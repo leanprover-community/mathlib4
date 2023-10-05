@@ -18,7 +18,7 @@ variable {α : Type*}
 section ExistsAddOfLE
 
 variable [AddCommSemigroup α] [PartialOrder α] [ExistsAddOfLE α]
-  [CovariantClass α α HAdd.hAdd LE.le] [Sub α] [OrderedSub α] {a b c d : α}
+  [CovariantClass α α (+) LE.le] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
 theorem add_tsub_cancel_of_le (h : a ≤ b) : a + (b - a) = b := by
@@ -155,7 +155,7 @@ protected theorem tsub_inj_right (hab : AddLECancellable (a - b)) (h₁ : b ≤ 
   rw [tsub_add_cancel_of_le h₁, h₃, tsub_add_cancel_of_le h₂]
 #align add_le_cancellable.tsub_inj_right AddLECancellable.tsub_inj_right
 
-protected theorem lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α HAdd.hAdd LT.lt]
+protected theorem lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α (+) LT.lt]
     (hb : AddLECancellable b) (hca : c ≤ a) (h : a - b < a - c) : c < b := by
   conv_lhs at h => rw [← tsub_add_cancel_of_le hca]
   exact lt_of_add_lt_add_left (hb.lt_add_of_tsub_lt_right h)
@@ -172,7 +172,7 @@ protected theorem tsub_lt_tsub_right_of_le (hc : AddLECancellable c) (h : c ≤ 
   rwa [add_tsub_cancel_of_le h]
 #align add_le_cancellable.tsub_lt_tsub_right_of_le AddLECancellable.tsub_lt_tsub_right_of_le
 
-protected theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α HAdd.hAdd LT.lt]
+protected theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (+) LT.lt]
     (hb : AddLECancellable b) (hab : AddLECancellable (a - b)) (h₁ : b ≤ a) (h₂ : c ≤ a) :
     a - b < a - c ↔ c < b :=
   ⟨hb.lt_of_tsub_lt_tsub_left_of_le h₂, hab.tsub_lt_tsub_left_of_le h₁⟩
@@ -200,7 +200,7 @@ section Contra
 /-! ### Lemmas where addition is order-reflecting. -/
 
 
-variable [ContravariantClass α α HAdd.hAdd LE.le]
+variable [ContravariantClass α α (+) LE.le]
 
 theorem eq_tsub_iff_add_eq_of_le (h : c ≤ b) : a = b - c ↔ a + c = b :=
   Contravariant.AddLECancellable.eq_tsub_iff_add_eq_of_le h
@@ -262,7 +262,7 @@ theorem lt_tsub_iff_left_of_le (h : c ≤ b) : a < b - c ↔ c + a < b :=
 #align lt_tsub_iff_left_of_le lt_tsub_iff_left_of_le
 
 /-- See `lt_of_tsub_lt_tsub_left` for a stronger statement in a linear order. -/
-theorem lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α HAdd.hAdd LT.lt] (hca : c ≤ a)
+theorem lt_of_tsub_lt_tsub_left_of_le [ContravariantClass α α (+) LT.lt] (hca : c ≤ a)
     (h : a - b < a - c) : c < b :=
   Contravariant.AddLECancellable.lt_of_tsub_lt_tsub_left_of_le hca h
 #align lt_of_tsub_lt_tsub_left_of_le lt_of_tsub_lt_tsub_left_of_le
@@ -280,7 +280,7 @@ theorem tsub_inj_right (h₁ : b ≤ a) (h₂ : c ≤ a) (h₃ : a - b = a - c) 
 #align tsub_inj_right tsub_inj_right
 
 /-- See `tsub_lt_tsub_iff_left_of_le` for a stronger statement in a linear order. -/
-theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α HAdd.hAdd LT.lt] (h₁ : b ≤ a)
+theorem tsub_lt_tsub_iff_left_of_le_of_le [ContravariantClass α α (+) LT.lt] (h₁ : b ≤ a)
     (h₂ : c ≤ a) : a - b < a - c ↔ c < b :=
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le Contravariant.AddLECancellable h₁
     h₂
@@ -381,7 +381,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α HAdd.hAdd LE.le]
+variable [ContravariantClass α α (+) LE.le]
 
 theorem tsub_le_tsub_iff_left (h : c ≤ a) : a - b ≤ a - c ↔ c ≤ b :=
   Contravariant.AddLECancellable.tsub_le_tsub_iff_left Contravariant.AddLECancellable h
@@ -464,7 +464,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α HAdd.hAdd LE.le]
+variable [ContravariantClass α α (+) LE.le]
 
 /-- This lemma also holds for `ENNReal`, but we need a different proof for that. -/
 theorem tsub_lt_tsub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b :=

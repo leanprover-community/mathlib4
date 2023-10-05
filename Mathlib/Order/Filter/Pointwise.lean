@@ -371,13 +371,13 @@ theorem le_mul_iff : h ≤ f * g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈
 #align filter.le_add_iff Filter.le_add_iff
 
 @[to_additive]
-instance covariant_mul : CovariantClass (Filter α) (Filter α) HMul.hMul LE.le :=
+instance covariant_mul : CovariantClass (Filter α) (Filter α) (*) LE.le :=
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_mul Filter.covariant_mul
 #align filter.covariant_add Filter.covariant_add
 
 @[to_additive]
-instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap HMul.hMul) LE.le :=
+instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (*)) LE.le :=
   ⟨fun _ _ _ => map₂_mono_right⟩
 #align filter.covariant_swap_mul Filter.covariant_swap_mul
 #align filter.covariant_swap_add Filter.covariant_swap_add

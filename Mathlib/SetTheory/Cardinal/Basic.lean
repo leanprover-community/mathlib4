@@ -667,11 +667,11 @@ private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → 
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 -- #align cardinal.add_le_add' Cardinal.add_le_add'
 
-instance add_covariantClass : CovariantClass Cardinal Cardinal HAdd.hAdd LE.le :=
+instance add_covariantClass : CovariantClass Cardinal Cardinal (+) LE.le :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
 #align cardinal.add_covariant_class Cardinal.add_covariantClass
 
-instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap HAdd.hAdd) LE.le :=
+instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (+)) LE.le :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 #align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
 

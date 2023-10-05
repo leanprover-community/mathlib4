@@ -260,7 +260,7 @@ theorem lt_fold_max : c < s.fold max b f ↔ c < b ∨ ∃ x ∈ s, c < f x :=
   fold_op_rel_iff_or lt_max_iff
 #align finset.lt_fold_max Finset.lt_fold_max
 
-theorem fold_max_add [Add β] [CovariantClass β β (Function.swap HAdd.hAdd) LE.le] (n : WithBot β)
+theorem fold_max_add [Add β] [CovariantClass β β (Function.swap (+)) LE.le] (n : WithBot β)
     (s : Finset α) : (s.fold max ⊥ fun x : α => ↑(f x) + n) = s.fold max ⊥ ((↑) ∘ f) + n := by
   classical
     induction' s using Finset.induction_on with a s _ ih <;> simp [*, max_add_add_right]

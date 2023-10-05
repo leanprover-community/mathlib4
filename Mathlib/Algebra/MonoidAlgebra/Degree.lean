@@ -96,9 +96,9 @@ end ExplicitDegrees
 
 section AddOnly
 
-variable [Add A] [Add B] [Add T] [CovariantClass B B HAdd.hAdd LE.le]
-  [CovariantClass B B (Function.swap HAdd.hAdd) LE.le] [CovariantClass T T HAdd.hAdd LE.le]
-  [CovariantClass T T (Function.swap HAdd.hAdd) LE.le]
+variable [Add A] [Add B] [Add T] [CovariantClass B B (+) LE.le]
+  [CovariantClass B B (Function.swap (+)) LE.le] [CovariantClass T T HAdd.hAdd LE.le]
+  [CovariantClass T T (Function.swap (+)) LE.le]
 
 theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
@@ -121,9 +121,9 @@ end AddOnly
 
 section AddMonoids
 
-variable [AddMonoid A] [AddMonoid B] [CovariantClass B B HAdd.hAdd LE.le]
-  [CovariantClass B B (Function.swap HAdd.hAdd) LE.le] [AddMonoid T]
-  [CovariantClass T T HAdd.hAdd LE.le] [CovariantClass T T (Function.swap HAdd.hAdd) LE.le]
+variable [AddMonoid A] [AddMonoid B] [CovariantClass B B (+) LE.le]
+  [CovariantClass B B (Function.swap (+)) LE.le] [AddMonoid T]
+  [CovariantClass T T (+) LE.le] [CovariantClass T T (Function.swap HAdd.hAdd) LE.le]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
@@ -171,9 +171,9 @@ end Semiring
 
 section CommutativeLemmas
 
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [CovariantClass B B HAdd.hAdd LE.le]
-  [CovariantClass B B (Function.swap HAdd.hAdd) LE.le] [AddCommMonoid T]
-  [CovariantClass T T HAdd.hAdd LE.le] [CovariantClass T T (Function.swap HAdd.hAdd) LE.le]
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [CovariantClass B B (+) LE.le]
+  [CovariantClass B B (Function.swap (+)) LE.le] [AddCommMonoid T]
+  [CovariantClass T T (+) LE.le] [CovariantClass T T (Function.swap HAdd.hAdd) LE.le]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_multiset_prod_le (degb0 : degb 0 ≤ 0)
@@ -240,7 +240,7 @@ theorem supDegree_add_le (f g : R[A]) :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
   sup_support_add_le D f g
 
-variable [CovariantClass B B HAdd.hAdd LE.le] [CovariantClass B B (Function.swap HAdd.hAdd) LE.le]
+variable [CovariantClass B B (+) LE.le] [CovariantClass B B (Function.swap HAdd.hAdd) LE.le]
   (D : A →+ B) in
 theorem supDegree_mul_le (f g : R[A]) :
     (f * g).supDegree D ≤ f.supDegree D + g.supDegree D :=
@@ -267,7 +267,7 @@ theorem le_infDegree_add (D : A → T) (f g : R[A]) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
-variable [CovariantClass T T HAdd.hAdd LE.le] [CovariantClass T T (Function.swap HAdd.hAdd) LE.le]
+variable [CovariantClass T T (+) LE.le] [CovariantClass T T (Function.swap HAdd.hAdd) LE.le]
   (D : A →+ T) in
 theorem le_infDegree_mul (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=

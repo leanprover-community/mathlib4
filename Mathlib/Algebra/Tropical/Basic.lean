@@ -500,17 +500,17 @@ end Monoid
 
 section Distrib
 
-instance covariant_mul [LE R] [Add R] [CovariantClass R R HAdd.hAdd LE.le] :
-    CovariantClass (Tropical R) (Tropical R) HMul.hMul LE.le :=
+instance covariant_mul [LE R] [Add R] [CovariantClass R R (+) LE.le] :
+    CovariantClass (Tropical R) (Tropical R) (*) LE.le :=
   ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
 #align tropical.covariant_mul Tropical.covariant_mul
 
-instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap HAdd.hAdd) LE.le] :
-    CovariantClass (Tropical R) (Tropical R) (Function.swap HMul.hMul) LE.le :=
+instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (+)) LE.le] :
+    CovariantClass (Tropical R) (Tropical R) (Function.swap (*)) LE.le :=
   ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
 #align tropical.covariant_swap_mul Tropical.covariant_swap_mul
 
-instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) HAdd.hAdd LE.le :=
+instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (+) LE.le :=
   ⟨fun x y z h => by
     cases' le_total x y with hx hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
@@ -520,19 +520,19 @@ instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R
       · rwa [add_eq_right hx]⟩
 #align tropical.covariant_add Tropical.covariant_add
 
-instance covariant_mul_lt [LT R] [Add R] [CovariantClass R R HAdd.hAdd LT.lt] :
-    CovariantClass (Tropical R) (Tropical R) HMul.hMul LT.lt :=
+instance covariant_mul_lt [LT R] [Add R] [CovariantClass R R (+) LT.lt] :
+    CovariantClass (Tropical R) (Tropical R) (*) LT.lt :=
   ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
 #align tropical.covariant_mul_lt Tropical.covariant_mul_lt
 
 instance covariant_swap_mul_lt [Preorder R] [Add R]
-    [CovariantClass R R (Function.swap HAdd.hAdd) LT.lt] :
-    CovariantClass (Tropical R) (Tropical R) (Function.swap HMul.hMul) LT.lt :=
+    [CovariantClass R R (Function.swap (+)) LT.lt] :
+    CovariantClass (Tropical R) (Tropical R) (Function.swap (*)) LT.lt :=
   ⟨fun _ y z h => add_lt_add_right (show untrop y < untrop z from h) _⟩
 #align tropical.covariant_swap_mul_lt Tropical.covariant_swap_mul_lt
 
-instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R HAdd.hAdd LE.le]
-    [CovariantClass R R (Function.swap HAdd.hAdd) LE.le] :
+instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (+) LE.le]
+    [CovariantClass R R (Function.swap (+)) LE.le] :
     Distrib (Tropical R) where
   mul := (· * ·)
   add := (· + ·)
@@ -540,8 +540,8 @@ instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R HAdd.hA
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 
 @[simp]
-theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R HAdd.hAdd LE.le]
-    [CovariantClass R R (Function.swap HAdd.hAdd) LE.le] (x y : Tropical R) (n : ℕ) :
+theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R (+) LE.le]
+    [CovariantClass R R (Function.swap (+)) LE.le] (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
   cases' le_total x y with h h
   · rw [add_eq_left h, add_eq_left (pow_le_pow_of_le_left' h _)]

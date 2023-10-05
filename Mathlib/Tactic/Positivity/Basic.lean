@@ -160,16 +160,16 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α HAdd.hAdd LT.lt) : Q(Prop))
+    let _a ← synthInstanceQ (q(CovariantClass $α $α (+) LT.lt) : Q(Prop))
     pure (.positive q(add_pos $pa $pb))
   | .positive pa, .nonnegative pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α (swap HAdd.hAdd) LT.lt) : Q(Prop))
+    let _a ← synthInstanceQ (q(CovariantClass $α $α (swap (+)) LT.lt) : Q(Prop))
     pure (.positive q(lt_add_of_pos_of_le $pa $pb))
   | .nonnegative pa, .positive pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α HAdd.hAdd LT.lt) : Q(Prop))
+    let _a ← synthInstanceQ (q(CovariantClass $α $α (+) LT.lt) : Q(Prop))
     pure (.positive q(lt_add_of_le_of_pos $pa $pb))
   | .nonnegative pa, .nonnegative pb =>
-    let _a ← synthInstanceQ (q(CovariantClass $α $α HAdd.hAdd LE.le) : Q(Prop))
+    let _a ← synthInstanceQ (q(CovariantClass $α $α (+) LE.le) : Q(Prop))
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
 
@@ -374,7 +374,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .none => pure .none
 
 private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
- [CovariantClass α α HAdd.hAdd LE.le] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
+ [CovariantClass α α (+) LE.le] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |(_ : α)|]

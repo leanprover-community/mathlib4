@@ -1782,8 +1782,8 @@ theorem EventuallyLE.mul_le_mul [MulZeroClass β] [PartialOrder β] [PosMulMono 
 #align filter.eventually_le.mul_le_mul Filter.EventuallyLE.mul_le_mul
 
 @[to_additive EventuallyLE.add_le_add]
-theorem EventuallyLE.mul_le_mul' [Mul β] [Preorder β] [CovariantClass β β HMul.hMul LE.le]
-    [CovariantClass β β (swap HMul.hMul) LE.le] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β}
+theorem EventuallyLE.mul_le_mul' [Mul β] [Preorder β] [CovariantClass β β (*) LE.le]
+    [CovariantClass β β (swap (*)) LE.le] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β}
     (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
   filter_upwards [hf, hg] with x hfx hgx using _root_.mul_le_mul' hfx hgx
 #align filter.eventually_le.mul_le_mul' Filter.EventuallyLE.mul_le_mul'

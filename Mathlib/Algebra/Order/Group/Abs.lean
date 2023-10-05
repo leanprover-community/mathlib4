@@ -102,7 +102,7 @@ theorem abs_sub_comm (a b : α) : |a - b| = |b - a| :=
     _ = |b - a| := abs_neg (b - a)
 #align abs_sub_comm abs_sub_comm
 
-variable [CovariantClass α α HAdd.hAdd LE.le] {a b c : α}
+variable [CovariantClass α α (+) LE.le] {a b c : α}
 
 theorem abs_of_nonneg (h : 0 ≤ a) : |a| = a :=
   max_eq_left <| (neg_nonpos.2 h).trans h
@@ -186,7 +186,7 @@ theorem abs_nonpos_iff {a : α} : |a| ≤ 0 ↔ a = 0 :=
   (abs_nonneg a).le_iff_eq.trans abs_eq_zero
 #align abs_nonpos_iff abs_nonpos_iff
 
-variable [CovariantClass α α (swap HAdd.hAdd) LE.le]
+variable [CovariantClass α α (swap (+)) LE.le]
 
 theorem abs_le_abs_of_nonpos (ha : a ≤ 0) (hab : b ≤ a) : |a| ≤ |b| := by
   rw [abs_of_nonpos ha, abs_of_nonpos (hab.trans ha)]
@@ -247,7 +247,7 @@ theorem le_of_abs_le (h : |a| ≤ b) : a ≤ b :=
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
-    [CovariantClass β β HMul.hMul LE.le] [CovariantClass β β (swap HMul.hMul) LE.le] {f : α → β}
+    [CovariantClass β β (*) LE.le] [CovariantClass β β (swap (*)) LE.le] {f : α → β}
     {a : α} (h₁ : 1 ≤ f a) (h₂ : 1 ≤ f (-a)) : f |a| ≤ f a * f (-a) :=
   (le_total a 0).rec (fun ha => (abs_of_nonpos ha).symm ▸ le_mul_of_one_le_left' h₁) fun ha =>
     (abs_of_nonneg ha).symm ▸ le_mul_of_one_le_right' h₂
@@ -256,7 +256,7 @@ theorem apply_abs_le_mul_of_one_le' {β : Type*} [MulOneClass β] [Preorder β]
 
 @[to_additive]
 theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
-    [CovariantClass β β HMul.hMul LE.le] [CovariantClass β β (swap HMul.hMul) LE.le] {f : α → β}
+    [CovariantClass β β (*) LE.le] [CovariantClass β β (swap (*)) LE.le] {f : α → β}
     (h : ∀ x, 1 ≤ f x) (a : α) : f |a| ≤ f a * f (-a) :=
   apply_abs_le_mul_of_one_le' (h _) (h _)
 #align apply_abs_le_mul_of_one_le apply_abs_le_mul_of_one_le

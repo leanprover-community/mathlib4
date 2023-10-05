@@ -812,7 +812,7 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
 #align measure_theory.Lp.simple_func.coe_fn_le MeasureTheory.Lp.simpleFunc.coeFn_le
 
 instance instCovariantClassLE :
-    CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) HAdd.hAdd LE.le := by
+    CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) (+) LE.le := by
   refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
   have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _

@@ -116,10 +116,10 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 -- porting note: are these 2 instances still required in Lean 4?
-instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ HMul.hMul LE.le := inferInstance
+instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (*) LE.le := inferInstance
 #align ennreal.covariant_class_mul_le ENNReal.covariantClass_mul_le
 
-instance covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ HAdd.hAdd LE.le := inferInstance
+instance covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (+) LE.le := inferInstance
 #align ennreal.covariant_class_add_le ENNReal.covariantClass_add_le
 
 -- porting note: todo: add a `WithTop` instance and use it here
@@ -814,7 +814,7 @@ protected theorem add_lt_add_of_lt_of_le : c ≠ ∞ → a < b → c ≤ d → a
   WithTop.add_lt_add_of_lt_of_le
 #align ennreal.add_lt_add_of_lt_of_le ENNReal.add_lt_add_of_lt_of_le
 
-instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ HAdd.hAdd LT.lt :=
+instance contravariantClass_add_lt : ContravariantClass ℝ≥0∞ ℝ≥0∞ (+) LT.lt :=
   WithTop.contravariantClass_add_lt
 #align ennreal.contravariant_class_add_lt ENNReal.contravariantClass_add_lt
 
@@ -1000,11 +1000,11 @@ theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
     _ ≤ c * d := mul_le_mul' a'c.le b'd.le
 #align ennreal.mul_lt_mul ENNReal.mul_lt_mul
 
--- TODO: generalize to `CovariantClass α α HMul.hMul LE.le`
+-- TODO: generalize to `CovariantClass α α (*) LE.le`
 theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
 #align ennreal.mul_left_mono ENNReal.mul_left_mono
 
--- TODO: generalize to `CovariantClass α α (swap HMul.hMul) LE.le`
+-- TODO: generalize to `CovariantClass α α (swap (*)) LE.le`
 theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
 #align ennreal.mul_right_mono ENNReal.mul_right_mono
 

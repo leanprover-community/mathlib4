@@ -119,7 +119,7 @@ variable {α : Type u} {β : Type*}
 `zero_le_one` field. -/
 
 
-theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α HAdd.hAdd LE.le] {a : α}
+theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (+) LE.le] {a : α}
     (a1 : 1 ≤ a) : a + 1 ≤ 2 * a :=
   calc
     a + 1 ≤ a + a := add_le_add_left a1 a

@@ -305,7 +305,7 @@ theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_right_mem_of_not_le DirectSum.coe_decompose_mul_of_right_mem_of_not_le
 
-variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι HAdd.hAdd LE.le]
+variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (+) LE.le]
 
 theorem coe_decompose_mul_of_left_mem_of_le (a_mem : a ∈ 𝒜 i) (h : i ≤ n) :
     (decompose 𝒜 (a * b) n : A) = a * decompose 𝒜 b (n - i) := by

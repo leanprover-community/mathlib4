@@ -20,7 +20,7 @@ section DenselyOrdered
 
 variable [Group α] [LinearOrder α]
 
-variable [CovariantClass α α HMul.hMul LE.le]
+variable [CovariantClass α α (*) LE.le]
 
 variable [DenselyOrdered α] {a b c : α}
 

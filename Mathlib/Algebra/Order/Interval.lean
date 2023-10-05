@@ -154,8 +154,8 @@ Note that this multiplication does not apply to `ℚ` or `ℝ`.
 
 section Mul
 
-variable [Preorder α] [Mul α] [CovariantClass α α HMul.hMul LE.le]
-  [CovariantClass α α (swap HMul.hMul) LE.le]
+variable [Preorder α] [Mul α] [CovariantClass α α (*) LE.le]
+  [CovariantClass α α (swap (*)) LE.le]
 
 @[to_additive]
 instance : Mul (NonemptyInterval α) :=
@@ -228,15 +228,15 @@ end Mul
 
 
 -- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
-instance NonemptyInterval.hasNsmul [AddMonoid α] [Preorder α] [CovariantClass α α HAdd.hAdd LE.le]
-    [CovariantClass α α (swap HAdd.hAdd) LE.le] : SMul ℕ (NonemptyInterval α) :=
+instance NonemptyInterval.hasNsmul [AddMonoid α] [Preorder α] [CovariantClass α α (+) LE.le]
+    [CovariantClass α α (swap (+)) LE.le] : SMul ℕ (NonemptyInterval α) :=
   ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_of_le_right s.fst_le_snd _⟩⟩
 #align nonempty_interval.has_nsmul NonemptyInterval.hasNsmul
 
 section Pow
 
-variable [Monoid α] [Preorder α] [CovariantClass α α HMul.hMul LE.le]
-  [CovariantClass α α (swap HMul.hMul) LE.le]
+variable [Monoid α] [Preorder α] [CovariantClass α α (*) LE.le]
+  [CovariantClass α α (swap (*)) LE.le]
 
 @[to_additive existing NonemptyInterval.hasNsmul]
 instance NonemptyInterval.hasPow : Pow (NonemptyInterval α) ℕ :=
@@ -338,7 +338,7 @@ is not a thing and probably should not become one).
 section Sub
 
 variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
-  [CovariantClass α α HAdd.hAdd LE.le]
+  [CovariantClass α α (+) LE.le]
 
 instance : Sub (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
@@ -403,7 +403,7 @@ Note that this division does not apply to `ℚ` or `ℝ`.
 
 section Div
 
-variable [Preorder α] [CommGroup α] [CovariantClass α α HMul.hMul LE.le]
+variable [Preorder α] [CommGroup α] [CovariantClass α α (*) LE.le]
 
 @[to_additive existing]
 instance : Div (NonemptyInterval α) :=

@@ -431,7 +431,7 @@ section AddGroup
 
 variable [AddGroup α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
 
-theorem Left.sign_neg [CovariantClass α α HAdd.hAdd LT.lt] (a : α) : sign (-a) = -sign a := by
+theorem Left.sign_neg [CovariantClass α α (+) LT.lt] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]
   split_ifs with h h'
   · exact False.elim (lt_asymm h h')
@@ -440,7 +440,7 @@ theorem Left.sign_neg [CovariantClass α α HAdd.hAdd LT.lt] (a : α) : sign (-a
   · simp
 #align left.sign_neg Left.sign_neg
 
-theorem Right.sign_neg [CovariantClass α α (Function.swap HAdd.hAdd) LT.lt] (a : α) :
+theorem Right.sign_neg [CovariantClass α α (Function.swap (+)) LT.lt] (a : α) :
     sign (-a) = -sign a := by
   simp_rw [sign_apply, Right.neg_pos_iff, Right.neg_neg_iff]
   split_ifs with h h'

@@ -142,8 +142,8 @@ instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
   { Finsupp.orderedAddCommMonoid with
     le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α HAdd.hAdd LE.le] :
-    ContravariantClass (ι →₀ α) (ι →₀ α) HAdd.hAdd LE.le :=
+instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (+) LE.le] :
+    ContravariantClass (ι →₀ α) (ι →₀ α) (+) LE.le :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
 section CanonicallyOrderedAddMonoid

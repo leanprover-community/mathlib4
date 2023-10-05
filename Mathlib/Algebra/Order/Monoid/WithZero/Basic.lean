@@ -25,8 +25,8 @@ variable {α : Type u}
 namespace WithZero
 
 instance contravariantClass_mul_lt [Mul α] [PartialOrder α]
-    [ContravariantClass α α HMul.hMul LT.lt] :
-    ContravariantClass (WithZero α) (WithZero α) HMul.hMul LT.lt := by
+    [ContravariantClass α α (*) LT.lt] :
+    ContravariantClass (WithZero α) (WithZero α) (*) LT.lt := by
   refine ⟨fun a b c h => ?_⟩
   have := ((zero_le _).trans_lt h).ne'
   induction a using WithZero.recZeroCoe

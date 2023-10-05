@@ -48,7 +48,7 @@ variable [OrderedCancelCommMonoid α] {a b c d : α}
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 200) OrderedCancelCommMonoid.to_contravariantClass_le_left :
-    ContravariantClass α α HMul.hMul LE.le :=
+    ContravariantClass α α (*) LE.le :=
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
 #align ordered_cancel_comm_monoid.to_contravariant_class_le_left OrderedCancelCommMonoid.to_contravariantClass_le_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_le_left OrderedCancelAddCommMonoid.to_contravariantClass_le_left
@@ -62,7 +62,7 @@ theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < 
 @[to_additive]
 instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type*)
     [OrderedCancelCommMonoid M] :
-    ContravariantClass M M HMul.hMul LT.lt where
+    ContravariantClass M M (*) LT.lt where
   elim _ _ _ := OrderedCancelCommMonoid.lt_of_mul_lt_mul_left _ _ _
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.to_contravariantClass_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.to_contravariantClass_left
@@ -74,7 +74,7 @@ instance. -/
 @[to_additive]
 instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type*)
     [OrderedCancelCommMonoid M] :
-    ContravariantClass M M (swap HMul.hMul) LT.lt :=
+    ContravariantClass M M (swap (*)) LT.lt :=
   contravariant_swap_mul_of_contravariant_mul M _
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.to_contravariantClass_right
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.to_contravariantClass_right

@@ -128,16 +128,16 @@ def coeAddHom : AddHom ℕ+ ℕ where
   map_add' := add_coe
 #align pnat.coe_add_hom PNat.coeAddHom
 
-instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ HAdd.hAdd LE.le :=
+instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (+) LE.le :=
   Positive.covariantClass_add_le
 
-instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ HAdd.hAdd LT.lt :=
+instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (+) LT.lt :=
   Positive.covariantClass_add_lt
 
-instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ HAdd.hAdd LE.le :=
+instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (+) LE.le :=
   Positive.contravariantClass_add_le
 
-instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ HAdd.hAdd LT.lt :=
+instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (+) LT.lt :=
   Positive.contravariantClass_add_lt
 
 /-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/

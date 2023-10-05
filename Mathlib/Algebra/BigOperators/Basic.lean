@@ -1426,7 +1426,7 @@ reduces to the difference of the last and first terms
 when the function we are summing is monotone.
 -/
 theorem sum_range_tsub [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α HAdd.hAdd LE.le] {f : ℕ → α} (h : Monotone f) (n : ℕ) :
+    [ContravariantClass α α (+) LE.le] {f : ℕ → α} (h : Monotone f) (n : ℕ) :
     ∑ i in range n, (f (i + 1) - f i) = f n - f 0 := by
   apply sum_range_induction
   case base => apply tsub_self
@@ -1702,7 +1702,7 @@ theorem prod_ite_one {f : α → Prop} [DecidablePred f] (hf : (s : Set α).Pair
 
 @[to_additive]
 theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [OrderedCommMonoid γ]
-    [CovariantClass γ γ HMul.hMul LT.lt] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
+    [CovariantClass γ γ (*) LT.lt] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
     (hdf : 1 < f d) : ∏ m : α in s.erase d, f m < ∏ m : α in s, f m := by
   conv in ∏ m in s, f m => rw [← Finset.insert_erase hd]
   rw [Finset.prod_insert (Finset.not_mem_erase d s)]

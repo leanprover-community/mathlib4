@@ -219,7 +219,7 @@ theorem Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquar
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
 theorem Even.tsub [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α HAdd.hAdd LE.le] {m n : α} (hm : Even m) (hn : Even n) :
+    [ContravariantClass α α (+) LE.le] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn

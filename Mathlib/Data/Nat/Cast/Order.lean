@@ -26,7 +26,7 @@ we use a generic collection of instances so that it applies in other settings (e
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
 variable [AddCommMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α HAdd.hAdd LE.le] [ZeroLEOneClass α]
+variable [CovariantClass α α (+) LE.le] [ZeroLEOneClass α]
 
 @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
@@ -120,7 +120,7 @@ end OrderedSemiring
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
 @[simp, norm_cast]
 theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α HAdd.hAdd LE.le] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
+    [ContravariantClass α α (+) LE.le] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
   cases' le_total m n with h h
   · rw [Nat.sub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
     exact mono_cast h

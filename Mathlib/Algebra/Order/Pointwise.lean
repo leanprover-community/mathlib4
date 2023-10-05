@@ -54,7 +54,7 @@ end One
 
 section Group
 
-variable [Group α] [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (swap HMul.hMul) LE.le]
+variable [Group α] [CovariantClass α α (*) LE.le] [CovariantClass α α (swap (*)) LE.le]
   (s t : Set α)
 
 @[to_additive]
@@ -123,7 +123,7 @@ end One
 
 section Group
 
-variable [Group α] [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (swap HMul.hMul) LE.le]
+variable [Group α] [CovariantClass α α (*) LE.le] [CovariantClass α α (swap (*)) LE.le]
   {s t : Set α}
 
 @[to_additive]

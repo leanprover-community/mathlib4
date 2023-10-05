@@ -207,16 +207,16 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ HMul.hMul LT.lt :=
+    have : CovariantClass αˣ αˣ (*) LT.lt :=
       LeftCancelSemigroup.covariant_mul_lt_of_covariant_mul_le αˣ
     inv_lt_inv_iff
 #align inv_lt_inv₀ inv_lt_inv₀
 
 theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
   show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ (Function.swap HMul.hMul) LE.le :=
+    have : CovariantClass αˣ αˣ (Function.swap (*)) LE.le :=
       OrderedCommMonoid.to_covariantClass_right αˣ
-    have : CovariantClass αˣ αˣ HMul.hMul LE.le :=
+    have : CovariantClass αˣ αˣ (*) LE.le :=
       OrderedCommGroup.to_covariantClass_left_le αˣ
     inv_le_inv_iff
 #align inv_le_inv₀ inv_le_inv₀

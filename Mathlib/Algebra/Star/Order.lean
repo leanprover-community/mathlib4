@@ -116,7 +116,7 @@ def ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s)) :
     StarOrderedRing R where
   le_iff x y := by
-    haveI : CovariantClass R R HAdd.hAdd LE.le := ⟨fun _ _ _ h => h_add h _⟩
+    haveI : CovariantClass R R (+) LE.le := ⟨fun _ _ _ h => h_add h _⟩
     simpa only [← sub_eq_iff_eq_add', sub_nonneg, exists_eq_right'] using h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff StarOrderedRing.ofNonnegIff
 
@@ -133,7 +133,7 @@ def ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ ∃ s, x = star s * s) : StarOrderedRing R :=
   ofLEIff <| by
-    haveI : CovariantClass R R HAdd.hAdd LE.le := ⟨fun _ _ _ h => h_add h _⟩
+    haveI : CovariantClass R R (+) LE.le := ⟨fun _ _ _ h => h_add h _⟩
     simpa [sub_eq_iff_eq_add', sub_nonneg] using fun x y => h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff' StarOrderedRing.ofNonnegIff'
 

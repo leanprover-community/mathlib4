@@ -129,7 +129,7 @@ theorem _root_.Set.up_union (s t : Set α) : up (s ∪ t) = up s + up t :=
 
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
-instance covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) HAdd.hAdd LE.le :=
+instance covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) (+) LE.le :=
   ⟨fun _ _ _ => union_subset_union_right _⟩
 #align set_semiring.covariant_class_add SetSemiring.covariantClass_add
 
@@ -168,12 +168,12 @@ instance : NoZeroDivisors (SetSemiring α) :=
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab⟩
 
 instance covariantClass_mul_left :
-    CovariantClass (SetSemiring α) (SetSemiring α) HMul.hMul LE.le :=
+    CovariantClass (SetSemiring α) (SetSemiring α) (*) LE.le :=
   ⟨fun _ _ _ => mul_subset_mul_left⟩
 #align set_semiring.covariant_class_mul_left SetSemiring.covariantClass_mul_left
 
 instance covariantClass_mul_right :
-    CovariantClass (SetSemiring α) (SetSemiring α) (swap HMul.hMul) LE.le :=
+    CovariantClass (SetSemiring α) (SetSemiring α) (swap (*)) LE.le :=
   ⟨fun _ _ _ => mul_subset_mul_right⟩
 #align set_semiring.covariant_class_mul_right SetSemiring.covariantClass_mul_right
 

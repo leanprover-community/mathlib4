@@ -46,7 +46,7 @@ attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    CovariantClass α α HMul.hMul LE.le where
+    CovariantClass α α (*) LE.le where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 #align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.to_covariantClass_left_le
@@ -59,7 +59,7 @@ instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCo
 #align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.toOrderedCancelCommMonoid
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
-example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap HAdd.hAdd) LT.lt :=
+example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (+)) LT.lt :=
   AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
 
 -- Porting note: this instance is not used,
@@ -69,7 +69,7 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap HAdd
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α HMul.hMul LE.le where
+    ContravariantClass α α (*) LE.le where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
@@ -80,7 +80,7 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (swap HMul.hMul) LE.le where
+    ContravariantClass α α (swap (*)) LE.le where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
 #align ordered_add_comm_group.to_contravariant_class_right_le OrderedAddCommGroup.to_contravariantClass_right_le
@@ -91,7 +91,7 @@ variable [Group α]
 
 section TypeclassesLeftLE
 
-variable [LE α] [CovariantClass α α HMul.hMul LE.le] {a b c d : α}
+variable [LE α] [CovariantClass α α (*) LE.le] {a b c d : α}
 
 /-- Uses `left` co(ntra)variant. -/
 @[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
@@ -151,7 +151,7 @@ end TypeclassesLeftLE
 
 section TypeclassesLeftLT
 
-variable [LT α] [CovariantClass α α HMul.hMul LT.lt] {a b c : α}
+variable [LT α] [CovariantClass α α (*) LT.lt] {a b c : α}
 
 /-- Uses `left` co(ntra)variant. -/
 @[to_additive (attr := simp) Left.neg_pos_iff "Uses `left` co(ntra)variant."]
@@ -208,7 +208,7 @@ end TypeclassesLeftLT
 
 section TypeclassesRightLE
 
-variable [LE α] [CovariantClass α α (swap HMul.hMul) LE.le] {a b c : α}
+variable [LE α] [CovariantClass α α (swap (*)) LE.le] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
 @[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
@@ -273,7 +273,7 @@ end TypeclassesRightLE
 
 section TypeclassesRightLT
 
-variable [LT α] [CovariantClass α α (swap HMul.hMul) LT.lt] {a b c : α}
+variable [LT α] [CovariantClass α α (swap (*)) LT.lt] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
 @[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
@@ -336,7 +336,7 @@ end TypeclassesRightLT
 
 section TypeclassesLeftRightLE
 
-variable [LE α] [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (swap HMul.hMul) LE.le]
+variable [LE α] [CovariantClass α α (*) LE.le] [CovariantClass α α (swap (*)) LE.le]
   {a b c d : α}
 
 @[to_additive (attr := simp)]
@@ -375,7 +375,7 @@ end TypeclassesLeftRightLE
 
 section TypeclassesLeftRightLT
 
-variable [LT α] [CovariantClass α α HMul.hMul LT.lt] [CovariantClass α α (swap HMul.hMul) LT.lt]
+variable [LT α] [CovariantClass α α (*) LT.lt] [CovariantClass α α (swap (*)) LT.lt]
   {a b c d : α}
 
 @[to_additive (attr := simp)]
@@ -431,7 +431,7 @@ variable [Preorder α]
 
 section LeftLE
 
-variable [CovariantClass α α HMul.hMul LE.le] {a : α}
+variable [CovariantClass α α (*) LE.le] {a : α}
 
 @[to_additive]
 theorem Left.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
@@ -452,7 +452,7 @@ end LeftLE
 
 section LeftLT
 
-variable [CovariantClass α α HMul.hMul LT.lt] {a : α}
+variable [CovariantClass α α (*) LT.lt] {a : α}
 
 @[to_additive]
 theorem Left.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
@@ -473,7 +473,7 @@ end LeftLT
 
 section RightLE
 
-variable [CovariantClass α α (swap HMul.hMul) LE.le] {a : α}
+variable [CovariantClass α α (swap (*)) LE.le] {a : α}
 
 @[to_additive]
 theorem Right.inv_le_self (h : 1 ≤ a) : a⁻¹ ≤ a :=
@@ -491,7 +491,7 @@ end RightLE
 
 section RightLT
 
-variable [CovariantClass α α (swap HMul.hMul) LT.lt] {a : α}
+variable [CovariantClass α α (swap (*)) LT.lt] {a : α}
 
 @[to_additive]
 theorem Right.inv_lt_self (h : 1 < a) : a⁻¹ < a :=
@@ -517,7 +517,7 @@ variable [CommGroup α]
 
 section LE
 
-variable [LE α] [CovariantClass α α HMul.hMul LE.le] {a b c d : α}
+variable [LE α] [CovariantClass α α (*) LE.le] {a b c d : α}
 
 @[to_additive]
 theorem inv_mul_le_iff_le_mul' : c⁻¹ * a ≤ b ↔ a ≤ b * c := by rw [inv_mul_le_iff_le_mul, mul_comm]
@@ -541,7 +541,7 @@ end LE
 
 section LT
 
-variable [LT α] [CovariantClass α α HMul.hMul LT.lt] {a b c d : α}
+variable [LT α] [CovariantClass α α (*) LT.lt] {a b c d : α}
 
 @[to_additive]
 theorem inv_mul_lt_iff_lt_mul' : c⁻¹ * a < b ↔ a < b * c := by rw [inv_mul_lt_iff_lt_mul, mul_comm]
@@ -703,7 +703,7 @@ variable [Group α] [LE α]
 
 section Right
 
-variable [CovariantClass α α (swap HMul.hMul) LE.le] {a b c d : α}
+variable [CovariantClass α α (swap (*)) LE.le] {a b c d : α}
 
 @[to_additive (attr := simp)]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
@@ -757,7 +757,7 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 -- (a renamed version of) `tsub_le_iff_right`?
 -- see Note [lower instance priority]
 instance (priority := 100) AddGroup.toHasOrderedSub {α : Type*} [AddGroup α] [LE α]
-    [CovariantClass α α (swap HAdd.hAdd) LE.le] : OrderedSub α :=
+    [CovariantClass α α (swap (+)) LE.le] : OrderedSub α :=
   ⟨fun _ _ _ => sub_le_iff_le_add⟩
 #align add_group.to_has_ordered_sub AddGroup.toHasOrderedSub
 
@@ -765,9 +765,9 @@ end Right
 
 section Left
 
-variable [CovariantClass α α HMul.hMul LE.le]
+variable [CovariantClass α α (*) LE.le]
 
-variable [CovariantClass α α (swap HMul.hMul) LE.le] {a b c : α}
+variable [CovariantClass α α (swap (*)) LE.le] {a b c : α}
 
 @[to_additive (attr := simp)]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
@@ -792,7 +792,7 @@ variable [CommGroup α]
 
 section LE
 
-variable [LE α] [CovariantClass α α HMul.hMul LE.le] {a b c d : α}
+variable [LE α] [CovariantClass α α (*) LE.le] {a b c d : α}
 
 @[to_additive sub_le_sub_iff]
 theorem div_le_div_iff' : a / b ≤ c / d ↔ a * d ≤ c * b := by
@@ -845,7 +845,7 @@ end LE
 
 section Preorder
 
-variable [Preorder α] [CovariantClass α α HMul.hMul LE.le] {a b c d : α}
+variable [Preorder α] [CovariantClass α α (*) LE.le] {a b c d : α}
 
 @[to_additive sub_le_sub]
 theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
@@ -866,7 +866,7 @@ variable [Group α] [LT α]
 
 section Right
 
-variable [CovariantClass α α (swap HMul.hMul) LT.lt] {a b c d : α}
+variable [CovariantClass α α (swap (*)) LT.lt] {a b c d : α}
 
 @[to_additive (attr := simp)]
 theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
@@ -927,7 +927,7 @@ end Right
 
 section Left
 
-variable [CovariantClass α α HMul.hMul LT.lt] [CovariantClass α α (swap HMul.hMul) LT.lt]
+variable [CovariantClass α α (*) LT.lt] [CovariantClass α α (swap (*)) LT.lt]
   {a b c : α}
 
 @[to_additive (attr := simp)]
@@ -959,7 +959,7 @@ variable [CommGroup α]
 
 section LT
 
-variable [LT α] [CovariantClass α α HMul.hMul LT.lt] {a b c d : α}
+variable [LT α] [CovariantClass α α (*) LT.lt] {a b c d : α}
 
 @[to_additive sub_lt_sub_iff]
 theorem div_lt_div_iff' : a / b < c / d ↔ a * d < c * b := by
@@ -1007,7 +1007,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] [CovariantClass α α HMul.hMul LT.lt] {a b c d : α}
+variable [Preorder α] [CovariantClass α α (*) LT.lt] {a b c d : α}
 
 @[to_additive sub_lt_sub]
 theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
@@ -1025,12 +1025,12 @@ section LinearOrder
 variable [Group α] [LinearOrder α]
 
 @[to_additive (attr := simp) cmp_sub_zero]
-theorem cmp_div_one' [CovariantClass α α (swap HMul.hMul) LE.le] (a b : α) :
+theorem cmp_div_one' [CovariantClass α α (swap (*)) LE.le] (a b : α) :
     cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel']
 #align cmp_div_one' cmp_div_one'
 #align cmp_sub_zero cmp_sub_zero
 
-variable [CovariantClass α α HMul.hMul LE.le]
+variable [CovariantClass α α (*) LE.le]
 
 section VariableNames
 
@@ -1051,7 +1051,7 @@ theorem le_iff_forall_one_lt_lt_mul : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε 
 /-  I (DT) introduced this lemma to prove (the additive version `sub_le_sub_flip` of)
 `div_le_div_flip` below.  Now I wonder what is the point of either of these lemmas... -/
 @[to_additive]
-theorem div_le_inv_mul_iff [CovariantClass α α (swap HMul.hMul) LE.le] :
+theorem div_le_inv_mul_iff [CovariantClass α α (swap (*)) LE.le] :
     a / b ≤ a⁻¹ * b ↔ a ≤ b := by
   rw [div_eq_mul_inv, mul_inv_le_inv_mul_iff]
   exact
@@ -1065,7 +1065,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap HMul.hMul) LE.le] :
 -- since the LHS simplifies with `tsub_le_iff_right`
 @[to_additive, simp]
 theorem div_le_div_flip {α : Type*} [CommGroup α] [LinearOrder α]
-    [CovariantClass α α HMul.hMul LE.le] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
+    [CovariantClass α α (*) LE.le] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
   exact div_le_inv_mul_iff
 #align div_le_div_flip div_le_div_flip
@@ -1273,8 +1273,8 @@ end NormNumLemmas
 
 section
 
-variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α HMul.hMul LE.le]
-  [CovariantClass α α (swap HMul.hMul) LE.le] [Preorder β] {f : β → α} {s : Set β}
+variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α (*) LE.le]
+  [CovariantClass α α (swap (*)) LE.le] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
 theorem Monotone.inv (hf : Monotone f) : Antitone fun x => (f x)⁻¹ := fun _ _ hxy =>
@@ -1304,8 +1304,8 @@ end
 
 section
 
-variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α HMul.hMul LT.lt]
-  [CovariantClass α α (swap HMul.hMul) LT.lt] [Preorder β] {f : β → α} {s : Set β}
+variable {β : Type*} [Group α] [Preorder α] [CovariantClass α α (*) LT.lt]
+  [CovariantClass α α (swap (*)) LT.lt] [Preorder β] {f : β → α} {s : Set β}
 
 @[to_additive]
 theorem StrictMono.inv (hf : StrictMono f) : StrictAnti fun x => (f x)⁻¹ := fun _ _ hxy =>

@@ -46,7 +46,7 @@ namespace Lex
 
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α]
-    [CovariantClass α α HMul.hMul LT.lt] [OrderedCommMonoid β] :
+    [CovariantClass α α (*) LT.lt] [OrderedCommMonoid β] :
     OrderedCommMonoid (α ×ₗ β) where
   mul_le_mul_left x y hxy z := ((le_iff _ _).1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)

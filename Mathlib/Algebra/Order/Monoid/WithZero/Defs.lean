@@ -75,8 +75,8 @@ instance linearOrder [LinearOrder α] : LinearOrder (WithZero α) :=
   WithBot.linearOrder
 
 instance covariantClass_mul_le [Mul α] [Preorder α]
-    [CovariantClass α α HMul.hMul LE.le] :
-    CovariantClass (WithZero α) (WithZero α) HMul.hMul LE.le := by
+    [CovariantClass α α (*) LE.le] :
+    CovariantClass (WithZero α) (WithZero α) (*) LE.le := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a using WithZero.recZeroCoe; · exact zero_le _
   induction b using WithZero.recZeroCoe; · exact zero_le _
@@ -109,8 +109,8 @@ instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero 
 
 -- Porting note: same issue as `covariantClass_mul_le`
 protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
-    [CovariantClass α α HAdd.hAdd LE.le] (h : ∀ a : α, 0 ≤ a) :
-    CovariantClass (WithZero α) (WithZero α) HAdd.hAdd LE.le := by
+    [CovariantClass α α (+) LE.le] (h : ∀ a : α, 0 ≤ a) :
+    CovariantClass (WithZero α) (WithZero α) (+) LE.le := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a using WithZero.recZeroCoe
   · rwa [zero_add, zero_add]

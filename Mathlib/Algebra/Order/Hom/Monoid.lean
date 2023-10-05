@@ -251,7 +251,7 @@ theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 �
   monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg _
 #align antitone_iff_map_nonneg antitone_iff_map_nonneg
 
-variable [CovariantClass β β HAdd.hAdd LT.lt]
+variable [CovariantClass β β (+) LT.lt]
 
 theorem strictMono_iff_map_pos : StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
   refine ⟨fun h a => ?_, fun h a b hl => ?_⟩

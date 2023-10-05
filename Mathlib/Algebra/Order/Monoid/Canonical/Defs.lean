@@ -52,7 +52,7 @@ instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] 
 
 section MulOneClass
 
-variable [MulOneClass α] [Preorder α] [ContravariantClass α α HMul.hMul LT.lt] [ExistsMulOfLE α]
+variable [MulOneClass α] [Preorder α] [ContravariantClass α α (*) LT.lt] [ExistsMulOfLE α]
   {a b : α}
 
 @[to_additive]
@@ -67,7 +67,7 @@ end MulOneClass
 section ExistsMulOfLE
 
 variable [LinearOrder α] [DenselyOrdered α] [Monoid α] [ExistsMulOfLE α]
-  [CovariantClass α α HMul.hMul LT.lt] [ContravariantClass α α HMul.hMul LT.lt] {a b : α}
+  [CovariantClass α α (*) LT.lt] [ContravariantClass α α (*) LT.lt] {a b : α}
 
 @[to_additive]
 theorem le_of_forall_one_lt_le_mul (h : ∀ ε : α, 1 < ε → a ≤ b * ε) : a ≤ b :=
@@ -284,7 +284,7 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 #align le_add_right le_add_right
 
 @[to_additive]
-theorem lt_iff_exists_mul [CovariantClass α α HMul.hMul LT.lt] : a < b ↔ ∃ c > 1, b = a * c := by
+theorem lt_iff_exists_mul [CovariantClass α α (*) LT.lt] : a < b ↔ ∃ c > 1, b = a * c := by
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
   apply exists_congr
   intro c

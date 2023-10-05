@@ -100,7 +100,7 @@ obtained from `(n₁, n₂)` by acting upon it by `m`.
 If `m : M` and `h : r n₁ n₂`, then `CovariantClass.elim m h : r (μ m n₁) (μ m n₂)`.
 
 *Note:*  if using this class for an operation like addition or multiplication, please,
-use it in the form `CovariantClass M M HMul.hMul LE.le` and likewise with `HAdd.hAdd, LT.lt...`.
+use it in the form `CovariantClass M M (*) LE.le` and likewise with `(+), LT.lt...`.
 In particular, the `H`eterogeneity is important!
 This avoids eta-expansion of the deprecated spelling `(· * ·)`.
 
@@ -126,7 +126,7 @@ pair `(μ m n₁, μ m n₂)` obtained from `(n₁, n₂)` by acting upon it by 
 If `m : M` and `h : r (μ m n₁) (μ m n₂)`, then `ContravariantClass.elim m h : r n₁ n₂`.
 
 *Note:*  if using this class for an operation like addition or multiplication, please,
-use it in the form `ContravariantClass M M HMul.hMul LE.le` and likewise with `HAdd.hAdd, LT.lt...`.
+use it in the form `ContravariantClass M M (*) LE.le` and likewise with `(+), LT.lt...`.
 In particular, the `H`eterogenous is important!
 This avoids eta-expansion of the deprecated spelling `(· * ·)`.
 
@@ -178,9 +178,12 @@ theorem Group.covariant_iff_contravariant [Group N] :
 #align group.covariant_iff_contravariant Group.covariant_iff_contravariant
 #align add_group.covariant_iff_contravariant AddGroup.covariant_iff_contravariant
 
+notation "(" "+" ")" => HAdd.hAdd
+notation "(" "*" ")" => HMul.hMul
+
 @[to_additive]
-instance (priority := 100) Group.covconv [Group N] [CovariantClass N N HMul.hMul r] :
-    ContravariantClass N N HMul.hMul r :=
+instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (*) r] :
+    ContravariantClass N N (*) r :=
   ⟨Group.covariant_iff_contravariant.mp CovariantClass.elim⟩
 
 @[to_additive]
@@ -196,8 +199,8 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
 
 
 @[to_additive]
-instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap HMul.hMul) r] :
-    ContravariantClass N N (swap HMul.hMul) r :=
+instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (*)) r] :
+    ContravariantClass N N (swap (*)) r :=
   ⟨Group.covariant_swap_iff_contravariant_swap.mp CovariantClass.elim⟩
 
 
@@ -353,12 +356,12 @@ instance covariant_lt_of_contravariant_le [LinearOrder N]
 
 @[to_additive]
 instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
-    [CovariantClass N N HMul.hMul r] : CovariantClass N N (swap HMul.hMul) r where
+    [CovariantClass N N (*) r] : CovariantClass N N (swap (*)) r where
   elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
 
 @[to_additive]
 instance contravariant_swap_mul_of_contravariant_mul [CommSemigroup N]
-    [ContravariantClass N N HMul.hMul r] : ContravariantClass N N (swap HMul.hMul) r where
+    [ContravariantClass N N (*) r] : ContravariantClass N N (swap (*)) r where
   elim := (contravariant_flip_iff N r (· * ·)).mpr ContravariantClass.elim
 
 theorem covariant_lt_of_covariant_le_of_contravariant_eq [ContravariantClass M N μ Eq]

@@ -46,7 +46,7 @@ namespace List
 
 @[to_additive card_nsmul_le_sum]
 theorem pow_card_le_prod [Monoid M] [Preorder M]
-    [CovariantClass M M (Function.swap HMul.hMul) LE.le] [CovariantClass M M HMul.hMul LE.le]
+    [CovariantClass M M (Function.swap (*)) LE.le] [CovariantClass M M (*) LE.le]
     (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) : n ^ l.length ≤ l.prod :=
   @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
 #align list.pow_card_le_prod List.pow_card_le_prod

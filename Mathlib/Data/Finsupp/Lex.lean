@@ -114,15 +114,15 @@ See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample.
 
 section Left
 
-variable [CovariantClass N N HAdd.hAdd LT.lt]
+variable [CovariantClass N N (+) LT.lt]
 
 instance Lex.covariantClass_lt_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) HAdd.hAdd LT.lt :=
+    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (+) LT.lt :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 #align finsupp.lex.covariant_class_lt_left Finsupp.Lex.covariantClass_lt_left
 
 instance Lex.covariantClass_le_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) HAdd.hAdd LE.le :=
+    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (+) LE.le :=
   covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_left Finsupp.Lex.covariantClass_le_left
 
@@ -130,16 +130,16 @@ end Left
 
 section Right
 
-variable [CovariantClass N N (Function.swap HAdd.hAdd) LT.lt]
+variable [CovariantClass N N (Function.swap (+)) LT.lt]
 
 instance Lex.covariantClass_lt_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap HAdd.hAdd) LT.lt :=
+    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (+)) LT.lt :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 #align finsupp.lex.covariant_class_lt_right Finsupp.Lex.covariantClass_lt_right
 
 instance Lex.covariantClass_le_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap HAdd.hAdd) LE.le :=
+    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (+)) LE.le :=
   covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_right Finsupp.Lex.covariantClass_le_right
 

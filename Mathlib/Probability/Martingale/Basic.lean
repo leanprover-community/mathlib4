@@ -181,7 +181,7 @@ theorem set_integral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (
   filter_upwards [hf.2.1 i j hij] with _ heq using heq
 #align measure_theory.supermartingale.set_integral_le MeasureTheory.Supermartingale.set_integral_le
 
-theorem add [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Supermartingale f ℱ μ)
+theorem add [Preorder E] [CovariantClass E E (+) LE.le] (hf : Supermartingale f ℱ μ)
     (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
   refine' ⟨hf.1.add hg.1, fun i j hij => _, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
   refine' (condexp_add (hf.integrable j) (hg.integrable j)).le.trans _
@@ -190,12 +190,12 @@ theorem add [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Supermarting
   refine' add_le_add _ _ <;> assumption
 #align measure_theory.supermartingale.add MeasureTheory.Supermartingale.add
 
-theorem add_martingale [Preorder E] [CovariantClass E E HAdd.hAdd LE.le]
+theorem add_martingale [Preorder E] [CovariantClass E E (+) LE.le]
     (hf : Supermartingale f ℱ μ) (hg : Martingale g ℱ μ) : Supermartingale (f + g) ℱ μ :=
   hf.add hg.supermartingale
 #align measure_theory.supermartingale.add_martingale MeasureTheory.Supermartingale.add_martingale
 
-theorem neg [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Supermartingale f ℱ μ) :
+theorem neg [Preorder E] [CovariantClass E E (+) LE.le] (hf : Supermartingale f ℱ μ) :
     Submartingale (-f) ℱ μ := by
   refine' ⟨hf.1.neg, fun i j hij => _, fun i => (hf.2.2 i).neg⟩
   refine' EventuallyLE.trans _ (condexp_neg (f j)).symm.le
@@ -225,7 +225,7 @@ theorem ae_le_condexp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i �
   hf.2.1 i j hij
 #align measure_theory.submartingale.ae_le_condexp MeasureTheory.Submartingale.ae_le_condexp
 
-theorem add [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Submartingale f ℱ μ)
+theorem add [Preorder E] [CovariantClass E E (+) LE.le] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
   refine' ⟨hf.1.add hg.1, fun i j hij => _, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
   refine' EventuallyLE.trans _ (condexp_add (hf.integrable j) (hg.integrable j)).symm.le
@@ -234,12 +234,12 @@ theorem add [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Submartingal
   refine' add_le_add _ _ <;> assumption
 #align measure_theory.submartingale.add MeasureTheory.Submartingale.add
 
-theorem add_martingale [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Submartingale f ℱ μ)
+theorem add_martingale [Preorder E] [CovariantClass E E (+) LE.le] (hf : Submartingale f ℱ μ)
     (hg : Martingale g ℱ μ) : Submartingale (f + g) ℱ μ :=
   hf.add hg.submartingale
 #align measure_theory.submartingale.add_martingale MeasureTheory.Submartingale.add_martingale
 
-theorem neg [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Submartingale f ℱ μ) :
+theorem neg [Preorder E] [CovariantClass E E (+) LE.le] (hf : Submartingale f ℱ μ) :
     Supermartingale (-f) ℱ μ := by
   refine' ⟨hf.1.neg, fun i j hij => (condexp_neg (f j)).le.trans _, fun i => (hf.2.2 i).neg⟩
   filter_upwards [hf.2.1 i j hij] with _ _
@@ -254,12 +254,12 @@ theorem set_integral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (
   exact Supermartingale.set_integral_le hf.neg hij hs
 #align measure_theory.submartingale.set_integral_le MeasureTheory.Submartingale.set_integral_le
 
-theorem sub_supermartingale [Preorder E] [CovariantClass E E HAdd.hAdd LE.le]
+theorem sub_supermartingale [Preorder E] [CovariantClass E E (+) LE.le]
     (hf : Submartingale f ℱ μ) (hg : Supermartingale g ℱ μ) : Submartingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 #align measure_theory.submartingale.sub_supermartingale MeasureTheory.Submartingale.sub_supermartingale
 
-theorem sub_martingale [Preorder E] [CovariantClass E E HAdd.hAdd LE.le] (hf : Submartingale f ℱ μ)
+theorem sub_martingale [Preorder E] [CovariantClass E E (+) LE.le] (hf : Submartingale f ℱ μ)
     (hg : Martingale g ℱ μ) : Submartingale (f - g) ℱ μ :=
   hf.sub_supermartingale hg.supermartingale
 #align measure_theory.submartingale.sub_martingale MeasureTheory.Submartingale.sub_martingale
@@ -332,12 +332,12 @@ end Submartingale
 
 namespace Supermartingale
 
-theorem sub_submartingale [Preorder E] [CovariantClass E E HAdd.hAdd LE.le]
+theorem sub_submartingale [Preorder E] [CovariantClass E E (+) LE.le]
     (hf : Supermartingale f ℱ μ) (hg : Submartingale g ℱ μ) : Supermartingale (f - g) ℱ μ := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 #align measure_theory.supermartingale.sub_submartingale MeasureTheory.Supermartingale.sub_submartingale
 
-theorem sub_martingale [Preorder E] [CovariantClass E E HAdd.hAdd LE.le]
+theorem sub_martingale [Preorder E] [CovariantClass E E (+) LE.le]
     (hf : Supermartingale f ℱ μ) (hg : Martingale g ℱ μ) : Supermartingale (f - g) ℱ μ :=
   hf.sub_submartingale hg.submartingale
 #align measure_theory.supermartingale.sub_martingale MeasureTheory.Supermartingale.sub_martingale

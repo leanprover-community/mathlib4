@@ -114,37 +114,37 @@ theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 #align nonneg.mk_eq_zero Nonneg.mk_eq_zero
 
-instance add [AddZeroClass α] [Preorder α] [CovariantClass α α HAdd.hAdd LE.le] :
+instance add [AddZeroClass α] [Preorder α] [CovariantClass α α (+) LE.le] :
     Add { x : α // 0 ≤ x } :=
   ⟨fun x y => ⟨x + y, add_nonneg x.2 y.2⟩⟩
 #align nonneg.has_add Nonneg.add
 
 @[simp]
-theorem mk_add_mk [AddZeroClass α] [Preorder α] [CovariantClass α α HAdd.hAdd LE.le] {x y : α}
+theorem mk_add_mk [AddZeroClass α] [Preorder α] [CovariantClass α α (+) LE.le] {x y : α}
     (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) + ⟨y, hy⟩ = ⟨x + y, add_nonneg hx hy⟩ :=
   rfl
 #align nonneg.mk_add_mk Nonneg.mk_add_mk
 
 @[simp, norm_cast]
-protected theorem coe_add [AddZeroClass α] [Preorder α] [CovariantClass α α HAdd.hAdd LE.le]
+protected theorem coe_add [AddZeroClass α] [Preorder α] [CovariantClass α α (+) LE.le]
     (a b : { x : α // 0 ≤ x }) : ((a + b : { x : α // 0 ≤ x }) : α) = a + b :=
   rfl
 #align nonneg.coe_add Nonneg.coe_add
 
-instance nsmul [AddMonoid α] [Preorder α] [CovariantClass α α HAdd.hAdd LE.le] :
+instance nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (+) LE.le] :
     SMul ℕ { x : α // 0 ≤ x } :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
 #align nonneg.has_nsmul Nonneg.nsmul
 
 @[simp]
-theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α HAdd.hAdd LE.le] (n : ℕ) {x : α}
+theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (+) LE.le] (n : ℕ) {x : α}
     (hx : 0 ≤ x) : (n • (⟨x, hx⟩ : { x : α // 0 ≤ x })) = ⟨n • x, nsmul_nonneg hx n⟩ :=
   rfl
 #align nonneg.nsmul_mk Nonneg.nsmul_mk
 
 @[simp, norm_cast]
-protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α HAdd.hAdd LE.le]
+protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (+) LE.le]
     (n : ℕ) (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • (a : α) :=
   rfl
 #align nonneg.coe_nsmul Nonneg.coe_nsmul

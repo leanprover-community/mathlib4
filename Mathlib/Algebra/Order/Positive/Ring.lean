@@ -25,7 +25,7 @@ variable {M R K : Type*}
 
 section AddBasic
 
-variable [AddMonoid M] [Preorder M] [CovariantClass M M HAdd.hAdd LT.lt]
+variable [AddMonoid M] [Preorder M] [CovariantClass M M (+) LT.lt]
 
 instance : Add { x : M // 0 < x } :=
   ⟨fun x y => ⟨x + y, add_pos x.2 y.2⟩⟩
@@ -40,55 +40,55 @@ instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
 #align positive.subtype.add_semigroup Positive.addSemigroup
 
 instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
-    [CovariantClass M M HAdd.hAdd LT.lt] : AddCommSemigroup { x : M // 0 < x } :=
+    [CovariantClass M M (+) LT.lt] : AddCommSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addCommSemigroup _ coe_add
 #align positive.subtype.add_comm_semigroup Positive.addCommSemigroup
 
 instance addLeftCancelSemigroup {M : Type*} [AddLeftCancelMonoid M] [Preorder M]
-    [CovariantClass M M HAdd.hAdd LT.lt] : AddLeftCancelSemigroup { x : M // 0 < x } :=
+    [CovariantClass M M (+) LT.lt] : AddLeftCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addLeftCancelSemigroup _ coe_add
 #align positive.subtype.add_left_cancel_semigroup Positive.addLeftCancelSemigroup
 
 instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder M]
-    [CovariantClass M M HAdd.hAdd LT.lt] : AddRightCancelSemigroup { x : M // 0 < x } :=
+    [CovariantClass M M (+) LT.lt] : AddRightCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 #align positive.subtype.add_right_cancel_semigroup Positive.addRightCancelSemigroup
 
 instance covariantClass_add_lt :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } HAdd.hAdd LT.lt :=
+    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (+) LT.lt :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_left (show (y : M) < z from hyz) _⟩
 #align positive.covariant_class_add_lt Positive.covariantClass_add_lt
 
-instance covariantClass_swap_add_lt [CovariantClass M M (swap HAdd.hAdd) LT.lt] :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (swap HAdd.hAdd) LT.lt :=
+instance covariantClass_swap_add_lt [CovariantClass M M (swap (+)) LT.lt] :
+    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (+)) LT.lt :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_right (show (y : M) < z from hyz) _⟩
 #align positive.covariant_class_swap_add_lt Positive.covariantClass_swap_add_lt
 
-instance contravariantClass_add_lt [ContravariantClass M M HAdd.hAdd LT.lt] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } HAdd.hAdd LT.lt :=
+instance contravariantClass_add_lt [ContravariantClass M M (+) LT.lt] :
+    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (+) LT.lt :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_left h⟩
 #align positive.contravariant_class_add_lt Positive.contravariantClass_add_lt
 
-instance contravariantClass_swap_add_lt [ContravariantClass M M (swap HAdd.hAdd) LT.lt] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap HAdd.hAdd) LT.lt :=
+instance contravariantClass_swap_add_lt [ContravariantClass M M (swap (+)) LT.lt] :
+    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (+)) LT.lt :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_right h⟩
 #align positive.contravariant_class_swap_add_lt Positive.contravariantClass_swap_add_lt
 
-instance contravariantClass_add_le [ContravariantClass M M HAdd.hAdd LE.le] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } HAdd.hAdd LE.le :=
+instance contravariantClass_add_le [ContravariantClass M M (+) LE.le] :
+    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (+) LE.le :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_left h⟩
 #align positive.contravariant_class_add_le Positive.contravariantClass_add_le
 
-instance contravariantClass_swap_add_le [ContravariantClass M M (swap HAdd.hAdd) LE.le] :
-    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap HAdd.hAdd) LE.le :=
+instance contravariantClass_swap_add_le [ContravariantClass M M (swap (+)) LE.le] :
+    ContravariantClass { x : M // 0 < x } { x : M // 0 < x } (swap (+)) LE.le :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_right h⟩
 #align positive.contravariant_class_swap_add_le Positive.contravariantClass_swap_add_le
 
 end AddBasic
 
 instance covariantClass_add_le [AddMonoid M] [PartialOrder M]
-    [CovariantClass M M HAdd.hAdd LT.lt] :
-    CovariantClass { x : M // 0 < x } { x : M // 0 < x } HAdd.hAdd LE.le :=
+    [CovariantClass M M (+) LT.lt] :
+    CovariantClass { x : M // 0 < x } { x : M // 0 < x } (+) LE.le :=
   ⟨@fun _ _ _ h₁ => StrictMono.monotone (fun _ _ h => add_lt_add_left h _) h₁⟩
 #align positive.covariant_class_add_le Positive.covariantClass_add_le
 

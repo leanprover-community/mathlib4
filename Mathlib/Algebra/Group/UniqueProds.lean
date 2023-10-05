@@ -564,7 +564,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
   "This instance asserts that if `G` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`." ]
 instance (priority := 100) of_Covariant_right [IsRightCancelMul G]
-    [LinearOrder G] [CovariantClass G G HMul.hMul LT.lt] :
+    [LinearOrder G] [CovariantClass G G (*) LT.lt] :
     TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by
     obtain ⟨hA, hB, -⟩ := Nat.one_lt_mul_iff.mp hc
@@ -598,10 +598,10 @@ open MulOpposite in
   "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
   addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
 instance (priority := 100) of_Covariant_left [IsLeftCancelMul G]
-    [LinearOrder G] [CovariantClass G G (Function.swap HMul.hMul) LT.lt] :
+    [LinearOrder G] [CovariantClass G G (Function.swap (*)) LT.lt] :
     TwoUniqueProds G :=
   let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
-  let _ : CovariantClass Gᵐᵒᵖ Gᵐᵒᵖ HMul.hMul LT.lt :=
+  let _ : CovariantClass Gᵐᵒᵖ Gᵐᵒᵖ (*) LT.lt :=
   { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
   of_mulOpposite of_Covariant_right
 

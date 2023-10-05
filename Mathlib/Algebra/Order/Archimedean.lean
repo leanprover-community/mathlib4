@@ -49,7 +49,7 @@ instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archi
 #align order_dual.archimedean OrderDual.archimedean
 
 theorem exists_lt_nsmul [OrderedAddCommMonoid M] [Archimedean M]
-    [CovariantClass M M HAdd.hAdd LT.lt] {a : M} (ha : 0 < a) (b : M) :
+    [CovariantClass M M (+) LT.lt] {a : M} (ha : 0 < a) (b : M) :
     ∃ n : ℕ, b < n • a :=
   let ⟨k, hk⟩ := Archimedean.arch b ha; ⟨k + 1, hk.trans_lt <| nsmul_lt_nsmul ha k.lt_succ_self⟩
 

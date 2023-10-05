@@ -79,7 +79,7 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
   rfl
 #align ordinal.lift_succ Ordinal.lift_succ
 
-instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} HAdd.hAdd LE.le :=
+instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (+) LE.le :=
   ⟨fun a b c =>
     inductionOn a fun α r hr =>
       inductionOn b fun β₁ s₁ hs₁ =>
@@ -119,16 +119,16 @@ theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
 private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b < c := by
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
-instance add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} HAdd.hAdd LT.lt :=
+instance add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} (+) LT.lt :=
   ⟨fun a _b _c => (add_lt_add_iff_left' a).2⟩
 #align ordinal.add_covariant_class_lt Ordinal.add_covariantClass_lt
 
-instance add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} HAdd.hAdd LT.lt :=
+instance add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} (+) LT.lt :=
   ⟨fun a _b _c => (add_lt_add_iff_left' a).1⟩
 #align ordinal.add_contravariant_class_lt Ordinal.add_contravariantClass_lt
 
 instance add_swap_contravariantClass_lt :
-    ContravariantClass Ordinal.{u} Ordinal.{u} (swap HAdd.hAdd) LT.lt :=
+    ContravariantClass Ordinal.{u} Ordinal.{u} (swap (+)) LT.lt :=
   ⟨fun _a _b _c => lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
 #align ordinal.add_swap_contravariant_class_lt Ordinal.add_swap_contravariantClass_lt
 
@@ -719,7 +719,7 @@ theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
 #align ordinal.mul_succ Ordinal.mul_succ
 
-instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} HMul.hMul LE.le :=
+instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (*) LE.le :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine'
@@ -730,7 +730,7 @@ instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} HMul.hMu
 #align ordinal.mul_covariant_class_le Ordinal.mul_covariantClass_le
 
 instance mul_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap HMul.hMul) LE.le :=
+    CovariantClass Ordinal.{u} Ordinal.{u} (swap (*)) LE.le :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine'

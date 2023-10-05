@@ -362,16 +362,16 @@ open Ordinal NaturalOps
 instance : Add NatOrdinal :=
   ⟨nadd⟩
 
-instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} HAdd.hAdd LT.lt :=
+instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (+) LT.lt :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_lt NatOrdinal.add_covariantClass_lt
 
-instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} HAdd.hAdd LE.le :=
+instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (+) LE.le :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_le NatOrdinal.add_covariantClass_le
 
 instance add_contravariantClass_le :
-    ContravariantClass NatOrdinal.{u} NatOrdinal.{u} HAdd.hAdd LE.le :=
+    ContravariantClass NatOrdinal.{u} NatOrdinal.{u} (+) LE.le :=
   ⟨fun a b c h => by
     by_contra' h'
     exact h.not_lt (add_lt_add_left h' a)⟩

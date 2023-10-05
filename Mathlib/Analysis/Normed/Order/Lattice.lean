@@ -219,7 +219,7 @@ theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0
   simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq,
     @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)]
   -- porting note: I'm not sure why Lean couldn't synthesize this instance because it works with
-  -- `have : CovariantClass E E HAdd.hAdd LE.le := inferInstance`
+  -- `have : CovariantClass E E (+) LE.le := inferInstance`
 #align is_closed_nonneg isClosed_nonneg
 
 theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]

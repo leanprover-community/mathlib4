@@ -157,15 +157,15 @@ monotone, when it is "just" monotone on `α i`. -/
 
 section Left
 
-variable [∀ i, CovariantClass (α i) (α i) HAdd.hAdd LT.lt]
+variable [∀ i, CovariantClass (α i) (α i) (+) LT.lt]
 
 instance Lex.covariantClass_lt_left :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) HAdd.hAdd LT.lt :=
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (+) LT.lt :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_left DFinsupp.Lex.covariantClass_lt_left
 
 instance Lex.covariantClass_le_left :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) HAdd.hAdd LE.le :=
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (+) LE.le :=
   covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_left DFinsupp.Lex.covariantClass_le_left
 
@@ -173,16 +173,16 @@ end Left
 
 section Right
 
-variable [∀ i, CovariantClass (α i) (α i) (Function.swap HAdd.hAdd) LT.lt]
+variable [∀ i, CovariantClass (α i) (α i) (Function.swap (+)) LT.lt]
 
 instance Lex.covariantClass_lt_right :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap HAdd.hAdd) LT.lt :=
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (+)) LT.lt :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_right DFinsupp.Lex.covariantClass_lt_right
 
 instance Lex.covariantClass_le_right :
-    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap HAdd.hAdd) LE.le :=
+    CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (+)) LE.le :=
   covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_right DFinsupp.Lex.covariantClass_le_right
 

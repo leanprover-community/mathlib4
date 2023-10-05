@@ -18,43 +18,43 @@ variable {α : Type*}
 open Function
 
 lemma lt_add_one [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
-    [NeZero (1 : α)] [CovariantClass α α HAdd.hAdd LT.lt] (a : α) : a < a + 1 :=
+    [NeZero (1 : α)] [CovariantClass α α (+) LT.lt] (a : α) : a < a + 1 :=
   lt_add_of_pos_right _ zero_lt_one
 #align lt_add_one lt_add_one
 
 lemma lt_one_add [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
-    [NeZero (1 : α)] [CovariantClass α α (swap HAdd.hAdd) LT.lt] (a : α) : a < 1 + a :=
+    [NeZero (1 : α)] [CovariantClass α α (swap (+)) LT.lt] (a : α) : a < 1 + a :=
   lt_add_of_pos_left _ zero_lt_one
 #align lt_one_add lt_one_add
 
 variable [AddMonoidWithOne α]
 
-lemma zero_le_two [Preorder α] [ZeroLEOneClass α] [CovariantClass α α HAdd.hAdd LE.le] :
+lemma zero_le_two [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (+) LE.le] :
     (0 : α) ≤ 2 := by
   rw [← one_add_one_eq_two]
   exact add_nonneg zero_le_one zero_le_one
 #align zero_le_two zero_le_two
 
-lemma zero_le_three [Preorder α] [ZeroLEOneClass α] [CovariantClass α α HAdd.hAdd LE.le] :
+lemma zero_le_three [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (+) LE.le] :
     (0 : α) ≤ 3 := by
   rw [← two_add_one_eq_three]
   exact add_nonneg zero_le_two zero_le_one
 #align zero_le_three zero_le_three
 
-lemma zero_le_four [Preorder α] [ZeroLEOneClass α] [CovariantClass α α HAdd.hAdd LE.le] :
+lemma zero_le_four [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (+) LE.le] :
     (0 : α) ≤ 4 := by
   rw [← three_add_one_eq_four]
   exact add_nonneg zero_le_three zero_le_one
 #align zero_le_four zero_le_four
 
-lemma one_le_two [LE α] [ZeroLEOneClass α] [CovariantClass α α HAdd.hAdd LE.le] :
+lemma one_le_two [LE α] [ZeroLEOneClass α] [CovariantClass α α (+) LE.le] :
     (1 : α) ≤ 2 :=
   calc (1 : α) = 1 + 0 := (add_zero 1).symm
      _ ≤ 1 + 1 := add_le_add_left zero_le_one _
      _ = 2 := one_add_one_eq_two
 #align one_le_two one_le_two
 
-lemma one_le_two' [LE α] [ZeroLEOneClass α] [CovariantClass α α (swap HAdd.hAdd) LE.le] :
+lemma one_le_two' [LE α] [ZeroLEOneClass α] [CovariantClass α α (swap (+)) LE.le] :
     (1 : α) ≤ 2 :=
   calc (1 : α) = 0 + 1 := (zero_add 1).symm
      _ ≤ 1 + 1 := add_le_add_right zero_le_one _
@@ -65,7 +65,7 @@ section
 variable [PartialOrder α] [ZeroLEOneClass α] [NeZero (1 : α)]
 
 section
-variable [CovariantClass α α HAdd.hAdd LE.le]
+variable [CovariantClass α α (+) LE.le]
 
 /-- See `zero_lt_two'` for a version with the type explicit. -/
 @[simp] lemma zero_lt_two : (0 : α) < 2 := zero_lt_one.trans_le one_le_two
@@ -103,7 +103,7 @@ instance ZeroLEOneClass.neZero.four : NeZero (4 : α) := ⟨zero_lt_four.ne'⟩
 
 end
 
-lemma one_lt_two [CovariantClass α α HAdd.hAdd LT.lt] : (1 : α) < 2 := by
+lemma one_lt_two [CovariantClass α α (+) LT.lt] : (1 : α) < 2 := by
   rw [← one_add_one_eq_two]
   exact lt_add_one _
 #align one_lt_two one_lt_two
