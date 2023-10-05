@@ -858,7 +858,7 @@ theorem isCoprime_tfae : TFAE [IsCoprime I J, Codisjoint I J, I + J = 1,
   simp
 
 theorem _root_.IsCoprime.codisjoint (h : IsCoprime I J) : Codisjoint I J :=
-isCoprime_iff_codisjoint.mp h
+  isCoprime_iff_codisjoint.mp h
 
 theorem _root_.IsCoprime.add_eq (h : IsCoprime I J) : I + J = 1 := isCoprime_iff_add.mp h
 
