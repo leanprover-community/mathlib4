@@ -466,9 +466,9 @@ theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicH
   apply dvd_mul_right
 #align adjoin_root.mk_left_inverse AdjoinRoot.mk_leftInverse
 
-theorem mk_surjective (hg : g.Monic) : Function.Surjective (mk g) :=
-  (mk_leftInverse hg).surjective
-#align adjoin_root.mk_surjective AdjoinRoot.mk_surjective
+theorem mk_surjective : Function.Surjective (mk g) :=
+  Ideal.Quotient.mk_surjective
+#align adjoin_root.mk_surjective AdjoinRoot.mk_surjectiveₓ
 
 /-- The elements `1, root g, ..., root g ^ (d - 1)` form a basis for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
@@ -611,7 +611,7 @@ variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
 open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
-If `R` is a GCD domain and `x` is integral, this is an isomorphism,
+If `R` is a integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
 @[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
@@ -630,7 +630,7 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
 
 theorem Minpoly.toAdjoin.apply_X :
     Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by
-    simp [toAdjoin]
+  simp [toAdjoin]
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.apply_X
 
@@ -638,10 +638,7 @@ variable (R x)
 
 theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x) := by
   rw [← range_top_iff_surjective, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
-  refine' adjoin_le _
-  simp only [AlgHom.coe_range, Set.mem_range]
-  rintro ⟨y₁, y₂⟩ h
-  refine' ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
+  exact adjoin_le fun ⟨y₁, y₂⟩ h ↦ ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
 #align adjoin_root.minpoly.to_adjoin.surjective AdjoinRoot.Minpoly.toAdjoin.surjective
 
 end minpoly
@@ -690,9 +687,7 @@ end Equiv'
 
 section Field
 
-variable (K) (L F : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
-
-variable (pb : PowerBasis F K)
+variable (L F : Type*) [Field F] [CommRing L] [IsDomain L] [Algebra F L]
 
 /-- If `L` is a field extension of `F` and `f` is a polynomial over `F` then the set
 of maps from `F[x]/(f)` into `L` is in bijection with the set of roots of `f` in `L`. -/

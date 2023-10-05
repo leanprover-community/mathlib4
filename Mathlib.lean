@@ -135,6 +135,7 @@ import Mathlib.Algebra.DualQuaternion
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Expr
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Defs
@@ -2355,6 +2356,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Prod
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.LinearAlgebra.Trace
@@ -2533,6 +2535,7 @@ import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Measure.Trim
 import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.Tactic
@@ -3229,7 +3232,13 @@ import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CommDiag
+import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.Conv
+import Mathlib.Tactic.Widget.Gcongr
+import Mathlib.Tactic.Widget.SelectInsertParamsClass
+import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Testing.SlimCheck.Gen

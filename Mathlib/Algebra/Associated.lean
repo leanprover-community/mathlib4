@@ -1156,7 +1156,7 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
           exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
-instance : CanonicallyOrderedMonoid (Associates α) where
+instance : CanonicallyOrderedCommMonoid (Associates α) where
     exists_mul_of_le := fun h => h
     le_self_mul := fun _ b => ⟨b, rfl⟩
     bot_le := fun _ => one_le

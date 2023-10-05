@@ -499,7 +499,7 @@ instance AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
 
 instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [TopologicalAddGroup A] : ContinuousSMul ℤ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_zsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSMul_int
 
 @[to_additive (attr := continuity)]
