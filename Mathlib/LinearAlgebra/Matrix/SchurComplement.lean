@@ -452,8 +452,8 @@ theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 +
 
 /-- The **Matrix determinant lemma**
 
- TODO: show the more general version without `hA : IsUnit A.det` as
- `(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A).mulVec u`.
+TODO: show the more general version without `hA : IsUnit A.det` as
+`(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A).mulVec u`.
 -/
 theorem det_add_col_mul_row {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
     (A + col u * row v).det = A.det * (1 + row v * A⁻¹ * col u).det := by
