@@ -205,6 +205,18 @@ def bvarIdx? : Expr → Option Nat
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
 
+private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
+  | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
+  | _,       as, _ => as
+
+/-- Given `f a b c`, return `#[f a, f a b, f a b c]`.
+    Remark: this procedure is very similar to `getAppArgs`. -/
+@[inline]
+def getAppApps (e : Expr) : Array Expr :=
+  let dummy := mkSort levelZero
+  let nargs := e.getAppNumArgs
+  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
+
 /-- Like `Expr.getUsedConstants`, but produce a `NameSet`. -/
 def getUsedConstants' (e : Expr) : NameSet :=
   e.foldConsts {} fun c cs => cs.insert c
@@ -460,6 +472,26 @@ def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
   mkDirectProjection e fieldName
 
+/-- If `e` is the projection of the structure constructor, reduce it. -/
+def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
+  e.withApp fun cfn args => do
+    let some cname := cfn.constName? | return none
+    let some pinfo ← getProjectionFnInfo? cname | return none
+    if ha : args.size = pinfo.numParams + 1 then
+      let sarg := args[pinfo.numParams]'(ha ▸ pinfo.numParams.lt_succ_self)
+      sarg.withApp fun sc sfds => do
+        unless sc.constName? = some pinfo.ctorName do
+          return none
+        let sidx := pinfo.numParams + pinfo.i
+        if hs : sidx < sfds.size then
+          return some (sfds[sidx]'hs)
+        else
+          throwError
+            (m!"ill-formed expression, {sc} is the {pinfo.i}-th projection function" ++
+              m!" but {sarg} has not enough arguments")
+    else
+      return none
+
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
@@ -483,6 +515,36 @@ Fails if the rewrite produces any subgoals.
 -/
 def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
+
+/-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
+    return a `forall x, Not (p x)` and a proof for it.
+
+    This function handles nested existentials. -/
+partial def toForallNotAux (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
+  let xn ← mkFreshUserName `x
+  withLocalDeclD xn A fun x => do
+    let px := p.beta #[x]
+    let notPx := mkNot px
+    let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx
+    if let .app (.app (.const ``Exists [lvl']) A') p' := px then
+      let hNotPxN ← mkFreshUserName `h
+      withLocalDeclD hNotPxN notPx fun hNotPx => do
+        let (qx, hQx) ← toForallNotAux lvl' A' p' hNotPx
+        let allQx ← mkForallFVars #[x] qx
+        let hNotPxImpQx ← mkLambdaFVars #[hNotPx] hQx
+        let hAllQx ← mkLambdaFVars #[x] (.app hNotPxImpQx (.app hAllNotPx x))
+        return (allQx, hAllQx)
+    else
+      let allNotPx ← mkForallFVars #[x] notPx
+      return (allNotPx, hAllNotPx)
+
+/-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
+    return a `forall x, Not (p x)` and a proof for it.
+
+    This function handles nested existentials. -/
+def toForallNot (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
+  let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
+  toForallNotAux lvl A p hNotEx
 
 end Expr
 

@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 import Mathlib.Init.CCLemmas
 import Mathlib.Data.Option.Defs
 import Mathlib.Init.Propext
+import Mathlib.Lean.Meta.Basic
 
 #align_import init.meta.smt.congruence_closure from "leanprover-community/lean"@"9eae65f7144bcc692858b9dadf2e48181f4270b9"
 
@@ -73,24 +74,6 @@ initialize
 def isValue (e : Expr) : Bool :=
   e.int?.isSome || e.isCharLit || e.isStringLit
 
-private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
-  | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
-  | _,       as, _ => as
-
-/-- Given `f a b c`, return `#[f a, f a b, f a b c]`.
-    Remark: this procedure is very similar to `getAppArgs`. -/
-@[inline]
-def getAppApps (e : Expr) : Array Expr :=
-  let dummy := mkSort levelZero
-  let nargs := e.getAppNumArgs
-  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
-
-/-- Determines whether two expressions are definitionally equal to each other without any mvar
-    assignments. -/
-@[inline]
-def pureIsDefEq (e₁ e₂ : Expr) : MetaM Bool :=
-  withNewMCtxDepth <| isDefEq e₁ e₂
-
 /-- Return true if `e` represents a value (nat/int numereal, character, or string). -/
 def isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
@@ -100,15 +83,6 @@ def isInterpretedValue (e : Expr) : MetaM Bool := do
     pureIsDefEq type (.const ``Nat []) <||> pureIsDefEq type (.const ``Int [])
   else
     return false
-
-/-- Similar to `mkAppM n #[lhs, rhs]`, but handles `Eq` and `Iff` more efficiently. -/
-def mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
-  if n == ``Eq then
-    mkEq lhs rhs
-  else if n == ``Iff then
-    return mkApp2 (.const ``Iff []) lhs rhs
-  else
-    mkAppM n #[lhs, rhs]
 
 /-- Given a reflexive relation `R`, and a proof `H : a = b`, build a proof for `R a b` -/
 def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
@@ -132,83 +106,6 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
 /-- Ordering on `Expr`. -/
 local instance : Ord Expr where
   compare a b := bif Expr.lt a b then .lt else bif Expr.eqv b a then .eq else .gt
-
-def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
-  e.withApp fun cfn args => do
-    let some cname := cfn.constName? | return none
-    let some pinfo ← getProjectionFnInfo? cname | return none
-    if ha : args.size = pinfo.numParams + 1 then
-      let sarg := args[pinfo.numParams]'(ha ▸ pinfo.numParams.lt_succ_self)
-      sarg.withApp fun sc sfds => do
-        unless sc.constName? = some pinfo.ctorName do
-          return none
-        let sidx := pinfo.numParams + pinfo.i
-        if hs : sidx < sfds.size then
-          return some (sfds[sidx]'hs)
-        else
-          throwError
-            (m!"ill-formed expression, {sc} is the {pinfo.i}-th projection function" ++
-              m!" but {sarg} has not enough arguments")
-    else
-      return none
-
-/-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
-    return a `forall x, Not (p x)` and a proof for it.
-
-    This function handles nested existentials. -/
-partial def toForallNotAux (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
-  let xn ← mkFreshUserName `x
-  withLocalDeclD xn A fun x => do
-    let px := p.beta #[x]
-    let notPx := mkNot px
-    let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx
-    if let .app (.app (.const ``Exists [lvl']) A') p' := px then
-      let hNotPxN ← mkFreshUserName `h
-      withLocalDeclD hNotPxN notPx fun hNotPx => do
-        let (qx, hQx) ← toForallNotAux lvl' A' p' hNotPx
-        let allQx ← mkForallFVars #[x] qx
-        let hNotPxImpQx ← mkLambdaFVars #[hNotPx] hQx
-        let hAllQx ← mkLambdaFVars #[x] (.app hNotPxImpQx (.app hAllNotPx x))
-        return (allQx, hAllQx)
-    else
-      let allNotPx ← mkForallFVars #[x] notPx
-      return (allNotPx, hAllNotPx)
-
-/-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
-    return a `forall x, Not (p x)` and a proof for it.
-
-    This function handles nested existentials. -/
-def toForallNot (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
-  let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
-  toForallNotAux lvl A p hNotEx
-
-def isReflRel (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
-  if let some (_, lhs, rhs) := e.eq? then
-    return (``Eq, lhs, rhs)
-  if let some (lhs, rhs) := e.iff? then
-    return (``Iff, lhs, rhs)
-  if let some (_, lhs, _, rhs) := e.heq? then
-    return (``HEq, lhs, rhs)
-  if let .app (.app rel lhs) rhs := e then
-    unless (← (Mathlib.Tactic.reflExt.getState (← getEnv)).getMatch rel).isEmpty do
-      match rel.getAppFn.constName? with
-      | some n => return some (n, lhs, rhs)
-      | none => return none
-  return none
-
-def isSymmRel (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
-  if let some (_, lhs, rhs) := e.eq? then
-    return (``Eq, lhs, rhs)
-  if let some (lhs, rhs) := e.iff? then
-    return (``Iff, lhs, rhs)
-  if let some (_, lhs, _, rhs) := e.heq? then
-    return (``HEq, lhs, rhs)
-  if let .app (.app rel lhs) rhs := e then
-    unless (← (Mathlib.Tactic.symmExt.getState (← getEnv)).getMatch rel).isEmpty do
-      match rel.getAppFn.constName? with
-      | some n => return some (n, lhs, rhs)
-      | none => return none
-  return none
 
 abbrev RBExprMap (α : Type u) := Std.RBMap Expr α compare
 
@@ -1112,8 +1009,8 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   mkEqRec motive r lhsFnEqRhsFn
 
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
-  let some (R₁, lhs₁, rhs₁) ← isSymmRel e₁ | return none
-  let some (R₂, lhs₂, rhs₂) ← isSymmRel e₂ | return none
+  let some (R₁, lhs₁, rhs₁) ← e₁.isSymmRel | return none
+  let some (R₂, lhs₂, rhs₂) ← e₂.isSymmRel | return none
   if R₁ != R₂ then return none
   if !(← isEqv lhs₁ lhs₂) then
     guard (← isEqv lhs₁ rhs₂)
@@ -1169,9 +1066,9 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
   | .eqTrue =>
     let (flip, some (R, a, b)) ←
       if lhs == .const ``True [] then
-        ((true, ·)) <$> isReflRel rhs
+        ((true, ·)) <$> rhs.isReflRel
       else
-        ((false, ·)) <$> isReflRel lhs
+        ((false, ·)) <$> lhs.isReflRel
       | failure
     let aRb ←
       if R == ``Eq then
@@ -1315,12 +1212,12 @@ def compareSymm (k₁ k₂ : Expr × Name) : CCM Bool := do
   if k₁.2 == ``Eq || k₁.2 == ``Iff then
     compareSymmAux e₁.appFn!.appArg! e₁.appArg! e₂.appFn!.appArg! e₂.appArg!
   else
-    let some (_, lhs₁, rhs₁) ← isSymmRel e₁ | failure
-    let some (_, lhs₂, rhs₂) ← isSymmRel e₂ | failure
+    let some (_, lhs₁, rhs₁) ← e₁.isSymmRel | failure
+    let some (_, lhs₂, rhs₂) ← e₂.isSymmRel | failure
     compareSymmAux lhs₁ rhs₁ lhs₂ rhs₂
 
 def checkEqTrue (e : Expr) : CCM Unit := do
-  let some (_, lhs, rhs) ← isReflRel e | return
+  let some (_, lhs, rhs) ← e.isReflRel | return
   if ← isEqv e (.const ``True []) then return -- it is already equivalent to `True`
   let lhsR ← getRoot lhs
   let rhsR ← getRoot rhs
@@ -1351,7 +1248,7 @@ def addCongruenceTable (e : Expr) : CCM Unit := do
       { ccs with congruences := ccs.congruences.insert k [e] }
 
 def addSymmCongruenceTable (e : Expr) : CCM Unit := do
-  let some (rel, lhs, rhs) ← isSymmRel e | failure
+  let some (rel, lhs, rhs) ← e.isSymmRel | failure
   let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
   if let some ps := (← getState).symmCongruences.find? k then
@@ -1834,7 +1731,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   else
     mkEntry e false gen
     if (← getState).config.values && isValue e then return -- we treat values as atomic symbols
-  if let some (_, lhs, rhs) ← isSymmRel e then
+  if let some (_, lhs, rhs) ← e.isSymmRel then
     internalizeCore lhs (some e) gen
     internalizeCore rhs (some e) gen
     addOccurrence e lhs true
@@ -1842,7 +1739,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
     addSymmCongruenceTable e
   else if (← mkExtCongrTheorem e).isSome then
     let fn := e.getAppFn
-    let apps := getAppApps e
+    let apps := e.getAppApps
     guard (apps.size > 0)
     guard (apps.back == e)
     let mut pinfo : List ParamInfo := []
@@ -2121,7 +2018,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     internalizeCore newE none (← getGenerationOf e)
     pushReflEq e newE
 
-  if let some r ← reduceProjStruct? e then
+  if let some r ← e.reduceProjStruct? then
     pushReflEq e r
 
   let fn := e.getAppFn
@@ -2192,7 +2089,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr
       parentsToPropagate := parentsToPropagate.push p
     if p.isApp then
       if pocc.symmTable then
-        let some (rel, lhs, rhs) ← isSymmRel p | failure
+        let some (rel, lhs, rhs) ← p.isSymmRel | failure
         let k' ← mkSymmCongruencesKey lhs rhs
         if let some lst := (← getState).symmCongruences.find? k' then
           let k := (p, rel)
@@ -2407,7 +2304,7 @@ def propagateEqDown (e : Expr) : CCM Unit := do
 def propagateExistsDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
     let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
-    let (all, hAll) ← toForallNot e hNotE
+    let (all, hAll) ← e.toForallNot hNotE
     internalizeCore all none (← getGenerationOf e)
     pushEq all (.const ``True []) (← mkEqTrue hAll)
 

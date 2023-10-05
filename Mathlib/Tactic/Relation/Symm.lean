@@ -145,3 +145,19 @@ elab "symm" loc:((Parser.Tactic.location)?) : tactic =>
 /-- For every hypothesis `h : a ~ b` where a `@[symm]` lemma is available,
 add a hypothesis `h_symm : b ~ a`. -/
 elab "symm_saturate" : tactic => liftMetaTactic1 fun g => g.symmSaturate
+
+/-- If the goal is the form `x ~ y`, where `~` is a symmetric
+relation, return `some ((· ~ ·), x, y)`. -/
+def _root_.Lean.Expr.isSymmRel (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
+  if let some (_, lhs, rhs) := e.eq? then
+    return (``Eq, lhs, rhs)
+  if let some (lhs, rhs) := e.iff? then
+    return (``Iff, lhs, rhs)
+  if let some (_, lhs, _, rhs) := e.heq? then
+    return (``HEq, lhs, rhs)
+  if let .app (.app rel lhs) rhs := e then
+    unless (← (Mathlib.Tactic.symmExt.getState (← getEnv)).getMatch rel).isEmpty do
+      match rel.getAppFn.constName? with
+      | some n => return some (n, lhs, rhs)
+      | none => return none
+  return none
