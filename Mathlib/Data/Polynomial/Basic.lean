@@ -141,8 +141,10 @@ instance mul' : Mul R[X] :=
   ⟨mul⟩
 #align polynomial.has_mul Polynomial.mul'
 
+instance smul {S : Type*} [SMulZeroClass S R] : SMul S R[X] :=
+  ⟨fun s p => ⟨s • p.toFinsupp⟩⟩
+
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
-  smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
 #align polynomial.smul_zero_class Polynomial.smulZeroClass
 
@@ -290,6 +292,29 @@ instance natCast : NatCast R[X] :=
   ⟨fun n => Polynomial.ofFinsupp n⟩
 #align polynomial.has_nat_cast Polynomial.natCast
 
+instance addSemigroup : AddSemigroup R[X] :=
+  { Function.Injective.addSemigroup toFinsupp toFinsupp_injective toFinsupp_add with
+    toAdd := Polynomial.add' }
+
+instance addMonoid : AddMonoid R[X] :=
+  { Function.Injective.addMonoid toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_add
+      (fun _ _ => toFinsupp_smul _ _) with
+    toAddSemigroup := Polynomial.addSemigroup
+    toZero := Polynomial.zero }
+
+instance addCommMonoid : AddCommMonoid R[X] :=
+  { Function.Injective.addCommMonoid toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_add
+      (fun _ _ => toFinsupp_smul _ _) with
+    toAddMonoid := Polynomial.addMonoid }
+#print NonUnitalNonAssocSemiring
+instance
+
+instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[X] :=
+  sorry
+
+instance nonUnitalSemiring : NonUnitalSemiring R[X] :=
+  sorry
+
 instance semiring : Semiring R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
@@ -302,7 +327,7 @@ instance semiring : Semiring R[X] :=
     nsmul := (. • .)
     npow := fun n x => (x ^ n) }
 #align polynomial.semiring Polynomial.semiring
-
+#exit
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
