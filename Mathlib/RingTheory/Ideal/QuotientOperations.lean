@@ -168,6 +168,8 @@ open Function Quotient Finset BigOperators
 
 variable {ι : Type*}
 
+/-- The homomorphism from `R/(⋂ i, f i)` to `∏ i, (R / f i)` featured in the Chinese
+  Remainder Theorem. It is bijective if the ideals `f i` are coprime. -/
 def quotientInfToPiQuotient (I : ι → Ideal R) : (R ⧸ ⨅ i, I i) →+* ∀ i, R ⧸ I i :=
   Quotient.lift (⨅ i, I i) (Pi.ringHom fun i : ι ↦ Quotient.mk (I i))
     (by simp [← RingHom.mem_ker, ker_Pi_Quotient_mk])
