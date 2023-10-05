@@ -663,7 +663,7 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
   surj' x := by
     by_cases hx : ‖x‖ ≤ 1
     · use (⟨x, hx⟩, 1)
-      rw [Submonoid.coe_one, map_one, mul_one, PadicInt.algebraMap_apply, Subtype.coe_mk]
+      rw [Submonoid.coe_one, map_one, mul_one, PadicInt.algebraMap_apply]
     · set n := Int.toNat (-x.valuation) with hn
       have hn_coe : (n : ℤ) = -x.valuation := by
         rw [hn, Int.toNat_of_nonneg]

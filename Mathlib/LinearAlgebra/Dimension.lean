@@ -1047,7 +1047,7 @@ theorem rank_fun_eq_lift_mul : Module.rank K (η → V) =
 #align rank_fun_eq_lift_mul rank_fun_eq_lift_mul
 
 theorem rank_fun' : Module.rank K (η → K) = Fintype.card η := by
-  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one, mul_one]
+  rw [rank_fun_eq_lift_mul, rank_self, Cardinal.lift_one]
 #align rank_fun' rank_fun'
 
 theorem rank_fin_fun (n : ℕ) : Module.rank K (Fin n → K) = n := by simp [rank_fun']

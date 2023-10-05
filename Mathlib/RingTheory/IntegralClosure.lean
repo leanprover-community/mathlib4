@@ -107,7 +107,7 @@ theorem isIntegral_of_submodule_noetherian (S : Subalgebra R A)
     simp only [aeval_def, eval₂, sum_def]
     rw [S.val.map_sum]
     refine' Finset.sum_congr rfl fun n _hn => _
-    rw [S.val.map_mul, S.val.map_pow, S.val.commutes, S.val_apply, Subtype.coe_mk]
+    rw [S.val.map_mul, S.val.map_pow, S.val.commutes, S.val_apply]
   refine' isIntegral_of_noetherian H ⟨x, hx⟩
 #align is_integral_of_submodule_noetherian isIntegral_of_submodule_noetherian
 
