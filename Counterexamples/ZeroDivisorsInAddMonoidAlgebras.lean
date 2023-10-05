@@ -190,11 +190,11 @@ instance : AddCommMonoid F where
   add_comm := by boom
 
 /-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
-instance covariantClass_add_le : CovariantClass F F HAdd.hAdd LE.le :=
+instance covariantClass_add_le : CovariantClass F F (+) LE.le :=
   ⟨by boom⟩
 #align counterexample.F.covariant_class_add_le Counterexample.F.covariantClass_add_le
 
-example : CovariantClass F F (Function.swap HAdd.hAdd) LE.le := by infer_instance
+example : CovariantClass F F (Function.swap (+)) LE.le := by infer_instance
 
 /-- The following examples show that `F` has all the typeclasses used by
 `Finsupp.Lex.covariantClass_le_left`... -/
@@ -203,7 +203,7 @@ example : LinearOrder F := by infer_instance
 example : AddMonoid F := by infer_instance
 
 /-- ... except for the strict monotonicity of addition, the crux of the matter. -/
-example : ¬CovariantClass F F HAdd.hAdd LT.lt := fun h =>
+example : ¬CovariantClass F F (+) LT.lt := fun h =>
   lt_irrefl 1 <| (h.elim : Covariant F F (· + ·) (· < ·)) 1 z01
 
 /-- A few `simp`-lemmas to take care of trivialities in the proof of the example below. -/
@@ -234,7 +234,7 @@ theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
 enough and is the content of `Finsupp.Lex.covariantClass_le_left`. -/
-example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) HAdd.hAdd LE.le := by
+example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (+) LE.le := by
   rintro ⟨h⟩
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
