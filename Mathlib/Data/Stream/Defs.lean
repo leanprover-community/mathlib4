@@ -3,8 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.QPF.Univariate.Basic
+import Mathlib.Control.Bifunctor
 
 #align_import data.stream.defs from "leanprover-community/mathlib"@"39af7d3bf61a98e928812dbc3e16f4ea8b795ca3"
 
@@ -18,31 +18,45 @@ Note that we already have `Stream` to represent a similar object, hence the awkw
 
 set_option autoImplicit true
 
+open QPF
+
+instance {α : Type u} : QPF (MProd α) where
+  P := { A := α, B := fun _ => PUnit }
+  abs := fun ⟨a, o⟩ => ⟨a, o ⟨⟩⟩
+  repr := fun ⟨a, b⟩ => ⟨a, fun _ => b⟩
+  abs_repr p := by cases p; rfl
+  abs_map f p := by cases p; rfl
+
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
-def Stream' (α : Type u) := ℕ → α
+def Stream' (α : Type u) := QPF.Cofix (MProd α)
 #align stream Stream'
 
 namespace Stream'
 
 /-- Prepend an element to a stream. -/
-def cons (a : α) (s : Stream' α) : Stream' α
-  | 0 => a
-  | n + 1 => s n
+@[inline]
+def cons (a : α) (s : Stream' α) : Stream' α :=
+  Cofix.mk ⟨a, s⟩
 #align stream.cons Stream'.cons
 
 scoped infixr:67 " :: " => cons
 
-/-- `n`-th element of a stream. -/
-def nth (s : Stream' α) (n : ℕ) : α := s n
-#align stream.nth Stream'.nth
+/-- Destructor for a sequence, returning `⟨a, s⟩` for `cons a s`. -/
+@[inline]
+def dest (s : Stream' α) : MProd α (Stream' α) :=
+  Cofix.dest s
 
-/-- Head of a stream: `Stream'.head s = Stream'.nth s 0`. -/
-abbrev head (s : Stream' α) : α := s.nth 0
+/-- Head of a stream: `Stream'.head (h :: t) = h`. -/
+abbrev head (s : Stream' α) : α := s.dest.1
 #align stream.head Stream'.head
 
 /-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-def tail (s : Stream' α) : Stream' α := fun i => s.nth (i + 1)
+abbrev tail (s : Stream' α) : Stream' α := s.dest.2
 #align stream.tail Stream'.tail
+
+/-- `n`-th element of a stream. -/
+def nth (s : Stream' α) (n : ℕ) : α := s n
+#align stream.nth Stream'.nth
 
 /-- Drop first `n` elements of a stream. -/
 def drop (n : Nat) (s : Stream' α) : Stream' α := fun i => s.nth (i + n)
