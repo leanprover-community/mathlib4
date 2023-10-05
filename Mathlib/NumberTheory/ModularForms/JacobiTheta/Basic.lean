@@ -44,7 +44,7 @@ theorem norm_exp_mul_sq_le {z : ℂ} (hz : 0 < z.im) (n : ℤ) :
         ofReal_mul_re, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
-    rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, zpow_ofNat]
+    rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast]
   · have : n ^ 2 = ↑(n.natAbs ^ 2) := by rw [Nat.cast_pow, Int.natAbs_sq]
     rw [this, zpow_ofNat]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
