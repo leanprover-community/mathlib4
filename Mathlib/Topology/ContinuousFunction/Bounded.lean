@@ -126,7 +126,7 @@ theorem eq_of_empty [h : IsEmpty α] (f g : α →ᵇ β) : f = g :=
 #align bounded_continuous_function.eq_of_empty BoundedContinuousFunction.eq_of_empty
 
 /-- A continuous function with an explicit bound is a bounded continuous function. -/
-def mkOfBound (f : C(α, β)) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) : α →ᵇ β :=
+abbrev mkOfBound (f : C(α, β)) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) : α →ᵇ β :=
   ⟨f, ⟨C, h⟩⟩
 #align bounded_continuous_function.mk_of_bound BoundedContinuousFunction.mkOfBound
 
@@ -877,8 +877,9 @@ theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
 
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
-def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [SeminormedAddCommGroup β]
-    (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
+abbrev ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
+    [SeminormedAddCommGroup β] (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    α →ᵇ β :=
   ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
 #align bounded_continuous_function.of_normed_add_comm_group BoundedContinuousFunction.ofNormedAddCommGroup
 

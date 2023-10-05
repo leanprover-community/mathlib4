@@ -51,6 +51,7 @@ theorem continuous_evalCharacterSpace :
     Continuous (evalCharacterSpace X) :=
   continuous_induced_rng.mpr <| continuous_of_continuous_eval fun f ↦ f.continuous
 
+set_option trace.profiler true
 noncomputable
 def foo (X : Type*) [TopologicalSpace X] : characterSpace ℂ (X →ᵇ ℂ) ≃ₜ StoneCech X where
   toFun :=
@@ -61,10 +62,10 @@ def foo (X : Type*) [TopologicalSpace X] : characterSpace ℂ (X →ᵇ ℂ) ≃
     (CharacterSpace.homeoEval (StoneCech X) ℂ).symm ∘ CharacterSpace.compContinuousMap
       (φ₂.comp φ₁)
   invFun := stoneCechExtend (continuous_evalCharacterSpace X)
-  left_inv χ := by
-    ext f : 1
+  left_inv := sorry
+    --refine (CharacterSpace.continuousMapEval_bijective).surjective
   right_inv := sorry
   continuous_toFun := sorry
-  continuous_invFun := continuous_stoneCechExtend (continuous_evalCharacterSpace X)
+  continuous_invFun := sorry --continuous_stoneCechExtend (continuous_evalCharacterSpace X)
 
 end BoundedContinuousFunction
