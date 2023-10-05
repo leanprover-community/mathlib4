@@ -116,10 +116,7 @@ lemma Fin.succ_mem_piFinset_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : ∀ 
     p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
   simp only [Fintype.mem_piFinset]
   constructor
-  · intros ha_1
-    constructor
-    · exact ha_1 0
-    · exact fun a_1 ↦ ha_1 (Fin.succ a_1)
+  · exact fun ha_1 ↦ ⟨ha_1 0, fun a_1 ↦ ha_1 (Fin.succ a_1)⟩
   · intro ⟨ha11, ha12⟩ a1
     rcases Fin.eq_zero_or_eq_succ a1 with rfl | ⟨j, rfl⟩
     · assumption
