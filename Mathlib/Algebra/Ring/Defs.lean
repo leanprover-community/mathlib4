@@ -110,7 +110,7 @@ TODO: clean this once lean4#2115 is fixed
 -/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
-class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
+class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, MulZeroClass α, Distrib α
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
 
 /-- An associative but not-necessarily unital semiring. -/
