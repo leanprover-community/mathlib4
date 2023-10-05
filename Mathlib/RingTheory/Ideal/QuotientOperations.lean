@@ -76,10 +76,15 @@ theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.R
   rfl
 #align ring_hom.quotient_ker_equiv_of_right_inverse.symm.apply RingHom.quotientKerEquivOfRightInverse.Symm.apply
 
-/-- The **first isomorphism theorem** for commutative rings. -/
+/-- The **first isomorphism theorem** for commutative rings, surjective case. -/
 noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 #align ring_hom.quotient_ker_equiv_of_surjective RingHom.quotientKerEquivOfSurjective
+
+/-- The **first isomorphism theorem** for commutative rings. -/
+noncomputable def RingHom.quotientKerEquivRange (f : R →+* S) : R ⧸ (RingHom.ker f) ≃+* f.range :=
+  (Ideal.quotEquivOfEq f.ker_rangeRestrict.symm).trans
+  (RingHom.quotientKerEquivOfSurjective (f.rangeRestrict_surjective))
 
 end RingHom
 

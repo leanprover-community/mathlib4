@@ -2105,6 +2105,11 @@ variable {F : Type*} [Ring R] [Ring S] [rc : RingHomClass F R S] (f : F)
 theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker, map_sub, sub_eq_zero]
 #align ring_hom.sub_mem_ker_iff RingHom.sub_mem_ker_iff
 
+@[simp]
+theorem ker_rangeRestrict (f : R →+* S) :
+    RingHom.ker f.rangeRestrict = RingHom.ker f :=
+  Ideal.ext fun _ ↦ ⟨fun h ↦ congr(((↑) : RingHom.range f → S) $h), fun h ↦ Subtype.ext h⟩
+
 end RingRing
 
 /-- The kernel of a homomorphism to a domain is a prime ideal. -/
