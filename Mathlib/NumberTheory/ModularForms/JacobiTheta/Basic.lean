@@ -43,7 +43,6 @@ theorem norm_exp_mul_sq_le {z : ℂ} (hz : 0 < z.im) (n : ℤ) :
       rw [(by push_cast; ring : ↑π * I * (n : ℂ) ^ 2 * z = ↑(π * (n : ℝ) ^ 2) * (z * I)),
         ofReal_mul_re, mul_I_re]
       ring
-    obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
     rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast]
   · have : n ^ 2 = ↑(n.natAbs ^ 2) := by rw [Nat.cast_pow, Int.natAbs_sq]
     rw [this, zpow_ofNat]
