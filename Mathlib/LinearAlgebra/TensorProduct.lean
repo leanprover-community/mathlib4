@@ -95,10 +95,10 @@ protected instance add : Add (M ⊗[R] N) :=
   (addConGen (TensorProduct.Eqv R M N)).hasAdd
 
 instance zero : Zero (M ⊗[R] N) :=
-  (addConGen (TensorProduct.Eqv R M N)).addMonoid.toZero
+  (addConGen (TensorProduct.Eqv R M N)).zero
 
 instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
+  { (addConGen (TensorProduct.Eqv R M N)).addZeroClass with
     /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
     This avoids any need to unfold `Con.addMonoid` when the type checker is checking
     that instance diagrams commute -/
@@ -106,7 +106,7 @@ instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
     toZero := TensorProduct.zero _ _ }
 
 instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
+  { (addConGen (TensorProduct.Eqv R M N)).addSemigroup with
     toAdd := TensorProduct.add _ _ }
 
 instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
