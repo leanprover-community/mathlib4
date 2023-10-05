@@ -187,7 +187,7 @@ instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Su
     DistribSMul S (M ⧸ P) :=
   { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
-    toSMul := instSMul' _ }
+    toSMulZeroClass := smulZeroClass' _ }
 #align submodule.quotient.distrib_smul' Submodule.Quotient.distribSMul'
 
 -- porting note: should this be marked as a `@[default_instance]`?
