@@ -71,8 +71,8 @@ variable (R)
 
 /-- The tensor product of two modules `M` and `N` over the same commutative semiring `R`.
 The localized notations are `M ⊗ N` and `M ⊗[R] N`, accessed by `open scoped TensorProduct`. -/
-def TensorProduct : Type _ :=
-  (addConGen (TensorProduct.Eqv R M N)).Quotient
+structure TensorProduct where ofQuotient ::
+  toQuotient : (addConGen (TensorProduct.Eqv R M N)).Quotient
 #align tensor_product TensorProduct
 
 variable {R}
@@ -86,31 +86,63 @@ namespace TensorProduct
 
 section Module
 
+variable {M N}
+
+theorem toQuotient_injective : Function.Injective (toQuotient : M ⊗[R] N → _)
+  | ⟨_⟩, ⟨_⟩, rfl => rfl
+
+private irreducible_def add : (M ⊗[R] N) → (M ⊗[R] N) → (M ⊗[R] N)
+  | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
+
+protected instance add' : Add (M ⊗[R] N) :=
+  { add := TensorProduct.add }
+
+theorem add'_def (a b : M ⊗[R] N) : a + b = ofQuotient (a.toQuotient + b.toQuotient) :=
+  add_def _ _
+
+theorem ofQuotient_add {a b} : (⟨a + b⟩ : M ⊗[R] N) = ⟨a⟩ + ⟨b⟩ :=
+  show _ = add _ _ by rw [add_def]
+
+theorem toQuotient_add : (a b : M ⊗[R] N) → (a + b).toQuotient = a.toQuotient + b.toQuotient
+  | ⟨_⟩, ⟨_⟩ => by rw [← ofQuotient_add]
+
+instance zero : Zero (M ⊗[R] N) :=
+  ⟨⟨0⟩⟩
+
+theorem ofQuotient_zero : (⟨0⟩ : M ⊗[R] N) = 0 :=
+  rfl
+
+theorem toQuotient_zero : (0 : M ⊗[R] N).toQuotient = 0 :=
+  rfl
+
+variable (M N)
+
+instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
+  { Function.Injective.addZeroClass toQuotient toQuotient_injective toQuotient_zero
+      toQuotient_add with
+    /- The `toAdd` field is given explicitly as `TensorProduct.add'` for performance reasons.
+    This avoids any need to unfold `Con.addMonoid` when the type checker is checking
+    that instance diagrams commute -/
+    toAdd := TensorProduct.add'
+    toZero := TensorProduct.zero }
+
+instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
+  { Function.Injective.addSemigroup toQuotient toQuotient_injective toQuotient_add with
+    toAdd := TensorProduct.add' }
+
+instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
+  { toAddSemigroup := TensorProduct.addSemigroup _ _
+    add_comm := fun ⟨x⟩ ⟨y⟩ => by
+      rw [add'_def, add'_def]
+      exact congr_arg ofQuotient <|
+      AddCon.induction_on₂ x y fun _ _ =>
+        Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
+
 -- porting note: This is added as a local instance for `SMul.aux`.
 -- For some reason type-class inference in Lean 3 unfolded this definition.
 def addMonoid : AddMonoid (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
-
-protected instance add : Add (M ⊗[R] N) :=
-  (addConGen (TensorProduct.Eqv R M N)).hasAdd
-
-instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
-    /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
-    This avoids any need to unfold `Con.addMonoid` when the type checker is checking
-    that instance diagrams commute -/
-    toAdd := TensorProduct.add _ _ }
-
-instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
-    toAdd := TensorProduct.add _ _ }
-
-instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
-    toAddSemigroup := TensorProduct.addSemigroup _ _
-    add_comm := fun x y =>
-      AddCon.induction_on₂ x y fun _ _ =>
-        Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
+  { zero_add := zero_add
+    add_zero := add_zero }
 
 instance : Inhabited (M ⊗[R] N) :=
   ⟨0⟩
@@ -120,7 +152,7 @@ variable (R) {M N}
 /-- The canonical function `M → N → M ⊗ N`. The localized notations are `m ⊗ₜ n` and `m ⊗ₜ[R] n`,
 accessed by `open scoped TensorProduct`. -/
 def tmul (m : M) (n : N) : M ⊗[R] N :=
-  AddCon.mk' _ <| FreeAddMonoid.of (m, n)
+  ofQuotient <| AddCon.mk' _ <| FreeAddMonoid.of (m, n)
 #align tensor_product.tmul TensorProduct.tmul
 
 variable {R}
@@ -134,10 +166,11 @@ notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
-    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
-  AddCon.induction_on z fun x =>
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z := by
+  rcases z with ⟨z⟩
+  exact AddCon.induction_on z fun x =>
     FreeAddMonoid.recOn x zero fun ⟨m, n⟩ y ih => by
-      rw [AddCon.coe_add]
+      rw [AddCon.coe_add, ofQuotient_add]
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
@@ -145,26 +178,30 @@ variable (M)
 
 @[simp]
 theorem zero_tmul (n : N) : (0 : M) ⊗ₜ[R] n = 0 :=
-  Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_zero_left _
+  congr_arg ofQuotient <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_zero_left _
 #align tensor_product.zero_tmul TensorProduct.zero_tmul
 
 variable {M}
 
-theorem add_tmul (m₁ m₂ : M) (n : N) : (m₁ + m₂) ⊗ₜ n = m₁ ⊗ₜ n + m₂ ⊗ₜ[R] n :=
-  Eq.symm <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_add_left _ _ _
+theorem add_tmul (m₁ m₂ : M) (n : N) : (m₁ + m₂) ⊗ₜ n = m₁ ⊗ₜ n + m₂ ⊗ₜ[R] n := by
+  rw [add'_def]
+  exact Eq.symm <| congr_arg ofQuotient <| Quotient.sound' <|
+    AddConGen.Rel.of _ _ <| Eqv.of_add_left _ _ _
 #align tensor_product.add_tmul TensorProduct.add_tmul
 
 variable (N)
 
 @[simp]
 theorem tmul_zero (m : M) : m ⊗ₜ[R] (0 : N) = 0 :=
-  Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_zero_right _
+  congr_arg ofQuotient <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_zero_right _
 #align tensor_product.tmul_zero TensorProduct.tmul_zero
 
 variable {N}
 
-theorem tmul_add (m : M) (n₁ n₂ : N) : m ⊗ₜ (n₁ + n₂) = m ⊗ₜ n₁ + m ⊗ₜ[R] n₂ :=
-  Eq.symm <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_add_right _ _ _
+theorem tmul_add (m : M) (n₁ n₂ : N) : m ⊗ₜ (n₁ + n₂) = m ⊗ₜ n₁ + m ⊗ₜ[R] n₂ := by
+  rw [add'_def]
+  exact congr_arg ofQuotient <| Eq.symm <| Quotient.sound' <|
+    AddConGen.Rel.of _ _ <| Eqv.of_add_right _ _ _
 #align tensor_product.tmul_add TensorProduct.tmul_add
 
 section
@@ -195,7 +232,7 @@ instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTow
     conv_lhs => rw [← one_smul R m]
     conv_rhs => rw [← one_smul R n]
     rw [← smul_assoc, ← smul_assoc]
-    exact Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_smul _ _ _⟩
+    exact congr_arg ofQuotient <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_smul _ _ _⟩
 #align tensor_product.compatible_smul.is_scalar_tower TensorProduct.CompatibleSMul.isScalarTower
 
 /-- `smul` can be moved from one side of the product to the other .-/
@@ -231,8 +268,8 @@ Note that in the special case that `R = R'`, since `R` is commutative, we just g
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
 instance leftHasSMul : SMul R' (M ⊗[R] N) :=
-  ⟨fun r =>
-    (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
+  ⟨fun r x =>
+    ((addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
       AddCon.addConGen_le fun x y hxy =>
         match x, y, hxy with
         | _, _, .of_zero_left n =>
@@ -246,7 +283,7 @@ instance leftHasSMul : SMul R' (M ⊗[R] N) :=
         | _, _, .of_smul s m n =>
           (AddCon.ker_rel _).2 <| by rw [SMul.aux_of, SMul.aux_of, ← smul_comm, smul_tmul]
         | _, _, .add_comm x y =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]⟩
+          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]) x.toQuotient⟩
 #align tensor_product.left_has_smul TensorProduct.leftHasSMul
 
 instance : SMul R (M ⊗[R] N) :=
@@ -256,8 +293,9 @@ protected theorem smul_zero (r : R') : r • (0 : M ⊗[R] N) = 0 :=
   AddMonoidHom.map_zero _
 #align tensor_product.smul_zero TensorProduct.smul_zero
 
-protected theorem smul_add (r : R') (x y : M ⊗[R] N) : r • (x + y) = r • x + r • y :=
-  AddMonoidHom.map_add _ _ _
+protected theorem smul_add (r : R') (x y : M ⊗[R] N) : r • (x + y) = r • x + r • y := by
+  rw [add'_def]
+  exact AddMonoidHom.map_add _ _ _
 #align tensor_product.smul_add TensorProduct.smul_add
 
 protected theorem zero_smul (x : M ⊗[R] N) : (0 : R'') • x = 0 :=
@@ -464,11 +502,19 @@ section UMP
 variable {M N}
 variable (f : M →ₗ[R] N →ₗ[R] P)
 
+private def addEquivQuotient :
+    M ⊗[R] N ≃+ (addConGen (TensorProduct.Eqv R M N)).Quotient :=
+  { toFun := toQuotient
+    invFun := ofQuotient
+    left_inv := fun _ => rfl
+    right_inv := fun _ => rfl
+    map_add' := toQuotient_add }
+
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def liftAux : M ⊗[R] N →+ P :=
-  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift fun p : M × N => f p.1 p.2) <|
+  ((addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift fun p : M × N => f p.1 p.2) <|
     AddCon.addConGen_le fun x y hxy =>
       match x, y, hxy with
       | _, _, Eqv.of_zero_left n =>
@@ -482,7 +528,8 @@ def liftAux : M ⊗[R] N →+ P :=
       | _, _, Eqv.of_smul r m n =>
         (AddCon.ker_rel _).2 <| by simp_rw [FreeAddMonoid.lift_eval_of, f.map_smul₂, (f m).map_smul]
       | _, _, Eqv.add_comm x y =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]).comp
+  addEquivQuotient.toAddMonoidHom
 #align tensor_product.lift_aux TensorProduct.liftAux
 
 theorem liftAux_tmul (m n) : liftAux f (m ⊗ₜ n) = f m n :=
@@ -1234,33 +1281,14 @@ open LinearMap
 variable (R)
 
 /-- Auxiliary function to defining negation multiplication on tensor product. -/
-def Neg.aux : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
-  FreeAddMonoid.lift fun p : M × N => (-p.1) ⊗ₜ p.2
-#align tensor_product.neg.aux TensorProduct.Neg.aux
+def Neg.aux : M ⊗[R] N →+ M ⊗[R] N :=
+  liftAux <| (mk R M N).comp (-LinearMap.id)
+#noalign tensor_product.neg.aux
 
 variable {R}
 
-theorem Neg.aux_of (m : M) (n : N) : Neg.aux R (FreeAddMonoid.of (m, n)) = (-m) ⊗ₜ[R] n :=
-  rfl
-#align tensor_product.neg.aux_of TensorProduct.Neg.aux_of
-
 instance neg : Neg (M ⊗[R] N) where
-  neg :=
-    (addConGen (TensorProduct.Eqv R M N)).lift (Neg.aux R) <|
-      AddCon.addConGen_le fun x y hxy =>
-        match x, y, hxy with
-        | _, _, Eqv.of_zero_left n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, Neg.aux_of, neg_zero, zero_tmul]
-        | _, _, Eqv.of_zero_right m =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, Neg.aux_of, tmul_zero]
-        | _, _, Eqv.of_add_left m₁ m₂ n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, Neg.aux_of, neg_add, add_tmul]
-        | _, _, Eqv.of_add_right m n₁ n₂ =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, Neg.aux_of, tmul_add]
-        | _, _, Eqv.of_smul s m n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [Neg.aux_of, ← smul_neg, ← smul_tmul]
-        | _, _, Eqv.add_comm x y =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+  neg := Neg.aux R
 
 protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
   x.induction_on
