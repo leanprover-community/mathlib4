@@ -875,7 +875,7 @@ theorem isCoprime_span_singleton_iff (x y : R) :
   · rintro ⟨a, _, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
   · rintro ⟨a, b, e⟩; exact ⟨a, _, ⟨b, rfl⟩, mul_comm y b ▸ e⟩
 
-theorem coprime_iInf_of_coprime {J : ι → Ideal R} {s : Finset ι}
+theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
     (hf : ∀ j ∈ s, IsCoprime I (J j)) : IsCoprime I (⨅ j ∈ s, J j) := by
   classical
   simp_rw [isCoprime_iff_add] at *

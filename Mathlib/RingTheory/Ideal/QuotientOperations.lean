@@ -193,7 +193,7 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
     have hI' : ∀ j ∈ ({i} : Finset ι)ᶜ, IsCoprime (I i) (I j) := by
       intros j hj
       exact hI _ _ (by simpa [ne_comm, isCoprime_iff_add] using hj)
-    rcases isCoprime_iff_exists.mp (coprime_iInf_of_coprime hI') with ⟨u, hu, e, he, hue⟩
+    rcases isCoprime_iff_exists.mp (isCoprime_biInf hI') with ⟨u, hu, e, he, hue⟩
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
     refine ⟨e, ?_, ?_⟩
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
@@ -202,7 +202,7 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
   choose e he using key
   use mk _ (∑ i, f i*e i)
   ext i
-  rw [quotientInfToPiQuotient_mk', map_sum, sum_univ_eq_single i]
+  rw [quotientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
   · simp [(he i).1, hf]
   · intros j hj
     simp [(he j).2 i hj.symm]
