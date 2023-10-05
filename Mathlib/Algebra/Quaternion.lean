@@ -1317,7 +1317,7 @@ instance instGroupWithZero : GroupWithZero ℍ[R] :=
   { Quaternion.instNontrivial,
     (by infer_instance : MonoidWithZero ℍ[R]) with
     inv := Inv.inv
-    inv_zero := by rw [instInv_inv, star_zero, smul_zero]
+    inv_zero := by erw [instInv_inv, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
       -- porting note: the aliased definition confuse TC search
       letI : Semiring ℍ[R] := inferInstanceAs (Semiring ℍ[R,-1,-1])
