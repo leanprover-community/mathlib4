@@ -65,7 +65,11 @@ instance linearOverField : Linear k (ModuleCat.{v} A) where
   homModule M N := LinearMap.module
   smul_comp := by
     -- Porting note: this was automatic by `aesop_cat`
-    intros; ext; erw [LinearMap.map_smul_of_tower]; rfl
+    intros
+    ext
+    dsimp only [coe_comp, Function.comp_apply]
+    rw [LinearMap.smul_apply, LinearMap.map_smul_of_tower]
+    rfl
 #align Module.linear_over_field ModuleCat.linearOverField
 
 end ModuleCat
