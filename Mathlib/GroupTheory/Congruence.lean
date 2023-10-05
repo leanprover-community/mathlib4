@@ -725,6 +725,15 @@ end
 
 end
 
+section One
+
+variable [One M] [Mul M] (c : Con M)
+
+@[to_additive]
+instance one : One c.Quotient := ⟨(1 : M)⟩
+
+end One
+
 section MulOneClass
 
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
@@ -733,7 +742,6 @@ variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
 instance mulOneClass : MulOneClass c.Quotient where
-  one := ((1 : M) : c.Quotient)
   mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
   one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
 #align con.mul_one_class Con.mulOneClass
@@ -756,8 +764,7 @@ variable (c)
 /-- The submonoid of `M × M` defined by a congruence relation on a monoid `M`. -/
 @[to_additive (attr := coe) "The `AddSubmonoid` of `M × M` defined by an additive congruence
 relation on an `AddMonoid` `M`."]
-protected def submonoid : Submonoid (M × M)
-    where
+protected def submonoid : Submonoid (M × M) where
   carrier := { x | c x.1 x.2 }
   one_mem' := c.iseqv.1 1
   mul_mem' := c.mul
@@ -770,8 +777,7 @@ variable {c}
     is an equivalence relation. -/
 @[to_additive "The additive congruence relation on an `AddMonoid` `M` from
 an `add_submonoid` of `M × M` for which membership is an equivalence relation."]
-def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ N) : Con M
-    where
+def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ N) : Con M where
   r x y := (x, y) ∈ N
   iseqv := H
   mul' := N.mul_mem
@@ -1146,15 +1152,6 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
 #align add_con.nsmul AddCon.nsmul
 
 @[to_additive]
-instance one [MulOneClass M] (c : Con M) : One c.Quotient where
-  -- Using Quotient.mk'' here instead of c.toQuotient
-  -- since c.toQuotient is not reducible.
-  -- This would lead to non-defeq diamonds since this instance ends up in
-  -- quotients modulo ideals.
-  one := Quotient.mk'' (1 : M)
-  -- one := ((1 : M) : c.Quotient)
-
-@[to_additive]
 theorem smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M) (a : α)
     {w x : M} (h : c w x) : c (a • w) (a • x) := by
   simpa only [smul_one_mul] using c.mul (c.refl' (a • (1 : M) : M)) h
@@ -1176,9 +1173,6 @@ an `AddSemigroup`."]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
   { (Function.Surjective.semigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
       Semigroup c.Quotient) with
-    /- The `toMul` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.semigroup` when the type checker is checking
-    that instance diagrams commute -/
     toMul := Con.hasMul _ }
 #align con.semigroup Con.semigroup
 #align add_con.add_semigroup AddCon.addSemigroup
@@ -1189,9 +1183,6 @@ an `AddCommSemigroup`."]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
   { (Function.Surjective.commSemigroup _ Quotient.surjective_Quotient_mk'' fun _ _ => rfl :
       CommSemigroup c.Quotient) with
-    /- The `toSemigroup` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commSemigroup` when the type checker is
-    checking that instance diagrams commute -/
     toSemigroup := Con.semigroup _ }
 #align con.comm_semigroup Con.commSemigroup
 #align add_con.add_comm_semigroup AddCon.addCommSemigroup
@@ -1202,9 +1193,6 @@ an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
   { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
       (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
-    /- The `toSemigroup` and `toOne` fields are given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.monoid` when the type checker is
-    checking that instance diagrams commute -/
     toSemigroup := Con.semigroup _
     toOne := Con.one _ }
 #align con.monoid Con.monoid
@@ -1216,9 +1204,6 @@ relation is an `AddCommMonoid`."]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
   { (Function.Surjective.commMonoid _ Quotient.surjective_Quotient_mk'' rfl
       (fun _ _ => rfl) fun _ _ => rfl : CommMonoid c.Quotient) with
-    /- The `toMonoid` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commMonoid` when the type checker is
-    checking that instance diagrams commute -/
     toMonoid := Con.monoid _ }
 #align con.comm_monoid Con.commMonoid
 #align add_con.add_comm_monoid AddCon.addCommMonoid
@@ -1392,7 +1377,8 @@ theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M 
 
 @[to_additive]
 instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
-    (c : Con M) : MulAction α c.Quotient where
+    (c : Con M) : MulAction α c.Quotient
+    where
   one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
   mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
 #align con.mul_action Con.mulAction

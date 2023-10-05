@@ -197,12 +197,12 @@ end add_mul
 
 section Zero
 
-variable [AddZeroClass R] [Mul R] (c : RingCon R)
+variable [Zero R] [Add R] [Mul R] (c : RingCon R)
 
-instance : Zero c.Quotient := inferInstanceAs (Zero c.toAddCon.Quotient)
+instance zero : Zero c.Quotient := inferInstanceAs (Zero c.toAddCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
+theorem coe_zero : ((0 : R) : c.Quotient) = 0 :=
   rfl
 #align ring_con.coe_zero RingCon.coe_zero
 
@@ -210,12 +210,12 @@ end Zero
 
 section One
 
-variable [Add R] [MulOneClass R] (c : RingCon R)
+variable [One R] [Add R] [Mul R] (c : RingCon R)
 
 instance : One c.Quotient := inferInstanceAs (One c.toCon.Quotient)
 
 @[simp, norm_cast]
-theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
+theorem coe_one : ((1 : R) : c.Quotient) = 1 :=
   rfl
 #align ring_con.coe_one RingCon.coe_one
 
@@ -225,7 +225,7 @@ section SMul
 
 variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
 
-instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
+instance smul : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
@@ -238,22 +238,22 @@ section NegSubZsmul
 
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
-instance : Neg c.Quotient := inferInstanceAs (Neg c.toAddCon.Quotient)
+instance neg : Neg c.Quotient := inferInstanceAs (Neg c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
   rfl
 #align ring_con.coe_neg RingCon.coe_neg
 
-instance : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
+instance sub : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 #align ring_con.coe_sub RingCon.coe_sub
 
-instance hasZsmul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
-#align ring_con.has_zsmul RingCon.hasZsmul
+instance zsmul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
+#align ring_con.has_zsmul RingCon.zsmul
 
 @[simp, norm_cast]
 theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
@@ -266,8 +266,8 @@ section Nsmul
 
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
-instance hasNsmul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
-#align ring_con.has_nsmul RingCon.hasNsmul
+instance nsmul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
+#align ring_con.has_nsmul RingCon.nsmul
 
 @[simp, norm_cast]
 theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
@@ -291,13 +291,15 @@ end Pow
 
 section NatCast
 
-variable [AddMonoidWithOne R] [Mul R] (c : RingCon R)
+variable [NatCast R] [Add R] [Mul R] (c : RingCon R)
 
-instance : NatCast c.Quotient :=
-  ⟨fun n => ↑(n : R)⟩
+instance natCast : NatCast c.Quotient :=
+  ⟨fun n => (n : R)⟩
+
+theorem natCast_eq (n : ℕ) : (RingCon.natCast c).natCast n = ((n : R) : c.Quotient) := rfl
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_nat_cast (n : ℕ) : ((n : R) : c.Quotient) = n :=
   rfl
 #align ring_con.coe_nat_cast RingCon.coe_nat_cast
 
@@ -305,20 +307,22 @@ end NatCast
 
 section IntCast
 
-variable [AddGroupWithOne R] [Mul R] (c : RingCon R)
+variable [IntCast R] [Add R] [Mul R] (c : RingCon R)
 
-instance : IntCast c.Quotient :=
-  ⟨fun z => ↑(z : R)⟩
+instance intCast : IntCast c.Quotient :=
+  ⟨fun z => (z : R)⟩
+
+theorem intCast_eq (n : ℤ) : (RingCon.intCast c).intCast n = ((n : R) : c.Quotient) := rfl
 
 @[simp, norm_cast]
-theorem coe_int_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_int_cast (n : ℕ) : ((n : R) : c.Quotient) = n :=
   rfl
 #align ring_con.coe_int_cast RingCon.coe_int_cast
 
 end IntCast
 
 instance [Inhabited R] [Add R] [Mul R] (c : RingCon R) : Inhabited c.Quotient :=
-  ⟨↑(default : R)⟩
+  ⟨(default : R)⟩
 
 end Data
 
@@ -330,76 +334,108 @@ The operations above on the quotient by `c : RingCon R` preserve the algebraic s
 
 section Algebraic
 
-instance [NonUnitalNonAssocSemiring R] (c : RingCon R) : NonUnitalNonAssocSemiring c.Quotient :=
-  Function.Surjective.nonUnitalNonAssocSemiring _ Quotient.surjective_Quotient_mk'' rfl
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+instance mulZeroClass [Add R] [MulZeroClass R] (c : RingCon R) : MulZeroClass c.Quotient :=
+  { toZero := zero _
+    toMul := Con.hasMul _
+    zero_mul := Quotient.ind' fun _ => congrArg Quotient.mk'' <| zero_mul _
+    mul_zero := Quotient.ind' fun _ => congrArg Quotient.mk'' <| mul_zero _ }
 
-instance [NonAssocSemiring R] (c : RingCon R) : NonAssocSemiring c.Quotient :=
-  Function.Surjective.nonAssocSemiring _ Quotient.surjective_Quotient_mk'' rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+instance mulZeroOneClass [Add R] [MulZeroOneClass R] (c : RingCon R) :
+    MulZeroOneClass c.Quotient :=
+  { RingCon.mulZeroClass c, Con.mulOneClass c.toCon with }
 
-instance [NonUnitalSemiring R] (c : RingCon R) : NonUnitalSemiring c.Quotient :=
-  Function.Surjective.nonUnitalSemiring _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance addMonoidWithOne [AddMonoidWithOne R] [Mul R] (c : RingCon R) :
+    AddMonoidWithOne c.Quotient :=
+  { toAddMonoid := AddCon.addMonoid c.toAddCon
+    natCast_zero := by
+      rw [natCast_eq, ←coe_zero, Nat.cast_zero]
+    natCast_succ := fun _ => by
+      rw [natCast_eq]
+      simp }
 
-instance [Semiring R] (c : RingCon R) : Semiring c.Quotient :=
-  Function.Surjective.semiring _ Quotient.surjective_Quotient_mk'' rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+instance addGroupWithOne [AddCommGroupWithOne R] [Mul R] (c : RingCon R) :
+    AddGroupWithOne c.Quotient :=
+  { RingCon.addMonoidWithOne c with
+    intCast_ofNat := fun _ => by
+      simp only [intCast_eq, Int.cast_ofNat, coe_nat_cast]
+    intCast_negSucc := fun _ => by
+      simp only [intCast_eq, Int.cast_negSucc, RingCon.coe_neg]
+      simp
+    sub_eq_add_neg := Quotient.ind₂' fun _ _ => congrArg Quotient.mk'' <| sub_eq_add_neg ..
+    add_left_neg := Quotient.ind' fun _ => congrArg Quotient.mk'' <| add_left_neg _ }
 
-instance [CommSemiring R] (c : RingCon R) : CommSemiring c.Quotient :=
-  Function.Surjective.commSemiring _ Quotient.surjective_Quotient_mk'' rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+instance distrib [Distrib R] (c : RingCon R) : Distrib c.Quotient :=
+  { toAdd := AddCon.hasAdd c.toAddCon
+    toMul := Con.hasMul _
+    left_distrib := fun a b c => Quotient.inductionOn₃' a b c
+      fun _ _ _ => congrArg Quotient.mk'' <| left_distrib ..
+    right_distrib := fun a b c => Quotient.inductionOn₃' a b c
+      fun _ _ _ => congrArg Quotient.mk'' <| right_distrib .. }
 
-instance [NonUnitalNonAssocRing R] (c : RingCon R) : NonUnitalNonAssocRing c.Quotient :=
-  Function.Surjective.nonUnitalNonAssocRing _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (c : RingCon R) :
+    NonUnitalNonAssocSemiring c.Quotient :=
+  { RingCon.mulZeroClass c, RingCon.distrib c with
+    toAddCommMonoid := AddCon.addCommMonoid c.toAddCon }
 
-instance [NonAssocRing R] (c : RingCon R) : NonAssocRing c.Quotient :=
-  Function.Surjective.nonAssocRing _ Quotient.surjective_Quotient_mk'' rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) fun _ => rfl
+instance nonAssocSemiring [NonAssocSemiring R] (c : RingCon R) : NonAssocSemiring c.Quotient :=
+  { RingCon.addMonoidWithOne c, RingCon.mulZeroOneClass c with
+    toNonUnitalNonAssocSemiring := RingCon.nonUnitalNonAssocSemiring c }
 
-instance [NonUnitalRing R] (c : RingCon R) : NonUnitalRing c.Quotient :=
-  Function.Surjective.nonUnitalRing _ Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+instance nonUnitalSemiring [NonUnitalSemiring R] (c : RingCon R) : NonUnitalSemiring c.Quotient :=
+  { toNonUnitalNonAssocSemiring := RingCon.nonUnitalNonAssocSemiring c
+    mul_assoc := fun x y z => Quotient.inductionOn₃' x y z fun _ _ _ =>
+      congrArg Quotient.mk'' <| mul_assoc .. }
 
-instance [Ring R] (c : RingCon R) : Ring c.Quotient :=
-  Function.Surjective.ring _ Quotient.surjective_Quotient_mk'' rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+instance semiring [Semiring R] (c : RingCon R) : Semiring c.Quotient :=
+  { RingCon.nonAssocSemiring c with
+    toNonUnitalSemiring := RingCon.nonUnitalSemiring c }
+
+instance commSemiring [CommSemiring R] (c : RingCon R) : CommSemiring c.Quotient :=
+  { mul_comm := Quotient.ind₂' fun _ _ => congrArg Quotient.mk'' <| mul_comm .. }
+
+instance nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (c : RingCon R) :
+    NonUnitalNonAssocRing c.Quotient :=
+  { RingCon.nonUnitalNonAssocSemiring c, AddCon.addGroup c.toAddCon with }
+
+instance nonAssocRing [NonAssocRing R] (c : RingCon R) : NonAssocRing c.Quotient :=
+  { RingCon.nonUnitalNonAssocRing c, RingCon.addGroupWithOne c, RingCon.mulZeroOneClass c with }
+
+instance nonUnitalRing [NonUnitalRing R] (c : RingCon R) : NonUnitalRing c.Quotient :=
+  { RingCon.nonUnitalNonAssocRing c, RingCon.nonUnitalSemiring c with }
+
+instance ring [Ring R] (c : RingCon R) : Ring c.Quotient :=
+  { RingCon.nonAssocRing c, RingCon.nonUnitalRing c with }
 
 instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
-  Function.Surjective.commRing _ Quotient.surjective_Quotient_mk'' rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  { mul_comm := mul_comm }
 
 instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     (c : RingCon R) : IsScalarTower α c.Quotient c.Quotient where
-  smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
+  smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc ..
 #align ring_con.is_scalar_tower_right RingCon.isScalarTower_right
 
 instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
-  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
+  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm ..).symm
 #align ring_con.smul_comm_class RingCon.smulCommClass
 
 instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
   haveI := SMulCommClass.symm R α R
-  SMulCommClass.symm _ _ _
+  SMulCommClass.symm ..
 #align ring_con.smul_comm_class' RingCon.smulCommClass'
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=
   { c.toCon.mulAction with
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
-    smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
+    smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add .. }
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient :=
   { smul_one := fun _ => congr_arg toQuotient <| smul_one _
     smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
-      MulSemiringAction.smul_mul _ _ _ }
+      MulSemiringAction.smul_mul .. }
 
 end Algebraic
 
