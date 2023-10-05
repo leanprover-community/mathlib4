@@ -303,7 +303,7 @@ theorem factorMultiset_mul (n m : ℕ+) :
 #align pnat.factor_multiset_mul PNat.factorMultiset_mul
 
 theorem factorMultiset_pow (n : ℕ+) (m : ℕ) :
-    factorMultiset (Pow.pow n m ) = m • factorMultiset n := by
+    factorMultiset (Pow.pow n m) = m • factorMultiset n := by
   let u := factorMultiset n
   have : n = u.prod := (prod_factorMultiset n).symm
   rw [this, ← PrimeMultiset.prod_smul]

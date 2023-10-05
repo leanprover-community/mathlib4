@@ -410,7 +410,7 @@ theorem coe_units_iff {ζ : Mˣ} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoo
 #align is_primitive_root.coe_units_iff IsPrimitiveRoot.coe_units_iff
 
 -- Porting note `variable` above already contains `(h : IsPrimitiveRoot ζ k)`
-theorem pow_of_coprime (i : ℕ) (hi : i.coprime k) : IsPrimitiveRoot (ζ ^ i) k := by
+theorem pow_of_coprime (i : ℕ) (hi : i.Coprime k) : IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : k = 0
   · subst k; simp_all only [pow_one, Nat.coprime_zero_right]
   rcases h.isUnit (Nat.pos_of_ne_zero h0) with ⟨ζ, rfl⟩
@@ -432,7 +432,7 @@ theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p)
 #align is_primitive_root.pow_of_prime IsPrimitiveRoot.pow_of_prime
 
 theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
-    IsPrimitiveRoot (ζ ^ i) k ↔ i.coprime k := by
+    IsPrimitiveRoot (ζ ^ i) k ↔ i.Coprime k := by
   refine' ⟨_, h.pow_of_coprime i⟩
   intro hi
   obtain ⟨a, ha⟩ := i.gcd_dvd_left k
@@ -440,7 +440,7 @@ theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
   suffices b = k by
     -- Porting note: was `rwa [this, ← one_mul k, mul_left_inj' h0.ne', eq_comm] at hb`
     rw [this, eq_comm, Nat.mul_left_eq_self_iff h0] at hb
-    rwa [Nat.coprime]
+    rwa [Nat.Coprime]
   rw [ha] at hi
   rw [mul_comm] at hb
   apply Nat.dvd_antisymm ⟨i.gcd k, hb⟩ (hi.dvd_of_pow_eq_one b _)
@@ -591,6 +591,14 @@ theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 
 #align is_primitive_root.zpow_of_gcd_eq_one IsPrimitiveRoot.zpow_of_gcd_eq_one
 
 end DivisionCommMonoid
+
+section CommRing
+
+variable [CommRing R]  {n : ℕ} (hn : 1 < n) {ζ : R} (hζ : IsPrimitiveRoot ζ n)
+
+theorem sub_one_ne_zero : ζ - 1 ≠ 0 := sub_ne_zero.mpr <| hζ.ne_one hn
+
+end CommRing
 
 section IsDomain
 
@@ -774,7 +782,7 @@ theorem eq_pow_of_pow_eq_one {k : ℕ} {ζ ξ : R} (h : IsPrimitiveRoot ζ k) (h
 #align is_primitive_root.eq_pow_of_pow_eq_one IsPrimitiveRoot.eq_pow_of_pow_eq_one
 
 theorem isPrimitiveRoot_iff' {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k) :
-    IsPrimitiveRoot ξ k ↔ ∃ i < (k : ℕ), i.coprime k ∧ ζ ^ i = ξ := by
+    IsPrimitiveRoot ξ k ↔ ∃ i < (k : ℕ), i.Coprime k ∧ ζ ^ i = ξ := by
   constructor
   · intro hξ
     obtain ⟨i, hik, rfl⟩ := h.eq_pow_of_mem_rootsOfUnity hξ.pow_eq_one
@@ -784,7 +792,7 @@ theorem isPrimitiveRoot_iff' {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
 #align is_primitive_root.is_primitive_root_iff' IsPrimitiveRoot.isPrimitiveRoot_iff'
 
 theorem isPrimitiveRoot_iff {k : ℕ} {ζ ξ : R} (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) :
-    IsPrimitiveRoot ξ k ↔ ∃ i < k, i.coprime k ∧ ζ ^ i = ξ := by
+    IsPrimitiveRoot ξ k ↔ ∃ i < k, i.Coprime k ∧ ζ ^ i = ξ := by
   constructor
   · intro hξ
     obtain ⟨i, hik, rfl⟩ := h.eq_pow_of_pow_eq_one hξ.pow_eq_one h0

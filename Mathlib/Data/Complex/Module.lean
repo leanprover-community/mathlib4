@@ -188,8 +188,8 @@ theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` commutes with
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
 instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGroup E] [Module ℂ E]
-    [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E
-    where smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
+    [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
+  smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
 #align smul_comm_class.complex_to_real SMulCommClass.complexToReal
 
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]

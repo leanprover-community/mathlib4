@@ -223,10 +223,7 @@ instance : AddGroupWithOne (Poly α) :=
 instance : CommRing (Poly α) := by
   refine' { (inferInstance : AddCommGroup (Poly α)),
             (inferInstance : AddGroupWithOne (Poly α)) with
-              add := ((· + ·) : Poly α → Poly α → Poly α)
-              zero := 0
               mul := (· * ·)
-              one := 1
               npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
               .. }
   all_goals

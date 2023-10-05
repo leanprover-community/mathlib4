@@ -115,8 +115,8 @@ theorem Orientation.reindex_symm (e : ι ≃ ι') :
 end Reindex
 
 /-- A module is canonically oriented with respect to an empty index type. -/
-instance (priority := 100) IsEmpty.oriented [Nontrivial R] [IsEmpty ι] : Module.Oriented R M ι
-    where positiveOrientation :=
+instance (priority := 100) IsEmpty.oriented [Nontrivial R] [IsEmpty ι] : Module.Oriented R M ι where
+  positiveOrientation :=
     rayOfNeZero R (AlternatingMap.constLinearEquivOfIsEmpty 1) <|
       AlternatingMap.constLinearEquivOfIsEmpty.injective.ne (by exact one_ne_zero)
 #align is_empty.oriented IsEmpty.oriented
@@ -397,7 +397,7 @@ theorem ne_iff_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fi
 /-- The value of `Orientation.map` when the index type has cardinality equal to the finite
 dimension, in terms of `f.det`. -/
 theorem map_eq_det_inv_smul (x : Orientation R M ι) (f : M ≃ₗ[R] M)
-  (h : Fintype.card ι = finrank R M) : Orientation.map ι f x = (LinearEquiv.det f)⁻¹ • x :=
+    (h : Fintype.card ι = finrank R M) : Orientation.map ι f x = (LinearEquiv.det f)⁻¹ • x :=
   haveI e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
   e.map_orientation_eq_det_inv_smul x f
 #align orientation.map_eq_det_inv_smul Orientation.map_eq_det_inv_smul

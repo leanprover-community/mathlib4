@@ -416,8 +416,8 @@ class SecondCountableTopologyEither (α β : Type*) [TopologicalSpace α] [Topol
 #align second_countable_topology_either SecondCountableTopologyEither
 
 instance (priority := 100) secondCountableTopologyEither_of_left (α β : Type*) [TopologicalSpace α]
-    [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β
-    where out := Or.inl (by infer_instance)
+    [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β where
+  out := Or.inl (by infer_instance)
 #align second_countable_topology_either_of_left secondCountableTopologyEither_of_left
 
 instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*)
@@ -675,7 +675,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.fst ha.choose_spec.snd
     convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
-      simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right_iff_subset, subset_def, mem_iUnion,
+      simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right, subset_def, mem_iUnion,
         mem_Ici, mem_Iio]
       intro x hx
       rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) x with ⟨z, hzt, hzx⟩
@@ -1837,8 +1837,8 @@ theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpa
     [OpensMeasurableSpace α] [ProperSpace α] {μ : Measure α} [IsFiniteMeasureOnCompacts μ]
     {s : Set α} (hs : IsCompact s) :
     Tendsto (fun r => μ (Metric.cthickening r s)) (𝓝 0) (𝓝 (μ s)) :=
-  tendsto_measure_cthickening_of_isClosed ⟨1, zero_lt_one, hs.bounded.cthickening.measure_lt_top.ne⟩
-    hs.isClosed
+  tendsto_measure_cthickening_of_isClosed
+    ⟨1, zero_lt_one, hs.isBounded.cthickening.measure_lt_top.ne⟩ hs.isClosed
 #align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
 
 namespace Real

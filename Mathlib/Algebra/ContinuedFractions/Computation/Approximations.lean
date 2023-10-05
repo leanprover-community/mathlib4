@@ -427,7 +427,7 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
   have g_finite_correctness :
     v = GeneralizedContinuedFraction.compExactValue pred_conts conts ifp.fr :=
     compExactValue_correctness_of_stream_eq_some stream_nth_eq
-  cases' Decidable.em (ifp.fr = 0) with ifp_fr_eq_zero ifp_fr_ne_zero
+  obtain (ifp_fr_eq_zero | ifp_fr_ne_zero) := eq_or_ne ifp.fr 0
   · suffices v - g.convergents n = 0 by simpa [ifp_fr_eq_zero]
     replace g_finite_correctness : v = g.convergents n;
     · simpa [GeneralizedContinuedFraction.compExactValue, ifp_fr_eq_zero] using g_finite_correctness
@@ -492,7 +492,7 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
     calc
       (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) - A / B =
           ((pA + ifp.fr⁻¹ * A) * B - (pB + ifp.fr⁻¹ * B) * A) / ((pB + ifp.fr⁻¹ * B) * B) := by
-        rw [div_sub_div _ _ this.symm zero_ne_B.symm]
+        rw [div_sub_div _ _ this zero_lt_B.ne']
       _ = (pA * B + ifp.fr⁻¹ * A * B - (pB * A + ifp.fr⁻¹ * B * A)) / _ := by repeat' rw [add_mul]
       _ = (pA * B - pB * A) / ((pB + ifp.fr⁻¹ * B) * B) := by ring
       _ = (-1) ^ n / ((pB + ifp.fr⁻¹ * B) * B) := by rw [determinant_eq]
@@ -544,9 +544,7 @@ theorem abs_sub_convergents_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminatedAt_n
     fib_le_continuantsAux_b <| Or.inr this
   have zero_lt_conts_b : 0 < conts.b :=
-    haveI : (0 : K) < fib (n + 1) := by
-      exact_mod_cast fib_pos (lt_of_le_of_ne n.succ.zero_le n.succ_ne_zero.symm)
-    lt_of_lt_of_le this conts_b_ineq
+    conts_b_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 n.succ_pos
   -- `denom'` is positive, so we can remove `|⬝|` from our goal
   suffices 1 / denom' ≤ 1 / denom by
     have : |(-1) ^ n / denom'| = 1 / denom' := by
@@ -569,9 +567,7 @@ theorem abs_sub_convergents_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
   suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_le_left zero_le_one this.left this.right
   constructor
   · have : 0 < pred_conts.b + gp.b * conts.b :=
-      lt_of_lt_of_le
-        (by exact_mod_cast fib_pos (lt_of_le_of_ne n.succ.succ.zero_le n.succ.succ_ne_zero.symm))
-        nextConts_b_ineq
+      nextConts_b_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 $ succ_pos _
     solve_by_elim [mul_pos]
   · -- we can cancel multiplication by `conts.b` and addition with `pred_conts.b`
     suffices : gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b
