@@ -11,6 +11,12 @@ import Mathlib.MeasureTheory.Integral.Lebesgue
 For a measure `μ` on `α` and a function `f : α → ℝ≥0∞`, we define a new measure `μ.withDensity f`.
 On a measurable set `s`, that measure has value `∫⁻ a in s, f a ∂μ`.
 
+An important result about `withDensity` is the Radon-Nikodym theorem. It states that, given measures
+`μ, ν`, if `HaveLebesgueDecomposition μ ν` then `μ` is absolutely continuous with respect to
+`ν` if and only if there exists a measurable function `f : α → ℝ≥0∞` such that
+`μ = ν.withDensity f`.
+See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
+
 -/
 
 open Set hiding restrict restrict_apply
