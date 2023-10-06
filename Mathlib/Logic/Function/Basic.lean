@@ -705,9 +705,8 @@ This definition only makes sense when `f a₁ = f a₂ → g a₁ = g a₂` (spe
 In particular this holds if `f` is injective.
 
 A typical use case is when extending a function from the subtype to the entire type. If you want to
-extend `g : {b : β // p b} → γ` to a function `β → γ` and do not care about the junk value, you
-should use `Function.extend Subtype.val g (Classical.arbitrary _)`. Note this assumes `γ` is
-nonempty. -/
+extend `g : {b : β // p b} → γ` by zero to a function `β → γ`, you should use
+`Function.extend Subtype.val g 0`. If you do not care about the junk value, you can replace `0` `Classical.arbitrary _` (assuming `γ` is nonempty). -/
 def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
   if h : ∃ a, f a = b then g (Classical.choose h) else j b
 #align function.extend Function.extend
