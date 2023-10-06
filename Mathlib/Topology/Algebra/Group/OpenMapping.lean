@@ -98,7 +98,7 @@ theorem isOpenMap_smul_of_sigmaCompact (x : X) : IsOpenMap (fun (g : G) ↦ g �
   point by changing basepoints. -/
   simp_rw [isOpenMap_iff_nhds_le, Filter.le_map_iff]
   intro g U hU
-  have : (· • x) = (· • (g • x)) ∘ (· * g⁻¹) := by 
+  have : (· • x) = (· • (g • x)) ∘ (· * g⁻¹) := by
     ext g
     simp [smul_smul]
   rw [this, image_comp, ← smul_singleton]
