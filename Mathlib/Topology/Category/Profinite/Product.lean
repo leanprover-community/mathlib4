@@ -9,7 +9,7 @@ import Mathlib.Topology.Category.Profinite.Basic
 # Compact subsets of products as limits in `Profinite`
 
 This file exhibits a compact subset `C` of a product `(i : ι) → X i` of totally disconnected
-Hausdorff spaces as a limit in `Profinite` indexed by `Finset ι`.
+Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 
 ## Main definitions
 
