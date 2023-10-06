@@ -345,6 +345,14 @@ theorem congr_symm (e : G ≃* H) (he : G'.map ↑e = H') :
   rfl
 #align quotient_group.congr_symm QuotientGroup.congr_symm
 
+/-- The isomorphism of quotient groups induced by an equality of normal subgroups. -/
+def equivOfEq {N M : Subgroup G} [N.Normal] [M.Normal] (h : N = M) : G ⧸ N ≃* G ⧸ M :=
+congr N M (MulEquiv.refl G) (by simp [h])
+
+@[simp]
+theorem equivOfEq_mk {N M : Subgroup G} [N.Normal] [M.Normal] (h : N = M) (x : G) :
+    equivOfEq h (mk x) = mk x := rfl
+
 end congr
 
 variable (φ : G →* H)

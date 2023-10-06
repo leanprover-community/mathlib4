@@ -487,8 +487,7 @@ theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
 #align mul_equiv.self_trans_symm MulEquiv.self_trans_symm
 #align add_equiv.self_trans_symm AddEquiv.self_trans_symm
 
--- Porting note: `simp` can prove this
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_monoidHom_refl {M} [MulOneClass M] : (refl M : M →* M) = MonoidHom.id M := rfl
 #align mul_equiv.coe_monoid_hom_refl MulEquiv.coe_monoidHom_refl
 #align add_equiv.coe_add_monoid_hom_refl AddEquiv.coe_addMonoidHom_refl
