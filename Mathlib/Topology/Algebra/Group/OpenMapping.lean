@@ -96,21 +96,14 @@ theorem isOpenMap_smul_of_sigmaCompact (x : X) : IsOpenMap (fun (g : G) ↦ g �
   /- We have already proved the theorem around the basepoint of the orbit, in
   `smul_singleton_mem_nhds_of_sigmaCompact`. The general statement follows around an arbitrary
   point by changing basepoints. -/
-  intro U hU
-  apply isOpen_iff_forall_mem_open.2
-  rintro - ⟨g, gU, rfl⟩
-  let V := (fun x ↦ x * g) ⁻¹' U
-  have A : V ∈ 𝓝 1 := by
-    apply (continuous_mul_right g).continuousAt.preimage_mem_nhds
-    apply hU.mem_nhds
-    simpa using gU
-  obtain ⟨t, ht, t_open, gt⟩ : ∃ t, t ⊆ V • {g • x} ∧ IsOpen t ∧ g • x ∈ t := by
-    have : V • {g • x} ∈ 𝓝 (g • x) := smul_singleton_mem_nhds_of_sigmaCompact A _
-    rw [mem_nhds_iff] at this
-    exact this
-  refine ⟨t, ht.trans ?_, t_open, gt⟩
-  rintro - ⟨t, -, ht, rfl, rfl⟩
-  exact ⟨t • g, by simpa using ht, by simp [← smul_assoc]⟩
+  simp_rw [isOpenMap_iff_nhds_le, Filter.le_map_iff]
+  intro g U hU
+  have : (· • x) = (· • (g • x)) ∘ (· * g⁻¹) := by 
+    ext g
+    simp [smul_smul]
+  rw [this, image_comp, ← smul_singleton]
+  apply smul_singleton_mem_nhds_of_sigmaCompact
+  simpa using isOpenMap_mul_right g⁻¹ |>.image_mem_nhds hU
 
 /-- A surjective morphism of topological groups is open when the source group is sigma-compact and
 the target group is a Baire space (for instance a locally compact group). -/
