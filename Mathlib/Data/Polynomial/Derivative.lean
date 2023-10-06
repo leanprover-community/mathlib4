@@ -382,11 +382,10 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     apply le_natDegree_of_mem_supp _ hn
   · refine' le_sup _
     rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
-    · show ¬leadingCoeff p = 0
-      rw [leadingCoeff_eq_zero]
+    · rw [coeff_natDegree, Ne.def, leadingCoeff_eq_zero]
       intro h
       rw [h, natDegree_zero] at hp
-      exact lt_irrefl 0 (lt_of_le_of_lt (zero_le _) hp)
+      exact hp.false
     exact hp
 #align polynomial.degree_derivative_eq Polynomial.degree_derivative_eq
 

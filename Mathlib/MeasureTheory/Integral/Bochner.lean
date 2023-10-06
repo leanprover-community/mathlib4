@@ -1379,7 +1379,7 @@ theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ �
       calc
         ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) :=
           norm_integral_le_lintegral_norm _
-        _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm )
+        _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm)
     fun h : ¬AEStronglyMeasurable f μ => by
       rw [integral_non_aestronglyMeasurable h, norm_zero]
       exact integral_nonneg_of_ae le_ae
@@ -1646,8 +1646,7 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
 
 theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
-    ∫ x in s, f x ∂μ =
-      ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ):= by
+    ∫ x in s, f x ∂μ = ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) := by
   rw [← map_comap_subtype_coe hs]
   exact (MeasurableEmbedding.subtype_coe hs).integral_map _
 

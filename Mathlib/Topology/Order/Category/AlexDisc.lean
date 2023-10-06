@@ -57,7 +57,7 @@ end AlexDisc
 
 /-- Sends a topological space to its specialisation order. -/
 @[simps]
-def alexDiscEquivPreord  : AlexDisc ≌ Preord where
+def alexDiscEquivPreord : AlexDisc ≌ Preord where
   functor := forget₂ _ _ ⋙ topToPreord
   inverse := { obj := λ X ↦ AlexDisc.of (WithUpperSet X), map := WithUpperSet.map }
   unitIso := NatIso.ofComponents λ X ↦ AlexDisc.Iso.mk $ by
