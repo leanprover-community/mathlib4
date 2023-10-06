@@ -341,7 +341,7 @@ def resolveUnqualifiedName (index : Index) (n : Name) :
   let mut msg := m!"unknown identifier {n}, using {n'} instead."
   if names.size > 1 then
     msg := msg ++
-      m!" (Other candiates: " ++
+      m!" (Other candidates: " ++
         MessageData.andList (names.extract 1 names.size |>.map (m!"{·}")) ++
         m!")"
     else
