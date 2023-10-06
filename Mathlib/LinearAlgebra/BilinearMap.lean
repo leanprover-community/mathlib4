@@ -388,9 +388,7 @@ variable (R M)
 
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
-  mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
-    simp only
-    rw [smul_comm]
+  mk₂ R (· • ·) add_smul mul_smul smul_add fun r s => smul_comm s r
 #align linear_map.lsmul LinearMap.lsmul
 
 variable {R M}
