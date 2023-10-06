@@ -83,7 +83,7 @@ def smoothSheaf : TopCat.Sheaf (Type u) (TopCat.of M) :=
 variable {M}
 
 instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
-    CoeFun ((smoothSheaf IM I M N).val.obj U) (fun _ ↦ ↑(unop U) → N) :=
+    CoeFun ((smoothSheaf IM I M N).presheaf.obj U) (fun _ ↦ ↑(unop U) → N) :=
   (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
 
 open Manifold in
@@ -91,7 +91,7 @@ open Manifold in
 `C^∞⟮IM, (unop U : Opens M); I, N⟯`, the `(IM, I)`-smooth functions from `U` to `N`.  This is not
 just a "moral" equality but a literal and definitional equality! -/
 lemma smoothSheaf.obj_eq (U : (Opens (TopCat.of M))ᵒᵖ) :
-    (smoothSheaf IM I M N).val.obj U = C^∞⟮IM, (unop U : Opens M); I, N⟯ := rfl
+    (smoothSheaf IM I M N).presheaf.obj U = C^∞⟮IM, (unop U : Opens M); I, N⟯ := rfl
 
 /-- Canonical map from the stalk of `smoothSheaf IM I M N` at `x` to `N`, given by evaluating
 sections at `x`. -/
@@ -108,7 +108,7 @@ open CategoryTheory Limits
 /-- Given manifolds `M`, `N` and an open neighbourhood `U` of a point `x : M`, the evaluation-at-`x`
 map to `N` from smooth functions from  `U` to `N`. -/
 def smoothSheaf.evalAt (x : TopCat.of M) (U : OpenNhds x)
-    (i : (smoothSheaf IM I M N).val.obj (Opposite.op U.obj)) : N :=
+    (i : (smoothSheaf IM I M N).presheaf.obj (Opposite.op U.obj)) : N :=
   i.1 ⟨x, U.2⟩
 
 @[simp, reassoc, elementwise] lemma smoothSheaf.ι_evalHom (x : TopCat.of M) (U) :
@@ -126,12 +126,12 @@ lemma smoothSheaf.eval_surjective (x : M) : Function.Surjective (smoothSheaf.eva
 variable {IM I N}
 
 @[simp] lemma smoothSheaf.eval_germ (U : Opens (TopCat.of M)) (x : U)
-    (f : (smoothSheaf IM I M N).val.obj (op U)) :
+    (f : (smoothSheaf IM I M N).presheaf.obj (op U)) :
     smoothSheaf.eval IM I N (x : TopCat.of M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
   TopCat.stalkToFiber_germ _ U x f
 
 lemma smoothSheaf.smooth_section {U : (Opens (TopCat.of M))ᵒᵖ}
-    (f : (smoothSheaf IM I M N).val.obj U) :
+    (f : (smoothSheaf IM I M N).presheaf.obj U) :
     Smooth IM I f :=
   (contDiffWithinAt_localInvariantProp IM I ⊤).section_spec _ _ _ _
 
@@ -141,13 +141,13 @@ end TypeCat
 -- variable [AddGroup G] [LieAddGroup I G]
 
 -- open Manifold in
--- instance (U : (Opens (TopCat.of M))ᵒᵖ) : AddGroup ((smoothSheaf IM I M G).val.obj U) :=
+-- instance (U : (Opens (TopCat.of M))ᵒᵖ) : AddGroup ((smoothSheaf IM I M G).presheaf.obj U) :=
 --   (SmoothMap.addGroup : AddGroup C^∞⟮IM, (unop U : Opens M); I, G⟯)
 
 -- /-- The presheaf of smooth functions from `M` to `G`, for `G` an additive Lie group, as a presheaf
 -- of additive groups. -/
 -- def smoothPresheafAddGroup : TopCat.Presheaf AddGroupCat.{u} (TopCat.of M) :=
---   { obj := fun U ↦ AddGroupCat.of ((smoothSheaf IM I M G).val.obj U)
+--   { obj := fun U ↦ AddGroupCat.of ((smoothSheaf IM I M G).presheaf.obj U)
 --     map := fun h ↦ AddGroupCat.ofHom <|
 --       SmoothMap.restrictAddMonoidHom IM I G <| CategoryTheory.leOfHom h.unop
 --     map_id := fun _ ↦ rfl
@@ -163,14 +163,15 @@ attribute [to_additive existing TopologicalSpace] TopologicalSpace
 -- set_option trace.to_additive_detail true
 open Manifold in
 @[to_additive]
-noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) : Group ((smoothSheaf IM I M G).val.obj U) :=
+noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
+    Group ((smoothSheaf IM I M G).presheaf.obj U) :=
   (SmoothMap.group : Group C^∞⟮IM, (unop U : Opens M); I, G⟯)
 
 /-- The presheaf of smooth functions from `M` to `G`, for `G` a Lie group, as a presheaf of groups.
 -/
 @[to_additive]
 noncomputable def smoothPresheafGroup : TopCat.Presheaf GroupCat.{u} (TopCat.of M) :=
-  { obj := fun U ↦ GroupCat.of ((smoothSheaf IM I M G).val.obj U)
+  { obj := fun U ↦ GroupCat.of ((smoothSheaf IM I M G).presheaf.obj U)
     map := fun h ↦ GroupCat.ofHom <|
       SmoothMap.restrictMonoidHom IM I G <| CategoryTheory.leOfHom h.unop
     map_id := fun _ ↦ rfl
@@ -192,13 +193,13 @@ end LieGroup
 -- variable [AddCommGroup A] [AddCommGroup A'] [LieAddGroup I A] [LieAddGroup I' A']
 
 -- open Manifold in
--- instance (U : (Opens (TopCat.of M))ᵒᵖ) : AddCommGroup ((smoothSheaf IM I M A).val.obj U) :=
+-- instance (U : (Opens (TopCat.of M))ᵒᵖ) : AddCommGroup ((smoothSheaf IM I M A).presheaf.obj U) :=
 --   (SmoothMap.addCommGroup : AddCommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯)
 
 -- /-- The presheaf of smooth functions from `M` to `A`, for `A` an additive abelian Lie group, as a
 -- presheaf of additive abelian groups. -/
 -- def smoothPresheafAddCommGroup : TopCat.Presheaf AddCommGroupCat.{u} (TopCat.of M) :=
---   { obj := fun U ↦ AddCommGroupCat.of ((smoothSheaf IM I M A).val.obj U)
+--   { obj := fun U ↦ AddCommGroupCat.of ((smoothSheaf IM I M A).presheaf.obj U)
 --     map := fun h ↦ AddCommGroupCat.ofHom <|
 --       SmoothMap.restrictAddMonoidHom IM I A <| CategoryTheory.leOfHom h.unop
 --     map_id := fun _ ↦ rfl
@@ -211,14 +212,14 @@ variable [CommGroup A] [CommGroup A'] [LieGroup I A] [LieGroup I' A']
 
 open Manifold in
 @[to_additive]
-noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommGroup ((smoothSheaf IM I M A).val.obj U) :=
+noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommGroup ((smoothSheaf IM I M A).presheaf.obj U) :=
   (SmoothMap.commGroup : CommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯)
 
 /-- The presheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
 presheaf of abelian groups. -/
 @[to_additive]
 noncomputable def smoothPresheafCommGroup : TopCat.Presheaf CommGroupCat.{u} (TopCat.of M) :=
-  { obj := fun U ↦ CommGroupCat.of ((smoothSheaf IM I M A).val.obj U)
+  { obj := fun U ↦ CommGroupCat.of ((smoothSheaf IM I M A).presheaf.obj U)
     map := fun h ↦ CommGroupCat.ofHom <|
       SmoothMap.restrictMonoidHom IM I A <| CategoryTheory.leOfHom h.unop
     map_id := fun _ ↦ rfl
@@ -266,13 +267,13 @@ section SmoothRing
 variable [Ring R] [SmoothRing I R]
 
 open Manifold in
-instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).val.obj U) :=
+instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).presheaf.obj U) :=
   (SmoothMap.ring : Ring C^∞⟮IM, (unop U : Opens M); I, R⟯)
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a presheaf
 of rings. -/
 def smoothPresheafRing : TopCat.Presheaf RingCat.{u} (TopCat.of M) :=
-  { obj := fun U ↦ RingCat.of ((smoothSheaf IM I M R).val.obj U)
+  { obj := fun U ↦ RingCat.of ((smoothSheaf IM I M R).presheaf.obj U)
     map := fun h ↦ RingCat.ofHom <|
       SmoothMap.restrictRingHom IM I R <| CategoryTheory.leOfHom h.unop
     map_id := fun _ ↦ rfl
@@ -292,13 +293,13 @@ section SmoothCommRing
 variable [CommRing R] [SmoothRing I R]
 
 open Manifold in
-instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).val.obj U) :=
+instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=
   (SmoothMap.commRing : CommRing C^∞⟮IM, (unop U : Opens M); I, R⟯)
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a
 presheaf of commutative rings. -/
 def smoothPresheafCommRing : TopCat.Presheaf CommRingCat.{u} (TopCat.of M) :=
-  { obj := fun U ↦ CommRingCat.of ((smoothSheaf IM I M R).val.obj U)
+  { obj := fun U ↦ CommRingCat.of ((smoothSheaf IM I M R).presheaf.obj U)
     map := fun h ↦ CommRingCat.ofHom <|
       SmoothMap.restrictRingHom IM I R <| CategoryTheory.leOfHom h.unop
     map_id := fun _ ↦ rfl
@@ -319,7 +320,7 @@ example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat)).ob
     (smoothSheafCommRing IM I M R) = (smoothSheaf IM I M R) := rfl
 
 instance smoothSheafCommRing.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
-    CoeFun ((smoothSheafCommRing IM I M R).val.obj U) (fun _ ↦ ↑(unop U) → R) :=
+    CoeFun ((smoothSheafCommRing IM I M R).presheaf.obj U) (fun _ ↦ ↑(unop U) → R) :=
   (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
 
 open CategoryTheory Limits
@@ -353,7 +354,7 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
 `x : M`, the evaluation-at-`x` map to `R` from smooth functions from  `U` to `R`. -/
 def smoothSheafCommRing.evalAt (x : TopCat.of M) (U : OpenNhds x) :
-    (smoothSheafCommRing IM I M R).val.obj (Opposite.op U.1) ⟶ CommRingCat.of R :=
+    (smoothSheafCommRing IM I M R).presheaf.obj (Opposite.op U.1) ⟶ CommRingCat.of R :=
   SmoothMap.evalRingHom ⟨x, U.2⟩
 
 /-- Canonical ring homomorphism from the stalk of `smoothSheafCommRing IM I M R` at `x` to `R`,
