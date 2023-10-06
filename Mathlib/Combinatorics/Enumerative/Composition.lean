@@ -758,10 +758,10 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
-      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero_iff, and_false,
+      Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and]
     erw [Set.mem_setOf_eq]
-    simp [this, false_or_iff, add_right_inj, add_eq_zero_iff, one_ne_zero, false_and_iff,
+    simp [this, false_or_iff, add_right_inj, add_eq_zero, one_ne_zero, false_and_iff,
       Fin.val_mk]
     constructor
     · intro h
