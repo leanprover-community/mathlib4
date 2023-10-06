@@ -460,7 +460,7 @@ def rank (G : Greedoid α) (s : Finset α) :=
   ((G.feasibleSet.filter (fun s' => s' ⊆ s)).image (fun t => t.card)).max.unbot (by
     intro h
     simp [Finset.max_eq_bot, filter_eq_empty_iff] at h
-    exact h _ G.containsEmpty (empty_subset _))
+    exact h G.containsEmpty (empty_subset _))
 
 section Rank
 
@@ -1177,7 +1177,7 @@ theorem subset_kernelClosureOperator_of_mem_partialAlphabets
   exists t
   simp only [hS₂ _ ht₁, true_and, ht₂, and_true]
   congr
-  rw [union_eq_left_iff_subset]
+  rw [union_eq_left]
   intro y hy
   simp only [hS₁, mem_biUnion, id_eq]
   exists t
@@ -1268,7 +1268,7 @@ theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   apply Finset.le_max
   simp only [mem_image, system_feasible_set_mem_mem]
   exists t
-  simp only [ht₁, (inter_eq_right_iff_subset _ _).mpr ht₂, ht₃]
+  simp only [ht₁, inter_eq_right.mpr ht₂, ht₃]
 
 theorem mem_rankFeasibleFamily_iff {s : Finset α} :
     s ∈ G.rankFeasibleFamily ↔ G.rankFeasible s := by
