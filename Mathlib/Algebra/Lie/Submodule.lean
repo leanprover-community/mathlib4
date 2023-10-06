@@ -771,11 +771,21 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_
 
 variable {f}
 
+theorem map_inf_le :
+    (N ⊓ N₂).map f ≤ N.map f ⊓ N₂.map f := by
+  rintro - ⟨m, ⟨hm₁ : m ∈ N, hm₂ : m ∈ N₂⟩, rfl⟩
+  exact ⟨⟨m, hm₁, rfl⟩, ⟨m, hm₂, rfl⟩⟩
+
+theorem map_inf (hf : Function.Injective f) :
+    (N ⊓ N₂).map f = N.map f ⊓ N₂.map f := by
+  refine le_antisymm map_inf_le fun m' ⟨⟨m, hm₁, hm₂⟩, ⟨n, hn₁, hn₂⟩⟩ ↦ ⟨m, ⟨hm₁, ?_⟩, hm₂⟩
+  have hmn : m = n := by rw [← hn₂] at hm₂; exact hf hm₂
+  rwa [hmn]
+
 @[simp]
 theorem map_sup : (N ⊔ N₂).map f = N.map f ⊔ N₂.map f :=
   (gc_map_comap f).l_sup
 #align lie_submodule.map_sup LieSubmodule.map_sup
-
 
 @[simp]
 theorem comap_inf {N₂' : LieSubmodule R L M'} :
@@ -823,6 +833,10 @@ theorem map_comp
 
 @[simp]
 theorem map_id : N.map LieModuleHom.id = N := by ext; simp
+
+@[simp] theorem map_bot :
+    (⊥ : LieSubmodule R L M).map f = ⊥ := by
+  ext m; simp [eq_comm]
 
 lemma map_rel_iff (hf : Function.Injective f) :
     N.map f ≤ N₂.map f ↔ N ≤ N₂ := by
@@ -1355,7 +1369,7 @@ variable {N}
 
 @[simp]
 lemma map_le_range {M' : Type*}
-    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] [LieModule R L M'] (f : M →ₗ⁅R,L⁆ M') :
+    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (f : M →ₗ⁅R,L⁆ M') :
     N.map f ≤ f.range := by
   rw [← LieModuleHom.map_top]
   exact LieSubmodule.map_mono le_top
@@ -1420,7 +1434,7 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
   rfl
 
 @[simp] lemma LieModuleEquiv.range_coe {M' : Type*}
-    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] [LieModule R L M'] (e : M ≃ₗ⁅R,L⁆ M') :
+    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (e : M ≃ₗ⁅R,L⁆ M') :
     LieModuleHom.range (e : M →ₗ⁅R,L⁆ M') = ⊤ := by
   rw [LieModuleHom.range_eq_top]
   exact e.surjective
