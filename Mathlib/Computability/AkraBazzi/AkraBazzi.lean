@@ -12,21 +12,22 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
 
 A divide-and-conquer recurrence is a function `T : ℕ → ℝ` that satisfies a recurrence relation of
-the form T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n) for large enough n, where r_i(n) is some
-function where ‖r_i(n) - b_i n‖ ∈ o(n / (log n)^2) for all, the a_i's are some positive
-coefficients, and the b_i's are reals ∈ (0,1). These recurrences arise mainly in the analysis of
-divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix multiplication.
-This class of algorithms works by dividing an instance of the problem of size n, into k smaller
-instances, where the i'th instance is of size roughly b_i n, and calling itself recursively on
-those smaller instances.  T(n) then represents the running time of the algorithm, and g(n)
-represents the running time required to actually divide up the instance and process the answers
-that come out of the recursive calls. Since virtually all such algorithms produce instances that
-are only approximately of size b_i n (they have to round up or down at the very least), we allow
-the instance sizes to be given by some function r_i(n) that approximates b_i n.
+the form `T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)` for large enough `n`, where `r_i(n)` is some
+function where `‖r_i(n) - b_i n‖ ∈ o(n / (log n)^2)` for every `i`, the `a_i`'s are some positive
+coefficients, and the `b_i`'s are reals `∈ (0,1)`. (Note that this can be improved to
+`O(n / (log n)^(1+ε))`, this is left as future work.) These recurrences arise mainly in the
+analysis of divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix
+multiplication.  This class of algorithms works by dividing an instance of the problem of size `n`,
+into `k` smaller instances, where the `i`'th instance is of size roughly `b_i n`, and calling itself
+recursively on those smaller instances. `T(n)` then represents the running time of the algorithm,
+and `g(n)` represents the running time required to actually divide up the instance and process the
+answers that come out of the recursive calls. Since virtually all such algorithms produce instances
+that are only approximately of size `b_i n` (they have to round up or down at the very least), we
+allow the instance sizes to be given by some function `r_i(n)` that approximates `b_i n`.
 
 The Akra-Bazzi theorem gives the asymptotic order of such a recurrence: it states that
-T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1})),
-where p is the unique real number such that ∑ a_i b_i^p = 1.
+`T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))`,
+where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Main definitions and results
 
@@ -34,13 +35,13 @@ where p is the unique real number such that ∑ a_i b_i^p = 1.
   recurrence with parameters `g`, `a`, `b` and `r` as above.
 * `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
   It roughly states that
-  c₁ g(n) ≤ g(u) ≤ c₂ g(n), for u between b*n and n for any constant b ∈ (0,1).
+  `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant `b ∈ (0,1)`.
 * `sumTransform`: The transformation which turns a function `g` into
   `n^p * ∑ u in Finset.Ico n₀ n, g u / u^(p+1)`.
 * `asymBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
-  n^p (1 + ∑ g(u) / u^(p+1))
+  `n^p (1 + ∑ g(u) / u^(p+1))`
 * `isTheta_asymBound`: The main result stating that
-  T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))
+  `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))`
 
 ## Implementation
 
@@ -51,8 +52,8 @@ above version with a sum, as it is simpler and more relevant for algorithms.
 ## TODO
 
 * Specialize this theorem to the very common case where the recurrence is of the form
-T(n) = ℓT(r_i(n)) + g(n)
-where g(n) ∈ Θ(n^t) for some t. (This is often called the "master theorem" in the literature.)
+`T(n) = ℓT(r_i(n)) + g(n)`
+where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
 * Add the original version of the theorem with an integral instead of a sum.
 
 ## References
@@ -63,8 +64,6 @@ where g(n) ∈ Θ(n^t) for some t. (This is often called the "master theorem" in
 
 -/
 
-set_option autoImplicit false
-
 open Finset Real Filter Asymptotics BigOperators
 
 /-!
@@ -72,7 +71,7 @@ open Finset Real Filter Asymptotics BigOperators
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence
-T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)
+`T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)`
 with appropriate conditions on the various parameters.
 -/
 
@@ -82,13 +81,13 @@ structure AkraBazziRecurrence {k : ℕ} (T : ℕ → ℝ) (g : ℝ → ℝ) (a :
     (b : Fin k → ℝ) (r : Fin k → ℕ → ℕ) where
   /-- Point below which the recurrence is in the base case -/
   n₀ : ℕ
-  /-- n₀ is always > 0 -/
+  /-- `n₀` is always `> 0` -/
   n₀_gt_zero : 0 < n₀
   /-- There is at least one term -/
   k_gt_zero : 0 < k
-  /-- The a's are nonzero -/
+  /-- The `a`'s are nonzero -/
   a_pos : ∀ i, 0 < a i
-  /-- The b's are nonzero -/
+  /-- The `b`'s are nonzero -/
   b_pos : ∀ i, 0 < b i
   /-- The b's are less than 1 -/
   b_lt_one : ∀ i, b i < 1
@@ -98,11 +97,11 @@ structure AkraBazziRecurrence {k : ℕ} (T : ℕ → ℝ) (g : ℝ → ℝ) (a :
   g_grows_poly : AkraBazziRecurrence.GrowsPolynomially g
   /-- The actual recurrence -/
   h_rec (n : ℕ) (hn₀ : n₀ ≤ n) : T n = (∑ i, a i * T (r i n)) + g n
-  /-- Base case: T(n) > 0 whenever n < n₀ -/
+  /-- Base case: `T(n) > 0` whenever `n < n₀` -/
   T_gt_zero' (n : ℕ) (hn : n < n₀) : 0 < T n
-  /-- The r's always reduce n -/
+  /-- The `r`'s always reduce `n` -/
   r_lt_n : ∀ i n, n₀ ≤ n → r i n < n
-  /-- The r's approximate the b's -/
+  /-- The `r`'s approximate the `b`'s -/
   dist_r_b : ∀ i, (fun n => (r i n : ℝ) - b i * n) =o[atTop] fun n => n / (log n) ^ 2
 
 namespace AkraBazziRecurrence
@@ -305,7 +304,9 @@ This part of the file then proves several properties of this function that will 
 the proof.
 -/
 
-/-- The "smoothing function" is defined as `1 / log n`. -/
+/-- The "smoothing function" is defined as `1 / log n`. This is defined as an `ℝ → ℝ` function
+as opposed to `ℕ → ℝ` since this is more convenient for the proof, where we need to e.g. take
+derivatives. -/
 noncomputable def smoothingFn (n : ℝ) : ℝ := 1 / log n
 
 local notation "ε" => smoothingFn
@@ -471,7 +472,6 @@ lemma strictAntiOn_one_add_smoothingFn : StrictAntiOn (fun (x:ℝ) => (1:ℝ) + 
 
 lemma isEquivalent_smoothingFn_sub_self (i : Fin k) :
     (fun (n:ℕ) => ε (b i * n) - ε n) ~[atTop] fun n => -log (b i) / (log n)^2 := by
-  simp only [smoothingFn]
   calc (fun (n:ℕ) => 1 / log (b i * n) - 1 / log n)
         =ᶠ[atTop] fun (n:ℕ) => (log n - log (b i * n)) / (log (b i * n) * log n)  := by
             filter_upwards [eventually_gt_atTop 1, R.eventually_log_b_mul_pos] with n hn hn'
@@ -511,9 +511,9 @@ lemma isTheta_smoothingFn_sub_self (i : Fin k) :
 #### Akra-Bazzi exponent `p`
 
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
-∑ a_i b_i^p = 1.  This section shows the existence and uniqueness of this exponent `p` for any
+`∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`, and defines `R.asymBound` to be the asymptotic bound satisfied by `R`,
-namely n^p (1 + ∑ g(u) / u^(p+1)).  -/
+namely `n^p (1 + ∑ g(u) / u^(p+1))`.  -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun p => ∑ i, a i * (b i)^p) := by
@@ -592,7 +592,7 @@ lemma sumTransform_def {p : ℝ} {g : ℝ → ℝ} {n₀ n : ℕ} :
 
 variable (g) (a) (b)
 /-- The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
-n^p (1 + ∑ g(u) / u^(p+1)). -/
+`n^p (1 + ∑ g(u) / u^(p+1))`. -/
 noncomputable def asymBound (n : ℕ) : ℝ := n^p a b + sumTransform (p a b) g 0 n
 
 lemma asymBound_def {n : ℕ} : asymBound g a b n = n^p a b + sumTransform (p a b) g 0 n := rfl
@@ -1381,7 +1381,7 @@ lemma smoothingFn_mul_asymBound_isBigO_T :
               positivity
          _ = base_min := by rw [base_min_def, hm]
   refine ⟨C, hC_pos, fun n hn => ?_⟩
-  -- Base case: statement is true for b' * n₀ ≤ n < n₀
+  -- Base case: statement is true for `b' * n₀ ≤ n < n₀`
   have h_base : ∀ n ∈ Finset.Ico (⌊b' * n₀⌋₊) n₀, C * ((1 + ε n) * asymBound g a b n) ≤ T n := by
     intro n hn
     rw [Finset.mem_Ico] at hn
@@ -1407,7 +1407,7 @@ lemma smoothingFn_mul_asymBound_isBigO_T :
     calc
       T n = (∑ i, a i * T (r i n)) + g n := by exact R.h_rec n <| n₀_ge_Rn₀.trans hn
         _ ≥ (∑ i, a i * (C * ((1 + ε (r i n)) * asymBound g a b (r i n)))) + g n := by
-            -- Apply the induction hypothesis, or use the base case depending on how large n is
+            -- Apply the induction hypothesis, or use the base case depending on how large `n` is
               gcongr (∑ i, a i * ?_) + g n with i _
               · exact le_of_lt <| R.a_pos _
               · rcases lt_or_le (r i n) n₀ with ri_lt_n₀ | n₀_le_ri
@@ -1474,7 +1474,7 @@ lemma smoothingFn_mul_asymBound_isBigO_T :
                     _ = 1              := inv_mul_cancel (by positivity)
         _ = C * ((1 + ε n) * asymBound g a b n) := by ring
 
-/-- The **Akra-Bazzi theorem**: T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1})) -/
+/-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_asymBound : T =O[atTop] asymBound g a b := by
   calc T =O[atTop] (fun n => (1 - ε n) * asymBound g a b n) := by
               exact R.T_isBigO_smoothingFn_mul_asymBound
@@ -1486,7 +1486,7 @@ theorem isBigO_asymBound : T =O[atTop] asymBound g a b := by
                 tendsto_nat_cast_atTop_atTop
          _ = asymBound g a b := by simp
 
-/-- The **Akra-Bazzi theorem**: T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1})) -/
+/-- The **Akra-Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_symm_asymBound : asymBound g a b =O[atTop] T := by
   calc asymBound g a b = (fun n => 1 * asymBound g a b n)  := by simp
                  _ ~[atTop] (fun n => (1 + ε n) * asymBound g a b n) := by
@@ -1498,7 +1498,7 @@ theorem isBigO_symm_asymBound : asymBound g a b =O[atTop] T := by
                               tendsto_nat_cast_atTop_atTop
                  _ =O[atTop] T := R.smoothingFn_mul_asymBound_isBigO_T
 
-/-- The **Akra-Bazzi theorem**: T ∈ Θ(n^p (1 + ∑_u^n g(u) / u^{p+1})) -/
+/-- The **Akra-Bazzi theorem**: `T ∈ Θ(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isTheta_asymBound : T =Θ[atTop] asymBound g a b :=
   ⟨R.isBigO_asymBound, R.isBigO_symm_asymBound⟩
 
