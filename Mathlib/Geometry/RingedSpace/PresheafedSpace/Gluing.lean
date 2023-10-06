@@ -511,7 +511,7 @@ instance componentwise_diagram_π_isIso (i : D.J) (U : Opens (D.U i).carrier) :
 
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
   base_open := D.ι_openEmbedding i
-  c_iso U := by erw [← colimitPresheafObjIsoComponentwiseLimit_hom_π]; infer_instance
+  c_iso U := by erw [← colimitPresheafObjIsoComponentwiseLimit_hom_π.{v, v, v}]; infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.PresheafedSpace.GlueData.ιIsOpenImmersion
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
