@@ -3,6 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Lie.Character
@@ -10,6 +11,7 @@ import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Artinian
 
 #align_import algebra.lie.weights from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -248,6 +250,139 @@ theorem isNilpotent_toEndomorphism_weightSpace_zero [LieAlgebra.IsNilpotent R L]
 instance [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] :
     IsNilpotent R L (weightSpace M (0 : L → R)) :=
   isNilpotent_iff_forall'.mpr <| isNilpotent_toEndomorphism_weightSpace_zero M
+
+variable (R L)
+
+@[simp]
+lemma weightSpace_zero_normalizer_eq_self [LieAlgebra.IsNilpotent R L] :
+    (weightSpace M (0 : L → R)).normalizer = weightSpace M 0 := by
+  refine' le_antisymm _ (LieSubmodule.le_normalizer _)
+  intro m hm
+  rw [LieSubmodule.mem_normalizer] at hm
+  simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm ⊢
+  intro y
+  obtain ⟨k, hk⟩ := hm y y
+  use k + 1
+  simpa [pow_succ', LinearMap.mul_eq_comp]
+
+lemma iSup_ucs_le_weightSpace_zero [LieAlgebra.IsNilpotent R L] :
+    ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ weightSpace M (0 : L → R) := by
+  simpa using LieSubmodule.ucs_le_of_normalizer_eq_self (weightSpace_zero_normalizer_eq_self R L M)
+
+/-- See also `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`. -/
+lemma iSup_ucs_eq_weightSpace_zero [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] :
+    ⨆ k, (⊥ : LieSubmodule R L M).ucs k = weightSpace M (0 : L → R) := by
+  obtain ⟨k, hk⟩ := (LieSubmodule.isNilpotent_iff_exists_self_le_ucs
+    <| weightSpace M (0 : L → R)).mp inferInstance
+  refine le_antisymm (iSup_ucs_le_weightSpace_zero R L M) (le_trans hk ?_)
+  exact le_iSup (fun k ↦ (⊥ : LieSubmodule R L M).ucs k) k
+
+variable {L}
+
+/-- If `M` is a representation of a nilpotent Lie algebra `L`, and `x : L`, then
+`posFittingCompOf R M x` is the infimum of the decreasing system
+`range φₓ ⊇ range φₓ² ⊇ range φₓ³ ⊇ ⋯` where `φₓ : End R M := toEndomorphism R L M x`. We call this
+the "positive Fitting component" because with appropriate assumptions (e.g., `R` is a field and
+`M` is finite-dimensional) `φₓ` induces the so-called Fitting decomposition: `M = M₀ ⊕ M₁` where
+`M₀ = weightSpaceOf M 0 x` and `M₁ = posFittingCompOf R M x`.
+
+It is a Lie submodule because `L` is nilpotent. -/
+def posFittingCompOf [LieAlgebra.IsNilpotent R L] (x : L) : LieSubmodule R L M :=
+  { toSubmodule := ⨅ k, LinearMap.range (toEndomorphism R L M x ^ k)
+    lie_mem := by
+      set φ := toEndomorphism R L M x
+      intros y m hm
+      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+        Submodule.mem_toAddSubmonoid, Submodule.mem_iInf, LinearMap.mem_range] at hm ⊢
+      intro k
+      obtain ⟨N, hN⟩ := LieAlgebra.nilpotent_ad_of_nilpotent_algebra R L
+      obtain ⟨m, rfl⟩ := hm (N + k)
+      let f₁ : Module.End R (L ⊗[R] M) := (LieAlgebra.ad R L x).rTensor M
+      let f₂ : Module.End R (L ⊗[R] M) := φ.lTensor L
+      replace hN : f₁ ^ N = 0 := by ext; simp [hN]
+      have h₁ : Commute f₁ f₂ := by ext; simp
+      have h₂ : φ ∘ₗ toModuleHom R L M = toModuleHom R L M ∘ₗ (f₁ + f₂) := by ext; simp
+      obtain ⟨q, hq⟩ := h₁.add_pow_dvd_pow_of_pow_eq_zero_right (N + k).le_succ hN
+      use toModuleHom R L M (q (y ⊗ₜ m))
+      change (φ ^ k).comp ((toModuleHom R L M : L ⊗[R] M →ₗ[R] M)) _ = _
+      simp [LinearMap.commute_pow_left_of_commute h₂, LinearMap.comp_apply (g := (f₁ + f₂) ^ k),
+        ← LinearMap.comp_apply (g := q), ← LinearMap.mul_eq_comp, ← hq] }
+
+variable {M} in
+lemma mem_posFittingCompOf [LieAlgebra.IsNilpotent R L] (x : L) (m : M) :
+    m ∈ posFittingCompOf R M x ↔ ∀ (k : ℕ), ∃ n, (toEndomorphism R L M x ^ k) n = m := by
+  simp [posFittingCompOf]
+
+@[simp] lemma posFittingCompOf_le_lowerCentralSeries [LieAlgebra.IsNilpotent R L] (x : L) (k : ℕ) :
+    posFittingCompOf R M x ≤ lowerCentralSeries R L M k := by
+  suffices : ∀ m l, (toEndomorphism R L M x ^ l) m ∈ lowerCentralSeries R L M l
+  · intro m hm
+    obtain ⟨n, rfl⟩ := (mem_posFittingCompOf R x m).mp hm k
+    exact this n k
+  intro m l
+  induction' l with l ih; simp
+  simp only [lowerCentralSeries_succ, pow_succ, LinearMap.mul_apply]
+  exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
+
+@[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
+    [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] (x : L) :
+    posFittingCompOf R M x = ⊥ := by
+  simp_rw [eq_bot_iff, ← iInf_lowerCentralSeries_eq_bot_of_isNilpotent, le_iInf_iff,
+    posFittingCompOf_le_lowerCentralSeries, forall_const]
+
+lemma exists_coe_posFittingCompOf_eq_of_isArtinian
+    [LieAlgebra.IsNilpotent R L] [IsArtinian R M] (x : L) :
+    ∃ (k : ℕ), posFittingCompOf R M x = LinearMap.range (toEndomorphism R L M x ^ k) :=
+  (toEndomorphism R L M x).exists_range_pow_eq_iInf
+
+variable (L)
+
+/-- If `M` is a representation of a nilpotent Lie algebra `L` with coefficients in `R`, then
+`posFittingComp R L M` is the span of the positive Fitting components of the action of `x` on `M`,
+as `x` ranges over `L`.
+
+It is a Lie submodule because `L` is nilpotent. -/
+def posFittingComp [LieAlgebra.IsNilpotent R L] : LieSubmodule R L M :=
+  ⨆ x, posFittingCompOf R M x
+
+lemma mem_posFittingComp [LieAlgebra.IsNilpotent R L] (m : M) :
+    m ∈ posFittingComp R L M ↔ m ∈ ⨆ (x : L), posFittingCompOf R M x := by
+  rfl
+
+lemma posFittingCompOf_le_posFittingComp [LieAlgebra.IsNilpotent R L] (x : L) :
+    posFittingCompOf R M x ≤ posFittingComp R L M := by
+  rw [posFittingComp]; exact le_iSup (posFittingCompOf R M) x
+
+lemma posFittingComp_le_iInf_lowerCentralSeries [LieAlgebra.IsNilpotent R L] :
+    posFittingComp R L M ≤ ⨅ k, lowerCentralSeries R L M k := by
+  simp [posFittingComp]
+
+/-- See also `LieModule.iSup_ucs_eq_weightSpace_zero`. -/
+@[simp] lemma iInf_lowerCentralSeries_eq_posFittingComp
+    [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [IsArtinian R M] :
+    ⨅ k, lowerCentralSeries R L M k = posFittingComp R L M := by
+  refine le_antisymm ?_ (posFittingComp_le_iInf_lowerCentralSeries R L M)
+  apply iInf_lcs_le_of_isNilpotent_quot
+  rw [LieModule.isNilpotent_iff_forall']
+  intro x
+  obtain ⟨k, hk⟩ := exists_coe_posFittingCompOf_eq_of_isArtinian R M x
+  use k
+  ext ⟨m⟩
+  set F := posFittingComp R L M
+  replace hk : (toEndomorphism R L M x ^ k) m ∈ F := by
+    apply posFittingCompOf_le_posFittingComp R L M x
+    rw [← LieSubmodule.mem_coeSubmodule, hk]
+    apply LinearMap.mem_range_self
+  suffices (toEndomorphism R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
+    LieSubmodule.Quotient.mk (N := F) ((toEndomorphism R L M x ^ k) m) by simpa [this]
+  have := LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute
+    (LieSubmodule.Quotient.toEndomorphism_comp_mk' F x) k) m
+  simpa using this
+
+@[simp] lemma posFittingComp_eq_bot_of_isNilpotent
+    [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
+    posFittingComp R L M = ⊥ := by
+  simp [posFittingComp]
 
 end LieModule
 
