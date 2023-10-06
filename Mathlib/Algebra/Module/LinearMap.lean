@@ -1250,7 +1250,7 @@ end
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (Module.End R M) M where
-  smul := (. <| .)
+  smul := (· <| ·)
   smul_zero := LinearMap.map_zero
   smul_add := LinearMap.map_add
   add_smul := LinearMap.add_apply
