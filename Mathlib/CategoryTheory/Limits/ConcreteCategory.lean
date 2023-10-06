@@ -177,8 +177,7 @@ theorem Concrete.colimit_exists_rep [HasColimit F] (x : ↑(colimit F)) :
   Concrete.isColimit_exists_rep F (colimit.isColimit _) x
 #align category_theory.limits.concrete.colimit_exists_rep CategoryTheory.Limits.Concrete.colimit_exists_rep
 
--- note: does not use the assumption `IsColimit D`
-theorem Concrete.isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (_ : IsColimit D)
+theorem Concrete.cocone_rep_eq_of_exists (D : Cocone F) {i j : J}
     (x : F.obj i) (y : F.obj j) (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
     D.ι.app i x = D.ι.app j y := by
   obtain ⟨k, f, g, eq⟩ := h
@@ -190,12 +189,12 @@ theorem Concrete.isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (_ : IsColi
   simp only [Functor.map_comp]
   change D.ι.app k (F.map f x) = D.ι.app k (F.map g y)
   rw [eq]
-#align category_theory.limits.concrete.is_colimit_rep_eq_of_exists CategoryTheory.Limits.Concrete.isColimit_rep_eq_of_exists
+#align category_theory.limits.concrete.is_colimit_rep_eq_of_exists CategoryTheory.Limits.Concrete.cocone_rep_eq_of_exists
 
 theorem Concrete.colimit_rep_eq_of_exists [HasColimit F] {i j : J} (x : F.obj i) (y : F.obj j)
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
     colimit.ι F i x = colimit.ι F j y :=
-  Concrete.isColimit_rep_eq_of_exists F (colimit.isColimit _) x y h
+  Concrete.cocone_rep_eq_of_exists F _ x y h
 #align category_theory.limits.concrete.colimit_rep_eq_of_exists CategoryTheory.Limits.Concrete.colimit_rep_eq_of_exists
 
 section FilteredColimits
@@ -211,7 +210,7 @@ theorem Concrete.isColimit_exists_of_rep_eq {D : Cocone F} {i j : J} (hD : IsCol
 theorem Concrete.isColimit_rep_eq_iff_exists {D : Cocone F} {i j : J} (hD : IsColimit D)
     (x : F.obj i) (y : F.obj j) :
     D.ι.app i x = D.ι.app j y ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
-  ⟨Concrete.isColimit_exists_of_rep_eq _ hD _ _, Concrete.isColimit_rep_eq_of_exists _ hD _ _⟩
+  ⟨Concrete.isColimit_exists_of_rep_eq _ hD _ _, Concrete.cocone_rep_eq_of_exists _ D _ _⟩
 #align category_theory.limits.concrete.is_colimit_rep_eq_iff_exists CategoryTheory.Limits.Concrete.isColimit_rep_eq_iff_exists
 
 theorem Concrete.colimit_exists_of_rep_eq [HasColimit F] {i j : J} (x : F.obj i) (y : F.obj j)
