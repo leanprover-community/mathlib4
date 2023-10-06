@@ -265,3 +265,38 @@ Of these, 0 match your patterns.
 -/
 #guard_msgs in
 #find |- And True True, uniquenameforthistest
+
+
+-- Searching for qualified names
+
+def Namespaced.TestDefinition := true
+
+theorem TestDefinition_eq_true:
+  Namespaced.TestDefinition = true := rfl
+
+/--
+info: unknown identifier TestDefinition, using Namespaced.TestDefinition instead.
+Found 1 definitions mentioning Namespaced.TestDefinition.
+• TestDefinition_eq_true
+-/
+#guard_msgs in
+#find TestDefinition
+
+
+-- Handlig duplcats
+
+def NamespacedA.AnotherTestDefinition := true
+def NamespacedB.AnotherTestDefinition := true
+def NamespacedC.AnotherTestDefinition := true
+theorem NamespcedA.AnotherTestDefinition_eq_true:
+  NamespacedA.AnotherTestDefinition = true := rfl
+theorem NamespcedB.AnotherTestDefinition_eq_true:
+  NamespacedB.AnotherTestDefinition = true := rfl
+
+/--
+info: unknown identifier AnotherTestDefinition, using NamespacedA.AnotherTestDefinition instead. (Other candiates: NamespacedB.AnotherTestDefinition and NamespacedC.AnotherTestDefinition)
+Found 1 definitions mentioning NamespacedA.AnotherTestDefinition.
+• NamespcedA.AnotherTestDefinition_eq_true
+-/
+#guard_msgs in
+#find AnotherTestDefinition
