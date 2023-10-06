@@ -952,12 +952,22 @@ theorem smul_set_univ : a • (univ : Set β) = univ :=
 #align set.smul_set_univ Set.smul_set_univ
 #align set.vadd_set_univ Set.vadd_set_univ
 
+@[to_additive]
+lemma smul_set_compl : a • sᶜ = (a • s)ᶜ := by
+  simp [compl_eq_univ_diff, smul_set_sdiff]
+
 @[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
   let ⟨a, ha⟩ := hs
   eq_univ_of_forall fun b ↦ ⟨a, a⁻¹ • b, ha, trivial, smul_inv_smul _ _⟩
 #align set.smul_univ Set.smul_univ
 #align set.vadd_univ Set.vadd_univ
+
+@[to_additive]
+lemma Disjoint.smul_set {s t : Set α} (h : Disjoint s t) :
+    Disjoint (a • s) (a • t) := by
+  rw [← preimage_smul_inv, ← preimage_smul_inv]
+  exact h.preimage _
 
 @[to_additive]
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
