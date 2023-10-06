@@ -278,6 +278,10 @@ theorem bases_nonempty :
     exists_basis_containing_feasible_set G.containsEmpty (empty_subset s)
   exists b; tauto
 
+theorem base_nonempty :
+    Nonempty G.base :=
+  G.base_bases_eq ▸ bases_nonempty
+
 theorem basis_card_eq
   {b₁ : Finset α} (hb₁ : b₁ ∈ G.bases s)
   {b₂ : Finset α} (hb₂ : b₂ ∈ G.bases s) :
@@ -1257,6 +1261,8 @@ variable {s : Finset α}
 
 theorem exists_feasible_satisfying_basisRank :
     ∃ t ∈ G, G.basisRank s = (s ∩ t).card := by
+  by_contra' h'
+  have ⟨t, ht⟩ : G.base.Nonempty := G.bases_nonempty
   sorry
 
 theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
