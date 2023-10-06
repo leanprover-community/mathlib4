@@ -1169,12 +1169,10 @@ theorem map_sup [SemilatticeSup β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y
     first
     | assumption
     | simp only [*, sup_of_le_left, sup_of_le_right]
-#align monotone_on.map_sup MonotoneOn.map_sup
 
 theorem map_inf [SemilatticeInf β] (hf : MonotoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     f (x ⊓ y) = f x ⊓ f y :=
   hf.dual.map_sup hx hy
-#align monotone_on.map_inf MonotoneOn.map_inf
 
 end MonotoneOn
 
