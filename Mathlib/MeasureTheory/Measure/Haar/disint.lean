@@ -36,12 +36,13 @@ instance {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
     rfl }
 
 variable {α : Type*} [TopologicalSpace α] [T2Space α] [MeasurableSpace α] [BorelSpace α]
-  {G : Type*} [TopologicalSpace G] [Group G] [MulAction G α]
+  {G : Type*} [TopologicalSpace G] [Monoid G] [MulAction G α]
   [ContinuousSMul G α]
 
 open scoped Pointwise
 open Set
 
+/-
 lemma smul_measure_apply {μ : Measure α} (g : G) (s : Set α) : (g • μ) s = μ (g⁻¹ • s) := by
   have : MeasurableEmbedding (fun x ↦ g • x) :=
     (Homeomorph.smul g (α := α)).closedEmbedding.measurableEmbedding
@@ -50,10 +51,12 @@ lemma smul_measure_apply {μ : Measure α} (g : G) (s : Set α) : (g • μ) s =
 @[simp]
 lemma smul_measure_smul_set_eq {μ : Measure α} (g : G) (s : Set α) : (g • μ) (g • s) = μ s := by
   rw [smul_measure_apply, smul_smul, mul_left_inv, one_smul]
+-/
 
 variable (μ : Measure α) [Regular μ]
 
-lemma glou {U : Set α} (hU : IsOpen U) : LowerSemicontinuousAt (fun (g : G) ↦ μ (g • U)) 1 := by
+lemma glou {U : Set α} (hU : IsOpen U) :
+    LowerSemicontinuousAt (fun (g : G) ↦ μ ((fun x ↦ g • x) ⁻¹' U)) 1 := by
   borelize G
   intro t ht
   simp only [one_smul] at ht
