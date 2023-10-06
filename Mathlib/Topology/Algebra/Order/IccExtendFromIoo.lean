@@ -3,8 +3,8 @@ Copyright (c) 2023 Wen Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wen Yang
 -/
+import Mathlib.Data.Set.FunctionToVal
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
-import Mathlib.Topology.Algebra.Order.ProjIcc
 
 /-!
 # Extend the domain of f from an open interval to the closed interval
@@ -149,52 +149,54 @@ theorem StrictAntiOn.Ioo_extend_Icc (hf_mono : StrictAntiOn f (Ioo a b))
 
 end StrictMonoOn
 
+open Set2Set
+
 section StrictMonoOn2
 variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
     [LinearOrder β] [TopologicalSpace β] [OrderTopology β] {a b : α} {c d : β}
 
-/- TODO: The condition `StrictMonoOn f` should be weakened to `MonotoneOn f`,
-but we need a different proof since `StrictMonoOn.orderIso` is used below.-/
 /-- A strictly monotone (increasing) function on an open interval can be continuously extended
 to the closed interval.-/
 theorem StrictMonoOn.Ioo_continuous_extend_Icc (hf_increasing : StrictMonoOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
     ∃ g, ContinuousOn g (Icc a b) ∧ EqOn f g {a, b}ᶜ ∧
-    g '' (Icc a b) = Icc c d ∧ g = update (update f a c) b d := by
+    BijOn g (Icc a b) (Icc c d) ∧ g = update (update f a c) b d := by
   obtain ⟨g, hg⟩ := hf_increasing.Ioo_extend_Icc hf_mapsto.subset hab hcd
   use g
+  have : Nonempty β := Nonempty.intro c
   have hg_mapsto := hg.2.2.1
   rw [hf_mapsto, ← Icc_diff_Ioo_same hcd.le] at hg_mapsto
   replace hg_mapsto : g '' Icc a b = Icc c d := by
     rw [hg_mapsto, @union_diff_self]
     exact union_eq_self_of_subset_left Ioo_subset_Icc_self
   let iso := hg.1.orderIso
-  have : OrderTopology (g '' (Icc a b)) := by
+  have hg_image : OrderTopology (g '' (Icc a b)) := by
     rw [hg_mapsto]
     exact orderTopology_of_ordConnected
-  have iso.extend.c : Continuous (IccExtend hab.le iso) :=
-      continuous_IccExtend_iff.mpr iso.continuous
-  set iso.extend := IccExtend hab.le iso
-  let iso.val := Subtype.val ∘ iso.extend
-  have iso.eq : EqOn iso.val g (Icc a b) := by
-    unfold_let iso.val iso.extend
-    intro x hx
-    unfold IccExtend projIcc
-    have : max a (min b x) = x := by aesop
-    simp [this]
+  let G := iso.toFun
+  have hG_eq : EqOn G.toval g (Icc a b) := by
+    rw [← @restrict_eq_restrict_iff]
+    rw [← toval_eq]
     exact rfl
-  have iso.val.c : Continuous iso.val := continuous_induced_rng.mp iso.extend.c
-  have iso.val.c_on : ContinuousOn iso.val (Icc a b) := Continuous.continuousOn iso.val.c
+  have hG_bij : BijOn G.toval (Icc a b) (g '' (Icc a b)) := by
+    rw [← toval_bijOn]
+    exact iso.bijective
+  have hG_c : ContinuousOn G.toval (Icc a b) := by
+    rw [← toval_continuous]
+    exact iso.continuous
   have hg_c : ContinuousOn g (Icc a b) := by
-    exact Iff.mpr (continuousOn_congr (id (EqOn.symm iso.eq))) iso.val.c_on
-  exact ⟨hg_c, ⟨hg.2.1, ⟨hg_mapsto, hg.2.2.2⟩⟩⟩
+    exact (continuousOn_congr hG_eq).mp hG_c
+  have hg_bij : BijOn g (Icc a b) (Icc c d) := by
+    rw [← hg_mapsto]
+    exact BijOn.congr hG_bij hG_eq
+  exact ⟨hg_c, ⟨hg.2.1, ⟨hg_bij, hg.2.2.2⟩⟩⟩
 
 /-- A strictly antitone (decreasing) function on an open interval can be continuously extended
 to the closed interval.-/
 theorem StrictAntiOn.Ioo_continuous_extend_Icc (hf_decreasing : StrictAntiOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
     ∃ g, ContinuousOn g (Icc a b) ∧ EqOn f g {a, b}ᶜ ∧
-    g '' (Icc a b) = Icc c d ∧ g = update (update f a d) b c := by
+    BijOn g (Icc a b) (Icc c d) ∧ g = update (update f a d) b c := by
   let F : α → OrderDual β := f
   have hF_increasing : StrictMonoOn F (Ioo a b) := hf_decreasing
   have hF_mapsto : F '' (Ioo a b) = Ioo (toDual d) (toDual c) := by aesop
