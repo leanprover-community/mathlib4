@@ -922,14 +922,21 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
   ext fun _ ↦ h.map_add _ _
 #align linear_map.comp_add LinearMap.comp_add
 
+instance addSemigroup : AddSemigroup (M →ₛₗ[σ₁₂] M₂) :=
+  { FunLike.coe_injective.addSemigroup (↑) (fun _ _ => rfl) with
+    toAdd := LinearMap.add }
+
+instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) :=
+  { FunLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
+    toAddSemigroup := LinearMap.addSemigroup }
+
 /-- The type of linear maps is an additive monoid. -/
 instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
   { FunLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
-    toAdd := LinearMap.add
-    toZero := LinearMap.zero }
+    toAddMonoid := LinearMap.addMonoid }
 
 /-- The negation of a linear map is linear. -/
-instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
+instance neg : Neg (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f ↦
     { toFun := -f
       map_add' := by simp [add_comm]
@@ -951,7 +958,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
 #align linear_map.comp_neg LinearMap.comp_neg
 
 /-- The subtraction of two linear maps is linear. -/
-instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
+instance sub : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
@@ -972,10 +979,23 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
   ext fun _ ↦ h.map_sub _ _
 #align linear_map.comp_sub LinearMap.comp_sub
 
+instance subNegMonoid : SubNegMonoid (M →ₛₗ[σ₁₂] N₂) :=
+  { FunLike.coe_injective.subNegMonoid (↑) rfl (fun _ _ => rfl)
+      (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) with
+    toAddMonoid := LinearMap.addMonoid
+    toSub := LinearMap.sub
+    toNeg := LinearMap.neg }
+
+instance addGroup : AddGroup (M →ₛₗ[σ₁₂] N₂) :=
+  { FunLike.coe_injective.addGroup (↑) rfl (fun _ _ => rfl)
+      (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) with
+    toSubNegMonoid := LinearMap.subNegMonoid }
+
 /-- The type of linear maps is an additive group. -/
 instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
-  FunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  { FunLike.coe_injective.addCommGroup (↑) rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+      (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
+    toAddGroup := LinearMap.addGroup }
 
 end Arithmetic
 
@@ -992,8 +1012,7 @@ variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
-instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂)
-    where
+instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂) where
   one_smul _ := ext fun _ ↦ one_smul _ _
   mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
   smul_add _ _ _ := ext fun _ ↦ smul_add _ _ _
@@ -1069,20 +1088,27 @@ theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g :=
   rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
+instance _root_.Module.End.Semigroup : Semigroup (Module.End R M) where
+  mul_assoc _ _ _ := LinearMap.ext fun _ ↦ rfl
+
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
-  mul := (· * ·)
-  one := (1 : M →ₗ[R] M)
-  mul_assoc f g h := LinearMap.ext fun x ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
 #align module.End.monoid Module.End.monoid
 
-instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
-  { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
-    mul_zero := comp_zero
+instance _root_.Module.End.nonUnitalNonAssocSemiring :
+    NonUnitalNonAssocSemiring (Module.End R M) :=
+  { mul_zero := comp_zero
     zero_mul := zero_comp
     left_distrib := fun _ _ _ ↦ comp_add _ _ _
-    right_distrib := fun _ _ _ ↦ add_comp _ _ _
+    right_distrib := fun _ _ _ ↦ add_comp _ _ _ }
+
+instance _root_.Module.End.nonUnitalSemiring : NonUnitalSemiring (Module.End R M) where
+  mul_assoc := mul_assoc
+
+instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
+  { one_mul := one_mul
+    mul_one := mul_one
     natCast := fun n ↦ n • (1 : M →ₗ[R] M)
     natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
     natCast_succ := fun n ↦ (AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)).trans (add_comm _ _) }
@@ -1094,9 +1120,12 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
   rfl
 #align module.End.nat_cast_apply Module.End.natCast_apply
 
+instance _root_.Module.End.intCast : IntCast (Module.End R N₁) :=
+  ⟨fun z ↦ z • (1 : N₁ →ₗ[R] N₁)⟩
+
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
-  { Module.End.semiring, LinearMap.addCommGroup with
-    intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
+  { add_left_neg := add_left_neg
+    sub_eq_add_neg := sub_eq_add_neg
     intCast_ofNat := ofNat_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
 #align module.End.ring Module.End.ring
@@ -1206,12 +1235,11 @@ end
 
 /-! ### Action by a module endomorphism. -/
 
-
 /-- The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (Module.End R M) M where
-  smul := (· <| ·)
+  smul := (. <| .)
   smul_zero := LinearMap.map_zero
   smul_add := LinearMap.map_add
   add_smul := LinearMap.add_apply
