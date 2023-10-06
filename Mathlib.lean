@@ -1829,6 +1829,7 @@ import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.FunctionToVal
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
