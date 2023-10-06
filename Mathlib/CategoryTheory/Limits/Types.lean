@@ -435,12 +435,6 @@ theorem Colimit.ι_map_apply [UnivLE.{v, u}] {F G : J ⥤ Type u} (α : F ⟶ G)
   congr_fun (colimit.ι_map α j) x
 #align category_theory.limits.types.colimit.ι_map_apply CategoryTheory.Limits.Types.Colimit.ι_map_apply
 
-@[simp]
-theorem Colimit.w_apply' [UnivLE.{v, u}] {F : J ⥤ Type u} {j j' : J} {x : F.obj j} (f : j ⟶ j') :
-    colimit.ι F j' (F.map f x) = colimit.ι F j x :=
-  congr_fun (colimit.w F f) x
-#align category_theory.limits.types.colimit.w_apply' CategoryTheory.Limits.Types.Colimit.w_apply'
-
 theorem colimit_sound
     {F : J ⥤ Type u} [UnivLE.{v, u}] {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
     (w : F.map f x = x') : colimit.ι F j x = colimit.ι F j' x' := by

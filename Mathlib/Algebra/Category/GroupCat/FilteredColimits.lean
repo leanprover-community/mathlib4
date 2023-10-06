@@ -235,6 +235,7 @@ noncomputable def colimit : CommGroupCat :=
 #align CommGroup.filtered_colimits.colimit CommGroupCat.FilteredColimits.colimit
 #align AddCommGroup.filtered_colimits.colimit AddCommGroupCat.FilteredColimits.colimit
 
+/-- Constructor for the proposed colimit commutative group. -/
 @[to_additive]
 noncomputable def colimit_mk (x : Σ j, F.obj j) : colimit F :=
   GroupCat.FilteredColimits.G.mk (F ⋙ forget₂ CommGroupCat.{u} GroupCat.{u}) x

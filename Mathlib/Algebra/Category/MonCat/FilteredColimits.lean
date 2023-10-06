@@ -196,7 +196,7 @@ noncomputable instance colimitMul : Mul (M F) where
 #align AddMon.filtered_colimits.colimit_has_add AddMonCat.FilteredColimits.colimitAdd
 
 @[to_additive]
-noncomputable def colimit_mul_mk_def (x y : Σ j, F.obj j) :
+lemma colimit_mul_mk_def (x y : Σ j, F.obj j) :
     M.mk F x * M.mk F y =
       M.mk F ⟨IsFiltered.max x.fst y.fst, F.map (IsFiltered.leftToMax x.1 y.1) x.2 *
         F.map (IsFiltered.rightToMax x.1 y.1) y.2⟩ := by
