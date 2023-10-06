@@ -521,7 +521,12 @@ instance invOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
 
 @[to_additive subNegMonoid]
 instance divInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) :=
-  { div_eq_mul_inv := Quotient.ind₂' fun _ _ => congrArg Quotient.mk'' <| div_eq_mul_inv .. }
+  { Function.Surjective.divInvMonoid ofFun (surjective_quot_mk _) (by rfl) (fun _ _ => by rfl)
+      (fun _ => by rfl) (fun _ _ => by rfl) (fun _ _ => by rfl) (fun _ _ => by rfl) with
+    toMonoid := monoid
+    toInv := inv
+    toDiv := div
+    zpow := fun z f => f ^ z }
 
 @[to_additive]
 instance divisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where

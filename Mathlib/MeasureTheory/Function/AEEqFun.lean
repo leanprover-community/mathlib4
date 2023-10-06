@@ -866,18 +866,17 @@ instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →�
 #align measure_theory.ae_eq_fun.add_group MeasureTheory.AEEqFun.instAddGroup
 
 instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.addCommGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
-    (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
+  { add_comm := add_comm }
 #align measure_theory.ae_eq_fun.add_comm_group MeasureTheory.AEEqFun.instAddCommGroup
 
 @[to_additive existing]
 instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
-  toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
+  toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm <| zpow_toGerm
 #align measure_theory.ae_eq_fun.group MeasureTheory.AEEqFun.instGroup
 
 @[to_additive existing]
 instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.commGroup _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
+  { mul_comm := mul_comm }
 #align measure_theory.ae_eq_fun.comm_group MeasureTheory.AEEqFun.instCommGroup
 
 section Module
