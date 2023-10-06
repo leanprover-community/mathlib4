@@ -3,6 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Sites.Coherent
 /-!
 
@@ -192,5 +194,116 @@ lemma extensive_regular_generate_coherent [Preregular C] [Extensive C] [Precoher
           simp only [Category.assoc]
     | top => apply Coverage.saturate.top
     | transitive Y T => apply Coverage.saturate.transitive Y T<;> [assumption; assumption]
+
+section ExtensiveSheaves
+
+variable [Extensive C] {C}
+
+/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
+coproduct to the target. -/
+class _root_.CategoryTheory.Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) :
+    Prop where
+  /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
+  coproduct of their sources. -/
+  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
+    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
+
+instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
+  has_pullbacks := by
+    obtain ⟨_, _, _, _, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
+    intro _ _ f hf _ hg
+    rw [hS] at hf hg
+    cases' hg with b
+    apply HasPullbacksOfInclusions.has_pullback f
+
+namespace ExtensiveSheafConditionProof
+
+lemma sigma_surjective {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) :
+    Function.Surjective (fun a => ⟨Z a, π a, Presieve.ofArrows.mk a⟩ :
+    α → Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) :=
+  fun ⟨_, ⟨_, hf⟩⟩ ↦ by cases' hf with a _; exact ⟨a, rfl⟩
+
+open Opposite
+
+instance {α : Type} {Z : α → C} {X : C} {π : (a : α) → Z a ⟶ X} [Fintype α] :
+    HasProduct fun (x : Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) ↦ (op x.1) :=
+  haveI := Finite.of_surjective _ (sigma_surjective.{v, u} π)
+  inferInstance
+
+/-- The canonical map from `Equalizer.FirstObj` to a product indexed by `α` -/
+noncomputable
+def prod_map {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) (F : Cᵒᵖ ⥤ Type max u v) :
+    (∏ fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) => F.obj (op f.fst)) ⟶
+    ∏ fun a => F.obj (op (Z a)) :=
+  Pi.lift (fun a => Pi.π _ ⟨Z a, π a, Presieve.ofArrows.mk a⟩) ≫ 𝟙 _
+
+/-- The inverse to `Equalizer.forkMap F (Presieve.ofArrows Z π)`. -/
+noncomputable
+def firstObj_to_base {α : Type} [Fintype α] {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
+  (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] [IsIso (Sigma.desc π)] :
+    Equalizer.FirstObj F (Presieve.ofArrows Z π) ⟶ F.obj (op X) :=
+  haveI : PreservesLimit (Discrete.functor fun a => op (Z a)) F :=
+    (PreservesFiniteProducts.preserves α).preservesLimit
+  (prod_map π F) ≫ ((Limits.PreservesProduct.iso F (fun a => op <| Z a)).inv ≫
+    F.map (opCoproductIsoProduct Z).inv ≫ F.map (inv (Sigma.desc π).op))
+
+lemma comp_inv_desc_eq_ι {α : Type} [Fintype α] {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
+    [IsIso (Sigma.desc π)] (a : α) : π a ≫ inv (Sigma.desc π) = Sigma.ι _ a := by
+  simp only [IsIso.comp_inv_eq, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+
+@[simp]
+lemma PreservesProduct.isoInvCompMap {C : Type u} [Category C] {D : Type v} [Category D] (F : C ⥤ D)
+    {J : Type w} {f : J → C} [HasProduct f] [HasProduct (fun j => F.obj (f j))]
+    [PreservesLimit (Discrete.functor f) F] (j : J) :
+    (PreservesProduct.iso F f).inv ≫ F.map (Pi.π _ j) = Pi.π _ j :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ (limit.isLimit _) (⟨j⟩ : Discrete J)
+
+instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
+    [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
+  (PreservesFiniteProducts.preserves α).preservesLimit
+
+instance {X : C} (S : Presieve X) [S.extensive]
+    {F : Cᵒᵖ ⥤ Type max u v} [PreservesFiniteProducts F] : IsIso (Equalizer.forkMap F S) := by
+  obtain ⟨α, _, Z, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
+  subst hS
+  refine' ⟨firstObj_to_base π F,_,_⟩
+  · simp only [firstObj_to_base, ← Category.assoc, Functor.map_inv,
+      IsIso.comp_inv_eq, Category.id_comp, ← Functor.mapIso_inv, Iso.comp_inv_eq,
+      Functor.mapIso_hom, Iso.comp_inv_eq, ← Functor.map_comp,
+      desc_op_comp_opCoproductIsoProduct_hom, PreservesProduct.iso_hom, map_lift_piComparison,
+      colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    funext s
+    ext a
+    simp only [prod_map, types_comp_apply, types_id_apply, Types.Limit.lift_π_apply,
+      Fan.mk_pt, Equalizer.forkMap, Fan.mk_π_app, Types.pi_lift_π_apply]
+  · refine Limits.Pi.hom_ext _ _ (fun f => ?_)
+    simp only [Equalizer.forkMap, Category.assoc, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
+      Category.id_comp]
+    obtain ⟨a, ha⟩ := sigma_surjective π f
+    rw [firstObj_to_base, Category.assoc, Category.assoc, Category.assoc, ← Functor.map_comp,
+      ← op_inv, ← op_comp, ← ha, comp_inv_desc_eq_ι, ← Functor.map_comp,
+      opCoproductIsoProduct_inv_comp_ι, PreservesProduct.isoInvCompMap F a]
+    simp only [prod_map, Category.comp_id, limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+
+end ExtensiveSheafConditionProof
+
+open ExtensiveSheafConditionProof in
+lemma isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
+    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] :
+    Presieve.IsSheafFor F S := by
+  refine' (Equalizer.Presieve.sheaf_condition F S).2 _
+  rw [Limits.Types.type_equalizer_iff_unique]
+  dsimp [Equalizer.FirstObj]
+  suffices : IsIso (Equalizer.forkMap F S)
+  · intro y _
+    refine' ⟨inv (Equalizer.forkMap F S) y, _, fun y₁ hy₁ => _⟩
+    · change (inv (Equalizer.forkMap F S) ≫ (Equalizer.forkMap F S)) y = y
+      rw [IsIso.inv_hom_id, types_id_apply]
+    · replace hy₁ := congr_arg (inv (Equalizer.forkMap F S)) hy₁
+      change ((Equalizer.forkMap F S) ≫ inv (Equalizer.forkMap F S)) _ = _ at hy₁
+      rwa [IsIso.hom_inv_id, types_id_apply] at hy₁
+  infer_instance
+
+end ExtensiveSheaves
 
 end CategoryTheory
