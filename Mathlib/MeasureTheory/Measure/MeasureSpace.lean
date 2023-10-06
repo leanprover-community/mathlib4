@@ -4175,6 +4175,14 @@ protected theorem map_apply (f : α ≃ᵐ β) (s : Set β) : μ.map f s = μ (f
   f.measurableEmbedding.map_apply _ _
 #align measurable_equiv.map_apply MeasurableEquiv.map_apply
 
+lemma comap_symm (e : α ≃ᵐ β) : μ.comap e.symm = μ.map e := by
+  ext s hs
+  rw [e.map_apply, Measure.comap_apply _ e.symm.injective _ _ hs, image_symm]
+  exact fun t ht ↦ e.symm.measurableSet_image.mpr ht
+
+lemma map_symm (e : β ≃ᵐ α) : μ.map e.symm = μ.comap e := by
+  rw [← comap_symm, symm_symm]
+
 @[simp]
 theorem map_symm_map (e : α ≃ᵐ β) : (μ.map e).map e.symm = μ := by
   simp [map_map e.symm.measurable e.measurable]
