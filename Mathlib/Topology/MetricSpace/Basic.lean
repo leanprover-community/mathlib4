@@ -2479,6 +2479,8 @@ theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s 
 
 theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
   hasBasis_cocompact.ge_iff.2 fun _s hs ↦ hs.isBounded
+#align comap_dist_right_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
+#align comap_dist_left_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 
 /-- Characterization of the boundedness of the range of a function -/
 theorem isBounded_range_iff {f : β → α} : IsBounded (range f) ↔ ∃ C, ∀ x y, dist (f x) (f y) ≤ C :=
@@ -2860,9 +2862,6 @@ def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
   pure (.nonnegative p)
 
 end Mathlib.Meta.Positivity
-
-#align comap_dist_right_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
-#align comap_dist_left_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 
 theorem Metric.cobounded_eq_cocompact [ProperSpace α] : cobounded α = cocompact α := by
   nontriviality α; inhabit α
