@@ -16,8 +16,17 @@ example (a b : ℕ) (h : a + 1 = b + 1) : a = b := by
 example {G : Type*} [Group G] (a b c : G) (h : a * c = b * c) : a = b := by
   apply mul_right_cancel at h
   guard_hyp h :ₛ a = b
+  exact h
+
+example {G : Type*} [Monoid G] (a b c : G) (h : a * c = b * c)
+    (hh : ∀ x y z : G, x * z = y * z → x = y): a = b := by
+  apply mul_right_cancel at h
+  guard_hyp h :ₛ a = b
   · exact h
-  · infer_instance
+  · guard_target = IsRightCancelMul G
+    constructor
+    intros a b c
+    apply hh
 
 example {α β γ δ : Type*} (f : α → β → γ → δ) (a : α) (b : β) (g : γ) : δ := by
   apply f at g
