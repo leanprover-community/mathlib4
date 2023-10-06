@@ -77,36 +77,39 @@ lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 
 @[simp]
-lemma bitwise_succ {n m : Nat} :
-    bitwise f (n + 1) (m + 1) =
-    bitwise f ((n+1) / 2) ((m+1) / 2) + bitwise f ((n+1) / 2) ((m+1) / 2)
-      + if f (!bodd n) (!bodd m) then 1 else 0 := by
+lemma bitwise_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
+    bitwise f n m =
+    bitwise f (n / 2) (m / 2) + bitwise f (n / 2) (m / 2)
+      + if f (bodd n) (bodd m) then 1 else 0 := by
   conv_lhs => { unfold bitwise }
-  have mod_two_iff_bod x : ((x+1) % 2 = 1 : Bool) = !bodd x := by
+  have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
-  simp only [add_eq_zero_iff, and_false, ite_false, mod_two_iff_bod]
+  simp only [hn, hm, add_eq_zero_iff, and_false, ite_false, mod_two_iff_bod]
   split_ifs <;> rfl
 
 @[simp]
-lemma bitwise'_succ {n m : Nat} :
-    bitwise' f (n + 1) (m + 1) =
-    bitwise' f (div2 (n + 1)) (div2 (m + 1)) + bitwise' f (div2 (n + 1)) (div2 (m + 1))
-      + if f (!bodd n) (!bodd m) then 1 else 0 := by
-  conv_lhs => { rw [←bit_decomp (n + 1), ←bit_decomp (m + 1)] }
-  simp only [bodd_succ, div2_succ, Bool.cond_eq_ite]
+lemma bitwise'_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
+    bitwise' f n m =
+    bitwise' f (div2 n) (div2 m) + bitwise' f (div2 n) (div2 m)
+      + if f (bodd n) (bodd m) then 1 else 0 := by
+  conv_lhs => { rw [←bit_decomp n, ←bit_decomp m] }
   rw [bitwise'_bit', bit]
   case ham =>
-    rcases n with ⟨⟩|⟨⟩|n
+    rcases n with ⟨⟩|⟨⟩|x
     <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
-    cases bodd n <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
-      ite_true, ite_false]
+    · contradiction
+    · cases bodd x
+      <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
+        ite_true, ite_false]
   case hbn =>
-    rcases m with ⟨⟩|⟨⟩|m
+    rcases m with ⟨⟩|⟨⟩|x
     <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
-    cases bodd m <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
-      ite_true, ite_false]
+    · contradiction
+    · cases bodd x
+      <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
+        ite_true, ite_false]
   simp [bit1, bit0]
-  cases f (!bodd n) (!bodd m)
+  cases f (bodd n) (bodd m)
   <;> simp only [Bool.cond_eq_ite, ite_false, add_zero, ite_true]
 
 lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
@@ -117,7 +120,8 @@ lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
   · simp only [bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
   · simp only [bitwise_zero_right, bitwise'_zero_right, Bool.cond_eq_ite]
   · specialize ih ((x+1) / 2) (div_lt_self' ..)
-    simp only [bitwise_succ, bitwise'_succ, div2_val, ih]
+    simp only [bitwise_ne_zero, bitwise'_ne_zero, div2_val, ih, ne_eq, succ_ne_zero,
+      not_false_eq_true]
 
 theorem lor'_eq_lor : lor' = lor :=
   bitwise'_eq_bitwise _
