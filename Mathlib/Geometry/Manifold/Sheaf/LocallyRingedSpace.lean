@@ -36,7 +36,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
   (M : Type u) [TopologicalSpace M] [ChartedSpace HM M]
 
-open AlgebraicGeometry Manifold TopologicalSpace Topology
+open AlgebraicGeometry Manifold TopologicalSpace Topology Opposite
 
 /-- The units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered as a
 sheaf of commutative rings, are the functions whose values at `x` are nonzero. -/
@@ -116,3 +116,45 @@ def SmoothManifoldWithCorners.locallyRingedSpace : LocallyRingedSpace where
     rw [smoothSheafCommRing.nonunits_stalk]
     intro f g
     exact Ideal.add_mem _
+
+variable {IM M} in
+/-- Let `W` be an open set in a complex manifold `M`, and let `F` and `G` be holomorphic functions
+on `W` with `F * G ≡ 0` on `W`. Let `x` be a point in `W`.  Then the germ of either `F` or `G` at
+`x` must be zero. -/
+theorem germ_zero_or_germ_zero_of_mul_eq_zero {W : Opens M}
+    {F G : (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.obj (op W)}
+    (H : F * G = 0) (x : W) :
+    (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.germ x F = 0
+    ∨ (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.germ x G = 0 :=
+  sorry
+
+/-- The stalk at `x` of the sheaf of holomorphic functions from `M` to `ℂ`, considered as a sheaf of
+commutative rings, has no zero divisors.  This is the main step in showing that it is an integral
+domain. -/
+instance (x : M) : NoZeroDivisors ((smoothPresheafCommRing IM 𝓘(𝕜, 𝕜) M 𝕜).stalk (x:M)) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := by
+    let S := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf
+    intro f g hfg
+    obtain ⟨U : Opens M, hxU, f : C^∞⟮IM, U; 𝓘(𝕜), 𝕜⟯, rfl⟩ := S.germ_exist x f
+    obtain ⟨V : Opens M, hxV, g : C^∞⟮IM, V; 𝓘(𝕜), 𝕜⟯, rfl⟩ := S.germ_exist x g
+    let X : ↑(U ⊓ V) := ⟨x, ⟨hxU, hxV⟩⟩
+    have hU' : U ⊓ V ≤ U := inf_le_left
+    let F : C^∞⟮IM, ↑(U ⊓ V); 𝓘(𝕜), 𝕜⟯ := S.map hU'.hom.op f
+    have hF : S.germ X F = _ := S.germ_res_apply hU'.hom X f
+    have hV' : U ⊓ V ≤ V := inf_le_right
+    let G : C^∞⟮IM, ↑(U ⊓ V); 𝓘(𝕜), 𝕜⟯ := S.map hV'.hom.op g
+    have hG : S.germ X G = _ := S.germ_res_apply hV'.hom X g
+    rw [← hF, ← hG] at hfg ⊢
+    have hFG : S.germ X (F * G) = S.germ X 0 := by rwa [map_mul, map_zero]
+    obtain ⟨W, hxW, i, _, hFGW⟩ := S.germ_eq _ _ _ _ _ hFG
+    have hFGW' : S.map i.op F * S.map i.op G = 0 := by rwa [map_mul, map_zero] at hFGW
+    have hFGW'' := germ_zero_or_germ_zero_of_mul_eq_zero hFGW' ⟨x, hxW⟩
+    rwa [S.germ_res_apply i, S.germ_res_apply i] at hFGW''
+
+instance (x : M) : Nontrivial ((smoothPresheafCommRing IM 𝓘(𝕜, 𝕜) M 𝕜).stalk (x:M)) :=
+  smoothSheafCommRing.stalk_nontrivial ..
+
+/-- The stalk at `x` of the sheaf of holomorphic functions from `M` to `ℂ`, considered as a sheaf of
+commutative rings, is an integral domain. -/
+instance (x : M) : IsDomain ((smoothPresheafCommRing IM 𝓘(𝕜, 𝕜) M 𝕜).stalk (x:M)) :=
+  NoZeroDivisors.to_isDomain ..

@@ -410,7 +410,8 @@ lemma smoothSheafCommRing.eval_surjective (x) :
   use (smoothSheafCommRing.forgetStalk IM I M R x).inv y
   apply smoothSheafCommRing.forgetStalk_inv_comp_eval_apply
 
-instance [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) :=
+instance smoothSheafCommRing.stalk_nontrivial [Nontrivial R] (x : M) :
+    Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) :=
   (smoothSheafCommRing.eval_surjective IM I M R x).nontrivial
 
 variable {IM I M R}
