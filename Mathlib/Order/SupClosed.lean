@@ -72,7 +72,7 @@ lemma SupClosed.prod {t : Set β} (hs : SupClosed s) (ht : SupClosed t) : SupClo
   λ _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
 
 lemma supClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeSup (α i)] {s : Set ι}
-  {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
+    {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
   λ _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
 end Set
@@ -136,7 +136,7 @@ lemma InfClosed.prod {t : Set β} (hs : InfClosed s) (ht : InfClosed t) : InfClo
   λ _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
 
 lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i)] {s : Set ι}
-  {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
+    {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
   λ _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
 end Set
@@ -198,7 +198,7 @@ lemma LatticeClosed.prod {t : Set β} (hs : LatticeClosed s) (ht : LatticeClosed
     LatticeClosed (s ×ˢ t) := ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
 
 lemma latticeClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {s : Set ι}
-  {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, LatticeClosed (t i)) : LatticeClosed (s.pi t) :=
+    {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, LatticeClosed (t i)) : LatticeClosed (s.pi t) :=
   ⟨supClosed_pi λ _i hi ↦ (ht _ hi).1, infClosed_pi λ _i hi ↦ (ht _ hi).2⟩
 
 @[simp] lemma supClosed_preimage_toDual {s : Set αᵒᵈ} :
