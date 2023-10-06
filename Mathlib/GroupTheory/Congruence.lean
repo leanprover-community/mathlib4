@@ -1188,11 +1188,10 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
-  { (Function.Surjective.monoid _ Quotient.surjective_Quotient_mk'' rfl
-      (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
-    toSemigroup := Con.semigroup _
+  { Con.semigroup _, mulOneClass _ with
     npow := fun n x => x ^ n
-    toOne := Con.one _ }
+    npow_zero := Quotient.ind' fun _ => congrArg _ <| Monoid.npow_zero _
+    npow_succ := fun _ => Quotient.ind' fun _ => congrArg _ <| Monoid.npow_succ .. }
 #align con.monoid Con.monoid
 #align add_con.add_monoid AddCon.addMonoid
 
@@ -1289,13 +1288,12 @@ instance zpowinst : Pow c.Quotient ℤ :=
 @[to_additive "A quotient of a `SubNegMonoid` by an additive congruence relation is
 a `SubNegMonoid`."]
 instance divInvMonoid : DivInvMonoid c.Quotient :=
-  { Function.Surjective.divInvMonoid (M₂ := c.Quotient) Quotient.mk''
-      Quotient.surjective_Quotient_mk'' rfl (fun _ _ => rfl) (fun _ => rfl)
-      (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl with
-    toMonoid := Con.monoid _
-    toInv := Con.hasInv _
-    toDiv := Con.hasDiv _
-    zpow := fun z q => q ^ z }
+  { Con.monoid _, Con.hasInv _, Con.hasDiv _ with
+    zpow := fun z q => q ^ z
+    zpow_zero' := Quotient.ind' fun _ => congrArg _ <| DivInvMonoid.zpow_zero' _
+    zpow_succ' := fun _ => Quotient.ind' fun _ => congrArg _ <| DivInvMonoid.zpow_succ' ..
+    zpow_neg' := fun _ => Quotient.ind' fun _ => congrArg _ <| DivInvMonoid.zpow_neg' ..
+    div_eq_mul_inv := Quotient.ind₂' fun _ _ => congrArg _ <| div_eq_mul_inv .. }
 
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
