@@ -85,6 +85,9 @@ section
 
 open ZeroObject
 
+lemma injective_of_isZero (X : C) (hX : IsZero X) : Injective X where
+  factors _ _ _ := ⟨hX.from_ _, hX.eq_of_tgt _ _⟩
+
 instance zero_injective [HasZeroObject C] [HasZeroMorphisms C] : Injective (0 : C) where
   factors g f := ⟨0, by ext⟩
 #align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
@@ -212,27 +215,37 @@ section EnoughInjectives
 
 variable [EnoughInjectives C]
 
+lemma exists_presentation' (X : C) : ∃ (I : InjectivePresentation X), IsZero X → IsZero I.J := by
+  by_cases IsZero X
+  · have := injective_of_isZero _ h
+    exact ⟨{ J := X, f := 𝟙 X}, by tauto⟩
+  · exact ⟨(EnoughInjectives.presentation X).some, by tauto⟩
+
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
 a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
-  (EnoughInjectives.presentation X).some.J
+  (exists_presentation' X).choose.J
 #align category_theory.injective.under CategoryTheory.Injective.under
 
 instance injective_under (X : C) : Injective (under X) :=
-  (EnoughInjectives.presentation X).some.injective
+  (exists_presentation' X).choose.injective
 #align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
 /-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
-  (EnoughInjectives.presentation X).some.f
+  (exists_presentation' X).choose.f
 #align category_theory.injective.ι CategoryTheory.Injective.ι
 
 instance ι_mono (X : C) : Mono (ι X) :=
-  (EnoughInjectives.presentation X).some.mono
+  (exists_presentation' X).choose.mono
 #align category_theory.injective.ι_mono CategoryTheory.Injective.ι_mono
+
+lemma isZero_under (X : C) (hX : IsZero X) :
+    IsZero (under X) :=
+  (exists_presentation' X).choose_spec hX
 
 section
 

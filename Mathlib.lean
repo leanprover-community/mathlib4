@@ -238,7 +238,8 @@ import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Exact
-import Mathlib.Algebra.Homology.Factorizations.Factorization
+import Mathlib.Algebra.Homology.Factorizations.Basic
+import Mathlib.Algebra.Homology.Factorizations.CM5b
 import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.HomologicalComplex

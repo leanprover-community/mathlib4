@@ -71,6 +71,6 @@ variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 def monoUpTo (n : ℤ) : Prop := ∀ (i : ℤ) (_ : i ≤ n), Mono (φ.f i)
 
-def fibration : Prop := ∀ (i : ℤ), epiWithInjectiveKernel (φ.f i)
+def degreewiseEpiWithInjectiveKernel : Prop := ∀ (i : ℤ), epiWithInjectiveKernel (φ.f i)
 
 end CochainComplex
