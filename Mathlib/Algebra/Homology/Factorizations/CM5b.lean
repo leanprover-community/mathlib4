@@ -98,15 +98,30 @@ lemma degreewiseEpiWithInjectiveKernel_p :
     rw [← HomologicalComplex.id_f, ← biprod.total, HomologicalComplex.add_f_apply,
       HomologicalComplex.comp_f, HomologicalComplex.comp_f]
 
---instance quasiIso_i : QuasiIso (p K L) := sorry
+noncomputable def mappingConeHomotopyZero (M : CochainComplex C ℤ): Homotopy (𝟙 (mappingCone (𝟙 M))) 0 :=
+  MappingCone.liftHomotopy _ _ _ (MappingCone.snd (𝟙 M)) 0 (by simp) (by simp)
+
+noncomputable def homotopyEquiv : HomotopyEquiv (mappingCone (𝟙 (I K)) ⊞ L) L where
+  hom := p K L
+  inv := biprod.inr
+  homotopyHomInvId := by
+    let h₁ := ((mappingConeHomotopyZero (I K)).compRight
+      (biprod.inl : _ ⟶ mappingCone (𝟙 (I K)) ⊞ L)).compLeft
+        (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _)
+    let h₂ := Homotopy.add h₁ (Homotopy.refl (biprod.snd ≫ biprod.inr))
+    refine' Homotopy.trans (Homotopy.ofEq _) (h₂.symm.trans (Homotopy.ofEq _))
+    · simp [p]
+    · simp [p]
+  homotopyInvHomId := Homotopy.ofEq (by simp [p])
+
+instance quasiIso_i : QuasiIso (p K L) := (homotopyEquiv K L).toQuasiIso
 
 end CM5b
 
---lemma CM5b (n : ℤ) [K.IsStrictlyGE (n+1)] [L.IsStrictlyGE n]:
---    ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
---      (_hi : Mono i) (_hp : degreewiseEpiWithInjectiveKernel p) (_hp' : QuasiIso p), i ≫ p = f :=
---  ⟨_ , by infer_instance, CM5b.i f, CM5b.p K L, inferInstance,
---    CM5b.degreewiseEpiWithInjectiveKernel_p K L, inferInstance, by simp⟩
-
+lemma CM5b (n : ℤ) [K.IsStrictlyGE (n+1)] [L.IsStrictlyGE n] :
+    ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
+      (_hi : Mono i) (_hp : degreewiseEpiWithInjectiveKernel p) (_hp' : QuasiIso p), i ≫ p = f :=
+  ⟨_ , by infer_instance, CM5b.i f, CM5b.p K L, inferInstance,
+    CM5b.degreewiseEpiWithInjectiveKernel_p K L, inferInstance, by simp⟩
 
 end CochainComplex
