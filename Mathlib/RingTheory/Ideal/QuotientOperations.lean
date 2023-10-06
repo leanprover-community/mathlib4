@@ -82,9 +82,9 @@ noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R 
 #align ring_hom.quotient_ker_equiv_of_surjective RingHom.quotientKerEquivOfSurjective
 
 /-- The **first isomorphism theorem** for commutative rings. -/
-noncomputable def quotientKerEquivRange (f : R →+* S) : R ⧸ (RingHom.ker f) ≃+* f.range :=
-  (Ideal.quotEquivOfEq f.ker_rangeRestrict.symm).trans
-  (RingHom.quotientKerEquivOfSurjective (f.rangeRestrict_surjective))
+noncomputable def quotientKerEquivRange (f : R →+* S) : R ⧸ ker f ≃+* f.range :=
+  (Ideal.quotEquivOfEq f.ker_rangeRestrict.symm).trans <|
+    quotientKerEquivOfSurjective f.rangeRestrict_surjective
 
 end RingHom
 
