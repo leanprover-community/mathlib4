@@ -757,6 +757,22 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
+@[simp]
+theorem coeff_natCast_zero (a : ℕ) : coeff a 0 = a := coeff_monomial
+
+@[simp]
+theorem coeff_natCast_succ (a n : ℕ) : coeff a (n + 1) = 0 := by simp [coeff_C]
+
+@[simp]
+theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] : coeff (no_index (OfNat.ofNat a : R[X])) 0 = a :=
+  coeff_monomial
+
+@[simp]
+theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
+    coeff (no_index (OfNat.ofNat a : R[X])) (n + 1) = 0 := by
+  rw [← Nat.cast_eq_ofNat]
+  simp
+
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by
