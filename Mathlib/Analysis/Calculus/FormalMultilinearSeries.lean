@@ -87,6 +87,8 @@ protected theorem ne_iff {p q : FormalMultilinearSeries 𝕜 E F} : p ≠ q ↔ 
   Function.ne_iff
 #align formal_multilinear_series.ne_iff FormalMultilinearSeries.ne_iff
 
+/-- Cartesian product of two formal multilinear series (with the same field `𝕜` and the same source
+space, but possibly different target spaces). -/
 def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
     FormalMultilinearSeries 𝕜 E (F × G)
   | n => (p n).prod (q n)
