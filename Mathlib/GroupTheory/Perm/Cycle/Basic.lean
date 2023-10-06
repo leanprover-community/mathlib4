@@ -1940,7 +1940,7 @@ theorem _root_.Finset.product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     rw [hf.pow_apply_eq_pow_apply ha] at h
     rw [mem_coe, mem_range] at hm hn
     exact hmn.symm (h.eq_of_lt_of_lt hn hm)
-#align finset.product_self_eq_disj_Union_perm_aux Finset.product_self_eq_disj_Union_perm_aux
+#align finset.product_self_eq_disj_Union_perm_aux Finset.product_self_eq_disjiUnion_perm_aux
 
 /-- We can partition the square `s ×ˢ s` into shifted diagonals as such:
 ```
@@ -1966,7 +1966,7 @@ theorem _root_.Finset.product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
     exact ⟨n, hn, a, hx.1, rfl, by rw [f.iterate_eq_pow]⟩
   · rintro ⟨n, -, a, ha, rfl, rfl⟩
     exact ⟨ha, (hf.1.iterate _).mapsTo ha⟩
-#align finset.product_self_eq_disj_Union_perm Finset.product_self_eq_disjUnionₓ_perm
+#align finset.product_self_eq_disj_Union_perm Finset.product_self_eq_disjiUnion_permₓ
 
 end Finset
 
