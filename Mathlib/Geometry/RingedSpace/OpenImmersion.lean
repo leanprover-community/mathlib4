@@ -62,9 +62,9 @@ open CategoryTheory.Limits
 
 namespace AlgebraicGeometry
 
-universe v v₁ v₂ u
+universe v v₁ v₂ u uC
 
-variable {C : Type*} [Category C]
+variable {C : Type uC} [Category.{v} C]
 
 /-- An open immersion of PresheafedSpaces is an open embedding `f : X ⟶ U ⊆ Y` of the underlying
 spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U`.
@@ -920,7 +920,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
       -- Porting note : just `convert` is very slow, so helps it a bit
       convert this using 2 <;> congr
     rw [PresheafedSpace.comp_c_app,
-      ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
+      ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π.{v, v, v}]
     -- Porting note : this instance created manually to make the `inferInstance` below work
     have inst1 : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c :=
       PresheafedSpace.c_isIso_of_iso _
