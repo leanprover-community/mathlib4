@@ -455,7 +455,8 @@ lemma HasFPowerSeriesOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ�
 
 variable (𝕜)
 
-lemma hasFPowerSeriesOnBall_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
+lemma hasFPowerSeriesOnBall_inv_one_sub
+    (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
     HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 - x)⁻¹) (formalMultilinearSeries_geometric 𝕜 𝕝) 0 1 := by
   constructor
   · exact le_of_eq (formalMultilinearSeries_geometric_radius 𝕜 𝕝).symm

@@ -178,7 +178,7 @@ end AnalyticAt
 /-- If `𝕝` is a normed field extension of `𝕜`, then the inverse map `𝕝 → 𝕝` is `𝕜`-analytic
 away from 0. -/
 lemma analyticAt_inv {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-  {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
+    {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
   let f1 : 𝕝 → 𝕝 := fun a ↦ 1 / z * a
   let f2 : 𝕝 → 𝕝 := fun b ↦ (1 - b)⁻¹
   let f3 : 𝕝 → 𝕝 := fun c ↦ 1 - c / z
