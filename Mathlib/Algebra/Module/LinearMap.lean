@@ -872,7 +872,7 @@ variable [Module R₁ N₁] [Module R₂ N₂] [Module R₃ N₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- The constant 0 map is linear. -/
-instance zero : Zero (M →ₛₗ[σ₁₂] M₂) :=
+protected instance zero : Zero (M →ₛₗ[σ₁₂] M₂) :=
   ⟨{  toFun := 0
       map_add' := by simp
       map_smul' := by simp }⟩
@@ -901,7 +901,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 #align linear_map.default_def LinearMap.default_def
 
 /-- The sum of two linear maps is linear. -/
-instance add : Add (M →ₛₗ[σ₁₂] M₂) :=
+protected instance add : Add (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun f g ↦
     { toFun := f + g
       map_add' := by simp [add_comm, add_left_comm]
@@ -939,7 +939,7 @@ instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
     toAddMonoid := LinearMap.addMonoid }
 
 /-- The negation of a linear map is linear. -/
-instance neg : Neg (M →ₛₗ[σ₁₂] N₂) :=
+protected instance neg : Neg (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f ↦
     { toFun := -f
       map_add' := by simp [add_comm]
@@ -961,7 +961,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
 #align linear_map.comp_neg LinearMap.comp_neg
 
 /-- The subtraction of two linear maps is linear. -/
-instance sub : Sub (M →ₛₗ[σ₁₂] N₂) :=
+protected instance sub : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
