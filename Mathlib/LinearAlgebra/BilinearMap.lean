@@ -226,7 +226,7 @@ variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
 
 variable [SMulCommClass R R M] [SMulCommClass R R Mₗ] [SMulCommClass R R Nₗ] [SMulCommClass R R Pₗ]
-  [SMulCommClass R R Qₗ] [SMulCommClass R R Qₗ'] [SMulCommClass R₂ R₂ N] [SMulCommClass R₃ R₃ P]
+  [SMulCommClass R R Qₗ] [SMulCommClass R R Qₗ']  [SMulCommClass R₃ R₃ P]
   [SMulCommClass R₄ R₄ Q]
 
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
