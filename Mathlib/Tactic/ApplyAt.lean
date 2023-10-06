@@ -26,7 +26,7 @@ original `i`.
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
   let f ← Term.elabTerm (← `(@$t)) none
   let some ldecl := (← getLCtx).findFromUserName? i.getId |
-    throwError m!"Identifier {i} not found"
+    throwErrorAt i m!"Identifier {i} not found"
   let (mvs, _, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal
   let mainGoal ← mainGoal.tryClear ldecl.fvarId
