@@ -306,15 +306,6 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
   exact (h m).eq_bot_of_ge (sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p)
 #align is_artinian.disjoint_partial_infs_eventually_top IsArtinian.disjoint_partial_infs_eventually_top
 
-lemma _root_.LinearMap.exists_range_pow_eq_iInf (f : Module.End R M) :
-    ∃ (n : ℕ), ⨅ m, LinearMap.range (f ^ m) = LinearMap.range (f ^ n) := by
-  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
-    monotone_stabilizes f.iterateRange
-  refine ⟨n, le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
-  cases' le_or_lt n m with h h
-  · rw [hn _ h]
-  · exact f.iterateRange.monotone h.le
-
 end IsArtinian
 
 end Ring
