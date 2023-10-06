@@ -205,11 +205,11 @@ theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
 
 end Semiring
 
-section CommSemiring
+section SMulCommSemiring
 
-variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
+variable {R : Type*} [Semiring R] {R₂ : Type*} [Semiring R₂]
 
-variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
+variable {R₃ : Type*} [Semiring R₃] {R₄ : Type*} [Semiring R₄]
 
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
 
@@ -224,6 +224,10 @@ variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
+
+variable [SMulCommClass R R M] [SMulCommClass R R Mₗ] [SMulCommClass R R Nₗ] [SMulCommClass R R Pₗ]
+  [SMulCommClass R R Qₗ] [SMulCommClass R R Qₗ']  [SMulCommClass R₃ R₃ P]
+  [SMulCommClass R₄ R₄ Q]
 
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
 
@@ -385,7 +389,8 @@ variable (R M)
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
   mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
-    simp only [smul_smul, smul_eq_mul, mul_comm]
+    simp only
+    rw [smul_comm]
 #align linear_map.lsmul LinearMap.lsmul
 
 variable {R M}
@@ -394,7 +399,7 @@ variable {R M}
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
-end CommSemiring
+end SMulCommSemiring
 
 section CommRing
 
