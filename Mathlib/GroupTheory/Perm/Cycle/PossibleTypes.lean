@@ -29,7 +29,7 @@ put elsewhere
 -/
 
 
-section List
+/- section List
 
 namespace List
 
@@ -70,77 +70,77 @@ def ranges : List ℕ → List (List ℕ)
 /-- The members of `l.ranges` are pairwise disjoint -/
 theorem ranges_disjoint (l : List ℕ) :
   Pairwise Disjoint (ranges l) := by
-  induction' l with a l hl
-  -- nil
-  exact Pairwise.nil
-  -- (a :: l)
-  simp only [ranges, pairwise_cons]
-  constructor
-  · intro s hs
-    obtain ⟨s', _, rfl⟩ := mem_map.mp hs
-    intro u hu
-    rw [mem_map]
-    rintro ⟨v, _, rfl⟩
-    rw [mem_range] at hu
-    exact lt_iff_not_le.mp hu le_self_add
-  · rw [pairwise_map]
-    apply Pairwise.imp _ hl
-    intro u v
-    apply disjoint_map
-    exact fun u v => Nat.add_left_cancel
+  induction l with
+  | nil => exact Pairwise.nil
+  | cons a l hl =>
+    simp only [ranges, pairwise_cons]
+    constructor
+    · intro s hs
+      obtain ⟨s', _, rfl⟩ := mem_map.mp hs
+      intro u hu
+      rw [mem_map]
+      rintro ⟨v, _, rfl⟩
+      rw [mem_range] at hu
+      exact lt_iff_not_le.mp hu le_self_add
+    · rw [pairwise_map]
+      apply Pairwise.imp _ hl
+      intro u v
+      apply disjoint_map
+      exact fun u v => Nat.add_left_cancel
 #align list.ranges_disjoint List.ranges_disjoint
 
 /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup (l : List ℕ) :
     ∀ s ∈ ranges l, s.Nodup := by
-  induction' l with a l hl
-  · -- nil
+  induction l with
+  | nil =>
     intro s hs
     simp only [ranges, not_mem_nil] at hs
-  · -- (a :: l)
+  | cons a l hl =>
     intro s hs
     simp only [ranges, List.mem_cons] at hs
-    cases' hs with hs hs
-    -- s = a
-    rw [hs]
-    exact nodup_range a
-    -- s ∈ l
-    obtain ⟨t, ht, rfl⟩ := mem_map.mp hs
-    exact Nodup.map (fun u v => Nat.add_left_cancel) (hl t ht)
+    cases hs with
+    | inl hs => -- case s = a
+      rw [hs]
+      exact nodup_range a
+    | inr hs => -- case s ∈ l
+      obtain ⟨t, ht, rfl⟩ := mem_map.mp hs
+      exact Nodup.map (fun u v => Nat.add_left_cancel) (hl t ht)
 
 /-- The lengths of the members of `l.ranges` are those given by `l` -/
 theorem ranges_length (l : List ℕ) :
     l.ranges.map length = l := by
-  induction' l with a l hl
-  -- nil
-  simp only [ranges, map_nil]
-  -- (a :: l)
-  simp only [map, length_range, map_map, cons.injEq, true_and]
-  conv_rhs => rw [← hl]
-  apply map_congr
-  intro s _
-  simp only [Function.comp_apply, length_map]
+  induction l with
+  | nil => simp only [ranges, map_nil]
+  | cons a l hl => -- (a :: l)
+    simp only [map, length_range, map_map, cons.injEq, true_and]
+    conv_rhs => rw [← hl]
+    apply map_congr
+    intro s _
+    simp only [Function.comp_apply, length_map]
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
 theorem ranges_lt (l : List ℕ) {s : List ℕ} {n : ℕ}
     (hs : s ∈ List.ranges l) (hn : n ∈ s) :
     n < l.sum := by
   revert s n
-  induction' l with a l hl
-  · -- nil
+  induction l with
+  | nil =>
     intro s n hs _
     exfalso
     simp only [ranges] at hs
     exact not_mem_nil s hs
-  · -- (a :: l)
+  | cons a l hl =>
     intro s n hs hn
     simp only [List.ranges, List.mem_cons] at hs
-    cases' hs with hs hs
-    · rw [hs, mem_range] at hn
+    cases hs with
+    | inl hs =>
+      rw [hs, mem_range] at hn
       apply lt_of_lt_of_le hn
       rw [sum_cons]
       exact le_self_add
-    · obtain ⟨t, ht, rfl⟩ := mem_map.mp hs
+    | inr hs =>
+      obtain ⟨t, ht, rfl⟩ := mem_map.mp hs
       obtain ⟨m, hm, rfl⟩ := mem_map.mp hn
       simp only [List.sum_cons, Nat.add_def, add_lt_add_iff_left]
       exact hl ht hm
@@ -193,6 +193,7 @@ theorem exists_pw_disjoint_with_card {α : Type*} [Fintype α]
       exact huv
 
 end List
+ -/
 
 variable (α : Type _) [DecidableEq α] [Fintype α]
 
@@ -254,3 +255,9 @@ theorem Equiv.Perm.with_cycleType_nonempty_iff {m : Multiset ℕ} :
       intro a b ha hb hab
       rw [List.formPerm_disjoint_iff (hp_nodup a ha) (hp_nodup b hb) (hp2 a ha) (hp2 b hb)]
       exact hab
+
+#find_home! List.ranges_nodup
+#find_home! List.disjoint_map
+#find_home! List.ranges_length
+
+#find_home! List.exists_pw_disjoint_with_card

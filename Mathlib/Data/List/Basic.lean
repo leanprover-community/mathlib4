@@ -4407,4 +4407,36 @@ theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
 end getI
 
+section Disjoint
+
+variable {α β : Type*}
+
+/-- The images of disjoint maps under a map are disjoint -/
+theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
+    (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
+  simp only [Disjoint]
+  intro b hbs hbt
+  rw [mem_map] at hbs hbt
+  obtain ⟨a, ha, rfl⟩ := hbs
+  apply h ha
+  obtain ⟨a', ha', ha''⟩ := hbt
+  rw [hf ha''.symm]; exact ha'
+
+/-- The images of disjoint lists under a partially defined map are disjoint -/
+theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List α}
+    (hs : ∀ a ∈ s, p a) (ht : ∀ a ∈ t, p a)
+    (hf : ∀ (a a' : α) (ha : p a) (ha' : p a'), f a ha = f a' ha' → a = a')
+    (h : Disjoint s t) :
+    Disjoint (s.pmap f hs) (t.pmap f ht) := by
+  simp only [Disjoint]
+  intro b hbs hbt
+  rw [mem_pmap] at hbs hbt
+  obtain ⟨a, ha, rfl⟩ := hbs
+  apply h ha
+  obtain ⟨a', ha', ha''⟩ := hbt
+  rw [hf a a' (hs a ha) (ht a' ha') ha''.symm]
+  exact ha'
+
+end Disjoint
+
 end List
