@@ -157,8 +157,7 @@ variable {σ : R →+* S}
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
 instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
-  { SemilinearMapClass.toAddHomClass with
-    map_zero := fun f ↦
+  { map_zero := fun f ↦
       show f 0 = 0 by
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
@@ -873,7 +872,7 @@ variable [Module R₁ N₁] [Module R₂ N₂] [Module R₃ N₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- The constant 0 map is linear. -/
-instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
+instance zero : Zero (M →ₛₗ[σ₁₂] M₂) :=
   ⟨{  toFun := 0
       map_add' := by simp
       map_smul' := by simp }⟩
@@ -902,7 +901,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 #align linear_map.default_def LinearMap.default_def
 
 /-- The sum of two linear maps is linear. -/
-instance : Add (M →ₛₗ[σ₁₂] M₂) :=
+instance add : Add (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun f g ↦
     { toFun := f + g
       map_add' := by simp [add_comm, add_left_comm]
@@ -925,7 +924,9 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 
 /-- The type of linear maps is an additive monoid. -/
 instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
-  FunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  { FunLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
+    toAdd := LinearMap.add
+    toZero := LinearMap.zero }
 
 /-- The negation of a linear map is linear. -/
 instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
