@@ -43,7 +43,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   a neighborhood of `x`, and it is included in `V⁻¹ • V • x`, which is itself contained in `U • x`
   if `V` is small enough. -/
   obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U :=
-    exists_nhds_one_isClosed_inv_eq_mul_subset hU
+    exists_closed_nhds_one_inv_eq_mul_subset hU
   obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ := by
     apply countable_cover_nhds_of_sigma_compact (fun g ↦ ?_)
     convert smul_mem_nhds g V_mem

@@ -1524,18 +1524,19 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
 
 /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/
-@[to_additive]
-theorem exists_nhds_one_isClosed_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
+@[to_additive "Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
+identity which is closed, symmetric, and satisfies `V + V ⊆ U`."]
+theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
     ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
-  rcases exists_nhds_one_split hU with ⟨V, V_mem, hV⟩
-  rcases exists_mem_nhds_isClosed_subset V_mem with ⟨W, W_mem, W_closed, hW⟩
+  rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
+  rcases exists_mem_nhds_isClosed_subset (V_open.mem_nhds V_mem) with ⟨W, W_mem, W_closed, hW⟩
   refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
     by simp [inter_comm], ?_⟩
   calc
   W ∩ W⁻¹ * (W ∩ W⁻¹)
     ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
   _ ⊆ V * V := mul_subset_mul hW hW
-  _ ⊆ U := by rintro - ⟨y, z, hy, hz, rfl⟩; exact hV y hy z hz
+  _ ⊆ U := hV
 
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
