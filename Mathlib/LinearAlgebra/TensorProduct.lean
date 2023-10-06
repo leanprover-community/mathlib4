@@ -1234,8 +1234,8 @@ open LinearMap
 variable (R)
 
 /-- Auxiliary function to defining negation multiplication on tensor product. -/
-def Neg.aux : M ⊗[R] N →+ M ⊗[R] N :=
-  liftAux <| (mk R M N).comp (-LinearMap.id)
+def Neg.aux : M ⊗[R] N →ₗ[R] M ⊗[R] N :=
+  lift <| (mk R M N).comp (-LinearMap.id)
 #noalign tensor_product.neg.aux
 
 variable {R}
@@ -1254,7 +1254,7 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     · rw [← this]
       unfold Neg.neg neg
       simp only
-      rw [AddMonoidHom.map_add]
+      rw [map_add]
       abel
     rw [hx, hy, add_zero]
 #align tensor_product.add_left_neg TensorProduct.add_left_neg
