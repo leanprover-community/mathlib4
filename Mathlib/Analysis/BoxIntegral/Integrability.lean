@@ -208,7 +208,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   refine' BoxIntegral.HasIntegral.congr_ae _ hfg.symm hl
   clear! f
   /- Now consider the sequence of simple functions
-    `simple_func.approx_on g hg.measurable (range g ∪ {0}) 0 (by simp)`
+    `SimpleFunc.approxOn g hg.measurable (range g ∪ {0}) 0 (by simp)`
     approximating `g`. Recall some properties of this sequence. -/
   set f : ℕ → SimpleFunc (ι → ℝ) E :=
     SimpleFunc.approxOn g hg.measurable (range g ∪ {0}) 0 (by simp)

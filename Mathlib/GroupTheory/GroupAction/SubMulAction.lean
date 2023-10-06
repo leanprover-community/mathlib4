@@ -63,6 +63,16 @@ class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [S
 
 attribute [to_additive] SMulMemClass
 
+/-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
+lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
+    [AddSubmonoidClass S M] : SMulMemClass S ℕ M where
+  smul_mem n _x hx := nsmul_mem hx n
+
+/-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
+lemma AddSubgroupClass.zsmulMemClass {S M : Type*} [SubNegMonoid M] [SetLike S M]
+    [AddSubgroupClass S M] : SMulMemClass S ℤ M where
+  smul_mem n _x hx := zsmul_mem hx n
+
 namespace SetLike
 
 variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
@@ -80,9 +90,17 @@ instance (priority := 900) smul : SMul R s :=
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
-  [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
-  SMulMemClass S M α :=
-{ smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
+    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+    SMulMemClass S M α :=
+  { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
+
+instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
+    (s : S) : IsScalarTower R s s where
+  smul_assoc r x y := Subtype.ext <| smul_assoc r (x : M) (y : M)
+
+instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
+    (s : S) : SMulCommClass R s s where
+  smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
 -- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
@@ -224,8 +242,8 @@ instance (priority := 75) toMulAction : MulAction R S' :=
 #align sub_mul_action.smul_mem_class.to_mul_action SubMulAction.SMulMemClass.toMulAction
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
-protected def subtype : S' →[R] M :=
-  ⟨Subtype.val, fun _ _ => rfl⟩
+protected def subtype : S' →[R] M where
+  toFun := Subtype.val; map_smul' _ _ := rfl
 #align sub_mul_action.smul_mem_class.subtype SubMulAction.SMulMemClass.subtype
 
 @[simp]
@@ -258,8 +276,8 @@ instance isScalarTower : IsScalarTower S R p where
 #align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
 instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
-    [IsScalarTower S' S M] : IsScalarTower S' S p
-    where smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
+    [IsScalarTower S' S M] : IsScalarTower S' S p where
+  smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower' SubMulAction.isScalarTower'
 
 @[simp, norm_cast]
@@ -307,7 +325,7 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
 
 /- -- Previously, the relatively useless :
 lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-  (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
+    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
 -/
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
