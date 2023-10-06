@@ -170,6 +170,9 @@ theorem mem_exchangeAxiom
 
 end Membership
 
+@[simp]
+theorem feasibleSet_nonempty : G.feasibleSet.Nonempty := ⟨∅, G.containsEmpty⟩
+
 -- Possible typo at IV. Lemma 1.5
 /-- Normal greedoid contains no loops. -/
 class Normal (G : Greedoid α) where
@@ -1261,9 +1264,21 @@ variable {s : Finset α}
 
 theorem exists_feasible_satisfying_basisRank :
     ∃ t ∈ G, G.basisRank s = (s ∩ t).card := by
-  by_contra' h'
-  have ⟨t, ht⟩ : G.base.Nonempty := G.bases_nonempty
-  sorry
+  simp only [basisRank, Nat.le_antisymm_iff , WithBot.unbot_le_iff, WithBot.le_unbot_iff]
+  have ⟨t, ht₁, ht₂⟩ :=
+    G.feasibleSet.exists_max_image (fun t => (s ∩ t).card) G.feasibleSet_nonempty
+  exists t
+  apply And.intro ht₁ (And.intro _ _)
+  · apply Finset.max_le
+    intro n hn
+    simp only [WithBot.coe_le_coe]
+    simp only [mem_image, system_feasible_set_mem_mem] at hn
+    let ⟨_, h₁, h₂⟩ := hn
+    rw [← h₂]
+    exact ht₂ _ h₁
+  · apply Finset.le_max
+    simp only [mem_image, system_feasible_set_mem_mem]
+    exists t
 
 theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   simp only [rank, system_feasible_set_mem_mem, basisRank, WithBot.le_unbot_iff, WithBot.coe_unbot]
