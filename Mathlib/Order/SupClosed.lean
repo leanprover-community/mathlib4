@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Set.Finite
 import Mathlib.Order.Closure
 import Mathlib.Order.UpperLower.Basic
 
@@ -26,10 +27,10 @@ is automatically complete. All dually for `⊓`.
   greatest lower bound is automatically complete.
 -/
 
-variable {α : Type*}
+variable {F α β : Type*}
 
 section SemilatticeSup
-variable [SemilatticeSup α]
+variable [SemilatticeSup α] [SemilatticeSup β]
 
 section Set
 variable {ι : Sort*} {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a : α}
@@ -56,6 +57,24 @@ lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 
 lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
 
+lemma SupClosed.preimage [SupHomClass F β α] (hs : SupClosed s) (f : F) : SupClosed (f ⁻¹' s) :=
+  λ a ha b hb ↦ by simpa [map_sup] using hs ha hb
+
+lemma SupClosed.image [SupHomClass F α β] (hs : SupClosed s) (f : F) : SupClosed (f '' s) := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+  rw [←map_sup]
+  exact Set.mem_image_of_mem _ $ hs ha hb
+
+lemma supClosed_range [SupHomClass F α β] (f : F) : SupClosed (Set.range f) := by
+  simpa using supClosed_univ.image f
+
+lemma SupClosed.prod {t : Set β} (hs : SupClosed s) (ht : SupClosed t) : SupClosed (s ×ˢ t) :=
+  λ _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
+
+lemma supClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeSup (α i)] {s : Set ι}
+  {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
+  λ _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
+
 end Set
 
 section Finset
@@ -75,7 +94,7 @@ end Finset
 end SemilatticeSup
 
 section SemilatticeInf
-variable [SemilatticeInf α]
+variable [SemilatticeInf α] [SemilatticeInf β]
 
 section Set
 variable {ι : Sort*} {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a : α}
@@ -102,6 +121,24 @@ lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
 
 lemma IsLowerSet.infClosed (hs : IsLowerSet s) :  InfClosed s := λ _a _ _b ↦ hs inf_le_right
 
+lemma InfClosed.preimage [InfHomClass F β α] (hs : InfClosed s) (f : F) : InfClosed (f ⁻¹' s) :=
+  λ a ha b hb ↦ by simpa [map_inf] using hs ha hb
+
+lemma InfClosed.image [InfHomClass F α β] (hs : InfClosed s) (f : F) : InfClosed (f '' s) := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+  rw [←map_inf]
+  exact Set.mem_image_of_mem _ $ hs ha hb
+
+lemma infClosed_range [InfHomClass F α β] (f : F) : InfClosed (Set.range f) := by
+  simpa using infClosed_univ.image f
+
+lemma InfClosed.prod {t : Set β} (hs : InfClosed s) (ht : InfClosed t) : InfClosed (s ×ˢ t) :=
+  λ _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
+
+lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i)] {s : Set ι}
+  {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
+  λ _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
+
 end Set
 
 section Finset
@@ -123,22 +160,69 @@ end SemilatticeInf
 open Finset OrderDual
 
 section Lattice
-variable [Lattice α]
+variable {ι : Sort*} [Lattice α] [Lattice β] {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a : α}
 
-@[simp] lemma supClosed_preimage_toDual {s : Set αᵒᵈ} : SupClosed (toDual ⁻¹' s) ↔ InfClosed s :=
-Iff.rfl
+open Set
 
-@[simp] lemma infClosed_preimage_toDual {s : Set αᵒᵈ} : InfClosed (toDual ⁻¹' s) ↔ SupClosed s :=
-Iff.rfl
+/-- A set `s` is *lattice-closed* if `a ⊔ b ∈ s` and `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/
+structure LatticeClosed (s : Set α) : Prop where
+  supClosed : SupClosed s
+  infClosed : InfClosed s
 
-@[simp] lemma supClosed_preimage_ofDual {s : Set α} : SupClosed (ofDual ⁻¹' s) ↔ InfClosed s :=
-Iff.rfl
+@[simp] lemma latticeClosed_empty : LatticeClosed (∅ : Set α) := ⟨supClosed_empty, infClosed_empty⟩
+@[simp] lemma latticeClosed_singleton : LatticeClosed ({a} : Set α) :=
+  ⟨supClosed_singleton, infClosed_singleton⟩
 
-@[simp] lemma infClosed_preimage_ofDual {s : Set α} : InfClosed (ofDual ⁻¹' s) ↔ SupClosed s :=
-Iff.rfl
+@[simp] lemma latticeClosed_univ : LatticeClosed (Set.univ : Set α) :=
+  ⟨supClosed_univ, infClosed_univ⟩
+
+lemma LatticeClosed.inter (hs : LatticeClosed s) (ht : LatticeClosed t) : LatticeClosed (s ∩ t) :=
+  ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
+
+lemma latticeClosed_sInter (hS : ∀ s ∈ S, LatticeClosed s) : LatticeClosed (⋂₀ S) :=
+  ⟨supClosed_sInter λ _s hs ↦ (hS _ hs).1, infClosed_sInter λ _s hs ↦ (hS _ hs).2⟩
+
+lemma latticeClosed_iInter (hf : ∀ i, LatticeClosed (f i)) : LatticeClosed (⋂ i, f i) :=
+  ⟨supClosed_iInter λ _i ↦ (hf _).1, infClosed_iInter λ _i ↦ (hf _).2⟩
+
+lemma LatticeClosed.preimage [LatticeHomClass F β α] (hs : LatticeClosed s) (f : F) :
+    LatticeClosed (f ⁻¹' s) := ⟨hs.1.preimage _, hs.2.preimage _⟩
+
+lemma LatticeClosed.image [LatticeHomClass F α β] (hs : LatticeClosed s) (f : F) :
+    LatticeClosed (f '' s) := ⟨hs.1.image _, hs.2.image _⟩
+
+lemma LatticeClosed_range [LatticeHomClass F α β] (f : F) : LatticeClosed (Set.range f) :=
+  ⟨supClosed_range _, infClosed_range _⟩
+
+lemma LatticeClosed.prod {t : Set β} (hs : LatticeClosed s) (ht : LatticeClosed t) :
+    LatticeClosed (s ×ˢ t) := ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
+
+lemma latticeClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {s : Set ι}
+  {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, LatticeClosed (t i)) : LatticeClosed (s.pi t) :=
+  ⟨supClosed_pi λ _i hi ↦ (ht _ hi).1, infClosed_pi λ _i hi ↦ (ht _ hi).2⟩
+
+@[simp] lemma supClosed_preimage_toDual {s : Set αᵒᵈ} :
+    SupClosed (toDual ⁻¹' s) ↔ InfClosed s := Iff.rfl
+
+@[simp] lemma infClosed_preimage_toDual {s : Set αᵒᵈ} :
+    InfClosed (toDual ⁻¹' s) ↔ SupClosed s := Iff.rfl
+
+@[simp] lemma supClosed_preimage_ofDual {s : Set α} :
+    SupClosed (ofDual ⁻¹' s) ↔ InfClosed s := Iff.rfl
+
+@[simp] lemma infClosed_preimage_ofDual {s : Set α} :
+    InfClosed (ofDual ⁻¹' s) ↔ SupClosed s := Iff.rfl
+
+@[simp] lemma latticeClosed_preimage_toDual {s : Set αᵒᵈ} :
+    LatticeClosed (toDual ⁻¹' s) ↔ LatticeClosed s := ⟨λ h ↦ ⟨h.2, h.1⟩, λ h ↦ ⟨h.2, h.1⟩⟩
+
+@[simp] lemma latticeClosed_preimage_ofDual :
+    LatticeClosed (ofDual ⁻¹' s) ↔ LatticeClosed s := ⟨λ h ↦ ⟨h.2, h.1⟩, λ h ↦ ⟨h.2, h.1⟩⟩
 
 alias ⟨_, InfClosed.dual⟩ := supClosed_preimage_ofDual
 alias ⟨_, SupClosed.dual⟩ := infClosed_preimage_ofDual
+alias ⟨_, LatticeClosed.dual⟩ := latticeClosed_preimage_ofDual
+alias ⟨_, LatticeClosed.of_dual⟩ := latticeClosed_preimage_toDual
 
 end Lattice
 
@@ -151,12 +235,17 @@ variable [LinearOrder α]
 @[simp] protected lemma LinearOrder.infClosed (s : Set α) : InfClosed s :=
 λ a ha b hb ↦ by cases le_total a b <;> simp [*]
 
+@[simp] protected lemma LinearOrder.latticeClosed (s : Set α) : LatticeClosed s :=
+  ⟨LinearOrder.supClosed _, LinearOrder.infClosed _⟩
+
 end LinearOrder
 
 /-! ## Closure -/
 
+open Finset
+
 section SemilatticeSup
-variable [SemilatticeSup α] {s : Set α} {a : α}
+variable [SemilatticeSup α] [SemilatticeSup β] {s t : Set α} {a b : α}
 
 /-- Every set in a join-semilattice generates a set closed under join. -/
 def supClosure : ClosureOperator (Set α) := ClosureOperator.mk₃
@@ -196,10 +285,34 @@ supClosure.idempotent _
 
 @[simp] lemma isLUB_supClosure : IsLUB (supClosure s) a ↔ IsLUB s a := by simp [IsLUB]
 
+lemma sup_mem_supClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊔ b ∈ supClosure s :=
+  supClosed_supClosure (subset_supClosure ha) (subset_supClosure hb)
+
+lemma finsetSup'_mem_supClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
+    (hf : ∀ i ∈ t, f i ∈ s) : t.sup' ht f ∈ supClosure s :=
+  supClosed_supClosure.finsetSup'_mem _ $ λ _i hi ↦ subset_supClosure $ hf _ hi
+
+@[simp] lemma supClosure_closed : supClosure.closed = {s : Set α | SupClosed s} := by
+  ext; exact ClosureOperator.mem_mk₃_closed
+
+lemma supClosure_min (hst : s ⊆ t) (ht : SupClosed t) : supClosure s ⊆ t :=
+  ClosureOperator.closure_le_mk₃_iff hst ht
+
+/-- The semilatice generated by a finite set is finite. -/
+protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite := by
+  lift s to Finset α using hs
+  classical
+  refine' ((s.powerset.filter Finset.Nonempty).attach.image
+    λ t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+  rintro _ ⟨t, ht, hts, rfl⟩
+  simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
+    Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
+  exact ⟨t, ⟨hts, ht⟩, rfl⟩
+
 end SemilatticeSup
 
 section SemilatticeInf
-variable [SemilatticeInf α] {s : Set α} {a : α}
+variable [SemilatticeInf α] [SemilatticeInf β] {s t : Set α} {a b : α}
 
 /-- Every set in a join-semilattice generates a set closed under join. -/
 def infClosure : ClosureOperator (Set α) := ClosureOperator.mk₃
@@ -238,6 +351,31 @@ infClosure.idempotent _
   exact le_inf' _ _ λ b hb ↦ ha $ hts hb
 
 @[simp] lemma isGLB_infClosure : IsGLB (infClosure s) a ↔ IsGLB s a := by simp [IsGLB]
+open Finset
+
+lemma inf_mem_infClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊓ b ∈ infClosure s :=
+  infClosed_infClosure (subset_infClosure ha) (subset_infClosure hb)
+
+lemma finsetInf'_mem_infClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
+    (hf : ∀ i ∈ t, f i ∈ s) : t.inf' ht f ∈ infClosure s :=
+  infClosed_infClosure.finsetInf'_mem _ $ λ _i hi ↦ subset_infClosure $ hf _ hi
+
+@[simp] lemma infClosure_closed : infClosure.closed = {s : Set α | InfClosed s} := by
+  ext; exact ClosureOperator.mem_mk₃_closed
+
+lemma infClosure_min (hst : s ⊆ t) (ht : InfClosed t) : infClosure s ⊆ t :=
+  ClosureOperator.closure_le_mk₃_iff hst ht
+
+/-- The semilatice generated by a finite set is finite. -/
+protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite := by
+  lift s to Finset α using hs
+  classical
+  refine' ((s.powerset.filter Finset.Nonempty).attach.image
+    λ t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+  rintro _ ⟨t, ht, hts, rfl⟩
+  simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
+    Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
+  exact ⟨t, ⟨hts, ht⟩, rfl⟩
 
 end SemilatticeInf
 
