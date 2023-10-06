@@ -182,7 +182,7 @@ instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (Wea
     -- Porting note: mathlib3 proof was done here
     rw [← (B x).neg_apply]
     congr
-    exact (map_neg B x).symm
+    exact (map_neg (H := F →ₗ[𝕜] 𝕜) B x).symm
 
 end Ring
 
