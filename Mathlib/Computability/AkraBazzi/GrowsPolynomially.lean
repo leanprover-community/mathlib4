@@ -31,8 +31,8 @@ open Finset Real Filter Asymptotics BigOperators
 namespace AkraBazziRecurrence
 
 /-- The growth condition that the function `g` must satisfy for the Akra-Bazzi theorem to apply.
-It roughly states that c₁ g(n) ≤ g(u) ≤ c₂ g(n), for u between b*n and n for any
-constant b ∈ (0,1). -/
+It roughly states that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b*n` and `n` for any
+constant `b ∈ (0,1)`. -/
 def GrowsPolynomially (f : ℝ → ℝ) : Prop :=
   ∀ b ∈ Set.Ioo 0 1, ∃ c₁ ∈ Set.Ioi 0, ∃ c₂ ∈ Set.Ioi 0,
     ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ∈ Set.Icc (c₁ * (f x)) (c₂ * f x)
@@ -92,8 +92,8 @@ protected lemma mul {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
                   eventually_ge_atTop 0] with x hf hg hf' hg' hx_pos
   intro u hu
   have hbx : b * x ≤ x := calc
-    b * x ≤ 1 * x   := by gcongr; exact le_of_lt hb.2
-        _ = x       := by ring
+    b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
+        _ = x := by ring
   have fu_nonneg : 0 ≤ f u := hf' u hu.1
   have gu_nonneg : 0 ≤ g u := hg' u hu.1
   have fx_nonneg : 0 ≤ f x := hf' x hbx
@@ -140,7 +140,7 @@ protected lemma add {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
   have gx_nonneg : 0 ≤ g x := hg' x hbx
   refine ⟨?lb, ?ub⟩
   case lb => calc
-    min c₁ c₃ * (f x + g x) = min c₁ c₃ * f x + min c₁ c₃ * g x     := by simp only [mul_add]
+    min c₁ c₃ * (f x + g x) = min c₁ c₃ * f x + min c₁ c₃ * g x := by simp only [mul_add]
       _ ≤ c₁ * f x + c₃ * g x := by
               gcongr
               · exact min_le_left _ _
