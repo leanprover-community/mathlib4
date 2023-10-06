@@ -50,7 +50,7 @@ instance concreteCategory : ConcreteCategory TopCat := by
   infer_instance
 
 @[to_additive existing TopCat.instCoeSortTopCatType]
-instance : CoeSort TopCat (Type*) :=
+instance instCoeSortTopCatType : CoeSort TopCat (Type*) :=
   Bundled.coeSort
 
 instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=

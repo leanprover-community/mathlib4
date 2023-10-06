@@ -127,14 +127,13 @@ variable {IM I N}
 
 @[simp] lemma smoothSheaf.eval_germ (U : Opens (TopCat.of M)) (x : U)
     (f : (smoothSheaf IM I M N).val.obj (op U)) :
-    smoothSheaf.eval IM I N (x : TopCat.of M) ((smoothSheaf IM I M N).presheaf.germ x f)
-    = f x :=
+    smoothSheaf.eval IM I N (x : TopCat.of M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
   TopCat.stalkToFiber_germ _ U x f
 
 lemma smoothSheaf.smooth_section {U : (Opens (TopCat.of M))ᵒᵖ}
     (f : (smoothSheaf IM I M N).val.obj U) :
     Smooth IM I f :=
-(contDiffWithinAt_localInvariantProp IM I ⊤).section_spec _ _ _ _
+  (contDiffWithinAt_localInvariantProp IM I ⊤).section_spec _ _ _ _
 
 end TypeCat
 
@@ -348,8 +347,8 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).inv =
     (forget CommRingCat).map
       (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).val) U) := by
-  rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom]
-  rfl
+  rw [Iso.comp_inv_eq, ← smoothSheafCommRing.ι_forgetStalk_hom, CommRingCat.forget_map]
+  simp_rw [Functor.comp_obj, Functor.op_obj]
 
 /-- Given a smooth commutative ring `R` and a manifold `M`, and an open neighbourhood `U` of a point
 `x : M`, the evaluation-at-`x` map to `R` from smooth functions from  `U` to `R`. -/
@@ -363,7 +362,7 @@ given by evaluating sections at `x`, considered as a morphism in the category of
 def smoothSheafCommRing.evalHom (x : TopCat.of M) :
     (smoothSheafCommRing IM I M R).presheaf.stalk x ⟶ CommRingCat.of R := by
   refine CategoryTheory.Limits.colimit.desc _ ⟨_, ⟨fun U ↦ ?_, ?_⟩⟩
-  · exact smoothSheafCommRing.evalAt _ _ _ _ _ _
+  · apply smoothSheafCommRing.evalAt
   · aesop_cat
 
 /-- Canonical ring homomorphism from the stalk of `smoothSheafCommRing IM I M R` at `x` to `R`,
