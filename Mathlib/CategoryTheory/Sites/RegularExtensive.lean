@@ -240,7 +240,7 @@ def prod_map {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) (F
 /-- The inverse to `Equalizer.forkMap F (Presieve.ofArrows Z π)`. -/
 noncomputable
 def firstObj_to_base {α : Type} [Fintype α] {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
-  (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] [IsIso (Sigma.desc π)] :
+    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] [IsIso (Sigma.desc π)] :
     Equalizer.FirstObj F (Presieve.ofArrows Z π) ⟶ F.obj (op X) :=
   haveI : PreservesLimit (Discrete.functor fun a => op (Z a)) F :=
     (PreservesFiniteProducts.preserves α).preservesLimit
