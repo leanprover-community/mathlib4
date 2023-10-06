@@ -8,6 +8,11 @@ example {α β : Type*} (f : α → β) (a : α) : β := by
   guard_hyp a :ₛ β
   exact a
 
+example {α β : Type*} (f : α → β) (a b : α) (h : a = b) : f a = f b := by
+  apply congr_arg f at h
+  guard_hyp h :ₛ f a = f b
+  exact h
+
 example (a b : ℕ) (h : a + 1 = b + 1) : a = b := by
   apply Nat.succ.inj at h
   guard_hyp h :ₛ a = b
