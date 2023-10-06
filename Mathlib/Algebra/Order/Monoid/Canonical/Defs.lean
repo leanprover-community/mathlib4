@@ -344,11 +344,11 @@ class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
 
+attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
+
 section CanonicallyLinearOrderedCommMonoid
 
 variable [CanonicallyLinearOrderedCommMonoid α]
-
-attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
