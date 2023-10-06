@@ -379,6 +379,73 @@ protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite :=
 
 end SemilatticeInf
 
+section Lattice
+variable [Lattice α] {s t : Set α}
+
+/-- Every set in a join-semilattice generates a set closed under join. -/
+def latticeClosure : ClosureOperator (Set α) :=
+  ClosureOperator.ofPred LatticeClosed $ λ _ ↦ latticeClosed_sInter
+
+@[simp] lemma subset_latticeClosure : s ⊆ latticeClosure s := latticeClosure.le_closure _
+
+@[simp] lemma latticeClosed_latticeClosure : LatticeClosed (latticeClosure s) :=
+  ClosureOperator.ofPred_spec _
+
+lemma latticeClosure_min (hst : s ⊆ t) (ht : LatticeClosed t) : latticeClosure s ⊆ t := by
+  rw [latticeClosure, ClosureOperator.ofPred]
+  exact ClosureOperator.closure_le_mk₃_iff hst ht
+
+lemma latticeClosure_mono : Monotone (latticeClosure : Set α → Set α) := latticeClosure.monotone
+
+@[simp] lemma latticeClosure_eq_self : latticeClosure s = s ↔ LatticeClosed s :=
+  ClosureOperator.mem_closed_ofPred
+
+@[simp] lemma latticeClosure_closed : latticeClosure.closed = {s : Set α | LatticeClosed s} :=
+  ClosureOperator.closed_ofPred
+
+alias ⟨_, LatticeClosed.latticeClosure_eq⟩ := latticeClosure_eq_self
+
+lemma latticeClosure_idem (s : Set α) : latticeClosure (latticeClosure s) = latticeClosure s :=
+  latticeClosure.idempotent _
+
+@[simp] lemma latticeClosure_empty : latticeClosure (∅ : Set α) = ∅ := by simp
+@[simp] lemma latticeClosure_singleton (a : α) : latticeClosure {a} = {a} := by simp
+@[simp] lemma latticeClosure_univ : latticeClosure (Set.univ : Set α) = Set.univ := by simp
+
+end Lattice
+
+section DistribLattice
+variable [DistribLattice α] [DistribLattice β] {s : Set α}
+
+open Finset
+
+protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure s) := by
+  rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
+  rw [inf'_sup_inf']
+  exact finsetInf'_mem_infClosure _
+    λ i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)
+
+protected lemma InfClosed.supClosure (hs : InfClosed s) : InfClosed (supClosure s) := by
+  rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
+  rw [sup'_inf_sup']
+  exact finsetSup'_mem_supClosure _
+    λ i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)
+
+@[simp] lemma supClosure_infClosure (s : Set α) : supClosure (infClosure s) = latticeClosure s :=
+  le_antisymm (supClosure_min (infClosure_min subset_latticeClosure latticeClosed_latticeClosure.2)
+    latticeClosed_latticeClosure.1) $ latticeClosure_min (subset_infClosure.trans subset_supClosure)
+      ⟨supClosed_supClosure, infClosed_infClosure.supClosure⟩
+
+@[simp] lemma infClosure_supClosure (s : Set α) : infClosure (supClosure s) = latticeClosure s :=
+  le_antisymm (infClosure_min (supClosure_min subset_latticeClosure latticeClosed_latticeClosure.1)
+    latticeClosed_latticeClosure.2) $ latticeClosure_min (subset_supClosure.trans subset_infClosure)
+      ⟨supClosed_supClosure.infClosure, infClosed_infClosure⟩
+
+lemma Set.Finite.latticeClosure (hs : s.Finite) : (latticeClosure s).Finite := by
+  rw [←supClosure_infClosure]; exact hs.infClosure.supClosure
+
+end DistribLattice
+
 /-- A join-semilattice where every sup-closed set has a least upper bound is automatically complete.
 -/
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)

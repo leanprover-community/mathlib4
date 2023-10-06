@@ -47,8 +47,7 @@ place when using concrete closure operators such as `ConvexHull`.
 * https://en.wikipedia.org/wiki/Closure_operator#Closure_operators_on_partially_ordered_sets
 -/
 
-
-universe u
+open Set
 
 /-! ### Closure operator -/
 
@@ -272,7 +271,25 @@ end SemilatticeSup
 
 section CompleteLattice
 
-variable [CompleteLattice α] (c : ClosureOperator α)
+variable [CompleteLattice α] (c : ClosureOperator α) {p : α → Prop}
+
+/-- Define a closure operator from a predicate that's preserved under infima. -/
+def ofPred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : ClosureOperator α :=
+  ClosureOperator.mk₃ (λ a ↦ ⨅ b : {b // p b ∧ a ≤ b}, b) p
+    (λ a ↦ by simp [forall_swap])
+    (λ a ↦ hsinf _ $ forall_range_iff.2 $ λ b ↦ b.2.1)
+    (λ a b hab hb ↦ iInf_le_of_le ⟨b, hb, hab⟩ le_rfl)
+
+/-- This lemma shows that the image of `x` of a closure operator built from the `ofPred` constructor
+respects `p`, the property that was fed into it. -/
+lemma ofPred_spec {sinf} (x : α) : p (ofPred p sinf x) := closure_mem_mk₃ _
+
+/-- The property `p` fed into the `ofPred` constructor exactly corresponds to being closed. -/
+@[simp] lemma closed_ofPred {hsinf} : (ofPred p hsinf).closed = {x | p x} := by
+  ext; exact mem_mk₃_closed
+
+/-- The property `p` fed into the `ofPred` constructor exactly corresponds to being closed. -/
+lemma mem_closed_ofPred {hsinf} {x : α} : x ∈ (ofPred p hsinf).closed ↔ p x := mem_mk₃_closed
 
 @[simp]
 theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
