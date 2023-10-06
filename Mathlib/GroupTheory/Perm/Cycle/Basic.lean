@@ -1925,7 +1925,7 @@ namespace Finset
 
 variable {f : Perm α} {s : Finset α}
 
-theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
+theorem _root_.Finset.product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     (range s.card : Set ℕ).PairwiseDisjoint fun k =>
       s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩ := by
   obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
@@ -1953,11 +1953,11 @@ theorem _root_.Finset.product_self_eq_disj_Union_perm_aux (hf : f.IsCycleOn s) :
 
 The diagonals are given by the cycle `f`.
 -/
-theorem _root_.Finset.product_self_eq_disjUnion_perm (hf : f.IsCycleOn s) :
+theorem _root_.Finset.product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
     s ×ˢ s =
       (range s.card).disjiUnion
         (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩)
-        (product_self_eq_disj_Union_perm_aux hf) := by
+        (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,
     Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop]
