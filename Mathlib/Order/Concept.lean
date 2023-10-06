@@ -129,7 +129,7 @@ theorem intentClosure_iUnion₂ (f : ∀ i, κ i → Set α) :
 theorem extentClosure_iUnion₂ (f : ∀ i, κ i → Set β) :
     extentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), extentClosure r (f i j) :=
   intentClosure_iUnion₂ _ _
-#align extent_closure_Union₂ extentClosure_Union₂
+#align extent_closure_Union₂ extentClosure_iUnion₂
 
 theorem subset_extentClosure_intentClosure (s : Set α) :
     s ⊆ extentClosure r (intentClosure r s) :=
