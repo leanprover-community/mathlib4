@@ -334,19 +334,21 @@ end NeZero
 /-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
     whose ordering is a linear order. -/
 class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
-  extends CanonicallyOrderedAddCommMonoid α, LinearOrder α
+  extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
-class CanonicallyLinearOrderedCommMonoid (α : Type*) extends CanonicallyOrderedCommMonoid α,
-  LinearOrder α
+class CanonicallyLinearOrderedCommMonoid (α : Type*)
+  extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
 
 section CanonicallyLinearOrderedCommMonoid
 
 variable [CanonicallyLinearOrderedCommMonoid α]
+
+attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -392,9 +394,5 @@ theorem bot_eq_one' : (⊥ : α) = 1 :=
   bot_eq_one
 #align bot_eq_one' bot_eq_one'
 #align bot_eq_zero' bot_eq_zero'
-
-@[to_additive]
-instance CanonicallyLinearOrderedCommMonoid.linearOrderedCommMonoid : LinearOrderedCommMonoid α :=
-  { ‹CanonicallyLinearOrderedCommMonoid α› with }
 
 end CanonicallyLinearOrderedCommMonoid
