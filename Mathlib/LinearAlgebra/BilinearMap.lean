@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.Algebra.Module.LinearMap
 
 #align_import linear_algebra.bilinear_map from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
