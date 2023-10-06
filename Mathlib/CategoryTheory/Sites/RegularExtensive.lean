@@ -234,8 +234,8 @@ def EqualizerCondition (P : Cᵒᵖ ⥤ Type (max u v)) : Prop :=
 The `FirstObj` in the sheaf condition diagram is isomorphic to `F` applied to `X`.
 -/
 noncomputable
-def EqualizerFirstObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ B)
-     : Equalizer.FirstObj F (Presieve.singleton π) ≅ F.obj (op X) :=
+def EqualizerFirstObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ B) :
+    Equalizer.FirstObj F (Presieve.singleton π) ≅ F.obj (op X) :=
   CategoryTheory.Equalizer.firstObjEqFamily F (Presieve.singleton π) ≪≫
   { hom := fun e ↦ e π (Presieve.singleton_self π)
     inv := fun e _ _ h ↦ by
