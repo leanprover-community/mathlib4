@@ -1242,6 +1242,9 @@ theorem mem_range (n : N) : n ∈ f.range ↔ ∃ m, f m = n :=
 theorem map_top : LieSubmodule.map f ⊤ = f.range := by ext; simp [LieSubmodule.mem_map]
 #align lie_module_hom.map_top LieModuleHom.map_top
 
+theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
+  rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_iff_surjective]
+
 end LieModuleHom
 
 namespace LieSubmodule
