@@ -53,8 +53,7 @@ When `P` is a monoidal predicate, the full subcategory for `P` inherits the mono
   `C`.
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
-  Monoidal.induced
-    (F := fullSubcategoryInclusion P)
+  Monoidal.induced (fullSubcategoryInclusion P)
     { tensorObj := fun X Y => ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
       μIsoSymm := fun X Y => eqToIso rfl
       whiskerLeft := fun X _ _ f ↦ X.1 ◁ f

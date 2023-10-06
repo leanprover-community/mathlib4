@@ -203,7 +203,7 @@ def fromInduced (F : D ⥤ C) [Faithful F] (fData : InducingFunctorData F):
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
-  induced (F := e.inverse)
+  induced e.inverse
     { tensorObj := fun X Y => e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
       μIsoSymm := fun X Y => (e.unitIso.app _).symm
       whiskerLeft := fun X _ _ f ↦ e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
