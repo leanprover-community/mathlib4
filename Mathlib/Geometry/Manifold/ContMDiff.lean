@@ -1642,7 +1642,7 @@ end Projections
 theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
-  by refine' ⟨fun h => ⟨h.fst, h.snd⟩, fun h => _⟩; simpa only [Prod.mk.eta] using h.1.prod_mk h.2
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
 #align cont_mdiff_within_at_prod_iff contMDiffWithinAt_prod_iff
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
@@ -1869,7 +1869,6 @@ theorem ContMDiff.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁}
 #align cont_mdiff.clm_apply ContMDiff.clm_apply
 
 -- porting note: Lean 3 code didn't need `@`
-set_option maxHeartbeats 400000 in
 theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
@@ -1896,7 +1895,6 @@ theorem ContMDiff.clm_precomp {f : M → F₁ →L[𝕜] F₂} (hf : ContMDiff I
   (hf x).clm_precomp
 
 -- porting note: Lean 3 code didn't need `@`
-set_option maxHeartbeats 400000 in
 theorem ContMDiffWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
@@ -2123,13 +2121,13 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : LocalHomeomorph M M') :
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
         apply EqOn.symm
         refine' e.isImage_source_target.symm_eqOn_of_inter_eq_of_eqOn _ _
-        · rw [inter_self, inter_eq_right_iff_subset.mpr h2e]
+        · rw [inter_self, inter_eq_right.mpr h2e]
         · rw [inter_self]; exact hef.symm
       have h2 : e.target ⊆ (c.symm ≫ₕ f ≫ₕ c').target := by
         intro x hx; rw [← e.right_inv hx, ← hef (e.symm.mapsTo hx)]
         exact LocalHomeomorph.mapsTo _ (h2e <| e.symm.mapsTo hx)
       rw [inter_self] at h1
-      rwa [inter_eq_right_iff_subset.mpr]
+      rwa [inter_eq_right.mpr]
       refine' h2.trans _
       mfld_set_tac
     refine' ⟨e.symm, StructureGroupoid.symm _ he, h3e, _⟩

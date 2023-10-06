@@ -38,10 +38,10 @@ def homotopic : HomRel (HomologicalComplex V c) := fun _ _ f g => Nonempty (Homo
 #align homotopic homotopic
 
 instance homotopy_congruence : Congruence (homotopic V c) where
-  isEquiv :=
+  equivalence :=
     { refl := fun C => ⟨Homotopy.refl C⟩
-      symm := fun _ _ ⟨w⟩ => ⟨w.symm⟩
-      trans := fun _ _ _ ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
+      symm := fun ⟨w⟩ => ⟨w.symm⟩
+      trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
   compLeft := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
   compRight := fun _ ⟨i⟩ => ⟨i.compRight _⟩
 #align homotopy_congruence homotopy_congruence
@@ -85,7 +85,7 @@ theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient 
 
 -- porting note: added to ease the port
 theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
-  Quot.mk _ f = (quotient V c).map f := rfl
+    Quot.mk _ f = (quotient V c).map f := rfl
 
 theorem eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homotopy f g) :
     (quotient V c).map f = (quotient V c).map g :=

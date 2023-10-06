@@ -1059,6 +1059,12 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
+/-- If `r` is a positive constant, then `x ↦ f x * r` tends to infinity along a filter if and only
+if `f` tends to infinity along the same filter. -/
+lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
+    Tendsto (λ x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
+  simpa only [div_eq_mul_inv] using tendsto_mul_const_atTop_of_pos (inv_pos.2 hr)
+
 /-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to infinity
 if and only if `0 < r. `-/
 theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
@@ -1074,6 +1080,12 @@ theorem tendsto_mul_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop ↔ 0 < r := by
   simp only [mul_comm _ r, tendsto_const_mul_atTop_iff_pos h]
 #align filter.tendsto_mul_const_at_top_iff_pos Filter.tendsto_mul_const_atTop_iff_pos
+
+/-- If `f` tends to infinity along a nontrivial filter `l`, then `x ↦ f x * r` tends to infinity
+if and only if `0 < r. `-/
+lemma tendsto_div_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
+    Tendsto (λ x ↦ f x / r) l atTop ↔ 0 < r := by
+  simp only [div_eq_mul_inv, tendsto_mul_const_atTop_iff_pos h, inv_pos]
 
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
 constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use

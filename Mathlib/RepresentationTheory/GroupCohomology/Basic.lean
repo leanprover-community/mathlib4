@@ -117,7 +117,7 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 variable [Group G] (n) (A : Rep k G)
 
 /- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 700000 in
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
 and the homogeneous `linearYonedaObjResolution`. -/
@@ -151,7 +151,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
   rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     Resolution.d_eq]
   erw [Resolution.d_of (Fin.partialProd g)]
-  rw [LinearMap.map_sum]
+  rw [map_sum]
   simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   rw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
@@ -172,7 +172,7 @@ variable [Group G] (n) (A : Rep k G)
 
 open InhomogeneousCochains
 
-set_option maxHeartbeats 3200000 in
+set_option maxHeartbeats 2400000 in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
@@ -199,7 +199,7 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     exact map_zero _
 #align group_cohomology.inhomogeneous_cochains GroupCohomology.inhomogeneousCochains
 
-set_option maxHeartbeats 3200000 in
+set_option maxHeartbeats 2000000 in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by

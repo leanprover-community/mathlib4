@@ -3,11 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Basic
 
 #align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -339,7 +338,7 @@ lemma CommSemigroup.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommSemigro
 `AddCommSemigroup G` that satisfies `IsLeftCancelAdd G` also satisfies
 `IsCancelAdd G`."]
 lemma CommSemigroup.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
-  [IsLeftCancelMul G] : IsCancelMul G :=
+    [IsLeftCancelMul G] : IsCancelMul G :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul G with }
 #align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommSemigroup.IsLeftCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsCancelAdd
@@ -962,7 +961,7 @@ theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻�
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
-  Int.negSucc n • a = -((n + 1) • a) := by
+    Int.negSucc n • a = -((n + 1) • a) := by
   rw [← ofNat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
@@ -1058,6 +1057,18 @@ theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
   DivisionMonoid.inv_eq_of_mul _ _
 #align inv_eq_of_mul_eq_one_right inv_eq_of_mul_eq_one_right
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
+
+@[to_additive]
+theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
+  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
+#align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
+#align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
+
+@[to_additive]
+theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
+  (inv_eq_of_mul_eq_one_left h).symm
+#align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
+#align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
 
 end DivisionMonoid
 

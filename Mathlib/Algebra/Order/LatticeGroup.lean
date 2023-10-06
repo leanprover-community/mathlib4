@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Order.Closure
 
@@ -277,7 +276,7 @@ theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b
     c * (a ⊓ b) = c * a ⊓ c * b := by
   refine' le_antisymm _ _
   rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left]
-  simp
+  simp only [inf_le_left, inf_le_right, and_self]
   rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
     inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
   simp
@@ -636,7 +635,7 @@ theorem mabs_mul_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : |a
 -- | |a| - |b| | ≤ |a - b|
 @[to_additive]
 theorem abs_abs_div_abs_le [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) :
-|(|a| / |b|)| ≤ |a / b| := by
+    |(|a| / |b|)| ≤ |a / b| := by
   rw [abs_eq_sup_inv, sup_le_iff]
   constructor
   · apply div_le_iff_le_mul.2
@@ -657,13 +656,13 @@ variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Mod
   [CovariantClass β β (· + ·) (· ≤ ·)]
 
 lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) :
-  x ⊓ y = (⅟2 : α) • (x + y - |y - x|) :=
-by rw [←LatticeOrderedCommGroup.two_inf_eq_add_sub_abs_sub x y, two_smul, ←two_smul α,
+    x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
+  rw [←LatticeOrderedCommGroup.two_inf_eq_add_sub_abs_sub x y, two_smul, ←two_smul α,
     smul_smul, invOf_mul_self, one_smul]
 
 lemma sup_eq_half_smul_add_add_abs_sub (x y : β) :
-  x ⊔ y = (⅟2 : α) • (x + y + |y - x|) :=
-by rw [←LatticeOrderedCommGroup.two_sup_eq_add_add_abs_sub x y, two_smul, ←two_smul α,
+    x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
+  rw [←LatticeOrderedCommGroup.two_sup_eq_add_add_abs_sub x y, two_smul, ←two_smul α,
     smul_smul, invOf_mul_self, one_smul]
 
 end invertible

@@ -60,7 +60,7 @@ example [Ring R] : coeff (1 : R[X]) 0 = 1 := by compute_degree!
 
 example [Ring R] : coeff (1 : R[X]) 2 = 0 := by compute_degree!
 
-example [Ring R] : coeff (1 : R[X]) n = if 0 = n then 1 else 0 := by compute_degree!
+example [Ring R] : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by compute_degree!
 
 example [Ring R] (h : (0 : R) = 6) : coeff (1 : R[X]) 1 = 6 := by compute_degree!
 

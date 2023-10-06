@@ -464,7 +464,7 @@ theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
 
 /-- If a set of functions is equicontinuous at some `x₀`, its closure for the product topology is
 also equicontinuous at `x₀`. -/
-theorem EquicontinuousAt.closure {A : Set <| X → α} {x₀ : X} (hA : A.EquicontinuousAt x₀) :
+protected theorem EquicontinuousAt.closure {A : Set (X → α)} {x₀ : X} (hA : A.EquicontinuousAt x₀) :
     (closure A).EquicontinuousAt x₀ :=
   EquicontinuousAt.closure' (u := id) hA continuous_id
 #align equicontinuous_at.closure EquicontinuousAt.closure
@@ -495,10 +495,10 @@ theorem Equicontinuous.closure {A : Set <| X → α} (hA : A.Equicontinuous) :
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is equicontinuous, then the limit is continuous. -/
-theorem Filter.Tendsto.continuous_of_equicontinuous_at {l : Filter ι} [l.NeBot] {F : ι → X → α}
+theorem Filter.Tendsto.continuous_of_equicontinuousAt {l : Filter ι} [l.NeBot] {F : ι → X → α}
     {f : X → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : Equicontinuous F) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x => h₁.continuousAt_of_equicontinuousAt (h₂ x)
-#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuous_at
+#align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuousAt
 
 /-- A version of `UniformEquicontinuous.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
@@ -532,6 +532,35 @@ theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι
   (uniformEquicontinuous_at_iff_range.mp h₂).closure.uniformContinuous
     ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
 #align filter.tendsto.uniform_continuous_of_uniform_equicontinuous Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous
+
+/-- If `F : ι → X → α` is a family of functions equicontinuous at `x`,
+it tends to `f y` along a filter `l` for any `y ∈ s`,
+the limit function `f` tends to `z` along `𝓝[s] x`, and `x ∈ closure s`,
+then `(F · x)` tends to `z` along `l`.
+
+In some sense, this is a converse of `EquicontinuousAt.closure`. -/
+theorem EquicontinuousAt.tendsto_of_mem_closure {l : Filter ι} {F : ι → X → α} {f : X → α}
+    {s : Set X} {x : X} {z : α} (hF : EquicontinuousAt F x) (hf : Tendsto f (𝓝[s] x) (𝓝 z))
+    (hs : ∀ y ∈ s, Tendsto (F · y) l (𝓝 (f y))) (hx : x ∈ closure s) :
+    Tendsto (F · x) l (𝓝 z) := by
+  rw [(nhds_basis_uniformity (𝓤 α).basis_sets).tendsto_right_iff] at hf ⊢
+  intro U hU
+  rcases comp_comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVs, hVU⟩
+  rw [mem_closure_iff_nhdsWithin_neBot] at hx
+  have : ∀ᶠ y in 𝓝[s] x, y ∈ s ∧ (∀ i, (F i x, F i y) ∈ V) ∧ (f y, z) ∈ V :=
+    eventually_mem_nhdsWithin.and <| ((hF V hV).filter_mono nhdsWithin_le_nhds).and (hf V hV)
+  rcases this.exists with ⟨y, hys, hFy, hfy⟩
+  filter_upwards [hs y hys (ball_mem_nhds _ hV)] with i hi
+  exact hVU ⟨_, ⟨_, hFy i, (mem_ball_symmetry hVs).2 hi⟩, hfy⟩
+
+/-- If `F : ι → X → α` is an equicontinuous family of functions,
+`f : X → α` is a continuous function, and `l` is a filter on `ι`,
+then `{x | Filter.Tendsto (F · x) l (𝓝 (f x))}` is a closed set. -/
+theorem Equicontinuous.isClosed_setOf_tendsto {l : Filter ι} {F : ι → X → α} {f : X → α}
+    (hF : Equicontinuous F) (hf : Continuous f) :
+    IsClosed {x | Tendsto (F · x) l (𝓝 (f x))} :=
+  closure_subset_iff_isClosed.mp fun x hx ↦
+    (hF x).tendsto_of_mem_closure (hf.continuousAt.mono_left inf_le_left) (fun _ ↦ id) hx
 
 end
 

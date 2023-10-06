@@ -177,13 +177,13 @@ theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toLocalEquiv.symm (e 
 @[simp, mfld_simps]
 theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toLocalEquiv.symm (proj x, (e x).2) = x := by
-  rw [← e.coe_fst ex, Prod.mk.eta, ← e.coe_coe, e.left_inv ex]
+  rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
 #align pretrivialization.symm_apply_mk_proj Pretrivialization.symm_apply_mk_proj
 
 @[simp, mfld_simps]
 theorem preimage_symm_proj_baseSet :
     e.toLocalEquiv.symm ⁻¹' (proj ⁻¹' e.baseSet) ∩ e.target = e.target := by
-  refine' inter_eq_right_iff_subset.mpr fun x hx => _
+  refine' inter_eq_right.mpr fun x hx => _
   simp only [mem_preimage, LocalEquiv.invFun_as_coe, e.proj_symm_apply hx]
   exact e.mem_target.mp hx
 #align pretrivialization.preimage_symm_proj_base_set Pretrivialization.preimage_symm_proj_baseSet
