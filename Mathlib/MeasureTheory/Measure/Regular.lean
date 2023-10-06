@@ -265,6 +265,11 @@ class WeaklyRegular (μ : Measure α) extends OuterRegular μ : Prop where
 #align measure_theory.measure.weakly_regular MeasureTheory.Measure.WeaklyRegular
 #align measure_theory.measure.weakly_regular.inner_regular MeasureTheory.Measure.WeaklyRegular.innerRegular
 
+/-- A measure `μ` is inner regular if, for any measurable set `s`, then
+`μ(s) = sup {μ(K) | K ⊆ s compact}`. -/
+class InnerRegular (μ : Measure α) : Prop where
+  protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s)
+
 /-- A measure `μ` is inner regular for finite measure sets with respect to compact sets:
 for any measurable set `s` with finite measure, then `μ(s) = sup {μ(K) | K ⊆ s compact}`. The
 main interest of this class is that it is satisfied for both natural Haar measures (the regular one
@@ -511,6 +516,13 @@ theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X
 
 end InnerRegularWRT
 
+namespace InnerRegular
+
+instance [InnerRegular μ] : InnerRegularCompactLTTop μ :=
+  ⟨fun _s hs r hr ↦ InnerRegular.innerRegular hs.1 r hr⟩
+
+end InnerRegular
+
 namespace InnerRegularCompactLTTop
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -556,13 +568,13 @@ theorem _root_.MeasurableSet.measure_eq_iSup_isCompact_of_ne_top [InnerRegularCo
 #align measurable_set.measure_eq_supr_is_compact_of_ne_top MeasurableSet.measure_eq_iSup_isCompact_of_ne_top
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets, then its
-restriction to finite measure measurable sets also is. Superseded by `restrict_of_measure_lt_top`,
-which removes the measurability assumption. -/
+restriction to finite measure measurable sets is inner regular. Superseded
+by `restrict_of_measure_lt_top`, which removes the measurability assumption. -/
 lemma restrict_of_measure_lt_top_aux
     [InnerRegularCompactLTTop μ] {A : Set α} (hA : MeasurableSet A) (h'A : μ A ≠ ∞) :
-    InnerRegularCompactLTTop (μ.restrict A) := by
+    InnerRegular (μ.restrict A) := by
   constructor
-  rintro U ⟨hU, -⟩ r hr
+  rintro U hU r hr
   rw [Measure.restrict_apply hU] at hr
   obtain ⟨K, KU, K_comp, hK⟩ : ∃ K, K ⊆ U ∩ A ∧ IsCompact K ∧ r < μ K := by
     apply MeasurableSet.exists_lt_isCompact_of_ne_top (hU.inter hA) _ hr
@@ -572,16 +584,15 @@ lemma restrict_of_measure_lt_top_aux
   rwa [Measure.restrict_apply' hA, this]
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets, then its
-restriction to finite measure sets also is -/
+restriction to finite measure sets is inner regular. -/
 lemma restrict_of_measure_lt_top
     [InnerRegularCompactLTTop μ] {A : Set α} (h'A : μ A ≠ ∞) :
-    InnerRegularCompactLTTop (μ.restrict A) := by
+    InnerRegular (μ.restrict A) := by
   rw [← restrict_toMeasurable h'A]
   exact InnerRegularCompactLTTop.restrict_of_measure_lt_top_aux (measurableSet_toMeasurable μ A)
     (by simpa using h'A)
 
 end InnerRegularCompactLTTop
-
 
 namespace WeaklyRegular
 
@@ -738,11 +749,11 @@ instance (priority := 100) sigmaFinite [SigmaCompactSpace α] [Regular μ] : Sig
 #align measure_theory.measure.regular.sigma_finite MeasureTheory.Measure.Regular.sigmaFinite
 
 /-- The restriction of a regular measure to a set of finite measure is regular. -/
-theorem restrict_of_measure_ne_top_aux [T2Space α] [BorelSpace α] [Regular μ] (A : Set α)
+theorem restrict_of_measure_ne_top [T2Space α] [BorelSpace α] [Regular μ] {A : Set α}
     (h'A : μ A ≠ ∞) : Regular (μ.restrict A) := by
   have : Fact (μ A < ∞) := ⟨h'A.lt_top⟩
   have : WeaklyRegular (μ.restrict A) := WeaklyRegular.restrict_of_measure_ne_top h'A
-  have : InnerRegularCompactLTTop (μ.restrict A) :=
+  have : InnerRegular (μ.restrict A) :=
     InnerRegularCompactLTTop.restrict_of_measure_lt_top h'A
   constructor
   intro V hV r hr
