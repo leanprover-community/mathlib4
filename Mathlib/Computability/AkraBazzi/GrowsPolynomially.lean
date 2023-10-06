@@ -100,10 +100,10 @@ protected lemma mul {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
   have gx_nonneg : 0 ≤ g x := hg' x hbx
   refine ⟨?lb, ?ub⟩
   case lb => calc
-    c₁ * c₃ * (f x * g x) = (c₁ * f x) * (c₃ * g x)    := by ring
-                        _ ≤ f u * g u                  := by gcongr
-                                                             · exact (hf u hu).1
-                                                             · exact (hg u hu).1
+    c₁ * c₃ * (f x * g x) = (c₁ * f x) * (c₃ * g x) := by ring
+                        _ ≤ f u * g u := by gcongr
+                                            · exact (hf u hu).1
+                                            · exact (hg u hu).1
   case ub => calc
     f u * g u ≤ (c₂ * f x) * (c₄ * g x) := by gcongr
                                               · exact (hf u hu).2
@@ -134,8 +134,8 @@ protected lemma add {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
                   eventually_ge_atTop 0] with x hf hg hf' hg' hx_pos
   intro u hu
   have hbx : b * x ≤ x := calc
-    b * x ≤ 1 * x   := by gcongr; exact le_of_lt hb.2
-        _ = x       := by ring
+    b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
+        _ = x := by ring
   have fx_nonneg : 0 ≤ f x := hf' x hbx
   have gx_nonneg : 0 ≤ g x := hg' x hbx
   refine ⟨?lb, ?ub⟩
@@ -214,13 +214,13 @@ protected lemma rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p := by
     intro u hu
     refine ⟨?lb, ?ub⟩
     case lb => calc
-      b ^ p * x ^ p = (b * x)^p    := by rw [←Real.mul_rpow] <;> positivity
-                  _ ≤ u ^ p        := by gcongr; exact hu.1
+      b ^ p * x ^ p = (b * x)^p := by rw [←Real.mul_rpow] <;> positivity
+                  _ ≤ u ^ p := by gcongr; exact hu.1
     case ub =>
       rw [one_mul]
       gcongr
-      · calc 0 ≤ b * x   := by positivity
-             _ ≤ u       := hu.1
+      · calc 0 ≤ b * x := by positivity
+             _ ≤ u := hu.1
       · exact hu.2
   case inr =>   -- p < 0
     refine ⟨1, by norm_num, ?_⟩
@@ -231,12 +231,12 @@ protected lemma rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p := by
     case lb =>
       rw [one_mul]
       refine rpow_le_rpow_of_exponent_nonpos ?_ hu.2 (le_of_lt hp)
-      calc 0 < b * x   := by positivity
-           _ ≤ u       := hu.1
+      calc 0 < b * x := by positivity
+           _ ≤ u := hu.1
     case ub => calc
-      u ^ p ≤ (b * x) ^ p     := by
+      u ^ p ≤ (b * x) ^ p := by
               exact rpow_le_rpow_of_exponent_nonpos (by positivity) hu.1 (le_of_lt hp)
-          _ = b ^ p * x ^ p    := by rw [Real.mul_rpow] <;> positivity
+          _ = b ^ p * x ^ p := by rw [Real.mul_rpow] <;> positivity
 
 protected lemma log : GrowsPolynomially Real.log := by
   intro b hb
@@ -256,15 +256,15 @@ protected lemma log : GrowsPolynomially Real.log := by
               gcongr
               rw [neg_div, neg_mul, ←neg_le]
               refine le_of_lt (hx x ?_)
-              calc b * x ≤ 1 * x    := by gcongr; exact le_of_lt hb.2
-                       _ = x         := by rw [one_mul]
+              calc b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
+                       _ = x := by rw [one_mul]
       _ = Real.log (b * x) := by rw [←Real.log_mul (by positivity) (by positivity), mul_comm]
       _ ≤ Real.log u := by gcongr; exact hu.1
   case ub =>
     rw [one_mul]
     gcongr
-    · calc 0 < b * x   := by positivity
-         _ ≤ u       := by exact hu.1
+    · calc 0 < b * x := by positivity
+         _ ≤ u := by exact hu.1
     · exact hu.2
 
 protected lemma norm (f : ℝ → ℝ) (hf : GrowsPolynomially f) (hf' : ∀ᶠ x in atTop, 0 ≤ f x) :
