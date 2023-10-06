@@ -26,6 +26,10 @@ target.
 In `extensive_union_regular_generates_coherent`, we prove that the union of these two coverages
 generates the coherent topology on `C` if `C` is precoherent, extensive and regular.
 
+In `isSheafFor_extensive_of_preservesFiniteProducts`, we prove that a finite product preserving
+presheaf satisfies the sheaf condition for a sieve consiting of finitely many arrows that together
+induce an isomorphism from the coproduct of their sources.
+
 TODO: figure out under what conditions `Preregular` and `Extensive` are implied by `Precoherent` and
 vice versa.
 
@@ -201,7 +205,7 @@ variable [Extensive C] {C}
 
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
 coproduct to the target. -/
-class _root_.CategoryTheory.Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) :
+class Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) :
     Prop where
   /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
   coproduct of their sources. -/
