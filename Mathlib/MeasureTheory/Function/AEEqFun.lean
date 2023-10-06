@@ -871,7 +871,7 @@ instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGr
 
 @[to_additive existing]
 instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
-  toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm <| zpow_toGerm
+  toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 #align measure_theory.ae_eq_fun.group MeasureTheory.AEEqFun.instGroup
 
 @[to_additive existing]
