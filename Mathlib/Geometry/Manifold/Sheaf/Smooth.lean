@@ -172,8 +172,8 @@ section CommLieGroup
 variable [CommGroup A] [CommGroup A'] [LieGroup I A] [LieGroup I' A']
 
 open Manifold in
-@[to_additive]
-noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommGroup ((smoothSheaf IM I M A).presheaf.obj U) :=
+@[to_additive] noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
+    CommGroup ((smoothSheaf IM I M A).presheaf.obj U) :=
   (SmoothMap.commGroup : CommGroup C^∞⟮IM, (unop U : Opens M); I, A⟯)
 
 /-- The presheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
