@@ -109,9 +109,7 @@ noncomputable def homotopyEquiv : HomotopyEquiv (mappingCone (𝟙 (I K)) ⊞ L)
       (biprod.inl : _ ⟶ mappingCone (𝟙 (I K)) ⊞ L)).compLeft
         (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _)
     let h₂ := Homotopy.add h₁ (Homotopy.refl (biprod.snd ≫ biprod.inr))
-    refine' Homotopy.trans (Homotopy.ofEq _) (h₂.symm.trans (Homotopy.ofEq _))
-    · simp [p]
-    · simp [p]
+    exact Homotopy.trans (Homotopy.ofEq (by simp [p])) (h₂.symm.trans (Homotopy.ofEq (by simp [p])))
   homotopyInvHomId := Homotopy.ofEq (by simp [p])
 
 instance quasiIso_i : QuasiIso (p K L) := (homotopyEquiv K L).toQuasiIso

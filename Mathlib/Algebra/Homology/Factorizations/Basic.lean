@@ -71,6 +71,15 @@ variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 def monoUpTo (n : ℤ) : Prop := ∀ (i : ℤ) (_ : i ≤ n), Mono (φ.f i)
 
-def degreewiseEpiWithInjectiveKernel : Prop := ∀ (i : ℤ), epiWithInjectiveKernel (φ.f i)
+def degreewiseEpiWithInjectiveKernel : MorphismProperty (CochainComplex C ℤ) :=
+  fun _ _ φ => ∀ (i : ℤ), epiWithInjectiveKernel (φ.f i)
+
+instance : (degreewiseEpiWithInjectiveKernel :
+    MorphismProperty (CochainComplex C ℤ)).ContainsIdentities where
+  id_mem' _ _ := MorphismProperty.id_mem _ _
+
+instance : (degreewiseEpiWithInjectiveKernel :
+    MorphismProperty (CochainComplex C ℤ)).IsMultiplicative where
+  stableUnderComposition _ _ _ _ _ hf hg n := MorphismProperty.comp_mem _ _ _ (hf n) (hg n)
 
 end CochainComplex
