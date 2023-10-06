@@ -77,10 +77,8 @@ jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
 private theorem no_anticollision :
     ¬∃ j k m : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r ∧ m * s ≤ j ∧ j + 1 < (m + 1) * s := by
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
-  replace h₁₁ := (lt_div_iff hrs.pos).2 h₁₁
-  replace h₁₂ := (div_le_iff hrs.pos).2 h₁₂
-  replace h₂₁ := (le_div_iff hrs.symm.pos).2 h₂₁
-  replace h₂₂ := (div_lt_iff hrs.symm.pos).2 h₂₂
+  simp only [← div_le_iff, ← le_div_iff, ← div_lt_iff, ← lt_div_iff, hrs.pos, hrs.symm.pos]
+    at h₁₁ h₁₂ h₂₁ h₂₂
   have h₃ := add_lt_add_of_lt_of_le h₁₁ h₂₁
   have h₄ := add_lt_add_of_le_of_lt h₁₂ h₂₂
   simp_rw [div_eq_inv_mul, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
@@ -124,15 +122,13 @@ than 1, and `1/r + 1/s = 1`. Then the complement of `B_r` is `B'_s`. -/
 theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     {beattySeq r k | k}ᶜ = {beattySeq' s k | k} := by
   ext j
-  by_cases h₁ : j ∈ {beattySeq r k | k}
-  · by_cases h₂ : j ∈ {beattySeq' s k | k}
-    · exact (Set.not_disjoint_iff.2 ⟨j, h₁, h₂⟩ (Beatty.no_collision hrs)).elim
-    · simp only [Set.mem_compl_iff, h₁, h₂]
-  · by_cases h₂ : j ∈ {beattySeq' s k | k}
-    · simp only [Set.mem_compl_iff, h₁, h₂]
-    · have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
-      have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
-      exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
+  by_cases h₁ : j ∈ {beattySeq r k | k} <;> by_cases h₂ : j ∈ {beattySeq' s k | k}
+  · exact (Set.not_disjoint_iff.2 ⟨j, h₁, h₂⟩ (Beatty.no_collision hrs)).elim
+  · simp only [Set.mem_compl_iff, h₁, h₂]
+  · simp only [Set.mem_compl_iff, h₁, h₂]
+  · have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
+    have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
+    exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
 
 theorem compl_beattySeq' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     {beattySeq' r k | k}ᶜ = {beattySeq s k | k} := by
