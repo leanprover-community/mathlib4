@@ -1351,11 +1351,26 @@ theorem comap_incl_self : comap N.incl N = ⊤ := by simp [← LieSubmodule.coe_
 
 theorem map_incl_top : (⊤ : LieSubmodule R L N).map N.incl = N := by simp
 
+variable {N}
+
 @[simp]
-lemma map_incl_lt_iff_lt_top {N : LieSubmodule R L M} {N' : LieSubmodule R L N} :
+lemma map_le_range {M' : Type*}
+    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] [LieModule R L M'] (f : M →ₗ⁅R,L⁆ M') :
+    N.map f ≤ f.range := by
+  rw [← LieModuleHom.map_top]
+  exact LieSubmodule.map_mono le_top
+
+@[simp]
+lemma map_incl_lt_iff_lt_top {N' : LieSubmodule R L N} :
     N'.map (LieSubmodule.incl N) < N ↔ N' < ⊤ := by
   convert (LieSubmodule.mapOrderEmbedding N.injective_incl).lt_iff_lt
   simp
+
+@[simp]
+lemma map_incl_le {N' : LieSubmodule R L N} :
+    N'.map N.incl ≤ N := by
+  conv_rhs => rw [← N.map_incl_top]
+  exact LieSubmodule.map_mono le_top
 
 end LieSubmodule
 
@@ -1403,5 +1418,11 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 @[simp] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
+
+@[simp] lemma LieModuleEquiv.range_coe {M' : Type*}
+    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] [LieModule R L M'] (e : M ≃ₗ⁅R,L⁆ M') :
+    LieModuleHom.range (e : M →ₗ⁅R,L⁆ M') = ⊤ := by
+  rw [LieModuleHom.range_eq_top]
+  exact e.surjective
 
 end TopEquiv

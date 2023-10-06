@@ -1007,6 +1007,9 @@ theorem injective (e : M ≃ₗ⁅R,L⁆ N) : Function.Injective e :=
   e.toEquiv.injective
 #align lie_module_equiv.injective LieModuleEquiv.injective
 
+theorem surjective (e : M ≃ₗ⁅R,L⁆ N) : Function.Surjective e :=
+  e.toEquiv.surjective
+
 @[simp]
 theorem toEquiv_mk (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ h₂) :
     toEquiv (mk f g h₁ h₂ : M ≃ₗ⁅R,L⁆ N) = Equiv.mk f g h₁ h₂ :=
