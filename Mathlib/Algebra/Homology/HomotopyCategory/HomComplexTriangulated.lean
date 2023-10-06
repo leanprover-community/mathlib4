@@ -679,8 +679,8 @@ def mappingConeTriangleIso' :
     ((shiftEquiv (CochainComplex AddCommGroupCat ℤ) (1 : ℤ)).unitIso.app _ ≪≫
       (CategoryTheory.shiftFunctor (CochainComplex AddCommGroupCat ℤ) (-1 : ℤ)).mapIso
         (leftMappingConeIso φ L)) (Iso.refl _) (Iso.refl _) _ _ _
-  · dsimp [Pretriangulated.PretriangulatedOpposite.homMk]
-    simp
+  · dsimp
+    simp only [comp_id, comp_neg, assoc]
     ext i (α : Cochain (mappingCone φ) L i)
     obtain ⟨α₁, α₂, rfl⟩ := MappingCone.cochain_from_break _ α (i+ (-1)) (by linarith)
     rw [map_add]
@@ -695,12 +695,14 @@ def mappingConeTriangleIso' :
     rw [Cochain.neg_v]
     erw [leftMappingConeIso_hom_f_apply _ _ _ i (by linarith)]
     rw [leftMappingConeIsoX_hom_apply]
-    --dsimp [leftMappingConeIso]
+    dsimp [MappingCone.triangleδ]
+    rw [Cochain.rightShift_v _ _ _ _ _ _ _ i (by linarith)]
+    dsimp
+    simp only [neg_comp]
     sorry
   · dsimp
     simp
-    rfl
-  · dsimp [Pretriangulated.PretriangulatedOpposite.homMk]
+  · dsimp
     simp
     sorry-/
 
