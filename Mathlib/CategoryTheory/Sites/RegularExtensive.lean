@@ -219,7 +219,7 @@ def MapToEqualizer (P : Cᵒᵖ ⥤ Type (max u v)) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
     P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
   fun t ↦ ⟨P.map f.op t, by
-    change (P.map _ ≫ P.map _) _ = (P.map _ ≫ P.map _) _ ;
+    change (P.map _ ≫ P.map _) _ = (P.map _ ≫ P.map _) _;
     simp_rw [← P.map_comp, ← op_comp, w] ⟩
 
 /--
@@ -276,7 +276,7 @@ def EqualizerSecondObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶
     inv_hom_id := by aesop }
 
 lemma isSheafFor_regular_of_hasPullbacks {B : C} {S : Presieve B} [S.regular] [S.hasPullbacks]
-     {F : Cᵒᵖ ⥤ Type (max u v)}
+    {F : Cᵒᵖ ⥤ Type (max u v)}
     (hFecs : EqualizerCondition F) : S.IsSheafFor F := by
   obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := Presieve.regular.single_epi (R := S)
   rw [Presieve.ofArrows_pUnit] at hS
@@ -356,5 +356,3 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
 end RegularSheaves
 
 end CategoryTheory
-
-#lint
