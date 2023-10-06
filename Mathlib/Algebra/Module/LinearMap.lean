@@ -1246,6 +1246,7 @@ end
 
 /-! ### Action by a module endomorphism. -/
 
+
 /-- The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
