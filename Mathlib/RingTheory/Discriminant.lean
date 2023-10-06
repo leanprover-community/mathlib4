@@ -98,7 +98,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
       intro j;
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
-      this j, ← LinearMap.map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
+      this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
   by_contra h
   rw [discr_def] at h
   simp [Matrix.eq_zero_of_mulVec_eq_zero h this] at hi
@@ -230,9 +230,9 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     refine' equivOfCardEq _
     rw [Fintype.card_fin, AlgHom.card]
     exact (PowerBasis.finrank pb).symm
-  have hnodup : ((minpoly K pb.gen).map (algebraMap K E)).roots.Nodup :=
+  have hnodup : ((minpoly K pb.gen).aroots E).Nodup :=
     nodup_roots (Separable.map (IsSeparable.separable K pb.gen))
-  have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ ((minpoly K pb.gen).map (algebraMap K E)).roots := by
+  have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
     rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero (IsSeparable.isIntegral K pb.gen)]
@@ -251,7 +251,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
       ← Finset.prod_mk _ (hnodup.erase _)]
   rw [prod_sigma', prod_sigma']
   refine'
-    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp )
+    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp)
       (fun i j hi hj hij => _) fun σ hσ => _
   · simp only [true_and_iff, Finset.mem_mk, mem_univ, mem_sigma]
     rw [Multiset.mem_erase_of_ne fun h => ?_]
@@ -330,7 +330,7 @@ theorem discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K] {b : Basis �
 separable extension of `K`. Let `B : PowerBasis K L` be such that `IsIntegral R B.gen`.
 Then for all, `z : L` that are integral over `R`, we have
 `(discr K B.basis) • z ∈ adjoin R ({B.gen} : set L)`. -/
-theorem discr_mul_isIntegral_mem_adjoin [IsDomain R] [IsSeparable K L] [IsIntegrallyClosed R]
+theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     [IsFractionRing R K] {B : PowerBasis K L} (hint : IsIntegral R B.gen) {z : L}
     (hz : IsIntegral R z) : discr K B.basis • z ∈ adjoin R ({B.gen} : Set L) := by
   have hinv : IsUnit (traceMatrix K B.basis).det := by

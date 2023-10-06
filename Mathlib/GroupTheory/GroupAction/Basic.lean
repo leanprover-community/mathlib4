@@ -174,7 +174,7 @@ theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
 
 variable {M}
 
-@[to_additive]
+@[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   rw [Fintype.card_eq_one_iff, mem_fixedPoints]
@@ -186,7 +186,7 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
       x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
       _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
 #align mul_action.mem_fixed_points_iff_card_orbit_eq_one MulAction.mem_fixedPoints_iff_card_orbit_eq_one
-#align add_action.mem_fixed_points_iff_card_orbit_eq_zero AddAction.mem_fixedPoints_iff_card_orbit_eq_zero
+#align add_action.mem_fixed_points_iff_card_orbit_eq_zero AddAction.mem_fixedPoints_iff_card_orbit_eq_one
 
 end MulAction
 
@@ -346,7 +346,7 @@ def orbitRel.Quotient : Type _ :=
 variable {G α}
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
-@[to_additive "The orbit corresponding to an element of the quotient by `add_action.orbit_rel`"]
+@[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
   Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 #align mul_action.orbit_rel.quotient.orbit MulAction.orbitRel.Quotient.orbit

@@ -273,7 +273,7 @@ theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
-  rw [Nat.cast_withBot, Nat.cast_withBot, WithBot.coe_lt_coe] at hn
+  rw [Nat.cast_lt] at hn
   rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
     coeff_eq_zero_of_natDegree_lt hn]
 #align polynomial.reverse_nat_degree_le Polynomial.reverse_natDegree_le

@@ -1,4 +1,5 @@
 import Mathlib.Tactic.SplitIfs
+import Std.Tactic.GuardMsgs
 
 example (x : Nat) (p : Prop) [Decidable p] : x = if p then x else x := by
   split_ifs with h1
@@ -29,7 +30,7 @@ example (p : Prop) [Decidable p] : if if ¬p then p else True then p else ¬p :=
   · exact h
   · exact h
 
-lemma foo (p q : Prop) [Decidable p] [Decidable q] :
+theorem foo (p q : Prop) [Decidable p] [Decidable q] :
     if if if p then ¬p else q then p else q then q else ¬p ∨ ¬q := by
   split_ifs with h1 h2 h3
   · exact h2
