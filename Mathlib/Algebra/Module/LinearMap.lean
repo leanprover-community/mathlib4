@@ -923,15 +923,18 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 #align linear_map.comp_add LinearMap.comp_add
 
 instance addSemigroup : AddSemigroup (M →ₛₗ[σ₁₂] M₂) :=
+  --TODO: add reference to library note in PR #7432
   { FunLike.coe_injective.addSemigroup (↑) (fun _ _ => rfl) with
     toAdd := LinearMap.add }
 
 instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) :=
+  --TODO: add reference to library note in PR #7432
   { FunLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
     toAddSemigroup := LinearMap.addSemigroup }
 
 /-- The type of linear maps is an additive monoid. -/
 instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
+  --TODO: add reference to library note in PR #7432
   { FunLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
     toAddMonoid := LinearMap.addMonoid }
 
@@ -980,6 +983,7 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
 #align linear_map.comp_sub LinearMap.comp_sub
 
 instance subNegMonoid : SubNegMonoid (M →ₛₗ[σ₁₂] N₂) :=
+  --TODO: add reference to library note in PR #7432
   { FunLike.coe_injective.subNegMonoid (↑) rfl (fun _ _ => rfl)
       (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) with
     toAddMonoid := LinearMap.addMonoid
@@ -987,12 +991,14 @@ instance subNegMonoid : SubNegMonoid (M →ₛₗ[σ₁₂] N₂) :=
     toNeg := LinearMap.neg }
 
 instance addGroup : AddGroup (M →ₛₗ[σ₁₂] N₂) :=
+  --TODO: add reference to library note in PR #7432
   { FunLike.coe_injective.addGroup (↑) rfl (fun _ _ => rfl)
       (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) with
     toSubNegMonoid := LinearMap.subNegMonoid }
 
 /-- The type of linear maps is an additive group. -/
 instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
+  --TODO: add reference to library note in PR #7432
   { FunLike.coe_injective.addCommGroup (↑) rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
       (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
     toAddGroup := LinearMap.addGroup }
@@ -1098,15 +1104,18 @@ instance _root_.Module.End.monoid : Monoid (Module.End R M) where
 
 instance _root_.Module.End.nonUnitalNonAssocSemiring :
     NonUnitalNonAssocSemiring (Module.End R M) :=
+  --TODO: add reference to library note in PR #7432
   { mul_zero := comp_zero
     zero_mul := zero_comp
     left_distrib := fun _ _ _ ↦ comp_add _ _ _
     right_distrib := fun _ _ _ ↦ add_comp _ _ _ }
 
 instance _root_.Module.End.nonUnitalSemiring : NonUnitalSemiring (Module.End R M) where
+  --TODO: add reference to library note in PR #7432
   mul_assoc := mul_assoc
 
 instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
+  --TODO: add reference to library note in PR #7432
   { one_mul := one_mul
     mul_one := mul_one
     natCast := fun n ↦ n • (1 : M →ₗ[R] M)
@@ -1121,9 +1130,11 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 #align module.End.nat_cast_apply Module.End.natCast_apply
 
 instance _root_.Module.End.intCast : IntCast (Module.End R N₁) :=
+  --TODO: add reference to library note in PR #7432
   ⟨fun z ↦ z • (1 : N₁ →ₗ[R] N₁)⟩
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
+  --TODO: add reference to library note in PR #7432
   { add_left_neg := add_left_neg
     sub_eq_add_neg := sub_eq_add_neg
     intCast_ofNat := ofNat_zsmul _
