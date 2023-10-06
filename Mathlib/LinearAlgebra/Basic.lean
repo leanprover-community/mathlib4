@@ -298,7 +298,7 @@ instance [Nontrivial M] : Nontrivial (Module.End R M) := by
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(∑ i in t, f i ) = ∑ i in t, (f i : M → M₂) :=
+    ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
       from { toFun := FunLike.coe,
