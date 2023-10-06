@@ -13,17 +13,17 @@ Hausdorff spaces as a limit in `Profinite` indexed by `Finset ι`.
 
 ## Main definitions
 
-- `IndexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps `J` to
-  the restriction of `C` to `J`
-- `IndexCone` is a cone on `IndexFunctor` with cone point `C`
+- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
+  `J` to the restriction of `C` to `J`
+- `Profinite.indexCone` is a cone on `Profinite.indexFunctor` with cone point `C`
 
 ## Main results
 
 - `Profinite.isIso_indexCone_lift` says that the natural map from the cone point of the explicit
-  limit cone in `Profinite` on `IndexFunctor` to the cone point of `IndexCone` is an
+  limit cone in `Profinite` on `indexFunctor` to the cone point of `indexCone` is an
   isomorphism
-- `Profinite.asLimitIndexConeIso` is the induced isomorphism of cones.
-- `Profinite.indexCone_isLimit` says that `IndexCone` is a limit cone.
+- `Profinite.asLimitindexConeIso` is the induced isomorphism of cones.
+- `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
 
 -/
 
@@ -38,17 +38,17 @@ namespace IndexFunctor
 
 open ContinuousMap
 
-/-- The object part of the functor `IndexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
+/-- The object part of the functor `indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
 def obj : Set ((i : {i : ι // J i}) → X i) := ContinuousMap.precomp (Subtype.val (p := J)) '' C
 
-/-- The projection maps in the limit cone `IndexCone`. -/
+/-- The projection maps in the limit cone `indexCone`. -/
 def π_app : C(C, obj C J) :=
   ⟨Set.MapsTo.restrict (precomp (Subtype.val (p := J))) _ _ (Set.mapsTo_image _ _),
     Continuous.restrict _ (Pi.continuous_precomp' _)⟩
 
 variable {J K}
 
-/-- The morphism part of the functor `IndexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
+/-- The morphism part of the functor `indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
 def map (h : ∀ i, J i → K i) : C(obj C K, obj C J) :=
   ⟨Set.MapsTo.restrict (precomp (Set.inclusion h)) _ _ (fun _ hx ↦ by
     obtain ⟨y, hy⟩ := hx
@@ -82,25 +82,25 @@ open CategoryTheory Limits Opposite IndexFunctor
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
-def IndexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
+def indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (obj C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
   map h := map C (leOfHom h.unop)
 
-/-- The limit cone on `IndexFunctor` -/
+/-- The limit cone on `indexFunctor` -/
 noncomputable
-def IndexCone : Cone (IndexFunctor hC) where
+def indexCone : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π := { app := fun J ↦ π_app C (· ∈ unop J) }
 
 instance isIso_indexCone_lift [DecidableEq ι] :
-    IsIso ((limitConeIsLimit (IndexFunctor hC)).lift (IndexCone hC)) :=
+    IsIso ((limitConeIsLimit (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
   isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
-        apply_fun fun f : (limitCone (IndexFunctor hC)).pt => f.val (op J) at h
+        apply_fun fun f : (limitCone (indexFunctor hC)).pt => f.val (op J) at h
         exact h
       · suffices : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
         · obtain ⟨b, hb⟩ := this
@@ -131,19 +131,19 @@ instance isIso_indexCone_lift [DecidableEq ι] :
 
 /-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
-def isoIndexConeLift [DecidableEq ι] :
+def isoindexConeLift [DecidableEq ι] :
     @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
-    (Profinite.limitCone (IndexFunctor hC)).pt :=
-  asIso <| (Profinite.limitConeIsLimit _).lift (IndexCone hC)
+    (Profinite.limitCone (indexFunctor hC)).pt :=
+  asIso <| (Profinite.limitConeIsLimit _).lift (indexCone hC)
 
-/-- The isomorphism of cones induced by `isoIndexConeLift`. -/
+/-- The isomorphism of cones induced by `isoindexConeLift`. -/
 noncomputable
-def asLimitIndexConeIso [DecidableEq ι] : IndexCone hC ≅ Profinite.limitCone _ :=
-  Limits.Cones.ext (isoIndexConeLift hC) fun _ => rfl
+def asLimitindexConeIso [DecidableEq ι] : indexCone hC ≅ Profinite.limitCone _ :=
+  Limits.Cones.ext (isoindexConeLift hC) fun _ => rfl
 
-/-- `IndexCone` is a limit cone. -/
+/-- `indexCone` is a limit cone. -/
 noncomputable
-def indexCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (IndexCone hC) :=
-  Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitIndexConeIso hC).symm
+def indexCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (indexCone hC) :=
+  Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitindexConeIso hC).symm
 
 end Profinite
