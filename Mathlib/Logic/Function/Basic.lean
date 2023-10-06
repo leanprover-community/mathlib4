@@ -698,16 +698,16 @@ variable {α β γ : Sort*} {f : α → β}
 
 /-- Extension of a function `g : α → γ` along a function `f : α → β`.
 
-For every `a : α`, `f a` is sent to `g a`. `f` might not be surjective, so we use a junk value
-function `j : β → γ` by sending `b : β` not in the range of `f` to `e b`.
+For every `a : α`, `f a` is sent to `g a`. `f` might not be surjective, so we use an auxiliary
+function `j : β → γ` by sending `b : β` not in the range of `f` to `j b`. If you do not care about
+the behavior outside the range, `j` can be used as a junk value by setting it to be `0` or
+`Classical.arbitrary` (assuming `γ` is nonempty).
 
 This definition only makes sense when `f a₁ = f a₂ → g a₁ = g a₂` (spelled `g.FactorsThrough f`).
 In particular this holds if `f` is injective.
 
-A typical use case is when extending a function from a subtype to the entire type. If you want to
-extend `g : {b : β // p b} → γ` by zero to a function `β → γ`, you should use
-`Function.extend Subtype.val g 0`. If you do not care about the junk value, you can replace `0` by
-`Classical.arbitrary _` (assuming `γ` is nonempty). -/
+A typical use case is extending a function from a subtype to the entire type. If you wish to extend
+`g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. -/
 def extend (f : α → β) (g : α → γ) (j : β → γ) : β → γ := fun b ↦
   if h : ∃ a, f a = b then g (Classical.choose h) else j b
 #align function.extend Function.extend
