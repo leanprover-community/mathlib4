@@ -71,7 +71,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 If the space is also compact:
 
 * `normalOfCompactT2`: A compact T₂ space is a `NormalSpace`.
-* `connected_components_eq_Inter_clopen`: The connected component of a point
+* `connectedComponent_eq_iInter_clopen`: The connected component of a point
   is the intersection of all its clopen neighbourhoods.
 * `compact_t2_tot_disc_iff_tot_sep`: Being a `TotallyDisconnectedSpace`
   is equivalent to being a `TotallySeparatedSpace`.
