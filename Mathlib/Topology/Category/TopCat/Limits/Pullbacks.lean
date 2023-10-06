@@ -397,8 +397,8 @@ end Pullback
 
 --TODO: Add analogous constructions for `pushout`.
 
-theorem isOpen_iff_of_isColimit {F : J ⥤ TopCat.{u}} [UnivLE.{v, u}] (c : Cocone F) (hc : IsColimit c)
-    (U : Set c.pt) :
+theorem isOpen_iff_of_isColimit
+    {F : J ⥤ TopCat.{u}} [UnivLE.{v, u}] (c : Cocone F) (hc : IsColimit c) (U : Set c.pt) :
     IsOpen U ↔ ∀ j, IsOpen (c.ι.app j ⁻¹' U) := by
   simp only [← (homeoOfIso (hc.coconePointUniqueUpToIso
     (colimitCoconeIsColimit F))).symm.isOpen_preimage, isOpen_iSup_iff, ← isOpen_coinduced]
@@ -406,7 +406,8 @@ theorem isOpen_iff_of_isColimit {F : J ⥤ TopCat.{u}} [UnivLE.{v, u}] (c : Coco
   intro i
   rw [← hc.comp_coconePointUniqueUpToIso_inv (colimitCoconeIsColimit F)]
 
-theorem coinduced_of_isColimit {F : J ⥤ TopCat.{u}} [UnivLE.{v, u}] (c : Cocone F) (hc : IsColimit c) :
+theorem coinduced_of_isColimit
+    {F : J ⥤ TopCat.{u}} [UnivLE.{v, u}] (c : Cocone F) (hc : IsColimit c) :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   ext X
   simp only [isOpen_iff_of_isColimit _ hc, isOpen_iSup_iff, ← isOpen_coinduced]
@@ -417,7 +418,8 @@ theorem colimit_topology (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] :
   coinduced_of_isColimit _ (colimit.isColimit F)
 #align Top.colimit_topology TopCat.colimit_topology
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] (U : Set ((colimit F : _) : Type u)) :
+theorem colimit_isOpen_iff
+    (F : J ⥤ TopCat.{u}) [UnivLE.{v, u}] (U : Set ((colimit F : _) : Type u)) :
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) :=
   isOpen_iff_of_isColimit _ (colimit.isColimit F) U
 #align Top.colimit_is_open_iff TopCat.colimit_isOpen_iff

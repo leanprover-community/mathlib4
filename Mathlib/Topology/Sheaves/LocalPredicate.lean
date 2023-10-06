@@ -297,7 +297,8 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
     refine' ⟨op W, fun w => fU (iU w : (unop U).1), P.res _ _ hU, _⟩
     rcases W with ⟨W, m⟩
     · exact iU
-    · exact ⟨colimit_sound.{v, v} iU.op (Subtype.eq rfl), colimit_sound.{v, v} iV.op (Subtype.eq (funext w).symm)⟩
+    · exact ⟨colimit_sound.{v, v} iU.op (Subtype.eq rfl),
+        colimit_sound.{v, v} iV.op (Subtype.eq (funext w).symm)⟩
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber_injective TopCat.stalkToFiber_injective
 

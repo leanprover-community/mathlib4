@@ -110,7 +110,8 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
 @[to_additive "Negation in the colimit. See also `colimitNegAux`."]
 noncomputable instance colimitInv : Inv (G F) where
   inv x := by
-    refine' Quot.lift (colimitInvAux F) _ ((equivShrink (Types.Quot ((F ⋙ forget₂ GroupCat MonCat) ⋙ forget MonCat))).symm x)
+    refine' Quot.lift (colimitInvAux F) _
+      ((equivShrink (Types.Quot ((F ⋙ forget₂ GroupCat MonCat) ⋙ forget MonCat))).symm x)
     intro x y h
     apply colimitInvAux_eq_of_rel
     apply Types.FilteredColimit.rel_of_quot_rel
