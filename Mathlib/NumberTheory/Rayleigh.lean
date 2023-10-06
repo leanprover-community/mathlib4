@@ -75,10 +75,8 @@ private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k}
 /-- Let `r > 1` and `1/r + 1/s = 1`. Suppose there is an integer `j` where `B_r` and `B'_s` both
 jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
 private theorem no_anticollision :
-    ¬∃ j k m : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r ∧ m * s ≤ j ∧ j + 1 < (m + 1) * s := by
+    ¬∃ j k m : ℤ, k < j / r ∧ (j + 1) / r ≤ k + 1 ∧ m ≤ j / s ∧ (j + 1) / s < m + 1 := by
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
-  simp only [← div_le_iff, ← le_div_iff, ← div_lt_iff, ← lt_div_iff, hrs.pos, hrs.symm.pos]
-    at h₁₁ h₁₂ h₂₁ h₂₂
   have h₃ := add_lt_add_of_lt_of_le h₁₁ h₂₁
   have h₄ := add_lt_add_of_le_of_lt h₁₂ h₂₂
   simp_rw [div_eq_inv_mul, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
@@ -88,27 +86,22 @@ private theorem no_anticollision :
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B_r` or `B_r` jumps over `j`. -/
 private theorem hit_or_miss (h : r > 0) :
-    j ∈ {beattySeq r k | k} ∨ ∃ k : ℤ, k * r < j ∧ j + 1 ≤ (k + 1) * r := by
+    j ∈ {beattySeq r k | k} ∨ ∃ k : ℤ, k < j / r ∧ (j + 1) / r ≤ k + 1 := by
   -- for both cases, the candidate is `k = ⌈(j + 1) / r⌉ - 1`
   cases lt_or_ge ((⌈(j + 1) / r⌉ - 1) * r) j
-  · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, by simpa, ?_⟩
-    rw [Int.cast_sub, Int.cast_one, sub_add_cancel, ← div_le_iff h]
-    apply Int.le_ceil
+  · refine Or.inr ⟨⌈(j + 1) / r⌉ - 1, ?_⟩
+    rw [Int.cast_sub, Int.cast_one, lt_div_iff h, sub_add_cancel]
+    exact ⟨‹_›, Int.le_ceil _⟩
   · refine Or.inl ⟨⌈(j + 1) / r⌉ - 1, ?_⟩
-    rw [beattySeq, Int.floor_eq_iff]
-    constructor
-    · simpa
-    rw [Int.cast_sub, Int.cast_one, ← lt_div_iff h, sub_lt_iff_lt_add]
-    apply Int.ceil_lt_add_one
+    rw [beattySeq, Int.floor_eq_iff, Int.cast_sub, Int.cast_one, ← lt_div_iff h, sub_lt_iff_lt_add]
+    exact ⟨‹_›, Int.ceil_lt_add_one _⟩
 
 /-- Let `0 < r ∈ ℝ` and `j ∈ ℤ`. Then either `j ∈ B'_r` or `B'_r` jumps over `j`. -/
 private theorem hit_or_miss' (h : r > 0) :
-    j ∈ {beattySeq' r k | k} ∨ ∃ k : ℤ, k * r ≤ j ∧ j + 1 < (k + 1) * r := by
+    j ∈ {beattySeq' r k | k} ∨ ∃ k : ℤ, k ≤ j / r ∧ (j + 1) / r < k + 1 := by
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   cases le_or_gt (⌊(j + 1) / r⌋ * r) j
-  · refine Or.inr ⟨⌊(j + 1) / r⌋, ‹_›, ?_⟩
-    rw [← div_lt_iff h]
-    apply Int.lt_floor_add_one
+  · exact Or.inr ⟨⌊(j + 1) / r⌋, (le_div_iff h).2 ‹_›, Int.lt_floor_add_one _⟩
   · refine Or.inl ⟨⌊(j + 1) / r⌋, ?_⟩
     rw [beattySeq', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one]
     constructor
