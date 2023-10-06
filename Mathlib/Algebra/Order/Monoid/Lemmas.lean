@@ -358,8 +358,8 @@ variable [LinearOrder α] {a b c d : α}
 end LinearOrder
 
 section LinearOrder
-variable [LinearOrder α] [CovariantClass α α HMul.hMul LE.le]
-  [CovariantClass α α (swap HMul.hMul) LE.le] {a b c d : α}
+variable [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+  [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
 @[to_additive max_add_add_le_max_add_max]
 theorem max_mul_mul_le_max_mul_max' : max (a * b) (c * d) ≤ max a c * max b d :=
