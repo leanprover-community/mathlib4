@@ -553,7 +553,7 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
 @[to_additive "An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure."]
 instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : Semigroup S :=
-  Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
+  { mul_assoc := fun _ _ _ => Subtype.coe_injective <| mul_assoc .. }
 #align mul_mem_class.to_semigroup MulMemClass.toSemigroup
 #align add_mem_class.to_add_semigroup AddMemClass.toAddSemigroup
 
@@ -561,7 +561,7 @@ instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMem
 @[to_additive "An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`."]
 instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S :=
-  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+  { mul_comm := fun _ _ => Subtype.coe_injective <| mul_comm .. }
 #align mul_mem_class.to_comm_semigroup MulMemClass.toCommSemigroup
 #align add_mem_class.to_add_comm_semigroup AddMemClass.toAddCommSemigroup
 
