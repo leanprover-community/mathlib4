@@ -58,7 +58,7 @@ lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 lemma IsUpperSet.supClosed (hs : IsUpperSet s) : SupClosed s := fun _a _ _b ↦ hs le_sup_right
 
 lemma SupClosed.preimage [SupHomClass F β α] (hs : SupClosed s) (f : F) : SupClosed (f ⁻¹' s) :=
-  λ a ha b hb ↦ by simpa [map_sup] using hs ha hb
+  fun a ha b hb ↦ by simpa [map_sup] using hs ha hb
 
 lemma SupClosed.image [SupHomClass F α β] (hs : SupClosed s) (f : F) : SupClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
@@ -69,11 +69,11 @@ lemma supClosed_range [SupHomClass F α β] (f : F) : SupClosed (Set.range f) :=
   simpa using supClosed_univ.image f
 
 lemma SupClosed.prod {t : Set β} (hs : SupClosed s) (ht : SupClosed t) : SupClosed (s ×ˢ t) :=
-  λ _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
+  fun _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
 
 lemma supClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeSup (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
-  λ _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
+  fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
 end Set
 
@@ -122,7 +122,7 @@ lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
 lemma IsLowerSet.infClosed (hs : IsLowerSet s) :  InfClosed s := λ _a _ _b ↦ hs inf_le_right
 
 lemma InfClosed.preimage [InfHomClass F β α] (hs : InfClosed s) (f : F) : InfClosed (f ⁻¹' s) :=
-  λ a ha b hb ↦ by simpa [map_inf] using hs ha hb
+  fun a ha b hb ↦ by simpa [map_inf] using hs ha hb
 
 lemma InfClosed.image [InfHomClass F α β] (hs : InfClosed s) (f : F) : InfClosed (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
@@ -133,11 +133,11 @@ lemma infClosed_range [InfHomClass F α β] (f : F) : InfClosed (Set.range f) :=
   simpa using infClosed_univ.image f
 
 lemma InfClosed.prod {t : Set β} (hs : InfClosed s) (ht : InfClosed t) : InfClosed (s ×ˢ t) :=
-  λ _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
+  fun _a ha _b hb ↦ ⟨hs ha.1 hb.1, ht ha.2 hb.2⟩
 
 lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
-  λ _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
+  fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
 end Set
 
@@ -214,10 +214,10 @@ lemma latticeClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] 
     InfClosed (ofDual ⁻¹' s) ↔ SupClosed s := Iff.rfl
 
 @[simp] lemma latticeClosed_preimage_toDual {s : Set αᵒᵈ} :
-    LatticeClosed (toDual ⁻¹' s) ↔ LatticeClosed s := ⟨λ h ↦ ⟨h.2, h.1⟩, λ h ↦ ⟨h.2, h.1⟩⟩
+    LatticeClosed (toDual ⁻¹' s) ↔ LatticeClosed s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
 
 @[simp] lemma latticeClosed_preimage_ofDual :
-    LatticeClosed (ofDual ⁻¹' s) ↔ LatticeClosed s := ⟨λ h ↦ ⟨h.2, h.1⟩, λ h ↦ ⟨h.2, h.1⟩⟩
+    LatticeClosed (ofDual ⁻¹' s) ↔ LatticeClosed s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
 
 alias ⟨_, InfClosed.dual⟩ := supClosed_preimage_ofDual
 alias ⟨_, SupClosed.dual⟩ := infClosed_preimage_ofDual
@@ -290,7 +290,7 @@ lemma sup_mem_supClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊔ b ∈ supClosure 
 
 lemma finsetSup'_mem_supClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
     (hf : ∀ i ∈ t, f i ∈ s) : t.sup' ht f ∈ supClosure s :=
-  supClosed_supClosure.finsetSup'_mem _ $ λ _i hi ↦ subset_supClosure $ hf _ hi
+  supClosed_supClosure.finsetSup'_mem _ $ fun _i hi ↦ subset_supClosure $ hf _ hi
 
 @[simp] lemma supClosure_closed : supClosure.closed = {s : Set α | SupClosed s} := by
   ext; exact ClosureOperator.mem_mk₃_closed
@@ -303,7 +303,7 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
   lift s to Finset α using hs
   classical
   refine' ((s.powerset.filter Finset.Nonempty).attach.image
-    λ t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+    fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset _
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
@@ -358,7 +358,7 @@ lemma inf_mem_infClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊓ b ∈ infClosure 
 
 lemma finsetInf'_mem_infClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
     (hf : ∀ i ∈ t, f i ∈ s) : t.inf' ht f ∈ infClosure s :=
-  infClosed_infClosure.finsetInf'_mem _ $ λ _i hi ↦ subset_infClosure $ hf _ hi
+  infClosed_infClosure.finsetInf'_mem _ $ fun _i hi ↦ subset_infClosure $ hf _ hi
 
 @[simp] lemma infClosure_closed : infClosure.closed = {s : Set α | InfClosed s} := by
   ext; exact ClosureOperator.mem_mk₃_closed
@@ -371,7 +371,7 @@ protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite :=
   lift s to Finset α using hs
   classical
   refine' ((s.powerset.filter Finset.Nonempty).attach.image
-    λ t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+    fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset _
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
@@ -384,7 +384,7 @@ variable [Lattice α] {s t : Set α}
 
 /-- Every set in a join-semilattice generates a set closed under join. -/
 def latticeClosure : ClosureOperator (Set α) :=
-  ClosureOperator.ofPred LatticeClosed $ λ _ ↦ latticeClosed_sInter
+  ClosureOperator.ofPred LatticeClosed $ fun _ ↦ latticeClosed_sInter
 
 @[simp] lemma subset_latticeClosure : s ⊆ latticeClosure s := latticeClosure.le_closure _
 
@@ -423,13 +423,13 @@ protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure 
   rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
   rw [inf'_sup_inf']
   exact finsetInf'_mem_infClosure _
-    λ i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)
+    fun i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)
 
 protected lemma InfClosed.supClosure (hs : InfClosed s) : InfClosed (supClosure s) := by
   rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
   rw [sup'_inf_sup']
   exact finsetSup'_mem_supClosure _
-    λ i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)
+    fun i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)
 
 @[simp] lemma supClosure_infClosure (s : Set α) : supClosure (infClosure s) = latticeClosure s :=
   le_antisymm (supClosure_min (infClosure_min subset_latticeClosure latticeClosed_latticeClosure.2)
