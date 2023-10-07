@@ -171,7 +171,7 @@ protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
 
 /-- The subsemigroup `M` of the magma `M`. -/
 @[to_additive "The additive subsemigroup `M` of the magma `M`."]
-instance : Top (Subsemigroup M) :=
+instance top : Top (Subsemigroup M) :=
   ⟨{  carrier := Set.univ
       mul_mem' := fun _ _ => Set.mem_univ _ }⟩
 
