@@ -1341,9 +1341,13 @@ theorem feasible_iff_rankFeasible_of_full [Full G] :
 
 -- G.rankFeasibleFamily = univ.powerset ↔ G is a matroid.
 
+-- p.64, lemma 3.1
 theorem exists_superset_feasible_satisfying_basisRank {t : Finset α} (ht₁ : t ⊆ s) (ht₂ : t ∈ G) :
     ∃ b ∈ G, t ⊆ b ∧ G.basisRank b = (s ∩ b).card := by
-  sorry
+  have ⟨c, hc₁, hc₂⟩ : ∃ c ∈ G, G.basisRank s = (s ∩ c).card := exists_feasible_satisfying_basisRank
+  by_cases h : c.card ≤ t.card
+  · sorry
+  · sorry
 
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
