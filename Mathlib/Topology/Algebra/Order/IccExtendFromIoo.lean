@@ -153,56 +153,52 @@ open Set2Set
 
 section StrictMonoOn2
 variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [LinearOrder β] [TopologicalSpace β] [OrderTopology β] {a b : α} {c d : β}
+    [LinearOrder β] [TopologicalSpace β] [OrderTopology β] [Nonempty β]
+    {a b : α} {c d : β}
 
-/-- A strictly monotone (increasing) function on an open interval can be continuously extended
-to the closed interval.-/
+/-- Extend strictly monotone (increasing) functions between open intervals to homeomorphisms
+between the closed intervals.-/
 theorem StrictMonoOn.Ioo_continuous_extend_Icc (hf_increasing : StrictMonoOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
-    ∃ g, ContinuousOn g (Icc a b) ∧ EqOn f g {a, b}ᶜ ∧
-    BijOn g (Icc a b) (Icc c d) ∧ g = update (update f a c) b d := by
+    ∃ (g : (Icc a b) ≃ₜ (Icc c d)), EqOn f g.toFun.toval (Ioo a b) := by
   obtain ⟨g, hg⟩ := hf_increasing.Ioo_extend_Icc hf_mapsto.subset hab hcd
-  use g
   have : Nonempty β := Nonempty.intro c
   have hg_mapsto := hg.2.2.1
   rw [hf_mapsto, ← Icc_diff_Ioo_same hcd.le] at hg_mapsto
   replace hg_mapsto : g '' Icc a b = Icc c d := by
     rw [hg_mapsto, @union_diff_self]
     exact union_eq_self_of_subset_left Ioo_subset_Icc_self
-  let iso := hg.1.orderIso
+  let iso := hg.1.orderIso g _
   have hg_image : OrderTopology (g '' (Icc a b)) := by
     rw [hg_mapsto]
     exact orderTopology_of_ordConnected
-  let G := iso.toFun
-  have hG_eq : EqOn G.toval g (Icc a b) := by
-    rw [← @restrict_eq_restrict_iff]
-    rw [← toval_eq]
+  let F := iso.toHomeomorph
+  have h_eq_fg : EqOn f g (Ioo a b) := by
+    intro x hx
+    apply hg.2.1
+    aesop
+  have h_eq_gF : EqOn g (toval iso.toFun) (Icc a b) := by
+    rw [← @restrict_eq_restrict_iff, ← toval_eq, @restrict_eq]
     exact rfl
-  have hG_bij : BijOn G.toval (Icc a b) (g '' (Icc a b)) := by
-    rw [← toval_bijOn]
-    exact iso.bijective
-  have hG_c : ContinuousOn G.toval (Icc a b) := by
-    rw [← toval_continuous]
-    exact iso.continuous
-  have hg_c : ContinuousOn g (Icc a b) := by
-    exact (continuousOn_congr hG_eq).mp hG_c
-  have hg_bij : BijOn g (Icc a b) (Icc c d) := by
-    rw [← hg_mapsto]
-    exact BijOn.congr hG_bij hG_eq
-  exact ⟨hg_c, ⟨hg.2.1, ⟨hg_bij, hg.2.2.2⟩⟩⟩
+  have hF : EqOn f (toval F.toFun) (Ioo a b) := by
+    intro x hx
+    rw [h_eq_fg hx, h_eq_gF (mem_Icc_of_Ioo hx)]
+    exact rfl
+  have : ∃ (g : (Icc a b) ≃ₜ g '' (Icc a b)), EqOn f g.toFun.toval (Ioo a b) := by use F
+  rw [hg_mapsto] at this
+  exact this
 
-/-- A strictly antitone (decreasing) function on an open interval can be continuously extended
-to the closed interval.-/
+/-- Extend strictly antitone (decreasing) functions between open intervals to homeomorphisms
+between the closed intervals.-/
 theorem StrictAntiOn.Ioo_continuous_extend_Icc (hf_decreasing : StrictAntiOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
-    ∃ g, ContinuousOn g (Icc a b) ∧ EqOn f g {a, b}ᶜ ∧
-    BijOn g (Icc a b) (Icc c d) ∧ g = update (update f a d) b c := by
+    ∃ (g : (Icc a b) ≃ₜ (Icc c d)), EqOn f g.toFun.toval (Ioo a b) := by
   let F : α → OrderDual β := f
   have hF_increasing : StrictMonoOn F (Ioo a b) := hf_decreasing
   have hF_mapsto : F '' (Ioo a b) = Ioo (toDual d) (toDual c) := by aesop
-  obtain ⟨G, hG⟩ := hF_increasing.Ioo_continuous_extend_Icc hF_mapsto hab hcd
-  let g : α → β := G
-  use g
-  aesop
+  obtain h := hF_increasing.Ioo_continuous_extend_Icc hF_mapsto hab hcd
+  have : Icc (toDual d) (toDual c) = Icc c d := by aesop
+  rw [this] at h
+  exact h
 
 end StrictMonoOn2
