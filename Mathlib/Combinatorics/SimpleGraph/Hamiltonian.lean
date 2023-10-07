@@ -72,7 +72,8 @@ A *Hamiltonian cycle* is a cycle `p` that visits every vertex once.
 We define this as a cycle whose tail is a Hamiltonian walk.
 -/
 structure IsHamiltonianCycle (p : G.Walk v v) extends p.IsCycle : Prop :=
-  path_hamiltonian : (p.tail toIsCycle.not_Nil).IsHamiltonian
+  @[nolint docBlame]
+  isHamiltonian_tail : (p.tail toIsCycle.not_Nil).IsHamiltonian
 
 lemma IsHamiltonianCycle.isCycle {p : G.Walk v v} (hp : p.IsHamiltonianCycle) :
     p.IsCycle := hp.toIsCycle
