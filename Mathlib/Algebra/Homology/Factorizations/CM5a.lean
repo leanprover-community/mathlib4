@@ -42,13 +42,25 @@ variable (f)
 
 def CofFibFactorization := FullSubcategory (IsCofFibFactorization (f := f))
 
+--instance : Category (CofFibFactorization f) := by
+--  dsimp only [CofFibFactorization]
+--  infer_instance
+
 namespace CofFibFactorization
 
 variable {f}
 variable (F : CofFibFactorization f)
 
+instance : Mono (F.1.i) := F.2.hi
+
 def IsIsoLE (n : ℤ) : Prop := ∀ (i : ℤ) (_ : i ≤ n), IsIso (F.1.p.f i)
-def QuasiIsoLE (n : ℤ) : Prop := ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt (F.1.i) i
+
+class QuasiIsoLE (n : ℤ) : Prop where
+  quasiIsoAt (i : ℤ) (_ : i ≤ n) : QuasiIsoAt (F.1.i) i
+
+lemma quasiIsoAt_of_quasiIsoLE (F : CofFibFactorization f)
+    (n : ℤ) [F.QuasiIsoLE n] (i : ℤ) (hi : i ≤ n) : QuasiIsoAt (F.1.i) i :=
+  QuasiIsoLE.quasiIsoAt i hi
 
 @[simps]
 def mk {I : CochainComplex C ℤ} {i : K ⟶ I} {p : I ⟶ L} (fac : i ≫ p = f)
@@ -126,7 +138,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     have : QuasiIsoAt p n := hp'' n hn
     have : QuasiIsoAt (i ≫ p) n := by simpa only [fac] using hf n hn
     exact quasiIsoAt_of_comp_right i p n
-  refine' ⟨CofFibFactorization.mk fac hp, hp', hi, mono_of_cancel_zero _ _⟩
+  refine' ⟨CofFibFactorization.mk fac hp, hp', ⟨hi⟩, mono_of_cancel_zero _ _⟩
   intro A₀ x₀ (hx₀ : x₀ ≫ homologyMap i n₁ = 0)
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := surjective_up_to_refinements_of_epi (K.homologyπ n₁) x₀
   rw [← cancel_epi π₁, comp_zero, hx₁,
@@ -158,8 +170,31 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
 
 /-lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i)
-    (hf₀ : Mono (homologyMap f n₁)) :
+    [Mono (homologyMap f n₁)] :
     ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₁), F.QuasiIsoLE n₁ := by
+  sorry
+
+lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+    (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i) :
+    ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₀), F.QuasiIsoLE n₁ := by
+  obtain ⟨F₁, hF₁, hF₁', _⟩ := step₁ f n₀ n₁ hn₁ hf
+  obtain ⟨F₂, hF₂, hF₂'⟩ := step₂ F₁.1.i n₀ n₁ hn₁ (F₁.quasiIsoAt_of_quasiIsoLE n₀)
+  have fac : F₂.1.i ≫ F₂.1.p ≫ F₁.1.p = f := by
+    rw [reassoc_of% F₂.1.fac, F₁.1.fac]
+  refine' ⟨CofFibFactorization.mk fac
+    (MorphismProperty.comp_mem _ _ _ F₂.2.hp F₁.2.hp), _,
+      ⟨F₂.quasiIsoAt_of_quasiIsoLE n₁⟩⟩
+  · intro i hi
+    have := hF₁ i hi
+    have := hF₂ i (by linarith)
+    dsimp
+    infer_instance-/
+
+variable {f}
+
+/-lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+    (F : CofFibFactorization f) [F.QuasiIsoLE n₀] :
+    ∃ (F' : CofFibFactorization f) (φ : F ⟶ F'), 0 = 1 := by
   sorry-/
 
 end CM5aCof
