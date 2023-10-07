@@ -3,6 +3,7 @@ Copyright (c) 2023 Wen Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wen Yang
 -/
+import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 
 /-!
@@ -15,6 +16,8 @@ Sometimes a function `f : (a, b) → β` can be naturally extended to `[a, b]`.
 * `StrictMonoOn.Ioo_continuous_extend_Icc`:
 A strictly monotone function between open intervals can be extended to be
 an homeomorphism between the closed intervals.
+* `Homeomorph.Ioo_extend_Icc` :
+Extend a homeomorphism between open intervals to that between the closed intervals.
 -/
 
 open OrderDual Function Set
@@ -159,3 +162,47 @@ theorem StrictAntiOn.Ioo_continuous_extend_Icc (hf_decreasing : StrictAntiOn f (
   exact h
 
 end StrictMonoOn
+
+section ContinuousOn
+open TopologicalSpace
+variable [ConditionallyCompleteLinearOrder α]
+    [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
+    [LinearOrder β] [TopologicalSpace β] [OrderTopology β][OrderClosedTopology β]
+    {a b : α} {c d : β}
+
+/-- Extend a homeomorphism between open intervals to that between the closed intervals.-/
+theorem Homeomorph.Ioo_extend_Icc (f : (Ioo a b) ≃ₜ (Ioo c d)) (hab : a < b) (hcd : c < d) :
+    ∃ g : (Icc a b) ≃ₜ (Icc c d),
+    ∀ x, (hx : x ∈ Ioo a b) → (f ⟨x, hx⟩).val = (g ⟨x, mem_Icc_of_Ioo hx⟩).val := by
+  let e' : α → β := fun _ => c
+  let g : α → β := extend Subtype.val (Subtype.val ∘ f) e'
+  have hg_apply := Subtype.val_injective.extend_apply (Subtype.val ∘ f) e'
+  have hg_eq := extend_comp Subtype.val_injective (Subtype.val ∘ f) e'
+  have hg_c : ContinuousOn g (Ioo a b) := by
+    unfold_let g
+    rw [@continuousOn_iff_continuous_restrict, @restrict_eq, hg_eq, @comp_continuous_iff']
+    exact continuous_subtype_val
+  have hg_inj : InjOn g (Ioo a b) := by
+    unfold_let g
+    rw [@injOn_iff_injective, @restrict_eq, hg_eq, @EquivLike.injective_comp]
+    exact Subtype.coe_injective
+  have hg_mapsto : g '' (Ioo a b) = Ioo c d := by
+    unfold_let g
+    rw [← @range_restrict, @restrict_eq, hg_eq, @EquivLike.range_comp]
+    exact Subtype.range_coe
+  have hg_mono := hg_c.StrictMonoOn_of_InjOn_Ioo hab hg_inj
+  cases hg_mono with
+  | inl hg_mono =>
+    choose G hG using hg_mono.Ioo_continuous_extend_Icc hg_mapsto hab hcd
+    use G
+    intro x hx
+    unfold_let g at hG
+    rw [← hG x hx, hg_apply ⟨x, hx⟩, @comp_apply]
+  | inr hg_mono =>
+    choose G hG using hg_mono.Ioo_continuous_extend_Icc hg_mapsto hab hcd
+    use G
+    intro x hx
+    unfold_let g at hG
+    rw [← hG x hx, hg_apply ⟨x, hx⟩, @comp_apply]
+
+end ContinuousOn
