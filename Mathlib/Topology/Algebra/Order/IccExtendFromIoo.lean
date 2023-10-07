@@ -86,7 +86,7 @@ between the closed intervals.-/
 theorem StrictMonoOn.Ioo_continuous_extend_Icc (hf_increasing : StrictMonoOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
     ∃ (g : (Icc a b) ≃ₜ (Icc c d)),
-    ∀ x, (hx : x ∈ Ioo a b) → f x = (g.toFun ⟨x, mem_Icc_of_Ioo hx⟩).val := by
+    ∀ x, (hx : x ∈ Ioo a b) → f x = (g ⟨x, mem_Icc_of_Ioo hx⟩).val := by
   let g := update (update f a c) b d
   --  First, we verify that `g` is strictly monotone.
   have ha : a ∉ Ioo a b := by simp
@@ -149,7 +149,7 @@ between the closed intervals.-/
 theorem StrictAntiOn.Ioo_continuous_extend_Icc (hf_decreasing : StrictAntiOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
     ∃ (g : (Icc a b) ≃ₜ (Icc c d)),
-    ∀ x, (hx : x ∈ Ioo a b) → f x = (g.toFun ⟨x, mem_Icc_of_Ioo hx⟩).val := by
+    ∀ x, (hx : x ∈ Ioo a b) → f x = (g ⟨x, mem_Icc_of_Ioo hx⟩).val := by
   let F : α → OrderDual β := f
   have hF_increasing : StrictMonoOn F (Ioo a b) := hf_decreasing
   have hF_mapsto : F '' (Ioo a b) = Ioo (toDual d) (toDual c) := by aesop
