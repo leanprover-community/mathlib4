@@ -11,7 +11,7 @@ import Mathlib.Algebra.BigOperators.Basic
 /-!
 # Hamiltonian Graphs
 
-In this file we introduce `Hamitonian paths`, `cylces` and `graphs`,
+In this file we introduce Hamiltonian paths, cycles and graphs,
 two main concepts in the theory of graphs.
 
 ## Main results
