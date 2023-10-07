@@ -757,10 +757,14 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
+-- Note: The `noindex` below makes sure the simplifier will apply the lemma
+-- even if the target is not syntactically a `ofNat`.
 @[simp]
 theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] : coeff (no_index (OfNat.ofNat a : R[X])) 0 = a :=
   coeff_monomial
 
+-- Note: The `noindex` below makes sure the simplifier will apply the lemma
+-- even if the target is not syntactically a `ofNat`.
 @[simp]
 theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
     coeff (no_index (OfNat.ofNat a : R[X])) (n + 1) = 0 := by
