@@ -206,9 +206,59 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i)
     [Mono (homologyMap f n₁)] :
     ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₁), F.QuasiIsoLE n₁ := by
-  sorry-/
+  let φ : K.cycles n₁ ⟶ L.homology n₁ := cyclesMap f n₁ ≫ L.homologyπ n₁
+  let I := Injective.syzygies φ
+  obtain ⟨α, hα⟩ : ∃ (α : L.X n₁ ⟶ I),
+    L.iCycles n₁ ≫ α = L.homologyπ n₁ ≫ Injective.d φ := ⟨_, Injective.comp_factorThru _ _⟩
+  have hα' : K.iCycles n₁ ≫ f.f n₁ ≫ α = 0 := by
+    rw [← cyclesMap_i_assoc, cyclesMap f n₁ ≫= hα, ← assoc,
+      cokernel.condition_assoc, zero_comp]
+  let β : L ⟶ (single C (ComplexShape.up ℤ) n₁).obj I :=
+    (toSingleEquiv _ _ n₀ n₁ (by simp [hn₁])).symm
+      ⟨α, by simpa using L.toCycles n₀ n₁ ≫= hα⟩
+  let L' := (mappingCone β)⟦(-1 : ℤ)⟧
+  let p : L' ⟶ L := (MappingCone.triangleδ β)⟦(-1 : ℤ)⟧' ≫ (shiftEquiv _ (1 : ℤ)).unitIso.inv.app L
+  obtain ⟨γ, hγ⟩ : ∃ (γ : K.X (n₁ + 1) ⟶ I), K.d n₁ (n₁ + 1) ≫ γ = f.f n₁ ≫ α := by
+    let ι := ((Abelian.coimageImageComparison _) ≫ Abelian.image.ι (K.d n₁ (n₁ + 1)))
+    let g : Abelian.coimage (K.d n₁ (n₁ + 1)) ⟶ I :=
+      cokernel.desc _ (f.f n₁ ≫ α) (by
+        have : kernel.ι (K.d n₁ (n₁ + 1)) =
+          K.liftCycles (kernel.ι (K.d n₁ (n₁ + 1))) (n₁ + 1) (by simp) (by simp) ≫ K.iCycles n₁ := by simp
+        rw [this, assoc, hα', comp_zero])
+    have : cokernel.π _ ≫ ι = K.d n₁ (n₁ + 1) := by simp
+    refine' ⟨Injective.factorThru g ι, _⟩
+    have H := Injective.comp_factorThru g ι
+    rw [← cancel_epi (cokernel.π _), cokernel.π_desc] at H
+    rw [← H, ← assoc]
+    congr 1
+    exact this.symm
+  let i' : HomComplex.Cocycle K (mappingCone β) (-1) :=
+    MappingCone.liftCocycle β (-HomComplex.Cocycle.ofHom f)
+      (HomComplex.Cochain.single (γ ≫ (singleObjXSelf C (ComplexShape.up ℤ) n₁ I).inv) (-1))
+      (neg_add_self 1) (by
+      ext q
+      by_cases q = n₁
+      · subst h
+        rw [HomComplex.Cochain.add_v, HomComplex.δ_v (-1) 0
+          (neg_add_self 1) _ q q (add_zero q) n₀ (q+1) (by linarith) rfl,
+          HomComplex.Cochain.single_v_eq_zero _ _ _ _ _ (by linarith),
+          zero_comp, zero_add,
+          HomComplex.Cochain.single_v, reassoc_of% hγ]
+        simp [toSingleEquiv]
+      · apply IsZero.eq_of_tgt
+        dsimp
+        rw [if_neg h]
+        exact Limits.isZero_zero C)
+  let i : K ⟶ L' := (i'.rightShift (-1) 0 (zero_add _)).homOf
+  have : ∀ (n : ℤ), Mono (i.f n) := sorry
+  have := mono_of_mono_f i
+  have hp : degreewiseEpiWithInjectiveKernel p := sorry
+  have fac : i ≫ p = f := sorry
+  refine' ⟨CofFibFactorization.mk fac hp, _, _⟩
+  · sorry
+  · sorry
 
-/-lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i) :
     ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₀), F.QuasiIsoLE n₁ := by
   obtain ⟨F₁, hF₁, hF₁', _⟩ := step₁ f n₀ n₁ hn₁ hf
@@ -222,11 +272,11 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     have := hF₁ i hi
     have := hF₂ i (by linarith)
     dsimp
-    infer_instance-/
+    infer_instance
 
 variable {f}
 
-/-lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (F : CofFibFactorization f) [F.QuasiIsoLE n₀] :
     ∃ (F' : CofFibFactorization f) (_ : F'.QuasiIsoLE n₁) (f : F' ⟶ F),
       ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (f.φ.f i) := by
@@ -248,6 +298,6 @@ lemma CM5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   obtain ⟨L', _, i₁, p₁, _, hp₁, _, rfl⟩ := CM5b f n
   obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := CM5a_cof i₁ n
   refine' ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
-    MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩-/
+    MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩ -/
 
 end CochainComplex
