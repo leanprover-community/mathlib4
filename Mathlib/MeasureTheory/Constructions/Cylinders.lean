@@ -273,9 +273,11 @@ theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
     t ∈ measurableCylinders α ↔ ∃ (s S : _) (_ : MeasurableSet S), t = cylinder s S := by
   simp_rw [measurableCylinders, mem_iUnion, mem_singleton_iff]
 
+/-- A finset `s` such that `t = cylinder s S`. `S` is given by `measurableCylinders.set`. -/
 noncomputable def measurableCylinders.finset (ht : t ∈ measurableCylinders α) : Finset ι :=
   ((mem_measurableCylinders t).mp ht).choose
 
+/-- A set `S` such that `t = cylinder s S`. `s` is given by `measurableCylinders.finset`. -/
 def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
     Set (∀ i : measurableCylinders.finset ht, α i) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose
