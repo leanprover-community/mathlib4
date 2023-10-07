@@ -18,20 +18,20 @@ variable [i : IncidenceGeometry] {a a1 a2 b b1 b2 c d e f g h j k l x y :
 open IncidenceGeometry
 
 -------------------------------------------------- new  API ----------------------------------------
-theorem online_of_line (L : Line) : ∃ a, OnLine a L := by
+theorem online_of_line L : ∃ a, OnLine a L := by
   rcases more_pts ∅ Set.finite_empty with ⟨a, -⟩
   exact Classical.by_cases (fun aL => by use a)
     (fun aL => by rcases diffside_of_not_online aL with ⟨b, -, abL⟩; rcases line_of_pts a b with
       ⟨M, aM, bM⟩; rcases pt_of_linesinter (lines_inter_of_not_sameside aM bM abL) with
       ⟨c, cL, -⟩; exact ⟨c, cL⟩)
 
-theorem online_ne_of_line (L : Line) : ∃ a b, a ≠ b ∧ OnLine  a L ∧ OnLine  b L := by
+theorem online_ne_of_line L : ∃ a b, a ≠ b ∧ OnLine  a L ∧ OnLine  b L := by
   rcases online_of_line L with ⟨a, aL⟩; rcases more_pts {a} (Set.finite_singleton a) with ⟨b, hb⟩;
   rcases circle_of_ne $ ne_of_mem_of_not_mem (Set.mem_singleton a) hb with ⟨α, acen, -⟩;
   rcases pts_of_linecircleinter (linecircleinter_of_inside_online aL
   (inside_circle_of_center acen)) with ⟨c, d, cd, cL, dL, -, -⟩; exact ⟨c, d, cd, cL, dL⟩
 
-theorem online_ne_of_point_line (a : Point) (L : Line) : ∃ b, a ≠ b ∧ OnLine b L := by
+theorem online_ne_of_point_line a L : ∃ b, a ≠ b ∧ OnLine b L := by
   rcases online_ne_of_line L with ⟨b, c, bc, bL, cL⟩
   by_cases c = a; use b; rw[h] at bc; exact ⟨bc.symm, bL⟩
   use c; exact ⟨Ne.symm h, cL⟩
@@ -50,7 +50,7 @@ theorem length_sum_perm_of_B (Babc : B a b c) : 0 < length a b ∧ 0 < length b 
   splitAll; exact len_pos_of_nq $ ne_12_of_B Babc; exact len_pos_of_nq $ ne_23_of_B Babc
   exact len_pos_of_nq $ ne_13_of_B Babc; exact length_sum_of_B Babc
 
-theorem not_online_of_line (L : Line) : ∃ a, ¬OnLine a L := by
+theorem not_online_of_line L : ∃ a, ¬OnLine a L := by
   rcases online_ne_of_line L with ⟨b, c, bc, bL, cL⟩
   rcases circle_of_ne bc with ⟨α, bα, cα⟩
   rcases circle_of_ne bc.symm with ⟨β, cβ, bβ⟩
