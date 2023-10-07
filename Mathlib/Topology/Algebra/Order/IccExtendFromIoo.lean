@@ -13,9 +13,6 @@ Sometimes a function `f : (a, b) → β` can be naturally extended to `[a, b]`.
 
 ## Main statements
 
-* `StrictMonoOn.Ioo_extend_Icc` and `StrictAntiOn.Ioo_extend_Icc`:
-A strictly monotone function on an open interval can be extended to be
-strictly monotone on the closed interval.
 -/
 
 open OrderDual Function Set
@@ -76,75 +73,3 @@ theorem StrictMonoOn.update_strict_lower_bound [PartialOrder α] [Preorder β]
   exact strict_mono_on_dual_iff.mp this
 
 end update
-
-section StrictMonoOn
-variable [PartialOrder α] [PartialOrder β] {a b : α} {c d : β}
-
-/-- A strictly monotone (increasing) function on an open interval can be extended
-to be strictly monotone (increasing) on the closed interval.-/
-theorem StrictMonoOn.Ioo_extend_Icc (hf_mono : StrictMonoOn f (Ioo a b))
-    (hf_mapsto : f '' (Ioo a b) ⊆ Ioo c d) (hab : a < b) (hcd : c < d) :
-    ∃ g, StrictMonoOn g (Icc a b) ∧
-    EqOn f g {a, b}ᶜ ∧
-    g '' (Icc a b) = f '' (Ioo a b) ∪ {c, d} ∧
-    g = update (update f a c) b d := by
-  let g : α → β := update (update f a c) b d
-  use g
-  have ha : a ∉ Ioo a b := by simp
-  have hg_mono : StrictMonoOn g (Icc a b) := by
-    have ha' : Ico a b = (Ioo a b) ∪ {a} := (Ioo_union_left hab).symm
-    have hf_mono' : StrictMonoOn (update f a c) (Ico a b) := by
-      rw [ha']
-      refine hf_mono.update_strict_lower_bound ?mapsto ?ha
-      · exact hf_mapsto.trans Ioo_subset_Ioi_self
-      · aesop
-    have hf_mapsto' : (update f a c) '' (Ico a b) ⊆ Ico c d := by
-      rw [ha', image_union]
-      simp only [(update.EqOn f ha).image_eq]
-      rw [← Ioo_union_left hcd]
-      simp [insert_subset_insert hf_mapsto]
-    have : (update f a c) '' (Ico a b) ⊆ Iio d := hf_mapsto'.trans Ico_subset_Iio_self
-    have hb : ∀ x ∈ Ico a b, x < b := by simp
-    have hf_mono'' := hf_mono'.update_strict_upper_bound this hb
-    replace : Ico a b ∪ {b} = Icc a b := Ico_union_right hab.le
-    rw [this] at hf_mono''
-    exact hf_mono''
-  have hg_eq : EqOn f g {a, b}ᶜ := by
-    intro x hx
-    unfold_let g
-    unfold update
-    aesop
-  have hg_image : g '' Icc a b = f '' Ioo a b ∪ {c, d} := by
-    unfold_let g
-    have hb : b ∉ Ico a b := by simp
-    rw [← Ico_union_right hab.le, update.image (update f a c) hb,
-        ← Ioo_union_left hab, update.image f ha]
-    have := insert_comm d c (f '' Ioo a b)
-    simp [this]
-  trivial
-
-/-- A strictly antitone (decreasing) function on an open interval can be extended
-to be strictly antitone (decreasing) on the closed interval.-/
-theorem StrictAntiOn.Ioo_extend_Icc (hf_mono : StrictAntiOn f (Ioo a b))
-    (hf_mapsto : f '' (Ioo a b) ⊆ Ioo c d) (hab : a < b) (hcd : c < d) :
-    ∃ g, StrictAntiOn g (Icc a b) ∧
-    EqOn f g {a, b}ᶜ ∧
-    g '' (Icc a b) = f '' (Ioo a b) ∪ {c, d} ∧
-    g = update (update f a d) b c := by
-  let g : α → OrderDual β := f
-  have hg_mono : StrictMonoOn g (Ioo a b) := hf_mono
-  have hg_mapsto : g '' (Ioo a b) ⊆ Ioo (toDual d) (toDual c) := by aesop
-  choose G hG using hg_mono.Ioo_extend_Icc hg_mapsto hab hcd
-  let F : α → β := G
-  use F
-  constructor
-  · aesop
-  · constructor
-    · aesop
-    · constructor
-      · rw [hG.2.2.1]
-        have := insert_comm (toDual d) (toDual c) ((fun a ↦ f a) '' Ioo a b)
-        aesop
-      · aesop
-
-end StrictMonoOn
