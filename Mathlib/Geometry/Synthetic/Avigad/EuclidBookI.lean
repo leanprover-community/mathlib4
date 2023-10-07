@@ -113,7 +113,7 @@ theorem eq_tri_of_length_online (ab : a ≠ b) (aL : OnLine a L) (bL : OnLine b 
 ⟨triangle_of_ne_online ab aL bL cL, by perma, by linperm, by linperm⟩
 
 theorem B_circ_of_ne (ab : a ≠ b) (bc : b ≠ c) : ∃ d α, B a b d ∧
-   CenterCircle b α ∧ OnCircle c α ∧ OnCircle d α := by
+    CenterCircle b α ∧ OnCircle c α ∧ OnCircle d α := by
 rcases circle_of_ne bc with ⟨α, bα, cα⟩; rcases pt_oncircle_of_inside_ne ab
  (inside_circle_of_center bα) with ⟨d, Babd, dα⟩; exact ⟨d, α, Babd, bα, cα, dα⟩
 
@@ -137,7 +137,7 @@ theorem ne_13_of_tri (tri : triangle a b c) : a ≠ c :=
 theorem ne_31_of_tri (tri : triangle a b c) : c ≠ a := fun ca => (ne_13_of_tri tri) ca.symm
 
 theorem incirc_of_lt (aα : CenterCircle a α) (bα : OnCircle b α)
-   (ac_ab : length a c < length a b) : InCircle c α := (in_circle_iff_length_lt aα bα).mp ac_ab
+    (ac_ab : length a c < length a b) : InCircle c α := (in_circle_iff_length_lt aα bα).mp ac_ab
 
 theorem B_circ_out_of_B (ab : a ≠ b) (Bacd : B a c d) (ab_ac : length a b = length a c) :
     ∃ e α, B a b e ∧ CenterCircle a α ∧ OnCircle d α ∧ OnCircle e α := by
@@ -157,7 +157,7 @@ theorem incircle_of_on_circle_length (aα : CenterCircle a α) (bα : OnCircle b
 fun c_in_α => by linarith[(in_circle_iff_length_lt aα bα).mpr c_in_α]
 
 theorem length_eq_of_B_B (Bdbe: B d b e) (Bdaf : B d a f) (da_db : length d a = length d b)
-   (de_df : length d e = length d f):
+    (de_df : length d e = length d f):
 length a f = length b e := by linarith[length_sum_perm_of_B Bdbe, length_sum_perm_of_B Bdaf]
 
 theorem B_oncircle_of_inside_outside (a_in_α : InCircle a α) (b_out_α : out_circle b α) :
@@ -224,12 +224,12 @@ theorem col_312 (col : colinear a b c) : colinear c a b := by
   rcases col with ⟨L, aL, bL, cL⟩; exact ⟨L, cL, aL, bL⟩
 
 theorem col_134_of_col_123_col_124 (ab : a ≠ b) (col_123 : colinear a b c)
-   (col_124 : colinear a b d) : colinear a c d := by
+    (col_124 : colinear a b d) : colinear a c d := by
 rcases col_123 with ⟨L, aL, bL, cL⟩; exact ⟨L, aL, cL, online_of_col_online ab aL bL col_124⟩
 
 theorem tri_143_of_tri_col (ad : a ≠ d) (tri_abc : triangle a b c) (col_abd : colinear a b d) :
-   triangle a d c := fun col_adc => by rcases col_abd with ⟨L, aL, bL, dL⟩; exact tri_abc
-                                        ⟨L, aL, bL, online_of_col_online ad aL dL col_adc⟩
+    triangle a d c := fun col_adc => by rcases col_abd with ⟨L, aL, bL, dL⟩; exact tri_abc
+                                          ⟨L, aL, bL, online_of_col_online ad aL dL col_adc⟩
 
 theorem col_of_B (Babc : B a b c) : colinear a b c := by
   rcases line_of_pts a b with ⟨L, aL, bL⟩; exact ⟨L, aL, bL, online_3_of_B Babc aL bL⟩
@@ -700,7 +700,7 @@ theorem sameside_of_sameside_para (aN : OnLine a N) (bN : OnLine b N) (acM : Sam
   sameside_trans (sameside_of_para_online' aN bN paraMN) acM
 
 theorem diffside_of_sameside_paragram (fL : OnLine f L) (cP : OnLine c P) (fP : OnLine f P)
-   (afM : SameSide a f M) (pgram : paragram a b c d L M N O) : diffside b d P := by
+    (afM : SameSide a f M) (pgram : paragram a b c d L M N O) : diffside b d P := by
 have ⟨_, bL, bM, cM, cN, dN, dO, aO, paraLN, paraMO⟩ := pgram
 exact diffside_of_sameside_sameside cM cP cN bM fP dN (sameside_of_sameside_para aO dO afM paraMO)
   (sameside_of_para_online bL fL paraLN)
