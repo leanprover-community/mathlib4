@@ -12,7 +12,6 @@ import Mathlib.Algebra.BigOperators.Basic
 # Hamiltonian Graphs
 
 In this file we introduce `Hamitonian paths`, `cylces` and `graphs`.
-
 ## Main results
 
 - `IsHamiltonian`: the definition of `Hamitonian paths`
@@ -21,10 +20,6 @@ In this file we introduce `Hamitonian paths`, `cylces` and `graphs`.
 -/
 
 open BigOperators
-
-lemma List.toFinset_sum_count_eq {α : Type*} [DecidableEq α] {l : List α} :
-    ∑ i in l.toFinset, l.count i = l.length :=
-  by simpa using Multiset.toFinset_sum_count_eq (l : Multiset α)
 
 namespace SimpleGraph
 
