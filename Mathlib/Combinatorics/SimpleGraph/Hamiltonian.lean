@@ -23,10 +23,6 @@ two main concepts in the theory of graphs.
 
 open BigOperators
 
-lemma List.toFinset_sum_count_eq {α : Type*} [DecidableEq α] {l : List α} :
-    ∑ i in l.toFinset, l.count i = l.length :=
-  by simpa using Multiset.toFinset_sum_count_eq (l : Multiset α)
-
 namespace SimpleGraph
 
 variable {V : Type} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj] {u v : V}
