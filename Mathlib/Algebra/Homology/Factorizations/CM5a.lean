@@ -59,17 +59,16 @@ def mk {I : CochainComplex C ℤ} {i : K ⟶ I} {p : I ⟶ L} (fac : i ≫ p = f
 
 end CofFibFactorization
 
-variable [Mono f]
-
-lemma step₁ (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
-    (hf : ∀ (i : ℤ) (hi : i ≤ n₀), QuasiIsoAt f i) :
-    ∃ (F : CofFibFactorization f) (hF₁ : F.IsIsoLE n₀) (hF₂ : F.QuasiIsoLE n₀),
+lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+    (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i) :
+    ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₀) (_ : F.QuasiIsoLE n₀),
       Mono (homologyMap F.1.i n₁) := by
   let S := ((single C (ComplexShape.up ℤ) n₁).obj (Injective.under (K.opcycles n₁)))
   let M := biprod S L
-  let i : K ⟶ M := biprod.lift ((toSingleEquiv _ _ n₀ n₁ (by subst hn₁; simp)).symm
+  let i₁ : K ⟶ S := ((toSingleEquiv _ _ n₀ n₁ (by subst hn₁; simp)).symm
     ⟨K.pOpcycles n₁ ≫ Injective.ι _,
-      by rw [d_pOpcycles_assoc, zero_comp]⟩) f
+      by rw [d_pOpcycles_assoc, zero_comp]⟩)
+  let i : K ⟶ M := biprod.lift i₁ f
   let p : M ⟶ L := biprod.snd
   let σ : L ⟶ M := biprod.inr
   have σp : σ ≫ p = 𝟙 _ := by simp
@@ -89,7 +88,7 @@ lemma step₁ (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     · rw [← comp_f, biprod.inr_snd, id_f]
     · rw [← id_f, ← biprod.total, add_f_apply, comp_f, comp_f]
   have fac : i ≫ p = f := by simp
-  have hp' : ∀ (n : ℤ) (hn : n ≤ n₀), IsIso (p.f n) := fun n hn => by
+  have hp' : ∀ (n : ℤ) (_ : n ≤ n₀), IsIso (p.f n) := fun n hn => by
     refine' ⟨(biprod.inr : _ ⟶ M).f n, _, _⟩
     · rw [← cancel_mono ((HomologicalComplex.eval C (ComplexShape.up ℤ) n).mapBiprod _ _).hom]
       ext
@@ -101,7 +100,7 @@ lemma step₁ (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
         simp only [Category.assoc, biprod.lift_snd, Category.id_comp]
         rw [← comp_f, biprod.inr_snd, id_f, comp_id]
     · rw [← comp_f, biprod.inr_snd, id_f]
-  have hp'' : ∀ (n : ℤ) (hn : n ≤ n₀), QuasiIsoAt p n := fun n hn => by
+  have hp'' : ∀ (n : ℤ) (_ : n ≤ n₀), QuasiIsoAt p n := fun n hn => by
     obtain (hn | rfl) := hn.lt_or_eq
     · rw [quasiIsoAt_iff' _ (n-1) n (n+1) (by simp) (by simp)]
       let φ := (shortComplexFunctor' C (ComplexShape.up ℤ) (n - 1) n (n + 1)).map p
@@ -123,7 +122,7 @@ lemma step₁ (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
           ← biprod.total, add_sub_cancel, ← cancel_epi (M.homologyπ n),
           homologyπ_naturality, comp_zero, cyclesMap_comp, this, comp_zero, zero_comp]
       · rw [← homologyMap_comp, σp, homologyMap_id]
-  have hi : ∀ (n : ℤ) (hn : n ≤ n₀), QuasiIsoAt i n := fun n hn => by
+  have hi : ∀ (n : ℤ) (_ : n ≤ n₀), QuasiIsoAt i n := fun n hn => by
     have : QuasiIsoAt p n := hp'' n hn
     have : QuasiIsoAt (i ≫ p) n := by simpa only [fac] using hf n hn
     exact quasiIsoAt_of_comp_right i p n
@@ -135,18 +134,37 @@ lemma step₁ (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
   replace hx₀ := π₁ ≫= hx₀
   rw [reassoc_of% hx₁, comp_zero, homologyπ_naturality, ← assoc,
     M.comp_homologyπ_eq_zero_iff_up_to_refinements (x₁ ≫ cyclesMap i n₁) n₀ (by simp [hn₁])] at hx₀
-  obtain ⟨A₂, π₂, _, x₂, hx₂⟩ := hx₀
+  have : Mono (opcyclesMap i₁ n₁) := by
+    let α : Injective.under (K.opcycles n₁) ⟶ S.X n₁ :=
+      (singleObjXSelf C (ComplexShape.up ℤ) n₁ (Injective.under (K.opcycles n₁))).inv
+    have := S.isIso_pOpcycles _ n₁ rfl rfl
+    have : opcyclesMap i₁ n₁ = Injective.ι (K.opcycles n₁) ≫ α ≫ S.pOpcycles n₁ := by
+      rw [← (cancel_epi (K.pOpcycles n₁)), p_opcyclesMap, ← assoc, ← assoc]
+      simp [toSingleEquiv]
+    rw [this]
+    infer_instance
   have hx₁' : (x₁ ≫ K.iCycles n₁) ≫ K.pOpcycles n₁ = 0 := by
+    obtain ⟨A₂, π₂, _, x₂, hx₂⟩ := hx₀
     replace hx₂ := hx₂ =≫ (M.iCycles n₁ ≫ M.pOpcycles n₁ ≫ opcyclesMap biprod.fst n₁)
     rw [assoc, assoc, assoc, cyclesMap_i_assoc, toCycles_i_assoc, d_pOpcycles_assoc,
-      zero_comp, comp_zero] at hx₂
-    simp at hx₂
-    sorry
-  sorry
+      zero_comp, comp_zero, p_opcyclesMap, ← comp_f_assoc, biprod.lift_fst,
+      ← p_opcyclesMap i₁ n₁] at hx₂
+    rw [assoc, ← cancel_mono (opcyclesMap i₁ n₁), zero_comp, assoc, assoc,
+      ← cancel_epi π₂, comp_zero, hx₂]
+  rw [K.comp_pOpcycles_eq_zero_iff_up_to_refinements (x₁ ≫ K.iCycles n₁) n₀ (by simp [hn₁])] at hx₁'
+  obtain ⟨A₃, π₃, _, x₃, hx₃⟩ := hx₁'
+  refine' ⟨A₃, π₃, inferInstance, x₃, _⟩
+  rw [← cancel_mono (K.iCycles n₁), assoc, hx₃, assoc, toCycles_i]
+
+/-lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+    (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i)
+    (hf₀ : Mono (homologyMap f n₁)) :
+    ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₁), F.QuasiIsoLE n₁ := by
+  sorry-/
 
 end CM5aCof
 
-lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
+/-lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f :=
   sorry
@@ -157,6 +175,6 @@ lemma CM5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   obtain ⟨L', _, i₁, p₁, _, hp₁, _, rfl⟩ := CM5b f n
   obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := CM5a_cof i₁ n
   refine' ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
-    MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩
+    MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩-/
 
 end CochainComplex

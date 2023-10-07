@@ -186,4 +186,14 @@ lemma ShortComplex.epi_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
       comp_liftCycles_assoc, liftCycles_comp_homologyπ_eq_iff_up_to_refinements]
     exact ⟨A₂, 𝟙 _, inferInstance, y₁, by simpa only [id_comp] using hy₁⟩
 
+lemma ShortComplex.comp_pOpcycles_eq_zero_iff_up_to_refinements
+    {A : C} (x₂ : A ⟶ S.X₂) :
+      x₂ ≫ S.pOpcycles = 0 ↔
+        ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
+  constructor
+  · exact (exact_of_g_is_cokernel (ShortComplex.mk S.f S.pOpcycles (by simp))
+      (S.opcyclesIsCokernel)).exact_up_to_refinements _
+  · rintro ⟨A', π, _, x₁, h⟩
+    rw [← cancel_epi π, comp_zero, reassoc_of% h, f_pOpcycles, comp_zero]
+
 end CategoryTheory
