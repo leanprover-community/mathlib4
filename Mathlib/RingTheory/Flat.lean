@@ -74,7 +74,7 @@ lemma iff_rTensor_injective (R : Type u) (M : Type v) [CommRing R] [AddCommGroup
     Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
   have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
     (TensorProduct.lift ((lsmul R M).comp I.subtype))
-  · intro I; apply TensorProduct.ext' ; intro x y ; simp
+  · intro I; apply TensorProduct.ext'; intro x y; simp
   constructor
   · intro F I hI
     erw [← Equiv.comp_injective _ (TensorProduct.lid R M).toEquiv]
