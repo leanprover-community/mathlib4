@@ -55,7 +55,7 @@ obstacle here is in the underlying category theory constructions, which are not 
 universe polymorphic.  A direct attempt to generalize the universes worked in Lean 3 but was
 reverted because it was hard to port to Lean 4, see
 https://github.com/leanprover-community/mathlib/pull/19230
-The current (Oct 2024) proposal to permit these generalizations is to use the new `UnivLE`
+The current (Oct 2023) proposal to permit these generalizations is to use the new `UnivLE`
 typeclass, and some (but not all) of the underlying category theory constructions have now been
 generalized by this method: see https://github.com/leanprover-community/mathlib4/pull/5724,
 https://github.com/leanprover-community/mathlib4/pull/5726.
