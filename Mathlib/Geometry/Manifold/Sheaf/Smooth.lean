@@ -51,10 +51,14 @@ for `GroupCat`, `CommGroupCat` and `RingCat` which can be added as needed.
 Currently there is a universe restriction: one can consider the sheaf of smooth functions from `M`
 to `N` only if `M` and `N` are in the same universe.  For example, since `ℂ` is in `Type`, we can
 only consider the structure sheaf of complex manifolds in `Type`, which is unsatisfactory. The
-obstacle here is in the underlying category theory constructions, and there is WIP (as of June 2023)
-to fix this.  See
-https://github.com/leanprover-community/mathlib/pull/19153
-and cross-references there.
+obstacle here is in the underlying category theory constructions, which are not sufficiently
+universe polymorphic.  A direct attempt to generalize the universes worked in Lean 3 but was
+reverted because it was hard to port to Lean 4, see
+https://github.com/leanprover-community/mathlib/pull/19230
+The current (Oct 2024) proposal to permit these generalizations is to use the new `UnivLE` typeclass,
+and some (but not all) of the underlying category theory constructions have now been generalized by
+this method: see https://github.com/leanprover-community/mathlib4/pull/5724,
+https://github.com/leanprover-community/mathlib4/pull/5726.
 -/
 
 
