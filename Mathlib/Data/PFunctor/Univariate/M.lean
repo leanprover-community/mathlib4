@@ -732,7 +732,7 @@ this can be an infinite structure. -/
 unsafe inductive CofixI (F : PFunctor.{u})
   /-- Construct `CofixI` from a thunk. Actually, children of the tree is lazy evaluated without
   thunk, but this is useful to construct the equivalence to `QPF.Cofix`. -/
-  | mk (t : Thunk (F.Obj (CofixI F))) : CofixI F
+  | mk (t : Thunk (F (CofixI F))) : CofixI F
 
 namespace M
 
@@ -801,7 +801,7 @@ unsafe def toI : M F → CofixI F :=
 
 variable {X : Type*}
 
-variable (f : X → F.Obj X)
+variable (f : X → F X)
 
 /-- The implemention of `corec`. This generates data trees lazily. -/
 @[inline]
@@ -827,7 +827,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.inhabited PFunctor.M.inhabited
 
 /-- The implemention of `dest`. This unfolds an M-type. -/
-unsafe def destUnsafe (x : M F) : F.Obj (M F) :=
+unsafe def destUnsafe (x : M F) : F (M F) :=
   match toI x with
   | ⟨t⟩ =>
     match t.get with
@@ -835,7 +835,7 @@ unsafe def destUnsafe (x : M F) : F.Obj (M F) :=
 
 /-- This unfolds an M-type. -/
 @[implemented_by destUnsafe]
-def dest (x : M F) : F.Obj (M F) :=
+def dest (x : M F) : F (M F) :=
   ofIntl <$> x.toIntl.dest
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest PFunctor.M.dest
@@ -871,23 +871,23 @@ theorem toIntl_eq_toIntlComputable : @toIntl.{u} = @toIntlComputable.{u} :=
 
 /-- The implemention of `mk`. -/
 @[inline]
-unsafe def mkUnsafe (x : F.Obj (M F)) : M F :=
+unsafe def mkUnsafe (x : F (M F)) : M F :=
   match x with
   | ⟨a, o⟩ => ofI <| CofixI.mk <| Thunk.pure ⟨a, fun b => toI (o b)⟩
 
 /-- constructor for M-types -/
 @[implemented_by mkUnsafe]
-protected def mk (x : F.Obj (M F)) : M F :=
+protected def mk (x : F (M F)) : M F :=
   ofIntl (MIntl.mk (toIntl <$> x))
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk PFunctor.MIntl.mk
 
 @[simp]
-theorem mk_ofIntl_map (x : F.Obj (MIntl F)) : M.mk (ofIntl <$> x) = ofIntl (MIntl.mk x) := by
+theorem mk_ofIntl_map (x : F (MIntl F)) : M.mk (ofIntl <$> x) = ofIntl (MIntl.mk x) := by
   simp [M.mk, Functor.map_map]
 
 @[simp]
-theorem dest_mk (x : F.Obj (M F)) : dest (M.mk x) = x := by
+theorem dest_mk (x : F (M F)) : dest (M.mk x) = x := by
   simp [dest, M.mk, Functor.map_map]
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_mk PFunctor.M.dest_mk
@@ -898,14 +898,14 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk_dest PFunctor.M.mk_dest
 
-theorem mk_inj {x y : F.Obj (M F)} (h : M.mk x = M.mk y) : x = y := by
+theorem mk_inj {x y : F (M F)} (h : M.mk x = M.mk y) : x = y := by
   rw [← dest_mk x, h, dest_mk]
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk_inj PFunctor.M.mk_inj
 
 /-- destructor for M-types -/
 @[inline]
-protected def cCases {r : M F → Sort w} (f : ∀ x : F.Obj (M F), r (M.mk x))
+protected def cCases {r : M F → Sort w} (f : ∀ x : F (M F), r (M.mk x))
     (x : M F) : r x :=
   suffices r (M.mk (dest x)) by
     rw [← mk_dest x]
@@ -917,7 +917,7 @@ set_option linter.uppercaseLean3 false in
 /-- destructor for M-types -/
 @[inline]
 protected def cCasesOn {r : M F → Sort w} (x : M F)
-    (f : ∀ x : F.Obj <| M F, r (M.mk x)) : r x :=
+    (f : ∀ x : F (M F), r (M.mk x)) : r x :=
   M.cCases f x
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_on PFunctor.M.cCasesOn
@@ -932,8 +932,8 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_on' PFunctor.M.cCasesOn'
 
 @[simp]
-theorem cCases_mk {r : M F → Sort*} (x : F.Obj <| M F)
-    (f : ∀ x : F.Obj <| M F, r (M.mk x)) :
+theorem cCases_mk {r : M F → Sort*} (x : F (M F))
+    (f : ∀ x : F (M F), r (M.mk x)) :
     PFunctor.M.cCases f (M.mk x) = f x := by
   dsimp only [M.cCases]
   rw [eq_mpr_eq_cast, cast_eq_iff_heq, dest_mk]
@@ -941,8 +941,8 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_mk PFunctor.M.cCases_mk
 
 @[simp]
-theorem cCasesOn_mk {r : M F → Sort*} (x : F.Obj <| M F)
-    (f : ∀ x : F.Obj <| M F, r (M.mk x)) :
+theorem cCasesOn_mk {r : M F → Sort*} (x : F (M F))
+    (f : ∀ x : F (M F), r (M.mk x)) :
     PFunctor.M.cCasesOn (M.mk x) f = f x :=
   cCases_mk x f
 set_option linter.uppercaseLean3 false in
@@ -956,12 +956,12 @@ theorem cCasesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_on_mk' PFunctor.M.cCasesOn_mk'
 
-theorem corec_def {X} (f : X → F.Obj X) (x₀ : X) :
+theorem corec_def {X} (f : X → F X) (x₀ : X) :
     M.corec f x₀ = M.mk (M.corec f <$> f x₀) := by
   simpa [M.corec, M.mk, Functor.map_map, Function.comp] using MIntl.corec_def f x₀
 
 /-- corecursor for `M F` with swapped arguments -/
-abbrev corecOn {X : Type*} (x₀ : X) (f : X → F.Obj X) : M F :=
+abbrev corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
   M.corec f x₀
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_on PFunctor.M.corecOn
@@ -969,7 +969,7 @@ set_option linter.uppercaseLean3 false in
 variable {P : PFunctor.{u}} {α : Type u}
 
 @[simp]
-theorem dest_corec (g : α → P.Obj α) (x : α) :
+theorem dest_corec (g : α → P α) (x : α) :
     M.dest (M.corec g x) = M.corec g <$> g x := by
   rw [corec_def, dest_mk]
 set_option linter.uppercaseLean3 false in
@@ -980,7 +980,7 @@ theorem bisim (R : M P → M P → Prop)
       M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   have hm :
-    Function.RightInverse (Functor.map ofIntl : P.Obj (MIntl P) → P.Obj (M P)) (Functor.map toIntl)
+    Function.RightInverse (Functor.map ofIntl : P (MIntl P) → P (M P)) (Functor.map toIntl)
   · simp [Function.RightInverse, LeftInverse, Functor.map_map]
   simp only [leftInv_ofIntl_toIntl.surjective.forall,
     leftInv_ofIntl_toIntl.surjective.comp_left.exists,
@@ -1055,7 +1055,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The more efficient implemention of `corec'`. -/
 @[inline]
-unsafe def corec'Unsafe {α : Type u} (F : α → M P ⊕ P.Obj α) (x : α) : M P :=
+unsafe def corec'Unsafe {α : Type u} (F : α → M P ⊕ P α) (x : α) : M P :=
   let rec
     /-- The main loop of `corec'Unsafe`. -/
     @[specialize] loop (x : α) : CofixI P :=
