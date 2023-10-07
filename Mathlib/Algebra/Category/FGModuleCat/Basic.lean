@@ -63,15 +63,60 @@ instance : CoeSort (FGModuleCat R) (Type u) :=
 
 attribute [coe] FGModuleCat.carrier
 
+namespace FGModuleCat
+
 @[simp] lemma obj_carrier (M : FGModuleCat R) : M.obj.carrier = M.carrier := rfl
 
-instance (M : FGModuleCat R) : AddCommGroup M := by
-  change AddCommGroup M.obj
+instance instAdd (M : FGModuleCat R) : Add M := by
+  change Add M.obj
   infer_instance
 
-instance (M : FGModuleCat R) : Module R M := by
-  change Module R M.obj
+instance addSemigroup (M : FGModuleCat R) : AddSemigroup M :=
+  { inferInstanceAs (AddSemigroup M.obj) with
+    toAdd := FGModuleCat.instAdd _ }
+
+instance instZero (M : FGModuleCat R) : Zero M := by
+  change Zero M.obj
   infer_instance
+
+instance addMonoid (M : FGModuleCat R) : AddMonoid M :=
+  { inferInstanceAs (AddMonoid M.obj) with
+    toAddSemigroup := FGModuleCat.addSemigroup _
+    toZero := FGModuleCat.instZero _ }
+
+instance instNeg (M : FGModuleCat R) : Neg M := by
+  change Neg M.obj
+  infer_instance
+
+instance instSub (M : FGModuleCat R) : Sub M := by
+  change Sub M.obj
+  infer_instance
+
+instance subNegMonoid (M : FGModuleCat R) : SubNegMonoid M :=
+  { inferInstanceAs (SubNegMonoid M.obj) with
+    toAddMonoid := FGModuleCat.addMonoid _
+    toNeg := FGModuleCat.instNeg _
+    toSub := FGModuleCat.instSub _ }
+
+instance addGroup (M : FGModuleCat R) : AddGroup M :=
+  { inferInstanceAs (AddGroup M.obj) with
+    toSubNegMonoid := FGModuleCat.subNegMonoid _ }
+
+instance addCommGroup (M : FGModuleCat R) : AddCommGroup M :=
+  { inferInstanceAs (AddCommGroup M.obj) with
+    toAddGroup := FGModuleCat.addGroup _ }
+
+instance instSMul (M : FGModuleCat R) : SMul R M := by
+  change SMul R M.obj
+  infer_instance
+
+instance mulAction (M : FGModuleCat R) : MulAction R M :=
+  { inferInstanceAs (MulAction R M.obj) with
+    toSMul := FGModuleCat.instSMul _ }
+
+instance (M : FGModuleCat R) : Module R M :=
+  { inferInstanceAs (Module R M.obj) with
+    toMulAction := FGModuleCat.mulAction _ }
 
 instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
@@ -87,6 +132,8 @@ instance : ConcreteCategory (FGModuleCat R) := by
 instance : Preadditive (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
+
+end FGModuleCat
 
 end Ring
 
