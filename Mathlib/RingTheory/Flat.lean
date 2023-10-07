@@ -170,26 +170,26 @@ lemma directSum (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι
   simp [f]
 
 /-- Free `R`-modules over discrete types are flat. -/
-instance finsupp (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι] : 
+instance finsupp (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι] :
     Flat R (ι →₀ R) :=
   of_iso R _ _ (finsuppLEquivDirectSum R R ι) (directSum R ι _ (fun _ ↦ (self R)))
 
-noncomputable instance of_free (R : Type) [CommRing R] (M: Type w) 
-    [AddCommGroup M] [Module R M] [Free R M] : Flat R M := 
+noncomputable instance of_free (R : Type) [CommRing R] (M: Type w)
+    [AddCommGroup M] [Module R M] [Free R M] : Flat R M :=
   of_iso R _ _ (Free.repr R M) (finsupp R _ )
 
 /-- A projective module with a discrete type of generator is flat -/
-lemma of_projective_surj (R : Type u) [CommRing R] (ι : Type v) [DecidableEq ι] (M : Type w) 
-  [AddCommGroup M] [Module R M] [Projective R M] (p : (ι →₀ R) →ₗ[R] M) (hp : Surjective p) : 
-  Flat R M := by
-    have h := Module.projective_lifting_property p (LinearMap.id) hp
-    cases h with
+lemma of_projective_surj (R : Type u) [CommRing R] (ι : Type v) [DecidableEq ι] (M : Type w)
+    [AddCommGroup M] [Module R M] [Projective R M] (p : (ι →₀ R) →ₗ[R] M) (hp : Surjective p) :
+    Flat R M := by
+  have h := Module.projective_lifting_property p (LinearMap.id) hp
+  cases h with
     | _ e he => exact of_retract R _ _ _ _ he (finsupp R _)
 
-noncomputable instance of_projective (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] 
+noncomputable instance of_projective (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M]
     [Module R M] [h : Projective R M] : Flat R M := by
-    rw [Module.projective_def'] at h
-    cases h with
+  rw [Module.projective_def'] at h
+  cases h with
     | _ e he => exact of_retract R _ _ _ _ he (@finsupp R _ (dec_ι := Classical.decEq _))
 
 end Flat
