@@ -169,6 +169,7 @@ lemma directSum (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι
     h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
+set_option linter.unusedVariables false in
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι] :
     Flat R (ι →₀ R) :=
