@@ -180,10 +180,10 @@ lemma LatticeClosed.inter (hs : LatticeClosed s) (ht : LatticeClosed t) : Lattic
   ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
 
 lemma latticeClosed_sInter (hS : ∀ s ∈ S, LatticeClosed s) : LatticeClosed (⋂₀ S) :=
-  ⟨supClosed_sInter λ _s hs ↦ (hS _ hs).1, infClosed_sInter λ _s hs ↦ (hS _ hs).2⟩
+  ⟨supClosed_sInter fun _s hs ↦ (hS _ hs).1, infClosed_sInter fun _s hs ↦ (hS _ hs).2⟩
 
 lemma latticeClosed_iInter (hf : ∀ i, LatticeClosed (f i)) : LatticeClosed (⋂ i, f i) :=
-  ⟨supClosed_iInter λ _i ↦ (hf _).1, infClosed_iInter λ _i ↦ (hf _).2⟩
+  ⟨supClosed_iInter fun _i ↦ (hf _).1, infClosed_iInter fun _i ↦ (hf _).2⟩
 
 lemma LatticeClosed.preimage [LatticeHomClass F β α] (hs : LatticeClosed s) (f : F) :
     LatticeClosed (f ⁻¹' s) := ⟨hs.1.preimage _, hs.2.preimage _⟩
