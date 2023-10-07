@@ -3,9 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.Opposite
+import Mathlib.Algebra.Homology.ShortComplex.Refinements
 import Mathlib.Tactic.Linarith
 /-!
 # The short complexes attached to homological complexes
@@ -563,6 +563,12 @@ lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap
   rw [← ShortComplex.homologyMap_add]
   rfl
 
+@[simp]
+lemma homologyMap_sub : homologyMap (φ - ψ) i = homologyMap φ i - homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_sub]
+  rfl
+
 instance [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
 
 variable (C c)
@@ -945,3 +951,16 @@ instance (i : ι) : (homologyFunctor C c i).Additive := by
   exact Functor.additive_of_full_essSurj_comp (quotient C c) _
 
 end HomotopyCategory
+
+namespace HomologicalComplex
+
+variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+  (K : HomologicalComplex C c)
+
+lemma comp_homologyπ_eq_zero_iff_up_to_refinements {A : C} {i : ι} (z : A ⟶ K.cycles i) (j : ι) (hj : c.prev i = j) :
+    z ≫ K.homologyπ i = 0 ↔
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ K.X j), π ≫ z = x ≫ K.toCycles j i := by
+  subst hj
+  apply ShortComplex.comp_homologyπ_eq_zero_iff_up_to_refinements
+
+end HomologicalComplex
