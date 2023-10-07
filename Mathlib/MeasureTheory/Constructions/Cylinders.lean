@@ -6,21 +6,33 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 import Mathlib.MeasureTheory.Constructions.Pi
 
 /-!
-# π-systems of boxes and cylinders
+# π-systems of cylinders and square cylinders
 
-We define two π-systems generating `MeasurableSpace.pi`.
+The instance `MeasurableSpace.pi` on `∀ i, α i`, where each `α i` has a `MeasurableSpace` `m i`,
+is defined as `⨆ i, (m i).comap (fun a => a i)`.
+That is, a function `g : β → ∀ i, α i` is measurable iff for all `i`, the function `b ↦ g b i`
+is measurable.
+
+We define two π-systems generating `MeasurableSpace.pi`, cylinders and square cylinders.
 
 ## Main definitions
 
-* `boxes`
-* `cylinder`
-* `measurableCylinders`
+Given a finite set `s` of indices, a cylinder is the product of a set of `∀ i : s, α i` and of
+`univ` on the other indices. A square cylinder is a cylinder for which the set on `∀ i : s, α i` is
+a product set.
+
+* `cylinder s S`: cylinder with base set `S : Set (∀ i : s, α i)` where `s` is a `Finset`
+* `squareCylinders C` with `C : ∀ i, Set (Set (α i))`: set of all square cylinders such that for
+  all `i` in the finset defining the box, the projection to `α i` belongs to `C i`. The main
+  application of this is with `C i = {s : Set (α i) | MeasurableSet s}`.
+* `measurableCylinders`: set of all cylinders with measurable base sets.
 
 ## Main statements
 
-* `generateFrom_boxes`: boxes formed from measurable sets generate the product σ-algebra
-* `generateFrom_measurableCylinders`: boxes formed from measurable sets generate the product
+* `generateFrom_squareCylinders`: square cylinders formed from measurable sets generate the product
   σ-algebra
+* `generateFrom_measurableCylinders`: cylinders formed from measurable sets generate the
+  product σ-algebra
 
 -/
 
@@ -30,19 +42,24 @@ namespace MeasureTheory
 
 variable {ι : Type _} {α : ι → Type _}
 
-section boxes
+section squareCylinders
 
-def boxes (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
+/-- Given a finite set `s` of indices, a square cylinder is the product of a set `S` of
+`∀ i : s, α i` and of `univ` on the other indices. The set `S` is a product of sets `t i` such that
+for all `i : s`, `t i ∈ C i`.
+`squareCylinders` is the set of all such squareCylinders. -/
+def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
-theorem boxes_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
-    boxes C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
+theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
+    squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
   ext1 f
-  simp only [boxes, mem_iUnion, mem_image, mem_univ_pi, exists_prop, mem_setOf_eq, eq_comm (a := f)]
+  simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop, mem_setOf_eq,
+    eq_comm (a := f)]
 
-theorem isPiSystem_boxes {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
+theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
     (hC_univ : ∀ i, univ ∈ C i) :
-    IsPiSystem (boxes C) := by
+    IsPiSystem (squareCylinders C) := by
   rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩ hst_nonempty
   classical
   let t₁' := s₁.piecewise t₁ (fun i ↦ univ)
@@ -61,9 +78,7 @@ theorem isPiSystem_boxes {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (
     intro i
     have : (t₁' i ∩ t₂' i).Nonempty := by
       obtain ⟨f, hf⟩ := hst_nonempty
-      rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2]
-        at hf
-      rw [mem_inter_iff, mem_pi, mem_pi] at hf
+      rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, mem_inter_iff, mem_pi, mem_pi] at hf
       refine ⟨f i, ⟨?_, ?_⟩⟩
       · by_cases hi₁ : i ∈ s₁
         · exact hf.1 i hi₁
@@ -86,9 +101,8 @@ theorem isPiSystem_boxes {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (
         exact hC_univ i
   · rw [Finset.coe_union]
 
-variable (α)
-
-theorem comap_eval_le_generateFrom_boxes_singleton [m : ∀ i, MeasurableSpace (α i)] (i : ι) :
+theorem comap_eval_le_generateFrom_squareCylinders_singleton
+    (α : ι → Type*) [m : ∀ i, MeasurableSpace (α i)] (i : ι) :
     MeasurableSpace.comap (Function.eval i) (m i) ≤
       MeasurableSpace.generateFrom
         ((fun t ↦ ({i} : Set ι).pi t) '' univ.pi fun i ↦ {s : Set (α i) | MeasurableSet s}) := by
@@ -108,11 +122,9 @@ theorem comap_eval_le_generateFrom_boxes_singleton [m : ∀ i, MeasurableSpace (
     ext1 x
     simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, mem_preimage]
 
-variable {α}
-
-/-- The boxes formed from measurable sets generate the product σ-algebra. -/
-theorem generateFrom_boxes [∀ i, MeasurableSpace (α i)] :
-    MeasurableSpace.generateFrom (boxes fun i ↦ {s : Set (α i) | MeasurableSet s}) =
+/-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
+theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
+    MeasurableSpace.generateFrom (squareCylinders fun i ↦ {s : Set (α i) | MeasurableSet s}) =
       MeasurableSpace.pi := by
   apply le_antisymm
   · rw [MeasurableSpace.generateFrom_le_iff]
@@ -120,18 +132,20 @@ theorem generateFrom_boxes [∀ i, MeasurableSpace (α i)] :
     simp only [mem_univ_pi, mem_setOf_eq] at h
     exact MeasurableSet.pi (Finset.countable_toSet _) (fun i _ ↦ h i)
   · refine iSup_le fun i ↦ ?_
-    refine (comap_eval_le_generateFrom_boxes_singleton α i).trans ?_
+    refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
     refine MeasurableSpace.generateFrom_mono ?_
-    rw [← Finset.coe_singleton, boxes_eq_iUnion_image]
+    rw [← Finset.coe_singleton, squareCylinders_eq_iUnion_image]
     exact subset_iUnion
       (fun (s : Finset ι) ↦
         (fun t : ∀ i, Set (α i) ↦ (s : Set ι).pi t) '' univ.pi (fun i ↦ setOf MeasurableSet))
       ({i} : Finset ι)
 
-end boxes
+end squareCylinders
 
 section cylinder
 
+/-- Given a finite set `s` of indices, a cylinder is the preimage of a set `S` of `∀ i : s, α i` by
+the projection from `∀ i, α i` to `∀ i : s, α i`. -/
 def cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) : Set (∀ i, α i) :=
   (fun (f : ∀ i, α i) (i : s) ↦ f i) ⁻¹' S
 
@@ -152,20 +166,18 @@ theorem cylinder_univ (s : Finset ι) : cylinder s (univ : Set (∀ i : s, α i)
 theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset ι)
     (S : Set (∀ i : s, α i)) :
     cylinder s S = ∅ ↔ S = ∅ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_contra hS
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at hS
-    let f := hS.some
-    have hf : f ∈ S := hS.choose_spec
-    classical
-    let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
-    have hf' : f' ∈ cylinder s S := by
-      rw [mem_cylinder]
-      simp only [Finset.coe_mem, dif_pos]
-      exact hf
-    rw [h] at hf'
-    exact not_mem_empty _ hf'
-  · rw [h]; exact cylinder_empty _
+  refine ⟨fun h ↦ ?_, fun h ↦ by (rw [h]; exact cylinder_empty _)⟩
+  by_contra hS
+  rw [← Ne.def, ← nonempty_iff_ne_empty] at hS
+  let f := hS.some
+  have hf : f ∈ S := hS.choose_spec
+  classical
+  let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
+  have hf' : f' ∈ cylinder s S := by
+    rw [mem_cylinder]
+    simpa only [Finset.coe_mem, dif_pos]
+  rw [h] at hf'
+  exact not_mem_empty _ hf'
 
 theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :
@@ -243,39 +255,36 @@ end cylinder
 
 section cylinders
 
-variable [∀ i, MeasurableSpace (α i)]
-
-variable (α)
-
-def measurableCylinders : Set (Set (∀ i, α i)) :=
+/-- Given a finite set `s` of indices, a cylinder is the preimage of a set `S` of `∀ i : s, α i` by
+the projection from `∀ i, α i` to `∀ i : s, α i`.
+`measurableCylinders` is the set of all cylinders with measurable base `S`. -/
+def measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] : Set (Set (∀ i, α i)) :=
   ⋃ (s) (S) (_ : MeasurableSet S), {cylinder s S}
 
-theorem empty_mem_measurableCylinders : ∅ ∈ measurableCylinders α := by
+theorem empty_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] :
+    ∅ ∈ measurableCylinders α := by
   simp_rw [measurableCylinders, mem_iUnion, mem_singleton_iff]
   exact ⟨∅, ∅, MeasurableSet.empty, (cylinder_empty _).symm⟩
 
-variable {α}
+variable [∀ i, MeasurableSpace (α i)] {s t : Set (∀ i, α i)}
 
 @[simp]
 theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
     t ∈ measurableCylinders α ↔ ∃ (s S : _) (_ : MeasurableSet S), t = cylinder s S := by
   simp_rw [measurableCylinders, mem_iUnion, mem_singleton_iff]
 
-noncomputable def measurableCylinders.finset
-    {t : Set (∀ i, α i)} (ht : t ∈ measurableCylinders α) :
-    Finset ι :=
+noncomputable def measurableCylinders.finset (ht : t ∈ measurableCylinders α) : Finset ι :=
   ((mem_measurableCylinders t).mp ht).choose
 
-def measurableCylinders.set {t : Set (∀ i, α i)} (ht : t ∈ measurableCylinders α) :
+def measurableCylinders.set (ht : t ∈ measurableCylinders α) :
     Set (∀ i : measurableCylinders.finset ht, α i) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose
 
-theorem measurableCylinders.measurableSet
-    {t : Set (∀ i, α i)} (ht : t ∈ measurableCylinders α) :
+theorem measurableCylinders.measurableSet (ht : t ∈ measurableCylinders α) :
     MeasurableSet (measurableCylinders.set ht) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.choose
 
-theorem measurableCylinders.eq_cylinder {t : Set (∀ i, α i)} (ht : t ∈ measurableCylinders α) :
+theorem measurableCylinders.eq_cylinder (ht : t ∈ measurableCylinders α) :
     t = cylinder (measurableCylinders.finset ht) (measurableCylinders.set ht) :=
   ((mem_measurableCylinders t).mp ht).choose_spec.choose_spec.choose_spec
 
@@ -284,7 +293,7 @@ theorem cylinder_mem_measurableCylinders (s : Finset ι) (S : Set (∀ i : s, α
     cylinder s S ∈ measurableCylinders α := by
   rw [mem_measurableCylinders]; exact ⟨s, S, hS, rfl⟩
 
-theorem inter_mem_measurableCylinders {s t : Set (∀ i : ι, α i)} (hs : s ∈ measurableCylinders α)
+theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
     (ht : t ∈ measurableCylinders α) :
     s ∩ t ∈ measurableCylinders α := by
   rw [mem_measurableCylinders] at *
@@ -302,28 +311,27 @@ theorem inter_mem_measurableCylinders {s t : Set (∀ i : ι, α i)} (hs : s ∈
 theorem isPiSystem_measurableCylinders : IsPiSystem (measurableCylinders α) :=
   fun _ hS _ hT _ ↦ inter_mem_measurableCylinders hS hT
 
-theorem compl_mem_measurableCylinders {s : Set (∀ i : ι, α i)} (hs : s ∈ measurableCylinders α) :
+theorem compl_mem_measurableCylinders (hs : s ∈ measurableCylinders α) :
     sᶜ ∈ measurableCylinders α := by
   rw [mem_measurableCylinders] at hs ⊢
   obtain ⟨s, S, hS, rfl⟩ := hs
   refine ⟨s, Sᶜ, hS.compl, ?_⟩
   rw [compl_cylinder]
 
-variable (α)
-
-theorem univ_mem_measurableCylinders : Set.univ ∈ measurableCylinders α := by
+theorem univ_mem_measurableCylinders (α : ι → Type*) [∀ i, MeasurableSpace (α i)] :
+    Set.univ ∈ measurableCylinders α := by
   rw [← compl_empty]; exact compl_mem_measurableCylinders (empty_mem_measurableCylinders α)
 
-variable {α}
-
-theorem union_mem_measurableCylinders {s t : Set (∀ i : ι, α i)} (hs : s ∈ measurableCylinders α)
-    (ht : t ∈ measurableCylinders α) : s ∪ t ∈ measurableCylinders α := by
+theorem union_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
+    (ht : t ∈ measurableCylinders α) :
+    s ∪ t ∈ measurableCylinders α := by
   rw [union_eq_compl_compl_inter_compl]
   exact compl_mem_measurableCylinders (inter_mem_measurableCylinders
     (compl_mem_measurableCylinders hs) (compl_mem_measurableCylinders ht))
 
-theorem diff_mem_measurableCylinders {s t : Set (∀ i : ι, α i)} (hs : s ∈ measurableCylinders α)
-    (ht : t ∈ measurableCylinders α) : s \ t ∈ measurableCylinders α := by
+theorem diff_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
+    (ht : t ∈ measurableCylinders α) :
+    s \ t ∈ measurableCylinders α := by
   rw [diff_eq_compl_inter]
   exact inter_mem_measurableCylinders (compl_mem_measurableCylinders ht) hs
 
@@ -335,7 +343,7 @@ theorem generateFrom_measurableCylinders :
     obtain ⟨s, S, hSm, rfl⟩ := (mem_measurableCylinders _).mp hS
     exact hSm.cylinder
   · refine iSup_le fun i ↦ ?_
-    refine (comap_eval_le_generateFrom_boxes_singleton α i).trans ?_
+    refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
     refine MeasurableSpace.generateFrom_mono (fun x ↦ ?_)
     simp only [singleton_pi, Function.eval, mem_image, mem_pi, mem_univ, mem_setOf_eq,
       forall_true_left, mem_measurableCylinders, exists_prop, forall_exists_index, and_imp]
