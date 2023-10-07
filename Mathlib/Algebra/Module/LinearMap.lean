@@ -872,7 +872,7 @@ variable [Module R₁ N₁] [Module R₂ N₂] [Module R₃ N₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- The constant 0 map is linear. -/
-protected instance zero : Zero (M →ₛₗ[σ₁₂] M₂) :=
+protected instance instZero : Zero (M →ₛₗ[σ₁₂] M₂) :=
   ⟨{  toFun := 0
       map_add' := by simp
       map_smul' := by simp }⟩
@@ -901,7 +901,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 #align linear_map.default_def LinearMap.default_def
 
 /-- The sum of two linear maps is linear. -/
-protected instance add : Add (M →ₛₗ[σ₁₂] M₂) :=
+protected instance instAdd : Add (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun f g ↦
     { toFun := f + g
       map_add' := by simp [add_comm, add_left_comm]
@@ -925,7 +925,7 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 instance addSemigroup : AddSemigroup (M →ₛₗ[σ₁₂] M₂) :=
   --TODO: add reference to library note in PR #7432
   { FunLike.coe_injective.addSemigroup (↑) (fun _ _ => rfl) with
-    toAdd := LinearMap.add }
+    toAdd := LinearMap.instAdd }
 
 instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) :=
   --TODO: add reference to library note in PR #7432
@@ -939,7 +939,7 @@ instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
     toAddMonoid := LinearMap.addMonoid }
 
 /-- The negation of a linear map is linear. -/
-protected instance neg : Neg (M →ₛₗ[σ₁₂] N₂) :=
+protected instance instNeg : Neg (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f ↦
     { toFun := -f
       map_add' := by simp [add_comm]
@@ -961,7 +961,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
 #align linear_map.comp_neg LinearMap.comp_neg
 
 /-- The subtraction of two linear maps is linear. -/
-protected instance sub : Sub (M →ₛₗ[σ₁₂] N₂) :=
+protected instance instSub : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
@@ -987,8 +987,8 @@ instance subNegMonoid : SubNegMonoid (M →ₛₗ[σ₁₂] N₂) :=
   { FunLike.coe_injective.subNegMonoid (↑) rfl (fun _ _ => rfl)
       (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) with
     toAddMonoid := LinearMap.addMonoid
-    toSub := LinearMap.sub
-    toNeg := LinearMap.neg }
+    toSub := LinearMap.instSub
+    toNeg := LinearMap.instNeg }
 
 instance addGroup : AddGroup (M →ₛₗ[σ₁₂] N₂) :=
   --TODO: add reference to library note in PR #7432
@@ -1018,9 +1018,12 @@ variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
-instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂) where
+instance : MulAction S (M →ₛₗ[σ₁₂] M₂) where
+  --TODO: add reference to library note in PR #7432
   one_smul _ := ext fun _ ↦ one_smul _ _
   mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
+
+instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂) where
   smul_add _ _ _ := ext fun _ ↦ smul_add _ _ _
   smul_zero _ := ext fun _ ↦ smul_zero _
 
