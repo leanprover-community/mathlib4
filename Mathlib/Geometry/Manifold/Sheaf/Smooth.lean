@@ -152,7 +152,8 @@ noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
 
 /-- The presheaf of smooth functions from `M` to `G`, for `G` a Lie group, as a presheaf of groups.
 -/
-@[to_additive]
+@[to_additive "The presheaf of smooth functions from `M` to `G`, for `G` an additive Lie group, as a
+presheaf of additive groups."]
 noncomputable def smoothPresheafGroup : TopCat.Presheaf GroupCat.{u} (TopCat.of M) :=
   { obj := fun U ↦ GroupCat.of ((smoothSheaf IM I M G).presheaf.obj U)
     map := fun h ↦ GroupCat.ofHom <|
@@ -182,7 +183,8 @@ open Manifold in
 
 /-- The presheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
 presheaf of abelian groups. -/
-@[to_additive]
+@[to_additive "The presheaf of smooth functions from `M` to `A`, for `A` an additive abelian Lie
+group, as a presheaf of additive abelian groups."]
 noncomputable def smoothPresheafCommGroup : TopCat.Presheaf CommGroupCat.{u} (TopCat.of M) :=
   { obj := fun U ↦ CommGroupCat.of ((smoothSheaf IM I M A).presheaf.obj U)
     map := fun h ↦ CommGroupCat.ofHom <|
@@ -204,7 +206,10 @@ noncomputable def smoothSheafCommGroup : TopCat.Sheaf CommGroupCat.{u} (TopCat.o
 /-- For a manifold `M` and a smooth homomorphism `φ` between abelian Lie groups `A`, `A'`, the
 'left-composition-by-`φ`' morphism of sheaves from `smoothSheafCommGroup IM I M A` to
 `smoothSheafCommGroup IM I' M A'`. -/
-@[to_additive] def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : Smooth I I' φ) :
+@[to_additive "For a manifold `M` and a smooth homomorphism `φ` between abelian additive Lie groups
+`A`, `A'`, the 'left-composition-by-`φ`' morphism of sheaves from `smoothSheafAddCommGroup IM I M A`
+to `smoothSheafAddCommGroup IM I' M A'`."]
+def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : Smooth I I' φ) :
     smoothSheafCommGroup IM I M A ⟶ smoothSheafCommGroup IM I' M A' :=
   CategoryTheory.Sheaf.Hom.mk <|
   { app := fun _ ↦ CommGroupCat.ofHom <| SmoothMap.compLeftMonoidHom _ _ φ hφ
