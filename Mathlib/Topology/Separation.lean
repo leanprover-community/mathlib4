@@ -1697,22 +1697,26 @@ lemma discreteTopology_union {S T : Set α} (hS : DiscreteTopology S) (hS' : IsC
 
 section codiscrete_filter
 
-/-- In a regular space, intersections of codiscrete sets are codiscrete. -/
-lemma IsCodiscrete.inter {U V : Set α}
-    (hU : IsCodiscrete U) (hV : IsCodiscrete V) : IsCodiscrete (U ∩ V) := by
-  refine ⟨hU.1.inter hV.1, ?_⟩
-  rw [compl_inter]
-  rw [IsCodiscrete, ← isClosed_compl_iff] at hU hV
-  exact discreteTopology_union hU.2 hU.1 hV.2 hV.1
-
 variable (α)
 
-/-- The filter of codiscrete subsets, in a regular space. -/
+/-- In a regular space, the open sets with with discrete complement form a filter. -/
 def Filter.Codiscrete [RegularSpace α] : Filter α where
-  sets := IsCodiscrete
-  univ_sets := isCodiscrete_univ
-  sets_of_superset := IsCodiscrete.mono
-  inter_sets := IsCodiscrete.inter
+  sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
+  univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
+  sets_of_superset := by
+    intro U V ⟨hU, hU'⟩ hV
+    rw [←isClosed_compl_iff] at hU
+    rw [←compl_subset_compl] at hV
+    refine ⟨?_, DiscreteTopology.of_subset hU' hV⟩
+    simpa only [Subtype.image_preimage_val, inter_eq_self_of_subset_left hV,
+      isClosed_compl_iff] using hU.closedEmbedding_subtype_val.isClosedMap _ (isClosed_discrete
+      (Subtype.val ⁻¹' Vᶜ))
+  inter_sets := by
+    intro U V ⟨hU, hU'⟩ ⟨hV, hV'⟩
+    refine ⟨hU.inter hV, ?_⟩
+    rw [compl_inter]
+    rw [← isClosed_compl_iff] at hU hV
+    exact discreteTopology_union hU' hU hV' hV
 
 end codiscrete_filter
 
