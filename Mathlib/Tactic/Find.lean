@@ -46,6 +46,9 @@ def MessageData.bulletListOfConsts {m} [Monad m] [MonadEnv m] [MonadError m]
 
 namespace Mathlib.Tactic.Find
 
+/-- Sorts a thing with a name so that names defied in modules that come earlier (as per `ModuleIdx`)
+come earlier. Within one module, sort alphabetically.
+-/
 def sortByModule' {m} [Monad m] [MonadEnv m] {α} (f : α → Name) (ns : Array α) :
     m (Array (α × Option ModuleIdx)) := do
   let env ← getEnv
@@ -62,6 +65,7 @@ def sortByModule' {m} [Monad m] [MonadEnv m] {α} (f : α → Name) (ns : Array 
       | some mi1, some mi2 =>
         Nat.blt mi1 mi2 || Nat.beq mi1 mi2 && Name.lt (f x1) (f x2)
 
+/-- See `sortByModule'` --/
 def sortByModule {m} [Monad m] [MonadEnv m] {α} (f : α → Name) (ns : Array α) : m (Array α) := do
   return (← sortByModule' f ns).map (·.1)
 
