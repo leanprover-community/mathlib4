@@ -41,6 +41,12 @@ theorem withDensity_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableS
   Measure.ofMeasurable_apply s hs
 #align measure_theory.with_density_apply MeasureTheory.withDensity_apply
 
+@[simp]
+lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
+  ext s hs
+  rw [withDensity_apply _ hs]
+  simp
+
 theorem withDensity_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) :
     μ.withDensity f = μ.withDensity g := by
   refine Measure.ext fun s hs => ?_
@@ -120,6 +126,11 @@ theorem withDensity_one : μ.withDensity 1 = μ := by
   ext1 s hs
   simp [withDensity_apply _ hs]
 #align measure_theory.with_density_one MeasureTheory.withDensity_one
+
+@[simp]
+theorem withDensity_const (c : ℝ≥0∞) : μ.withDensity (fun _ ↦ c) = c • μ := by
+  ext1 s hs
+  simp [withDensity_apply _ hs]
 
 theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     μ.withDensity (∑' n, f n) = sum fun n => μ.withDensity (f n) := by
