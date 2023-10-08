@@ -416,9 +416,9 @@ variable [Monoid S] [Monoid T]
 variable [DistribMulAction S N] [DistribMulAction T N]
 variable [SMulCommClass R S N] [SMulCommClass  Rᵐᵒᵖ S N] [SMulCommClass T R N] [SMulCommClass T Rᵐᵒᵖ N]
 
-#check instSMulCommClass
+-- #check instSMulCommClass
 
-instance : SMulCommClass S R N := instSMulCommClass
+-- instance : SMulCommClass S R N := instSMulCommClass
 /-
 instance : SMul S (M →ₗ[Rᵐᵒᵖ] N) where
   smul s L := ⟨⟨fun a => s • L a, fun _ _ => by simp⟩,fun r a => by
@@ -464,6 +464,8 @@ instance : SMul S (M →ₗ[R] M →ₗ[Rᵐᵒᵖ] N) := by infer_instance
     ⟩
 -/
 
+variable [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N]
+
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
 When `R` is commutative, this provides an `R`-action via `Algebra.id`. -/
@@ -473,13 +475,13 @@ instance : SMul S (QuadraticForm R M N) :=
       toFun_smul := fun b x => by
         rw [Pi.smul_apply, map_smul, Pi.smul_apply]
         rw [smul_comm]
-      toFun_smulr := fun b x => by rw [Pi.smul_apply, map_smulr, Pi.smul_apply, smul_comm]
+      toFun_smulr := fun b x => by
+        rw [Pi.smul_apply, map_smulr, Pi.smul_apply, smul_comm]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨a • B, by
           intros
           simp [h]
-          abel
           ⟩ }⟩
 
 @[simp]
@@ -492,10 +494,12 @@ theorem smul_apply (a : S) (Q : QuadraticForm R M N) (x : M) : (a • Q) x = a �
   rfl
 #align quadratic_form.smul_apply QuadraticForm.smul_apply
 
-instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticForm R M N) where
+instance [SMulCommClass S T N] [SMulCommClass R T N] [SMulCommClass Rᵐᵒᵖ T N] :
+    SMulCommClass S T (QuadraticForm R M N) where
   smul_comm _s _t _q := ext <| fun _ => smul_comm _ _ _
 
-instance [SMul S T] [IsScalarTower S T N] : IsScalarTower S T (QuadraticForm R M N) where
+instance [SMul S T] [IsScalarTower S T N] [SMulCommClass R T N]
+    [SMulCommClass Rᵐᵒᵖ T N] : IsScalarTower S T (QuadraticForm R M N) where
   smul_assoc _s _t _q := ext <| fun _ => smul_assoc _ _ _
 
 end SMul
