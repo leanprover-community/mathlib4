@@ -87,7 +87,6 @@ theorem HasFDerivAt.hasGradientAt {frechet : F →L[𝕜] 𝕜} (h : HasFDerivAt
     HasGradientAt f ((toDual 𝕜 F).symm frechet) x := by
   rw [← (toDual 𝕜 F).apply_symm_apply frechet] at h
   exact HasGradientAt_iff_HasFDerivAt.mpr h
-
 theorem Gradient_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : ∇ f x = 0 := by
   have : (toDual 𝕜 F).symm 0 = 0 := by simp only [map_zero]
   rw [← fderiv_zero_of_not_differentiableAt h] at this
@@ -95,14 +94,12 @@ theorem Gradient_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) 
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
-theorem toDual_eq_inner (y x : F) : ((toDual 𝕜 F) y) x = ⟪y, x⟫ := rfl
-
 section GradientUniqueness
 
 variable {gradf gradg : F}
 
 theorem HasGradientAt.unique (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
-    gradf = gradg := (toDual 𝕜 F).injective
+  gradf = gradg := (toDual 𝕜 F).injective
   ((HasGradientAt_iff_HasFDerivAt.mp hf).unique (HasGradientAt_iff_HasFDerivAt.mp hg))
 
 end GradientUniqueness
@@ -117,8 +114,7 @@ theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
-    DifferentiableAt 𝕜 f x := by 
-  use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
+  DifferentiableAt 𝕜 f x := by use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
   DifferentiableWithinAt 𝕜 f s x := HasFDerivWithinAt.differentiableWithinAt h
@@ -146,12 +142,12 @@ theorem StarRingEnd_eq_toDual : ((toDual 𝕜 𝕜) (starRingEnd 𝕜 g')) 1 = g
 theorem Mul_one_eq_SterRingEnd (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
     (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
   refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro v; rw [toDual_eq_inner, IsROrC.inner_apply, mul_comm]
+  simp; intro v; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
 
 theorem SterRingEnd_eq_Mul_one (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
     g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
   refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro ; rw [toDual_eq_inner, IsROrC.inner_apply, mul_comm]
+  simp; intro ; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
   rw [RingHomCompTriple.comp_apply, RingHom.id_apply]
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
@@ -168,7 +164,7 @@ theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
   exact h
 
 theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasGradientAt g g' u) :
-    HasDerivAt g g' u := h.hasDerivAt
+  HasDerivAt g g' u := h.hasDerivAt
 
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
@@ -199,7 +195,7 @@ theorem HasGradientWithinAt.lim (h : HasGradientWithinAt f f' s x) {α : Type*} 
     (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
     Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 ⟪f', v⟫) := by
   have : _ := (HasGradientWithinAt_iff_HasFDerivWithinAt.mp h).lim l dtop clim cdlim
-  rw [toDual_eq_inner f' v] at this
+  rw [toDual_apply] at this
   exact this
 
 section GradientProperties
