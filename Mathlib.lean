@@ -3385,6 +3385,7 @@ import Mathlib.Topology.Homotopy.Product
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Complex
+import Mathlib.Topology.Instances.Countable
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
