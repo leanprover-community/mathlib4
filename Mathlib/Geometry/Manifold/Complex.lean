@@ -215,9 +215,10 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
     (hf : MDifferentiableOn I 𝓘(ℂ, F) f U) (hU : IsPreconnected U) {z₀ : M} (h₀ : z₀ ∈ U)
     (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
+  change ∀ᶠ x in 𝓝 z₀, f x = 0 at hfz₀
   have : PreconnectedSpace U := Subtype.preconnectedSpace hU
-  let s : Set U := {x : U | f =ᶠ[𝓝 (x:M)] 0}
-  have hfz₀' : U.restrict f =ᶠ[𝓝 ⟨z₀, h₀⟩] 0 := by
+  let s : Set U := {x : U | ∀ᶠ y in 𝓝 (x:M), f y = 0}
+  have hfz₀' : ∀ᶠ y in 𝓝 ⟨z₀, h₀⟩, U.restrict f y = 0 := by
     refine eventually_nhds_subtype_iff_eventually_nhdsWithin U _ (P := fun x ↦ f x = 0) |>.mp ?_
     exact eventually_nhdsWithin_of_eventually_nhds hfz₀
   have h1 : s.Nonempty := ⟨⟨z₀, h₀⟩, hfz₀⟩
@@ -234,13 +235,27 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
   have h3 : IsClosed s := by
     rw [isClosed_iff_frequently]
     intro a ha
-    have ha' := (frequently_nhds_subtype_iff_frequently_nhdsWithin U a (fun x ↦ f =ᶠ[𝓝 x] 0)).mpr ha
+    have ha' := (frequently_nhds_subtype_iff_frequently_nhdsWithin U a (fun x ↦ ∀ᶠ y in 𝓝 x, f y = 0)).mpr ha
     rw [frequently_iff] at ha'
-    let V := extChartAt I (a:M)
-    have H1 : V.source ∈ 𝓝[U] (a:M) := extChartAt_source_mem_nhdsWithin I (a:M)
-    have H2 : connectedComponentIn (V.source ∩ U) a ∈ 𝓝[U] (a:M) := sorry
+    let φ := extChartAt I (a:M)
+    have H1 : φ.source ∈ 𝓝[U] (a:M) := extChartAt_source_mem_nhdsWithin I (a:M)
+    have H2 : connectedComponentIn (φ.source ∩ U) a ∈ 𝓝[U] (a:M) := sorry
+    have H3 : IsPreconnected (φ '' connectedComponentIn (φ.source ∩ U) a) := sorry
+    have H6 : φ '' connectedComponentIn (φ.source ∩ U) a ∈ 𝓝[range I] (φ a) := sorry
+    let ff := f ∘ φ.symm
+    have hff : DifferentiableOn ℂ ff (φ '' connectedComponentIn (φ.source ∩ U) a) := sorry
     obtain ⟨b, hbU, hbf⟩ := ha' H2
-    sorry
+    have hbφ : b ∈ φ.source := sorry
+    have H4 : φ b ∈ φ '' connectedComponentIn (φ.source ∩ U) a := sorry
+    have H5 : ∀ᶠ x in 𝓝 (φ b), ff x = 0 := by
+      rw [← map_extChartAt_symm_nhdsWithin_range' I (a:M) hbφ] at hbf
+      simp only [eventually_map] at hbf
+      change ∀ᶠ x in 𝓝[range I] φ b, ff x = 0 at hbf
+      sorry -- not good enough, need to weaken `DifferentiableOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero`
+    have H7 : ∀ᶠ x in 𝓝[range I] φ a, ff x = 0 := by
+      rw [eventually_iff_exists_mem]
+      exact ⟨_, H6, hff.eqOn_zero_of_preconnected_of_eventuallyEq_zero H3 H4 H5⟩
+    simpa only [mem_setOf_eq, ← map_extChartAt_symm_nhdsWithin_range I, eventually_map] using H7
   intro x hx
   have H : ∀ᶠ y in 𝓝 (⟨x, hx⟩:U), f y = 0 := by
     show _ ∈ s
