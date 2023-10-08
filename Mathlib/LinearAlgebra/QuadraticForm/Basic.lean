@@ -228,18 +228,6 @@ theorem map_add_add_add_map (x y z : M) :
   abel
 #align quadratic_form.map_add_add_add_map QuadraticForm.map_add_add_add_map
 
-lemma test (a b : R) (c : M) : a • (b • c) = (a *b)•c := by
-  exact smul_smul a b c
-
-lemma test'' : (2 : R) + (1 : R) = (3 : R) := by
-  exact two_add_one_eq_three
-
-lemma test''' : (3 : R) + (1 : R) = (4 : R) := by
-  exact three_add_one_eq_four
-
-lemma test' : (1 : R) + (1 : R) = (2 : R) := by
-  exact one_add_one_eq_two
-
 theorem map_add_self (x : M) : Q (x + x) = 4 • Q x := by
   rw [← one_smul R x, ← add_smul, map_smul]
   rw [← three_add_one_eq_four, ← two_add_one_eq_three, ← one_add_one_eq_two]
@@ -412,57 +400,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [AddC
 section SMul
 
 variable [Monoid S] [Monoid T]
---variable [DistribMulAction S R] [DistribMulAction T R]
 variable [DistribMulAction S N] [DistribMulAction T N]
 variable [SMulCommClass R S N] [SMulCommClass  Rᵐᵒᵖ S N] [SMulCommClass T R N] [SMulCommClass T Rᵐᵒᵖ N]
-
--- #check instSMulCommClass
-
--- instance : SMulCommClass S R N := instSMulCommClass
-/-
-instance : SMul S (M →ₗ[Rᵐᵒᵖ] N) where
-  smul s L := ⟨⟨fun a => s • L a, fun _ _ => by simp⟩,fun r a => by
-    simp
-    rw [smul_comm]
-    ⟩
-
-
--- instance : SMul S (M →ₗ[Rᵐᵒᵖ] N) := LinearMap.instSMulLinearMap
-
-lemma smul (s : S) (L : M →ₗ[Rᵐᵒᵖ] N) (a : M) : (s • L) a = s • (L a) := rfl
-
-instance : DistribMulAction S (M →ₗ[Rᵐᵒᵖ] N) where
-  one_smul L := by
-    ext
-    rw [smul, one_smul]
-  mul_smul s t L := by
-    ext a
-    rw [smul, smul, mul_smul]
-    rfl
-  smul_zero s := by
-    ext
-    simp [smul]
-  smul_add a L₁ L₂ := by
-    ext
-    rw [smul, LinearMap.add_apply, smul_add, LinearMap.add_apply, smul, smul]
--/
-
-instance : SMulCommClass R S (M →ₗ[Rᵐᵒᵖ] N) := by infer_instance
-  --smul_comm s r L := sorry
-  /-
-  by
-    ext
-    rw [smul, LinearMap.smul_apply, LinearMap.smul_apply, smul, smul_comm]
-  -/
-
-instance : SMul S (M →ₗ[R] M →ₗ[Rᵐᵒᵖ] N) := by infer_instance
-/-
- where
-  smul s B := ⟨⟨fun a => s • B a, fun _ _ => by simp⟩,fun r a => by
-    simp
-    rw [smul_comm]
-    ⟩
--/
 
 variable [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N]
 
@@ -579,8 +518,8 @@ theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M N) (s : Finset ι) 
 
 end Sum
 
-instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N] :
-    DistribMulAction S (QuadraticForm R M N) where
+instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N]
+    [SMulCommClass R S N] [SMulCommClass Rᵐᵒᵖ S N] : DistribMulAction S (QuadraticForm R M N) where
   mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
   one_smul Q := ext fun x => by simp only [QuadraticForm.smul_apply, one_smul]
   smul_add a Q Q' := by
@@ -590,7 +529,8 @@ instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] [SMulCommClass 
     ext
     simp only [zero_apply, smul_apply, smul_zero]
 
-instance [Semiring S] [Module S N] [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N] : Module S (QuadraticForm R M N) where
+instance [Semiring S] [Module S N] [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N]
+    [SMulCommClass R S N] [SMulCommClass Rᵐᵒᵖ S N] : Module S (QuadraticForm R M N) where
   zero_smul Q := by
     ext
     simp only [zero_apply, smul_apply, zero_smul]
@@ -602,7 +542,8 @@ end SemiringOperators
 
 section RingOperators
 
-variable [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [AddCommGroup N] [Module R N] [Module Rᵐᵒᵖ N] [SMulCommClass Rᵐᵒᵖ R N]
+variable [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [AddCommGroup N] [Module R N]
+  [Module Rᵐᵒᵖ N] [SMulCommClass Rᵐᵒᵖ R N]
 
 instance : Neg (QuadraticForm R M N) :=
   ⟨fun Q =>
