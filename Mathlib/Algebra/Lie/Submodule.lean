@@ -831,14 +831,12 @@ theorem map_id : N.map LieModuleHom.id = N := by ext; simp
   ext m; simp [eq_comm]
 
 lemma map_rel_iff (hf : Function.Injective f) :
-    N.map f ≤ N₂.map f ↔ N ≤ N₂ := by
-  refine ⟨fun h m hm ↦ ?_, map_mono⟩
-  obtain ⟨n, hn : n ∈ N₂, hn' : f n = f m⟩ := (mem_map _).mpr <| h (mem_map_of_mem hm)
-  rwa [← hf hn']
+    N.map f ≤ N₂.map f ↔ N ≤ N₂ :=
+  Set.image_subset_image_iff hf
 
 lemma map_injective_of_injective (hf : Function.Injective f) :
-    Function.Injective (map f) :=
-  fun N₁ N₂ h ↦ by apply le_antisymm <;> rw [← map_rel_iff hf, h]
+    Function.Injective (map f) := fun {N N'} h ↦
+  SetLike.coe_injective <| hf.image_injective <| by simp only [← coe_map, h]
 
 /-- An injective morphism of Lie modules embeds the lattice of submodules of the domain into that
 of the target. -/
@@ -846,7 +844,7 @@ of the target. -/
   LieSubmodule R L M ↪o LieSubmodule R L M' where
     toFun := LieSubmodule.map f
     inj' := map_injective_of_injective hf
-    map_rel_iff' := map_rel_iff hf
+    map_rel_iff' := Set.image_subset_image_iff hf
 
 variable (N) in
 /-- For an injective morphism of Lie modules, any Lie submodule is equivalent to its image. -/
@@ -863,10 +861,7 @@ Submodules. -/
   invFun := comap e
   left_inv := fun N ↦ by ext; simp
   right_inv := fun N ↦ by ext; simp [e.apply_eq_iff_eq_symm_apply]
-  map_rel_iff' := fun {N N'} ↦ by
-    refine ⟨fun h x hx ↦ ?_, map_mono⟩
-    obtain ⟨y : M, hy : y ∈ N', hxy : e y = e x⟩ := h ⟨x, hx, rfl⟩
-    rwa [← (EmbeddingLike.apply_eq_iff_eq e).mp hxy]
+  map_rel_iff' := fun {N N'} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
 
