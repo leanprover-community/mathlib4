@@ -202,6 +202,12 @@ theorem eventually_nhds_subtype_iff_eventually_nhdsWithin {α : Type*} [Topologi
   · simp_rw [eventually_iff, mem_nhds_subtype_iff_nhdsWithin]
     rfl
 
+theorem frequently_nhds_subtype_iff_frequently_nhdsWithin {α : Type*} [TopologicalSpace α]
+    (s : Set α) (a : s) (P : α → Prop) :
+    (∃ᶠ x in 𝓝[s] (a:α), P x) ↔ (∃ᶠ x : s in 𝓝 a, P x) := by
+  rw [← not_iff_not, not_frequently, not_frequently]
+  apply eventually_nhds_subtype_iff_eventually_nhdsWithin
+
 /-- The **identity principle** for holomorphic functions on a complex manifold: If a holomorphic
 function vanishes in a whole neighborhood of a point `z₀`, then it is uniformly zero along a
 connected set. -/
@@ -210,26 +216,31 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
     (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   have : PreconnectedSpace U := Subtype.preconnectedSpace hU
-  let s : Set U := {x | U.restrict f x = 0}
-  have h1 : s.Nonempty := ⟨⟨z₀, h₀⟩, (Filter.Eventually.self_of_nhds hfz₀:)⟩
+  let s : Set U := {x | U.restrict f =ᶠ[𝓝 x] 0}
+  have hfz₀' : U.restrict f =ᶠ[𝓝 ⟨z₀, h₀⟩] 0 := by
+    refine eventually_nhds_subtype_iff_eventually_nhdsWithin U _ (P := fun x ↦ f x = 0) |>.mp ?_
+    exact eventually_nhdsWithin_of_eventually_nhds hfz₀
+  have h1 : s.Nonempty := ⟨⟨z₀, h₀⟩, hfz₀'⟩
   have h2 : IsOpen s := by
     rw [isOpen_iff_eventually]
-    intro a ha
-    suffices ∀ᶠ x in 𝓝[U] (a:M), f x = 0 by
-      simp only [restrict_apply, mem_setOf_eq]
-      rwa [← eventually_nhds_subtype_iff_eventually_nhdsWithin U a (P := fun x ↦ f x = 0)]
-    rw [← map_extChartAt_symm_nhdsWithin I]
-    simp only [eventually_map]
-    -- apply DifferentiableOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero
-    sorry
+    rintro a (ha : ∀ᶠ x in 𝓝 a, U.restrict f x = 0)
+    rw [eventually_nhds_iff] at ha ⊢
+    obtain ⟨t, htf, ht, hat⟩ := ha
+    refine ⟨t, ?_, ht, hat⟩
+    intro b hbt
+    show ∀ᶠ y in 𝓝 b, _ = 0
+    rw [eventually_nhds_iff]
+    exact ⟨t, htf, ht, hbt⟩
   have h3 : IsClosed s := by
-    apply (T1Space.t1 (0:F)).preimage
-    rw [← continuousOn_iff_continuous_restrict]
-    exact hf.continuousOn
+    rw [isClosed_iff_frequently]
+    intro a ha
+    sorry
   intro x hx
-  show (⟨x, hx⟩ : U) ∈ s
-  rw [IsClopen.eq_univ ⟨h2, h3⟩ h1]
-  exact Set.mem_univ _
+  have H : ∀ᶠ y in 𝓝 ⟨x, hx⟩, U.restrict f y = 0 := by
+    show _ ∈ s
+    rw [IsClopen.eq_univ ⟨h2, h3⟩ h1]
+    exact Set.mem_univ _
+  exact H.self_of_nhds
 
 /-- The **identity principle** for holomorphic functions on a complex manifold: If two holomorphic
 functions coincide in a whole neighborhood of a point `z₀`, then they coincide globally along a
