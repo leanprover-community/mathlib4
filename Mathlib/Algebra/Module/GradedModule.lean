@@ -34,15 +34,15 @@ namespace DirectSum
 open GradedMonoid
 
 /-- A graded version of `DistribMulAction`. -/
-class GdistribMulAction [AddMonoid ιA] [VAdd ιA ιB] [GMonoid A] [∀ i, AddMonoid (M i)] extends
-  GMulAction A M where
+class GdistribMulAction [AddMonoid ιA] [VAdd ιA ιB] [GMonoid A] [∀ i, AddMonoid (M i)]
+    extends GMulAction A M where
   smul_add {i j} (a : A i) (b c : M j) : smul a (b + c) = smul a b + smul a c
   smul_zero {i j} (a : A i) : smul a (0 : M j) = 0
 #align direct_sum.gdistrib_mul_action DirectSum.GdistribMulAction
 
 /-- A graded version of `Module`. -/
-class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, AddMonoid (M i)] [GMonoid A] extends
-  GdistribMulAction A M where
+class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, AddMonoid (M i)] [GMonoid A]
+    extends GdistribMulAction A M where
   add_smul {i j} (a a' : A i) (b : M j) : smul (a + a') b = smul a b + smul a' b
   zero_smul {i j} (b : M j) : smul (0 : A i) b = 0
 #align direct_sum.gmodule DirectSum.Gmodule
