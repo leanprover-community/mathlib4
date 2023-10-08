@@ -211,12 +211,13 @@ theorem frequently_nhds_subtype_iff_frequently_nhdsWithin {α : Type*} [Topologi
 /-- The **identity principle** for holomorphic functions on a complex manifold: If a holomorphic
 function vanishes in a whole neighborhood of a point `z₀`, then it is uniformly zero along a
 connected set. -/
-theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
-    (hf : MDifferentiableOn I 𝓘(ℂ, F) f U) (hU : IsPreconnected U) {z₀ : M} (h₀ : z₀ ∈ U)
-    (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U V : Set M}
+    (hUV : U ⊆ V) (hV : ∀ x ∈ U, V ∈ 𝓝 x) (hf : MDifferentiableOn I 𝓘(ℂ, F) f V)
+    (hU : IsPreconnected U) {z₀ : M} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   change ∀ᶠ x in 𝓝 z₀, f x = 0 at hfz₀
   have : PreconnectedSpace U := Subtype.preconnectedSpace hU
+  have hI : range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
   let s : Set U := {x : U | ∀ᶠ y in 𝓝 (x:M), f y = 0}
   have hfz₀' : ∀ᶠ y in 𝓝 ⟨z₀, h₀⟩, U.restrict f y = 0 := by
     refine eventually_nhds_subtype_iff_eventually_nhdsWithin U _ (P := fun x ↦ f x = 0) |>.mp ?_
@@ -238,24 +239,24 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
     have ha' := (frequently_nhds_subtype_iff_frequently_nhdsWithin U a (fun x ↦ ∀ᶠ y in 𝓝 x, f y = 0)).mpr ha
     rw [frequently_iff] at ha'
     let φ := extChartAt I (a:M)
-    have H1 : φ.source ∈ 𝓝[U] (a:M) := extChartAt_source_mem_nhdsWithin I (a:M)
-    have H2 : connectedComponentIn (φ.source ∩ U) a ∈ 𝓝[U] (a:M) := sorry
-    have H3 : IsPreconnected (φ '' connectedComponentIn (φ.source ∩ U) a) := sorry
-    have H6 : φ '' connectedComponentIn (φ.source ∩ U) a ∈ 𝓝[range I] (φ a) := sorry
+    let W : Set M := connectedComponentIn (φ.source ∩ U) a
+    have H1 : W ∈ 𝓝[U] (a:M) := sorry
+    have H2 : IsPreconnected (φ '' W ∩ φ.target) := sorry
+    have H3 : φ a ∈ φ '' W ∩ φ.target := sorry
+    have H6 : φ '' W ∩ φ.target ⊆ φ '' V ∩ φ.target := sorry
+    have H7 : ∀ x : E, x ∈ φ '' W ∩ φ.target → φ '' V ∩ φ.target ∈ 𝓝 x := sorry
     let ff := f ∘ φ.symm
-    have hff : DifferentiableOn ℂ ff (φ '' connectedComponentIn (φ.source ∩ U) a) := sorry
-    obtain ⟨b, hbU, hbf⟩ := ha' H2
+    have hff : DifferentiableOn ℂ ff (φ '' V ∩ φ.target) := sorry
+    obtain ⟨b, hbU, hbf⟩ := ha' H1
     have hbφ : b ∈ φ.source := sorry
-    have H4 : φ b ∈ φ '' connectedComponentIn (φ.source ∩ U) a := sorry
+    have H4 : φ b ∈ φ '' W ∩ φ.target := sorry
     have H5 : ∀ᶠ x in 𝓝 (φ b), ff x = 0 := by
-      rw [← map_extChartAt_symm_nhdsWithin_range' I (a:M) hbφ] at hbf
-      simp only [eventually_map] at hbf
-      change ∀ᶠ x in 𝓝[range I] φ b, ff x = 0 at hbf
-      sorry -- not good enough, need to weaken `DifferentiableOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero`
-    have H7 : ∀ᶠ x in 𝓝[range I] φ a, ff x = 0 := by
-      rw [eventually_iff_exists_mem]
-      exact ⟨_, H6, hff.eqOn_zero_of_preconnected_of_eventuallyEq_zero H3 H4 H5⟩
-    simpa only [mem_setOf_eq, ← map_extChartAt_symm_nhdsWithin_range I, eventually_map] using H7
+      simpa only [← map_extChartAt_symm_nhdsWithin_range' I (a:M) hbφ,
+        eventually_map, hI, nhdsWithin_univ] using hbf
+    have : ∀ᶠ x in 𝓝 (φ a), ff x = 0 :=
+      hff.eventuallyEq_zero_of_preconnected_of_eventuallyEq_zero H6 H7 H2 H4 H3 H5
+    simpa only [mem_setOf_eq, ← map_extChartAt_symm_nhdsWithin_range I, hI, nhdsWithin_univ,
+      eventually_map]
   intro x hx
   have H : ∀ᶠ y in 𝓝 (⟨x, hx⟩:U), f y = 0 := by
     show _ ∈ s
@@ -266,9 +267,10 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
 /-- The **identity principle** for holomorphic functions on a complex manifold: If two holomorphic
 functions coincide in a whole neighborhood of a point `z₀`, then they coincide globally along a
 connected set. Also known as **unique continuation** of holomorphic functions. -/
-theorem eqOn_of_preconnected_of_eventuallyEq {f g : M → N} {U : Set M}
-    (hf : MDifferentiableOn I I' f U) (hg : MDifferentiableOn I I' g U)
-    (hU : IsPreconnected U) {z₀ : M} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
+theorem eqOn_of_preconnected_of_eventuallyEq {f g : M → N} {U V : Set M}
+    (hUV : U ⊆ V) (hV : ∀ x ∈ U, V ∈ 𝓝 x) (hf : MDifferentiableOn I I' f V)
+    (hg : MDifferentiableOn I I' g V) (hU : IsPreconnected U) {z₀ : M} (h₀ : z₀ ∈ U)
+    (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U :=
   sorry
 
@@ -304,7 +306,7 @@ theorem eventually_zero_or_eventually_zero_of_mul_eq_zero {W : Set M} (hW : IsOp
       exact (eq_zero_or_eq_zero_of_mul_eq_zero (H x hxW)).resolve_left hxf
     -- So by unique continuation, `g` vanishes on the whole connected component.
     rw [← isConnected_connectedComponentIn_iff] at ha
-    exact (hg.mono haW).eqOn_zero_of_preconnected_of_eventuallyEq_zero
-      isPreconnected_connectedComponentIn hbWa hbf'
+    exact (hg.mono haW).eqOn_zero_of_preconnected_of_eventuallyEq_zero (le_refl _)
+      (fun _ ↦ haW'.mem_nhds) isPreconnected_connectedComponentIn hbWa hbf'
 
 end MDifferentiableOn

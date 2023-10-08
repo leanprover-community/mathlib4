@@ -23,17 +23,40 @@ open Topology Set
 /-- The **identity principle** for complex-differentiable functions: If a complex-differentiable
 function vanishes in a whole neighborhood of a point `z₀`, then it is uniformly zero along a
 connected set. -/
-theorem DifferentiableOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
-    (hf : DifferentiableOn ℂ f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U)
-    (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+theorem DifferentiableOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U V : Set E}
+    (hUV : U ⊆ V) (hV : ∀ x ∈ U, V ∈ 𝓝 x) (hf : DifferentiableOn ℂ f V) (hU : IsPreconnected U)
+    {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   sorry
+
+/-- The **identity principle** for complex-differentiable functions: If a complex-differentiable
+function vanishes in a whole neighborhood of a point `z₀`, then it vanishes in a whole neighbourhood
+of any point connected to it. -/
+theorem DifferentiableOn.eventuallyEq_zero_of_preconnected_of_eventuallyEq_zero {f : E → F}
+    {U V : Set E} (hUV : U ⊆ V) (hV : ∀ x ∈ U, V ∈ 𝓝 x) (hf : DifferentiableOn ℂ f V)
+    (hU : IsPreconnected U) {z₀ z₁ : E} (h₀ : z₀ ∈ U) (h₁ : z₁ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+    f =ᶠ[𝓝 z₁] 0 := by
+  have H : V ∈ 𝓝 z₁ := hV z₁ h₁
+  rw [(LocallyConnectedSpace.open_connected_basis z₁).mem_iff] at H
+  obtain ⟨s, ⟨hs, hz₁s, hs'⟩, hs'' : s ⊆ V⟩ := H
+  have hUs : IsPreconnected (U ∪ s) := hU.union z₁ h₁ hz₁s hs'.isPreconnected
+  have hUsV : ∀ x ∈ U ∪ s, V ∈ 𝓝 x := by
+    rintro x (hx | hx)
+    · exact hV x hx
+    · rw [mem_nhds_iff]
+      use s
+  show ∀ᶠ _ in _, _
+  rw [eventually_nhds_iff]
+  refine ⟨s, fun x hx ↦ ?_, hs, hz₁s⟩
+  exact hf.eqOn_zero_of_preconnected_of_eventuallyEq_zero (union_subset hUV hs'') hUsV hUs
+    (mem_union_left s h₀) hfz₀ (mem_union_right _ hx)
 
 /-- The **identity principle** for complex-differentiable functions: If two complex-differentiable
 functions coincide in a whole neighborhood of a point `z₀`, then they coincide globally along a
 connected set. Also known as **unique continuation** of complex-differentiable functions. -/
-theorem DifferentiableOn.eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E}
-    (hf : DifferentiableOn ℂ f U) (hg : DifferentiableOn ℂ g U) (hU : IsPreconnected U) {z₀ : E}
+theorem DifferentiableOn.eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U V : Set E}
+    (hUV : U ⊆ V) (hV : ∀ x ∈ U, V ∈ 𝓝 x) (hf : DifferentiableOn ℂ f V)
+    (hg : DifferentiableOn ℂ g V) (hU : IsPreconnected U) {z₀ : E}
     (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U :=
   sorry
@@ -69,5 +92,5 @@ theorem eventually_zero_or_eventually_zero_of_mul_eq_zero {W : Set E} (hW : IsOp
       exact (eq_zero_or_eq_zero_of_mul_eq_zero (H x hxW)).resolve_left hxf
     -- So by unique continuation, `g` vanishes on the whole connected component.
     rw [← isConnected_connectedComponentIn_iff] at ha
-    exact (hg.mono haW).eqOn_zero_of_preconnected_of_eventuallyEq_zero
-      isPreconnected_connectedComponentIn hbWa hbf'
+    refine (hg.mono haW).eqOn_zero_of_preconnected_of_eventuallyEq_zero (le_refl _)
+      (fun _ ↦ haW'.mem_nhds) isPreconnected_connectedComponentIn hbWa hbf'
