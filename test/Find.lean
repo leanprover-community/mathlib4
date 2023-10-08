@@ -294,7 +294,7 @@ theorem NamespcedB.AnotherTestDefinition_eq_true:
   NamespacedB.AnotherTestDefinition = true := rfl
 
 /--
-info: unknown identifier AnotherTestDefinition, using NamespacedA.AnotherTestDefinition instead. (Other candiates: NamespacedB.AnotherTestDefinition and NamespacedC.AnotherTestDefinition)
+info: unknown identifier AnotherTestDefinition, using NamespacedA.AnotherTestDefinition instead. (Other candidates: NamespacedB.AnotherTestDefinition and NamespacedC.AnotherTestDefinition)
 Found 1 definitions mentioning NamespacedA.AnotherTestDefinition.
 • NamespcedA.AnotherTestDefinition_eq_true
 -/
