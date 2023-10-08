@@ -168,7 +168,7 @@ theorem Set.Finite.isOpen_sInter {s : Set (Set α)} (hs : s.Finite) :
 #align is_open_sInter Set.Finite.isOpen_sInter
 
 theorem Set.Finite.isOpen_biInter {s : Set β} {f : β → Set α} (hs : s.Finite)
-  (h : ∀ i ∈ s, IsOpen (f i)) :
+    (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
   sInter_image f s ▸ (hs.image _).isOpen_sInter (ball_image_iff.2 h)
 #align is_open_bInter Set.Finite.isOpen_biInter
@@ -254,7 +254,7 @@ theorem IsClosed.sdiff {s t : Set α} (h₁ : IsClosed s) (h₂ : IsOpen t) : Is
 #align is_closed.sdiff IsClosed.sdiff
 
 theorem Set.Finite.isClosed_biUnion {s : Set β} {f : β → Set α} (hs : s.Finite)
-  (h : ∀ i ∈ s, IsClosed (f i)) :
+    (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋃ i ∈ s, f i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact hs.isOpen_biInter h
@@ -401,15 +401,15 @@ theorem interior_iInter_subset (s : ι → Set α) : interior (⋂ i, s i) ⊆ �
   subset_iInter fun _ => interior_mono <| iInter_subset _ _
 #align interior_Inter_subset interior_iInter_subset
 
-theorem interior_Inter₂_subset (p : ι → Sort*) (s : ∀ i, p i → Set α) :
+theorem interior_iInter₂_subset (p : ι → Sort*) (s : ∀ i, p i → Set α) :
     interior (⋂ (i) (j), s i j) ⊆ ⋂ (i) (j), interior (s i j) :=
   (interior_iInter_subset _).trans <| iInter_mono fun _ => interior_iInter_subset _
-#align interior_Inter₂_subset interior_Inter₂_subset
+#align interior_Inter₂_subset interior_iInter₂_subset
 
 theorem interior_sInter_subset (S : Set (Set α)) : interior (⋂₀ S) ⊆ ⋂ s ∈ S, interior s :=
   calc
     interior (⋂₀ S) = interior (⋂ s ∈ S, s) := by rw [sInter_eq_biInter]
-    _ ⊆ ⋂ s ∈ S, interior s := interior_Inter₂_subset _ _
+    _ ⊆ ⋂ s ∈ S, interior s := interior_iInter₂_subset _ _
 #align interior_sInter_subset interior_sInter_subset
 
 /-!
@@ -547,11 +547,11 @@ theorem Finset.closure_biUnion {ι : Type*} (s : Finset ι) (f : ι → Set α) 
 #align finset.closure_bUnion Finset.closure_biUnion
 
 @[simp]
-theorem closure_Union_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
+theorem closure_iUnion_of_finite {ι : Type*} [Finite ι] (f : ι → Set α) :
     closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   cases nonempty_fintype ι
   convert Finset.univ.closure_biUnion f <;> simp
-#align closure_Union closure_Union_of_finite
+#align closure_Union closure_iUnion_of_finite
 
 theorem interior_subset_closure {s : Set α} : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
@@ -2004,8 +2004,8 @@ get something like this: (assumption `hf` could be weakened, but the important t
 of the conclusion)
 ```
 lemma ContinuousOn.comp_fract {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
-  Continuous (fun x ↦ f x (fract (g x)))
+    {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
+    Continuous (fun x ↦ f x (fract (g x)))
 ```
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.
