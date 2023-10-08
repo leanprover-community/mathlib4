@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Complex.Uniqueness
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Topology.LocallyConstant.Basic
@@ -47,8 +48,14 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 
+variable {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners ℂ F H'}
+
 variable {M : Type*} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
+
+variable {N : Type*} [TopologicalSpace N] [CompactSpace N] [ChartedSpace H' N]
+  [SmoothManifoldWithCorners I' N]
+
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood
@@ -178,13 +185,59 @@ end MDifferentiable
 
 namespace MDifferentiableOn
 
+-- move to Mathlib.Topology.ContinuousOn
+theorem eventually_nhds_subtype_iff_eventually_nhdsWithin {α : Type*} [TopologicalSpace α]
+    (s : Set α) (a : s) (P : α → Prop) :
+    (∀ᶠ x in 𝓝[s] (a:α), P x) ↔ (∀ᶠ x : s in 𝓝 a, P x) := by
+  trans ∀ᶠ x in 𝓝[s] (a:α), ∃ b : s, P b ∧ (b:α) = x
+  · constructor
+    · intro H
+      have H' : ∀ᶠ x in 𝓝[s] (a:α), x ∈ s := eventually_mem_nhdsWithin
+      filter_upwards [H, H'] with x hx hx'
+      exact ⟨⟨x, hx'⟩, hx, rfl⟩
+    · intro H
+      filter_upwards [H]
+      rintro _ ⟨x, hx, rfl⟩
+      exact hx
+  · simp_rw [eventually_iff, mem_nhds_subtype_iff_nhdsWithin]
+    rfl
+
 /-- The **identity principle** for holomorphic functions on a complex manifold: If a holomorphic
 function vanishes in a whole neighborhood of a point `z₀`, then it is uniformly zero along a
-connected set. Also known as **unique continuation** of holomorphic functions. -/
+connected set. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
     (hf : MDifferentiableOn I 𝓘(ℂ, F) f U) (hU : IsPreconnected U) {z₀ : M} (h₀ : z₀ ∈ U)
     (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
+  have : PreconnectedSpace U := Subtype.preconnectedSpace hU
+  let s : Set U := {x | U.restrict f x = 0}
+  have h1 : s.Nonempty := ⟨⟨z₀, h₀⟩, (Filter.Eventually.self_of_nhds hfz₀:)⟩
+  have h2 : IsOpen s := by
+    rw [isOpen_iff_eventually]
+    intro a ha
+    suffices ∀ᶠ x in 𝓝[U] (a:M), f x = 0 by
+      simp only [restrict_apply, mem_setOf_eq]
+      rwa [← eventually_nhds_subtype_iff_eventually_nhdsWithin U a (P := fun x ↦ f x = 0)]
+    rw [← map_extChartAt_symm_nhdsWithin I]
+    simp only [eventually_map]
+    -- apply DifferentiableOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero
+    sorry
+  have h3 : IsClosed s := by
+    apply (T1Space.t1 (0:F)).preimage
+    rw [← continuousOn_iff_continuous_restrict]
+    exact hf.continuousOn
+  intro x hx
+  show (⟨x, hx⟩ : U) ∈ s
+  rw [IsClopen.eq_univ ⟨h2, h3⟩ h1]
+  exact Set.mem_univ _
+
+/-- The **identity principle** for holomorphic functions on a complex manifold: If two holomorphic
+functions coincide in a whole neighborhood of a point `z₀`, then they coincide globally along a
+connected set. Also known as **unique continuation** of holomorphic functions. -/
+theorem eqOn_of_preconnected_of_eventuallyEq {f g : M → N} {U : Set M}
+    (hf : MDifferentiableOn I I' f U) (hg : MDifferentiableOn I I' g U)
+    (hU : IsPreconnected U) {z₀ : M} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
+    EqOn f g U :=
   sorry
 
 /-- Let `W` be an open set in a complex manifold `M`, and let `f` and `g` be holomorphic

@@ -20,13 +20,22 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 open Topology Set
 
-/-- The *identity principle* for complex-differentiable functions: If a complex-differentiable
+/-- The **identity principle** for complex-differentiable functions: If a complex-differentiable
 function vanishes in a whole neighborhood of a point `z₀`, then it is uniformly zero along a
-connected set. Also known as *unique continuation* of complex-differentiable functions. -/
+connected set. -/
 theorem DifferentiableOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     (hf : DifferentiableOn ℂ f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U)
     (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
+  sorry
+
+/-- The **identity principle** for complex-differentiable functions: If two complex-differentiable
+functions coincide in a whole neighborhood of a point `z₀`, then they coincide globally along a
+connected set. Also known as **unique continuation** of complex-differentiable functions. -/
+theorem DifferentiableOn.eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E}
+    (hf : DifferentiableOn ℂ f U) (hg : DifferentiableOn ℂ g U) (hU : IsPreconnected U) {z₀ : E}
+    (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
+    EqOn f g U :=
   sorry
 
 /-- Let `W` be an open set in a complex normed space `E`, and let `f` and `g` be holomorphic
