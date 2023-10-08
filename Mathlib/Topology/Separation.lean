@@ -1682,44 +1682,6 @@ instance {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)] [∀ 
     RegularSpace (∀ i, π i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
-/-- In a regular space, the union of two discrete closed subsets is discrete. -/
-lemma discreteTopology_union {S T : Set α} (hS : DiscreteTopology S) (hS' : IsClosed S)
-    (hT : DiscreteTopology T) (hT' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
-  simp_rw [discreteTopology_subtype_iff, ←disjoint_iff] at hS hT ⊢
-  intro x h
-  wlog hx : x ∈ S generalizing S T
-  · simp_rw [union_comm S T] at this h ⊢
-    exact this hT' hS' hT hS h (((mem_union _ _ _).mp h).resolve_right hx)
-  rw [←sup_principal, disjoint_sup_right]
-  by_cases hx' : x ∈ T
-  exacts [⟨hS x hx, hT x hx'⟩, ⟨hS x hx, (RegularSpace.regular hT' hx').symm.mono
-      nhdsWithin_le_nhds principal_le_nhdsSet⟩]
-
-section codiscrete_filter
-
-variable (α)
-
-/-- In a regular space, the open sets with with discrete complement form a filter. -/
-def Filter.Codiscrete [RegularSpace α] : Filter α where
-  sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
-  univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
-  sets_of_superset := by
-    intro U V ⟨hU, hU'⟩ hV
-    rw [←isClosed_compl_iff] at hU
-    rw [←compl_subset_compl] at hV
-    refine ⟨?_, DiscreteTopology.of_subset hU' hV⟩
-    simpa only [Subtype.image_preimage_val, inter_eq_self_of_subset_left hV,
-      isClosed_compl_iff] using hU.closedEmbedding_subtype_val.isClosedMap _ (isClosed_discrete
-      (Subtype.val ⁻¹' Vᶜ))
-  inter_sets := by
-    intro U V ⟨hU, hU'⟩ ⟨hV, hV'⟩
-    refine ⟨hU.inter hV, ?_⟩
-    rw [compl_inter]
-    rw [← isClosed_compl_iff] at hU hV
-    exact discreteTopology_union hU' hU hV' hV
-
-end codiscrete_filter
-
 end RegularSpace
 
 section T3
