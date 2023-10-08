@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
