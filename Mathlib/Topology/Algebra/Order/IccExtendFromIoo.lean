@@ -3,6 +3,7 @@ Copyright (c) 2023 Wen Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wen Yang
 -/
+import Mathlib.Data.Set.FunctionToVal
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 
@@ -79,17 +80,18 @@ theorem StrictMonoOn.update_strict_lower_bound [PartialOrder α] [Preorder β]
 
 end update
 
+open Set2Set
+
 section StrictMonoOn
 variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [LinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    [LinearOrder β] [TopologicalSpace β] [OrderTopology β] [Nonempty β]
     {a b : α} {c d : β}
 
 /-- Extend strictly monotone (increasing) functions between open intervals to homeomorphisms
 between the closed intervals.-/
 theorem StrictMonoOn.Ioo_continuous_extend_Icc (hf_increasing : StrictMonoOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
-    ∃ (g : (Icc a b) ≃ₜ (Icc c d)),
-    ∀ x, (hx : x ∈ Ioo a b) → f x = (g ⟨x, mem_Icc_of_Ioo hx⟩).val := by
+    ∃ (g : (Icc a b) ≃ₜ (Icc c d)), EqOn f g.toFun.toval (Ioo a b) := by
   let g := update (update f a c) b d
   --  First, we verify that `g` is strictly monotone.
   have ha : a ∉ Ioo a b := by simp
@@ -124,7 +126,8 @@ theorem StrictMonoOn.Ioo_continuous_extend_Icc (hf_increasing : StrictMonoOn f (
     rw [hg_mapsto]
     exact orderTopology_of_ordConnected
   let F := iso.toHomeomorph
-  have h_eq_fg (x) (hx : x ∈ Ioo a b) : f x = g x := by
+  have h_eq_fg : EqOn f g (Ioo a b) := by
+    intro x hx
     unfold_let g
     unfold update
     have hxa : x ≠ a := by
@@ -138,12 +141,14 @@ theorem StrictMonoOn.Ioo_continuous_extend_Icc (hf_increasing : StrictMonoOn f (
       revert hx
       simp
     simp [hxa, hxb]
-  have hgF (x : Icc a b) : g x = F.toFun x := rfl
-  have hF : ∀ x, (hx : x ∈ Ioo a b) → f x = (F.toFun ⟨x, mem_Icc_of_Ioo hx⟩).val := by
+  have h_eq_gF : EqOn g (toval iso.toFun) (Icc a b) := by
+    rw [← @restrict_eq_restrict_iff, ← toval_eq, @restrict_eq]
+    exact rfl
+  have hF : EqOn f (toval F.toFun) (Ioo a b) := by
     intro x hx
-    rw [h_eq_fg x hx, hgF ⟨x, _⟩]
-  have : ∃ (G : (Icc a b) ≃ₜ (g '' Icc a b)), ∀ x, (hx : x ∈ Ioo a b) →
-      f x = (G.toFun ⟨x, mem_Icc_of_Ioo hx⟩).val := by use F
+    rw [h_eq_fg hx, h_eq_gF (mem_Icc_of_Ioo hx)]
+    exact rfl
+  have : ∃ (G : (Icc a b) ≃ₜ (g '' Icc a b)), EqOn f G.toFun.toval (Ioo a b) := by use F
   rw [hg_mapsto] at this
   exact this
 
@@ -151,8 +156,7 @@ theorem StrictMonoOn.Ioo_continuous_extend_Icc (hf_increasing : StrictMonoOn f (
 between the closed intervals.-/
 theorem StrictAntiOn.Ioo_continuous_extend_Icc (hf_decreasing : StrictAntiOn f (Ioo a b))
     (hf_mapsto : f '' (Ioo a b) = Ioo c d) (hab : a < b) (hcd : c < d) :
-    ∃ (g : (Icc a b) ≃ₜ (Icc c d)),
-    ∀ x, (hx : x ∈ Ioo a b) → f x = (g ⟨x, mem_Icc_of_Ioo hx⟩).val := by
+    ∃ (g : (Icc a b) ≃ₜ (Icc c d)), EqOn f g.toFun.toval (Ioo a b) := by
   let F : α → OrderDual β := f
   have hF_increasing : StrictMonoOn F (Ioo a b) := hf_decreasing
   have hF_mapsto : F '' (Ioo a b) = Ioo (toDual d) (toDual c) := by aesop
@@ -167,42 +171,25 @@ section ContinuousOn
 open TopologicalSpace
 variable [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
-    [LinearOrder β] [TopologicalSpace β] [OrderTopology β][OrderClosedTopology β]
+    [LinearOrder β] [TopologicalSpace β] [OrderTopology β][OrderClosedTopology β] [Nonempty β]
     {a b : α} {c d : β}
 
 /-- Extend a homeomorphism between open intervals to that between the closed intervals.-/
 theorem Homeomorph.Ioo_extend_Icc (f : (Ioo a b) ≃ₜ (Ioo c d)) (hab : a < b) (hcd : c < d) :
-    ∃ g : (Icc a b) ≃ₜ (Icc c d),
-    ∀ x, (hx : x ∈ Ioo a b) → (f ⟨x, hx⟩).val = (g ⟨x, mem_Icc_of_Ioo hx⟩).val := by
-  let e' : α → β := fun _ => c
-  let g : α → β := extend Subtype.val (Subtype.val ∘ f) e'
-  have hg_apply := Subtype.val_injective.extend_apply (Subtype.val ∘ f) e'
-  have hg_eq := extend_comp Subtype.val_injective (Subtype.val ∘ f) e'
-  have hg_c : ContinuousOn g (Ioo a b) := by
-    unfold_let g
-    rw [@continuousOn_iff_continuous_restrict, @restrict_eq, hg_eq, @comp_continuous_iff']
-    exact continuous_subtype_val
-  have hg_inj : InjOn g (Ioo a b) := by
-    unfold_let g
-    rw [@injOn_iff_injective, @restrict_eq, hg_eq, @EquivLike.injective_comp]
-    exact Subtype.coe_injective
-  have hg_mapsto : g '' (Ioo a b) = Ioo c d := by
-    unfold_let g
-    rw [← @range_restrict, @restrict_eq, hg_eq, @EquivLike.range_comp]
-    exact Subtype.range_coe
-  have hg_mono := hg_c.StrictMonoOn_of_InjOn_Ioo hab hg_inj
-  cases hg_mono with
-  | inl hg_mono =>
-    choose G hG using hg_mono.Ioo_continuous_extend_Icc hg_mapsto hab hcd
-    use G
-    intro x hx
-    unfold_let g at hG
-    rw [← hG x hx, hg_apply ⟨x, hx⟩, @comp_apply]
-  | inr hg_mono =>
-    choose G hG using hg_mono.Ioo_continuous_extend_Icc hg_mapsto hab hcd
-    use G
-    intro x hx
-    unfold_let g at hG
-    rw [← hG x hx, hg_apply ⟨x, hx⟩, @comp_apply]
+    ∃ (g : (Icc a b) ≃ₜ (Icc c d)), EqOn (toval f) (toval g) (Ioo a b) := by
+  have hf_c : ContinuousOn (toval f) (Ioo a b) := by
+    rw [← toval_continuous]
+    exact f.continuous
+  have hf_inj : InjOn (toval f) (Ioo a b) := by
+    rw [← toval_injOn]
+    exact f.injective
+  have hf_mapsto : (toval f) '' (Ioo a b) = Ioo c d := by
+    rw [← toval_image_eq, @EquivLike.range_comp, @Subtype.range_val]
+  have hf_mono := hf_c.StrictMonoOn_of_InjOn_Ioo hab hf_inj
+  cases hf_mono with
+  | inl hf_mono =>
+    exact StrictMonoOn.Ioo_continuous_extend_Icc hf_mono hf_mapsto hab hcd
+  | inr hf_mono =>
+    exact StrictAntiOn.Ioo_continuous_extend_Icc hf_mono hf_mapsto hab hcd
 
 end ContinuousOn
