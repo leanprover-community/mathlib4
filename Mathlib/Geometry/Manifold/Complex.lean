@@ -216,27 +216,33 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U : Set M}
     (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   have : PreconnectedSpace U := Subtype.preconnectedSpace hU
-  let s : Set U := {x | U.restrict f =ᶠ[𝓝 x] 0}
+  let s : Set U := {x : U | f =ᶠ[𝓝 (x:M)] 0}
   have hfz₀' : U.restrict f =ᶠ[𝓝 ⟨z₀, h₀⟩] 0 := by
     refine eventually_nhds_subtype_iff_eventually_nhdsWithin U _ (P := fun x ↦ f x = 0) |>.mp ?_
     exact eventually_nhdsWithin_of_eventually_nhds hfz₀
-  have h1 : s.Nonempty := ⟨⟨z₀, h₀⟩, hfz₀'⟩
+  have h1 : s.Nonempty := ⟨⟨z₀, h₀⟩, hfz₀⟩
   have h2 : IsOpen s := by
     rw [isOpen_iff_eventually]
-    rintro a (ha : ∀ᶠ x in 𝓝 a, U.restrict f x = 0)
+    rintro a (ha : ∀ᶠ x in 𝓝 a, f x = 0)
     rw [eventually_nhds_iff] at ha ⊢
     obtain ⟨t, htf, ht, hat⟩ := ha
-    refine ⟨t, ?_, ht, hat⟩
+    refine ⟨Subtype.val ⁻¹' t, ?_, isOpen_induced ht, hat⟩
     intro b hbt
-    show ∀ᶠ y in 𝓝 b, _ = 0
+    show ∀ᶠ y in 𝓝 (b:M), _ = 0
     rw [eventually_nhds_iff]
     exact ⟨t, htf, ht, hbt⟩
   have h3 : IsClosed s := by
     rw [isClosed_iff_frequently]
     intro a ha
+    have ha' := (frequently_nhds_subtype_iff_frequently_nhdsWithin U a (fun x ↦ f =ᶠ[𝓝 x] 0)).mpr ha
+    rw [frequently_iff] at ha'
+    let V := extChartAt I (a:M)
+    have H1 : V.source ∈ 𝓝[U] (a:M) := extChartAt_source_mem_nhdsWithin I (a:M)
+    have H2 : connectedComponentIn (V.source ∩ U) a ∈ 𝓝[U] (a:M) := sorry
+    obtain ⟨b, hbU, hbf⟩ := ha' H2
     sorry
   intro x hx
-  have H : ∀ᶠ y in 𝓝 ⟨x, hx⟩, U.restrict f y = 0 := by
+  have H : ∀ᶠ y in 𝓝 (⟨x, hx⟩:U), f y = 0 := by
     show _ ∈ s
     rw [IsClopen.eq_univ ⟨h2, h3⟩ h1]
     exact Set.mem_univ _
