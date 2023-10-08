@@ -830,7 +830,7 @@ theorem map_id : N.map LieModuleHom.id = N := by ext; simp
     (⊥ : LieSubmodule R L M).map f = ⊥ := by
   ext m; simp [eq_comm]
 
-lemma map_rel_iff (hf : Function.Injective f) :
+lemma map_le_map_iff (hf : Function.Injective f) :
     N.map f ≤ N₂.map f ↔ N ≤ N₂ :=
   Set.image_subset_image_iff hf
 

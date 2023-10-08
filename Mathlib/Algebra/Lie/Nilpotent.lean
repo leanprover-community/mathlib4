@@ -73,8 +73,9 @@ theorem lcs_succ : N.lcs (k + 1) = ⁅(⊤ : LieIdeal R L), N.lcs k⁆ :=
 @[simp]
 lemma lcs_sup {N₁ N₂ : LieSubmodule R L M} {k : ℕ} :
     (N₁ ⊔ N₂).lcs k = N₁.lcs k ⊔ N₂.lcs k := by
-  induction' k with k ih; simp
-  simp only [LieSubmodule.lcs_succ, ih, LieSubmodule.lie_sup]
+  induction' k with k ih
+  · simp
+  · simp only [LieSubmodule.lcs_succ, ih, LieSubmodule.lie_sup]
 
 end LieSubmodule
 
