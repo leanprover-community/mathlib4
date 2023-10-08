@@ -147,7 +147,7 @@ theorem Mul_one_eq_SterRingEnd (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 
 theorem SterRingEnd_eq_Mul_one (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
     g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
   refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro ; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
+  simp; intro; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
   rw [RingHomCompTriple.comp_apply, RingHom.id_apply]
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
