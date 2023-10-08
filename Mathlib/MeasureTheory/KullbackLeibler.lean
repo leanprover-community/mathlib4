@@ -222,29 +222,6 @@ lemma integral_toReal_rnDeriv {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite
     ENNReal.toReal_eq_toReal_iff, lintegral_rnDeriv hμν]
   simp only [Measure.measure_univ_eq_zero, true_or]
 
-section x_log_x
-
-namespace Real
-
-lemma continuous_id_mul_log : Continuous (fun x ↦ x * log x) := by
-  sorry
-
-lemma convexOn_id_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
-  sorry
-
-lemma id_mul_log_ge {x : ℝ} (hx : 0 ≤ x) : log (exp 1) / (exp 1) ≤ x * log x := by
-  sorry
-
-lemma id_mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
-  mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
-
-lemma measurable_id_mul_log : Measurable (fun x ↦ x * log x) :=
-  measurable_id'.mul measurable_log
-
-end Real
-
-end x_log_x
-
 section tilted
 
 noncomputable
@@ -337,7 +314,7 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
   · exact fun x ↦ (exp_pos _).le
   · exact hf
 
-lemma isProbabilityMeasure_tilted {μ : Measure α} [IsProbabilityMeasure μ] {f : α → ℝ}
+lemma isProbabilityMeasure_tilted {μ : Measure α} [IsFiniteMeasure μ] [NeZero μ] {f : α → ℝ}
     (hf : Integrable (fun x ↦ exp (f x)) μ) :
     IsProbabilityMeasure (μ.tilted f) := by
   constructor
@@ -529,6 +506,29 @@ lemma singularPart_tilted_right {μ ν : Measure α} [SigmaFinite μ] [IsProbabi
   sorry
 
 end tilted
+
+section x_log_x
+
+namespace Real
+
+lemma continuous_id_mul_log : Continuous (fun x ↦ x * log x) := by
+  sorry
+
+lemma convexOn_id_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
+  sorry
+
+lemma id_mul_log_ge {x : ℝ} (hx : 0 ≤ x) : log (exp 1) / (exp 1) ≤ x * log x := by
+  sorry
+
+lemma id_mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
+  mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
+
+lemma measurable_id_mul_log : Measurable (fun x ↦ x * log x) :=
+  measurable_id'.mul measurable_log
+
+end Real
+
+end x_log_x
 
 section definition
 
