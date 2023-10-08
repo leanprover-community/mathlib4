@@ -266,6 +266,19 @@ theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹'
   rw [← image_symm]; exact h.symm.isCompact_image
 #align homeomorph.is_compact_preimage Homeomorph.isCompact_preimage
 
+/-- If `h : α → β` is a homeomorphism, `s` is σ-compact iff `h(s)` is. -/
+theorem isSigmaCompact_image {s : Set α} (h : α ≃ₜ β) :
+    IsSigmaCompact (↑h '' s) ↔ IsSigmaCompact s := by
+  refine ⟨?_, fun hyp => hyp.image h.continuous⟩
+  rintro ⟨K, hcomp, hcov⟩
+  refine ⟨fun n ↦ h.invFun '' (K n), fun n ↦ (hcomp n).image (h.continuous_invFun), ?_⟩
+  have : h.invFun ∘ h = id := by ext x; exact h.left_inv x
+  calc ⋃ (n : ℕ), h.invFun '' K n
+    _ = h.invFun '' (⋃ (n : ℕ), K n) := by rw [image_iUnion]
+    _ = (h.invFun ∘ h) '' s := by rw [hcov, image_comp]
+    _ = id '' s := by rw [this]
+    _ = s := by rw [image_id]
+
 @[simp]
 theorem isPreconnected_image {s : Set α} (h : α ≃ₜ β) :
     IsPreconnected (h '' s) ↔ IsPreconnected s :=

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Order.Filter.Pi
 import Mathlib.Topology.Bases
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Topology.Bornology.Basic
@@ -29,10 +30,11 @@ We define the following properties for sets in a topological space:
 * `IsClopen`: a set that is both open and closed.
 * `IsIrreducible`: a nonempty set that has contains no non-trivial pair of disjoint opens.
   See also the section below in the module doc.
+* `IsSigmaCompact`: a set that is the union of countably many compact sets.
 
 For each of these definitions (except for `IsClopen`), we also have a class stating that the whole
 space satisfies that property:
-`CompactSpace`, `PreirreducibleSpace`, `IrreducibleSpace`.
+`CompactSpace`, `PreirreducibleSpace`, `IrreducibleSpace`. (See below for `SigmaCompactSpace`.)
 
 Furthermore, we have four more classes:
 * `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
@@ -1307,6 +1309,120 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
   rw [← this, compl_compl]
 #align is_closed.exists_minimal_nonempty_closed_subset IsClosed.exists_minimal_nonempty_closed_subset
 
+/-- A subset `s ⊆ α` is called **σ-compact** if it is the union of countably many compact sets. -/
+def IsSigmaCompact (s : Set α) : Prop :=
+  ∃ K : ℕ → Set α, (∀ n, IsCompact (K n)) ∧ ⋃ n, K n = s
+
+/-- The empty set is σ-compact. -/
+@[simp]
+lemma isSigmaCompact_empty : IsSigmaCompact (∅ : Set α) := by
+  use fun _ ↦ ∅
+  simp only [isCompact_empty, forall_const, iUnion_empty, and_self]
+
+/-- Compact sets are σ-compact. -/
+lemma isSigmaCompact_of_compact {s : Set α} (hs : IsCompact s) : IsSigmaCompact s :=
+  ⟨fun _ => s, fun _ => hs, iUnion_const _⟩
+
+/-- Countable unions of compact sets are σ-compact. -/
+lemma isSigmaCompact_of_countable_compact {S : Set (Set α)} (hc : Set.Countable S)
+    (hcomp : ∀ (s : Set α), s ∈ S → IsCompact s) : IsSigmaCompact (⋃₀ S) := by
+  by_cases S = ∅
+  · simp only [h, sUnion_empty, isSigmaCompact_empty]
+  · -- If S is non-empty, choose a surjection f : ℕ → S, this yields a map ℕ → Set X.
+    obtain ⟨f, hf⟩ := (Set.countable_iff_exists_surjective (nmem_singleton_empty.mp h)).mp hc
+    refine ⟨fun n ↦ f n, fun n ↦ hcomp (f n) (Subtype.mem (f n)), ?_⟩
+    -- I presume this part can be golfed.
+    apply Subset.antisymm
+    · -- Suppose x ∈ ⋃ n, f n. Then x ∈ f i for some i,
+      intro _ hx
+      rw [mem_iUnion] at hx
+      rcases hx with ⟨i, hi⟩
+      -- ... but f i is a set in S, so x ∈ ⋃ S as well.
+      exact ⟨f i, Subtype.mem (f i), hi⟩
+    · -- Suppose x ∈ ⋃ s, then x ∈ s for some s ∈ S.
+      intro x hx
+      rw [mem_sUnion] at hx
+      rcases hx with ⟨s, h, hxs⟩
+      -- Choose n with f n = s (using surjectivity of f).
+      have : ∃ n, f n = s := by
+        obtain ⟨y, hy⟩ := hf ⟨s, h⟩
+        use y
+        simp_all only [Subtype.forall]
+      rcases this with ⟨n, hn⟩
+      exact ⟨f n, mem_range_self n, (by rw [hn]; exact hxs)⟩
+
+/-- Countable unions of σ-compact sets are σ-compact. -/
+lemma isSigmaCompact_of_countable_sigma_compact (S : Set (Set α)) (hc : Set.Countable S)
+    (hcomp : ∀ s : S, IsSigmaCompact s (α := α)) : IsSigmaCompact (⋃₀ S) := by
+  -- Choose a decomposition s = ⋃ s_i for each s ∈ S.
+  choose K hcomp hcov using fun s ↦ hcomp s
+  -- Then, we have a countable union of countable unions of compact sets, i.e. countably many.
+  have : ⋃₀ S = ⋃₀ range (K.uncurry) := by
+    calc ⋃₀ S
+      _ = ⋃ s : S, s := by rw [← sUnion_eq_iUnion]
+      _ = ⋃ s : S, ⋃ n, (K s n) := by simp_rw [hcov]
+      _ = ⋃ s : S, ⋃ n, (K.uncurry ⟨s, n⟩) := by rw [Function.uncurry_def]
+      _ = ⋃ (s : S) (n : ℕ), (K.uncurry ⟨s, n⟩) := by rw [iUnion_coe_set]
+      _ = ⋃₀ range (K.uncurry) := by rw [← iUnion_prod', sUnion_range]
+  rw [this]
+  rw [← countable_coe_iff] at hc
+  refine isSigmaCompact_of_countable_compact (countable_range (K.uncurry)) fun s hs ↦ ?_
+  obtain ⟨⟨ys, yn⟩, hy⟩ := mem_range.mp hs
+  rw [← hy]
+  exact hcomp ys yn
+
+/-- A closed subset of a σ-compact set is σ-compact. -/
+lemma IsSigmaCompact.of_isClosed_subset {s t : Set α} (ht : IsSigmaCompact t)
+    (hs : IsClosed s) (h : s ⊆ t) : IsSigmaCompact s := by
+  rcases ht with ⟨K, hcompact, hcov⟩
+  refine ⟨(fun n ↦ s ∩ (K n)), fun n ↦ (hcompact n).inter_left hs, ?_⟩
+  rw [← inter_iUnion, hcov]
+  exact inter_eq_left.mpr h
+
+/-- If `s` is σ-compact and `f` continuous on a set `w` containing `s`, `f(s)` is σ-compact.-/
+lemma IsSigmaCompact.image_of_continuousOn {f : α → β} {s : Set α} (hs : IsSigmaCompact s)
+    (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
+  rcases hs with ⟨K, hcompact, hcov⟩
+  refine ⟨fun n ↦ f '' K n, ?_, (by rw [← hcov]; exact image_iUnion.symm)⟩
+  refine fun n ↦ (hcompact n).image_of_continuousOn (hf.mono ?_)
+  calc K n
+    _ ⊆ ⋃ n, K n := subset_iUnion K n
+    _ = s := by rw [hcov]
+
+/-- If `s` is σ-compact and `f` continuous, `f(s)` is σ-compact. -/
+lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs : IsSigmaCompact s) :
+    IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
+
+/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
+if and only `s`` is σ-compact.
+This does not hold for merely inducing maps; direction `←` requires injectivity. -/
+lemma Embedding.isSigmaCompact_iff_isSigmaCompact_image {f : α → β} {s : Set α}
+    (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
+  constructor
+  · exact fun h ↦ h.image (continuous hf)
+  · rintro ⟨L, hcomp, hcov⟩
+    -- Suppose f '' s is σ-compact; we want to show f is σ-compact.
+    -- Write f(s) as a union of compact sets L n, so s = ⋃ K n with K n := f⁻¹(L n).
+    -- Since f is an embedding, each K n is compact iff L n is.
+    refine ⟨fun n ↦ f ⁻¹' (L n), ?_, ?_⟩
+    · intro n
+      have : f '' (f ⁻¹' (L n)) = L n := by
+        have h: L n ⊆ f '' s := by
+          rw [← hcov]
+          exact subset_iUnion L n
+        apply Set.image_preimage_eq_subset' (h.trans (image_subset _ (subset_univ s)))
+      specialize hcomp n
+      rw [← this] at hcomp
+      apply hf.toInducing.isCompact_iff.mp hcomp
+    · calc ⋃ n, f ⁻¹' L n
+        _ = f ⁻¹' (⋃ n, L n) := by rw [preimage_iUnion]
+        _ = f ⁻¹' (f '' s) := by rw [hcov]
+        _ = s := preimage_image_eq s hf.inj
+
+lemma isSigmaCompact_iff_isSigmaCompact_in_subtype {p : α → Prop} {s : Set { a // p a }} :
+    IsSigmaCompact s ↔ IsSigmaCompact (((↑) : _ → α) '' s) :=
+  embedding_subtype_val.isSigmaCompact_iff_isSigmaCompact_image
+
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
   The sequence can be extracted using `compactCovering`. -/
@@ -1315,6 +1431,28 @@ class SigmaCompactSpace (α : Type*) [TopologicalSpace α] : Prop where
   that cover the entire space. -/
   exists_compact_covering : ∃ K : ℕ → Set α, (∀ n, IsCompact (K n)) ∧ ⋃ n, K n = univ
 #align sigma_compact_space SigmaCompactSpace
+
+/-- A topological space is σ-compact iff `univ` is σ-compact. -/
+lemma isSigmaCompact_univ_iff : IsSigmaCompact (univ : Set α) ↔ SigmaCompactSpace α :=
+  ⟨fun h ↦ { exists_compact_covering := h }, fun _ ↦ SigmaCompactSpace.exists_compact_covering⟩
+
+lemma isSigmaCompact_univ [h : SigmaCompactSpace α] : IsSigmaCompact (univ : Set α) :=
+  isSigmaCompact_univ_iff.mpr h
+
+/-- If `X` is σ-compact, `im f` is σ-compact. -/
+lemma isSigmaCompact_range {f : α → β} (hf : Continuous f) [i : SigmaCompactSpace α] :
+    IsSigmaCompact (range f) := by
+  rw [← image_univ]
+  apply isSigmaCompact_univ.image hf
+
+/-- A subset `s` is σ-compact iff `s` (with the subspace topology) is a σ-compact space. -/
+lemma isSigmaCompact_iff_isSigmaCompact_univ {s : Set α} :
+    IsSigmaCompact s ↔ IsSigmaCompact (univ : Set s) := by
+  rw [isSigmaCompact_iff_isSigmaCompact_in_subtype, image_univ, Subtype.range_coe]
+
+lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set α} :
+    IsSigmaCompact s ↔ SigmaCompactSpace s :=
+  isSigmaCompact_iff_isSigmaCompact_univ.trans isSigmaCompact_univ_iff
 
 -- see Note [lower instance priority]
 instance (priority := 200) CompactSpace.sigma_compact [CompactSpace α] : SigmaCompactSpace α :=
