@@ -130,7 +130,8 @@ end Polar
 
 For a more familiar constructor when `R` is a ring, see `QuadraticForm.ofPolar`. -/
 structure QuadraticForm (R : Type u) (M : Type v) (N : Type w) [Semiring R] [AddCommMonoid M]
-    [Module R M] [Module Rᵐᵒᵖ M] [AddCommMonoid N] [Module R N] [Module Rᵐᵒᵖ N] [SMulCommClass Rᵐᵒᵖ R N] where
+    [Module R M] [Module Rᵐᵒᵖ M] [AddCommMonoid N] [Module R N] [Module Rᵐᵒᵖ N]
+    [SMulCommClass Rᵐᵒᵖ R N] where
   toFun : M → N
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = (a * a) • toFun x
   toFun_smulr : ∀ (a : Rᵐᵒᵖ) (x : M), toFun (a • x) = (a * a) • toFun x
@@ -345,7 +346,7 @@ def polarBilin : M →ₗ[R] M →ₗ[Rᵐᵒᵖ] N where
     simp
 #align quadratic_form.polar_bilin QuadraticForm.polarBilin
 /-
-variable [CommSemiring S] [Algebra S R] [Module S M] [Module Sᵐᵒᵖ M] [Algebra S N] [IsScalarTower S R M]
+variable [CommSemiring S] [Algebra S R] [Module S M] [Algebra S N] [IsScalarTower S R M]
 
 @[simp]
 theorem polar_smul_left_of_tower (a : S) (x y : M) : polar Q (a • x) y = a • polar Q x y := by
@@ -401,9 +402,8 @@ section SMul
 
 variable [Monoid S] [Monoid T]
 variable [DistribMulAction S N] [DistribMulAction T N]
-variable [SMulCommClass R S N] [SMulCommClass  Rᵐᵒᵖ S N] [SMulCommClass T R N] [SMulCommClass T Rᵐᵒᵖ N]
-
-variable [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N]
+variable [SMulCommClass R S N] [SMulCommClass  Rᵐᵒᵖ S N] [SMulCommClass T R N]
+  [SMulCommClass T Rᵐᵒᵖ N] [SMulCommClass S R N] [SMulCommClass S Rᵐᵒᵖ N]
 
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
@@ -591,8 +591,15 @@ variable [AddCommMonoid N] [Module R N] [Module Rᵐᵒᵖ N]
 
 variable {N' : Type v} [AddCommMonoid N'] [Module R N'] [Module Rᵐᵒᵖ N'] [SMulCommClass Rᵐᵒᵖ R N]
 
+variable [SMulCommClass R Rᵐᵒᵖ N]
+
+variable (f : M →ₗ[R] N') (hf : IsLinearMap Rᵐᵒᵖ f)
+
+#check IsLinearMap.mk' f hf
+
 /-- Compose the quadratic form with a linear function. -/
-def comp (Q : QuadraticForm R N' N) (f : M →ₗ[R] N') (hf : IsLinearMap Rᵐᵒᵖ f): QuadraticForm R M N where
+def comp (Q : QuadraticForm R N' N) (f : M →ₗ[R] N') (hf : IsLinearMap Rᵐᵒᵖ f) :
+    QuadraticForm R M N where
   toFun x := Q (f x)
   toFun_smul a x := by simp only [map_smul, f.map_smul]
   toFun_smulr a x := by
