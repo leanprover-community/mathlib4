@@ -5,11 +5,11 @@ Authors: Rémy Degenne, Felix Weilacher
 -/
 import Mathlib.Topology.Bases
 
-open Set TopologicalSpace Filter
-
 /-!
 We prove that countable discrete spaces are second countable.
 -/
+
+open Set TopologicalSpace
 
 variable {α : Type*} [TopologicalSpace α]
 
