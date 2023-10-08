@@ -771,10 +771,8 @@ theorem map_inf_le : (N ⊓ N₂).map f ≤ N.map f ⊓ N₂.map f :=
   Set.image_inter_subset f N N₂
 
 theorem map_inf (hf : Function.Injective f) :
-    (N ⊓ N₂).map f = N.map f ⊓ N₂.map f := by
-  refine le_antisymm map_inf_le fun m' ⟨⟨m, hm₁, hm₂⟩, ⟨n, hn₁, hn₂⟩⟩ ↦ ⟨m, ⟨hm₁, ?_⟩, hm₂⟩
-  have hmn : m = n := by rw [← hn₂] at hm₂; exact hf hm₂
-  rwa [hmn]
+    (N ⊓ N₂).map f = N.map f ⊓ N₂.map f :=
+  SetLike.coe_injective <| Set.image_inter hf
 
 @[simp]
 theorem map_sup : (N ⊔ N₂).map f = N.map f ⊔ N₂.map f :=

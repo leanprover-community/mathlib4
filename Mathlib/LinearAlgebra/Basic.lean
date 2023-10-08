@@ -616,9 +616,13 @@ theorem map_add_le (f g : M →ₛₗ[σ₁₂] M₂) : map (f + g) p ≤ map f 
   exact add_mem_sup (mem_map_of_mem hm) (mem_map_of_mem hm)
 #align submodule.map_add_le Submodule.map_add_le
 
-lemma map_inf_le (f : F) {p q : Submodule R M} :
+theorem map_inf_le (f : F) {p q : Submodule R M} :
     (p ⊓ q).map f ≤ p.map f ⊓ q.map f :=
   image_inter_subset f p q
+
+theorem map_inf (f : F) {p q : Submodule R M} (hf : Injective f) :
+    (p ⊓ q).map f = p.map f ⊓ q.map f :=
+  SetLike.coe_injective <| Set.image_inter hf
 
 theorem range_map_nonempty (N : Submodule R M) :
     (Set.range (fun ϕ => Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
