@@ -102,6 +102,17 @@ protected abbrev Set.EquicontinuousAt (H : Set <| X → α) (x₀ : X) : Prop :=
 #align set.equicontinuous_at Set.EquicontinuousAt
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
+*equicontinuous at `x₀ : X`* if, for all entourage `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
+such that, for all `x ∈ V` and for all `i : ι`, `F i x` is `U`-close to `F i x₀`. -/
+def EquicontinuousWithinAt (F : ι → X → α) (S : Set X) (x₀ : X) : Prop :=
+  ∀ U ∈ 𝓤 α, ∀ᶠ x in 𝓝[S] x₀, ∀ i, (F i x₀, F i x) ∈ U
+
+/-- We say that a set `H : Set (X → α)` of functions is equicontinuous at a point if the family
+`(↑) : ↥H → (X → α)` is equicontinuous at that point. -/
+protected abbrev Set.EquicontinuousWithinAt (H : Set <| X → α) (S : Set X) (x₀ : X) : Prop :=
+  EquicontinuousWithinAt ((↑) : H → X → α) S x₀
+
+/-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
 *equicontinuous* on all of `X` if it is equicontinuous at each point of `X`. -/
 def Equicontinuous (F : ι → X → α) : Prop :=
   ∀ x₀, EquicontinuousAt F x₀
@@ -112,6 +123,16 @@ def Equicontinuous (F : ι → X → α) : Prop :=
 protected abbrev Set.Equicontinuous (H : Set <| X → α) : Prop :=
   Equicontinuous ((↑) : H → X → α)
 #align set.equicontinuous Set.Equicontinuous
+
+/-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
+*equicontinuous* on all of `X` if it is equicontinuous at each point of `X`. -/
+def EquicontinuousOn (F : ι → X → α) (S : Set X) : Prop :=
+  ∀ x₀ ∈ S, EquicontinuousWithinAt F S x₀
+
+/-- We say that a set `H : Set (X → α)` of functions is equicontinuous if the family
+`(↑) : ↥H → (X → α)` is equicontinuous. -/
+protected abbrev Set.EquicontinuousOn (H : Set <| X → α) (S : Set X) : Prop :=
+  EquicontinuousOn ((↑) : H → X → α) S
 
 /-- A family `F : ι → β → α` of functions between uniform spaces is *uniformly equicontinuous* if,
 for all entourage `U ∈ 𝓤 α`, there is an entourage `V ∈ 𝓤 β` such that, whenever `x` and `y` are
@@ -126,12 +147,44 @@ protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
   UniformEquicontinuous ((↑) : H → β → α)
 #align set.uniform_equicontinuous Set.UniformEquicontinuous
 
+/-- A family `F : ι → β → α` of functions between uniform spaces is *uniformly equicontinuous* if,
+for all entourage `U ∈ 𝓤 α`, there is an entourage `V ∈ 𝓤 β` such that, whenever `x` and `y` are
+`V`-close, we have that, *for all `i : ι`*, `F i x` is `U`-close to `F i x₀`. -/
+def UniformEquicontinuousOn (F : ι → β → α) (S : Set β) : Prop :=
+  ∀ U ∈ 𝓤 α, ∀ᶠ xy : β × β in 𝓤 β ⊓ 𝓟 (S ×ˢ S), ∀ i, (F i xy.1, F i xy.2) ∈ U
+
+/-- We say that a set `H : Set (X → α)` of functions is uniformly equicontinuous if the family
+`(↑) : ↥H → (X → α)` is uniformly equicontinuous. -/
+protected abbrev Set.UniformEquicontinuousOn (H : Set <| β → α) (S : Set β) : Prop :=
+  UniformEquicontinuousOn ((↑) : H → β → α) S
+
+lemma EquicontinuousAt.equicontinuousWithinAt {F : ι → X → α} {x₀ : X} (H : EquicontinuousAt F x₀)
+    (S : Set X) : EquicontinuousWithinAt F S x₀ :=
+  fun U hU ↦ (H U hU).filter_mono inf_le_left
+
+lemma EquicontinuousWithinAt.mono {F : ι → X → α} {x₀ : X} {S T : Set X}
+    (hST : S ⊆ T) (H : EquicontinuousWithinAt F T x₀) : EquicontinuousWithinAt F S x₀ :=
+  fun U hU ↦ (H U hU).filter_mono <| nhdsWithin_mono x₀ hST
+
+lemma equicontinuousWithinAt_univ (F : ι → X → α) (x₀ : X) :
+    EquicontinuousWithinAt F univ x₀ ↔ EquicontinuousAt F x₀ := by
+  rw [EquicontinuousWithinAt, EquicontinuousAt, nhdsWithin_univ]
+
+lemma equicontinuousAt_restrict_iff (F : ι → X → α) {S : Set X} (x₀ : S) :
+    EquicontinuousAt (S.restrict ∘ F) x₀ ↔ EquicontinuousWithinAt F S x₀ := by
+  sorry
+
 /-!
 ### Empty index type
 -/
 
 @[simp]
 lemma equicontinuousAt_empty [h : IsEmpty ι] (F : ι → X → α) (x₀ : X) :
+    EquicontinuousAt F x₀ :=
+  fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
+
+@[simp]
+lemma equicontinuousWithinAt_empty [h : IsEmpty ι] (F : ι → X → α) (x₀ : X) :
     EquicontinuousAt F x₀ :=
   fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
 
