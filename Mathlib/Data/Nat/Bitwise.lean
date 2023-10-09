@@ -341,63 +341,9 @@ theorem bitwise'_comm {f} (hf : ∀ b b', f b b' = f b' b) (hf' : f false false 
     _ = swap (bitwise' f) := bitwise'_swap hf'
 #align nat.bitwise_comm Nat.bitwise'_comm
 
-lemma bitwise'_bit' {f : Bool → Bool → Bool} (a m b n)
-    (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
-    bitwise' f (bit a m) (bit b n) = bit (f a b) (bitwise' f m n) := by
-  unfold bitwise'
-  rw [binaryRec_eq', binaryRec_eq']
-  · apply Or.inr hbn
-  · apply Or.inr ham
-
-lemma div2_succ_succ (x) :
-    div2 (x + 2) = (div2 x) + 1 := by
-  simp only [div2_succ, bodd_succ, Bool.cond_not]
-  cases bodd x <;> simp only [cond_false, cond_true]
-
-lemma div2_eq_zero {x : ℕ} :
-    div2 x = 0 → x = 0 ∨ x = 1 := by
-  intro h
-  rcases x with ⟨⟩ | ⟨⟩ | x
-  next => apply Or.inl rfl
-  next => apply Or.inr rfl
-  next =>
-    rw[div2_succ_succ] at h
-    contradiction
-
-lemma bitwise_eq_bitwise' (f) : bitwise f = bitwise' f := by
-  funext x y
-  have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
-  induction' k using Nat.strongInductionOn with k ih generalizing x y
-  by_cases h1 : x = 0 <;> by_cases h2 : y = 0
-  · unfold bitwise
-    simp [h1, h2]
-  · unfold bitwise bitwise'; simp[h1]; aesop
-  · unfold bitwise bitwise' binaryRec
-    simp only [h1, h2, if_true, if_false, dite_false]
-    split_ifs with hx <;>
-    simp [hx, bit_decomp]
-  · unfold bitwise
-    rw [mod_two_of_bodd, mod_two_of_bodd, if_neg h1, if_neg h2]
-    conv_rhs => rw [← bit_decomp x, ← bit_decomp y]
-    rw [bitwise'_bit']
-    · cases' hx: bodd x
-      <;> cases' hy: bodd y
-      <;> ring_nf
-      <;> rw [ih (div2 x + div2 y)
-              (by rw [hk, div2_val, div2_val]
-                  simp[add_lt_add (bitwise_rec_lemma h1) (bitwise_rec_lemma h2)])
-              (x/2) (y/2) (by simp[div2_val])]
-      <;> simp [h1, h2, hx, hy, bit_val, div2_val, mul_comm, add_comm]
-      <;> aesop
-    all_goals
-      intro h
-      rcases div2_eq_zero h with ⟨⟩|⟨⟨⟩⟩;
-      · contradiction
-      · rfl
-
 theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
     bitwise f x y < 2 ^ n := by
-  rw [bitwise_eq_bitwise' f]
+  rw [←bitwise'_eq_bitwise f]
   apply lt_of_testBit n (by simp [testBit_bitwise' h x y n,
                                   testBit_eq_false_of_lt hx,
                                   testBit_eq_false_of_lt hy, h])
