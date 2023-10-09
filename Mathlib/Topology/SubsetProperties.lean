@@ -882,10 +882,9 @@ theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
 /-- If `f : α → β` is an `Embedding` (or more generally, an `Inducing` map, see
 `Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
 `s` is compact. -/
-theorem Embedding.isCompact_iff_isCompact_image {f : α → β} (hf : Embedding f) :
-    IsCompact s ↔ IsCompact (f '' s) :=
-  hf.toInducing.isCompact_iff.symm
-#align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff_isCompact_image
+theorem Embedding.isCompact_image_iff {f : α → β} (hf : Embedding f) :
+    IsCompact (f '' s) ↔ IsCompact s := hf.toInducing.isCompact_iff
+#align embedding.is_compact_iff_is_compact_image Embedding.isCompact_image_iff
 
 /-- The preimage of a compact set under an inducing map is a compact set. -/
 theorem Inducing.isCompact_preimage {f : α → β} (hf : Inducing f) (hf' : IsClosed (range f))
@@ -907,13 +906,14 @@ theorem ClosedEmbedding.tendsto_cocompact {f : α → β} (hf : ClosedEmbedding 
     (hf.isCompact_preimage hK).compl_mem_cocompact
 #align closed_embedding.tendsto_cocompact ClosedEmbedding.tendsto_cocompact
 
-theorem isCompact_iff_isCompact_in_subtype {p : α → Prop} {s : Set { a // p a }} :
-    IsCompact s ↔ IsCompact (((↑) : _ → α) '' s) :=
-  embedding_subtype_val.isCompact_iff_isCompact_image
-#align is_compact_iff_is_compact_in_subtype isCompact_iff_isCompact_in_subtype
+/-- Sets of subtype are compact iff the image under a coercion is. -/
+theorem isCompact_subtype {p : α → Prop} {s : Set { a // p a }} :
+    IsCompact s ↔ IsCompact ((↑) '' s : Set α) :=
+  embedding_subtype_val.isCompact_image_iff.symm
+#align is_compact_iff_is_compact_in_subtype isCompact_subtype
 
 theorem isCompact_iff_isCompact_univ {s : Set α} : IsCompact s ↔ IsCompact (univ : Set s) := by
-  rw [isCompact_iff_isCompact_in_subtype, image_univ, Subtype.range_coe]
+  rw [isCompact_subtype, image_univ, Subtype.range_coe]
 #align is_compact_iff_is_compact_univ isCompact_iff_isCompact_univ
 
 theorem isCompact_iff_compactSpace {s : Set α} : IsCompact s ↔ CompactSpace s :=
