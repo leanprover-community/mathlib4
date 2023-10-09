@@ -25,6 +25,45 @@ end HomologicalComplex
 
 namespace CochainComplex
 
+variable {C : Type*} [Category C] [Abelian C] (T : Pretriangulated.Triangle (CochainComplex C ℤ))
+  [HasDerivedCategory C]
+  (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang _)
+
+open HomologicalComplex
+
+lemma homologyMap_eq_zero_of_Q_map_eq_zero {K L : CochainComplex C ℤ} (f : K ⟶ L)
+    (hf : DerivedCategory.Q.map f = 0) (n : ℤ) : homologyMap f n = 0 := by
+  have eq := NatIso.naturality_2 (DerivedCategory.homologyFunctorFactors C n).symm f
+  dsimp at eq
+  rw [← eq, hf]
+  simp only [Functor.map_zero, zero_comp, comp_zero]
+
+lemma homology_δ_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    T.obj₃.homology n₀ ⟶ T.obj₁.homology n₁ :=
+  homologyMap T.mor₃ n₀ ≫
+    ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso 1 n₀ n₁ (by linarith)).hom.app T.obj₁
+
+lemma homologyMap_comp₁₂_eq_zero_of_distinguished (n : ℤ) :
+    homologyMap T.mor₁ n ≫ homologyMap T.mor₂ n = 0 := by
+  have := hT
+  rw [← homologyMap_comp]
+  apply homologyMap_eq_zero_of_Q_map_eq_zero
+  rw [Functor.map_comp]
+  exact Pretriangulated.comp_dist_triangle_mor_zero₁₂ _ hT
+
+lemma homology_exact₂_of_distinguished (n : ℤ) :
+    (ShortComplex.mk (homologyMap T.mor₁ n) (homologyMap T.mor₂ n)
+      (homologyMap_comp₁₂_eq_zero_of_distinguished T hT n)).Exact := by
+  let e := DerivedCategory.homologyFunctorFactors C n
+  refine' ShortComplex.exact_of_iso _ (DerivedCategory.HomologySequence.exact₂ _ hT n)
+  exact ShortComplex.isoMk
+    (e.app T.obj₁) (e.app T.obj₂) (e.app T.obj₃)
+    (e.hom.naturality T.mor₁).symm (e.hom.naturality T.mor₂).symm
+
+end CochainComplex
+
+namespace CochainComplex
+
 variable {C ι : Type*} [Category C] [Preadditive C] [HasZeroObject C] [DecidableEq ι]
   {c : ComplexShape ι} (n₀ n₁ : ι) (h : c.Rel n₀ n₁) (h' : n₁ ≠ n₀) {X₀ X₁ : C} (f : X₀ ⟶ X₁)
 
@@ -227,12 +266,12 @@ lemma id (p q : ℤ) (hpq : p + (-1) = q) : (fst f).f p ≫ (inl f).v p p (add_z
     rw [← add_comp, ← MappingCone.id_X]
     simp
 
-noncomputable def δ : L ⟶ (mappingCocone f)⟦(1 : ℤ)⟧ :=
+noncomputable def triangleδ : L ⟶ (mappingCocone f)⟦(1 : ℤ)⟧ :=
   MappingCone.inr f ≫ (shiftEquiv (CochainComplex C ℤ) (1 : ℤ)).counitIso.inv.app _
 
 @[simps!]
 noncomputable def triangle : Pretriangulated.Triangle (CochainComplex C ℤ) :=
-  Pretriangulated.Triangle.mk (fst f) f (δ f)
+  Pretriangulated.Triangle.mk (fst f) f (triangleδ f)
 
 noncomputable def triangleIso : triangle f ≅ (MappingCone.triangle f).invRotate := by
   refine' Pretriangulated.Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _ _
@@ -252,9 +291,29 @@ noncomputable def triangleIso : triangle f ≅ (MappingCone.triangle f).invRotat
   · dsimp
     simp only [comp_id, id_comp]
   · dsimp
-    simp only [triangle, δ, shiftEquiv'_inverse, shiftEquiv'_functor, shiftEquiv'_counitIso,
+    simp only [triangle, triangleδ, shiftEquiv'_inverse, shiftEquiv'_functor, shiftEquiv'_counitIso,
       Pretriangulated.Triangle.mk_obj₁, Pretriangulated.Triangle.mk_mor₃, CategoryTheory.Functor.map_id, comp_id,
       id_comp]
+
+variable [HasDerivedCategory C]
+
+lemma Q_map_triangle_distinguished : DerivedCategory.Q.mapTriangle.obj (triangle f) ∈ distTriang _ := by
+  refine' Pretriangulated.isomorphic_distinguished _ _ _
+    ((DerivedCategory.Q.mapTriangle.mapIso (triangleIso f)) ≪≫
+      (DerivedCategory.Q.mapTriangleInvRotateIso.app (MappingCone.triangle f)).symm)
+  refine' Pretriangulated.inv_rot_of_dist_triangle _ _
+  rw [DerivedCategory.mem_distTriang_iff]
+  exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
+
+open HomologicalComplex
+
+@[reassoc (attr := simp)]
+lemma homologyMap_fst_comp (n : ℤ) : homologyMap (fst f) n ≫ homologyMap f n = 0 :=
+  homologyMap_comp₁₂_eq_zero_of_distinguished _ (Q_map_triangle_distinguished f) n
+
+lemma homology_exact₂ (n : ℤ) :
+    (ShortComplex.mk (homologyMap (fst f) n) (homologyMap f n) (by simp)).Exact :=
+  homology_exact₂_of_distinguished _ (Q_map_triangle_distinguished f) n
 
 end MappingCocone
 
