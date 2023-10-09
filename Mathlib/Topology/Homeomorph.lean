@@ -269,8 +269,14 @@ theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹'
 /-- If `h : α → β` is a homeomorphism, `s` is σ-compact iff `h(s)` is. -/
 @[simp]
 theorem isSigmaCompact_image {s : Set α} (h : α ≃ₜ β) :
-    IsSigmaCompact (↑h '' s) ↔ IsSigmaCompact s :=
+    IsSigmaCompact (h '' s) ↔ IsSigmaCompact s :=
   h.embedding.isSigmaCompact_image_iff
+
+/-- If `h : α → β` is a homeomorphism, `h⁻¹(s)` is σ-compact iff `s` is. -/
+@[simp]
+theorem isSigmaCompact_preimage {s : Set β} (h : α ≃ₜ β) :
+    IsSigmaCompact (h ⁻¹' s) ↔ IsSigmaCompact s := by
+  rw [← image_symm]; exact h.symm.isSigmaCompact_image
 
 @[simp]
 theorem isPreconnected_image {s : Set α} (h : α ≃ₜ β) :
