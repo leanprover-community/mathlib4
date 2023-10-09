@@ -32,7 +32,7 @@ open Set Filter
 
 open Topology
 
-variable {X : Type*} {Y : Type*} {γ : Type*} {δ : Type*}
+variable {X : Type*} {Y : Type*} {Z : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
@@ -49,7 +49,7 @@ infixl:25 " ≃ₜ " => Homeomorph
 
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace γ] [TopologicalSpace δ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace δ]
 
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -110,18 +110,18 @@ protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
 #align homeomorph.refl Homeomorph.refl
 
 /-- Composition of two homeomorphisms. -/
-protected def trans (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ γ) : X ≃ₜ γ where
+protected def trans (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) : X ≃ₜ Z where
   continuous_toFun := h₂.continuous_toFun.comp h₁.continuous_toFun
   continuous_invFun := h₁.continuous_invFun.comp h₂.continuous_invFun
   toEquiv := Equiv.trans h₁.toEquiv h₂.toEquiv
 #align homeomorph.trans Homeomorph.trans
 
 @[simp]
-theorem trans_apply (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ γ) (a : X) : h₁.trans h₂ a = h₂ (h₁ a) :=
+theorem trans_apply (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) (a : X) : h₁.trans h₂ a = h₂ (h₁ a) :=
   rfl
 #align homeomorph.trans_apply Homeomorph.trans_apply
 
-@[simp] theorem symm_trans_apply (f : X ≃ₜ Y) (g : Y ≃ₜ γ) (a : γ) :
+@[simp] theorem symm_trans_apply (f : X ≃ₜ Y) (g : Y ≃ₜ Z) (a : Z) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
 
 @[simp]
@@ -437,38 +437,38 @@ def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpe
 #align homeomorph.homeomorph_of_continuous_open Homeomorph.homeomorphOfContinuousOpen
 
 @[simp]
-theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : γ → X) (s : Set γ) :
+theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
     ContinuousOn (h ∘ f) s ↔ ContinuousOn f s :=
   h.inducing.continuousOn_iff.symm
 #align homeomorph.comp_continuous_on_iff Homeomorph.comp_continuousOn_iff
 
 @[simp]
-theorem comp_continuous_iff (h : X ≃ₜ Y) {f : γ → X} : Continuous (h ∘ f) ↔ Continuous f :=
+theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f) ↔ Continuous f :=
   h.inducing.continuous_iff.symm
 #align homeomorph.comp_continuous_iff Homeomorph.comp_continuous_iff
 
 @[simp]
-theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → γ} : Continuous (f ∘ h) ↔ Continuous f :=
+theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
   h.quotientMap.continuous_iff.symm
 #align homeomorph.comp_continuous_iff' Homeomorph.comp_continuous_iff'
 
-theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : γ → X) (x : γ) :
+theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (x : Z) :
     ContinuousAt (h ∘ f) x ↔ ContinuousAt f x :=
   h.inducing.continuousAt_iff.symm
 #align homeomorph.comp_continuous_at_iff Homeomorph.comp_continuousAt_iff
 
-theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → γ) (x : X) :
+theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
     ContinuousAt (f ∘ h) x ↔ ContinuousAt f (h x) :=
   h.inducing.continuousAt_iff' (by simp)
 #align homeomorph.comp_continuous_at_iff' Homeomorph.comp_continuousAt_iff'
 
-theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : γ → X) (s : Set γ) (x : γ) :
+theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (x : Z) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (h ∘ f) s x :=
   h.inducing.continuousWithinAt_iff
 #align homeomorph.comp_continuous_within_at_iff Homeomorph.comp_continuousWithinAt_iff
 
 @[simp]
-theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : γ → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
+theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
   rw [← Function.comp.left_id f, ← h.symm_comp_self, Function.comp.assoc]
@@ -476,7 +476,7 @@ theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : γ → X} : IsOpenMap (h ∘ f)
 #align homeomorph.comp_is_open_map_iff Homeomorph.comp_isOpenMap_iff
 
 @[simp]
-theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → γ} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
+theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
   rw [← Function.comp.right_id f, ← h.self_comp_symm, ← Function.comp.assoc]
@@ -491,33 +491,33 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
 #align homeomorph.set_congr Homeomorph.setCongr
 
 /-- Sum of two homeomorphisms. -/
-def sumCongr (h₁ : X ≃ₜ Y) (h₂ : γ ≃ₜ δ) : Sum X γ ≃ₜ Sum Y δ where
+def sumCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) : Sum X Z ≃ₜ Sum Y δ where
   continuous_toFun := h₁.continuous.sum_map h₂.continuous
   continuous_invFun := h₁.symm.continuous.sum_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
 #align homeomorph.sum_congr Homeomorph.sumCongr
 
 /-- Product of two homeomorphisms. -/
-def prodCongr (h₁ : X ≃ₜ Y) (h₂ : γ ≃ₜ δ) : X × γ ≃ₜ Y × δ where
+def prodCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) : X × Z ≃ₜ Y × δ where
   continuous_toFun := h₁.continuous.prod_map h₂.continuous
   continuous_invFun := h₁.symm.continuous.prod_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 #align homeomorph.prod_congr Homeomorph.prodCongr
 
 @[simp]
-theorem prodCongr_symm (h₁ : X ≃ₜ Y) (h₂ : γ ≃ₜ δ) :
+theorem prodCongr_symm (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) :
     (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
   rfl
 #align homeomorph.prod_congr_symm Homeomorph.prodCongr_symm
 
 @[simp]
-theorem coe_prodCongr (h₁ : X ≃ₜ Y) (h₂ : γ ≃ₜ δ) : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
+theorem coe_prodCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
   rfl
 #align homeomorph.coe_prod_congr Homeomorph.coe_prodCongr
 
 section
 
-variable (X Y γ)
+variable (X Y Z)
 
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
@@ -536,11 +536,11 @@ theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
   rfl
 #align homeomorph.coe_prod_comm Homeomorph.coe_prodComm
 
-/-- `(X × Y) × γ` is homeomorphic to `X × (Y × γ)`. -/
-def prodAssoc : (X × Y) × γ ≃ₜ X × Y × γ where
+/-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
+def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
   continuous_toFun := continuous_fst.fst.prod_mk (continuous_fst.snd.prod_mk continuous_snd)
   continuous_invFun := (continuous_fst.prod_mk continuous_snd.fst).prod_mk continuous_snd.snd
-  toEquiv := Equiv.prodAssoc X Y γ
+  toEquiv := Equiv.prodAssoc X Y Z
 #align homeomorph.prod_assoc Homeomorph.prodAssoc
 
 /-- `X × {*}` is homeomorphic to `X`. -/
@@ -615,17 +615,17 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
 
 section Distrib
 
-/-- `(X ⊕ Y) × γ` is homeomorphic to `X × γ ⊕ Y × γ`. -/
-def sumProdDistrib : Sum X Y × γ ≃ₜ Sum (X × γ) (Y × γ) :=
+/-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
+def sumProdDistrib : Sum X Y × Z ≃ₜ Sum (X × Z) (Y × Z) :=
   Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y γ).symm
+    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
         ((continuous_inl.prod_map continuous_id).sum_elim
           (continuous_inr.prod_map continuous_id)) <|
       (isOpenMap_inl.prod IsOpenMap.id).sum_elim (isOpenMap_inr.prod IsOpenMap.id)
 #align homeomorph.sum_prod_distrib Homeomorph.sumProdDistrib
 
-/-- `X × (Y ⊕ γ)` is homeomorphic to `X × Y ⊕ X × γ`. -/
-def prodSumDistrib : X × Sum Y γ ≃ₜ Sum (X × Y) (X × γ) :=
+/-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
+def prodSumDistrib : X × Sum Y Z ≃ₜ Sum (X × Y) (X × Z) :=
   (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
 #align homeomorph.prod_sum_distrib Homeomorph.prodSumDistrib
 
@@ -742,7 +742,7 @@ end
 end Homeomorph
 
 namespace Equiv
-variable {X Y γ : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace γ]
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- An equiv between topological spaces respecting openness is a homeomorphism. -/
 @[simps toEquiv]
@@ -760,7 +760,7 @@ lemma toHomeomorph_apply (e : X ≃ Y) (he) (a : X) : e.toHomeomorph he a = e a 
 @[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
   (e.toHomeomorph he).symm = e.symm.toHomeomorph λ s ↦ by convert (he _).symm; simp := rfl
 
-lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ γ) (he hf) :
+lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
     (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
