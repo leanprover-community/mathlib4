@@ -50,7 +50,7 @@ inductive ContextFreeRule.RewritesTo {N : Type _} (r : ContextFreeRule T N) :
   | cons (x : Symbol T N) {s₁ s₂ : List (Symbol T N)} (hrs : RewritesTo r s₁ s₂) :
       r.RewritesTo (x :: s₁) (x :: s₂)
 
-lemma ContextFreeRule.RewritesTo.toParts {N : Type _} {r : ContextFreeRule T N}
+lemma ContextFreeRule.RewritesTo.exists_parts {N : Type _} {r : ContextFreeRule T N}
     {u v : List (Symbol T N)} (hyp : r.RewritesTo u v) :
     ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
       u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
