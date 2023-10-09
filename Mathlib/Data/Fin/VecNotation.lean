@@ -67,7 +67,7 @@ def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
 For instance, `![a, b, c] : Fin 3` is syntax for `vecCons a (vecCons b (vecCons c vecEmpty))`.
 
 Note that this should not be used as syntax for `Matrix` as it generates a term with the wrong type.
-The `!![a, b; c, d]` syntax should be used instead (from `Mathlib/Data/Matrix/Notation`).
+The `!![a, b; c, d]` syntax (provided by `Matrix.matrixNotation`) should be used instead.
 -/
 syntax (name := vecNotation) "![" term,* "]" : term
 

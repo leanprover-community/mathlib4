@@ -83,7 +83,7 @@ This notation implements some special cases:
 * `![,,]`, with `n` `,`s, is a term of type `Matrix (Fin 0) (Fin n) α`
 * `![]` is the 0×0 matrix
 
-Note that vector notation is provided elsewhere, as `![a, b, c]`.
+Note that vector notation is provided elsewhere (by `Matrix.vecNotation`) as `![a, b, c]`.
 Under the hood, `!![a, b, c; d e f]` is syntax for `Matrix.of ![![a, b, c], ![d, e, f]]`.
 -/
 syntax (name := matrixNotation)
