@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Artinian
 
 #align_import algebra.lie.submodule from "leanprover-community/mathlib"@"9822b65bfc4ac74537d77ae318d27df1df662471"
 
@@ -528,15 +529,22 @@ instance : IsModularLattice (LieSubmodule R L M) where
 
 variable (R L M)
 
+/-- The natural functor that forgets the action of `L` as an order embedding. -/
+@[simps] def toSubmodule_orderEmbedding : LieSubmodule R L M ↪o Submodule R M :=
+  { toFun := (↑)
+    inj' := coeSubmodule_injective
+    map_rel_iff' := Iff.rfl }
+
 theorem wellFounded_of_noetherian [IsNoetherian R M] :
     WellFounded ((· > ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
-  let f :
-    ((· > ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) →r
-      ((· > ·) : Submodule R M → Submodule R M → Prop) :=
-    { toFun := (↑)
-      map_rel' := fun h ↦ h }
-  RelHomClass.wellFounded f (isNoetherian_iff_wellFounded.mp inferInstance)
+  RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding <|
+    isNoetherian_iff_wellFounded.mp inferInstance
 #align lie_submodule.well_founded_of_noetherian LieSubmodule.wellFounded_of_noetherian
+
+theorem wellFounded_of_isArtinian [IsArtinian R M] :
+    WellFounded ((· < ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
+  RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding <|
+    IsArtinian.wellFounded_submodule_lt R M
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
@@ -724,6 +732,8 @@ def map : LieSubmodule R L M' :=
       · norm_cast at hfm; simp [hfm] }
 #align lie_submodule.map LieSubmodule.map
 
+@[simp] theorem coe_map : (N.map f : Set M') = f '' N := rfl
+
 @[simp]
 theorem coeSubmodule_map : (N.map f : Submodule R M') = (N : Submodule R M).map (f : M →ₗ[R] M') :=
   rfl
@@ -757,15 +767,35 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_
 
 variable {f}
 
+theorem map_inf_le : (N ⊓ N₂).map f ≤ N.map f ⊓ N₂.map f :=
+  Set.image_inter_subset f N N₂
+
+theorem map_inf (hf : Function.Injective f) :
+    (N ⊓ N₂).map f = N.map f ⊓ N₂.map f :=
+  SetLike.coe_injective <| Set.image_inter hf
+
 @[simp]
 theorem map_sup : (N ⊔ N₂).map f = N.map f ⊔ N₂.map f :=
   (gc_map_comap f).l_sup
 #align lie_submodule.map_sup LieSubmodule.map_sup
 
 @[simp]
+theorem comap_inf {N₂' : LieSubmodule R L M'} :
+    (N' ⊓ N₂').comap f = N'.comap f ⊓ N₂'.comap f :=
+  rfl
+
+@[simp]
+theorem map_iSup {ι : Type*} (N : ι → LieSubmodule R L M) :
+    (⨆ i, N i).map f = ⨆ i, (N i).map f :=
+  (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
+
+@[simp]
 theorem mem_map (m' : M') : m' ∈ N.map f ↔ ∃ m, m ∈ N ∧ f m = m' :=
   Submodule.mem_map
 #align lie_submodule.mem_map LieSubmodule.mem_map
+
+theorem mem_map_of_mem {m : M} (h : m ∈ N) : f m ∈ N.map f :=
+  Set.mem_image_of_mem _ h
 
 @[simp]
 theorem mem_comap {m : M} : m ∈ comap f N' ↔ f m ∈ N' :=
@@ -782,6 +812,56 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
     LieSubmodule.incl_coe, LieSubmodule.bot_coeSubmodule, ← Submodule.disjoint_iff_comap_eq_bot,
     disjoint_iff, inf_coe_toSubmodule]
 #align lie_submodule.comap_incl_eq_bot LieSubmodule.comap_incl_eq_bot
+
+@[mono]
+theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
+  Set.image_subset _ h
+
+theorem map_comp
+    {M'' : Type*} [AddCommGroup M''] [Module R M''] [LieRingModule L M''] {g : M' →ₗ⁅R,L⁆ M''} :
+    N.map (g.comp f) = (N.map f).map g :=
+  SetLike.coe_injective <| by
+    simp only [← Set.image_comp, coe_map, LinearMap.coe_comp, LieModuleHom.coe_comp]
+
+@[simp]
+theorem map_id : N.map LieModuleHom.id = N := by ext; simp
+
+@[simp] theorem map_bot :
+    (⊥ : LieSubmodule R L M).map f = ⊥ := by
+  ext m; simp [eq_comm]
+
+lemma map_le_map_iff (hf : Function.Injective f) :
+    N.map f ≤ N₂.map f ↔ N ≤ N₂ :=
+  Set.image_subset_image_iff hf
+
+lemma map_injective_of_injective (hf : Function.Injective f) :
+    Function.Injective (map f) := fun {N N'} h ↦
+  SetLike.coe_injective <| hf.image_injective <| by simp only [← coe_map, h]
+
+/-- An injective morphism of Lie modules embeds the lattice of submodules of the domain into that
+of the target. -/
+@[simps] def mapOrderEmbedding {f : M →ₗ⁅R,L⁆ M'} (hf : Function.Injective f) :
+  LieSubmodule R L M ↪o LieSubmodule R L M' where
+    toFun := LieSubmodule.map f
+    inj' := map_injective_of_injective hf
+    map_rel_iff' := Set.image_subset_image_iff hf
+
+variable (N) in
+/-- For an injective morphism of Lie modules, any Lie submodule is equivalent to its image. -/
+noncomputable def equivMapOfInjective (hf : Function.Injective f) :
+    N ≃ₗ⁅R,L⁆ N.map f :=
+  { Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N with
+    map_lie' := by rintro x ⟨m, hm : m ∈ N⟩; ext; exact f.map_lie x m }
+
+/-- An equivalence of Lie modules yields an order-preserving equivalence of their lattices of Lie
+Submodules. -/
+@[simps] def orderIsoMapComap (e : M ≃ₗ⁅R,L⁆ M') :
+    LieSubmodule R L M ≃o LieSubmodule R L M' where
+  toFun := map e
+  invFun := comap e
+  left_inv := fun N ↦ by ext; simp
+  right_inv := fun N ↦ by ext; simp [e.apply_eq_iff_eq_symm_apply]
+  map_rel_iff' := fun {N N'} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
 
@@ -1239,8 +1319,12 @@ theorem mem_range (n : N) : n ∈ f.range ↔ ∃ m, f m = n :=
   Iff.rfl
 #align lie_module_hom.mem_range LieModuleHom.mem_range
 
+@[simp]
 theorem map_top : LieSubmodule.map f ⊤ = f.range := by ext; simp [LieSubmodule.mem_map]
 #align lie_module_hom.map_top LieModuleHom.map_top
+
+theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
+  rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_iff_surjective]
 
 end LieModuleHom
 
@@ -1265,6 +1349,29 @@ theorem range_incl : N.incl.range = N := by simp [← LieSubmodule.coe_toSubmodu
 @[simp]
 theorem comap_incl_self : comap N.incl N = ⊤ := by simp [← LieSubmodule.coe_toSubmodule_eq_iff]
 #align lie_submodule.comap_incl_self LieSubmodule.comap_incl_self
+
+theorem map_incl_top : (⊤ : LieSubmodule R L N).map N.incl = N := by simp
+
+variable {N}
+
+@[simp]
+lemma map_le_range {M' : Type*}
+    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (f : M →ₗ⁅R,L⁆ M') :
+    N.map f ≤ f.range := by
+  rw [← LieModuleHom.map_top]
+  exact LieSubmodule.map_mono le_top
+
+@[simp]
+lemma map_incl_lt_iff_lt_top {N' : LieSubmodule R L N} :
+    N'.map (LieSubmodule.incl N) < N ↔ N' < ⊤ := by
+  convert (LieSubmodule.mapOrderEmbedding (f := N.incl) Subtype.coe_injective).lt_iff_lt
+  simp
+
+@[simp]
+lemma map_incl_le {N' : LieSubmodule R L N} :
+    N'.map N.incl ≤ N := by
+  conv_rhs => rw [← N.map_incl_top]
+  exact LieSubmodule.map_mono le_top
 
 end LieSubmodule
 
@@ -1300,5 +1407,23 @@ def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl
 #align lie_ideal.top_equiv_apply LieIdeal.topEquiv_apply
+
+variable (R L)
+variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+
+/-- The natural equivalence between the 'top' Lie submodule and the enclosing Lie module. -/
+def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
+  { LinearEquiv.ofTop ⊤ rfl with
+    map_lie' := rfl }
+
+@[simp] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+    LieModuleEquiv.ofTop R L M x = x :=
+  rfl
+
+@[simp] lemma LieModuleEquiv.range_coe {M' : Type*}
+    [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (e : M ≃ₗ⁅R,L⁆ M') :
+    LieModuleHom.range (e : M →ₗ⁅R,L⁆ M') = ⊤ := by
+  rw [LieModuleHom.range_eq_top]
+  exact e.surjective
 
 end TopEquiv
