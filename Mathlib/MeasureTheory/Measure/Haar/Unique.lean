@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Group.Integral
 
 /-!
 # Uniqueness of Haar measure, again
@@ -159,49 +160,80 @@ lemma integral_integral_swap_of_hasCompactSupport
 
 end
 
-open Function
+open Function MeasureTheory Measure
 
 variable {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
-  [T2Space G] [MeasurableSpace G] [BorelSpace G]
+  [MeasurableSpace G] [BorelSpace G]
 
 lemma boulb {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
+    [IsMulLeftInvariant μ] [IsMulRightInvariant ν]
     {f g : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f)
     (hg : Continuous g) (h'g : HasCompactSupport g) :
     let D : G → ℝ := fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂ν
-    ∫ x, f x ∂μ = (∫ y, f y / D y ∂ν) * ∫ x, g x ∂μ := by
-  set D : G → ℝ := fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂ν with D_def
+    ∫ x, f x ∂μ = (∫ y, f y * (D y) ⁻¹ ∂ν) * ∫ x, g x ∂μ := by
+  let D : G → ℝ := fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂ν
   have D_cont : Continuous D := sorry
   have D_pos : ∀ x, 0 < D x := sorry
-  have :
-  ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
-    apply integral_integral_swap_of_hasCompactSupport
-    · apply Continuous.mul
-      · exact (hf.comp continuous_fst).mul
-          ((D_cont.comp continuous_fst).inv₀ (fun x ↦ (D_pos _).ne'))
-      · exact hg.comp (continuous_snd.inv.mul continuous_fst)
-    · let K := tsupport f
-      have K_comp : IsCompact K := h'f
-      let L := tsupport g
-      have L_comp : IsCompact L := h'g
-      let M := (fun (p : G × G) ↦ p.2⁻¹ * p.1) '' (K ×ˢ L)
-      have M_comp : IsCompact M :=
-        (K_comp.prod L_comp).image (continuous_snd.inv.mul continuous_fst)
-      have : support (fun (p : G × G) ↦ f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1)) ⊆ K ×ˢ M := by
-        apply support_subset_iff'.2
-        rintro ⟨x, y⟩ hxy
-        by_cases H : x ∈ K; swap
-        · simp [image_eq_zero_of_nmem_tsupport H]
-        have : g (y⁻¹ * x) = 0 := by
-          apply image_eq_zero_of_nmem_tsupport
-          contrapose! hxy
-
-
-#exit
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
     congr with x; rw [mul_assoc, inv_mul_cancel (D_pos x).ne', mul_one]
   _ = ∫ x, (∫ y, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂ν) ∂μ := by simp_rw [integral_mul_left]
   _ = ∫ y, (∫ x, f x * (D x)⁻¹ * g (y⁻¹ * x) ∂μ) ∂ν := by
-      apply integral_prod
-      sorry
-  _ = (∫ y, f y / D y ∂ν) * ∫ x, g x ∂μ := sorry
+      apply integral_integral_swap_of_hasCompactSupport
+      · apply Continuous.mul
+        · exact (hf.comp continuous_fst).mul
+            ((D_cont.comp continuous_fst).inv₀ (fun x ↦ (D_pos _).ne'))
+        · exact hg.comp (continuous_snd.inv.mul continuous_fst)
+      · let K := tsupport f
+        have K_comp : IsCompact K := h'f
+        let L := tsupport g
+        have L_comp : IsCompact L := h'g
+        let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
+        have M_comp : IsCompact M :=
+          (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
+        have : ∀ (p : G × G), p ∉ K ×ˢ M → f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1) = 0 := by
+          rintro ⟨x, y⟩ hxy
+          by_cases H : x ∈ K; swap
+          · simp [image_eq_zero_of_nmem_tsupport H]
+          have : g (y⁻¹ * x) = 0 := by
+            apply image_eq_zero_of_nmem_tsupport
+            contrapose! hxy
+            simp only [mem_prod, H, mem_image, Prod.exists, true_and]
+            exact ⟨x, y⁻¹ * x, ⟨H, hxy⟩, by group⟩
+          simp [this]
+        exact HasCompactSupport.intro' (K_comp.prod M_comp) this
+  _ = ∫ y, (∫ x, f (y * x) * (D (y * x))⁻¹ * g x ∂μ) ∂ν := by
+      congr with y
+      rw [← integral_mul_left_eq_self _ y]
+      congr with x
+      congr
+      group
+  _ = ∫ x, (∫ y, f (y * x) * (D (y * x))⁻¹ * g x ∂ν) ∂μ := by
+      apply (integral_integral_swap_of_hasCompactSupport _ _).symm
+      · apply Continuous.mul ?_ (hg.comp continuous_fst)
+        exact (hf.comp (continuous_snd.mul continuous_fst)).mul
+          ((D_cont.comp (continuous_snd.mul continuous_fst)).inv₀ (fun x ↦ (D_pos _).ne'))
+      · let K := tsupport f
+        have K_comp : IsCompact K := h'f
+        let L := tsupport g
+        have L_comp : IsCompact L := h'g
+        let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
+        have M_comp : IsCompact M :=
+          (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
+        have : ∀ (p : G × G), p ∉ L ×ˢ M → f (p.2 * p.1) * (D (p.2 * p.1))⁻¹ * g p.1 = 0 := by
+          rintro ⟨x, y⟩ hxy
+          by_cases H : x ∈ L; swap
+          · simp [image_eq_zero_of_nmem_tsupport H]
+          have : f (y * x) = 0 := by
+            apply image_eq_zero_of_nmem_tsupport
+            contrapose! hxy
+            simp only [mem_prod, H, mem_image, Prod.exists, true_and, and_true]
+            refine ⟨y * x, x, ⟨hxy, H⟩, by group⟩
+          simp [this]
+        exact HasCompactSupport.intro (L_comp.prod M_comp) this
+  _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
+      simp_rw [integral_mul_right]
+      congr with x
+      congr 1
+      conv_rhs => rw [← integral_mul_right_eq_self _ x]
+  _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
