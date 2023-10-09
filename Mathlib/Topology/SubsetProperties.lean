@@ -133,7 +133,7 @@ theorem IsCompact.of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t
   inter_eq_self_of_subset_right h ▸ hs.inter_right ht
 #align is_compact_of_is_closed_subset IsCompact.of_isClosed_subset
 
-theorem IsCompact.image_of_continuousOn {f : X → β} (hs : IsCompact s) (hf : ContinuousOn f s) :
+theorem IsCompact.image_of_continuousOn {f : X → Y} (hs : IsCompact s) (hf : ContinuousOn f s) :
     IsCompact (f '' s) := by
   intro l lne ls
   have : NeBot (l.comap f ⊓ 𝓟 s) :=
@@ -148,7 +148,7 @@ theorem IsCompact.image_of_continuousOn {f : X → β} (hs : IsCompact s) (hf : 
   exact this.neBot
 #align is_compact.image_of_continuous_on IsCompact.image_of_continuousOn
 
-theorem IsCompact.image {f : X → β} (hs : IsCompact s) (hf : Continuous f) : IsCompact (f '' s) :=
+theorem IsCompact.image {f : X → Y} (hs : IsCompact s) (hf : Continuous f) : IsCompact (f '' s) :=
   hs.image_of_continuousOn hf.continuousOn
 #align is_compact.image IsCompact.image
 
@@ -368,10 +368,10 @@ theorem isCompact_iff_finite_subfamily_closed :
   ⟨fun hs => hs.elim_finite_subfamily_closed, isCompact_of_finite_subfamily_closed⟩
 #align is_compact_iff_finite_subfamily_closed isCompact_iff_finite_subfamily_closed
 
-/-- If `s : Set (X × β)` belongs to `𝓝 x ×ˢ l` for all `x` from a compact set `K`,
+/-- If `s : Set (X × Y)` belongs to `𝓝 x ×ˢ l` for all `x` from a compact set `K`,
 then it belongs to `(𝓝ˢ K) ×ˢ l`,
 i.e., there exist an open `U ⊇ K` and `t ∈ l` such that `U ×ˢ t ⊆ s`. -/
-theorem IsCompact.mem_nhdsSet_prod_of_forall {K : Set X} {l : Filter β} {s : Set (X × β)}
+theorem IsCompact.mem_nhdsSet_prod_of_forall {K : Set X} {l : Filter Y} {s : Set (X × Y)}
     (hK : IsCompact K) (hs : ∀ x ∈ K, s ∈ 𝓝 x ×ˢ l) : s ∈ (𝓝ˢ K) ×ˢ l := by
   refine hK.induction_on (by simp) (fun t t' ht hs ↦ ?_) (fun t t' ht ht' ↦ ?_) fun x hx ↦ ?_
   · exact prod_mono (nhdsSet_mono ht) le_rfl hs
@@ -381,19 +381,19 @@ theorem IsCompact.mem_nhdsSet_prod_of_forall {K : Set X} {l : Filter β} {s : Se
     refine ⟨u, nhdsWithin_le_nhds (huo.mem_nhds hx), mem_of_superset ?_ hs⟩
     exact prod_mem_prod (huo.mem_nhdsSet.2 Subset.rfl) hv
 
-theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter β) :
+theorem IsCompact.nhdsSet_prod_eq_biSup {K : Set X} (hK : IsCompact K) (l : Filter Y) :
     (𝓝ˢ K) ×ˢ l = ⨆ x ∈ K, 𝓝 x ×ˢ l :=
   le_antisymm (fun s hs ↦ hK.mem_nhdsSet_prod_of_forall <| by simpa using hs)
     (iSup₂_le fun x hx ↦ prod_mono (nhds_le_nhdsSet hx) le_rfl)
 
-theorem IsCompact.prod_nhdsSet_eq_biSup {K : Set β} (hK : IsCompact K) (l : Filter X) :
+theorem IsCompact.prod_nhdsSet_eq_biSup {K : Set Y} (hK : IsCompact K) (l : Filter X) :
     l ×ˢ (𝓝ˢ K) = ⨆ y ∈ K, l ×ˢ 𝓝 y := by
   simp only [prod_comm (f := l), hK.nhdsSet_prod_eq_biSup, map_iSup]
 
-/-- If `s : Set (X × β)` belongs to `l ×ˢ 𝓝 y` for all `y` from a compact set `K`,
+/-- If `s : Set (X × Y)` belongs to `l ×ˢ 𝓝 y` for all `y` from a compact set `K`,
 then it belongs to `l ×ˢ (𝓝ˢ K)`,
 i.e., there exist `t ∈ l` and an open `U ⊇ K` such that `t ×ˢ U ⊆ s`. -/
-theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set β} {l : Filter X} {s : Set (X × β)}
+theorem IsCompact.mem_prod_nhdsSet_of_forall {K : Set Y} {l : Filter X} {s : Set (X × Y)}
     (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ×ˢ 𝓝 y) : s ∈ l ×ˢ 𝓝ˢ K :=
   (hK.prod_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
 
@@ -404,8 +404,8 @@ to `(x₀, y₀)`.
 Provided for backwards compatibility,
 see `IsCompact.mem_prod_nhdsSet_of_forall` for a stronger statement.
 -/
-theorem IsCompact.eventually_forall_of_forall_eventually {x₀ : X} {K : Set β} (hK : IsCompact K)
-    {P : X → β → Prop} (hP : ∀ y ∈ K, ∀ᶠ z : X × β in 𝓝 (x₀, y), P z.1 z.2) :
+theorem IsCompact.eventually_forall_of_forall_eventually {x₀ : X} {K : Set Y} (hK : IsCompact K)
+    {P : X → Y → Prop} (hP : ∀ y ∈ K, ∀ᶠ z : X × Y in 𝓝 (x₀, y), P z.1 z.2) :
     ∀ᶠ x in 𝓝 x₀, ∀ y ∈ K, P x y := by
   simp only [nhds_prod_eq, ← eventually_iSup, ← hK.prod_nhdsSet_eq_biSup] at hP
   exact hP.curry.mono fun _ h ↦ h.self_of_nhdsSet
@@ -575,7 +575,7 @@ theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
 #align nat.cocompact_eq Nat.cocompact_eq
 
-theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → β} {b}
+theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {b}
     (hf : Tendsto f (cocompact X) (𝓝 b)) (hfc : Continuous f) : IsCompact (insert b (range f)) := by
   intro l hne hle
   by_cases hb : ClusterPt b l
@@ -670,14 +670,14 @@ end Bornology
 is the product of set neighborhoods filters for `s` and `t`.
 
 For general sets, only the `≤` inequality holds, see `nhdsSet_prod_le`. -/
-theorem IsCompact.nhdsSet_prod_eq {s : Set X} {t : Set β} (hs : IsCompact s) (ht : IsCompact t) :
+theorem IsCompact.nhdsSet_prod_eq {s : Set X} {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
     𝓝ˢ (s ×ˢ t) = 𝓝ˢ s ×ˢ 𝓝ˢ t := by
   simp_rw [hs.nhdsSet_prod_eq_biSup, ht.prod_nhdsSet_eq_biSup, nhdsSet, sSup_image, biSup_prod,
     nhds_prod_eq]
 
 /-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
 formulated in terms of a filter inequality. -/
-theorem nhdsSet_prod_le (s : Set X) (t : Set β) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
+theorem nhdsSet_prod_le (s : Set X) (t : Set Y) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ s ×ˢ 𝓝ˢ t :=
   ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).ge_iff.2 fun (_u, _v) ⟨⟨huo, hsu⟩, hvo, htv⟩ ↦
     (huo.prod hvo).mem_nhdsSet.2 <| prod_mono hsu htv
 
@@ -685,9 +685,9 @@ theorem nhdsSet_prod_le (s : Set X) (t : Set β) : 𝓝ˢ (s ×ˢ t) ≤ 𝓝ˢ 
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
 
 See also `IsCompact.nhdsSet_prod_eq`. -/
-theorem generalized_tube_lemma {s : Set X} (hs : IsCompact s) {t : Set β} (ht : IsCompact t)
-    {n : Set (X × β)} (hn : IsOpen n) (hp : s ×ˢ t ⊆ n) :
-    ∃ (u : Set X) (v : Set β), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n := by
+theorem generalized_tube_lemma {s : Set X} (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
+    {n : Set (X × Y)} (hn : IsOpen n) (hp : s ×ˢ t ⊆ n) :
+    ∃ (u : Set X) (v : Set Y), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n := by
   rw [← hn.mem_nhdsSet, hs.nhdsSet_prod_eq ht,
     ((hasBasis_nhdsSet _).prod (hasBasis_nhdsSet _)).mem_iff] at hp
   rcases hp with ⟨⟨u, v⟩, ⟨⟨huo, hsu⟩, hvo, htv⟩, hn⟩
@@ -827,18 +827,18 @@ noncomputable def LocallyFinite.fintypeOfCompact {ι : Type*} [CompactSpace X] {
   fintypeOfFiniteUniv (hf.finite_of_compact hne)
 #align locally_finite.fintype_of_compact LocallyFinite.fintypeOfCompact
 
-/-- The comap of the cocompact filter on `β` by a continuous function `f : X → β` is less than or
+/-- The comap of the cocompact filter on `Y` by a continuous function `f : X → Y` is less than or
 equal to the cocompact filter on `X`.
 This is a reformulation of the fact that images of compact sets are compact. -/
-theorem Filter.comap_cocompact_le {f : X → β} (hf : Continuous f) :
-    (Filter.cocompact β).comap f ≤ Filter.cocompact X := by
+theorem Filter.comap_cocompact_le {f : X → Y} (hf : Continuous f) :
+    (Filter.cocompact Y).comap f ≤ Filter.cocompact X := by
   rw [(Filter.hasBasis_cocompact.comap f).le_basis_iff Filter.hasBasis_cocompact]
   intro t ht
   refine' ⟨f '' t, ht.image hf, _⟩
   simpa using t.subset_preimage_image f
 #align filter.comap_cocompact_le Filter.comap_cocompact_le
 
-theorem isCompact_range [CompactSpace X] {f : X → β} (hf : Continuous f) : IsCompact (range f) := by
+theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsCompact (range f) := by
   rw [← image_univ]; exact isCompact_univ.image hf
 #align is_compact_range isCompact_range
 
@@ -867,9 +867,9 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace X] {ι : Type*} [Nonemp
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 #align exists_subset_nhds_of_compact_space exists_subset_nhds_of_compactSpace
 
-/-- If `f : X → β` is an `Inducing` map,
+/-- If `f : X → Y` is an `Inducing` map,
 the image `f '' s` of a set `s` is compact if and only if `s` is compact. -/
-theorem Inducing.isCompact_iff {f : X → β} (hf : Inducing f) {s : Set X} :
+theorem Inducing.isCompact_iff {f : X → Y} (hf : Inducing f) {s : Set X} :
     IsCompact (f '' s) ↔ IsCompact s := by
   refine ⟨fun hs F F_ne_bot F_le => ?_, fun hs => hs.image hf.continuous⟩
   obtain ⟨_, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
@@ -877,30 +877,30 @@ theorem Inducing.isCompact_iff {f : X → β} (hf : Inducing f) {s : Set X} :
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 #align inducing.is_compact_iff Inducing.isCompact_iff
 
-/-- If `f : X → β` is an `Embedding` (or more generally, an `Inducing` map, see
+/-- If `f : X → Y` is an `Embedding` (or more generally, an `Inducing` map, see
 `Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
 `s` is compact. -/
-theorem Embedding.isCompact_iff_isCompact_image {f : X → β} (hf : Embedding f) :
+theorem Embedding.isCompact_iff_isCompact_image {f : X → Y} (hf : Embedding f) :
     IsCompact s ↔ IsCompact (f '' s) :=
   hf.toInducing.isCompact_iff.symm
 #align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff_isCompact_image
 
 /-- The preimage of a compact set under an inducing map is a compact set. -/
-theorem Inducing.isCompact_preimage {f : X → β} (hf : Inducing f) (hf' : IsClosed (range f))
-    {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
+theorem Inducing.isCompact_preimage {f : X → Y} (hf : Inducing f) (hf' : IsClosed (range f))
+    {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
   replace hK := hK.inter_right hf'
   rwa [← hf.isCompact_iff, image_preimage_eq_inter_range]
 
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
-theorem ClosedEmbedding.isCompact_preimage {f : X → β} (hf : ClosedEmbedding f)
-    {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
+theorem ClosedEmbedding.isCompact_preimage {f : X → Y} (hf : ClosedEmbedding f)
+    {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.toInducing.isCompact_preimage (hf.closed_range) hK
 #align closed_embedding.is_compact_preimage ClosedEmbedding.isCompact_preimage
 
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `ClosedEmbedding.isCompact_preimage`. -/
-theorem ClosedEmbedding.tendsto_cocompact {f : X → β} (hf : ClosedEmbedding f) :
-    Tendsto f (Filter.cocompact X) (Filter.cocompact β) :=
+theorem ClosedEmbedding.tendsto_cocompact {f : X → Y} (hf : ClosedEmbedding f) :
+    Tendsto f (Filter.cocompact X) (Filter.cocompact Y) :=
   Filter.hasBasis_cocompact.tendsto_right_iff.mpr fun _K hK =>
     (hf.isCompact_preimage hK).compl_mem_cocompact
 #align closed_embedding.tendsto_cocompact ClosedEmbedding.tendsto_cocompact
@@ -929,24 +929,24 @@ theorem exists_nhds_ne_inf_principal_neBot {s : Set X} (hs : IsCompact s) (hs' :
   exact hs' (hs.finite <| discreteTopology_subtype_iff.mpr H)
 #align exists_nhds_ne_inf_principal_ne_bot exists_nhds_ne_inf_principal_neBot
 
-protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace X] {f : X → β}
-    (hf : ClosedEmbedding f) : NoncompactSpace β :=
+protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace X] {f : X → Y}
+    (hf : ClosedEmbedding f) : NoncompactSpace Y :=
   noncompactSpace_of_neBot hf.tendsto_cocompact.neBot
 #align closed_embedding.noncompact_space ClosedEmbedding.noncompactSpace
 
-protected theorem ClosedEmbedding.compactSpace [h : CompactSpace β] {f : X → β}
+protected theorem ClosedEmbedding.compactSpace [h : CompactSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : CompactSpace X :=
   ⟨by rw [← hf.toInducing.isCompact_iff, image_univ]; exact hf.closed_range.isCompact⟩
 #align closed_embedding.compact_space ClosedEmbedding.compactSpace
 
-theorem IsCompact.prod {s : Set X} {t : Set β} (hs : IsCompact s) (ht : IsCompact t) :
+theorem IsCompact.prod {s : Set X} {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ×ˢ t) := by
   rw [isCompact_iff_ultrafilter_le_nhds] at hs ht ⊢
   intro f hfs
   rw [le_principal_iff] at hfs
   obtain ⟨a : X, sa : a ∈ s, ha : map Prod.fst f.1 ≤ 𝓝 a⟩ :=
     hs (f.map Prod.fst) (le_principal_iff.2 <| mem_map.2 <| mem_of_superset hfs fun x => And.left)
-  obtain ⟨b : β, tb : b ∈ t, hb : map Prod.snd f.1 ≤ 𝓝 b⟩ :=
+  obtain ⟨b : Y, tb : b ∈ t, hb : map Prod.snd f.1 ≤ 𝓝 b⟩ :=
     ht (f.map Prod.snd) (le_principal_iff.2 <| mem_map.2 <| mem_of_superset hfs fun x => And.right)
   rw [map_le_iff_le_comap] at ha hb
   refine' ⟨⟨a, b⟩, ⟨sa, tb⟩, _⟩
@@ -959,11 +959,11 @@ instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
 #align finite.compact_space Finite.compactSpace
 
 /-- The product of two compact spaces is compact. -/
-instance [CompactSpace X] [CompactSpace β] : CompactSpace (X × β) :=
+instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X × Y) :=
   ⟨by rw [← univ_prod_univ]; exact isCompact_univ.prod isCompact_univ⟩
 
 /-- The disjoint union of two compact spaces is compact. -/
-instance [CompactSpace X] [CompactSpace β] : CompactSpace (X ⊕ β) :=
+instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X ⊕ Y) :=
   ⟨by
     rw [← range_inl_union_range_inr]
     exact (isCompact_range continuous_inl).union (isCompact_range continuous_inr)⟩
@@ -977,7 +977,7 @@ instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, CompactSpace (π i
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/
 theorem Filter.coprod_cocompact :
-    (Filter.cocompact X).coprod (Filter.cocompact β) = Filter.cocompact (X × β) := by
+    (Filter.cocompact X).coprod (Filter.cocompact Y) = Filter.cocompact (X × Y) := by
   ext S
   simp only [mem_coprod_iff, exists_prop, mem_comap, Filter.mem_cocompact]
   constructor
@@ -1001,19 +1001,19 @@ theorem Filter.coprod_cocompact :
 #align filter.coprod_cocompact Filter.coprod_cocompact
 
 theorem Prod.noncompactSpace_iff :
-    NoncompactSpace (X × β) ↔ NoncompactSpace X ∧ Nonempty β ∨ Nonempty X ∧ NoncompactSpace β := by
+    NoncompactSpace (X × Y) ↔ NoncompactSpace X ∧ Nonempty Y ∨ Nonempty X ∧ NoncompactSpace Y := by
   simp [← Filter.cocompact_neBot_iff, ← Filter.coprod_cocompact, Filter.coprod_neBot_iff]
 #align prod.noncompact_space_iff Prod.noncompactSpace_iff
 
 -- See Note [lower instance priority]
-instance (priority := 100) Prod.noncompactSpace_left [NoncompactSpace X] [Nonempty β] :
-    NoncompactSpace (X × β) :=
+instance (priority := 100) Prod.noncompactSpace_left [NoncompactSpace X] [Nonempty Y] :
+    NoncompactSpace (X × Y) :=
   Prod.noncompactSpace_iff.2 (Or.inl ⟨‹_›, ‹_›⟩)
 #align prod.noncompact_space_left Prod.noncompactSpace_left
 
 -- See Note [lower instance priority]
-instance (priority := 100) Prod.noncompactSpace_right [Nonempty X] [NoncompactSpace β] :
-    NoncompactSpace (X × β) :=
+instance (priority := 100) Prod.noncompactSpace_right [Nonempty X] [NoncompactSpace Y] :
+    NoncompactSpace (X × Y) :=
   Prod.noncompactSpace_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 #align prod.noncompact_space_right Prod.noncompactSpace_right
 
@@ -1045,7 +1045,7 @@ instance Pi.compactSpace [∀ i, CompactSpace (π i)] : CompactSpace (∀ i, π 
   ⟨by rw [← pi_univ univ]; exact isCompact_univ_pi fun i => isCompact_univ⟩
 #align pi.compact_space Pi.compactSpace
 
-instance Function.compactSpace [CompactSpace β] : CompactSpace (ι → β) :=
+instance Function.compactSpace [CompactSpace Y] : CompactSpace (ι → Y) :=
   Pi.compactSpace
 #align function.compact_space Function.compactSpace
 
@@ -1082,8 +1082,8 @@ class WeaklyLocallyCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
 export WeaklyLocallyCompactSpace (exists_compact_mem_nhds)
 #align exists_compact_mem_nhds WeaklyLocallyCompactSpace.exists_compact_mem_nhds
 
-instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace β] :
-    WeaklyLocallyCompactSpace (X × β) where
+instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
+    WeaklyLocallyCompactSpace (X × Y) where
   exists_compact_mem_nhds x :=
     let ⟨s₁, hc₁, h₁⟩ := exists_compact_mem_nhds x.1
     let ⟨s₂, hc₂, h₂⟩ := exists_compact_mem_nhds x.2
@@ -1148,10 +1148,10 @@ theorem locallyCompactSpace_of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → 
     ⟨s x i, (h x).mem_of_mem hp, ht, hc x i hp⟩⟩
 #align locally_compact_space_of_has_basis locallyCompactSpace_of_hasBasis
 
-instance Prod.locallyCompactSpace (X : Type*) (β : Type*) [TopologicalSpace X]
-    [TopologicalSpace β] [LocallyCompactSpace X] [LocallyCompactSpace β] :
-    LocallyCompactSpace (X × β) :=
-  have := fun x : X × β => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
+instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
+    [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
+    LocallyCompactSpace (X × Y) :=
+  have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
   locallyCompactSpace_of_hasBasis this fun _ _ ⟨⟨_, h₁⟩, _, h₂⟩ => h₁.prod h₂
 #align prod.locally_compact_space Prod.locallyCompactSpace
 
@@ -1191,13 +1191,13 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (π i)] : LocallyCompactSpa
         exact CompactSpace.isCompact_univ⟩
 #align pi.locally_compact_space Pi.locallyCompactSpace
 
-instance Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace β] :
-    LocallyCompactSpace (ι → β) :=
+instance Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace Y] :
+    LocallyCompactSpace (ι → Y) :=
   Pi.locallyCompactSpace_of_finite
 #align function.locally_compact_space_of_finite Function.locallyCompactSpace_of_finite
 
-instance Function.locallyCompactSpace [LocallyCompactSpace β] [CompactSpace β] :
-    LocallyCompactSpace (ι → β) :=
+instance Function.locallyCompactSpace [LocallyCompactSpace Y] [CompactSpace Y] :
+    LocallyCompactSpace (ι → Y) :=
   Pi.locallyCompactSpace
 #align function.locally_compact_space Function.locallyCompactSpace
 
@@ -1230,7 +1230,7 @@ theorem exists_compact_between [hX : LocallyCompactSpace X] {K U : Set X} (hK : 
   exact interior_mono (subset_iUnion₂ y hyt) hy
 #align exists_compact_between exists_compact_between
 
-protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace β] {f : X → β}
+protected theorem ClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : ClosedEmbedding f) : LocallyCompactSpace X :=
   haveI : ∀ x : X, (𝓝 x).HasBasis (fun s => s ∈ 𝓝 (f x) ∧ IsCompact s) fun s => f ⁻¹' s := by
     intro x
@@ -1244,7 +1244,7 @@ protected theorem IsClosed.locallyCompactSpace [LocallyCompactSpace X] {s : Set 
   (closedEmbedding_subtype_val hs).locallyCompactSpace
 #align is_closed.locally_compact_space IsClosed.locallyCompactSpace
 
-protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace β] {f : X → β}
+protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : OpenEmbedding f) : LocallyCompactSpace X := by
   have : ∀ x : X, (𝓝 x).HasBasis
       (fun s => (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) fun s => f ⁻¹' s := by
@@ -1366,10 +1366,10 @@ theorem exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering X) x
 #align exists_mem_compact_covering exists_mem_compactCovering
 
-instance [SigmaCompactSpace β] : SigmaCompactSpace (X × β) :=
-  ⟨⟨fun n => compactCovering X n ×ˢ compactCovering β n, fun _ =>
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
+  ⟨⟨fun n => compactCovering X n ×ˢ compactCovering Y n, fun _ =>
       (isCompact_compactCovering _ _).prod (isCompact_compactCovering _ _), by
-      simp only [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset β),
+      simp only [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset Y),
         iUnion_compactCovering, univ_prod_univ]⟩⟩
 
 instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, SigmaCompactSpace (π i)] :
@@ -1380,10 +1380,10 @@ instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, SigmaCompactSpace 
   · simp only [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (π i)
 
-instance [SigmaCompactSpace β] : SigmaCompactSpace (Sum X β) :=
-  ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering β n, fun n =>
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
+  ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
       ((isCompact_compactCovering X n).image continuous_inl).union
-        ((isCompact_compactCovering β n).image continuous_inr),
+        ((isCompact_compactCovering Y n).image continuous_inr),
       by simp only [iUnion_union_distrib, ← image_iUnion, iUnion_compactCovering, image_univ,
         range_inl_union_range_inr]⟩⟩
 
@@ -1402,8 +1402,8 @@ instance [Countable ι] [∀ i, TopologicalSpace (π i)] [∀ i, SigmaCompactSpa
       refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
-protected theorem ClosedEmbedding.sigmaCompactSpace {e : β → X} (he : ClosedEmbedding e) :
-    SigmaCompactSpace β :=
+protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
+    SigmaCompactSpace Y :=
   ⟨⟨fun n => e ⁻¹' compactCovering X n, fun n =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
@@ -1413,7 +1413,7 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : β → X} (he : ClosedE
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
 
-instance [SigmaCompactSpace β] : SigmaCompactSpace (ULift.{u} β) :=
+instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
   ULift.closedEmbedding_down.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
@@ -1628,47 +1628,47 @@ theorem IsClopen.diff {s t : Set X} (hs : IsClopen s) (ht : IsClopen t) : IsClop
   hs.inter ht.compl
 #align is_clopen.diff IsClopen.diff
 
-theorem IsClopen.prod {s : Set X} {t : Set β} (hs : IsClopen s) (ht : IsClopen t) :
+theorem IsClopen.prod {s : Set X} {t : Set Y} (hs : IsClopen s) (ht : IsClopen t) :
     IsClopen (s ×ˢ t) :=
   ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
 #align is_clopen.prod IsClopen.prod
 
-theorem isClopen_iUnion_of_finite {β : Type*} [Finite β] {s : β → Set X} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iUnion_of_finite {Y : Type*} [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋃ i, s i) :=
   ⟨isOpen_iUnion (forall_and.1 h).1, isClosed_iUnion_of_finite (forall_and.1 h).2⟩
 #align is_clopen_Union isClopen_iUnion_of_finite
 
-theorem Set.Finite.isClopen_biUnion {β : Type*} {s : Set β} {f : β → Set X} (hs : s.Finite)
+theorem Set.Finite.isClopen_biUnion {Y : Type*} {s : Set Y} {f : Y → Set X} (hs : s.Finite)
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
   ⟨isOpen_biUnion fun i hi => (h i hi).1, hs.isClosed_biUnion fun i hi => (h i hi).2⟩
 #align is_clopen_bUnion Set.Finite.isClopen_biUnion
 
-theorem isClopen_biUnion_finset {β : Type*} {s : Finset β} {f : β → Set X}
+theorem isClopen_biUnion_finset {Y : Type*} {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
  s.finite_toSet.isClopen_biUnion  h
 #align is_clopen_bUnion_finset isClopen_biUnion_finset
 
-theorem isClopen_iInter_of_finite {β : Type*} [Finite β] {s : β → Set X} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iInter_of_finite {Y : Type*} [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋂ i, s i) :=
   ⟨isOpen_iInter_of_finite (forall_and.1 h).1, isClosed_iInter (forall_and.1 h).2⟩
 #align is_clopen_Inter isClopen_iInter_of_finite
 
-theorem Set.Finite.isClopen_biInter {β : Type*} {s : Set β} (hs : s.Finite) {f : β → Set X}
+theorem Set.Finite.isClopen_biInter {Y : Type*} {s : Set Y} (hs : s.Finite) {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
   ⟨hs.isOpen_biInter fun i hi => (h i hi).1, isClosed_biInter fun i hi => (h i hi).2⟩
 #align is_clopen_bInter Set.Finite.isClopen_biInter
 
-theorem isClopen_biInter_finset {β : Type*} {s : Finset β} {f : β → Set X}
+theorem isClopen_biInter_finset {Y : Type*} {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isClopen_biInter h
 #align is_clopen_bInter_finset isClopen_biInter_finset
 
-theorem IsClopen.preimage {s : Set β} (h : IsClopen s) {f : X → β} (hf : Continuous f) :
+theorem IsClopen.preimage {s : Set Y} (h : IsClopen s) {f : X → Y} (hf : Continuous f) :
     IsClopen (f ⁻¹' s) :=
   ⟨h.1.preimage hf, h.2.preimage hf⟩
 #align is_clopen.preimage IsClopen.preimage
 
-theorem ContinuousOn.preimage_clopen_of_clopen {f : X → β} {s : Set X} {t : Set β}
+theorem ContinuousOn.preimage_clopen_of_clopen {f : X → Y} {s : Set X} {t : Set Y}
     (hf : ContinuousOn f s) (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ f ⁻¹' t) :=
   ⟨ContinuousOn.preimage_open_of_open hf hs.1 ht.1,
     ContinuousOn.preimage_closed_of_closed hf hs.2 ht.2⟩
@@ -1691,11 +1691,11 @@ theorem isClopen_discrete [DiscreteTopology X] (x : Set X) : IsClopen x :=
 #align is_clopen_discrete isClopen_discrete
 
 -- porting note: new lemma
-theorem isClopen_range_inl : IsClopen (range (Sum.inl : X → X ⊕ β)) :=
+theorem isClopen_range_inl : IsClopen (range (Sum.inl : X → X ⊕ Y)) :=
   ⟨isOpen_range_inl, isClosed_range_inl⟩
 
 -- porting note: new lemma
-theorem isClopen_range_inr : IsClopen (range (Sum.inr : β → X ⊕ β)) :=
+theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
   ⟨isOpen_range_inr, isClosed_range_inr⟩
 
 theorem isClopen_range_sigmaMk {ι : Type*} {σ : ι → Type*} [∀ i, TopologicalSpace (σ i)] {i : ι} :
@@ -1703,7 +1703,7 @@ theorem isClopen_range_sigmaMk {ι : Type*} {σ : ι → Type*} [∀ i, Topologi
   ⟨openEmbedding_sigmaMk.open_range, closedEmbedding_sigmaMk.closed_range⟩
 #align clopen_range_sigma_mk isClopen_range_sigmaMk
 
-protected theorem QuotientMap.isClopen_preimage {f : X → β} (hf : QuotientMap f) {s : Set β} :
+protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap f) {s : Set Y} :
     IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isOpen_preimage hf.isClosed_preimage
 #align quotient_map.is_clopen_preimage QuotientMap.isClopen_preimage
@@ -1899,7 +1899,7 @@ protected theorem IsOpen.dense [PreirreducibleSpace X] {s : Set X} (ho : IsOpen 
   dense_iff_inter_open.2 fun _t hto htne => nonempty_preirreducible_inter hto ho htne hne
 #align is_open.dense IsOpen.dense
 
-theorem IsPreirreducible.image {s : Set X} (H : IsPreirreducible s) (f : X → β)
+theorem IsPreirreducible.image {s : Set X} (H : IsPreirreducible s) (f : X → Y)
     (hf : ContinuousOn f s) : IsPreirreducible (f '' s) := by
   rintro u v hu hv ⟨_, ⟨⟨x, hx, rfl⟩, hxu⟩⟩ ⟨_, ⟨⟨y, hy, rfl⟩, hyv⟩⟩
   rw [← mem_preimage] at hxu hyv
@@ -1917,7 +1917,7 @@ theorem IsPreirreducible.image {s : Set X} (H : IsPreirreducible s) (f : X → �
     simp [*]
 #align is_preirreducible.image IsPreirreducible.image
 
-theorem IsIrreducible.image {s : Set X} (H : IsIrreducible s) (f : X → β) (hf : ContinuousOn f s) :
+theorem IsIrreducible.image {s : Set X} (H : IsIrreducible s) (f : X → Y) (hf : ContinuousOn f s) :
     IsIrreducible (f '' s) :=
   ⟨H.nonempty.image _, H.isPreirreducible.image f hf⟩
 #align is_irreducible.image IsIrreducible.image
@@ -2030,7 +2030,7 @@ theorem IsPreirreducible.interior {Z : Set X} (hZ : IsPreirreducible Z) :
   hZ.open_subset isOpen_interior interior_subset
 #align is_preirreducible.interior IsPreirreducible.interior
 
-theorem IsPreirreducible.preimage {Z : Set X} (hZ : IsPreirreducible Z) {f : β → X}
+theorem IsPreirreducible.preimage {Z : Set X} (hZ : IsPreirreducible Z) {f : Y → X}
     (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' Z) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨z, h₂, rfl⟩, ⟨z', h₃, h₄⟩⟩ :=
