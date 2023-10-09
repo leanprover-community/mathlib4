@@ -126,7 +126,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
 theorem LocallyIntegrableOn.aestronglyMeasurable [SecondCountableTopology X]
     (hf : LocallyIntegrableOn f s μ) : AEStronglyMeasurable f (μ.restrict s) := by
   rcases hf.exists_nat_integrableOn with ⟨u, -, su, hu⟩
-  have : s = ⋃ n, u n ∩ s := by rw [← iUnion_inter]; exact (inter_eq_right_iff_subset.mpr su).symm
+  have : s = ⋃ n, u n ∩ s := by rw [← iUnion_inter]; exact (inter_eq_right.mpr su).symm
   rw [this, aestronglyMeasurable_iUnion_iff]
   exact fun i : ℕ => (hu i).aestronglyMeasurable
 #align measure_theory.locally_integrable_on.ae_strongly_measurable MeasureTheory.LocallyIntegrableOn.aestronglyMeasurable
@@ -144,7 +144,7 @@ theorem locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClos
       let ⟨K, hK, h2K⟩ := exists_compact_mem_nhds x
       ⟨_, inter_mem_nhdsWithin s h2K,
         hf _ (inter_subset_left _ _)
-          (isCompact_of_isClosed_subset hK (hs.inter hK.isClosed) (inter_subset_right _ _))⟩
+          (hK.of_isClosed_subset (hs.inter hK.isClosed) (inter_subset_right _ _))⟩
   | inr hs =>
     obtain ⟨K, hK, h2K, h3K⟩ := exists_compact_subset hs hx
     refine' ⟨K, _, hf K h3K hK⟩

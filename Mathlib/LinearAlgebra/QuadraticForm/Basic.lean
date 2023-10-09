@@ -576,7 +576,7 @@ def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
     ring
   exists_companion' :=
     ⟨BilinForm.linMulLin f g + BilinForm.linMulLin g f, fun x y => by
-      simp
+      simp only [Pi.mul_apply, map_add, BilinForm.add_apply, BilinForm.linMulLin_apply]
       ring⟩
 #align quadratic_form.lin_mul_lin QuadraticForm.linMulLin
 
