@@ -93,7 +93,7 @@ open scoped Classical
 
 universe u v
 
-variable {α : Type u} {β : Type v} [TopologicalSpace α]
+variable {α : Type*} {β : Type*} [TopologicalSpace α]
 
 section Separation
 
