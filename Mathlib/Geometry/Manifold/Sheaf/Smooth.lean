@@ -134,8 +134,7 @@ variable {IM I N}
 
 @[simp] lemma smoothSheaf.eval_germ (U : Opens M) (x : U)
     (f : (smoothSheaf IM I M N).presheaf.obj (op U)) :
-    smoothSheaf.eval IM I N (x:M) ((smoothSheaf IM I M N).presheaf.germ x f)
-    = f x :=
+    smoothSheaf.eval IM I N (x:M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
   TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp IM I ⊤).localPredicate M N) _ _ _
 
 lemma smoothSheaf.smooth_section {U : (Opens (TopCat.of M))ᵒᵖ}
