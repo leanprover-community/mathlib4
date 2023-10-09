@@ -67,15 +67,15 @@ If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
 def gradient (f : F → 𝕜) (x : F) : F := (toDual 𝕜 F).symm (fderiv 𝕜 f x)
 
-local notation "∇" => gradient
+notation "∇" => gradient
 
 variable {s : Set F} {L : Filter F}
 
 theorem HasGradientWithinAt_iff_HasFDerivWithinAt {s : Set F} :
-  HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toDual 𝕜 F f') s x := Iff.rfl
+    HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toDual 𝕜 F f') s x := Iff.rfl
 
 theorem HasGradientAt_iff_HasFDerivAt :
-  HasGradientAt f f' x ↔ HasFDerivAt f (toDual 𝕜 F f') x := Iff.rfl
+    HasGradientAt f f' x ↔ HasFDerivAt f (toDual 𝕜 F f') x := Iff.rfl
 
 theorem HasGradientAt.hasFDerivAt {frechet : F →L[𝕜] 𝕜}
     (h : HasGradientAt f ((toDual 𝕜 F).symm frechet) x) :
@@ -99,7 +99,7 @@ section GradientUniqueness
 variable {gradf gradg : F}
 
 theorem HasGradientAt.unique (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
-  gradf = gradg := (toDual 𝕜 F).injective
+    gradf = gradg := (toDual 𝕜 F).injective
   ((HasGradientAt_iff_HasFDerivAt.mp hf).unique (HasGradientAt_iff_HasFDerivAt.mp hg))
 
 end GradientUniqueness
@@ -114,10 +114,10 @@ theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
-  DifferentiableAt 𝕜 f x := by use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
+    DifferentiableAt 𝕜 f x := by use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
-  DifferentiableWithinAt 𝕜 f s x := HasFDerivWithinAt.differentiableWithinAt h
+    DifferentiableWithinAt 𝕜 f s x := HasFDerivWithinAt.differentiableWithinAt h
 
 @[simp]
 theorem hasGradientWithinAt_univ : HasGradientWithinAt f f' univ x ↔ HasGradientAt f f' x := by
@@ -125,7 +125,7 @@ theorem hasGradientWithinAt_univ : HasGradientWithinAt f f' univ x ↔ HasGradie
   rw [hasFDerivWithinAt_univ]
 
 theorem DifferentiableOn.hasGradientAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 𝓝 x) :
-  HasGradientAt f (∇ f x) x := (h.hasFDerivAt hs).hasGradientAt
+    HasGradientAt f (∇ f x) x := (h.hasFDerivAt hs).hasGradientAt
 
 theorem HasGradientAt.gradient (h : HasGradientAt f f' x) : ∇ f x = f' :=
   h.differentiableAt.hasGradientAt.unique h
@@ -164,7 +164,7 @@ theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
   exact h
 
 theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasGradientAt g g' u) :
-  HasDerivAt g g' u := h.hasDerivAt
+    HasDerivAt g g' u := h.hasDerivAt
 
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
@@ -172,7 +172,7 @@ theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
   exact h
 
 theorem HasDerivAt.hasGradientAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasDerivAt g g' u) :
-  HasGradientAt g g' u := h.hasGradientAt
+    HasGradientAt g g' u := h.hasGradientAt
 
 theorem gradient_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
   by_cases h: DifferentiableAt 𝕜 g u
@@ -201,44 +201,45 @@ theorem HasGradientWithinAt.lim (h : HasGradientWithinAt f f' s x) {α : Type*} 
 section GradientProperties
 
 theorem hasGradientAtFilter_iff_isLittleO :
-  HasGradientAtFilter f f' x L ↔
+    HasGradientAtFilter f f' x L ↔
     (fun x' : F => f x' - f x - ⟪f' , x' - x⟫) =o[L] fun x' => x' - x := Iff.rfl
 
 theorem hasGradientWithinAt_iff_isLittleO :
-  HasGradientWithinAt f f' s x ↔
+    HasGradientWithinAt f f' s x ↔
     (fun x' : F => f x' - f x - ⟪f' , x' - x⟫) =o[𝓝[s] x] fun x' => x' - x := Iff.rfl
 
 theorem hasGradientWithinAt_iff_tendsto :
-  HasGradientWithinAt f f' s x ↔
+    HasGradientWithinAt f f' s x ↔
     Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f' , x' - x⟫‖) (𝓝[s] x) (𝓝 0) :=
   hasFDerivAtFilter_iff_tendsto
 
 theorem hasGradientAt_iff_isLittleO : HasGradientAt f f' x ↔
-  (fun x' : F => f x' - f x - ⟪f' , x' - x⟫) =o[𝓝 x] fun x' => x' - x := Iff.rfl
+    (fun x' : F => f x' - f x - ⟪f' , x' - x⟫) =o[𝓝 x] fun x' => x' - x := Iff.rfl
 
 theorem hasGradientAt_iff_tendsto :
     HasGradientAt f f' x ↔
-      Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f' , x' - x⟫‖) (𝓝 x) (𝓝 0) :=
+    Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - ⟪f' , x' - x⟫‖) (𝓝 x) (𝓝 0) :=
   hasFDerivAtFilter_iff_tendsto
 
 theorem HasGradientAtFilter.isBigO_sub (h : HasGradientAtFilter f f' x L) :
-  (fun x' => f x' - f x) =O[L] fun x' => x' - x := HasFDerivAtFilter.isBigO_sub h
+    (fun x' => f x' - f x) =O[L] fun x' => x' - x := HasFDerivAtFilter.isBigO_sub h
 
 theorem hasGradientWithinAt_congr_set' {s t : Set F} (y : F) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-  HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x := hasFDerivWithinAt_congr_set' y h
+    HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x := hasFDerivWithinAt_congr_set' y h
 
 theorem hasGradientWithinAt_congr_set {s t : Set F} (h : s =ᶠ[𝓝 x] t) :
-  HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x := hasFDerivWithinAt_congr_set h
+    HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x := hasFDerivWithinAt_congr_set h
 
 theorem hasGradientAt_iff_isLittleO_nhds_zero : HasGradientAt f f' x ↔
-  (fun h => f (x + h) - f x - ⟪f' , h⟫) =o[𝓝 0] fun h => h := hasFDerivAt_iff_isLittleO_nhds_zero
+    (fun h => f (x + h) - f x - ⟪f' , h⟫)
+    =o[𝓝 0] fun h => h := hasFDerivAt_iff_isLittleO_nhds_zero
 
 end GradientProperties
 
 /-! ### Congruence properties of the Gradient -/
 section congr
 
-variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {x₀ x₁ : F} {s₀ s₁ t: Set F} {L₀ L₁ : Filter F}
+variable {f₀ f₁ : F → 𝕜} {f₀' f₁' : F} {x₀ x₁ : F} {s₀ s₁ t : Set F} {L₀ L₁ : Filter F}
 
 theorem Filter.EventuallyEq.hasGradientAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
     (h₁ : f₀' = f₁') : HasGradientAtFilter f₀ f₀' x L ↔ HasGradientAtFilter f₁ f₁' x L :=
