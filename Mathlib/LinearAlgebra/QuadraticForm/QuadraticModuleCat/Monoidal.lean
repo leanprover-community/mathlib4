@@ -68,35 +68,35 @@ open instMonoidalCategory
 set_option maxHeartbeats 1600000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
-    (F := forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    (tensorObj := instMonoidalCategory.tensorObj)
-    (μIsoSymm := fun X Y => eqToIso rfl)
-    (whiskerLeft := fun X _ _ f => tensorHom (𝟙 _) f)
-    -- (whiskerLeft_eq := sorry)
-    (whiskerRight := @fun X₁ X₂ (f : X₁ ⟶ X₂) Y => tensorHom f (𝟙 _))
-    -- (whiskerRight_eq := sorry)
-    (tensorHom := tensorHom)
-    -- (tensorHom_eq := sorry)
-    (tensorUnit' := tensorUnit)
-    (εIsoSymm := eqToIso rfl)
-    (associator := associator)
-    (associator_eq := fun X Y Z => by
-      dsimp only [forget₂_obj, forget₂_map_associator_hom]
-      simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
-        Iso.refl_hom, MonoidalCategory.tensor_id]
-      erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
-      rfl)
-    (leftUnitor := fun X => ofIso (tensorLId X.form))
-    -- (leftUnitor_eq := sorry)
-    (rightUnitor := fun X => ofIso (tensorRId X.form))
-    -- (rightUnitor_eq := sorry)
+    (forget₂ (QuadraticModuleCat R) (ModuleCat R))
+    { tensorObj := instMonoidalCategory.tensorObj
+      μIsoSymm := fun X Y => eqToIso rfl
+      whiskerLeft := fun X _ _ f => tensorHom (𝟙 _) f
+      whiskerRight := @fun X₁ X₂ (f : X₁ ⟶ X₂) Y => tensorHom f (𝟙 _)
+      tensorHom := tensorHom
+      tensorUnit' := tensorUnit
+      εIsoSymm := eqToIso rfl
+      associator := associator
+      associator_eq := fun X Y Z => by
+        dsimp only [forget₂_obj, forget₂_map_associator_hom]
+        simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
+          Iso.refl_hom, MonoidalCategory.tensor_id]
+        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
+        rfl
+      leftUnitor := fun X => ofIso (tensorLId X.form)
+      rightUnitor := fun X => ofIso (tensorRId X.form)
+      -- uncomment these lines to avoid running slow proofs while editing the proof above
+      -- whiskerLeft_eq := sorry
+      -- whiskerRight_eq := sorry
+      -- tensorHom_eq := sorry
+      -- leftUnitor_eq := sorry
+      -- rightUnitor_eq := sorry
+      }
 
 variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
-def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) := by
-  rw [instMonoidalCategory]
-  exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) :=
+  Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
 
 instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
   forget₂_faithful _ _
