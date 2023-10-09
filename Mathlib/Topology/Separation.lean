@@ -1208,7 +1208,7 @@ instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 #align sigma.t2_space Sigma.t2Space
 
-variable {γ : Type*} [TopologicalSpace Y] [TopologicalSpace γ]
+variable {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { x : Y | f x = g x } :=
@@ -1233,7 +1233,7 @@ theorem Continuous.ext_on [T2Space X] {s : Set Y} (hs : Dense s) {f g : Y → X}
   funext fun x => h.closure hf hg (hs x)
 #align continuous.ext_on Continuous.ext_on
 
-theorem eqOn_closure₂' [T2Space X] {s : Set Y} {t : Set γ} {f g : Y → γ → X}
+theorem eqOn_closure₂' [T2Space X] {s : Set Y} {t : Set Z} {f g : Y → Z → X}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf₁ : ∀ x, Continuous (f x))
     (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
     (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
@@ -1242,7 +1242,7 @@ theorem eqOn_closure₂' [T2Space X] {s : Set Y} {t : Set γ} {f g : Y → γ �
     isClosed_biInter fun y _ => isClosed_eq (hf₂ _) (hg₂ _)
 #align eq_on_closure₂' eqOn_closure₂'
 
-theorem eqOn_closure₂ [T2Space X] {s : Set Y} {t : Set γ} {f g : Y → γ → X}
+theorem eqOn_closure₂ [T2Space X] {s : Set Y} {t : Set Z} {f g : Y → Z → X}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf : Continuous (uncurry f))
     (hg : Continuous (uncurry g)) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   eqOn_closure₂' h (fun x => continuous_uncurry_left x hf) (fun x => continuous_uncurry_right x hf)
