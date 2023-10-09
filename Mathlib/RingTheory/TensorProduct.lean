@@ -750,6 +750,9 @@ protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
     (by simp [Algebra.smul_def])
 #align algebra.tensor_product.lid Algebra.TensorProduct.lid
 
+@[simp] theorem lid_toLinearEquiv :
+    (TensorProduct.lid R A).toLinearEquiv = _root_.TensorProduct.lid R A := rfl
+
 @[simp]
 theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r ⊗ₜ a) = r • a := rfl
 #align algebra.tensor_product.lid_tmul Algebra.TensorProduct.lid_tmul
@@ -765,6 +768,9 @@ protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
     (fun _a₁ _a₂ _r₁ _r₂ => smul_mul_smul _ _ _ _ |>.symm)
     (one_smul _ _)
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
+
+@[simp] theorem rid_toLinearEquiv :
+    (TensorProduct.rid R S A).toLinearEquiv = AlgebraTensorModule.rid R S A := rfl
 
 variable {R A} in
 @[simp]
@@ -809,7 +815,7 @@ theorem assoc_aux_2 : (TensorProduct.assoc R A B C) ((1 ⊗ₜ[R] 1) ⊗ₜ[R] 1
   rfl
 #align algebra.tensor_product.assoc_aux_2 Algebra.TensorProduct.assoc_aux_2ₓ
 
-variable (A B C)
+variable (R A B C)
 
 -- porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
@@ -820,12 +826,14 @@ protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
     Algebra.TensorProduct.assoc_aux_2
 #align algebra.tensor_product.assoc Algebra.TensorProduct.assoc
 
+@[simp] theorem assoc_toLinearEquiv :
+  (Algebra.TensorProduct.assoc R A B C).toLinearEquiv = _root_.TensorProduct.assoc R A B C := rfl
+
 variable {A B C}
 
 @[simp]
 theorem assoc_tmul (a : A) (b : B) (c : C) :
-    (_root_.TensorProduct.assoc R A B C : (A ⊗[R] B) ⊗[R] C → A ⊗[R] B ⊗[R] C) (a ⊗ₜ b ⊗ₜ c) =
-      a ⊗ₜ (b ⊗ₜ c) :=
+    Algebra.TensorProduct.assoc R A B C (a ⊗ₜ b ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) :=
   rfl
 #align algebra.tensor_product.assoc_tmul Algebra.TensorProduct.assoc_tmul
 
