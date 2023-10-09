@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
+import Mathlib.Algebra.Lie.Weights
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.Trace
 
@@ -59,6 +60,7 @@ lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
 @[simp] lemma traceForm_flip : (traceForm R L M).flip = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
+/-- See also `LieModule.traceForm_apply_lie_apply'`. -/
 lemma traceForm_apply_lie_apply (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
   calc traceForm R L M ⁅x, y⁆ z
@@ -72,6 +74,14 @@ lemma traceForm_apply_lie_apply (x y z : L) :
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← LinearMap.mul_eq_comp]
+
+/-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint wrt
+the trace form. -/
+lemma traceForm_apply_lie_apply' (x y z : L) :
+    traceForm R L M ⁅x, y⁆ z = - traceForm R L M y ⁅x, z⁆ :=
+  calc traceForm R L M ⁅x, y⁆ z
+      = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, LinearMap.neg_apply]
+    _ = - traceForm R L M y ⁅x, z⁆ := by rw [traceForm_apply_lie_apply]
 
 @[simp] lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent R L M] :
     traceForm R L M = 0 := by
@@ -87,6 +97,30 @@ lemma traceForm_apply_lie_apply (x y z : L) :
   suffices φ x ∘ₗ φ y = 0 by simp [this]
   ext m
   simp
+
+/-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
+invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
+Fitting decomposition of `M` are orthogonal wrt `B`. -/
+lemma eq_zero_of_mem_weightSpace_mem_posFittingComp [LieAlgebra.IsNilpotent R L]
+    {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {m₀ m₁ : M} (hm₀ : m₀ ∈ weightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
+    B m₀ m₁ = 0 := by
+  replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
+    intro x k
+    induction' k with k ih; simp
+    intro m n
+    replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
+    have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
+    conv_lhs => rw [pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
+      ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ, ← smul_assoc, this]
+  suffices : ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0
+  · apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
+    aesop
+  clear hm₁ m₁; intro x m₁ hm₁
+  simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
+  obtain ⟨k, hk⟩ := hm₀ x
+  obtain ⟨m, rfl⟩ := (mem_posFittingCompOf R x m₁).mp hm₁ k
+  simp [hB, hk]
 
 end LieModule
 
@@ -127,12 +161,22 @@ end LieSubmodule
 
 section LieAlgebra
 
-variable [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R]
+variable [Module.Free R L] [Module.Finite R L]
 
 /-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
 noncomputable abbrev killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
+
+lemma killingForm_eq_zero_of_mem_weightSpace_mem_posFittingComp [LieAlgebra.IsNilpotent R L]
+    {x₀ x₁ : L}
+    (hx₀ : x₀ ∈ LieModule.weightSpace L (0 : L → R))
+    (hx₁ : x₁ ∈ LieModule.posFittingComp R L L) :
+    killingForm R L x₀ x₁ = 0 :=
+  LieModule.eq_zero_of_mem_weightSpace_mem_posFittingComp R L L
+    (LieModule.traceForm_apply_lie_apply' R L L) hx₀ hx₁
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 namespace LieIdeal
 
