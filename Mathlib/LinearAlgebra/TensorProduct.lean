@@ -1234,33 +1234,16 @@ open LinearMap
 variable (R)
 
 /-- Auxiliary function to defining negation multiplication on tensor product. -/
-def Neg.aux : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
-  FreeAddMonoid.lift fun p : M × N => (-p.1) ⊗ₜ p.2
-#align tensor_product.neg.aux TensorProduct.Neg.aux
+def Neg.aux : M ⊗[R] N →ₗ[R] M ⊗[R] N :=
+  lift <| (mk R M N).comp (-LinearMap.id)
+#noalign tensor_product.neg.aux
 
 variable {R}
 
-theorem Neg.aux_of (m : M) (n : N) : Neg.aux R (FreeAddMonoid.of (m, n)) = (-m) ⊗ₜ[R] n :=
-  rfl
-#align tensor_product.neg.aux_of TensorProduct.Neg.aux_of
+#noalign tensor_product.neg.aux_of
 
 instance neg : Neg (M ⊗[R] N) where
-  neg :=
-    (addConGen (TensorProduct.Eqv R M N)).lift (Neg.aux R) <|
-      AddCon.addConGen_le fun x y hxy =>
-        match x, y, hxy with
-        | _, _, Eqv.of_zero_left n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, Neg.aux_of, neg_zero, zero_tmul]
-        | _, _, Eqv.of_zero_right m =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, Neg.aux_of, tmul_zero]
-        | _, _, Eqv.of_add_left m₁ m₂ n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, Neg.aux_of, neg_add, add_tmul]
-        | _, _, Eqv.of_add_right m n₁ n₂ =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, Neg.aux_of, tmul_add]
-        | _, _, Eqv.of_smul s m n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [Neg.aux_of, ← smul_neg, ← smul_tmul]
-        | _, _, Eqv.add_comm x y =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+  neg := Neg.aux R
 
 protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
   x.induction_on
@@ -1271,7 +1254,7 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     · rw [← this]
       unfold Neg.neg neg
       simp only
-      rw [AddMonoidHom.map_add]
+      rw [map_add]
       abel
     rw [hx, hy, add_zero]
 #align tensor_product.add_left_neg TensorProduct.add_left_neg
