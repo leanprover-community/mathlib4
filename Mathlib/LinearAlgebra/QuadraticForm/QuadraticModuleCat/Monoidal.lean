@@ -27,25 +27,19 @@ noncomputable section
 
 namespace instMonoidalCategory
 
-/-- Auxiliary definition used to fight a tmieout when building
-`QuadraticModuleCat.instMonoidalCategory`. -/
+/-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`. -/
 @[simps! form]
 noncomputable abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
   of (X.form.tmul Y.form)
 
-/-- Auxiliary definition used to fight a tmieout when building
-`QuadraticModuleCat.instMonoidalCategory`. -/
+/-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`.
+
+We want this up front so that we can re-use it to define `whiskerLeft` and `whiskerRight`. -/
 noncomputable abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
-  ⟨(f.toIsometry.tmul g.toIsometry :)⟩
+  ⟨f.toIsometry.tmul g.toIsometry⟩
 
-/-- Auxiliary definition used to fight a tmieout when building
-`QuadraticModuleCat.instMonoidalCategory`. -/
-@[simps! form]
-abbrev tensorUnit : QuadraticModuleCat.{u} R := of (sq (R := R))
-
-/-- Auxiliary definition used to fight a tmieout when building
-`QuadraticModuleCat.instMonoidalCategory`. -/
+/-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`. -/
 noncomputable abbrev associator (X Y Z : QuadraticModuleCat.{u} R) :
     tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
   ofIso (tensorAssoc X.form Y.form Z.form)
@@ -59,6 +53,7 @@ open MonoidalCategory
 @[simp] theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
   (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).inv
     = (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
+
 end instMonoidalCategory
 
 open instMonoidalCategory
@@ -72,7 +67,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
       whiskerLeft := fun X _ _ f => tensorHom (𝟙 _) f
       whiskerRight := @fun X₁ X₂ (f : X₁ ⟶ X₂) Y => tensorHom f (𝟙 _)
       tensorHom := tensorHom
-      tensorUnit' := tensorUnit
+      tensorUnit' := of (sq (R := R))
       εIsoSymm := eqToIso rfl
       associator := associator
       associator_eq := fun X Y Z => by
