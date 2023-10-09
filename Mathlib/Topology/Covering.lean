@@ -194,9 +194,9 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
 
 /-- Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
   `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
-  that covers `f⁻¹(V)` such that (1) `f` is injective on each `U_i`, (2) `V` is contained in
-  the image `f(U_i)` for every `i`, and moreover (3) the open sets in `V` is determined by
-  their preimages in each `U_i`. Then `f` admits a `Trivialization` over the base set `V`. -/
+  that covers `f⁻¹(V)` such that for every `i`, (1) `f` is injective on `U_i`, (2) `V` is
+  contained in the image `f(U_i), and (3) the open sets in `V` are determined by their preimages
+  in `U_i`. Then `f` admits a `Trivialization` over the base set `V`. -/
 noncomputable def IsOpen.trivialization_discrete (hE : Nonempty E ∨ f.Surjective)
     {ι} [Nonempty ι] [t : TopologicalSpace ι] [d : DiscreteTopology ι] (U : ι → Set E) (V : Set X)
     (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))
