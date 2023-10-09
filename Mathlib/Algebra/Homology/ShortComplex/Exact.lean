@@ -859,4 +859,48 @@ end Splitting
 
 end ShortComplex
 
+namespace ShortComplex
+
+variable {C : Type*} [Category C] [Preadditive C] {S : ShortComplex C}
+  (hS : S.Exact)
+
+lemma Exact.mono_g [S.HasLeftHomology] (hf : S.f = 0) : Mono S.g := by
+  have := hS.epi_toCycles
+  have : S.iCycles = 0 := by rw [← cancel_epi S.toCycles, comp_zero, toCycles_i, hf]
+  apply Preadditive.mono_of_cancel_zero
+  intro A x₂ hx₂
+  rw [← S.liftCycles_i x₂ hx₂, this, comp_zero]
+
+lemma Exact.epi_f [S.HasRightHomology] (hg : S.g = 0) : Epi S.f := by
+  have := hS.mono_fromOpcycles
+  have : S.pOpcycles = 0 := by rw [← cancel_mono S.fromOpcycles, zero_comp, p_fromOpcycles, hg]
+  apply Preadditive.epi_of_cancel_zero
+  intro A x₂ hx₂
+  rw [← S.p_descOpcycles x₂ hx₂, this, zero_comp]
+
+lemma Exact.mono_g_iff [S.HasLeftHomology] : Mono S.g ↔ S.f = 0 := by
+  constructor
+  · intro
+    rw [← cancel_mono S.g, zero, zero_comp]
+  · exact hS.mono_g
+
+lemma Exact.epi_f_iff [S.HasRightHomology] : Epi S.f ↔ S.g = 0 := by
+  constructor
+  · intro
+    rw [← cancel_epi S.f, zero, comp_zero]
+  · exact hS.epi_f
+
+lemma Exact.isZero_X₂ [S.HasLeftHomology] (hf : S.f = 0) (hg : S.g = 0) : IsZero S.X₂ := by
+  have := hS.mono_g hf
+  rw [IsZero.iff_id_eq_zero, ← cancel_mono S.g, hg, comp_zero, comp_zero]
+
+lemma Exact.isZero_X₂_iff [S.HasLeftHomology] : IsZero S.X₂ ↔ S.f = 0 ∧ S.g = 0 := by
+  constructor
+  · intro h
+    exact ⟨h.eq_of_tgt _ _, h.eq_of_src _ _⟩
+  · rintro ⟨hf, hg⟩
+    exact hS.isZero_X₂ hf hg
+
+end ShortComplex
+
 end CategoryTheory

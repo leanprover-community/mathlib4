@@ -420,6 +420,42 @@ lemma isIso_descOpcycles (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.Has
   have := K.isIso_pOpcycles i j hi h
   exact IsIso.of_isIso_fac_left (K.p_descOpcycles _ _ _ _)
 
+lemma isIso_homologyπ (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
+    IsIso (K.homologyπ j) :=
+  ShortComplex.isIso_homologyπ _ (by aesop_cat)
+
+@[simps! hom]
+noncomputable def isoHomologyπ (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
+    K.cycles j ≅ K.homology j :=
+  have := K.isIso_homologyπ i j hi h
+  asIso (K.homologyπ j)
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ_hom_inv_id (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
+    K.homologyπ j ≫ (K.isoHomologyπ i j hi h).inv = 𝟙 _ := (K.isoHomologyπ i j hi h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ_inv_hom_id (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
+    (K.isoHomologyπ i j hi h).inv ≫ K.homologyπ j = 𝟙 _ := (K.isoHomologyπ i j hi h).inv_hom_id
+
+lemma isIso_homologyι (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+    IsIso (K.homologyι i) :=
+  ShortComplex.isIso_homologyι _ (by aesop_cat)
+
+@[simps! hom]
+noncomputable def isoHomologyι (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+    K.homology i ≅ K.opcycles i :=
+  have := K.isIso_homologyι i j hj h
+  asIso (K.homologyι i)
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι_hom_inv_id (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+    K.homologyι i ≫ (K.isoHomologyι i j hj h).inv = 𝟙 _ := (K.isoHomologyι i j hj h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι_inv_hom_id (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+    (K.isoHomologyι i j hj h).inv ≫ K.homologyι i = 𝟙 _ := (K.isoHomologyι i j hj h).inv_hom_id
+
 variable {K L}
 
 noncomputable def homologyMapArrowIso (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)

@@ -185,7 +185,7 @@ instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
-noncomputable def isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono
+noncomputable def _root_.CategoryTheory.Limits.isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono
     {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Mono (F.map i)]
     [PreservesColimit (parallelPair i 0) F] :
@@ -203,7 +203,7 @@ noncomputable instance : NormalMonoCategory (ShortComplex C) := ⟨fun i _ => by
     (isLimitOfIsLimitπ _ _ _ _ )
   all_goals apply isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono⟩
 
-noncomputable def isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi
+noncomputable def _root_.CategoryTheory.Limits.isColimit_mapCocone_of_cokernelCofork_ofπ_kernel_condition_of_epi
     {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Epi (F.map p)]
     [PreservesLimit (parallelPair p 0) F] :
