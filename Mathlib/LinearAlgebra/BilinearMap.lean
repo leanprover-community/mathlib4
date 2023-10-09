@@ -121,6 +121,7 @@ theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : 
 
 theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
   ⟨congr_fun₂, ext₂⟩
+
 section
 
 attribute [local instance] SMulCommClass.symm
