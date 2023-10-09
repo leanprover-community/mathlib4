@@ -309,7 +309,7 @@ instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (None
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff_isCompact_image]
+    rw [← NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_image_iff]
     rw [image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 #align emetric.nonempty_compacts.compact_space EMetric.NonemptyCompacts.compactSpace
