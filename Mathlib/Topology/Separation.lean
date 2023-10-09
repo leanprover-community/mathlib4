@@ -1211,12 +1211,12 @@ instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [
 variable {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
-    IsClosed { x : Y | f x = g x } :=
+    IsClosed { y : Y | f y = g y } :=
   continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_diagonal
 #align is_closed_eq isClosed_eq
 
 theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
-    IsOpen { x : Y | f x ≠ g x } :=
+    IsOpen { y : Y | f y ≠ g y } :=
   isOpen_compl_iff.mpr <| isClosed_eq hf hg
 #align is_open_ne_fun isOpen_ne_fun
 
@@ -1233,7 +1233,7 @@ theorem Continuous.ext_on [T2Space X] {s : Set Y} (hs : Dense s) {f g : Y → X}
   funext fun x => h.closure hf hg (hs x)
 #align continuous.ext_on Continuous.ext_on
 
-theorem eqOn_closure₂' [T2Space X] {s : Set Y} {t : Set Z} {f g : Y → Z → X}
+theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf₁ : ∀ x, Continuous (f x))
     (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
     (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
@@ -1242,7 +1242,7 @@ theorem eqOn_closure₂' [T2Space X] {s : Set Y} {t : Set Z} {f g : Y → Z → 
     isClosed_biInter fun y _ => isClosed_eq (hf₂ _) (hg₂ _)
 #align eq_on_closure₂' eqOn_closure₂'
 
-theorem eqOn_closure₂ [T2Space X] {s : Set Y} {t : Set Z} {f g : Y → Z → X}
+theorem eqOn_closure₂ [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf : Continuous (uncurry f))
     (hg : Continuous (uncurry g)) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   eqOn_closure₂' h (fun x => continuous_uncurry_left x hf) (fun x => continuous_uncurry_right x hf)
@@ -1251,7 +1251,7 @@ theorem eqOn_closure₂ [T2Space X] {s : Set Y} {t : Set Z} {f g : Y → Z → X
 
 /-- If `f x = g x` for all `x ∈ s` and `f`, `g` are continuous on `t`, `s ⊆ t ⊆ closure s`, then
 `f x = g x` for all `x ∈ t`. See also `Set.EqOn.closure`. -/
-theorem Set.EqOn.of_subset_closure [T2Space X] {s t : Set Y} {f g : Y → X} (h : EqOn f g s)
+theorem Set.EqOn.of_subset_closure [T2Space Y] {s t : Set X} {f g : X → Y} (h : EqOn f g s)
     (hf : ContinuousOn f t) (hg : ContinuousOn g t) (hst : s ⊆ t) (hts : t ⊆ closure s) :
     EqOn f g t := by
   intro x hx
