@@ -759,7 +759,8 @@ theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] : coeff (no_index (OfNat.ofNat a : R[X])) 0 = a :=
+theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
+    coeff (no_index (OfNat.ofNat a : R[X])) 0 = OfNat.ofNat a :=
   coeff_monomial
 
 -- See note [no_index around OfNat.ofNat]
