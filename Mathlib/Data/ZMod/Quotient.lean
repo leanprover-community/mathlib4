@@ -69,15 +69,15 @@ end Int
 
 noncomputable section ChineseRemainder
 open BigOperators Ideal
-
+#check IsCoprime.natCast
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
-    (coprime : ∀ i j, i ≠ j → IsCoprime (a i) (a j)) : ZMod (∏ i, a i) ≃+* ∀ i, ZMod (a i) :=
+    (coprime : ∀ i j, i ≠ j → Nat.Coprime (a i) (a j)) : ZMod (∏ i, a i) ≃+* ∀ i, ZMod (a i) :=
   have : ∀ (i j : ι), i ≠ j → IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
-    fun i j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime i j h).natCast (R := ℤ))
+    fun i j h ↦ (isCoprime_span_singleton_iff _ _).mpr (coprime i j h).isCoprime
   Int.quotientSpanNatEquivZMod _ |>.symm.trans <|
-  quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|
+  quotEquivOfEq (iInf_span_singleton_natCast coprime) |>.symm.trans <|
   quotientInfRingEquivPiQuotient _ this |>.trans <|
   RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
 

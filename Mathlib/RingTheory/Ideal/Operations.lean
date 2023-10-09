@@ -640,10 +640,13 @@ theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton
 
 theorem iInf_span_singleton_natCast {ι : Type*} [Fintype ι] {I : ι → ℕ}
-    (hI : ∀ (i j : ι), i ≠ j → IsCoprime (I i) (I j)) :
+    (hI : ∀ (i j : ι), i ≠ j → (I i).Coprime (I j)) :
     ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
   rw [iInf_span_singleton, Nat.cast_prod]
-  exact fun i j h ↦ (hI i j h).natCast
+  intro i j H
+  sorry
+  /- rw?
+  exact fun i j h ↦ (hI i j h).natCast -/
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
