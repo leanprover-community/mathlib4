@@ -585,8 +585,6 @@ variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra R C] [Algebra S C]
 variable [Semiring D] [Algebra R D]
 
-attribute [ext] _root_.TensorProduct.AlgebraTensorModule.ext
-
 /-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
 tensors, it preserves multiplication and the identity.
 
