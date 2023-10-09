@@ -67,7 +67,7 @@ If the derivative exists (i.e., `∃ f', HasGradientAt f f' x`), then
 `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x`. -/
 def gradient (f : F → 𝕜) (x : F) : F := (toDual 𝕜 F).symm (fderiv 𝕜 f x)
 
-notation "∇" => gradient
+local notation "∇" => gradient
 
 variable {s : Set F} {L : Filter F}
 
