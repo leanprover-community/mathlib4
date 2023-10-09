@@ -597,7 +597,8 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
     (h_one : f (1 ⊗ₜ[R] 1) = 1) : A ⊗[R] B →ₐ[S] C :=
   AlgHom.ofLinearMap f h_one <| f.map_mul_iff.2 <| by
-    letI : Algebra R C := instAlgebraRestrictScalarsInstSemiringRestrictScalars R S C
+    -- these instances are needed by the statement of `ext`, but not by the current definition.
+    letI : Algebra R C := RestrictScalars.algebra R S C
     letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
     ext
     exact h_mul _ _ _ _
