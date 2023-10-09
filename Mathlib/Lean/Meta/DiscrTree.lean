@@ -54,7 +54,7 @@ partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Arr
 variable {m : Type → Type} [Monad m]
 
 
-/-- A better representaton for lists-of-quadruples -/
+/-- A representation of lists-of-quadruples with a smaller memory footprint. -/
 private inductive Ctxt (α β γ δ : Type)
   | empty : Ctxt α β γ δ
   | ctxt : α → β → γ → δ → Ctxt α β γ δ → Ctxt α β γ δ
