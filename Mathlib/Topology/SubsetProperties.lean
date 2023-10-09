@@ -848,8 +848,8 @@ theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
 
 -- porting note: renamed, golfed
 /-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/
-theorem isClosedMap_snd_of_compactSpace {X : Type*} [TopologicalSpace X] [CompactSpace X]
-    {Y : Type*} [TopologicalSpace Y] : IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
+theorem isClosedMap_snd_of_compactSpace {X : Type*} [TopologicalSpace X] [CompactSpace X] :
+    IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro y hy
   have : univ ×ˢ {y} ⊆ sᶜ
@@ -1633,32 +1633,32 @@ theorem IsClopen.prod {s : Set X} {t : Set Y} (hs : IsClopen s) (ht : IsClopen t
   ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
 #align is_clopen.prod IsClopen.prod
 
-theorem isClopen_iUnion_of_finite {Y : Type*} [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iUnion_of_finite [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋃ i, s i) :=
   ⟨isOpen_iUnion (forall_and.1 h).1, isClosed_iUnion_of_finite (forall_and.1 h).2⟩
 #align is_clopen_Union isClopen_iUnion_of_finite
 
-theorem Set.Finite.isClopen_biUnion {Y : Type*} {s : Set Y} {f : Y → Set X} (hs : s.Finite)
+theorem Set.Finite.isClopen_biUnion {s : Set Y} {f : Y → Set X} (hs : s.Finite)
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
   ⟨isOpen_biUnion fun i hi => (h i hi).1, hs.isClosed_biUnion fun i hi => (h i hi).2⟩
 #align is_clopen_bUnion Set.Finite.isClopen_biUnion
 
-theorem isClopen_biUnion_finset {Y : Type*} {s : Finset Y} {f : Y → Set X}
+theorem isClopen_biUnion_finset {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
  s.finite_toSet.isClopen_biUnion  h
 #align is_clopen_bUnion_finset isClopen_biUnion_finset
 
-theorem isClopen_iInter_of_finite {Y : Type*} [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iInter_of_finite [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋂ i, s i) :=
   ⟨isOpen_iInter_of_finite (forall_and.1 h).1, isClosed_iInter (forall_and.1 h).2⟩
 #align is_clopen_Inter isClopen_iInter_of_finite
 
-theorem Set.Finite.isClopen_biInter {Y : Type*} {s : Set Y} (hs : s.Finite) {f : Y → Set X}
+theorem Set.Finite.isClopen_biInter {s : Set Y} (hs : s.Finite) {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
   ⟨hs.isOpen_biInter fun i hi => (h i hi).1, isClosed_biInter fun i hi => (h i hi).2⟩
 #align is_clopen_bInter Set.Finite.isClopen_biInter
 
-theorem isClopen_biInter_finset {Y : Type*} {s : Finset Y} {f : Y → Set X}
+theorem isClopen_biInter_finset {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isClopen_biInter h
 #align is_clopen_bInter_finset isClopen_biInter_finset
