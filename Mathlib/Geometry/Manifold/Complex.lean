@@ -208,6 +208,7 @@ theorem frequently_nhds_subtype_iff_frequently_nhdsWithin {α : Type*} [Topologi
   rw [← not_iff_not, not_frequently, not_frequently]
   apply eventually_nhds_subtype_iff_eventually_nhdsWithin
 
+-- eventuallyEq_zero_nhds
 /-- The **identity principle** for holomorphic functions on a complex manifold: If a holomorphic
 function vanishes in a whole neighborhood of a point `z₀`, then it is uniformly zero along a
 connected set. -/
@@ -218,15 +219,12 @@ theorem eventuallyEq_zero_of_preconnected_of_eventuallyEq_zero {f : M → F} {U 
   change ∀ᶠ x in 𝓝 z₀, f x = 0 at hfz₀
   have : PreconnectedSpace U := Subtype.preconnectedSpace hU
   have hI : range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
-  let s : Set U := {x : U | ∀ᶠ y in 𝓝 (x:M), f y = 0}
+  let s : Set U := {x : U | f =ᶠ[𝓝 (x:M)] 0}
   show ⟨z₁, h₁⟩ ∈ s
   suffices s = univ by convert mem_univ _
   refine IsClopen.eq_univ ⟨?_, ?_⟩ ⟨⟨z₀, h₀⟩, hfz₀⟩
-  · rw [isOpen_iff_eventually]
-    intro x hx
-    let P : M → Prop := fun x ↦ f =ᶠ[𝓝 x] 0
-    refine (eventually_nhds_subtype_iff_eventually_nhdsWithin _ x P).mp ?_
-    apply eventually_nhdsWithin_of_eventually_nhds (hx.eventually_nhds)
+  · simp only [eventuallyEq_zero_nhds]
+    exact isClosed_closure.isOpen_compl.preimage continuous_subtype_val
   · rw [isClosed_iff_frequently]
     intro a ha
     have ha' := (frequently_nhds_subtype_iff_frequently_nhdsWithin U a (fun x ↦ ∀ᶠ y in 𝓝 x, f y = 0)).mpr ha
