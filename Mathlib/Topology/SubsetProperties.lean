@@ -1320,7 +1320,7 @@ lemma isSigmaCompact_empty : IsSigmaCompact (∅ : Set α) := by
   simp only [isCompact_empty, forall_const, iUnion_empty, and_self]
 
 /-- Compact sets are σ-compact. -/
-lemma isSigmaCompact_of_compact {s : Set α} (hs : IsCompact s) : IsSigmaCompact s :=
+lemma IsCompact.isSigmaCompact {s : Set α} (hs : IsCompact s) : IsSigmaCompact s :=
   ⟨fun _ => s, fun _ => hs, iUnion_const _⟩
 
 /-- Countable unions of compact sets are σ-compact. -/
@@ -1385,9 +1385,8 @@ lemma IsSigmaCompact.image_of_continuousOn {f : α → β} {s : Set α} (hs : Is
   rcases hs with ⟨K, hcompact, hcov⟩
   refine ⟨fun n ↦ f '' K n, ?_, (by rw [← hcov]; exact image_iUnion.symm)⟩
   refine fun n ↦ (hcompact n).image_of_continuousOn (hf.mono ?_)
-  calc K n
-    _ ⊆ ⋃ n, K n := subset_iUnion K n
-    _ = s := by rw [hcov]
+  rw [← hcov]
+  exact subset_iUnion K n
 
 /-- If `s` is σ-compact and `f` continuous, `f(s)` is σ-compact. -/
 lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs : IsSigmaCompact s) :
@@ -1396,10 +1395,9 @@ lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
 if and only `s`` is σ-compact.
 This does not hold for merely inducing maps; direction `←` requires injectivity. -/
-lemma Embedding.isSigmaCompact_iff_isSigmaCompact_image {f : α → β} {s : Set α}
-    (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
+lemma Embedding.isSigmaCompact_image_iff {f : α → β} {s : Set α}
+    (hf : Embedding f) : IsSigmaCompact (f '' s) ↔ IsSigmaCompact s := by
   constructor
-  · exact fun h ↦ h.image (continuous hf)
   · rintro ⟨L, hcomp, hcov⟩
     -- Suppose f '' s is σ-compact; we want to show f is σ-compact.
     -- Write f(s) as a union of compact sets L n, so s = ⋃ K n with K n := f⁻¹(L n).
@@ -1418,10 +1416,12 @@ lemma Embedding.isSigmaCompact_iff_isSigmaCompact_image {f : α → β} {s : Set
         _ = f ⁻¹' (⋃ n, L n) := by rw [preimage_iUnion]
         _ = f ⁻¹' (f '' s) := by rw [hcov]
         _ = s := preimage_image_eq s hf.inj
+  · exact fun h ↦ h.image (continuous hf)
 
-lemma isSigmaCompact_iff_isSigmaCompact_in_subtype {p : α → Prop} {s : Set { a // p a }} :
-    IsSigmaCompact s ↔ IsSigmaCompact (((↑) : _ → α) '' s) :=
-  embedding_subtype_val.isSigmaCompact_iff_isSigmaCompact_image
+/-- Sets of subtype are σ-compact iff the image under a coercion is. -/
+lemma isSigmaCompact_subtype {p : α → Prop} {s : Set { a // p a }} :
+    IsSigmaCompact s ↔ IsSigmaCompact ((↑) '' s : Set α) :=
+  embedding_subtype_val.isSigmaCompact_image_iff.symm
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
@@ -1448,7 +1448,7 @@ lemma isSigmaCompact_range {f : α → β} (hf : Continuous f) [i : SigmaCompact
 /-- A subset `s` is σ-compact iff `s` (with the subspace topology) is a σ-compact space. -/
 lemma isSigmaCompact_iff_isSigmaCompact_univ {s : Set α} :
     IsSigmaCompact s ↔ IsSigmaCompact (univ : Set s) := by
-  rw [isSigmaCompact_iff_isSigmaCompact_in_subtype, image_univ, Subtype.range_coe]
+  rw [isSigmaCompact_subtype, image_univ, Subtype.range_coe]
 
 lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set α} :
     IsSigmaCompact s ↔ SigmaCompactSpace s :=
