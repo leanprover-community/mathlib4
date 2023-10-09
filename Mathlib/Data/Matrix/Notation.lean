@@ -82,8 +82,8 @@ For instance:
 
 This notation implements some special cases:
 
-* `![;;]`, with `m` `;`s, is a term of type `Matrix (Fin m) (Fin 0) α`
 * `![,,]`, with `n` `,`s, is a term of type `Matrix (Fin 0) (Fin n) α`
+* `![;;]`, with `m` `;`s, is a term of type `Matrix (Fin m) (Fin 0) α`
 * `![]` is the 0×0 matrix
 
 Note that vector notation is provided elsewhere (by `Matrix.vecNotation`) as `![a, b, c]`.
