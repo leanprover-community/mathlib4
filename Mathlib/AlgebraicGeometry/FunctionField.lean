@@ -89,7 +89,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.open_range _
   rw [Set.univ_inter, Set.image_univ]
-  apply PreirreducibleSpace.isPreirreducible_univ (α := Y.carrier)
+  apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
   exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 #align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersion
 
