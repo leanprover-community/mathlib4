@@ -68,7 +68,7 @@ lemma logIntegralExp_zero_right (μ : Measure α) [IsProbabilityMeasure μ] :
     logIntegralExp μ 0 = 0 := by
   simp [logIntegralExp]
 
-lemma logIntegralExp_of_not_integrable {μ : Measure α} [NeZero μ] {f : α → ℝ}
+lemma logIntegralExp_of_not_integrable {μ : Measure α} {f : α → ℝ}
     (hf : ¬ Integrable (fun x ↦ exp (f x)) μ) :
     logIntegralExp μ f = 0 := by
   simp only [logIntegralExp, log_eq_zero]
@@ -287,8 +287,8 @@ lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFi
   | inr h0 =>
     suffices μ.rnDeriv (ν.tilted f)
         =ᵐ[ν] fun x ↦ (ENNReal.ofReal (exp (- f x + logIntegralExp ν f)) * μ.rnDeriv ν x) by
-      suffices (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
-          =ᵐ[ν] fun x ↦ (ENNReal.ofReal (exp (- f x + logIntegralExp ν f)) * μ.rnDeriv ν x).toReal by
+      suffices (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal) =ᵐ[ν]
+          fun x ↦ (ENNReal.ofReal (exp (- f x + logIntegralExp ν f)) * μ.rnDeriv ν x).toReal by
         filter_upwards [this] with x hx
         rw [hx, ENNReal.toReal_mul, ENNReal.toReal_ofReal (exp_pos _).le]
       filter_upwards [this] with x hx

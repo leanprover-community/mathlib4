@@ -438,11 +438,10 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
       add_comm (ν₂.singularPart μ), add_assoc, add_comm _ (ν₂.singularPart μ),
       ← ν₂.haveLebesgueDecomposition_add μ, ← add_assoc, ← ν₁.haveLebesgueDecomposition_add μ]
 
-lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
-    (hμν : μ ⟂ₘ ν) :
+lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} [SigmaFinite ν] (hμν : μ ⟂ₘ ν) :
     μ.rnDeriv ν =ᵐ[ν] 0 := by
   refine (Measure.eq_rnDeriv measurable_zero hμν ?_).symm
-  simp only [withDensity_zero, add_zero]
+  rw [withDensity_zero, add_zero]
 
 open VectorMeasure SignedMeasure
 
