@@ -58,7 +58,7 @@ open Set Filter Topology TopologicalSpace Classical
 
 universe u v
 
-variable {X : Type u} {Y : Type v} {ι : Type*} {π : ι → Type*}
+variable {X : Type u} {Y : Type*} {ι : Type*} {π : ι → Type*}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
