@@ -63,7 +63,7 @@ lemma ContextFreeRule.RewritesTo.toParts {N : Type _} {r : ContextFreeRule T N}
     use x :: p', q'
     simp [bef, aft]
 
-lemma ContextFreeRule.rewritesTo_of_parts {N : Type _}
+lemma ContextFreeRule.rewritesTo_of_exists_parts {N : Type _}
     (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
     r.RewritesTo (p ++ [Symbol.nonterminal r.input] ++ q) (p ++ r.output ++ q) := by
   induction p with
