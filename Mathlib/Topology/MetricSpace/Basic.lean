@@ -1953,7 +1953,7 @@ lemma eventually_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
     ∀ᶠ r in 𝓝 (0 : ℝ), IsCompact (closedBall x r) := by
   rcases local_compact_nhds (x := x) (n := univ) univ_mem with ⟨s, hs, -, s_compact⟩
   filter_upwards [eventually_closedBall_subset hs] with r hr
-  exact isCompact_of_isClosed_subset s_compact isClosed_ball hr
+  exact IsCompact.of_isClosed_subset s_compact isClosed_ball hr
 
 lemma exists_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
     ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
@@ -2139,7 +2139,7 @@ theorem sphere_pi (x : ∀ b, π b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
     sphere x r = (⋃ i : β, Function.eval i ⁻¹' sphere (x i) r) ∩ closedBall x r := by
   obtain hr | rfl | hr := lt_trichotomy r 0
   · simp [hr]
-  · rw [closedBall_eq_sphere_of_nonpos le_rfl, eq_comm, Set.inter_eq_right_iff_subset]
+  · rw [closedBall_eq_sphere_of_nonpos le_rfl, eq_comm, Set.inter_eq_right]
     letI := h.resolve_left (lt_irrefl _)
     inhabit β
     refine' subset_iUnion_of_subset default _
@@ -2204,7 +2204,7 @@ export ProperSpace (isCompact_closedBall)
 /-- In a proper pseudometric space, all spheres are compact. -/
 theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
     IsCompact (sphere x r) :=
-  isCompact_of_isClosed_subset (isCompact_closedBall x r) isClosed_sphere sphere_subset_closedBall
+  (isCompact_closedBall x r).of_isClosed_subset isClosed_sphere sphere_subset_closedBall
 #align is_compact_sphere isCompact_sphere
 
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
@@ -2224,22 +2224,11 @@ instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
   · exact ⟨⟨fun _ => ∅, fun _ => isCompact_empty, iUnion_eq_univ_iff.2 fun x => (hn ⟨x⟩).elim⟩⟩
 #align second_countable_of_proper secondCountable_of_proper
 
-theorem tendsto_dist_right_cocompact_atTop [ProperSpace α] (x : α) :
-    Tendsto (fun y => dist y x) (cocompact α) atTop :=
-  (hasBasis_cocompact.tendsto_iff atTop_basis).2 fun r _ =>
-    ⟨closedBall x r, isCompact_closedBall x r, fun _y hy => (not_le.1 <| mt mem_closedBall.2 hy).le⟩
-#align tendsto_dist_right_cocompact_at_top tendsto_dist_right_cocompact_atTop
-
-theorem tendsto_dist_left_cocompact_atTop [ProperSpace α] (x : α) :
-    Tendsto (dist x) (cocompact α) atTop := by
-  simpa only [dist_comm] using tendsto_dist_right_cocompact_atTop x
-#align tendsto_dist_left_cocompact_at_top tendsto_dist_left_cocompact_atTop
-
 /-- If all closed balls of large enough radius are compact, then the space is proper. Especially
 useful when the lower bound for the radius is 0. -/
 theorem properSpace_of_compact_closedBall_of_le (R : ℝ)
     (h : ∀ x : α, ∀ r, R ≤ r → IsCompact (closedBall x r)) : ProperSpace α :=
-  ⟨fun x r => isCompact_of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
+  ⟨fun x r => IsCompact.of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
 #align proper_space_of_compact_closed_ball_of_le properSpace_of_compact_closedBall_of_le
 
@@ -2298,8 +2287,7 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · exact ⟨r / 2, ⟨half_pos hr, half_lt_self hr⟩, empty_subset _⟩
   have : IsCompact s :=
-    isCompact_of_isClosed_subset (isCompact_closedBall x r) hs
-      (h.trans ball_subset_closedBall)
+    (isCompact_closedBall x r).of_isClosed_subset hs (h.trans ball_subset_closedBall)
   obtain ⟨y, hys, hy⟩ : ∃ y ∈ s, s ⊆ closedBall x (dist y x) :=
     this.exists_forall_ge hne (continuous_id.dist continuous_const).continuousOn
   have hyr : dist y x < r := h hys
@@ -2409,6 +2397,9 @@ theorem _root_.Bornology.IsBounded.subset_ball_lt (h : IsBounded s) (a : ℝ) (c
 theorem _root_.Bornology.IsBounded.subset_ball (h : IsBounded s) (c : α) : ∃ r, s ⊆ ball c r :=
   (h.subset_ball_lt 0 c).imp fun _ ↦ And.right
 
+theorem isBounded_iff_subset_ball (c : α) : IsBounded s ↔ ∃ r, s ⊆ ball c r :=
+  ⟨(IsBounded.subset_ball · c), fun ⟨_r, hr⟩ ↦ isBounded_ball.subset hr⟩
+
 theorem _root_.Bornology.IsBounded.subset_closedBall_lt (h : IsBounded s) (a : ℝ) (c : α) :
     ∃ r, a < r ∧ s ⊆ closedBall c r :=
   let ⟨r, har, hr⟩ := h.subset_ball_lt a c
@@ -2435,6 +2426,39 @@ theorem isBounded_closure_iff : IsBounded (closure s) ↔ IsBounded s :=
 #align metric.bounded_bUnion Bornology.isBounded_biUnion
 #align metric.bounded.prod Bornology.IsBounded.prod
 
+theorem hasBasis_cobounded_compl_closedBall (c : α) :
+    (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
+  ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_closedBall c).trans <| by simp⟩
+
+theorem hasBasis_cobounded_compl_ball (c : α) :
+    (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (ball c r)ᶜ) :=
+  ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_ball c).trans <| by simp⟩
+
+@[simp]
+theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α :=
+  (atTop_basis.comap _).eq_of_same_basis <| by
+    simpa only [compl_def, mem_ball, not_lt] using hasBasis_cobounded_compl_ball c
+
+@[simp]
+theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := by
+  simpa only [dist_comm _ c] using comap_dist_right_atTop c
+
+@[simp]
+theorem tendsto_dist_right_atTop_iff (c : α) {f : β → α} {l : Filter β} :
+    Tendsto (fun x ↦ dist (f x) c) l atTop ↔ Tendsto f l (cobounded α) := by
+  rw [← comap_dist_right_atTop c, tendsto_comap_iff]; rfl
+
+@[simp]
+theorem tendsto_dist_left_atTop_iff (c : α) {f : β → α} {l : Filter β} :
+    Tendsto (fun x ↦ dist c (f x)) l atTop ↔ Tendsto f l (cobounded α) := by
+  simp only [dist_comm c, tendsto_dist_right_atTop_iff]
+
+theorem tendsto_dist_right_cobounded_atTop (c : α) : Tendsto (dist · c) (cobounded α) atTop :=
+  tendsto_iff_comap.2 (comap_dist_right_atTop c).ge
+
+theorem tendsto_dist_left_cobounded_atTop (c : α) : Tendsto (dist c) (cobounded α) atTop :=
+  tendsto_iff_comap.2 (comap_dist_left_atTop c).ge
+
 /-- A totally bounded set is bounded -/
 theorem _root_.TotallyBounded.isBounded {s : Set α} (h : TotallyBounded s) : IsBounded s :=
   -- We cover the totally bounded set by finitely many balls of radius 1,
@@ -2452,6 +2476,11 @@ theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s 
 #align metric.bounded_of_finite Set.Finite.isBounded
 #align set.finite.bounded Set.Finite.isBounded
 #align metric.bounded_singleton Bornology.isBounded_singleton
+
+theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
+  hasBasis_cocompact.ge_iff.2 fun _s hs ↦ hs.isBounded
+#align comap_dist_right_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
+#align comap_dist_left_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 
 /-- Characterization of the boundedness of the range of a function -/
 theorem isBounded_range_iff {f : β → α} : IsBounded (range f) ↔ ∃ C, ∀ x y, dist (f x) (f y) ≤ C :=
@@ -2558,7 +2587,7 @@ theorem isCompact_of_isClosed_isBounded [ProperSpace α] (hc : IsClosed s) (hb :
   rcases eq_empty_or_nonempty s with (rfl | ⟨x, -⟩)
   · exact isCompact_empty
   · rcases hb.subset_closedBall x with ⟨r, hr⟩
-    exact isCompact_of_isClosed_subset (isCompact_closedBall x r) hc hr
+    exact (isCompact_closedBall x r).of_isClosed_subset hc hr
 #align metric.is_compact_of_is_closed_bounded Metric.isCompact_of_isClosed_isBounded
 
 /-- The **Heine–Borel theorem**: In a proper space, the closure of a bounded set is compact. -/
@@ -2834,32 +2863,29 @@ def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
-theorem comap_dist_right_atTop_le_cocompact (x : α) :
-    comap (fun y => dist y x) atTop ≤ cocompact α := by
-  refine' Filter.hasBasis_cocompact.ge_iff.2 fun s hs => mem_comap.2 _
-  rcases hs.isBounded.subset_closedBall x with ⟨r, hr⟩
-  exact ⟨Ioi r, Ioi_mem_atTop r, fun y hy hys => (mem_closedBall.1 <| hr hys).not_lt hy⟩
-#align comap_dist_right_at_top_le_cocompact comap_dist_right_atTop_le_cocompact
+theorem Metric.cobounded_eq_cocompact [ProperSpace α] : cobounded α = cocompact α := by
+  nontriviality α; inhabit α
+  exact cobounded_le_cocompact.antisymm <| (hasBasis_cobounded_compl_closedBall default).ge_iff.2
+    fun _ _ ↦ (isCompact_closedBall _ _).compl_mem_cocompact
+#align comap_dist_right_at_top_eq_cocompact Metric.cobounded_eq_cocompact
 
-theorem comap_dist_left_atTop_le_cocompact (x : α) : comap (dist x) atTop ≤ cocompact α := by
-  simpa only [dist_comm _ x] using comap_dist_right_atTop_le_cocompact x
-#align comap_dist_left_at_top_le_cocompact comap_dist_left_atTop_le_cocompact
+theorem tendsto_dist_right_cocompact_atTop [ProperSpace α] (x : α) :
+    Tendsto (dist · x) (cocompact α) atTop :=
+  (tendsto_dist_right_cobounded_atTop x).mono_left cobounded_eq_cocompact.ge
+#align tendsto_dist_right_cocompact_at_top tendsto_dist_right_cocompact_atTop
 
-theorem comap_dist_right_atTop_eq_cocompact [ProperSpace α] (x : α) :
-    comap (fun y => dist y x) atTop = cocompact α :=
-  (comap_dist_right_atTop_le_cocompact x).antisymm <|
-    (tendsto_dist_right_cocompact_atTop x).le_comap
-#align comap_dist_right_at_top_eq_cocompact comap_dist_right_atTop_eq_cocompact
+theorem tendsto_dist_left_cocompact_atTop [ProperSpace α] (x : α) :
+    Tendsto (dist x) (cocompact α) atTop :=
+  (tendsto_dist_left_cobounded_atTop x).mono_left cobounded_eq_cocompact.ge
+#align tendsto_dist_left_cocompact_at_top tendsto_dist_left_cocompact_atTop
 
 theorem comap_dist_left_atTop_eq_cocompact [ProperSpace α] (x : α) :
-    comap (dist x) atTop = cocompact α :=
-  (comap_dist_left_atTop_le_cocompact x).antisymm <| (tendsto_dist_left_cocompact_atTop x).le_comap
+    comap (dist x) atTop = cocompact α := by simp [cobounded_eq_cocompact]
 #align comap_dist_left_at_top_eq_cocompact comap_dist_left_atTop_eq_cocompact
 
 theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter β} (x : α)
-    (h : Tendsto (fun y => dist (f y) x) l atTop) : Tendsto f l (cocompact α) := by
-  refine' Tendsto.mono_right _ (comap_dist_right_atTop_le_cocompact x)
-  rwa [tendsto_comap_iff]
+    (h : Tendsto (fun y => dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
+  ((tendsto_dist_right_atTop_iff _).1 h).mono_right cobounded_le_cocompact
 #align tendsto_cocompact_of_tendsto_dist_comp_at_top tendsto_cocompact_of_tendsto_dist_comp_atTop
 
 /-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
