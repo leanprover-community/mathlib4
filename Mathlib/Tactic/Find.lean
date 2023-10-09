@@ -286,7 +286,8 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
     let mut terms := #[]
     match args with
     | `(find_filters| $args':find_filter,*) =>
-      for arg in args'.getElems do
+      for argi in List.range args'.getElems.size do
+      let arg := args'.getElems[argi]!
         match arg with
         | `(find_filter| $_:turnstyle $s:term) => do
           let e ← elabTerm' s (some (mkSort (← mkFreshLevelMVar)))
@@ -304,8 +305,13 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
           if (← getEnv).contains n then
             idents := idents.push n
           else
-            let _suggestedNames ← resolveUnqualifiedName index n
-            return .error ⟨i, m!"unknown identifier '{n}'", #[]⟩ -- TODO
+            let suggestedNames ← resolveUnqualifiedName index n
+            let suggestions ← suggestedNames.mapM fun sugg => do
+              let id := Lean.mkIdent sugg
+              let arg' ← `(find_filter|$id:ident)
+              let ss := Syntax.TSepArray.mk (args'.elemsAndSeps.set! (2 * argi) arg')
+              `(find_filters|$ss:find_filter,*)
+            return .error ⟨i, m!"unknown identifier '{n}'", suggestions⟩ -- TODO
         | `(find_filter| _) => do
             return .error ⟨arg, "Cannot search for _. " ++
               "Did you forget to put a term pattern in parentheses?", #[]⟩
@@ -475,8 +481,9 @@ cache will stay up-to-date.
 elab "#find " args:find_filters : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
     match ← find cachedIndex args with
-    | .error ⟨s, warn, _suggestions⟩ =>
+    | .error ⟨s, warn, suggestions⟩ => do
       Lean.logErrorAt s warn
+      suggestions.forM fun sugg => Std.Tactic.TryThis.addSuggestion args sugg
     | .ok result =>
       let names := result.hits.map (·.1.name)
       Lean.logInfo $ result.header ++ (← MessageData.bulletListOfConsts names)

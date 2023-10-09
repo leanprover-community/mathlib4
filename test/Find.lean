@@ -274,7 +274,11 @@ def Namespaced.TestDefinition := true
 theorem TestDefinition_eq_true:
   Namespaced.TestDefinition = true := rfl
 
-/-- error: unknown identifier 'TestDefinition' -/
+/--
+error: unknown identifier 'TestDefinition'
+---
+info: Try this: Namespaced.TestDefinition
+-/
 #guard_msgs in
 #find TestDefinition
 
@@ -289,6 +293,26 @@ theorem NamespcedA.AnotherTestDefinition_eq_true:
 theorem NamespcedB.AnotherTestDefinition_eq_true:
   NamespacedB.AnotherTestDefinition = true := rfl
 
-/-- error: unknown identifier 'AnotherTestDefinition' -/
+/--
+error: unknown identifier 'AnotherTestDefinition'
+---
+info: Try this: NamespacedA.AnotherTestDefinition
+---
+info: Try this: NamespacedB.AnotherTestDefinition
+---
+info: Try this: NamespacedC.AnotherTestDefinition
+-/
 #guard_msgs in
 #find AnotherTestDefinition
+
+/--
+error: unknown identifier 'AnotherTestDefinition'
+---
+info: Try this: "some string before", NamespacedA.AnotherTestDefinition, some (Expr after)
+---
+info: Try this: "some string before", NamespacedB.AnotherTestDefinition, some (Expr after)
+---
+info: Try this: "some string before", NamespacedC.AnotherTestDefinition, some (Expr after)
+-/
+#guard_msgs in
+#find "some string before", AnotherTestDefinition, some (Expr after)
