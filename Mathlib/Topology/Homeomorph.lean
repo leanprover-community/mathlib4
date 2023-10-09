@@ -147,8 +147,8 @@ protected theorem continuous_symm (h : X ≃ₜ Y) : Continuous h.symm :=
 #align homeomorph.continuous_symm Homeomorph.continuous_symm
 
 @[simp]
-theorem apply_symm_apply (h : X ≃ₜ Y) (x : Y) : h (h.symm x) = x :=
-  h.toEquiv.apply_symm_apply x
+theorem apply_symm_apply (h : X ≃ₜ Y) (y : Y) : h (h.symm y) = y :=
+  h.toEquiv.apply_symm_apply y
 #align homeomorph.apply_symm_apply Homeomorph.apply_symm_apply
 
 @[simp]
@@ -452,8 +452,8 @@ theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ 
   h.quotientMap.continuous_iff.symm
 #align homeomorph.comp_continuous_iff' Homeomorph.comp_continuous_iff'
 
-theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (x : Z) :
-    ContinuousAt (h ∘ f) x ↔ ContinuousAt f x :=
+theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
+    ContinuousAt (h ∘ f) z ↔ ContinuousAt f z :=
   h.inducing.continuousAt_iff.symm
 #align homeomorph.comp_continuous_at_iff Homeomorph.comp_continuousAt_iff
 
@@ -462,8 +462,8 @@ theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
   h.inducing.continuousAt_iff' (by simp)
 #align homeomorph.comp_continuous_at_iff' Homeomorph.comp_continuousAt_iff'
 
-theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (x : Z) :
-    ContinuousWithinAt f s x ↔ ContinuousWithinAt (h ∘ f) s x :=
+theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (z : Z) :
+    ContinuousWithinAt f s z ↔ ContinuousWithinAt (h ∘ f) s z :=
   h.inducing.continuousWithinAt_iff
 #align homeomorph.comp_continuous_within_at_iff Homeomorph.comp_continuousWithinAt_iff
 
