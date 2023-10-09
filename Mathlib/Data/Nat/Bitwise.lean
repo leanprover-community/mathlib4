@@ -91,19 +91,15 @@ lemma bitwise'_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
   conv_lhs => { rw [←bit_decomp n, ←bit_decomp m] }
   rw [bitwise'_bit', bit, div2_val, div2_val]
   case ham =>
-    rcases n with ⟨⟩|⟨⟩|x
-    <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+    obtain ⟨⟩ | n := n
     · contradiction
-    · cases bodd x
-      <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
-        ite_true, ite_false]
+    · simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+      cases bodd n <;> simp
   case hbn =>
-    rcases m with ⟨⟩|⟨⟩|x
-    <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+    obtain ⟨⟩ | m := m
     · contradiction
-    · cases bodd x
-      <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
-        ite_true, ite_false]
+    · simp only [div2_succ, cond, bodd_succ, Bool.not_not]
+      cases bodd m <;> simp
 
 lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
   funext x y
