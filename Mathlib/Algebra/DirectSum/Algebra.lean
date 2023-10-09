@@ -52,9 +52,9 @@ class GAlgebra where
   toFun : R →+ A 0
   map_one : toFun 1 = GradedMonoid.GOne.one
   map_mul :
-    ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = ⟨_, GradedMonoid.GMul.mul (toFun r) (toFun s)⟩
-  commutes : ∀ r x, GradedMonoid.mk _ (toFun r) * x = x * GradedMonoid.mk _ (toFun r)
-  smul_def : ∀ (r) (x : GradedMonoid A), r • x = GradedMonoid.mk _ (toFun r) * x
+    ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = .mk _ (GradedMonoid.GMul.mul (toFun r) (toFun s))
+  commutes : ∀ (r) (x : GradedMonoid A), .mk _ (toFun r) * x = x * .mk _ (toFun r)
+  smul_def : ∀ (r) (x : GradedMonoid A), r • x = .mk _ (toFun r) * x
 #align direct_sum.galgebra DirectSum.GAlgebra
 
 end
@@ -68,6 +68,18 @@ instance : SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
     rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance : IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
+  smul_assoc s x y := by
+    dsimp
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+
+instance _root_.GradedMonoid.smulCommClass_right :
+    SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
+  smul_comm s x y := by
+    dsimp
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+
+instance _root_.GradedMonoid.isScalarTower_right :
+    IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
   smul_assoc s x y := by
     dsimp
     rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
@@ -137,7 +149,9 @@ theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i 
   algHom_ext' R A fun i => LinearMap.ext <| h i
 #align direct_sum.alg_hom_ext DirectSum.algHom_ext
 
-/-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism. -/
+/-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism.
+
+This is the graded version of `LinearMap.mul`, and the linear version of `DirectSum.gMulHom` -/
 @[simps]
 def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
   toFun a :=
