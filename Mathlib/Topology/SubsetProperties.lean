@@ -2060,7 +2060,7 @@ theorem isClosed_and_discrete_iff {S : Set α} : IsClosed S ∧ DiscreteTopology
 variable (α)
 
 /-- In any topological space, the open sets with with discrete complement form a filter. -/
-def Filter.Codiscrete : Filter α where
+def Filter.codiscrete : Filter α where
   sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
   univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
   sets_of_superset := by
