@@ -34,6 +34,53 @@ instance {α : Type _} [DecidableEq α] : @DecidablePred (Finset (Finset α)) ex
       have ⟨a, ha⟩ := h _ hs₁ _ hs₂ hs
       exists a; simp only [Finset.mem_sdiff, ha, not_false_eq_true, and_self])
 
+theorem exchangeProperty_exists_superset_of_card_le {α : Type _} [DecidableEq α]
+  {Sys : Finset (Finset α)} (hSys : exchangeProperty Sys)
+  {s₁ : Finset α} (hs₁ : s₁ ∈ Sys)
+  {s₂ : Finset α} (hs₂ : s₂ ∈ Sys)
+  (hs : s₂.card ≤ s₁.card)
+  {n : ℕ} (hn₁ : n ≤ s₁.card) (hn₂ : s₂.card ≤ n) :
+    ∃ s ∈ Sys, s₂ ⊆ s ∧ s ⊆ s₁ ∪ s₂ ∧ s.card = n := by
+  by_cases h : s₂.card = n
+  · exists s₂
+    simp_all only [Finset.Subset.refl, Finset.subset_union_right]
+  · have ⟨x, hx₁, hx₂⟩ := hSys hs₁ hs₂ (Nat.lt_iff_le_and_ne.mpr ⟨hs, by
+      intro h₁
+      apply h
+      apply le_antisymm hn₂
+      exact h₁ ▸ hn₁⟩)
+    have h₁ : (insert x s₂).card = s₂.card + 1 :=
+      Finset.card_insert_of_not_mem (Finset.mem_sdiff.mp hx₁).2
+    have ⟨b, hb⟩ := exchangeProperty_exists_superset_of_card_le hSys hs₁ hx₂ (by
+      rw [h₁, Nat.succ_le, Nat.lt_iff_le_and_ne]
+      apply And.intro hs
+      intro h₂
+      apply h
+      apply le_antisymm hn₂
+      exact h₂ ▸ hn₁) hn₁ (by
+      rw [h₁, Nat.succ_le]
+      exact Nat.lt_of_lt_of_le (Nat.lt_iff_le_and_ne.mpr ⟨hn₂, h⟩) le_rfl)
+    exists b
+    exact ⟨hb.1, subset_trans (Finset.subset_insert _ _) hb.2.1, by
+      intro _ h
+      have h := hb.2.2.1 h
+      simp only [Finset.union_insert, Finset.mem_union, Finset.mem_insert] at h
+      rw [Finset.mem_union]
+      apply h.elim _ (fun h => h)
+      intro h
+      simp only [← h, Finset.mem_sdiff] at hx₁
+      simp only [hx₁], hb.2.2.2⟩
+termination_by exchangeProperty_exists_superset_of_card_le => s₁.card - s₂.card
+decreasing_by
+  simp_wf
+  rw [h₁, Nat.sub_add_eq]
+  apply Nat.sub_lt _ (by decide)
+  rw [tsub_pos_iff_lt, Nat.lt_iff_le_and_ne]
+  apply And.intro hs
+  intro h₂
+  apply h
+  exact le_antisymm hn₂ (h₂ ▸ hn₁)
+
 /-- The accessible property of greedoid -/
 def accessibleProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop :=
   {s : Finset α} → s ∈ Sys → s ≠ ∅ → ∃ x ∈ s, s \ {x} ∈ Sys
@@ -1259,6 +1306,13 @@ section BasisRank
 
 variable {s : Finset α}
 
+theorem feasibleSet_inter_card_le_basisRank {t : Finset α} (ht : t ∈ G) :
+    (s ∩ t).card ≤ G.basisRank s := by
+  simp only [basisRank]
+  apply le_max'
+  simp only [mem_image, system_feasible_set_mem_mem]
+  exists t
+
 theorem exists_feasible_satisfying_basisRank :
     ∃ t ∈ G, G.basisRank s = (s ∩ t).card := by
   simp only [basisRank]
@@ -1267,15 +1321,12 @@ theorem exists_feasible_satisfying_basisRank :
   exists t
   rw [system_feasible_set_mem_mem] at ht₁
   simp only [ht₁, true_and]
-  apply Nat.le_antisymm
-  · apply Finset.max'_le
-    intro n hn
-    simp only [mem_image] at hn
-    let ⟨_, h₁, h₂⟩ := hn
-    exact h₂ ▸ ht₂ _ h₁
-  · apply Finset.le_max'
-    simp only [mem_image]
-    exists t
+  apply Nat.le_antisymm _ (feasibleSet_inter_card_le_basisRank ht₁)
+  apply max'_le
+  intro n hn
+  simp only [mem_image] at hn
+  let ⟨_, h₁, h₂⟩ := hn
+  exact h₂ ▸ ht₂ _ h₁
 
 theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   simp only [rank, filter_congr_decidable, basisRank, max'_le_iff, mem_image, Finset.mem_filter,
@@ -1283,7 +1334,7 @@ theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   intro n t h₁ h₂ h₃
   rw [← h₃]
   apply Finset.le_max'
-  simp
+  simp only [mem_image, system_feasible_set_mem_mem]
   exists t
   rw [← inter_eq_right] at h₂
   simp only [h₂, h₁]
@@ -1343,11 +1394,57 @@ theorem feasible_iff_rankFeasible_of_full [Full G] :
 
 -- p.64, lemma 3.1
 theorem exists_superset_feasible_satisfying_basisRank {t : Finset α} (ht₁ : t ⊆ s) (ht₂ : t ∈ G) :
-    ∃ b ∈ G, t ⊆ b ∧ G.basisRank b = (s ∩ b).card := by
+    ∃ b ∈ G, t ⊆ b ∧ G.basisRank s = (s ∩ b).card := by
   have ⟨c, hc₁, hc₂⟩ : ∃ c ∈ G, G.basisRank s = (s ∩ c).card := exists_feasible_satisfying_basisRank
   by_cases h : c.card ≤ t.card
-  · sorry
-  · sorry
+  · have h₁ : t.card ≤ G.basisRank s := by
+      have ⟨b, hb₁, hb₂⟩ := G.exists_basis_containing_feasible_set ht₂ ht₁
+      apply Nat.le_trans (card_le_of_subset hb₂)
+      simp only [basisRank]
+      apply le_max'
+      simp only [mem_image, system_feasible_set_mem_mem]
+      exists b
+      simp only [G.basis_mem_feasible hb₁, inter_eq_right.mpr (G.basis_subset hb₁)]
+    have h₂ : G.basisRank s ≤ c.card := hc₂ ▸ card_le_of_subset (Finset.inter_subset_right _ _)
+    have h₃ : G.basisRank s = t.card := le_antisymm (le_trans h₂ h) h₁
+    exists t
+    simp only [ht₂, Finset.Subset.refl, inter_eq_right.mpr ht₁, h₃]
+  · simp only [not_le] at h
+    have ⟨b, hb₁, hb₂, hb₃, hb₄⟩ :=
+      exchangeProperty_exists_superset_of_card_le G.exchangeProperty hc₁ ht₂ (le_of_lt h) le_rfl
+        (le_of_lt h)
+    exists b
+    apply And.intro hb₁ (And.intro hb₂ _)
+    have h₀ (x y : Finset α) : x.card = (x \ y).card + (x ∩ y).card := by
+      rw [← card_disjoint_union (disjoint_sdiff_inter _ _), sdiff_union_inter]
+    have h₁ {x y : Finset α} : (x ∩ y).card = x.card - (x \ y).card := by
+      simp only [h₀ x y, add_tsub_cancel_left]
+    have h₂ {x y : Finset α} : (x \ y).card = x.card - (x ∩ y).card := by
+      simp only [h₀ x y, add_tsub_cancel_right]
+    have h₃ {x y : Finset α} : (x \ y).card ≤ x.card := by
+      simp only [h₂, tsub_le_iff_right, le_add_iff_nonneg_right, _root_.zero_le]
+    have h₄ {x y z : Finset α} (h : x ⊆ z) : (x \ y).card ≤ (z \ y).card := by
+      apply Finset.card_le_of_subset
+      intro _ h'
+      rw [mem_sdiff] at *
+      exact ⟨h h'.1, h'.2⟩
+    apply Nat.le_antisymm _ (feasibleSet_inter_card_le_basisRank hb₁)
+    rw [hc₂, inter_comm s, inter_comm s, h₁, h₁, tsub_le_iff_right, ← Nat.sub_add_comm h₃,
+      le_tsub_iff_right (le_trans h₃ (Nat.le_add_right _ _))]
+    simp only [hb₄, add_le_add_iff_left]
+    apply le_trans (h₄ hb₃) (le_of_eq _)
+    have h : (c ∪ t) \ s = c \ s := by
+      ext; constructor <;> intro h
+      · simp only [mem_sdiff, mem_union] at h
+        let ⟨h₁, h₂⟩ := h
+        simp only [mem_sdiff, h₂, not_false_eq_true, and_true]
+        apply h₁.elim (fun h₁ => h₁)
+        intro h₁
+        exfalso
+        exact h₂ (ht₁ h₁)
+      · simp only [mem_sdiff] at h
+        simp only [mem_sdiff, mem_union, h, true_or]
+    rw [h]
 
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
