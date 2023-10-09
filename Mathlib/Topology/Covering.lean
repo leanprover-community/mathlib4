@@ -192,6 +192,11 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
 #align fiber_bundle.is_covering_map FiberBundle.isCoveringMap
 
+/-- Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
+  `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
+  that covers `f⁻¹(V)` such that (1) `f` is injective on each `U_i`, (2) `V` is contained in
+  the image `f(U_i)` for every `i`, and moreover (3) the open sets in `V` is determined by
+  their preimages in each `U_i`. Then `f` admits a `Trivialization` over the base set `V`. -/
 noncomputable def IsOpen.trivialization_discrete (hE : Nonempty E ∨ f.Surjective)
     {ι} [Nonempty ι] [t : TopologicalSpace ι] [d : DiscreteTopology ι] (U : ι → Set E) (V : Set X)
     (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))
@@ -258,21 +263,22 @@ variable {G} [t : TopologicalSpace G] [d : DiscreteTopology G]
   [Group G] [MulAction G E] [ContinuousConstSMul G E]
   {p : E → X} (hp : QuotientMap p) (hpG : ∀ {e₁ e₂}, p e₁ = p e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
 
-@[to_additive]
-lemma trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
-    (disjoint : ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) :
-    ∃ t : Trivialization G p, t.baseSet = p '' U := by
+/-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
+  `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
+  `Trivialization` over the base set `p(U)`. -/
+@[to_additive] noncomputable def trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
+    (disjoint : ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) : Trivialization G p := by
   have pGE : ∀ (g : G) e, p (g • e) = p e := fun g e ↦ hpG.mpr ⟨g, rfl⟩
   simp_rw [← Set.nonempty_iff_ne_empty] at disjoint
   have preim_im : p ⁻¹' (p '' U) = ⋃ g : G, (g • ·) ⁻¹' U
   · ext e; refine ⟨fun ⟨e', heU, he⟩ ↦ ?_, ?_⟩
     · obtain ⟨g, rfl⟩ := hpG.mp he; exact ⟨_, ⟨g, rfl⟩, heU⟩
     · intro ⟨_, ⟨g, rfl⟩, hg⟩; exact ⟨_, hg, pGE g e⟩
-  refine ⟨IsOpen.trivialization_discrete (Or.inr hp.surjective) (fun g ↦ (g • ·) ⁻¹' U) (p '' U)
+  refine IsOpen.trivialization_discrete (Or.inr hp.surjective) (fun g ↦ (g • ·) ⁻¹' U) (p '' U)
     ?_ (fun g W hWU ↦ ⟨fun hoW ↦ (hoW.preimage hp.continuous).inter (open_U.preimage <|
       continuous_const_smul g), fun isOpen ↦ hp.isOpen_preimage.mp ?_⟩) (fun g e₁ h₁ e₂ h₂ he ↦ ?_)
     ?_ (fun {g₁ g₂} hne ↦ disjoint_iff_inf_le.mpr fun e ⟨h₁, h₂⟩ ↦ hne <|
-      mul_inv_eq_one.mp (disjoint _ ⟨_, ⟨_, h₂, ?_⟩, h₁⟩)) preim_im.subset, rfl⟩
+      mul_inv_eq_one.mp (disjoint _ ⟨_, ⟨_, h₂, ?_⟩, h₁⟩)) preim_im.subset
   · rw [← hp.isOpen_preimage, preim_im]
     exact isOpen_iUnion fun g ↦ open_U.preimage (continuous_const_smul g)
   · convert isOpen_iUnion fun g : G ↦ isOpen.preimage (continuous_const_smul g)
@@ -296,9 +302,8 @@ lemma trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
   · choose t ht using this; exact IsCoveringMapOn.mk _ _ (fun _ ↦ G) t ht
   rintro x ⟨e, he, rfl⟩
   obtain ⟨U, heU, hU⟩ := disjoint e
-  have := hp.trivialization_of_mulAction hpG (interior U) isOpen_interior fun g hg ↦ ?_
-  · obtain ⟨t, hpU⟩ := this; use t; rw [hpU]
-    exact ⟨e, mem_interior_iff_mem_nhds.mpr heU, rfl⟩
+  refine ⟨hp.trivialization_of_mulAction hpG (interior U) isOpen_interior
+    fun g hg ↦ ?_, e, mem_interior_iff_mem_nhds.mpr heU, rfl⟩
   rw [← Subgroup.mem_bot, ← he]; apply hU; contrapose! hg; exact Set.subset_eq_empty
     (Set.inter_subset_inter (Set.image_subset _ interior_subset) interior_subset) hg
 
