@@ -137,7 +137,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
           isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
       simp [Set.ext_iff] at vu
       have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
-        simp [Set.ext_iff]
+        simp? [Set.ext_iff]
         refine' fun x => ⟨fun ax => _, fun ⟨a', ⟨h, _⟩, ax⟩ => lt_of_lt_of_le h ax⟩
         rcases (vu x).2 (by
           refine' not_imp_comm.1 (fun h => _) h

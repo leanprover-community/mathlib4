@@ -542,7 +542,7 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     Function.update f a b
   mem_support_toFun i := by
     classical
-    simp [Function.update, Ne.def]
+    simp? [Function.update, Ne.def]
     split_ifs with hb ha ha <;>
       try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]

@@ -326,7 +326,7 @@ lemma isZero₂_iff : IsZero T.obj₂ ↔ (T.mor₁ = 0 ∧ T.mor₂ = 0) := by
 lemma isZero₁_iff : IsZero T.obj₁ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
   refine' (isZero₂_iff _ (inv_rot_of_dist_triangle _ hT)).trans _
   dsimp
-  simp [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
+  simp? [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
   tauto
 
 lemma isZero₃_iff : IsZero T.obj₃ ↔ (T.mor₂ = 0 ∧ T.mor₃ = 0) := by

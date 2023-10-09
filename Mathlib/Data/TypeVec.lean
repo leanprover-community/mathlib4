@@ -645,7 +645,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction' i with _ _ _ i_ih
-  simp [prod.diag, diagSub, repeatEq, subtypeVal, comp]
+  simp? [prod.diag, diagSub, repeatEq, subtypeVal, comp]
   apply @i_ih (drop α)
 #align typevec.diag_sub_val TypeVec.diag_sub_val
 

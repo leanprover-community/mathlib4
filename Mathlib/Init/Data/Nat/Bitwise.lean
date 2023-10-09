@@ -243,7 +243,7 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
   fun n =>
     if n0 : n = 0 then by
-      simp [n0]
+      simp? [n0]
       exact z
     else by
       let n' := div2 n
@@ -361,7 +361,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
   by_cases h : bit b n = 0
   -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
   case pos h' =>
-    simp [dif_pos h]
+    simp? [dif_pos h]
     generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
@@ -374,7 +374,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     rw [h']
     rfl
   case neg h' =>
-    simp [dif_neg h]
+    simp? [dif_neg h]
     generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
       (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
     revert e

@@ -370,7 +370,7 @@ theorem Tendsto.prod_map {δ : Type*} {f : α → γ} {g : β → δ} {a : Filte
 
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map m (f ×ˢ g) = (f.map fun a b => m (a, b)).seq g := by
-  simp [Filter.ext_iff, mem_prod_iff, mem_map_seq_iff]
+  simp? [Filter.ext_iff, mem_prod_iff, mem_map_seq_iff]
   intro s
   constructor
   exact fun ⟨t, ht, s, hs, h⟩ => ⟨s, hs, t, ht, fun x hx y hy => @h ⟨x, y⟩ ⟨hx, hy⟩⟩

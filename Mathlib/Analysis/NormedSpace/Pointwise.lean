@@ -414,7 +414,7 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   refine' ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
     ⟨r • ‖y - x‖⁻¹ • (y - x) + x, _⟩⟩
   have : ‖y - x‖ ≠ 0 := by simpa [sub_eq_zero]
-  simp [norm_smul, this, Real.norm_of_nonneg hr]
+  simp? [norm_smul, this, Real.norm_of_nonneg hr]
   rw [inv_mul_cancel this, mul_one, abs_eq_self.mpr hr]
 #align normed_space.sphere_nonempty NormedSpace.sphere_nonempty
 

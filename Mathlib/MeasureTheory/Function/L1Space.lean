@@ -1263,7 +1263,7 @@ def Integrable (f : α →ₘ[μ] β) : Prop :=
 
 theorem integrable_mk {f : α → β} (hf : AEStronglyMeasurable f μ) :
     Integrable (mk f hf : α →ₘ[μ] β) ↔ MeasureTheory.Integrable f μ := by
-  simp [Integrable]
+  simp? [Integrable]
   apply integrable_congr
   exact coeFn_mk f hf
 #align measure_theory.ae_eq_fun.integrable_mk MeasureTheory.AEEqFun.integrable_mk
@@ -1348,12 +1348,12 @@ theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[�
 #align measure_theory.L1.ae_measurable_coe_fn MeasureTheory.L1.aemeasurable_coeFn
 
 theorem edist_def (f g : α →₁[μ] β) : edist f g = ∫⁻ a, edist (f a) (g a) ∂μ := by
-  simp [Lp.edist_def, snorm, snorm']
+  simp? [Lp.edist_def, snorm, snorm']
   simp [edist_eq_coe_nnnorm_sub]
 #align measure_theory.L1.edist_def MeasureTheory.L1.edist_def
 
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
-  simp [Lp.dist_def, snorm, snorm']
+  simp? [Lp.dist_def, snorm, snorm']
   simp [edist_eq_coe_nnnorm_sub]
 #align measure_theory.L1.dist_def MeasureTheory.L1.dist_def
 
@@ -1444,7 +1444,7 @@ theorem toL1_sub (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ)
 
 theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, edist (f a) 0 ∂μ) := by
-  simp [toL1, snorm, snorm']
+  simp? [toL1, snorm, snorm']
   simp [edist_eq_coe_nnnorm]
 #align measure_theory.integrable.norm_to_L1 MeasureTheory.Integrable.norm_toL1
 
@@ -1456,14 +1456,14 @@ theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :
     edist (hf.toL1 f) (hg.toL1 g) = ∫⁻ a, edist (f a) (g a) ∂μ := by
-  simp [Integrable.toL1, snorm, snorm']
+  simp? [Integrable.toL1, snorm, snorm']
   simp [edist_eq_coe_nnnorm_sub]
 #align measure_theory.integrable.edist_to_L1_to_L1 MeasureTheory.Integrable.edist_toL1_toL1
 
 @[simp]
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp [Integrable.toL1, snorm, snorm']
+  simp? [Integrable.toL1, snorm, snorm']
   simp [edist_eq_coe_nnnorm]
 #align measure_theory.integrable.edist_to_L1_zero MeasureTheory.Integrable.edist_toL1_zero
 

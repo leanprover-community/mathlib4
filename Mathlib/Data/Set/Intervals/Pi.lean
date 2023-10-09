@@ -353,7 +353,7 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
   simp at ha'
-  simp [le_update_iff, update_le_iff, hxa, hay, hxa _, hay _, ← exists_or]
+  simp? [le_update_iff, update_le_iff, hxa, hay, hxa _, hay _, ← exists_or]
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
   cases lt_or_le (x' w) (a w) <;> simp_all

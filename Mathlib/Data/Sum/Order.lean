@@ -738,7 +738,7 @@ namespace WithBot
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
     rcases a with (a | _) <;> rcases b with (b | _) <;>
-    simp [swap, Equiv.optionEquivSumPUnit]
+    simp? [swap, Equiv.optionEquivSumPUnit]
     exact not_coe_le_bot _⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
 
@@ -772,7 +772,7 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
     rcases a with (a | _) <;> rcases b with (b | _) <;>
-    simp [swap, Equiv.optionEquivSumPUnit]
+    simp? [swap, Equiv.optionEquivSumPUnit]
     exact not_top_le_coe _⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit
 

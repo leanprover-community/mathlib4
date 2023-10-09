@@ -561,7 +561,7 @@ theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) 
   rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
   rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
-  simp [vsub_vadd_eq_vsub_sub, smul_sub, smul_smul, ← sub_smul]
+  simp? [vsub_vadd_eq_vsub_sub, smul_sub, smul_smul, ← sub_smul]
   ring_nf
 #align wbtw.same_ray_vsub Wbtw.sameRay_vsub
 

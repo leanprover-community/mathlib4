@@ -63,7 +63,7 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
   intro ⟨cs₁⟩ ⟨cs₂⟩ i₁ i₂ <;>
   intros <;>
   (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
-  simp [Iterator.hasNext_cons_addChar, *]
+  simp? [Iterator.hasNext_cons_addChar, *]
   · rename_i h₂ h₁ heq ih
     simp [Iterator.curr, get_cons_addChar, Iterator.next, next, *] at *
     repeat rw [Pos.addChar_right_comm _ c]
@@ -162,7 +162,7 @@ instance : LinearOrder String where
     apply le_total
   decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
-    simp [compare, compareOfLessAndEq, toList, instLTString, List.instLTList, List.LT']
+    simp? [compare, compareOfLessAndEq, toList, instLTString, List.instLTList, List.LT']
     split_ifs <;>
     simp [List.lt_iff_lex_lt] at * <;>
     contradiction

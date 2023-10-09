@@ -504,7 +504,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp [periodicOrbit]
+  simp? [periodicOrbit]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 #align function.periodic_orbit_eq_nil_iff_not_periodic_pt Function.periodicOrbit_eq_nil_iff_not_periodic_pt
 

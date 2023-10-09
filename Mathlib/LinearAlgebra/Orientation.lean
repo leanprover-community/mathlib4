@@ -344,7 +344,7 @@ theorem det_adjustToOrientation [Nontrivial R] [Nonempty ι] (e : Basis ι R M)
   · left
     rfl
   · right
-    simp [e.det_unitsSMul, ← Units.coe_prod, Finset.prod_update_of_mem]
+    simp? [e.det_unitsSMul, ← Units.coe_prod, Finset.prod_update_of_mem]
     ext
     simp
 #align basis.det_adjust_to_orientation Basis.det_adjustToOrientation

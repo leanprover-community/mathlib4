@@ -1245,7 +1245,7 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
   ext j
   by_cases h1 : j = i
-  simp [h1]
+  simp? [h1]
   by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.support_erase DFinsupp.support_erase
 

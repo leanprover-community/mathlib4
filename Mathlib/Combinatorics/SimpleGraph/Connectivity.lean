@@ -1612,7 +1612,7 @@ theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
   | nil => simp
   | cons _ _ ih =>
     rw [Walk.cons_isPath_iff] at hp
-    simp [ih hp.1]
+    simp? [ih hp.1]
     intro x hx hf
     cases hinj hf
     exact hp.2 hx

@@ -1022,7 +1022,7 @@ theorem fract_fract (a : α) : fract (fract a) = fract a :=
 theorem fract_add (a b : α) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
   ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
     unfold fract
-    simp [sub_eq_add_neg]
+    simp? [sub_eq_add_neg]
     abel⟩
 #align int.fract_add Int.fract_add
 

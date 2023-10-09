@@ -219,7 +219,7 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃]
+        simp? [h₁, h₂, h₃]
         rw [mul_assoc, add_mul, add_mul, mul_assoc, add_assoc]
         congr 2
         ac_rfl
@@ -273,7 +273,7 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃, mul_ne_zero]
+        simp? [h₁, h₂, h₃, mul_ne_zero]
         rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul
@@ -546,7 +546,7 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 end Casts
 
 theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
-  simp [mkRat]
+  simp? [mkRat]
   by_cases d = 0
   · simp [h]
   · simp [h, HDiv.hDiv, Rat.div, Div.div]

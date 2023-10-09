@@ -426,7 +426,7 @@ theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r
 #align ring_quot.mk_ring_hom_rel RingQuot.mkRingHom_rel
 
 theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
-  simp [mkRingHom_def]
+  simp? [mkRingHom_def]
   rintro ⟨⟨⟩⟩
   simp
 #align ring_quot.mk_ring_hom_surjective RingQuot.mkRingHom_surjective

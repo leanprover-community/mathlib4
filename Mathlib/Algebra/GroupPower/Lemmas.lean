@@ -167,7 +167,7 @@ set_option linter.deprecated false
 theorem zpow_bit0 (a : α) : ∀ n : ℤ, a ^ bit0 n = a ^ n * a ^ n
   | (n : ℕ) => by simp only [zpow_ofNat, ← Int.ofNat_bit0, pow_bit0]
   | -[n+1] => by
-    simp [← mul_inv_rev, ← pow_bit0]
+    simp? [← mul_inv_rev, ← pow_bit0]
     rw [negSucc_eq, bit0_neg, zpow_neg]
     norm_cast
 #align zpow_bit0 zpow_bit0

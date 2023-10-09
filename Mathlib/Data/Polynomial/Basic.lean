@@ -813,7 +813,7 @@ theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
   -- Porting note: Was `simp [coeff, FunLike.ext_iff]`
-  simp [coeff]
+  simp? [coeff]
   exact FunLike.ext_iff (F := ℕ →₀ R)
 #align polynomial.ext_iff Polynomial.ext_iff
 

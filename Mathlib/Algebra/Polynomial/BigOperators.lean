@@ -144,7 +144,7 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
   rw [Polynomial.leadingCoeff_mul'] <;>
     · rw [ih]
-      simp [*]
+      simp? [*]
       apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
 

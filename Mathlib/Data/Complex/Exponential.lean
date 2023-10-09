@@ -1474,7 +1474,7 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by
-        simp [factorial, Finset.sum_range_succ]
+        simp? [factorial, Finset.sum_range_succ]
         ring_nf
     _ ≤ exp x := sum_le_exp_of_nonneg hx 3
 #align real.quadratic_le_exp_of_nonneg Real.quadratic_le_exp_of_nonneg
@@ -1774,7 +1774,7 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
 
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
-  simp [expNear]
+  simp? [expNear]
   convert exp_bound (n := m) h ?_ using 1
   field_simp [mul_comm]
   linarith
@@ -1825,7 +1825,7 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
-            simp [pow_succ, Nat.factorial]
+            simp? [pow_succ, Nat.factorial]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf
             )))
     _ ≤ abs ((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2) +
@@ -1856,7 +1856,7 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
         (congr_arg (fun x : ℂ => x / 2)
           (by
             simp only [sum_range_succ]
-            simp [pow_succ, Nat.factorial]
+            simp? [pow_succ, Nat.factorial]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
     _ ≤ abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) * I / 2) +
           abs (-((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) * I) / 2) :=

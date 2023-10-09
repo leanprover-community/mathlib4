@@ -214,7 +214,7 @@ theorem map_add_add_add_map (x y z : M) :
     Q (x + y + z) + (Q x + Q y + Q z) = Q (x + y) + Q (y + z) + Q (z + x) := by
   obtain ⟨B, h⟩ := Q.exists_companion
   rw [add_comm z x]
-  simp [h]
+  simp? [h]
   abel
 #align quadratic_form.map_add_add_add_map QuadraticForm.map_add_add_add_map
 

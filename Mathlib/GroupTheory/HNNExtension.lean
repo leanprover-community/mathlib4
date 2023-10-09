@@ -428,7 +428,7 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     | ofGroup => simp [Cancels] at hcan2
     | cons g u' w h1 h2 ih =>
       clear ih
-      simp [unitsSMulWithCancel, unitsSMulGroup]
+      simp? [unitsSMulWithCancel, unitsSMulGroup]
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1

@@ -562,7 +562,7 @@ private def fromVector : Vector α 2 → α × α
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     [a₁, b₁].Perm [a₂, b₂] ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ a₁ = b₂ ∧ b₁ = a₂ :=
   { mp := by
-      simp [← Multiset.coe_eq_coe, ← Multiset.cons_coe, Multiset.cons_eq_cons]
+      simp? [← Multiset.coe_eq_coe, ← Multiset.cons_coe, Multiset.cons_eq_cons]
       aesop
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by

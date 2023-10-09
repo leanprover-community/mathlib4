@@ -205,7 +205,7 @@ theorem tsum_meas_le_meas_iUnion_of_disjoint₀ {ι : Type*} [MeasurableSpace α
   rw [hS.tsum_eq]
   refine' tendsto_le_of_eventuallyLE hS tendsto_const_nhds (eventually_of_forall _)
   intro s
-  simp [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
+  simp? [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   exact measure_mono (iUnion₂_subset_iUnion (fun i : ι => i ∈ s) fun i : ι => As i)
 
 /-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
