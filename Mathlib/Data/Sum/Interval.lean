@@ -12,7 +12,7 @@ import Mathlib.Order.LocallyFinite
 /-!
 # Finite intervals in a disjoint union
 
-This file provides the `locally_finite_order` instance for the disjoint sum and linear sum of two
+This file provides the `LocallyFiniteOrder` instance for the disjoint sum and linear sum of two
 orders and calculates the cardinality of their finite intervals.
 -/
 
@@ -333,7 +333,9 @@ local elab "simp_lex" : tactic => do
         not_inr_lt_inl, inr_lt_inr_iff, mem_Icc, mem_Ico, mem_Ioc, mem_Ioo, mem_Ici, mem_Ioi, mem_Iic,
         mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and, map_empty,
         not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex, mem_map,
-        Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply]
+        Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
+        -- porting note: added
+        inl.injEq, inr.injEq]
   )
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
