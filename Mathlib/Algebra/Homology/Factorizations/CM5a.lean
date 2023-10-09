@@ -695,6 +695,15 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
   refine' ⟨A₃, π₃, inferInstance, x₃, _⟩
   rw [← cancel_mono (K.iCycles n₁), assoc, hx₃, assoc, toCycles_i]
 
+def CofFibFactorizationQuasiIsoLE (n : ℤ) :=
+  FullSubcategory (fun (F : CofFibFactorization f) => F.QuasiIsoLE n)
+
+instance (n : ℤ) : Category (CofFibFactorizationQuasiIsoLE f n) := by
+  dsimp only [CofFibFactorizationQuasiIsoLE]
+  infer_instance
+
+instance (n : ℤ) (F : CofFibFactorizationQuasiIsoLE f n) : F.1.QuasiIsoLE n := F.2
+
 namespace Step₂
 
 variable [Mono f] (n : ℤ) [Mono (homologyMap f n)]
@@ -953,16 +962,54 @@ lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     dsimp
     infer_instance
 
+lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+    (F : CofFibFactorizationQuasiIsoLE f n₀) :
+    ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (f : F'.1 ⟶ F.1),
+      ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (f.φ.f i) := by
+  obtain ⟨F₁₂, h, _⟩ := step₁₂ F.1.1.i n₀ n₁ hn₁ (F.1.quasiIsoAt_of_quasiIsoLE n₀)
+  have fac : F₁₂.obj.i ≫ F₁₂.obj.p ≫ F.1.1.p = f := by rw [F₁₂.1.fac_assoc, F.1.1.fac]
+  exact ⟨⟨CofFibFactorization.mk fac (MorphismProperty.comp_mem _ _ _ F₁₂.2.hp F.1.2.hp),
+    ⟨F₁₂.quasiIsoAt_of_quasiIsoLE n₁⟩⟩, { φ := F₁₂.1.p }, h⟩
+
+namespace CofFibFactorizationQuasiIsoLE
+
+def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
+    CofFibFactorizationQuasiIsoLE f (n + (0 : ℕ)) where
+  obj := CofFibFactorization.mk (comp_id _) (fun n => by
+    rw [epiWithInjectiveKernel_iff]
+    refine' ⟨0, inferInstance, 0, 𝟙 _, 0, _, _, _, _, _⟩
+    all_goals simp)
+  property := ⟨by
+    intro i hi
+    simp only [Nat.cast_zero, add_zero] at hi
+    dsimp
+    rw [quasiIsoAt_iff_isIso_homologyMap]
+    refine' ⟨0, _, _⟩
+    all_goals
+      apply IsZero.eq_of_src
+      rw [isZero_homology_iff, exactAt_iff]
+      apply ShortComplex.exact_of_isZero_X₂
+      apply isZero_of_isStrictlyGE _ (n + 1) i (by linarith)⟩
+
 variable {f}
 
-lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
-    (F : CofFibFactorization f) [F.QuasiIsoLE n₀] :
-    ∃ (F' : CofFibFactorization f) (_ : F'.QuasiIsoLE n₁) (f : F' ⟶ F),
-      ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (f.φ.f i) := by
-  obtain ⟨F₁₂, h, _⟩ := step₁₂ F.1.i n₀ n₁ hn₁ (F.quasiIsoAt_of_quasiIsoLE n₀)
-  have fac : F₁₂.obj.i ≫ F₁₂.obj.p ≫ F.obj.p = f := by rw [F₁₂.1.fac_assoc, F.1.fac]
-  exact ⟨CofFibFactorization.mk fac (MorphismProperty.comp_mem _ _ _ F₁₂.2.hp F.2.hp),
-    ⟨F₁₂.quasiIsoAt_of_quasiIsoLE n₁⟩, { φ := F₁₂.1.p }, h⟩
+noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) :
+    CofFibFactorizationQuasiIsoLE f n₁ :=
+  (step' f _ _ hn₁ F).choose
+
+noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) : (F.next n₁ hn₁).1 ⟶ F.1 :=
+  (step' f _ _ hn₁ F).choose_spec.choose
+
+lemma isIso_from_next_φ_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) (i : ℤ) (hi : i ≤ n₀) :
+    IsIso ((F.fromNext n₁ hn₁).φ.f i) :=
+  (step' f _ _ hn₁ F).choose_spec.choose_spec i hi
+
+noncomputable def sequence [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)] :
+    ∀ (q : ℕ), CofFibFactorizationQuasiIsoLE f (n₀ + q)
+  | 0 => zero f n₀
+  | (q + 1) => (sequence n₀ q).next _ (by rw [Nat.cast_add, Nat.cast_one, add_assoc])
+
+end CofFibFactorizationQuasiIsoLE
 
 end CM5aCof
 
