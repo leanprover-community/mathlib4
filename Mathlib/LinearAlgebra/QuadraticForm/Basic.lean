@@ -576,7 +576,7 @@ def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
     ring
   exists_companion' :=
     ⟨BilinForm.linMulLin f g + BilinForm.linMulLin g f, fun x y => by
-      simp
+      simp only [Pi.mul_apply, map_add, BilinForm.add_apply, BilinForm.linMulLin_apply]
       ring⟩
 #align quadratic_form.lin_mul_lin QuadraticForm.linMulLin
 
@@ -751,7 +751,22 @@ theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y 
 theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip' B :=
   BilinForm.ext polar_toQuadraticForm
 
+@[simp] theorem _root_.QuadraticForm.toQuadraticForm_polarBilin (Q : QuadraticForm R M) :
+    toQuadraticForm (polarBilin Q) = 2 • Q :=
+  QuadraticForm.ext <| fun x => (polar_self _ x).trans <| by simp
+
+theorem  _root_.QuadraticForm.polarBilin_injective (h : IsUnit (2 : R)) :
+    Function.Injective (polarBilin : QuadraticForm R M → _) :=
+  fun Q₁ Q₂ h₁₂ => QuadraticForm.ext fun x => h.mul_left_cancel <| by
+    simpa using FunLike.congr_fun (congr_arg toQuadraticForm h₁₂) x
+
+variable {N : Type v}
 variable [CommRing S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+variable [AddCommGroup N] [Module R N]
+
+theorem _root_.QuadraticForm.polarBilin_comp (Q : QuadraticForm R N) (f : M →ₗ[R] N) :
+    polarBilin (Q.comp f) = BilinForm.comp (polarBilin Q) f f :=
+  BilinForm.ext <| fun x y => by simp [polar]
 
 theorem _root_.LinearMap.compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y : M) :
     polar (f.compQuadraticForm Q) x y = f (polar Q x y) := by

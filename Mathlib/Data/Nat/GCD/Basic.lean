@@ -93,7 +93,7 @@ theorem gcd_self_add_right (m n : ℕ) : gcd m (m + n) = gcd m n := by
 @[simp]
 theorem gcd_sub_self_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) m = gcd n m := by
   calc
-    gcd (n - m) m = gcd (n - m + m) m  := by rw [← gcd_add_self_left (n - m) m]
+    gcd (n - m) m = gcd (n - m + m) m := by rw [← gcd_add_self_left (n - m) m]
                 _ = gcd n m := by rw [Nat.sub_add_cancel h]
 
 @[simp]
@@ -127,6 +127,15 @@ theorem lcm_pos {m n : ℕ} : 0 < m → 0 < n → 0 < m.lcm n := by
   simp_rw [pos_iff_ne_zero]
   exact lcm_ne_zero
 #align nat.lcm_pos Nat.lcm_pos
+
+theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
+  apply dvd_antisymm
+  · exact lcm_dvd (mul_dvd_mul_left m (dvd_lcm_left n k)) (mul_dvd_mul_left m (dvd_lcm_right n k))
+  · have h : m ∣ lcm (m * n) (m * k) := (dvd_mul_right m n).trans (dvd_lcm_left (m * n) (m * k))
+    rw [←dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ←lcm_dvd_iff]
+
+theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
+ rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]
 
 /-!
 ### `Coprime`
@@ -216,7 +225,7 @@ theorem coprime_sub_self_left {m n : ℕ} (h : m ≤ n) : Coprime (n - m) m ↔ 
   rw [Coprime, Coprime, gcd_sub_self_left h]
 
 @[simp]
-theorem coprime_sub_self_right {m n : ℕ} (h : m ≤ n) : Coprime m (n - m) ↔ Coprime m n:= by
+theorem coprime_sub_self_right {m n : ℕ} (h : m ≤ n) : Coprime m (n - m) ↔ Coprime m n := by
   rw [Coprime, Coprime, gcd_sub_self_right h]
 
 @[simp]

@@ -36,8 +36,8 @@ instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β]
     ⟨(c, d), ext hc hd⟩⟩
 
 @[to_additive]
-instance [CanonicallyOrderedMonoid α] [CanonicallyOrderedMonoid β] :
-    CanonicallyOrderedMonoid (α × β) :=
+instance [CanonicallyOrderedCommMonoid α] [CanonicallyOrderedCommMonoid β] :
+    CanonicallyOrderedCommMonoid (α × β) :=
   { (inferInstance : OrderedCommMonoid _), (inferInstance : OrderBot _),
     (inferInstance : ExistsMulOfLE _) with
       le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩ }
@@ -63,8 +63,8 @@ instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelComm
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α]
     [LinearOrderedCancelCommMonoid β] : LinearOrderedCancelCommMonoid (α ×ₗ β) where
-  __ := (inferInstance : LinearOrder (α ×ₗ β))
-  __ := (inferInstance : OrderedCancelCommMonoid (α ×ₗ β))
+  __ : LinearOrder (α ×ₗ β) := inferInstance
+  __ : OrderedCancelCommMonoid (α ×ₗ β) := inferInstance
 
 end Lex
 

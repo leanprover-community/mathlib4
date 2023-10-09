@@ -140,6 +140,11 @@ theorem eval₂_nat_cast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
   · rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 #align polynomial.eval₂_nat_cast Polynomial.eval₂_nat_cast
 
+@[simp]
+lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
+    (no_index (OfNat.ofNat n : R[X])).eval₂ f a = OfNat.ofNat n := by
+  simp [OfNat.ofNat]
+
 variable [Semiring T]
 
 theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
@@ -346,6 +351,11 @@ theorem eval₂_at_nat_cast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
 #align polynomial.eval₂_at_nat_cast Polynomial.eval₂_at_nat_cast
 
 @[simp]
+theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
+    p.eval₂ f (no_index (OfNat.ofNat n)) = f (p.eval (OfNat.ofNat n)) := by
+  simp [OfNat.ofNat]
+
+@[simp]
 theorem eval_C : (C a).eval x = a :=
   eval₂_C _ _
 #align polynomial.eval_C Polynomial.eval_C
@@ -353,6 +363,11 @@ theorem eval_C : (C a).eval x = a :=
 @[simp]
 theorem eval_nat_cast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_nat_cast, eval_C]
 #align polynomial.eval_nat_cast Polynomial.eval_nat_cast
+
+@[simp]
+lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
+    (no_index (OfNat.ofNat n : R[X])).eval a = OfNat.ofNat n := by
+  simp only [OfNat.ofNat, eval_nat_cast]
 
 @[simp]
 theorem eval_X : X.eval x = x :=
@@ -682,6 +697,9 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
   case h₁ =>
     simp (config := { contextual := true })
 #align polynomial.coeff_comp_degree_mul_degree Polynomial.coeff_comp_degree_mul_degree
+
+@[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
+    (∑ i in s, p i).comp q = ∑ i in s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
 
 end Comp
 
