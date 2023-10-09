@@ -253,7 +253,7 @@ theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
 #align exists_is_open_xor_mem exists_isOpen_xor'_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
-def specializationOrder (X : Type*) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
+def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
   { specializationPreorder X, PartialOrder.lift (OrderDual.toDual ∘ 𝓝) nhds_injective with }
 #align specialization_order specializationOrder
 
@@ -281,9 +281,8 @@ theorem minimal_nonempty_closed_eq_singleton [T0Space X] {s : Set X} (hs : IsClo
 
 /-- Given a closed set `S` in a compact T₀ space, there is some `x ∈ S` such that `{x}` is
 closed. -/
-theorem IsClosed.exists_closed_singleton {X : Type*} [TopologicalSpace X] [T0Space X]
-    [CompactSpace X] {S : Set X} (hS : IsClosed S) (hne : S.Nonempty) :
-    ∃ x : X, x ∈ S ∧ IsClosed ({x} : Set X) := by
+theorem IsClosed.exists_closed_singleton [T0Space X] [CompactSpace X] {S : Set X}
+    (hS : IsClosed S) (hne : S.Nonempty) : ∃ x : X, x ∈ S ∧ IsClosed ({x} : Set X) := by
   obtain ⟨V, Vsub, Vne, Vcls, hV⟩ := hS.exists_minimal_nonempty_closed_subset hne
   rcases minimal_nonempty_closed_eq_singleton Vcls Vne hV with ⟨x, rfl⟩
   exact ⟨x, Vsub (mem_singleton x), Vcls⟩
@@ -509,8 +508,7 @@ theorem t1Space_TFAE (X : Type u) [ TopologicalSpace X ] :
   tfae_finish
 #align t1_space_tfae t1Space_TFAE
 
-theorem t1Space_iff_continuous_cofinite_of {X : Type*} [TopologicalSpace X] :
-    T1Space X ↔ Continuous (@CofiniteTopology.of X) :=
+theorem t1Space_iff_continuous_cofinite_of : T1Space X ↔ Continuous (@CofiniteTopology.of X) :=
   (t1Space_TFAE X).out 0 3
 #align t1_space_iff_continuous_cofinite_of t1Space_iff_continuous_cofinite_of
 
@@ -565,10 +563,10 @@ theorem nhds_le_nhds_iff [T1Space X] {a b : X} : 𝓝 a ≤ 𝓝 b ↔ a = b :=
   specializes_iff_eq
 #align nhds_le_nhds_iff nhds_le_nhds_iff
 
-instance {X : Type*} : T1Space (CofiniteTopology X) :=
+instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
-theorem t1Space_antitone {X : Type*} : Antitone (@T1Space X) := fun a _ h _ =>
+theorem t1Space_antitone : Antitone (@T1Space X) := fun a _ h _ =>
   @T1Space.mk _ a fun x => (T1Space.t1 x).mono h
 #align t1_space_antitone t1Space_antitone
 
@@ -756,7 +754,7 @@ theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {a : X
     fact₂ fact₁ (Eq.refl <| f a)
 #align eq_of_tendsto_nhds eq_of_tendsto_nhds
 
-theorem Filter.Tendsto.eventually_ne [TopologicalSpace Y] [T1Space Y] {X : Type*} {g : X → Y}
+theorem Filter.Tendsto.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y}
     {l : Filter X} {b₁ b₂ : Y} (hg : Tendsto g l (𝓝 b₁)) (hb : b₁ ≠ b₂) : ∀ᶠ z in l, g z ≠ b₂ :=
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
 #align filter.tendsto.eventually_ne Filter.Tendsto.eventually_ne
@@ -786,7 +784,7 @@ theorem tendsto_const_nhds_iff [T1Space X] {l : Filter Y} [NeBot l] {c d : X} :
 #align tendsto_const_nhds_iff tendsto_const_nhds_iff
 
 /-- A point with a finite neighborhood has to be isolated. -/
-theorem isOpen_singleton_of_finite_mem_nhds {X : Type*} [TopologicalSpace X] [T1Space X] (x : X)
+theorem isOpen_singleton_of_finite_mem_nhds [T1Space X] (x : X)
     {s : Set X} (hs : s ∈ 𝓝 x) (hsf : s.Finite) : IsOpen ({x} : Set X) := by
   have A : {x} ⊆ s := by simp only [singleton_subset_iff, mem_of_mem_nhds hs]
   have B : IsClosed (s \ {x}) := (hsf.subset (diff_subset _ _)).isClosed
@@ -804,7 +802,7 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 #align infinite_of_mem_nhds infinite_of_mem_nhds
 
-theorem discrete_of_t1_of_finite {X : Type*} [TopologicalSpace X] [T1Space X] [Finite X] :
+theorem discrete_of_t1_of_finite [T1Space X] [Finite X] :
     DiscreteTopology X := by
   apply singletons_open_iff_discrete.mp
   intro x
@@ -886,8 +884,7 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
 `t ⊆ s`, then the topological space structure on `t` induced by `X` is the same as the one
 obtained by the induced topological space structure on `s`. Use `embedding_inclusion` instead. -/
 @[deprecated embedding_inclusion]
-theorem TopologicalSpace.subset_trans {X : Type*} [TopologicalSpace X] {s t : Set X}
-    (ts : t ⊆ s) :
+theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
     (instTopologicalSpaceSubtype : TopologicalSpace t) =
       (instTopologicalSpaceSubtype : TopologicalSpace s).induced (Set.inclusion ts) :=
   (embedding_inclusion ts).induced
@@ -1143,31 +1140,30 @@ Hausdorff spaces:
 
 
 -- see Note [lower instance priority]
-instance (priority := 100) DiscreteTopology.toT2Space {X : Type*} [TopologicalSpace X]
+instance (priority := 100) DiscreteTopology.toT2Space
     [DiscreteTopology X] : T2Space X :=
   ⟨fun x y h => ⟨{x}, {y}, isOpen_discrete _, isOpen_discrete _, rfl, rfl, disjoint_singleton.2 h⟩⟩
 #align discrete_topology.to_t2_space DiscreteTopology.toT2Space
 
-theorem separated_by_continuous {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [T2Space Y] {f : X → Y} (hf : Continuous f) {x y : X} (h : f x ≠ f y) :
+theorem separated_by_continuous [TopologicalSpace Y] [T2Space Y]
+    {f : X → Y} (hf : Continuous f) {x y : X} (h : f x ≠ f y) :
     ∃ u v : Set X, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ Disjoint u v :=
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f ⁻¹' u, f ⁻¹' v, uo.preimage hf, vo.preimage hf, xu, yv, uv.preimage _⟩
 #align separated_by_continuous separated_by_continuous
 
-theorem separated_by_openEmbedding {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [T2Space X] {f : X → Y} (hf : OpenEmbedding f) {x y : X} (h : x ≠ y) :
+theorem separated_by_openEmbedding [TopologicalSpace Y] [T2Space X]
+    {f : X → Y} (hf : OpenEmbedding f) {x y : X} (h : x ≠ y) :
     ∃ u v : Set Y, IsOpen u ∧ IsOpen v ∧ f x ∈ u ∧ f y ∈ v ∧ Disjoint u v :=
   let ⟨u, v, uo, vo, xu, yv, uv⟩ := t2_separation h
   ⟨f '' u, f '' v, hf.isOpenMap _ uo, hf.isOpenMap _ vo, mem_image_of_mem _ xu,
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.inj uv⟩
 #align separated_by_open_embedding separated_by_openEmbedding
 
-instance {X : Type*} {p : X → Prop} [TopologicalSpace X] [T2Space X] : T2Space (Subtype p) :=
+instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) :=
   ⟨fun _ _ h => separated_by_continuous continuous_subtype_val (mt Subtype.eq h)⟩
 
-instance Prod.t2Space {X : Type*} {Y : Type*} [TopologicalSpace X] [T2Space X]
-    [TopologicalSpace Y] [T2Space Y] : T2Space (X × Y) :=
+instance Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X × Y) :=
   ⟨fun _ _ h => Or.elim (not_and_or.mp (mt Prod.ext_iff.mpr h))
     (fun h₁ => separated_by_continuous continuous_fst h₁) fun h₂ =>
     separated_by_continuous continuous_snd h₂⟩
@@ -1185,7 +1181,7 @@ theorem Embedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y} (hf : E
   .of_injective_continuous hf.inj hf.continuous
 #align embedding.t2_space Embedding.t2Space
 
-instance {X Y : Type*} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2Space Y] :
+instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
   rintro (x | x) (y | y) h
@@ -1194,7 +1190,7 @@ instance {X Y : Type*} [TopologicalSpace X] [T2Space X] [TopologicalSpace Y] [T2
   · exact separated_by_continuous continuous_isLeft <| by simp
   · exact separated_by_openEmbedding openEmbedding_inr <| ne_of_apply_ne _ h
 
-instance Pi.t2Space {X : Type*} {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
+instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
     [∀ a, T2Space (Y a)] : T2Space (∀ a, Y a) :=
   ⟨fun _ _ h =>
     let ⟨i, hi⟩ := not_forall.mp (mt funext h)
@@ -1495,7 +1491,7 @@ theorem isIrreducible_iff_singleton [T2Space X] {S : Set X} : IsIrreducible S �
 /-- There does not exist a nontrivial preirreducible T₂ space. -/
 theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [PreirreducibleSpace X]
     [Nontrivial X] [T2Space X] : False :=
-  (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
+  (PreirreducibleSpace.isPreirreducible_univ (α := X)).subsingleton.not_nontrivial nontrivial_univ
 #align not_preirreducible_nontrivial_t2 not_preirreducible_nontrivial_t2
 
 end Separation
