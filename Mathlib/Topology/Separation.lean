@@ -1495,7 +1495,7 @@ theorem isIrreducible_iff_singleton [T2Space α] {S : Set α} : IsIrreducible S 
 /-- There does not exist a nontrivial preirreducible T₂ space. -/
 theorem not_preirreducible_nontrivial_t2 (α) [TopologicalSpace α] [PreirreducibleSpace α]
     [Nontrivial α] [T2Space α] : False :=
-  (PreirreducibleSpace.isPreirreducible_univ (α := α)).subsingleton.not_nontrivial nontrivial_univ
+  (PreirreducibleSpace.isPreirreducible_univ (X := α)).subsingleton.not_nontrivial nontrivial_univ
 #align not_preirreducible_nontrivial_t2 not_preirreducible_nontrivial_t2
 
 end Separation
