@@ -14,7 +14,7 @@ Derivation by a grammar is inherently nondeterministic.
 -/
 
 /-- The type of symbols is the disjoint union of terminals `T` and nonterminals `N`. -/
-inductive Symbol (T : Type _) (N : Type _)
+inductive Symbol (T : Type*) (N : Type*)
   /-- Terminal symbols (of the same type as the language) -/
   | terminal    (t : T) : Symbol T N
   /-- Nonterminal symbols (must not be present at the end of word being generated) -/
