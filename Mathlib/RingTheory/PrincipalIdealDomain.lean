@@ -199,8 +199,8 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
 #align mod_mem_iff mod_mem_iff
 
 -- see Note [lower instance priority]
-instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R
-    where principal S :=
+instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
+  principal S :=
     ⟨if h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty then
         have wf : WellFounded (EuclideanDomain.r : R → R → Prop) := EuclideanDomain.r_wellFounded
         have hmin : WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∈ S ∧

@@ -30,7 +30,6 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
-
 namespace LinearMap
 
 section Semiring
@@ -178,7 +177,7 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
 
 theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
     f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
-  (flip f y).map_sum
+  _root_.map_sum (flip f y) _ _
 #align linear_map.map_sum₂ LinearMap.map_sum₂
 
 /-- Restricting a bilinear map in the second entry -/
@@ -417,7 +416,7 @@ theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
 #align linear_map.lsmul_injective LinearMap.lsmul_injective
 
 theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
-  LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
+    LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 #align linear_map.ker_lsmul LinearMap.ker_lsmul
 
