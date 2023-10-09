@@ -30,7 +30,7 @@ variable {K V P : Type*} [LinearOrderedField K] [AddCommGroup V] [Module K V] [A
 
 /-- Constructs a linear program given a list of equalities, a list of inequalities,
     and an objective function. -/
-def linearProgram_of_equalities_inequalities_objective
+def LinearProgram.mkOfEqs
     (equalities inequalities : List (P →ᵃ[K] K)) (objectiv : P →ᵃ[K] K) :
     LinearProgram K P where
   constraints := inequalities ++ equalities ++ equalities.map Neg.neg
