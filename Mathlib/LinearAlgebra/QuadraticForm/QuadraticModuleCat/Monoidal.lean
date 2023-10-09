@@ -47,10 +47,8 @@ abbrev tensorUnit : QuadraticModuleCat.{u} R := of (sq (R := R))
 /-- Auxiliary definition used to fight a tmieout when building
 `QuadraticModuleCat.instMonoidalCategory`. -/
 noncomputable abbrev associator (X Y Z : QuadraticModuleCat.{u} R) :
-    tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) := by
-  refine ofIso ?_
-  dsimp [tensorObj, of]
-  exact tensorAssoc X.form Y.form Z.form
+    tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
+  ofIso (tensorAssoc X.form Y.form Z.form)
 
 open MonoidalCategory
 
@@ -65,7 +63,7 @@ end instMonoidalCategory
 
 open instMonoidalCategory
 
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 400000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
