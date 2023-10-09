@@ -313,10 +313,10 @@ variable {G} [t : TopologicalSpace G] [d : DiscreteTopology G]
     convert ← hp.isCoveringMapOn_of_mulAction hpG fun e ↦ ?_
     · refine Set.eq_univ_of_forall fun x ↦ ?_
       obtain ⟨e, rfl⟩ := hp.surjective x
-      refine ⟨e, (Subgroup.eq_bot_iff_forall _).mpr fun g hg ↦ ?_, rfl⟩
       obtain ⟨U, hU, hGU⟩ := disjoint e
-      have := mem_of_mem_nhds hU
-      apply hGU g (Set.nonempty_iff_ne_empty.mp ⟨e, ⟨e, this, hg⟩, this⟩)
+      replace hU := mem_of_mem_nhds hU
+      exact ⟨e, (Subgroup.eq_bot_iff_forall _).mpr fun g hg ↦
+        hGU g (Set.nonempty_iff_ne_empty.mp ⟨e, ⟨e, hU, hg⟩, hU⟩), rfl⟩
     · obtain ⟨U, hU, hGU⟩ := disjoint e
       refine ⟨U, hU, fun g hg ↦ ?_⟩; rw [hGU g hg, one_smul]
 
