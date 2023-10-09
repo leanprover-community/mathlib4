@@ -5,6 +5,79 @@ import Mathlib.CategoryTheory.Abelian.YonedaExt
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
+namespace CategoryTheory
+
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
+
+namespace Functor
+
+variable {X : ℕ → C} (f : ∀ n, X n ⟶ X (n + 1))
+
+namespace OfSequence
+
+lemma congr_f (i j : ℕ) (h : i = j) :
+    f i = eqToHom (by rw [h]) ≫ f j ≫ eqToHom (by rw [h]) := by
+  subst h
+  simp
+
+@[simp]
+def map' : ∀ (i k : ℕ), X i ⟶ X (i + k)
+  | _, 0 => 𝟙 _
+  | i, (k+1) => map' i k ≫ f (i + k)
+
+lemma comp_map' (i k₁ k₂ : ℕ) :
+    map' f i k₁ ≫ map' f (i + k₁) k₂ =
+      map' f i (k₁ + k₂) ≫ eqToHom (by rw [add_assoc]) := by
+  revert i k₁
+  induction' k₂ with k₂ hk₂
+  · intro i k₁
+    simp
+  · intro i k₁
+    simp [reassoc_of% (hk₂ i k₁), congr_f f _ _ (add_assoc i k₁ k₂)]
+
+def map (i j : ℕ) (hij : i ≤ j) : X i ⟶ X j :=
+  map' f i (j-i) ≫ eqToHom (by
+    obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hij
+    simp)
+
+lemma map_eq (i j k : ℕ) (hk : i + k = j) :
+    map f i j (by linarith) = map' f i k ≫ eqToHom (by rw [hk]) := by
+  obtain rfl := tsub_eq_of_eq_add_rev hk.symm
+  rfl
+
+lemma map_id (i : ℕ) : map f i i (by rfl) = 𝟙 _ := by
+  rw [map_eq f i i 0 (by linarith), eqToHom_refl, comp_id]
+  rfl
+
+lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
+    map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk := by
+  obtain ⟨k₁, rfl⟩ := Nat.exists_eq_add_of_le hij
+  obtain ⟨k₂, rfl⟩ := Nat.exists_eq_add_of_le hjk
+  rw [map_eq f i _ k₁ rfl, eqToHom_refl, comp_id, map_eq f (i + k₁) _ k₂ rfl, eqToHom_refl,
+    comp_id, comp_map', map_eq f i (i + k₁ + k₂) (k₁ + k₂) (by rw [add_assoc])]
+
+lemma map_of_le_succ (n : ℕ) :
+    map f n (n+1) (by linarith) = f n := by
+  simp [map_eq f n _ 1 rfl]
+
+end OfSequence
+
+@[simps obj]
+def ofSequence : ℕ ⥤ C where
+  obj := X
+  map {i j} φ := OfSequence.map f i j (leOfHom φ)
+  map_id i := OfSequence.map_id f i
+  map_comp {i j k} α β := OfSequence.map_comp f i j k (leOfHom α) (leOfHom β)
+
+@[simp]
+lemma ofSequence_map_of_le_succ (n : ℕ) :
+    (ofSequence f).map (homOfLE (Nat.le_add_right n 1)) = f n :=
+  OfSequence.map_of_le_succ f n
+
+end Functor
+
+end CategoryTheory
+
 namespace HomologicalComplex
 
 variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
