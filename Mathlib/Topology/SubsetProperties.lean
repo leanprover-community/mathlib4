@@ -262,7 +262,7 @@ theorem IsCompact.elim_finite_subfamily_closed {s : Set X} {ι : Type v} (hs : I
 
 /-- If `s` is a compact set in a topological space `X` and `f : ι → Set X` is a locally finite
 family of sets, then `f i ∩ s` is nonempty only for a finitely many `i`. -/
-theorem LocallyFinite.finite_nonempty_inter_compact {ι : Type*} {f : ι → Set X}
+theorem LocallyFinite.finite_nonempty_inter_compact {f : ι → Set X}
     (hf : LocallyFinite f) {s : Set X} (hs : IsCompact s) : { i | (f i ∩ s).Nonempty }.Finite := by
   choose U hxU hUf using hf
   rcases hs.elim_nhds_subcover U fun x _ => hxU x with ⟨t, -, hsU⟩
@@ -485,7 +485,7 @@ protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a 
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
-theorem exists_subset_nhds_of_isCompact' {ι : Type*} [Nonempty ι] {V : ι → Set X}
+theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
     {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
   obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
@@ -808,21 +808,21 @@ theorem finite_cover_nhds [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x �
 
 /-- If `X` is a compact space, then a locally finite family of sets of `X` can have only finitely
 many nonempty elements. -/
-theorem LocallyFinite.finite_nonempty_of_compact {ι : Type*} [CompactSpace X] {f : ι → Set X}
+theorem LocallyFinite.finite_nonempty_of_compact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) : { i | (f i).Nonempty }.Finite := by
   simpa only [inter_univ] using hf.finite_nonempty_inter_compact isCompact_univ
 #align locally_finite.finite_nonempty_of_compact LocallyFinite.finite_nonempty_of_compact
 
 /-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
 finitely many elements, `Set.Finite` version. -/
-theorem LocallyFinite.finite_of_compact {ι : Type*} [CompactSpace X] {f : ι → Set X}
+theorem LocallyFinite.finite_of_compact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Finite := by
   simpa only [hne] using hf.finite_nonempty_of_compact
 #align locally_finite.finite_of_compact LocallyFinite.finite_of_compact
 
 /-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
 finitely many elements, `Fintype` version. -/
-noncomputable def LocallyFinite.fintypeOfCompact {ι : Type*} [CompactSpace X] {f : ι → Set X}
+noncomputable def LocallyFinite.fintypeOfCompact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Fintype ι :=
   fintypeOfFiniteUniv (hf.finite_of_compact hne)
 #align locally_finite.fintype_of_compact LocallyFinite.fintypeOfCompact
@@ -860,7 +860,7 @@ theorem isClosedMap_snd_of_compactSpace [CompactSpace X] : IsClosedMap (Prod.snd
   exact hs ⟨hU trivial, hzV⟩ hzs
 #align is_closed_proj_of_is_compact isClosedMap_snd_of_compactSpace
 
-theorem exists_subset_nhds_of_compactSpace [CompactSpace X] {ι : Type*} [Nonempty ι]
+theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
@@ -1088,7 +1088,7 @@ instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
     let ⟨s₂, hc₂, h₂⟩ := exists_compact_mem_nhds x.2
     ⟨s₁ ×ˢ s₂, hc₁.prod hc₂, prod_mem_nhds h₁ h₂⟩
 
-instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSpace (X i)]
+instance [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSpace (X i)]
     [(i : ι) → WeaklyLocallyCompactSpace (X i)] :
     WeaklyLocallyCompactSpace ((i : ι) → X i) where
   exists_compact_mem_nhds := fun f ↦ by
@@ -1416,7 +1416,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
 only countably many elements, `Set.Countable` version. -/
-protected theorem LocallyFinite.countable_univ {ι : Type*} {f : ι → Set X} (hf : LocallyFinite f)
+protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyFinite f)
     (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Countable := by
   have := fun n => hf.finite_nonempty_inter_compact (isCompact_compactCovering X n)
   refine (countable_iUnion fun n => (this n).countable).mono fun i _ => ?_
@@ -1427,7 +1427,7 @@ protected theorem LocallyFinite.countable_univ {ι : Type*} {f : ι → Set X} (
 
 /-- If `f : ι → Set X` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
-protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set X}
+protected noncomputable def LocallyFinite.encodable {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
   @Encodable.ofEquiv _ _ (hf.countable_univ hne).toEncodable (Equiv.Set.univ _).symm
 #align locally_finite.encodable LocallyFinite.encodable
@@ -1696,7 +1696,7 @@ theorem isClopen_range_inl : IsClopen (range (Sum.inl : X → X ⊕ Y)) :=
 theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
   ⟨isOpen_range_inr, isClosed_range_inr⟩
 
-theorem isClopen_range_sigmaMk {ι : Type*} {σ : ι → Type*} [∀ i, TopologicalSpace (σ i)] {i : ι} :
+theorem isClopen_range_sigmaMk {σ : ι → Type*} [∀ i, TopologicalSpace (σ i)] {i : ι} :
     IsClopen (Set.range (@Sigma.mk ι σ i)) :=
   ⟨openEmbedding_sigmaMk.open_range, closedEmbedding_sigmaMk.closed_range⟩
 #align clopen_range_sigma_mk isClopen_range_sigmaMk
