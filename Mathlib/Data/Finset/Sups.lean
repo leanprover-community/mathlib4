@@ -226,18 +226,6 @@ theorem sups_sups_sups_comm : s ⊻ t ⊻ (u ⊻ v) = s ⊻ u ⊻ (t ⊻ v) :=
   image₂_image₂_image₂_comm sup_sup_sup_comm
 #align finset.sups_sups_sups_comm Finset.sups_sups_sups_comm
 
-variable [@DecidableRel α (· ≤ ·)]
-
-lemma filter_sups_le (s t : Finset α) (a : α) :
-    (s ⊻ t).filter (· ≤ a) = s.filter (· ≤ a) ⊻ t.filter (· ≤ a) := by
-  ext b
-  simp only [mem_filter, mem_sups]
-  constructor
-  · rintro ⟨⟨b, hb, c, hc, rfl⟩, ha⟩
-    rw [sup_le_iff] at ha
-    exact ⟨_, ⟨hb, ha.1⟩, _, ⟨hc, ha.2⟩, rfl⟩
-  · rintro ⟨b, hb, c, hc, _, rfl⟩
-    exact ⟨⟨_, hb.1, _, hc.1, rfl⟩, _root_.sup_le hb.2 hc.2⟩
 #align finset.filter_sups_le Finset.filter_sups_le
 
 end Sups
@@ -428,19 +416,7 @@ theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image₂_image₂_image₂_comm inf_inf_inf_comm
 #align finset.infs_infs_infs_comm Finset.infs_infs_infs_comm
 
-variable [@DecidableRel α (· ≤ ·)]
-
-lemma filter_infs_ge (s t : Finset α) (a : α) :
-    (s ⊼ t).filter (a ≤ ·) = s.filter (a ≤ ·) ⊼ t.filter (a ≤ ·) := by
-  ext b
-  simp only [mem_filter, mem_infs]
-  constructor
-  · rintro ⟨⟨b, hb, c, hc, rfl⟩, ha⟩
-    rw [le_inf_iff] at ha
-    exact ⟨_, ⟨hb, ha.1⟩, _, ⟨hc, ha.2⟩, rfl⟩
-  · rintro ⟨b, hb, c, hc, _, rfl⟩
-    exact ⟨⟨_, hb.1, _, hc.1, rfl⟩, _root_.le_inf hb.2 hc.2⟩
-#align finset.filter_infs_ge Finset.filter_infs_ge
+#align finset.filter_infs_ge Finset.filter_infs_le
 
 end Infs
 
