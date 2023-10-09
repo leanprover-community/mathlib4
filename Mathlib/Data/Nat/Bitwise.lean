@@ -56,18 +56,18 @@ lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool)
   · apply Or.inr ham
 
 @[simp]
-lemma bitwise_zero_left {m : Nat} : bitwise f 0 m = if f false true then m else 0 :=
+lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
   rfl
 
 @[simp]
-lemma bitwise_zero_right {n : Nat} : bitwise f n 0 = if f true false then n else 0 := by
+lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
   unfold bitwise
   simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
   rintro ⟨⟩
   split_ifs <;> rfl
 
 @[simp]
-theorem bitwise'_zero_right {m : Nat} :
+theorem bitwise'_zero_right (m : Nat) :
     bitwise' f m 0 = bif f true false then m else 0 := by
   unfold bitwise' binaryRec
   simp only [Bool.cond_eq_ite, eq_mpr_eq_cast, cast_eq, dite_eq_ite]
