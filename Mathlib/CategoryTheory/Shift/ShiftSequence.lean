@@ -159,6 +159,16 @@ lemma shiftIso_add'_inv_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
     (shift F a).map ((shiftFunctorAdd' C m n mn hnm).inv.app X) := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
+@[reassoc]
+lemma shiftIso_hom_app_comp (n m mn : M) (hnm : m + n = mn)
+    (a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
+    (shiftIso F n a a' ha').hom.app ((shiftFunctor C m).obj X) ≫
+      (shiftIso F m a' a'' ha'').hom.app X =
+        (shift F a).map ((shiftFunctorAdd' C m n mn hnm).inv.app X) ≫
+          (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).hom.app X := by
+  rw [F.shiftIso_add'_hom_app n m mn hnm a a' a'' ha' ha'', ← Functor.map_comp_assoc,
+    Iso.inv_hom_id_app, Functor.map_id, id_comp]
+
 def shiftMap {X Y : C} {n : M} (f : X ⟶ Y⟦n⟧) (a a' : M) (ha' : n + a = a') :
     (F.shift a).obj X ⟶ (F.shift a').obj Y :=
   (F.shift a).map f ≫ (F.shiftIso _ _ _ ha').hom.app Y

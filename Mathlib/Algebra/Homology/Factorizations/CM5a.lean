@@ -38,7 +38,7 @@ lemma homologyMap_eq_zero_of_Q_map_eq_zero {K L : CochainComplex C ℤ} (f : K �
   rw [← eq, hf]
   simp only [Functor.map_zero, zero_comp, comp_zero]
 
-lemma homology_δ_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+noncomputable def homologyδOfDistinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     T.obj₃.homology n₀ ⟶ T.obj₁.homology n₁ :=
   homologyMap T.mor₃ n₀ ≫
     ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso 1 n₀ n₁ (by linarith)).hom.app T.obj₁
@@ -59,6 +59,88 @@ lemma homology_exact₂_of_distinguished (n : ℤ) :
   exact ShortComplex.isoMk
     (e.app T.obj₁) (e.app T.obj₂) (e.app T.obj₃)
     (e.hom.naturality T.mor₁).symm (e.hom.naturality T.mor₂).symm
+
+lemma comp_homologyδOfDistinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    homologyMap T.mor₂ n₀ ≫ homologyδOfDistinguished T n₀ n₁ h = 0 := by
+  have hT' : DerivedCategory.Q.mapTriangle.obj T.rotate ∈ distTriang _ :=
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.rot_of_dist_triangle _ hT) _
+      (DerivedCategory.Q.mapTriangleRotateIso.app T).symm
+  have eq := homologyMap_comp₁₂_eq_zero_of_distinguished T.rotate hT' n₀
+  dsimp at eq
+  dsimp [homologyδOfDistinguished]
+  rw [reassoc_of% eq, zero_comp]
+
+lemma homology_exact₃_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    (ShortComplex.mk (homologyMap T.mor₂ n₀) (homologyδOfDistinguished T n₀ n₁ h)
+      (comp_homologyδOfDistinguished T hT n₀ n₁ h)).Exact := by
+  have hT' : DerivedCategory.Q.mapTriangle.obj T.rotate ∈ distTriang _ :=
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.rot_of_dist_triangle _ hT) _
+      (DerivedCategory.Q.mapTriangleRotateIso.app T).symm
+  refine' ShortComplex.exact_of_iso _ (homology_exact₂_of_distinguished _ hT' n₀)
+  refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
+    (((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso 1 n₀ n₁ (by linarith)).app T.obj₁) _ _
+  · dsimp
+    simp
+  · dsimp [homologyδOfDistinguished]
+    simp
+
+lemma homologyMap_shift {K L : CochainComplex C ℤ} (f : K ⟶ L) (a n m : ℤ) (hm : a + n = m) :
+    homologyMap (f⟦a⟧') n =
+      ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso a n m hm).hom.app K ≫ homologyMap f m ≫
+      ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso a n m hm).inv.app L := by
+  erw [← NatTrans.naturality_assoc, Iso.hom_inv_id_app, comp_id]
+  rfl
+
+lemma homologyδOfDistinguished_comp (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    homologyδOfDistinguished T n₀ n₁ h ≫ homologyMap T.mor₁ n₁ = 0 := by
+  -- the proof most duplicates the proof of `homology_exact₁_of_distinguished` below
+  -- it would be nicer to introduce an isomorphism in `Arrow₂`, and to deduce both
+  -- this vanishing and the exactness
+  have := hT
+  have hT' : DerivedCategory.Q.mapTriangle.obj T.invRotate ∈ distTriang _ :=
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_dist_triangle _ hT) _
+      (DerivedCategory.Q.mapTriangleInvRotateIso.app T).symm
+  have eq := homologyMap_comp₁₂_eq_zero_of_distinguished T.invRotate hT' n₁
+  dsimp at eq
+  rw [homologyMap_neg, neg_comp, neg_eq_zero, homologyMap_comp, assoc,
+    homologyMap_shift T.mor₃ (-1) n₁ n₀ (by linarith), assoc, assoc,
+    IsIso.comp_left_eq_zero] at eq
+  conv_lhs at eq =>
+    congr
+    · skip
+    · rw [← assoc]
+  dsimp only [homologyδOfDistinguished]
+  rw [assoc]
+  convert eq using 3
+  rw [← cancel_epi (((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀
+    (by linarith)).hom.app (T.obj₁⟦(1 : ℤ)⟧)), Iso.hom_inv_id_app_assoc]
+  rw [(homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso_hom_app_comp
+      (-1 : ℤ) 1 0 (add_neg_self 1) n₁ n₀ n₁ (by linarith) (by linarith),
+      Functor.shiftIso_zero_hom_app, ← Functor.map_comp]
+  dsimp [shiftFunctorCompIsoId]
+  rfl
+
+lemma homology_exact₁_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    (ShortComplex.mk (homologyδOfDistinguished T n₀ n₁ h) (homologyMap T.mor₁ n₁)
+      (homologyδOfDistinguished_comp T hT n₀ n₁ h)).Exact := by
+  have hT' : DerivedCategory.Q.mapTriangle.obj T.invRotate ∈ distTriang _ :=
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_dist_triangle _ hT) _
+      (DerivedCategory.Q.mapTriangleInvRotateIso.app T).symm
+  refine' ShortComplex.exact_of_iso _ (homology_exact₂_of_distinguished _ hT' n₁)
+  refine' ShortComplex.isoMk
+    (mulIso (-1) ((((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀ (by linarith)).app T.obj₃))) (Iso.refl _) (Iso.refl _) _ _
+  · dsimp [homologyδOfDistinguished]
+    simp only [neg_smul, one_smul, neg_comp, homologyMap_neg, comp_id, neg_inj]
+    erw [← NatTrans.naturality_assoc]
+    rw [homologyMap_comp]
+    congr 1
+    rw [(homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso_hom_app_comp
+      (-1 : ℤ) 1 0 (add_neg_self 1) n₁ n₀ n₁ (by linarith) (by linarith),
+      Functor.shiftIso_zero_hom_app, ← Functor.map_comp]
+    dsimp [shiftFunctorCompIsoId]
+    rfl
+  · dsimp
+    simp
 
 end CochainComplex
 
@@ -311,9 +393,31 @@ open HomologicalComplex
 lemma homologyMap_fst_comp (n : ℤ) : homologyMap (fst f) n ≫ homologyMap f n = 0 :=
   homologyMap_comp₁₂_eq_zero_of_distinguished _ (Q_map_triangle_distinguished f) n
 
+noncomputable def homology_δ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    L.homology n₀ ⟶ (mappingCocone f).homology n₁ :=
+  homologyδOfDistinguished (triangle f) n₀ n₁ hn₁
+
+@[reassoc (attr := simp)]
+lemma homology_δ_comp (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    homology_δ f n₀ n₁ hn₁ ≫ homologyMap (fst f) n₁ = 0 :=
+  homologyδOfDistinguished_comp _ (Q_map_triangle_distinguished f) n₀ n₁ hn₁
+
+@[reassoc (attr := simp)]
+lemma homology_comp_δ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    homologyMap f n₀ ≫ homology_δ f n₀ n₁ hn₁ = 0 :=
+  comp_homologyδOfDistinguished _ (Q_map_triangle_distinguished f) n₀ n₁ hn₁
+
+lemma homology_exact₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    (ShortComplex.mk (homology_δ f n₀ n₁ hn₁) (homologyMap (fst f) n₁) (by simp)).Exact :=
+  homology_exact₁_of_distinguished _ (Q_map_triangle_distinguished f) n₀ n₁ hn₁
+
 lemma homology_exact₂ (n : ℤ) :
     (ShortComplex.mk (homologyMap (fst f) n) (homologyMap f n) (by simp)).Exact :=
   homology_exact₂_of_distinguished _ (Q_map_triangle_distinguished f) n
+
+lemma homology_exact₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    (ShortComplex.mk (homologyMap f n₀) (homology_δ f n₀ n₁ hn₁) (by simp)).Exact :=
+  homology_exact₃_of_distinguished _ (Q_map_triangle_distinguished f) n₀ n₁ hn₁
 
 end MappingCocone
 
@@ -342,7 +446,7 @@ attribute [reassoc (attr := simp)] fac
 variable (F₁ F₂ F₃ : HomFactorization f)
 
 @[ext]
-structure Hom where
+  structure Hom where
   φ : F₁.I ⟶ F₂.I
   commi : F₁.i ≫ φ = F₂.i := by aesop_cat
   commp : φ ≫ F₂.p = F₁.p := by aesop_cat
@@ -539,6 +643,13 @@ instance mono_homologyShortComplex_f : Mono (homologyShortComplex f n).f := by
 
 noncomputable def I := (single C (ComplexShape.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
 
+lemma isZero_homology_I (q : ℤ) (hq : q ≠ n) : IsZero ((I f n).homology q) := by
+  rw [isZero_homology_iff, exactAt_iff]
+  apply ShortComplex.exact_of_isZero_X₂
+  dsimp [I]
+  rw [if_neg hq]
+  exact Limits.isZero_zero C
+
 instance (p : ℤ) : Injective ((I f n).X p) := by
   dsimp [I]
   split_ifs <;> infer_instance
@@ -564,10 +675,10 @@ lemma mono_homologyMap_π' : Mono (homologyMap (π' f n) n) := by
   have := ((cokernel f).truncGE n).isIso_homologyπ (n-1) n (by simp)
     (IsZero.eq_of_src (isZero_truncGEX _ _ _ (by linarith)) _ _)
   have := (I f n).isIso_homologyπ  (n-1) n (by simp) (by
-    apply IsZero.eq_of_src
-    dsimp [I]
-    rw [if_neg (by linarith)]
-    exact isZero_zero C)
+      apply IsZero.eq_of_src
+      dsimp [I]
+      rw [if_neg (by linarith)]
+      exact isZero_zero C)
   have : Mono ((truncGE (cokernel f) n).homologyπ n ≫ homologyMap (π' f n) n) := by
     rw [homologyπ_naturality (π' f n) n]
     infer_instance
@@ -680,8 +791,62 @@ lemma quasiIso_truncGEπ : QuasiIso ((cokernel f).truncGEπ n) := by
   rw [quasiIso_iff_mem_qis, qis_truncGEπ_iff]
   exact isGE_cokernel f n hf
 
-lemma quasiIsoLE_cofFibFactorization : (cofFibFactorization f n).QuasiIsoLE n := by
-  sorry
+variable [HasDerivedCategory C]
+
+lemma mono_homologyMap_p (q : ℤ) (hq : q ≤ n) : Mono (homologyMap (p f n) q) :=
+  (MappingCocone.homology_exact₁ (α f n) (q-1) q (by linarith)).mono_g (by
+    apply IsZero.eq_of_src
+    apply isZero_homology_I
+    linarith)
+
+lemma epi_homologyMap_p (q : ℤ) (hq : q < n) : Epi (homologyMap (p f n) q) :=
+  (MappingCocone.homology_exact₂ (α f n) q).epi_f (by
+    apply IsZero.eq_of_tgt
+    dsimp
+    apply isZero_homology_I
+    linarith)
+
+lemma isIso_homologyMap_p (q : ℤ) (hq : q < n) : IsIso (homologyMap (p f n) q) := by
+  have := mono_homologyMap_p f n q (by linarith)
+  have := epi_homologyMap_p f n q hq
+  apply isIso_of_mono_of_epi
+
+lemma isIso_homologyMap_i' (q : ℤ) (hq : q < n) : IsIso (homologyMap (i f n) q) := by
+  have := isIso_homologyMap_p f n q hq
+  have h : IsIso (homologyMap f q) := by
+    simpa only [quasiIsoAt_iff_isIso_homologyMap] using (hf q (by linarith))
+  rw [← fac f n, homologyMap_comp] at h
+  exact IsIso.of_isIso_comp_right (homologyMap (i f n) q) (homologyMap (p f n) q)
+
+@[simps]
+noncomputable def homologyShortComplex'' : ShortComplex C :=
+  ShortComplex.mk (homologyMap (p f n) n) (homologyMap (α f n) n)
+    (MappingCocone.homologyMap_fst_comp _ _)
+
+instance : Mono (homologyShortComplex'' f n).f :=
+  mono_homologyMap_p f n n (by rfl)
+
+lemma homologyShortComplex''_exact : (homologyShortComplex'' f n).Exact :=
+  MappingCocone.homology_exact₂ (α f n) n
+
+lemma isIso_homologyMap_i : IsIso (homologyMap (i f n) n) := by
+  have h₁ := (homologyShortComplex'_exact f n).fIsKernel
+  have h₂ := (homologyShortComplex''_exact f n).fIsKernel
+  have : (homologyMap (i f n) n) = (IsLimit.conePointUniqueUpToIso h₁ h₂).hom := by
+    rw [← cancel_mono (homologyShortComplex'' f n).f]
+    have eq := IsLimit.conePointUniqueUpToIso_hom_comp h₁ h₂ WalkingParallelPair.zero
+    dsimp at eq ⊢
+    rw [eq, ← homologyMap_comp, fac]
+  rw [this]
+  infer_instance
+
+lemma quasiIsoLE_cofFibFactorization : (cofFibFactorization f n).QuasiIsoLE n := ⟨fun q hq => by
+  have := hf
+  dsimp
+  rw [quasiIsoAt_iff_isIso_homologyMap]
+  obtain hq | rfl := hq.lt_or_eq
+  · exact isIso_homologyMap_i' f n hf q hq
+  · exact isIso_homologyMap_i f q⟩
 
 end Step₂
 
@@ -693,12 +858,13 @@ lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i)
     [Mono (homologyMap f n₁)] :
     ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₁), F.QuasiIsoLE n₁ := by
-  obtain : n₀ = n₁ - 1 := by linarith
-  exact ⟨cofFibFactorization f n₁, isIso_p_f f n₁, quasiIsoLE_cofFibFactorization f n₁⟩
+  have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+  obtain rfl : n₀ = n₁ - 1 := by linarith
+  exact ⟨cofFibFactorization f n₁, isIso_p_f f n₁, quasiIsoLE_cofFibFactorization f n₁ hf⟩
 
 end
 
-/-lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
+lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     (hf : ∀ (i : ℤ) (_ : i ≤ n₀), QuasiIsoAt f i) :
     ∃ (F : CofFibFactorization f) (_ : F.IsIsoLE n₀), F.QuasiIsoLE n₁ := by
   obtain ⟨F₁, hF₁, hF₁', _⟩ := step₁ f n₀ n₁ hn₁ hf
@@ -723,7 +889,7 @@ lemma step' (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
   obtain ⟨F₁₂, h, _⟩ := step₁₂ F.1.i n₀ n₁ hn₁ (F.quasiIsoAt_of_quasiIsoLE n₀)
   have fac : F₁₂.obj.i ≫ F₁₂.obj.p ≫ F.obj.p = f := by rw [F₁₂.1.fac_assoc, F.1.fac]
   exact ⟨CofFibFactorization.mk fac (MorphismProperty.comp_mem _ _ _ F₁₂.2.hp F.2.hp),
-    ⟨F₁₂.quasiIsoAt_of_quasiIsoLE n₁⟩, { φ := F₁₂.1.p }, h⟩-/
+    ⟨F₁₂.quasiIsoAt_of_quasiIsoLE n₁⟩, { φ := F₁₂.1.p }, h⟩
 
 end CM5aCof
 
