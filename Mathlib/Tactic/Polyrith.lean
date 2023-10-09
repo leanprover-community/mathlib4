@@ -332,8 +332,6 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     if hyps'.isEmpty then
       return ← byRing "polyrith did not find any relevant hypotheses"
     let vars := (← get).atoms.size
-    if vars = 0 then
-      return ← byRing "polyrith did not find find any variables"
     match ← sageOutput (createSageArgs traceOnly α vars hyps' tgt) with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
