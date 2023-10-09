@@ -98,7 +98,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
       intro j;
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
-      this j, ← LinearMap.map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
+      this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
   by_contra h
   rw [discr_def] at h
   simp [Matrix.eq_zero_of_mulVec_eq_zero h this] at hi
@@ -251,7 +251,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
       ← Finset.prod_mk _ (hnodup.erase _)]
   rw [prod_sigma', prod_sigma']
   refine'
-    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp )
+    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp)
       (fun i j hi hj hij => _) fun σ hσ => _
   · simp only [true_and_iff, Finset.mem_mk, mem_univ, mem_sigma]
     rw [Multiset.mem_erase_of_ne fun h => ?_]

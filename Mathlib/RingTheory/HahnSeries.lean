@@ -813,9 +813,6 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
 instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
     inferInstanceAs (Distrib (HahnSeries Γ R)) with
-    zero := 0
-    add := (· + ·)
-    mul := (· * ·)
     zero_mul := fun _ => by
       ext
       simp [mul_coeff]
@@ -825,18 +822,11 @@ instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries �
 
 instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
-    zero := 0
-    add := (· + ·)
-    mul := (· * ·)
     mul_assoc := mul_assoc' }
 
 instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
   { AddMonoidWithOne.unary,
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
-    zero := 0
-    one := 1
-    add := (· + ·)
-    mul := (· * ·)
     one_mul := fun x => by
       ext
       exact single_zero_mul_coeff.trans (one_mul _)
@@ -846,11 +836,7 @@ instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
 
 instance [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
-    inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with
-    zero := 0
-    one := 1
-    add := (· + ·)
-    mul := (· * ·) }
+    inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
 instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with

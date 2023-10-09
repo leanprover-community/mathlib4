@@ -21,7 +21,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddMonoid PartENat`
+* `CanonicallyOrderedAddCommMonoid PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -427,7 +427,7 @@ noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
         ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
-noncomputable instance : CanonicallyOrderedAddMonoid PartENat :=
+noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
   { PartENat.semilatticeSup, PartENat.orderBot,
     PartENat.orderedAddCommMonoid with
     le_self_add := fun a b =>
@@ -503,7 +503,7 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
   norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
 #align part_enat.add_one_le_iff_lt PartENat.add_one_le_iff_lt
 
-theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e:= by
+theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e := by
   rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, add_one_le_iff_lt (natCast_ne_top n)]
 #align part_enat.coe_succ_le_succ_iff PartENat.coe_succ_le_iff
 

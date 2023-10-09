@@ -366,7 +366,6 @@ instance commSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_left_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 ((coe_eq.1 H).mono fun _x => mul_left_cancel) }
@@ -374,7 +373,6 @@ instance leftCancelSemigroup [LeftCancelSemigroup M] : LeftCancelSemigroup (Germ
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (Germ l M) :=
   { Germ.semigroup with
-    mul := (· * ·)
     mul_right_cancel := fun f₁ f₂ f₃ =>
       inductionOn₃ f₁ f₂ f₃ fun _f₁ _f₂ _f₃ H =>
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
@@ -846,8 +844,8 @@ instance existsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ
     rw [dif_pos hx, hc]
 
 @[to_additive]
-instance canonicallyOrderedMonoid [CanonicallyOrderedMonoid β] :
-    CanonicallyOrderedMonoid (Germ l β) :=
+instance CanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
+    CanonicallyOrderedCommMonoid (Germ l β) :=
   { orderedCommMonoid, orderBot, existsMulOfLE with
     le_self_mul := fun x y ↦ inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul }
 

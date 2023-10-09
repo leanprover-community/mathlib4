@@ -142,14 +142,6 @@ theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align pochhammer_succ_comp_X_add_one ascPochhammer_succ_comp_X_add_one
 
-
--- TODO: find a better place for this lemma?
-theorem Polynomial.mul_X_add_nat_cast_comp {p q : S[X]} {n : ℕ} :
-    (p * (X + (n : S[X]))).comp q = p.comp q * (q + n) := by
-  rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_add]
-set_option linter.uppercaseLean3 false in
-#align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_X_add_nat_cast_comp
-
 theorem ascPochhammer_mul (n m : ℕ) :
     ascPochhammer S n * (ascPochhammer S m).comp (X + (n : S[X])) = ascPochhammer S (n + m) := by
   induction' m with m ih
@@ -343,11 +335,6 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
   nth_rw 2 [descPochhammer_succ_left]
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, nat_cast_comp]
   ring
-
--- TODO: find a better place for this lemma?
-theorem Polynomial.mul_X_sub_int_cast_comp {p q : R[X]} {n : ℕ} :
-    (p * (X - (n : R[X]))).comp q = p.comp q * (q - n) := by
-  rw [mul_sub, sub_comp, mul_X_comp, ← Nat.cast_comm, nat_cast_mul_comp, Nat.cast_comm, mul_sub]
 
 theorem descPochhammer_mul (n m : ℕ) :
     descPochhammer R n * (descPochhammer R m).comp (X - (n : R[X])) = descPochhammer R (n + m) := by

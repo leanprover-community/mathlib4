@@ -289,6 +289,16 @@ theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
   Finset.card_univ_diff s
 #align finset.card_compl Finset.card_compl
 
+@[simp]
+theorem card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+    s.card + sᶜ.card = Fintype.card α := by
+  rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
+
+@[simp]
+theorem card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
+    sᶜ.card + s.card = Fintype.card α := by
+  rw [add_comm, card_add_card_compl]
+
 theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
     Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
   classical rw [← Set.toFinset_card, ← Set.toFinset_card, ← Finset.card_compl, Set.toFinset_compl]
@@ -321,7 +331,7 @@ theorem fin_injective : Function.Injective Fin := fun m n h =>
 
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
-    _root_.cast h = ⇑(Fin.castIso <| fin_injective h) := by
+    _root_.cast h = Fin.cast (fin_injective h) := by
   cases fin_injective h
   rfl
 #align fin.cast_eq_cast' Fin.cast_eq_cast'
@@ -1237,12 +1247,12 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
   Finset.univ_nonempty.card_pos
 
 --Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
--- /-- Extension for the `positivity` tactic: `finset.card s` is positive if `s` is nonempty. -/
+-- /-- Extension for the `positivity` tactic: `Finset.card s` is positive if `s` is nonempty. -/
 -- @[positivity]
 -- unsafe def positivity_finset_card : expr → tactic strictness
 --   | q(Finset.card $(s)) => do
 --     let p
---       ←-- TODO: Partial decision procedure for `finset.nonempty`
+--       ←-- TODO: Partial decision procedure for `Finset.nonempty`
 --             to_expr
 --             ``(Finset.Nonempty $(s)) >>=
 --           find_assumption
@@ -1251,7 +1261,7 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
 --   | e =>
 --     pp e >>=
 --       fail ∘
---       format.bracket "The expression `" "` isn't of the form `finset.card s` or `fintype.card α`"
+--       format.bracket "The expression `" "` isn't of the form `Finset.card s` or `Fintype.card α`"
 -- #align tactic.positivity_finset_card tactic.positivity_finset_card
 
 end Tactic

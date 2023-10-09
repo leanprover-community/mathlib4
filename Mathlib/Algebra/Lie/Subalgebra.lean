@@ -536,7 +536,7 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   add_comm _ _ := sup_comm
   nsmul := nsmulRec
 
-instance : CanonicallyOrderedAddMonoid (LieSubalgebra R L) :=
+instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
   { LieSubalgebra.addCommMonoid,
     LieSubalgebra.completeLattice with
     add_le_add_left := fun _a _b ↦ sup_le_sup_left

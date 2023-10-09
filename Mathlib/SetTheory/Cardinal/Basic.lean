@@ -693,11 +693,11 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
       inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
 
-instance : CanonicallyLinearOrderedAddMonoid Cardinal.{u} :=
+instance : CanonicallyLinearOrderedAddCommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
 
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CanonicallyOrderedAddMonoid Cardinal.{u} :=
+instance : CanonicallyOrderedAddCommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
@@ -1902,7 +1902,7 @@ theorem toPartENat_surjective : Surjective toPartENat := fun x =>
 #align cardinal.to_part_enat_surjective Cardinal.toPartENat_surjective
 
 theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
-  toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
+    toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     simp only [toPartENat_apply_of_lt_aleph0 hc, PartENat.natCast_ne_top, false_iff, not_le, hc]
@@ -1910,7 +1910,7 @@ theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
 #align to_part_enat_eq_top_iff_le_aleph_0 Cardinal.toPartENat_eq_top_iff_le_aleph0
 
 lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
-  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+    toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     rw [toPartENat_apply_of_lt_aleph0 hc]
@@ -1929,7 +1929,7 @@ lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
 #align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_of_le_aleph0
 
 lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
-  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+    toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     rw [toPartENat_apply_of_lt_aleph0 hc]
@@ -1943,13 +1943,13 @@ lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
 #align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_of_lt_aleph0
 
 lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
-  toPartENat c = toPartENat c' ↔ c = c' := by
+    toPartENat c = toPartENat c' ↔ c = c' := by
   rw [le_antisymm_iff, le_antisymm_iff, toPartENat_le_iff_of_le_aleph0 hc,
     toPartENat_le_iff_of_le_aleph0 hc']
 #align to_part_enat_eq_iff_eq_of_le_aleph_0 Cardinal.toPartENat_eq_iff_of_le_aleph0
 
 theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
-  toPartENat c ≤ toPartENat c' := by
+    toPartENat c ≤ toPartENat c' := by
   cases lt_or_ge c ℵ₀ with
   | inl hc =>
     rw [toPartENat_apply_of_lt_aleph0 hc]
