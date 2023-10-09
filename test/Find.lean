@@ -13,7 +13,7 @@ import Mathlib.Tactic.RunCmd
 -- so that this test file does not need to to be updated when Mathlib changes.
 
 
-/-- warning: Cannot search: No constants or name fragments in search pattern. -/
+/-- error: Cannot search: No constants or name fragments in search pattern. -/
 #guard_msgs in
 #find
 
@@ -274,11 +274,7 @@ def Namespaced.TestDefinition := true
 theorem TestDefinition_eq_true:
   Namespaced.TestDefinition = true := rfl
 
-/--
-info: unknown identifier TestDefinition, using Namespaced.TestDefinition instead.
-Found 1 definitions mentioning Namespaced.TestDefinition.
-• TestDefinition_eq_true
--/
+/-- error: unknown identifier 'TestDefinition' -/
 #guard_msgs in
 #find TestDefinition
 
@@ -293,10 +289,6 @@ theorem NamespcedA.AnotherTestDefinition_eq_true:
 theorem NamespcedB.AnotherTestDefinition_eq_true:
   NamespacedB.AnotherTestDefinition = true := rfl
 
-/--
-info: unknown identifier AnotherTestDefinition, using NamespacedA.AnotherTestDefinition instead. (Other candidates: NamespacedB.AnotherTestDefinition and NamespacedC.AnotherTestDefinition)
-Found 1 definitions mentioning NamespacedA.AnotherTestDefinition.
-• NamespcedA.AnotherTestDefinition_eq_true
--/
+/-- error: unknown identifier 'AnotherTestDefinition' -/
 #guard_msgs in
 #find AnotherTestDefinition

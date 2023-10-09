@@ -11,6 +11,7 @@ import Std.Util.Pickle
 import Mathlib.Tactic.Cache
 import Mathlib.Lean.Data.NameRel
 import Mathlib.Lean.Data.RBTree
+import Mathlib.Control.Monad.Writer
 
 /-!
 # The `#find` command and tactic.
@@ -232,26 +233,13 @@ def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
     Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
     return t
 
-/-- When a name cannot be resolved, see if we can find it in the trie under some namepace -/
-def resolveUnqualifiedName (index : Index) (n : Name) :
-    TermElabM (Option (MessageData × Name)) := do
+/-- When a name cannot be resolved, see if we can find it in the trie under some namepace. -/
+def resolveUnqualifiedName (index : Index) (n : Name) : MetaM (Array Name) := do
   let s := "." ++ n.toString
   let (t₁, t₂) ← index.trieCache.get
   let names := t₁.findSuffix s ++ t₂.findSuffix s
   let names := names.filter ((← getEnv).contains ·)
-  let names ← sortByModule id names
-  if names.isEmpty then return none
-  let n' := names.get! 0
-  let mut msg := m!"unknown identifier {n}, using {n'} instead."
-  if names.size > 1 then
-    msg := msg ++
-      m!" (Other candidates: " ++
-        MessageData.andList (names.extract 1 names.size |>.map (m!"{·}")) ++
-        m!")"
-    else
-    pure ()
-  msg := msg ++ Format.line
-  return some (msg, names.get! 0)
+  sortByModule id names
 
 /-!
 ## The core find tactic engine
@@ -277,16 +265,25 @@ structure Result where
   /-- Matching definition (with defining module, if imported)  -/
   hits : Array (ConstantInfo × Option Name)
 
+/-- Negative result  of `find` -/
+structure Failure where
+  /-- Position of error message -/
+  ref : Syntax
+  /-- Error message -/
+  message : MessageData
+  /-- Alternative suggestions  -/
+  suggestions : Array (TSyntax ``find_filters)
+
 /-- The core of the `#find` tactic with all parsing/printing factored out, for
 programmatic use (e.g. the loogle CLI).
 It also does not use the implicit global Index, but rather expects one as an argument. -/
 def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
-    TermElabM (Except MessageData Result) := do
+    TermElabM (Except Failure Result) := do
   profileitM Exception "#find" (← getOptions) do
+    let mut message := MessageData.nil
     let mut idents := #[]
     let mut namePats := #[]
     let mut terms := #[]
-    let mut parserMessage := MessageData.nil
     match args with
     | `(find_filters| $args':find_filter,*) =>
       for arg in args'.getElems do
@@ -295,40 +292,38 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
           let e ← elabTerm' s (some (mkSort (← mkFreshLevelMVar)))
           let t := ← inferType e
           unless t.isSort do
-            throwErrorAt s "Conclusion pattern is of type {t}, should be of type `Sort`"
+            return .error ⟨s, m!"Conclusion pattern is of type {t}, should be of type `Sort`", #[]⟩
           terms := terms.push (true, e)
         | `(find_filter| $ss:str) => do
           let str := Lean.TSyntax.getString ss
           if str = "" || str = "." then
-            throwErrorAt ss "Name pattern is too general"
+            return .error ⟨ss, "Name pattern is too general", #[]⟩
           namePats := namePats.push str
         | `(find_filter| $i:ident) => do
           let n := Lean.TSyntax.getId i
           if (← getEnv).contains n then
             idents := idents.push n
           else
-            if let some (msg, n') := (← resolveUnqualifiedName index n) then
-              parserMessage := parserMessage ++ msg
-              idents := idents.push n'
-            else
-              throwErrorAt i "unknown identifier '{n}'"
+            let _suggestedNames ← resolveUnqualifiedName index n
+            return .error ⟨i, m!"unknown identifier '{n}'", #[]⟩ -- TODO
         | `(find_filter| _) => do
-            throwErrorAt arg ("Cannot search for _. " ++
-              "Did you forget to put a term pattern in parentheses?")
+            return .error ⟨arg, "Cannot search for _. " ++
+              "Did you forget to put a term pattern in parentheses?", #[]⟩
         | `(find_filter| $s:term) => do
           let e ← elabTerm' s none
           terms := terms.push (false, e)
-        | _ => throwErrorAt args "unexpected argument to #find"
-      | _ => throwErrorAt args "unexpected argument to #find"
+        | _ => return .error ⟨args, "unexpected argument to #find", #[]⟩
+      | _ => return .error ⟨args, "unexpected argument to #find", #[]⟩
 
     -- Collect set of names to query the index by
     let needles : NameSet :=
           {} |> idents.foldl NameSet.insert
              |> terms.foldl (fun s (_,t) => t.foldConsts s (flip NameSet.insert))
-    let (indexHits, indexSummary) ← do
+    let indexHits ← do
       if needles.isEmpty then do
         if namePats.isEmpty then
-          return .error m!"Cannot search: No constants or name fragments in search pattern."
+          return .error ⟨args, m!"Cannot search: No constants or name fragments in search pattern.",
+            #[]⟩
         -- No constants in patterns, use trie
         let (t₁, t₂) ← index.trieCache.get
         let hitArrays := namePats.map (fun s => (s, t₁.find s ++ t₂.find s))
@@ -336,8 +331,8 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
         -- array of names
         let hitArrays := hitArrays.qsort fun (_, a₁) (_, a₂) => a₁.size < a₂.size
         let (needle, hits) := hitArrays.get! 0
-        let indexSummary := m!"Found {hits.size} definitions whose name contains \"{needle}\"."
-        pure (hits, indexSummary)
+        message := message ++ m!"Found {hits.size} definitions whose name contains \"{needle}\".\n"
+        pure hits
       else do
         -- Query the declaration cache
         let (m₁, m₂) ← index.nameRelCache.get
@@ -345,13 +340,16 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
           (m₁.find needle).union (m₂.find needle)
 
         let needlesList := MessageData.andList (needles.toArray.map .ofName)
-        let indexSummary := m!"Found {hits.size} definitions mentioning {needlesList}."
-        pure (hits.toArray, indexSummary)
+        message := message ++ m!"Found {hits.size} definitions mentioning {needlesList}.\n"
+        pure hits.toArray
 
     -- Filter by name patterns
     let nameMatchers := namePats.map (String.Matcher.ofString ·.toLower)
     let hits2 := indexHits.filter fun n => nameMatchers.all fun m =>
       m.find? n.toString.toLower |>.isSome
+    unless (namePats.isEmpty) do
+      let nameList := MessageData.andList <| namePats.map fun s => m!"\"{s}\""
+      message := message ++ m!"Of these, {hits2.size} have a name containing {nameList}.\n"
 
     -- Obtain ConstantInfos
     let env ← getEnv
@@ -364,32 +362,23 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
       else
         matchAnywhere t
     let hits4 ← hits3.filterM fun ci => pats.allM (· ci)
-
-    -- Add defining module index
+    unless (pats.isEmpty) do
+      message := message ++ m!"Of these, {hits4.size} match your patterns.\n"
 
     -- Sort by modindex and then by name.
     let hits5 ← sortByModule' (·.name) hits4
 
     -- Apply maxShown limit
     let hits6 := hits5.extract 0 maxShown
+    unless (hits6.size ≤ maxShown) do
+      message := message ++ m!"Of these, only the first {maxShown} are shown.\n"
 
     -- Resolve ModIndex to module name
     let hits7 := hits6.map fun (ci, mi) =>
       let modName : Option Name := do env.header.moduleNames[(← mi).toNat]!
       (ci, modName)
 
-    let summary ← IO.mkRef parserMessage
-    let addLine line := do summary.set <| (← summary.get) ++ line ++ Format.line
-
-    addLine indexSummary
-    unless (namePats.isEmpty) do
-      let nameList := MessageData.andList <| namePats.map fun s => m!"\"{s}\""
-      addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
-    unless (pats.isEmpty) do
-      addLine $ m!"Of these, {hits4.size} match your patterns."
-    unless (hits6.size ≤ maxShown) do
-      addLine $ m!"Of these, only the first {maxShown} are shown."
-    return .ok ⟨← summary.get, hits4.size, hits7⟩
+    return .ok ⟨message, hits4.size, hits7⟩
 
 /-
 ###  The per-module cache used by the `#find` command
@@ -483,11 +472,11 @@ the distributed cache, it may be useful to open a scratch file, `import Mathlib`
 there, this way you will find lemmas that you have not yet imported, and the
 cache will stay up-to-date.
 -/
-elab s:"#find " args:find_filters : command => liftTermElabM do
+elab "#find " args:find_filters : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
     match ← find cachedIndex args with
-    | .error warn =>
-      Lean.logWarningAt s warn
+    | .error ⟨s, warn, _suggestions⟩ =>
+      Lean.logErrorAt s warn
     | .ok result =>
       let names := result.hits.map (·.1.name)
       Lean.logInfo $ result.header ++ (← MessageData.bulletListOfConsts names)
