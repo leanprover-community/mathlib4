@@ -199,16 +199,20 @@ section nonZeroSMulDivisors
 
 open nonZeroSMulDivisors nonZeroDivisors
 
-variable (R M : Type*) [MonoidWithZero R] [Zero M] [MulAction R M]
+variable {R M : Type*} [MonoidWithZero R] [Zero M] [MulAction R M]
 
-lemma mem_nonZeroSMulDivisors_iff (x : R) : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
+lemma mem_nonZeroSMulDivisors_iff {x : R} : x ∈ R⁰[M] ↔ ∀ (m : M), x • m = 0 → m = 0 := Iff.rfl
 
-@[simp, nolint simpNF]
-lemma Submonoid.unop_mulOpposite_nonZeroSmulDivisors_over_itself_eq_nonZeroDivisors :
+variable (R)
+
+@[simp]
+lemma unop_nonZeroSmulDivisors_mulOpposite_eq_nonZeroDivisors :
     (Rᵐᵒᵖ ⁰[R]).unop = R⁰ := rfl
 
-@[simp, nolint simpNF]
-lemma Submonoid.mulOpposite_nonZeroSmulDivisors_over_itself_eq_op_nonZeroDivisors :
+/-- The non-zero `•`-divisors with `•` as right multiplication correspond with the non-zero
+divisors. Note that the `MulOpposite` is needed because we defined `nonZeroDivisors` with
+multiplication on the right. -/
+lemma nonZeroSmulDivisors_mulOpposite_eq_op_nonZeroDivisors :
     Rᵐᵒᵖ ⁰[R] = R⁰.op := rfl
 
 end nonZeroSMulDivisors
