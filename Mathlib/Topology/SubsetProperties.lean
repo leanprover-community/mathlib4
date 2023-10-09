@@ -848,7 +848,8 @@ theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
 
 -- porting note: golfed
 /-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/
-theorem isClosedMap_snd_of_compactSpace [CompactSpace X] : IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
+theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :
+    IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro y hy
   have : univ ×ˢ {y} ⊆ sᶜ
