@@ -1746,6 +1746,63 @@ end
 
 section
 
+variable [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
+
+lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
+  rcases exists_isCompact_isClosed_nhds_one G with ⟨K, K_comp, K_closed, K_mem⟩
+  apply K_comp.of_isClosed_subset isClosed_closure
+  rw [← IsClosed.closure_eq K_closed]
+  apply closure_mono
+  simpa using mem_of_mem_nhds K_mem
+
+lemma IsCompact.closure_eq_smul_set_one {K : Set G} (hK : IsCompact K) :
+    closure K = K • (closure {1} : Set G) := by
+  apply Subset.antisymm
+  · have : IsClosed (K • (closure {1} : Set G)) :=
+      IsClosed.smul_left_of_isCompact isClosed_closure hK
+    rw [IsClosed.closure_subset_iff this]
+    have : K ⊆ K • ({1} : Set G) := by simpa using Subset.rfl
+    exact this.trans (smul_subset_smul_left subset_closure)
+  · calc
+    K • (closure {1} : Set G) ⊆ closure K • (closure {1} : Set G) :=
+      smul_subset_smul_right subset_closure
+    _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
+    _ = closure K := by simp
+
+lemma IsCompact.closure {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
+  rw [hK.closure_eq_smul_set_one, ← image2_smul, ← image_uncurry_prod]
+  exact IsCompact.image (hK.prod isCompact_closure_one) continuous_smul
+
+lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
+    F • closure ({1} : Set G) = F := by
+  apply Subset.antisymm
+  · calc
+    F • closure ({1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
+    _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
+    _ = F := by simp [hF.closure_eq]
+  · calc
+    F = F • ({1} : Set G) := by simp
+    _ ⊆ F • (closure {1} : Set G) := smul_subset_smul_left subset_closure
+
+/- Faire le cas général de la multiplication par un sous-groupe...
+lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hF : IsOpen U) :
+    U • closure ({1} : Set G) = U := by
+  let F := Uᶜ
+  have : U = univ \ F := sorry
+  rw [this]
+  rw [diff_smul_set]
+
+
+lemma IsCompact.closure_subset_of_isOpen {K : Set G} (hK : IsCompact K) {U : Set G} (hU : IsOpen U)
+    (h : K ⊆ U) : closure K ⊆ U := by
+
+
+-/
+
+end
+
+section
+
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 @[to_additive]
