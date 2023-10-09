@@ -284,13 +284,13 @@ lemma connected_uniqueness_of_homotopy_lifting (Y : Type*)[TopologicalSpace Y]  
 
 open unitInterval
 
-lemma
+
 
 lemma existence_of_path_lifting (hf : IsCoveringMap f)
   (p : ContinuousMap I X) (x':E) (hx': f x' = p 0): ∃ P : ContinuousMap I E, f ∘ P = p ∧ P 0 = x'  := by
   let b := {r:I | ∃Q:ContinuousMap (Set.Icc 0 r) E, f∘Q = p ∘ Subtype.val ∧ Q ⟨ 0, Set.left_mem_Icc.2 (r.2.1)⟩ = x'}
-  have : 0 ∈ b
-  · use ContinuousMap.const _ x'
+  have : 0 ∈ b := by
+    use ContinuousMap.const _ x'
     constructor
     ext x
     change f x' = p x
@@ -299,10 +299,20 @@ lemma existence_of_path_lifting (hf : IsCoveringMap f)
     rwa [this]
     rfl
 
-  have : ∀ x y:I, x≤ y∧y ∈ b → x∈ b
-  intro x y hhx
-  let z := hhx.2
-  let w = z.2
+
+  have convex: ∀ x y:I, x≤ y∧y ∈ b → x∈ b := by
+    intro x y ⟨ζ ,r,hr₁,hr₂⟩
+    rw [Set.mem_setOf_eq]
+    let ι :(Set.Icc 0 x) → (Set.Icc 0 y) := Set.inclusion (Set.Icc_subset_Icc_right ζ )
+    let ρ : Continuous ι := continuous_inclusion (Set.Icc_subset_Icc_right ζ )
+    use ⟨ r∘ ι, r.2.comp ρ⟩
+    constructor
+    rw[Function.funext_iff] at hr₁ ⊢
+    exact fun ξ ↦ hr₁ ( ι (ξ))
+    exact hr₂
+
+  have interior: ∀ x: I, (∀ y, y<x → y∈b ) → ∃ z: I,x<z∧ z∈ b
+
 
 
 
