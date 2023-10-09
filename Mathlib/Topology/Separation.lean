@@ -1919,37 +1919,37 @@ end CompletelyNormal
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
 theorem connectedComponent_eq_iInter_clopen [T2Space X] [CompactSpace X] (x : X) :
-    connectedComponent x = ⋂ Z : { Z : Set X // IsClopen Z ∧ x ∈ Z }, Z := by
+    connectedComponent x = ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, s := by
   apply Subset.antisymm connectedComponent_subset_iInter_clopen
   -- Reduce to showing that the clopen intersection is connected.
-  refine' IsPreconnected.subset_connectedComponent _ (mem_iInter.2 fun Z => Z.2.2)
+  refine' IsPreconnected.subset_connectedComponent _ (mem_iInter.2 fun s => s.2.2)
   -- We do this by showing that any disjoint cover by two closed sets implies
   -- that one of these closed sets must contain our whole thing.
   -- To reduce to the case where the cover is disjoint on all of `X` we need that `s` is closed
-  have hs : @IsClosed X _ (⋂ Z : { Z : Set X // IsClopen Z ∧ x ∈ Z }, Z) :=
-    isClosed_iInter fun Z => Z.2.1.2
+  have hs : @IsClosed X _ (⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, s) :=
+    isClosed_iInter fun s => s.2.1.2
   rw [isPreconnected_iff_subset_of_fully_disjoint_closed hs]
   intro a b ha hb hab ab_disj
   -- Since our space is normal, we get two larger disjoint open sets containing the disjoint
   -- closed sets. If we can show that our intersection is a subset of any of these we can then
   -- "descend" this to show that it is a subset of either a or b.
   rcases normal_separation ha hb ab_disj with ⟨u, v, hu, hv, hau, hbv, huv⟩
-  obtain ⟨Z, H⟩ : ∃ Z : Set X, IsClopen Z ∧ x ∈ Z ∧ Z ⊆ u ∪ v
-  /- Now we find a clopen set `Z` around `x`, contained in `u ∪ v`. We utilize the fact that
+  obtain ⟨s, H⟩ : ∃ s : Set X, IsClopen s ∧ x ∈ s ∧ s ⊆ u ∪ v
+  /- Now we find a clopen set `s` around `x`, contained in `u ∪ v`. We utilize the fact that
   `X \ u ∪ v` will be compact, so there must be some finite intersection of clopen neighbourhoods of
   `X` disjoint to it, but a finite intersection of clopen sets is clopen so we let this be our
-  `Z`. -/
+  `s`. -/
   · have H1 := (hu.union hv).isClosed_compl.isCompact.inter_iInter_nonempty
-      (fun Z : { Z : Set X // IsClopen Z ∧ x ∈ Z } => Z) fun Z => Z.2.1.2
+      (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s) fun s => s.2.1.2
     rw [← not_disjoint_iff_nonempty_inter, imp_not_comm, not_forall] at H1
     cases' H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
-      with Zi H2
-    refine' ⟨⋂ U ∈ Zi, Subtype.val U, _, _, _⟩
-    · exact isClopen_biInter_finset fun Z _ => Z.2.1
-    · exact mem_iInter₂.2 fun Z _ => Z.2.2
+      with si H2
+    refine' ⟨⋂ U ∈ si, Subtype.val U, _, _, _⟩
+    · exact isClopen_biInter_finset fun s _ => s.2.1
+    · exact mem_iInter₂.2 fun s _ => s.2.2
     · rwa [← disjoint_compl_left_iff_subset, disjoint_iff_inter_eq_empty,
         ← not_nonempty_iff_eq_empty]
-  -- So, we get a disjoint decomposition `Z = Z ∩ u ∪ Z ∩ v` of clopen sets. The intersection of all
+  -- So, we get a disjoint decomposition `s = s ∩ u ∪ s ∩ v` of clopen sets. The intersection of all
   -- clopen neighbourhoods will then lie in whichever of u or v x lies in and hence will be a subset
   -- of either a or b.
   · have H1 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hu hv huv
@@ -1957,19 +1957,19 @@ theorem connectedComponent_eq_iInter_clopen [T2Space X] [CompactSpace X] (x : X)
     have H2 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hv hu huv.symm
     by_cases hxu : x ∈ u <;> [left; right]
     -- The x ∈ u case.
-    · suffices ⋂ Z : { Z : Set X // IsClopen Z ∧ x ∈ Z }, ↑Z ⊆ u
+    · suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ u
         from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)
-      · apply Subset.trans _ (inter_subset_right Z u)
-        exact iInter_subset (fun Z : { Z : Set X // IsClopen Z ∧ x ∈ Z } => Z.1)
-          ⟨Z ∩ u, H1, mem_inter H.2.1 hxu⟩
+      · apply Subset.trans _ (inter_subset_right s u)
+        exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
+          ⟨s ∩ u, H1, mem_inter H.2.1 hxu⟩
     -- If x ∉ u, we get x ∈ v since x ∈ u ∪ v. The rest is then like the x ∈ u case.
     · have h1 : x ∈ v :=
         (hab.trans (union_subset_union hau hbv) (mem_iInter.2 fun i => i.2.2)).resolve_left hxu
-      suffices ⋂ Z : { Z : Set X // IsClopen Z ∧ x ∈ Z }, ↑Z ⊆ v
+      suffices ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, ↑s ⊆ v
         from (huv.symm.mono this hau).left_le_of_le_sup_left hab
-      · refine Subset.trans ?_ (inter_subset_right Z v)
-        exact iInter_subset (fun Z : { Z : Set X // IsClopen Z ∧ x ∈ Z } => Z.1)
-          ⟨Z ∩ v, H2, mem_inter H.2.1 h1⟩
+      · refine Subset.trans ?_ (inter_subset_right s v)
+        exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
+          ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
 #align connected_component_eq_Inter_clopen connectedComponent_eq_iInter_clopen
 
 section Profinite
@@ -2013,15 +2013,15 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
         totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
       rw [connectedComponent_eq_iInter_clopen] at hx
       intro hU
-      let N := { Z // IsClopen Z ∧ x ∈ Z }
-      suffices : ∃ Z : N, Z.val ⊆ U
+      let N := { s // IsClopen s ∧ x ∈ s }
+      suffices : ∃ s : N, s.val ⊆ U
       · rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
-      have hNcl : ∀ Z : N, IsClosed Z.val := fun Z => Z.property.1.2
-      have hdir : Directed Superset fun Z : N => Z.val := by
+      have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.2
+      have hdir : Directed Superset fun s : N => s.val := by
         rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
         exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left s t, inter_subset_right s t⟩
-      have h_nhd : ∀ y ∈ ⋂ Z : N, Z.val, U ∈ 𝓝 y := fun y y_in => by
+      have h_nhd : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
         erw [hx, mem_singleton_iff] at y_in
         rwa [y_in]
       exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhd
@@ -2110,12 +2110,12 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
       IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
     have h :=
       (isClosed_connectedComponent (α := X)).isCompact.elim_finite_subfamily_closed
-        _ (fun Z : { Z : Set X // IsClopen Z ∧ b ∈ Z } => Z.2.1.2) h
+        _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.2) h
     cases' h with fin_a ha
     -- This clopen and its complement will separate the connected components of `a` and `b`
-    set U : Set X := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (_ : i ∈ fin_a), i
+    set U : Set X := ⋂ (i : { s // IsClopen s ∧ b ∈ s }) (_ : i ∈ fin_a), i
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1
-    exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun Z _ => Z.2.1.connectedComponent_subset Z.2.2,
+    exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
   refine' ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
