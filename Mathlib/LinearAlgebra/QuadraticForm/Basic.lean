@@ -48,9 +48,19 @@ and composition with linear maps `f`, `Q.comp f x = Q (f x)`.
 
 ## Notation
 
-In this file, the variable `R` is used when a `CommSemiring` structure.
+In this file, the variable `R` is used when a `CommSemiring` structure is available.
 
 The variable `S` is used when `R` itself has a `•` action.
+
+## Implementation notes
+
+While the definition and many results make sense if we drop commutativity assumptions,
+the correct definition of a quadratic form in the noncommutative setting would require
+substantial refactors from the current version, such that $Q(rm) = rQ(m)r^*$ for some
+suitable conjugation $r^*$.
+
+The [Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Quadratic.20Maps/near/395529867)
+has some further discusion.
 
 ## References
 
