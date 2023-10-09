@@ -3,15 +3,12 @@ import Std.Tactic.GuardMsgs
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.RunCmd
 
--- Recall that `#find` caches an index of imported lemmas on disk
--- If you are modifying the way that `#find` indexes lemmas,
--- while testing you will probably want to delete
--- `build/lib/MathlibExtras/Find.extra`
--- so that the cache is rebuilt.
---
--- The tests below are set up to only depend on local definitions (using `uniquenameforthistest`)
--- so that this test file does not need to to be updated when Mathlib changes.
+-- We want the following tests to be self-contained.
+-- Therefore we erase all knowledge about imported definitios from find:
 
+run_cmd do
+  Mathlib.Tactic.Find.cachedIndex.1.cache.set (.inr (.pure (pure (.empty, .empty))))
+  Mathlib.Tactic.Find.cachedIndex.2.cache.set (.inr (.pure (pure (.empty, .empty))))
 
 /-- error: Cannot search: No constants or name fragments in search pattern. -/
 #guard_msgs in
@@ -26,138 +23,135 @@ Of these, 0 have a name containing "namefragmentsearch".
 
 /-- We use this definition in all tests below to get reproducible results,
 including the statistics about how many lemas were found in the index. -/
-def uniquenameforthistest : Bool := true
+def my_true : Bool := true
 
-theorem uniquenameforthistest_eq_true:
-  uniquenameforthistest = true := rfl
+theorem my_true_eq_true:
+  my_true = true := rfl
 
-theorem uniquenameforthistest_eq_True: -- intentionally capitalized
-  uniquenameforthistest = true := rfl
+theorem my_true_eq_True: -- intentionally capitalized
+  my_true = true := rfl
 
 /--
-info: Found 2 definitions mentioning uniquenameforthistest.
-• uniquenameforthistest_eq_True
-• uniquenameforthistest_eq_true
+info: Found 2 definitions mentioning my_true.
+• my_true_eq_True
+• my_true_eq_true
 -/
 #guard_msgs in
-#find uniquenameforthistest
+#find my_true
 
 /--
-info: Found 3 definitions whose name contains "uniquenameforthistest".
-Of these, 3 have a name containing "uniquenameforthistest".
-• uniquenameforthistest
-• uniquenameforthistest_eq_True
-• uniquenameforthistest_eq_true
+info: Found 3 definitions whose name contains "my_true".
+Of these, 3 have a name containing "my_true".
+• my_true
+• my_true_eq_True
+• my_true_eq_true
 -/
 #guard_msgs in
-#find "uniquenameforthistest"
+#find "my_true"
 
 /--
-info: Found 3 definitions whose name contains "uenameforthis".
-Of these, 3 have a name containing "uenameforthis".
-• uniquenameforthistest
-• uniquenameforthistest_eq_True
-• uniquenameforthistest_eq_true
+info: Found 3 definitions whose name contains "y_tru".
+Of these, 3 have a name containing "y_tru".
+• my_true
+• my_true_eq_True
+• my_true_eq_true
 -/
 #guard_msgs in
-#find "uenameforthis"
+#find "y_tru"
 
 /--
-info: Found 2 definitions mentioning uniquenameforthistest.
+info: Found 2 definitions mentioning my_true.
 Of these, 2 have a name containing "eq".
-• uniquenameforthistest_eq_True
-• uniquenameforthistest_eq_true
+• my_true_eq_True
+• my_true_eq_true
 -/
 #guard_msgs in
-#find uniquenameforthistest, "eq"
+#find my_true, "eq"
 
 /--
-info: Found 2 definitions mentioning uniquenameforthistest and Eq.
+info: Found 2 definitions mentioning my_true and Eq.
 Of these, 2 match your patterns.
-• uniquenameforthistest_eq_True
-• uniquenameforthistest_eq_true
+• my_true_eq_True
+• my_true_eq_true
 -/
 #guard_msgs in
-#find uniquenameforthistest = _
+#find my_true = _
 
 /--
-info: Found 2 definitions mentioning uniquenameforthistest and Eq.
+info: Found 2 definitions mentioning my_true and Eq.
 Of these, 0 match your patterns.
 -/
 #guard_msgs in
-#find (_ = uniquenameforthistest)
+#find (_ = my_true)
 
-/-- error: unknown identifier 'uniquenameforthistestthatdoesn'texist' -/
+/-- error: unknown identifier 'doesn'texist' -/
 #guard_msgs in
-#find uniquenameforthistestthatdoesn'texist
+#find doesn'texist
 
-/-- error: unknown identifier 'uniquenameforthistestthatdoesn'texist' -/
+/-- error: unknown identifier 'doesn'texist' -/
 #guard_msgs in
-#find (uniquenameforthistestthatdoesn'texist = _)
+#find (doesn'texist = _)
 
 /-- error: Cannot search for _. Did you forget to put a term pattern in parentheses? -/
 #guard_msgs in
-#find uniquenameforthistest, _
+#find my_true, _
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
-theorem non_linear_pattern_test1 {n m : Nat} (_ : uniquenameforthistest = true) :
+theorem non_linear_pattern_test1 {n m : Nat} :
   List.replicate (2 * n) () = List.replicate n () ++ List.replicate n () := by
   sorry
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
-theorem non_linear_pattern_test2 {n m : Nat} (_ : uniquenameforthistest = true) :
+theorem non_linear_pattern_test2 {n m : Nat} :
   List.replicate n () ++ List.replicate m () = List.replicate (n + m) () := by
   sorry
 
 /--
-info: Found 2 definitions mentioning List.replicate, uniquenameforthistest and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate and HAppend.hAppend.
 Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
 #guard_msgs in
-#find uniquenameforthistest, List.replicate ?n _ ++ List.replicate ?n _
+#find List.replicate ?n _ ++ List.replicate ?n _
 
 /--
-info: Found 2 definitions mentioning List.replicate, uniquenameforthistest and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate and HAppend.hAppend.
 Of these, 2 match your patterns.
 • non_linear_pattern_test1
 • non_linear_pattern_test2
 -/
 #guard_msgs in
-#find uniquenameforthistest, List.replicate ?n _ ++ List.replicate ?m _
+#find List.replicate ?n _ ++ List.replicate ?m _
 
 /--
-info: Found 2 definitions mentioning List.replicate, uniquenameforthistest, Eq and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate, Eq and HAppend.hAppend.
 Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
 #guard_msgs in
-#find uniquenameforthistest, |- _ = List.replicate ?n _ ++ List.replicate ?m _
+#find |- _ = List.replicate ?n _ ++ List.replicate ?m _
 
 /--
-info: Found 2 definitions mentioning List.replicate, uniquenameforthistest, Eq and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate, Eq and HAppend.hAppend.
 Of these, 1 match your patterns.
 • non_linear_pattern_test2
 -/
 #guard_msgs in
-#find uniquenameforthistest, |- List.replicate ?n _ ++ List.replicate ?m _ = _
+#find |- List.replicate ?n _ ++ List.replicate ?m _ = _
 
-theorem hyp_ordering_test1 {n : Nat} (_ : uniquenameforthistest = true) (h : 0 < n) :
-  0 ≤ n := Nat.le_of_lt h
-
-theorem hyp_ordering_test2 {n : Nat} (h : 0 < n) (_ : uniquenameforthistest = true) :
-  0 ≤ n := Nat.le_of_lt h
+theorem hyp_ordering_test1 {n : Nat} (h : 0 < n) (_ : n + n = 6 * n): 0 ≤ n := Nat.le_of_lt h
+theorem hyp_ordering_test2 {n : Nat} (_ : n + n = 6 * n) (h : 0 < n) : 0 ≤ n := Nat.le_of_lt h
 
 /--
-info: Found 2 definitions mentioning LE.le, LT.lt, OfNat.ofNat, uniquenameforthistest and Eq.
+info: Found 2 definitions mentioning LE.le, LT.lt and OfNat.ofNat.
 Of these, 2 match your patterns.
 • hyp_ordering_test1
 • hyp_ordering_test2
 -/
 #guard_msgs in
-#find ⊢ uniquenameforthistest = _ → 0 < ?n → _ ≤ ?n
+#find ⊢ 0 < ?n → _ ≤ ?n
 
 
 -- Regression test
@@ -188,15 +182,13 @@ Of these, 1 match your patterns.
 #guard_msgs in
 #find star ?a * ?a = ?a * star ?_
 
--- The following does not work for some strange reason
-
 /--
 info: Found 1 definitions mentioning HMul.hMul, LinearPatternTest.Star.star and Eq.
 Of these, 1 match your patterns.
 • star_comm_self'
 -/
 #guard_msgs in
-#find star ?a * ?a = ?a * star ?a
+#find star ?a * ?a = ?b * star ?b
 
 
 end LinearPatternTest
@@ -232,39 +224,38 @@ end ListMapTest
 #find "."
 
 /--
-info: Found 3 definitions whose name contains "uniquenameforThisTest".
-Of these, 3 have a name containing "uniquenameforThisTest".
-• uniquenameforthistest
-• uniquenameforthistest_eq_True
-• uniquenameforthistest_eq_true
+info: Found 2 definitions whose name contains "my_true_eq_True".
+Of these, 2 have a name containing "my_true_eq_True".
+• my_true_eq_True
+• my_true_eq_true
 -/
 #guard_msgs in
-#find "uniquenameforThisTest" -- checks for case-insensitivity
+#find "my_true_eq_True" -- checks for case-insensitivity
 
 
 -- Check that |- only allows Sort-typed things
 
 /--
-info: Found 0 definitions mentioning And, True and uniquenameforthistest.
+info: Found 0 definitions mentioning And and True.
 Of these, 0 match your patterns.
 -/
 #guard_msgs in
-#find uniquenameforthistest, And True
+#find And True
 
 /-- error: Conclusion pattern is of type Bool, should be of type `Sort` -/
 #guard_msgs in
-#find uniquenameforthistest, |- true
+#find |- true
 
 /-- error: Conclusion pattern is of type Prop → Prop, should be of type `Sort` -/
 #guard_msgs in
-#find uniquenameforthistest, |- And True
+#find |- And True
 
 /--
-info: Found 0 definitions mentioning And, True and uniquenameforthistest.
+info: Found 0 definitions mentioning And, True and my_true.
 Of these, 0 match your patterns.
 -/
 #guard_msgs in
-#find |- And True True, uniquenameforthistest
+#find |- And True True, my_true
 
 
 -- Searching for qualified names
