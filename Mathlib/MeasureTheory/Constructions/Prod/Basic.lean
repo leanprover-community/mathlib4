@@ -584,7 +584,7 @@ lemma nullMeasurableSet_prod_of_ne_zero {s : Set α} {t : Set β} (hs : μ s ≠
     NullMeasurableSet (s ×ˢ t) (μ.prod ν) ↔ NullMeasurableSet s μ ∧ NullMeasurableSet t ν :=
   ⟨fun h ↦ ⟨h.left_of_prod ht, h.right_of_prod hs⟩, fun ⟨hs, ht⟩ ↦ hs.prod ht⟩
 
-/-- The product of two set is null measurable
+/-- The product of two sets is null measurable
 if and only if both of them are null measurable or one of them has measure zero. -/
 lemma nullMeasurableSet_prod {s : Set α} {t : Set β} :
     NullMeasurableSet (s ×ˢ t) (μ.prod ν) ↔
