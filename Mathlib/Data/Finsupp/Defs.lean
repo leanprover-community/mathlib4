@@ -1009,7 +1009,7 @@ instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M)
   add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
-  add_right_cancel _ _ _ h := Finsupp.ext fun x => add_right_cancel <| FunLike.congr_fun h x
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
