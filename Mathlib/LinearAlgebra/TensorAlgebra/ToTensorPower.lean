@@ -79,7 +79,7 @@ namespace TensorAlgebra
 /-- The canonical map from a direct sum of tensor powers to the tensor algebra. -/
 def ofDirectSum : (⨁ n, (⨂[R]^n) M) →ₐ[R] TensorAlgebra R M :=
   DirectSum.toAlgebra _ _ (fun _ => TensorPower.toTensorAlgebra) TensorPower.toTensorAlgebra_gOne
-    (fun {_ _} => TensorPower.toTensorAlgebra_gMul) TensorPower.toTensorAlgebra_galgebra_toFun
+    (fun {_ _} => TensorPower.toTensorAlgebra_gMul)
 #align tensor_algebra.of_direct_sum TensorAlgebra.ofDirectSum
 
 @[simp]
