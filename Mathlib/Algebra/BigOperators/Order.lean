@@ -390,9 +390,9 @@ theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf 
 
 end DoubleCounting
 
-section CanonicallyOrderedMonoid
+section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedMonoid M] {f : ι → M} {s t : Finset ι}
+variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
 
 @[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
@@ -427,7 +427,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
 #align finset.sum_le_sum_of_ne_zero Finset.sum_le_sum_of_ne_zero
 
-end CanonicallyOrderedMonoid
+end CanonicallyOrderedCommMonoid
 
 section OrderedCancelCommMonoid
 

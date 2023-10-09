@@ -304,7 +304,7 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉₊ :=
 theorem ceil_intCast {α : Type*} [LinearOrderedRing α] [FloorSemiring α] (z : ℤ) :
     ⌈(z : α)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
-    simp
+    simp only [ceil_le, Int.toNat_le]
     norm_cast
 #align nat.ceil_int_cast Nat.ceil_intCast
 

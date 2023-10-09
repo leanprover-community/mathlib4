@@ -1213,7 +1213,9 @@ instance addMonoid : AddMonoid (α →₀ M) :=
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
 instance neg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1271,12 +1273,17 @@ instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_group Finsupp.addGroup
 
 instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddGroup := Finsupp.addGroup }
 #align finsupp.add_comm_group Finsupp.addCommGroup
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}
