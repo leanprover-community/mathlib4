@@ -1916,7 +1916,7 @@ instance [T5Space X] : T5Space (SeparationQuotient X) where
 
 end CompletelyNormal
 
-/-- In a compact t2 space, the connected component of a point equals the intersection of all
+/-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
 theorem connectedComponent_eq_iInter_clopen [T2Space X] [CompactSpace X] (x : X) :
     connectedComponent x = ⋂ Z : { Z : Set X // IsClopen Z ∧ x ∈ Z }, Z := by
