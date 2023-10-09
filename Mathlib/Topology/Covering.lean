@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Topology.IsLocallyHomeomorph
 import Mathlib.Topology.FiberBundle.Basic
+import Mathlib.Topology.UnitInterval
 
 #align_import topology.covering from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -239,7 +240,7 @@ theorem clopen_equalizer_of_discrete {X Y : Type*} [TopologicalSpace X] [Topolog
   IsClopen {x : X | f x = g x} := (isClopen_discrete (Set.diagonal Y)).preimage (hf.prod_mk hg)
 
 
-lemma tautology : true := sorry
+lemma tautology : true := by rw [Bool.eq_iff_iff]
 
 theorem uniqueness_of_homotopy_lifting (Y : Type*) [TopologicalSpace Y] (hf : IsCoveringMap f)
   (H₁ H₂ : ContinuousMap Y E) (h : f ∘ H₁ = f ∘ H₂)
@@ -269,5 +270,47 @@ theorem uniqueness_of_homotopy_lifting (Y : Type*) [TopologicalSpace Y] (hf : Is
   refine' clopen_equalizer_of_discrete
     (continuous_snd.comp (t.continuous_toFun.comp_continuous (H₁.2.comp continuous_subtype_val) h1))
      (continuous_snd.comp (t.continuous_toFun.comp_continuous (H₂.2.comp continuous_subtype_val) h2))
+
+lemma connected_uniqueness_of_homotopy_lifting (Y : Type*)[TopologicalSpace Y]  [ConnectedSpace Y]
+    (hf : IsCoveringMap f)(y:Y)
+    (H₁ H₂ : ContinuousMap Y E) (h : f ∘ H₁ = f ∘ H₂)
+    (hC : H₁ y = H₂ y) : H₁ = H₂ := by
+  refine' uniqueness_of_homotopy_lifting Y hf H₁ H₂ h (fun x:Y => ⟨y,_⟩ )
+  rw [PreconnectedSpace.connectedComponent_eq_univ x]
+  exact { left := trivial, right := hC }
+
+
+
+
+open unitInterval
+
+lemma
+
+lemma existence_of_path_lifting (hf : IsCoveringMap f)
+  (p : ContinuousMap I X) (x':E) (hx': f x' = p 0): ∃ P : ContinuousMap I E, f ∘ P = p ∧ P 0 = x'  := by
+  let b := {r:I | ∃Q:ContinuousMap (Set.Icc 0 r) E, f∘Q = p ∘ Subtype.val ∧ Q ⟨ 0, Set.left_mem_Icc.2 (r.2.1)⟩ = x'}
+  have : 0 ∈ b
+  · use ContinuousMap.const _ x'
+    constructor
+    ext x
+    change f x' = p x
+    have : (x:I) = 0
+    exact le_antisymm x.2.2 x.2.1
+    rwa [this]
+    rfl
+
+  have : ∀ x y:I, x≤ y∧y ∈ b → x∈ b
+  intro x y hhx
+  let z := hhx.2
+  let w = z.2
+
+
+
+  let U := (hf (p 0)).toTrivialization
+
+
+
+
+
 
 end isCoveringMap
