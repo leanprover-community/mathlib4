@@ -742,7 +742,7 @@ end
 end Homeomorph
 
 namespace Equiv
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- An equiv between topological spaces respecting openness is a homeomorphism. -/
 @[simps toEquiv]
