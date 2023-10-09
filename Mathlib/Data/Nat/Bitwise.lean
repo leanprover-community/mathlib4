@@ -78,22 +78,18 @@ lemma bitwise_zero : bitwise f 0 0 = 0 := by
 
 @[simp]
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
-    bitwise f n m =
-    bitwise f (n / 2) (m / 2) + bitwise f (n / 2) (m / 2)
-      + if f (bodd n) (bodd m) then 1 else 0 := by
+    bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
   conv_lhs => { unfold bitwise }
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
-  simp only [hn, hm, add_eq_zero_iff, and_false, ite_false, mod_two_iff_bod]
+  simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
   split_ifs <;> rfl
 
 @[simp]
 lemma bitwise'_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
-    bitwise' f n m =
-    bitwise' f (div2 n) (div2 m) + bitwise' f (div2 n) (div2 m)
-      + if f (bodd n) (bodd m) then 1 else 0 := by
+    bitwise' f n m = bit (f (bodd n) (bodd m)) (bitwise' f (n / 2) (m / 2)) := by
   conv_lhs => { rw [←bit_decomp n, ←bit_decomp m] }
-  rw [bitwise'_bit', bit]
+  rw [bitwise'_bit', bit, div2_val, div2_val]
   case ham =>
     rcases n with ⟨⟩|⟨⟩|x
     <;> simp only [div2_succ, cond, bodd_succ, Bool.not_not]
@@ -108,9 +104,6 @@ lemma bitwise'_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     · cases bodd x
       <;> simp only [Bool.not_false, Bool.not_true, succ_ne_zero, IsEmpty.forall_iff,
         ite_true, ite_false]
-  simp [bit1, bit0]
-  cases f (bodd n) (bodd m)
-  <;> simp only [Bool.cond_eq_ite, ite_false, add_zero, ite_true]
 
 lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
   funext x y
@@ -120,8 +113,7 @@ lemma bitwise'_eq_bitwise (f) : bitwise' f = bitwise f := by
   · simp only [bitwise_zero_left, bitwise'_zero_left, Bool.cond_eq_ite]
   · simp only [bitwise_zero_right, bitwise'_zero_right, Bool.cond_eq_ite]
   · specialize ih ((x+1) / 2) (div_lt_self' ..)
-    simp only [bitwise_of_ne_zero, bitwise'_of_ne_zero, div2_val, ih, ne_eq, succ_ne_zero,
-      not_false_eq_true]
+    simp only [ne_eq, succ_ne_zero, not_false_eq_true, bitwise'_of_ne_zero, ih, bitwise_of_ne_zero]
 
 theorem lor'_eq_lor : lor' = lor :=
   bitwise'_eq_bitwise _
