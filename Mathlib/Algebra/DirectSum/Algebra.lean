@@ -43,9 +43,6 @@ variable [AddMonoid ι] [GSemiring A]
 
 section
 
-instance : SMul R (GradedMonoid A) where
-  smul r g := GradedMonoid.mk g.1 (r • g.2)
-
 /-- A graded version of `Algebra`. An instance of `DirectSum.GAlgebra R A` endows `(⨁ i, A i)`
 with an `R`-algebra structure. -/
 class GAlgebra where
@@ -60,17 +57,6 @@ class GAlgebra where
 end
 
 variable [Semiring B] [GAlgebra R A] [Algebra R B]
-#check mul_smul_comm
-
-instance : SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
-  smul_comm s x y := by
-    dsimp
-    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
-
-instance : IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
-  smul_assoc s x y := by
-    dsimp
-    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance _root_.GradedMonoid.smulCommClass_right :
     SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
