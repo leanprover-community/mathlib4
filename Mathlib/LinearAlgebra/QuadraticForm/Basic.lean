@@ -13,14 +13,15 @@ import Mathlib.LinearAlgebra.Matrix.Symmetric
 # Quadratic forms
 
 This file defines quadratic forms over a `R`-module `M`.
-A quadratic form on a ring `R` is a map `Q : M → R` such that:
+A quadratic form on a commutative ring `R` is a map `Q : M → R` such that:
+
 * `QuadraticForm.map_smul`: `Q (a • x) = a * a * Q x`
 * `QuadraticForm.polar_add_left`, `QuadraticForm.polar_add_right`,
   `QuadraticForm.polar_smul_left`, `QuadraticForm.polar_smul_right`:
   the map `QuadraticForm.polar Q := fun x y ↦ Q (x + y) - Q x - Q y` is bilinear.
 
-This notion generalizes to semirings using the approach in [izhakian2016][] which requires that
-there be a (possibly non-unique) companion bilinear form `B` such that
+This notion generalizes to commutative semirings using the approach in [izhakian2016][] which
+requires that there be a (possibly non-unique) companion bilinear form `B` such that
 `∀ x y, Q (x + y) = Q x + Q y + B x y`. Over a ring, this `B` is precisely `QuadraticForm.polar Q`.
 
 To build a `QuadraticForm` from the `polar` axioms, use `QuadraticForm.ofPolar`.
