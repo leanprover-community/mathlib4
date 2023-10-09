@@ -1662,6 +1662,16 @@ theorem _root_.aestronglyMeasurable_iff_aemeasurable_separable [PseudoMetrizable
     exact stronglyMeasurable_iff_measurable_separable.2 ⟨g_meas, t_sep.mono gt⟩
 #align ae_strongly_measurable_iff_ae_measurable_separable aestronglyMeasurable_iff_aemeasurable_separable
 
+theorem _root_.aestronglyMeasurable_iff_nullMeasurable_separable [PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β] :
+    AEStronglyMeasurable f μ ↔
+      NullMeasurable f μ ∧ ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by
+  refine aestronglyMeasurable_iff_aemeasurable_separable.trans <| and_congr_left ?_
+  rintro ⟨t, hsep, hft⟩
+  refine ⟨AEMeasurable.nullMeasurable, fun hf ↦ ?_⟩
+  have := hsep.secondCountableTopology
+  
+
 theorem _root_.MeasurableEmbedding.aestronglyMeasurable_map_iff {γ : Type*}
     {mγ : MeasurableSpace γ} {mα : MeasurableSpace α} {f : γ → α} {μ : Measure γ}
     (hf : MeasurableEmbedding f) {g : α → β} :

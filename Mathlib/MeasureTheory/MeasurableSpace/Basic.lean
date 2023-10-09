@@ -630,13 +630,16 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
     MeasurableSet (inclusion h '' u) :=
   (measurable_subtype_coe hs).image_inclusion' h hu
 
+theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
+    (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
+  convert (hs.subtype_image hsu).union (ht.subtype_image htu)
+  simp [image_preimage_eq_inter_range, ← inter_distrib_left, univ_subset_iff.1 h]
+
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
     (ht : MeasurableSet t) (h : univ ⊆ s ∪ t) (hc : Measurable fun a : s => f a)
-    (hd : Measurable fun a : t => f a) : Measurable f := fun u hu => by
-  convert (hs.subtype_image (hc hu)).union (ht.subtype_image (hd hu))
-  change f ⁻¹' u = (↑) '' ((↑) ⁻¹' (f ⁻¹' u) : Set s) ∪ (↑) '' ((↑) ⁻¹' (f ⁻¹' u) : Set t)
-  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, Subtype.range_coe,
-    Subtype.range_coe, ← inter_distrib_left, univ_subset_iff.1 h, inter_univ]
+    (hd : Measurable fun a : t => f a) : Measurable f := fun _u hu =>
+  .of_union_cover hs ht h (hc hu) (hd hu)
 #align measurable_of_measurable_union_cover measurable_of_measurable_union_cover
 
 theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (hs : MeasurableSet s)
