@@ -70,7 +70,11 @@ protected def ringCon (I : Ideal R) : RingCon R :=
 #align ideal.quotient.ring_con Ideal.Quotient.ringCon
 
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
-    inferInstanceAs (CommRing (Quotient.ringCon I).Quotient)
+  { inferInstanceAs (CommRing (Quotient.ringCon I).Quotient) with
+    -- Help unification with the submonoid instances by ensuring the right unfolding happens.
+    toRing.toSemiring.toAddCommMonoid := (Submodule.Quotient.addCommGroup _).toAddCommMonoid
+    toRing.toNeg := (Submodule.Quotient.addCommGroup _).toNeg
+    toRing.toSub := (Submodule.Quotient.addCommGroup _).toSub }
 #align ideal.quotient.comm_ring Ideal.Quotient.commRing
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
