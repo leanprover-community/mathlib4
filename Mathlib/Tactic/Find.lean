@@ -210,6 +210,50 @@ def Index.mkFromCache (init : NameRel × SuffixTrie) : IO Index := do
   pure ⟨c1, c2⟩
 
 /-!
+## The #find syntax and elaboration helpers
+-/
+
+open Parser
+
+/-- The turnstyle uesd bin `#find`, unicode or ascii allowed -/
+syntax turnstyle := patternIgnore("⊢ " <|> "|- ")
+/-- a single `#find` filter. The `term` can also be an ident or a strlit,
+these are distinguished in `parseFindFilters` -/
+syntax find_filter := (turnstyle term) <|> term
+
+/-- The argument to `#find`, a list of filters -/
+syntax find_filters := find_filter,*
+
+/-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
+when a type class constraint has no instances.  -/
+def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
+  withTheReader Term.Context ({ ·  with ignoreTCFailures := true, errToSorry := false }) do
+    let t ← Term.elabTerm t expectedType?
+    Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+    return t
+
+/-- When a name cannot be resolved, see if we can find it in the trie under some namepace -/
+def resolveUnqualifiedName (index : Index) (n : Name) :
+    TermElabM (Option (MessageData × Name)) := do
+  let s := "." ++ n.toString
+  let (t₁, t₂) ← index.trieCache.get
+  let names := t₁.findSuffix s ++ t₂.findSuffix s
+  let names := names.filter ((← getEnv).contains ·)
+  let names ← sortByModule id names
+  if names.isEmpty then return none
+  let n' := names.get! 0
+  let mut msg := m!"unknown identifier {n}, using {n'} instead."
+  if names.size > 1 then
+    msg := msg ++
+      m!" (Other candidates: " ++
+        MessageData.andList (names.extract 1 names.size |>.map (m!"{·}")) ++
+        m!")"
+    else
+    pure ()
+  msg := msg ++ Format.line
+  return some (msg, names.get! 0)
+
+/-!
 ## The core find tactic engine
 -/
 
@@ -236,126 +280,9 @@ structure Result where
 /-- The core of the `#find` tactic with all parsing/printing factored out, for
 programmatic use (e.g. the loogle CLI).
 It also does not use the implicit global Index, but rather expects one as an argument. -/
-def find (index : Index) (args : Arguments) (maxShown := 200) :
-    MetaM (Except MessageData Result) := do
+def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
+    TermElabM (Except MessageData Result) := do
   profileitM Exception "#find" (← getOptions) do
-    -- Collect set of names to query the index by
-    let needles : NameSet :=
-          {} |> args.idents.foldl NameSet.insert
-             |> args.terms.foldl (fun s (_,t) => t.foldConsts s (flip NameSet.insert))
-    let (indexHits, indexSummary) ← do
-      if needles.isEmpty then do
-        if args.namePats.isEmpty then
-          return .error m!"Cannot search: No constants or name fragments in search pattern."
-        -- No constants in patterns, use trie
-        let (t₁, t₂) ← index.trieCache.get
-        let hitArrays := args.namePats.map (fun s => (s, t₁.find s ++ t₂.find s))
-        -- If we have more than one name fragment pattern, use the one that returns the smallest
-        -- array of names
-        let hitArrays := hitArrays.qsort fun (_, a₁) (_, a₂) => a₁.size < a₂.size
-        let (needle, hits) := hitArrays.get! 0
-        let indexSummary := m!"Found {hits.size} definitions whose name contains \"{needle}\"."
-        pure (hits, indexSummary)
-      else do
-        -- Query the declaration cache
-        let (m₁, m₂) ← index.nameRelCache.get
-        let hits := RBTree.intersects <| needles.toArray.map <| fun needle =>
-          (m₁.find needle).union (m₂.find needle)
-
-        let needlesList := MessageData.andList (needles.toArray.map .ofName)
-        let indexSummary := m!"Found {hits.size} definitions mentioning {needlesList}."
-        pure (hits.toArray, indexSummary)
-
-    -- Filter by name patterns
-    let nameMatchers := args.namePats.map (String.Matcher.ofString ·.toLower)
-    let hits2 := indexHits.filter fun n => nameMatchers.all fun m =>
-      m.find? n.toString.toLower |>.isSome
-
-    -- Obtain ConstantInfos
-    let env ← getEnv
-    let hits3 := hits2.filterMap env.find?
-
-    -- Filter by term patterns
-    let pats ← liftM <| args.terms.mapM fun (isConclusionPattern, t) =>
-      if isConclusionPattern then
-        matchConclusion t
-      else
-        matchAnywhere t
-    let hits4 ← hits3.filterM fun ci => pats.allM (· ci)
-
-    -- Add defining module index
-
-    -- Sort by modindex and then by name.
-    let hits5 ← sortByModule' (·.name) hits4
-
-    -- Apply maxShown limit
-    let hits6 := hits5.extract 0 maxShown
-
-    -- Resolve ModIndex to module name
-    let hits7 := hits6.map fun (ci, mi) =>
-      let modName : Option Name := do env.header.moduleNames[(← mi).toNat]!
-      (ci, modName)
-
-    let summary ← IO.mkRef args.parserMessage
-    let addLine line := do summary.set <| (← summary.get) ++ line ++ Format.line
-
-    addLine indexSummary
-    unless (args.namePats.isEmpty) do
-      let nameList := MessageData.andList <| args.namePats.map fun s => m!"\"{s}\""
-      addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
-    unless (pats.isEmpty) do
-      addLine $ m!"Of these, {hits4.size} match your patterns."
-    unless (hits6.size ≤ maxShown) do
-      addLine $ m!"Of these, only the first {maxShown} are shown."
-    return .ok ⟨← summary.get, hits4.size, hits7⟩
-
-/-!
-## The #find command, syntax and parsing
--/
-
-open Parser
-
-/-- The turnstyle uesd bin `#find`, unicode or ascii allowed -/
-syntax turnstyle := patternIgnore("⊢ " <|> "|- ")
-/-- a single `#find` filter. The `term` can also be an ident or a strlit,
-these are distinguished in `parseFindFilters` -/
-syntax find_filter := (turnstyle term) <|> term
-
-/-- The argument to `#find`, a list of filters -/
-syntax find_filters := find_filter,*
-
-/-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
-when a type class constraint has no instances.  -/
-def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
-  withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
-    let t ← Term.elabTerm t expectedType?
-    Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
-    return t
-
-/-- When a name cannot be resolved, see if we can find it in the trie under some namepace -/
-def resolveUnqualifiedName (index : Index) (n : Name) :
-    TermElabM (Option (MessageData × Name)) := do
-  let s := "." ++ n.toString
-  let (t₁, t₂) ← index.trieCache.get
-  let names := t₁.findSuffix s ++ t₂.findSuffix s
-  let names := names.filter ((← getEnv).contains ·)
-  let names ← sortByModule id names
-  if names.isEmpty then return none
-  let n' := names.get! 0
-  let mut msg := m!"unknown identifier {n}, using {n'} instead."
-  if names.size > 1 then
-    msg := msg ++
-      m!" (Other candidates: " ++
-        MessageData.andList (names.extract 1 names.size |>.map (m!"{·}")) ++
-        m!")"
-    else
-    pure ()
-  msg := msg ++ Format.line
-  return some (msg, names.get! 0)
-
-/-- Parses `find_filters` syntax into `Arguments` -/
-def parseFindFilters (index : Index) (args : TSyntax ``find_filters) : TermElabM Arguments :=
-  withReader (fun ctx => { ctx with errToSorry := false }) do
     let mut idents := #[]
     let mut namePats := #[]
     let mut terms := #[]
@@ -392,9 +319,77 @@ def parseFindFilters (index : Index) (args : TSyntax ``find_filters) : TermElabM
           let e ← elabTerm' s none
           terms := terms.push (false, e)
         | _ => throwErrorAt args "unexpected argument to #find"
-    | _ => throwErrorAt args "unexpected argument to #find"
-    pure {idents, namePats, terms, parserMessage}
+      | _ => throwErrorAt args "unexpected argument to #find"
 
+    -- Collect set of names to query the index by
+    let needles : NameSet :=
+          {} |> idents.foldl NameSet.insert
+             |> terms.foldl (fun s (_,t) => t.foldConsts s (flip NameSet.insert))
+    let (indexHits, indexSummary) ← do
+      if needles.isEmpty then do
+        if namePats.isEmpty then
+          return .error m!"Cannot search: No constants or name fragments in search pattern."
+        -- No constants in patterns, use trie
+        let (t₁, t₂) ← index.trieCache.get
+        let hitArrays := namePats.map (fun s => (s, t₁.find s ++ t₂.find s))
+        -- If we have more than one name fragment pattern, use the one that returns the smallest
+        -- array of names
+        let hitArrays := hitArrays.qsort fun (_, a₁) (_, a₂) => a₁.size < a₂.size
+        let (needle, hits) := hitArrays.get! 0
+        let indexSummary := m!"Found {hits.size} definitions whose name contains \"{needle}\"."
+        pure (hits, indexSummary)
+      else do
+        -- Query the declaration cache
+        let (m₁, m₂) ← index.nameRelCache.get
+        let hits := RBTree.intersects <| needles.toArray.map <| fun needle =>
+          (m₁.find needle).union (m₂.find needle)
+
+        let needlesList := MessageData.andList (needles.toArray.map .ofName)
+        let indexSummary := m!"Found {hits.size} definitions mentioning {needlesList}."
+        pure (hits.toArray, indexSummary)
+
+    -- Filter by name patterns
+    let nameMatchers := namePats.map (String.Matcher.ofString ·.toLower)
+    let hits2 := indexHits.filter fun n => nameMatchers.all fun m =>
+      m.find? n.toString.toLower |>.isSome
+
+    -- Obtain ConstantInfos
+    let env ← getEnv
+    let hits3 := hits2.filterMap env.find?
+
+    -- Filter by term patterns
+    let pats ← liftM <| terms.mapM fun (isConclusionPattern, t) =>
+      if isConclusionPattern then
+        matchConclusion t
+      else
+        matchAnywhere t
+    let hits4 ← hits3.filterM fun ci => pats.allM (· ci)
+
+    -- Add defining module index
+
+    -- Sort by modindex and then by name.
+    let hits5 ← sortByModule' (·.name) hits4
+
+    -- Apply maxShown limit
+    let hits6 := hits5.extract 0 maxShown
+
+    -- Resolve ModIndex to module name
+    let hits7 := hits6.map fun (ci, mi) =>
+      let modName : Option Name := do env.header.moduleNames[(← mi).toNat]!
+      (ci, modName)
+
+    let summary ← IO.mkRef parserMessage
+    let addLine line := do summary.set <| (← summary.get) ++ line ++ Format.line
+
+    addLine indexSummary
+    unless (namePats.isEmpty) do
+      let nameList := MessageData.andList <| namePats.map fun s => m!"\"{s}\""
+      addLine $ m!"Of these, {hits2.size} have a name containing {nameList}."
+    unless (pats.isEmpty) do
+      addLine $ m!"Of these, {hits4.size} match your patterns."
+    unless (hits6.size ≤ maxShown) do
+      addLine $ m!"Of these, only the first {maxShown} are shown."
+    return .ok ⟨← summary.get, hits4.size, hits7⟩
 
 /-
 ###  The per-module cache used by the `#find` command
@@ -490,7 +485,7 @@ cache will stay up-to-date.
 -/
 elab s:"#find " args:find_filters : command => liftTermElabM do
   profileitM Exception "find" (← getOptions) do
-    match ← find cachedIndex (← parseFindFilters cachedIndex args) with
+    match ← find cachedIndex args with
     | .error warn =>
       Lean.logWarningAt s warn
     | .ok result =>
