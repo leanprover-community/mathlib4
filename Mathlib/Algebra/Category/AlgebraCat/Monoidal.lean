@@ -60,7 +60,7 @@ open MonoidalCategory
         (forget₂ _ (ModuleCat R) |>.obj Z)).hom := by
   rfl
 
-count_heartbeats in
+set_option maxHeartbeats 400000 in
 @[simp] theorem forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
     (forget₂ (AlgebraCat R) (ModuleCat R)).map (associator X Y Z).inv
       = (α_
