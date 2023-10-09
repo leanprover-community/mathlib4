@@ -1446,6 +1446,84 @@ theorem exists_superset_feasible_satisfying_basisRank {t : Finset α} (ht₁ : t
         simp only [mem_sdiff, mem_union, h, true_or]
     rw [h]
 
+theorem rankFeasible_TFAE :
+    TFAE [
+      G.rankFeasible s,
+      ∀ {t}, t ⊆ univ \ s → G.rank (s ∪ t) ≤ G.rank s + t.card,
+      ∀ {b}, b ∈ G.bases s → ∀ {t}, t ⊆ univ \ s → G.rank (s ∪ t) = G.rank (b ∪ t)
+    ] := by
+  tfae_have 1 → 3
+  {
+    intro h₁ b h₂ t h₃
+    apply Nat.le_antisymm
+    · have ⟨b₀, hb₀⟩ : Nonempty (G.bases (s ∪ t)) := G.bases_nonempty
+      have h₄ : b.card ≤ b₀.card := G.basis_card_le_of_subset_bases h₂ hb₀ (subset_union_left _ _)
+      have ⟨b', hb'₁, hb'₂, hb'₃, hb'₄⟩ := exchangeProperty_exists_superset_of_card_le
+        G.exchangeProperty (G.basis_mem_feasible hb₀) (G.basis_mem_feasible h₂) h₄ le_rfl h₄
+      have h₅ : b.card ≤ (b' ∩ s).card := by
+        have : b = b ∩ s := by
+          ext; constructor <;> intro h <;> simp at *
+          · exact ⟨h, G.basis_subset h₂ h⟩
+          · exact h.1
+        rw [this]
+        apply card_le_of_subset
+        apply inter_subset_inter_right
+        exact hb'₂
+      have h₆ : (b' ∩ s).card ≤ G.rank s := by
+        rw [← h₁]
+        exact (Finset.inter_comm b' s) ▸ G.feasibleSet_inter_card_le_basisRank hb'₁
+      rw [G.rank_eq_basis_card h₂] at h₆
+      have h₇ : b = b' ∩ s := by
+        ext; constructor <;> intro h
+        · rw [mem_inter]
+          exact ⟨(hb'₂ h), G.basis_subset h₂ h⟩
+        · rw [mem_inter] at h
+          by_contra' h'
+          have : b.card < (b' ∩ s).card := by
+            apply Finset.card_lt_card
+            apply ssubset_def.mpr (And.intro _ _)
+            · intro _ h''
+              rw [mem_inter]
+              exact ⟨hb'₂ h'', G.basis_subset h₂ h''⟩
+            · intro h''
+              apply h' (h'' _)
+              rw [mem_inter]
+              exact h
+          have := Nat.lt_of_lt_of_le this h₆
+          simp only [lt_self_iff_false] at this
+      have h₈ : b' ⊆ b ∪ t := by
+        intro _ h
+        rw [mem_union, h₇]
+        simp only [mem_inter, h, true_and]
+        rw [← mem_union]
+        have : b₀ ∪ b ⊆ s ∪ t := by
+          exact union_subset_iff.mpr
+            ⟨G.basis_subset hb₀, subset_trans (G.basis_subset h₂) (subset_union_left s t)⟩
+        exact this (hb'₃ h)
+      have h₉ : b'.card ≤ G.rank (b ∪ t) := by
+        have ⟨d, hd₁, hd₂⟩ := G.exists_basis_containing_feasible_set hb'₁ h₈
+        rw [G.rank_eq_basis_card hd₁]
+        exact card_le_of_subset hd₂
+      apply le_trans _ h₉
+      rw [hb'₄, G.rank_eq_basis_card hb₀]
+    · apply rank_le_of_subset
+      intro _ h
+      simp only [mem_union] at *
+      exact h.elim (fun h => Or.inl (G.basis_subset h₂ h)) (fun h => Or.inr h)
+  }
+  tfae_have 3 → 2
+  {
+    intro h₃ t ht
+    let ⟨b, hb⟩ : Nonempty (G.bases s) := G.bases_nonempty
+    rw [h₃ hb ht, G.rank_eq_basis_card hb]
+    exact le_trans rank_le_card (card_union_le _ _)
+  }
+  tfae_have 2 → 1
+  {
+    sorry
+  }
+  tfae_finish
+
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
   accessible {s} h₁ h₂ := by
