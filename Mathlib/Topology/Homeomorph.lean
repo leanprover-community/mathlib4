@@ -32,7 +32,7 @@ open Set Filter
 
 open Topology
 
-variable {X : Type*} {Y : Type*} {Z : Type*} {δ : Type*}
+variable {X : Type*} {Y : Type*} {Z : Type*} {W : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
@@ -49,7 +49,7 @@ infixl:25 " ≃ₜ " => Homeomorph
 
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace δ]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
 
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
@@ -491,27 +491,27 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
 #align homeomorph.set_congr Homeomorph.setCongr
 
 /-- Sum of two homeomorphisms. -/
-def sumCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) : Sum X Z ≃ₜ Sum Y δ where
+def sumCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ W) : Sum X Z ≃ₜ Sum Y W where
   continuous_toFun := h₁.continuous.sum_map h₂.continuous
   continuous_invFun := h₁.symm.continuous.sum_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
 #align homeomorph.sum_congr Homeomorph.sumCongr
 
 /-- Product of two homeomorphisms. -/
-def prodCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) : X × Z ≃ₜ Y × δ where
+def prodCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ W) : X × Z ≃ₜ Y × W where
   continuous_toFun := h₁.continuous.prod_map h₂.continuous
   continuous_invFun := h₁.symm.continuous.prod_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 #align homeomorph.prod_congr Homeomorph.prodCongr
 
 @[simp]
-theorem prodCongr_symm (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) :
+theorem prodCongr_symm (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ W) :
     (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
   rfl
 #align homeomorph.prod_congr_symm Homeomorph.prodCongr_symm
 
 @[simp]
-theorem coe_prodCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ δ) : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
+theorem coe_prodCongr (h₁ : X ≃ₜ Y) (h₂ : Z ≃ₜ W) : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
   rfl
 #align homeomorph.coe_prod_congr Homeomorph.coe_prodCongr
 
