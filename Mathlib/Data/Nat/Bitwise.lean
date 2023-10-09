@@ -56,7 +56,7 @@ lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool)
   · apply Or.inr ham
 
 @[simp]
-lemma bitwise_zero_left {m : Nat} : bitwise f 0 m = if f false true then m else 0 := by
+lemma bitwise_zero_left {m : Nat} : bitwise f 0 m = if f false true then m else 0 :=
   rfl
 
 @[simp]
