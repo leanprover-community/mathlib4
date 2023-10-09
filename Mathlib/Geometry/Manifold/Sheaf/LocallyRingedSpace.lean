@@ -34,7 +34,7 @@ universe u
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
-  (M : Type u) [TopologicalSpace M] [ChartedSpace HM M]
+  {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
 
 open AlgebraicGeometry Manifold TopologicalSpace Topology
 
@@ -97,22 +97,26 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
 
 /-- The non-units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered
 as a sheaf of commutative rings, are the functions whose values at `x` are zero. -/
-theorem smoothSheafCommRing.nonunits_stalk {x : M} :
+theorem smoothSheafCommRing.nonunits_stalk (x : M) :
     nonunits ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x)
     = RingHom.ker (smoothSheafCommRing.eval IM 𝓘(𝕜) M 𝕜 x) := by
   ext1 f
   rw [mem_nonunits_iff, not_iff_comm, Iff.comm]
   apply smoothSheafCommRing.isUnit_stalk_iff
 
+/-- The stalks of the structure sheaf of a smooth manifold-with-corners are local rings. -/
+instance smoothSheafCommRing.localRing_stalk (x : M) :
+    LocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
+  apply LocalRing.of_nonunits_add
+  rw [smoothSheafCommRing.nonunits_stalk]
+  intro f g
+  exact Ideal.add_mem _
+
+variable (M)
+
 /-- A smooth manifold-with-corners can be considered as a locally ringed space. -/
 def SmoothManifoldWithCorners.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
-  localRing := by
-    intro (x : M)
-    show LocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x)
-    apply LocalRing.of_nonunits_add
-    rw [smoothSheafCommRing.nonunits_stalk]
-    intro f g
-    exact Ideal.add_mem _
+  localRing x := smoothSheafCommRing.localRing_stalk IM x
