@@ -34,7 +34,7 @@ function vanishes in a whole neighborhood of a point `z₀`, then it vanishes in
 of any point connected to it. -/
 theorem DifferentiableOn.eventuallyEq_zero_of_preconnected_of_eventuallyEq_zero {f : E → F}
     {U V : Set E} (hUV : U ⊆ V) (hV : ∀ x ∈ U, V ∈ 𝓝 x) (hf : DifferentiableOn ℂ f V)
-    (hU : IsPreconnected U) {z₀ z₁ : E} (h₀ : z₀ ∈ U) (h₁ : z₁ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+    (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) {z₁ : E} (h₁ : z₁ ∈ U) :
     f =ᶠ[𝓝 z₁] 0 := by
   have H : V ∈ 𝓝 z₁ := hV z₁ h₁
   rw [(LocallyConnectedSpace.open_connected_basis z₁).mem_iff] at H
