@@ -307,3 +307,9 @@ info: Try this: "some string before", NamespacedC.AnotherTestDefinition, some (E
 -/
 #guard_msgs in
 #find "some string before", AnotherTestDefinition, some (Expr after)
+
+-- doesn't give suggestions (yet)
+
+/-- error: unknown identifier 'AnotherTestDefinition' -/
+#guard_msgs in
+#find "some string before", AnotherTestDefinition = _, some (Expr after)
