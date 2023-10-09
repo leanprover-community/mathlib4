@@ -310,6 +310,42 @@ info: Try this: "some string before", NamespacedC.AnotherTestDefinition, some (E
 
 -- doesn't give suggestions (yet)
 
-/-- error: unknown identifier 'AnotherTestDefinition' -/
+/--
+error: unknown identifier 'AnotherTestDefinition'
+---
+info: Try this: "some string before", NamespacedA.AnotherTestDefinition = _, some (Expr after)
+---
+info: Try this: "some string before", NamespacedB.AnotherTestDefinition = _, some (Expr after)
+---
+info: Try this: "some string before", NamespacedC.AnotherTestDefinition = _, some (Expr after)
+-/
 #guard_msgs in
 #find "some string before", AnotherTestDefinition = _, some (Expr after)
+
+/--
+error: unknown identifier 'AnotherTestDefinition'
+---
+info: Try this: "some string before", |- NamespacedA.AnotherTestDefinition = _, some (Expr after)
+---
+info: Try this: "some string before", |- NamespacedB.AnotherTestDefinition = _, some (Expr after)
+---
+info: Try this: "some string before", |- NamespacedC.AnotherTestDefinition = _, some (Expr after)
+-/
+#guard_msgs in
+#find "some string before", |- AnotherTestDefinition = _, some (Expr after)
+
+-- The following check checks that a type error (or other error) at an identifier
+-- that can be resolved doesn't make #find look for possible candidates
+
+/--
+error: application type mismatch
+  Nat.add 0 my_true
+argument
+  my_true
+has type
+  Bool : Type
+but is expected to have type
+  ℕ : Type
+-/
+#guard_msgs in
+#find Nat.add 0 my_true

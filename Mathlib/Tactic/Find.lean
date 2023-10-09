@@ -70,6 +70,7 @@ def sortByModule' {m} [Monad m] [MonadEnv m] {α} (f : α → Name) (ns : Array 
 def sortByModule {m} [Monad m] [MonadEnv m] {α} (f : α → Name) (ns : Array α) : m (Array α) := do
   return (← sortByModule' f ns).map (·.1)
 
+
 /-!
 ## Matching term patterns against conclusions or any subexpression
 -/
@@ -211,6 +212,72 @@ def Index.mkFromCache (init : NameRel × SuffixTrie) : IO Index := do
   pure ⟨c1, c2⟩
 
 /-!
+## Generating suggestions for unresolvable names
+
+For `#find` it is really helpful if, when the user entered a term with a name that cannot
+be resolved, we use the name trie to see if it exists maybe in some qualified form. For
+simple `ident` patterns, this is straight forward, but for expressions it is harder: The term
+elaborator simply throws an unstructured expression.
+
+So we’ll use the source refernce from that exception, check if there is an `.ident` at tht position
+in the source, check if the name there does not resolve in the environments, generate
+possible suggestions, and re-assemble the syntax.
+
+The following functions are rather hackish, maybe there can be a more principled approach.
+-/
+
+/-- Equality on `SourceInfo` -/
+private def SourceInfo.beq  : SourceInfo → SourceInfo → Bool
+  | .original _ p1 _ p2, .original _ p3 _ p4
+  | .original _ p1 _ p2, .synthetic p3 p4 _
+  | .synthetic p1 p2 _, .synthetic p3 p4 _
+  | .synthetic p1 p2 _, .original _ p3 _ p4
+  => p1 == p3 && p2 == p4
+  | _, _ => false
+
+
+/-- Within the given `Syntax`, see if the `SourceInfo` points to an `.ident` -/
+partial def findNameAt (needle : SourceInfo) : Syntax → Option Name
+  | .node _ _ cs => cs.findSome? (findNameAt needle)
+  | .ident si _ n _ =>
+    if SourceInfo.beq needle si then
+      .some n
+    else
+      .none
+  | _ => .none
+
+/-- Within the given `Syntax`, if the `SourceInfo` points to an `.ident`, replace the `Name` -/
+partial def replaceIdentAt' (needle : SourceInfo) (new_name : Name) : Syntax → Syntax
+  | .node si kind cs => .node si kind (cs.map (replaceIdentAt' needle new_name))
+  | .ident si str n prs =>
+    if SourceInfo.beq needle si then
+      .ident si (new_name.toString) new_name []
+    else
+      .ident si str n prs
+  | s => s
+
+/-- Within the given `TSyntax`, if the `SourceInfo` points to an `.ident`, replace the `Name` -/
+def replaceIdentAt {kind} (si : SourceInfo) (n : Name) : TSyntax kind → TSyntax kind
+  | .mk s => .mk (replaceIdentAt' si n s)
+
+/-- When a name cannot be resolved, see if we can find it in the trie under some namepace. -/
+def resolveUnqualifiedName (index : Index) (n : Name) : MetaM (Array Name) := do
+  let s := "." ++ n.toString
+  let (t₁, t₂) ← index.trieCache.get
+  let names := t₁.findSuffix s ++ t₂.findSuffix s
+  let names := names.filter ((← getEnv).contains ·)
+  sortByModule id names
+
+/-- If the `s` at `si` is an identifier not found in he environment, produce a list
+of possible suggestions in place of `s`. -/
+def suggestQualifiedNames {kind} (index : Index) (s : TSyntax kind) (si : SourceInfo) :
+    MetaM (Array (TSyntax kind)) := do
+  let .some n := findNameAt si s | pure #[]
+  let .none := (← getEnv).find? n | pure #[]
+  let suggestedNames ← resolveUnqualifiedName index n
+  return suggestedNames.map fun sugg => replaceIdentAt si sugg s
+
+/-!
 ## The #find syntax and elaboration helpers
 -/
 
@@ -232,14 +299,6 @@ def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
     let t ← Term.elabTerm t expectedType?
     Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
     return t
-
-/-- When a name cannot be resolved, see if we can find it in the trie under some namepace. -/
-def resolveUnqualifiedName (index : Index) (n : Name) : MetaM (Array Name) := do
-  let s := "." ++ n.toString
-  let (t₁, t₂) ← index.trieCache.get
-  let names := t₁.findSuffix s ++ t₂.findSuffix s
-  let names := names.filter ((← getEnv).contains ·)
-  sortByModule id names
 
 /-!
 ## The core find tactic engine
@@ -284,42 +343,41 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
     let mut idents := #[]
     let mut namePats := #[]
     let mut terms := #[]
-    match args with
-    | `(find_filters| $args':find_filter,*) =>
-      for argi in List.range args'.getElems.size do
-      let arg := args'.getElems[argi]!
-        match arg with
-        | `(find_filter| $_:turnstyle $s:term) => do
-          let e ← elabTerm' s (some (mkSort (← mkFreshLevelMVar)))
-          let t := ← inferType e
-          unless t.isSort do
-            return .error ⟨s, m!"Conclusion pattern is of type {t}, should be of type `Sort`", #[]⟩
-          terms := terms.push (true, e)
-        | `(find_filter| $ss:str) => do
-          let str := Lean.TSyntax.getString ss
-          if str = "" || str = "." then
-            return .error ⟨ss, "Name pattern is too general", #[]⟩
-          namePats := namePats.push str
-        | `(find_filter| $i:ident) => do
-          let n := Lean.TSyntax.getId i
-          if (← getEnv).contains n then
-            idents := idents.push n
-          else
-            let suggestedNames ← resolveUnqualifiedName index n
-            let suggestions ← suggestedNames.mapM fun sugg => do
-              let id := Lean.mkIdent sugg
-              let arg' ← `(find_filter|$id:ident)
-              let ss := Syntax.TSepArray.mk (args'.elemsAndSeps.set! (2 * argi) arg')
-              `(find_filters|$ss:find_filter,*)
-            return .error ⟨i, m!"unknown identifier '{n}'", suggestions⟩ -- TODO
-        | `(find_filter| _) => do
-            return .error ⟨arg, "Cannot search for _. " ++
-              "Did you forget to put a term pattern in parentheses?", #[]⟩
-        | `(find_filter| $s:term) => do
-          let e ← elabTerm' s none
-          terms := terms.push (false, e)
-        | _ => return .error ⟨args, "unexpected argument to #find", #[]⟩
-      | _ => return .error ⟨args, "unexpected argument to #find", #[]⟩
+    try
+      match args with
+      | `(find_filters| $args':find_filter,*) =>
+        for argi in List.range args'.getElems.size do
+        let arg := args'.getElems[argi]!
+          match arg with
+          | `(find_filter| $_:turnstyle $s:term) => do
+            let e ← elabTerm' s (some (mkSort (← mkFreshLevelMVar)))
+            let t := ← inferType e
+            unless t.isSort do
+              throwErrorAt s m!"Conclusion pattern is of type {t}, should be of type `Sort`"
+            terms := terms.push (true, e)
+          | `(find_filter| $ss:str) => do
+            let str := Lean.TSyntax.getString ss
+            if str = "" || str = "." then
+              throwErrorAt ss "Name pattern is too general"
+            namePats := namePats.push str
+          | `(find_filter| $i:ident) => do
+            let n := Lean.TSyntax.getId i
+            if (← getEnv).contains n then
+              idents := idents.push n
+            else
+              throwErrorAt i m!"unknown identifier '{n}'"
+          | `(find_filter| _) => do
+              throwErrorAt arg ("Cannot search for _. " ++
+                "Did you forget to put a term pattern in parentheses?")
+          | `(find_filter| $s:term) => do
+              let e ← elabTerm' s none
+              terms := terms.push (false, e)
+          | _ => throwErrorAt args "unexpected argument to #find"
+        | _ => throwErrorAt args "unexpected argument to #find"
+    catch e => do
+      let .error ref msg := e | throw e
+      let suggestions ← suggestQualifiedNames index args (.fromRef ref)
+      return .error ⟨ref, msg, suggestions⟩
 
     -- Collect set of names to query the index by
     let needles : NameSet :=
