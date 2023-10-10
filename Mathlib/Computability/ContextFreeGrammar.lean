@@ -91,13 +91,9 @@ def Produces (g : ContextFreeGrammar T) (u v : List (Symbol T g.NT)) : Prop :=
 abbrev Derives (g : ContextFreeGrammar T) : List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
   Relation.ReflTransGen g.Produces
 
-/-- Accepts a word (a list of terminals) iff it can be derived from the initial nonterminal. -/
-def Generates (g : ContextFreeGrammar T) (w : List T) : Prop :=
-  g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w)
-
 /-- The set of words that can be derived from the initial nonterminal. -/
 def language (g : ContextFreeGrammar T) : Language T :=
-  setOf g.Generates
+  { w | g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) }
 
 variable {g : ContextFreeGrammar T}
 
