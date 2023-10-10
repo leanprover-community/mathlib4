@@ -47,7 +47,7 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
           simp [← hbc, prod_insert hiu, mul_assoc, mul_comm, mul_left_comm]⟩
 #align mul_eq_mul_prime_prod mul_eq_mul_prime_prod
 
-/-- If ` x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
+/-- If `x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
   as the product of a power of `p` and a divisor of `a`. -/
 theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y = a * p ^ n) :
     ∃ (i j : ℕ) (b c : R), i + j = n ∧ a = b * c ∧ x = b * p ^ i ∧ y = c * p ^ j := by
