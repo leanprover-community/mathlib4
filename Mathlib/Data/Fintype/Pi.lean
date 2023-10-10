@@ -13,13 +13,13 @@ import Mathlib.Data.Finset.Pi
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 
 namespace Fintype
 
-variable [DecidableEq α] [Fintype α] {δ : α → Type _}
+variable [DecidableEq α] [Fintype α] {δ : α → Type*}
 
 /-- Given for all `a : α` a finset `t a` of `δ a`, then one can define the
 finset `Fintype.piFinset t` of all functions taking values in `t a` for all `a`. This is the
@@ -81,13 +81,13 @@ end Fintype
 /-! ### pi -/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-instance Pi.fintype {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+instance Pi.fintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 #align pi.fintype Pi.fintype
 
 @[simp]
-theorem Fintype.piFinset_univ {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
     (Fintype.piFinset fun a : α => (Finset.univ : Finset (β a))) =
       (Finset.univ : Finset (∀ a, β a)) :=
@@ -104,7 +104,7 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]
-theorem Finset.univ_pi_univ {α : Type _} {β : α → Type _} [DecidableEq α] [Fintype α]
+theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
     (Finset.univ.pi fun a : α => (Finset.univ : Finset (β a))) = Finset.univ := by
   ext; simp

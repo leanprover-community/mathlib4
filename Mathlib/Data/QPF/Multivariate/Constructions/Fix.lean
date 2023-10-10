@@ -106,7 +106,7 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wEquiv
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
-                    (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
+    (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
   apply q.P.w_cases _ x
@@ -185,7 +185,7 @@ than the input. For `F a b c` a ternary functor, `Fix F` is a binary functor suc
 Fix F a b = F a b (Fix F a b)
 ```
 -/
-def Fix {n : ℕ} (F : TypeVec (n + 1) → Type _) [MvFunctor F] [q : MvQPF F] (α : TypeVec n) :=
+def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [MvFunctor F] [q : MvQPF F] (α : TypeVec n) :=
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
 

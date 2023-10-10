@@ -14,7 +14,7 @@ import Mathlib.Algebra.Parity
 -/
 
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 section Prime
 
@@ -48,6 +48,12 @@ theorem dvd_or_dvd (hp : Prime p) {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p �
   hp.2.2 a b h
 #align prime.dvd_or_dvd Prime.dvd_or_dvd
 
+theorem dvd_mul {a b : α} : p ∣ a * b ↔ p ∣ a ∨ p ∣ b :=
+  ⟨hp.dvd_or_dvd, (Or.elim · (dvd_mul_of_dvd_left · _) (dvd_mul_of_dvd_right · _))⟩
+
+theorem not_dvd_mul {a b : α} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
+  hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
+
 theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction' n with n ih
   · rw [pow_zero] at h
@@ -59,6 +65,9 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
   · assumption
   exact ih dvd_pow
 #align prime.dvd_of_dvd_pow Prime.dvd_of_dvd_pow
+
+theorem dvd_pow_iff_dvd {a : α} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
+  ⟨hp.dvd_of_dvd_pow, (dvd_pow · hn)⟩
 
 end Prime
 
@@ -72,7 +81,7 @@ theorem not_prime_one : ¬Prime (1 : α) := fun h => h.not_unit isUnit_one
 
 section Map
 
-variable [CommMonoidWithZero β] {F : Type _} {G : Type _} [MonoidWithZeroHomClass F α β]
+variable [CommMonoidWithZero β] {F : Type*} {G : Type*} [MonoidWithZeroHomClass F α β]
   [MulHomClass G β α] (f : F) (g : G) {p : α}
 
 theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime p :=
@@ -140,14 +149,12 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
   exact dvd_mul_right _ _
 #align prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd
 
-theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x y : α} (h : Prime p)
+theorem prime_pow_succ_dvd_mul {α : Type*} [CancelCommMonoidWithZero α] {p x y : α} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
   intro hy
   induction' i with i ih generalizing x
-  · simp only [zero_add, pow_one] at *
-    rw [pow_one]
-    rw [pow_one] at hxy
+  · rw [pow_one] at hxy ⊢
     exact (h.dvd_or_dvd hxy).resolve_right hy
   rw [pow_succ] at hxy ⊢
   obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
@@ -408,7 +415,7 @@ instance [Monoid α] : IsTrans α Associated :=
   ⟨fun _ _ _ => Associated.trans⟩
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
-protected def setoid (α : Type _) [Monoid α] :
+protected def setoid (α : Type*) [Monoid α] :
     Setoid α where
   r := Associated
   iseqv := ⟨Associated.refl, Associated.symm, Associated.trans⟩
@@ -446,69 +453,69 @@ theorem associated_one_of_associated_mul_one [CommMonoid α] {a b : α} : a * b 
   | ⟨u, h⟩ => associated_one_of_mul_eq_one (b * u) <| by simpa [mul_assoc] using h
 #align associated_one_of_associated_mul_one associated_one_of_associated_mul_one
 
-theorem associated_mul_unit_left {β : Type _} [Monoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_mul_unit_left {β : Type*} [Monoid β] (a u : β) (hu : IsUnit u) :
     Associated (a * u) a :=
   let ⟨u', hu⟩ := hu
   ⟨u'⁻¹, hu ▸ Units.mul_inv_cancel_right _ _⟩
 #align associated_mul_unit_left associated_mul_unit_left
 
-theorem associated_unit_mul_left {β : Type _} [CommMonoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_unit_mul_left {β : Type*} [CommMonoid β] (a u : β) (hu : IsUnit u) :
     Associated (u * a) a := by
   rw [mul_comm]
   exact associated_mul_unit_left _ _ hu
 #align associated_unit_mul_left associated_unit_mul_left
 
-theorem associated_mul_unit_right {β : Type _} [Monoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_mul_unit_right {β : Type*} [Monoid β] (a u : β) (hu : IsUnit u) :
     Associated a (a * u) :=
   (associated_mul_unit_left a u hu).symm
 #align associated_mul_unit_right associated_mul_unit_right
 
-theorem associated_unit_mul_right {β : Type _} [CommMonoid β] (a u : β) (hu : IsUnit u) :
+theorem associated_unit_mul_right {β : Type*} [CommMonoid β] (a u : β) (hu : IsUnit u) :
     Associated a (u * a) :=
   (associated_unit_mul_left a u hu).symm
 #align associated_unit_mul_right associated_unit_mul_right
 
-theorem associated_mul_isUnit_left_iff {β : Type _} [Monoid β] {a u b : β} (hu : IsUnit u) :
+theorem associated_mul_isUnit_left_iff {β : Type*} [Monoid β] {a u b : β} (hu : IsUnit u) :
     Associated (a * u) b ↔ Associated a b :=
   ⟨(associated_mul_unit_right _ _ hu).trans, (associated_mul_unit_left _ _ hu).trans⟩
 #align associated_mul_is_unit_left_iff associated_mul_isUnit_left_iff
 
-theorem associated_isUnit_mul_left_iff {β : Type _} [CommMonoid β] {u a b : β} (hu : IsUnit u) :
+theorem associated_isUnit_mul_left_iff {β : Type*} [CommMonoid β] {u a b : β} (hu : IsUnit u) :
     Associated (u * a) b ↔ Associated a b := by
   rw [mul_comm]
   exact associated_mul_isUnit_left_iff hu
 #align associated_is_unit_mul_left_iff associated_isUnit_mul_left_iff
 
-theorem associated_mul_isUnit_right_iff {β : Type _} [Monoid β] {a b u : β} (hu : IsUnit u) :
+theorem associated_mul_isUnit_right_iff {β : Type*} [Monoid β] {a b u : β} (hu : IsUnit u) :
     Associated a (b * u) ↔ Associated a b :=
   Associated.comm.trans <| (associated_mul_isUnit_left_iff hu).trans Associated.comm
 #align associated_mul_is_unit_right_iff associated_mul_isUnit_right_iff
 
-theorem associated_isUnit_mul_right_iff {β : Type _} [CommMonoid β] {a u b : β} (hu : IsUnit u) :
+theorem associated_isUnit_mul_right_iff {β : Type*} [CommMonoid β] {a u b : β} (hu : IsUnit u) :
     Associated a (u * b) ↔ Associated a b :=
   Associated.comm.trans <| (associated_isUnit_mul_left_iff hu).trans Associated.comm
 #align associated_is_unit_mul_right_iff associated_isUnit_mul_right_iff
 
 @[simp]
-theorem associated_mul_unit_left_iff {β : Type _} [Monoid β] {a b : β} {u : Units β} :
+theorem associated_mul_unit_left_iff {β : Type*} [Monoid β] {a b : β} {u : Units β} :
     Associated (a * u) b ↔ Associated a b :=
   associated_mul_isUnit_left_iff u.isUnit
 #align associated_mul_unit_left_iff associated_mul_unit_left_iff
 
 @[simp]
-theorem associated_unit_mul_left_iff {β : Type _} [CommMonoid β] {a b : β} {u : Units β} :
+theorem associated_unit_mul_left_iff {β : Type*} [CommMonoid β] {a b : β} {u : Units β} :
     Associated (↑u * a) b ↔ Associated a b :=
   associated_isUnit_mul_left_iff u.isUnit
 #align associated_unit_mul_left_iff associated_unit_mul_left_iff
 
 @[simp]
-theorem associated_mul_unit_right_iff {β : Type _} [Monoid β] {a b : β} {u : Units β} :
+theorem associated_mul_unit_right_iff {β : Type*} [Monoid β] {a b : β} {u : Units β} :
     Associated a (b * u) ↔ Associated a b :=
   associated_mul_isUnit_right_iff u.isUnit
 #align associated_mul_unit_right_iff associated_mul_unit_right_iff
 
 @[simp]
-theorem associated_unit_mul_right_iff {β : Type _} [CommMonoid β] {a b : β} {u : Units β} :
+theorem associated_unit_mul_right_iff {β : Type*} [CommMonoid β] {a b : β} {u : Units β} :
     Associated a (↑u * b) ↔ Associated a b :=
   associated_isUnit_mul_right_iff u.isUnit
 #align associated_unit_mul_right_iff associated_unit_mul_right_iff
@@ -597,12 +604,24 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
         exact hp.dvd_or_dvd⟩⟩
 #align associated.prime Associated.prime
 
-theorem Irreducible.associated_of_dvd [CancelMonoidWithZero α] {p q : α} (p_irr : Irreducible p)
-    (q_irr : Irreducible q) (dvd : p ∣ q) : Associated p q :=
-  associated_of_dvd_dvd dvd (p_irr.dvd_symm q_irr dvd)
-#align irreducible.associated_of_dvd Irreducible.associated_of_dvd
+theorem Irreducible.dvd_iff [Monoid α] {x y : α} (hx : Irreducible x) :
+    y ∣ x ↔ IsUnit y ∨ Associated x y := by
+  constructor
+  · rintro ⟨z, hz⟩
+    obtain (h|h) := hx.isUnit_or_isUnit hz
+    · exact Or.inl h
+    · rw [hz]
+      exact Or.inr (associated_mul_unit_left _ _ h)
+  · rintro (hy|h)
+    · exact hy.dvd
+    · exact h.symm.dvd
 
-theorem Irreducible.dvd_irreducible_iff_associated [CancelMonoidWithZero α] {p q : α}
+theorem Irreducible.associated_of_dvd [Monoid α] {p q : α} (p_irr : Irreducible p)
+    (q_irr : Irreducible q) (dvd : p ∣ q) : Associated p q :=
+  ((q_irr.dvd_iff.mp dvd).resolve_left p_irr.not_unit).symm
+#align irreducible.associated_of_dvd Irreducible.associated_of_dvdₓ
+
+theorem Irreducible.dvd_irreducible_iff_associated [Monoid α] {p q : α}
     (pp : Irreducible p) (qp : Irreducible q) : p ∣ q ↔ Associated p q :=
   ⟨Irreducible.associated_of_dvd pp qp, Associated.dvd⟩
 #align irreducible.dvd_irreducible_iff_associated Irreducible.dvd_irreducible_iff_associated
@@ -629,6 +648,10 @@ protected theorem Associated.isUnit [Monoid α] {a b : α} (h : a ~ᵤ b) : IsUn
 theorem Associated.isUnit_iff [Monoid α] {a b : α} (h : a ~ᵤ b) : IsUnit a ↔ IsUnit b :=
   ⟨h.isUnit, h.symm.isUnit⟩
 #align associated.is_unit_iff Associated.isUnit_iff
+
+theorem Irreducible.isUnit_iff_not_associated_of_dvd [Monoid α]
+    {x y : α} (hx : Irreducible x) (hy : y ∣ x) : IsUnit y ↔ ¬ Associated x y :=
+  ⟨fun hy hxy => hx.1 (hxy.symm.isUnit hy), (hx.dvd_iff.mp hy).resolve_right⟩
 
 protected theorem Associated.irreducible [Monoid α] {p q : α} (h : p ~ᵤ q) (hp : Irreducible p) :
     Irreducible q :=
@@ -699,7 +722,7 @@ theorem associated_eq_eq : (Associated : α → α → Prop) = Eq := by
   rw [associated_iff_eq]
 #align associated_eq_eq associated_eq_eq
 
-theorem prime_dvd_prime_iff_eq {M : Type _} [CancelCommMonoidWithZero M] [Unique Mˣ] {p q : M}
+theorem prime_dvd_prime_iff_eq {M : Type*} [CancelCommMonoidWithZero M] [Unique Mˣ] {p q : M}
     (pp : Prime p) (qp : Prime q) : p ∣ q ↔ p = q := by
   rw [pp.dvd_prime_iff_associated qp, ← associated_eq_eq]
 #align prime_dvd_prime_iff_eq prime_dvd_prime_iff_eq
@@ -708,7 +731,7 @@ end UniqueUnits
 
 section UniqueUnits₀
 
-variable {R : Type _} [CancelCommMonoidWithZero R] [Unique Rˣ] {p₁ p₂ : R} {k₁ k₂ : ℕ}
+variable {R : Type*} [CancelCommMonoidWithZero R] [Unique Rˣ] {p₁ p₂ : R} {k₁ k₂ : ℕ}
 
 theorem eq_of_prime_pow_eq (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁)
     (h : p₁ ^ k₁ = p₂ ^ k₂) : p₁ = p₂ := by
@@ -727,7 +750,7 @@ end UniqueUnits₀
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
   monoid structure on `Associates α`. -/
-abbrev Associates (α : Type _) [Monoid α] : Type _ :=
+abbrev Associates (α : Type*) [Monoid α] : Type _ :=
   Quotient (Associated.setoid α)
 #align associates Associates
 
@@ -736,7 +759,7 @@ namespace Associates
 open Associated
 
 /-- The canonical quotient map from a monoid `α` into the `Associates` of `α` -/
-protected abbrev mk {α : Type _} [Monoid α] (a : α) : Associates α :=
+protected abbrev mk {α : Type*} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧
 #align associates.mk Associates.mk
 
@@ -1133,7 +1156,7 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
           exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
-instance : CanonicallyOrderedMonoid (Associates α) where
+instance : CanonicallyOrderedCommMonoid (Associates α) where
     exists_mul_of_le := fun h => h
     le_self_mul := fun _ b => ⟨b, rfl⟩
     bot_le := fun _ => one_le

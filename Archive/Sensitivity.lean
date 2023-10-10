@@ -138,7 +138,7 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     q ∈ p.adjacent ↔ π q ∈ (π p).adjacent := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
-    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq )
+    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq)
     use i.pred h_i,
       show p (Fin.succ (Fin.pred i _)) ≠ q (Fin.succ (Fin.pred i _)) by rwa [Fin.succ_pred]
     intro y hy
@@ -327,7 +327,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
 #align sensitivity.f_matrix Sensitivity.f_matrix
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
-noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ:=
+noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
   LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
 #align sensitivity.g Sensitivity.g
 
@@ -399,10 +399,10 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
-    simp only [exists_prop]
     exact_mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1) := by
     convert ← rank_submodule_le (W ⊔ img)
+    rw [← Nat.cast_succ]
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
     convert ← Submodule.rank_sup_add_rank_inf_eq W img

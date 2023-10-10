@@ -118,7 +118,7 @@ add_decl_doc a₄
 /-- The `a₆` coefficient of a Weierstrass curve. -/
 add_decl_doc a₆
 
-instance [Inhabited R] : Inhabited <| WeierstrassCurve R :=
+instance instInhabitedWeierstrassCurve [Inhabited R] : Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
 #align weierstrass_curve.inhabited WeierstrassCurve.instInhabitedWeierstrassCurve
 
@@ -919,7 +919,7 @@ instance instIsScalarTowerCoordinateRing : IsScalarTower R R[X] W.CoordinateRing
   Quotient.isScalarTower R R[X] _
 #align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.CoordinateRing.instIsScalarTowerCoordinateRing
 
-instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
+instance instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
 #align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.CoordinateRing.instSubsingletonCoordinateRing
 
@@ -1144,7 +1144,7 @@ It is of $j$-invariant $0$ (see `EllipticCurve.ofJ0_j`). -/
 def ofJ0 [Invertible (3 : R)] : EllipticCurve R :=
   have := invertibleNeg (3 ^ 3 : R)
   ⟨WeierstrassCurve.ofJ0 R, unitOfInvertible (-3 ^ 3 : R),
-    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ0_Δ R]; norm_num1⟩
+    by rw [val_unitOfInvertible, WeierstrassCurve.ofJ0_Δ R]; norm_num1⟩
 
 lemma ofJ0_j [Invertible (3 : R)] : (ofJ0 R).j = 0 := by
   simp only [j, ofJ0, WeierstrassCurve.ofJ0_c₄]
@@ -1155,10 +1155,10 @@ It is of $j$-invariant $1728$ (see `EllipticCurve.ofJ1728_j`). -/
 def ofJ1728 [Invertible (2 : R)] : EllipticCurve R :=
   have := invertibleNeg (2 ^ 6 : R)
   ⟨WeierstrassCurve.ofJ1728 R, unitOfInvertible (-2 ^ 6 : R),
-    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
+    by rw [val_unitOfInvertible, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
 
 lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
-  field_simp [j, ofJ1728, @unitOfInvertible_val _ _ _ <| invertibleNeg _,
+  field_simp [j, ofJ1728, @val_unitOfInvertible _ _ _ <| invertibleNeg _,
     WeierstrassCurve.ofJ1728_c₄]
   norm_num1
 
@@ -1173,14 +1173,14 @@ def ofJ' (j : R) [Invertible j] [Invertible (j - 1728)] : EllipticCurve R :=
     (WeierstrassCurve.ofJ_Δ j).symm⟩
 
 lemma ofJ'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJ' j).j = j := by
-  field_simp [EllipticCurve.j, ofJ', @unitOfInvertible_val _ _ _ <| invertibleMul _ _,
+  field_simp [EllipticCurve.j, ofJ', @val_unitOfInvertible _ _ _ <| invertibleMul _ _,
     WeierstrassCurve.ofJ_c₄]
   ring1
 
 variable {F : Type u} [Field F] (j : F)
 
 private lemma two_or_three_ne_zero : (2 : F) ≠ 0 ∨ (3 : F) ≠ 0 :=
-  ne_zero_or_ne_zero_of_nat_coprime (show Nat.coprime 2 3 by norm_num1)
+  ne_zero_or_ne_zero_of_nat_coprime (show Nat.Coprime 2 3 by norm_num1)
 
 variable [DecidableEq F]
 

@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Lie.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 #align_import algebra.lie.base_change from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
 
@@ -36,19 +37,16 @@ namespace ExtendScalars
 
 variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
 
-/-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`.
-
-In fact this bracket is fully `A`-bilinear but without a significant upgrade to our mixed-scalar
-support in the tensor product library, it is far easier to bootstrap like this, starting with the
-definition below. -/
-private def bracket' : A ⊗[R] L →ₗ[R] A ⊗[R] L →ₗ[R] A ⊗[R] L :=
+/-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`. -/
+private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] L →ₗ[A] A ⊗[R] L :=
   TensorProduct.curry <|
-    TensorProduct.map (LinearMap.mul' R _) (LieModule.toModuleHom R L L : L ⊗[R] L →ₗ[R] L) ∘ₗ
-      ↑(TensorProduct.tensorTensorTensorComm R A L A L)
+    TensorProduct.AlgebraTensorModule.map
+        (LinearMap.mul' A A) (LieModule.toModuleHom R L L : L ⊗[R] L →ₗ[R] L) ∘ₗ
+      (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A A L A L).toLinearMap
 
 @[simp]
 private theorem bracket'_tmul (s t : A) (x y : L) :
-    bracket' R A L (s ⊗ₜ[R] x) (t ⊗ₜ[R] y) = (s * t) ⊗ₜ ⁅x, y⁆ := by simp [bracket']
+    bracket' R A L (s ⊗ₜ[R] x) (t ⊗ₜ[R] y) = (s * t) ⊗ₜ ⁅x, y⁆ := rfl
 
 instance : Bracket (A ⊗[R] L) (A ⊗[R] L) where bracket x y := bracket' R A L x y
 
@@ -56,8 +54,7 @@ private theorem bracket_def (x y : A ⊗[R] L) : ⁅x, y⁆ = bracket' R A L x y
   rfl
 
 @[simp]
-theorem bracket_tmul (s t : A) (x y : L) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = (s * t) ⊗ₜ ⁅x, y⁆ := by
-  rw [bracket_def, bracket'_tmul]
+theorem bracket_tmul (s t : A) (x y : L) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = (s * t) ⊗ₜ ⁅x, y⁆ := rfl
 #align lie_algebra.extend_scalars.bracket_tmul LieAlgebra.ExtendScalars.bracket_tmul
 
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
@@ -112,22 +109,7 @@ instance : LieRing (A ⊗[R] L) where
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L
 
-private theorem bracket_lie_smul (a : A) (x y : A ⊗[R] L) : ⁅x, a • y⁆ = a • ⁅x, y⁆ := by
-  refine' x.induction_on _ _ _
-  · simp only [zero_lie, smul_zero]
-  · intro a₁ l₁; refine' y.induction_on _ _ _
-    · simp only [lie_zero, smul_zero]
-    · intro a₂ l₂
-      simp only [bracket_def, bracket', TensorProduct.smul_tmul', mul_left_comm a₁ a a₂,
-        TensorProduct.curry_apply, LinearMap.mul'_apply, Algebra.id.smul_eq_mul,
-        Function.comp_apply, LinearEquiv.coe_coe, LinearMap.coe_comp, TensorProduct.map_tmul,
-        TensorProduct.tensorTensorTensorComm_tmul]
-    · intro z₁ z₂ h₁ h₂
-      simp only [h₁, h₂, smul_add, lie_add]
-  · intro z₁ z₂ h₁ h₂
-    simp only [h₁, h₂, smul_add, add_lie]
-
-instance lieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul := bracket_lie_smul R A L
+instance lieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 #align lie_algebra.extend_scalars.lie_algebra LieAlgebra.ExtendScalars.lieAlgebra
 
 end ExtendScalars

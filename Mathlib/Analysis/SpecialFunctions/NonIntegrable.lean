@@ -43,7 +43,7 @@ open scoped MeasureTheory Topology Interval NNReal ENNReal
 
 open MeasureTheory TopologicalSpace Set Filter Asymptotics intervalIntegral
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [SecondCountableTopology E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [SecondCountableTopology E]
   [CompleteSpace E] [NormedAddCommGroup F]
 
 /-- If `f` is eventually differentiable along a nontrivial filter `l : Filter ℝ` that is generated

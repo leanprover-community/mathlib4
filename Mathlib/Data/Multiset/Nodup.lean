@@ -18,7 +18,7 @@ namespace Multiset
 
 open Function List
 
-variable {α β γ : Type _} {r : α → α → Prop} {s t : Multiset α} {a : α}
+variable {α β γ : Type*} {r : α → α → Prop} {s t : Multiset α} {a : α}
 
 -- nodup
 /-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
@@ -188,7 +188,7 @@ protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodu
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
 #align multiset.nodup.product Multiset.Nodup.product
 
-protected theorem Nodup.sigma {σ : α → Type _} {t : ∀ a, Multiset (σ a)} :
+protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
   Quot.induction_on s fun l₁ => by
     choose f hf using fun a => Quotient.exists_rep (t a)

@@ -32,8 +32,8 @@ open Category
 
 namespace Functor
 
-variable {C D E : Type _} [Category C] [Category D] [Category E]
-  (F : C ⥤ D) (G : D ⥤ E) (A : Type _) [AddMonoid A]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  (F : C ⥤ D) (G : D ⥤ E) (A : Type*) [AddMonoid A]
   [HasShift C A] [HasShift D A] [HasShift E A]
 
 namespace CommShift

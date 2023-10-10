@@ -36,7 +36,7 @@ Necessary for the TODO in the module docstring of `Order.disjointed`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section SemilatticeSup
 
@@ -102,6 +102,9 @@ theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α)
   · exact h 0
   · exact sup_le_sup ih (h _)
 #align partial_sups_mono partialSups_mono
+
+theorem partialSups_apply_mono (f : ℕ → α) : Monotone (partialSups f) :=
+  fun n _ hnm => partialSups_le f n _ (fun _ hm'n => le_partialSups_of_le _ (hm'n.trans hnm))
 
 /-- `partialSups` forms a Galois insertion with the coercion from monotone functions to functions.
 -/

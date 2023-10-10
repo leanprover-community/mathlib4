@@ -43,7 +43,7 @@ diamonds, as `Fintype` carries data.
 -/
 
 
-variable {K : Type _} {R : Type _}
+variable {K : Type*} {R : Type*}
 
 -- mathport name: exprq
 local notation "q" => Fintype.card K
@@ -110,6 +110,107 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
         (fun a => by simp [@inv_eq_iff_eq_inv _ _ a]) (by simp)
     rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
 #align finite_field.prod_univ_units_id_eq_neg_one FiniteField.prod_univ_units_id_eq_neg_one
+
+theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial K]
+    (G : Subgroup Kˣ) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
+  let n := Fintype.card G
+  intro nzero
+  have ⟨p, char_p⟩ := CharP.exists K
+  have hd : p ∣ n := (CharP.cast_eq_zero_iff K p n).mp nzero
+  cases CharP.char_is_prime_or_zero K p with
+  | inr pzero =>
+    exact (Fintype.card_pos).ne' <| Nat.eq_zero_of_zero_dvd <| pzero ▸ hd
+  | inl pprime =>
+    have fact_pprime := Fact.mk pprime
+    -- G has an element x of order p by Cauchy's theorem
+    have ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
+    -- F has an element u (= ↑↑x) of order p
+    let u := ((x : Kˣ) : K)
+    have hu : orderOf u = p := by rwa [orderOf_units, orderOf_subgroup]
+    -- u ^ p = 1 implies (u - 1) ^ p = 0 and hence u = 1 ...
+    have h : u = 1 := by
+      rw [← sub_left_inj, sub_self 1]
+      apply pow_eq_zero (n := p)
+      rw [sub_pow_char_of_commute, one_pow, ← hu, pow_orderOf_eq_one, sub_self]
+      exact Commute.one_right u
+    -- ... meaning x didn't have order p after all, contradiction
+    apply pprime.one_lt.ne
+    rw [← hu, h, orderOf_one]
+
+/-- The sum of a nontrivial subgroup of the units of a field is zero. -/
+theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
+    {G : Subgroup Kˣ} [Fintype G] (hg : G ≠ ⊥) :
+    ∑ x : G, (x.val : K) = 0 := by
+  rw [Subgroup.ne_bot_iff_exists_ne_one] at hg
+  rcases hg with ⟨a, ha⟩
+  -- The action of a on G as an embedding
+  let a_mul_emb : G ↪ G := mulLeftEmbedding a
+  -- ... and leaves G unchanged
+  have h_unchanged : Finset.univ.map a_mul_emb = Finset.univ := by simp
+  -- Therefore the sum of x over a G is the sum of a x over G
+  have h_sum_map := Finset.univ.sum_map a_mul_emb fun x => ((x : Kˣ) : K)
+  -- ... and the former is the sum of x over G.
+  -- By algebraic manipulation, we have Σ G, x = ∑ G, a x = a ∑ G, x
+  simp only [h_unchanged, Function.Embedding.coeFn_mk, Function.Embedding.toFun_eq_coe,
+    mulLeftEmbedding_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul,
+    ← Finset.mul_sum] at h_sum_map
+  -- thus one of (a - 1) or ∑ G, x is zero
+  have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
+    rw [←mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
+  apply Or.resolve_left hzero
+  contrapose! ha
+  ext
+  rwa [←sub_eq_zero]
+
+/-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
+@[simp]
+theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
+    {G : Subgroup Kˣ} [Fintype G] [Decidable (G = ⊥)] :
+    ∑ x : G, (x.val : K) = if G = ⊥ then 1 else 0 := by
+  by_cases G_bot : G = ⊥
+  · subst G_bot
+    simp only [ite_true, Subgroup.mem_bot, Fintype.card_ofSubsingleton, Nat.cast_ite, Nat.cast_one,
+      Nat.cast_zero, univ_unique, Set.default_coe_singleton, sum_singleton, Units.val_one]
+  · simp only [G_bot, ite_false]
+    exact sum_subgroup_units_eq_zero G_bot
+
+@[simp]
+theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
+    {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) :
+    ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
+  nontriviality K
+  have := NoZeroDivisors.to_isDomain K
+  rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
+  rw [Finset.sum_eq_multiset_sum]
+  have h_multiset_map :
+    Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k) =
+      Finset.univ.val.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) := by
+    simp_rw [← mul_pow]
+    have as_comp :
+      (fun x : ↥G => (((x : Kˣ) : K) * ((a : Kˣ) : K)) ^ k)
+        = (fun x : ↥G => ((x : Kˣ) : K) ^ k) ∘ fun x : ↥G => x * a := by
+      funext x
+      simp only [Function.comp_apply, Submonoid.coe_mul, Subgroup.coe_toSubmonoid, Units.val_mul]
+    rw [as_comp, ← Multiset.map_map]
+    congr
+    rw [eq_comm]
+    exact Multiset.map_univ_val_equiv (Equiv.mulRight a)
+  have h_multiset_map_sum :
+    (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
+      (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum
+  rw [h_multiset_map]
+  rw [Multiset.sum_map_mul_right] at h_multiset_map_sum
+  have hzero : (((a : Kˣ) : K) ^ k - 1 : K)
+                  * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
+    rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
+  rw [mul_eq_zero] at hzero
+  rcases hzero with h | h
+  · contrapose! ha
+    ext
+    rw [←sub_eq_zero]
+    simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one,
+      Units.val_one, h]
+  · exact h
 
 section
 
@@ -225,7 +326,7 @@ open Polynomial
 
 section
 
-variable (K' : Type _) [Field K'] {p n : ℕ}
+variable (K' : Type*) [Field K'] {p n : ℕ}
 
 theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
   have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
@@ -272,7 +373,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     rw [separable_def]
     convert isCoprime_one_right.neg_right (R := K[X]) using 1
     rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero K, C_0,
-      MulZeroClass.zero_mul, zero_sub]
+      zero_mul, zero_sub]
 set_option linter.uppercaseLean3 false in
 #align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
 
@@ -345,7 +446,7 @@ theorem Nat.sq_add_sq_modEq (p : ℕ) [Fact p.Prime] (x : ℕ) :
 
 namespace CharP
 
-theorem sq_add_sq (R : Type _) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
+theorem sq_add_sq (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [NeZero p] [CharP R p] (x : ℤ) :
     ∃ a b : ℕ, ((a : R) ^ 2 + (b : R) ^ 2) = x := by
   haveI := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
@@ -370,7 +471,7 @@ theorem ZMod.pow_totient {n : ℕ} (x : (ZMod n)ˣ) : x ^ φ n = 1 := by
 
 /-- The **Fermat-Euler totient theorem**. `ZMod.pow_totient` is an alternative statement
   of the same theorem. -/
-theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.coprime x n) : x ^ φ n ≡ 1 [MOD n] := by
+theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1 [MOD n] := by
   rw [← ZMod.eq_iff_modEq_nat]
   let x' : Units (ZMod n) := ZMod.unitOfCoprime _ h
   have := ZMod.pow_totient x'
@@ -381,7 +482,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.coprime x n) : x ^ φ n ≡ 1
 
 section
 
-variable {V : Type _} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
 
 -- should this go in a namespace?
 -- finite_dimensional would be natural,
@@ -465,7 +566,7 @@ section
 
 namespace FiniteField
 
-variable {F : Type _} [Field F]
+variable {F : Type*} [Field F]
 
 section Finite
 
@@ -538,7 +639,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
     constructor
     · rintro ⟨y, rfl⟩
       rw [← pow_two, ← pow_mul, hodd]
-      apply_fun Units.val using Units.ext (α := F)
+      apply_fun Units.val using Units.ext
       · push_cast
         exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h

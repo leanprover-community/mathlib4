@@ -34,7 +34,7 @@ homeomorphisms to the real line first.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Set
 
@@ -96,7 +96,7 @@ theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} 
   simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
 #align function.semiconj.symm_adjoint Function.Semiconj.symm_adjoint
 
-variable {G : Type _}
+variable {G : Type*}
 
 theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃o α) {h : α → α}
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :

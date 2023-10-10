@@ -37,10 +37,10 @@ such that
 
 - `ContDiffBump (c : E)`: a structure holding data needed to construct
   an infinitely smooth bump function.
-- `ContDiffBumpBase (E : Type _)`: a family of infinitely smooth bump functions
+- `ContDiffBumpBase (E : Type*)`: a family of infinitely smooth bump functions
   that can be used to construct coercion of a `ContDiffBump (c : E)`
   to a function.
-- `HasContDiffBump (E : Type _)`: a typeclass saying that `E` has a `ContDiffBumpBase`.
+- `HasContDiffBump (E : Type*)`: a typeclass saying that `E` has a `ContDiffBumpBase`.
   Two instances of this typeclass (for inner product spaces and for finite dimensional spaces)
   are provided elsewhere.
 
@@ -53,7 +53,7 @@ noncomputable section
 open Function Set Filter
 open scoped Topology Filter
 
-variable {E X : Type _}
+variable {E X : Type*}
 
 /-- `f : ContDiffBump c`, where `c` is a point in a normed vector space, is a
 bundled smooth function such that
@@ -83,7 +83,7 @@ and finite dimensional vector spaces, notably derivative norm control in terms o
 
 TODO: do we ever need `f x = 1 ↔ ‖x‖ ≤ 1`? -/
 -- porting note: was @[nolint has_nonempty_instance]
-structure ContDiffBumpBase (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+structure ContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   toFun : ℝ → E → ℝ
   mem_Icc : ∀ (R : ℝ) (x : E), toFun R x ∈ Icc (0 : ℝ) 1
   symmetric : ∀ (R : ℝ) (x : E), toFun R (-x) = toFun R x
@@ -95,13 +95,13 @@ structure ContDiffBumpBase (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ 
 /-- A class registering that a real vector space admits bump functions. This will be instantiated
 first for inner product spaces, and then for finite-dimensional normed spaces.
 We use a specific class instead of `Nonempty (ContDiffBumpBase E)` for performance reasons. -/
-class HasContDiffBump (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop where
+class HasContDiffBump (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop where
   out : Nonempty (ContDiffBumpBase E)
 #align has_cont_diff_bump HasContDiffBump
 
 /-- In a space with `C^∞` bump functions, register some function that will be used as a basis
 to construct bump functions of arbitrary size around any point. -/
-def someContDiffBumpBase (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E]
+def someContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     [hb : HasContDiffBump E] : ContDiffBumpBase E :=
   Nonempty.some hb.out
 #align some_cont_diff_bump_base someContDiffBumpBase

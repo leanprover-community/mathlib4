@@ -21,6 +21,8 @@ Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term o
 
 -/
 
+set_option autoImplicit true
+
 
 open Opposite
 
@@ -77,7 +79,7 @@ variable {C}
 -- porting note: added to ease automation
 @[ext]
 lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
+    (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
   NatTrans.ext _ _ (by ext; apply h)
 
 variable (X : SimplicialObject C)
@@ -221,7 +223,7 @@ variable (C)
 
 /-- Functor composition induces a functor on simplicial objects. -/
 @[simps!]
-def whiskering (D : Type _) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 #align category_theory.simplicial_object.whiskering CategoryTheory.SimplicialObject.whiskering
 
@@ -259,7 +261,7 @@ variable (C)
 
 /-- Functor composition induces a functor on truncated simplicial objects. -/
 @[simps!]
-def whiskering {n} (D : Type _) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 #align category_theory.simplicial_object.truncated.whiskering CategoryTheory.SimplicialObject.Truncated.whiskering
 
@@ -345,7 +347,7 @@ variable (C)
 
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
-def whiskeringObj (D : Type _) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
+def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
   obj X :=
     { left := ((whiskering _ _).obj F).obj (drop.obj X)
       right := F.obj (point.obj X)
@@ -447,7 +449,7 @@ variable {C}
 -- porting note: added to ease automation
 @[ext]
 lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
+    (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
   NatTrans.ext _ _ (by ext; apply h)
 
 variable (X : CosimplicialObject C)
@@ -593,7 +595,7 @@ variable (C)
 
 /-- Functor composition induces a functor on cosimplicial objects. -/
 @[simps!]
-def whiskering (D : Type _) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
+def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 #align category_theory.cosimplicial_object.whiskering CategoryTheory.CosimplicialObject.whiskering
 
@@ -631,7 +633,7 @@ variable (C)
 
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
 @[simps!]
-def whiskering {n} (D : Type _) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 #align category_theory.cosimplicial_object.truncated.whiskering CategoryTheory.CosimplicialObject.Truncated.whiskering
 
@@ -709,7 +711,7 @@ variable (C)
 
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simp]
-def whiskeringObj (D : Type _) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
+def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
   obj X :=
     { left := F.obj (point.obj X)
       right := ((whiskering _ _).obj F).obj (drop.obj X)

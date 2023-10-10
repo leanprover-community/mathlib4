@@ -26,14 +26,14 @@ For a topological space `α`,
 
 open Set
 
-variable {α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace TopologicalSpace
 
 /-! ### Compact sets -/
 
 /-- The type of compact sets of a topological space. -/
-structure Compacts (α : Type _) [TopologicalSpace α] where
+structure Compacts (α : Type*) [TopologicalSpace α] where
   carrier : Set α
   isCompact' : IsCompact carrier
 #align topological_space.compacts TopologicalSpace.Compacts
@@ -121,7 +121,7 @@ theorem coe_bot : (↑(⊥ : Compacts α) : Set α) = ∅ :=
 #align topological_space.compacts.coe_bot TopologicalSpace.Compacts.coe_bot
 
 @[simp]
-theorem coe_finset_sup {ι : Type _} {s : Finset ι} {f : ι → Compacts α} :
+theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :
     (↑(s.sup f) : Set α) = s.sup fun i => ↑(f i) := by
   refine Finset.cons_induction_on s rfl fun a s _ h => ?_
   simp_rw [Finset.sup_cons, coe_sup, sup_eq_union]
@@ -204,7 +204,7 @@ end Compacts
 /-! ### Nonempty compact sets -/
 
 /-- The type of nonempty compact sets of a topological space. -/
-structure NonemptyCompacts (α : Type _) [TopologicalSpace α] extends Compacts α where
+structure NonemptyCompacts (α : Type*) [TopologicalSpace α] extends Compacts α where
   nonempty' : carrier.Nonempty
 #align topological_space.nonempty_compacts TopologicalSpace.NonemptyCompacts
 
@@ -308,7 +308,7 @@ end NonemptyCompacts
 
 /-- The type of compact sets with nonempty interior of a topological space.
 See also `TopologicalSpace.Compacts` and `TopologicalSpace.NonemptyCompacts`. -/
-structure PositiveCompacts (α : Type _) [TopologicalSpace α] extends Compacts α where
+structure PositiveCompacts (α : Type*) [TopologicalSpace α] extends Compacts α where
   interior_nonempty' : (interior carrier).Nonempty
 #align topological_space.positive_compacts TopologicalSpace.PositiveCompacts
 
@@ -422,8 +422,10 @@ instance [CompactSpace α] [Nonempty α] : Inhabited (PositiveCompacts α) :=
   ⟨⊤⟩
 
 /-- In a nonempty locally compact space, there exists a compact set with nonempty interior. -/
-instance nonempty' [LocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) :=
-  nonempty_of_exists <| exists_positiveCompacts_subset isOpen_univ univ_nonempty
+instance nonempty' [WeaklyLocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) := by
+  inhabit α
+  rcases exists_compact_mem_nhds (default : α) with ⟨K, hKc, hK⟩
+  exact ⟨⟨K, hKc⟩, _, mem_interior_iff_mem_nhds.2 hK⟩
 #align topological_space.positive_compacts.nonempty' TopologicalSpace.PositiveCompacts.nonempty'
 
 /-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
@@ -448,7 +450,7 @@ end PositiveCompacts
 
 /-- The type of compact open sets of a topological space. This is useful in non Hausdorff contexts,
 in particular spectral spaces. -/
-structure CompactOpens (α : Type _) [TopologicalSpace α] extends Compacts α where
+structure CompactOpens (α : Type*) [TopologicalSpace α] extends Compacts α where
   isOpen' : IsOpen carrier
 #align topological_space.compact_opens TopologicalSpace.CompactOpens
 

@@ -46,7 +46,7 @@ section Tuple
 /-- There is exactly one tuple of size zero. -/
 example (α : Fin 0 → Sort u) : Unique (∀ i : Fin 0, α i) := by infer_instance
 
-theorem tuple0_le {α : ∀ _ : Fin 0, Type _} [∀ i, Preorder (α i)] (f g : ∀ i, α i) : f ≤ g :=
+theorem tuple0_le {α : ∀ _ : Fin 0, Type*} [∀ i, Preorder (α i)] (f g : ∀ i, α i) : f ≤ g :=
   finZeroElim
 #align fin.tuple0_le Fin.tuple0_le
 
@@ -57,7 +57,7 @@ variable {α : Fin (n + 1) → Type u} (x : α 0) (q : ∀ i, α i) (p : ∀ i :
 def tail (q : ∀ i, α i) : ∀ i : Fin n, α i.succ := fun i ↦ q i.succ
 #align fin.tail Fin.tail
 
-theorem tail_def {n : ℕ} {α : Fin (n + 1) → Type _} {q : ∀ i, α i} :
+theorem tail_def {n : ℕ} {α : Fin (n + 1) → Type*} {q : ∀ i, α i} :
     (tail fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q k.succ :=
   rfl
 #align fin.tail_def Fin.tail_def
@@ -77,6 +77,11 @@ theorem cons_succ : cons x p i.succ = p i := by simp [cons]
 @[simp]
 theorem cons_zero : cons x p 0 = x := by simp [cons]
 #align fin.cons_zero Fin.cons_zero
+
+@[simp]
+theorem cons_one {α : Fin (n + 2) → Type*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
+    cons x p 1 = p 0 := by
+  rw [← cons_succ x p]; rfl
 
 /-- Updating a tuple and adding an element at the beginning commute. -/
 @[simp]
@@ -158,7 +163,7 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
 
 /-- Recurse on a tuple by splitting into `Fin.elim0` and `Fin.cons`. -/
 @[elab_as_elim]
-def consInduction {α : Type _} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
+def consInduction {α : Type*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
   | 0, x => by convert h0
   | n + 1, x => consCases (fun x₀ x ↦ h _ _ <| consInduction h0 h _) x
@@ -193,13 +198,13 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
 #align fin.cons_injective_iff Fin.cons_injective_iff
 
 @[simp]
-theorem forall_fin_zero_pi {α : Fin 0 → Sort _} {P : (∀ i, α i) → Prop} :
+theorem forall_fin_zero_pi {α : Fin 0 → Sort*} {P : (∀ i, α i) → Prop} :
     (∀ x, P x) ↔ P finZeroElim :=
   ⟨fun h ↦ h _, fun h x ↦ Subsingleton.elim finZeroElim x ▸ h⟩
 #align fin.forall_fin_zero_pi Fin.forall_fin_zero_pi
 
 @[simp]
-theorem exists_fin_zero_pi {α : Fin 0 → Sort _} {P : (∀ i, α i) → Prop} :
+theorem exists_fin_zero_pi {α : Fin 0 → Sort*} {P : (∀ i, α i) → Prop} :
     (∃ x, P x) ↔ P finZeroElim :=
   ⟨fun ⟨x, h⟩ ↦ Subsingleton.elim x finZeroElim ▸ h, fun h ↦ ⟨_, h⟩⟩
 #align fin.exists_fin_zero_pi Fin.exists_fin_zero_pi
@@ -229,7 +234,7 @@ theorem tail_update_succ : tail (update q i.succ y) = update (tail q) i y := by
   · simp [tail, (Fin.succ_injective n).ne h, h]
 #align fin.tail_update_succ Fin.tail_update_succ
 
-theorem comp_cons {α : Type _} {β : Type _} (g : α → β) (y : α) (q : Fin n → α) :
+theorem comp_cons {α : Type*} {β : Type*} (g : α → β) (y : α) (q : Fin n → α) :
     g ∘ cons y q = cons (g y) (g ∘ q) := by
   ext j
   by_cases h : j = 0
@@ -240,7 +245,7 @@ theorem comp_cons {α : Type _} {β : Type _} (g : α → β) (y : α) (q : Fin 
     rw [← this, cons_succ, comp, comp, cons_succ]
 #align fin.comp_cons Fin.comp_cons
 
-theorem comp_tail {α : Type _} {β : Type _} (g : α → β) (q : Fin n.succ → α) :
+theorem comp_tail {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ tail q = tail (g ∘ q) := by
   ext j
   simp [tail]
@@ -275,7 +280,7 @@ theorem range_fin_succ {α} (f : Fin (n + 1) → α) :
 #align fin.range_fin_succ Fin.range_fin_succ
 
 @[simp]
-theorem range_cons {α : Type _} {n : ℕ} (x : α) (b : Fin n → α) :
+theorem range_cons {α : Type*} {n : ℕ} (x : α) (b : Fin n → α) :
     Set.range (Fin.cons x b : Fin n.succ → α) = insert x (Set.range b) := by
   rw [range_fin_succ, cons_zero, tail_cons]
 #align fin.range_cons Fin.range_cons
@@ -284,79 +289,77 @@ section Append
 
 /-- Append a tuple of length `m` to a tuple of length `n` to get a tuple of length `m + n`.
 This is a non-dependent version of `Fin.add_cases`. -/
-def append {α : Type _} (a : Fin m → α) (b : Fin n → α) : Fin (m + n) → α :=
+def append {α : Type*} (a : Fin m → α) (b : Fin n → α) : Fin (m + n) → α :=
   @Fin.addCases _ _ (fun _ => α) a b
 #align fin.append Fin.append
 
 @[simp]
-theorem append_left {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
+theorem append_left {α : Type*} (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
     append u v (Fin.castAdd n i) = u i :=
   addCases_left _
 #align fin.append_left Fin.append_left
 
 @[simp]
-theorem append_right {α : Type _} (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
+theorem append_right {α : Type*} (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
     append u v (natAdd m i) = v i :=
   addCases_right _
 #align fin.append_right Fin.append_right
 
-theorem append_right_nil {α : Type _} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
-    append u v = u ∘ Fin.castIso (by rw [hv, add_zero]) := by
+theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
+    append u v = u ∘ Fin.cast (by rw [hv, add_zero]) := by
   refine' funext (Fin.addCases (fun l => _) fun r => _)
   · rw [append_left, Function.comp_apply]
     refine' congr_arg u (Fin.ext _)
     simp
-  · exact (Fin.castIso hv r).elim0'
+  · exact (Fin.cast hv r).elim0'
 #align fin.append_right_nil Fin.append_right_nil
 
 @[simp]
-theorem append_elim0' {α : Type _} (u : Fin m → α) :
-    append u Fin.elim0' = u ∘ Fin.castIso (add_zero _) :=
+theorem append_elim0' {α : Type*} (u : Fin m → α) :
+    append u Fin.elim0' = u ∘ Fin.cast (add_zero _) :=
   append_right_nil _ _ rfl
 #align fin.append_elim0' Fin.append_elim0'
 
-theorem append_left_nil {α : Type _} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
-    append u v = v ∘ Fin.castIso (by rw [hu, zero_add]) := by
+theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
+    append u v = v ∘ Fin.cast (by rw [hu, zero_add]) := by
   refine' funext (Fin.addCases (fun l => _) fun r => _)
-  · exact (Fin.castIso hu l).elim0'
+  · exact (Fin.cast hu l).elim0'
   · rw [append_right, Function.comp_apply]
     refine' congr_arg v (Fin.ext _)
     simp [hu]
 #align fin.append_left_nil Fin.append_left_nil
 
 @[simp]
-theorem elim0'_append {α : Type _} (v : Fin n → α) :
-    append Fin.elim0' v = v ∘ Fin.castIso (zero_add _) :=
+theorem elim0'_append {α : Type*} (v : Fin n → α) :
+    append Fin.elim0' v = v ∘ Fin.cast (zero_add _) :=
   append_left_nil _ _ rfl
 #align fin.elim0'_append Fin.elim0'_append
 
-theorem append_assoc {p : ℕ} {α : Type _} (a : Fin m → α) (b : Fin n → α) (c : Fin p → α) :
-    append (append a b) c = append a (append b c) ∘ Fin.castIso (add_assoc _ _ _) := by
+theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α) (c : Fin p → α) :
+    append (append a b) c = append a (append b c) ∘ Fin.cast (add_assoc _ _ _) := by
   ext i
   rw [Function.comp_apply]
   refine' Fin.addCases (fun l => _) (fun r => _) i
   · rw [append_left]
     refine' Fin.addCases (fun ll => _) (fun lr => _) l
     · rw [append_left]
-      -- TODO: we need to decide the simp normal form here
-      -- and potentially add `@[simp]` to `castIso_eq_cast`.
-      simp [castAdd_castAdd, castIso_eq_cast]
+      simp [castAdd_castAdd]
     · rw [append_right]
-      simp [castAdd_natAdd, castIso_eq_cast]
+      simp [castAdd_natAdd]
   · rw [append_right]
-    simp [← natAdd_natAdd, castIso_eq_cast]
+    simp [← natAdd_natAdd]
 #align fin.append_assoc Fin.append_assoc
 
 /-- Appending a one-tuple to the left is the same as `Fin.cons`. -/
-theorem append_left_eq_cons {α : Type _} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
-    Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.castIso (add_comm _ _) := by
+theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
+    Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.cast (add_comm _ _) := by
   ext i
   refine' Fin.addCases _ _ i <;> clear i
   · intro i
     rw [Subsingleton.elim i 0, Fin.append_left, Function.comp_apply, eq_comm]
     exact Fin.cons_zero _ _
   · intro i
-    rw [Fin.append_right, Function.comp_apply, Fin.castIso_natAdd, eq_comm, Fin.addNat_one]
+    rw [Fin.append_right, Function.comp_apply, Fin.cast_natAdd, eq_comm, Fin.addNat_one]
     exact Fin.cons_succ _ _ _
 #align fin.append_left_eq_cons Fin.append_left_eq_cons
 
@@ -366,48 +369,48 @@ section Repeat
 
 /-- Repeat `a` `m` times. For example `Fin.repeat 2 ![0, 3, 7] = ![0, 3, 7, 0, 3, 7]`. -/
 -- Porting note: removed @[simp]
-def «repeat» {α : Type _} (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
+def «repeat» {α : Type*} (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 #align fin.repeat Fin.repeat
 
 -- Porting note: added (leanprover/lean4#2042)
 @[simp]
-theorem repeat_apply {α : Type _} (a : Fin n → α) (i : Fin (m * n)) :
+theorem repeat_apply {α : Type*} (a : Fin n → α) (i : Fin (m * n)) :
     Fin.repeat m a i = a i.modNat :=
   rfl
 
 @[simp]
-theorem repeat_zero {α : Type _} (a : Fin n → α) :
-    Fin.repeat 0 a = Fin.elim0' ∘ castIso (zero_mul _) :=
-  funext fun x => (castIso (zero_mul _) x).elim0'
+theorem repeat_zero {α : Type*} (a : Fin n → α) :
+    Fin.repeat 0 a = Fin.elim0' ∘ cast (zero_mul _) :=
+  funext fun x => (cast (zero_mul _) x).elim0'
 #align fin.repeat_zero Fin.repeat_zero
 
 @[simp]
-theorem repeat_one {α : Type _} (a : Fin n → α) : Fin.repeat 1 a = a ∘ castIso (one_mul _) := by
+theorem repeat_one {α : Type*} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (one_mul _) := by
   generalize_proofs h
   apply funext
-  rw [(Fin.castIso h.symm).surjective.forall]
+  rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   intro i
   simp [modNat, Nat.mod_eq_of_lt i.is_lt]
 #align fin.repeat_one Fin.repeat_one
 
-theorem repeat_succ {α : Type _} (a : Fin n → α) (m : ℕ) :
+theorem repeat_succ {α : Type*} (a : Fin n → α) (m : ℕ) :
     Fin.repeat m.succ a =
-      append a (Fin.repeat m a) ∘ castIso ((Nat.succ_mul _ _).trans (add_comm _ _)) := by
+      append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (add_comm _ _)) := by
   generalize_proofs h
   apply funext
-  rw [(Fin.castIso h.symm).surjective.forall]
+  rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine' Fin.addCases (fun l => _) fun r => _
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat]
 #align fin.repeat_succ Fin.repeat_succ
 
 @[simp]
-theorem repeat_add {α : Type _} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
-    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ castIso (add_mul _ _ _) := by
+theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
+    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (add_mul _ _ _) := by
   generalize_proofs h
   apply funext
-  rw [(Fin.castIso h.symm).surjective.forall]
+  rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine' Fin.addCases (fun l => _) fun r => _
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat, Nat.add_mod]
@@ -435,7 +438,7 @@ def init (q : ∀ i, α i) (i : Fin n) : α (castSucc i) :=
   q (castSucc i)
 #align fin.init Fin.init
 
-theorem init_def {n : ℕ} {α : Fin (n + 1) → Type _} {q : ∀ i, α i} :
+theorem init_def {n : ℕ} {α : Fin (n + 1) → Type*} {q : ∀ i, α i} :
     (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q (castSucc k) :=
   rfl
 #align fin.init_def Fin.init_def
@@ -483,7 +486,7 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort _} (f : Fin (m + n) → α) (a 
 #align fin.snoc_comp_nat_add Fin.snoc_comp_nat_add
 
 @[simp]
-theorem snoc_cast_add {α : Fin (n + m + 1) → Type _} (f : ∀ i : Fin (n + m), α (castSucc i))
+theorem snoc_cast_add {α : Fin (n + m + 1) → Type*} (f : ∀ i : Fin (n + m), α (castSucc i))
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 #align fin.snoc_cast_add Fin.snoc_cast_add
@@ -570,7 +573,7 @@ theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) 
 
 /-- `tail` and `init` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
-theorem tail_init_eq_init_tail {β : Type _} (q : Fin (n + 2) → β) :
+theorem tail_init_eq_init_tail {β : Type*} (q : Fin (n + 2) → β) :
     tail (init q) = init (tail q) := by
   ext i
   simp [tail, init, castSucc_fin_succ]
@@ -578,7 +581,7 @@ theorem tail_init_eq_init_tail {β : Type _} (q : Fin (n + 2) → β) :
 
 /-- `cons` and `snoc` commute. We state this lemma in a non-dependent setting, as otherwise it
 would involve a cast to convince Lean that the two types are equal, making it harder to use. -/
-theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β) :
+theorem cons_snoc_eq_snoc_cons {β : Type*} (a : β) (q : Fin n → β) (b : β) :
     @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b := by
   ext i
   by_cases h : i = 0
@@ -598,7 +601,7 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
   simp
 #align fin.cons_snoc_eq_snoc_cons Fin.cons_snoc_eq_snoc_cons
 
-theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α) (y : α) :
+theorem comp_snoc {α : Type*} {β : Type*} (g : α → β) (q : Fin n → α) (y : α) :
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by
   ext j
   by_cases h : j.val < n
@@ -608,7 +611,7 @@ theorem comp_snoc {α : Type _} {β : Type _} (g : α → β) (q : Fin n → α)
 #align fin.comp_snoc Fin.comp_snoc
 
 /-- Appending a one-tuple to the right is the same as `Fin.snoc`. -/
-theorem append_right_eq_snoc {α : Type _} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
+theorem append_right_eq_snoc {α : Type*} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
     Fin.append x x₀ = Fin.snoc x (x₀ 0) := by
   ext i
   refine' Fin.addCases _ _ i <;> clear i
@@ -620,7 +623,7 @@ theorem append_right_eq_snoc {α : Type _} {n : ℕ} (x : Fin n → α) (x₀ : 
     exact (@snoc_last _ (fun _ => α) _ _).symm
 #align fin.append_right_eq_snoc Fin.append_right_eq_snoc
 
-theorem comp_init {α : Type _} {β : Type _} (g : α → β) (q : Fin n.succ → α) :
+theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by
   ext j
   simp [init]
@@ -951,7 +954,7 @@ end Find
 
 section ContractNth
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Sends `(g₀, ..., gₙ)` to `(g₀, ..., op gⱼ gⱼ₊₁, ..., gₙ)`. -/
 def contractNth (j : Fin (n + 1)) (op : α → α → α) (g : Fin (n + 1) → α) (k : Fin n) : α :=
@@ -988,20 +991,20 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
 end ContractNth
 
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
-`Fin.castIso`. -/
-theorem sigma_eq_of_eq_comp_castIso {α : Type _} :
-    ∀ {a b : Σii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.castIso h → a = b
+`Fin.cast`. -/
+theorem sigma_eq_of_eq_comp_cast {α : Type*} :
+    ∀ {a b : Σii, Fin ii → α} (h : a.fst = b.fst), a.snd = b.snd ∘ Fin.cast h → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩, hi, h => by
     dsimp only at hi
     subst hi
     simpa using h
-#align fin.sigma_eq_of_eq_comp_cast Fin.sigma_eq_of_eq_comp_castIso
+#align fin.sigma_eq_of_eq_comp_cast Fin.sigma_eq_of_eq_comp_cast
 
-/-- `Fin.sigma_eq_of_eq_comp_castIso` as an `iff`. -/
-theorem sigma_eq_iff_eq_comp_castIso {α : Type _} {a b : Σii, Fin ii → α} :
-    a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.castIso h :=
+/-- `Fin.sigma_eq_of_eq_comp_cast` as an `iff`. -/
+theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σii, Fin ii → α} :
+    a = b ↔ ∃ h : a.fst = b.fst, a.snd = b.snd ∘ Fin.cast h :=
   ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦
-    sigma_eq_of_eq_comp_castIso _ h'⟩
-#align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_castIso
+    sigma_eq_of_eq_comp_cast _ h'⟩
+#align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_cast
 
 end Fin

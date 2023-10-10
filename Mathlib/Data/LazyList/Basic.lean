@@ -26,7 +26,7 @@ namespace LazyList
 open Function
 
 /-- Isomorphism between strict and lazy lists. -/
-def listEquivLazyList (α : Type _) : List α ≃ LazyList α where
+def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   toFun := LazyList.ofList
   invFun := LazyList.toList
   right_inv := by

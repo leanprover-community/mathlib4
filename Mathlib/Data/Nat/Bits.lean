@@ -5,6 +5,7 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.List.Basic
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.bits from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
@@ -17,7 +18,7 @@ which allows us to more easily work with operations which do depend
 on the number of leading zeros in the binary representation of `n`.
 For example, we can more easily work with `Nat.bits` and `Nat.size`.
 
-See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftl`/`shiftr`),
+See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
 
@@ -163,7 +164,7 @@ The same as `binaryRec_eq`,
 but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
 Here, we allow you to explicitly say that that case is not happening,
 i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
+theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
     (h : f false 0 z = z ∨ (n = 0 → b = true)) :
     binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
@@ -185,7 +186,7 @@ theorem binaryRec_eq' {C : ℕ → Sort _} {z : C 0} {f : ∀ b n, C n → C (bi
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
   the bit being appended is `true`-/
 @[elab_as_elim]
-def binaryRec' {C : ℕ → Sort _} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
+def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
     ∀ n, C n :=
   binaryRec z fun b n ih =>
     if h : n = 0 → b = true then f b n h ih
@@ -197,7 +198,7 @@ def binaryRec' {C : ℕ → Sort _} (z : C 0) (f : ∀ b n, (n = 0 → b = true)
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim]
-def binaryRecFromOne {C : ℕ → Sort _} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) :
+def binaryRecFromOne {C : ℕ → Sort*} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) :
     ∀ n, C n :=
   binaryRec' z₀ fun b n h ih =>
     if h' : n = 0 then by

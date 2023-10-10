@@ -53,9 +53,9 @@ open MvPolynomial Function
 
 open scoped BigOperators
 
-variable {p : ℕ} {R S T : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
+variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 -- mathport name: expr𝕎
 local notation "𝕎" => WittVector p
@@ -99,7 +99,7 @@ macro "map_fun_tac" : tactic => `(tactic| (
   try { cases n <;> simp <;> done } <;>  -- porting note: this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
-    fin_cases i <;> rfl ))
+    fin_cases i <;> rfl))
 
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.

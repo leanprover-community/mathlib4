@@ -17,7 +17,7 @@ namespace Finset
 
 open Function Multiset
 
-variable {α : Type _} {s t : Finset α}
+variable {α : Type*} {s t : Finset α}
 
 /-! ### powerset -/
 
@@ -328,7 +328,7 @@ theorem map_val_val_powersetLen (s : Finset α) (i : ℕ) :
   simp [Finset.powersetLen, map_pmap, pmap_eq_map, map_id']
 #align finset.map_val_val_powerset_len Finset.map_val_val_powersetLen
 
-theorem powersetLen_map {β : Type _} (f : α ↪ β) (n : ℕ) (s : Finset α) :
+theorem powersetLen_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetLen n (s.map f) = (powersetLen n s).map (mapEmbedding f).toEmbedding :=
   ext <| fun t => by
     simp only [card_map, mem_powersetLen, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]

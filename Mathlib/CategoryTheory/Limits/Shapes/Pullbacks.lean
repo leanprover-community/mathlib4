@@ -1292,7 +1292,7 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
 #align category_theory.limits.pullback.snd_of_mono CategoryTheory.Limits.pullback.snd_of_mono
 
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
-instance mono_pullback_to_prod {C : Type _} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
     Mono (prod.lift pullback.fst pullback.snd : pullback f g ⟶ _) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -1330,7 +1330,7 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
 #align category_theory.limits.pushout.inr_of_epi CategoryTheory.Limits.pushout.inr_of_epi
 
 /-- The map ` X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
-instance epi_coprod_to_pushout {C : Type _} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
     Epi (coprod.desc pushout.inl pushout.inr : _ ⟶ pushout f g) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -1594,7 +1594,7 @@ open WalkingCospan
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
     [HasPullback f g] : IsLimit (PullbackCone.mk pullback.fst pullback.snd
       (show pullback.fst ≫ f ≫ i = pullback.snd ≫ g ≫ i from by -- Porting note: used to be _
-        simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition )) :=
+        simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition)) :=
   PullbackCone.isLimitOfCompMono f g i _ (limit.isLimit (cospan f g))
 #align category_theory.limits.pullback_is_pullback_of_comp_mono CategoryTheory.Limits.pullbackIsPullbackOfCompMono
 
@@ -1708,8 +1708,8 @@ theorem pullbackConeOfRightIso_π_app_left : (pullbackConeOfRightIso f g).π.app
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_left CategoryTheory.Limits.pullbackConeOfRightIso_π_app_left
 
 @[simp]
-theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g
-  := rfl
+theorem pullbackConeOfRightIso_π_app_right : (pullbackConeOfRightIso f g).π.app right = f ≫ inv g :=
+  rfl
 #align category_theory.limits.pullback_cone_of_right_iso_π_app_right CategoryTheory.Limits.pullbackConeOfRightIso_π_app_right
 
 /-- Verify that the constructed limit cone is indeed a limit. -/

@@ -50,7 +50,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h => ?_
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
-  · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, LinearMap.map_sum]
+  · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
     conv =>
       congr
       congr
@@ -216,7 +216,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     simp
 #align dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_is_eiseinstein_at dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt
 
-theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type _} [CommSemiring A] [CommRing B]
+theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [CommRing B]
     [Algebra A B] [NoZeroSMulDivisors A B] {Q : A[X]} {p : A} {x z : B} (hp : p ≠ 0)
     (hQ : ∀ i ∈ range (Q.natDegree + 1), p ∣ Q.coeff i) (hz : aeval x Q = p • z) :
     z ∈ adjoin A ({x} : Set B) := by

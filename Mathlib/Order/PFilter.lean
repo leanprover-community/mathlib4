@@ -40,7 +40,7 @@ open OrderDual
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 /-- A filter on a preorder `P` is a subset of `P` that is
   - nonempty

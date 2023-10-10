@@ -104,7 +104,7 @@ theorem const.get_map (f : α ⟹ β) (x : (const n A).Obj α) : const.get (f <$
 #align mvpfunctor.const.get_map MvPFunctor.const.get_map
 
 @[simp]
-theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := by rfl
+theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := rfl
 #align mvpfunctor.const.get_mk MvPFunctor.const.get_mk
 
 @[simp]
@@ -241,7 +241,7 @@ def last : PFunctor where
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- append arrows of a polynomial functor application -/
 @[reducible]
-def appendContents {α : TypeVec n} {β : Type _} {a : P.A} (f' : P.drop.B a ⟹ α)
+def appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P.B a ⟹ (α ::: β) :=
   splitFun f' f
 #align mvpfunctor.append_contents MvPFunctor.appendContents

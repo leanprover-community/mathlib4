@@ -5,8 +5,8 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
-import Mathlib.Algebra.Ring.Divisibility
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.GroupPower.Ring
 
 #align_import ring_theory.coprime.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
@@ -41,6 +41,7 @@ def IsCoprime : Prop :=
 
 variable {x y z}
 
+@[symm]
 theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
   let ⟨a, b, H⟩ := H
   ⟨b, a, by rw [add_comm, H]⟩
@@ -227,7 +228,7 @@ end CommSemiring
 
 section ScalarTower
 
-variable {R G : Type _} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
+variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
   [IsScalarTower G R R] (x : G) (y z : R)
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
@@ -247,7 +248,7 @@ end ScalarTower
 
 section CommSemiringUnit
 
-variable {R : Type _} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
+variable {R : Type*} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
 
 theorem isCoprime_mul_unit_left_left : IsCoprime (x * y) z ↔ IsCoprime y z :=
   let ⟨u, hu⟩ := hu
@@ -382,7 +383,7 @@ theorem neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
 
 end CommRing
 
-theorem sq_add_sq_ne_zero {R : Type _} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
+theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
   obtain ⟨ha, hb⟩ := (add_eq_zero_iff'

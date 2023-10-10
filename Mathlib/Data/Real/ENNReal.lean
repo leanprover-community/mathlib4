@@ -76,7 +76,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 open Set BigOperators NNReal
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
@@ -104,8 +104,8 @@ noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-noncomputable instance : CanonicallyLinearOrderedAddMonoid ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyLinearOrderedAddMonoid (WithTop ℝ≥0))
+noncomputable instance : CanonicallyLinearOrderedAddCommMonoid ℝ≥0∞ :=
+  inferInstanceAs (CanonicallyLinearOrderedAddCommMonoid (WithTop ℝ≥0))
 
 noncomputable instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
 noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
@@ -141,7 +141,7 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 instance : Coe ℝ≥0 ℝ≥0∞ := ⟨some⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.some`. -/
-def recTopCoe {C : ℝ≥0∞ → Sort _} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
+def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 
 instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLift
@@ -154,6 +154,8 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLi
 #align ennreal.some_eq_coe ENNReal.some_eq_coe
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
+
+protected theorem coe_injective : Function.Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
 
 theorem range_coe' : range some = Iio ∞ := WithTop.range_coe
 theorem range_coe : range some = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
@@ -461,12 +463,12 @@ theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
   @iInf_ne_top αᵒᵈ _ _
 #align ennreal.supr_ne_top ENNReal.iSup_ne_top
 
-theorem iInf_ennreal {α : Type _} [CompleteLattice α] {f : ℝ≥0∞ → α} :
+theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
   (iInf_option f).trans inf_comm
 #align ennreal.infi_ennreal ENNReal.iInf_ennreal
 
-theorem iSup_ennreal {α : Type _} [CompleteLattice α] {f : ℝ≥0∞ → α} :
+theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
   @iInf_ennreal αᵒᵈ _ _
 #align ennreal.supr_ennreal ENNReal.iSup_ennreal
@@ -487,35 +489,35 @@ def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
 section Actions
 
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type _} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
+noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
   MulAction.compHom M ofNNRealHom.toMonoidHom
 
-theorem smul_def {M : Type _} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
+theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
 #align ennreal.smul_def ENNReal.smul_def
 
-instance {M N : Type _} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
+instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ≥0∞) : _)
 
-instance smulCommClass_left {M N : Type _} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
+instance smulCommClass_left {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ≥0∞) : _)
 #align ennreal.smul_comm_class_left ENNReal.smulCommClass_left
 
-instance smulCommClass_right {M N : Type _} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
+instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ≥0∞) : _)
 #align ennreal.smul_comm_class_right ENNReal.smulCommClass_right
 
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type _} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
+noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
     DistribMulAction ℝ≥0 M :=
   DistribMulAction.compHom M ofNNRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
-noncomputable instance {M : Type _} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
+noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
   Module.compHom M ofNNRealHom
 
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
-noncomputable instance {A : Type _} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
+noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ≥0∞) x, smul_def]
@@ -950,6 +952,7 @@ theorem abs_toReal {x : ℝ≥0∞} : |x.toReal| = x.toReal := by cases x <;> si
 end Order
 
 section CompleteLattice
+variable {ι : Sort*} {f : ι → ℝ≥0}
 
 theorem coe_sSup {s : Set ℝ≥0} : BddAbove s → (↑(sSup s) : ℝ≥0∞) = ⨆ a ∈ s, ↑a :=
   WithTop.coe_sSup
@@ -959,13 +962,13 @@ theorem coe_sInf {s : Set ℝ≥0} : s.Nonempty → (↑(sInf s) : ℝ≥0∞) =
   WithTop.coe_sInf
 #align ennreal.coe_Inf ENNReal.coe_sInf
 
-theorem coe_iSup {ι : Sort _} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
+theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
     (↑(iSup f) : ℝ≥0∞) = ⨆ a, ↑(f a) :=
   WithTop.coe_iSup _ hf
 #align ennreal.coe_supr ENNReal.coe_iSup
 
 @[norm_cast]
-theorem coe_iInf {ι : Sort _} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
+theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
   WithTop.coe_iInf f
 #align ennreal.coe_infi ENNReal.coe_iInf
 
@@ -973,6 +976,11 @@ theorem coe_mem_upperBounds {s : Set ℝ≥0} :
     ↑r ∈ upperBounds (some '' s) ↔ r ∈ upperBounds s := by
   simp (config := { contextual := true }) [upperBounds, ball_image_iff, -mem_image, *]
 #align ennreal.coe_mem_upper_bounds ENNReal.coe_mem_upperBounds
+
+lemma iSup_coe_eq_top : ⨆ i, (f i : ℝ≥0∞) = ⊤ ↔ ¬ BddAbove (range f) := WithTop.iSup_coe_eq_top
+lemma iSup_coe_lt_top : ⨆ i, (f i : ℝ≥0∞) < ⊤ ↔ BddAbove (range f) := WithTop.iSup_coe_lt_top
+lemma iInf_coe_eq_top : ⨅ i, (f i : ℝ≥0∞) = ⊤ ↔ IsEmpty ι := WithTop.iInf_coe_eq_top
+lemma iInf_coe_lt_top : ⨅ i, (f i : ℝ≥0∞) < ⊤ ↔ Nonempty ι := WithTop.iInf_coe_lt_top
 
 end CompleteLattice
 
@@ -2159,7 +2167,7 @@ theorem zero_eq_ofReal {p : ℝ} : 0 = ENNReal.ofReal p ↔ p ≤ 0 :=
   eq_comm.trans ofReal_eq_zero
 #align ennreal.zero_eq_of_real ENNReal.zero_eq_ofReal
 
-alias ofReal_eq_zero ↔ _ ofReal_of_nonpos
+alias ⟨_, ofReal_of_nonpos⟩ := ofReal_eq_zero
 #align ennreal.of_real_of_nonpos ENNReal.ofReal_of_nonpos
 
 theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
@@ -2182,6 +2190,9 @@ theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : 
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.toNNReal_lt_iff_lt_coe ha
 #align ennreal.of_real_lt_iff_lt_to_real ENNReal.ofReal_lt_iff_lt_toReal
 
+theorem ofReal_lt_coe_iff {a : ℝ} {b : ℝ≥0} (ha : 0 ≤ a) : ENNReal.ofReal a < b ↔ a < b :=
+  (ofReal_lt_iff_lt_toReal ha coe_ne_top).trans <| by rw [coe_toReal]
+
 theorem le_ofReal_iff_toReal_le {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞) (hb : 0 ≤ b) :
     a ≤ ENNReal.ofReal b ↔ ENNReal.toReal a ≤ b := by
   lift a to ℝ≥0 using ha
@@ -2199,6 +2210,9 @@ theorem lt_ofReal_iff_toReal_lt {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞) :
   lift a to ℝ≥0 using ha
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.lt_toNNReal_iff_coe_lt
 #align ennreal.lt_of_real_iff_to_real_lt ENNReal.lt_ofReal_iff_toReal_lt
+
+theorem toReal_lt_of_lt_ofReal {b : ℝ} (h : a < ENNReal.ofReal b) : ENNReal.toReal a < b :=
+  (lt_ofReal_iff_toReal_lt h.ne_top).1 h
 
 theorem ofReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     ENNReal.ofReal (p * q) = ENNReal.ofReal p * ENNReal.ofReal q := by
@@ -2259,7 +2273,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 #align ennreal.to_nnreal_pow ENNReal.toNNReal_pow
 
 @[simp]
-theorem toNNReal_prod {ι : Type _} {s : Finset ι} {f : ι → ℝ≥0∞} :
+theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toNNReal = ∏ i in s, (f i).toNNReal :=
   toNNRealHom.map_prod _ _
 #align ennreal.to_nnreal_prod ENNReal.toNNReal_prod
@@ -2283,7 +2297,7 @@ theorem toReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toReal = a.toReal ^ n :=
 #align ennreal.to_real_pow ENNReal.toReal_pow
 
 @[simp]
-theorem toReal_prod {ι : Type _} {s : Finset ι} {f : ι → ℝ≥0∞} :
+theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toReal = ∏ i in s, (f i).toReal :=
   toRealHom.map_prod _ _
 #align ennreal.to_real_prod ENNReal.toReal_prod
@@ -2381,7 +2395,7 @@ end Real
 
 section iInf
 
-variable {ι : Sort _} {f g : ι → ℝ≥0∞}
+variable {ι : Sort*} {f g : ι → ℝ≥0∞}
 
 theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f i).toNNReal := by
   cases isEmpty_or_nonempty ι
@@ -2403,9 +2417,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
   simp_rw [toNNReal_coe]
   by_cases h : BddAbove (range f)
   · rw [← coe_iSup h, toNNReal_coe]
-  · -- porting note: middle lemma now needs `erw` as `ENNReal` does not reduce to `WithTop NNReal`
-    -- https://github.com/leanprover-community/mathlib4/issues/5164
-    erw [NNReal.iSup_of_not_bddAbove h, (WithTop.iSup_coe_eq_top f).mpr h, top_toNNReal]
+  · rw [NNReal.iSup_of_not_bddAbove h, iSup_coe_eq_top.2 h, top_toNNReal]
 #align ennreal.to_nnreal_supr ENNReal.toNNReal_iSup
 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
@@ -2515,12 +2527,12 @@ end iInf
 section iSup
 
 @[simp]
-theorem iSup_eq_zero {ι : Sort _} {f : ι → ℝ≥0∞} : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 :=
+theorem iSup_eq_zero {ι : Sort*} {f : ι → ℝ≥0∞} : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 :=
   iSup_eq_bot
 #align ennreal.supr_eq_zero ENNReal.iSup_eq_zero
 
 @[simp]
-theorem iSup_zero_eq_zero {ι : Sort _} : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
+theorem iSup_zero_eq_zero {ι : Sort*} : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
 #align ennreal.supr_zero_eq_zero ENNReal.iSup_zero_eq_zero
 
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=

@@ -188,8 +188,8 @@ attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.pres
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 def preservesBinaryBiproductOfPreservesBiproduct (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C)
-    [PreservesBiproduct (pairFunction X Y) F] : PreservesBinaryBiproduct X Y F
-    where preserves {b} hb :=
+    [PreservesBiproduct (pairFunction X Y) F] : PreservesBinaryBiproduct X Y F where
+  preserves {b} hb :=
     { isLimit :=
         IsLimit.ofIsoLimit
             ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm

@@ -40,7 +40,7 @@ open Limits Opposite Presieve
 
 section
 
-variable {C : Type _} [Category C] {D : Type _} [Category D] {G : C ⥤ D}
+variable {C : Type*} [Category C] {D : Type*} [Category D] {G : C ⥤ D}
 
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
 

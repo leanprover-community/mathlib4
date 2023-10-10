@@ -31,7 +31,7 @@ bundled homs, but means we don't have to repeat statements for different types o
 -/
 
 
-variable {ι R M σ : Type _}
+variable {ι R M σ : Type*}
 
 open DirectSum BigOperators
 
@@ -137,7 +137,7 @@ lemma decomposeAddEquiv_apply (a : M) :
 
 @[simp]
 lemma decomposeAddEquiv_symm_apply (a : ⨁ i, ℳ i) :
-  (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
+    (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
 
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=

@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
+import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Data.Nat.Order.Basic
 
@@ -63,7 +64,7 @@ open Classical
 
 namespace OrderHom
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 /-- `Part.bind` as a monotone function -/
@@ -91,7 +92,7 @@ def Chain (α : Type u) [Preorder α] :=
 
 namespace Chain
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
@@ -108,6 +109,10 @@ variable (f : α →o β)
 variable (g : β →o γ)
 
 instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
+
+lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
+
+lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
@@ -129,6 +134,7 @@ theorem exists_of_mem_map {b : β} : b ∈ c.map f → ∃ a, a ∈ c ∧ f a = 
   fun ⟨i, h⟩ => ⟨c i, ⟨i, rfl⟩, h.symm⟩
 #align omega_complete_partial_order.chain.exists_of_mem_map OmegaCompletePartialOrder.Chain.exists_of_mem_map
 
+@[simp]
 theorem mem_map_iff {b : β} : b ∈ c.map f ↔ ∃ a, a ∈ c ∧ f a = b :=
   ⟨exists_of_mem_map _, fun h => by
     rcases h with ⟨w, h, h'⟩
@@ -175,7 +181,7 @@ call `ωSup`). In this sense, it is strictly weaker than join complete
 semi-lattices as only ω-sized totally ordered sets have a supremum.
 
 See the definition on page 114 of [gunter1992]. -/
-class OmegaCompletePartialOrder (α : Type _) extends PartialOrder α where
+class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
   /-- The supremum of an increasing sequence -/
   ωSup : Chain α → α
   /-- `ωSup` is an upper bound of the increasing sequence -/
@@ -186,7 +192,7 @@ class OmegaCompletePartialOrder (α : Type _) extends PartialOrder α where
 
 namespace OmegaCompletePartialOrder
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 
 variable [OmegaCompletePartialOrder α]
 
@@ -231,9 +237,28 @@ theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ 
   exact ωSup_le _ _ ‹_›
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
+lemma isLUB_range_ωSup (c : Chain α) : IsLUB (Set.range c) (ωSup c) := by
+  constructor
+  · simp only [upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff',
+      Set.mem_setOf_eq]
+    exact fun a ↦ le_ωSup c a
+  · simp only [lowerBounds, upperBounds, Set.mem_range, forall_exists_index,
+      forall_apply_eq_imp_iff', Set.mem_setOf_eq]
+    exact fun ⦃a⦄ a_1 ↦ ωSup_le c a a_1
+
+lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a = ωSup c := by
+  rw [le_antisymm_iff]
+  simp only [IsLUB, IsLeast, upperBounds, lowerBounds, Set.mem_range, forall_exists_index,
+    forall_apply_eq_imp_iff', Set.mem_setOf_eq] at h
+  constructor
+  · apply h.2
+    exact fun a ↦ le_ωSup c a
+  · rw [ωSup_le_iff]
+    apply h.1
+
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
-def subtype {α : Type _} [OmegaCompletePartialOrder α] (p : α → Prop)
+def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
     (fun c => ⟨ωSup _, hp (c.map (OrderHom.Subtype.val p)) fun _ ⟨n, q⟩ => q.symm ▸ (c n).2⟩)
@@ -261,6 +286,18 @@ def Continuous (f : α →o β) : Prop :=
 def Continuous' (f : α → β) : Prop :=
   ∃ hf : Monotone f, Continuous ⟨f, hf⟩
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
+
+lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinuous f) :
+    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
+  simp only [map_coe, OrderHom.coe_mk]
+  rw [(Set.range_comp f ↑c)]
+  exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c)) (isLUB_range_ωSup c)
+
+lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
+  constructor
+  intro c
+  rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
+  simp only [OrderHom.coe_mk]
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
@@ -312,7 +349,7 @@ end OmegaCompletePartialOrder
 
 namespace Part
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 
 open OmegaCompletePartialOrder
 
@@ -400,7 +437,7 @@ end Part
 
 namespace Pi
 
-variable {α : Type _} {β : α → Type _} {γ : Type _}
+variable {α : Type*} {β : α → Type*} {γ : Type*}
 
 open OmegaCompletePartialOrder OmegaCompletePartialOrder.Chain
 
@@ -437,7 +474,7 @@ namespace Prod
 
 open OmegaCompletePartialOrder
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 variable [OmegaCompletePartialOrder α]
 variable [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ]
@@ -489,7 +526,7 @@ theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f)
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
 #align complete_lattice.Sup_continuous CompleteLattice.sSup_continuous
 
-theorem iSup_continuous {ι : Sort _} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
+theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
   sSup_continuous _ <| Set.forall_range_iff.2 h
 #align complete_lattice.supr_continuous CompleteLattice.iSup_continuous
@@ -524,7 +561,7 @@ end CompleteLattice
 
 namespace CompleteLattice
 
-variable {α β : Type _} [OmegaCompletePartialOrder α] [CompleteLinearOrder β]
+variable {α β : Type*} [OmegaCompletePartialOrder α] [CompleteLinearOrder β]
 
 theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊓ g) := by
@@ -544,7 +581,7 @@ end CompleteLattice
 
 namespace OmegaCompletePartialOrder
 
-variable {α : Type u} {α' : Type _} {β : Type v} {β' : Type _} {γ : Type _} {φ : Type _}
+variable {α : Type u} {α' : Type*} {β : Type v} {β' : Type*} {γ : Type*} {φ : Type*}
 
 variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
 variable [OmegaCompletePartialOrder γ] [OmegaCompletePartialOrder φ]
@@ -842,7 +879,7 @@ theorem ωSup_apply_ωSup (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) :
 
 /-- A family of continuous functions yields a continuous family of functions. -/
 @[simps]
-def flip {α : Type _} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
+def flip {α : Type*} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
   toFun x y := f y x
   monotone' x y h a := (f a).monotone h
   cont := by intro _; ext x; change f _ _ = _; rw [(f _).continuous]; rfl

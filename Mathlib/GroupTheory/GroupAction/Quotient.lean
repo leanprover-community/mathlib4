@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
+import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
@@ -48,7 +49,7 @@ class QuotientAction : Prop where
 #align mul_action.quotient_action MulAction.QuotientAction
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
-class _root_.AddAction.QuotientAction {α : Type _} (β : Type _) [AddGroup α] [AddMonoid β]
+class _root_.AddAction.QuotientAction {α : Type*} (β : Type _) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
     This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
@@ -64,7 +65,7 @@ instance left_quotientAction : QuotientAction α H :=
 #align add_action.left_quotient_action AddAction.left_quotientAction
 
 @[to_additive]
-instance right_quotientAction : QuotientAction (opposite (normalizer H)) H :=
+instance right_quotientAction : QuotientAction (normalizer H).op H :=
   ⟨fun b c _ _ => by
     rwa [smul_def, smul_def, smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, ← mul_assoc,
       mem_normalizer_iff'.mp b.prop, mul_assoc, mul_inv_cancel_left]⟩
@@ -129,8 +130,8 @@ end QuotientAction
 open QuotientGroup
 
 /-- The canonical map to the left cosets. -/
-def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H :=
-  ⟨(↑), Quotient.smul_coe H⟩
+def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H where
+  toFun := (↑); map_smul' := Quotient.smul_coe H
 #align mul_action_hom.to_quotient MulActionHom.toQuotient
 
 @[simp]
@@ -350,9 +351,19 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 
 end MulAction
 
+set_option autoImplicit true in
+theorem ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjClasses.mk g).carrier]
+    [Fintype <| MulAction.stabilizer (ConjAct G) g] : Fintype.card (ConjClasses.mk g).carrier =
+      Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
+  classical
+  rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]
+  rw [←MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
+  simp_rw [ConjAct.orbit_eq_carrier_conjClasses]
+  exact Fintype.card_pos_iff.mpr inferInstance
+
 namespace Subgroup
 
-variable {G : Type _} [Group G] (H : Subgroup G)
+variable {G : Type*} [Group G] (H : Subgroup G)
 
 theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
   apply le_antisymm
@@ -401,3 +412,25 @@ theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G)
 #align subgroup.quotient_center_embedding_apply Subgroup.quotientCenterEmbedding_apply
 
 end Subgroup
+
+section conjClasses
+
+open Fintype
+
+theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
+    Nat.card { p : G × G // Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
+  classical
+  rcases fintypeOrInfinite G; swap
+  · rw [mul_comm, Nat.card_eq_zero_of_infinite, Nat.card_eq_zero_of_infinite, zero_mul]
+  simp only [Nat.card_eq_fintype_card]
+  -- Porting note: Changed `calc` proof into a `rw` proof.
+  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype Commute), card_sigma,
+    sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
+      (fun g ↦ card (MulAction.fixedBy (ConjAct G) G g))
+      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
+    MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
+  congr 1; apply card_congr'; congr; ext;
+  exact (Setoid.comm' _).trans isConj_iff.symm
+#align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
+
+end conjClasses

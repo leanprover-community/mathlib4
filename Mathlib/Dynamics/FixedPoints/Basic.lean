@@ -33,6 +33,8 @@ variable {α : Type u} {β : Type v} {f fa g : α → α} {x y : α} {fb : β �
 
 namespace Function
 
+open Function (Commute)
+
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) :=
   f x = x
@@ -139,7 +141,7 @@ theorem mem_fixedPoints : x ∈ fixedPoints f ↔ IsFixedPt f x :=
   Iff.rfl
 #align function.mem_fixed_points Function.mem_fixedPoints
 
-theorem mem_fixedPoints_iff {α : Type _} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
+theorem mem_fixedPoints_iff {α : Type*} {f : α → α} {x : α} : x ∈ fixedPoints f ↔ f x = x := by
   rfl
 #align function.mem_fixed_points_iff Function.mem_fixedPoints_iff
 

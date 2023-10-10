@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Trim
 
 #align_import measure_theory.measure.ae_measurable from "leanprover-community/mathlib"@"3310acfa9787aa171db6d4cba3945f6f275fe9f2"
 
@@ -16,11 +16,9 @@ We discuss several of its properties that are analogous to properties of measura
 -/
 
 
-open MeasureTheory MeasureTheory.Measure Filter Set Function
+open MeasureTheory MeasureTheory.Measure Filter Set Function Classical ENNReal
 
-open MeasureTheory Filter Classical ENNReal Interval
-
-variable {ι α β γ δ R : Type _} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
+variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ] {f g : α → β} {μ ν : Measure α}
 
 section
@@ -40,6 +38,11 @@ theorem aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   nontriviality α; inhabit α
   exact ⟨fun _ => f default, measurable_const, rfl⟩
 #align ae_measurable_zero_measure aemeasurable_zero_measure
+
+theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
+    @AEMeasurable α α m m0 id μ :=
+  @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
+#align probability_theory.ae_measurable_id'' aemeasurable_id''
 
 namespace AEMeasurable
 
@@ -88,11 +91,8 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     exact measurable_const
   · rw [restrict_piecewise_compl, compl_iInter]
     intro t ht
-    refine'
-      ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ,
-        MeasurableSet.iUnion fun i =>
-          (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl,
-        _⟩
+    refine ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ, MeasurableSet.iUnion fun i ↦
+      (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl, ?_⟩
     ext ⟨x, hx⟩
     simp only [mem_preimage, mem_iUnion, Subtype.coe_mk, Set.restrict, mem_inter_iff,
       mem_compl_iff] at hx ⊢
@@ -344,11 +344,31 @@ theorem aemeasurable_indicator_iff {s} (hs : MeasurableSet s) :
     exact ae_of_ae_restrict_of_ae_restrict_compl _ A B
 #align ae_measurable_indicator_iff aemeasurable_indicator_iff
 
+theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (indicator s f) μ ↔ AEMeasurable f (μ.restrict s) := by
+  rcases hs with ⟨t, ht, hst⟩
+  rw [← aemeasurable_congr (indicator_ae_eq_of_ae_eq_set hst.symm), aemeasurable_indicator_iff ht,
+      restrict_congr_set hst]
+
+/-- A characterization of the a.e.-measurability of the indicator function which takes a constant
+value `b` on a set `A` and `0` elsewhere. -/
+lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β) [NeZero b] :
+    AEMeasurable (s.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet s μ := by
+  constructor <;> intro h
+  · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
+    rw [indicator_const_preimage_eq_union s {0}ᶜ b]
+    simp [NeZero.ne b]
+  · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
+
 @[measurability]
 theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff hs).mpr hfm.restrict
 #align ae_measurable.indicator AEMeasurable.indicator
+
+theorem AEMeasurable.indicator₀ (hfm : AEMeasurable f μ) {s} (hs : NullMeasurableSet s μ) :
+    AEMeasurable (s.indicator f) μ :=
+  (aemeasurable_indicator_iff₀ hs).mpr hfm.restrict
 
 theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf : AEMeasurable f μ)
     {s : Set δ} (hs : MeasurableSet s) : (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=

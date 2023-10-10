@@ -67,7 +67,7 @@ namespace ProbabilityTheory
 
 namespace kernel
 
-variable {α β ι : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 section CompositionProduct
 
@@ -79,7 +79,7 @@ We define a kernel composition-product
 -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {s : Set (β × γ)}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {s : Set (β × γ)}
 
 /-- Auxiliary function for the definition of the composition-product of two kernels.
 For all `a : α`, `compProdFun κ η a` is a countably additive function with value zero on the empty
@@ -93,7 +93,7 @@ noncomputable def compProdFun (κ : kernel α β) (η : kernel (α × β) γ) (a
 theorem compProdFun_empty (κ : kernel α β) (η : kernel (α × β) γ) (a : α) :
     compProdFun κ η a ∅ = 0 := by
   simp only [compProdFun, Set.mem_empty_iff_false, Set.setOf_false, measure_empty,
-    MeasureTheory.lintegral_const, MulZeroClass.zero_mul]
+    MeasureTheory.lintegral_const, zero_mul]
 #align probability_theory.kernel.comp_prod_fun_empty ProbabilityTheory.kernel.compProdFun_empty
 
 theorem compProdFun_iUnion (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel η] (a : α)
@@ -163,8 +163,7 @@ theorem measurable_compProdFun_of_finite (κ : kernel α β) [IsFiniteKernel κ]
       (Function.uncurry fun a b => η (a, b) {c : γ | (b, c) ∈ s}) = fun p =>
         η p {c : γ | (p.2, c) ∈ s} := by
       ext1 p
-      have hp_eq_mk : p = (p.fst, p.snd) := Prod.mk.eta.symm
-      rw [hp_eq_mk, Function.uncurry_apply_pair]
+      rw [Function.uncurry_apply_pair]
     rw [this]
     exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs)
   exact h_meas.lintegral_kernel_prod_right
@@ -180,8 +179,7 @@ theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : ke
       (Function.uncurry fun a b => seq η n (a, b) {c : γ | (b, c) ∈ s}) = fun p =>
         seq η n p {c : γ | (p.2, c) ∈ s} := by
       ext1 p
-      have hp_eq_mk : p = (p.fst, p.snd) := Prod.mk.eta.symm
-      rw [hp_eq_mk, Function.uncurry_apply_pair]
+      rw [Function.uncurry_apply_pair]
     rw [this]
     exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs)
   exact h_meas.lintegral_kernel_prod_right
@@ -258,6 +256,24 @@ theorem le_compProd_apply (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel 
       (kernel.compProd_apply_eq_compProdFun κ η a (measurableSet_toMeasurable _ _)).symm
     _ = (κ ⊗ₖ η) a s := measure_toMeasurable s
 #align probability_theory.kernel.le_comp_prod_apply ProbabilityTheory.kernel.le_compProd_apply
+
+@[simp]
+lemma compProd_zero_left (κ : kernel (α × β) γ) :
+    (0 : kernel α β) ⊗ₖ κ = 0 := by
+  by_cases h : IsSFiniteKernel κ
+  · ext a s hs
+    rw [kernel.compProd_apply _ _ _ hs]
+    simp
+  · rw [kernel.compProd_of_not_isSFiniteKernel_right _ _ h]
+
+@[simp]
+lemma compProd_zero_right (κ : kernel α β) (γ : Type*) [MeasurableSpace γ] :
+    κ ⊗ₖ (0 : kernel (α × β) γ) = 0 := by
+  by_cases h : IsSFiniteKernel κ
+  · ext a s hs
+    rw [kernel.compProd_apply _ _ _ hs]
+    simp
+  · rw [kernel.compProd_of_not_isSFiniteKernel_left _ _ h]
 
 section Ae
 
@@ -356,7 +372,7 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
   have h : ∀ a, ⨆ n, F n a = Function.uncurry f a :=
     SimpleFunc.iSup_eapprox_apply (Function.uncurry f) hf
   simp only [Prod.forall, Function.uncurry_apply_pair] at h
-  simp_rw [← h, Prod.mk.eta]
+  simp_rw [← h]
   have h_mono : Monotone F := fun i j hij b =>
     SimpleFunc.monotone_eapprox (Function.uncurry f) hij _
   rw [lintegral_iSup (fun n => (F n).measurable) h_mono]
@@ -471,7 +487,7 @@ theorem compProd_eq_sum_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : 
 #align probability_theory.kernel.comp_prod_eq_sum_comp_prod ProbabilityTheory.kernel.compProd_eq_sum_compProd
 
 theorem compProd_eq_sum_compProd_left (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ) :
-  κ ⊗ₖ η = kernel.sum fun n => seq κ n ⊗ₖ η := by
+    κ ⊗ₖ η = kernel.sum fun n => seq κ n ⊗ₖ η := by
   by_cases h : IsSFiniteKernel η
   swap
   · simp_rw [compProd_of_not_isSFiniteKernel_right _ _ h]
@@ -548,7 +564,7 @@ section MapComap
 /-! ### map, comap -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
 /-- The pushforward of a kernel along a measurable function.
 We include measurability in the assumptions instead of using junk values
@@ -566,6 +582,10 @@ theorem map_apply (κ : kernel α β) (hf : Measurable f) (a : α) : map κ f hf
 theorem map_apply' (κ : kernel α β) (hf : Measurable f) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     map κ f hf a s = κ a (f ⁻¹' s) := by rw [map_apply, Measure.map_apply hf hs]
 #align probability_theory.kernel.map_apply' ProbabilityTheory.kernel.map_apply'
+
+@[simp]
+lemma map_zero (hf : Measurable f) : kernel.map (0 : kernel α β) f hf = 0 := by
+  ext; rw [kernel.map_apply]; simp
 
 nonrec theorem lintegral_map (κ : kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
     (hg : Measurable g') : ∫⁻ b, g' b ∂map κ f hf a = ∫⁻ a, g' (f a) ∂κ a := by
@@ -615,6 +635,10 @@ theorem comap_apply' (κ : kernel α β) (hg : Measurable g) (c : γ) (s : Set �
   rfl
 #align probability_theory.kernel.comap_apply' ProbabilityTheory.kernel.comap_apply'
 
+@[simp]
+lemma comap_zero (hg : Measurable g) : kernel.comap (0 : kernel α β) g hg = 0 := by
+  ext; rw [kernel.comap_apply]; simp
+
 theorem lintegral_comap (κ : kernel α β) (hg : Measurable g) (c : γ) (g' : β → ℝ≥0∞) :
     ∫⁻ b, g' b ∂comap κ g hg c = ∫⁻ b, g' b ∂κ (g c) :=
   rfl
@@ -652,11 +676,11 @@ open scoped ProbabilityTheory
 section FstSnd
 
 /-- Define a `kernel (γ × α) β` from a `kernel α β` by taking the comap of the projection. -/
-def prodMkLeft (γ : Type _) [MeasurableSpace γ] (κ : kernel α β) : kernel (γ × α) β :=
+def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : kernel α β) : kernel (γ × α) β :=
   comap κ Prod.snd measurable_snd
 #align probability_theory.kernel.prod_mk_left ProbabilityTheory.kernel.prodMkLeft
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
 theorem prodMkLeft_apply (κ : kernel α β) (ca : γ × α) : prodMkLeft γ κ ca = κ ca.snd :=
   rfl
@@ -813,7 +837,7 @@ section Comp
 /-! ### Composition of two kernels -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
 
 /-- Composition of two kernels. -/
 noncomputable def comp (η : kernel β γ) (κ : kernel α β) : kernel α γ where
@@ -859,7 +883,7 @@ instance IsSFiniteKernel.comp (η : kernel β γ) [IsSFiniteKernel η] (κ : ker
 #align probability_theory.kernel.is_s_finite_kernel.comp ProbabilityTheory.kernel.IsSFiniteKernel.comp
 
 /-- Composition of kernels is associative. -/
-theorem comp_assoc {δ : Type _} {mδ : MeasurableSpace δ} (ξ : kernel γ δ) [IsSFiniteKernel ξ]
+theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : kernel γ δ) [IsSFiniteKernel ξ]
     (η : kernel β γ) (κ : kernel α β) : ξ ∘ₖ η ∘ₖ κ = ξ ∘ₖ (η ∘ₖ κ) := by
   refine' ext_fun fun a f hf => _
   simp_rw [lintegral_comp _ _ _ hf, lintegral_comp _ _ _ hf.lintegral_kernel]
@@ -886,7 +910,7 @@ section Prod
 /-! ### Product of two kernels -/
 
 
-variable {γ : Type _} {mγ : MeasurableSpace γ}
+variable {γ : Type*} {mγ : MeasurableSpace γ}
 
 /-- Product of two kernels. This is meaningful only when the kernels are s-finite. -/
 noncomputable def prod (κ : kernel α β) (η : kernel α γ) : kernel α (β × γ) :=

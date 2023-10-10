@@ -17,6 +17,8 @@ See also `Mathlib.CategoryTheory.UnivLE` for the statement
 `UnivLE.{u,v} ↔ EssSurj (uliftFunctor : Type v ⥤ Type max u v)`.
 -/
 
+set_option autoImplicit true
+
 noncomputable section
 
 /--

@@ -126,6 +126,11 @@ theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
   rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
 #align dihedral_group.card DihedralGroup.card
 
+theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
+  cases n
+  · rw [Nat.card_eq_zero_of_infinite]
+  · rw [Nat.card_eq_fintype_card, card]
+
 @[simp]
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
   induction' k with k IH
@@ -203,5 +208,53 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
 #align dihedral_group.exponent DihedralGroup.exponent
+
+/-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
+$n + n + n + n*n$) of commuting elements. -/
+@[simps]
+def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
+    ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
+  let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn.not_two_dvd_nat)
+  have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun a => ZMod.add_self_eq_zero_iff_eq_zero hn
+  { toFun := fun
+      | ⟨⟨sr i, r _⟩, _⟩ => Sum.inl i
+      | ⟨⟨r _, sr j⟩, _⟩ => Sum.inr (Sum.inl j)
+      | ⟨⟨sr i, sr j⟩, _⟩ => Sum.inr (Sum.inr (Sum.inl (i + j)))
+      | ⟨⟨r i, r j⟩, _⟩ => Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩))
+    invFun := fun
+      | .inl i => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
+      | .inr (.inl j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
+      | .inr (.inr (.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
+      | .inr (.inr (.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
+    left_inv := fun
+      | ⟨⟨r i, r j⟩, h⟩ => rfl
+      | ⟨⟨r i, sr j⟩, h⟩ => by
+        simpa [sub_eq_add_neg, neg_eq_iff_add_eq_zero, hu, eq_comm (a := i) (b := 0)] using h.eq
+      | ⟨⟨sr i, r j⟩, h⟩ => by
+        simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hu, eq_comm (a := j) (b := 0)] using h.eq
+      | ⟨⟨sr i, sr j⟩, h⟩ => by
+        replace h := r.inj h
+        rw [←neg_sub, neg_eq_iff_add_eq_zero, hu, sub_eq_zero] at h
+        rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, and_self, ←two_mul]
+        exact u.inv_mul_cancel_left j
+    right_inv := fun
+      | .inl i => rfl
+      | .inr (.inl j) => rfl
+      | .inr (.inr (.inl k)) =>
+        congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) $ two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
+      | .inr (.inr (.inr ⟨i, j⟩)) => rfl }
+
+/-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/
+lemma card_commute_odd (hn : Odd n) :
+    Nat.card { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } = n * (n + 3) := by
+  have hn' : NeZero n := ⟨hn.pos.ne'⟩
+  simp_rw [Nat.card_congr (OddCommuteEquiv hn), Nat.card_sum, Nat.card_prod, Nat.card_zmod]
+  ring
+
+lemma card_conjClasses_odd (hn : Odd n) :
+    Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
+  rw [←Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
+    card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
+
 
 end DihedralGroup

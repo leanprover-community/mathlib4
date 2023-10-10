@@ -30,7 +30,7 @@ Where possible, the results in this file should be first proved in the generalit
 -/
 
 
-variable {σ R : Type _} [CommSemiring R]
+variable {σ R : Type*} [CommSemiring R]
 
 namespace MvPolynomial
 

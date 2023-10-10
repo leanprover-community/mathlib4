@@ -44,7 +44,7 @@ periodic group, aperiodic group, torsion subgroup, torsion abelian group
 -/
 
 
-variable {G H : Type _}
+variable {G H : Type*}
 
 namespace Monoid
 
@@ -157,7 +157,7 @@ end Group
 section Module
 
 -- A (semi/)ring of scalars and a commutative monoid of elements
-variable (R M : Type _) [AddCommMonoid M]
+variable (R M : Type*) [AddCommMonoid M]
 
 namespace AddMonoid
 
@@ -409,7 +409,7 @@ theorem IsTorsionFree.subgroup (tG : IsTorsionFree G) (H : Subgroup G) : IsTorsi
 /-- Direct products of torsion free groups are torsion free. -/
 @[to_additive AddMonoid.IsTorsionFree.prod
       "Direct products of additive torsion free groups are torsion free."]
-theorem IsTorsionFree.prod {η : Type _} {Gs : η → Type _} [∀ i, Group (Gs i)]
+theorem IsTorsionFree.prod {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
     (tfGs : ∀ i, IsTorsionFree (Gs i)) : IsTorsionFree <| ∀ i, Gs i := fun w hne h =>
   hne <|
     funext fun i => Classical.not_not.mp <| mt (tfGs i (w i)) <| Classical.not_not.mpr <| h.apply i

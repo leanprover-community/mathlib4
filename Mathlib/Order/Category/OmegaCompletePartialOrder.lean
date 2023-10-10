@@ -51,16 +51,16 @@ instance : BundledHom @ContinuousHom where
 deriving instance LargeCategory for ωCPO
 instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
 
-instance : CoeSort ωCPO (Type _) :=
+instance : CoeSort ωCPO (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
-def of (α : Type _) [OmegaCompletePartialOrder α] : ωCPO :=
+def of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO :=
   Bundled.of α
 #align ωCPO.of ωCPO.of
 
 @[simp]
-theorem coe_of (α : Type _) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
 #align ωCPO.coe_of ωCPO.coe_of
 
@@ -100,7 +100,7 @@ instance (J : Type v) (f : J → ωCPO.{v}) : HasProduct f :=
 
 end HasProducts
 
-instance omegaCompletePartialOrderEqualizer {α β : Type _} [OmegaCompletePartialOrder α]
+instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f g : α →𝒄 β) :
     OmegaCompletePartialOrder { a : α // f a = g a } :=
   OmegaCompletePartialOrder.subtype _ fun c hc => by
@@ -113,7 +113,7 @@ instance omegaCompletePartialOrderEqualizer {α β : Type _} [OmegaCompleteParti
 namespace HasEqualizers
 
 /-- The equalizer inclusion function as a `ContinuousHom`. -/
-def equalizerι {α β : Type _} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
+def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
     (f g : α →𝒄 β) : { a : α // f a = g a } →𝒄 α :=
   .mk (OrderHom.Subtype.val _) fun _ => rfl
 #align ωCPO.has_equalizers.equalizer_ι ωCPO.HasEqualizers.equalizerι

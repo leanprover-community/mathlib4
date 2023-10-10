@@ -91,7 +91,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
     simp_rw [List.mem_bind, List.mem_map,
       List.Nat.mem_antidiagonal, Fin.cons_eq_cons, exists_eq_right_right, ih,
       @eq_comm _ _ (Prod.snd _), and_comm (a := Prod.snd _ = _),
-      ←Prod.mk.inj_iff (a₁ := Prod.fst _), Prod.mk.eta, exists_eq_right]
+      ←Prod.mk.inj_iff (a₁ := Prod.fst _), exists_eq_right]
 #align list.nat.mem_antidiagonal_tuple List.Nat.mem_antidiagonalTuple
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
@@ -132,7 +132,7 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
-    tsub_self, List.bind_append, List.bind_singleton, List.map_bind]
+    tsub_self, List.append_bind, List.bind_singleton, List.map_bind]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
   simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]

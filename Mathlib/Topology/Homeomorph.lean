@@ -32,11 +32,11 @@ open Set Filter
 
 open Topology
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Homeomorphism between `α` and `β`, also called topological isomorphism -/
-structure Homeomorph (α : Type _) (β : Type _) [TopologicalSpace α] [TopologicalSpace β]
+structure Homeomorph (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     extends α ≃ β where
   /-- The forward map of a homeomorphism is a continuous function. -/
   continuous_toFun : Continuous toFun := by continuity
@@ -103,7 +103,7 @@ theorem ext {h h' : α ≃ₜ β} (H : ∀ x, h x = h' x) : h = h' :=
 
 /-- Identity map as a homeomorphism. -/
 @[simps! (config := { fullyApplied := false }) apply]
-protected def refl (α : Type _) [TopologicalSpace α] : α ≃ₜ α where
+protected def refl (α : Type*) [TopologicalSpace α] : α ≃ₜ α where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
   toEquiv := Equiv.refl α
@@ -258,10 +258,12 @@ protected theorem secondCountableTopology [TopologicalSpace.SecondCountableTopol
   h.inducing.secondCountableTopology
 #align homeomorph.second_countable_topology Homeomorph.secondCountableTopology
 
+@[simp]
 theorem isCompact_image {s : Set α} (h : α ≃ₜ β) : IsCompact (h '' s) ↔ IsCompact s :=
   h.embedding.isCompact_iff_isCompact_image.symm
 #align homeomorph.is_compact_image Homeomorph.isCompact_image
 
+@[simp]
 theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹' s) ↔ IsCompact s := by
   rw [← image_symm]; exact h.symm.isCompact_image
 #align homeomorph.is_compact_preimage Homeomorph.isCompact_preimage
@@ -360,7 +362,10 @@ protected theorem closedEmbedding (h : α ≃ₜ β) : ClosedEmbedding h :=
 
 protected theorem normalSpace [NormalSpace α] (h : α ≃ₜ β) : NormalSpace β :=
   h.symm.closedEmbedding.normalSpace
-#align homeomorph.normal_space Homeomorph.normalSpace
+
+protected theorem t4Space [T4Space α] (h : α ≃ₜ β) : T4Space β :=
+  h.symm.closedEmbedding.t4Space
+#align homeomorph.normal_space Homeomorph.t4Space
 
 theorem preimage_closure (h : α ≃ₜ β) (s : Set β) : h ⁻¹' closure s = closure (h ⁻¹' s) :=
   h.isOpenMap.preimage_closure_eq_closure_preimage h.continuous _
@@ -566,21 +571,41 @@ def homeomorphOfUnique [Unique α] [Unique β] : α ≃ₜ β :=
 
 end
 
-/-- If each `β₁ i` is homeomorphic to `β₂ i`, then `Π i, β₁ i` is homeomorphic to `Π i, β₂ i`. -/
+/-- `Equiv.piCongrLeft` as a homeomorphism: this is the natural homeomorphism
+`Π i, β (e i) ≃ₜ Π j, β j` obtained from a bijection `ι ≃ ι'`. -/
 @[simps! apply toEquiv]
-def piCongrRight {ι : Type _} {β₁ β₂ : ι → Type _} [∀ i, TopologicalSpace (β₁ i)]
+def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, TopologicalSpace (β j)]
+    (e : ι ≃ ι') : (∀ i, β (e i)) ≃ₜ ∀ j, β j where
+  continuous_toFun := continuous_pi <| e.forall_congr_left.mp <| fun i ↦ by
+    simpa only [Equiv.toFun_as_coe_apply, Equiv.piCongrLeft_apply_apply] using continuous_apply i
+  continuous_invFun := Pi.continuous_precomp' e
+  toEquiv := Equiv.piCongrLeft _ e
+
+/-- `Equiv.piCongrRight` as a homeomorphism: this is the natural homeomorphism
+`Π i, β₁ i ≃ₜ Π j, β₂ i` obtained from homeomorphisms `β₁ i ≃ₜ β₂ i` for each `i`. -/
+@[simps! apply toEquiv]
+def piCongrRight {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSpace (β₁ i)]
     [∀ i, TopologicalSpace (β₂ i)] (F : ∀ i, β₁ i ≃ₜ β₂ i) : (∀ i, β₁ i) ≃ₜ ∀ i, β₂ i where
-  continuous_toFun := continuous_pi fun i => (F i).continuous.comp <| continuous_apply i
-  continuous_invFun := continuous_pi fun i => (F i).symm.continuous.comp <| continuous_apply i
+  continuous_toFun := Pi.continuous_postcomp' fun i ↦ (F i).continuous
+  continuous_invFun := Pi.continuous_postcomp' fun i ↦ (F i).symm.continuous
   toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
 #align homeomorph.Pi_congr_right Homeomorph.piCongrRight
 
 @[simp]
-theorem piCongrRight_symm {ι : Type _} {β₁ β₂ : ι → Type _} [∀ i, TopologicalSpace (β₁ i)]
+theorem piCongrRight_symm {ι : Type*} {β₁ β₂ : ι → Type*} [∀ i, TopologicalSpace (β₁ i)]
     [∀ i, TopologicalSpace (β₂ i)] (F : ∀ i, β₁ i ≃ₜ β₂ i) :
     (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
   rfl
 #align homeomorph.Pi_congr_right_symm Homeomorph.piCongrRight_symm
+
+/-- `Equiv.piCongr` as a homeomorphism: this is the natural homeomorphism
+`Π i₁, β₁ i ≃ₜ Π i₂, β₂ i₂` obtained from a bijection `ι₁ ≃ ι₂` and homeomorphisms
+`β₁ i₁ ≃ₜ β₂ (e i₁)` for each `i₁ : ι₁`. -/
+@[simps! apply toEquiv]
+def piCongr {ι₁ ι₂ : Type*} {β₁ : ι₁ → Type*} {β₂ : ι₂ → Type*}
+    [∀ i₁, TopologicalSpace (β₁ i₁)] [∀ i₂, TopologicalSpace (β₂ i₂)]
+    (e : ι₁ ≃ ι₂) (F : ∀ i₁, β₁ i₁ ≃ₜ β₂ (e i₁)) : (∀ i₁, β₁ i₁) ≃ₜ ∀ i₂, β₂ i₂ :=
+  (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
 -- porting note: TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift α` is homeomorphic to `α`. -/
@@ -606,7 +631,7 @@ def prodSumDistrib : α × Sum β γ ≃ₜ Sum (α × β) (α × γ) :=
   (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
 #align homeomorph.prod_sum_distrib Homeomorph.prodSumDistrib
 
-variable {ι : Type _} {σ : ι → Type _} [∀ i, TopologicalSpace (σ i)]
+variable {ι : Type*} {σ : ι → Type*} [∀ i, TopologicalSpace (σ i)]
 
 /-- `(Σ i, σ i) × β` is homeomorphic to `Σ i, (σ i × β)`. -/
 def sigmaProdDistrib : (Σi, σ i) × β ≃ₜ Σi, σ i × β :=
@@ -620,7 +645,7 @@ end Distrib
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
-def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α where
+def funUnique (ι α : Type*) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α where
   toEquiv := Equiv.funUnique ι α
   continuous_toFun := continuous_apply _
   continuous_invFun := continuous_pi fun _ => continuous_id
@@ -652,7 +677,7 @@ def image (e : α ≃ₜ β) (s : Set α) : s ≃ₜ e '' s where
 
 /-- `Set.univ α` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
-def Set.univ (α : Type _) [TopologicalSpace α] : (univ : Set α) ≃ₜ α where
+def Set.univ (α : Type*) [TopologicalSpace α] : (univ : Set α) ≃ₜ α where
   toEquiv := Equiv.Set.univ α
   continuous_toFun := continuous_subtype_val
   continuous_invFun := continuous_id.subtype_mk _
@@ -670,12 +695,12 @@ def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ₜ s × t where
 
 section
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- The topological space `Π i, β i` can be split as a product by separating the indices in ι
   depending on whether they satisfy a predicate p or not.-/
 @[simps!]
-def piEquivPiSubtypeProd (p : ι → Prop) (β : ι → Type _) [∀ i, TopologicalSpace (β i)]
+def piEquivPiSubtypeProd (p : ι → Prop) (β : ι → Type*) [∀ i, TopologicalSpace (β i)]
     [DecidablePred p] : (∀ i, β i) ≃ₜ (∀ i : { x // p x }, β i) × ∀ i : { x // ¬p x }, β i
     where
   toEquiv := Equiv.piEquivPiSubtypeProd p β
@@ -692,7 +717,7 @@ variable [DecidableEq ι] (i : ι)
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
   the product of all the remaining spaces. -/
 @[simps!]
-def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
+def piSplitAt (β : ι → Type*) [∀ j, TopologicalSpace (β j)] :
     (∀ j, β j) ≃ₜ β i × ∀ j : { j // j ≠ i }, β j
     where
   toEquiv := Equiv.piSplitAt i β
@@ -718,14 +743,38 @@ end
 
 end Homeomorph
 
+namespace Equiv
+variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+
+/-- An equiv between topological spaces respecting openness is a homeomorphism. -/
+@[simps toEquiv]
+def toHomeomorph (e : α ≃ β) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : α ≃ₜ β where
+  toEquiv := e
+  continuous_toFun := continuous_def.2 λ s ↦ (he _).2
+  continuous_invFun := continuous_def.2 λ s ↦ by convert (he _).1; simp
+
+@[simp] lemma coe_toHomeomorph (e : α ≃ β) (he) : ⇑(e.toHomeomorph he) = e := rfl
+lemma toHomeomorph_apply (e : α ≃ β) (he) (a : α) : e.toHomeomorph he a = e a := rfl
+
+@[simp] lemma toHomeomorph_refl :
+  (Equiv.refl α).toHomeomorph (λ _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+
+@[simp] lemma toHomeomorph_symm (e : α ≃ β) (he) :
+  (e.toHomeomorph he).symm = e.symm.toHomeomorph λ s ↦ by convert (he _).symm; simp := rfl
+
+lemma toHomeomorph_trans (e : α ≃ β) (f : β ≃ γ) (he hf) :
+    (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
+    (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
+
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
 @[simps toEquiv] -- porting note: TODO: was `@[simps]`
-def Equiv.toHomeomorphOfInducing [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ β)
-    (hf : Inducing f) : α ≃ₜ β :=
+def toHomeomorphOfInducing (f : α ≃ β) (hf : Inducing f) : α ≃ₜ β :=
   { f with
     continuous_toFun := hf.continuous
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
 #align equiv.to_homeomorph_of_inducing Equiv.toHomeomorphOfInducing
+
+end Equiv
 
 namespace Continuous
 
