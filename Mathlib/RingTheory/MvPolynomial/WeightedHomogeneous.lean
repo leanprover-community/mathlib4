@@ -508,8 +508,8 @@ theorem nonTrivialWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠
   rw [smul_eq_zero]
   intro hnx
   cases' hnx with hn hx
-  . exact hn
-  . exact absurd hx (hw x)
+  · exact hn
+  · exact absurd hx (hw x)
 #align mv_polynomial.non_trivial_weight_of MvPolynomial.nonTrivialWeight_of
 
 end CanonicallyOrderedAddCommMonoid
