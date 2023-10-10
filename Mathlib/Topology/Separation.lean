@@ -571,16 +571,17 @@ theorem t1Space_antitone : Antitone (@T1Space X) := fun a _ h _ =>
 #align t1_space_antitone t1Space_antitone
 
 theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
-    {s : Set X} {x y : X} {z : Y} (hne : y ≠ x) :
-    ContinuousWithinAt (Function.update f x z) s y ↔ ContinuousWithinAt f s y :=
+    {s : Set X} {x x' : X} {y : Y} (hne : x' ≠ x) :
+    ContinuousWithinAt (Function.update f x y) s x' ↔ ContinuousWithinAt f s x' :=
   EventuallyEq.congr_continuousWithinAt
     (mem_nhdsWithin_of_mem_nhds <| mem_of_superset (isOpen_ne.mem_nhds hne) fun _y' hy' =>
       Function.update_noteq hy' _ _)
     (Function.update_noteq hne _ _)
 #align continuous_within_at_update_of_ne continuousWithinAt_update_of_ne
 
-theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
-    {x y : X} {z : Y} (hne : y ≠ x) : ContinuousAt (Function.update f x z) y ↔ ContinuousAt f y :=
+theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
+    {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
+    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' :=
   by simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
 #align continuous_at_update_of_ne continuousAt_update_of_ne
 
