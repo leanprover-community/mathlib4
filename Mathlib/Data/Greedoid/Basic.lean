@@ -1544,6 +1544,48 @@ theorem rankFeasible_TFAE :
   }
   tfae_finish
 
+theorem basisRank_union_add_rank_inter_le_basisRank_add_basisRank (s t : Finset α) :
+    G.basisRank (s ∪ t) + G.rank (s ∩ t) ≤ G.basisRank s + G.basisRank t := by
+  let ⟨b₁, hb₁⟩ : Nonempty (G.bases (s ∩ t)) := G.bases_nonempty
+  let ⟨u, hu₁, hu₂⟩ := G.exists_feasible_satisfying_basisRank (s ∪ t)
+  let ⟨b₀, hb₀⟩ : Nonempty (G.bases (s ∪ t ∪ u)) := G.bases_nonempty
+  have h₀ := G.basis_card_le_of_subset_bases hb₁ hb₀ (fun _ h => by
+    simp only [union_assoc, mem_inter, mem_union] at *; exact Or.inl h.1)
+  let ⟨b₂, hb₂, hb₃, hb₄, hb₅⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
+    (G.basis_mem_feasible hb₀) (G.basis_mem_feasible hb₁) h₀ le_rfl h₀
+  apply le_trans _ (Nat.add_le_add
+    (inter_comm s b₂ ▸ G.feasibleSet_inter_card_le_basisRank hb₂)
+    (inter_comm t b₂ ▸ G.feasibleSet_inter_card_le_basisRank hb₂))
+  rw [← card_union_add_card_inter, ← inter_distrib_left, ← Finset.inter_inter_distrib_left]
+  have h₁ : b₁.card ≤ (b₂ ∩ (s ∩ t)).card := by -- Possible typo in the proof of the book
+    apply card_le_of_subset
+    intro _ h'
+    rw [mem_inter]
+    exact And.intro (hb₃ h') (G.basis_subset hb₁ h')
+  apply le_trans _ (Nat.add_le_add_left h₁ _)
+  have h₂ (x y : Finset α) : x.card = (x \ y).card + (x ∩ y).card := by
+    rw [← card_disjoint_union (disjoint_sdiff_inter _ _), sdiff_union_inter]
+  have h₃ {x y : Finset α} : (x ∩ y).card = x.card - (x \ y).card := by
+    simp only [h₂ x y, add_tsub_cancel_left]
+  have h₄ {x y : Finset α} : (x \ y).card = x.card - (x ∩ y).card := by
+    simp only [h₂ x y, add_tsub_cancel_right]
+  have h₅ {x y z : Finset α} (h : x ⊆ z) : (x \ y).card ≤ (z \ y).card := by
+    apply Finset.card_le_of_subset
+    intro _ h'
+    rw [mem_sdiff] at *
+    exact ⟨h h'.1, h'.2⟩
+  rw [add_comm _ b₁.card, h₃, ← Nat.add_sub_assoc (card_le_of_subset (sdiff_subset _ _))]
+  simp only [G.rank_eq_basis_card hb₁, add_comm (G.basisRank _),
+    Nat.add_sub_assoc (card_le_of_subset (sdiff_subset b₂ (s ∪ t))), add_le_add_iff_left]
+  sorry
+
+theorem rankFeasibleFamily_submodular
+  (s : Finset α) (hs : G.rankFeasible s) (t : Finset α) (ht : G.rankFeasible t) :
+    G.rank (s ∪ t) + G.rank (s ∩ t) ≤ G.rank s + G.rank t := by
+  rw [← hs, ← ht]
+  apply le_trans _ (G.basisRank_union_add_rank_inter_le_basisRank_add_basisRank s t)
+  simp only [add_le_add_iff_right, rank_le_basisRank]
+
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
   accessible {s} h₁ h₂ := by
