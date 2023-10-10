@@ -226,6 +226,11 @@ variable (K L)
 noncomputable def truncGEπ (n : ℤ) : K ⟶ K.truncGE n where
   f i := K.truncGEπf n i
 
+lemma isIso_truncGEπ_f (n q : ℤ) (hq : n < q) : IsIso ((K.truncGEπ n).f q) := by
+  dsimp
+  rw [K.truncGEπf_eq_truncGEXIso_inv n q hq]
+  infer_instance
+
 variable {K L}
 
 @[reassoc (attr := simp)]

@@ -245,6 +245,7 @@ import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
+import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.Algebra.Homology.Homotopy
@@ -1087,6 +1088,7 @@ import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
+import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers

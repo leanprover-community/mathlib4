@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Preadditive.Injective
 
 namespace CategoryTheory
 
@@ -163,6 +164,22 @@ lemma shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
   epi_g := s.epi_g
 
 end Splitting
+
+namespace ShortExact
+
+noncomputable def splittingOfInjective
+    (S : ShortComplex C) (hS : S.ShortExact) [Injective S.X₁] [Balanced C] :
+    S.Splitting :=
+  have := hS.mono_f
+  Splitting.ofExactOfRetraction S hS.exact (Injective.factorThru (𝟙 S.X₁) S.f) (by simp) hS.epi_g
+
+noncomputable def splittingOfProjective
+    (S : ShortComplex C) (hS : S.ShortExact) [Projective S.X₃] [Balanced C] :
+    S.Splitting :=
+  have := hS.epi_g
+  Splitting.ofExactOfSection S hS.exact (Projective.factorThru (𝟙 S.X₃) S.g) (by simp) hS.mono_f
+
+end ShortExact
 
 end Preadditive
 

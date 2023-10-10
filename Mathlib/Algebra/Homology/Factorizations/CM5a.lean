@@ -2,12 +2,22 @@ import Mathlib.Algebra.Homology.Factorizations.CM5b
 import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
 import Mathlib.CategoryTheory.Abelian.YonedaExt
+import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 
 open CategoryTheory Category Limits Preadditive ZeroObject
 
 namespace CategoryTheory
 
 variable {C : Type*} [Category C]
+
+namespace Injective
+
+lemma direct_factor {X I : C} {i : X ⟶ I} {p : I ⟶ X} (fac : i ≫ p = 𝟙 X) [Injective I] :
+    Injective X where
+  factors g f _ := ⟨Injective.factorThru (g ≫ i) f ≫ p,
+    by rw [comp_factorThru_assoc, assoc, fac, comp_id]⟩
+
+end Injective
 
 namespace Functor
 
@@ -1086,29 +1096,6 @@ noncomputable def inverseSystem : ℕᵒᵖ ⥤ CofFibFactorization f :=
 noncomputable def inverseSystemI : ℕᵒᵖ ⥤ CochainComplex C ℤ :=
   inverseSystem f n₀ ⋙ CofFibFactorization.forget f ⋙ HomFactorization.forget f
 
-instance : HasLimit (inverseSystemI f n₀) := sorry
-
-noncomputable def I := limit (inverseSystemI f n₀)
-
-noncomputable def cone : Cone (inverseSystemI f n₀) where
-  pt := K
-  π :=
-    { app := fun n => ((inverseSystem f n₀).obj n).1.i
-      naturality := fun i j φ => by
-        dsimp
-        rw [id_comp]
-        exact ((inverseSystem f n₀).map φ).commi.symm }
-
-noncomputable def i : K ⟶ I f n₀ := limit.lift (inverseSystemI f n₀) (cone f n₀)
-
-noncomputable def p : I f n₀ ⟶ L :=
-  limit.π _ (Opposite.op 0) ≫ ((inverseSystem f n₀).obj ((Opposite.op 0))).1.p
-
-@[reassoc (attr := simp)]
-lemma fac : i f n₀ ≫ p f n₀ = f := by simp [i, p, cone]
-
-instance : Mono (i f n₀) := mono_of_mono_fac (fac f n₀)
-
 lemma isIso_inverseSystemI_map_succ (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) :
     IsIso (((inverseSystemI f n₀).map ((homOfLE (show n ≤ n + 1 by linarith)).op)).f q) := by
   dsimp only [inverseSystemI, inverseSystem]
@@ -1146,6 +1133,45 @@ lemma isIso_inverseSystemI_map {n n' : ℕ} (φ : Opposite.op n' ⟶ Opposite.op
     (q : ℤ) (hq : q ≤ n₀ + n) : IsIso (((inverseSystemI f n₀).map φ).f q) :=
   isIso_inverseSystemI_map' f n₀ n n' (leOfHom φ.unop) q hq
 
+lemma isEventuallyConstantTo_inverseSystemI_comp_eval (q : ℤ) (n : ℕ) (hq : q ≤ n₀ + n) :
+    (inverseSystemI f n₀ ⋙ HomologicalComplex.eval _ _ q).IsEventuallyConstantTo (Opposite.op n) := by
+  rintro ⟨n'⟩ φ
+  exact isIso_inverseSystemI_map f n₀ φ q hq
+
+instance (q : ℤ) :
+    (inverseSystemI f n₀ ⋙ HomologicalComplex.eval _ _ q).IsEventuallyConstant where
+  isEventuallyConstantTo :=
+    ⟨Opposite.op (q - n₀).toNat, isEventuallyConstantTo_inverseSystemI_comp_eval _ _ _ _
+      (by linarith [Int.self_le_toNat (q - n₀)])⟩
+
+example : HasLimit (inverseSystemI f n₀) := inferInstance
+
+noncomputable def I := limit (inverseSystemI f n₀)
+
+lemma isIso_π_f (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) :
+    IsIso ((limit.π (inverseSystemI f n₀) (Opposite.op n)).f q) := by
+  apply isIso_limit_π_of_isEventuallyConstantTo
+  exact isEventuallyConstantTo_inverseSystemI_comp_eval f n₀ q n hq
+
+noncomputable def cone : Cone (inverseSystemI f n₀) where
+  pt := K
+  π :=
+    { app := fun n => ((inverseSystem f n₀).obj n).1.i
+      naturality := fun i j φ => by
+        dsimp
+        rw [id_comp]
+        exact ((inverseSystem f n₀).map φ).commi.symm }
+
+noncomputable def i : K ⟶ I f n₀ := limit.lift (inverseSystemI f n₀) (cone f n₀)
+
+noncomputable def p : I f n₀ ⟶ L :=
+  limit.π _ (Opposite.op 0) ≫ ((inverseSystem f n₀).obj ((Opposite.op 0))).1.p
+
+@[reassoc (attr := simp)]
+lemma fac : i f n₀ ≫ p f n₀ = f := by simp [i, p, cone]
+
+instance : Mono (i f n₀) := mono_of_mono_fac (fac f n₀)
+
 noncomputable def p' (n : ℕ) : (inverseSystemI f n₀).obj (Opposite.op n) ⟶ L :=
   ((inverseSystem f n₀).obj (Opposite.op n)).1.p
 
@@ -1161,10 +1187,6 @@ lemma π_comp_p' (n : ℕ) : limit.π _ (Opposite.op n) ≫ p' f n₀ n = p f n�
   rw [← limit.w (inverseSystemI f n₀) (homOfLE (show 0 ≤ n by linarith)).op, assoc,
     (w_p' f n₀ 0 n _).symm]
   rfl
-
-lemma isIso_π_f (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) :
-    IsIso ((limit.π (inverseSystemI f n₀) (Opposite.op n)).f q) := by
-  sorry
 
 lemma isIso_p_f (q : ℤ) (hq : q ≤ n₀) : IsIso ((p f n₀).f q) := by
   rw [← π_comp_p' f n₀ 0, comp_f, p'_zero, id_f, comp_id]
@@ -1240,5 +1262,83 @@ lemma CM5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := CM5a_cof i₁ n
   refine' ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
     MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩
+
+variable (K)
+
+lemma exists_injective_resolution' (n : ℤ) [K.IsStrictlyGE n] :
+    ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi : Mono i) (_hi' : QuasiIso i)
+      (hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE (n-1) := by
+  have : K.IsStrictlyGE (n - 1 + 1) := by
+    simp only [sub_add_cancel]
+    infer_instance
+  obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := CM5a (0 : K ⟶ 0) (n - 1)
+  have hp₀ : p = 0 := by simp
+  refine' ⟨L, i, hi, hi', fun n => Injective.of_iso _ ((hp n).2), hL⟩
+  exact
+    { hom := kernel.ι _
+      inv := kernel.lift _ (𝟙 _) (by simp [hp₀])
+      hom_inv_id := by rw [← cancel_mono (kernel.ι _), assoc, kernel.lift_ι, comp_id, id_comp]
+      inv_hom_id := by simp }
+
+lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
+    ∃ (L : CochainComplex C ℤ) (i : K ⟶ L) (_hi' : QuasiIso i)
+      (_hL : ∀ (n : ℤ), Injective (L.X n)), L.IsStrictlyGE n := by
+  have : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+  obtain ⟨L, i, _, _, hL, _⟩  := exists_injective_resolution' K n
+  have : L.IsGE n := by
+    have hK : K.IsGE n := inferInstance
+    rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
+    exact DerivedCategory.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
+  have : QuasiIso (L.truncGEπ n) := by
+    rw [quasiIso_iff_mem_qis, L.qis_truncGEπ_iff n]
+    infer_instance
+  have : Injective (L.opcycles n) := by
+    let S : ShortComplex C := ShortComplex.mk (L.d (n-1) n) (L.pOpcycles n) (by simp)
+    have : Epi S.g := by dsimp; infer_instance
+    have : Mono S.f := by
+      let T := L.sc' (n-2) (n-1) n
+      have hT : T.Exact := by
+        rw [← L.exactAt_iff' (n-2) (n-1) n (by simp; linarith) (by simp),
+          ← L.isZero_homology_iff]
+        exact L.isZero_of_isGE n (n-1) (by linarith)
+      apply hT.mono_g
+      apply IsZero.eq_of_src
+      apply L.isZero_of_isStrictlyGE (n-1)
+      linarith
+    have hS : S.ShortExact :=
+      { exact := S.exact_of_g_is_cokernel (L.opcyclesIsCokernel (n-1) n (by simp)) }
+    exact Injective.direct_factor (hS.splittingOfInjective).s_g
+  -- note: this `i ≫ L.truncGEπ n` is a mono in degrees > n, but it may not be in degree n
+  refine' ⟨L.truncGE n, i ≫ L.truncGEπ n, inferInstance, _, inferInstance⟩
+  intro q
+  by_cases q < n
+  · apply Injective.injective_of_isZero
+    apply isZero_truncGEX
+    exact h
+  · simp only [not_lt] at h
+    obtain (hq | rfl) := h.lt_or_eq
+    · exact Injective.of_iso (L.truncGEXIsoX n q hq).symm (hL q)
+    · exact Injective.of_iso (L.truncGEXIsoOpcycles n n rfl).symm inferInstance
+
+section
+
+variable (n : ℤ) [K.IsStrictlyGE n]
+
+noncomputable def injectiveResolution : CochainComplex C ℤ :=
+  (K.exists_injective_resolution n).choose
+
+noncomputable def ιInjectiveResolution : K ⟶ K.injectiveResolution n :=
+  (K.exists_injective_resolution n).choose_spec.choose
+
+instance : QuasiIso (K.ιInjectiveResolution n) :=
+  (K.exists_injective_resolution n).choose_spec.choose_spec.choose
+
+instance (q : ℤ) : Injective ((K.injectiveResolution n).X q) :=
+  (K.exists_injective_resolution n).choose_spec.choose_spec.choose_spec.choose q
+
+instance : (K.injectiveResolution n).IsStrictlyGE n :=
+  (K.exists_injective_resolution n).choose_spec.choose_spec.choose_spec.choose_spec
+
+end
 
 end CochainComplex
