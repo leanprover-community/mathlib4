@@ -28,9 +28,11 @@ but `Finset.antidiagonal` and `Multiset.antidiagonal` will return different obje
 For example, for `s : Multiset ℕ := {0,0,0}`, `Multiset.antidiagonal s` has 8 elements
 but `Finset.antidiagonal s` has only 4.
 
--- def s : Multiset ℕ := {0, 0, 0}
--- #eval (Finset.antidiagonal s).card -- 4
--- #eval Multiset.card (Multiset.antidiagonal s) -- 8
+```lean
+def s : Multiset ℕ := {0, 0, 0}
+#eval (Finset.antidiagonal s).card -- 4
+#eval Multiset.card (Multiset.antidiagonal s) -- 8
+```
 
 This is mostly taken from a mathlib3 file of Bhavik Mehta,
 https://leanprover-community.github.io/mathlib_docs/wiedijk_100_theorems/partition.html
