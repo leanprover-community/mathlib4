@@ -1117,7 +1117,7 @@ lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t
 
 /-- `sUnion` is monotone under taking a superset of each set. -/
 lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
-    ⋃₀ (f '' s) ⊆ ⋃₀ s  :=
+    ⋃₀ (f '' s) ⊆ ⋃₀ s :=
   -- let t ∈ f '' s be arbitrary; then t = f u for some u : Set α
   fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (Eq.trans_subset hut.symm (hf u)) hxt⟩
 
