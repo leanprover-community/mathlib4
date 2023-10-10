@@ -592,6 +592,11 @@ protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSup
 
 variable [BorelSpace G] [FirstCountableTopology G] [TopologicalSpace P] [FirstCountableTopology P]
 
+theorem mem_nhdsWithin_prod_iff {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    {a : α} {b : β} {s : Set (α × β)} {ta : Set α} {tb : Set β} :
+    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s :=
+  by rw [nhdsWithin_prod_eq, mem_prod_iff]
+
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
@@ -609,8 +614,39 @@ theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set
     closure_minimal (support_subset_iff'.2 fun z hz => hgs _ _ hp hz) h'k
   /- We find a small neighborhood of `{q₀.1} × k` on which the function is uniformly bounded.
       This follows from the continuity at all points of the compact set `k`. -/
-  obtain ⟨w, C, w_open, q₀w, hw⟩ :
-    ∃ w C, IsOpen w ∧ q₀.1 ∈ w ∧ ∀ p x, p ∈ w ∩ s → ‖g p x‖ ≤ C := by
+  have ε : ℝ := sorry
+  have εpos : 0 < ε := sorry
+  have : ∃ wP wG, IsOpen wP ∧ IsOpen wG ∧ q₀.1 ∈ wP ∧ 0 ∈ wG ∧ ∀ p x y, p ∈ wP ∩ s → x ∈ k
+      → y - x ∈ wG → ‖g p y - g q₀.1 x‖ < ε := by
+    apply IsCompact.induction_on hk
+      (p := fun t ↦ ∃ wP wG, IsOpen wP ∧ IsOpen wG ∧ q₀.1 ∈ wP ∧ 0 ∈ wG ∧ ∀ p x y, p ∈ wP ∩ s
+          → x ∈ t → y - x ∈ wG → ‖g p y - g q₀.1 x‖ < ε)
+    · exact ⟨univ, univ, isOpen_univ, isOpen_univ, mem_univ _, mem_univ _, by simp⟩
+    · intro t' t ht't ⟨wP, wG, wP_open, wG_open, mem_wP, mem_wG, hw⟩
+      exact ⟨wP, wG, wP_open, wG_open, mem_wP, mem_wG,
+        fun p x y hp hx hy ↦ hw p x y hp (ht't hx) hy⟩
+    · intro t' t ⟨wP, wG, wP_open, wG_open, mem_wP, mem_wG, hw⟩
+        ⟨wP', wG', wP'_open, wG'_open, mem_wP', mem_wG', hw'⟩
+      refine ⟨wP ∩ wP', wG ∩ wG', wP_open.inter wP'_open, wG_open.inter wG'_open, ⟨mem_wP, mem_wP'⟩,
+        ⟨mem_wG, mem_wG'⟩, fun p x y hp hx hy ↦ ?_⟩
+      rcases hx with h'x|h'x
+      · exact hw p x y ⟨hp.1.1, hp.2⟩ h'x hy.1
+      · exact hw' p x y ⟨hp.1.2, hp.2⟩ h'x hy.2
+    · intro x hx
+      obtain ⟨u, hu, v, hv, huv⟩ : ∃ u, u ∈ 𝓝[s] q₀.fst ∧ ∃ v, v ∈ 𝓝[univ] x
+          ∧ u ×ˢ v ⊆ {p | dist ((↿g) p) ((↿g) (q₀.fst, x)) < ε} :=
+        mem_nhdsWithin_prod_iff.1
+          (continuousWithinAt_iff'.1 (hg (q₀.1, x) ⟨hq₀, mem_univ _⟩ ) ε εpos)
+      refine ⟨v, nhdsWithin_mono _ (subset_univ _) hv, ?_⟩
+
+
+
+
+
+
+
+#exit
+
     have A : IsCompact ({q₀.1} ×ˢ k) := isCompact_singleton.prod hk
     obtain ⟨t, kt, t_open, ht⟩ :
         ∃ t, {q₀.1} ×ˢ k ⊆ t ∧ IsOpen t ∧ IsBounded (↿g '' (t ∩ s ×ˢ univ)) := by

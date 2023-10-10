@@ -69,7 +69,7 @@ theorem measurableSet_integrable [SigmaFinite ν] ⦃f : α → β → E⦄
 
 section
 
-variable [NormedSpace ℝ E] [CompleteSpace E]
+variable [NormedSpace ℝ E]
 
 /-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
   Fubini's theorem is measurable.
@@ -77,6 +77,8 @@ variable [NormedSpace ℝ E] [CompleteSpace E]
 theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
   borelize E
+  by_cases hE : CompleteSpace E; swap
+  · simp [hE, integral]; exact stronglyMeasurable_const
   haveI : SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
   let s : ℕ → SimpleFunc (α × β) E :=
@@ -195,7 +197,7 @@ theorem MeasureTheory.AEStronglyMeasurable.snd {γ} [TopologicalSpace γ] [Sigma
 /-- The Bochner integral is a.e.-measurable.
   This shows that the integrand of (the right-hand-side of) Fubini's theorem is a.e.-measurable. -/
 theorem MeasureTheory.AEStronglyMeasurable.integral_prod_right' [SigmaFinite ν] [NormedSpace ℝ E]
-    [CompleteSpace E] ⦃f : α × β → E⦄ (hf : AEStronglyMeasurable f (μ.prod ν)) :
+    ⦃f : α × β → E⦄ (hf : AEStronglyMeasurable f (μ.prod ν)) :
     AEStronglyMeasurable (fun x => ∫ y, f (x, y) ∂ν) μ :=
   ⟨fun x => ∫ y, hf.mk f (x, y) ∂ν, hf.stronglyMeasurable_mk.integral_prod_right', by
     filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ hx using integral_congr_ae hx⟩
@@ -316,7 +318,7 @@ theorem integrable_prod_mul {L : Type*} [IsROrC L] {f : α → L} {g : β → L}
 
 end
 
-variable [NormedSpace ℝ E] [CompleteSpace E]
+variable [NormedSpace ℝ E]
 
 theorem Integrable.integral_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
     Integrable (fun x => ∫ y, f (x, y) ∂ν) μ :=
@@ -342,7 +344,7 @@ theorem integral_prod_swap (f : α × β → E) :
   measurePreserving_swap.integral_comp MeasurableEquiv.prodComm.measurableEmbedding _
 #align measure_theory.integral_prod_swap MeasureTheory.integral_prod_swap
 
-variable {E' : Type*} [NormedAddCommGroup E'] [CompleteSpace E'] [NormedSpace ℝ E']
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
 /-! Some rules about the sum/difference of double integrals. They follow from `integral_add`, but
   we separate them out as separate lemmas, because they involve quite some steps. -/
@@ -450,6 +452,8 @@ theorem continuous_integral_integral :
 theorem integral_prod :
     ∀ (f : α × β → E) (_ : Integrable f (μ.prod ν)),
       ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
+  by_cases hE : CompleteSpace E; swap
+  · simp [hE, integral]
   apply Integrable.induction
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
