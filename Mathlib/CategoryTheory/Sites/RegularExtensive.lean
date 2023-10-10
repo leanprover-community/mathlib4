@@ -314,7 +314,7 @@ lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasP
     apply_fun (EqualizerFirstObjIso F π).hom at hz
     exact hx₂ z hz
 
-lemma IsSheafFor.equalizerCondition {F : Cᵒᵖ ⥤ Type (max u v)}
+lemma IsSheafForRegular.equalizerCondition {F : Cᵒᵖ ⥤ Type (max u v)}
     (hSF : ∀ {B : C} (S : Presieve B) [S.regular] [S.hasPullbacks], S.IsSheafFor F) :
     EqualizerCondition F := by
   intro X B π _ _
