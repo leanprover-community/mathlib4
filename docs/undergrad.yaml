@@ -549,7 +549,7 @@ Probability Theory:
     conditional probability: 'ProbabilityTheory.cond'
     law of total probability: ''
   Random variables and their laws:
-    discrete law: 'Pmf'
+    discrete law: 'PMF'
     absolute continuity of probability laws: ''
     probability density function: 'MeasureTheory.HasPDF'
     law of joint probability: ''
@@ -558,7 +558,7 @@ Probability Theory:
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     transfer theorem: ''
     moments: 'ProbabilityTheory.moment'
-    Bernoulli law: 'Pmf.bernoulli'
+    Bernoulli law: 'PMF.bernoulli'
     binomial law: ''
     geometric law: ''
     Poisson law: ''
