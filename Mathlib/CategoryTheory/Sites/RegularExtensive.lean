@@ -280,59 +280,39 @@ lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasP
     (hFecs : EqualizerCondition F) : S.IsSheafFor F := by
   obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := Presieve.regular.single_epi (R := S)
   rw [Presieve.ofArrows_pUnit] at hS
-  haveI hh : (Presieve.singleton π).hasPullbacks := by rw [← hS]; infer_instance
-  haveI : HasPullback π π := hh.has_pullbacks (Presieve.singleton.mk) (Presieve.singleton.mk)
+  haveI : (Presieve.singleton π).hasPullbacks := by rw [← hS]; infer_instance
+  haveI : HasPullback π π :=
+    Presieve.hasPullbacks.has_pullbacks (Presieve.singleton.mk) (Presieve.singleton.mk)
   subst hS
   rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
   intro y h
   specialize hFecs X B π
-  have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
-      F.map π.op
-  · dsimp [EqualizerFirstObjIso, Equalizer.forkMap]
-    ext b
-    simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-  have fmap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.fst (f := π) (g := π)).op =
-      Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
-  · dsimp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.firstMap]
-    ext b
-    simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-  have smap_comp : (EqualizerFirstObjIso F π).hom ≫ F.map (pullback.snd (f := π) (g := π)).op =
-      Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom
-  · dsimp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.secondMap]
-    ext b
-    simp only [types_comp_apply, Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-  have iy_mem : F.map (pullback.fst (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y) =
-      F.map (pullback.snd (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y)
-  · change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
-    apply Eq.symm -- how do I avoid this ugly hack?
-    change ((EqualizerFirstObjIso F π).hom ≫ _) y = _
-    rw [fmap_comp, smap_comp]
-    dsimp
-    rw [h]
-  have uniq_F : ∃! x, F.map π.op x = (EqualizerFirstObjIso F π).hom y
+  have hy : F.map (pullback.fst (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y) =
+      F.map (pullback.snd (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y) :=
+    calc
+      _ = (Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom) y
+          := by simp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.firstMap]
+      _ = (Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom)
+          y := by simp only [Equalizer.Presieve.SecondObj, types_comp_apply]; rw [h]
+      _ = _ := by
+          simp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.secondMap]
+  obtain ⟨x, ⟨hx₁, hx₂⟩⟩ : ∃! x, F.map π.op x = (EqualizerFirstObjIso F π).hom y
   · rw [Function.bijective_iff_existsUnique] at hFecs
-    specialize hFecs ⟨(EqualizerFirstObjIso F π).hom y, iy_mem⟩
-    obtain ⟨x, hx⟩ := hFecs
-    refine' ⟨x, _⟩
-    dsimp [MapToEqualizer] at *
-    refine' ⟨Subtype.ext_iff.mp hx.1,_⟩
-    intro z hz
-    apply hx.2
+    specialize hFecs ⟨(EqualizerFirstObjIso F π).hom y, hy⟩
+    obtain ⟨x, ⟨hx₁, hx₂⟩⟩ := hFecs
+    refine ⟨x, ⟨Subtype.ext_iff.mp hx₁, ?_⟩⟩
+    intros
+    apply hx₂
     rwa [Subtype.ext_iff]
-  obtain ⟨x,hx⟩ := uniq_F
-  dsimp at hx
-  rw [← fork_comp] at hx
-  use x
-  dsimp
-  constructor
-  · apply_fun (EqualizerFirstObjIso F π).hom
-    · exact hx.1
-    · apply Function.Bijective.injective
-      rw [← isIso_iff_bijective]
-      exact inferInstance
+  have fork_comp : Equalizer.forkMap F (Presieve.singleton π) ≫ (EqualizerFirstObjIso F π).hom =
+      F.map π.op := by ext; simp [EqualizerFirstObjIso, Equalizer.forkMap]
+  rw [← fork_comp] at hx₁ hx₂
+  refine ⟨x, ⟨?_, ?_⟩⟩
+  · apply_fun (EqualizerFirstObjIso F π).hom using injective_of_mono (EqualizerFirstObjIso F π).hom
+    exact hx₁
   · intro z hz
     apply_fun (EqualizerFirstObjIso F π).hom at hz
-    exact hx.2 z hz
+    exact hx₂ z hz
 
 lemma IsSheafFor.equalizerCondition {F : Cᵒᵖ ⥤ Type (max u v)}
     (hSF : ∀ {B : C} (S : Presieve B) [S.regular] [S.hasPullbacks], S.IsSheafFor F) :
@@ -343,49 +323,39 @@ lemma IsSheafFor.equalizerCondition {F : Cᵒᵖ ⥤ Type (max u v)}
   specialize hSF (Presieve.singleton π)
   rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hSF
   rw [Function.bijective_iff_existsUnique]
-  intro b
-  specialize hSF ((EqualizerFirstObjIso F π).inv b.val)
-  dsimp [MapToEqualizer]
-  have h1 : (EqualizerFirstObjIso F π).inv ≫ Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫
-      (EqualizerSecondObjIso F π).hom = F.map (pullback.fst (f := π) (g := π)).op
-  · ext
-    simp only [EqualizerFirstObjIso, Iso.trans_inv, Equalizer.Presieve.SecondObj,
-      Equalizer.Presieve.firstMap, EqualizerSecondObjIso, Iso.trans_hom,
-      Types.productIso_hom_comp_eval, limit.lift_π, Fan.mk_pt, Fan.mk_π_app, types_comp_apply,
-      Equalizer.firstObjEqFamily_inv, Types.pi_lift_π_apply]
-    rfl
-  have h2 : (EqualizerFirstObjIso F π).inv ≫ Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫
-      (EqualizerSecondObjIso F π).hom = F.map (pullback.snd (f := π) (g := π)).op
-  · ext
-    simp only [EqualizerFirstObjIso, Iso.trans_inv, Equalizer.Presieve.SecondObj,
-      Equalizer.Presieve.secondMap, EqualizerSecondObjIso, Iso.trans_hom,
-      Types.productIso_hom_comp_eval, limit.lift_π, Fan.mk_pt, Fan.mk_π_app, types_comp_apply,
-      Equalizer.firstObjEqFamily_inv, Types.Limit.lift_π_apply']
-    rfl
-  cases' b with b hb
-  simp only [Set.mem_setOf_eq] at hb
-  rw [← h1, ← h2] at hb
-  apply_fun (EqualizerSecondObjIso F π).inv at hb
-  simp only [Equalizer.Presieve.SecondObj, types_comp_apply, hom_inv_id_apply] at hb
-  specialize hSF hb
-  obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := hSF
-  refine ⟨a, ⟨?_, ?_⟩⟩
-  · ext
-    dsimp
-    apply_fun (EqualizerFirstObjIso F π).hom at ha₁
-    simp only [inv_hom_id_apply] at ha₁
-    rw [← ha₁]
-    simp only [EqualizerFirstObjIso, Equalizer.forkMap, Iso.trans_hom, types_comp_apply,
-      Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-  · intro y hy
-    apply ha₂
-    apply_fun (EqualizerFirstObjIso F π).hom using injective_of_mono (EqualizerFirstObjIso F π).hom
-    simp only [inv_hom_id_apply]
-    simp only [Set.mem_setOf_eq, Subtype.mk.injEq] at hy
-    rw [← hy]
-    simp only [EqualizerFirstObjIso, Equalizer.forkMap, Iso.trans_hom, types_comp_apply,
-      Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
-
+  intro ⟨b, hb⟩
+  specialize hSF ((EqualizerFirstObjIso F π).inv b) ?_
+  · apply_fun (EqualizerSecondObjIso F π).hom using injective_of_mono _
+    calc
+      _ = F.map (pullback.fst (f := π) (g := π)).op b := by
+        simp only [Equalizer.Presieve.SecondObj, EqualizerSecondObjIso, Equalizer.Presieve.firstMap,
+          EqualizerFirstObjIso, Iso.trans_inv, types_comp_apply, Equalizer.firstObjEqFamily_inv,
+          Iso.trans_hom, Types.productIso_hom_comp_eval_apply, Types.Limit.lift_π_apply', Fan.mk_pt,
+          Fan.mk_π_app]; rfl
+      _ = F.map (pullback.snd (f := π) (g := π)).op b := hb
+      _ = ((EqualizerFirstObjIso F π).inv ≫ Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫
+        (EqualizerSecondObjIso F π).hom) b := by
+          simp only [EqualizerFirstObjIso, Iso.trans_inv, Equalizer.Presieve.SecondObj,
+            Equalizer.Presieve.secondMap, EqualizerSecondObjIso, Iso.trans_hom,
+            Types.productIso_hom_comp_eval, limit.lift_π, Fan.mk_pt, Fan.mk_π_app, types_comp_apply,
+            Equalizer.firstObjEqFamily_inv, Types.Limit.lift_π_apply']; rfl
+  · obtain ⟨a, ⟨ha₁, ha₂⟩⟩ := hSF
+    refine ⟨a, ⟨?_, ?_⟩⟩
+    · ext
+      dsimp [MapToEqualizer]
+      apply_fun (EqualizerFirstObjIso F π).hom at ha₁
+      simp only [inv_hom_id_apply] at ha₁
+      rw [← ha₁]
+      simp only [EqualizerFirstObjIso, Equalizer.forkMap, Iso.trans_hom, types_comp_apply,
+        Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
+    · intro y hy
+      apply ha₂
+      apply_fun (EqualizerFirstObjIso F π).hom using injective_of_mono _
+      simp only [inv_hom_id_apply]
+      simp only [MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq] at hy
+      rw [← hy]
+      simp only [EqualizerFirstObjIso, Equalizer.forkMap, Iso.trans_hom, types_comp_apply,
+        Equalizer.firstObjEqFamily_hom, Types.pi_lift_π_apply]
 
 lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Projective X]
     (F : Cᵒᵖ ⥤ Type (max u v)) : S.IsSheafFor F := by
