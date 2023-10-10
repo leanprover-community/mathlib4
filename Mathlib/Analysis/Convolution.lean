@@ -592,10 +592,45 @@ protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSup
 
 variable [BorelSpace G] [FirstCountableTopology G] [TopologicalSpace P] [FirstCountableTopology P]
 
-theorem mem_nhdsWithin_prod_iff {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    {a : α} {b : β} {s : Set (α × β)} {ta : Set α} {tb : Set β} :
-    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s :=
-  by rw [nhdsWithin_prod_eq, mem_prod_iff]
+open scoped Uniformity
+
+lemma blouk {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
+    {f : α → β → E} {s : Set α} {k : Set β} {q : α} {u : Set (E × E)}
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ k)) (hq : q ∈ s) (hu : u ∈ 𝓤 E) :
+    ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, (f p x, f q x) ∈ u := by
+  apply hk.induction_on (p := fun t ↦ ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ t, (f p x, f q x) ∈ u)
+  · exact ⟨univ, univ_mem, by simp⟩
+  · intro t' t ht't ⟨v, v_mem, hv⟩
+    exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
+  · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
+    refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
+    rcases hx with h'x|h'x
+    · exact hv p hp.1 x h'x
+    · exact hv' p hp.2 x h'x
+  · rcases comp_symm_of_uniformity hu with ⟨u', u'_mem, u'_symm, hu'⟩
+    intro x hx
+    obtain ⟨v, hv, w, hw, hvw⟩ :
+      ∃ v ∈ 𝓝[s] q, ∃ w ∈ 𝓝[k] x, v ×ˢ w ⊆ uncurry f ⁻¹' {z | (f q x, z) ∈ u'} :=
+        mem_nhdsWithin_prod_iff.1 (hf (q, x) ⟨hq, hx⟩ (mem_nhds_left (f q x) u'_mem))
+    refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
+    have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
+    have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
+    exact hu' (prod_mk_mem_compRel (u'_symm A) B)
+
+lemma blouk2 {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
+    {f : α → β → E} {s : Set α} {k : Set β} {q : α} {u : Set (E × E)}
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ)) (hq : q ∈ s) (hu : u ∈ 𝓤 E)
+    {a : E} (h'f : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = a) :
+    ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x, (f p x, f q x) ∈ u := by
+  have : s ×ˢ k ⊆ s ×ˢ univ := sorry
+  rcases blouk hk (hf.mono this) hq hu with ⟨v, v_mem, hv⟩
+
+
+
+
+
+
+#exit
 
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
