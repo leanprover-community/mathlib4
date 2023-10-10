@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Interval
+import Mathlib.Algebra.Order.Sub.Defs
 
 /-! # Antidiagonal with values in general types
 
@@ -44,16 +45,16 @@ open Finset Function
 
 /-- The class of monoids with an antidiagonal -/
 class HasMulAntidiagonal (μ : Type*) [Monoid μ] where
-/-- The antidiagonal function -/
+  /-- The antidiagonal function -/
   (antidiagonal : μ → Finset (μ × μ))
-/-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n` -/
+  /-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n` -/
   (mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst * a.snd = n)
 
 /-- The class of additive monoids with an antidiagonal -/
 class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
-/-- The antidiagonal function -/
+  /-- The antidiagonal function -/
   (antidiagonal : μ → Finset (μ × μ))
-/-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n` -/
+  /-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n` -/
   (mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst + a.snd = n)
 
 variable {μ : Type _}
@@ -70,16 +71,22 @@ def antidiagonal (n : μ) : Finset (μ × μ) :=
 #align finset.antidiagonal Finset.antidiagonal
 
 @[simp]
-theorem mem_antidiagonal (n : μ) (a : μ × μ) : a ∈ antidiagonal n ↔ a.fst + a.snd = n := by
+theorem mem_antidiagonal (n : μ) (a : μ × μ) :
+    a ∈ antidiagonal n ↔ a.fst + a.snd = n := by
   simp only [antidiagonal, Prod.forall, mem_filter, and_iff_right_iff_imp]
   intro h; rw [← h]
   erw [mem_product, mem_Iic, mem_Iic]
   exact ⟨le_self_add, le_add_self⟩
 
-/-- Antidiagonal instance in a canonically ordered add monoid -/
-instance : HasAntidiagonal μ := ⟨antidiagonal, mem_antidiagonal⟩
+/- These functions apply to (ι →₀ ℕ), more generally to (ι →₀ μ) under the additional assumption `OrderedSub μ` that make it a canonically ordered add monoid
+In fact, we just need an AddMonoid with a compatible order,
+finite Iic, such that if a + b = n, then a, b ≤ n,
+and any other bound would be OK.
 
-/-- The Finset of functions `ι → μ` whose support is contained in `s`
+  What follows is an analogous definition for ι → μ, with additional conditions on the support
+-/
+
+/-- The Finset of functions `ι → μ` whose support is contained in `s : Finset ι`
   and whose sum is `n` -/
 def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι → μ) :=
   Finset.filter (fun f => s.sum f = n)
@@ -174,4 +181,3 @@ theorem piAntidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
       exact hg' i hi.2
 
 end Finset
-#lint
