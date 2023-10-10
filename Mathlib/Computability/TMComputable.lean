@@ -286,7 +286,7 @@ instance inhabitedEvalsToInTime :
     Inhabited (EvalsToInTime (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩) 0) :=
   ⟨EvalsToInTime.refl _ _⟩
 #align turing.inhabited_evals_to_in_time Turing.inhabitedEvalsToInTime
-
+ 
 instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩)) :=
   ⟨EvalsTo.refl _ _⟩
 #align turing.inhabited_tm2_evals_to Turing.inhabitedTM2EvalsTo
