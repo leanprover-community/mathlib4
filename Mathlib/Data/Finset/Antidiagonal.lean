@@ -10,9 +10,9 @@ import Mathlib.Data.Finsupp.Interval
 
 /-! # Antidiagonal with values in general types
 
-Let `n : μ`, where `μ` is a canonically ordered add monoid with locally finite order.
+Let `n : μ`, where `μ` is a canonically ordered add monoid with locally finite order. (For example, one may take `μ` to be `ℕ`, more generally `σ →₀ ℕ`.)
 
-* For `s : Finset ι`, we define `Finset.Pi.antidiagonal s n` as the `Finset (ι → μ)`
+* For `s : Finset ι`, we define `Finset.piAntidiagonal s n` as the `Finset (ι → μ)`
 of functions with support in `s` whose sum is equal to `n`.
 
 * We define `Finset.antidiagonal n : Finset (μ × μ)` of pairs adding to `n`.
@@ -62,16 +62,16 @@ theorem mem_antidiagonal (n : μ) (a : μ × μ) : a ∈ antidiagonal n ↔ a.fs
 
 /-- The Finset of functions `ι → μ` whose support is contained in `s`
   and whose sum is `n` -/
-def Pi.antidiagonal (s : Finset ι) (n : μ) : Finset (ι → μ) :=
+def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι → μ) :=
   Finset.filter (fun f => s.sum f = n)
     ((s.pi fun _ => Iic n).map
       ⟨fun f i => if h : i ∈ s then f i h else 0,
         fun f g h => by ext i hi; simpa only [dif_pos hi] using congr_fun h i⟩)
 
 @[simp]
-theorem Pi.mem_antidiagonal (s : Finset ι) (n : μ) (f : ι → μ) :
-    f ∈ Pi.antidiagonal s n ↔ s.sum f = n ∧ ∀ (i) (_ : i ∉ s), f i = 0 := by
-  rw [Pi.antidiagonal, mem_filter, and_comm, and_congr_right]
+theorem mem_piAntidiagonal (s : Finset ι) (n : μ) (f : ι → μ) :
+    f ∈ piAntidiagonal s n ↔ s.sum f = n ∧ ∀ (i) (_ : i ∉ s), f i = 0 := by
+  rw [piAntidiagonal, mem_filter, and_comm, and_congr_right]
   intro h
   simp only [mem_map, exists_prop, Function.Embedding.coeFn_mk, mem_pi]
   constructor
@@ -88,47 +88,47 @@ theorem Pi.mem_antidiagonal (s : Finset ι) (n : μ) (f : ι → μ) :
       rw [dite_eq_ite, ite_eq_left_iff, eq_comm]
       exact hf x
 
-theorem Pi_antidiagonal_equiv_antidiagonal (n : μ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (Pi.antidiagonal univ n) = antidiagonal n := by
+theorem piAntidiagonal_equiv_antidiagonal (n : μ) :
+    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
     Equiv.eq_symm_apply]
-  simp [Pi.mem_antidiagonal, add_comm, mem_antidiagonal]
+  simp [mem_piAntidiagonal, add_comm, mem_antidiagonal]
 
-theorem Pi.antidiagonal_zero (s : Finset ι) :
-    Pi.antidiagonal s (0 : μ) = {0} := by
+theorem piAntidiagonal_zero (s : Finset ι) :
+    piAntidiagonal s (0 : μ) = {0} := by
   ext f
-  rw [Pi.mem_antidiagonal, mem_singleton, sum_eq_zero_iff, ← forall_and, funext_iff]
+  rw [mem_piAntidiagonal, mem_singleton, sum_eq_zero_iff, ← forall_and, funext_iff]
   apply forall_congr'
   intro i
   simp only [← or_imp, em (i ∈ s), forall_true_left, Pi.zero_apply]
 
-theorem Pi.antidiagonal_empty (n : μ) :
-    Pi.antidiagonal (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
+theorem piAntidiagonal_empty (n : μ) :
+    piAntidiagonal (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   ext f
-  rw [Pi.mem_antidiagonal]
+  rw [mem_piAntidiagonal]
   simp only [sum_empty, not_mem_empty, not_false_iff, forall_true_left]
   split_ifs with hn
   simp only [hn, mem_singleton, funext_iff, eq_self_iff_true, true_and_iff, Pi.zero_apply]
   simp only [not_mem_empty, iff_false_iff]
   intro h'; exact hn h'.1.symm
 
-theorem Pi.antidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
-    Pi.antidiagonal (insert a s) n =
+theorem piAntidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
+    piAntidiagonal (insert a s) n =
       (Finset.antidiagonal n).biUnion fun p : μ × μ =>
-        (Pi.antidiagonal s p.snd).image fun f => Function.update f a p.fst := by
+        (piAntidiagonal s p.snd).image fun f => Function.update f a p.fst := by
   ext f
-  rw [Pi.mem_antidiagonal, mem_biUnion, sum_insert h]
+  rw [mem_piAntidiagonal, mem_biUnion, sum_insert h]
   constructor
   · rintro ⟨rfl, h₁⟩
-    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists]
+    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_piAntidiagonal, Prod.exists]
     use f a, s.sum f
     constructor
     · exact (Finset.mem_antidiagonal (f a + ∑ x in s, f x) (f a, Finset.sum s f)).mpr rfl
     rw [mem_image]
     use Function.update f a 0
     constructor
-    · rw [Pi.mem_antidiagonal s (s.sum f)]
+    · rw [mem_piAntidiagonal s (s.sum f)]
       constructor
       apply Finset.sum_congr rfl
       intro i hi; rw [Function.update_apply]; rw [if_neg]; intro hia; apply h; rw [← hia]; exact hi
@@ -141,7 +141,7 @@ theorem Pi.antidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
       rw [hia]
       rfl
   · simp only [mem_insert, Finset.mem_antidiagonal, mem_image, exists_prop,
-      Prod.exists, forall_exists_index, and_imp, mem_antidiagonal]
+      Prod.exists, forall_exists_index, and_imp, mem_piAntidiagonal]
     rintro d e rfl g hg hg' rfl
     constructor
     · simp only [Function.update_same]
