@@ -68,9 +68,10 @@ where
       interpreter stack when the `Trie` is very deep -/
   go cs vs todo ps :=
     if todo.isEmpty then
+      let c := .node vs cs
       match ps with
-      | .empty => .node vs cs
-      | .ctxt cs' vs' todo k ps => go (cs.push (k, .node vs' cs')) vs todo ps
+      | .empty => c
+      | .ctxt cs' vs' todo k ps => go (cs'.push (k, c)) vs' todo ps
     else
       let (k, .node vs' cs') := todo.back
       go (.mkEmpty cs'.size) (f vs') cs'.reverse (.ctxt cs vs todo.pop k ps)
