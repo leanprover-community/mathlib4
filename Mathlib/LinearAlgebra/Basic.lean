@@ -2392,6 +2392,15 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
   p.comap_equiv_eq_map_symm _
 #align submodule.order_iso_map_comap_symm_apply' Submodule.orderIsoMapComap_symm_apply'
 
+theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
+    comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
+  rw [SetLike.le_def]
+  intro m h
+  change f₁ m + f₂ m ∈ q
+  change f₁ m ∈ q ∧ f₂ m ∈ q at h
+  apply q.add_mem h.1 h.2
+#align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
+
 end Submodule
 
 namespace Submodule
@@ -2417,15 +2426,6 @@ theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ 
   change fₗ m ∈ qₗ at h
   apply qₗ.smul_mem _ h
 #align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
-
-theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
-    comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  rw [SetLike.le_def]
-  intro m h
-  change f₁ m + f₂ m ∈ q
-  change f₁ m ∈ q ∧ f₂ m ∈ q at h
-  apply q.add_mem h.1 h.2
-#align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
