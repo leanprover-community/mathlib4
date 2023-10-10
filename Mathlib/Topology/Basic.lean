@@ -303,10 +303,6 @@ theorem interior_subset {s : Set α} : interior s ⊆ s :=
   sUnion_subset fun _ => And.right
 #align interior_subset interior_subset
 
-/-- `sUnion` is monotone under taking the interior of each set. -/
-lemma sUnion_supset_interior {s : Set (Set α)} : ⋃₀ (interior '' s) ⊆ ⋃₀ s :=
-  sUnion_mono_supsets (by apply interior_subset)
-
 theorem interior_maximal {s t : Set α} (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
 #align interior_maximal interior_maximal
@@ -439,10 +435,6 @@ theorem isClosed_closure {s : Set α} : IsClosed (closure s) :=
 theorem subset_closure {s : Set α} : s ⊆ closure s :=
   subset_sInter fun _ => And.right
 #align subset_closure subset_closure
-
-/-- `sUnion` is monotone under taking the closure of each set. -/
-lemma sUnion_subset_closure {s : Set (Set α)} : ⋃₀ s ⊆ ⋃₀ (closure '' s) :=
-  sUnion_mono_subsets (by apply subset_closure)
 
 theorem not_mem_of_not_mem_closure {s : Set α} {P : α} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)

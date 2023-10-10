@@ -243,8 +243,7 @@ def IsNowhereDense (s : Set α) := interior (closure s) = ∅
 /-- The empty set is nowhere dense. -/
 @[simp]
 lemma isNowhereDense_of_empty : IsNowhereDense (∅ : Set α) := by
-  unfold IsNowhereDense
-  rw [closure_empty, interior_empty]
+  rw [IsNowhereDense, closure_empty, interior_empty]
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
 lemma IsClosed.isNowhereDense_iff {s : Set α} (hs : IsClosed s) :
@@ -254,13 +253,12 @@ lemma IsClosed.isNowhereDense_iff {s : Set α} (hs : IsClosed s) :
 /-- If a set `s` is nowhere dense, so is its closure.-/
 protected lemma IsNowhereDense.closure {s : Set α} (hs : IsNowhereDense s) :
     IsNowhereDense (closure s) := by
-  rw [IsNowhereDense, closure_closure]
-  exact hs
+  rwa [IsNowhereDense, closure_closure]
 
 /-- A nowhere dense set `s` is contained in a closed nowhere dense set (namely, its closure). -/
 lemma IsNowhereDense.subset_of_closed_nowhereDense {s : Set α} (hs : IsNowhereDense s) :
     ∃ t : Set α, s ⊆ t ∧ IsNowhereDense t ∧ IsClosed t :=
-  ⟨closure (s : Set α), subset_closure, ⟨hs.closure, isClosed_closure⟩⟩
+  ⟨closure s, subset_closure, ⟨hs.closure, isClosed_closure⟩⟩
 
 /-- A set `s` is closed and nowhere dense iff its complement `sᶜ` is open and dense. -/
 lemma closed_isNowhereDense_iff_compl {s : Set α} :
@@ -277,7 +275,7 @@ lemma meagre_empty : IsMeagre (∅ : Set α) := by
   exact Filter.univ_mem
 
 /-- Subsets of meagre sets are meagre. -/
-lemma IsMeagre.mono {s t: Set α} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t :=
+lemma IsMeagre.mono {s t : Set α} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t :=
   Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
 
 /-- An intersection with a meagre set is meagre. -/
