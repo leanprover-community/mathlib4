@@ -42,13 +42,29 @@ open scoped BigOperators
 
 open Finset Function
 
-variable {μ : Type _} [CanonicallyOrderedAddMonoid μ] [LocallyFiniteOrder μ] [DecidableEq μ]
+/-- The class of monoids with an antidiagonal -/
+class HasMulAntidiagonal (μ : Type*) [Monoid μ] where
+/-- The antidiagonal function -/
+  (antidiagonal : μ → Finset (μ × μ))
+/-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n` -/
+  (mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst * a.snd = n)
+
+/-- The class of additive monoids with an antidiagonal -/
+class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
+/-- The antidiagonal function -/
+  (antidiagonal : μ → Finset (μ × μ))
+/-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n` -/
+  (mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst + a.snd = n)
+
+variable {μ : Type _}
+  [CanonicallyOrderedAddMonoid μ]
+  [LocallyFiniteOrder μ] [DecidableEq μ]
 
 variable {ι : Type _} [DecidableEq ι] [DecidableEq (ι → μ)]
 
 namespace Finset
 
-/-- The Finset of pairs of elements of `μ` with sum `n` -/
+/-- In a canonically ordered add monoid, the finset of pairs of elements of `μ` with sum `n` -/
 def antidiagonal (n : μ) : Finset (μ × μ) :=
   Finset.filter (fun uv => uv.fst + uv.snd = n) (Finset.product (Iic n) (Iic n))
 #align finset.antidiagonal Finset.antidiagonal
@@ -59,6 +75,9 @@ theorem mem_antidiagonal (n : μ) (a : μ × μ) : a ∈ antidiagonal n ↔ a.fs
   intro h; rw [← h]
   erw [mem_product, mem_Iic, mem_Iic]
   exact ⟨le_self_add, le_add_self⟩
+
+/-- Antidiagonal instance in a canonically ordered add monoid -/
+instance : HasAntidiagonal μ := ⟨antidiagonal, mem_antidiagonal⟩
 
 /-- The Finset of functions `ι → μ` whose support is contained in `s`
   and whose sum is `n` -/
@@ -155,3 +174,4 @@ theorem piAntidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
       exact hg' i hi.2
 
 end Finset
+#lint
