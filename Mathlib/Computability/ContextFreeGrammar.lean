@@ -8,30 +8,30 @@ import Mathlib.Computability.Language
 /-!
 # Context-Free Grammar
 
-This file contains the definition of a Context-Free Grammar (CFG), which is a grammar that has a
-single nonterminal symbol on the left-hand side of each rule.
+This file contains the definition of a Context-Free Grammar, which is a grammar that has a single
+nonterminal symbol on the left-hand side of each rule.
 -/
 
 /-- Rule that rewrites a single nonterminal to any list of symbols. -/
-structure ContextFreeRule (T : Type _) (N : Type _) where
+structure ContextFreeRule (T : Type*) (N : Type*) where
   /-- Input nonterminal a.k.a. left-hand side -/
   input : N
   /-- Output string a.k.a. right-hand side -/
   output : List (Symbol T N)
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
-structure ContextFreeGrammar (T : Type _) where
+structure ContextFreeGrammar (T : Type*) where
   /-- Type of nonterminals -/
-  NT : Type _
+  NT : Type*
   /-- Initial nonterminal -/
   initial : NT
   /-- Rewrite rules -/
   rules : List (ContextFreeRule T NT)
 
-variable {T : Type _}
+variable {T : Type*}
 
 /-- One application of single context-free rule. -/
-inductive ContextFreeRule.RewritesTo {N : Type _} (r : ContextFreeRule T N) :
+inductive ContextFreeRule.RewritesTo {N : Type*} (r : ContextFreeRule T N) :
     List (Symbol T N) → List (Symbol T N) → Prop
   /-- The replacement is at the start of the remaining string. -/
   | head (s : List (Symbol T N)) :
