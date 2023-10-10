@@ -68,7 +68,7 @@ def weightedDegree (w : σ → M) : (σ →₀ ℕ) →+ M :=
 #align mv_polynomial.weighted_degree' MvPolynomial.weightedDegree
 
 theorem weightedDegree_apply (w : σ → M) (f : σ →₀ ℕ):
-  weightedDegree w f = Finsupp.sum f (fun i c => c • w i) := by
+    weightedDegree w f = Finsupp.sum f (fun i c => c • w i) := by
   rfl
 section SemilatticeSup
 
