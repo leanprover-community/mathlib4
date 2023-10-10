@@ -12,15 +12,6 @@ This file contains the definition of a Context-Free Grammar (CFG), which is a gr
 single nonterminal symbol on the left-hand side of each rule.
 -/
 
-/-- The type of symbols is the disjoint union of terminals `T` and nonterminals `N`. -/
-inductive Symbol (T : Type _) (N : Type _)
-  /-- Terminal symbols (of the same type as the language) -/
-  | terminal    (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
-  | nonterminal (n : N) : Symbol T N
-  -- If we have `[DecidableEq T]` and `[DecidableEq N]` then `[DecidableEq (Symbol T N)]` is added.
-  deriving DecidableEq
-
 /-- Rule that rewrites a single nonterminal to any list of symbols. -/
 structure ContextFreeRule (T : Type _) (N : Type _) where
   /-- Input nonterminal a.k.a. left-hand side -/
@@ -82,7 +73,8 @@ theorem ContextFreeRule.rewritesTo_iff {N : Type _} {r : ContextFreeRule T N}
 
 namespace ContextFreeGrammar
 
-/-- One step of context-free transformation. -/
+/-- If `g` is a context-free grammar, `g.Produces u v` means that one step of context-free
+    transformation sends `u` to `v`. -/
 def Produces (g : ContextFreeGrammar T) (u v : List (Symbol T g.NT)) : Prop :=
   ∃ r ∈ g.rules, r.RewritesTo u v
 
@@ -93,6 +85,11 @@ abbrev Derives (g : ContextFreeGrammar T) : List (Symbol T g.NT) → List (Symbo
 /-- The set of words that can be derived from the initial nonterminal. -/
 def language (g : ContextFreeGrammar T) : Language T :=
   { w | g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) }
+
+@[refl]
+lemma language_def (g : ContextFreeGrammar T) (w : List T) :
+    w ∈ g.language ↔ g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) := by
+  rfl
 
 variable {g : ContextFreeGrammar T}
 

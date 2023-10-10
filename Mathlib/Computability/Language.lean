@@ -297,3 +297,12 @@ instance : KleeneAlgebra (Language α) :=
       exact le_trans (le_mul_congr h le_rfl) ih }
 
 end Language
+
+/-- Symbols for use by grammars. -/
+inductive Symbol (T : Type _) (N : Type _)
+  /-- Terminal symbols (of the same type as the language) -/
+  | terminal    (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  | nonterminal (n : N) : Symbol T N
+  -- If we have `[DecidableEq T]` and `[DecidableEq N]` then `[DecidableEq (Symbol T N)]` is added.
+  deriving DecidableEq
