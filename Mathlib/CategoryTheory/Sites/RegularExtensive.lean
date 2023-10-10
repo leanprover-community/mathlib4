@@ -275,7 +275,7 @@ def EqualizerSecondObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶
       rfl
     inv_hom_id := by aesop }
 
-lemma isSheafFor_regular_of_hasPullbacks {B : C} {S : Presieve B} [S.regular] [S.hasPullbacks]
+lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasPullbacks]
     {F : Cᵒᵖ ⥤ Type (max u v)}
     (hFecs : EqualizerCondition F) : S.IsSheafFor F := by
   obtain ⟨X, π, ⟨hS, πsurj⟩⟩ := Presieve.regular.single_epi (R := S)
