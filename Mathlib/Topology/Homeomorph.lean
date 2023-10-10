@@ -65,7 +65,7 @@ instance : EquivLike (X ≃ₜ Y) X Y where
 
 instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨FunLike.coe⟩
 
-@[simp] theorem homeomorph_mk_coe (a : X ≃ₜ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
+@[simp] theorem homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
   rfl
 #align homeomorph.homeomorph_mk_coe Homeomorph.homeomorph_mk_coe
 
@@ -126,8 +126,8 @@ theorem symm_trans_apply (f : X ≃ₜ Y) (g : Y ≃ₜ Z) (z : Z) :
     (f.trans g).symm z = f.symm (g.symm z) := rfl
 
 @[simp]
-theorem homeomorph_mk_coe_symm (h : X ≃ₜ Y) (b c) :
-    ((Homeomorph.mk h b c).symm : Y → X) = h.symm :=
+theorem homeomorph_mk_coe_symm (a : X ≃ Y) (b c) :
+    ((Homeomorph.mk a b c).symm : Y → X) = a.symm :=
   rfl
 #align homeomorph.homeomorph_mk_coe_symm Homeomorph.homeomorph_mk_coe_symm
 
