@@ -58,9 +58,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 -/
 
 
-open Set
-
-open BigOperators Pointwise
+open Set Filter BigOperators Pointwise
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
@@ -369,8 +367,8 @@ theorem monotone_stabilizes_iff_noetherian :
 #align monotone_stabilizes_iff_noetherian monotone_stabilizes_iff_noetherian
 
 theorem eventuallyConst_of_isNoetherian [IsNoetherian R M] (f : ℕ →o Submodule R M) :
-    Filter.atTop.EventuallyConst f := by
-  simp_rw [Filter.eventuallyConst_atTop, eq_comm]
+    atTop.EventuallyConst f := by
+  simp_rw [eventuallyConst_atTop, eq_comm]
   exact (monotone_stabilizes_iff_noetherian.mpr inferInstance) f
 
 /-- If `∀ I > J, P I` implies `P J`, then `P` holds for all submodules. -/
@@ -427,10 +425,10 @@ theorem isNoetherian_of_range_eq_ker [IsNoetherian R P] (f : M →ₗ[R] N)
 /-- For an endomorphism of a Noetherian module, any sufficiently large iterate has disjoint kernel
 and range. -/
 theorem LinearMap.eventually_disjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
-    ∀ᶠ n in Filter.atTop, Disjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
+    ∀ᶠ n in atTop, Disjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.ker (f ^ n) = LinearMap.ker (f ^ m)⟩ :=
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
-  refine Filter.eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr ?_⟩
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr ?_⟩
   rw [← hn _ hm, Submodule.eq_bot_iff]
   rintro - ⟨hx, ⟨x, rfl⟩⟩
   apply LinearMap.pow_map_zero_of_le hm
@@ -440,10 +438,10 @@ theorem LinearMap.eventually_disjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
 #align is_noetherian.exists_endomorphism_iterate_ker_inf_range_eq_bot LinearMap.eventually_disjoint_ker_pow_range_pow
 
 lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
-    ∀ᶠ n in Filter.atTop, ⨆ m, LinearMap.ker (f ^ m) = LinearMap.ker (f ^ n) := by
+    ∀ᶠ n in atTop, ⨆ m, LinearMap.ker (f ^ m) = LinearMap.ker (f ^ n) := by
   obtain ⟨n, hn : ∀ m, n ≤ m → ker (f ^ n) = ker (f ^ m)⟩ :=
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
-  refine Filter.eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
   refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
   cases' le_or_lt m l with h h
   · rw [← hn _ (hm.trans h), hn _ hm]
@@ -452,7 +450,7 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
 /-- Any surjective endomorphism of a Noetherian module is injective. -/
 theorem IsNoetherian.injective_of_surjective_endomorphism (f : M →ₗ[R] M)
     (s : Surjective f) : Injective f := by
-  obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp f.eventually_disjoint_ker_pow_range_pow
+  obtain ⟨n, hn⟩ := eventually_atTop.mp f.eventually_disjoint_ker_pow_range_pow
   specialize hn (n + 1) (n.le_add_right 1)
   rw [disjoint_iff, LinearMap.range_eq_top.mpr (LinearMap.iterate_surjective s _), inf_top_eq,
     LinearMap.ker_eq_bot] at hn
