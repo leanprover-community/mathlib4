@@ -91,7 +91,7 @@ instance inhabitedCfg : Inhabited (Cfg tm) :=
 def step : tm.Cfg → Option tm.Cfg :=
   Turing.TM2.step tm.m
 #align turing.fin_tm2.step Turing.FinTM2.step
-
+ 
 end
 
 end FinTM2
