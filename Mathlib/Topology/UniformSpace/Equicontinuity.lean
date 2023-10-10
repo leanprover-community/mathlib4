@@ -166,13 +166,48 @@ lemma EquicontinuousWithinAt.mono {F : ι → X → α} {x₀ : X} {S T : Set X}
     (hST : S ⊆ T) (H : EquicontinuousWithinAt F T x₀) : EquicontinuousWithinAt F S x₀ :=
   fun U hU ↦ (H U hU).filter_mono <| nhdsWithin_mono x₀ hST
 
-lemma equicontinuousWithinAt_univ (F : ι → X → α) (x₀ : X) :
+@[simp] lemma equicontinuousWithinAt_univ (F : ι → X → α) (x₀ : X) :
     EquicontinuousWithinAt F univ x₀ ↔ EquicontinuousAt F x₀ := by
   rw [EquicontinuousWithinAt, EquicontinuousAt, nhdsWithin_univ]
 
 lemma equicontinuousAt_restrict_iff (F : ι → X → α) {S : Set X} (x₀ : S) :
     EquicontinuousAt (S.restrict ∘ F) x₀ ↔ EquicontinuousWithinAt F S x₀ := by
+  simp [EquicontinuousWithinAt, EquicontinuousAt,
+    ← eventually_nhds_subtype_iff_eventually_nhdsWithin]
+
+lemma Equicontinuous.equicontinuousOn {F : ι → X → α} (H : Equicontinuous F)
+    (S : Set X) : EquicontinuousOn F S :=
+  fun x _ ↦ (H x).equicontinuousWithinAt S
+
+lemma EquicontinuousOn.mono {F : ι → X → α} {S T : Set X}
+    (hST : S ⊆ T) (H : EquicontinuousOn F T) : EquicontinuousOn F S :=
+  fun x hx ↦ (H x (hST hx)).mono hST
+
+lemma equicontinuousOn_univ (F : ι → X → α) :
+    EquicontinuousOn F univ ↔ Equicontinuous F := by
+  simp [EquicontinuousOn, Equicontinuous]
+
+lemma equicontinuous_restrict_iff (F : ι → X → α) {S : Set X} :
+    Equicontinuous (S.restrict ∘ F) ↔ EquicontinuousOn F S := by
+  simp [Equicontinuous, EquicontinuousOn, equicontinuousAt_restrict_iff]
+
+lemma UniformEquicontinuous.uniformEquicontinuousOn {F : ι → β → α} (H : UniformEquicontinuous F)
+    (S : Set β) : UniformEquicontinuousOn F S :=
+  fun U hU ↦ (H U hU).filter_mono inf_le_left
+
+lemma UniformEquicontinuousOn.mono {F : ι → β → α} {S T : Set β}
+    (hST : S ⊆ T) (H : UniformEquicontinuousOn F T) : UniformEquicontinuousOn F S :=
+  fun U hU ↦ (H U hU).filter_mono <| inf_le_inf_left _ <| principal_mono.mpr <| prod_mono hST hST
+
+lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
+    UniformEquicontinuousOn F univ ↔ UniformEquicontinuous F := by
+  simp [UniformEquicontinuousOn, UniformEquicontinuous]
+
+lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
+    UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
   sorry
+
+#print axioms uniformEquicontinuousOn_univ
 
 /-!
 ### Empty index type
@@ -184,8 +219,8 @@ lemma equicontinuousAt_empty [h : IsEmpty ι] (F : ι → X → α) (x₀ : X) :
   fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
 
 @[simp]
-lemma equicontinuousWithinAt_empty [h : IsEmpty ι] (F : ι → X → α) (x₀ : X) :
-    EquicontinuousAt F x₀ :=
+lemma equicontinuousWithinAt_empty (F : ι → X → α) (x₀ : X) :
+    EquicontinuousWithinAt F ∅ x₀ :=
   fun _ _ ↦ eventually_of_forall (fun _ ↦ h.elim)
 
 @[simp]
