@@ -156,3 +156,8 @@ example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring_nf
 example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
   ring_nf
+
+noncomputable def C {α} [Ring α] : α →+* R x α := test_sorry
+
+example (p : R Unit ℤ) : C 1 * p = p := by ring
+example (p : R Unit ℤ) (r : ℤ) : C (2 * r) * p = C r * p + C r * p := by ring
