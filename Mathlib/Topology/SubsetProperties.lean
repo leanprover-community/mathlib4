@@ -1035,7 +1035,8 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
 #align is_compact_pi_infinite isCompact_pi_infinite
 
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
-theorem isCompact_univ_pi {s : ∀ i, Set (X i)}  (h : ∀ i, IsCompact (s i)) : IsCompact (pi univ s) := by
+theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
+    IsCompact (pi univ s) := by
   convert isCompact_pi_infinite h
   simp only [← mem_univ_pi, setOf_mem_eq]
 #align is_compact_univ_pi isCompact_univ_pi
