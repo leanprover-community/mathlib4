@@ -637,7 +637,7 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 #align compl_singleton_mem_nhds compl_singleton_mem_nhds
 
 @[simp]
-theorem closure_singleton [T1Space X] {a : X} : closure ({a} : Set X) = {a} :=
+theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 #align closure_singleton closure_singleton
 
@@ -745,14 +745,14 @@ theorem Dense.diff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set 
   exact (Finite.coe_toFinset _).symm
 #align dense.diff_finite Dense.diff_finite
 
-/-- If a function to a `T1Space` tends to some limit `b` at some point `a`, then necessarily
-`b = f a`. -/
-theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {a : X} {b : Y}
-    (h : Tendsto f (𝓝 a) (𝓝 b)) : f a = b :=
-  by_contra fun hfa : f a ≠ b =>
-    have fact₁ : {f a}ᶜ ∈ 𝓝 b := compl_singleton_mem_nhds hfa.symm
-    have fact₂ : Tendsto f (pure a) (𝓝 b) := h.comp (tendsto_id'.2 <| pure_le_nhds a)
-    fact₂ fact₁ (Eq.refl <| f a)
+/-- If a function to a `T1Space` tends to some limit `y` at some point `x`, then necessarily
+`y = f x`. -/
+theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
+    (h : Tendsto f (𝓝 x) (𝓝 y)) : f x = y :=
+  by_contra fun hfa : f x ≠ y =>
+    have fact₁ : {f x}ᶜ ∈ 𝓝 y := compl_singleton_mem_nhds hfa.symm
+    have fact₂ : Tendsto f (pure x) (𝓝 y) := h.comp (tendsto_id'.2 <| pure_le_nhds x)
+    fact₂ fact₁ (Eq.refl <| f x)
 #align eq_of_tendsto_nhds eq_of_tendsto_nhds
 
 theorem Filter.Tendsto.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y}
@@ -760,8 +760,8 @@ theorem Filter.Tendsto.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X →
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
 #align filter.tendsto.eventually_ne Filter.Tendsto.eventually_ne
 
-theorem ContinuousAt.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y} {a : X} {b : Y}
-    (hg1 : ContinuousAt g a) (hg2 : g a ≠ b) : ∀ᶠ z in 𝓝 a, g z ≠ b :=
+theorem ContinuousAt.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y} {x : X} {y : Y}
+    (hg1 : ContinuousAt g x) (hg2 : g x ≠ y) : ∀ᶠ z in 𝓝 x, g z ≠ y :=
   hg1.tendsto.eventually_ne hg2
 #align continuous_at.eventually_ne ContinuousAt.eventually_ne
 
@@ -772,10 +772,10 @@ theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b)
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
   Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
 
-/-- To prove a function to a `T1Space` is continuous at some point `a`, it suffices to prove that
-`f` admits *some* limit at `a`. -/
-theorem continuousAt_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {a : X} {b : Y}
-    (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a := by
+/-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
+`f` admits *some* limit at `x`. -/
+theorem continuousAt_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
+    (h : Tendsto f (𝓝 x) (𝓝 y)) : ContinuousAt f x := by
   rwa [ContinuousAt, eq_of_tendsto_nhds h]
 #align continuous_at_of_tendsto_nhds continuousAt_of_tendsto_nhds
 
@@ -1057,12 +1057,12 @@ are useful without a `Nonempty X` instance.
 -/
 
 
-theorem lim_eq {a : X} [NeBot f] (h : f ≤ 𝓝 a) : @lim _ _ ⟨a⟩ f = a :=
-  tendsto_nhds_unique (le_nhds_lim ⟨a, h⟩) h
+theorem lim_eq {x : X} [NeBot f] (h : f ≤ 𝓝 x) : @lim _ _ ⟨x⟩ f = x :=
+  tendsto_nhds_unique (le_nhds_lim ⟨x, h⟩) h
 set_option linter.uppercaseLean3 false in
 #align Lim_eq lim_eq
 
-theorem lim_eq_iff [NeBot f] (h : ∃ a : X, f ≤ nhds a) {a} : @lim _ _ ⟨a⟩ f = a ↔ f ≤ 𝓝 a :=
+theorem lim_eq_iff [NeBot f] (h : ∃ x : X, f ≤ nhds x) {x} : @lim _ _ ⟨x⟩ f = x ↔ f ≤ 𝓝 x :=
   ⟨fun c => c ▸ le_nhds_lim h, lim_eq⟩
 set_option linter.uppercaseLean3 false in
 #align Lim_eq_iff lim_eq_iff
@@ -1082,42 +1082,42 @@ theorem isOpen_iff_ultrafilter' [CompactSpace X] (U : Set X) :
   exact cond _ hx
 #align is_open_iff_ultrafilter' isOpen_iff_ultrafilter'
 
-theorem Filter.Tendsto.limUnder_eq {a : X} {f : Filter Y} [NeBot f] {g : Y → X}
-    (h : Tendsto g f (𝓝 a)) : @limUnder _ _ _ ⟨a⟩ f g = a :=
+theorem Filter.Tendsto.limUnder_eq {x : X} {f : Filter Y} [NeBot f] {g : Y → X}
+    (h : Tendsto g f (𝓝 x)) : @limUnder _ _ _ ⟨x⟩ f g = x :=
   lim_eq h
 #align filter.tendsto.lim_eq Filter.Tendsto.limUnder_eq
 
-theorem Filter.limUnder_eq_iff {f : Filter Y} [NeBot f] {g : Y → X} (h : ∃ a, Tendsto g f (𝓝 a))
-    {a} : @limUnder _ _ _ ⟨a⟩ f g = a ↔ Tendsto g f (𝓝 a) :=
+theorem Filter.limUnder_eq_iff {f : Filter Y} [NeBot f] {g : Y → X} (h : ∃ x, Tendsto g f (𝓝 x))
+    {x} : @limUnder _ _ _ ⟨x⟩ f g = x ↔ Tendsto g f (𝓝 x) :=
   ⟨fun c => c ▸ tendsto_nhds_limUnder h, Filter.Tendsto.limUnder_eq⟩
 #align filter.lim_eq_iff Filter.limUnder_eq_iff
 
-theorem Continuous.limUnder_eq [TopologicalSpace Y] {f : Y → X} (h : Continuous f) (a : Y) :
-    @limUnder _ _ _ ⟨f a⟩ (𝓝 a) f = f a :=
-  (h.tendsto a).limUnder_eq
+theorem Continuous.limUnder_eq [TopologicalSpace Y] {f : Y → X} (h : Continuous f) (y : Y) :
+    @limUnder _ _ _ ⟨f y⟩ (𝓝 y) f = f y :=
+  (h.tendsto y).limUnder_eq
 #align continuous.lim_eq Continuous.limUnder_eq
 
 @[simp]
-theorem lim_nhds (a : X) : @lim _ _ ⟨a⟩ (𝓝 a) = a :=
+theorem lim_nhds (x : X) : @lim _ _ ⟨x⟩ (𝓝 x) = x :=
   lim_eq le_rfl
 set_option linter.uppercaseLean3 false in
 #align Lim_nhds lim_nhds
 
 @[simp]
-theorem limUnder_nhds_id (a : X) : @limUnder _ _ _ ⟨a⟩ (𝓝 a) id = a :=
-  lim_nhds a
+theorem limUnder_nhds_id (x : X) : @limUnder _ _ _ ⟨x⟩ (𝓝 x) id = x :=
+  lim_nhds x
 #align lim_nhds_id limUnder_nhds_id
 
 @[simp]
-theorem lim_nhdsWithin {a : X} {s : Set X} (h : a ∈ closure s) : @lim _ _ ⟨a⟩ (𝓝[s] a) = a :=
-  haveI : NeBot (𝓝[s] a) := mem_closure_iff_clusterPt.1 h
+theorem lim_nhdsWithin {x : X} {s : Set X} (h : x ∈ closure s) : @lim _ _ ⟨x⟩ (𝓝[s] x) = x :=
+  haveI : NeBot (𝓝[s] x) := mem_closure_iff_clusterPt.1 h
   lim_eq inf_le_left
 set_option linter.uppercaseLean3 false in
 #align Lim_nhds_within lim_nhdsWithin
 
 @[simp]
-theorem limUnder_nhdsWithin_id {a : X} {s : Set X} (h : a ∈ closure s) :
-    @limUnder _ _ _ ⟨a⟩ (𝓝[s] a) id = a :=
+theorem limUnder_nhdsWithin_id {x : X} {s : Set X} (h : x ∈ closure s) :
+    @limUnder _ _ _ ⟨x⟩ (𝓝[s] x) id = x :=
   lim_nhdsWithin h
 #align lim_nhds_within_id limUnder_nhdsWithin_id
 
@@ -1511,11 +1511,11 @@ class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
 
 theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
     List.TFAE [RegularSpace X,
-      ∀ (s : Set X) a, a ∉ closure s → Disjoint (𝓝ˢ s) (𝓝 a),
-      ∀ (a : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 a) ↔ a ∉ closure s,
-      ∀ (a : X) (s : Set X), s ∈ 𝓝 a → ∃ t ∈ 𝓝 a, IsClosed t ∧ t ⊆ s,
-      ∀ a : X, (𝓝 a).lift' closure ≤ 𝓝 a,
-      ∀ a : X , (𝓝 a).lift' closure = 𝓝 a] := by
+      ∀ (s : Set X) x, x ∉ closure s → Disjoint (𝓝ˢ s) (𝓝 x),
+      ∀ (x : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s,
+      ∀ (x : X) (s : Set X), s ∈ 𝓝 x → ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s,
+      ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x,
+      ∀ x : X , (𝓝 x).lift' closure = 𝓝 x] := by
   tfae_have 1 ↔ 5
   · rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
@@ -1543,7 +1543,7 @@ theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
   tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
-theorem RegularSpace.ofLift'_closure (h : ∀ a : X, (𝓝 a).lift' closure = 𝓝 a) : RegularSpace X :=
+theorem RegularSpace.ofLift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
 #align regular_space.of_lift'_closure RegularSpace.ofLift'_closure
 
@@ -1554,57 +1554,57 @@ theorem RegularSpace.ofBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : 
 #align regular_space.of_basis RegularSpace.ofBasis
 
 theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
-    (h : ∀ (a : X), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 a, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
+    (h : ∀ (x : X), ∀ s ∈ 𝓝 x, ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset
 
-variable [RegularSpace X] {a : X} {s : Set X}
+variable [RegularSpace X] {x : X} {s : Set X}
 
-theorem disjoint_nhdsSet_nhds : Disjoint (𝓝ˢ s) (𝓝 a) ↔ a ∉ closure s := by
+theorem disjoint_nhdsSet_nhds : Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s := by
   have h := (regularSpace_TFAE X).out 0 2
   exact h.mp ‹_› _ _
 #align disjoint_nhds_set_nhds disjoint_nhdsSet_nhds
 
-theorem disjoint_nhds_nhdsSet : Disjoint (𝓝 a) (𝓝ˢ s) ↔ a ∉ closure s :=
+theorem disjoint_nhds_nhdsSet : Disjoint (𝓝 x) (𝓝ˢ s) ↔ x ∉ closure s :=
   disjoint_comm.trans disjoint_nhdsSet_nhds
 #align disjoint_nhds_nhds_set disjoint_nhds_nhdsSet
 
-theorem exists_mem_nhds_isClosed_subset {a : X} {s : Set X} (h : s ∈ 𝓝 a) :
-    ∃ t ∈ 𝓝 a, IsClosed t ∧ t ⊆ s := by
+theorem exists_mem_nhds_isClosed_subset {x : X} {s : Set X} (h : s ∈ 𝓝 x) :
+    ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s := by
   have h' := (regularSpace_TFAE X).out 0 3
   exact h'.mp ‹_› _ _ h
 #align exists_mem_nhds_is_closed_subset exists_mem_nhds_isClosed_subset
 
-theorem closed_nhds_basis (a : X) : (𝓝 a).HasBasis (fun s : Set X => s ∈ 𝓝 a ∧ IsClosed s) id :=
+theorem closed_nhds_basis (x : X) : (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsClosed s) id :=
   hasBasis_self.2 fun _ => exists_mem_nhds_isClosed_subset
 #align closed_nhds_basis closed_nhds_basis
 
-theorem lift'_nhds_closure (a : X) : (𝓝 a).lift' closure = 𝓝 a :=
-  (closed_nhds_basis a).lift'_closure_eq_self fun _ => And.right
+theorem lift'_nhds_closure (x : X) : (𝓝 x).lift' closure = 𝓝 x :=
+  (closed_nhds_basis x).lift'_closure_eq_self fun _ => And.right
 #align lift'_nhds_closure lift'_nhds_closure
 
-theorem Filter.HasBasis.nhds_closure {ι : Sort*} {a : X} {p : ι → Prop} {s : ι → Set X}
-    (h : (𝓝 a).HasBasis p s) : (𝓝 a).HasBasis p fun i => closure (s i) :=
-  lift'_nhds_closure a ▸ h.lift'_closure
+theorem Filter.HasBasis.nhds_closure {ι : Sort*} {x : X} {p : ι → Prop} {s : ι → Set X}
+    (h : (𝓝 x).HasBasis p s) : (𝓝 x).HasBasis p fun i => closure (s i) :=
+  lift'_nhds_closure x ▸ h.lift'_closure
 #align filter.has_basis.nhds_closure Filter.HasBasis.nhds_closure
 
-theorem hasBasis_nhds_closure (a : X) : (𝓝 a).HasBasis (fun s => s ∈ 𝓝 a) closure :=
-  (𝓝 a).basis_sets.nhds_closure
+theorem hasBasis_nhds_closure (x : X) : (𝓝 x).HasBasis (fun s => s ∈ 𝓝 x) closure :=
+  (𝓝 x).basis_sets.nhds_closure
 #align has_basis_nhds_closure hasBasis_nhds_closure
 
-theorem hasBasis_opens_closure (a : X) : (𝓝 a).HasBasis (fun s => a ∈ s ∧ IsOpen s) closure :=
-  (nhds_basis_opens a).nhds_closure
+theorem hasBasis_opens_closure (x : X) : (𝓝 x).HasBasis (fun s => x ∈ s ∧ IsOpen s) closure :=
+  (nhds_basis_opens x).nhds_closure
 #align has_basis_opens_closure hasBasis_opens_closure
 
 theorem TopologicalSpace.IsTopologicalBasis.nhds_basis_closure {B : Set (Set X)}
-    (hB : IsTopologicalBasis B) (a : X) :
-    (𝓝 a).HasBasis (fun s : Set X => a ∈ s ∧ s ∈ B) closure := by
+    (hB : IsTopologicalBasis B) (x : X) :
+    (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ s ∈ B) closure := by
   simpa only [and_comm] using hB.nhds_hasBasis.nhds_closure
 #align topological_space.is_topological_basis.nhds_basis_closure TopologicalSpace.IsTopologicalBasis.nhds_basis_closure
 
 theorem TopologicalSpace.IsTopologicalBasis.exists_closure_subset {B : Set (Set X)}
-    (hB : IsTopologicalBasis B) {a : X} {s : Set X} (h : s ∈ 𝓝 a) :
-    ∃ t ∈ B, a ∈ t ∧ closure t ⊆ s := by
+    (hB : IsTopologicalBasis B) {x : X} {s : Set X} (h : s ∈ 𝓝 x) :
+    ∃ t ∈ B, x ∈ t ∧ closure t ⊆ s := by
   simpa only [exists_prop, and_assoc] using hB.nhds_hasBasis.nhds_closure.mem_iff.mp h
 #align topological_space.is_topological_basis.exists_closure_subset TopologicalSpace.IsTopologicalBasis.exists_closure_subset
 
