@@ -42,7 +42,7 @@ def LinearProgram.feasibles (lp : LinearProgram K P) : Set P :=
 
 lemma oh_come_on {k : K} (hk_pos : 0 ≤ k) (hk_neg : 0 ≤ -k) : 0 = k := by
   rw [neg_nonneg] at hk_neg
-  sorry
+  exact le_antisymm hk_pos hk_neg
 
 lemma LinearProgram.feasibles_mkOfEqs
     (equalities inequalities : List (P →ᵃ[K] K)) (objective : P →ᵃ[K] K) :
@@ -51,15 +51,16 @@ lemma LinearProgram.feasibles_mkOfEqs
   ext x
   constructor
   · intro hyp
-    simp only [Set.mem_setOf_eq]
-    simp only [LinearProgram.feasibles, LinearProgram.mkOfEqs] at hyp
-    simp only [List.append_assoc, List.mem_append, List.mem_map, neg_involutive,
-      Function.Involutive.exists_mem_and_apply_eq_iff, Set.mem_setOf_eq] at hyp
+    rw [Set.mem_setOf_eq]
+    simp only [LinearProgram.feasibles, LinearProgram.mkOfEqs,
+      List.append_assoc, List.mem_append, List.mem_map, Set.mem_setOf_eq,
+      Function.Involutive.exists_mem_and_apply_eq_iff, neg_involutive] at hyp
     constructor
     · intro constr_eq mem_equalities
       have hyp_pos := hyp constr_eq (by simp [mem_equalities])
       have hyp_neg := hyp (-constr_eq) (by simp [mem_equalities])
-      exact (oh_come_on hyp_pos hyp_neg).symm
+      simp only [AffineMap.coe_neg, Pi.neg_apply, Left.nonneg_neg_iff] at hyp_neg
+      exact le_antisymm hyp_neg hyp_pos
     · intro constr_le mem_inequalities
       exact hyp constr_le (by simp [mem_inequalities])
   · intro hyp
