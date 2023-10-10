@@ -299,7 +299,7 @@ theorem IsPrefix.filter_map (h : l₁ <+: l₂) (f : α → Option β) :
       exact hl h.right
 #align list.is_prefix.filter_map List.IsPrefix.filter_map
 
-theorem isPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
+theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
   h.filter_map id
 #align list.is_prefix.reduce_option List.isPrefix.reduceOption
