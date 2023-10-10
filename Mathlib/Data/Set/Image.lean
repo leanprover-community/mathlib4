@@ -158,8 +158,7 @@ lemma exists_eq_const_of_preimage_singleton [Nonempty β] {f : α → β}
   · exact ⟨b, funext fun x ↦ eq_univ_iff_forall.1 hb x⟩
   · have : ∀ x b, f x ≠ b := fun x b ↦
       eq_empty_iff_forall_not_mem.1 ((hf b).resolve_right fun h ↦ hf' ⟨b, h⟩) x
-    inhabit β
-    exact ⟨default, funext fun x ↦ absurd rfl (this x _)⟩
+    exact ⟨Classical.arbitrary β, funext fun x ↦ absurd rfl (this x _)⟩
 
 theorem preimage_comp {s : Set γ} : g ∘ f ⁻¹' s = f ⁻¹' (g ⁻¹' s) :=
   rfl
