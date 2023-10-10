@@ -10,17 +10,16 @@ import Mathlib.Computability.Language
 
 This file contains the definition of a Context-Free Grammar (CFG), which is a grammar that has a
 single nonterminal symbol on the left-hand side of each rule.
-Derivation by a grammar is inherently nondeterministic.
 -/
 
 /-- The type of symbols is the disjoint union of terminals `T` and nonterminals `N`. -/
-inductive Symbol (T : Type*) (N : Type*)
+inductive Symbol (T : Type _) (N : Type _)
   /-- Terminal symbols (of the same type as the language) -/
   | terminal    (t : T) : Symbol T N
   /-- Nonterminal symbols (must not be present at the end of word being generated) -/
   | nonterminal (n : N) : Symbol T N
-  -- If we have `[BEq T]` and `[BEq N]` then `[BEq (Symbol T N)]` is added.
-  deriving BEq
+  -- If we have `[DecidableEq T]` and `[DecidableEq N]` then `[DecidableEq (Symbol T N)]` is added.
+  deriving DecidableEq
 
 /-- Rule that rewrites a single nonterminal to any list of symbols. -/
 structure ContextFreeRule (T : Type _) (N : Type _) where
@@ -76,10 +75,10 @@ theorem ContextFreeRule.rewritesTo_iff {N : Type _} {r : ContextFreeRule T N}
       ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
         u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
   constructor
-  · apply ContextFreeRule.RewritesTo.toParts
+  · apply ContextFreeRule.RewritesTo.exists_parts
   · rintro ⟨p, q, bef, aft⟩
     rw [bef, aft]
-    apply ContextFreeRule.rewritesTo_of_parts
+    apply ContextFreeRule.rewritesTo_of_exists_parts
 
 namespace ContextFreeGrammar
 
