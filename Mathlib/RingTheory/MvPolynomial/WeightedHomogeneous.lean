@@ -527,7 +527,7 @@ theorem weightedDegree_eq_zero_iff (hw : NonTrivialWeight w) (m : σ →₀ ℕ)
   intro x
   rw [Finsupp.mem_support_iff]
   constructor
-  . intro hx
+  · intro hx
     by_contra hx'
     exact absurd (hw _ _ (hx hx')) hx'
   . intro hax _
