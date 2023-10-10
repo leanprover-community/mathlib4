@@ -71,7 +71,7 @@ protected def ringCon (I : Ideal R) : RingCon R :=
 
 instance commRing (I : Ideal R) : CommRing (R ⧸ I) :=
   { inferInstanceAs (CommRing (Quotient.ringCon I).Quotient) with
-    -- Help unification with the submonoid instances by ensuring the right unfolding happens.
+    -- Help unification with the submodule instances by ensuring the right unfolding happens.
     toRing.toSemiring.toAddCommMonoid := (Submodule.Quotient.addCommGroup _).toAddCommMonoid
     toRing.toNeg := (Submodule.Quotient.addCommGroup _).toNeg
     toRing.toSub := (Submodule.Quotient.addCommGroup _).toSub }
