@@ -530,7 +530,7 @@ theorem weightedDegree_eq_zero_iff (hw : NonTrivialWeight w) (m : σ →₀ ℕ)
   · intro hx
     by_contra hx'
     exact absurd (hw _ _ (hx hx')) hx'
-  . intro hax _
+  · intro hax _
     simp only [hax, zero_smul]
 
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :
