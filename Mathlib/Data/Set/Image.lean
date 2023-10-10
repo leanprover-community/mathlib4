@@ -492,17 +492,6 @@ theorem image_preimage_subset (f : α → β) (s : Set β) : f '' (f ⁻¹' s) �
   image_subset_iff.2 Subset.rfl
 #align set.image_preimage_subset Set.image_preimage_subset
 
--- Phrased in terms of f '' univ, as `Set.range` is only defined further below.
-theorem image_preimage_eq_subset' {f : α → β} {s : Set β} (hs : s ⊆ f '' univ) :
-    f '' (f ⁻¹' s) = s := by
-  apply Subset.antisymm (image_preimage_subset f s)
-  intro x hx
-  -- Choose y such that f y = x.
-  obtain ⟨y, _, hy⟩ := hs hx
-  refine ⟨y, ?_, hy⟩
-  rw [mem_preimage, hy]
-  exact hx
-
 theorem subset_preimage_image (f : α → β) (s : Set α) : s ⊆ f ⁻¹' (f '' s) := fun _ =>
   mem_image_of_mem f
 #align set.subset_preimage_image Set.subset_preimage_image
