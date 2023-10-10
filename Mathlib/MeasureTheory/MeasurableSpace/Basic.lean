@@ -611,7 +611,7 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
 #align measurable.subtype_mk Measurable.subtype_mk
 
 @[measurability]
-theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
+protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
     Measurable (rangeFactorization f) :=
   hf.subtype_mk
 
