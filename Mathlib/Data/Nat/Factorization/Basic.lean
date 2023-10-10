@@ -122,7 +122,8 @@ theorem factorization_zero : factorization 0 = 0 := by simp [factorization]
 theorem factorization_one : factorization 1 = 0 := by simp [factorization]
 #align nat.factorization_one Nat.factorization_one
 
-abbrev primeDivisors (n : ℕ) := n.factorization.support
+/-- The `Finset` of prime divisors of `n` -/
+abbrev primeDivisors (n : ℕ) : Finset ℕ := n.factorization.support
 
 @[simp]
 theorem primeDivisors_zero : primeDivisors 0 = ∅ := by simp [primeDivisors]
