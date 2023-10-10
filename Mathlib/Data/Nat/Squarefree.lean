@@ -386,7 +386,7 @@ theorem squarefree_mul_iff {m n : ℕ} :
   ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
     fun h => (squarefree_mul h.1).mpr h.2⟩
 
-theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
+theorem prod_primeDivisors_of_squarefree {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.primeDivisors, p = n := by
   rw [primeDivisors_eq_factors, List.prod_toFinset _ hn.nodup_factors, List.map_id'',
     Nat.prod_factors hn.ne_zero]

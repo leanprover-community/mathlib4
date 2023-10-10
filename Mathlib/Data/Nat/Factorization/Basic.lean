@@ -703,9 +703,9 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   exact (min_add_max _ _).symm
 #align nat.factorization_lcm Nat.factorization_lcm
 
-@[to_additive sum_factors_gcd_add_sum_factors_mul]
-theorem prod_factors_gcd_mul_prod_factors_mul {β : Type*} [CommMonoid β] (m n : ℕ) (f : ℕ → β) :
-    (m.gcd n).primeDivisors.prod f * (m * n).primeDivisors.prod f =
+@[to_additive sum_primeDivisors_gcd_add_sum_primeDivisors_mul]
+theorem prod_primeDivisors_gcd_mul_prod_primeDivisors_mul {β : Type*} [CommMonoid β] (m n : ℕ)
+    (f : ℕ → β) : (m.gcd n).primeDivisors.prod f * (m * n).primeDivisors.prod f =
       m.primeDivisors.prod f * n.primeDivisors.prod f := by
   rcases eq_or_ne n 0 with (rfl | hm0)
   · simp
@@ -715,8 +715,10 @@ theorem prod_factors_gcd_mul_prod_factors_mul {β : Type*} [CommMonoid β] (m n 
   congr
   · apply factors_mul_toFinset <;> assumption
   · simp only [primeDivisors_eq_factorization, factorization_gcd hn0 hm0, Finsupp.support_inf]
-#align nat.prod_factors_gcd_mul_prod_factors_mul Nat.prod_factors_gcd_mul_prod_factors_mul
-#align nat.sum_factors_gcd_add_sum_factors_mul Nat.sum_factors_gcd_add_sum_factors_mul
+#align nat.prod_factors_gcd_mul_prod_factors_mul Nat.prod_primeDivisors_gcd_mul_prod_primeDivisors_mul
+#align nat.sum_factors_gcd_add_sum_factors_mul Nat.sum_primeDivisors_gcd_add_sum_primeDivisors_mul
+
+
 
 theorem setOf_pow_dvd_eq_Icc_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     { i : ℕ | i ≠ 0 ∧ p ^ i ∣ n } = Set.Icc 1 (n.factorization p) := by
