@@ -88,7 +88,7 @@ def Produces (g : ContextFreeGrammar T) (u v : List (Symbol T g.NT)) : Prop :=
   ∃ r ∈ g.rules, r.RewritesTo u v
 
 /-- Any number of steps of context-free transformation. -/
-def Derives (g : ContextFreeGrammar T) : List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
+abbrev Derives (g : ContextFreeGrammar T) : List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
   Relation.ReflTransGen g.Produces
 
 /-- Accepts a word (a list of terminals) iff it can be derived from the initial nonterminal. -/
