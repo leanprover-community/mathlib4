@@ -91,7 +91,7 @@ instance inhabitedCfg : Inhabited (Cfg tm) :=
 def step : tm.Cfg → Option tm.Cfg :=
   Turing.TM2.step tm.m
 #align turing.fin_tm2.step Turing.FinTM2.step
- 
+
 end
 
 end FinTM2
@@ -315,32 +315,32 @@ instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
 #align turing.inhabited_tm2_computable_aux Turing.inhabitedTM2ComputableAux
 
-/--
-A (TM2) Multi-tape Turing Machine composing the operations of two other Multi-tape Turing Machines.
-This machine should work by first carrying out the oppertions of the first machine on the subset of
-tapes associated with the first machine, then copying the output tape of the first machine to the
-input tape of the second machine, then running the second machine.
--/
-def compose {α β γ : Type} (eα : FinEncoding α) (eβ : FinEncoding β) (eγ : FinEncoding γ)
-  (m1 m2 : FinTM2) : FinTM2 where
-    K := m1.K ⊕ m2.K
-    kDecidableEq := sorry
-    kFin := sorry
-    k₀ := Sum.inl m1.k₀
-    k₁ := Sum.inr m2.k₁
-    Γ := Sum.elim m1.Γ m2.Γ
-    Λ := Unit ⊕ m1.Λ ⊕ m2.Λ
-    main := Sum.inl ()
-    ΛFin := sorry
-    σ := m1.σ ⊕ m2.σ
-    initialState := Sum.inl m1.initialState
-    σFin := sorry
-    Γk₀Fin := sorry
-    m := sorry
+-- /--
+-- A (TM2) Multi-tape Turing Machine composing the operations of two other Multi-tape Turing Machines.
+-- This machine should work by first carrying out the oppertions of the first machine on the subset of
+-- tapes associated with the first machine, then copying the output tape of the first machine to the
+-- input tape of the second machine, then running the second machine.
+-- -/
+-- def compose {α β γ : Type} (eα : FinEncoding α) (eβ : FinEncoding β) (eγ : FinEncoding γ)
+--   (m1 m2 : FinTM2) : FinTM2 where
+--     K := m1.K ⊕ m2.K
+--     kDecidableEq := sorry
+--     kFin := sorry
+--     k₀ := Sum.inl m1.k₀
+--     k₁ := Sum.inr m2.k₁
+--     Γ := Sum.elim m1.Γ m2.Γ
+--     Λ := Unit ⊕ m1.Λ ⊕ m2.Λ
+--     main := Sum.inl ()
+--     ΛFin := sorry
+--     σ := m1.σ ⊕ m2.σ
+--     initialState := Sum.inl m1.initialState
+--     σFin := sorry
+--     Γk₀Fin := sorry
+--     m := sorry
 
-lemma the_function_compose_compute_is_the_composition_of_the_functions_its_arguments_compute : sorry := sorry
+-- lemma the_function_compose_compute_is_the_composition_of_the_functions_its_arguments_compute : sorry := sorry
 
-lemma a_composition_of_polytime_machines_is_polytime : sorry := sorry
+-- lemma a_composition_of_polytime_machines_is_polytime : sorry := sorry
 
 end
 
