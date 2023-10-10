@@ -7,7 +7,7 @@ open CategoryTheory Category Limits Preadditive ZeroObject
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category C]
 
 namespace Functor
 
@@ -75,6 +75,56 @@ lemma ofSequence_map_of_le_succ (n : ℕ) :
   OfSequence.map_of_le_succ f n
 
 end Functor
+
+namespace NatTrans
+
+variable {C : Type*} [Category C]
+
+section
+
+variable {F G : ℕ ⥤ C} (app : ∀ (n : ℕ), F.obj n ⟶ G.obj n)
+
+def functorNat (H : ∀ (n : ℕ), F.map (homOfLE (by linarith)) ≫ app (n + 1) =
+      app n ≫ G.map (homOfLE (by linarith))) : F ⟶ G where
+  app := app
+  naturality := by
+    suffices ∀ (k : ℕ) (i j : ℕ) (h : i + k = j), F.map (homOfLE (by linarith)) ≫ app j =
+        app i ≫ G.map (homOfLE (by linarith)) by
+      intro i j φ
+      obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (leOfHom φ)
+      exact this k i _ rfl
+    intro k
+    induction' k with k hk
+    · intro i j h
+      obtain rfl : j = i := by linarith
+      erw [F.map_id, G.map_id, id_comp, comp_id]
+    · intro i j h
+      obtain rfl : j = i + k + 1 := by linarith
+      simp only [← homOfLE_comp (show i ≤ i + k by linarith) (show i + k ≤ i + k + 1 by linarith),
+        Functor.map_comp, assoc, H (i + k), reassoc_of% (hk i _ rfl)]
+
+@[simp]
+lemma functorNat_app (H : ∀ (n : ℕ), F.map (homOfLE (by linarith)) ≫ app (n + 1) =
+      app n ≫ G.map (homOfLE (by linarith))) (n : ℕ) :
+  (functorNat app H).app n = app n := rfl
+
+end
+
+variable {F G : ℕᵒᵖ ⥤ C} (app : ∀ (n : ℕ), F.obj (Opposite.op n) ⟶ G.obj (Opposite.op n))
+
+def functorNatOp
+    (H : ∀ (n : ℕ), F.map (homOfLE (by linarith)).op ≫ app n =
+      app (n + 1) ≫ G.map (homOfLE (by linarith)).op) : F ⟶ G :=
+  NatTrans.leftOp (@functorNat _ _ G.rightOp F.rightOp (fun n => (app n).op) (fun n => by
+    dsimp
+    simp only [← op_comp, H]))
+
+@[simp]
+lemma functorNatOp_app (H : ∀ (n : ℕ), F.map (homOfLE (by linarith)).op ≫ app n =
+      app (n + 1) ≫ G.map (homOfLE (by linarith)).op) (n : ℕ) :
+    (functorNatOp app H).app (Opposite.op n) = app n := rfl
+
+end NatTrans
 
 end CategoryTheory
 
@@ -546,6 +596,13 @@ instance : Category (HomFactorization f) where
 lemma hom_ext (f g : F₁ ⟶ F₂) (h : f.φ = g.φ) : f = g :=
   Hom.ext f g h
 
+variable (f)
+
+@[simps]
+def forget : HomFactorization f ⥤ C where
+  obj F := F.I
+  map f := f.φ
+
 end HomFactorization
 
 end CategoryTheory
@@ -574,6 +631,9 @@ instance : Category (CofFibFactorization f) := by
   infer_instance
 
 namespace CofFibFactorization
+
+def forget : CofFibFactorization f ⥤ HomFactorization f :=
+  fullSubcategoryInclusion _
 
 variable {f}
 variable (F : CofFibFactorization f)
@@ -1000,23 +1060,178 @@ noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (
 noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) : (F.next n₁ hn₁).1 ⟶ F.1 :=
   (step' f _ _ hn₁ F).choose_spec.choose
 
-lemma isIso_from_next_φ_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) (i : ℤ) (hi : i ≤ n₀) :
+lemma isIso_fromNext_φ_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀) (n₁ : ℤ) (hn₁ : n₁ = n₀ + 1) (i : ℤ) (hi : i ≤ n₀) :
     IsIso ((F.fromNext n₁ hn₁).φ.f i) :=
   (step' f _ _ hn₁ F).choose_spec.choose_spec i hi
+
+variable (f)
 
 noncomputable def sequence [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)] :
     ∀ (q : ℕ), CofFibFactorizationQuasiIsoLE f (n₀ + q)
   | 0 => zero f n₀
   | (q + 1) => (sequence n₀ q).next _ (by rw [Nat.cast_add, Nat.cast_one, add_assoc])
 
+noncomputable def sequenceFromNext
+    [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)] (q : ℕ) :
+    (sequence f n₀ (q + 1)).1 ⟶ (sequence f n₀ q).1 :=
+  fromNext _ _ _
+
 end CofFibFactorizationQuasiIsoLE
+
+variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
+
+noncomputable def inverseSystem : ℕᵒᵖ ⥤ CofFibFactorization f :=
+  (Functor.ofSequence (fun q => (CofFibFactorizationQuasiIsoLE.sequenceFromNext f n₀ q).op)).leftOp
+
+noncomputable def inverseSystemI : ℕᵒᵖ ⥤ CochainComplex C ℤ :=
+  inverseSystem f n₀ ⋙ CofFibFactorization.forget f ⋙ HomFactorization.forget f
+
+instance : HasLimit (inverseSystemI f n₀) := sorry
+
+noncomputable def I := limit (inverseSystemI f n₀)
+
+noncomputable def cone : Cone (inverseSystemI f n₀) where
+  pt := K
+  π :=
+    { app := fun n => ((inverseSystem f n₀).obj n).1.i
+      naturality := fun i j φ => by
+        dsimp
+        rw [id_comp]
+        exact ((inverseSystem f n₀).map φ).commi.symm }
+
+noncomputable def i : K ⟶ I f n₀ := limit.lift (inverseSystemI f n₀) (cone f n₀)
+
+noncomputable def p : I f n₀ ⟶ L :=
+  limit.π _ (Opposite.op 0) ≫ ((inverseSystem f n₀).obj ((Opposite.op 0))).1.p
+
+@[reassoc (attr := simp)]
+lemma fac : i f n₀ ≫ p f n₀ = f := by simp [i, p, cone]
+
+instance : Mono (i f n₀) := mono_of_mono_fac (fac f n₀)
+
+lemma isIso_inverseSystemI_map_succ (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) :
+    IsIso (((inverseSystemI f n₀).map ((homOfLE (show n ≤ n + 1 by linarith)).op)).f q) := by
+  dsimp only [inverseSystemI, inverseSystem]
+  simp only [Functor.comp_obj, Functor.leftOp_obj, Opposite.unop_op, Functor.ofSequence_obj,
+    HomFactorization.forget_obj, Functor.comp_map, Functor.leftOp_map, Quiver.Hom.unop_op,
+    Functor.ofSequence_map_of_le_succ, HomFactorization.forget_map]
+  change IsIso ((CofFibFactorizationQuasiIsoLE.sequenceFromNext f n₀ n).1.f q)
+  apply CofFibFactorizationQuasiIsoLE.isIso_fromNext_φ_f
+  simpa only [Nat.add_eq, add_zero] using hq
+
+lemma isIso_inverseSystemI_map' (n n' : ℕ) (h : n ≤ n')
+    (q : ℤ) (hq : q ≤ n₀ + n) : IsIso (((inverseSystemI f n₀).map (homOfLE h).op).f q) := by
+  suffices ∀ (k n n' : ℕ) (h : n + k = n') (q : ℤ) (_ : q ≤ n₀ + n),
+      IsIso (((inverseSystemI f n₀).map (homOfLE (show n ≤ n' by linarith)).op).f q) by
+    obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
+    exact this k n _ rfl q hq
+  intro k
+  induction' k with k hk
+  · intro n n' h
+    obtain rfl : n = n' := by linarith
+    intro q _
+    have : homOfLE (show n ≤ n by rfl) = 𝟙 _ := rfl
+    rw [this, op_id, (inverseSystemI f n₀).map_id, id_f]
+    infer_instance
+  · intro n n'' h q hq
+    let n' := n + k
+    have := hk n n' rfl q hq
+    rw [← homOfLE_comp (show n ≤ n' by linarith) (show n' ≤ n'' by linarith), op_comp,
+      (inverseSystemI f n₀).map_comp, comp_f]
+    obtain rfl : n'' = n' + 1 := by linarith
+    have := isIso_inverseSystemI_map_succ f n₀ n' q (by rw [Nat.cast_add]; linarith)
+    infer_instance
+
+lemma isIso_inverseSystemI_map {n n' : ℕ} (φ : Opposite.op n' ⟶ Opposite.op n)
+    (q : ℤ) (hq : q ≤ n₀ + n) : IsIso (((inverseSystemI f n₀).map φ).f q) :=
+  isIso_inverseSystemI_map' f n₀ n n' (leOfHom φ.unop) q hq
+
+noncomputable def p' (n : ℕ) : (inverseSystemI f n₀).obj (Opposite.op n) ⟶ L :=
+  ((inverseSystem f n₀).obj (Opposite.op n)).1.p
+
+@[simp]
+lemma p'_zero : p' f n₀ 0 = 𝟙 _ := rfl
+
+lemma w_p' (n n' : ℕ) (h : n ≤ n') :
+    ((inverseSystemI f n₀).map (homOfLE h).op) ≫ p' f n₀ n = p' f n₀ n' :=
+  ((inverseSystem f n₀).map (homOfLE h).op).commp
+
+lemma π_comp_p' (n : ℕ) : limit.π _ (Opposite.op n) ≫ p' f n₀ n = p f n₀ := by
+  dsimp [p]
+  rw [← limit.w (inverseSystemI f n₀) (homOfLE (show 0 ≤ n by linarith)).op, assoc,
+    (w_p' f n₀ 0 n _).symm]
+  rfl
+
+lemma isIso_π_f (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) :
+    IsIso ((limit.π (inverseSystemI f n₀) (Opposite.op n)).f q) := by
+  sorry
+
+lemma isIso_p_f (q : ℤ) (hq : q ≤ n₀) : IsIso ((p f n₀).f q) := by
+  rw [← π_comp_p' f n₀ 0, comp_f, p'_zero, id_f, comp_id]
+  apply isIso_π_f
+  rw [Nat.cast_zero, add_zero]
+  exact hq
+
+lemma degreewiseEpiWithInjectiveKernel_p :
+    degreewiseEpiWithInjectiveKernel (CM5aCof.p f n₀) := fun q => by
+  obtain ⟨n, hq⟩ : ∃ (n : ℕ), q ≤ n₀ + n :=
+    ⟨Int.toNat (q - n₀), by linarith [Int.self_le_toNat (q - n₀)]⟩
+  rw [← π_comp_p' f n₀ n, comp_f]
+  refine' MorphismProperty.comp_mem _ _ _ _ _
+  · have := isIso_π_f f n₀ n q hq
+    apply epiWithInjectiveKernel_of_iso
+  · exact ((inverseSystem f n₀).obj (Opposite.op n)).2.hp q
+
+
+noncomputable def i' (n : ℕ) : K ⟶ (inverseSystemI f n₀).obj (Opposite.op n) :=
+  ((inverseSystem f n₀).obj (Opposite.op n)).1.i
+
+lemma quasiIsoAt_i' (n : ℕ) (q : ℤ) (hq : q ≤ n₀ + n) : QuasiIsoAt (i' f n₀ n) q :=
+  (CofFibFactorizationQuasiIsoLE.sequence f n₀ n).2.quasiIsoAt q hq
+
+lemma quasiIsoAt_π_f (n : ℕ) (q : ℤ) (hq : q + 1 ≤ n₀ + n) :
+    QuasiIsoAt (limit.π (inverseSystemI f n₀) (Opposite.op n)) q := by
+  rw [quasiIsoAt_iff' _ (q-1) q (q + 1) (by simp) (by simp)]
+  have := isIso_π_f f n₀ n (q-1) (by linarith)
+  have := isIso_π_f f n₀ n q (by linarith)
+  have := isIso_π_f f n₀ n (q+1) (by linarith)
+  refine @ShortComplex.quasiIso_of_epi_of_isIso_of_mono _ _ _ _ _ _ _ _ ?_ ?_ ?_
+  all_goals
+    dsimp
+    infer_instance
+
+lemma i_π (n : ℕ) : i f n₀ ≫ (limit.π (inverseSystemI f n₀) (Opposite.op n)) = i' f n₀ n := by
+  apply limit.lift_π
+
+instance : QuasiIso (i f n₀) where
+  quasiIso q := by
+    obtain ⟨n, hq⟩ : ∃ (n : ℕ), q + 1 ≤ n₀ + n :=
+      ⟨Int.toNat (q + 1 - n₀), by linarith [Int.self_le_toNat (q + 1 - n₀)]⟩
+    have := quasiIsoAt_π_f f n₀ n q hq
+    rw [← quasiIsoAt_iff_comp_right _ (limit.π (inverseSystemI f n₀) (Opposite.op n)),
+      i_π]
+    exact quasiIsoAt_i' f n₀ n q  (by linarith)
+
+example (n : ℤ) : n ≤ n.toNat := by exact Int.self_le_toNat n
 
 end CM5aCof
 
-/-lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
+section
+
+lemma CM5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
-      (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f :=
-  sorry
+      (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
+  let n₀ := n - 1
+  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_GE (n₀ + 1) (n + 1) (by dsimp; linarith)
+  have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_GE (n₀ + 1) n (by dsimp; linarith)
+  have : (CM5aCof.I f n₀).IsStrictlyGE n := ⟨fun q hq =>
+    IsZero.of_iso (L.isZero_of_isStrictlyGE n q hq) (by
+      have := CM5aCof.isIso_p_f f n₀ q (by dsimp; linarith)
+      exact asIso ((CM5aCof.p f n₀).f q))⟩
+  exact ⟨_, inferInstance, CM5aCof.i f n₀, CM5aCof.p f n₀, inferInstance, inferInstance,
+    CM5aCof.degreewiseEpiWithInjectiveKernel_p f n₀, CM5aCof.fac f n₀⟩
+
+end
 
 lemma CM5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
@@ -1024,6 +1239,6 @@ lemma CM5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
   obtain ⟨L', _, i₁, p₁, _, hp₁, _, rfl⟩ := CM5b f n
   obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := CM5a_cof i₁ n
   refine' ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
-    MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩-/
+    MorphismProperty.comp_mem _ _ _ hp₂ hp₁, by simp⟩
 
 end CochainComplex

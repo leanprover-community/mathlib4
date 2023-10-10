@@ -63,6 +63,11 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
         comp_zero, add_zero, biprod.inl_snd_assoc, BinaryBicone.inr_snd_assoc, zero_add]
       rw [add_assoc, ← comp_add, ← assoc q', ← assoc g, ← add_comp, ← H', id_comp, H]
 
+lemma epiWithInjectiveKernel_of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    epiWithInjectiveKernel f := by
+  rw [epiWithInjectiveKernel_iff]
+  exact ⟨0, inferInstance, 0, inv f, 0, by simp, by simp, by simp, by simp, by simp⟩
+
 end CategoryTheory
 
 namespace CochainComplex

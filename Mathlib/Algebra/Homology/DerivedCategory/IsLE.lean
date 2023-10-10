@@ -26,10 +26,10 @@ class IsStrictlyGE : Prop where
 lemma isZero_of_isStrictlyGE (i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
     IsZero (K.X i) := IsStrictlyGE.isZero i hi
 
-lemma isStrictLE_of_LE (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
+lemma isStrictlyLE_of_LE (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
   K.IsStrictlyLE q := ⟨fun i hi => K.isZero_of_isStrictlyLE p i (by linarith)⟩
 
-lemma isStrictLE_of_GE (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyGE q] :
+lemma isStrictlyGE_of_GE (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyGE q] :
   K.IsStrictlyGE p := ⟨fun i hi => K.isZero_of_isStrictlyGE q i (by linarith)⟩
 
 lemma isStrictlyLE_shift [K.IsStrictlyLE n] (a n' : ℤ) (h : a + n' = n) :
