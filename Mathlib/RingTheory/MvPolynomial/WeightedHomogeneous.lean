@@ -360,8 +360,7 @@ theorem weightedHomogeneousComponent_isWeightedHomogeneous :
 #align mv_polynomial.weighted_homogeneous_component_is_weighted_homogeneous MvPolynomial.weightedHomogeneousComponent_isWeightedHomogeneous
 
 theorem weightedHomogeneousComponent_mem (w : σ → M) (φ : MvPolynomial σ R) (m : M) :
-    weightedHomogeneousComponent w m φ ∈ weightedHomogeneousSubmodule R w m :=
-  by
+    weightedHomogeneousComponent w m φ ∈ weightedHomogeneousSubmodule R w m := by
   rw [mem_weightedHomogeneousSubmodule]
   exact weightedHomogeneousComponent_isWeightedHomogeneous m φ
 
