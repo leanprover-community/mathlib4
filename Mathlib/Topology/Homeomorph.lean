@@ -118,12 +118,13 @@ protected def trans (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) : X ≃ₜ Z where
 #align homeomorph.trans Homeomorph.trans
 
 @[simp]
-theorem trans_apply (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) (a : X) : h₁.trans h₂ a = h₂ (h₁ a) :=
+theorem trans_apply (h₁ : X ≃ₜ Y) (h₂ : Y ≃ₜ Z) (x : X) : h₁.trans h₂ x = h₂ (h₁ x) :=
   rfl
 #align homeomorph.trans_apply Homeomorph.trans_apply
 
-@[simp] theorem symm_trans_apply (f : X ≃ₜ Y) (g : Y ≃ₜ Z) (a : Z) :
-    (f.trans g).symm a = f.symm (g.symm a) := rfl
+@[simp]
+theorem symm_trans_apply (f : X ≃ₜ Y) (g : Y ≃ₜ Z) (z : Z) :
+    (f.trans g).symm z = f.symm (g.symm z) := rfl
 
 @[simp]
 theorem homeomorph_mk_coe_symm (a : Equiv X Y) (b c) :
@@ -630,12 +631,12 @@ def prodSumDistrib : X × Sum Y Z ≃ₜ Sum (X × Y) (X × Z) :=
   (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
 #align homeomorph.prod_sum_distrib Homeomorph.prodSumDistrib
 
-variable {ι : Type*} {σ : ι → Type*} [∀ i, TopologicalSpace (σ i)]
+variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
-/-- `(Σ i, σ i) × Y` is homeomorphic to `Σ i, (σ i × Y)`. -/
-def sigmaProdDistrib : (Σi, σ i) × Y ≃ₜ Σi, σ i × Y :=
+/-- `(Σ i, X i) × Y` is homeomorphic to `Σ i, (X i × Y)`. -/
+def sigmaProdDistrib : (Σi, X i) × Y ≃ₜ Σi, X i × Y :=
   Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib σ Y).symm
+    homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
       (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)
       (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prod IsOpenMap.id)
 #align homeomorph.sigma_prod_distrib Homeomorph.sigmaProdDistrib
@@ -753,7 +754,7 @@ def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : 
   continuous_invFun := continuous_def.2 λ s ↦ by convert (he _).1; simp
 
 @[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
-lemma toHomeomorph_apply (e : X ≃ Y) (he) (a : X) : e.toHomeomorph he a = e a := rfl
+lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
 
 @[simp] lemma toHomeomorph_refl :
   (Equiv.refl X).toHomeomorph (λ _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
