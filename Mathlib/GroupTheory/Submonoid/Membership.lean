@@ -342,6 +342,17 @@ theorem closure_singleton_one : closure ({1} : Set M) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
 #align submonoid.closure_singleton_one Submonoid.closure_singleton_one
 
+open Fintype in
+lemma eq_bot_iff_card {S : Submonoid M} [Fintype S] : S = ⊥ ↔ card S = 1 := by
+  suffices (∀ x ∈ S, x = 1) ↔ ∃ x ∈ S, ∀ a ∈ S, a = x by
+    simpa [eq_bot_iff_forall, card_eq_one_iff]
+  constructor
+  · intro h
+    use 1, S.one_mem
+  · rintro ⟨y, -, hy'⟩ x hx
+    calc x = y := hy' x hx
+    _      = 1 := (hy' 1 S.one_mem).symm
+
 @[to_additive]
 theorem _root_.FreeMonoid.mrange_lift {α} (f : α → M) :
     mrange (FreeMonoid.lift f) = closure (Set.range f) := by
