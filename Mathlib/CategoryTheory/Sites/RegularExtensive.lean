@@ -291,13 +291,13 @@ instance {X : C} (S : Presieve X) [S.extensive]
 
 end ExtensiveSheafConditionProof
 
-open ExtensiveSheafConditionProof in
+open ExtensiveSheafConditionProof
+
 lemma isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
     (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] :
     Presieve.IsSheafFor F S := by
   refine' (Equalizer.Presieve.sheaf_condition F S).2 _
   rw [Limits.Types.type_equalizer_iff_unique]
-  dsimp [Equalizer.FirstObj]
   suffices : IsIso (Equalizer.forkMap F S)
   · intro y _
     refine' ⟨inv (Equalizer.forkMap F S) y, _, fun y₁ hy₁ => _⟩
@@ -307,6 +307,21 @@ lemma isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [
       change ((Equalizer.forkMap F S) ≫ inv (Equalizer.forkMap F S)) _ = _ at hy₁
       rwa [IsIso.hom_inv_id, types_id_apply] at hy₁
   infer_instance
+
+open Opposite
+
+instance (F : Cᵒᵖ ⥤ Type max u v) (h : ∀ {X : C} (S : Presieve X) [S.extensive], S.IsSheafFor F) :
+    PreservesFiniteProducts F := by
+  constructor
+  intro J _
+  constructor
+  intro K
+  let k : J → Cᵒᵖ := fun j ↦ K.obj ⟨j⟩
+  let S : Presieve (unop (∏ k)) := Presieve.ofArrows (fun j ↦ (k j).unop) (fun j ↦ (Pi.π k j).unop)
+  haveI : S.extensive := sorry
+  specialize h S
+  rw [Equalizer.Presieve.sheaf_condition] at h
+  sorry
 
 end ExtensiveSheaves
 
