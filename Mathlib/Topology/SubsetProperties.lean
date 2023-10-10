@@ -153,7 +153,7 @@ theorem IsCompact.image {f : X → Y} (hs : IsCompact s) (hf : Continuous f) : I
 #align is_compact.image IsCompact.image
 
 theorem IsCompact.adherence_nhdset {f : Filter X} (hs : IsCompact s) (hf₂ : f ≤ 𝓟 s)
-    (ht₁ : IsOpen t) (ht₂ : ∀ a ∈ s, ClusterPt a f → a ∈ t) : t ∈ f :=
+    (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   Classical.by_cases mem_of_eq_bot fun (this : f ⊓ 𝓟 tᶜ ≠ ⊥) =>
     let ⟨a, ha, (hfa : ClusterPt a <| f ⊓ 𝓟 tᶜ)⟩ := @hs _ ⟨this⟩ <| inf_le_of_left_le hf₂
     have : a ∈ t := ht₂ a ha hfa.of_inf_left
@@ -164,7 +164,7 @@ theorem IsCompact.adherence_nhdset {f : Filter X} (hs : IsCompact s) (hf₂ : f 
 #align is_compact.adherence_nhdset IsCompact.adherence_nhdset
 
 theorem isCompact_iff_ultrafilter_le_nhds :
-    IsCompact s ↔ ∀ f : Ultrafilter X, ↑f ≤ 𝓟 s → ∃ a ∈ s, ↑f ≤ 𝓝 a := by
+    IsCompact s ↔ ∀ f : Ultrafilter X, ↑f ≤ 𝓟 s → ∃ x ∈ s, ↑f ≤ 𝓝 x := by
   refine' (forall_neBot_le_iff _).trans _
   · rintro f g hle ⟨a, has, haf⟩
     exact ⟨a, has, haf.mono hle⟩
@@ -417,9 +417,9 @@ theorem isCompact_empty : IsCompact (∅ : Set X) := fun _f hnf hsf =>
 #align is_compact_empty isCompact_empty
 
 @[simp]
-theorem isCompact_singleton {a : X} : IsCompact ({a} : Set X) := fun f hf hfa =>
-  ⟨a, rfl, ClusterPt.of_le_nhds'
-    (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds a) hf⟩
+theorem isCompact_singleton {x : X} : IsCompact ({x} : Set X) := fun f hf hfa =>
+  ⟨x, rfl, ClusterPt.of_le_nhds'
+    (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds x) hf⟩
 #align is_compact_singleton isCompact_singleton
 
 theorem Set.Subsingleton.isCompact (hs : s.Subsingleton) : IsCompact s :=
@@ -923,7 +923,7 @@ theorem IsCompact.finite (hs : IsCompact s) (hs' : DiscreteTopology s) : s.Finit
 #align is_compact.finite IsCompact.finite
 
 theorem exists_nhds_ne_inf_principal_neBot (hs : IsCompact s) (hs' : s.Infinite) :
-    ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot := by
+    ∃ x ∈ s, (𝓝[≠] x ⊓ 𝓟 s).NeBot := by
   by_contra' H
   simp_rw [not_neBot] at H
   exact hs' (hs.finite <| discreteTopology_subtype_iff.mpr H)
@@ -944,13 +944,13 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
   rw [isCompact_iff_ultrafilter_le_nhds] at hs ht ⊢
   intro f hfs
   rw [le_principal_iff] at hfs
-  obtain ⟨a : X, sa : a ∈ s, ha : map Prod.fst f.1 ≤ 𝓝 a⟩ :=
+  obtain ⟨x : X, sx : x ∈ s, hx : map Prod.fst f.1 ≤ 𝓝 x⟩ :=
     hs (f.map Prod.fst) (le_principal_iff.2 <| mem_map.2 <| mem_of_superset hfs fun x => And.left)
-  obtain ⟨b : Y, tb : b ∈ t, hb : map Prod.snd f.1 ≤ 𝓝 b⟩ :=
+  obtain ⟨y : Y, ty : y ∈ t, hy : map Prod.snd f.1 ≤ 𝓝 y⟩ :=
     ht (f.map Prod.snd) (le_principal_iff.2 <| mem_map.2 <| mem_of_superset hfs fun x => And.right)
-  rw [map_le_iff_le_comap] at ha hb
-  refine' ⟨⟨a, b⟩, ⟨sa, tb⟩, _⟩
-  rw [nhds_prod_eq]; exact le_inf ha hb
+  rw [map_le_iff_le_comap] at hx hy
+  refine' ⟨⟨x, y⟩, ⟨sx, ty⟩, _⟩
+  rw [nhds_prod_eq]; exact le_inf hx hy
 #align is_compact.prod IsCompact.prod
 
 /-- Finite topological spaces are compact. -/
@@ -1906,12 +1906,12 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y)
   have := H u' v' hu' hv'
   rw [inter_comm s u', ← u'_eq] at this
   rw [inter_comm s v', ← v'_eq] at this
-  rcases this ⟨x, hxu, hx⟩ ⟨y, hyv, hy⟩ with ⟨z, hzs, hzu', hzv'⟩
-  refine' ⟨f z, mem_image_of_mem f hzs, _, _⟩
+  rcases this ⟨x, hxu, hx⟩ ⟨y, hyv, hy⟩ with ⟨x, hzs, hzu', hzv'⟩
+  refine' ⟨f x, mem_image_of_mem f hzs, _, _⟩
   all_goals
     rw [← mem_preimage]
     apply mem_of_mem_inter_left
-    show z ∈ _ ∩ s
+    show x ∈ _ ∩ s
     simp [*]
 #align is_preirreducible.image IsPreirreducible.image
 
