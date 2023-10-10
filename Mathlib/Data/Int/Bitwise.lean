@@ -22,6 +22,8 @@ import Mathlib.Init.Data.Int.Bitwise
 
 namespace Int
 
+-- In the `Int` namespace, `xor` will inconveniently resolve to `Int.xor`.
+/-- `bxor` denotes the `xor` function, i.e. the exclusive-or function, on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
 /-! ### bitwise ops -/
