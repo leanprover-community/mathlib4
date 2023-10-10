@@ -228,7 +228,6 @@ def testBit (m n : ℕ) : Bool :=
   bodd (m >>> n)
 #align nat.test_bit Nat.testBit
 
-
 lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   rw [div2_val]
   apply (div_lt_iff_lt_mul <| succ_pos 1).2
