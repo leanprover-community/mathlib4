@@ -2334,7 +2334,7 @@ end Submodule
 
 namespace Submodule
 
-variable [CommSemiring R] [CommSemiring R₂]
+variable [Semiring R] [Semiring R₂]
 
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 
@@ -2391,6 +2391,24 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
     (orderIsoMapComap e).symm p = map e.symm p :=
   p.comap_equiv_eq_map_symm _
 #align submodule.order_iso_map_comap_symm_apply' Submodule.orderIsoMapComap_symm_apply'
+
+end Submodule
+
+namespace Submodule
+
+variable [CommSemiring R] [CommSemiring R₂]
+
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+
+variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
+
+variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
+
+variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
+
+variable (p : Submodule R M) (q : Submodule R₂ M₂)
+
+variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
 theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
   rw [SetLike.le_def]
