@@ -68,7 +68,7 @@ def weightedDegree (w : σ → M) : (σ →₀ ℕ) →+ M :=
 #align mv_polynomial.weighted_degree' MvPolynomial.weightedDegree
 
 theorem weightedDegree_apply (w : σ → M) (f : σ →₀ ℕ):
-  weightedDegree w f = Finsupp.sum f (fun i c => c • w i) := by
+    weightedDegree w f = Finsupp.sum f (fun i c => c • w i) := by
   rfl
 section SemilatticeSup
 
@@ -507,8 +507,8 @@ theorem nonTrivialWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠
   rw [smul_eq_zero]
   intro hnx
   cases' hnx with hn hx
-  . exact hn
-  . exact absurd hx (hw x)
+  · exact hn
+  · exact absurd hx (hw x)
 #align mv_polynomial.non_trivial_weight_of MvPolynomial.nonTrivialWeight_of
 
 end CanonicallyOrderedAddCommMonoid
@@ -526,10 +526,10 @@ theorem weightedDegree_eq_zero_iff (hw : NonTrivialWeight w) (m : σ →₀ ℕ)
   intro x
   rw [Finsupp.mem_support_iff]
   constructor
-  . intro hx
+  · intro hx
     by_contra hx'
     exact absurd (hw _ _ (hx hx')) hx'
-  . intro hax _
+  · intro hax _
     simp only [hax, zero_smul]
 
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :
