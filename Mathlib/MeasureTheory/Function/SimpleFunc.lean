@@ -234,38 +234,6 @@ theorem sum_range_measure_preimage_singleton (f : α →ₛ β) (μ : Measure α
   rw [f.sum_measure_preimage_singleton, coe_range, preimage_range]
 #align measure_theory.simple_func.sum_range_measure_preimage_singleton MeasureTheory.SimpleFunc.sum_range_measure_preimage_singleton
 
-/-- If `f : α → β` is a simple function with null measurable fibers,
-then `f.ofNullMeasurable` is a simple function with measurable fibers that is a.e. equal to `f`. -/
-def ofNullMeasurable {μ : Measure α} (f : NullMeasurableSpace α μ →ₛ β) : α →ₛ β where
-  toFun := (⋂ y ∈ range f, toMeasurable μ (f ⁻¹' {y}ᶜ)).piecewise (fun x ↦ Classical.choice ⟨f x⟩) f
-  measurableSet_fiber' y := by
-    set S := ⋂ y ∈ range f, toMeasurable μ (f ⁻¹' {y}ᶜ)
-    have hS : MeasurableSet S :=
-      f.finite_range.measurableSet_biInter fun _ _ ↦ measurableSet_toMeasurable _ _
-    refine .of_union_cover hS hS.compl (union_compl_self _).ge ?_ ?_
-    · simp only [preimage_preimage, ← Set.restrict_apply, restrict_piecewise]
-      letI : MeasurableSpace β := ⊤
-      exact measurable_const' (f := fun x : S ↦ Classical.choice ⟨f x.1⟩) (fun _ _ ↦ rfl) trivial
-    · convert (measurableSet_toMeasurable μ (f ⁻¹' {y}ᶜ)).compl.preimage measurable_subtype_coe
-        using 1
-      ext ⟨x, hx⟩
-      simp only [mem_preimage, piecewise_eq_of_not_mem _ _ _ hx]
-      refine ⟨fun hy hx' ↦ hx <| mem_biInter <| Set.forall_range_iff.2 fun x' ↦ ?_,
-        not_imp_comm.1 fun h ↦ subset_toMeasurable _ _ h⟩
-      subst y
-      
-      -- constructor
-      -- · rintro rfl hx'
-      --   exact hx <| mem_biInter _ _
-      -- obtain ⟨y, -, hy⟩ : ∃ y ∈ range f, x ∉ toMeasurable μ (f ⁻¹' {y}ᶜ) := by
-      --   simpa only [compl_iInter₂, mem_iUnion, exists_prop] using hx
-      -- obtain rfl : f x = y :=
-      --   by_contra <| mt (fun h : x ∈ f ⁻¹' {y}ᶜ ↦ subset_toMeasurable _ _ h) hy
-      
-      -- suffices S.restrict f ⁻¹' {y} = (↑) ⁻¹' (toMeasurable μ (f ⁻¹' {y}ᶜ))ᶜ by
-      --   simp only [preimage_preimage, ← Set.restrict_apply, restrict_piecewise_compl, this]
-  finite_range' := _
-
 /-- If-then-else as a `SimpleFunc`. -/
 def piecewise (s : Set α) (hs : MeasurableSet s) (f g : α →ₛ β) : α →ₛ β :=
   ⟨s.piecewise f g, fun _ =>

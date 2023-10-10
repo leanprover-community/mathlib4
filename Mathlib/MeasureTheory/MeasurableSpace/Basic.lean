@@ -610,6 +610,11 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
   hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
 #align measurable.subtype_mk Measurable.subtype_mk
 
+@[measurability]
+theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
+    Measurable (rangeFactorization f) :=
+  hf.subtype_mk
+
 theorem Measurable.subtype_map {f : α → β} {p : α → Prop} {q : β → Prop} (hf : Measurable f)
     (hpq : ∀ x, p x → q (f x)) : Measurable (Subtype.map f hpq) :=
   (hf.comp measurable_subtype_coe).subtype_mk
@@ -1801,6 +1806,10 @@ theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @Countab
   rcases h₁ with ⟨⟨b₁, hb₁c, rfl⟩⟩
   rcases h₂ with ⟨⟨b₂, hb₂c, rfl⟩⟩
   exact @mk _ (_ ⊔ _) ⟨_, hb₁c.union hb₂c, generateFrom_sup_generateFrom⟩
+
+instance (priority := 100) [MeasurableSpace α] [Finite α] : CountablyGenerated α where
+  isCountablyGenerated :=
+    ⟨{s | MeasurableSet s}, Set.to_countable _, generateFrom_measurableSet.symm⟩
 
 instance [MeasurableSpace α] [CountablyGenerated α] {p : α → Prop} :
     CountablyGenerated { x // p x } := .comap _

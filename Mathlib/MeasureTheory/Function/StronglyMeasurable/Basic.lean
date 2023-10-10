@@ -1665,12 +1665,10 @@ theorem _root_.aestronglyMeasurable_iff_aemeasurable_separable [PseudoMetrizable
 theorem _root_.aestronglyMeasurable_iff_nullMeasurable_separable [PseudoMetrizableSpace β]
     [MeasurableSpace β] [BorelSpace β] :
     AEStronglyMeasurable f μ ↔
-      NullMeasurable f μ ∧ ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by
-  refine aestronglyMeasurable_iff_aemeasurable_separable.trans <| and_congr_left ?_
-  rintro ⟨t, hsep, hft⟩
-  refine ⟨AEMeasurable.nullMeasurable, fun hf ↦ ?_⟩
-  have := hsep.secondCountableTopology
-  
+      NullMeasurable f μ ∧ ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t :=
+  aestronglyMeasurable_iff_aemeasurable_separable.trans <| and_congr_left fun ⟨_, hsep, h⟩ ↦
+    have := hsep.secondCountableTopology
+    ⟨AEMeasurable.nullMeasurable, fun hf ↦ hf.aemeasurable_of_aerange h⟩
 
 theorem _root_.MeasurableEmbedding.aestronglyMeasurable_map_iff {γ : Type*}
     {mγ : MeasurableSpace γ} {mα : MeasurableSpace α} {f : γ → α} {μ : Measure γ}
