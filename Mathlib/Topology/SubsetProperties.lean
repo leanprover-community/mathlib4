@@ -882,9 +882,9 @@ theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
 /-- If `f : α → β` is an `Embedding` (or more generally, an `Inducing` map, see
 `Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
 `s` is compact. -/
-theorem Embedding.isCompact_image_iff {f : α → β} (hf : Embedding f) :
+theorem Embedding.isCompact_iff {f : α → β} (hf : Embedding f) :
     IsCompact (f '' s) ↔ IsCompact s := hf.toInducing.isCompact_iff
-#align embedding.is_compact_iff_is_compact_image Embedding.isCompact_image_iff
+#align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff
 
 /-- The preimage of a compact set under an inducing map is a compact set. -/
 theorem Inducing.isCompact_preimage {f : α → β} (hf : Inducing f) (hf' : IsClosed (range f))
@@ -907,13 +907,13 @@ theorem ClosedEmbedding.tendsto_cocompact {f : α → β} (hf : ClosedEmbedding 
 #align closed_embedding.tendsto_cocompact ClosedEmbedding.tendsto_cocompact
 
 /-- Sets of subtype are compact iff the image under a coercion is. -/
-theorem isCompact_subtype {p : α → Prop} {s : Set { a // p a }} :
+theorem Subtype.isCompact_iff {p : α → Prop} {s : Set { a // p a }} :
     IsCompact s ↔ IsCompact ((↑) '' s : Set α) :=
-  embedding_subtype_val.isCompact_image_iff.symm
-#align is_compact_iff_is_compact_in_subtype isCompact_subtype
+  embedding_subtype_val.isCompact_iff.symm
+#align is_compact_iff_is_compact_in_subtype Subtype.isCompact_iff
 
 theorem isCompact_iff_isCompact_univ {s : Set α} : IsCompact s ↔ IsCompact (univ : Set s) := by
-  rw [isCompact_subtype, image_univ, Subtype.range_coe]
+  rw [Subtype.isCompact_iff, image_univ, Subtype.range_coe]
 #align is_compact_iff_is_compact_univ isCompact_iff_isCompact_univ
 
 theorem isCompact_iff_compactSpace {s : Set α} : IsCompact s ↔ CompactSpace s :=
@@ -1378,7 +1378,7 @@ lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
 if and only `s`` is σ-compact.
 This does not hold for merely inducing maps; direction `←` requires injectivity. -/
-lemma Embedding.isSigmaCompact_image_iff {f : α → β} {s : Set α}
+lemma Embedding.isSigmaCompact_iff {f : α → β} {s : Set α}
     (hf : Embedding f) : IsSigmaCompact (f '' s) ↔ IsSigmaCompact s := by
   constructor
   · rintro ⟨L, hcomp, hcov⟩
@@ -1402,9 +1402,9 @@ lemma Embedding.isSigmaCompact_image_iff {f : α → β} {s : Set α}
   · exact fun h ↦ h.image (continuous hf)
 
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
-lemma isSigmaCompact_subtype {p : α → Prop} {s : Set { a // p a }} :
+lemma Subtype.isSigmaCompact_iff {p : α → Prop} {s : Set { a // p a }} :
     IsSigmaCompact s ↔ IsSigmaCompact ((↑) '' s : Set α) :=
-  embedding_subtype_val.isSigmaCompact_image_iff.symm
+  embedding_subtype_val.isSigmaCompact_iff.symm
 
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.
   Note that a locally compact separable T₂ space need not be σ-compact.
@@ -1442,7 +1442,7 @@ lemma isSigmaCompact_range {f : α → β} (hf : Continuous f) [i : SigmaCompact
 /-- A subset `s` is σ-compact iff `s` (with the subspace topology) is a σ-compact space. -/
 lemma isSigmaCompact_iff_isSigmaCompact_univ {s : Set α} :
     IsSigmaCompact s ↔ IsSigmaCompact (univ : Set s) := by
-  rw [isSigmaCompact_subtype, image_univ, Subtype.range_coe]
+  rw [Subtype.isSigmaCompact_iff, image_univ, Subtype.range_coe]
 
 lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set α} :
     IsSigmaCompact s ↔ SigmaCompactSpace s :=

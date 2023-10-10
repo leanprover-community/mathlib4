@@ -139,7 +139,7 @@ theorem NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continu
 
 theorem noetherianSpace_set_iff (s : Set α) :
     NoetherianSpace s ↔ ∀ t, t ⊆ s → IsCompact t := by
-  simp only [noetherianSpace_iff_isCompact, embedding_subtype_val.isCompact_image_iff.symm,
+  simp only [noetherianSpace_iff_isCompact, embedding_subtype_val.isCompact_iff.symm,
     Subtype.forall_set_subtype]
 #align topological_space.noetherian_space_set_iff TopologicalSpace.noetherianSpace_set_iff
 
