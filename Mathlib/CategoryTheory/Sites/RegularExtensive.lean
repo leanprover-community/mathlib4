@@ -290,8 +290,9 @@ lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasP
   have hy : F.map (pullback.fst (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y) =
       F.map (pullback.snd (f := π) (g := π)).op ((EqualizerFirstObjIso F π).hom y) :=
     calc
-      _ = (Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom) y
-          := by simp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.firstMap]
+      _ = (Equalizer.Presieve.firstMap F (Presieve.singleton π) ≫
+          (EqualizerSecondObjIso F π).hom) y := by
+          simp [EqualizerSecondObjIso, EqualizerFirstObjIso, Equalizer.Presieve.firstMap]
       _ = (Equalizer.Presieve.secondMap F (Presieve.singleton π) ≫ (EqualizerSecondObjIso F π).hom)
           y := by simp only [Equalizer.Presieve.SecondObj, types_comp_apply]; rw [h]
       _ = _ := by
