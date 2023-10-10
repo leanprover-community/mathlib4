@@ -34,8 +34,8 @@ def s : Multiset ℕ := {0, 0, 0}
 #eval Multiset.card (Multiset.antidiagonal s) -- 8
 ```
 
-This is mostly taken from a mathlib3 file of Bhavik Mehta,
-https://leanprover-community.github.io/mathlib_docs/wiedijk_100_theorems/partition.html
+This is mostly taken from a file of Bhavik Mehta,
+https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/Partition.lean, where `piAntidiagonal` was called `cut`
 -/
 
 open scoped BigOperators
