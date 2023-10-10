@@ -2895,9 +2895,8 @@ theorem _root_.Subgroup.ker_inclusion {H K : Subgroup G} (h : H ≤ K) : (inclus
 
 @[to_additive]
 theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g : G →* N) :
-    (f.prod g).ker = f.ker ⊓ g.ker := by
-  ext x
-  simp [MonoidHom.mem_ker]
+    (f.prod g).ker = f.ker ⊓ g.ker :=
+  SetLike.ext fun _ => Prod.mk_eq_one
 
 @[to_additive]
 theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N)
