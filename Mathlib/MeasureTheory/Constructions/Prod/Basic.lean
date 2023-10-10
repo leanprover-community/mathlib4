@@ -514,6 +514,8 @@ lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_snd [NeZero μ] {t : Se
     (h : NullMeasurableSet (Prod.snd ⁻¹' t) (μ.prod ν)) : NullMeasurableSet t ν :=
   .right_of_prod (by rwa [univ_prod]) (NeZero.ne _)
 
+/-- `Prod.snd ⁻¹' t` is null measurable w.r.t. `μ.prod ν` iff `t` is null measurable w.r.t. `ν`
+provided that `μ ≠ 0`. -/
 lemma nullMeasurableSet_preimage_snd [NeZero μ] {t : Set β} :
     NullMeasurableSet (Prod.snd ⁻¹' t) (μ.prod ν) ↔ NullMeasurableSet t ν :=
   ⟨.of_preimage_snd, (.preimage · quasiMeasurePreserving_snd)⟩
@@ -592,10 +594,15 @@ lemma _root_.MeasureTheory.NullMeasurableSet.left_of_prod {s : Set α} {t : Set 
   exact h.preimage measurePreserving_swap.quasiMeasurePreserving
 
 /-- If `Prod.fst ⁻¹' s` is a null measurable set and `ν ≠ 0`, then `s` is a null measurable set. -/
+lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_fst [NeZero ν] {s : Set α}
+    (h : NullMeasurableSet (Prod.fst ⁻¹' s) (μ.prod ν)) : NullMeasurableSet s μ :=
+  .left_of_prod (by rwa [prod_univ]) (NeZero.ne _)
+
+/-- `Prod.fst ⁻¹' s` is null measurable w.r.t. `μ.prod ν` iff `s` is null measurable w.r.t. `μ`
+provided that `ν ≠ 0`. -/
 lemma nullMeasurableSet_preimage_fst [NeZero ν] {s : Set α} :
     NullMeasurableSet (Prod.fst ⁻¹' s) (μ.prod ν) ↔ NullMeasurableSet s μ :=
-  ⟨fun h ↦ .left_of_prod (by rwa [prod_univ]) (NeZero.ne _),
-    (.preimage · quasiMeasurePreserving_fst)⟩
+  ⟨.of_preimage_fst, (.preimage · quasiMeasurePreserving_fst)⟩
 
 lemma nullMeasurable_comp_fst [NeZero ν] {f : α → γ} :
     NullMeasurable (f ∘ Prod.fst) (μ.prod ν) ↔ NullMeasurable f μ :=
