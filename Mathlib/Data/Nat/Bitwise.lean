@@ -264,7 +264,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   <;> cases' n with n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
   · specialize ih ((m+1) / 2) (div_lt_self' ..)
-    simp [bitwise_succ, bitwise_succ, ih]
+    simp [bitwise_of_ne_zero, ih]
 #align nat.bitwise_swap Nat.bitwise_swap
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
