@@ -154,10 +154,10 @@ def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInT
 @[trans]
 def EvalsToInTime.trans {σ : Type*} (f : σ → Option σ) (m₁ : ℕ) (m₂ : ℕ) (a : σ) (b : σ)
     (c : Option σ) (h₁ : EvalsToInTime f a b m₁) (h₂ : EvalsToInTime f b c m₂) :
-    EvalsToInTime f a c (m₂ + m₁) :=
+    EvalsToInTime f a c (m₂ + m₁) := 
   ⟨EvalsTo.trans f a b c h₁.toEvalsTo h₂.toEvalsTo, add_le_add h₂.steps_le_m h₁.steps_le_m⟩
 #align turing.evals_to_in_time.trans Turing.EvalsToInTime.trans
-
+ 
 /-- A proof of tm outputting l' when given l. -/
 def TM2Outputs (tm : FinTM2) (l : List (tm.Γ tm.k₀)) (l' : Option (List (tm.Γ tm.k₁))) :=
   EvalsTo tm.step (initList tm l) ((Option.map (haltList tm)) l')
