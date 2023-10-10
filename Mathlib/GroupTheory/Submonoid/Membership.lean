@@ -343,6 +343,7 @@ theorem closure_singleton_one : closure ({1} : Set M) = ⊥ := by
 #align submonoid.closure_singleton_one Submonoid.closure_singleton_one
 
 open Fintype in
+@[to_additive]
 lemma eq_bot_iff_card {S : Submonoid M} [Fintype S] : S = ⊥ ↔ card S = 1 := by
   suffices (∀ x ∈ S, x = 1) ↔ ∃ x ∈ S, ∀ a ∈ S, a = x by
     simpa [eq_bot_iff_forall, card_eq_one_iff]
