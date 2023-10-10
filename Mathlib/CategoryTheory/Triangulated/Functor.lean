@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
@@ -217,5 +217,40 @@ lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e
       ((mapTriangleCompIso F G).symm.app T)
 
 end Functor
+
+section
+
+variable {C D : Type _} [Category C] [Category D]
+  [HasShift C ℤ] [HasShift D ℤ] [HasZeroObject C] [HasZeroObject D]
+  [Preadditive C] [Preadditive D]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated C] [Pretriangulated D]
+  (F : C ⥤ D) [F.CommShift ℤ]
+
+lemma IsTriangulated.of_fully_faithful_triangulated_functor
+    [F.IsTriangulated] [Full F] [Faithful F] [IsTriangulated D] :
+    IsTriangulated C where
+  octahedron_axiom {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃} comm
+    {v₁₂ w₁₂} h₁₂ {v₂₃ w₂₃} h₂₃ {v₁₃ w₁₃} h₁₃ := by
+    have comm' : F.map u₁₂ ≫ F.map u₂₃ = F.map u₁₃ := by rw [← comm, F.map_comp]
+    have H := Triangulated.someOctahedron comm' (F.map_distinguished _ h₁₂)
+      (F.map_distinguished _ h₂₃) (F.map_distinguished _ h₁₃)
+    exact
+      ⟨{
+        m₁ := F.preimage H.m₁
+        m₃ := F.preimage H.m₃
+        comm₁ := F.map_injective (by simpa using H.comm₁)
+        comm₂ := F.map_injective (by
+          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₁)]
+          simpa using H.comm₂)
+        comm₃ := F.map_injective (by simpa using H.comm₃)
+        comm₄ := F.map_injective (by
+          rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₂)]
+          simpa using H.comm₄)
+        mem := by
+          rw [← F.map_distinguished_iff]
+          simpa using H.mem }⟩
+
+end
 
 end CategoryTheory

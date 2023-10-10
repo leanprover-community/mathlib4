@@ -204,9 +204,6 @@ instance [EnoughInjectives C] (X : HomotopyCategory.Plus C) :
     exact Relation.ReflTransGen.single
       (Or.inl ⟨LocalizerMorphism.RightResolution.Hom.mk φ hφ' hφ⟩))
 
--- remove this assumption
-variable [DerivedCategory.Plus.Qh.IsLocalization (HomotopyCategory.Plus.qis C)]
-
 instance [EnoughInjectives C] : (localizerMorphism C).IsRightDerivabilityStructure :=
   LocalizerMorphism.IsRightDerivabilityStructure.mk' (localizerMorphism C) (𝟭 _)
     DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
@@ -241,9 +238,6 @@ end
 end Injectives
 
 namespace Functor
-
--- TODO: remove this assumption...
-variable [DerivedCategory.Plus.Qh.IsLocalization (HomotopyCategory.Plus.qis C)]
 
 variable {C D}
 variable (F : C ⥤ D) [F.Additive]

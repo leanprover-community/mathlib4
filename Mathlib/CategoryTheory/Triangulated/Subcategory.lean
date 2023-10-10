@@ -180,6 +180,15 @@ lemma W.triangle_obj₃_mem {X Y : C} (f : X ⟶ Y) (hf : S.W f) :
 
 variable (S)
 
+lemma mem_W_iff_of_distinguished [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) :
+    S.W T.mor₁ ↔ T.obj₃ ∈ S.set := by
+  constructor
+  · intro hf
+    obtain ⟨e, _⟩ := exists_iso_of_arrow_iso _ _ (W.triangle_distinguished _ hf) hT (Iso.refl _)
+    exact S.set.mem_of_iso (Triangle.π₃.mapIso e) (W.triangle_obj₃_mem _ hf)
+  · intro h
+    exact ⟨_, _, _, hT, h⟩
+
 lemma W_eq_W' : S.W = S.W' := by
   apply MorphismProperty.ext
   intro X Y f
@@ -282,7 +291,7 @@ lemma mul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     (Arrow.isoMk (Preadditive.mulIso ((-1 : Units ℤ)^n) (Iso.refl _)) (Iso.refl _)
       (by dsimp ; simp only [Preadditive.zsmul_comp, id_comp, comp_id]))
 
-instance WIsCompatibleWIthShift : S.W.IsCompatibleWithShift ℤ := ⟨by
+instance WIsCompatibleWithShift : S.W.IsCompatibleWithShift ℤ := ⟨by
   have : ∀ {X Y : C} (f : X ⟶ Y) (hf : S.W f) (n : ℤ), S.W (f⟦n⟧') := by
     rintro X Y f ⟨Z, g, h, H, mem⟩ n
     rw [← mul_mem_W_iff S _ n]
@@ -440,9 +449,10 @@ instance : Pretriangulated S.category where
     . rw [← cancel_mono ((Functor.commShiftIso (ι S) (1 : ℤ)).hom.app T₂.obj₁),
         S.ι.map_comp, S.ι.map_comp, assoc, assoc, hc₂]
 
---instance [IsTriangulated C] : IsTriangulated S.category := sorry
-
 instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
+
+instance [IsTriangulated C] : IsTriangulated S.category :=
+  IsTriangulated.of_fully_faithful_triangulated_functor S.ι
 
 /-inductive setSpan (S : Set C) : C → Prop
   | subset (X : C) (hX : X ∈ S) : setSpan S X
@@ -657,6 +667,29 @@ instance [HasShift D ℤ] [Preadditive D] [F.CommShift ℤ] [HasZeroObject D]
     (S.lift F hF).IsTriangulated := by
   rw [Functor.isTriangulated_iff_comp_right (S.liftCompInclusion F hF)]
   infer_instance
+
+end
+
+section
+
+variable {D : Type*} [Category D] [Preadditive D] [HasZeroObject D] [HasShift D ℤ]
+  [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+  (F : D ⥤ C) [F.CommShift ℤ] [F.IsTriangulated]
+  [S.set.RespectsIso]
+
+def inverseImage : Subcategory D :=
+  Subcategory.mk' (fun X => F.obj X ∈ S.set)
+    (S.set.mem_of_iso F.mapZeroObject.symm S.zero)
+    (fun X n hX => S.set.mem_of_iso ((F.commShiftIso n).symm.app X) (S.shift _ n hX))
+    (fun _ hT h₁ h₃ => S.ext₂ _ (F.map_distinguished _ hT) h₁ h₃)
+
+lemma mem_inverseImage_iff (X : D) :
+    X ∈ (S.inverseImage F).set ↔ F.obj X ∈ S.set := by rfl
+
+instance : (S.inverseImage F).set.RespectsIso where
+  condition X Y e hX := by
+    rw [mem_inverseImage_iff] at hX ⊢
+    exact S.set.mem_of_iso (F.mapIso e) hX
 
 end
 

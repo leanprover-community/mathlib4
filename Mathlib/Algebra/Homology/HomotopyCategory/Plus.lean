@@ -55,8 +55,6 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
 
 abbrev Plus := (subcategoryPlus C).category
 
---instance : IsTriangulated (Plus C) := inferInstance
-
 namespace Plus
 
 abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryPlus C).ι
