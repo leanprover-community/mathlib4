@@ -1519,7 +1519,7 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 #align submodule.map_subtype_le Submodule.map_subtype_le
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
-maximal submodule of `p` is just `p `. -/
+maximal submodule of `p` is just `p`. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 #align submodule.map_subtype_top Submodule.map_subtype_top
@@ -2342,7 +2342,7 @@ end Submodule
 
 namespace Submodule
 
-variable [CommSemiring R] [CommSemiring R₂]
+variable [Semiring R] [Semiring R₂]
 
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 
@@ -2400,14 +2400,6 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
   p.comap_equiv_eq_map_symm _
 #align submodule.order_iso_map_comap_symm_apply' Submodule.orderIsoMapComap_symm_apply'
 
-theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
-  rw [SetLike.le_def]
-  intro m h
-  change c • fₗ m ∈ qₗ
-  change fₗ m ∈ qₗ at h
-  apply qₗ.smul_mem _ h
-#align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
-
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
   rw [SetLike.le_def]
@@ -2416,6 +2408,32 @@ theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
   change f₁ m ∈ q ∧ f₂ m ∈ q at h
   apply q.add_mem h.1 h.2
 #align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
+
+end Submodule
+
+namespace Submodule
+
+variable [CommSemiring R] [CommSemiring R₂]
+
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+
+variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
+
+variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
+
+variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
+
+variable (p : Submodule R M) (q : Submodule R₂ M₂)
+
+variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
+
+theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
+  rw [SetLike.le_def]
+  intro m h
+  change c • fₗ m ∈ qₗ
+  change fₗ m ∈ qₗ at h
+  apply qₗ.smul_mem _ h
+#align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
