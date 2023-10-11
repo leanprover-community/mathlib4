@@ -177,3 +177,10 @@ def CommAlg.restrictScalars (R S : Type u) [CommRing R] [CommRing S] [Algebra R 
         (RestrictScalars R S B) _ _ _ _ _ A.3 B.3 _ _ _ _ f
     map_id := ffs
     map_comp := ffs
+
+-- ummmmmm
+@[simps] def restrictScalarsAlgEquiv (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] (A : Type u)
+    [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
+    RestrictScalars R S A ≃ₐ[R] A :=
+{   RestrictScalars.ringEquiv R S A with
+  commutes' := fun r => (IsScalarTower.algebraMap_apply R S A r).symm }
