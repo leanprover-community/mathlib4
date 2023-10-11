@@ -354,7 +354,7 @@ instance instRing : Ring 𝓜(𝕜, A) :=
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
 
-/-- The canonical map `double_centralizer.to_prod` as an additive group homomorphism. -/
+/-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/
 @[simps]
 def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
