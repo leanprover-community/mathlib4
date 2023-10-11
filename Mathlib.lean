@@ -3361,11 +3361,11 @@ import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Compactness.Paracompact
+import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Connected
-import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.Connected
+import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
