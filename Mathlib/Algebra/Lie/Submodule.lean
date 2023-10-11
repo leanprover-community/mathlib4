@@ -451,18 +451,18 @@ theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
-instance : Sup (LieSubmodule R L M) :=
-  ⟨fun N N' ↦
+instance : Sup (LieSubmodule R L M) where
+  sup N N' :=
     { toSubmodule := (N : Submodule R M) ⊔ (N' : Submodule R M)
       lie_mem := by
         rintro x m (hm : m ∈ (N : Submodule R M) ⊔ (N' : Submodule R M))
         change ⁅x, m⁆ ∈ (N : Submodule R M) ⊔ (N' : Submodule R M)
         rw [Submodule.mem_sup] at hm ⊢
         obtain ⟨y, hy, z, hz, rfl⟩ := hm
-        exact ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩ }⟩
+        exact ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩ }
 
-instance : SupSet (LieSubmodule R L M) :=
-  ⟨fun S ↦
+instance : SupSet (LieSubmodule R L M) where
+  sSup S :=
     { toSubmodule := sSup {(p : Submodule R M) | p ∈ S}
       lie_mem := by
         intro x m (hm : m ∈ sSup {(p : Submodule R M) | p ∈ S})
@@ -479,7 +479,7 @@ instance : SupSet (LieSubmodule R L M) :=
           refine add_mem ?_ (ih (Subset.trans (by simp) hs) hu)
           obtain ⟨p, hp, rfl⟩ : ∃ p ∈ S, ↑p = q := hs (Finset.mem_insert_self q t)
           suffices p ≤ sSup {(p : Submodule R M) | p ∈ S} by exact this (p.lie_mem hm')
-          exact le_sSup ⟨p, hp, rfl⟩ }⟩
+          exact le_sSup ⟨p, hp, rfl⟩ }
 
 @[norm_cast, simp]
 theorem sup_coe_toSubmodule :
@@ -509,14 +509,14 @@ instance : CompleteLattice (LieSubmodule R L M) :=
       rw [← coeSubmodule_le_coeSubmodule, sInf_coe_toSubmodule]; exact sInf_le ⟨a, ha, rfl⟩
     le_sInf := fun s a ha ↦ by rw [← coeSubmodule_le_coeSubmodule, sInf_coe_toSubmodule]; simpa
     le_top := fun _ _ _ ↦ trivial
-    bot_le := fun N _ h ↦ by rw [mem_bot] at h; rw [h]; exact N.zero_mem'
+    bot_le := fun _ ↦ bot_le (α := Submodule R M)
     sup_le := fun _ _ _ ↦ sup_le (α := Submodule R M)
     le_sup_right := fun _ _ ↦ le_sup_right (α := Submodule R M)
     le_sup_left := fun _ _ ↦ le_sup_left (α := Submodule R M)
     sSup_le := fun s a ha ↦ by rw [← coeSubmodule_le_coeSubmodule, sSup_coe_toSubmodule]; simpa
     le_sSup := fun s a ha ↦ by
       rw [← coeSubmodule_le_coeSubmodule, sSup_coe_toSubmodule]; exact le_sSup ⟨a, ha, rfl⟩
-    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    le_inf := fun _ _ _ ↦ le_inf (α := Submodule R M)
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
