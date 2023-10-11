@@ -5,7 +5,7 @@ Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Calculus.Dslope
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Uniqueness
 
@@ -35,7 +35,7 @@ open Filter Function Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology BigOperators
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 --  {y : Fin n → 𝕜} -- Porting note: This is used nowhere and creates problem since it is sometimes
 -- automatically included as a hypothesis
@@ -120,7 +120,7 @@ theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ
 #align has_fpower_series_at.locally_ne_zero HasFPowerSeriesAt.locally_ne_zero
 
 theorem locally_zero_iff (hp : HasFPowerSeriesAt f p z₀) : (∀ᶠ z in 𝓝 z₀, f z = 0) ↔ p = 0 :=
-  ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (by rwa [h] at hp )⟩
+  ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (by rwa [h] at hp)⟩
 #align has_fpower_series_at.locally_zero_iff HasFPowerSeriesAt.locally_zero_iff
 
 end HasFPowerSeriesAt
@@ -134,7 +134,7 @@ theorem eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = 0) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rcases hf with ⟨p, hp⟩
   by_cases h : p = 0
-  · exact Or.inl (HasFPowerSeriesAt.eventually_eq_zero (by rwa [h] at hp ))
+  · exact Or.inl (HasFPowerSeriesAt.eventually_eq_zero (by rwa [h] at hp))
   · exact Or.inr (hp.locally_ne_zero h)
 #align analytic_at.eventually_eq_zero_or_eventually_ne_zero AnalyticAt.eventually_eq_zero_or_eventually_ne_zero
 

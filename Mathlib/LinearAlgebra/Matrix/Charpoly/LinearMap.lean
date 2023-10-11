@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 
 # Cayley-Hamilton theorem for f.g. modules.
 
-Given a fixed finite spanning set `b : ι → M` of a `R`-module `M`, we say that a matrix `M`
+Given a fixed finite spanning set `b : ι → M` of an `R`-module `M`, we say that a matrix `M`
 represents an endomorphism `f : M →ₗ[R] M` if the matrix as an endomorphism of `ι → R` commutes
 with `f` via the projection `(ι → R) →ₗ[R] M` given by `b`.
 
@@ -23,9 +23,9 @@ This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbit
 -/
 
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
-variable {M : Type _} [AddCommGroup M] (R : Type _) [CommRing R] [Module R M] (I : Ideal R)
+variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I : Ideal R)
 
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 

@@ -464,8 +464,8 @@ theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
     have h' := add_nfBelow (h₁.snd.mono <| le_of_lt h₁.lt) h₂
     simp [oadd_add]; revert h'; cases' a + o with e' n' a' <;> intro h'
     · exact NFBelow.oadd h₁.fst NFBelow.zero h₁.lt
-    simp [add]; have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
-    cases h: cmp e e' <;> simp [add] <;> dsimp [addAux] <;> simp [h]
+    have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
+    cases h: cmp e e' <;> dsimp [addAux] <;> simp [h]
     · exact h'
     · simp [h] at this
       subst e'
@@ -719,10 +719,11 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
       simp [split_eq_scale_split' h', split, split']
       have : 1 + (e - 1) = e := by
         refine' repr_inj.1 _
-        simp
+        simp only [repr_add, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
+          repr_sub]
         have := mt repr_inj.1 e0
         refine' Ordinal.add_sub_cancel_of_le _
-        have:= (one_le_iff_ne_zero.2 this)
+        have := (one_le_iff_ne_zero.2 this)
         exact this
       intros
       substs o' m
@@ -835,7 +836,7 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
         infer_instance
   · simp [(· ^ ·),Pow.pow,pow, opow, opowAux2, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
-    cases' k with k <;> simp <;> skip <;> dsimp
+    cases' k with k <;> simp
     · infer_instance
     · cases k <;> cases m <;> infer_instance
 #align onote.NF_opow ONote.nf_opow
@@ -1227,7 +1228,7 @@ theorem fastGrowingε₀_one : fastGrowingε₀ 1 = 2 := by
 #align onote.fast_growing_ε₀_one ONote.fastGrowingε₀_one
 
 theorem fastGrowingε₀_two : fastGrowingε₀ 2 = 2048 := by
-  simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
+  norm_num [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
     show oadd 0 (2 : Nat).succPNat 0 = 3 from rfl, @fastGrowing_succ 3 2 rfl]
 #align onote.fast_growing_ε₀_two ONote.fastGrowingε₀_two
 
@@ -1334,7 +1335,7 @@ def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
   inductive definition, which can't actually be defined this
   way due to conflicting dependencies. -/
 @[elab_as_elim]
-def recOn {C : NONote → Sort _} (o : NONote) (H0 : C 0)
+def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
   cases' o with o h; induction' o with e n a IHe IHa
   · exact H0

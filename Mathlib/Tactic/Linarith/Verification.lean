@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 
 import Mathlib.Tactic.Linarith.Elimination
@@ -20,6 +19,8 @@ This file implements the reconstruction.
 
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
+
+set_option autoImplicit true
 
 open Lean Elab Tactic Meta
 

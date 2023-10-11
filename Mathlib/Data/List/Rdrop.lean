@@ -33,7 +33,7 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 -/
 
 
-variable {α : Type _} (p : α → Bool) (l : List α) (n : ℕ)
+variable {α : Type*} (p : α → Bool) (l : List α) (n : ℕ)
 
 namespace List
 
@@ -153,7 +153,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
       rw [← h]
       simp only [H]
-      exact List.isSuffix.sublist (dropWhile_suffix p)
+      exact List.IsSuffix.sublist (dropWhile_suffix p)
     · have := h (by simp only [length, Nat.succ_pos])
       rw [nthLe, get] at this
       simp_rw [this]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
@@ -19,9 +19,9 @@ half-infinite intervals in `ℝ`.
 
 ## See also
 
-- `analysis.special_functions.integrals` -- integrals over finite intervals
-- `analysis.special_functions.gaussian` -- integral of `exp (-x ^ 2)`
-- `analysis.special_functions.japanese_bracket`-- integrability of `(1+‖x‖)^(-r)`.
+- `Mathlib.Analysis.SpecialFunctions.Integrals` -- integrals over finite intervals
+- `Mathlib.Analysis.SpecialFunctions.Gaussian` -- integral of `exp (-x ^ 2)`
+- `Mathlib.Analysis.SpecialFunctions.JapaneseBracket`-- integrability of `(1+‖x‖)^(-r)`.
 -/
 
 

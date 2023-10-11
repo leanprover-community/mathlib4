@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.TensorProductBasis
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.LinearAlgebra.Projection
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import linear_algebra.trace from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -47,7 +48,7 @@ variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R 
 
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
 
-variable {κ : Type _} [DecidableEq κ] [Fintype κ]
+variable {κ : Type*} [DecidableEq κ] [Fintype κ]
 
 variable (b : Basis ι R M) (c : Basis κ R M)
 
@@ -68,10 +69,10 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       Matrix.trace (LinearMap.toMatrix b b f) =
           Matrix.trace (LinearMap.toMatrix b b ((LinearMap.id.comp f).comp LinearMap.id)) := by
         rw [LinearMap.id_comp, LinearMap.comp_id]
-      _ = Matrix.trace (LinearMap.toMatrix c b LinearMap.id ⬝ LinearMap.toMatrix c c f ⬝
+      _ = Matrix.trace (LinearMap.toMatrix c b LinearMap.id * LinearMap.toMatrix c c f *
           LinearMap.toMatrix b c LinearMap.id) := by
         rw [LinearMap.toMatrix_comp _ c, LinearMap.toMatrix_comp _ c]
-      _ = Matrix.trace (LinearMap.toMatrix c c f ⬝ LinearMap.toMatrix b c LinearMap.id ⬝
+      _ = Matrix.trace (LinearMap.toMatrix c c f * LinearMap.toMatrix b c LinearMap.id *
           LinearMap.toMatrix c b LinearMap.id) := by
         rw [Matrix.mul_assoc, Matrix.trace_mul_comm]
       _ = Matrix.trace (LinearMap.toMatrix c c ((f.comp LinearMap.id).comp LinearMap.id)) := by
@@ -113,6 +114,14 @@ theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g 
   else by rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
 #align linear_map.trace_mul_comm LinearMap.trace_mul_comm
 
+lemma trace_mul_cycle (f g h : M →ₗ[R] M) :
+    trace R M (f * g * h) = trace R M (h * f * g) := by
+  rw [LinearMap.trace_mul_comm, ← mul_assoc]
+
+lemma trace_mul_cycle' (f g h : M →ₗ[R] M) :
+    trace R M (f * (g * h)) = trace R M (h * (f * g)) := by
+  rw [← mul_assoc, LinearMap.trace_mul_comm]
+
 /-- The trace of an endomorphism is invariant under conjugation -/
 @[simp]
 theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
@@ -125,11 +134,11 @@ end
 
 section
 
-variable {R : Type _} [CommRing R] {M : Type _} [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
-variable (N : Type _) [AddCommGroup N] [Module R N]
+variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
  `End(M) ≃ M* ⊗ M`-/
@@ -157,7 +166,8 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 
 variable (R M)
 
-variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N] [Nontrivial R]
+variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
+  [Module.Free R P] [Module.Finite R P]
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
@@ -172,8 +182,6 @@ theorem trace_eq_contract_apply (x : Module.Dual R M ⊗[R] M) :
   rw [← comp_apply, trace_eq_contract]
 #align linear_map.trace_eq_contract_apply LinearMap.trace_eq_contract_apply
 
-open Classical
-
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
 theorem trace_eq_contract' :
@@ -184,6 +192,8 @@ theorem trace_eq_contract' :
 /-- The trace of the identity endomorphism is the dimension of the free module -/
 @[simp]
 theorem trace_one : trace R M 1 = (finrank R M : R) := by
+  cases subsingleton_or_nontrivial R
+  · simp
   have b := Module.Free.chooseBasis R M
   rw [trace_eq_matrix_trace R b, toMatrix_one, finrank_eq_card_chooseBasisIndex]
   simp
@@ -219,7 +229,7 @@ theorem trace_prodMap :
       trace_eq_contract_apply, contractLeft_apply, snd_apply, coprod_apply, id_coe, id_eq, zero_add]
 #align linear_map.trace_prod_map LinearMap.trace_prodMap
 
-variable {R M N}
+variable {R M N P}
 
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
@@ -229,7 +239,7 @@ theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
   exact h
 #align linear_map.trace_prod_map' LinearMap.trace_prodMap'
 
-variable (R M N)
+variable (R M N P)
 
 open TensorProduct Function
 
@@ -256,7 +266,7 @@ theorem trace_comp_comm :
     trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
-variable {R M N}
+variable {R M N P}
 
 @[simp]
 theorem trace_transpose' (f : M →ₗ[R] M) :
@@ -279,6 +289,14 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
   exact h
 #align linear_map.trace_comp_comm' LinearMap.trace_comp_comm'
 
+lemma trace_comp_cycle (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
+    trace R P (g ∘ₗ f ∘ₗ h) = trace R N (f ∘ₗ h ∘ₗ g) := by
+  rw [trace_comp_comm', comp_assoc]
+
+lemma trace_comp_cycle' (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
+    trace R P ((g ∘ₗ f) ∘ₗ h) = trace R M ((h ∘ₗ g) ∘ₗ f) := by
+  rw [trace_comp_comm', ← comp_assoc]
+
 @[simp]
 theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj f) = trace R M f := by
   rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
@@ -290,6 +308,13 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
     trace R M f = (finrank R p : R) := by
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 #align linear_map.is_proj.trace LinearMap.IsProj.trace
+
+lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) :
+    IsNilpotent (trace R M f) := by
+  let b : Basis _ R M := Module.Free.chooseBasis R M
+  rw [trace_eq_matrix_trace R b]
+  apply Matrix.isNilpotent_trace_of_isNilpotent
+  simpa
 
 end
 

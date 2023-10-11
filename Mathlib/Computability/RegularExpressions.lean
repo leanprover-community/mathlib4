@@ -29,7 +29,7 @@ open Computability
 
 universe u
 
-variable {α β γ : Type _} [dec : DecidableEq α]
+variable {α β γ : Type*} [dec : DecidableEq α]
 
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
@@ -320,7 +320,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
           case tail ht' => exact helem t' ht'
-    · rintro ⟨S, hsum, helem⟩; dsimp
+    · rintro ⟨S, hsum, helem⟩
       cases' x with a x
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -395,11 +395,8 @@ theorem rmatch_iff_matches' (P : RegularExpression α) :
       tauto
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches'
 
-instance (P : RegularExpression α) : DecidablePred P.matches' := by
-  intro x
-  change Decidable (x ∈ P.matches')
-  rw [← rmatch_iff_matches']
-  exact instDecidableEqBool (rmatch P x) True
+instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
+  decidable_of_iff _ (rmatch_iff_matches' _ _)
 
 /-- Map the alphabet of a regular expression. -/
 @[simp]

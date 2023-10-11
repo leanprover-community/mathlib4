@@ -3,9 +3,12 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Use
 
 #align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -234,8 +237,6 @@ theorem of_le_succ {n m : ℕ} (H : n ≤ m.succ) : n ≤ m ∨ n = m.succ :=
   H.lt_or_eq_dec.imp le_of_lt_succ id
 #align nat.of_le_succ Nat.of_le_succ
 
-theorem succ_lt_succ_iff {m n : ℕ} : succ m < succ n ↔ m < n :=
-  ⟨lt_of_succ_lt_succ, succ_lt_succ⟩
 #align nat.succ_lt_succ_iff Nat.succ_lt_succ_iff
 
 theorem div_le_iff_le_mul_add_pred {m n k : ℕ} (n0 : 0 < n) : m / n ≤ k ↔ m ≤ n * k + (n - 1) := by
@@ -288,7 +289,7 @@ theorem exists_eq_add_of_le' (h : m ≤ n) : ∃ k : ℕ, n = k + m :=
 #align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
 
 theorem exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
-  ⟨n - (m + 1), by rw [add_right_comm, add_sub_of_le h]⟩
+  ⟨n - (m + 1), by rw [Nat.add_right_comm, add_sub_of_le h]⟩
 #align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 /-! ### `pred` -/
@@ -326,6 +327,21 @@ theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
   | _ + 1 => id
 #align nat.le_of_pred_lt Nat.le_of_pred_lt
 
+theorem self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
+  cases n
+  · rfl
+  · rw [two_mul]
+    convert (add_succ_sub_one (Nat.succ _) _).symm
+
+theorem sub_one_add_self (n : ℕ) : (n - 1) + n = 2 * n - 1 :=
+  add_comm _ n ▸ self_add_sub_one n
+
+theorem self_add_pred (n : ℕ) : n + pred n = (2 * n).pred :=
+  self_add_sub_one n
+
+theorem pred_add_self (n : ℕ) : pred n + n = (2 * n).pred :=
+  sub_one_add_self n
+
 /-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
 @[simp]
 theorem pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [add_comm, add_one, Nat.pred_succ]
@@ -359,6 +375,20 @@ theorem mul_left_eq_self_iff {a b : ℕ} (hb : 0 < b) : a * b = b ↔ a = 1 := b
 theorem lt_succ_iff_lt_or_eq {n i : ℕ} : n < i.succ ↔ n < i ∨ n = i :=
   lt_succ_iff.trans Decidable.le_iff_lt_or_eq
 #align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
+
+set_option push_neg.use_distrib true in
+/-- The product of two natural numbers is greater than 1 if and only if
+  at least one of them is greater than 1 and both are positive. -/
+lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
+  constructor <;> intro h
+  · by_contra h'; push_neg at h'; simp_rw [Nat.le_zero] at h'
+    obtain rfl | rfl | h' := h'
+    · simp at h
+    · simp at h
+    · exact (Nat.mul_le_mul h'.1 h'.2).not_lt h
+  · obtain hm | hn := h.2.2
+    · exact Nat.mul_lt_mul hm h.2.1 Nat.zero_lt_one
+    · exact Nat.mul_lt_mul' h.1 hn h.1
 
 /-!
 ### Recursion and induction principles
@@ -462,11 +492,11 @@ protected def strongRec' {p : ℕ → Sort u} (H : ∀ n, (∀ m, m < n → p m)
 
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
-def strongRecOn' {P : ℕ → Sort _} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
+def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
   Nat.strongRec' h n
 #align nat.strong_rec_on' Nat.strongRecOn'
 
-theorem strongRecOn'_beta {P : ℕ → Sort _} {h} {n : ℕ} :
+theorem strongRecOn'_beta {P : ℕ → Sort*} {h} {n : ℕ} :
     (strongRecOn' n h : P n) = h n fun m _ => (strongRecOn' m h : P m) := by
   simp only [strongRecOn']
   rw [Nat.strongRec']
@@ -489,20 +519,20 @@ theorem le_induction {m} {P : ∀ (n : Nat) (_ : m ≤ n), Prop} (base : P m le_
 Also works for functions to `Sort*`. For a version assuming only the assumption for `k < n`, see
 `decreasing_induction'`. -/
 @[elab_as_elim]
-def decreasingInduction {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
+def decreasingInduction {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
     (hP : P n) : P m :=
   leRecOn mn (fun {k} ih hsk => ih <| h k hsk) (fun h => h) hP
 #align nat.decreasing_induction Nat.decreasingInduction
 
 @[simp]
-theorem decreasingInduction_self {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {n : ℕ} (nn : n ≤ n)
+theorem decreasingInduction_self {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {n : ℕ} (nn : n ≤ n)
     (hP : P n) :
     (decreasingInduction h nn hP : P n) = hP := by
   dsimp only [decreasingInduction]
   rw [leRecOn_self]
 #align nat.decreasing_induction_self Nat.decreasingInduction_self
 
-theorem decreasingInduction_succ {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
+theorem decreasingInduction_succ {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ} (mn : m ≤ n)
     (msn : m ≤ n + 1) (hP : P (n + 1)) :
     (decreasingInduction h msn hP : P m) = decreasingInduction h mn (h n hP) := by
   dsimp only [decreasingInduction]
@@ -510,13 +540,13 @@ theorem decreasingInduction_succ {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → 
 #align nat.decreasing_induction_succ Nat.decreasingInduction_succ
 
 @[simp]
-theorem decreasingInduction_succ' {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m : ℕ}
+theorem decreasingInduction_succ' {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m : ℕ}
     (msm : m ≤ m + 1) (hP : P (m + 1)) : (decreasingInduction h msm hP : P m) = h m hP := by
   dsimp only [decreasingInduction]
   rw [leRecOn_succ']
 #align nat.decreasing_induction_succ' Nat.decreasingInduction_succ'
 
-theorem decreasingInduction_trans {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n k : ℕ}
+theorem decreasingInduction_trans {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n k : ℕ}
     (mn : m ≤ n) (nk : n ≤ k) (hP : P k) :
     (decreasingInduction h (le_trans mn nk) hP : P m) =
     decreasingInduction h mn (decreasingInduction h nk hP) := by
@@ -525,7 +555,7 @@ theorem decreasingInduction_trans {P : ℕ → Sort _} (h : ∀ n, P (n + 1) →
   · rw [decreasingInduction_succ h (le_trans mn nk), ih, decreasingInduction_succ]
 #align nat.decreasing_induction_trans Nat.decreasingInduction_trans
 
-theorem decreasingInduction_succ_left {P : ℕ → Sort _} (h : ∀ n, P (n + 1) → P n) {m n : ℕ}
+theorem decreasingInduction_succ_left {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m n : ℕ}
     (smn : m + 1 ≤ n) (mn : m ≤ n) (hP : P n) :
     (decreasingInduction h mn hP : P m) = h m (decreasingInduction h smn hP) := by
   rw [Subsingleton.elim mn (le_trans (le_succ m) smn), decreasingInduction_trans,
@@ -537,7 +567,7 @@ theorem decreasingInduction_succ_left {P : ℕ → Sort _} (h : ∀ n, P (n + 1)
 strictly below `(a,b)` to `P a b`, then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-def strongSubRecursion {P : ℕ → ℕ → Sort _} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
+def strongSubRecursion {P : ℕ → ℕ → Sort*} (H : ∀ a b, (∀ x y, x < a → y < b → P x y) → P a b) :
     ∀ n m : ℕ, P n m
   | n, m => H n m fun x y _ _ => strongSubRecursion H x y
 #align nat.strong_sub_recursion Nat.strongSubRecursion
@@ -552,7 +582,7 @@ and for any `x y : ℕ` we can extend `P` from `(x,y+1)` and `(x+1,y)` to `(x+1,
 then we have `P n m` for all `n m : ℕ`.
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
 since this produces equation lemmas. -/
-def pincerRecursion {P : ℕ → ℕ → Sort _} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
+def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ a : ℕ, P a 0) (H0b : ∀ b : ℕ, P 0 b)
     (H : ∀ x y : ℕ, P x y.succ → P x.succ y → P x.succ y.succ) : ∀ n m : ℕ, P n m
   | a, 0 => Ha0 a
   | 0, b => H0b b
@@ -568,7 +598,7 @@ attribute [elab_as_elim] pincerRecursion
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
 @[elab_as_elim]
-def leRecOn' {C : ℕ → Sort _} {n : ℕ} :
+def leRecOn' {C : ℕ → Sort*} {n : ℕ} :
     ∀ {m : ℕ}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m
   | 0, H, _, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
   | m + 1, H, next, x =>
@@ -579,7 +609,7 @@ def leRecOn' {C : ℕ → Sort _} {n : ℕ} :
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
 Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_induction`. -/
 @[elab_as_elim]
-def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
+def decreasingInduction' {P : ℕ → Sort*} {m n : ℕ} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) :
     P m := by
   revert h hP
@@ -732,7 +762,7 @@ protected theorem mul_dvd_mul_iff_left {a b c : ℕ} (ha : 0 < a) : a * b ∣ a 
 #align nat.mul_dvd_mul_iff_left Nat.mul_dvd_mul_iff_left
 
 protected theorem mul_dvd_mul_iff_right {a b c : ℕ} (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b :=
-  exists_congr fun d => by rw [mul_right_comm, mul_left_inj' hc.ne']
+  exists_congr fun d => by rw [Nat.mul_right_comm, mul_left_inj' hc.ne']
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
 
 @[simp]
@@ -904,22 +934,23 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
+-- To work around lean4#2552, we use `match` instead of `if/casesOn` with decidable instances.
 instance decidableBallLT :
-    ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
-| 0, P, _ => isTrue fun n h => by cases h
-| (n+1), P, H => by
-  cases' decidableBallLT n fun k h => P k (lt_succ_of_lt h) with h h
-  · refine' isFalse (mt _ h)
-    intro hn k h
-    apply hn
-  by_cases p : P n (lt_succ_self n)
-  · exact
-      isTrue fun k h' =>
-        (le_of_lt_succ h').lt_or_eq_dec.elim (h _) fun e =>
-          match k, e, h' with
-          | _, rfl, _ => p
-  · exact isFalse (mt (fun hn => hn _ _) p)
+  ∀ (n : Nat) (P : ∀ k, k < n → Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
+| 0, _, _ => isTrue fun _ => (by cases ·)
+| (n+1), P, H =>
+  match decidableBallLT n (P · <| lt_succ_of_lt ·) with
+  | isFalse h => isFalse (h fun _ _ => · _ _)
+  | isTrue h =>
+    match H n Nat.le.refl with
+    | isFalse p => isFalse (p <| · _ _)
+    | isTrue p => isTrue fun _ h' => (Nat.le_of_lt_succ h').lt_or_eq_dec.elim (h _) (· ▸ p)
 #align nat.decidable_ball_lt Nat.decidableBallLT
+
+-- To verify we don't have a regression on the speed, we put a difficult example.
+-- any regression should take a huge amount of heartbeats -- we are currently at 187621.
+-- For reference, the instance using `casesOn` took 44544 for 4; this one takes 1299 for 4.
+example : ∀ a, a < 25 → ∀ b, b < 25 → ∀ c, c < 25 → a ^ 2 + b ^ 2 + c ^ 2 ≠ 7 := by decide
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=

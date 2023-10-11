@@ -50,7 +50,7 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
   then it is an extremum of the same type for their sum;
 * `is**.neg` : if `x` is an extremum for `f`, then it is an extremum
   of the opposite type for `-f`;
-* `is**.sub` : if `x` is an a minimum for `f` and a maximum for `g`,
+* `is**.sub` : if `x` is a minimum for `f` and a maximum for `g`,
   then it is a minimum for `f - g` and a maximum for `g - f`;
 * `is**.max`, `is**.min`, `is**.sup`, `is**.inf` : similarly for `is**.add`
   for pointwise `max`, `min`, `sup`, `inf`, respectively.
@@ -215,15 +215,15 @@ theorem isExtrFilter_dual_iff : IsExtrFilter (toDual ∘ f) l a ↔ IsExtrFilter
   or_comm
 #align is_extr_filter_dual_iff isExtrFilter_dual_iff
 
-alias isMinFilter_dual_iff ↔ IsMinFilter.undual IsMaxFilter.dual
+alias ⟨IsMinFilter.undual, IsMaxFilter.dual⟩ := isMinFilter_dual_iff
 #align is_min_filter.undual IsMinFilter.undual
 #align is_max_filter.dual IsMaxFilter.dual
 
-alias isMaxFilter_dual_iff ↔ IsMaxFilter.undual IsMinFilter.dual
+alias ⟨IsMaxFilter.undual, IsMinFilter.dual⟩ := isMaxFilter_dual_iff
 #align is_max_filter.undual IsMaxFilter.undual
 #align is_min_filter.dual IsMinFilter.dual
 
-alias isExtrFilter_dual_iff ↔ IsExtrFilter.undual IsExtrFilter.dual
+alias ⟨IsExtrFilter.undual, IsExtrFilter.dual⟩ := isExtrFilter_dual_iff
 #align is_extr_filter.undual IsExtrFilter.undual
 #align is_extr_filter.dual IsExtrFilter.dual
 
@@ -239,15 +239,15 @@ theorem isExtrOn_dual_iff : IsExtrOn (toDual ∘ f) s a ↔ IsExtrOn f s a :=
   or_comm
 #align is_extr_on_dual_iff isExtrOn_dual_iff
 
-alias isMinOn_dual_iff ↔ IsMinOn.undual IsMaxOn.dual
+alias ⟨IsMinOn.undual, IsMaxOn.dual⟩ := isMinOn_dual_iff
 #align is_min_on.undual IsMinOn.undual
 #align is_max_on.dual IsMaxOn.dual
 
-alias isMaxOn_dual_iff ↔ IsMaxOn.undual IsMinOn.dual
+alias ⟨IsMaxOn.undual, IsMinOn.dual⟩ := isMaxOn_dual_iff
 #align is_max_on.undual IsMaxOn.undual
 #align is_min_on.dual IsMinOn.dual
 
-alias isExtrOn_dual_iff ↔ IsExtrOn.undual IsExtrOn.dual
+alias ⟨IsExtrOn.undual, IsExtrOn.dual⟩ := isExtrOn_dual_iff
 #align is_extr_on.undual IsExtrOn.undual
 #align is_extr_on.dual IsExtrOn.dual
 
@@ -631,7 +631,7 @@ section Eventually
 /-! ### Relation with `eventually` comparisons of two functions -/
 
 
-theorem Filter.EventuallyLE.isMaxFilter {α β : Type _} [Preorder β] {f g : α → β} {a : α}
+theorem Filter.EventuallyLE.isMaxFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
   refine' hle.mp (h.mono fun x hf hgf => _)
@@ -639,39 +639,39 @@ theorem Filter.EventuallyLE.isMaxFilter {α β : Type _} [Preorder β] {f g : α
   exact le_trans hgf hf
 #align filter.eventually_le.is_max_filter Filter.EventuallyLE.isMaxFilter
 
-theorem IsMaxFilter.congr {α β : Type _} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
+theorem IsMaxFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsMaxFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMaxFilter g l a :=
   heq.symm.le.isMaxFilter hfga h
 #align is_max_filter.congr IsMaxFilter.congr
 
-theorem Filter.EventuallyEq.isMaxFilter_iff {α β : Type _} [Preorder β] {f g : α → β} {a : α}
+theorem Filter.EventuallyEq.isMaxFilter_iff {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMaxFilter f l a ↔ IsMaxFilter g l a :=
   ⟨fun h => h.congr heq hfga, fun h => h.congr heq.symm hfga.symm⟩
 #align filter.eventually_eq.is_max_filter_iff Filter.EventuallyEq.isMaxFilter_iff
 
-theorem Filter.EventuallyLE.isMinFilter {α β : Type _} [Preorder β] {f g : α → β} {a : α}
+theorem Filter.EventuallyLE.isMinFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : f ≤ᶠ[l] g) (hfga : f a = g a) (h : IsMinFilter f l a) :
     IsMinFilter g l a :=
   @Filter.EventuallyLE.isMaxFilter _ βᵒᵈ _ _ _ _ _ hle hfga h
 #align filter.eventually_le.is_min_filter Filter.EventuallyLE.isMinFilter
 
-theorem IsMinFilter.congr {α β : Type _} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
+theorem IsMinFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsMinFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMinFilter g l a :=
   heq.le.isMinFilter hfga h
 #align is_min_filter.congr IsMinFilter.congr
 
-theorem Filter.EventuallyEq.isMinFilter_iff {α β : Type _} [Preorder β] {f g : α → β} {a : α}
+theorem Filter.EventuallyEq.isMinFilter_iff {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMinFilter f l a ↔ IsMinFilter g l a :=
   ⟨fun h => h.congr heq hfga, fun h => h.congr heq.symm hfga.symm⟩
 #align filter.eventually_eq.is_min_filter_iff Filter.EventuallyEq.isMinFilter_iff
 
-theorem IsExtrFilter.congr {α β : Type _} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
+theorem IsExtrFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsExtrFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsExtrFilter g l a := by
   rw [IsExtrFilter] at *
   rwa [← heq.isMaxFilter_iff hfga, ← heq.isMinFilter_iff hfga]
 #align is_extr_filter.congr IsExtrFilter.congr
 
-theorem Filter.EventuallyEq.isExtrFilter_iff {α β : Type _} [Preorder β] {f g : α → β} {a : α}
+theorem Filter.EventuallyEq.isExtrFilter_iff {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsExtrFilter f l a ↔ IsExtrFilter g l a :=
   ⟨fun h => h.congr heq hfga, fun h => h.congr heq.symm hfga.symm⟩
 #align filter.eventually_eq.is_extr_filter_iff Filter.EventuallyEq.isExtrFilter_iff

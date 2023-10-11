@@ -38,7 +38,7 @@ open Set Filter TopologicalSpace
 
 open Filter Topology
 
-variable {ι : Sort _} {α β X Y : Type _}
+variable {ι : Sort*} {α β X Y : Type*}
 
 namespace Filter
 
@@ -91,6 +91,11 @@ protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Se
   rw [nhds_eq]
   exact h.lift' monotone_principal.Iic
 #align filter.has_basis.nhds Filter.HasBasis.nhds
+
+protected theorem tendsto_pure_self (l : Filter X) :
+    Tendsto (pure : X → Filter X) l (𝓝 l) := by
+  rw [Filter.tendsto_nhds]
+  refine fun s hs ↦ Eventually.mono hs fun x ↦ id
 
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=

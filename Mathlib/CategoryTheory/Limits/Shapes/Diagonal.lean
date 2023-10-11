@@ -24,7 +24,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
-variable {C : Type _} [Category C] {X Y Z : C}
+variable {C : Type*} [Category C] {X Y Z : C}
 
 namespace pullback
 

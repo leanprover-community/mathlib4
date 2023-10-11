@@ -42,7 +42,7 @@ open Matrix
 
 open Matrix
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 /-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
 def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by
@@ -73,7 +73,7 @@ theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
   simp [cross_apply, mul_comm]
 #align cross_anticomm cross_anticomm
 
-alias cross_anticomm ← neg_cross
+alias neg_cross := cross_anticomm
 #align neg_cross neg_cross
 
 @[simp]
@@ -87,10 +87,6 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   simp_rw [cross_apply, mul_comm, cons_eq_zero_iff]
   exact ⟨sub_self _, sub_self _, sub_self _, zero_empty.symm⟩
 #align cross_self cross_self
-
--- Porting note: Added this to make `norm_num` work better
-@[simp]
-private theorem vecCons2 (a : R) (v : Fin 2 → R) : vecCons a v 2 = v 1 := rfl
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/
 @[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify

@@ -10,6 +10,8 @@ import Mathlib.Lean.Expr.Traverse
 # Additions to `Lean.Meta.DiscrTree`
 -/
 
+set_option autoImplicit true
+
 namespace Lean.Meta.DiscrTree
 
 /--
@@ -41,7 +43,8 @@ partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Arr
       args.foldlM (fun acc arg => do
           pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg)))
         (← d.getSubexpressionMatches body).reverse)
-  | .lam _ _ _ _ => lambdaTelescope e (fun args body => do
+  | .lam _ _ _ _
+  | .letE _ _ _ _ _ => lambdaLetTelescope e (fun args body => do
       args.foldlM (fun acc arg => do
           pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg)))
         (← d.getSubexpressionMatches body).reverse)

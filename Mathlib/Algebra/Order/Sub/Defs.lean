@@ -22,9 +22,9 @@ subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENN
 ## Implementation details
 
 `OrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
-where we don't have a `CanonicallyOrderedAddMonoid` instance
+where we don't have a `CanonicallyOrderedAddCommMonoid` instance
 (even though that is our main focus). Conversely, this means we can use
-`CanonicallyOrderedAddMonoid` without necessarily having to define a subtraction.
+`CanonicallyOrderedAddCommMonoid` without necessarily having to define a subtraction.
 
 The results in this file are ordered by the type-class assumption needed to prove it.
 This means that similar results might not be close to each other. Furthermore, we don't prove
@@ -44,7 +44,7 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- `OrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`.
 In other words, `a - b` is the least `c` such that `a ≤ b + c`.
@@ -52,7 +52,7 @@ In other words, `a - b` is the least `c` such that `a ≤ b + c`.
 This is satisfied both by the subtraction in additive ordered groups and by truncated subtraction
 in canonically ordered monoids on many specific types.
 -/
-class OrderedSub (α : Type _) [LE α] [Add α] [Sub α] : Prop where
+class OrderedSub (α : Type*) [LE α] [Add α] [Sub α] : Prop where
   /-- `a - b` provides a lower bound on `c` such that `a ≤ c + b`. -/
   tsub_le_iff_right : ∀ a b c : α, a - b ≤ c ↔ a ≤ c + b
 #align has_ordered_sub OrderedSub
@@ -89,6 +89,7 @@ variable [Preorder α]
 section AddCommSemigroup
 
 variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
+/- TODO: Most results can be generalized to [Add α] [IsSymmOp α α (· + ·)] -/
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 #align tsub_le_iff_left tsub_le_iff_left
@@ -247,7 +248,7 @@ variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 theorem tsub_nonpos : a - b ≤ 0 ↔ a ≤ b := by rw [tsub_le_iff_left, add_zero]
 #align tsub_nonpos tsub_nonpos
 
-alias tsub_nonpos ↔ _ tsub_nonpos_of_le
+alias ⟨_, tsub_nonpos_of_le⟩ := tsub_nonpos
 #align tsub_nonpos_of_le tsub_nonpos_of_le
 
 end Preorder

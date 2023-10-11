@@ -29,7 +29,7 @@ continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` i
 
 open TopologicalSpace Bornology Filter Topology Pointwise
 
-variable {𝕜 𝕜' E F : Type _}
+variable {𝕜 𝕜' E F : Type*}
 
 variable [AddCommGroup E] [UniformSpace E] [UniformAddGroup E]
 

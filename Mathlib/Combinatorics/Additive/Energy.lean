@@ -24,11 +24,11 @@ is `multiplicativeEnergy s t`) as a standalone definition.
 
 section
 
-variable {α : Type _} [PartialOrder α] {x y : α}
+variable {α : Type*} [PartialOrder α] {x y : α}
 
 end
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 namespace Finset
 

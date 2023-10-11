@@ -44,8 +44,8 @@ open Filter
 /-- Class `ContinuousSMul M X` says that the scalar multiplication `(•) : M → X → X`
 is continuous in both arguments. We use the same class for all kinds of multiplicative actions,
 including (semi)modules and algebras. -/
-class ContinuousSMul (M X : Type _) [SMul M X] [TopologicalSpace M] [TopologicalSpace X] :
-  Prop where
+class ContinuousSMul (M X : Type*) [SMul M X] [TopologicalSpace M] [TopologicalSpace X] :
+    Prop where
   /-- The scalar multiplication `(•)` is continuous. -/
   continuous_smul : Continuous fun p : M × X => p.1 • p.2
 #align has_continuous_smul ContinuousSMul
@@ -55,8 +55,8 @@ export ContinuousSMul (continuous_smul)
 /-- Class `ContinuousVAdd M X` says that the additive action `(+ᵥ) : M → X → X`
 is continuous in both arguments. We use the same class for all kinds of additive actions,
 including (semi)modules and algebras. -/
-class ContinuousVAdd (M X : Type _) [VAdd M X] [TopologicalSpace M] [TopologicalSpace X] :
-  Prop where
+class ContinuousVAdd (M X : Type*) [VAdd M X] [TopologicalSpace M] [TopologicalSpace X] :
+    Prop where
   /-- The additive action `(+ᵥ)` is continuous. -/
   continuous_vadd : Continuous fun p : M × X => p.1 +ᵥ p.2
 #align has_continuous_vadd ContinuousVAdd
@@ -67,15 +67,15 @@ attribute [to_additive] ContinuousSMul
 
 section Main
 
-variable {M X Y α : Type _} [TopologicalSpace M] [TopologicalSpace X] [TopologicalSpace Y]
+variable {M X Y α : Type*} [TopologicalSpace M] [TopologicalSpace X] [TopologicalSpace Y]
 
 section SMul
 
 variable [SMul M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X
-    where continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
+instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
+  continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
 #align has_continuous_smul.has_continuous_const_smul ContinuousSMul.continuousConstSMul
 #align has_continuous_vadd.has_continuous_const_vadd ContinuousVAdd.continuousConstVAdd
 
@@ -123,7 +123,7 @@ theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun
 #align continuous.vadd Continuous.vadd
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
-@[to_additive "If an additive action is central, then its right action is continuous when its left\n
+@[to_additive "If an additive action is central, then its right action is continuous when its left
 action is."]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
@@ -147,12 +147,22 @@ section Monoid
 variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Units.continuousSMul : ContinuousSMul Mˣ X
-    where continuous_smul :=
+instance Units.continuousSMul : ContinuousSMul Mˣ X where
+  continuous_smul :=
     show Continuous ((fun p : M × X => p.fst • p.snd) ∘ fun p : Mˣ × X => (p.1, p.2)) from
       continuous_smul.comp ((Units.continuous_val.comp continuous_fst).prod_mk continuous_snd)
 #align units.has_continuous_smul Units.continuousSMul
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
+
+/-- If an action is continuous, then composing this action with a continuous homomorphism gives
+again a continuous action. -/
+@[to_additive]
+theorem MulAction.continuousSMul_compHom
+    {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
+    letI : MulAction N X := MulAction.compHom _ f
+    ContinuousSMul N X := by
+  let _ : MulAction N X := MulAction.compHom _ f
+  exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
 
 end Monoid
 
@@ -177,7 +187,7 @@ instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [Continu
       (continuous_fst.smul (continuous_snd.comp continuous_snd))⟩
 
 @[to_additive]
-instance {ι : Type _} {γ : ι → Type _} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
+instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
     [∀ i, ContinuousSMul M (γ i)] : ContinuousSMul M (∀ i, γ i) :=
   ⟨continuous_pi fun i =>
       (continuous_fst.smul continuous_snd).comp <|
@@ -187,7 +197,7 @@ end Main
 
 section LatticeOps
 
-variable {ι : Sort _} {M X : Type _} [TopologicalSpace M] [SMul M X]
+variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
@@ -224,7 +234,7 @@ end LatticeOps
 
 section AddTorsor
 
-variable (G : Type _) (P : Type _) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
+variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
 
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 

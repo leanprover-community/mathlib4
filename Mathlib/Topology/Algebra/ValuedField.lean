@@ -36,7 +36,7 @@ open Topology
 
 section DivisionRing
 
-variable {K : Type _} [DivisionRing K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section ValuationTopologicalDivisionRing
 
@@ -137,7 +137,7 @@ namespace Valued
 
 open UniformSpace
 
-variable {K : Type _} [Field K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
+variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
 
 local notation "hat " => Completion
 
@@ -171,7 +171,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace  := H₀ y y_in₀
+        replace := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
@@ -287,7 +287,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp
+    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by
@@ -311,7 +311,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
         (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_fst).union
           (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_snd)
     · intro x y
-      dsimp
       norm_cast
       rw [← le_max_iff]
       exact v.map_add x y

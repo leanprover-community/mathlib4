@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
-import Mathlib.Init.Data.Prod
 import Mathlib.Init.Logic
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Attr.Register
@@ -23,6 +22,8 @@ namespace Function
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 #align function.comp Function.comp
+
+lemma comp_def {α β δ : Sort _} (f : β → δ) (g : α → β) : f ∘ g = fun x ↦ f (g x) := rfl
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
@@ -115,7 +116,6 @@ theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : 
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
-@[reducible]
 def Surjective (f : α → β) : Prop :=
   ∀ b, ∃ a, f a = b
 #align function.surjective Function.Surjective

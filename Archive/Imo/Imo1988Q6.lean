@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Rat.Defs
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.WLOG
 
 #align_import imo.imo1988_q6 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
@@ -207,7 +208,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
       hk (fun x => k * x) (fun x => x * x - k) fun _ _ => False <;>
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
-    intro x y; dsimp only
+    intro x y
     rw [← Int.coe_nat_inj', ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
@@ -265,7 +266,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
       hk (fun x => k * x) (fun x => x * x + 1) fun x _ => x ≤ 1 <;>
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
-    intro x y; dsimp only
+    intro x y
     rw [← Int.coe_nat_inj', ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring

@@ -26,7 +26,7 @@ This file records basic facts about uniformly locally doubling measures.
 -/
 
 -- Porting note: for 2 ^ n in exists_eventually_forall_measure_closedBall_le_mul
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -41,15 +41,15 @@ example we want hyperbolic space to carry the instance `IsUnifLocDoublingMeasure
 volumes grow exponentially in hyperbolic space. To be really explicit, consider the hyperbolic plane
 of curvature -1, the area of a disc of radius `ε` is `A(ε) = 2π(cosh(ε) - 1)` so
 `A(2ε)/A(ε) ~ exp(ε)`. -/
-class IsUnifLocDoublingMeasure {α : Type _} [MetricSpace α] [MeasurableSpace α]
-  (μ : Measure α) where
+class IsUnifLocDoublingMeasure {α : Type*} [MetricSpace α] [MeasurableSpace α]
+  (μ : Measure α) : Prop where
   exists_measure_closedBall_le_mul'' :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε)
 #align is_unif_loc_doubling_measure IsUnifLocDoublingMeasure
 
 namespace IsUnifLocDoublingMeasure
 
-variable {α : Type _} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
+variable {α : Type*} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
 -- Porting note: added for missing infer kinds
@@ -125,7 +125,7 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
   rcases lt_trichotomy r 0 with (rneg | rfl | rpos)
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
     simp only [closedBall_eq_empty.2 this, measure_empty, zero_le']
-  · simp only [MulZeroClass.mul_zero, closedBall_zero]
+  · simp only [mul_zero, closedBall_zero]
     refine' le_mul_of_one_le_of_le _ le_rfl
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
   · apply (hR ⟨rpos, hr⟩ x t ht.2).trans _

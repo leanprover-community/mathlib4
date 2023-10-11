@@ -2,10 +2,9 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Lemmas
-import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Ring.Basic
 import Mathlib.Util.SynthesizeUsing
 
 /-!
@@ -282,7 +281,7 @@ def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPrep
 tracing the result if `trace.linarith` is on.
 -/
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
-  (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
+    (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
   let branches ← pp.transform g l
   if branches.length > 1 then
     trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
@@ -319,7 +318,7 @@ open Meta
 structure LinarithConfig : Type where
   /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
   -- TODO There should be a def for this, rather than calling `evalTactic`?
-  discharger : TacticM Unit := do evalTactic (←`(tactic| ring))
+  discharger : TacticM Unit := do evalTactic (←`(tactic| ring1))
   -- We can't actually store a `Type` here,
   -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
   -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
@@ -347,7 +346,7 @@ since this is typically needed when using stronger unification.
 def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
     LinarithConfig :=
   if reduce_default then
-    { cfg with transparency := .default, discharger := do evalTactic (←`(tactic| ring!)) }
+    { cfg with transparency := .default, discharger := do evalTactic (←`(tactic| ring1!)) }
   else cfg
 
 /-!

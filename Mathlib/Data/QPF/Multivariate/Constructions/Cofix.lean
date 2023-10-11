@@ -14,7 +14,7 @@ import Mathlib.Data.QPF.Multivariate.Basic
 # The final co-algebra of a multivariate qpf is again a qpf.
 
 For a `(n+1)`-ary QPF `F (α₀,..,αₙ)`, we take the least fixed point of `F` with
-regards to its last argument `αₙ`. The result is a `n`-ary functor: `Fix F (α₀,..,αₙ₋₁)`.
+regards to its last argument `αₙ`. The result is an `n`-ary functor: `Fix F (α₀,..,αₙ₋₁)`.
 Making `Fix F` into a functor allows us to take the fixed point, compose with other functors
 and take a fixed point again.
 
@@ -144,7 +144,6 @@ def Cofix.dest {α : TypeVec n} : Cofix F α → F (α.append1 (Cofix F α)) :=
         intro x y h
         exact ⟨r, pr, h⟩
       rw [← Quot.factor_mk_eq _ _ this]
-      dsimp
       conv =>
         lhs
         rw [appendFun_comp_id, comp_map, ← abs_map, pr rxy, abs_map, ← comp_map,
@@ -223,7 +222,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
   intro rxy
   apply Quot.sound
   let r' := fun x y => r (Quot.mk _ x) (Quot.mk _ y)
-  have hr' : r' = fun x y => r (Quot.mk _ x) (Quot.mk _ y) := by rfl
+  have hr' : r' = fun x y => r (Quot.mk _ x) (Quot.mk _ y) := rfl
   have : IsPrecongr r' := by
     intro a b r'ab
     have h₀ :
@@ -283,7 +282,7 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
 
 /-- Bisimulation principle using `LiftR` to match and relate children of two trees. -/
 theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
-    (h : ∀ x y, r x y → LiftR (RelLast α r (i:=_)) (Cofix.dest x) (Cofix.dest y)) :
+    (h : ∀ x y, r x y → LiftR (RelLast α r (i := _)) (Cofix.dest x) (Cofix.dest y)) :
     ∀ x y, r x y → x = y := by
   apply Cofix.bisim_rel
   intro x y rxy
@@ -312,7 +311,7 @@ theorem Cofix.bisim₂ {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
 /-- Bisimulation principle the values `⟨a,f⟩` of the polynomial functor representing
 `Cofix F α` as well as an invariant `Q : β → Prop` and a state `β` generating the
 left-hand side and right-hand side of the equality through functions `u v : β → Cofix F α` -/
-theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β → Cofix F α)
+theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β → Cofix F α)
     (h : ∀ x, Q x → ∃ a f' f₀ f₁,
       Cofix.dest (u x) = q.abs ⟨a, q.P.appendContents f' f₀⟩ ∧
         Cofix.dest (v x) = q.abs ⟨a, q.P.appendContents f' f₁⟩ ∧
@@ -415,7 +414,6 @@ theorem liftR_map_last [lawful: LawfulMvFunctor F]
         apply ih
     simp only [lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
       lastFun_subtypeVal, comp.left_id, lastFun_comp, lastFun_prod]
-    dsimp
     ext1
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh

@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 
 namespace WithTop
 
-variable {α : Type _}
+variable {α : Type*}
 
 section LinearOrderedAddCommGroup
 

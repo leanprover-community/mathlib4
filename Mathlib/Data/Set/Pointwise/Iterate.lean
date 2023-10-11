@@ -28,7 +28,7 @@ the map `x ↦ x^n`. Then `s` is invariant under the pointwise action of the sub
       the additive subgroup of elements `g : G` such that `(n^j) • g = 0` for some `j : ℕ`.
       (This additive subgroup is called the Prüfer subgroup when `G` is the `AddCircle` and `n` is
       prime.)"]
-theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type _} [CommGroup G] {n : ℤ} {s : Set G}
+theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ} {s : Set G}
     (hs : (fun x => x ^ n) ⁻¹' s = s) {g : G} {j : ℕ} (hg : g ^ n ^ j = 1) : g • s = s := by
   suffices ∀ {g' : G} (_ : g' ^ n ^ j = 1), g' • s ⊆ s by
     refine' le_antisymm (this hg) _
@@ -41,6 +41,6 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type _} [CommGroup G] {n : �
   change (zpowGroupHom n)^[j] (g' * y) ∈ s
   replace hg' : (zpowGroupHom n)^[j] g' = 1
   · simpa [zpowGroupHom]
-  rwa [MonoidHom.iterate_map_mul, hg', one_mul]
+  rwa [iterate_map_mul, hg', one_mul]
 #align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self
 #align vadd_eq_self_of_preimage_zsmul_eq_self vadd_eq_self_of_preimage_zsmul_eq_self

@@ -39,7 +39,7 @@ open Topology
 
 section
 
-variable {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace β]
 
 /-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
 let `a : α`. The limit strictly to the left of `f` at `a`, denoted with `leftLim f a`, is defined
@@ -78,19 +78,34 @@ theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology �
   simp [leftLim, ite_eq_left_iff, h]
 #align left_lim_eq_of_eq_bot leftLim_eq_of_eq_bot
 
+theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
+    {f : α → β} {a : α} {y : β} (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
+    Function.rightLim f a = y :=
+  @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
+#align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
+
+theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α → β) {a : α}
+    (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
+  @leftLim_eq_of_eq_bot αᵒᵈ _ _ _ _ _  f a h
+
 end
 
 open Function
 
 namespace Monotone
 
-variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
 
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
     leftLim f x = sSup (f '' Iio x) :=
   leftLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Iio x)
 #align monotone.left_lim_eq_Sup Monotone.leftLim_eq_sSup
+
+theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
+    rightLim f x = sInf (f '' Ioi x) :=
+  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
+#align right_lim_eq_Inf Monotone.rightLim_eq_sInf
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
@@ -292,7 +307,7 @@ end Monotone
 
 namespace Antitone
 
-variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
 
 theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=

@@ -30,7 +30,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Heyting
 
@@ -116,7 +116,7 @@ namespace Regular
 
 theorem prop : ∀ a : Regular α, IsRegular a.val := Subtype.prop
 
-instance : Coe (Regular α) α := ⟨Regular.val⟩
+instance : CoeOut (Regular α) α := ⟨Regular.val⟩
 
 theorem coe_injective : Injective ((↑) : Regular α → α) :=
   Subtype.coe_injective

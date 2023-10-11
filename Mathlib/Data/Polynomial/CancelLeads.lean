@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Tactic.ComputeDegree
 
 #align_import data.polynomial.cancel_leads from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -28,7 +29,7 @@ noncomputable section
 
 open Polynomial
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Ring
 
@@ -60,11 +61,8 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     C p.leadingCoeff * q + -(C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p) = 0
   · exact (le_of_eq (by simp only [h0, natDegree_zero])).trans_lt hq
   apply lt_of_le_of_ne
-  · -- porting note: was compute_degree_le; repeat' rwa [Nat.sub_add_cancel]
-    rw [natDegree_add_le_iff_left]
-    · apply natDegree_C_mul_le
-    refine (natDegree_neg (C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p)).le.trans ?_
-    exact natDegree_mul_le.trans <| Nat.add_le_of_le_sub h <| natDegree_C_mul_X_pow_le _ _
+  · compute_degree!
+    rwa [Nat.sub_add_cancel]
   · contrapose! h0
     rw [← leadingCoeff_eq_zero, leadingCoeff, h0, mul_assoc, X_pow_mul, ← tsub_add_cancel_of_le h,
       add_comm _ p.natDegree]

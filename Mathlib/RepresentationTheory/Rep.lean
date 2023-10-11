@@ -26,6 +26,7 @@ We construct the categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k
 We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category with all (co)limits.
 -/
 
+suppress_compilation
 
 universe u
 
@@ -407,14 +408,14 @@ variable {A B C}
 /-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
 simplify. -/
 theorem homEquiv_apply_hom (f : A ⊗ B ⟶ C) :
-  (homEquiv A B C f).hom = (TensorProduct.curry f.hom).flip := rfl
+    (homEquiv A B C f).hom = (TensorProduct.curry f.hom).flip := rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_apply_hom Rep.homEquiv_apply_hom
 
 /-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
 simplify. -/
 theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
-  ((homEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip := rfl
+    ((homEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip := rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv_symm_apply_hom Rep.homEquiv_symm_apply_hom
 
@@ -477,14 +478,16 @@ set_option linter.uppercaseLean3 false in
 
 variable {A B C}
 
-@[simp]
+-- `simpNF` times out
+@[simp, nolint simpNF]
 theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquiv A B C f).hom = (TensorProduct.curry f.hom).flip :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_hom Rep.MonoidalClosed.linearHomEquiv_hom
 
-@[simp]
+-- `simpNF` times out
+@[simp, nolint simpNF]
 theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquivComm A B C f).hom = TensorProduct.curry f.hom :=
   rfl
@@ -552,7 +555,7 @@ example : MonoidalLinear k (Rep k G) := by infer_instance
 noncomputable section
 
 /-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
-theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (V W : Type _)
+theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
     (r : MonoidAlgebra k G) (x : V) :
@@ -630,7 +633,8 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
         dsimp [counitIsoAddEquiv]
 /- Porting note: rest of broken proof was `simp`. -/
         rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply]
-        erw [Representation.ofModule_asAlgebraHom_apply_apply]
+        rw [AddEquiv.trans_apply]
+        erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
         exact AddEquiv.symm_apply_apply _ _}
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso Rep.counitIso

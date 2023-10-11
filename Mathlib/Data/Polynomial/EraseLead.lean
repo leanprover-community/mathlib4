@@ -29,7 +29,7 @@ open Polynomial Finset
 
 namespace Polynomial
 
-variable {R : Type _} [Semiring R] {f : R[X]}
+variable {R : Type*} [Semiring R] {f : R[X]}
 
 /-- `eraseLead f` for a polynomial `f` is the polynomial obtained by
 subtracting from `f` the leading term of `f`. -/
@@ -73,13 +73,13 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.erase_lead_add_C_mul_X_pow Polynomial.eraseLead_add_C_mul_X_pow
 
 @[simp]
-theorem self_sub_monomial_natDegree_leadingCoeff {R : Type _} [Ring R] (f : R[X]) :
+theorem self_sub_monomial_natDegree_leadingCoeff {R : Type*} [Ring R] (f : R[X]) :
     f - monomial f.natDegree f.leadingCoeff = f.eraseLead :=
   (eq_sub_iff_add_eq.mpr (eraseLead_add_monomial_natDegree_leadingCoeff f)).symm
 #align polynomial.self_sub_monomial_nat_degree_leading_coeff Polynomial.self_sub_monomial_natDegree_leadingCoeff
 
 @[simp]
-theorem self_sub_C_mul_X_pow {R : Type _} [Ring R] (f : R[X]) :
+theorem self_sub_C_mul_X_pow {R : Type*} [Ring R] (f : R[X]) :
     f - C f.leadingCoeff * X ^ f.natDegree = f.eraseLead := by
   rw [C_mul_X_pow_eq_monomial, self_sub_monomial_natDegree_leadingCoeff]
 set_option linter.uppercaseLean3 false in
@@ -250,7 +250,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
 Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
-theorem mono_map_natDegree_eq {S F : Type _} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
+theorem mono_map_natDegree_eq {S F : Type*} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
     {p : R[X]} (k : ℕ) (fu : ℕ → ℕ) (fu0 : ∀ {n}, n ≤ k → fu n = 0)
     (fc : ∀ {n m}, k ≤ n → n < m → fu n < fu m) (φ_k : ∀ {f : R[X]}, f.natDegree < k → φ f = 0)
     (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = fu n) :
@@ -270,7 +270,7 @@ theorem mono_map_natDegree_eq {S F : Type _} [Semiring S] [AddMonoidHomClass F R
       · rwa [φ_k (not_le.mp FG), zero_add]
 #align polynomial.mono_map_nat_degree_eq Polynomial.mono_map_natDegree_eq
 
-theorem map_natDegree_eq_sub {S F : Type _} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
+theorem map_natDegree_eq_sub {S F : Type*} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
     {p : R[X]} {k : ℕ} (φ_k : ∀ f : R[X], f.natDegree < k → φ f = 0)
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
@@ -279,7 +279,7 @@ theorem map_natDegree_eq_sub {S F : Type _} [Semiring S] [AddMonoidHomClass F R[
     (φ_k _) φ_mon
 #align polynomial.map_nat_degree_eq_sub Polynomial.map_natDegree_eq_sub
 
-theorem map_natDegree_eq_natDegree {S F : Type _} [Semiring S] [AddMonoidHomClass F R[X] S[X]]
+theorem map_natDegree_eq_natDegree {S F : Type*} [Semiring S] [AddMonoidHomClass F R[X] S[X]]
     {φ : F} (p) (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n) :
     (φ p).natDegree = p.natDegree :=
   (map_natDegree_eq_sub (fun f h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans

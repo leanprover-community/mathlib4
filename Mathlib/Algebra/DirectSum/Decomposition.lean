@@ -31,7 +31,7 @@ bundled homs, but means we don't have to repeat statements for different types o
 -/
 
 
-variable {ι R M σ : Type _}
+variable {ι R M σ : Type*}
 
 open DirectSum BigOperators
 
@@ -137,7 +137,7 @@ lemma decomposeAddEquiv_apply (a : M) :
 
 @[simp]
 lemma decomposeAddEquiv_symm_apply (a : ⨁ i, ℳ i) :
-  (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
+    (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
 
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=
@@ -184,7 +184,7 @@ end AddCommMonoid
 
 /-- The `-` in the statements below doesn't resolve without this line.
 
-This seems to a be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
+This seems to be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
 the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
 instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
 to be found by unification rather than synthesis, then everything works fine without this

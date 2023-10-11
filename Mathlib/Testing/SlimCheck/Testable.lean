@@ -60,7 +60,7 @@ instance : SampleableExt MyType :=
 
 Again, we take advantage of the fact that other types have useful
 `Shrinkable` implementations, in this case `Prod`. Note that the second
-proof is heavily based on `WellFoundedRelation` since its used for termination so
+proof is heavily based on `WellFoundedRelation` since it's used for termination so
 the first step you want to take is almost always to `simp_wf` in order to
 get through the `WellFoundedRelation`.
 
@@ -78,6 +78,8 @@ random testing
 * https://hackage.haskell.org/package/QuickCheck
 
 -/
+
+set_option autoImplicit true
 
 namespace SlimCheck
 
@@ -215,7 +217,7 @@ def addInfo (x : String) (h : q → p) (r : TestResult p)
 
 /-- Add some formatting to the information recorded by `addInfo`. -/
 def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q  :=
+    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool
@@ -459,7 +461,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-  TestResult p → Nat → Rand (TestResult p)
+    TestResult p → Nat → Rand (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -529,7 +531,7 @@ scoped elab "mk_decorations" : tactic => do
 end Decorations
 
 open Decorations in
-/-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
+/-- Run a test suite for `p` and throw an exception if `p` does not hold. -/
 def Testable.check (p : Prop) (cfg : Configuration := {})
     (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
   match ← Testable.checkIO p' cfg with

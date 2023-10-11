@@ -24,6 +24,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 
 -/
 
+suppress_compilation
 
 universe u u'
 
@@ -41,7 +42,7 @@ def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
   show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
-  show A ⟶ _; exact Algebra.TensorProduct.includeLeft.toRingHom
+  show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
   show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
   ext r
   trans algebraMap R (A ⊗[R] B) r
@@ -55,7 +56,7 @@ theorem pushoutCocone_inl :
     (pushoutCocone f g).inl = by
       letI := f.toAlgebra
       letI := g.toAlgebra
-      exact Algebra.TensorProduct.includeLeft.toRingHom :=
+      exact Algebra.TensorProduct.includeLeftRingHom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_inl CommRingCat.pushoutCocone_inl
@@ -128,7 +129,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
       ext x
       change h' x = Algebra.TensorProduct.productMap f' g' x
       rw [this]
-    apply Algebra.TensorProduct.ext
+    apply Algebra.TensorProduct.ext'
     intro a b
     simp only [PushoutCocone.ι_app_left, pushoutCocone_pt, coe_of, RingHom.toMonoidHom_eq_coe,
       AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, ← eq1, AlgHom.toRingHom_eq_coe,
@@ -160,8 +161,8 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
   have e : (0 : X) = 1 := by
     rw [← f.map_one, ← f.map_zero]
     congr
-  replace e : 0 * x = 1 * x := congr_arg (. * x) e
-  rw [one_mul, MulZeroClass.zero_mul, ← f.map_zero] at e
+  replace e : 0 * x = 1 * x := congr_arg (· * x) e
+  rw [one_mul, zero_mul, ← f.map_zero] at e
   exact e
 set_option linter.uppercaseLean3 false in
 #align CommRing.CommRing_has_strict_terminal_objects CommRingCat.commRingCat_hasStrictTerminalObjects

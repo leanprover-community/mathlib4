@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 
@@ -62,7 +62,7 @@ namespace CategoryTheory
 
 section CoverLifting
 
-variable {C : Type _} [Category C] {D : Type _} [Category D] {E : Type _} [Category E]
+variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
@@ -348,5 +348,70 @@ noncomputable def Sites.pullbackCopullbackAdjunction {G : C ⥤ D} (Hp : CoverPr
     refine Sheaf.Hom.ext _ _ ?_
     apply (Ran.adjunction A G.op).homEquiv_counit
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Sites.pullbackCopullbackAdjunction
+
+namespace Sites
+
+variable
+  [ConcreteCategory.{max v u} A]
+  [PreservesLimits (forget A)]
+  [ReflectsIsomorphisms (forget A)]
+  [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
+  [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A]
+  [∀ (X : D), PreservesColimitsOfShape (K.Cover X)ᵒᵖ (forget A)]
+  [∀ (X : D), HasColimitsOfShape (K.Cover X)ᵒᵖ A]
+
+/-- The natural isomorphism exhibiting compatibility between pullback and sheafification. -/
+def pullbackSheafificationCompatibility
+    {G : C ⥤ D} (Hp : CoverPreserving J K G)
+    (Hl : CoverLifting J K G) (Hc : CompatiblePreserving K G) :
+    (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
+    presheafToSheaf K A ⋙ pullback A Hc Hp :=
+  letI A1 : (whiskeringLeft _ _ A).obj G.op ⊣ _ := Ran.adjunction _ _
+  letI A2 : presheafToSheaf J A ⊣ _ := sheafificationAdjunction _ _
+  letI B1 : presheafToSheaf K A ⊣ _ := sheafificationAdjunction _ _
+  letI B2 : pullback A Hc Hp ⊣ _ := pullbackCopullbackAdjunction _ _ Hl _
+  letI A12 := A1.comp A2
+  letI B12 := B1.comp B2
+  A12.leftAdjointUniq B12
+
+/- Implementation: This is primarily used to prove the lemma
+`pullbackSheafificationCompatibility_hom_app_val`. -/
+lemma toSheafify_pullbackSheafificationCompatibility
+    {G : C ⥤ D} (Hp : CoverPreserving J K G)
+    (Hl : CoverLifting J K G) (Hc : CompatiblePreserving K G) (F) :
+    J.toSheafify (G.op ⋙ F) ≫
+    ((pullbackSheafificationCompatibility.{w, v, u} A Hp Hl Hc).hom.app F).val =
+    whiskerLeft _ (K.toSheafify _) := by
+  dsimp [pullbackSheafificationCompatibility, Adjunction.leftAdjointUniq]
+  apply Quiver.Hom.op_inj
+  apply coyoneda.map_injective
+  ext E : 2
+  dsimp [Functor.preimage, Full.preimage, coyoneda, Adjunction.leftAdjointsCoyonedaEquiv]
+  erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
+  dsimp [Adjunction.comp]
+  simp only [sheafificationAdjunction_unit_app, Category.comp_id, Functor.map_id,
+    whiskerLeft_id', GrothendieckTopology.sheafifyMap_comp,
+    GrothendieckTopology.sheafifyMap_sheafifyLift, Category.id_comp,
+    Category.assoc, GrothendieckTopology.toSheafify_sheafifyLift]
+  ext t s : 3
+  dsimp [pullbackSheaf]
+  congr 1
+  simp only [← Category.assoc]
+  convert Category.id_comp (obj := A) _
+  have := (Ran.adjunction A G.op).left_triangle
+  apply_fun (fun e => (e.app (K.sheafify F)).app s) at this
+  exact this
+
+@[simp]
+lemma pullbackSheafificationCompatibility_hom_app_val
+    {G : C ⥤ D} (Hp : CoverPreserving J K G)
+    (Hl : CoverLifting J K G) (Hc : CompatiblePreserving K G) (F : Dᵒᵖ ⥤ A) :
+    ((pullbackSheafificationCompatibility.{w, v, u} A Hp Hl Hc).hom.app F).val =
+    J.sheafifyLift (whiskerLeft G.op <| K.toSheafify F)
+      ((presheafToSheaf K A ⋙ pullback A Hc Hp).obj F).cond := by
+  apply J.sheafifyLift_unique
+  apply toSheafify_pullbackSheafificationCompatibility
+
+end Sites
 
 end CategoryTheory

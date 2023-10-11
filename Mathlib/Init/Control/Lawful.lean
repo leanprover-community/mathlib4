@@ -11,6 +11,8 @@ import Mathlib.Tactic.Basic
 
 /-! ## Functor Laws, applicative laws, and monad Laws -/
 
+set_option autoImplicit true
+
 universe u v
 
 #align is_lawful_functor LawfulFunctor

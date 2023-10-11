@@ -226,7 +226,7 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
-      MulZeroClass.zero_mul, single_zero] -/
+      zero_mul, single_zero] -/
   · rw [TensorProduct.tmul_zero, map_zero, map_zero]
   · intro _ _ _ _ _ hx
     rw [TensorProduct.tmul_add, map_add, map_add, hx]
@@ -243,7 +243,7 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   · simp only [TensorProduct.zero_tmul, map_zero]
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
-      TensorProduct.add_tmul, Finsupp.sum_single_index, MulZeroClass.zero_mul, single_zero] -/
+      TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
   · rw [TensorProduct.zero_tmul, map_zero, map_zero]
   · intro _ _ _ _ _ hx
     rw [TensorProduct.add_tmul, map_add, map_add, hx]
@@ -257,7 +257,7 @@ end Rep
 open scoped TensorProduct
 
 open Representation
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 500000 in
 /-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
 the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
@@ -289,9 +289,9 @@ def ofMulActionBasisAux :
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
 def ofMulActionBasis :
     Basis (Fin n → G) (MonoidAlgebra k G) (ofMulAction k G (Fin (n + 1) → G)).asModule :=
-  @Basis.map _ (MonoidAlgebra k G) (MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k)) _ _ _ _ _ _
-    (@Algebra.TensorProduct.basis.{u} k _ (MonoidAlgebra k G) _ _ ((Fin n → G) →₀ k) _ _ (Fin n → G)
-      ⟨LinearEquiv.refl k _⟩)
+  Basis.map
+    (Algebra.TensorProduct.basis (MonoidAlgebra k G)
+      (Finsupp.basisSingleOne : Basis (Fin n → G) k ((Fin n → G) →₀ k)))
     (ofMulActionBasisAux k G n)
 #align group_cohomology.resolution.of_mul_action_basis groupCohomology.resolution.ofMulActionBasis
 
@@ -342,7 +342,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
-set_option maxHeartbeats 800000
+set_option maxHeartbeats 400000 in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -425,7 +425,6 @@ def cechNerveTerminalFromIso :
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
     dsimp only [cechNerveTerminalFrom, Pi.lift]
-    dsimp
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso classifyingSpaceUniversalCover.cechNerveTerminalFromIso
@@ -620,8 +619,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
   trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
-    erw [@Finsupp.lmapDomain_total (Fin 1 → G) k k (⊤_ Type u) k _ _ _ _ _ (fun _ => (1 : k))
-        (fun _ => (1 : k))
+    erw [Finsupp.lmapDomain_total (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
+        (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
         (terminal.from
           ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)
         LinearMap.id fun i => rfl,
@@ -693,17 +692,15 @@ instance : EnoughProjectives (Rep k G) :=
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
     ModuleCat.moduleCat_enoughProjectives.{u}
 
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 1200000 in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `groupCohomology.resolution k G`. -/
 def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (groupCohomology.resolution k G)).homology
-          n).unop := by
-  let E := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
-     (groupCohomology.projectiveResolution k G)).unop.symm
-  exact E
+              (GroupCohomology.resolution k G)).homology
+          n).unop := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
+     (GroupCohomology.projectiveResolution k G)).unop.symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso groupCohomology.extIso

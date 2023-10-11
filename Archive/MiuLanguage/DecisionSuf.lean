@@ -153,7 +153,7 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
     cases' h with hc hc <;> · rw [hc]; norm_num
   rcases hk with ⟨g, hkg, hgmod⟩
   by_cases hp : c + 3 * (k + 1) ≤ 2 ^ g
-  · use g; exact ⟨hp, hgmod⟩
+  · use g, hp, hgmod
   refine' ⟨g + 2, _, _⟩
   · rw [mul_succ, ← add_assoc, pow_add]
     change c + 3 * k + 3 ≤ 2 ^ g * (1 + 3); rw [mul_add (2 ^ g) 1 3, mul_one]
@@ -262,12 +262,12 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
     · -- case `x = M` gives a contradiction.
       exfalso; exact hm (mem_cons_self M xs)
     · -- case `x = I`
-      rw [count_cons, if_pos rfl, length, succ_eq_add_one, succ_inj']
+      rw [count_cons, if_pos rfl, length, succ_inj']
       apply hxs
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
-      exfalso; simp only [count, countp_cons_of_pos] at hu
+      exfalso; simp only [count, countP_cons_of_pos] at hu
       exact succ_ne_zero _ hu
 set_option linter.uppercaseLean3 false in
 #align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
@@ -277,7 +277,7 @@ set_option linter.uppercaseLean3 false in
 theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Derivable en := by
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
-    intro k; simp only [k, count, countp, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
+    intro k; simp only [k, count, countP, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
   rcases mhead
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)

@@ -18,14 +18,13 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
-
 open TensorProduct Module
 
 namespace LinearMap
 
 section NonUnitalNonAssoc
 
-variable (R A : Type _) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
@@ -36,7 +35,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 #align linear_map.mul LinearMap.mul
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
-def mul' : A ⊗[R] A →ₗ[R] A :=
+noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 #align linear_map.mul' LinearMap.mul'
 
@@ -108,7 +107,7 @@ end NonUnitalNonAssoc
 
 section NonUnital
 
-variable (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A]
+variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A]
   [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital algebra is a bilinear map.
@@ -153,7 +152,7 @@ end NonUnital
 
 section Semiring
 
-variable (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
@@ -230,7 +229,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
 
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulLeft R x) := by

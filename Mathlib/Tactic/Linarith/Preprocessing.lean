@@ -2,11 +2,10 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
-import Mathlib.Tactic.CancelDenoms
+import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap
@@ -26,6 +25,8 @@ A `GlobalPreprocessor` is a function `List Expr → TacticM (List Expr)`. Users 
 preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
+
+set_option autoImplicit true
 
 namespace Linarith
 
@@ -387,7 +388,7 @@ This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
   let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
-    let some (α, a, b) := (← inferType e).ne? | return none
+    let some (α, a, b) := (← inferType e).ne?' | return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure

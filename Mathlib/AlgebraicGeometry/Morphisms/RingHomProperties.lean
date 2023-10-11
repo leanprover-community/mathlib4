@@ -213,23 +213,25 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
   · intro H V e
     let U' := (Opens.map f.val.base).obj U.1
     have e' : U'.openEmbedding.isOpenMap.functor.obj ((Opens.map U'.inclusion).obj V.1) = V.1 := by
-      ext1; refine' Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left_iff_subset.mpr _)
+      ext1; refine' Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left.mpr _)
       erw [Subtype.range_val]
       convert e
-    have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, ?_⟩
+    have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, ?h'⟩
     erw [← X.presheaf.map_comp] at this
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc, ←
-      X.presheaf.map_comp]
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
+      ← X.presheaf.map_comp]
     convert this using 1
-    · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
-      · congr 1; apply e'.symm
-      · -- Porting note: makes instance metavariable like in Lean 3
-        apply
-          (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
-        -- Porting note: was convert V.2
-        erw [e']
-        apply V.2
-        infer_instance
+    dsimp only [Functor.op, unop_op]
+    rw [Opens.openEmbedding_obj_top]
+    congr 1
+    exact e'.symm
+    case h' =>
+      apply
+        (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
+      -- Porting note: was convert V.2
+      erw [e']
+      apply V.2
+      infer_instance
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     erw [← X.presheaf.map_comp]
@@ -283,7 +285,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
 variable (hP : RingHom.PropertyIsLocal @P)
 
 -- Porting note: the terms here are getting huge ~ 1/2 Gb for the goal midway (with `pp.explicit`)
-set_option maxHeartbeats 13000000 in
+set_option maxHeartbeats 4000000 in
 theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso @P)
     (h₃ : RingHom.OfLocalizationSpanTarget @P) {X Y : Scheme} (f : X ⟶ Y) (U : X.affineOpens)
     (s : Set (X.presheaf.obj (op U.1))) (hs : Ideal.span s = ⊤)
@@ -501,8 +503,6 @@ theorem source_affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y
   · have h := (hP.affine_openCover_TFAE f).out 1 0
     apply h.mp
     use 𝒰
-    use inferInstance
-    exact H
 #align ring_hom.property_is_local.source_affine_open_cover_iff RingHom.PropertyIsLocal.source_affine_openCover_iff
 
 theorem isLocal_sourceAffineLocally : (sourceAffineLocally @P).IsLocal :=

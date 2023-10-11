@@ -20,6 +20,8 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
+set_option autoImplicit true
+
 
 universe u v
 
@@ -42,7 +44,7 @@ namespace MonCat
 /-- `MonoidHom` doesn't actually assume associativity. This alias is needed to make the category
 theory machinery work. -/
 @[to_additive]
-abbrev AssocMonoidHom (M N : Type _) [Monoid M] [Monoid N] :=
+abbrev AssocMonoidHom (M N : Type*) [Monoid M] [Monoid N] :=
   MonoidHom M N
 set_option linter.uppercaseLean3 false in
 #align Mon.assoc_monoid_hom MonCat.AssocMonoidHom
@@ -72,7 +74,7 @@ instance concreteCategory : ConcreteCategory MonCat :=
   BundledHom.concreteCategory _
 
 @[to_additive]
-instance : CoeSort MonCat (Type _) where
+instance : CoeSort MonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
@@ -143,7 +145,7 @@ add_decl_doc AddMonCat.ofHom
 
 @[to_additive (attr := simp)]
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
-  (ofHom f) x = f x := rfl
+    (ofHom f) x = f x := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
@@ -156,14 +158,14 @@ lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
 
 ---- porting note: added to ease the port of `RepresentationTheory.Action`
 @[to_additive (attr := simp)]
-lemma one_of {A : Type _} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
+lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
 
 @[to_additive (attr := simp)]
-lemma mul_of {A : Type _} [Monoid A] (a b : A) :
+lemma mul_of {A : Type*} [Monoid A] (a b : A) :
     @HMul.hMul (MonCat.of A) (MonCat.of A) (MonCat.of A) _ a b = a * b := rfl
 
 @[to_additive]
-instance {G : Type _} [Group G] : Group (MonCat.of G) := by assumption
+instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 
 end MonCat
 
@@ -194,7 +196,7 @@ instance concreteCategory : ConcreteCategory CommMonCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommMonCat (Type _) where
+instance : CoeSort CommMonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
@@ -276,7 +278,7 @@ add_decl_doc AddCommMonCat.ofHom
 
 @[to_additive (attr := simp)]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
-  (ofHom f) x = f x := rfl
+    (ofHom f) x = f x := rfl
 
 end CommMonCat
 
@@ -368,7 +370,7 @@ end CategoryTheory.Iso
 in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
-  X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
+    X ≃* Y ≅ MonCat.of X ≅ MonCat.of Y where
   hom e := e.toMonCatIso
   inv i := i.monCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in

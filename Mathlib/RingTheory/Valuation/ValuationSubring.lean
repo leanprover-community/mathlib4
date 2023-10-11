@@ -415,7 +415,7 @@ end ValuationSubring
 namespace Valuation
 
 variable {K}
-variable {Γ Γ₁ Γ₂ : Type _} [LinearOrderedCommGroupWithZero Γ]
+variable {Γ Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ]
   [LinearOrderedCommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₂] (v : Valuation K Γ)
   (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
 
@@ -615,7 +615,7 @@ theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.n
   ext a
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
   erw [Subtype.exists]
-  simp_rw [Subtype.coe_mk, exists_and_right, exists_eq_right]
+  simp_rw [exists_and_right, exists_eq_right]
   -- Porting note: added
   simp
 #align valuation_subring.image_maximal_ideal ValuationSubring.image_maximalIdeal
@@ -709,7 +709,7 @@ def principalUnitGroupEquiv :
       rw [A.coe_mem_principalUnitGroup_iff]; simpa using SetLike.coe_mem x⟩
   left_inv x := by simp
   right_inv x := by simp
-  map_mul' x y := by rfl
+  map_mul' x y := rfl
 #align valuation_subring.principal_unit_group_equiv ValuationSubring.principalUnitGroupEquiv
 
 @[simp]
@@ -797,7 +797,7 @@ section PointwiseActions
 
 open scoped Pointwise
 
-variable {G : Type _} [Group G] [MulSemiringAction G K]
+variable {G : Type*} [Group G] [MulSemiringAction G K]
 
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
@@ -880,7 +880,7 @@ end PointwiseActions
 
 section
 
-variable {L J : Type _} [Field L] [Field J]
+variable {L J : Type*} [Field L] [Field J]
 
 /-- The pullback of a valuation subring `A` along a ring homomorphism `K →+* L`. -/
 def comap (A : ValuationSubring L) (f : K →+* L) : ValuationSubring K :=
@@ -906,7 +906,7 @@ end ValuationSubring
 
 namespace Valuation
 
-variable {Γ : Type _} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
 -- @[simp] -- Porting note: not in simpNF
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=

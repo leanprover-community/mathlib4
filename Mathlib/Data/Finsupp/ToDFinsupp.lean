@@ -60,7 +60,7 @@ these arguments are also present on the `noncomputable` equivs.
 -/
 
 
-variable {ι : Type _} {R : Type _} {M : Type _}
+variable {ι : Type*} {R : Type*} {M : Type*}
 
 /-! ### Basic definitions and lemmas -/
 
@@ -255,7 +255,7 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDFinsupp
 
--- porting note: `simps` generated as ` ↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
+-- porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
@@ -274,7 +274,7 @@ noncomputable section Sigma
 /-! ### Stronger versions of `Finsupp.split` -/
 --noncomputable section
 
-variable {η : ι → Type _} {N : Type _} [Semiring R]
+variable {η : ι → Type*} {N : Type*} [Semiring R]
 
 open Finsupp
 

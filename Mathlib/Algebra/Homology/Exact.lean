@@ -355,7 +355,7 @@ variable [HasImages W] [HasZeroMorphisms W] [HasKernels W]
 
 /-- A functor reflects exact sequences if any composable pair of morphisms that is mapped to an
     exact pair is itself exact. -/
-class ReflectsExactSequences (F : V ⥤ W) where
+class ReflectsExactSequences (F : V ⥤ W) : Prop where
   reflects : ∀ {A B C : V} (f : A ⟶ B) (g : B ⟶ C), Exact (F.map f) (F.map g) → Exact f g
 #align category_theory.functor.reflects_exact_sequences CategoryTheory.Functor.ReflectsExactSequences
 

@@ -25,7 +25,7 @@ collection of setoids indexed by a type `ι`, a (finite) list `l` of
 indices, and a function that for each `i ∈ l` gives a term of the
 corresponding quotient type, then there is a corresponding term in the
 quotient of the product of the setoids indexed by `l`. -/
-def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
+def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S : ∀ i, Setoid (α i)] :
     ∀ l : List ι, (∀ i ∈ l, Quotient (S i)) → @Quotient (∀ i ∈ l, α i) (by infer_instance)
   | [], _ => ⟦fun i h => nomatch List.not_mem_nil _ h⟧
   | i :: l, f => by
@@ -41,7 +41,7 @@ def Quotient.finChoiceAux {ι : Type _} [DecidableEq ι] {α : ι → Type _} [S
     · exact h₂ _ _
 #align quotient.fin_choice_aux Quotient.finChoiceAux
 
-theorem Quotient.finChoiceAux_eq {ι : Type _} [DecidableEq ι] {α : ι → Type _}
+theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] :
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
   | [], f => Quotient.sound fun i h => nomatch List.not_mem_nil _ h
@@ -56,7 +56,7 @@ theorem Quotient.finChoiceAux_eq {ι : Type _} [DecidableEq ι] {α : ι → Typ
 function that for each `i : ι` gives a term of the corresponding
 quotient type, then there is corresponding term in the quotient of the
 product of the setoids. -/
-def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
+def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] (f : ∀ i, Quotient (S i)) : @Quotient (∀ i, α i) (by infer_instance) :=
   Quotient.liftOn
     (@Quotient.recOn _ _ (fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
@@ -74,7 +74,7 @@ def Quotient.finChoice {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → 
     (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) (fun a b h => Quotient.sound fun i => by apply h)
 #align quotient.fin_choice Quotient.finChoice
 
-theorem Quotient.finChoice_eq {ι : Type _} [DecidableEq ι] [Fintype ι] {α : ι → Type _}
+theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
     [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by
   dsimp only [Quotient.finChoice]
   conv_lhs =>

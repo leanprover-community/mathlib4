@@ -32,7 +32,7 @@ noncomputable section
 
 open CategoryTheory
 
-variable (R : Type _) [Ring R] (C : Type _) [Category C] [Abelian C] [Linear R C]
+variable (R : Type*) [Ring R] (C : Type*) [Category C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
 
 /-- `Ext R C n` is defined by deriving in the first argument of `(X, Y) ↦ Module.of R (unop X ⟶ Y)`

@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 
 import Std.Data.RBMap.Basic
@@ -29,6 +28,8 @@ This is ultimately converted into a `Linexp` in the obvious way.
 
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
+
+set_option autoImplicit true
 
 open Linarith.Ineq Std
 
@@ -216,7 +217,7 @@ def toComp (red : TransparencyMode) (e : Expr) (e_map : ExprMap) (monom_map : Ma
 updating `e_map` and `monom_map` as it goes.
  -/
 def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom ℕ →
-      MetaM (List Comp × ExprMap × Map Monom ℕ)
+    MetaM (List Comp × ExprMap × Map Monom ℕ)
 | m, [],     mm => return ([], m, mm)
 | m, (h::t), mm => do
     let (c, m', mm') ← toComp red h m mm

@@ -12,6 +12,8 @@ import Lean
 Changes the current namespace without causing scoped things to go out of scope.
 -/
 
+set_option autoImplicit true
+
 namespace Lean.Elab.Command
 
 /-- Adds the name to the namespace, `_root_`-aware.

@@ -2,8 +2,8 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
-Ported by: Scott Morrison
 -/
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
@@ -113,7 +113,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type _}
+variable {α : Type u} {β : Type*}
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
@@ -141,7 +141,10 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α
+class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
+  mul_le_mul_of_nonneg_right a b c ha hc :=
+    -- parentheses ensure this generates an `optParam` rather than an `autoParam`
+    (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
@@ -186,7 +189,7 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommRing (α : Type _) extends StrictOrderedRing α, CommRing α
+class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
@@ -200,7 +203,7 @@ class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
 
 /-- A `LinearOrderedCommSemiring` is a nontrivial commutative semiring with a linear order such
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
-class LinearOrderedCommSemiring (α : Type _) extends StrictOrderedCommSemiring α,
+class LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
   LinearOrderedSemiring α
 #align linear_ordered_comm_semiring LinearOrderedCommSemiring
 
@@ -319,7 +322,7 @@ theorem one_lt_mul_of_lt_of_le (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
   ha.trans_le <| le_mul_of_one_le_right (zero_le_one.trans ha.le) hb
 #align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
 
-alias one_lt_mul_of_le_of_lt ← one_lt_mul
+alias one_lt_mul := one_lt_mul_of_le_of_lt
 #align one_lt_mul one_lt_mul
 
 theorem mul_lt_one_of_nonneg_of_lt_one_left (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=

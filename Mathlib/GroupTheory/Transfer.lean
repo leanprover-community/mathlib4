@@ -6,7 +6,7 @@ Authors: Thomas Browning
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
 
-#align_import group_theory.transfer from "leanprover-community/mathlib"@"56489b558d42c30f6aac5947cafc9a594f60813b"
+#align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
 /-!
 # The Transfer Homomorphism
@@ -29,7 +29,7 @@ In this file we construct the transfer homomorphism.
 
 open scoped BigOperators
 
-variable {G : Type _} [Group G] {H : Subgroup G} {A : Type _} [CommGroup A] (ϕ : H →* A)
+variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)
 
 namespace Subgroup
 
@@ -60,7 +60,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
     (prod_congr rfl fun q _ =>
       (ϕ.map_mul _ _).symm.trans
         (congr_arg ϕ
-          (by simp_rw [Subtype.ext_iff, coe_mul, coe_mk, mul_assoc, mul_inv_cancel_left])))
+          (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
 #align subgroup.left_transversals.diff_mul_diff Subgroup.leftTransversals.diff_mul_diff
 #align add_subgroup.left_transversals.diff_add_diff AddSubgroup.leftTransversals.diff_add_diff
 
@@ -83,7 +83,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
     (fun _ _ =>
       congr_arg ϕ
         (by
-          simp_rw [coe_mk, smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
+          simp_rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
             inv_mul_cancel_left]))
     (fun q _ => g • q) (fun _ _ => mem_univ _) (fun q _ => smul_inv_smul g q) fun q _ =>
     inv_smul_smul g q
@@ -209,7 +209,7 @@ theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
 
 section BurnsideTransfer
 
-variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ (P : Subgroup G).centralizer)
+variable {p : ℕ} (P : Sylow p G) (hP : (P : Subgroup G).normalizer ≤ centralizer (P : Set G))
 
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
@@ -242,7 +242,7 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
-  (fun x : P => x ^ (P : Subgroup G).index) :=
+    (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
 #align monoid_hom.transfer_sylow_restrict_eq_pow MonoidHom.transferSylow_restrict_eq_pow
 

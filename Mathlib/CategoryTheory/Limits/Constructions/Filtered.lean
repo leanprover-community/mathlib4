@@ -48,7 +48,7 @@ def liftToFinset [HasFiniteCoproducts C] (F : Discrete α ⥤ C) : Finset (Discr
     type. -/
 @[simps!]
 def liftToFinsetColimitCocone [HasFiniteCoproducts C] [HasFilteredColimitsOfSize.{w, w} C]
-    [DecidableEq α] (F : Discrete α ⥤ C) : ColimitCocone F where
+    (F : Discrete α ⥤ C) : ColimitCocone F where
   cocone :=
     { pt := colimit (liftToFinset F)
       ι :=

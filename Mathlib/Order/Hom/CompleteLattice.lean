@@ -42,11 +42,11 @@ Frame homs are Heyting homs.
 
 open Function OrderDual Set
 
-variable {F α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {F α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 -- Porting note: mathport made this & sInfHom into "SupHomCat" and "InfHomCat".
 /-- The type of `⨆`-preserving functions from `α` to `β`. -/
-structure sSupHom (α β : Type _) [SupSet α] [SupSet β] where
+structure sSupHom (α β : Type*) [SupSet α] [SupSet β] where
   /-- The underlying function of a sSupHom. -/
   toFun : α → β
   /-- The proposition that a `sSupHom` commutes with arbitrary suprema/joins. -/
@@ -54,7 +54,7 @@ structure sSupHom (α β : Type _) [SupSet α] [SupSet β] where
 #align Sup_hom sSupHom
 
 /-- The type of `⨅`-preserving functions from `α` to `β`. -/
-structure sInfHom (α β : Type _) [InfSet α] [InfSet β] where
+structure sInfHom (α β : Type*) [InfSet α] [InfSet β] where
   /-- The underlying function of an `sInfHom`. -/
   toFun : α → β
   /-- The proposition that a `sInfHom` commutes with arbitrary infima/meets -/
@@ -63,7 +63,7 @@ structure sInfHom (α β : Type _) [InfSet α] [InfSet β] where
 
 /-- The type of frame homomorphisms from `α` to `β`. They preserve finite meets and arbitrary joins.
 -/
-structure FrameHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] extends
+structure FrameHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] extends
   InfTopHom α β where
   /-- The proposition that frame homomorphisms commute with arbitrary suprema/joins. -/
   map_sSup' (s : Set α) : toFun (sSup s) = sSup (toFun '' s)
@@ -71,7 +71,7 @@ structure FrameHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] ex
 
 
 /-- The type of complete lattice homomorphisms from `α` to `β`. -/
-structure CompleteLatticeHom (α β : Type _) [CompleteLattice α] [CompleteLattice β] extends
+structure CompleteLatticeHom (α β : Type*) [CompleteLattice α] [CompleteLattice β] extends
   sInfHom α β where
   /-- The proposition that complete lattice homomorphism commutes with arbitrary suprema/joins. -/
   map_sSup' (s : Set α) : toFun (sSup s) = sSup (toFun '' s)
@@ -83,7 +83,7 @@ section
 /-- `sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
 
 You should extend this class when you extend `sSupHom`. -/
-class sSupHomClass (F : Type _) (α β : outParam <| Type _) [SupSet α] [SupSet β] extends
+class sSupHomClass (F : Type*) (α β : outParam <| Type*) [SupSet α] [SupSet β] extends
   FunLike F α fun _ => β where
   /-- The proposition that members of `sSupHomClass`s commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
@@ -92,7 +92,7 @@ class sSupHomClass (F : Type _) (α β : outParam <| Type _) [SupSet α] [SupSet
 /-- `sInfHomClass F α β` states that `F` is a type of `⨅`-preserving morphisms.
 
 You should extend this class when you extend `sInfHom`. -/
-class sInfHomClass (F : Type _) (α β : outParam <| Type _) [InfSet α] [InfSet β] extends
+class sInfHomClass (F : Type*) (α β : outParam <| Type*) [InfSet α] [InfSet β] extends
   FunLike F α fun _ => β where
   /-- The proposition that members of `sInfHomClass`s commute with arbitrary infima/meets. -/
   map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
@@ -101,7 +101,7 @@ class sInfHomClass (F : Type _) (α β : outParam <| Type _) [InfSet α] [InfSet
 /-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
 You should extend this class when you extend `FrameHom`. -/
-class FrameHomClass (F : Type _) (α β : outParam <| Type _) [CompleteLattice α]
+class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
   [CompleteLattice β] extends InfTopHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
@@ -110,7 +110,7 @@ class FrameHomClass (F : Type _) (α β : outParam <| Type _) [CompleteLattice �
 /-- `CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
-class CompleteLatticeHomClass (F : Type _) (α β : outParam <| Type _) [CompleteLattice α]
+class CompleteLatticeHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
   [CompleteLattice β] extends sInfHomClass F α β where
   /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
   suprema/joins. -/
@@ -256,7 +256,7 @@ instance : sSupHomClass (sSupHom α β) α β
 
 -- Porting note: times out
 @[simp]
-theorem toFun_eq_coe {f : sSupHom α β} : f.toFun = ⇑f  :=
+theorem toFun_eq_coe {f : sSupHom α β} : f.toFun = ⇑f :=
   rfl
 #align Sup_hom.to_fun_eq_coe sSupHom.toFun_eq_coe
 
@@ -337,11 +337,13 @@ theorem id_comp (f : sSupHom α β) : (sSupHom.id β).comp f = f :=
   ext fun _ => rfl
 #align Sup_hom.id_comp sSupHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : sSupHom β γ} {f : sSupHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Sup_hom.cancel_right sSupHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : sSupHom β γ} {f₁ f₂ : sSupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -481,11 +483,13 @@ theorem id_comp (f : sInfHom α β) : (sInfHom.id β).comp f = f :=
   ext fun _ => rfl
 #align Inf_hom.id_comp sInfHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : sInfHom β γ} {f : sInfHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align Inf_hom.cancel_right sInfHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : sInfHom β γ} {f₁ f₂ : sInfHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -634,11 +638,13 @@ theorem id_comp (f : FrameHom α β) : (FrameHom.id β).comp f = f :=
   ext fun _ => rfl
 #align frame_hom.id_comp FrameHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align frame_hom.cancel_right FrameHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -764,11 +770,13 @@ theorem id_comp (f : CompleteLatticeHom α β) : (CompleteLatticeHom.id β).comp
   ext fun _ => rfl
 #align complete_lattice_hom.id_comp CompleteLatticeHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLatticeHom α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align complete_lattice_hom.cancel_right CompleteLatticeHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeHom α β}
     (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

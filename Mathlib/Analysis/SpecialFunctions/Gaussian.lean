@@ -37,7 +37,7 @@ for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -46,10 +46,6 @@ open Real Set MeasureTheory Filter Asymptotics
 open scoped Real Topology FourierTransform
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
-
-notation "cexp" => Complex.exp
-
-notation "rexp" => Real.exp
 
 theorem exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => exp (-b * x ^ 2)) =o[atTop] fun x : ℝ => exp (-x) := by
@@ -173,7 +169,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
         (tendsto_pow_atTop two_ne_zero))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
-  simp only [MulZeroClass.mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
+  simp only [mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add]
 #align integral_mul_cexp_neg_mul_sq integral_mul_cexp_neg_mul_sq
 
@@ -257,7 +253,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     refine'
       ContinuousAt.continuousOn fun b hb =>
         (continuousAt_cpow_const (Or.inl _)).comp (continuousAt_const.div continuousAt_id (nv hb))
-    rw [div_re, ofReal_im, ofReal_re, MulZeroClass.zero_mul, zero_div, add_zero]
+    rw [div_re, ofReal_im, ofReal_re, zero_mul, zero_div, add_zero]
     exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))
   · -- equality at 1
     have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
@@ -489,8 +485,8 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
         (by
           refine' Differentiable.differentiableOn (Differentiable.const_mul _ _).cexp
           exact differentiable_pow 2)
-    simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, MulZeroClass.zero_mul, add_zero, neg_re,
-      ofReal_re, add_re, mul_re, I_re, MulZeroClass.mul_zero, I_im, tsub_zero, add_im, mul_im,
+    simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, zero_mul, add_zero, neg_re,
+      ofReal_re, add_re, mul_re, I_re, mul_zero, I_im, tsub_zero, add_im, mul_im,
       mul_one, zero_add, Algebra.id.smul_eq_mul, ofReal_neg] using this
   simp_rw [id.def, ← HI₁]
   have : I₁ = fun T : ℝ => I₂ T + verticalIntegral b c T := by
@@ -544,7 +540,7 @@ theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
   convert _root_.fourier_transform_gaussian h1 (-2 * π * t) using 1
   · congr 1 with x : 1
     congr 2
-    all_goals push_cast; ring
+    any_goals push_cast; ring
   · conv_lhs => rw [mul_comm]
     congr 2
     · field_simp [ofReal_ne_zero.mpr pi_ne_zero]; ring
@@ -560,7 +556,7 @@ section GaussianPoisson
 /-! ## Poisson summation applied to the Gaussian -/
 
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
     Tendsto (fun x : ℝ => |x| ^ s * rexp (-a * x ^ 2)) (cocompact ℝ) (𝓝 0) := by

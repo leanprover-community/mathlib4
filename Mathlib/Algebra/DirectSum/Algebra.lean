@@ -49,14 +49,26 @@ class GAlgebra where
   toFun : R →+ A 0
   map_one : toFun 1 = GradedMonoid.GOne.one
   map_mul :
-    ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = ⟨_, GradedMonoid.GMul.mul (toFun r) (toFun s)⟩
-  commutes : ∀ r x, GradedMonoid.mk _ (toFun r) * x = x * ⟨_, toFun r⟩
-  smul_def : ∀ (r) (x : GradedMonoid A), GradedMonoid.mk x.1 (r • x.2) = ⟨_, toFun r⟩ * x
+    ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = .mk _ (GradedMonoid.GMul.mul (toFun r) (toFun s))
+  commutes : ∀ (r) (x : GradedMonoid A), .mk _ (toFun r) * x = x * .mk _ (toFun r)
+  smul_def : ∀ (r) (x : GradedMonoid A), r • x = .mk _ (toFun r) * x
 #align direct_sum.galgebra DirectSum.GAlgebra
 
 end
 
 variable [Semiring B] [GAlgebra R A] [Algebra R B]
+
+instance _root_.GradedMonoid.smulCommClass_right :
+    SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
+  smul_comm s x y := by
+    dsimp
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
+
+instance _root_.GradedMonoid.isScalarTower_right :
+    IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
+  smul_assoc s x y := by
+    dsimp
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ←mul_assoc, GAlgebra.commutes, mul_assoc]
 
 instance : Algebra R (⨁ i, A i) where
   toFun := (DirectSum.of A 0).comp GAlgebra.toFun
@@ -123,6 +135,20 @@ theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i 
   algHom_ext' R A fun i => LinearMap.ext <| h i
 #align direct_sum.alg_hom_ext DirectSum.algHom_ext
 
+/-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism.
+
+This is the graded version of `LinearMap.mul`, and the linear version of `DirectSum.gMulHom` -/
+@[simps]
+def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
+  toFun a :=
+    { toFun := fun b => GradedMonoid.GMul.mul a b
+      map_smul' := fun r x => by
+        injection (smul_comm r (GradedMonoid.mk _ a) (GradedMonoid.mk _ x)).symm
+      map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
+  map_smul' r x := LinearMap.ext fun y => by
+    injection smul_assoc r (GradedMonoid.mk _ x) (GradedMonoid.mk _ y)
+  map_add' _ _ := LinearMap.ext fun _ => GNonUnitalNonAssocSemiring.add_mul _ _ _
+
 end DirectSum
 
 /-! ### Concrete instances -/
@@ -132,7 +158,7 @@ end DirectSum
 
 -/
 @[simps]
-instance Algebra.directSumGAlgebra {R A : Type _} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
+instance Algebra.directSumGAlgebra {R A : Type*} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
     [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one
