@@ -217,7 +217,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     rw [le_zero_iff] at hm
     simp [hm]
   induction' m using Nat.binaryRec with b' m hm' generalizing i
-  · exact False.elim (Bool.ff_ne_tt ((zero_testBit i).symm.trans hm))
+  · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
   · subst hi
     simp only [testBit_zero] at hn hm

@@ -26,6 +26,7 @@ We construct the categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k
 We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category with all (co)limits.
 -/
 
+suppress_compilation
 
 universe u
 
