@@ -83,9 +83,9 @@ def apply_changes(changes, filename):
         if start > end:
             logging.error(f"apply_changes: start should be less than end: ({start}, {end}, {replacement})")
         elif end > last_start:
-            logging.warn(f"apply_changes: skipping change because it overlaps with previous ({last_start}): ({start}, {end}, {replacement})")
+            logging.warning(f"apply_changes: skipping change because it overlaps with previous ({last_start}): ({start}, {end}, {replacement})")
         elif source[start:end] == replacement:
-            logging.warn(f"apply_changes: skipping change because it is identical to the original: ({start}, {end}, {replacement})")
+            logging.warning(f"apply_changes: skipping change because it is identical to the original: ({start}, {end}, {replacement})")
         else:
             # logging.debug(f"apply_changes: (source[{start}:{end}] = {source[start:end]} -> {replacement})")
             source = source[:start] + replacement + source[end:]
@@ -93,7 +93,7 @@ def apply_changes(changes, filename):
             last_start = start
 
     if not changed:
-        logging.warn(f"apply_changes: no changes applied")
+        logging.warning(f"apply_changes: no changes applied")
         return False, filename
 
     source = normalize_lean_code(source)
@@ -263,7 +263,7 @@ def make_sorry(filename):
         source = file.read()
 
     for match in re.finditer(r':=.*?\n\n', source, flags=re.DOTALL):
-        if match == ':= sorry\n\n': continue # Skip useless changes.
+        if source[match.start():match.end()] == ':= sorry\n\n': continue # Skip useless changes.
         yield match.start(), match.end(), ':= sorry\n\n'
 
 def delete_imports(filename):
