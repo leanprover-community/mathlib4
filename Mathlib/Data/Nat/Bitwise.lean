@@ -104,7 +104,7 @@ theorem ldiff_bit : ∀ a m b n, ldiff (bit a m) (bit b n) = bit (a && not b) (l
 @[simp]
 theorem xor_bit : ∀ a m b n, xor (bit a m) (bit b n) = bit (bne a b) (xor m n) :=
   bitwise_bit
-#align nat.xor_bit Nat.xor_bit
+#align nat.lxor_bit Nat.xor_bit
 
 @[simp]
 theorem testBit_bitwise {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
