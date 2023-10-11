@@ -288,7 +288,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type
     (hZc : ∀ i, IsCompact (Z i)) (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty := by
   let i₀ := hι.some
   suffices (Z i₀ ∩ ⋂ i, Z i).Nonempty by
-    rwa [inter_eq_right_iff_subset.mpr (iInter_subset _ i₀)] at this
+    rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
   simp only [nonempty_iff_ne_empty] at hZn ⊢
   apply mt ((hZc i₀).elim_directed_family_closed Z hZcl)
   push_neg
@@ -2041,3 +2041,35 @@ theorem IsPreirreducible.preimage {Z : Set α} (hZ : IsPreirreducible Z) {f : β
 #align is_preirreducible.preimage IsPreirreducible.preimage
 
 end Preirreducible
+
+section codiscrete_filter
+
+/-- Criterion for a subset `S ⊆ α` to be closed and discrete in terms of the punctured
+neighbourhood filter at an arbitrary point of `α`. (Compare `discreteTopology_subtype_iff`.) -/
+theorem isClosed_and_discrete_iff {S : Set α} : IsClosed S ∧ DiscreteTopology S ↔
+    ∀ x, Disjoint (𝓝[≠] x) (𝓟 S) := by
+  rw [discreteTopology_subtype_iff, isClosed_iff_clusterPt, ← forall_and]
+  congrm (∀ x, ?_)
+  rw [← not_imp_not, clusterPt_iff_not_disjoint, not_not, ←disjoint_iff]
+  constructor <;> intro H
+  · by_cases hx : x ∈ S
+    exacts [H.2 hx, (H.1 hx).mono_left nhdsWithin_le_nhds]
+  · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
+    simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
+
+variable (α)
+
+/-- In any topological space, the open sets with with discrete complement form a filter. -/
+def Filter.codiscrete : Filter α where
+  sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
+  univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
+  sets_of_superset := by
+    intro U V hU hV
+    simp_rw [←isClosed_compl_iff, isClosed_and_discrete_iff] at hU ⊢
+    exact fun x ↦ (hU x).mono_right (principal_mono.mpr <| compl_subset_compl.mpr hV)
+  inter_sets := by
+    intro U V hU hV
+    simp_rw [←isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
+    exact fun x ↦ compl_inter U V ▸ sup_principal ▸ disjoint_sup_right.mpr ⟨hU x, hV x⟩
+
+end codiscrete_filter

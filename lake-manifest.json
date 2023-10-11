@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "4f8b397237411249930791f1cba0a9d2880a02dd",
+    "rev": "41c6370eb2f0c9052bee6af0e0a017b9ba8da2b8",
     "opts": {},
     "name": "aesop",
     "inputRev?": "master",
@@ -28,15 +28,15 @@
   {"git":
    {"url": "https://github.com/EdAyers/ProofWidgets4",
     "subDir?": null,
-    "rev": "65bba7286e2395f3163fd0277110578f19b8170f",
+    "rev": "27715d1daf32b9657dc38cd52172d77b19bde4ba",
     "opts": {},
     "name": "proofwidgets",
-    "inputRev?": "v0.0.16",
+    "inputRev?": "v0.0.18",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "f2df4ab8c0726fce3bafb73a5727336b0c3120ea",
+    "rev": "a093d7a6ac721071d8ba3774b0318063928cd3e2",
     "opts": {},
     "name": "std",
     "inputRev?": "main",

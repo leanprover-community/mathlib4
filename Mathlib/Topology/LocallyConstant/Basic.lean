@@ -551,7 +551,7 @@ open Classical
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/
 @[to_additive (attr := simps) "Given a clopen set `U` and a locally constant function `f`,
-  `locally_constant.indicator` returns the locally constant function that is `f` on `U` and `0`
+  `LocallyConstant.indicator` returns the locally constant function that is `f` on `U` and `0`
   otherwise. "]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
