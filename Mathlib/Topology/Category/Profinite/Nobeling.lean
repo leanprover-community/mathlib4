@@ -24,11 +24,20 @@ This file proves Nöbeling's theorem,
 
 - `Nobeling`: For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
 
-## Implementation Details
+## Proof idea
 
-We follow the proof of theorem 5.4 in [scholze2019condensed], ordinal induction, etc.
+We follow the proof of theorem 5.4 in [scholze2019condensed], in which the idea is to embed `S` in
+a product of `I` copies of `Bool`, choosing a well-ordering on `I` and using ordinal induction over
+that well-order.
 
-**TODO:** Write more details here.
+For `i : I`, let `e S i : LocallyConstant (S : Set (I → Bool)) ℤ` denote the map
+`fun f ↦ (if f.val i then 1 else 0)`.
+
+The basis will consist of products `e S iᵣ * ⋯ * e S i₁` with `iᵣ > ⋯ > i₁` which cannot be written
+as linear combinations of lexicographically smaller products.
+
+What is proved by ordinal induction is that this set is linearly independent. The fact that it
+spans can be proved directly.
 
 ## References
 
@@ -165,7 +174,7 @@ variable (J)
 
 open Profinite ContinuousMap
 
-/-- The objectwise map in the isomorphism `FinsetsToProfinite' ≅ FinsetsToProfinite`. -/
+/-- The objectwise map in the isomorphism `spanFunctor ≅ Profinite.indexFunctor`. -/
 def iso_map : C(C.proj J, (IndexFunctor.obj C J)) :=
   ⟨fun x ↦ ⟨fun i ↦ x.val i.val, by
     obtain ⟨y, hy⟩ := x.prop
@@ -177,19 +186,15 @@ def iso_map : C(C.proj J, (IndexFunctor.obj C J)) :=
     exact (Continuous.comp (continuous_apply i.val) continuous_subtype_val)⟩
 
 lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
-  refine ⟨?_, ?_⟩
-  · intro a b h
-    dsimp [iso_map] at h
-    ext i
+  refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
+  · ext i
     rw [Subtype.ext_iff] at h
-    dsimp at h
     by_cases hi : J i
     · exact congr_fun h ⟨i, hi⟩
     · obtain ⟨c, hc⟩ := a.prop
       obtain ⟨d, hd⟩ := b.prop
       rw [← hc.2, ← hd.2, Proj, Proj, if_neg hi, if_neg hi]
-  · intro a
-    refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
+  · refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
     · obtain ⟨y, hy⟩ := a.prop
       refine ⟨y, hy.1, ?_⟩
       rw [← hy.2]
@@ -218,7 +223,7 @@ variable {C} (hC : IsCompact C)
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
-def FinsetsToProfinite' :
+def spanFunctor :
     (Finset I)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (C.proj (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (continuous_proj _)) _ _
@@ -226,24 +231,24 @@ def FinsetsToProfinite' :
   map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
-/-- The natural isomorphism `FinsetsToProfinite' ≅ Profinite.indexFunctor`. -/
+/-- The natural isomorphism `spanFunctor ≅ Profinite.indexFunctor`. -/
 noncomputable
-def FinsetsToProfiniteIso : FinsetsToProfinite' hC ≅ indexFunctor hC := NatIso.ofComponents
+def spanIsoIndex : spanFunctor hC ≅ indexFunctor hC := NatIso.ofComponents
   (fun J ↦ (Profinite.isoOfBijective (iso_map C (· ∈ unop J)) (iso_map_bijective C (· ∈ unop J))))
   (by
     intro ⟨J⟩ ⟨K⟩ ⟨⟨⟨f⟩⟩⟩
     ext x
     exact congr_fun (iso_naturality C (· ∈ K) (· ∈ J) f) x)
 
-/-- The limit cone on `FinsetsToProfinite'` -/
+/-- The limit cone on `spanFunctor` -/
 noncomputable
-def FinsetsCone' : Cone (FinsetsToProfinite' hC) where
+def spanCone : Cone (spanFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π := {
     app := fun J ↦ ⟨ProjRestrict C (· ∈ unop J), continuous_projRestrict _ _⟩
     naturality := by
       intro _ _ h
-      simp only [Functor.const_obj_obj, FinsetsToProfinite', ProjRestricts, Homeomorph.setCongr,
+      simp only [Functor.const_obj_obj, spanFunctor, ProjRestricts, Homeomorph.setCongr,
         Homeomorph.homeomorph_mk_coe, ProjRestrict, Functor.const_obj_map, Category.id_comp]
       congr
       ext x i
@@ -254,20 +259,20 @@ def FinsetsCone' : Cone (FinsetsToProfinite' hC) where
       · rfl
   }
 
-/-- The isomorphism of cones `FinsetsCone' ≅ Profinite.indexCone` -/
+/-- The isomorphism of cones `spanCone ≅ Profinite.indexCone` -/
 noncomputable
-def FinsetsConeIso :
-    (Cones.postcompose (FinsetsToProfiniteIso hC).hom).obj (FinsetsCone' hC) ≅ indexCone hC :=
+def spanConeIsoIndex :
+    (Cones.postcompose (spanIsoIndex hC).hom).obj (spanCone hC) ≅ indexCone hC :=
   Cones.ext (Iso.refl _) (by
     intro ⟨J⟩
     ext x
     exact congr_fun (cones_naturality C (· ∈ J)) x)
 
-/-- `FinsetsCone'` is a limit cone. -/
+/-- `spanCone` is a limit cone. -/
 noncomputable
-def finsetsCone_isLimit' : CategoryTheory.Limits.IsLimit (FinsetsCone' hC) :=
-  (IsLimit.postcomposeHomEquiv (FinsetsToProfiniteIso hC) (FinsetsCone' hC))
-    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (FinsetsConeIso _).symm)
+def spanCone_isLimit : CategoryTheory.Limits.IsLimit (spanCone hC) :=
+  (IsLimit.postcomposeHomEquiv (spanIsoIndex hC) (spanCone hC))
+    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (spanConeIsoIndex _).symm)
 
 end Projections
 
@@ -805,8 +810,8 @@ theorem fin_comap_jointlySurjective
     (f : LocallyConstant C ℤ) : ∃ (J : Finset I)
     (g : LocallyConstant (C.proj (· ∈ J)) ℤ), f = g.comap (ProjRestrict C (· ∈ J)) := by
   obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset I)ᵒᵖ _ _ _
-    (FinsetsCone' hC.isCompact) _
-    (finsetsCone_isLimit' hC.isCompact) f
+    (spanCone hC.isCompact) _
+    (spanCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
 
 theorem GoodProducts.span (hC : IsClosed C) :
