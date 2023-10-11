@@ -243,10 +243,10 @@ def delete_lines(filename):
 passes = {
     'strip_comments': make_decomposable_pass(strip_comments),
     'delete_align': make_decomposable_pass(delete_align),
-    'delete_imports': make_decomposable_pass(delete_imports),
-    'make_sorry': make_decomposable_pass(make_sorry),
     'delete_defs': make_decomposable_pass(delete_defs),
+    'make_sorry': make_decomposable_pass(make_sorry),
 #    'delete_lines': make_decomposable_pass(delete_lines),
+    'delete_imports': make_decomposable_pass(delete_imports),
     'replace_imports': make_decomposable_pass(replace_imports),
 }
 
@@ -265,7 +265,8 @@ def minimize_file(original_file):
                 if pass_progress:
                     logging.info(f"minimize_file: success: {pass_name} modified {current_file} -> {new_file}")
                     progress = True
-                    current_file = make_definitive(original_file, new_file)
+                    # Commit to this intermediate result.
+                    make_definitive(original_file, new_file)
             except Exception as e:
                 logging.error(f"minimize_file: exception in {pass_name}: {e}")
 
