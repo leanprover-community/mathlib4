@@ -386,7 +386,6 @@ theorem Injective.of_subobject
 #find CompleteLattice (Subobject _)
 #check CategoryTheory.Subobject.completeSemilatticeSup
 #find (_ : _ → Subobject _) → (⨆ _, _ ⟶ _)
-
 theorem Injective.of_generator
     [HasPullbacks C]
     [Balanced C]
@@ -414,9 +413,18 @@ theorem Injective.of_generator
     let ub₁ : β := ⟨sSup chain₂, ?_, ?_⟩
     let ub : α := ⟨ub₁, ?_⟩
     refine ⟨ub, ?_⟩
-    · sorry -- easy
+    · sorry
+      -- intros a h'
+      -- dsimp
+      -- have h' : a.val.fst ∈ chain₂ := by
+      --   dsimp
+      --   refine Set.mem_image_of_mem PSigma.fst ?h
+      --   exact Set.mem_image_of_mem Subtype.val h'
+      -- have hh := le_sSup h'
+      -- dsimp at hh
+      -- exact hh
     · sorry -- not as easy
-    · sorry -- easy
+    · sorry
     · sorry
   case transitive => exact fun {_ _ _} ↦ LE.le.trans
   obtain ⟨m, hm⟩ := key
