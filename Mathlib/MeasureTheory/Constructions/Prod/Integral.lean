@@ -307,8 +307,7 @@ theorem Integrable.integral_norm_prod_right [SigmaFinite μ] ⦃f : α × β →
 #align measure_theory.integrable.integral_norm_prod_right MeasureTheory.Integrable.integral_norm_prod_right
 
 theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
-    [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] {f : α → 𝕜} {g : β → E}
-    (hf : Integrable f μ) (hg : Integrable g ν) :
+    [NormedSpace ℝ E] {f : α → 𝕜} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) := by
   refine' (integrable_prod_iff _).2 ⟨_, _⟩
   · exact hf.1.fst.smul hg.1.snd
