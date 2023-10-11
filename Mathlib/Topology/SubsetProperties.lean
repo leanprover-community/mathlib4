@@ -1378,10 +1378,8 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set α} (ht : IsSigmaCompact t)
 lemma IsSigmaCompact.image_of_continuousOn {f : α → β} {s : Set α} (hs : IsSigmaCompact s)
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
-  refine ⟨fun n ↦ f '' K n, ?_, (by rw [← hcov]; exact image_iUnion.symm)⟩
-  refine fun n ↦ (hcompact n).image_of_continuousOn (hf.mono ?_)
-  rw [← hcov]
-  exact subset_iUnion K n
+  refine ⟨fun n ↦ f '' K n, ?_, hcov.symm ▸ image_iUnion.symm⟩
+  refine fun n ↦ (hcompact n).image_of_continuousOn (hf.mono (hcov.symm ▸ subset_iUnion K n))
 
 /-- If `s` is σ-compact and `f` continuous, `f(s)` is σ-compact. -/
 lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs : IsSigmaCompact s) :
@@ -1400,13 +1398,10 @@ lemma Embedding.isSigmaCompact_iff {f : α → β} {s : Set α}
     refine ⟨fun n ↦ f ⁻¹' (L n), ?_, ?_⟩
     · intro n
       have : f '' (f ⁻¹' (L n)) = L n := by
-        have h: L n ⊆ f '' s := by
-          rw [← hcov]
-          exact subset_iUnion L n
+        have h: L n ⊆ f '' s := hcov.symm ▸ subset_iUnion L n
         apply Set.image_preimage_eq_of_subset (SurjOn.subset_range h)
       specialize hcomp n
-      rw [← this] at hcomp
-      apply hf.toInducing.isCompact_iff.mp hcomp
+      apply hf.toInducing.isCompact_iff.mp (this.symm ▸ hcomp)
     · calc ⋃ n, f ⁻¹' L n
         _ = f ⁻¹' (⋃ n, L n) := by rw [preimage_iUnion]
         _ = f ⁻¹' (f '' s) := by rw [hcov]
@@ -1446,10 +1441,9 @@ lemma SigmaCompactSpace.exists_compact_covering [h : SigmaCompactSpace α] :
   SigmaCompactSpace_iff_exists_compact_covering.mp h
 
 /-- If `X` is σ-compact, `im f` is σ-compact. -/
-lemma isSigmaCompact_range {f : α → β} (hf : Continuous f) [i : SigmaCompactSpace α] :
-    IsSigmaCompact (range f) := by
-  rw [← image_univ]
-  apply isSigmaCompact_univ.image hf
+lemma isSigmaCompact_range {f : α → β} (hf : Continuous f) [SigmaCompactSpace α] :
+    IsSigmaCompact (range f) :=
+  image_univ ▸ isSigmaCompact_univ.image hf
 
 /-- A subset `s` is σ-compact iff `s` (with the subspace topology) is a σ-compact space. -/
 lemma isSigmaCompact_iff_isSigmaCompact_univ {s : Set α} :
