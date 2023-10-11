@@ -699,8 +699,8 @@ standard resolution of `k` called `groupCohomology.resolution k G`. -/
 def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (GroupCohomology.resolution k G)).homology
+              (groupCohomology.resolution k G)).homology
           n).unop := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
-     (GroupCohomology.projectiveResolution k G)).unop.symm
+     (groupCohomology.projectiveResolution k G)).unop.symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso groupCohomology.extIso
