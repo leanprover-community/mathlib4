@@ -1311,6 +1311,12 @@ section BasisRank
 
 variable {s : Finset α}
 
+theorem basisRank_le_card :
+    G.basisRank s ≤ s.card := by
+  simp only [basisRank, max'_le_iff, mem_image, system_feasible_set_mem_mem, forall_exists_index,
+    and_imp, forall_apply_eq_imp_iff₂]
+  exact fun _ _ => card_le_of_subset (Finset.inter_subset_left _ _)
+
 theorem feasibleSet_inter_card_le_basisRank {t : Finset α} (ht : t ∈ G) :
     (s ∩ t).card ≤ G.basisRank s := by
   simp only [basisRank]
@@ -1485,7 +1491,7 @@ theorem rankFeasible_TFAE :
               apply h' (h'' _)
               rw [mem_inter]
               exact h
-          have := Nat.lt_of_lt_of_le this h₆
+          have := Nat.lt_of_lt_of_le this h₅
           simp only [lt_self_iff_false] at this
       have h₇ : b' ⊆ b ∪ t := by
         intro _ h
@@ -1569,15 +1575,27 @@ theorem basisRank_union_add_rank_inter_le_basisRank_add_basisRank (s t : Finset 
     simp only [h₂ x y, add_tsub_cancel_left]
   have h₄ {x y : Finset α} : (x \ y).card = x.card - (x ∩ y).card := by
     simp only [h₂ x y, add_tsub_cancel_right]
-  have h₅ {x y z : Finset α} (h : x ⊆ z) : (x \ y).card ≤ (z \ y).card := by
-    apply Finset.card_le_of_subset
-    intro _ h'
-    rw [mem_sdiff] at *
-    exact ⟨h h'.1, h'.2⟩
-  rw [add_comm _ b₁.card, h₃, ← Nat.add_sub_assoc (card_le_of_subset (sdiff_subset _ _))]
-  simp only [G.rank_eq_basis_card hb₁, add_comm (G.basisRank _),
-    Nat.add_sub_assoc (card_le_of_subset (sdiff_subset b₂ (s ∪ t))), add_le_add_iff_left]
-  sorry
+  simp only [hu₂, G.rank_eq_basis_card hb₁, add_le_add_iff_right]
+  have h₅ : b₀ ∪ b₁ ⊆ s ∪ t ∪ u := by
+    have h₅ : b₀ ⊆ s ∪ t ∪ u := subset_trans (G.basis_subset hb₀) subset_rfl
+    have h₆ : b₁ ⊆ s ∪ t ∪ u :=
+      subset_trans (subset_trans hb₃ hb₄) (union_subset h₅ (subset_trans (G.basis_subset hb₁)
+        (subset_trans inter_subset_union (subset_union_left _ u))))
+    exact union_subset h₅ h₆
+  have h₆ : u.card ≤ b₂.card := by
+    apply G.basis_max_card_of_feasible _ hu₁ (subset_union_right (s ∪ t) u)
+    exact G.basis_of_basis_card_eq_of_subset hb₀ hb₅ (subset_trans hb₄ h₅) hb₂
+  have h₇ : (b₂ \ (s ∪ t)).card ≤ (u \ (s ∪ t)).card := by
+    apply card_le_of_subset
+    intro _ h
+    rw [← union_sdiff_right]
+    apply sdiff_subset_sdiff _ subset_rfl h
+    rw [union_comm u]
+    exact subset_trans hb₄ h₅
+  rw [inter_comm _ u, h₃, h₃, tsub_le_iff_right, ← Nat.sub_add_comm, le_tsub_iff_right]
+  · exact Nat.add_le_add h₆ h₇
+  · exact le_add_left h₇
+  · exact h₄ ▸ sub_le _ _
 
 theorem rankFeasibleFamily_submodular
   (s : Finset α) (hs : G.rankFeasible s) (t : Finset α) (ht : G.rankFeasible t) :
@@ -1585,6 +1603,10 @@ theorem rankFeasibleFamily_submodular
   rw [← hs, ← ht]
   apply le_trans _ (G.basisRank_union_add_rank_inter_le_basisRank_add_basisRank s t)
   simp only [add_le_add_iff_right, rank_le_basisRank]
+
+theorem rankFeasible_iff_subset_subset_monotoneClosure :
+    G.rankFeasible s ↔ ∀ {t}, t ∈ G.bases s → s ⊆ G.monotoneClosureOperator t := by
+  sorry
 
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
