@@ -16,7 +16,7 @@ say that `F` preserves homology when `F` preserves both kernels and cokernels.
 This typeclass is named `[F.PreservesHomology]`, and is automatically
 satisfied when `F` preserves both finite limits and finite colimits.
 
-TODO: If `S : ShortComplex C` and `[F.PreservesHomology]`, then there is an
+If `S : ShortComplex C` and `[F.PreservesHomology]`, then there is an
 isomorphism `S.mapHomologyIso F : (S.map F).homology ≅ F.obj S.homology`.
 
 -/
