@@ -37,10 +37,9 @@ formalise this as `Filter.codiscrete`.
 
 open Set Filter Function Topology
 
-section cofinite_cocompact
-
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
+section cofinite_cocompact
 
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
@@ -79,9 +78,9 @@ end cofinite_cocompact
 
 section codiscrete_filter
 
-/-- Criterion for a subset `S ⊆ α` to be closed and discrete in terms of the punctured
-neighbourhood filter at an arbitrary point of `α`. (Compare `discreteTopology_subtype_iff`.) -/
-theorem isClosed_and_discrete_iff {α : Type*} [TopologicalSpace α] {S : Set α} :
+/-- Criterion for a subset `S ⊆ X` to be closed and discrete in terms of the punctured
+neighbourhood filter at an arbitrary point of `X`. (Compare `discreteTopology_subtype_iff`.) -/
+theorem isClosed_and_discrete_iff {S : Set X} :
     IsClosed S ∧ DiscreteTopology S ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 S) := by
   rw [discreteTopology_subtype_iff, isClosed_iff_clusterPt, ← forall_and]
   congrm (∀ x, ?_)
@@ -93,7 +92,7 @@ theorem isClosed_and_discrete_iff {α : Type*} [TopologicalSpace α] {S : Set α
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
 
 /-- In any topological space, the open sets with with discrete complement form a filter. -/
-def Filter.codiscrete (α : Type*) [TopologicalSpace α] : Filter α where
+def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X where
   sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
   univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
   sets_of_superset := by
