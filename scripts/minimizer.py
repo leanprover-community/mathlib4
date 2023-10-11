@@ -9,13 +9,13 @@ import tempfile
 
 def minimized_filename(original_file):
     name_parts = original_file.split('.')
-    if name_parts[-3] == 'min':
+    if len(name_parts) >= 3 and name_parts[-3] == 'min':
         try:
             version = int(name_parts[-2])
             return '.'.join(name_parts[:-3]) + f'.min.{version + 1}.lean'
         except ValueError:
             return '.'.join(name_parts[:-3]) + f'.min.1.lean'
-    elif name_parts[-1] == 'lean':
+    elif len(name_parts) >= 1 and name_parts[-1] == 'lean':
         return '.'.join(name_parts[:-1]) + f'.min.1.lean'
     else:
         return original_file + '.min.1.lean'
