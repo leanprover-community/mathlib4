@@ -13,7 +13,7 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 /-!
 # Category instance for algebras over a commutative ring
 
-We introduce the bundled category `AlgebraCat` of algebras over a fixed commutative ring `R ` along
+We introduce the bundled category `AlgebraCat` of algebras over a fixed commutative ring `R` along
 with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show that the functor
 associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/

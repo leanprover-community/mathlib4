@@ -689,7 +689,7 @@ theorem quotQuotEquivQuotSup_symm_quotQuotMk (x : R) :
   rfl
 #align double_quot.quot_quot_equiv_quot_sup_symm_quot_quot_mk DoubleQuot.quotQuotEquivQuotSup_symm_quotQuotMk
 
-/-- The obvious isomorphism `(R/I)/J' → (R/J)/I' `   -/
+/-- The obvious isomorphism `(R/I)/J' → (R/J)/I'` -/
 def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+*
     (R ⧸ J) ⧸ I.map (Ideal.Quotient.mk J) :=
   ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm))).trans
