@@ -285,7 +285,8 @@ import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Lie.UniversalEnveloping
-import Mathlib.Algebra.Lie.Weights
+import Mathlib.Algebra.Lie.Weights.Basic
+import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Algebra
