@@ -151,8 +151,8 @@ and the homogeneous `linearYonedaObjResolution`. -/
   rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     resolution.d_eq]
   erw [resolution.d_of (Fin.partialProd g)]
-  rw [LinearMap.map_sum]
-  simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
+  --rw [map_sum]
+  simp only [map_sum, ←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   rw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
   simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
