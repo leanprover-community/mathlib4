@@ -59,6 +59,7 @@ lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else
   simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
   rintro ⟨⟩
   split_ifs <;> rfl
+#align nat.bitwise_zero_right Nat.bitwise_zero_right
 
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
