@@ -330,11 +330,6 @@ lemma mem_posFittingCompOf [LieAlgebra.IsNilpotent R L] (x : L) (m : M) :
   simp_rw [eq_bot_iff, ← iInf_lowerCentralSeries_eq_bot_of_isNilpotent, le_iInf_iff,
     posFittingCompOf_le_lowerCentralSeries, forall_const]
 
-lemma exists_coe_posFittingCompOf_eq_of_isArtinian
-    [LieAlgebra.IsNilpotent R L] [IsArtinian R M] (x : L) :
-    ∃ (k : ℕ), posFittingCompOf R M x = LinearMap.range (toEndomorphism R L M x ^ k) :=
-  (toEndomorphism R L M x).exists_range_pow_eq_iInf
-
 variable (L)
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L` with coefficients in `R`, then
@@ -365,13 +360,13 @@ lemma posFittingComp_le_iInf_lowerCentralSeries [LieAlgebra.IsNilpotent R L] :
   apply iInf_lcs_le_of_isNilpotent_quot
   rw [LieModule.isNilpotent_iff_forall']
   intro x
-  obtain ⟨k, hk⟩ := exists_coe_posFittingCompOf_eq_of_isArtinian R M x
+  obtain ⟨k, hk⟩ := Filter.eventually_atTop.mp (toEndomorphism R L M x).eventually_iInf_range_pow_eq
   use k
   ext ⟨m⟩
   set F := posFittingComp R L M
   replace hk : (toEndomorphism R L M x ^ k) m ∈ F := by
     apply posFittingCompOf_le_posFittingComp R L M x
-    rw [← LieSubmodule.mem_coeSubmodule, hk]
+    simp_rw [← LieSubmodule.mem_coeSubmodule, posFittingCompOf, hk k (le_refl k)]
     apply LinearMap.mem_range_self
   suffices (toEndomorphism R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
     LieSubmodule.Quotient.mk (N := F) ((toEndomorphism R L M x ^ k) m) by simpa [this]
@@ -468,6 +463,8 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
     simp only [SetLike.val_smul, smul_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.smul_apply,
       SetLike.mk_smul_mk]
 #align lie_algebra.root_space_weight_space_product_aux LieAlgebra.rootSpaceWeightSpaceProductAux
+
+suppress_compilation
 
 -- Porting note: this def is _really_ slow
 -- See https://github.com/leanprover-community/mathlib4/issues/5028
