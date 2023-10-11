@@ -138,7 +138,7 @@ theorem sum_snd : (p.sum q).snd = Sum.inr q.snd :=
 
 /-- The `false`, `true` two-pointing of `Bool`. -/
 protected def bool : TwoPointing Bool :=
-  ⟨(false, true), Bool.ff_ne_tt⟩
+  ⟨(false, true), Bool.false_ne_true⟩
 #align two_pointing.bool TwoPointing.bool
 
 @[simp]
