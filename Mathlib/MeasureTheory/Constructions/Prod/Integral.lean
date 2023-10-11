@@ -220,16 +220,15 @@ variable [SigmaFinite ν]
 
 section
 
+theorem integrable_swap_iff [SigmaFinite μ] {f : α × β → E} :
+    Integrable (f ∘ Prod.swap) (ν.prod μ) ↔ Integrable f (μ.prod ν) :=
+  measurePreserving_swap.integrable_comp_emb MeasurableEquiv.prodComm.measurableEmbedding
+#align measure_theory.integrable_swap_iff MeasureTheory.integrable_swap_iff
+
 theorem Integrable.swap [SigmaFinite μ] ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
     Integrable (f ∘ Prod.swap) (ν.prod μ) :=
-  ⟨hf.aestronglyMeasurable.prod_swap,
-    (lintegral_prod_swap _ hf.aestronglyMeasurable.ennnorm : _).le.trans_lt hf.hasFiniteIntegral⟩
+  integrable_swap_iff.2 hf
 #align measure_theory.integrable.swap MeasureTheory.Integrable.swap
-
-theorem integrable_swap_iff [SigmaFinite μ] ⦃f : α × β → E⦄ :
-    Integrable (f ∘ Prod.swap) (ν.prod μ) ↔ Integrable f (μ.prod ν) :=
-  ⟨fun hf => hf.swap, fun hf => hf.swap⟩
-#align measure_theory.integrable_swap_iff MeasureTheory.integrable_swap_iff
 
 theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasurable f) :
     HasFiniteIntegral f (μ.prod ν) ↔
@@ -336,13 +335,11 @@ theorem Integrable.integral_prod_right [SigmaFinite μ] ⦃f : α × β → E⦄
 
 /-! ### The Bochner integral on a product -/
 
-
 variable [SigmaFinite μ]
 
-theorem integral_prod_swap (f : α × β → E) (hf : AEStronglyMeasurable f (μ.prod ν)) :
-    ∫ z, f z.swap ∂ν.prod μ = ∫ z, f z ∂μ.prod ν := by
-  rw [← prod_swap] at hf
-  rw [← integral_map measurable_swap.aemeasurable hf, prod_swap]
+theorem integral_prod_swap (f : α × β → E) :
+    ∫ z, f z.swap ∂ν.prod μ = ∫ z, f z ∂μ.prod ν :=
+  measurePreserving_swap.integral_comp MeasurableEquiv.prodComm.measurableEmbedding _
 #align measure_theory.integral_prod_swap MeasureTheory.integral_prod_swap
 
 variable {E' : Type*} [NormedAddCommGroup E'] [CompleteSpace E'] [NormedSpace ℝ E']
@@ -477,7 +474,7 @@ theorem integral_prod :
   This version has the integrals on the right-hand side in the other order. -/
 theorem integral_prod_symm (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ y, ∫ x, f (x, y) ∂μ ∂ν := by
-  simp_rw [← integral_prod_swap f hf.aestronglyMeasurable]; exact integral_prod _ hf.swap
+  rw [← integral_prod_swap f]; exact integral_prod _ hf.swap
 #align measure_theory.integral_prod_symm MeasureTheory.integral_prod_symm
 
 /-- Reversed version of **Fubini's Theorem**. -/

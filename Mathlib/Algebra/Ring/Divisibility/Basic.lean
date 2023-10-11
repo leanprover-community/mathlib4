@@ -11,6 +11,10 @@ import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Lemmas about divisibility in rings
+
+Note that this file is imported by basic tactics like `linarith` and so must have only minimal
+imports. Further results about divisibility in rings may be found in
+`Mathlib.Algebra.Ring.Divisibility.Lemmas` which is not subject to this import constraint.
 -/
 
 

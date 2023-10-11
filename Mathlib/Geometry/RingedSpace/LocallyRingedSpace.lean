@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.AlgebraicGeometry.RingedSpace
-import Mathlib.AlgebraicGeometry.Stalks
+import Mathlib.Geometry.RingedSpace.Basic
+import Mathlib.Geometry.RingedSpace.Stalks
 
 #align_import algebraic_geometry.locally_ringed_space from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -243,7 +243,7 @@ def restrict {U : TopCat} (X : LocallyRingedSpace) {f : U ⟶ X.toTopCat} (h : O
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.restrict AlgebraicGeometry.LocallyRingedSpace.restrict
 
-/-- The canonical map from the restriction to the supspace. -/
+/-- The canonical map from the restriction to the subspace. -/
 def ofRestrict {U : TopCat} (X : LocallyRingedSpace) {f : U ⟶ X.toTopCat} (h : OpenEmbedding f) :
     X.restrict h ⟶ X :=
   ⟨X.toPresheafedSpace.ofRestrict h, fun _ => inferInstance⟩
