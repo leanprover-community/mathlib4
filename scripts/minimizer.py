@@ -319,6 +319,7 @@ def minimize_file(original_file):
                     progress = True
                     # Commit to this intermediate result.
                     make_definitive(original_file, new_file)
+                    current_file = new_file
             except Exception as e:
                 logging.error(f"minimize_file: exception in {pass_name}: {e}")
 
