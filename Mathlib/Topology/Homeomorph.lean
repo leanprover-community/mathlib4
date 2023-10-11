@@ -259,7 +259,7 @@ protected theorem secondCountableTopology [TopologicalSpace.SecondCountableTopol
 #align homeomorph.second_countable_topology Homeomorph.secondCountableTopology
 
 theorem isCompact_image {s : Set α} (h : α ≃ₜ β) : IsCompact (h '' s) ↔ IsCompact s :=
-  h.embedding.isCompact_iff
+  h.embedding.isCompact_iff.symm
 #align homeomorph.is_compact_image Homeomorph.isCompact_image
 
 theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹' s) ↔ IsCompact s := by
@@ -270,7 +270,7 @@ theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹'
 @[simp]
 theorem isSigmaCompact_image {s : Set α} (h : α ≃ₜ β) :
     IsSigmaCompact (h '' s) ↔ IsSigmaCompact s :=
-  h.embedding.isSigmaCompact_iff
+  h.embedding.isSigmaCompact_iff.symm
 
 /-- If `h : α → β` is a homeomorphism, `h⁻¹(s)` is σ-compact iff `s` is. -/
 @[simp]
