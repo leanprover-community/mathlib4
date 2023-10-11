@@ -3,14 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Pi
-import Mathlib.Topology.Bases
-import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.BoolIndicator
-import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.Bases
 import Mathlib.Topology.LocallyFinite
-import Mathlib.Order.Minimal
+import Mathlib.Topology.Bornology.Basic
 /-!
 # Compact sets and compact spaces
 

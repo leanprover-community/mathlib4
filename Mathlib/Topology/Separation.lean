@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected
-import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
