@@ -464,6 +464,8 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
       SetLike.mk_smul_mk]
 #align lie_algebra.root_space_weight_space_product_aux LieAlgebra.rootSpaceWeightSpaceProductAux
 
+suppress_compilation
+
 -- Porting note: this def is _really_ slow
 -- See https://github.com/leanprover-community/mathlib4/issues/5028
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
