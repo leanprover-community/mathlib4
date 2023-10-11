@@ -509,6 +509,21 @@ lemma _root_.MeasureTheory.NullMeasurableSet.right_of_prod {s : Set α} {t : Set
   refine ⟨Prod.mk x ⁻¹' u, measurable_prod_mk_left hum, ?_⟩
   rwa [mk_preimage_prod_right hxs] at hx
 
+/-- If `Prod.snd ⁻¹' t` is a null measurable set and `μ ≠ 0`, then `t` is a null measurable set. -/
+lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_snd [NeZero μ] {t : Set β}
+    (h : NullMeasurableSet (Prod.snd ⁻¹' t) (μ.prod ν)) : NullMeasurableSet t ν :=
+  .right_of_prod (by rwa [univ_prod]) (NeZero.ne _)
+
+/-- `Prod.snd ⁻¹' t` is null measurable w.r.t. `μ.prod ν` iff `t` is null measurable w.r.t. `ν`
+provided that `μ ≠ 0`. -/
+lemma nullMeasurableSet_preimage_snd [NeZero μ] {t : Set β} :
+    NullMeasurableSet (Prod.snd ⁻¹' t) (μ.prod ν) ↔ NullMeasurableSet t ν :=
+  ⟨.of_preimage_snd, (.preimage · quasiMeasurePreserving_snd)⟩
+
+lemma nullMeasurable_comp_snd [NeZero μ] {f : β → γ} :
+    NullMeasurable (f ∘ Prod.snd) (μ.prod ν) ↔ NullMeasurable f ν :=
+  forall₂_congr fun s _ ↦ nullMeasurableSet_preimage_snd (t := f ⁻¹' s)
+
 /-- `μ.prod ν` has finite spanning sets in rectangles of finite spanning sets. -/
 noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)} {D : Set (Set β)}
     (hμ : μ.FiniteSpanningSetsIn C) (hν : ν.FiniteSpanningSetsIn D) :
@@ -577,6 +592,21 @@ lemma _root_.MeasureTheory.NullMeasurableSet.left_of_prod {s : Set α} {t : Set 
   refine .right_of_prod ?_ ht
   rw [← preimage_swap_prod]
   exact h.preimage measurePreserving_swap.quasiMeasurePreserving
+
+/-- If `Prod.fst ⁻¹' s` is a null measurable set and `ν ≠ 0`, then `s` is a null measurable set. -/
+lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_fst [NeZero ν] {s : Set α}
+    (h : NullMeasurableSet (Prod.fst ⁻¹' s) (μ.prod ν)) : NullMeasurableSet s μ :=
+  .left_of_prod (by rwa [prod_univ]) (NeZero.ne _)
+
+/-- `Prod.fst ⁻¹' s` is null measurable w.r.t. `μ.prod ν` iff `s` is null measurable w.r.t. `μ`
+provided that `ν ≠ 0`. -/
+lemma nullMeasurableSet_preimage_fst [NeZero ν] {s : Set α} :
+    NullMeasurableSet (Prod.fst ⁻¹' s) (μ.prod ν) ↔ NullMeasurableSet s μ :=
+  ⟨.of_preimage_fst, (.preimage · quasiMeasurePreserving_fst)⟩
+
+lemma nullMeasurable_comp_fst [NeZero ν] {f : α → γ} :
+    NullMeasurable (f ∘ Prod.fst) (μ.prod ν) ↔ NullMeasurable f μ :=
+  forall₂_congr fun s _ ↦ nullMeasurableSet_preimage_fst (s := f ⁻¹' s)
 
 /-- The product of two non-null sets is null measurable
 if and only if both of them are null measurable. -/
