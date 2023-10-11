@@ -350,12 +350,12 @@ open Fintype
   the instance in a goal is often not the same as the one inferred by type class inference.  -/
 @[to_additive]
 theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 1 :=
-  Fintype.card_eq_one_iff.2
-    ⟨⟨(1 : M), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| Submonoid.mem_bot.1 hy⟩
+  card_eq_one_iff.2
+    ⟨⟨(1 : M), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| mem_bot.1 hy⟩
 
 @[to_additive]
 theorem eq_bot_of_card_le (h : card S ≤ 1) : S = ⊥ :=
-  let _ := Fintype.card_le_one_iff_subsingleton.mp h
+  let _ := card_le_one_iff_subsingleton.mp h
   eq_bot_of_subsingleton S
 
 @[to_additive]
