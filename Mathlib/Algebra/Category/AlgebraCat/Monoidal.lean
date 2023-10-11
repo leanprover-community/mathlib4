@@ -108,6 +108,4 @@ instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
 
 end
 
-#print instMonoidalCategory
-
 end AlgebraCat
