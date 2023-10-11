@@ -76,6 +76,7 @@ lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X
    fun _ ↦ hs.tendsto_coe_cofinite_of_discreteTopology inferInstance⟩
 
 end cofinite_cocompact
+
 section codiscrete_filter
 
 /-- Criterion for a subset `S ⊆ α` to be closed and discrete in terms of the punctured

@@ -12,8 +12,6 @@ import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Minimal
 
-#align_import topology.subset_properties from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
-
 /-!
 # Clopen sets
 
