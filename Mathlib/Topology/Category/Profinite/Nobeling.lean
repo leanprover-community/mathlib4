@@ -163,12 +163,14 @@ theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
 
 variable (J)
 
+open Profinite ContinuousMap
+
 /-- The objectwise map in the isomorphism `FinsetsToProfinite' ≅ FinsetsToProfinite`. -/
-def iso_map : C(C.proj J, (FinsetFunctor.obj C J)) :=
+def iso_map : C(C.proj J, (IndexFunctor.obj C J)) :=
   ⟨fun x ↦ ⟨fun i ↦ x.val i.val, by
     obtain ⟨y, hy⟩ := x.prop
     refine ⟨y, hy.1, ?_⟩
-    rw [precomp, ContinuousMap.coe_mk, ← hy.2]
+    rw [precomp, coe_mk, ← hy.2]
     ext i
     exact (if_pos i.prop).symm⟩, by
     refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
@@ -198,7 +200,7 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
 variable (K)
 
 lemma iso_naturality (h : ∀ i, J i → K i) :
-    iso_map C J ∘ ProjRestricts C h = FinsetFunctor.map C h ∘ iso_map C K := by
+    iso_map C J ∘ ProjRestricts C h = IndexFunctor.map C h ∘ iso_map C K := by
   ext x i
   simp only [iso_map, ContinuousMap.coe_mk, Function.comp_apply, ProjRestricts_coe,
     Proj._eq_1, precomp._eq_1, Set.coe_inclusion]
@@ -206,7 +208,7 @@ lemma iso_naturality (h : ∀ i, J i → K i) :
   rfl
 
 lemma cones_naturality :
-    iso_map C J ∘ ProjRestrict C J = FinsetFunctor.π_app C J := by
+    iso_map C J ∘ ProjRestrict C J = IndexFunctor.π_app C J := by
   ext _ i
   exact dif_pos i.prop
 
@@ -224,16 +226,16 @@ def FinsetsToProfinite' :
   map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
-/-- The natural isomorphism `FinsetsToProfinite' ≅ FinsetsToProfinite`. -/
+/-- The natural isomorphism `FinsetsToProfinite' ≅ Profinite.indexFunctor`. -/
 noncomputable
-def FinsetsToProfiniteIso : FinsetsToProfinite' hC ≅ FinsetsToProfinite hC := NatIso.ofComponents
+def FinsetsToProfiniteIso : FinsetsToProfinite' hC ≅ indexFunctor hC := NatIso.ofComponents
   (fun J ↦ (Profinite.isoOfBijective (iso_map C (· ∈ unop J)) (iso_map_bijective C (· ∈ unop J))))
   (by
     intro ⟨J⟩ ⟨K⟩ ⟨⟨⟨f⟩⟩⟩
     ext x
     exact congr_fun (iso_naturality C (· ∈ K) (· ∈ J) f) x)
 
-/-- The limit cone on `FinsetsToProfinite` -/
+/-- The limit cone on `FinsetsToProfinite'` -/
 noncomputable
 def FinsetsCone' : Cone (FinsetsToProfinite' hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
@@ -252,10 +254,10 @@ def FinsetsCone' : Cone (FinsetsToProfinite' hC) where
       · rfl
   }
 
-/-- The isomorphism of cones `FinsetsCone' ≅ FinsetsCone` -/
+/-- The isomorphism of cones `FinsetsCone' ≅ Profinite.indexCone` -/
 noncomputable
 def FinsetsConeIso :
-    (Cones.postcompose (FinsetsToProfiniteIso hC).hom).obj (FinsetsCone' hC) ≅ FinsetsCone hC :=
+    (Cones.postcompose (FinsetsToProfiniteIso hC).hom).obj (FinsetsCone' hC) ≅ indexCone hC :=
   Cones.ext (Iso.refl _) (by
     intro ⟨J⟩
     ext x
@@ -265,7 +267,7 @@ def FinsetsConeIso :
 noncomputable
 def finsetsCone_isLimit' : CategoryTheory.Limits.IsLimit (FinsetsCone' hC) :=
   (IsLimit.postcomposeHomEquiv (FinsetsToProfiniteIso hC) (FinsetsCone' hC))
-    (IsLimit.ofIsoLimit (finsetsCone_isLimit hC) (FinsetsConeIso _).symm)
+    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (FinsetsConeIso _).symm)
 
 end Projections
 
@@ -1904,6 +1906,7 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 
+/-- Nöbeling's theorem: the `ℤ`-module `LocallyConstant S ℤ` is free for every `S : Profinite` -/
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
   @NobelingProof.Nobeling {C : Set S // IsClopen C} ⟨⟨∅, isClopen_empty⟩⟩
     (IsWellOrder.linearOrder WellOrderingRel)
