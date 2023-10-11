@@ -128,10 +128,10 @@ theorem IsCompact.diff (hs : IsCompact s) (ht : IsOpen t) : IsCompact (s \ t) :=
 #align is_compact.diff IsCompact.diff
 
 /-- A closed subset of a compact set is a compact set. -/
-theorem isCompact_of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
+theorem IsCompact.of_isClosed_subset (hs : IsCompact s) (ht : IsClosed t) (h : t ⊆ s) :
     IsCompact t :=
   inter_eq_self_of_subset_right h ▸ hs.inter_right ht
-#align is_compact_of_is_closed_subset isCompact_of_isClosed_subset
+#align is_compact_of_is_closed_subset IsCompact.of_isClosed_subset
 
 theorem IsCompact.image_of_continuousOn {f : α → β} (hs : IsCompact s) (hf : ContinuousOn f s) :
     IsCompact (f '' s) := by
@@ -288,7 +288,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type
     (hZc : ∀ i, IsCompact (Z i)) (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty := by
   let i₀ := hι.some
   suffices (Z i₀ ∩ ⋂ i, Z i).Nonempty by
-    rwa [inter_eq_right_iff_subset.mpr (iInter_subset _ i₀)] at this
+    rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
   simp only [nonempty_iff_ne_empty] at hZn ⊢
   apply mt ((hZc i₀).elim_directed_family_closed Z hZcl)
   push_neg
@@ -306,7 +306,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ �
   have Zmono : Antitone Z := antitone_nat_of_succ_le hZd
   have hZd : Directed (· ⊇ ·) Z := directed_of_sup Zmono
   have : ∀ i, Z i ⊆ Z 0 := fun i => Zmono <| zero_le i
-  have hZc : ∀ i, IsCompact (Z i) := fun i => isCompact_of_isClosed_subset hZ0 (hZcl i) (this i)
+  have hZc : ∀ i, IsCompact (Z i) := fun i => hZ0.of_isClosed_subset (hZcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed Z hZd hZn hZc hZcl
 #align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
 
@@ -733,7 +733,7 @@ theorem compactSpace_of_finite_subfamily_closed
 #align compact_space_of_finite_subfamily_closed compactSpace_of_finite_subfamily_closed
 
 theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsCompact s :=
-  isCompact_of_isClosed_subset isCompact_univ h (subset_univ _)
+  isCompact_univ.of_isClosed_subset h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
 
 /-- `α` is a noncompact topological space if it is not a compact space. -/
@@ -867,8 +867,8 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonem
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 #align exists_subset_nhds_of_compact_space exists_subset_nhds_of_compactSpace
 
-/-- If `f : α → β` is an `Inducing` map, then the image `f '' s` of a set `s` is compact if and only
-if the set `s` is closed. -/
+/-- If `f : α → β` is an `Inducing` map,
+the image `f '' s` of a set `s` is compact if and only if `s` is compact. -/
 theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsCompact (f '' s) ↔ IsCompact s := by
   refine ⟨fun hs F F_ne_bot F_le => ?_, fun hs => hs.image hf.continuous⟩
@@ -878,18 +878,23 @@ theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
 #align inducing.is_compact_iff Inducing.isCompact_iff
 
 /-- If `f : α → β` is an `Embedding` (or more generally, an `Inducing` map, see
-`Inducing.isCompact_iff`), then the image `f '' s` of a set `s` is compact if and only if the set
-`s` is closed. -/
+`Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
+`s` is compact. -/
 theorem Embedding.isCompact_iff_isCompact_image {f : α → β} (hf : Embedding f) :
     IsCompact s ↔ IsCompact (f '' s) :=
   hf.toInducing.isCompact_iff.symm
 #align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff_isCompact_image
 
+/-- The preimage of a compact set under an inducing map is a compact set. -/
+theorem Inducing.isCompact_preimage {f : α → β} (hf : Inducing f) (hf' : IsClosed (range f))
+    {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
+  replace hK := hK.inter_right hf'
+  rwa [← hf.isCompact_iff, image_preimage_eq_inter_range]
+
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
-theorem ClosedEmbedding.isCompact_preimage {f : α → β} (hf : ClosedEmbedding f) {K : Set β}
-    (hK : IsCompact K) : IsCompact (f ⁻¹' K) := by
-  replace hK := hK.inter_right hf.closed_range
-  rwa [← hf.toInducing.isCompact_iff, image_preimage_eq_inter_range]
+theorem ClosedEmbedding.isCompact_preimage {f : α → β} (hf : ClosedEmbedding f)
+    {K : Set β} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
+  hf.toInducing.isCompact_preimage (hf.closed_range) hK
 #align closed_embedding.is_compact_preimage ClosedEmbedding.isCompact_preimage
 
 /-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
@@ -2036,3 +2041,35 @@ theorem IsPreirreducible.preimage {Z : Set α} (hZ : IsPreirreducible Z) {f : β
 #align is_preirreducible.preimage IsPreirreducible.preimage
 
 end Preirreducible
+
+section codiscrete_filter
+
+/-- Criterion for a subset `S ⊆ α` to be closed and discrete in terms of the punctured
+neighbourhood filter at an arbitrary point of `α`. (Compare `discreteTopology_subtype_iff`.) -/
+theorem isClosed_and_discrete_iff {S : Set α} : IsClosed S ∧ DiscreteTopology S ↔
+    ∀ x, Disjoint (𝓝[≠] x) (𝓟 S) := by
+  rw [discreteTopology_subtype_iff, isClosed_iff_clusterPt, ← forall_and]
+  congrm (∀ x, ?_)
+  rw [← not_imp_not, clusterPt_iff_not_disjoint, not_not, ←disjoint_iff]
+  constructor <;> intro H
+  · by_cases hx : x ∈ S
+    exacts [H.2 hx, (H.1 hx).mono_left nhdsWithin_le_nhds]
+  · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
+    simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
+
+variable (α)
+
+/-- In any topological space, the open sets with with discrete complement form a filter. -/
+def Filter.codiscrete : Filter α where
+  sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
+  univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
+  sets_of_superset := by
+    intro U V hU hV
+    simp_rw [←isClosed_compl_iff, isClosed_and_discrete_iff] at hU ⊢
+    exact fun x ↦ (hU x).mono_right (principal_mono.mpr <| compl_subset_compl.mpr hV)
+  inter_sets := by
+    intro U V hU hV
+    simp_rw [←isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
+    exact fun x ↦ compl_inter U V ▸ sup_principal ▸ disjoint_sup_right.mpr ⟨hU x, hV x⟩
+
+end codiscrete_filter

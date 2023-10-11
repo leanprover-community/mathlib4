@@ -177,7 +177,7 @@ lemma Exact.unop {S : ShortComplex Cᵒᵖ} (h : S.Exact) : S.unop.Exact := by
 variable (S)
 
 @[simp]
-lemma exact_op_iff : S.op.Exact ↔ S.Exact:=
+lemma exact_op_iff : S.op.Exact ↔ S.Exact :=
   ⟨Exact.unop, Exact.op⟩
 
 @[simp]

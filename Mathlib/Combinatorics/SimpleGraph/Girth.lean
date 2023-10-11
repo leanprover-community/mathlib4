@@ -32,7 +32,7 @@ lemma girth_anti : Antitone (girth : SimpleGraph α → ℕ∞) :=
 λ G H h ↦ iInf_mono λ a ↦ iInf₂_mono' λ w hw ↦ ⟨w.mapLe h, hw.mapLe _, by simp⟩
 
 lemma exists_girth_eq_length :
-  (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
+    (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
   refine' ⟨_, λ h ↦ _⟩
   · rintro ⟨a, w, hw, _⟩ hG
     exact hG _ hw
