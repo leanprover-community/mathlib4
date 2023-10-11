@@ -2016,6 +2016,7 @@ import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Geometry.Manifold.Metrizable
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.Sheaf.Basic
+import Mathlib.Geometry.Manifold.Sheaf.Smooth
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
@@ -3156,6 +3157,7 @@ import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
@@ -3338,6 +3340,7 @@ import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Limits
+import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.Category.Profinite.Projective
 import Mathlib.Topology.Category.Stonean.Adjunctions
 import Mathlib.Topology.Category.Stonean.Basic

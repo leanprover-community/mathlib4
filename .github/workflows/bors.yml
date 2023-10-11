@@ -232,7 +232,11 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          lake build
+          # Because `Lean4Checker/Tests/ReduceBool.lean` is non-deterministic (compiles only 1/4 of the time),
+          # we just keep rebuilding until it works!
+          # I'll try to come up with something better.
+          until lake build > /dev/null 2>&1; do :; done
+          ./test.sh
           cd ..
           lake env lean4checker/build/bin/lean4checker
 
