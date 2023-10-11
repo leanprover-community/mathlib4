@@ -342,17 +342,38 @@ theorem closure_singleton_one : closure ({1} : Set M) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
 #align submonoid.closure_singleton_one Submonoid.closure_singleton_one
 
-open Fintype in
+section Submonoid
+variable {S : Submonoid M} [Fintype S]
+open Fintype
+
+/- curly brackets `{}` are used here instead of instance brackets `[]` because
+  the instance in a goal is often not the same as the one inferred by type class inference.  -/
 @[to_additive]
-lemma eq_bot_iff_card {S : Submonoid M} [Fintype S] : S = ⊥ ↔ card S = 1 := by
-  suffices (∀ x ∈ S, x = 1) ↔ ∃ x ∈ S, ∀ a ∈ S, a = x by
-    simpa [eq_bot_iff_forall, card_eq_one_iff]
-  constructor
-  · intro h
-    use 1, S.one_mem
-  · rintro ⟨y, -, hy'⟩ x hx
-    calc x = y := hy' x hx
-    _      = 1 := (hy' 1 S.one_mem).symm
+theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 1 :=
+  Fintype.card_eq_one_iff.2
+    ⟨⟨(1 : M), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| Submonoid.mem_bot.1 hy⟩
+
+@[to_additive]
+theorem eq_bot_of_card_le (h : card S ≤ 1) : S = ⊥ :=
+  let _ := Fintype.card_le_one_iff_subsingleton.mp h
+  eq_bot_of_subsingleton S
+
+@[to_additive]
+theorem eq_bot_of_card_eq (h : card S = 1) : S = ⊥ :=
+  S.eq_bot_of_card_le (le_of_eq h)
+
+@[to_additive card_le_one_iff_eq_bot]
+theorem card_le_one_iff_eq_bot : card S ≤ 1 ↔ S = ⊥ :=
+  ⟨fun h =>
+    (eq_bot_iff_forall _).2 fun x hx => by
+      simpa [Subtype.ext_iff] using card_le_one_iff.1 h ⟨x, hx⟩ 1,
+    fun h => by simp [h]⟩
+
+@[to_additive]
+lemma eq_bot_iff_card : S = ⊥ ↔ card S = 1 :=
+  ⟨by rintro rfl;  exact card_bot, eq_bot_of_card_eq⟩
+
+end Submonoid
 
 @[to_additive]
 theorem _root_.FreeMonoid.mrange_lift {α} (f : α → M) :
