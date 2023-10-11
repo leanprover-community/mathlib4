@@ -354,7 +354,7 @@ theorem IsFundamentalDomain.QuotientVolumeEqVolumePreimage_bubHaarMeasure {𝓕 
   set c := volume ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
   have c_ne_top : c ≠ ⊤
   · contrapose! h𝓕_finite
-    have : volume (π ⁻¹' ↑K ∩ 𝓕) ≤ volume 𝓕 := measure_mono (Set.inter_subset_right _ _)
+    have : c ≤ volume 𝓕 := measure_mono (Set.inter_subset_right _ _)
     rw [h𝓕_finite] at this
     exact top_unique this
   set μ := c • haarMeasure K
