@@ -240,6 +240,7 @@ jobs:
           # we just keep rebuilding until it works!
           # I'll try to come up with something better.
           until lake build > /dev/null 2>&1; do :; done
+          ./test.sh
           cd ..
           lake env lean4checker/build/bin/lean4checker
 
