@@ -101,7 +101,7 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
 /-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
-lemma eq_zero_of_mem_weightSpace_mem_posFittingComp [LieAlgebra.IsNilpotent R L]
+lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ weightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
@@ -168,13 +168,14 @@ variable [Module.Free R L] [Module.Finite R L]
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
 noncomputable abbrev killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
 
-lemma killingForm_eq_zero_of_mem_weightSpace_mem_posFittingComp [LieAlgebra.IsNilpotent R L]
+lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
+    (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
     {x₀ x₁ : L}
-    (hx₀ : x₀ ∈ LieModule.weightSpace L (0 : L → R))
-    (hx₁ : x₁ ∈ LieModule.posFittingComp R L L) :
+    (hx₀ : x₀ ∈ LieAlgebra.zeroRootSubalgebra R L H)
+    (hx₁ : x₁ ∈ LieModule.posFittingComp R H L) :
     killingForm R L x₀ x₁ = 0 :=
-  LieModule.eq_zero_of_mem_weightSpace_mem_posFittingComp R L L
-    (LieModule.traceForm_apply_lie_apply' R L L) hx₀ hx₁
+  LieModule.eq_zero_of_mem_weightSpace_mem_posFitting R H L
+    (fun x y z ↦ LieModule.traceForm_apply_lie_apply' R L L x y z) hx₀ hx₁
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
