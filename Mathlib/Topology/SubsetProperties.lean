@@ -34,7 +34,7 @@ We define the following properties for sets in a topological space:
 
 For each of these definitions (except for `IsClopen`), we also have a class stating that the whole
 space satisfies that property:
-`CompactSpace`, `PreirreducibleSpace`, `IrreducibleSpace`. (See below for `SigmaCompactSpace`.)
+`CompactSpace`, `PreirreducibleSpace`, `IrreducibleSpace`, `SigmaCompactSpace`.
 
 Furthermore, we have four more classes:
 * `WeaklyLocallyCompactSpace`: every point `x` has a compact neighborhood.
@@ -1379,7 +1379,7 @@ lemma IsSigmaCompact.image_of_continuousOn {f : α → β} {s : Set α} (hs : Is
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
   refine ⟨fun n ↦ f '' K n, ?_, hcov.symm ▸ image_iUnion.symm⟩
-  refine fun n ↦ (hcompact n).image_of_continuousOn (hf.mono (hcov.symm ▸ subset_iUnion K n))
+  exact fun n ↦ (hcompact n).image_of_continuousOn (hf.mono (hcov.symm ▸ subset_iUnion K n))
 
 /-- If `s` is σ-compact and `f` continuous, `f(s)` is σ-compact. -/
 lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs : IsSigmaCompact s) :
