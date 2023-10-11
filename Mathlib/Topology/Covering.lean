@@ -269,7 +269,7 @@ variable {G} [t : TopologicalSpace G] [d : DiscreteTopology G]
 @[to_additive "If a group `G` acts on a space `E` and `U` is an open subset disjoint from all
   other `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
   `Trivialization` over the base set `p(U)`."]
-noncomputable def trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
+noncomputable def trivialization_of_smul_disjoint (U : Set E) (open_U : IsOpen U)
     (disjoint : ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) : Trivialization G f := by
   have pGE : ∀ (g : G) e, f (g • e) = f e := fun g e ↦ hfG.mpr ⟨g, rfl⟩
   simp_rw [← Set.nonempty_iff_ne_empty] at disjoint
@@ -297,7 +297,7 @@ noncomputable def trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
   · rintro g x ⟨e, hU, rfl⟩; refine ⟨g⁻¹ • e, ?_, pGE _ e⟩; apply (smul_inv_smul g e).symm ▸ hU
   · dsimp only; rw [mul_smul, inv_smul_smul]
 
-@[to_additive] lemma isCoveringMapOn_of_mulAction
+@[to_additive] lemma isCoveringMapOn_of_smul_disjoint
     (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g • e = e) :
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) := by
   letI : TopologicalSpace G := ⊥; have : DiscreteTopology G := ⟨rfl⟩
@@ -305,15 +305,15 @@ noncomputable def trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
   · choose t ht using this; exact IsCoveringMapOn.mk _ _ (fun _ ↦ G) t ht
   rintro x ⟨e, he, rfl⟩
   obtain ⟨U, heU, hU⟩ := disjoint e
-  refine ⟨hf.trivialization_of_mulAction hfG (interior U) isOpen_interior
+  refine ⟨hf.trivialization_of_smul_disjoint hfG (interior U) isOpen_interior
     fun g hg ↦ ?_, e, mem_interior_iff_mem_nhds.mpr heU, rfl⟩
   rw [← Subgroup.mem_bot, ← he]; apply hU; contrapose! hg; exact Set.subset_eq_empty
     (Set.inter_subset_inter (Set.image_subset _ interior_subset) interior_subset) hg
 
-@[to_additive] lemma isCoveringMap_of_mulAction
+@[to_additive] lemma isCoveringMap_of_smul_disjoint
     (disjoint : ∀ e : E, ∃ U ∈ 𝓝 e, ∀ g : G, (g • ·) '' U ∩ U ≠ ∅ → g = 1) : IsCoveringMap f :=
   isCoveringMap_iff_isCoveringMapOn_univ.mpr <| by
-    convert ← hf.isCoveringMapOn_of_mulAction hfG fun e ↦ ?_
+    convert ← hf.isCoveringMapOn_of_smul_disjoint hfG fun e ↦ ?_
     · refine Set.eq_univ_of_forall fun x ↦ ?_
       obtain ⟨e, rfl⟩ := hf.surjective x
       obtain ⟨U, hU, hGU⟩ := disjoint e
@@ -327,7 +327,7 @@ noncomputable def trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
     [DiscreteTopology G] (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁⁻¹ * e₂ ∈ G) :
     IsCoveringMap f := by
   obtain ⟨U, hU, disj⟩ := G.disjoint_nhds_of_discrete
-  refine hf.isCoveringMap_of_mulAction (G := G.op) (fun {_ _} ↦ ?_) fun e ↦ ?_
+  refine hf.isCoveringMap_of_smul_disjoint (G := G.op) (fun {_ _} ↦ ?_) fun e ↦ ?_
   · rw [hfG, ← QuotientGroup.leftRel_apply]; rfl
   refine ⟨_, singleton_mul_mem_nhds_of_nhds_one e hU, fun ⟨⟨s⟩, hS⟩ hs ↦ Subtype.ext <|
     MulOpposite.unop_injective <| disj _ hS <| Or.inr ?_⟩
@@ -336,7 +336,7 @@ noncomputable def trivialization_of_mulAction (U : Set E) (open_U : IsOpen U)
   exact ⟨y, ⟨x, hx, mul_left_cancel (he.trans <| mul_assoc _ _ _).symm⟩, hy⟩
 
 @[to_additive] lemma isCoveringMap_of_discrete_ker_monoidHom [Group E] [TopologicalGroup E]
-    [Group X] {f : E →* X} (hf : QuotientMap f) [DiscreteTopology f.ker] : IsCoveringMap f :=
+    [Group X] {f : E →* X} (hf : QuotientMap f) (d : DiscreteTopology f.ker) : IsCoveringMap f :=
   hf.isCoveringMap_of_subgroup f.ker fun {_ _} ↦ by rw [← inv_mul_eq_one, ← map_inv, ← map_mul]; rfl
 
 section ProperlyDiscontinuousSMul
@@ -345,22 +345,25 @@ variable [ProperlyDiscontinuousSMul G E] [WeaklyLocallyCompactSpace E] [T2Space 
 
 @[to_additive] lemma isCoveringMapOn_of_properlyDiscontinuousSMul :
     IsCoveringMapOn f (f '' {e | MulAction.stabilizer G e = ⊥}) :=
-  hf.isCoveringMapOn_of_mulAction hfG (ProperlyDiscontinuousSMul.disjoint_image_nhds G)
+  hf.isCoveringMapOn_of_smul_disjoint hfG (ProperlyDiscontinuousSMul.disjoint_image_nhds G)
 
 @[to_additive] lemma isCoveringMap_of_properlyDiscontinuousSMul
-    [ProperlyDiscontinuousSMul G E] [WeaklyLocallyCompactSpace E] [T2Space E]
-    (h : ∀ (g : G) (e : E), g • e = e → g = 1) : IsCoveringMap f := by
+    (free : ∀ (g : G) (e : E), g • e = e → g = 1) : IsCoveringMap f := by
   rw [isCoveringMap_iff_isCoveringMapOn_univ]
   convert ← hf.isCoveringMapOn_of_properlyDiscontinuousSMul hfG
   refine Set.eq_univ_iff_forall.mpr fun x ↦ ?_
   obtain ⟨e, rfl⟩ := hf.surjective x
-  exact ⟨e, eq_bot_iff.mpr fun g hg ↦ h g e hg, rfl⟩
+  exact ⟨e, eq_bot_iff.mpr fun g hg ↦ free g e hg, rfl⟩
 
-@[to_additive] lemma _root_.isCoveringMapOn_quotient_of_properlyDiscontinuousSMul
-    [ProperlyDiscontinuousSMul G E] [WeaklyLocallyCompactSpace E] [T2Space E] :
+@[to_additive] lemma _root_.isCoveringMapOn_quotient_of_properlyDiscontinuousSMul :
     IsCoveringMapOn (Quotient.mk _) <|
       (Quotient.mk <| MulAction.orbitRel G E) '' {e | MulAction.stabilizer G e = ⊥} :=
   quotientMap_quotient_mk'.isCoveringMapOn_of_properlyDiscontinuousSMul Quotient.eq''
+
+@[to_additive] lemma _root_.isCoveringMap_quotient_of_properlyDiscontinuousSMul
+    (free : ∀ (g : G) (e : E), g • e = e → g = 1) :
+    IsCoveringMap (Quotient.mk <| MulAction.orbitRel G E) :=
+  quotientMap_quotient_mk'.isCoveringMap_of_properlyDiscontinuousSMul Quotient.eq'' free
 
 end ProperlyDiscontinuousSMul
 
@@ -375,6 +378,20 @@ end QuotientMap
 theorem isCoveringMap_coe_addCircle (p : ℝ) : IsCoveringMap ((↑) : ℝ → AddCircle p) :=
   AddSubgroup.isCoveringMap _
 
-/- TODO:
-theorem isCoveringMap_nsmul (p : ℝ) (n : ℕ) [NeZero n] :
-    IsCoveringMap fun x : AddCircle p ↦ n • x := by -/
+theorem isCoveringMap_nsmul (p : ℝ) [Fact (0 < p)] {n : ℕ} (hn : 0 < n) :
+    IsCoveringMap fun x : AddCircle p ↦ n • x := by
+  apply QuotientMap.isCoveringMap_of_discrete_ker_addMonoidHom
+    (f := DistribMulAction.toAddMonoidHom _ n)
+  · /- To show that (n • ·) on AddCircle p is a quotient map, it suffices to show
+      its composition with ℝ → AddCircle p is a quotient map. -/
+    apply QuotientMap.of_quotientMap_compose (f := ((↑) : ℝ → _)) _ (continuous_zsmul n)
+    · /- This composition is equal to the composition with (n • ·) on ℝ (a homeomorphism)
+        and the quotient map ℝ → AddCircle p. -/
+      convert quotientMap_quotient_mk'.comp (affineHomeomorph (n : ℝ) 0 _).quotientMap; swap
+      · exact_mod_cast hn.ne'
+      · ext x; dsimp only [Function.comp_apply]
+        rw [affineHomeomorph_apply, add_zero, ← nsmul_eq_mul]; rfl
+    · exact continuous_quotient_mk'
+  · refine @discrete_of_t1_of_finite _ _ _ ?_
+    simp_rw [AddMonoidHom.mem_ker, DistribMulAction.toAddMonoidHom_apply]
+    exact Set.finite_coe_iff.mpr (AddCircle.finite_torsion p hn)
