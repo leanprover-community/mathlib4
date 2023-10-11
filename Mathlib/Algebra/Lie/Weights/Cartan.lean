@@ -80,23 +80,8 @@ abbrev IsRoot (χ : LieCharacter R H) :=
 
 @[simp]
 theorem rootSpace_comap_eq_weightSpace (χ : H → R) :
-    (rootSpace H χ).comap H.incl' = weightSpace H χ := by
-  ext x
-  let f : H → Module.End R L := fun y => toEndomorphism R H L y - χ y • ↑1
-  let g : H → Module.End R H := fun y => toEndomorphism R H H y - χ y • ↑1
-  suffices
-    (∀ y : H, ∃ k : ℕ, (f y ^ k).comp (H.incl : H →ₗ[R] L) x = 0) ↔
-      ∀ y : H, ∃ k : ℕ, (H.incl : H →ₗ[R] L).comp (g y ^ k) x = 0 by
-    simp only [LieHom.coe_toLinearMap, LieSubalgebra.coe_incl, Function.comp_apply,
-      LinearMap.coe_comp, Submodule.coe_eq_zero] at this
-    simp only [mem_weightSpace, LieSubalgebra.coe_incl', LieSubmodule.mem_comap, this]
-  have hfg : ∀ y : H, (f y).comp (H.incl : H →ₗ[R] L) = (H.incl : H →ₗ[R] L).comp (g y) := by
-    rintro ⟨y, hy⟩; ext ⟨z, _⟩
-    simp only [Submodule.coe_sub, toEndomorphism_apply_apply, LieHom.coe_toLinearMap,
-      LinearMap.one_apply, LieSubalgebra.coe_incl, LieSubalgebra.coe_bracket_of_module,
-      LieSubalgebra.coe_bracket, LinearMap.smul_apply, Function.comp_apply,
-      Submodule.coe_smul_of_tower, LinearMap.coe_comp, LinearMap.sub_apply]
-  simp_rw [LinearMap.commute_pow_left_of_commute (hfg _)]
+    (rootSpace H χ).comap H.incl' = weightSpace H χ :=
+  comap_weightSpace_eq_of_injective Subtype.coe_injective
 #align lie_algebra.root_space_comap_eq_weight_space LieAlgebra.rootSpace_comap_eq_weightSpace
 
 variable {H}

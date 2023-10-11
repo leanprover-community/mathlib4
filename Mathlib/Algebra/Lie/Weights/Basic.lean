@@ -33,6 +33,7 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieModule.posFittingComp`
   * `LieModule.iSup_ucs_eq_weightSpace_zero`
   * `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
+  * `LieModule.isCompl_weightSpace_zero_posFittingComp`
 
 ## References
 
@@ -153,13 +154,17 @@ def weightSpaceOf (χ : R) (x : L) : LieSubmodule R L M :=
       rw [← zero_add χ]
       exact lie_mem_maxGenEigenspace_toEndomorphism (by simp) hm }
 
+end notation_weight_space_of
+
+variable (M)
+
 theorem mem_weightSpaceOf (χ : R) (x : L) (m : M) :
     m ∈ weightSpaceOf M χ x ↔ ∃ k : ℕ, ((toEndomorphism R L M x - χ • ↑1) ^ k) m = 0 := by
   simp [weightSpaceOf]
 
-end notation_weight_space_of
-
-variable (M)
+theorem coe_weightSpaceOf_zero (x : L) :
+    ↑(weightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEndomorphism R L M x ^ k) := by
+  simp [weightSpaceOf, Module.End.maximalGeneralizedEigenspace]
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L` and `χ : L → R` is a family of
 scalars, then `weightSpace M χ` is the intersection of the maximal generalized `χ x`-eigenspaces of
@@ -354,5 +359,151 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
     [IsNilpotent R L M] :
     posFittingComp R L M = ⊥ := by
   simp [posFittingComp]
+
+section map_comap
+
+variable {R L M}
+variable
+  {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+  {χ : L → R} (f : M →ₗ⁅R,L⁆ M₂)
+
+lemma map_posFittingComp_le :
+    (posFittingComp R L M).map f ≤ posFittingComp R L M₂ := by
+  rw [posFittingComp, posFittingComp, LieSubmodule.map_iSup]
+  refine iSup_mono fun y ↦ LieSubmodule.map_le_iff_le_comap.mpr fun m hm ↦ ?_
+  simp only [mem_posFittingCompOf] at hm
+  simp only [LieSubmodule.mem_comap, mem_posFittingCompOf]
+  intro k
+  obtain ⟨n, hn⟩ := hm k
+  use f n
+  rw [LieModule.toEndomorphism_pow_apply_map, hn]
+
+lemma map_weightSpace_le :
+    (weightSpace M χ).map f ≤ weightSpace M₂ χ := by
+  rw [LieSubmodule.map_le_iff_le_comap]
+  intro m hm
+  simp only [LieSubmodule.mem_comap, mem_weightSpace]
+  intro x
+  have : (toEndomorphism R L M₂ x - χ x • ↑1) ∘ₗ f = f ∘ₗ (toEndomorphism R L M x - χ x • ↑1) := by
+    ext; simp
+  obtain ⟨k, h⟩ := (mem_weightSpace _ _ _).mp hm x
+  exact ⟨k, by simpa [h] using LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute this k) m⟩
+
+variable {f}
+
+lemma comap_weightSpace_eq_of_injective (hf : Function.Injective f) :
+    (weightSpace M₂ χ).comap f = weightSpace M χ := by
+  refine le_antisymm (fun m hm ↦ ?_) ?_
+  · simp only [LieSubmodule.mem_comap, mem_weightSpace] at hm
+    simp only [mem_weightSpace]
+    intro x
+    have h : (toEndomorphism R L M₂ x - χ x • ↑1) ∘ₗ f =
+             f ∘ₗ (toEndomorphism R L M x - χ x • ↑1) := by ext; simp
+    obtain ⟨k, hk⟩ := hm x
+    use k
+    suffices : f (((toEndomorphism R L M x - χ x • ↑1) ^ k) m) = 0
+    · rw [← f.map_zero] at this; exact hf this
+    simpa [hk] using (LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute h k) m).symm
+  · rw [← LieSubmodule.map_le_iff_le_comap]
+    exact map_weightSpace_le f
+
+lemma map_weightSpace_eq_of_injective (hf : Function.Injective f) :
+    (weightSpace M χ).map f = weightSpace M₂ χ ⊓ f.range := by
+  refine le_antisymm (le_inf_iff.mpr ⟨map_weightSpace_le f, LieSubmodule.map_le_range f⟩) ?_
+  rintro - ⟨hm, ⟨m, rfl⟩⟩
+  simp only [← comap_weightSpace_eq_of_injective hf, LieSubmodule.mem_map, LieSubmodule.mem_comap]
+  exact ⟨m, hm, rfl⟩
+
+lemma map_weightSpace_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
+    (weightSpace M χ).map e = weightSpace M₂ χ := by
+  simp [map_weightSpace_eq_of_injective e.injective]
+
+lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
+    (posFittingComp R L M).map e = posFittingComp R L M₂ := by
+  refine le_antisymm (map_posFittingComp_le _) ?_
+  suffices posFittingComp R L M₂ = ((posFittingComp R L M₂).map (e.symm : M₂ →ₗ⁅R,L⁆ M)).map e by
+    rw [this]
+    exact LieSubmodule.map_mono (map_posFittingComp_le _)
+  rw [← LieSubmodule.map_comp]
+  convert LieSubmodule.map_id
+  ext
+  simp
+
+lemma posFittingComp_map_incl_sup_of_codisjoint [IsNoetherian R M] [IsArtinian R M]
+    {N₁ N₂ : LieSubmodule R L M} (h : Codisjoint N₁ N₂) :
+    (posFittingComp R L N₁).map N₁.incl ⊔ (posFittingComp R L N₂).map N₂.incl =
+    posFittingComp R L M := by
+  obtain ⟨l, hl⟩ := Filter.eventually_atTop.mp <|
+    (eventually_iInf_lowerCentralSeries_eq R L N₁).and <|
+    (eventually_iInf_lowerCentralSeries_eq R L N₂).and
+    (eventually_iInf_lowerCentralSeries_eq R L M)
+  obtain ⟨hl₁, hl₂, hl₃⟩ := hl l (le_refl _)
+  simp_rw [← iInf_lowerCentralSeries_eq_posFittingComp, hl₁, hl₂, hl₃,
+    LieSubmodule.lowerCentralSeries_map_eq_lcs, ←LieSubmodule.lcs_sup, lowerCentralSeries, h.eq_top]
+
+end map_comap
+
+section fitting_decomposition
+
+variable [IsNoetherian R M] [IsArtinian R M]
+
+lemma isCompl_weightSpaceOf_zero_posFittingCompOf (x : L) :
+    IsCompl (weightSpaceOf M 0 x) (posFittingCompOf R M x) := by
+  simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.coe_toSubmodule_eq_iff,
+    LieSubmodule.sup_coe_toSubmodule, LieSubmodule.inf_coe_toSubmodule,
+    LieSubmodule.top_coeSubmodule, LieSubmodule.bot_coeSubmodule, coe_weightSpaceOf_zero] using
+    (toEndomorphism R L M x).isCompl_iSup_ker_pow_iInf_range_pow
+
+/-- This lemma exists only to simplify the proof of
+`LieModule.isCompl_weightSpace_zero_posFittingComp`. -/
+private lemma isCompl_weightSpace_zero_posFittingComp_aux
+    (h : ∀ N < (⊤ : LieSubmodule R L M), IsCompl (weightSpace N 0) (posFittingComp R L N)) :
+    IsCompl (weightSpace M 0) (posFittingComp R L M) := by
+  set M₀ := weightSpace M (0 : L → R)
+  set M₁ := posFittingComp R L M
+  rcases forall_or_exists_not (fun (x : L) ↦ weightSpaceOf M (0 : R) x = ⊤)
+    with h | ⟨x, hx : weightSpaceOf M (0 : R) x ≠ ⊤⟩
+  · suffices IsNilpotent R L M by simp [isCompl_top_bot]
+    replace h : M₀ = ⊤ := by simpa [weightSpace]
+    rw [← LieModule.isNilpotent_of_top_iff', ← h]
+    infer_instance
+  · set M₀ₓ := weightSpaceOf M (0 : R) x
+    set M₁ₓ := posFittingCompOf R M x
+    set M₀ₓ₀ := weightSpace M₀ₓ (0 : L → R)
+    set M₀ₓ₁ := posFittingComp R L M₀ₓ
+    have h₀ : Function.Injective (LieSubmodule.incl M₀ₓ) := Subtype.coe_injective
+    have h₁ : IsCompl M₀ₓ M₁ₓ := isCompl_weightSpaceOf_zero_posFittingCompOf R L M x
+    have h₂ : IsCompl M₀ₓ₀ M₀ₓ₁ := h M₀ₓ hx.lt_top
+    have h₃ : M₀ₓ₀.map M₀ₓ.incl = M₀ := by
+      rw [map_weightSpace_eq_of_injective h₀, inf_eq_left, LieSubmodule.range_incl]
+      exact iInf_le _ x
+    have h₄ : M₀ₓ₁.map M₀ₓ.incl ⊔ M₁ₓ = M₁ := by
+      apply le_antisymm <| sup_le_iff.mpr
+        ⟨map_posFittingComp_le _, posFittingCompOf_le_posFittingComp R L M x⟩
+      rw [← posFittingComp_map_incl_sup_of_codisjoint h₁.codisjoint]
+      exact sup_le_sup_left LieSubmodule.map_incl_le _
+    rw [← h₃, ← h₄]
+    apply Disjoint.isCompl_sup_right_of_isCompl_sup_left
+    · rw [disjoint_iff, ← LieSubmodule.map_inf h₀, h₂.inf_eq_bot, LieSubmodule.map_bot]
+    · rwa [← LieSubmodule.map_sup, h₂.sup_eq_top, LieModuleHom.map_top, LieSubmodule.range_incl]
+
+/-- This is the Fitting decomposition of the Lie module `M`. -/
+lemma isCompl_weightSpace_zero_posFittingComp :
+    IsCompl (weightSpace M 0) (posFittingComp R L M) := by
+  let P : LieSubmodule R L M → Prop := fun N ↦ IsCompl (weightSpace N 0) (posFittingComp R L N)
+  suffices : P ⊤
+  · let e := LieModuleEquiv.ofTop R L M
+    rw [← map_weightSpace_eq e, ← map_posFittingComp_eq e]
+    exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mp this
+  refine (LieSubmodule.wellFounded_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
+  refine isCompl_weightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
+  suffices : IsCompl (weightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl))
+  · have h_inj : Function.Injective N.incl := Subtype.coe_injective
+    let e := LieSubmodule.equivMapOfInjective N' h_inj
+    rw [← map_weightSpace_eq e, ← map_posFittingComp_eq e] at this
+    exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mpr this
+  exact hN _ (LieSubmodule.map_incl_lt_iff_lt_top.mpr hN')
+
+end fitting_decomposition
 
 end LieModule
