@@ -1377,7 +1377,7 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set α} (ht : IsSigmaCompact t)
   rw [← inter_iUnion, hcov]
   exact inter_eq_left.mpr h
 
-/-- If `s` is σ-compact and `f` continuous on a set `w` containing `s`, `f(s)` is σ-compact.-/
+/-- If `s` is σ-compact and `f` is continuous on a set `w` containing `s`, `f(s)` is σ-compact.-/
 lemma IsSigmaCompact.image_of_continuousOn {f : α → β} {s : Set α} (hs : IsSigmaCompact s)
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
@@ -1389,7 +1389,7 @@ lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs 
     IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
-if and only `s`` is σ-compact.
+  if and only `s`` is σ-compact.
 This does not hold for merely inducing maps; direction `←` requires injectivity. -/
 lemma Embedding.isSigmaCompact_iff {f : α → β} {s : Set α}
     (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
@@ -1404,8 +1404,7 @@ lemma Embedding.isSigmaCompact_iff {f : α → β} {s : Set α}
       have : f '' (f ⁻¹' (L n)) = L n := by
         have h: L n ⊆ f '' s := hcov.symm ▸ subset_iUnion L n
         apply Set.image_preimage_eq_of_subset (SurjOn.subset_range h)
-      specialize hcomp n
-      apply hf.toInducing.isCompact_iff.mpr (this.symm ▸ hcomp)
+      exact hf.toInducing.isCompact_iff.mpr (this.symm ▸ (hcomp n))
     · calc ⋃ n, f ⁻¹' L n
         _ = f ⁻¹' (⋃ n, L n) := by rw [preimage_iUnion]
         _ = f ⁻¹' (f '' s) := by rw [hcov]
