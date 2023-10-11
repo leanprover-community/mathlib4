@@ -2043,9 +2043,9 @@ end Preirreducible
 
 section codiscrete_filter
 
-/-- Criterion for a subset `S ⊆ α` to be closed and discrete in terms of the punctured
-neighbourhood filter at an arbitrary point of `α`. (Compare `discreteTopology_subtype_iff`.) -/
-theorem isClosed_and_discrete_iff {S : Set α} : IsClosed S ∧ DiscreteTopology S ↔
+/-- Criterion for a subset `S ⊆ X` to be closed and discrete in terms of the punctured
+neighbourhood filter at an arbitrary point of `X`. (Compare `discreteTopology_subtype_iff`.) -/
+theorem isClosed_and_discrete_iff {S : Set X} : IsClosed S ∧ DiscreteTopology S ↔
     ∀ x, Disjoint (𝓝[≠] x) (𝓟 S) := by
   rw [discreteTopology_subtype_iff, isClosed_iff_clusterPt, ← forall_and]
   congrm (∀ x, ?_)
@@ -2056,10 +2056,10 @@ theorem isClosed_and_discrete_iff {S : Set α} : IsClosed S ∧ DiscreteTopology
   · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
 
-variable (α)
+variable (X)
 
 /-- In any topological space, the open sets with with discrete complement form a filter. -/
-def Filter.codiscrete : Filter α where
+def Filter.codiscrete : Filter X where
   sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
   univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
   sets_of_superset := by
