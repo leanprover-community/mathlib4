@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Luke Kershaw
+Authors: Luke Kershaw, Joël Riou
 -/
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -457,10 +458,78 @@ lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
   isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_dist_triangle _ hT)
     (inv_rot_of_dist_triangle _ hT') (by dsimp; infer_instance) (by dsimp; infer_instance)
 
-/-
-TODO: If `C` is pretriangulated with respect to a shift,
-then `Cᵒᵖ` is pretriangulated with respect to the inverse shift.
--/
+/-- Given a distinguished triangle `T` such that `T.mor₃ = 0` and the datum of morphisms
+`inr : T.obj₃ ⟶ T.obj₂` and `fst : T.obj₂ ⟶ T.obj₁` satisfying suitable relations, this
+is the binary biproduct data expressing that `T.obj₂` identifies to the binary
+biproduct of `T.obj₁` and `T.obj₃`.
+See also `exists_iso_binaryBiproduct_of_dist_triangle`. -/
+@[simps]
+def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mor₃ = 0)
+    (inr : T.obj₃ ⟶ T.obj₂) (inr_snd : inr ≫ T.mor₂ = 𝟙 _) (fst : T.obj₂ ⟶ T.obj₁)
+    (total : fst ≫ T.mor₁ + T.mor₂ ≫ inr = 𝟙 T.obj₂) :
+    BinaryBiproductData T.obj₁ T.obj₃ := by
+  have : Mono T.mor₁ := T.mono₁ hT hT₀
+  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel]
+  exact
+    { bicone :=
+      { pt := T.obj₂
+        fst := fst
+        snd := T.mor₂
+        inl := T.mor₁
+        inr := inr
+        inl_fst := by
+          simp only [← cancel_mono T.mor₁, assoc, id_comp, eq, comp_sub, comp_id,
+            comp_dist_triangle_mor_zero₁₂_assoc _ hT, zero_comp, sub_zero]
+        inl_snd := comp_dist_triangle_mor_zero₁₂ _ hT
+        inr_fst := by
+          simp only [← cancel_mono T.mor₁, assoc, eq, comp_sub, reassoc_of% inr_snd,
+            comp_id, sub_self, zero_comp]
+        inr_snd := inr_snd }
+      isBilimit := isBinaryBilimitOfTotal _ total }
+
+instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
+  obtain ⟨X₂, inl, snd, mem⟩ := distinguished_cocone_triangle₂ (0 : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
+  obtain ⟨inr : X₃ ⟶ X₂, inr_snd : 𝟙 _ = inr ≫ snd⟩ :=
+    Triangle.coyoneda_exact₃ _ mem (𝟙 X₃) (by simp)
+  obtain ⟨fst : X₂ ⟶ X₁, hfst : 𝟙 X₂ - snd ≫ inr = fst ≫ inl⟩ :=
+    Triangle.coyoneda_exact₂ _ mem (𝟙 X₂ - snd ≫ inr) (by
+      dsimp
+      simp only [sub_comp, assoc, id_comp, ← inr_snd, comp_id, sub_self])
+  refine' ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst _⟩⟩
+  dsimp
+  simp only [← hfst, sub_add_cancel]⟩
+
+instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
+instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+
+lemma exists_iso_binaryBiproduct_of_dist_triangle (T : Triangle C) (hT : T ∈ distTriang C)
+    (zero : T.mor₃ = 0) :
+    ∃ (e : T.obj₂ ≅ T.obj₁ ⊞ T.obj₃), T.mor₁ ≫ e.hom = biprod.inl ∧
+      T.mor₂ = e.hom ≫ biprod.snd := by
+  have := T.epi₂ hT zero
+  have := isSplitEpi_of_epi T.mor₂
+  obtain ⟨fst, hfst⟩ := T.coyoneda_exact₂ hT (𝟙 T.obj₂ - T.mor₂ ≫ section_ T.mor₂) (by simp)
+  let d := binaryBiproductData _ hT zero (section_ T.mor₂) (by simp) fst
+    (by simp only [← hfst, sub_add_cancel])
+  refine' ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨_, by simp⟩⟩
+  ext
+  · simpa using d.bicone.inl_fst
+  · simpa using d.bicone.inl_snd
+
+lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
+    binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
+  obtain ⟨Y, g, h, mem⟩ := distinguished_cocone_triangle₂ (0 : X₂ ⟶ X₁⟦(1 : ℤ)⟧)
+  obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_dist_triangle _ mem rfl
+  dsimp at he₁ he₂
+  refine' isomorphic_distinguished _ mem _ (Iso.symm _)
+  refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+
+lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
+    binaryProductTriangle X₁ X₂ ∈ distTriang C :=
+  isomorphic_distinguished _ (binaryBiproductTriangle_distinguished X₁ X₂) _
+    (binaryProductTriangleIsoBinaryBiproductTriangle X₁ X₂)
 
 end Pretriangulated
 
