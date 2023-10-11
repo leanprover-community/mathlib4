@@ -24,9 +24,6 @@ See `Algebra.RingQuot` for quotients of non-commutative rings.
 
  - `Ideal.Quotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
 
-## Main results
-
- - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**
 -/
 
 

@@ -54,21 +54,27 @@ partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Arr
 variable {m : Type → Type} [Monad m]
 
 
-/-- A better representaton for lists-of-quadruples -/
-private inductive Ctxt (α β γ δ : Type)
-  | empty : Ctxt α β γ δ
-  | ctxt : α → β → γ → δ → Ctxt α β γ δ → Ctxt α β γ δ
+/-- The explicit stack of `Trie.mapArrays` -/
+private inductive Ctxt {α β s}
+  | empty : Ctxt
+  | ctxt : Array (Key s × Trie β s) → Array β → Array (Key s × Trie α s) → Key s → Ctxt → Ctxt
 
 /-- Apply a function to the array of values at each node in a `DiscrTree`. -/
 partial def Trie.mapArrays (t : Trie α s) (f : Array α → Array β) : Trie β s :=
   let .node vs0 cs0 := t
-  go Ctxt.empty #[] (f vs0) cs0.toList
+  go (.mkEmpty cs0.size) (f vs0) cs0.reverse Ctxt.empty
 where
   /-- This implementation as a single tail-recursive function is chosen to not blow the
       interpreter stack when the `Trie` is very deep -/
-  go  | .empty, cs, vs, []                   => .node vs cs
-      | .ctxt cs vs todo k ps, cs', vs', []  => go ps (cs.push (k, .node vs' cs')) vs todo
-      | ps, cs, vs, (k, .node vs' cs')::todo => go (.ctxt cs vs todo k ps) #[] (f vs') cs'.toList
+  go cs vs todo ps :=
+    if todo.isEmpty then
+      let c := .node vs cs
+      match ps with
+      | .empty => c
+      | .ctxt cs' vs' todo k ps => go (cs'.push (k, c)) vs' todo ps
+    else
+      let (k, .node vs' cs') := todo.back
+      go (.mkEmpty cs'.size) (f vs') cs'.reverse (.ctxt cs vs todo.pop k ps)
 
 /-- Apply a function to the array of values at each node in a `DiscrTree`. -/
 def mapArrays (d : DiscrTree α s) (f : Array α → Array β) : DiscrTree β s :=

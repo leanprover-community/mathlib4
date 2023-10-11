@@ -23,7 +23,7 @@ Jensen's inequalities:
 * `ConcaveOn.le_map_centerMass`, `ConcaveOn.le_map_sum`: Concave Jensen's inequality.
 
 As corollaries, we get:
-* `ConvexOn.exists_ge_of_mem_convexHull `: Maximum principle for convex functions.
+* `ConvexOn.exists_ge_of_mem_convexHull`: Maximum principle for convex functions.
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
 

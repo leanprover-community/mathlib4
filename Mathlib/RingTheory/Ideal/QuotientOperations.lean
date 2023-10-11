@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
+Authors: Kenny Lau, Patrick Massot
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
@@ -10,6 +10,13 @@ import Mathlib.RingTheory.Ideal.Quotient
 
 /-!
 # More operations on modules and ideals related to quotients
+
+## Main results:
+
+ - `quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
+ - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
+   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
+   `ZMod`).
 -/
 
 universe u v w
@@ -682,7 +689,7 @@ theorem quotQuotEquivQuotSup_symm_quotQuotMk (x : R) :
   rfl
 #align double_quot.quot_quot_equiv_quot_sup_symm_quot_quot_mk DoubleQuot.quotQuotEquivQuotSup_symm_quotQuotMk
 
-/-- The obvious isomorphism `(R/I)/J' → (R/J)/I' `   -/
+/-- The obvious isomorphism `(R/I)/J' → (R/J)/I'` -/
 def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+*
     (R ⧸ J) ⧸ I.map (Ideal.Quotient.mk J) :=
   ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm))).trans
