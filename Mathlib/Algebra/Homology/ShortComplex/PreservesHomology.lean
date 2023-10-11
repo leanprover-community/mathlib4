@@ -17,7 +17,9 @@ This typeclass is named `[F.PreservesHomology]`, and is automatically
 satisfied when `F` preserves both finite limits and finite colimits.
 
 If `S : ShortComplex C` and `[F.PreservesHomology]`, then there is an
-isomorphism `S.mapHomologyIso F : (S.map F).homology ≅ F.obj S.homology`.
+isomorphism `S.mapHomologyIso F : (S.map F).homology ≅ F.obj S.homology`, which
+is part of the natural isomorphism `homologyFunctorIso F` between the functors
+`F.mapShortComplex ⋙ homologyFunctor D` and `homologyFunctor C ⋙ F`.
 
 -/
 
