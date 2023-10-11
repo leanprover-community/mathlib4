@@ -180,6 +180,10 @@ lemma add_left_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h�
   simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply] at h
   rwa [hμ_eq, zero_add, zero_add, ← h₁_eq, ← h₂_eq] at h
 
+lemma add_right_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
+    ν₁ + μ = ν₂ + μ ↔ ν₁ = ν₂ := by
+  rw [add_comm _ μ, add_comm _ μ]
+  exact add_left_cancel h₁ h₂
 
 end Measure
 
