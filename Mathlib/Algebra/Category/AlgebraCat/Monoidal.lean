@@ -73,7 +73,7 @@ end instMonoidalCategory
 
 open instMonoidalCategory
 
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 800000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
@@ -86,15 +86,17 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
       εIsoSymm := eqToIso rfl
       associator := associator
       associator_eq := fun X Y Z => by
-        save
         dsimp only [forget₂_module_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
         erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
       leftUnitor := fun X => (Algebra.TensorProduct.lid R X).toAlgebraIso
       rightUnitor := fun X => (Algebra.TensorProduct.rid R R X).toAlgebraIso
-      rightUnitor_eq := fun X => congr_arg LinearEquiv.toLinearMap <|
-        TensorProduct.AlgebraTensorModule.rid_eq_rid R X }
+      rightUnitor_eq := fun X => by
+        dsimp
+        erw [Category.id_comp, MonoidalCategory.tensor_id, Category.id_comp]
+        exact congr_arg LinearEquiv.toLinearMap <|
+          TensorProduct.AlgebraTensorModule.rid_eq_rid R X }
 
 variable (R) in
 /-- `forget₂ (AlgebraCat R) (ModuleCat R)` as a monoidal functor. -/
@@ -105,5 +107,7 @@ instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
   forget₂_faithful _ _
 
 end
+
+#print instMonoidalCategory
 
 end AlgebraCat
