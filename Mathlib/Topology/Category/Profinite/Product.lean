@@ -9,48 +9,46 @@ import Mathlib.Topology.Category.Profinite.Basic
 # Compact subsets of products as limits in `Profinite`
 
 This file exhibits a compact subset `C` of a product `(i : ι) → X i` of totally disconnected
-Hausdorff spaces as a limit in `Profinite` indexed by `Finset ι`.
+Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 
 ## Main definitions
 
-- `FinsetsToProfinite` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps `J` to
-  the restriction of `C` to `J`
-- `FinsetsCone` is a cone on `FinsetsToProfinite` with cone point `C`
+- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
+  `J` to the restriction of `C` to `J`
+- `Profinite.indexCone` is a cone on `Profinite.indexFunctor` with cone point `C`
 
 ## Main results
 
-- `Profinite.isIso_finsetsCone_lift` says that the natural map from the cone point of the explicit
-  limit cone in `Profinite` on `FinsetsToProfinite` to the cone point of `FinsetsCone` is an
+- `Profinite.isIso_indexCone_lift` says that the natural map from the cone point of the explicit
+  limit cone in `Profinite` on `indexFunctor` to the cone point of `indexCone` is an
   isomorphism
-- `Profinite.asLimitFinsetsConeIso` is the induced isomorphism of cones.
-- `Profinite.finsetsCone_isLimit` says that `FinsetsCone` is a limit cone.
+- `Profinite.asLimitindexConeIso` is the induced isomorphism of cones.
+- `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
 
 -/
 
 universe u
 
-section
-
-/-- "Precomposition" as a continuous map between dependent types. -/
-def precomp {ι ι' : Type*} {π : ι → Type*} [(i : ι) → TopologicalSpace (π i)]
-    (φ : ι' → ι) : C((i : ι) → π i, (i : ι') → π (φ i)) := ⟨_, Pi.continuous_precomp' φ⟩
+namespace Profinite
 
 variable {ι : Type u} {X : ι → Type} [∀ i, TopologicalSpace (X i)] (C : Set ((i : ι) → X i))
     (J K : ι → Prop)
 
-namespace FinsetFunctor
+namespace IndexFunctor
 
-/-- The object part of the functor `FinsetsToProfinite : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
-def obj : Set ((i : {i : ι // J i}) → X i) := precomp (Subtype.val (p := J)) '' C
+open ContinuousMap
 
-/-- The projection maps in the limit cone `FinsetsCone`. -/
-def π_app : C(C, FinsetFunctor.obj C J) :=
+/-- The object part of the functor `indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
+def obj : Set ((i : {i : ι // J i}) → X i) := ContinuousMap.precomp (Subtype.val (p := J)) '' C
+
+/-- The projection maps in the limit cone `indexCone`. -/
+def π_app : C(C, obj C J) :=
   ⟨Set.MapsTo.restrict (precomp (Subtype.val (p := J))) _ _ (Set.mapsTo_image _ _),
     Continuous.restrict _ (Pi.continuous_precomp' _)⟩
 
 variable {J K}
 
-/-- The morphism part of the functor `FinsetsToProfinite : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
+/-- The morphism part of the functor `indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite`. -/
 def map (h : ∀ i, J i → K i) : C(obj C K, obj C J) :=
   ⟨Set.MapsTo.restrict (precomp (Set.inclusion h)) _ _ (fun _ hx ↦ by
     obtain ⟨y, hy⟩ := hx
@@ -65,43 +63,44 @@ theorem surjective_π_app :
 
 theorem map_comp_π_app (h : ∀ i, J i → K i) : map C h ∘ π_app C K = π_app C J := rfl
 
-end FinsetFunctor
-
-variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)] {C} (hC : IsCompact C)
-
-open CategoryTheory Limits Opposite FinsetFunctor
-
-/-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
-noncomputable
-def FinsetsToProfinite : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
-  obj J := @Profinite.of (obj C (· ∈ (unop J))) _
-    (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
-  map h := map C (leOfHom h.unop)
-
-/-- The limit cone on `FinsetsToProfinite` -/
-noncomputable
-def FinsetsCone : Cone (FinsetsToProfinite hC) where
-  pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
-  π := { app := fun J ↦ π_app C (· ∈ unop J) }
+variable {C}
 
 theorem eq_of_forall_π_app_eq (a b : C)
     (h : ∀ (J : Finset ι), π_app C (· ∈ J) a = π_app C (· ∈ J) b) : a = b := by
   ext i
   specialize h ({i} : Finset ι)
   rw [Subtype.ext_iff] at h
-  simp only [π_app, precomp, ContinuousMap.coe_mk,
+  simp only [π_app, ContinuousMap.precomp, ContinuousMap.coe_mk,
     Set.MapsTo.val_restrict_apply] at h
   exact congr_fun h ⟨i, Finset.mem_singleton.mpr rfl⟩
 
-open Profinite in
-instance isIso_finsetsCone_lift [DecidableEq ι] :
-    IsIso ((limitConeIsLimit (FinsetsToProfinite hC)).lift (FinsetsCone hC)) :=
+end IndexFunctor
+
+variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)] {C} (hC : IsCompact C)
+
+open CategoryTheory Limits Opposite IndexFunctor
+
+/-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
+noncomputable
+def indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
+  obj J := @Profinite.of (obj C (· ∈ (unop J))) _
+    (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
+  map h := map C (leOfHom h.unop)
+
+/-- The limit cone on `indexFunctor` -/
+noncomputable
+def indexCone : Cone (indexFunctor hC) where
+  pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
+  π := { app := fun J ↦ π_app C (· ∈ unop J) }
+
+instance isIso_indexCone_lift [DecidableEq ι] :
+    IsIso ((limitConeIsLimit (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
   isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
-        apply_fun fun f : (limitCone (FinsetsToProfinite hC)).pt => f.val (op J) at h
+        apply_fun fun f : (limitCone (indexFunctor hC)).pt => f.val (op J) at h
         exact h
       · suffices : ∃ (x : C), ∀ (J : Finset ι), π_app C (· ∈ J) x = a.val (op J)
         · obtain ⟨b, hb⟩ := this
@@ -132,19 +131,19 @@ instance isIso_finsetsCone_lift [DecidableEq ι] :
 
 /-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
-def isoFinsetsConeLift [DecidableEq ι] :
+def isoindexConeLift [DecidableEq ι] :
     @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
-    (Profinite.limitCone (FinsetsToProfinite hC)).pt :=
-  asIso <| (Profinite.limitConeIsLimit _).lift (FinsetsCone hC)
+    (Profinite.limitCone (indexFunctor hC)).pt :=
+  asIso <| (Profinite.limitConeIsLimit _).lift (indexCone hC)
 
-/-- The isomorphism of cones induced by `isoFinsetsConeLift`. -/
+/-- The isomorphism of cones induced by `isoindexConeLift`. -/
 noncomputable
-def asLimitFinsetsConeIso [DecidableEq ι] : FinsetsCone hC ≅ Profinite.limitCone _ :=
-  Limits.Cones.ext (isoFinsetsConeLift hC) fun _ => rfl
+def asLimitindexConeIso [DecidableEq ι] : indexCone hC ≅ Profinite.limitCone _ :=
+  Limits.Cones.ext (isoindexConeLift hC) fun _ => rfl
 
-/-- `FinsetsCone` is a limit cone. -/
+/-- `indexCone` is a limit cone. -/
 noncomputable
-def finsetsCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (FinsetsCone hC) :=
-  Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitFinsetsConeIso hC).symm
+def indexCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (indexCone hC) :=
+  Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitindexConeIso hC).symm
 
-end
+end Profinite
