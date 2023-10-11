@@ -97,7 +97,59 @@ def apply_changes(changes, filename):
 def import_to_filename(import_name):
     return import_name.replace('.', '/') + '.lean'
 
-def make_decomposable_pass(change_generator):
+def make_committing_pass(change_generator):
+    """Turn a change generator into a minimization pass.
+
+    A change generator will be called on a source file name and should return an iterable
+    of all edits it wants to make, as a tuple (start, end, replacement)
+    indicating that the substring source[start:end] should be replaced with the replacement.
+    These changes should be independent, but they don't necessarily need to all make progress.
+
+    The resulting minimization pass will try each change at most once and commit to the first that succeeds.
+    """
+    def decomposable_pass(expected_out, filename):
+        changes = sorted(list(change_generator(filename)))
+
+        for i, change in enumerate(changes):
+            logging.info(f"committing_pass: trying change {i}")
+            new_file = apply_changes([change], filename)
+            if try_compile(expected_out, new_file):
+                logging.info(f"committing_pass: change {i} succeeded")
+                return True, new_file
+
+        return False, filename
+
+    return decomposable_pass
+
+def make_bottom_up_pass(change_generator):
+    """Turn a change generator into a minimization pass.
+
+    A change generator will be called on a source file name and should return an iterable
+    of all edits it wants to make, as a tuple (start, end, replacement)
+    indicating that the substring source[start:end] should be replaced with the replacement.
+    These changes should be independent, but they don't necessarily need to all make progress.
+
+    The resulting minimization pass will go from the bottom to the top of the file to figure which subset of edits make progress,
+    trying each change once.
+    """
+    def decomposable_pass(expected_out, filename):
+        changes = sorted(list(change_generator(filename)))
+
+        current_file = filename
+        progress = False
+        for i, change in reversed(list(enumerate(changes))):
+            logging.info(f"bottom_up_pass: trying change {i}")
+            new_file = apply_changes([change], current_file)
+            if try_compile(expected_out, new_file):
+                logging.info(f"bottom_up_pass: change {i} succeeded")
+                progress = True
+                current_file = new_file
+
+        return progress, current_file
+
+    return decomposable_pass
+
+def make_bisecting_pass(change_generator):
     """Turn a change generator into a minimization pass.
 
     A change generator will be called on a source file name and should return an iterable
@@ -157,7 +209,7 @@ def strip_comments(filename):
     with open(filename, 'r') as file:
         source = file.read()
 
-    for match in re.finditer(r'\s--.*$',
+    for match in re.finditer(r'(^\s*)?\s--.*$',
                              # Require whitespace before, so we don't try to strip `/--` for example. Use .*$ to match until rest of the line, since '.' doesn't match newlines.
                              source,
                              flags=re.MULTILINE):
@@ -241,13 +293,13 @@ def delete_lines(filename):
 # Add more minimization passes here.
 # The order matters: generally, you want the fast-to-finish passes to be on the top.
 passes = {
-    'strip_comments': make_decomposable_pass(strip_comments),
-    'delete_align': make_decomposable_pass(delete_align),
-    'delete_defs': make_decomposable_pass(delete_defs),
-    'make_sorry': make_decomposable_pass(make_sorry),
-#    'delete_lines': make_decomposable_pass(delete_lines),
-    'delete_imports': make_decomposable_pass(delete_imports),
-    'replace_imports': make_decomposable_pass(replace_imports),
+    'strip_comments': make_bisecting_pass(strip_comments),
+    'delete_align': make_bisecting_pass(delete_align),
+    'delete_defs': make_bottom_up_pass(delete_defs),
+    'make_sorry': make_bisecting_pass(make_sorry),
+#    'delete_lines': make_bisecting_pass(delete_lines),
+    'delete_imports': make_bisecting_pass(delete_imports),
+    'replace_imports': make_committing_pass(replace_imports),
 }
 
 def minimize_file(original_file):
