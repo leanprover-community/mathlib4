@@ -93,7 +93,8 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
         erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
       leftUnitor := fun X => (Algebra.TensorProduct.lid R X).toAlgebraIso
       rightUnitor := fun X => (Algebra.TensorProduct.rid R R X).toAlgebraIso
-      rightUnitor_eq := sorry }
+      rightUnitor_eq := fun X => congr_arg LinearEquiv.toLinearMap <|
+        TensorProduct.AlgebraTensorModule.rid_eq_rid R X }
 
 variable (R) in
 /-- `forget₂ (AlgebraCat R) (ModuleCat R)` as a monoidal functor. -/
