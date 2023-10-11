@@ -660,7 +660,7 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
           by simp [← Equivalence.counitInv_app_functor]) }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
-/-- If `F` reflects isomorphisms, then `cocones.functoriality F` reflects isomorphisms
+/-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
 as well.
 -/
 instance reflects_cocone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
