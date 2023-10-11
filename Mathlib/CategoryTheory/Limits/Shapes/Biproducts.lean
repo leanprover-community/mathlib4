@@ -1703,18 +1703,6 @@ theorem biprod.inr_map {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduc
   exact IsColimit.ι_map (BinaryBiproduct.isColimit W X) _ _ ⟨WalkingPair.right⟩
 #align category_theory.limits.biprod.inr_map CategoryTheory.Limits.biprod.inr_map
 
-/-- The isomorphism `X ⊞ Y ≅ X ⨯ Y` between the binary biproduct and the binary product. -/
-@[simps]
-def biprodIsoProd (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨯ Y where
-  hom := prod.lift biprod.fst biprod.snd
-  inv := biprod.lift prod.fst prod.snd
-
-/-- The isomorphism `X ⊞ Y ≅ X ⨿ Y` between the binary biproduct and the binary coproduct. -/
-@[simps]
-def biprodIsoCoprod (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨿ Y where
-  hom := biprod.desc coprod.inl coprod.inr
-  inv := coprod.desc biprod.inl biprod.inr
-
 /-- Given a pair of isomorphisms between the summands of a pair of binary biproducts,
 we obtain an isomorphism between the binary biproducts. -/
 @[simps]
