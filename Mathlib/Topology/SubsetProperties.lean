@@ -41,7 +41,6 @@ Furthermore, we have four more classes:
 * `LocallyCompactSpace`: for every point `x`,
   every open neighborhood of `x` contains a compact neighborhood of `x`.
   The definition is formulated in terms of the neighborhood filter.
-* `SigmaCompactSpace`: a space that is the union of a countably many compact subspaces;
 * `NoncompactSpace`: a space that is not a compact space.
 
 ## On the definition of irreducible and connected sets/spaces
@@ -1334,31 +1333,35 @@ lemma isSigmaCompact_sUnion_of_isCompact {S : Set (Set α)} (hc : Set.Countable 
     rw [Function.Surjective.iUnion_comp hf]
     exact sUnion_eq_iUnion.symm
 
-/-- Countable unions of σ-compact sets are σ-compact.
-  Formulated here for an indexed union of sets in a given set. -/
+lemma isSigmaCompact_iUnion_of_isCompact {ι : Type*} [hι : Countable ι] (s : ι → Set α)
+    (hcomp : ∀ i, IsCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
+  rcases isEmpty_or_nonempty ι
+  · simp only [iUnion_of_empty, isSigmaCompact_empty]
+  · -- If ι is non-empty, choose a surjection f : ℕ → ι, this yields a map ℕ → Set X.
+    obtain ⟨f, hf⟩ := countable_iff_exists_surjective.mp hι
+    exact ⟨s ∘ f, fun n ↦ hcomp (f n), Function.Surjective.iUnion_comp hf _⟩
+
+/-- Countable unions of σ-compact sets are σ-compact. -/
 lemma isSigmaCompact_iUnion {ι : Type*} [Countable ι] (s : ι → Set α)
     (hcomp : ∀ i, IsSigmaCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
   -- Choose a decomposition s = ⋃ s_i for each s ∈ S.
   choose K hcomp hcov using fun i ↦ hcomp i
   -- Then, we have a countable union of countable unions of compact sets, i.e. countably many.
-  have : ⋃ i, s i = ⋃₀ range (K.uncurry) := by calc ⋃ i, s i
-      _ = ⋃ i, ⋃ n, (K i n) := by simp_rw [hcov]
-      _ = ⋃ (i) (n : ℕ), (K.uncurry ⟨i, n⟩) := by rw [Function.uncurry_def]
-      _ = ⋃₀ range (K.uncurry) := by rw [← iUnion_prod', sUnion_range]
+  have := calc
+    ⋃ i, s i
+    _ = ⋃ i, ⋃ n, (K i n) := by simp_rw [hcov]
+    _ = ⋃ (i) (n : ℕ), (K.uncurry ⟨i, n⟩) := by rw [Function.uncurry_def]
+    _ = ⋃ x, K.uncurry x := by rw [← iUnion_prod']
   rw [this]
-  refine isSigmaCompact_sUnion_of_isCompact (countable_range (K.uncurry)) fun s hs ↦ ?_
-  obtain ⟨⟨ys, yn⟩, hy⟩ := mem_range.mp hs
-  exact hy ▸ hcomp ys yn
+  exact isSigmaCompact_iUnion_of_isCompact K.uncurry fun x ↦ (hcomp x.1 x.2)
 
-/-- Countable unions of σ-compact sets are σ-compact.
-  Formulated here for a union of subsets. -/
+/-- Countable unions of σ-compact sets are σ-compact. -/
 lemma isSigmaCompact_sUnion (S : Set (Set α)) (hc : Set.Countable S)
     (hcomp : ∀ s : S, IsSigmaCompact s (α := α)) : IsSigmaCompact (⋃₀ S) := by
   have : Countable S := countable_coe_iff.mpr hc
   apply sUnion_eq_iUnion.symm ▸ isSigmaCompact_iUnion _ hcomp
 
-/-- Countable unions of σ-compact sets are σ-compact.
-  Formulated here with an index set which is a countable set in any type. -/
+/-- Countable unions of σ-compact sets are σ-compact. -/
 lemma isSigmaCompact_biUnion {ι : Type*} {s : Set ι} {S : ι → Set α} (hc : Set.Countable s)
     (hcomp : ∀ (i : ι), i ∈ s → IsSigmaCompact (S i)) :
     IsSigmaCompact (⋃ (i : ι) (_ : i ∈ s), S i) := by
