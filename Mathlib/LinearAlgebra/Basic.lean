@@ -2401,12 +2401,8 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 #align submodule.order_iso_map_comap_symm_apply' Submodule.orderIsoMapComap_symm_apply'
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
-    comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  rw [SetLike.le_def]
-  intro m h
-  change f₁ m + f₂ m ∈ q
-  change f₁ m ∈ q ∧ f₂ m ∈ q at h
-  apply q.add_mem h.1 h.2
+    comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q :=
+  fun m (h : f₁ m ∈ q ∧ f₂ m ∈ q) => q.add_mem h.1 h.2
 #align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
 
 end Submodule
@@ -2419,12 +2415,8 @@ variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
-theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
-  rw [SetLike.le_def]
-  intro m h
-  change c • f m ∈ q
-  change f m ∈ q at h
-  apply q.smul_mem _ h
+theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q :=
+  fun m (h : f m ∈ q) => q.smul_mem _ h
 #align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
