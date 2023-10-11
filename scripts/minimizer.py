@@ -75,24 +75,33 @@ def normalize_lean_code(source):
 def apply_changes(changes, filename):
     with open(filename, 'r') as file:
         source = file.read()
+
     # Work backwards, otherwise we'll overwrite later changes.
+    changed = False
     last_start = len(source)
     for start, end, replacement in sorted(changes, reverse=True):
         if start > end:
             logging.error(f"apply_changes: start should be less than end: ({start}, {end}, {replacement})")
         elif end > last_start:
             logging.warn(f"apply_changes: skipping change because it overlaps with previous ({last_start}): ({start}, {end}, {replacement})")
+        elif source[start:end] == replacement:
+            logging.warn(f"apply_changes: skipping change because it is identical to the original: ({start}, {end}, {replacement})")
         else:
             # logging.debug(f"apply_changes: (source[{start}:{end}] = {source[start:end]} -> {replacement})")
             source = source[:start] + replacement + source[end:]
+            changed = True
             last_start = start
+
+    if not changed:
+        logging.warn(f"apply_changes: no changes applied")
+        return False, filename
 
     source = normalize_lean_code(source)
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False) as destination:
         logging.debug(f"apply_changes: {filename} -> {destination.name}")
         destination.write(source)
-        return destination.name
+        return True, destination.name
 
 def import_to_filename(import_name):
     return import_name.replace('.', '/') + '.lean'
@@ -111,8 +120,10 @@ def make_committing_pass(change_generator):
         changes = sorted(list(change_generator(filename)))
 
         for i, change in enumerate(changes):
-            logging.info(f"committing_pass: trying change {i}")
-            new_file = apply_changes([change], filename)
+            logging.debug(f"committing_pass: trying change {i}")
+            changed, new_file = apply_changes([change], filename)
+            if not changed: continue
+
             if try_compile(expected_out, new_file):
                 logging.info(f"committing_pass: change {i} succeeded")
                 return True, new_file
@@ -138,8 +149,10 @@ def make_bottom_up_pass(change_generator):
         current_file = filename
         progress = False
         for i, change in reversed(list(enumerate(changes))):
-            logging.info(f"bottom_up_pass: trying change {i}")
-            new_file = apply_changes([change], current_file)
+            logging.debug(f"bottom_up_pass: trying change {i}")
+            changed, new_file = apply_changes([change], current_file)
+            if not changed: continue
+
             if try_compile(expected_out, new_file):
                 logging.info(f"bottom_up_pass: change {i} succeeded")
                 progress = True
@@ -173,7 +186,8 @@ def make_bisecting_pass(change_generator):
 
         # Maybe the changes succeed instantly?
         logging.debug(f"bisect_changes: applying {len(changes)} changes")
-        new_file = apply_changes(changes, filename)
+        changed, new_file = apply_changes(changes, filename)
+        if not changed: return False, filename
         if try_compile(expected_out, new_file):
             return True, new_file
 
