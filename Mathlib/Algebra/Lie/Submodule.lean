@@ -430,6 +430,10 @@ theorem sInf_coe_toSubmodule (S : Set (LieSubmodule R L M)) :
   rfl
 #align lie_submodule.Inf_coe_to_submodule LieSubmodule.sInf_coe_toSubmodule
 
+theorem sInf_coe_toSubmodule' (S : Set (LieSubmodule R L M)) :
+    (↑(sInf S) : Submodule R M) = ⨅ N ∈ S, (N : Submodule R M) := by
+  rw [sInf_coe_toSubmodule, ← Set.image, sInf_image]
+
 @[simp]
 theorem iInf_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨅ i, p i) : Submodule R M) = ⨅ i, (p i : Submodule R M) := by
@@ -492,6 +496,10 @@ theorem sSup_coe_toSubmodule (S : Set (LieSubmodule R L M)) :
     (↑(sSup S) : Submodule R M) = sSup {(s : Submodule R M) | s ∈ S} :=
   rfl
 
+theorem sSup_coe_toSubmodule' (S : Set (LieSubmodule R L M)) :
+    (↑(sSup S) : Submodule R M) = ⨆ N ∈ S, (N : Submodule R M) := by
+  rw [sSup_coe_toSubmodule, ← Set.image, sSup_image]
+
 @[simp]
 theorem iSup_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨆ i, p i) : Submodule R M) = ⨆ i, (p i : Submodule R M) := by
@@ -499,20 +507,9 @@ theorem iSup_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 
 /-- The set of Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
-  { sInf_le := fun s a ha ↦ by
-      rw [← coeSubmodule_le_coeSubmodule, sInf_coe_toSubmodule]; exact sInf_le ⟨a, ha, rfl⟩
-    le_sInf := fun s a ha ↦ by rw [← coeSubmodule_le_coeSubmodule, sInf_coe_toSubmodule]; simpa
-    le_top := fun _ _ _ ↦ trivial
-    bot_le := fun _ ↦ bot_le (α := Submodule R M)
-    sup_le := fun _ _ _ ↦ sup_le (α := Submodule R M)
-    le_sup_right := fun _ _ ↦ le_sup_right (α := Submodule R M)
-    le_sup_left := fun _ _ ↦ le_sup_left (α := Submodule R M)
-    sSup_le := fun s a ha ↦ by rw [← coeSubmodule_le_coeSubmodule, sSup_coe_toSubmodule]; simpa
-    le_sSup := fun s a ha ↦ by
-      rw [← coeSubmodule_le_coeSubmodule, sSup_coe_toSubmodule]; exact le_sSup ⟨a, ha, rfl⟩
-    le_inf := fun _ _ _ ↦ le_inf (α := Submodule R M)
-    inf_le_left := fun _ _ _ ↦ And.left
-    inf_le_right := fun _ _ _ ↦ And.right }
+  { coeSubmodule_injective.completeLattice toSubmodule sup_coe_toSubmodule inf_coe_toSubmodule
+      sSup_coe_toSubmodule' sInf_coe_toSubmodule' rfl rfl with
+    toPartialOrder := SetLike.instPartialOrder }
 
 theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h : b ∈ N i) :
     b ∈ ⨆ i, N i :=
