@@ -3514,8 +3514,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
   -- measurable set `s`. It is built on each member of a spanning family using `toMeasurable`
   -- (which is well behaved for finite measure sets thanks to `measure_toMeasurable_inter`), and
   -- the desired property passes to the union.
-  have A :
-    ∃ (t' : _) (_ : t' ⊇ t), MeasurableSet t' ∧ ∀ u, MeasurableSet u → μ (t' ∩ u) = μ (t ∩ u) := by
+  have A : ∃ t', t' ⊇ t ∧ MeasurableSet t' ∧ ∀ u, MeasurableSet u → μ (t' ∩ u) = μ (t ∩ u) := by
     let w n := toMeasurable μ (t ∩ v n)
     have hw : ∀ n, μ (w n) < ∞ := by
       intro n
@@ -3568,8 +3567,8 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
   rw [toMeasurable]
   split_ifs with ht
   · apply measure_congr
-    exact ae_eq_set_inter ht.choose_spec.snd.2 (ae_eq_refl _)
-  · exact A.choose_spec.snd.2 s hs
+    exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)
+  · exact A.choose_spec.2.2 s hs
 #align measure_theory.measure.measure_to_measurable_inter_of_cover MeasureTheory.Measure.measure_toMeasurable_inter_of_cover
 
 theorem restrict_toMeasurable_of_cover {s : Set α} {v : ℕ → Set α} (hv : s ⊆ ⋃ n, v n)
