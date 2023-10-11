@@ -1235,34 +1235,25 @@ theorem bijective_iff_map_univ_eq_univ (f : α → β) :
     Function.Bijective f ↔ map f (Finset.univ : Finset α).val = univ.val := by
   constructor
   · intro ⟨inj, surj⟩
-    have k : f = ↑(Embedding.mk f inj) := rfl
-    rw [k, ←map_val, map_univ_of_surjective (f := Embedding.mk _ _) surj]
+    exact congr_arg (·.val) (map_univ_of_surjective (f := Embedding.mk f inj) surj)
   intro univ_eq
+  have h (b) : ∃ a, filter (b = f ·) univ.val = {a}
+  · rw [←card_eq_one, ←count_map, univ_eq, count_univ]
   constructor
   · intro a b fab
-    have h : count (f a) (Multiset.map f univ.val) = 1
-    rw [univ_eq, count_univ]
-    rw [count_map] at h
-    have h1 := card_eq_one.mp h
-    rcases h1 with ⟨c, hc⟩
+    obtain ⟨c, hc⟩ := h (f a)
     have ha : a = c
-    · apply Multiset.mem_singleton.mp
+    · rw [←Multiset.mem_singleton]
       simp [←hc]
     have hb : b = c
-    · apply Multiset.mem_singleton.mp
+    · rw [←Multiset.mem_singleton]
       simp [←hc, fab]
-    rw [ha,hb]
+    rw [ha, hb]
   · intro b
-    have h : count b (Multiset.map f univ.val) = 1
-    rw [univ_eq, count_univ]
-    rw [count_map] at h
-    have h1 := card_eq_one.mp h
-    rcases h1 with ⟨a, ha⟩
-    apply Exists.intro a
-    have ha2 : a ∈ Multiset.filter (fun a ↦ b = f a) univ.val
-    rw [ha, Multiset.mem_singleton]
-    simp only [Multiset.mem_filter, mem_val, mem_univ, true_and] at ha2
-    rw [ha2]
+    refine (h b).imp fun a ha => ?_
+    have ha2 : a ∈ Multiset.filter (b = f ·) univ.val
+    · rw [ha, Multiset.mem_singleton]
+    simpa only [Multiset.mem_filter, mem_val, mem_univ, true_and, eq_comm] using ha2
 
 end Multiset
 
