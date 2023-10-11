@@ -46,11 +46,11 @@ noncomputable abbrev associator (X Y Z : QuadraticModuleCat.{u} R) :
 
 open MonoidalCategory
 
-@[simp] theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
+theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
   (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).hom
     = (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
 
-@[simp] theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
+theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
   (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).inv
     = (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
