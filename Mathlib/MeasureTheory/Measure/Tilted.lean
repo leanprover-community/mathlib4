@@ -55,6 +55,7 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
 
 section tilted
 
+/-- The quantity `log (∫ x, exp (f x) ∂μ)`. -/
 noncomputable
 def logIntegralExp (μ : Measure α) (f : α → ℝ) : ℝ := log (∫ x, exp (f x) ∂μ)
 
@@ -80,6 +81,8 @@ lemma exp_logIntegralExp {μ : Measure α} [NeZero μ] {f : α → ℝ}
   rw [logIntegralExp, exp_log]
   exact integral_exp_pos hf
 
+/-- Exponentially tilted measure. `μ.tilted f` is the probability measure with density with respect
+to `μ` proportional to `exp (f x)`. -/
 noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) : Measure α :=
   μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x - logIntegralExp μ f)))
