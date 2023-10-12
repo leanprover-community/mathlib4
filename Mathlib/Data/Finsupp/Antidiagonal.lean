@@ -17,8 +17,6 @@ The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 -/
 
-
-
 open BigOperators
 
 namespace Finsupp
@@ -45,12 +43,6 @@ instance : HasAntidiagonal (α →₀ ℕ) where
     rcases p with ⟨p₁, p₂⟩
     simp [antidiagonal', ← and_assoc, Multiset.toFinsupp_eq_iff,
     ← Multiset.toFinsupp_eq_iff (f := f)]
-
-/-- Finsupp.antidiagonal coincides with Finset.antidiagonalOfLocallyFinite.antidiagonal -/
-lemma antidiagonal_eq_antidiagonal (f : α →₀ ℕ) :
-    antidiagonal f = Finset.antidiagonalOfLocallyFinite.antidiagonal f := by
-  ext p
-  simp only [mem_antidiagonal, Finset.antidiagonalOfLocallyFinite.mem_antidiagonal]
 
 theorem swap_mem_antidiagonal {n : α →₀ ℕ} {f : (α →₀ ℕ) × (α →₀ ℕ)} :
     f.swap ∈ antidiagonal n ↔ f ∈ antidiagonal n := by
