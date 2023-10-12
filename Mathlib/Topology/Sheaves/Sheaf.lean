@@ -23,7 +23,7 @@ See the docstring of `TopCat.Presheaf.IsSheaf` for an explanation on the design 
 of equivalent conditions.
 
 We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full subcategory of
-presheaves, and the fully faithful functor `sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
+presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
 
 -/
 
