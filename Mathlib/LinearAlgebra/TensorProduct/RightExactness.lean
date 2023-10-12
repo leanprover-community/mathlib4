@@ -9,10 +9,10 @@ import Mathlib.RingTheory.TensorProduct
 
 /-! # Right-exactness properties of tensor product
 
-* `TensorProduct.rTensor.surjective` asserts that one on tensors
+* `TensorProduct.rTensor.surjective` asserts that one tensors
   a surjective map on the right, one still gets a surjective linear map.
 
-* `TensorProduct.lTensor.surjective` asserts that one on tensors
+* `TensorProduct.lTensor.surjective` asserts that one tensors
   a surjective map on the left, one still gets a surjective linear map.
 
 * `TensorProduct.rTensor_exact` says that when one tensors a short exact
@@ -49,6 +49,7 @@ The proofs are those of [bourbaki1989] (chap. 2, §3, n°6)
 * Treat algebras (further PR)
 -/
 
+suppress_compilation
 
 section Modules
 
