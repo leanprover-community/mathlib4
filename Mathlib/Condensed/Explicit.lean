@@ -117,7 +117,7 @@ lemma isSheafFor_of_preservesFiniteProducts_and_equalizerCondition {B : CompHaus
     haveI : S.extensive := ⟨hSIso⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts S F
   · haveI : S.regular := ⟨hSSingle⟩
-    exact isSheafFor_regular_of_hasPullbacks hFecs
+    exact hFecs.isSheafFor
 
 instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
     PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
@@ -248,7 +248,7 @@ lemma isSheafFor_of_preservesFiniteProducts_and_equalizerCondition {B : Profinit
     haveI : S.extensive := ⟨hSIso⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts S F
   · haveI : S.regular := ⟨hSSingle⟩
-    exact isSheafFor_regular_of_hasPullbacks hFecs
+    exact hFecs.isSheafFor
 
 theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Profinite.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F]
