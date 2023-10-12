@@ -11,17 +11,20 @@ import Mathlib.Algebra.Order.Sub.Defs
 
 /-! # Antidiagonal with values in general types
 
-Let `n : μ`, where `μ` is a canonically ordered add monoid with locally finite order.
-(For example, one may take `μ` to be `ℕ`, more generally `σ →₀ ℕ`.)
+Let `μ` be an AddCommMonoid.
 
-* For `s : Finset ι`, we define `Finset.piAntidiagonal s n` as the `Finset (ι → μ)`
-of functions with support in `s` whose sum is equal to `n`.
+* We define a type class `HasAntidiagonal` which contains a function
+`antidiagonal : μ → Finset (μ × μ)` such that `antidiagonal n` is the Finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 
-* We define `Finset.antidiagonal n : Finset (μ × μ)` of pairs adding to `n`.
+Assume that `μ` is a canonically ordered add monoid with locally finite order.
+For example, one may take `μ` to be `ℕ`, more generally `σ →₀ ℕ`.
 
-These definitions generalize `Finset.Nat.antidiagonal` and `Finsupp.antidiagonal`
-which are defined in `Mathlib.Data.Finset.NatAntidiagonal`
-and `Mathlib.Data.Finsupp.Antidiagonal` and we make the comparisons there.
+* `Finset.antidiagonalOfLocallyFinite` is a member of this type class.
+
+However, it is not made as an instance because in specific cases,
+there are more efficient definitions of the antidiagonal.
+For instance, `Mathlib.Data.Finset.NatAntidiagonal`
+and `Mathlib.Data.Finsupp.Antidiagonal` declare such instances.
 
 This definition does not exactly match with that of `Multiset.antidiagonal` which is
 defined in `Mathlib.Data.Multiset.Antidiagonal`, because of the multiplicities.
@@ -36,6 +39,13 @@ def s : Multiset ℕ := {0, 0, 0}
 #eval Multiset.card (Multiset.antidiagonal s) -- 8
 ```
 
+* For `s : Finset ι`, we define `Finset.piAntidiagonal s n` as the `Finset (ι → μ)`
+of functions with support in `s` whose sum is equal to `n`.
+
+## TODO
+
+* Define `HasMulAntidiagonal` (for monoids)
+
 -/
 
 namespace Finset
@@ -44,33 +54,12 @@ open scoped BigOperators
 
 open Function
 
-/-- The class of monoids with an antidiagonal -/
-class HasMulAntidiagonal (μ : Type*) [Monoid μ] where
-  /-- The antidiagonal function -/
-  antidiagonal _ : Finset (μ × μ)
-  /-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n` -/
-  mem_antidiagonal {n : μ} {a : μ × μ} : a ∈ antidiagonal n ↔ a.fst * a.snd = n
-
-export HasMulAntidiagonal (antidiagonal mem_antidiagonal)
-
-attribute [simp] mem_antidiagonal
-
-/-- All HasMulAntidiagonal are equal -/
-instance (μ : Type*) [Monoid μ] :
-    Subsingleton (HasMulAntidiagonal μ) := by
-  apply Subsingleton.intro
-  rintro ⟨a, ha⟩ ⟨b, hb⟩
-  suffices : a = b
-  simp_rw [this]
-  ext n xy
-  rw [ha, hb]
-
 /-- The class of additive monoids with an antidiagonal -/
 class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
   /-- The antidiagonal function -/
   antidiagonal : μ → Finset (μ × μ)
   /-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n` -/
-  mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst + a.snd = n
+  mem_antidiagonal {n} {a} : a ∈ antidiagonal n ↔ a.fst + a.snd = n
 
 export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
@@ -95,7 +84,7 @@ variable {ι : Type*} [DecidableEq ι]
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/
 abbrev antidiagonalOfLocallyFinite : HasAntidiagonal μ where
   antidiagonal n := Finset.filter (fun uv => uv.fst + uv.snd = n) (Finset.product (Iic n) (Iic n))
-  mem_antidiagonal n a := by
+  mem_antidiagonal {n} {a} := by
     simp only [Prod.forall, mem_filter, and_iff_right_iff_imp]
     intro h; rw [← h]
     erw [mem_product, mem_Iic, mem_Iic]
@@ -144,7 +133,7 @@ variable (μ)
 -- in the hope of using Subsingleton...
 def HasAntidiagonal' : HasAntidiagonal μ where
   antidiagonal n := Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n)
-  mem_antidiagonal n xy := by
+  mem_antidiagonal {n} {xy} := by
     simp only [Fintype.univ_bool, mem_singleton, Equiv.finsetCongr_apply, mem_map_equiv,
       mem_piAntidiagonal, Equiv.boolArrowEquivProd_symm_apply, not_false_eq_true, sum_insert,
       sum_singleton, mem_insert, Bool.forall_bool, IsEmpty.forall_iff, and_self, and_true]
@@ -191,8 +180,7 @@ theorem piAntidiagonal_insert [HasAntidiagonal μ] [DecidableEq (ι → μ)]
     simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_piAntidiagonal, Prod.exists]
     use f a, s.sum f
     constructor
-    · exact (Finset.HasAntidiagonal.mem_antidiagonal
-        (f a + ∑ x in s, f x) (f a, Finset.sum s f)).mpr rfl
+    · rw [mem_antidiagonal]
     rw [mem_image]
     use Function.update f a 0
     constructor
