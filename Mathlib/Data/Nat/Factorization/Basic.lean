@@ -140,12 +140,19 @@ theorem primeDivisors_eq_factors {n : ℕ} : n.primeDivisors = n.factors.toFinse
 
 theorem primeDivisors_eq_factorization {n : ℕ} : n.primeDivisors = n.factorization.support := rfl
 
-theorem factor_iff_mem_primeDivisors {n p : ℕ} : p ∈ n.primeDivisors ↔ p ∈ n.factors := by
+theorem mem_primeDivisors_iff_factor {n p : ℕ} : p ∈ n.primeDivisors ↔ p ∈ n.factors := by
   simp only [support_factorization, List.mem_toFinset]
-#align nat.factor_iff_mem_factorization Nat.factor_iff_mem_primeDivisors
+#align nat.factor_iff_mem_factorization Nat.mem_primeDivisors_iff_factor
+
+theorem mem_primeDivisors {n p : ℕ} : p ∈ n.primeDivisors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
+  rw [mem_primeDivisors_iff_factor]
+  constructor
+  · refine fun h ↦ ⟨prime_of_mem_factors h, dvd_of_mem_factors h, ?_⟩
+    rintro rfl; simp at h
+  · exact fun ⟨hp, hpn, hn⟩ ↦ (mem_factors_iff_dvd hn hp).mpr hpn
 
 theorem prime_of_mem_primeDivisors {n p : ℕ} (hp : p ∈ n.primeDivisors) : p.Prime :=
-  prime_of_mem_factors (factor_iff_mem_primeDivisors.mp hp)
+  mem_primeDivisors.mp hp |>.1
 #align nat.prime_of_mem_factorization Nat.prime_of_mem_primeDivisors
 
 theorem pos_of_mem_primeDivisors {n p : ℕ} (hp : p ∈ n.primeDivisors) : 0 < p :=
@@ -153,7 +160,7 @@ theorem pos_of_mem_primeDivisors {n p : ℕ} (hp : p ∈ n.primeDivisors) : 0 < 
 #align nat.pos_of_mem_factorization Nat.pos_of_mem_primeDivisors
 
 theorem le_of_mem_primeDivisors {n p : ℕ} (h : p ∈ n.primeDivisors) : p ≤ n :=
-  le_of_mem_factors (factor_iff_mem_primeDivisors.mp h)
+  le_of_mem_factors (mem_primeDivisors_iff_factor.mp h)
 #align nat.le_of_mem_factorization Nat.le_of_mem_primeDivisors
 
 /-! ## Lemmas characterising when `n.factorization p = 0` -/
@@ -191,7 +198,7 @@ theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
 #align nat.factorization_one_right Nat.factorization_one_right
 
 theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p ∣ n :=
-  dvd_of_mem_factors (factor_iff_mem_primeDivisors.1 (mem_support_iff.2 hn))
+  dvd_of_mem_factors (mem_primeDivisors_iff_factor.1 (mem_support_iff.2 hn))
 #align nat.dvd_of_factorization_pos Nat.dvd_of_factorization_pos
 
 theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ∣ n) :
@@ -237,7 +244,7 @@ theorem factorization_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 theorem primeDivisors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).primeDivisors = a.primeDivisors ∪ b.primeDivisors := by
   ext q
-  simp only [Finset.mem_union, factor_iff_mem_primeDivisors]
+  simp only [Finset.mem_union, mem_primeDivisors_iff_factor]
   exact mem_factors_mul ha hb
 #align nat.factorization_mul_support Nat.primeDivisors_mul
 
@@ -431,7 +438,7 @@ theorem ord_compl_mul (a b p : ℕ) : ord_compl[p] (a * b) = ord_compl[p] a * or
 theorem dvd_of_mem_primeDivisors {n p : ℕ} (h : p ∈ n.primeDivisors) : p ∣ n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  simp [← mem_factors_iff_dvd hn (prime_of_mem_primeDivisors h), factor_iff_mem_primeDivisors.mp h]
+  simp [← mem_factors_iff_dvd hn (prime_of_mem_primeDivisors h), mem_primeDivisors_iff_factor.mp h]
 #align nat.dvd_of_mem_factorization Nat.dvd_of_mem_primeDivisors
 
 /-- A crude upper bound on `n.factorization p` -/

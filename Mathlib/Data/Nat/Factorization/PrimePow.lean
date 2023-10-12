@@ -29,7 +29,7 @@ theorem isPrimePow_of_minFac_pow_factorization_eq {n : ℕ}
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp_all
   refine' ⟨_, _, (Nat.minFac_prime hn).prime, _, h⟩
-  rw [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.factor_iff_mem_primeDivisors,
+  rw [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.mem_primeDivisors_iff_factor,
     Nat.mem_factors_iff_dvd hn' (Nat.minFac_prime hn)]
   apply Nat.minFac_dvd
 #align is_prime_pow_of_min_fac_pow_factorization_eq isPrimePow_of_minFac_pow_factorization_eq
