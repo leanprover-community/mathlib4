@@ -1657,6 +1657,8 @@ end
 
 section
 
+open scoped Topology
+
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 /-- A compact set is covered by finitely many left multiplicative translates of a set
@@ -1725,6 +1727,26 @@ theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
   rcases exists_mem_nhds_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
   exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
+
+/-- If a point in a topological group has a compact neighborhood, then the group is
+locally compact. -/
+@[to_additive]
+theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsCompact K) {x : G}
+    (h : K ∈ 𝓝 x) : LocallyCompactSpace G := by
+  refine ⟨fun y n hn ↦ ?_⟩
+  have A : (y * x⁻¹) • K ∈ 𝓝 y := by
+    rw [← preimage_smul_inv]
+    exact (continuous_const_smul _).continuousAt.preimage_mem_nhds (by simpa using h)
+  rcases exists_mem_nhds_isClosed_subset (inter_mem A hn) with ⟨L, hL, L_closed, LK⟩
+  refine ⟨L, hL, LK.trans (inter_subset_right _ _), ?_⟩
+  exact (hK.smul (y * x⁻¹)).of_isClosed_subset L_closed (LK.trans (inter_subset_left _ _))
+
+/-- A topological group which is weakly locally compact is automatically locally compact. -/
+@[to_additive]
+lemma WeaklyLocallyCompactSpace.locallyCompactSpace_of_group [WeaklyLocallyCompactSpace G] :
+    LocallyCompactSpace G := by
+  rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
+  exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
