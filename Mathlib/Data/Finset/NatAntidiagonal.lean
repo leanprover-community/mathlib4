@@ -44,7 +44,11 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
   rw [antidiagonal, mem_def, Multiset.Nat.mem_antidiagonal]
 #align finset.nat.mem_antidiagonal Finset.Nat.mem_antidiagonal
 
-/-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonal` -/
+/-- HasAntidiagonal for Nat -/
+abbrev Finset.Nat.HasAntidiagonal : Finset.HasAntidiagonal ℕ :=
+  ⟨antidiagonal, @mem_antidiagonal⟩
+
+/-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonalOfLocallyFinite` -/
 lemma antidiagonal_eq_antidiagonal (n : ℕ) :
     Finset.Nat.antidiagonal n = Finset.antidiagonalOfLocallyFinite.antidiagonal n := by
     ext ⟨p,q⟩

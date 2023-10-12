@@ -50,11 +50,15 @@ theorem mem_antidiagonal {f : α →₀ ℕ} {p : (α →₀ ℕ) × (α →₀ 
     ← Multiset.toFinsupp_eq_iff (f := f)]
 #align finsupp.mem_antidiagonal Finsupp.mem_antidiagonal
 
-/-- Finsupp.antidiagonal coincides with Finset.antidiagonal -/
+/-- Finsupp.antidiagonal coincides with Finset.antidiagonalOfLocallyFinite.antidiagonal -/
 lemma antidiagonal_eq_antidiagonal (f : α →₀ ℕ) :
     antidiagonal f = Finset.antidiagonalOfLocallyFinite.antidiagonal f := by
   ext p
   simp only [mem_antidiagonal, Finset.antidiagonalOfLocallyFinite.mem_antidiagonal]
+
+/-- Antidiagonal for Nat valued functions with finite support -/
+abbrev HasAntidiagonal : Finset.HasAntidiagonal (α →₀ ℕ) :=
+  ⟨antidiagonal, @mem_antidiagonal α _⟩
 
 theorem swap_mem_antidiagonal {n : α →₀ ℕ} {f : (α →₀ ℕ) × (α →₀ ℕ)} :
     f.swap ∈ antidiagonal n ↔ f ∈ antidiagonal n := by
