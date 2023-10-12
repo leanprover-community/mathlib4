@@ -84,6 +84,25 @@ jobs:
       - name: check that all files are imported
         run: git diff --exit-code
 
+  check_workflows:
+    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    name: check workflowsJOB_NAME
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v3
+
+      - name: update workflows
+        run: |
+          cd .github/workflows/
+          ./mk_build_yml.sh
+
+      - name: check that workflows were consistent
+        run: git diff --exit-code
+
   build:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: BuildJOB_NAME
