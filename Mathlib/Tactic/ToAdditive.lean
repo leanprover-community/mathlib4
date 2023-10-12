@@ -1159,7 +1159,16 @@ various things you can try.
 The first thing to do is to figure out what `@[to_additive]` did wrong by looking at the type
 mismatch error.
 
-* Option 1: It additivized a declaration `d` that should remain multiplicative. Solution:
+* Option 1: It didn't additivize a declaration that should be additivized.
+  This happened because the heuristic applied, and the first argument contains a fixed type,
+  like `ℕ` or `ℝ`. Solutions:
+  * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
+    attribute.
+  * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
+    `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
+    attribute `[to_additive_ignore_args k]` to `d`.
+    Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
+* Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
     multiplicative structure (and not some indexing type)?
@@ -1175,16 +1184,7 @@ mismatch error.
     multiplicative structure on it. If you get a different output (or a failure), you could add
     the attribute `@[to_additive_relevant_arg n]` manually, where `n` is an argument with a
     multiplicative structure.
-* Option 2: It didn't additivize a declaration that should be additivized.
-  This happened because the heuristic applied, and the first argument contains a fixed type,
-  like `ℕ` or `ℝ`. Solutions:
-  * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
-    attribute.
-  * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
-    `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
-    attribute `[to_additive_ignore_args k]` to `d`.
-    Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
-* Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
+  * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
