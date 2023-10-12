@@ -45,7 +45,8 @@ of functions with support in `s` whose sum is equal to `n`.
 
 ## TODO
 
-* Define `HasMulAntidiagonal` (for monoids)
+* Define `HasMulAntidiagonal` (for monoids).
+For `PNat`, we will recover the set of divisors of a strictly positive integer.
 
 -/
 
