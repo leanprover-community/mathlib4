@@ -102,3 +102,4 @@ attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
   commGroupAddCommGroupEquivalence_counitIso_hom_app_apply
   commGroupAddCommGroupEquivalence_unitIso_inv_app_apply
   commGroupAddCommGroupEquivalence_unitIso_hom_app_apply
+  commGroupAddCommGroupEquivalence_counitIso_inv_app_apply
