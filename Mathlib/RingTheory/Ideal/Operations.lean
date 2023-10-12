@@ -632,12 +632,18 @@ theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
 #align ideal.finset_inf_span_singleton Ideal.finset_inf_span_singleton
 
-theorem iInf_span_singleton {ι : Type*} [Fintype ι] (I : ι → R)
+theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
     (hI : ∀ (i j) (_ : i ≠ j), IsCoprime (I i) (I j)) :
-    ⨅ i, Ideal.span ({I i} : Set R) = Ideal.span {∏ i, I i} := by
+    ⨅ i, span ({I i} : Set R) = span {∏ i, I i} := by
   rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
   rwa [Finset.coe_univ, Set.pairwise_univ]
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton
+
+theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
+    {I : ι → ℕ} (hI : ∀ (i j : ι), i ≠ j → (I i).Coprime (I j)) :
+    ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
+  rw [iInf_span_singleton, Nat.cast_prod]
+  exact fun i j h ↦ (hI i j h).cast
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
@@ -874,6 +880,22 @@ theorem isCoprime_span_singleton_iff (x y : R) :
   constructor
   · rintro ⟨a, _, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
   · rintro ⟨a, b, e⟩; exact ⟨a, _, ⟨b, rfl⟩, mul_comm y b ▸ e⟩
+
+theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
+    (hf : ∀ j ∈ s, IsCoprime I (J j)) : IsCoprime I (⨅ j ∈ s, J j) := by
+  classical
+  simp_rw [isCoprime_iff_add] at *
+  induction s using Finset.induction with
+  | empty =>
+      simp
+  | @insert i s _ hs =>
+      rw [Finset.iInf_insert, inf_comm, one_eq_top, eq_top_iff, ← one_eq_top]
+      set K := ⨅ j ∈ s, J j
+      calc
+        1 = I + K            := (hs fun j hj ↦ hf j (Finset.mem_insert_of_mem hj)).symm
+        _ = I + K*(I + J i)  := by rw [hf i (Finset.mem_insert_self i s), mul_one]
+        _ = (1+K)*I + K*J i  := by ring
+        _ ≤ I + K ⊓ J i      := add_le_add mul_le_left mul_le_inf
 
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
 def radical (I : Ideal R) : Ideal R where
@@ -2071,6 +2093,11 @@ theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr <| not_one_mem_ker f
 #align ring_hom.ker_ne_top RingHom.ker_ne_top
 
+lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
+    (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
+  ext x
+  simp [mem_ker, Ideal.mem_iInf, Function.funext_iff]
+
 end Semiring
 
 section Ring
@@ -2104,6 +2131,10 @@ variable {F : Type*} [Ring R] [Ring S] [rc : RingHomClass F R S] (f : F)
 
 theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker, map_sub, sub_eq_zero]
 #align ring_hom.sub_mem_ker_iff RingHom.sub_mem_ker_iff
+
+@[simp]
+theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
 
 end RingRing
 

@@ -110,7 +110,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       rw [← xz₁] at h₁
       rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
       have : a ∈ ball a ε := by
-        simp
+        simp only [mem_ball, dist_self]
         exact εpos
       rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
       rcases(mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
