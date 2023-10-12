@@ -11,7 +11,8 @@ import Mathlib.Algebra.Order.Sub.Defs
 
 /-! # Antidiagonal with values in general types
 
-Let `n : μ`, where `μ` is a canonically ordered add monoid with locally finite order. (For example, one may take `μ` to be `ℕ`, more generally `σ →₀ ℕ`.)
+Let `n : μ`, where `μ` is a canonically ordered add monoid with locally finite order.
+(For example, one may take `μ` to be `ℕ`, more generally `σ →₀ ℕ`.)
 
 * For `s : Finset ι`, we define `Finset.piAntidiagonal s n` as the `Finset (ι → μ)`
 of functions with support in `s` whose sum is equal to `n`.
@@ -36,7 +37,8 @@ def s : Multiset ℕ := {0, 0, 0}
 ```
 
 This is mostly taken from a file of Bhavik Mehta,
-https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/Partition.lean, where `piAntidiagonal` was called `cut`
+Archive/Wiedijk100Theorems/Partition.lean,
+where `piAntidiagonal` was called `cut`
 -/
 
 open scoped BigOperators
