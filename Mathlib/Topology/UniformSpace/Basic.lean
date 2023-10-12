@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.NhdsSet
 
 #align_import topology.uniform_space.basic from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
@@ -478,7 +478,7 @@ theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s �
       (compRel_mono hU.1 hU.2).trans hts⟩
 #align eventually_uniformity_iterate_comp_subset eventually_uniformity_iterate_comp_subset
 
-/-- If `s ∈ 𝓤 α`, then for any natural `n`, for a subset `t` of a sufficiently small set in `𝓤 α`,
+/-- If `s ∈ 𝓤 α`, then for a subset `t` of a sufficiently small set in `𝓤 α`,
 we have `t ○ t ⊆ s`. -/
 theorem eventually_uniformity_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
     ∀ᶠ t in (𝓤 α).smallSets, t ○ t ⊆ s :=
