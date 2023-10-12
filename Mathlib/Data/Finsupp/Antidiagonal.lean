@@ -39,7 +39,7 @@ def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →�
 such that `t₁ + t₂ = s`. -/
 instance : HasAntidiagonal (α →₀ ℕ) where
   antidiagonal f := f.antidiagonal'.support
-  mem_antidiagonal f p := by
+  mem_antidiagonal {f} {p} := by
     rcases p with ⟨p₁, p₂⟩
     simp [antidiagonal', ← and_assoc, Multiset.toFinsupp_eq_iff,
     ← Multiset.toFinsupp_eq_iff (f := f)]

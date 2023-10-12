@@ -36,7 +36,7 @@ namespace Nat
     the finset of pairs `(i, j)` such that `i + j = n`. -/
 instance : HasAntidiagonal ℕ where
   antidiagonal n := ⟨Multiset.Nat.antidiagonal n, Multiset.Nat.nodup_antidiagonal n⟩
-  mem_antidiagonal n xy := by
+  mem_antidiagonal {n} {xy} := by
     rw [mem_def, Multiset.Nat.mem_antidiagonal]
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
