@@ -10,6 +10,7 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.Finset.Antidiagonal
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -91,6 +92,7 @@ def partialDistinctGF (m : ℕ) [CommSemiring α] :=
   ∏ i in range m, (1 + (X : PowerSeries α) ^ (i + 1))
 #align theorems_100.partial_distinct_gf Theorems100.partialDistinctGF
 
+/-
 /--
 Functions defined only on `s`, which sum to `n`. In other words, a partition of `n` indexed by `s`.
 Every function in here is finitely supported, and the support is a subset of `s`.
@@ -155,18 +157,18 @@ theorem cut_empty_succ {ι : Type _} (n : ℕ) : cut (∅ : Finset ι) (n + 1) =
   cases hx.1
 #align theorems_100.cut_empty_succ Theorems100.cut_empty_succ
 
-theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
-    cut (insert a s) n =
+theorem piAntidiagonal_insert' {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
+    piAntidiagonal (insert a s) n =
       (Nat.antidiagonal n).biUnion fun p : ℕ × ℕ =>
-        (cut s p.snd).map
+        (piAntidiagonal s p.snd).map
           ⟨fun f => f + fun t => if t = a then p.fst else 0, add_left_injective _⟩ := by
   ext f
-  rw [mem_cut, mem_biUnion, sum_insert h]
+  rw [mem_piAntidiagonal, mem_biUnion, sum_insert h]
   constructor
   · rintro ⟨rfl, h₁⟩
     simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, Nat.mem_antidiagonal, Prod.exists]
     refine' ⟨f a, s.sum f, rfl, fun i => if i = a then 0 else f i, _, _⟩
-    · rw [mem_cut]
+    · rw [mem_piAntidiagonal]
       refine' ⟨_, _⟩
       · rw [sum_ite]
         have : filter (fun x => x ≠ a) s = s := by
@@ -184,46 +186,70 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
       · simp
       · simp [if_neg h]
   · simp only [mem_insert, Function.Embedding.coeFn_mk, mem_map, Nat.mem_antidiagonal, Prod.exists,
-      exists_prop, mem_cut, not_or]
+      exists_prop, mem_piAntidiagonal, not_or]
     rintro ⟨p, q, rfl, g, ⟨rfl, hg₂⟩, rfl⟩
     refine' ⟨_, _⟩
     · simp [sum_add_distrib, if_neg h, hg₂ _ h, add_comm]
     · rintro i ⟨h₁, h₂⟩
       simp [if_neg h₁, hg₂ _ h₂]
-#align theorems_100.cut_insert Theorems100.cut_insert
+#align theorems_100.cut_insert Theorems100.piAntidiagonal_insert
+-/
 
-theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι → PowerSeries α)
-    (n : ℕ) : coeff α n (∏ j in s, f j) = ∑ l in cut s n, ∏ i in s, coeff α (l i) (f i) := by
+theorem coeff_prod_range [CommSemiring α] {ι : Type*} -- [DecidableEq ι] -- [DecidableEq (ι → ℕ)]
+    (s : Finset ι) (f : ι → PowerSeries α) (n : ℕ) :
+    coeff α n (∏ j in s, f j) = ∑ l in piAntidiagonal s n, ∏ i in s, coeff α (l i) (f i) := by
   revert n
   induction s using Finset.induction_on with
   | empty =>
-    rintro ⟨_ | n⟩
-    · simp
-    simp [cut_empty_succ, if_neg (Nat.succ_ne_zero _)]
+    intro n
+    rw [piAntidiagonal_empty]
+    by_cases hn : n = 0
+    · simp only [if_pos hn, prod_empty, coeff_one, sum_const, card_singleton, one_smul]
+    · simp only [if_neg hn, prod_empty, coeff_one, sum_const, card_empty, zero_smul, ite_eq_right_iff]
   | @insert a s hi ih =>
     intro n
-    rw [cut_insert _ _ _ hi, prod_insert hi, coeff_mul, sum_biUnion]
-    · congr with i
-      simp only [sum_map, Pi.add_apply, Function.Embedding.coeFn_mk, prod_insert hi, if_pos rfl, ih,
-        mul_sum]
-      apply sum_congr rfl _
-      intro x hx
-      rw [mem_cut] at hx
-      rw [hx.2 a hi, zero_add]
-      congr 1
-      apply prod_congr rfl
+    rw [piAntidiagonal_insert _ _ _ hi, prod_insert hi, coeff_mul, sum_biUnion]
+    · apply Finset.sum_congr rfl
+      rintro ⟨x,y⟩ _
+      simp only [sum_map, Pi.add_apply, Function.Embedding.coeFn_mk,
+        prod_insert hi, if_pos rfl, ih, mul_sum]
+      rw [Finset.sum_image]
+      apply Finset.sum_congr rfl
+      intro c _
+      apply congr_arg₂
+      rw [Function.update_same]
+      apply Finset.prod_congr rfl
       intro k hk
-      rw [if_neg, add_zero]
+      rw [Function.update_apply, if_neg]
       exact ne_of_mem_of_not_mem hk hi
-    · simp only [Set.PairwiseDisjoint, Set.Pairwise, Prod.forall, not_and, Ne.def,
-        Nat.mem_antidiagonal, disjoint_left, mem_map, exists_prop, Function.Embedding.coeFn_mk,
-        exists_imp, not_exists, Finset.mem_coe, Function.onFun, mem_cut, and_imp]
-      rintro p₁ q₁ rfl p₂ q₂ h t x p hp _ hp3 q hq _ hq3
-      have z := hp3.trans hq3.symm
-      have := sum_congr (Eq.refl s) fun x _ => Function.funext_iff.1 z x
-      obtain rfl : q₁ = q₂ := by simpa [sum_add_distrib, hp, hq, if_neg hi] using this
-      obtain rfl : p₂ = p₁ := by simpa using h
-      exact (t rfl).elim
+      · intro c hc d hd h
+        rw [Function.funext_iff] at h
+        ext i
+        by_cases hia : i = a
+        · rw [mem_piAntidiagonal] at hc hd
+          rw [hia, hc.2 a hi, hd.2 a hi]
+        · specialize h i
+          simp only [Function.update_noteq hia] at h
+          exact h
+    · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, ne_eq, Function.onFun, disjoint_left,
+        mem_image, mem_piAntidiagonal, not_exists, not_and, and_imp, forall_exists_index,
+        Prod.forall, Prod.mk.injEq]
+      intro p₁ q₁ h₁ p₂ q₂ h₂ t c d hdq₁ _ hdp₁ e heq₂ he hep₂
+      suffices : q₁ = q₂
+      · apply (t _) this
+        simp only [HasAntidiagonal.mem_antidiagonal] at h₁ h₂
+        simp only [this, ← h₂, add_left_inj] at h₁
+        exact h₁
+      rw [← hdq₁, ← heq₂]
+      apply Finset.sum_congr rfl
+      intro i his
+      rw [Function.funext_iff] at hdp₁ hep₂
+      specialize hdp₁ i
+      specialize hep₂ i
+      suffices : i ≠ a
+      rw [Function.update_noteq this] at hdp₁ hep₂
+      rw [hdp₁, hep₂]
+      apply ne_of_mem_of_not_mem his hi
 #align theorems_100.coeff_prod_range Theorems100.coeff_prod_range
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
@@ -319,17 +345,31 @@ theorem partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ
   simp_rw [coeff_prod_range, coeff_indicator, prod_boole, sum_boole]
   congr 1
   refine' Finset.card_congr (fun p _ i => Multiset.count i p.parts • i) _ _ _
-  · simp only [mem_filter, mem_cut, mem_univ, true_and_iff, exists_prop, and_assoc, and_imp,
+  · simp only [mem_filter, mem_univ, true_and_iff, exists_prop, and_assoc, and_imp,
       smul_eq_zero, Function.Embedding.coeFn_mk, exists_imp]
+    -- simp only [smul_eq_mul, Set.mem_image, mul_eq_mul_right_iff]
     rintro ⟨p, hp₁, hp₂⟩ hp₃ hp₄
     dsimp only at *
-    refine' ⟨_, _, _⟩
-    · rw [← hp₂, ←
-        sum_multiset_count_of_subset p s fun x hx => hp₄ _ (Multiset.mem_toFinset.mp hx)]
-    · intro i hi
-      left
-      exact Multiset.count_eq_zero_of_not_mem (mt (hp₄ i) hi)
-    · exact fun i _ => ⟨_, hp₃ i, rfl⟩
+    -- refine' ⟨_, _, _⟩
+    constructor
+    · -- rw [mem_piAntidiagonal] does not work because of distinct decidable instances
+      -- ugly hack
+      suffices : s.sum (fun i ↦ Multiset.count i p • i) = n ∧
+        ∀ (i) (_ : i ∉ s), (fun i ↦ Multiset.count i p • i) i = 0
+      rw [← mem_piAntidiagonal] at this
+      convert this
+      constructor
+      · rw [← hp₂, ← sum_multiset_count_of_subset p s]
+        intro i hi
+        simp only [Multiset.mem_toFinset] at hi
+        exact hp₄ i hi
+      · intro i hi
+        simp only [smul_eq_mul, mul_eq_zero]
+        left
+        exact Multiset.count_eq_zero_of_not_mem (mt (hp₄ i) hi)
+    · intro i _
+      simp only [smul_eq_mul, Set.mem_image, mul_eq_mul_right_iff]
+      exact ⟨Multiset.count i p, hp₃ i, Or.intro_left _ rfl⟩
   · dsimp only
     intro p₁ p₂ hp₁ hp₂ h
     apply Nat.Partition.ext
@@ -345,15 +385,17 @@ theorem partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     | .succ i =>
       rwa [Nat.nsmul_eq_mul, Nat.nsmul_eq_mul, mul_left_inj' i.succ_ne_zero] at h
-  · simp only [mem_filter, mem_cut, mem_univ, exists_prop, true_and_iff, and_assoc]
-    rintro f ⟨hf₁, hf₂, hf₃⟩
+  · simp only [mem_filter, mem_piAntidiagonal, mem_univ, exists_prop, true_and_iff, and_assoc]
+    rintro f ⟨hf, hf₃⟩
+    suffices hf' : f ∈ piAntidiagonal s n
+    simp only [mem_piAntidiagonal] at hf'
     refine' ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, _, _⟩, _, _, _⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
       rcases hi with ⟨t, ht, z⟩
       apply hs
       rwa [Multiset.eq_of_mem_replicate z]
-    · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul, ← hf₁]
+    · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul, ← hf'.1]
       refine' sum_congr rfl fun i hi => Nat.div_mul_cancel _
       rcases hf₃ i hi with ⟨w, _, hw₂⟩
       rw [← hw₂]
@@ -374,7 +416,8 @@ theorem partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ
       · apply Nat.div_mul_cancel
         rcases hf₃ i h with ⟨w, _, hw₂⟩
         apply Dvd.intro_left _ hw₂
-      · rw [zero_smul, hf₂ i h]
+      · rw [zero_smul, hf'.2 i h]
+    · convert hf
 #align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
