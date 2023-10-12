@@ -631,15 +631,13 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
     [OpensMeasurableSpace β]
     {f : α → β → E'} {s : Set α} {k : Set β} {g : β → E}
-    (hk : IsCompact k) (h'k : IsClosed k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0)
     {μ : Measure β} (hg : LocallyIntegrable g μ) :
     ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
     refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
-  have B : ∀ p ∈ s, tsupport (f p) ⊆ k := fun p hp =>
-    closure_minimal (support_subset_iff'.2 fun z hz => hfs _ _ hp hz) h'k
   intro q hq
   apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
   obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by

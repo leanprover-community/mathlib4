@@ -700,6 +700,23 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
 #align continuous.strongly_measurable Continuous.stronglyMeasurable
 
 /-- A continuous function with compact support is strongly measurable. -/
+theorem _root_.Continuous.stronglyMeasurable_of_support_subset_isCompact
+    [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
+    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Zero β] {f : α → β}
+    (hf : Continuous f) {k : Set α} (hk : IsCompact k)
+    (h'f : support f ⊆ k) : StronglyMeasurable f := by
+  letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
+  rw [stronglyMeasurable_iff_measurable_separable]
+  refine ⟨hf.measurable, ?_⟩
+  have Z := isCompact_range_of_support_subset_isCompact hf h'f
+
+
+
+#exit
+
+IsCompact.isSeparable (s := range f) (h'f.isCompact_range hf)
+
+/-- A continuous function with compact support is strongly measurable. -/
 theorem _root_.Continuous.stronglyMeasurable_of_hasCompactSupport
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
     [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Zero β] {f : α → β}

@@ -188,10 +188,16 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 
 @[to_additive]
+theorem isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
+    (hf : Continuous f) {k : Set α} (hk : IsCompact k) (h'f : mulSupport f ⊆ k) :
+    IsCompact (range f) := by
+  cases' range_eq_image_or_of_mulSupport_subset h'f with h2 h2 <;> rw [h2]
+  exacts [hk.image hf, (hk.image hf).insert 1]
+
+@[to_additive]
 theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
     (hf : Continuous f) : IsCompact (range f) := by
-  cases' range_eq_image_mulTSupport_or f with h2 h2 <;> rw [h2]
-  exacts [h.image hf, (h.image hf).insert 1]
+  apply isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
 #align has_compact_mul_support.is_compact_range HasCompactMulSupport.isCompact_range
 #align has_compact_support.is_compact_range HasCompactSupport.isCompact_range
 
