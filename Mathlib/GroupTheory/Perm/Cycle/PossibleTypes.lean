@@ -255,9 +255,3 @@ theorem Equiv.Perm.with_cycleType_nonempty_iff {m : Multiset ℕ} :
       intro a b ha hb hab
       rw [List.formPerm_disjoint_iff (hp_nodup a ha) (hp_nodup b hb) (hp2 a ha) (hp2 b hb)]
       exact hab
-
-#find_home! List.ranges_nodup
-#find_home! List.disjoint_map
-#find_home! List.ranges_length
-
-#find_home! List.exists_pw_disjoint_with_card
