@@ -45,13 +45,15 @@ theorem _root_.Commute.ofNat_right (x : α) (n : ℕ) [n.AtLeastTwo] :
   n.commute_cast x
 
 theorem commute_add_cast (r s : α) (n : ℕ) (h : Commute r s) :
-  Commute r (s + n) := h.add_right (commute_cast r n)
+    Commute r (s + n) :=
+  h.add_right (commute_cast r n)
 
 theorem add_cast_commute (r s : α) (n : ℕ) (h : Commute r s) :
-  Commute (r + n) s := h.add_left (cast_commute n s)
+    Commute (r + n) s :=
+  h.add_left (cast_commute n s)
 
 theorem add_cast_commute_add_cast (r s : α) (k n : ℕ) (h : Commute r s):
-  Commute (r + k) (s + n) :=
-    (h.add_left (cast_commute k s)).add_right (commute_cast (r+k) n)
+    Commute (r + k) (s + n) :=
+  (h.add_left (cast_commute k s)).add_right (commute_cast (r+k) n)
 
 end Commute
