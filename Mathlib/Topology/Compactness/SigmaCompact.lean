@@ -17,7 +17,7 @@ open Set Filter Topology TopologicalSpace Classical
 
 universe u v
 
-variable {X : Type*} {Y : Type*} {ι : Type*} {π : ι → Type*}
+variable {X : Type*} {Y : Type*} {ι : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 /-- A subset `s ⊆ X` is called **σ-compact** if it is the union of countably many compact sets. -/
@@ -45,7 +45,7 @@ lemma isSigmaCompact_sUnion_of_isCompact {S : Set (Set X)} (hc : Set.Countable S
     rw [Function.Surjective.iUnion_comp hf]
     exact sUnion_eq_iUnion.symm
 
-lemma isSigmaCompact_iUnion_of_isCompact {ι : Type*} [hι : Countable ι] (s : ι → Set X)
+lemma isSigmaCompact_iUnion_of_isCompact [hι : Countable ι] (s : ι → Set X)
     (hcomp : ∀ i, IsCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
   rcases isEmpty_or_nonempty ι
   · simp only [iUnion_of_empty, isSigmaCompact_empty]
@@ -54,7 +54,7 @@ lemma isSigmaCompact_iUnion_of_isCompact {ι : Type*} [hι : Countable ι] (s : 
     exact ⟨s ∘ f, fun n ↦ hcomp (f n), Function.Surjective.iUnion_comp hf _⟩
 
 /-- Countable unions of σ-compact sets are σ-compact. -/
-lemma isSigmaCompact_iUnion {ι : Type*} [Countable ι] (s : ι → Set X)
+lemma isSigmaCompact_iUnion [Countable ι] (s : ι → Set X)
     (hcomp : ∀ i, IsSigmaCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
   -- Choose a decomposition s = ⋃ s_i for each s ∈ S.
   choose K hcomp hcov using fun i ↦ hcomp i
@@ -74,7 +74,7 @@ lemma isSigmaCompact_sUnion (S : Set (Set X)) (hc : Set.Countable S)
   apply sUnion_eq_iUnion.symm ▸ isSigmaCompact_iUnion _ hcomp
 
 /-- Countable unions of σ-compact sets are σ-compact. -/
-lemma isSigmaCompact_biUnion {ι : Type*} {s : Set ι} {S : ι → Set X} (hc : Set.Countable s)
+lemma isSigmaCompact_biUnion {s : Set ι} {S : ι → Set X} (hc : Set.Countable s)
     (hcomp : ∀ (i : ι), i ∈ s → IsSigmaCompact (S i)) :
     IsSigmaCompact (⋃ (i : ι) (_ : i ∈ s), S i) := by
   have : Countable ↑s := countable_coe_iff.mpr hc
@@ -224,13 +224,13 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
       simp only [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset Y),
         iUnion_compactCovering, univ_prod_univ]⟩⟩
 
-instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, SigmaCompactSpace (π i)] :
-    SigmaCompactSpace (∀ i, π i) := by
-  refine' ⟨⟨fun n => Set.pi univ fun i => compactCovering (π i) n,
-    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (π i) _, _⟩⟩
+instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
+    SigmaCompactSpace (∀ i, X i) := by
+  refine' ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
+    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, _⟩⟩
   rw [iUnion_univ_pi_of_monotone]
   · simp only [iUnion_compactCovering, pi_univ]
-  · exact fun i => compactCovering_subset (π i)
+  · exact fun i => compactCovering_subset (X i)
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
   ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
@@ -239,12 +239,12 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
       by simp only [iUnion_union_distrib, ← image_iUnion, iUnion_compactCovering, image_univ,
         range_inl_union_range_inr]⟩⟩
 
-instance [Countable ι] [∀ i, TopologicalSpace (π i)] [∀ i, SigmaCompactSpace (π i)] :
-    SigmaCompactSpace (Σi, π i) := by
+instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σi, X i) := by
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩
-    refine' ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (π (f k)) n, fun n => _, _⟩⟩
+    refine' ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => _, _⟩⟩
     · refine' (finite_le_nat _).isCompact_biUnion fun k _ => _
       exact (isCompact_compactCovering _ _).image continuous_sigmaMk
     · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion]
@@ -270,7 +270,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
 only countably many elements, `Set.Countable` version. -/
-protected theorem LocallyFinite.countable_univ {ι : Type*} {f : ι → Set X} (hf : LocallyFinite f)
+protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyFinite f)
     (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Countable := by
   have := fun n => hf.finite_nonempty_inter_compact (isCompact_compactCovering X n)
   refine (countable_iUnion fun n => (this n).countable).mono fun i _ => ?_
