@@ -3,11 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Data.ZMod.IntUnitsPower
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.CharP.Two
 
 /-!
 # Graded tensor products over super- (`ZMod 2`-graded)
@@ -49,23 +48,6 @@ open scoped TensorProduct
 
 variable {R A B : Type*}
 
-section zmod2_pow
-
-/-- There is a canonical power operation by `ℤˣ` on `ZMod 2`. -/
-instance : Pow ℤˣ (ZMod 2) where
-  pow s z₂ := s ^ z₂.val
-
-lemma z₂pow_def (s : ℤˣ) (x : ZMod 2) : s ^ x = s ^ x.val := rfl
-
-@[simp] lemma z₂pow_zero (s : ℤˣ) : (s ^ (0 : ZMod 2) : ℤˣ) = (1 : ℤˣ) := pow_zero _
-@[simp] lemma z₂pow_one (s : ℤˣ) : (s ^ (1 : ZMod 2) : ℤˣ) = s := pow_one _
-lemma z₂pow_add (s : ℤˣ) (x y : ZMod 2) : s ^ (x + y) = s ^ x * s ^ y := by
-  simp only [z₂pow_def]
-  rw [ZMod.val_add, ←pow_eq_pow_mod, pow_add]
-  fin_cases s <;> simp
-
-end zmod2_pow
-
 namespace TensorProduct
 
 section external
@@ -83,8 +65,9 @@ instance (i : ℤ₂ × ℤ₂) : Module R (𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.s
   TensorProduct.leftModule
 
 variable (R) in
-/-- Auxliary construction used to build `gradedMul`. This operates on direct sums of tensors
-instead of tensors of direct sums. -/
+/-- Auxliary construction used to build `TensorProduct.gradedMul`.
+
+This operates on direct sums of tensors instead of tensors of direct sums. -/
 noncomputable irreducible_def gradedMulAux :
     (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ 𝒜ℬ) := by
   refine TensorProduct.curry ?_
@@ -462,7 +445,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
       simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
       simp_rw [mul_assoc (f a₁), ←mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
-        smul_mul_assoc, smul_smul, ←z₂pow_add, CharTwo.add_self_eq_zero, z₂pow_zero, one_smul])
+        smul_mul_assoc, smul_smul, z₂pow_mul_self, one_smul])
 
 @[simp]
 theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
@@ -481,7 +464,7 @@ def liftEquiv :
   invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
     dsimp
     rw [←F.map_mul, ←F.map_mul, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
-      tmul_one_mul_one_tmul, smul_smul, ←z₂pow_add, CharTwo.add_self_eq_zero, z₂pow_zero, one_smul]⟩
+      tmul_one_mul_one_tmul, smul_smul, z₂pow_mul_self, one_smul]⟩
   left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
@@ -500,3 +483,4 @@ lemma algHom_ext ⦃f g : (𝒜 ⊗'[R] ℬ) →ₐ[R] C⦄
 end SuperTensorProduct
 
 end internal
+#lint
