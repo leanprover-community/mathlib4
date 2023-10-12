@@ -412,21 +412,26 @@ local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
   inferInstance
   -- IsScalarTower.right
 
+set_option synthInstance.maxHeartbeats 40000 in
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
   inferInstance
   -- Submodule.module' _
 
+set_option synthInstance.maxHeartbeats 40000 in
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
   -- Submodule.module' _
   inferInstance
 
+set_option synthInstance.maxHeartbeats 40000 in
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
   -- Submodule.module' _
   inferInstance
 
+set_option maxHeartbeats 800000 in
+set_option synthInstance.maxHeartbeats 150000 in
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
 noncomputable def KaehlerDifferential.endEquivDerivation' :
@@ -444,6 +449,8 @@ def KaehlerDifferential.endEquivAuxEquiv :
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
+set_option maxHeartbeats 500000 in
+set_option synthInstance.maxHeartbeats 150000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
