@@ -371,7 +371,7 @@ lemma ofHoms_comp (φ : ∀ (p : ℤ), F.X p ⟶ G.X p) (ψ : ∀ (p : ℤ), G.X
 
 @[simp]
 lemma ofHom_comp (f : F ⟶ G) (g : G ⟶ K) :
-    ofHom (f ≫ g) = (ofHom f).comp (ofHom g) (zero_add 0):= by
+    ofHom (f ≫ g) = (ofHom f).comp (ofHom g) (zero_add 0) := by
   simp only [ofHom, HomologicalComplex.comp_f, ofHoms_comp]
 
 variable (K)
@@ -482,7 +482,7 @@ lemma δ_zero_cochain_comp {n₂ : ℤ} (z₁ : Cochain F G 0) (z₂ : Cochain G
     (m₂ : ℤ) (h₂ : n₂ + 1 = m₂) :
     δ n₂ m₂ (z₁.comp z₂ (zero_add n₂)) =
       z₁.comp (δ n₂ m₂ z₂) (zero_add m₂) +
-      n₂.negOnePow • ((δ 0 1 z₁).comp z₂ (by rw [add_comm, h₂])):=
+      n₂.negOnePow • ((δ 0 1 z₁).comp z₂ (by rw [add_comm, h₂])) :=
   δ_comp z₁ z₂ (zero_add n₂) 1 m₂ m₂ h₂ (zero_add 1) h₂
 
 lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K 0)
@@ -494,7 +494,7 @@ lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
 
 @[simp]
 lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
-    (δ 0 1 z).v p q hpq = z.v p p (add_zero p) ≫ G.d p q - F.d p q ≫ z.v q q (add_zero q):= by
+    (δ 0 1 z).v p q hpq = z.v p p (add_zero p) ≫ G.d p q - F.d p q ≫ z.v q q (add_zero q) := by
   simp only [δ_v 0 1 (zero_add 1) z p q hpq p q (by linarith) hpq, zero_add,
     Int.negOnePow_one, neg_smul, one_smul, sub_eq_add_neg]
 
