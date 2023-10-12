@@ -584,9 +584,9 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp; ext j; rw [hα]; simp
     rw [hg, hg''', assoc, comp_dist_triangle_mor_zero₁₂ _ hT', comp_zero]
   refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
-  . intro a₁ a₂ ha
+  · intro a₁ a₂ ha
     simpa only [← cancel_mono φ'.hom₃] using ha
-  . intro a
+  · intro a
     obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
       have zero : ((productTriangle T).mor₃) ≫ (shiftFunctor C 1).map T'.mor₁ = 0 := by
         rw [← cancel_mono (φ'.hom₂⟦1⟧'), zero_comp, assoc, ← Functor.map_comp, φ'.comm₁, h₁,
@@ -605,7 +605,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     let b := fun j => (ha'' j).choose
     have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
-      Limits.Pi.hom_ext _ _ (fun j => by rw [hb] ; simp)
+      Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
     have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
       rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
     exact ⟨_, this⟩
