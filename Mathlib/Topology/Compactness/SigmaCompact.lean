@@ -17,7 +17,7 @@ open Set Filter Topology TopologicalSpace Classical
 
 universe u v
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*}
+variable {α : Type*} {β : Type*} {ι : Type*} {π : ι → Type*}
 variable [TopologicalSpace α] [TopologicalSpace β] {s t : Set α}
 
 /-- A subset `s ⊆ α` is called **σ-compact** if it is the union of countably many compact sets. -/
