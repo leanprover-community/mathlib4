@@ -9,7 +9,7 @@ import Mathlib.Topology.Compactness.LocallyCompact
 
 ## Main definitions
 * `IsSigmaCompact`: a set that is the union of countably many compact sets.
-* `SigmaCompactSpace`: a σ-compact topological space; `X` is σ-compact iff it is the union
+* `SigmaCompactSpace X`: `X` is a σ-compact topological space; i.e., is the union
   of a countable collection of compact subspaces.
 
 -/
