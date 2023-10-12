@@ -33,6 +33,8 @@ use this as an interface and not need to interact much with the implementation d
 -- Porting note: Module
 set_option linter.uppercaseLean3 false
 
+suppress_compilation
+
 universe v w x u
 
 open CategoryTheory
