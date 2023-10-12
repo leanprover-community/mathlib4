@@ -90,7 +90,7 @@ lemma mem_language_iff (g : ContextFreeGrammar T) (w : List T) :
 variable {g : ContextFreeGrammar T}
 
 @[refl]
-lemma Derives.refl {w : List (Symbol T g.NT)} : g.Derives w w :=
+lemma Derives.refl (w : List (Symbol T g.NT)) : g.Derives w w :=
   Relation.ReflTransGen.refl
 
 lemma Produces.single {v w : List (Symbol T g.NT)} (hvw : g.Produces v w) : g.Derives v w :=
