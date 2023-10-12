@@ -91,9 +91,8 @@ https://en.wikipedia.org/wiki/Separation_axiom
 open Function Set Filter Topology TopologicalSpace
 open scoped Classical
 
-universe u v
-
-variable {α : Type u} {β : Type v} [TopologicalSpace α]
+universe u v uα uβ
+variable {α : Type uα} {β : Type uβ} [TopologicalSpace α]
 
 section Separation
 

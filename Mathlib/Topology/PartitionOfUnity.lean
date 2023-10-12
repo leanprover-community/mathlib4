@@ -75,8 +75,6 @@ partition of unity, bump function, Urysohn's lemma, normal space, paracompact sp
 -/
 
 
-universe u v
-
 open Function Set Filter
 
 open BigOperators Topology Classical
@@ -127,7 +125,8 @@ structure BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) w
   eventuallyEq_one' : ∀ x ∈ s, ∃ i, toFun i =ᶠ[𝓝 x] 1
 #align bump_covering BumpCovering
 
-variable {ι : Type u} {X : Type v} [TopologicalSpace X]
+universe uι uX
+variable {ι : Type uι} {X : Type uX} [TopologicalSpace X]
 
 namespace PartitionOfUnity
 

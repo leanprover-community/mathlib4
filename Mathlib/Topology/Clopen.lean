@@ -20,9 +20,8 @@ A clopen set is a set that is both open and closed.
 
 open Set Filter Topology TopologicalSpace Classical
 
-universe u v
-
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*}
+universe uα uβ uι uπ
+variable {α : Type uα} {β : Type uβ} {ι : Type uι} {π : ι → Type uπ}
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s t : Set α}
 

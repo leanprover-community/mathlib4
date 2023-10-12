@@ -30,9 +30,9 @@ We define the following properties for sets in a topological space:
 -/
 open Set Filter Topology TopologicalSpace Classical
 
-universe u v
+universe u v uβ uι
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*}
+variable {α : Type u} {β : Type uβ} {ι : Type uι} {π : ι → Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s t : Set α}
 

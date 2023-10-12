@@ -45,9 +45,8 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 open Set Function Topology TopologicalSpace Relation
 open scoped Classical
 
-universe u v
-
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
+universe u uα uβ uι uπ
+variable {α : Type uα} {β : Type uβ} {ι : Type uι} {π : ι → Type uπ} [TopologicalSpace α]
   {s t u v : Set α}
 
 section Preconnected
@@ -1242,7 +1241,7 @@ section LocallyConnectedSpace
 of connected *open* sets. Note that it is equivalent to each point having a basis of connected
 (non necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
 equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
-class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
+class LocallyConnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
   open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id
 #align locally_connected_space LocallyConnectedSpace
@@ -1576,7 +1575,7 @@ end TotallySeparated
 section connectedComponentSetoid
 
 /-- The setoid of connected components of a topological space -/
-def connectedComponentSetoid (α : Type*) [TopologicalSpace α] : Setoid α :=
+def connectedComponentSetoid (α : Type u) [TopologicalSpace α] : Setoid α :=
   ⟨fun x y => connectedComponent x = connectedComponent y,
     ⟨fun x => by trivial, fun h1 => h1.symm, fun h1 h2 => h1.trans h2⟩⟩
 #align connected_component_setoid connectedComponentSetoid

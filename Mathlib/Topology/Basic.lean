@@ -58,7 +58,7 @@ noncomputable section
 
 open Set Filter
 
-universe u v w
+universe u
 
 /-!
 ### Topological spaces
@@ -95,7 +95,8 @@ def TopologicalSpace.ofClosed {α : Type u} (T : Set (Set α)) (empty_mem : ∅ 
 
 section TopologicalSpace
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {a : α} {s s₁ s₂ t : Set α} {p p₁ p₂ : α → Prop}
+universe uα uβ
+variable {α : Type uα} {β : Type uβ} {ι : Sort w} {a : α} {s s₁ s₂ t : Set α} {p p₁ p₂ : α → Prop}
 
 /-- `IsOpen s` means that `s` is open in the ambient topological space on `α` -/
 def IsOpen [TopologicalSpace α] : Set α → Prop := TopologicalSpace.IsOpen

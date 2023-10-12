@@ -32,10 +32,8 @@ Here is the list of statements specific to these two types of filters:
   `IsLocal* f a`.
 -/
 
-
-universe u v w x
-
-variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x} [TopologicalSpace α]
+universe uα uβ uγ uδ
+variable {α : Type uα} {β : Type uβ} {γ : Type uγ} {δ : Type uδ} [TopologicalSpace α]
 
 open Set Filter Topology
 
@@ -628,4 +626,3 @@ theorem Filter.EventuallyEq.isLocalExtr_iff {f g : α → β} {a : α} (heq : f 
 #align filter.eventually_eq.is_local_extr_iff Filter.EventuallyEq.isLocalExtr_iff
 
 end Eventually
-

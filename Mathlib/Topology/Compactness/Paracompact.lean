@@ -51,7 +51,7 @@ open Set Filter Function
 
 open Filter Topology
 
-universe u v w
+universe u v uι uy
 
 /-- A topological space is called paracompact, if every open covering of this space admits a locally
 finite refinement. We use the same universe for all types in the definition to avoid creating a
@@ -66,7 +66,7 @@ class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
         LocallyFinite t ∧ ∀ b, ∃ a, t b ⊆ s a
 #align paracompact_space ParacompactSpace
 
-variable {ι : Type u} {X : Type v} {Y : Type w} [TopologicalSpace X] [TopologicalSpace Y]
+variable {ι : Type uι} {X : Type v} {Y : Type uy} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- Any open cover of a paracompact space has a locally finite *precise* refinement, that is,
 one indexed on the same type with each open set contained in the corresponding original one. -/

@@ -46,11 +46,10 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 set_option autoImplicit true
 
-universe u v w x
-
 open Filter Function Set Topology NNReal ENNReal Bornology
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
+universe uα uβ uγ uι
+variable {α : Type uα} {β : Type uβ} {γ : Type uγ} {ι : Type uι}
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y`
 we have `dist (f x) (f y) ≤ K * dist x y`. -/
@@ -231,7 +230,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
   hf
 #align lipschitz_with.subtype_mk LipschitzWith.subtype_mk
 
-protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
+protected theorem eval {α : ι → Type*} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
   LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
 #align lipschitz_with.eval LipschitzWith.eval

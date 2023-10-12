@@ -13,9 +13,8 @@ subspaces.
 -/
 open Set Filter Topology TopologicalSpace Classical
 
-universe u v
-
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*}
+universe u uα uβ uι uπ
+variable {α : Type uα} {β : Type uβ} {ι : Type uι} {π : ι → Type uπ}
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s t : Set α}
 /-- A σ-compact space is a space that is the union of a countable collection of compact subspaces.

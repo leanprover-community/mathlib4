@@ -30,8 +30,6 @@ compact Hausdorff spaces.
 [Gleason, *Projective topological spaces*][gleason1958]
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Classical Function Set
@@ -40,7 +38,7 @@ universe u
 
 section
 
-variable (X : Type u) [TopologicalSpace X]
+variable (X : Type u) [TopologicalSpace X] {ι : Type*}
 
 /-- An extremally disconnected topological space is a space
 in which the closure of every open set is open. -/
@@ -135,7 +133,7 @@ end
 
 section
 
-variable {A D E : Type u} [TopologicalSpace A] [TopologicalSpace D] [TopologicalSpace E]
+variable {A D E : Type*} [TopologicalSpace A] [TopologicalSpace D] [TopologicalSpace E]
 
 /-- Lemma 2.4 in [Gleason, *Projective topological spaces*][gleason1958]:
 a continuous surjection $\pi$ from a compact space $D$ to a Fréchet space $A$ restricts to

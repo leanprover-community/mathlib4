@@ -288,7 +288,7 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
 `(Prod.map f id : X × Filter X → Y × Filter X)` is closed. This is stronger than
 `isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
 properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [TopologicalSpace X]
+theorem isProperMap_iff_isClosedMap_filter {X : Type*} {Y : Type*} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap
       (Prod.map f id : X × Filter X → Y × Filter X) := by
@@ -332,7 +332,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
 `(Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X)` is closed. This is stronger than
 `isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
 properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type u} {Y : Type v} [TopologicalSpace X]
+theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type*} {Y : Type*} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap
       (Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X) := by
@@ -360,7 +360,7 @@ have this restriction.
 
 This is taken as the definition of properness in
 [N. Bourbaki, *General Topology*][bourbaki1966]. -/
-theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type v} [TopologicalSpace X]
+theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type*} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ ∀ (Z : Type u) [TopologicalSpace Z],
       IsClosedMap (Prod.map f id : X × Z → Y × Z) := by
