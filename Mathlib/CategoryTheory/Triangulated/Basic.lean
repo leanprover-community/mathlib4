@@ -258,6 +258,7 @@ def productTriangle.π (j : J) :
 @[simp]
 def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
+/-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
     T' ⟶ productTriangle T where
@@ -269,6 +270,8 @@ def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
     rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
     aesop_cat
 
+/-- The triangle `productTriangle T` satisfies the universal property of the categorical
+product of the triangles `T`. -/
 def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
   mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by aesop_cat) (by
     intro s m hm
