@@ -706,6 +706,10 @@ theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
   simp only [span_singleton_le_iff_mem]
 #align submodule.mem_supr Submodule.mem_iSup
 
+theorem mem_sSup {s : Set (Submodule R M)} {m : M} :
+    (m ∈ sSup s) ↔ ∀ N, (∀ p ∈ s, p ≤ N) → m ∈ N := by
+  simp_rw [sSup_eq_iSup, Submodule.mem_iSup, iSup_le_iff]
+
 section
 
 /-- For every element in the span of a set, there exists a finite subset of the set
