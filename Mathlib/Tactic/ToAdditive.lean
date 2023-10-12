@@ -1159,11 +1159,18 @@ various things you can try.
 The first thing to do is to figure out what `@[to_additive]` did wrong by looking at the type
 mismatch error.
 
-* Option 1: It didn't additivize a declaration that should be additivized.
-  This happened because the heuristic applied, and the first argument contains a fixed type,
-  like `ℕ` or `ℝ`. Solutions:
+* Option 1: The most common case is that it didn't additivize a declaration that should be
+  additivized. This happened because the heuristic applied, and the first argument contains a
+  fixed type, like `ℕ` or `ℝ`. However, the heuristic misfires on some other declarations.
+  Solutions:
+  * First figure out what the fixed type is in the first argument of the declaration that didn't
+    get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
+    it is hard, you can run `set_option trace.to_additive_detail true` and search the output for the
+    fragment "contains the fixed type" to find what the fixed type is.
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
+  * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
+    `@[to_additive existing Foo]` to the fixed type `Foo`.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
@@ -1178,13 +1185,14 @@ mismatch error.
     should have automatically added the attribute `@[to_additive_relevant_arg]` to the declaration.
     You can test this by running the following (where `d` is the full name of the declaration):
     ```
-      #eval (do isRelevant `d >>= trace)
+      open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
     ```
-    The expected output is `n` where the `n`-th argument of `d` is a type (family) with a
-    multiplicative structure on it. If you get a different output (or a failure), you could add
-    the attribute `@[to_additive_relevant_arg n]` manually, where `n` is an argument with a
+    The expected output is `n` where the `n`-th (0-indexed) argument of `d` is a type (family)
+    with a multiplicative structure on it. `none` means `0`.
+    If you get a different output (or a failure), you could add the attribute
+    `@[to_additive_relevant_arg n]` manually, where `n` is an (1-indexed) argument with a
     multiplicative structure.
-  * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
+* Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the
     multiplicative and additive version. This might mean that arguments have an "unnatural" order
