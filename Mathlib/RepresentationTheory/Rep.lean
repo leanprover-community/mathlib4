@@ -486,15 +486,15 @@ theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
 set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_hom Rep.MonoidalClosed.linearHomEquiv_hom
 
-<<<<<<< HEAD
--- linter times out
-@[simp, nolint simpNF]
-||||||| e70f8800f
-@[simp]
-=======
 -- `simpNF` times out
+@[simp, nolint simpNF]
+theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
+    (MonoidalClosed.linearHomEquivComm A B C f).hom = TensorProduct.curry f.hom :=
+  rfl
+set_option linter.uppercaseLean3 false in
 #align Rep.monoidal_closed.linear_hom_equiv_comm_hom Rep.MonoidalClosed.linearHomEquivComm_hom
 
+@[simp]
 theorem MonoidalClosed.linearHomEquiv_symm_hom (f : B ⟶ A ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip :=
   rfl
