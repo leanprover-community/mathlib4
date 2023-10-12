@@ -166,7 +166,7 @@ it suffices to prove it for
 * the finset family which only contains the empty finset.
 * `ℬ ∪ {s ∪ {a} | s ∈ 𝒞}` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the
   ground type and `𝒜` and `ℬ` are families of finsets not containing `a`.
-  Note that instead of giving `ℬ` and `𝒞`, the induction principle gives you
+  Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you
   `𝒜 = ℬ ∪ {s ∪ {a} | s ∈ 𝒞}`, so that `ℬ = 𝒜.nonMemberSubfamily` and `𝒞 = 𝒜.memberSubfamily`.
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
@@ -197,8 +197,8 @@ it suffices to prove it for
 * `{s ∪ {a} | s ∈ 𝒜}` assuming the property for `𝒜` a family of finsets not containing `a`.
 * `ℬ ∪ 𝒞` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the ground type and
   `ℬ`is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
-  Note that instead of giving `ℬ` and `𝒞`, the induction principle gives you
-  `𝒜 = ℬ ∪ 𝒞`, so that `ℬ = 𝒜.filter (a ∉ ·)` and `𝒞 = 𝒜.filter (a ∈ ·)`.
+  Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you `𝒜 = ℬ ∪ 𝒞`, so that
+  `ℬ = 𝒜.filter (a ∉ ·)` and `𝒞 = 𝒜.filter (a ∈ ·)`.
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
