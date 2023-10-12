@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
-import Mathlib.Algebra.Lie.Weights
+import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.Trace
 
