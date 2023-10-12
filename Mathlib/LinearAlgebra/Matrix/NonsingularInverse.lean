@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Tim Baanen. All rights reserved.
+Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baanen, Lu-Ming Zhang
+Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.LinearAlgebra.Matrix.Adjugate
@@ -346,6 +346,20 @@ lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x =
 
 lemma mul_left_inj_of_invertible [Invertible A] {x y : Matrix m n α} : x * A = y * A ↔ x = y :=
   (mul_left_injective_of_invertible A).eq_iff
+
+section InjectiveMul
+variable [Fintype m] [DecidableEq m]
+variable [Fintype l] [DecidableEq l]
+
+lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
+    Function.Injective (fun x : Matrix l m α => x * A) :=
+  fun _ _ g => by simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr_arg (· * B) g
+
+lemma mul_right_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
+    Function.Injective (fun x : Matrix m l α => B * x) :=
+  fun _ _ g => by simpa only [← Matrix.mul_assoc, Matrix.one_mul, h] using congr_arg (A * ·) g
+
+end InjectiveMul
 
 theorem nonsing_inv_cancel_or_zero : A⁻¹ * A = 1 ∧ A * A⁻¹ = 1 ∨ A⁻¹ = 0 := by
   by_cases h : IsUnit A.det

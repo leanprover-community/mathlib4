@@ -5,7 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Clopen
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -64,7 +65,7 @@ lemma isOpen_iInter (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
 isOpen_sInter $ forall_range_iff.2 hf
 
 lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j)) :
-  IsOpen (⋂ i, ⋂ j, f i j) :=
+    IsOpen (⋂ i, ⋂ j, f i j) :=
 isOpen_iInter λ _ ↦ isOpen_iInter $ hf _
 
 lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
@@ -74,7 +75,7 @@ lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
 isClosed_sUnion $ forall_range_iff.2 hf
 
 lemma isClosed_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClosed (f i j)) :
-  IsClosed (⋃ i, ⋃ j, f i j) :=
+    IsClosed (⋃ i, ⋃ j, f i j) :=
 isClosed_iUnion λ _ ↦ isClosed_iUnion $ hf _
 
 lemma isClopen_sInter (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋂₀ S) :=
@@ -84,7 +85,7 @@ lemma isClopen_iInter (hf : ∀ i, IsClopen (f i)) : IsClopen (⋂ i, f i) :=
 ⟨isOpen_iInter λ i ↦ (hf i).1, isClosed_iInter λ i ↦ (hf i).2⟩
 
 lemma isClopen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
-  IsClopen (⋂ i, ⋂ j, f i j) :=
+    IsClopen (⋂ i, ⋂ j, f i j) :=
 isClopen_iInter λ _ ↦ isClopen_iInter $ hf _
 
 lemma isClopen_sUnion (hS : ∀ s ∈ S, IsClopen s) : IsClopen (⋃₀ S) :=
@@ -94,7 +95,7 @@ lemma isClopen_iUnion (hf : ∀ i, IsClopen (f i)) : IsClopen (⋃ i, f i) :=
 ⟨isOpen_iUnion λ i ↦ (hf i).1, isClosed_iUnion λ i ↦ (hf i).2⟩
 
 lemma isClopen_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsClopen (f i j)) :
-  IsClopen (⋃ i, ⋃ j, f i j) :=
+    IsClopen (⋃ i, ⋃ j, f i j) :=
 isClopen_iUnion λ _ ↦ isClopen_iUnion $ hf _
 
 lemma interior_iInter (f : ι → Set α) : interior (⋂ i, f i) = ⋂ i, interior (f i) :=
@@ -227,18 +228,18 @@ lemma Inducing.alexandrovDiscrete {f : β → α} (h : Inducing f) : AlexandrovD
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
-  @AlexandrovDiscrete β (coinduced f ‹_›) :=
+    @AlexandrovDiscrete β (coinduced f ‹_›) :=
 @AlexandrovDiscrete.mk β (coinduced f ‹_›) λ S hS ↦ by
   rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
 
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
-  (_ : @AlexandrovDiscrete α t₂) :
+    (_ : @AlexandrovDiscrete α t₂) :
   @AlexandrovDiscrete α (t₁ ⊔ t₂) :=
 @AlexandrovDiscrete.mk α (t₁ ⊔ t₂) λ _S hS ↦
   ⟨@isOpen_sInter _ t₁ _ _ λ _s hs ↦ (hS _ hs).1, isOpen_sInter λ _s hs ↦ (hS _ hs).2⟩
 
 lemma alexandrovDiscrete_iSup {t : ι → TopologicalSpace α} (_ : ∀ i, @AlexandrovDiscrete α (t i)) :
-  @AlexandrovDiscrete α (⨆ i, t i) :=
+    @AlexandrovDiscrete α (⨆ i, t i) :=
 @AlexandrovDiscrete.mk α (⨆ i, t i) λ _S hS ↦ isOpen_iSup_iff.2 λ i ↦ @isOpen_sInter _ (t i) _ _
   λ _s hs ↦ isOpen_iSup_iff.1 (hS _ hs) _
 
