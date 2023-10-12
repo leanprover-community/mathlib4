@@ -114,7 +114,7 @@ def apply_changes(changes, filename):
 def import_to_filename(import_name):
     return import_name.replace('.', '/') + '.lean'
 
-def make_committing_pass(change_generator):
+def make_committing_pass(change_generator, bottom_up=False):
     """Turn a change generator into a minimization pass.
 
     A change generator will be called on a source file name and should return an iterable
@@ -123,9 +123,11 @@ def make_committing_pass(change_generator):
     These changes should be independent, but they don't necessarily need to all make progress.
 
     The resulting minimization pass will try each change at most once and commit to the first that succeeds.
+    By default, we try changes from the top of the file downwards.
+    If `bottom_up` is true, then we try changes from the bottom of the file upwards.
     """
     def decomposable_pass(expected_out, filename):
-        changes = sorted(list(change_generator(filename)))
+        changes = sorted(list(change_generator(filename)), reverse=bottom_up)
 
         for i, change in enumerate(changes):
             logging.debug(f"committing_pass: trying change {i}")
@@ -317,9 +319,8 @@ def delete_lines(filename):
 passes = {
     'strip_comments': make_bisecting_pass(strip_comments),
     'delete_align': make_bisecting_pass(delete_align),
-    'delete_defs': make_bottom_up_pass(delete_defs),
-    'make_sorry': make_bisecting_pass(make_sorry),
-#    'delete_lines': make_bisecting_pass(delete_lines),
+    'delete_defs': make_committing_pass(delete_defs, bottom_up=True),
+    'make_sorry': make_committing_pass(make_sorry, bottom_up=True),
     'delete_imports': make_bisecting_pass(delete_imports),
     'replace_imports': make_committing_pass(replace_imports),
 }
