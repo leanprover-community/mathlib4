@@ -69,7 +69,7 @@ def ranges : List ℕ → List (List ℕ)
 
 /-- The members of `l.ranges` are pairwise disjoint -/
 theorem ranges_disjoint (l : List ℕ) :
-  Pairwise Disjoint (ranges l) := by
+    Pairwise Disjoint (ranges l) := by
   induction l with
   | nil => exact Pairwise.nil
   | cons a l hl =>
