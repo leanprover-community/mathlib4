@@ -243,8 +243,6 @@ attribute [simp] killingCompl_top_eq_bot
     LinearMap.ker (killingForm R L) = ⊥ := by
   simp [← LieIdeal.coe_killingCompl_top, killingCompl_top_eq_bot]
 
--- TODO: formalize a positive-characteristic counterexample to the above instance
-
 /-- If the Killing form of a Lie algebra is non-singular, it remains non-singular when restricted
 to a Cartan subalgebra. -/
 lemma ker_restrictBilinear_of_isCartanSubalgebra_eq_bot
@@ -267,6 +265,8 @@ instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] [IsKilling R L] : Is
   refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
+
+-- TODO: formalize a positive-characteristic counterexample to the above instance
 
 end IsKilling
 
