@@ -377,6 +377,27 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
     rwa [← types_comp_apply (F.map f.op) (F.map g.op), ← F.map_comp, ← op_comp, hfg, op_id,
       F.map_id, types_id_apply] at this
 
+lemma isSheaf_iff_equalizerCondition (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C] [HasPullbacks C] :
+    Presieve.IsSheaf (regularCoverage C).toGrothendieck F ↔ EqualizerCondition F := by
+  rw [Presieve.isSheaf_coverage]
+  refine ⟨?_, ?_⟩
+  · intro h
+    apply IsSheafForRegular.equalizerCondition
+    intro B S _ _
+    apply h S
+    obtain ⟨Y, f, rfl, _⟩ := Presieve.regular.single_epi (R := S)
+    use Y, f
+  · intro h X S ⟨Y, f, hh⟩
+    haveI : S.regular := ⟨Y, f, hh⟩
+    exact h.isSheafFor
+
+lemma isSheaf_of_projective (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C] [∀ (X : C), Projective X] :
+    Presieve.IsSheaf (regularCoverage C).toGrothendieck F := by
+  rw [Presieve.isSheaf_coverage]
+  intro X S ⟨Y, f, hh⟩
+  haveI : S.regular := ⟨Y, f, hh⟩
+  exact isSheafFor_regular_of_projective _ _
+
 end RegularSheaves
 
 end CategoryTheory
