@@ -39,13 +39,6 @@ instance : HasAntidiagonal ℕ where
   mem_antidiagonal n xy := by
     rw [mem_def, Multiset.Nat.mem_antidiagonal]
 
-/-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonalOfLocallyFinite.antidiagonal` -/
-lemma antidiagonal_eq_antidiagonal (n : ℕ):
-    antidiagonal n = Finset.antidiagonalOfLocallyFinite.antidiagonal n := by
-    suffices : Finset.Nat.instHasAntidiagonalNatAddMonoid = Finset.antidiagonalOfLocallyFinite
-    rw [← this]
-    apply Subsingleton.elim
-
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
 theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [Finset.HasAntidiagonal.antidiagonal]
