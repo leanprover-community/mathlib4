@@ -78,8 +78,6 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] �
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE, stronglyMeasurable_const]
   borelize E
-  by_cases hE : CompleteSpace E; swap
-  · simp [hE, integral]; exact stronglyMeasurable_const
   haveI : SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
   let s : ℕ → SimpleFunc (α × β) E :=
@@ -449,11 +447,10 @@ theorem continuous_integral_integral :
   `integrable_prod_iff` can be useful to show that the function in question in integrable.
   `MeasureTheory.Integrable.integral_prod_right` is useful to show that the inner integral
   of the right-hand side is integrable. -/
-theorem integral_prod :
-    ∀ (f : α × β → E) (_ : Integrable f (μ.prod ν)),
-      ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
-  by_cases hE : CompleteSpace E; swap
-  · simp [hE, integral]
+theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
+    ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
+  by_cases hE : CompleteSpace E; swap; · simp only [integral, dif_neg hE]
+  revert f
   apply Integrable.induction
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
