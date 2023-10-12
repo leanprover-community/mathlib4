@@ -712,15 +712,15 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
 #align nat.find_x Nat.findX
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
-there exists some natural number satisfying `p`, then `nat.find hp` is the
-smallest natural number satisfying `p`. Note that `nat.find` is protected,
+there exists some natural number satisfying `p`, then `Nat.find hp` is the
+smallest natural number satisfying `p`. Note that `Nat.find` is protected,
 meaning that you can't just write `find`, even if the `nat` namespace is open.
 
-The API for `nat.find` is:
+The API for `Nat.find` is:
 
-* `nat.find_spec` is the proof that `nat.find hp` satisfies `p`.
-* `nat.find_min` is the proof that if `m < nat.find hp` then `m` does not satisfy `p`.
-* `nat.find_min'` is the proof that if `m` does satisfy `p` then `nat.find hp ≤ m`.
+* `Nat.find_spec` is the proof that `Nat.find hp` satisfies `p`.
+* `Nat.find_min` is the proof that if `m < Nat.find hp` then `m` does not satisfy `p`.
+* `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
 -/
 protected def find : ℕ :=
   (Nat.findX H).1
@@ -739,7 +739,7 @@ protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
 #align nat.find_min' Nat.find_min'
 
 lemma to_digits_core_lens_eq_aux (b f : Nat) :
-  ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
+    ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
     (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
   induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
   | zero => assumption

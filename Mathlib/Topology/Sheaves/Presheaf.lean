@@ -185,7 +185,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
-  (h : f = g) (ℱ : X.Presheaf C) (U) :
+    (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
       ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
   by simp [pushforwardEq]
@@ -494,7 +494,7 @@ set_option linter.uppercaseLean3 false in
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
 @[simps! unit_app_app counit_app_app]
 def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
-  pullback C f ⊣ pushforward C f :=
+    pullback C f ⊣ pushforward C f :=
   Lan.adjunction _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_pullback_adjunction TopCat.Presheaf.pushforwardPullbackAdjunction
