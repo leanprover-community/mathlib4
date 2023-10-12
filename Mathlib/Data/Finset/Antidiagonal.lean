@@ -151,7 +151,8 @@ def HasAntidiagonal' : HasAntidiagonal μ where
 variable {μ}
 
 theorem piAntidiagonal_equiv_antidiagonal [HasAntidiagonal μ] (n : μ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) = Finset.HasAntidiagonal.antidiagonal n := by
+    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) =
+      Finset.HasAntidiagonal.antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding,
     Function.Embedding.coeFn_mk, ← Equiv.eq_symm_apply]
