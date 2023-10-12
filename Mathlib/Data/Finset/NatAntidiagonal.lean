@@ -34,31 +34,21 @@ namespace Nat
 
 /-- The antidiagonal of a natural number `n` is
     the finset of pairs `(i, j)` such that `i + j = n`. -/
-def antidiagonal (n : ℕ) : Finset (ℕ × ℕ) :=
-  ⟨Multiset.Nat.antidiagonal n, Multiset.Nat.nodup_antidiagonal n⟩
-#align finset.nat.antidiagonal Finset.Nat.antidiagonal
-
-/-- A pair (i, j) is contained in the antidiagonal of `n` if and only if `i + j = n`. -/
-@[simp]
-theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
-  rw [antidiagonal, mem_def, Multiset.Nat.mem_antidiagonal]
-#align finset.nat.mem_antidiagonal Finset.Nat.mem_antidiagonal
-
-/-- HasAntidiagonal for Nat -/
-instance Finset.Nat.HasAntidiagonal : Finset.HasAntidiagonal ℕ :=
-  ⟨Nat.antidiagonal, @Nat.mem_antidiagonal⟩
+instance : HasAntidiagonal ℕ where
+  antidiagonal n := ⟨Multiset.Nat.antidiagonal n, Multiset.Nat.nodup_antidiagonal n⟩
+  mem_antidiagonal n xy := by
+    rw [mem_def, Multiset.Nat.mem_antidiagonal]
 
 /-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonalOfLocallyFinite.antidiagonal` -/
-lemma antidiagonal_eq_antidiagonal :
-    Nat.antidiagonal = Finset.antidiagonalOfLocallyFinite.antidiagonal := by
-    suffices : Finset.Nat.HasAntidiagonal = Finset.antidiagonalOfLocallyFinite
+lemma antidiagonal_eq_antidiagonal (n : ℕ):
+    antidiagonal n = Finset.antidiagonalOfLocallyFinite.antidiagonal n := by
+    suffices : Finset.Nat.instHasAntidiagonalNatAddMonoid = Finset.antidiagonalOfLocallyFinite
     rw [← this]
-    rfl
     apply Subsingleton.elim
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
+theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [Finset.HasAntidiagonal.antidiagonal]
 #align finset.nat.card_antidiagonal Finset.Nat.card_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
@@ -104,7 +94,7 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
 /-- See also `Finset.map.map_prodComm_antidiagonal`. -/
 @[simp] theorem map_swap_antidiagonal {n : ℕ} :
     (antidiagonal n).map ⟨Prod.swap, Prod.swap_injective⟩ = antidiagonal n :=
-  eq_of_veq <| by simp [antidiagonal, Multiset.Nat.map_swap_antidiagonal]
+  eq_of_veq <| by simp [Finset.HasAntidiagonal.antidiagonal, Multiset.Nat.map_swap_antidiagonal]
 #align finset.nat.map_swap_antidiagonal Finset.Nat.map_swap_antidiagonal
 
 @[simp] theorem map_prodComm_antidiagonal {n : ℕ} :
@@ -145,7 +135,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
 theorem filter_fst_eq_antidiagonal (n m : ℕ) :
     filter (fun x : ℕ × ℕ ↦ x.fst = m) (antidiagonal n) = if m ≤ n then {(m, n - m)} else ∅ := by
   ext ⟨x, y⟩
-  simp only [mem_filter, Nat.mem_antidiagonal]
+  simp only [mem_filter, mem_antidiagonal]
   split_ifs with h
   · simp (config := { contextual := true }) [and_comm, eq_tsub_iff_add_eq_of_le h, add_comm]
   · rw [not_le] at h
@@ -165,7 +155,7 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
     (antidiagonal n).filter (fun a ↦ a.snd ≤ k) = (antidiagonal k).map
       (Embedding.prodMap ⟨_, add_left_injective (n - k)⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
-  suffices i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i by simpa
+  suffices i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i by simpa [mem_antidiagonal]
   refine' ⟨fun hi ↦ ⟨k - j, tsub_add_cancel_of_le hi.2, _⟩, _⟩
   · rw [add_comm, tsub_add_eq_add_tsub h, ← hi.1, add_assoc, Nat.add_sub_of_le hi.2,
       add_tsub_cancel_right]
@@ -184,13 +174,13 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
   rw [← map_prodComm_antidiagonal]
   simp_rw [aux₁, ← map_filter, antidiagonal_filter_snd_le_of_le h, map_map]
   ext ⟨i, j⟩
-  simpa using aux₂ i j
+  simpa [mem_antidiagonal] using aux₂ i j
 
 @[simp] lemma antidiagonal_filter_le_fst_of_le {n k : ℕ} (h : k ≤ n) :
     (antidiagonal n).filter (fun a ↦ k ≤ a.fst) = (antidiagonal (n - k)).map
       (Embedding.prodMap ⟨_, add_left_injective k⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
-  suffices i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i by simpa
+  suffices i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i by simpa [mem_antidiagonal]
   refine' ⟨fun hi ↦ ⟨i - k, _, tsub_add_cancel_of_le hi.2⟩, _⟩
   · rw [← Nat.sub_add_comm hi.2, hi.1]
   · rintro ⟨l, hl, rfl⟩
@@ -208,7 +198,7 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
   rw [← map_prodComm_antidiagonal]
   simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h, map_map]
   ext ⟨i, j⟩
-  simpa using aux₂ i j
+  simpa [mem_antidiagonal] using aux₂ i j
 
 section EquivProd
 
@@ -217,7 +207,7 @@ section EquivProd
 @[simps]
 def sigmaAntidiagonalEquivProd : (Σn : ℕ, antidiagonal n) ≃ ℕ × ℕ where
   toFun x := x.2
-  invFun x := ⟨x.1 + x.2, x, mem_antidiagonal.mpr rfl⟩
+  invFun x := ⟨x.1 + x.2, x, by rw [mem_antidiagonal]⟩
   left_inv := by
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_antidiagonal] at h
