@@ -65,11 +65,7 @@ theorem ContextFreeRule.rewritesTo_iff {N : Type _} {r : ContextFreeRule T N}
     r.RewritesTo u v ↔
       ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
         u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
-  constructor
-  · apply ContextFreeRule.RewritesTo.exists_parts
-  · rintro ⟨p, q, bef, aft⟩
-    rw [bef, aft]
-    apply ContextFreeRule.rewritesTo_of_exists_parts
+  ⟨fun t ↦ t.exists_parts, by rintro ⟨p, q, rfl, rfl⟩; apply rewritesTo_of_exists_parts⟩
 
 namespace ContextFreeGrammar
 
