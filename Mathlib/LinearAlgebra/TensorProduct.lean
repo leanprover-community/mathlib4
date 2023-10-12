@@ -34,8 +34,6 @@ as `m ⊗ₜ n` and `m ⊗ₜ[R] n` for `TensorProduct.tmul R m n`.
 bilinear, tensor, tensor product
 -/
 
-suppress_compilation
-
 section Semiring
 
 variable {R : Type*} [CommSemiring R]
@@ -502,9 +500,13 @@ theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
 
 variable (f)
 
+/-- If no one is going to compute it, lets use 0; what could possibly go wrong!? -/
+def stupidLiftHack (_ : M →ₗ[R] N →ₗ[R] P) : M ⊗[R] N →ₗ[R] P := 0
+
 /-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
+@[implemented_by stupidLiftHack]
 def lift : M ⊗[R] N →ₗ[R] P :=
   { liftAux f with map_smul' := liftAux.smul }
 #align tensor_product.lift TensorProduct.lift
