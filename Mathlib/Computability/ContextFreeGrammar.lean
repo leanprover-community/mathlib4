@@ -83,7 +83,7 @@ def language (g : ContextFreeGrammar T) : Language T :=
   { w | g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) }
 
 @[refl]
-lemma language_def (g : ContextFreeGrammar T) (w : List T) :
+lemma mem_language_iff (g : ContextFreeGrammar T) (w : List T) :
     w ∈ g.language ↔ g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) := by
   rfl
 
