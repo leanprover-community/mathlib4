@@ -311,7 +311,8 @@ noncomputable instance instRing : Ring (𝒜 ⊗'[R] ℬ) where
 
 set_option maxHeartbeats 800000 in
 /-- Note that a more general `tmul_coe_mul_coe_tmul` is available. -/
-theorem coe_tmul_coe_mul_coe_tmul_coe {i₁ j₁ i₂ j₂ : ℤ₂} (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
+theorem coe_tmul_coe_mul_coe_tmul_coe {i₁ j₁ i₂ j₂ : ℤ₂}
+    (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
     ((a₁ : A) ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] (b₂ : B) : 𝒜 ⊗'[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
@@ -382,8 +383,8 @@ def includeLeftRingHom : A →+* 𝒜 ⊗'[R] ℬ where
     simp_rw [tmul, sum_tmul, map_sum, Finset.mul_sum]
     congr
     ext i
-    rw [←SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, z₂pow_zero, one_smul, SetLike.coe_gOne,
-      one_mul]
+    rw [←SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, z₂pow_zero, one_smul,
+      SetLike.coe_gOne, one_mul]
 
 noncomputable instance instAlgebra : Algebra R (𝒜 ⊗'[R] ℬ) where
   toRingHom := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
@@ -439,7 +440,9 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a)) :
     (𝒜 ⊗'[R] ℬ) →ₐ[R] C :=
   AlgHom.ofLinearMap
-    (LinearMap.mul' R C ∘ₗ (TensorProduct.map f.toLinearMap g.toLinearMap) ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ⊗'[R] ℬ →ₗ[R] A ⊗[R] B))
+    (LinearMap.mul' R C
+      ∘ₗ (TensorProduct.map f.toLinearMap g.toLinearMap)
+      ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ⊗'[R] ℬ →ₗ[R] A ⊗[R] B))
     (by dsimp [Algebra.TensorProduct.one_def]; simp only [_root_.map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
