@@ -41,44 +41,42 @@ Archive/Wiedijk100Theorems/Partition.lean,
 where `piAntidiagonal` was called `cut`
 -/
 
+namespace Finset
+
 open scoped BigOperators
 
-open Finset Function
+open Function
 
 /-- The class of monoids with an antidiagonal -/
 class HasMulAntidiagonal (μ : Type*) [Monoid μ] where
   /-- The antidiagonal function -/
-  (antidiagonal : μ → Finset (μ × μ))
+  antidiagonal : μ → Finset (μ × μ)
   /-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n` -/
-  (mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst * a.snd = n)
+  mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst * a.snd = n
 
 /-- The class of additive monoids with an antidiagonal -/
 class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
   /-- The antidiagonal function -/
-  (antidiagonal : μ → Finset (μ × μ))
+  antidiagonal : μ → Finset (μ × μ)
   /-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n` -/
-  (mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst + a.snd = n)
+  mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst + a.snd = n
 
 variable {μ : Type _}
-  [CanonicallyOrderedAddMonoid μ]
+  [CanonicallyOrderedAddCommMonoid μ]
   [LocallyFiniteOrder μ] [DecidableEq μ]
 
 variable {ι : Type _} [DecidableEq ι] [DecidableEq (ι → μ)]
 
-namespace Finset
+/-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.
 
-/-- In a canonically ordered add monoid, the finset of pairs of elements of `μ` with sum `n` -/
-def antidiagonal (n : μ) : Finset (μ × μ) :=
-  Finset.filter (fun uv => uv.fst + uv.snd = n) (Finset.product (Iic n) (Iic n))
-#align finset.antidiagonal Finset.antidiagonal
-
-@[simp]
-theorem mem_antidiagonal (n : μ) (a : μ × μ) :
-    a ∈ antidiagonal n ↔ a.fst + a.snd = n := by
-  simp only [antidiagonal, Prod.forall, mem_filter, and_iff_right_iff_imp]
-  intro h; rw [← h]
-  erw [mem_product, mem_Iic, mem_Iic]
-  exact ⟨le_self_add, le_add_self⟩
+Note that this is not an instance, as for some times a more efficient algorithm is available. -/
+abbrev antidiagonalOfLocallyFinite : HasAntidiagonal μ where
+  antidiagonal n := Finset.filter (fun uv => uv.fst + uv.snd = n) (Finset.product (Iic n) (Iic n))
+  mem_antidiagonal n a := by
+    simp only [Prod.forall, mem_filter, and_iff_right_iff_imp]
+    intro h; rw [← h]
+    erw [mem_product, mem_Iic, mem_Iic]
+    exact ⟨le_self_add, le_add_self⟩
 
 /- These functions apply to (ι →₀ ℕ), more generally to (ι →₀ μ) under the additional assumption `OrderedSub μ` that make it a canonically ordered add monoid
 In fact, we just need an AddMonoid with a compatible order,
@@ -117,11 +115,11 @@ theorem mem_piAntidiagonal (s : Finset ι) (n : μ) (f : ι → μ) :
       exact hf x
 
 theorem piAntidiagonal_equiv_antidiagonal (n : μ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) = antidiagonal n := by
+    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) = antidiagonalOfLocallyFinite.antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
     Equiv.eq_symm_apply]
-  simp [mem_piAntidiagonal, add_comm, mem_antidiagonal]
+  simp [mem_piAntidiagonal, add_comm, antidiagonalOfLocallyFinite.mem_antidiagonal]
 
 theorem piAntidiagonal_zero (s : Finset ι) :
     piAntidiagonal s (0 : μ) = {0} := by
@@ -143,7 +141,7 @@ theorem piAntidiagonal_empty (n : μ) :
 
 theorem piAntidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     piAntidiagonal (insert a s) n =
-      (Finset.antidiagonal n).biUnion fun p : μ × μ =>
+      (Finset.antidiagonalOfLocallyFinite.antidiagonal n).biUnion fun p : μ × μ =>
         (piAntidiagonal s p.snd).image fun f => Function.update f a p.fst := by
   ext f
   rw [mem_piAntidiagonal, mem_biUnion, sum_insert h]
@@ -152,7 +150,7 @@ theorem piAntidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_piAntidiagonal, Prod.exists]
     use f a, s.sum f
     constructor
-    · exact (Finset.mem_antidiagonal (f a + ∑ x in s, f x) (f a, Finset.sum s f)).mpr rfl
+    · exact (Finset.antidiagonalOfLocallyFinite.mem_antidiagonal (f a + ∑ x in s, f x) (f a, Finset.sum s f)).mpr rfl
     rw [mem_image]
     use Function.update f a 0
     constructor
@@ -168,7 +166,7 @@ theorem piAntidiagonal_insert (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
       split_ifs with hia
       rw [hia]
       rfl
-  · simp only [mem_insert, Finset.mem_antidiagonal, mem_image, exists_prop,
+  · simp only [mem_insert, Finset.antidiagonalOfLocallyFinite.mem_antidiagonal, mem_image, exists_prop,
       Prod.exists, forall_exists_index, and_imp, mem_piAntidiagonal]
     rintro d e rfl g hg hg' rfl
     constructor
