@@ -76,6 +76,7 @@ variable [NormedSpace ℝ E]
   This version has `f` in curried form. -/
 theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SigmaFinite ν] ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
+  by_cases hE : CompleteSpace E; swap; · simp [integral, hE, stronglyMeasurable_const]
   borelize E
   by_cases hE : CompleteSpace E; swap
   · simp [hE, integral]; exact stronglyMeasurable_const
@@ -218,7 +219,6 @@ namespace MeasureTheory
 variable [SigmaFinite ν]
 
 /-! ### Integrability on a product -/
-
 
 section
 
@@ -523,7 +523,7 @@ theorem set_integral_prod_mul {L : Type*} [IsROrC L] (f : α → L) (g : β → 
     ∫ z in s ×ˢ t, f z.1 * g z.2 ∂μ.prod ν = (∫ x in s, f x ∂μ) * ∫ y in t, g y ∂ν := by
   -- Porting note: added
   rw [← Measure.prod_restrict s t]
-  simp only [← Measure.prod_restrict s t, IntegrableOn, integral_prod_mul]
+  apply integral_prod_mul
 #align measure_theory.set_integral_prod_mul MeasureTheory.set_integral_prod_mul
 
 end MeasureTheory
