@@ -28,12 +28,20 @@ def make_definitive(original_file, current_file):
 def delete_lineno(line):
     return re.sub('^[^:]+:[0-9]+:[0-9]+: ', '', line)
 
+def delete_timeout_location(line):
+    """Omit the precise point that a timeout occurred, because that's sensitive to generally irrelevant details."""
+    return re.sub('\(deterministic\) timeout at \'[^\']+\'', 'deterministic timeout', line)
+
+def erase_details(line):
+    """Process a line of Lean stdout by erasing unnecessary details."""
+    return delete_timeout_location(delete_lineno(line))
+
 def ignore_sorry(lines):
     return [line for line in lines if line != 'warning: declaration uses \'sorry\'']
 
 def substantially_similar(result_1, result_2):
-    lines_1 = [delete_lineno(line) for line in result_1.stdout.split('\n')]
-    lines_2 = [delete_lineno(line) for line in result_2.stdout.split('\n')]
+    lines_1 = [erase_details(line) for line in result_1.stdout.split('\n')]
+    lines_2 = [erase_details(line) for line in result_2.stdout.split('\n')]
     return ignore_sorry(lines_1) == ignore_sorry(lines_2)
 
 def compile_file(filename):
