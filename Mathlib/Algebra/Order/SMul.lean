@@ -57,7 +57,6 @@ variable {ι α β γ 𝕜 R M N : Type*}
 
 namespace OrderDual
 
-@[to_additive]
 instance OrderDual.instSMulWithZero [Zero R] [AddZeroClass M] [SMulWithZero R M] :
     SMulWithZero R Mᵒᵈ :=
   { OrderDual.instSMul with
