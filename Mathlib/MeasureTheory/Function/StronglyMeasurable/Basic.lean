@@ -699,31 +699,24 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
   · exact hf.measurable.stronglyMeasurable
 #align continuous.strongly_measurable Continuous.stronglyMeasurable
 
-/-- A continuous function with compact support is strongly measurable. -/
-theorem _root_.Continuous.stronglyMeasurable_of_support_subset_isCompact
+/-- A continuous function whose support is contained in a compact set is strongly measurable. -/
+@[to_additive]
+theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
-    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Zero β] {f : α → β}
+    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [One β] {f : α → β}
     (hf : Continuous f) {k : Set α} (hk : IsCompact k)
-    (h'f : support f ⊆ k) : StronglyMeasurable f := by
+    (h'f : mulSupport f ⊆ k) : StronglyMeasurable f := by
   letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
   rw [stronglyMeasurable_iff_measurable_separable]
-  refine ⟨hf.measurable, ?_⟩
-  have Z := isCompact_range_of_support_subset_isCompact hf h'f
-
-
-
-#exit
-
-IsCompact.isSeparable (s := range f) (h'f.isCompact_range hf)
+  exact ⟨hf.measurable, (isCompact_range_of_mulSupport_subset_isCompact hf hk h'f).isSeparable⟩
 
 /-- A continuous function with compact support is strongly measurable. -/
-theorem _root_.Continuous.stronglyMeasurable_of_hasCompactSupport
+@[to_additive]
+theorem _root_.Continuous.stronglyMeasurable_of_hasCompactMulSupport
     [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
-    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Zero β] {f : α → β}
-    (hf : Continuous f) (h'f : HasCompactSupport f) : StronglyMeasurable f := by
-  letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
-  rw [stronglyMeasurable_iff_measurable_separable]
-  refine ⟨hf.measurable, IsCompact.isSeparable (s := range f) (h'f.isCompact_range hf)⟩
+    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [One β] {f : α → β}
+    (hf : Continuous f) (h'f : HasCompactMulSupport f) : StronglyMeasurable f :=
+  hf.stronglyMeasurable_of_mulSupport_subset_isCompact h'f (subset_mulTSupport f)
 
 /-- If `g` is a topological embedding, then `f` is strongly measurable iff `g ∘ f` is. -/
 theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [TopologicalSpace β]
