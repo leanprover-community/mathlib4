@@ -103,7 +103,7 @@ lemma bit_mod_two_eq_one_iff (a x) :
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
     with assumptions that neither `bit a m` nor `bit b n` are `0`
     (albeit, phrased as the implications `m = 0 → a = true` and `n = 0 → b = true`) -/
-lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
+lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
     (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => { unfold bitwise }
@@ -285,7 +285,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     rw [le_zero_iff] at hm
     simp [hm]
   induction' m using Nat.binaryRec with b' m hm' generalizing i
-  · exact False.elim (Bool.ff_ne_tt ((zero_testBit i).symm.trans hm))
+  · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
   · subst hi
     simp only [testBit_zero] at hn hm
