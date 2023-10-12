@@ -45,14 +45,16 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
 #align finset.nat.mem_antidiagonal Finset.Nat.mem_antidiagonal
 
 /-- HasAntidiagonal for Nat -/
-abbrev Finset.Nat.HasAntidiagonal : Finset.HasAntidiagonal ℕ :=
-  ⟨antidiagonal, @mem_antidiagonal⟩
+instance Finset.Nat.HasAntidiagonal : Finset.HasAntidiagonal ℕ :=
+  ⟨Nat.antidiagonal, @Nat.mem_antidiagonal⟩
 
-/-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonalOfLocallyFinite` -/
-lemma antidiagonal_eq_antidiagonal (n : ℕ) :
-    Finset.Nat.antidiagonal n = Finset.antidiagonalOfLocallyFinite.antidiagonal n := by
-    ext ⟨p,q⟩
-    simp only [Finset.Nat.mem_antidiagonal, Finset.antidiagonalOfLocallyFinite.mem_antidiagonal]
+/-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonalOfLocallyFinite.antidiagonal` -/
+lemma antidiagonal_eq_antidiagonal :
+    Nat.antidiagonal = Finset.antidiagonalOfLocallyFinite.antidiagonal := by
+    suffices : Finset.Nat.HasAntidiagonal = Finset.antidiagonalOfLocallyFinite
+    rw [← this]
+    rfl
+    apply Subsingleton.elim
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]

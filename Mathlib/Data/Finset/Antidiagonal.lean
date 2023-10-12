@@ -54,6 +54,18 @@ class HasMulAntidiagonal (μ : Type*) [Monoid μ] where
   /-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n` -/
   mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst * a.snd = n
 
+export HasMulAntidiagonal (antidiagonal mem_antidiagonal)
+
+/-- All HasMulAntidiagonal are equal -/
+instance (μ : Type*) [Monoid μ] :
+    Subsingleton (HasMulAntidiagonal μ) := by
+  apply Subsingleton.intro
+  rintro ⟨a, ha⟩ ⟨b, hb⟩
+  suffices : a = b
+  simp_rw [this]
+  ext n xy
+  rw [ha, hb]
+
 /-- The class of additive monoids with an antidiagonal -/
 class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
   /-- The antidiagonal function -/
@@ -61,11 +73,23 @@ class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
   /-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n` -/
   mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst + a.snd = n
 
-variable {μ : Type _}
+export HasAntidiagonal (antidiagonal mem_antidiagonal)
+
+/-- All HasAntidiagonal are equal -/
+instance (μ : Type*) [AddMonoid μ] :
+    Subsingleton (HasAntidiagonal μ) := by
+  apply Subsingleton.intro
+  rintro ⟨a, ha⟩ ⟨b, hb⟩
+  suffices : a = b
+  simp_rw [this]
+  ext n xy
+  rw [ha, hb]
+
+variable {μ : Type*}
   [CanonicallyOrderedAddCommMonoid μ]
   [LocallyFiniteOrder μ] [DecidableEq μ]
 
-variable {ι : Type _} [DecidableEq ι] [DecidableEq (ι → μ)]
+variable {ι : Type*} [DecidableEq ι]
 
 /-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.
 
@@ -78,12 +102,14 @@ abbrev antidiagonalOfLocallyFinite : HasAntidiagonal μ where
     erw [mem_product, mem_Iic, mem_Iic]
     exact ⟨le_self_add, le_add_self⟩
 
-/- These functions apply to (ι →₀ ℕ), more generally to (ι →₀ μ) under the additional assumption `OrderedSub μ` that make it a canonically ordered add monoid
-In fact, we just need an AddMonoid with a compatible order,
-finite Iic, such that if a + b = n, then a, b ≤ n,
-and any other bound would be OK.
+/- These functions apply to (ι →₀ ℕ), more generally to (ι →₀ μ)
+  under the additional assumption `OrderedSub μ` that make it a canonically ordered add monoid
+  In fact, we just need an AddMonoid with a compatible order,
+  finite Iic, such that if a + b = n, then a, b ≤ n,
+  and any other bound would be OK.
 
-  What follows is an analogous definition for ι → μ, with additional conditions on the support
+  What follows is an analogous definition for ι → μ,
+  with an explicit finiteness conditions on the support
 -/
 
 /-- The Finset of functions `ι → μ` whose support is contained in `s : Finset ι`
@@ -114,6 +140,19 @@ theorem mem_piAntidiagonal (s : Finset ι) (n : μ) (f : ι → μ) :
       rw [dite_eq_ite, ite_eq_left_iff, eq_comm]
       exact hf x
 
+variable (μ)
+
+-- in the hope of using Subsingleton...
+def HasAntidiagonal' : HasAntidiagonal μ where
+  antidiagonal n := Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n)
+  mem_antidiagonal n xy := by
+    simp only [Fintype.univ_bool, mem_singleton, Equiv.finsetCongr_apply, mem_map_equiv,
+      mem_piAntidiagonal, Equiv.boolArrowEquivProd_symm_apply, not_false_eq_true, sum_insert,
+      sum_singleton, mem_insert, Bool.forall_bool, IsEmpty.forall_iff, and_self, and_true]
+    rw [add_comm]
+
+variable {μ}
+
 theorem piAntidiagonal_equiv_antidiagonal [HasAntidiagonal μ] (n : μ) :
     Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) = Finset.HasAntidiagonal.antidiagonal n := by
   ext ⟨x₁, x₂⟩
@@ -139,11 +178,12 @@ theorem piAntidiagonal_empty (n : μ) :
   simp only [not_mem_empty, iff_false_iff]
   intro h'; exact hn h'.1.symm
 
-theorem piAntidiagonal_insert [HasAntidiagonal μ]
+theorem piAntidiagonal_insert [HasAntidiagonal μ] [DecidableEq (ι → μ)]
     (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     piAntidiagonal (insert a s) n =
-      (Finset.HasAntidiagonal.antidiagonal n).biUnion fun p : μ × μ =>
-        (piAntidiagonal s p.snd).image fun f => Function.update f a p.fst := by
+      (Finset.HasAntidiagonal.antidiagonal n).biUnion
+        fun p : μ × μ =>
+          (piAntidiagonal s p.snd).image (fun f => Function.update f a p.fst) := by
   ext f
   rw [mem_piAntidiagonal, mem_biUnion, sum_insert h]
   constructor
