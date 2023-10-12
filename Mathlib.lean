@@ -3373,7 +3373,9 @@ import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Connected
+import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.ContinuousFunction.Basic

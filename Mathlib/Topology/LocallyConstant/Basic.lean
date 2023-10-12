@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Connected
+import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Tactic.FinCases

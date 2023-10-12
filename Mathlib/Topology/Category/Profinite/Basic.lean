@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Connected
+import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Limits
