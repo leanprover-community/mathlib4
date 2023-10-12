@@ -14,9 +14,7 @@ We define the following classes of topological spaces:
 -/
 open Set Filter Topology TopologicalSpace Classical
 
-universe u v
-
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*}
+variable {α : Type*} {β : Type*} {ι : Type*} {π : ι → Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s t : Set α}
 
