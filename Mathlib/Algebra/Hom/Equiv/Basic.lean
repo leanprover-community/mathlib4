@@ -281,10 +281,18 @@ def refl (M : Type*) [Mul M] : M ≃* M :=
 @[to_additive]
 instance : Inhabited (M ≃* M) := ⟨refl M⟩
 
+/-- An alias for `h.symm.map_mul`. Introduced to fix the issue in
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234183.20.60simps.60.20maximum.20recursion.20depth
+-/
+@[to_additive]
+lemma symm_map_mul {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) (x y : N) :
+    h.symm (x * y) = h.symm x * h.symm y :=
+  (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul x y
+
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) "The inverse of an isomorphism is an isomorphism."]
 def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
-  ⟨h.toEquiv.symm, (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul⟩
+  ⟨h.toEquiv.symm, h.symm_map_mul⟩
 #align mul_equiv.symm MulEquiv.symm
 #align add_equiv.symm AddEquiv.symm
 
@@ -344,7 +352,7 @@ theorem symm_bijective : Function.Bijective (symm : M ≃* N → N ≃* M) :=
 -- because the signature of `MulEquiv.mk` has changed.
 @[to_additive (attr := simp)]
 theorem symm_mk (f : M ≃ N) (h) :
-    (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm.map_mul'⟩ := rfl
+    (MulEquiv.mk f h).symm = ⟨f.symm, (MulEquiv.mk f h).symm_map_mul⟩ := rfl
 #align mul_equiv.symm_mk MulEquiv.symm_mkₓ
 #align add_equiv.symm_mk AddEquiv.symm_mkₓ
 
@@ -488,8 +496,8 @@ theorem coe_monoidHom_refl {M} [MulOneClass M] : (refl M : M →* M) = MonoidHom
 -- Porting note: `simp` can prove this
 @[to_additive]
 theorem coe_monoidHom_trans {M N P} [MulOneClass M] [MulOneClass N] [MulOneClass P]
-  (e₁ : M ≃* N) (e₂ : N ≃* P) :
-  (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
+    (e₁ : M ≃* N) (e₂ : N ≃* P) :
+    (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
 #align mul_equiv.coe_monoid_hom_trans MulEquiv.coe_monoidHom_trans
 #align add_equiv.coe_add_monoid_hom_trans AddEquiv.coe_addMonoidHom_trans
 
@@ -642,8 +650,7 @@ for multiplicative maps from a monoid to a commutative monoid.
 -- porting note: @[simps apply] removed because it was making a lemma which
 -- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
-  (f : M ≃* N) (g : P ≃* Q) :
-  (M →* P) ≃* (N →* Q) where
+    (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) where
   toFun h := g.toMonoidHom.comp (h.comp f.symm.toMonoidHom)
   invFun k := g.symm.toMonoidHom.comp (k.comp f.toMonoidHom)
   left_inv h := by ext; simp
@@ -667,7 +674,7 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
   This is the `AddEquiv` version of `Equiv.piCongrRight`, and the dependent version of
   `AddEquiv.arrowCongr`."]
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
-  (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
+    (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with
     toFun := fun x j => es j (x j),
     invFun := fun x j => (es j).symm (x j),
@@ -685,14 +692,14 @@ theorem piCongrRight_refl {η : Type*} {Ms : η → Type*} [∀ j, Mul (Ms j)] :
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_symm {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
-  (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = piCongrRight fun i => (es i).symm := rfl
+    (es : ∀ j, Ms j ≃* Ns j) : (piCongrRight es).symm = piCongrRight fun i => (es i).symm := rfl
 #align mul_equiv.Pi_congr_right_symm MulEquiv.piCongrRight_symm
 #align add_equiv.Pi_congr_right_symm AddEquiv.piCongrRight_symm
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_trans {η : Type*} {Ms Ns Ps : η → Type*} [∀ j, Mul (Ms j)]
-  [∀ j, Mul (Ns j)] [∀ j, Mul (Ps j)] (es : ∀ j, Ms j ≃* Ns j) (fs : ∀ j, Ns j ≃* Ps j) :
-  (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) := rfl
+    [∀ j, Mul (Ns j)] [∀ j, Mul (Ps j)] (es : ∀ j, Ms j ≃* Ns j) (fs : ∀ j, Ns j ≃* Ps j) :
+    (piCongrRight es).trans (piCongrRight fs) = piCongrRight fun i => (es i).trans (fs i) := rfl
 #align mul_equiv.Pi_congr_right_trans MulEquiv.piCongrRight_trans
 #align add_equiv.Pi_congr_right_trans AddEquiv.piCongrRight_trans
 
@@ -702,7 +709,7 @@ index. -/
   "A family indexed by a nonempty subsingleton type is
   equivalent to the element at the single index."]
 def piSubsingleton {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Subsingleton ι]
-  (i : ι) : (∀ j, M j) ≃* M i :=
+    (i : ι) : (∀ j, M j) ≃* M i :=
   { Equiv.piSubsingleton M i with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
 #align mul_equiv.Pi_subsingleton MulEquiv.piSubsingleton
 #align add_equiv.Pi_subsingleton AddEquiv.piSubsingleton
@@ -747,7 +754,7 @@ homomorphisms. -/
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
   homomorphisms."]
 def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ : g.comp f = MulHom.id _)
-  (h₂ : f.comp g = MulHom.id _) : M ≃* N where
+    (h₂ : f.comp g = MulHom.id _) : M ≃* N where
   toFun := f
   invFun := g
   left_inv := FunLike.congr_fun h₁
@@ -783,7 +790,7 @@ useful if the underlying type(s) have specialized `ext` lemmas for monoid homomo
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
   monoid homomorphisms."]
 def MonoidHom.toMulEquiv [MulOneClass M] [MulOneClass N] (f : M →* N) (g : N →* M)
-  (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
+    (h₁ : g.comp f = MonoidHom.id _) (h₂ : f.comp g = MonoidHom.id _) : M ≃* N where
   toFun := f
   invFun := g
   left_inv := FunLike.congr_fun h₁

@@ -91,11 +91,23 @@ section Module
 def addMonoid : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
+protected instance add : Add (M ⊗[R] N) :=
+  (addConGen (TensorProduct.Eqv R M N)).hasAdd
+
 instance addZeroClass : AddZeroClass (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
+  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
+    /- The `toAdd` field is given explicitly as `TensorProduct.add` for performance reasons.
+    This avoids any need to unfold `Con.addMonoid` when the type checker is checking
+    that instance diagrams commute -/
+    toAdd := TensorProduct.add _ _ }
+
+instance addSemigroup : AddSemigroup (M ⊗[R] N) :=
+  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
+    toAdd := TensorProduct.add _ _ }
 
 instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with
+    toAddSemigroup := TensorProduct.addSemigroup _ _
     add_comm := fun x y =>
       AddCon.induction_on₂ x y fun _ _ =>
         Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
@@ -273,6 +285,8 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
   { TensorProduct.addCommSemigroup _ _,
     TensorProduct.addZeroClass _ _ with
+    toAddSemigroup := TensorProduct.addSemigroup _ _
+    toZero := (TensorProduct.addZeroClass _ _).toZero
     nsmul := fun n v => n • v
     nsmul_zero := by simp [TensorProduct.zero_smul]
     nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
@@ -280,8 +294,7 @@ instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
 
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
-  { smul := (· • ·)
-    smul_add := fun r x y => TensorProduct.smul_add r x y
+  { smul_add := fun r x y => TensorProduct.smul_add r x y
     mul_smul := fun r s x =>
       x.induction_on (by simp_rw [TensorProduct.smul_zero])
         (fun m n => by simp_rw [this, mul_smul]) fun x y ihx ihy => by
@@ -309,8 +322,7 @@ theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n)
 #align tensor_product.smul_tmul_smul TensorProduct.smul_tmul_smul
 
 instance leftModule : Module R'' (M ⊗[R] N) :=
-  { TensorProduct.leftDistribMulAction with
-    add_smul := TensorProduct.add_smul
+  { add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
 #align tensor_product.left_module TensorProduct.leftModule
 
@@ -1303,25 +1315,25 @@ namespace LinearMap
 @[simp]
 theorem lTensor_sub (f g : N →ₗ[R] P) : (f - g).lTensor M = f.lTensor M - g.lTensor M := by
   simp_rw [← coe_lTensorHom]
-  exact (lTensorHom (R:=R) (N:=N) (P:=P) M).map_sub f g
+  exact (lTensorHom (R := R) (N := N) (P := P) M).map_sub f g
 #align linear_map.ltensor_sub LinearMap.lTensor_sub
 
 @[simp]
 theorem rTensor_sub (f g : N →ₗ[R] P) : (f - g).rTensor M = f.rTensor M - g.rTensor M := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R:=R) (N:=N) (P:=P) M).map_sub f g
+  exact (rTensorHom (R := R) (N := N) (P := P) M).map_sub f g
 #align linear_map.rtensor_sub LinearMap.rTensor_sub
 
 @[simp]
 theorem lTensor_neg (f : N →ₗ[R] P) : (-f).lTensor M = -f.lTensor M := by
   simp only [← coe_lTensorHom]
-  exact (lTensorHom (R:=R) (N:=N) (P:=P) M).map_neg f
+  exact (lTensorHom (R := R) (N := N) (P := P) M).map_neg f
 #align linear_map.ltensor_neg LinearMap.lTensor_neg
 
 @[simp]
 theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R:=R) (N:=N) (P:=P) M).map_neg f
+  exact (rTensorHom (R := R) (N := N) (P := P) M).map_neg f
 #align linear_map.rtensor_neg LinearMap.rTensor_neg
 
 end LinearMap

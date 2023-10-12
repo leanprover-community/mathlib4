@@ -49,7 +49,7 @@ instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
 #align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
-variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕 μ)
+variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
 
 variable [Countable Γ] [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)]
 
@@ -80,7 +80,7 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
         simp [Set.preimage]
       rw [measure_preimage_mul]
     rw [this]
-    have h𝓕_translate_fundom : IsFundamentalDomain (Subgroup.opposite Γ) (g • 𝓕) μ :=
+    have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) μ :=
       h𝓕.smul_of_comm g
     rw [h𝓕.measure_set_eq h𝓕_translate_fundom meas_πA, ← preimage_smul_inv]; rfl
     rintro ⟨γ, γ_in_Γ⟩
@@ -217,9 +217,9 @@ lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddComm
     [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
     (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :
     ∫ x : G, f x ∂μ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 := by
-  calc ∫ x : G, f x ∂μ = ∑' γ : (Subgroup.opposite Γ), ∫ x in 𝓕, f (γ • x) ∂μ :=
+  calc ∫ x : G, f x ∂μ = ∑' γ : Γ.op, ∫ x in 𝓕, f (γ • x) ∂μ :=
     h𝓕.integral_eq_tsum'' f hf₁
-    _ = ∫ x in 𝓕, ∑' γ : (Subgroup.opposite Γ), f (γ • x) ∂μ := ?_
+    _ = ∫ x in 𝓕, ∑' γ : Γ.op, f (γ • x) ∂μ := ?_
     _ = ∫ x : G ⧸ Γ, automorphize f x ∂μ_𝓕 :=
       (integral_map continuous_quotient_mk'.aemeasurable hf₂).symm
   rw [integral_tsum]
@@ -282,7 +282,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
     (f_ℒ_1 : Integrable f μ') {g : G' ⧸ Γ' → K} (hg : AEStronglyMeasurable g μ_𝓕)
     (g_ℒ_infinity : essSup (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 ≠ ∞)
     (F_ae_measurable : AEStronglyMeasurable (QuotientAddGroup.automorphize f) μ_𝓕)
-    (h𝓕 : IsAddFundamentalDomain (AddSubgroup.opposite Γ') 𝓕' μ') :
+    (h𝓕 : IsAddFundamentalDomain Γ'.op 𝓕' μ') :
     ∫ x : G', g (x : G' ⧸ Γ') * (f x) ∂μ'
       = ∫ x : G' ⧸ Γ', g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by
   let π : G' → G' ⧸ Γ' := QuotientAddGroup.mk

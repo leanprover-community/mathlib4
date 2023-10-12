@@ -322,7 +322,7 @@ e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.
 -/
 def additiveTest (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
+    (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
   unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
@@ -480,8 +480,8 @@ def reorderLambda (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr :=
     mkLambdaFVars (xs.permute! reorder) e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl
-  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) : MetaM ConstantInfo := do
+def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
+    MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
@@ -616,7 +616,7 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
 def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
-  (thisAttr attrName src tgt : Name) : CoreM Unit := do
+    (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (ext.getState (← getEnv)) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
       m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. {
@@ -629,19 +629,19 @@ def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ
 
 /-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
 def warnAttr [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
-  (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
+    (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (f ·.stateStack.head!.state ·) thisAttr attrName src tgt
 
 /-- Warn the user when the multiplicative declaration has a parametric attribute. -/
 def warnParametricAttr (stx : Syntax) (attr : ParametricAttribute β)
-  (thisAttr attrName src tgt : Name) : CoreM Unit :=
+    (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 
 /-- `runAndAdditivize names desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
-  (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
+    (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
@@ -1099,7 +1099,7 @@ attribute is added to the generated lemma only, to additivize it again.
 This is useful for lemmas about `Pow` to generate both lemmas about `SMul` and `VAdd`. Example:
 ```
 @[to_additive (attr := to_additive VAdd_lemma, simp) SMul_lemma]
-lemma Pow_lemma ...
+lemma Pow_lemma ... :=
 ```
 In the above example, the `simp` is added to all 3 lemmas. All other options to `to_additive`
 (like the generated name or `(reorder := ...)`) are not passed down,
@@ -1129,7 +1129,7 @@ mapped to its additive version. The basic heuristic is
 
 Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
-  first argument is `ℕ`, an identifier not applied to any arguments.
+  first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
   `prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
@@ -1147,9 +1147,9 @@ There are some exceptions to this heuristic:
   declaration when the first argument has no multiplicative type-class, but argument `n` does.
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
-  For example, `cont_mdiff_map` has attribute `@[to_additive_ignore_args 21]`, which means
-  that its 21st argument `(n : WithTop Nat)` can contain `ℕ`
-  (usually in the form `Top.top Nat ...`) and still be additivized.
+  For example, `ContMDiffMap` has attribute `@[to_additive_ignore_args 21]`, which means
+  that its 21st argument `(n : WithTop ℕ)` can contain `ℕ`
+  (usually in the form `Top.top ℕ ...`) and still be additivized.
   So `@Mul.mul (C^∞⟮I, N; I', G⟯) _ f g` will be additivized.
 
 ### Troubleshooting
@@ -1183,6 +1183,7 @@ mismatch error.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
+    Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
 * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
   * Ensure that the order of arguments of all relevant declarations are the same for the

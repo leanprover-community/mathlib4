@@ -156,40 +156,45 @@ instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGro
 local notation " Q " => G ⧸ N
 
 @[to_additive (attr := simp)]
-theorem mk_one : ((1 : G) : Q ) = 1 :=
+theorem mk_one : ((1 : G) : Q) = 1 :=
   rfl
 #align quotient_group.coe_one QuotientGroup.mk_one
 #align quotient_add_group.coe_zero QuotientAddGroup.mk_zero
 
 @[to_additive (attr := simp)]
-theorem mk_mul (a b : G) : ((a * b : G) : Q ) = a * b :=
+theorem mk_mul (a b : G) : ((a * b : G) : Q) = a * b :=
   rfl
 #align quotient_group.coe_mul QuotientGroup.mk_mul
 #align quotient_add_group.coe_add QuotientAddGroup.mk_add
 
 @[to_additive (attr := simp)]
-theorem mk_inv (a : G) : ((a⁻¹ : G) : Q ) = (a : Q)⁻¹ :=
+theorem mk_inv (a : G) : ((a⁻¹ : G) : Q) = (a : Q)⁻¹ :=
   rfl
 #align quotient_group.coe_inv QuotientGroup.mk_inv
 #align quotient_add_group.coe_neg QuotientAddGroup.mk_neg
 
 @[to_additive (attr := simp)]
-theorem mk_div (a b : G) : ((a / b : G) : Q ) = a / b :=
+theorem mk_div (a b : G) : ((a / b : G) : Q) = a / b :=
   rfl
 #align quotient_group.coe_div QuotientGroup.mk_div
 #align quotient_add_group.coe_sub QuotientAddGroup.mk_sub
 
 @[to_additive (attr := simp)]
-theorem mk_pow (a : G) (n : ℕ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
+theorem mk_pow (a : G) (n : ℕ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
   rfl
 #align quotient_group.coe_pow QuotientGroup.mk_pow
 #align quotient_add_group.coe_nsmul QuotientAddGroup.mk_nsmul
 
 @[to_additive (attr := simp)]
-theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q ) = (a : Q) ^ n :=
+theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
   rfl
 #align quotient_group.coe_zpow QuotientGroup.mk_zpow
 #align quotient_add_group.coe_zsmul QuotientAddGroup.mk_zsmul
+
+ @[to_additive (attr := simp)]
+ theorem mk_prod {G ι : Type _} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
+     ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
+   map_prod (QuotientGroup.mk' N) _ _
 
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
@@ -206,13 +211,13 @@ def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
 #align quotient_add_group.lift QuotientAddGroup.lift
 
 @[to_additive (attr := simp)]
-theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q ) = φ g :=
+theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
   rfl
 #align quotient_group.lift_mk QuotientGroup.lift_mk
 #align quotient_add_group.lift_mk QuotientAddGroup.lift_mk
 
 @[to_additive (attr := simp)]
-theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q ) = φ g :=
+theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q) = φ g :=
   rfl
 -- TODO: replace `mk` with `mk'`)
 #align quotient_group.lift_mk' QuotientGroup.lift_mk'
@@ -220,7 +225,7 @@ theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk 
 
 @[to_additive (attr := simp)]
 theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
-    lift N φ HN (Quot.mk _ g : Q ) = φ g :=
+    lift N φ HN (Quot.mk _ g : Q) = φ g :=
   rfl
 #align quotient_group.lift_quot_mk QuotientGroup.lift_quot_mk
 #align quotient_add_group.lift_quot_mk QuotientAddGroup.lift_quot_mk
