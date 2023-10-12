@@ -78,12 +78,17 @@ def Produces (g : ContextFreeGrammar.{uN} T) (u v : List (Symbol T g.NT)) : Prop
   ∃ r ∈ g.rules, r.RewritesTo u v
 
 /-- Any number of steps of context-free transformation. -/
-abbrev Derives (g : ContextFreeGrammar.{uN} T) : List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
+abbrev Derives (g : ContextFreeGrammar.{uN} T) :
+    List (Symbol T g.NT) → List (Symbol T g.NT) → Prop :=
   Relation.ReflTransGen g.Produces
+
+/-- String `s` can be derived by grammar `g` from its initial nonterminal. -/
+def Generates (g : ContextFreeGrammar.{uN} T) (s : List (Symbol T g.NT)) : Prop :=
+  g.Derives [Symbol.nonterminal g.initial] s
 
 /-- The set of words that can be derived from the initial nonterminal. -/
 def language (g : ContextFreeGrammar.{uN} T) : Language T :=
-  { w | g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) }
+  { w | g.Generates (List.map Symbol.terminal w) }
 
 @[simp]
 lemma mem_language_iff (g : ContextFreeGrammar.{uN} T) (w : List T) :
