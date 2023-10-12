@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Triangulated.Triangulated
@@ -521,6 +522,16 @@ lemma op_distinguished (T : Triangle C) (hT : T ∈ distTriang C) :
 lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) :
     ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := hT
 
+lemma distinguished_iff_op (T : Triangle C) :
+    (T ∈ distTriang C) ↔
+      ((triangleOpEquivalence C).functor.obj (Opposite.op T)) ∈ distTriang Cᵒᵖ := by
+  constructor
+  · intro hT
+    exact op_distinguished _ hT
+  · intro hT'
+    exact isomorphic_distinguished _ (unop_distinguished _ hT') _
+      (((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop.symm)
+
 namespace Opposite
 
 set_option maxHeartbeats 400000 in
@@ -779,6 +790,71 @@ instance : (unopUnop C).IsTriangulated :=
   (inferInstance : (opOpEquivalence C).functor.IsTriangulated)
 
 end Opposite
+
+section
+
+variable {J : Type*} (T : J → Triangle C)
+  [HasCoproduct (fun j => (T j).obj₁)] [HasCoproduct (fun j => (T j).obj₂)]
+  [HasCoproduct (fun j => (T j).obj₃)]
+  [HasCoproduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
+
+@[simps!]
+noncomputable def coproductTriangle : Triangle C :=
+  Triangle.mk (Limits.Sigma.map (fun j => (T j).mor₁))
+    (Limits.Sigma.map (fun j => (T j).mor₂))
+    (Limits.Sigma.map (fun j => (T j).mor₃) ≫ sigmaComparison _ _)
+
+noncomputable def opCoproductTriangleIsoProductTriangle
+  [HasProduct (fun j => ((triangleOpEquivalence C).functor.obj (Opposite.op (T j))).obj₁)]
+  [HasProduct (fun j => ((triangleOpEquivalence C).functor.obj (Opposite.op (T j))).obj₂)]
+  [HasProduct (fun j => ((triangleOpEquivalence C).functor.obj (Opposite.op (T j))).obj₃)]
+  [HasProduct (fun j => (((triangleOpEquivalence C).functor.obj
+    (Opposite.op (T j))).obj₁)⟦(1 : ℤ)⟧)] :
+    productTriangle (fun j => (triangleOpEquivalence C).functor.obj (Opposite.op (T j))) ≅
+    (triangleOpEquivalence C).functor.obj (Opposite.op (coproductTriangle T)) :=
+  Triangle.isoMk _ _ (opCoproductIsoProduct (fun j => (T j).obj₃)).symm
+    (opCoproductIsoProduct (fun j => (T j).obj₂)).symm
+    (opCoproductIsoProduct (fun j => (T j).obj₁)).symm (by
+      dsimp [productTriangle]
+      simp only [opCoproductIsoProduct_inv_comp_map]) (by
+      dsimp [productTriangle]
+      simp only [opCoproductIsoProduct_inv_comp_map]) (by
+      dsimp [productTriangle]
+      have : HasProduct (fun j => (shiftFunctor Cᵒᵖ (1 : ℤ)).obj (Opposite.op (T j).obj₃)) :=
+        ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor Cᵒᵖ (1 : ℤ)) _ _
+          (productIsProduct (fun j => (Opposite.op (T j).obj₃)))⟩
+      rw [assoc, ← cancel_mono ((shiftFunctor Cᵒᵖ (1 : ℤ)).map
+        (opCoproductIsoProduct (fun j ↦ (T j).obj₃)).hom), assoc, assoc, assoc, assoc,
+        ← Functor.map_comp, Iso.inv_hom_id, Functor.map_id, comp_id,
+        ← cancel_mono (piComparison (shiftFunctor Cᵒᵖ (1 : ℤ)) (fun j ↦ Opposite.op (T j).obj₃)),
+        assoc, assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
+      ext j
+      rw [limMap_π, Discrete.natTrans_app, assoc, assoc, assoc, assoc, piComparison_comp_π,
+        ← Functor.map_comp, ← Functor.map_comp, assoc,
+        opCoproductIsoProduct_hom_comm_π, ← op_comp_assoc, ← op_comp, ι_colimMap_assoc,
+        Discrete.natTrans_app, ι_comp_sigmaComparison]
+      dsimp
+      rw [Functor.map_comp]
+      erw [← (opShiftFunctorEquivalence C 1).counitIso.inv.naturality_assoc
+        ((Sigma.ι (fun j ↦ (T j).obj₁) j).op)]
+      dsimp
+      rw [opCoproductIsoProduct_inv_comp_ι_assoc])
+
+lemma coproductTriangle_distinguished (hT : ∀ j, T j ∈ distTriang C) :
+    coproductTriangle T ∈ distTriang C := by
+  rw [distinguished_iff_op]
+  let T' := fun j => (triangleOpEquivalence C).functor.obj (Opposite.op (T j))
+  have : HasProduct (fun j ↦ (T' j).obj₁) := by dsimp [triangleOpEquivalence]; infer_instance
+  have : HasProduct (fun j ↦ (T' j).obj₂) := by dsimp [triangleOpEquivalence]; infer_instance
+  have : HasProduct (fun j ↦ (T' j).obj₃) := by dsimp [triangleOpEquivalence]; infer_instance
+  have : HasProduct (fun j ↦ ((T' j).obj₁)⟦(1 : ℤ)⟧) :=
+    ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor Cᵒᵖ (1 : ℤ)) _ _
+      (productIsProduct (fun j => (T' j).obj₁))⟩
+  exact isomorphic_distinguished _
+    (productTriangle_distinguished T' (fun j => op_distinguished _ (hT j))) _
+    (opCoproductTriangleIsoProductTriangle T).symm
+
+end
 
 end Pretriangulated
 

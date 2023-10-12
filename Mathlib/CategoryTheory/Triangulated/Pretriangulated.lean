@@ -621,9 +621,11 @@ lemma productTriangle.π_zero₃₁ {J : Type _} (T : J → Triangle C)
     [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
     [HasProduct (fun j => (T j).obj₃)]
     [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
-    [HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧)]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
+  have : HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧) :=
+    ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor C (1 : ℤ)) _ _
+      (productIsProduct (fun j => (T j).obj₂))⟩
   dsimp
   have eq : (Pi.map fun j => (T j).mor₁) = Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁) := by
     aesop_cat
@@ -653,8 +655,7 @@ lemma productTriangle_distinguished {J : Type _} (T : J → Triangle C)
     (hT : ∀ j, T j ∈ distTriang C)
     [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
     [HasProduct (fun j => (T j).obj₃)]
-    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
-    [HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧)] :
+    [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] :
     productTriangle T ∈ distTriang C := by
   let f₁ := Pi.map (fun j => (T j).mor₁)
   obtain ⟨Z, f₂, f₃, hT'⟩  := distinguished_cocone_triangle f₁

@@ -414,7 +414,6 @@ instance : HasProduct (fun z ↦ op (Z z)) := hasLimitOfIso
     Discrete.functor (fun z ↦ op (Z z)))
 
 /-- The isomorphism from the opposite of the coproduct to the product. -/
-@[simp]
 noncomputable
 def opCoproductIsoProduct : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
   IsLimit.conePointUniqueUpToIso (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b))
@@ -422,6 +421,7 @@ def opCoproductIsoProduct : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
     (productIsProduct (fun z ↦ op (Z z))) (limit.isLimit _) (Discrete.opposite α).symm
     (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
 
+@[reassoc]
 lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι (fun a => Z a) b).op =
     Pi.π (fun a => op (Z a)) b := by
@@ -442,6 +442,30 @@ lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
     Functor.op_map, Discrete.functor_map_id, op_id]
   simp only [Discrete.functor, Function.comp_apply, id_eq, Discrete.opposite, Equivalence.mk,
     id_obj, comp_obj, leftOp_obj, unop_op, op_obj, Category.comp_id]
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct_hom_comm_π (b : α) :
+    (opCoproductIsoProduct Z).hom ≫ Pi.π _ b = (Sigma.ι Z b).op := by
+  rw [← cancel_epi (opCoproductIsoProduct Z).inv, Iso.inv_hom_id_assoc,
+    opCoproductIsoProduct_inv_comp_ι]
+
+variable {Z}
+
+lemma opCoproductIsoProduct_inv_comp_map {Z' : α → C} [HasCoproduct Z']
+    (φ : ∀ a, Z' a ⟶ Z a) :
+  (opCoproductIsoProduct Z).inv ≫ (Sigma.map φ).op =
+    Pi.map (fun a => (φ a).op) ≫ (opCoproductIsoProduct Z').inv := Quiver.Hom.unop_inj (by
+  dsimp
+  ext j
+  rw [ι_colimMap_assoc, Discrete.natTrans_app]
+  apply Quiver.Hom.op_inj
+  conv_rhs =>
+    rw [← Category.assoc, op_comp, op_comp, Quiver.Hom.op_unop, Quiver.Hom.op_unop,
+      opCoproductIsoProduct_inv_comp_ι]
+  simp only [op_unop, op_comp, Quiver.Hom.op_unop, Category.assoc, limMap_π, Discrete.functor_obj,
+    Discrete.natTrans_app, opCoproductIsoProduct_inv_comp_ι_assoc])
+
+variable (Z)
 
 lemma desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a => Quiver.Hom.op (π a)) := by
