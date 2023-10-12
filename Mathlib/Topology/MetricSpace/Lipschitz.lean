@@ -3,11 +3,10 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Topology.Bornology.Hom
+import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Bornology.Hom
 import Mathlib.Tactic.GCongr
 
 #align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
