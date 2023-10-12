@@ -111,13 +111,15 @@ theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
 #align polynomial.coeff_sum Polynomial.coeff_sum
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
-over `Nat.antidiagonal`. A version which sums over `range (n + 1)` can be obtained
+over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `Finset.Nat.sum_antidiagonal_eq_sum_range_succ`. -/
 theorem coeff_mul (p q : R[X]) (n : ℕ) :
-    coeff (p * q) n = ∑ x in Nat.antidiagonal n, coeff p x.1 * coeff q x.2 := by
+    coeff (p * q) n = ∑ x in antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp_rw [← ofFinsupp_mul, coeff]
-  exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ Nat.mem_antidiagonal
+  exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ (by
+    intro p
+    rw [Finset.mem_antidiagonal])
 #align polynomial.coeff_mul Polynomial.coeff_mul
 
 @[simp]
@@ -229,10 +231,10 @@ theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     rw [coeff_X_pow, if_neg, mul_zero]
     rintro rfl
     apply h2
-    rw [Nat.mem_antidiagonal, add_right_cancel_iff] at h1
+    rw [mem_antidiagonal, add_right_cancel_iff] at h1
     subst h1
     rfl
-  · exact fun h1 => (h1 (Nat.mem_antidiagonal.2 rfl)).elim
+  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
 #align polynomial.coeff_mul_X_pow Polynomial.coeff_mul_X_pow
 
 @[simp]
