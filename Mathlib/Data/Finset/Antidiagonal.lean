@@ -47,9 +47,9 @@ open Function
 /-- The class of monoids with an antidiagonal -/
 class HasMulAntidiagonal (μ : Type*) [Monoid μ] where
   /-- The antidiagonal function -/
-  antidiagonal : μ → Finset (μ × μ)
+  antidiagonal _ : Finset (μ × μ)
   /-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n` -/
-  mem_antidiagonal : ∀ (n : μ) (a : μ × μ), a ∈ antidiagonal n ↔ a.fst * a.snd = n
+  mem_antidiagonal {n : μ} {a : μ × μ} : a ∈ antidiagonal n ↔ a.fst * a.snd = n
 
 export HasMulAntidiagonal (antidiagonal mem_antidiagonal)
 
