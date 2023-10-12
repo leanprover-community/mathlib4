@@ -100,7 +100,7 @@ lemma div_two_succ (x : Nat) :
   simp only [←div2_val, ←Bool.cond_eq_ite, div2_succ]
 
 lemma bitwise_eq_binaryRec :
-  bitwise f =
+    bitwise f =
     binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
       binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n) := by
   funext x y
