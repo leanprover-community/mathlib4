@@ -55,8 +55,12 @@ to compute some kernels.
 * All kernels are computed by applying the first isomorphism theorem and
   establishing some isomorphisms.
 
-* The proofs are essentially done twice, once for `lTensor` and then for `rTensor`.
-  It is possible to apply `TensorProduct.flip` to deduce one of them from the other. However, this approach will lead to different isomorphisms, and it is not quicker.
+* The proofs are essentially done twice,
+  once for `lTensor` and then for `rTensor`.
+  It is possible to apply `TensorProduct.flip` to deduce one of them
+  from the other.
+  However, this approach will lead to different isomorphisms,
+  and it is not quicker.
 
 * The proofs of `Ideal.map_includeLeft_eq` and `Ideal.map_includeRight_eq`
   could be easier if `I ⊗[R] B` was naturally an `A ⊗[R] B` module,
@@ -75,8 +79,6 @@ to compute some kernels.
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
 -/
-
-suppress_compilation
 
 section Modules
 
