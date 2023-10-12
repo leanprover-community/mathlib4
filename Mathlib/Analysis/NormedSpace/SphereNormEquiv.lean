@@ -10,6 +10,8 @@ variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 open Set Metric
 
+/-- -/
+@[simps apply_fst_coe apply_snd_coe symm_apply]
 noncomputable def homeomorphUnitSphereProd :
     ({0}ᶜ : Set E) ≃ₜ (sphere (0 : E) 1 × Ioi (0 : ℝ)) where
   toFun x := (⟨‖x.1‖⁻¹ • x.1, by
