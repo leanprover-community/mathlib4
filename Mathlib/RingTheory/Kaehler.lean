@@ -34,6 +34,8 @@ import Mathlib.RingTheory.IsTensorProduct
 - Define the `IsKaehlerDifferential` predicate.
 -/
 
+suppress_compilation
+
 section KaehlerDifferential
 
 open scoped TensorProduct
@@ -477,6 +479,7 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
       Set.range fun x : R => single (algebraMap R S x) 1)
 #align kaehler_differential.ker_total KaehlerDifferential.kerTotal
 
+unsuppress_compilation in
 -- Porting note: was `local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)`
 -- but `notation3` wants an explicit expansion to be able to generate a pretty printer.
 local notation3 x "𝖣" y =>
@@ -590,6 +593,7 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Al
 
 variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
 
+unsuppress_compilation in
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
 local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
@@ -699,4 +703,3 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
 end ExactSequence
 
 end KaehlerDifferential
-

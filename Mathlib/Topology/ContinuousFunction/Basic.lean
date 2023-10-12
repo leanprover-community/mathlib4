@@ -357,6 +357,10 @@ def eval (i : I) : C(∀ j, X j, X i) where
 def piMap (f : ∀ i, C(X i, Y i)) : C((i : I) → X i, (i : I) → Y i) :=
   .pi fun i ↦ (f i).comp (eval i)
 
+/-- "Precomposition" as a continuous map between dependent types. -/
+def precomp {ι : Type*} (φ : ι → I) : C((i : I) → X i, (i : ι) → X (φ i)) :=
+  ⟨_, Pi.continuous_precomp' φ⟩
+
 end Pi
 
 section Restrict

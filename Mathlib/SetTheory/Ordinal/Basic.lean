@@ -378,7 +378,7 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
 #align ordinal.type_lt_iff Ordinal.type_lt_iff
 
 theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s : β → β → Prop}
-  [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
+    [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 #align principal_seg.ordinal_type_lt PrincipalSeg.ordinal_type_lt
 
@@ -1265,7 +1265,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       · intro a'
         cases' (hf _).1 (typein_lt_type _ a') with b e
         exists b
-        simp
+        simp only [RelEmbedding.ofMonotone_coe]
         simp [e]
     · cases' h with a e
       rw [← e]
