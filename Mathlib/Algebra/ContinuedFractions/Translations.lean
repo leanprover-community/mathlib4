@@ -2,13 +2,11 @@
 Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.translations
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
+
+#align_import algebra.continued_fractions.translations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions
@@ -32,7 +30,7 @@ us to access the numerators and denominators of a continued fraction.
 -/
 
 
-variable {α : Type _} {g : GeneralizedContinuedFraction α} {n : ℕ}
+variable {α : Type*} {g : GeneralizedContinuedFraction α} {n : ℕ}
 
 theorem terminatedAt_iff_s_terminatedAt : g.TerminatedAt n ↔ g.s.TerminatedAt n := by rfl
 #align generalized_continued_fraction.terminated_at_iff_s_terminated_at GeneralizedContinuedFraction.terminatedAt_iff_s_terminatedAt
@@ -87,7 +85,7 @@ continued fraction.
 -/
 
 
-variable {K : Type _} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
 
 theorem nth_cont_eq_succ_nth_cont_aux : g.continuants n = g.continuantsAux (n + 1) :=
   rfl

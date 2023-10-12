@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kevin Buzzard
-
-! This file was ported from Lean 3 source module category_theory.preadditive.injective
-! leanprover-community/mathlib commit 3974a774a707e2e06046a14c0eaef4654584fada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Projective
+
+#align_import category_theory.preadditive.injective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
 /-!
 # Injective objects and categories with enough injectives
@@ -48,7 +45,7 @@ to some injective object `J`.
 structure InjectivePresentation (X : C) where
   J : C
   injective : Injective J := by infer_instance
-  f : X ⟶  J
+  f : X ⟶ J
   mono : Mono f := by infer_instance
 #align category_theory.injective_presentation CategoryTheory.InjectivePresentation
 
@@ -216,7 +213,7 @@ section EnoughInjectives
 variable [EnoughInjectives C]
 
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
-a monomorphism `Injective.ι : X ⟶  Injective.under X`.
+a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J
@@ -226,7 +223,7 @@ instance injective_under (X : C) : Injective (under X) :=
   (EnoughInjectives.presentation X).some.injective
 #align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
-/-- The monomorphism `Injective.ι : X ⟶  Injective.under X`
+/-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
@@ -251,7 +248,7 @@ def syzygies : C :=
 instance : Injective <| syzygies f := injective_under (cokernel f)
 
 /-- When `C` has enough injective,
-`injective.d f : Y ⟶ syzygies f` is the composition
+`Injective.d f : Y ⟶ syzygies f` is the composition
 `cokernel.π f ≫ ι (cokernel f)`.
 
 (When `C` is abelian, we have `exact f (injective.d f)`.)
@@ -312,7 +309,7 @@ end Injective
 
 namespace Adjunction
 
-variable {D : Type _} [Category D] {F : C ⥤ D} {G : D ⥤ C}
+variable {D : Type*} [Category D] {F : C ⥤ D} {G : D ⥤ C}
 
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
@@ -350,7 +347,10 @@ end Adjunction
 
 namespace Equivalence
 
-variable {D : Type _} [Category D] (F : C ≌ D)
+variable {D : Type*} [Category D] (F : C ≌ D)
+
+theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
+  ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩
 
 /-- Given an equivalence of categories `F`, an injective presentation of `F(X)` induces an
 injective presentation of `X.` -/
@@ -376,4 +376,3 @@ theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInject
 end Equivalence
 
 end CategoryTheory
-

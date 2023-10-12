@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.hom.freiman
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Data.FunLike.Basic
+
+#align_import algebra.hom.freiman from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Freiman homomorphisms
@@ -55,10 +52,10 @@ instance.
 
 open Multiset
 
-variable {F α β γ δ G : Type _}
+variable {F α β γ δ G : Type*}
 
 /-- An additive `n`-Freiman homomorphism is a map which preserves sums of `n` elements. -/
-structure AddFreimanHom (A : Set α) (β : Type _) [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) where
+structure AddFreimanHom (A : Set α) (β : Type*) [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) where
   /-- The underlying function. -/
   toFun : α → β
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
@@ -69,7 +66,7 @@ structure AddFreimanHom (A : Set α) (β : Type _) [AddCommMonoid α] [AddCommMo
 
 /-- An `n`-Freiman homomorphism on a set `A` is a map which preserves products of `n` elements. -/
 @[to_additive AddFreimanHom]
-structure FreimanHom (A : Set α) (β : Type _) [CommMonoid α] [CommMonoid β] (n : ℕ) where
+structure FreimanHom (A : Set α) (β : Type*) [CommMonoid α] [CommMonoid β] (n : ℕ) where
   /-- The underlying function. -/
   toFun : α → β
   /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
@@ -90,7 +87,7 @@ notation:25 (name := «FreimanHomLocal≺») A " →*[" n:25 "] " β:0 => Freima
 
 /-- `AddFreimanHomClass F A β n` states that `F` is a type of `n`-ary sums-preserving morphisms.
 You should extend this class when you extend `AddFreimanHom`. -/
-class AddFreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <| Type _)
+class AddFreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Type*)
   [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
   map_sum_eq_map_sum' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
@@ -104,7 +101,7 @@ You should extend this class when you extend `FreimanHom`. -/
 @[to_additive AddFreimanHomClass
       "`AddFreimanHomClass F A β n` states that `F` is a type of `n`-ary
       sums-preserving morphisms. You should extend this class when you extend `AddFreimanHom`."]
-class FreimanHomClass (F : Type _) (A : outParam <| Set α) (β : outParam <| Type _) [CommMonoid α]
+class FreimanHomClass (F : Type*) (A : outParam <| Set α) (β : outParam <| Type*) [CommMonoid α]
   [CommMonoid β] (n : ℕ) [FunLike F α fun _ => β] : Prop where
   /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod' (f : F) {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A)
@@ -254,7 +251,7 @@ theorem comp_assoc (f : A →*[n] β) (g : B →*[n] γ) (h : C →*[n] δ) {hf 
 #align freiman_hom.comp_assoc FreimanHom.comp_assoc
 #align add_freiman_hom.comp_assoc AddFreimanHom.comp_assoc
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem cancel_right {g₁ g₂ : B →*[n] γ} {f : A →*[n] β} (hf : Function.Surjective f) {hg₁ hg₂} :
     g₁.comp f hg₁ = g₂.comp f hg₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => h ▸ rfl⟩
@@ -329,7 +326,7 @@ theorem one_comp (f : A →*[n] β) {hf} : (1 : B →*[n] γ).comp f hf = 1 :=
 instance : Inhabited (A →*[n] β) :=
   ⟨1⟩
 
-/-- `f * g` is the Freiman homomorphism  sends `x` to `f x * g x`. -/
+/-- `f * g` is the Freiman homomorphism sends `x` to `f x * g x`. -/
 @[to_additive "`f + g` is the Freiman homomorphism sending `x` to `f x + g x`."]
 instance : Mul (A →*[n] β) :=
   ⟨fun f g =>
@@ -524,9 +521,9 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
 #align map_sum_eq_map_sum_of_le map_sum_eq_map_sum_of_le
 
-/-- `α →*[n] β` is naturally included in  `A →*[m] β` for any `m ≤ n`. -/
+/-- `α →*[n] β` is naturally included in `A →*[m] β` for any `m ≤ n`. -/
 @[to_additive AddFreimanHom.toAddFreimanHom
-      "`α →+[n] β` is naturally included in  `α →+[m] β`
+      "`α →+[n] β` is naturally included in `α →+[m] β`
       for any `m ≤ n`"]
 def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β where
   toFun := f

@@ -2,11 +2,6 @@
 Copyright (c) 2023 Emily Witt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emily Witt, Scott Morrison, Jake Levinson, Sam van Gool
-
-! This file was ported from Lean 3 source module algebra.homology.local_cohomology
-! leanprover-community/mathlib commit 893964fc28cefbcffc7cb784ed00a2895b4e65cf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Colimits
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.RingTheory.Finiteness
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.RingTheory.Noetherian
+
+#align_import algebra.homology.local_cohomology from "leanprover-community/mathlib"@"893964fc28cefbcffc7cb784ed00a2895b4e65cf"
 
 
 /-!
@@ -97,6 +94,11 @@ section
 -- along diagrams either in Type, or in the same universe as the ring, and we need to cover both.
 variable {R : Type max u v} [CommRing R] {D : Type v} [SmallCategory D]
 
+lemma hasColimitDiagram (I : D ⥤ Ideal R) (i : ℕ) :
+    HasColimit (diagram I i) := by
+  have : HasColimitsOfShape Dᵒᵖ (AddCommGroupCatMax.{u, v}) := inferInstance
+  infer_instance
+
 /-
 In this definition we do not assume any special property of the diagram `I`, but the relevant case
 will be where `I` is (cofinal with) the diagram of powers of a single given ideal.
@@ -107,8 +109,9 @@ in an ideal `J`, `localCohomology` and `localCohomology.ofSelfLERadical`.
 /-- `localCohomology.ofDiagram I i` is the functor sending a module `M` over a commutative
 ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collection of ideals
 of `R`, represented as a functor `I`. -/
-def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCat.{max u v} R ⥤ ModuleCat.{max u v} R :=
-  colimit (diagram.{max u v, v} I i)
+def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCatMax.{u, v} R ⥤ ModuleCatMax.{u, v} R :=
+  have := hasColimitDiagram.{u, v} I i
+  colimit (diagram I i)
 #align local_cohomology.of_diagram localCohomology.ofDiagram
 
 end
@@ -119,16 +122,19 @@ variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
 
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 250000 in
 /-- Local cohomology along a composition of diagrams. -/
 def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
   Iso.refl _
 #align local_cohomology.diagram_comp localCohomology.diagramComp
 
 /-- Local cohomology agrees along precomposition with a cofinal diagram. -/
+@[nolint unusedHavesSuffices]
 def isoOfFinal [Functor.Initial I'] (i : ℕ) :
     ofDiagram.{max u v, v'} (I' ⋙ I) i ≅ ofDiagram.{max u v', v} I i :=
-  HasColimit.isoOfNatIso (diagramComp.{u} _ _ _) ≪≫ Functor.Final.colimitIso _ _
+  have := hasColimitDiagram.{max u v', v} I i
+  have := hasColimitDiagram.{max u v, v'} (I' ⋙ I) i
+  HasColimit.isoOfNatIso (diagramComp.{u} I' I i) ≪≫ Functor.Final.colimitIso _ _
 #align local_cohomology.iso_of_final localCohomology.isoOfFinal
 
 end
@@ -153,8 +159,8 @@ def SelfLERadical (J : Ideal R) : Type u :=
 instance (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
 
-instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J)
-    where default := ⟨J, Ideal.le_radical⟩
+instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
+  default := ⟨J, Ideal.le_radical⟩
 #align local_cohomology.self_le_radical.inhabited localCohomology.SelfLERadical.inhabited
 
 /-- The diagram of all ideals with radical containing `J`, represented as a functor.
@@ -249,11 +255,6 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
       right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
       left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
-
--- FIXME again, this instance is not found by `inferInstance`, but `#synth` finds it just fine.
--- #synth HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R)
-instance : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) :=
-  ModuleCat.Colimits.hasColimitsOfSize_zero_moduleCat.{u, u}
 
 example : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) := inferInstance
 /-- Local cohomology (defined in terms of powers of `J`) agrees with local

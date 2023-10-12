@@ -2,11 +2,6 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.divergence_theorem
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+
+#align_import analysis.box_integral.divergence_theorem from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
 /-!
 # Divergence integral for Henstock-Kurzweil integral
@@ -114,7 +111,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       · intro y hy
         refine' (hε y hy).trans (mul_le_mul_of_nonneg_left _ h0.le)
         rw [← dist_eq_norm]
-        exact dist_le_diam_of_mem I.isCompact_Icc.bounded hy hxI
+        exact dist_le_diam_of_mem I.isCompact_Icc.isBounded hy hxI
       rw [two_mul, add_mul]
       exact norm_sub_le_of_le (hε _ (this _ Hl)) (hε _ (this _ Hu))
   calc
@@ -142,7 +139,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       ac_rfl
 #align box_integral.norm_volume_sub_integral_face_upper_sub_lower_smul_le BoxIntegral.norm_volume_sub_integral_face_upper_sub_lower_smul_le
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral

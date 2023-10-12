@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
-
-! This file was ported from Lean 3 source module imo.imo1981_q3
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Fib
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
+
+#align_import imo.imo1981_q3 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1981 Q3
@@ -206,8 +203,7 @@ numbers in this range, and thus provide the maximum of `specifiedSet`.
 -/
 theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   have := fun h => @solution_greatest 1981 16 h 3524578
-  simp only [show fib (16 : ℕ) = 987 ∧ fib (16 + 1 : ℕ) = 1597 by norm_num [fib_add_two]] at this
-  apply_mod_cast this trivial trivial
-  rw [ProblemPredicate_iff]
-  norm_num
+  norm_num at this
+  apply this
+  norm_num [ProblemPredicate_iff]
 #align imo1981_q3 imo1981_q3

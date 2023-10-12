@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.ring.ulift
-! leanprover-community/mathlib commit 13e18cfa070ea337ea960176414f5ae3a1534aae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.ring.ulift from "leanprover-community/mathlib"@"13e18cfa070ea337ea960176414f5ae3a1534aae"
 
 /-!
 # `ULift` instances for ring
@@ -51,7 +48,6 @@ instance nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] :
 
 instance nonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring (ULift α) :=
   { ULift.addMonoidWithOne with
-      zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·),
       nsmul := AddMonoid.nsmul, natCast := fun n => ULift.up n, add_comm, left_distrib,
       right_distrib, zero_mul, mul_zero, one_mul, mul_one }
 #align ulift.non_assoc_semiring ULift.nonAssocSemiring
@@ -65,7 +61,7 @@ instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring (ULift α)
 
 instance semiring [Semiring α] : Semiring (ULift α) :=
   { ULift.addMonoidWithOne with
-      zero := (0 : ULift α), one := 1, add := (· + ·), mul := (· * ·), nsmul := AddMonoid.nsmul,
+      nsmul := AddMonoid.nsmul,
       npow := Monoid.npow, natCast := fun n => ULift.up n, add_comm, left_distrib, right_distrib,
       zero_mul, mul_zero, mul_assoc, one_mul, mul_one, npow_zero := fun _ => Monoid.npow_zero _,
       npow_succ := fun _ _ => Monoid.npow_succ _ _ }
@@ -90,7 +86,6 @@ instance nonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemirin
 
 instance commSemiring [CommSemiring α] : CommSemiring (ULift α) :=
   { ULift.semiring with
-      zero := (0 : ULift α), one := (1 : ULift α), add := (· + ·), mul := (· * ·),
       nsmul := AddMonoid.nsmul, natCast := fun n => ULift.up n, npow := Monoid.npow, mul_comm }
 #align ulift.comm_semiring ULift.commSemiring
 

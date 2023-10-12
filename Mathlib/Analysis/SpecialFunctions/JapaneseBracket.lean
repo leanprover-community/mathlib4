@@ -2,14 +2,11 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.special_functions.japanese_bracket
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.Layercake
+
+#align_import analysis.special_functions.japanese_bracket from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Japanese Bracket
@@ -29,12 +26,12 @@ than the dimension.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 open scoped BigOperators NNReal Filter Topology ENNReal
 
 open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem sqrt_one_add_norm_sq_le (x : E) : Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
   rw [sqrt_le_left (by positivity)]
@@ -108,7 +105,7 @@ theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
     -- porting note: was `by measurability`
     (measurable_norm.const_add _).pow_const _
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
-  rw [lintegral_eq_lintegral_meas_le volume h_pos h_meas]
+  rw [lintegral_eq_lintegral_meas_le volume (eventually_of_forall h_pos) h_meas.aemeasurable]
   have h_int : ∀ t, 0 < t → volume {a : E | t ≤ (1 + ‖a‖) ^ (-r)} =
       volume (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1)) := fun t ht ↦ by
     congr 1
@@ -162,6 +159,6 @@ theorem integrable_rpow_neg_one_add_norm_sq [MeasureSpace E] [BorelSpace E]
     ?_ (eventually_of_forall fun x => ?_)
   · -- porting note: was `measurability`
     exact (((measurable_id.norm.pow_const _).const_add _).pow_const _).aestronglyMeasurable
-  refine (abs_of_pos ?_).trans_le  (rpow_neg_one_add_norm_sq_le x hr)
+  refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq

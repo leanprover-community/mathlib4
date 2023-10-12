@@ -16,6 +16,8 @@ This file defines basic operations on the types expr, name, declaration, level, 
 This file is mostly for non-tactics.
 -/
 
+set_option autoImplicit true
+
 namespace Lean
 
 namespace BinderInfo
@@ -94,14 +96,14 @@ Note: this declaration also occurs as `shouldIgnore` in the Lean 4 file `test/le
 def isInternal' (declName : Name) : Bool :=
   declName.isInternal ||
   match declName with
-  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s || "eq_".isPrefixOf s
+  | .str _ s => "match_".isPrefixOf s || "proof_".isPrefixOf s
   | _        => true
 
 
 open Meta
 
 -- from Lean.Server.Completion
-def isBlackListed (declName : Name) : MetaM Bool := do
+def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
   if declName == ``sorryAx then return true
   if declName matches .str _ "inj" then return true
   if declName matches .str _ "noConfusionType" then return true
@@ -158,7 +160,7 @@ def updateType (c : ConstantInfo) (type : Expr) : ConstantInfo :=
 
 /-- Update the level parameters of a `ConstantInfo`. -/
 def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
-  ConstantInfo :=
+    ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with levelParams}
 
 /-- Update the value of a `ConstantInfo`, if it has one. -/
@@ -212,6 +214,72 @@ def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v
   | _                      => panic! "nat literal expected"
 
+/-- Turn an expression that is a constructor of `Int` applied to a natural number literal
+into an integer. -/
+def intLit! (e : Expr) : Int :=
+  if e.isAppOfArity ``Int.ofNat 1 then
+    e.appArg!.natLit!
+  else if e.isAppOfArity ``Int.negOfNat 1 then
+    .negOfNat e.appArg!.natLit!
+  else
+    panic! "not a raw integer literal"
+
+/--
+Check if an expression is a "natural number in normal form",
+i.e. of the form `OfNat n`, where `n` matches `.lit (.natVal lit)` for some `lit`.
+and if so returns `lit`.
+-/
+-- Note that an `Expr.lit (.natVal n)` is not considered in normal form!
+def nat? (e : Expr) : Option Nat := do
+  guard <| e.isAppOfArity ``OfNat.ofNat 3
+  let lit (.natVal n) := e.appFn!.appArg! | none
+  n
+
+
+/--
+Check if an expression is an "integer in normal form",
+i.e. either a natural number in normal form, or the negation of one,
+and if so returns the integer.
+-/
+def int? (e : Expr) : Option Int :=
+  if e.isAppOfArity ``Neg.neg 3 then
+    (- ·) <$> e.appArg!.nat?
+  else
+    e.nat?
+
+/--
+Check if an expression is a "rational in normal form",
+i.e. either an integer number in normal form,
+or `n / d` where `n` is an integer in normal form, `d` is a natural number in normal form,
+`d ≠ 1`, and `n` and `d` are coprime (in particular, we check that `(mkRat n d).den = d`).
+If so returns the rational number.
+-/
+def rat? (e : Expr) : Option Rat := do
+  if e.isAppOfArity ``Div.div 4 then
+    let d ← e.appArg!.nat?
+    guard (d ≠ 1)
+    let n ← e.appFn!.appArg!.int?
+    let q := mkRat n d
+    guard (q.den = d)
+    pure q
+  else
+    e.int?
+
+/--
+Test if an expression represents an explicit number written in normal form:
+* A "natural number in normal form" is an expression `OfNat.ofNat n`, even if it is not of type `ℕ`,
+  as long as `n` is a literal.
+* An "integer in normal form" is an expression which is either a natural number in number form,
+  or `-n`, where `n` is a natural number in normal form.
+* A "rational in normal form" is an expressions which is either an integer in normal form,
+  or `n / d` where `n` is an integer in normal form, `d` is a natural number in normal form,
+  `d ≠ 1`, and `n` and `d` are coprime (in particular, we check that `(mkRat n d).den = d`).
+-/
+def isExplicitNumber : Expr → Bool
+  | .lit _ => true
+  | .mdata _ e => isExplicitNumber e
+  | e => e.rat?.isSome
+
 /-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
 def fvarId? : Expr → Option FVarId
   | .fvar n => n
@@ -229,6 +297,11 @@ def isConstantApplication (e : Expr) :=
     | .lam _ _ b _, n + 1  => aux depth b n
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
+
+/-- Counts the immediate depth of a nested `let` expression. -/
+def letDepth : Expr → Nat
+  | .letE _ _ _ b _ => b.letDepth + 1
+  | _ => 0
 
 open Meta
 
@@ -249,6 +322,8 @@ def ofNat (α : Expr) (n : Nat) : MetaM Expr := do
 def ofInt (α : Expr) : Int → MetaM Expr
   | Int.ofNat n => Expr.ofNat α n
   | Int.negSucc n => do mkAppM ``Neg.neg #[← Expr.ofNat α (n+1)]
+
+section recognizers
 
 /--
   Return `some n` if `e` is one of the following
@@ -274,6 +349,33 @@ def zero? (e : Expr) : Bool :=
   | some 0 => true
   | _ => false
 
+/-- Tests is if an expression matches either `x ≠ y` or `¬ (x = y)`.
+If it matches, returns `some (type, x, y)`. -/
+def ne?' (e : Expr) : Option (Expr × Expr × Expr) :=
+  e.ne? <|> (e.not? >>= Expr.eq?)
+
+/-- `Lean.Expr.le? e` takes `e : Expr` as input.
+If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def le? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LE.le
+  return (type, lhs, rhs)
+
+/-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
+where `lhs : tyLhs` and `rhs : tyRhs`,
+and where `lhs` is related to `rhs` by the respective relation.
+
+See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
+def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
+  if let some (lhs, rhs) := ty.iff? then
+    some (.sort .zero, lhs, .sort .zero, rhs)
+  else if let some (ty, lhs, rhs) := ty.eq? then
+    some (ty, lhs, ty, rhs)
+  else
+    ty.heq?
+
+end recognizers
+
 def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
   | e => pure e
@@ -281,7 +383,7 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
   modifyAppArgM (M := Id) modifier
 
-def modifyRevArg (modifier : Expr → Expr) : Nat → Expr  → Expr
+def modifyRevArg (modifier : Expr → Expr) : Nat → Expr → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 
@@ -401,8 +503,30 @@ def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
 /-- Return the name of the module in which a declaration was defined. -/
 def Environment.getModuleFor? (env : Environment) (declName : Name) : Option Name :=
   match env.getModuleIdxFor? declName with
-  | none => none
+  | none =>
+    if env.constants.map₂.contains declName then
+      env.header.mainModule
+    else
+      none
   | some idx => env.header.moduleNames[idx.toNat]!
+
+/--
+Return the names of the modules in which constants used in the specified declaration were defined.
+
+Note that this will *not* account for tactics and syntax used in the declaration,
+so the results may not suffice as imports.
+-/
+def Name.requiredModules (n : Name) : CoreM NameSet := do
+  let env ← getEnv
+  let mut requiredModules : NameSet := {}
+  let ci ← getConstInfo n
+  for n in ci.getUsedConstants do
+    match env.getModuleFor? n with
+    | some m =>
+      if ¬ (`Init).isPrefixOf m then
+        requiredModules := requiredModules.insert m
+    | none => pure ()
+  return requiredModules
 
 /--
 Return the names of the modules in which constants used in the current file were defined.

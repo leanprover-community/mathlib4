@@ -2,11 +2,6 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.instances.sphere
-! leanprover-community/mathlib commit 0dc4079202c28226b2841a51eb6d3cc2135bb80f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.NormedSpace.BallAction
@@ -16,6 +11,8 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv
+
+#align_import geometry.manifold.instances.sphere from "leanprover-community/mathlib"@"0dc4079202c28226b2841a51eb6d3cc2135bb80f"
 
 /-!
 # Manifold structure on the sphere
@@ -67,7 +64,7 @@ Relate the stereographic projection to the inversion of the space.
 -/
 
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
 
@@ -75,7 +72,7 @@ open Metric FiniteDimensional Function
 
 open scoped Manifold
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 section StereographicProjection
 
@@ -239,12 +236,6 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have ha : 1 - a ≠ 0 := by
     have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
     linarith
-  have : 2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2 ≠ 0 := by
-    refine' ne_of_gt _
-    have : (0 : ℝ) < (1 - a) ^ 2 := sq_pos_of_ne_zero (1 - a) ha
-    -- Porting note: nlinarith needed a little help
-    change 0 < 4 * _ + 4 * _
-    nlinarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
     -- Porting note: used to be `field_simp; simp only [Submodule.coe_norm] at *; nlinarith`
@@ -253,21 +244,15 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     -- clear_value because field_simp does zeta-reduction (by design?) and is annoying
     clear_value a y
     field_simp
-    rw [div_eq_iff, duh]
-    · ring
-    · apply mul_ne_zero_iff.mpr ⟨?_,ha⟩
-      convert this using 2; rw [Submodule.coe_norm]; ring
+    rw [duh]
+    ring
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
     -- Porting note: field_simp is not behaving as in ml3
     -- see porting note above; previous proof used trans and was comparably complicated
     clear_value a y
     field_simp
-    rw [div_eq_iff, duh]
-    ring_nf
-    -- Porting note: shouldn't repeat myself but getting the coercion right is annoying
-    apply mul_ne_zero_iff.mpr ⟨?_,?_⟩
-    · convert this using 2; rw [Submodule.coe_norm]; ring
-    · apply pow_ne_zero _ ha
+    rw [duh]
+    ring
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
   · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
@@ -284,10 +269,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
-    have : ‖(w : E)‖ ^ 2 + 4 ≠ 0 := by nlinarith
-    have : (4 : ℝ) + 4 ≠ 0 := by nlinarith
-    field_simp
-    ring
+    field_simp; ring
   convert congr_arg (· • w) this
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
@@ -364,7 +346,7 @@ In this section we construct a charted space structure on the unit sphere in a f
 real inner product space `E`; that is, we show that it is locally homeomorphic to the Euclidean
 space of dimension one less than `E`.
 
-The restriction to finite dimension is for convenience.  The most natural `charted_space`
+The restriction to finite dimension is for convenience.  The most natural `ChartedSpace`
 structure for the sphere uses the stereographic projection from the antipodes of a point as the
 canonical chart at this point.  However, the codomain of the stereographic projection constructed
 in the previous section is `(ℝ ∙ v)ᗮ`, the orthogonal complement of the vector `v` in `E` which is
@@ -479,14 +461,14 @@ theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
           U.symm.contDiff).contDiffOn
 #align cont_mdiff_coe_sphere contMDiff_coe_sphere
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-variable {H : Type _} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
+variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 
-variable {M : Type _} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
-/-- If a `cont_mdiff` function `f : M → E`, where `M` is some manifold, takes values in the
-sphere, then it restricts to a `cont_mdiff` function from `M` to the sphere. -/
+/-- If a `ContMDiff` function `f : M → E`, where `M` is some manifold, takes values in the
+sphere, then it restricts to a `ContMDiff` function from `M` to the sphere. -/
 theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m : ℕ∞} {f : M → E}
     (hf : ContMDiff I 𝓘(ℝ, E) m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
     ContMDiff I (𝓡 n) m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
@@ -559,7 +541,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
       (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
-  -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`
+  -- we must show `Submodule.span ℝ {v} = Submodule.span ℝ {-v}`
   apply Submodule.span_eq_span
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [← Submodule.neg_mem_iff]

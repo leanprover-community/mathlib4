@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.module.submodule.pointwise
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Span
+
+#align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -33,7 +30,7 @@ Most of the lemmas in this file are direct copies of lemmas from
 -/
 
 
-variable {α : Type _} {R : Type _} {M : Type _}
+variable {α : Type*} {R : Type*} {M : Type*}
 
 open Pointwise
 
@@ -52,10 +49,9 @@ Recall that When `R` is the semiring corresponding to the nonnegative elements o
 `Submodule R' M` is the type of cones of `M`. This instance reflects such cones about `0`.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseNeg : Neg (Submodule R M)
-    where neg p :=
+protected def pointwiseNeg : Neg (Submodule R M) where
+  neg p :=
     { -p.toAddSubmonoid with
-      carrier := -(p : Set M)
       smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
 #align submodule.has_pointwise_neg Submodule.pointwiseNeg
 
@@ -134,12 +130,12 @@ theorem neg_top : -(⊤ : Submodule R M) = ⊤ :=
 #align submodule.neg_top Submodule.neg_top
 
 @[simp]
-theorem neg_iInf {ι : Sort _} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
+theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iInf _
 #align submodule.neg_infi Submodule.neg_iInf
 
 @[simp]
-theorem neg_iSup {ι : Sort _} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
+theorem neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
 #align submodule.neg_supr Submodule.neg_iSup
 
@@ -176,12 +172,9 @@ theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
 
-instance : CanonicallyOrderedAddMonoid (Submodule R M) :=
+instance : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
   { Submodule.pointwiseAddCommMonoid,
     Submodule.completeLattice with
-    zero := 0
-    bot := ⊥
-    add := (· + ·)
     add_le_add_left := fun _a _b => sup_le_sup_left
     exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
     le_self_add := fun _a _b => le_sup_left }
@@ -221,7 +214,7 @@ theorem pointwise_smul_toAddSubmonoid (a : α) (S : Submodule R M) :
 #align submodule.pointwise_smul_to_add_submonoid Submodule.pointwise_smul_toAddSubmonoid
 
 @[simp]
-theorem pointwise_smul_toAddSubgroup {R M : Type _} [Ring R] [AddCommGroup M] [DistribMulAction α M]
+theorem pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [DistribMulAction α M]
     [Module R M] [SMulCommClass α R M] (a : α) (S : Submodule R M) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup :=
   rfl
@@ -256,7 +249,7 @@ instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass 
 #align submodule.pointwise_central_scalar Submodule.pointwiseCentralScalar
 
 @[simp]
-theorem smul_le_self_of_tower {α : Type _} [Semiring α] [Module α R] [Module α M]
+theorem smul_le_self_of_tower {α : Type*} [Semiring α] [Module α R] [Module α M]
     [SMulCommClass α R M] [IsScalarTower α R M] (a : α) (S : Submodule R M) : a • S ≤ S := by
   rintro y ⟨x, hx, rfl⟩
   exact smul_of_tower_mem _ a hx

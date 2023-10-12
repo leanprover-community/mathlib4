@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.basic
-! leanprover-community/mathlib commit 3b1890e71632be9e3b2086ab512c3259a7e9a3ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.Star
+
+#align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Infinite sum over a topological monoid
@@ -29,6 +26,8 @@ generally, see `HasSum.tendsto_sum_nat`.
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -36,7 +35,7 @@ open Classical Filter Finset Function
 
 open BigOperators Classical Topology
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 section HasSum
 
@@ -311,7 +310,7 @@ theorem Summable.hasSum_iff_tendsto_nat [T2Space α] {f : ℕ → α} {a : α} (
   exact hf.hasSum
 #align summable.has_sum_iff_tendsto_nat Summable.hasSum_iff_tendsto_nat
 
-theorem Function.Surjective.summable_iff_of_hasSum_iff {α' : Type _} [AddCommMonoid α']
+theorem Function.Surjective.summable_iff_of_hasSum_iff {α' : Type*} [AddCommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
     (he : ∀ {a}, HasSum f (e a) ↔ HasSum g a) : Summable f ↔ Summable g :=
   hes.exists.trans <| exists_congr <| @he
@@ -398,7 +397,7 @@ theorem Summable.even_add_odd {f : ℕ → α} (he : Summable fun k => f (2 * k)
   (he.hasSum.even_add_odd ho.hasSum).summable
 #align summable.even_add_odd Summable.even_add_odd
 
-theorem HasSum.sigma [RegularSpace α] {γ : β → Type _} {f : (Σ b : β, γ b) → α} {g : β → α} {a : α}
+theorem HasSum.sigma [RegularSpace α] {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β → α} {a : α}
     (ha : HasSum f a) (hf : ∀ b, HasSum (fun c => f ⟨b, c⟩) (g b)) : HasSum g a := by
   refine' (atTop_basis.tendsto_iff (closed_nhds_basis a)).mpr _
   rintro s ⟨hs, hsc⟩
@@ -424,12 +423,12 @@ theorem HasSum.prod_fiberwise [RegularSpace α] {f : β × γ → α} {g : β �
   HasSum.sigma ((Equiv.sigmaEquivProd β γ).hasSum_iff.2 ha) hf
 #align has_sum.prod_fiberwise HasSum.prod_fiberwise
 
-theorem Summable.sigma' [RegularSpace α] {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f)
+theorem Summable.sigma' [RegularSpace α] {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Summable f)
     (hf : ∀ b, Summable fun c => f ⟨b, c⟩) : Summable fun b => ∑' c, f ⟨b, c⟩ :=
   (ha.hasSum.sigma fun b => (hf b).hasSum).summable
 #align summable.sigma' Summable.sigma'
 
-theorem HasSum.sigma_of_hasSum [T3Space α] {γ : β → Type _} {f : (Σb : β, γ b) → α} {g : β → α}
+theorem HasSum.sigma_of_hasSum [T3Space α] {γ : β → Type*} {f : (Σb : β, γ b) → α} {g : β → α}
     {a : α} (ha : HasSum g a) (hf : ∀ b, HasSum (fun c => f ⟨b, c⟩) (g b)) (hf' : Summable f) :
     HasSum f a := by simpa [(hf'.hasSum.sigma hf).unique ha] using hf'.hasSum
 #align has_sum.sigma_of_has_sum HasSum.sigma_of_hasSum
@@ -437,7 +436,7 @@ theorem HasSum.sigma_of_hasSum [T3Space α] {γ : β → Type _} {f : (Σb : β,
 /-- Version of `HasSum.update` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that `f.update` has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `f.update` given that both exist. -/
-theorem HasSum.update' {α β : Type _} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
+theorem HasSum.update' {α β : Type*} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
     [ContinuousAdd α] {f : β → α} {a a' : α} (hf : HasSum f a) (b : β) (x : α)
     (hf' : HasSum (update f b x) a') : a + x = a' + f b := by
   have : ∀ b', f b' + ite (b' = b) x 0 = update f b x b' + ite (b' = b) (f b) 0 := by
@@ -453,7 +452,7 @@ theorem HasSum.update' {α β : Type _} [TopologicalSpace α] [AddCommMonoid α]
 /-- Version of `hasSum_ite_sub_hasSum` for `AddCommMonoid` rather than `AddCommGroup`.
 Rather than showing that the `ite` expression has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given that both exist. -/
-theorem eq_add_of_hasSum_ite {α β : Type _} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
+theorem eq_add_of_hasSum_ite {α β : Type*} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
     [ContinuousAdd α] {f : β → α} {a : α} (hf : HasSum f a) (b : β) (a' : α)
     (hf' : HasSum (fun n => ite (n = b) 0 (f n)) a') : a = a' + f b := by
   refine' (add_zero a).symm.trans (hf.update' b 0 _)
@@ -513,8 +512,8 @@ theorem sum_eq_tsum_indicator (f : β → α) (s : Finset β) :
     (tsum_eq_sum this).symm
 #align sum_eq_tsum_indicator sum_eq_tsum_indicator
 
-theorem tsum_bool (f : Bool → α) : ∑' i : Bool, f i = f False + f True := by
-  rw [tsum_fintype, Finset.sum_eq_add] <;> simp
+theorem tsum_bool (f : Bool → α) : ∑' i : Bool, f i = f false + f true := by
+  rw [tsum_fintype, Fintype.sum_bool, add_comm]
 #align tsum_bool tsum_bool
 
 theorem tsum_eq_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 0) :
@@ -582,7 +581,7 @@ theorem tsum_dite_left (P : Prop) [Decidable P] (x : β → P → α) :
   by_cases hP : P <;> simp [hP]
 #align tsum_dite_left tsum_dite_left
 
-theorem Function.Surjective.tsum_eq_tsum_of_hasSum_iff_hasSum {α' : Type _} [AddCommMonoid α']
+theorem Function.Surjective.tsum_eq_tsum_of_hasSum_iff_hasSum {α' : Type*} [AddCommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) (h0 : e 0 = 0) {f : β → α}
     {g : γ → α'} (h : ∀ {a}, HasSum f (e a) ↔ HasSum g a) : ∑' b, f b = e (∑' c, g c) :=
   _root_.by_cases (fun x => (h.mpr x.hasSum).tsum_eq) fun hg : ¬Summable g => by
@@ -670,7 +669,7 @@ theorem tsum_eq_add_tsum_ite' {f : β → α} (b : β) (hf : Summable (update f 
 
 variable [AddCommMonoid δ] [TopologicalSpace δ] [T3Space δ] [ContinuousAdd δ]
 
-theorem tsum_sigma' {γ : β → Type _} {f : (Σb : β, γ b) → δ} (h₁ : ∀ b, Summable fun c => f ⟨b, c⟩)
+theorem tsum_sigma' {γ : β → Type*} {f : (Σb : β, γ b) → δ} (h₁ : ∀ b, Summable fun c => f ⟨b, c⟩)
     (h₂ : Summable f) : ∑' p, f p = ∑' (b) (c), f ⟨b, c⟩ :=
   (h₂.hasSum.sigma fun b => (h₁ b).hasSum).tsum_eq.symm
 #align tsum_sigma' tsum_sigma'
@@ -698,7 +697,7 @@ variable [Encodable γ]
   taking a supremum. This is useful for outer measures. -/
 theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
     ∑' i : ℕ, m (⨆ b ∈ decode₂ γ i, s b) = ∑' b : γ, m (s b) := by
-  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome :=by
+  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome := by
     intro n h
     generalize decode₂ γ n = foo at *
     cases' foo with b
@@ -1038,7 +1037,7 @@ theorem summable_int_of_summable_nat {f : ℤ → α} (hp : Summable fun n : ℕ
   (HasSum.nonneg_add_neg hp.hasSum <| Summable.hasSum <| (summable_nat_add_iff 1).mpr hn).summable
 #align summable_int_of_summable_nat summable_int_of_summable_nat
 
-theorem HasSum.sum_nat_of_sum_int {α : Type _} [AddCommMonoid α] [TopologicalSpace α]
+theorem HasSum.sum_nat_of_sum_int {α : Type*} [AddCommMonoid α] [TopologicalSpace α]
     [ContinuousAdd α] {a : α} {f : ℤ → α} (hf : HasSum f a) :
     HasSum (fun n : ℕ => f n + f (-n)) (a + f 0) := by
   apply (hf.add (hasSum_ite_eq (0 : ℤ) (f 0))).hasSum_of_sum_eq fun u => ?_
@@ -1194,12 +1193,12 @@ theorem summable_subtype_and_compl {s : Set β} :
   ⟨and_imp.2 Summable.add_compl, fun h => ⟨h.subtype s, h.subtype sᶜ⟩⟩
 #align summable_subtype_and_compl summable_subtype_and_compl
 
-theorem Summable.sigma_factor {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f) (b : β) :
+theorem Summable.sigma_factor {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Summable f) (b : β) :
     Summable fun c => f ⟨b, c⟩ :=
   ha.comp_injective sigma_mk_injective
 #align summable.sigma_factor Summable.sigma_factor
 
-theorem Summable.sigma {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f) :
+theorem Summable.sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Summable f) :
     Summable fun b => ∑' c, f ⟨b, c⟩ :=
   ha.sigma' fun b => ha.sigma_factor b
 #align summable.sigma Summable.sigma
@@ -1209,15 +1208,7 @@ theorem Summable.prod_factor {f : β × γ → α} (h : Summable f) (b : β) :
   h.comp_injective fun _ _ h => (Prod.ext_iff.1 h).2
 #align summable.prod_factor Summable.prod_factor
 
-section LocInstances
-
--- enable inferring a T3-topological space from a topological group
-attribute [local instance] TopologicalAddGroup.t3Space
-
--- disable getting a T0-space from a T1-space as this causes loops
-attribute [-instance] T1Space.t0Space
-
-theorem tsum_sigma [T0Space α] {γ : β → Type _} {f : (Σb : β, γ b) → α} (ha : Summable f) :
+theorem tsum_sigma [T0Space α] {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Summable f) :
     ∑' p, f p = ∑' (b) (c), f ⟨b, c⟩ :=
   tsum_sigma' (fun b => ha.sigma_factor b) ha
 #align tsum_sigma tsum_sigma
@@ -1231,8 +1222,6 @@ theorem tsum_comm [T0Space α] {f : β → γ → α} (h : Summable (Function.un
     ∑' (c) (b), f b c = ∑' (b) (c), f b c :=
   tsum_comm' h h.prod_factor h.prod_symm.prod_factor
 #align tsum_comm tsum_comm
-
-end LocInstances
 
 theorem tsum_subtype_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f) (s : Set β) :
     ∑' x : s, f x + ∑' x : ↑sᶜ, f x = ∑' x, f x :=
@@ -1250,7 +1239,7 @@ end UniformGroup
 
 section TopologicalGroup
 
-variable {G : Type _} [TopologicalSpace G] [AddCommGroup G] [TopologicalAddGroup G] {f : α → G}
+variable {G : Type*} [TopologicalSpace G] [AddCommGroup G] [TopologicalAddGroup G] {f : α → G}
 
 theorem Summable.vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (0 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∑ k in t, f k) ∈ e := by
@@ -1275,6 +1264,10 @@ theorem Summable.tendsto_atTop_zero {f : ℕ → G} (hf : Summable f) : Tendsto 
   exact hf.tendsto_cofinite_zero
 #align summable.tendsto_at_top_zero Summable.tendsto_atTop_zero
 
+theorem Summable.countable_support [TopologicalSpace.FirstCountableTopology G] [T1Space G]
+    (hf : Summable f) : f.support.Countable := by
+  simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
+
 end TopologicalGroup
 
 section ConstSmul
@@ -1290,9 +1283,42 @@ theorem Summable.const_smul (b : γ) (hf : Summable f) : Summable fun i => b •
   (hf.hasSum.const_smul _).summable
 #align summable.const_smul Summable.const_smul
 
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Monoid`, but
+  requiring a summability hypothesis. -/
 theorem tsum_const_smul [T2Space α] (b : γ) (hf : Summable f) : ∑' i, b • f i = b • ∑' i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
 #align tsum_const_smul tsum_const_smul
+
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
+  not requiring any summability hypothesis. -/
+lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
+    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
+  by_cases hf : Summable f
+  · exact tsum_const_smul g hf
+  rw [tsum_eq_zero_of_not_summable hf]
+  simp only [smul_zero]
+  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv α g
+  apply tsum_eq_zero_of_not_summable
+  change ¬ Summable (mul_g ∘ f)
+  rwa [Summable.map_iff_of_equiv mul_g]
+  · apply continuous_const_smul
+  · apply continuous_const_smul
+
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a
+  `DivisionRing`; no summability hypothesis. This could be made to work for a
+  `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
+lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
+    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
+  by_cases hf : Summable f
+  · exact tsum_const_smul g hf
+  rw [tsum_eq_zero_of_not_summable hf]
+  simp only [smul_zero]
+  by_cases hg : g = 0
+  · simp [hg]
+  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv₀ α g hg
+  apply tsum_eq_zero_of_not_summable
+  change ¬ Summable (mul_g ∘ f)
+  rwa [Summable.map_iff_of_equiv] <;> apply continuous_const_smul
 
 end ConstSmul
 
@@ -1312,7 +1338,7 @@ end Prod
 
 section Pi
 
-variable {ι : Type _} {π : α → Type _} [∀ x, AddCommMonoid (π x)] [∀ x, TopologicalSpace (π x)]
+variable {ι : Type*} {π : α → Type*} [∀ x, AddCommMonoid (π x)] [∀ x, TopologicalSpace (π x)]
 
 theorem Pi.hasSum {f : ι → ∀ x, π x} {g : ∀ x, π x} :
     HasSum f g ↔ ∀ x, HasSum (fun i => f i x) (g x) := by
@@ -1433,3 +1459,104 @@ theorem tsum_star : star (∑' b, f b) = ∑' b, star (f b) := by
 #align tsum_star tsum_star
 
 end ContinuousStar
+
+section automorphize
+
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] {R : Type*}
+  [DivisionRing R] [Module R M] [ContinuousConstSMul R M]
+
+/-- Given a group `α` acting on a type `β`, and a function `f : β → M`, we "automorphize" `f` to a
+  function `β ⧸ α → M` by summing over `α` orbits, `b ↦ ∑' (a : α), f(a • b)`. -/
+@[to_additive "Given an additive group `α` acting on a type `β`, and a function `f : β → M`,
+  we automorphize `f` to a function `β ⧸ α → M` by summing over `α` orbits,
+  `b ↦ ∑' (a : α), f(a • b)`."]
+noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β → M) :
+    Quotient (MulAction.orbitRel α β) → M := by
+  refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
+  intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
+  simp only
+  rw [← ha]
+  convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
+  simp only [Equiv.coe_mulRight]
+  congr
+  ext
+  congr 1
+  simp only [mul_smul]
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
+    (g : Quotient (MulAction.orbitRel α β) → R) :
+    MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
+  ext x
+  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
+  intro b
+  simp only [automorphize, Pi.smul_apply', comp_apply]
+  set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
+  have H₁ : ∀ a : α, π (a • b) = π b
+  · intro a
+    apply (@Quotient.eq _ (MulAction.orbitRel α β) (a • b) b).mpr
+    use a
+  change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
+  simp_rw [H₁]
+  exact tsum_const_smul'' _
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
+    (g : Quotient (AddAction.orbitRel α β) → R) :
+    AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
+  ext x
+  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
+  intro b
+  simp only [automorphize, Pi.smul_apply', comp_apply]
+  set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
+  have H₁ : ∀ a : α, π (a +ᵥ b) = π b
+  · intro a
+    apply (@Quotient.eq _ (AddAction.orbitRel α β) (a +ᵥ b) b).mpr
+    use a
+  change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
+  simp_rw [H₁]
+  exact tsum_const_smul'' _
+
+attribute [to_additive existing MulAction.automorphize_smul_left] AddAction.automorphize_smul_left
+
+section
+
+variable {G : Type*} [Group G] {Γ : Subgroup G}
+
+/-- Given a subgroup `Γ` of a group `G`, and a function `f : G → M`, we "automorphize" `f` to a
+  function `G ⧸ Γ → M` by summing over `Γ` orbits, `g ↦ ∑' (γ : Γ), f(γ • g)`. -/
+@[to_additive "Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
+  automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
+  `g ↦ ∑' (γ : Γ), f(γ • g)`."]
+noncomputable def QuotientGroup.automorphize  (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma QuotientGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
+    (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ (_)) : G → R) • f) : G ⧸ Γ → M)
+      = g • (QuotientGroup.automorphize f : G ⧸ Γ → M) :=
+  MulAction.automorphize_smul_left f g
+
+end
+
+section
+
+variable {G : Type*} [AddGroup G] {Γ : AddSubgroup G}
+
+/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/
+lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
+    QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
+      = g • (QuotientAddGroup.automorphize f : G ⧸ Γ → M) :=
+  AddAction.automorphize_smul_left f g
+
+end
+
+attribute [to_additive existing QuotientGroup.automorphize_smul_left]
+  QuotientAddGroup.automorphize_smul_left
+
+end automorphize

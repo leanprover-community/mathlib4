@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.filter.n_ary
-! leanprover-community/mathlib commit 78f647f8517f021d839a7553d5dc97e79b508dea
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Prod
+
+#align_import order.filter.n_ary from "leanprover-community/mathlib"@"78f647f8517f021d839a7553d5dc97e79b508dea"
 
 /-!
 # N-ary maps of filter
@@ -34,7 +31,7 @@ open Filter
 
 namespace Filter
 
-variable {α α' β β' γ γ' δ δ' ε ε' : Type _} {m : α → β → γ} {f f₁ f₂ : Filter α}
+variable {α α' β β' γ γ' δ δ' ε ε' : Type*} {m : α → β → γ} {f f₁ f₂ : Filter α}
   {g g₁ g₂ : Filter β} {h h₁ h₂ : Filter γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
   {v : Set δ} {a : α} {b : β} {c : γ}
 
@@ -55,7 +52,7 @@ def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ
         (image2_subset (inter_subset_right _ _) <| inter_subset_right _ _).trans ht⟩
 #align filter.map₂ Filter.map₂
 
-@[simp]
+@[simp 900]
 theorem mem_map₂_iff : u ∈ map₂ m f g ↔ ∃ s t, s ∈ f ∧ t ∈ g ∧ image2 m s t ⊆ u :=
   Iff.rfl
 #align filter.mem_map₂_iff Filter.mem_map₂_iff
@@ -279,7 +276,7 @@ theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
 @[simp]
 theorem map₂_curry (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map₂ (curry m) f g = (f ×ˢ g).map m :=
-  (map_prod_eq_map₂' _  _ _).symm
+  (map_prod_eq_map₂' _ _ _).symm
 #align filter.map₂_curry Filter.map₂_curry
 
 @[simp]

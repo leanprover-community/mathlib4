@@ -2,15 +2,12 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.order.pi
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # Pi instances for ordered groups and monoids
@@ -18,12 +15,10 @@ import Mathlib.Tactic.Positivity
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
-variable {ι α β : Type _}
-
-variable {I : Type u}
+variable {ι I α β γ : Type*}
 
 -- The indexing type
-variable {f : I → Type v}
+variable {f : I → Type*}
 
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i : I)
@@ -34,7 +29,7 @@ namespace Pi
 @[to_additive
       "The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid."]
-instance orderedCommMonoid {ι : Type _} {Z : ι → Type _} [∀ i, OrderedCommMonoid (Z i)] :
+instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
     OrderedCommMonoid (∀ i, Z i) :=
   { Pi.partialOrder, Pi.commMonoid with
     mul_le_mul_left := fun _ _ w _ i => mul_le_mul_left' (w i) _ }
@@ -42,7 +37,7 @@ instance orderedCommMonoid {ι : Type _} {Z : ι → Type _} [∀ i, OrderedComm
 #align pi.ordered_add_comm_monoid Pi.orderedAddCommMonoid
 
 @[to_additive]
-instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [∀ i, Mul (α i)]
+instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
     [∀ i, ExistsMulOfLE (α i)] : ExistsMulOfLE (∀ i, α i) :=
   ⟨fun h =>
     ⟨fun i => (exists_mul_of_le <| h i).choose,
@@ -54,8 +49,8 @@ instance existsMulOfLe {ι : Type _} {α : ι → Type _} [∀ i, LE (α i)] [�
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type _} {Z : ι → Type _} [∀ i, CanonicallyOrderedMonoid (Z i)] :
-    CanonicallyOrderedMonoid (∀ i, Z i) :=
+instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
+    CanonicallyOrderedCommMonoid (∀ i, Z i) :=
   { Pi.orderBot, Pi.orderedCommMonoid, Pi.existsMulOfLe with
     le_self_mul := fun _ _ _ => le_self_mul }
 
@@ -63,10 +58,6 @@ instance {ι : Type _} {Z : ι → Type _} [∀ i, CanonicallyOrderedMonoid (Z i
 instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
     OrderedCancelCommMonoid (∀ i : I, f i) :=
   { Pi.partialOrder, Pi.commMonoid with
-    mul := (· * ·)
-    one := (1 : ∀ i, f i)
-    le := (· ≤ ·)
-    lt := (· < ·)
     npow := Monoid.npow,
     le_of_mul_le_mul_left := fun _ _ _ h i =>
       OrderedCancelCommMonoid.le_of_mul_le_mul_left _ _ _ (h i)
@@ -87,10 +78,6 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
 @[to_additive]
 instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) :=
   { Pi.commGroup, Pi.orderedCommMonoid with
-    mul := (· * ·)
-    one := (1 : ∀ i, f i)
-    le := (· ≤ ·)
-    lt := (· < ·)
     npow := Monoid.npow }
 #align pi.ordered_comm_group Pi.orderedCommGroup
 #align pi.ordered_add_comm_group Pi.orderedAddCommGroup
@@ -119,7 +106,7 @@ instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i
 end Pi
 
 namespace Function
-
+section const
 variable (β) [One α] [Preorder α] {a : α}
 
 @[to_additive const_nonneg_of_nonneg]
@@ -158,6 +145,18 @@ theorem const_lt_one : const β a < 1 ↔ a < 1 :=
 #align function.const_lt_one Function.const_lt_one
 #align function.const_neg Function.const_neg
 
+end const
+
+section extend
+variable [One γ] [LE γ] {f : α → β} {g : α → γ} {e : β → γ}
+
+@[to_additive extend_nonneg] lemma one_le_extend (hg : 1 ≤ g) (he : 1 ≤ e) : 1 ≤ extend f g e :=
+  fun _b ↦ by classical exact one_le_dite (fun _ ↦ hg _) (fun _ ↦ he _)
+
+@[to_additive] lemma extend_le_one (hg : g ≤ 1) (he : e ≤ 1) : extend f g e ≤ 1 :=
+  fun _b ↦ by classical exact dite_le_one (fun _ ↦ hg _) (fun _ ↦ he _)
+
+end extend
 end Function
 --Porting note: Tactic code not ported yet
 -- namespace Tactic

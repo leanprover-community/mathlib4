@@ -2,13 +2,10 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ring_hom.surjective
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.LocalProperties
+
+#align_import ring_theory.ring_hom.surjective from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 
@@ -41,11 +38,12 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
   classical
   introv h x
   skip
-  induction' x using TensorProduct.induction_on with x y x y ex ey
-  · exact ⟨0, map_zero _⟩
-  · obtain ⟨y, rfl⟩ := h y; use y • x; dsimp
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨0, map_zero _⟩
+  | tmul x y =>
+    obtain ⟨y, rfl⟩ := h y; use y • x; dsimp
     rw [TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]
-  · obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := ex, ey; exact ⟨x + y, map_add _ x y⟩
+  | add x y ex ey => obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := ex, ey; exact ⟨x + y, map_add _ x y⟩
 #align ring_hom.surjective_stable_under_base_change RingHom.surjective_stableUnderBaseChange
 
 open scoped BigOperators

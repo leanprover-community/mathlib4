@@ -2,14 +2,11 @@
 Copyright (c) 2022 Justin Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Thomas
-
-! This file was ported from Lean 3 source module linear_algebra.annihilating_polynomial
-! leanprover-community/mathlib commit d3e8e0a0237c10c2627bf52c246b15ff8e7df4c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import linear_algebra.annihilating_polynomial from "leanprover-community/mathlib"@"d3e8e0a0237c10c2627bf52c246b15ff8e7df4c0"
 
 /-!
 # Annihilating Ideal
@@ -43,7 +40,7 @@ namespace Polynomial
 
 section Semiring
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 variable (R)
 
@@ -69,13 +66,12 @@ end Semiring
 
 section Field
 
-variable {𝕜 A : Type _} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+variable {𝕜 A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 variable (𝕜)
 
 open Submodule
 
-set_option synthInstance.maxHeartbeats 35000 in
 /-- `annIdealGenerator 𝕜 a` is the monic generator of `annIdeal 𝕜 a`
 if one exists, otherwise `0`.
 

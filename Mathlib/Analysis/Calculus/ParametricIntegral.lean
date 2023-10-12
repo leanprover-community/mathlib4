@@ -2,14 +2,11 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.calculus.parametric_integral
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import analysis.calculus.parametric_integral from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -62,8 +59,8 @@ open TopologicalSpace MeasureTheory Filter Metric
 
 open scoped Topology Filter
 
-variable {α : Type _} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type _} [IsROrC 𝕜] {E : Type _}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type _}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type*}
   [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming `F x₀` is

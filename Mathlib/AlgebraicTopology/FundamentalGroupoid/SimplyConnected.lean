@@ -2,16 +2,13 @@
 Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module algebraic_topology.fundamental_groupoid.simply_connected
-! leanprover-community/mathlib commit 38341f11ded9e2bc1371eb42caad69ecacf8f541
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+
+#align_import algebraic_topology.fundamental_groupoid.simply_connected from "leanprover-community/mathlib"@"38341f11ded9e2bc1371eb42caad69ecacf8f541"
 
 /-!
 # Simply connected spaces
@@ -35,16 +32,13 @@ open ContinuousMap
 open scoped ContinuousMap
 
 /-- A simply connected space is one whose fundamental groupoid is equivalent to `Discrete Unit` -/
-class SimplyConnectedSpace (X : Type _) [TopologicalSpace X] : Prop where
+@[mk_iff simply_connected_def]
+class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 #align simply_connected_space SimplyConnectedSpace
-
-theorem simply_connected_def (X : Type _) [TopologicalSpace X] :
-    SimplyConnectedSpace X ↔ Nonempty (FundamentalGroupoid X ≌ Discrete Unit) :=
-  ⟨fun h => @SimplyConnectedSpace.equiv_unit X _ h, fun h => ⟨h⟩⟩
 #align simply_connected_def simply_connected_def
 
-theorem simply_connected_iff_unique_homotopic (X : Type _) [TopologicalSpace X] :
+theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
   rw [simply_connected_def, equiv_punit_iff_unique]; rfl
@@ -52,7 +46,7 @@ theorem simply_connected_iff_unique_homotopic (X : Type _) [TopologicalSpace X] 
 
 namespace SimplyConnectedSpace
 
-variable {X : Type _} [TopologicalSpace X] [SimplyConnectedSpace X]
+variable {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X]
 
 instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
@@ -84,7 +78,7 @@ attribute [local instance] Path.Homotopic.setoid
 
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/
-theorem simply_connected_iff_paths_homotopic {Y : Type _} [TopologicalSpace Y] :
+theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
   ⟨by intro; constructor <;> infer_instance, fun h => by
@@ -93,7 +87,7 @@ theorem simply_connected_iff_paths_homotopic {Y : Type _} [TopologicalSpace Y] :
 #align simply_connected_iff_paths_homotopic simply_connected_iff_paths_homotopic
 
 /-- Another version of `simply_connected_iff_paths_homotopic` -/
-theorem simply_connected_iff_paths_homotopic' {Y : Type _} [TopologicalSpace Y] :
+theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
   convert simply_connected_iff_paths_homotopic (Y := Y)

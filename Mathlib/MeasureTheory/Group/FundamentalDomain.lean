@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.group.fundamental_domain
-! leanprover-community/mathlib commit eb810cf549db839dadf13353dbe69bac55acdbbc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import measure_theory.group.fundamental_domain from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Fundamental domain of a group action
@@ -50,7 +47,7 @@ namespace MeasureTheory
 /-- A measurable set `s` is a *fundamental domain* for an additive action of an additive group `G`
 on a measurable space `α` with respect to a measure `α` if the sets `g +ᵥ s`, `g : G`, are pairwise
 a.e. disjoint and cover the whole space. -/
-structure IsAddFundamentalDomain (G : Type _) {α : Type _} [Zero G] [VAdd G α] [MeasurableSpace α]
+structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [MeasurableSpace α]
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g +ᵥ x ∈ s
@@ -61,14 +58,14 @@ structure IsAddFundamentalDomain (G : Type _) {α : Type _} [Zero G] [VAdd G α]
 space `α` with respect to a measure `α` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
 cover the whole space. -/
 @[to_additive IsAddFundamentalDomain]
-structure IsFundamentalDomain (G : Type _) {α : Type _} [One G] [SMul G α] [MeasurableSpace α]
+structure IsFundamentalDomain (G : Type*) {α : Type*} [One G] [SMul G α] [MeasurableSpace α]
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g • x ∈ s
   protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g • s)
 #align measure_theory.is_fundamental_domain MeasureTheory.IsFundamentalDomain
 
-variable {G H α β E : Type _}
+variable {G H α β E : Type*}
 
 namespace IsFundamentalDomain
 
@@ -181,7 +178,7 @@ theorem pairwise_aedisjoint_of_ac {ν} (h : IsFundamentalDomain G s μ) (hν : �
 #align measure_theory.is_add_fundamental_domain.pairwise_ae_disjoint_of_ac MeasureTheory.IsAddFundamentalDomain.pairwise_aedisjoint_of_ac
 
 @[to_additive]
-theorem smul_of_comm {G' : Type _} [Group G'] [MulAction G' α] [MeasurableSpace G']
+theorem smul_of_comm {G' : Type*} [Group G'] [MulAction G' α] [MeasurableSpace G']
     [MeasurableSMul G' α] [SMulInvariantMeasure G' α μ] [SMulCommClass G' G α]
     (h : IsFundamentalDomain G s μ) (g : G') : IsFundamentalDomain G (g • s) μ :=
   h.image_of_equiv (MulAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
@@ -255,6 +252,10 @@ theorem lintegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0�
       (measurePreserving_smul g⁻¹ μ).set_lintegral_comp_emb (measurableEmbedding_const_smul _) _ _
 #align measure_theory.is_fundamental_domain.lintegral_eq_tsum' MeasureTheory.IsFundamentalDomain.lintegral_eq_tsum'
 #align measure_theory.is_add_fundamental_domain.lintegral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.lintegral_eq_tsum'
+
+@[to_additive] lemma lintegral_eq_tsum'' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) :
+    ∫⁻ x, f x ∂μ = ∑' g : G, ∫⁻ x in s, f (g • x) ∂μ :=
+  (lintegral_eq_tsum' h f).trans ((Equiv.inv G).tsum_eq (fun g ↦ ∫⁻ (x : α) in s, f (g • x) ∂μ))
 
 @[to_additive]
 theorem set_lintegral_eq_tsum (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) (t : Set α) :
@@ -357,7 +358,7 @@ protected theorem measure_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundament
 #align measure_theory.is_add_fundamental_domain.measure_eq MeasureTheory.IsAddFundamentalDomain.measure_eq
 
 @[to_additive]
-protected theorem aEStronglyMeasurable_on_iff {β : Type _} [TopologicalSpace β]
+protected theorem aEStronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     [PseudoMetrizableSpace β] (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ)
     {f : α → β} (hf : ∀ (g : G) (x), f (g • x) = f x) :
     AEStronglyMeasurable f (μ.restrict s) ↔ AEStronglyMeasurable f (μ.restrict t) :=
@@ -428,6 +429,10 @@ theorem integral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → E) (hf : 
       (measurePreserving_smul g⁻¹ μ).set_integral_image_emb (measurableEmbedding_const_smul _) _ _
 #align measure_theory.is_fundamental_domain.integral_eq_tsum' MeasureTheory.IsFundamentalDomain.integral_eq_tsum'
 #align measure_theory.is_add_fundamental_domain.integral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.integral_eq_tsum'
+
+@[to_additive] lemma integral_eq_tsum'' (h : IsFundamentalDomain G s μ)
+    (f : α → E) (hf : Integrable f μ) : ∫ x, f x ∂μ = ∑' g : G, ∫ x in s, f (g • x) ∂μ :=
+  (integral_eq_tsum' h f hf).trans ((Equiv.inv G).tsum_eq (fun g ↦ ∫ (x : α) in s, f (g • x) ∂μ))
 
 @[to_additive]
 theorem set_integral_eq_tsum (h : IsFundamentalDomain G s μ) {f : α → E} {t : Set α}
@@ -615,14 +620,14 @@ theorem sdiff_fundamentalFrontier : s \ fundamentalFrontier G s = fundamentalInt
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_vadd]
 theorem fundamentalFrontier_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalFrontier G (g • s) = g • fundamentalFrontier G s := by
-  simp_rw [fundamentalFrontier, smul_set_inter, smul_set_Union, smul_comm g (_ : G) (_ : Set α)]
+  simp_rw [fundamentalFrontier, smul_set_inter, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 #align measure_theory.fundamental_frontier_smul MeasureTheory.fundamentalFrontier_smul
 #align measure_theory.add_fundamental_frontier_vadd MeasureTheory.addFundamentalFrontier_vadd
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalInterior_vadd]
 theorem fundamentalInterior_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalInterior G (g • s) = g • fundamentalInterior G s := by
-  simp_rw [fundamentalInterior, smul_set_sdiff, smul_set_Union, smul_comm g (_ : G) (_ : Set α)]
+  simp_rw [fundamentalInterior, smul_set_sdiff, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 #align measure_theory.fundamental_interior_smul MeasureTheory.fundamentalInterior_smul
 #align measure_theory.add_fundamental_interior_vadd MeasureTheory.addFundamentalInterior_vadd
 

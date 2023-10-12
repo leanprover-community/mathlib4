@@ -2,17 +2,14 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.fourier.poisson_summation
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+
+#align_import analysis.fourier.poisson_summation from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Poisson's summation formula
@@ -83,7 +80,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       simp_rw [coe_mul, Pi.mul_apply,
         ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
     -- Swap sum and integral.
-    _ =  ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
+    _ = ∑' n : ℤ, ∫ x in (0:ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine' (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm _).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
@@ -95,7 +92,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       suffices Integrable (e * f) from this.hasSum_intervalIntegral_comp_add_int.tsum_eq
       apply integrable_of_summable_norm_Icc
       convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
-      simp_rw [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
+      simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish
@@ -129,7 +126,7 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
 
 section RpowDecay
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `λ x, ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
@@ -205,7 +202,7 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
     IsBigO (cocompact ℝ) (fun x => ‖(f.comp (ContinuousMap.addRight x)).restrict K‖) fun x =>
       |x| ^ (-b) := by
-  obtain ⟨r, hr⟩ := K.isCompact.bounded.subset_ball 0
+  obtain ⟨r, hr⟩ := K.isCompact.isBounded.subset_closedBall 0
   rw [closedBall_eq_Icc, zero_add, zero_sub] at hr
   have :
     ∀ x : ℝ,

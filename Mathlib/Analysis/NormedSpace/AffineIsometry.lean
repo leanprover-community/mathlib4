@@ -2,11 +2,6 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.affine_isometry
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.NormedSpace.LinearIsometry
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.Tactic.FailIfNoProgress
+
+#align_import analysis.normed_space.affine_isometry from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Affine isometries
@@ -41,7 +38,7 @@ algebra-homomorphisms.)
 
 open Function Set
 
-variable (𝕜 : Type _) {V V₁ V₂ V₃ V₄ : Type _} {P₁ : Type _} (P P₂ : Type _) {P₃ P₄ : Type _}
+variable (𝕜 : Type*) {V V₁ V₂ V₃ V₄ : Type*} {P₁ : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup V₁] [SeminormedAddCommGroup V₂]
   [SeminormedAddCommGroup V₃] [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V] [NormedSpace 𝕜 V₁]
   [NormedSpace 𝕜 V₂] [NormedSpace 𝕜 V₃] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P] [MetricSpace P₁]
@@ -203,7 +200,7 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
 #align affine_isometry.diam_range AffineIsometry.diam_range
 
 @[simp]
-theorem comp_continuous_iff {α : Type _} [TopologicalSpace α] {g : α → P} :
+theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
     Continuous (f ∘ g) ↔ Continuous g :=
   f.isometry.comp_continuous_iff
 #align affine_isometry.comp_continuous_iff AffineIsometry.comp_continuous_iff
@@ -333,7 +330,7 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   rfl
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
 
-instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P  P₂ :=
+instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun
     inv := fun f => f.invFun
     left_inv := fun f => f.left_inv
@@ -674,7 +671,7 @@ theorem diam_image (s : Set P) : Metric.diam (e '' s) = Metric.diam s :=
   e.isometry.diam_image s
 #align affine_isometry_equiv.diam_image AffineIsometryEquiv.diam_image
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 @[simp]
 theorem comp_continuousOn_iff {f : α → P} {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=

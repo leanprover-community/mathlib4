@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.roots_of_unity.basic
-! leanprover-community/mathlib commit 7fdeecc0d03cd40f7a165e6cf00a4d2286db599f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.NeZero
@@ -18,6 +13,8 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.Tactic.Zify
+
+#align_import ring_theory.roots_of_unity.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
 /-!
 # Roots of unity and primitive roots of unity
@@ -75,7 +72,7 @@ open Polynomial
 
 open Finset
 
-variable {M N G R S F : Type _}
+variable {M N G R S F : Type*}
 
 variable [CommMonoid M] [CommMonoid N] [DivisionCommMonoid G]
 
@@ -84,7 +81,7 @@ section rootsOfUnity
 variable {k l : ℕ+}
 
 /-- `rootsOfUnity k M` is the subgroup of elements `m : Mˣ` that satisfy `m ^ k = 1`. -/
-def rootsOfUnity (k : ℕ+) (M : Type _) [CommMonoid M] : Subgroup Mˣ where
+def rootsOfUnity (k : ℕ+) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
   carrier := {ζ | ζ ^ (k : ℕ) = 1}
   one_mem' := one_pow _
   mul_mem' _ _ := by simp_all only [Set.mem_setOf_eq, mul_pow, one_mul]
@@ -111,7 +108,7 @@ a positive power equal to one. -/
 def rootsOfUnity.mkOfPowEq (ζ : M) {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) : rootsOfUnity n M :=
   ⟨Units.ofPowEqOne ζ n h n.ne_zero, Units.pow_ofPowEqOne _ _⟩
 #align roots_of_unity.mk_of_pow_eq rootsOfUnity.mkOfPowEq
-#align roots_of_unity.mk_of_pow_eq_coe_coe rootsOfUnity.mkOfPowEq_coe_val
+#align roots_of_unity.mk_of_pow_eq_coe_coe rootsOfUnity.val_mkOfPowEq_coe
 
 @[simp]
 theorem rootsOfUnity.coe_mkOfPowEq {ζ : M} {n : ℕ+} (h : ζ ^ (n : ℕ) = 1) :
@@ -268,7 +265,7 @@ section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 -- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
@@ -289,18 +286,20 @@ end rootsOfUnity
 
 /-- An element `ζ` is a primitive `k`-th root of unity if `ζ ^ k = 1`,
 and if `l` satisfies `ζ ^ l = 1` then `k ∣ l`. -/
+@[mk_iff IsPrimitiveRoot.iff_def]
 structure IsPrimitiveRoot (ζ : M) (k : ℕ) : Prop where
   pow_eq_one : ζ ^ (k : ℕ) = 1
   dvd_of_pow_eq_one : ∀ l : ℕ, ζ ^ l = 1 → k ∣ l
 #align is_primitive_root IsPrimitiveRoot
+#align is_primitive_root.iff_def IsPrimitiveRoot.iff_def
 
 /-- Turn a primitive root μ into a member of the `rootsOfUnity` subgroup. -/
 @[simps!]
 def IsPrimitiveRoot.toRootsOfUnity {μ : M} {n : ℕ+} (h : IsPrimitiveRoot μ n) : rootsOfUnity n M :=
   rootsOfUnity.mkOfPowEq μ h.pow_eq_one
 #align is_primitive_root.to_roots_of_unity IsPrimitiveRoot.toRootsOfUnity
-#align is_primitive_root.coe_to_roots_of_unity_coe IsPrimitiveRoot.toRootsOfUnity_coe_val
-#align is_primitive_root.coe_inv_to_roots_of_unity_coe IsPrimitiveRoot.toRootsOfUnity_coe_inv
+#align is_primitive_root.coe_to_roots_of_unity_coe IsPrimitiveRoot.val_toRootsOfUnity_coe
+#align is_primitive_root.coe_inv_to_roots_of_unity_coe IsPrimitiveRoot.val_inv_toRootsOfUnity_coe
 
 section primitiveRoots
 
@@ -308,7 +307,7 @@ variable {k : ℕ}
 
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
-def primitiveRoots (k : ℕ) (R : Type _) [CommRing R] [IsDomain R] : Finset R :=
+def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
   (nthRoots k (1 : R)).toFinset.filter fun ζ => IsPrimitiveRoot ζ k
 #align primitive_roots primitiveRoots
 
@@ -335,10 +334,6 @@ end primitiveRoots
 namespace IsPrimitiveRoot
 
 variable {k l : ℕ}
-
-theorem iff_def (ζ : M) (k : ℕ) : IsPrimitiveRoot ζ k ↔ ζ ^ k = 1 ∧ ∀ l : ℕ, ζ ^ l = 1 → k ∣ l :=
-  ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
-#align is_primitive_root.iff_def IsPrimitiveRoot.iff_def
 
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
@@ -403,7 +398,7 @@ theorem one_right_iff : IsPrimitiveRoot ζ 1 ↔ ζ = 1 := by
 #align is_primitive_root.one_right_iff IsPrimitiveRoot.one_right_iff
 
 @[simp]
-theorem coe_submonoidClass_iff {M B : Type _} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
+theorem coe_submonoidClass_iff {M B : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
     {N : B} {ζ : N} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
   simp_rw [iff_def]
   norm_cast
@@ -415,7 +410,7 @@ theorem coe_units_iff {ζ : Mˣ} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoo
 #align is_primitive_root.coe_units_iff IsPrimitiveRoot.coe_units_iff
 
 -- Porting note `variable` above already contains `(h : IsPrimitiveRoot ζ k)`
-theorem pow_of_coprime (i : ℕ) (hi : i.coprime k) : IsPrimitiveRoot (ζ ^ i) k := by
+theorem pow_of_coprime (i : ℕ) (hi : i.Coprime k) : IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : k = 0
   · subst k; simp_all only [pow_one, Nat.coprime_zero_right]
   rcases h.isUnit (Nat.pos_of_ne_zero h0) with ⟨ζ, rfl⟩
@@ -437,7 +432,7 @@ theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p)
 #align is_primitive_root.pow_of_prime IsPrimitiveRoot.pow_of_prime
 
 theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
-    IsPrimitiveRoot (ζ ^ i) k ↔ i.coprime k := by
+    IsPrimitiveRoot (ζ ^ i) k ↔ i.Coprime k := by
   refine' ⟨_, h.pow_of_coprime i⟩
   intro hi
   obtain ⟨a, ha⟩ := i.gcd_dvd_left k
@@ -445,7 +440,7 @@ theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
   suffices b = k by
     -- Porting note: was `rwa [this, ← one_mul k, mul_left_inj' h0.ne', eq_comm] at hb`
     rw [this, eq_comm, Nat.mul_left_eq_self_iff h0] at hb
-    rwa [Nat.coprime]
+    rwa [Nat.Coprime]
   rw [ha] at hi
   rw [mul_comm] at hb
   apply Nat.dvd_antisymm ⟨i.gcd k, hb⟩ (hi.dvd_of_pow_eq_one b _)
@@ -495,7 +490,7 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
   subst n
   simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and_iff]
   intro l hl
-  -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, MulZeroClass.zero_mul] using hn`
+  -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, zero_mul] using hn`
   have ha0 : a ≠ 0 := left_ne_zero_of_mul hn.ne'
   rw [← mul_dvd_mul_iff_left ha0]
   exact h.dvd_of_pow_eq_one _ hl
@@ -537,7 +532,7 @@ end CommMonoid
 
 section CommMonoidWithZero
 
-variable {M₀ : Type _} [CommMonoidWithZero M₀]
+variable {M₀ : Type*} [CommMonoidWithZero M₀]
 
 theorem zero [Nontrivial M₀] : IsPrimitiveRoot (0 : M₀) 0 :=
   ⟨pow_zero 0, fun l hl => by
@@ -596,6 +591,14 @@ theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 
 #align is_primitive_root.zpow_of_gcd_eq_one IsPrimitiveRoot.zpow_of_gcd_eq_one
 
 end DivisionCommMonoid
+
+section CommRing
+
+variable [CommRing R]  {n : ℕ} (hn : 1 < n) {ζ : R} (hζ : IsPrimitiveRoot ζ n)
+
+theorem sub_one_ne_zero : ζ - 1 ≠ 0 := sub_ne_zero.mpr <| hζ.ne_one hn
+
+end CommRing
 
 section IsDomain
 
@@ -779,7 +782,7 @@ theorem eq_pow_of_pow_eq_one {k : ℕ} {ζ ξ : R} (h : IsPrimitiveRoot ζ k) (h
 #align is_primitive_root.eq_pow_of_pow_eq_one IsPrimitiveRoot.eq_pow_of_pow_eq_one
 
 theorem isPrimitiveRoot_iff' {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k) :
-    IsPrimitiveRoot ξ k ↔ ∃ i < (k : ℕ), i.coprime k ∧ ζ ^ i = ξ := by
+    IsPrimitiveRoot ξ k ↔ ∃ i < (k : ℕ), i.Coprime k ∧ ζ ^ i = ξ := by
   constructor
   · intro hξ
     obtain ⟨i, hik, rfl⟩ := h.eq_pow_of_mem_rootsOfUnity hξ.pow_eq_one
@@ -789,7 +792,7 @@ theorem isPrimitiveRoot_iff' {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
 #align is_primitive_root.is_primitive_root_iff' IsPrimitiveRoot.isPrimitiveRoot_iff'
 
 theorem isPrimitiveRoot_iff {k : ℕ} {ζ ξ : R} (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) :
-    IsPrimitiveRoot ξ k ↔ ∃ i < k, i.coprime k ∧ ζ ^ i = ξ := by
+    IsPrimitiveRoot ξ k ↔ ∃ i < k, i.Coprime k ∧ ζ ^ i = ξ := by
   constructor
   · intro hξ
     obtain ⟨i, hik, rfl⟩ := h.eq_pow_of_pow_eq_one hξ.pow_eq_one h0
@@ -910,7 +913,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
     rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := by
       contrapose! hd with ha0
-      simp_all only [nonpos_iff_eq_zero, MulZeroClass.zero_mul]
+      simp_all only [nonpos_iff_eq_zero, zero_mul]
       exact n.ne_zero
     rw [mem_primitiveRoots hazero] at ha
     rw [hd, pow_mul, ha.pow_eq_one, one_pow]
@@ -946,7 +949,7 @@ variable [CommRing S] [IsDomain S] {μ : S} {n : ℕ+} (hμ : IsPrimitiveRoot μ
 noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   let μ' := hμ.toRootsOfUnity
   have ho : orderOf μ' = n := by
-    rw [hμ.eq_orderOf, ← hμ.toRootsOfUnity_coe_val, orderOf_units, orderOf_subgroup]
+    rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe, orderOf_units, orderOf_subgroup]
   MonoidHom.toHomUnits
     { toFun := fun σ => (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by

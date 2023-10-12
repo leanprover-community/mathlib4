@@ -2,16 +2,13 @@
 Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yaël Dillies, Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.seminorm
-! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
+
+#align_import analysis.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 
 /-!
 # Seminorms
@@ -38,16 +35,18 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
+set_option autoImplicit true
+
 
 open NormedField Set Filter
 
 open BigOperators NNReal Pointwise Topology
 
-variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type _}
+variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
 
 /-- A seminorm on a module over a normed ring is a function to the reals that is positive
 semidefinite, positive homogeneous, and subadditive. -/
-structure Seminorm (𝕜 : Type _) (E : Type _) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
+structure Seminorm (𝕜 : Type*) (E : Type*) [SeminormedRing 𝕜] [AddGroup E] [SMul 𝕜 E] extends
   AddGroupSeminorm E where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -59,7 +58,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 /-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module `E`.
 
 You should extend this class when you extend `Seminorm`. -/
-class SeminormClass (F : Type _) (𝕜 E : outParam <| Type _) [SeminormedRing 𝕜] [AddGroup E]
+class SeminormClass (F : Type*) (𝕜 E : outParam <| Type*) [SeminormedRing 𝕜] [AddGroup E]
   [SMul 𝕜 E] extends AddGroupSeminormClass F E ℝ where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -79,7 +78,7 @@ def Seminorm.of [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E �
     (add_le : ∀ x y : E, f (x + y) ≤ f x + f y) (smul : ∀ (a : 𝕜) (x : E), f (a • x) = ‖a‖ * f x) :
     Seminorm 𝕜 E where
   toFun := f
-  map_zero' := by rw [← zero_smul 𝕜 (0 : E), smul, norm_zero, MulZeroClass.zero_mul]
+  map_zero' := by rw [← zero_smul 𝕜 (0 : E), smul, norm_zero, zero_mul]
   add_le' := add_le
   smul' := smul
   neg' x := by rw [← neg_one_smul 𝕜, smul, norm_neg, ← smul, one_smul]
@@ -141,7 +140,7 @@ theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q
 
 instance instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
-    smul' := fun _ _ => (MulZeroClass.mul_zero _).symm }⟩
+    smul' := fun _ _ => (mul_zero _).symm }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : Seminorm 𝕜 E) = 0 :=
@@ -168,8 +167,9 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         rw [map_smul_eq_mul, mul_left_comm] }
 
 instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
-    [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] : IsScalarTower R R' (Seminorm 𝕜 E)
-    where smul_assoc r a p := ext fun x => smul_assoc r a (p x)
+    [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
+    IsScalarTower R R' (Seminorm 𝕜 E) where
+  smul_assoc r a p := ext fun x => smul_assoc r a (p x)
 
 theorem coe_smul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p : Seminorm 𝕜 E) :
     ⇑(r • p) = r • ⇑p :=
@@ -493,7 +493,7 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
       smul' := by
         intro a x
         obtain rfl | ha := eq_or_ne a 0
-        · rw [norm_zero, MulZeroClass.zero_mul, zero_smul]
+        · rw [norm_zero, zero_mul, zero_smul]
           refine'
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
               -- Porting note: the following was previously `fun i => by positivity`
@@ -603,16 +603,33 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
         le_ciSup ⟨q x, forall_range_iff.mpr fun i : s => hq (mem_image_of_mem _ i.2) x⟩ ⟨p, hp⟩⟩⟩
 #align seminorm.bdd_above_iff Seminorm.bddAbove_iff
 
+protected theorem bddAbove_range_iff {p : ι → Seminorm 𝕜 E} :
+    BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) := by
+  rw [Seminorm.bddAbove_iff, ← range_comp, bddAbove_range_pi]; rfl
+
 protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
     ↑(sSup s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
   Seminorm.coe_sSup_eq' (Seminorm.bddAbove_iff.mp hs)
 #align seminorm.coe_Sup_eq Seminorm.coe_sSup_eq
 
-protected theorem coe_iSup_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
+protected theorem coe_iSup_eq {ι : Type*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
     ↑(⨆ i, p i) = ⨆ i, ((p i : Seminorm 𝕜 E) : E → ℝ) := by
   rw [← sSup_range, Seminorm.coe_sSup_eq hp]
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
 #align seminorm.coe_supr_eq Seminorm.coe_iSup_eq
+
+protected theorem sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : E} :
+    (sSup s) x = ⨆ p : s, (p : E → ℝ) x := by
+  rw [Seminorm.coe_sSup_eq hp, iSup_apply]
+
+protected theorem iSup_apply {ι : Type*} {p : ι → Seminorm 𝕜 E}
+    (hp : BddAbove (range p)) {x : E} : (⨆ i, p i) x = ⨆ i, p i x := by
+  rw [Seminorm.coe_iSup_eq hp, iSup_apply]
+
+protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
+  ext
+  rw [Seminorm.sSup_apply bddAbove_empty, Real.ciSup_empty]
+  rfl
 
 private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
@@ -964,10 +981,19 @@ section NormedField
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {A B : Set E} {a : 𝕜}
   {r : ℝ} {x : E}
 
+theorem closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E) {r : ℝ}
+    (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
+  cases isEmpty_or_nonempty ι
+  · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
+    exact closedBall_bot _ hr
+  · ext x
+    have := Seminorm.bddAbove_range_iff.mp hp (x - e)
+    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
+
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
   rcases eq_or_ne k 0 with (rfl | hk)
-  · rw [norm_zero, MulZeroClass.zero_mul, ball_eq_emptyset _ le_rfl]
+  · rw [norm_zero, zero_mul, ball_eq_emptyset _ le_rfl]
     exact empty_subset _
   · intro x
     rw [Set.mem_smul_set, Seminorm.mem_ball_zero]
@@ -1095,7 +1121,7 @@ end Convex
 
 section RestrictScalars
 
-variable (𝕜) {𝕜' : Type _} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [NormOneClass 𝕜'] [AddCommGroup E] [Module 𝕜' E] [SMul 𝕜 E] [IsScalarTower 𝕜 𝕜' E]
 
 /-- Reinterpret a seminorm over a field `𝕜'` as a seminorm over a smaller field `𝕜`. This will
@@ -1206,16 +1232,16 @@ protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [Contin
 /-- A seminorm is uniformly continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.uniformContinuous'`. -/
-protected theorem uniform_continuous_of_forall' [UniformSpace E] [UniformAddGroup E]
+protected theorem uniformContinuous_of_forall' [UniformSpace E] [UniformAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
-protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
+protected theorem uniformContinuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hp)
-#align seminorm.uniform_continuous' Seminorm.uniform_continuous'
+#align seminorm.uniform_continuous' Seminorm.uniformContinuous'
 
 /-- A seminorm is continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
@@ -1333,6 +1359,28 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
   exact hf y (fun k hk ↦ (le_finset_sup_apply hk).trans_lt hlt) i hi (hiy ▸ hle)
 
 end ShellLemmas
+
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
+    (h : ∀ x ∈ s, BddAbove (range fun i ↦ p i x)) :
+    BddAbove (range p) := by
+  rw [Seminorm.bddAbove_range_iff]
+  intro x
+  rcases hs x with ⟨r, hr, hrx⟩
+  rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
+  have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
+  have : k⁻¹ • x ∈ s := by
+    rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
+    exact hrx k hk.le
+  rcases h (k⁻¹ • x) this with ⟨M, hM⟩
+  refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
+  have := (forall_range_iff.mp hM) i
+  rwa [map_smul_eq_mul, norm_inv, inv_mul_le_iff (hr.trans hk)] at this
+
+end NontriviallyNormedField
 
 end Seminorm
 

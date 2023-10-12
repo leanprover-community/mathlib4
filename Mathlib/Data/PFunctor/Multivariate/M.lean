@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfunctor.multivariate.M
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Univariate.M
+
+#align_import data.pfunctor.multivariate.M from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # The M construction as a multivariate polynomial functor.
@@ -146,14 +143,14 @@ set_option linter.uppercaseLean3 false in
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
-                    {β : Type u}
-                    (g₀ : β → P.A)
-                    (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
-                    (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
-                    (x : _)
-                    (b : β)
-                    (h: x = M.corecShape P g₀ g₂ b)
-                    : M.Path P x ⟹ α
+    {β : Type u}
+    (g₀ : β → P.A)
+    (g₁ : ∀ b : β, P.drop.B (g₀ b) ⟹ α)
+    (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
+    (x : _)
+    (b : β)
+    (h: x = M.corecShape P g₀ g₂ b) :
+    M.Path P x ⟹ α
   | _, M.Path.root x a f h' i c =>
     have : a = g₀ b := by
       rw [h, M.corecShape, PFunctor.M.dest_corec] at h'
@@ -338,7 +335,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
     simpa using h₁
   exists ax, dropFun fx, lastFun fx, lastFun fy
   rw [split_dropFun_lastFun, Hdrop, split_dropFun_lastFun]
-  simp
+  simp only [true_and]
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
   simp [(· ⊚ ·), appendFun, splitFun] at h₁

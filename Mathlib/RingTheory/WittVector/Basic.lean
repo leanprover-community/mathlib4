@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.basic
-! leanprover-community/mathlib commit 9556784a5b84697562e9c6acb40500d4a82e675a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.RingTheory.WittVector.Defs
+
+#align_import ring_theory.witt_vector.basic from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
 
 /-!
 # Witt vectors
@@ -56,9 +53,9 @@ open MvPolynomial Function
 
 open scoped BigOperators
 
-variable {p : ℕ} {R S T : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
+variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 -- mathport name: expr𝕎
 local notation "𝕎" => WittVector p
@@ -98,11 +95,11 @@ macro "map_fun_tac" : tactic => `(tactic| (
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
     -- porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
     add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
-    peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom]  <;>
-  try { cases n <;> simp <;> done }  <;>  -- porting note: this line solves `one`
-  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl  <;>
+    peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
+  try { cases n <;> simp <;> done } <;>  -- porting note: this line solves `one`
+  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
-    fin_cases i <;> rfl ))
+    fin_cases i <;> rfl))
 
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.

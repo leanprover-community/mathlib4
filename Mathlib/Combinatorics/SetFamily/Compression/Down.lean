@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.compression.down
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
+
+#align_import combinatorics.set_family.compression.down from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Down-compressions
@@ -40,7 +37,7 @@ compression, down-compression
 -/
 
 
-variable {α : Type _} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
+variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 
 namespace Finset
 
@@ -212,7 +209,7 @@ theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).ca
   · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
   · exact disjoint_filter_filter_neg 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))
   intro s hs
-  rw [mem_coe, mem_filter, Function.comp_apply] at hs
+  rw [mem_coe, mem_filter] at hs
   exact not_imp_comm.1 erase_eq_of_not_mem (ne_of_mem_of_not_mem hs.1 hs.2).symm
 #align down.card_compression Down.card_compression
 

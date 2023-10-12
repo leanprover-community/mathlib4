@@ -2,21 +2,20 @@
 Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.set.functor
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Init.Set
 import Mathlib.Control.Basic
+
+#align_import data.set.functor from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Functoriality of `Set`
 
 This file defines the functor structure of `Set`.
 -/
+
+set_option autoImplicit true
 
 universe u
 
@@ -74,5 +73,25 @@ instance : Alternative Set :=
   { Set.monad with
     orElse := fun s t => s ∪ (t ())
     failure := ∅ }
+
+/-! ## Monadic coercion lemmas -/
+
+variable {β : Set α} {γ : Set β}
+
+theorem mem_coe_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
+  ⟨_, ⟨⟨_, rfl⟩, _, ⟨ha', rfl⟩, rfl⟩⟩
+
+theorem coe_subset : (γ : Set α) ⊆ β := by
+  intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
+
+theorem mem_of_mem_coe (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
+  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
+
+theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
+  eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
+
+theorem image_coe_eq_restrict_image {f : α → δ} : f '' γ = β.restrict f '' γ :=
+  ext fun _ =>
+    ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
 
 end Set

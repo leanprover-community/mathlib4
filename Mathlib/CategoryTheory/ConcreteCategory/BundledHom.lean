@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.bundled_hom
-! leanprover-community/mathlib commit 77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+
+#align_import category_theory.concrete_category.bundled_hom from "leanprover-community/mathlib"@"77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8"
 
 /-!
 # Category instances for algebraic structures that use bundled homs.
@@ -145,7 +142,7 @@ Once we've set up `MonCat` as the category of bundled monoids,
 this allows us to set up `CommMonCat` by defining an instance
 ```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
 -/
-class ParentProjection (F : ∀ {α}, d α → c α)
+class ParentProjection (F : ∀ {α}, d α → c α) : Prop
 #align category_theory.bundled_hom.parent_projection CategoryTheory.BundledHom.ParentProjection
 
 end
@@ -157,8 +154,9 @@ instance bundledHomOfParentProjection (F : ∀ {α}, d α → c α) [ParentProje
   map hom @F
 #align category_theory.bundled_hom.bundled_hom_of_parent_projection CategoryTheory.BundledHom.bundledHomOfParentProjection
 
-instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] : HasForget₂ (Bundled d) (Bundled c)
-    where forget₂ :=
+instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+    HasForget₂ (Bundled d) (Bundled c) where
+  forget₂ :=
     { obj := fun X => ⟨X, F X.2⟩
       map := @fun X Y f => f }
 #align category_theory.bundled_hom.forget₂ CategoryTheory.BundledHom.forget₂

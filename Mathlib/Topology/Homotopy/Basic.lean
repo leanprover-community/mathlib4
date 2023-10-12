@@ -2,16 +2,13 @@
 Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
-
-! This file was ported from Lean 3 source module topology.homotopy.basic
-! leanprover-community/mathlib commit 11c53f174270aa43140c0b26dabce5fc4a253e80
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
+
+#align_import topology.homotopy.basic from "leanprover-community/mathlib"@"11c53f174270aa43140c0b26dabce5fc4a253e80"
 
 /-!
 # Homotopy between functions
@@ -57,12 +54,14 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
 universe u v w x
 
-variable {F : Type _} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
+variable {F : Type*} {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
@@ -89,8 +88,8 @@ section
 `f₁`.
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
-class HomotopyLike {X Y : outParam (Type _)} [TopologicalSpace X] [TopologicalSpace Y]
-    (F : Type _) (f₀ f₁ : outParam <| C(X, Y)) extends ContinuousMapClass F (I × X) Y where
+class HomotopyLike {X Y : outParam (Type*)} [TopologicalSpace X] [TopologicalSpace Y]
+    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) extends ContinuousMapClass F (I × X) Y where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/
@@ -244,8 +243,7 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (F.continuous.comp (by continuity)).continuousOn
         (G.continuous.comp (by continuity)).continuousOn _
     rintro x hx
-    rw [hx]
-    norm_num
+    norm_num [hx]
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
@@ -269,8 +267,7 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   simp only [coe_symm_eq, symm_apply]
   split_ifs with h₁ h₂ h₂
   · have ht : (t : ℝ) = 1 / 2 := by linarith
-    simp only [ht]
-    norm_num
+    norm_num [ht]
   · congr 2
     apply Subtype.ext
     simp only [coe_symm_eq]
@@ -331,7 +328,7 @@ def prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} (F : Homotopy f₀ f₁
 
 /-- Given a family of homotopies `F i` between `f₀ i : C(X, Y i)` and `f₁ i : C(X, Y i)`, returns a
 homotopy between `ContinuousMap.pi f₀` and `ContinuousMap.pi f₁`. -/
-protected def pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+protected def pi {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
     (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
     Homotopy (.pi f₀) (.pi f₁) where
   toContinuousMap := .pi fun i ↦ F i
@@ -340,7 +337,7 @@ protected def pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ 
 
 /-- Given a family of homotopies `F i` between `f₀ i : C(X i, Y i)` and `f₁ i : C(X i, Y i)`,
 returns a homotopy between `ContinuousMap.piMap f₀` and `ContinuousMap.piMap f₁`. -/
-protected def piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)]
+protected def piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)]
     {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
     Homotopy (.piMap f₀) (.piMap f₁) :=
   .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
@@ -390,14 +387,14 @@ nonrec theorem prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} :
 
 /-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
 homotopic to `ContinuousMap.pi f₁`. -/
-protected theorem pi {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
+protected theorem pi {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X, Y i)}
     (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
     Homotopic (.pi f₀) (.pi f₁) :=
   ⟨.pi fun i ↦ (F i).some⟩
 
 /-- If each `f₀ i : C(X, Y i)` is homotopic to `f₁ i : C(X, Y i)`, then `ContinuousMap.pi f₀` is
 homotopic to `ContinuousMap.pi f₁`. -/
-protected theorem piMap {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+protected theorem piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
     Homotopic (.piMap f₀) (.piMap f₁) :=
   .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
@@ -568,6 +565,10 @@ theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P
   ⟨h.some.symm⟩
 #align continuous_map.homotopic_with.symm ContinuousMap.HomotopicWith.symm
 
+-- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
+-- the `trans` tactic could not use it.
+-- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- It could be restored by changing the argument order to `HomotopicWith P f g`.
 @[trans]
 theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :
     HomotopicWith f h P :=

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module number_theory.liouville.liouville_with
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.NumberTheory.Liouville.Basic
 import Mathlib.Topology.Instances.Irrational
+
+#align_import number_theory.liouville.liouville_with from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Liouville numbers with a given exponent
@@ -65,7 +62,7 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
   rw [abs_sub_comm, abs_of_pos (sub_pos.2 this), rpow_one, sub_lt_iff_lt_add',
     add_div_eq_mul_add_div _ _ hn'.ne', div_lt_div_right hn']
   convert add_lt_add_right ((Int.floor_le (x * n)).trans_lt (lt_add_one _)) 1 using 1 <;>
-  push_cast <;> ring
+    (try push_cast) <;> ring
 #align liouville_with_one liouvilleWith_one
 
 namespace LiouvilleWith
@@ -340,7 +337,7 @@ namespace Liouville
 
 variable {x : ℝ}
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note : see issue#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- If `x` is a Liouville number, then for any `n`, for infinitely many denominators `b` there
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
@@ -388,6 +385,6 @@ theorem forall_liouvilleWith_iff {x : ℝ} : (∀ p, LiouvilleWith p x) ↔ Liou
   refine ⟨fun H n => ?_, Liouville.liouvilleWith⟩
   rcases ((eventually_gt_atTop 1).and_frequently
     ((H (n + 1)).frequently_lt_rpow_neg (lt_add_one (n : ℝ)))).exists
-    with  ⟨b, hb, a, hne, hlt⟩
+    with ⟨b, hb, a, hne, hlt⟩
   exact ⟨a, b, by exact_mod_cast hb, hne, by simpa [rpow_neg] using hlt⟩
 #align forall_liouville_with_iff forall_liouvilleWith_iff

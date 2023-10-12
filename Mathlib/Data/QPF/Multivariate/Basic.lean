@@ -2,13 +2,10 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
+
+#align_import data.qpf.multivariate.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Multivariate quotients of polynomial functors.
@@ -85,7 +82,7 @@ open MvFunctor
 
 /-- Multivariate quotients of polynomial functors.
 -/
-class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type _) [MvFunctor F] where
+class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) [MvFunctor F] where
   P : MvPFunctor.{u} n
   abs : ∀ {α}, P.Obj α → F α
   repr : ∀ {α}, F α → P.Obj α
@@ -95,7 +92,7 @@ class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type _) [MvFunctor F] where
 
 namespace MvQPF
 
-variable {n : ℕ} {F : TypeVec.{u} n → Type _} [MvFunctor F] [q : MvQPF F]
+variable {n : ℕ} {F : TypeVec.{u} n → Type*} [MvFunctor F] [q : MvQPF F]
 
 open MvFunctor (LiftP LiftR)
 
@@ -136,7 +133,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     · rw [← hy, ← abs_repr y, h, ← abs_map]; rfl
     intro i j
     apply (f i j).property
-  rintro ⟨a, f, h₀, h₁⟩; dsimp at *
+  rintro ⟨a, f, h₀, h₁⟩
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 #align mvqpf.liftp_iff MvQPF.liftP_iff

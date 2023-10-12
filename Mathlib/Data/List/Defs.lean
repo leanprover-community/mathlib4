@@ -2,11 +2,6 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.defs
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
@@ -17,12 +12,16 @@ import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic
 import Std.Data.RBMap.Basic
 
+#align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
+
 /-!
 ## Definitions on lists
 
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
+
+set_option autoImplicit true
 
 -- Porting notes
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
@@ -36,11 +35,12 @@ open Function Nat
 
 universe u v w x
 
-variable {α β γ δ ε ζ : Type _}
+variable {α β γ δ ε ζ : Type*}
 
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
+#align list.replicate List.replicate
 #align list.split_at List.splitAt
 #align list.split_on_p List.splitOnP
 #align list.split_on List.splitOn
@@ -92,14 +92,14 @@ def sum [Add α] [Zero α] : List α → α :=
 #align list.sum List.sum
 
 /-- The alternating sum of a list. -/
-def alternatingSum {G : Type _} [Zero G] [Add G] [Neg G] : List G → G
+def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
   | [] => 0
   | g :: [] => g
   | g :: h :: t => g + -h + alternatingSum t
 #align list.alternating_sum List.alternatingSum
 
 /-- The alternating product of a list. -/
-def alternatingProd {G : Type _} [One G] [Mul G] [Inv G] : List G → G
+def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
   | [] => 1
   | g :: [] => g
   | g :: h :: t => g * h⁻¹ * alternatingProd t
@@ -209,11 +209,11 @@ def mapIdxM' {α} (f : ℕ → α → m PUnit) (as : List α) : m PUnit :=
 end mapIdxM
 
 #align list.lookmap List.lookmap
-#align list.countp List.countp
+#align list.countp List.countP
 #align list.count List.count
-#align list.is_prefix List.isPrefix
-#align list.is_suffix List.isSuffix
-#align list.is_infix List.isInfix
+#align list.is_prefix List.IsPrefix
+#align list.is_suffix List.IsSuffix
+#align list.is_infix List.IsInfix
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
@@ -298,7 +298,7 @@ def permutations'Aux (t : α) : List α → List (List α)
 
 /-- List of all permutations of `l`. This version of `permutations` is less efficient but has
 simpler definitional equations. The permutations are in a different order,
-but are equal up to permutation, as shown by `list.permutations_perm_permutations'`.
+but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],
@@ -436,21 +436,21 @@ Example: suppose `l = [1, 2, 3]`. `mapDiagM' f l` will evaluate, in this order,
 `f 1 1`, `f 1 2`, `f 1 3`, `f 2 2`, `f 2 3`, `f 3 3`.
 -/
 def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
--- as ported:
---   | [] => return ()
---   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
   | [] => return ()
   | h :: t => do
     _ ← f h h
     _ ← t.mapM' (f h)
     t.mapDiagM' f
+-- as ported:
+--   | [] => return ()
+--   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
 #align list.mmap'_diag List.mapDiagM'
 
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β)
-    : List α → F (List β)
+protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
+    List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
@@ -589,6 +589,5 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
-
 
 end List

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.disjoint
-! leanprover-community/mathlib commit 22c4d2ff43714b6ff724b2745ccfdc0f236a4a76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
+
+#align_import order.disjoint from "leanprover-community/mathlib"@"22c4d2ff43714b6ff724b2745ccfdc0f236a4a76"
 
 /-!
 # Disjointness and complements
@@ -27,7 +24,7 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Disjoint
 
@@ -85,7 +82,7 @@ theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
 
 /- TODO: Rename `Disjoint.eq_bot` to `Disjoint.inf_eq` and `Disjoint.eq_bot_of_self` to
 `Disjoint.eq_bot` -/
-alias disjoint_self ↔ Disjoint.eq_bot_of_self _
+alias ⟨Disjoint.eq_bot_of_self, _⟩ := disjoint_self
 #align disjoint.eq_bot_of_self Disjoint.eq_bot_of_self
 
 theorem Disjoint.ne (ha : a ≠ ⊥) (hab : Disjoint a b) : a ≠ b :=
@@ -269,7 +266,7 @@ theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
 
 /- TODO: Rename `Codisjoint.eq_top` to `Codisjoint.sup_eq` and `Codisjoint.eq_top_of_self` to
 `Codisjoint.eq_top` -/
-alias codisjoint_self ↔ Codisjoint.eq_top_of_self _
+alias ⟨Codisjoint.eq_top_of_self, _⟩ := codisjoint_self
 #align codisjoint.eq_top_of_self Codisjoint.eq_top_of_self
 
 theorem Codisjoint.ne (ha : a ≠ ⊤) (hab : Codisjoint a b) : a ≠ b :=
@@ -580,7 +577,7 @@ end IsCompl
 
 namespace Prod
 
-variable {β : Type _} [PartialOrder α] [PartialOrder β]
+variable {β : Type*} [PartialOrder α] [PartialOrder β]
 
 protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
@@ -701,7 +698,7 @@ end ComplementedLattice
 -- TODO: Define as a sublattice?
 /-- The sublattice of complemented elements. -/
 @[reducible]
-def Complementeds (α : Type _) [Lattice α] [BoundedOrder α] : Type _ := {a : α // IsComplemented a}
+def Complementeds (α : Type*) [Lattice α] [BoundedOrder α] : Type _ := {a : α // IsComplemented a}
 #align complementeds Complementeds
 
 namespace Complementeds

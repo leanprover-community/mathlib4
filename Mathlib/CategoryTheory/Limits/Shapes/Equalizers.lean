@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.equalizers
-! leanprover-community/mathlib commit 4698e35ca56a0d4fa53aa5639c3364e0a77f4eba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.HasLimits
+
+#align_import category_theory.limits.shapes.equalizers from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
 
 /-!
 # Equalizers and coequalizers
@@ -88,7 +85,7 @@ open WalkingParallelPairHom
 
 /-- Composition of morphisms in the indexing diagram for (co)equalizers. -/
 def WalkingParallelPairHom.comp :
-  -- Porting note: changed X Y Z to implicit to match comp fields in precategory
+    -- Porting note: changed X Y Z to implicit to match comp fields in precategory
     ∀ { X Y Z : WalkingParallelPair } (_ : WalkingParallelPairHom X Y)
       (_ : WalkingParallelPairHom Y Z), WalkingParallelPairHom X Z
   | _, _, _, id _, h => h
@@ -172,7 +169,7 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
   counitIso :=
     NatIso.ofComponents (fun j => eqToIso (by
             induction' j with X
-            cases X <;> rfl ))
+            cases X <;> rfl))
       (fun {i} {j} f => by
       induction' i with i
       induction' j with j
@@ -406,7 +403,7 @@ theorem Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ 
     ∀ j : WalkingParallelPair, k ≫ s.π.app j = l ≫ s.π.app j
   | zero => h
   | one => by
-    have : k ≫ ι s ≫ f = l ≫ ι s ≫  f := by
+    have : k ≫ ι s ≫ f = l ≫ ι s ≫ f := by
       simp only [← Category.assoc]; exact congrArg (· ≫ f) h
     rw [s.app_one_eq_ι_comp_left, this]
 #align category_theory.limits.fork.equalizer_ext CategoryTheory.Limits.Fork.equalizer_ext
@@ -526,8 +523,8 @@ def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.
     only asks for a proof of facts that carry any mathematical content, and allows access to the
     same `s` for all parts. -/
 def Cofork.IsColimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Cofork f g)
-    (create : ∀ s : Cofork f g, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π ∧ ∀ {m}, t.π ≫ m = s.π → m = l })
-    : IsColimit t :=
+    (create : ∀ s : Cofork f g, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π
+                                    ∧ ∀ {m}, t.π ≫ m = s.π → m = l }) : IsColimit t :=
   Cofork.IsColimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
     (create s).2.2 w
 #align category_theory.limits.cofork.is_colimit.mk' CategoryTheory.Limits.Cofork.IsColimit.mk'
@@ -677,7 +674,7 @@ theorem Cofork.π_precompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parall
 -/
 @[simps]
 def Fork.mkHom {s t : Fork f g} (k : s.pt ⟶ t.pt) (w : k ≫ t.ι = s.ι) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · exact w
@@ -705,7 +702,7 @@ def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
 -/
 @[simps]
 def Cofork.mkHom {s t : Cofork f g} (k : s.pt ⟶ t.pt) (w : s.π ≫ k = t.π) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · simp [Cofork.app_zero_eq_comp_π_left, w]
@@ -713,12 +710,12 @@ def Cofork.mkHom {s t : Cofork f g} (k : s.pt ⟶ t.pt) (w : s.π ≫ k = t.π) 
 #align category_theory.limits.cofork.mk_hom CategoryTheory.Limits.Cofork.mkHom
 
 @[reassoc (attr := simp)]
-theorem Fork.hom_comp_ι {s t : Fork f g} (f : s ⟶ t) : f.Hom ≫ t.ι = s.ι := by
+theorem Fork.hom_comp_ι {s t : Fork f g} (f : s ⟶ t) : f.hom ≫ t.ι = s.ι := by
   cases s; cases t; cases f; aesop
 #align category_theory.limits.fork.hom_comp_ι CategoryTheory.Limits.Fork.hom_comp_ι
 
 @[reassoc (attr := simp)]
-theorem Fork.π_comp_hom {s t : Cofork f g} (f : s ⟶ t) : s.π ≫ f.Hom = t.π := by
+theorem Fork.π_comp_hom {s t : Cofork f g} (f : s ⟶ t) : s.π ≫ f.hom = t.π := by
   cases s; cases t; cases f; aesop
 #align category_theory.limits.fork.π_comp_hom CategoryTheory.Limits.Fork.π_comp_hom
 
@@ -811,8 +808,7 @@ noncomputable def equalizer.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) 
   ⟨equalizer.lift k h, equalizer.lift_ι _ _⟩
 #align category_theory.limits.equalizer.lift' CategoryTheory.Limits.equalizer.lift'
 
-/-- Two maps into an equalizer are equal if they are are equal when composed with the equalizer
-    map. -/
+/-- Two maps into an equalizer are equal if they are equal when composed with the equalizer map. -/
 @[ext]
 theorem equalizer.hom_ext {W : C} {k l : W ⟶ equalizer f g}
     (h : k ≫ equalizer.ι f g = l ≫ equalizer.ι f g) : k = l :=

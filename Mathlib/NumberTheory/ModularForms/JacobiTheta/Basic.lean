@@ -2,16 +2,13 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.jacobi_theta.basic
-! leanprover-community/mathlib commit 57f9349f2fe19d2de7207e99b0341808d977cdcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+
+#align_import number_theory.modular_forms.jacobi_theta.basic from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
 /-! # Jacobi's theta function
 
@@ -29,7 +26,7 @@ open Complex Real Asymptotics Filter
 
 open scoped Real BigOperators UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- Jacobi's theta function `∑' (n : ℤ), exp (π * I * n ^ 2 * τ)`. -/
 noncomputable def jacobiTheta (z : ℂ) : ℂ :=
@@ -82,7 +79,7 @@ theorem jacobiTheta_two_add (z : ℂ) : jacobiTheta (2 + z) = jacobiTheta z := b
 
 theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta ↑(ModularGroup.T ^ 2 • τ) = jacobiTheta τ := by
   suffices ↑(ModularGroup.T ^ 2 • τ) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
-  have : ModularGroup.T ^ (2 : ℕ) = ModularGroup.T ^ (2 : ℤ) := by rfl
+  have : ModularGroup.T ^ (2 : ℕ) = ModularGroup.T ^ (2 : ℤ) := rfl
   simp_rw [this, UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
   norm_cast
 set_option linter.uppercaseLean3 false in
@@ -93,7 +90,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   unfold jacobiTheta
   rw [UpperHalfPlane.modular_S_smul, UpperHalfPlane.coe_mk]
   have ha : 0 < (-I * τ).re := by
-    rw [neg_mul, neg_re, mul_re, I_re, I_im, MulZeroClass.zero_mul, one_mul, zero_sub, neg_neg]
+    rw [neg_mul, neg_re, mul_re, I_re, I_im, zero_mul, one_mul, zero_sub, neg_neg]
     exact τ.im_pos
   have ha' : (-I * τ) ^ (1 / 2 : ℂ) ≠ 0 := by
     rw [Ne.def, cpow_eq_zero_iff]
@@ -121,7 +118,7 @@ theorem hasSum_nat_jacobiTheta {z : ℂ} (hz : 0 < im z) :
   have := (summable_exp_mul_sq hz).hasSum.sum_nat_of_sum_int
   rw [← @hasSum_nat_add_iff' ℂ _ _ _ _ 1] at this
   simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_ofNat, Nat.cast_zero, neg_zero,
-    Int.cast_zero, sq (0 : ℂ), MulZeroClass.mul_zero, MulZeroClass.zero_mul, neg_sq, ← mul_two,
+    Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
     Nat.cast_add, Nat.cast_one] at this
   convert this.div_const 2 using 1

@@ -1,6 +1,7 @@
 import Std.Tactic.GuardExpr
 import Mathlib.Tactic.SimpIntro
 
+set_option autoImplicit true
 example : x + 0 = y → x = y := by
   simp_intro
   guard_target = x = y → x = y

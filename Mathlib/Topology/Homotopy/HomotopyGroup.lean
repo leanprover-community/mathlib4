@@ -2,16 +2,13 @@
 Copyright (c) 2021 Roberto Alvarez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Roberto Alvarez
-
-! This file was ported from Lean 3 source module topology.homotopy.homotopy_group
-! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Ext
+
+#align_import topology.homotopy.homotopy_group from "leanprover-community/mathlib"@"4c3e1721c58ef9087bbc2c8c38b540f70eda2e53"
 
 /-!
 # `n`th homotopy group
@@ -56,11 +53,11 @@ scoped[Topology] notation "I^" N => N → I
 namespace Cube
 
 /-- The points in a cube with at least one projection equal to 0 or 1. -/
-def boundary (N : Type _) : Set (I^N) :=
+def boundary (N : Type*) : Set (I^N) :=
   {y | ∃ i, y i = 0 ∨ y i = 1}
 #align cube.boundary Cube.boundary
 
-variable {N : Type _} [DecidableEq N]
+variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
@@ -85,7 +82,7 @@ theorem insertAt_boundary (i : N) {t₀ : I} {t}
 
 end Cube
 
-variable (N X : Type _) [TopologicalSpace X] (x : X)
+variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`. -/
 @[reducible]
@@ -395,7 +392,7 @@ end GenLoop
 
 /-- The `n`th homotopy group at `x` defined as the quotient of `Ω^n x` by the
   `GenLoop.Homotopic` relation. -/
-def HomotopyGroup (N X : Type _) [TopologicalSpace X] (x : X) : Type _ :=
+def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 #align homotopy_group HomotopyGroup
 
@@ -418,7 +415,7 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
 
 /-- Homotopy group of finite index. -/
 @[reducible]
-def HomotopyGroup.Pi (n) (X : Type _) [TopologicalSpace X] (x : X) :=
+def HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 #align homotopy_group.pi HomotopyGroup.Pi
 
@@ -558,7 +555,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
-  -- porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
+    -- porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.roots_of_unity.complex
-! leanprover-community/mathlib commit 7fdeecc0d03cd40f7a165e6cf00a4d2286db599f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.RingTheory.RootsOfUnity.Basic
+
+#align_import ring_theory.roots_of_unity.complex from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
 /-!
 # Complex roots of unity
@@ -32,7 +29,7 @@ open Polynomial Real
 
 open scoped Nat Real
 
-theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.coprime n) :
+theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
@@ -58,7 +55,7 @@ theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 *
 #align complex.is_primitive_root_exp Complex.isPrimitiveRoot_exp
 
 theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
-    IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.coprime n, exp (2 * π * I * (i / n)) = ζ := by
+    IsPrimitiveRoot ζ n ↔ ∃ i < (n : ℕ), ∃ _ : i.Coprime n, exp (2 * π * I * (i / n)) = ζ := by
   have hn0 : (n : ℂ) ≠ 0 := by exact_mod_cast hn
   constructor; swap
   · rintro ⟨i, -, hi, rfl⟩; exact isPrimitiveRoot_exp_of_coprime i n hn hi
@@ -151,7 +148,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
       rw [this]
       apply tsub_lt_self hn.bot_lt
       contrapose! h₂
-      rw [Nat.eq_zero_of_le_zero h₂, MulZeroClass.zero_mul]
+      rw [Nat.eq_zero_of_le_zero h₂, zero_mul]
       exact zero_le _
     rw [← Int.natAbs_neg, neg_sub, Int.natAbs_eq_iff]
     exact Or.inl (Int.ofNat_sub h.le).symm

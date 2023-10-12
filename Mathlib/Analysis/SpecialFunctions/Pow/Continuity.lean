@@ -3,13 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.pow.continuity
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+
+#align_import analysis.special_functions.pow.continuity from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Continuity of power functions
@@ -24,7 +21,7 @@ open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
 
 open Filter Finset Set
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 section CpowLimits
 
@@ -35,7 +32,7 @@ section CpowLimits
 
 open Complex
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem zero_cpow_eq_nhds {b : ℂ} (hb : b ≠ 0) : (fun x : ℂ => (0 : ℂ) ^ x) =ᶠ[𝓝 b] 0 := by
   suffices : ∀ᶠ x : ℂ in 𝓝 b, x ≠ 0
@@ -272,7 +269,7 @@ end Real
 
 section
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem Filter.Tendsto.rpow {l : Filter α} {f g : α → ℝ} {x y : ℝ} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) (h : x ≠ 0 ∨ 0 < y) : Tendsto (fun t => f t ^ g t) l (𝓝 (x ^ y)) :=
@@ -463,7 +460,7 @@ end NNReal
 
 open Filter
 
-theorem Filter.Tendsto.nnrpow {α : Type _} {f : Filter α} {u : α → ℝ≥0} {v : α → ℝ} {x : ℝ≥0}
+theorem Filter.Tendsto.nnrpow {α : Type*} {f : Filter α} {u : α → ℝ≥0} {v : α → ℝ} {x : ℝ≥0}
     {y : ℝ} (hx : Tendsto u f (𝓝 x)) (hy : Tendsto v f (𝓝 y)) (h : x ≠ 0 ∨ 0 < y) :
     Tendsto (fun a => u a ^ v a) f (𝓝 (x ^ y)) :=
   Tendsto.comp (NNReal.continuousAt_rpow h) (hx.prod_mk_nhds hy)
@@ -534,7 +531,7 @@ theorem tendsto_const_mul_rpow_nhds_zero_of_pos {c : ℝ≥0∞} (hc : c ≠ ∞
 
 end ENNReal
 
-theorem Filter.Tendsto.ennrpow_const {α : Type _} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} (r : ℝ)
+theorem Filter.Tendsto.ennrpow_const {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} (r : ℝ)
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ r) f (𝓝 (a ^ r)) :=
   (ENNReal.continuous_rpow_const.tendsto a).comp hm
 #align filter.tendsto.ennrpow_const Filter.Tendsto.ennrpow_const

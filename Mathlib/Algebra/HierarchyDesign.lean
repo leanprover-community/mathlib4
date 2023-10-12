@@ -2,13 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.hierarchy_design
-! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Util.LibraryNote
+import Mathlib.Mathport.Rename
+
+#align_import algebra.hierarchy_design from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
 /-!
 # Documentation of the algebraic hierarchy

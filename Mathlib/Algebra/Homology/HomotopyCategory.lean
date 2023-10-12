@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.homotopy_category
-! leanprover-community/mathlib commit 13ff898b0eee75d3cc75d1c06a491720eaaf911d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.CategoryTheory.Quotient
+
+#align_import algebra.homology.homotopy_category from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
 
 /-!
 # The homotopy category
@@ -17,6 +14,8 @@ import Mathlib.CategoryTheory.Quotient
 `HomotopyCategory V c` gives the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic.
 -/
+
+set_option autoImplicit true
 
 
 universe v u
@@ -27,7 +26,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable (V : Type u) [Category.{v} V] [Preadditive V]
 
@@ -39,10 +38,10 @@ def homotopic : HomRel (HomologicalComplex V c) := fun _ _ f g => Nonempty (Homo
 #align homotopic homotopic
 
 instance homotopy_congruence : Congruence (homotopic V c) where
-  isEquiv :=
+  equivalence :=
     { refl := fun C => ⟨Homotopy.refl C⟩
-      symm := fun _ _ ⟨w⟩ => ⟨w.symm⟩
-      trans := fun _ _ _ ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
+      symm := fun ⟨w⟩ => ⟨w.symm⟩
+      trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
   compLeft := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
   compRight := fun _ ⟨i⟩ => ⟨i.compRight _⟩
 #align homotopy_congruence homotopy_congruence
@@ -86,7 +85,7 @@ theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient 
 
 -- porting note: added to ease the port
 theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
-  Quot.mk _ f = (quotient V c).map f := rfl
+    Quot.mk _ f = (quotient V c).map f := rfl
 
 theorem eq_of_homotopy {C D : HomologicalComplex V c} (f g : C ⟶ D) (h : Homotopy f g) :
     (quotient V c).map f = (quotient V c).map g :=
@@ -178,7 +177,7 @@ end HomotopyCategory
 
 namespace CategoryTheory
 
-variable {V} {W : Type _} [Category W] [Preadditive W]
+variable {V} {W : Type*} [Category W] [Preadditive W]
 
 -- porting note: given a simpler definition of this functor
 /-- An additive functor induces a functor between homotopy categories. -/

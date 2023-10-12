@@ -2,16 +2,14 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
-! This file was ported from Lean 3 source module algebra.order.field.basic
-! leanprover-community/mathlib commit 84771a9f5f0bd5e5d6218811556508ddf476dcbd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Int.Cast.Basic
+
+#align_import algebra.order.field.basic from "leanprover-community/mathlib"@"84771a9f5f0bd5e5d6218811556508ddf476dcbd"
 
 /-!
 # Lemmas about linear ordered (semi)fields
@@ -20,7 +18,7 @@ import Mathlib.Data.Int.Cast.Basic
 
 open Function OrderDual
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 section LinearOrderedSemifield
 
@@ -53,7 +51,7 @@ theorem inv_pos : 0 < a⁻¹ ↔ 0 < a :=
   fun a ha => flip lt_of_mul_lt_mul_left ha.le <| by simp [ne_of_gt ha, zero_lt_one]
 #align inv_pos inv_pos
 
-alias inv_pos ↔ _ inv_pos_of_pos
+alias ⟨_, inv_pos_of_pos⟩ := inv_pos
 #align inv_pos_of_pos inv_pos_of_pos
 
 @[simp]
@@ -61,7 +59,7 @@ theorem inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by
   simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
 #align inv_nonneg inv_nonneg
 
-alias inv_nonneg ↔ _ inv_nonneg_of_nonneg
+alias ⟨_, inv_nonneg_of_nonneg⟩ := inv_nonneg
 #align inv_nonneg_of_nonneg inv_nonneg_of_nonneg
 
 @[simp]
@@ -521,13 +519,13 @@ theorem half_lt_self_iff : a / 2 < a ↔ 0 < a := by
   rw [div_lt_iff (zero_lt_two' α), mul_two, lt_add_iff_pos_left]
 #align half_lt_self_iff half_lt_self_iff
 
-alias half_le_self_iff ↔ _ half_le_self
+alias ⟨_, half_le_self⟩ := half_le_self_iff
 #align half_le_self half_le_self
 
-alias half_lt_self_iff ↔ _ half_lt_self
+alias ⟨_, half_lt_self⟩ := half_lt_self_iff
 #align half_lt_self half_lt_self
 
-alias half_lt_self ← div_two_lt_of_pos
+alias div_two_lt_of_pos := half_lt_self
 #align div_two_lt_of_pos div_two_lt_of_pos
 
 theorem one_half_lt_one : (1 / 2 : α) < 1 :=
@@ -576,13 +574,13 @@ theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ 
   ⟨c⁻¹, inv_pos.2 hc₀, by rwa [← div_eq_inv_mul, lt_div_iff hc₀]⟩
 #align exists_pos_lt_mul exists_pos_lt_mul
 
-theorem Monotone.div_const {β : Type _} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
+theorem Monotone.div_const {β : Type*} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
     (hc : 0 ≤ c) : Monotone fun x => f x / c := by
   haveI := @LinearOrder.decidableLE α _
   simpa only [div_eq_mul_inv] using (monotone_mul_right_of_nonneg (inv_nonneg.2 hc)).comp hf
 #align monotone.div_const Monotone.div_const
 
-theorem StrictMono.div_const {β : Type _} [Preorder β] {f : β → α} (hf : StrictMono f) {c : α}
+theorem StrictMono.div_const {β : Type*} [Preorder β] {f : β → α} (hf : StrictMono f) {c : α}
     (hc : 0 < c) : StrictMono fun x => f x / c := by
   simpa only [div_eq_mul_inv] using hf.mul_const (inv_pos.2 hc)
 #align strict_mono.div_const StrictMono.div_const
@@ -962,12 +960,12 @@ theorem mul_sub_mul_div_mul_nonpos_iff (hc : c ≠ 0) (hd : d ≠ 0) :
   rw [mul_comm b c, ← div_sub_div _ _ hc hd, sub_nonpos]
 #align mul_sub_mul_div_mul_nonpos_iff mul_sub_mul_div_mul_nonpos_iff
 
-alias mul_sub_mul_div_mul_neg_iff ↔ div_lt_div_of_mul_sub_mul_div_neg mul_sub_mul_div_mul_neg
+alias ⟨div_lt_div_of_mul_sub_mul_div_neg, mul_sub_mul_div_mul_neg⟩ := mul_sub_mul_div_mul_neg_iff
 #align mul_sub_mul_div_mul_neg mul_sub_mul_div_mul_neg
 #align div_lt_div_of_mul_sub_mul_div_neg div_lt_div_of_mul_sub_mul_div_neg
 
-alias mul_sub_mul_div_mul_nonpos_iff ↔
-  div_le_div_of_mul_sub_mul_div_nonpos mul_sub_mul_div_mul_nonpos
+alias ⟨div_le_div_of_mul_sub_mul_div_nonpos, mul_sub_mul_div_mul_nonpos⟩ :=
+  mul_sub_mul_div_mul_nonpos_iff
 #align div_le_div_of_mul_sub_mul_div_nonpos div_le_div_of_mul_sub_mul_div_nonpos
 #align mul_sub_mul_div_mul_nonpos mul_sub_mul_div_mul_nonpos
 

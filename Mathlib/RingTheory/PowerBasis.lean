@@ -2,13 +2,10 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.power_basis
-! leanprover-community/mathlib commit d1d69e99ed34c95266668af4e288fc1c598b9a7f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Minpoly.Field
+
+#align_import ring_theory.power_basis from "leanprover-community/mathlib"@"d1d69e99ed34c95266668af4e288fc1c598b9a7f"
 
 /-!
 # Power basis
@@ -48,11 +45,11 @@ open Polynomial
 
 open Polynomial
 
-variable {R S T : Type _} [CommRing R] [Ring S] [Algebra R S]
+variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-variable {A B : Type _} [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 /-- `pb : PowerBasis R S` states that `1, pb.gen, ..., pb.gen ^ (pb.dim - 1)`
 is a basis for the `R`-algebra `S` (viewed as `R`-module).
@@ -62,7 +59,7 @@ For the common case where `S` is defined by adjoining an integral element to `R`
 the canonical power basis is given by `{Algebra,IntermediateField}.adjoin.powerBasis`.
 -/
 -- @[nolint has_nonempty_instance] -- Porting note: doesn't exist
-structure PowerBasis (R S : Type _) [CommRing R] [Ring S] [Algebra R S] where
+structure PowerBasis (R S : Type*) [CommRing R] [Ring S] [Algebra R S] where
   gen : S
   dim : ℕ
   basis : Basis (Fin dim) R S
@@ -138,7 +135,7 @@ theorem exists_eq_aeval' (pb : PowerBasis R S) (y : S) : ∃ f : R[X], y = aeval
   exact ⟨f, hf⟩
 #align power_basis.exists_eq_aeval' PowerBasis.exists_eq_aeval'
 
-theorem algHom_ext {S' : Type _} [Semiring S'] [Algebra R S'] (pb : PowerBasis R S)
+theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R S)
     ⦃f g : S →ₐ[R] S'⦄ (h : f pb.gen = g pb.gen) : f = g := by
   ext x
   obtain ⟨f, rfl⟩ := pb.exists_eq_aeval' x
@@ -178,7 +175,6 @@ theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p �
   refine' Fintype.sum_eq_zero _ fun i => _
   simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root
   have := Fintype.linearIndependent_iff.1 pb.basis.linearIndependent _ root
-  dsimp only at this
   rw [this, monomial_zero_right]
 #align power_basis.dim_le_nat_degree_of_root PowerBasis.dim_le_natDegree_of_root
 
@@ -246,7 +242,7 @@ end minpoly
 
 section Equiv
 
-variable [Algebra A S] {S' : Type _} [Ring S'] [Algebra A S']
+variable [Algebra A S] {S' : Type*} [Ring S'] [Algebra A S']
 
 theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A pb.gen) = 0)
     (f : A[X]) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (aeval pb.gen f) = aeval y f := by
@@ -260,7 +256,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
     rw [← pb.natDegree_minpoly]
     apply natDegree_lt_natDegree hf
     exact degree_modByMonic_lt _ (minpoly.monic pb.isIntegral_gen)
-  rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, LinearMap.map_sum]
+  rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine' Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => _
   rw [Finset.mem_range] at hi
   rw [LinearMap.map_smul]
@@ -332,7 +328,7 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! (config := { fullyApplied := false })]
 noncomputable def liftEquiv' (pb : PowerBasis A S) :
-    (S →ₐ[A] B) ≃ { y : B // y ∈ ((minpoly A pb.gen).map (algebraMap A B)).roots } :=
+    (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
     rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
     · simp
@@ -352,7 +348,7 @@ where "the same" means that `pb` is a root of `pb'`s minimal polynomial and vice
 See also `PowerBasis.equivOfMinpoly` which takes the hypothesis that the
 minimal polynomials are identical.
 -/
-@[simps! (config := { attrs := [] }) apply]
+@[simps! (config := { isSimp := false }) apply]
 noncomputable def equivOfRoot (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0) :
     S ≃ₐ[A] S' :=
@@ -367,14 +363,14 @@ noncomputable def equivOfRoot (pb : PowerBasis A S) (pb' : PowerBasis A S')
       simp)
 #align power_basis.equiv_of_root PowerBasis.equivOfRoot
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfRoot_aeval (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0)
     (f : A[X]) : pb.equivOfRoot pb' h₁ h₂ (aeval pb.gen f) = aeval pb'.gen f :=
   pb.lift_aeval _ h₂ _
 #align power_basis.equiv_of_root_aeval PowerBasis.equivOfRoot_aeval
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfRoot_gen (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h₁ : aeval pb.gen (minpoly A pb'.gen) = 0) (h₂ : aeval pb'.gen (minpoly A pb.gen) = 0) :
     pb.equivOfRoot pb' h₁ h₂ pb.gen = pb'.gen :=
@@ -394,20 +390,20 @@ where "the same" means that they have identical minimal polynomials.
 See also `PowerBasis.equivOfRoot` which takes the hypothesis that each generator is a root of the
 other basis' minimal polynomial; `PowerBasis.equivOfRoot` is more general if `A` is not a field.
 -/
-@[simps! (config := { attrs := [] }) apply]
+@[simps! (config := { isSimp := false }) apply]
 noncomputable def equivOfMinpoly (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) : S ≃ₐ[A] S' :=
   pb.equivOfRoot pb' (h ▸ minpoly.aeval _ _) (h.symm ▸ minpoly.aeval _ _)
 #align power_basis.equiv_of_minpoly PowerBasis.equivOfMinpoly
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfMinpoly_aeval (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) (f : A[X]) :
     pb.equivOfMinpoly pb' h (aeval pb.gen f) = aeval pb'.gen f :=
   pb.equivOfRoot_aeval pb' _ _ _
 #align power_basis.equiv_of_minpoly_aeval PowerBasis.equivOfMinpoly_aeval
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem equivOfMinpoly_gen (pb : PowerBasis A S) (pb' : PowerBasis A S')
     (h : minpoly A pb.gen = minpoly A pb'.gen) : pb.equivOfMinpoly pb' h pb.gen = pb'.gen :=
   pb.equivOfRoot_gen pb' _ _
@@ -452,14 +448,14 @@ theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
   have := minpoly.monic hx
   refine' ⟨f %ₘ minpoly R x, (degree_modByMonic_lt _ this).trans_le degree_le_natDegree, _⟩
   conv_lhs => rw [← modByMonic_add_div f this]
-  simp only [add_zero, MulZeroClass.zero_mul, minpoly.aeval, aeval_add, AlgHom.map_mul]
+  simp only [add_zero, zero_mul, minpoly.aeval, aeval_add, AlgHom.map_mul]
 #align is_integral.mem_span_pow IsIntegral.mem_span_pow
 
 namespace PowerBasis
 
 section Map
 
-variable {S' : Type _} [CommRing S'] [Algebra R S']
+variable {S' : Type*} [CommRing S'] [Algebra R S']
 
 /-- `PowerBasis.map pb (e : S ≃ₐ[R] S')` is the power basis for `S'` generated by `e pb.gen`. -/
 @[simps dim gen basis]

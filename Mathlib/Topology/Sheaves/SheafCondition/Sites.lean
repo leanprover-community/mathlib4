@@ -2,15 +2,12 @@
 Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.sites
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Spaces
 import Mathlib.Topology.Sheaves.Sheaf
 import Mathlib.CategoryTheory.Sites.DenseSubsite
+
+#align_import topology.sheaves.sheaf_condition.sites from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 
@@ -135,7 +132,7 @@ end TopCat.Presheaf
 
 namespace TopCat.Opens
 
-variable {X : TopCat} {ι : Type _}
+variable {X : TopCat} {ι : Type*}
 
 theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
     CoverDense (Opens.grothendieckTopology X) B ↔ Opens.IsBasis (Set.range B.obj) := by
@@ -192,7 +189,7 @@ open TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
 
-variable {X : TopCat.{w}} {ι : Type _} {B : ι → Opens X}
+variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 
 variable (F : X.Presheaf C) (F' : Sheaf C X) (h : Opens.IsBasis (Set.range B))
 

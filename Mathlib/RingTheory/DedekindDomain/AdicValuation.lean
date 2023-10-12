@@ -2,17 +2,14 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.adic_valuation
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.ValuedField
 import Mathlib.Algebra.Order.Group.TypeTags
+
+#align_import ring_theory.dedekind_domain.adic_valuation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Adic valuations on Dedekind domains
@@ -41,7 +38,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   ideal `(r)`.
 - `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
   with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
-- `is_dedekind_domain.height_one_spectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
+- IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
@@ -67,7 +64,7 @@ open scoped Classical DiscreteValuation
 
 open Multiplicative IsDedekindDomain
 
-variable {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type _} [Field K]
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 namespace IsDedekindDomain.HeightOneSpectrum
@@ -168,9 +165,9 @@ theorem IntValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
   simp only [intValuationDef]
   by_cases hx : x = 0
-  · rw [hx, MulZeroClass.zero_mul, if_pos (Eq.refl _), MulZeroClass.zero_mul]
+  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, MulZeroClass.mul_zero, if_pos (Eq.refl _), MulZeroClass.mul_zero]
+    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj, ←
         ofAdd_add, ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
         Associates.count_mul (by apply Associates.mk_ne_zero'.mpr hx)
@@ -448,13 +445,13 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ext
     --Porting note: added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_mul, Subring.coe_mul, Subtype.coe_mk, UniformSpace.Completion.coe_mul]
+    simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
     --Porting note: added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_add, Subring.coe_add, Subtype.coe_mk, UniformSpace.Completion.coe_add]
+    simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
     -- Porting note: added `dsimp` line
     dsimp

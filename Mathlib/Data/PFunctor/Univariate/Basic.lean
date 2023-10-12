@@ -2,13 +2,10 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.pfunctor.univariate.basic
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.W.Basic
+
+#align_import data.pfunctor.univariate.basic from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Polynomial functors
@@ -45,12 +42,12 @@ instance : Inhabited PFunctor :=
 variable (P : PFunctor) {α β : Type u}
 
 /-- Applying `P` to an object of `Type` -/
-def Obj (α : Type _) :=
+def Obj (α : Type*) :=
   Σx : P.A, P.B x → α
 #align pfunctor.obj PFunctor.Obj
 
 /-- Applying `P` to a morphism of `Type` -/
-def map {α β : Type _} (f : α → β) : P.Obj α → P.Obj β :=
+def map {α β : Type*} (f : α → β) : P.Obj α → P.Obj β :=
   fun ⟨a, g⟩ => ⟨a, f ∘ g⟩
 #align pfunctor.map PFunctor.map
 
@@ -65,7 +62,7 @@ protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a �
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
 
-protected theorem id_map {α : Type _} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
+protected theorem id_map {α : Type*} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
 protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
@@ -90,7 +87,7 @@ such that `P.B a` is empty to yield a finite tree -/
 
 variable {P}
 
-/-- root element  of a W tree -/
+/-- root element of a W tree -/
 def W.head : W P → P.A
   | ⟨a, _f⟩ => a
 #align pfunctor.W.head PFunctor.W.head
@@ -123,19 +120,19 @@ variable (P)
 /-- `Idx` identifies a location inside the application of a pfunctor.
 For `F : PFunctor`, `x : F.obj α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
-def IdxCat :=
+def Idx :=
   Σx : P.A, P.B x
-#align pfunctor.Idx PFunctor.IdxCat
+#align pfunctor.Idx PFunctor.Idx
 
-instance IdxCat.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.IdxCat :=
+instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
   ⟨⟨default, default⟩⟩
-#align pfunctor.Idx.inhabited PFunctor.IdxCat.inhabited
+#align pfunctor.Idx.inhabited PFunctor.Idx.inhabited
 
 variable {P}
 
 /-- `x.iget i` takes the component of `x` designated by `i` if any is or returns
 a default value -/
-def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P.Obj α) (i : P.IdxCat) : α :=
+def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P.Obj α) (i : P.Idx) : α :=
   if h : i.1 = x.1 then x.2 (cast (congr_arg _ h) i.2) else default
 #align pfunctor.obj.iget PFunctor.Obj.iget
 
@@ -145,7 +142,7 @@ theorem fst_map {α β : Type u} (x : P.Obj α) (f : α → β) : (f <$> x).1 = 
 
 @[simp]
 theorem iget_map [DecidableEq P.A] {α β : Type u} [Inhabited α] [Inhabited β] (x : P.Obj α)
-    (f : α → β) (i : P.IdxCat) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
+    (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
   simp only [Obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
   cases x
   rfl

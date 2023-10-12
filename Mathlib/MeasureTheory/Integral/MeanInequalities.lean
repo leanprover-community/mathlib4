@@ -2,16 +2,13 @@
 Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.integral.mean_inequalities
-! leanprover-community/mathlib commit 13bf7613c96a9fd66a81b9020a82cad9a6ea1fcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+
+#align_import measure_theory.integral.mean_inequalities from "leanprover-community/mathlib"@"13bf7613c96a9fd66a81b9020a82cad9a6ea1fcf"
 
 /-!
 # Mean value inequalities for integrals
@@ -55,9 +52,9 @@ open Classical BigOperators NNReal ENNReal MeasureTheory
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-variable {α : Type _} [MeasurableSpace α] {μ : Measure α}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
 namespace ENNReal
 
@@ -142,7 +139,7 @@ theorem lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p
   rw [← @lintegral_zero_fun α _ μ]
   refine' lintegral_congr_ae _
   suffices h_mul_zero : f * g =ᵐ[μ] 0 * g
-  · rwa [MulZeroClass.zero_mul] at h_mul_zero
+  · rwa [zero_mul] at h_mul_zero
   have hf_eq_zero : f =ᵐ[μ] 0 := ae_eq_zero_of_lintegral_rpow_eq_zero hp0 hf hf_zero
   exact hf_eq_zero.mul (ae_eq_refl g)
 #align ennreal.lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero ENNReal.lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero
@@ -261,7 +258,7 @@ theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}
       (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) * (∫⁻ a, g a ^ p ∂μ) ^ (1 / q) := by
   refine' le_trans (ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf (hg.pow_const _)) _
   by_cases hf_zero_rpow : (∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) = 0
-  · rw [hf_zero_rpow, MulZeroClass.zero_mul]
+  · rw [hf_zero_rpow, zero_mul]
     exact zero_le _
   have hf_top_rpow : (∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) ≠ ⊤ := by
     by_contra h

@@ -2,21 +2,18 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module group_theory.perm.cycle.concrete
-! leanprover-community/mathlib commit 00638177efd1b2534fc5269363ebf42a7871df9a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Cycle
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.List
 
+#align_import group_theory.perm.cycle.concrete from "leanprover-community/mathlib"@"00638177efd1b2534fc5269363ebf42a7871df9a"
+
 /-!
 
 # Properties of cyclic permutations constructed from lists/cycles
 
-In the following, `{α : Type _} [Fintype α] [DecidableEq α]`.
+In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 
 ## Main definitions
 
@@ -52,7 +49,7 @@ to show it takes a long time. TODO: is this because computing the cycle factors 
 
 open Equiv Equiv.Perm List
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace List
 
@@ -192,7 +189,7 @@ nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
   simpa using formPerm_reverse _ h
 #align cycle.form_perm_reverse Cycle.formPerm_reverse
 
-nonrec theorem formPerm_eq_formPerm_iff {α : Type _} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
+nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
@@ -520,8 +517,8 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
     right_inv := Fintype.leftInverse_bijInv _ }
 #align equiv.perm.iso_cycle' Equiv.Perm.isoCycle'
 
-notation3 "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
-  Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff _)
+notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+  Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
 unsafe instance repr_perm [Repr α] : Repr (Perm α) :=
   ⟨fun f _ => repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)

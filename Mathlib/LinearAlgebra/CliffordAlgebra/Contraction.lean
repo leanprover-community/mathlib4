@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.contraction
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+
+#align_import linear_algebra.clifford_algebra.contraction from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Contraction in Clifford Algebras
@@ -117,8 +114,7 @@ def contractRight : CliffordAlgebra Q →ₗ[R] Module.Dual R M →ₗ[R] Cliffo
 #align clifford_algebra.contract_right CliffordAlgebra.contractRight
 
 theorem contractRight_eq (x : CliffordAlgebra Q) :
-    contractRight (Q := Q) x d = reverse (Q := Q)
-    (contractLeft (R := R) (M := M) d <| reverse (Q := Q) x) :=
+    contractRight (Q := Q) x d = reverse (contractLeft (R := R) (M := M) d <| reverse x) :=
   rfl
 #align clifford_algebra.contract_right_eq CliffordAlgebra.contractRight_eq
 
@@ -171,7 +167,7 @@ variable (Q)
 theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
 -- Porting note: Lean cannot figure out anymore the third argument
   refine (foldr'_ι _ _ ?_ _ _).trans <| by
-    simp_rw [contractLeftAux_apply_apply, MulZeroClass.mul_zero, sub_zero,
+    simp_rw [contractLeftAux_apply_apply, mul_zero, sub_zero,
       Algebra.algebraMap_eq_smul_one]
   exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 #align clifford_algebra.contract_left_ι CliffordAlgebra.contractLeft_ι
@@ -211,7 +207,7 @@ theorem contractLeft_contractLeft (x : CliffordAlgebra Q) : d⌋(d⌋x) = 0 := b
   · simp_rw [contractLeft_algebraMap, map_zero]
   · rw [map_add, map_add, hx, hy, add_zero]
   · rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, LinearMap.map_smul,
-      MulZeroClass.mul_zero, sub_zero, sub_self]
+      mul_zero, sub_zero, sub_self]
 #align clifford_algebra.contract_left_contract_left CliffordAlgebra.contractLeft_contractLeft
 
 /-- This is [grinberg_clifford_2016][] Theorem 13 -/
@@ -235,7 +231,7 @@ theorem contractRight_comm (x : CliffordAlgebra Q) : x⌊d⌊d' = -(x⌊d'⌊d) 
 #align clifford_algebra.contract_right_comm CliffordAlgebra.contractRight_comm
 
 /- TODO:
-lemma contract_right_contract_left (x : clifford_algebra Q) : (d ⌋ x) ⌊ d' = d ⌋ (x ⌊ d') :=
+lemma contractRight_contractLeft (x : CliffordAlgebra Q) : (d ⌋ x) ⌊ d' = d ⌋ (x ⌊ d') :=
 -/
 end contractLeft
 
@@ -293,7 +289,7 @@ theorem changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
 #align clifford_algebra.change_form.neg_proof CliffordAlgebra.changeForm.neg_proof
 
 theorem changeForm.associated_neg_proof [Invertible (2 : R)] :
-    (QuadraticForm.associated (R₁ := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
+    (QuadraticForm.associated (R := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
   simp [QuadraticForm.toQuadraticForm_associated]
 #align clifford_algebra.change_form.associated_neg_proof CliffordAlgebra.changeForm.associated_neg_proof
 
@@ -328,8 +324,8 @@ theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
--- Porting note: original statement
---    changeForm h (d⌋x) = d⌋changeForm h x := by
+    -- Porting note: original statement
+    --    changeForm h (d⌋x) = d⌋changeForm h x := by
     changeForm h (contractLeft (Q := Q) d x) = contractLeft (Q := Q') d (changeForm h x) := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]

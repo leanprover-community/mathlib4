@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.real.cau_seq_completion
-! leanprover-community/mathlib commit cf4c49c445991489058260d75dae0ff2b1abca28
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.CauSeq
+
+#align_import data.real.cau_seq_completion from "leanprover-community/mathlib"@"cf4c49c445991489058260d75dae0ff2b1abca28"
 
 /-!
 # Cauchy completion
@@ -24,9 +21,9 @@ open CauSeq
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
+variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 -- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
 /-- The Cauchy completion of a ring with absolute value. -/
@@ -111,11 +108,11 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
   rfl
 #align cau_seq.completion.mk_sub CauSeq.Completion.mk_sub
 
-instance {γ : Type _} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
+instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
   ⟨fun c => (Quotient.map ((· • ·) c)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
-theorem mk_smul {γ : Type _} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
+theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
     c • mk f = mk (c • f) :=
   rfl
 #align cau_seq.completion.mk_smul CauSeq.Completion.mk_smul
@@ -165,7 +162,7 @@ private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
   rfl
 
 instance Cauchy.ring : Ring (Cauchy abv) :=
-  Function.Surjective.ring mk (surjective_quotient_mk _) zero_def.symm one_def.symm
+  Function.Surjective.ring mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -189,12 +186,12 @@ end
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) :=
-  Function.Surjective.commRing mk (surjective_quotient_mk _) zero_def.symm one_def.symm
+  Function.Surjective.commRing mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -205,9 +202,9 @@ open Classical
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance : RatCast (Cauchy abv) :=
   ⟨fun q => ofRat q⟩
@@ -298,9 +295,9 @@ end
 
 section
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
-variable {β : Type _} [Field β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
 noncomputable instance Cauchy.field : Field (Cauchy abv) :=
@@ -310,13 +307,13 @@ end
 
 end CauSeq.Completion
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
 namespace CauSeq
 
 section
 
-variable (β : Type _) [Ring β] (abv : β → α) [IsAbsoluteValue abv]
+variable (β : Type*) [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 /-- A class stating that a ring with an absolute value is complete, i.e. every Cauchy
 sequence has a limit. -/
@@ -330,7 +327,7 @@ end
 
 section
 
-variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
+variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 
 variable [IsComplete β abv]
 
@@ -412,7 +409,7 @@ end
 
 section
 
-variable {β : Type _} [Field β] {abv : β → α} [IsAbsoluteValue abv] [IsComplete β abv]
+variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv] [IsComplete β abv]
 
 theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f)⁻¹ :=
   have hl : lim f ≠ 0 := by rwa [← lim_eq_zero_iff] at hf

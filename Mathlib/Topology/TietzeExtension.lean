@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.tietze_extension
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Set.Intervals.IsoIoo
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.UrysohnsBounded
+
+#align_import topology.tietze_extension from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Tietze extension theorem
@@ -38,7 +35,7 @@ Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
 
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [NormalSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [NormalSpace Y]
 
 open Metric Set Filter
 
@@ -136,7 +133,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
   have hge : (limUnder atTop g).compContinuous e = f := by
     refine' tendsto_nhds_unique this (tendsto_iff_dist_tendsto_zero.2 _)
     refine' squeeze_zero (fun _ => dist_nonneg) hgf _
-    rw [← MulZeroClass.zero_mul ‖f‖]
+    rw [← zero_mul ‖f‖]
     refine' (tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num1
   refine' ⟨limUnder atTop g, le_antisymm _ _, hge⟩
   · rw [← dist_zero_left, ← g0]
@@ -203,9 +200,9 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
   inhabit X
   -- Put `a = ⨅ x, f x` and `b = ⨆ x, f x`
   obtain ⟨a, ha⟩ : ∃ a, IsGLB (range f) a
-  exact ⟨_, isGLB_ciInf (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).1⟩
+  exact ⟨_, isGLB_ciInf (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1⟩
   obtain ⟨b, hb⟩ : ∃ b, IsLUB (range f) b
-  exact ⟨_, isLUB_ciSup (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2⟩
+  exact ⟨_, isLUB_ciSup (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2⟩
   -- Then `f x ∈ [a, b]` for all `x`
   have hmem : ∀ x, f x ∈ Icc a b := fun x => ⟨ha.1 ⟨x, rfl⟩, hb.1 ⟨x, rfl⟩⟩
   -- Rule out the trivial case `a = b`
@@ -356,9 +353,8 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
   let F : X →ᵇ ℝ :=
     { toFun := (↑) ∘ h ∘ f
       continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
-      map_bounded' :=
-        bounded_range_iff.1
-          ((bounded_Ioo (-1 : ℝ) 1).mono <| forall_range_iff.2 fun x => (h (f x)).2) }
+      map_bounded' := isBounded_range_iff.1
+        ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
   let t' : Set ℝ := (↑) ∘ h '' t
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
   have : OrdConnected t' := by

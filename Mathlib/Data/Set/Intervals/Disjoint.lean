@@ -2,13 +2,10 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.disjoint
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
+
+#align_import data.set.intervals.disjoint from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Extra lemmas about intervals
@@ -227,24 +224,24 @@ theorem IsLUB.biUnion_Iic_eq_Iic (a_lub : IsLUB s a) (a_mem : a ∈ s) : ⋃ x �
   a_lub.dual.biUnion_Ici_eq_Ici a_mem
 #align is_lub.bUnion_Iic_eq_Iic IsLUB.biUnion_Iic_eq_Iic
 
-theorem iUnion_Ici_eq_Ioi_iInf {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Ici_eq_Ioi_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (no_least_elem : ⨅ i, f i ∉ range f) : ⋃ i : ι, Ici (f i) = Ioi (⨅ i, f i) := by
   simp only [← IsGLB.biUnion_Ici_eq_Ioi (@isGLB_iInf _ _ _ f) no_least_elem, mem_range,
     iUnion_exists, iUnion_iUnion_eq']
 #align Union_Ici_eq_Ioi_infi iUnion_Ici_eq_Ioi_iInf
 
-theorem iUnion_Iic_eq_Iio_iSup {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Iic_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (no_greatest_elem : (⨆ i, f i) ∉ range f) : ⋃ i : ι, Iic (f i) = Iio (⨆ i, f i) :=
   @iUnion_Ici_eq_Ioi_iInf ι (OrderDual R) _ f no_greatest_elem
 #align Union_Iic_eq_Iio_supr iUnion_Iic_eq_Iio_iSup
 
-theorem iUnion_Ici_eq_Ici_iInf {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Ici_eq_Ici_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (has_least_elem : (⨅ i, f i) ∈ range f) : ⋃ i : ι, Ici (f i) = Ici (⨅ i, f i) := by
   simp only [← IsGLB.biUnion_Ici_eq_Ici (@isGLB_iInf _ _ _ f) has_least_elem, mem_range,
     iUnion_exists, iUnion_iUnion_eq']
 #align Union_Ici_eq_Ici_infi iUnion_Ici_eq_Ici_iInf
 
-theorem iUnion_Iic_eq_Iic_iSup {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : ⋃ i : ι, Iic (f i) = Iic (⨆ i, f i) :=
   @iUnion_Ici_eq_Ici_iInf ι (OrderDual R) _ f has_greatest_elem
 #align Union_Iic_eq_Iic_supr iUnion_Iic_eq_Iic_iSup

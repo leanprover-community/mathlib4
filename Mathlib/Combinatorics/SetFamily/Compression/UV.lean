@@ -2,13 +2,10 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.set_family.compression.uv
-! leanprover-community/mathlib commit 6f8ab7de1c4b78a68ab8cf7dd83d549eb78a68a1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SetFamily.Shadow
+
+#align_import combinatorics.set_family.compression.uv from "leanprover-community/mathlib"@"6f8ab7de1c4b78a68ab8cf7dd83d549eb78a68a1"
 
 /-!
 # UV-compressions
@@ -54,7 +51,7 @@ compression, UV-compression, shadow
 
 open Finset
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- UV-compression is injective on the elements it moves. See `UV.compress`. -/
 theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
@@ -193,11 +190,10 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
 /-- Compressing a family is idempotent. -/
 @[simp]
 theorem compression_idem (u v : α) (s : Finset α) :
-  𝓒 u v (𝓒 u v s) = 𝓒 u v s := by
+    𝓒 u v (𝓒 u v s) = 𝓒 u v s := by
   have h : filter (fun a => compress u v a ∉ 𝓒 u v s) (𝓒 u v s) = ∅ :=
     filter_false_of_mem fun a ha h => h <| compress_mem_compression_of_mem_compression ha
   rw [compression, image_filter]
-  simp_rw [Function.comp]
   rw [h, image_empty, ← h]
   exact filter_union_filter_neg_eq _ (compression u v s)
 #align uv.compression_idem UV.compression_idem
@@ -206,13 +202,11 @@ theorem compression_idem (u v : α) (s : Finset α) :
 theorem card_compression (u v : α) (s : Finset α) : (𝓒 u v s).card = s.card := by
   rw [compression, card_disjoint_union (compress_disjoint _ _), image_filter, card_image_of_injOn,
     ← card_disjoint_union]
-  simp_rw [Function.comp]
   rw [filter_union_filter_neg_eq]
   · rw [disjoint_iff_inter_eq_empty]
     exact filter_inter_filter_neg_eq _ _ _
   intro a ha b hb hab
-  dsimp at hab
-  rw [mem_coe, mem_filter, Function.comp_apply] at ha hb
+  rw [mem_coe, mem_filter] at ha hb
   rw [compress] at ha hab
   split_ifs at ha hab with has
   · rw [compress] at hb hab
@@ -259,7 +253,7 @@ theorem sup_sdiff_mem_of_mem_compression_of_not_mem (h : a ∈ 𝓒 u v s) (ha :
 /-- If `a` is in the family compression and can be compressed, then its compression is in the
 original family. -/
 theorem sup_sdiff_mem_of_mem_compression (ha : a ∈ 𝓒 u v s)
-  (hva : v ≤ a) (hua : Disjoint u a) :
+    (hva : v ≤ a) (hua : Disjoint u a) :
     (a ⊔ u) \ v ∈ s := by
   rw [mem_compression, compress_of_disjoint_of_le hua hva] at ha
   obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
@@ -280,7 +274,7 @@ theorem sup_sdiff_mem_of_mem_compression (ha : a ∈ 𝓒 u v s)
 /-- If `a` is in the `u, v`-compression but `v ≤ a`, then `a` must have been in the original
 family. -/
 theorem mem_of_mem_compression (ha : a ∈ 𝓒 u v s) (hva : v ≤ a) (hvu : v = ⊥ → u = ⊥) :
-  a ∈ s := by
+    a ∈ s := by
   rw [mem_compression] at ha
   obtain ha | ⟨_, b, hb, h⟩ := ha
   · exact ha.1

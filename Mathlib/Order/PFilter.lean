@@ -2,13 +2,10 @@
 Copyright (c) 2020 Mathieu Guay-Paquet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mathieu Guay-Paquet
-
-! This file was ported from Lean 3 source module order.pfilter
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
+
+#align_import order.pfilter from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Order filters
@@ -43,7 +40,7 @@ open OrderDual
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 /-- A filter on a preorder `P` is a subset of `P` that is
   - nonempty

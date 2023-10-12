@@ -2,17 +2,15 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.subalgebra
-! leanprover-community/mathlib commit 160ef3e338a2a4f21a280e4c152d4016156e516d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Module
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import algebra.star.subalgebra from "leanprover-community/mathlib"@"160ef3e338a2a4f21a280e4c152d4016156e516d"
 
 /-!
 # Star subalgebras
@@ -38,7 +36,7 @@ namespace StarSubalgebra
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
-variable {F R A B C : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B C : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [StarRing A] [Algebra R A] [StarModule R A]
 
@@ -60,13 +58,17 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   one_mem {s} := s.one_mem'
   zero_mem {s} := s.zero_mem'
 
+instance smulMemClass : SMulMemClass (StarSubalgebra R A) R A where
+  smul_mem {s} r a (ha : a ∈ s.toSubalgebra) :=
+    (SMulMemClass.smul_mem r ha : r • a ∈ s.toSubalgebra)
+
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
 
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
 instance starRing (s : StarSubalgebra R A) : StarRing s :=
-  { StarMemClass.star s with
+  { StarMemClass.instStar s with
     star_involutive := fun r => Subtype.ext (star_star (r : A))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))
     star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
@@ -86,6 +88,9 @@ theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈
 theorem ext {S T : StarSubalgebra R A} (h : ∀ x : A, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 #align star_subalgebra.ext StarSubalgebra.ext
+
+@[simp]
+lemma coe_mk (S : Subalgebra R A) (h) : ((⟨S, h⟩ : StarSubalgebra R A) : Set A) = S := rfl
 
 @[simp]
 theorem mem_toSubalgebra {S : StarSubalgebra R A} {x} : x ∈ S.toSubalgebra ↔ x ∈ S :=
@@ -219,6 +224,7 @@ theorem map_map (S : StarSubalgebra R A) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ
   SetLike.coe_injective <| Set.image_image _ _ _
 #align star_subalgebra.map_map StarSubalgebra.map_map
 
+@[simp]
 theorem mem_map {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} {y : B} :
     y ∈ map f S ↔ ∃ x ∈ S, f x = y :=
   Subsemiring.mem_map
@@ -290,31 +296,27 @@ section Centralizer
 
 variable (R) -- porting note: redundant binder annotation update
 
-theorem _root_.Set.star_mem_centralizer {a : A} {s : Set A} (h : ∀ a : A, a ∈ s → star a ∈ s)
-    (ha : a ∈ Set.centralizer s) : star a ∈ Set.centralizer s := fun y hy => by
-  simpa using congr_arg star (ha _ (h _ hy)).symm
-#align set.star_mem_centralizer Set.star_mem_centralizer
-
-/-- The centralizer, or commutant, of a *-closed set as star subalgebra. -/
-def centralizer (s : Set A) (w : ∀ a : A, a ∈ s → star a ∈ s) : StarSubalgebra R A :=
-  { Subalgebra.centralizer R s with
-    star_mem' := Set.star_mem_centralizer w }
+/-- The centralizer, or commutant, of the star-closure of a set as a star subalgebra. -/
+def centralizer (s : Set A) : StarSubalgebra R A where
+  toSubalgebra := Subalgebra.centralizer R (s ∪ star s)
+  star_mem' := Set.star_mem_centralizer
 #align star_subalgebra.centralizer StarSubalgebra.centralizer
 
-@[simp]
-theorem coe_centralizer (s : Set A) (w : ∀ a : A, a ∈ s → star a ∈ s) :
-    (centralizer R s w : Set A) = s.centralizer :=
+@[simp, norm_cast]
+theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
   rfl
 #align star_subalgebra.coe_centralizer StarSubalgebra.coe_centralizer
 
-theorem mem_centralizer_iff {s : Set A} {w} {z : A} :
-    z ∈ centralizer R s w ↔ ∀ g ∈ s, g * z = z * g :=
-  Iff.rfl
+theorem mem_centralizer_iff {s : Set A} {z : A} :
+    z ∈ centralizer R s ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g := by
+  show (∀ g ∈ s ∪ star s, g * z = z * g) ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g
+  simp only [Set.mem_union, or_imp, forall_and, and_congr_right_iff]
+  exact fun _ =>
+    ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
 #align star_subalgebra.mem_centralizer_iff StarSubalgebra.mem_centralizer_iff
 
-theorem centralizer_le (s t : Set A) (ws : ∀ a : A, a ∈ s → star a ∈ s)
-    (wt : ∀ a : A, a ∈ t → star a ∈ t) (h : s ⊆ t) : centralizer R t wt ≤ centralizer R s ws :=
-  Set.centralizer_subset h
+theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
+  Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 #align star_subalgebra.centralizer_le StarSubalgebra.centralizer_le
 
 end Centralizer
@@ -328,7 +330,7 @@ namespace Subalgebra
 
 open Pointwise
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -385,13 +387,16 @@ variable {R}
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
 @[simps!]
-def starClosure (S : Subalgebra R A) : StarSubalgebra R A :=
-  { S ⊔ star S with
-    star_mem' := fun {a} ha => by
-      simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
-      rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
-      simpa using ha }
+def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
+  toSubalgebra := S ⊔ star S
+  star_mem' := fun {a} ha => by
+    simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
+    rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
+    simpa using ha
 #align subalgebra.star_closure Subalgebra.starClosure
+
+theorem starClosure_toSubalgebra (S : Subalgebra R A) : S.starClosure.toSubalgebra = S ⊔ star S :=
+  rfl
 
 theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
     S₁.starClosure ≤ S₂ :=
@@ -412,7 +417,7 @@ end Subalgebra
 
 namespace StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -682,16 +687,16 @@ theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
 #align star_subalgebra.Inf_to_subalgebra StarSubalgebra.sInf_toSubalgebra
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 #align star_subalgebra.coe_infi StarSubalgebra.coe_iInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → StarSubalgebra R A} {x : A} :
+theorem mem_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align star_subalgebra.mem_infi StarSubalgebra.mem_iInf
 
 @[simp]
-theorem iInf_toSubalgebra {ι : Sort _} (S : ι → StarSubalgebra R A) :
+theorem iInf_toSubalgebra {ι : Sort*} (S : ι → StarSubalgebra R A) :
     (⨅ i, S i).toSubalgebra = ⨅ i, (S i).toSubalgebra :=
   SetLike.coe_injective <| by simp
 #align star_subalgebra.infi_to_subalgebra StarSubalgebra.iInf_toSubalgebra
@@ -721,7 +726,7 @@ namespace StarAlgHom
 
 open StarSubalgebra
 
-variable {F R A B : Type _} [CommSemiring R] [StarRing R]
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
@@ -791,6 +796,20 @@ protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : 
   toAlgHom := AlgHom.codRestrict f.toAlgHom S.toSubalgebra hf
   map_star' := fun x => Subtype.ext (map_star f x)
 
+@[simp]
+theorem coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
+    ↑(f.codRestrict S hf x) = f x :=
+  rfl
+
+@[simp]
+theorem subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
+    (hf : ∀ x : A, f x ∈ S) : S.subtype.comp (f.codRestrict S hf) = f :=
+  StarAlgHom.ext <| coe_codRestrict _ S hf
+
+theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
+    Function.Injective (StarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
+
 /-- Restriction of the codomain of a `StarAlgHom` to its range. -/
 def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=
   StarAlgHom.codRestrict f _ fun x => ⟨x, rfl⟩
@@ -808,7 +827,7 @@ end StarAlgHom
 
 section RestrictScalars
 
-variable (R : Type _) {S A B : Type _} [CommSemiring R]
+variable (R : Type*) {S A B : Type*} [CommSemiring R]
   [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
   [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
 

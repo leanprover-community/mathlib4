@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
-
-! This file was ported from Lean 3 source module topology.category.Top.limits.products
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+
+#align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Products and coproducts in the category of topological spaces
@@ -61,8 +58,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCatMax.{v, u}) : IsLimit (piFan �
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCatMax.{v, u}) :
-  ∏ α ≅ TopCat.of (∀ i, α i) :=
+def piIsoPi {ι : Type v} (α : ι → TopCatMax.{v, u}) : ∏ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
 #align Top.pi_iso_pi TopCat.piIsoPi
 
@@ -178,7 +174,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   lift := fun S : BinaryFan X Y => {
     toFun := fun s => (S.fst s, S.snd s)
     -- Porting note: continuity failed again here. Lean cannot infer
-    -- ContinuousMapClass (X ⟶  Y) X Y for X Y : TopCat which may be one of the problems
+    -- ContinuousMapClass (X ⟶ Y) X Y for X Y : TopCat which may be one of the problems
     continuous_toFun := (Continuous.prod_mk)
       (BinaryFan.fst S).continuous_toFun (BinaryFan.snd S).continuous_toFun }
   fac := by
@@ -328,8 +324,6 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, _⟩
-      simp only [Functor.map_comp]
-
       erw [Set.range_comp, ← eq_compl_iff_isCompl, coe_comp, coe_comp, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]

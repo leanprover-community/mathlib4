@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.group_with_zero
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.algebra.group_with_zero from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
 /-!
 # Topological group with zero
@@ -45,7 +42,7 @@ operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `Continuou
 -/
 
 
-variable {α β G₀ : Type _}
+variable {α β G₀ : Type*}
 
 section DivConst
 
@@ -83,7 +80,7 @@ end DivConst
 
 /-- A type with `0` and `Inv` such that `fun x ↦ x⁻¹` is continuous at all nonzero points. Any
 normed (semi)field has this property. -/
-class HasContinuousInv₀ (G₀ : Type _) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
+class HasContinuousInv₀ (G₀ : Type*) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
   /-- The map `fun x ↦ x⁻¹` is continuous at all nonzero points. -/
   continuousAt_inv₀ : ∀ ⦃x : G₀⦄, x ≠ 0 → ContinuousAt Inv.inv x
 #align has_continuous_inv₀ HasContinuousInv₀
@@ -331,7 +328,7 @@ theorem Filter.Tendsto.zpow₀ {f : α → G₀} {l : Filter α} {a : G₀} (hf 
   (continuousAt_zpow₀ _ m h).tendsto.comp hf
 #align filter.tendsto.zpow₀ Filter.Tendsto.zpow₀
 
-variable {X : Type _} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
+variable {X : Type*} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
 
 nonrec theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => f x ^ m) a :=

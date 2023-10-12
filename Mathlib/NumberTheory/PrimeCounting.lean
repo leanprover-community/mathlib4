@@ -2,17 +2,14 @@
 Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
-
-! This file was ported from Lean 3 source module number_theory.prime_counting
-! leanprover-community/mathlib commit 7fdd4f3746cb059edfdb5d52cba98f66fce418c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.Nth
+
+#align_import number_theory.prime_counting from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
 
 /-!
 # The Prime Counting Function
@@ -88,7 +85,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
       apply card_union_le
     _ ≤ π' k + ((Ico k (k + n)).filter Prime).card := by
       rw [primeCounting', count_eq_card_filter_range]
-    _ ≤ π' k + ((Ico k (k + n)).filter (coprime a)).card := by
+    _ ≤ π' k + ((Ico k (k + n)).filter (Coprime a)).card := by
       refine' add_le_add_left (card_le_of_subset _) k.primeCounting'
       simp only [subset_iff, and_imp, mem_filter, mem_Ico]
       intro p succ_k_le_p p_lt_n p_prime

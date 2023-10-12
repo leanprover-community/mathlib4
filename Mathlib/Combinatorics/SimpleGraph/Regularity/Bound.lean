@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.bound
-! leanprover-community/mathlib commit bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Order.Partition.Equipartition
+
+#align_import combinatorics.simple_graph.regularity.bound from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Numerical bounds for Szemerédi Regularity Lemma
@@ -35,7 +32,7 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 open Finset Fintype Function Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open BigOperators
 
@@ -58,14 +55,14 @@ theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
   zero_lt_mul_right <| by positivity
 #align szemeredi_regularity.step_bound_pos_iff SzemerediRegularity.stepBound_pos_iff
 
-alias stepBound_pos_iff ↔ _ stepBound_pos
+alias ⟨_, stepBound_pos⟩ := stepBound_pos_iff
 #align szemeredi_regularity.step_bound_pos SzemerediRegularity.stepBound_pos
 
 end SzemerediRegularity
 
 open SzemerediRegularity
 
-variable {α : Type _} [DecidableEq α] [Fintype α] {P : Finpartition (univ : Finset α)}
+variable {α : Type*} [DecidableEq α] [Fintype α] {P : Finpartition (univ : Finset α)}
   {u : Finset α} {ε : ℝ}
 
 local notation3 (prettyPrint := false)
@@ -230,7 +227,7 @@ theorem bound_pos : 0 < bound ε l :=
   (initialBound_pos ε l).trans_le <| initialBound_le_bound ε l
 #align szemeredi_regularity.bound_pos SzemerediRegularity.bound_pos
 
-variable {ι 𝕜 : Type _} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [DecidableRel r] {s t : Finset ι}
+variable {ι 𝕜 : Type*} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [DecidableRel r] {s t : Finset ι}
   {x : 𝕜}
 
 theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i in s, f i) / s.card) ^ 2)

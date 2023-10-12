@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed_space.ray
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.ray from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Rays in a real normed vector space
@@ -22,7 +19,7 @@ norms and `‖y‖ • x = ‖x‖ • y`.
 
 open Real
 
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type _}
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type _}
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 namespace SameRay
@@ -87,7 +84,7 @@ theorem sameRay_iff_inv_norm_smul_eq_of_ne (hx : x ≠ 0) (hy : y ≠ 0) :
     rwa [norm_ne_zero_iff]
 #align same_ray_iff_inv_norm_smul_eq_of_ne sameRay_iff_inv_norm_smul_eq_of_ne
 
-alias sameRay_iff_inv_norm_smul_eq_of_ne ↔ SameRay.inv_norm_smul_eq _
+alias ⟨SameRay.inv_norm_smul_eq, _⟩ := sameRay_iff_inv_norm_smul_eq_of_ne
 #align same_ray.inv_norm_smul_eq SameRay.inv_norm_smul_eq
 
 /-- Two vectors `x y` in a real normed space are on the ray if and only if one of them is zero or

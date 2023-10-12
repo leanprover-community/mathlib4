@@ -2,14 +2,11 @@
 Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module data.polynomial.lifts
-! leanprover-community/mathlib commit 63417e01fbc711beaf25fa73b6edb395c0cfddd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Monic
+
+#align_import data.polynomial.lifts from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
 /-!
 # Polynomials that lift

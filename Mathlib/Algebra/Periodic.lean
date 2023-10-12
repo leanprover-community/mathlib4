@@ -2,11 +2,6 @@
 Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
-
-! This file was ported from Lean 3 source module algebra.periodic
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Opposite
@@ -16,6 +11,8 @@ import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.periodic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Periodicity
@@ -38,7 +35,7 @@ period, periodic, periodicity, antiperiodic
 -/
 
 
-variable {α β γ : Type _} {f g : α → β} {c c₁ c₂ x : α}
+variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
 open Set BigOperators
 
@@ -96,7 +93,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 #align multiset.periodic_sum Multiset.periodic_sum
 
 @[to_additive]
-theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type _} {f : ι → α → β}
+theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
     (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i in s, f i) c :=
   s.prod_to_list f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
 #align finset.periodic_prod Finset.periodic_prod
@@ -194,7 +191,7 @@ theorem Periodic.const_sub [AddCommGroup α] (h : Periodic f c) (a : α) :
 #align function.periodic.const_sub Function.Periodic.const_sub
 
 theorem Periodic.sub_const [AddCommGroup α] (h : Periodic f c) (a : α) :
-    Periodic (fun x => f (x - a)) c :=  by
+    Periodic (fun x => f (x - a)) c := by
   simpa only [sub_eq_add_neg] using h.add_const (-a)
 #align function.periodic.sub_const Function.Periodic.sub_const
 

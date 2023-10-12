@@ -2,14 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
-
-! This file was ported from Lean 3 source module data.int.cast.basic
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
+
+#align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Cast of integers (additional theorems)
@@ -108,7 +106,7 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
-  | (m : ℕ), (n : ℕ) => by simp [← Int.ofNat_add, Nat.cast_add]
+  | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.ofNat_add]
   | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
     erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_iff_eq_add, add_assoc,

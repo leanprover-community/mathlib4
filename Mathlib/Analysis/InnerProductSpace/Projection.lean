@@ -2,11 +2,6 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.projection
-! leanprover-community/mathlib commit 0b7c740e25651db0ba63648fbae9f9d6f941e31b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
@@ -14,6 +9,8 @@ import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Data.IsROrC.Lemmas
 import Mathlib.Algebra.DirectSum.Decomposition
+
+#align_import analysis.inner_product_space.projection from "leanprover-community/mathlib"@"0b7c740e25651db0ba63648fbae9f9d6f941e31b"
 
 /-!
 # The orthogonal projection
@@ -30,7 +27,7 @@ each `u : E`, the point `reflection K u` to satisfy
 Basic API for `orthogonalProjection` and `reflection` is developed.
 
 Next, the orthogonal projection is used to prove a series of more subtle lemmas about the
-the orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
+orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
 defined in `Analysis.InnerProductSpace.Orthogonal`); the lemma
 `Submodule.sup_orthogonal_of_completeSpace`, stating that for a complete subspace `K` of `E` we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
@@ -38,8 +35,8 @@ defined in `Analysis.InnerProductSpace.Orthogonal`); the lemma
 ## References
 
 The orthogonal projection construction is adapted from
-*  [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
-*  [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
+* [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
+* [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
@@ -53,7 +50,7 @@ open LinearMap (ker range)
 
 open BigOperators Topology
 
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 
@@ -176,14 +173,14 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       exact sqrt_zero.symm
     have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert(@tendsto_const_nhds _ _ _ (8 * δ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      simp only [mul_zero]
     have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert(@tendsto_const_nhds _ _ _ (4 : ℝ) _).mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      simp only [mul_zero]
     have eq₂ :
         Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert this.mul tendsto_one_div_add_atTop_nhds_0_nat
-      simp only [MulZeroClass.mul_zero]
+      simp only [mul_zero]
     convert eq₁.add eq₂
     simp only [add_zero]
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
@@ -398,7 +395,7 @@ instance [HasOrthogonalProjection K] : HasOrthogonalProjection Kᗮ where
     exact K.le_orthogonal_orthogonal hwK
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjection K]
-    {E' : Type _} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
+    {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
     HasOrthogonalProjection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) where
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) (f.symm v) with ⟨w, hwK, hw⟩
@@ -406,7 +403,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjectio
     erw [← f.symm.inner_map_map, f.symm_apply_apply, map_sub, f.symm_apply_apply, hw u hu]
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [HasOrthogonalProjection K]
-    {E' : Type _} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
+    {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
     HasOrthogonalProjection (K.map f.toLinearIsometry) :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
@@ -490,7 +487,7 @@ def orthogonalProjection : E →L[𝕜] K :=
         have ho : ∀ w ∈ K, ⟪c • x - c • orthogonalProjectionFn K x, w⟫ = 0 := by
           intro w hw
           rw [← smul_sub, inner_smul_left, orthogonalProjectionFn_inner_eq_zero _ w hw,
-            MulZeroClass.mul_zero]
+            mul_zero]
         ext
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
@@ -583,7 +580,18 @@ theorem orthogonalProjection_eq_self_iff {v : E} : (orthogonalProjection K v : E
   · simp
 #align orthogonal_projection_eq_self_iff orthogonalProjection_eq_self_iff
 
-theorem LinearIsometry.map_orthogonalProjection {E E' : Type _} [NormedAddCommGroup E]
+@[simp]
+theorem orthogonalProjection_eq_zero_iff {v : E} : orthogonalProjection K v = 0 ↔ v ∈ Kᗮ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_orthogonalProjection_of_mem_orthogonal
+    (zero_mem _) ?_⟩
+  · simpa [h] using sub_orthogonalProjection_mem_orthogonal (K := K) v
+  · simpa
+
+@[simp]
+theorem ker_orthogonalProjection : LinearMap.ker (orthogonalProjection K) = Kᗮ := by
+  ext; exact orthogonalProjection_eq_zero_iff
+
+theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f.toLinearMap)]
     (x : E) : f (orthogonalProjection p x) = orthogonalProjection (p.map f.toLinearMap) (f x) := by
@@ -593,7 +601,7 @@ theorem LinearIsometry.map_orthogonalProjection {E E' : Type _} [NormedAddCommGr
   rw [← f.map_sub, f.inner_map_map, orthogonalProjection_inner_eq_zero x x' hx']
 #align linear_isometry.map_orthogonal_projection LinearIsometry.map_orthogonalProjection
 
-theorem LinearIsometry.map_orthogonalProjection' {E E' : Type _} [NormedAddCommGroup E]
+theorem LinearIsometry.map_orthogonalProjection' {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f)] (x : E) :
     f (orthogonalProjection p x) = orthogonalProjection (p.map f) (f x) :=
@@ -602,7 +610,7 @@ theorem LinearIsometry.map_orthogonalProjection' {E E' : Type _} [NormedAddCommG
 #align linear_isometry.map_orthogonal_projection' LinearIsometry.map_orthogonalProjection'
 
 /-- Orthogonal projection onto the `Submodule.map` of a subspace. -/
-theorem orthogonalProjection_map_apply {E E' : Type _} [NormedAddCommGroup E]
+theorem orthogonalProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] (x : E') :
     (orthogonalProjection (p.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x : E') =
@@ -747,6 +755,10 @@ theorem reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _)
 
 variable {K}
 
+theorem reflection_singleton_apply (u v : E) :
+    reflection (𝕜 ∙ u) v = 2 • (⟪u, v⟫ / ((‖u‖ : 𝕜) ^ 2)) • u - v := by
+  rw [reflection_apply, orthogonalProjection_singleton, ofReal_pow]
+
 /-- A point is its own reflection if and only if it is in the subspace. -/
 theorem reflection_eq_self_iff (x : E) : reflection K x = x ↔ x ∈ K := by
   rw [← orthogonalProjection_eq_self_iff, reflection_apply, sub_eq_iff_eq_add', ← two_smul 𝕜,
@@ -760,7 +772,7 @@ theorem reflection_mem_subspace_eq_self {x : E} (hx : x ∈ K) : reflection K x 
 #align reflection_mem_subspace_eq_self reflection_mem_subspace_eq_self
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
-theorem reflection_map_apply {E E' : Type _} [NormedAddCommGroup E] [NormedAddCommGroup E']
+theorem reflection_map_apply {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [HasOrthogonalProjection K] (x : E') :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x = f (reflection K (f.symm x)) := by
@@ -768,7 +780,7 @@ theorem reflection_map_apply {E E' : Type _} [NormedAddCommGroup E] [NormedAddCo
 #align reflection_map_apply reflection_map_apply
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
-theorem reflection_map {E E' : Type _} [NormedAddCommGroup E] [NormedAddCommGroup E']
+theorem reflection_map {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [HasOrthogonalProjection K] :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) = f.symm.trans ((reflection K).trans f) :=
@@ -926,7 +938,7 @@ theorem orthogonalProjection_orthogonalProjection_of_le {U V : Submodule 𝕜 E}
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on
 `(⨆ i, U i).topologicalClosure` along `atTop`. -/
-theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type _} [SemilatticeSup ι]
+theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type*} [SemilatticeSup ι]
     (U : ι → Submodule 𝕜 E) [∀ i, CompleteSpace (U i)] (hU : Monotone U) (x : E) :
     Filter.Tendsto (fun i => (orthogonalProjection (U i) x : E)) atTop
       (𝓝 (orthogonalProjection (⨆ i, U i).topologicalClosure x : E)) := by
@@ -954,7 +966,7 @@ theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type _
 
 /-- Given a monotone family `U` of complete submodules of `E` with dense span supremum,
 and a fixed `x : E`, the orthogonal projection of `x` on `U i` tends to `x` along `at_top`. -/
-theorem orthogonalProjection_tendsto_self [CompleteSpace E] {ι : Type _} [SemilatticeSup ι]
+theorem orthogonalProjection_tendsto_self [CompleteSpace E] {ι : Type*} [SemilatticeSup ι]
     (U : ι → Submodule 𝕜 E) [∀ t, CompleteSpace (U t)] (hU : Monotone U) (x : E)
     (hU' : ⊤ ≤ (⨆ t, U t).topologicalClosure) :
     Filter.Tendsto (fun t => (orthogonalProjection (U t) x : E)) atTop (𝓝 x) := by
@@ -1270,7 +1282,7 @@ end Orthogonal
 
 section OrthogonalFamily
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
 they provide an internal direct sum decomposition of `E`) if and only if their span has trivial
@@ -1331,7 +1343,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
         DFinsupp.single_eq_of_ne hij.symm]
       exact hV.isOrtho hij.symm x.prop
-  · simp_rw [map_add, DFinsupp.add_apply]
+  · simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.projection_direct_sum_coe_add_hom OrthogonalFamily.projection_directSum_coeAddHom
 

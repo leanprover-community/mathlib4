@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
 import Lean
-import Mathlib.Init.Logic
 import Mathlib.Tactic.Core
 
 /-!
@@ -64,6 +63,7 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
+  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
   let _ ← simpLocation ctx discharge? loc
   pure ()
 
@@ -72,10 +72,9 @@ Has a similar effect as `SplitIf.splitIfTarget?` or `SplitIf.splitIfLocalDecl?` 
 core Lean 4. We opt not to use those library functions so that we can better mimic
 the behavior of mathlib3's `split_ifs`.
 -/
-private def splitIf1 (cond: Expr) (hName : Name) (loc : Location) : TacticM Unit := do
-  let splitCases := liftMetaTactic fun mvarId ↦ do
-    let (s1, s2) ← mvarId.byCases cond hName
-    pure [s1.mvarId, s2.mvarId]
+private def splitIf1 (cond : Expr) (hName : Name) (loc : Location) : TacticM Unit := do
+  let splitCases :=
+    evalTactic (← `(tactic| by_cases $(mkIdent hName) : $(← Elab.Term.exprToSyntax cond)))
   andThenOnSubgoals splitCases (reduceIfsAt loc)
 
 /-- Pops off the front of the list of names, or generates a fresh name if the

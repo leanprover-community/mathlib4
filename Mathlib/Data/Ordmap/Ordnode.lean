@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.ordmap.ordnode
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
 import Mathlib.Init.Data.Nat.Bitwise
+
+#align_import data.ordmap.ordnode from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Ordered sets
@@ -66,6 +63,8 @@ ordered map, ordered set, data structure
 
 -/
 
+set_option autoImplicit true
+
 
 
 /- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
@@ -83,7 +82,7 @@ compile_inductive% Ordnode
 
 namespace Ordnode
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance : EmptyCollection (Ordnode α) :=
   ⟨nil⟩
@@ -179,7 +178,7 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
      repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
-def repr {α} [Repr α]  (o : Ordnode α) (n : ℕ) : Std.Format :=
+def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
   | node _ l x r =>
@@ -877,11 +876,11 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
   | x :: xs => fun s =>
     if s = 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
     else
-      match ofAscListAux₁ xs (s.shiftl 1) with
+      match ofAscListAux₁ xs (s <<< 1) with
       | (t, ⟨[], _⟩) => (t, ⟨[], Nat.zero_le _⟩)
       | (l, ⟨y :: ys, h⟩) =>
         have := Nat.le_succ_of_le h
-        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s.shiftl 1)
+        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
         (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
         termination_by ofAscListAux₁ l => l.length
 #align ordnode.of_asc_list_aux₁ Ordnode.ofAscListAux₁
@@ -893,7 +892,7 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
     match ofAscListAux₁ xs s with
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
-      ofAscListAux₂ ys (link l x r) (s.shiftl 1)
+      ofAscListAux₂ ys (link l x r) (s <<< 1)
       termination_by ofAscListAux₂ l => l.length
 #align ordnode.of_asc_list_aux₂ Ordnode.ofAscListAux₂
 

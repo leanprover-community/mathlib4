@@ -2,11 +2,6 @@
 Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
-
-! This file was ported from Lean 3 source module algebra.order.rearrangement
-! leanprover-community/mathlib commit b3f25363ae62cb169e72cd6b8b1ac97bacf21ca7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.Module
@@ -14,6 +9,8 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Tactic.Abel
+
+#align_import algebra.order.rearrangement from "leanprover-community/mathlib"@"b3f25363ae62cb169e72cd6b8b1ac97bacf21ca7"
 
 /-!
 # Rearrangement inequality
@@ -50,7 +47,7 @@ open Equiv Equiv.Perm Finset Function OrderDual
 
 open BigOperators
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 /-! ### Scalar multiplication versions -/
 

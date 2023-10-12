@@ -2,13 +2,10 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.plus
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
+
+#align_import category_theory.sites.plus from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -281,7 +278,6 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   suffices : ∀ X, IsIso ((J.toPlus P).app X)
   · apply NatIso.isIso_of_isIso_app
   intro X
-  dsimp
   suffices : IsIso (colimit.ι (J.diagram P X.unop) (op ⊤))
   · apply IsIso.comp_isIso
   suffices : ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f)

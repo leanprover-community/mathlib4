@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.holder
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+
+#align_import topology.metric_space.holder from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Hölder continuous functions
@@ -38,7 +35,7 @@ Hölder continuity, Lipschitz continuity
  -/
 
 
-variable {X Y Z : Type _}
+variable {X Y Z : Type*}
 
 open Filter Set
 
@@ -87,15 +84,15 @@ theorem holderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
   simp only [HolderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
 #align holder_on_with_one holderOnWith_one
 
-alias holderOnWith_one ↔ _ LipschitzOnWith.holderOnWith
+alias ⟨_, LipschitzOnWith.holderOnWith⟩ := holderOnWith_one
 #align lipschitz_on_with.holder_on_with LipschitzOnWith.holderOnWith
 
 @[simp]
 theorem holderWith_one {C : ℝ≥0} {f : X → Y} : HolderWith C 1 f ↔ LipschitzWith C f :=
-  holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitz_on_univ
+  holderOnWith_univ.symm.trans <| holderOnWith_one.trans lipschitzOn_univ
 #align holder_with_one holderWith_one
 
-alias holderWith_one ↔ _ LipschitzWith.holderWith
+alias ⟨_, LipschitzWith.holderWith⟩ := holderWith_one
 #align lipschitz_with.holder_with LipschitzWith.holderWith
 
 theorem holderWith_id : HolderWith 1 1 (id : X → X) :=

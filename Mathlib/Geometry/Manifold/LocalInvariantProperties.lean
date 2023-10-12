@@ -2,13 +2,10 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.local_invariant_properties
-! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.ChartedSpace
+
+#align_import geometry.manifold.local_invariant_properties from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-!
 # Local properties invariant under a groupoid
@@ -54,7 +51,7 @@ open Classical Manifold Topology
 
 open Set Filter TopologicalSpace
 
-variable {H M H' M' X : Type _}
+variable {H M H' M' X : Type*}
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
@@ -548,7 +545,7 @@ theorem liftProp_id (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
 theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Opens M} (hUV : U ≤ V)
     (f : V → M') (x : U) :
     LiftPropAt P f (Set.inclusion hUV x) ↔ LiftPropAt P (f ∘ Set.inclusion hUV : U → M') x := by
-  change (_ ∧ _) ↔ (_ ∧ _); congr! 1 -- Porting note: was `congrm _ ∧ _`
+  congrm ?_ ∧ ?_
   · simp [continuousWithinAt_univ,
       (TopologicalSpace.Opens.openEmbedding_of_le hUV).continuousAt_iff]
   · apply hG.congr_iff
@@ -657,7 +654,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGr
   rw [f.isLocalStructomorphWithinAt_iff hx]
   refine' imp_congr_right fun _ ↦ exists_congr fun e ↦ and_congr_right fun _ ↦ _
   refine' and_congr_right fun h2e ↦ _
-  rw [inter_eq_right_iff_subset.mpr (h2e.trans hs)]
+  rw [inter_eq_right.mpr (h2e.trans hs)]
 #align local_homeomorph.is_local_structomorph_within_at_iff' LocalHomeomorph.isLocalStructomorphWithinAt_iff'
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and
@@ -671,7 +668,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_source_iff {G : Struc
   f.isLocalStructomorphWithinAt_iff' Subset.rfl this
 #align local_homeomorph.is_local_structomorph_within_at_source_iff LocalHomeomorph.isLocalStructomorphWithinAt_source_iff
 
-variable {H₁ : Type _} [TopologicalSpace H₁] {H₂ : Type _} [TopologicalSpace H₂] {H₃ : Type _}
+variable {H₁ : Type*} [TopologicalSpace H₁] {H₂ : Type*} [TopologicalSpace H₂] {H₃ : Type*}
   [TopologicalSpace H₃] [ChartedSpace H₁ H₂] [ChartedSpace H₂ H₃] {G₁ : StructureGroupoid H₁}
   [HasGroupoid H₂ G₁] [ClosedUnderRestriction G₁] (G₂ : StructureGroupoid H₂) [HasGroupoid H₃ G₂]
 

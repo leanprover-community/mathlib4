@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.subsheaf
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.Tactic.CategoryTheory.Elementwise
+
+#align_import category_theory.sites.subsheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -32,7 +29,7 @@ We define the sub(pre)sheaf of a type valued presheaf.
   The descent of a map into a sheaf to the sheafification.
 - `CategoryTheory.GrothendieckTopology.imageSheaf` : The image sheaf of a morphism.
 - `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
-  `limits.image_factorization`.
+  `Limits.imageFactorization`.
 -/
 
 
@@ -97,8 +94,8 @@ instance : Mono G.ι :=
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
 @[simps]
-def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf
-    where app U x := ⟨x, h U x.prop⟩
+def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
+  app U x := ⟨x, h U x.prop⟩
 #align category_theory.grothendieck_topology.subpresheaf.hom_of_le CategoryTheory.GrothendieckTopology.Subpresheaf.homOfLe
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
@@ -146,7 +143,7 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
 
 @[reassoc (attr := simp)]
 theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
-  G.lift f hf ≫ G.ι = f := by
+    G.lift f hf ≫ G.ι = f := by
   ext
   rfl
 #align category_theory.grothendieck_topology.subpresheaf.lift_ι CategoryTheory.GrothendieckTopology.Subpresheaf.lift_ι
@@ -397,7 +394,7 @@ instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ TypeMax.{v, w}} (f : F ⟶ F'
       exact this (congr_arg Subtype.val e : _)
     · rintro ⟨_, ⟨x, rfl⟩⟩
       exact ⟨x, rfl⟩
-  apply  NatIso.isIso_of_isIso_app
+  apply NatIso.isIso_of_isIso_app
 
 /-- The image sheaf of a morphism between sheaves, defined to be the sheafification of
 `image_presheaf`. -/

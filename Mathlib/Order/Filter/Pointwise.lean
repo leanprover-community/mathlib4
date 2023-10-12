@@ -2,22 +2,19 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.filter.pointwise
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Ultrafilter
+
+#align_import order.filter.pointwise from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Pointwise operations on filters
 
 This file defines pointwise operations on filters. This is useful because usual algebraic operations
 distribute over pointwise operations. For example,
-* `(f₁ * f₂).map m  = f₁.map m * f₂.map m`
+* `(f₁ * f₂).map m = f₁.map m * f₂.map m`
 * `𝓝 (x * y) = 𝓝 x * 𝓝 y`
 
 ## Main declarations
@@ -60,7 +57,7 @@ filter multiplication, filter addition, pointwise addition, pointwise multiplica
 
 open Function Set Filter Pointwise
 
-variable {F α β γ δ ε : Type _}
+variable {F α β γ δ ε : Type*}
 
 namespace Filter
 
@@ -151,8 +148,8 @@ theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
 
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]
-def pureOneHom : OneHom α (Filter α) :=
-  ⟨pure, pure_one⟩
+def pureOneHom : OneHom α (Filter α) where
+  toFun := pure; map_one' := pure_one
 #align filter.pure_one_hom Filter.pureOneHom
 #align filter.pure_zero_hom Filter.pureZeroHom
 
@@ -393,8 +390,8 @@ protected theorem map_mul [MulHomClass F α β] (m : F) : (f₁ * f₂).map m = 
 
 /-- `pure` operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-def pureMulHom : α →ₙ* Filter α :=
-  ⟨pure, fun _ _ => pure_mul_pure.symm⟩
+def pureMulHom : α →ₙ* Filter α where
+  toFun := pure; map_mul' _ _ := pure_mul_pure.symm
 #align filter.pure_mul_hom Filter.pureMulHom
 #align filter.pure_add_hom Filter.pureAddHom
 
@@ -569,7 +566,7 @@ protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
-@[to_additive  existing]
+@[to_additive existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align filter.has_zpow Filter.instZPow

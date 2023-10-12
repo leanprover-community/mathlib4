@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.vector.basic
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
@@ -14,11 +9,15 @@ import Mathlib.Data.List.OfFn
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
+#align_import data.vector.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
+
 /-!
 # Additional theorems and definitions about the `Vector` type
 
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
+
+set_option autoImplicit true
 
 
 universe u
@@ -27,7 +26,7 @@ variable {n : ℕ}
 
 namespace Vector
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -97,27 +96,27 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 #noalign vector.length_coe
 
 @[simp]
-theorem toList_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
+theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
   by cases v; rfl
 #align vector.to_list_map Vector.toList_map
 
 @[simp]
-theorem head_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head := by
+theorem head_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, head_cons, head_cons]
 #align vector.head_map Vector.head_map
 
 @[simp]
-theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
+theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
     (v.map f).tail = v.tail.map f := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, tail_cons, tail_cons]
 #align vector.tail_map Vector.tail_map
 
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
-    v.get i = v.toList.get (Fin.castIso v.toList_length.symm i) :=
+    v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
-#align vector.nth_eq_nth_le Vector.get_eq_get
+#align vector.nth_eq_nth_le Vector.get_eq_getₓ
 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]
@@ -131,7 +130,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 #align vector.nth_repeat Vector.get_replicate
 
 @[simp]
-theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
+theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
   cases v; simp [Vector.map, get_eq_get]; rfl
 #align vector.nth_map Vector.get_map
@@ -161,7 +160,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 #align vector.of_fn_nth Vector.ofFn_get
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
-def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
+def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
@@ -301,7 +300,8 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse]
-  rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
+  rw [← Option.some_inj, Fin.cast, Fin.cast, ← List.get?_eq_get, ← List.get?_eq_get,
+    List.get?_reverse]
   · congr
     simp
   · simp
@@ -309,7 +309,7 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
 
 section Scan
 
-variable {β : Type _}
+variable {β : Type*}
 
 variable (f : β → α → β) (b : β)
 
@@ -393,7 +393,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -453,7 +453,7 @@ and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)
 
 This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
-def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
   -- porting notes: removed `generalizing`: already generalized
   induction' n with n ih
@@ -468,11 +468,11 @@ def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vecto
 -- check that the above works with `induction ... using`
 example (v : Vector α n) : True := by induction v using Vector.inductionOn <;> trivial
 
-variable {β γ : Type _}
+variable {β γ : Type*}
 
 /-- Define `C v w` by induction on a pair of vectors `v : Vector α n` and `w : Vector β n`. -/
 @[elab_as_elim]
-def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _}
+def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
@@ -492,7 +492,7 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _}
 /-- Define `C u v w` by induction on a triplet of vectors
 `u : Vector α n`, `v : Vector β n`, and `w : Vector γ b`. -/
 @[elab_as_elim]
-def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _}
+def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort*}
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
@@ -515,27 +515,28 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 #align vector.induction_on₃ Vector.inductionOn₃
 
 /-- Define `motive v` by case-analysis on `v : Vector α n` -/
-def casesOn {motive : ∀ {n}, Vector α n → Sort _} (v : Vector α m)
-    (nil : motive nil) (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
+def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
+    (nil : motive nil)
+    (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
     motive v :=
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n` -/
-def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort _} (v₁ : Vector α m) (v₂ : Vector β m)
-              (nil : motive nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
-                      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
-              motive v₁ v₂ :=
-    inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
+def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
+    (nil : motive nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
+      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
+    motive v₁ v₂ :=
+  inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n` -/
-def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort _} (v₁ : Vector α m)
-              (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
-                        → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
-              motive v₁ v₂ v₃ :=
-    inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
+def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
+    (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
+      → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
+    motive v₁ v₂ v₃ :=
+  inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
@@ -622,8 +623,6 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
 @[simp]
 theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
   cases v; cases i; simp [Vector.set, get_eq_get]
-  dsimp
-  exact List.get_set_eq _ _ _ _
 #align vector.nth_update_nth_same Vector.get_set_same
 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
@@ -631,13 +630,12 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
   cases v; cases i; cases j
   simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
   rw [List.get_set_of_ne]
-  · rfl
   · simpa using h
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by
-  split_ifs <;> try simp [*] <;> try rw [get_set_of_ne]; assumption
+  split_ifs <;> (try simp [*]); rwa [get_set_of_ne]
 #align vector.nth_update_nth_eq_if Vector.get_set_eq_if
 
 @[to_additive]
@@ -715,7 +713,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
   simp! [cast, *, functor_norm]
   · rfl
   · rw [Vector.traverse_def, ih]
-    simp [functor_norm, (. ∘ .)]
+    simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :

@@ -14,6 +14,8 @@ This implements the `trans` tactic, which can apply transitivity theorems with a
 variable argument.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 open Lean Meta Elab
 
@@ -50,8 +52,8 @@ def _root_.Trans.simple {a b c : α} [Trans r r r] : r a b → r b c → r a c :
 
 /-- Composition using the `Trans` class in the general case. -/
 def _root_.Trans.het {a : α} {b : β} {c : γ}
-  {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
-  [Trans r s t] : r a b → s b c → t a c := trans
+    {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
+    [Trans r s t] : r a b → s b c → t a c := trans
 
 
 open Lean.Elab.Tactic
@@ -68,7 +70,7 @@ def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
 
 /-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
 def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
-  match f  with
+  match f with
   | Expr.app rel x => do
     let check: Bool ← do
       try
@@ -146,7 +148,7 @@ elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
   let s ← saveState
   for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
-      ``HEq.trans |>.push ``HEq.trans  do
+      ``HEq.trans |>.push ``HEq.trans do
     try
       liftMetaTactic fun g ↦ do
         trace[Tactic.trans]"trying lemma {lem}"

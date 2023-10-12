@@ -2,17 +2,14 @@
 Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
-
-! This file was ported from Lean 3 source module algebra.geom_sum
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Parity
+
+#align_import algebra.geom_sum from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Partial sums of geometric series
@@ -88,8 +85,7 @@ theorem op_geom_sum (x : α) (n : ℕ) : op (∑ i in range n, x ^ i) = ∑ i in
 --porting note: linter suggested to change left hand side
 @[simp]
 theorem op_geom_sum₂ (x y : α) (n : ℕ) : ∑ i in range n, op y ^ (n - 1 - i) * op x ^ i =
-    ∑ i in range n, op y ^ i * op x ^ (n - 1 - i):= by
-  simp only [op_sum, op_mul, op_pow]
+    ∑ i in range n, op y ^ i * op x ^ (n - 1 - i) := by
   rw [← sum_range_reflect]
   refine' sum_congr rfl fun j j_in => _
   rw [mem_range, Nat.lt_iff_add_one_le] at j_in
@@ -143,7 +139,7 @@ theorem neg_one_geom_sum [Ring α] {n : ℕ} :
     · rw [(Nat.odd_iff_not_even.2 h).neg_one_pow, neg_add_self]
 #align neg_one_geom_sum neg_one_geom_sum
 
-theorem geom_sum₂_self {α : Type _} [CommRing α] (x : α) (n : ℕ) :
+theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
     ∑ i in range n, x ^ i * x ^ (n - 1 - i) = n * x ^ (n - 1) :=
   calc
     ∑ i in Finset.range n, x ^ i * x ^ (n - 1 - i) =
@@ -193,9 +189,23 @@ theorem geom_sum₂_mul [CommRing α] (x y : α) (n : ℕ) :
   (Commute.all x y).geom_sum₂_mul n
 #align geom_sum₂_mul geom_sum₂_mul
 
+theorem Commute.sub_dvd_pow_sub_pow [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
+    x - y ∣ x ^ n - y ^ n :=
+  Dvd.intro _ $ h.mul_geom_sum₂ _
+
 theorem sub_dvd_pow_sub_pow [CommRing α] (x y : α) (n : ℕ) : x - y ∣ x ^ n - y ^ n :=
-  Dvd.intro_left _ (geom_sum₂_mul x y n)
+  (Commute.all x y).sub_dvd_pow_sub_pow n
 #align sub_dvd_pow_sub_pow sub_dvd_pow_sub_pow
+
+theorem one_sub_dvd_one_sub_pow [Ring α] (x : α) (n : ℕ) :
+    1 - x ∣ 1 - x ^ n := by
+  conv_rhs => rw [← one_pow n]
+  exact (Commute.one_left x).sub_dvd_pow_sub_pow n
+
+theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
+    x - 1 ∣ x ^ n - 1 := by
+  conv_rhs => rw [← one_pow n]
+  exact (Commute.one_right x).sub_dvd_pow_sub_pow n
 
 theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   cases' le_or_lt y x with h h
@@ -322,7 +332,6 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
   have : (∑ k in Ico m n, MulOpposite.op y ^ (n - 1 - k) * MulOpposite.op x ^ k) =
       ∑ k in Ico m n, MulOpposite.op x ^ k * MulOpposite.op y ^ (n - 1 - k) := by
     refine' sum_congr rfl fun k _ => _
-    simp only [ge_iff_le, tsub_le_iff_right]
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
@@ -391,7 +400,7 @@ theorem geom_sum_inv [DivisionRing α] {x : α} (hx1 : x ≠ 1) (hx0 : x ≠ 0) 
   rw [add_comm _ (-x), add_assoc, add_assoc _ _ 1]
 #align geom_sum_inv geom_sum_inv
 
-variable {β : Type _}
+variable {β : Type*}
 
 theorem RingHom.map_geom_sum [Semiring α] [Semiring β] (x : α) (n : ℕ) (f : α →+* β) :
     f (∑ i in range n, x ^ i) = ∑ i in range n, f x ^ i := by simp [f.map_sum]

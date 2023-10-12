@@ -2,17 +2,14 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.finite.polynomial
-! leanprover-community/mathlib commit 5aa3c1de9f3c642eac76e11071c852766f220fd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+
+#align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
 
 /-!
 ## Polynomials over finite fields
@@ -21,7 +18,7 @@ import Mathlib.FieldTheory.Finite.Basic
 
 namespace MvPolynomial
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 /-- A polynomial over the integers is divisible by `n : ℕ`
 if and only if it is zero over `ZMod n`. -/
@@ -59,7 +56,7 @@ open scoped BigOperators Classical
 
 open Set LinearMap Submodule
 
-variable {K : Type _} {σ : Type _}
+variable {K : Type*} {σ : Type*}
 
 section Indicator
 
@@ -145,13 +142,13 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
   refine' ⟨∑ n : σ → K, e n • indicator n, _, _⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
-    simp only [LinearMap.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
-      LinearMap.map_smul]
+    simp only [_root_.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
+      map_smul]
     simp only [evalₗ_apply]
     trans
-    refine' Finset.sum_eq_single n (fun b _ h => _) _
-    · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-    · exact fun h => (h <| Finset.mem_univ n).elim
+    · refine' Finset.sum_eq_single n (fun b _ h => _) _
+      · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
+      · exact fun h => (h <| Finset.mem_univ n).elim
     · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
 #align mv_polynomial.map_restrict_dom_evalₗ MvPolynomial.map_restrict_dom_evalₗ
 

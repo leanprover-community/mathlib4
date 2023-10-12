@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.natural_transformation
-! leanprover-community/mathlib commit d047eb4671130d5998b185e49a0443a0d2e9b191
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.FullSubcategory
+
+#align_import category_theory.monoidal.natural_transformation from "leanprover-community/mathlib"@"d047eb4671130d5998b185e49a0443a0d2e9b191"
 
 /-!
 # Monoidal natural transformations
@@ -21,8 +18,6 @@ an additional compatibility relation with the tensorators:
 (Lax) monoidal functors between a fixed pair of monoidal categories
 themselves form a category.
 -/
-
-set_option autoImplicit false
 
 open CategoryTheory
 
@@ -131,8 +126,8 @@ attribute [local simp] NatTrans.naturality MonoidalNatTrans.unit MonoidalNatTran
 /-- The cartesian product of two monoidal natural transformations is monoidal. -/
 @[simps]
 def prod {F G : LaxMonoidalFunctor C D} {H K : LaxMonoidalFunctor C E} (α : MonoidalNatTrans F G)
-    (β : MonoidalNatTrans H K) : MonoidalNatTrans (F.prod' H) (G.prod' K)
-    where app X := (α.app X, β.app X)
+    (β : MonoidalNatTrans H K) : MonoidalNatTrans (F.prod' H) (G.prod' K) where
+  app X := (α.app X, β.app X)
 #align category_theory.monoidal_nat_trans.prod CategoryTheory.MonoidalNatTrans.prod
 
 end
@@ -238,8 +233,7 @@ def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
       erw [Iso.hom_inv_id_app, CategoryTheory.Functor.map_id]
       simp only [id_comp, CategoryTheory.Iso.inv_hom_id_app,
         CategoryTheory.IsIso.hom_inv_id_assoc]
-      erw [comp_id]
-      rfl }
+      erw [comp_id] }
 #align category_theory.monoidal_counit CategoryTheory.monoidalCounit
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalCounit F) :=

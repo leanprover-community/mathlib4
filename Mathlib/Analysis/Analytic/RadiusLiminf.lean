@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.analytic.radius_liminf
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+
+#align_import analysis.analytic.radius_liminf from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Representation of `FormalMultilinearSeries.radius` as a `liminf`
@@ -21,8 +18,8 @@ because this would create a circular dependency once we redefine `exp` using
 -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped Topology Classical BigOperators NNReal ENNReal
 
@@ -30,8 +27,7 @@ open Filter Asymptotics
 
 namespace FormalMultilinearSeries
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: see lean4#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
@@ -39,7 +35,7 @@ variable (p : FormalMultilinearSeries 𝕜 E F)
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses `ℝ≥0` and some
 coercions. -/
 theorem radius_eq_liminf :
-  p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
+    p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
   -- porting note: added type ascription to make elaborated statement match Lean 3 version
   have :
     ∀ (r : ℝ≥0) {n : ℕ},

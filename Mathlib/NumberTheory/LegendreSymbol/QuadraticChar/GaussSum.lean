@@ -2,14 +2,11 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.quadratic_char.gauss_sum
-! leanprover-community/mathlib commit 5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 import Mathlib.NumberTheory.LegendreSymbol.GaussSum
+
+#align_import number_theory.legendre_symbol.quadratic_char.gauss_sum from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
 /-!
 # Quadratic characters of finite fields
@@ -32,7 +29,7 @@ section SpecialValues
 
 open ZMod MulChar
 
-variable {F : Type _} [Field F] [Fintype F]
+variable {F : Type*} [Field F] [Fintype F]
 
 /-- The value of the quadratic character at `2` -/
 theorem quadraticChar_two [DecidableEq F] (hF : ringChar F ≠ 2) :
@@ -97,7 +94,7 @@ theorem FiniteField.isSquare_neg_two_iff :
 /-- The relation between the values of the quadratic character of one field `F` at the
 cardinality of another field `F'` and of the quadratic character of `F'` at the cardinality
 of `F`. -/
-theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Type _} [Field F']
+theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Type*} [Field F']
     [Fintype F'] [DecidableEq F'] (hF' : ringChar F' ≠ 2) (h : ringChar F' ≠ ringChar F) :
     quadraticChar F (Fintype.card F') =
     quadraticChar F' (quadraticChar F (-1) * Fintype.card F) := by
@@ -140,7 +137,7 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
     obtain ⟨n, _, hc⟩ := FiniteField.card F (ringChar F)
     have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ringChar_zmod_n p).symm
     conv => enter [1, 1, 2]; rw [hc, Nat.cast_pow, map_pow, hchar, map_ringChar]
-    simp only [zero_pow n.pos, MulZeroClass.mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
+    simp only [zero_pow n.pos, mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
   · rw [← Iff.not_left (@quadraticChar_neg_one_iff_not_isSquare F _ _ _ _),
       quadraticChar_odd_prime hF hp]
     exact hFp

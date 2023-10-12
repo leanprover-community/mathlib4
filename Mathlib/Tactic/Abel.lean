@@ -14,6 +14,8 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
 
@@ -212,13 +214,13 @@ theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smul c a = a') :
-  smul c (@term α _ n x a) = term n' x a' := by
+    (h₁ : c * n = n') (h₂ : smul c a = a') :
+    smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smulg c a = a') :
-  smulg c (@termg α _ n x a) = termg n' x a' := by
+    (h₁ : c * n = n') (h₂ : smulg c a = a') :
+    smulg c (@termg α _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
@@ -299,7 +301,7 @@ def evalSMul' (eval : Expr → M (NormalExpr × Expr))
   trace[abel] "Calling NormNum on {e₁}"
   let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
-  match Meta.NormNum.isIntLit e₁' with
+  match e₁'.int? with
   | some n => do
     let c ← read
     let (e₂', p₂) ← eval e₂

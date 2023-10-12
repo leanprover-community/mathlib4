@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.int.succ_pred
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.SuccPred
+
+#align_import data.int.succ_pred from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Successors and predecessors of integers
@@ -97,5 +94,5 @@ theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
   exact Int.coe_nat_inj'
 #align nat.cast_int_covby_iff Nat.cast_int_covby_iff
 
-alias Nat.cast_int_covby_iff ↔ _ Covby.cast_int
+alias ⟨_, Covby.cast_int⟩ := Nat.cast_int_covby_iff
 #align covby.cast_int Covby.cast_int

@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module number_theory.zsqrtd.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Algebra.Star.Unitary
+
+#align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-! # ℤ[√d]
 
@@ -204,10 +201,7 @@ instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
 instance commRing : CommRing (ℤ√d) := by
   refine
   { Zsqrtd.addGroupWithOne with
-    add := (· + ·)
-    zero := (0 : ℤ√d)
     mul := (· * ·)
-    one := 1
     npow := @npowRec (ℤ√d) ⟨1⟩ ⟨(· * ·)⟩,
     add_comm := ?_
     left_distrib := ?_
@@ -360,7 +354,7 @@ protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n 
 theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp only [add_zero, coe_int_re, MulZeroClass.zero_mul, mul_im, dvd_mul_right, and_self_iff,
+    simp only [add_zero, coe_int_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
       mul_re, mul_zero, coe_int_im]
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
@@ -1046,7 +1040,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
     { toFun := fun a => a.1 + a.2 * (r : R)
       map_zero' := by simp
       map_add' := fun a b => by
-        simp
+        simp only [add_re, Int.cast_add, add_im]
         ring
       map_one' := by simp
       map_mul' := fun a b => by
@@ -1074,9 +1068,9 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
     have h_inj : Function.Injective ((↑) : ℤ → R) := Int.cast_injective
     suffices lift r a.norm = 0 by
       simp only [coe_int_re, add_zero, lift_apply_apply, coe_int_im, Int.cast_zero,
-        MulZeroClass.zero_mul] at this
+        zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
-    rw [norm_eq_mul_conj, RingHom.map_mul, ha, MulZeroClass.zero_mul]
+    rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]
 #align zsqrtd.lift_injective Zsqrtd.lift_injective
 
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid

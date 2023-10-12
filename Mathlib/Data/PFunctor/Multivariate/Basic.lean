@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfunctor.multivariate.basic
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Data.PFunctor.Univariate.Basic
+
+#align_import data.pfunctor.multivariate.basic from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Multivariate polynomial functors.
@@ -107,7 +104,7 @@ theorem const.get_map (f : α ⟹ β) (x : (const n A).Obj α) : const.get (f <$
 #align mvpfunctor.const.get_map MvPFunctor.const.get_map
 
 @[simp]
-theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := by rfl
+theorem const.get_mk (x : A) : const.get (const.mk n x : (const n A).Obj α) = x := rfl
 #align mvpfunctor.const.get_mk MvPFunctor.const.get_mk
 
 @[simp]
@@ -244,7 +241,7 @@ def last : PFunctor where
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- append arrows of a polynomial functor application -/
 @[reducible]
-def appendContents {α : TypeVec n} {β : Type _} {a : P.A} (f' : P.drop.B a ⟹ α)
+def appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P.B a ⟹ (α ::: β) :=
   splitFun f' f
 #align mvpfunctor.append_contents MvPFunctor.appendContents

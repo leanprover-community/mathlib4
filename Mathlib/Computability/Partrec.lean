@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.partrec
-! leanprover-community/mathlib commit 9ee02c6c2208fd7795005aa394107c0374906cca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Primrec
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.PFun
+
+#align_import computability.partrec from "leanprover-community/mathlib"@"9ee02c6c2208fd7795005aa394107c0374906cca"
 
 /-!
 # The partial recursive functions
@@ -227,7 +224,8 @@ theorem ppred : Partrec fun n => ppred n :=
         eq_none_iff.2 fun a ⟨⟨m, h, _⟩, _⟩ => by
           simp [show 0 ≠ m.succ by intro h; injection h] at h
     · refine' eq_some_iff.2 _
-      simp
+      simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_True, mem_some_iff,
+        Bool.false_eq_decide_iff, true_and]
       intro m h
       simp [ne_of_gt h]
 #align nat.partrec.ppred Nat.Partrec.ppred
@@ -275,7 +273,7 @@ protected theorem Computable₂.partrec₂ {α β σ} [Primcodable α] [Primcoda
 
 namespace Computable
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -423,7 +421,7 @@ end Computable
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -495,7 +493,7 @@ end Partrec
 
 namespace Partrec₂
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -522,7 +520,7 @@ end Partrec₂
 
 namespace Computable
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -540,7 +538,7 @@ end Computable
 
 namespace Computable₂
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -558,7 +556,7 @@ end Computable₂
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -626,7 +624,7 @@ theorem Vector.mOfFn_part_some {α n} :
 
 namespace Computable
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -759,7 +757,7 @@ end Computable
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 

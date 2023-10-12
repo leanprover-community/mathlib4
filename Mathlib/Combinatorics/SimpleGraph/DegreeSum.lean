@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.degree_sum
-! leanprover-community/mathlib commit 90659cbe25e59ec302e2fb92b00e9732160cc620
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Parity
+
+#align_import combinatorics.simple_graph.degree_sum from "leanprover-community/mathlib"@"90659cbe25e59ec302e2fb92b00e9732160cc620"
 
 /-!
 # Degree-sum formula and handshaking lemma
@@ -123,7 +120,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even (univ.filter fun v => Odd (G.degree v)).card := by
   classical
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
-    simp only [ZMod.nat_cast_self, MulZeroClass.zero_mul, Nat.cast_mul] at h
+    simp only [ZMod.nat_cast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
     rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
     · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne.def] at h

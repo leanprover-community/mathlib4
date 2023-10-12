@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module linear_algebra.adic_completion
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.JacobsonIdeal
+
+#align_import linear_algebra.adic_completion from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -33,11 +30,11 @@ with respect to an ideal `I`:
 
 open Submodule
 
-variable {R : Type _} [CommRing R] (I : Ideal R)
+variable {R : Type*} [CommRing R] (I : Ideal R)
 
-variable (M : Type _) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddCommGroup M] [Module R M]
 
-variable {N : Type _} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddCommGroup N] [Module R N]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
 class IsHausdorff : Prop where
@@ -88,7 +85,6 @@ def Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 
-set_option maxHeartbeats 700000 in
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -216,7 +212,7 @@ def of : M →ₗ[R] adicCompletion I M where
   map_smul' _ _ := rfl
 #align adic_completion.of adicCompletion.of
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 300000 in
 @[simp]
 theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
   rfl
@@ -239,7 +235,7 @@ theorem eval_apply (n : ℕ) (f : adicCompletion I M) : eval I M n f = f.1 n :=
   rfl
 #align adic_completion.eval_apply adicCompletion.eval_apply
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 300000 in
 theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ _ x :=
   rfl
 #align adic_completion.eval_of adicCompletion.eval_of

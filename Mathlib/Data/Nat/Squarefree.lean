@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module data.nat.squarefree
-! leanprover-community/mathlib commit 3c1368cac4abd5a5cbe44317ba7e87379d51ed88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Squarefree
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.RingTheory.Int.Basic
+
+#align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
 /-!
 # Lemmas about squarefreeness of natural numbers
@@ -33,6 +30,13 @@ theorem squarefree_iff_nodup_factors {n : ℕ} (h0 : n ≠ 0) : Squarefree n ↔
   rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0, Nat.factors_eq]
   simp
 #align nat.squarefree_iff_nodup_factors Nat.squarefree_iff_nodup_factors
+
+end Nat
+
+theorem Squarefree.nodup_factors {n : ℕ} (hn : Squarefree n) : n.factors.Nodup :=
+  (Nat.squarefree_iff_nodup_factors hn.ne_zero).mp hn
+
+namespace Nat
 
 theorem squarefree_iff_prime_squarefree {n : ℕ} : Squarefree n ↔ ∀ x, Prime x → ¬x * x ∣ n :=
   squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible ⟨_, prime_two⟩
@@ -117,7 +121,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
         lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt <| Nat.div_le_self _ _) k) this
         if k ∣ n' then some k else minSqFacAux n' (k + 2)
       else minSqFacAux n (k + 2)
-termination_by  _ n k => sqrt n + 2 - k
+termination_by _ n k => sqrt n + 2 - k
 #align nat.min_sq_fac_aux Nat.minSqFacAux
 
 /-- Returns the smallest prime factor `p` of `n` such that `p^2 ∣ n`, or `none` if there is no
@@ -249,13 +253,14 @@ theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none :
 instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
---Porting note: norm_num now cannot close the first subgoal
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors]
-  · rw [Nat.factors_prime prime_two]
-    exact List.nodup_singleton 2
-  · norm_num
+  rw [squarefree_iff_nodup_factors] <;> norm_num
 #align nat.squarefree_two Nat.squarefree_two
+
+theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
+    n.divisors.filter Squarefree = n.divisors :=
+  Finset.ext fun d => ⟨@Finset.filter_subset _ _ _ _ d, fun hd =>
+    Finset.mem_filter.mpr ⟨hd, hn.squarefree_of_dvd (Nat.dvd_of_mem_divisors hd) ⟩⟩
 
 open UniqueFactorizationMonoid
 
@@ -281,7 +286,6 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
         rw [Ne.def, Multiset.prod_eq_zero_iff]
-        simp only [exists_prop, id.def, exists_eq_right]
         intro con
         apply
           not_irreducible_zero
@@ -313,7 +317,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
 
 open BigOperators
 
-theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type _} [AddCommMonoid α]
+theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [AddCommMonoid α]
     {f : ℕ → α} :
     ∑ i in n.divisors.filter Squarefree, f i =
       ∑ i in (UniqueFactorizationMonoid.normalizedFactors n).toFinset.powerset, f i.val.prod := by
@@ -364,23 +368,27 @@ theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefre
     exact ⟨a, b, h₁, h₂⟩
 #align nat.sq_mul_squarefree Nat.sq_mul_squarefree
 
-/-- `squarefree` is multiplicative. Note that the → direction does not require `hmn`
-and generalizes to arbitrary commutative monoids. See `squarefree.of_mul_left` and
-`squarefree.of_mul_right` above for auxiliary lemmas. -/
-theorem squarefree_mul {m n : ℕ} (hmn : m.coprime n) :
+/-- `Squarefree` is multiplicative. Note that the → direction does not require `hmn`
+and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` and
+`Squarefree.of_mul_right` above for auxiliary lemmas. -/
+theorem squarefree_mul {m n : ℕ} (hmn : m.Coprime n) :
     Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
   simp only [squarefree_iff_prime_squarefree, ← sq, ← forall_and]
   refine' ball_congr fun p hp => _
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
 
-theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.coprime n :=
+theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.Coprime n :=
   coprime_of_dvd fun p hp hm hn => squarefree_iff_prime_squarefree.mp h p hp (mul_dvd_mul hm hn)
 
 theorem squarefree_mul_iff {m n : ℕ} :
-    Squarefree (m * n) ↔ m.coprime n ∧ Squarefree m ∧ Squarefree n :=
+    Squarefree (m * n) ↔ m.Coprime n ∧ Squarefree m ∧ Squarefree n :=
   ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
     fun h => (squarefree_mul h.1).mpr h.2⟩
+
+theorem prod_factors_toFinset_of_squarefree {n : ℕ} (hn : Squarefree n) :
+    ∏ p in n.factors.toFinset, p = n := by
+  rw [List.prod_toFinset _ hn.nodup_factors, List.map_id'', Nat.prod_factors hn.ne_zero]
 
 end Nat
 

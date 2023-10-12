@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.mv_polynomial.counit
-! leanprover-community/mathlib commit abb3121f210743a930dea73cd766d988079bdf8b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Basic
+
+#align_import data.mv_polynomial.counit from "leanprover-community/mathlib"@"abb3121f210743a930dea73cd766d988079bdf8b"
 
 /-!
 ## Counit morphisms for multivariate polynomials
@@ -32,7 +29,7 @@ namespace MvPolynomial
 
 open Function
 
-variable (A B R : Type _) [CommSemiring A] [CommSemiring B] [CommRing R] [Algebra A B]
+variable (A B R : Type*) [CommSemiring A] [CommSemiring B] [CommRing R] [Algebra A B]
 
 /-- `MvPolynomial.ACounit A B` is the natural surjective algebra homomorphism
 `MvPolynomial B A →ₐ[A] B` obtained by `X a ↦ a`.

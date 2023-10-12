@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jannis Limperg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
-
-! This file was ported from Lean 3 source module data.list.indexes
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
+
+#align_import data.list.indexes from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Lemmas about List.*Idx functions.
@@ -86,12 +83,12 @@ protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (
   · cases' l₁ with head tail
     · rfl
     · simp only [List.oldMapIdxCore, List.append_eq, length_cons, cons_append,cons.injEq, true_and]
-      suffices : n + Nat.succ (length tail) = n + 1 + tail.length
-      { rw [this]
+      suffices n + Nat.succ (length tail) = n + 1 + tail.length by
+        rw [this]
         apply ih (n + 1) _ _ _
         simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
-        simp only [length_append, h] }
-      { rw [Nat.add_assoc]; simp only [Nat.add_comm] }
+        simp only [length_append, h]
+      rw [Nat.add_assoc]; simp only [Nat.add_comm]
 
 -- Porting note: new theorem.
 protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
@@ -158,8 +155,8 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     · contradiction
     · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, zero_add, zipWith_map_left]
       rw [ih]
-      suffices : (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ)
-      rw [this]
+      suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
+        rw [this]
       funext n' a
       simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
       simp only [length_cons, Nat.succ.injEq] at e; exact e
@@ -170,7 +167,7 @@ theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
   induction' l with hd tl hl generalizing f
   · rfl
   · rw [List.oldMapIdx, List.oldMapIdxCore, List.oldMapIdxCore_eq, hl]
-    simp [enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
+    simp [map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
 #align list.map_with_index_eq_enum_map List.mapIdx_eq_enum_map
 
 @[simp]
@@ -178,6 +175,7 @@ theorem mapIdx_cons {α β} (l : List α) (f : ℕ → α → β) (a : α) :
     mapIdx f (a :: l) = f 0 a :: mapIdx (fun i ↦ f (i + 1)) l := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith,
     range_succ_eq_map, zipWith_map_left]
+  rfl
 #align list.map_with_index_cons List.mapIdx_cons
 
 theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :

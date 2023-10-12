@@ -2,21 +2,17 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.hom.equiv.units.basic
-! leanprover-community/mathlib commit a95b16cbade0f938fc24abd05412bde1e84bab9b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Units
+
+#align_import algebra.hom.equiv.units.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
 
 /-!
 # Multiplicative and additive equivalence acting on units.
 -/
 
-variable {F α β A B M N P Q G H : Type _}
+variable {F α β A B M N P Q G H : Type*}
 
 /-- A group is isomorphic to its group of units. -/
 @[to_additive "An additive group is isomorphic to its group of additive units"]
@@ -207,8 +203,7 @@ theorem divLeft_eq_inv_trans_mulLeft (a : G) :
 
 /-- A version of `Equiv.mulRight a⁻¹ b` that is defeq to `b / a`. -/
 @[to_additive (attr := simps) " A version of `Equiv.addRight (-a) b` that is defeq to `b - a`. "]
-protected def divRight (a : G) : G ≃
-      G where
+protected def divRight (a : G) : G ≃ G where
   toFun b := b / a
   invFun b := b * a
   left_inv b := by simp [div_eq_mul_inv]
@@ -238,7 +233,7 @@ end Equiv
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
 @[to_additive (attr := simps apply)
   "When the `AddGroup` is commutative, `Equiv.neg` is an `AddEquiv`."]
-def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
+def MulEquiv.inv (G : Type*) [DivisionCommMonoid G] : G ≃* G :=
   { Equiv.inv G with toFun := Inv.inv, invFun := Inv.inv, map_mul' := mul_inv }
 #align mul_equiv.inv MulEquiv.inv
 #align add_equiv.neg AddEquiv.neg
@@ -246,7 +241,7 @@ def MulEquiv.inv (G : Type _) [DivisionCommMonoid G] : G ≃* G :=
 #align add_equiv.neg_apply AddEquiv.neg_apply
 
 @[to_additive (attr := simp)]
-theorem MulEquiv.inv_symm (G : Type _) [DivisionCommMonoid G] :
+theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.monoidal
-! leanprover-community/mathlib commit 0caf3701139ef2e69c215717665361cda205a90b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Functor.InvIsos
+
+#align_import category_theory.closed.monoidal from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
 /-!
 # Closed monoidal categories
@@ -304,8 +301,8 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
 noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
-    [h : MonoidalClosed D] : MonoidalClosed C
-    where closed X :=
+    [h : MonoidalClosed D] : MonoidalClosed C where
+  closed X :=
     { isAdj := by
         haveI q : Closed (F.obj X) := inferInstance
         haveI : IsLeftAdjoint (tensorLeft (F.obj X)) := q.isAdj

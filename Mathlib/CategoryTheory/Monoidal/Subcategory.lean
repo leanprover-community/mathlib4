@@ -2,17 +2,15 @@
 Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module category_theory.monoidal.subcategory
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Linear
+import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Closed.Monoidal
+
+#align_import category_theory.monoidal.subcategory from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Full monoidal subcategories
@@ -54,24 +52,22 @@ variable [MonoidalPredicate P]
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
-instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
-  tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  tensorHom := @fun X₁ Y₁ X₂ Y₂ f g => by
-    change X₁.1 ⊗ X₂.1 ⟶ Y₁.1 ⊗ Y₂.1
-    change X₁.1 ⟶ Y₁.1 at f; change X₂.1 ⟶ Y₂.1 at g; exact f ⊗ g
-  tensorUnit' := ⟨𝟙_ C, prop_id⟩
-  associator X Y Z :=
-    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
-      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
-  leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
-  rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
-  tensor_id X Y := tensor_id X.1 Y.1
-  tensor_comp f₁ f₂ g₁ g₂ := @tensor_comp C _ _ _ _ _ _ _ _ f₁ f₂ g₁ g₂
-  associator_naturality f₁ f₂ f₃ := @associator_naturality C _ _ _ _ _ _ _ _ f₁ f₂ f₃
-  leftUnitor_naturality f := @leftUnitor_naturality C _ _ _ _ f
-  rightUnitor_naturality f := @rightUnitor_naturality C _ _ _ _ f
-  pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
-  triangle X Y := triangle X.1 Y.1
+instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
+  Monoidal.induced (fullSubcategoryInclusion P)
+    { tensorObj := fun X Y => ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
+      μIsoSymm := fun X Y => eqToIso rfl
+      whiskerLeft := fun X _ _ f ↦ X.1 ◁ f
+      whiskerRight := @fun X₁ X₂ (f : X₁.1 ⟶ X₂.1) Y ↦ (f ▷ Y.1 :)
+      tensorHom := fun f g => f ⊗ g
+      tensorUnit' := ⟨𝟙_ C, prop_id⟩
+      εIsoSymm := eqToIso rfl
+      associator := fun X Y Z =>
+        ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
+          inv_hom_id (α_ X.1 Y.1 Z.1)⟩
+      leftUnitor := fun X =>
+        ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
+      rightUnitor := fun X =>
+        ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩ }
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
@@ -105,7 +101,7 @@ instance fullMonoidalSubcategoryInclusion_additive :
 instance [MonoidalPreadditive C] : MonoidalPreadditive (FullSubcategory P) :=
   monoidalPreadditive_of_faithful (fullMonoidalSubcategoryInclusion P)
 
-variable (R : Type _) [Ring R] [Linear R C]
+variable (R : Type*) [Ring R] [Linear R C]
 
 instance fullMonoidalSubcategoryInclusion_linear :
     (fullMonoidalSubcategoryInclusion P).toFunctor.Linear R :=
@@ -119,6 +115,8 @@ end
 
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
+-- needed for `aesop_cat`
+attribute [simp] FullSubcategory.comp_def FullSubcategory.id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
@@ -127,6 +125,7 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
   toFunctor := FullSubcategory.map h
   ε := 𝟙 _
   μ X Y := 𝟙 _
+
 #align category_theory.monoidal_category.full_monoidal_subcategory.map CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map
 
 instance fullMonoidalSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
@@ -228,8 +227,8 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           counit :=
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
-          left_triangle := by ext Y; simp; exact ihom.ev_coev X.1 Y.1
-          right_triangle := by ext Y; simp; exact ihom.coev_ev X.1 Y.1 } } }
+          left_triangle := by ext Y; simp
+          right_triangle := by ext Y; simp } } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]

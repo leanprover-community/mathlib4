@@ -2,15 +2,12 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.bool.basic
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
+
+#align_import data.bool.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Booleans
@@ -22,6 +19,8 @@ relation to decidable propositions.
 bool, boolean, Bool, De Morgan
 
 -/
+
+set_option autoImplicit true
 
 namespace Bool
 
@@ -136,7 +135,7 @@ theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
 theorem cond_not {α} (b : Bool) (t e : α) : cond (!b) t e = cond b e t := by cases b <;> rfl
 #align bool.cond_bnot Bool.cond_not
 
-theorem not_ne_id : not ≠ id := fun h ↦ ff_ne_tt <| congrFun h true
+theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
 theorem coe_bool_iff : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
@@ -401,8 +400,8 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 #align bool.of_nat_to_nat Bool.ofNat_toNat
 
 @[simp]
-theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
-  ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
+theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
+  ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
     exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 #align bool.injective_iff Bool.injective_iff

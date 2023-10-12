@@ -2,11 +2,6 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module number_theory.ADE_inequality
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.PNat.Interval
@@ -14,6 +9,8 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
+
+#align_import number_theory.ADE_inequality from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`
@@ -201,7 +198,6 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
-  simp at H
   have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
     assumption_mod_cast
@@ -219,7 +215,6 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   have h6 : (0 : ℚ) < 6 := by norm_num
   contrapose! H
   rw [sumInv_pqr]
-  simp at H
   have hr: (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv _ h6]
     assumption_mod_cast

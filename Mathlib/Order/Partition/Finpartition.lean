@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module order.partition.finpartition
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.SupIndep
+
+#align_import order.partition.finpartition from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Finite partitions
@@ -59,7 +56,7 @@ the literature and turn the order around?
 
 open BigOperators Finset Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A finite partition of `a : α` is a pairwise disjoint finite set of elements whose supremum is
 `a`. We forbid `⊥` as a part. -/
@@ -105,7 +102,7 @@ def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.Sup
 @[simps]
 def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts ⊆ P.parts)
     (sup_parts : parts.sup id = b) : Finpartition b :=
-  { parts :=parts
+  { parts := parts
     supIndep := P.supIndep.subset subset
     supParts := sup_parts
     not_bot_mem := fun h ↦ P.not_bot_mem (subset h) }

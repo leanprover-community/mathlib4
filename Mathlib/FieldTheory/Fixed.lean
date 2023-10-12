@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module field_theory.fixed
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.Tower
+
+#align_import field_theory.fixed from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Fixed field under a group action.

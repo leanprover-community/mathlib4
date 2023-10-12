@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
 import Lean
+import Mathlib.Tactic.Basic
 
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
@@ -15,7 +16,7 @@ open Lean.Meta
 namespace Lean.Elab.Tactic
 
 /-- Derives `Inhabited α` from `Nonempty α` with `Classical.choice`-/
-noncomputable def nonempty_to_inhabited (α : Sort _) (_ : Nonempty α) : Inhabited α :=
+noncomputable def nonempty_to_inhabited (α : Sort*) (_ : Nonempty α) : Inhabited α :=
   Inhabited.mk (Classical.ofNonempty)
 
 /-- Derives `Inhabited α` from `Nonempty α` without `Classical.choice`

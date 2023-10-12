@@ -3,17 +3,14 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
-! This file was ported from Lean 3 source module data.finset.sym
-! leanprover-community/mathlib commit 02ba8949f486ebecf93fe7460f1ed0564b5e442c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
-
 [`data.finset.sym`@`98e83c3d541c77cdb7da20d79611a780ff8e7d90`..`02ba8949f486ebecf93fe7460f1ed0564b5e442c`](https://leanprover-community.github.io/mathlib-port-status/file/data/finset/sym?range=98e83c3d541c77cdb7da20d79611a780ff8e7d90..02ba8949f486ebecf93fe7460f1ed0564b5e442c)
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.Sym.Sym2
+
+#align_import data.finset.sym from "leanprover-community/mathlib"@"02ba8949f486ebecf93fe7460f1ed0564b5e442c"
 
 /-!
 # Symmetric powers of a finset
@@ -35,7 +32,7 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 
 namespace Finset
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} {a b : α}
+variable {α : Type*} [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem isDiag_mk'_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag ⟦a⟧ :=
   (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
@@ -81,7 +78,7 @@ theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   rw [Finset.sym2, Nonempty.image_iff, nonempty_product, and_self_iff]
 #align finset.sym2_nonempty Finset.sym2_nonempty
 
-alias sym2_nonempty ↔ _ nonempty.sym2
+alias ⟨_, nonempty.sym2⟩ := sym2_nonempty
 #align finset.nonempty.sym2 Finset.nonempty.sym2
 
 -- Porting note: attribute does not exist

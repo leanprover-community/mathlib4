@@ -2,19 +2,17 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
-
-! This file was ported from Lean 3 source module algebra.category.Module.monoidal.closed
-! leanprover-community/mathlib commit 74403a3b2551b0970855e14ef5e8fd0d6af1bfc2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+
+#align_import algebra.category.Module.monoidal.closed from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
 
 /-!
 # The monoidal closed structure on `Module R`.
 -/
 
+suppress_compilation
 
 universe v w x u
 
@@ -68,7 +66,7 @@ open MonoidalCategory
 -- I can't seem to express the function coercion here without writing `@FunLike.coe`.
 @[simp]
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
-    @FunLike.coe _ _ _ LinearMap.instFunLikeLinearMap
+    @FunLike.coe _ _ _ LinearMap.instFunLike
       ((MonoidalClosed.curry f : N →ₗ[R] M →ₗ[R] P) y) x = f (x ⊗ₜ[R] y) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -78,7 +76,7 @@ set_option linter.uppercaseLean3 false in
 theorem monoidalClosed_uncurry
     {M N P : ModuleCat.{u} R} (f : N ⟶ M ⟶[ModuleCat.{u} R] P) (x : M) (y : N) :
     MonoidalClosed.uncurry f (x ⊗ₜ[R] y) =
-      @FunLike.coe _ _ _ LinearMap.instFunLikeLinearMap (f y) x :=
+      @FunLike.coe _ _ _ LinearMap.instFunLike (f y) x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_uncurry ModuleCat.monoidalClosed_uncurry

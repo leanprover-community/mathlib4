@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.set.countable
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Equiv.List
+
+#align_import data.set.countable from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 # Countable sets
@@ -46,7 +43,7 @@ theorem to_countable (s : Set α) [Countable s] : s.Countable :=
 #align set.to_countable Set.to_countable
 
 /-- Restate `Set.Countable` as a `Countable` instance. -/
-alias countable_coe_iff ↔ _root_.Countable.to_set Countable.to_subtype
+alias ⟨_root_.Countable.to_set, Countable.to_subtype⟩ := countable_coe_iff
 #align countable.to_set Countable.to_set
 #align set.countable.to_subtype Set.Countable.to_subtype
 
@@ -109,7 +106,7 @@ protected theorem countable_iff_exists_surjective {s : Set α} (hs : s.Nonempty)
   countable_coe_iff.symm.trans <| @countable_iff_exists_surjective s hs.to_subtype
 #align set.countable_iff_exists_surjective Set.countable_iff_exists_surjective
 
-alias Set.countable_iff_exists_surjective ↔ Countable.exists_surjective _
+alias ⟨Countable.exists_surjective, _⟩ := Set.countable_iff_exists_surjective
 #align set.countable.exists_surjective Set.Countable.exists_surjective
 
 theorem countable_univ [Countable α] : (univ : Set α).Countable :=
@@ -208,10 +205,10 @@ theorem Countable.sUnion_iff {s : Set (Set α)} (hs : s.Countable) :
     (⋃₀ s).Countable ↔ ∀ a ∈ s, (a : _).Countable := by rw [sUnion_eq_biUnion, hs.biUnion_iff]
 #align set.countable.sUnion_iff Set.Countable.sUnion_iff
 
-alias Countable.biUnion_iff ↔ _ Countable.biUnion
+alias ⟨_, Countable.biUnion⟩ := Countable.biUnion_iff
 #align set.countable.bUnion Set.Countable.biUnion
 
-alias Countable.sUnion_iff ↔ _ Countable.sUnion
+alias ⟨_, Countable.sUnion⟩ := Countable.sUnion_iff
 #align set.countable.sUnion Set.Countable.sUnion
 
 @[simp]
@@ -231,7 +228,7 @@ theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Co
   simp only [insert_eq, countable_union, countable_singleton, true_and_iff]
 #align set.countable_insert Set.countable_insert
 
-theorem Countable.insert {s : Set α} (a : α) (h : s.Countable) : (insert a s).Countable :=
+protected theorem Countable.insert {s : Set α} (a : α) (h : s.Countable) : (insert a s).Countable :=
   countable_insert.2 h
 #align set.countable.insert Set.Countable.insert
 
@@ -248,11 +245,11 @@ theorem Subsingleton.countable {s : Set α} (hs : s.Subsingleton) : s.Countable 
   hs.finite.countable
 #align set.subsingleton.countable Set.Subsingleton.countable
 
-theorem countable_isTop (α : Type _) [PartialOrder α] : { x : α | IsTop x }.Countable :=
+theorem countable_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Countable :=
   (finite_isTop α).countable
 #align set.countable_is_top Set.countable_isTop
 
-theorem countable_isBot (α : Type _) [PartialOrder α] : { x : α | IsBot x }.Countable :=
+theorem countable_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Countable :=
   (finite_isBot α).countable
 #align set.countable_is_bot Set.countable_isBot
 
@@ -267,13 +264,13 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   exact mem_range_self _
 #align set.countable_set_of_finite_subset Set.countable_setOf_finite_subset
 
-theorem countable_univ_pi {π : α → Type _} [Finite α] {s : ∀ a, Set (π a)}
+theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
   haveI := fun a => (hs a).to_subtype
   (Countable.of_equiv _ (Equiv.Set.univPi s).symm).to_set
 #align set.countable_univ_pi Set.countable_univ_pi
 
-theorem countable_pi {π : α → Type _} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
+theorem countable_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)} (hs : ∀ a, (s a).Countable) :
     { f : ∀ a, π a | ∀ a, f a ∈ s a }.Countable := by
   simpa only [← mem_univ_pi] using countable_univ_pi hs
 #align set.countable_pi Set.countable_pi
@@ -290,6 +287,27 @@ theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Co
   rw [← image_prod]
   exact (hs.prod ht).image _
 #align set.countable.image2 Set.Countable.image2
+
+/-- If a family of disjoint sets is included in a countable set, then only countably many of
+them are nonempty. -/
+theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
+    (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
+    Set.Countable {t | (f t).Nonempty} := by
+  rw [← Set.countable_coe_iff] at hs ⊢
+  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.1 ∈ f t := by
+    rintro ⟨t, ⟨x, hx⟩⟩
+    exact ⟨⟨x, (h'f t hx)⟩, hx⟩
+  choose F hF using this
+  have A : Injective F := by
+    rintro ⟨t, ht⟩ ⟨t', ht'⟩ htt'
+    have A : (f t ∩ f t').Nonempty := by
+      refine ⟨F ⟨t, ht⟩, hF _, ?_⟩
+      rw [htt']
+      exact hF _
+    simp only [Subtype.mk.injEq]
+    by_contra H
+    exact not_disjoint_iff_nonempty_inter.2 A (hf H)
+  exact Injective.countable A
 
 end Set
 

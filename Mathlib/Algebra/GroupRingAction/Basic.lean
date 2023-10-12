@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.group_ring_action.basic
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Field.Defs
 import Mathlib.GroupTheory.GroupAction.Group
+
+#align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Group action on rings
@@ -47,7 +44,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
 
 section Semiring
 
-variable (M N G : Type _) [Monoid M] [Monoid N] [Group G]
+variable (M N G : Type*) [Monoid M] [Monoid N] [Group G]
 
 variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S] [DivisionRing F]
 
@@ -85,7 +82,7 @@ variable {M N}
 See note [reducible non-instances]. -/
 @[reducible]
 def MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
-  { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with smul := SMul.comp.smul f }
+  { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with }
 #align mul_semiring_action.comp_hom MulSemiringAction.compHom
 
 end

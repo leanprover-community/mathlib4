@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.partrec_code
-! leanprover-community/mathlib commit 6155d4351090a6fad236e3d2e4e0e4e7342668e8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Partrec
+
+#align_import computability.partrec_code from "leanprover-community/mathlib"@"6155d4351090a6fad236e3d2e4e0e4e7342668e8"
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.
@@ -1128,7 +1125,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases n.unpair.2
         · rfl
-        simp
+        simp only [decode_eq_ofNat, Option.some.injEq]
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
         cases evaln k' _ _
         · rfl
@@ -1137,7 +1134,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         cases' evaln k cf n with x
         · rfl
-        simp
+        simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind]
         cases x <;> simp [Nat.succ_ne_zero]
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
   (Primrec.option_bind

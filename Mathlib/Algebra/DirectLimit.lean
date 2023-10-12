@@ -2,16 +2,13 @@
 Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes
-
-! This file was ported from Lean 3 source module algebra.direct_limit
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import algebra.direct_limit from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Direct limit of modules, abelian groups, rings, and fields.
@@ -206,7 +203,7 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
       f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
   unfold DFinsupp.sum
-  simp only [LinearMap.map_sum]
+  simp only [map_sum]
   refine' Finset.sum_congr rfl fun k hk => _
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
     totalize_of_le (hx k hk), totalize_of_le (le_trans (hx k hk) hij), DirectedSystem.map_map]
@@ -608,7 +605,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     -- porting note: RingHom.map_mul was `(restriction _).map_mul`
     rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
-      (f' j k hjk).map_zero, MulZeroClass.mul_zero]
+      (f' j k hjk).map_zero, mul_zero]
 #align ring.direct_limit.of.zero_exact_aux Ring.DirectLimit.of.zero_exact_aux
 
 /-- A component that corresponds to zero in the direct limit is already zero in some
@@ -736,7 +733,7 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
 -- porting note: this takes some time, had to increase heartbeats
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 500000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]

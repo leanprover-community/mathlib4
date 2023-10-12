@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module group_theory.specific_groups.alternating
-! leanprover-community/mathlib commit 0f6670b8af2dff699de1c0b4b49039b31bc13c46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.IntervalCases
+
+#align_import group_theory.specific_groups.alternating from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
 /-!
 # Alternating Groups
@@ -46,7 +43,7 @@ alternating group permutation
 
 open Equiv Equiv.Perm Subgroup Fintype
 
-variable (α : Type _) [Fintype α] [DecidableEq α]
+variable (α : Type*) [Fintype α] [DecidableEq α]
 
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
@@ -247,9 +244,8 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-          ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h)
-      --Porting note : added `: _`
-          : _))
+        --Porting note : added `: _`
+        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
 #align alternating_group.normal_closure_fin_rotate_five alternatingGroup.normalClosure_finRotate_five
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be

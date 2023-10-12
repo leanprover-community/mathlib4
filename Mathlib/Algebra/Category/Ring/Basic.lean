@@ -2,16 +2,13 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.category.Ring.basic
-! leanprover-community/mathlib commit 34b2a989ad80bce3a5de749d935a4f23726e26e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.category.Ring.basic from "leanprover-community/mathlib"@"34b2a989ad80bce3a5de749d935a4f23726e26e9"
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -23,6 +20,8 @@ We introduce the bundled categories:
 * `CommRingCat`
 along with the relevant forgetful functors between them.
 -/
+
+set_option autoImplicit true
 
 
 universe u v
@@ -44,7 +43,7 @@ namespace SemiRingCat
 
 /-- `RingHom` doesn't actually assume associativity. This alias is needed to make the category
 theory machinery work. We use the same trick in `MonCat.AssocMonoidHom`. -/
-abbrev AssocRingHom (M N : Type _) [Semiring M] [Semiring N] :=
+abbrev AssocRingHom (M N : Type*) [Semiring M] [Semiring N] :=
   RingHom M N
 set_option linter.uppercaseLean3 false in
 #align SemiRing.assoc_ring_hom SemiRingCat.AssocRingHom
@@ -66,7 +65,7 @@ instance : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
   infer_instance
 
-instance : CoeSort SemiRingCat (Type _) where
+instance : CoeSort SemiRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
@@ -122,8 +121,8 @@ instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_forget_to_Mon SemiRingCat.hasForgetToMonCat
 
-instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat
-    where  -- can't use BundledHom.mkHasForget₂, since AddCommMon is an induced category
+instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
+   -- can't use BundledHom.mkHasForget₂, since AddCommMon is an induced category
   forget₂ :=
     { obj := fun R => AddCommMonCat.of R
       -- Porting note: This doesn't work without the `(_ := _)` trick.
@@ -138,7 +137,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom SemiRingCat.ofHom
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover-community/mathlib4/issues/5081
+-- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
 theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     ofHom f x = f x :=
@@ -184,7 +183,7 @@ instance : ConcreteCategory RingCat := by
   dsimp [RingCat]
   infer_instance
 
-instance : CoeSort RingCat (Type _) where
+instance : CoeSort RingCat (Type*) where
   coe X := X.α
 
 instance (X : RingCat) : Ring X := X.str
@@ -255,8 +254,8 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
 set_option linter.uppercaseLean3 false in
 #align Ring.has_forget_to_SemiRing RingCat.hasForgetToSemiRingCat
 
-instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat
-    where -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
+instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat where
+  -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
   forget₂ :=
     { obj := fun R => AddCommGroupCat.of R
       -- Porting note: use `(_ := _)` similar to above.
@@ -285,7 +284,7 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type _) where
+instance : CoeSort CommSemiRingCat (Type*) where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
@@ -404,7 +403,7 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type _) where
+instance : CoeSort CommRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.smul_with_zero
-! leanprover-community/mathlib commit 966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Prod
+
+#align_import algebra.smul_with_zero from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 
 /-!
 # Introduce `SMulWithZero`
@@ -40,7 +37,7 @@ We also add an `instance`:
 -/
 
 
-variable {R R' M M' : Type _}
+variable {R R' M M' : Type*}
 
 section Zero
 
@@ -201,7 +198,6 @@ variable (M)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 def MulActionWithZero.compHom (f : R' →*₀ R) : MulActionWithZero R' M :=
   { SMulWithZero.compHom M f.toZeroHom with
-    smul := (· • ·) ∘ f
     mul_smul := fun r s m => by show f (r * s) • m = (f r) • (f s) • m; simp [mul_smul]
     one_smul := fun m => by show (f 1) • m = m; simp }
 #align mul_action_with_zero.comp_hom MulActionWithZero.compHom
@@ -210,7 +206,7 @@ end MonoidWithZero
 
 section GroupWithZero
 
-variable {α β : Type _} [GroupWithZero α] [GroupWithZero β] [MulActionWithZero α β]
+variable {α β : Type*} [GroupWithZero α] [GroupWithZero β] [MulActionWithZero α β]
 
 theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
     (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
@@ -226,7 +222,7 @@ end GroupWithZero
 
 /-- Scalar multiplication as a monoid homomorphism with zero. -/
 @[simps]
-def smulMonoidWithZeroHom {α β : Type _} [MonoidWithZero α] [MulZeroOneClass β]
+def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass β]
     [MulActionWithZero α β] [IsScalarTower α β β] [SMulCommClass α β β] : α × β →*₀ β :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom

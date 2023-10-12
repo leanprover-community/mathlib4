@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.interval
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.AtTopBot
+
+#align_import order.filter.interval from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Convergence of intervals
@@ -47,7 +44,7 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Filter Set Function
 
@@ -116,7 +113,7 @@ theorem tendstoIxxClass_of_subset {l₁ l₂ : Filter α} {Ixx Ixx' : α → α 
   ⟨h'.1.smallSets_mono <| eventually_of_forall <| Prod.forall.2 h⟩
 #align filter.tendsto_Ixx_class_of_subset Filter.tendstoIxxClass_of_subset
 
-theorem HasBasis.tendstoIxxClass {ι : Type _} {p : ι → Prop} {s} {l : Filter α}
+theorem HasBasis.tendstoIxxClass {ι : Type*} {p : ι → Prop} {s} {l : Filter α}
     (hl : l.HasBasis p s) {Ixx : α → α → Set α}
     (H : ∀ i, p i → ∀ x ∈ s i, ∀ y ∈ s i, Ixx x y ⊆ s i) : TendstoIxxClass Ixx l l :=
   ⟨(hl.prod_self.tendsto_iff hl.smallSets).2 fun i hi => ⟨i, hi, fun _ h => H i hi _ h.1 _ h.2⟩⟩

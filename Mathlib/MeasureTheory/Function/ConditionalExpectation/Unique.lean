@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.unique
-! leanprover-community/mathlib commit d8bbb04e2d2a44596798a9207ceefc0fb236e41e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
+
+#align_import measure_theory.function.conditional_expectation.unique from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
 /-!
 # Uniqueness of the conditional expectation
@@ -36,7 +33,7 @@ open scoped ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E' F' 𝕜 : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
+variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E' for an inner product space on which we compute integrals
   [NormedAddCommGroup E']

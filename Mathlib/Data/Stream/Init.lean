@@ -2,11 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.stream.init
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Tactic.Ext
 import Mathlib.Data.Stream.Defs
@@ -14,12 +9,16 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Data.List.Basic
 
+#align_import data.stream.init from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
+
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
 
 Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
 name clashes.  -/
+
+set_option autoImplicit true
 
 open Nat Function Option
 
@@ -318,7 +317,7 @@ theorem nth_of_bisim (bisim : IsBisimulation R) :
 #align stream.nth_of_bisim Stream'.nth_of_bisim
 
 -- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun  r =>
+theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun r =>
   Stream'.ext fun n => And.left (nth_of_bisim R bisim n r)
 #align stream.eq_of_bisim Stream'.eq_of_bisim
 
@@ -363,7 +362,6 @@ theorem map_iterate (f : α → α) (a : α) : iterate f (f a) = map f (iterate 
   induction' n with n' ih
   · rfl
   · unfold map iterate nth
-    dsimp
     rw [map, nth] at ih
     rw [iterate]
     exact congrArg f ih

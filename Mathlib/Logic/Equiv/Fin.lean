@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module logic.equiv.fin
-! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
+
+#align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
 # Equivalences for `Fin n`
@@ -38,7 +35,7 @@ def finOneEquiv : Fin 1 ≃ Unit :=
 /-- Equivalence between `Fin 2` and `Bool`. -/
 def finTwoEquiv : Fin 2 ≃ Bool where
   toFun := ![false, true]
-  invFun b := cond b 1 0
+  invFun b := b.casesOn 0 1
   left_inv := Fin.forall_fin_two.2 <| by simp
   right_inv := Bool.forall_bool.2 <| by simp
 #align fin_two_equiv finTwoEquiv
@@ -61,8 +58,7 @@ theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
       Set.pi Set.univ (Fin.cons s <| Fin.cons t finZeroElim) := by
   ext f
-  have : (Fin.cons s (Fin.cons t finZeroElim) : ∀ i, Set (α i)) 1 = t := rfl
-  simp [Fin.forall_fin_two, this]
+  simp [Fin.forall_fin_two]
 #align fin.preimage_apply_01_prod Fin.preimage_apply_01_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -84,7 +80,7 @@ def prodEquivPiFinTwo (α β : Type u) : α × β ≃ ∀ i : Fin 2, ![α, β] i
 /-- The space of functions `Fin 2 → α` is equivalent to `α × α`. See also `piFinTwoEquiv` and
 `prodEquivPiFinTwo`. -/
 @[simps (config := { fullyApplied := false })]
-def finTwoArrowEquiv (α : Type _) : (Fin 2 → α) ≃ α × α :=
+def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
   { piFinTwoEquiv fun _ => α with invFun := fun x => ![x.1, x.2] }
 #align fin_two_arrow_equiv finTwoArrowEquiv
 #align fin_two_arrow_equiv_symm_apply finTwoArrowEquiv_symm_apply
@@ -100,7 +96,7 @@ def OrderIso.piFinTwoIso (α : Fin 2 → Type u) [∀ i, Preorder (α i)] : (∀
 
 /-- The space of functions `Fin 2 → α` is order equivalent to `α × α`. See also
 `OrderIso.piFinTwoIso`. -/
-def OrderIso.finTwoArrowIso (α : Type _) [Preorder α] : (Fin 2 → α) ≃o α × α :=
+def OrderIso.finTwoArrowIso (α : Type*) [Preorder α] : (Fin 2 → α) ≃o α × α :=
   { OrderIso.piFinTwoIso fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align order_iso.fin_two_arrow_iso OrderIso.finTwoArrowIso
 
@@ -414,7 +410,7 @@ theorem finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
   finRotate_last'
 #align fin_rotate_last finRotate_last
 
-theorem Fin.snoc_eq_cons_rotate {α : Type _} (v : Fin n → α) (a : α) :
+theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
     @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
   ext ⟨i, h⟩
   by_cases h' : i < n

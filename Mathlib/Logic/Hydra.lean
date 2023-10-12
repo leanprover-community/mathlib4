@@ -2,15 +2,12 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module logic.hydra
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Order.GameAdd
+
+#align_import logic.hydra from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Termination of a hydra game
@@ -40,7 +37,7 @@ namespace Relation
 
 open Multiset Prod
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- The relation that specifies valid moves in our hydra game. `CutExpand r s' s`
   means that `s'` is obtained by removing one head `a ∈ s` and adding back an arbitrary
@@ -62,7 +59,7 @@ def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
 
 variable {r : α → α → Prop}
 
-theorem cutExpand_le_invImage_lex [IsIrrefl α r] :
+theorem cutExpand_le_invImage_lex [DecidableEq α] [IsIrrefl α r] :
     CutExpand r ≤ InvImage (Finsupp.Lex (rᶜ ⊓ (· ≠ ·)) (· < ·)) toFinsupp := by
   rintro s t ⟨u, a, hr, he⟩
   replace hr := fun a' ↦ mt (hr a')

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.mul_coeff
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.Data.MvPolynomial.Supported
+
+#align_import ring_theory.witt_vector.mul_coeff from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Leading terms of Witt vector multiplication
@@ -33,13 +30,13 @@ that needs to happen in characteristic 0.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
 
-variable {k : Type _} [CommRing k]
+variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
 
@@ -233,10 +230,7 @@ theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
     Function.uncurry_apply_pair, aeval_X, Matrix.cons_val_one, map_mul, Matrix.cons_val_zero,
     map_sub]
   rw [sub_sub, add_comm (_ * _), ← sub_sub]
-  have mvpz : (p : MvPolynomial ℕ ℤ) = MvPolynomial.C ↑p := by rw [eq_intCast, Int.cast_ofNat]
-  have : ∀ (f : ℤ →+* k) (g : ℕ → k), eval₂ f g p = f p := by
-    intros; rw [mvpz, MvPolynomial.eval₂_C]
-  simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, eval₂_rename, this, mul_coeff, peval, map_natCast,
+  simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, eval₂_rename, mul_coeff, peval, map_natCast,
     map_add, map_pow, map_mul]
 #align witt_vector.peval_poly_of_interest WittVector.peval_polyOfInterest
 
@@ -284,7 +278,6 @@ theorem nth_mul_coeff' (n : ℕ) :
   intro x y
   dsimp [peval]
   rw [← hf₀]
-  simp only [Function.uncurry_apply_pair]
   congr
   ext a
   cases' a with a ha

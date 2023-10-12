@@ -2,11 +2,6 @@
 Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.basic
-! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.NormedSpace.Basic
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.Module.Star
+
+#align_import analysis.normed_space.star.basic from "leanprover-community/mathlib"@"aa6669832974f87406a3d9d70fc5707a60546207"
 
 /-!
 # Normed star rings and algebras
@@ -42,7 +39,7 @@ open Topology
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
-class NormedStarGroup (E : Type _) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
+class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star : ∀ x : E, ‖x⋆‖ = ‖x‖
 #align normed_star_group NormedStarGroup
 
@@ -50,7 +47,7 @@ export NormedStarGroup (norm_star)
 
 attribute [simp] norm_star
 
-variable {𝕜 E α : Type _}
+variable {𝕜 E α : Type*}
 
 section NormedStarGroup
 
@@ -85,7 +82,7 @@ instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedSta
 
 /-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x⋆ * x‖ = ‖x‖^2`
 for every `x`. -/
-class CstarRing (E : Type _) [NonUnitalNormedRing E] [StarRing E] : Prop where
+class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
 #align cstar_ring CstarRing
 
@@ -106,7 +103,7 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
     · simp only [htriv, star_zero]
     · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
       have hnt_star : 0 < ‖x⋆‖ :=
-        norm_pos_iff.mpr ((AddEquiv.map_ne_zero_iff starAddEquiv).mpr htriv)
+        norm_pos_iff.mpr ((AddEquiv.map_ne_zero_iff starAddEquiv (M := E)).mpr htriv)
       have h₁ :=
         calc
           ‖x‖ * ‖x‖ = ‖x⋆ * x‖ := norm_star_mul_self.symm
@@ -157,7 +154,7 @@ end NonUnital
 
 section ProdPi
 
-variable {ι R₁ R₂ : Type _} {R : ι → Type _}
+variable {ι R₁ R₂ : Type*} {R : ι → Type*}
 
 variable [NonUnitalNormedRing R₁] [StarRing R₁] [CstarRing R₁]
 
@@ -318,7 +315,7 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-instance toNormedAlgebra {𝕜 A : Type _} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
+instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) S.algebra _ _ _ S.subtype
 #align star_subalgebra.to_normed_algebra StarSubalgebra.toNormedAlgebra

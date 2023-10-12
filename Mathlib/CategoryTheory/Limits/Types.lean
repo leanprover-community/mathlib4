@@ -2,16 +2,13 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Reid Barton
-
-! This file was ported from Lean 3 source module category_theory.limits.types
-! leanprover-community/mathlib commit 4aa2a2e17940311e47007f087c9df229e7f12942
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Filtered
+import Mathlib.CategoryTheory.Filtered.Basic
+
+#align_import category_theory.limits.types from "leanprover-community/mathlib"@"4aa2a2e17940311e47007f087c9df229e7f12942"
 
 /-!
 # Limits in the category of types.
@@ -24,6 +21,8 @@ We also give a characterisation of filtered colimits in `Type`, via
 Finally, we prove the category of types has categorical images,
 and that these agree with the range of a function.
 -/
+
+set_option autoImplicit true
 
 
 open CategoryTheory CategoryTheory.Limits
@@ -399,7 +398,7 @@ theorem Colimit.ι_desc_apply (F : J ⥤ TypeMax.{v, u}) (s : Cocone F) (j : J) 
 
 --porting note: @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_map_apply {F G : J ⥤ TypeMax.{v, u}} (α : F ⟶ G) (j : J) (x : F.obj j) :
-  colim.{v, v}.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
+    colim.{v, v}.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_fun (colimit.ι_map α j) x
 #align category_theory.limits.types.colimit.ι_map_apply CategoryTheory.Limits.Types.Colimit.ι_map_apply
 
@@ -477,7 +476,7 @@ protected def Rel (x y : Σ j, F.obj j) : Prop :=
 #align category_theory.limits.types.filtered_colimit.rel CategoryTheory.Limits.Types.FilteredColimit.Rel
 
 theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
-  Quot.Rel.{v, u} F x y → FilteredColimit.Rel.{v, u} F x y :=
+    Quot.Rel.{v, u} F x y → FilteredColimit.Rel.{v, u} F x y :=
   fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
 #align category_theory.limits.types.filtered_colimit.rel_of_quot_rel CategoryTheory.Limits.Types.FilteredColimit.rel_of_quot_rel
 
@@ -506,8 +505,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       intro a b h
       rcases jointly_surjective.{v, u} F (colimit.isColimit F) a with ⟨i, xi, rfl⟩
       rcases jointly_surjective.{v, u} F (colimit.isColimit F) b with ⟨j, xj, rfl⟩
-      replace h : (colimit.ι F i ≫ colimit.desc F t) xi = (colimit.ι F j ≫ colimit.desc F t) xj
-        := h
+      replace h : (colimit.ι F i ≫ colimit.desc F t) xi = (colimit.ι F j ≫ colimit.desc F t) xj := h
       rw [colimit.ι_desc, colimit.ι_desc] at h
       rcases hinj i j xi xj h with ⟨k, f, g, h'⟩
       change colimit.ι F i xi = colimit.ι F j xj
@@ -639,16 +637,5 @@ instance : HasImageMaps (Type u) where
         replace p := congr_fun p (Classical.choose x.2)
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
         erw [p, Classical.choose_spec x.2]⟩⟩) rfl
-
--- porting note: the following three instances have been added to ease
--- the automation in a definition in `AlgebraicTopology.SimplicialSet`
-noncomputable instance : Inhabited (⊤_ (Type u)) :=
-  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
-
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
-  congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
-    (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
-
-noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 
 end CategoryTheory.Limits.Types

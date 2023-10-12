@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.fin_category
-! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Category.ULift
+
+#align_import category_theory.fin_category from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
 /-!
 # Finite categories
@@ -34,11 +31,11 @@ noncomputable section
 
 namespace CategoryTheory
 
-instance discreteFintype {α : Type _} [Fintype α] : Fintype (Discrete α) :=
+instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
   Fintype.ofEquiv α discreteEquiv.symm
 #align category_theory.discrete_fintype CategoryTheory.discreteFintype
 
-instance discreteHomFintype {α : Type _} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
+instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
   apply ULift.fintype
 #align category_theory.discrete_hom_fintype CategoryTheory.discreteHomFintype
 
@@ -55,7 +52,7 @@ instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Di
 
 namespace FinCategory
 
-variable (α : Type _) [Fintype α] [SmallCategory α] [FinCategory α]
+variable (α : Type*) [Fintype α] [SmallCategory α] [FinCategory α]
 
 /-- A FinCategory `α` is equivalent to a category with objects in `Type`. -/
 --@[nolint unused_arguments]

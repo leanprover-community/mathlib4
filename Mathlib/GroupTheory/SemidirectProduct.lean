@@ -2,15 +2,12 @@
 Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.semidirect_product
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Logic.Function.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
+
+#align_import group_theory.semidirect_product from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Semidirect product
@@ -36,7 +33,7 @@ group, semidirect product
 -/
 
 
-variable (N : Type _) (G : Type _) {H : Type _} [Group N] [Group G] [Group H]
+variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 
 /-- The semidirect product of groups `N` and `G`, given a map `φ` from `G` to the automorphism
   group of `N`. It the product of sets with the group operation
@@ -69,8 +66,7 @@ variable {φ : G →* MulAut N}
 instance : Mul (SemidirectProduct N G φ) where
   mul a b := ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩
 
-lemma mul_def (a b : SemidirectProduct N G φ) :
-  a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
+lemma mul_def (a b : SemidirectProduct N G φ) : a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left := rfl
@@ -263,7 +259,7 @@ end lift
 
 section Map
 
-variable {N₁ : Type _} {G₁ : Type _} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
+variable {N₁ : Type*} {G₁ : Type*} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
 
 /-- Define a map from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` given maps `N →* N₁` and `G →* G₁` that
   satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`.  -/

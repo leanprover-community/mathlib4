@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
-
-! This file was ported from Lean 3 source module data.list.tfae
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Init.Data.List.Basic
+
+#align_import data.list.tfae from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # The Following Are Equivalent
@@ -34,6 +31,7 @@ theorem tfae_nil : TFAE [] :=
   forall_mem_nil _
 #align list.tfae_nil List.tfae_nil
 
+@[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 #align list.tfae_singleton List.tfae_singleton
 
@@ -51,6 +49,10 @@ theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔
 theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
 #align list.tfae_cons_cons List.tfae_cons_cons
+
+@[simp]
+theorem tfae_cons_self {a} {l : List Prop} : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by
+  simp [tfae_cons_cons]
 
 theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
@@ -84,7 +86,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
   forall_tfae [_, _, _] H
 ```
 -/
-theorem forall_tfae {α : Type _} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+theorem forall_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∀ a, p a)).TFAE := by
   simp_rw [TFAE, List.forall_mem_map_iff]
   intros p₁ hp₁ p₂ hp₂
@@ -103,7 +105,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
   exists_tfae [_, _, _] H
 ```
 -/
-theorem exists_tfae {α : Type _} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∃ a, p a)).TFAE := by
   simp_rw [TFAE, List.forall_mem_map_iff]
   intros p₁ hp₁ p₂ hp₂

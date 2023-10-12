@@ -2,13 +2,10 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.nat.upto
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import data.nat.upto from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
 /-!
 # `Nat.Upto`
@@ -55,7 +52,7 @@ instance : LT (Upto p) :=
 satisfying `p`. -/
 protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
   | ⟨x, h⟩ => by
-    suffices Upto.GT p = InvImage  (· < ·) fun y : Nat.Upto p => x - y.val by
+    suffices Upto.GT p = InvImage (· < ·) fun y : Nat.Upto p => x - y.val by
       rw [this]
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩

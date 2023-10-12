@@ -2,15 +2,12 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.constructions.pi
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.Topology.Constructions
+
+#align_import measure_theory.constructions.pi from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Product measures
@@ -66,7 +63,7 @@ open scoped Classical BigOperators Topology ENNReal
 
 universe u v
 
-variable {ι ι' : Type _} {α : ι → Type _}
+variable {ι ι' : Type*} {α : ι → Type*}
 
 /-! We start with some measurability properties -/
 
@@ -223,7 +220,7 @@ section Tprod
 
 open List
 
-variable {δ : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
+variable {δ : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 
 -- for some reason the equation compiler doesn't like this definition
 /-- A product of measures in `tprod α l`. -/
@@ -309,7 +306,7 @@ protected irreducible_def pi : Measure (∀ i, α i) :=
 
 -- porting note: moved from below so that instances about `Measure.pi` and `MeasureSpace.pi`
 -- go together
-instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type _} [∀ i, MeasureSpace (α i)] :
+instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩
 #align measure_theory.measure_space.pi MeasureTheory.MeasureSpace.pi
@@ -320,7 +317,6 @@ theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ 
   · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     apply OuterMeasure.pi_pi_le
   · haveI : Encodable ι := Fintype.toEncodable ι
-    rw [← pi'_pi μ s]
     simp_rw [← pi'_pi μ s, Measure.pi,
       toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
@@ -416,11 +412,11 @@ instance pi.sigmaFinite : SigmaFinite (Measure.pi μ) :=
   (FiniteSpanningSetsIn.pi fun i => (μ i).toFiniteSpanningSetsIn).sigmaFinite
 #align measure_theory.measure.pi.sigma_finite MeasureTheory.Measure.pi.sigmaFinite
 
-instance {α : ι → Type _} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
+instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     SigmaFinite (volume : Measure (∀ i, α i)) :=
   pi.sigmaFinite _
 
-theorem pi_of_empty {α : Type _} [IsEmpty α] {β : α → Type _} {m : ∀ a, MeasurableSpace (β a)}
+theorem pi_of_empty {α : Type*} [IsEmpty α] {β : α → Type*} {m : ∀ a, MeasurableSpace (β a)}
     (μ : ∀ a : α, Measure (β a)) (x : ∀ a, β a := isEmptyElim) : Measure.pi μ = dirac x := by
   haveI : ∀ a, SigmaFinite (μ a) := isEmptyElim
   refine' pi_eq fun s _ => _
@@ -460,12 +456,12 @@ theorem ae_pi_le_pi : (Measure.pi μ).ae ≤ Filter.pi fun i => (μ i).ae :=
   le_iInf fun _ => tendsto_eval_ae_ae.le_comap
 #align measure_theory.measure.ae_pi_le_pi MeasureTheory.Measure.ae_pi_le_pi
 
-theorem ae_eq_pi {β : ι → Type _} {f f' : ∀ i, α i → β i} (h : ∀ i, f i =ᵐ[μ i] f' i) :
+theorem ae_eq_pi {β : ι → Type*} {f f' : ∀ i, α i → β i} (h : ∀ i, f i =ᵐ[μ i] f' i) :
     (fun (x : ∀ i, α i) i => f i (x i)) =ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
   (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => funext hx
 #align measure_theory.measure.ae_eq_pi MeasureTheory.Measure.ae_eq_pi
 
-theorem ae_le_pi {β : ι → Type _} [∀ i, Preorder (β i)] {f f' : ∀ i, α i → β i}
+theorem ae_le_pi {β : ι → Type*} [∀ i, Preorder (β i)] {f f' : ∀ i, α i → β i}
     (h : ∀ i, f i ≤ᵐ[μ i] f' i) :
     (fun (x : ∀ i, α i) i => f i (x i)) ≤ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
   (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => hx
@@ -552,7 +548,7 @@ theorem pi_noAtoms (i : ι) [NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
 instance pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
   h.elim fun i => pi_noAtoms i
 
-instance {α : ι → Type _} [Nonempty ι] [∀ i, MeasureSpace (α i)]
+instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
     [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NoAtoms (volume : Measure (α i))] :
     NoAtoms (volume : Measure (∀ i, α i)) :=
   pi_noAtoms'
@@ -566,7 +562,7 @@ instance pi.isLocallyFiniteMeasure
   rw [pi_pi]
   exact ENNReal.prod_lt_top fun i _ => (hμ i).ne
 
-instance {X : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
+instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
     [∀ i, IsLocallyFiniteMeasure (volume : Measure (X i))] :
     IsLocallyFiniteMeasure (volume : Measure (∀ i, X i)) :=
@@ -585,7 +581,7 @@ instance pi.isMulLeftInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i
 #align measure_theory.measure.pi.is_add_left_invariant MeasureTheory.Measure.pi.isAddLeftInvariant
 
 @[to_additive]
-instance {G : ι → Type _} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
+instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
     [∀ i, SigmaFinite (volume : Measure (G i))] [∀ i, IsMulLeftInvariant (volume : Measure (G i))] :
     IsMulLeftInvariant (volume : Measure (∀ i, G i)) :=
   pi.isMulLeftInvariant _
@@ -601,7 +597,7 @@ instance pi.isMulRightInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α 
 #align measure_theory.measure.pi.is_add_right_invariant MeasureTheory.Measure.pi.isAddRightInvariant
 
 @[to_additive]
-instance {G : ι → Type _} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
+instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
     [∀ i, SigmaFinite (volume : Measure (G i))]
     [∀ i, IsMulRightInvariant (volume : Measure (G i))] :
     IsMulRightInvariant (volume : Measure (∀ i, G i)) :=
@@ -618,7 +614,7 @@ instance pi.isInvInvariant [∀ i, Group (α i)] [∀ i, MeasurableInv (α i)]
 #align measure_theory.measure.pi.is_neg_invariant MeasureTheory.Measure.pi.isNegInvariant
 
 @[to_additive]
-instance {G : ι → Type _} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableInv (G i)]
+instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableInv (G i)]
     [∀ i, SigmaFinite (volume : Measure (G i))] [∀ i, IsInvInvariant (volume : Measure (G i))] :
     IsInvInvariant (volume : Measure (∀ i, G i)) :=
   pi.isInvInvariant _
@@ -635,7 +631,7 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   apply (hs i).1.measure_pos (μ i) ⟨a i, (hs i).2⟩
 #align measure_theory.measure.pi.is_open_pos_measure MeasureTheory.Measure.pi.isOpenPosMeasure
 
-instance {X : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
+instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
     [∀ i, IsOpenPosMeasure (volume : Measure (X i))] [∀ i, SigmaFinite (volume : Measure (X i))] :
     IsOpenPosMeasure (volume : Measure (∀ i, X i)) :=
   pi.isOpenPosMeasure _
@@ -652,7 +648,7 @@ instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
   exact fun i _ => ne_of_lt (IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i)))
 #align measure_theory.measure.pi.is_finite_measure_on_compacts MeasureTheory.Measure.pi.isFiniteMeasureOnCompacts
 
-instance {X : ι → Type _} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
+instance {X : ι → Type*} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
     [∀ i, IsFiniteMeasureOnCompacts (volume : Measure (X i))] :
     IsFiniteMeasureOnCompacts (volume : Measure (∀ i, X i)) :=
@@ -665,7 +661,7 @@ instance pi.isHaarMeasure [∀ i, Group (α i)] [∀ i, TopologicalSpace (α i)]
 #align measure_theory.measure.pi.is_add_haar_measure MeasureTheory.Measure.pi.isAddHaarMeasure
 
 @[to_additive]
-instance {G : ι → Type _} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
+instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
     [∀ i, TopologicalSpace (G i)] [∀ i, SigmaFinite (volume : Measure (G i))]
     [∀ i, IsHaarMeasure (volume : Measure (G i))] : IsHaarMeasure (volume : Measure (∀ i, G i)) :=
   pi.isHaarMeasure _
@@ -747,7 +743,7 @@ theorem measurePreserving_piEquivPiSubtypeProd {ι : Type u} {α : ι → Type v
   exact Fintype.prod_subtype_mul_prod_subtype p fun i => μ i (s i)
 #align measure_theory.measure_preserving_pi_equiv_pi_subtype_prod MeasureTheory.measurePreserving_piEquivPiSubtypeProd
 
-theorem volume_preserving_piEquivPiSubtypeProd {ι : Type _} (α : ι → Type _) [Fintype ι]
+theorem volume_preserving_piEquivPiSubtypeProd {ι : Type*} (α : ι → Type*) [Fintype ι]
     [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] (p : ι → Prop)
     [DecidablePred p] : MeasurePreserving (MeasurableEquiv.piEquivPiSubtypeProd α p) :=
   measurePreserving_piEquivPiSubtypeProd (fun _ => volume) p

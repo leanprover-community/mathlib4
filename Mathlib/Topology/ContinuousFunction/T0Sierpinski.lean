@@ -2,15 +2,12 @@
 Copyright (c) 2022 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
-
-! This file was ported from Lean 3 source module topology.continuous_function.t0_sierpinski
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.continuous_function.t0_sierpinski from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
@@ -28,7 +25,7 @@ noncomputable section
 
 namespace TopologicalSpace
 
-theorem eq_induced_by_maps_to_sierpinski (X : Type _) [t : TopologicalSpace X] :
+theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
   · rw [le_iInf_iff]
@@ -40,7 +37,7 @@ theorem eq_induced_by_maps_to_sierpinski (X : Type _) [t : TopologicalSpace X] :
     exact ⟨⟨u, h⟩, {True}, isOpen_singleton_true, by simp [Set.preimage]⟩
 #align topological_space.eq_induced_by_maps_to_sierpinski TopologicalSpace.eq_induced_by_maps_to_sierpinski
 
-variable (X : Type _) [TopologicalSpace X]
+variable (X : Type*) [TopologicalSpace X]
 
 /-- The continuous map from `X` to the product of copies of the Sierpinski space, (one copy for each
 open subset `u` of `X`). The `u` coordinate of `productOfMemOpens x` is given by `x ∈ u`.

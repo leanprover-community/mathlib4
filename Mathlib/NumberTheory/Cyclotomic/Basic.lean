@@ -2,15 +2,12 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module number_theory.cyclotomic.basic
-! leanprover-community/mathlib commit 4b05d3f4f0601dca8abf99c4ec99187682ed0bba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.FieldTheory.Galois
+
+#align_import number_theory.cyclotomic.basic from "leanprover-community/mathlib"@"4b05d3f4f0601dca8abf99c4ec99187682ed0bba"
 
 /-!
 # Cyclotomic extensions
@@ -126,7 +123,7 @@ variable {A B}
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension ∅ A B := by
 -- Porting note: Lean3 is able to infer `A`.
-  refine'  (iff_adjoin_eq_top _ A _).2
+  refine' (iff_adjoin_eq_top _ A _).2
     ⟨fun s hs => by simp at hs, _root_.eq_top_iff.2 fun x hx => _⟩
   rw [← h] at hx
   simpa using hx
@@ -174,7 +171,7 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
 #align is_cyclotomic_extension.subsingleton_iff IsCyclotomicExtension.subsingleton_iff
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
-is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1 } ` given by
+is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1 }` given by
 roots of unity of order in `T`. -/
 theorem union_right [h : IsCyclotomicExtension (S ∪ T) A B] :
     IsCyclotomicExtension T (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}) B := by
@@ -284,7 +281,7 @@ variable (A B)
 /-- Given `(f : B ≃ₐ[A] C)`, if `IsCyclotomicExtension S A B` then
 `IsCyclotomicExtension S A C`. -/
 protected
-theorem equiv {C : Type _} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension S A B]
+theorem equiv {C : Type*} [CommRing C] [Algebra A C] [h : IsCyclotomicExtension S A B]
     (f : B ≃ₐ[A] C) : IsCyclotomicExtension S A C := by
   letI : Algebra B C := f.toAlgHom.toRingHom.toAlgebra
   haveI : IsCyclotomicExtension {1} B C := singleton_one_of_algebraMap_bijective f.surjective
@@ -355,8 +352,8 @@ theorem numberField [h : NumberField K] [Finite S] [IsCyclotomicExtension S K L]
 /-- A finite cyclotomic extension of an integral noetherian domain is integral -/
 theorem integral [IsDomain B] [IsNoetherianRing A] [Finite S] [IsCyclotomicExtension S A B] :
     Algebra.IsIntegral A B :=
-  isIntegral_of_noetherian <| isNoetherian_of_fg_of_noetherian' <|
-    (IsCyclotomicExtension.finite S A B).out
+  letI := IsCyclotomicExtension.finite S A B; isIntegral_of_noetherian <|
+    isNoetherian_of_isNoetherianRing_of_finite A B
 #align is_cyclotomic_extension.integral IsCyclotomicExtension.integral
 
 /-- If `S` is finite and `IsCyclotomicExtension S K A`, then `finiteDimensional K A`. -/
@@ -483,7 +480,7 @@ set_option linter.uppercaseLean3 false in
        IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
 /-- Any two `n`-th cyclotomic extensions are isomorphic. -/
-def algEquiv (L' : Type _) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K L'] :
+def algEquiv (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K L'] :
     L ≃ₐ[K] L' :=
   let h₁ := isSplittingField_X_pow_sub_one n K L
   let h₂ := isSplittingField_X_pow_sub_one n K L'
@@ -582,12 +579,12 @@ instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
 example : algebraInt (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ :=
   rfl
 
-instance CyclotomicField.algebra' {R : Type _} [CommRing R] [Algebra R K] :
+instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
     Algebra R (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 #align cyclotomic_field.algebra' CyclotomicField.algebra'
 
-instance {R : Type _} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
+instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
 instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
@@ -709,8 +706,8 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
       simp only [map_add, map_mul]
     · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
       refine' ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, _⟩
-      rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K)  _) ↑a.2), mul_assoc, ←
-        mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K)  _) ↑a.2), ← mul_assoc, ha]
+      rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
+        mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
   eq_iff_exists' := @fun x y =>
     ⟨fun h => ⟨1, by rw [adjoin_algebra_injective n A K h]⟩, fun ⟨c, hc⟩ => by

@@ -1,8 +1,10 @@
 -- tests for byContra' tactic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
+import Mathlib.Tactic.Set
 import Mathlib.Data.Nat.Basic
 
+set_option autoImplicit true
 example (a b : ℕ) (foo : False)  : a < b := by
   by_contra'
   guard_hyp this : b ≤ a

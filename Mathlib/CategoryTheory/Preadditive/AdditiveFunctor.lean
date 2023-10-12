@@ -2,16 +2,13 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.additive_functor
-! leanprover-community/mathlib commit ee89acdf96a0b45afe3eea493bceb2a80a0f2efa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+
+#align_import category_theory.preadditive.additive_functor from "leanprover-community/mathlib"@"ee89acdf96a0b45afe3eea493bceb2a80a0f2efa"
 
 /-!
 # Additive Functors
@@ -39,7 +36,7 @@ universe v₁ v₂ u₁ u₂
 namespace CategoryTheory
 
 /-- A functor `F` is additive provided `F.map` is an additive homomorphism. -/
-class Functor.Additive {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D]
+class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) : Prop where
   /-- the addition of two morphisms is mapped to the sum of their images -/
   map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by aesop_cat
@@ -51,7 +48,7 @@ namespace Functor
 
 section
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
   [Functor.Additive F]
 
 @[simp]
@@ -70,13 +67,13 @@ theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl
 #align category_theory.functor.coe_map_add_hom CategoryTheory.Functor.coe_mapAddHom
 
-instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMorphisms F
-    where map_zero _ _ := F.mapAddHom.map_zero
+instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMorphisms F where
+  map_zero _ _ := F.mapAddHom.map_zero
 #align category_theory.functor.preserves_zero_morphisms_of_additive CategoryTheory.Functor.preservesZeroMorphisms_of_additive
 
 instance : Additive (𝟭 C) where
 
-instance {E : Type _} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
+instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
     Additive (F ⋙ G) where
 
 @[simp]
@@ -101,7 +98,7 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
 open BigOperators
 
 @[simp]
-theorem map_sum {X Y : C} {α : Type _} (f : α → (X ⟶ Y)) (s : Finset α) :
+theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
     F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
   (F.mapAddHom : (X ⟶ Y) →+ _).map_sum f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
@@ -110,14 +107,14 @@ end
 
 section InducedCategory
 
-variable {C : Type _} {D : Type _} [Category D] [Preadditive D] (F : C → D)
+variable {C : Type*} {D : Type*} [Category D] [Preadditive D] (F : C → D)
 
 instance inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
 #align category_theory.functor.induced_functor_additive CategoryTheory.Functor.inducedFunctor_additive
 
 end InducedCategory
 
-instance fullSubcategoryInclusion_additive {C : Type _} [Category C] [Preadditive C]
+instance fullSubcategoryInclusion_additive {C : Type*} [Category C] [Preadditive C]
     (Z : C → Prop) : (fullSubcategoryInclusion Z).Additive where
 #align category_theory.functor.full_subcategory_inclusion_additive CategoryTheory.Functor.fullSubcategoryInclusion_additive
 
@@ -146,8 +143,8 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
   map_add {X Y f g} := by
-    rw [biprod.add_eq_lift_id_desc,  F.map_comp, ← biprod.lift_mapBiprod,
-      ←  biprod.mapBiprod_hom_desc, Category.assoc, Iso.inv_hom_id_assoc, F.map_id,
+    rw [biprod.add_eq_lift_id_desc, F.map_comp, ← biprod.lift_mapBiprod,
+      ← biprod.mapBiprod_hom_desc, Category.assoc, Iso.inv_hom_id_assoc, F.map_id,
       biprod.add_eq_lift_id_desc]
 #align category_theory.functor.additive_of_preserves_binary_biproducts CategoryTheory.Functor.additive_of_preservesBinaryBiproducts
 
@@ -159,7 +156,7 @@ end Functor
 
 namespace Equivalence
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
@@ -169,7 +166,7 @@ end Equivalence
 
 section
 
-variable (C D : Type _) [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/

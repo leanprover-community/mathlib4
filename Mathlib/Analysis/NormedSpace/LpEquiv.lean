@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.lp_equiv
-! leanprover-community/mathlib commit 6afc9b06856ad973f6a2619e3e8a0a8d537a58f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.Topology.ContinuousFunction.Bounded
+
+#align_import analysis.normed_space.lp_equiv from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
 /-!
 # Equivalences among $L^p$ spaces
@@ -47,7 +44,7 @@ section LpPiLp
 
 set_option linter.uppercaseLean3 false
 
-variable {α : Type _} {E : α → Type _} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
+variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
 
 /-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
 theorem Memℓp.all [Finite α] (f : ∀ i, E i) : Memℓp f p := by
@@ -99,7 +96,7 @@ theorem coe_addEquiv_lpPiLp_symm [Fact (1 ≤ p)] (f : PiLp p E) :
 
 section Equivₗᵢ
 
-variable (𝕜 : Type _) [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 variable (E)
 /- porting note: Lean is unable to work with `lpPiLpₗᵢ` if `E` is implicit without
 annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
@@ -136,7 +133,7 @@ open scoped BoundedContinuousFunction
 open BoundedContinuousFunction
 
 -- note: `R` and `A` are explicit because otherwise Lean has elaboration problems
-variable {α E : Type _} (R A 𝕜 : Type _) [TopologicalSpace α] [DiscreteTopology α]
+variable {α E : Type*} (R A 𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
 
 variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
 

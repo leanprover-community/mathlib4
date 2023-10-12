@@ -2,20 +2,17 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.mul_antidiagonal
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.WellFoundedSet
+
+#align_import data.set.mul_antidiagonal from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-! # Multiplication antidiagonal -/
 
 
 namespace Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Mul
 
@@ -61,7 +58,7 @@ theorem swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x :
 
 @[to_additive (attr := simp)]
 theorem swap_mem_mulAntidiagonal_aux [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
-     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
+    x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
       ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 

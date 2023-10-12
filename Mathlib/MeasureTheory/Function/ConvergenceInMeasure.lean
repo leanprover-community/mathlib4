@@ -2,15 +2,12 @@
 Copyright (c) 2022 Rémy Degenne, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.function.convergence_in_measure
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.MeasureTheory.Function.Egorov
 import Mathlib.MeasureTheory.Function.LpSpace
+
+#align_import measure_theory.function.convergence_in_measure from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Convergence in measure
@@ -48,7 +45,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace MeasureTheory
 
-variable {α ι E : Type _} {m : MeasurableSpace α} {μ : Measure α}
+variable {α ι E : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 /-- A sequence of functions `f` is said to converge in measure to some function `g` if for all
 `ε > 0`, the measure of the set `{x | ε ≤ dist (f i x) (g x)}` tends to 0 as `i` converges along
@@ -142,8 +139,7 @@ theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStron
   exact hxfg
 #align measure_theory.tendsto_in_measure_of_tendsto_ae MeasureTheory.tendstoInMeasure_of_tendsto_ae
 
--- Porting note: See issue #2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace ExistsSeqTendstoAe
 
@@ -210,12 +206,8 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
   set ns := ExistsSeqTendstoAe.seqTendstoAeSeq hfg
   use ns
   let S := fun k => { x | (2 : ℝ)⁻¹ ^ k ≤ dist (f (ns k) x) (g x) }
-  have hμS_le : ∀ k, μ (S k) ≤ (2 : ℝ≥0∞)⁻¹ ^ k := by
-    intro k
-    have := ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
-    convert this
-
-  --  fun k => ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
+  have hμS_le : ∀ k, μ (S k) ≤ (2 : ℝ≥0∞)⁻¹ ^ k :=
+    fun k => ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
   set s := Filter.atTop.limsup S with hs
   have hμs : μ s = 0 := by
     refine' measure_limsup_eq_zero (ne_of_lt <| lt_of_le_of_lt (ENNReal.tsum_le_tsum hμS_le) _)
@@ -262,18 +254,18 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
 
 end ExistsSeqTendstoAe
 
-section AeMeasurableOf
+section AEMeasurableOf
 
 variable [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
 
-theorem TendstoInMeasure.aeMeasurable {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
+theorem TendstoInMeasure.aemeasurable {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
     {f : ι → α → E} {g : α → E} (hf : ∀ n, AEMeasurable (f n) μ)
     (h_tendsto : TendstoInMeasure μ f u g) : AEMeasurable g μ := by
   obtain ⟨ns, hns⟩ := h_tendsto.exists_seq_tendsto_ae'
   exact aemeasurable_of_tendsto_metrizable_ae atTop (fun n => hf (ns n)) hns
-#align measure_theory.tendsto_in_measure.ae_measurable MeasureTheory.TendstoInMeasure.aeMeasurable
+#align measure_theory.tendsto_in_measure.ae_measurable MeasureTheory.TendstoInMeasure.aemeasurable
 
-end AeMeasurableOf
+end AEMeasurableOf
 
 section TendstoInMeasureOf
 
@@ -290,7 +282,7 @@ theorem tendstoInMeasure_of_tendsto_snorm_of_stronglyMeasurable (hp_ne_zero : p 
   intro ε hε
   replace hfg := ENNReal.Tendsto.const_mul
     (Tendsto.ennrpow_const p.toReal hfg) (Or.inr <| @ENNReal.ofReal_ne_top (1 / ε ^ p.toReal))
-  simp only [MulZeroClass.mul_zero,
+  simp only [mul_zero,
     ENNReal.zero_rpow_of_pos (ENNReal.toReal_pos hp_ne_zero hp_ne_top)] at hfg
   rw [ENNReal.tendsto_nhds_zero] at hfg ⊢
   intro δ hδ

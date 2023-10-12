@@ -2,15 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.nat.factorial.basic
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Common
+
+#align_import data.nat.factorial.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
 /-!
 # Factorial and variants
@@ -29,7 +27,6 @@ This file defines the factorial, along with the ascending and descending variant
 namespace Nat
 
 /-- `Nat.factorial n` is the factorial of `n`. -/
-@[simp]
 def factorial : ℕ → ℕ
   | 0 => 1
   | succ n => succ n * factorial n
@@ -47,7 +44,6 @@ theorem factorial_zero : 0! = 1 :=
   rfl
 #align nat.factorial_zero Nat.factorial_zero
 
-@[simp]
 theorem factorial_succ (n : ℕ) : n.succ ! = (n + 1) * n ! :=
   rfl
 #align nat.factorial_succ Nat.factorial_succ
@@ -232,7 +228,7 @@ section AscFactorial
 
 /-- `n.ascFactorial k = (n + k)! / n!` (as seen in `Nat.ascFactorial_eq_div`), but implemented
 recursively to allow for "quick" computation when using `norm_num`. This is closely related to
-`pochhammer`, but much less general. -/
+`ascPochhammer`, but much less general. -/
 def ascFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n + k + 1) * ascFactorial n k
@@ -285,7 +281,7 @@ theorem ascFactorial_of_sub {n k : ℕ} (h : k < n) :
     (n - k) * (n - k).ascFactorial k = (n - (k + 1)).ascFactorial (k + 1) := by
   let t := n - k.succ
   let ht : t = n - k.succ := rfl
-  suffices h' : n - k = t.succ; · rw [← ht, h', succ_ascFactorial, ascFactorial_succ]
+  suffices h' : n - k = t.succ by rw [← ht, h', succ_ascFactorial, ascFactorial_succ]
   rw [ht, succ_eq_add_one, ← tsub_tsub_assoc (succ_le_of_lt h) (succ_pos _), succ_sub_one]
 #align nat.asc_factorial_of_sub Nat.ascFactorial_of_sub
 
@@ -342,7 +338,7 @@ section DescFactorial
 
 /-- `n.descFactorial k = n! / (n - k)!` (as seen in `Nat.descFactorial_eq_div`), but
 implemented recursively to allow for "quick" computation when using `norm_num`. This is closely
-related to `pochhammer`, but much less general. -/
+related to `ascPochhammer`, but much less general. -/
 def descFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n - k) * descFactorial n k
@@ -409,7 +405,7 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
     exact fun h _ => h
 #align nat.desc_factorial_eq_zero_iff_lt Nat.descFactorial_eq_zero_iff_lt
 
-alias descFactorial_eq_zero_iff_lt ↔ _ descFactorial_of_lt
+alias ⟨_, descFactorial_of_lt⟩ := descFactorial_eq_zero_iff_lt
 #align nat.desc_factorial_of_lt Nat.descFactorial_of_lt
 
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) :

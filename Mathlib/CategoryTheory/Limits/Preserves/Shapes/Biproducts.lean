@@ -2,14 +2,11 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.biproducts
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+
+#align_import category_theory.limits.preserves.shapes.biproducts from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Preservation of biproducts
@@ -191,8 +188,8 @@ attribute [inherit_doc PreservesBinaryBiproducts] PreservesBinaryBiproducts.pres
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/
 def preservesBinaryBiproductOfPreservesBiproduct (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C)
-    [PreservesBiproduct (pairFunction X Y) F] : PreservesBinaryBiproduct X Y F
-    where preserves {b} hb :=
+    [PreservesBiproduct (pairFunction X Y) F] : PreservesBinaryBiproduct X Y F where
+  preserves {b} hb :=
     { isLimit :=
         IsLimit.ofIsoLimit
             ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm

@@ -2,17 +2,14 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module topology.category.Profinite.cofiltered_limit
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+
+#align_import topology.category.Profinite.cofiltered_limit from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Cofiltered limits of profinite sets.
@@ -131,7 +128,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
-theorem exists_locallyConstant_finite_aux {α : Type _} [Finite α] (hC : IsLimit C)
+theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
       (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _) := by
   cases nonempty_fintype α
@@ -176,7 +173,7 @@ theorem exists_locallyConstant_finite_aux {α : Type _} [Finite α] (hC : IsLimi
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_finite_aux Profinite.exists_locallyConstant_finite_aux
 
-theorem exists_locallyConstant_finite_nonempty {α : Type _} [Finite α] [Nonempty α]
+theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
   inhabit α
@@ -208,7 +205,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
-theorem exists_locallyConstant {α : Type _} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
+theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
   let S := f.discreteQuotient
   let ff : S → α := f.lift
@@ -229,7 +226,7 @@ theorem exists_locallyConstant {α : Type _} (hC : IsLimit C) (f : LocallyConsta
       (inferInstance : T2Space (F.obj j))
     haveI : ∀ j : J, CompactSpace ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : CompactSpace (F.obj j))
-    have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u, u}
+    have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u}
       (F ⋙ Profinite.toTopCat)
     suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C

@@ -2,7 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Control.Basic
 import Mathlib.Data.HashMap
@@ -118,6 +117,8 @@ The components of `linarith` are spread between a number of files for the sake o
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Tactic Meta
 open Std
 
@@ -232,8 +233,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
   let preprocessors :=
     (if cfg.splitHypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
     cfg.preprocessors.getD defaultPreprocessors
-  -- TODO restore when the `removeNe` preprocessor is implemented
-  -- let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
+  let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
   let branches ← preprocess preprocessors g hyps
   for (g, es) in branches do
     let r ← singleProcess g es
@@ -321,12 +321,14 @@ goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 
 An example:
 ```lean
-example (x y z : ℚ) (h1 : 2*x  < 3*y) (h2 : -4*x + 2*z < 0)
+example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
         (h3 : 12*y - 4* z < 0)  : False :=
 by linarith
 ```
 
 `linarith` will use all appropriate hypotheses and the negation of the goal, if applicable.
+Disequality hypotheses require case splitting and are not normally considered
+(see the `splitNe` option below).
 
 `linarith [t1, t2, t3]` will additionally use proof terms `t1, t2, t3`.
 
@@ -350,6 +352,10 @@ optional arguments:
   it will only unfold `reducible` definitions.
 * If `split_hypotheses` is true, `linarith` will split conjunctions in the context into separate
   hypotheses.
+* If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
+  For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
+  and so this runs linarith exponentially many times with respect to the number of
+  disequality hypotheses. (False by default.)
 * If `exfalso` is false, `linarith` will fail when the goal is neither an inequality nor `false`.
   (True by default.)
 * `restrict_type` (not yet implemented in mathlib4)

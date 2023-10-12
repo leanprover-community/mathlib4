@@ -2,17 +2,14 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module order.jordan_holder
-! leanprover-community/mathlib commit 91288e351d51b3f0748f0a38faa7613fb0ae2ada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Lattice
 import Mathlib.Data.List.Sort
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Data.Fintype.Card
+
+#align_import order.jordan_holder from "leanprover-community/mathlib"@"91288e351d51b3f0748f0a38faa7613fb0ae2ada"
 
 /-!
 # Jordan-Hölder Theorem
@@ -207,7 +204,7 @@ def toList (s : CompositionSeries X) : List X :=
 /-- Two `CompositionSeries` are equal if they are the same length and
 have the same `i`th element for every `i` -/
 theorem ext_fun {s₁ s₂ : CompositionSeries X} (hl : s₁.length = s₂.length)
-    (h : ∀ i, s₁ i = s₂ (Fin.castIso (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
+    (h : ∀ i, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ hl) i)) : s₁ = s₂ := by
   cases s₁; cases s₂
   -- Porting note: `dsimp at *` doesn't work. Why?
   dsimp at hl h
@@ -229,7 +226,7 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
   have h₁ : s₁.length = s₂.length :=
     Nat.succ_injective
       ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
-  have h₂ : ∀ i : Fin s₁.length.succ, s₁ i = s₂ (Fin.castIso (congr_arg Nat.succ h₁) i) :=
+  have h₂ : ∀ i : Fin s₁.length.succ, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ h₁) i) :=
     -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
     --               different type, so we do golf here.
     congr_fun <| List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
@@ -241,7 +238,7 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
   -- Porting note: `[heq_iff_eq, eq_self_iff_true, true_and_iff]`
   --             → `[mk.injEq, heq_eq_eq, true_and]`
   simp only [mk.injEq, heq_eq_eq, true_and]
-  simp only [Fin.castIso_refl] at h₂
+  simp only [Fin.cast_refl] at h₂
   exact funext h₂
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
@@ -451,7 +448,7 @@ theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
 section FinLemmas
 
 -- TODO: move these to `VecNotation` and rename them to better describe their statement
-variable {α : Type _} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
+variable {α : Type*} {m n : ℕ} (a : Fin m.succ → α) (b : Fin n.succ → α)
 
 theorem append_castAdd_aux (i : Fin m) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b
@@ -574,7 +571,7 @@ theorem snoc_castSucc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top 
 @[simp]
 theorem bot_snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) :
     (snoc s x hsat).bot = s.bot := by
-  rw [bot, bot, ← snoc_castSucc s x hsat 0, Fin.castSucc_zero (n := s.length + 1)]
+  rw [bot, bot, ← snoc_castSucc s x hsat 0, Fin.castSucc_zero' (n := s.length + 1)]
 #align composition_series.bot_snoc CompositionSeries.bot_snoc
 
 theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} :

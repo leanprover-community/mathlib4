@@ -2,16 +2,13 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.direct_sum
-! leanprover-community/mathlib commit c0cc689babd41c0e9d5f02429211ffbe2403472a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.Basic
+
+#align_import algebra.lie.direct_sum from "leanprover-community/mathlib"@"c0cc689babd41c0e9d5f02429211ffbe2403472a"
 
 /-!
 # Direct sums of Lie algebras and Lie modules

@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.turing_machine
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Prod
@@ -16,6 +11,8 @@ import Mathlib.Data.PFun
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
+
+#align_import computability.turing_machine from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Turing machines
@@ -428,12 +425,12 @@ theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMa
 #align turing.list_blank.nth_map Turing.ListBlank.nth_map
 
 /-- The `i`-th projection as a pointed map. -/
-def proj {ι : Type _} {Γ : ι → Type _} [∀ i, Inhabited (Γ i)] (i : ι) :
+def proj {ι : Type*} {Γ : ι → Type*} [∀ i, Inhabited (Γ i)] (i : ι) :
     PointedMap (∀ i, Γ i) (Γ i) :=
   ⟨fun a ↦ a i, rfl⟩
 #align turing.proj Turing.proj
 
-theorem proj_map_nth {ι : Type _} {Γ : ι → Type _} [∀ i, Inhabited (Γ i)] (i : ι) (L n) :
+theorem proj_map_nth {ι : Type*} {Γ : ι → Type*} [∀ i, Inhabited (Γ i)] (i : ι) (L n) :
     (ListBlank.map (@proj ι Γ _ i) L).nth n = L.nth n i := by
   rw [ListBlank.nth_map]; rfl
 #align turing.proj_map_nth Turing.proj_map_nth
@@ -473,7 +470,7 @@ def ListBlank.bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (l : ListBlank Γ) (f
     (hf : ∃ n, f default = List.replicate n default) : ListBlank Γ' := by
   apply l.liftOn (fun l ↦ ListBlank.mk (List.bind l f))
   rintro l _ ⟨i, rfl⟩; cases' hf with n e; refine' Quotient.sound' (Or.inl ⟨i * n, _⟩)
-  rw [List.bind_append, mul_comm]; congr
+  rw [List.append_bind, mul_comm]; congr
   induction' i with i IH; rfl
   simp only [IH, e, List.replicate_add, Nat.mul_succ, add_comm, List.replicate_succ, List.cons_bind]
 #align turing.list_blank.bind Turing.ListBlank.bind
@@ -497,7 +494,7 @@ theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l 
 current position of the head), together with two `ListBlank`s denoting the portions of the tape
 going off to the left and right. When the Turing machine moves right, an element is pulled from the
 right side and becomes the new head, while the head element is consed onto the left side. -/
-structure Tape (Γ : Type _) [Inhabited Γ] where
+structure Tape (Γ : Type*) [Inhabited Γ] where
   head : Γ
   left : ListBlank Γ
   right : ListBlank Γ
@@ -824,7 +821,7 @@ which is either terminal (meaning `a = b`) or where the next point also satisfie
 holds of any point where `eval f a` evaluates to `b`. This formalizes the notion that if
 `eval f a` evaluates to `b` then it reaches terminal state `b` in finitely many steps. -/
 @[elab_as_elim]
-def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort _} {a : σ}
+def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
   PFun.fixInduction h fun a' ha' h' ↦
     H _ ha' fun b' e ↦ h' _ <| Part.mem_some_iff.2 <| by rw [e]; rfl
@@ -1018,10 +1015,10 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable (Γ : Type _) [Inhabited Γ]
+variable (Γ : Type*) [Inhabited Γ]
 
 -- type of tape symbols
-variable (Λ : Type _) [Inhabited Λ]
+variable (Λ : Type*) [Inhabited Λ]
 
 -- type of "labels" or TM states
 /-- A Turing machine "statement" is just a command to either move
@@ -1125,13 +1122,13 @@ end
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
-variable {Γ' : Type _} [Inhabited Γ']
+variable {Γ' : Type*} [Inhabited Γ']
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {Λ' : Type _} [Inhabited Λ']
+variable {Λ' : Type*} [Inhabited Λ']
 
 /-- Map a TM statement across a function. This does nothing to move statements and maps the write
 values. -/
@@ -1226,13 +1223,13 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable (Γ : Type _) [Inhabited Γ]
+variable (Γ : Type*) [Inhabited Γ]
 
 -- Type of tape symbols
-variable (Λ : Type _)
+variable (Λ : Type*)
 
 -- Type of function labels
-variable (σ : Type _)
+variable (σ : Type*)
 
 -- Type of variable settings
 /-- The TM1 model is a simplification and extension of TM0
@@ -1440,11 +1437,11 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {σ : Type _} [Inhabited σ]
+variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => TM1.Stmt Γ Λ σ
 
@@ -1617,7 +1614,7 @@ open TM1
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
 theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
     enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
@@ -1633,9 +1630,9 @@ theorem exists_enc_dec [Fintype Γ] : ∃ (n : ℕ) (enc : Γ → Vector Bool n)
     exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 #align turing.TM1to1.exists_enc_dec Turing.TM1to1.exists_enc_dec
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {σ : Type _} [Inhabited σ]
+variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₁" => Stmt Γ Λ σ
 
@@ -1699,8 +1696,7 @@ def trNormal : Stmt₁ → Stmt'₁
 
 theorem stepAux_move (d : Dir) (q : Stmt'₁) (v : σ) (T : Tape Bool) :
     stepAux (moveₙ d q) v T = stepAux q v ((Tape.move d)^[n] T) := by
-  suffices : ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T)
-  exact this n
+  suffices ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T) from this n
   intro i; induction' i with i IH generalizing T; · rfl
   rw [iterate_succ', iterate_succ]
   simp only [stepAux, Function.comp_apply]
@@ -1844,7 +1840,7 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
     stepAux (readAux l₂.length fun v ↦ f (a ::ᵥ v)) v
       (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))
   · dsimp [readAux, stepAux]
-    simp
+    simp only [ListBlank.head_cons, Tape.move_right_mk', ListBlank.tail_cons]
     cases a <;> rfl
   rw [← ListBlank.append, IH]
   rfl
@@ -1982,9 +1978,9 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable {Γ : Type _} [Inhabited Γ]
+variable {Γ : Type*} [Inhabited Γ]
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
 /-- The machine states for a TM1 emulating a TM0 machine. States of the TM0 machine are embedded
 as `normal q` states, but the actual operation is split into two parts, a jump to `act s q`
@@ -2088,16 +2084,16 @@ set_option linter.uppercaseLean3 false
 
 section
 
-variable {K : Type _} [DecidableEq K]
+variable {K : Type*} [DecidableEq K]
 
 -- Index type of stacks
-variable (Γ : K → Type _)
+variable (Γ : K → Type*)
 
 -- Type of stack elements
-variable (Λ : Type _)
+variable (Λ : Type*)
 
 -- Type of function labels
-variable (σ : Type _)
+variable (σ : Type*)
 
 -- Type of variable settings
 /-- The TM2 model removes the tape entirely from the TM1 model,
@@ -2326,7 +2322,7 @@ namespace TM2to1
 set_option linter.uppercaseLean3 false
 
 -- A displaced lemma proved in unnecessary generality
-theorem stk_nth_val {K : Type _} {Γ : K → Type _} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
+theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
     (hL : ListBlank.map (proj k) L = ListBlank.mk (List.map some S).reverse) :
     L.nth n k = S.reverse.get? n := by
   rw [← proj_map_nth, hL, ← List.map_reverse, ListBlank.nth_mk, List.getI_eq_iget_get?,
@@ -2336,13 +2332,13 @@ theorem stk_nth_val {K : Type _} {Γ : K → Type _} {L : ListBlank (∀ k, Opti
 
 section
 
-variable {K : Type _} [DecidableEq K]
+variable {K : Type*} [DecidableEq K]
 
-variable {Γ : K → Type _}
+variable {Γ : K → Type*}
 
-variable {Λ : Type _} [Inhabited Λ]
+variable {Λ : Type*} [Inhabited Λ]
 
-variable {σ : Type _} [Inhabited σ]
+variable {σ : Type*} [Inhabited σ]
 
 local notation "Stmt₂" => TM2.Stmt Γ Λ σ
 
@@ -2563,7 +2559,6 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
   dsimp only; simp; cases o <;> simp only [stWrite, stVar, trStAct, TM1.stepAux]
   case push f =>
     have := Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k (some (f v)))
-    dsimp only at this
     refine'
       ⟨_, fun k' ↦ _, by
         -- Porting note: `rw [...]` to `erw [...]; rfl`.
@@ -2728,7 +2723,6 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
 theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trInit k L) : Cfg₂₁) := by
   rw [(_ : TM1.init _ = _)]
   · refine' ⟨ListBlank.mk (L.reverse.map fun a ↦ update default k (some a)), fun k' ↦ _⟩
-    simp only [TM2.Cfg.stk, TM2.init]
     refine' ListBlank.ext fun i ↦ _
     rw [ListBlank.map_mk, ListBlank.nth_mk, List.getI_eq_iget_get?, List.map_map]
     have : ((proj k').f ∘ fun a => update (β := fun k => Option (Γ k)) default k (some a))

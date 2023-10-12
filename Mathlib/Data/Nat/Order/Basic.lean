@@ -2,15 +2,12 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit 3ed3f98a1e836241990d3d308f1577e434977130
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
+
+#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
 
 
 /-!
@@ -76,8 +73,8 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
     le_self_add := Nat.le_add_right,
     eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
-instance canonicallyLinearOrderedAddMonoid : CanonicallyLinearOrderedAddMonoid ℕ :=
-  { (inferInstance : CanonicallyOrderedAddMonoid ℕ), Nat.linearOrder with }
+instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ :=
+  { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrder with }
 
 variable {m n k l : ℕ}
 
@@ -92,6 +89,11 @@ theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n �
   | 1 => by decide
   | n + 2 => by simp
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
+
+theorem le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1
+  | 0 => by decide
+  | 1 => by decide
+  | n + 2 => by simp
 
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
@@ -620,6 +622,9 @@ theorem findGreatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 <
   simp [findGreatest_eq_iff]
 #align nat.find_greatest_eq_zero_iff Nat.findGreatest_eq_zero_iff
 
+@[simp] lemma findGreatest_pos : 0 < Nat.findGreatest P k ↔ ∃ n, 0 < n ∧ n ≤ k ∧ P n := by
+  rw [pos_iff_ne_zero, Ne.def, findGreatest_eq_zero_iff]; push_neg; rfl
+
 theorem findGreatest_spec (hmb : m ≤ n) (hm : P m) : P (Nat.findGreatest P n) := by
   by_cases h : Nat.findGreatest P n = 0
   · cases m
@@ -685,7 +690,7 @@ protected theorem bit1_le {n m : ℕ} (h : n ≤ m) : bit1 n ≤ bit1 m :=
 #align nat.bit1_le Nat.bit1_le
 
 theorem bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => Nat.bit1_le  h
+  | true, _, _, h => Nat.bit1_le h
   | false, _, _, h => Nat.bit0_le h
 #align nat.bit_le Nat.bit_le
 

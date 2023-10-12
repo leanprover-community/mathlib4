@@ -2,14 +2,11 @@
 Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
-
-! This file was ported from Lean 3 source module category_theory.triangulated.basic
-! leanprover-community/mathlib commit 6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.CategoryTheory.Shift.Basic
+
+#align_import category_theory.triangulated.basic from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
 /-!
 # Triangles
@@ -160,7 +157,7 @@ instance triangleCategory : Category (Triangle C)
 
 @[ext]
 lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
-  (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
+    (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
   TriangleMorphism.ext _ _ h₁ h₂ h₃
 
 @[simps]
@@ -194,5 +191,12 @@ def Triangle.isoMk (A B : Triangle C)
       Iso.inv_hom_id_assoc, ← Functor.map_comp, Iso.inv_hom_id,
       Functor.map_id, Category.comp_id])
 #align category_theory.pretriangulated.triangle.iso_mk CategoryTheory.Pretriangulated.Triangle.isoMk
+
+lemma Triangle.eqToHom_hom₁ {A B : Triangle C} (h : A = B) :
+    (eqToHom h).hom₁ = eqToHom (by subst h; rfl) := by subst h; rfl
+lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
+    (eqToHom h).hom₂ = eqToHom (by subst h; rfl) := by subst h; rfl
+lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
+    (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
 
 end CategoryTheory.Pretriangulated

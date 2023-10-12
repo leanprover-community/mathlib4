@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.cover_preserving
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.Tactic.ApplyFun
+
+#align_import category_theory.sites.cover_preserving from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 /-!
 # Cover-preserving functors between sites.
 
@@ -136,7 +133,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     over it since `StructuredArrow W u` is cofiltered.
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
-  let c' := IsCofiltered.cone (StructuredArrowCone.toDiagram c ⋙ StructuredArrow.pre _ _ _)
+  let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
   have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app left).w]
     dsimp

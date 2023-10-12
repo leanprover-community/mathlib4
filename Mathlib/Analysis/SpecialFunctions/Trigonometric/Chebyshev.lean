@@ -2,16 +2,13 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.chebyshev
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Polynomial.Chebyshev
+
+#align_import analysis.special_functions.trigonometric.chebyshev from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # Multiple angle formulas in terms of Chebyshev polynomials
@@ -26,7 +23,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial
 
-variable {R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 @[simp]
 theorem aeval_T (x : A) (n : ℕ) : aeval x (T R n) = (T A n).eval x := by
@@ -75,7 +72,7 @@ variable (θ : ℂ)
 value `cos (n * θ)`. -/
 @[simp]
 theorem T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
-  | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, MulZeroClass.zero_mul, cos_zero]
+  | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, zero_mul, cos_zero]
   | 1 => by simp only [eval_X, one_mul, T_one, Nat.cast_one]
   | n + 2 => by
     -- Porting note: partially rewrote proof for lean4 numerals.

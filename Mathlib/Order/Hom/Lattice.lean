@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.hom.lattice
-! leanprover-community/mathlib commit 7581030920af3dcb241d1df0e36f6ec8289dd6be
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.SymmDiff
+
+#align_import order.hom.lattice from "leanprover-community/mathlib"@"7581030920af3dcb241d1df0e36f6ec8289dd6be"
 
 /-!
 # Lattice homomorphisms
@@ -45,10 +42,10 @@ Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphis
 
 open Function OrderDual
 
-variable {F ι α β γ δ : Type _}
+variable {F ι α β γ δ : Type*}
 
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
-structure SupHom (α β : Type _) [Sup α] [Sup β] where
+structure SupHom (α β : Type*) [Sup α] [Sup β] where
   /-- The underlying function of a `SupHom` -/
   toFun : α → β
   /-- A `SupHom` preserves suprema. -/
@@ -56,7 +53,7 @@ structure SupHom (α β : Type _) [Sup α] [Sup β] where
 #align sup_hom SupHom
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
-structure InfHom (α β : Type _) [Inf α] [Inf β] where
+structure InfHom (α β : Type*) [Inf α] [Inf β] where
   /-- The underlying function of an `InfHom` -/
   toFun : α → β
   /-- An `InfHom` preserves infima. -/
@@ -64,25 +61,25 @@ structure InfHom (α β : Type _) [Inf α] [Inf β] where
 #align inf_hom InfHom
 
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
-structure SupBotHom (α β : Type _) [Sup α] [Sup β] [Bot α] [Bot β] extends SupHom α β where
+structure SupBotHom (α β : Type*) [Sup α] [Sup β] [Bot α] [Bot β] extends SupHom α β where
   /-- A `SupBotHom` preserves the bottom element. -/
   map_bot' : toFun ⊥ = ⊥
 #align sup_bot_hom SupBotHom
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
-structure InfTopHom (α β : Type _) [Inf α] [Inf β] [Top α] [Top β] extends InfHom α β where
+structure InfTopHom (α β : Type*) [Inf α] [Inf β] [Top α] [Top β] extends InfHom α β where
   /-- An `InfTopHom` preserves the top element. -/
   map_top' : toFun ⊤ = ⊤
 #align inf_top_hom InfTopHom
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
-structure LatticeHom (α β : Type _) [Lattice α] [Lattice β] extends SupHom α β where
+structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β where
   /-- A `LatticeHom` preserves infima. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 #align lattice_hom LatticeHom
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
-structure BoundedLatticeHom (α β : Type _) [Lattice α] [Lattice β] [BoundedOrder α]
+structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β where
   /-- A `BoundedLatticeHom` preserves the top element. -/
   map_top' : toFun ⊤ = ⊤
@@ -102,7 +99,7 @@ section
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
 You should extend this class when you extend `SupHom`. -/
-class SupHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β] extends
+class SupHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] extends
   FunLike F α fun _ => β where
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
@@ -111,7 +108,7 @@ class SupHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β] ex
 /-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
 You should extend this class when you extend `InfHom`. -/
-class InfHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β] extends
+class InfHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] extends
   FunLike F α fun _ => β where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
@@ -120,7 +117,7 @@ class InfHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β] ex
 /-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class SupBotHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β] [Bot α]
+class SupBotHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] [Bot α]
   [Bot β] extends SupHomClass F α β where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
@@ -129,7 +126,7 @@ class SupBotHomClass (F : Type _) (α β : outParam <| Type _) [Sup α] [Sup β]
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class InfTopHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β] [Top α]
+class InfTopHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] [Top α]
   [Top β] extends InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -138,7 +135,7 @@ class InfTopHomClass (F : Type _) (α β : outParam <| Type _) [Inf α] [Inf β]
 /-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `LatticeHom`. -/
-class LatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [Lattice β] extends
+class LatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β] extends
   SupHomClass F α β where
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
@@ -147,7 +144,7 @@ class LatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [La
 /-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 
 You should extend this class when you extend `BoundedLatticeHom`. -/
-class BoundedLatticeHomClass (F : Type _) (α β : outParam <| Type _) [Lattice α] [Lattice β]
+class BoundedLatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β]
   [BoundedOrder α] [BoundedOrder β] extends LatticeHomClass F α β where
   /-- A `BoundedLatticeHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -295,9 +292,9 @@ theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
 #align map_sdiff' map_sdiff'
 
 /-- Special case of `map_symmDiff` for boolean algebras. -/
-theorem map_symm_diff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
+theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
-#align map_symm_diff' map_symm_diff'
+#align map_symm_diff' map_symmDiff'
 
 end BooleanAlgebra
 
@@ -424,11 +421,13 @@ theorem comp_assoc (f : SupHom γ δ) (g : SupHom β γ) (h : SupHom α β) :
 @[simp] theorem id_comp (f : SupHom α β) : (SupHom.id β).comp f = f := rfl
 #align sup_hom.id_comp SupHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : SupHom β γ} {f : SupHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => SupHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align sup_hom.cancel_right SupHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : SupHom β γ} {f₁ f₂ : SupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => SupHom.ext fun a => hg <| by rw [← SupHom.comp_apply, h, SupHom.comp_apply],
@@ -610,11 +609,13 @@ theorem comp_assoc (f : InfHom γ δ) (g : InfHom β γ) (h : InfHom α β) :
 @[simp] theorem id_comp (f : InfHom α β) : (InfHom.id β).comp f = f := rfl
 #align inf_hom.id_comp InfHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : InfHom β γ} {f : InfHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => InfHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align inf_hom.cancel_right InfHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : InfHom β γ} {f₁ f₂ : InfHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => InfHom.ext fun a => hg <| by rw [← InfHom.comp_apply, h, InfHom.comp_apply],
@@ -811,11 +812,13 @@ theorem comp_assoc (f : SupBotHom γ δ) (g : SupBotHom β γ) (h : SupBotHom α
 @[simp] theorem id_comp (f : SupBotHom α β) : (SupBotHom.id β).comp f = f := rfl
 #align sup_bot_hom.id_comp SupBotHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : SupBotHom β γ} {f : SupBotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align sup_bot_hom.cancel_right SupBotHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : SupBotHom β γ} {f₁ f₂ : SupBotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => SupBotHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -971,11 +974,13 @@ theorem comp_assoc (f : InfTopHom γ δ) (g : InfTopHom β γ) (h : InfTopHom α
 @[simp] theorem id_comp (f : InfTopHom α β) : (InfTopHom.id β).comp f = f := rfl
 #align inf_top_hom.id_comp InfTopHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : InfTopHom β γ} {f : InfTopHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align inf_top_hom.cancel_right InfTopHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : InfTopHom β γ} {f₁ f₂ : InfTopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => InfTopHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -1151,11 +1156,13 @@ theorem id_comp (f : LatticeHom α β) : (LatticeHom.id β).comp f = f :=
   LatticeHom.ext fun _ => rfl
 #align lattice_hom.id_comp LatticeHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : LatticeHom β γ} {f : LatticeHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => LatticeHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align lattice_hom.cancel_right LatticeHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : LatticeHom β γ} {f₁ f₂ : LatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => LatticeHom.ext fun a => hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
@@ -1345,12 +1352,14 @@ theorem comp_assoc (f : BoundedLatticeHom γ δ) (g : BoundedLatticeHom β γ)
 @[simp] theorem id_comp (f : BoundedLatticeHom α β) : (BoundedLatticeHom.id β).comp f = f := rfl
 #align bounded_lattice_hom.id_comp BoundedLatticeHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : BoundedLatticeHom β γ} {f : BoundedLatticeHom α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => BoundedLatticeHom.ext <| hf.forall.2 <| FunLike.ext_iff.1 h,
     fun h => congr_arg₂ _ h rfl⟩
 #align bounded_lattice_hom.cancel_right BoundedLatticeHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : BoundedLatticeHom β γ} {f₁ f₂ : BoundedLatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.constructions.fix
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.W
 import Mathlib.Data.QPF.Multivariate.Basic
+
+#align_import data.qpf.multivariate.constructions.fix from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.
@@ -109,7 +106,7 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.recF_eq_of_Wequiv MvQPF.recF_eq_of_wEquiv
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
-                    (h : MvQPF.abs (q.P.wDest' x ) = MvQPF.abs (q.P.wDest' y)) :
+    (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
   apply q.P.w_cases _ x
@@ -188,7 +185,7 @@ than the input. For `F a b c` a ternary functor, `Fix F` is a binary functor suc
 Fix F a b = F a b (Fix F a b)
 ```
 -/
-def Fix {n : ℕ} (F : TypeVec (n + 1) → Type _) [MvFunctor F] [q : MvQPF F] (α : TypeVec n) :=
+def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [MvFunctor F] [q : MvQPF F] (α : TypeVec n) :=
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
 

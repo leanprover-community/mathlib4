@@ -2,13 +2,10 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.isocrystal
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.FrobeniusFractionField
+
+#align_import ring_theory.witt_vector.isocrystal from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
 /-!
 
@@ -55,6 +52,8 @@ This file introduces notation in the locale `isocrystal`.
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -64,7 +63,7 @@ namespace WittVector
 
 variable (p : ℕ) [Fact p.Prime]
 
-variable (k : Type _) [CommRing k]
+variable (k : Type*) [CommRing k]
 
 scoped[Isocrystal] notation "K(" p ", " k ")" => FractionRing (WittVector p k)
 
@@ -112,15 +111,15 @@ scoped[Isocrystal]
 /-- An isocrystal is a vector space over the field `K(p, k)` additionally equipped with a
 Frobenius-linear automorphism.
 -/
-class Isocrystal (V : Type _) [AddCommGroup V] extends Module K(p, k) V where
+class Isocrystal (V : Type*) [AddCommGroup V] extends Module K(p, k) V where
   frob : V ≃ᶠˡ[p, k] V
 #align witt_vector.isocrystal WittVector.Isocrystal
 
 open WittVector
 
-variable (V : Type _) [AddCommGroup V] [Isocrystal p k V]
+variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
 
-variable (V₂ : Type _) [AddCommGroup V₂] [Isocrystal p k V₂]
+variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
 
 variable {V}
 
@@ -209,7 +208,7 @@ end PerfectRing
 
 /-- A one-dimensional isocrystal over an algebraically closed field
 admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensional isocrystals. -/
-theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP k p] (V : Type _)
+theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
   haveI : Nontrivial V := FiniteDimensional.nontrivial_of_finrank_eq_succ h_dim
@@ -249,9 +248,6 @@ theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP 
     LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1
-  -- Porting note: added the next two lines
-  erw [smul_eq_mul]
-  simp only [map_zpow₀, map_natCast]
   linear_combination φ(p, k) c * hmb
 #align witt_vector.isocrystal_classification WittVector.isocrystal_classification
 

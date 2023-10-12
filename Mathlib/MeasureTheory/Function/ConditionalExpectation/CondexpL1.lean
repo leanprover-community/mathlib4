@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.condexp_L1
-! leanprover-community/mathlib commit d8bbb04e2d2a44596798a9207ceefc0fb236e41e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+
+#align_import measure_theory.function.conditional_expectation.condexp_L1 from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
 /-! # Conditional expectation in L1
 
@@ -40,7 +37,7 @@ open scoped NNReal ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α β F F' G G' 𝕜 : Type _} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α β F F' G G' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F]
@@ -477,7 +474,7 @@ theorem aestronglyMeasurable'_condexpL1Clm (f : α →₁[μ] F') :
     refine' AEStronglyMeasurable'.congr _ (coeFn_add _ _).symm
     exact AEStronglyMeasurable'.add hfm hgm
   · have : {f : Lp F' 1 μ | AEStronglyMeasurable' m (condexpL1Clm F' hm μ f) μ} =
-        condexpL1Clm F' hm μ ⁻¹' {f | AEStronglyMeasurable' m f μ} := by rfl
+        condexpL1Clm F' hm μ ⁻¹' {f | AEStronglyMeasurable' m f μ} := rfl
     rw [this]
     refine' IsClosed.preimage (condexpL1Clm F' hm μ).continuous _
     exact isClosed_aeStronglyMeasurable' hm

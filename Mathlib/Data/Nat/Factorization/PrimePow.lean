@@ -2,14 +2,11 @@
 Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module data.nat.factorization.prime_pow
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+
+#align_import data.nat.factorization.prime_pow from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Prime powers and factorizations
@@ -18,7 +15,7 @@ This file deals with factorizations of prime powers.
 -/
 
 
-variable {R : Type _} [CommMonoidWithZero R] (n p : R) (k : ℕ)
+variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
 theorem IsPrimePow.minFac_pow_factorization_eq {n : ℕ} (hn : IsPrimePow n) :
     n.minFac ^ n.factorization n.minFac = n := by
@@ -120,7 +117,7 @@ theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ I
   exact ⟨hp.dvd_of_dvd_pow, fun t => t.trans (dvd_pow_self _ hk)⟩
 #align is_prime_pow_pow_iff isPrimePow_pow_iff
 
-theorem Nat.coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.coprime a b) (hn : IsPrimePow n) :
+theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Nat.coprime_zero_left] at hab
@@ -142,9 +139,9 @@ theorem Nat.coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.coprime a b) (hn
     intro t -- porting note: used to be `exact` below, but the definition of `∈` has changed.
     simpa using (Nat.factorization_disjoint_of_coprime hab).le_bot t
   cases' this with h h <;> simp [h, imp_or]
-#align nat.coprime.is_prime_pow_dvd_mul Nat.coprime.isPrimePow_dvd_mul
+#align nat.coprime.is_prime_pow_dvd_mul Nat.Coprime.isPrimePow_dvd_mul
 
-theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.coprime b) :
+theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     (a * b).divisors.filter IsPrimePow = (a.divisors ∪ b.divisors).filter IsPrimePow := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Nat.coprime_zero_left] at hab

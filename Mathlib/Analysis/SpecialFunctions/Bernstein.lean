@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module analysis.special_functions.bernstein
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Compact
+
+#align_import analysis.special_functions.bernstein from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # Bernstein approximations and Weierstrass' theorem
@@ -118,12 +115,8 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
   have h' : (n : ℝ) ≠ 0 := ne_of_gt h
-  -- Porting note: fails with `unknown identifier 'h''`
-  -- apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
-  -- apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
-  have h'' := GroupWithZero.mul_right_injective h'
-  apply h''
-  apply h''
+  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
+  apply_fun fun x : ℝ => x * n using GroupWithZero.mul_right_injective h'
   dsimp
   conv_lhs => simp only [Finset.sum_mul, z]
   conv_rhs => rw [div_mul_cancel _ h']

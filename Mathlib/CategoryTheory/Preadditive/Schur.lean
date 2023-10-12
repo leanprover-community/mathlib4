@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.schur
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+
+#align_import category_theory.preadditive.schur from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
 # Schur's lemma
@@ -31,7 +28,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 variable [Preadditive C]
 
@@ -85,7 +82,7 @@ open FiniteDimensional
 
 section
 
-variable (𝕜 : Type _) [DivisionRing 𝕜]
+variable (𝕜 : Type*) [DivisionRing 𝕜]
 
 /-- Part of **Schur's lemma** for `𝕜`-linear categories:
 the hom space between two non-isomorphic simple objects is 0-dimensional.
@@ -102,7 +99,7 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
 
 end
 
-variable (𝕜 : Type _) [Field 𝕜]
+variable (𝕜 : Type*) [Field 𝕜]
 
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 

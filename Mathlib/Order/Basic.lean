@@ -2,14 +2,17 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module order.basic
-! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.Order.LinearOrder
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
+import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Cases
+
+#align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -65,7 +68,7 @@ open Function
 
 universe u v w
 
-variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {π : ι → Type _} {r : α → α → Prop}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {π : ι → Type*} {r : α → α → Prop}
 
 section Preorder
 
@@ -114,44 +117,46 @@ attribute [simp] le_refl
 
 attribute [ext] LE
 
-alias le_trans ← LE.le.trans
+alias LE.le.trans := le_trans
 
-alias le_trans' ← LE.le.trans'
+alias LE.le.trans' := le_trans'
 
-alias lt_of_le_of_lt ← LE.le.trans_lt
+alias LE.le.trans_lt := lt_of_le_of_lt
 
-alias lt_of_le_of_lt' ← LE.le.trans_lt'
+alias LE.le.trans_lt' := lt_of_le_of_lt'
 
-alias le_antisymm ← LE.le.antisymm
+alias LE.le.antisymm := le_antisymm
 
-alias ge_antisymm ← LE.le.antisymm'
+alias LE.le.antisymm' := ge_antisymm
 
-alias lt_of_le_of_ne ← LE.le.lt_of_ne
+alias LE.le.lt_of_ne := lt_of_le_of_ne
 
-alias lt_of_le_of_ne' ← LE.le.lt_of_ne'
+alias LE.le.lt_of_ne' := lt_of_le_of_ne'
 
-alias lt_of_le_not_le ← LE.le.lt_of_not_le
+alias LE.le.lt_of_not_le := lt_of_le_not_le
 
-alias lt_or_eq_of_le ← LE.le.lt_or_eq
+alias LE.le.lt_or_eq := lt_or_eq_of_le
 
-alias Decidable.lt_or_eq_of_le ← LE.le.lt_or_eq_dec
+alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 
-alias le_of_lt ← LT.lt.le
+alias LT.lt.le := le_of_lt
 
-alias lt_trans ← LT.lt.trans
+alias LT.lt.trans := lt_trans
 
-alias lt_trans' ← LT.lt.trans'
+alias LT.lt.trans' := lt_trans'
 
-alias lt_of_lt_of_le ← LT.lt.trans_le
+alias LT.lt.trans_le := lt_of_lt_of_le
 
-alias lt_of_lt_of_le' ← LT.lt.trans_le'
+alias LT.lt.trans_le' := lt_of_lt_of_le'
 
-alias ne_of_lt ← LT.lt.ne
+alias LT.lt.ne := ne_of_lt
 #align has_lt.lt.ne LT.lt.ne
 
-alias lt_asymm ← LT.lt.asymm LT.lt.not_lt
+alias LT.lt.asymm := lt_asymm
 
-alias le_of_eq ← Eq.le
+alias LT.lt.not_lt := lt_asymm
+
+alias Eq.le := le_of_eq
 #align eq.le Eq.le
 
 -- Porting note: no `decidable_classical` linter
@@ -203,24 +208,24 @@ theorem lt_of_eq_of_lt' : b = c → a < b → a < c :=
   flip lt_of_lt_of_eq
 #align lt_of_eq_of_lt' lt_of_eq_of_lt'
 
-alias le_of_le_of_eq ← LE.le.trans_eq
+alias LE.le.trans_eq := le_of_le_of_eq
 
-alias le_of_le_of_eq' ← LE.le.trans_eq'
+alias LE.le.trans_eq' := le_of_le_of_eq'
 
-alias lt_of_lt_of_eq ← LT.lt.trans_eq
+alias LT.lt.trans_eq := lt_of_lt_of_eq
 
-alias lt_of_lt_of_eq' ← LT.lt.trans_eq'
+alias LT.lt.trans_eq' := lt_of_lt_of_eq'
 
-alias le_of_eq_of_le ← Eq.trans_le
+alias Eq.trans_le := le_of_eq_of_le
 #align eq.trans_le Eq.trans_le
 
-alias le_of_eq_of_le' ← Eq.trans_ge
+alias Eq.trans_ge := le_of_eq_of_le'
 #align eq.trans_ge Eq.trans_ge
 
-alias lt_of_eq_of_lt ← Eq.trans_lt
+alias Eq.trans_lt := lt_of_eq_of_lt
 #align eq.trans_lt Eq.trans_lt
 
-alias lt_of_eq_of_lt' ← Eq.trans_gt
+alias Eq.trans_gt := lt_of_eq_of_lt'
 #align eq.trans_gt Eq.trans_gt
 
 end
@@ -243,6 +248,18 @@ theorem not_gt (h : x = y) : ¬y < x :=
 #align eq.not_gt Eq.not_gt
 
 end Eq
+
+
+section
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+
+-- Making this a @[simp] lemma causes confluences problems downstream.
+lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
+
+end
 
 namespace LE.le
 
@@ -354,12 +371,12 @@ theorem not_le_of_lt [Preorder α] {a b : α} (h : a < b) : ¬b ≤ a :=
   (le_not_le_of_lt h).right
 #align not_le_of_lt not_le_of_lt
 
-alias not_le_of_lt ← LT.lt.not_le
+alias LT.lt.not_le := not_le_of_lt
 
 theorem not_lt_of_le [Preorder α] {a b : α} (h : a ≤ b) : ¬b < a := fun hba ↦ hba.not_le h
 #align not_lt_of_le not_lt_of_le
 
-alias not_lt_of_le ← LE.le.not_lt
+alias LE.le.not_lt := not_lt_of_le
 
 theorem ne_of_not_le [Preorder α] {a b : α} (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 #align ne_of_not_le ne_of_not_le
@@ -406,13 +423,13 @@ theorem gt_or_eq_of_le [PartialOrder α] {a b : α} (h : a ≤ b) : a < b ∨ b 
   (eq_or_gt_of_le h).symm
 #align gt_or_eq_of_le gt_or_eq_of_le
 
-alias Decidable.eq_or_lt_of_le ← LE.le.eq_or_lt_dec
+alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
 
-alias eq_or_lt_of_le ← LE.le.eq_or_lt
+alias LE.le.eq_or_lt := eq_or_lt_of_le
 
-alias eq_or_gt_of_le ← LE.le.eq_or_gt
+alias LE.le.eq_or_gt := eq_or_gt_of_le
 
-alias gt_or_eq_of_le ← LE.le.gt_or_eq
+alias LE.le.gt_or_eq := gt_or_eq_of_le
 
 -- Porting note: no `decidable_classical` linter
 -- attribute [nolint decidable_classical] LE.le.eq_or_lt_dec
@@ -425,9 +442,9 @@ theorem eq_of_ge_of_not_gt [PartialOrder α] {a b : α} (hab : a ≤ b) (hba : �
   (hab.eq_or_lt.resolve_right hba).symm
 #align eq_of_ge_of_not_gt eq_of_ge_of_not_gt
 
-alias eq_of_le_of_not_lt ← LE.le.eq_of_not_lt
+alias LE.le.eq_of_not_lt := eq_of_le_of_not_lt
 
-alias eq_of_ge_of_not_gt ← LE.le.eq_of_not_gt
+alias LE.le.eq_of_not_gt := eq_of_ge_of_not_gt
 
 theorem Ne.le_iff_lt [PartialOrder α] {a b : α} (h : a ≠ b) : a ≤ b ↔ a < b :=
   ⟨fun h' ↦ lt_of_le_of_ne h' h, fun h ↦ h.le⟩
@@ -595,7 +612,7 @@ theorem associative_of_commutative_of_le {f : α → α → α} (comm : Commutat
 end PartialOrder
 
 @[ext]
-theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.toLE α) :=
+theorem Preorder.toLE_injective {α : Type*} : Function.Injective (@Preorder.toLE α) :=
   fun A B h ↦ match A, B with
   | { lt := A_lt, lt_iff_le_not_le := A_iff, .. },
     { lt := B_lt, lt_iff_le_not_le := B_iff, .. } => by
@@ -609,7 +626,7 @@ theorem Preorder.toLE_injective {α : Type _} : Function.Injective (@Preorder.to
 #align preorder.to_has_le_injective Preorder.toLE_injective
 
 @[ext]
-theorem PartialOrder.toPreorder_injective {α : Type _} :
+theorem PartialOrder.toPreorder_injective {α : Type*} :
     Function.Injective (@PartialOrder.toPreorder α) := fun A B h ↦ by
   cases A
   cases B
@@ -618,13 +635,13 @@ theorem PartialOrder.toPreorder_injective {α : Type _} :
 #align partial_order.to_preorder_injective PartialOrder.toPreorder_injective
 
 @[ext]
-theorem LinearOrder.toPartialOrder_injective {α : Type _} :
+theorem LinearOrder.toPartialOrder_injective {α : Type*} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun A B h ↦ match A, B with
   | { le := A_le, lt := A_lt,
       decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
-      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,  .. },
+      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
     { le := B_le, lt := B_lt,
       decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
@@ -686,7 +703,7 @@ instance Order.Preimage.decidable {α β} (f : α → β) (s : β → β → Pro
 
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
 notation for `OrderDual α`. -/
-def OrderDual (α : Type _) : Type _ :=
+def OrderDual (α : Type*) : Type _ :=
   α
 #align order_dual OrderDual
 
@@ -695,52 +712,53 @@ notation:max α "ᵒᵈ" => OrderDual α
 
 namespace OrderDual
 
-instance (α : Type _) [h : Nonempty α] : Nonempty αᵒᵈ :=
+instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
   h
 
-instance (α : Type _) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
+instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
-instance (α : Type _) [LE α] : LE αᵒᵈ :=
+instance (α : Type*) [LE α] : LE αᵒᵈ :=
   ⟨fun x y : α ↦ y ≤ x⟩
 
-instance (α : Type _) [LT α] : LT αᵒᵈ :=
+instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
-instance preorder (α : Type _) [Preorder α] : Preorder αᵒᵈ where
+instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
   lt_iff_le_not_le := fun _ _ ↦ lt_iff_le_not_le
 
-instance partialOrder (α : Type _) [PartialOrder α] : PartialOrder αᵒᵈ where
+instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
   __ := inferInstanceAs (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
-instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
+instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  le_total     := λ a b : α => le_total b a
+  le_total := λ a b : α => le_total b a
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
-#align order_dual.linear_order OrderDual.linearOrder
+#align order_dual.linear_order OrderDual.instLinearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
-
-theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
+theorem Preorder.dual_dual (α : Type*) [H : Preorder α] : OrderDual.instPreorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
 #align order_dual.preorder.dual_dual OrderDual.Preorder.dual_dual
 
-theorem partialOrder.dual_dual (α : Type _) [H : PartialOrder α] : OrderDual.partialOrder αᵒᵈ = H :=
+theorem instPartialOrder.dual_dual (α : Type*) [H : PartialOrder α] :
+    OrderDual.instPartialOrder αᵒᵈ = H :=
   PartialOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.partial_order.dual_dual OrderDual.partialOrder.dual_dual
+#align order_dual.partial_order.dual_dual OrderDual.instPartialOrder.dual_dual
 
-theorem linearOrder.dual_dual (α : Type _) [H : LinearOrder α] : OrderDual.linearOrder αᵒᵈ = H :=
+theorem instLinearOrder.dual_dual (α : Type*) [H : LinearOrder α] :
+    OrderDual.instLinearOrder αᵒᵈ = H :=
   LinearOrder.ext fun _ _ ↦ Iff.rfl
-#align order_dual.linear_order.dual_dual OrderDual.linearOrder.dual_dual
+#align order_dual.linear_order.dual_dual OrderDual.instLinearOrder.dual_dual
 
 end OrderDual
 
@@ -749,7 +767,7 @@ end OrderDual
 
 /-- Set / lattice complement -/
 @[notation_class]
-class HasCompl (α : Type _) where
+class HasCompl (α : Type*) where
   /-- Set / lattice complement -/
   compl : α → α
 #align has_compl HasCompl
@@ -816,7 +834,7 @@ instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π 
 
 section Pi
 
-/-- A function `a` is strongly less than a function `b`  if `a i < b i` for all `i`. -/
+/-- A function `a` is strongly less than a function `b` if `a i < b i` for all `i`. -/
 def StrongLT [∀ i, LT (π i)] (a b : ∀ i, π i) : Prop :=
   ∀ i, a i < b i
 #align strong_lt StrongLT
@@ -842,16 +860,16 @@ theorem strongLT_of_le_of_strongLT (hab : a ≤ b) (hbc : b ≺ c) : a ≺ c := 
   (hab _).trans_lt <| hbc _
 #align strong_lt_of_le_of_strong_lt strongLT_of_le_of_strongLT
 
-alias le_of_strongLT ← StrongLT.le
+alias StrongLT.le := le_of_strongLT
 #align strong_lt.le StrongLT.le
 
-alias lt_of_strongLT ← StrongLT.lt
+alias StrongLT.lt := lt_of_strongLT
 #align strong_lt.lt StrongLT.lt
 
-alias strongLT_of_strongLT_of_le ← StrongLT.trans_le
+alias StrongLT.trans_le := strongLT_of_strongLT_of_le
 #align strong_lt.trans_le StrongLT.trans_le
 
-alias strongLT_of_le_of_strongLT ← LE.le.trans_strongLT
+alias LE.le.trans_strongLT := strongLT_of_le_of_strongLT
 
 end Pi
 
@@ -1257,7 +1275,8 @@ end Preorder
 /-- The pointwise partial order on a product.
     (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
     available via the type synonym `α ×ₗ β = α × β`.) -/
-instance (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] : PartialOrder (α × β) where
+instance instPartialOrder (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] :
+    PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 
@@ -1295,7 +1314,7 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : D
     · obtain ⟨c, ha, hb⟩ := exists_between h₂
       exact ⟨(_, c), Or.inr ⟨h₁, ha⟩, Or.inr ⟨le_rfl, hb⟩⟩⟩
 
-instance {α : ι → Type _} [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] :
+instance {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] :
     DenselyOrdered (∀ i, α i) :=
   ⟨fun a b ↦ by
     classical
@@ -1433,3 +1452,41 @@ noncomputable instance AsLinearOrder.linearOrder {α} [PartialOrder α] [IsTotal
   le_total := @total_of α (· ≤ ·) _
   decidableLE := Classical.decRel _
 #align as_linear_order.linear_order AsLinearOrder.linearOrder
+
+section dite
+variable [One α] {p : Prop} [Decidable p] {a : p → α} {b : ¬ p → α}
+
+@[to_additive dite_nonneg]
+lemma one_le_dite [LE α] (ha : ∀ h, 1 ≤ a h) (hb : ∀ h, 1 ≤ b h) : 1 ≤ dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_le_one [LE α] (ha : ∀ h, a h ≤ 1) (hb : ∀ h, b h ≤ 1) : dite p a b ≤ 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive dite_pos]
+lemma one_lt_dite [LT α] (ha : ∀ h, 1 < a h) (hb : ∀ h, 1 < b h) : 1 < dite p a b := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+@[to_additive]
+lemma dite_lt_one [LT α] (ha : ∀ h, a h < 1) (hb : ∀ h, b h < 1) : dite p a b < 1 := by
+  split; exacts [ha ‹_›, hb ‹_›]
+
+end dite
+
+section
+variable [One α] {p : Prop} [Decidable p] {a b : α}
+
+@[to_additive ite_nonneg]
+lemma one_le_ite [LE α] (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_le_one [LE α] (ha : a ≤ 1) (hb : b ≤ 1) : ite p a b ≤ 1 := by split <;> assumption
+
+@[to_additive ite_pos]
+lemma one_lt_ite [LT α] (ha : 1 < a) (hb : 1 < b) : 1 < ite p a b := by split <;> assumption
+
+@[to_additive]
+lemma ite_lt_one [LT α] (ha : a < 1) (hb : b < 1) : ite p a b < 1 := by split <;> assumption
+
+end

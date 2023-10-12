@@ -2,13 +2,10 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.S_integer
-! leanprover-community/mathlib commit 00ab77614e085c9ef49479babba1a7d826d3232e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+
+#align_import ring_theory.dedekind_domain.S_integer from "leanprover-community/mathlib"@"00ab77614e085c9ef49479babba1a7d826d3232e"
 
 /-!
 # `S`-integers and `S`-units of fraction fields of Dedekind domains

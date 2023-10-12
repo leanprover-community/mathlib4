@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module geometry.manifold.algebra.left_invariant_derivation
-! leanprover-community/mathlib commit b608348ffaeb7f557f2fd46876037abafd326ff3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Derivation.Lie
 import Mathlib.Geometry.Manifold.DerivationBundle
+
+#align_import geometry.manifold.algebra.left_invariant_derivation from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
 /-!
 
@@ -29,8 +26,8 @@ noncomputable section
 
 open scoped LieGroup Manifold Derivation
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type _)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (g h : G)
 
 -- Generate trivial has_sizeof instance. It prevents weird type class inference timeout problems
@@ -72,7 +69,7 @@ instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜�
 instance : CoeFun (LeftInvariantDerivation I G) fun _ => C^∞⟮I, G; 𝕜⟯ → C^∞⟮I, G; 𝕜⟯ :=
   ⟨FunLike.coe⟩
 
-variable {M : Type _} [TopologicalSpace M] [ChartedSpace H M] {x : M} {r : 𝕜}
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} {r : 𝕜}
   {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
 
 theorem toFun_eq_coe : X.toFun = ⇑X :=
@@ -142,7 +139,6 @@ instance : Add (LeftInvariantDerivation I G) where
     ⟨X + Y, fun g => by
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
-set_option maxHeartbeats 400000 in
 instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by
     -- porting note: was simp [left_invariant']
@@ -150,7 +146,7 @@ instance : Neg (LeftInvariantDerivation I G) where
     rw [map_neg (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_neg (𝒅ₕ (smoothLeftMul_one I g)),
       left_invariant', map_neg (Derivation.evalAt (𝕜 := 𝕜) g)]⟩
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 300000 in
 instance : Sub (LeftInvariantDerivation I G) where
   sub X Y := ⟨X - Y, fun g => by
     -- porting note: was simp [left_invariant']
@@ -265,7 +261,6 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
 set_option linter.uppercaseLean3 false in
 #align left_invariant_derivation.comp_L LeftInvariantDerivation.comp_L
 
-set_option maxHeartbeats 400000 in
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by

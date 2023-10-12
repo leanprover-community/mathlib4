@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.AffineScheme
+
+#align_import algebraic_geometry.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # (Co)Limits of Schemes
@@ -26,6 +23,8 @@ We construct various limits and colimits in the category of schemes.
 * Coproducts exists (and the forgetful functors preserve them).
 
 -/
+
+suppress_compilation
 
 set_option linter.uppercaseLean3 false
 
@@ -88,7 +87,7 @@ instance : IsEmpty Scheme.empty.carrier :=
   show IsEmpty PEmpty by infer_instance
 
 instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier :=
-  ⟨PrimeSpectrum.pUnit⟩
+  inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 #align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_punit_isEmpty
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)

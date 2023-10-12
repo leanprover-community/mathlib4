@@ -3,11 +3,6 @@ Copyright (c) 2019 Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert 
 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Han, Chris Hughes, Robert Y. Lewis, Patrick Massot
-
-! This file was ported from Lean 3 source module sensitivity
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.ApplyFun
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Data.Real.Sqrt
+
+#align_import sensitivity from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # Huang's sensitivity theorem
@@ -106,8 +103,8 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
     ext x
     by_cases hx : x = 0
     · rwa [hx]
-    · rw [← Fin.succ_pred x <| Fin.vne_of_ne hx]
-      convert congr_fun h (Fin.pred x <| Fin.vne_of_ne hx)
+    · rw [← Fin.succ_pred x hx]
+      convert congr_fun h (Fin.pred x hx)
 #align sensitivity.Q.succ_n_eq Sensitivity.Q.succ_n_eq
 
 /-- The adjacency relation defining the graph structure on `Q n`:
@@ -131,7 +128,7 @@ theorem adj_iff_proj_eq {p q : Q n.succ} (h₀ : p 0 ≠ q 0) : q ∈ p.adjacent
     use 0, h₀
     intro y hy
     contrapose! hy
-    rw [← Fin.succ_pred _ <| Fin.vne_of_ne hy]
+    rw [← Fin.succ_pred _ hy]
     apply congr_fun heq
 #align sensitivity.Q.adj_iff_proj_eq Sensitivity.Q.adj_iff_proj_eq
 
@@ -141,15 +138,15 @@ theorem adj_iff_proj_adj {p q : Q n.succ} (h₀ : p 0 = q 0) :
     q ∈ p.adjacent ↔ π q ∈ (π p).adjacent := by
   constructor
   · rintro ⟨i, h_eq, h_uni⟩
-    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq )
-    use i.pred <| Fin.vne_of_ne h_i,
+    have h_i : i ≠ 0 := fun h_i => absurd h₀ (by rwa [h_i] at h_eq)
+    use i.pred h_i,
       show p (Fin.succ (Fin.pred i _)) ≠ q (Fin.succ (Fin.pred i _)) by rwa [Fin.succ_pred]
     intro y hy
     simp [Eq.symm (h_uni _ hy)]
   · rintro ⟨i, h_eq, h_uni⟩
     use i.succ, h_eq
     intro y hy
-    rw [← Fin.pred_inj (ha := Fin.vne_of_ne (?ha : y ≠ 0)) (hb := Fin.vne_of_ne (?hb : i.succ ≠ 0)),
+    rw [← Fin.pred_inj (ha := (?ha : y ≠ 0)) (hb := (?hb : i.succ ≠ 0)),
       Fin.pred_succ]
     case ha =>
       contrapose! hy
@@ -234,8 +231,8 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   · dsimp [ε] at h; exact h fun _ => true
   · cases' v with v₁ v₂
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
-      [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred <| Fin.vne_of_ne h);
-      let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred <| Fin.vne_of_ne h)]
+      [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
+      let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
     all_goals
       specialize h q
       first
@@ -330,7 +327,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
 #align sensitivity.f_matrix Sensitivity.f_matrix
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
-noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ:=
+noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
   LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
 #align sensitivity.g Sensitivity.g
 
@@ -402,14 +399,14 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
-    simp only [exists_prop]
     exact_mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1) := by
     convert ← rank_submodule_le (W ⊔ img)
+    rw [← Nat.cast_succ]
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
     convert ← Submodule.rank_sup_add_rank_inf_eq W img
-    rw [← rank_eq_of_injective (g m) g_injective]
+    rw [rank_range_of_injective (g m) g_injective]
     apply dim_V
   have dimW : dim W = card H := by
     have li : LinearIndependent ℝ (H.restrict e) := by

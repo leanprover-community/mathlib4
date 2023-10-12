@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.cartan_subalgebra
-! leanprover-community/mathlib commit 938fead7abdc0cbbca8eba7a1052865a169dc102
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Normalizer
+
+#align_import algebra.lie.cartan_subalgebra from "leanprover-community/mathlib"@"938fead7abdc0cbbca8eba7a1052865a169dc102"
 
 /-!
 # Cartan subalgebras
@@ -40,7 +37,7 @@ that a Lie submodule `N ⊆ M` is the limiting value for the upper central serie
 
 This is a characteristic property of Cartan subalgebras with the roles of `L`, `M`, `N` played by
 `H`, `L`, `H`, respectively. See `LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit`. -/
-def LieSubmodule.IsUcsLimit {M : Type _} [AddCommGroup M] [Module R M] [LieRingModule L M]
+def LieSubmodule.IsUcsLimit {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M]
     [LieModule R L M] (N : LieSubmodule R L M) : Prop :=
   ∃ k, ∀ l, k ≤ l → (⊥ : LieSubmodule R L M).ucs l = N
 #align lie_submodule.is_ucs_limit LieSubmodule.IsUcsLimit

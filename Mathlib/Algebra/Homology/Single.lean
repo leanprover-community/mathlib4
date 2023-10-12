@@ -2,13 +2,10 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.single
-! leanprover-community/mathlib commit 324a7502510e835cdbd3de1519b6c66b51fb2467
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homology
+
+#align_import algebra.homology.single from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
 
 /-!
 # Chain complexes supported in a single degree
@@ -41,7 +38,7 @@ variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
 
 namespace HomologicalComplex
 
-variable {ι : Type _} [DecidableEq ι] (c : ComplexShape ι)
+variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 
 /-- The functor `V ⥤ HomologicalComplex V c` creating a chain complex supported in a single degree.
 
@@ -440,7 +437,7 @@ def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
           simp
         · exact hf
         · rw [C.shape, comp_zero]
-          simp
+          simp only [Nat.zero_eq, ComplexShape.up_Rel, zero_add]
           exact j.succ_succ_ne_one.symm }
   left_inv f := by
     ext i

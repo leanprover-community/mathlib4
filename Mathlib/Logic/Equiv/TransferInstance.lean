@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.equiv.transfer_instance
-! leanprover-community/mathlib commit ec1c7d810034d4202b0dd239112d1792be9f6fdc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
+
+#align_import logic.equiv.transfer_instance from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -107,11 +104,11 @@ theorem inv_def [Inv β] (x : α) :
 
 /-- Transfer `SMul` across an `Equiv` -/
 @[reducible]
-protected def smul (R : Type _) [SMul R β] : SMul R α :=
+protected def smul (R : Type*) [SMul R β] : SMul R α :=
   ⟨fun r x => e.symm (r • e x)⟩
 #align equiv.has_smul Equiv.smul
 
-theorem smul_def {R : Type _} [SMul R β] (r : R) (x : α) :
+theorem smul_def {R : Type*} [SMul R β] (r : R) (x : α) :
     letI := e.smul R
     r • x = e.symm (r • e x) :=
   rfl
@@ -119,11 +116,11 @@ theorem smul_def {R : Type _} [SMul R β] (r : R) (x : α) :
 
 /-- Transfer `Pow` across an `Equiv` -/
 @[reducible, to_additive existing smul]
-protected def pow (N : Type _) [Pow β N] : Pow α N :=
+protected def pow (N : Type*) [Pow β N] : Pow α N :=
   ⟨fun x n => e.symm (e x ^ n)⟩
 #align equiv.has_pow Equiv.pow
 
-theorem pow_def {N : Type _} [Pow β N] (n : N) (x : α) :
+theorem pow_def {N : Type*} [Pow β N] (n : N) (x : α) :
     letI := e.pow N
     x ^ n = e.symm (e x ^ n) :=
   rfl
@@ -208,7 +205,7 @@ protected def semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α :=
 #align equiv.semigroup_with_zero Equiv.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
-@[reducible, to_additive "Transfer `add_comm_semigroup` across an `Equiv`"]
+@[reducible, to_additive "Transfer `AddCommSemigroup` across an `Equiv`"]
 protected def commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
@@ -477,7 +474,7 @@ protected def field [Field β] : Field α := by
 
 section R
 
-variable (R : Type _)
+variable (R : Type*)
 
 section
 
@@ -537,7 +534,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
     { Equiv.addEquiv e with
       map_smul' := fun r x => by
         apply e.symm.injective
-        simp
+        simp only [toFun_as_coe_apply, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
         exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 #align equiv.linear_equiv Equiv.linearEquiv
 

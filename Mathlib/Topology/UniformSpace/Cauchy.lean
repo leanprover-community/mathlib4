@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.uniform_space.cauchy
-! leanprover-community/mathlib commit 22131150f88a2d125713ffa0f4693e3355b1eb49
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Bases
 import Mathlib.Topology.UniformSpace.Basic
+
+#align_import topology.uniform_space.cauchy from "leanprover-community/mathlib"@"22131150f88a2d125713ffa0f4693e3355b1eb49"
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
@@ -23,7 +20,7 @@ open Filter TopologicalSpace Set Classical UniformSpace Function
 
 open Classical Uniformity Topology Filter
 
-variable {α : Type u} {β : Type v} [UniformSpace α]
+variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
 /-- A filter `f` is Cauchy if for every entourage `r`, there exists an
   `s ∈ f` such that `s × s ⊆ r`. This is a generalization of Cauchy
@@ -56,6 +53,10 @@ theorem cauchy_iff {f : Filter α} : Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α,
   cauchy_iff'.trans <| by
     simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, ball_mem_comm]
 #align cauchy_iff cauchy_iff
+
+lemma cauchy_iff_le {l : Filter α} [hl : l.NeBot] :
+    Cauchy l ↔ l ×ˢ l ≤ 𝓤 α := by
+  simp only [Cauchy, hl, true_and]
 
 theorem Cauchy.ultrafilter_of {l : Filter α} (h : Cauchy l) :
     Cauchy (@Ultrafilter.of _ l h.1 : Filter α) := by
@@ -95,13 +96,40 @@ theorem Filter.Tendsto.cauchy_map {l : Filter β} [NeBot l] {f : β → α} {a :
   cauchy_nhds.mono h
 #align filter.tendsto.cauchy_map Filter.Tendsto.cauchy_map
 
+lemma Cauchy.mono_uniformSpace {u v : UniformSpace β} {F : Filter β} (huv : u ≤ v)
+    (hF : Cauchy (uniformSpace := u) F) : Cauchy (uniformSpace := v) F :=
+  ⟨hF.1, hF.2.trans huv⟩
+
+lemma cauchy_inf_uniformSpace {u v : UniformSpace β} {F : Filter β} :
+    Cauchy (uniformSpace := u ⊓ v) F ↔
+    Cauchy (uniformSpace := u) F ∧ Cauchy (uniformSpace := v) F := by
+  unfold Cauchy
+  rw [inf_uniformity (u := u), le_inf_iff, and_and_left]
+
+lemma cauchy_iInf_uniformSpace {ι : Sort*} [Nonempty ι] {u : ι → UniformSpace β}
+    {l : Filter β} :
+    Cauchy (uniformSpace := ⨅ i, u i) l ↔ ∀ i, Cauchy (uniformSpace := u i) l := by
+  unfold Cauchy
+  rw [iInf_uniformity, le_iInf_iff, forall_and, forall_const]
+
+lemma cauchy_iInf_uniformSpace' {ι : Sort*} {u : ι → UniformSpace β}
+    {l : Filter β} [l.NeBot] :
+    Cauchy (uniformSpace := ⨅ i, u i) l ↔ ∀ i, Cauchy (uniformSpace := u i) l := by
+  simp_rw [cauchy_iff_le (uniformSpace := _), iInf_uniformity, le_iInf_iff]
+
+lemma cauchy_comap_uniformSpace {u : UniformSpace β} {f : α → β} {l : Filter α} :
+    Cauchy (uniformSpace := comap f u) l ↔ Cauchy (map f l) := by
+  simp only [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap]
+  rfl
+
+lemma cauchy_prod_iff [UniformSpace β] {F : Filter (α × β)} :
+    Cauchy F ↔ Cauchy (map Prod.fst F) ∧ Cauchy (map Prod.snd F) := by
+  simp_rw [instUniformSpaceProd, ← cauchy_comap_uniformSpace, ← cauchy_inf_uniformSpace]
+
 theorem Cauchy.prod [UniformSpace β] {f : Filter α} {g : Filter β} (hf : Cauchy f) (hg : Cauchy g) :
     Cauchy (f ×ˢ g) := by
-  refine' ⟨hf.1.prod hg.1, _⟩
-  simp only [uniformity_prod, le_inf_iff, ← map_le_iff_le_comap, ← prod_map_map_eq]
-  exact
-    ⟨le_trans (prod_mono tendsto_fst tendsto_fst) hf.2,
-      le_trans (prod_mono tendsto_snd tendsto_snd) hg.2⟩
+  have := hf.1; have := hg.1
+  simpa [cauchy_prod_iff, hf.1] using ⟨hf, hg⟩
 #align cauchy.prod Cauchy.prod
 
 /-- The common part of the proofs of `le_nhds_of_cauchy_adhp` and
@@ -178,7 +206,7 @@ theorem CauchySeq.nonempty [SemilatticeSup β] {u : β → α} (hu : CauchySeq u
   @nonempty_of_neBot _ _ <| (map_neBot_iff _).1 hu.1
 #align cauchy_seq.nonempty CauchySeq.nonempty
 
-theorem CauchySeq.mem_entourage {β : Type _} [SemilatticeSup β] {u : β → α} (h : CauchySeq u)
+theorem CauchySeq.mem_entourage {β : Type*} [SemilatticeSup β] {u : β → α} (h : CauchySeq u)
     {V : Set (α × α)} (hV : V ∈ 𝓤 α) : ∃ k₀, ∀ i j, k₀ ≤ i → k₀ ≤ j → (u i, u j) ∈ V := by
   haveI := h.nonempty
   have := h.tendsto_uniformity; rw [← prod_atTop_atTop_eq] at this
@@ -277,7 +305,7 @@ theorem Filter.Tendsto.subseq_mem_entourage {V : ℕ → Set (α × α)} (hV : �
 
 /-- If a Cauchy sequence has a convergent subsequence, then it converges. -/
 theorem tendsto_nhds_of_cauchySeq_of_subseq [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)
-    {ι : Type _} {f : ι → β} {p : Filter ι} [NeBot p] (hf : Tendsto f p atTop) {a : α}
+    {ι : Type*} {f : ι → β} {p : Filter ι} [NeBot p] (hf : Tendsto f p atTop) {a : α}
     (ha : Tendsto (u ∘ f) p (𝓝 a)) : Tendsto u atTop (𝓝 a) :=
   le_nhds_of_cauchy_adhp hu (mapClusterPt_of_comp hf ha)
 #align tendsto_nhds_of_cauchy_seq_of_subseq tendsto_nhds_of_cauchySeq_of_subseq
@@ -343,7 +371,7 @@ protected theorem IsComplete.union {s t : Set α} (hs : IsComplete s) (ht : IsCo
       (ht l hl htl).imp fun x hx => ⟨Or.inr hx.1, hx.2⟩⟩
 #align is_complete.union IsComplete.union
 
-theorem isComplete_iUnion_separated {ι : Sort _} {s : ι → Set α} (hs : ∀ i, IsComplete (s i))
+theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i, IsComplete (s i))
     {U : Set (α × α)} (hU : U ∈ 𝓤 α) (hd : ∀ (i j : ι), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j) :
     IsComplete (⋃ i, s i) := by
   set S := ⋃ i, s i
@@ -382,9 +410,7 @@ instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace 
   complete hf :=
     let ⟨x1, hx1⟩ := CompleteSpace.complete <| hf.map uniformContinuous_fst
     let ⟨x2, hx2⟩ := CompleteSpace.complete <| hf.map uniformContinuous_snd
-    ⟨(x1, x2), by
-      rw [nhds_prod_eq, Filter.prod_def]
-      exact Filter.le_lift.2 fun s hs => Filter.le_lift'.2 fun t ht => inter_mem (hx1 hs) (hx2 ht)⟩
+    ⟨(x1, x2), by rw [nhds_prod_eq, le_prod]; constructor <;> assumption⟩
 #align complete_space.prod CompleteSpace.prod
 
 @[to_additive]
@@ -511,7 +537,7 @@ theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBoun
     let ⟨t, htf, hst⟩ := h V hV.1
     ⟨t, htf,
       closure_minimal hst <|
-        isClosed_biUnion htf fun _ _ => hV.2.preimage (continuous_id.prod_mk continuous_const)⟩
+        htf.isClosed_biUnion fun _ _ => hV.2.preimage (continuous_id.prod_mk continuous_const)⟩
 #align totally_bounded.closure TotallyBounded.closure
 
 /-- The image of a totally bounded set under a uniformly continuous map is totally bounded. -/

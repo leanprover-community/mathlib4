@@ -2,15 +2,12 @@
 Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.symmetric
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+
+#align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -26,15 +23,20 @@ We also prove some basic facts about them.
 
 * `MvPolynomial.esymm`
 
+* `MvPolynomial.psum`
+
 ## Notation
 
-+ `esymm σ R n`, is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
++ `esymm σ R n` is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
+
++ `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
+  `(X i)^n` over `i ∈ σ`.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ : Type _` (indexing the variables)
++ `σ τ : Type*` (indexing the variables)
 
-+ `R S : Type _` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
++ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
 
 + `r : R` elements of the coefficient ring
 
@@ -53,7 +55,7 @@ noncomputable section
 
 namespace Multiset
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 /-- The `n`th elementary symmetric function evaluated at the elements of `s` -/
 def esymm (s : Multiset R) (n : ℕ) : R :=
@@ -70,12 +72,12 @@ end Multiset
 
 namespace MvPolynomial
 
-variable {σ : Type _} {R : Type _}
+variable {σ : Type*} {R : Type*}
 
-variable {τ : Type _} {S : Type _}
+variable {τ : Type*} {S : Type*}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
-permutations of its variables by the  `rename` operation -/
+permutations of its variables by the `rename` operation -/
 def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
   ∀ e : Perm σ, rename e φ = φ
 #align mv_polynomial.is_symmetric MvPolynomial.IsSymmetric
@@ -180,7 +182,7 @@ theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
 /-- We can define `esymm σ R n` by summing over a subtype instead of over `powerset_len`. -/
 theorem esymm_eq_sum_subtype (n : ℕ) :
     esymm σ R n = ∑ t : { s : Finset σ // s.card = n }, ∏ i in (t : Finset σ), X i :=
-  sum_subtype _ (fun _ => mem_powerset_len_univ_iff) _
+  sum_subtype _ (fun _ => mem_powersetLen_univ) _
 #align mv_polynomial.esymm_eq_sum_subtype MvPolynomial.esymm_eq_sum_subtype
 
 /-- We can define `esymm σ R n` as a sum over explicit monomials -/
@@ -236,7 +238,6 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
   have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
   rw [hs, ht] at this
-  simp only [Finsupp.support_single_ne_zero _ one_ne_zero] at this
   · simp only [biUnion_singleton_eq_self] at this
     exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
@@ -275,9 +276,37 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
       · rfl
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-    simpa using powerset_len_sup _ _ (Nat.lt_of_succ_le hn)
+    simpa using powersetLen_sup _ _ (Nat.lt_of_succ_le hn)
 #align mv_polynomial.degrees_esymm MvPolynomial.degrees_esymm
 
 end ElementarySymmetric
+
+section PowerSum
+
+open Finset
+
+variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
+
+/-- The degree-`n` power sum -/
+def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
+
+lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
+
+@[simp]
+theorem psum_zero : psum σ R 0 = Fintype.card σ := by
+  simp only [psum, _root_.pow_zero, ← cast_card]
+  exact rfl
+
+@[simp]
+theorem psum_one : psum σ R 1 = ∑ i, X i := by
+  simp only [psum, _root_.pow_one]
+
+@[simp]
+theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
+  simp_rw [psum, map_sum, map_pow, rename_X, e.sum_comp (X · ^ n)]
+
+theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n
+
+end PowerSum
 
 end MvPolynomial

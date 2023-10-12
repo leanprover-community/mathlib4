@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.order.hom.basic
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.order.hom.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Continuous order homomorphisms
@@ -33,10 +30,10 @@ be satisfied by itself and all stricter types.
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of continuous monotone maps from `α` to `β`, aka Priestley homomorphisms. -/
-structure ContinuousOrderHom (α β : Type _) [Preorder α] [Preorder β] [TopologicalSpace α]
+structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [TopologicalSpace α]
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 #align continuous_order_hom ContinuousOrderHom
@@ -50,7 +47,7 @@ section
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
-class ContinuousOrderHomClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] extends
     ContinuousMapClass F α β where
   map_monotone (f : F) : Monotone f
@@ -73,6 +70,8 @@ instance (priority := 100) toOrderHomClass  :
 -- for the original coercion. The original one directly exposed
 -- ContinuousOrderHom.mk which allowed simp to apply more eagerly than in all
 -- the other results in `Topology.Order.Hom.Esakia`.
+/-- Turn an element of a type `F` satisfying `ContinuousOrderHomClass F α β` into an actual
+`ContinuousOrderHom`. This is declared as the default coercion from `F` to `α →Co β`. -/
 @[coe]
 def toContinuousOrderHom (f : F) : α →Co β :=
     { toFun := f
@@ -187,11 +186,13 @@ theorem id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
   ext fun _ => rfl
 #align continuous_order_hom.id_comp ContinuousOrderHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_order_hom.cancel_right ContinuousOrderHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -206,4 +207,3 @@ instance [PartialOrder β] : PartialOrder (α →Co β) :=
   PartialOrder.lift ((↑) : (α →Co β) → α → β) FunLike.coe_injective
 
 end ContinuousOrderHom
-

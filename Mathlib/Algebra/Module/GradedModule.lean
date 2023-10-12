@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.module.graded_module
-! leanprover-community/mathlib commit 59cdeb0da2480abbc235b7e611ccd9a7e5603d7c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.Module.BigOperators
+
+#align_import algebra.module.graded_module from "leanprover-community/mathlib"@"59cdeb0da2480abbc235b7e611ccd9a7e5603d7c"
 
 /-!
 # Graded Module
@@ -30,7 +27,7 @@ section
 
 open DirectSum
 
-variable {ι : Type _} (A : ι → Type _) (M : ι → Type _)
+variable {ι : Type*} (A : ι → Type*) (M : ι → Type*)
 
 namespace DirectSum
 
@@ -75,7 +72,7 @@ def gsmulHom [GMonoid A] [Gmodule A M] {i j} : A i →+ M j →+ M (i + j) where
 
 namespace Gmodule
 
-/-- For graded monoid `A` and a graded module `M` over `A`. `gmodule.smul_add_monoid_hom` is the
+/-- For graded monoid `A` and a graded module `M` over `A`. `Gmodule.smulAddMonoidHom` is the
 `⨁ᵢ Aᵢ`-scalar multiplication on `⨁ᵢ Mᵢ` induced by `gsmul_hom`. -/
 def smulAddMonoidHom [DecidableEq ι] [GMonoid A] [Gmodule A M] :
     (⨁ i, A i) →+ (⨁ i, M i) →+ ⨁ i, M i :=
@@ -88,8 +85,8 @@ section
 
 open GradedMonoid DirectSum Gmodule
 
-instance [DecidableEq ι] [GMonoid A] [Gmodule A M] : SMul (⨁ i, A i) (⨁ i, M i)
-    where smul x y := smulAddMonoidHom A M x y
+instance [DecidableEq ι] [GMonoid A] [Gmodule A M] : SMul (⨁ i, A i) (⨁ i, M i) where
+  smul x y := smulAddMonoidHom A M x y
 
 @[simp]
 theorem smul_def [DecidableEq ι] [GMonoid A] [Gmodule A M] (x : ⨁ i, A i) (y : ⨁ i, M i) :
@@ -163,7 +160,7 @@ end
 
 open DirectSum BigOperators
 
-variable {ι R A M σ σ' : Type _}
+variable {ι R A M σ σ' : Type*}
 
 variable [AddMonoid ι] [CommSemiring R] [Semiring A] [Algebra R A]
 

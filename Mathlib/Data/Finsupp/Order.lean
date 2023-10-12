@@ -2,13 +2,10 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
-
-! This file was ported from Lean 3 source module data.finsupp.order
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
+
+#align_import data.finsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Pointwise order on finitely supported functions
@@ -33,7 +30,7 @@ open BigOperators
 
 open Finset
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 
@@ -48,7 +45,7 @@ section LE
 
 variable [LE α]
 
-instance : LE (ι →₀ α) :=
+instance instLEFinsupp : LE (ι →₀ α) :=
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
 theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=
@@ -119,6 +116,18 @@ instance lattice [Lattice α] : Lattice (ι →₀ α) :=
   { Finsupp.semilatticeInf, Finsupp.semilatticeSup with }
 #align finsupp.lattice Finsupp.lattice
 
+section Lattice
+variable [DecidableEq ι] [Lattice α] (f g : ι →₀ α)
+
+theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
+  coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
+#align finsupp.support_inf_union_support_sup Finsupp.support_inf_union_support_sup
+
+theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
+  (union_comm _ _).trans <| support_inf_union_support_sup _ _
+#align finsupp.support_sup_union_support_inf Finsupp.support_sup_union_support_inf
+
+end Lattice
 end Zero
 
 /-! ### Algebraic order structures -/
@@ -137,9 +146,9 @@ instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α 
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α]
+variable [CanonicallyOrderedAddCommMonoid α]
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -184,7 +193,7 @@ instance tsub : Sub (ι →₀ α) :=
 instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddMonoid (ι →₀ α) :=
+instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
   { Finsupp.orderBot,
     Finsupp.orderedAddCommMonoid with
     exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
@@ -217,11 +226,11 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
   simp (config := { contextual := true }) [subset_iff]
 #align finsupp.subset_support_tsub Finsupp.subset_support_tsub
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddMonoid α]
+variable [CanonicallyLinearOrderedAddCommMonoid α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
@@ -245,7 +254,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
     rfl
 #align finsupp.disjoint_iff Finsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid
 
 /-! ### Some lemmas about `ℕ` -/
 

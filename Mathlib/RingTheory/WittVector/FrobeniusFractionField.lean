@@ -2,15 +2,12 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.frobenius_fraction_field
-! leanprover-community/mathlib commit cead93130da7100f8a9fe22ee210f7636a91168f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.WittVector.DiscreteValuationRing
+
+#align_import ring_theory.witt_vector.frobenius_fraction_field from "leanprover-community/mathlib"@"cead93130da7100f8a9fe22ee210f7636a91168f"
 
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`
@@ -65,7 +62,7 @@ whose variable represents the `n`th coefficient of `x` in `x * a`.
 
 section CommRing
 
-variable {k : Type _} [CommRing k] [CharP k p]
+variable {k : Type*} [CommRing k] [CharP k p]
 
 open Polynomial
 
@@ -102,7 +99,7 @@ end CommRing
 
 section IsAlgClosed
 
-variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
+variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 theorem root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ∃ b : k, (succNthDefiningPoly p n a₁ a₂ bs).IsRoot b :=
@@ -146,7 +143,7 @@ end RecursionMain
 
 namespace RecursionBase
 
-variable {k : Type _} [Field k] [IsAlgClosed k]
+variable {k : Type*} [Field k] [IsAlgClosed k]
 
 theorem solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
   IsAlgClosed.exists_pow_nat_eq _ <|
@@ -197,7 +194,7 @@ section FrobeniusRotation
 
 section IsAlgClosed
 
-variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
+variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 /-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
 -/

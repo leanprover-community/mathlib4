@@ -2,15 +2,12 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.valued_field
-! leanprover-community/mathlib commit 3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Valuation
 import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.Algebra.UniformField
+
+#align_import topology.algebra.valued_field from "leanprover-community/mathlib"@"3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064"
 
 /-!
 # Valued fields and their completions
@@ -39,7 +36,7 @@ open Topology
 
 section DivisionRing
 
-variable {K : Type _} [DivisionRing K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section ValuationTopologicalDivisionRing
 
@@ -140,7 +137,7 @@ namespace Valued
 
 open UniformSpace
 
-variable {K : Type _} [Field K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
+variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
 
 local notation "hat " => Completion
 
@@ -174,7 +171,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace  := H₀ y y_in₀
+        replace := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
@@ -290,7 +287,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp
+    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by
@@ -314,7 +311,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
         (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_fst).union
           (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_snd)
     · intro x y
-      dsimp
       norm_cast
       rw [← le_max_iff]
       exact v.map_add x y

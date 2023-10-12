@@ -2,14 +2,11 @@
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudriashov
-
-! This file was ported from Lean 3 source module analysis.convex.jensen
-! leanprover-community/mathlib commit bfad3f455b388fbcc14c49d0cac884f774f14d20
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Function
+
+#align_import analysis.convex.jensen from "leanprover-community/mathlib"@"bfad3f455b388fbcc14c49d0cac884f774f14d20"
 
 /-!
 # Jensen's inequality and maximum principle for convex functions
@@ -26,7 +23,7 @@ Jensen's inequalities:
 * `ConcaveOn.le_map_centerMass`, `ConcaveOn.le_map_sum`: Concave Jensen's inequality.
 
 As corollaries, we get:
-* `ConvexOn.exists_ge_of_mem_convexHull `: Maximum principle for convex functions.
+* `ConvexOn.exists_ge_of_mem_convexHull`: Maximum principle for convex functions.
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
 
@@ -128,9 +125,8 @@ theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ 
 /-- Maximum principle for convex functions. If a function `f` is convex on the convex hull of `s`,
 then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
-    (hx : x ∈ convexHull.{u, v} 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
-  -- Porting note: `convexHull_eq` has an unspecified universe value that we need to pick.
-  rw [_root_.convexHull_eq.{u, v, 0}] at hx
+    (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
+  rw [_root_.convexHull_eq] at hx
   obtain ⟨α, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx
   rcases hf.exists_ge_of_centerMass hw₀ (hw₁.symm ▸ zero_lt_one) fun i hi =>
       subset_convexHull 𝕜 s (hp i hi) with

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.sober
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.sober from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Sober spaces
@@ -29,7 +26,7 @@ stated via `[QuasiSober α] [T0Space α]`.
 
 open Set
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 section genericPoint
 
@@ -120,7 +117,7 @@ section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
 @[mk_iff quasiSober_iff]
-class QuasiSober (α : Type _) [TopologicalSpace α] : Prop where
+class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 #align quasi_sober QuasiSober
 
