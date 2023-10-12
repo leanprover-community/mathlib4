@@ -119,7 +119,7 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
-    rw [RingQuot.liftAlgHom_mkAlgHom_apply]
+    erw [RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
   right_inv F := by
     apply RingQuot.ringQuot_ext'
@@ -129,7 +129,7 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   LinearMap.toFun_eq_coe, LinearMap.coe_comp, LieHom.coe_linearMap_comp,
     --   AlgHom.comp_toLinearMap, Function.comp_apply, AlgHom.toLinearMap_apply,
     --   RingQuot.liftAlgHom_mkAlgHom_apply, AlgHom.coe_toLieHom, LieHom.coe_mk]
-    simp [mkAlgHom]
+    simp [mkAlgHom]; rfl
 #align universal_enveloping_algebra.lift UniversalEnvelopingAlgebra.lift
 
 @[simp]

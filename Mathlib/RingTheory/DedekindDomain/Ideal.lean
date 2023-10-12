@@ -1156,7 +1156,9 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by simp
+  right_inv := fun ⟨j, hj⟩ => by
+    simp
+    erw [OrderIso.apply_symm_apply]
 #align normalized_factors_equiv_of_quot_equiv normalizedFactorsEquivOfQuotEquiv
 
 @[simp]

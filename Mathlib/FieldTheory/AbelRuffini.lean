@@ -363,7 +363,8 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
     apply Subtype.val_injective
-    simp [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
+    erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
+    simp
   rw [P, key]
   refine' gal_isSolvable_of_splits ⟨Normal.splits _ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
   apply SplittingField.instNormal

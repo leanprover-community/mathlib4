@@ -195,8 +195,8 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
     replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
-    rw [coe_comp, coe_comp] at this
-    rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
+    erw [coe_comp, coe_comp] at this
+    erw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
       rw [←comp_apply, ←comp_base, D.t_inv, id_base, id_apply]

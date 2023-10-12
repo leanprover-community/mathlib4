@@ -53,8 +53,8 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
     (by
       dsimp [pullbackFst, pullbackSnd, Function.comp]
       ext ⟨x, h⟩
-      rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]
-      exact h)
+      rw [comp_apply, comp_apply]
+      congr!)
 #align Top.pullback_cone TopCat.pullbackCone
 
 /-- The constructed cone is a limit. -/
@@ -74,12 +74,10 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       refine' ⟨_, _, _⟩
       · delta pullbackCone
         ext a
-        rw [comp_apply, ContinuousMap.coe_mk]
-        rfl
+        erw [comp_apply, ContinuousMap.coe_mk]
       · delta pullbackCone
         ext a
-        rw [comp_apply, ContinuousMap.coe_mk]
-        rfl
+        erw [comp_apply, ContinuousMap.coe_mk]
       · intro m h₁ h₂
         -- Porting note: used to be ext x
         apply ContinuousMap.ext; intro x
@@ -168,7 +166,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
     rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π] <;>
-    simp
+    aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :

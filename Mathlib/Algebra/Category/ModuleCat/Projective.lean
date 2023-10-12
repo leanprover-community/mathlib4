@@ -69,7 +69,7 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
               -- Porting note: simp [Finsupp.total_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]
-              rw [Finsupp.total_single, one_smul]
+              erw [Finsupp.total_single, one_smul]
               rfl ⟩) }⟩
 set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives

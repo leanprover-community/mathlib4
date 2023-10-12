@@ -363,9 +363,9 @@ theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
     exact Subtype.property _
   · intro h
     apply (mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁).unique
-    · simp [equiv_fst_eq_mul_inv]
+    · rw [equiv_fst_eq_mul_inv]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
-      simp [equiv_fst_eq_mul_inv, ← mul_assoc]
+      rw [equiv_fst_eq_mul_inv]; simp [equiv_fst_eq_mul_inv, ← mul_assoc]
 
 theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
     (hHT.equiv g₁).snd = (hHT.equiv g₂).snd ↔ RightCosetEquivalence H g₁ g₂ := by
@@ -377,17 +377,17 @@ theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
     exact Subtype.property _
   · intro h
     apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁).unique
-    · simp [equiv_snd_eq_inv_mul]
+    · rw [equiv_snd_eq_inv_mul]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_left h]
-      simp [equiv_snd_eq_inv_mul, mul_assoc]
+      rw [equiv_snd_eq_inv_mul, mul_assoc]; simp
 
 theorem leftCosetEquivalence_equiv_fst (g : G) :
     LeftCosetEquivalence K g ((hSK.equiv g).fst : G) := by
-  simp [LeftCosetEquivalence, leftCoset_eq_iff, equiv_fst_eq_mul_inv]
+  rw [equiv_fst_eq_mul_inv]; simp [LeftCosetEquivalence, leftCoset_eq_iff]
 
 theorem rightCosetEquivalence_equiv_snd (g : G) :
     RightCosetEquivalence H g ((hHT.equiv g).snd : G) := by
-  simp [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]
+  rw [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]; simp
 
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
     (hST.equiv g).fst = ⟨g, hg⟩ := by

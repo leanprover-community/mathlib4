@@ -73,7 +73,10 @@ def unitClosed : Closed (𝟙_ C) where
                 right_inv := by aesop_cat }
             homEquiv_naturality_left_symm := fun f g => by
               dsimp
-              rw [leftUnitor_naturality_assoc] } }
+              rw [leftUnitor_naturality_assoc]
+            homEquiv_naturality_right := by  -- aesop failure
+              dsimp
+              simp }}
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}

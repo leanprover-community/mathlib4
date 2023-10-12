@@ -122,7 +122,7 @@ theorem iso_isometry_of_normNoninc {V W : SemiNormedGroupCat} (i : V ≅ W) (h1 
   intro v
   apply le_antisymm (h1 v)
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
 #align SemiNormedGroup.iso_isometry_of_norm_noninc SemiNormedGroupCat.iso_isometry_of_normNoninc
 
@@ -258,7 +258,7 @@ theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.ho
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 #align SemiNormedGroup₁.iso_isometry SemiNormedGroupCat₁.iso_isometry
 

@@ -183,8 +183,8 @@ protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
   refine' ⟨fun u => _, fun u => _⟩ <;>
     -- Porting note: was
     -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
-    simp only [φ.symmetrifyStar, φ.symmetrifyCostar, EquivLike.comp_bijective] <;>
-    erw [EquivLike.bijective_comp] <;>
+    simp only [φ.symmetrifyStar, φ.symmetrifyCostar] <;>
+    erw [EquivLike.comp_bijective, EquivLike.bijective_comp] <;>
     simp [hφ.star_bijective u, hφ.costar_bijective u]
 #align prefunctor.is_covering.symmetrify Prefunctor.IsCovering.symmetrify
 

@@ -189,7 +189,7 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     ((inv ((linearization k G).μ (Action.leftRegular G) { V := Fin n → G, ρ := 1 })).hom
       ((lmapDomain k k (actionDiagonalSucc G n).hom.hom) (single f a))) = _
   simp only [CategoryTheory.Functor.map_id, linearization_μ_inv_hom]
-  rw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
+  erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
     LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
   erw [lcongr_single]
   rw [TensorProduct.lid_symm_apply, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp_symm_single]
@@ -227,10 +227,11 @@ theorem diagonalSucc_inv_single_left (g : G) (f : Gⁿ →₀ k) (r : k) :
     simp only [lift_apply, smul_single', mul_one, TensorProduct.tmul_add, map_add,
       diagonalSucc_inv_single_single, hx, Finsupp.sum_single_index, mul_comm b,
       zero_mul, single_zero] -/
-  · rw [TensorProduct.tmul_zero, map_zero, map_zero]
+  · rw [TensorProduct.tmul_zero, map_zero]; erw [map_zero]
   · intro _ _ _ _ _ hx
-    rw [TensorProduct.tmul_add, map_add, map_add, hx]
-    simp_rw [lift_apply, smul_single, smul_eq_mul, diagonalSucc_inv_single_single]
+    rw [TensorProduct.tmul_add, map_add]; erw [map_add, hx]
+    simp_rw [lift_apply, smul_single, smul_eq_mul]
+    erw [diagonalSucc_inv_single_single]
     rw [sum_single_index, mul_comm]
     · rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_left GroupCohomology.Resolution.diagonalSucc_inv_single_left
@@ -244,10 +245,11 @@ theorem diagonalSucc_inv_single_right (g : G →₀ k) (f : Gⁿ) (r : k) :
   · intro a b x ha hb hx
     simp only [lift_apply, smul_single', map_add, hx, diagonalSucc_inv_single_single,
       TensorProduct.add_tmul, Finsupp.sum_single_index, zero_mul, single_zero] -/
-  · rw [TensorProduct.zero_tmul, map_zero, map_zero]
+  · rw [TensorProduct.zero_tmul, map_zero]; erw [map_zero]
   · intro _ _ _ _ _ hx
-    rw [TensorProduct.add_tmul, map_add, map_add, hx]
-    simp_rw [lift_apply, smul_single', diagonalSucc_inv_single_single]
+    rw [TensorProduct.add_tmul, map_add]; erw [map_add, hx]
+    simp_rw [lift_apply, smul_single']
+    erw [diagonalSucc_inv_single_single]
     rw [sum_single_index]
     · rw [zero_mul, single_zero]
 #align group_cohomology.resolution.diagonal_succ_inv_single_right GroupCohomology.Resolution.diagonalSucc_inv_single_right
@@ -267,7 +269,7 @@ def ofMulActionBasisAux :
       (ofMulAction k G (Fin (n + 1) → G)).asModule :=
   { (Rep.equivalenceModuleMonoidAlgebra.1.mapIso (diagonalSucc k G n).symm).toLinearEquiv with
     map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
+      erw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
 /- Porting note: broken proof was
       refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
@@ -365,9 +367,9 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom]
   -- Porting note: This is a sure sign that coercions for morphisms in `ModuleCat`
   -- are still not set up properly.
-  rw [ModuleCat.coe_comp]
+  erw [ModuleCat.coe_comp]
   simp only [ModuleCat.coe_comp, Function.comp_apply]
-  rw [diagonalSucc_hom_single]
+  erw [diagonalSucc_hom_single]
   erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
   simp only [one_smul]
   erw [Representation.linHom_apply]

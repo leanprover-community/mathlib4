@@ -268,7 +268,7 @@ theorem isAffineOpen_iff_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : Is
     fun hU => hU.imageIsOpenImmersion f⟩
   · rw [Scheme.comp_val_base, coe_comp, Set.range_comp]
     dsimp [Opens.inclusion]
-    rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_coe, Subtype.range_coe]
+    erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_coe, Subtype.range_coe]
     rfl
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.isAffineOpen_iff_of_isOpenImmersion

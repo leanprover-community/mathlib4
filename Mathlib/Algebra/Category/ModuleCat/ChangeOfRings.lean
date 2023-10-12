@@ -741,8 +741,9 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
     · rw [map_zero, map_zero]
     · dsimp
       rw [ModuleCat.coe_comp, ModuleCat.coe_comp,Function.comp,Function.comp,
-        ExtendScalars.map_tmul, restrictScalars.map_apply, Counit.map_apply, Counit.map_apply,
-        lift.tmul, lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
+        ExtendScalars.map_tmul, restrictScalars.map_apply]
+      erw [Counit.map_apply] --Counit.map_apply,
+      rw [lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
       set s' : S := s'
       change s' • g y = g (s' • y)
       rw [map_smul]
@@ -770,7 +771,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
       letI m2 : Module R Y := Module.compHom Y f
       induction' x using TensorProduct.induction_on with s x _ _ _ _
       · rw [map_zero, map_zero]
-      · rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply, ModuleCat.coe_comp, Function.comp_apply,
+      · erw [ExtendRestrictScalarsAdj.homEquiv_symm_apply, ModuleCat.coe_comp, Function.comp_apply,
           ExtendRestrictScalarsAdj.counit_app, ExtendRestrictScalarsAdj.Counit.map_apply]
         dsimp
         rw [TensorProduct.lift.tmul]

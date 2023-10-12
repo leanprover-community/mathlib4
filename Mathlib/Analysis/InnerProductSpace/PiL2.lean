@@ -422,7 +422,7 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 @[simp]
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
-  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr,
+  erw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr,
     LinearIsometryEquiv.coe_toLinearEquiv]
 #align orthonormal_basis.coe_to_basis_repr_apply OrthonormalBasis.coe_toBasis_repr_apply
 

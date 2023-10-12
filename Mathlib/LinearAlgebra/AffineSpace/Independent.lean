@@ -402,7 +402,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  rw [← e.affineIndependent_iff, this, affineIndependent_equiv]
+  erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
 #align affine_equiv.affine_independent_set_of_eq_iff AffineEquiv.affineIndependent_set_of_eq_iff
 
 end Composition

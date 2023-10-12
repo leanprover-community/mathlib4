@@ -590,8 +590,9 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       (RingHom.comp (stalkToFiberRingHom R x) (localizationToStalk R x))
       (RingHom.id (Localization.AtPrime _)) <| by
         ext f
-        rw [RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
+        erw [RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
           stalkToFiberRingHom_toStalk, RingHom.comp_apply, RingHom.id_apply]
+        infer_instance
 #align algebraic_geometry.structure_sheaf.stalk_iso AlgebraicGeometry.StructureSheaf.stalkIso
 
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
@@ -624,7 +625,7 @@ theorem toBasicOpen_mk' (s f : R) (g : Submonoid.powers s) :
     toBasicOpen R s (IsLocalization.mk' (Localization.Away s) f g) =
       const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_subset hx g.2 :=
   (IsLocalization.lift_mk'_spec _ _ _ _).2 <| by
-    rw [toOpen_eq_const, toOpen_eq_const, const_mul_cancel']
+    erw [toOpen_eq_const, toOpen_eq_const, const_mul_cancel']
 #align algebraic_geometry.structure_sheaf.to_basic_open_mk' AlgebraicGeometry.StructureSheaf.toBasicOpen_mk'
 
 @[simp]

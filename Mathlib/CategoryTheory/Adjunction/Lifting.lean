@@ -160,10 +160,10 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
-  rw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
+  erw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
   erw [adj₂.homEquiv_naturality_right]
   simp_rw [Functor.comp_map]
-  simp
+  aesop_cat
 #align category_theory.lift_adjoint.construct_left_adjoint CategoryTheory.LiftAdjoint.constructLeftAdjoint
 
 end LiftAdjoint

@@ -69,7 +69,8 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
               Discrete.functor_obj, Cofan.mk_pt, Discrete.natTrans_app, Category.id_comp]
           right_inv := fun f => by
             dsimp
-            simp } }
+            simp }
+      homEquiv_naturality_right := by intros; dsimp; simp }
 #align category_theory.evaluation_adjunction_right CategoryTheory.evaluationAdjunctionRight
 
 instance evaluationIsRightAdjoint (c : C) : IsRightAdjoint ((evaluation _ D).obj c) :=

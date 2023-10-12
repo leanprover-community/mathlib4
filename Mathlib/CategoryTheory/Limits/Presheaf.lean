@@ -459,7 +459,7 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     intros X Y f
     ext t
     dsimp
-    rw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
+    erw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
     simpa using (s.ι.naturality
       (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
   fac := by
@@ -468,14 +468,14 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     apply yonedaEquiv.injective
     rw [yonedaEquiv_comp]
     dsimp only
-    rw [Equiv.symm_apply_apply]
+    erw [Equiv.symm_apply_apply]
     rfl
   uniq := by
     intro s j h
     ext V x
     obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
     dsimp
-    rw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
+    erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
     exact congr_arg _ (h (CostructuredArrow.mk t))
 
 end ArbitraryUniverses

@@ -105,16 +105,26 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
     apply Subtype.ext
     ext j
     simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
+    erw [map_one]
     rfl
   · intro x y
     apply Subtype.ext
     ext j
     simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
+    erw [map_mul]
     rfl
   · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
+    apply Subtype.ext
+    dsimp
+    funext u
+    erw [map_zero]
     rfl
   · intro x y
     simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
+    apply Subtype.ext
+    dsimp
+    funext u
+    erw [map_add]
     rfl
   · intro r
     apply Subtype.ext

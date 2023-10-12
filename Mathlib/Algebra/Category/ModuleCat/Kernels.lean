@@ -39,7 +39,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     -- Porting note: broken dot notation on LinearMap.ker
       LinearMap.codRestrict (LinearMap.ker f) (Fork.ι s) fun c =>
         LinearMap.mem_ker.2 <| by
-          rw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp, Fork.condition,
+          erw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp, Fork.condition,
             HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
     (fun s => LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>

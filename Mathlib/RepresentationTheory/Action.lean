@@ -901,7 +901,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         refine' Prod.ext rfl _
         erw [tensor_rho, tensor_rho]
         dsimp
-        rw [leftRegular_ρ_apply]
+        erw [leftRegular_ρ_apply]
         erw [map_mul]
         rfl }
   hom_inv_id := by

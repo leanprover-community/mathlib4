@@ -101,7 +101,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     apply toTopObj.ext
     funext i
     dsimp
-    rw [CategoryTheory.comp_apply, ContinuousMap.coe_mk, ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+    erw [CategoryTheory.comp_apply, ContinuousMap.coe_mk, ContinuousMap.coe_mk, ContinuousMap.coe_mk]
     simp only [coe_toTopMap]
     erw [← Finset.sum_biUnion]
     · apply Finset.sum_congr

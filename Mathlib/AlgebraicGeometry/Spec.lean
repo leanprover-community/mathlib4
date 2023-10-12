@@ -241,7 +241,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        rw [stalkIso_hom, stalkIso_inv, comp_apply, comp_apply, localizationToStalk_of]
+        erw [stalkIso_hom, stalkIso_inv, comp_apply, comp_apply, localizationToStalk_of]
         erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso

@@ -102,9 +102,9 @@ def free : Type u ⥤ GroupCat where
   obj α := of (FreeGroup α)
   map := FreeGroup.map
   map_id := by
-    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
+    intros; ext1; erw [←FreeGroup.map.unique] <;> intros <;> rfl
   map_comp := by
-    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
+    intros; ext1; erw [←FreeGroup.map.unique] <;> intros <;> rfl
 #align Group.free GroupCat.free
 
 /-- The free-forgetful adjunction for groups.

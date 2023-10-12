@@ -104,7 +104,7 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     = (Finsupp.mapDomain (f ⊗ g) (finsuppTensorFinsupp' R X X'
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single x' 1))) _
   simp_rw [Finsupp.mapDomain_single, finsuppTensorFinsupp'_single_tmul_single, mul_one,
-    Finsupp.mapDomain_single, CategoryTheory.tensor_apply]
+    Finsupp.mapDomain_single, CategoryTheory.tensor_apply]; rfl
 #align Module.free.μ_natural ModuleCat.Free.μ_natural
 
 theorem left_unitality (X : Type u) :
@@ -176,7 +176,7 @@ theorem associativity (X Y Z : Type u) :
     (Finsupp.single x 1 ⊗ₜ[R]
       finsuppTensorFinsupp' R Y Z (Finsupp.single y 1 ⊗ₜ[R] Finsupp.single z 1)) a
   simp_rw [finsuppTensorFinsupp'_single_tmul_single, Finsupp.mapDomain_single, mul_one,
-    CategoryTheory.associator_hom_apply]
+    CategoryTheory.associator_hom_apply]; rfl
 #align Module.free.associativity ModuleCat.Free.associativity
 
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.

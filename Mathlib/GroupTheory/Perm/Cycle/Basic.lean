@@ -870,6 +870,8 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
       (hf.isCycle_subtypePerm hs).pow_eq_one_iff'
         (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).2)]
     simp
+    erw [subtypePerm_apply]
+    simp
 #align equiv.perm.is_cycle_on.pow_apply_eq Equiv.Perm.IsCycleOn.pow_apply_eq
 
 theorem IsCycleOn.zpow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
@@ -1736,10 +1738,9 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
     Eq.trans _
       (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
   apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
-  simp only [Ne.def, IsCycle.zpowersEquivSupport_apply, Subtype.coe_mk,
-    zpowersEquivZpowers_apply]
+  erw [zpowersEquivZpowers_apply, zpowersEquivZpowers_apply]
   dsimp
-  rw [pow_succ, Perm.mul_apply]
+  erw [pow_succ, Perm.mul_apply]
 #align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :

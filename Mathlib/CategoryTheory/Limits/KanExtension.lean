@@ -332,7 +332,9 @@ def lan [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] : (S ⥤ D) ⥤ L
   Adjunction.leftAdjointOfEquiv (fun F G => Lan.equiv ι F G) (by {
     intros X' X Y f g
     ext
-    simp [Lan.equiv] })
+    simp [Lan.equiv]
+    erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
+    simp })
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan CategoryTheory.lan
 

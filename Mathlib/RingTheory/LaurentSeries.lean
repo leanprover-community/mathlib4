@@ -161,9 +161,10 @@ instance of_powerSeries_localization [CommRing R] :
       intro m
       have h := hc (m + n)
       simp only at h
-      rwa [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
+      erw [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
         add_comm m, PowerSeries.coeff, Finsupp.single_add, MvPowerSeries.coeff_add_monomial_mul,
         one_mul] at h
+      assumption
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed

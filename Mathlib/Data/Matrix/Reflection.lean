@@ -230,7 +230,8 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 ```
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
-  simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of, Equiv.refl_apply]
+  simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
+  erw [Equiv.refl_apply]
 #align matrix.eta_expand_eq Matrix.etaExpand_eq
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=
