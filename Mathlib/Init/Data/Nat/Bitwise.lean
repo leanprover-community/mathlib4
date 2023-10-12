@@ -361,5 +361,6 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     rw [bodd_bit, div2_bit]
     intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq
+#noalign nat.bitwise_bit_aux
 
 end Nat
