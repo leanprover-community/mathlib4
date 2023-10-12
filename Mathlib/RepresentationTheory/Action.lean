@@ -976,7 +976,6 @@ variable {V}
 variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCategory W]
   (F : MonoidalFunctor V W) (G : MonCat.{u})
 
-set_option maxHeartbeats 400000 in
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/
 @[simps]
