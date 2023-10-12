@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris Van Doorn, Yury Kudryashov
+Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
@@ -540,7 +540,7 @@ lemma restrict
   _ = μ.restrict (toMeasurable μ (s ∩ A)) K := by
     rw [restrict_apply' (measurableSet_toMeasurable μ (s ∩ A))]
     congr
-    apply (inter_eq_left_iff_subset.2 ?_).symm
+    apply (inter_eq_left.2 ?_).symm
     exact K_subs.trans (inter_subset_left _ _)
   _ = μ.restrict (s ∩ A) K := by rwa [restrict_toMeasurable]
   _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono (inter_subset_right _ _) le_rfl) K
