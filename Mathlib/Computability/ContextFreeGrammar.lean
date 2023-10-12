@@ -49,7 +49,7 @@ lemma ContextFreeRule.RewritesTo.exists_parts {N : Type _} {r : ContextFreeRule 
     use [], xs
     simp
   | cons x _ ih =>
-    rcases ih with ⟨p', q', bef, aft⟩
+    rcases ih with ⟨p', q', rfl, rfl⟩
     use x :: p', q'
     simp [bef, aft]
 
