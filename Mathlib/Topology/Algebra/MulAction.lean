@@ -140,6 +140,14 @@ instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
 #align mul_opposite.has_continuous_smul MulOpposite.continuousSMul
 #align add_opposite.has_continuous_vadd AddOpposite.continuousVAdd
 
+@[to_additive]
+lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsCompact u) :
+    IsCompact (k • u) := by
+  rw [← Set.image_smul_prod]
+  exact IsCompact.image (hk.prod hu) continuous_smul
+
+#exit
+
 end SMul
 
 section Monoid

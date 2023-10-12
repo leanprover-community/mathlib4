@@ -433,7 +433,7 @@ end CommGroup
 
 end ConvolutionExists
 
-variable [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedSpace ℝ F]
 
 /-- The convolution of two functions `f` and `g` with respect to a continuous bilinear map `L` and
 measure `μ`. It is defined to be `(f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`. -/
@@ -443,13 +443,16 @@ noncomputable def convolution [Sub G] (f : G → E) (g : G → E') (L : E →L[�
 #align convolution convolution
 
 -- mathport name: convolution
+/-- The convolution of two functions with respect to a bilinear operation `L` and a measure `μ`. -/
 scoped[Convolution] notation:67 f " ⋆[" L:67 ", " μ:67 "] " g:66 => convolution f g L μ
 
 -- mathport name: convolution.volume
+/-- The convolution of two functions with respect to a bilinear operation `L` and the volume. -/
 scoped[Convolution]
   notation:67 f " ⋆[" L:67 "]" g:66 => convolution f g L MeasureTheory.MeasureSpace.volume
 
 -- mathport name: convolution.lsmul
+/-- The convolution of two real-valued functions with respect to volume. -/
 scoped[Convolution]
   notation:67 f " ⋆ " g:66 =>
     convolution f g (ContinuousLinearMap.lsmul ℝ ℝ) MeasureTheory.MeasureSpace.volume
@@ -590,11 +593,15 @@ protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSup
       (hcg.isCompact.add hcf).isClosed
 #align has_compact_support.convolution HasCompactSupport.convolution
 
-variable [BorelSpace G] [FirstCountableTopology G] [TopologicalSpace P] [FirstCountableTopology P]
+variable [BorelSpace G] [TopologicalSpace P]
 
 open scoped Uniformity
 
-lemma blouk {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
+/-- In a product space `α × β`, assume that a function `f` is continuous on `s × k` where `k` is
+compact. Then, along the fiber above any `q ∈ s`, `f` is transversely uniformly continuous, i.e.,
+if `p ∈ s` is close enough to `q`, then `f p x` is uniformly close to `f q x` for all `x ∈ k`. -/
+lemma IsCompact.mem_uniformity_of_prod
+    {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
     {f : α → β → E} {s : Set α} {k : Set β} {q : α} {u : Set (E × E)}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ k)) (hq : q ∈ s) (hu : u ∈ 𝓤 E) :
     ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, (f p x, f q x) ∈ u := by
@@ -617,62 +624,105 @@ lemma blouk {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [Unifo
     have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
     exact hu' (prod_mk_mem_compRel (u'_symm A) B)
 
-lemma blouk2 {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
-    {f : α → β → E} {s : Set α} {k : Set β} {q : α} {u : Set (E × E)}
-    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ)) (hq : q ∈ s) (hu : u ∈ 𝓤 E)
-    {a : E} (h'f : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = a) :
-    ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x, (f p x, f q x) ∈ u := by
-  have : s ×ˢ k ⊆ s ×ˢ univ := sorry
-  rcases blouk hk (hf.mono this) hq hu with ⟨v, v_mem, hv⟩
+/-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
+`g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
+integral depends continuously on `a`. -/
+lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
+    {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
+    [OpensMeasurableSpace β]
+    {f : α → β → E'} {s : Set α} {k : Set β} {g : β → E}
+    (hk : IsCompact k) (h'k : IsClosed k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
+    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0)
+    {μ : Measure β} (hg : LocallyIntegrable g μ) :
+    ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
+  have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
+    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+  have B : ∀ p ∈ s, tsupport (f p) ⊆ k := fun p hp =>
+    closure_minimal (support_subset_iff'.2 fun z hz => hfs _ _ hp hz) h'k
+  intro q hq
+  apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
+  obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by
+    simpa [integral_mul_right] using exists_pos_mul_lt εpos _
+  obtain ⟨v, v_mem, hv⟩ : ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, dist (f p x) (f q x) < δ :=
+    hk.mem_uniformity_of_prod
+      (hf.mono (Set.prod_mono_right (subset_univ k))) hq (dist_mem_uniformity δpos)
+  simp_rw [dist_eq_norm] at hv ⊢
+  have I : ∀ p ∈ s, IntegrableOn (fun x ↦ L (g x) (f p x)) k μ := by
+    intro p hp
+    obtain ⟨C, hC⟩ : ∃ C, ∀ x, ‖f p x‖ ≤ C := by
+      have : ContinuousOn (f p) k := by
+        have : ContinuousOn (fun x ↦ (p, x)) k := (Continuous.Prod.mk p).continuousOn
+        exact hf.comp this (by simp [MapsTo, hp])
+      rcases IsCompact.exists_bound_of_continuousOn hk this with ⟨C, hC⟩
+      refine ⟨max C 0, fun x ↦ ?_⟩
+      by_cases hx : x ∈ k
+      · exact (hC x hx).trans (le_max_left _ _)
+      · simp [hfs p x hp hx]
+    have : IntegrableOn (fun x ↦ ‖L‖ * ‖g x‖ * C) k μ :=
+      ((hg.integrableOn_isCompact hk).norm.const_mul _).mul_const _
+    apply Integrable.mono' this ?_ ?_
+    · borelize E'
+      apply L.aestronglyMeasurable_comp₂ (hg.integrableOn_isCompact hk).aestronglyMeasurable
+      apply StronglyMeasurable.aestronglyMeasurable
+      apply Continuous.stronglyMeasurable_of_hasCompactSupport (A p hp)
+      exact hk.of_isClosed_subset (isClosed_tsupport _) (B p hp)
+    · apply eventually_of_forall (fun x ↦ (le_op_norm₂ L (g x) (f p x)).trans ?_)
+      specialize hC x
+      gcongr
+  filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
+  calc
+  ‖∫ x, L (g x) (f p x) ∂μ - ∫ x, L (g x) (f q x) ∂μ‖
+    = ‖∫ x in k, L (g x) (f p x) ∂μ - ∫ x in k, L (g x) (f q x) ∂μ‖ := by
+      congr 2
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+        simp [hfs p x h'p hx]
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+        simp [hfs q x hq hx]
+  _ = ‖∫ x in k, L (g x) (f p x) - L (g x) (f q x) ∂μ‖ := by rw [integral_sub (I p h'p) (I q hq)]
+  _ ≤ ∫ x in k, ‖L (g x) (f p x) - L (g x) (f q x)‖ ∂μ := norm_integral_le_integral_norm _
+  _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
+      apply integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity))
+      · exact ((hg.integrableOn_isCompact hk).norm.const_mul _).mul_const _
+      · apply eventually_of_forall (fun x ↦ ?_)
+        by_cases hx : x ∈ k
+        · dsimp only
+          specialize hv p hp x hx
+          calc
+          ‖L (g x) (f p x) - L (g x) (f q x)‖
+            = ‖L (g x) (f p x - f q x)‖ := by simp only [map_sub]
+          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_op_norm₂ _ _ _
+          _ ≤ ‖L‖ * ‖g x‖ * δ := by gcongr
+        · simp only [hfs p x h'p hx, hfs q x hq hx, sub_self, norm_zero, mul_zero]
+          positivity
+  _ < ε := hδ
 
-
-
-
-
-
-#exit
+open scoped Pointwise
 
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
-a parameter space `P` (and the compact support `k` is independent of the parameter in `s`),
-not assuming `T2Space G`. -/
-theorem continuousOn_convolution_right_with_param' {g : P → G → E'} {s : Set P} {k : Set G}
-    (hk : IsCompact k) (h'k : IsClosed k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
+a parameter space `P` (and the compact support `k` is independent of the parameter in `s`). -/
+theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set P} {k : Set G}
+    (hk : IsCompact k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
     (hf : LocallyIntegrable f μ) (hg : ContinuousOn (↿g) (s ×ˢ univ)) :
     ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
-  intro q₀ hq₀
-  replace hq₀ : q₀.1 ∈ s; · simpa only [mem_prod, mem_univ, and_true] using hq₀
-  have A : ∀ p ∈ s, Continuous (g p) := fun p hp ↦ by
-    refine hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
-  have B : ∀ p ∈ s, tsupport (g p) ⊆ k := fun p hp =>
-    closure_minimal (support_subset_iff'.2 fun z hz => hgs _ _ hp hz) h'k
-  /- We find a small neighborhood of `{q₀.1} × k` on which the function is uniformly bounded.
-      This follows from the continuity at all points of the compact set `k`. -/
-  have ε : ℝ := sorry
-  have εpos : 0 < ε := sorry
-  have : ∃ wP wG, IsOpen wP ∧ IsOpen wG ∧ q₀.1 ∈ wP ∧ 0 ∈ wG ∧ ∀ p x y, p ∈ wP ∩ s → x ∈ k
-      → y - x ∈ wG → ‖g p y - g q₀.1 x‖ < ε := by
-    apply IsCompact.induction_on hk
-      (p := fun t ↦ ∃ wP wG, IsOpen wP ∧ IsOpen wG ∧ q₀.1 ∈ wP ∧ 0 ∈ wG ∧ ∀ p x y, p ∈ wP ∩ s
-          → x ∈ t → y - x ∈ wG → ‖g p y - g q₀.1 x‖ < ε)
-    · exact ⟨univ, univ, isOpen_univ, isOpen_univ, mem_univ _, mem_univ _, by simp⟩
-    · intro t' t ht't ⟨wP, wG, wP_open, wG_open, mem_wP, mem_wG, hw⟩
-      exact ⟨wP, wG, wP_open, wG_open, mem_wP, mem_wG,
-        fun p x y hp hx hy ↦ hw p x y hp (ht't hx) hy⟩
-    · intro t' t ⟨wP, wG, wP_open, wG_open, mem_wP, mem_wG, hw⟩
-        ⟨wP', wG', wP'_open, wG'_open, mem_wP', mem_wG', hw'⟩
-      refine ⟨wP ∩ wP', wG ∩ wG', wP_open.inter wP'_open, wG_open.inter wG'_open, ⟨mem_wP, mem_wP'⟩,
-        ⟨mem_wG, mem_wG'⟩, fun p x y hp hx hy ↦ ?_⟩
-      rcases hx with h'x|h'x
-      · exact hw p x y ⟨hp.1.1, hp.2⟩ h'x hy.1
-      · exact hw' p x y ⟨hp.1.2, hp.2⟩ h'x hy.2
-    · intro x hx
-      obtain ⟨u, hu, v, hv, huv⟩ : ∃ u, u ∈ 𝓝[s] q₀.fst ∧ ∃ v, v ∈ 𝓝[univ] x
-          ∧ u ×ˢ v ⊆ {p | dist ((↿g) p) ((↿g) (q₀.fst, x)) < ε} :=
-        mem_nhdsWithin_prod_iff.1
-          (continuousWithinAt_iff'.1 (hg (q₀.1, x) ⟨hq₀, mem_univ _⟩ ) ε εpos)
-      refine ⟨v, nhdsWithin_mono _ (subset_univ _) hv, ?_⟩
+  have : LocallyCompactSpace G := sorry
+  rintro ⟨q₀, x₀⟩ ⟨hq₀, -⟩
+  obtain ⟨t, t_comp, ht⟩ : ∃ t, IsCompact t ∧ t ∈ 𝓝 x₀ := exists_compact_mem_nhds x₀
+  let k' : Set G := t +ᵥ k
+  have : IsCompact k' := by
+    have Z := IsCompact.smul
+
+  let g' : (P × G) → G → E' := fun p x ↦ g p.1 (x - p.2)
+  let s' : Set (P × G) := s ×ˢ univ
+  have : ContinuousOn g'.uncurry (s' ×ˢ univ) := by
+    have : g'.uncurry = g.uncurry ∘ (fun w ↦ (w.1.1, w.2 - w.1.2)) := by ext y; rfl
+    rw [this]
+    refine hg.comp (continuous_fst.fst.prod_mk (continuous_snd.sub
+      continuous_id.fst.snd)).continuousOn ?_
+
+
+
 
 
 
