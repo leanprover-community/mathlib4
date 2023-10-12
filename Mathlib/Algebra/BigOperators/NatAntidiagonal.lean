@@ -53,7 +53,7 @@ theorem sum_antidiagonal_succ' {n : ℕ} {f : ℕ × ℕ → N} :
 @[to_additive]
 theorem prod_antidiagonal_subst {n : ℕ} {f : ℕ × ℕ → ℕ → M} :
     ∏ p in antidiagonal n, f p n = ∏ p in antidiagonal n, f p (p.1 + p.2) :=
-  prod_congr rfl fun p hp ↦ by rw [(mem_antidiagonal _ _).mp hp]
+  prod_congr rfl fun p hp ↦ by rw [mem_antidiagonal.mp hp]
 #align finset.nat.prod_antidiagonal_subst Finset.Nat.prod_antidiagonal_subst
 #align finset.nat.sum_antidiagonal_subst Finset.Nat.sum_antidiagonal_subst
 

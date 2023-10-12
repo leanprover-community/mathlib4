@@ -14,7 +14,8 @@ import Mathlib.Algebra.Order.Sub.Defs
 Let `μ` be an AddCommMonoid.
 
 * We define a type class `HasAntidiagonal` which contains a function
-`antidiagonal : μ → Finset (μ × μ)` such that `antidiagonal n` is the Finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
+`antidiagonal : μ → Finset (μ × μ)` such that `antidiagonal n`
+is the Finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 
 Assume that `μ` is a canonically ordered add monoid with locally finite order.
 For example, one may take `μ` to be `ℕ`, more generally `σ →₀ ℕ`.
