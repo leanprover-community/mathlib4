@@ -98,6 +98,25 @@ jobs:
       - name: check that all files are imported
         run: git diff --exit-code
 
+  check_workflows:
+    if: github.repository == 'leanprover-community/mathlib4'
+    name: check workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@v3
+
+      - name: update workflows
+        run: |
+          cd .github/workflows/
+          ./mk_build_yml.sh
+
+      - name: check that workflows were consistent
+        run: git diff --exit-code
+
   build:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Build
@@ -236,6 +255,7 @@ jobs:
           # we just keep rebuilding until it works!
           # I'll try to come up with something better.
           until lake build > /dev/null 2>&1; do :; done
+          ./test.sh
           cd ..
           lake env lean4checker/build/bin/lean4checker
 
