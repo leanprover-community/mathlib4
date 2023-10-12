@@ -14,7 +14,7 @@ We define the following classes of topological spaces:
 -/
 open Set Filter Topology TopologicalSpace Classical
 
-variable {X : Type*} {Y : Type*} {ι : Type*} {π : ι → Type*}
+variable {X : Type*} {Y : Type*} {ι : Type*}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
@@ -103,11 +103,11 @@ instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
 
 section Pi
 
-variable [∀ i, TopologicalSpace (π i)] [∀ i, LocallyCompactSpace (π i)]
+variable {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, LocallyCompactSpace (X i)]
 
 /-- In general it suffices that all but finitely many of the spaces are compact,
   but that's not straightforward to state and use. -/
-instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, π i) :=
+instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, X i) :=
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, -, n', hn', hsub⟩ := hn
@@ -119,7 +119,7 @@ instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀
 #align pi.locally_compact_space_of_finite Pi.locallyCompactSpace_of_finite
 
 /-- For spaces that are not Hausdorff. -/
-instance Pi.locallyCompactSpace [∀ i, CompactSpace (π i)] : LocallyCompactSpace (∀ i, π i) :=
+instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpace (∀ i, X i) :=
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, hs, n', hn', hsub⟩ := hn
