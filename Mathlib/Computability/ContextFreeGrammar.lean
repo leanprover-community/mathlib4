@@ -51,7 +51,7 @@ lemma ContextFreeRule.RewritesTo.exists_parts {N : Type _} {r : ContextFreeRule 
   | cons x _ ih =>
     rcases ih with ⟨p', q', rfl, rfl⟩
     use x :: p', q'
-    simp [bef, aft]
+    simp
 
 lemma ContextFreeRule.rewritesTo_of_exists_parts {N : Type _}
     (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
@@ -64,7 +64,7 @@ theorem ContextFreeRule.rewritesTo_iff {N : Type _} {r : ContextFreeRule T N}
     (u v : List (Symbol T N)) :
     r.RewritesTo u v ↔
       ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
-        u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
+        u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q :=
   ⟨fun t ↦ t.exists_parts, by rintro ⟨p, q, rfl, rfl⟩; apply rewritesTo_of_exists_parts⟩
 
 namespace ContextFreeGrammar
@@ -89,7 +89,6 @@ lemma mem_language_iff (g : ContextFreeGrammar T) (w : List T) :
 
 variable {g : ContextFreeGrammar T}
 
-@[refl]
 lemma Derives.refl (w : List (Symbol T g.NT)) : g.Derives w w :=
   Relation.ReflTransGen.refl
 
