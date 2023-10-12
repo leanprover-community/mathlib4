@@ -36,6 +36,10 @@ where $A$ and $B$ are algebras graded by `ZMod 2`, also known as superalgebras.
 
 * https://math.stackexchange.com/q/202718/1896
 * TODO: find appropriate part of Bourbaki
+
+## TODO
+
+Show that the tensor product of graded algebras is itself a graded algebra.
 -/
 
 suppress_compilation
