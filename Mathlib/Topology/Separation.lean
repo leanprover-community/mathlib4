@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
