@@ -430,6 +430,10 @@ theorem sInf_coe_toSubmodule (S : Set (LieSubmodule R L M)) :
   rfl
 #align lie_submodule.Inf_coe_to_submodule LieSubmodule.sInf_coe_toSubmodule
 
+theorem sInf_coe_toSubmodule' (S : Set (LieSubmodule R L M)) :
+    (↑(sInf S) : Submodule R M) = ⨅ N ∈ S, (N : Submodule R M) := by
+  rw [sInf_coe_toSubmodule, ← Set.image, sInf_image]
+
 @[simp]
 theorem iInf_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨅ i, p i) : Submodule R M) = ⨅ i, (p i : Submodule R M) := by
@@ -451,18 +455,18 @@ theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
-instance : Sup (LieSubmodule R L M) :=
-  ⟨fun N N' ↦
+instance : Sup (LieSubmodule R L M) where
+  sup N N' :=
     { toSubmodule := (N : Submodule R M) ⊔ (N' : Submodule R M)
       lie_mem := by
         rintro x m (hm : m ∈ (N : Submodule R M) ⊔ (N' : Submodule R M))
         change ⁅x, m⁆ ∈ (N : Submodule R M) ⊔ (N' : Submodule R M)
         rw [Submodule.mem_sup] at hm ⊢
         obtain ⟨y, hy, z, hz, rfl⟩ := hm
-        exact ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩ }⟩
+        exact ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩ }
 
-instance : SupSet (LieSubmodule R L M) :=
-  ⟨fun S ↦
+instance : SupSet (LieSubmodule R L M) where
+  sSup S :=
     { toSubmodule := sSup {(p : Submodule R M) | p ∈ S}
       lie_mem := by
         intro x m (hm : m ∈ sSup {(p : Submodule R M) | p ∈ S})
@@ -479,7 +483,7 @@ instance : SupSet (LieSubmodule R L M) :=
           refine add_mem ?_ (ih (Subset.trans (by simp) hs) hu)
           obtain ⟨p, hp, rfl⟩ : ∃ p ∈ S, ↑p = q := hs (Finset.mem_insert_self q t)
           suffices p ≤ sSup {(p : Submodule R M) | p ∈ S} by exact this (p.lie_mem hm')
-          exact le_sSup ⟨p, hp, rfl⟩ }⟩
+          exact le_sSup ⟨p, hp, rfl⟩ }
 
 @[norm_cast, simp]
 theorem sup_coe_toSubmodule :
@@ -492,10 +496,24 @@ theorem sSup_coe_toSubmodule (S : Set (LieSubmodule R L M)) :
     (↑(sSup S) : Submodule R M) = sSup {(s : Submodule R M) | s ∈ S} :=
   rfl
 
+theorem sSup_coe_toSubmodule' (S : Set (LieSubmodule R L M)) :
+    (↑(sSup S) : Submodule R M) = ⨆ N ∈ S, (N : Submodule R M) := by
+  rw [sSup_coe_toSubmodule, ← Set.image, sSup_image]
+
 @[simp]
 theorem iSup_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨆ i, p i) : Submodule R M) = ⨆ i, (p i : Submodule R M) := by
   rw [iSup, sSup_coe_toSubmodule]; ext; simp [Submodule.mem_sSup, Submodule.mem_iSup]
+
+/-- The set of Lie submodules of a Lie module form a complete lattice. -/
+instance : CompleteLattice (LieSubmodule R L M) :=
+  { coeSubmodule_injective.completeLattice toSubmodule sup_coe_toSubmodule inf_coe_toSubmodule
+      sSup_coe_toSubmodule' sInf_coe_toSubmodule' rfl rfl with
+    toPartialOrder := SetLike.instPartialOrder }
+
+theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h : b ∈ N i) :
+    b ∈ ⨆ i, N i :=
+  (le_iSup N i) h
 
 lemma iSup_induction {ι} (N : ι → LieSubmodule R L M) {C : M → Prop} {x : M}
     (hx : x ∈ ⨆ i, N i) (hN : ∀ i, ∀ y ∈ N i, C y) (h0 : C 0)
@@ -503,22 +521,18 @@ lemma iSup_induction {ι} (N : ι → LieSubmodule R L M) {C : M → Prop} {x : 
   rw [← LieSubmodule.mem_coeSubmodule, LieSubmodule.iSup_coe_toSubmodule] at hx
   exact Submodule.iSup_induction (C := C) (fun i ↦ (N i : Submodule R M)) hx hN h0 hadd
 
-/-- The set of Lie submodules of a Lie module form a complete lattice. -/
-instance : CompleteLattice (LieSubmodule R L M) :=
-  { sInf_le := fun s a ha ↦ by
-      rw [← coeSubmodule_le_coeSubmodule, sInf_coe_toSubmodule]; exact sInf_le ⟨a, ha, rfl⟩
-    le_sInf := fun s a ha ↦ by rw [← coeSubmodule_le_coeSubmodule, sInf_coe_toSubmodule]; simpa
-    le_top := fun _ _ _ ↦ trivial
-    bot_le := fun N _ h ↦ by rw [mem_bot] at h; rw [h]; exact N.zero_mem'
-    sup_le := fun _ _ _ ↦ sup_le (α := Submodule R M)
-    le_sup_right := fun _ _ ↦ le_sup_right (α := Submodule R M)
-    le_sup_left := fun _ _ ↦ le_sup_left (α := Submodule R M)
-    sSup_le := fun s a ha ↦ by rw [← coeSubmodule_le_coeSubmodule, sSup_coe_toSubmodule]; simpa
-    le_sSup := fun s a ha ↦ by
-      rw [← coeSubmodule_le_coeSubmodule, sSup_coe_toSubmodule]; exact le_sSup ⟨a, ha, rfl⟩
-    le_inf := fun N₁ N₂ N₃ h₁₂ h₁₃ m hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
-    inf_le_left := fun _ _ _ ↦ And.left
-    inf_le_right := fun _ _ _ ↦ And.right }
+@[elab_as_elim]
+theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x ∈ ⨆ i, N i) → Prop}
+    (hN : ∀ (i) (x) (hx : x ∈ N i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
+    (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
+    (hx : x ∈ ⨆ i, N i) : C x hx := by
+  refine' Exists.elim _ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
+  refine' iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
+    (fun i x hx => _) _ fun x y => _
+  · exact ⟨_, hN _ _ hx⟩
+  · exact ⟨_, h0⟩
+  · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
+    refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
 
 instance : AddCommMonoid (LieSubmodule R L M) where
   add := (· ⊔ ·)
