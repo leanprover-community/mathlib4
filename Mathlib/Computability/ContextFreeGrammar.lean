@@ -85,13 +85,14 @@ abbrev Derives (g : ContextFreeGrammar.{uN} T) : List (Symbol T g.NT) → List (
 def language (g : ContextFreeGrammar.{uN} T) : Language T :=
   { w | g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) }
 
-@[refl]
+@[simp]
 lemma mem_language_iff (g : ContextFreeGrammar.{uN} T) (w : List T) :
     w ∈ g.language ↔ g.Derives [Symbol.nonterminal g.initial] (List.map Symbol.terminal w) := by
   rfl
 
 variable {g : ContextFreeGrammar.{uN} T}
 
+@[refl]
 lemma Derives.refl (w : List (Symbol T g.NT)) : g.Derives w w :=
   Relation.ReflTransGen.refl
 
