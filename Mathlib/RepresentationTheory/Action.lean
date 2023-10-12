@@ -1019,3 +1019,5 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action_μ_inv_hom CategoryTheory.MonoidalFunctor.mapAction_μ_inv_hom
 
 end CategoryTheory.MonoidalFunctor
+attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom Action.rightDual_ρ
+  Action.leftDual_ρ

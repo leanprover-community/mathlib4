@@ -685,4 +685,6 @@ end Concrete
 
 end Presheaf
 
+attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
+  CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
 end CategoryTheory

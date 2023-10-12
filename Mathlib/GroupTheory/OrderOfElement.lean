@@ -1173,4 +1173,7 @@ theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrde
 
 end Prod
 
+attribute [nolint simpNF] finEquivMultiples_apply finEquivPowers_apply
+  finEquivMultiples_symm_apply finEquivPowers_symm_apply finEquivZmultiples_apply
+  finEquivZpowers_apply finEquivZmultiples_symm_apply finEquivZpowers_symm_apply
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles

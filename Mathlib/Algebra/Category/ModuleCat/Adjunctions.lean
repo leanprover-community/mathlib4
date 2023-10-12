@@ -422,5 +422,5 @@ def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
 #align category_theory.Free.lift_unique CategoryTheory.Free.liftUnique
 
 end Free
-
+attribute [nolint simpNF] ModuleCat.Free.ε_apply
 end CategoryTheory

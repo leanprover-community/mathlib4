@@ -242,4 +242,5 @@ def equivOfHomotopyEquiv (hequiv : X ≃ₕ Y) : πₓ X ≌ πₓ Y := by
     exacts [((π).map_comp _ _).symm, ((π).map_id Y).symm]
 #align fundamental_groupoid_functor.equiv_of_homotopy_equiv FundamentalGroupoidFunctor.equivOfHomotopyEquiv
 
+attribute [nolint simpNF] ContinuousMap.Homotopy.ulift_apply
 end FundamentalGroupoidFunctor

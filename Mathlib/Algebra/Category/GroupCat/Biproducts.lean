@@ -144,4 +144,6 @@ theorem biproductIsoPi_inv_comp_π (f : J → AddCommGroupCat.{u}) (j : J) :
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
 #align AddCommGroup.biproduct_iso_pi_inv_comp_π AddCommGroupCat.biproductIsoPi_inv_comp_π
 
+attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
+  AddCommGroupCat.biproductIsoPi_hom_apply
 end AddCommGroupCat

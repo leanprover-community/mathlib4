@@ -478,5 +478,5 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.is_localized_module_to_pushforward_stalk_alg_hom AlgebraicGeometry.StructureSheaf.isLocalizedModule_toPushforwardStalkAlgHom
 
 end StructureSheaf
-
+attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
 end AlgebraicGeometry

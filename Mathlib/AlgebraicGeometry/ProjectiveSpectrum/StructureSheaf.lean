@@ -410,5 +410,6 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Proj.to_LocallyRingedSpace AlgebraicGeometry.Proj.toLocallyRingedSpace
 
 end
-
+attribute [nolint simpNF]
+  AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 end AlgebraicGeometry

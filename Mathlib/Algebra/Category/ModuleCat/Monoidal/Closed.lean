@@ -105,4 +105,5 @@ theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f 
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_pre_app ModuleCat.monoidalClosed_pre_app
 
+attribute [nolint simpNF] ModuleCat.monoidalClosed_curry
 end ModuleCat

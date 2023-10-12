@@ -161,4 +161,6 @@ end
 
 end Sheaf
 
+attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
+  CategoryTheory.Sheaf.composeEquiv_symm_apply_val
 end CategoryTheory

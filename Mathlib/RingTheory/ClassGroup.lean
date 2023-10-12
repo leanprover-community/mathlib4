@@ -225,8 +225,9 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk I := by
-  erw [ClassGroup.mk, MonoidHom.comp_apply, ← MonoidHom.comp_apply (Units.map _), ← Units.map_comp, ←
-      RingEquiv.coe_monoidHom_trans, FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
+  erw [ClassGroup.mk, MonoidHom.comp_apply, ← MonoidHom.comp_apply (Units.map _),
+      ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
+      FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
   rfl
 #align class_group.mk_canonical_equiv ClassGroup.mk_canonicalEquiv
 

@@ -470,5 +470,5 @@ lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGroupCat).map (homMk φ hφ) = φ := rfl
 
 end
-
+attribute [nolint simpNF] ModuleCat.mkOfSMul_smul
 end ModuleCat

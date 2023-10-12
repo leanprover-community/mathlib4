@@ -1426,4 +1426,5 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
   rw [LieModuleHom.range_eq_top]
   exact e.surjective
 
+attribute [nolint simpNF] LieIdeal.topEquiv_apply LieModuleEquiv.ofTop_apply
 end TopEquiv

@@ -367,5 +367,8 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.coreflective CategoryTheory.Lan.coreflective
 
 end Lan
-
+attribute [nolint simpNF] CategoryTheory.Ran.equiv_symm_apply_app
+  CategoryTheory.Ran.equiv_apply_app
+  CategoryTheory.Lan.equiv_symm_apply_app
+  CategoryTheory.Lan.equiv_apply_app
 end CategoryTheory

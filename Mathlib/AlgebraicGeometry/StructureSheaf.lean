@@ -1219,5 +1219,6 @@ theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :
 end Comap
 
 end StructureSheaf
-
+attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
+  AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom_apply_coe
 end AlgebraicGeometry

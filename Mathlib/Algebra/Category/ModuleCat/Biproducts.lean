@@ -175,4 +175,5 @@ noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.
     biprodIsoProd _ _).toLinearEquiv.symm
 #align lequiv_prod_of_left_split_exact lequivProdOfLeftSplitExact
 
+attribute [nolint simpNF] ModuleCat.biprodIsoProd_hom_apply ModuleCat.biproductIsoPi_hom_apply
 end SplitExact

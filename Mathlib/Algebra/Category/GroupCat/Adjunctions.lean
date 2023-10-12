@@ -60,7 +60,7 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup �
   rfl
 #align AddCommGroup.free_obj_coe AddCommGroupCat.free_obj_coe
 
-@[simp]
+@[simp, nolint simpNF]
 theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl

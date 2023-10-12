@@ -243,4 +243,5 @@ def monModuleEquivalenceAlgebraForget :
     (by aesop_cat)
 #align Module.Mon_Module_equivalence_Algebra_forget ModuleCat.monModuleEquivalenceAlgebraForget
 
+attribute [nolint simpNF] ModuleCat.MonModuleEquivalenceAlgebra.functor_map_apply
 end ModuleCat

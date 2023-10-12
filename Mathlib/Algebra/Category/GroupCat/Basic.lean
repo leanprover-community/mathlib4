@@ -134,7 +134,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.zero_apply AddGroupCat.zero_apply
 
 /-- Typecheck a `MonoidHom` as a morphism in `GroupCat`. -/
-@[to_additive]
+@[to_additive, nolint simpNF]
 def ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
   f
 set_option linter.uppercaseLean3 false in
@@ -528,3 +528,5 @@ abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 /-- An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}
+
+attribute [nolint simpNF] AddGroupCat.ofHom_apply GroupCat.ofHom_apply

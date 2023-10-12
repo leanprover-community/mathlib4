@@ -94,3 +94,12 @@ def commGroupAddCommGroupEquivalence : CommGroupCat ≌ AddCommGroupCat :=
     (NatIso.ofComponents fun X => MulEquiv.toCommGroupCatIso (MulEquiv.multiplicativeAdditive X))
     (NatIso.ofComponents fun X => AddEquiv.toAddCommGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align CommGroup_AddCommGroup_equivalence commGroupAddCommGroupEquivalence
+
+attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
+  groupAddGroupEquivalence_counitIso_inv_app_apply
+  groupAddGroupEquivalence_unitIso_inv_app_apply
+  groupAddGroupEquivalence_counitIso_hom_app_apply
+  commGroupAddCommGroupEquivalence_counitIso_hom_app_apply
+  commGroupAddCommGroupEquivalence_unitIso_inv_app_apply
+  commGroupAddCommGroupEquivalence_unitIso_hom_app_apply
+  commGroupAddCommGroupEquivalence_counitIso_inv_app_apply

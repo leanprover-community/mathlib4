@@ -136,6 +136,5 @@ theorem completion.lift_unique {V W : SemiNormedGroupCat} [CompleteSpace W] [Sep
     (f : V ⟶ W) (g : completion.obj V ⟶ W) : completion.incl ≫ g = f → g = completion.lift f :=
   fun h => (NormedAddGroupHom.extension_unique _ fun v => ((ext_iff.1 h) v).symm).symm
 #align SemiNormedGroup.Completion.lift_unique SemiNormedGroupCat.completion.lift_unique
-
+attribute [nolint simpNF] SemiNormedGroupCat.completion.incl_apply
 end SemiNormedGroupCat
-

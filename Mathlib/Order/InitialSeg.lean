@@ -567,3 +567,5 @@ theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (c
 #align rel_embedding.collapse_apply RelEmbedding.collapse_apply
 
 end RelEmbedding
+attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
+  PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply

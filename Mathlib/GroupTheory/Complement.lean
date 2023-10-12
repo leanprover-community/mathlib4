@@ -787,4 +787,6 @@ theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H)
   · rw [if_neg hk, if_neg hk]
 #align subgroup.transfer_transversal_apply'' Subgroup.transferTransversal_apply''
 
+attribute [nolint simpNF] Subgroup.IsComplement.equiv_mul_right
+  Subgroup.IsComplement.equiv_mul_left
 end Subgroup

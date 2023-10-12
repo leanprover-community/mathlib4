@@ -484,8 +484,8 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCa
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine' ⟨q a'', _⟩
-    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H, ModuleCat.comp_def, LinearMap.comp_apply,
-      ha'', ha']
+    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H,
+      ModuleCat.comp_def, LinearMap.comp_apply, ha'', ha']
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective q).1 hq a'
     refine' ⟨p a'', _⟩

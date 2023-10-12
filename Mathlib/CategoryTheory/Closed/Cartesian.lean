@@ -111,9 +111,11 @@ abbrev coev : 𝟭 C ⟶ prod.functor.obj A ⋙ exp A :=
 
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
+/-- STuff -/
 notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
+/-- STuff -/
 @[delab app.Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := do
   let e ← getExpr
@@ -130,6 +132,7 @@ def delabPrefunctorObjExp : Delab := do
 
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
+/-- STuff -/
 notation:30 B " ^^ " A:30 => (exp A).obj B
 
 @[simp, reassoc]
@@ -434,4 +437,6 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
 
 end Functor
 
+attribute [nolint simpNF] CategoryTheory.CartesianClosed.homEquiv_apply_eq
+  CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 end CategoryTheory

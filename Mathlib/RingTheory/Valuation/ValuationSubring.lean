@@ -914,3 +914,11 @@ theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
 #align valuation.mem_unit_group_iff Valuation.mem_unitGroup_iff
 
 end Valuation
+
+attribute [nolint simpNF] ValuationSubring.primeSpectrumEquiv_symm_apply_asIdeal
+ValuationSubring.primeSpectrumEquiv_apply_coe
+ValuationSubring.primeSpectrumOrderEquiv_apply
+ValuationSubring.primeSpectrumOrderEquiv_symm_apply
+ValuationSubring.principalUnitGroupEquiv_apply
+ValuationSubring.principalUnitGroup_symm_apply
+ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply

@@ -1457,3 +1457,6 @@ theorem mem_posSubmonoid {R : Type*} [StrictOrderedSemiring R] (u : Rˣ) :
     ↑u ∈ posSubmonoid R ↔ (0 : R) < u :=
   Iff.rfl
 #align mem_pos_monoid mem_posSubmonoid
+
+attribute [nolint simpNF] RingEquiv.subsemiringMap_symm_apply_coe RingEquiv.subsemiringMap_apply_coe
+

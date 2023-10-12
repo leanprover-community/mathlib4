@@ -395,7 +395,8 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
           hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
         change TensorProduct.uncurry k _ _ _ f.hom.flip (A.ρ g x ⊗ₜ[k] B.ρ g y) =
           C.ρ g (TensorProduct.uncurry k _ _ _ f.hom.flip (x ⊗ₜ[k] y))
-        erw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply, Rep.ihom_obj_ρ_apply,
+        erw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply,
+          Rep.ihom_obj_ρ_apply,
           LinearMap.comp_apply, LinearMap.comp_apply] --, ρ_inv_self_apply (A := C)]
         dsimp
         erw [ρ_inv_self_apply]
@@ -681,3 +682,6 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end
+attribute [nolint simpNF] Rep.linearization_ε_inv_hom_apply
+  Rep.MonoidalClosed.linearHomEquiv_symm_hom
+  Rep.MonoidalClosed.linearHomEquivComm_symm_hom

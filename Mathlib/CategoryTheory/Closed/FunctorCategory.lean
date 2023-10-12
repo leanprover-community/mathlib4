@@ -91,3 +91,4 @@ theorem ihom_coev_app (F G : D ⥤ C) : (ihom.coev F).app G = (closedUnit F).app
 #align category_theory.functor.ihom_coev_app CategoryTheory.Functor.ihom_coev_app
 
 end CategoryTheory.Functor
+#lint

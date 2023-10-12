@@ -489,5 +489,5 @@ instance : Reflective Spec.toLocallyRingedSpace :=
 instance Spec.reflective : Reflective Scheme.Spec :=
   ⟨⟩
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
-
+attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
 end AlgebraicGeometry

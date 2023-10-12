@@ -741,7 +741,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
 `subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
-@[simps!]
+@[simps!, nolint simpNF]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map e.toAlgHom :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
     commutes' := fun r => by
@@ -1509,4 +1509,5 @@ theorem mem_subalgebraOfSubring {x : R} {S : Subring R} : x ∈ subalgebraOfSubr
   Iff.rfl
 #align mem_subalgebra_of_subring mem_subalgebraOfSubring
 
+attribute [nolint simpNF] AlgEquiv.subalgebraMap_apply_coe AlgEquiv.subalgebraMap_symm_apply_coe
 end Int

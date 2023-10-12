@@ -205,6 +205,7 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 -- mathport name: «expr ⊗ₜ[ , ] »
 -- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
 -- without this notation, one need to work with `s : (restrictScalars f).obj ⟨S⟩`.
+/-- Stuff -/
 scoped[ChangeOfRings]
   notation s "⊗ₜ[" R "," f "]" m => @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
@@ -787,5 +788,6 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     CategoryTheory.IsRightAdjoint (restrictScalars f) :=
   ⟨_, extendRestrictScalarsAdj f⟩
-
+attribute [nolint simpNF] restrictScalarsId'_inv_apply  restrictScalarsId'_hom_apply
+  restrictScalarsComp'_hom_apply restrictScalarsComp'_inv_apply
 end ModuleCat

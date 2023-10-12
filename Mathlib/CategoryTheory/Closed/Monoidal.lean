@@ -346,5 +346,6 @@ theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor
 end OfEquiv
 
 end MonoidalClosed
-
+attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
+  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
 end CategoryTheory

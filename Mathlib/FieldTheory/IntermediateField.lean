@@ -749,3 +749,5 @@ theorem mem_subalgebraEquivIntermediateField_symm (alg : Algebra.IsAlgebraic K L
     x ∈ (subalgebraEquivIntermediateField alg).symm S ↔ x ∈ S :=
   Iff.rfl
 #align mem_subalgebra_equiv_intermediate_field_symm mem_subalgebraEquivIntermediateField_symm
+attribute [nolint simpNF] IntermediateField.intermediateFieldMap_apply_coe
+  IntermediateField.intermediateFieldMap_symm_apply_coe
