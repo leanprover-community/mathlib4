@@ -41,7 +41,8 @@ instance : HasAntidiagonal ℕ where
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [Finset.HasAntidiagonal.antidiagonal]
+theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by
+  simp [Finset.HasAntidiagonal.antidiagonal]
 #align finset.nat.card_antidiagonal Finset.Nat.card_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
