@@ -313,14 +313,19 @@ def delete_lines(filename):
     for match in re.finditer(r'^.*$', source, flags=re.MULTILINE):
         yield match.start(), match.end(), ''
 
+def combine_change_generators(*generators):
+    def combined_generator(*args, **kwargs):
+        for generator in generators:
+            yield from generator(*args, **kwargs)
+    return combined_generator
+
 # Dictionary mapping pass-name to pass-code.
 # Add more minimization passes here.
 # The order matters: generally, you want the fast-to-finish passes to be on the top.
 passes = {
     'strip_comments': make_bisecting_pass(strip_comments),
     'delete_align': make_bisecting_pass(delete_align),
-    'delete_defs': make_committing_pass(delete_defs, bottom_up=True),
-    'make_sorry': make_committing_pass(make_sorry, bottom_up=True),
+    'delete_or_sorry': make_bottom_up_pass(combine_change_generators(delete_defs, make_sorry)),
     'delete_imports': make_bisecting_pass(delete_imports),
     'replace_imports': make_committing_pass(replace_imports),
 }
