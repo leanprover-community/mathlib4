@@ -137,14 +137,14 @@ theorem nonMemberSubfamily_nonMemberSubfamily :
 #align finset.non_member_subfamily_non_member_subfamily Finset.nonMemberSubfamily_nonMemberSubfamily
 
 lemma memberSubfamily_image_insert (h𝒜 : ∀ s ∈ 𝒜, a ∉ s) :
-    (𝒜.image $ insert a).memberSubfamily a = 𝒜 := by
+    (𝒜.image <| insert a).memberSubfamily a = 𝒜 := by
   ext s
   simp only [mem_memberSubfamily, mem_image]
   refine ⟨?_, fun hs ↦ ⟨⟨s, hs, rfl⟩, h𝒜 _ hs⟩⟩
   rintro ⟨⟨t, ht, hts⟩, hs⟩
   rwa [←insert_erase_invOn.2.injOn (h𝒜 _ ht) hs hts]
 
-@[simp] lemma nonMemberSubfamily_image_insert : (𝒜.image $ insert a).nonMemberSubfamily a = ∅ := by
+@[simp] lemma nonMemberSubfamily_image_insert : (𝒜.image <| insert a).nonMemberSubfamily a = ∅ := by
   simp [eq_empty_iff_forall_not_mem]
 
 @[simp] lemma memberSubfamily_image_erase : (𝒜.image (erase · a)).memberSubfamily a = ∅ := by
@@ -184,9 +184,9 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     obtain rfl | rfl := hu <;> assumption
   refine subfamily a (ih _ ?_) (ih _ ?_)
   · simp only [mem_nonMemberSubfamily, and_imp]
-    exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 $ hu _ hs
+    exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 <| hu _ hs
   · simp only [mem_memberSubfamily, and_imp]
-    exact fun s hs ha ↦ (insert_subset_insert_iff ha).1 $ hu _ hs
+    exact fun s hs ha ↦ (insert_subset_insert_iff ha).1 <| hu _ hs
 
 /-- Induction principle for finset families. To prove a statement for every finset family,
 it suffices to prove it for
@@ -204,7 +204,7 @@ See also `Finset.memberFamily_induction_on.`-/
 protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
     (image_insert : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
-      (∀ s ∈ 𝒜, a ∉ s) → p 𝒜 → p (𝒜.image $ insert a))
+      (∀ s ∈ 𝒜, a ∉ s) → p 𝒜 → p (𝒜.image <| insert a))
     (subfamily : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
       p (𝒜.filter (a ∉ ·)) → p (𝒜.filter (a ∈ ·)) → p 𝒜) : p 𝒜 := by
   refine memberFamily_induction_on 𝒜 empty singleton_empty fun a 𝒜 h𝒜₀ h𝒜₁ ↦ subfamily a h𝒜₀ ?_
