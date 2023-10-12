@@ -531,6 +531,85 @@ lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
   isomorphic_distinguished _ (binaryBiproductTriangle_distinguished X₁ X₂) _
     (binaryProductTriangleIsoBinaryBiproductTriangle X₁ X₂)
 
+/-- A chosen extension of a commutative square into a morphism of distinguished triangles. -/
+@[simps hom₁ hom₂]
+def completeDistinguishedTriangleMorphism (T₁ T₂ : Triangle C)
+    (hT₁ : T₁ ∈ distTriang C) (hT₂ : T₂ ∈ distTriang C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (comm : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+    T₁ ⟶ T₂ :=
+    have h := complete_distinguished_triangle_morphism _ _ hT₁ hT₂ a b comm
+    { hom₁ := a
+      hom₂ := b
+      hom₃ := h.choose
+      comm₁ := comm
+      comm₂ := h.choose_spec.1
+      comm₃ := h.choose_spec.2 }
+
+/-- A product of distinguished triangles is distinguished -/
+lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
+    (hT : ∀ j, T j ∈ distTriang C)
+    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
+    [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] :
+    productTriangle T ∈ distTriang C := by
+  let f₁ := Pi.map (fun j => (T j).mor₁)
+  obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
+  let T' := Triangle.mk f₁ f₂ f₃
+  change T' ∈ distTriang C at hT'
+  let φ : ∀ j, T' ⟶ T j := fun j => completeDistinguishedTriangleMorphism _ _
+    hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp)
+  let φ' := productTriangle.lift _ φ
+  have h₁ : φ'.hom₁ = 𝟙 _ := by aesop_cat
+  have h₂ : φ'.hom₂ = 𝟙 _ := by aesop_cat
+  have : IsIso φ'.hom₁ := by rw [h₁]; infer_instance
+  have : IsIso φ'.hom₂ := by rw [h₂]; infer_instance
+  suffices IsIso φ'.hom₃ by
+    have : IsIso φ' := by
+      apply Triangle.isIso_of_isIsos
+      all_goals infer_instance
+    exact isomorphic_distinguished _ hT' _ (asIso φ').symm
+  have : Mono φ'.hom₃ := by
+    rw [mono_iff_cancel_zero]
+    intro A f hf
+    have hf' : f ≫ T'.mor₃ = 0 := by
+      rw [← cancel_mono (φ'.hom₁⟦1⟧'), zero_comp, assoc, φ'.comm₃, reassoc_of% hf, zero_comp]
+    obtain ⟨g, hg⟩ := T'.coyoneda_exact₃ hT' f hf'
+    have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j => by
+      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 :=
+        by rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
+      rw [φ'.comm₂_assoc, h₂, id_comp] at this
+      simpa using this
+    have hg'' := fun j => (T j).coyoneda_exact₂ (hT j) _ (hg' j)
+    let α := fun j => (hg'' j).choose
+    have hα : ∀ j, _ = α j ≫ _ := fun j => (hg'' j).choose_spec
+    have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp; ext j; rw [hα]; simp
+    rw [hg, hg''', assoc, comp_dist_triangle_mor_zero₁₂ _ hT', comp_zero]
+  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  . intro a₁ a₂ ha
+    simpa only [← cancel_mono φ'.hom₃] using ha
+  . intro a
+    obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
+      have zero : ((productTriangle T).mor₃) ≫ (shiftFunctor C 1).map T'.mor₁ = 0 := by
+        rw [← cancel_mono (φ'.hom₂⟦1⟧'), zero_comp, assoc, ← Functor.map_comp, φ'.comm₁, h₁,
+          id_comp]
+        rw [productTriangle.zero₃₁]
+        intro j
+        exact comp_dist_triangle_mor_zero₃₁ _ (hT j)
+      have ⟨g, hg⟩ := T'.coyoneda_exact₁ hT' (a ≫ (productTriangle T).mor₃) (by
+        rw [assoc, zero, comp_zero])
+      exact ⟨g, hg.symm⟩
+    have ha'' := fun (j : J) => (T j).coyoneda_exact₃ (hT j) ((a - a' ≫ φ'.hom₃) ≫ Pi.π _ j) (by
+        simp only [sub_comp, assoc]
+        erw [← (productTriangle.π T j).comm₃]
+        rw [← φ'.comm₃_assoc]
+        rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
+    let b := fun j => (ha'' j).choose
+    have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
+    have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
+      Limits.Pi.hom_ext _ _ (fun j => by rw [hb] ; simp)
+    have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
+      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
+    exact ⟨_, this⟩
+
 end Pretriangulated
 
 end CategoryTheory
