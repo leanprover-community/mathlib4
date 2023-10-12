@@ -103,7 +103,7 @@ def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} 
 def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const J) F
     where
   obj c := CostructuredArrow.mk c.π
-  map f := CostructuredArrow.homMk f.Hom
+  map f := CostructuredArrow.homMk f.hom
 #align category_theory.limits.cone.to_costructured_arrow CategoryTheory.Limits.Cone.toCostructuredArrow
 
 /-- Construct a cone on `F` from an object of the category `(Δ ↓ F)`. This is part of an
@@ -113,7 +113,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
     where
   obj c := ⟨c.left, c.hom⟩
   map f :=
-    { Hom := f.left
+    { hom := f.left
       w := fun j => by
         convert congr_fun (congr_arg NatTrans.app f.w) j
         dsimp
@@ -252,7 +252,7 @@ def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) 
 def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (const J)
     where
   obj c := StructuredArrow.mk c.ι
-  map f := StructuredArrow.homMk f.Hom
+  map f := StructuredArrow.homMk f.hom
 #align category_theory.limits.cocone.to_structured_arrow CategoryTheory.Limits.Cocone.toStructuredArrow
 
 /-- Construct a cocone on `F` from an object of the category `(F ↓ Δ)`. This is part of an
@@ -262,7 +262,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
     where
   obj c := ⟨c.right, c.hom⟩
   map f :=
-    { Hom := f.right
+    { hom := f.right
       w := fun j => by
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
         dsimp

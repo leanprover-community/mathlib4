@@ -171,7 +171,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace  := H₀ y y_in₀
+        replace := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
@@ -287,7 +287,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp
+    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by

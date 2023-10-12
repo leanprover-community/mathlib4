@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
 
-#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"4367b192b58a665b6f18773f73eb492eb4df7990"
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals
@@ -870,6 +870,12 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
   simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
 #align set.Ioo_union_right Set.Ioo_union_right
+
+theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
+  have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
+    | x, .inl rfl => left_mem_Icc.mpr h
+    | x, .inr rfl => right_mem_Icc.mpr h
+  rw [← this, Icc_diff_both]
 
 theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
   rw [← Icc_diff_left, diff_union_self,

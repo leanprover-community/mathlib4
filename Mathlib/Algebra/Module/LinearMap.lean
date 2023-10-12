@@ -92,7 +92,7 @@ structure LinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R �
     AddHom M M₂ where
   /-- A linear map preserves scalar multiplication.
   We prefer the spelling `_root_.map_smul` instead. -/
-  map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
+  protected map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
 
 /-- The `AddHom` underlying a `LinearMap`. -/
@@ -158,7 +158,6 @@ variable {σ : R →+* S}
 instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
-    coe := fun f ↦ (f : M → M₃)
     map_zero := fun f ↦
       show f 0 = 0 by
         rw [← zero_smul R (0 : M), map_smulₛₗ]
@@ -167,7 +166,6 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
 instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with
-    coe := fun f ↦ (f : M → M₂)
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
 variable {F} (f : F) [i : SemilinearMapClass F σ M M₃]
@@ -263,7 +261,7 @@ theorem coe_addHom_mk {σ : R →+* S} (f : AddHom M M₃) (h) :
 
 /-- Identity map as a `LinearMap` -/
 def id : M →ₗ[R] M :=
-  { DistribMulActionHom.id R with toFun := _root_.id }
+  { DistribMulActionHom.id R with }
 #align linear_map.id LinearMap.id
 
 theorem id_apply (x : M) : @id R M _ _ _ x = x :=
@@ -521,7 +519,6 @@ end
 @[simps]
 def _root_.RingHom.toSemilinearMap (f : R →+* S) : R →ₛₗ[f] S :=
   { f with
-    toFun := f
     map_smul' := f.map_mul }
 #align ring_hom.to_semilinear_map RingHom.toSemilinearMap
 #align ring_hom.to_semilinear_map_apply RingHom.toSemilinearMap_apply
@@ -568,16 +565,35 @@ theorem id_comp : id.comp f = f :=
   LinearMap.ext fun _ ↦ rfl
 #align linear_map.id_comp LinearMap.id_comp
 
+theorem comp_assoc
+    {R₄ : Type*} {M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R₄ M₄]
+    {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
+    [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+    (f : M₁ →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃) (h : M₃ →ₛₗ[σ₃₄] M₄) :
+    ((h.comp g : M₂ →ₛₗ[σ₂₄] M₄).comp f : M₁ →ₛₗ[σ₁₄] M₄) = h.comp (g.comp f : M₁ →ₛₗ[σ₁₃] M₃) :=
+  rfl
+#align linear_map.comp_assoc LinearMap.comp_assoc
+
 variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁₂] M₂}
 
-@[simp]
-theorem cancel_right (hg : Function.Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
-  ⟨fun h ↦ ext <| hg.forall.2 (ext_iff.1 h), fun h ↦ h ▸ rfl⟩
-#align linear_map.cancel_right LinearMap.cancel_right
+/-- The linear map version of `Function.Surjective.injective_comp_right` -/
+lemma _root_.Function.Surjective.injective_linearMapComp_right (hg : Surjective g) :
+    Injective fun f : M₂ →ₛₗ[σ₂₃] M₃ ↦ f.comp g :=
+  fun _ _ h ↦ ext <| hg.forall.2 (ext_iff.1 h)
 
 @[simp]
-theorem cancel_left (hf : Function.Injective f) : f.comp g = f.comp g' ↔ g = g' :=
-  ⟨fun h ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
+theorem cancel_right (hg : Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
+  hg.injective_linearMapComp_right.eq_iff
+#align linear_map.cancel_right LinearMap.cancel_right
+
+/-- The linear map version of `Function.Injective.comp_left` -/
+lemma _root_.Function.Injective.injective_linearMapComp_left (hf : Injective f) :
+    Injective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g :=
+  fun g₁ g₂ (h : f.comp g₁ = f.comp g₂) ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply]
+
+@[simp]
+theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=
+  hf.injective_linearMapComp_left.eq_iff
 #align linear_map.cancel_left LinearMap.cancel_left
 
 end
@@ -659,7 +675,7 @@ def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : Coe (M →+[R] M₂) (M →ₗ[R] M₂) :=
+instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) :=
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -1013,8 +1029,6 @@ end Actions
 
 /-!
 ### Monoid structure of endomorphisms
-
-Lemmas about `pow` such as `LinearMap.pow_apply` appear in later files.
 -/
 
 
@@ -1064,10 +1078,6 @@ instance _root_.Module.End.monoid : Monoid (Module.End R M) where
 
 instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
   { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
-    mul := (· * ·)
-    one := (1 : M →ₗ[R] M)
-    zero := (0 : M →ₗ[R] M)
-    add := (· + ·)
     mul_zero := comp_zero
     zero_mul := zero_comp
     left_distrib := fun _ _ _ ↦ comp_add _ _ _
@@ -1085,10 +1095,6 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
-    mul := (· * ·)
-    one := (1 : N₁ →ₗ[R] N₁)
-    zero := (0 : N₁ →ₗ[R] N₁)
-    add := (· + ·)
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
     intCast_ofNat := ofNat_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
@@ -1131,6 +1137,70 @@ theorem _root_.Module.End_isUnit_inv_apply_apply_of_isUnit
   (by simp : (h.unit.inv * f) x = x)
 #align module.End_is_unit_inv_apply_apply_of_is_unit Module.End_isUnit_inv_apply_apply_of_isUnit
 
+theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+#align linear_map.coe_pow LinearMap.coe_pow
+
+theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
+#align linear_map.pow_apply LinearMap.pow_apply
+
+theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
+    (hm : (f ^ k) m = 0) : (f ^ l) m = 0 := by
+  rw [← tsub_add_cancel_of_le hk, pow_add, mul_apply, hm, map_zero]
+#align linear_map.pow_map_zero_of_le LinearMap.pow_map_zero_of_le
+
+theorem commute_pow_left_of_commute
+    [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
+    {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
+    (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
+  induction' k with k ih
+  · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
+  · rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
+      h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
+#align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
+
+@[simp]
+theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
+  one_pow n
+#align linear_map.id_pow LinearMap.id_pow
+
+variable {f' : M →ₗ[R] M}
+
+theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ', mul_eq_comp]
+#align linear_map.iterate_succ LinearMap.iterate_succ
+
+theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
+  | 0 => surjective_id
+  | n + 1 => by
+    rw [iterate_succ]
+    exact (iterate_surjective h n).comp h
+#align linear_map.iterate_surjective LinearMap.iterate_surjective
+
+theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective (f' ^ n)
+  | 0 => injective_id
+  | n + 1 => by
+    rw [iterate_succ]
+    exact (iterate_injective h n).comp h
+#align linear_map.iterate_injective LinearMap.iterate_injective
+
+theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
+  | 0 => bijective_id
+  | n + 1 => by
+    rw [iterate_succ]
+    exact (iterate_bijective h n).comp h
+#align linear_map.iterate_bijective LinearMap.iterate_bijective
+
+theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
+    Injective f' := by
+  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), iterate_succ, coe_comp] at h
+  exact h.of_comp
+#align linear_map.injective_of_iterate_injective LinearMap.injective_of_iterate_injective
+
+theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
+    Surjective f' := by
+  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ, coe_mul] at h
+  exact Surjective.of_comp h
+#align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
+
 end
 
 /-! ### Action by a module endomorphism. -/
@@ -1159,12 +1229,12 @@ instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
   ⟨LinearMap.ext⟩
 #align linear_map.apply_has_faithful_smul LinearMap.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (Module.End R M) M
-    where smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass : SMulCommClass R (Module.End R M) M where
+  smul_comm r e m := (e.map_smul r m).symm
 #align linear_map.apply_smul_comm_class LinearMap.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M
-    where smul_comm := LinearMap.map_smul
+instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M where
+  smul_comm := LinearMap.map_smul
 #align linear_map.apply_smul_comm_class' LinearMap.apply_smulCommClass'
 
 instance apply_isScalarTower {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] :

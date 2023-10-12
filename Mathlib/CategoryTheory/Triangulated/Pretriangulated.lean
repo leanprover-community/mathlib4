@@ -3,9 +3,7 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Triangulated.Rotate
+import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 #align_import category_theory.triangulated.pretriangulated from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -26,11 +24,7 @@ TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Preadditive
-
-open CategoryTheory.Limits
+open CategoryTheory Preadditive Limits
 
 universe v v₀ v₁ v₂ u u₀ u₁ u₂
 
@@ -90,7 +84,7 @@ class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
 
 namespace Pretriangulated
 
-variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [hC : Pretriangulated C]
+variable [∀ n : ℤ, Functor.Additive (CategoryTheory.shiftFunctor C n)] [hC : Pretriangulated C]
 
 -- porting note: increased the priority so that we can write `T ∈ distTriang C`, and
 -- not just `T ∈ (distTriang C)`
@@ -144,7 +138,7 @@ See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
 theorem comp_dist_triangle_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
-  T.mor₂ ≫ T.mor₃ = 0 :=
+    T.mor₂ ≫ T.mor₃ = 0 :=
   comp_dist_triangle_mor_zero₁₂ T.rotate (rot_of_dist_triangle T H)
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₂₃ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₂₃
 
@@ -158,7 +152,7 @@ See <https://stacks.math.columbia.edu/tag/0146>
 -/
 @[reassoc]
 theorem comp_dist_triangle_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
-    T.mor₃ ≫ (shiftEquiv C 1).functor.map T.mor₁ = 0 := by
+    T.mor₃ ≫ T.mor₁⟦1⟧' = 0 := by
   have H₂ := rot_of_dist_triangle T.rotate (rot_of_dist_triangle T H)
   simpa using comp_dist_triangle_mor_zero₁₂ T.rotate.rotate H₂
 #align category_theory.pretriangulated.comp_dist_triangle_mor_zero₃₁ CategoryTheory.Pretriangulated.comp_dist_triangle_mor_zero₃₁
@@ -378,6 +372,33 @@ lemma isZero₁_of_isIso₂ (h : IsIso T.mor₂) : IsZero T.obj₁ := (T.isZero�
 lemma isZero₂_of_isIso₃ (h : IsIso T.mor₃) : IsZero T.obj₂ := (T.isZero₂_iff_isIso₃ hT).2 h
 lemma isZero₃_of_isIso₁ (h : IsIso T.mor₁) : IsZero T.obj₃ := (T.isZero₃_iff_isIso₁ hT).2 h
 
+lemma shift_distinguished (n : ℤ) :
+    (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ distTriang C := by
+  revert T hT
+  let H : ℤ → Prop := fun n => ∀ (T : Triangle C) (_ : T ∈ distTriang C),
+    (Triangle.shiftFunctor C n).obj T ∈ distTriang C
+  change H n
+  have H_zero : H 0 := fun T hT =>
+    isomorphic_distinguished _ hT _ ((Triangle.shiftFunctorZero C).app T)
+  have H_one : H 1 := fun T hT =>
+    isomorphic_distinguished _ (rot_of_dist_triangle _
+      (rot_of_dist_triangle _ (rot_of_dist_triangle _ hT))) _
+        ((rotateRotateRotateIso C).symm.app T)
+  have H_neg_one : H (-1) := fun T hT =>
+    isomorphic_distinguished _ (inv_rot_of_dist_triangle _
+      (inv_rot_of_dist_triangle _ (inv_rot_of_dist_triangle _ hT))) _
+        ((invRotateInvRotateInvRotateIso C).symm.app T)
+  have H_add : ∀ {a b c : ℤ}, H a → H b → a + b = c → H c := fun {a b c} ha hb hc T hT =>
+    isomorphic_distinguished _ (hb _ (ha _ hT)) _
+      ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
+  obtain (n|n) := n
+  · induction' n with n hn
+    · exact H_zero
+    · exact H_add hn H_one rfl
+  · induction' n with n hn
+    · exact H_neg_one
+    · exact H_add hn H_neg_one rfl
+
 end Triangle
 
 instance : SplitEpiCategory C where
@@ -393,6 +414,48 @@ instance : SplitMonoCategory C where
     obtain ⟨r, hr⟩ := Triangle.yoneda_exact₂ _ hT (𝟙 _) (by
       rw [Triangle.mor₁_eq_zero_of_mono₂ _ hT hf, zero_comp])
     exact ⟨r, hr.symm⟩
+
+lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
+    (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₂ := by
+  have : Mono φ.hom₂ := by
+    rw [mono_iff_cancel_zero]
+    intro A f hf
+    obtain ⟨g, rfl⟩ := Triangle.coyoneda_exact₂ _ hT f
+      (by rw [← cancel_mono φ.hom₃, assoc, φ.comm₂, reassoc_of% hf, zero_comp, zero_comp])
+    rw [assoc] at hf
+    obtain ⟨h, hh⟩ := Triangle.coyoneda_exact₂ T'.invRotate (inv_rot_of_dist_triangle _ hT')
+      (g ≫ φ.hom₁) (by dsimp; rw [assoc, ← φ.comm₁, hf])
+    obtain ⟨k, rfl⟩ : ∃ (k : A ⟶ T.invRotate.obj₁), k ≫ T.invRotate.mor₁ = g := by
+      refine' ⟨h ≫ inv (φ.hom₃⟦(-1 : ℤ)⟧'), _⟩
+      have eq := ((invRotate C).map φ).comm₁
+      dsimp only [invRotate] at eq
+      rw [← cancel_mono φ.hom₁, assoc, assoc, eq, IsIso.inv_hom_id_assoc, hh]
+    erw [assoc, comp_dist_triangle_mor_zero₁₂ _ (inv_rot_of_dist_triangle _ hT), comp_zero]
+  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  · intro f₁ f₂ h
+    simpa only [← cancel_mono φ.hom₂] using h
+  · intro y₂
+    obtain ⟨x₃, hx₃⟩ : ∃ (x₃ : A ⟶ T.obj₃), x₃ ≫ φ.hom₃ = y₂ ≫ T'.mor₂ :=
+      ⟨y₂ ≫ T'.mor₂ ≫ inv φ.hom₃, by simp⟩
+    obtain ⟨x₂, hx₂⟩ := Triangle.coyoneda_exact₃ _ hT x₃
+      (by rw [← cancel_mono (φ.hom₁⟦(1 : ℤ)⟧'), assoc, zero_comp, φ.comm₃, reassoc_of% hx₃,
+        comp_dist_triangle_mor_zero₂₃ _ hT', comp_zero])
+    obtain ⟨y₁, hy₁⟩ := Triangle.coyoneda_exact₂ _ hT' (y₂ - x₂ ≫ φ.hom₂)
+      (by rw [sub_comp, assoc, ← φ.comm₂, ← reassoc_of% hx₂, hx₃, sub_self])
+    obtain ⟨x₁, hx₁⟩ : ∃ (x₁ : A ⟶ T.obj₁), x₁ ≫ φ.hom₁ = y₁ := ⟨y₁ ≫ inv φ.hom₁, by simp⟩
+    refine' ⟨x₂ + x₁ ≫ T.mor₁, _⟩
+    dsimp
+    rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel'_right]
+
+lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
+    (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
+  isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_dist_triangle _ hT)
+    (rot_of_dist_triangle _ hT') h₂ (by dsimp; infer_instance)
+
+lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
+    (hT' : T' ∈ distTriang C) (h₂ : IsIso φ.hom₂) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₁ :=
+  isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_dist_triangle _ hT)
+    (inv_rot_of_dist_triangle _ hT') (by dsimp; infer_instance) (by dsimp; infer_instance)
 
 /-
 TODO: If `C` is pretriangulated with respect to a shift,
