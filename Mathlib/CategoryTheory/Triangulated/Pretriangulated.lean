@@ -551,6 +551,11 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
     [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] :
     productTriangle T ∈ distTriang C := by
+  /- The proof proceeds by constructing a morphism of triangles
+    `φ' : T' ⟶ productTriangle T` with `T'` distinguished, and such that
+    `φ'.hom₁` and `φ'.hom₂` are identities. Then, it suffices to show that
+    `φ'.hom₃` is an isomorphism, which is achieved by using Yoneda's lemma
+    and a diagram chase. -/
   let f₁ := Pi.map (fun j => (T j).mor₁)
   obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
   let T' := Triangle.mk f₁ f₂ f₃
@@ -567,7 +572,10 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       apply Triangle.isIso_of_isIsos
       all_goals infer_instance
     exact isomorphic_distinguished _ hT' _ (asIso φ').symm
-  have : Mono φ'.hom₃ := by
+  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  · suffices Mono φ'.hom₃ by
+      intro a₁ a₂ ha
+      simpa only [← cancel_mono φ'.hom₃] using ha
     rw [mono_iff_cancel_zero]
     intro A f hf
     have hf' : f ≫ T'.mor₃ = 0 := by
@@ -583,25 +591,21 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     have hα : ∀ j, _ = α j ≫ _ := fun j => (hg'' j).choose_spec
     have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp; ext j; rw [hα]; simp
     rw [hg, hg''', assoc, comp_dist_triangle_mor_zero₁₂ _ hT', comp_zero]
-  refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
-  · intro a₁ a₂ ha
-    simpa only [← cancel_mono φ'.hom₃] using ha
   · intro a
     obtain ⟨a', ha'⟩ : ∃ (a' : A ⟶ Z), a' ≫ T'.mor₃ = a ≫ (productTriangle T).mor₃ := by
       have zero : ((productTriangle T).mor₃) ≫ (shiftFunctor C 1).map T'.mor₁ = 0 := by
         rw [← cancel_mono (φ'.hom₂⟦1⟧'), zero_comp, assoc, ← Functor.map_comp, φ'.comm₁, h₁,
-          id_comp]
-        rw [productTriangle.zero₃₁]
+          id_comp, productTriangle.zero₃₁]
         intro j
         exact comp_dist_triangle_mor_zero₃₁ _ (hT j)
       have ⟨g, hg⟩ := T'.coyoneda_exact₁ hT' (a ≫ (productTriangle T).mor₃) (by
         rw [assoc, zero, comp_zero])
       exact ⟨g, hg.symm⟩
     have ha'' := fun (j : J) => (T j).coyoneda_exact₃ (hT j) ((a - a' ≫ φ'.hom₃) ≫ Pi.π _ j) (by
-        simp only [sub_comp, assoc]
-        erw [← (productTriangle.π T j).comm₃]
-        rw [← φ'.comm₃_assoc]
-        rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
+      simp only [sub_comp, assoc]
+      erw [← (productTriangle.π T j).comm₃]
+      rw [← φ'.comm₃_assoc]
+      rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
     let b := fun j => (ha'' j).choose
     have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
