@@ -88,7 +88,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
     with assumptions that neither `bit a m` nor `bit b n` are `0` -/
-lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
+lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
     (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => { unfold bitwise }
