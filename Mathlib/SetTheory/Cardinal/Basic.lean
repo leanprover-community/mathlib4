@@ -1657,6 +1657,14 @@ theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [
 #align cardinal.aleph_0_mul_nat Cardinal.aleph0_mul_nat
 
 @[simp]
+theorem ofNat_mul_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) * ℵ₀ = ℵ₀ :=
+  nat_mul_aleph0 (OfNat.ofNat_ne_zero n)
+
+@[simp]
+theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * no_index (OfNat.ofNat n) = ℵ₀ :=
+  aleph0_mul_nat (OfNat.ofNat_ne_zero n)
+
+@[simp]
 theorem add_le_aleph0 {c₁ c₂ : Cardinal} : c₁ + c₂ ≤ ℵ₀ ↔ c₁ ≤ ℵ₀ ∧ c₂ ≤ ℵ₀ :=
   ⟨fun h => ⟨le_self_add.trans h, le_add_self.trans h⟩, fun h =>
     aleph0_add_aleph0 ▸ add_le_add h.1 h.2⟩
@@ -1670,6 +1678,14 @@ theorem aleph0_add_nat (n : ℕ) : ℵ₀ + n = ℵ₀ :=
 @[simp]
 theorem nat_add_aleph0 (n : ℕ) : ↑n + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_nat]
 #align cardinal.nat_add_aleph_0 Cardinal.nat_add_aleph0
+
+@[simp]
+theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) + ℵ₀ = ℵ₀ :=
+  nat_add_aleph0 n
+
+@[simp]
+theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
+  aleph0_add_nat n
 
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
