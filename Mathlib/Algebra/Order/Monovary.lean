@@ -231,7 +231,8 @@ lemma Antivary.pow_right₀ (hg : 0 ≤ g) (hfg : Antivary f g) (n : ℕ) : Anti
 end LinearOrderedSemiring
 
 section LinearOrderedSemifield
-variable [LinearOrderedSemifield α] [LinearOrderedSemifield β] {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+variable [LinearOrderedSemifield α] [LinearOrderedSemifield β] {s : Set ι} {f f₁ f₂ : ι → α}
+  {g g₁ g₂ : ι → β}
 
 @[simp]
 lemma monovaryOn_inv_left₀ (hf : ∀ i ∈ s, 0 < f i) : MonovaryOn f⁻¹ g s ↔ AntivaryOn f g s :=
@@ -311,7 +312,7 @@ lemma AntivaryOn.div_right₀ (hg₁ : ∀ i ∈ s, 0 ≤ g₁ i) (hg₂ : ∀ i
   (h₁.symm.div_left₀ hg₁ hg₂ h₂.symm).symm
 
 lemma Monovary.div_right₀ (hg₁ : 0 ≤ g₁) (hg₂ : StrongLT 0 g₂) (h₁ : Monovary f g₁)
-   (h₂ : Antivary f g₂) : Monovary f (g₁ / g₂) := (h₁.symm.div_left₀ hg₁ hg₂ h₂.symm).symm
+    (h₂ : Antivary f g₂) : Monovary f (g₁ / g₂) := (h₁.symm.div_left₀ hg₁ hg₂ h₂.symm).symm
 
 lemma Antivary.div_right₀ (hg₁ : 0 ≤ g₁) (hg₂ : StrongLT 0 g₂) (h₁ : Antivary f g₁)
     (h₂ : Monovary f g₂) : Antivary f (g₁ / g₂) := (h₁.symm.div_left₀ hg₁ hg₂ h₂.symm).symm
@@ -325,7 +326,7 @@ variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β]
   [OrderedSMul α β] {f : ι → α} {g : ι → β} {s : Set ι} {a a₁ a₂ : α} {b b₁ b₂ : β}
 
 lemma monovaryOn_iff_forall_smul_nonneg :
-  MonovaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → 0 ≤ (f j - f i) • (g j - g i) := by
+    MonovaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → 0 ≤ (f j - f i) • (g j - g i) := by
   simp_rw [smul_nonneg_iff_pos_imp_nonneg, sub_pos, sub_nonneg, forall_and]
   exact (and_iff_right_of_imp MonovaryOn.symm).symm
 
@@ -356,7 +357,7 @@ lemma antivaryOn_iff_smul_rearrangement :
 
 /-- Two functions monovary iff the rearrangement inequality holds. -/
 lemma monovary_iff_smul_rearrangement :
-  Monovary f g ↔ ∀ i j, f i • g j + f j • g i ≤ f i • g i + f j • g j :=
+    Monovary f g ↔ ∀ i j, f i • g j + f j • g i ≤ f i • g i + f j • g j :=
   monovaryOn_univ.symm.trans $ monovaryOn_iff_smul_rearrangement.trans $ by
     simp only [Set.mem_univ, forall_true_left]
 
