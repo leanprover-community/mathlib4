@@ -36,9 +36,6 @@ def s : Multiset ℕ := {0, 0, 0}
 #eval Multiset.card (Multiset.antidiagonal s) -- 8
 ```
 
-This is mostly taken from a file of Bhavik Mehta,
-Archive/Wiedijk100Theorems/Partition.lean,
-where `piAntidiagonal` was called `cut`
 -/
 
 namespace Finset
