@@ -22,14 +22,23 @@ In this file we define `Gδ` sets and prove their basic properties.
 * `residual`: the σ-filter of residual sets. A set `s` is called *residual* if it includes a
   countable intersection of dense open sets.
 
+* `IsNowhereDense`: a set is called *nowhere dense* iff its closure has empty interior
+* `IsMeagre`: a set `s` is called *meagre* iff its complement is residual
+
 ## Main results
 
-We prove that finite or countable intersections of Gδ sets is a Gδ set. We also prove that the
+We prove that finite or countable intersections of Gδ sets are Gδ sets. We also prove that the
 continuity set of a function from a topological space to an (e)metric space is a Gδ set.
+
+- `closed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
+its complement is open and dense
+- `meagre_iff_countable_union_nowhereDense`: a set is meagre iff it is contained in a countable
+union of nowhere dense
+- subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
 ## Tags
 
-Gδ set, residual set
+Gδ set, residual set, nowhere dense set, meagre set
 -/
 
 
@@ -223,3 +232,72 @@ theorem mem_residual_iff {s : Set α} :
 #align mem_residual_iff mem_residual_iff
 
 end residual
+
+section meagre
+open Function TopologicalSpace Set
+variable {α : Type*} [TopologicalSpace α]
+
+/-- A set is called **nowhere dense** iff its closure has empty interior. -/
+def IsNowhereDense (s : Set α) := interior (closure s) = ∅
+
+/-- The empty set is nowhere dense. -/
+@[simp]
+lemma isNowhereDense_of_empty : IsNowhereDense (∅ : Set α) := by
+  rw [IsNowhereDense, closure_empty, interior_empty]
+
+/-- A closed set is nowhere dense iff its interior is empty. -/
+lemma IsClosed.isNowhereDense_iff {s : Set α} (hs : IsClosed s) :
+    IsNowhereDense s ↔ interior s = ∅ := by
+  rw [IsNowhereDense, IsClosed.closure_eq hs]
+
+/-- If a set `s` is nowhere dense, so is its closure.-/
+protected lemma IsNowhereDense.closure {s : Set α} (hs : IsNowhereDense s) :
+    IsNowhereDense (closure s) := by
+  rwa [IsNowhereDense, closure_closure]
+
+/-- A nowhere dense set `s` is contained in a closed nowhere dense set (namely, its closure). -/
+lemma IsNowhereDense.subset_of_closed_nowhereDense {s : Set α} (hs : IsNowhereDense s) :
+    ∃ t : Set α, s ⊆ t ∧ IsNowhereDense t ∧ IsClosed t :=
+  ⟨closure s, subset_closure, ⟨hs.closure, isClosed_closure⟩⟩
+
+/-- A set `s` is closed and nowhere dense iff its complement `sᶜ` is open and dense. -/
+lemma closed_isNowhereDense_iff_compl {s : Set α} :
+    IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
+  rw [and_congr_right IsClosed.isNowhereDense_iff,
+    isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
+
+/-- A set is called **meagre** iff its complement is a residual (or comeagre) set. -/
+def IsMeagre (s : Set α) := sᶜ ∈ residual α
+
+/-- The empty set is meagre. -/
+lemma meagre_empty : IsMeagre (∅ : Set α) := by
+  rw [IsMeagre, compl_empty]
+  exact Filter.univ_mem
+
+/-- Subsets of meagre sets are meagre. -/
+lemma IsMeagre.mono {s t : Set α} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t :=
+  Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
+
+/-- An intersection with a meagre set is meagre. -/
+lemma IsMeagre.inter {s t : Set α} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
+  hs.mono (inter_subset_left s t)
+
+/-- A countable union of meagre sets is meagre. -/
+lemma meagre_iUnion {s : ℕ → Set α} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
+  rw [IsMeagre, compl_iUnion]
+  exact countable_iInter_mem.mpr hs
+
+/-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
+lemma meagre_iff_countable_union_nowhereDense {s : Set α} : IsMeagre s ↔
+    ∃ S : Set (Set α), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
+  rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
+  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← closed_isNowhereDense_iff_compl,
+    sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
+  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, fun ⟨S, hS, hc, hsub⟩ ↦ ?_⟩
+  · rw [← compl_compl_image S]; exact hc.image _
+  use closure '' S
+  rw [ball_image_iff]
+  exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
+    (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
+
+end meagre

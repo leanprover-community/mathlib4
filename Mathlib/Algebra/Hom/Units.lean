@@ -45,9 +45,9 @@ equal at `x⁻¹`. -/
   "If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
   additive unit `x`, then they are equal at `-x`."]
 theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F G N]
-  {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
-left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
-  (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
+    {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
+  left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
+    (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
 #align is_unit.eq_on_inv IsUnit.eq_on_inv
 #align is_add_unit.eq_on_neg IsAddUnit.eq_on_neg
 
@@ -56,7 +56,7 @@ left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
     "If two homomorphism from an additive group to an additive monoid are equal at `x`,
     then they are equal at `-x`."]
 theorem eq_on_inv {F G M} [Group G] [Monoid M] [MonoidHomClass F G M]
-  (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
+    (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
 #align eq_on_inv eq_on_inv
 #align eq_on_neg eq_on_neg
@@ -223,15 +223,15 @@ theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x)
 
 @[to_additive]
 theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
-  (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x :=
-  by simpa only [hfg x] using h.map g
+    (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
+  simpa only [hfg x] using h.map g
 #align is_unit.of_left_inverse IsUnit.of_leftInverse
 #align is_add_unit.of_left_inverse IsAddUnit.of_leftInverse
 
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
-  {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
-  IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
+    {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
+    IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
 #align is_unit_map_of_left_inverse isUnit_map_of_leftInverse
 #align is_add_unit_map_of_left_inverse isAddUnit_map_of_leftInverse
 
@@ -490,14 +490,14 @@ protected theorem mul_div_mul_left (h : IsUnit c) (a b : α) : c * a / (c * b) =
 
 @[to_additive]
 protected theorem mul_eq_mul_of_div_eq_div (hb : IsUnit b) (hd : IsUnit d)
-  (a c : α) (h : a / b = c / d) : a * d = c * b := by
+    (a c : α) (h : a / b = c / d) : a * d = c * b := by
   rw [← mul_one a, ← hb.div_self, ← mul_comm_div, h, div_mul_eq_mul_div, hd.div_mul_cancel]
 #align is_unit.mul_eq_mul_of_div_eq_div IsUnit.mul_eq_mul_of_div_eq_div
 #align is_add_unit.add_eq_add_of_sub_eq_sub IsAddUnit.add_eq_add_of_sub_eq_sub
 
 @[to_additive]
 protected theorem div_eq_div_iff (hb : IsUnit b) (hd : IsUnit d) :
-  a / b = c / d ↔ a * d = c * b := by
+    a / b = c / d ↔ a * d = c * b := by
   rw [← (hb.mul hd).mul_left_inj, ← mul_assoc, hb.div_mul_cancel, ← mul_assoc, mul_right_comm,
     hd.div_mul_cancel]
 #align is_unit.div_eq_div_iff IsUnit.div_eq_div_iff
