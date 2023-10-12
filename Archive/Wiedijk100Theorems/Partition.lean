@@ -205,7 +205,8 @@ theorem coeff_prod_range [CommSemiring α] {ι : Type*} -- [DecidableEq ι] -- [
     rw [piAntidiagonal_empty]
     by_cases hn : n = 0
     · simp only [if_pos hn, prod_empty, coeff_one, sum_const, card_singleton, one_smul]
-    · simp only [if_neg hn, prod_empty, coeff_one, sum_const, card_empty, zero_smul, ite_eq_right_iff]
+    · simp only [if_neg hn, prod_empty, coeff_one, sum_const, card_empty,
+        zero_smul, ite_eq_right_iff]
   | @insert a s hi ih =>
     intro n
     rw [piAntidiagonal_insert _ _ _ hi, prod_insert hi, coeff_mul, sum_biUnion]
