@@ -86,8 +86,23 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs <;> simp_all
 #align nat.bitwise_bit Nat.bitwise_bit
 
+lemma bit_mod_two (a x) :
+    bit a x % 2 = if a then 1 else 0 := by
+  sorry
+
+@[simp]
+lemma bit_mod_two_eq_zero_iff (a x) :
+    bit a x % 2 = 0 ↔ !a := by
+  rw [bit_mod_two]; split_ifs <;> simp_all
+
+@[simp]
+lemma bit_mod_two_eq_one_iff (a x) :
+    bit a x % 2 = 1 ↔ a := by
+  rw [bit_mod_two]; split_ifs <;> simp_all
+
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
-    with assumptions that neither `bit a m` nor `bit b n` are `0` -/
+    with assumptions that neither `bit a m` nor `bit b n` are `0`
+    (albeit, phrased as the implications `m = 0 → a = true` and `n = 0 → b = true`) -/
 lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
     (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
@@ -103,9 +118,9 @@ lemma bitwise'_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool)
       · simp at hc
   have ham' := this ham
   have hbn' := this hbn
-  simp [ham', hbn']
-  simp [bit, bit1, bit0, Bool.cond_eq_ite]
-  sorry
+  simp [ham', hbn', ←div2_val, div2_bit]
+  conv_rhs => simp [bit, bit1, bit0, Bool.cond_eq_ite]
+  split_ifs with hf <;> rfl
 
 lemma binaryRec_of_ne_zero {C : ℕ → Sort*} {z : C 0} {f n} (h : n ≠ 0) :
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
