@@ -7,20 +7,26 @@ import Mathlib.RingTheory.TensorProduct
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.CharP.Two
 
 /-!
 # Graded tensor products over super- (`ZMod 2`-graded)
 
-The graded product  $A \otimes B$ is defined on homogeneous tensors by
+The graded tensor product $A \hat\otimes_R B$ is imbued with a multiplication defined on homogeneous
+tensors by:
 
 $$(a \otimes b) \cdot (a' \otimes b') = (-1)^{\deg a' \deg b} (a \cdot a') \otimes (b \cdot b')$$
+
+where $A$ and $B$ are algebras graded by `ZMod 2`, also known as superalgebras.
 
 ## Main results
 
 * `TensorProduct.gradedMul`: this multiplication on externally-graded rings, as a bilinear map
 * `SuperTensorProduct R 𝒜 ℬ`: for families of submodules of `A` and `B` that form a graded algebra,
   this is a type alias for `A ⊗'[R] B` with the appropriate multiplication.
-* `SuperTensorProduct.instRing`: the ring structure induced by this multiplication.
+* `SuperTensorProduct.instAlgebra`: the ring structure induced by this multiplication.
+* `SuperTensorProduct.liftEquiv`: a universal property for graded tensor products
+
 
 ## Notation
 
@@ -31,6 +37,8 @@ $$(a \otimes b) \cdot (a' \otimes b') = (-1)^{\deg a' \deg b} (a \cdot a') \otim
 * https://math.stackexchange.com/q/202718/1896
 * TODO: find appropriate part of Bourbaki
 -/
+
+suppress_compilation
 
 local notation "ℤ₂" => ZMod 2
 open scoped TensorProduct
@@ -231,6 +239,14 @@ theorem of_symm_of (x : A ⊗[R] B) : (of R 𝒜 ℬ).symm (of R 𝒜 ℬ x) = x
 @[simp, nolint simpNF]
 theorem symm_of_of (x : 𝒜 ⊗'[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).symm x) = x := rfl
 
+/-- Two linear maps from the graded tensor product agree if they agree on the underlying tensor
+product. -/
+@[ext]
+theorem hom_ext {M} [AddCommMonoid M] [Module R M] ⦃f g : 𝒜 ⊗'[R] ℬ →ₗ[R] M⦄
+    (h : f ∘ₗ of R 𝒜 ℬ = (g ∘ₗ of R 𝒜 ℬ : A ⊗[R] B →ₗ[R] M)) :
+    f = g :=
+  h
+
 variable (R) {𝒜 ℬ} in
 /-- The graded tensor product of two elements of graded rings. -/
 abbrev tmul (a : A) (b : B) := of R 𝒜 ℬ (a ⊗ₜ b)
@@ -293,9 +309,9 @@ noncomputable instance instRing : Ring (𝒜 ⊗'[R] ℬ) where
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
--- extracted to an auxiliary lemmas as it is so slow
 set_option maxHeartbeats 800000 in
-private theorem coe_mul_coe_aux {i₁ j₁ i₂ j₂ : ℤ₂} (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
+/-- Note that a more general `tmul_coe_mul_coe_tmul` is available. -/
+theorem coe_tmul_coe_mul_coe_tmul_coe {i₁ j₁ i₂ j₂ : ℤ₂} (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
     ((a₁ : A) ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] (b₂ : B) : 𝒜 ⊗'[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
@@ -313,7 +329,7 @@ private theorem coe_mul_coe_aux {i₁ j₁ i₂ j₂ : ℤ₂} (a₁ : 𝒜 i₁
   rw [decompose_symm_of, decompose_symm_of, SetLike.coe_gMul, SetLike.coe_gMul]
 
 /-- The characterization of this multiplication on partially homogenous elements. -/
-theorem coe_mul_coe {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
+theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
   classical
@@ -321,7 +337,36 @@ theorem coe_mul_coe {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : �
   rw [Finset.sum_mul, Finset.mul_sum]
   simp_rw [tmul, sum_tmul, tmul_sum, map_sum, Finset.smul_sum]
   rw [Finset.sum_mul]
-  simp_rw [Finset.mul_sum, coe_mul_coe_aux]
+  simp_rw [Finset.mul_sum, coe_tmul_coe_mul_coe_tmul_coe]
+
+/-- A special case for when `b₁` has grade 0. -/
+theorem tmul_zero_coe_mul_coe_tmul {i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
+      ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
+  rw [tmul_coe_mul_coe_tmul, zero_mul, z₂pow_zero, one_smul]
+
+/-- A special case for when `a₂` has grade 0. -/
+theorem tmul_coe_mul_zero_coe_tmul {j₁ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 0) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
+      ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
+  rw [tmul_coe_mul_coe_tmul, mul_zero, z₂pow_zero, one_smul]
+
+theorem tmul_one_mul_coe_tmul {i₂ : ℤ₂} (a₁ : A) (a₂ : 𝒜 i₂) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] (1 : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) = (a₁ * a₂ : A) ⊗ₜ' (b₂ : B) := by
+  convert tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) a₂ b₂
+  rw [SetLike.coe_gOne, one_mul]
+
+theorem tmul_coe_mul_one_tmul {j₁ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] (b₁ : B) * (1 : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) = (a₁ : A) ⊗ₜ' (b₁ * b₂ : B) := by
+  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
+  rw [SetLike.coe_gOne, mul_one]
+
+theorem tmul_one_mul_one_tmul (a₁ : A) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] (1 : B) * (1 : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) = (a₁ : A) ⊗ₜ' (b₂ : B) := by
+  convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ
+    a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
+  · rw [SetLike.coe_gOne, mul_one]
+  · rw [SetLike.coe_gOne, one_mul]
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 @[simps]
@@ -337,7 +382,7 @@ def includeLeftRingHom : A →+* 𝒜 ⊗'[R] ℬ where
     simp_rw [tmul, sum_tmul, map_sum, Finset.mul_sum]
     congr
     ext i
-    rw [←SetLike.coe_gOne ℬ, coe_mul_coe, zero_mul, z₂pow_zero, one_smul, SetLike.coe_gOne,
+    rw [←SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, z₂pow_zero, one_smul, SetLike.coe_gOne,
       one_mul]
 
 noncomputable instance instAlgebra : Algebra R (𝒜 ⊗'[R] ℬ) where
@@ -350,6 +395,100 @@ noncomputable instance instAlgebra : Algebra R (𝒜 ⊗'[R] ℬ) where
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
       map_smul, LinearEquiv.symm_apply_apply]
+
+lemma algebraMap_def (r : R) : algebraMap R (𝒜 ⊗'[R] ℬ) r = algebraMap R A r ⊗ₜ'[R] 1 := rfl
+
+theorem tmul_algebraMap_mul_coe_tmul {i₂ : ℤ₂} (a₁ : A) (r : R) (a₂ : 𝒜 i₂) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] algebraMap R B r * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ)
+      = (a₁ * a₂ : A) ⊗ₜ' (algebraMap R B r * b₂ : B) :=
+  tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (GAlgebra.toFun (A := (ℬ ·)) r) a₂ b₂
+
+theorem tmul_coe_mul_algebraMap_tmul {j₁ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (r : R) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] (b₁ : B) * algebraMap R A r ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ)
+      = (a₁ * algebraMap R A r : A) ⊗ₜ' (b₁ * b₂ : B) :=
+  tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (GAlgebra.toFun (A := (𝒜 ·)) r) b₂
+
+/-- The algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
+@[simps!]
+def includeLeft : A →ₐ[R] 𝒜 ⊗'[R] ℬ where
+  toRingHom := includeLeftRingHom 𝒜 ℬ
+  commutes' _ := rfl
+
+/-- The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. -/
+@[simps!]
+def includeRight : B →ₐ[R] (𝒜 ⊗'[R] ℬ) :=
+  AlgHom.ofLinearMap (R := R) (A := B) (B := 𝒜 ⊗'[R] ℬ)
+    (f := {
+       toFun := fun b => 1 ⊗ₜ' b
+       map_add' := by simp [tmul, TensorProduct.tmul_add]
+       map_smul' := by simp [tmul, TensorProduct.tmul_smul] })
+    (map_one := rfl)
+    (map_mul := by
+      rw [LinearMap.map_mul_iff]
+      refine DirectSum.decompose_lhom_ext ℬ fun i₁ => ?_
+      ext b₁ b₂ : 2
+      dsimp
+      rw [tmul_coe_mul_one_tmul])
+
+variable {C} [Ring C] [Algebra R C]
+
+/-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
+product can be assembed from maps on each component that (anti)commute on pure elements of the
+corresponding graded algebras. -/
+def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a)) :
+    (𝒜 ⊗'[R] ℬ) →ₐ[R] C :=
+  AlgHom.ofLinearMap
+    (LinearMap.mul' R C ∘ₗ (TensorProduct.map f.toLinearMap g.toLinearMap) ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ⊗'[R] ℬ →ₗ[R] A ⊗[R] B))
+    (by dsimp [Algebra.TensorProduct.one_def]; simp only [_root_.map_one, mul_one])
+    (by
+      rw [LinearMap.map_mul_iff]
+      ext a₁ : 3
+      refine DirectSum.decompose_lhom_ext ℬ fun j₁ => ?_
+      ext b₁ : 3
+      refine DirectSum.decompose_lhom_ext 𝒜 fun i₂ => ?_
+      ext a₂ b₂ : 2
+      dsimp
+      rw [tmul_coe_mul_coe_tmul]
+      rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul, map_smul]
+      rw [←zsmul_eq_smul_cast R, ←@Units.smul_def _ _ (_) (_)]
+      rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
+      simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
+      simp_rw [mul_assoc (f a₁), ←mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
+        smul_mul_assoc, smul_smul, ←z₂pow_add, CharTwo.add_self_eq_zero, z₂pow_zero, one_smul])
+
+@[simp]
+theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a))
+    (a : A) (b : B) :
+    lift 𝒜 ℬ f g h_anti_commutes (a ⊗ₜ' b) = f a * g b :=
+  rfl
+
+/-- The universal property of the graded tensor product; every algebra morphism uniquely factors
+as a pair of algebra morphisms that anticommute with respect to the grading. -/
+def liftEquiv :
+    { fg : (A →ₐ[R] C) × (B →ₐ[R] C) //
+        ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), fg.1 a * fg.2 b = (-1 : ℤˣ)^(j * i) • (fg.2 b * fg.1 a)} ≃
+      ((𝒜 ⊗'[R] ℬ) →ₐ[R] C) where
+  toFun fg := lift 𝒜 ℬ _ _ fg.prop
+  invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
+    dsimp
+    rw [←F.map_mul, ←F.map_mul, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
+      tmul_one_mul_one_tmul, smul_smul, ←z₂pow_add, CharTwo.add_self_eq_zero, z₂pow_zero, one_smul]⟩
+  left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
+  right_inv F := by
+    apply AlgHom.toLinearMap_injective
+    ext
+    dsimp
+    rw [←F.map_mul, tmul_one_mul_one_tmul]
+
+/-- Two algebra morphism from the graded tensor product agree if their compositions with the left
+and right inclusions agree. -/
+@[ext]
+lemma algHom_ext ⦃f g : (𝒜 ⊗'[R] ℬ) →ₐ[R] C⦄
+    (ha : f.comp (includeLeft 𝒜 ℬ) = g.comp (includeLeft 𝒜 ℬ))
+    (hb : f.comp (includeRight 𝒜 ℬ) = g.comp (includeRight 𝒜 ℬ)) : f = g :=
+  (liftEquiv 𝒜 ℬ).symm.injective <| Subtype.ext <| Prod.ext ha hb
 
 end SuperTensorProduct
 
