@@ -373,6 +373,11 @@ theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 #align submodule.mem_sup' Submodule.mem_sup'
 
+lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
+    ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
+  suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
+  simpa only [h.eq_top] using Submodule.mem_top
+
 variable (p p')
 
 theorem coe_sup : ↑(p ⊔ p') = (p + p' : Set M) := by

@@ -27,12 +27,12 @@ We define the trace / Killing form in this file and prove some basic properties.
  * `LieModule.traceForm_eq_zero_of_isNilpotent`
  * `killingForm`
  * `LieAlgebra.IsKilling`
+ * `LieAlgebra.IsKilling.ker_restrictBilinear_of_isCartanSubalgebra_eq_bot`
  * `LieAlgebra.IsKilling.isSemisimple`
 
 ## TODO
 
  * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
- * If the Killing form is non-degenerate, then so is its restriction to a Cartan subalgebra.
 -/
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -139,7 +139,7 @@ lemma trace_eq_trace_restrict_of_le_idealizer
   exact fun m ↦ N.lie_mem (h hy m)
 
 lemma traceForm_eq_of_le_idealizer :
-    traceForm R I N = (traceForm R L M).compl₁₂ I.subtype I.subtype := by
+    traceForm R I N = I.restrictBilinear (traceForm R L M) := by
   ext ⟨x, hx⟩ ⟨y, hy⟩
   change _ = trace R M (φ x ∘ₗ φ y)
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
@@ -177,8 +177,6 @@ lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
   LieModule.eq_zero_of_mem_weightSpace_mem_posFitting R H L
     (fun x y z ↦ LieModule.traceForm_apply_lie_apply' R L L x y z) hx₀ hx₁
 
-variable [IsDomain R] [IsPrincipalIdealRing R]
-
 namespace LieIdeal
 
 variable (I : LieIdeal R L)
@@ -204,8 +202,15 @@ noncomputable def killingCompl : LieIdeal R L :=
     LieModule.traceForm_apply_apply, LinearMap.zero_apply, Subtype.forall]
   rfl
 
+lemma coe_killingCompl_top :
+    killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
+  ext
+  simp [-LieModule.traceForm_apply_apply, LinearMap.ext_iff]
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
+
 lemma killingForm_eq :
-    killingForm R I = (killingForm R L).compl₁₂ I.subtype I.subtype :=
+    killingForm R I = I.restrictBilinear (killingForm R L) :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I $ by simp
 
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
@@ -228,14 +233,42 @@ class IsKilling : Prop :=
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 
-/-- The converse of this is true over a field of characteristic zero. There are counterexamples
-over fields with positive characteristic. -/
-instance IsKilling.isSemisimple [IsKilling R L] : IsSemisimple R L := by
-  refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
-  rw [eq_bot_iff, ← IsKilling.killingCompl_top_eq_bot]
-  exact I.le_killingCompl_top_of_isLieAbelian
+namespace IsKilling
+
+variable [IsKilling R L]
+
+attribute [simp] killingCompl_top_eq_bot
+
+@[simp] lemma ker_killingForm_eq_bot :
+    LinearMap.ker (killingForm R L) = ⊥ := by
+  simp [← LieIdeal.coe_killingCompl_top, killingCompl_top_eq_bot]
 
 -- TODO: formalize a positive-characteristic counterexample to the above instance
+
+/-- If the Killing form of a Lie algebra is non-singular, it remains non-singular when restricted
+to a Cartan subalgebra. -/
+lemma ker_restrictBilinear_of_isCartanSubalgebra_eq_bot
+    [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
+    LinearMap.ker (H.restrictBilinear (killingForm R L)) = ⊥ := by
+  have h : Codisjoint (rootSpace H 0) (LieModule.posFittingComp R H L) :=
+    (LieModule.isCompl_weightSpace_zero_posFittingComp R H L).codisjoint
+  replace h : Codisjoint (H : Submodule R L) (LieModule.posFittingComp R H L : Submodule R L) := by
+    rwa [codisjoint_iff, ← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.sup_coe_toSubmodule,
+      LieSubmodule.top_coeSubmodule, rootSpace_zero_eq R L H, LieSubalgebra.coe_toLieSubmodule,
+      ← codisjoint_iff] at h
+  suffices : ∀ m₀ ∈ H, ∀ m₁ ∈ LieModule.posFittingComp R H L, killingForm R L m₀ m₁ = 0
+  · simp [LinearMap.ker_restrictBilinear_eq_of_codisjoint h this]
+  intro m₀ h₀ m₁ h₁
+  exact killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting R L H (le_zeroRootSubalgebra R L H h₀) h₁
+
+/-- The converse of this is true over a field of characteristic zero. There are counterexamples
+over fields with positive characteristic. -/
+instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] [IsKilling R L] : IsSemisimple R L := by
+  refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
+  rw [eq_bot_iff, ← killingCompl_top_eq_bot]
+  exact I.le_killingCompl_top_of_isLieAbelian
+
+end IsKilling
 
 end LieAlgebra
 
