@@ -95,10 +95,10 @@ theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
 
 @[simp]
 theorem antidiagonal_single (a : α) (n : ℕ) :
-    antidiagonal (single a n) = (Finset.Nat.antidiagonal n).map
+    antidiagonal (single a n) = (antidiagonal n).map
       (Function.Embedding.prodMap ⟨_, single_injective a⟩ ⟨_, single_injective a⟩) := by
   ext ⟨x, y⟩
-  simp only [mem_antidiagonal, mem_map, Nat.mem_antidiagonal, Function.Embedding.coe_prodMap,
+  simp only [mem_antidiagonal, mem_map, mem_antidiagonal, Function.Embedding.coe_prodMap,
     Function.Embedding.coeFn_mk, Prod_map, Prod.mk.injEq, Prod.exists]
   constructor
   · intro h
