@@ -52,9 +52,9 @@ theorem mem_antidiagonal {f : α →₀ ℕ} {p : (α →₀ ℕ) × (α →₀ 
 
 /-- Finsupp.antidiagonal coincides with Finset.antidiagonal -/
 lemma antidiagonal_eq_antidiagonal (f : α →₀ ℕ) :
-    antidiagonal f = Finset.antidiagonal f := by
+    antidiagonal f = Finset.antidiagonalOfLocallyFinite.antidiagonal f := by
   ext p
-  simp only [mem_antidiagonal, Finset.mem_antidiagonal]
+  simp only [mem_antidiagonal, Finset.antidiagonalOfLocallyFinite.mem_antidiagonal]
 
 theorem swap_mem_antidiagonal {n : α →₀ ℕ} {f : (α →₀ ℕ) × (α →₀ ℕ)} :
     f.swap ∈ antidiagonal n ↔ f ∈ antidiagonal n := by

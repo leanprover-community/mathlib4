@@ -46,9 +46,9 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
 
 /-- `Finset.Nat.antidiagonal` coincides with `Finset.antidiagonal` -/
 lemma antidiagonal_eq_antidiagonal (n : ℕ) :
-    Finset.Nat.antidiagonal n = Finset.antidiagonal n := by
+    Finset.Nat.antidiagonal n = Finset.antidiagonalOfLocallyFinite.antidiagonal n := by
     ext ⟨p,q⟩
-    simp only [Finset.Nat.mem_antidiagonal, Finset.mem_antidiagonal]
+    simp only [Finset.Nat.mem_antidiagonal, Finset.antidiagonalOfLocallyFinite.mem_antidiagonal]
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
