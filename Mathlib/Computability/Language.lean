@@ -7,7 +7,7 @@ import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Fintype.Basic -- remove if not used
+import Mathlib.Tactic.DeriveFintype
 
 #align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 
@@ -305,4 +305,4 @@ inductive Symbol (T : Type*) (N : Type*)
   | terminal    (t : T) : Symbol T N
   /-- Nonterminal symbols (must not be present at the end of word being generated) -/
   | nonterminal (n : N) : Symbol T N
-  deriving DecidableEq, Repr
+deriving DecidableEq, Repr, Fintype
