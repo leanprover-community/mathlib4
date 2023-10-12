@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Compactness.Paracompact
 
 #align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 

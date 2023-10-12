@@ -921,7 +921,7 @@ theorem bitwise_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (p
 #align num.bitwise_to_nat Num.bitwise_to_nat
 
 @[simp, norm_cast]
-theorem lor_to_nat : ∀ m n, (lor m n : ℕ) = Nat.lor m n := by
+theorem lor'_to_nat : ∀ m n : Num, ↑(m ||| n) = Nat.lor m n := by
   -- Porting note: A name of an implicit local hypothesis is not available so
   --               `cases_type*` is used.
   apply bitwise_to_nat fun x y => pos (PosNum.lor x y) <;>
@@ -929,41 +929,42 @@ theorem lor_to_nat : ∀ m n, (lor m n : ℕ) = Nat.lor m n := by
 #align num.lor_to_nat Num.lor_to_nat
 
 @[simp, norm_cast]
-theorem land_to_nat : ∀ m n, (land m n : ℕ) = Nat.land m n := by
-  apply bitwise_to_nat PosNum.land <;> intros <;> (try cases_type* Bool) <;> rfl
-#align num.land_to_nat Num.land_to_nat
+theorem land'_to_nat : ∀ m n : Num, ↑(m &&& n) = Nat.land m n := by
+  apply bitwise'_to_nat PosNum.land <;> intros <;> (try cases_type* Bool) <;> rfl
+#align num.land_to_nat Num.land'_to_nat
 
 @[simp, norm_cast]
-theorem ldiff_to_nat : ∀ m n, (ldiff m n : ℕ) = Nat.ldiff m n := by
-  apply bitwise_to_nat PosNum.ldiff <;> intros <;> (try cases_type* Bool) <;> rfl
-#align num.ldiff_to_nat Num.ldiff_to_nat
+theorem ldiff'_to_nat : ∀ m n : Num, (ldiff m n : ℕ) = Nat.ldiff m n := by
+  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> (try cases_type* Bool) <;> rfl
+#align num.ldiff_to_nat Num.ldiff'_to_nat
 
 @[simp, norm_cast]
-theorem xor_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.xor m n := by
-  apply bitwise_to_nat PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
-#align num.lxor_to_nat Num.xor_to_nat
+theorem lxor'_to_nat : ∀ m n : Num, ↑(m ^^^ n) = Nat.lxor m n := by
+  apply bitwise'_to_nat PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
+#align num.lxor_to_nat Num.lxor'_to_nat
 
 @[simp, norm_cast]
-theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = (m : ℕ) <<< (n : ℕ) := by
-  cases m <;> dsimp only [shiftl]
+theorem shiftl_to_nat (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n : ℕ) := by
+  cases m <;> dsimp only [←shiftl_eq_shiftLeft, shiftl]
   · symm
     apply Nat.zero_shiftLeft
   simp only [cast_pos]
   induction' n with n IH
   · rfl
   simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH,
-        Nat.bit0_val, pow_succ, ← mul_assoc, mul_comm]
+        Nat.bit0_val, pow_succ, ← mul_assoc, mul_comm,
+        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl]
 #align num.shiftl_to_nat Num.shiftl_to_nat
 
 @[simp, norm_cast]
 
-theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = (m : ℕ) >>> (n : ℕ)  := by
-  cases' m with m <;> dsimp only [shiftr];
+theorem shiftr_to_nat (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ)  := by
+  cases' m with m <;> dsimp only [←shiftr_eq_shiftRight, shiftr];
   · symm
     apply Nat.zero_shiftRight
   induction' n with n IH generalizing m
   · cases m <;> rfl
-  cases' m with m m <;> dsimp only [PosNum.shiftr]
+  cases' m with m m <;> dsimp only [PosNum.shiftr, ←PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt
