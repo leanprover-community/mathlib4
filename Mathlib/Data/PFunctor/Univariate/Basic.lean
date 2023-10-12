@@ -59,7 +59,7 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
   ⟨⟨default, default⟩⟩
 #align pfunctor.obj.inhabited PFunctor.Obj.inhabited
 
-instance : Functor.{v, max u v} (⇑P) where map := @map P
+instance : Functor.{v, max u v} P.Obj where map := @map P
 
 protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a → α) :
     @Functor.map P.Obj _ _ _ f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
@@ -73,7 +73,7 @@ protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
     ∀ x : P α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.comp_map PFunctor.comp_map
 
-instance : LawfulFunctor.{v, max u v} (⇑P) where
+instance : LawfulFunctor.{v, max u v} P.Obj where
   map_const := rfl
   id_map := @PFunctor.id_map P
   comp_map := @PFunctor.comp_map P
