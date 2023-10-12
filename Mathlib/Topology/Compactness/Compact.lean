@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bases
-import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.LocallyFinite
 /-!
 # Compact sets and compact spaces
 
