@@ -6,7 +6,7 @@ Authors: Koundinya Vajjha, Thomas Browning
 
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Data.Int.Log
-import Mathlib.Data.Rat.Lemmas
+
 
 /-!
 
