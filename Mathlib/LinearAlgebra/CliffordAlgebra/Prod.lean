@@ -26,20 +26,28 @@ open scoped TensorProduct
 
 namespace CliffordAlgebra
 
+example (a b c d : ℤ) : (a + (-b)) + (b + c) = a + c := by exact?
+
 /-- The forward direction of `CliffordAlgebra.prodEquiv`. -/
 def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ⊗'[R] evenOdd Q₂) :=
-  lift _ ⟨LinearMap.coprod
-    ((SuperTensorProduct.includeLeft (evenOdd Q₁) (evenOdd Q₂)).toLinearMap ∘ₗ ι Q₁)
-    ((SuperTensorProduct.includeRight (evenOdd Q₁) (evenOdd Q₂)).toLinearMap ∘ₗ ι Q₂), fun m => by
-      dsimp only [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply,
-        QuadraticForm.prod_apply]
-      simp only [map_add, add_mul, mul_add, SuperTensorProduct.algebraMap_def, ←map_mul,
-        ι_sq_scalar, AlgHom.commutes]
-      simp_rw [add_assoc]
-      congr 1
-      simp_rw [←add_assoc, add_left_eq_self]
+  lift _ ⟨
+    LinearMap.coprod
+      ((SuperTensorProduct.includeLeft (evenOdd Q₁) (evenOdd Q₂)).toLinearMap
+          ∘ₗ Submodule.subtype (evenOdd Q₁ 1) ∘ₗ (ι Q₁).codRestrict _ (ι_mem_evenOdd_one Q₁))
+      ((SuperTensorProduct.includeRight (evenOdd Q₁) (evenOdd Q₂)).toLinearMap
+          ∘ₗ Submodule.subtype (evenOdd Q₂ 1) ∘ₗ (ι Q₂).codRestrict _ (ι_mem_evenOdd_one Q₂)),
+    fun m => by
+      dsimp only [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply,
+        AlgHom.toLinearMap_apply, QuadraticForm.prod_apply, Submodule.coeSubtype,
+        SuperTensorProduct.includeLeft_apply, SuperTensorProduct.includeRight_apply]
+      simp only [map_add, add_mul, mul_add, SuperTensorProduct.algebraMap_def]
+      rw [SuperTensorProduct.tmul_one_mul_one_tmul, SuperTensorProduct.tmul_one_mul_coe_tmul,
+        SuperTensorProduct.tmul_coe_mul_one_tmul, SuperTensorProduct.tmul_coe_mul_coe_tmul]
       dsimp
-      sorry⟩
+      simp_rw [one_mul, z₂pow_one, Units.neg_smul, one_smul]
+      rw [ι_sq_scalar, ι_sq_scalar, mul_one, one_mul]
+      simp_rw [←SuperTensorProduct.algebraMap_def, ←SuperTensorProduct.algebraMap_def']
+      abel⟩
 
 @[simp]
 lemma ofProd_ι_mk (m₁ : M₁) (m₂ : M₂) :
