@@ -13,7 +13,7 @@ namespace Triangulated
 open Pretriangulated
 
 variable (T : Triangle C) (hT : T ∈ distTriang C) (hT₁ : T.obj₁ ∈ A) (hT₂ : T.obj₂ ∈ A)
-  {K Q : C} (α : K⟦(1 : ℤ)⟧ ⟶ T.obj₃) {β : T.obj₃ ⟶ Q} {γ : Q ⟶ K⟦(1 : ℤ)⟧⟦(1 : ℤ)⟧}
+  {K Q : C} (α : K⟦(1 : ℤ)⟧ ⟶ T.obj₃) (β : T.obj₃ ⟶ Q) {γ : Q ⟶ K⟦(1 : ℤ)⟧⟦(1 : ℤ)⟧}
   (hT' : Triangle.mk α β γ ∈ distTriang C) (hK : K ∈ A) (hQ : Q ∈ A)
 
 section AbelianSubcategory
@@ -26,6 +26,8 @@ lemma vanishing_from_positive_shift {X Y : C} {n : ℤ} (f : X⟦n⟧ ⟶ Y)
 
 noncomputable def ιK : K ⟶ T.obj₁ := (shiftFunctor C (1 : ℤ)).preimage (α ≫ T.mor₃)
 
+def πQ : T.obj₂ ⟶ Q := T.mor₂ ≫ β
+
 @[simp, reassoc]
 lemma shift_ιK : (ιK T α)⟦(1 : ℤ)⟧' = α ≫ T.mor₃ := by
   simp [ιK]
@@ -37,7 +39,11 @@ lemma ιK_mor₁ : ιK T α ≫ T.mor₁ = 0 := by
   simp only [Functor.map_comp, shift_ιK, assoc, Functor.map_zero]
   rw [comp_dist_triangle_mor_zero₃₁ T hT, comp_zero]
 
-variable {α}
+lemma mor₂_πQ : T.mor₁ ≫ πQ T β = 0 := by
+  dsimp [πQ]
+  rw [comp_dist_triangle_mor_zero₁₂_assoc T hT, zero_comp]
+
+variable {α β}
 
 lemma ιK_cancel_zero
     {B : C} (k : B ⟶ K) (hB : B ∈ A) (hk : k ≫ ιK T α = 0) : k = 0 := by
@@ -59,6 +65,21 @@ lemma ιK_cancel_zero
   apply (shiftFunctor C (1 : ℤ)).map_injective
   rw [hm, Functor.map_zero]
 
+lemma πQ_cancel_zero
+    {B : C} (k : Q ⟶ B) (hB : B ∈ A) (hk : πQ T β ≫ k = 0) : k = 0 := by
+  dsimp [πQ] at hk
+  rw [assoc] at hk
+  obtain ⟨l, hl⟩ := T.yoneda_exact₃ hT _ hk
+  obtain rfl : l = 0 := vanishing_from_positive_shift hA _ hT₁ hB (by linarith)
+  rw [comp_zero] at hl
+  obtain ⟨m, hm⟩ := Triangle.yoneda_exact₃ _ hT' k hl
+  dsimp at m hm
+  obtain rfl : m = 0 := by
+    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by linarith)).hom.app K),
+      comp_zero]
+    exact vanishing_from_positive_shift hA _ hK hB (by linarith)
+  rw [hm, comp_zero]
+
 lemma ιK_lift
     {B : C} (x₁ : B ⟶ T.obj₁) (hB : B ∈ A) (hx₁ : x₁ ≫ T.mor₁ = 0) :
     ∃ (k : B ⟶ K), k ≫ ιK T α = x₁ := by
@@ -75,13 +96,28 @@ lemma ιK_lift
   dsimp at hk'
   rw [hx₃, hk', assoc]
 
-variable (α)
+lemma πQ_desc
+    {B : C} (x₂ : T.obj₂ ⟶ B) (hB : B ∈ A) (hx₂ : T.mor₁ ≫ x₂ = 0) :
+    ∃ (k : Q ⟶ B), πQ T β ≫ k = x₂ := by
+  obtain ⟨x₁, hx₁⟩ := T.yoneda_exact₂ hT x₂ hx₂
+  obtain ⟨k, hk⟩ := Triangle.yoneda_exact₂ _ hT' x₁
+    (vanishing_from_positive_shift hA _ hK hB (by linarith))
+  dsimp at k hk
+  refine' ⟨k, _⟩
+  dsimp [πQ]
+  rw [assoc, hx₁, hk]
+
+variable (α β)
 
 noncomputable abbrev kernelFork :=
   @KernelFork.ofι (FullSubcategory A) _ _ ⟨T.obj₁, hT₁⟩ ⟨T.obj₂, hT₂⟩ T.mor₁ ⟨K, hK⟩
     (ιK T α) (ιK_mor₁ hT α)
 
-variable {α}
+noncomputable abbrev cokernelFork :=
+  @CokernelCofork.ofπ (FullSubcategory A) _ _ ⟨T.obj₁, hT₁⟩ ⟨T.obj₂, hT₂⟩ T.mor₁ ⟨Q, hQ⟩
+    (πQ T β) (mor₂_πQ hT β)
+
+variable {α β}
 
 noncomputable def isLimitKernelFork : IsLimit (kernelFork hT hT₁ hT₂ α hK) :=
   KernelFork.IsLimit.ofι _ _ (fun {B} x₁ hx₁ => (ιK_lift hA hT hT' hQ x₁ B.2 hx₁).choose)
@@ -92,10 +128,24 @@ noncomputable def isLimitKernelFork : IsLimit (kernelFork hT hT₁ hT₂ α hK) 
       rw [sub_comp, sub_eq_zero, (ιK_lift hA hT hT' hQ x₁ B.2 hx₁).choose_spec]
       exact hm)
 
+noncomputable def isColimitCokernelCofork : IsColimit (cokernelFork hT hT₁ hT₂ β hQ) :=
+  CokernelCofork.IsColimit.ofπ _ _
+    (fun {B} x₂ hx₂ => (πQ_desc hA hT hT' hK x₂ B.2 hx₂).choose)
+    (fun {B} x₂ hx₂ => (πQ_desc hA hT hT' hK x₂ B.2 hx₂).choose_spec)
+    (fun {B} x₂ hx₂ m hm => by
+      rw [← sub_eq_zero]
+      refine' πQ_cancel_zero hA hT hT₁ hT' hK _ B.2 _
+      rw [comp_sub, sub_eq_zero, (πQ_desc hA hT hT' hK x₂ B.2 hx₂).choose_spec]
+      exact hm)
+
 -- BBD 1.2.1, p. 27
 lemma hasKernel :
     HasKernel (show FullSubcategory.mk T.obj₁ hT₁ ⟶ FullSubcategory.mk T.obj₂ hT₂ from T.mor₁) :=
   ⟨_, isLimitKernelFork hA hT hT₁ hT₂ hT' hK hQ⟩
+
+lemma hasCokernel :
+    HasCokernel (show FullSubcategory.mk T.obj₁ hT₁ ⟶ FullSubcategory.mk T.obj₂ hT₂ from T.mor₁) :=
+  ⟨_, isColimitCokernelCofork hA hT hT₁ hT₂ hT' hK hQ⟩
 
 end AbelianSubcategory
 
