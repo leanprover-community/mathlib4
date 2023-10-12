@@ -184,7 +184,7 @@ We prove two versions of the Cauchy product formula. The first one is
 involving `Nat` subtraction.
 In order to avoid `Nat` subtraction, we also provide `tsum_mul_tsum_eq_tsum_sum_antidiagonal`,
 where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which corresponds to the
-`Finset` `Finset.Nat.antidiagonal n`
+`Finset` `Finset.antidiagonal n`
 -/
 
 
@@ -193,10 +193,10 @@ section CauchyProduct
 variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : ℕ → α}
 
 /- The family `(k, l) : ℕ × ℕ ↦ f k * g l` is summable if and only if the family
-`(n, k, l) : Σ (n : ℕ), Nat.antidiagonal n ↦ f k * g l` is summable. -/
+`(n, k, l) : Σ (n : ℕ), antidiagonal n ↦ f k * g l` is summable. -/
 theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
     (Summable fun x : ℕ × ℕ => f x.1 * g x.2) ↔
-      Summable fun x : Σn : ℕ, Nat.antidiagonal n => f (x.2 : ℕ × ℕ).1 * g (x.2 : ℕ × ℕ).2 :=
+      Summable fun x : Σn : ℕ, antidiagonal n => f (x.2 : ℕ × ℕ).1 * g (x.2 : ℕ × ℕ).2 :=
   Nat.sigmaAntidiagonalEquivProd.summable_iff.symm
 #align summable_mul_prod_iff_summable_mul_sigma_antidiagonal summable_mul_prod_iff_summable_mul_sigma_antidiagonal
 
@@ -204,20 +204,20 @@ variable [T3Space α] [TopologicalSemiring α]
 
 theorem summable_sum_mul_antidiagonal_of_summable_mul
     (h : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    Summable fun n => ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 := by
+    Summable fun n => ∑ kl in antidiagonal n, f kl.1 * g kl.2 := by
   rw [summable_mul_prod_iff_summable_mul_sigma_antidiagonal] at h
   conv => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
   exact h.sigma' fun n => (hasSum_fintype _).summable
 #align summable_sum_mul_antidiagonal_of_summable_mul summable_sum_mul_antidiagonal_of_summable_mul
 
 /-- The **Cauchy product formula** for the product of two infinites sums indexed by `ℕ`, expressed
-by summing on `Finset.Nat.antidiagonal`.
+by summing on `Finset.antidiagonal`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm` if `f` and `g` are absolutely
 summable. -/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 := by
+    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in antidiagonal n, f kl.1 * g kl.2 := by
   conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
   rw [tsum_mul_tsum hf hg hfg, ← Nat.sigmaAntidiagonalEquivProd.tsum_eq (_ : ℕ × ℕ → α)]
   exact
