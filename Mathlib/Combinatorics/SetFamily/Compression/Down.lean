@@ -137,14 +137,14 @@ theorem nonMemberSubfamily_nonMemberSubfamily :
 #align finset.non_member_subfamily_non_member_subfamily Finset.nonMemberSubfamily_nonMemberSubfamily
 
 lemma memberSubfamily_image_insert (h𝒜 : ∀ s ∈ 𝒜, a ∉ s) :
-    (𝒜.image $ insert a).memberSubfamily a = 𝒜 := by
+    (𝒜.image <| insert a).memberSubfamily a = 𝒜 := by
   ext s
   simp only [mem_memberSubfamily, mem_image]
   refine ⟨?_, fun hs ↦ ⟨⟨s, hs, rfl⟩, h𝒜 _ hs⟩⟩
   rintro ⟨⟨t, ht, hts⟩, hs⟩
   rwa [←insert_erase_invOn.2.injOn (h𝒜 _ ht) hs hts]
 
-@[simp] lemma nonMemberSubfamily_image_insert : (𝒜.image $ insert a).nonMemberSubfamily a = ∅ := by
+@[simp] lemma nonMemberSubfamily_image_insert : (𝒜.image <| insert a).nonMemberSubfamily a = ∅ := by
   simp [eq_empty_iff_forall_not_mem]
 
 @[simp] lemma memberSubfamily_image_erase : (𝒜.image (erase · a)).memberSubfamily a = ∅ := by
@@ -164,8 +164,10 @@ lemma image_insert_memberSubfamily (𝒜 : Finset (Finset α)) (a : α) :
 it suffices to prove it for
 * the empty finset family.
 * the finset family which only contains the empty finset.
-* `𝒜 ∪ {s ∪ {a} | s ∈ ℬ}` assuming the property for `𝒜` and `ℬ`, where `a` is an element of the
+* `ℬ ∪ {s ∪ {a} | s ∈ 𝒞}` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the
   ground type and `𝒜` and `ℬ` are families of finsets not containing `a`.
+  Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you
+  `𝒜 = ℬ ∪ {s ∪ {a} | s ∈ 𝒞}`, so that `ℬ = 𝒜.nonMemberSubfamily` and `𝒞 = 𝒜.memberSubfamily`.
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
@@ -184,18 +186,19 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     obtain rfl | rfl := hu <;> assumption
   refine subfamily a (ih _ ?_) (ih _ ?_)
   · simp only [mem_nonMemberSubfamily, and_imp]
-    exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 $ hu _ hs
+    exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 <| hu _ hs
   · simp only [mem_memberSubfamily, and_imp]
-    exact fun s hs ha ↦ (insert_subset_insert_iff ha).1 $ hu _ hs
+    exact fun s hs ha ↦ (insert_subset_insert_iff ha).1 <| hu _ hs
 
 /-- Induction principle for finset families. To prove a statement for every finset family,
 it suffices to prove it for
 * the empty finset family.
 * the finset family which only contains the empty finset.
 * `{s ∪ {a} | s ∈ 𝒜}` assuming the property for `𝒜` a family of finsets not containing `a`.
-* `𝒜 ∪ ℬ` assuming the property for `𝒜` and `ℬ`, where `a` is an element of the
-  ground type and `𝒜`is a family of finsets not containing `a` and `ℬ` a family of finsets
-  containing `a`.
+* `ℬ ∪ 𝒞` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the ground type and
+  `ℬ`is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
+  Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you `𝒜 = ℬ ∪ 𝒞`, so that
+  `ℬ = 𝒜.filter (a ∉ ·)` and `𝒞 = 𝒜.filter (a ∈ ·)`.
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
@@ -204,7 +207,7 @@ See also `Finset.memberFamily_induction_on.`-/
 protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
     (image_insert : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
-      (∀ s ∈ 𝒜, a ∉ s) → p 𝒜 → p (𝒜.image $ insert a))
+      (∀ s ∈ 𝒜, a ∉ s) → p 𝒜 → p (𝒜.image <| insert a))
     (subfamily : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
       p (𝒜.filter (a ∉ ·)) → p (𝒜.filter (a ∈ ·)) → p 𝒜) : p 𝒜 := by
   refine memberFamily_induction_on 𝒜 empty singleton_empty fun a 𝒜 h𝒜₀ h𝒜₁ ↦ subfamily a h𝒜₀ ?_
