@@ -26,8 +26,6 @@ open scoped TensorProduct
 
 namespace CliffordAlgebra
 
-example (a b c d : ℤ) : (a + (-b)) + (b + c) = a + c := by exact?
-
 /-- The forward direction of `CliffordAlgebra.prodEquiv`. -/
 def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ⊗'[R] evenOdd Q₂) :=
   lift _ ⟨
