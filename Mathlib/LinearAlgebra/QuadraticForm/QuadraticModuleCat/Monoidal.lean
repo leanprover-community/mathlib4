@@ -11,7 +11,21 @@ import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
 
 /-!
 # The monoidal category structure on quadratic R-modules
+
+The monoidal structure is simply the structure on the underlying modules, where the tensor product
+of two modules is equipped with the form constructed via `QuadraticForm.tmul`.
+
+As with the monoidal structure on `ModuleCat`,
+the universe level of the modules must be at least the universe level of the ring,
+so that we have a monoidal unit.
+For now, we simplify by insisting both universe levels are the same.
+
+## Implementation notes
+
+This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Monoidal.lean`.
 -/
+
+suppress_compilation
 
 open CategoryTheory
 
@@ -22,8 +36,6 @@ variable {R : Type u} [CommRing R] [Invertible (2 : R)]
 namespace QuadraticModuleCat
 
 open QuadraticForm
-
-noncomputable section
 
 namespace instMonoidalCategory
 
@@ -47,12 +59,12 @@ noncomputable abbrev associator (X Y Z : QuadraticModuleCat.{u} R) :
 open MonoidalCategory
 
 theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).hom
-    = (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
+    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).hom =
+      (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
 
 theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).inv
-    = (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
+    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).inv =
+      (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
 end instMonoidalCategory
 
@@ -63,12 +75,12 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     { tensorObj := instMonoidalCategory.tensorObj
-      μIsoSymm := fun X Y => eqToIso rfl
+      μIsoSymm := fun X Y => Iso.refl _
       whiskerLeft := fun X _ _ f => tensorHom (𝟙 _) f
       whiskerRight := @fun X₁ X₂ (f : X₁ ⟶ X₂) Y => tensorHom f (𝟙 _)
       tensorHom := tensorHom
       tensorUnit' := of (sq (R := R))
-      εIsoSymm := eqToIso rfl
+      εIsoSymm := Iso.refl _
       associator := associator
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]

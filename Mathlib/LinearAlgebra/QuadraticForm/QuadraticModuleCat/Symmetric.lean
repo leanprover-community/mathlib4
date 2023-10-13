@@ -12,10 +12,15 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 In this file we show:
 
 * `QuadraticModuleCat.instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R)`
--/
-open CategoryTheory
 
-noncomputable section
+## Implementation notes
+
+This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Symmetric.lean`.
+-/
+
+suppress_compilation
+
+open CategoryTheory
 
 universe v u
 
@@ -28,7 +33,7 @@ open QuadraticForm
 instance : BraidedCategory (QuadraticModuleCat.{u} R) :=
   braidedCategoryOfFaithful (toModuleCatMonoidalFunctor R)
     (fun X Y => ofIso <| tensorComm X.form Y.form)
-    (fun _X _Y => by aesop_cat)
+    (by aesop_cat)
 
 variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a braided functor. -/
