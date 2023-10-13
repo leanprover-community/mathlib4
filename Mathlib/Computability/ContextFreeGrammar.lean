@@ -141,3 +141,5 @@ lemma Derives.eq_or_head {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
 lemma Derives.eq_or_tail {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
     u = w ∨ ∃ v : List (Symbol T g.NT), g.Derives u v ∧ g.Produces v w :=
   (Relation.ReflTransGen.cases_tail huw).casesOn (Or.inl ∘ Eq.symm) Or.inr
+
+end ContextFreeGrammar
