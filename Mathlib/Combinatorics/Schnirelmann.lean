@@ -51,7 +51,6 @@ section
 
 variable {A : Set ℕ} [DecidablePred (· ∈ A)]
 
-
 lemma schnirelmannDensity_nonneg : 0 ≤ schnirelmannDensity A :=
   Real.iInf_nonneg (fun _ => by positivity)
 
@@ -155,7 +154,7 @@ lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
   by rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
 
 /-- The Schnirelmann density is unaffected by adding `0`. -/
-lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :
+@[simp] lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :
     schnirelmannDensity (insert 0 A) = schnirelmannDensity A :=
   schnirelmannDensity_congr' (by aesop)
 
@@ -259,7 +258,7 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rw [←schnirelmannDensity_setOf_mod_eq_one hm]
   apply schnirelmannDensity_congr
   ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, one_mod_of_ne_one hm]
+  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_of_ne_one hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
