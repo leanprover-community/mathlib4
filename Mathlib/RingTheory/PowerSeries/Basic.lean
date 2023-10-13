@@ -285,7 +285,9 @@ protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ
 #align mv_power_series.mul_add MvPowerSeries.mul_add
 
 protected theorem add_mul (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : (φ₁ + φ₂) * φ₃ = φ₁ * φ₃ + φ₂ * φ₃ :=
-  ext fun n => by classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
+  ext fun n => by
+  classical
+  simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
 #align mv_power_series.add_mul MvPowerSeries.add_mul
 
 protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * φ₂ * φ₃ = φ₁ * (φ₂ * φ₃) := by
