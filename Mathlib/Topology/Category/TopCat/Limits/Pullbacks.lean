@@ -53,7 +53,7 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
     (by
       dsimp [pullbackFst, pullbackSnd, Function.comp]
       ext ⟨x, h⟩
-      -- Next 2 lines were 
+      -- Next 2 lines were
       -- `rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]`
       -- `exact h` before leanprover/lean4#2644
       rw [comp_apply, comp_apply]

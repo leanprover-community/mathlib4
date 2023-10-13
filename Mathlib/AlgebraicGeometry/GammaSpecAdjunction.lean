@@ -299,7 +299,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       --Porting Note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
-      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before 
+      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
       -- leanprover/lean4#2644
       have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
         = toΓSpecFun Y (f.val.base x) := by erw [ContinuousMap.coe_mk]; rfl

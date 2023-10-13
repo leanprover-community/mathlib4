@@ -1099,7 +1099,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
-                                      -- This used to be in the above `simp` before 
+                                      -- This used to be in the above `simp` before
                                       -- leanprover/lean4#2644
                                       erw [aux]
   finset_mem_Ioc a b x :=
@@ -1107,12 +1107,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
-                                -- This used to be in the above `simp` before 
+                                -- This used to be in the above `simp` before
                                 -- leanprover/lean4#2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
-                                      -- This used to be in the above `simp` before 
+                                      -- This used to be in the above `simp` before
                                       -- leanprover/lean4#2644
                                       erw [aux]
   finset_mem_Ioo a b x :=
@@ -1120,13 +1120,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
-                                -- This used to be in the above `simp` before 
+                                -- This used to be in the above `simp` before
                                 -- leanprover/lean4#2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
-      -- This used to be in the above `simp` before 
+      -- This used to be in the above `simp` before
       -- leanprover/lean4#2644
       erw [aux]
 
