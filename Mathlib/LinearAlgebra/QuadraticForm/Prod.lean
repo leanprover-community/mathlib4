@@ -140,8 +140,8 @@ end Semiring
 section Ring
 
 variable [CommRing R]
-variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
-variable [Module R M₁] [Module R M₂] [Module R N₁] [Module R N₂]
+variable [AddCommGroup M₁] [AddCommGroup M₂]
+variable [Module R M₁] [Module R M₂]
 
 @[simp] theorem polar_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (x y : M₁ × M₂) :
     polar (Q₁.prod Q₂) x y = polar Q₁ x.1 y.1 + polar Q₂ x.2 y.2 := by
