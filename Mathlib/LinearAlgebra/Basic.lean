@@ -130,59 +130,6 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
   right_inv := by intro f; ext; rfl
 #align add_monoid_hom_lequiv_int addMonoidHomLequivInt
 
-/-! ### Properties of submodules -/
-
-
-namespace Submodule
-
-section AddCommMonoid
-
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M']
-variable [Module R M] [Module R M'] [Module R₂ M₂] [Module R₃ M₃]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable {σ₂₁ : R₂ →+* R}
-variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable (p p' : Submodule R M) (q q' : Submodule R₂ M₂)
-variable (q₁ q₁' : Submodule R M')
-variable {r : R} {x y : M}
-
-open Set
-
-variable {p p'}
-
-/-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `ofLe p p'` is the linear map version of
-this inclusion. -/
-def ofLe (h : p ≤ p') : p →ₗ[R] p' :=
-  p.subtype.codRestrict p' fun ⟨_, hx⟩ => h hx
-#align submodule.of_le Submodule.ofLe
-
-@[simp]
-theorem coe_ofLe (h : p ≤ p') (x : p) : (ofLe h x : M) = x :=
-  rfl
-#align submodule.coe_of_le Submodule.coe_ofLe
-
-theorem ofLe_apply (h : p ≤ p') (x : p) : ofLe h x = ⟨x, h x.2⟩ :=
-  rfl
-#align submodule.of_le_apply Submodule.ofLe_apply
-
-theorem ofLe_injective (h : p ≤ p') : Function.Injective (ofLe h) := fun _ _ h =>
-  Subtype.val_injective (Subtype.mk.inj h)
-#align submodule.of_le_injective Submodule.ofLe_injective
-
-variable (p p')
-
-theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) :
-    q.subtype.comp (ofLe h) = p.subtype := by
-  ext ⟨b, hb⟩
-  rfl
-#align submodule.subtype_comp_of_le Submodule.subtype_comp_ofLe
-
-end AddCommMonoid
-
-end Submodule
-
 /-! ### Properties of linear maps -/
 
 
