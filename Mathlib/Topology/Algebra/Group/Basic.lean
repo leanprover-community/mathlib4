@@ -694,11 +694,11 @@ instance (S : Subgroup G) : TopologicalGroup S :=
 
 end Subgroup
 
-/-- The (topological-space) closure of a subgroup of a space `M` with `ContinuousMul` is
+/-- The (topological-space) closure of a subgroup of a topological group is
 itself a subgroup. -/
 @[to_additive
-  "The (topological-space) closure of an additive subgroup of a space `M` with
-  `ContinuousAdd` is itself an additive subgroup."]
+  "The (topological-space) closure of an additive subgroup of an additive topological group is
+  itself an additive subgroup."]
 def Subgroup.topologicalClosure (s : Subgroup G) : Subgroup G :=
   { s.toSubmonoid.topologicalClosure with
     carrier := _root_.closure (s : Set G)
@@ -796,6 +796,11 @@ def Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
   { s.topologicalClosure.toGroup, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 #align subgroup.comm_group_topological_closure Subgroup.commGroupTopologicalClosure
 #align add_subgroup.add_comm_group_topological_closure AddSubgroup.addCommGroupTopologicalClosure
+
+variable (G) in
+@[to_additive]
+lemma Subgroup.coe_topologicalClosure_bot :
+    ((⊥ : Subgroup G).topologicalClosure : Set G) = _root_.closure ({1} : Set G) := by simp
 
 @[to_additive exists_nhds_half_neg]
 theorem exists_nhds_split_inv {s : Set G} (hs : s ∈ 𝓝 (1 : G)) :
@@ -1378,7 +1383,7 @@ end ContinuousConstSMulOp
 
 section TopologicalGroup
 
-variable [TopologicalSpace α] [Group α] [TopologicalGroup α] {s t : Set α}
+variable [TopologicalSpace G] [Group G] [TopologicalGroup G] {s t : Set G}
 
 @[to_additive]
 theorem IsOpen.div_left (ht : IsOpen t) : IsOpen (s / t) := by
@@ -1413,7 +1418,7 @@ theorem subset_interior_div : interior s / interior t ⊆ interior (s / t) :=
 #align subset_interior_sub subset_interior_sub
 
 @[to_additive]
-theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set α) : s * closure t = s * t := by
+theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set G) : s * closure t = s * t := by
   refine' (mul_subset_iff.2 fun a ha b hb => _).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
   have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, a * b, Set.inv_mem_inv.2 ha, rfl, inv_mul_cancel_left _ _⟩
@@ -1423,20 +1428,20 @@ theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set α) : s * closure t = s * t 
 #align is_open.add_closure IsOpen.add_closure
 
 @[to_additive]
-theorem IsOpen.closure_mul (ht : IsOpen t) (s : Set α) : closure s * t = s * t := by
+theorem IsOpen.closure_mul (ht : IsOpen t) (s : Set G) : closure s * t = s * t := by
   rw [← inv_inv (closure s * t), mul_inv_rev, inv_closure, ht.inv.mul_closure, mul_inv_rev, inv_inv,
     inv_inv]
 #align is_open.closure_mul IsOpen.closure_mul
 #align is_open.closure_add IsOpen.closure_add
 
 @[to_additive]
-theorem IsOpen.div_closure (hs : IsOpen s) (t : Set α) : s / closure t = s / t := by
+theorem IsOpen.div_closure (hs : IsOpen s) (t : Set G) : s / closure t = s / t := by
   simp_rw [div_eq_mul_inv, inv_closure, hs.mul_closure]
 #align is_open.div_closure IsOpen.div_closure
 #align is_open.sub_closure IsOpen.sub_closure
 
 @[to_additive]
-theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t := by
+theorem IsOpen.closure_div (ht : IsOpen t) (s : Set G) : closure s / t = s / t := by
   simp_rw [div_eq_mul_inv, ht.inv.closure_mul]
 #align is_open.closure_div IsOpen.closure_div
 #align is_open.closure_sub IsOpen.closure_sub
@@ -1452,14 +1457,55 @@ theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
 
 @[to_additive]
-theorem QuotientGroup.isClosedMap_coe {H : Subgroup α} (hH : IsCompact (H : Set α)) :
-    IsClosedMap ((↑) : α → α ⧸ H) := by
+theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
+    IsClosedMap ((↑) : G → G ⧸ H) := by
   intro t ht
   rw [← quotientMap_quotient_mk'.isClosed_preimage]
   convert ht.mul_right_of_isCompact hH
   refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans ?_
   rw [iUnion_subtype, ← iUnion_mul_right_image]
   rfl
+
+lemma IsCompact.closure_subset_smul_set_closure_one {K : Set G} (hK : IsCompact K) :
+    closure K ⊆ K • (closure {1} : Set G) := by
+  have : IsClosed (K • (closure {1} : Set G)) :=
+    IsClosed.smul_left_of_isCompact isClosed_closure hK
+  rw [IsClosed.closure_subset_iff this]
+  have : K ⊆ K • ({1} : Set G) := by simpa using Subset.rfl
+  exact this.trans (smul_subset_smul_left subset_closure)
+
+lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
+    F • closure ({1} : Set G) = F := by
+  apply Subset.antisymm
+  · calc
+    F • closure ({1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
+    _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
+    _ = F := by simp [hF.closure_eq]
+  · calc
+    F = F • ({1} : Set G) := by simp
+    _ ⊆ F • (closure {1} : Set G) := smul_subset_smul_left subset_closure
+
+lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
+    U • closure ({1} : Set G) = U := by
+  apply Subset.antisymm
+  · rintro - ⟨x, g, hx, hg, rfl⟩
+    by_contra H
+    have : x ∈ Uᶜ • closure ({1} : Set G) := by
+      rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
+      exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
+    rw [hU.isClosed_compl.smul_set_closure_one_eq] at this
+    exact this hx
+  · calc
+    U = U • ({1} : Set G) := by simp
+    _ ⊆ U • closure ({1} : Set G) := smul_subset_smul_left subset_closure
+
+/-- In a topological group, if a compact set `K` is included in an open set `U`, then
+the closure of `K` is also included in `U`. -/
+lemma IsCompact.closure_subset_of_isOpen {K : Set G} (hK : IsCompact K) {U : Set G} (hU : IsOpen U)
+    (h : K ⊆ U) : closure K ⊆ U := by
+  rw [← hU.smul_set_closure_one_eq]
+  exact hK.closure_subset_smul_set_closure_one.trans (smul_subset_smul_right h)
+
 
 end TopologicalGroup
 
@@ -1776,7 +1822,7 @@ end
 
 section
 
-variable [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
+variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [WeaklyLocallyCompactSpace G]
 
 lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
   rcases exists_isCompact_isClosed_nhds_one G with ⟨K, K_comp, K_closed, K_mem⟩
@@ -1799,35 +1845,9 @@ lemma IsCompact.closure_eq_smul_set_one {K : Set G} (hK : IsCompact K) :
     _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
     _ = closure K := by simp
 
-lemma IsCompact.closure {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
+protected lemma IsCompact.closure {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
   rw [hK.closure_eq_smul_set_one, ← image2_smul, ← image_uncurry_prod]
   exact IsCompact.image (hK.prod isCompact_closure_one) continuous_smul
-
-lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
-    F • closure ({1} : Set G) = F := by
-  apply Subset.antisymm
-  · calc
-    F • closure ({1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
-    _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
-    _ = F := by simp [hF.closure_eq]
-  · calc
-    F = F • ({1} : Set G) := by simp
-    _ ⊆ F • (closure {1} : Set G) := smul_subset_smul_left subset_closure
-
-/- Faire le cas général de la multiplication par un sous-groupe...
-lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hF : IsOpen U) :
-    U • closure ({1} : Set G) = U := by
-  let F := Uᶜ
-  have : U = univ \ F := sorry
-  rw [this]
-  rw [diff_smul_set]
-
-
-lemma IsCompact.closure_subset_of_isOpen {K : Set G} (hK : IsCompact K) {U : Set G} (hU : IsOpen U)
-    (h : K ⊆ U) : closure K ⊆ U := by
-
-
--/
 
 end
 
