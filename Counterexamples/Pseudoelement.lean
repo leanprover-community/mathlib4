@@ -87,7 +87,7 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
     Preadditive.comp_add] at ha
   let π₁ := (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₁ := congr_arg π₁ ha
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644  
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₁
   simp only [BinaryBiproduct.bicone_fst, biprod.lift_fst, CategoryTheory.id_apply,
     biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
