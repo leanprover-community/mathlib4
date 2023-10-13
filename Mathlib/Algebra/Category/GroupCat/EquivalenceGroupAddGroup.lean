@@ -86,6 +86,12 @@ def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
     (NatIso.ofComponents fun X => AddEquiv.toAddGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align Group_AddGroup_equivalence groupAddGroupEquivalence
 
+-- simpNF complains after leanprover/lean4#2466
+attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
+  groupAddGroupEquivalence_counitIso_inv_app_apply
+  groupAddGroupEquivalence_unitIso_inv_app_apply
+  groupAddGroupEquivalence_counitIso_hom_app_apply
+
 /-- The equivalence of categories between `CommGroup` and `AddCommGroup`.
 -/
 @[simps!]
@@ -95,11 +101,8 @@ def commGroupAddCommGroupEquivalence : CommGroupCat ≌ AddCommGroupCat :=
     (NatIso.ofComponents fun X => AddEquiv.toAddCommGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align CommGroup_AddCommGroup_equivalence commGroupAddCommGroupEquivalence
 
-attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
-  groupAddGroupEquivalence_counitIso_inv_app_apply
-  groupAddGroupEquivalence_unitIso_inv_app_apply
-  groupAddGroupEquivalence_counitIso_hom_app_apply
-  commGroupAddCommGroupEquivalence_counitIso_hom_app_apply
+-- simpNF complains after leanprover/lean4#2466
+attribute [nolint simpNF] commGroupAddCommGroupEquivalence_counitIso_hom_app_apply
   commGroupAddCommGroupEquivalence_unitIso_inv_app_apply
   commGroupAddCommGroupEquivalence_unitIso_hom_app_apply
   commGroupAddCommGroupEquivalence_counitIso_inv_app_apply

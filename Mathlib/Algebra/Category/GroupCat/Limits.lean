@@ -464,6 +464,9 @@ def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
   Over.isoMk (kernelIsoKer f)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
+
+-- simpNF complains after leanprover/lean4#2466
 attribute [nolint simpNF] AddCommGroupCat.kernelIsoKerOver_inv_left_apply
   AddCommGroupCat.kernelIsoKerOver_hom_left_apply_coe
+
 end AddCommGroupCat

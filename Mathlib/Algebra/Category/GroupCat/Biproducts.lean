@@ -76,6 +76,9 @@ noncomputable def biprodIsoProd (G H : AddCommGroupCat.{u}) :
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit G H) (binaryProductLimitCone G H).isLimit
 #align AddCommGroup.biprod_iso_prod AddCommGroupCat.biprodIsoProd
 
+-- simpNF now complains after leanprover/lean4#2644
+attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
+
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (G H : AddCommGroupCat.{u}) :
     (biprodIsoProd G H).inv ≫ biprod.fst = AddMonoidHom.fst G H :=
@@ -138,12 +141,13 @@ noncomputable def biproductIsoPi (f : J → AddCommGroupCat.{u}) :
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 #align AddCommGroup.biproduct_iso_pi AddCommGroupCat.biproductIsoPi
 
+-- simpNF now complains after leanprover/lean4#2644
+attribute [nolint simpNF] AddCommGroupCat.biproductIsoPi_hom_apply
+
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π (f : J → AddCommGroupCat.{u}) (j : J) :
     (biproductIsoPi f).inv ≫ biproduct.π f j = Pi.evalAddMonoidHom (fun j => f j) j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
 #align AddCommGroup.biproduct_iso_pi_inv_comp_π AddCommGroupCat.biproductIsoPi_inv_comp_π
 
-attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
-  AddCommGroupCat.biproductIsoPi_hom_apply
 end AddCommGroupCat

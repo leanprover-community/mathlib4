@@ -77,6 +77,9 @@ noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit M N) (binaryProductLimitCone M N).isLimit
 #align Module.biprod_iso_prod ModuleCat.biprodIsoProd
 
+-- simpNF complains after leanprover/lean4#2644
+attribute [nolint simpNF] ModuleCat.biprodIsoProd_hom_apply
+
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (M N : ModuleCat.{v} R) :
     (biprodIsoProd M N).inv ≫ biprod.fst = LinearMap.fst R M N :=
@@ -138,6 +141,9 @@ noncomputable def biproductIsoPi [Fintype J] (f : J → ModuleCat.{v} R) :
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 #align Module.biproduct_iso_pi ModuleCat.biproductIsoPi
 
+-- simpNF complains after leanprover/lean4#2644
+attribute [nolint simpNF] ModuleCat.biproductIsoPi_hom_apply
+
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π [Fintype J] (f : J → ModuleCat.{v} R) (j : J) :
     (biproductIsoPi f).inv ≫ biproduct.π f j = (LinearMap.proj j : (∀ j, f j) →ₗ[R] f j) :=
@@ -175,5 +181,4 @@ noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.
     biprodIsoProd _ _).toLinearEquiv.symm
 #align lequiv_prod_of_left_split_exact lequivProdOfLeftSplitExact
 
-attribute [nolint simpNF] ModuleCat.biprodIsoProd_hom_apply ModuleCat.biproductIsoPi_hom_apply
 end SplitExact
