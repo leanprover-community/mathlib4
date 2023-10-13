@@ -691,8 +691,8 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
     ext i j
     dsimp
     split_ifs with h
-    . rfl
-    . rw [ho.zero i j (fun h' => h (by dsimp at h'; linarith))]
+    · rfl
+    · rw [ho.zero i j (fun h' => h (by dsimp at h'; linarith))]
   right_inv := fun z => by
     ext p q hpq
     dsimp [Cochain.ofHomotopy]
