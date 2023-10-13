@@ -23,12 +23,18 @@ We define the trace / Killing form in this file and prove some basic properties.
 
 ## Main definitions
 
- * `LieModule.traceForm`
- * `LieModule.traceForm_eq_zero_of_isNilpotent`
- * `killingForm`
- * `LieAlgebra.IsKilling`
- * `LieAlgebra.IsKilling.ker_restrictBilinear_of_isCartanSubalgebra_eq_bot`
- * `LieAlgebra.IsKilling.isSemisimple`
+ * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
+   on `L` called the trace Form.
+ * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
+   representation of a Lie algebra vanishes.
+ * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
+   form on `L` via the trace form construction.
+ * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
+   Killing form.
+ * `LieAlgebra.IsKilling.ker_restrictBilinear_of_isCartanSubalgebra_eq_bot`: if the Killing form of
+   a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
+ * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
+   semisimple.
 
 ## TODO
 
@@ -60,7 +66,9 @@ lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
 @[simp] lemma traceForm_flip : (traceForm R L M).flip = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
-/-- See also `LieModule.traceForm_apply_lie_apply'`. -/
+/-- The trace form of a Lie module is compatible with the action of the Lie algebra.
+
+See also `LieModule.traceForm_apply_lie_apply'`. -/
 lemma traceForm_apply_lie_apply (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
   calc traceForm R L M ⁅x, y⁆ z
@@ -233,11 +241,11 @@ class IsKilling : Prop :=
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 
+attribute [simp] IsKilling.killingCompl_top_eq_bot
+
 namespace IsKilling
 
 variable [IsKilling R L]
-
-attribute [simp] killingCompl_top_eq_bot
 
 @[simp] lemma ker_killingForm_eq_bot :
     LinearMap.ker (killingForm R L) = ⊥ := by
@@ -254,8 +262,8 @@ lemma ker_restrictBilinear_of_isCartanSubalgebra_eq_bot
     rwa [codisjoint_iff, ← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.sup_coe_toSubmodule,
       LieSubmodule.top_coeSubmodule, rootSpace_zero_eq R L H, LieSubalgebra.coe_toLieSubmodule,
       ← codisjoint_iff] at h
-  suffices : ∀ m₀ ∈ H, ∀ m₁ ∈ LieModule.posFittingComp R H L, killingForm R L m₀ m₁ = 0
-  · simp [LinearMap.ker_restrictBilinear_eq_of_codisjoint h this]
+  suffices this : ∀ m₀ ∈ H, ∀ m₁ ∈ LieModule.posFittingComp R H L, killingForm R L m₀ m₁ = 0 by
+    simp [LinearMap.ker_restrictBilinear_eq_of_codisjoint h this]
   intro m₀ h₀ m₁ h₁
   exact killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting R L H (le_zeroRootSubalgebra R L H h₀) h₁
 
