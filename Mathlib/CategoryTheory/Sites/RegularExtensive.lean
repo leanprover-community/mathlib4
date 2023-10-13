@@ -227,6 +227,22 @@ lemma sigma_surjective {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a
     α → Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) :=
   fun ⟨_, ⟨_, hf⟩⟩ ↦ by cases' hf with a _; exact ⟨a, rfl⟩
 
+-- noncomputable
+-- def map {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) :
+--     (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) → α :=
+--   Function.surjInv (sigma_surjective π)
+
+-- def map2 {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
+--     (f : Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) :
+--     f.fst ⟶ Z (map π f) := sorry
+
+lemma map_eq {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X)
+    (f : Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f }) :
+    ∃ i, f.fst = Z i := by
+  obtain ⟨Y, g, h⟩ := f
+  cases' h with i
+  exact ⟨i, rfl⟩
+
 open Opposite
 
 instance {α : Type} {Z : α → C} {X : C} {π : (a : α) → Z a ⟶ X} [Fintype α] :
@@ -239,7 +255,16 @@ noncomputable
 def prod_map {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) (F : Cᵒᵖ ⥤ Type max u v) :
     (∏ fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) => F.obj (op f.fst)) ⟶
     ∏ fun a => F.obj (op (Z a)) :=
-  Pi.lift (fun a => Pi.π _ ⟨Z a, π a, Presieve.ofArrows.mk a⟩) ≫ 𝟙 _
+  Pi.lift (fun a => Pi.π (fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) =>
+    F.obj (op f.fst)) ⟨Z a, π a, Presieve.ofArrows.mk a⟩)
+
+/-- The canonical map from `Equalizer.FirstObj` to a product indexed by `α` -/
+noncomputable
+def prod_map_inv {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) (F : Cᵒᵖ ⥤ Type max u v) :
+     (∏ fun a => F.obj (op (Z a))) ⟶
+    (∏ fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) => F.obj (op f.fst)) :=
+  Pi.lift (fun f ↦ (Pi.π (fun a => F.obj (op (Z a))) (map_eq π f).choose ≫
+    F.map (eqToHom (map_eq π f).choose_spec).op))
 
 /-- The inverse to `Equalizer.forkMap F (Presieve.ofArrows Z π)`. -/
 noncomputable
@@ -278,8 +303,8 @@ instance {X : C} (S : Presieve X) [S.extensive]
       colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
     funext s
     ext a
-    simp only [prod_map, types_comp_apply, types_id_apply, Types.Limit.lift_π_apply,
-      Fan.mk_pt, Equalizer.forkMap, Fan.mk_π_app, Types.pi_lift_π_apply]
+    simp only [prod_map, types_comp_apply, Types.Limit.lift_π_apply, Fan.mk_pt, Fan.mk_π_app,
+      Equalizer.forkMap, Types.pi_lift_π_apply]
   · refine Limits.Pi.hom_ext _ _ (fun f => ?_)
     simp only [Equalizer.forkMap, Category.assoc, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
       Category.id_comp]
@@ -287,7 +312,7 @@ instance {X : C} (S : Presieve X) [S.extensive]
     rw [firstObj_to_base, Category.assoc, Category.assoc, Category.assoc, ← Functor.map_comp,
       ← op_inv, ← op_comp, ← ha, comp_inv_desc_eq_ι, ← Functor.map_comp,
       opCoproductIsoProduct_inv_comp_ι, PreservesProduct.isoInvCompMap F a]
-    simp only [prod_map, Category.comp_id, limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+    simp only [prod_map, limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 
 end ExtensiveSheafConditionProof
 
@@ -308,8 +333,29 @@ lemma isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [
       rwa [IsIso.hom_inv_id, types_id_apply] at hy₁
   infer_instance
 
+namespace ExtensiveSheafConditionProof
+
 open Opposite
 
+variable {α : Type} [Fintype α] (Z : α → C) (F : Cᵒᵖ ⥤ Type max u v)
+    (hF : Presieve.IsSheafFor F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)))
+
+instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).hasPullbacks := sorry
+
+instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).extensive := sorry
+
+lemma one : F.map (opCoproductIsoProduct Z).inv ≫
+    Equalizer.forkMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) ≫ prod_map _ F =
+    piComparison F (fun z ↦ op (Z z)) := sorry
+
+lemma two : Equalizer.Presieve.firstMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) =
+    Equalizer.Presieve.secondMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) := sorry
+
+end ExtensiveSheafConditionProof
+
+open Opposite
+
+noncomputable
 instance (F : Cᵒᵖ ⥤ Type max u v) (h : ∀ {X : C} (S : Presieve X) [S.extensive], S.IsSheafFor F) :
     PreservesFiniteProducts F := by
   constructor
@@ -317,11 +363,45 @@ instance (F : Cᵒᵖ ⥤ Type max u v) (h : ∀ {X : C} (S : Presieve X) [S.ext
   constructor
   intro K
   let k : J → Cᵒᵖ := fun j ↦ K.obj ⟨j⟩
-  let S : Presieve (unop (∏ k)) := Presieve.ofArrows (fun j ↦ (k j).unop) (fun j ↦ (Pi.π k j).unop)
-  haveI : S.extensive := sorry
+  let i : K ≅ (Discrete.functor k) := Discrete.natIsoFunctor
+  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ F i.symm ?_
+  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ k _ _ ?_
+  let S := (Presieve.ofArrows (fun j ↦ unop (k j)) (fun j ↦ Sigma.ι (fun j ↦ unop (k j)) j))
   specialize h S
-  rw [Equalizer.Presieve.sheaf_condition] at h
-  sorry
+  have hh : piComparison F (fun j ↦ op (unop (k j))) = piComparison F k := rfl
+  rw [← hh, (one (fun j ↦ (k j).unop) F).symm]
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+  refine @IsIso.comp_isIso _ _ _ _ _ _ _ ?_ ?_
+  · rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
+    rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at h
+    exact fun b ↦ h b (congr_fun (two (fun j ↦ unop (k j)) F) b)
+  · sorry
+
+    -- rw [isIso_iff_bijective]
+    -- refine ⟨fun a b hab ↦ ?_, fun a ↦ ?_⟩
+    -- · ext Y f hf
+    --   cases' hf with i
+    --   simp only [prod_map, op_unop] at hab
+    --   sorry
+    -- · refine ⟨prod_map_inv _ _ a, ?_⟩
+    --   ext j
+    --   sorry
+
+    -- refine ⟨prod_map_inv _ _, ?_, ?_⟩
+    -- · -- simp only [prod_map, op_unop, Category.comp_id, prod_map_inv, eqToHom_op]
+    --   ext a Y f hf
+    --   cases' hf with i
+    --   dsimp only [prod_map_inv, prod_map]
+    --   simp only [op_unop, eqToHom_op, types_comp_apply, Types.pi_lift_π_apply, types_id_apply]
+    --   sorry
+    -- · simp only [prod_map_inv, op_unop, eqToHom_op, prod_map, Category.comp_id]
+    --   ext
+    --   dsimp only [op_unop, types_comp_apply, types_id_apply]
+    --   simp only [Types.pi_lift_π_apply, op_unop, types_comp_apply]
+    --   -- Types.pi_lift_π_apply
+    --   sorry
+
+
 
 end ExtensiveSheaves
 
