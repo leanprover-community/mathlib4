@@ -774,9 +774,12 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
       letI m2 : Module R Y := Module.compHom Y f
       induction' x using TensorProduct.induction_on with s x _ _ _ _
       · rw [map_zero, map_zero]
-      · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [ExtendRestrictScalarsAdj.homEquiv_symm_apply, ModuleCat.coe_comp, Function.comp_apply,
-          ExtendRestrictScalarsAdj.counit_app, ExtendRestrictScalarsAdj.Counit.map_apply]
+      · rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [ModuleCat.coe_comp]
+        rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [ExtendRestrictScalarsAdj.Counit.map_apply]
         dsimp
         rw [TensorProduct.lift.tmul]
         rfl
