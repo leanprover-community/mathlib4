@@ -279,15 +279,11 @@ protected theorem mul_one : φ * 1 = φ :=
 #align mv_power_series.mul_one MvPowerSeries.mul_one
 
 protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ₂ + φ₃) = φ₁ * φ₂ + φ₁ * φ₃ :=
-  ext fun n => by
-  classical
-  simp only [coeff_mul, mul_add, Finset.sum_add_distrib, LinearMap.map_add]
+  ext fun n => by classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, LinearMap.map_add]
 #align mv_power_series.mul_add MvPowerSeries.mul_add
 
 protected theorem add_mul (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : (φ₁ + φ₂) * φ₃ = φ₁ * φ₃ + φ₂ * φ₃ :=
-  ext fun n => by
-  classical
-  simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
+  ext fun n => by classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
 #align mv_power_series.add_mul MvPowerSeries.add_mul
 
 protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * φ₂ * φ₃ = φ₁ * (φ₂ * φ₃) := by
@@ -879,40 +875,43 @@ theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries
 #align mv_power_series.coeff_inv_of_unit MvPowerSeries.coeff_invOfUnit
 
 @[simp]
-theorem constantCoeff_invOfUnit [DecidableEq σ] (φ : MvPowerSeries σ R) (u : Rˣ) :
+theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
     constantCoeff σ R (invOfUnit φ u) = ↑u⁻¹ := by
+  classical
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
 #align mv_power_series.constant_coeff_inv_of_unit MvPowerSeries.constantCoeff_invOfUnit
 
 theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
-    φ * invOfUnit φ u = 1 := by
-  classical
-  ext n
-  by_cases H: n = 0
-  · rw [H]
-    simp [coeff_mul, support_single_ne_zero, h]
-  · have : ((0 : σ →₀ ℕ), n) ∈ n.antidiagonal := by rw [Finsupp.mem_antidiagonal, zero_add]
-    rw [coeff_one, if_neg H, coeff_mul, ← Finset.insert_erase this,
-    Finset.sum_insert (Finset.not_mem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
-      coeff_invOfUnit, if_neg H, neg_mul, mul_neg, Units.mul_inv_cancel_left, ←
-      Finset.insert_erase this, Finset.sum_insert (Finset.not_mem_erase _ _),
-      Finset.insert_erase this, if_neg (not_lt_of_ge <| le_rfl), zero_add, add_comm, ←
-      sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
-    rintro ⟨i, j⟩ hij
-    rw [Finset.mem_erase, Finsupp.mem_antidiagonal] at hij
-    cases' hij with h₁ h₂
-    subst n
-    rw [if_pos]
-    suffices (0 : _) + j < i + j by simpa
-    apply add_lt_add_right
-    constructor
-    · intro s
-      exact Nat.zero_le _
-    · intro H
-      apply h₁
-      suffices i = 0 by simp [this]
-      ext1 s
-      exact Nat.eq_zero_of_le_zero (H s)
+    φ * invOfUnit φ u = 1 :=
+  ext fun n =>
+    letI := Classical.decEq (σ →₀ ℕ)
+    if H : n = 0 then by
+      rw [H]
+      simp [coeff_mul, support_single_ne_zero, h]
+    else by
+      classical
+      have : ((0 : σ →₀ ℕ), n) ∈ n.antidiagonal := by rw [Finsupp.mem_antidiagonal, zero_add]
+      rw [coeff_one, if_neg H, coeff_mul, ← Finset.insert_erase this,
+        Finset.sum_insert (Finset.not_mem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
+        coeff_invOfUnit, if_neg H, neg_mul, mul_neg, Units.mul_inv_cancel_left, ←
+        Finset.insert_erase this, Finset.sum_insert (Finset.not_mem_erase _ _),
+        Finset.insert_erase this, if_neg (not_lt_of_ge <| le_rfl), zero_add, add_comm, ←
+        sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
+      rintro ⟨i, j⟩ hij
+      rw [Finset.mem_erase, Finsupp.mem_antidiagonal] at hij
+      cases' hij with h₁ h₂
+      subst n
+      rw [if_pos]
+      suffices (0 : _) + j < i + j by simpa
+      apply add_lt_add_right
+      constructor
+      · intro s
+        exact Nat.zero_le _
+      · intro H
+        apply h₁
+        suffices i = 0 by simp [this]
+        ext1 s
+        exact Nat.eq_zero_of_le_zero (H s)
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
 
 end Ring
@@ -981,11 +980,10 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, if_pos rfl]
 #align mv_power_series.constant_coeff_inv MvPowerSeries.constantCoeff_inv
 
-theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 := by
-  classical
-  exact
+theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 :=
   ⟨fun h => by simpa using congr_arg (constantCoeff σ k) h, fun h =>
     ext fun n => by
+      classical
       rw [coeff_inv]
       split_ifs <;>
         simp only [h, map_zero, zero_mul, inv_zero, neg_zero]⟩
@@ -1109,9 +1107,9 @@ theorem coeff_coe (n : σ →₀ ℕ) : MvPowerSeries.coeff R n ↑φ = coeff n 
 
 @[simp, norm_cast]
 theorem coe_monomial (n : σ →₀ ℕ) (a : R) :
-    (monomial n a : MvPowerSeries σ R) = MvPowerSeries.monomial R n a := by
-  classical
-  exact MvPowerSeries.ext fun m => by
+    (monomial n a : MvPowerSeries σ R) = MvPowerSeries.monomial R n a :=
+  MvPowerSeries.ext fun m => by
+    classical
     rw [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial]
     split_ifs with h₁ h₂ <;> first |rfl|subst m; contradiction
 #align mv_polynomial.coe_monomial MvPolynomial.coe_monomial
@@ -1132,9 +1130,10 @@ theorem coe_add : ((φ + ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ + ψ
 #align mv_polynomial.coe_add MvPolynomial.coe_add
 
 @[simp, norm_cast]
-theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ := by
-  classical
-  exact MvPowerSeries.ext fun n => by simp only [coeff_coe, MvPowerSeries.coeff_mul, coeff_mul]
+theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ :=
+  MvPowerSeries.ext fun n => by
+    classical
+    simp only [coeff_coe, MvPowerSeries.coeff_mul, coeff_mul]
 #align mv_polynomial.coe_mul MvPolynomial.coe_mul
 
 @[simp, norm_cast]
@@ -2068,12 +2067,12 @@ variable [Ring R]
 
 theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) (h : φ * ψ = 0) :
     φ = 0 ∨ ψ = 0 := by
+  classical
   rw [or_iff_not_imp_left]
   intro H
   have ex : ∃ m, coeff R m φ ≠ 0 := by
     contrapose! H
     exact ext H
-  classica:l
   let m := Nat.find ex
   have hm₁ : coeff R m φ ≠ 0 := Nat.find_spec ex
   have hm₂ : ∀ k < m, ¬coeff R k φ ≠ 0 := fun k => Nat.find_min ex
