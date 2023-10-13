@@ -163,18 +163,22 @@ theorem comp_neg : f ≫ (-g) = -f ≫ g :=
 theorem neg_comp_neg : (-f) ≫ (-g) = f ≫ g := by simp
 #align category_theory.preadditive.neg_comp_neg CategoryTheory.Preadditive.neg_comp_neg
 
+@[simp]
 theorem nsmul_comp (n : ℕ) : (n • f) ≫ g = n • f ≫ g :=
   map_nsmul (rightComp P g) n f
 #align category_theory.preadditive.nsmul_comp CategoryTheory.Preadditive.nsmul_comp
 
+@[simp]
 theorem comp_nsmul (n : ℕ) : f ≫ (n • g) = n • f ≫ g :=
   map_nsmul (leftComp R f) n g
 #align category_theory.preadditive.comp_nsmul CategoryTheory.Preadditive.comp_nsmul
 
+@[simp]
 theorem zsmul_comp (n : ℤ) : (n • f) ≫ g = n • f ≫ g :=
   map_zsmul (rightComp P g) n f
 #align category_theory.preadditive.zsmul_comp CategoryTheory.Preadditive.zsmul_comp
 
+@[simp]
 theorem comp_zsmul (n : ℤ) : f ≫ (n • g) = n • f ≫ g :=
   map_zsmul (leftComp R f) n g
 #align category_theory.preadditive.comp_zsmul CategoryTheory.Preadditive.comp_zsmul
