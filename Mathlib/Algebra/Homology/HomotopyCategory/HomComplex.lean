@@ -762,7 +762,7 @@ lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
     simp only [δ_v n m hnm _ p q hpq (q-1) (p+1) rfl rfl,
       Functor.map_add, Functor.map_comp, Functor.map_zsmul,
       Cochain.map_v, Functor.mapHomologicalComplex_obj_d]
-  . simp only [δ_shape _ _ hnm, Cochain.map_zero]
+  · simp only [δ_shape _ _ hnm, Cochain.map_zero]
 
 end
 
