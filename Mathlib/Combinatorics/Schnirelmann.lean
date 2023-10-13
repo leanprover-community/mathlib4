@@ -25,7 +25,7 @@ we must exclude `0` from the infimum, and from the intersection.
 
 Despite the definition being noncomputable, we include a decidable instance argument, since this
 makes the definition easier to use in explicit cases.
-Further, we use Finset.Ioc rather than a set intersection since the set is finite by construction,
+Further, we use `Finset.Ioc` rather than a set intersection since the set is finite by construction,
 which reduces the proof obligations later that would arise with `Nat.card`.
 
 ## TODO
