@@ -196,7 +196,7 @@ theorem openEmbedding_of_comp (hf : IsLocallyHomeomorph g) (hgf : OpenEmbedding 
   (hgf.isLocallyHomeomorph.of_comp hf cont).openEmbedding_of_injective hgf.inj.of_comp
 
 open TopologicalSpace in
-/-- Local sections of a local homeomorphism form a basis of the total space. -/
+/-- Ranges of continuous local sections of a local homeomorphism form a basis of the total space. -/
 theorem isTopologicalBasis (hf : IsLocallyHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_open_of_nhds ?_ fun x U hx hU ↦ ?_
