@@ -71,7 +71,8 @@ Occasionally this leads to proofs that are uglier than expected.
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+-- open Classical
+open BigOperators Polynomial
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring.-/
@@ -83,7 +84,7 @@ namespace MvPowerSeries
 
 open Finsupp
 
-variable {σ R : Type*}
+variable {σ R : Type*} [DecidableEq σ]
 
 instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
   ⟨fun _ => default⟩
@@ -141,14 +142,12 @@ theorem ext_iff {φ ψ : MvPowerSeries σ R} : φ = ψ ↔ ∀ n : σ →₀ ℕ
   Function.funext_iff
 #align mv_power_series.ext_iff MvPowerSeries.ext_iff
 
-theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
+theorem monomial_def (n : σ →₀ ℕ) :
     (monomial R n) = LinearMap.stdBasis R (fun _ ↦ R) n := by
   rw [monomial]
-  -- unify the `Decidable` arguments
-  convert rfl
 #align mv_power_series.monomial_def MvPowerSeries.monomial_def
 
-theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
+theorem coeff_monomial (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
   rw [coeff, monomial_def, LinearMap.proj_apply]
   dsimp only
@@ -156,23 +155,25 @@ theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
 #align mv_power_series.coeff_monomial MvPowerSeries.coeff_monomial
 
 @[simp]
-theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) : coeff R n (monomial R n a) = a := by
+theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) :
+    coeff R n (monomial R n a) = a := by
   rw [monomial_def]
   exact LinearMap.stdBasis_same R (fun _ ↦ R) n a
 #align mv_power_series.coeff_monomial_same MvPowerSeries.coeff_monomial_same
 
-theorem coeff_monomial_ne {m n : σ →₀ ℕ} (h : m ≠ n) (a : R) : coeff R m (monomial R n a) = 0 := by
+theorem coeff_monomial_ne [DecidableEq σ] {m n : σ →₀ ℕ} (h : m ≠ n) (a : R) : coeff R m (monomial R n a) = 0 := by
   rw [monomial_def]
   exact LinearMap.stdBasis_ne R (fun _ ↦ R) _ _ h a
 #align mv_power_series.coeff_monomial_ne MvPowerSeries.coeff_monomial_ne
 
-theorem eq_of_coeff_monomial_ne_zero {m n : σ →₀ ℕ} {a : R} (h : coeff R m (monomial R n a) ≠ 0) :
+theorem eq_of_coeff_monomial_ne_zero [DecidableEq σ] {m n : σ →₀ ℕ} {a : R}
+    (h : coeff R m (monomial R n a) ≠ 0) :
     m = n :=
   by_contra fun h' => h <| coeff_monomial_ne h' a
 #align mv_power_series.eq_of_coeff_monomial_ne_zero MvPowerSeries.eq_of_coeff_monomial_ne_zero
 
 @[simp]
-theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n) = LinearMap.id :=
+theorem coeff_comp_monomial [DecidableEq σ] (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n) = LinearMap.id :=
   LinearMap.ext <| coeff_monomial_same n
 #align mv_power_series.coeff_comp_monomial MvPowerSeries.coeff_comp_monomial
 
