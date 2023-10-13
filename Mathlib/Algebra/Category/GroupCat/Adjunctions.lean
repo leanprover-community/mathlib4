@@ -102,8 +102,10 @@ def free : Type u ⥤ GroupCat where
   obj α := of (FreeGroup α)
   map := FreeGroup.map
   map_id := by
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     intros; ext1; erw [←FreeGroup.map.unique] <;> intros <;> rfl
   map_comp := by
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     intros; ext1; erw [←FreeGroup.map.unique] <;> intros <;> rfl
 #align Group.free GroupCat.free
 

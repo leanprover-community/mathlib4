@@ -459,6 +459,7 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     intros X Y f
     ext t
     dsimp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
     simpa using (s.ι.naturality
       (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
@@ -468,6 +469,7 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     apply yonedaEquiv.injective
     rw [yonedaEquiv_comp]
     dsimp only
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Equiv.symm_apply_apply]
     rfl
   uniq := by
@@ -475,6 +477,7 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     ext V x
     obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
     dsimp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
     exact congr_arg _ (h (CostructuredArrow.mk t))
 

@@ -333,6 +333,7 @@ def lan [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] : (S ⥤ D) ⥤ L
     intros X' X Y f g
     ext
     simp [Lan.equiv]
+    -- This used to be the end of the proof before leanprover/lean4#2644
     erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
     simp })
 set_option linter.uppercaseLean3 false in

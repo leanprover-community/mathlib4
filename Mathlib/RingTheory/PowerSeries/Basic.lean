@@ -149,8 +149,10 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
 
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
   dsimp only
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
 #align mv_power_series.coeff_monomial MvPowerSeries.coeff_monomial
 
@@ -1407,6 +1409,7 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = const
 
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
 set_option linter.uppercaseLean3 false in
 #align power_series.monomial_zero_eq_C PowerSeries.monomial_zero_eq_C
@@ -1438,6 +1441,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_X : coeff R 0 (X : R⟦X⟧) = 0 := by
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X PowerSeries.coeff_zero_X

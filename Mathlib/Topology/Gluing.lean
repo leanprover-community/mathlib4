@@ -174,6 +174,7 @@ theorem eqvGen_of_π_eq
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π, ContinuousMap.toFun_eq_coe] at h
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
     simp
     rfl
@@ -411,6 +412,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
     rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
+    -- The next 9 tactics were a single `rw` before leanprover/lean4#2644
     rw [comp_app] --, comp_app, id_app]
     -- erw [ContinuousMap.coe_mk]
     conv_lhs => erw [ContinuousMap.coe_mk]

@@ -147,11 +147,13 @@ and the homogeneous `linearYonedaObjResolution`. -/
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   change d n A f g = diagonalHomEquiv (n + 1) A
     ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     Resolution.d_eq]
   erw [Resolution.d_of (Fin.partialProd g)]
   rw [map_sum]
   simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
   simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
@@ -160,7 +162,8 @@ and the homogeneous `linearYonedaObjResolution`. -/
   · have := Fin.partialProd_right_inv g (Fin.castSucc x)
     simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
-  · erw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
+  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
 #align inhomogeneous_cochains.d_eq InhomogeneousCochains.d_eq
 
 end InhomogeneousCochains

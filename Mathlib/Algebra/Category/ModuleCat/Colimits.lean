@@ -61,6 +61,7 @@ noncomputable def colimitCocone : Cocone F where
   ι :=
     { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGroupCat)  j) (fun r => by
         dsimp
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [mkOfSMul_smul]
         simp)
       naturality := fun i j f => by
@@ -77,6 +78,7 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
     intro j
     dsimp
     rw [colimit.ι_desc_assoc]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [mkOfSMul_smul]
     dsimp
     simp only [ι_colimMap_assoc, Functor.comp_obj, forget₂_obj, colimit.ι_desc,

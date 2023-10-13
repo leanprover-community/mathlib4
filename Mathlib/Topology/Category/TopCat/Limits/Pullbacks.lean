@@ -53,6 +53,9 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
     (by
       dsimp [pullbackFst, pullbackSnd, Function.comp]
       ext ⟨x, h⟩
+      -- Next 2 lines were 
+      -- `rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]`
+      -- `exact h` before leanprover/lean4#2644
       rw [comp_apply, comp_apply]
       congr!)
 #align Top.pullback_cone TopCat.pullbackCone
@@ -74,9 +77,11 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       refine' ⟨_, _, _⟩
       · delta pullbackCone
         ext a
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk]
       · delta pullbackCone
         ext a
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk]
       · intro m h₁ h₂
         -- Porting note: used to be ext x
@@ -166,6 +171,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
     rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π] <;>
+    -- This used to be `simp` before leanprover/lean4#2644
     aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
 

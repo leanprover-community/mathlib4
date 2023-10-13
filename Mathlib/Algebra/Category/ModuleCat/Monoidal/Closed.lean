@@ -34,6 +34,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
   left_inv f := by
     apply TensorProduct.ext'
     intro m n
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [coe_comp, Function.comp_apply, MonoidalCategory.braiding_hom_apply,
       TensorProduct.lift.tmul, LinearMap.compr₂_apply,
       TensorProduct.mk_apply, coe_comp, Function.comp_apply, MonoidalCategory.braiding_hom_apply]

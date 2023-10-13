@@ -496,6 +496,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     intro s
     ext1 x
     simp
+    -- This used to be the end of the proof before leanprover/lean4#2644
     erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
     simp
     congr!

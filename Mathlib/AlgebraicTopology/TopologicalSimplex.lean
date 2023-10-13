@@ -101,6 +101,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     apply toTopObj.ext
     funext i
     dsimp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [CategoryTheory.comp_apply, ContinuousMap.coe_mk,
       ContinuousMap.coe_mk, ContinuousMap.coe_mk]
     simp only [coe_toTopMap]

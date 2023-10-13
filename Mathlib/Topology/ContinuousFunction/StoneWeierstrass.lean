@@ -70,6 +70,7 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
   simp only [ContinuousMap.coe_comp, Function.comp_apply, ContinuousMap.attachBound_apply_coe,
     Polynomial.toContinuousMapOn_apply, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_continuousMap_apply, Polynomial.toContinuousMap_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [ContinuousMap.attachBound_apply_coe]
 #align continuous_map.polynomial_comp_attach_bound ContinuousMap.polynomial_comp_attachBound
 

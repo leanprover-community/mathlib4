@@ -158,6 +158,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
     -- Porting note: was `simp [Quiver.symmetrifyStar]`
@@ -170,6 +171,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
     -- Porting note: was `simp [Quiver.symmetrifyCostar]`

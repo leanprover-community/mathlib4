@@ -161,6 +161,7 @@ instance of_powerSeries_localization [CommRing R] :
       intro m
       have h := hc (m + n)
       simp only at h
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
         add_comm m, PowerSeries.coeff, Finsupp.single_add, MvPowerSeries.coeff_add_monomial_mul,
         one_mul] at h

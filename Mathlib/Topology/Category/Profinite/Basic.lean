@@ -383,12 +383,14 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         ext x
         apply ULift.ext
         dsimp [LocallyConstant.ofClopen]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
       dsimp [LocallyConstant.ofClopen] at H
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
@@ -396,9 +398,11 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
 #align Profinite.epi_iff_surjective Profinite.epi_iff_surjective
 
 instance {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [CompHaus.epi_iff_surjective, ← epi_iff_surjective]; assumption
 
 instance {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [epi_iff_surjective, ← CompHaus.epi_iff_surjective]; assumption
 
 theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
@@ -406,6 +410,7 @@ theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Func
   · intro h
     haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance
     haveI : Mono (profiniteToCompHaus.map f) := inferInstance
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [← CompHaus.mono_iff_injective]
     assumption
   · rw [← CategoryTheory.mono_iff_injective]

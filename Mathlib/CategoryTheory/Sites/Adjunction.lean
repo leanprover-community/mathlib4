@@ -76,6 +76,7 @@ def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
       intro γ
       ext1
       dsimp
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [J.toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv

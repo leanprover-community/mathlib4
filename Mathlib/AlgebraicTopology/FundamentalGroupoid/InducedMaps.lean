@@ -171,6 +171,7 @@ theorem apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
     hcast (H.apply_zero x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
 #align continuous_map.homotopy.apply_zero_path ContinuousMap.Homotopy.apply_zero_path
 
@@ -180,6 +181,7 @@ theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
     hcast (H.apply_one x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
 #align continuous_map.homotopy.apply_one_path ContinuousMap.Homotopy.apply_one_path
 

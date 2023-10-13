@@ -115,6 +115,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   one_mul := by
     -- Porting note : `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
     -- Porting note : this `dsimp` does nothing
     -- dsimp [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
@@ -133,6 +134,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     --   AlgebraCat.coe_comp]
     -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
@@ -147,6 +149,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     --   MonoidalCategory.associator_hom_apply]
     -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
     rw [compr₂_apply, compr₂_apply, compr₂_apply, compr₂_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]

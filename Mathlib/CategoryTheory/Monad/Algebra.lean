@@ -200,6 +200,7 @@ def adj : T.free ⊣ T.forget :=
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
             apply Category.comp_id },
+      -- This used to be automatic before leanprover/lean4#2644
       homEquiv_naturality_right := by
         intros
         -- This doesn't look good:

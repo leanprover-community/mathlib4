@@ -80,6 +80,7 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
       by_cases h : j = i
       · rw [← h]; simp
       · simp [lof, lsingle, h]
+        -- This used to be the end of the proof before leanprover/lean4#2644
         erw [AddHom.coe_mk]
         simp [lof, lsingle, h] }
 #align direct_sum.lie_module_of DirectSum.lieModuleOf
@@ -142,11 +143,13 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
       refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp [of, singleAddHom]
+        -- This used to be the end of the proof before leanprover/lean4#2644
         erw [AddHom.coe_mk, single_apply, single_apply]
         simp [h]
         intros
         erw [single_add]
       · simp [of, singleAddHom, h]
+        -- This used to be the end of the proof before leanprover/lean4#2644
         erw [AddHom.coe_mk, single_apply, single_apply]
         simp [h]
         intros
@@ -174,6 +177,7 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : 
   rw [LieHom.map_lie]
   simp only [of, singleAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk, lieAlgebraComponent_apply,
     component, lapply, LinearMap.coe_mk, AddHom.coe_mk, single_apply, LieHom.map_zero]
+  -- The next four lines were not needed before leanprover/lean4#2644
   erw [AddMonoidHom.coe_mk, AddHom.coe_mk, ZeroHom.coe_mk]
   rotate_left
   intros; erw [single_add]

@@ -45,6 +45,7 @@ def cokernelCocone {X Y : SemiNormedGroupCat₁.{u}} (f : X ⟶ Y) : Cofork f 0 
       -- simp only [comp_apply, Limits.zero_comp, NormedAddGroupHom.zero_apply,
       --   SemiNormedGroupCat₁.mkHom_apply, SemiNormedGroupCat₁.zero_apply,
       --   ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk, f.1.mem_range]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [Limits.zero_comp, comp_apply, SemiNormedGroupCat₁.mkHom_apply,
         SemiNormedGroupCat₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk,
         f.1.mem_range]
@@ -62,6 +63,7 @@ def cokernelLift {X Y : SemiNormedGroupCat₁.{u}} (f : X ⟶ Y) (s : CokernelCo
     rintro _ ⟨b, rfl⟩
     change (f ≫ s.π) b = 0
     simp
+    -- This used to be the end of the proof before leanprover/lean4#2644
     erw [zero_apply]
   -- The lift has norm at most one:
   exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
@@ -80,6 +82,7 @@ instance : HasCokernels SemiNormedGroupCat₁.{u} where
               rintro _ ⟨b, rfl⟩
               change (f ≫ s.π) b = 0
               simp
+              -- This used to be the end of the proof before leanprover/lean4#2644
               erw [zero_apply])
             fun s m w =>
             Subtype.eq
@@ -152,12 +155,15 @@ def cokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       ext a
       simp only [comp_apply, Limits.zero_comp]
       -- porting note: `simp` not firing on the below
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644     
       erw [comp_apply, NormedAddGroupHom.zero_apply]
       -- porting note: Lean 3 didn't need this instance
       letI : SeminormedAddCommGroup ((forget SemiNormedGroupCat).obj Y) :=
         (inferInstance : SeminormedAddCommGroup Y)
       -- porting note: again simp doesn't seem to be firing in the below line
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [ ←NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
+    -- This used to be `simp only [exists_apply_eq_apply]` before leanprover/lean4#2644
       convert exists_apply_eq_apply f a)
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.cokernel_cocone SemiNormedGroupCat.cokernelCocone
@@ -171,6 +177,7 @@ def cokernelLift {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) (s : CokernelCofor
       rintro _ ⟨b, rfl⟩
       change (f ≫ s.π) b = 0
       simp
+      -- This used to be the end of the proof before leanprover/lean4#2644
       erw [zero_apply])
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.cokernel_lift SemiNormedGroupCat.cokernelLift
@@ -186,6 +193,7 @@ def isColimitCokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
       rintro _ ⟨b, rfl⟩
       change (f ≫ s.π) b = 0
       simp
+      -- This used to be the end of the proof before leanprover/lean4#2644
       erw [zero_apply])
     fun s m w => NormedAddGroupHom.lift_unique f.range _ _ _ w
 set_option linter.uppercaseLean3 false in
