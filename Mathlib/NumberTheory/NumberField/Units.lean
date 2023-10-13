@@ -181,7 +181,7 @@ distinguished (arbitrary) infinite place, prove that its kernel is the torsion s
 follows that `unitLattice` is a free `ℤ`-module (see `unitLattice_moduleFree `) of rank
 `card (InfinitePlaces K) - 1` (see `unitLattice_rank`). To prove that the `unitLattice` is a full
 `ℤ`-lattice, we need to prove that it is discrete (see `unitLattice_inter_ball_finite`) and that it
-spans the full space over `ℝ` (see ` unitLattice_span_eq_top`); this is the main part of the proof,
+spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the main part of the proof,
 see the section `span_top` below for more details.
 -/
 
