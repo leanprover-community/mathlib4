@@ -482,7 +482,7 @@ def constantCoeff : MvPowerSeries σ R →+* R :=
   { coeff R (0 : σ →₀ ℕ) with
     toFun := coeff R (0 : σ →₀ ℕ)
     map_one' := coeff_zero_one
-    map_mul' := fun φ ψ => by simp [coeff_mul, support_single_ne_zero]
+    map_mul' := fun φ ψ => by classical simp [coeff_mul, support_single_ne_zero]
     map_zero' := LinearMap.map_zero _ }
 #align mv_power_series.constant_coeff MvPowerSeries.constantCoeff
 
@@ -549,6 +549,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s = t :=
   ⟨by
+    classical
     intro h
     replace h := congr_arg (coeff R (single s 1)) h
     rw [coeff_X, if_pos rfl, coeff_X] at h
@@ -580,6 +581,7 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   map_one' :=
     ext fun n =>
       show f ((coeff R n) 1) = (coeff S n) 1 by
+        classical
         rw [coeff_one, coeff_one]
         split_ifs with h
         · simp only [RingHom.map_ite_one_zero, ite_true, map_one, h]
@@ -589,6 +591,7 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   map_mul' φ ψ :=
     ext fun n =>
       show f _ = _ by
+        classical
         rw [coeff_mul, map_sum, coeff_mul]
         apply Finset.sum_congr rfl
         rintro ⟨i, j⟩ _; rw [f.map_mul]; rfl
@@ -618,6 +621,7 @@ theorem constantCoeff_map (φ : MvPowerSeries σ R) :
 
 @[simp]
 theorem map_monomial (n : σ →₀ ℕ) (a : R) : map σ f (monomial R n a) = monomial S n (f a) := by
+  classical
   ext m
   simp [coeff_monomial, apply_ite f]
 #align mv_power_series.map_monomial MvPowerSeries.map_monomial
@@ -663,6 +667,7 @@ theorem algebraMap_apply {r : R} :
 
 instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
   ⟨⟨⊥, ⊤, by
+      classical
       rw [Ne.def, SetLike.ext_iff, not_forall]
       inhabit σ
       refine' ⟨X default, _⟩
@@ -683,8 +688,12 @@ def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
   ∑ m in Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
 #align mv_power_series.trunc_fun MvPowerSeries.truncFun
 
-theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+-- TODO: this should be elsewhere
+instance : @DecidableRel (σ →₀ ℕ) LT.lt := decidableLTOfDecidableLE
+
+theorem coeff_truncFun [DecidableEq σ] (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (truncFun n φ).coeff m = if m < n then coeff R m φ else 0 := by
+  classical
   simp [truncFun, MvPolynomial.coeff_sum]
 #align mv_power_series.coeff_trunc_fun MvPowerSeries.coeff_truncFun
 
@@ -694,9 +703,11 @@ variable (R)
 def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
   toFun := truncFun n
   map_zero' := by
+    classical
     ext
     simp [coeff_truncFun]
   map_add' := by
+    classical
     intros x y
     ext m
     simp only [coeff_truncFun, MvPolynomial.coeff_add]
@@ -709,12 +720,14 @@ def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
 variable {R}
 
 theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (trunc R n φ).coeff m = if m < n then coeff R m φ else 0 := by simp [trunc, coeff_truncFun]
+    (trunc R n φ).coeff m = if m < n then coeff R m φ else 0 := by
+  classical simp [trunc, coeff_truncFun]
 #align mv_power_series.coeff_trunc MvPowerSeries.coeff_trunc
 
 @[simp]
 theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
   MvPolynomial.ext _ _ fun m => by
+    classical
     rw [coeff_trunc, coeff_one]
     split_ifs with H H'
     · subst m
