@@ -134,7 +134,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.zero_apply AddGroupCat.zero_apply
 
 /-- Typecheck a `MonoidHom` as a morphism in `GroupCat`. -/
-@[to_additive, nolint simpNF]
+@[to_additive]
 def ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
   f
 set_option linter.uppercaseLean3 false in
