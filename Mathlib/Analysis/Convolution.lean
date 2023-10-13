@@ -585,7 +585,6 @@ variable [TopologicalSpace G]
 
 variable [TopologicalAddGroup G]
 
-/- TODO: remove the T2Space assumption -/
 protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSupport f)
     (hcg : HasCompactSupport g) : HasCompactSupport (f ⋆[L, μ] g) :=
   (hcg.isCompact.add hcf).of_isClosed_subset isClosed_closure <|
@@ -595,35 +594,6 @@ protected theorem HasCompactSupport.convolution [T2Space G] (hcf : HasCompactSup
 #align has_compact_support.convolution HasCompactSupport.convolution
 
 variable [BorelSpace G] [TopologicalSpace P]
-
-open scoped Uniformity
-
-/-- In a product space `α × β`, assume that a function `f` is continuous on `s × k` where `k` is
-compact. Then, along the fiber above any `q ∈ s`, `f` is transversely uniformly continuous, i.e.,
-if `p ∈ s` is close enough to `q`, then `f p x` is uniformly close to `f q x` for all `x ∈ k`. -/
-lemma IsCompact.mem_uniformity_of_prod
-    {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
-    {f : α → β → E} {s : Set α} {k : Set β} {q : α} {u : Set (E × E)}
-    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ k)) (hq : q ∈ s) (hu : u ∈ 𝓤 E) :
-    ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, (f p x, f q x) ∈ u := by
-  apply hk.induction_on (p := fun t ↦ ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ t, (f p x, f q x) ∈ u)
-  · exact ⟨univ, univ_mem, by simp⟩
-  · intro t' t ht't ⟨v, v_mem, hv⟩
-    exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
-  · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
-    refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
-    rcases hx with h'x|h'x
-    · exact hv p hp.1 x h'x
-    · exact hv' p hp.2 x h'x
-  · rcases comp_symm_of_uniformity hu with ⟨u', u'_mem, u'_symm, hu'⟩
-    intro x hx
-    obtain ⟨v, hv, w, hw, hvw⟩ :
-      ∃ v ∈ 𝓝[s] q, ∃ w ∈ 𝓝[k] x, v ×ˢ w ⊆ uncurry f ⁻¹' {z | (f q x, z) ∈ u'} :=
-        mem_nhdsWithin_prod_iff.1 (hf (q, x) ⟨hq, hx⟩ (mem_nhds_left (f q x) u'_mem))
-    refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
-    have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
-    have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
-    exact hu' (prod_mk_mem_compRel (u'_symm A) B)
 
 /-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
@@ -698,29 +668,6 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
 
 open scoped Pointwise
 
-
-/-- If a function defined on a topological group has compact multiplicative support, then either
-the function is trivial or the group is locally compact. -/
-@[to_additive
-      "If a function defined on a topological additive group has compact support, then either the
-      function is trivial or the group is locally compact."]
-theorem HasCompactMulSupport.eq_one_or_weaklyLocallyCompactSpace {α : Type*} [TopologicalSpace α]
-   [One α] [T1Space α] {f : G → α} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
-    f = 1 ∨ WeaklyLocallyCompactSpace G := by
-  by_cases h : ∀ x, f x = 1
-  · apply Or.inl
-    ext x
-    exact h x
-  apply Or.inr
-  push_neg at h
-  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 1 := h
-  have : mulTSupport f ∈ 𝓝 x :=
-    mem_of_superset (h'f.isOpen_mulSupport.mem_nhds hx) (subset_mulTSupport f)
-
-
-
-#exit
-
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
 compactly supported. Version where `g` depends on an additional parameter in a subset `s` of
 a parameter space `P` (and the compact support `k` is independent of the parameter in `s`). -/
@@ -728,7 +675,27 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     (hk : IsCompact k) (hgs : ∀ p, ∀ x, p ∈ s → x ∉ k → g p x = 0)
     (hf : LocallyIntegrable f μ) (hg : ContinuousOn (↿g) (s ×ˢ univ)) :
     ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
-  have : LocallyCompactSpace G := sorry
+  /- First get rid of the case where the space is not locally compact. Then `g` vanishes everywhere
+  and the conclusion is trivial. -/
+  by_cases H : ∀ p ∈ s, ∀ x, g p x = 0
+  · apply (continuousOn_const (c := 0)).congr
+    rintro ⟨p, x⟩ ⟨hp, -⟩
+    apply integral_eq_zero_of_ae (eventually_of_forall (fun y ↦ ?_))
+    simp [H p hp _]
+  have : LocallyCompactSpace G := by
+    push_neg at H
+    rcases H with ⟨p, hp, x, hx⟩
+    have A : support (g p) ⊆ k := support_subset_iff'.2 (fun y hy ↦ hgs p y hp hy)
+    have B : Continuous (g p) := by
+      refine hg.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+      simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+    rcases eq_zero_or_weaklyLocallyCompactSpace_of_support_subset_isCompact hk A B with H|H
+    · simp [H] at hx
+    · exact H
+  /- Since `G` is locally compact, one may thicken a little bit `k` into a larger compact set
+  `(-k) + t`, outside of which all functions that appear in the convolution vanish. Then we can
+  apply a continuity statement for integrals depending on a parameter, with respect to
+  locally integrable functions and compactly supported continuous functions. -/
   rintro ⟨q₀, x₀⟩ ⟨hq₀, -⟩
   obtain ⟨t, t_comp, ht⟩ : ∃ t, IsCompact t ∧ t ∈ 𝓝 x₀ := exists_compact_mem_nhds x₀
   let k' : Set G := (-k) +ᵥ t

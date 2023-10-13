@@ -1122,6 +1122,77 @@ theorem continuous_of_dominated {F : X → α → G} {bound : α → ℝ}
   · simp [integral, hG, continuous_const]
 #align measure_theory.continuous_of_dominated MeasureTheory.continuous_of_dominated
 
+/-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
+`g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
+integral depends continuously on `a`. -/
+lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
+    {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
+    [OpensMeasurableSpace β]
+    {f : α → β → E'} {s : Set α} {k : Set β} {g : β → E}
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
+    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0)
+    {μ : Measure β} (hg : LocallyIntegrable g μ) :
+    ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
+  have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
+    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
+  intro q hq
+  apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
+  obtain ⟨δ, δpos, hδ⟩ : ∃ (δ : ℝ), 0 < δ ∧ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ < ε := by
+    simpa [integral_mul_right] using exists_pos_mul_lt εpos _
+  obtain ⟨v, v_mem, hv⟩ : ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, dist (f p x) (f q x) < δ :=
+    hk.mem_uniformity_of_prod
+      (hf.mono (Set.prod_mono_right (subset_univ k))) hq (dist_mem_uniformity δpos)
+  simp_rw [dist_eq_norm] at hv ⊢
+  have I : ∀ p ∈ s, IntegrableOn (fun x ↦ L (g x) (f p x)) k μ := by
+    intro p hp
+    obtain ⟨C, hC⟩ : ∃ C, ∀ x, ‖f p x‖ ≤ C := by
+      have : ContinuousOn (f p) k := by
+        have : ContinuousOn (fun x ↦ (p, x)) k := (Continuous.Prod.mk p).continuousOn
+        exact hf.comp this (by simp [MapsTo, hp])
+      rcases IsCompact.exists_bound_of_continuousOn hk this with ⟨C, hC⟩
+      refine ⟨max C 0, fun x ↦ ?_⟩
+      by_cases hx : x ∈ k
+      · exact (hC x hx).trans (le_max_left _ _)
+      · simp [hfs p x hp hx]
+    have : IntegrableOn (fun x ↦ ‖L‖ * ‖g x‖ * C) k μ :=
+      ((hg.integrableOn_isCompact hk).norm.const_mul _).mul_const _
+    apply Integrable.mono' this ?_ ?_
+    · borelize E'
+      apply L.aestronglyMeasurable_comp₂ (hg.integrableOn_isCompact hk).aestronglyMeasurable
+      apply StronglyMeasurable.aestronglyMeasurable
+      apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
+      apply support_subset_iff'.2 (fun x hx ↦ hfs p x hp hx)
+    · apply eventually_of_forall (fun x ↦ (le_op_norm₂ L (g x) (f p x)).trans ?_)
+      specialize hC x
+      gcongr
+  filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
+  calc
+  ‖∫ x, L (g x) (f p x) ∂μ - ∫ x, L (g x) (f q x) ∂μ‖
+    = ‖∫ x in k, L (g x) (f p x) ∂μ - ∫ x in k, L (g x) (f q x) ∂μ‖ := by
+      congr 2
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+        simp [hfs p x h'p hx]
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+        simp [hfs q x hq hx]
+  _ = ‖∫ x in k, L (g x) (f p x) - L (g x) (f q x) ∂μ‖ := by rw [integral_sub (I p h'p) (I q hq)]
+  _ ≤ ∫ x in k, ‖L (g x) (f p x) - L (g x) (f q x)‖ ∂μ := norm_integral_le_integral_norm _
+  _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
+      apply integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity))
+      · exact ((hg.integrableOn_isCompact hk).norm.const_mul _).mul_const _
+      · apply eventually_of_forall (fun x ↦ ?_)
+        by_cases hx : x ∈ k
+        · dsimp only
+          specialize hv p hp x hx
+          calc
+          ‖L (g x) (f p x) - L (g x) (f q x)‖
+            = ‖L (g x) (f p x - f q x)‖ := by simp only [map_sub]
+          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_op_norm₂ _ _ _
+          _ ≤ ‖L‖ * ‖g x‖ * δ := by gcongr
+        · simp only [hfs p x h'p hx, hfs q x hq hx, sub_self, norm_zero, mul_zero]
+          positivity
+  _ < ε := hδ
+
 /-- The Bochner integral of a real-valued function `f : α → ℝ` is the difference between the
   integral of the positive part of `f` and the integral of the negative part of `f`.  -/
 theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (hf : Integrable f μ) :

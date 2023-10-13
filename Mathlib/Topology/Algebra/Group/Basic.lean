@@ -1475,10 +1475,10 @@ lemma IsCompact.closure_subset_smul_set_closure_one {K : Set G} (hK : IsCompact 
   exact this.trans (smul_subset_smul_left subset_closure)
 
 lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
-    F • closure ({1} : Set G) = F := by
+    F • (closure {1} : Set G) = F := by
   apply Subset.antisymm
   · calc
-    F • closure ({1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
+    F • (closure {1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
     _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
     _ = F := by simp [hF.closure_eq]
   · calc
@@ -1486,18 +1486,18 @@ lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
     _ ⊆ F • (closure {1} : Set G) := smul_subset_smul_left subset_closure
 
 lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
-    U • closure ({1} : Set G) = U := by
+    U • (closure {1} : Set G) = U := by
   apply Subset.antisymm
   · rintro - ⟨x, g, hx, hg, rfl⟩
     by_contra H
-    have : x ∈ Uᶜ • closure ({1} : Set G) := by
+    have : x ∈ Uᶜ • (closure {1} : Set G) := by
       rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
       exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
     rw [hU.isClosed_compl.smul_set_closure_one_eq] at this
     exact this hx
   · calc
     U = U • ({1} : Set G) := by simp
-    _ ⊆ U • closure ({1} : Set G) := smul_subset_smul_left subset_closure
+    _ ⊆ U • (closure {1} : Set G) := smul_subset_smul_left subset_closure
 
 /-- In a topological group, if a compact set `K` is included in an open set `U`, then
 the closure of `K` is also included in `U`. -/
@@ -1505,7 +1505,6 @@ lemma IsCompact.closure_subset_of_isOpen {K : Set G} (hK : IsCompact K) {U : Set
     (h : K ⊆ U) : closure K ⊆ U := by
   rw [← hU.smul_set_closure_one_eq]
   exact hK.closure_subset_smul_set_closure_one.trans (smul_subset_smul_right h)
-
 
 end TopologicalGroup
 
@@ -1793,6 +1792,37 @@ lemma WeaklyLocallyCompactSpace.locallyCompactSpace_of_group [WeaklyLocallyCompa
     LocallyCompactSpace G := by
   rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
   exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
+
+/-- If a function defined on a topological group has a multiplicative support contained in a
+compact set, then either the function is trivial or the group is locally compact. -/
+@[to_additive
+      "If a function defined on a topological additive group has a support contained in a compact
+      set, then either the function is trivial or the group is locally compact."]
+theorem eq_one_or_weaklyLocallyCompactSpace_of_mulSupport_subset_isCompact
+   [TopologicalSpace α] [One α] [T1Space α]
+   {f : G → α} {k : Set G} (hk : IsCompact k) (hf : mulSupport f ⊆ k) (h'f : Continuous f) :
+    f = 1 ∨ LocallyCompactSpace G := by
+  by_cases h : ∀ x, f x = 1
+  · apply Or.inl
+    ext x
+    exact h x
+  apply Or.inr
+  push_neg at h
+  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 1 := h
+  have : k ∈ 𝓝 x :=
+    mem_of_superset (h'f.isOpen_mulSupport.mem_nhds hx) hf
+  exact IsCompact.locallyCompactSpace_of_mem_nhds_of_group hk this
+
+/-- If a function defined on a topological group has compact multiplicative support, then either
+the function is trivial or the group is locally compact. -/
+@[to_additive
+      "If a function defined on a topological additive group has compact support,
+      then either the function is trivial or the group is locally compact."]
+theorem HasCompactMulSupport.eq_one_or_weaklyLocallyCompactSpace
+   [TopologicalSpace α] [One α] [T1Space α]
+   {f : G → α} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
+    f = 1 ∨ LocallyCompactSpace G :=
+  eq_one_or_weaklyLocallyCompactSpace_of_mulSupport_subset_isCompact hf (subset_mulTSupport f) h'f
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
