@@ -54,7 +54,7 @@ inductive Rewrites (r : ContextFreeRule T N) : List (Symbol T N) → List (Symbo
 
 lemma Rewrites.exists_parts {r : ContextFreeRule T N} {u v : List (Symbol T N)}
     (hyp : r.Rewrites u v) :
-    ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
+    ∃ p q : List (Symbol T N),
       u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
   induction hyp with
   | head xs =>
@@ -151,6 +151,7 @@ end ContextFreeGrammar
 def Language.IsContextFree (L : Language T) : Prop :=
   ∃ g : ContextFreeGrammar.{uT} T, g.language = L
 
+/-- `L.reverse` is a language that contains exactly all words from `L` backwards. -/
 def Language.reverse (L : Language T) : Language T := { w : List T | w.reverse ∈ L }
 
 private def reverseRule {N : Type uN} (r : ContextFreeRule T N) : ContextFreeRule T N :=
@@ -174,8 +175,7 @@ private lemma reverseGrammar_reverseGrammar (g : ContextFreeGrammar T) :
 
 private lemma derives_reverse {g : ContextFreeGrammar T} {s : List (Symbol T g.NT)}
     (hgs : (reverseGrammar g).Derives [Symbol.nonterminal (reverseGrammar g).initial] s) :
-    g.Derives [Symbol.nonterminal g.initial] s.reverse :=
-by
+    g.Derives [Symbol.nonterminal g.initial] s.reverse := by
   induction hgs with
   | refl =>
     rw [List.reverse_singleton]
@@ -196,8 +196,7 @@ by
 
 private lemma reversed_word_in_original_language {g : ContextFreeGrammar T} {w : List T}
     (hgw : w ∈ (reverseGrammar g).language) :
-    w.reverse ∈ g.language :=
-by
+    w.reverse ∈ g.language := by
   convert derives_reverse hgw
   simp [List.map_reverse]
 
