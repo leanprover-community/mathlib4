@@ -958,9 +958,9 @@ variable (k A)
 def domCongr (e : G ≃* H) : MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv
     (Finsupp.domLCongr e : (G →₀ A) ≃ₗ[k] (H →₀ A))
+    ((equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_one e)
     (fun f g => (equivMapDomain_eq_mapDomain _ _).trans <| (mapDomain_mul e f g).trans <|
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
-    (fun r => (equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_algebraMap A e r)
 
 theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
   AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
@@ -2073,9 +2073,9 @@ variable [CommSemiring k] [AddMonoid G] [AddMonoid H] [Semiring A] [Algebra k A]
 def domCongr (e : G ≃+ H) : A[G] ≃ₐ[k] A[H] :=
   AlgEquiv.ofLinearEquiv
     (Finsupp.domLCongr e : (G →₀ A) ≃ₗ[k] (H →₀ A))
+    ((equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_one e)
     (fun f g => (equivMapDomain_eq_mapDomain _ _).trans <| (mapDomain_mul e f g).trans <|
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
-    (fun r => (equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_algebraMap A e r)
 
 theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomainAlgHom k A e :=
   AlgHom.ext <| fun _ => equivMapDomain_eq_mapDomain _ _
