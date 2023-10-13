@@ -27,7 +27,7 @@ namespace AlgebraCat
 instance : BraidedCategory (AlgebraCat.{u} R) :=
   braidedCategoryOfFaithful (toModuleCatMonoidalFunctor R)
     (fun X Y => (Algebra.TensorProduct.comm R X Y).toAlgebraIso)
-    (fun _X _Y => by aesop_cat)
+    (by aesop_cat)
 
 variable (R) in
 /-- `forget₂ (AlgebraCat R) (ModuleCat R)` as a braided functor. -/
