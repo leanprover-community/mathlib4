@@ -1799,8 +1799,8 @@ compact set, then either the function is trivial or the group is locally compact
       "If a function defined on a topological additive group has a support contained in a compact
       set, then either the function is trivial or the group is locally compact."]
 theorem eq_one_or_weaklyLocallyCompactSpace_of_mulSupport_subset_isCompact
-   [TopologicalSpace α] [One α] [T1Space α]
-   {f : G → α} {k : Set G} (hk : IsCompact k) (hf : mulSupport f ⊆ k) (h'f : Continuous f) :
+    [TopologicalSpace α] [One α] [T1Space α]
+    {f : G → α} {k : Set G} (hk : IsCompact k) (hf : mulSupport f ⊆ k) (h'f : Continuous f) :
     f = 1 ∨ LocallyCompactSpace G := by
   by_cases h : ∀ x, f x = 1
   · apply Or.inl
@@ -1819,8 +1819,8 @@ the function is trivial or the group is locally compact. -/
       "If a function defined on a topological additive group has compact support,
       then either the function is trivial or the group is locally compact."]
 theorem HasCompactMulSupport.eq_one_or_weaklyLocallyCompactSpace
-   [TopologicalSpace α] [One α] [T1Space α]
-   {f : G → α} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
+    [TopologicalSpace α] [One α] [T1Space α]
+    {f : G → α} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
     f = 1 ∨ LocallyCompactSpace G :=
   eq_one_or_weaklyLocallyCompactSpace_of_mulSupport_subset_isCompact hf (subset_mulTSupport f) h'f
 
