@@ -53,8 +53,8 @@ noncomputable abbrev associator (X Y Z : AlgebraCat.{u} R) :
 open MonoidalCategory
 
 theorem forget₂_map_associator_hom (X Y Z : AlgebraCat.{u} R) :
-    (forget₂ (AlgebraCat R) (ModuleCat R)).map (associator X Y Z).hom
-      = (α_
+    (forget₂ (AlgebraCat R) (ModuleCat R)).map (associator X Y Z).hom =
+      (α_
         (forget₂ _ (ModuleCat R) |>.obj X)
         (forget₂ _ (ModuleCat R) |>.obj Y)
         (forget₂ _ (ModuleCat R) |>.obj Z)).hom := by
@@ -62,8 +62,8 @@ theorem forget₂_map_associator_hom (X Y Z : AlgebraCat.{u} R) :
 
 set_option maxHeartbeats 400000 in
 theorem forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
-    (forget₂ (AlgebraCat R) (ModuleCat R)).map (associator X Y Z).inv
-      = (α_
+    (forget₂ (AlgebraCat R) (ModuleCat R)).map (associator X Y Z).inv =
+      (α_
         (forget₂ _ (ModuleCat R) |>.obj X)
         (forget₂ _ (ModuleCat R) |>.obj Y)
         (forget₂ _ (ModuleCat R) |>.obj Z)).inv := by
