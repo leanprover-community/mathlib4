@@ -138,6 +138,7 @@ def checkForToolchainMismatch : IO Unit := do
     IO.println "It is recommended that your project toolchain matches Mathlibs toolchain.
     This can be achieved by copying the contents of the file {./lake-packages/mathlib/lean-toolchain}
     into the lean-toolchain at the root directory of your project"
+    IO.Process.exit 10
   return ()
 
 /-- Downloads missing files, and unpacks files. -/
