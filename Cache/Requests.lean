@@ -130,14 +130,15 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
   else IO.println "No files to download"
 
 def checkForToolchainMismatch : IO Unit := do
+  let mathlibToolchainFile := IO.mathlibDepPath / "lean-toolchain"
   let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
-  let mathlibToolchain ← IO.FS.readFile "./lake-packages/mathlib/lean-toolchain"
+  let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
   if !(mathlibToolchain.trim = downstreamToolchain.trim) then
     IO.println "Dependency Mathlib uses a different lean-toolchain"
     IO.println s!"Project uses {downstreamToolchain.trim} | Mathlib uses {mathlibToolchain.trim} "
-    IO.println "It is recommended that your project toolchain matches Mathlibs toolchain.
-    This can be achieved by copying the contents of the file {./lake-packages/mathlib/lean-toolchain}
-    into the lean-toolchain at the root directory of your project"
+    IO.println "\nIt is recommended that your project toolchain matches Mathlibs toolchain"
+    IO.println s!"This can be achieved by copying the contents of the file {mathlibToolchainFile}
+into the lean-toolchain file at the root directory of your project"
     IO.Process.exit 10
   return ()
 
@@ -149,6 +150,7 @@ def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompre
   downloadFiles hashMap forceDownload parallel
   if decompress then
     IO.unpackCache hashMap forceUnpack
+
 end Get
 
 section Put
