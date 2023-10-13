@@ -17,7 +17,7 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 suppress_compilation
 
-variable {R M₁ M₂  : Type*}
+variable {R M₁ M₂ : Type*}
 variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
 
 variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
@@ -25,6 +25,17 @@ variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
 open scoped TensorProduct
 
 namespace CliffordAlgebra
+
+@[simp] theorem ι_inl_mul_ι_inr_add_swap (m₁ : M₁) (m₂ : M₂) :
+    ι (Q₁.prod Q₂) (m₁, 0) * ι (Q₁.prod Q₂) (0, m₂)
+      + ι (Q₁.prod Q₂) (0, m₂) * ι (Q₁.prod Q₂) (m₁, 0) = 0 := by
+  rw [ι_mul_ι_add_swap, QuadraticForm.polar_prod]
+  simp
+
+theorem ι_inl_mul_ι_inr (m₁ : M₁) (m₂ : M₂) :
+    ι (Q₁.prod Q₂) (m₁, 0) * ι (Q₁.prod Q₂) (0, m₂) =
+      -(ι (Q₁.prod Q₂) (0, m₂) * ι (Q₁.prod Q₂) (m₁, 0)) :=
+  eq_neg_of_add_eq_zero_left <| ι_inl_mul_ι_inr_add_swap _ _ _ _
 
 /-- The forward direction of `CliffordAlgebra.prodEquiv`. -/
 def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ⊗'[R] evenOdd Q₂) :=
