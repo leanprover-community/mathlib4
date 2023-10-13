@@ -930,17 +930,17 @@ theorem lor_to_nat : ∀ m n : Num, ↑(m ||| n) = Nat.lor m n := by
 
 @[simp, norm_cast]
 theorem land_to_nat : ∀ m n : Num, ↑(m &&& n) = Nat.land m n := by
-  apply bitwise'_to_nat PosNum.land <;> intros <;> (try cases_type* Bool) <;> rfl
+  apply bitwise_to_nat PosNum.land <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.land_to_nat Num.land_to_nat
 
 @[simp, norm_cast]
 theorem ldiff_to_nat : ∀ m n : Num, (ldiff m n : ℕ) = Nat.ldiff m n := by
-  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> (try cases_type* Bool) <;> rfl
+  apply bitwise_to_nat PosNum.ldiff <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.ldiff_to_nat Num.ldiff_to_nat
 
 @[simp, norm_cast]
-theorem lxor_to_nat : ∀ m n : Num, ↑(m ^^^ n) = Nat.lxor m n := by
-  apply bitwise'_to_nat PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
+theorem lxor_to_nat : ∀ m n : Num, ↑(m ^^^ n) = Nat.xor m n := by
+  apply bitwise_to_nat PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.lxor_to_nat Num.lxor_to_nat
 
 @[simp, norm_cast]
