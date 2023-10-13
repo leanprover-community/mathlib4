@@ -121,7 +121,7 @@ end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
 @[nolint unusedArguments]
-def AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
+abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 #align add_circle AddCircle
 
@@ -130,14 +130,14 @@ section instances
 
 variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜)
 
-instance : AddCommGroup (AddCircle p) :=
-  inferInstanceAs (AddCommGroup (𝕜 ⧸ zmultiples p))
-instance : TopologicalSpace (AddCircle p) :=
-  inferInstanceAs (TopologicalSpace (𝕜 ⧸ zmultiples p))
-instance : TopologicalAddGroup (AddCircle p) :=
-  inferInstanceAs (TopologicalAddGroup (𝕜 ⧸ zmultiples p))
-instance : Inhabited (AddCircle p) :=
-  inferInstanceAs (Inhabited (𝕜 ⧸ zmultiples p))
+-- instance : AddCommGroup (AddCircle p) :=
+--   inferInstance -- As (AddCommGroup (𝕜 ⧸ zmultiples p))
+-- instance : TopologicalSpace (AddCircle p) :=
+--   inferInstanceAs (TopologicalSpace (𝕜 ⧸ zmultiples p))
+-- instance : TopologicalAddGroup (AddCircle p) :=
+--   inferInstanceAs (TopologicalAddGroup (𝕜 ⧸ zmultiples p))
+-- instance : Inhabited (AddCircle p) :=
+--   inferInstanceAs (Inhabited (𝕜 ⧸ zmultiples p))
 
 instance : Coe 𝕜 (AddCircle p) := ⟨QuotientAddGroup.mk⟩
 

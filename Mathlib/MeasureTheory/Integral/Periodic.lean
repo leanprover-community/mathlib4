@@ -26,18 +26,9 @@ Another consequence (`Function.Periodic.intervalIntegral_add_eq` and related dec
 period `T`.
 -/
 
-
 open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgroup intervalIntegral
 
 open scoped MeasureTheory NNReal ENNReal
-
-noncomputable instance AddCircle.measurableSpace {a : ℝ} : MeasurableSpace (AddCircle a) :=
-  QuotientAddGroup.measurableSpace _
-#align add_circle.measurable_space AddCircle.measurableSpace
-
-instance AddCircle.borelSpace {a : ℝ} : BorelSpace (AddCircle a) :=
-  QuotientAddGroup.borelSpace
-#align add_circle.borel_space AddCircle.borelSpace
 
 @[measurability]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
@@ -71,7 +62,7 @@ variable (T : ℝ) [hT : Fact (0 < T)]
 /-- Equip the "additive circle" `ℝ ⧸ (ℤ ∙ T)` with, as a standard measure, the Haar measure of total
 mass `T` -/
 noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
-  { AddCircle.measurableSpace with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
+  { QuotientAddGroup.measurableSpace _ with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
 #align add_circle.measure_space AddCircle.measureSpace
 
 @[simp]
@@ -92,18 +83,8 @@ instance hasFunDom : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) �
   has_add_fundamental_domain_characterization :=
   ⟨Ioc 0 (0 + T), isAddFundamentalDomain_Ioc' Fact.out 0⟩
 
--- Note: Not finding this instance automatically, so we name it to fill explicitly in typeclass
--- arguments
-instance sigmaFinite : SigmaFinite (volume : Measure (AddCircle T)) := inferInstance
-
--- Note: Not finding this instance automatically, so we name it to fill explicitly in typeclass
--- arguments
-instance isAddLeftInv : IsAddLeftInvariant (volume : Measure (AddCircle T)) := inferInstance
-
 instance : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
-  apply @MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage ℝ _ _ _ _ _ _
-    (zmultiples T) _ _ _ _ (volume : Measure (AddCircle T)) _ _ _ (isAddLeftInv T)
-    (sigmaFinite T) (isFiniteMeasure T)
+  apply MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage
   rw [IsAddFundamentalDomain.covolume_eq_volume (isAddFundamentalDomain_Ioc' hT.out 0),
       AddCircle.measure_univ]
   simp
