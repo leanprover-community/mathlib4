@@ -106,6 +106,4 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (Mod
 instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
   forget₂_faithful _ _
 
-end
-
 end QuadraticModuleCat
