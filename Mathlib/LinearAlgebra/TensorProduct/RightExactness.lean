@@ -225,7 +225,8 @@ lemma lTensor.inverse_comp_lTensor :
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P`
   (computably, given a right inverse) -/
-noncomputable def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+noncomputable
+def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
   toLinearMap := lTensor.toFun Q hfg
   invFun    := lTensor.inverse_of_rightInverse Q hfg hgh
