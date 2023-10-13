@@ -93,8 +93,6 @@ B_symm : ∀ {a b c}, B a b c → B c b a
 ne_12_of_B : ∀ {a b c}, B a b c → a ≠ b
 /--B is strict-/
 ne_13_of_B : ∀ {a b c}, B a b c → a ≠ c
-/--B is strict-/
-ne_23_of_B : ∀ {a b c}, B a b c → b ≠ c
 /--If you are between then the other configurations are impossible-/
 not_B_of_B : ∀ {a b c}, B a b c → ¬B b a c
 /--From two points being on a line the B forces the third point-/
@@ -171,7 +169,9 @@ area_nonneg : ∀ a b c, 0 ≤ area a b c
 /--Degenerate areas are zero-/
 degenerate_area : ∀ a b, area a a b = 0
 /--Area is completely symmetric-/
-area_invariant : ∀ a b c, area a b c = area c a b ∧ area a b c = area a c b
+area_invariant_cycle : ∀ a b c, area a b c = area c a b
+/--Area is completely symmetric-/
+area_invariant_flip : ∀ a b c, area a b c = area a c b
 /--If SSS is satisfied then triangles have equal area-/
 area_eq_of_SSS : ∀ {a b c a1 b1 c1}, length a b = length a1 b1 →
   length a c = length a1 c1 → length b c = length b1 c1 → area a b c = area a1 b1 c1

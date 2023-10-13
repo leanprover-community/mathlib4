@@ -13,6 +13,9 @@ open IncidenceGeometry
 
 variable [i: IncidenceGeometry] {a b c : Point}
 
+theorem area_invariant a b c : area a b c = area c a b ∧ area a b c = area a c b :=
+  ⟨area_invariant_cycle a b c, area_invariant_flip a b c⟩
+
 lemma ar132  : area a b c = area a c b := by exact (area_invariant a b c).2
 
 lemma ar312  : area a b c = area c a b := by exact (area_invariant a b c).1

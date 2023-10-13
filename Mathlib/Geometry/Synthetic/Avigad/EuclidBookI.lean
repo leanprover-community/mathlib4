@@ -18,6 +18,8 @@ variable [i : IncidenceGeometry] {a a1 a2 b b1 b2 c d e f g h j k l x y :
 open IncidenceGeometry
 
 -------------------------------------------------- new  API ----------------------------------------
+theorem ne_23_of_B (Babc : B a b c) : b ≠ c := (ne_12_of_B $ B_symm Babc).symm
+
 theorem online_of_line L : ∃ a, OnLine a L := by
   rcases more_pts ∅ Set.finite_empty with ⟨a, -⟩
   exact Classical.by_cases (fun aL => by use a)
