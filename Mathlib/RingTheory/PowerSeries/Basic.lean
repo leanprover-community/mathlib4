@@ -70,7 +70,7 @@ Occasionally this leads to proofs that are uglier than expected.
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring.-/
@@ -118,6 +118,7 @@ variable (R) [Semiring R]
 
 /-- The `n`th monomial with coefficient `a` as multivariate formal power series.-/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
+  letI := Classical.decEq σ
   LinearMap.stdBasis R (fun _ ↦ R) n
 #align mv_power_series.monomial MvPowerSeries.monomial
 
@@ -156,11 +157,13 @@ theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
 
 @[simp]
 theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) : coeff R n (monomial R n a) = a := by
+  classical
   rw [monomial_def]
   exact LinearMap.stdBasis_same R (fun _ ↦ R) n a
 #align mv_power_series.coeff_monomial_same MvPowerSeries.coeff_monomial_same
 
 theorem coeff_monomial_ne {m n : σ →₀ ℕ} (h : m ≠ n) (a : R) : coeff R m (monomial R n a) = 0 := by
+  classical
   rw [monomial_def]
   exact LinearMap.stdBasis_ne R (fun _ ↦ R) _ _ h a
 #align mv_power_series.coeff_monomial_ne MvPowerSeries.coeff_monomial_ne
@@ -206,24 +209,26 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
     one := 1 }
 
 instance : Mul (MvPowerSeries σ R) :=
+  letI := Classical.decEq σ
   ⟨fun φ ψ n => ∑ p in Finsupp.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
 theorem coeff_mul [DecidableEq σ] :
     coeff R n (φ * ψ) = ∑ p in Finsupp.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   refine Finset.sum_congr ?_ fun _ _ => rfl
-  rw [Subsingleton.elim (fun a b => propDecidable (a = b)) ‹DecidableEq σ›]
+  rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
 #align mv_power_series.coeff_mul MvPowerSeries.coeff_mul
 
 protected theorem zero_mul : (0 : MvPowerSeries σ R) * φ = 0 :=
-  ext fun n => by simp [coeff_mul]
+  ext fun n => by classical simp [coeff_mul]
 #align mv_power_series.zero_mul MvPowerSeries.zero_mul
 
 protected theorem mul_zero : φ * 0 = 0 :=
-  ext fun n => by simp [coeff_mul]
+  ext fun n => by classical simp [coeff_mul]
 #align mv_power_series.mul_zero MvPowerSeries.mul_zero
 
 theorem coeff_monomial_mul (a : R) :
     coeff R m (monomial R n a * φ) = if n ≤ m then a * coeff R (m - n) φ else 0 := by
+  classical
   have :
     ∀ p ∈ antidiagonal m,
       coeff R (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 (monomial R n a) * coeff R p.2 φ ≠ 0 → p.1 = n :=
@@ -234,6 +239,7 @@ theorem coeff_monomial_mul (a : R) :
 
 theorem coeff_mul_monomial (a : R) :
     coeff R m (φ * monomial R n a) = if n ≤ m then coeff R (m - n) φ * a else 0 := by
+  classical
   have :
     ∀ p ∈ antidiagonal m,
       coeff R (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 φ * coeff R p.2 (monomial R n a) ≠ 0 → p.2 = n :=
@@ -273,15 +279,16 @@ protected theorem mul_one : φ * 1 = φ :=
 #align mv_power_series.mul_one MvPowerSeries.mul_one
 
 protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ₂ + φ₃) = φ₁ * φ₂ + φ₁ * φ₃ :=
-  ext fun n => by simp only [coeff_mul, mul_add, Finset.sum_add_distrib, LinearMap.map_add]
+  ext fun n => by classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, LinearMap.map_add]
 #align mv_power_series.mul_add MvPowerSeries.mul_add
 
 protected theorem add_mul (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : (φ₁ + φ₂) * φ₃ = φ₁ * φ₃ + φ₂ * φ₃ :=
-  ext fun n => by simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
+  ext fun n => by classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
 #align mv_power_series.add_mul MvPowerSeries.add_mul
 
 protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * φ₂ * φ₃ = φ₁ * (φ₂ * φ₃) := by
   ext1 n
+  classical
   simp only [coeff_mul, Finset.sum_mul, Finset.mul_sum, Finset.sum_sigma']
   refine' Finset.sum_bij (fun p _ => ⟨(p.2.1, p.2.2 + p.1.2), (p.2.2, p.1.2)⟩) _ _ _ _ <;>
     simp only [mem_antidiagonal, Finset.mem_sigma, heq_iff_eq, Prod.mk.inj_iff, and_imp,
@@ -324,6 +331,7 @@ instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
   { show Semiring (MvPowerSeries σ R) by infer_instance with
     mul_comm := fun φ ψ =>
       ext fun n => by
+        classical
         simpa only [coeff_mul, mul_comm] using
           sum_antidiagonal_swap n fun a b => coeff R a φ * coeff R b ψ }
 
@@ -341,6 +349,7 @@ variable [Semiring R]
 
 theorem monomial_mul_monomial (m n : σ →₀ ℕ) (a b : R) :
     monomial R m a * monomial R n b = monomial R (m + n) (a * b) := by
+  classical
   ext k
   simp only [coeff_mul_monomial, coeff_monomial]
   split_ifs with h₁ h₂ h₃ h₃ h₂ <;> try rfl
@@ -413,6 +422,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_power_series.coeff_index_single_self_X MvPowerSeries.coeff_index_single_self_X
 
 theorem coeff_zero_X (s : σ) : coeff R (0 : σ →₀ ℕ) (X s : MvPowerSeries σ R) = 0 := by
+  classical
   rw [coeff_X, if_neg]
   intro h
   exact one_ne_zero (single_eq_zero.mp h.symm)
