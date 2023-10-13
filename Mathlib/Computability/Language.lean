@@ -300,7 +300,6 @@ instance : KleeneAlgebra (Language α) :=
 end Language
 
 /-- Symbols for use by all kinds of grammars. -/
-@[nolint docBlame]
 inductive Symbol (T N : Type*)
   /-- Terminal symbols (of the same type as the language) -/
   | terminal    (t : T) : Symbol T N
@@ -308,3 +307,5 @@ inductive Symbol (T N : Type*)
   | nonterminal (n : N) : Symbol T N
 deriving
   DecidableEq, Repr, Fintype
+
+attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv
