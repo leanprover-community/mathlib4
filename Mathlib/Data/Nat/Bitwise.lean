@@ -18,7 +18,7 @@ import Mathlib.Tactic.Ring
 
 In the first half of this file, we provide theorems for reasoning about natural numbers from their
 bitwise properties. In the second half of this file, we show properties of the bitwise operations
-`lor`, `land` and `xor'`, which are defined in core.
+`lor`, `land` and `xor`, which are defined in core.
 
 ## Main results
 * `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
