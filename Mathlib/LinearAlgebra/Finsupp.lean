@@ -1406,3 +1406,33 @@ theorem splittingOfFunOnFintypeSurjective_injective [Fintype α] (f : M →ₗ[R
 #align linear_map.splitting_of_fun_on_fintype_surjective_injective LinearMap.splittingOfFunOnFintypeSurjective_injective
 
 end LinearMap
+
+namespace LinearMap
+
+section AddCommMonoid
+
+variable {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} {ι : Type*}
+variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂] {σ₁₂ : R →+* R₂}
+variable [Module R M] [Module R₂ M₂]
+variable {γ : Type*} [Zero γ]
+
+section Finsupp
+
+#align linear_map.map_finsupp_sum map_finsupp_sumₓ
+#align linear_equiv.map_finsupp_sum map_finsupp_sumₓ
+
+theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
+    ⇑(t.sum g) = t.sum fun i d => g i d := rfl
+#align linear_map.coe_finsupp_sum LinearMap.coe_finsupp_sum
+
+@[simp]
+theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) (b : M) :
+    (t.sum g) b = t.sum fun i d => g i d b :=
+  sum_apply _ _ _
+#align linear_map.finsupp_sum_apply LinearMap.finsupp_sum_apply
+
+end Finsupp
+
+end AddCommMonoid
+
+end LinearMap

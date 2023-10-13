@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Map
 import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -144,24 +145,6 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
-
-section Finsupp
-
-variable {γ : Type*} [Zero γ]
-
-#align linear_map.map_finsupp_sum map_finsupp_sumₓ
-
-theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(t.sum g) = t.sum fun i d => g i d := rfl
-#align linear_map.coe_finsupp_sum LinearMap.coe_finsupp_sum
-
-@[simp]
-theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) (b : M) :
-    (t.sum g) b = t.sum fun i d => g i d b :=
-  sum_apply _ _ _
-#align linear_map.finsupp_sum_apply LinearMap.finsupp_sum_apply
-
-end Finsupp
 
 section DFinsupp
 
@@ -967,12 +950,6 @@ theorem submoduleMap_symm_apply (p : Submodule R M)
 
 
 end
-
-section Finsupp
-
-#align linear_equiv.map_finsupp_sum map_finsupp_sumₓ
-
-end Finsupp
 
 section DFinsupp
 
