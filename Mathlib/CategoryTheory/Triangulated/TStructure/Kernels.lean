@@ -1,8 +1,50 @@
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 namespace CategoryTheory
 
 open Category Limits Preadditive ZeroObject
+
+namespace Abelian
+
+variable (C : Type*) [Category C] [Preadditive C] [HasFiniteProducts C]
+  (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), ∃ (K : C) (i : K ⟶ X) (wi : i ≫ f = 0) (_hi : IsLimit (KernelFork.ofι _ wi))
+    (Q : C) (p : Y ⟶ Q) (wp : f ≫ p = 0) (_hp : IsColimit (CokernelCofork.ofπ _ wp))
+    (I : C) (π : X ⟶ I) (wπ : i ≫ π = 0) (_hπ : IsColimit (CokernelCofork.ofπ _ wπ))
+    (ι : I ⟶ Y) (wι : ι ≫ p = 0) (_hι : IsLimit (KernelFork.ofι _ wι)), f = π ≫ ι)
+
+noncomputable def mk' : Abelian C where
+  has_kernels := ⟨fun {X Y} f => by
+    obtain ⟨K, i, wi, hi, _⟩ := h f
+    exact ⟨_, hi⟩⟩
+  has_cokernels := ⟨fun {X Y} f => by
+    obtain ⟨_, _, _, _, Q, p, wp, hp, _⟩ := h f
+    exact ⟨_, hp⟩⟩
+  normalMonoOfMono {X Y} f _ := by
+    apply Nonempty.some
+    obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
+    refine'
+     ⟨{ Z := Q
+        g := p
+        w := by rw [fac, assoc, wι, comp_zero]
+        isLimit := by
+          have : IsIso π := CokernelCofork.IsColimit.isIso_π _ hπ (by
+            rw [← cancel_mono f, zero_comp, wi])
+          exact IsLimit.ofIsoLimit hι (Fork.ext (by exact asIso π)
+            (by exact fac.symm)).symm }⟩
+  normalEpiOfEpi {X Y} f _ := by
+    apply Nonempty.some
+    obtain ⟨K, i, wi, _, Q, p, wp, _, I, π, wπ, hπ, ι, wι, hι, fac⟩ := h f
+    refine'
+     ⟨{ W := K
+        g := i
+        w := by rw [fac, reassoc_of% wπ, zero_comp]
+        isColimit := by
+          have : IsIso ι := KernelFork.IsLimit.isIso_ι _ hι (by
+            rw [← cancel_epi f, comp_zero, wp])
+          exact IsColimit.ofIsoColimit hπ (Cofork.ext (asIso ι) fac.symm) }⟩
+
+end Abelian
 
 variable {C : Type*} [Category C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -271,6 +313,104 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : t.Heart}
       rw [mem_heart_iff]
       constructor <;> infer_instance) X₃.2) _
   exact Cofork.ext (Iso.refl _) (by simp [AbelianSubcategory.πQ])
+
+instance : HasTerminal t.Heart := by
+  let Z : t.Heart := ⟨0, by
+    change 0 ∈ t.heart
+    rw [t.mem_heart_iff]
+    constructor <;> infer_instance⟩
+  have : ∀ (X : t.Heart), Inhabited (X ⟶ Z) := fun X => ⟨0⟩
+  have : ∀ (X : t.Heart), Unique (X ⟶ Z) := fun X =>
+    { uniq := fun f => t.ιHeart.map_injective ((isZero_zero C).eq_of_tgt _ _) }
+  exact hasTerminal_of_unique Z
+
+lemma prod_mem (X₁ X₂ : C) (hX₁ : X₁ ∈ t.heart) (hX₂ : X₂ ∈ t.heart) :
+    (X₁ ⨯ X₂) ∈ t.heart := by
+  rw [t.mem_heart_iff]
+  constructor
+  · exact t.isLE₂ _ (binaryProductTriangle_distinguished X₁ X₂) 0 ⟨hX₁.1⟩ ⟨hX₂.1⟩
+  · exact t.isGE₂ _ (binaryProductTriangle_distinguished X₁ X₂) 0 ⟨hX₁.2⟩ ⟨hX₂.2⟩
+
+instance : HasBinaryProducts t.Heart := by
+  apply hasLimitsOfShape_of_closed_under_limits
+  intro F c hc H
+  exact t.heart.mem_of_iso
+    (limit.isoLimitCone ⟨_, (IsLimit.postcomposeHomEquiv (diagramIsoPair F) _).symm hc⟩)
+    (prod_mem t _ _ (H _) (H _))
+
+instance : HasFiniteProducts t.Heart := hasFiniteProducts_of_has_binary_and_terminal
+
+noncomputable instance : Abelian t.Heart := by
+  apply Abelian.mk'
+  intro X₁ X₂ f₁
+  obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (t.ιHeart.map f₁)
+  have : t.IsLE X₃ 0 := cocone_heart_isLE_zero t hT X₁.2 X₂.2
+  have : t.IsGE X₃ (-1) := cocone_heart_isGE_neg_one t hT X₁.2 X₂.2
+  let K := (t.homology (-1)).obj X₃
+  have hK := AbelianSubcategory.isLimitKernelFork (vanishing_to_negative_shift t) hT X₁.2 X₂.2
+    (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃) (t.ιHeart_obj_mem_heart _)
+      (t.ιHeart_obj_mem_heart ((t.homology 0).obj X₃))
+  let Q := (t.homology 0).obj X₃
+  have hQ := AbelianSubcategory.isColimitCokernelCofork (vanishing_to_negative_shift t) hT X₁.2 X₂.2
+    (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃) (t.ιHeart_obj_mem_heart _)
+      (t.ιHeart_obj_mem_heart ((t.homology 0).obj X₃))
+  dsimp
+  let a : (t.ιHeart.obj K)⟦(1 : ℤ)⟧ ⟶ X₃ := (TriangleOfGENegOneOfLEZero.triangle t X₃).mor₁
+  let b := (TriangleOfGENegOneOfLEZero.triangle t X₃).mor₂
+  let i : K ⟶ X₁ := AbelianSubcategory.ιK (Triangle.mk (t.ιHeart.map f₁) f₂ f₃) a
+  let p : X₂ ⟶ Q := AbelianSubcategory.πQ (Triangle.mk (t.ιHeart.map f₁) f₂ f₃) b
+  have comm : a ≫ f₃ = a ≫ f₃ := rfl
+  obtain ⟨I₀, π, g, hI⟩ := distinguished_cocone_triangle (t.ιHeart.map i)
+  let T₃ := (Triangle.mk (t.ιHeart.map i) π g)⟦(1 : ℤ)⟧
+  let T'₃ := Triangle.mk (a ≫ f₃) T₃.mor₂ (-T₃.mor₃)
+  have h₁ := (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃)
+  have h₂ := rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)
+  have h₃ : T'₃ ∈ distTriang C := by
+    refine' isomorphic_distinguished _ (Triangle.shift_distinguished _ hI 1) _ _
+    refine' Triangle.isoMk _ _ (mulIso (-1) (Iso.refl _)) (Iso.refl _) (Iso.refl _) _ _ _
+    all_goals dsimp; simp
+  have H := someOctahedron comm h₁ h₂ h₃
+  let I : t.Heart := ⟨I₀, by
+    change I₀ ∈ t.heart
+    rw [t.mem_heart_iff]
+    constructor
+    · have : t.IsLE ((t.homology (-1)).obj X₃).1 1 := t.isLE_of_LE _ 0 1 (by linarith)
+      exact t.isLE₂ _ (rot_of_dist_triangle _ hI) 0 ⟨X₁.2.1⟩
+        (t.isLE_shift ((t.homology (-1)).obj X₃).1 1 1 0 (add_zero 1))
+    · suffices t.IsGE (I₀⟦(1 : ℤ)⟧) (-1) by
+        have := t.isGE_shift (I₀⟦(1 : ℤ)⟧) (-1) (-1) 0 (add_zero (-1))
+        have e := (shiftEquiv C (1 : ℤ)).unitIso.symm.app I₀
+        dsimp at e
+        exact t.isGE_of_iso e 0
+      apply t.isGE₂ _ H.mem (-1)
+      · dsimp
+        exact t.isGE_of_GE _ (-1) 0 (by linarith)
+      · exact t.isGE_shift X₂.1 0 1 (-1) (by linarith)⟩
+  let π' : X₁ ⟶ I := π
+  let ι : I₀ ⟶ X₂.1 := (shiftFunctor C (1 : ℤ)).preimage H.m₃
+  let ι' : I ⟶ X₂ := ι
+  have hι' : f₁ = π' ≫ ι' := by
+    apply t.ιHeart.map_injective
+    apply (shiftFunctor C (1 : ℤ)).map_injective
+    have eq := H.comm₃
+    dsimp at eq
+    simp only [neg_smul, one_smul, neg_comp, neg_inj] at eq
+    refine' eq.symm.trans _
+    simp only [Functor.map_comp]
+    dsimp
+    simp only [Functor.image_preimage]
+  have mem : Triangle.mk ι (t.ιHeart.map p) (-H.m₁) ∈ distTriang C := by
+    rw [← Triangle.shift_distinguished_iff _ 1]
+    refine' isomorphic_distinguished _ (rot_of_dist_triangle _ H.mem) _ _
+    refine' Triangle.isoMk _ _ (mulIso (-1) (Iso.refl _)) (Iso.refl _) (Iso.refl _) _ _ _
+    · dsimp
+      simp
+    · dsimp [AbelianSubcategory.πQ]
+      simp
+    · dsimp
+      simp
+  exact ⟨K, i, _, hK, Q, p, _, hQ, I, π', _, isColimitCokernelCoforkOfDistTriang t i π' _ hI,
+    ι', _, isLimitKernelForkOfDistTriang t ι' p _ mem, hι'⟩
 
 end Heart
 

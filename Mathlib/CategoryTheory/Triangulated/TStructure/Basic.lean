@@ -243,8 +243,20 @@ lemma mem_heart_iff (X : C) :
   . rintro ⟨h₁, h₂⟩
     exact ⟨t.mem_of_isLE _ _, t.mem_of_isGE _ _⟩
 
+instance : t.heart.RespectsIso where
+  condition X Y e hX := by
+    rw [mem_heart_iff] at hX ⊢
+    have := hX.1
+    have := hX.2
+    constructor
+    · exact t.isLE_of_iso e 0
+    · exact t.isGE_of_iso e 0
+
 instance (X : t.Heart) : t.IsLE (t.ιHeart.obj X) 0 := ⟨X.2.1⟩
 instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 := ⟨X.2.2⟩
+instance (X : t.Heart) : t.IsLE X.1 0 := ⟨X.2.1⟩
+instance (X : t.Heart) : t.IsGE X.1 0 := ⟨X.2.2⟩
+
 
 lemma ιHeart_obj_mem_heart (X : t.Heart) : t.ιHeart.obj X ∈ t.heart := X.2
 
