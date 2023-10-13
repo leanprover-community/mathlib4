@@ -85,6 +85,7 @@ section existential
 open Lean Parser Term PrettyPrinter Delaborator
 
 /-- Delaborator for existential quantifier, including extended binders. -/
+-- TODO: reduce the duplication in this code
 @[delab app.Exists]
 def exists_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[ι, f] := (← SubExpr.getExpr).getAppArgs | failure
