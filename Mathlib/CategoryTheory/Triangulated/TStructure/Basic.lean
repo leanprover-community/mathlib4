@@ -246,6 +246,8 @@ lemma mem_heart_iff (X : C) :
 instance (X : t.Heart) : t.IsLE (t.ιHeart.obj X) 0 := ⟨X.2.1⟩
 instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 := ⟨X.2.2⟩
 
+lemma ιHeart_obj_mem_heart (X : t.Heart) : t.ιHeart.obj X ∈ t.heart := X.2
+
 def ιHeartDegree (n : ℤ) : t.Heart ⥤ C :=
   t.ιHeart ⋙ shiftFunctor C (-n)
 
