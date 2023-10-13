@@ -483,4 +483,3 @@ lemma algHom_ext ⦃f g : (𝒜 ⊗'[R] ℬ) →ₐ[R] C⦄
 end SuperTensorProduct
 
 end internal
-#lint
