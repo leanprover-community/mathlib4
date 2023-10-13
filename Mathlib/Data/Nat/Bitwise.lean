@@ -145,8 +145,9 @@ lemma bitwise_eq_binaryRec :
   · simp only [bitwise_zero, binaryRec_zero, Bool.cond_eq_ite];
     split_ifs <;> rfl
   · simp only [bitwise_zero_left, Bool.cond_eq_ite, binaryRec_zero]
-  · simp only [zero_eq, bitwise_zero_right, Bool.cond_eq_ite, ne_eq, succ_ne_zero, not_false_eq_true,
-    binaryRec_of_ne_zero, bodd_succ, div2_succ, eq_rec_constant, binaryRec_zero]
+  · simp only [zero_eq, bitwise_zero_right, Bool.cond_eq_ite, ne_eq, succ_ne_zero,
+      not_false_eq_true, binaryRec_of_ne_zero, bodd_succ, div2_succ, eq_rec_constant,
+      binaryRec_zero]
     split_ifs with _ hbodd
     · conv_lhs => { rw [←bit_decomp (succ x)] }; simp [hbodd]
     · conv_lhs => { rw [←bit_decomp (succ x)] }; simp [hbodd]
