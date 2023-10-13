@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Map
 import Mathlib.Data.DFinsupp.Basic
-import Mathlib.Data.Finsupp.Basic
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -67,80 +67,6 @@ variable {M : Type*} {M' : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*} {
 variable {N : Type*} {N₂ : Type*}
 variable {ι : Type*}
 variable {V : Type*} {V₂ : Type*}
-
-namespace Finsupp
-
-theorem smul_sum {α : Type*} {β : Type*} {R : Type*} {M : Type*} [Zero β] [AddCommMonoid M]
-    [DistribSMul R M] {v : α →₀ β} {c : R} {h : α → β → M} :
-    c • v.sum h = v.sum fun a b => c • h a b :=
-  Finset.smul_sum
-#align finsupp.smul_sum Finsupp.smul_sum
-
-@[simp]
-theorem sum_smul_index_linearMap' {α : Type*} {R : Type*} {M : Type*} {M₂ : Type*} [Semiring R]
-    [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R M₂] {v : α →₀ M} {c : R}
-    {h : α → M →ₗ[R] M₂} : ((c • v).sum fun a => h a) = c • v.sum fun a => h a := by
-  rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
-  · simp only [map_smul]
-  · intro i
-    exact (h i).map_zero
-#align finsupp.sum_smul_index_linear_map' Finsupp.sum_smul_index_linearMap'
-
-variable (α : Type*) [Finite α]
-
-variable (R M) [AddCommMonoid M] [Semiring R] [Module R M]
-
-/-- Given `Finite α`, `linearEquivFunOnFinite R` is the natural `R`-linear equivalence between
-`α →₀ β` and `α → β`. -/
-@[simps apply]
-noncomputable def linearEquivFunOnFinite : (α →₀ M) ≃ₗ[R] α → M :=
-  { equivFunOnFinite with
-    toFun := (⇑)
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
-#align finsupp.linear_equiv_fun_on_finite Finsupp.linearEquivFunOnFinite
-
-@[simp]
-theorem linearEquivFunOnFinite_single [DecidableEq α] (x : α) (m : M) :
-    (linearEquivFunOnFinite R M α) (single x m) = Pi.single x m :=
-  equivFunOnFinite_single x m
-#align finsupp.linear_equiv_fun_on_finite_single Finsupp.linearEquivFunOnFinite_single
-
-@[simp]
-theorem linearEquivFunOnFinite_symm_single [DecidableEq α] (x : α) (m : M) :
-    (linearEquivFunOnFinite R M α).symm (Pi.single x m) = single x m :=
-  equivFunOnFinite_symm_single x m
-#align finsupp.linear_equiv_fun_on_finite_symm_single Finsupp.linearEquivFunOnFinite_symm_single
-
-@[simp]
-theorem linearEquivFunOnFinite_symm_coe (f : α →₀ M) : (linearEquivFunOnFinite R M α).symm f = f :=
-  (linearEquivFunOnFinite R M α).symm_apply_apply f
-#align finsupp.linear_equiv_fun_on_finite_symm_coe Finsupp.linearEquivFunOnFinite_symm_coe
-
-/-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
-`R`-linearly equivalent to `M`. -/
-noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
-  { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
-#align finsupp.linear_equiv.finsupp_unique Finsupp.LinearEquiv.finsuppUnique
-
-variable {R M α}
-
-@[simp]
-theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ M) :
-    LinearEquiv.finsuppUnique R M α f = f default :=
-  rfl
-#align finsupp.linear_equiv.finsupp_unique_apply Finsupp.LinearEquiv.finsuppUnique_apply
-
-@[simp]
-theorem LinearEquiv.finsuppUnique_symm_apply {α : Type*} [Unique α] (m : M) :
-    (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
-  ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
-    equivFunOnFinite, Function.update]
-#align finsupp.linear_equiv.finsupp_unique_symm_apply Finsupp.LinearEquiv.finsuppUnique_symm_apply
-
-end Finsupp
 
 /-! ### Properties of linear maps -/
 
