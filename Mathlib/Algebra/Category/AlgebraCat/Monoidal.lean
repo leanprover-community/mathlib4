@@ -78,12 +78,12 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
     { tensorObj := instMonoidalCategory.tensorObj
-      μIsoSymm := fun X Y => eqToIso rfl
+      μIsoSymm := fun X Y => Iso.refl _
       whiskerLeft := fun X _ _ f => tensorHom (𝟙 _) f
       whiskerRight := @fun X₁ X₂ (f : X₁ ⟶ X₂) Y => tensorHom f (𝟙 _)
       tensorHom := tensorHom
       tensorUnit' := tensorUnit
-      εIsoSymm := eqToIso rfl
+      εIsoSymm := Iso.refl _
       associator := associator
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_module_obj, forget₂_map_associator_hom]
