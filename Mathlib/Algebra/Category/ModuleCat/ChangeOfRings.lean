@@ -207,7 +207,6 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 -- mathport name: «expr ⊗ₜ[ , ] »
 -- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
 -- without this notation, one need to work with `s : (restrictScalars f).obj ⟨S⟩`.
-/-- Tensor multiplication using a ring morphism. -/
 scoped[ChangeOfRings]
   notation s "⊗ₜ[" R "," f "]" m => @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
@@ -746,7 +745,7 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
       rw [ModuleCat.coe_comp, ModuleCat.coe_comp,Function.comp,Function.comp,
         ExtendScalars.map_tmul, restrictScalars.map_apply]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [Counit.map_apply] --Counit.map_apply,
+      erw [Counit.map_apply]
       rw [lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
       set s' : S := s'
       change s' • g y = g (s' • y)
