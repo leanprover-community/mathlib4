@@ -47,34 +47,34 @@ def ascPochEval (r : R) : ℕ → R
 theorem ascPochEval_zero (r : R) : ascPochEval r 0 = 1 := rfl
 
 theorem ascPochEval_succ (r : R) (k : ℕ) :
-  ascPochEval r (k.succ) = (ascPochEval r k) * (r + k) := rfl
+    ascPochEval r (k.succ) = (ascPochEval r k) * (r + k) := rfl
 
 theorem ascPochEval_cast (n : ℕ) : ∀ (k : ℕ), ascPochEval (n : R) k = ascPochEval n k
-| 0 => by rw [ascPochEval_zero, ascPochEval_zero, Nat.cast_one]
-| (k + 1) => by
-  rw [ascPochEval_succ, ascPochEval_succ, Nat.cast_mul, ascPochEval_cast n k, Nat.cast_add]
-  norm_cast
+  | 0 => by rw [ascPochEval_zero, ascPochEval_zero, Nat.cast_one]
+  | (k + 1) => by
+    rw [ascPochEval_succ, ascPochEval_succ, Nat.cast_mul, ascPochEval_cast n k, Nat.cast_add]
+    norm_cast
 
 theorem ascPochEval_eq_ascPochhammer_eval (r : R) :
-  ∀ (k : ℕ), ascPochEval r k = Polynomial.eval r (ascPochhammer R k)
+    ∀ (k : ℕ), ascPochEval r k = Polynomial.eval r (ascPochhammer R k)
   | 0 => by rw [ascPochhammer_zero, Polynomial.eval_one, ascPochEval_zero]
   | (k + 1) => by
     rw [ascPochhammer_succ_eval, ← ascPochEval_eq_ascPochhammer_eval r k, ascPochEval_succ]
 
 theorem translate_comm_ascPochEval (r s : R) (k : ℕ) (h : Commute r s) : ∀ (n : ℕ),
-  Commute (r + k) (ascPochEval s n)
-| 0 => by
-  rw [ascPochEval_zero]
-  exact Commute.one_right (r + ↑k)
-| (n + 1) => by
-  rw [ascPochEval_succ]
-  exact (translate_comm_ascPochEval r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
+    Commute (r + k) (ascPochEval s n)
+  | 0 => by
+    rw [ascPochEval_zero]
+    exact Commute.one_right (r + ↑k)
+  | (n + 1) => by
+    rw [ascPochEval_succ]
+    exact (translate_comm_ascPochEval r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
 
 theorem ascPochEval_add_right (r : R) (n : ℕ) : ∀ (k : ℕ),
-  ascPochEval r (n + k) = ascPochEval r n * ascPochEval (r + n) k
-| 0 => by rw [add_zero, ascPochEval_zero, mul_one]
-| (k + 1) => by
-  rw [← add_assoc, ascPochEval_succ, ascPochEval_add_right r n k, ascPochEval_succ, mul_assoc,
+    ascPochEval r (n + k) = ascPochEval r n * ascPochEval (r + n) k
+  | 0 => by rw [add_zero, ascPochEval_zero, mul_one]
+  | (k + 1) => by
+    rw [← add_assoc, ascPochEval_succ, ascPochEval_add_right r n k, ascPochEval_succ, mul_assoc,
     Nat.cast_add, add_assoc]
 
 end Ring
@@ -96,7 +96,7 @@ class BinomialSemiring (R: Type u) extends Semiring R where
   factorial_mul_multichoose : ∀ (r : R) (n : ℕ), n.factorial * multichoose r n = ascPochEval r n
 
 theorem inj_smul_pos [BinomialSemiring R] (n : ℕ) (r s : R) (h: n ≠ 0) :
-  n * r = n * s → r = s := BinomialSemiring.inj_smul_pos n r s h
+    n * r = n * s → r = s := BinomialSemiring.inj_smul_pos n r s h
 
 theorem eq_of_mul_eq_mul_factorial [BinomialSemiring R] {r s : R} (n : ℕ)
     (h : n.factorial * r = n.factorial * s) : r = s :=
