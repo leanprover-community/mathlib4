@@ -135,7 +135,8 @@ def checkForToolchainMismatch : IO Unit := do
   let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
   if !(mathlibToolchain.trim = downstreamToolchain.trim) then
     IO.println "Dependency Mathlib uses a different lean-toolchain"
-    IO.println s!"Project uses {downstreamToolchain.trim} | Mathlib uses {mathlibToolchain.trim} "
+    IO.println s!"  Project uses {downstreamToolchain.trim}"
+    IO.println s!"  Mathlib uses {mathlibToolchain.trim}"
     IO.println "\nIt is recommended that your project toolchain matches Mathlibs toolchain"
     IO.println s!"This can be achieved by copying the contents of the file {mathlibToolchainFile}
 into the lean-toolchain file at the root directory of your project"
