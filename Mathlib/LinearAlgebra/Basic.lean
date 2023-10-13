@@ -146,44 +146,6 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
 
-section DFinsupp
-
-open DFinsupp
-
-variable {γ : ι → Type*} [DecidableEq ι]
-
-section Sum
-
-variable [∀ i, Zero (γ i)] [∀ (i) (x : γ i), Decidable (x ≠ 0)]
-
-#align linear_map.map_dfinsupp_sum map_dfinsupp_sumₓ
-
-theorem coe_dfinsupp_sum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(t.sum g) = t.sum fun i d => g i d := rfl
-#align linear_map.coe_dfinsupp_sum LinearMap.coe_dfinsupp_sum
-
-@[simp]
-theorem dfinsupp_sum_apply (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) (b : M) :
-    (t.sum g) b = t.sum fun i d => g i d b :=
-  sum_apply _ _ _
-#align linear_map.dfinsupp_sum_apply LinearMap.dfinsupp_sum_apply
-
-end Sum
-
-section SumAddHom
-
-variable [∀ i, AddZeroClass (γ i)]
-
-@[simp]
-theorem map_dfinsupp_sumAddHom (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ i} {g : ∀ i, γ i →+ M} :
-    f (sumAddHom g t) = sumAddHom (fun i => f.toAddMonoidHom.comp (g i)) t :=
-  f.toAddMonoidHom.map_dfinsupp_sumAddHom _ _
-#align linear_map.map_dfinsupp_sum_add_hom LinearMap.map_dfinsupp_sumAddHom
-
-end SumAddHom
-
-end DFinsupp
-
 variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
