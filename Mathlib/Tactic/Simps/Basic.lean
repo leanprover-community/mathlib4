@@ -1094,7 +1094,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   if let idx :: rest := toApply then
     let some ⟨newRhs, _⟩ := projInfo[idx]?
       | throwError "unreachable: index of composite projection is out of bounds."
-    let newType ← inferType lhsAp
+    let newType ← inferType newRhs
     trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:{
       indentExpr lhsAp}"
     return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest
