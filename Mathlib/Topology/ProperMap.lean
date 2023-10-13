@@ -67,13 +67,11 @@ so don't hesitate to have a look!
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
-set_option autoImplicit true
-
 open Filter Topology Function Set
 open Prod (fst snd)
 
-
-
+universe u uX uY uZ uW uι
+variable {X : Type uX} {Y : Type uY} {Z : Type uZ} {W : Type uW} {ι : Type uι}
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   {f : X → Y}
 
@@ -288,8 +286,7 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
 `(Prod.map f id : X × Filter X → Y × Filter X)` is closed. This is stronger than
 `isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
 properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_filter {X : Type*} {Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} :
+theorem isProperMap_iff_isClosedMap_filter {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap
       (Prod.map f id : X × Filter X → Y × Filter X) := by
   constructor <;> intro H
@@ -332,8 +329,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type*} {Y : Type*} [TopologicalS
 `(Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X)` is closed. This is stronger than
 `isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
 properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type*} {Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} :
+theorem isProperMap_iff_isClosedMap_ultrafilter {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap
       (Prod.map f id : X × Ultrafilter X → Y × Ultrafilter X) := by
   -- The proof is basically the same as above.
@@ -360,8 +356,7 @@ have this restriction.
 
 This is taken as the definition of properness in
 [N. Bourbaki, *General Topology*][bourbaki1966]. -/
-theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} :
+theorem isProperMap_iff_universally_closed {X : Type u} [TopologicalSpace X] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ ∀ (Z : Type u) [TopologicalSpace Z],
       IsClosedMap (Prod.map f id : X × Z → Y × Z) := by
   constructor <;> intro H
