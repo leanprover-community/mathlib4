@@ -2,7 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 
 namespace CategoryTheory
 
-open Category Limits Preadditive
+open Category Limits Preadditive ZeroObject
 
 variable {C : Type*} [Category C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
@@ -244,6 +244,33 @@ instance : HasCokernels t.Heart where
     exact AbelianSubcategory.hasCokernel (vanishing_to_negative_shift t) hT X₁.2 X₂.2
       (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃) (t.ιHeart_obj_mem_heart _)
         (t.ιHeart_obj_mem_heart ((t.homology 0).obj X₃))
+
+noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : t.Heart}
+    (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (h : X₃.1 ⟶ X₁.1⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk (t.ιHeart.map f) (t.ιHeart.map g) h ∈ distTriang C) :
+    IsLimit (KernelFork.ofι f (show f ≫ g = 0 from comp_dist_triangle_mor_zero₁₂ _ hT)) := by
+  refine' IsLimit.ofIsoLimit (AbelianSubcategory.isLimitKernelFork (vanishing_to_negative_shift t)
+    (rot_of_dist_triangle _ hT) _ _ (contractible_distinguished (X₁.1⟦(1 : ℤ)⟧)) X₁.2 (by
+      rw [mem_heart_iff]
+      constructor <;> infer_instance)) _
+  exact Fork.ext (mulIso (-1) (Iso.refl _))
+    ((shiftFunctor C (1 : ℤ)).map_injective (by aesop_cat))
+
+noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : t.Heart}
+    (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (h : X₃.1 ⟶ X₁.1⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk (t.ιHeart.map f) (t.ιHeart.map g) h ∈ distTriang C) :
+    IsColimit (CokernelCofork.ofπ g (show f ≫ g = 0 from comp_dist_triangle_mor_zero₁₂ _ hT)) := by
+  have hT' : Triangle.mk (0 : (0 : C)⟦(1 : ℤ)⟧ ⟶ _) (𝟙 X₃.1) 0 ∈ distTriang C := by
+    refine' isomorphic_distinguished _ (inv_rot_of_dist_triangle _ (contractible_distinguished X₃.1)) _ _
+    refine' Triangle.isoMk _ _ (IsZero.iso _ _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by simp)
+    all_goals
+      dsimp
+      rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
+  refine' IsColimit.ofIsoColimit (AbelianSubcategory.isColimitCokernelCofork (vanishing_to_negative_shift t)
+    hT X₁.2 X₂.2 hT' (by
+      rw [mem_heart_iff]
+      constructor <;> infer_instance) X₃.2) _
+  exact Cofork.ext (Iso.refl _) (by simp [AbelianSubcategory.πQ])
 
 end Heart
 
