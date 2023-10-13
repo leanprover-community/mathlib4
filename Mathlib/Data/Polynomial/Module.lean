@@ -175,7 +175,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
 #align polynomial_module.smul_single_apply PolynomialModule.smul_single_apply
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
-    (f • g) n = ∑ x in Finset.Nat.antidiagonal n, f.coeff x.1 • g x.2 := by
+    (f • g) n = ∑ x in Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
   induction' f using Polynomial.induction_on' with p q hp hq f_n f_a
   · rw [add_smul, Finsupp.add_apply, hp, hq, ← Finset.sum_add_distrib]
     congr
@@ -207,7 +207,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
         · rw [Finset.sum_eq_single (i - n, n)]
           simp only [ite_true]
           · rintro ⟨p, q⟩ hpq1 hpq2
-            rw [Finset.Nat.mem_antidiagonal] at hpq1
+            rw [Finset.mem_antidiagonal] at hpq1
             split_ifs with H
             · dsimp at H
               exfalso
@@ -218,10 +218,10 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
           · intro H
             exfalso
             apply H
-            rw [Finset.Nat.mem_antidiagonal, tsub_add_cancel_of_le hn]
+            rw [Finset.mem_antidiagonal, tsub_add_cancel_of_le hn]
         · symm
           rw [Finset.sum_ite_of_false, Finset.sum_const_zero]
-          simp_rw [Finset.Nat.mem_antidiagonal]
+          simp_rw [Finset.mem_antidiagonal]
           intro x hx
           contrapose! hn
           rw [add_comm, ← hn] at hx
