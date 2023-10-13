@@ -20,7 +20,6 @@ structure ContextFreeRule (T : Type uT) (N : Type uN) where
   /-- Output string a.k.a. right-hand side -/
   output : List (Symbol T N)
 
--- the `uN` universe comes first as it can't be inferred
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar.{uN,uT} (T : Type uT) where
   /-- Type of nonterminals -/
@@ -33,9 +32,11 @@ structure ContextFreeGrammar.{uN,uT} (T : Type uT) where
 universe uT uN
 variable {T : Type uT}
 
+namespace ContextFreeRule
+variable {N : Type uN}
+
 /-- One application of single context-free rule. -/
-inductive ContextFreeRule.Rewrites {N : Type uN} (r : ContextFreeRule T N) :
-    List (Symbol T N) → List (Symbol T N) → Prop
+inductive Rewrites (r : ContextFreeRule T N) : List (Symbol T N) → List (Symbol T N) → Prop
   /-- The replacement is at the start of the remaining string. -/
   | head (s : List (Symbol T N)) :
       r.Rewrites (Symbol.nonterminal r.input :: s) (r.output ++ s)
@@ -43,8 +44,8 @@ inductive ContextFreeRule.Rewrites {N : Type uN} (r : ContextFreeRule T N) :
   | cons (x : Symbol T N) {s₁ s₂ : List (Symbol T N)} (hrs : Rewrites r s₁ s₂) :
       r.Rewrites (x :: s₁) (x :: s₂)
 
-lemma ContextFreeRule.Rewrites.exists_parts {N : Type uN} {r : ContextFreeRule T N}
-    {u v : List (Symbol T N)} (hyp : r.Rewrites u v) :
+lemma Rewrites.exists_parts {r : ContextFreeRule T N} {u v : List (Symbol T N)}
+    (hyp : r.Rewrites u v) :
     ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
       u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
   induction hyp with
@@ -56,19 +57,19 @@ lemma ContextFreeRule.Rewrites.exists_parts {N : Type uN} {r : ContextFreeRule T
     use x :: p', q'
     simp
 
-lemma ContextFreeRule.rewrites_of_exists_parts {N : Type uN}
-    (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
+lemma rewrites_of_exists_parts (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
     r.Rewrites (p ++ [Symbol.nonterminal r.input] ++ q) (p ++ r.output ++ q) := by
   induction p with
-  | nil         => exact ContextFreeRule.Rewrites.head q
-  | cons d l ih => exact ContextFreeRule.Rewrites.cons d ih
+  | nil         => exact Rewrites.head q
+  | cons d l ih => exact Rewrites.cons d ih
 
-theorem ContextFreeRule.rewrites_iff {N : Type uN} {r : ContextFreeRule T N}
-    (u v : List (Symbol T N)) :
+theorem rewrites_iff {r : ContextFreeRule T N} (u v : List (Symbol T N)) :
     r.Rewrites u v ↔
       ∃ p : List (Symbol T N), ∃ q : List (Symbol T N),
         u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q :=
   ⟨Rewrites.exists_parts, by rintro ⟨p, q, rfl, rfl⟩; apply rewrites_of_exists_parts⟩
+
+end ContextFreeRule
 
 namespace ContextFreeGrammar
 
