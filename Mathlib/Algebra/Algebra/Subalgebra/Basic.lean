@@ -749,6 +749,9 @@ def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map e
       exact e.commutes _ }
 #align alg_equiv.subalgebra_map AlgEquiv.subalgebraMap
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgEquiv.subalgebraMap_apply_coe AlgEquiv.subalgebraMap_symm_apply_coe
+
 end AlgEquiv
 
 namespace Algebra
@@ -1509,5 +1512,4 @@ theorem mem_subalgebraOfSubring {x : R} {S : Subring R} : x ∈ subalgebraOfSubr
   Iff.rfl
 #align mem_subalgebra_of_subring mem_subalgebraOfSubring
 
-attribute [nolint simpNF] AlgEquiv.subalgebraMap_apply_coe AlgEquiv.subalgebraMap_symm_apply_coe
 end Int
