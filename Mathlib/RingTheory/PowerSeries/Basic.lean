@@ -2296,8 +2296,6 @@ namespace PowerSeries
 
 variable {R : Type*}
 
-attribute [local instance 1] Classical.propDecidable
-
 section OrderBasic
 
 open multiplicity
@@ -2313,6 +2311,8 @@ theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
 def order (φ : R⟦X⟧) : PartENat :=
+  letI := Classical.decEq R
+  letI := Classical.decEq R⟦X⟧
   if h : φ = 0 then ⊤ else Nat.find (exists_coeff_ne_zero_iff_ne_zero.mpr h)
 #align power_series.order PowerSeries.order
 
@@ -2337,6 +2337,7 @@ theorem order_finite_iff_ne_zero : (order φ).Dom ↔ φ ≠ 0 := by
 /-- If the order of a formal power series is finite,
 then the coefficient indexed by the order is nonzero.-/
 theorem coeff_order (h : (order φ).Dom) : coeff R (φ.order.get h) φ ≠ 0 := by
+  classical
   simp only [order, order_finite_iff_ne_zero.mp h, not_false_iff, dif_neg, PartENat.get_natCast']
   generalize_proofs h
   exact Nat.find_spec h
@@ -2345,6 +2346,7 @@ theorem coeff_order (h : (order φ).Dom) : coeff R (φ.order.get h) φ ≠ 0 := 
 /-- If the `n`th coefficient of a formal power series is nonzero,
 then the order of the power series is less than or equal to `n`.-/
 theorem order_le (n : ℕ) (h : coeff R n φ ≠ 0) : order φ ≤ n := by
+  classical
   have _ :  ∃ n, coeff R n φ ≠ 0 := Exists.intro n h
   rw [order, dif_neg]
   · simp only [PartENat.coe_le_coe, Nat.find_le_iff]
@@ -2397,6 +2399,7 @@ theorem le_order (φ : R⟦X⟧) (n : PartENat) (h : ∀ i : ℕ, ↑i < n → c
 and the `i`th coefficient is `0` for all `i < n`.-/
 theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff R n φ ≠ 0 ∧ ∀ i, i < n → coeff R i φ = 0 := by
+  classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simpa using (PartENat.natCast_ne_top _).symm
   simp [order, dif_neg hφ, Nat.find_eq_iff]
@@ -2487,6 +2490,7 @@ theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
 
 /-- The order of the monomial `a*X^n` is `n` if `a ≠ 0`.-/
 theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monomial R n a) = n := by
+  classical
   rw [order_monomial, if_neg h]
 #align power_series.order_monomial_of_ne_zero PowerSeries.order_monomial_of_ne_zero
 
@@ -2513,6 +2517,7 @@ theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧
 theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
     (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i in s, (1 - f i)) = coeff R k φ := by
+  classical
   induction' s using Finset.induction_on with a s ha ih t
   · simp
   · intro t
@@ -2535,8 +2540,9 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
 set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
 
-theorem order_eq_multiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
+theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧ (· ∣ ·)] (φ : R⟦X⟧) :
     order φ = multiplicity X φ := by
+  classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
   induction' ho : order φ using PartENat.casesOn with n
@@ -2595,6 +2601,7 @@ variable [CommRing R] [IsDomain R]
 /-- The order of the product of two formal power series over an integral domain
  is the sum of their orders.-/
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
+  classical
   simp_rw [order_eq_multiplicity_X]
   exact multiplicity.mul X_prime
 #align power_series.order_mul PowerSeries.order_mul
