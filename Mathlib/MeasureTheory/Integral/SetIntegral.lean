@@ -1383,21 +1383,22 @@ end MeasureTheory
 
 end BilinearMap
 
+section ParametricIntegral
 
-open Metric Function
+variable {α β F G 𝕜 : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
+  [OpensMeasurableSpace β] {μ : Measure β} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+open Metric Function ContinuousLinearMap
 
 /-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
 integral depends continuously on `a`. -/
 lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
-    {α β F G : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
-    [OpensMeasurableSpace β]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-    (L : F →L[𝕜] G →L[𝕜] E)
+    [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
     {f : α → β → G} {s : Set α} {k : Set β} {g : β → F}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
-    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0)
-    {μ : Measure β} (hg : LocallyIntegrable g μ) :
+    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : LocallyIntegrable g μ) :
     ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
     refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
@@ -1459,5 +1460,14 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
           positivity
   _ < ε := hδ
 
+/-- Consider a parameterized integral `a ↦ ∫ x, f a x` where `f` is continuous and uniformly
+compactly supported. Then the integral depends continuously on `a`. -/
+lemma continuousOn_integral_of_compact_support
+    {f : α → β → E} {s : Set α} {k : Set β} [IsLocallyFiniteMeasure μ]
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
+    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
+    ContinuousOn (fun a ↦ ∫ x, f a x ∂μ) s := by
+  simpa using continuousOn_integral_bilinear_of_locally_integrable_of_compact_support (lsmul ℝ ℝ)
+    hk hf hfs (locallyIntegrable_const 1) (μ := μ)
 
-#exit
+end ParametricIntegral
