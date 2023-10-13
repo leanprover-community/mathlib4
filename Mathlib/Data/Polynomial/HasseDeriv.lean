@@ -247,7 +247,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
         monomial (m - x.1 + (n - x.2)) (↑(m.choose x.1) * r * (↑(n.choose x.2) * s)) =
           monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) := by
     intro x hx
-    rw [Finset.Nat.mem_antidiagonal] at hx
+    rw [mem_antidiagonal] at hx
     subst hx
     by_cases hm : m < x.1
     · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,

@@ -98,7 +98,7 @@ theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
       simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
   specialize hφ aux.1
   specialize hψ aux.2
-  rw [Finsupp.mem_antidiagonal] at hde
+  rw [Finset.mem_antidiagonal] at hde
   classical
   have hd' : d.support ⊆ d.support ∪ e.support := Finset.subset_union_left _ _
   have he' : e.support ⊆ d.support ∪ e.support := Finset.subset_union_right _ _
