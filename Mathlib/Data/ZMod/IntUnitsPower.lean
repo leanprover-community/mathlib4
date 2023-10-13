@@ -49,6 +49,3 @@ lemma z₂pow_add (s : ℤˣ) (x y : ZMod 2) : s ^ (x + y) = s ^ x * s ^ y := by
   simp only [z₂pow_def]
   rw [ZMod.val_add, ←pow_eq_pow_mod, pow_add]
   fin_cases s <;> simp
-
-@[simp] lemma z₂pow_mul_self (s : ℤˣ) (x : ZMod 2) : s ^ x * s ^ x = 1 := by
-  rw [←z₂pow_add, CharTwo.add_self_eq_zero, z₂pow_zero s]
