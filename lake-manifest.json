@@ -36,7 +36,7 @@
   {"git":
    {"url": "https://github.com/semorrison/aesop",
     "subDir?": null,
-    "rev": "9d0b8bf00c99c8bbe48f2e3383ae96e79075fd14",
+    "rev": "0f5a839497c3e6981af03263804ea30ca29b9d39",
     "opts": {},
     "name": "aesop",
     "inputRev?": "bump_2621",
