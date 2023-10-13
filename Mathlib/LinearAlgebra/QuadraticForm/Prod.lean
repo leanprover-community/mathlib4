@@ -36,17 +36,15 @@ universe u v w
 
 variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ : Type*} {Mᵢ Nᵢ : ι → Type*}
 
-variable [CommSemiring R]
-
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
-
-variable [Module R M₁] [Module R M₂] [Module R N₁] [Module R N₂]
-
-variable [∀ i, AddCommMonoid (Mᵢ i)] [∀ i, AddCommMonoid (Nᵢ i)]
-
-variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)]
 
 namespace QuadraticForm
+
+section Prod
+
+section Semiring
+variable [CommSemiring R]
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
+variable [Module R M₁] [Module R M₂] [Module R N₁] [Module R N₂]
 
 /-- Construct a quadratic form on a product of two modules from the quadratic form on each module.
 -/
@@ -149,7 +147,37 @@ theorem PosDef.prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
   posDef_prod_iff.mpr ⟨h₁, h₂⟩
 #align quadratic_form.pos_def.prod QuadraticForm.PosDef.prod
 
+end Semiring
+
+section Ring
+
+variable [CommRing R]
+variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
+variable [Module R M₁] [Module R M₂] [Module R N₁] [Module R N₂]
+
+@[simp] theorem polar_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (x y : M₁ × M₂) :
+    polar (Q₁.prod Q₂) x y = polar Q₁ x.1 y.1 + polar Q₂ x.2 y.2 := by
+  dsimp [polar]
+  abel
+
+@[simp] theorem polarBilin_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    (Q₁.prod Q₂).polarBilin =
+      Q₁.polarBilin.comp (.fst _ _ _) (.fst _ _ _) +
+      Q₂.polarBilin.comp (.snd _ _ _) (.snd _ _ _) :=
+  BilinForm.ext <| polar_prod _ _
+
+end Ring
+
+end Prod
+
+section Pi
+
 open scoped BigOperators
+
+section Semiring
+variable [CommSemiring R]
+variable [∀ i, AddCommMonoid (Mᵢ i)] [∀ i, AddCommMonoid (Nᵢ i)]
+variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)]
 
 /-- Construct a quadratic form on a family of modules from the quadratic form on each module. -/
 def pi [Fintype ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) : QuadraticForm R (∀ i, Mᵢ i) :=
@@ -223,5 +251,27 @@ theorem posDef_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (M�
     · exact hx _ (Finset.mem_univ _)
     exact (h j).1 _
 #align quadratic_form.pos_def_pi_iff QuadraticForm.posDef_pi_iff
+
+end Semiring
+
+namespace Ring
+
+variable [CommRing R]
+variable [∀ i, AddCommGroup (Mᵢ i)] [∀ i, AddCommGroup (Nᵢ i)]
+variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)]
+variable [Fintype ι]
+
+@[simp] theorem polar_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) (x y : ∀ i, Mᵢ i) :
+    polar (pi Q) x y = ∑ i, polar (Q i) (x i) (y i) := by
+  dsimp [polar]
+  simp_rw [Finset.sum_sub_distrib, pi_apply, Pi.add_apply]
+
+@[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
+    (pi Q).polarBilin = ∑ i, (Q i).polarBilin.comp (.proj i) (.proj i) :=
+  BilinForm.ext <| fun x y => (polar_pi _ _ _).trans <| by simp
+
+end Ring
+
+end Pi
 
 end QuadraticForm
