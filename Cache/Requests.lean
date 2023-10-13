@@ -139,6 +139,11 @@ def checkForToolchainMismatch : IO Unit := do
     IO.println "\nIt is recommended that your project toolchain matches Mathlibs toolchain"
     IO.println s!"This can be achieved by copying the contents of the file {mathlibToolchainFile}
 into the lean-toolchain file at the root directory of your project"
+    if !System.Platform.isWindows then
+      IO.println s!"You can use cp {mathlibToolchainFile} ./lean-toolchain"
+    else
+      IO.println s!"On powershell you can use cp {mathlibToolchainFile} ./lean-toolchain"
+      IO.println s!"On Windows CMD you can use copy {mathlibToolchainFile} lean-toolchain"
     IO.Process.exit 10
   return ()
 
