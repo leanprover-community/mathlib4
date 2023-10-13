@@ -1016,10 +1016,10 @@ theorem Functor.map_isPushout [PreservesColimit (span f g) F] (s : IsPushout f g
   · simp
 #align category_theory.functor.map_is_pushout CategoryTheory.Functor.map_isPushout
 
-alias Functor.map_isPullback ← IsPullback.map
+alias IsPullback.map := Functor.map_isPullback
 #align category_theory.is_pullback.map CategoryTheory.IsPullback.map
 
-alias Functor.map_isPushout ← IsPushout.map
+alias IsPushout.map := Functor.map_isPushout
 #align category_theory.is_pushout.map CategoryTheory.IsPushout.map
 
 theorem IsPullback.of_map [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i)

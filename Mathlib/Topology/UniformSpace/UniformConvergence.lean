@@ -112,8 +112,9 @@ theorem tendstoUniformlyOn_iff_tendstoUniformlyOnFilter :
   simp
 #align tendsto_uniformly_on_iff_tendsto_uniformly_on_filter tendstoUniformlyOn_iff_tendstoUniformlyOnFilter
 
-alias tendstoUniformlyOn_iff_tendstoUniformlyOnFilter ↔
-  TendstoUniformlyOn.tendstoUniformlyOnFilter TendstoUniformlyOnFilter.tendstoUniformlyOn
+
+alias ⟨TendstoUniformlyOn.tendstoUniformlyOnFilter, TendstoUniformlyOnFilter.tendstoUniformlyOn⟩ :=
+  tendstoUniformlyOn_iff_tendstoUniformlyOnFilter
 #align tendsto_uniformly_on.tendsto_uniformly_on_filter TendstoUniformlyOn.tendstoUniformlyOnFilter
 #align tendsto_uniformly_on_filter.tendsto_uniformly_on TendstoUniformlyOnFilter.tendstoUniformlyOn
 
@@ -915,7 +916,7 @@ this paragraph, we prove variations around this statement.
 
 
 /-- If `Fₙ` converges locally uniformly on a neighborhood of `x` within a set `s` to a function `f`
-which is continuous at `x` within `s `, and `gₙ` tends to `x` within `s`, then `Fₙ (gₙ)` tends
+which is continuous at `x` within `s`, and `gₙ` tends to `x` within `s`, then `Fₙ (gₙ)` tends
 to `f x`. -/
 theorem tendsto_comp_of_locally_uniform_limit_within (h : ContinuousWithinAt f s x)
     (hg : Tendsto g p (𝓝[s] x))

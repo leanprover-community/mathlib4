@@ -19,6 +19,8 @@ Note that this definition allows for Automaton with infinite states; a `Fintype`
 supplied for true NFA's.
 -/
 
+set_option autoImplicit true
+
 
 open Set
 

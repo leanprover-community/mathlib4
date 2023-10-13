@@ -5,7 +5,6 @@ Authors: Kevin Buzzard, Calle Sönne
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Connected
-import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Limits
@@ -282,8 +281,8 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
 #align Profinite.to_Profinite_adj_to_CompHaus Profinite.toProfiniteAdjToCompHaus
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
-instance toCompHaus.reflective : Reflective profiniteToCompHaus
-    where toIsRightAdjoint := ⟨CompHaus.toProfinite, Profinite.toProfiniteAdjToCompHaus⟩
+instance toCompHaus.reflective : Reflective profiniteToCompHaus where
+  toIsRightAdjoint := ⟨CompHaus.toProfinite, Profinite.toProfiniteAdjToCompHaus⟩
 #align Profinite.to_CompHaus.reflective Profinite.toCompHaus.reflective
 
 noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=
@@ -336,41 +335,27 @@ instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) :
 #align Profinite.forget_reflects_isomorphisms Profinite.forget_reflectsIsomorphisms
 
 /-- Construct an isomorphism from a homeomorphism. -/
-@[simps hom inv]
-def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y where
-  hom := ⟨f, f.continuous⟩
-  inv := ⟨f.symm, f.symm.continuous⟩
-  hom_inv_id := by
-    ext x
-    exact f.symm_apply_apply x
-  inv_hom_id := by
-    ext x
-    exact f.apply_symm_apply x
+@[simps! hom inv]
+noncomputable
+def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
+  @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
+    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
-@[simps]
-def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.hom
-  invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+@[simps!]
+def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (profiniteToCompHaus.mapIso f)
 #align Profinite.homeo_of_iso Profinite.homeoOfIso
 
 /-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
 of topological spaces. -/
-@[simps]
+@[simps!]
+noncomputable
 def isoEquivHomeo : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
 #align Profinite.iso_equiv_homeo Profinite.isoEquivHomeo
 
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
@@ -409,6 +394,12 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
 #align Profinite.epi_iff_surjective Profinite.epi_iff_surjective
+
+instance {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+  rwa [CompHaus.epi_iff_surjective, ← epi_iff_surjective]
+
+instance {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+  rwa [epi_iff_surjective, ← CompHaus.epi_iff_surjective]
 
 theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor

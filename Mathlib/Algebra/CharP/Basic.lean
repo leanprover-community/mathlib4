@@ -99,8 +99,8 @@ variable (R)
 
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
- -/
+This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+-/
 @[mk_iff charP_iff]
 class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
   cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
@@ -110,7 +110,7 @@ class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
 -- porting note: the field of the structure had implicit arguments where they were
 -- explicit in Lean 3
 theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (x : ℕ) :
-  (x : R) = 0 ↔ p ∣ x :=
+    (x : R) = 0 ↔ p ∣ x :=
 CharP.cast_eq_zero_iff' (R := R) (p := p) x
 
 @[simp]
@@ -177,12 +177,12 @@ theorem CharP.exists [NonAssocSemiring R] : ∃ p, CharP R p :=
                     rwa [← Nat.mod_add_div x (Nat.find (not_forall.1 H)), Nat.cast_add,
                       Nat.cast_mul,
                       of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
-                      MulZeroClass.zero_mul, add_zero] at H1,
+                      zero_mul, add_zero] at H1,
                     H2⟩)),
           fun H1 => by
           rw [← Nat.mul_div_cancel' H1, Nat.cast_mul,
             of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
-            MulZeroClass.zero_mul]⟩⟩⟩
+            zero_mul]⟩⟩⟩
 #align char_p.exists CharP.exists
 
 theorem CharP.exists_unique [NonAssocSemiring R] : ∃! p, CharP R p :=
@@ -466,6 +466,9 @@ theorem charP_to_charZero (R : Type*) [AddGroupWithOne R] [CharP R 0] : CharZero
   charZero_of_inj_zero fun n h0 => eq_zero_of_zero_dvd ((cast_eq_zero_iff R 0 n).mp h0)
 #align char_p.char_p_to_char_zero CharP.charP_to_charZero
 
+theorem charP_zero_iff_charZero (R : Type*) [AddGroupWithOne R] : CharP R 0 ↔ CharZero R :=
+  ⟨fun _ ↦ charP_to_charZero R, fun _ ↦ ofCharZero R⟩
+
 theorem cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
@@ -483,6 +486,9 @@ theorem char_ne_zero_of_finite (p : ℕ) [CharP R p] [Finite R] : p ≠ 0 := by
 theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=
   char_ne_zero_of_finite R (ringChar R)
 #align char_p.ring_char_ne_zero_of_finite CharP.ringChar_ne_zero_of_finite
+
+theorem ringChar_zero_iff_CharZero [NonAssocRing R] : ringChar R = 0 ↔ CharZero R := by
+  rw [ringChar.eq_iff, charP_zero_iff_charZero]
 
 end
 
@@ -582,7 +588,7 @@ instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
       r = 1 * r := by rw [one_mul]
       _ = (1 : ℕ) * r := by rw [Nat.cast_one]
       _ = 0 * r := by rw [CharP.cast_eq_zero]
-      _ = 0 := by rw [MulZeroClass.zero_mul]
+      _ = 0 := by rw [zero_mul]
 
 theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
   false_of_nontrivial_of_subsingleton R
@@ -654,14 +660,14 @@ theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 
       intro k
       constructor
       · intro h
-        rw [← Nat.mod_add_div k n, Nat.cast_add, Nat.cast_mul, H, MulZeroClass.zero_mul,
+        rw [← Nat.mod_add_div k n, Nat.cast_add, Nat.cast_mul, H, zero_mul,
           add_zero] at h
         rw [Nat.dvd_iff_mod_eq_zero]
         apply hR _ (Nat.mod_lt _ _) h
         rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
         exact ⟨0⟩
       · rintro ⟨k, rfl⟩
-        rw [Nat.cast_mul, H, MulZeroClass.zero_mul] }
+        rw [Nat.cast_mul, H, zero_mul] }
 #align char_p_of_ne_zero charP_of_ne_zero
 
 theorem charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p : ℕ) [hp : Fact p.Prime] (n : ℕ)
@@ -732,3 +738,18 @@ theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p 
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero
+
+namespace CharZero
+
+theorem charZero_iff_forall_prime_ne_zero
+    [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
+    CharZero R ↔ ∀ p : ℕ, p.Prime → (p : R) ≠ 0 := by
+  refine ⟨fun h p hp => by simp [hp.ne_zero], fun h => ?_⟩
+  let p := ringChar R
+  cases CharP.char_is_prime_or_zero R p with
+  | inl hp => simpa using h p hp
+  | inr h =>
+    haveI : CharP R 0 := h ▸ inferInstance
+    exact CharP.charP_to_charZero R
+
+end CharZero

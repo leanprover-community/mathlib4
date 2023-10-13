@@ -12,6 +12,8 @@ import Mathlib.Data.Multiset.Nodup
 # The powerset of a multiset
 -/
 
+set_option autoImplicit true
+
 
 namespace Multiset
 
@@ -321,7 +323,7 @@ theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
         (h.sublist_ext (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset
 
-alias nodup_powerset ↔ Nodup.ofPowerset Nodup.powerset
+alias ⟨Nodup.ofPowerset, Nodup.powerset⟩ := nodup_powerset
 #align multiset.nodup.of_powerset Multiset.Nodup.ofPowerset
 #align multiset.nodup.powerset Multiset.Nodup.powerset
 

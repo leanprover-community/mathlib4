@@ -317,7 +317,7 @@ theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
 #align nat.clog_pow Nat.clog_pow
 
 theorem pow_pred_clog_lt_self {b : ℕ} (hb : 1 < b) {x : ℕ} (hx : 1 < x) :
-  b ^ (clog b x).pred < x := by
+    b ^ (clog b x).pred < x := by
   rw [← not_le, le_pow_iff_clog_le hb, not_le]
   exact pred_lt (clog_pos hb hx).ne'
 #align nat.pow_pred_clog_lt_self Nat.pow_pred_clog_lt_self

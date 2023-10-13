@@ -55,6 +55,8 @@ remember to force recompilation of any files that call `polyrith`.
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Polyrith
 open Lean hiding Rat
 open Meta Ring Qq PrettyPrinter AtomM

@@ -17,7 +17,7 @@ and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 -/
 
 
-universe v u
+universe w v u
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
@@ -28,7 +28,7 @@ namespace Functor
 
 /-- The constant functor sending everything to `PUnit.star`. -/
 @[simps!]
-def star : C ⥤ Discrete PUnit :=
+def star : C ⥤ Discrete PUnit.{w + 1} :=
   (Functor.const _).obj ⟨⟨⟩⟩
 #align category_theory.functor.star CategoryTheory.Functor.star
 -- Porting note: simp can simplify this
@@ -37,7 +37,7 @@ variable {C}
 
 /-- Any two functors to `Discrete PUnit` are isomorphic. -/
 @[simps!]
-def punitExt (F G : C ⥤ Discrete PUnit) : F ≅ G :=
+def punitExt (F G : C ⥤ Discrete PUnit.{w + 1}) : F ≅ G :=
   NatIso.ofComponents fun X => eqToIso (by simp only [eq_iff_true_of_subsingleton])
 #align category_theory.functor.punit_ext CategoryTheory.Functor.punitExt
 -- Porting note: simp does indeed fire for these despite the linter warning
@@ -45,18 +45,18 @@ attribute [nolint simpNF] punitExt_hom_app_down_down punitExt_inv_app_down_down
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
 You probably want to use `punitExt` instead of this. -/
-theorem punit_ext' (F G : C ⥤ Discrete PUnit) : F = G :=
+theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
   Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
 #align category_theory.functor.punit_ext' CategoryTheory.Functor.punit_ext'
 
 /-- The functor from `Discrete PUnit` sending everything to the given object. -/
-abbrev fromPUnit (X : C) : Discrete PUnit.{v + 1} ⥤ C :=
+abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
   (Functor.const _).obj X
 #align category_theory.functor.from_punit CategoryTheory.Functor.fromPUnit
 
 /-- Functors from `Discrete PUnit` are equivalent to the category itself. -/
 @[simps]
-def equiv : Discrete PUnit ⥤ C ≌ C where
+def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
   functor :=
     { obj := fun F => F.obj ⟨⟨⟩⟩
       map := fun θ => θ.app ⟨⟨⟩⟩ }
@@ -71,7 +71,7 @@ end Functor
   any two objects. (In fact, such a category is also a groupoid;
   see `CategoryTheory.Groupoid.ofHomUnique`) -/
 theorem equiv_punit_iff_unique :
-    Nonempty (C ≌ Discrete PUnit) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
+    Nonempty (C ≌ Discrete PUnit.{w + 1}) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
   constructor
   · rintro ⟨h⟩
     refine' ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro _⟩

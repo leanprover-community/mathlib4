@@ -79,18 +79,18 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
 #align algebraic_geometry.structure_sheaf.localizations AlgebraicGeometry.StructureSheaf.Localizations
 
 -- Porting note : can't derive `CommRingCat`
-instance CommRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
-  show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
+instance commRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
+  inferInstanceAs <| CommRing <| Localization.AtPrime P.asIdeal
 
 -- Porting note : can't derive `LocalRing`
-instance LocalRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
-  show LocalRing <| Localization.AtPrime P.asIdeal from inferInstance
+instance localRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
+  inferInstanceAs <| LocalRing <| Localization.AtPrime P.asIdeal
 
 instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
   ⟨1⟩
 
 instance (U : Opens (PrimeSpectrum.Top R)) (x : U) : Algebra R (Localizations R x) :=
-  show Algebra R (Localization.AtPrime x.1.asIdeal) from inferInstance
+  inferInstanceAs <| Algebra R (Localization.AtPrime x.1.asIdeal)
 
 instance (U : Opens (PrimeSpectrum.Top R)) (x : U) :
     IsLocalization.AtPrime (Localizations R x) (x : PrimeSpectrum.Top R).asIdeal :=
@@ -352,7 +352,7 @@ theorem res_const' (f g : R) (V hv) :
 
 theorem const_zero (f : R) (U hu) : const R 0 f U hu = 0 :=
   Subtype.eq <| funext fun x => IsLocalization.mk'_eq_iff_eq_mul.2 <| by
-    erw [RingHom.map_zero, Subring.coe_zero, Pi.zero_apply, MulZeroClass.zero_mul]
+    erw [RingHom.map_zero, Subring.coe_zero, Pi.zero_apply, zero_mul]
 #align algebraic_geometry.structure_sheaf.const_zero AlgebraicGeometry.StructureSheaf.const_zero
 
 theorem const_self (f : R) (U hu) : const R f f U hu = 1 :=
@@ -554,14 +554,14 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
 
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
-  -- Porting note : now `algebraMap _ _` needs to be explicitly typed
+    -- Porting note : now `algebraMap _ _` needs to be explicitly typed
     toStalk R x ≫ stalkToFiberRingHom R x = algebraMap R (Localization.AtPrime x.asIdeal) := by
   erw [toStalk, Category.assoc, germ_comp_stalkToFiberRingHom]; rfl
 #align algebraic_geometry.structure_sheaf.to_stalk_comp_stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.toStalk_comp_stalkToFiberRingHom
 
 @[simp]
 theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
-  -- Porting note : now `algebraMap _ _` needs to be explicitly typed
+    -- Porting note : now `algebraMap _ _` needs to be explicitly typed
     stalkToFiberRingHom R x (toStalk R x f) = algebraMap R (Localization.AtPrime x.asIdeal) f :=
   RingHom.ext_iff.1 (toStalk_comp_stalkToFiberRingHom R x) _
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom_to_stalk AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom_toStalk
@@ -655,7 +655,7 @@ theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := 
   -- We define `I` as the ideal of *all* elements `r` satisfying the above equation.
   let I : Ideal R :=
     { carrier := { r : R | r * (d * a) = r * (b * c) }
-      zero_mem' := by simp only [Set.mem_setOf_eq, MulZeroClass.zero_mul]
+      zero_mem' := by simp only [Set.mem_setOf_eq, zero_mul]
       add_mem' := fun {r₁ r₂} hr₁ hr₂ => by dsimp at hr₁ hr₂ ⊢; simp only [add_mul, hr₁, hr₂]
       smul_mem' := fun {r₁ r₂} hr₂ => by dsimp at hr₂ ⊢; simp only [mul_assoc, hr₂] }
   -- Our claim now reduces to showing that `f` is contained in the radical of `I`

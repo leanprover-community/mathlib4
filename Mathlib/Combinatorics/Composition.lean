@@ -690,7 +690,7 @@ theorem length_splitWrtComposition (l : List α) (c : Composition n) :
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
-  · simp
+  · simp [splitWrtCompositionAux]
   have := le_trans (Nat.le_add_right _ _) h
   simp only [splitWrtCompositionAux_cons, this]; dsimp
   rw [length_take, IH] <;> simp [length_drop]

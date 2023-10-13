@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.RingTheory.TensorProduct
 
 #align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
@@ -88,15 +89,14 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 Erdős-Kaplansky theorem about the dimension of a dual vector space in case of infinite dimension.
 -/
 
-
 noncomputable section
 
 namespace Module
 
 -- Porting note: max u v universe issues so name and specific below
-universe u v v' v'' w u₁ u₂
+universe uR uA uM uM' uM''
 
-variable (R : Type u) (M : Type v)
+variable (R : Type uR) (A : Type uA) (M : Type uM)
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
@@ -121,9 +121,6 @@ namespace Dual
 
 instance : Inhabited (Dual R M) := ⟨0⟩
 
-instance : FunLike (Dual R M) M fun _ => R :=
-  inferInstanceAs (FunLike (M →ₗ[R] R) M fun _ => R)
-
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
 def eval : M →ₗ[R] Dual R (Dual R M) :=
@@ -135,7 +132,7 @@ theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 #align module.dual.eval_apply Module.Dual.eval_apply
 
-variable {R M} {M' : Type v'}
+variable {R M} {M' : Type uM'}
 variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to
@@ -149,7 +146,7 @@ theorem transpose_apply (u : M →ₗ[R] M') (l : Dual R M') : transpose (R := R
   rfl
 #align module.dual.transpose_apply Module.Dual.transpose_apply
 
-variable {M'' : Type v''} [AddCommMonoid M''] [Module R M'']
+variable {M'' : Type uM''} [AddCommMonoid M''] [Module R M'']
 
 -- Porting note: with reducible def need to specify some parameters to transpose explicitly
 theorem transpose_comp (u : M' →ₗ[R] M'') (v : M →ₗ[R] M') :
@@ -161,7 +158,7 @@ end Dual
 
 section Prod
 
-variable (M' : Type v') [AddCommMonoid M'] [Module R M']
+variable (M' : Type uM') [AddCommMonoid M'] [Module R M']
 
 /-- Taking duals distributes over products. -/
 @[simps!]
@@ -182,6 +179,8 @@ end Module
 section DualMap
 
 open Module
+
+universe u v v'
 
 variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
 
@@ -277,7 +276,8 @@ open Module Module.Dual Submodule LinearMap Cardinal Function
 
 open BigOperators
 
-variable {R : Type u} {M : Type v} {K : Type u₁} {V : Type u₂} {ι : Type w}
+universe uR uM uK uV uι
+variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
@@ -299,7 +299,7 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 @[simp]
 theorem toDual_total_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.total ι M R b f) (b i) = f i := by
-  rw [Finsupp.total_apply, Finsupp.sum, LinearMap.map_sum, LinearMap.sum_apply]
+  rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum, LinearMap.sum_apply]
   simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq']
   split_ifs with h
@@ -310,7 +310,7 @@ theorem toDual_total_left (f : ι →₀ R) (i : ι) :
 @[simp]
 theorem toDual_total_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.total ι M R b f) = f i := by
-  rw [Finsupp.total_apply, Finsupp.sum, LinearMap.map_sum]
+  rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum]
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
   · rfl
@@ -384,7 +384,7 @@ theorem sum_dual_apply_smul_coord (f : Module.Dual R M) :
     (∑ x, f (b x) • b.coord x) = f := by
   ext m
   simp_rw [LinearMap.sum_apply, LinearMap.smul_apply, smul_eq_mul, mul_comm (f _), ← smul_eq_mul, ←
-    f.map_smul, ← f.map_sum, Basis.coord_apply, Basis.sum_repr]
+    f.map_smul, ← _root_.map_sum, Basis.coord_apply, Basis.sum_repr]
 #align basis.sum_dual_apply_smul_coord Basis.sum_dual_apply_smul_coord
 
 end
@@ -501,11 +501,11 @@ theorem total_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι] (b : 
 
 -- Porting note: universes very dodgy in Cardinals...
 theorem dual_rank_eq [CommRing K] [AddCommGroup V] [Module K V] [Finite ι] (b : Basis ι K V) :
-    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) := by
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
   classical
     cases nonempty_fintype ι
     have := LinearEquiv.lift_rank_eq b.toDualEquiv
-    rw [Cardinal.lift_umax.{u₂,u₁}] at this
+    rw [Cardinal.lift_umax.{uV,uK}] at this
     rw [this, ← Cardinal.lift_umax]
     apply Cardinal.lift_id
 #align basis.dual_rank_eq Basis.dual_rank_eq
@@ -514,7 +514,8 @@ end Basis
 
 namespace Module
 
-variable {K : Type u₁} {V : Type u₂}
+universe uK uV
+variable {K : Type uK} {V : Type uV}
 
 variable [CommRing K] [AddCommGroup V] [Module K V] [Module.Free K V]
 
@@ -565,7 +566,7 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
 end
 
 theorem dual_rank_eq [Module.Finite K V] :
-    Cardinal.lift.{u₁,u₂} (Module.rank K V) = Module.rank K (Dual K V) :=
+    Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) :=
   (Module.Free.chooseBasis K V).dual_rank_eq
 #align module.dual_rank_eq Module.dual_rank_eq
 
@@ -578,7 +579,7 @@ section IsReflexive
 
 open Function
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 /-- A reflexive module is one for which the natural map to its double dual is a bijection.
 
@@ -637,8 +638,7 @@ theorem mapEvalEquiv_symm_apply (W'' : Submodule R (Dual R (Dual R M))) :
   rfl
 #align module.map_eval_equiv_symm_apply Module.mapEvalEquiv_symm_apply
 
-instance _root_.Prod.instModuleIsReflexive
-    {N : Type*} [AddCommGroup N] [Module R N] [IsReflexive R N] :
+instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
     IsReflexive R (M × N) where
   bijective_dual_eval' := by
     let e : Dual R (Dual R (M × N)) ≃ₗ[R] Dual R (Dual R M) × Dual R (Dual R N) :=
@@ -650,19 +650,22 @@ instance _root_.Prod.instModuleIsReflexive
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
 
-instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) where
+variable {R M N} in
+lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
   bijective_dual_eval' := by
-    let e : Dual R (Dual R (MulOpposite M)) ≃ₗ[R] Dual R (Dual R M) :=
-      LinearEquiv.dualMap <| LinearEquiv.dualMap <| MulOpposite.opLinearEquiv _ |>.symm
-    have : Dual.eval R (MulOpposite M) = e.symm.comp ((Dual.eval R M).comp
-        <| MulOpposite.opLinearEquiv _ |>.symm.toLinearMap) := by
-      ext m f; rfl
+    let ed : Dual R (Dual R N) ≃ₗ[R] Dual R (Dual R M) := e.symm.dualMap.dualMap
+    have : Dual.eval R N = ed.symm.comp ((Dual.eval R M).comp e.symm.toLinearMap) := by
+      ext m f
+      exact FunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
--- TODO: add `ULift.instModuleIsReflexive : IsReflexive R (ULift.{v} M)` once we have
--- `LinearEquiv.ulift`
+instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
+  equiv <| MulOpposite.opLinearEquiv _
+
+instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
+  equiv ULift.moduleEquiv.symm
 
 end IsReflexive
 
@@ -680,7 +683,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
 open Lean.Elab.Tactic in
 /-- Try using `Set.to_finite` to dispatch a `Set.finite` goal. -/
 def evalUseFiniteInstance : TacticM Unit := do
-  evalTactic (← `(tactic| intros; apply Set.toFinite ))
+  evalTactic (← `(tactic| intros; apply Set.toFinite))
 
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
@@ -734,16 +737,13 @@ open Module
 variable [DecidableEq ι] (h : DualBases e ε)
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
-  erw [LinearMap.map_sum]
-  simp_rw [map_smul]
+  rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
   -- Porting note: cannot get at •
   -- simp only [h.eval, map_smul, smul_eq_mul]
-  rw [Finset.sum_eq_single i]
   · simp [h.eval, smul_eq_mul]
   · intro q _ q_ne
     simp [q_ne.symm, h.eval, smul_eq_mul]
-  · intro p_not_in
-    simp [Finsupp.not_mem_support_iff.1 p_not_in]
+  · simp
 #align module.dual_bases.dual_lc Module.DualBases.dual_lc
 
 @[simp]
@@ -1196,7 +1196,8 @@ open Module
 
 namespace LinearMap
 
-variable {R : Type u} [CommSemiring R] {M₁ : Type v} {M₂ : Type v'}
+universe uR uM₁ uM₂
+variable {R : Type uR} [CommSemiring R] {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
@@ -1375,8 +1376,9 @@ end CommRing
 
 section VectorSpace
 
--- Porting note: adding `u` to avoid timeouts in `dualPairing_eq`
-variable {K : Type u} [Field K] {V₁ : Type v'} {V₂ : Type v''}
+-- Porting note: adding `uK` to avoid timeouts in `dualPairing_eq`
+universe uK uV₁ uV₂
+variable {K : Type uK} [Field K] {V₁ : Type uV₁} {V₂ : Type uV₂}
 
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
@@ -1422,15 +1424,12 @@ open Submodule
 -- Porting note: remove this at some point; this spends a lot of time
 -- checking that AddCommGroup structures on V₁ ⧸ W.dualAnnihilator are defEq
 -- was much worse with implicit universe variables
-set_option maxHeartbeats 400000 in
 theorem dualPairing_eq (W : Subspace K V₁) :
     W.dualPairing = W.quotAnnihilatorEquiv.toLinearMap := by
   ext
   rfl
 #align subspace.dual_pairing_eq Subspace.dualPairing_eq
 
--- Porting note: remove this
-set_option maxHeartbeats 400000 in
 theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualPairing_eq]
@@ -1520,7 +1519,7 @@ namespace LinearMap
 -- see https://github.com/leanprover-community/mathlib/pull/17521#discussion_r1083242551
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
-  -- Porting note: broken dot notation lean4#1910
+    -- Porting note: broken dot notation lean4#1910
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
   have that := Submodule.finrank_quotient_add_finrank (LinearMap.range f)
   -- Porting note: Again LinearEquiv.finrank_eq needs help
@@ -1564,7 +1563,7 @@ end VectorSpace
 
 namespace TensorProduct
 
-variable (R : Type*) (M : Type*) (N : Type*)
+variable (R A : Type*) (M : Type*) (N : Type*)
 
 variable {ι κ : Type*}
 
@@ -1606,6 +1605,24 @@ theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
 
 end
 
+namespace AlgebraTensorModule
+variable [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [AddCommMonoid N]
+
+variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
+
+/-- Heterobasic version of `TensorProduct.dualDistrib` -/
+def dualDistrib : Dual A M ⊗[R] Dual R N →ₗ[A] Dual A (M ⊗[R] N) :=
+  compRight (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
+
+variable {R M N}
+
+@[simp]
+theorem dualDistrib_apply (f : Dual A M) (g : Dual R N) (m : M) (n : N) :
+    dualDistrib R A M N (f ⊗ₜ g) (m ⊗ₜ n) = g n • f m :=
+  rfl
+
+end AlgebraTensorModule
+
 variable {R M N}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
@@ -1637,7 +1654,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   rintro ⟨i', j'⟩
   simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
-    Basis.repr_self, ne_eq, LinearMap.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
+    Basis.repr_self, ne_eq, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]; simp

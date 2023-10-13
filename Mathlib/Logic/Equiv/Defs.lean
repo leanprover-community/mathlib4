@@ -7,6 +7,8 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.Substs
+import Mathlib.Tactic.Conv
 
 #align_import logic.equiv.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -51,6 +53,8 @@ Many more such isomorphisms and operations are defined in `Logic.Equiv.Basic`.
 equivalence, congruence, bijective map
 -/
 
+set_option autoImplicit true
+
 
 open Function
 
@@ -60,10 +64,10 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
 structure Equiv (α : Sort*) (β : Sort _) where
-  toFun : α → β
-  invFun : β → α
-  left_inv : LeftInverse invFun toFun
-  right_inv : RightInverse invFun toFun
+  protected toFun : α → β
+  protected invFun : β → α
+  protected left_inv : LeftInverse invFun toFun
+  protected right_inv : RightInverse invFun toFun
 #align equiv Equiv
 
 infixl:25 " ≃ " => Equiv
@@ -90,10 +94,10 @@ def Equiv.Perm (α : Sort*) :=
 namespace Equiv
 
 instance : EquivLike (α ≃ β) α β where
-  coe := toFun
-  inv := invFun
-  left_inv := left_inv
-  right_inv := right_inv
+  coe := Equiv.toFun
+  inv := Equiv.invFun
+  left_inv := Equiv.left_inv
+  right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
 /-- Helper instance when inference gets stuck on following the normal chain

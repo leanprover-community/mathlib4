@@ -37,11 +37,9 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
       rintro (a₁ | b₁) (a₂ | b₂) f_eq <;>
         simp only [Equiv.coe_fn_symm_mk, Sum.elim_inl, Sum.elim_inr] at f_eq
       · rw [f.injective f_eq]
-      · simp! only at f_eq
-        exfalso
+      · exfalso
         refine disj.le_bot ⟨⟨a₁, f_eq⟩, ⟨b₂, by simp [f_eq]⟩⟩
-      · simp! only at f_eq
-        exfalso
+      · exfalso
         exact disj.le_bot ⟨⟨a₂, rfl⟩, ⟨b₁, f_eq⟩⟩
       · rw [g.injective f_eq]⟩
   left_inv f := by

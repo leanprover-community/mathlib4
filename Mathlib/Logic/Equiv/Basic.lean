@@ -11,6 +11,11 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Tactic.SimpRw
 
 #align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -22,7 +27,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 * canonical isomorphisms between various types: e.g.,
 
   - `Equiv.sumEquivSigmaBool` is the canonical equivalence between the sum of two types `α ⊕ β`
-    and the sigma-type `Σ b : Bool, cond b α β`;
+    and the sigma-type `Σ b : Bool, b.casesOn α β`;
 
   - `Equiv.prodSumDistrib : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ)` shows that type product and type sum
     satisfy the distributive law up to a canonical equivalence;
@@ -40,6 +45,8 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 
 equivalence, congruence, bijective map
 -/
+
+set_option autoImplicit true
 
 open Function
 
@@ -374,7 +381,7 @@ end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
-  ⟨fun b => cond b (inr PUnit.unit) (inl PUnit.unit), Sum.elim (fun _ => false) fun _ => true,
+  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
     fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 #align equiv.bool_equiv_punit_sum_punit Equiv.boolEquivPUnitSumPUnit
 
@@ -519,11 +526,11 @@ def piOptionEquivProd {β : Option α → Type*} :
 `β` to be types from the same universe, so it cannot be used directly to transfer theorems about
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
-def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=
-  ⟨fun s => s.elim (fun x => ⟨true, x⟩) fun x => ⟨false, x⟩, fun s =>
+def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, b.casesOn α β :=
+  ⟨fun s => s.elim (fun x => ⟨false, x⟩) fun x => ⟨true, x⟩, fun s =>
     match s with
-    | ⟨true, a⟩ => inl a
-    | ⟨false, b⟩ => inr b,
+    | ⟨false, a⟩ => inl a
+    | ⟨true, b⟩ => inr b,
     fun s => by cases s <;> rfl, fun s => by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
 #align equiv.sum_equiv_sigma_bool Equiv.sumEquivSigmaBool
 
@@ -906,11 +913,28 @@ section
 def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
   toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
-  left_inv := fun f => funext fun c => Prod.mk.eta
+  left_inv := fun f => rfl
   right_inv := fun p => by cases p; rfl
 #align equiv.arrow_prod_equiv_prod_arrow Equiv.arrowProdEquivProdArrow
 
 open Sum
+
+/-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
+functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
+@[simps]
+def sumPiEquivProdPi (π : ι ⊕ ι' → Type _) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
+    where
+  toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
+  invFun g := Sum.rec g.1 g.2
+  left_inv f := by ext (i | i) <;> rfl
+  right_inv g := Prod.ext rfl rfl
+
+/-- The equivalence between a product of two dependent functions types and a single dependent
+function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
+@[simps!]
+def prodPiEquivSumPi (π : ι → Type _) (π' : ι' → Type _) :
+    ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
+  sumPiEquivProdPi (Sum.elim π π') |>.symm
 
 /-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
 on `α` and on `β`. -/
@@ -1041,7 +1065,7 @@ def sigmaNatSucc (f : ℕ → Type u) : (Σ n, f n) ≃ Sum (f 0) (Σ n, f (n + 
 /-- The product `Bool × α` is equivalent to `α ⊕ α`. -/
 @[simps]
 def boolProdEquivSum (α) : Bool × α ≃ Sum α α where
-  toFun p := cond p.1 (inr p.2) (inl p.2)
+  toFun p := p.1.casesOn (inl p.2) (inr p.2)
   invFun := Sum.elim (Prod.mk false) (Prod.mk true)
   left_inv := by rintro ⟨_ | _, _⟩ <;> rfl
   right_inv := by rintro (_ | _) <;> rfl
@@ -1052,8 +1076,8 @@ def boolProdEquivSum (α) : Bool × α ≃ Sum α α where
 /-- The function type `Bool → α` is equivalent to `α × α`. -/
 @[simps]
 def boolArrowEquivProd (α) : (Bool → α) ≃ α × α where
-  toFun f := (f true, f false)
-  invFun p b := cond b p.1 p.2
+  toFun f := (f false, f true)
+  invFun p b := b.casesOn p.1 p.2
   left_inv _ := funext <| Bool.forall_bool.2 ⟨rfl, rfl⟩
   right_inv := fun _ => rfl
 #align equiv.bool_arrow_equiv_prod Equiv.boolArrowEquivProd
@@ -1168,6 +1192,12 @@ def subtypeEquivRight {p q : α → Prop} (e : ∀ x, p x ↔ q x) : { x // p x 
 #align equiv.subtype_equiv_right Equiv.subtypeEquivRight
 #align equiv.subtype_equiv_right_apply_coe Equiv.subtypeEquivRight_apply_coe
 #align equiv.subtype_equiv_right_symm_apply_coe Equiv.subtypeEquivRight_symm_apply_coe
+
+lemma subtypeEquivRight_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
+    (z : { x // p x }) : subtypeEquivRight e z = ⟨z, (e z.1).mp z.2⟩ := rfl
+
+lemma subtypeEquivRight_symm_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
+    (z : { x // q x }) : (subtypeEquivRight e).symm z = ⟨z, (e z.1).mpr z.2⟩ := rfl
 
 /-- If `α ≃ β`, then for any predicate `p : β → Prop` the subtype `{a // p (e a)}` is equivalent
 to the subtype `{b // p b}`. -/
@@ -1581,7 +1611,7 @@ theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
   unfold swapCore
   -- Porting note: whatever solution works for `swapCore_swapCore` will work here too.
-  split_ifs with h₁ h₂ h₃ <;> simp
+  split_ifs with h₁ h₂ h₃ <;> try simp
   · cases h₁; cases h₂; rfl
 #align equiv.swap_core_comm Equiv.swapCore_comm
 
@@ -1800,6 +1830,23 @@ def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P 
 #align equiv.Pi_congr_left'_apply Equiv.piCongrLeft'_apply
 #align equiv.Pi_congr_left'_symm_apply Equiv.piCongrLeft'_symm_apply
 
+/-- Note: the "obvious" statement `(piCongrLeft' P e).symm g a = g (e a)` doesn't typecheck: the
+LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. For that reason,
+we have to explicitly substitute along `e.symm (e a) = a` in the statement of this lemma. -/
+add_decl_doc Equiv.piCongrLeft'_symm_apply
+
+/-- Note: the "obvious" statement `(piCongrLeft' P e).symm g a = g (e a)` doesn't typecheck: the
+LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. This lemma is a way
+around it in the case where `a` is of the form `e.symm b`, so we can use `g b` instead of
+`g (e (e.symm b))`. -/
+lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
+    (piCongrLeft' P e).symm g (e.symm b) = g b := by
+  change Eq.ndrec _ _ = _
+  generalize_proofs hZa
+  revert hZa
+  rw [e.apply_symm_apply b]
+  simp
+
 end
 
 section
@@ -1812,6 +1859,46 @@ expressed as a "simplification".
 def piCongrLeft : (∀ a, P (e a)) ≃ ∀ b, P b :=
   (piCongrLeft' P e.symm).symm
 #align equiv.Pi_congr_left Equiv.piCongrLeft
+
+/-- Note: the "obvious" statement `(piCongrLeft P e) f b = f (e.symm b)` doesn't typecheck: the
+LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`. For that reason,
+we have to explicitly substitute along `e (e.symm b) = b` in the statement of this lemma. -/
+@[simp]
+lemma piCongrLeft_apply (f : ∀ a, P (e a)) (b : β) :
+    (piCongrLeft P e) f b = e.apply_symm_apply b ▸ f (e.symm b) :=
+  rfl
+
+@[simp]
+lemma piCongrLeft_symm_apply (g : ∀ b, P b) (a : α) :
+    (piCongrLeft P e).symm g a = g (e a) :=
+  piCongrLeft'_apply P e.symm g a
+
+/-- Note: the "obvious" statement `(piCongrLeft P e) f b = f (e.symm b)` doesn't typecheck: the
+LHS would have type `P b` while the RHS would have type `P (e (e.symm b))`. This lemma is a way
+around it in the case where `b` is of the form `e a`, so we can use `f a` instead of
+`f (e.symm (e a))`. -/
+lemma piCongrLeft_apply_apply (f : ∀ a, P (e a)) (a : α) :
+    (piCongrLeft P e) f (e a) = f a :=
+  piCongrLeft'_symm_apply_apply P e.symm f a
+
+open Sum
+
+lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
+    (f : (a : α) → P (e a)) (b : β) :
+    piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
+  Eq.rec_eq_cast _ _
+
+theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+    (g : ∀ i, π (e (inr i))) (i : ι) :
+    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
+  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
+    sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
+
+theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+    (g : ∀ i, π (e (inr i))) (j : ι') :
+    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
+  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
+    sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
 
 end
 
@@ -1840,11 +1927,7 @@ theorem piCongr_symm_apply (f : ∀ b, Z b) :
 
 @[simp]
 theorem piCongr_apply_apply (f : ∀ a, W a) (a : α) : h₁.piCongr h₂ f (h₁ a) = h₂ a (f a) := by
-  change Eq.ndrec _ _ = _
-  generalize_proofs hZa
-  revert hZa
-  rw [h₁.symm_apply_apply a]
-  simp; rfl
+  simp only [piCongr, piCongrRight, trans_apply, coe_fn_mk, piCongrLeft_apply_apply]
 #align equiv.Pi_congr_apply_apply Equiv.piCongr_apply_apply
 
 end
@@ -1874,13 +1957,7 @@ theorem piCongr'_apply (f : ∀ a, W a) : h₁.piCongr' h₂ f = fun b => h₂ b
 @[simp]
 theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
     (h₁.piCongr' h₂).symm f (h₁.symm b) = (h₂ b).symm (f b) := by
-  change Eq.ndrec _ _ = _
-  generalize_proofs hWb
-  revert hWb
-  generalize hb : h₁ (h₁.symm b) = b'
-  rw [h₁.apply_symm_apply b] at hb
-  subst hb
-  simp; rfl
+  simp [piCongr', piCongr_apply_apply]
 #align equiv.Pi_congr'_symm_apply_symm_apply Equiv.piCongr'_symm_apply_symm_apply
 
 end

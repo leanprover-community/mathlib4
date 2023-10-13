@@ -378,7 +378,7 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
 #align ordinal.type_lt_iff Ordinal.type_lt_iff
 
 theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s : β → β → Prop}
-  [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
+    [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 #align principal_seg.ordinal_type_lt PrincipalSeg.ordinal_type_lt
 
@@ -636,6 +636,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
   see `lift.initialSeg`. -/
+@[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
   Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
     Quot.sound
@@ -676,8 +677,7 @@ theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Pr
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-/-- `lift.{(max u v) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
@@ -685,8 +685,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
 #align ordinal.lift_umax Ordinal.lift_umax
 
-/-- `lift.{(max v u) u}` equals `lift.{v u}`. Using `set_option pp.universes true` will make it much
-    easier to understand what's happening when using this lemma. -/
+/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
@@ -1266,7 +1265,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       · intro a'
         cases' (hf _).1 (typein_lt_type _ a') with b e
         exists b
-        simp
+        simp only [RelEmbedding.ofMonotone_coe]
         simp [e]
     · cases' h with a e
       rw [← e]
@@ -1378,6 +1377,19 @@ theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
 theorem lt_ord_succ_card (o : Ordinal) : o < (succ o.card).ord :=
   lt_ord.2 <| lt_succ _
 #align cardinal.lt_ord_succ_card Cardinal.lt_ord_succ_card
+
+theorem card_le_iff {o : Ordinal} {c : Cardinal} : o.card ≤ c ↔ o < (succ c).ord := by
+  rw [lt_ord, lt_succ_iff]
+
+/--
+A variation on `Cardinal.lt_ord` using `≤`: If `o` is no greater than the
+initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
+
+The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
+-/
+lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
+    o.card ≤ c := by
+  rw [← card_ord c]; exact Ordinal.card_le_card ho
 
 @[mono]
 theorem ord_strictMono : StrictMono ord :=

@@ -19,7 +19,7 @@ Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n
 in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
 ```
 def matPolyEquiv :
-  Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
+    Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
 ```
 which is characterized by
 ```
@@ -102,25 +102,23 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     simp_rw [coeff_sum, coeff_monomial, sum_def, Finset.sum_ite_eq', mem_support_iff, Ne.def]
     conv_rhs => rw [coeff_mul]
     simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne.def, mul_ite,
-      MulZeroClass.mul_zero, ite_mul, MulZeroClass.zero_mul]
+      mul_zero, ite_mul, zero_mul]
     simp_rw [ite_mul_zero_left (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
     simp_rw [ite_mul_zero_right (¬coeff p₂ _ = 0) _ (_ * _)]
     simp_rw [toFunLinear_mul_tmul_mul_aux_1, toFunLinear_mul_tmul_mul_aux_2]
 #align poly_equiv_tensor.to_fun_linear_mul_tmul_mul PolyEquivTensor.toFunLinear_mul_tmul_mul
 
-theorem toFunLinear_algebraMap_tmul_one (r : R) :
-    (toFunLinear R A) ((algebraMap R A) r ⊗ₜ[R] 1) = (algebraMap R A[X]) r := by
-  rw [toFunLinear_tmul_apply, toFunBilinear_apply_apply, Polynomial.aeval_one, algebraMap_smul,
-    Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one] -- porting note: had to
-  -- add extra `Algebra.algebraMap_eq_smul_one`
-#align poly_equiv_tensor.to_fun_linear_algebra_map_tmul_one PolyEquivTensor.toFunLinear_algebraMap_tmul_one
+theorem toFunLinear_one_tmul_one :
+    toFunLinear R A (1 ⊗ₜ[R] 1) = 1 := by
+  rw [toFunLinear_tmul_apply, toFunBilinear_apply_apply, Polynomial.aeval_one, one_smul]
+#align poly_equiv_tensor.to_fun_linear_algebra_map_tmul_one PolyEquivTensor.toFunLinear_one_tmul_oneₓ
 
 /-- (Implementation detail).
 The algebra homomorphism `A ⊗[R] R[X] →ₐ[R] A[X]`.
 -/
 def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
   algHomOfLinearMapTensorProduct (toFunLinear R A) (toFunLinear_mul_tmul_mul R A)
-    (toFunLinear_algebraMap_tmul_one R A)
+    (toFunLinear_one_tmul_one R A)
 #align poly_equiv_tensor.to_fun_alg_hom PolyEquivTensor.toFunAlgHom
 
 @[simp]
@@ -236,7 +234,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
   simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
   simp only [Algebra.TensorProduct.tmul_mul_tmul, one_pow, one_mul, Matrix.mul_one,
-    Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply, mul_eq_mul]
+    Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
   congr with i' <;> simp [stdBasisMatrix]
 #align mat_poly_equiv_coeff_apply_aux_1 matPolyEquiv_coeff_apply_aux_1

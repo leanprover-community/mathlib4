@@ -500,9 +500,6 @@ theorem QuotientGroup.card_preimage_mk [Fintype G] (s : Subgroup G) (t : Set (G 
 #align quotient_group.card_preimage_mk QuotientGroup.card_preimage_mk
 
 namespace Sylow
-
-open Subgroup Submonoid MulAction
-
 theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Finite (H : Set G)]
     {x : G} : (x : G ⧸ H) ∈ MulAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
   ⟨fun hx =>
@@ -672,7 +669,7 @@ theorem dvd_card_of_dvd_card [Fintype G] {p : ℕ} [Fact p.Prime] (P : Sylow p G
 
 /-- Sylow subgroups are Hall subgroups. -/
 theorem card_coprime_index [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G) :
-    (card P).coprime (index (P : Subgroup G)) :=
+    (card P).Coprime (index (P : Subgroup G)) :=
   let ⟨_n, hn⟩ := IsPGroup.iff_card.mp P.2
   hn.symm ▸ (hp.1.coprime_pow_of_not_dvd (not_dvd_index_sylow P index_ne_zero_of_finite)).symm
 #align sylow.card_coprime_index Sylow.card_coprime_index
@@ -785,7 +782,7 @@ noncomputable def directProductOfNormal [Fintype G]
   set ps := (Fintype.card G).factorization.support
   -- “The” Sylow subgroup for p
   let P : ∀ p, Sylow p G := default
-  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → _root_.Commute x y := by
+  have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_factorization hp₁)
     haveI hp₂' := Fact.mk (Nat.prime_of_mem_factorization hp₂)

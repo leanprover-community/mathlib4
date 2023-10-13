@@ -45,7 +45,7 @@ class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop where
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
 lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
-  ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
+    ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
 
 namespace ValuationRing
 
@@ -154,8 +154,8 @@ noncomputable instance linearOrderedCommGroupWithZero :
   mul_le_mul_left := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
     use c; simp only [Algebra.smul_def]; ring
-  zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [MulZeroClass.zero_mul]; apply Setoid.refl'
-  mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [MulZeroClass.mul_zero]; apply Setoid.refl'
+  zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
+  mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
   zero_le_one := ⟨0, by rw [zero_smul]⟩
   exists_pair_ne := by
     use 0, 1
@@ -325,8 +325,8 @@ theorem iff_isInteger_or_isInteger :
   · intro H
     constructor
     intro a b
-    by_cases ha : a = 0; · subst ha; exact ⟨0, Or.inr <| MulZeroClass.mul_zero b⟩
-    by_cases hb : b = 0; · subst hb; exact ⟨0, Or.inl <| MulZeroClass.mul_zero a⟩
+    by_cases ha : a = 0; · subst ha; exact ⟨0, Or.inr <| mul_zero b⟩
+    by_cases hb : b = 0; · subst hb; exact ⟨0, Or.inl <| mul_zero a⟩
     replace ha := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr ha
     replace hb := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr hb
     obtain ⟨c, e⟩ | ⟨c, e⟩ := H (algebraMap R K a / algebraMap R K b)

@@ -12,6 +12,8 @@ import Mathlib.Order.Hom.Set
 # Order isomorphisms and bounds.
 -/
 
+set_option autoImplicit true
+
 open Set
 
 namespace OrderIso

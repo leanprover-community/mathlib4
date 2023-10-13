@@ -11,7 +11,7 @@ import Mathlib.Tactic.LeftRight
 /-!
 # mk_iff_of_inductive_prop
 
-This file defines a tactic `tactic.mk_iff_of_inductive_prop` that generates `iff` rules for
+This file defines a command `mk_iff_of_inductive_prop` that generates `iff` rules for
 inductive `Prop`s. For example, when applied to `List.Chain`, it creates a declaration with
 the following type:
 
@@ -24,11 +24,13 @@ This tactic can be called using either the `mk_iff_of_inductive_prop` user comma
 the `mk_iff` attribute.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.MkIff
 
 open Lean Meta Elab
 
-/-- `select m n` runs `tactic.right` `m` times, and then `tactic.left` `(n-m)` times.
+/-- `select m n` runs `right` `m` times, and then `left` `(n-m)` times.
 Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
@@ -61,6 +63,11 @@ partial def compactRelation :
       let (bs, as_ps', subst) := compactRelation (bs.map i) ((ps₁ ++ ps₂).map (λ⟨a, p⟩ => (a, i p)))
       (none :: bs, as_ps', i ∘ subst)
 
+private def updateLambdaBinderInfoD! (e : Expr) : Expr :=
+  match e with
+  | .lam n domain body _ => .lam n domain body .default
+  | _           => panic! "lambda expected"
+
 /-- Generates an expression of the form `∃(args), inner`. `args` is assumed to be a list of fvars.
 When possible, `p ∧ q` is used instead of `∃(_ : p), q`. -/
 def mkExistsList (args : List Expr) (inner : Expr) : MetaM Expr :=
@@ -68,16 +75,17 @@ args.foldrM (λarg i:Expr => do
     let t ← inferType arg
     let l := (← inferType t).sortLevel!
     if arg.occurs i || l != Level.zero
-      then pure <| mkApp2 (mkConst `Exists [l] : Expr) t (←(mkLambdaFVars #[arg] i))
+      then pure (mkApp2 (mkConst `Exists [l] : Expr) t
+        (updateLambdaBinderInfoD! <| ←mkLambdaFVars #[arg] i))
       else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
   Returns `empty` if the list is empty. -/
 def mkOpList (op : Expr) (empty : Expr) : List Expr → Expr
-| []        => empty
-| [e]       => e
-| (e :: es) => mkApp2 op e $ mkOpList op empty es
+  | []        => empty
+  | [e]       => e
+  | (e :: es) => mkApp2 op e $ mkOpList op empty es
 
 /-- `mkAndList [x1, x2, ...]` is defined as `x1 ∧ (x2 ∧ ...)`, or `True` if the list is empty. -/
 def mkAndList : List Expr → Expr := mkOpList (mkConst `And) (mkConst `True)
@@ -87,9 +95,9 @@ def mkOrList : List Expr → Expr := mkOpList (mkConst `Or) (mkConst `False)
 
 /-- Drops the final element of a list. -/
 def List.init : List α → List α
-| []     => []
-| [_]    => []
-| a::l => a::init l
+  | []     => []
+  | [_]    => []
+  | a::l => a::init l
 
 /-- Auxiliary data associated with a single constructor of an inductive declaration.
 -/
@@ -123,7 +131,7 @@ structure Shape : Type where
 while proving the iff theorem, and a proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-  MetaM (Shape × Expr)  :=
+    MetaM (Shape × Expr)  :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
      pure $ ty.replaceFVars fvars params.toArray
@@ -231,16 +239,16 @@ listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none
 ```
 -/
 def listBoolMerge {α : Type*} : List Bool → List α → List (Option α)
-| [], _ => []
-| false :: xs, ys => none :: listBoolMerge xs ys
-| true :: xs, y :: ys => some y :: listBoolMerge xs ys
-| true :: _, [] => []
+  | [], _ => []
+  | false :: xs, ys => none :: listBoolMerge xs ys
+  | true :: xs, y :: ys => some y :: listBoolMerge xs ys
+  | true :: _, [] => []
 
 /-- Proves the right to left direction of a generated iff theorem.
 -/
 def toInductive (mvar : MVarId) (cs : List Name)
-  (gs : List Expr) (s : List Shape) (h : FVarId) :
-  MetaM Unit := do
+    (gs : List Expr) (s : List Shape) (h : FVarId) :
+    MetaM Unit := do
   match s.length with
   | 0       => do let _ ← mvar.cases h
                   pure ()

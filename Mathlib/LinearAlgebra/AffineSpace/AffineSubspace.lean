@@ -1165,7 +1165,7 @@ theorem affineSpan_nonempty : (affineSpan k s : Set P).Nonempty ↔ s.Nonempty :
   spanPoints_nonempty k s
 #align affine_span_nonempty affineSpan_nonempty
 
-alias affineSpan_nonempty ↔ _ _root_.Set.Nonempty.affineSpan
+alias ⟨_, _root_.Set.Nonempty.affineSpan⟩ := affineSpan_nonempty
 #align set.nonempty.affine_span Set.Nonempty.affineSpan
 
 /-- The affine span of a nonempty set is nonempty. -/
@@ -1539,6 +1539,10 @@ theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f 
   Set.mem_image_of_mem _ h
 #align affine_subspace.mem_map_of_mem AffineSubspace.mem_map_of_mem
 
+-- The simpNF linter says that the LHS can be simplified via `AffineSubspace.mem_map`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
 theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
     (hf : Function.Injective f) : f x ∈ s.map f ↔ x ∈ s :=
   hf.mem_set_image

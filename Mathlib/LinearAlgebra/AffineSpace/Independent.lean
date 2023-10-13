@@ -209,7 +209,7 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
           simp only [Set.indicator, Finset.mem_coe, ite_eq_right_iff]
           intro h
           by_contra
-          exact ( mt (@Set.mem_union_right _ i ↑s2 ↑s1) hi) h
+          exact (mt (@Set.mem_union_right _ i ↑s2 ↑s1) hi) h
         simp [h₁, h₂]
     · intro ha s w hw hs i0 hi0
       let w1 : ι → k := Function.update (Function.const ι 0) i0 1
@@ -737,7 +737,6 @@ theorem sign_eq_of_affineCombination_mem_affineSpan_pair {p : ι → P} (h : Aff
     SignType.sign (w i) = SignType.sign (w j) := by
   rw [affineCombination_mem_affineSpan_pair h hw hw₁ hw₂] at hs
   rcases hs with ⟨r, hr⟩
-  dsimp only at hr
   rw [hr i hi, hr j hj, hi0, hj0, add_zero, add_zero, sub_zero, sub_zero, sign_mul, sign_mul, hij]
 #align sign_eq_of_affine_combination_mem_affine_span_pair sign_eq_of_affineCombination_mem_affineSpan_pair
 
