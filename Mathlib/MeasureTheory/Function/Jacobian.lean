@@ -1278,6 +1278,16 @@ lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_
     integral_image_eq_integral_abs_det_fderiv_smul μ hs hf' (hf.injective.injOn _)]
   simp_rw [smul_eq_mul]
 
+lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul
+    (hs : MeasurableSet s) (f : E ≃ᵐ E)
+    {g : E → ℝ} (hg : ∀ᵐ x ∂μ, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s) μ)
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) :
+    (μ.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
+      = ENNReal.ofReal (∫ x in s, |(f' x).det| * g (f x) ∂μ) := by
+  rw [MeasurableEquiv.map_symm,
+    MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul μ hs
+      f.measurableEmbedding hg hg_int hf']
+
 lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul
     {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
     {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
@@ -1286,7 +1296,17 @@ lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_
       = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
   rw [hf.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul volume hs
     hg hg_int hf']
-  simp [det_one_smulRight]
+  simp only [det_one_smulRight]
+
+lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul
+    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
+    {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
+    {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
+      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
+  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
+      f hg hg_int hf']
+  simp only [det_one_smulRight]
 
 lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul'
     {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
@@ -1297,6 +1317,17 @@ lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_
   hf.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul hs
     (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
     (fun x _ => (hf' x).hasDerivWithinAt)
+
+lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul'
+    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
+    {f' : ℝ → ℝ} (hf' : ∀ x, HasDerivAt f (f' x) x)
+    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
+    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
+      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
+  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
+      f (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
+      (fun x _ => (hf' x).hasDerivWithinAt)]
+  simp only [det_one_smulRight]
 
 end withDensity
 

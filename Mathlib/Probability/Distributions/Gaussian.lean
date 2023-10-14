@@ -230,7 +230,7 @@ section Transformations
 
 variable {Ω : Type} [MeasureSpace Ω] {μ : ℝ} {v : ℝ≥0}
 
-lemma MeasurableEmbedding.gaussianReal_comap_apply (hv : v ≠ 0)
+lemma _root_.MeasurableEmbedding.gaussianReal_comap_apply (hv : v ≠ 0)
     {f : ℝ → ℝ} (hf : MeasurableEmbedding f)
     {f' : ℝ → ℝ} (h_deriv : ∀ x, HasDerivAt f (f' x) x) {s : Set ℝ} (hs : MeasurableSet s) :
     (gaussianReal μ v).comap f s
@@ -239,12 +239,13 @@ lemma MeasurableEmbedding.gaussianReal_comap_apply (hv : v ≠ 0)
   exact hf.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul' hs h_deriv
     (ae_of_all _ (gaussianPdfReal_nonneg _ _)) (integrable_gaussianPdfReal _ _)
 
-lemma MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ ≃ᵐ ℝ) {f' : ℝ → ℝ}
+lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ ≃ᵐ ℝ) {f' : ℝ → ℝ}
     (h_deriv : ∀ x, HasDerivAt f (f' x) x) {s : Set ℝ} (hs : MeasurableSet s) :
     (gaussianReal μ v).map f.symm s
       = ENNReal.ofReal (∫ x in s, |f' x| * gaussianPdfReal μ v (f x)) := by
-  rw [MeasurableEquiv.map_symm,
-    MeasurableEmbedding.gaussianReal_comap_apply hv f.measurableEmbedding h_deriv hs]
+  rw [gaussianReal_of_var_ne_zero _ hv, gaussianPdf_def]
+  exact f.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul' hs h_deriv
+    (ae_of_all _ (gaussianPdfReal_nonneg _ _)) (integrable_gaussianPdfReal _ _)
 
 lemma gaussianReal_map_add_const (y : ℝ) :
     (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
