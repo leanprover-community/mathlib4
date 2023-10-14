@@ -1254,7 +1254,7 @@ abbrev replaceVertex : SimpleGraph V where
   symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
 
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
-theorem not_adj_of_replaceVertex : ¬(G.replaceVertex s t).Adj s t := by simp
+theorem not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp
 
 @[simp]
 theorem replaceVertex_self : G.replaceVertex s s = G := by
@@ -1263,20 +1263,16 @@ theorem replaceVertex_self : G.replaceVertex s s = G := by
 /-- Except possibly for `t`, the neighbours of `s` in `G.replaceVertex s t` are its neighbours in
 `G`. -/
 lemma adj_replaceVertex_iff_of_ne_left {w : V} (hw : w ≠ t) :
-    (G.replaceVertex s t).Adj s w ↔ G.Adj s w := by
-  simp [hw]
+    (G.replaceVertex s t).Adj s w ↔ G.Adj s w := by simp [hw]
 
 /-- Except possibly for itself, the neighbours of `t` in `G.replaceVertex s t` are the neighbours of
 `s` in `G`. -/
 lemma adj_replaceVertex_iff_of_ne_right {w : V} (hw : w ≠ t) :
-    (G.replaceVertex s t).Adj t w ↔ G.Adj s w := by
-  simp [hw]
+    (G.replaceVertex s t).Adj t w ↔ G.Adj s w := by simp [hw]
 
-/-- Adjacency in `G.replaceVertex s t` which does not involve `s` or `t` is the same as that of
-`G`. -/
-lemma adj_replaceVertex_iff_of_ne {v w : V} (hv : v ≠ t) (hw : w ≠ t) (hv' : v ≠ s) (hw' : w ≠ s) :
-    (G.replaceVertex s t).Adj v w ↔ G.Adj v w := by
-  simp [hv, hw, hv', hw']
+/-- Adjacency in `G.replaceVertex s t` which does not involve `t` is the same as that of `G`. -/
+lemma adj_replaceVertex_iff_of_ne {v w : V} (hv : v ≠ t) (hw : w ≠ t) :
+    (G.replaceVertex s t).Adj v w ↔ G.Adj v w := by simp [hv, hw]
 
 end ReplaceVertex
 
