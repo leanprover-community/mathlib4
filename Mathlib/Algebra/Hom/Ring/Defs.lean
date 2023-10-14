@@ -3,12 +3,8 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Data.Pi.Algebra
-import Mathlib.Algebra.Hom.Units
-import Mathlib.Data.Set.Image
 
 #align_import algebra.hom.ring from "leanprover-community/mathlib"@"cf9386b56953fb40904843af98b7a80757bbe7f9"
 
@@ -595,14 +591,6 @@ theorem codomain_trivial_iff_range_trivial : (0 : β) = 1 ↔ ∀ x, f x = 0 :=
     ⟨fun h x => by rw [← mul_one x, map_mul, h, mul_zero], fun h => h 1⟩
 #align ring_hom.codomain_trivial_iff_range_trivial RingHom.codomain_trivial_iff_range_trivial
 
-/-- `f : α →+* β` has a trivial codomain iff its range is `{0}`. -/
-theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.range f = {0} :=
-  f.codomain_trivial_iff_range_trivial.trans
-    ⟨fun h =>
-      Set.ext fun y => ⟨fun ⟨x, hx⟩ => by simp [← hx, h x], fun hy => ⟨0, by simpa using hy.symm⟩⟩,
-      fun h x => Set.mem_singleton_iff.mp (h ▸ Set.mem_range_self x)⟩
-#align ring_hom.codomain_trivial_iff_range_eq_singleton_zero RingHom.codomain_trivial_iff_range_eq_singleton_zero
-
 /-- `f : α →+* β` doesn't map `1` to `0` if `β` is nontrivial -/
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
   mt f.codomain_trivial_iff_map_one_eq_zero.mpr zero_ne_one
@@ -636,20 +624,6 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
     (map_add : ∀ a b, f (a + b) = f a + f b) : α →+* β :=
   { AddMonoidHom.mk' f map_add, f with }
 #align ring_hom.mk' RingHom.mk'
-
-section Semiring
-
-variable [Semiring α] [Semiring β]
-
-theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
-  IsUnit.map f
-#align ring_hom.is_unit_map RingHom.isUnit_map
-
-protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
-  map_dvd f
-#align ring_hom.map_dvd RingHom.map_dvd
-
-end Semiring
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
@@ -747,15 +721,6 @@ theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective 
 #align ring_hom.cancel_left RingHom.cancel_left
 
 end RingHom
-
-/-- Pullback `IsDomain` instance along an injective function. -/
-protected theorem Function.Injective.isDomain [Ring α] [IsDomain α] [Ring β] (f : β →+* α)
-    (hf : Injective f) : IsDomain β := by
-  haveI := pullback_nonzero f f.map_zero f.map_one
-  haveI := IsRightCancelMulZero.to_noZeroDivisors α
-  haveI := hf.noZeroDivisors f f.map_zero f.map_mul
-  exact NoZeroDivisors.to_isDomain β
-#align function.injective.is_domain Function.Injective.isDomain
 
 namespace AddMonoidHom
 
