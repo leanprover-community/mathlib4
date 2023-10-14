@@ -104,6 +104,11 @@ namespace TStructure
 
 section
 
+instance (n : ℤ) (X : C) [t.IsLE X n] : t.IsLE ((shiftFunctor C (1 : ℤ)).obj X) n := by
+  have : t.IsLE (((shiftFunctor C (1 : ℤ))).obj X) (n-1) :=
+    t.isLE_shift X n 1 (n-1) (by linarith)
+  exact t.isLE_of_LE _ (n-1) n (by linarith)
+
 variable (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) [t.IsLE T.obj₁ n]
 
 @[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
@@ -117,7 +122,7 @@ instance : t.IsLE (t.truncLETriangle T n).obj₁ n := by dsimp; infer_instance
 instance : t.IsLE (t.truncLETriangle T n).obj₂ n := by dsimp; infer_instance
 instance : t.IsLE (t.truncLETriangle T n).obj₃ n := by dsimp; infer_instance
 
-/-lemma truncLETriangle_distinguished :
+lemma truncLETriangle_distinguished :
     t.truncLETriangle T n ∈ distTriang C := by
   have := hT
   let a : T.obj₁ ⟶ (t.truncLE n).obj T.obj₂ :=
@@ -127,14 +132,37 @@ instance : t.IsLE (t.truncLETriangle T n).obj₃ n := by dsimp; infer_instance
   obtain ⟨Z, f₂, f₃, h₁⟩ := distinguished_cocone_triangle a
   have h₂ := (t.triangleLEGT_distinguished n T.obj₂)
   have H := someOctahedron comm h₁ h₂ hT
-  refine' isomorphic_distinguished _ h₁ _ _
-  have paf := H.mem
-  have e : (t.truncLE n).obj T.obj₃ ≅ Z := sorry
-  have he₁ : (truncLE t n).map T.mor₂ ≫ e.hom = f₂ := sorry
+  have : t.IsLE Z n := t.isLE₂ _ (rot_of_dist_triangle _ h₁) n
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+  obtain ⟨e, he : e.hom.hom₂ = 𝟙 _⟩ :=
+    t.triangle_iso_exists n (n + 1) (by linarith) _ _
+      (t.triangleLEGE_distinguished n (n + 1) rfl T.obj₃) H.mem (Iso.refl _)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+  have he' : e.inv.hom₂ = 𝟙 _ := by
+    rw [← cancel_mono e.hom.hom₂, ← comp_hom₂, e.inv_hom_id, id_hom₂, he, comp_id]
+  have he₁' : (truncLE t n).map T.mor₂ = f₂ ≫ e.inv.hom₁ := by
+    apply to_truncLE_obj_ext
+    have eq₁ := e.inv.comm₁
+    have eq₂ := H.comm₁
+    dsimp at eq₁ eq₂ ⊢
+    simp only [NatTrans.naturality, Functor.id_map, ← eq₂, assoc, ← eq₁,
+      he', Triangle.mk_obj₂, comp_id]
+  have he₁ : (truncLE t n).map T.mor₂ ≫ e.hom.hom₁ = f₂ := by
+    rw [he₁', assoc, ← comp_hom₁, e.inv_hom_id, id_hom₁]
+    simp only [Triangle.mk_obj₁, comp_id]
   have he₂ : (t.truncLETriangle T n).mor₃ ≫
-    (shiftFunctor C 1).map ((truncLEι t n).app T.obj₁) = e.hom ≫ f₃ := sorry
+    (shiftFunctor C 1).map ((truncLEι t n).app T.obj₁) = e.hom.hom₁ ≫ f₃ := by
+    have eq₁ := H.comm₂
+    have eq₂ := e.hom.comm₁
+    dsimp at eq₁ eq₂
+    dsimp [truncLETriangle]
+    erw [he, comp_id] at eq₂
+    rw [assoc, assoc, ← Functor.map_comp, IsIso.inv_hom_id,
+      Functor.map_id, comp_id, eq₂, assoc, eq₁]
+  refine' isomorphic_distinguished _ h₁ _ _
   exact Triangle.isoMk _ _ (asIso ((t.truncLEι n).app T.obj₁))
-    (Iso.refl _) e (by simp) (by simp [he₁]) he₂-/
+    (Iso.refl _) (Triangle.π₁.mapIso e) (by simp) (by simp [he₁]) he₂
 
 end
 
@@ -238,7 +266,7 @@ instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncLEι n).app X)) 
   dsimp [homology]
   infer_instance
 
-/-def case₂ [t.IsLE T.obj₁ 0] :
+def case₂ [t.IsLE T.obj₁ 0] :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
   have h' := case₁ t (t.truncLETriangle_distinguished T hT 0)
   refine' (ShortComplex.exact_and_epi_g_iff_of_iso _).1 h'
@@ -248,7 +276,7 @@ instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncLEι n).app X)) 
     (asIso ((t.homology 0).map ((t.truncLEι 0).app T.obj₃))) _ _
   all_goals
     dsimp
-    simp only [← Functor.map_comp, NatTrans.naturality, Functor.id_obj, Functor.id_map]-/
+    simp only [← Functor.map_comp, NatTrans.naturality, Functor.id_obj, Functor.id_map]
 
 end
 
