@@ -5,7 +5,6 @@ Authors: Lorenzo Luccioli, Rémy Degenne
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Density
 
 /-!
 # Gaussian distributions over ℝ
