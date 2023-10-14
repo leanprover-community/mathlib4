@@ -23,6 +23,8 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 
 * `Finset.image`: Given a function `f : α → β`, `s.image f` is the image finset in `β`.
 * `Finset.map`: Given an embedding `f : α ↪ β`, `s.map f` is the image finset in `β`.
+* `Finset.filterMap` Given a function `f : α → Option β`, `s.filterMap f` is the image finset in `β`,
+  filtering out `none`s.
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
@@ -656,6 +658,60 @@ theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image
 #align finset.bUnion_singleton Finset.biUnion_singleton
 
 end Image
+
+/-! ### filterMap -/
+
+section FilterMap
+
+/-- `filterMap f s` is a combination filter/map operation on `s`.
+  The function `f : α → Option β` is applied to each element of `s`;
+  if `f a` is `some b` then `b` is included in the result, otherwise
+  `a` is excluded from the resulting finset.
+
+  In notation, `filterMap f s` is the finset `{b : β | ∃ a, f a = some b}`. -/
+-- TODO: should there be `filterImage` too?
+def filterMap (f : α → Option β) (s : Finset α)
+    (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
+  ⟨s.val.filterMap f, s.nodup.filterMap f f_inj⟩
+
+@[simp]
+theorem filterMap_val (f : α → Option β) (s : Finset α)
+    {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'} :
+    (filterMap f s f_inj).1 = s.1.filterMap f :=
+  rfl
+
+@[simp]
+theorem filterMap_empty (f : α → Option β) {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
+    : (∅ : Finset α).filterMap f f_inj = ∅ :=
+  rfl
+
+variable (f : α → Option β) {s t : Finset α} {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
+
+@[simp]
+theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a = some b :=
+  s.val.mem_filterMap f
+
+-- TODO: This was added in analogy to `coe_map`, but is this `simp` lemma even good?
+-- It might be nicer if it coerced `PFun.image f s` instead, but that's ill-typed because `f` is not a `PFun`.
+@[simp, norm_cast]
+theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
+  Set.ext (by simp only [mem_coe, mem_filterMap, Option.mem_def, Set.mem_setOf_eq, implies_true])
+
+-- TODO: Is this lemma worth having? Where should it go? If not, it can just be replaced with `(by simp)`
+-- where it's used
+theorem _root_.Option.mem_some_eucl : ∀ (a a' b : α), b ∈ some a → b ∈ some a' → a = a' :=
+  by simp only [Option.mem_def, Option.some.injEq, forall_eq', forall_eq, implies_true]
+
+@[simp]
+theorem filterMap_some : s.filterMap some Option.mem_some_eucl = s :=
+  ext fun _ => by simp only [mem_filterMap, Option.some.injEq, exists_eq_right]
+
+theorem filterMap_sub_filterMap (h : s ⊆ t) :
+    filterMap f s f_inj ⊆ filterMap f t f_inj := by
+  rw [←val_le_iff] at h ⊢
+  exact Multiset.filterMap_le_filterMap f h
+
+end FilterMap
 
 /-! ### Subtype -/
 
