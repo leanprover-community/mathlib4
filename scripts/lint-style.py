@@ -47,7 +47,9 @@ ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
-ERR_TWS = 15 # Trailing whitespace
+ERR_TWS = 15 # trailing whitespace
+ERR_CLN = 16 # line starts with a colon
+ERR_IND = 17 # second line not correctly indented
 
 exceptions = []
 
@@ -159,6 +161,40 @@ def line_endings_check(lines, path):
         newlines.append((line_nr, line))
     return errors, newlines
 
+def four_spaces_in_second_line(lines, path):
+    # TODO: also fix the space for all lines before ":=", right now we only fix the line after
+    # the first line break
+    errors = []
+    # We never alter the first line, as it does not occur as next_line in the iteration over the
+    # zipped lines below, hence we add it here
+    newlines = [lines[0]]
+    annotated_lines = list(annotate_comments(lines))
+    for (_, line, is_comment), (next_line_nr, next_line, _) in zip(annotated_lines,
+                                                                   annotated_lines[1:]):
+        # Check if the current line matches "(lemma|theorem) .* :"
+        new_next_line = next_line
+        if (not is_comment) and re.search(r"^(protected )?(def|lemma|theorem) (?!.*:=).*(where)?$",
+                                          line):
+            # Calculate the number of spaces before the first non-space character in the next line
+            stripped_next_line = next_line.lstrip()
+            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--")):
+                num_spaces = len(next_line) - len(stripped_next_line)
+                # The match with "| " could potentially match with a different usage of the same
+                # symbol, e.g. some sort of norm. In that case a space is not necessary, so
+                # looking for "| " should be enough.
+                if stripped_next_line.startswith("| ") or line.endswith("where\n"):
+                    # Check and fix if the number of leading space is not 2
+                    if num_spaces != 2:
+                        errors += [(ERR_IND, next_line_nr, path)]
+                        new_next_line = ' ' * 2 + stripped_next_line
+                # Check and fix if the number of leading spaces is not 4
+                else:
+                    if num_spaces != 4:
+                        errors += [(ERR_IND, next_line_nr, path)]
+                        new_next_line = ' ' * 4 + stripped_next_line
+        newlines.append((next_line_nr, new_next_line))
+    return errors, newlines
+
 def long_lines_check(lines, path):
     errors = []
     # TODO: find a good way to break long lines
@@ -250,12 +286,14 @@ def isolated_by_dot_semicolon_check(lines, path):
                 errors += [(ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". "):
             errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", count=1)
+            line = line.replace(". ", "· ", 1)
         if line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
             errors += [(ERR_SEM, line_nr, path)]
             line = line.replace(" ;", ";")
+        if line.lstrip().startswith(":"):
+            errors += [(ERR_CLN, line_nr, path)]
         newlines.append((line_nr, line))
     return errors, newlines
 
@@ -301,6 +339,10 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
         if errno == ERR_TWS:
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
+        if errno == ERR_CLN:
+            output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
+        if errno == ERR_IND:
+            output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
@@ -308,19 +350,19 @@ def lint(path, fix=False):
         # we will modify lines as we go, so we need to keep track of the original line numbers
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
-        errs, newlines = line_endings_check(enum_lines, path)
-        format_errors(errs)
-
-        errs,newlines = long_lines_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = isolated_by_dot_semicolon_check(newlines, path)
-        format_errors(errs)
-        errs,newlines = set_option_check(newlines, path)
-        format_errors(errs)
-        if not import_only_check(newlines, path):
-            errs,newlines = regular_check(newlines, path)
+        newlines = enum_lines
+        for error_check in [line_endings_check,
+                            four_spaces_in_second_line,
+                            long_lines_check,
+                            isolated_by_dot_semicolon_check,
+                            set_option_check]:
+            errs, newlines = error_check(newlines, path)
             format_errors(errs)
-            errs,newlines = banned_import_check(newlines, path)
+
+        if not import_only_check(newlines, path):
+            errs, newlines = regular_check(newlines, path)
+            format_errors(errs)
+            errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:

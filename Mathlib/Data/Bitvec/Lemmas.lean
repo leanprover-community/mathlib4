@@ -43,7 +43,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   conv in addLsb x b =>
     rw [← h]
   clear h
-  simp
+  simp only [List.foldl_append, List.foldl_cons, List.foldl_nil]
   induction' xs with x xs xs_ih generalizing x
   · simp
     unfold addLsb
@@ -88,7 +88,7 @@ theorem toNat_eq_foldr_reverse {n : ℕ} (v : Bitvec n) :
 #align bitvec.to_nat_eq_foldr_reverse Bitvec.toNat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
-  suffices : v.toNat + 1 ≤ 2 ^ n; simpa
+  suffices v.toNat + 1 ≤ 2 ^ n by simpa
   rw [toNat_eq_foldr_reverse]
   cases' v with xs h
   dsimp [Bitvec.toNat, bitsToNat]

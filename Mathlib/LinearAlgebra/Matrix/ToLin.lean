@@ -362,6 +362,10 @@ theorem LinearMap.toMatrix'_id : LinearMap.toMatrix' (LinearMap.id : (n → R) �
 #align linear_map.to_matrix'_id LinearMap.toMatrix'_id
 
 @[simp]
+theorem LinearMap.toMatrix'_one : LinearMap.toMatrix' (1 : (n → R) →ₗ[R] n → R) = 1 :=
+  LinearMap.toMatrix'_id
+
+@[simp]
 theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Matrix m n R) :
     Matrix.toLin' (M * N) = (Matrix.toLin' M).comp (Matrix.toLin' N) :=
   Matrix.mulVecLin_mul _ _
@@ -435,7 +439,7 @@ def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matr
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
 def LinearMap.toMatrixAlgEquiv' : ((n → R) →ₗ[R] n → R) ≃ₐ[R] Matrix n n R :=
-  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_mul LinearMap.toMatrix'_algebraMap
+  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_one LinearMap.toMatrix'_mul
 #align linear_map.to_matrix_alg_equiv' LinearMap.toMatrixAlgEquiv'
 
 /-- A `Matrix n n R` is algebra equivalent to a linear map `(n → R) →ₗ[R] (n → R)`. -/
@@ -708,8 +712,8 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
 equivalence between linear maps `M₁ →ₗ M₁` and square matrices over `R` indexed by the basis. -/
 def LinearMap.toMatrixAlgEquiv : (M₁ →ₗ[R] M₁) ≃ₐ[R] Matrix n n R :=
-  AlgEquiv.ofLinearEquiv (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_mul v₁)
-    (LinearMap.toMatrix_algebraMap v₁)
+  AlgEquiv.ofLinearEquiv
+    (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_one v₁) (LinearMap.toMatrix_mul v₁)
 #align linear_map.to_matrix_alg_equiv LinearMap.toMatrixAlgEquiv
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
@@ -965,7 +969,6 @@ is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
   { LinearMap.toMatrix' with
     map_mul' := LinearMap.toMatrix'_comp
-    map_add' := LinearMap.toMatrix'.map_add
     -- porting note: golfed away messy failing proof
     commutes' := LinearMap.toMatrix'_algebraMap }
 #align alg_equiv_matrix' algEquivMatrix'
@@ -975,7 +978,6 @@ endomorphisms. -/
 def LinearEquiv.algConj (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃ₐ[R] Module.End R M₂ :=
   { e.conj with
     map_mul' := fun f g => by apply e.arrowCongr_comp
-    map_add' := e.conj.map_add
     commutes' := fun r => by
       change e.conj (r • LinearMap.id) = r • LinearMap.id
       rw [LinearEquiv.map_smul, LinearEquiv.conj_id] }

@@ -136,12 +136,10 @@ theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     rw [hf.eq_degree, hm]
   · rcases hg with ⟨hg, m, hm⟩
     let g' := Classical.choose hf
-    cases' (Classical.choose_spec hf).2 with m' hm'
+    obtain ⟨hg', m', hm'⟩ := Classical.choose_spec hf
     haveI : Fact q.Prime := ⟨by assumption⟩
-    apply contraction_degree_eq_or_insep q g g' m m'
+    refine contraction_degree_eq_or_insep q g g' m m' ?_ hg hg'
     rw [hm, hm']
-    exact hg
-    exact (Classical.choose_spec hf).1
 #align polynomial.is_separable_contraction.degree_eq Polynomial.IsSeparableContraction.degree_eq
 
 end Field

@@ -35,7 +35,7 @@ vector space and `ι : Type*` is an arbitrary indexing type.
   (saving you from having to work with `Finsupp`). The converse, turning this isomorphism into
   a basis, is called `Basis.ofEquivFun`.
 
-* `Basis.constr hv f` constructs a linear map `M₁ →ₗ[R] M₂` given the values `f : ι → M₂` at the
+* `Basis.constr b R f` constructs a linear map `M₁ →ₗ[R] M₂` given the values `f : ι → M₂` at the
   basis elements `⇑b : ι → M₁`.
 * `Basis.reindex` uses an equiv to map a basis to a different indexing set.
 * `Basis.map` uses a linear equiv to map a basis to a different module.
@@ -157,9 +157,8 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
 theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total ι M R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
-    _ = ∑ i in v.support, b.repr.symm (Finsupp.single i (v i)) :=
-      by rw [Finsupp.sum, LinearEquiv.map_sum]
-    _ = Finsupp.total ι M R b v := by simp [repr_symm_single, Finsupp.total_apply, Finsupp.sum]
+    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
+    _ = Finsupp.total ι M R b v := by simp only [repr_symm_single, Finsupp.total_apply]
 #align basis.repr_symm_apply Basis.repr_symm_apply
 
 @[simp]
@@ -276,14 +275,14 @@ variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
-  simp only [LinearMap.map_sum, LinearMap.map_smulₛₗ, h]
+  simp only [map_sum, LinearMap.map_smulₛₗ, h]
 #align basis.ext Basis.ext
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
-  simp only [LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ, h]
+  simp only [map_sum, LinearEquiv.map_smulₛₗ, h]
 #align basis.ext' Basis.ext'
 
 /-- Two elements are equal iff their coordinates are equal. -/
@@ -355,6 +354,9 @@ protected def map : Basis ι R M' :=
 theorem map_apply (i) : b.map f i = f (b i) :=
   rfl
 #align basis.map_apply Basis.map_apply
+
+theorem coe_map : (b.map f : ι → M') = f ∘ b :=
+  rfl
 
 end Map
 
@@ -594,7 +596,9 @@ variable (S : Type*) [Semiring S] [Module S M']
 
 variable [SMulCommClass R S M']
 
-/-- Construct a linear map given the value at the basis.
+/-- Construct a linear map given the value at the basis, called `Basis.constr b S f` where `b` is
+a basis, `f` is the value of the linear map over the elements of the basis, and `S` is an
+extra semiring (typically `S = R` or `S = ℕ`).
 
 This definition is parameterized over an extra `Semiring S`,
 such that `SMulCommClass R S M'` holds.
@@ -644,7 +648,7 @@ theorem constr_self (f : M →ₗ[R] M') : (constr (M' := M') b S fun i => f (b 
   b.constr_eq S fun _ => rfl
 #align basis.constr_self Basis.constr_self
 
-theorem constr_range [Nonempty ι] {f : ι → M'} :
+theorem constr_range {f : ι → M'} :
     LinearMap.range (constr (M' := M') b S f) = span R (range f) := by
   rw [b.constr_def S f, LinearMap.range_comp, LinearMap.range_comp, LinearEquiv.range, ←
     Finsupp.supported_univ, Finsupp.lmapDomain_supported, ← Set.image_univ, ←
@@ -1060,7 +1064,7 @@ theorem equiv'_symm_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι'
 theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : ι) :
     (∑ j : ι', b.repr (b' j) i * b'.repr x j) = b.repr x i := by
   conv_rhs => rw [← b'.sum_repr x]
-  simp_rw [LinearEquiv.map_sum, LinearEquiv.map_smul, Finset.sum_apply']
+  simp_rw [map_sum, map_smul, Finset.sum_apply']
   refine' Finset.sum_congr rfl fun j _ => _
   rw [Finsupp.smul_apply, smul_eq_mul, mul_comm]
 #align basis.sum_repr_mul_repr Basis.sum_repr_mul_repr

@@ -268,10 +268,10 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
   ⟨fun h => by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
     rw [WellFounded.fixFEq] at h₂
-    simp at h₂
+    simp only [Part.mem_assert_iff] at h₂
     cases' h₂ with h₂ h₃
     split at h₃
-    next e => simp at h₃; subst b; refine' Or.inl ⟨h₂, e⟩
+    next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
    fun h => by
     simp [fix]

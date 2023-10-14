@@ -395,7 +395,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
 
 end CharP
 
-/-- If `n ≠ 0` in `F`, then ` X ^ n - a` is separable for any `a ≠ 0`. -/
+/-- If `n ≠ 0` in `F`, then `X ^ n - a` is separable for any `a ≠ 0`. -/
 theorem separable_X_pow_sub_C {n : ℕ} (a : F) (hn : (n : F) ≠ 0) (ha : a ≠ 0) :
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C_unit (Units.mk0 a ha) (IsUnit.mk0 (n : F) hn)
@@ -575,9 +575,8 @@ variable [Algebra K S] [Algebra K L]
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
-  let s := ((minpoly K pb.gen).map (algebraMap K L)).roots.toFinset
   let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
-  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype s (fun x => Multiset.mem_toFinset),
+  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
     ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
 #align alg_hom.card_of_power_basis AlgHom.card_of_powerBasis

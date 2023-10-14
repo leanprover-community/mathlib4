@@ -316,15 +316,17 @@ section DerivativesProperties
 
 /-! ### Unique differentiability sets in manifolds -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M]
-  --
-  {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
-  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
+variable
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {f f₀ f₁ : M → M'} {x : M} {s t : Set M} {g : M' → M''} {u : Set M'}
 
 theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
@@ -1105,7 +1107,7 @@ alias ⟨HasMFDerivAt.hasFDerivAt, HasFDerivAt.hasMFDerivAt⟩ := hasMFDerivAt_i
 #align has_mfderiv_at.has_fderiv_at HasMFDerivAt.hasFDerivAt
 #align has_fderiv_at.has_mfderiv_at HasFDerivAt.hasMFDerivAt
 
-/-- For maps between vector spaces, `MDifferentiableWithinAt` and `fdifferentiable_within_at`
+/-- For maps between vector spaces, `MDifferentiableWithinAt` and `DifferentiableWithinAt`
 coincide -/
 theorem mdifferentiableWithinAt_iff_differentiableWithinAt :
     MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x := by
@@ -2021,7 +2023,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [SmoothManifoldWithCorners I' M'] {s : Set M}
 
-/-- If `s` has the unique differential property at `x`, `f` is differetiable within `s` at x` and
+/-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at x` and
 its derivative has Dense range, then `f '' s` has the Unique differential property at `f x`. -/
 theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
     {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivWithinAt I I' f s x f')
@@ -2035,7 +2037,7 @@ theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
     rintro _ ⟨y, ⟨⟨hys, hfy⟩, -⟩, rfl⟩
     exact ⟨⟨_, hys, ((extChartAt I' (f x)).left_inv hfy).symm⟩, mem_range_self _⟩
 
-/-- If `s` has the unique differential, `f` is differetiable on `s` and its derivative at every
+/-- If `s` has the unique differential, `f` is differentiable on `s` and its derivative at every
 point of `s` has dense range, then `f '' s` has the unique differential property. This version
 uses `HaMFDerivWithinAt` predicate. -/
 theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
@@ -2044,7 +2046,7 @@ theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
     UniqueMDiffOn I' (f '' s) :=
   ball_image_iff.2 fun x hx ↦ (hs x hx).image_denseRange (hf x hx) (hd x hx)
 
-/-- If `s` has the unique differential, `f` is differetiable on `s` and its derivative at every
+/-- If `s` has the unique differential, `f` is differentiable on `s` and its derivative at every
 point of `s` has dense range, then `f '' s` has the unique differential property. -/
 theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
     (hf : MDifferentiableOn I I' f s) (hd : ∀ x ∈ s, DenseRange (mfderivWithin I I' f s x)) :

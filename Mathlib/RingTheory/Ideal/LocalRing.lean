@@ -212,8 +212,8 @@ theorem map_localRing [CommSemiring R] [CommSemiring S] [LocalRing S]
 -- what is the best way to make them be so. For now, I am just leaving them
 -- for the legacy code to work.
 
-instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R)
-    where map_nonunit _ := id
+instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
+  map_nonunit _ := id
 #align is_local_ring_hom_id isLocalRingHom_id
 
 instance isLocalRingHom_comp [Semiring R] [Semiring S] [Semiring T] (g : S →+* T) (f : R →+* S)

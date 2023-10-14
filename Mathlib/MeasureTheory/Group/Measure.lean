@@ -3,6 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
@@ -10,6 +11,7 @@ import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.Topology.ContinuousFunction.CocompactMap
+import Mathlib.Topology.Homeomorph
 
 #align_import measure_theory.group.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -245,6 +247,48 @@ theorem isMulLeftInvariant_map {H : Type*} [MeasurableSpace H] [Mul H] [Measurab
 end MeasurableMul
 
 end Mul
+
+section Semigroup
+
+variable [Semigroup G] [MeasurableMul G] {μ : Measure G}
+
+/-- The image of a left invariant measure under a left action is left invariant, assuming that
+the action preserves multiplication. -/
+@[to_additive "The image of a left invariant measure under a left additive action is left invariant,
+assuming that the action preserves addition."]
+theorem isMulLeftInvariant_map_smul
+    {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
+    [IsMulLeftInvariant μ] (a : α) :
+    IsMulLeftInvariant (map (a • · : G → G) μ) :=
+  (forall_measure_preimage_mul_iff _).1 <| fun x _ hs =>
+    (smulInvariantMeasure_map_smul μ a).measure_preimage_smul x hs
+
+/-- The image of a right invariant measure under a left action is right invariant, assuming that
+the action preserves multiplication. -/
+@[to_additive "The image of a right invariant measure under a left additive action is right
+ invariant, assuming that the action preserves addition."]
+theorem isMulRightInvariant_map_smul
+    {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
+    [IsMulRightInvariant μ] (a : α) :
+    IsMulRightInvariant (map (a • · : G → G) μ) :=
+  (forall_measure_preimage_mul_right_iff _).1 <| fun x _ hs =>
+    (smulInvariantMeasure_map_smul μ a).measure_preimage_smul (MulOpposite.op x) hs
+
+/-- The image of a left invariant measure under right multiplication is left invariant. -/
+@[to_additive isMulLeftInvariant_map_add_right
+"The image of a left invariant measure under right addition is left invariant."]
+instance isMulLeftInvariant_map_mul_right [IsMulLeftInvariant μ] (g : G) :
+    IsMulLeftInvariant (map (· * g) μ) :=
+  isMulLeftInvariant_map_smul (MulOpposite.op g)
+
+/-- The image of a right invariant measure under left multiplication is right invariant. -/
+@[to_additive isMulRightInvariant_map_add_left
+"The image of a right invariant measure under left addition is right invariant."]
+instance isMulRightInvariant_map_mul_left [IsMulRightInvariant μ] (g : G) :
+    IsMulRightInvariant (map (g * ·) μ) :=
+  isMulRightInvariant_map_smul g
+
+end Semigroup
 
 section DivInvMonoid
 
@@ -759,6 +803,26 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 #align measure_theory.measure.is_haar_measure_map MeasureTheory.Measure.isHaarMeasure_map
 #align measure_theory.measure.is_add_haar_measure_map MeasureTheory.Measure.isAddHaarMeasure_map
 
+/-- The image of a Haar measure under map of a left action is again a Haar measure. -/
+@[to_additive
+   "The image of a Haar measure under map of a left additive action is again a Haar measure"]
+instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
+    [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
+    [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
+  toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
+  lt_top_of_isCompact K hK := by
+    rw [map_apply (measurable_const_smul _) hK.measurableSet]
+    exact IsCompact.measure_lt_top <| (Homeomorph.isCompact_preimage (Homeomorph.smul a)).2 hK
+  toIsOpenPosMeasure :=
+    (continuous_const_smul a).isOpenPosMeasure_map (MulAction.surjective a)
+
+/-- The image of a Haar measure under right multiplication is again a Haar measure. -/
+@[to_additive isHaarMeasure_map_add_right
+  "The image of a Haar measure under right addition is again a Haar measure."]
+instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
+    IsHaarMeasure (Measure.map (· * g) μ) :=
+  isHaarMeasure_map_smul μ (MulOpposite.op g)
+
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
 nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
@@ -769,6 +833,18 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
     ({ e with } : G ≃ₜ H).toCocompactMap.cocompact_tendsto'
 #align mul_equiv.is_haar_measure_map MulEquiv.isHaarMeasure_map
 #align add_equiv.is_add_haar_measure_map AddEquiv.isAddHaarMeasure_map
+
+/-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
+theorem _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
+    {E F R S : Type*} [Semiring R] [Semiring S]
+    [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]
+    [TopologicalSpace E] [TopologicalAddGroup E] [TopologicalSpace F] [T2Space F]
+    [TopologicalAddGroup F]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    [MeasurableSpace E] [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
+    (L : E ≃SL[σ] F) (μ : Measure E) [IsAddHaarMeasure μ] :
+    IsAddHaarMeasure (μ.map L) :=
+  AddEquiv.isAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
 
 /-- A Haar measure on a σ-compact space is σ-finite.
 

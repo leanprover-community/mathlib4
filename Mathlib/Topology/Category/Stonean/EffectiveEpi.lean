@@ -60,13 +60,13 @@ takes this condition (for all `Z` in `C`) as an assumption.
 
 In the construction in this file we start with this descent condition for all `Z : Stonean` but
 to apply the analogue result on `CompHaus` we need extend this condition to all
-`Z : CompHaus`. We do this by considering the Stone-Czech compactification `βZ → Z`
+`Z : CompHaus`. We do this by considering the Stone-Cech compactification `βZ → Z`
 which is an epi in `CompHaus` covering `Z` where `βZ` lies in the image of `Stonean`.
 -/
 lemma lift_desc_condition {W : Stonean} {e : (a : α) → X a ⟶ W}
     (h : ∀ {Z : Stonean} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
-      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
-    : ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
+      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂) :
+    ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
         g₁ ≫ (π a₁) = g₂ ≫ (π a₂) → g₁ ≫ e a₁ = g₂ ≫ e a₂ := by
   intro Z a₁ a₂ g₁ g₂ hg
   -- The Stone-Cech-compactification `βZ` of `Z : CompHaus` is in `Stonean`
@@ -97,8 +97,7 @@ def struct : EffectiveEpiFamilyStruct X π where
     -- The `fac` on `CompHaus`
     have fac₁ :  F.map (π a ≫ _) = F.map (e a) :=
       EffectiveEpiFamily.fac (F.obj <| X ·) π e (lift_desc_condition π he) a
-    replace fac₁ := Faithful.map_injective fac₁
-    exact fac₁
+    exact Faithful.map_injective fac₁
   uniq := by
     -- The `EffectiveEpiFamily F(X) F(π)` on `CompHaus`
     let fam : EffectiveEpiFamily (F.obj <| X ·) π :=
@@ -109,8 +108,7 @@ def struct : EffectiveEpiFamilyStruct X π where
       simp_all only [toCompHaus_map]
     have uniq₁ : F.map m = F.map _ :=
       EffectiveEpiFamily.uniq (F.obj <| X ·) π e (lift_desc_condition π he) (F.map m) Fhm
-    replace uniq₁ := Faithful.map_injective uniq₁
-    exact uniq₁
+    exact Faithful.map_injective uniq₁
 
 end EffectiveEpiFamily
 
@@ -167,6 +165,11 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Stonean}
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
 
+lemma effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
+    EffectiveEpi f ↔ Function.Surjective f := by
+  rw [← epi_iff_surjective]
+  exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
 end JointlySurjective
 
 section Coherent
@@ -180,7 +183,7 @@ theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
   refine' ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
   exact (((effectiveEpiFamily_tfae _ _).out 0 2).1 H : ∀ _, ∃ _, _) _
 
-instance instPrecoherent: Precoherent Stonean.{u} := by
+instance instPrecoherent : Precoherent Stonean.{u} := by
   constructor
   intro B₁ B₂ f α _ X₁ π₁ h₁
   refine ⟨α, inferInstance, fun a => (CompHaus.pullback f (π₁ a)).presentation, fun a =>

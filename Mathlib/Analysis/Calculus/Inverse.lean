@@ -204,7 +204,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   have Icf' : (c : ℝ) * f'symm.nnnorm < 1 := by rwa [inv_eq_one_div, lt_div_iff If'] at hc
   have Jf' : (f'symm.nnnorm : ℝ) ≠ 0 := ne_of_gt If'
   have Jcf' : (1 : ℝ) - c * f'symm.nnnorm ≠ 0 := by apply ne_of_gt; linarith
-  /- We have to show that `y` can be written as `f x` for some `x ∈ closed_ball b ε`.
+  /- We have to show that `y` can be written as `f x` for some `x ∈ closedBall b ε`.
     The idea of the proof is to apply the Banach contraction principle to the map
     `g : x ↦ x + f'symm (y - f x)`, as a fixed point of this map satisfies `f x = y`.
     When `f'symm` is a genuine linear inverse, `g` is a contracting map. In our case, since `f'symm`
@@ -304,11 +304,11 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         exact (D n).1
       _ = f'symm.nnnorm * dist (f b) y * ((c : ℝ) * f'symm.nnnorm) ^ n := by ring
   obtain ⟨x, hx⟩ : ∃ x, Tendsto u atTop (𝓝 x) := cauchySeq_tendsto_of_complete this
-  -- As all the `uₙ` belong to the ball `closed_ball b ε`, so does their limit `x`.
+  -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
     isClosed_ball.mem_of_tendsto hx (eventually_of_forall fun n => C n _ (D n).2)
   refine' ⟨x, xmem, _⟩
-  -- It remains to check that `f x = y`. This follows from continuity of `f` on `closed_ball b ε`
+  -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
     simp only [nhdsWithin, tendsto_inf, hx, true_and_iff, ge_iff_le, tendsto_principal]
@@ -324,7 +324,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
 
 theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
     (hs : IsOpen s) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : IsOpen (f '' s) := by
-  cases' hc with hE hc; · skip; apply isOpen_discrete
+  cases' hc with hE hc
+  · exact isOpen_discrete _
   simp only [isOpen_iff_mem_nhds, nhds_basis_closedBall.mem_iff, ball_image_iff] at hs ⊢
   intro x hx
   rcases hs x hx with ⟨ε, ε0, hε⟩
@@ -359,15 +360,13 @@ We also assume that either `E = {0}`, or `c < ‖f'⁻¹‖⁻¹`. We use `N` as
 
 variable {f' : E ≃L[𝕜] F} {s : Set E} {c : ℝ≥0}
 
--- mathport name: exprN
 local notation "N" => ‖(f'.symm : F →L[𝕜] E)‖₊
 
 protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.restrict f) := by
   cases' hc with hE hc
-  · haveI : Subsingleton s := ⟨fun x y => Subtype.eq <| @Subsingleton.elim _ hE _ _⟩
-    exact AntilipschitzWith.of_subsingleton
-  convert(f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
+  · exact AntilipschitzWith.of_subsingleton
+  convert (f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
   simp [restrict]
 #align approximates_linear_on.antilipschitz ApproximatesLinearOn.antilipschitz
 
@@ -445,7 +444,7 @@ section
 variable (f s)
 
 /-- Given a function `f` that approximates a linear equivalence on an open set `s`,
-returns a local homeomorph with `to_fun = f` and `source = s`. -/
+returns a local homeomorph with `toFun = f` and `source = s`. -/
 def toLocalHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : LocalHomeomorph E F where
   toLocalEquiv := hf.toLocalEquiv hc
@@ -456,12 +455,31 @@ def toLocalHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
   continuous_invFun := hf.inverse_continuousOn hc
 #align approximates_linear_on.to_local_homeomorph ApproximatesLinearOn.toLocalHomeomorph
 
+@[simp]
+theorem toLocalHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
+    (hf.toLocalHomeomorph f s hc hs : E → F) = f :=
+  rfl
+#align approximates_linear_on.to_local_homeomorph_coe ApproximatesLinearOn.toLocalHomeomorph_coe
+
+@[simp]
+theorem toLocalHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : (hf.toLocalHomeomorph f s hc hs).source = s :=
+  rfl
+#align approximates_linear_on.to_local_homeomorph_source ApproximatesLinearOn.toLocalHomeomorph_source
+
+@[simp]
+theorem toLocalHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
+    (hf.toLocalHomeomorph f s hc hs).target = f '' s :=
+  rfl
+#align approximates_linear_on.to_local_homeomorph_target ApproximatesLinearOn.toLocalHomeomorph_target
+
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
   refine' (hf.toLocalHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl _
-  change f '' univ = univ
-  rw [image_univ, range_iff_surjective]
+  rw [toLocalHomeomorph_target, image_univ, range_iff_surjective]
   exact hf.surjective hc
 #align approximates_linear_on.to_homeomorph ApproximatesLinearOn.toHomeomorph
 
@@ -492,31 +510,11 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
 
 end
 
-@[simp]
-theorem toLocalHomeomorph_coe (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
-    (hf.toLocalHomeomorph f s hc hs : E → F) = f :=
-  rfl
-#align approximates_linear_on.to_local_homeomorph_coe ApproximatesLinearOn.toLocalHomeomorph_coe
-
-@[simp]
-theorem toLocalHomeomorph_source (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : (hf.toLocalHomeomorph f s hc hs).source = s :=
-  rfl
-#align approximates_linear_on.to_local_homeomorph_source ApproximatesLinearOn.toLocalHomeomorph_source
-
-@[simp]
-theorem toLocalHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
-    (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) :
-    (hf.toLocalHomeomorph f s hc hs).target = f '' s :=
-  rfl
-#align approximates_linear_on.to_local_homeomorph_target ApproximatesLinearOn.toLocalHomeomorph_target
-
 theorem closedBall_subset_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) {b : E} (ε0 : 0 ≤ ε) (hε : closedBall b ε ⊆ s) :
     closedBall (f b) ((N⁻¹ - c) * ε) ⊆ (hf.toLocalHomeomorph f s hc hs).target :=
   (hf.surjOn_closedBall_of_nonlinearRightInverse f'.toNonlinearRightInverse ε0 hε).mono hε
-    (Subset.refl _)
+    Subset.rfl
 #align approximates_linear_on.closed_ball_subset_target ApproximatesLinearOn.closedBall_subset_target
 
 end ApproximatesLinearOn
@@ -565,8 +563,7 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
     ∃ s : Set E, a ∈ s ∧ IsOpen s ∧
       ApproximatesLinearOn f (f' : E →L[𝕜] F) s (‖(f'.symm : F →L[𝕜] E)‖₊⁻¹ / 2) := by
   simp only [← and_assoc]
-  refine' ((nhds_basis_opens a).exists_iff _).1 _
-  exact fun s t => ApproximatesLinearOn.mono_set
+  refine ((nhds_basis_opens a).exists_iff fun s t => ApproximatesLinearOn.mono_set).1 ?_
   exact
     hf.approximates_deriv_on_nhds <|
       f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
@@ -657,7 +654,7 @@ theorem localInverse_unique (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {
 #align has_strict_fderiv_at.local_inverse_unique HasStrictFDerivAt.localInverse_unique
 
 /-- If `f` has an invertible derivative `f'` at `a` in the sense of strict differentiability `(hf)`,
-then the inverse function `hf.local_inverse f` has derivative `f'.symm` at `f a`. -/
+then the inverse function `hf.localInverse f` has derivative `f'.symm` at `f a`. -/
 theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     HasStrictFDerivAt (hf.localInverse f f' a) (f'.symm : F →L[𝕜] E) (f a) :=
   (hf.toLocalHomeomorph f).hasStrictFDerivAt_symm hf.image_mem_toLocalHomeomorph_target <| by

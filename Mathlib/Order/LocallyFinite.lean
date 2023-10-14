@@ -86,19 +86,17 @@ We can provide `SuccOrder α` from `LinearOrder α` and `LocallyFiniteOrder α` 
 
 ```lean
 lemma exists_min_greater [LinearOrder α] [LocallyFiniteOrder α] {x ub : α} (hx : x < ub) :
-  ∃ lub, x < lub ∧ ∀ y, x < y → lub ≤ y :=
-begin -- very non golfed
-  have h : (Finset.Ioc x ub).Nonempty := ⟨ub, Finset.mem_Ioc_iff.2 ⟨hx, le_rfl⟩⟩
+    ∃ lub, x < lub ∧ ∀ y, x < y → lub ≤ y := by
+  -- very non golfed
+  have h : (Finset.Ioc x ub).Nonempty := ⟨ub, Finset.mem_Ioc.2 ⟨hx, le_rfl⟩⟩
   use Finset.min' (Finset.Ioc x ub) h
   constructor
-  · have := Finset.min'_mem _ h
-    simp * at *
+  · exact (Finset.mem_Ioc.mp <| Finset.min'_mem _ h).1
   rintro y hxy
   obtain hy | hy := le_total y ub
-  apply Finset.min'_le
-  simp * at *
-  exact (Finset.min'_le _ _ (Finset.mem_Ioc_iff.2 ⟨hx, le_rfl⟩)).trans hy
-end
+  · refine Finset.min'_le (Ioc x ub) y ?_
+    simp [*] at *
+  · exact (Finset.min'_le _ _ (Finset.mem_Ioc.2 ⟨hx, le_rfl⟩)).trans hy
 ```
 Note that the converse is not true. Consider `{-2^z | z : ℤ} ∪ {2^z | z : ℤ}`. Any element has a
 successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's not locally finite
@@ -1472,3 +1470,46 @@ instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } :
   ext
   simp
   rfl
+
+namespace Set
+variable {α : Type*} [Preorder α]
+
+section LocallyFiniteOrder
+variable [LocallyFiniteOrder α]
+
+@[simp] lemma toFinset_Icc (a b : α) [Fintype (Icc a b)] : (Icc a b).toFinset = Finset.Icc a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ico (a b : α) [Fintype (Ico a b)] : (Ico a b).toFinset = Finset.Ico a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ioc (a b : α) [Fintype (Ioc a b)] : (Ioc a b).toFinset = Finset.Ioc a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ioo (a b : α) [Fintype (Ioo a b)] : (Ioo a b).toFinset = Finset.Ioo a b := by
+  ext; simp
+
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderTop
+variable [LocallyFiniteOrderTop α]
+
+@[simp]
+lemma toFinset_Ici (a : α) [Fintype (Ici a)] : (Ici a).toFinset = Finset.Ici a := by ext; simp
+
+@[simp]
+lemma toFinset_Ioi (a : α) [Fintype (Ioi a)] : (Ioi a).toFinset = Finset.Ioi a := by ext; simp
+
+end LocallyFiniteOrderTop
+
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α]
+
+@[simp]
+lemma toFinset_Iic (a : α) [Fintype (Iic a)] : (Iic a).toFinset = Finset.Iic a := by ext; simp
+
+@[simp]
+lemma toFinset_Iio (a : α) [Fintype (Iio a)] : (Iio a).toFinset = Finset.Iio a := by ext; simp
+
+end LocallyFiniteOrderBot
+end Set

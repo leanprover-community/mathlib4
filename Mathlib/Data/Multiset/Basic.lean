@@ -659,7 +659,7 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 #align multiset.le_iff_exists_add Multiset.le_iff_exists_add
 
-instance : CanonicallyOrderedAddMonoid (Multiset α) where
+instance : CanonicallyOrderedAddCommMonoid (Multiset α) where
   __ := inferInstanceAs (OrderBot (Multiset α))
   le_self_add := le_add_right
   exists_add_of_le h := leInductionOn h fun s =>
@@ -3039,15 +3039,15 @@ def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
     (by
       intros a b _
       funext hp
-      suffices all_equal : ∀ x y : { t // t ∈ b ∧ p t }, x = y
-      · apply all_equal
-      · rintro ⟨x, px⟩ ⟨y, py⟩
-        rcases hp with ⟨z, ⟨_z_mem_l, _pz⟩, z_unique⟩
-        congr
-        calc
-          x = z := z_unique x px
-          _ = y := (z_unique y py).symm
-          )
+      suffices all_equal : ∀ x y : { t // t ∈ b ∧ p t }, x = y by
+        apply all_equal
+      rintro ⟨x, px⟩ ⟨y, py⟩
+      rcases hp with ⟨z, ⟨_z_mem_l, _pz⟩, z_unique⟩
+      congr
+      calc
+        x = z := z_unique x px
+        _ = y := (z_unique y py).symm
+        )
 #align multiset.choose_x Multiset.chooseX
 
 /-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `choose p l hp` returns

@@ -30,7 +30,7 @@ universe u v
 
 open BigOperators
 
-variable {R S : Type u} {x y : R}
+variable {R S : Type*} {x y : R}
 
 /-- An element is said to be nilpotent if some natural-number-power of it equals zero.
 
@@ -55,6 +55,18 @@ theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   rw [neg_pow, hn, mul_zero]
 #align is_nilpotent.neg IsNilpotent.neg
 
+lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
+  obtain ⟨N,hN⟩ := hx
+  use N
+  rw [←pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+
+lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
+  cases n with
+  | zero => contradiction
+  | succ => exact IsNilpotent.pow hx
+
 @[simp]
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
@@ -75,7 +87,7 @@ theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsU
     simp
 
 theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilpotent r)
-  (hru : Commute r (↑u⁻¹ : R)) : IsUnit (u + r) := by
+    (hru : Commute r (↑u⁻¹ : R)) : IsUnit (u + r) := by
   rw [← Units.isUnit_mul_units _ u⁻¹, add_mul, Units.mul_inv, ← IsUnit.neg_iff, add_comm, neg_add,
     ← sub_eq_add_neg]
   obtain ⟨n, hn⟩ := hnil
