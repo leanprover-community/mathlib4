@@ -402,13 +402,13 @@ theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
 
 @[to_additive]
 theorem mulRothNumber_lt_of_forall_not_mulSalemSpencer
-    (h : ∀ t ∈ powersetLen n s, ¬MulSalemSpencer ((t : Finset α) : Set α)) :
+    (h : ∀ t ∈ powersetCard n s, ¬MulSalemSpencer ((t : Finset α) : Set α)) :
     mulRothNumber s < n := by
   obtain ⟨t, hts, hcard, ht⟩ := mulRothNumber_spec s
   rw [← hcard, ← not_le]
   intro hn
   obtain ⟨u, hut, rfl⟩ := exists_smaller_set t n hn
-  exact h _ (mem_powersetLen.2 ⟨hut.trans hts, rfl⟩) (ht.mono hut)
+  exact h _ (mem_powersetCard.2 ⟨hut.trans hts, rfl⟩) (ht.mono hut)
 #align mul_roth_number_lt_of_forall_not_mul_salem_spencer mulRothNumber_lt_of_forall_not_mulSalemSpencer
 #align add_roth_number_lt_of_forall_not_add_salem_spencer addRothNumber_lt_of_forall_not_addSalemSpencer
 
