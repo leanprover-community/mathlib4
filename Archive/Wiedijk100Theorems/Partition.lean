@@ -302,14 +302,14 @@ theorem num_series' [Field α] (i : ℕ) :
       symm
       split_ifs with h
       · suffices
-          ((Nat.antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
+          ((antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
             1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
         cases' h with p hp
         refine' ⟨((i + 1) * (p - 1), i + 1), _⟩
         ext ⟨a₁, a₂⟩
-        simp only [mem_filter, Prod.mk.inj_iff, Nat.mem_antidiagonal, mem_singleton]
+        simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
           refine' ⟨_, rfl⟩
@@ -319,12 +319,12 @@ theorem num_series' [Field α] (i : ℕ) :
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (Nat.antidiagonal n.succ)).card =
+          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal n.succ)).card =
             0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
         apply eq_empty_of_forall_not_mem
-        simp only [Prod.forall, mem_filter, not_and, Nat.mem_antidiagonal]
+        simp only [Prod.forall, mem_filter, not_and, mem_antidiagonal]
         rintro _ h₁ h₂ ⟨a, rfl⟩ rfl
         apply h
         simp [← h₂]
