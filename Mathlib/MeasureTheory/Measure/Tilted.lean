@@ -8,19 +8,20 @@ import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 /-!
 # Exponentially tilted measures
 
+The exponential tilting of a measure `μ` on `α` by a function `f : α → ℝ` is the measure with
+density `x ↦ exp (f x - log ∫ x, exp (f x) ∂μ)` with respect to `μ`. This is sometimes also called
+the Esscher transform, after F. Esscher who introduced it for `f` linear in
+[esscher1932probability].
+
+The definition is mostly used for `f` linear, in which case the exponentially tilted measure belongs
+to the natural exponential family of the base measure. Exponentially tilted measures for general `f`
+are used for example to establish variational expressions for the Kullback-Leibler divergence.
+
 ## Main definitions
 
-* `FooBar`
-
-## Main statements
-
-* `fooBar_unique`
-
-## References
-
-TODO: cite Esscher 1932
-
-* [F. Bar, *Quuxes*][bibkey]
+* `logIntegralExp μ f`: the quantity `log (∫ x, exp (f x) ∂μ)`.
+* `Measure.tilted μ f`: exponential tilting of `μ` by `f`, equal to
+  `μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x - logIntegralExp μ f)))`.
 
 -/
 
