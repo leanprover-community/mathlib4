@@ -222,7 +222,7 @@ instance isLocalRingHom_comp [Semiring R] [Semiring S] [Semiring T] (g : S →+*
 #align is_local_ring_hom_comp isLocalRingHom_comp
 
 theorem isLocalRingHom_of_comp [Semiring R] [Semiring S] [Semiring T] (f : R →+* S) (g : S →+* T)
-  [IsLocalRingHom (g.comp f)] : IsLocalRingHom f :=
+    [IsLocalRingHom (g.comp f)] : IsLocalRingHom f :=
   ⟨fun _ ha => IsUnit.of_map (g.comp f) _ (ha.map g)⟩
 #align is_local_ring_hom_of_comp isLocalRingHom_of_comp
 
