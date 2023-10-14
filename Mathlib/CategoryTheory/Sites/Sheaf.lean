@@ -655,7 +655,21 @@ end
 
 section Concrete
 
-variable [HasPullbacks C]
+theorem isSheaf_of_isSheaf_forget (s : A ⥤ Type w) [ReflectsLimitsOfSize.{v₁, max v₁ u₁} s]
+    (h : IsSheaf J (P ⋙ s)) : IsSheaf J P := by
+  rw [isSheaf_iff_isLimit] at h ⊢
+  exact fun X S hS ↦ (h S hS).map fun t ↦ isLimitOfReflects s t
+
+theorem isSheaf_forget_of_isSheaf (s : A ⥤ Type w) [PreservesLimitsOfSize.{v₁, max v₁ u₁} s]
+    (h : IsSheaf J P) : IsSheaf J (P ⋙ s) := by
+  rw [isSheaf_iff_isLimit] at h ⊢
+  apply fun X S hS ↦ (h S hS).map fun t ↦ isLimitOfPreserves s t
+
+theorem isSheaf_iff_isSheaf_forget' (s : A ⥤ Type w) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
+    [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [ReflectsIsomorphisms s] :
+    IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
+  letI : ReflectsLimitsOfSize s := reflectsLimitsOfReflectsIsomorphisms
+  exact ⟨isSheaf_forget_of_isSheaf J P s, isSheaf_of_isSheaf_forget J P s⟩
 
 /--
 For a concrete category `(A, s)` where the forgetful functor `s : A ⥤ Type v` preserves limits and
@@ -666,19 +680,11 @@ Note this lemma applies for "algebraic" categories, eg groups, abelian groups an
 for the category of topological spaces, topological rings, etc since reflecting isomorphisms doesn't
 hold.
 -/
-theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
+theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [h : HasLimits A'] [PreservesLimits s]
     [ReflectsIsomorphisms s] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
-  rw [isSheaf_iff_isSheaf', isSheaf_iff_isSheaf']
-  refine' forall_congr' (fun U => ball_congr (fun R _ => _))
-  letI : ReflectsLimits s := reflectsLimitsOfReflectsIsomorphisms
-  have : IsLimit (s.mapCone (Fork.ofι _ (w R P'))) ≃ IsLimit (Fork.ofι _ (w R (P' ⋙ s))) :=
-    isSheafForIsSheafFor' P' s U R
-  rw [← Equiv.nonempty_congr this]
-  constructor
-  · haveI := preservesSmallestLimitsOfPreservesLimits s
-    exact Nonempty.map fun t => isLimitOfPreserves s t
-  · haveI := reflectsSmallestLimitsOfReflectsLimits s
-    exact Nonempty.map fun t => isLimitOfReflects s t
+  have : HasLimitsOfSize.{v₁, max v₁ u₁} A' := hasLimitsOfSizeShrink.{_, _, u₁, 0} A'
+  have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSizeShrink.{_, 0, _, u₁} s
+  apply isSheaf_iff_isSheaf_forget'
 #align category_theory.presheaf.is_sheaf_iff_is_sheaf_forget CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget
 
 end Concrete
