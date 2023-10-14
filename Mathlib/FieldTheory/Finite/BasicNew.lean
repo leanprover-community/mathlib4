@@ -42,6 +42,10 @@ in this file we take the `Fintype Kˣ` argument directly to reduce the chance of
 diamonds, as `Fintype` carries data.
 -- REVIEWERS: this needs a library note, this is a general design principle
 
+In this file, we use `K` for a general ring; because in this case, all "general rings" are actually
+fields, just not assumed to be such by Lean; this follows by Wedderburn's Little Theorem,
+but it is overkill to import this into this file; we use the weak form instead to lift some results.
+
 -/
 
 /-
@@ -52,6 +56,9 @@ CHANGES apart from moving and re-sorting:
 * `FiniteField.{X_pow_card_sub_X_natDegree_eq, X_pow_card_pow_sub_X_natDegree_eq, X_pow_card_sub_X_ne_zero, X_pow_card_pow_sub_X_ne_zero}` → `Polynomial.*`, generalised from `Field` to `Ring` + `Nontrivial`.
 * `FiniteField.card_image_polynomial_eval` → `Fintype.card_le_deg_mul_card_image_polynomial_eval`, added `nontriviality`.
 * `ZMod.sq_add_sq` generalised to be for all finite fields (no longer requires that char ≠ 2)
+* `sum_pow_units`: changed to use `Fintype Kˣ`
+* Also turned a bunch of `Field K` into cancellative `K` by using the weak Wedderburn; similarly for
+  `DivisionRing K` etc
 
 Note that NoZeroDivisors + Nontrivial is no longer equivalent to IsDomain (for semirings)
 
@@ -402,9 +409,11 @@ theorem Finite.exists_sq_add_sq (x : R) : ∃ a b : R, a ^ 2 + b ^ 2 = x := by
   cases' em' (q % 2 = 1) with h h
   · rw [Nat.mod_two_ne_one, ← Nat.dvd_iff_mod_eq_zero, ←prime_dvd_char_iff_dvd_card,
         (ringChar_is_prime R).dvd_iff_eq <| by norm_num] at h
-    have := h ▸ ringChar.charP R
+    have t : CharP R 2 := h ▸ ringChar.charP R
+    -- another workaround for another caching bug
+    --have := this
     -- REVIEWERS: if I do it without the `@ + _` it won't infer the instance?
-    obtain ⟨x, rfl⟩ := @isSquare_of_charTwo' _ _ _ _ this x
+    obtain ⟨x, rfl⟩ := isSquare_of_charTwo' x
     exact ⟨x, 0, by simp [sq]⟩
   let f : R[X] := X ^ 2
   let g : R[X] := X ^ 2 - C x
@@ -415,67 +424,47 @@ theorem Finite.exists_sq_add_sq (x : R) : ∃ a b : R, a ^ 2 + b ^ 2 = x := by
   simpa only [eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
 #align zmod.sq_add_sq Finite.exists_sq_add_sq
 
-end NoZeroDivisors
+-- REVIEWERS: check every theorem has the correct signature
+variable (R)
 
-section IsDomain
-
-variable [IsDomain R]
-
-end IsDomain
-
-end CommRing
-
-section Field
-
-local notation "q" => Fintype.card K
-
-variable [Field K]
-
--- REVIEWERS: sort this out first - the issue is basically `card_units` so this can be
--- generalised appropriately
-theorem FiniteField.forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
-  classical
-    obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
-    rw [← Fintype.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
-      orderOf_dvd_iff_pow_eq_one]
-    constructor
-    · intro h; apply h
-    · intro h y
-      simp_rw [← mem_powers_iff_mem_zpowers] at hx
-      rcases hx y with ⟨j, rfl⟩
-      rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
-#align finite_field.forall_pow_eq_one_iff FiniteField.forall_pow_eq_one_iff
-
-theorem FiniteField.sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0 := by
+-- edit Chevalley-Warning
+theorem FiniteField.sum_pow_lt_card_sub_one {i : ℕ} (h : i < q - 1) :
+    ∑ x : R, x ^ i = 0 := by
+  nontriviality R
+  have := NoZeroDivisors.to_isDomain R
+  -- this proof is _very_ delicate about how it wants `classical` to be used; moving `classical!`
+  -- up here fails, and so does using just `classical` instead of it without extreme care.
+  -- note also that deleting `Field R` causes this not to be placed in the instance cache.
+  let inst : Field R := by classical exact Fintype.fieldOfDomain R
   rcases eq_or_ne i 0 with rfl | hi
   · simp only [nsmul_one, sum_const, pow_zero, card_univ, CharP.cast_card_eq_zero]
-  classical
+  classical!
   rw [←Fintype.card_units, ←Subgroup.card_top] at h
-  have key := Fintype.sum_subgroup_pow_eq_zero (R := K) (G := ⊤) hi (by convert h)
-  erw [Subgroup.sum_top ((· : Kˣ → K) ^ i : Kˣ → K)] at key
+  have key := Fintype.sum_subgroup_pow_eq_zero (R := R) (G := ⊤) hi (by convert h)
+  erw [Subgroup.sum_top ((· : Rˣ → R) ^ i : Rˣ → R)] at key
   rw [←sum_units_nonunits, ← key]
   simp [hi]
 
-theorem FiniteField.roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
+-- can be finished!
+theorem sum_pow_units [Fintype Rˣ] (i : ℕ) :
+    (∑ x : Rˣ, (x ^ i : R)) = if q - 1 ∣ i then -1 else 0 := by
+  nontriviality R
   classical
-    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
-    have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
-      rw [eq_univ_iff_forall]
-      intro x
-      rw [Multiset.mem_toFinset, mem_roots aux, IsRoot.def, eval_sub, eval_pow, eval_X,
-        sub_eq_zero, Fintype.pow_card]
-    rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
-    apply nodup_roots
-    rw [separable_def]
-    convert isCoprime_one_right.neg_right (R := K[X]) using 1
-    rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero K, C_0,
-      zero_mul, zero_sub]
-set_option linter.uppercaseLean3 false in
-#align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
+  have := FiniteField.sum_pow_lt_card_sub_one R (Nat.mod_lt i <| by simpa using Fintype.one_lt_card)
+  rw [←sum_units_nonunits] at this
+  sorry
+  --have := pow_eq_mod_card -- need this for finite fields; grr
+  --split_ifs
 
-theorem FiniteField.frobenius_pow [Fact p.Prime] [CharP K p] (hcard : q = p ^ n) :
-    frobenius K p ^ n = 1 := by
-  ext x; conv_rhs => rw [RingHom.one_def, RingHom.id_apply, ← Fintype.pow_card x, hcard]
+
+theorem FiniteField.frobenius_pow [Fact p.Prime] [CharP R p] (hcard : q = p ^ n) :
+    frobenius R p ^ n = 1 := by
+  ext x
+  nontriviality R
+  classical
+  have := NoZeroDivisors.to_isDomain R
+  let inst := Fintype.fieldOfDomain R
+  conv_rhs => rw [RingHom.one_def, RingHom.id_apply, ← Fintype.pow_card x, hcard]
   clear hcard
   induction' n with n hn
   · simp
@@ -483,12 +472,62 @@ theorem FiniteField.frobenius_pow [Fact p.Prime] [CharP K p] (hcard : q = p ^ n)
 #align finite_field.frobenius_pow FiniteField.frobenius_pow
 
 open Polynomial in
-theorem FiniteField.expand_card (f : K[X]) : expand K q f = f ^ q := by
-  cases' CharP.exists K with p hp
-  rcases FiniteField.card K p with ⟨n, hp, hn⟩
+theorem FiniteField.expand_card (f : R[X]) : expand R q f = f ^ q := by
+  nontriviality R
+  have := NoZeroDivisors.to_isDomain R
+  cases' CharP.exists R with p hp
+  rcases FiniteField.card R p with ⟨n, hp, hn⟩
   have : Fact p.Prime := ⟨hp⟩
   rw [hn, ← map_expand_pow_char, frobenius_pow hn, RingHom.one_def, map_id]
 #align finite_field.expand_card FiniteField.expand_card
+
+end NoZeroDivisors
+
+section IsDomain
+
+variable [IsDomain R]
+
+-- REVIEWERS: sort this out first - the issue is basically `card_units` so this can be
+-- generalised appropriately
+-- second note: I have absolutely no clue what I meant with the note above,
+-- if anyone does then please let me know :)
+theorem FiniteField.forall_pow_eq_one_iff (i : ℕ) : (∀ x : Rˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
+  classical
+  let inst := Fintype.fieldOfDomain R
+  obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Rˣ)
+  rw [← Fintype.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
+    orderOf_dvd_iff_pow_eq_one]
+  constructor
+  · intro h; apply h
+  · intro h y
+    simp_rw [← mem_powers_iff_mem_zpowers] at hx
+    rcases hx y with ⟨j, rfl⟩
+    rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
+#align finite_field.forall_pow_eq_one_iff FiniteField.forall_pow_eq_one_iff
+
+theorem FiniteField.roots_X_pow_card_sub_X : (X ^ q - X : R[X]).roots = Finset.univ.val := by
+  classical
+  let inst := Fintype.fieldOfDomain R
+  have aux : (X ^ q - X : R[X]) ≠ 0 := X_pow_card_sub_X_ne_zero R Fintype.one_lt_card
+  have : (roots (X ^ q - X : R[X])).toFinset = Finset.univ := by
+    rw [eq_univ_iff_forall]
+    intro x
+    rw [Multiset.mem_toFinset, mem_roots aux, IsRoot.def, eval_sub, eval_pow, eval_X,
+      sub_eq_zero, Fintype.pow_card]
+  rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
+  apply nodup_roots
+  rw [separable_def]
+  convert isCoprime_one_right.neg_right (R := R[X]) using 1
+  rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero R, C_0,
+    zero_mul, zero_sub]
+set_option linter.uppercaseLean3 false in
+#align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
+
+end IsDomain
+
+end CommRing
+
+section Field
 
 end Field
 
