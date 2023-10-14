@@ -853,14 +853,6 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
 termination_by _ n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
-lemma antidiagonal_rfl (μ : Type*) [AddMonoid μ]
-    [H1 : Finset.HasAntidiagonal μ] [H2 : Finset.HasAntidiagonal μ]
-    (n : μ) :
-    H1.antidiagonal n = H2.antidiagonal n := by
-  have : H1 = H2 := by apply Subsingleton.elim
-  rw [this]
-
-
 theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :
     coeff R n (inv.aux a φ) =
       if n = 0 then a
@@ -874,7 +866,6 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
   · rfl
   · apply congr_arg₂ _ rfl
     apply Finset.sum_congr
-    apply antidiagonal_rfl
     rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
     intros; simp only [dite_eq_ite]; rfl
 #align mv_power_series.coeff_inv_aux MvPowerSeries.coeff_inv_aux
