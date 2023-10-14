@@ -154,6 +154,15 @@ variable [Module R M₁] [Module R M₂]
       Q₂.polarBilin.comp (.snd _ _ _) (.snd _ _ _) :=
   BilinForm.ext <| polar_prod _ _
 
+@[simp] theorem associated_prod [Invertible (2 : R)]
+    (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    associated (Q₁.prod Q₂) =
+      Q₁.associated.comp (.fst _ _ _) (.fst _ _ _) +
+      Q₂.associated.comp (.snd _ _ _) (.snd _ _ _) := by
+  dsimp [associated, associatedHom]
+  rw [polarBilin_prod, smul_add]
+  rfl
+
 end Ring
 
 end Prod
@@ -257,6 +266,12 @@ variable [Fintype ι]
 @[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
     (pi Q).polarBilin = ∑ i, (Q i).polarBilin.comp (.proj i) (.proj i) :=
   BilinForm.ext <| fun x y => (polar_pi _ _ _).trans <| by simp
+
+@[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
+    associated (pi Q) = ∑ i, (Q i).associated.comp (.proj i) (.proj i) := by
+  dsimp [associated, associatedHom]
+  rw [polarBilin_pi, Finset.smul_sum]
+  rfl
 
 end Ring
 
