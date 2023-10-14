@@ -265,9 +265,9 @@ theorem cliqueFree_of_replaceVertex_cliqueFree [DecidableEq α] (s t : α) (h : 
       split_ifs with h1 h2 h2
       · simp_all
       · have := (@ha b x).mpr h2
-        split_ifs at this; simp_all only; tauto
+        split_ifs at this; subst h1; tauto
       · have := (@ha a x).mpr h1
-        split_ifs at this; simp_all only
+        split_ifs at this; subst h2; tauto
       · rw [← @ha a b]
         have := (@hi a x).mt h1
         have := (@hi b x).mt h2
