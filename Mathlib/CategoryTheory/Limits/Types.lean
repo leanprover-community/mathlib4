@@ -33,7 +33,7 @@ namespace CategoryTheory.Limits.Types
 
 section limit_characterization
 
-variable{J : Type v} [Category J] {F : J ⥤ Type u}
+variable {J : Type v} [Category J] {F : J ⥤ Type u}
 
 /-- Given a section of a functor F into `Type*`,
   construct a cone over F with `PUnit` as the cone point. -/
