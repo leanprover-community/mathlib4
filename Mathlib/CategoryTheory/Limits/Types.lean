@@ -204,8 +204,8 @@ noncomputable def limitEquivSections (F : J ⥤ Type u) :
 
 @[simp]
 theorem limitEquivSections_apply (F : J ⥤ Type u) (x : limit F) (j : J) :
-    ((limitEquivSections.{v, u} F) x : ∀ j, F.obj j) j = limit.π F j x := by
-  simp [limitEquivSections, isLimitEquivSections, IsLimit.conePointUniqueUpToIso]
+    ((limitEquivSections.{v, u} F) x : ∀ j, F.obj j) j = limit.π F j x :=
+  isLimitEquivSections_apply _ _ _
 #align category_theory.limits.types.limit_equiv_sections_apply CategoryTheory.Limits.Types.limitEquivSections_apply
 
 @[simp]
