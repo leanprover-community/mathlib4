@@ -681,8 +681,8 @@ theorem filterMap_val (f : α → Option β) (s : Finset α)
   rfl
 
 @[simp]
-theorem filterMap_empty (f : α → Option β) {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
-    : (∅ : Finset α).filterMap f f_inj = ∅ :=
+theorem filterMap_empty (f : α → Option β) {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'} :
+    (∅ : Finset α).filterMap f f_inj = ∅ :=
   rfl
 
 variable (f : α → Option β) {s t : Finset α} {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
