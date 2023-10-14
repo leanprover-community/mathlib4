@@ -50,13 +50,36 @@ def section_of_cone (c : Cone F) (x : c.pt) : F.sections :=
 
 theorem isLimit_iff (c : Cone F) :
     Nonempty (IsLimit c) ↔ ∀ s ∈ F.sections, ∃! x : c.pt, ∀ i, c.π.app i x = s i := by
-  refine ⟨fun ⟨l⟩ s hs ↦ ?_, fun h ↦ ⟨?_⟩⟩
+  refine ⟨fun ⟨t⟩ s hs ↦ ?_, fun h ↦ ⟨?_⟩⟩
   · let cs := cone_of_section hs
-    exact ⟨l.lift cs ⟨⟩, fun j ↦ congr_fun (l.fac cs j) ⟨⟩,
-      fun x hx ↦ congr_fun (l.uniq cs (fun _ ↦ x) fun j ↦ funext fun _ ↦ hx j) ⟨⟩⟩
+    exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_fun (t.fac cs j) ⟨⟩,
+      fun x hx ↦ congr_fun (t.uniq cs (fun _ ↦ x) fun j ↦ funext fun _ ↦ hx j) ⟨⟩⟩
   · choose x hx using fun (c : Cone F) (y : c.pt) ↦ h _ (section_of_cone c y).2
     exact ⟨x, fun c j ↦ funext fun y ↦ (hx c y).1 j,
       fun c f hf ↦ funext fun y ↦ (hx c y).2 (f y) (fun j ↦ congr_fun (hf j) y)⟩
+
+/-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
+sections of `F`.
+-/
+noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
+    c.pt ≃ F.sections where
+  toFun := section_of_cone c
+  invFun s := t.lift (cone_of_section s.2) ⟨⟩
+  left_inv x := (congr_fun (t.uniq (cone_of_section _) (fun _ ↦ x) fun _ ↦ rfl) ⟨⟩).symm
+  right_inv s := Subtype.ext <| funext fun j ↦ congr_fun (t.fac (cone_of_section s.2) j) ⟨⟩
+#align category_theory.limits.types.is_limit_equiv_sections CategoryTheory.Limits.Types.isLimitEquivSections
+
+@[simp]
+theorem isLimitEquivSections_apply {c : Cone F} (t : IsLimit c) (j : J)
+    (x : c.pt) : (isLimitEquivSections t x : ∀ j, F.obj j) j = c.π.app j x := rfl
+#align category_theory.limits.types.is_limit_equiv_sections_apply CategoryTheory.Limits.Types.isLimitEquivSections_apply
+
+@[simp]
+theorem isLimitEquivSections_symm_apply {c : Cone F} (t : IsLimit c)
+    (x : F.sections) (j : J) :
+    c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j := by
+  conv_rhs => rw [← (isLimitEquivSections t).right_inv x]
+#align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 end limit_characterization
 
@@ -152,29 +175,6 @@ section UnivLE
 
 open UnivLE
 variable [UnivLE.{v, u}]
-
-/-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
-sections of `F`.
--/
-noncomputable def isLimitEquivSections {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c) :
-    c.pt ≃ F.sections :=
-  (IsLimit.conePointUniqueUpToIso t (UnivLE.limitConeIsLimit.{v, u} F)).toEquiv.trans
-    (equivShrink _).symm
-#align category_theory.limits.types.is_limit_equiv_sections CategoryTheory.Limits.Types.isLimitEquivSections
-
-@[simp]
-theorem isLimitEquivSections_apply {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c) (j : J)
-    (x : c.pt) : ((isLimitEquivSections.{v, u} t) x : ∀ j, F.obj j) j = c.π.app j x := by
-  simp [isLimitEquivSections, IsLimit.conePointUniqueUpToIso]
-#align category_theory.limits.types.is_limit_equiv_sections_apply CategoryTheory.Limits.Types.isLimitEquivSections_apply
-
-@[simp]
-theorem isLimitEquivSections_symm_apply {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c)
-    (x : F.sections) (j : J) :
-    c.π.app j ((isLimitEquivSections.{v, u} t).symm x) = (x : ∀ j, F.obj j) j := by
-  obtain ⟨x, rfl⟩ := (isLimitEquivSections.{v, u} t).surjective x
-  simp
-#align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 /--
 The category of types has all limits.
