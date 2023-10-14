@@ -246,6 +246,15 @@ namespace Set
 
 variable [Preorder α] {p : α → Prop}
 
+@[simp] lemma preimage_subtype_val_Ici (a : {x // p x}) : (↑) ⁻¹' (Ici a.1) = Ici a := rfl
+@[simp] lemma preimage_subtype_val_Iic (a : {x // p x}) : (↑) ⁻¹' (Iic a.1) = Iic a := rfl
+@[simp] lemma preimage_subtype_val_Ioi (a : {x // p x}) : (↑) ⁻¹' (Ioi a.1) = Ioi a := rfl
+@[simp] lemma preimage_subtype_val_Iio (a : {x // p x}) : (↑) ⁻¹' (Iio a.1) = Iio a := rfl
+@[simp] lemma preimage_subtype_val_Icc (a b : {x // p x}) : (↑) ⁻¹' (Icc a.1 b) = Icc a b := rfl
+@[simp] lemma preimage_subtype_val_Ico (a b : {x // p x}) : (↑) ⁻¹' (Ico a.1 b) = Ico a b := rfl
+@[simp] lemma preimage_subtype_val_Ioc (a b : {x // p x}) : (↑) ⁻¹' (Ioc a.1 b) = Ioc a b := rfl
+@[simp] lemma preimage_subtype_val_Ioo (a b : {x // p x}) : (↑) ⁻¹' (Ioo a.1 b) = Ioo a b := rfl
+
 theorem image_subtype_val_Icc_subset (a b : {x // p x}) :
     Subtype.val '' Icc a b ⊆ Icc a.val b.val :=
   image_subset_iff.mpr fun _ m => m

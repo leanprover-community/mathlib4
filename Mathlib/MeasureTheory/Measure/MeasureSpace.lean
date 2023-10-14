@@ -1579,7 +1579,6 @@ theorem restrict_le_self : μ.restrict s ≤ μ := fun t ht =>
   calc
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
     _ ≤ μ t := measure_mono <| inter_subset_left t s
-
 #align measure_theory.measure.restrict_le_self MeasureTheory.Measure.restrict_le_self
 
 variable (μ)
@@ -1591,7 +1590,6 @@ theorem restrict_eq_self (h : s ⊆ t) : μ.restrict t s = μ s :=
         measure_mono (subset_inter (subset_toMeasurable _ _) h)
       _ = μ.restrict t s := by
         rw [← restrict_apply (measurableSet_toMeasurable _ _), measure_toMeasurable]
-
 #align measure_theory.measure.restrict_eq_self MeasureTheory.Measure.restrict_eq_self
 
 @[simp]
@@ -1609,7 +1607,6 @@ theorem le_restrict_apply (s t : Set α) : μ (t ∩ s) ≤ μ.restrict s t :=
   calc
     μ (t ∩ s) = μ.restrict s (t ∩ s) := (restrict_eq_self μ (inter_subset_right _ _)).symm
     _ ≤ μ.restrict s t := measure_mono (inter_subset_left _ _)
-
 #align measure_theory.measure.le_restrict_apply MeasureTheory.Measure.le_restrict_apply
 
 theorem restrict_apply_superset (h : s ⊆ t) : μ.restrict s t = μ s :=
@@ -4084,8 +4081,11 @@ theorem comap_apply (μ : Measure β) (s : Set α) : comap f μ s = μ (f '' s) 
     _ = μ (f '' s) := by
       rw [hf.map_comap, restrict_apply' hf.measurableSet_range,
         inter_eq_self_of_subset_left (image_subset_range _ _)]
-
 #align measurable_embedding.comap_apply MeasurableEmbedding.comap_apply
+
+theorem comap_map (μ : Measure α) : (map f μ).comap f = μ := by
+  ext t _
+  rw [hf.comap_apply, hf.map_apply, preimage_image_eq _ hf.injective]
 
 theorem ae_map_iff {p : β → Prop} {μ : Measure α} : (∀ᵐ x ∂μ.map f, p x) ↔ ∀ᵐ x ∂μ, p (f x) := by
   simp only [ae_iff, hf.map_apply, preimage_setOf_eq]
@@ -4096,11 +4096,20 @@ theorem restrict_map (μ : Measure α) (s : Set β) :
   Measure.ext fun t ht => by simp [hf.map_apply, ht, hf.measurable ht]
 #align measurable_embedding.restrict_map MeasurableEmbedding.restrict_map
 
-protected theorem comap_preimage (μ : Measure β) {s : Set β} (hs : MeasurableSet s) :
-    μ.comap f (f ⁻¹' s) = μ (s ∩ range f) :=
-  comap_preimage _ _ hf.injective hf.measurable
-    (fun _t ht => (hf.measurableSet_image' ht).nullMeasurableSet) hs
+protected theorem comap_preimage (μ : Measure β) (s : Set β) :
+    μ.comap f (f ⁻¹' s) = μ (s ∩ range f) := by
+  rw [← hf.map_apply, hf.map_comap, restrict_apply' hf.measurableSet_range]
 #align measurable_embedding.comap_preimage MeasurableEmbedding.comap_preimage
+
+lemma comap_restrict (μ : Measure β) (s : Set β) :
+    (μ.restrict s).comap f = (μ.comap f).restrict (f ⁻¹' s) := by
+  ext t ht
+  rw [Measure.restrict_apply ht, comap_apply hf, comap_apply hf,
+    Measure.restrict_apply (hf.measurableSet_image.2 ht), image_inter_preimage]
+
+lemma restrict_comap (μ : Measure β) (s : Set α) :
+    (μ.comap f).restrict s = (μ.restrict (f '' s)).comap f := by
+  rw [comap_restrict hf, preimage_image_eq _ hf.injective]
 
 end MeasurableEmbedding
 
