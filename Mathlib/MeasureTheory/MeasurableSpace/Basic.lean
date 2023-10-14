@@ -1617,7 +1617,7 @@ def MeasurableEquiv.piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ 
   exact fun i => measurable_pi_apply (f i)
 
 theorem MeasurableEquiv.piCongrLeft_eq (f : δ ≃ δ') :
-  MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
+    MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
 
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := { fullyApplied := false })]
@@ -1679,7 +1679,7 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def MeasurableEquiv.sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
-   (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
+    (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
   refine' { Equiv.sumPiEquivProdPi α with .. }
   · refine Measurable.prod ?_ ?_ <;>
       rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
