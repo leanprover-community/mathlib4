@@ -723,7 +723,8 @@ def Scheme.restrictFunctor : Opens X ⥤ Over X where
       (IsOpenImmersion.lift (X.ofRestrict _) (X.ofRestrict _) <| by
           dsimp [ofRestrict, LocallyRingedSpace.ofRestrict, Opens.inclusion]
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-          erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]; rw [Subtype.range_val, Subtype.range_val]
+          erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+          rw [Subtype.range_val, Subtype.range_val]
           exact i.le)
       (IsOpenImmersion.lift_fac _ _ _)
   map_id U := by
