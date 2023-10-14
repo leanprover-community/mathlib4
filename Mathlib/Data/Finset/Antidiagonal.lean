@@ -75,6 +75,9 @@ instance (μ : Type*) [AddMonoid μ] :
   ext n xy
   rw [ha, hb]
 
+-- The goal of these two functions is to allow to rewrite antidiagonal/mem_antidiagonal
+-- when the decidability instances obsucate Lean
+-- Are they useful at all?
 lemma HasAntidiagonal.antidiagonal_rfl (μ : Type*) [AddMonoid μ]
     [H1 : HasAntidiagonal μ] [H2 : HasAntidiagonal μ] :
     H1.antidiagonal = H2.antidiagonal := by
@@ -141,19 +144,7 @@ theorem mem_piAntidiagonal (s : Finset ι) (n : μ) (f : ι → μ) :
       rw [dite_eq_ite, ite_eq_left_iff, eq_comm]
       exact hf x
 
-variable (μ)
-
--- in the hope of using Subsingleton...
-def HasAntidiagonal' : HasAntidiagonal μ where
-  antidiagonal n := Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n)
-  mem_antidiagonal {n} {xy} := by
-    simp only [Fintype.univ_bool, mem_singleton, Equiv.finsetCongr_apply, mem_map_equiv,
-      mem_piAntidiagonal, Equiv.boolArrowEquivProd_symm_apply, not_false_eq_true, sum_insert,
-      sum_singleton, mem_insert, Bool.forall_bool, IsEmpty.forall_iff, and_self, and_true]
-    rw [add_comm]
-
-variable {μ}
-
+-- Should this be promoted into a HasAntidiagonal instance?
 theorem piAntidiagonal_equiv_antidiagonal [HasAntidiagonal μ] (n : μ) :
     Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) =
       Finset.HasAntidiagonal.antidiagonal n := by
