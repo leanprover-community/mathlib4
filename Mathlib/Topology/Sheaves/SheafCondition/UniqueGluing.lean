@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
 import Mathlib.Topology.Sheaves.Forget
+import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 
 #align_import topology.sheaves.sheaf_condition.unique_gluing from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
@@ -27,8 +28,8 @@ and `sf j` to `U i ⊓ U j` agree. A section `s : F.obj (op (supr U))` is a glui
 family `sf`, if `s` restricts to `sf i` on `U i` for all `i : ι`
 
 We show that the sheaf condition in terms of unique gluings is equivalent to the definition
-in terms of equalizers. Our approach is as follows: First, we show them to be equivalent for
-`Type`-valued presheaves. Then we use that composing a presheaf with a limit-preserving and
+in terms of pairwise intersections. Our approach is as follows: First, we show them to be equivalent
+for `Type`-valued presheaves. Then we use that composing a presheaf with a limit-preserving and
 isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
 `Mathlib/Topology/Sheaves/Forget.lean`.
 
@@ -119,7 +120,7 @@ theorem isGluing_iff_pairwise {sf} {s} : IsGluing F U sf s ↔
 variable (F)
 
 /-- For type-valued presheaves, the sheaf condition in terms of unique gluings is equivalent to the
-usual sheaf condition in terms of equalizer diagrams.
+usual sheaf condition.
 -/
 theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGluing := by
   simp_rw [isSheaf_iff_isSheafPairwiseIntersections, IsSheafPairwiseIntersections,
@@ -139,7 +140,7 @@ set_option linter.uppercaseLean3 false in
 #noalign Top.presheaf.is_gluing_iff_eq_res
 #noalign Top.presheaf.is_sheaf_unique_gluing_of_is_sheaf_types
 
-/-- The "equalizer" sheaf condition can be obtained from the sheaf condition
+/-- The usual sheaf condition can be obtained from the sheaf condition
 in terms of unique gluings.
 -/
 theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.IsSheaf :=
@@ -158,8 +159,7 @@ variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forge
 variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
 /-- For presheaves valued in a concrete category, whose forgetful functor reflects isomorphisms and
-preserves limits, the sheaf condition in terms of unique gluings is equivalent to the usual one
-in terms of equalizer diagrams.
+preserves limits, the sheaf condition in terms of unique gluings is equivalent to the usual one.
 -/
 theorem isSheaf_iff_isSheafUniqueGluing : F.IsSheaf ↔ F.IsSheafUniqueGluing :=
   Iff.trans (isSheaf_iff_isSheaf_comp (forget C) F)
