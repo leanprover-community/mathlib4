@@ -7,7 +7,6 @@ import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Order.Basic
-import Mathlib.Data.Option.Basic
 
 #align_import data.finset.image from "leanprover-community/mathlib"@"b685f506164f8d17a6404048bc4d696739c5d976"
 
@@ -675,32 +674,24 @@ def filterMap (f : α → Option β) (s : Finset α)
     (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
   ⟨s.val.filterMap f, s.nodup.filterMap f f_inj⟩
 
-@[simp]
-theorem filterMap_val (f : α → Option β) (s : Finset α)
-    {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'} :
-    (filterMap f s f_inj).1 = s.1.filterMap f :=
-  rfl
+variable (f : α → Option β) (s' : Finset α) {s t : Finset α} {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
 
 @[simp]
-theorem filterMap_empty (f : α → Option β) {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'} :
-    (∅ : Finset α).filterMap f f_inj = ∅ :=
-  rfl
+theorem filterMap_val : (filterMap f s' f_inj).1 = s'.1.filterMap f := rfl
 
-variable (f : α → Option β) {s t : Finset α} {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
+@[simp]
+theorem filterMap_empty : (∅ : Finset α).filterMap f f_inj = ∅ := rfl
 
 @[simp]
 theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a = some b :=
   s.val.mem_filterMap f
 
--- TODO: This was added in analogy to `coe_map`, but is this `simp` lemma even good?
--- It might be nicer if it coerced `PFun.image f s` instead, but that's ill-typed because
--- `f` is not a `PFun`.
 @[simp, norm_cast]
 theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
   Set.ext (by simp only [mem_coe, mem_filterMap, Option.mem_def, Set.mem_setOf_eq, implies_true])
 
 @[simp]
-theorem filterMap_some : s.filterMap some Option.mem_some_eucl = s :=
+theorem filterMap_some : s.filterMap some (by simp) = s :=
   ext fun _ => by simp only [mem_filterMap, Option.some.injEq, exists_eq_right]
 
 theorem filterMap_sub_filterMap (h : s ⊆ t) :
