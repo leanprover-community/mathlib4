@@ -59,12 +59,54 @@ variable [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ]
 variable [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ]
 
 local notation "𝒜ℬ" => (fun i : ℤ₂ × ℤ₂ => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
+local notation "ℬ𝒜" => (fun i : ℤ₂ × ℤ₂ => ℬ (Prod.fst i) ⊗[R] 𝒜 (Prod.snd i))
 
 -- this helps with performance
 instance (i : ℤ₂ × ℤ₂) : Module R (𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i)) :=
   TensorProduct.leftModule
 
-variable (R) in
+open DirectSum (lof)
+open GradedMonoid (GMul)
+
+variable (R)
+
+/-- Auxliary construction used to build `TensorProduct.gradedComm`.
+
+This operates on direct sums of tensors instead of tensors of direct sums. -/
+noncomputable def gradedCommAux :
+    (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ ℬ𝒜) := by
+  refine DirectSum.toModule R _ _ fun i => ?_
+  have o := DirectSum.lof R _ ℬ𝒜 i.swap
+  have s : ℤˣ := ((-1 : ℤˣ)^(i.1* i.2 : ℤ₂) : ℤˣ)
+  refine (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
+
+@[simp]
+theorem gradedCommAux_lof_tmul (i j : ℤ₂) (a : 𝒜 i) (b : ℬ j) :
+    gradedCommAux R 𝒜 ℬ (lof R _ 𝒜ℬ (i, j) (a ⊗ₜ b)) =
+      (-1 : ℤˣ)^(j * i) • lof R _ ℬ𝒜 (j, i) (b ⊗ₜ a) := by
+  rw [gradedCommAux]
+  dsimp
+  simp [mul_comm i j]
+
+/-- The braiding operation for tensor products of externally `ZMod 2`-graded algebras. -/
+noncomputable irreducible_def gradedComm :
+    (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) →ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
+  let e := TensorProduct.directSum R ℬ 𝒜
+  let e' := e.symm.toLinearMap
+  refine e' ∘ₗ ?_ ∘ₗ (TensorProduct.directSum R 𝒜 ℬ).toLinearMap
+  exact gradedCommAux _ _ _
+
+-- without the heartbeat bump, the `rfl` inside the `rw` fails (though the error is silenced)!
+set_option maxHeartbeats 400000 in
+theorem gradedComm_of_tmul_of (i j : ℤ₂) (a : 𝒜 i) (b : ℬ j):
+    gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
+      (-1 : ℤˣ)^(j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
+  rw [gradedComm]
+  dsimp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
+    zsmul_eq_smul_cast R, map_smul, TensorProduct.directSum_symm_lof_tmul,
+    ←zsmul_eq_smul_cast, ←Units.smul_def]
+
 /-- Auxliary construction used to build `TensorProduct.gradedMul`.
 
 This operates on direct sums of tensors instead of tensors of direct sums. -/
@@ -95,8 +137,7 @@ theorem gradedMulAux_lof_tmul_lof_tmul (i₁ j₁ i₂ j₂ : ℤ₂)
   dsimp
   simp
 
-set_option maxHeartbeats 4000000
-variable (R) in
+set_option maxHeartbeats 4000000 in
 /-- The multiplication operation for tensor products of externally `ZMod 2`-graded algebras. -/
 noncomputable irreducible_def gradedMul :
     letI AB := (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)
@@ -110,6 +151,8 @@ noncomputable irreducible_def gradedMul :
   refine TensorProduct.lift ?_
   exact gradedMulAux R 𝒜 ℬ
 
+-- without the heartbeat bump, the `rfl` inside the `rw` fails (though the error is silenced)!
+set_option maxHeartbeats 400000 in
 theorem gradedMul_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
     (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
     gradedMul R 𝒜 ℬ (lof R _ 𝒜 i₁ a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ lof R _ ℬ j₂ b₂) =
@@ -121,6 +164,8 @@ theorem gradedMul_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
   rw [TensorProduct.directSum_lof_tmul_lof, TensorProduct.directSum_lof_tmul_lof,
     gradedMulAux_lof_tmul_lof_tmul, Units.smul_def, zsmul_eq_smul_cast R, map_smul,
     TensorProduct.directSum_symm_lof_tmul, ←zsmul_eq_smul_cast, ←Units.smul_def]
+
+variable {R}
 
 theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) x = r • x := by
@@ -156,6 +201,7 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ x 1 = x := by
   simpa only [_root_.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
+set_option maxHeartbeats 400000 in
 theorem gradedMul_assoc (x y z : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ
