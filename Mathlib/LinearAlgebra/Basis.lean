@@ -157,9 +157,8 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
 theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total ι M R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
-    _ = ∑ i in v.support, b.repr.symm (Finsupp.single i (v i)) :=
-      by rw [Finsupp.sum, map_sum]
-    _ = Finsupp.total ι M R b v := by simp [repr_symm_single, Finsupp.total_apply, Finsupp.sum]
+    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
+    _ = Finsupp.total ι M R b v := by simp only [repr_symm_single, Finsupp.total_apply]
 #align basis.repr_symm_apply Basis.repr_symm_apply
 
 @[simp]

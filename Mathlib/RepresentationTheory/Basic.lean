@@ -356,7 +356,7 @@ open TensorProduct
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on their
 tensor product `V ⊗[k] W`.
 -/
-def tprod : Representation k G (V ⊗[k] W) where
+noncomputable def tprod : Representation k G (V ⊗[k] W) where
   toFun g := TensorProduct.map (ρV g) (ρW g)
   map_one' := by simp only [_root_.map_one, TensorProduct.map_one]
   map_mul' g h := by simp only [_root_.map_mul, TensorProduct.map_mul]
