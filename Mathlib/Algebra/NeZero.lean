@@ -19,19 +19,17 @@ We create a typeclass `NeZero n` which carries around the fact that `(n : R) ≠
 * `NeZero`: `n ≠ 0` as a typeclass.
 -/
 
-set_option autoImplicit true
-
 /-- A type-class version of `n ≠ 0`.  -/
-class NeZero {R} [Zero R] (n : R) : Prop where
+class NeZero {R : Type*} [Zero R] (n : R) : Prop where
   /-- The proposition that `n` is not zero. -/
   out : n ≠ 0
 #align ne_zero NeZero
 
-theorem NeZero.ne {R} [Zero R] (n : R) [h : NeZero n] : n ≠ 0 :=
+theorem NeZero.ne {R : Type*} [Zero R] (n : R) [h : NeZero n] : n ≠ 0 :=
   h.out
 #align ne_zero.ne NeZero.ne
 
-theorem NeZero.ne' {R} [Zero R] (n : R) [h : NeZero n] : 0 ≠ n :=
+theorem NeZero.ne' {R : Type*} [Zero R] (n : R) [h : NeZero n] : 0 ≠ n :=
   h.out.symm
 #align ne_zero.ne' NeZero.ne'
 
@@ -42,7 +40,7 @@ theorem neZero_iff {R : Type*} [Zero R] {n : R} : NeZero n ↔ n ≠ 0 :=
 theorem not_neZero {R : Type*} [Zero R] {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]
 #align not_ne_zero not_neZero
 
-theorem eq_zero_or_neZero {α} [Zero α] (a : α) : a = 0 ∨ NeZero a :=
+theorem eq_zero_or_neZero {α : Type*} [Zero α] (a : α) : a = 0 ∨ NeZero a :=
   (eq_or_ne a 0).imp_right NeZero.mk
 #align eq_zero_or_ne_zero eq_zero_or_neZero
 
@@ -93,7 +91,7 @@ namespace NeZero
 
 variable {M : Type*} {x : M}
 
-instance succ : NeZero (n + 1) := ⟨n.succ_ne_zero⟩
+instance succ (n : ℕ) : NeZero (n + 1) := ⟨n.succ_ne_zero⟩
 
 theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
 #align ne_zero.of_pos NeZero.of_pos
