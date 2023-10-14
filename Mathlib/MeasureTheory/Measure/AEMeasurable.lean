@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Trim
 
 #align_import measure_theory.measure.ae_measurable from "leanprover-community/mathlib"@"3310acfa9787aa171db6d4cba3945f6f275fe9f2"
 
@@ -46,8 +46,11 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
 
 namespace AEMeasurable
 
+lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :=
+  ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
+
 theorem mono_measure (h : AEMeasurable f μ) (h' : ν ≤ μ) : AEMeasurable f ν :=
-  ⟨h.mk f, h.measurable_mk, Eventually.filter_mono (ae_mono h') h.ae_eq_mk⟩
+  mono_ac h (absolutelyContinuous_of_le h')
 #align ae_measurable.mono_measure AEMeasurable.mono_measure
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
@@ -91,11 +94,8 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
     exact measurable_const
   · rw [restrict_piecewise_compl, compl_iInter]
     intro t ht
-    refine'
-      ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ,
-        MeasurableSet.iUnion fun i =>
-          (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl,
-        _⟩
+    refine ⟨⋃ i, (h i).mk f ⁻¹' t ∩ (s i)ᶜ, MeasurableSet.iUnion fun i ↦
+      (measurable_mk _ ht).inter (measurableSet_toMeasurable _ _).compl, ?_⟩
     ext ⟨x, hx⟩
     simp only [mem_preimage, mem_iUnion, Subtype.coe_mk, Set.restrict, mem_inter_iff,
       mem_compl_iff] at hx ⊢

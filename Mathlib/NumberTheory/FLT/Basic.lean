@@ -11,7 +11,7 @@ import Mathlib.Tactic.TFAE
 /-!
 # Statement of Fermat's Last Theorem
 
-This file states the Fermat Last Theorem. We provide a statement over a general semiring with
+This file states Fermat's Last Theorem. We provide a statement over a general semiring with
 specific exponent, along with the usual statement over the naturals.
 -/
 
@@ -35,7 +35,7 @@ lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α 
   refine hm _ _ _ ?_ ?_ ?_ <;> exact pow_ne_zero _ ‹_›
 
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
-  TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
+    TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
   tfae_have 1 → 2
   · rintro h a b c ha hb hc habc
     obtain hn | hn := n.even_or_odd

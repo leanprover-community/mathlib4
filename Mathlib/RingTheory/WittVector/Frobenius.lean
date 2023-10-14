@@ -116,7 +116,7 @@ def frobeniusPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 Our next goal is to prove
 ```
 lemma map_frobeniusPoly (n : ℕ) :
-  MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n
+    MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n
 ```
 This lemma has a rather long proof, but it mostly boils down to applying induction,
 and then using the following two key facts at the right point.

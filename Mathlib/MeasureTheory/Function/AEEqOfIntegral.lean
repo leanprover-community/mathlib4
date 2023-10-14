@@ -222,14 +222,34 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
     _ = 0 := by simp only [μs, tsum_zero]
 #align measure_theory.ae_le_of_forall_set_lintegral_le_of_sigma_finite MeasureTheory.ae_le_of_forall_set_lintegral_le_of_sigmaFinite
 
-theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
-    (hf : Measurable f) (hg : Measurable g)
+theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ {μ : Measure α} [SigmaFinite μ]
+    {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ) :
+    f ≤ᵐ[μ] g := by
+  have h' : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, hf.mk f x ∂μ ≤ ∫⁻ x in s, hg.mk g x ∂μ := by
+    intro s hs hμs
+    specialize h s hs hμs
+    refine (set_lintegral_congr_fun hs ?_).trans_le (h.trans_eq (set_lintegral_congr_fun hs ?_))
+    · filter_upwards [hf.ae_eq_mk] with a ha using fun _ ↦ ha.symm
+    · filter_upwards [hg.ae_eq_mk] with a ha using fun _ ↦ ha
+  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk,
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite hf.measurable_mk hg.measurable_mk h']
+    with a haf hag ha
+  rwa [haf, hag]
+
+theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ {μ : Measure α} [SigmaFinite μ]
+    {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g := by
   have A : f ≤ᵐ[μ] g :=
-    ae_le_of_forall_set_lintegral_le_of_sigmaFinite hf hg fun s hs h's => le_of_eq (h s hs h's)
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ hf hg fun s hs h's => le_of_eq (h s hs h's)
   have B : g ≤ᵐ[μ] f :=
-    ae_le_of_forall_set_lintegral_le_of_sigmaFinite hg hf fun s hs h's => ge_of_eq (h s hs h's)
+    ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ hg hf fun s hs h's => ge_of_eq (h s hs h's)
   filter_upwards [A, B] with x using le_antisymm
+
+theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
+    (hf : Measurable f) (hg : Measurable g)
+    (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g :=
+  ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf.aemeasurable hg.aemeasurable h
 #align measure_theory.ae_eq_of_forall_set_lintegral_eq_of_sigma_finite MeasureTheory.ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite
 
 end ENNReal
@@ -603,8 +623,8 @@ end AeEqOfForallSetIntegralEq
 
 section Lintegral
 
-theorem AeMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) (hfi : (∫⁻ x, f x ∂μ) ≠ ∞) (hgi : (∫⁻ x, g x ∂μ) ≠ ∞)
+theorem AEMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (hgi : ∫⁻ x, g x ∂μ ≠ ∞)
     (hfg : ∀ ⦃s⦄, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) :
     f =ᵐ[μ] g := by
   refine'
@@ -625,7 +645,16 @@ theorem AeMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} 
   exacts [ae_of_all _ fun x => ENNReal.toReal_nonneg,
     hg.ennreal_toReal.restrict.aestronglyMeasurable, ae_of_all _ fun x => ENNReal.toReal_nonneg,
     hf.ennreal_toReal.restrict.aestronglyMeasurable]
-#align measure_theory.ae_measurable.ae_eq_of_forall_set_lintegral_eq MeasureTheory.AeMeasurable.ae_eq_of_forall_set_lintegral_eq
+#align measure_theory.ae_measurable.ae_eq_of_forall_set_lintegral_eq MeasureTheory.AEMeasurable.ae_eq_of_forall_set_lintegral_eq
+
+lemma ae_eq_of_withDensity_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg : AEMeasurable g μ) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
+    (h : μ.withDensity f = μ.withDensity g) :
+    f =ᵐ[μ] g := by
+  refine AEMeasurable.ae_eq_of_forall_set_lintegral_eq hf hg hf_int hg_int fun s hs _ ↦ ?_
+  rw [Measure.ext_iff] at h
+  specialize h s hs
+  rwa [withDensity_apply _ hs, withDensity_apply _ hs] at h
 
 end Lintegral
 

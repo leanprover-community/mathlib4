@@ -904,9 +904,11 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 /-! ### Trails, paths, circuits, cycles -/
 
 /-- A *trail* is a walk with no repeating edges. -/
+@[mk_iff isTrail_def]
 structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
   edges_nodup : p.edges.Nodup
 #align simple_graph.walk.is_trail SimpleGraph.Walk.IsTrail
+#align simple_graph.walk.is_trail_def SimpleGraph.Walk.isTrail_def
 
 /-- A *path* is a walk with no repeating vertices.
 Use `simple_graph.walk.is_path.mk'` for a simpler constructor. -/
@@ -919,9 +921,11 @@ protected lemma IsPath.isTrail (h : IsPath p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_path.to_trail SimpleGraph.Walk.IsPath.isTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
+@[mk_iff isCircuit_def]
 structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
   ne_nil : p ≠ nil
 #align simple_graph.walk.is_circuit SimpleGraph.Walk.IsCircuit
+#align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
 -- porting note: used to use `extends to_trail : is_trail p` in structure
 protected lemma IsCircuit.isTrail (h : IsCircuit p) : IsTrail p := h.toIsTrail
@@ -936,10 +940,6 @@ structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
 -- porting note: used to use `extends to_circuit : is_circuit p` in structure
 protected lemma IsCycle.isCircuit (h : IsCycle p) : IsCircuit p := h.toIsCircuit
 #align simple_graph.walk.is_cycle.to_circuit SimpleGraph.Walk.IsCycle.isCircuit
-
-theorem isTrail_def {u v : V} (p : G.Walk u v) : p.IsTrail ↔ p.edges.Nodup :=
-  ⟨IsTrail.edges_nodup, fun h => ⟨h⟩⟩
-#align simple_graph.walk.is_trail_def SimpleGraph.Walk.isTrail_def
 
 @[simp]
 theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -962,10 +962,6 @@ theorem isPath_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
   subst_vars
   rfl
 #align simple_graph.walk.is_path_copy SimpleGraph.Walk.isPath_copy
-
-theorem isCircuit_def {u : V} (p : G.Walk u u) : p.IsCircuit ↔ p.IsTrail ∧ p ≠ nil :=
-  Iff.intro (fun h => ⟨h.1, h.2⟩) fun h => ⟨h.1, h.2⟩
-#align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
 @[simp]
 theorem isCircuit_copy {u u'} (p : G.Walk u u) (hu : u = u') :
@@ -1083,8 +1079,8 @@ theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.
 #align simple_graph.walk.is_cycle.not_of_nil SimpleGraph.Walk.IsCycle.not_of_nil
 
 lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
-| nil, hp => by cases hp.ne_nil rfl
-| cons h _, hp => by rintro rfl; exact h
+  | nil, hp => by cases hp.ne_nil rfl
+  | cons h _, hp => by rintro rfl; exact h
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬⟦(u, v)⟧ ∈ p.edges := by

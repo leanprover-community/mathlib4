@@ -176,6 +176,17 @@ theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×
   simp [and_assoc, and_left_comm]
 #align set.prod_inter_prod Set.prod_inter_prod
 
+lemma compl_prod_eq_union {α β : Type*} (s : Set α) (t : Set β) :
+    (s ×ˢ t)ᶜ = (sᶜ ×ˢ univ) ∪ (univ ×ˢ tᶜ) := by
+  ext p
+  simp only [mem_compl_iff, mem_prod, not_and, mem_union, mem_univ, and_true, true_and]
+  constructor <;> intro h
+  · by_cases fst_in_s : p.fst ∈ s
+    · exact Or.inr (h fst_in_s)
+    · exact Or.inl fst_in_s
+  · intro fst_in_s
+    simpa only [fst_in_s, not_true, false_or] using h
+
 @[simp]
 theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
   simp_rw [disjoint_left, mem_prod, not_and_or, Prod.forall, and_imp, ← @forall_or_right α, ←
@@ -679,6 +690,11 @@ theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=
   eq_univ_of_forall fun _ _ _ => mem_univ _
 #align set.pi_univ Set.pi_univ
 
+@[simp]
+theorem pi_univ_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
+    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
+  ext; simp_rw [Set.mem_pi]; apply forall_congr'; intro i; split_ifs with h <;> simp [h]
+
 theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := fun _ hx i hi => h i hi <| hx i hi
 #align set.pi_mono Set.pi_mono
 
@@ -915,3 +931,37 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
 end Pi
 
 end Set
+
+namespace Equiv
+
+open Set
+variable {ι ι' : Type*} {α : ι → Type*}
+
+theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι') (t : ∀ i, Set (α i)) :
+    (f.piCongrLeft α).symm ⁻¹' s.pi (fun i' => t <| f i') = (f '' s).pi t := by
+  ext; simp
+
+theorem piCongrLeft_symm_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
+    (f.piCongrLeft α).symm ⁻¹' univ.pi (fun i' => t <| f i') = univ.pi t := by
+  simpa [f.surjective.range_eq] using piCongrLeft_symm_preimage_pi f univ t
+
+theorem piCongrLeft_preimage_pi (f : ι' ≃ ι) (s : Set ι') (t : ∀ i, Set (α i)) :
+    f.piCongrLeft α ⁻¹' (f '' s).pi t = s.pi fun i => t (f i) := by
+  apply Set.ext;
+  rw [← (f.piCongrLeft α).symm.forall_congr_left]
+  simp
+
+theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
+    f.piCongrLeft α ⁻¹' univ.pi t = univ.pi fun i => t (f i) := by
+  simpa [f.surjective.range_eq] using piCongrLeft_preimage_pi f univ t
+
+theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
+    (sumPiEquivProdPi π).symm ⁻¹' univ.pi t =
+    univ.pi (fun i => t (.inl i)) ×ˢ univ.pi fun i => t (.inr i) := by
+  ext
+  simp_rw [mem_preimage, mem_prod, mem_univ_pi, sumPiEquivProdPi_symm_apply]
+  constructor
+  · intro h; constructor <;> intro i <;> apply h
+  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
+
+end Equiv

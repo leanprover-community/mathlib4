@@ -9,6 +9,7 @@ import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.NormNum.OfScientific
 
+private axiom test_sorry : ∀ {α}, α
 /-! # Inequality tests for the `gcongr` tactic -/
 
 open Nat Finset BigOperators
@@ -110,10 +111,10 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x *
 
 -- test for a missing `withContext`
 example {x y : ℚ} {n : ℕ} (hx : 0 ≤ x) (hn : 0 < n) : y ≤ x := by
-  have h : x < y := sorry
-  have : x ^ n < y ^ n
+  have h : x < y := test_sorry
+  have _this : x ^ n < y ^ n
   · rel [h] -- before bugfix: complained "unknown identifier 'h'"
-  sorry
+  exact test_sorry
 
 /-! ## Non-finishing examples -/
 
