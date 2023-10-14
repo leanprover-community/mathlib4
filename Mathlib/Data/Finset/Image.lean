@@ -23,8 +23,8 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 
 * `Finset.image`: Given a function `f : α → β`, `s.image f` is the image finset in `β`.
 * `Finset.map`: Given an embedding `f : α ↪ β`, `s.map f` is the image finset in `β`.
-* `Finset.filterMap` Given a function `f : α → Option β`, `s.filterMap f` is the image finset in `β`,
-  filtering out `none`s.
+* `Finset.filterMap` Given a function `f : α → Option β`, `s.filterMap f` is the
+  image finset in `β`, filtering out `none`s.
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
@@ -692,13 +692,14 @@ theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a 
   s.val.mem_filterMap f
 
 -- TODO: This was added in analogy to `coe_map`, but is this `simp` lemma even good?
--- It might be nicer if it coerced `PFun.image f s` instead, but that's ill-typed because `f` is not a `PFun`.
+-- It might be nicer if it coerced `PFun.image f s` instead, but that's ill-typed because
+-- `f` is not a `PFun`.
 @[simp, norm_cast]
 theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
   Set.ext (by simp only [mem_coe, mem_filterMap, Option.mem_def, Set.mem_setOf_eq, implies_true])
 
--- TODO: Is this lemma worth having? Where should it go? If not, it can just be replaced with `(by simp)`
--- where it's used
+-- TODO: Is this lemma worth having? Where should it go? If not, it can just be
+-- replaced with `(by simp)` where it's used.
 theorem _root_.Option.mem_some_eucl : ∀ (a a' b : α), b ∈ some a → b ∈ some a' → a = a' :=
   by simp only [Option.mem_def, Option.some.injEq, forall_eq', forall_eq, implies_true]
 
