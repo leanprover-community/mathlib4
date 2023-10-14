@@ -858,7 +858,8 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
       if n = 0 then a
       else
         -a *
-          ∑ x in antidiagonal n, if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
+          ∑ x in antidiagonal n,
+            if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
   change inv.aux a φ n = _
   nth_rewrite 1 [inv.aux]
   split_ifs
