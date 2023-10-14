@@ -26,7 +26,7 @@ and `A` live in the same universe.
   are all sheaves of sets, see `CategoryTheory.Presheaf.IsSheaf`.
 * When `A = Type`, this recovers the basic definition of sheaves of sets, see
   `CategoryTheory.isSheaf_iff_isSheaf_of_type`.
-* A sheaf condition in terms of limits, unconditionally equivalent to the original one:
+* A alternate definition in terms of limits, unconditionally equivalent to the original one:
   see `CategoryTheory.Presheaf.isSheaf_iff_isLimit`.
 * An alternate definition when `C` is small, has pullbacks and `A` has products is given by an
   equalizer condition `CategoryTheory.Presheaf.IsSheaf'`. This is equivalent to the earlier
@@ -52,7 +52,7 @@ inequalities this can be changed.
 -/
 
 
-universe w v₁ v₂ u₁ u₂
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -474,6 +474,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 -- instead.
 variable {A : Type u₂} [Category.{v₂} A]
 variable {A' : Type u₂} [Category.{max v₁ u₁} A']
+variable {B : Type u₃} [Category.{v₃} B]
 
 variable (J : GrothendieckTopology C)
 
@@ -657,21 +658,21 @@ end
 
 section Concrete
 
-theorem isSheaf_of_isSheaf_forget (s : A ⥤ Type w) [ReflectsLimitsOfSize.{v₁, max v₁ u₁} s]
+theorem isSheaf_of_isSheaf_comp (s : A ⥤ B) [ReflectsLimitsOfSize.{v₁, max v₁ u₁} s]
     (h : IsSheaf J (P ⋙ s)) : IsSheaf J P := by
   rw [isSheaf_iff_isLimit] at h ⊢
   exact fun X S hS ↦ (h S hS).map fun t ↦ isLimitOfReflects s t
 
-theorem isSheaf_forget_of_isSheaf (s : A ⥤ Type w) [PreservesLimitsOfSize.{v₁, max v₁ u₁} s]
+theorem isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max v₁ u₁} s]
     (h : IsSheaf J P) : IsSheaf J (P ⋙ s) := by
   rw [isSheaf_iff_isLimit] at h ⊢
   apply fun X S hS ↦ (h S hS).map fun t ↦ isLimitOfPreserves s t
 
-theorem isSheaf_iff_isSheaf_forget' (s : A ⥤ Type w) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
+theorem isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
     [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [ReflectsIsomorphisms s] :
     IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
   letI : ReflectsLimitsOfSize s := reflectsLimitsOfReflectsIsomorphisms
-  exact ⟨isSheaf_forget_of_isSheaf J P s, isSheaf_of_isSheaf_forget J P s⟩
+  exact ⟨isSheaf_comp_of_isSheaf J P s, isSheaf_of_isSheaf_comp J P s⟩
 
 /--
 For a concrete category `(A, s)` where the forgetful functor `s : A ⥤ Type v` preserves limits and
@@ -686,7 +687,7 @@ theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'
     [ReflectsIsomorphisms s] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
   have : HasLimitsOfSize.{v₁, max v₁ u₁} A' := hasLimitsOfSizeShrink.{_, _, u₁, 0} A'
   have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSizeShrink.{_, 0, _, u₁} s
-  apply isSheaf_iff_isSheaf_forget'
+  apply isSheaf_iff_isSheaf_comp
 #align category_theory.presheaf.is_sheaf_iff_is_sheaf_forget CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget
 
 end Concrete
