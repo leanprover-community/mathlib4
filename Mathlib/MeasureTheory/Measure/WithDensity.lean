@@ -428,6 +428,8 @@ lemma withDensity_inv_same {μ : Measure α} {f : α → ℝ≥0∞}
     (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) = μ :=
   withDensity_inv_same₀ hf.aemeasurable hf_pos hf_ne_top
 
+/-- If `f` is almost everywhere positive and finite, then `μ ≪ μ.withDensity f`. See also
+`withDensity_absolutelyContinuous` for the reverse direction, which always holds. -/
 lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_pos : ∀ᵐ x ∂μ, 0 < f x) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     μ ≪ μ.withDensity f := by
