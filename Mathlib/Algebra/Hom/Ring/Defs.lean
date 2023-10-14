@@ -797,3 +797,8 @@ theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
 #align add_monoid_hom.coe_add_monoid_hom_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero
 
 end AddMonoidHom
+
+assert_not_exists Function.Injective.mulZeroClass
+assert_not_exists semigroupDvd
+assert_not_exists Units.map
+assert_not_exists Set.range
