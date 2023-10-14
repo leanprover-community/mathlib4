@@ -1253,16 +1253,12 @@ abbrev replaceVertex : SimpleGraph V where
                       else if w = t then G.Adj v s else G.Adj v w
   symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
 
+/-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
 theorem not_adj_of_replaceVertex : ¬(G.replaceVertex s t).Adj s t := by simp
 
 @[simp]
 theorem replaceVertex_self : G.replaceVertex s s = G := by
   ext; dsimp only; split_ifs <;> simp_all [adj_comm]
-
-/-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
-lemma not_adj_replaceVertex_same :
-    ¬ (G.replaceVertex s t).Adj s t := by
-  simp
 
 /-- Except possibly for `t`, the neighbours of `s` in `G.replaceVertex s t` are its neighbours in
 `G`. -/
