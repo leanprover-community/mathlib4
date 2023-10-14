@@ -105,7 +105,7 @@ lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
   rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ←Real.sqrt_mul]
   · field_simp
     ring
-  . positivity
+  · positivity
 
 /-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
 lemma integral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
