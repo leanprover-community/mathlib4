@@ -227,13 +227,15 @@ section
 
 open AddMonoidHom Finset.Nat
 
+open Finset (antidiagonal mem_antidiagonal)
+
 theorem hasseDeriv_mul (f g : R[X]) :
-    hasseDeriv k (f * g) = ∑ ij in Finset.antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
+    hasseDeriv k (f * g) = ∑ ij in antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
   let Φ := @AddMonoidHom.mul R[X] _
   show
     (compHom (D k)).comp Φ f g =
-      ∑ ij : ℕ × ℕ in Finset.antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
+      ∑ ij : ℕ × ℕ in antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
   simp only [← finset_sum_apply]
   congr 2
   clear f g
@@ -243,11 +245,11 @@ theorem hasseDeriv_mul (f g : R[X]) :
              coe_mul, monomial_mul_monomial]
   have aux :
     ∀ x : ℕ × ℕ,
-      x ∈ Finset.antidiagonal k →
+      x ∈ antidiagonal k →
         monomial (m - x.1 + (n - x.2)) (↑(m.choose x.1) * r * (↑(n.choose x.2) * s)) =
           monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) := by
     intro x hx
-    rw [Finset.mem_antidiagonal] at hx
+    rw [mem_antidiagonal] at hx
     subst hx
     by_cases hm : m < x.1
     · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,
