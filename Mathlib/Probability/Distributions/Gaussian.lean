@@ -26,6 +26,37 @@ We define a Gaussian measure over the reals.
 
 open scoped ENNReal NNReal Real
 
+namespace MeasureTheory
+
+lemma Measure.map_const {α β : Type*} {mα : MeasurableSpace α} [MeasurableSpace β]
+    (μ : Measure α) (c : β) :
+    μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
+  ext s hs
+  simp only [aemeasurable_const, measurable_const, smul_toOuterMeasure, OuterMeasure.coe_smul,
+    Pi.smul_apply, dirac_apply' _ hs, smul_eq_mul]
+  classical
+  rw [Measure.map_apply measurable_const hs, Set.preimage_const]
+  by_cases hsc : c ∈ s
+  · rw [(Set.indicator_eq_one_iff_mem _).mpr hsc, mul_one, if_pos hsc]
+  · rw [if_neg hsc, (Set.indicator_eq_zero_iff_not_mem _).mpr hsc, measure_empty, mul_zero]
+
+lemma MeasurableEmbedding.withDensity_ofReal_comap_apply {f : ℝ → ℝ} (hf : MeasurableEmbedding f)
+    {f' : ℝ → ℝ} (h_deriv : ∀ x, HasDerivAt f (f' x) x)
+    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g)
+    {s : Set ℝ} (hs : MeasurableSet s) :
+    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
+      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
+  rw [Measure.comap_apply f hf.injective (fun t ht ↦ hf.measurableSet_image.mpr ht) _ hs,
+    withDensity_apply _ (hf.measurableSet_image.mpr hs), ← ofReal_integral_eq_lintegral_ofReal]
+  · rw [integral_image_eq_integral_abs_deriv_smul hs (fun x _ ↦ (h_deriv x).hasDerivWithinAt)
+      (hf.injective.injOn _)]
+    simp_rw [smul_eq_mul]
+  · exact hg_int.restrict
+  · refine ae_restrict_of_ae hg
+
+
+end MeasureTheory
+
 open MeasureTheory
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
@@ -191,5 +222,129 @@ lemma rnDeriv_gaussianReal (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
   exact Measure.rnDeriv_withDensity _ (measurable_gaussianPdf μ v)
 
 end GaussianReal
+
+section Transformations
+
+variable {Ω : Type} [MeasureSpace Ω] {μ : ℝ} {v : ℝ≥0}
+
+lemma gaussianPdfReal_sub_const (x y : ℝ) :
+    gaussianPdfReal μ v (x - y) = gaussianPdfReal (μ + y) v x := by
+  simp only [gaussianPdfReal]
+  rw [@sub_add_eq_sub_sub_swap]
+
+lemma gaussianPdf_sub_const (x y : ℝ) :
+    gaussianPdf μ v (x - y) = gaussianPdf (μ + y) v x := by
+  simp only [gaussianPdf, gaussianPdfReal]
+  rw [@sub_add_eq_sub_sub_swap]
+
+lemma gaussianPdfReal_inv_const_mul {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
+    gaussianPdfReal μ v (c⁻¹ * x) = |c| * gaussianPdfReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
+  simp only [gaussianPdfReal._eq_1, gt_iff_lt, zero_lt_two, zero_le_mul_left, NNReal.zero_le_coe,
+    Real.sqrt_mul', one_div, mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk, NNReal.coe_pos]
+  rw [← mul_assoc]
+  refine congr_arg₂ _ ?_ ?_
+  · field_simp
+    rw [Real.sqrt_sq_eq_abs]
+    ring_nf
+    calc (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹
+      = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * (|c| * |c|⁻¹) := by
+          rw [mul_inv_cancel, mul_one]
+          simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
+    _ = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * |c| * |c|⁻¹ := by ring
+  · congr 1
+    field_simp
+    congr 1
+    ring
+
+lemma MeasurableEmbedding.gaussianReal_comap_apply (hv : v ≠ 0)
+    {f : ℝ → ℝ} (hf : MeasurableEmbedding f)
+    {f' : ℝ → ℝ} (h_deriv : ∀ x, HasDerivAt f (f' x) x) {s : Set ℝ} (hs : MeasurableSet s) :
+    (gaussianReal μ v).comap f s
+      = ENNReal.ofReal (∫ x in s, |f' x| * gaussianPdfReal μ v (f x)) := by
+  rw [gaussianReal_of_var_ne_zero _ hv, gaussianPdf_def,
+    MeasurableEmbedding.withDensity_ofReal_comap_apply hf h_deriv _ _ hs]
+  · exact ae_of_all _ (gaussianPdfReal_nonneg _ _)
+  · exact integrable_gaussianPdfReal _ _
+
+lemma MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ ≃ᵐ ℝ) {f' : ℝ → ℝ}
+    (h_deriv : ∀ x, HasDerivAt f (f' x) x) {s : Set ℝ} (hs : MeasurableSet s) :
+    (gaussianReal μ v).map f.symm s
+      = ENNReal.ofReal (∫ x in s, |f' x| * gaussianPdfReal μ v (f x)) := by
+  rw [MeasurableEquiv.map_symm,
+    MeasurableEmbedding.gaussianReal_comap_apply hv f.measurableEmbedding h_deriv hs]
+
+lemma gaussianReal_map_add_const (y : ℝ) :
+    (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
+  by_cases hv : v = 0
+  · simp only [hv, ne_eq, not_true, gaussianReal_zero_var]
+    exact Measure.map_dirac (measurable_id'.add_const _) _
+  let e : ℝ ≃ᵐ ℝ :=
+  { toFun := fun x ↦ x - y
+    invFun := fun x ↦ x + y
+    left_inv := fun x ↦ by simp
+    right_inv := fun x ↦ by simp
+    measurable_toFun := measurable_id'.add_const _
+    measurable_invFun := measurable_id'.add_const _}
+  have he' : ∀ x, HasDerivAt e ((fun _ ↦ 1) x) x := fun _ ↦ (hasDerivAt_id _).sub_const y
+  suffices (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v by exact this
+  ext s' hs'
+  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
+  simp only [abs_neg, abs_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, one_mul, ne_eq]
+  rw [gaussianReal_apply_eq_integral _ hv hs']
+  simp_rw [gaussianPdfReal_sub_const _ y]
+
+lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v)
+    (hXm : Measurable X) (y : ℝ) :
+    Measure.map (fun ω ↦ X ω + y) ℙ = gaussianReal (μ + y) v := by
+  change Measure.map ((fun ω ↦ ω + y) ∘ X) ℙ = gaussianReal (μ + y) v
+  rw [← Measure.map_map (measurable_id'.add_const _) hXm, hX, gaussianReal_map_add_const y]
+
+lemma gaussianReal_map_const_mul (c : ℝ) :
+    (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
+  by_cases hv : v = 0
+  · simp only [hv, mul_zero, ne_eq, not_true, gaussianReal_zero_var]
+    exact Measure.map_dirac (measurable_id'.const_mul c) μ
+  by_cases hc : c = 0
+  · simp only [hc, zero_mul, ne_eq, abs_zero, mul_eq_zero]
+    rw [Measure.map_const]
+    simp only [ne_eq, measure_univ, one_smul, mul_eq_zero]
+    convert (gaussianReal_zero_var 0).symm
+    simp only [ne_eq, zero_pow', mul_eq_zero, hv, or_false]
+    rfl
+  let e : ℝ ≃ᵐ ℝ :=
+  { toFun := fun x ↦ c⁻¹ * x
+    invFun := fun x ↦ c * x
+    left_inv := fun x ↦ by simp [hc]
+    right_inv := fun x ↦ by simp [hc]
+    measurable_toFun := measurable_id'.const_mul _
+    measurable_invFun := measurable_id'.const_mul _}
+  have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
+    suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
+    exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
+  suffices (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) by
+    exact this
+  ext s' hs'
+  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
+  simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, ne_eq, mul_eq_zero]
+  rw [gaussianReal_apply_eq_integral _ _ hs']
+  swap
+  · simp only [ne_eq, mul_eq_zero, hv, or_false]
+    rw [← NNReal.coe_eq]
+    simp [hc]
+  simp_rw [gaussianPdfReal_inv_const_mul hc]
+  congr with x
+  suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
+  rw [abs_inv, inv_mul_cancel]
+  rwa [ne_eq, abs_eq_zero]
+
+lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v)
+    (hXm : Measurable X) (c : ℝ) :
+    Measure.map (fun ω ↦ c * X ω) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
+  change Measure.map ((fun ω ↦ c * ω) ∘ X) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
+  rw [← Measure.map_map (measurable_id'.const_mul c) hXm, hX]
+  exact gaussianReal_map_const_mul c
+
+end Transformations
+
 
 end ProbabilityTheory
