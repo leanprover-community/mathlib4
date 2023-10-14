@@ -695,7 +695,7 @@ theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a =
 theorem filterMap_some : s.filterMap some (by simp) = s :=
   ext fun _ => by simp only [mem_filterMap, Option.some.injEq, exists_eq_right]
 
-theorem filterMap_subset_filterMap (h : s ⊆ t) :
+theorem filterMap_mono (h : s ⊆ t) :
     filterMap f s f_inj ⊆ filterMap f t f_inj := by
   rw [←val_le_iff] at h ⊢
   exact Multiset.filterMap_le_filterMap f h
