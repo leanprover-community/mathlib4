@@ -42,7 +42,7 @@ summability of the norms, this implies the overall convergence.
 * `has_fpower_series_at.comp` states that if two functions `g` and `f` admit power series expansions
   `q` and `p`, then `g ∘ f` admits a power series expansion given by `q.comp p`.
 * `analytic_at.comp` states that the composition of analytic functions is analytic.
-* `formal_multilinear_series.comp_assoc` states that composition is associative on formal
+* `FormalMultilinearSeries.comp_assoc` states that composition is associative on formal
   multilinear series.
 
 ## Implementation details
@@ -936,11 +936,11 @@ made of two blocks of length `4` and `9`, i.e., `c = [4, 9]`. But one can also r
 the new first block was initially made of two blocks of size `2`, so `d₀ = [2, 2]`, and the new
 second block was initially made of three blocks of size `3`, `4` and `2`, so `d₁ = [3, 4, 2]`.
 
-This equivalence is called `composition.sigma_equiv_sigma_pi n` below.
+This equivalence is called `Composition.sigma_equiv_sigma_pi n` below.
 
 We start with preliminary results on compositions, of a very specialized nature, then define the
-equivalence `composition.sigma_equiv_sigma_pi n`, and we deduce finally the associativity of
-composition of formal multilinear series in `formal_multilinear_series.comp_assoc`.
+equivalence `Composition.sigmaEquivSigmaPi n`, and we deduce finally the associativity of
+composition of formal multilinear series in `FormalMultilinearSeries.comp_assoc`.
 -/
 
 
@@ -1019,7 +1019,7 @@ theorem length_gather (a : Composition n) (b : Composition a.length) :
 
 -- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
 set_option linter.deprecated false in
-/-- An auxiliary function used in the definition of `sigma_equiv_sigma_pi` below, associating to
+/-- An auxiliary function used in the definition of `sigmaEquivSigmaPi` below, associating to
 two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by the length of
 `a.gather b`, the subcomposition of `a` made of those blocks belonging to the `i`-th block of
 `a.gather b`. -/
@@ -1205,7 +1205,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     simpa only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
       compAlongComposition_apply, Finset.sum_sigma', applyComposition,
       ContinuousMultilinearMap.map_sum]
-  /- Now, we use `composition.sigma_equiv_sigma_pi n` to change
+  /- Now, we use `Composition.sigmaEquivSigmaPi n` to change
     variables in the second sum, and check that we get exactly the same sums. -/
   rw [← (sigmaEquivSigmaPi n).sum_comp]
   /- To check that we have the same terms, we should check that we apply the same component of
@@ -1216,7 +1216,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   apply Finset.sum_congr rfl
   rintro ⟨a, b⟩ _
   dsimp [sigmaEquivSigmaPi]
-  -- check that the `r` components are the same. Based on `composition.length_gather`
+  -- check that the `r` components are the same. Based on `Composition.length_gather`
   apply r.congr (Composition.length_gather a b).symm
   intro i hi1 hi2
   -- check that the `q` components are the same. Based on `length_sigma_composition_aux`
