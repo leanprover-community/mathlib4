@@ -333,7 +333,7 @@ theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
 #align polynomial.eval₂_gcd_eq_zero Polynomial.eval₂_gcd_eq_zero
 
 theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
-  (hf : f.eval α = 0) (hg : g.eval α = 0) : (EuclideanDomain.gcd f g).eval α = 0 :=
+    (hf : f.eval α = 0) (hg : g.eval α = 0) : (EuclideanDomain.gcd f g).eval α = 0 :=
   eval₂_gcd_eq_zero hf hg
 #align polynomial.eval_gcd_eq_zero Polynomial.eval_gcd_eq_zero
 
@@ -461,7 +461,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.dvd_C_mul Polynomial.dvd_C_mul
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
-  (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
+    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 #align polynomial.coe_norm_unit_of_ne_zero Polynomial.coe_normUnit_of_ne_zero

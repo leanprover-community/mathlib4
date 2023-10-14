@@ -40,6 +40,8 @@ Let `R, S` be rings and `f : R →+* S`
   `s ⊗ m : S ⊗[R, f] M`.
 -/
 
+suppress_compilation
+
 set_option linter.uppercaseLean3 false -- Porting note: Module
 
 open CategoryTheory
@@ -120,7 +122,7 @@ theorem restrictScalars.smul_def' {R : Type u₁} {S : Type u₂} [Ring R] [Ring
 
 instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Ring R] [CommRing S]
     (f : R →+* S) (M : Type v) [I : AddCommGroup M] [Module S M] :
-    have : SMul R M := (RestrictScalars.obj' f (ModuleCat.mk M)).isModule.toSMul
+    haveI : SMul R M := (RestrictScalars.obj' f (ModuleCat.mk M)).isModule.toSMul
     SMulCommClass R S M :=
   -- Porting note: cannot synth SMul R M
   have : SMul R M := (RestrictScalars.obj' f (ModuleCat.mk M)).isModule.toSMul
@@ -448,7 +450,7 @@ def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) : (restri
     -- Porting note: should probably change CoeFun for obj above
     rw [← LinearMap.coe_toAddHom, ←AddHom.toFun_eq_coe]
     rw [CoextendScalars.smul_apply (s := f r) (g := g y) (s' := 1), one_mul]
-    rw [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
+    simp
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.to_restriction ModuleCat.RestrictionCoextensionAdj.HomEquiv.toRestriction
 
 -- Porting note: add to address timeout in unit'
@@ -459,7 +461,8 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
         map_add' := fun s s' => add_smul _ _ _
         map_smul' := fun r (s : S) => by
           dsimp
-          erw [smul_eq_mul, mul_smul] }
+          erw [smul_eq_mul, mul_smul]
+          simp }
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd

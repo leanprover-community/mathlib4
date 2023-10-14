@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Hom.Units
+import Mathlib.Algebra.Hom.Group.Basic
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 

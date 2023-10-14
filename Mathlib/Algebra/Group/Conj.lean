@@ -6,7 +6,7 @@ Authors: Patrick Massot, Chris Hughes, Michael Howes
 import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Hom.Aut
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 
 #align_import algebra.group.conj from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"
 

@@ -343,7 +343,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by
       have : exp (t * ε) * (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal ≤
           μ[fun ω => exp (t * X ω)] :=
-        mul_meas_ge_le_integral_of_nonneg (fun x => (exp_pos _).le) h_int _
+        mul_meas_ge_le_integral_of_nonneg (ae_of_all _ fun x => (exp_pos _).le) h_int _
       rwa [mul_comm (exp (t * ε))⁻¹, ← div_eq_mul_inv, le_div_iff' (exp_pos _)]
     _ = exp (-t * ε) * mgf X μ t := by rw [neg_mul, exp_neg]; rfl
 #align probability_theory.measure_ge_le_exp_mul_mgf ProbabilityTheory.measure_ge_le_exp_mul_mgf
