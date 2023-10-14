@@ -35,9 +35,10 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     apply TensorProduct.ext'
     intro m n
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [coe_comp, Function.comp_apply, MonoidalCategory.braiding_hom_apply,
-      TensorProduct.lift.tmul, LinearMap.compr₂_apply,
-      TensorProduct.mk_apply, coe_comp, Function.comp_apply, MonoidalCategory.braiding_hom_apply]
+    erw [coe_comp]
+    rw [Function.comp_apply]
+    -- This used to be `rw` and was longer (?), but we need `erw` after leanprover/lean4#2644
+    erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
   right_inv f := rfl
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_hom_equiv ModuleCat.monoidalClosedHomEquiv
@@ -65,7 +66,8 @@ open MonoidalCategory
 
 -- porting note: `CoeFun` was replaced by `FunLike`
 -- I can't seem to express the function coercion here without writing `@FunLike.coe`.
-@[simp]
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : M) (y : N) :
     @FunLike.coe _ _ _ LinearMap.instFunLike
       ((MonoidalClosed.curry f : N →ₗ[R] M →ₗ[R] P) y) x = f (x ⊗ₜ[R] y) :=
@@ -107,5 +109,4 @@ theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f 
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_pre_app ModuleCat.monoidalClosed_pre_app
 
-attribute [nolint simpNF] ModuleCat.monoidalClosed_curry
 end ModuleCat

@@ -269,7 +269,9 @@ theorem isAffineOpen_iff_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : Is
   · rw [Scheme.comp_val_base, coe_comp, Set.range_comp]
     dsimp [Opens.inclusion]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_coe, Subtype.range_coe]
+    erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    rw [Subtype.range_coe]; erw [Subtype.range_coe]
     rfl
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.isAffineOpen_iff_of_isOpenImmersion

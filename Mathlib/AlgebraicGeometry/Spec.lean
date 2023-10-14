@@ -242,7 +242,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [stalkIso_hom, stalkIso_inv, comp_apply, comp_apply, localizationToStalk_of]
+        rw [stalkIso_hom, stalkIso_inv]; erw [comp_apply, comp_apply]; rw [localizationToStalk_of]
         erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
@@ -308,6 +308,9 @@ def toSpecΓ (R : CommRingCat) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj
   StructureSheaf.toOpen R ⊤
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.to_Spec_Γ AlgebraicGeometry.toSpecΓ
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
 
 instance isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global
@@ -479,5 +482,4 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.is_localized_module_to_pushforward_stalk_alg_hom AlgebraicGeometry.StructureSheaf.isLocalizedModule_toPushforwardStalkAlgHom
 
 end StructureSheaf
-attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
 end AlgebraicGeometry

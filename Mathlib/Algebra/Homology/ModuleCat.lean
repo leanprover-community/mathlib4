@@ -73,7 +73,7 @@ set_option linter.uppercaseLean3 false in
 theorem cyclesMap_toCycles (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
     (cyclesMap f i) (toCycles x) = toCycles ⟨f.f i x.1, by
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [LinearMap.mem_ker, Hom.comm_from_apply, x.2, map_zero]⟩ := by
+      rw [LinearMap.mem_ker]; erw [Hom.comm_from_apply, x.2, map_zero]⟩ := by
   ext
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [cyclesMap_arrow_apply, toKernelSubobject_arrow, toKernelSubobject_arrow]

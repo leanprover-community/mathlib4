@@ -79,10 +79,11 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
       refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp
-      · simp [lof, lsingle, h]
-        -- This used to be the end of the proof before leanprover/lean4#2644
+      · -- This used to be the end of the proof before leanprover/lean4#2644
+        -- old proof `simp [lof, lsingle, h]`
+        simp only [lof, lsingle, AddHom.toFun_eq_coe, lie_module_bracket_apply]
         erw [AddHom.coe_mk]
-        simp [lof, lsingle, h] }
+        simp [h] }
 #align direct_sum.lie_module_of DirectSum.lieModuleOf
 
 /-- The projection map onto one component, as a morphism of Lie modules. -/
@@ -142,19 +143,21 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
     map_lie' := fun {x y} => by
       refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
-      · rw [← h]; simp [of, singleAddHom]
+      · rw [← h]
         -- This used to be the end of the proof before leanprover/lean4#2644
+        -- with `simp [of, singleAddHom]`
+        simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
         simp [h]
         intros
         erw [single_add]
-      · simp [of, singleAddHom, h]
-        -- This used to be the end of the proof before leanprover/lean4#2644
+      · -- This used to be the end of the proof before leanprover/lean4#2644
+        -- with `simp [of, singleAddHom]`
+        simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
-        simp [h]
+        simp only [h, dite_false, single_apply, lie_self]
         intros
-        erw [single_add]
-        }
+        erw [single_add] }
 #align direct_sum.lie_algebra_of DirectSum.lieAlgebraOf
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/

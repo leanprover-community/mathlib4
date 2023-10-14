@@ -130,6 +130,7 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   LinearMap.toFun_eq_coe, LinearMap.coe_comp, LieHom.coe_linearMap_comp,
     --   AlgHom.comp_toLinearMap, Function.comp_apply, AlgHom.toLinearMap_apply,
     --   RingQuot.liftAlgHom_mkAlgHom_apply, AlgHom.coe_toLieHom, LieHom.coe_mk]
+    -- extra `rfl` after leanprover/lean4#2644
     simp [mkAlgHom]; rfl
 #align universal_enveloping_algebra.lift UniversalEnvelopingAlgebra.lift
 

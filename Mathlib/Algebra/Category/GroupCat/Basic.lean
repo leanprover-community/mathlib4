@@ -154,6 +154,8 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom_apply AddGroupCat.ofHom_apply
 
+attribute [nolint simpNF] AddGroupCat.ofHom_apply GroupCat.ofHom_apply
+
 @[to_additive]
 instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
 set_option linter.uppercaseLean3 false in
@@ -529,4 +531,3 @@ abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 @[nolint checkUnivs]
 abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}
 
-attribute [nolint simpNF] AddGroupCat.ofHom_apply GroupCat.ofHom_apply

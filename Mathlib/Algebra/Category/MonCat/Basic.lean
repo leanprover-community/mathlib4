@@ -403,7 +403,8 @@ add_decl_doc addEquivIsoAddCommMonCatIso
 instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
-    -- Again a problem that exists already creeps into other things
+    -- Again a problem that exists already creeps into other things leanprover/lean4#2644
+    -- this used to be `by aesop`; see next declaration
     let e : X ≃* Y := MulEquiv.mk i.toEquiv (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact IsIso.of_iso e.toMonCatIso
 set_option linter.uppercaseLean3 false in
