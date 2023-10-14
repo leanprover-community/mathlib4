@@ -138,7 +138,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
 def Path (F : PFunctor.{u}) :=
-  List F.IdxCat
+  List F.Idx
 #align pfunctor.approx.path PFunctor.Approx.Path
 
 instance Path.inhabited : Inhabited (Path F) :=
@@ -260,7 +260,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
-def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.IdxCat) (x : M F) : M F :=
+def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.Idx) (x : M F) : M F :=
   if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
   else default
 set_option linter.uppercaseLean3 false in
@@ -330,7 +330,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree' PFunctor.M.Agree'
 
 @[simp]
-theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x := by rfl
+theorem dest_mk (x : F.Obj <| M F) : dest (M.mk x) = x := rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_mk PFunctor.M.dest_mk
 
@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem casesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
-                    (f : ∀ (a) (f : F.B a → M F), r (M.mk ⟨a, f⟩)) :
+    (f : ∀ (a) (f : F.B a → M F), r (M.mk ⟨a, f⟩)) :
     PFunctor.M.casesOn' (M.mk ⟨a, x⟩) f = f a x :=
   @cases_mk F r ⟨a, x⟩ (fun ⟨a, g⟩ => f a g)
 set_option linter.uppercaseLean3 false in
@@ -535,7 +535,7 @@ theorem head_mk (x : F.Obj (M F)) : head (M.mk x) = x.1 :=
   Eq.symm <|
     calc
       x.1 = (dest (M.mk x)).1 := by rw [dest_mk]
-      _ = head (M.mk x) := by rfl
+      _ = head (M.mk x) := rfl
 
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.head_mk PFunctor.M.head_mk
@@ -546,7 +546,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.children_mk PFunctor.M.children_mk
 
 @[simp]
-theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F.Obj (M F)) (i : F.IdxCat) :
+theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F.Obj (M F)) (i : F.Idx) :
     ichildren i (M.mk x) = x.iget i := by
   dsimp only [ichildren, PFunctor.Obj.iget]
   congr with h
@@ -562,7 +562,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
-    iselect nil (M.mk ⟨a, f⟩) = a := by rfl
+    iselect nil (M.mk ⟨a, f⟩) = a := rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_nil PFunctor.M.iselect_nil
 

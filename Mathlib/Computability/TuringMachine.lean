@@ -1696,8 +1696,7 @@ def trNormal : Stmt₁ → Stmt'₁
 
 theorem stepAux_move (d : Dir) (q : Stmt'₁) (v : σ) (T : Tape Bool) :
     stepAux (moveₙ d q) v T = stepAux q v ((Tape.move d)^[n] T) := by
-  suffices : ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T)
-  exact this n
+  suffices ∀ i, stepAux ((Stmt.move d)^[i] q) v T = stepAux q v ((Tape.move d)^[i] T) from this n
   intro i; induction' i with i IH generalizing T; · rfl
   rw [iterate_succ', iterate_succ]
   simp only [stepAux, Function.comp_apply]
@@ -1841,7 +1840,7 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
     stepAux (readAux l₂.length fun v ↦ f (a ::ᵥ v)) v
       (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))
   · dsimp [readAux, stepAux]
-    simp
+    simp only [ListBlank.head_cons, Tape.move_right_mk', ListBlank.tail_cons]
     cases a <;> rfl
   rw [← ListBlank.append, IH]
   rfl

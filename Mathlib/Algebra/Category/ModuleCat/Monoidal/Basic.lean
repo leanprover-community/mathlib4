@@ -33,6 +33,8 @@ use this as an interface and not need to interact much with the implementation d
 -- Porting note: Module
 set_option linter.uppercaseLean3 false
 
+suppress_compilation
+
 universe v w x u
 
 open CategoryTheory
@@ -135,7 +137,7 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f�
 #align Module.monoidal_category.associator_naturality ModuleCat.MonoidalCategory.associator_naturality
 
 -- Porting note: very slow!
-set_option maxHeartbeats 1600000 in
+set_option maxHeartbeats 1200000 in
 theorem pentagon (W X Y Z : ModuleCat R) :
     tensorHom (associator W X Y).hom (𝟙 Z) ≫
         (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =

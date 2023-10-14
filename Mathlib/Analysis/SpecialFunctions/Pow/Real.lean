@@ -719,8 +719,7 @@ theorem sqrt_eq_rpow (x : ℝ) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   · rw [← mul_self_inj_of_nonneg (sqrt_nonneg _) (rpow_nonneg_of_nonneg h _), mul_self_sqrt h, ← sq,
       ← rpow_nat_cast, ← rpow_mul h]
     norm_num
-  · have : 1 / (2 : ℝ) * π = π / (2 : ℝ)
-    ring
+  · have : 1 / (2 : ℝ) * π = π / (2 : ℝ) := by ring
     rw [sqrt_eq_zero_of_nonpos h.le, rpow_def_of_neg h, this, cos_pi_div_two, mul_zero]
 #align real.sqrt_eq_rpow Real.sqrt_eq_rpow
 

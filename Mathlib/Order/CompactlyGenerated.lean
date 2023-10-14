@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Order.Atoms
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
@@ -61,7 +62,7 @@ variable (α)
 /-- A compactness property for a complete lattice is that any `sup`-closed non-empty subset
 contains its `sSup`. -/
 def IsSupClosedCompact : Prop :=
-  ∀ (s : Set α) (_ : s.Nonempty), (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ⊔ b ∈ s) → sSup s ∈ s
+  ∀ (s : Set α) (_ : s.Nonempty), SupClosed s → sSup s ∈ s
 #align complete_lattice.is_sup_closed_compact CompleteLattice.IsSupClosedCompact
 
 /-- A compactness property for a complete lattice is that any subset has a finite subset with the
@@ -219,7 +220,7 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     rw [ht₂]
     simp [eq_singleton_bot_of_sSup_eq_bot_of_nonempty ht₂ hne]
   · rw [ht₂]
-    exact t.sup_closed_of_sup_closed h ht₁ hsc
+    exact hsc.finsetSup_mem h ht₁
 #align complete_lattice.is_Sup_finite_compact.is_sup_closed_compact CompleteLattice.IsSupFiniteCompact.isSupClosedCompact
 
 theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :

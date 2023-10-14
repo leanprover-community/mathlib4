@@ -42,6 +42,10 @@ def trace (A : Matrix n n R) : R :=
   ∑ i, diag A i
 #align matrix.trace Matrix.trace
 
+lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
+    trace (diagonal d) = ∑ i, d i := by
+  simp only [trace, diag_apply, diagonal_apply_eq]
+
 variable (n R)
 
 @[simp]
@@ -50,6 +54,9 @@ theorem trace_zero : trace (0 : Matrix n n R) = 0 :=
 #align matrix.trace_zero Matrix.trace_zero
 
 variable {n R}
+
+@[simp]
+lemma trace_eq_zero_of_isEmpty [IsEmpty n] (A : Matrix n n R) : trace A = 0 := by simp [trace]
 
 @[simp]
 theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
@@ -183,7 +190,6 @@ with `Matrix.det_fin_two` etc.
 -/
 
 
-@[simp]
 theorem trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
   rfl
 #align matrix.trace_fin_zero Matrix.trace_fin_zero

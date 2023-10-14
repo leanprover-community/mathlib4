@@ -380,7 +380,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
   let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
     mulRothNumber (s ∪ t) = u.card := hcard.symm
-    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_distrib_left, (inter_eq_left_iff_subset _ _).2 hus]
+    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_distrib_left, inter_eq_left.2 hus]
     _ ≤ (u ∩ s).card + (u ∩ t).card := (card_union_le _ _)
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
@@ -440,7 +440,7 @@ theorem mulRothNumber_map_mul_left :
 @[to_additive (attr := simp)]
 theorem mulRothNumber_map_mul_right :
     mulRothNumber (s.map <| mulRightEmbedding a) = mulRothNumber s := by
-  rw [← mul_left_embedding_eq_mul_right_embedding, mulRothNumber_map_mul_left s a]
+  rw [← mulLeftEmbedding_eq_mulRightEmbedding, mulRothNumber_map_mul_left s a]
 #align mul_roth_number_map_mul_right mulRothNumber_map_mul_right
 #align add_roth_number_map_add_right addRothNumber_map_add_right
 
