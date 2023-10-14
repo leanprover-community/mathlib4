@@ -29,29 +29,16 @@ open BigOperators Polynomial
 section Embeddings
 
 variable (F : Type*) [Field F]
--- Porting note: timed out in term mode.
--- Using `apply` appears to be faster than using `refine/exact`.
+
+open AdjoinRoot in
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :
-    Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) := by
-  refine AlgEquiv.symm ?_
-  refine AlgEquiv.ofBijective
-      (AlgHom.codRestrict (AdjoinRoot.liftHom _ x <| minpoly.aeval F x) _ fun p => ?_) ⟨?_, ?_⟩
-  · induction p using AdjoinRoot.induction_on with
-    | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval F x).symm ▸
-        (Polynomial.aeval _).mem_range.mpr ⟨p, rfl⟩
-  · apply (AlgHom.injective_codRestrict _ _ _).2
-    apply (injective_iff_map_eq_zero _).2
-    intro p
-    induction p using AdjoinRoot.induction_on with
-    | ih p =>
-      intro hp
-      apply Ideal.Quotient.eq_zero_iff_mem.2
-      apply Ideal.mem_span_singleton.2
-      apply minpoly.dvd F x hp
-  · intro y
-    let ⟨p, hp⟩ := (SetLike.ext_iff.1 (Algebra.adjoin_singleton_eq_range_aeval F x) (y : R)).1 y.2
-    exact ⟨AdjoinRoot.mk _ p, Subtype.eq hp⟩
+    Algebra.adjoin F ({x} : Set R) ≃ₐ[F] AdjoinRoot (minpoly F x) :=
+  AlgEquiv.symm <| AlgEquiv.ofBijective (Minpoly.toAdjoin F x) <| by
+    refine ⟨(injective_iff_map_eq_zero _).2 fun P₁ hP₁ ↦ ?_, Minpoly.toAdjoin.surjective F x⟩
+    obtain ⟨P, rfl⟩ := mk_surjective P₁
+    refine AdjoinRoot.mk_eq_zero.mpr (minpoly.dvd F x ?_)
+    rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe] at hP₁
 #align alg_equiv.adjoin_singleton_equiv_adjoin_root_minpoly AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly
 
 open Finset

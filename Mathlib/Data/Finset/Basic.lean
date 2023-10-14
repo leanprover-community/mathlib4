@@ -1198,6 +1198,9 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   insert_subset_iff.2 ⟨mem_insert_self _ _, Subset.trans h (subset_insert _ _)⟩
 #align finset.insert_subset_insert Finset.insert_subset_insert
 
+@[simp] lemma insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
+  simp_rw [←coe_subset]; simp [-coe_subset, ha]
+
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_not_mem_of_mem_insert (h.subst <| mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 #align finset.insert_inj Finset.insert_inj
@@ -1497,25 +1500,17 @@ theorem insert_union_distrib (a : α) (s t : Finset α) :
   simp only [insert_union, union_insert, insert_idem]
 #align finset.insert_union_distrib Finset.insert_union_distrib
 
-@[simp]
-theorem union_eq_left_iff_subset {s t : Finset α} : s ∪ t = s ↔ t ⊆ s :=
-  sup_eq_left
-#align finset.union_eq_left_iff_subset Finset.union_eq_left_iff_subset
+@[simp] lemma union_eq_left : s ∪ t = s ↔ t ⊆ s := sup_eq_left
+#align finset.union_eq_left_iff_subset Finset.union_eq_left
 
-@[simp]
-theorem left_eq_union_iff_subset {s t : Finset α} : s = s ∪ t ↔ t ⊆ s := by
-  rw [← union_eq_left_iff_subset, eq_comm]
-#align finset.left_eq_union_iff_subset Finset.left_eq_union_iff_subset
+@[simp] lemma left_eq_union : s = s ∪ t ↔ t ⊆ s := by rw [eq_comm, union_eq_left]
+#align finset.left_eq_union_iff_subset Finset.left_eq_union
 
-@[simp]
-theorem union_eq_right_iff_subset {s t : Finset α} : s ∪ t = t ↔ s ⊆ t :=
-  sup_eq_right
-#align finset.union_eq_right_iff_subset Finset.union_eq_right_iff_subset
+@[simp] lemma union_eq_right : s ∪ t = t ↔ s ⊆ t := sup_eq_right
+#align finset.union_eq_right_iff_subset Finset.union_eq_right
 
-@[simp]
-theorem right_eq_union_iff_subset {s t : Finset α} : s = t ∪ s ↔ t ⊆ s := by
-  rw [← union_eq_right_iff_subset, eq_comm]
-#align finset.right_eq_union_iff_subset Finset.right_eq_union_iff_subset
+@[simp] lemma right_eq_union : s = t ∪ s ↔ t ⊆ s := by rw [eq_comm, union_eq_right]
+#align finset.right_eq_union_iff_subset Finset.right_eq_union
 
 -- Porting note: replaced `⊔` in RHS
 theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
@@ -1813,9 +1808,8 @@ theorem inter_inter_inter_comm (s t u v : Finset α) : s ∩ t ∩ (u ∩ v) = s
   inf_inf_inf_comm _ _ _ _
 #align finset.inter_inter_inter_comm Finset.inter_inter_inter_comm
 
-theorem union_eq_empty_iff (A B : Finset α) : A ∪ B = ∅ ↔ A = ∅ ∧ B = ∅ :=
-  sup_eq_bot_iff
-#align finset.union_eq_empty_iff Finset.union_eq_empty_iff
+lemma union_eq_empty : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ := sup_eq_bot_iff
+#align finset.union_eq_empty_iff Finset.union_eq_empty
 
 theorem union_subset_iff : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ u :=
   (sup_le_iff : s ⊔ t ≤ u ↔ s ≤ u ∧ t ≤ u)
@@ -1825,15 +1819,11 @@ theorem subset_inter_iff : s ⊆ t ∩ u ↔ s ⊆ t ∧ s ⊆ u :=
   (le_inf_iff : s ≤ t ⊓ u ↔ s ≤ t ∧ s ≤ u)
 #align finset.subset_inter_iff Finset.subset_inter_iff
 
-@[simp]
-theorem inter_eq_left_iff_subset (s t : Finset α) : s ∩ t = s ↔ s ⊆ t :=
-  inf_eq_left
-#align finset.inter_eq_left_iff_subset Finset.inter_eq_left_iff_subset
+@[simp] lemma inter_eq_left : s ∩ t = s ↔ s ⊆ t := inf_eq_left
+#align finset.inter_eq_left_iff_subset_iff_subset Finset.inter_eq_left
 
-@[simp]
-theorem inter_eq_right_iff_subset (s t : Finset α) : t ∩ s = s ↔ s ⊆ t :=
-  inf_eq_right
-#align finset.inter_eq_right_iff_subset Finset.inter_eq_right_iff_subset
+@[simp] lemma inter_eq_right : t ∩ s = s ↔ s ⊆ t := inf_eq_right
+#align finset.inter_eq_right_iff_subset Finset.inter_eq_right
 
 theorem inter_congr_left (ht : s ∩ u ⊆ t) (hu : s ∩ t ⊆ u) : s ∩ t = s ∩ u :=
   inf_congr_left ht hu
@@ -2815,7 +2805,7 @@ theorem subset_coe_filter_of_subset_forall (s : Finset α) {t : Set α} (h₁ : 
 theorem filter_singleton (a : α) : filter p (singleton a) = if p a then singleton a else ∅ := by
   classical
     ext x
-    simp
+    simp only [mem_singleton, forall_eq, mem_filter]
     split_ifs with h <;> by_cases h' : x = a <;> simp [h, h']
 #align finset.filter_singleton Finset.filter_singleton
 
@@ -2943,7 +2933,7 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
     · intro x
       simp
     · intro x
-      simp
+      simp only [not_not, coe_filter, Set.mem_setOf_eq, Set.mem_diff, and_imp]
       intro hx hx₂
       refine' ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 #align finset.subset_union_elim Finset.subset_union_elim

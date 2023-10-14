@@ -501,7 +501,7 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
 #align add_subgroup.to_subgroup' AddSubgroup.toSubgroup'
 
-/-- Additive supgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
+/-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
 @[simps!]
 def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) where
@@ -1259,6 +1259,10 @@ theorem closure_union (s t : Set G) : closure (s ∪ t) = closure s ⊔ closure 
   (Subgroup.gi G).gc.l_sup
 #align subgroup.closure_union Subgroup.closure_union
 #align add_subgroup.closure_union AddSubgroup.closure_union
+
+@[to_additive]
+theorem sup_eq_closure (H H' : Subgroup G) : H ⊔ H' = closure ((H : Set G) ∪ (H' : Set G)) :=
+  by simp_rw [closure_union, closure_eq]
 
 @[to_additive]
 theorem closure_iUnion {ι} (s : ι → Set G) : closure (⋃ i, s i) = ⨆ i, closure (s i) :=
@@ -2890,6 +2894,11 @@ theorem _root_.Subgroup.ker_inclusion {H K : Subgroup G} (h : H ≤ K) : (inclus
 #align add_subgroup.ker_inclusion AddSubgroup.ker_inclusion
 
 @[to_additive]
+theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g : G →* N) :
+    (f.prod g).ker = f.ker ⊓ g.ker :=
+  SetLike.ext fun _ => Prod.mk_eq_one
+
+@[to_additive]
 theorem prodMap_comap_prod {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* N)
     (g : G' →* N') (S : Subgroup N) (S' : Subgroup N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
@@ -3536,7 +3545,7 @@ variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 @[to_additive]
 theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
   ⟨fun h => by
-    rw [← closure_eq s, ← closure_eq t, ← closure_union] at h
+    rw [sup_eq_closure] at h
     refine Subgroup.closure_induction h ?_ ?_ ?_ ?_
     · rintro y (h | h)
       · exact ⟨y, h, 1, t.one_mem, by simp⟩

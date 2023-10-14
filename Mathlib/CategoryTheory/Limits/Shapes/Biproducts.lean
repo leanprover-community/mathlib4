@@ -1361,7 +1361,7 @@ def getBinaryBiproductData (P Q : C) [HasBinaryBiproduct P Q] : BinaryBiproductD
   Classical.choice HasBinaryBiproduct.exists_binary_biproduct
 #align category_theory.limits.get_binary_biproduct_data CategoryTheory.Limits.getBinaryBiproductData
 
-/-- A bicone for `P Q ` which is both a limit cone and a colimit cocone. -/
+/-- A bicone for `P Q` which is both a limit cone and a colimit cocone. -/
 def BinaryBiproduct.bicone (P Q : C) [HasBinaryBiproduct P Q] : BinaryBicone P Q :=
   (getBinaryBiproductData P Q).bicone
 #align category_theory.limits.binary_biproduct.bicone CategoryTheory.Limits.BinaryBiproduct.bicone

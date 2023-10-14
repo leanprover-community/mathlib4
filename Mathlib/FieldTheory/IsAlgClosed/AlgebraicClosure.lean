@@ -325,7 +325,7 @@ def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
-  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x:= Nat.leRecOn_succ' x
+  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x := Nat.leRecOn_succ' x
   unfold ofStep
   rw [RingHom.comp_apply]
   dsimp [toStepOfLE]
