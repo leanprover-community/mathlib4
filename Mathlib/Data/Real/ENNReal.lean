@@ -353,11 +353,11 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 #align ennreal.coe_lt_coe ENNReal.coe_lt_coe
 
 -- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, ENNReal.coe_le_coe_of_le⟩ := ENNReal.coe_le_coe
+alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 attribute [gcongr] ENNReal.coe_le_coe_of_le
 
 -- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, ENNReal.coe_lt_coe_of_le⟩ := ENNReal.coe_lt_coe
+alias ⟨_, coe_lt_coe_of_le⟩ := coe_lt_coe
 attribute [gcongr] ENNReal.coe_lt_coe_of_le
 
 theorem coe_mono : Monotone some := fun _ _ => coe_le_coe.2
