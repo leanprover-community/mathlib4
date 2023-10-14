@@ -1345,9 +1345,10 @@ import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Rotate
 import Mathlib.CategoryTheory.Triangulated.SpectralObject
 import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.CategoryTheory.Triangulated.TStructure.Abelian
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
-import Mathlib.CategoryTheory.Triangulated.TStructure.Kernels
+import Mathlib.CategoryTheory.Triangulated.TStructure.Homological
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
@@ -3667,3 +3668,4 @@ import Mathlib.Util.Tactic
 import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.test
