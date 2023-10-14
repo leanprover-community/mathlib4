@@ -1278,6 +1278,15 @@ lemma isIso_truncLT_map_truncLTι_app (a b : ℤ) (h : a ≤ b) (X : C) :
   t.isIso₁_truncLT_map_of_GE _ (t.triangleLTGE_distinguished b X) a
     (t.isGE_of_GE ((t.truncGE b).obj X) a b (by linarith))
 
+lemma isIso_truncLE_map_truncLEι_app (a b : ℤ) (h : a ≤ b) (X : C) :
+    IsIso ((t.truncLE a).map ((t.truncLEι b).app X)) := by
+  apply isIso_truncLT_map_truncLTι_app
+  linarith
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncLE n).map ((t.truncLEι n).app X)) := by
+  apply t.isIso_truncLE_map_truncLEι_app
+  rfl
+
 lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : ℤt) (h : a ≤ b) (X : C) :
     IsIso ((t.truncGEt.obj b).map ((t.abstractSpectralObject.truncGEπ a).app X)) := by
   obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases

@@ -12,7 +12,6 @@ lemma AddCommGroupCat.isZero (X : AddCommGroupCat) (hX : ∀ (x : X), x = 0) :
 
 namespace CategoryTheory
 
-
 namespace Pretriangulated
 
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
@@ -103,6 +102,42 @@ variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C 
 
 namespace TStructure
 
+section
+
+variable (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) [t.IsLE T.obj₁ n]
+
+@[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
+noncomputable def truncLETriangle  :
+    Triangle C :=
+  Triangle.mk ((t.truncLE n).map T.mor₁)
+    ((t.truncLE n).map T.mor₂)
+    ((t.truncLEι n).app T.obj₃ ≫ T.mor₃ ≫ (asIso ((t.truncLEι n).app T.obj₁)).inv⟦(1 : ℤ)⟧')
+
+instance : t.IsLE (t.truncLETriangle T n).obj₁ n := by dsimp; infer_instance
+instance : t.IsLE (t.truncLETriangle T n).obj₂ n := by dsimp; infer_instance
+instance : t.IsLE (t.truncLETriangle T n).obj₃ n := by dsimp; infer_instance
+
+/-lemma truncLETriangle_distinguished :
+    t.truncLETriangle T n ∈ distTriang C := by
+  have := hT
+  let a : T.obj₁ ⟶ (t.truncLE n).obj T.obj₂ :=
+    (asIso ((t.truncLEι n).app T.obj₁)).inv ≫ (t.truncLE n).map T.mor₁
+  let b := (t.truncLEι n).app T.obj₂
+  have comm : a ≫ b = T.mor₁ := by simp
+  obtain ⟨Z, f₂, f₃, h₁⟩ := distinguished_cocone_triangle a
+  have h₂ := (t.triangleLEGT_distinguished n T.obj₂)
+  have H := someOctahedron comm h₁ h₂ hT
+  refine' isomorphic_distinguished _ h₁ _ _
+  have paf := H.mem
+  have e : (t.truncLE n).obj T.obj₃ ≅ Z := sorry
+  have he₁ : (truncLE t n).map T.mor₂ ≫ e.hom = f₂ := sorry
+  have he₂ : (t.truncLETriangle T n).mor₃ ≫
+    (shiftFunctor C 1).map ((truncLEι t n).app T.obj₁) = e.hom ≫ f₃ := sorry
+  exact Triangle.isoMk _ _ (asIso ((t.truncLEι n).app T.obj₁))
+    (Iso.refl _) e (by simp) (by simp [he₁]) he₂-/
+
+end
+
 noncomputable def toHomology₀ (X : C) [t.IsLE X 0] : X ⟶ t.ιHeart.obj ((t.homology 0).obj X) :=
   (asIso ((t.truncLEι 0).app X)).inv ≫ (t.truncGEπ 0).app _ ≫ (shiftFunctorZero C ℤ).inv.app _
 
@@ -162,6 +197,7 @@ instance : (t.homology 0).Additive where
     apply t.ιHeart.map_injective
     simp [homology]
 
+@[simps!]
 noncomputable def shortComplex :=
   (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).map (t.homology 0)
 
@@ -191,6 +227,28 @@ def case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
   intro (x : T.obj₁⟦(1 : ℤ)⟧ ⟶ A.obj)
   have : t.IsLE (T.obj₁⟦(1 : ℤ)⟧) (-1) := t.isLE_shift T.obj₁ 0 1 (-1) (by linarith)
   exact t.zero x (-1) 0 (by linarith)
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncGELE n n).map ((t.truncLEι n).app X)) := by
+  dsimp [truncGELE]
+  infer_instance
+
+instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncLEι n).app X)) := by
+  suffices IsIso (t.ιHeart.map ((t.homology n).map ((t.truncLEι n).app X))) from
+    isIso_of_reflects_iso ((t.homology n).map ((t.truncLEι n).app X)) t.ιHeart
+  dsimp [homology]
+  infer_instance
+
+/-def case₂ [t.IsLE T.obj₁ 0] :
+    (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
+  have h' := case₁ t (t.truncLETriangle_distinguished T hT 0)
+  refine' (ShortComplex.exact_and_epi_g_iff_of_iso _).1 h'
+  refine' ShortComplex.isoMk
+    (asIso ((t.homology 0).map ((t.truncLEι 0).app T.obj₁)))
+    (asIso ((t.homology 0).map ((t.truncLEι 0).app T.obj₂)))
+    (asIso ((t.homology 0).map ((t.truncLEι 0).app T.obj₃))) _ _
+  all_goals
+    dsimp
+    simp only [← Functor.map_comp, NatTrans.naturality, Functor.id_obj, Functor.id_map]-/
 
 end
 
