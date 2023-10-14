@@ -1126,7 +1126,7 @@ def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
     classical
       refine' sum_filter_ne_zero.symm.trans ((sum_congr _ fun _ _ => rfl).trans sum_filter_ne_zero)
       ext m
-      simp only [Nat.mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
+      simp only [mem_antidiagonal, mem_addAntidiagonal, and_congr_left_iff, mem_filter,
         mem_support]
       rintro h
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
