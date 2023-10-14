@@ -7,6 +7,7 @@ import Mathlib.Algebra.Hom.Embedding
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Option.Basic
 
 #align_import data.finset.image from "leanprover-community/mathlib"@"b685f506164f8d17a6404048bc4d696739c5d976"
 
@@ -697,11 +698,6 @@ theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a 
 @[simp, norm_cast]
 theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
   Set.ext (by simp only [mem_coe, mem_filterMap, Option.mem_def, Set.mem_setOf_eq, implies_true])
-
--- TODO: Is this lemma worth having? Where should it go? If not, it can just be
--- replaced with `(by simp)` where it's used.
-theorem _root_.Option.mem_some_eucl : ∀ (a a' b : α), b ∈ some a → b ∈ some a' → a = a' :=
-  by simp only [Option.mem_def, Option.some.injEq, forall_eq', forall_eq, implies_true]
 
 @[simp]
 theorem filterMap_some : s.filterMap some Option.mem_some_eucl = s :=

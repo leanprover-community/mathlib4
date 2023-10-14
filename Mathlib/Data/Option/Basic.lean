@@ -68,6 +68,11 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
   h1.trans h2.symm
 #align option.eq_of_mem_of_mem Option.eq_of_mem_of_mem
 
+-- TODO: Is this lemma worth having? If not, it can just be
+-- replaced with `(by simp)` where it's used.
+theorem mem_some_eucl {a a' b : α} : b ∈ some a → b ∈ some a' → a = a' :=
+  fun ha ha' => some.inj <| eq_of_mem_of_mem ha ha'
+
 theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
   fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
