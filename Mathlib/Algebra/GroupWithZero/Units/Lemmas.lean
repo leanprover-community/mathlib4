@@ -26,7 +26,7 @@ section Monoid
 variable [Monoid M] [GroupWithZero G₀]
 
 lemma isLocalRingHom_of_exists_map_ne_one [MonoidHomClass F G₀ M] {f : F}
-  (hf : ∃ x : G₀, f x ≠ 1) : IsLocalRingHom f where
+    (hf : ∃ x : G₀, f x ≠ 1) : IsLocalRingHom f where
   map_nonunit a h := by
     rcases eq_or_ne a 0 with (rfl | h)
     · obtain ⟨t, ht⟩ := hf

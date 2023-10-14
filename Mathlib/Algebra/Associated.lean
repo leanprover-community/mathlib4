@@ -248,7 +248,7 @@ theorem Irreducible.dvd_comm [Monoid α] {p q : α} (hp : Irreducible p) (hq : I
 #align irreducible.dvd_comm Irreducible.dvd_comm
 
 theorem Irreducible.of_map [Monoid α] [Monoid β] [MonoidHomClass F α β] (f : F)
-  [IsLocalRingHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
+    [IsLocalRingHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
   ⟨fun hu ↦ hfx.not_unit <| hu.map f,
    by rintro p q rfl
       exact (hfx.isUnit_or_isUnit <| map_mul f p q).imp (.of_map f _) (.of_map f _)⟩
