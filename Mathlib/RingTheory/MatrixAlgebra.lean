@@ -12,6 +12,7 @@ import Mathlib.RingTheory.TensorProduct
 We show `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 
+suppress_compilation
 
 universe u v w
 

@@ -93,7 +93,7 @@ zero otherwise. -/
 def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] :
     K.X Δ.len ⟶ K.X Δ'.len := by
   by_cases Δ = Δ'
-  · exact eqToHom (by congr )
+  · exact eqToHom (by congr)
   · by_cases Isδ₀ i
     · exact K.d Δ.len Δ'.len
     · exact 0

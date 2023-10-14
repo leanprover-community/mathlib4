@@ -70,9 +70,13 @@ instance : ProperSpace ℤ :=
     exact (Set.finite_Icc _ _).isCompact⟩
 
 @[simp]
-theorem cocompact_eq : cocompact ℤ = atBot ⊔ atTop := by
-  simp_rw [← comap_dist_right_atTop_eq_cocompact (0 : ℤ), dist_eq', sub_zero,
+theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
+  simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
+
+@[simp]
+theorem cocompact_eq : cocompact ℤ = atBot ⊔ atTop := by
+  rw [← cobounded_eq_cocompact, cobounded_eq]
 #align int.cocompact_eq Int.cocompact_eq
 
 @[simp]
