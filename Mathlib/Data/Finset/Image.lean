@@ -674,7 +674,8 @@ def filterMap (f : α → Option β) (s : Finset α)
     (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
   ⟨s.val.filterMap f, s.nodup.filterMap f f_inj⟩
 
-variable (f : α → Option β) (s' : Finset α) {s t : Finset α} {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
+variable (f : α → Option β) (s' : Finset α) {s t : Finset α}
+  {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
 
 @[simp]
 theorem filterMap_val : (filterMap f s' f_inj).1 = s'.1.filterMap f := rfl
