@@ -418,6 +418,9 @@ def includeRight : B →ₐ[R] (𝒜 ⊗'[R] ℬ) :=
       dsimp
       rw [tmul_coe_mul_one_tmul])
 
+lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ⊗'[R] ℬ) r = 1 ⊗ₜ'[R] algebraMap R B r :=
+  (includeRight 𝒜 ℬ).commutes r |>.symm
+
 variable {C} [Ring C] [Algebra R C]
 
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
