@@ -84,6 +84,16 @@ instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) w
       map := fun f => ModuleCat.ofHom f.toLinearMap }
 #align Algebra.has_forget_to_Module AlgebraCat.hasForgetToModule
 
+@[simp]
+lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
+    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).obj X = ModuleCat.of R X :=
+  rfl
+
+@[simp]
+lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
+    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.ofHom f.toLinearMap :=
+  rfl
+
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. -/
 def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
