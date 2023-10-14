@@ -20,6 +20,8 @@ This file shows that taking `TensorProduct`s commutes with taking `Prod`s in bot
 universe uR uM₁ uM₂ uM₃
 variable (R : Type uR) (M₁ : Type uM₁) (M₂ : Type uM₂) (M₃ : Type uM₃)
 
+suppress_compilation
+
 namespace TensorProduct
 
 variable [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]

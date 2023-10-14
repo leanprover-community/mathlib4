@@ -508,10 +508,16 @@ theorem dvd_gcd_mul_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k
   (dvd_gcd (dvd_mul_right _ n) H).trans (gcd_mul_right' n k m).dvd
 #align dvd_gcd_mul_of_dvd_mul dvd_gcd_mul_of_dvd_mul
 
+theorem dvd_gcd_mul_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ gcd k m * n ↔ k ∣ m * n :=
+  ⟨fun h => h.trans (mul_dvd_mul (gcd_dvd_right k m) dvd_rfl), dvd_gcd_mul_of_dvd_mul⟩
+
 theorem dvd_mul_gcd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k ∣ m * gcd k n := by
   rw [mul_comm] at H ⊢
   exact dvd_gcd_mul_of_dvd_mul H
 #align dvd_mul_gcd_of_dvd_mul dvd_mul_gcd_of_dvd_mul
+
+theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n ↔ k ∣ m * n :=
+  ⟨fun h => h.trans (mul_dvd_mul dvd_rfl (gcd_dvd_right k n)), dvd_mul_gcd_of_dvd_mul⟩
 
 /-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 
@@ -691,6 +697,22 @@ theorem extract_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α] (x
   obtain ⟨y', ey⟩ := gcd_dvd_right x y
   exact ⟨x', y', ex, ey, isUnit_gcd_of_eq_mul_gcd ex ey h⟩
 #align extract_gcd extract_gcd
+
+theorem associated_gcd_left_iff [GCDMonoid α] {x y : α} : Associated x (gcd x y) ↔ x ∣ y :=
+  ⟨fun hx => hx.dvd.trans (gcd_dvd_right x y),
+    fun hxy => associated_of_dvd_dvd (dvd_gcd dvd_rfl hxy) (gcd_dvd_left x y)⟩
+
+theorem associated_gcd_right_iff [GCDMonoid α] {x y : α} : Associated y (gcd x y) ↔ y ∣ x :=
+  ⟨fun hx => hx.dvd.trans (gcd_dvd_left x y),
+    fun hxy => associated_of_dvd_dvd (dvd_gcd hxy dvd_rfl) (gcd_dvd_right x y)⟩
+
+theorem Irreducible.isUnit_gcd_iff [GCDMonoid α] {x y : α} (hx : Irreducible x) :
+    IsUnit (gcd x y) ↔ ¬(x ∣ y) := by
+  rw [hx.isUnit_iff_not_associated_of_dvd (gcd_dvd_left x y), not_iff_not, associated_gcd_left_iff]
+
+theorem Irreducible.gcd_eq_one_iff [NormalizedGCDMonoid α] {x y : α} (hx : Irreducible x) :
+    gcd x y = 1 ↔ ¬(x ∣ y) := by
+  rw [← hx.isUnit_gcd_iff, ← normalize_eq_one, NormalizedGCDMonoid.normalize_gcd]
 
 end GCD
 

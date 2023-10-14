@@ -622,7 +622,7 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
   · simp (config := { contextual := true })
   · rw [Set.PairwiseDisjoint]
     convert π.pairwiseDisjoint
-    rw [Set.union_eq_left_iff_subset, filter_boxes, coe_filter]
+    rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 #align box_integral.prepartition.Union_filter_not BoxIntegral.Prepartition.iUnion_filter_not
 

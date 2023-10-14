@@ -115,6 +115,7 @@ Please refer to
 For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
 
 * Anne Baanen (@Vierkantor): algebra, number theory, tactics
+* Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory, performance
 * Reid Barton (@rwbarton): category theory, topology
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering

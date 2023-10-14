@@ -130,6 +130,14 @@ lemma PosSemidef.eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
 
+lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
+    0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
+  (Matrix.posSemidef_conjTranspose_mul_self _).eigenvalues_nonneg _
+
+lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [DecidableEq m] (i : m) :
+    0 ≤ (isHermitian_mul_conjTranspose_self A).eigenvalues i :=
+  (Matrix.posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg _
+
 namespace PosDef
 
 variable {M : Matrix n n ℝ} (hM : M.PosDef)
@@ -156,14 +164,15 @@ variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q, ← BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)]
+  rw [← toQuadraticForm_associated ℝ Q,
+    ← BilinForm.toMatrix'.left_inv ((associatedHom (R := ℝ) ℝ) Q)]
   apply Matrix.posDef_toQuadraticForm' hQ
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
   rw [← toQuadraticForm_associated ℝ Q, ←
-    BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)] at hQ
+    BilinForm.toMatrix'.left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
   apply Matrix.posDef_of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 #align quadratic_form.pos_def_to_matrix' QuadraticForm.posDef_toMatrix'
 
