@@ -2,7 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Abelian
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 
-open CategoryTheory Category Limits Pretriangulated
+open CategoryTheory Category Limits Pretriangulated Preadditive
 
 lemma AddCommGroupCat.isZero (X : AddCommGroupCat) (hX : ∀ (x : X), x = 0) :
     Limits.IsZero X := by
@@ -170,7 +170,6 @@ instance : t.IsLE (t.truncLETriangle T n).obj₃ n := by dsimp; infer_instance
 
 lemma truncLETriangle_distinguished :
     t.truncLETriangle T n ∈ distTriang C := by
-  have := hT
   let a : T.obj₁ ⟶ (t.truncLE n).obj T.obj₂ :=
     (asIso ((t.truncLEι n).app T.obj₁)).inv ≫ (t.truncLE n).map T.mor₁
   let b := (t.truncLEι n).app T.obj₂
@@ -226,10 +225,69 @@ instance : t.IsGE (t.truncGETriangle T n).obj₁ n := by dsimp; infer_instance
 instance : t.IsGE (t.truncGETriangle T n).obj₂ n := by dsimp; infer_instance
 instance : t.IsGE (t.truncGETriangle T n).obj₃ n := by dsimp; infer_instance
 
-/-lemma truncGETriangle_distinguished :
+instance (X : C) [t.IsGE X n] : t.IsGE (X⟦(-1 : ℤ)⟧) n := by
+  have : t.IsGE (X⟦(-1 : ℤ)⟧) (n + 1) :=
+    t.isGE_shift X n (-1) (n + 1) (by linarith)
+  exact t.isGE_of_GE _ n (n + 1) (by linarith)
+
+lemma truncGETriangle_distinguished :
     t.truncGETriangle T n ∈ distTriang C := by
   have := hT
-  sorry-/
+  let a := (t.truncGEπ n).app T.obj₂
+  let b : (t.truncGE n).obj T.obj₂ ⟶ T.obj₃ :=
+    (t.truncGE n).map T.mor₂ ≫ (asIso ((t.truncGEπ n).app T.obj₃)).inv
+  have comm : a ≫ b = T.mor₂ := by simp
+  have h₁ := rot_of_dist_triangle _ (t.triangleLEGE_distinguished (n-1) n (by linarith) T.obj₂)
+  obtain ⟨Z, f₁, f₃, h₂⟩ := distinguished_cocone_triangle₁ b
+  have H := someOctahedron comm h₁ (rot_of_dist_triangle _ h₂) (rot_of_dist_triangle _ hT)
+  obtain ⟨m₁, hm₁⟩ : ∃ (m₁ : (t.truncLE (n-1)).obj T.obj₂ ⟶ T.obj₁),
+    (shiftFunctor C (1 : ℤ)).map m₁ = H.m₁ := ⟨(shiftFunctor C (1 : ℤ)).preimage H.m₁, by simp⟩
+  obtain ⟨m₃, hm₃⟩ : ∃ (m₃ : T.obj₁ ⟶ Z), (shiftFunctor C (1 : ℤ)).map m₃ = H.m₃ :=
+    ⟨(shiftFunctor C (1 : ℤ)).preimage H.m₃, by simp⟩
+  let T' := Triangle.mk m₁ m₃ (f₁ ≫ (t.truncGEδLE (n-1) n (by linarith)).app T.obj₂)
+  have Hmem' : T' ∈ distTriang C := by
+    rw [← T'.shift_distinguished_iff 1]
+    refine' isomorphic_distinguished _ H.mem _ _
+    refine' Triangle.isoMk _ _ (Iso.refl _) (mulIso (-1) (Iso.refl _)) (Iso.refl _) _ _ _
+    · dsimp
+      simp [hm₁]
+    · dsimp
+      simp [hm₃]
+    · dsimp
+      simp
+  have : t.IsGE Z n := t.isGE₂ _ (inv_rot_of_dist_triangle _ h₂) n
+    (by dsimp; infer_instance) (by dsimp; infer_instance)
+  obtain ⟨e, he : _ = 𝟙 _⟩ :=
+    t.triangle_iso_exists (n-1) n (by linarith) _ _
+      (t.triangleLEGE_distinguished (n - 1) n (by linarith) T.obj₁)
+      Hmem' (Iso.refl _) (by dsimp; infer_instance) (by dsimp; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+  refine' isomorphic_distinguished _ h₂ _ _
+  refine' Triangle.isoMk _ _ (Triangle.π₃.mapIso e) (Iso.refl _)
+    (asIso ((t.truncGEπ n).app T.obj₃)).symm _ _ _
+  · dsimp
+    simp only [comp_id]
+    have eq₁ := e.hom.comm₂
+    have eq₂ := H.comm₄
+    dsimp at eq₁ eq₂
+    simp only [neg_comp, comp_neg, neg_inj] at eq₂
+    apply from_truncGE_obj_ext
+    rw [reassoc_of% eq₁, he]
+    dsimp
+    rw [id_comp, ← NatTrans.naturality]
+    dsimp
+    apply (shiftFunctor C (1 : ℤ)).map_injective
+    simpa only [Functor.map_comp, hm₃] using eq₂
+  · dsimp
+    simp
+  · dsimp [truncGETriangle]
+    simp only [assoc, IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc]
+    have eq₁ := H.comm₃
+    have eq₂ := e.hom.comm₂
+    dsimp at eq₁ eq₂
+    rw [← eq₁, ← Functor.map_comp, eq₂, he]
+    dsimp
+    rw [id_comp, hm₃]
 
 end
 
@@ -435,7 +493,7 @@ instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncGEπ n).app X)) 
   dsimp [homology]
   infer_instance
 
-/-lemma case₂' (h₃ : t.IsGE T.obj₃ 0) :
+lemma case₂' (h₃ : t.IsGE T.obj₃ 0) :
     (shortComplex t hT).Exact ∧ Mono (shortComplex t hT).f := by
   have h' := case₁' t (t.truncGETriangle_distinguished T hT 0)
   refine' (ShortComplex.exact_and_mono_f_iff_of_iso _).2 h'
@@ -447,14 +505,14 @@ instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncGEπ n).app X)) 
     dsimp
     simp only [← Functor.map_comp]
     congr 1
-    exact ((t.truncGEπ 0).naturality _).symm-/
+    exact ((t.truncGEπ 0).naturality _).symm
 
 end HomologicalFunctorAux
 
 instance (X : C) (n : ℤ) : t.IsGE (((t.truncGE n).obj X)⟦n⟧) 0 :=
   t.isGE_shift _ n n 0 (add_zero n)
 
-/-open HomologicalFunctorAux in
+open HomologicalFunctorAux in
 instance : (t.homology 0).IsHomological where
   exact T hT := by
     have h₁ := t.triangleLEGE_distinguished 0 1 (by linarith) T.obj₁
@@ -473,12 +531,8 @@ instance : (t.homology 0).IsHomological where
     refine' ShortComplex.exact_of_iso _ ex₃.exact₂
     refine' ShortComplex.isoMk (asIso ((t.homology 0).map ((t.truncLEι 0).app T.obj₁)))
         (Iso.refl _) (Iso.refl _) _ _
-    · dsimp
-      simp
-      rfl
-    · dsimp
-      simp
-      rfl-/
+    all_goals
+      dsimp; simp; rfl
 
 end TStructure
 
