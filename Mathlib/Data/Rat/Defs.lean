@@ -219,7 +219,8 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero, or_self, h₃]
+        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
+          or_self, h₃]
         rw [mul_assoc, add_mul, add_mul, mul_assoc, add_assoc]
         congr 2
         ac_rfl

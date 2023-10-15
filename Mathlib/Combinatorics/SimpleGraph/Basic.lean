@@ -1991,14 +1991,16 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
   invFun := Hom.mapEdgeSet f.symm
   left_inv := by
     rintro ⟨e, h⟩
-    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe, RelEmbedding.coe_toEmbedding,
-      RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply, Subtype.mk.injEq]
+    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe,
+      RelEmbedding.coe_toEmbedding, RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply,
+      Subtype.mk.injEq]
     convert congr_fun Sym2.map_id e
     exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
-    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe, RelEmbedding.coe_toEmbedding,
-      RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply, Subtype.mk.injEq]
+    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe,
+      RelEmbedding.coe_toEmbedding, RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply,
+      Subtype.mk.injEq]
     convert congr_fun Sym2.map_id e
     exact RelIso.apply_symm_apply _ _
 #align simple_graph.iso.map_edge_set SimpleGraph.Iso.mapEdgeSet

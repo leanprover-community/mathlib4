@@ -1474,8 +1474,9 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by
-        simp only [sum_range_succ, range_one, sum_singleton, _root_.pow_zero, factorial, cast_one, ne_eq, one_ne_zero,
-          not_false_eq_true, div_self, pow_one, mul_one, div_one, Nat.mul_one, cast_succ, add_right_inj]
+        simp only [sum_range_succ, range_one, sum_singleton, _root_.pow_zero, factorial, cast_one,
+          ne_eq, one_ne_zero, not_false_eq_true, div_self, pow_one, mul_one, div_one, Nat.mul_one,
+          cast_succ, add_right_inj]
         ring_nf
     _ ≤ exp x := sum_le_exp_of_nonneg hx 3
 #align real.quadratic_le_exp_of_nonneg Real.quadratic_le_exp_of_nonneg
@@ -1825,10 +1826,10 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
       (congr_arg Complex.abs
         (congr_arg (fun x : ℂ => x / 2)
           (by
-            simp only [sum_range_succ]
-            simp only [neg_mul, pow_succ, pow_zero, mul_one, range_zero, sum_empty, Nat.factorial, Nat.cast_one, ne_eq,
-              one_ne_zero, not_false_eq_true, div_self, zero_add, div_one, Nat.mul_one, Nat.cast_succ, Nat.cast_mul,
-              Nat.cast_ofNat, mul_neg, neg_neg]
+            simp only [sum_range_succ, neg_mul, pow_succ, pow_zero, mul_one, range_zero, sum_empty,
+              Nat.factorial, Nat.cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
+              zero_add, div_one, Nat.mul_one, Nat.cast_succ, Nat.cast_mul, Nat.cast_ofNat, mul_neg,
+              neg_neg]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf
             )))
     _ ≤ abs ((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) / 2) +
@@ -1858,10 +1859,10 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
       (congr_arg Complex.abs
         (congr_arg (fun x : ℂ => x / 2)
           (by
-            simp only [sum_range_succ]
-            simp only [neg_mul, pow_succ, pow_zero, mul_one, ofReal_sub, ofReal_mul, ofReal_ofNat, ofReal_div,
-              range_zero, sum_empty, Nat.factorial, Nat.cast_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
-              zero_add, div_one, mul_neg, neg_neg, Nat.mul_one, Nat.cast_succ, Nat.cast_mul, Nat.cast_ofNat]
+            simp only [sum_range_succ, neg_mul, pow_succ, pow_zero, mul_one, ofReal_sub, ofReal_mul,
+              ofReal_ofNat, ofReal_div, range_zero, sum_empty, Nat.factorial, Nat.cast_one, ne_eq,
+              one_ne_zero, not_false_eq_true, div_self, zero_add, div_one, mul_neg, neg_neg,
+              Nat.mul_one, Nat.cast_succ, Nat.cast_mul, Nat.cast_ofNat]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
     _ ≤ abs ((Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) * I / 2) +
           abs (-((Complex.exp (x * I) - ∑ m in range 4, (x * I) ^ m / m.factorial) * I) / 2) :=

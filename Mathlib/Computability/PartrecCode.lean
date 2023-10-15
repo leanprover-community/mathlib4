@@ -788,8 +788,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       ∀ {k k₂ n x : ℕ} {o₁ o₂ : Option ℕ},
         k ≤ k₂ → (x ∈ o₁ → x ∈ o₂) →
           x ∈ do { guard (n ≤ k); o₁ } → x ∈ do { guard (n ≤ k₂); o₂ } := by
-      simp only [Option.mem_def, bind, Option.bind_eq_some, Option.guard_eq_some', exists_and_left, exists_const,
-        and_imp]
+      simp only [Option.mem_def, bind, Option.bind_eq_some, Option.guard_eq_some', exists_and_left,
+        exists_const, and_imp]
       introv h h₁ h₂ h₃
       exact ⟨le_trans h₂ h, h₁ h₃⟩
     simp at h ⊢
@@ -893,8 +893,8 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n :=
               le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
             evaln_mono (Nat.succ_le_succ <| le_max_left _ _) _,
             evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
-        simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some, Option.guard_eq_some',
-          exists_and_left, exists_const]
+        simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
+          Option.guard_eq_some', exists_and_left, exists_const]
         exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
     case rfind' cf hf =>
       rcases h with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩

@@ -1573,8 +1573,8 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   · refine' ⟨some Γ'.cons, TransGen.single _⟩
     simp
   refine' ⟨none, _⟩
-  simp only [TM2.step, trList, trNat._eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ, List.tail_cons,
-    List.headI_cons]
+  simp only [TM2.step, trList, trNat._eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
+    List.tail_cons, List.headI_cons]
   cases' (n : Num) with a
   · simp [trPosNum, trNum, show Num.zero.succ' = PosNum.one from rfl]
     refine' TransGen.head rfl _
@@ -1626,8 +1626,8 @@ theorem trNormal_respects (c k v s) :
     cons f fs IHf _ =>
     obtain ⟨c, h₁, h₂⟩ := IHf (Cont.cons₁ fs v k) v none
     refine' ⟨c, h₁, TransGen.head rfl <| (move_ok (by decide) (splitAtPred_false _)).trans _⟩
-    simp only [TM2.step, Option.mem_def, elim_stack, elim_update_stack, elim_update_main, ne_eq, Function.update_noteq,
-      elim_main, elim_rev, elim_update_rev]
+    simp only [TM2.step, Option.mem_def, elim_stack, elim_update_stack, elim_update_main, ne_eq,
+      Function.update_noteq, elim_main, elim_rev, elim_update_rev]
     refine' (copy_ok _ none [] (trList v).reverse _ _).trans _
     convert h₂ using 2
     simp [List.reverseAux_eq, trContStack]

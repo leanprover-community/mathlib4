@@ -737,16 +737,14 @@ namespace WithBot
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
+    simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
+      Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
     rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.sumComm_apply, swap,
-        elim_inr, Lex.toLex_le_toLex, le_refl, lex_inl_inl, none_le]
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.sumComm_apply, swap,
-      elim_inr, elim_inl, Lex.toLex_le_toLex, le_refl, Lex.sep, none_le]
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.sumComm_apply, swap,
-      elim_inl, elim_inr, Lex.toLex_le_toLex, le_refl, lex_inr_inl, false_iff]
+    · simp only [elim_inr, lex_inl_inl, none_le]
+    · simp only [elim_inr, elim_inl, Lex.sep, none_le]
+    · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.sumComm_apply, swap,
-      elim_inl, Lex.toLex_le_toLex, le_refl, lex_inr_inr, some_le_some]
+    · simp only [elim_inl, lex_inr_inr, some_le_some]
   ⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
 
