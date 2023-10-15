@@ -2567,7 +2567,7 @@ theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b)
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
 
-private lemma middle_xYz_left {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
+private lemma append_singleton_append_mem_left_of_length_lt {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
     (together : x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂) (longer : x₂.length < x₁.length) :
     Y₂ ∈ x₁ := by
   have middle := congr_fun (congr_arg get? together) x₂.length
@@ -2593,7 +2593,8 @@ private lemma todo_refactor {a b c d : ℕ}
   · exact Nat.ne_of_lt impossi
   exact impossineq total
 
-lemma match_xYz {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α} (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
+lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
+    (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
     x₁ ++ [Y₁] ++ z₁ = x₂ ++ [Y₂] ++ z₂ ↔ x₁ = x₂ ∧ Y₁ = Y₂ ∧ z₁ = z₂ := by
   constructor
   · intro together
@@ -2601,7 +2602,7 @@ lemma match_xYz {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α} (notin_x : Y₂
     · have not_gt : ¬ x₁.length > x₂.length
       · intro contra_gt
         apply notin_x
-        exact middle_xYz_left together contra_gt
+        exact append_singleton_append_mem_left_of_length_lt together contra_gt
       have not_lt : ¬ x₁.length < x₂.length
       · intro contra_lt
         apply notin_z
@@ -2609,7 +2610,7 @@ lemma match_xYz {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α} (notin_x : Y₂
         rw [reverse_append_append, reverse_append_append,
             reverse_singleton, reverse_singleton] at reversed
         rw [← mem_reverse]
-        apply middle_xYz_left reversed
+        apply append_singleton_append_mem_left_of_length_lt reversed
         rw [length_reverse, length_reverse]
         have total := congr_arg length together
         rw [length_append_append, length_append_append, length_singleton, length_singleton] at total
