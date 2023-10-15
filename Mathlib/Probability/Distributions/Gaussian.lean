@@ -181,7 +181,7 @@ lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0)
   rw [gaussianReal_of_var_ne_zero _ hv]
   refine withDensity_absolutelyContinuous' ?_ ?_ ?_
   · exact (measurable_gaussianPdf _ _).aemeasurable
-  · exact ae_of_all _ (fun _ ↦ gaussianPdf_pos _ hv _)
+  · exact ae_of_all _ (fun _ ↦ (gaussianPdf_pos _ hv _).ne')
   · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
 lemma rnDeriv_gaussianReal (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
