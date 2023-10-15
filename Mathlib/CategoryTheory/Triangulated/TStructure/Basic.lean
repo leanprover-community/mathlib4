@@ -346,6 +346,50 @@ noncomputable def liftHeartιHeart {D : Type*} [Category D]
 
 end TStructure
 
+namespace Subcategory
+
+variable {C}
+variable (S : Subcategory C) (t : TStructure C)
+
+class HasInducedTStructure : Prop :=
+  exists_triangle_zero_one (A : C) (hA : A ∈ S.set) :
+    ∃ (X Y : C) (_ : X ∈ t.setLE 0) (_ : Y ∈ t.setGE 1)
+      (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧) (_ : Triangle.mk f g h ∈ distTriang C),
+    X ∈ S.ι.essImage ∧ Y ∈ S.ι.essImage
+
+def tStructure [h : S.HasInducedTStructure t] : TStructure S.category where
+  setLE n X := t.setLE n (S.ι.obj X)
+  setGE n X := t.setGE n (S.ι.obj X)
+  setLE_respectsIso n := ⟨fun X Y e hX => (t.setLE n).mem_of_iso (S.ι.mapIso e) hX⟩
+  setGE_respectsIso n := ⟨fun X Y e hX => (t.setGE n).mem_of_iso (S.ι.mapIso e) hX⟩
+  shift_mem_setLE n a n' h X hX := (t.setLE n').mem_of_iso ((S.ι.commShiftIso a).symm.app X)
+    (t.shift_mem_setLE n a n' h (S.ι.obj X) hX)
+  shift_mem_setGE n a n' h X hX := (t.setGE n').mem_of_iso ((S.ι.commShiftIso a).symm.app X)
+    (t.shift_mem_setGE n a n' h (S.ι.obj X) hX)
+  zero' {X Y} f hX hY := S.ι.map_injective (by
+    rw [Functor.map_zero]
+    exact t.zero' (S.ι.map f) hX hY)
+  setLE_zero_subset X hX := t.setLE_zero_subset hX
+  setGE_one_subset X hX := t.setGE_one_subset hX
+  exists_triangle_zero_one A := by
+    obtain ⟨X, Y, hX, hY, f, g, h, hT, ⟨X', ⟨e⟩⟩, ⟨Y', ⟨e'⟩⟩⟩ :=
+      h.exists_triangle_zero_one A.1 A.2
+    refine' ⟨X', Y', (t.setLE 0).mem_of_iso e.symm hX, (t.setGE 1).mem_of_iso e'.symm hY,
+      S.ι.preimage (e.hom ≫ f), S.ι.preimage (g ≫ e'.inv),
+      S.ι.preimage (e'.hom ≫ h ≫ e.inv⟦(1 : ℤ)⟧' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X'),
+      isomorphic_distinguished _ hT _ _⟩
+    refine' Triangle.isoMk _ _ e (Iso.refl _) e' _ _ _
+    · dsimp
+      simp
+    · dsimp
+      simp
+    · dsimp
+      simp only [Functor.image_preimage, assoc, Iso.inv_hom_id_app, Functor.comp_obj,
+        comp_id, Iso.cancel_iso_hom_left, ← Functor.map_comp, Iso.inv_hom_id,
+        Functor.map_id]
+
+end Subcategory
+
 end Triangulated
 
 end CategoryTheory

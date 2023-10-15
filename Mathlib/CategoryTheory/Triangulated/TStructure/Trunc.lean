@@ -1587,6 +1587,32 @@ noncomputable def homology₀CompιHeartIsoTruncLEGE : t.homology' 0 ⋙ t.ιHea
 
 end TStructure
 
+namespace Subcategory
+
+lemma HasInducedTStructure.mk' (S : Subcategory C) (t : TStructure C)
+    (h : ∀ (X : C) (_ : X ∈ S.set) (n : ℤ), (t.truncLE n).obj X ∈ S.set ∧
+      (t.truncGE n).obj X ∈ S.set) :
+    S.HasInducedTStructure t where
+  exists_triangle_zero_one X hX := by
+    refine' ⟨_, _, _, _, _, _, _,
+      t.triangleLEGE_distinguished 0 1 (by linarith) X,
+      ⟨⟨(t.truncLE 0).obj X, (h X hX 0).1⟩, ⟨Iso.refl _⟩⟩,
+      ⟨⟨(t.truncGE 1).obj X, (h X hX 1).2⟩, ⟨Iso.refl _⟩⟩⟩
+    exact TStructure.mem_of_isLE  _ _ _
+    exact TStructure.mem_of_isGE  _ _ _
+
+end Subcategory
+
+instance [IsTriangulated C] : t.plus.HasInducedTStructure t := by
+  apply Subcategory.HasInducedTStructure.mk'
+  rintro X ⟨a, _⟩ n
+  exact ⟨⟨a, inferInstance⟩, ⟨a, inferInstance⟩⟩
+
+instance [IsTriangulated C] : t.minus.HasInducedTStructure t := by
+  apply Subcategory.HasInducedTStructure.mk'
+  rintro X ⟨a, _⟩ n
+  exact ⟨⟨a, inferInstance⟩, ⟨a, inferInstance⟩⟩
+
 end Triangulated
 
 end CategoryTheory
