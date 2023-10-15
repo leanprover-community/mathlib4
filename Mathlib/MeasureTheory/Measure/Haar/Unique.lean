@@ -16,14 +16,13 @@ import Mathlib.Analysis.Convolution
 -/
 
 open MeasureTheory Filter Set TopologicalSpace
-open scoped Uniformity Topology ENNReal
+open scoped Uniformity Topology ENNReal Pointwise
 
 section
 
 variable {X Y α : Type*} [Zero α]
     [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace X] [MeasurableSpace Y]
     [OpensMeasurableSpace X] [OpensMeasurableSpace Y]
-
 
 /-- A continuous function with compact support on a product space can be uniformly approximated by
 simple functions. The subtlety is that we do not assume that the spaces are separable, so the
@@ -159,25 +158,43 @@ open Function MeasureTheory Measure
 variable {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G]
 
-
-lemma boulbacont {ν : Measure G} [IsFiniteMeasureOnCompacts ν]
-    {g : G → ℝ}
+lemma continuous_integral_apply_inv_mul
+    {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {g : G → E}
     (hg : Continuous g) (h'g : HasCompactSupport g) :
-    Continuous (fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂ν) := by
-  have Z := continuousOn_integral_of_compact_support
+    Continuous (fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂μ) := by
+  let k := tsupport g
+  have k_comp : IsCompact k := h'g
+  apply continuous_iff_continuousAt.2 (fun x₀ ↦ ?_)
+  obtain ⟨t, t_comp, ht⟩ : ∃ t, IsCompact t ∧ t ∈ 𝓝 x₀ := exists_compact_mem_nhds x₀
+  let k' : Set G := t • k⁻¹
+  have k'_comp : IsCompact k' := t_comp.smul_set k_comp.inv
+  have A : ContinuousOn (fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂μ) t := by
+    apply continuousOn_integral_of_compact_support k'_comp
+    · exact (hg.comp (continuous_snd.inv.mul continuous_fst)).continuousOn
+    · intro p x hp hx
+      contrapose! hx
+      refine ⟨p, p⁻¹ * x, hp, ?_, by simp⟩
+      simpa only [Set.mem_inv, mul_inv_rev, inv_inv] using subset_tsupport _ hx
+  exact A.continuousAt ht
 
-
-#exit
-
-lemma boulb {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
-    [IsMulLeftInvariant μ] [IsMulRightInvariant ν]
+lemma integral_mulLeftInvariant_mulRightInvariant_combo
+    {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
+    [IsMulLeftInvariant μ] [IsMulRightInvariant ν] [IsOpenPosMeasure ν]
     {f g : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f)
-    (hg : Continuous g) (h'g : HasCompactSupport g) :
-    let D : G → ℝ := fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂ν
-    ∫ x, f x ∂μ = (∫ y, f y * (D y) ⁻¹ ∂ν) * ∫ x, g x ∂μ := by
+    (hg : Continuous g) (h'g : HasCompactSupport g) (g_nonneg : 0 ≤ g) {x₀ : G} (g_pos : g x₀ ≠ 0) :
+    ∫ x, f x ∂μ = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ := by
   let D : G → ℝ := fun (x : G) ↦ ∫ y, g (y⁻¹ * x) ∂ν
-  have D_cont : Continuous D := sorry
-  have D_pos : ∀ x, 0 < D x := sorry
+  have D_cont : Continuous D := continuous_integral_apply_inv_mul hg h'g
+  have D_pos : ∀ x, 0 < D x := by
+    intro x
+    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := hg.comp (continuous_inv.mul continuous_const)
+    apply (integral_pos_iff_support_of_nonneg _ _).2
+    · apply C.isOpen_support.measure_pos ν
+      exact ⟨x * x₀⁻¹, by simpa using g_pos⟩
+    · exact fun y ↦ g_nonneg (y⁻¹ * x)
+    · apply C.integrable_of_hasCompactSupport
+      exact h'g.comp_homeomorph ((Homeomorph.inv G).trans (Homeomorph.mulRight x))
   calc
   ∫ x, f x ∂μ = ∫ x, f x * (D x)⁻¹ * D x ∂μ := by
     congr with x; rw [mul_assoc, inv_mul_cancel (D_pos x).ne', mul_one]
@@ -195,18 +212,21 @@ lemma boulb {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureO
         let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
         have M_comp : IsCompact M :=
           (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
-        have : ∀ (p : G × G), p ∉ K ×ˢ M → f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1) = 0 := by
+        have M'_comp : IsCompact (closure M) := M_comp.closure
+        have : ∀ (p : G × G), p ∉ K ×ˢ closure M → f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1) = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ K; swap
           · simp [image_eq_zero_of_nmem_tsupport H]
           have : g (y⁻¹ * x) = 0 := by
             apply image_eq_zero_of_nmem_tsupport
             contrapose! hxy
-            simp only [mem_prod, H, mem_image, Prod.exists, true_and]
+            simp only [mem_prod, H, true_and]
+            apply subset_closure
+            simp only [mem_image, mem_prod, Prod.exists]
             exact ⟨x, y⁻¹ * x, ⟨H, hxy⟩, by group⟩
           simp [this]
-        apply HasCompactSupport.intro' (K_comp.prod M_comp) ?_ this
-        apply (isClosed_tsupport f).prod
+        apply HasCompactSupport.intro' (K_comp.prod M'_comp) ?_ this
+        exact (isClosed_tsupport f).prod isClosed_closure
   _ = ∫ y, (∫ x, f (y * x) * (D (y * x))⁻¹ * g x ∂μ) ∂ν := by
       congr with y
       rw [← integral_mul_left_eq_self _ y]
@@ -225,17 +245,22 @@ lemma boulb {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureO
         let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
         have M_comp : IsCompact M :=
           (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
-        have : ∀ (p : G × G), p ∉ L ×ˢ M → f (p.2 * p.1) * (D (p.2 * p.1))⁻¹ * g p.1 = 0 := by
+        have M'_comp : IsCompact (closure M) := M_comp.closure
+        have : ∀ (p : G × G), p ∉ L ×ˢ closure M →
+            f (p.2 * p.1) * (D (p.2 * p.1))⁻¹ * g p.1 = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ L; swap
           · simp [image_eq_zero_of_nmem_tsupport H]
           have : f (y * x) = 0 := by
             apply image_eq_zero_of_nmem_tsupport
             contrapose! hxy
-            simp only [mem_prod, H, mem_image, Prod.exists, true_and, and_true]
+            simp only [mem_prod, H, true_and]
+            apply subset_closure
+            simp only [mem_image, mem_prod, Prod.exists]
             refine ⟨y * x, x, ⟨hxy, H⟩, by group⟩
           simp [this]
-        exact HasCompactSupport.intro (L_comp.prod M_comp) this
+        apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
+        exact (isClosed_tsupport g).prod isClosed_closure
   _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
       simp_rw [integral_mul_right]
       congr with x
