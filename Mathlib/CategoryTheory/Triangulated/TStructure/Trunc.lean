@@ -1111,6 +1111,8 @@ noncomputable def truncGELT (a b : ℤ) : C ⥤ C := t.truncLT b ⋙ t.truncGE a
 
 noncomputable def truncLTGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLT b
 
+noncomputable def truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncLE b
+
 noncomputable def truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
 noncomputable def truncGELEIsoTruncGELT (a b b' : ℤ) (hb' : b + 1 = b') :
@@ -1259,6 +1261,9 @@ noncomputable def homology (n : ℤ) : C ⥤ t.Heart :=
 noncomputable def homologyCompιHeart (n : ℤ) :
   t.homology n ⋙ t.ιHeart ≅ t.truncGELE n n ⋙ shiftFunctor C n :=
     FullSubcategory.lift_comp_inclusion _ _ _
+
+noncomputable def homology₀CompιHeartIsoTruncGELE : t.homology 0 ⋙ t.ιHeart ≅ t.truncGELE 0 0 :=
+  t.homologyCompιHeart 0 ≪≫ isoWhiskerLeft (t.truncGELE 0 0) (shiftFunctorZero C ℤ)
 
 noncomputable def homologyCompιHeartDegreeIsoHomology' (q : ℤ) :
     t.homology q ⋙ t.ιHeartDegree q ≅ t.truncGELE q q :=
@@ -1503,6 +1508,12 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELTTruncLTGE a b).app X) 
 instance (a b : ℤ) : IsIso (t.natTransTruncGELTTruncLTGE a b) :=
   NatIso.isIso_of_isIso_app _
 
+noncomputable def truncGELTIsoLTGE (a b : ℤ) : t.truncGELT a b ≅ t.truncLTGE a b :=
+  asIso (t.natTransTruncGELTTruncLTGE a b)
+
+noncomputable def truncGELEIsoLEGE (a b : ℤ) : t.truncGELE a b ≅ t.truncLEGE a b :=
+  t.truncGELTIsoLTGE a (b + 1)
+
 instance (a b : ℤ) (X : C) :
   IsIso ((t.truncLTι b).app ((t.truncGE a).obj ((t.truncLT b).obj X))) := by
     rw [← t.isLE_iff_isIso_truncLTι_app (b-1) b (by linarith)]
@@ -1570,6 +1581,9 @@ noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart (X : C) (q q' : ℤ
       (t.homology q ⋙ t.ιHeart).obj X :=
   (shiftFunctor C q).mapIso ((t.truncGELEIsoTruncGELT q q q' hq').symm.app X) ≪≫
     (t.homologyCompιHeart q).symm.app X
+
+noncomputable def homology₀CompιHeartIsoTruncLEGE : t.homology 0 ⋙ t.ιHeart ≅ t.truncLEGE 0 0 :=
+  t.homology₀CompιHeartIsoTruncGELE ≪≫ t.truncGELEIsoLEGE 0 0
 
 end TStructure
 

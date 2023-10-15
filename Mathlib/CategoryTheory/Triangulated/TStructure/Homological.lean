@@ -24,6 +24,13 @@ lemma preadditiveYoneda_map_distinguished (A : C) (T : Triangle C) (hT : T ∈ d
   obtain ⟨x₃, hx₃⟩ := T.yoneda_exact₂ hT x₂ hx₂
   exact ⟨x₃, hx₃.symm⟩
 
+instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
+  exact T hT := by
+    rw [ShortComplex.ab_exact_iff]
+    intro (x₂ : A.unop ⟶ T.obj₂) (hx₂ : x₂ ≫ T.mor₂ = 0)
+    obtain ⟨x₁, hx₁⟩ := T.coyoneda_exact₂ hT x₂ hx₂
+    exact ⟨x₁, hx₁.symm⟩
+
 end Pretriangulated
 
 namespace Limits
@@ -51,6 +58,29 @@ def nonempty_isColimit_iff_preadditiveYoneda {X Y : C} {f : X ⟶ Y} (c : Cokern
         (hm.trans ((h _).1 s.π (CokernelCofork.condition s)).choose_spec.symm))⟩
 
 end CokernelCofork
+
+namespace KernelFork
+
+variable {C : Type*} [Category C] [Preadditive C]
+
+def nonempty_isLimit_iff_preadditiveCoyoneda {X Y : C} {f : X ⟶ Y} (c : KernelFork f) :
+    Nonempty (IsLimit c) ↔ ∀ (A : C), ((ShortComplex.mk _ _ c.condition).map (preadditiveCoyoneda.obj (Opposite.op A))).Exact ∧
+      Mono (((ShortComplex.mk _ _ c.condition).map (preadditiveCoyoneda.obj (Opposite.op A))).f) := by
+  simp_rw [ShortComplex.ab_exact_iff, AddCommGroupCat.mono_iff_injective]
+  constructor
+  · intro ⟨h⟩ A
+    constructor
+    · rintro (x₂ : A ⟶ X) (hx₂ : x₂ ≫ f = 0)
+      exact ⟨_, (KernelFork.IsLimit.lift' h x₂ hx₂).2⟩
+    · rintro (x₁ : A ⟶ c.pt) (x₁' : A ⟶ c.pt) (h₁ : x₁ ≫ c.ι = x₁' ≫ c.ι)
+      exact Fork.IsLimit.hom_ext h h₁
+  · rintro h
+    exact ⟨Fork.IsLimit.mk _
+      (fun s => ((h _).1 s.ι (KernelFork.condition s)).choose)
+      (fun s => ((h _).1 s.ι (KernelFork.condition s)).choose_spec)
+      (fun s m hm => (h _).2 (hm.trans ((h _).1 s.ι (KernelFork.condition s)).choose_spec.symm))⟩
+
+end KernelFork
 
 end Limits
 
@@ -85,11 +115,27 @@ lemma exact_and_epi_g_iff (S : ShortComplex C) [Balanced C] [S.HasHomology] :
   · intro ⟨h⟩
     exact ⟨S.exact_of_g_is_cokernel h, ⟨fun _ _ => Cofork.IsColimit.hom_ext h⟩⟩
 
+lemma exact_and_mono_f_iff (S : ShortComplex C) [Balanced C] [S.HasHomology] :
+    (S.Exact ∧ Mono S.f) ↔
+      Nonempty (IsLimit (KernelFork.ofι _ S.zero)) := by
+  constructor
+  · rintro ⟨hS, _⟩
+    exact ⟨hS.fIsKernel⟩
+  · intro ⟨h⟩
+    exact ⟨S.exact_of_f_is_kernel h, ⟨fun _ _ => Fork.IsLimit.hom_ext h⟩⟩
+
 lemma exact_and_epi_g_iff_preadditiveYoneda (S : ShortComplex C) [Balanced C] [S.HasHomology] :
     (S.Exact ∧ Epi S.g) ↔
       ∀ (A : C), (S.op.map (preadditiveYoneda.obj A)).Exact ∧
         Mono (S.op.map (preadditiveYoneda.obj A)).f := by
   rw [exact_and_epi_g_iff, CokernelCofork.nonempty_isColimit_iff_preadditiveYoneda]
+  rfl
+
+lemma exact_and_mono_f_iff_preadditiveCoyoneda (S : ShortComplex C) [Balanced C] [S.HasHomology] :
+    (S.Exact ∧ Mono S.f) ↔
+      ∀ (A : C), (S.map (preadditiveCoyoneda.obj (Opposite.op A))).Exact ∧
+        Mono (S.map (preadditiveCoyoneda.obj (Opposite.op A))).f := by
+  rw [exact_and_mono_f_iff, KernelFork.nonempty_isLimit_iff_preadditiveCoyoneda]
   rfl
 
 end ShortComplex
@@ -166,6 +212,27 @@ lemma truncLETriangle_distinguished :
 
 end
 
+section
+
+variable (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) [t.IsGE T.obj₃ n]
+
+@[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
+noncomputable def truncGETriangle  :
+    Triangle C :=
+  Triangle.mk ((t.truncGE n).map T.mor₁) ((t.truncGE n).map T.mor₂)
+    ((asIso ((t.truncGEπ n).app T.obj₃)).inv ≫ T.mor₃ ≫ ((t.truncGEπ n).app T.obj₁)⟦(1 : ℤ)⟧')
+
+instance : t.IsGE (t.truncGETriangle T n).obj₁ n := by dsimp; infer_instance
+instance : t.IsGE (t.truncGETriangle T n).obj₂ n := by dsimp; infer_instance
+instance : t.IsGE (t.truncGETriangle T n).obj₃ n := by dsimp; infer_instance
+
+/-lemma truncGETriangle_distinguished :
+    t.truncGETriangle T n ∈ distTriang C := by
+  have := hT
+  sorry-/
+
+end
+
 noncomputable def toHomology₀ (X : C) [t.IsLE X 0] : X ⟶ t.ιHeart.obj ((t.homology 0).obj X) :=
   (asIso ((t.truncLEι 0).app X)).inv ≫ (t.truncGEπ 0).app _ ≫ (shiftFunctorZero C ℤ).inv.app _
 
@@ -216,6 +283,52 @@ instance (A X : C) [t.IsLE X 0] [t.IsGE A 0]:
   rw [op_comp, op_comp, Functor.map_comp, Functor.map_comp]
   infer_instance
 
+noncomputable def fromHomology₀ (X : C) [t.IsGE X 0] : t.ιHeart.obj ((t.homology 0).obj X) ⟶ X :=
+  t.homology₀CompιHeartIsoTruncLEGE.hom.app X ≫ (t.truncLEι 0).app _ ≫ (asIso ((t.truncGEπ 0).app X)).inv
+
+@[reassoc]
+lemma homology₀CompιHeartIsoTruncLEGE_inv_app_fromHomology₀_truncGEπ (X : C) [t.IsGE X 0] :
+    t.homology₀CompιHeartIsoTruncLEGE.inv.app X ≫ t.fromHomology₀ X ≫ (t.truncGEπ 0).app X =
+      (t.truncLEι 0).app ((t.truncGE 0).obj X) := by
+  simp [fromHomology₀]
+
+lemma fromHomology₀_naturality {X Y : C} (f : X ⟶ Y) [t.IsGE X 0] [t.IsGE Y 0] :
+    (t.homology 0 ⋙ t.ιHeart).map f ≫ t.fromHomology₀ Y = t.fromHomology₀ X ≫ f := by
+  rw [← cancel_mono ((t.truncGEπ 0).app Y), assoc, assoc]
+  erw [(t.truncGEπ 0).naturality f]
+  rw [← cancel_epi (t.homology₀CompιHeartIsoTruncLEGE.inv.app X),
+    homology₀CompιHeartIsoTruncLEGE_inv_app_fromHomology₀_truncGEπ_assoc,
+    ← NatTrans.naturality_assoc,
+    homology₀CompιHeartIsoTruncLEGE_inv_app_fromHomology₀_truncGEπ]
+  dsimp [truncLEGE]
+  apply NatTrans.naturality
+
+instance (A X : C) [t.IsGE X 0] [t.IsLE A 0] :
+    IsIso ((preadditiveCoyoneda.obj (Opposite.op A)).map ((t.truncLEι 0).app X)) := by
+  have : Mono ((preadditiveCoyoneda.obj (Opposite.op A)).map ((t.truncLEι 0).app X)) :=
+    ((preadditiveCoyoneda.obj (Opposite.op A)).map_distinguished_exact _
+      (inv_rot_of_dist_triangle _ (t.triangleLEGE_distinguished 0 1 (by linarith) X))).mono_g (by
+        apply IsZero.eq_of_src
+        apply AddCommGroupCat.isZero
+        intro (x : A ⟶ (((t.truncGE 1).obj X)⟦(-1 : ℤ)⟧))
+        have : t.IsGE (((t.truncGE 1).obj X)⟦(-1 : ℤ)⟧) 1 :=
+          t.isGE_shift ((t.truncGE 1).obj X) 0 (-1) 1 (by linarith)
+        exact t.zero x 0 1 (by linarith))
+  have : Epi ((preadditiveCoyoneda.obj (Opposite.op A)).map ((t.truncLEι 0).app X)) :=
+    ((preadditiveCoyoneda.obj (Opposite.op A)).map_distinguished_exact _
+      (t.triangleLEGE_distinguished 0 1 (by linarith) X)).epi_f (by
+        apply IsZero.eq_of_tgt
+        apply AddCommGroupCat.isZero
+        intro (x : A ⟶ (t.truncGE 1).obj X)
+        exact t.zero x 0 1 (by linarith))
+  apply isIso_of_mono_of_epi
+
+instance (A X : C) [t.IsGE X 0] [t.IsLE A 0]:
+    IsIso ((preadditiveCoyoneda.obj (Opposite.op A)).map (t.fromHomology₀ X)) := by
+  dsimp only [fromHomology₀]
+  rw [Functor.map_comp, Functor.map_comp]
+  infer_instance
+
 namespace HomologicalFunctorAux
 
 variable {T : Triangle C} (hT : T ∈ distTriang C)
@@ -229,9 +342,7 @@ instance : (t.homology 0).Additive where
 noncomputable def shortComplex :=
   (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).map (t.homology 0)
 
-section
-
-def case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
+lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
   let S := fun A => (shortComplex t hT).op.map (preadditiveYoneda.obj A)
   let S' := fun A => (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).op.map (preadditiveYoneda.obj A)
@@ -266,7 +377,7 @@ instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncLEι n).app X)) 
   dsimp [homology]
   infer_instance
 
-def case₂ (h₁ : t.IsLE T.obj₁ 0) :
+lemma case₂ (h₁ : t.IsLE T.obj₁ 0) :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
   have h' := case₁ t (t.truncLETriangle_distinguished T hT 0)
   refine' (ShortComplex.exact_and_epi_g_iff_of_iso _).1 h'
@@ -278,11 +389,65 @@ def case₂ (h₁ : t.IsLE T.obj₁ 0) :
     dsimp
     simp only [← Functor.map_comp, NatTrans.naturality, Functor.id_obj, Functor.id_map]
 
-/-def case₂' (h₃ : t.IsGE T.obj₃ 0) :
+lemma case₁' [t.IsGE T.obj₁ 0] [t.IsGE T.obj₂ 0] [t.IsGE T.obj₃ 0] :
     (shortComplex t hT).Exact ∧ Mono (shortComplex t hT).f := by
-  sorry-/
+  let S := fun A => (shortComplex t hT).map (preadditiveCoyoneda.obj (Opposite.op A))
+  let S' := fun A => (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).map (preadditiveCoyoneda.obj (Opposite.op A))
+  suffices ∀ A, (S A).Exact ∧ Mono (S A).f by
+    rw [ShortComplex.exact_and_mono_f_iff_preadditiveCoyoneda]
+    exact this
+  intro A
+  let e' : ∀ (X : C) [t.IsGE X 0],
+    (preadditiveCoyoneda.obj (Opposite.op A)).obj (((t.homology 0).obj X)) ≅
+    (preadditiveCoyoneda.obj (Opposite.op A.1)).obj X := fun X _ =>
+      asIso ((preadditiveCoyoneda.obj (Opposite.op A.1)).map (t.fromHomology₀ X))
+  have e : S A ≅ S' A.1 := by
+    refine' ShortComplex.isoMk (e' T.obj₁) (e' T.obj₂) (e' T.obj₃) _ _
+    · simpa only [Functor.map_comp] using
+        (preadditiveCoyoneda.obj (Opposite.op A.1)).congr_map (t.fromHomology₀_naturality T.mor₁).symm
+    · simpa only [Functor.map_comp] using
+        (preadditiveCoyoneda.obj (Opposite.op A.1)).congr_map (t.fromHomology₀_naturality T.mor₂).symm
+  rw [ShortComplex.exact_and_mono_f_iff_of_iso e]
+  refine' ⟨(preadditiveCoyoneda.obj (Opposite.op A.1)).map_distinguished_exact _ hT,
+    ((preadditiveCoyoneda.obj (Opposite.op A.1)).map_distinguished_exact _ (inv_rot_of_dist_triangle _ hT)).mono_g _⟩
+  apply IsZero.eq_of_src
+  apply AddCommGroupCat.isZero
+  intro (x : A.obj ⟶ T.obj₃⟦-1⟧)
+  have : t.IsGE (T.obj₃⟦(-1 : ℤ)⟧) 1 := t.isGE_shift T.obj₃ 0 (-1) 1 (by linarith)
+  exact t.zero x 0 1 (by linarith)
 
-end
+instance (X : C) (n : ℤ) : IsIso ((t.truncGE n).map ((t.truncGEπ n).app X)) := by
+  apply isIso_truncGE_map_truncGEπ_app
+  rfl
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncLTGE n (n+1)).map ((t.truncGEπ n).app X)) := by
+  dsimp [truncLTGE]
+  infer_instance
+
+instance (X : C) (n : ℤ) : IsIso ((t.truncGELE n n).map ((t.truncGEπ n).app X)) := by
+  have e : t.truncGELE n n ≅ t.truncLTGE n (n+1) := asIso (t.natTransTruncGELTTruncLTGE n (n+1))
+  rw [NatIso.isIso_map_iff e ((t.truncGEπ n).app X)]
+  infer_instance
+
+instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncGEπ n).app X)) := by
+  suffices IsIso (t.ιHeart.map ((t.homology n).map ((t.truncGEπ n).app X))) from
+    isIso_of_reflects_iso ((t.homology n).map ((t.truncGEπ n).app X)) t.ιHeart
+  dsimp [homology]
+  infer_instance
+
+/-lemma case₂' (h₃ : t.IsGE T.obj₃ 0) :
+    (shortComplex t hT).Exact ∧ Mono (shortComplex t hT).f := by
+  have h' := case₁' t (t.truncGETriangle_distinguished T hT 0)
+  refine' (ShortComplex.exact_and_mono_f_iff_of_iso _).2 h'
+  refine' ShortComplex.isoMk
+    (asIso ((t.homology 0).map ((t.truncGEπ 0).app T.obj₁)))
+    (asIso ((t.homology 0).map ((t.truncGEπ 0).app T.obj₂)))
+    (asIso ((t.homology 0).map ((t.truncGEπ 0).app T.obj₃))) _ _
+  all_goals
+    dsimp
+    simp only [← Functor.map_comp]
+    congr 1
+    exact ((t.truncGEπ 0).naturality _).symm-/
 
 end HomologicalFunctorAux
 
