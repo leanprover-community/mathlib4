@@ -127,6 +127,45 @@ instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Catego
   (locallySmall_congr (equivSmallModel C)).mpr (CategoryTheory.locallySmall_self _)
 #align category_theory.locally_small_of_essentially_small CategoryTheory.locallySmall_of_essentiallySmall
 
+namespace Equiv
+
+open Category
+
+variable {C}
+
+def equivalence {D : Type*} (e : D ≃ C) : InducedCategory C e ≌ C where
+  functor := inducedFunctor e
+  inverse :=
+  { obj := e.symm
+    map := fun {X Y} f ↦ by apply eqToHom (e.right_inv X) ≫ f ≫ eqToHom (e.right_inv Y).symm
+    map_id := fun X ↦ by simp; rfl
+    map_comp := fun f g ↦ by
+      dsimp only
+      conv_rhs => erw [assoc, assoc]
+      slice_rhs 2 4 => rw [eqToHom_trans, eqToHom_refl]
+      rw [comp_id] }
+  unitIso := NatIso.ofComponents (fun X ↦ eqToIso (e.left_inv X).symm) fun {X Y} f ↦ by
+    dsimp only [Functor.comp_map, inducedFunctor_map]
+    conv_rhs => erw [← assoc]
+    have := e.left_inv X
+    erw [eqToIso.hom, eqToHom_trans, eqToHom_refl, id_comp]
+    exacts [rfl, this.symm, this]
+  counitIso := NatIso.ofComponents (fun X ↦ eqToIso (e.right_inv X)) fun {X Y} f ↦ by simp
+  functor_unitIso_comp X := have := congr_arg e (e.left_inv X).symm
+    (eqToHom_trans this this.symm).trans (eqToHom_refl _ _)
+
+end Equiv
+
+namespace Shrink
+
+noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
+  InducedCategory.category (equivShrink C).symm
+
+noncomputable def equivalence [Small.{w} C] : Shrink.{w} C ≌ C :=
+  Equiv.equivalence (equivShrink C).symm
+
+end Shrink
+
 /-- We define a type alias `ShrinkHoms C` for `C`. When we have `LocallySmall.{w} C`,
 we'll put a `Category.{w}` instance on `ShrinkHoms C`.
 -/

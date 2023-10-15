@@ -83,6 +83,9 @@ instance (priority := 100) small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 #align small_max small_max
 
+instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
+  small_lift.{v, v+1} α
+
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
 #align small_ulift small_ulift

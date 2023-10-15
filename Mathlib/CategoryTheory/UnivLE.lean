@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Types
 /-!
 # Universe inequalities and essential surjectivity of `uliftFunctor`.
 
-We show `UnivLE.{u, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)`.
+We show `(∀ α : Type max u v, Small.{v} α) ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)`.
 -/
 
 set_option autoImplicit true
@@ -19,28 +19,28 @@ open CategoryTheory
 
 noncomputable section
 
-theorem UnivLE.ofEssSurj.{u, v} (w : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)) :
-    UnivLE.{u, v} :=
-  fun a => by
-    obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage a
+theorem Small.ofEssSurj.{u, v} (w : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v))
+      (α : Type max u v) : Small.{v} α := by
+    obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage α
     exact ⟨a', ⟨(Iso.toEquiv m).symm.trans Equiv.ulift⟩⟩
 
-instance [UnivLE.{u, v}] : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) where
+instance EssSurj.ofSmall [∀ α : Type max u v, Small.{v} α] :
+    EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) where
   mem_essImage α :=
     ⟨Shrink α, ⟨Equiv.toIso (Equiv.ulift.trans (equivShrink α).symm)⟩⟩
 
 theorem UnivLE_iff_essSurj.{u, v} :
-    UnivLE.{u, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) :=
-  ⟨fun _ => inferInstance, fun w => UnivLE.ofEssSurj w⟩
+    (∀ α : Type max u v, Small.{v} α) ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) :=
+  ⟨fun _ => EssSurj.ofSmall, fun w => Small.ofEssSurj w⟩
 
-instance [UnivLE.{u, v}] : IsEquivalence uliftFunctor.{u, v} :=
+instance [∀ α : Type max u v, Small.{v} α] : IsEquivalence uliftFunctor.{u, v} :=
   Equivalence.ofFullyFaithfullyEssSurj uliftFunctor
 
-def UnivLE.witness.{u, v} [UnivLE.{u, v}] : Type u ⥤ Type v :=
+def UnivLE.witness.{u, v} [∀ α : Type max u v, Small.{v} α] : Type u ⥤ Type v :=
   uliftFunctor.{v, u} ⋙ (uliftFunctor.{u, v}).inv
 
-instance [UnivLE.{u, v}] : Faithful UnivLE.witness.{u, v} :=
+instance [∀ α : Type max u v, Small.{v} α] : Faithful UnivLE.witness.{u, v} :=
   inferInstanceAs <| Faithful (_ ⋙ _)
 
-instance [UnivLE.{u, v}] : Full UnivLE.witness.{u, v} :=
+instance [∀ α : Type max u v, Small.{v} α] : Full UnivLE.witness.{u, v} :=
   inferInstanceAs <| Full (_ ⋙ _)
