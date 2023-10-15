@@ -173,6 +173,9 @@ theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g
   le_iff' f g <| Subset.refl _
 #align finsupp.le_iff Finsupp.le_iff
 
+lemma support_mono : Monotone (support (α := ι) (M := α)) :=
+  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+
 instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 #align finsupp.decidable_le Finsupp.decidableLE
