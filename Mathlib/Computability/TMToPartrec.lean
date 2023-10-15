@@ -1693,7 +1693,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       exact h₂
     · obtain ⟨s', h₁, h₂⟩ := trNormal_respects f (Cont.fix f k) v.tail (some Γ'.cons)
       refine' ⟨_, h₁, TransGen.head rfl <| TransGen.trans _ h₂⟩
-      simp only [Option.mem_def, TM2.stepAux, elim_main, this.1, cond_false, elim_update_main, trCont]
+      simp only [Option.mem_def, TM2.stepAux, elim_main, this.1, cond_false, elim_update_main,         trCont]
       convert clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
         convert rfl
