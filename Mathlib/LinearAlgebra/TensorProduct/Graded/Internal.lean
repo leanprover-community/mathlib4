@@ -147,6 +147,11 @@ instance : Mul (𝒜 ⊗'[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ⊗'[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 
+@[simp]
+theorem auxEquiv_mul (x y : 𝒜 ⊗'[R] ℬ) :
+    auxEquiv R 𝒜 ℬ (x * y) = gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y) :=
+  LinearEquiv.eq_symm_apply _ |>.mp rfl
+
 instance instMonoid : Monoid (𝒜 ⊗'[R] ℬ) where
   mul_one x := by
     rw [mul_def, mulHom_apply, auxEquiv_one, gradedMul_one, LinearEquiv.symm_apply_apply]
@@ -339,29 +344,28 @@ lemma algHom_ext ⦃f g : (𝒜 ⊗'[R] ℬ) →ₐ[R] C⦄
     (hb : f.comp (includeRight 𝒜 ℬ) = g.comp (includeRight 𝒜 ℬ)) : f = g :=
   (liftEquiv 𝒜 ℬ).symm.injective <| Subtype.ext <| Prod.ext ha hb
 
-count_heartbeats in
+/-- The non-trivial symmetric braiding, sending $a \otimes b)$ to
+$(-1)^{\deg a' \deg b} (b \otimes a)$. -/
 def comm : (𝒜 ⊗'[R] ℬ) ≃ₐ[R] (ℬ ⊗'[R] 𝒜) :=
   AlgEquiv.ofLinearEquiv
     (auxEquiv R 𝒜 ℬ ≪≫ₗ gradedComm R _ _ ≪≫ₗ (auxEquiv R ℬ 𝒜).symm)
     (by
       dsimp
       simp_rw [auxEquiv_one, gradedComm_one, auxEquiv_symm_one])
-    (by
-      simp_rw [←LinearEquiv.coe_toLinearMap]
-      rw [LinearMap.map_mul_iff]
-      ext : 2
-      refine DirectSum.decompose_lhom_ext 𝒜 fun i₁ => ?_
-      ext a₁ : 1
-      refine DirectSum.decompose_lhom_ext ℬ fun j₁ => ?_
-      ext b₁ : 1
-      ext : 2
-      refine DirectSum.decompose_lhom_ext 𝒜 fun i₂ => ?_
-      ext a₂ : 1
-      refine DirectSum.decompose_lhom_ext ℬ fun j₂ => ?_
-      ext b₂ : 1
+    (fun x y => by
       dsimp
-      simp [←lof_eq_of R, gradedComm_of_tmul_of]
-      rw [tmul_coe_mul_coe_tmul]
-      sorry)
+      simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq, ←gradedComm_gradedMul,
+        auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
+
+@[simp] lemma auxEquiv_comm (x : 𝒜 ⊗'[R] ℬ) :
+    auxEquiv R ℬ 𝒜 (comm 𝒜 ℬ x) = gradedComm R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) :=
+  LinearEquiv.eq_symm_apply _ |>.mp rfl
+
+@[simp] lemma comm_coe_tmul_coe {i j : ℤ₂} (a : 𝒜 i) (b : ℬ j) :
+    comm 𝒜 ℬ (a ⊗ₜ' b) = (-1 : ℤˣ)^(j * i) • (b ⊗ₜ' a : ℬ ⊗'[R] 𝒜) :=
+  (auxEquiv R ℬ 𝒜).injective <| by
+    simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ←lof_eq_of R, gradedComm_of_tmul_of,
+      @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, auxEquiv_tmul, decompose_coe,
+      lof_eq_of]
 
 end SuperTensorProduct
