@@ -10,7 +10,7 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 /-!
-# Graded tensor products over super- (`ZMod 2`-graded)
+# Graded tensor products over super- (`ZMod 2`-graded) algebras
 
 The graded tensor product $A \hat\otimes_R B$ is imbued with a multiplication defined on homogeneous
 tensors by:
@@ -21,7 +21,10 @@ where $A$ and $B$ are algebras graded by `ZMod 2`, also known as superalgebras.
 
 ## Main results
 
-* `TensorProduct.gradedMul`: this multiplication on externally-graded rings, as a bilinear map
+* `TensorProduct.gradedComm`: the symmetric braiding operator on the tensor product of
+  externally-graded rings.
+* `TensorProduct.gradedMul`: the previously describe multiplication on externally-graded rings, as a
+  bilinear map.
 * `SuperTensorProduct R 𝒜 ℬ`: for families of submodules of `A` and `B` that form a graded algebra,
   this is a type alias for `A ⊗'[R] B` with the appropriate multiplication.
 * `SuperTensorProduct.instAlgebra`: the ring structure induced by this multiplication.
@@ -30,7 +33,7 @@ where $A$ and $B$ are algebras graded by `ZMod 2`, also known as superalgebras.
 
 ## Notation
 
-`𝒜 ⊗'[R] ℬ` is notation for `SuperTensorProduct R 𝒜 ℬ`
+`𝒜 ⊗'[R] ℬ` is notation for `SuperTensorProduct R 𝒜 ℬ`.
 
 ## References
 
@@ -59,27 +62,28 @@ variable [∀ i, Module R (𝒜 i)] [∀ i, Module R (ℬ i)]
 variable [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ]
 variable [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ]
 
-local notation "𝒜ℬ" => (fun i : ℤ₂ × ℤ₂ => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
-local notation "ℬ𝒜" => (fun i : ℤ₂ × ℤ₂ => ℬ (Prod.fst i) ⊗[R] 𝒜 (Prod.snd i))
-
 -- this helps with performance
 instance (i : ℤ₂ × ℤ₂) : Module R (𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i)) :=
   TensorProduct.leftModule
 
 open DirectSum (lof)
-open GradedMonoid (GMul)
 
 variable (R)
+
+section gradedComm
+
+local notation "𝒜ℬ" => (fun i : ℤ₂ × ℤ₂ => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
+local notation "ℬ𝒜" => (fun i : ℤ₂ × ℤ₂ => ℬ (Prod.fst i) ⊗[R] 𝒜 (Prod.snd i))
+
 
 /-- Auxliary construction used to build `TensorProduct.gradedComm`.
 
 This operates on direct sums of tensors instead of tensors of direct sums. -/
-noncomputable def gradedCommAux :
-    (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ ℬ𝒜) := by
+def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 := by
   refine DirectSum.toModule R _ _ fun i => ?_
   have o := DirectSum.lof R _ ℬ𝒜 i.swap
   have s : ℤˣ := ((-1 : ℤˣ)^(i.1* i.2 : ℤ₂) : ℤˣ)
-  refine (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
+  exact (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
 
 @[simp]
 theorem gradedCommAux_lof_tmul (i j : ℤ₂) (a : 𝒜 i) (b : ℬ j) :
@@ -97,9 +101,10 @@ theorem gradedCommAux_comp_gradedCommAux :
   rw [gradedCommAux_lof_tmul, LinearMap.map_smul_of_tower, gradedCommAux_lof_tmul, smul_smul,
     mul_comm i.2 i.1, Int.units_mul_self, one_smul]
 
+/-- The braiding operation for tensor products of externally `ZMod 2`-graded algebras.
 
-/-- The braiding operation for tensor products of externally `ZMod 2`-graded algebras. -/
-noncomputable irreducible_def gradedComm :
+This sends $a ⊗ b$ to $(-1)^{\deg a' \deg b} (b ⊗ a)$. -/
+def gradedComm :
     (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) ≃ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
   refine TensorProduct.directSum R 𝒜 ℬ ≪≫ₗ ?_ ≪≫ₗ (TensorProduct.directSum R ℬ 𝒜).symm
   exact LinearEquiv.ofLinear (gradedCommAux _ _ _) (gradedCommAux _ _ _)
@@ -123,6 +128,51 @@ theorem gradedComm_of_tmul_of (i j : ℤ₂) (a : 𝒜 i) (b : ℬ j):
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
     zsmul_eq_smul_cast R, map_smul, TensorProduct.directSum_symm_lof_tmul,
     ←zsmul_eq_smul_cast, ←Units.smul_def]
+
+theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
+    gradedComm R 𝒜 ℬ (a ⊗ₜ lof R _ ℬ 0 b) = lof R _ ℬ _ b ⊗ₜ a := by
+  suffices
+    (gradedComm R 𝒜 ℬ).toLinearMap ∘ₗ (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)).flip (lof R _ ℬ 0 b) =
+      TensorProduct.mk R _ _ (lof R _ ℬ 0 b) from
+    FunLike.congr_fun this a
+  save
+  ext i a
+  dsimp
+  rw [gradedComm_of_tmul_of, zero_mul, z₂pow_zero, one_smul]
+
+theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
+    gradedComm R 𝒜 ℬ (lof R _ 𝒜 0 a ⊗ₜ b) = b ⊗ₜ lof R _ 𝒜 _ a := by
+  suffices
+    (gradedComm R 𝒜 ℬ).toLinearMap ∘ₗ (TensorProduct.mk R (⨁ i, 𝒜 i) (⨁ i, ℬ i)) (lof R _ 𝒜 0 a) =
+      (TensorProduct.mk R _ _).flip (lof R _ 𝒜 0 a) from
+    FunLike.congr_fun this b
+  save
+  ext i b
+  dsimp
+  rw [gradedComm_of_tmul_of, mul_zero, z₂pow_zero, one_smul]
+
+theorem gradedComm_tmul_one (a : ⨁ i, 𝒜 i) : gradedComm R 𝒜 ℬ (a ⊗ₜ 1) = 1 ⊗ₜ a :=
+  gradedComm_tmul_of_zero _ _ _ _ _
+
+theorem gradedComm_one_tmul (b : ⨁ i, ℬ i) : gradedComm R 𝒜 ℬ (1 ⊗ₜ b) = b ⊗ₜ 1 :=
+  gradedComm_of_zero_tmul _ _ _ _ _
+
+@[simp] theorem gradedComm_one : gradedComm R 𝒜 ℬ 1 = 1 :=
+  gradedComm_one_tmul _ _ _ _
+
+theorem gradedComm_tmul_algebraMap (a : ⨁ i, 𝒜 i) (r : R) :
+    gradedComm R 𝒜 ℬ (a ⊗ₜ algebraMap R _ r) = algebraMap R _ r ⊗ₜ a :=
+  gradedComm_tmul_of_zero _ _ _ _ _
+
+theorem gradedComm_algebraMap_tmul (r : R) (b : ⨁ i, ℬ i) :
+    gradedComm R 𝒜 ℬ (algebraMap R _ r ⊗ₜ b) = b ⊗ₜ algebraMap R _ r :=
+  gradedComm_of_zero_tmul _ _ _ _ _
+
+@[simp] theorem gradedComm_algebraMap (r : R) :
+    gradedComm R 𝒜 ℬ (algebraMap R _ r) = algebraMap R _ r :=
+  (gradedComm_algebraMap_tmul R 𝒜 ℬ r 1).trans (Algebra.TensorProduct.algebraMap_apply' r).symm
+
+end gradedComm
 
 set_option maxHeartbeats 4000000 in
 /-- The multiplication operation for tensor products of externally `ZMod 2`-graded algebras. -/
@@ -266,7 +316,7 @@ theorem hom_ext {M} [AddCommMonoid M] [Module R M] ⦃f g : 𝒜 ⊗'[R] ℬ →
 
 variable (R) {𝒜 ℬ} in
 /-- The graded tensor product of two elements of graded rings. -/
-abbrev tmul (a : A) (b : B) := of R 𝒜 ℬ (a ⊗ₜ b)
+abbrev tmul (a : A) (b : B) : 𝒜 ⊗'[R] ℬ := of R 𝒜 ℬ (a ⊗ₜ b)
 
 @[inherit_doc]
 notation:100 x " ⊗ₜ'" y:100 => tmul _ x y
@@ -276,7 +326,7 @@ notation:100 x " ⊗ₜ'[" R "] " y:100 => tmul R x y
 
 variable (R) in
 /-- An auxiliary construction to move between the graded tensor product of internally-graded objects
-and the product of direct sums.-/
+and the tensor product of direct sums.-/
 noncomputable def auxEquiv : (𝒜 ⊗'[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) :=
   let fA := (decomposeAlgEquiv 𝒜).toLinearEquiv
   let fB := (decomposeAlgEquiv ℬ).toLinearEquiv
