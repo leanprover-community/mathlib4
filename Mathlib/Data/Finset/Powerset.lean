@@ -206,12 +206,14 @@ theorem mem_powersetCard {n} {s t : Finset α} : s ∈ powersetCard n t ↔ s �
 
 @[simp]
 theorem powersetCard_mono {n} {s t : Finset α} (h : s ⊆ t) : powersetCard n s ⊆ powersetCard n t :=
-  fun _u h' => mem_powersetCard.2 <| And.imp (fun h₂ => Subset.trans h₂ h) id (mem_powersetCard.1 h')
+  fun _u h' => mem_powersetCard.2 <|
+    And.imp (fun h₂ => Subset.trans h₂ h) id (mem_powersetCard.1 h')
 #align finset.powerset_len_mono Finset.powersetCard_mono
 
 /-- **Formula for the Number of Combinations** -/
 @[simp]
-theorem card_powersetCard (n : ℕ) (s : Finset α) : card (powersetCard n s) = Nat.choose (card s) n :=
+theorem card_powersetCard (n : ℕ) (s : Finset α) :
+    card (powersetCard n s) = Nat.choose (card s) n :=
   (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.1)
 #align finset.card_powerset_len Finset.card_powersetCard
 
