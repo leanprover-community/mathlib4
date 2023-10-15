@@ -20,9 +20,9 @@ open CategoryTheory
 noncomputable section
 
 theorem Small.ofEssSurj.{u, v} (w : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v))
-      (α : Type max u v) : Small.{v} α := by
-    obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage α
-    exact ⟨a', ⟨(Iso.toEquiv m).symm.trans Equiv.ulift⟩⟩
+    (α : Type max u v) : Small.{v} α := by
+  obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage α
+  exact ⟨a', ⟨(Iso.toEquiv m).symm.trans Equiv.ulift⟩⟩
 
 instance EssSurj.ofSmall [∀ α : Type max u v, Small.{v} α] :
     EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) where
