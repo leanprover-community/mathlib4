@@ -414,4 +414,5 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Proj.to_LocallyRingedSpace AlgebraicGeometry.Proj.toLocallyRingedSpace
 
 end
+
 end AlgebraicGeometry

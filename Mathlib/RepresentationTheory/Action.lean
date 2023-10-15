@@ -78,6 +78,9 @@ def ρAut {G : GroupCat.{u}} (A : Action V (MonCat.of G)) : G ⟶ GroupCat.of (A
 set_option linter.uppercaseLean3 false in
 #align Action.ρ_Aut Action.ρAut
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
+
 variable (G : MonCat.{u})
 
 section
@@ -738,13 +741,15 @@ theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
 set_option linter.uppercaseLean3 false in
 #align Action.left_dual_V Action.leftDual_v
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
 #align Action.right_dual_ρ Action.rightDual_ρ
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
@@ -1020,5 +1025,3 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action_μ_inv_hom CategoryTheory.MonoidalFunctor.mapAction_μ_inv_hom
 
 end CategoryTheory.MonoidalFunctor
-attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom Action.rightDual_ρ
-  Action.leftDual_ρ

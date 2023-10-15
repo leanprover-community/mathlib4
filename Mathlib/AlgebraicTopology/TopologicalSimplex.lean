@@ -120,6 +120,8 @@ def toTop : SimplexCategory ⥤ TopCat where
       rw [← he.1, he.2]
 set_option linter.uppercaseLean3 false in
 #align simplex_category.to_Top SimplexCategory.toTop
+
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] SimplexCategory.toTop_map_apply
+
 end SimplexCategory
