@@ -37,6 +37,13 @@ where $A$ and $B$ are algebras graded by `ZMod 2`, also known as superalgebras.
 Show that the tensor product of graded algebras is itself a graded algebra.
 -/
 
+suppress_compilation
+
+local notation "ℤ₂" => ZMod 2
+open scoped TensorProduct
+
+variable {R A B : Type*}
+
 variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (𝒜 : ZMod 2 → Submodule R A) (ℬ : ZMod 2 → Submodule R B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
