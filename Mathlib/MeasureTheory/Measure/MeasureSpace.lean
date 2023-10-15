@@ -3854,6 +3854,13 @@ theorem CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
   ⟨IsFiniteMeasureOnCompacts.lt_top_of_isCompact isCompact_univ⟩
 #align measure_theory.compact_space.is_finite_measure MeasureTheory.CompactSpace.isFiniteMeasure
 
+instance (priority := 100) SigmaFinite.of_isFiniteMeasureOnCompacts [TopologicalSpace α]
+    [SigmaCompactSpace α] (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : SigmaFinite μ :=
+  ⟨⟨{   set := compactCovering α
+        set_mem := fun _ => trivial
+        finite := fun n => (isCompact_compactCovering α n).measure_lt_top
+        spanning := iUnion_compactCovering α }⟩⟩
+
 -- see Note [lower instance priority]
 instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
     [SecondCountableTopology α] [IsLocallyFiniteMeasure μ] : SigmaFinite μ := by
