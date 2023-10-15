@@ -412,7 +412,7 @@ lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuo
   rw [withDensity_apply _ hUo.measurableSet]
   exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, ball_image_iff.2 hUf⟩
 
-lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) : 
+lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
   .withDensity_coe <| continuous_real_toNNReal.comp hf
 
