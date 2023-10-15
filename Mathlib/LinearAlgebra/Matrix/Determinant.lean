@@ -811,11 +811,11 @@ theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
             A 0 1 * A 1 2 * A 2 0 +
           A 0 2 * A 1 0 * A 2 1 -
         A 0 2 * A 1 1 * A 2 0 := by
-  simp only [det_succ_row_zero, Nat.odd_iff_not_even, submatrix_apply, Fin.succ_zero_eq_one, submatrix_submatrix,
-    det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two, ne_eq, Fin.sum_univ_succ, Fin.val_zero, pow_zero,
-    one_mul, Fin.zero_succAbove, univ_unique, Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, neg_mul,
-    Fin.succ_succAbove_zero, sum_neg_distrib, sum_singleton, Fin.succ_succAbove_one, even_add_self, Even.neg_pow,
-    one_pow]
+  simp only [det_succ_row_zero, Nat.odd_iff_not_even, submatrix_apply, Fin.succ_zero_eq_one,
+    submatrix_submatrix, det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two, ne_eq,
+    Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, univ_unique,
+    Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero,
+    sum_neg_distrib, sum_singleton, Fin.succ_succAbove_one, even_add_self, Even.neg_pow, one_pow]
   ring
 #align matrix.det_fin_three Matrix.det_fin_three
 

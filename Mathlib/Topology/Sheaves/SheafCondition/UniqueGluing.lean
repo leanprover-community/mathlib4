@@ -164,8 +164,8 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
   · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
     -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext fun ⟨i⟩ => funext fun x => ?_
-    simp only [Discrete.functor_obj, Functor.const_obj_obj, fork_pt, parallelPair_obj_zero, fork_ι, res._eq_1,
-      types_comp_apply, Types.pi_lift_π_apply]
+    simp only [Discrete.functor_obj, Functor.const_obj_obj, fork_pt, parallelPair_obj_zero, fork_ι,
+      res._eq_1, types_comp_apply, Types.pi_lift_π_apply]
     simpa using m_spec x i
   · intro l hl
     ext x

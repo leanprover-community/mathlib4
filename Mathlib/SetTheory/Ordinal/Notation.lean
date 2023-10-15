@@ -785,8 +785,8 @@ theorem nf_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o
   cases' nf_repr_split' e with s₁ s₂; skip
   rw [split_eq_scale_split' e] at h
   injection h; substs o' n
-  simp only [repr_scale, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero, opow_one, s₂.symm,
-    and_true]
+  simp only [repr_scale, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
+    opow_one, s₂.symm, and_true]
   infer_instance
 #align onote.NF_repr_split ONote.nf_repr_split
 
@@ -999,8 +999,8 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     · simp [opow, opowAux2, r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr]
       simp only [repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero, opow_one]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
-      simp only [repr_mul, repr_scale, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero, opow_one,
-        opow_mul]
+      simp only [repr_mul, repr_scale, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one,
+        add_zero, opow_one, opow_mul]
       rw [← mul_add, ← add_assoc ((ω : Ordinal.{0}) ^ repr a0 * (n : ℕ))]
       congr 1
       rw [← opow_succ]
