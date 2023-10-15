@@ -154,6 +154,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom_apply AddGroupCat.ofHom_apply
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AddGroupCat.ofHom_apply GroupCat.ofHom_apply
 
 @[to_additive]
@@ -530,4 +531,3 @@ abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 /-- An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}
-
