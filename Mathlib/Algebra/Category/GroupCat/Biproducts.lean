@@ -76,7 +76,7 @@ noncomputable def biprodIsoProd (G H : AddCommGroupCat.{u}) :
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit G H) (binaryProductLimitCone G H).isLimit
 #align AddCommGroup.biprod_iso_prod AddCommGroupCat.biprodIsoProd
 
--- simpNF now complains after leanprover/lean4#2644
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
 
 @[simp, elementwise]
@@ -141,7 +141,7 @@ noncomputable def biproductIsoPi (f : J → AddCommGroupCat.{u}) :
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 #align AddCommGroup.biproduct_iso_pi AddCommGroupCat.biproductIsoPi
 
--- simpNF now complains after leanprover/lean4#2644
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AddCommGroupCat.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
