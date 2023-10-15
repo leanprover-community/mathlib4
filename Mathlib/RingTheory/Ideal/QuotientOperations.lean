@@ -973,3 +973,6 @@ theorem quotQuotEquivQuotOfLE_symm_comp_mkₐ (h : I ≤ J) :
 
 end AlgebraQuotient
 end DoubleQuot
+attribute [nolint simpNF] Ideal.kerLiftAlg_mk
+Ideal.quotientKerAlgEquivOfRightInverse.apply
+Ideal.QuotientKerAlgEquivOfRightInverseSymm.apply

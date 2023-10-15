@@ -901,7 +901,8 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         refine' Prod.ext rfl _
         erw [tensor_rho, tensor_rho]
         dsimp
-        rw [leftRegular_ρ_apply]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [leftRegular_ρ_apply]
         erw [map_mul]
         rfl }
   hom_inv_id := by
@@ -1019,3 +1020,5 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action_μ_inv_hom CategoryTheory.MonoidalFunctor.mapAction_μ_inv_hom
 
 end CategoryTheory.MonoidalFunctor
+attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom Action.rightDual_ρ
+  Action.leftDual_ρ

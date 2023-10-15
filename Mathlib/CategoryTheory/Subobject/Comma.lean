@@ -241,4 +241,6 @@ instance well_copowered_costructuredArrow [WellPowered Cᵒᵖ] [HasColimits C] 
 
 end CostructuredArrow
 
+attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
+  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
 end CategoryTheory

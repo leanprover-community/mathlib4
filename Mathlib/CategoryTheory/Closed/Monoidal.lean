@@ -73,7 +73,11 @@ def unitClosed : Closed (𝟙_ C) where
                 right_inv := by aesop_cat }
             homEquiv_naturality_left_symm := fun f g => by
               dsimp
-              rw [leftUnitor_naturality_assoc] } }
+              rw [leftUnitor_naturality_assoc]
+            -- This used to be automatic before leanprover/lean4#2644
+            homEquiv_naturality_right := by  -- aesop failure
+              dsimp
+              simp }}
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}
@@ -343,5 +347,6 @@ theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor
 end OfEquiv
 
 end MonoidalClosed
-
+attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
+  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
 end CategoryTheory

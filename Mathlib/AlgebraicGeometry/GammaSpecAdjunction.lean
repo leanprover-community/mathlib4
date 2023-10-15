@@ -299,9 +299,17 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       --Porting Note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
+      -- leanprover/lean4#2644
+      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
+        = toΓSpecFun Y (f.val.base x) := by erw [ContinuousMap.coe_mk]; rfl
+      erw [this]
+      have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
+        = toΓSpecFun X x := by erw [ContinuousMap.coe_mk]
+      erw [this]
       dsimp [toΓSpecFun]
-      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
@@ -484,5 +492,5 @@ instance : Reflective Spec.toLocallyRingedSpace :=
 instance Spec.reflective : Reflective Scheme.Spec :=
   ⟨⟩
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
-
+attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
 end AlgebraicGeometry

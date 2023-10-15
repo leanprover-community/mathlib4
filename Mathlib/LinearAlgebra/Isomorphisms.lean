@@ -192,4 +192,5 @@ theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
     Fintype.card_eq.mpr ⟨(quotientQuotientEquivQuotient T S hST).toEquiv⟩]
 #align submodule.card_quotient_mul_card_quotient Submodule.card_quotient_mul_card_quotient
 
+attribute [nolint simpNF] LinearMap.quotientInfEquivSupQuotient_apply_mk
 end Submodule

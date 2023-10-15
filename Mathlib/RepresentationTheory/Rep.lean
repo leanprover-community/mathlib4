@@ -299,7 +299,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem leftRegularHom_apply {A : Rep k G} (x : A) :
     (leftRegularHom A x).hom (Finsupp.single 1 1) = x := by
-  rw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
   · rw [zero_smul]
 set_option linter.uppercaseLean3 false in
@@ -328,6 +329,8 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
     rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
     erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
     simp only [one_smul, smul_eq_mul, mul_one]
+    · -- This goal didn't exist before leanprover/lean4#2644
+      rfl
     · rw [zero_smul]
   right_inv x := leftRegularHom_apply x
 set_option linter.uppercaseLean3 false in
@@ -335,7 +338,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
-  rw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
     Finsupp.sum_single_index, one_smul]
   · rw [zero_smul]
 set_option linter.uppercaseLean3 false in
@@ -395,8 +399,12 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
           hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
         change TensorProduct.uncurry k _ _ _ f.hom.flip (A.ρ g x ⊗ₜ[k] B.ρ g y) =
           C.ρ g (TensorProduct.uncurry k _ _ _ f.hom.flip (x ⊗ₜ[k] y))
-        rw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply, Rep.ihom_obj_ρ_apply,
-          LinearMap.comp_apply, LinearMap.comp_apply, ρ_inv_self_apply]
+        -- The next 3 tactics used to be `rw` before leanprover/lean4#2644
+        erw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply,
+          Rep.ihom_obj_ρ_apply,
+          LinearMap.comp_apply, LinearMap.comp_apply] --, ρ_inv_self_apply (A := C)]
+        dsimp
+        erw [ρ_inv_self_apply]
         rfl}
   left_inv f := Action.Hom.ext _ _ (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
@@ -661,9 +669,9 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
 /- Porting note: rest of broken proof was
           simp only [Representation.asModuleEquiv_symm_map_smul,
             RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
-          rw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply,
-            Representation.asModuleEquiv_symm_map_smul,
-            RestrictScalars.addEquiv_symm_map_algebraMap_smul]
+          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          erw [AddEquiv.coe_toEquiv, AddEquiv.trans_apply,
+            Representation.asModuleEquiv_symm_map_smul]
           rfl })
     fun g => by ext; apply unit_iso_comm
 set_option linter.uppercaseLean3 false in
@@ -680,3 +688,6 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end
+attribute [nolint simpNF] Rep.linearization_ε_inv_hom_apply
+  Rep.MonoidalClosed.linearHomEquiv_symm_hom
+  Rep.MonoidalClosed.linearHomEquivComm_symm_hom

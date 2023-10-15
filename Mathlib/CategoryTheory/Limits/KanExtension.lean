@@ -332,7 +332,10 @@ def lan [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] : (S ⥤ D) ⥤ L
   Adjunction.leftAdjointOfEquiv (fun F G => Lan.equiv ι F G) (by {
     intros X' X Y f g
     ext
-    simp [Lan.equiv] })
+    simp [Lan.equiv]
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
+    simp })
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan CategoryTheory.lan
 
@@ -365,5 +368,8 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.coreflective CategoryTheory.Lan.coreflective
 
 end Lan
-
+attribute [nolint simpNF] CategoryTheory.Ran.equiv_symm_apply_app
+  CategoryTheory.Ran.equiv_apply_app
+  CategoryTheory.Lan.equiv_symm_apply_app
+  CategoryTheory.Lan.equiv_apply_app
 end CategoryTheory

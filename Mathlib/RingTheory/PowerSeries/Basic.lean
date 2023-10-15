@@ -149,9 +149,11 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
 
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
-  rw [coeff, monomial_def, LinearMap.proj_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
   dsimp only
-  rw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
 #align mv_power_series.coeff_monomial MvPowerSeries.coeff_monomial
 
 @[simp]
@@ -1407,7 +1409,8 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = const
 
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
-  rw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C, C]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
 set_option linter.uppercaseLean3 false in
 #align power_series.monomial_zero_eq_C PowerSeries.monomial_zero_eq_C
 
@@ -1438,7 +1441,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_X : coeff R 0 (X : R⟦X⟧) = 0 := by
-  rw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X PowerSeries.coeff_zero_X
 
@@ -1514,7 +1518,7 @@ set_option linter.uppercaseLean3 false in
 theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (φ * X) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add]
   convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
-  rw [mul_one]
+  rw [mul_one]; rfl
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_succ_mul_X PowerSeries.coeff_succ_mul_X
 
@@ -1522,7 +1526,7 @@ set_option linter.uppercaseLean3 false in
 theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff R (n + 1) (X * φ) = coeff R n φ := by
   simp only [coeff, Finsupp.single_add, add_comm n 1]
   convert φ.coeff_add_monomial_mul (single () 1) (single () n) _
-  rw [one_mul]
+  rw [one_mul]; rfl
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_succ_X_mul PowerSeries.coeff_succ_X_mul
 
@@ -1920,7 +1924,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
         -a *
           ∑ x in Finset.Nat.antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
-  rw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
+  erw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
   simp only [Finsupp.single_eq_zero]
   split_ifs; · rfl
   congr 1

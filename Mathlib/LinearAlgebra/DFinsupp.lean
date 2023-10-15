@@ -554,5 +554,5 @@ theorem independent_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {v
 #align complete_lattice.independent_iff_linear_independent_of_ne_zero CompleteLattice.independent_iff_linearIndependent_of_ne_zero
 
 end Ring
-
+attribute [nolint simpNF] DFinsupp.lmk_apply
 end CompleteLattice

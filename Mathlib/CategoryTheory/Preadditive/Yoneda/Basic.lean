@@ -154,4 +154,6 @@ instance faithful_preadditiveCoyoneda :
   Faithful.of_comp_eq whiskering_preadditiveCoyoneda
 #align category_theory.preadditive_coyoneda_faithful CategoryTheory.faithful_preadditiveCoyoneda
 
+attribute [nolint simpNF] CategoryTheory.preadditiveYoneda_map_app_apply
+  CategoryTheory.preadditiveCoyoneda_map_app_apply
 end CategoryTheory

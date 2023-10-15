@@ -214,7 +214,8 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
     leibniz' := fun a b => by
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply, - Ideal.toCotangent_apply]
-      rw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
         ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]
       convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a : _)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b : _) using 1
@@ -393,7 +394,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
   In Mathlib 3, it was slow but not this slow. -/
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := inferInstance
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 @[nolint defLemma]
@@ -411,19 +412,23 @@ local instance isScalarTower_R_right :
 @[nolint defLemma]
 local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
-  IsScalarTower.right
+  inferInstance
+  -- IsScalarTower.right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  Submodule.module' _
+  inferInstance
+  -- Submodule.module' _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  Submodule.module' _
+  -- Submodule.module' _
+  inferInstance
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
-  Submodule.module' _
+  -- Submodule.module' _
+  inferInstance
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/

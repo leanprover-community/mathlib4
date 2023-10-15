@@ -605,4 +605,5 @@ theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
 
 end
 
+attribute [nolint simpNF] finsetBasisOfTopLeSpanOfCardEqFinrank_repr_apply
 end SubalgebraRank

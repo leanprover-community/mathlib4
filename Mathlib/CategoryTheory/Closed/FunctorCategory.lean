@@ -90,4 +90,6 @@ theorem ihom_coev_app (F G : D ⥤ C) : (ihom.coev F).app G = (closedUnit F).app
   rfl
 #align category_theory.functor.ihom_coev_app CategoryTheory.Functor.ihom_coev_app
 
+attribute [nolint simpNF] Functor.monoidalClosed_closed_isAdj_adj_homEquiv_apply_app
+  Functor.monoidalClosed_closed_isAdj_adj_homEquiv_symm_apply_app
 end CategoryTheory.Functor
