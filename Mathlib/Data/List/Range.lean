@@ -221,6 +221,9 @@ theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
 #align list.map_nth_le List.finRange_map_get
 
+lemma finRange_map_comp_get : (finRange l.length).map (f ∘ l.get) = map f l := by
+  simp [← List.map_map]
+
 set_option linter.deprecated false in
 @[simp]
 theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
