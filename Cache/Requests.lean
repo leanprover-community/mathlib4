@@ -145,7 +145,7 @@ into the `lean-toolchain` file at the root directory of your project"
     else
       IO.println s!"On powershell you can use `cp {mathlibToolchainFile} ./lean-toolchain`"
       IO.println s!"On Windows CMD you can use `copy {mathlibToolchainFile} lean-toolchain`"
-    IO.Process.exit 10
+    IO.Process.exit 1
   return ()
 
 /-- Downloads missing files, and unpacks files. -/
