@@ -13,6 +13,7 @@ open scoped Pointwise ENNReal NNReal
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 local notation "dim" => FiniteDimensional.finrank ℝ
 
+noncomputable section
 namespace MeasureTheory
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
@@ -20,8 +21,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimension
 
 namespace Measure
 
-
-noncomputable def toSphere (μ : Measure E) : Measure (sphere (0 : E) 1) :=
+def toSphere (μ : Measure E) : Measure (sphere (0 : E) 1) :=
   dim E • ((μ.comap (Subtype.val ∘ (homeomorphUnitSphereProd E).symm)).restrict
     (univ ×ˢ Iio ⟨1, mem_Ioi.2 one_pos⟩)).fst
 
@@ -55,45 +55,50 @@ instance : IsFiniteMeasure μ.toSphere where
     exact ENNReal.mul_lt_top (ENNReal.nat_ne_top _) <|
       ne_top_of_le_ne_top measure_ball_lt_top.ne <| measure_mono (diff_subset _ _)
 
+def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
+  .withDensity (.comap Subtype.val volume) fun r ↦ .ofReal (r.1 ^ n)
+
+lemma volumeIoiPow_apply_Iio (n : ℕ) (x : Ioi (0 : ℝ)) :
+    volumeIoiPow n (Iio x) = ENNReal.ofReal (x.1 ^ (n + 1) / (n + 1)) := by
+  have hr₀ : 0 ≤ x.1 := le_of_lt x.2
+  rw [volumeIoiPow, withDensity_apply _ measurableSet_Iio,
+    set_lintegral_subtype measurableSet_Ioi _ fun a : ℝ ↦ .ofReal (a ^ n),
+    image_subtype_val_Ioi_Iio, restrict_congr_set Ioo_ae_eq_Ioc,
+    ← ofReal_integral_eq_lintegral_ofReal (intervalIntegrable_pow _).1, ← integral_of_le hr₀]
+  · simp
+  · filter_upwards [ae_restrict_mem measurableSet_Ioc] with y hy
+    exact pow_nonneg hy.1.le _
+
+def finiteSpanningSetsIn_volumeIoiPow_range_Iio (n : ℕ) :
+    FiniteSpanningSetsIn (volumeIoiPow n) (range Iio) where
+  set k := Iio ⟨k + 1, mem_Ioi.2 k.cast_add_one_pos⟩
+  set_mem k := mem_range_self _
+  finite k := by simp [volumeIoiPow_apply_Iio]
+  spanning := iUnion_eq_univ_iff.2 fun x ↦ ⟨⌊x.1⌋₊, Nat.lt_floor_add_one x.1⟩
+
+instance (n : ℕ) : SigmaFinite (volumeIoiPow n) :=
+  (finiteSpanningSetsIn_volumeIoiPow_range_Iio n).sigmaFinite
+
 theorem measurePreserving_homeomorphUnitSphereProd :
     MeasurePreserving (homeomorphUnitSphereProd E) (μ.comap (↑))
-      (.prod μ.toSphere <| .withDensity (.comap Subtype.val volume) fun r ↦
-        .ofReal (r.1 ^ (dim E - 1))) := by
-  set ν : Measure (Ioi (0 : ℝ)) := ((volume : Measure ℝ).comap Subtype.val).withDensity fun r ↦
-    .ofReal (r.1 ^ (dim E - 1))
+      (μ.toSphere.prod (volumeIoiPow (dim E - 1))) := by
   cases subsingleton_or_nontrivial E
   · have : IsEmpty (sphere (0 : E) 1) := sphere_isEmpty_of_subsingleton one_ne_zero
     exact .of_isEmpty ..
-  have hpos : 0 < dim E := FiniteDimensional.finrank_pos
-  have h₁ : 1 ≤ dim E := hpos
-  have hν : ∀ r : Ioi (0 : ℝ), ν (Iio r) = ENNReal.ofReal (r.1 ^ dim E / dim E) := fun r ↦ by
-    have hr₀ : 0 ≤ r.1 := le_of_lt r.2
-    rw [withDensity_apply _ measurableSet_Iio,
-      set_lintegral_subtype measurableSet_Ioi _ fun a : ℝ ↦ .ofReal (a ^ (dim E - 1)),
-      image_subtype_val_Ioi_Iio, restrict_congr_set Ioo_ae_eq_Ioc,
-      ← ofReal_integral_eq_lintegral_ofReal (intervalIntegrable_pow _).1, ← integral_of_le hr₀]
-    · simp [Nat.sub_add_cancel h₁, hpos.ne', hpos]
-    · filter_upwards [ae_restrict_mem measurableSet_Ioc] with x hx
-      exact pow_nonneg hx.1.le _
   refine ⟨(homeomorphUnitSphereProd E).measurable, .symm ?_⟩
   refine prod_eq_generateFrom generateFrom_measurableSet
     ((borel_eq_generateFrom_Iio _).symm.trans BorelSpace.measurable_eq.symm)
-    isPiSystem_measurableSet isPiSystem_Iio μ.toSphere.toFiniteSpanningSetsIn ?_ fun s hs ↦
-      forall_range_iff.2 fun r ↦ ?_
-  · refine ⟨fun n ↦ Iio ⟨n + 1, mem_Ioi.2 n.cast_add_one_pos⟩, fun _ ↦ mem_range_self _,
-      fun n ↦ ?_, ?_⟩
-    · rw [hν]
-      exact ENNReal.ofReal_lt_top
-    · exact iUnion_eq_univ_iff.2 fun x ↦ ⟨⌊x.1⌋₊, Nat.lt_floor_add_one x.1⟩
-  · rw [(Homeomorph.measurableEmbedding _).map_apply, hν, toSphere_apply' _ hs,
-      comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux]
-    calc
-      μ (Ioo (0 : ℝ) r • (↑) '' s) = μ (r.1 • Ioo (0 : ℝ) 1 • (↑) '' s) := by
-        rw [← smul_assoc, LinearOrderedField.smul_Ioo r.2.out, smul_zero, smul_eq_mul, mul_one]
-      _ = _ := by
-        rw [μ.addHaar_smul_of_nonneg r.2.out.le, mul_right_comm, ← ENNReal.ofReal_coe_nat,
-          ← ENNReal.ofReal_mul, mul_div_cancel']
-        exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
+    isPiSystem_measurableSet isPiSystem_Iio
+    μ.toSphere.toFiniteSpanningSetsIn (finiteSpanningSetsIn_volumeIoiPow_range_Iio _)
+    fun s hs ↦ forall_range_iff.2 fun r ↦ ?_
+  have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by
+    rw [LinearOrderedField.smul_Ioo r.2.out, smul_zero, smul_eq_mul, mul_one]
+  have hpos : 0 <  dim E := FiniteDimensional.finrank_pos
+  rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
+    comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
+    smul_assoc, μ.addHaar_smul_of_nonneg r.2.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,
+    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_coe_nat, ← ENNReal.ofReal_mul, mul_div_cancel']
+  exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
 
 end Measure
 
@@ -106,11 +111,18 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
       rw [← set_integral_eq_subtype' (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
         restrict_compl_singleton]
-    _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂_ :=
+    _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
       μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
         (f ∘ Subtype.val ∘ Prod.snd)
-    _ = (μ.toSphere univ).toReal • ∫ x : Ioi (0 : ℝ), f x ∂_ := _
-    _ = _ := _
-  
+    _ = (μ.toSphere univ).toReal • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
+      integral_fun_snd (f ∘ Subtype.val)
+    _ = _ := by
+      simp only [Measure.volumeIoiPow, ENNReal.ofReal]
+      rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
+        ENNReal.toReal_mul, ENNReal.toReal_nat, ← nsmul_eq_mul, smul_assoc,
+        ← set_integral_eq_subtype' measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
+        set_integral_congr measurableSet_Ioi fun x hx ↦ ?_]
+      · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
+      · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 
 end MeasureTheory
