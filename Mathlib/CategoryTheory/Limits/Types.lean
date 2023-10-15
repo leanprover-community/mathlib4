@@ -54,7 +54,7 @@ theorem isLimit_iff (c : Cone F) :
   · let cs := cone_of_section hs
     exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_fun (t.fac cs j) ⟨⟩,
       fun x hx ↦ congr_fun (t.uniq cs (fun _ ↦ x) fun j ↦ funext fun _ ↦ hx j) ⟨⟩⟩
-  · choose x hx using fun (c : Cone F) (y : c.pt) ↦ h _ (section_of_cone c y).2
+  · choose x hx using fun c y ↦ h _ (section_of_cone c y).2
     exact ⟨x, fun c j ↦ funext fun y ↦ (hx c y).1 j,
       fun c f hf ↦ funext fun y ↦ (hx c y).2 (f y) (fun j ↦ congr_fun (hf j) y)⟩
 
@@ -66,7 +66,7 @@ noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
   toFun := section_of_cone c
   invFun s := t.lift (cone_of_section s.2) ⟨⟩
   left_inv x := (congr_fun (t.uniq (cone_of_section _) (fun _ ↦ x) fun _ ↦ rfl) ⟨⟩).symm
-  right_inv s := Subtype.ext <| funext fun j ↦ congr_fun (t.fac (cone_of_section s.2) j) ⟨⟩
+  right_inv s := Subtype.ext (funext fun j ↦ congr_fun (t.fac (cone_of_section s.2) j) ⟨⟩)
 #align category_theory.limits.types.is_limit_equiv_sections CategoryTheory.Limits.Types.isLimitEquivSections
 
 @[simp]
