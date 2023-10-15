@@ -437,6 +437,10 @@ termination_by
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.mem.decidable
 
+-- This is otherwise detected by the `nonClassInstance` linter from
+-- https://github.com/leanprover/std4/pull/268
+attribute [-instance] Lists.Equiv.decidable._unary._mutual
+
 end Decidable
 
 end Lists
