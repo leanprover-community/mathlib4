@@ -1204,7 +1204,7 @@ theorem integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (hs : Measurable
 /-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Bochner integral of a function
 `g : E → F` on `f '' s` coincides with the integral of `|(f' x).det| • g ∘ f` on `s`. -/
-theorem integral_image_eq_integral_abs_det_fderiv_smul [CompleteSpace F] (hs : MeasurableSet s)
+theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) (g : E → F) :
     ∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ := by
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
@@ -1253,7 +1253,7 @@ theorem integral_image_eq_integral_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ
       (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
 #align measure_theory.integral_image_eq_integral_abs_deriv_smul MeasureTheory.integral_image_eq_integral_abs_deriv_smul
 
-theorem integral_target_eq_integral_abs_det_fderiv_smul [CompleteSpace F] {f : LocalHomeomorph E E}
+theorem integral_target_eq_integral_abs_det_fderiv_smul {f : LocalHomeomorph E E}
     (hf' : ∀ x ∈ f.source, HasFDerivAt f (f' x) x) (g : E → F) :
     ∫ x in f.target, g x ∂μ = ∫ x in f.source, |(f' x).det| • g (f x) ∂μ := by
   have : f '' f.source = f.target := LocalEquiv.image_source_eq_target f.toLocalEquiv
