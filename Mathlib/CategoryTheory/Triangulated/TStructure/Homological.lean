@@ -266,7 +266,7 @@ instance (X : C) (n : ℤ) : IsIso ((t.homology n).map ((t.truncLEι n).app X)) 
   dsimp [homology]
   infer_instance
 
-def case₂ [t.IsLE T.obj₁ 0] :
+def case₂ (h₁ : t.IsLE T.obj₁ 0) :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
   have h' := case₁ t (t.truncLETriangle_distinguished T hT 0)
   refine' (ShortComplex.exact_and_epi_g_iff_of_iso _).1 h'
@@ -278,9 +278,42 @@ def case₂ [t.IsLE T.obj₁ 0] :
     dsimp
     simp only [← Functor.map_comp, NatTrans.naturality, Functor.id_obj, Functor.id_map]
 
+/-def case₂' (h₃ : t.IsGE T.obj₃ 0) :
+    (shortComplex t hT).Exact ∧ Mono (shortComplex t hT).f := by
+  sorry-/
+
 end
 
 end HomologicalFunctorAux
+
+instance (X : C) (n : ℤ) : t.IsGE (((t.truncGE n).obj X)⟦n⟧) 0 :=
+  t.isGE_shift _ n n 0 (add_zero n)
+
+/-open HomologicalFunctorAux in
+instance : (t.homology 0).IsHomological where
+  exact T hT := by
+    have h₁ := t.triangleLEGE_distinguished 0 1 (by linarith) T.obj₁
+    obtain ⟨U, f, g, h₃⟩ := distinguished_cocone_triangle ((t.truncLEι 0).app T.obj₁ ≫ T.mor₁)
+    have H := someOctahedron rfl h₁ hT h₃
+    have ex₁ := case₂ t h₃ (by dsimp; infer_instance)
+    have ex₂ := case₂' t (rot_of_dist_triangle _ H.mem) (by dsimp; infer_instance)
+    dsimp [Triangle.rotate] at ex₂
+    have := ex₁.2
+    have : Mono (shortComplex t (rot_of_dist_triangle _ H.mem)).f := ex₂.2
+    have ex₃ := ShortComplex₄.connectShortComplex_exact (shortComplex t h₃)
+      (shortComplex t (rot_of_dist_triangle _ H.mem)) (Iso.refl _)
+        ((t.homology 0).map T.mor₂) (by
+          dsimp [shortComplex, ShortComplex.map]
+          rw [id_comp, ← Functor.map_comp, H.comm₃]) ex₁.1 ex₂.1
+    refine' ShortComplex.exact_of_iso _ ex₃.exact₂
+    refine' ShortComplex.isoMk (asIso ((t.homology 0).map ((t.truncLEι 0).app T.obj₁)))
+        (Iso.refl _) (Iso.refl _) _ _
+    · dsimp
+      simp
+      rfl
+    · dsimp
+      simp
+      rfl-/
 
 end TStructure
 
