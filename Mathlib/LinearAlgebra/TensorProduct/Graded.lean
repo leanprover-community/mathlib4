@@ -107,63 +107,35 @@ theorem gradedComm_of_tmul_of (i j : ℤ₂) (a : 𝒜 i) (b : ℬ j):
     zsmul_eq_smul_cast R, map_smul, TensorProduct.directSum_symm_lof_tmul,
     ←zsmul_eq_smul_cast, ←Units.smul_def]
 
-/-- Auxliary construction used to build `TensorProduct.gradedMul`.
-
-This operates on direct sums of tensors instead of tensors of direct sums. -/
-noncomputable irreducible_def gradedMulAux :
-    (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ 𝒜ℬ) →ₗ[R] (DirectSum _ 𝒜ℬ) := by
-  refine TensorProduct.curry ?_
-  refine ?_ ∘ₗ (TensorProduct.directSum R 𝒜ℬ 𝒜ℬ).toLinearMap
-  refine DirectSum.toModule R _ _ fun i => ?_
-  have o := DirectSum.lof R _ 𝒜ℬ (i.1.1 + i.2.1, i.1.2 + i.2.2)
-  have s : ℤˣ := ((-1 : ℤˣ)^(i.1.2 * i.2.1 : ℤ₂) : ℤˣ)
-  refine (s • o) ∘ₗ ?_
-  refine ?_ ∘ₗ (TensorProduct.tensorTensorTensorComm R _ _ _ _).toLinearMap
-  refine TensorProduct.map (TensorProduct.lift ?_) (TensorProduct.lift ?_)
-  · exact DirectSum.gMulLHom R _
-  · exact DirectSum.gMulLHom R _
-
-open DirectSum (lof)
-open GradedMonoid (GMul)
-
-set_option maxHeartbeats 400000 in
-@[simp]
-theorem gradedMulAux_lof_tmul_lof_tmul (i₁ j₁ i₂ j₂ : ℤ₂)
-    (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
-    gradedMulAux R 𝒜 ℬ (lof R _ 𝒜ℬ (i₁, j₁) (a₁ ⊗ₜ b₁)) (lof R _ 𝒜ℬ (i₂, j₂) (a₂ ⊗ₜ b₂)) =
-      (-1 : ℤˣ)^(j₁ * i₂)
-        • lof R _ 𝒜ℬ (_, _) (GMul.mul a₁ a₂ ⊗ₜ GMul.mul b₁ b₂) := by
-  rw [gradedMulAux]
-  dsimp
-  simp
-
 set_option maxHeartbeats 4000000 in
 /-- The multiplication operation for tensor products of externally `ZMod 2`-graded algebras. -/
 noncomputable irreducible_def gradedMul :
-    letI AB := (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)
+    letI AB := (DirectSum _ 𝒜) ⊗[R] (DirectSum _ ℬ)
     letI : Module R AB := TensorProduct.leftModule
     AB →ₗ[R] AB →ₗ[R] AB := by
   refine TensorProduct.curry ?_
-  let e := TensorProduct.directSum R 𝒜 ℬ
-  let e' := e.symm.toLinearMap
-  refine e' ∘ₗ ?_
-  refine ?_ ∘ₗ TensorProduct.map e.toLinearMap e.toLinearMap
-  refine TensorProduct.lift ?_
-  exact gradedMulAux R 𝒜 ℬ
+  refine TensorProduct.map (LinearMap.mul' R (⨁ i, 𝒜 i))  (LinearMap.mul' R (⨁ i, ℬ i)) ∘ₗ ?_
+  refine (TensorProduct.assoc R _ _ _).symm.toLinearMap
+    ∘ₗ ?_ ∘ₗ (TensorProduct.assoc R _ _ _).toLinearMap
+  refine TensorProduct.map LinearMap.id ?_
+  refine (TensorProduct.assoc R _ _ _).toLinearMap
+    ∘ₗ ?_ ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
+  refine TensorProduct.map ?_ LinearMap.id
+  exact gradedComm _ _ _
 
--- without the heartbeat bump, the `rfl` inside the `rw` fails (though the error is silenced)!
-set_option maxHeartbeats 400000 in
-theorem gradedMul_of_tmul_of (i₁ j₁ i₂ j₂ : ℤ₂)
-    (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
-    gradedMul R 𝒜 ℬ (lof R _ 𝒜 i₁ a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ lof R _ ℬ j₂ b₂) =
-      (-1 : ℤˣ)^(j₁ * i₂)
-        • (lof R _ 𝒜 _ (GMul.mul a₁ a₂) ⊗ₜ lof R _ ℬ _ (GMul.mul b₁ b₂)) := by
+set_option maxHeartbeats 800000 in
+theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ℤ₂)
+    (a₁ : ⨁ i, 𝒜 i) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ⨁ i, ℬ i) :
+    gradedMul R 𝒜 ℬ (a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ b₂) =
+      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
   rw [gradedMul]
-  dsimp only [TensorProduct.curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, TensorProduct.map_tmul, TensorProduct.lift.tmul]
-  rw [TensorProduct.directSum_lof_tmul_lof, TensorProduct.directSum_lof_tmul_lof,
-    gradedMulAux_lof_tmul_lof_tmul, Units.smul_def, zsmul_eq_smul_cast R, map_smul,
-    TensorProduct.directSum_symm_lof_tmul, ←zsmul_eq_smul_cast, ←Units.smul_def]
+  dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_tmul,
+    map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul]
+  rw [mul_comm j₁ i₂, gradedComm_of_tmul_of]
+  -- the tower smul lemmas elaborate too slowly
+  rw [Units.smul_def, Units.smul_def, zsmul_eq_smul_cast R, zsmul_eq_smul_cast R]
+  rw [←smul_tmul', map_smul, tmul_smul, map_smul, map_smul]
+  dsimp
 
 variable {R}
 
@@ -173,12 +145,9 @@ theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i))
     exact FunLike.congr_fun this x
   ext ia a ib b
   dsimp
-  erw [gradedMul_of_tmul_of]
-  rw [zero_mul, z₂pow_zero, one_smul]
-  simp_rw [DirectSum.lof_eq_of]
-  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of, smul_tmul']
+  erw [tmul_of_gradedMul_of_tmul]
+  rw [zero_mul, z₂pow_zero, one_smul, smul_tmul']
   erw [one_mul, _root_.Algebra.smul_def]
-  rfl
 
 theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ 1 x = x := by
@@ -190,10 +159,8 @@ theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R)
     exact FunLike.congr_fun this x
   ext
   dsimp
-  erw [gradedMul_of_tmul_of]
-  rw [mul_zero, z₂pow_zero, one_smul]
-  simp_rw [DirectSum.lof_eq_of]
-  rw [←DirectSum.of_mul_of, ←DirectSum.of_mul_of, smul_tmul']
+  erw [tmul_of_gradedMul_of_tmul]
+  rw [mul_zero, z₂pow_zero, one_smul, smul_tmul']
   erw [mul_one, _root_.Algebra.smul_def, Algebra.commutes]
   rfl
 
@@ -202,7 +169,7 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
   simpa only [_root_.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
 set_option maxHeartbeats 400000 in
-theorem gradedMul_assoc (x y z : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
+theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ
     -- restate as an equality of morphisms so that we can use `ext`
@@ -211,10 +178,10 @@ theorem gradedMul_assoc (x y z : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp
-  save
-  simp_rw [gradedMul_of_tmul_of, Units.smul_def, zsmul_eq_smul_cast R,
-    LinearMap.map_smul₂, LinearMap.map_smul, gradedMul_of_tmul_of, DirectSum.lof_eq_of,
-    ←DirectSum.of_mul_of, mul_assoc]
+  simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, zsmul_eq_smul_cast R,
+    LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
+    ←DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ←DirectSum.of_mul_of,
+    ←DirectSum.lof_eq_of R, mul_assoc]
   save
   simp_rw [←zsmul_eq_smul_cast R, ←Units.smul_def, smul_smul, ←z₂pow_add, add_mul, mul_add]
   congr 2
@@ -343,35 +310,29 @@ noncomputable instance instRing : Ring (𝒜 ⊗'[R] ℬ) where
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
 set_option maxHeartbeats 800000 in
-/-- Note that a more general `tmul_coe_mul_coe_tmul` is available. -/
-theorem coe_tmul_coe_mul_coe_tmul_coe {i₁ j₁ i₂ j₂ : ℤ₂}
-    (a₁ : 𝒜 i₁) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ℬ j₂) :
-    ((a₁ : A) ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] (b₂ : B) : 𝒜 ⊗'[R] ℬ) =
+/-- The characterization of this multiplication on partially homogenous elements. -/
+theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
+    (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
   dsimp [auxEquiv, tmul]
-  erw [decompose_coe, decompose_coe, decompose_coe, decompose_coe]
+  erw [decompose_coe, decompose_coe]
   dsimp
   simp_rw [←lof_eq_of R]
-  rw [gradedMul_of_tmul_of]
+  rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
   rw [LinearEquiv.symm_symm]
   rw [@Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, map_smul,
     ←zsmul_eq_smul_cast R, ←@Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
   dsimp
-  rw [decompose_symm_of, decompose_symm_of, SetLike.coe_gMul, SetLike.coe_gMul]
-
-/-- The characterization of this multiplication on partially homogenous elements. -/
-theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
-    (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
-      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
-  classical
-  rw [←DirectSum.sum_support_decompose 𝒜 a₁, ←DirectSum.sum_support_decompose ℬ b₂]
-  rw [Finset.sum_mul, Finset.mul_sum]
-  simp_rw [tmul, sum_tmul, tmul_sum, map_sum, Finset.smul_sum]
-  rw [Finset.sum_mul]
-  simp_rw [Finset.mul_sum, coe_tmul_coe_mul_coe_tmul_coe]
+  simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
+  -- classical
+  -- rw [←DirectSum.sum_support_decompose 𝒜 a₁, ←DirectSum.sum_support_decompose ℬ b₂]
+  -- rw [Finset.sum_mul, Finset.mul_sum]
+  -- simp_rw [tmul, sum_tmul, tmul_sum, map_sum, Finset.smul_sum]
+  -- rw [Finset.sum_mul]
+  -- simp_rw [Finset.mul_sum, coe_tmul_coe_mul_coe_tmul_coe]
 
 /-- A special case for when `b₁` has grade 0. -/
 theorem tmul_zero_coe_mul_coe_tmul {i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :
