@@ -217,7 +217,7 @@ def long_lines_check(lines, path):
                 for lemma in lemmas:
                     # If the lemma fits on the current line, put it there
                     if len(broken_lines[-1]) + len(lemma) < 99:
-                        broken_lines[-1].append(lemma + ",")
+                        broken_lines[-1] += lemma + ","
                     # Otherwise, start a new line
                     else:
                         broken_lines.append(" " * (num_spaces + 2) + lemma + ",")
@@ -225,7 +225,7 @@ def long_lines_check(lines, path):
                 broken_lines[-1] = broken_lines[-1][:-1] + "]"
                 # Tack on the rest of the line after the end of the list, if that fits
                 if len(broken_lines[-1]) + len(line[end_list_idx+1:]) < 99:
-                    broken_lines[-1].append(line[end_list_idx+1:])
+                    broken_lines[-1] += (line[end_list_idx+1:])
                 # Otherwise, start a new line
                 else:
                     broken_lines.append(line[end_list_idx+1:])
