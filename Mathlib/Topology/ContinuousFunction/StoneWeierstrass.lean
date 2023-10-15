@@ -333,7 +333,7 @@ section IsROrC
 open IsROrC
 
 -- Redefine `X`, since for the next lemma it need not be compact
-variable {𝕜 : Type _} {X : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+variable {𝕜 : Type*} {X : Type*} [IsROrC 𝕜] [TopologicalSpace X]
 
 open ContinuousMap
 
