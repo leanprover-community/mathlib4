@@ -34,11 +34,11 @@
     "inputRev?": "v0.0.18",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover/std4",
+   {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "a093d7a6ac721071d8ba3774b0318063928cd3e2",
+    "rev": "b8d39f021dbf433a3eb0a274fb6ae9be606a5491",
     "opts": {},
     "name": "std",
-    "inputRev?": "main",
+    "inputRev?": "Int_simp_lemmas",
     "inherited": false}}],
  "name": "mathlib"}
