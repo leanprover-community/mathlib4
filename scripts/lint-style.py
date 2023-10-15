@@ -197,49 +197,14 @@ def four_spaces_in_second_line(lines, path):
 
 def long_lines_check(lines, path):
     errors = []
+    # TODO: find a good way to break long lines
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
-    newlines = []
     for line_nr, line in lines:
         if "http" in line or "#align" in line:
-            newlines.append((line_nr, line))
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]
-            # Break up lines with long lists of lemmas by wrapping lemmas to new lines
-            if line.count("[") == 1 and line.count("]") == 1:
-                start_list_idx = line.find("[")
-                end_list_idx = line.find("]")
-                lemmas = line[start_list_idx + 1:end_list_idx].split(",")
-                stripped_line = line.lstrip()
-                num_spaces = len(line) - len(stripped_line)
-                # Make a list of new lines
-                broken_lines = [line[:start_list_idx + 1]]
-                for lemma in lemmas:
-                    # If the lemma fits on the current line, put it there
-                    if len(broken_lines[-1]) + len(lemma) < 99:
-                        broken_lines[-1] += lemma + ","
-                    # Otherwise, start a new line
-                    else:
-                        broken_lines[-1] += "\n"
-                        broken_lines.append(" " * (num_spaces + 2) + lemma + ",")
-                # Replace the last comma with a closing bracket
-                broken_lines[-1] = broken_lines[-1][:-1] + "]"
-                # Tack on the rest of the line after the end of the list, if that fits
-                if len(broken_lines[-1]) + len(line[end_list_idx+1:]) < 99:
-                    broken_lines[-1] += (line[end_list_idx+1:])
-                # Otherwise, start a new line
-                else:
-                    broken_lines[-1] += "\n"
-                    broken_lines.append(line[end_list_idx+1:])
-                # Add the broken lines to the newlines list
-                for broken_line in broken_lines:
-                    newlines.append((line_nr, broken_line))
-            else:
-                # TODO: find a good way to break long lines that aren't lists of lemmas
-                newlines.append((line_nr, line))
-        else:
-            newlines.append((line_nr, line))
-    return errors, newlines
+    return errors, lines
 
 def import_only_check(lines, path):
     for _, line, is_comment in annotate_comments(lines):
