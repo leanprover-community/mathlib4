@@ -2093,8 +2093,8 @@ instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
   measurable_smul_const := by
     intro x
     apply Measurable.mul_const
-    simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
-      ENNReal.coe_ofNNRealHom, ZeroHom.coe_mk, RingHom.id_apply]
+    simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe, ENNReal.coe_ofNNRealHom, ZeroHom.coe_mk, RingHom.id_apply]
     apply measurable_coe_nnreal_ennreal
 
 instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
