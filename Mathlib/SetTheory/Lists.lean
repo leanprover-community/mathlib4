@@ -437,7 +437,7 @@ termination_by
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.mem.decidable
 
--- This is otherwise detected by the `nonClassInstances` linter from
+-- This is otherwise detected by the `nonClassInstance` linter from
 -- https://github.com/leanprover/std4/pull/268
 attribute [-instance] Lists.Equiv.decidable._unary._mutual
 
@@ -481,6 +481,3 @@ instance [DecidableEq α] : DecidableEq (Finsets α) := by
   exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))
 
 end Finsets
-
-#print Lists.Equiv.decidable._unary._mutual
-#lint
