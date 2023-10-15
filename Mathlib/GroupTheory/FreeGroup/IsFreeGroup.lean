@@ -232,7 +232,7 @@ theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it is free. Here, the universal property is expressed as in `IsFreeGroup.lift` and its
 properties. -/
-def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
+lemma ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (lift : ∀ {H : Type u} [Group H], (X → H) ≃ (G →* H))
     (lift_of : ∀ {H : Type u} [Group H], ∀ (f : X → H) (a), lift f (of a) = f a) :
     IsFreeGroup G :=
