@@ -276,84 +276,84 @@ end Semigroup
 
 /-- A commutative addition is a type with an addition which commutes-/
 @[ext]
-class AddComm (G : Type u) extends Add G where
+class AddCommMagma (G : Type u) extends Add G where
   /-- Addition is commutative in an additive commutative semigroup. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
 /-- A commutative multiplication is a type with a multiplication which commutes-/
 @[ext]
-class CommMul (G : Type u) extends Mul G where
+class CommMagma (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative semigroup. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
-attribute [to_additive] CommMul
+attribute [to_additive] CommMagma
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 @[ext]
-class CommSemigroup (G : Type u) extends Semigroup G, CommMul G where
+class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 #align comm_semigroup CommSemigroup
 #align comm_semigroup.ext_iff CommSemigroup.ext_iff
 #align comm_semigroup.ext CommSemigroup.ext
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 @[ext]
-class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddComm G where
+class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 #align add_comm_semigroup AddCommSemigroup
 #align add_comm_semigroup.ext AddCommSemigroup.ext
 #align add_comm_semigroup.ext_iff AddCommSemigroup.ext_iff
 
 attribute [to_additive] CommSemigroup
-attribute [to_additive existing] CommSemigroup.toCommMul
+attribute [to_additive existing] CommSemigroup.toCommMagma
 
-section CommMul
+section CommMagma
 
-variable [CommMul G]
+variable [CommMagma G]
 
 @[to_additive]
-theorem mul_comm : ∀ a b : G, a * b = b * a := CommMul.mul_comm
+theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 #align mul_comm mul_comm
 #align add_comm add_comm
 
 @[to_additive]
-instance CommMul.to_isCommutative : IsCommutative G (· * ·) := ⟨mul_comm⟩
-#align comm_semigroup.to_is_commutative CommMul.to_isCommutative
-#align add_comm_semigroup.to_is_commutative AddComm.to_isCommutative
+instance CommMagma.to_isCommutative : IsCommutative G (· * ·) := ⟨mul_comm⟩
+#align comm_semigroup.to_is_commutative CommMagma.to_isCommutative
+#align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 
-/-- Any `CommMul G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
+/-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddComm.IsRightCancelAdd.toIsLeftCancelAdd "Any `AddComm G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsLeftCancelAdd G`."]
-lemma CommMul.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMul G] [IsRightCancelMul G] :
+lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
     IsLeftCancelMul G :=
   ⟨fun _ _ _ h => mul_right_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
-#align comm_semigroup.is_right_cancel_mul.to_is_left_cancel_mul CommMul.IsRightCancelMul.toIsLeftCancelMul
+#align comm_semigroup.is_right_cancel_mul.to_is_left_cancel_mul CommMagma.IsRightCancelMul.toIsLeftCancelMul
 #align add_comm_semigroup.is_right_cancel_add.to_is_left_cancel_add AddComm.IsRightCancelAdd.toIsLeftCancelAdd
 
 /-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
 @[to_additive AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommSemigroup G` that
 satisfies `IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`."]
-lemma CommMul.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMul G] [IsLeftCancelMul G] :
+lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
     IsRightCancelMul G :=
   ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
-#align comm_semigroup.is_left_cancel_mul.to_is_right_cancel_mul CommMul.IsLeftCancelMul.toIsRightCancelMul
+#align comm_semigroup.is_left_cancel_mul.to_is_right_cancel_mul CommMagma.IsLeftCancelMul.toIsRightCancelMul
 #align add_comm_semigroup.is_left_cancel_add.to_is_right_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd
 
-/-- Any `CommMul G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
+/-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddComm.IsLeftCancelAdd.toIsCancelAdd "Any `AddComm G` that satisfies
 `IsLeftCancelAdd G` also satisfies `IsCancelAdd G`."]
-lemma CommMul.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMul G] [IsLeftCancelMul G] :
-    IsCancelMul G := { CommMul.IsLeftCancelMul.toIsRightCancelMul G with }
-#align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommMul.IsLeftCancelMul.toIsCancelMul
+lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
+    IsCancelMul G := { CommMagma.IsLeftCancelMul.toIsRightCancelMul G with }
+#align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommMagma.IsLeftCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddComm.IsLeftCancelAdd.toIsCancelAdd
 
-/-- Any `CommMul G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
+/-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddComm.IsRightCancelAdd.toIsCancelAdd "Any `AddComm G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsCancelAdd G`."]
-lemma CommSemigroup.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMul G] [IsRightCancelMul G] :
-    IsCancelMul G := { CommMul.IsRightCancelMul.toIsLeftCancelMul G with }
+lemma CommSemigroup.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
+    IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
 #align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommSemigroup.IsRightCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_right_cancel_add.to_is_cancel_add AddComm.IsRightCancelAdd.toIsCancelAdd
 
-end CommMul
+end CommMagma
 
 /-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
 @[ext]
@@ -747,7 +747,7 @@ attribute [to_additive existing] CancelCommMonoid.toCommMonoid
 @[to_additive]
 instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelCommMonoid M] :
     CancelMonoid M :=
-  { CommMul.IsLeftCancelMul.toIsRightCancelMul M with }
+  { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 #align cancel_comm_monoid.to_cancel_monoid CancelCommMonoid.toCancelMonoid
 #align add_cancel_comm_monoid.to_cancel_add_monoid AddCancelCommMonoid.toAddCancelMonoid
 
