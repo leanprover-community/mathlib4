@@ -2082,6 +2082,21 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
 #align ennreal.has_measurable_mul₂ ENNReal.instMeasurableMul₂
 
+instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
+  measurable_const_smul := by
+    intro c
+    have : ∀ x : ℝ≥0∞, c • x = (c : ℝ≥0∞) • x := by
+      intro x
+      rfl
+    simp_rw [this]
+    exact MeasurableSMul.measurable_const_smul _
+  measurable_smul_const := by
+    intro x
+    apply Measurable.mul_const
+    simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
+      ENNReal.coe_ofNNRealHom, ZeroHom.coe_mk, RingHom.id_apply]
+    apply measurable_coe_nnreal_ennreal
+
 instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
   ⟨by
     apply measurable_of_measurable_nnreal_nnreal <;>

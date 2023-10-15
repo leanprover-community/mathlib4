@@ -843,6 +843,8 @@ theorem smul_apply {_m : MeasurableSpace α} (c : R) (μ : Measure α) (s : Set 
   rfl
 #align measure_theory.measure.smul_apply MeasureTheory.Measure.smul_apply
 
+lemma nnreal_smul_eq_coe_smul (r : ℝ≥0) (μ : Measure α) : r • μ = (r : ℝ≥0∞) • μ := rfl
+
 instance instSMulCommClass [SMulCommClass R R' ℝ≥0∞] [MeasurableSpace α] :
     SMulCommClass R R' (Measure α) :=
   ⟨fun _ _ _ => ext fun _ _ => smul_comm _ _ _⟩
