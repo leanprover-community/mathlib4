@@ -1398,7 +1398,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
     {f : α → β → G} {s : Set α} {k : Set β} {g : β → F}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
-    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : LocallyIntegrable g μ) :
+    (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
     refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
@@ -1423,10 +1423,10 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
       · exact (hC x hx).trans (le_max_left _ _)
       · simp [hfs p x hp hx]
     have : IntegrableOn (fun x ↦ ‖L‖ * ‖g x‖ * C) k μ :=
-      ((hg.integrableOn_isCompact hk).norm.const_mul _).mul_const _
+      (hg.norm.const_mul _).mul_const _
     apply Integrable.mono' this ?_ ?_
     · borelize G
-      apply L.aestronglyMeasurable_comp₂ (hg.integrableOn_isCompact hk).aestronglyMeasurable
+      apply L.aestronglyMeasurable_comp₂ hg.aestronglyMeasurable
       apply StronglyMeasurable.aestronglyMeasurable
       apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
       apply support_subset_iff'.2 (fun x hx ↦ hfs p x hp hx)
@@ -1446,7 +1446,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
   _ ≤ ∫ x in k, ‖L (g x) (f p x) - L (g x) (f q x)‖ ∂μ := norm_integral_le_integral_norm _
   _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
       apply integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity))
-      · exact ((hg.integrableOn_isCompact hk).norm.const_mul _).mul_const _
+      · exact (hg.norm.const_mul _).mul_const _
       · apply eventually_of_forall (fun x ↦ ?_)
         by_cases hx : x ∈ k
         · dsimp only
@@ -1463,11 +1463,11 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
 /-- Consider a parameterized integral `a ↦ ∫ x, f a x` where `f` is continuous and uniformly
 compactly supported. Then the integral depends continuously on `a`. -/
 lemma continuousOn_integral_of_compact_support
-    {f : α → β → E} {s : Set α} {k : Set β} [IsLocallyFiniteMeasure μ]
+    {f : α → β → E} {s : Set α} {k : Set β} [IsFiniteMeasureOnCompacts μ]
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
     ContinuousOn (fun a ↦ ∫ x, f a x ∂μ) s := by
   simpa using continuousOn_integral_bilinear_of_locally_integrable_of_compact_support (lsmul ℝ ℝ)
-    hk hf hfs (locallyIntegrable_const 1) (μ := μ)
+    hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
 
 end ParametricIntegral
