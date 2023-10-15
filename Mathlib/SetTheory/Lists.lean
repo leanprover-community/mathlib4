@@ -439,7 +439,7 @@ termination_by
 
 -- This is otherwise detected by the `nonClassInstance` linter from
 -- https://github.com/leanprover/std4/pull/268
-attribute [-instance] Lists.Equiv.decidable._unary._mutual
+attribute [nolint nonClassInstance] Lists.Equiv.decidable._unary._mutual
 
 end Decidable
 
