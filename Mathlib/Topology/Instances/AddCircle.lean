@@ -204,9 +204,6 @@ protected theorem continuous_mk' :
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
-instance instCircularOrderAddCircle : CircularOrder (AddCircle p) :=
-  QuotientAddGroup.circularOrder
-
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
 is the natural quotient map. -/
 def equivIco : AddCircle p ≃ Ico a (a + p) :=
@@ -520,17 +517,6 @@ instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
 instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
   (zmultiples p).properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
     (AddSubgroup.tendsto_zmultiples_subtype_cofinite p)
-
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is Hausdorff. -/
-instance : T2Space (AddCircle p) :=
-  t2Space_of_properlyDiscontinuousVAdd_of_t2Space
-
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is T₄. -/
-instance [Fact (0 < p)] : T4Space (AddCircle p) := inferInstance
-
-/-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is second-countable. -/
-instance : SecondCountableTopology (AddCircle p) :=
-  QuotientAddGroup.secondCountableTopology
 
 end AddCircle
 

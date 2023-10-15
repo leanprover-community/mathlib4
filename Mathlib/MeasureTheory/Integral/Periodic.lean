@@ -204,17 +204,9 @@ namespace UnitAddCircle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-noncomputable instance measureSpace : MeasureSpace UnitAddCircle :=
-  AddCircle.measureSpace 1
-#align unit_add_circle.measure_space UnitAddCircle.measureSpace
-
 @[simp]
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 #align unit_add_circle.measure_univ UnitAddCircle.measure_univ
-
-instance isFiniteMeasure : IsFiniteMeasure (volume : Measure UnitAddCircle) :=
-  AddCircle.isFiniteMeasure 1
-#align unit_add_circle.is_finite_measure UnitAddCircle.isFiniteMeasure
 
 /-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass 1)
