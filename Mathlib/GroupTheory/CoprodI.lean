@@ -989,21 +989,22 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
 
 end PingPongLemma
 
-/-- The free product of free groups is itself a free group -/
-@[simps!]  --Porting note: added `!`
-instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [hG : ∀ i, IsFreeGroup (G i)] :
-    IsFreeGroup (CoprodI G) where
-  Generators := Σi, IsFreeGroup.Generators (G i)
-  MulEquiv' :=
-    MonoidHom.toMulEquiv
-      (FreeGroup.lift fun x : Σi, IsFreeGroup.Generators (G i) =>
-        CoprodI.of (IsFreeGroup.of x.2 : G x.1))
-      (CoprodI.lift fun i : ι =>
-        (IsFreeGroup.lift fun x : IsFreeGroup.Generators (G i) =>
-            FreeGroup.of (⟨i, x⟩ : Σi, IsFreeGroup.Generators (G i)) :
-          G i →* FreeGroup (Σi, IsFreeGroup.Generators (G i))))
-      (by ext; simp)
-      (by ext; simp)
+/-- Given a family of free groups with distinguished bases, then their free product is free, with
+a basis given by the union of the bases of the components. -/
+def FreeGroupBasis.coprodI {ι : Type*} {X : ι → Type*} {G : ι → Type*} [∀ i, Group (G i)]
+    (B : ∀ i, FreeGroupBasis (X i) (G i)) :
+    FreeGroupBasis (Σ i, X i) (CoprodI G) :=
+  ⟨MulEquiv.symm <| MonoidHom.toMulEquiv
+    (FreeGroup.lift fun x : Σ i, X i => CoprodI.of (B x.1 x.2))
+    (CoprodI.lift fun i : ι => (B i).lift fun x : X i =>
+              FreeGroup.of (⟨i, x⟩ : Σ i, X i))
+    (by ext; simp)
+    (by ext1 i; apply (B i).ext_hom; simp)⟩
+
+/-- The free product of free groups is itself a free group. -/
+instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGroup (G i)] :
+    IsFreeGroup (CoprodI G) :=
+  (FreeGroupBasis.coprodI (fun i ↦ IsFreeGroup.basis (G i))).isFreeGroup
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.

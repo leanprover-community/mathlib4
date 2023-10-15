@@ -79,6 +79,10 @@ instance funLike : FunLike (FreeGroupBasis ι G) ι (fun _ ↦ G) where
     ext i
     exact congr_fun hbb' i
 
+@[simp] lemma repr_apply_coe (b : FreeGroupBasis ι G) (i : ι) : b.repr (b i) = FreeGroup.of i := by
+  change b.repr (b.repr.symm (FreeGroup.of i)) = FreeGroup.of i
+  simp
+
 /-- The canonical basis of the free group over `X`. -/
 def ofFreeGroup (X : Type*) : FreeGroupBasis X (FreeGroup X) := ofRepr (MulEquiv.refl _)
 
@@ -110,6 +114,24 @@ lemma isFreeGroup (b : FreeGroupBasis ι G) : IsFreeGroup G :=
 instance (X : Type*) : IsFreeGroup (FreeGroup X) :=
   (ofFreeGroup X).isFreeGroup
 
+/-- Given a free group basis of `G` over `ι`, there is a canonical bijection between maps from `ι`
+to a group `H` and morphisms from `G` to `H`. -/
+@[simps!]
+def lift (b : FreeGroupBasis ι G) : (ι → H) ≃ (G →* H) :=
+  FreeGroup.lift.trans
+    { toFun := fun f => f.comp b.repr.toMonoidHom
+      invFun := fun f => f.comp b.repr.symm.toMonoidHom
+      left_inv := fun f => by
+        ext
+        simp
+      right_inv := fun f => by
+        ext
+        simp }
+
+/-- If two morphisms on `G` coincide on the elements of a basis, then they coincide. -/
+lemma ext_hom (b : FreeGroupBasis ι G) (f g : G →* H) (h : ∀ i, f (b i) = g (b i)) : f = g :=
+  b.lift.symm.injective <| funext h
+
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it admits a free group basis based on this type. Here, the universal property is expressed as
 in `IsFreeGroup.lift` and its properties. -/
@@ -132,7 +154,7 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it admits a free group basis based on this type. Here
 the universal property is expressed as in `IsFreeGroup.unique_lift`.  -/
-noncomputable def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
+def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     (h : ∀ {H : Type u} [Group H] (f : X → H), ∃! F : G →* H, ∀ a, F (of a) = f a) :
     FreeGroupBasis X G :=
   let lift {H : Type u} [Group H] : (X → H) ≃ (G →* H) :=
@@ -180,15 +202,7 @@ variable {H : Type*} [Group H]
 /-- The equivalence between functions on the generators and group homomorphisms from a free group
 given by those generators. -/
 def lift : (Generators G → H) ≃ (G →* H) :=
-  FreeGroup.lift.trans
-    { toFun := fun f => f.comp (MulEquiv G).symm.toMonoidHom
-      invFun := fun f => f.comp (MulEquiv G).toMonoidHom
-      left_inv := fun f => by
-        ext
-        simp
-      right_inv := fun f => by
-        ext
-        simp }
+  (basis G).lift
 #align is_free_group.lift IsFreeGroup.lift
 
 @[simp]
@@ -201,8 +215,7 @@ theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f 
   rfl
 #align is_free_group.lift_symm_apply IsFreeGroup.lift_symm_apply
 
-@[ext 1050] --Porting note: increased priority, but deliberately less than for example
---`FreeProduct.ext_hom`
+/- Do not register this as an ext lemma, as `Generators G` is not canonical. -/
 theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of a)) : f = g :=
   lift.symm.injective (funext h)
 #align is_free_group.ext_hom IsFreeGroup.ext_hom
@@ -215,5 +228,23 @@ expresses the universal property.  -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
   simpa only [Function.funext_iff] using lift.symm.bijective.existsUnique f
 #align is_free_group.unique_lift IsFreeGroup.unique_lift
+
+/-- If a group satisfies the universal property of a free group with respect to a given type, then
+it is free. Here, the universal property is expressed as in `IsFreeGroup.lift` and its properties. -/
+def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
+    (lift : ∀ {H : Type u} [Group H], (X → H) ≃ (G →* H))
+    (lift_of : ∀ {H : Type u} [Group H], ∀ (f : X → H) (a), lift f (of a) = f a) :
+    IsFreeGroup G :=
+  (FreeGroupBasis.ofLift X of lift lift_of).isFreeGroup
+
+/-- If a group satisfies the universal property of a free group with respect to a given type, then
+it is free. Here the universal property is expressed as in `IsFreeGroup.unique_lift`.  -/
+lemma ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
+    (h : ∀ {H : Type u} [Group H] (f : X → H), ∃! F : G →* H, ∀ a, F (of a) = f a) :
+    IsFreeGroup G :=
+  (FreeGroupBasis.ofUniqueLift X of h).isFreeGroup
+
+lemma ofMulEquiv [IsFreeGroup G] (e : G ≃* H) : IsFreeGroup H :=
+  ((basis G).map e).isFreeGroup
 
 end IsFreeGroup
