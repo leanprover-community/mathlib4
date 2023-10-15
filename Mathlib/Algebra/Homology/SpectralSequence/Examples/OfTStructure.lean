@@ -56,7 +56,7 @@ noncomputable def spectralSequence : E₂CohomologicalSpectralSequence A :=
 
 noncomputable def spectralSequenceE₂Iso (pq : ℤ × ℤ) :
     (t.spectralSequence X H).page 2 pq ≅
-      (t.homology pq.2 ⋙ t.ιHeart ⋙ H.shift pq.1).obj X :=
+      (t.homology' pq.2 ⋙ t.ιHeart' ⋙ H.shift pq.1).obj X :=
   ((t.spectralObject X).mapHomologicalFunctor H).toE₂CohomologicalSpectralSequencePageTwoIso
     pq _ rfl _ rfl ≪≫ (H.shiftIso _ _ _ (add_comm pq.2 pq.1)).symm.app _ ≪≫
     (H.shift pq.1).mapIso (t.shiftSpectralObjectω₁IsoHomologyιHeart X pq.2 _ rfl)

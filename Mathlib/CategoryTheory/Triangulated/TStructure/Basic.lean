@@ -231,9 +231,18 @@ lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
 
 def heart : Set C := t.setLE 0 ∩ t.setGE 0
 
-abbrev Heart := FullSubcategory t.heart
+class HasHeart where
+  H : Type*
+  [cat : Category H]
+  ι : H ⥤ C
+  hι : ι.essImage = t.heart
 
-abbrev ιHeart : t.Heart ⥤ C := fullSubcategoryInclusion _
+-- this should be refactored by requiring a type class [t.HasHeart]
+-- which would involve a fully faithful functor `H ⥤ C` whose essential image is `t.heart`
+
+abbrev Heart' := FullSubcategory t.heart
+
+abbrev ιHeart' : t.Heart' ⥤ C := fullSubcategoryInclusion _
 
 lemma mem_heart_iff (X : C) :
     X ∈ t.heart ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
@@ -252,18 +261,18 @@ instance : t.heart.RespectsIso where
     · exact t.isLE_of_iso e 0
     · exact t.isGE_of_iso e 0
 
-instance (X : t.Heart) : t.IsLE (t.ιHeart.obj X) 0 := ⟨X.2.1⟩
-instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 := ⟨X.2.2⟩
-instance (X : t.Heart) : t.IsLE X.1 0 := ⟨X.2.1⟩
-instance (X : t.Heart) : t.IsGE X.1 0 := ⟨X.2.2⟩
+instance (X : t.Heart') : t.IsLE (t.ιHeart'.obj X) 0 := ⟨X.2.1⟩
+instance (X : t.Heart') : t.IsGE (t.ιHeart'.obj X) 0 := ⟨X.2.2⟩
+instance (X : t.Heart') : t.IsLE X.1 0 := ⟨X.2.1⟩
+instance (X : t.Heart') : t.IsGE X.1 0 := ⟨X.2.2⟩
 
 
-lemma ιHeart_obj_mem_heart (X : t.Heart) : t.ιHeart.obj X ∈ t.heart := X.2
+lemma ιHeart_obj_mem_heart (X : t.Heart') : t.ιHeart'.obj X ∈ t.heart := X.2
 
-def ιHeartDegree (n : ℤ) : t.Heart ⥤ C :=
-  t.ιHeart ⋙ shiftFunctor C (-n)
+def ιHeartDegree (n : ℤ) : t.Heart' ⥤ C :=
+  t.ιHeart' ⋙ shiftFunctor C (-n)
 
-noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ shiftFunctor C n ≅ t.ιHeart :=
+noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ shiftFunctor C n ≅ t.ιHeart' :=
   Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (shiftFunctorCompIsoId C (-n) n (add_left_neg n)) ≪≫
     Functor.rightUnitor _

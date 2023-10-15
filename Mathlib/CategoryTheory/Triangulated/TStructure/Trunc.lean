@@ -1243,32 +1243,32 @@ lemma truncGEt_obj_obj_isGE (n : ℤ) (i : ℤt) (h : ℤt.mk n ≤ i) (X : C) :
     apply Functor.zero_obj
 
 
-noncomputable def homology' (n : ℤ) : C ⥤ C := t.truncGELE n n ⋙ shiftFunctor C n
+noncomputable def homology'' (n : ℤ) : C ⥤ C := t.truncGELE n n ⋙ shiftFunctor C n
 
-instance (X : C) (n : ℤ) : t.IsLE ((t.homology' n).obj X) 0 :=
+instance (X : C) (n : ℤ) : t.IsLE ((t.homology'' n).obj X) 0 :=
   t.isLE_shift _ n n 0 (add_zero n)
 
-instance (X : C) (n : ℤ) : t.IsGE ((t.homology' n).obj X) 0 :=
+instance (X : C) (n : ℤ) : t.IsGE ((t.homology'' n).obj X) 0 :=
   t.isGE_shift _ n n 0 (add_zero n)
 
-lemma homology'_obj_mem_heart (n : ℤ) (X : C) : (t.homology' n).obj X ∈ t.heart := by
+lemma homology''_obj_mem_heart (n : ℤ) (X : C) : (t.homology'' n).obj X ∈ t.heart := by
   rw [mem_heart_iff]
   exact ⟨inferInstance, inferInstance⟩
 
-noncomputable def homology (n : ℤ) : C ⥤ t.Heart :=
-  FullSubcategory.lift _ (t.truncGELE n n ⋙ shiftFunctor C n) (t.homology'_obj_mem_heart n)
+noncomputable def homology' (n : ℤ) : C ⥤ t.Heart' :=
+  FullSubcategory.lift _ (t.truncGELE n n ⋙ shiftFunctor C n) (t.homology''_obj_mem_heart n)
 
-noncomputable def homologyCompιHeart (n : ℤ) :
-  t.homology n ⋙ t.ιHeart ≅ t.truncGELE n n ⋙ shiftFunctor C n :=
+noncomputable def homologyCompιHeart' (n : ℤ) :
+  t.homology' n ⋙ t.ιHeart' ≅ t.truncGELE n n ⋙ shiftFunctor C n :=
     FullSubcategory.lift_comp_inclusion _ _ _
 
-noncomputable def homology₀CompιHeartIsoTruncGELE : t.homology 0 ⋙ t.ιHeart ≅ t.truncGELE 0 0 :=
-  t.homologyCompιHeart 0 ≪≫ isoWhiskerLeft (t.truncGELE 0 0) (shiftFunctorZero C ℤ)
+noncomputable def homology₀CompιHeart'IsoTruncGELE : t.homology' 0 ⋙ t.ιHeart' ≅ t.truncGELE 0 0 :=
+  t.homologyCompιHeart' 0 ≪≫ isoWhiskerLeft (t.truncGELE 0 0) (shiftFunctorZero C ℤ)
 
 noncomputable def homologyCompιHeartDegreeIsoHomology' (q : ℤ) :
-    t.homology q ⋙ t.ιHeartDegree q ≅ t.truncGELE q q :=
+    t.homology' q ⋙ t.ιHeartDegree q ≅ t.truncGELE q q :=
   (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (t.homologyCompιHeart q) _ ≪≫ Functor.associator _ _ _ ≪≫
+    isoWhiskerRight (t.homologyCompιHeart' q) _ ≪≫ Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _  (shiftFunctorCompIsoId C q (-q) (add_right_neg q)) ≪≫
     Functor.rightUnitor _
 
@@ -1578,12 +1578,12 @@ noncomputable def spectralObject (X : C) : SpectralObject C ℤt :=
 
 noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart (X : C) (q q' : ℤ) (hq' : q + 1 = q') :
     ((t.spectralObject X).ω₁ ⋙ shiftFunctor C q).obj (ιℤt.mapArrow.obj (Arrow.mkOfLE q q')) ≅
-      (t.homology q ⋙ t.ιHeart).obj X :=
+      (t.homology' q ⋙ t.ιHeart').obj X :=
   (shiftFunctor C q).mapIso ((t.truncGELEIsoTruncGELT q q q' hq').symm.app X) ≪≫
-    (t.homologyCompιHeart q).symm.app X
+    (t.homologyCompιHeart' q).symm.app X
 
-noncomputable def homology₀CompιHeartIsoTruncLEGE : t.homology 0 ⋙ t.ιHeart ≅ t.truncLEGE 0 0 :=
-  t.homology₀CompιHeartIsoTruncGELE ≪≫ t.truncGELEIsoLEGE 0 0
+noncomputable def homology₀CompιHeartIsoTruncLEGE : t.homology' 0 ⋙ t.ιHeart' ≅ t.truncLEGE 0 0 :=
+  t.homology₀CompιHeart'IsoTruncGELE ≪≫ t.truncGELEIsoLEGE 0 0
 
 end TStructure
 

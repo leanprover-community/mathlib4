@@ -219,20 +219,20 @@ namespace TriangleOfGENegOneOfLEZero
 
 noncomputable def truncLTZeroIso :
   (t.truncLT 0).obj X ≅
-    (t.homology (-1) ⋙ t.ιHeartDegree (-1)).obj X :=
+    (t.homology' (-1) ⋙ t.ιHeartDegree (-1)).obj X :=
   (t.truncLEIsoTruncLT (-1) 0 (by linarith)).symm.app X ≪≫
     asIso ((t.truncGEπ (-1)).app ((t.truncLE (-1)).obj X)) ≪≫
     (t.homologyCompιHeartDegreeIsoHomology' (-1)).symm.app X
 
-noncomputable def truncGEZeroIso : (t.truncGE 0).obj X ≅ (t.homology 0 ⋙ t.ιHeart).obj X :=
+noncomputable def truncGEZeroIso : (t.truncGE 0).obj X ≅ (t.homology' 0 ⋙ t.ιHeart').obj X :=
   (t.truncGE 0).mapIso (asIso ((t.truncLEι 0).app X)).symm ≪≫
     (shiftFunctorZero C ℤ).symm.app _
 
 @[simps]
 noncomputable def triangle : Triangle C where
-  obj₁ := (t.homology (-1) ⋙ t.ιHeartDegree (-1)).obj X
+  obj₁ := (t.homology' (-1) ⋙ t.ιHeartDegree (-1)).obj X
   obj₂ := X
-  obj₃ := (t.homology 0 ⋙ t.ιHeart).obj X
+  obj₃ := (t.homology' 0 ⋙ t.ιHeart').obj X
   mor₁ := (truncLTZeroIso t X).inv ≫ (t.truncLTι 0).app X
   mor₂ := (t.truncGEπ 0).app X ≫ (truncGEZeroIso t X).hom
   mor₃ := (truncGEZeroIso t X).inv ≫ (t.truncGEδLT 0).app X ≫
@@ -269,27 +269,27 @@ lemma vanishing_to_negative_shift {X Y : C} {n : ℤ} (f : X ⟶ Y⟦n⟧)
   have : t.IsGE (Y⟦n⟧) (-n) := t.isGE_shift Y 0 n (-n) (by linarith)
   exact t.zero f 0 (-n) (by linarith)
 
-instance : HasKernels t.Heart where
+instance : HasKernels t.Heart' where
   has_limit {X₁ X₂} f₁ := by
-    obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (t.ιHeart.map f₁)
+    obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (t.ιHeart'.map f₁)
     have : t.IsLE X₃ 0 := cocone_heart_isLE_zero t hT X₁.2 X₂.2
     have : t.IsGE X₃ (-1) := cocone_heart_isGE_neg_one t hT X₁.2 X₂.2
     exact AbelianSubcategory.hasKernel (vanishing_to_negative_shift t) hT X₁.2 X₂.2
       (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃) (t.ιHeart_obj_mem_heart _)
-        (t.ιHeart_obj_mem_heart ((t.homology 0).obj X₃))
+        (t.ιHeart_obj_mem_heart ((t.homology' 0).obj X₃))
 
-instance : HasCokernels t.Heart where
+instance : HasCokernels t.Heart' where
   has_colimit {X₁ X₂} f₁ := by
-    obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (t.ιHeart.map f₁)
+    obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (t.ιHeart'.map f₁)
     have : t.IsLE X₃ 0 := cocone_heart_isLE_zero t hT X₁.2 X₂.2
     have : t.IsGE X₃ (-1) := cocone_heart_isGE_neg_one t hT X₁.2 X₂.2
     exact AbelianSubcategory.hasCokernel (vanishing_to_negative_shift t) hT X₁.2 X₂.2
       (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃) (t.ιHeart_obj_mem_heart _)
-        (t.ιHeart_obj_mem_heart ((t.homology 0).obj X₃))
+        (t.ιHeart_obj_mem_heart ((t.homology' 0).obj X₃))
 
-noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : t.Heart}
+noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : t.Heart'}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (h : X₃.1 ⟶ X₁.1⟦(1 : ℤ)⟧)
-    (hT : Triangle.mk (t.ιHeart.map f) (t.ιHeart.map g) h ∈ distTriang C) :
+    (hT : Triangle.mk (t.ιHeart'.map f) (t.ιHeart'.map g) h ∈ distTriang C) :
     IsLimit (KernelFork.ofι f (show f ≫ g = 0 from comp_dist_triangle_mor_zero₁₂ _ hT)) := by
   refine' IsLimit.ofIsoLimit (AbelianSubcategory.isLimitKernelFork (vanishing_to_negative_shift t)
     (rot_of_dist_triangle _ hT) _ _ (contractible_distinguished (X₁.1⟦(1 : ℤ)⟧)) X₁.2 (by
@@ -298,9 +298,9 @@ noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : t.Heart}
   exact Fork.ext (mulIso (-1) (Iso.refl _))
     ((shiftFunctor C (1 : ℤ)).map_injective (by aesop_cat))
 
-noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : t.Heart}
+noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : t.Heart'}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (h : X₃.1 ⟶ X₁.1⟦(1 : ℤ)⟧)
-    (hT : Triangle.mk (t.ιHeart.map f) (t.ιHeart.map g) h ∈ distTriang C) :
+    (hT : Triangle.mk (t.ιHeart'.map f) (t.ιHeart'.map g) h ∈ distTriang C) :
     IsColimit (CokernelCofork.ofπ g (show f ≫ g = 0 from comp_dist_triangle_mor_zero₁₂ _ hT)) := by
   have hT' : Triangle.mk (0 : (0 : C)⟦(1 : ℤ)⟧ ⟶ _) (𝟙 X₃.1) 0 ∈ distTriang C := by
     refine' isomorphic_distinguished _ (inv_rot_of_dist_triangle _ (contractible_distinguished X₃.1)) _ _
@@ -314,14 +314,14 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : t.Heart}
       constructor <;> infer_instance) X₃.2) _
   exact Cofork.ext (Iso.refl _) (by simp [AbelianSubcategory.πQ])
 
-instance : HasTerminal t.Heart := by
-  let Z : t.Heart := ⟨0, by
+instance : HasTerminal t.Heart' := by
+  let Z : t.Heart' := ⟨0, by
     change 0 ∈ t.heart
     rw [t.mem_heart_iff]
     constructor <;> infer_instance⟩
-  have : ∀ (X : t.Heart), Inhabited (X ⟶ Z) := fun X => ⟨0⟩
-  have : ∀ (X : t.Heart), Unique (X ⟶ Z) := fun X =>
-    { uniq := fun f => t.ιHeart.map_injective ((isZero_zero C).eq_of_tgt _ _) }
+  have : ∀ (X : t.Heart'), Inhabited (X ⟶ Z) := fun X => ⟨0⟩
+  have : ∀ (X : t.Heart'), Unique (X ⟶ Z) := fun X =>
+    { uniq := fun f => t.ιHeart'.map_injective ((isZero_zero C).eq_of_tgt _ _) }
   exact hasTerminal_of_unique Z
 
 lemma prod_mem (X₁ X₂ : C) (hX₁ : X₁ ∈ t.heart) (hX₂ : X₂ ∈ t.heart) :
@@ -331,37 +331,37 @@ lemma prod_mem (X₁ X₂ : C) (hX₁ : X₁ ∈ t.heart) (hX₂ : X₂ ∈ t.he
   · exact t.isLE₂ _ (binaryProductTriangle_distinguished X₁ X₂) 0 ⟨hX₁.1⟩ ⟨hX₂.1⟩
   · exact t.isGE₂ _ (binaryProductTriangle_distinguished X₁ X₂) 0 ⟨hX₁.2⟩ ⟨hX₂.2⟩
 
-instance : HasBinaryProducts t.Heart := by
+instance : HasBinaryProducts t.Heart' := by
   apply hasLimitsOfShape_of_closed_under_limits
   intro F c hc H
   exact t.heart.mem_of_iso
     (limit.isoLimitCone ⟨_, (IsLimit.postcomposeHomEquiv (diagramIsoPair F) _).symm hc⟩)
     (prod_mem t _ _ (H _) (H _))
 
-instance : HasFiniteProducts t.Heart := hasFiniteProducts_of_has_binary_and_terminal
+instance : HasFiniteProducts t.Heart' := hasFiniteProducts_of_has_binary_and_terminal
 
-noncomputable instance : Abelian t.Heart := by
+noncomputable instance : Abelian t.Heart' := by
   apply Abelian.mk'
   intro X₁ X₂ f₁
-  obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (t.ιHeart.map f₁)
+  obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (t.ιHeart'.map f₁)
   have : t.IsLE X₃ 0 := cocone_heart_isLE_zero t hT X₁.2 X₂.2
   have : t.IsGE X₃ (-1) := cocone_heart_isGE_neg_one t hT X₁.2 X₂.2
-  let K := (t.homology (-1)).obj X₃
+  let K := (t.homology' (-1)).obj X₃
   have hK := AbelianSubcategory.isLimitKernelFork (vanishing_to_negative_shift t) hT X₁.2 X₂.2
     (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃) (t.ιHeart_obj_mem_heart _)
-      (t.ιHeart_obj_mem_heart ((t.homology 0).obj X₃))
-  let Q := (t.homology 0).obj X₃
+      (t.ιHeart_obj_mem_heart ((t.homology' 0).obj X₃))
+  let Q := (t.homology' 0).obj X₃
   have hQ := AbelianSubcategory.isColimitCokernelCofork (vanishing_to_negative_shift t) hT X₁.2 X₂.2
     (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃) (t.ιHeart_obj_mem_heart _)
-      (t.ιHeart_obj_mem_heart ((t.homology 0).obj X₃))
+      (t.ιHeart_obj_mem_heart ((t.homology' 0).obj X₃))
   dsimp
-  let a : (t.ιHeart.obj K)⟦(1 : ℤ)⟧ ⟶ X₃ := (TriangleOfGENegOneOfLEZero.triangle t X₃).mor₁
+  let a : (t.ιHeart'.obj K)⟦(1 : ℤ)⟧ ⟶ X₃ := (TriangleOfGENegOneOfLEZero.triangle t X₃).mor₁
   let b := (TriangleOfGENegOneOfLEZero.triangle t X₃).mor₂
-  let i : K ⟶ X₁ := AbelianSubcategory.ιK (Triangle.mk (t.ιHeart.map f₁) f₂ f₃) a
-  let p : X₂ ⟶ Q := AbelianSubcategory.πQ (Triangle.mk (t.ιHeart.map f₁) f₂ f₃) b
+  let i : K ⟶ X₁ := AbelianSubcategory.ιK (Triangle.mk (t.ιHeart'.map f₁) f₂ f₃) a
+  let p : X₂ ⟶ Q := AbelianSubcategory.πQ (Triangle.mk (t.ιHeart'.map f₁) f₂ f₃) b
   have comm : a ≫ f₃ = a ≫ f₃ := rfl
-  obtain ⟨I₀, π, g, hI⟩ := distinguished_cocone_triangle (t.ιHeart.map i)
-  let T₃ := (Triangle.mk (t.ιHeart.map i) π g)⟦(1 : ℤ)⟧
+  obtain ⟨I₀, π, g, hI⟩ := distinguished_cocone_triangle (t.ιHeart'.map i)
+  let T₃ := (Triangle.mk (t.ιHeart'.map i) π g)⟦(1 : ℤ)⟧
   let T'₃ := Triangle.mk (a ≫ f₃) T₃.mor₂ (-T₃.mor₃)
   have h₁ := (TriangleOfGENegOneOfLEZero.triangle_distinguished t X₃)
   have h₂ := rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)
@@ -370,13 +370,13 @@ noncomputable instance : Abelian t.Heart := by
     refine' Triangle.isoMk _ _ (mulIso (-1) (Iso.refl _)) (Iso.refl _) (Iso.refl _) _ _ _
     all_goals dsimp; simp
   have H := someOctahedron comm h₁ h₂ h₃
-  let I : t.Heart := ⟨I₀, by
+  let I : t.Heart' := ⟨I₀, by
     change I₀ ∈ t.heart
     rw [t.mem_heart_iff]
     constructor
-    · have : t.IsLE ((t.homology (-1)).obj X₃).1 1 := t.isLE_of_LE _ 0 1 (by linarith)
+    · have : t.IsLE ((t.homology' (-1)).obj X₃).1 1 := t.isLE_of_LE _ 0 1 (by linarith)
       exact t.isLE₂ _ (rot_of_dist_triangle _ hI) 0 ⟨X₁.2.1⟩
-        (t.isLE_shift ((t.homology (-1)).obj X₃).1 1 1 0 (add_zero 1))
+        (t.isLE_shift ((t.homology' (-1)).obj X₃).1 1 1 0 (add_zero 1))
     · suffices t.IsGE (I₀⟦(1 : ℤ)⟧) (-1) by
         have := t.isGE_shift (I₀⟦(1 : ℤ)⟧) (-1) (-1) 0 (add_zero (-1))
         have e := (shiftEquiv C (1 : ℤ)).unitIso.symm.app I₀
@@ -390,7 +390,7 @@ noncomputable instance : Abelian t.Heart := by
   let ι : I₀ ⟶ X₂.1 := (shiftFunctor C (1 : ℤ)).preimage H.m₃
   let ι' : I ⟶ X₂ := ι
   have hι' : f₁ = π' ≫ ι' := by
-    apply t.ιHeart.map_injective
+    apply t.ιHeart'.map_injective
     apply (shiftFunctor C (1 : ℤ)).map_injective
     have eq := H.comm₃
     dsimp at eq
@@ -399,7 +399,7 @@ noncomputable instance : Abelian t.Heart := by
     simp only [Functor.map_comp]
     dsimp
     simp only [Functor.image_preimage]
-  have mem : Triangle.mk ι (t.ιHeart.map p) (-H.m₁) ∈ distTriang C := by
+  have mem : Triangle.mk ι (t.ιHeart'.map p) (-H.m₁) ∈ distTriang C := by
     rw [← Triangle.shift_distinguished_iff _ 1]
     refine' isomorphic_distinguished _ (rot_of_dist_triangle _ H.mem) _ _
     refine' Triangle.isoMk _ _ (mulIso (-1) (Iso.refl _)) (Iso.refl _) (Iso.refl _) _ _ _

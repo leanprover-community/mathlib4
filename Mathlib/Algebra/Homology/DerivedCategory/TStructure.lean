@@ -217,13 +217,13 @@ namespace HeartEquivalence
 
 variable {C}
 
-noncomputable def functor : (t : TStructure (DerivedCategory C)).Heart ⥤ C :=
-  t.ιHeart ⋙ homologyFunctor C 0
+noncomputable def functor : (t : TStructure (DerivedCategory C)).Heart' ⥤ C :=
+  t.ιHeart' ⋙ homologyFunctor C 0
 
-noncomputable def inverse : C ⥤ (t : TStructure (DerivedCategory C)).Heart :=
+noncomputable def inverse : C ⥤ (t : TStructure (DerivedCategory C)).Heart' :=
   FullSubcategory.lift _ (singleFunctor C 0) singleFunctor_obj_mem_heart
 
-noncomputable def inverseCompιHeart : (inverse : C ⥤ _) ⋙ t.ιHeart ≅ singleFunctor C 0 :=
+noncomputable def inverseCompιHeart : (inverse : C ⥤ _) ⋙ t.ιHeart' ≅ singleFunctor C 0 :=
   FullSubcategory.lift_comp_inclusion _ _ _
 
 noncomputable instance : Full (inverse : C ⥤ _) := Functor.fullOfSurjective  _ (by
@@ -239,7 +239,7 @@ instance : EssSurj (inverse : C ⥤ _) := ⟨fun X => by
   have : X.obj.IsLE 0 := X.2.1
   have : X.obj.IsGE 0 := X.2.2
   obtain ⟨A, ⟨e⟩⟩ := exists_iso_single X.obj 0
-  exact ⟨A, ⟨t.ιHeart.preimageIso e.symm⟩⟩⟩
+  exact ⟨A, ⟨t.ιHeart'.preimageIso e.symm⟩⟩⟩
 
 noncomputable def counitIso : inverse ⋙ functor ≅ 𝟭 C :=
   (Functor.associator _ _ _).symm ≪≫
@@ -253,18 +253,18 @@ instance : Faithful (functor : _ ⥤ C) :=
     inferInstance inferInstance
 
 noncomputable def unitIso :
-    𝟭 (t : TStructure (DerivedCategory C)).Heart ≅ functor ⋙ inverse :=
+    𝟭 (t : TStructure (DerivedCategory C)).Heart' ≅ functor ⋙ inverse :=
   natIsoOfCompFullyFaithful functor
     (Functor.leftUnitor _ ≪≫ (Functor.rightUnitor _).symm ≪≫
     isoWhiskerLeft _ counitIso.symm ≪≫ (Functor.associator _ _ _).symm)
 
 @[simp]
-lemma functor_map_unitIso_hom_app (X : (t : TStructure (DerivedCategory C)).Heart) :
+lemma functor_map_unitIso_hom_app (X : (t : TStructure (DerivedCategory C)).Heart') :
     functor.map (unitIso.hom.app X) = counitIso.inv.app (functor.obj X) := by
   simp [unitIso]
 
 @[simp]
-lemma functor_map_unitIso_inv_app (X : (t : TStructure (DerivedCategory C)).Heart) :
+lemma functor_map_unitIso_inv_app (X : (t : TStructure (DerivedCategory C)).Heart') :
     functor.map (unitIso.inv.app X) = counitIso.hom.app (functor.obj X) := by
   simp [unitIso]
 
@@ -272,14 +272,14 @@ end HeartEquivalence
 
 @[simps]
 noncomputable def heartEquivalence :
-    (t : TStructure (DerivedCategory C)).Heart ≌ C where
+    (t : TStructure (DerivedCategory C)).Heart' ≌ C where
   functor := HeartEquivalence.functor
   inverse := HeartEquivalence.inverse
   unitIso := HeartEquivalence.unitIso
   counitIso := HeartEquivalence.counitIso
 
 noncomputable def heartEquivalenceInverseCompιHeart :
-    (heartEquivalence C).inverse ⋙ t.ιHeart ≅ singleFunctor C 0 :=
+    (heartEquivalence C).inverse ⋙ t.ιHeart' ≅ singleFunctor C 0 :=
   HeartEquivalence.inverseCompιHeart
 
 variable {C}
@@ -355,10 +355,10 @@ noncomputable def truncGECompHomologyFunctorIso (a n : ℤ) (hn : a ≤ n) :
   exact (asIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n))).symm
 
 noncomputable def homologyCompFunctorIso (q : ℤ) :
-    t.homology q ⋙ (heartEquivalence C).functor ≅
+    t.homology' q ⋙ (heartEquivalence C).functor ≅
       homologyFunctor C q := by
   refine' (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (t.homologyCompιHeart q) _ ≪≫
+    isoWhiskerRight (t.homologyCompιHeart' q) _ ≪≫
     Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ ((homologyFunctor C 0).shiftIso q 0 q (add_zero q)) ≪≫
     Functor.associator _ _ _ ≪≫
@@ -366,13 +366,13 @@ noncomputable def homologyCompFunctorIso (q : ℤ) :
     truncLECompHomologyFunctorIso C q q (by rfl)
 
 noncomputable def homologyIsoHomologyFunctorCompInverse (q : ℤ) :
-    t.homology q ≅ homologyFunctor C q ⋙ (heartEquivalence C).inverse :=
+    t.homology' q ≅ homologyFunctor C q ⋙ (heartEquivalence C).inverse :=
   natIsoOfCompFullyFaithful (heartEquivalence C).functor
     (homologyCompFunctorIso C q ≪≫ (Functor.rightUnitor _).symm ≪≫
     isoWhiskerLeft _ (heartEquivalence C).counitIso.symm ≪≫ (Functor.associator _ _ _).symm)
 
 noncomputable def homologyιHeart (q : ℤ) :
-    t.homology q ⋙ t.ιHeart ≅ homologyFunctor C q ⋙ singleFunctor C 0 :=
+    t.homology' q ⋙ t.ιHeart' ≅ homologyFunctor C q ⋙ singleFunctor C 0 :=
   isoWhiskerRight (homologyIsoHomologyFunctorCompInverse C q) _ ≪≫
     Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (heartEquivalenceInverseCompιHeart C).symm
