@@ -344,9 +344,33 @@ instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).hasPullbacks := sorry
 
 instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).extensive := sorry
 
-lemma one : F.map (opCoproductIsoProduct Z).inv ≫
+lemma one : (F.mapIso (opCoproductIsoProduct Z)).inv ≫
     Equalizer.forkMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) ≫ prod_map _ F =
-    piComparison F (fun z ↦ op (Z z)) := sorry
+    piComparison F (fun z ↦ op (Z z)) := by
+  have : (Equalizer.forkMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) ≫
+      prod_map (fun j ↦ Sigma.ι Z j) F) = Pi.lift (fun j ↦ F.map ((fun j ↦ Sigma.ι Z j) j).op) := by
+    ext; simp [prod_map, Equalizer.forkMap]
+  rw [this]
+  --dsimp only [piComparison]
+  rw [Iso.inv_comp_eq]
+  -- simp only [opCoproductIsoProduct, limit.cone_x, Fan.mk_pt, Equivalence.symm_functor,
+  --   Discrete.natIsoFunctor, Functor.comp_obj, Functor.op_obj, Functor.mapIso_trans,
+  --   Functor.mapIso_symm, Iso.trans_hom, Functor.mapIso_hom, Iso.symm_hom, Functor.mapIso_inv,
+  --   IsLimit.conePointsIsoOfEquivalence_inv, Cones.equivalenceOfReindexing_functor,
+  --   Cones.whiskering_obj, Category.assoc]
+  simp only [opCoproductIsoProduct]
+  -- rw [map_lift_piComparison]
+
+  sorry
+  -- conv =>
+  --   rhs
+  --   congr
+  --   congr
+  --   simp
+  -- ext
+  -- simp [piComparison, Equalizer.forkMap, opCoproductIsoProduct, prod_map]
+  -- sorry
+
 
 lemma two : Equalizer.Presieve.firstMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) =
     Equalizer.Presieve.secondMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) := sorry
