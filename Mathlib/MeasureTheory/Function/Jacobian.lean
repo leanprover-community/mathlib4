@@ -1246,7 +1246,7 @@ theorem integrableOn_image_iff_integrableOn_abs_deriv_smul {s : Set ℝ} {f : �
 `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then the Bochner integral of a
 function `g : ℝ → F` on `f '' s` coincides with the integral of `|(f' x)| • g ∘ f` on `s`. -/
 theorem integral_image_eq_integral_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ} {f' : ℝ → ℝ}
-    [CompleteSpace F] (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x)
+    (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x)
     (hf : InjOn f s) (g : ℝ → F) : ∫ x in f '' s, g x = ∫ x in s, |f' x| • g (f x) := by
   simpa only [det_one_smulRight] using
     integral_image_eq_integral_abs_det_fderiv_smul volume hs
