@@ -86,7 +86,7 @@ def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
     (NatIso.ofComponents fun X => AddEquiv.toAddGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align Group_AddGroup_equivalence groupAddGroupEquivalence
 
--- simpNF complains after leanprover/lean4#2466
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
   groupAddGroupEquivalence_counitIso_inv_app_apply
   groupAddGroupEquivalence_unitIso_inv_app_apply
@@ -101,7 +101,7 @@ def commGroupAddCommGroupEquivalence : CommGroupCat ≌ AddCommGroupCat :=
     (NatIso.ofComponents fun X => AddEquiv.toAddCommGroupCatIso (AddEquiv.additiveMultiplicative X))
 #align CommGroup_AddCommGroup_equivalence commGroupAddCommGroupEquivalence
 
--- simpNF complains after leanprover/lean4#2466
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] commGroupAddCommGroupEquivalence_counitIso_hom_app_apply
   commGroupAddCommGroupEquivalence_unitIso_inv_app_apply
   commGroupAddCommGroupEquivalence_unitIso_hom_app_apply
