@@ -18,6 +18,16 @@ open Lean Expr Meta Qq Elab Tactic
 
 private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
+/-- This is the core to the `peel` tacitc.
+
+It tries to match `e` and `goal` as quantified statements (using `∀`, `∃`, `∀ᶠ` or `∃ᶠ`), then
+applies `forall_imp`, `Exists.imp`, `Filter.Eventually.mp`, `Filter.Frequently.mp` (the latter two
+also use `Filter.eventually_of_forall`) as appropriate, and then intros two variables, with the
+optionally provided names. If, for example, `goal : ∃ y : α, q y`, the metavariable returned has
+type `q x` where `x : α` has been introduced into the context.
+
+The special casing for `e`/`goal` pairs of type `r ∧ p` and `r ∧ q` exists primarily to deal with
+quantified statements like `∃ δ > (0 : ℝ), q δ`. -/
 def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Option Name := none) :
     MetaM (List MVarId) := goal.withContext do
   let ty : Q(Prop) ← whnfR (← inferType e)
@@ -72,6 +82,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
     | _, _ => do
       return [goal]
 
+/-- a single application of `peelQuantifier`, lifted to the `Tactic` monad. -/
 def peelTacAux (e : TSyntax `term) (n : Option (TSyntax `ident)) (n' : Option (TSyntax `ident)) :
     TacticM Unit := withMainContext do
   let e ← Elab.Term.elabTerm e none
@@ -80,7 +91,6 @@ def peelTacAux (e : TSyntax `term) (n : Option (TSyntax `ident)) (n' : Option (T
     | .none, .some n₂ => liftMetaTactic (peelQuantifier · e (.some n₂.getId))
     | .some n₁, .none => liftMetaTactic (peelQuantifier · e (n' := .some n₁.getId))
     | .none, .none => liftMetaTactic (peelQuantifier · e)
-
 
 /--
 Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
@@ -118,6 +128,8 @@ This tactic works by repeatedly applying `forall_imp`, `Exists.imp`, `Filter.Eve
 are applied.
 -/
 syntax (name := peel) "peel" (num)? (ppSpace term) (Mathlib.Tactic.withArgs)? : tactic
+
+/-- The `peel` tactic. -/
 @[tactic peel] def peelTac : Tactic := fun stx => do
   match stx with
     | `(tactic| peel $e:term) => peelTacAux e .none .none
