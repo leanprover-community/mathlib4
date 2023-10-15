@@ -133,6 +133,9 @@ open Category
 
 variable {C}
 
+/- TODO: make explicit the map between `D` and `InducedCategory C e` (which are defeq)
+  to avoid defeq abuse and `erw`s. -/
+/-- When `e` is a bijection, `InducedCategory C e` is equivalent to `C`. -/
 def equivalence {D : Type*} (e : D ≃ C) : InducedCategory C e ≌ C where
   functor := inducedFunctor e
   inverse :=
