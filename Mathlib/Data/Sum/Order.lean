@@ -779,16 +779,14 @@ namespace WithTop
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
+    simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
+      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_none]
     rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, ge_iff_le,
-      Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_none]
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, ge_iff_le,
-      Lex.toLex_le_toLex, le_refl, lex_inr_inl, false_iff]
+    · simp only [lex_inr_inr, le_none]
+    · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, ge_iff_le,
-      Lex.toLex_le_toLex, le_refl, Lex.sep, le_none]
-    · simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk, ge_iff_le,
-      Lex.toLex_le_toLex, le_refl, lex_inl_inl, some_le_some]
+    · simp only [Lex.sep, le_none]
+    · simp only [lex_inl_inl, some_le_some]
 
   ⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit

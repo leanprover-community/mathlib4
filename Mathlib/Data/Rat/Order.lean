@@ -111,8 +111,8 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
     numDenCasesOn'' b fun nb db hb hbred => by
       change Rat.blt _ _ = false ↔ _
       unfold Rat.blt
-      simp only [Bool.and_eq_true, decide_eq_true_eq, Bool.ite_eq_false_distrib, decide_eq_false_iff_not, not_lt,
-        ite_eq_left_iff, not_and, not_le]
+      simp only [Bool.and_eq_true, decide_eq_true_eq, Bool.ite_eq_false_distrib,
+        decide_eq_false_iff_not, not_lt, ite_eq_left_iff, not_and, not_le]
       split_ifs with h h'
       · rw [Rat.sub_def]
         simp only [Rat.Nonneg, false_iff, not_le]

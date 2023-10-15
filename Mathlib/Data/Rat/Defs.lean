@@ -274,7 +274,8 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero, or_self, h₃, mul_def']
+        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
+          or_self, h₃, mul_def']
         rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul

@@ -1689,11 +1689,13 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     by_cases v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
     · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head?
       refine' ⟨c, h₁, TransGen.head rfl _⟩
-      simp only [Option.mem_def, TM2.stepAux, trContStack, contStack, elim_main, this, cond_true,         elim_update_main]
+      simp only [Option.mem_def, TM2.stepAux, trContStack, contStack, elim_main, this, cond_true,
+        elim_update_main]
       exact h₂
     · obtain ⟨s', h₁, h₂⟩ := trNormal_respects f (Cont.fix f k) v.tail (some Γ'.cons)
       refine' ⟨_, h₁, TransGen.head rfl <| TransGen.trans _ h₂⟩
-      simp only [Option.mem_def, TM2.stepAux, elim_main, this.1, cond_false, elim_update_main,         trCont]
+      simp only [Option.mem_def, TM2.stepAux, elim_main, this.1, cond_false, elim_update_main,
+        trCont]
       convert clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
         convert rfl

@@ -793,9 +793,10 @@ theorem det_fin_one_of (a : R) : det !![a] = a :=
 
 /-- Determinant of 2x2 matrix -/
 theorem det_fin_two (A : Matrix (Fin 2) (Fin 2) R) : det A = A 0 0 * A 1 1 - A 0 1 * A 1 0 := by
-  simp only [det_succ_row_zero, Nat.odd_iff_not_even, det_unique, Fin.default_eq_zero, submatrix_apply,
-    Fin.succ_zero_eq_one, ne_eq, Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, univ_unique,
-    Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one, neg_mul, Fin.succ_succAbove_zero, sum_neg_distrib, sum_singleton]
+  simp only [det_succ_row_zero, Nat.odd_iff_not_even, det_unique, Fin.default_eq_zero,
+    submatrix_apply, Fin.succ_zero_eq_one, ne_eq, Fin.sum_univ_succ, Fin.val_zero, pow_zero,
+    one_mul, Fin.zero_succAbove, univ_unique, Fin.val_succ, Fin.coe_fin_one, zero_add, pow_one,
+    neg_mul, Fin.succ_succAbove_zero, sum_neg_distrib, sum_singleton]
   ring
 #align matrix.det_fin_two Matrix.det_fin_two
 
