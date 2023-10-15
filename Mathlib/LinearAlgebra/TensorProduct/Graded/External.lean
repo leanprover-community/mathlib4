@@ -244,7 +244,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   congr 2
   abel
 
-count_heartbeats in
+set_option maxHeartbeats 800000 in
 theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedComm R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y)
       = gradedMul R ℬ 𝒜 (gradedComm R 𝒜 ℬ x) (gradedComm R 𝒜 ℬ y) := by
@@ -253,10 +253,15 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     LinearMap.congr_fun₂ this x y
   ext i₁ a₁ j₁ b₁ i₂ a₂ j₂ b₂
   dsimp
-  save
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
-  simp_rw [Units.smul_def, zsmul_eq_smul_cast R, map_smul]
-  simp_rw [←zsmul_eq_smul_cast R, ←Units.smul_def]
-  sorry
+  simp_rw [Units.smul_def, zsmul_eq_smul_cast R, map_smul, LinearMap.smul_apply]
+  save
+  simp_rw [←zsmul_eq_smul_cast R, ←Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
+    ←DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
+    DirectSum.lof_eq_of, ←DirectSum.of_mul_of, ←DirectSum.lof_eq_of R]
+  simp_rw [←z₂pow_add, mul_add, add_mul, mul_comm i₁ j₂]
+  congr 2
+  abel_nf
+  rw [two_zsmul, CharTwo.add_self_eq_zero, zero_add]
 
 end TensorProduct
