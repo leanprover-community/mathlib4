@@ -1609,14 +1609,14 @@ def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π
 
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
-def MeasurableEquiv.piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
+def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
   refine' { Equiv.piCongrLeft π f with .. }
   · exact measurable_piCongrLeft f
   simp only [invFun_as_coe, coe_fn_symm_mk]
   rw [measurable_pi_iff]
   exact fun i => measurable_pi_apply (f i)
 
-theorem MeasurableEquiv.piCongrLeft_eq (f : δ ≃ δ') :
+theorem piCongrLeft_eq (f : δ ≃ δ') :
     MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
 
 /-- Pi-types are measurably equivalent to iterated products. -/
@@ -1678,7 +1678,7 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
 
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
-def MeasurableEquiv.sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
+def sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
     (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
   refine' { Equiv.sumPiEquivProdPi α with .. }
   · refine Measurable.prod ?_ ?_ <;>
@@ -1687,11 +1687,10 @@ def MeasurableEquiv.sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, Measur
     exact measurable_pi_iff.1 measurable_fst _
     exact measurable_pi_iff.1 measurable_snd _
 
-theorem MeasurableEquiv.coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
+theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
     MeasurableEquiv.sumPiEquivProdPi α = Equiv.sumPiEquivProdPi α := by rfl
 
-theorem MeasurableEquiv.coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type _)
-    [∀ i, MeasurableSpace (α i)] :
+theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
     (MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
