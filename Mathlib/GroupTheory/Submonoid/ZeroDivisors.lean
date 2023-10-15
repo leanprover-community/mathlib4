@@ -18,7 +18,7 @@ import Mathlib.GroupTheory.Submonoid.Basic
 
 section MonoidWithZero
 
-variable (M₀ : Type _) [MonoidWithZero M₀]
+variable (M₀ : Type*) [MonoidWithZero M₀]
 
 /-- The collection of elements of a `MonoidWithZero` that are not left zero divisors form a
 `Submonoid`. -/

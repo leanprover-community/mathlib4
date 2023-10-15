@@ -1026,7 +1026,7 @@ theorem eq_rec_inj {α : Sort*} {a a' : α} (h : a = a') {C : α → Type*} (x y
 #align eq_rec_inj eq_rec_inj
 
 @[simp]
-theorem cast_inj {α β : Type _} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
+theorem cast_inj {α β : Type u} (h : α = β) {x y : α} : cast h x = cast h y ↔ x = y :=
   (cast_bijective h).injective.eq_iff
 #align cast_inj cast_inj
 

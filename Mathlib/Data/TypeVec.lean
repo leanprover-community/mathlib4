@@ -266,7 +266,7 @@ theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun �
   funext fun x => by apply Fin2.elim0 x -- porting note: `by apply` is necessary?
 #align typevec.nil_fun_comp TypeVec.nilFun_comp
 
-theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type _} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
+theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type u} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
     (@id _ α ::: g₁ ∘ g₀) = (id ::: g₁) ⊚ (id ::: g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp_id TypeVec.appendFun_comp_id
@@ -384,7 +384,7 @@ def PredLast (α : TypeVec n) {β : Type*} (p : β → Prop) : ∀ ⦃i⦄, (α.
 
 /-- `RelLast α r x y` says that `p` the last elements of `x y : α.append1 β` are related by `r` and
 all the other elements are equal. -/
-def RelLast (α : TypeVec n) {β γ : Type _} (r : β → γ → Prop) :
+def RelLast (α : TypeVec n) {β γ : Type u} (r : β → γ → Prop) :
     ∀ ⦃i⦄, (α.append1 β) i → (α.append1 γ) i → Prop
   | Fin2.fs _ => Eq
   | Fin2.fz => r
