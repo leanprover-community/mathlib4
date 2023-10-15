@@ -93,7 +93,7 @@ class IsCommJordan [CommMul A] : Prop where
 -- see Note [lower instance priority]
 /-- A (commutative) Jordan multiplication is also a Jordan multipication -/
 instance (priority := 100) IsCommJordan.toIsJordan [CommMul A] [IsCommJordan A] : IsJordan A where
-  lmul_comm_rmul a b := by rw [CommMul.mul_comm, CommMul.mul_comm a b]
+  lmul_comm_rmul a b := by rw [mul_comm, mul_comm a b]
   lmul_lmul_comm_lmul a b := by
     rw [CommMul.mul_comm (a * a) (a * b), IsCommJordan.lmul_comm_rmul_rmul,
       CommMul.mul_comm b (a * a)]
