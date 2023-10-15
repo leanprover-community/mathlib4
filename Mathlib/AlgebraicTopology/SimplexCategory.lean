@@ -341,7 +341,7 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   rcases j with ⟨j, hj⟩
   simp at H hk
   dsimp [σ, Fin.predAbove]
-  simp only [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.coe_pred, ge_iff_le, dite_eq_ite, Fin.coe_castLT]
+  simp only [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.coe_pred, ge_iff_le, dite_eq_ite,     Fin.coe_castLT]
   split_ifs
   all_goals try linarith
   all_goals cases k <;> simp at *; linarith
