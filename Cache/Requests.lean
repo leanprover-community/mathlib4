@@ -138,8 +138,8 @@ def checkForToolchainMismatch : IO Unit := do
     IO.println s!"  Project uses {downstreamToolchain.trim}"
     IO.println s!"  Mathlib uses {mathlibToolchain.trim}"
     IO.println "\nThe cache will not work unless your project's toolchain matches Mathlib's toolchain"
-    IO.println s!"This can be achieved by copying the contents of the file {mathlibToolchainFile}
-into the lean-toolchain file at the root directory of your project"
+    IO.println s!"This can be achieved by copying the contents of the file `{mathlibToolchainFile}`
+into the `lean-toolchain` file at the root directory of your project"
     if !System.Platform.isWindows then
       IO.println s!"You can use `cp {mathlibToolchainFile} ./lean-toolchain`"
     else
