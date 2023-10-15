@@ -1192,6 +1192,10 @@ theorem contDiff_update (k : ℕ∞) (x : ∀ i, F' i) (i : ι) : ContDiff 𝕜 
     exact contDiff_id
   · exact contDiff_const
 
+variable (F') in
+theorem contDiff_single (k : ℕ∞) (i : ι) : ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
+  contDiff_update k 0 i
+
 variable (𝕜 E)
 
 theorem contDiff_apply (i : ι) : ContDiff 𝕜 n fun f : ι → E => f i :=
