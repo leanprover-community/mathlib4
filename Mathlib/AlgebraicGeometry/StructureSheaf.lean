@@ -247,6 +247,9 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_presheaf_in_CommRing AlgebraicGeometry.structurePresheafInCommRing
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
+
 /-- Some glue, verifying that that structure presheaf valued in `CommRingCat` agrees
 with the `Type` valued structure presheaf.
 -/
@@ -1010,6 +1013,9 @@ def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :
   asIso (toOpen R ⊤)
 #align algebraic_geometry.structure_sheaf.global_sections_iso AlgebraicGeometry.StructureSheaf.globalSectionsIso
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom_apply_coe
+
 @[simp]
 theorem globalSectionsIso_hom (R : CommRingCat) : (globalSectionsIso R).hom = toOpen R ⊤ :=
   rfl
@@ -1220,6 +1226,5 @@ theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :
 end Comap
 
 end StructureSheaf
-attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
-  AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom_apply_coe
+
 end AlgebraicGeometry

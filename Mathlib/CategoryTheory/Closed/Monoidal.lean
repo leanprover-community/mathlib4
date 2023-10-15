@@ -165,12 +165,14 @@ def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
   ((ihom.adjunction A).homEquiv _ _).symm
 #align category_theory.monoidal_closed.uncurry CategoryTheory.MonoidalClosed.uncurry
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.monoidal_closed.hom_equiv_apply_eq CategoryTheory.MonoidalClosed.homEquiv_apply_eq
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl

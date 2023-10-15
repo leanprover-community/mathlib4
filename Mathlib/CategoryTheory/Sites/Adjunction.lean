@@ -81,6 +81,10 @@ def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
+  CategoryTheory.Sheaf.composeEquiv_symm_apply_val
+
 /-- An adjunction `adj : G ⊣ F` with `F : D ⥤ E` and `G : E ⥤ D` induces an adjunction
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
 and `F` preserves the correct limits. -/
@@ -162,6 +166,4 @@ end
 
 end Sheaf
 
-attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
-  CategoryTheory.Sheaf.composeEquiv_symm_apply_val
 end CategoryTheory

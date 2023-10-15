@@ -482,4 +482,5 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.is_localized_module_to_pushforward_stalk_alg_hom AlgebraicGeometry.StructureSheaf.isLocalizedModule_toPushforwardStalkAlgHom
 
 end StructureSheaf
+
 end AlgebraicGeometry

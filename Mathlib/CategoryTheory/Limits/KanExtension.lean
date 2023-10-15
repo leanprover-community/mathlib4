@@ -324,6 +324,12 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.equiv CategoryTheory.Lan.equiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.Ran.equiv_symm_apply_app
+  CategoryTheory.Ran.equiv_apply_app
+  CategoryTheory.Lan.equiv_symm_apply_app
+  CategoryTheory.Lan.equiv_apply_app
+
 end Lan
 
 /-- The left Kan extension of a functor. -/
@@ -368,8 +374,5 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.coreflective CategoryTheory.Lan.coreflective
 
 end Lan
-attribute [nolint simpNF] CategoryTheory.Ran.equiv_symm_apply_app
-  CategoryTheory.Ran.equiv_apply_app
-  CategoryTheory.Lan.equiv_symm_apply_app
-  CategoryTheory.Lan.equiv_apply_app
+
 end CategoryTheory

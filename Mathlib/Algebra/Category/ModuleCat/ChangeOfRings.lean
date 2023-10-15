@@ -156,11 +156,13 @@ variable {R : Type u₁} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
 identity functor. -/
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ := by subst hf; rfl
 
-@[simp]
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId' f hf).inv.app M x = x := by subst hf; rfl
 
-@[simp]
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId' f hf).hom.app M x = x := by subst hf; rfl
 
@@ -182,11 +184,14 @@ composition of the restriction of scalars functors. -/
 def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
       ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f := by subst hgf; rfl
-@[simp]
+
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp' f g gf hgf).hom.app M x = x := by subst hgf; rfl
 
-@[simp]
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp' f g gf hgf).inv.app M x = x := by subst hgf; rfl
 
@@ -794,6 +799,5 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     CategoryTheory.IsRightAdjoint (restrictScalars f) :=
   ⟨_, extendRestrictScalarsAdj f⟩
-attribute [nolint simpNF] restrictScalarsId'_inv_apply  restrictScalarsId'_hom_apply
-  restrictScalarsComp'_hom_apply restrictScalarsComp'_inv_apply
+
 end ModuleCat

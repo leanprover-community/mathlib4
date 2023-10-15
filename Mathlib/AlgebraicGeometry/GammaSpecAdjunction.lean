@@ -101,6 +101,9 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   continuous_toFun := X.toΓSpec_continuous
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_base AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
+
 variable (r : Γ.obj (op X))
 
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
@@ -492,5 +495,5 @@ instance : Reflective Spec.toLocallyRingedSpace :=
 instance Spec.reflective : Reflective Scheme.Spec :=
   ⟨⟩
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
-attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
+
 end AlgebraicGeometry
