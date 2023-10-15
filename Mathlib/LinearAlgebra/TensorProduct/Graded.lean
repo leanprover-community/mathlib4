@@ -3,6 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.ZMod.IntUnitsPower
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.RingTheory.GradedAlgebra.Basic
@@ -88,13 +89,29 @@ theorem gradedCommAux_lof_tmul (i j : ℤ₂) (a : 𝒜 i) (b : ℬ j) :
   dsimp
   simp [mul_comm i j]
 
+@[simp]
+theorem gradedCommAux_comp_gradedCommAux :
+    gradedCommAux R 𝒜 ℬ ∘ₗ gradedCommAux R ℬ 𝒜 = LinearMap.id := by
+  ext i a b
+  dsimp
+  rw [gradedCommAux_lof_tmul, LinearMap.map_smul_of_tower, gradedCommAux_lof_tmul, smul_smul,
+    mul_comm i.2 i.1, Int.units_mul_self, one_smul]
+
+
 /-- The braiding operation for tensor products of externally `ZMod 2`-graded algebras. -/
 noncomputable irreducible_def gradedComm :
-    (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) →ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
-  let e := TensorProduct.directSum R ℬ 𝒜
-  let e' := e.symm.toLinearMap
-  refine e' ∘ₗ ?_ ∘ₗ (TensorProduct.directSum R 𝒜 ℬ).toLinearMap
-  exact gradedCommAux _ _ _
+    (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i) ≃ₗ[R] (⨁ i, ℬ i) ⊗[R] (⨁ i, 𝒜 i) := by
+  refine TensorProduct.directSum R 𝒜 ℬ ≪≫ₗ ?_ ≪≫ₗ (TensorProduct.directSum R ℬ 𝒜).symm
+  exact LinearEquiv.ofLinear (gradedCommAux _ _ _) (gradedCommAux _ _ _)
+    (gradedCommAux_comp_gradedCommAux _ _ _) (gradedCommAux_comp_gradedCommAux _ _ _)
+
+/-- The braiding is symmetric. -/
+theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 := by
+  rw [gradedComm, gradedComm]
+  dsimp
+  rw [LinearEquiv.symm_symm]
+  ext
+  rfl
 
 -- without the heartbeat bump, the `rfl` inside the `rw` fails (though the error is silenced)!
 set_option maxHeartbeats 400000 in
@@ -102,7 +119,7 @@ theorem gradedComm_of_tmul_of (i j : ℤ₂) (a : 𝒜 i) (b : ℬ j):
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
       (-1 : ℤˣ)^(j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
   rw [gradedComm]
-  dsimp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
     zsmul_eq_smul_cast R, map_smul, TensorProduct.directSum_symm_lof_tmul,
     ←zsmul_eq_smul_cast, ←Units.smul_def]
@@ -121,7 +138,7 @@ noncomputable irreducible_def gradedMul :
   refine (TensorProduct.assoc R _ _ _).toLinearMap
     ∘ₗ ?_ ∘ₗ (TensorProduct.assoc R _ _ _).symm.toLinearMap
   refine TensorProduct.map ?_ LinearMap.id
-  exact gradedComm _ _ _
+  exact (gradedComm _ _ _).toLinearMap
 
 set_option maxHeartbeats 800000 in
 theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ℤ₂)
@@ -489,6 +506,8 @@ lemma algHom_ext ⦃f g : (𝒜 ⊗'[R] ℬ) →ₐ[R] C⦄
     (ha : f.comp (includeLeft 𝒜 ℬ) = g.comp (includeLeft 𝒜 ℬ))
     (hb : f.comp (includeRight 𝒜 ℬ) = g.comp (includeRight 𝒜 ℬ)) : f = g :=
   (liftEquiv 𝒜 ℬ).symm.injective <| Subtype.ext <| Prod.ext ha hb
+
+def comm :  (𝒜 ⊗'[R] ℬ) →ₐ
 
 end SuperTensorProduct
 
