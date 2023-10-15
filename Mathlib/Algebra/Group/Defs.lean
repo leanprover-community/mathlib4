@@ -320,13 +320,13 @@ instance CommMagma.to_isCommutative : IsCommutative G (· * ·) := ⟨mul_comm�
 #align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
-@[to_additive AddComm.IsRightCancelAdd.toIsLeftCancelAdd "Any `AddComm G` that satisfies
+@[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd "Any `AddCommMagma G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsLeftCancelAdd G`."]
 lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
     IsLeftCancelMul G :=
   ⟨fun _ _ _ h => mul_right_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 #align comm_semigroup.is_right_cancel_mul.to_is_left_cancel_mul CommMagma.IsRightCancelMul.toIsLeftCancelMul
-#align add_comm_semigroup.is_right_cancel_add.to_is_left_cancel_add AddComm.IsRightCancelAdd.toIsLeftCancelAdd
+#align add_comm_semigroup.is_right_cancel_add.to_is_left_cancel_add AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd
 
 /-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
 @[to_additive AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommSemigroup G` that
@@ -338,20 +338,20 @@ lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMagma G] [I
 #align add_comm_semigroup.is_left_cancel_add.to_is_right_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
-@[to_additive AddComm.IsLeftCancelAdd.toIsCancelAdd "Any `AddComm G` that satisfies
+@[to_additive AddCommMagma.IsLeftCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
 `IsLeftCancelAdd G` also satisfies `IsCancelAdd G`."]
 lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
     IsCancelMul G := { CommMagma.IsLeftCancelMul.toIsRightCancelMul G with }
 #align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommMagma.IsLeftCancelMul.toIsCancelMul
-#align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddComm.IsLeftCancelAdd.toIsCancelAdd
+#align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddCommMagma.IsLeftCancelAdd.toIsCancelAdd
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
-@[to_additive AddComm.IsRightCancelAdd.toIsCancelAdd "Any `AddComm G` that satisfies
+@[to_additive AddCommMagma.IsRightCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsCancelAdd G`."]
 lemma CommSemigroup.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
     IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
 #align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommSemigroup.IsRightCancelMul.toIsCancelMul
-#align add_comm_semigroup.is_right_cancel_add.to_is_cancel_add AddComm.IsRightCancelAdd.toIsCancelAdd
+#align add_comm_semigroup.is_right_cancel_add.to_is_cancel_add AddCommMagma.IsRightCancelAdd.toIsCancelAdd
 
 end CommMagma
 

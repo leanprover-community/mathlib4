@@ -237,7 +237,7 @@ theorem ite_and_mul_zero {α : Type*} [MulZeroClass α] (P Q : Prop) [Decidable 
 #align ite_and_mul_zero ite_and_mul_zero
 
 /-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
-class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMul α
+class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
 
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid

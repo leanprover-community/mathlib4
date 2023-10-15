@@ -86,13 +86,13 @@ class IsJordan [Mul A] : Prop where
 #align is_jordan IsJordan
 
 /-- A commutative Jordan multipication -/
-class IsCommJordan [CommMul A] : Prop where
+class IsCommJordan [CommMagma A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
 #align is_comm_jordan IsCommJordan
 
 -- see Note [lower instance priority]
 /-- A (commutative) Jordan multiplication is also a Jordan multipication -/
-instance (priority := 100) IsCommJordan.toIsJordan [CommMul A] [IsCommJordan A] : IsJordan A where
+instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A] : IsJordan A where
   lmul_comm_rmul a b := by rw [mul_comm, mul_comm a b]
   lmul_lmul_comm_lmul a b := by
     rw [mul_comm (a * a) (a * b), IsCommJordan.lmul_comm_rmul_rmul,
