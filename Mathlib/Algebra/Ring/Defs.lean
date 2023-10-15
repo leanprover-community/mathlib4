@@ -430,7 +430,7 @@ class NonUnitalNonAssocCommRing (α : Type u)
   extends NonUnitalNonAssocRing α, NonUnitalNonAssocCommSemiring α
 
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
+class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 #align non_unital_comm_ring NonUnitalCommRing
 
 -- see Note [lower instance priority]
