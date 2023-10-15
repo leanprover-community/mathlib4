@@ -71,11 +71,11 @@ open scoped BigOperators
 -- REVIEWERS: I don't like this name but what am I meant to do.
 -- note: `to_additive` does _not_ make the correct lemma in this case, so we make it by hand.
 lemma Subgroup.finset_prod_top {β α : Type*} [Group α] [Fintype α] [Fintype (⊤ : Subgroup α)]
-  [CommMonoid β] (f : α → β) : ∏ x : (⊤ : Subgroup α), f x = ∏ x : α, f x :=
+    [CommMonoid β] (f : α → β) : ∏ x : (⊤ : Subgroup α), f x = ∏ x : α, f x :=
   by simp [Finset.prod_set_coe]
 
 lemma AddSubgroup.finset_prod_top {β α : Type*} [AddGroup α] [Fintype α]
-  [Fintype (⊤ : AddSubgroup α)] [CommMonoid β] (f : α → β) :
+    [Fintype (⊤ : AddSubgroup α)] [CommMonoid β] (f : α → β) :
     ∏ x : (⊤ : AddSubgroup α), f x = ∏ x : α, f x :=
   by simp [Finset.prod_set_coe]
 -- Subgroup.finset_prod_top (α := Multiplicative α) f
@@ -85,11 +85,11 @@ attribute [to_additive existing AddSubgroup.finset_prod_top] Subgroup.finset_pro
 
 @[to_additive]
 lemma Subgroup.sum_top {β α : Type*} [Group α] [Fintype α] [Fintype (⊤ : Subgroup α)]
-  [AddCommMonoid β] (f : α → β) : ∑ x : (⊤ : Subgroup α), f x = ∑ x : α, f x :=
+    [AddCommMonoid β] (f : α → β) : ∑ x : (⊤ : Subgroup α), f x = ∑ x : α, f x :=
   by simp [Finset.sum_set_coe]
 
 lemma prod_units_nonunits {α β : Type*} [Monoid α] [CommMonoid β] [Fintype α] [Fintype αˣ]
-  [Fintype <| nonunits α] (f : α → β) :
+    [Fintype <| nonunits α] (f : α → β) :
     (∏ x : αˣ, f x) * ∏ x in (nonunits α).toFinset, f x = ∏ x : α, f x := by
   rw [←Finset.prod_set_coe, ←Fintype.prod_sum_elim]
   apply Fintype.prod_bijective (Sum.elim (· : αˣ → α) (· : nonunits α → α))
