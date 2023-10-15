@@ -244,6 +244,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   congr 2
   abel
 
+count_heartbeats in
 theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedComm R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y)
       = gradedMul R ℬ 𝒜 (gradedComm R 𝒜 ℬ x) (gradedComm R 𝒜 ℬ y) := by
