@@ -5,7 +5,6 @@ Authors: Martin Dvorak
 -/
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Tactic.LibrarySearch --
 
 /-! # Linear programming
 
@@ -40,9 +39,9 @@ def LinearProgram.mkOfEqs
 def LinearProgram.feasibles (lp : LinearProgram K P) : Set P :=
   { x : P | ∀ a ∈ lp.constraints, 0 ≤ a x }
 
-lemma oh_come_on {k : K} (hk_pos : 0 ≤ k) (hk_neg : 0 ≤ -k) : 0 = k := by
-  rw [neg_nonneg] at hk_neg
-  exact le_antisymm hk_pos hk_neg
+/-- Given linear program is minimized at given point. -/
+def LinearProgram.MinAt (lp : LinearProgram K P) (x : P) : Prop :=
+  IsLeast (lp.objective '' lp.feasibles) (lp.objective x)
 
 lemma LinearProgram.feasibles_mkOfEqs
     (equalities inequalities : List (P →ᵃ[K] K)) (objective : P →ᵃ[K] K) :
@@ -79,6 +78,23 @@ lemma LinearProgram.feasibles_mkOfEqs
       rw [← neg_orig]
       simp [hyp.1 orig orig_mem]
 
-/-- Given linear program is minimized at given point. -/
-def LinearProgram.MinAt (lp : LinearProgram K P) (x : P) : Prop :=
-  IsLeast (lp.objective '' lp.feasibles) (lp.objective x)
+/-- Adding more constraints cannot enlarge the set of feasible solutions. -/
+lemma feasiblesLinearProgram_superset_of_contraints_subset {lp₁ lp₂ : LinearProgram K P}
+    (hconstrs : lp₁.constraints ⊆ lp₂.constraints) :
+    lp₂.feasibles ⊆ lp₁.feasibles := by
+  intro x hx
+  simp only [LinearProgram.feasibles, Set.mem_setOf_eq] at hx ⊢
+  intro a ha
+  apply hx
+  exact hconstrs ha
+
+/-- Adding more constraints cannot decrease the minimum. -/
+lemma minLinearProgram_le_of_contraints_subset {lp₁ lp₂ : LinearProgram K P} {x₁ x₂ : P}
+    (hconstrs : lp₁.constraints ⊆ lp₂.constraints)
+    (hobj : lp₁.objective = lp₂.objective) (opt₁ : lp₁.MinAt x₁) (opt₂ : lp₂.MinAt x₂) :
+    lp₁.objective x₁ ≤ lp₂.objective x₂ := by
+  unfold LinearProgram.MinAt at opt₁ opt₂
+  apply IsLeast.mono opt₂ opt₁
+  rw [hobj]
+  apply Set.image_subset
+  exact feasiblesLinearProgram_superset_of_contraints_subset hconstrs
