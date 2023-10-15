@@ -113,7 +113,8 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := ofLe (le_sup_left : p ≤ p ⊔ p')
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
@@ -192,5 +193,4 @@ theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)
     Fintype.card_eq.mpr ⟨(quotientQuotientEquivQuotient T S hST).toEquiv⟩]
 #align submodule.card_quotient_mul_card_quotient Submodule.card_quotient_mul_card_quotient
 
-attribute [nolint simpNF] LinearMap.quotientInfEquivSupQuotient_apply_mk
 end Submodule

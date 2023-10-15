@@ -412,7 +412,9 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
     rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
-    -- The next 9 tactics were a single `rw` before leanprover/lean4#2644
+    -- The next 9 tactics (up to `convert ...` were a single `rw` before leanprover/lean4#2644
+    -- rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
+    --   Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
     rw [comp_app] --, comp_app, id_app]
     -- erw [ContinuousMap.coe_mk]
     conv_lhs => erw [ContinuousMap.coe_mk]

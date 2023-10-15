@@ -1354,6 +1354,10 @@ def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 #align ring_equiv.subring_map RingEquiv.subringMap
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] RingEquiv.subringMap_symm_apply_coe
+  RingEquiv.subringMap_apply_coe
+
 end RingEquiv
 
 namespace Subring
@@ -1534,6 +1538,3 @@ theorem Units.mem_posSubgroup {R : Type*} [LinearOrderedSemiring R] (u : Rˣ) :
     u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
   Iff.rfl
 #align units.mem_pos_subgroup Units.mem_posSubgroup
-
-attribute [nolint simpNF] RingEquiv.subringMap_symm_apply_coe
-  RingEquiv.subringMap_apply_coe

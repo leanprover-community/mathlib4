@@ -367,7 +367,11 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : ∀ i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
-  -- The end of this proof was very different before leanprover/lean4#2644
+  -- The end of this proof was very different before leanprover/lean4#2644:
+  -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
+  -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
+  -- show _ • _ = _
+  -- rw [one_smul]
   erw [AddCon.lift_coe]
   erw [FreeAddMonoid.of]
   dsimp [FreeAddMonoid.ofList]
