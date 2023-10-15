@@ -96,11 +96,28 @@ lemma measurable_LLR (μ ν : Measure α) : Measurable (LLR μ ν) :=
 lemma stronglyMeasurable_LLR (μ ν : Measure α) : StronglyMeasurable (LLR μ ν) :=
   (measurable_LLR μ ν).stronglyMeasurable
 
+lemma LLR_smul_left {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
+    LLR (c • μ) ν =ᵐ[μ] fun x ↦ LLR μ ν x + log c.toReal := by
+  simp only [LLR, LLR_def]
+  have h := Measure.rnDeriv_smul_left_of_ne_top μ ν hc_ne_top
+  filter_upwards [hμν.ae_le h, Measure.rnDeriv_pos hμν, hμν.ae_le (Measure.rnDeriv_lt_top μ ν)]
+    with x hx_eq hx_pos hx_ne_top
+  rw [hx_eq]
+  simp only [Pi.smul_apply, smul_eq_mul, ENNReal.toReal_mul]
+  rw [log_mul]
+  rotate_left
+  · rw [ENNReal.toReal_ne_zero]
+    simp [hc, hc_ne_top]
+  · rw [ENNReal.toReal_ne_zero]
+    simp [hx_pos.ne', hx_ne_top.ne]
+  ring
+
 lemma LLR_smul_right {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     LLR μ (c • ν) =ᵐ[μ] fun x ↦ LLR μ ν x - log c.toReal := by
   simp only [LLR, LLR_def]
-  have h := Measure.rnDeriv_smul_right_of_ne_top μ ν c hc hc_ne_top
+  have h := Measure.rnDeriv_smul_right_of_ne_top μ ν hc hc_ne_top
   filter_upwards [hμν.ae_le h, Measure.rnDeriv_pos hμν, hμν.ae_le (Measure.rnDeriv_lt_top μ ν)]
     with x hx_eq hx_pos hx_ne_top
   rw [hx_eq]
