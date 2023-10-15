@@ -220,6 +220,7 @@ def long_lines_check(lines, path):
                         broken_lines[-1] += lemma + ","
                     # Otherwise, start a new line
                     else:
+                        broken_lines[-1] += "\n"
                         broken_lines.append(" " * (num_spaces + 2) + lemma + ",")
                 # Replace the last comma with a closing bracket
                 broken_lines[-1] = broken_lines[-1][:-1] + "]"
@@ -228,6 +229,7 @@ def long_lines_check(lines, path):
                     broken_lines[-1] += (line[end_list_idx+1:])
                 # Otherwise, start a new line
                 else:
+                    broken_lines[-1] += "\n"
                     broken_lines.append(line[end_list_idx+1:])
                 # Add the broken lines to the newlines list
                 for broken_line in broken_lines:
