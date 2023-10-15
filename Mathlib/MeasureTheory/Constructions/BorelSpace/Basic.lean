@@ -985,6 +985,9 @@ def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
   toEquiv := h.toEquiv
 #align homeomorph.to_measurable_equiv Homeomorph.toMeasurableEquiv
 
+lemma Homeomorph.measurableEmbedding (h : γ ≃ₜ γ₂) : MeasurableEmbedding h :=
+  h.toMeasurableEquiv.measurableEmbedding
+
 @[simp]
 theorem Homeomorph.toMeasurableEquiv_coe (h : γ ≃ₜ γ₂) : (h.toMeasurableEquiv : γ → γ₂) = h :=
   rfl
@@ -2078,6 +2081,21 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
   · simp only [ENNReal.mul_top', ENNReal.coe_eq_zero]
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
 #align ennreal.has_measurable_mul₂ ENNReal.instMeasurableMul₂
+
+instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
+  measurable_const_smul := by
+    intro c
+    have : ∀ x : ℝ≥0∞, c • x = (c : ℝ≥0∞) • x := by
+      intro x
+      rfl
+    simp_rw [this]
+    exact MeasurableSMul.measurable_const_smul _
+  measurable_smul_const := by
+    intro x
+    apply Measurable.mul_const
+    simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe, ENNReal.coe_ofNNRealHom, ZeroHom.coe_mk, RingHom.id_apply]
+    apply measurable_coe_nnreal_ennreal
 
 instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
   ⟨by

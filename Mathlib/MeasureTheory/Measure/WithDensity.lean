@@ -102,10 +102,6 @@ theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ �
   simp only [Pi.smul_apply, smul_eq_mul]
 #align measure_theory.with_density_smul' MeasureTheory.withDensity_smul'
 
-lemma set_lintegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) (s : Set α) :
-    ∫⁻ a in s, f a ∂c • μ = c * ∫⁻ a in s, f a ∂μ := by
-  rw [Measure.restrict_smul, lintegral_smul_measure]
-
 theorem withDensity_smul_measure (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
     (r • μ).withDensity f = r • μ.withDensity f := by
   ext s hs
@@ -435,25 +431,27 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
   rw [ENNReal.mul_inv_cancel hx_zero hx_top]
 
 lemma withDensity_inv_same₀ {μ : Measure α} {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) (hf_pos : ∀ᵐ x ∂μ, 0 < f x) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
+    (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) = μ := by
   rw [← withDensity_mul₀ hf hf.inv]
   suffices (f * fun x ↦ (f x)⁻¹) =ᵐ[μ] 1 by
     rw [withDensity_congr_ae this, withDensity_one]
-  filter_upwards [hf_pos, hf_ne_top] with x hf_pos hf_ne_top
+  filter_upwards [hf_ne_zero, hf_ne_top] with x hf_ne_zero hf_ne_top
   simp only [Pi.mul_apply]
-  rw [ENNReal.mul_inv_cancel hf_pos.ne' hf_ne_top, Pi.one_apply]
+  rw [ENNReal.mul_inv_cancel hf_ne_zero hf_ne_top, Pi.one_apply]
 
 lemma withDensity_inv_same {μ : Measure α} {f : α → ℝ≥0∞}
-    (hf : Measurable f) (hf_pos : ∀ᵐ x ∂μ, 0 < f x) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
+    (hf : Measurable f) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) = μ :=
-  withDensity_inv_same₀ hf.aemeasurable hf_pos hf_ne_top
+  withDensity_inv_same₀ hf.aemeasurable hf_ne_zero hf_ne_top
 
+/-- If `f` is almost everywhere positive and finite, then `μ ≪ μ.withDensity f`. See also
+`withDensity_absolutelyContinuous` for the reverse direction, which always holds. -/
 lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) (hf_pos : ∀ᵐ x ∂μ, 0 < f x) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
+    (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     μ ≪ μ.withDensity f := by
   suffices (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) ≪ μ.withDensity f by
-    rwa [withDensity_inv_same₀ hf hf_pos hf_ne_top] at this
+    rwa [withDensity_inv_same₀ hf hf_ne_zero hf_ne_top] at this
   exact withDensity_absolutelyContinuous _ _
 
 /-- A sigma-finite measure is absolutely continuous with respect to some finite measure. -/

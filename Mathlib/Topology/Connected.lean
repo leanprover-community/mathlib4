@@ -5,7 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Irreducible
 
 #align_import topology.connected from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 

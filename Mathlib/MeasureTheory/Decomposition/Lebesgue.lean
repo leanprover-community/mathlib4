@@ -120,26 +120,6 @@ instance haveLebesgueDecomposition_smul (μ ν : Measure α) [HaveLebesgueDecomp
       rfl
 #align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecomposition_smul
 
-instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
-  measurable_const_smul := by
-    intro c
-    simp only
-    have : ∀ x : ℝ≥0∞, c • x = (c : ℝ≥0∞) • x := by
-      intro x
-      rfl
-    simp_rw [this]
-    exact MeasurableSMul.measurable_const_smul _
-  measurable_smul_const := by
-    intro x
-    apply Measurable.mul_const
-    simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
-      ENNReal.coe_ofNNRealHom, ZeroHom.coe_mk, RingHom.id_apply]
-    apply measurable_coe_nnreal_ennreal
-
-lemma _root_.ENNReal.nnreal_smul_eq_coe_smul (r : ℝ≥0) (x : ℝ≥0∞) : r • x = (r : ℝ≥0∞) • x := rfl
-lemma _root_.ENNReal.nnreal_smul_eq_coe_mul (r : ℝ≥0) (x : ℝ≥0∞) : r • x = (r : ℝ≥0∞) * x := rfl
-lemma nnreal_smul_eq_coe_smul (r : ℝ≥0) (μ : Measure α) : r • μ = (r : ℝ≥0∞) • μ := rfl
-
 instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) :
     μ.HaveLebesgueDecomposition (r • ν) where
@@ -156,7 +136,7 @@ instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgue
       exact absolutelyContinuous_of_le_smul le_rfl
     · have : r⁻¹ • rnDeriv μ ν = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv μ ν := by
         ext x
-        simp [ENNReal.nnreal_smul_eq_coe_smul]
+        simp [ENNReal.smul_def]
       rw [this, withDensity_smul _ hmeas, nnreal_smul_eq_coe_smul r,
         withDensity_smul_measure, ← smul_assoc, smul_eq_mul, ENNReal.coe_inv,
         ENNReal.inv_mul_cancel]
@@ -359,7 +339,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
       convert haveLebesgueDecomposition_add μ ν
       ext x
       simp only [Pi.smul_apply, ne_eq]
-      rw [← ENNReal.nnreal_smul_eq_coe_smul, ← smul_assoc, smul_eq_mul, mul_inv_cancel hr, one_smul]
+      rw [← ENNReal.smul_def, ← smul_assoc, smul_eq_mul, mul_inv_cancel hr, one_smul]
   · rw [singularPart, singularPart, dif_neg hl, dif_neg]
     refine' fun hl' => hl _
     rw [← inv_smul_smul₀ hr ν]
@@ -481,14 +461,14 @@ theorem rnDeriv_smul_left (ν : Measure α) [IsFiniteMeasure ν]
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (lintegral_rnDeriv_lt_top (r • ν) μ).ne
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
-  · simp only [Pi.smul_apply, smul_eq_mul, ENNReal.nnreal_smul_eq_coe_mul]
+  · simp only [Pi.smul_apply, smul_eq_mul, ENNReal.smul_def]
     rw [lintegral_const_mul _ (measurable_rnDeriv _ _)]
     refine ENNReal.mul_ne_top ENNReal.coe_ne_top ?_
     exact (lintegral_rnDeriv_lt_top ν μ).ne
   · simp_rw [nnreal_smul_eq_coe_smul]
     have : r • rnDeriv ν μ = (r : ℝ≥0∞) • rnDeriv ν μ := by
       ext x
-      simp [ENNReal.nnreal_smul_eq_coe_mul]
+      simp [ENNReal.smul_def]
     rw [this, withDensity_smul _ (measurable_rnDeriv _ _)]
     suffices (r • ν).singularPart μ + withDensity μ (rnDeriv (r • ν) μ)
         = (r • ν).singularPart μ + r • withDensity μ (rnDeriv ν μ) by
@@ -504,17 +484,17 @@ theorem rnDeriv_smul_left (ν : Measure α) [IsFiniteMeasure ν]
       ← ν.haveLebesgueDecomposition_add μ]
 
 theorem rnDeriv_smul_left_of_ne_top (ν : Measure α) [IsFiniteMeasure ν]
-    (μ : Measure α) [ν.HaveLebesgueDecomposition μ] (r : ℝ≥0∞) (hr : r ≠ ∞) :
+    (μ : Measure α) [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0∞} (hr : r ≠ ∞) :
     (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
   have h : (r.toNNReal • ν).rnDeriv μ =ᵐ[μ] r.toNNReal • ν.rnDeriv μ :=
     rnDeriv_smul_left ν μ r.toNNReal
   have : r.toNNReal • rnDeriv ν μ = r • rnDeriv ν μ := by
       ext x
-      simp [ENNReal.nnreal_smul_eq_coe_smul, ENNReal.coe_toNNReal hr]
+      simp [ENNReal.smul_def, ENNReal.coe_toNNReal hr]
   simpa [this, nnreal_smul_eq_coe_smul, ENNReal.coe_toNNReal hr] using h
 
 theorem rnDeriv_smul_right (ν : Measure α) [IsFiniteMeasure ν]
-    (μ : Measure α) [ν.HaveLebesgueDecomposition μ] (r : ℝ≥0) (hr : r ≠ 0) :
+    (μ : Measure α) [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
     ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
   suffices ν.rnDeriv (r • μ) =ᵐ[r • μ] r⁻¹ • ν.rnDeriv μ by
     suffices hμ : μ ≪ r • μ by exact hμ.ae_le this
@@ -525,15 +505,14 @@ theorem rnDeriv_smul_right (ν : Measure α) [IsFiniteMeasure ν]
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (lintegral_rnDeriv_lt_top ν _).ne
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
-  · simp only [Pi.smul_apply, smul_eq_mul, ENNReal.nnreal_smul_eq_coe_mul]
-    rw [lintegral_const_mul _ (measurable_rnDeriv _ _)]
-    rw [nnreal_smul_eq_coe_smul, lintegral_smul_measure, ← mul_assoc]
+  · simp only [ENNReal.smul_def, Pi.smul_apply, ne_eq, smul_eq_mul, lintegral_smul_measure]
+    rw [lintegral_const_mul _ (measurable_rnDeriv _ _), ← mul_assoc]
     refine ENNReal.mul_ne_top (ENNReal.mul_ne_top ENNReal.coe_ne_top ENNReal.coe_ne_top) ?_
     exact (lintegral_rnDeriv_lt_top ν μ).ne
   · simp_rw [nnreal_smul_eq_coe_smul]
     have : r⁻¹ • rnDeriv ν μ = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv ν μ := by
       ext x
-      simp [ENNReal.nnreal_smul_eq_coe_mul]
+      simp [ENNReal.smul_def]
     rw [this, withDensity_smul _ (measurable_rnDeriv _ _)]
     suffices ν.singularPart (r • μ) + withDensity (r • μ) (rnDeriv ν (r • μ))
         = ν.singularPart (r • μ) + r⁻¹ • withDensity (r • μ) (rnDeriv ν μ) by
@@ -551,15 +530,15 @@ theorem rnDeriv_smul_right (ν : Measure α) [IsFiniteMeasure ν]
     exact ν.haveLebesgueDecomposition_add μ
 
 theorem rnDeriv_smul_right_of_ne_top (ν : Measure α) [IsFiniteMeasure ν]
-    (μ : Measure α) [ν.HaveLebesgueDecomposition μ] (r : ℝ≥0∞) (hr : r ≠ 0) (hr_ne_top : r ≠ ∞) :
+    (μ : Measure α) [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0∞} (hr : r ≠ 0) (hr_ne_top : r ≠ ∞) :
     ν.rnDeriv (r • μ) =ᵐ[μ] r⁻¹ • ν.rnDeriv μ := by
   have h : ν.rnDeriv (r.toNNReal • μ) =ᵐ[μ] r.toNNReal⁻¹ • ν.rnDeriv μ := by
-    refine rnDeriv_smul_right ν μ r.toNNReal ?_
+    refine rnDeriv_smul_right ν μ ?_
     rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
     simp [hr, hr_ne_top]
   have : (r.toNNReal)⁻¹ • rnDeriv ν μ = r⁻¹ • rnDeriv ν μ := by
       ext x
-      simp only [Pi.smul_apply, ENNReal.nnreal_smul_eq_coe_smul, ne_eq, smul_eq_mul]
+      simp only [Pi.smul_apply, ENNReal.smul_def, ne_eq, smul_eq_mul]
       rw [ENNReal.coe_inv, ENNReal.coe_toNNReal hr_ne_top]
       rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
       simp [hr, hr_ne_top]
