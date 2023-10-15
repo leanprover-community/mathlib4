@@ -39,6 +39,17 @@ end Set
 
 namespace CategoryTheory
 
+@[simp]
+lemma essImageFullSubcategoryInclusion {C : Type*} [Category C] (S : Set C) [S.RespectsIso] :
+    (fullSubcategoryInclusion S).essImage = S := by
+  ext X
+  constructor
+  · rintro ⟨Y, ⟨e⟩⟩
+    rw [← S.mem_iff_of_iso e]
+    exact Y.2
+  · intro hX
+    exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
+
 variable (C : Type _) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
@@ -231,19 +242,6 @@ lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
 
 def heart : Set C := t.setLE 0 ∩ t.setGE 0
 
-class HasHeart where
-  H : Type*
-  [cat : Category H]
-  ι : H ⥤ C
-  hι : ι.essImage = t.heart
-
--- this should be refactored by requiring a type class [t.HasHeart]
--- which would involve a fully faithful functor `H ⥤ C` whose essential image is `t.heart`
-
-abbrev Heart' := FullSubcategory t.heart
-
-abbrev ιHeart' : t.Heart' ⥤ C := fullSubcategoryInclusion _
-
 lemma mem_heart_iff (X : C) :
     X ∈ t.heart ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
   constructor
@@ -261,6 +259,14 @@ instance : t.heart.RespectsIso where
     · exact t.isLE_of_iso e 0
     · exact t.isGE_of_iso e 0
 
+-- this should be refactored by requiring a type class [t.HasHeart]
+-- which would involve a fully faithful functor `H ⥤ C` whose essential image is `t.heart`
+
+abbrev Heart' := FullSubcategory t.heart
+
+abbrev ιHeart' : t.Heart' ⥤ C := fullSubcategoryInclusion _
+
+
 instance (X : t.Heart') : t.IsLE (t.ιHeart'.obj X) 0 := ⟨X.2.1⟩
 instance (X : t.Heart') : t.IsGE (t.ιHeart'.obj X) 0 := ⟨X.2.2⟩
 instance (X : t.Heart') : t.IsLE X.1 0 := ⟨X.2.1⟩
@@ -276,6 +282,67 @@ noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ sh
   Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (shiftFunctorCompIsoId C (-n) n (add_left_neg n)) ≪≫
     Functor.rightUnitor _
+
+class HasHeart where
+  H : Type*
+  [cat : Category H]
+  ι : H ⥤ C
+  fullι : Full ι := by infer_instance
+  faithful_ι : Faithful ι := by infer_instance
+  hι : ι.essImage = t.heart := by simp
+
+def hasHeartFullSubcategory : t.HasHeart where
+  ι := fullSubcategoryInclusion t.heart
+
+variable [ht : t.HasHeart]
+
+def Heart := ht.H
+
+instance : Category t.Heart := ht.cat
+
+def ιHeart : t.Heart ⥤ C := ht.ι
+
+instance : Full t.ιHeart := ht.fullι
+instance : Faithful t.ιHeart := ht.faithful_ι
+
+lemma ιHeart_obj_mem (X : t.Heart) : t.ιHeart.obj X ∈ t.heart := by
+  rw [← ht.hι]
+  exact t.ιHeart.obj_mem_essImage X
+
+lemma mem_essImage_ιHeart_iff (X : C) :
+    X ∈ t.ιHeart.essImage ↔ X ∈ t.heart := by
+  dsimp [ιHeart]
+  rw [ht.hι]
+
+noncomputable def heartMk (X : C) (hX : X ∈ t.heart) : t.Heart :=
+  Functor.essImage.witness ((t.mem_essImage_ιHeart_iff X).2 hX)
+
+noncomputable def ιHeartObjHeartMkIso (X : C) (hX : X ∈ t.heart) :
+    t.ιHeart.obj (t.heartMk X hX) ≅ X :=
+  Functor.essImage.getIso ((t.mem_essImage_ιHeart_iff X).2 hX)
+
+@[simps obj]
+noncomputable def liftHeart {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ t.heart) :
+    D ⥤ t.Heart where
+  obj X := t.heartMk (F.obj X) (hF X)
+  map {X Y} f := t.ιHeart.preimage ((t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
+      (t.ιHeartObjHeartMkIso _ (hF Y)).inv)
+  map_id X := t.ιHeart.map_injective (by simp)
+  map_comp f g := t.ιHeart.map_injective (by simp)
+
+@[simp, reassoc]
+lemma ιHeart_map_liftHeart_map {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ t.heart) {X Y : D} (f : X ⟶ Y) :
+    t.ιHeart.map ((t.liftHeart F hF).map f) =
+      (t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
+        (t.ιHeartObjHeartMkIso _ (hF Y)).inv := by
+  simp [liftHeart]
+
+noncomputable def liftHeartιHeart {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), F.obj X ∈ t.heart) :
+    t.liftHeart F hF ⋙ t.ιHeart ≅ F :=
+  NatIso.ofComponents (fun X => t.ιHeartObjHeartMkIso _ (hF X)) (by aesop_cat)
 
 end TStructure
 

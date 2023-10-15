@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TruncLE
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
-import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
+import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
@@ -211,6 +211,23 @@ lemma singleFunctor_obj_mem_heart (X : C) :
   ⟨(inferInstance : ((singleFunctor C 0).obj X).IsLE 0),
     (inferInstance : ((singleFunctor C 0).obj X).IsGE 0)⟩
 
+@[simp]
+lemma essImage_singleFunctor_eq_heart :
+    (singleFunctor C 0).essImage = t.heart := by
+  ext X
+  constructor
+  · rintro ⟨A, ⟨e⟩⟩
+    exact t.heart.mem_of_iso e (singleFunctor_obj_mem_heart A)
+  · intro h
+    rw [TStructure.mem_heart_iff] at h
+    have : X.IsGE 0 := h.2.1
+    have : X.IsLE 0 := h.1.1
+    obtain ⟨A, ⟨e⟩⟩ := exists_iso_single X 0
+    exact ⟨A, ⟨e.symm⟩⟩
+
+noncomputable instance : (t : TStructure (DerivedCategory C)).HasHeart where
+  ι := singleFunctor C 0
+
 variable (C)
 
 namespace HeartEquivalence
@@ -354,6 +371,12 @@ noncomputable def truncGECompHomologyFunctorIso (a n : ℤ) (hn : a ≤ n) :
   have := isIso_whiskerRight_truncGEπ_homologyFunctor C a n hn
   exact (asIso (whiskerRight (t.truncGEπ a) (homologyFunctor C n))).symm
 
+noncomputable def truncGELECompHomologyFunctorIso (a b n : ℤ) (ha : a ≤ n) (hb : n ≤ b):
+  t.truncGELE a b ⋙ homologyFunctor C n ≅ homologyFunctor C n :=
+    Functor.associator _ _ _ ≪≫
+      isoWhiskerLeft (t.truncLE b) (truncGECompHomologyFunctorIso C a n ha) ≪≫
+      truncLECompHomologyFunctorIso C b n hb
+
 noncomputable def homologyCompFunctorIso (q : ℤ) :
     t.homology' q ⋙ (heartEquivalence C).functor ≅
       homologyFunctor C q := by
@@ -376,6 +399,30 @@ noncomputable def homologyιHeart (q : ℤ) :
   isoWhiskerRight (homologyIsoHomologyFunctorCompInverse C q) _ ≪≫
     Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (heartEquivalenceInverseCompιHeart C).symm
+
+variable {C}
+
+noncomputable def truncLE₀GE₀ToHeart : DerivedCategory C ⥤ C :=
+  t.liftHeart (t.truncGELE 0 0) t.truncGE₀LE₀_mem_heart
+
+noncomputable def truncLE₀GE₀ToHeartιHeart :
+    (truncLE₀GE₀ToHeart : _ ⥤ C) ⋙ t.ιHeart ≅ t.truncGELE 0 0 :=
+  t.liftHeartιHeart _ _
+
+variable (C)
+
+noncomputable def homologyFunctorIsotruncLE₀GE₀ToHeart :
+    homologyFunctor C 0 ≅ truncLE₀GE₀ToHeart :=
+  (truncGELECompHomologyFunctorIso C 0 0 0 (by rfl) (by rfl)).symm ≪≫
+    isoWhiskerRight truncLE₀GE₀ToHeartιHeart.symm _ ≪≫
+    Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ (singleFunctorCompHomologyFunctorIso C 0) ≪≫
+    truncLE₀GE₀ToHeart.rightUnitor
+
+noncomputable instance : (t : TStructure (DerivedCategory C)).HasHomology₀ where
+  homology₀ := homologyFunctor C 0
+  iso := isoWhiskerRight (homologyFunctorIsotruncLE₀GE₀ToHeart C) _ ≪≫
+    truncLE₀GE₀ToHeartιHeart
 
 end TStructure
 
