@@ -382,9 +382,13 @@ instance instAlgebra : Algebra R (A ⊗[R] B) :=
 
 @[simp]
 theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
-    (algebraMap S (A ⊗[R] B)) r = (algebraMap S A) r ⊗ₜ 1 :=
+    algebraMap S (A ⊗[R] B) r = (algebraMap S A) r ⊗ₜ 1 :=
   rfl
 #align algebra.tensor_product.algebra_map_apply Algebra.TensorProduct.algebraMap_apply
+
+theorem algebraMap_apply' (r : R) :
+    algebraMap R (A ⊗[R] B) r = 1 ⊗ₜ algebraMap R B r := by
+  rw [algebraMap_apply, Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, smul_tmul]
 
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
@@ -404,12 +408,7 @@ def includeRight : B →ₐ[R] A ⊗[R] B where
   map_add' := by simp [tmul_add]
   map_one' := rfl
   map_mul' := by simp
-  commutes' r := by
-    simp only [algebraMap_apply]
-    trans r • (1 : A) ⊗ₜ[R] (1 : B)
-    · rw [← tmul_smul, Algebra.smul_def]
-      simp
-    · simp [Algebra.smul_def]
+  commutes' r := by simp only [algebraMap_apply']
 #align algebra.tensor_product.include_right Algebra.TensorProduct.includeRight
 
 @[simp]
