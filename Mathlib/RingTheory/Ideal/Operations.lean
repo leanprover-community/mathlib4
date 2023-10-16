@@ -2379,7 +2379,7 @@ namespace AlgHom
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
-lemma coe_ker  : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
