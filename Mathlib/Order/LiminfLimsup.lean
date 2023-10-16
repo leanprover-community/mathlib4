@@ -342,7 +342,8 @@ theorem IsBoundedUnder.sup [SemilatticeSup α] {f : Filter β} {u v : β → α}
     f.IsBoundedUnder (· ≤ ·) u →
       f.IsBoundedUnder (· ≤ ·) v → f.IsBoundedUnder (· ≤ ·) fun a => u a ⊔ v a
   | ⟨bu, (hu : ∀ᶠ x in f, u x ≤ bu)⟩, ⟨bv, (hv : ∀ᶠ x in f, v x ≤ bv)⟩ =>
-    ⟨bu ⊔ bv, show ∀ᶠ x in f, u x ⊔ v x ≤ bu ⊔ bv by filter_upwards [hu, hv] with _ using sup_le_sup⟩
+    ⟨bu ⊔ bv, show ∀ᶠ x in f, u x ⊔ v x ≤ bu ⊔ bv
+      by filter_upwards [hu, hv] with _ using sup_le_sup⟩
 #align filter.is_bounded_under.sup Filter.IsBoundedUnder.sup
 
 @[simp]
