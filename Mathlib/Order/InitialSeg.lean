@@ -404,7 +404,8 @@ noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 attribute [nolint simpNF] PrincipalSeg.subrelIso_symm_apply
 
--- This lemma was always bad, but the linter only noticed after lean4#2644@[simp, nolint simpNF]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
     f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
