@@ -10,18 +10,19 @@ import Mathlib.Order.SupClosed
 #align_import combinatorics.colex from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
-# Colex
+# Colexigraphic order
 
-We define the colex ordering for finite sets, and give a couple of important
-lemmas and properties relating to it.
+We define the colex order for finite sets, and give a couple of important lemmas and properties
+relating to it.
 
-The colex ordering likes to avoid large values - In the special case of `ℕ`, it can be thought of as
-the "binary" ordering. That is, order s based on `∑_{i ∈ s} 2^i`.
-It's defined here in a slightly more general way, requiring only `LT α` in
-the definition of colex on `Finset α`. In the context of the Kruskal-Katona
-lemma, we are interested in particular on how colex behaves for sets of a
-fixed size. If the size is 3, colex on ℕ starts
-123, 124, 134, 234, 125, 135, 235, 145, 245, 345, ...
+The colex ordering likes to avoid large values: If the biggest element of `t` is bigger than all elements of `s`, then `s < t`.
+
+In the special case of `ℕ`, it can be thought of as the "binary" ordering. That is, order `s` based
+on `∑_{i ∈ s} 2^i`. It's defined here on `Finset α` for any linear order `α`.
+
+In the context of the Kruskal-Katona theorem, we are interested in how colex behaves for sets of a
+fixed size. Eg for size 3, the colex order on ℕ starts
+`123, 124, 134, 234, 125, 135, 235, 145, 245, 345, ...`
 
 ## Main statements
 
