@@ -148,7 +148,6 @@ noncomputable
 def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPdf μ v)
 
-@[simp]
 lemma gaussianReal_of_var_ne_zero (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     gaussianReal μ v = volume.withDensity (gaussianPdf μ v) := if_neg hv
 
@@ -157,7 +156,7 @@ lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ :=
 
 instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where
-  measure_univ := by by_cases h : v = 0 <;> simp [h]
+  measure_univ := by by_cases h : v = 0 <;> simp [gaussianReal_of_var_ne_zero, h]
 
 lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) {s : Set ℝ} (hs : MeasurableSet s) :
     gaussianReal μ v s = ∫⁻ x in s, gaussianPdf μ v x := by
