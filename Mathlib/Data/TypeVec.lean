@@ -466,7 +466,7 @@ def RelLast' (α : TypeVec n) {β : Type*} (p : β → β → Prop) :
 
 /-- given `F : TypeVec.{u} (n+1) → Type u`, `curry F : Type u → TypeVec.{u} → Type u`,
 i.e. its first argument can be fed in separately from the rest of the vector of arguments -/
-def Curry (F : TypeVec.{u} (n + 1) → Type _) (α : Type u) (β : TypeVec.{u} n) : Type* :=
+def Curry (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n) : Type _ :=
   F (β ::: α)
 #align typevec.curry TypeVec.Curry
 
