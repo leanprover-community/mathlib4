@@ -38,13 +38,6 @@ theorem Ideal.comap_span_le {R : Type*} {S : Type*} [Semiring R] [Semiring S] (f
   have := Ideal.apply_coe_mem_map g _ ⟨_, hx⟩
   rwa [Ideal.map_span, Subtype.coe_mk, h x] at this
 
-/-- `CharP.quotient'` as an `Iff`. -/
-theorem CharP.quotient_iff' (R : Type*) [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
-    CharP (R ⧸ I) n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 := by
-  refine ⟨fun _ x hx => ?_, CharP.quotient' n I⟩
-  rw [CharP.cast_eq_zero_iff R n, ←CharP.cast_eq_zero_iff (R ⧸ I) n _]
-  exact (Submodule.Quotient.mk_eq_zero I).mpr hx
-
 theorem Ideal.span_le_bot {R : Type*} [Semiring R] (s : Set R) : Ideal.span s ≤ ⊥ ↔ s ≤ {0} :=
   Submodule.span_le
 
