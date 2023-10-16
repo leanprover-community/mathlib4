@@ -279,6 +279,15 @@ theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
 theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 #align iff.not_right Iff.not_right
 
+protected lemma Iff.ne {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c = d) → (a ≠ b ↔ c ≠ d) :=
+  Iff.not
+
+lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) → (a ≠ b ↔ c = d) :=
+  Iff.not_left
+
+lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
+  Iff.not_right
+
 /-! ### Declarations about `Xor'` -/
 
 @[simp] theorem xor_true : Xor' True = Not := by
