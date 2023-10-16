@@ -79,22 +79,22 @@ lemma LinearProgram.feasibles_mkOfEqs
       simp [hyp.1 orig orig_mem]
 
 /-- Adding more constraints cannot enlarge the set of feasible solutions. -/
-lemma feasiblesLinearProgram_superset_of_contraints_subset {lp₁ lp₂ : LinearProgram K P}
-    (hconstrs : lp₁.constraints ⊆ lp₂.constraints) :
+lemma feasiblesLinearProgram_superset_of_constraints_subset {lp₁ lp₂ : LinearProgram K P}
+    (constrss : lp₁.constraints ⊆ lp₂.constraints) :
     lp₂.feasibles ⊆ lp₁.feasibles := by
   intro x hx
   simp only [LinearProgram.feasibles, Set.mem_setOf_eq] at hx ⊢
   intro a ha
   apply hx
-  exact hconstrs ha
+  exact constrss ha
 
 /-- Adding more constraints cannot decrease the minimum. -/
-lemma minLinearProgram_le_of_contraints_subset {lp₁ lp₂ : LinearProgram K P} {x₁ x₂ : P}
-    (hconstrs : lp₁.constraints ⊆ lp₂.constraints)
+lemma minLinearProgram_le_of_constraints_subset {lp₁ lp₂ : LinearProgram K P} {x₁ x₂ : P}
+    (constrss : lp₁.constraints ⊆ lp₂.constraints)
     (hobj : lp₁.objective = lp₂.objective) (opt₁ : lp₁.MinAt x₁) (opt₂ : lp₂.MinAt x₂) :
     lp₁.objective x₁ ≤ lp₂.objective x₂ := by
   unfold LinearProgram.MinAt at opt₁ opt₂
   apply IsLeast.mono opt₂ opt₁
   rw [hobj]
   apply Set.image_subset
-  exact feasiblesLinearProgram_superset_of_contraints_subset hconstrs
+  exact feasiblesLinearProgram_superset_of_constraints_subset constrss
