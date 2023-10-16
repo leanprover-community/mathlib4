@@ -29,7 +29,7 @@ variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
   This is the marginal distribution of all variables not in `s`. -/
 def marginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞)
-  (x : ∀ i, π i) : ℝ≥0∞ :=
+    (x : ∀ i, π i) : ℝ≥0∞ :=
   ∫⁻ y : ∀ i : s, π i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
 
 -- Note: this notation is not a binder. This is more convenient since it returns a function.

@@ -25,7 +25,7 @@ section RPow
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 theorem NNReal.rpow_add_of_nonneg (x : ℝ≥0) {y z : ℝ} (hy : 0 ≤ y) (hz : 0 ≤ z) :
-  x ^ (y + z) = x ^ y * x ^ z := by
+    x ^ (y + z) = x ^ y * x ^ z := by
   by_cases h : y + z = 0
   · obtain rfl : y = 0 := by linarith
     obtain rfl : z = 0 := by linarith

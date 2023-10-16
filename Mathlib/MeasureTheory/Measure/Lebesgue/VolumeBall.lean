@@ -49,7 +49,7 @@ theorem Real.Gamma_nonneg_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 0 ≤ Real.Gamma 
 
 @[simp, norm_cast]
 theorem Nat.cast_le_zero [OrderedSemiring R] [CharZero R] {n : ℕ} :
-  (n : R) ≤ 0 ↔ n = 0 := by rw [← cast_zero, cast_le, le_zero_iff]
+    (n : R) ≤ 0 ↔ n = 0 := by rw [← cast_zero, cast_le, le_zero_iff]
 
 -- protect NNReal.inv_lt_one_iff and ENNReal.one_lt_two (also write linter for this)
 

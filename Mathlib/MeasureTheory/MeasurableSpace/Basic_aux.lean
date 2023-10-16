@@ -117,12 +117,12 @@ def MeasurableEquiv.piCongrLeft (f : ι' ≃ ι) : (∀ b, α (f b)) ≃ᵐ ∀ 
 variable {α}
 
 theorem MeasurableEquiv.piCongrLeft_eq (f : ι' ≃ ι) :
-  (MeasurableEquiv.piCongrLeft α f : _ → _) = f.piCongrLeft α := by rfl
+    (MeasurableEquiv.piCongrLeft α f : _ → _) = f.piCongrLeft α := by rfl
 
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def MeasurableEquiv.sumPiEquivProdPi (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
-   (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
+    (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
   refine' { Equiv.sumPiEquivProdPi α with .. }
   · refine Measurable.prod ?_ ?_ <;>
       rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
