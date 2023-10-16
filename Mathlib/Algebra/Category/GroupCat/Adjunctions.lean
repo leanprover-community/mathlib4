@@ -60,9 +60,7 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup �
   rfl
 #align AddCommGroup.free_obj_coe AddCommGroupCat.free_obj_coe
 
--- This currently can't be a `simp` lemma,
--- because `free_obj_coe` will simplify implicit arguments in the LHS.
--- (The `simpNF` linter will, correctly, complain.)
+@[simp]
 theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl
@@ -104,11 +102,9 @@ def free : Type u ⥤ GroupCat where
   obj α := of (FreeGroup α)
   map := FreeGroup.map
   map_id := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    intros; ext1; erw [←FreeGroup.map.unique] <;> intros <;> rfl
+    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
   map_comp := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    intros; ext1; erw [←FreeGroup.map.unique] <;> intros <;> rfl
+    intros; ext1; rw [←FreeGroup.map.unique]; intros; rfl
 #align Group.free GroupCat.free
 
 /-- The free-forgetful adjunction for groups.

@@ -119,8 +119,7 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [RingQuot.liftAlgHom_mkAlgHom_apply]
+    rw [RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
   right_inv F := by
     apply RingQuot.ringQuot_ext'
@@ -130,8 +129,7 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   LinearMap.toFun_eq_coe, LinearMap.coe_comp, LieHom.coe_linearMap_comp,
     --   AlgHom.comp_toLinearMap, Function.comp_apply, AlgHom.toLinearMap_apply,
     --   RingQuot.liftAlgHom_mkAlgHom_apply, AlgHom.coe_toLieHom, LieHom.coe_mk]
-    -- extra `rfl` after leanprover/lean4#2644
-    simp [mkAlgHom]; rfl
+    simp [mkAlgHom]
 #align universal_enveloping_algebra.lift UniversalEnvelopingAlgebra.lift
 
 @[simp]

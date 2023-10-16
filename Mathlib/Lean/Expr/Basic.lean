@@ -115,6 +115,17 @@ def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
 
 end Name
 
+namespace NameSet
+
+/-- The union of two `NameSet`s. -/
+def append (s t : NameSet) : NameSet :=
+  s.mergeBy (fun _ _ _ => .unit) t
+
+instance : Append NameSet where
+  append := NameSet.append
+
+end NameSet
+
 namespace ConstantInfo
 
 /-- Checks whether this `ConstantInfo` is a definition, -/
@@ -193,6 +204,10 @@ def bvarIdx? : Expr → Option Nat
 /-- Return the function (name) and arguments of an application. -/
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
+
+/-- Like `Expr.getUsedConstants`, but produce a `NameSet`. -/
+def getUsedConstants' (e : Expr) : NameSet :=
+  e.foldConsts {} fun c cs => cs.insert c
 
 /-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
@@ -471,6 +486,13 @@ def rewriteType (e eq : Expr) : MetaM Expr := do
 
 end Expr
 
+/-- Return all names appearing in the type or value of a `ConstantInfo`. -/
+def ConstantInfo.getUsedConstants (c : ConstantInfo) : NameSet :=
+  let tc := c.type.getUsedConstants'
+  match c.value? with
+  | none => tc
+  | some v => tc ++ v.getUsedConstants'
+
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
   except that this returns the (last component of the) projection names instead of the parent names.
 -/
@@ -498,7 +520,7 @@ def Name.requiredModules (n : Name) : CoreM NameSet := do
   let env ← getEnv
   let mut requiredModules : NameSet := {}
   let ci ← getConstInfo n
-  for n in ci.getUsedConstantsAsSet do
+  for n in ci.getUsedConstants do
     match env.getModuleFor? n with
     | some m =>
       if ¬ (`Init).isPrefixOf m then
@@ -516,7 +538,7 @@ def Environment.requiredModules (env : Environment) : NameSet := Id.run do
   let localConstantInfos := env.constants.map₂
   let mut requiredModules : NameSet := {}
   for (_, ci) in localConstantInfos do
-    for n in ci.getUsedConstantsAsSet do
+    for n in ci.getUsedConstants do
       match env.getModuleFor? n with
       | some m =>
         if ¬ (`Init).isPrefixOf m then

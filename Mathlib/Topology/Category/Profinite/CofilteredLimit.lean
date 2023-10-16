@@ -122,11 +122,9 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   obtain ⟨j, V, hV, h⟩ := exists_clopen_of_cofiltered C hC hU
   use j, LocallyConstant.ofClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
   conv_rhs => rw [Set.preimage_comp]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.ofClopen_fiber_zero hV, ← h]
+  rw [LocallyConstant.ofClopen_fiber_zero hV, ← h]
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
@@ -160,11 +158,9 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   rw [h]
   dsimp
   ext1 x
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app (j a)).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app (j a)).continuous]
   dsimp [LocallyConstant.flip, LocallyConstant.unflip]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app j0).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app j0).continuous]
   dsimp
   rw [LocallyConstant.coe_comap _ _ _]
   -- Porting note: `repeat' rw [LocallyConstant.coe_comap]` didn't work
@@ -172,7 +168,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   · dsimp
     congr! 1
     change _ = (C.π.app j0 ≫ F.map (fs a)) x
-    rw [C.w]; rfl
+    rw [C.w]
   · exact (F.map _).continuous
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_finite_aux Profinite.exists_locallyConstant_finite_aux
@@ -186,17 +182,14 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine' ⟨j, gg.map σ, _⟩
   ext x
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
+  rw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
   dsimp
   have h1 : ι (f x) = gg (C.π.app j x) := by
     change f.map (fun a b => if a = b then (0 : Fin 2) else 1) x = _
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [h, LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
+    rw [h, LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [dif_pos h2]
+  rw [dif_pos h2]
   apply_fun ι
   · rw [h2.choose_spec]
     exact h1
@@ -245,8 +238,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     refine' ⟨j, ⟨ff ∘ g', g'.isLocallyConstant.comp _⟩, _⟩
     ext1 t
     apply_fun fun e => e t at hj
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous] at hj ⊢
+    rw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous] at hj ⊢
     dsimp at hj ⊢
     rw [← hj]
     rfl
