@@ -201,7 +201,7 @@ theorem orientation_unitsSMul [Nontrivial R] (e : Basis ι R M) (w : ι → Unit
   rw [Basis.orientation, Basis.orientation, smul_rayOfNeZero, ray_eq_iff,
     e.det.eq_smul_basis_det (e.unitsSMul w), det_unitsSMul_self, Units.smul_def, smul_smul]
   norm_cast
-  simp
+  simp only [mul_left_inv, Units.val_one, one_smul]
   exact SameRay.rfl
 #align basis.orientation_units_smul Basis.orientation_unitsSMul
 

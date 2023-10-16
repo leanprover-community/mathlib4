@@ -295,7 +295,7 @@ instance instSMul : SMul R (OuterMeasure α) :=
     { measureOf := fun s => c • m s
       empty := by simp; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
-        simp
+        simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
         exact ENNReal.mul_left_mono (m.mono h)
       iUnion_nat := fun s => by
@@ -530,7 +530,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
       empty := by simp
       mono := fun {s t} h => m.mono <| image_subset f h
       iUnion_nat := fun s => by
-        simp
+        simp only
         rw [image_iUnion]
         apply m.iUnion_nat }
   map_add' m₁ m₂ := rfl
@@ -682,7 +682,7 @@ protected def ofFunction : OuterMeasure α :=
         intro i
         apply Subset.trans (hf i).1
         apply iUnion_subset
-        simp
+        simp only [Nat.pairEquiv_symm_apply]
         rw [iUnion_unpair]
         intro j
         apply subset_iUnion₂ i }
@@ -1242,7 +1242,8 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
       image_preimage_eq_inter_range]
     exact image_subset _ ht
   · refine' ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono _
-    simp
+    simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
+      image_subset_iff]
     exact subset_refl _
 #align measure_theory.outer_measure.map_infi_comap MeasureTheory.OuterMeasure.map_iInf_comap
 
@@ -1599,7 +1600,7 @@ theorem le_trim : m ≤ m.trim := by
   apply le_ofFunction.mpr
   intro s
   apply le_iInf
-  simp
+  simp only [le_refl, implies_true]
   apply extend_empty <;> simp
 #align measure_theory.outer_measure.le_trim MeasureTheory.OuterMeasure.le_trim
 
