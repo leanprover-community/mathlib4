@@ -89,14 +89,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
         erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
         rfl
       leftUnitor := fun X => ofIso (tensorLId X.form)
-      rightUnitor := fun X => ofIso (tensorRId X.form)
-      -- uncomment these lines to avoid running slow proofs while editing the proof above
-      -- whiskerLeft_eq := sorry
-      -- whiskerRight_eq := sorry
-      -- tensorHom_eq := sorry
-      -- leftUnitor_eq := sorry
-      -- rightUnitor_eq := sorry
-      }
+      rightUnitor := fun X => ofIso (tensorRId X.form) }
 
 variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
