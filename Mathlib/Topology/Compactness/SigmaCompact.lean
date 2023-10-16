@@ -30,8 +30,8 @@ lemma IsCompact.isSigmaCompact {s : Set α} (hs : IsCompact s) : IsSigmaCompact 
 
 /-- The empty set is σ-compact. -/
 @[simp]
-lemma isSigmaCompact_empty : IsSigmaCompact (∅ : Set α) := by
-  apply IsCompact.isSigmaCompact isCompact_empty
+lemma isSigmaCompact_empty : IsSigmaCompact (∅ : Set α) :=
+  IsCompact.isSigmaCompact isCompact_empty
 
 /-- Countable unions of compact sets are σ-compact. -/
 lemma isSigmaCompact_iUnion_of_isCompact {ι : Type*} [hι : Countable ι] (s : ι → Set α)
