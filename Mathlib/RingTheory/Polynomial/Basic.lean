@@ -30,7 +30,7 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 

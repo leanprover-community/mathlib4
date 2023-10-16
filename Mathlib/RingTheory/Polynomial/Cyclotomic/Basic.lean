@@ -49,7 +49,7 @@ to get a polynomial with integer coefficients and then we map it to `R[X]`, for 
 -/
 
 
-open scoped Classical BigOperators Polynomial
+open scoped BigOperators Polynomial
 
 noncomputable section
 
