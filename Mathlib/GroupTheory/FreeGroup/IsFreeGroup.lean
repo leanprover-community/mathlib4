@@ -69,7 +69,7 @@ variable {ι ι' G H : Type*} [Group G] [Group H]
 /-- A free group basis for `G` over `ι` is associated to a map `ι → G` recording the images of
 the generators. -/
 instance funLike : FunLike (FreeGroupBasis ι G) ι (fun _ ↦ G) where
-  coe := fun b i ↦ b.repr.symm (FreeGroup.of i)
+  coe b := fun i ↦ b.repr.symm (FreeGroup.of i)
   coe_injective' := by
     rintro ⟨b⟩  ⟨b'⟩ hbb'
     suffices H : (b.symm : FreeGroup ι →* G) = (b'.symm : FreeGroup ι →* G) by
