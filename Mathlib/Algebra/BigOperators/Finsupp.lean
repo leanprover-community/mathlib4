@@ -478,9 +478,9 @@ theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
 @[simp]
 theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
     ∑ a : α, single a (f a) = f := by
-  conv_rhs => rw [←sum_single f]
-  refine (Finset.sum_subset (subset_univ _) fun a _ ha => ?_).symm
-  rw [not_mem_support_iff.mp ha, single_zero]
+  classical
+  refine FunLike.coe_injective ?_
+  simp_rw [coe_finset_sum, single_eq_pi_single, Finset.univ_sum_single]
 
 @[simp]
 theorem univ_sum_single_apply [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
