@@ -432,9 +432,6 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
   { Complex.addGroupWithOne with
-    zero := (0 : ℂ)
-    add := (· + ·)
-    one := 1
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp [add_comm]
@@ -1041,7 +1038,7 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 #align complex.abs_conj Complex.abs_conj
 
-@[simp]
+-- Porting note: @[simp] can prove it now
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
@@ -1177,7 +1174,7 @@ noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
 #align complex.cau_seq_im Complex.cauSeqIm
 
 theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
-  IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
+    IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt
     (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
@@ -1189,7 +1186,7 @@ noncomputable def limAux (f : CauSeq ℂ Complex.abs) : ℂ :=
 #align complex.lim_aux Complex.limAux
 
 theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
-  f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
+    f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
   (exists_forall_ge_and
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
@@ -1225,7 +1222,7 @@ theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := b
 #align complex.lim_im Complex.lim_im
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
-  IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
+    IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
     rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩

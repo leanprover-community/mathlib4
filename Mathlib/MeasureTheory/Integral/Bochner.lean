@@ -1379,7 +1379,7 @@ theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ �
       calc
         ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) :=
           norm_integral_le_lintegral_norm _
-        _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm )
+        _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm)
     fun h : ¬AEStronglyMeasurable f μ => by
       rw [integral_non_aestronglyMeasurable h, norm_zero]
       exact integral_nonneg_of_ae le_ae
@@ -1444,6 +1444,17 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
   apply tendsto_integral_approxOn_of_measurable hf fmeas _ _ (integrable_zero _ _ _)
   exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 #align measure_theory.tendsto_integral_approx_on_of_measurable_of_range_subset MeasureTheory.tendsto_integral_approxOn_of_measurable_of_range_subset
+
+theorem tendsto_integral_norm_approxOn_sub [MeasurableSpace E] [BorelSpace E] {f : α → E}
+    (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
+    Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
+      atTop (𝓝 0) := by
+  convert (tendsto_toReal zero_ne_top).comp (tendsto_approxOn_range_L1_nnnorm fmeas hf) with n
+  rw [integral_norm_eq_lintegral_nnnorm]
+  · simp
+  · apply (SimpleFunc.aestronglyMeasurable _).sub
+    apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩ ).aestronglyMeasurable
+    exact (isSeparable_of_separableSpace_subtype (range f ∪ {0})).mono (subset_union_left _ _)
 
 variable {ν : Measure α}
 
@@ -1635,8 +1646,7 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
 
 theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
-    ∫ x in s, f x ∂μ =
-      ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ):= by
+    ∫ x in s, f x ∂μ = ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) := by
   rw [← map_comap_subtype_coe hs]
   exact (MeasurableEmbedding.subtype_coe hs).integral_map _
 
@@ -1680,33 +1690,18 @@ theorem set_integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f
   · exact integral_zero_measure _
 #align measure_theory.set_integral_dirac MeasureTheory.set_integral_dirac
 
-theorem mul_meas_ge_le_integral_of_nonneg [IsFiniteMeasure μ] {f : α → ℝ} (hf_nonneg : 0 ≤ f)
+/-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
+theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * (μ { x | ε ≤ f x }).toReal ≤ ∫ x, f x ∂μ := by
-  cases' lt_or_le ε 0 with hε hε
-  · exact
-      (mul_nonpos_of_nonpos_of_nonneg hε.le ENNReal.toReal_nonneg).trans (integral_nonneg hf_nonneg)
-  rw [integral_eq_lintegral_of_nonneg_ae (eventually_of_forall fun x => hf_nonneg x)
-      hf_int.aestronglyMeasurable,
-    ← ENNReal.toReal_ofReal hε, ← ENNReal.toReal_mul]
-  have : { x : α | (ENNReal.ofReal ε).toReal ≤ f x } =
-      { x : α | ENNReal.ofReal ε ≤ (fun x => ENNReal.ofReal (f x)) x } := by
-    ext1 x
-    rw [Set.mem_setOf_eq, Set.mem_setOf_eq, ← ENNReal.toReal_ofReal (hf_nonneg x)]
-    exact ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top ENNReal.ofReal_ne_top
-  rw [this]
-  have h_meas : AEMeasurable (fun x => ENNReal.ofReal (f x)) μ :=
-    measurable_id'.ennreal_ofReal.comp_aemeasurable hf_int.aemeasurable
-  have h_mul_meas_le := @mul_meas_ge_le_lintegral₀ _ _ μ _ h_meas (ENNReal.ofReal ε)
-  rw [ENNReal.toReal_le_toReal _ _]
-  · exact h_mul_meas_le
-  · simp only [Ne.def, ENNReal.mul_eq_top, ENNReal.ofReal_eq_zero, not_le,
-      ENNReal.ofReal_ne_top, false_and_iff, or_false_iff, not_and]
-    exact fun _ => measure_ne_top _ _
-  · have h_lt_top : ∫⁻ a, ‖f a‖₊ ∂μ < ∞ := hf_int.hasFiniteIntegral
-    simp_rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs] at h_lt_top
-    convert h_lt_top.ne
-    rename_i x
-    rw [abs_of_nonneg (hf_nonneg x)]
+  cases' eq_top_or_lt_top (μ {x | ε ≤ f x}) with hμ hμ
+  · simpa [hμ] using integral_nonneg_of_ae hf_nonneg
+  · have := Fact.mk hμ
+    calc
+      ε * (μ { x | ε ≤ f x }).toReal = ∫ _ in {x | ε ≤ f x}, ε ∂μ := by simp [mul_comm]
+      _ ≤ ∫ x in {x | ε ≤ f x}, f x ∂μ :=
+        integral_mono_ae (integrable_const _) (hf_int.mono_measure μ.restrict_le_self) <|
+          ae_restrict_mem₀ <| hf_int.aemeasurable.nullMeasurable measurableSet_Ici
+      _ ≤ _ := integral_mono_measure μ.restrict_le_self hf_nonneg hf_int
 #align measure_theory.mul_meas_ge_le_integral_of_nonneg MeasureTheory.mul_meas_ge_le_integral_of_nonneg
 
 /-- Hölder's inequality for the integral of a product of norms. The integral of the product of two
@@ -1782,27 +1777,27 @@ theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.IsConjugateExpo
 set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_mul_le_Lp_mul_Lq_of_nonneg MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg
 
-theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : Measure α} {f : α → ℝ}
-    (hf : Integrable f μ) :
-    ∫ a, f a ∂μ = ∑' a, f a * (μ {a}).toReal := by
+theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : Measure α}
+    {f : α → E} (hf : Integrable f μ) :
+    ∫ a, f a ∂μ = ∑' a, (μ {a}).toReal • f a := by
   rw [← Measure.sum_smul_dirac μ] at hf
   rw [← Measure.sum_smul_dirac μ, integral_sum_measure hf]
   congr 1 with a : 1
-  rw [integral_smul_measure, integral_dirac, mul_comm, smul_eq_mul, Measure.sum_smul_dirac]
+  rw [integral_smul_measure, integral_dirac, Measure.sum_smul_dirac]
 
-theorem integral_singleton' {μ : Measure α} {f : α → ℝ} (hf : StronglyMeasurable f) (a : α) :
-    ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
+theorem integral_singleton' {μ : Measure α} {f : α → E} (hf : StronglyMeasurable f) (a : α) :
+    ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
   simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf, smul_eq_mul,
     mul_comm]
 
-theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → ℝ) (a : α) :
-    ∫ a in {a}, f a ∂μ = f a * (μ {a}).toReal := by
+theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → E) (a : α) :
+    ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
   simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, smul_eq_mul,
     mul_comm]
 
-theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
-    {s : Set α} (hs : s.Countable) (hf : Integrable f (μ.restrict s)) :
-    ∫ a in s, f a ∂μ = ∑' a : s, f a * (μ {(a : α)}).toReal := by
+theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
+    (hf : Integrable f (μ.restrict s)) :
+    ∫ a in s, f a ∂μ = ∑' a : s, (μ {(a : α)}).toReal • f a := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
     rw [← map_comap_subtype_coe, integrable_map_measure] at hf
@@ -1817,22 +1812,22 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → ℝ)
     (MeasurableSet.singleton a)]
   simp
 
-theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ)
+theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → E)
     (hf : Integrable f (μ.restrict s)) :
-    ∫ x in s, f x ∂μ = ∑ x in s, f x * (μ {x}).toReal := by
+    ∫ x in s, f x ∂μ = ∑ x in s, (μ {x}).toReal • f x := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
-theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ)
+theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → E)
     (hf : Integrable f μ) :
-    ∫ x, f x ∂μ = ∑ x, f x * (μ {x}).toReal := by
+    ∫ x, f x ∂μ = ∑ x, (μ {x}).toReal • f x := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ , Finset.coe_univ, Measure.restrict_univ]
   simp only [Finset.coe_univ, Measure.restrict_univ, hf]
 
-theorem integral_unique [Unique α] (f : α → ℝ) : ∫ x, f x ∂μ = f default * (μ univ).toReal :=
+theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ).toReal • f default :=
   calc
     ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
-    _ = f default * (μ univ).toReal := by rw [integral_const, smul_eq_mul, mul_comm]
+    _ = (μ univ).toReal • f default := by rw [integral_const]
 
 end Properties
 

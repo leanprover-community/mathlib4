@@ -522,7 +522,7 @@ theorem sum_inner {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
 /-- An inner product with a sum on the right. -/
 theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
     ⟪x, ∑ i in s, f i⟫ = ∑ i in s, ⟪x, f i⟫ :=
-  (LinearMap.flip sesqFormOfInner x).map_sum
+  map_sum (LinearMap.flip sesqFormOfInner x) _ _
 #align inner_sum inner_sum
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
@@ -1167,7 +1167,7 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
 #align inner_eq_sum_norm_sq_div_four inner_eq_sum_norm_sq_div_four
 
 /-- Formula for the distance between the images of two nonzero points under an inversion with center
-zero. See also `euclidean_geometry.dist_inversion_inversion` for inversions around a general
+zero. See also `EuclideanGeometry.dist_inversion_inversion` for inversions around a general
 point. -/
 theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) :
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) = R ^ 2 / (‖x‖ * ‖y‖) * dist x y :=
@@ -2317,8 +2317,8 @@ namespace UniformSpace.Completion
 open UniformSpace Function
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
-    Inner 𝕜' (Completion E')
-    where inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
+    Inner 𝕜' (Completion E') where
+  inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
 
 @[simp]
 theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inner a b : 𝕜) :=

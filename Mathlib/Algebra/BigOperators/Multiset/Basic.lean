@@ -117,6 +117,7 @@ theorem prod_add (s t : Multiset α) : prod (s + t) = prod s * prod t :=
 #align multiset.prod_add Multiset.prod_add
 #align multiset.sum_add Multiset.sum_add
 
+@[to_additive]
 theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | 0 => by
     rw [zero_nsmul, pow_zero]
@@ -342,9 +343,9 @@ theorem sum_map_mul_right : sum (s.map fun i => f i * a) = sum (s.map f) * a :=
 
 end NonUnitalNonAssocSemiring
 
-section Semiring
+section NonUnitalSemiring
 
-variable [Semiring α]
+variable [NonUnitalSemiring α]
 
 theorem dvd_sum {a : α} {s : Multiset α} : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
   Multiset.induction_on s (fun _ => dvd_zero _) fun x s ih h => by
@@ -352,7 +353,7 @@ theorem dvd_sum {a : α} {s : Multiset α} : (∀ x ∈ s, a ∣ x) → a ∣ s.
     exact dvd_add (h _ (mem_cons_self _ _)) (ih fun y hy => h _ <| mem_cons.2 <| Or.inr hy)
 #align multiset.dvd_sum Multiset.dvd_sum
 
-end Semiring
+end NonUnitalSemiring
 
 /-! ### Order -/
 
@@ -448,7 +449,7 @@ theorem prod_eq_one [CommMonoid α] {m : Multiset α} (h : ∀ x ∈ m, x = (1 :
 #align multiset.sum_eq_zero Multiset.sum_eq_zero
 
 @[to_additive]
-theorem le_prod_of_mem [CanonicallyOrderedMonoid α] {m : Multiset α} {a : α} (h : a ∈ m) :
+theorem le_prod_of_mem [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α} (h : a ∈ m) :
     a ≤ m.prod := by
   obtain ⟨m', rfl⟩ := exists_cons_of_mem h
   rw [prod_cons]

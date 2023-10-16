@@ -83,6 +83,8 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
     exact zero_mk _ _ _
   · exact congr_arg num
 
+lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
+
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
   rw [←zero_divInt b, divInt_eq_iff b0 b0, zero_mul, mul_eq_zero, or_iff_left b0]
@@ -116,7 +118,7 @@ theorem coe_int_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := num_den'
 numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
 @[elab_as_elim]
 def numDenCasesOn.{u} {C : ℚ → Sort u} :
-    ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).coprime d → C (n /. d)), C a
+    ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).Coprime d → C (n /. d)), C a
   | ⟨n, d, h, c⟩, H => by rw [num_den']; exact H n d (Nat.pos_of_ne_zero h) c
 #align rat.num_denom_cases_on Rat.numDenCasesOn
 
@@ -509,6 +511,10 @@ theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q
   rfl
 #align rat.coe_int_num_of_denom_eq_one Rat.coe_int_num_of_den_eq_one
 
+lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
+  rw [Rat.isInt, Nat.beq_eq_true_eq] at h
+  exact (Rat.coe_int_num_of_den_eq_one h).symm
+
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
   ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
@@ -546,8 +552,8 @@ theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   · simp [h, HDiv.hDiv, Rat.div, Div.div]
     unfold Rat.inv
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
-    have h₂ : ¬ (d : ℤ) < 0 := by simp only [not_lt, Nat.cast_nonneg]
-    simp [h, h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
+    have h₂ : ¬ (d : ℤ) < 0 := of_decide_eq_false rfl
+    simp [h₁, h₂, ←Rat.normalize_eq_mk', Rat.normalize_eq_mkRat, ← mkRat_one,
       Rat.mkRat_mul_mkRat]
 
 end Rat

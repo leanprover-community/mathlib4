@@ -35,7 +35,7 @@ example (x : Nat) (h : x - x = 0) : x = x := by
   rfl
 
 example : True := by
-  set g : Nat → Int := (fun ε => ε) with h
+  set g : Nat → Int := (fun ε => ε) with _h
   trivial
 
 -- simulate a slow to elaborate term
@@ -46,6 +46,6 @@ elab "test" : term => do
 
 -- this will timeout if test is elaborated multiple times
 set_option maxHeartbeats 3000 in
-example {a b c d e f g h : Nat} : 1 = 1 := by
-  set a : Nat := test with h
+example {_a _b _c _d _e _f _g _h : Nat} : 1 = 1 := by
+  set a : Nat := test with _h
   trivial

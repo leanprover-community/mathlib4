@@ -607,7 +607,8 @@ def fst : Submodule R (M × M₂) :=
 
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
-def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where -- Porting note: proofs were `tidy` or `simp`
+def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
+  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
   invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.fst_add, Subtype.forall,
@@ -642,7 +643,8 @@ def snd : Submodule R (M × M₂) :=
 
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
-def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where -- Porting note: proofs were `tidy` or `simp`
+def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
+  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
   invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.snd_add, Subtype.forall,
@@ -756,6 +758,36 @@ theorem snd_comp_prodComm :
   ext <;> simp
 
 end prodComm
+
+section SkewSwap
+
+variable (R M N)
+variable [Semiring R]
+variable [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N]
+
+/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
+protected def skewSwap : (M × N) ≃ₗ[R] (N × M) where
+  toFun x := (-x.2, x.1)
+  invFun x := (x.2, -x.1)
+  map_add' _ _ := by
+    simp [add_comm]
+  map_smul' _ _ := by
+    simp
+  left_inv _ := by
+    simp
+  right_inv _ := by
+    simp
+
+variable {R M N}
+
+@[simp]
+theorem skewSwap_apply (x : M × N) : LinearEquiv.skewSwap R M N x = (-x.2, x.1) := rfl
+
+@[simp]
+theorem skewSwap_symm_apply (x : N × M) : (LinearEquiv.skewSwap R M N).symm x = (x.2, -x.1) := rfl
+
+end SkewSwap
 
 section
 

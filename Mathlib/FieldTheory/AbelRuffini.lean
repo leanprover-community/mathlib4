@@ -394,7 +394,7 @@ theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aev
   have : _root_.IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
     rw [minpoly.eq_of_irreducible q_irred q_aeval, ←
       show minpoly F (⟨α, hα⟩ : solvableByRad F E) = minpoly F α from
-        minpoly.eq_of_algebraMap_eq (RingHom.injective _) (isIntegral ⟨α, hα⟩) rfl]
+        (minpoly.algebraMap_eq (RingHom.injective _) _).symm]
     exact isSolvable ⟨α, hα⟩
   refine' solvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ _)
   rw [mul_ne_zero_iff, Ne, Ne, C_eq_zero, inv_eq_zero]
