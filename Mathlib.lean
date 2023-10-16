@@ -908,6 +908,7 @@ import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.Constructor
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.Ext
@@ -1346,6 +1347,7 @@ import Mathlib.CategoryTheory.Triangulated.Rotate
 import Mathlib.CategoryTheory.Triangulated.SpectralObject
 import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.Abelian
+import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homological

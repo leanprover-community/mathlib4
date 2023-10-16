@@ -1,157 +1,189 @@
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
-import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Abelian.Constructor
+import Mathlib.CategoryTheory.Shift.SingleFunctors
 
 namespace CategoryTheory
 
-open Category Limits Preadditive ZeroObject
-
-variable {C : Type*} [Category C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  {A : Set C} (hA : ∀ {X Y : C} {n : ℤ} (f : X ⟶ Y⟦n⟧), X ∈ A → Y ∈ A → n < 0 → f = 0)
+open Category Limits Preadditive ZeroObject Pretriangulated
 
 namespace Triangulated
 
-open Pretriangulated
-
-variable (T : Triangle C) (hT : T ∈ distTriang C) (hT₁ : T.obj₁ ∈ A) (hT₂ : T.obj₂ ∈ A)
-  {K Q : C} (α : K⟦(1 : ℤ)⟧ ⟶ T.obj₃) (β : T.obj₃ ⟶ Q) {γ : Q ⟶ K⟦(1 : ℤ)⟧⟦(1 : ℤ)⟧}
-  (hT' : Triangle.mk α β γ ∈ distTriang C) (hK : K ∈ A) (hQ : Q ∈ A)
+variable {C A : Type*} [Category C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
 namespace AbelianSubcategory
 
-lemma vanishing_from_positive_shift {X Y : C} {n : ℤ} (f : X⟦n⟧ ⟶ Y)
-    (hX : X ∈ A) (hY : Y ∈ A) (hn : 0 < n) : f = 0 := by
+variable [Category A] [Preadditive A] {ι : A ⥤ C} [ι.Additive] [Full ι] [Faithful ι]
+  (hι : ∀ ⦃X Y : A⦄ ⦃n : ℤ⦄ (f : ι.obj X ⟶ (ι.obj Y)⟦n⟧), n < 0 → f = 0)
+
+lemma vanishing_from_positive_shift {X Y : A} {n : ℤ} (f : (ι.obj X)⟦n⟧ ⟶ ι.obj Y)
+    (hn : 0 < n) : f = 0 := by
   apply (shiftFunctor C (-n)).map_injective
-  rw [← cancel_epi ((shiftEquiv C n).unitIso.hom.app X), Functor.map_zero, comp_zero]
-  exact hA _ hX hY (by linarith)
+  rw [← cancel_epi ((shiftEquiv C n).unitIso.hom.app _), Functor.map_zero, comp_zero]
+  exact hι _ (by linarith)
 
-noncomputable def ιK : K ⟶ T.obj₁ := (shiftFunctor C (1 : ℤ)).preimage (α ≫ T.mor₃)
+section
 
-def πQ : T.obj₂ ⟶ Q := T.mor₂ ≫ β
+variable {X₁ X₂ : A} {f₁ : X₁ ⟶ X₂} {X₃ : C} (f₂ : ι.obj X₂ ⟶ X₃) (f₃ : X₃ ⟶ (ι.obj X₁)⟦(1 : ℤ)⟧)
+  (hT : Triangle.mk (ι.map f₁) f₂ f₃ ∈ distTriang C) {K Q : A}
+  (α : (ι.obj K)⟦(1 : ℤ)⟧ ⟶ X₃) (β : X₃ ⟶ (ι.obj Q)) {γ : ι.obj Q ⟶ (ι.obj K)⟦(1 : ℤ)⟧⟦(1 : ℤ)⟧}
+  (hT' : Triangle.mk α β γ ∈ distTriang C)
+
+noncomputable def ιK : K ⟶ X₁ := (ι ⋙ shiftFunctor C (1 : ℤ)).preimage (α ≫ f₃)
+
+def πQ : X₂ ⟶ Q := ι.preimage (f₂ ≫ β)
 
 @[simp, reassoc]
-lemma shift_ιK : (ιK T α)⟦(1 : ℤ)⟧' = α ≫ T.mor₃ := by
-  simp [ιK]
+lemma shift_ι_map_ιK : (ι.map (ιK f₃ α))⟦(1 : ℤ)⟧' = α ≫ f₃ := by
+  apply (ι ⋙ shiftFunctor C (1 : ℤ)).image_preimage
 
-variable {T}
+@[simp, reassoc]
+lemma ι_map_πQ : ι.map (πQ f₂ β) = f₂ ≫ β := by
+  apply ι.image_preimage
 
-lemma ιK_mor₁ : ιK T α ≫ T.mor₁ = 0 := by
-  apply (shiftFunctor C (1 : ℤ)).map_injective
-  simp only [Functor.map_comp, shift_ιK, assoc, Functor.map_zero]
-  rw [comp_dist_triangle_mor_zero₃₁ T hT, comp_zero]
+variable {f₂ f₃}
 
-lemma mor₂_πQ : T.mor₁ ≫ πQ T β = 0 := by
-  dsimp [πQ]
-  rw [comp_dist_triangle_mor_zero₁₂_assoc T hT, zero_comp]
+lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 := by
+  apply (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
+  simp only [Functor.comp_map, Functor.map_comp, shift_ι_map_ιK,
+    assoc, Functor.map_zero]
+  erw [comp_dist_triangle_mor_zero₃₁ _ hT, comp_zero]
+
+lemma mor₁_πQ : f₁ ≫ πQ f₂ β = 0 := by
+  apply ι.map_injective
+  simp only [Functor.map_comp, Functor.map_zero, ι_map_πQ]
+  erw [comp_dist_triangle_mor_zero₁₂_assoc _ hT, zero_comp]
 
 variable {α β}
 
-lemma ιK_cancel_zero
-    {B : C} (k : B ⟶ K) (hB : B ∈ A) (hk : k ≫ ιK T α = 0) : k = 0 := by
-  replace hk := (shiftFunctor C (1 : ℤ)).congr_map hk
-  apply (shiftFunctor C (1 : ℤ)).map_injective
-  simp only [Functor.map_comp, Functor.map_zero, shift_ιK, ← assoc] at hk ⊢
-  obtain ⟨l, hl⟩ := T.coyoneda_exact₃ hT _ hk
-  obtain rfl : l = 0 := vanishing_from_positive_shift hA _ hB hT₂ (by linarith)
+lemma mono_ιK : Mono (ιK f₃ α) := by
+  rw [mono_iff_cancel_zero]
+  intro B k hk
+  replace hk := (ι ⋙ shiftFunctor C (1 : ℤ)).congr_map hk
+  apply (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
+  simp only [Functor.comp_obj, Functor.comp_map, Functor.map_comp,
+    shift_ι_map_ιK, Functor.map_zero, ← assoc] at hk ⊢
+  obtain ⟨l, hl⟩ := Triangle.coyoneda_exact₃ _ hT _ hk
+  obtain rfl : l = 0 := vanishing_from_positive_shift hι _ (by linarith)
   rw [zero_comp] at hl
-  obtain ⟨m, hm⟩ := Triangle.coyoneda_exact₁ _ hT' (k⟦(1 : ℤ)⟧'⟦(1 : ℤ)⟧') (by
+  obtain ⟨m, hm⟩ := Triangle.coyoneda_exact₁ _ hT' ((ι.map k)⟦(1 : ℤ)⟧'⟦(1 : ℤ)⟧') (by
     dsimp
     rw [← Functor.map_comp, hl, Functor.map_zero])
-  dsimp at m
+  dsimp at m hm
   obtain rfl : m = 0 := by
-    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by linarith)).hom.app B),
-      comp_zero]
-    exact vanishing_from_positive_shift hA _ hB hQ (by linarith)
+    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by linarith)).hom.app _), comp_zero]
+    exact vanishing_from_positive_shift hι _ (by linarith)
   rw [zero_comp] at hm
   apply (shiftFunctor C (1 : ℤ)).map_injective
   rw [hm, Functor.map_zero]
 
-lemma πQ_cancel_zero
-    {B : C} (k : Q ⟶ B) (hB : B ∈ A) (hk : πQ T β ≫ k = 0) : k = 0 := by
-  dsimp [πQ] at hk
-  rw [assoc] at hk
-  obtain ⟨l, hl⟩ := T.yoneda_exact₃ hT _ hk
-  obtain rfl : l = 0 := vanishing_from_positive_shift hA _ hT₁ hB (by linarith)
+lemma epi_πQ : Epi (πQ f₂ β) := by
+  rw [epi_iff_cancel_zero]
+  intro B k hk
+  replace hk := ι.congr_map hk
+  simp only [Functor.map_comp, ι_map_πQ, assoc, Functor.map_zero] at hk
+  obtain ⟨l, hl⟩ := Triangle.yoneda_exact₃ _ hT _ hk
+  obtain rfl : l = 0 := vanishing_from_positive_shift hι _ (by linarith)
   rw [comp_zero] at hl
-  obtain ⟨m, hm⟩ := Triangle.yoneda_exact₃ _ hT' k hl
+  obtain ⟨m, hm⟩ := Triangle.yoneda_exact₃ _ hT' (ι.map k) hl
   dsimp at m hm
   obtain rfl : m = 0 := by
-    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by linarith)).hom.app K),
+    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by linarith)).hom.app _),
       comp_zero]
-    exact vanishing_from_positive_shift hA _ hK hB (by linarith)
-  rw [hm, comp_zero]
+    exact vanishing_from_positive_shift hι _ (by linarith)
+  apply ι.map_injective
+  rw [hm, comp_zero, ι.map_zero]
 
-lemma ιK_lift
-    {B : C} (x₁ : B ⟶ T.obj₁) (hB : B ∈ A) (hx₁ : x₁ ≫ T.mor₁ = 0) :
-    ∃ (k : B ⟶ K), k ≫ ιK T α = x₁ := by
-  suffices ∃ (k' : B⟦(1 : ℤ)⟧ ⟶ K⟦(1 : ℤ)⟧), x₁⟦(1 : ℤ)⟧' = k' ≫ α ≫ T.mor₃ by
+lemma ιK_lift {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
+    ∃ (k : B ⟶ K), k ≫ ιK f₃ α = x₁ := by
+  suffices ∃ (k' : (ι.obj B)⟦(1 : ℤ)⟧ ⟶ (ι.obj K)⟦(1 : ℤ)⟧), (ι.map x₁)⟦(1 : ℤ)⟧' = k' ≫ α ≫ f₃ by
     obtain ⟨k', hk'⟩ := this
-    refine' ⟨(shiftFunctor C (1 : ℤ)).preimage k', _⟩
-    apply (shiftFunctor C (1 : ℤ)).map_injective
-    rw [Functor.map_comp, Functor.image_preimage, shift_ιK, hk']
-  obtain ⟨x₃, hx₃⟩ := T.coyoneda_exact₁ hT (x₁⟦(1 : ℤ)⟧')
-    (by rw [← Functor.map_comp, hx₁, Functor.map_zero])
+    refine' ⟨(ι ⋙ shiftFunctor C (1 : ℤ)).preimage k', _⟩
+    apply (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
+    rw [Functor.map_comp, Functor.image_preimage, Functor.comp_map, shift_ι_map_ιK,
+      Functor.comp_map, hk']
+  obtain ⟨x₃, hx₃⟩ := Triangle.coyoneda_exact₁ _ hT ((ι.map x₁)⟦(1 : ℤ)⟧')
+    (by
+      dsimp
+      rw [← Functor.map_comp, ← Functor.map_comp, hx₁, Functor.map_zero, Functor.map_zero])
   obtain ⟨k', hk'⟩ := Triangle.coyoneda_exact₂ _ hT' x₃
-    (vanishing_from_positive_shift hA _ hB hQ (by linarith))
+    (vanishing_from_positive_shift hι _ (by linarith))
   refine' ⟨k', _⟩
-  dsimp at hk'
+  dsimp at hk' hx₃
   rw [hx₃, hk', assoc]
 
-lemma πQ_desc
-    {B : C} (x₂ : T.obj₂ ⟶ B) (hB : B ∈ A) (hx₂ : T.mor₁ ≫ x₂ = 0) :
-    ∃ (k : Q ⟶ B), πQ T β ≫ k = x₂ := by
-  obtain ⟨x₁, hx₁⟩ := T.yoneda_exact₂ hT x₂ hx₂
-  obtain ⟨k, hk⟩ := Triangle.yoneda_exact₂ _ hT' x₁
-    (vanishing_from_positive_shift hA _ hK hB (by linarith))
-  dsimp at k hk
-  refine' ⟨k, _⟩
-  dsimp [πQ]
-  rw [assoc, hx₁, hk]
-
-variable (α β)
-
-noncomputable abbrev kernelFork :=
-  @KernelFork.ofι (FullSubcategory A) _ _ ⟨T.obj₁, hT₁⟩ ⟨T.obj₂, hT₂⟩ T.mor₁ ⟨K, hK⟩
-    (ιK T α) (ιK_mor₁ hT α)
-
-noncomputable abbrev cokernelFork :=
-  @CokernelCofork.ofπ (FullSubcategory A) _ _ ⟨T.obj₁, hT₁⟩ ⟨T.obj₂, hT₂⟩ T.mor₁ ⟨Q, hQ⟩
-    (πQ T β) (mor₂_πQ hT β)
-
-variable {α β}
-
-noncomputable def isLimitKernelFork : IsLimit (kernelFork hT hT₁ hT₂ α hK) :=
-  KernelFork.IsLimit.ofι _ _ (fun {B} x₁ hx₁ => (ιK_lift hA hT hT' hQ x₁ B.2 hx₁).choose)
-    (fun {B} x₁ hx₁ => (ιK_lift hA hT hT' hQ x₁ B.2 hx₁).choose_spec)
+noncomputable def isLimitKernelFork : IsLimit (KernelFork.ofι _ (ιK_mor₁ hT α)) :=
+  KernelFork.IsLimit.ofι _ _  (fun {B} x₁ hx₁ => (ιK_lift hι hT hT' x₁ hx₁).choose)
+    (fun {B} x₁ hx₁ => (ιK_lift hι hT hT' x₁ hx₁).choose_spec)
     (fun {B} x₁ hx₁ m hm => by
-      rw [← sub_eq_zero]
-      refine' ιK_cancel_zero hA hT hT₂ hT' hQ _ B.2 _
-      rw [sub_comp, sub_eq_zero, (ιK_lift hA hT hT' hQ x₁ B.2 hx₁).choose_spec]
-      exact hm)
+      have := mono_ιK hι hT hT'
+      rw [← cancel_mono (ιK f₃ α), (ιK_lift hι hT hT' x₁ hx₁).choose_spec, hm])
 
-noncomputable def isColimitCokernelCofork : IsColimit (cokernelFork hT hT₁ hT₂ β hQ) :=
+lemma πQ_desc {B : A} (x₂ : X₂ ⟶ B) (hx₂ : f₁ ≫ x₂ = 0) :
+    ∃ (k : Q ⟶ B), πQ f₂ β ≫ k = x₂ := by
+  obtain ⟨x₁, hx₁⟩ := Triangle.yoneda_exact₂ _ hT (ι.map x₂) (by
+    dsimp
+    rw [← ι.map_comp, hx₂, ι.map_zero])
+  obtain ⟨k, hk⟩ := Triangle.yoneda_exact₂ _ hT' x₁
+    (vanishing_from_positive_shift hι _ (by linarith))
+  dsimp at k hk hx₁
+  refine' ⟨ι.preimage k, _⟩
+  apply ι.map_injective
+  simp only [Functor.map_comp, ι_map_πQ, Functor.image_preimage, assoc, hx₁, hk]
+
+noncomputable def isColimitCokernelCofork : IsColimit (CokernelCofork.ofπ _ (mor₁_πQ hT β)) :=
   CokernelCofork.IsColimit.ofπ _ _
-    (fun {B} x₂ hx₂ => (πQ_desc hA hT hT' hK x₂ B.2 hx₂).choose)
-    (fun {B} x₂ hx₂ => (πQ_desc hA hT hT' hK x₂ B.2 hx₂).choose_spec)
+    (fun {B} x₂ hx₂ => (πQ_desc hι hT hT' x₂ hx₂).choose)
+    (fun {B} x₂ hx₂ => (πQ_desc hι hT hT' x₂ hx₂).choose_spec)
     (fun {B} x₂ hx₂ m hm => by
-      rw [← sub_eq_zero]
-      refine' πQ_cancel_zero hA hT hT₁ hT' hK _ B.2 _
-      rw [comp_sub, sub_eq_zero, (πQ_desc hA hT hT' hK x₂ B.2 hx₂).choose_spec]
-      exact hm)
+      have := epi_πQ hι hT hT'
+      rw [← cancel_epi (πQ f₂ β), (πQ_desc hι hT hT' x₂ hx₂).choose_spec, hm])
 
 -- BBD 1.2.1, p. 27
-lemma hasKernel :
-    HasKernel (show FullSubcategory.mk T.obj₁ hT₁ ⟶ FullSubcategory.mk T.obj₂ hT₂ from T.mor₁) :=
-  ⟨_, isLimitKernelFork hA hT hT₁ hT₂ hT' hK hQ⟩
+lemma hasKernel : HasKernel f₁ := ⟨_, isLimitKernelFork hι hT hT'⟩
+lemma hasCokernel : HasCokernel f₁ := ⟨_, isColimitCokernelCofork hι hT hT'⟩
 
-lemma hasCokernel :
-    HasCokernel (show FullSubcategory.mk T.obj₁ hT₁ ⟶ FullSubcategory.mk T.obj₂ hT₂ from T.mor₁) :=
-  ⟨_, isColimitCokernelCofork hA hT hT₁ hT₂ hT' hK hQ⟩
+end
+
+variable (ι)
+
+def admissibleMorphism : MorphismProperty A := fun X₁ X₂ f₁ =>
+  ∀ ⦃X₃ : C⦄ (f₂ : ι.obj X₂ ⟶ X₃) (f₃ : X₃ ⟶ (ι.obj X₁)⟦(1 : ℤ)⟧)
+    (_ : Triangle.mk (ι.map f₁) f₂ f₃ ∈ distTriang C),
+  ∃ (K Q : A) (α : (ι.obj K)⟦(1 : ℤ)⟧ ⟶ X₃) (β : X₃ ⟶ (ι.obj Q))
+    (γ : ι.obj Q ⟶ (ι.obj K)⟦(1 : ℤ)⟧⟦(1 : ℤ)⟧), Triangle.mk α β γ ∈ distTriang C
+
+variable {ι}
+
+lemma hasKernel_of_admissibleMorphism {X₁ X₂ : A} (f₁ : X₁ ⟶ X₂)
+    (hf₁ : admissibleMorphism ι f₁) :
+    HasKernel f₁ := by
+  obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (ι.map f₁)
+  obtain ⟨K, Q, α, β, γ, hT'⟩ := hf₁ f₂ f₃ hT
+  exact hasKernel hι hT hT'
+
+lemma hasCokernel_of_admissibleMorphism {X₁ X₂ : A} (f₁ : X₁ ⟶ X₂)
+    (hf₁ : admissibleMorphism ι f₁) :
+    HasCokernel f₁ := by
+  obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (ι.map f₁)
+  obtain ⟨K, Q, α, β, γ, hT'⟩ := hf₁ f₂ f₃ hT
+  exact hasCokernel hι hT hT'
+
+section
+
+variable (H : ∀ ⦃X₁ X₂ : A⦄ (f₁ : X₁ ⟶ X₂), admissibleMorphism ι f₁)
+  [HasFiniteProducts A]
+
+--lemma abelian : Abelian A := by
+--  apply Abelian.mk'
+--  sorry
+
+
+end
 
 end AbelianSubcategory
 
-variable (t : TStructure C) [IsTriangulated C]
+/-variable (t : TStructure C) [IsTriangulated C]
 
 namespace TStructure
 
@@ -374,7 +406,8 @@ noncomputable instance : Abelian t.Heart' := by
 
 end Heart
 
-end TStructure
+-/
+
 
 end Triangulated
 
