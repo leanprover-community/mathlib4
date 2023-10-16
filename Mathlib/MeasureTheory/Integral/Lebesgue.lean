@@ -626,6 +626,7 @@ theorem lintegral_zero_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) 
   bot_unique <| by simp [lintegral]
 #align measure_theory.lintegral_zero_measure MeasureTheory.lintegral_zero_measure
 
+@[simp]
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
 
