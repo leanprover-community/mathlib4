@@ -80,7 +80,7 @@ theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     rfl
 #align finsupp.to_multiset_map Finsupp.toMultiset_map
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
     f.toMultiset.prod = f.prod fun a n => a ^ n := by
   refine' f.induction _ _
@@ -110,8 +110,8 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
     _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
     _ = f a * ({a} : Multiset α).count a :=
       sum_eq_single _
-        (fun a' _ H => by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero]) fun H =>
-        by simp only [not_mem_support_iff.1 H, zero_mul]
+        (fun a' _ H => by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero])
+        (fun _ => zero_mul _)
     _ = f a := by rw [Multiset.count_singleton_self, mul_one]
 #align finsupp.count_to_multiset Finsupp.count_toMultiset
 

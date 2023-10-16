@@ -463,7 +463,10 @@ section ToProd
 
 variable {M N : Type*} [Monoid M] [Monoid N]
 
-@[to_additive] instance : Monoid (M ∗ N) := Con.monoid _
+@[to_additive] instance : Monoid (M ∗ N) :=
+  { mul_assoc := (Con.monoid _).mul_assoc
+    one_mul := (Con.monoid _).one_mul
+    mul_one := (Con.monoid _).mul_one }
 
 /-- The natural projection `M ∗ N →* M`. -/
 @[to_additive "The natural projection `AddMonoid.Coprod M N →+ M`."]

@@ -56,6 +56,10 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
     Subtype.coe_injective.eq_iff]; rfl
 #align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
 
+theorem Algebra.coe_norm_int {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) :
+    Algebra.norm ℤ x = Algebra.norm ℚ (x : K) :=
+  (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
+
 end Rat
 
 variable (K : Type*) [Field K]
@@ -177,7 +181,7 @@ distinguished (arbitrary) infinite place, prove that its kernel is the torsion s
 follows that `unitLattice` is a free `ℤ`-module (see `unitLattice_moduleFree `) of rank
 `card (InfinitePlaces K) - 1` (see `unitLattice_rank`). To prove that the `unitLattice` is a full
 `ℤ`-lattice, we need to prove that it is discrete (see `unitLattice_inter_ball_finite`) and that it
-spans the full space over `ℝ` (see ` unitLattice_span_eq_top`); this is the main part of the proof,
+spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the main part of the proof,
 see the section `span_top` below for more details.
 -/
 
@@ -368,7 +372,7 @@ theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K)
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :
-     w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
+    w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
   induction m with
   | zero =>
       exfalso
@@ -392,15 +396,13 @@ theorem seq_norm_le (n : ℕ) :
         simp only [Nat.lt_one_iff.mp hB, CharP.cast_eq_zero, mul_zero, zero_le]
       simp only [ne_eq, seq, map_one, Int.natAbs_one, this]
   | succ n =>
-      rw [← Nat.cast_le (α := ℚ), Int.cast_natAbs, Int.cast_abs]
-      change |algebraMap ℤ ℚ _| ≤ _
-      rw [← Algebra.norm_localization ℤ (Sₘ := K) (nonZeroDivisors ℤ)]
+      rw [← Nat.cast_le (α := ℚ), Int.cast_natAbs, Int.cast_abs, Algebra.coe_norm_int]
       exact (seq_next K w₁ hB (seq K w₁ hB n).prop).choose_spec.2.2
 
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
 image by the `logEmbedding` of these units  is `ℝ`-linearly independent, see
 `unit_lattice_span_eq_top`. -/
-theorem exists_unit (w₁ : InfinitePlace K ) :
+theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
   obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
     simp_rw [mul_comm]
