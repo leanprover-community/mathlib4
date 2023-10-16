@@ -622,6 +622,8 @@ lemma innerRegular_of_finiteMeasure [h : InnerRegularCompactLTTop μ] [IsFiniteM
   simp [measure_ne_top μ s]
 
 end InnerRegularCompactLTTop
+-- Generalized and moved to another file
+#align measure_theory.measure.regular.sigma_finite MeasureTheory.SigmaFinite.of_isFiniteMeasureOnCompacts
 
 namespace WeaklyRegular
 
