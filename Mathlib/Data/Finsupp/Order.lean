@@ -177,6 +177,9 @@ instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →
   decidable_of_iff _ (le_iff f g).symm
 #align finsupp.decidable_le Finsupp.decidableLE
 
+instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+  decidableLTOfDecidableLE
+
 @[simp]
 theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=
   (le_iff' _ _ support_single_subset).trans <| by simp
