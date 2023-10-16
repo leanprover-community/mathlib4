@@ -749,14 +749,16 @@ noncomputable def finEquivPowers [Finite G] (x : G) :
 #align fin_equiv_powers finEquivPowers
 #align fin_equiv_multiples finEquivMultiples
 
-@[to_additive (attr := simp) finEquivMultiples_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivMultiples_apply]
 theorem finEquivPowers_apply [Finite G] {x : G} {n : Fin (orderOf x)} :
     finEquivPowers x n = ⟨x ^ (n : ℕ), n, rfl⟩ :=
   rfl
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
-@[to_additive (attr := simp) finEquivMultiples_symm_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivMultiples_symm_apply]
 theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, pow_eq_mod_orderOf, Fin.val_mk]
@@ -877,14 +879,16 @@ noncomputable def finEquivZpowers [Finite G] (x : G) :
 #align fin_equiv_zpowers finEquivZpowers
 #align fin_equiv_zmultiples finEquivZmultiples
 
-@[to_additive (attr := simp) finEquivZmultiples_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_apply]
 theorem finEquivZpowers_apply [Finite G] {n : Fin (orderOf x)} :
     finEquivZpowers x n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ :=
   rfl
 #align fin_equiv_zpowers_apply finEquivZpowers_apply
 #align fin_equiv_zmultiples_apply finEquivZmultiples_apply
 
-@[to_additive (attr := simp) finEquivZmultiples_symm_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_symm_apply]
 theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℤ, x ^ m = x ^ n} :
     (finEquivZpowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
   rw [finEquivZpowers, Equiv.symm_trans_apply]
@@ -922,6 +926,12 @@ theorem orderOf_eq_card_zpowers : orderOf x = Fintype.card (zpowers x) :=
   (Fintype.card_fin (orderOf x)).symm.trans (Fintype.card_eq.2 ⟨finEquivZpowers x⟩)
 #align order_eq_card_zpowers orderOf_eq_card_zpowers
 #align add_order_eq_card_zmultiples addOrderOf_eq_card_zmultiples
+
+@[to_additive card_zmultiples_le]
+theorem card_zpowers_le (a : G) {k : ℕ} (k_pos : k ≠ 0)
+    (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
+  rw [← orderOf_eq_card_zpowers]
+  apply orderOf_le_of_pow_eq_one k_pos.bot_lt ha
 
 open QuotientGroup
 
