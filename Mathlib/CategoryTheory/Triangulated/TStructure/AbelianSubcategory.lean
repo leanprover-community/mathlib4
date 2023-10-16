@@ -196,6 +196,24 @@ noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
   exact Fork.ext (mulIso (-1) (Iso.refl _)) ((ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
     (by simp))
 
+noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
+    (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (f₃ : ι.obj X₃ ⟶ (ι.obj X₁)⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk (ι.map f₁) (ι.map f₂) f₃ ∈ distTriang C) :
+    IsColimit (CokernelCofork.ofπ f₂ (show f₁ ≫ f₂ = 0 from ι.map_injective (by
+        erw [Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT, ι.map_zero]))) := by
+  have hT' : Triangle.mk (0 : ((ι ⋙ shiftFunctor C (1 : ℤ)).obj 0) ⟶ _) (𝟙 (ι.obj X₃)) 0 ∈
+      distTriang C := by
+    refine' isomorphic_distinguished _ (inv_rot_of_dist_triangle _ (contractible_distinguished (ι.obj X₃))) _ _
+    refine' Triangle.isoMk _ _ (IsZero.iso _ _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by simp)
+    · dsimp
+      rw [IsZero.iff_id_eq_zero, ← Functor.map_id, ← Functor.map_id, id_zero,
+        Functor.map_zero, Functor.map_zero]
+    · dsimp
+      rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
+  refine' IsColimit.ofIsoColimit (AbelianSubcategory.isColimitCokernelCofork hι
+    hT hT') _
+  exact Cofork.ext (Iso.refl _) (ι.map_injective (by simp))
+
 variable (H : ∀ ⦃X₁ X₂ : A⦄ (f₁ : X₁ ⟶ X₂), admissibleMorphism ι f₁)
 
 --lemma abelian : Abelian A := by
