@@ -19,7 +19,7 @@ theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
   rw [Pi.single, Function.update_apply]
   split_ifs with h
   · simp [h]
-  · simp [Function.update_noteq h]
+  · simp [Pi.single_eq_of_ne h]
 
 theorem hasDerivAt_single (i : ι) (y : 𝕜) :
     HasDerivAt (Pi.single (f := fun _ ↦ 𝕜) i) (Pi.single i (1 : 𝕜)) y :=
