@@ -32,10 +32,6 @@ We define a Gaussian measure over the reals.
 
 open scoped ENNReal NNReal Real
 
-namespace MeasureTheory
-
-end MeasureTheory
-
 open MeasureTheory
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
@@ -102,13 +98,13 @@ lemma integrable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
 lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPdfReal μ v x) = 1 := by
   rw [←ENNReal.toReal_eq_one_iff]
-  have hfm : AEStronglyMeasurable (gaussianPdfReal μ v) ℙ :=
+  have hfm : AEStronglyMeasurable (gaussianPdfReal μ v) volume :=
     (stronglyMeasurable_gaussianPdfReal μ v).aestronglyMeasurable
   have hf : 0 ≤ₐₛ gaussianPdfReal μ v := ae_of_all _ (gaussianPdfReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
   simp only [gaussianPdfReal, gt_iff_lt, zero_lt_two, zero_le_mul_right, ge_iff_le, one_div,
     Nat.cast_ofNat, integral_mul_left]
-  rw [integral_sub_right_eq_self (μ := ℙ) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
+  rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
   simp only [gt_iff_lt, zero_lt_two, zero_le_mul_right, ge_iff_le, div_eq_inv_mul, mul_inv_rev,
     mul_neg]
   simp_rw [←neg_mul]
@@ -183,7 +179,6 @@ noncomputable
 def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPdf μ v)
 
-@[simp]
 lemma gaussianReal_of_var_ne_zero (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     gaussianReal μ v = volume.withDensity (gaussianPdf μ v) := if_neg hv
 
@@ -192,7 +187,7 @@ lemma gaussianReal_zero_var (μ : ℝ) : gaussianReal μ 0 = Measure.dirac μ :=
 
 instance instIsProbabilityMeasureGaussianReal (μ : ℝ) (v : ℝ≥0) :
     IsProbabilityMeasure (gaussianReal μ v) where
-  measure_univ := by by_cases h : v = 0 <;> simp [h]
+  measure_univ := by by_cases h : v = 0 <;> simp [gaussianReal_of_var_ne_zero, h]
 
 lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) {s : Set ℝ} (hs : MeasurableSet s) :
     gaussianReal μ v s = ∫⁻ x in s, gaussianPdf μ v x := by
@@ -207,24 +202,26 @@ lemma gaussianReal_apply_eq_integral (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0)
   · exact ae_of_all _ (gaussianPdfReal_nonneg _ _)
 
 lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    gaussianReal μ v ≪ ℙ := by
+    gaussianReal μ v ≪ volume := by
   rw [gaussianReal_of_var_ne_zero _ hv]
   exact withDensity_absolutelyContinuous _ _
 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    ℙ ≪ gaussianReal μ v := by
+    volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
   refine withDensity_absolutelyContinuous' ?_ ?_ ?_
   · exact (measurable_gaussianPdf _ _).aemeasurable
-  · exact ae_of_all _ (fun _ ↦ gaussianPdf_pos _ hv _)
+  · exact ae_of_all _ (fun _ ↦ (gaussianPdf_pos _ hv _).ne')
   · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
-lemma rnDeriv_gaussianReal (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    ∂(gaussianReal μ v)/∂ℙ =ₐₛ gaussianPdf μ v := by
-  rw [gaussianReal_of_var_ne_zero _ hv]
-  exact Measure.rnDeriv_withDensity _ (measurable_gaussianPdf μ v)
-
-end GaussianReal
+lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
+    ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPdf μ v := by
+  by_cases hv : v = 0
+  · simp only [hv, gaussianReal_zero_var, gaussianPdf_zero_var]
+    refine (Measure.eq_rnDeriv measurable_zero (mutuallySingular_dirac μ volume) ?_).symm
+    rw [withDensity_zero, add_zero]
+  · rw [gaussianReal_of_var_ne_zero _ hv]
+    exact Measure.rnDeriv_withDensity _ (measurable_gaussianPdf μ v)
 
 section Transformations
 
@@ -320,5 +317,6 @@ lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
 
 end Transformations
 
+end GaussianReal
 
 end ProbabilityTheory

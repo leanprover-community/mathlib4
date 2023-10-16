@@ -91,9 +91,19 @@ theorem lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν
   exact iSup_mono fun φ => iSup_mono' fun hφ => ⟨le_trans hφ hfg, lintegral_mono (le_refl φ) hμν⟩
 #align measure_theory.lintegral_mono' MeasureTheory.lintegral_mono'
 
+-- workaround for the known eta-reduction issue with `@[gcongr]`
+@[gcongr] theorem lintegral_mono_fn' ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) (h2 : μ ≤ ν) :
+    lintegral μ f ≤ lintegral ν g :=
+lintegral_mono' h2 hfg
+
 theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono' (le_refl μ) hfg
 #align measure_theory.lintegral_mono MeasureTheory.lintegral_mono
+
+-- workaround for the known eta-reduction issue with `@[gcongr]`
+@[gcongr] theorem lintegral_mono_fn ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
+    lintegral μ f ≤ lintegral μ g :=
+lintegral_mono hfg
 
 theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)
@@ -286,6 +296,10 @@ theorem set_lintegral_mono_ae' {s : Set α} {f g : α → ℝ≥0∞} (hs : Meas
 theorem set_lintegral_mono' {s : Set α} {f g : α → ℝ≥0∞} (hs : MeasurableSet s)
     (hfg : ∀ x ∈ s, f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ :=
   set_lintegral_mono_ae' hs (ae_of_all _ hfg)
+
+theorem set_lintegral_le_lintegral (s : Set α) (f : α → ℝ≥0∞) :
+    ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x, f x ∂μ :=
+  lintegral_mono' Measure.restrict_le_self le_rfl
 
 theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ :=
   le_antisymm (lintegral_mono_ae <| h.le) (lintegral_mono_ae <| h.symm.le)
@@ -615,6 +629,10 @@ theorem lintegral_zero_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) 
     (∫⁻ a, f a ∂(0 : Measure α)) = 0 :=
   bot_unique <| by simp [lintegral]
 #align measure_theory.lintegral_zero_measure MeasureTheory.lintegral_zero_measure
+
+@[simp]
+theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
+    ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
 
 theorem set_lintegral_empty (f : α → ℝ≥0∞) : ∫⁻ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, lintegral_zero_measure]
@@ -1327,6 +1345,11 @@ theorem lintegral_map_equiv [MeasurableSpace β] (f : β → ℝ≥0∞) (g : α
     ∫⁻ a, f a ∂map g μ = ∫⁻ a, f (g a) ∂μ :=
   g.measurableEmbedding.lintegral_map f
 #align measure_theory.lintegral_map_equiv MeasureTheory.lintegral_map_equiv
+
+protected theorem MeasurePreserving.lintegral_map_equiv [MeasurableSpace β] {ν : Measure β}
+    (f : β → ℝ≥0∞) (g : α ≃ᵐ β) (hg : MeasurePreserving g μ ν) :
+    ∫⁻ a, f a ∂ν = ∫⁻ a, f (g a) ∂μ := by
+  rw [← MeasureTheory.lintegral_map_equiv f g, hg.map_eq]
 
 theorem MeasurePreserving.lintegral_comp {mb : MeasurableSpace β} {ν : Measure β} {g : α → β}
     (hg : MeasurePreserving g μ ν) {f : β → ℝ≥0∞} (hf : Measurable f) :
