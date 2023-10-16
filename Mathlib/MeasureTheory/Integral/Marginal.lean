@@ -17,47 +17,11 @@ set_option autoImplicit true
 
 noncomputable section
 
--- not needed
--- theorem surjective_decode_iget (α : Type _) [Encodable α] [Inhabited α] :
---     Function.Surjective fun n => (Encodable.decode (α := α) n).iget := fun x =>
---   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
-
--- move this, maybe next to `measurable_update` in `MeasureTheory.MeasurableSpace`
-section Measurable
-variable {δ : Type _} [DecidableEq δ] {π : δ → Type _} [∀ a : δ, MeasurableSpace (π a)]
-
--- unused
-theorem measurable_update'  {a : δ} :
-    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
-  rw [measurable_pi_iff]; intro j
-  dsimp [update]
-  split_ifs with h
-  · subst h
-    dsimp
-    exact measurable_snd
-  · exact measurable_pi_iff.1 measurable_fst _
-
-theorem measurable_update_left {a : δ} {x : π a} :
-    Measurable (update · a x) := by
-  rw [measurable_pi_iff]; intro j
-  dsimp [update]
-  split_ifs with h
-  · subst h
-    exact measurable_const
-  · exact measurable_pi_apply j
-
-theorem measurable_updateFinset {s : Finset δ} {x : ∀ i, π i}  : Measurable (updateFinset x s) := by
-  simp_rw [updateFinset, measurable_pi_iff]
-  intro i
-  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
-
-end Measurable
-
 namespace MeasureTheory
 
 section Marginal
 
-variable {δ δ' : Type _} {π : δ → Type _} [∀ x, MeasurableSpace (π x)]
+variable {δ δ' : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)] [DecidableEq δ]
 variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π i} {i : δ}
 

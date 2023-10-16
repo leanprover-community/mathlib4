@@ -23,6 +23,7 @@ variable {ι ι' ι'' : Type _}
 
 open Set Function MeasurableSpace Equiv
 
+-- move this, maybe next to `measurable_update` in `MeasureTheory.MeasurableSpace`
 section Measurable
 
 open Set
@@ -49,6 +50,34 @@ def MeasurableEquiv.piUnique (α : ι → Type _) [Unique ι] [∀ i, Measurable
 theorem MeasurableSet.univ_pi_fintype {δ} {π : δ → Type _} [∀ i, MeasurableSpace (π i)] [Fintype δ]
     {t : ∀ i, Set (π i)} (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
   MeasurableSet.pi finite_univ.countable fun i _ => ht i
+
+variable {δ : Type _} [DecidableEq δ] {π : δ → Type _} [∀ a : δ, MeasurableSpace (π a)]
+
+-- unused
+theorem measurable_update'  {a : δ} :
+    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
+  rw [measurable_pi_iff]; intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    dsimp
+    exact measurable_snd
+  · exact measurable_pi_iff.1 measurable_fst _
+
+theorem measurable_update_left {a : δ} {x : π a} :
+    Measurable (update · a x) := by
+  rw [measurable_pi_iff]; intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    exact measurable_const
+  · exact measurable_pi_apply j
+
+-- not yet moved in mathlib
+theorem measurable_updateFinset {s : Finset δ} {x : ∀ i, π i}  : Measurable (updateFinset x s) := by
+  simp_rw [updateFinset, measurable_pi_iff]
+  intro i
+  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
 end Measurable
 
@@ -109,6 +138,7 @@ theorem MeasurableEquiv.coe_sumPiEquivProdPi_symm (α : ι ⊕ ι' → Type _)
     (MeasurableEquiv.sumPiEquivProdPi α |>.symm : _ → _) = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 -- we really need a linter that warns me if I don't have a `[DecidableEq ι]` argument here.
+-- not yet moved in mathlib
 variable (α) in
 def MeasurableEquiv.piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ᵐ ∀ i : (s ∪ t : Finset ι), α i :=

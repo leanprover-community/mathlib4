@@ -23,28 +23,12 @@ open Finset
 
 variable {α β γ : Type _}
 
-theorem Equiv.finset_image_univ_eq_univ [Fintype α] [Fintype β] [DecidableEq β] (f : α ≃ β) : univ.image f = univ :=
-  Finset.image_univ_of_surjective f.surjective
+-- theorem Equiv.finset_image_univ_eq_univ [Fintype α] [Fintype β] [DecidableEq β] (f : α ≃ β) : univ.image f = univ :=
+--   Finset.image_univ_of_surjective f.surjective
 
 variable [CommMonoid β]
 
-namespace Function
-
--- not yet ported
-theorem comp_def (f : β → γ) (g : α → β) : f ∘ g = fun x => f (g x) := rfl
-
-end Function
-
 namespace Finset
-
-theorem insert_compl_insert [DecidableEq ι] [Fintype ι] {s : Finset ι} {i : ι} (hi : i ∉ s) :
-    insert i (insert i s)ᶜ = sᶜ := by
-  simp_rw [@eq_compl_comm _ _ s, compl_insert, compl_erase, compl_compl, erase_insert hi]
-
-@[to_additive]
-theorem mul_prod_eq_prod_insertNone {α} {M} [CommMonoid M] (f : α → M) (x : M) (s : Finset α) :
-    x * ∏ i in s, f i = ∏ i in insertNone s, i.elim x f :=
-  (prod_insertNone (fun i => i.elim x f) _).symm
 
 -- to Fintype/Sum
 @[to_additive]
@@ -56,13 +40,6 @@ theorem prod_sum_univ [Fintype α] [Fintype γ] (f : α ⊕ γ → β) :
 theorem card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) : s.card + sᶜ.card = Fintype.card α := by
   rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
 
-@[simp]
-theorem cast_card_erase_of_mem [DecidableEq α] [AddGroupWithOne R] {s : Finset α} (hs : a ∈ s) :
-    ((s.erase a).card : R) = s.card - 1 := by
-  rw [card_erase_of_mem hs, Nat.cast_sub, Nat.cast_one]
-  rw [Nat.add_one_le_iff, Finset.card_pos]
-  exact ⟨a, hs⟩
-
 instance : Unique ({i} : Finset δ) :=
   ⟨⟨⟨i, mem_singleton_self i⟩⟩, fun j ↦ Subtype.ext <| mem_singleton.mp j.2⟩
 
@@ -73,106 +50,15 @@ end Finset
 
 end Finset
 
-section Logic
-
-open Sum
-
-@[simp]
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
-  simp_rw [imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
-
-theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
-    h ▸ z = cast (congr_arg P h) z := ((cast_eq_iff_heq.mpr) <| heq_of_eq_rec_left h rfl).symm
-
-end Logic
-
 open Set
-namespace Equiv
-open Set
+-- namespace Equiv
+-- open Set
+-- open Sum
 
--- simps doesn't work from another module :-(
-lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
-    (f : (a : α) → P (e a)) (b : β) :
-    piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
-  Eq.rec_eq_cast _ _
-
-lemma subtypeEquivRight_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
-    (z : { x // p x }) : subtypeEquivRight e z = ⟨z, (e z.1).mp z.2⟩ := rfl
-
-lemma subtypeEquivRight_symm_apply {p q : α → Prop} (e : ∀ x, p x ↔ q x)
-    (z : { x // q x }) : (subtypeEquivRight e).symm z = ⟨z, (e z.1).mpr z.2⟩ := rfl
-
-variable {α : ι → Type _}
-
-theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι) (t : ∀ i, Set (α i)) :
-    ((f.piCongrLeft α).symm ⁻¹' (f ⁻¹' s).pi fun i' => t <| f i') = s.pi t := by
-  ext; simp_rw [mem_preimage, Set.mem_pi, piCongrLeft_symm_apply]
-  convert f.forall_congr_left; rfl
-
-theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
-    f.piCongrLeft α ⁻¹' pi univ t = pi univ fun i => t (f i) := by
-  apply Set.ext; rw [← (f.piCongrLeft α).symm.forall_congr_left]
-  intro x; simp_rw [mem_preimage, apply_symm_apply, mem_univ_pi]
-  exact f.forall_congr_left.symm
-
-open Sum
-
-/-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
-functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
-@[simps]
-def sumPiEquivProdPi (π : ι ⊕ ι' → Type _) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
-    where
-  toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
-  invFun g := Sum.rec g.1 g.2
-  left_inv f := by ext (i | i) <;> rfl
-  right_inv g := Prod.ext rfl rfl
-
-/-- The equivalence between a product of two dependent functions types and a single dependent
-function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
-@[simps!]
-def prodPiEquivSumPi (π : ι → Type _) (π' : ι' → Type _) :
-    ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
-  sumPiEquivProdPi (Sum.elim π π') |>.symm
-
-theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
-    (sumPiEquivProdPi π).symm ⁻¹' univ.pi t =
-    univ.pi (fun i => t (.inl i)) ×ˢ univ.pi fun i => t (.inr i) := by
-  ext
-  simp_rw [mem_preimage, mem_prod, mem_univ_pi, sumPiEquivProdPi_symm_apply]
-  constructor
-  · intro h; constructor <;> intro i <;> apply h
-  · rintro ⟨h₁, h₂⟩ (i|i) <;> simp <;> apply_assumption
-
-theorem sum_rec_congr (P : ι ⊕ ι' → Sort _) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
-    {x y : ι ⊕ ι'} (h : x = y) :
-    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
-
-theorem piCongrLeft_sum_inl (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
-    (g : ∀ i, π (e (inr i))) (i : ι) :
-    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
-  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
-    sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
-
-theorem piCongrLeft_sum_inr (π : ι'' → Type _) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
-    (g : ∀ i, π (e (inr i))) (j : ι') :
-    piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
-  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
-    sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
-end Equiv
-
-namespace Option
-
-theorem elim_comp {ι α β} (h : α → β) {f : ι → α} {x : α} {i : Option ι} :
-    (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl
-
-theorem elim_comp₂ {ι α β γ} (h : α → β → γ) {f : ι → α} {x : α} {g : ι → β} {y : β}
-    {i : Option ι} : (i.elim (h x y) fun j => h (f j) (g j)) = h (i.elim x f) (i.elim y g) := by
-  cases i <;> rfl
-
-theorem elim_apply {α β ι : Type _} {f : ι → α → β} {x : α → β} {i : Option ι} {y : α} :
-    i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
-
-end Option
+-- theorem sum_rec_congr (P : ι ⊕ ι' → Sort _) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
+--     {x y : ι ⊕ ι'} (h : x = y) :
+--     @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
+-- end Equiv
 
 open Function Equiv
 
