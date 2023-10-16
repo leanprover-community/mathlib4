@@ -58,6 +58,7 @@ lemma id_mul_log_ge {x : ℝ} (hx : 0 ≤ x) : log (exp 1) / (exp 1) ≤ x * log
 lemma id_mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
   mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
 
+@[measurability]
 lemma measurable_id_mul_log : Measurable (fun x ↦ x * log x) :=
   measurable_id'.mul measurable_log
 
@@ -67,6 +68,7 @@ end x_log_x
 
 section LLR
 
+@[measurability]
 lemma measurable_toReal_rnDeriv (μ ν : Measure α) : Measurable (fun x ↦ (μ.rnDeriv ν x).toReal) :=
   (Measure.measurable_rnDeriv μ ν).ennreal_toReal
 
@@ -90,9 +92,11 @@ lemma exp_LLR (μ ν : Measure α) [SigmaFinite μ] :
   rw [ENNReal.toReal_pos_iff]
   exact ⟨lt_of_le_of_ne (zero_le _) (Ne.symm h_zero), hx⟩
 
+@[measurability]
 lemma measurable_LLR (μ ν : Measure α) : Measurable (LLR μ ν) :=
   (measurable_toReal_rnDeriv μ ν).log
 
+@[measurability]
 lemma stronglyMeasurable_LLR (μ ν : Measure α) : StronglyMeasurable (LLR μ ν) :=
   (measurable_LLR μ ν).stronglyMeasurable
 
@@ -333,6 +337,49 @@ lemma aux_bddAbove {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbability
   · simp only [hfμ, ciSup_empty]
     exact integral_LLR_nonneg hμν h_int
 
+theorem AEStronglyMeasurable.piecewise {α β : Type*} {m : MeasurableSpace α} [TopologicalSpace β]
+    {μ : Measure α}{f g : α → β} {s : Set α} [DecidablePred (fun j ↦ j ∈ s)]
+    (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (μ.restrict s))
+    (hg : AEStronglyMeasurable g (μ.restrict sᶜ)) :
+    AEStronglyMeasurable (s.piecewise f g) μ := by
+  refine ⟨s.piecewise (hf.mk f) (hg.mk g),
+    StronglyMeasurable.piecewise hs hf.stronglyMeasurable_mk hg.stronglyMeasurable_mk, ?_⟩
+  refine ae_of_ae_restrict_of_ae_restrict_compl s ?_ ?_
+  · have h := hf.ae_eq_mk
+    rw [Filter.EventuallyEq, ae_restrict_iff' hs] at h
+    rw [ae_restrict_iff' hs]
+    filter_upwards [h] with x hx
+    intro hx_mem
+    simp only [hx_mem, Set.piecewise_eq_of_mem, hx hx_mem]
+  · have h := hg.ae_eq_mk
+    rw [Filter.EventuallyEq, ae_restrict_iff' hs.compl] at h
+    rw [ae_restrict_iff' hs.compl]
+    filter_upwards [h] with x hx
+    intro hx_mem
+    rw [Set.mem_compl_iff] at hx_mem
+    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_not_mem, hx hx_mem]
+
+lemma Integrable.piecewise {α E : Type*} {mα : MeasurableSpace α} {μ : Measure α}
+    [NormedAddCommGroup E]
+    {f g : α → E} {s : Set α} [DecidablePred (fun j ↦ j ∈ s)]
+    (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
+    Integrable (s.piecewise f g) μ := by
+  rw [← memℒp_one_iff_integrable]
+  refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
+  rw [snorm_one_eq_lintegral_nnnorm, ← lintegral_add_compl _ hs, ENNReal.add_lt_top]
+  constructor
+  · have h : ∀ᵐ (x : α) ∂μ, x ∈ s → (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) = ‖f x‖₊ := by
+      refine ae_of_all _ (fun a ha ↦ ?_)
+      simp [ha]
+    rw [set_lintegral_congr_fun hs h]
+    exact hf.2
+  · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ → (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) = ‖g x‖₊ := by
+      refine ae_of_all _ (fun a ha ↦ ?_)
+      have ha' : a ∉ s := ha
+      simp [ha']
+    rw [set_lintegral_congr_fun hs.compl h]
+    exact hg.2
+
 lemma todo {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ ν x ∂μ
@@ -340,8 +387,29 @@ lemma todo {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure 
         ∫ x, f x ∂μ - logIntegralExp ν f := by
   classical
   let LLRu : ℝ → α → ℝ := fun u x ↦ log ((μ.rnDeriv ν x).toReal + u)
+  have hmeas : ∀ u, StronglyMeasurable (LLRu u) :=
+    fun u ↦ ((measurable_toReal_rnDeriv _ _).add measurable_const).log.stronglyMeasurable
   have hu_int : ∀ u, Integrable (LLRu u) μ := by
-    sorry
+    intro u
+    let s := {x | (μ.rnDeriv ν x).toReal ≤ u}
+    have hs : MeasurableSet s := measurable_toReal_rnDeriv μ ν measurableSet_Iic
+    suffices IntegrableOn (LLRu u) s μ ∧ IntegrableOn (LLRu u) sᶜ μ by
+      simpa using Integrable.piecewise hs this.1 this.2
+    constructor
+    · have hs_le : ∀ x ∈ s, ‖LLRu u x‖ ≤ ‖max (log u) (log (2*u))‖ := by
+        sorry
+      have hs_le' : ∀ᵐ x ∂(μ.restrict s), ‖LLRu u x‖ ≤ ‖max (log u) (log (2*u))‖ := by
+        refine ae_of_all _ (fun x ↦ ?_)
+        sorry
+      exact Integrable.mono (integrable_const _) (hmeas u).aestronglyMeasurable hs_le'
+    · have hs_le : ∀ x ∈ sᶜ, ‖LLRu u x‖ ≤ max ‖log u‖ ‖log (2*(μ.rnDeriv ν x).toReal)‖ := by
+        sorry
+      have hs_le' : ∀ᵐ x ∂(μ.restrict sᶜ),
+          ‖LLRu u x‖ ≤ ‖max (log u) (log (2*(μ.rnDeriv ν x).toReal))‖ := by
+        sorry
+      refine Integrable.mono ?_ (hmeas u).aestronglyMeasurable hs_le'
+      refine (integrable_const _).sup ?_
+      sorry
   have h_exp_log : ∀ (u) (hu : 0 < u) (x),
       exp (log ((μ.rnDeriv ν x).toReal + u)) = (μ.rnDeriv ν x).toReal + u := by
     intro u hu x
