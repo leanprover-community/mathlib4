@@ -142,7 +142,8 @@ def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
     H.continuous.comp ((continuous_induced_dom.comp continuous_fst).prod_mk continuous_snd)⟩
 #align continuous_map.homotopy.ulift_map ContinuousMap.Homotopy.uliftMap
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
 #align continuous_map.homotopy.ulift_apply ContinuousMap.Homotopy.ulift_apply
@@ -171,7 +172,8 @@ theorem apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
     hcast (H.apply_zero x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
-    rw [Path.prod_coe]; simp_rw [ulift_apply]; simp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
 #align continuous_map.homotopy.apply_zero_path ContinuousMap.Homotopy.apply_zero_path
 
 /-- Proof that `g(p) = H(1 ⟶ 1, p)`, with the appropriate casts -/
@@ -180,7 +182,8 @@ theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
     hcast (H.apply_one x₁) :=
   Quotient.inductionOn p fun p' => by
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
-    rw [Path.prod_coe]; simp_rw [ulift_apply]; simp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
 #align continuous_map.homotopy.apply_one_path ContinuousMap.Homotopy.apply_one_path
 
 /-- Proof that `H.evalAt x = H(0 ⟶ 1, x ⟶ x)`, with the appropriate casts -/
