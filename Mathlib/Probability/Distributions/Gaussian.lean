@@ -186,7 +186,7 @@ lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0)
 lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
     ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPdf μ v := by
   by_cases hv : v = 0
-  · simp [hv]
+  · simp only [hv, gaussianReal_zero_var, gaussianPdf_zero_var]
     refine (Measure.eq_rnDeriv measurable_zero (mutuallySingular_dirac μ volume) ?_).symm
     rw [withDensity_zero, add_zero]
   · rw [gaussianReal_of_var_ne_zero _ hv]
