@@ -403,6 +403,13 @@ instance : Module R[X] <| CompAEval R M a where
 
 instance : IsScalarTower R R[X] <| CompAEval R M a := ⟨by simp [CompAEval.smul_def]⟩
 
+lemma CompAEval.ext (m m' : CompAEval R M a) : m = m' ↔ m.val = m'.val := by
+  cases m; tauto
+
+@[simp]
+lemma CompAEval.coe_injective (m m' : M) :
+    (m : CompAEval R M a) = m' ↔ m = m' := by
+  rw [CompAEval.ext]
 
 variable (φ : M →ₗ[R] M)
 /--
@@ -412,22 +419,9 @@ I.e. `X • m = ↑φ m`. There is a coercion from `M` to `Polynomial_Module φ`
 
 This is defined as a special case of `Module.CompAEval` in which the `R`-algebra is `M →ₗ[R] M`.
 -/
-def PolynomialModule' := Module.CompAEval R M φ
+@[reducible] def PolynomialModule' := Module.CompAEval R M φ
 
 lemma PolynomialModule'_def : PolynomialModule' φ = Module.CompAEval R M φ := rfl
-
-instance : Coe M <| PolynomialModule' φ := by
-  unfold PolynomialModule'; infer_instance
-instance : AddCommMonoid <| PolynomialModule' φ := by
-  unfold PolynomialModule'; infer_instance
-instance : Module R <| PolynomialModule' φ  := by
-  unfold PolynomialModule'; infer_instance
-instance : Module (M →ₗ[R] M) <| PolynomialModule' φ := by
-  unfold PolynomialModule'; infer_instance
-instance : IsScalarTower R (M →ₗ[R] M) <| PolynomialModule' φ := by
-  unfold PolynomialModule'; infer_instance;
-instance : SMul R[X] <| PolynomialModule' φ := by
-  unfold PolynomialModule'; infer_instance
 
 lemma PolynomialModule'.ext (m m' : PolynomialModule' φ) :
     m = m' ↔ m.val = m'.val := by
@@ -436,7 +430,7 @@ lemma PolynomialModule'.ext (m m' : PolynomialModule' φ) :
 @[simp]
 lemma PolynomialModule'.coe_injective (m m' : M) :
     (m : PolynomialModule' φ) = m' ↔ m = m' := by
-  rw [PolynomialModule'.ext]; tauto
+  rw [PolynomialModule'.ext]
 
 lemma PolynomialModule'.smul_def (f : R[X]) (m : PolynomialModule' φ) :
     f • m = aeval φ f • m := rfl
