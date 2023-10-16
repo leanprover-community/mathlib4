@@ -29,6 +29,7 @@ We will develop the basics of the theory of unbounded operators on Hilbert space
 * `ContinuousLinearMap.toPMap_adjoint_eq_adjoint_toPMap_of_dense`: The adjoint on
   `ContinuousLinearMap` and `LinearPMap` coincide.
 * `LinearPMap.adjoint_isClosed`: The adjoint is a closed operator.
+* `IsSelfAdjoint.isClosed`: Every self-adjoint operator is closed.
 
 ## Notation
 
@@ -285,7 +286,7 @@ def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
       (WithLp.linearEquiv 2 𝕜 (F × E)).symm).orthogonal.map (WithLp.linearEquiv 2 𝕜 (F × E))
 
 @[simp]
-theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E):
+theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner (𝕜 := 𝕜) b x.fst - inner a x.snd = 0 := by
   simp only [Submodule.adjoint, Submodule.mem_map, Submodule.mem_orthogonal, LinearMap.coe_comp,
