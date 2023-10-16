@@ -123,7 +123,7 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
 #align measure_theory.measure.mutually_singular.smul_nnreal MeasureTheory.Measure.MutuallySingular.smul_nnreal
 
-lemma add_left_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
+lemma add_right_inj {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
     μ + ν₁ = μ + ν₂ ↔ ν₁ = ν₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
   obtain ⟨t₁, ht₁, ht₁μ, ht₁ν₁⟩ := h₁
@@ -170,10 +170,10 @@ lemma add_left_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h�
   simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply] at h
   rwa [hμ_eq, zero_add, zero_add, ← h₁_eq, ← h₂_eq] at h
 
-lemma add_right_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
+lemma add_left_inj {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
     ν₁ + μ = ν₂ + μ ↔ ν₁ = ν₂ := by
   rw [add_comm _ μ, add_comm _ μ]
-  exact MutuallySingular.add_left_cancel h₁ h₂
+  exact MutuallySingular.add_right_inj h₁ h₂
 
 end MutuallySingular
 
