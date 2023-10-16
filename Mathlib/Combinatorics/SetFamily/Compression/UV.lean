@@ -139,7 +139,7 @@ def IsCompressed (u v : α) (s : Finset α) :=
 #align uv.is_compressed UV.IsCompressed
 
 /-- UV-compression is injective on the sets that are not UV-compressed. -/
-theorem compress_injOn : Set.InjOn (compress u v) ↑(s.filter fun a ↦ compress u v a ∉ s) := by
+theorem compress_injOn : Set.InjOn (compress u v) ↑(s.filter (compress u v · ∉ s)) := by
   intro a ha b hb hab
   rw [mem_coe, mem_filter] at ha hb
   rw [compress] at ha hab
@@ -178,7 +178,7 @@ theorem isCompressed_self (u : α) (s : Finset α) : IsCompressed u u s := compr
 #align uv.is_compressed_self UV.isCompressed_self
 
 theorem compress_disjoint :
-    Disjoint (s.filter fun a ↦ compress u v a ∈ s) ((s.image <| compress u v).filter (· ∉ s)) :=
+    Disjoint (s.filter (compress u v · ∈ s)) ((s.image <| compress u v).filter (· ∉ s)) :=
   disjoint_left.2 fun _a ha₁ ha₂ ↦ (mem_filter.1 ha₂).2 (mem_filter.1 ha₁).1
 #align uv.compress_disjoint UV.compress_disjoint
 
@@ -203,7 +203,7 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
 /-- Compressing a family is idempotent. -/
 @[simp]
 theorem compression_idem (u v : α) (s : Finset α) : 𝓒 u v (𝓒 u v s) = 𝓒 u v s := by
-  have h : filter (fun a ↦ compress u v a ∉ 𝓒 u v s) (𝓒 u v s) = ∅ :=
+  have h : filter (compress u v · ∉ 𝓒 u v s) (𝓒 u v s) = ∅ :=
     filter_false_of_mem fun a ha h ↦ h <| compress_mem_compression_of_mem_compression ha
   rw [compression, image_filter, h, image_empty, ←h]
   exact filter_union_filter_neg_eq _ (compression u v s)
