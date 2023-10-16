@@ -783,7 +783,7 @@ theorem feasibleContinuations_eq {s : Finset α} (hs : s ∈ G):
     simp only [h₂, add_le_iff_nonpos_right] at this
   · constructor
     · intro h'; apply h; rw [insert_eq_of_mem h']
-    · have h₁ := Nat.lt_of_le_and_ne (rank_le_of_subset (subset_insert _ _)) (Ne.symm h)
+    · have h₁ := Nat.lt_of_le_of_ne (rank_le_of_subset (subset_insert _ _)) (Ne.symm h)
       rw [← rank_eq_card_iff_feasible]
       rw [← rank_eq_card_iff_feasible] at hs
       rw [hs] at h₁
