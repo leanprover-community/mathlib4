@@ -11,8 +11,6 @@ import Mathlib.RingTheory.TensorProduct
 
 ## Modules
 
-## Modules
-
 * `TensorProduct.rTensor.surjective` asserts that when one tensors
   a surjective map on the right, one still gets a surjective linear map.
 
