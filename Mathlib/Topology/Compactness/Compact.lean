@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Order.Filter.Pi
 import Mathlib.Topology.Bases
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Accumulate
+import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
