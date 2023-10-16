@@ -184,10 +184,14 @@ lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0)
   · exact ae_of_all _ (fun _ ↦ (gaussianPdf_pos _ hv _).ne')
   · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
-lemma rnDeriv_gaussianReal (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
+lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
     ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPdf μ v := by
-  rw [gaussianReal_of_var_ne_zero _ hv]
-  exact Measure.rnDeriv_withDensity _ (measurable_gaussianPdf μ v)
+  by_cases hv : v = 0
+  · simp [hv]
+    refine (Measure.eq_rnDeriv measurable_zero (mutuallySingular_dirac μ volume) ?_).symm
+    rw [withDensity_zero, add_zero]
+  · rw [gaussianReal_of_var_ne_zero _ hv]
+    exact Measure.rnDeriv_withDensity _ (measurable_gaussianPdf μ v)
 
 end GaussianReal
 
