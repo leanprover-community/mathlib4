@@ -86,6 +86,6 @@ def Amenable : Prop :=
 
 
 /-- For amenable actions, we can pick an invariant mean -/
-noncomputable def invmean_of_amenable (h: amenable α G) :
+noncomputable def invmean_of_amenable (h: Amenable α G) :
     InvariantMean α G :=
   Classical.choice h
