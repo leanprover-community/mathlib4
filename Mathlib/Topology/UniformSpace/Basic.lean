@@ -697,7 +697,7 @@ theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
   refine' ⟨_, fun hs => _⟩
   · simp only [mem_nhds_iff, isOpen_uniformity, and_imp, exists_imp]
     intro t ts ht xt
-    filter_upwards [ht x xt]using fun y h eq => ts (h eq)
+    filter_upwards [ht x xt] using fun y h eq => ts (h eq)
   · refine' mem_nhds_iff.mpr ⟨{ x | { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α }, _, _, hs⟩
     · exact fun y hy => refl_mem_uniformity hy rfl
     · refine' isOpen_uniformity.mpr fun y hy => _
@@ -997,7 +997,7 @@ theorem uniformity_eq_uniformity_interior : 𝓤 α = (𝓤 α).lift' interior :
             ht.subset_interior_iff.mpr fun x (hx : x ∈ t) =>
               let ⟨x, y, h₁, h₂, h₃⟩ := ht_comp hx
               hs_comp ⟨x, h₁, y, h₂, h₃⟩
-      have : interior d ∈ 𝓤 α := by filter_upwards [hs]using this
+      have : interior d ∈ 𝓤 α := by filter_upwards [hs] using this
       simp [this])
     fun s hs => ((𝓤 α).lift' interior).sets_of_superset (mem_lift' hs) interior_subset
 #align uniformity_eq_uniformity_interior uniformity_eq_uniformity_interior
