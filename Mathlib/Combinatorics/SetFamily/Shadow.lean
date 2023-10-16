@@ -71,6 +71,9 @@ theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
   rfl
 #align finset.shadow_empty Finset.shadow_empty
 
+@[simp] lemma shadow_iterate_empty (k : ℕ) : ∂^[k] (∅ : Finset (Finset α)) = ∅ := by
+  induction' k <;> simp [*, shadow_empty]
+
 @[simp]
 theorem shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
   rfl
@@ -104,13 +107,52 @@ theorem mem_shadow_iff_insert_mem : s ∈ ∂ 𝒜 ↔ ∃ (a : _) (_ : a ∉ s)
     exact ⟨insert a s, hs, a, mem_insert_self _ _, erase_insert ha⟩
 #align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
+/-- `t ∈ ∂𝒜` iff `t` is exactly one element less than something from `𝒜` -/
+lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = 1 := by
+  simp_rw [mem_shadow_iff_insert_mem, card_eq_one]
+  constructor
+  · rintro ⟨i, hi, ht⟩
+    exact ⟨insert i t, ht, subset_insert _ _, i, insert_sdiff_cancel hi⟩
+  · rintro ⟨s, hs, hts, a, ha⟩
+    refine' ⟨a, (mem_sdiff.1 $ (ext_iff.1 ha _).2 $ mem_singleton_self _).2, _⟩
+    rwa [insert_eq, ←ha, sdiff_union_of_subset hts]
+
+/-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`. -/
+lemma mem_shadow_iterate_iff_exists_sdiff {𝒜 : Finset (Finset α)} {t : Finset α} (k : ℕ) :
+    t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = k := by
+  induction' k with k ih generalizing 𝒜 t
+  · simp only [sdiff_eq_empty_iff_subset, Function.iterate_zero, id.def, card_eq_zero, exists_prop]
+    refine' ⟨fun p ↦ ⟨t, p, Subset.rfl, Subset.rfl⟩, _⟩
+    rintro ⟨s, hs, hst, hts⟩
+    rwa [subset_antisymm hst hts]
+  simp only [exists_prop, Function.comp_apply, Function.iterate_succ, ih,
+    mem_shadow_iff_insert_mem]
+  clear ih
+  constructor
+  · rintro ⟨s, ⟨a, ha, hs⟩, hts, rfl⟩
+    refine' ⟨_, hs, hts.trans $ subset_insert _ _, _⟩
+    rw [insert_sdiff_of_not_mem _ $ not_mem_mono hts ha,
+      card_insert_of_not_mem $ not_mem_mono (sdiff_subset _ _) ha]
+  · rintro ⟨s, hs, hts, hk⟩
+    obtain ⟨a, ha⟩ : (s \ t).Nonempty := by rw [←card_pos, hk]; exact Nat.succ_pos _
+    refine' ⟨erase s a, ⟨a, not_mem_erase _ _, _⟩, subset_erase.2 ⟨hts, (mem_sdiff.1 ha).2⟩, _⟩
+    · rwa [insert_erase (mem_sdiff.1 ha).1]
+    · rw [erase_sdiff_comm, card_erase_of_mem ha, hk, succ_sub_one]
+
 /-- The shadow of a family of `r`-sets is a family of `r - 1`-sets. -/
-protected theorem Set.Sized.shadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+protected theorem _root_.Set.Sized.shadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     (∂ 𝒜 : Set (Finset α)).Sized (r - 1) := by
   intro A h
   obtain ⟨A, hA, i, hi, rfl⟩ := mem_shadow_iff.1 h
   rw [card_erase_of_mem hi, h𝒜 hA]
-#align finset.set.sized.shadow Finset.Set.Sized.shadow
+#align finset.set.sized.shadow Set.Sized.shadow
+
+/-- The `k`-th shadow of a family of `r`-sets is a family of `r - k`-sets. -/
+lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+    (∂^[k] 𝒜 : Set (Finset α)).Sized (r - k) := by
+  simp_rw [Set.Sized, mem_coe, mem_shadow_iterate_iff_exists_sdiff]
+  rintro t ⟨s, hs, hts, rfl⟩
+  rw [card_sdiff hts, ←h𝒜 hs, Nat.sub_sub_self (card_le_of_subset hts)]
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
