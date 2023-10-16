@@ -172,10 +172,10 @@ theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
 #align nat.of_digits_eq_foldr Nat.ofDigits_eq_foldr
 
 theorem ofDigits_eq_sum_map_with_index_aux (b : ℕ) (l : List ℕ) :
-    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ i) ∘ succ) l).sum =
+    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ (i + 1))) l).sum =
       b * ((List.range l.length).zipWith (fun i a => a * b ^ i) l).sum := by
   suffices
-    (List.range l.length).zipWith ((fun i a : ℕ => a * b ^ i) ∘ succ) l =
+    (List.range l.length).zipWith (fun i a : ℕ => a * b ^ (i + 1)) l =
       (List.range l.length).zipWith (fun i a => b * (a * b ^ i)) l
     by simp [this]
   congr; ext; simp [pow_succ]; ring
