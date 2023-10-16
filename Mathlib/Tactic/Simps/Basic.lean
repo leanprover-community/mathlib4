@@ -893,7 +893,7 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
   let params := tgt.getAppArgs
   if cfg.debug && !(← (params.zip rhs.getAppArgs).allM fun ⟨a, b⟩ ↦ isDefEq a b) then
     throwError "unreachable code: parameters are not definitionally equal"
-  let str := tgt.getAppFn.constName?.getD default
+  let str := tgt.getAppFn.constName
   -- the fields of the object
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
   let (rawUnivs, projDeclata) ← getRawProjections stx str
@@ -902,7 +902,7 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
       { proj with
         expr := (proj.expr.instantiateLevelParams rawUnivs
           tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
-        projNrs := proj.projNrs.tail })
+        projNrs := proj.projNrs })
 
 variable (ref : Syntax) (univs : List Name)
 
@@ -985,6 +985,14 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   unless isEta do return e
   trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
   headStructureEtaReduce reduct
+
+/-- If `type` is a structure, this gives the codomain of field number `nr`. -/
+def updateType (type : Expr) (nr : ℕ) : CoreM Expr := do
+  let fieldName := (getStructureFields (← getEnv) type.getAppFn.constName)[nr]!
+  let params := type.getAppArgs
+  let x := (type.expr.instantiateLevelParams rawUnivs
+          tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
+  return _
 
 /-- Derive lemmas specifying the projections of the declaration.
   `nm`: name of the lemma
@@ -1094,7 +1102,9 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   if let idx :: rest := toApply then
     let some ⟨newRhs, _⟩ := projInfo[idx]?
       | throwError "unreachable: index of composite projection is out of bounds."
-    let newType ← inferType newRhs
+    -- todo: don't use rhs to infer type.
+    -- However, there are already too many projections applied to lhsAp.
+    let newType ← updateType tgt idx
     trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:{
       indentExpr lhsAp}"
     return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest
@@ -1116,15 +1126,17 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
       }be customly defined for `simps`, and could differ from the projection names of the {""
       }structure."
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
-    let newType ← inferType newRhs
     let newTodo := todo.filterMap
       fun (x, stx) ↦ (x.dropPrefix? (proj.getString ++ "_")).map (·.toString, stx)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
+    -- we determine the new type by looking what the type is if we applied one of the standard
+    -- projections to this expression
+    let newType ← inferType <| projInfo[projNrs.head!]!.2.expr.app lhsAp
     let newName := updateName nm proj.getString isPrefix
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
-    addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
+    addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs.tail
   return if addThisProjection then nms.push nm else nms
 
 end Simps
