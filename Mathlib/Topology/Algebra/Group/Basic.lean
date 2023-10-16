@@ -1466,38 +1466,35 @@ theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set 
   rw [iUnion_subtype, ← iUnion_mul_right_image]
   rfl
 
+lemma subset_smul_set_closure_one (s : Set G) : s ⊆ s • (closure {1} : Set G) := by
+  have : s ⊆ s • ({1} : Set G) := by simpa using Subset.rfl
+  exact this.trans (smul_subset_smul_left subset_closure)
+
 lemma IsCompact.closure_subset_smul_set_closure_one {K : Set G} (hK : IsCompact K) :
     closure K ⊆ K • (closure {1} : Set G) := by
   have : IsClosed (K • (closure {1} : Set G)) :=
     IsClosed.smul_left_of_isCompact isClosed_closure hK
   rw [IsClosed.closure_subset_iff this]
-  have : K ⊆ K • ({1} : Set G) := by simpa using Subset.rfl
-  exact this.trans (smul_subset_smul_left subset_closure)
+  exact subset_smul_set_closure_one K
 
 lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
     F • (closure {1} : Set G) = F := by
-  apply Subset.antisymm
-  · calc
-    F • (closure {1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
-    _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
-    _ = F := by simp [hF.closure_eq]
-  · calc
-    F = F • ({1} : Set G) := by simp
-    _ ⊆ F • (closure {1} : Set G) := smul_subset_smul_left subset_closure
+  refine Subset.antisymm ?_ (subset_smul_set_closure_one F)
+  calc
+  F • (closure {1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
+  _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
+  _ = F := by simp [hF.closure_eq]
 
 lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U • (closure {1} : Set G) = U := by
-  apply Subset.antisymm
-  · rintro - ⟨x, g, hx, hg, rfl⟩
-    by_contra H
-    have : x ∈ Uᶜ • (closure {1} : Set G) := by
-      rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
-      exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
-    rw [hU.isClosed_compl.smul_set_closure_one_eq] at this
-    exact this hx
-  · calc
-    U = U • ({1} : Set G) := by simp
-    _ ⊆ U • (closure {1} : Set G) := smul_subset_smul_left subset_closure
+  refine Subset.antisymm ?_ (subset_smul_set_closure_one U)
+  rintro - ⟨x, g, hx, hg, rfl⟩
+  by_contra H
+  have : x ∈ Uᶜ • (closure {1} : Set G) := by
+    rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
+    exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
+  rw [hU.isClosed_compl.smul_set_closure_one_eq] at this
+  exact this hx
 
 /-- In a topological group, if a compact set `K` is included in an open set `U`, then
 the closure of `K` is also included in `U`. -/
@@ -1863,17 +1860,12 @@ lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
 
 lemma IsCompact.closure_eq_smul_set_one {K : Set G} (hK : IsCompact K) :
     closure K = K • (closure {1} : Set G) := by
-  apply Subset.antisymm
-  · have : IsClosed (K • (closure {1} : Set G)) :=
-      IsClosed.smul_left_of_isCompact isClosed_closure hK
-    rw [IsClosed.closure_subset_iff this]
-    have : K ⊆ K • ({1} : Set G) := by simpa using Subset.rfl
-    exact this.trans (smul_subset_smul_left subset_closure)
-  · calc
-    K • (closure {1} : Set G) ⊆ closure K • (closure {1} : Set G) :=
-      smul_subset_smul_right subset_closure
-    _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
-    _ = closure K := by simp
+  apply Subset.antisymm hK.closure_subset_smul_set_closure_one ?_
+  calc
+  K • (closure {1} : Set G) ⊆ closure K • (closure {1} : Set G) :=
+    smul_subset_smul_right subset_closure
+  _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
+  _ = closure K := by simp
 
 protected lemma IsCompact.closure {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
   rw [hK.closure_eq_smul_set_one, ← image2_smul, ← image_uncurry_prod]
