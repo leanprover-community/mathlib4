@@ -703,8 +703,8 @@ function `j : β → γ` by sending `b : β` not in the range of `f` to `j b`. I
 the behavior outside the range, `j` can be used as a junk value by setting it to be `0` or
 `Classical.arbitrary` (assuming `γ` is nonempty).
 
-This definition only makes sense when `f a₁ = f a₂ → g a₁ = g a₂` (spelled `g.FactorsThrough f`).
-In particular this holds if `f` is injective.
+This definition is mathematically meaningful only when `f a₁ = f a₂ → g a₁ = g a₂` (spelled
+`g.FactorsThrough f`). In particular this holds if `f` is injective.
 
 A typical use case is extending a function from a subtype to the entire type. If you wish to extend
 `g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. -/
