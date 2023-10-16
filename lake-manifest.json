@@ -26,19 +26,19 @@
     "inputRev?": "v0.0.18",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/semorrison/std4",
-    "subDir?": null,
-    "rev": "371f5994da8c2af00d590095e73e20e0d75cfe2a",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "bump_2621",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/semorrison/aesop",
     "subDir?": null,
     "rev": "0f5a839497c3e6981af03263804ea30ca29b9d39",
     "opts": {},
     "name": "aesop",
+    "inputRev?": "bump_2621",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/semorrison/std4",
+    "subDir?": null,
+    "rev": "afbf35c1161b993a38433df1c1b792e18512e0d7",
+    "opts": {},
+    "name": "std",
     "inputRev?": "bump_2621",
     "inherited": false}}],
  "name": "mathlib"}
