@@ -50,7 +50,8 @@ structure Mean where
   measureOf_univ : measureOf ⟨Set.univ, MeasurableSet.univ⟩ = 1
   /-- measureOf is finitely additive -/
   fin_add (X Y : Set α) (hX : MeasurableSet X) (hY : MeasurableSet Y) :
-    Disjoint X Y → measureOf (⟨X ∪ Y, MeasurableSet.union hX hY⟩) = measureOf ⟨X, hX⟩ + measureOf ⟨Y, hY⟩
+    Disjoint X Y → measureOf (⟨X ∪ Y, MeasurableSet.union hX hY⟩) =
+    measureOf ⟨X, hX⟩ + measureOf ⟨Y, hY⟩
 
 @[coe]
 instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α := α) S} → NNReal) where
