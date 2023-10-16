@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.FiniteType
+import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import data.polynomial.module from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
@@ -17,6 +18,7 @@ module structures on `ℕ →₀ M` of interest. See the docstring of `Polynomia
 
 -/
 
+section section_PolynomialModule
 
 universe u v
 
@@ -350,3 +352,103 @@ theorem comp_smul (p p' : R[X]) (q : PolynomialModule R M) :
 #align polynomial_module.comp_smul PolynomialModule.comp_smul
 
 end PolynomialModule
+
+end section_PolynomialModule
+
+namespace Module
+
+open Polynomial
+/--
+Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
+Then `Module.comp_aeval R M a` is the `R[X]`-module with carrier `M`,
+where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
+-/
+structure CompAEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) where
+  /--
+  The element of `M` corresponding to an element of `Module.CompAEval R M a`.
+  -/
+  val : M
+
+variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
+  [Module R M] [IsScalarTower R A M]
+
+/--
+The natural equivalence between `Module.CompAEval R M a` and `M`, taking `⟨m⟩` to `m`.
+-/
+def CompAEval.equiv : CompAEval R M a ≃ M where
+  toFun       := CompAEval.val
+  invFun      := CompAEval.mk
+  left_inv _  := rfl
+  right_inv _ := rfl
+lemma CompAEval.equiv_def (m : M) : (CompAEval.equiv a (R := R)) ⟨m⟩ = m := by rfl
+lemma CompAEval.equiv_symm_def (m : M) : (CompAEval.equiv a (R := R)).symm m = ⟨m⟩ := by rfl
+
+instance : Coe M <| CompAEval R M a := ⟨CompAEval.mk⟩
+instance : AddCommMonoid <| CompAEval R M a     := (CompAEval.equiv a).addCommMonoid
+instance : Module R <| CompAEval R M a          := (CompAEval.equiv a).module R
+instance : Module A <| CompAEval R M a          := (CompAEval.equiv a).module A
+instance : IsScalarTower R A <| CompAEval R M a := ⟨by simp [Equiv.smul_def]⟩
+instance : SMul R[X] <| CompAEval R M a         := ⟨fun f m ↦ ⟨aeval a f • m.val⟩⟩
+lemma CompAEval.smul_def (f : R[X]) (m : CompAEval R M a) : f • m = aeval a f • m := rfl
+lemma CompAEval.smul_def' (f : R[X]) (m : M) : f • (m : CompAEval R M a) = aeval a f • m := rfl
+
+instance : Module R[X] <| CompAEval R M a where
+  one_smul  := by simp [CompAEval.smul_def]
+  mul_smul  := by simp [CompAEval.smul_def,mul_smul]
+  smul_zero := by simp [CompAEval.smul_def]
+  smul_add  := by simp [CompAEval.smul_def]
+  add_smul  := by simp [CompAEval.smul_def,add_smul]
+  zero_smul := by simp [CompAEval.smul_def]
+
+instance : IsScalarTower R R[X] <| CompAEval R M a := ⟨by simp [CompAEval.smul_def]⟩
+
+
+variable (φ : M →ₗ[R] M)
+/--
+Given and `R`-module `M` and a linear map `φ : M →ₗ[R] M`, `Polynomial_Module φ` is the
+`R[X]`-module with elements `⟨m⟩` for `m : M` in which the action of `X` is given by `φ`.
+I.e. `X • m = ↑φ m`. There is a coercion from `M` to `Polynomial_Module φ`.
+
+This is defined as a special case of `Module.CompAEval` in which the `R`-algebra is `M →ₗ[R] M`.
+-/
+def PolynomialModule' := Module.CompAEval R M φ
+
+lemma PolynomialModule'_def : PolynomialModule' φ = Module.CompAEval R M φ := rfl
+
+instance : Coe M <| PolynomialModule' φ := by
+  unfold PolynomialModule'; infer_instance
+instance : AddCommMonoid <| PolynomialModule' φ := by
+  unfold PolynomialModule'; infer_instance
+instance : Module R <| PolynomialModule' φ  := by
+  unfold PolynomialModule'; infer_instance
+instance : Module (M →ₗ[R] M) <| PolynomialModule' φ := by
+  unfold PolynomialModule'; infer_instance
+instance : IsScalarTower R (M →ₗ[R] M) <| PolynomialModule' φ := by
+  unfold PolynomialModule'; infer_instance;
+instance : SMul R[X] <| PolynomialModule' φ := by
+  unfold PolynomialModule'; infer_instance
+
+lemma PolynomialModule'.ext (m m' : PolynomialModule' φ) :
+    m = m' ↔ m.val = m'.val := by
+  cases m; tauto
+
+@[simp]
+lemma PolynomialModule'.coe_injective (m m' : M) :
+    (m : PolynomialModule' φ) = m' ↔ m = m' := by
+  rw [PolynomialModule'.ext]; tauto
+
+lemma PolynomialModule'.smul_def (f : R[X]) (m : PolynomialModule' φ) :
+    f • m = aeval φ f • m := rfl
+
+lemma PolynomialModule'.smul_def' (f : R[X]) (m : M) :
+    f • (m : PolynomialModule' φ) = aeval φ f • m := rfl
+
+lemma PolynomialModule'.X_smul (m : PolynomialModule' φ) :
+    (X : R[X]) • m = φ • m := by simp [PolynomialModule'.smul_def]
+
+lemma PolynomialModule'.X_smul' (m : M) :
+    (X : R[X]) • (m : PolynomialModule' φ) = φ m :=
+  PolynomialModule'.X_smul φ m
+
+end Module
