@@ -4,7 +4,7 @@ import Mathlib.CategoryTheory.Shift.SingleFunctors
 
 namespace CategoryTheory
 
-open Category Limits Preadditive ZeroObject Pretriangulated
+open Category Limits Preadditive ZeroObject Pretriangulated ZeroObject
 
 namespace Triangulated
 
@@ -171,8 +171,32 @@ lemma hasCokernel_of_admissibleMorphism {X₁ X₂ : A} (f₁ : X₁ ⟶ X₂)
 
 section
 
+-- should be moved somewhere
+instance hasZeroObject [HasTerminal A] : HasZeroObject A :=
+  ⟨⊤_ A, by
+    rw [IsZero.iff_id_eq_zero]
+    apply Subsingleton.elim⟩
+
+variable [HasFiniteProducts A]
+
+noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
+    (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (f₃ : ι.obj X₃ ⟶ (ι.obj X₁)⟦(1 : ℤ)⟧)
+    (hT : Triangle.mk (ι.map f₁) (ι.map f₂) f₃ ∈ distTriang C) :
+    IsLimit (KernelFork.ofι f₁ (show f₁ ≫ f₂ = 0 from ι.map_injective (by
+        erw [Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT, ι.map_zero]))) := by
+  have hT' : Triangle.mk (𝟙 ((ι.obj X₁)⟦(1 : ℤ)⟧)) (0 : _ ⟶ ι.obj 0) 0 ∈ distTriang C := by
+    refine' isomorphic_distinguished _ (contractible_distinguished
+      (((ι ⋙ shiftFunctor C (1 : ℤ)).obj X₁))) _ _
+    refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (IsZero.iso (by
+      dsimp
+      rw [IsZero.iff_id_eq_zero, ← ι.map_id, id_zero, ι.map_zero]) (isZero_zero C))
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  refine' IsLimit.ofIsoLimit (AbelianSubcategory.isLimitKernelFork hι
+    (rot_of_dist_triangle _ hT) hT') _
+  exact Fork.ext (mulIso (-1) (Iso.refl _)) ((ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
+    (by simp))
+
 variable (H : ∀ ⦃X₁ X₂ : A⦄ (f₁ : X₁ ⟶ X₂), admissibleMorphism ι f₁)
-  [HasFiniteProducts A]
 
 --lemma abelian : Abelian A := by
 --  apply Abelian.mk'
