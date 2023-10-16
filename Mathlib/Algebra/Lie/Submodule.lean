@@ -1442,13 +1442,11 @@ def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
   LieSubalgebra.topEquiv
 #align lie_ideal.top_equiv LieIdeal.topEquiv
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-@[simp]
+-- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl
 #align lie_ideal.top_equiv_apply LieIdeal.topEquiv_apply
-
-attribute [nolint simpNF] LieIdeal.topEquiv_apply
 
 variable (R L)
 variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -1458,12 +1456,10 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
   { LinearEquiv.ofTop ⊤ rfl with
     map_lie' := rfl }
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-@[simp] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+-- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
-
-attribute [nolint simpNF] LieModuleEquiv.ofTop_apply
 
 @[simp] lemma LieModuleEquiv.range_coe {M' : Type*}
     [AddCommGroup M'] [Module R M'] [LieRingModule L M'] (e : M ≃ₗ⁅R,L⁆ M') :
