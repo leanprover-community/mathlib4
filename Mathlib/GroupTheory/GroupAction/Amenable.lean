@@ -80,7 +80,7 @@ structure InvariantMean extends Mean α where
 
 
 /-- A monoid action is amenable if there exists an invariant mean for it-/
-def amenable : Prop :=
+def Amenable : Prop :=
   Nonempty (InvariantMean α G)
 
 
