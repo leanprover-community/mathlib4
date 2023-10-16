@@ -1783,36 +1783,36 @@ lemma WeaklyLocallyCompactSpace.locallyCompactSpace_of_group [WeaklyLocallyCompa
   rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
   exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
 
-/-- If a function defined on a topological group has a multiplicative support contained in a
+/-- If a function defined on a topological group has a support contained in a
 compact set, then either the function is trivial or the group is locally compact. -/
 @[to_additive
       "If a function defined on a topological additive group has a support contained in a compact
       set, then either the function is trivial or the group is locally compact."]
-theorem eq_one_or_weaklyLocallyCompactSpace_of_mulSupport_subset_isCompact
-    [TopologicalSpace α] [One α] [T1Space α]
-    {f : G → α} {k : Set G} (hk : IsCompact k) (hf : mulSupport f ⊆ k) (h'f : Continuous f) :
-    f = 1 ∨ LocallyCompactSpace G := by
-  by_cases h : ∀ x, f x = 1
+theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
+    [TopologicalSpace α] [Zero α] [T1Space α]
+    {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
+    f = 0 ∨ LocallyCompactSpace G := by
+  by_cases h : ∀ x, f x = 0
   · apply Or.inl
     ext x
     exact h x
   apply Or.inr
   push_neg at h
-  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 1 := h
+  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
-    mem_of_superset (h'f.isOpen_mulSupport.mem_nhds hx) hf
+    mem_of_superset (h'f.isOpen_support.mem_nhds hx) hf
   exact IsCompact.locallyCompactSpace_of_mem_nhds_of_group hk this
 
-/-- If a function defined on a topological group has compact multiplicative support, then either
+/-- If a function defined on a topological group has compact support, then either
 the function is trivial or the group is locally compact. -/
 @[to_additive
       "If a function defined on a topological additive group has compact support,
       then either the function is trivial or the group is locally compact."]
-theorem HasCompactMulSupport.eq_one_or_weaklyLocallyCompactSpace
-    [TopologicalSpace α] [One α] [T1Space α]
-    {f : G → α} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
-    f = 1 ∨ LocallyCompactSpace G :=
-  eq_one_or_weaklyLocallyCompactSpace_of_mulSupport_subset_isCompact hf (subset_mulTSupport f) h'f
+theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
+    [TopologicalSpace α] [Zero α] [T1Space α]
+    {f : G → α} (hf : HasCompactSupport f) (h'f : Continuous f) :
+    f = 0 ∨ LocallyCompactSpace G :=
+  eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group hf (subset_tsupport f) h'f
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/

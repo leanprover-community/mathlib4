@@ -267,3 +267,13 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
       congr 1
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
+
+
+lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
+    {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
+    ∃ (c : ℝ), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
+      ∫ x, f x ∂μ' = c * ∫ x, f x ∂μ := by
+  by_cases H : LocallyCompactSpace G; swap
+  · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
+    have Z := f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont
