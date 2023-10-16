@@ -408,16 +408,14 @@ instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
 instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
 #align rat.measurable_space Rat.instMeasurableSpace
 
-theorem Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
+instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
     MeasurableSingletonClass α := by
   refine' ⟨fun i => _⟩
   convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall]
+#noalign empty.measurable_singleton_class
+#noalign punit.measurable_singleton_class
 
-instance Empty.instMeasurableSingletonClass : MeasurableSingletonClass Empty := ⟨fun _ => trivial⟩
-#align empty.measurable_singleton_class Empty.instMeasurableSingletonClass
-instance PUnit.instMeasurableSingletonClass : MeasurableSingletonClass PUnit := ⟨fun _ => trivial⟩
-#align punit.measurable_singleton_class PUnit.instMeasurableSingletonClass
 instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩
 #align bool.measurable_singleton_class Bool.instMeasurableSingletonClass
 instance Prop.instMeasurableSingletonClass : MeasurableSingletonClass Prop := ⟨fun _ => trivial⟩
@@ -1678,7 +1676,7 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
 
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
-def sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
+def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
   refine' { Equiv.sumPiEquivProdPi α with .. }
   · refine Measurable.prod ?_ ?_ <;>
@@ -1687,10 +1685,10 @@ def sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)
     exact measurable_pi_iff.1 measurable_fst _
     exact measurable_pi_iff.1 measurable_snd _
 
-theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
+theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     MeasurableEquiv.sumPiEquivProdPi α = Equiv.sumPiEquivProdPi α := by rfl
 
-theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type _) [∀ i, MeasurableSpace (α i)] :
+theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     (MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
