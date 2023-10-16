@@ -1512,7 +1512,7 @@ class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   regular : ∀ {s : Set X} {a}, IsClosed s → a ∉ s → Disjoint (𝓝ˢ s) (𝓝 a)
 #align regular_space RegularSpace
 
-theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
+theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
     List.TFAE [RegularSpace X,
       ∀ (s : Set X) a, a ∉ closure s → Disjoint (𝓝ˢ s) (𝓝 a),
       ∀ (a : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 a) ↔ a ∉ closure s,
@@ -1598,6 +1598,22 @@ theorem hasBasis_nhds_closure (a : α) : (𝓝 a).HasBasis (fun s => s ∈ 𝓝 
 theorem hasBasis_opens_closure (a : α) : (𝓝 a).HasBasis (fun s => a ∈ s ∧ IsOpen s) closure :=
   (nhds_basis_opens a).nhds_closure
 #align has_basis_opens_closure hasBasis_opens_closure
+
+/-- In a (possibly non-Hausdorff) regular space, if a compact set `s` is contained in an
+open set `u`, then its closure is also contained in `u`. -/
+theorem IsCompact.closure_subset_of_isOpen
+    {u : Set α} (hs : IsCompact s) (hu : IsOpen u) (h : s ⊆ u) : closure s ⊆ u := by
+  obtain ⟨F, sF, F_closed, Fu⟩ : ∃ F, s ⊆ F ∧ IsClosed F ∧ F ⊆ u := by
+    apply hs.induction_on (p := fun t ↦ ∃ F, t ⊆ F ∧ IsClosed F ∧ F ⊆ u)
+    · exact ⟨∅, by simp⟩
+    · intro t' t ht't ⟨F, tF, F_closed, Fu⟩
+      exact ⟨F, ht't.trans tF, F_closed, Fu⟩
+    · intro t t' ⟨F, tF, F_closed, Fu⟩ ⟨F', t'F', F'_closed, F'u⟩
+      exact ⟨F ∪ F', union_subset_union tF t'F', F_closed.union F'_closed, union_subset Fu F'u⟩
+    · intro x hx
+      rcases exists_mem_nhds_isClosed_subset (hu.mem_nhds (h hx)) with ⟨F, F_mem, F_closed, Fu⟩
+      exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
+  exact (closure_minimal sF F_closed).trans Fu
 
 theorem TopologicalSpace.IsTopologicalBasis.nhds_basis_closure {B : Set (Set α)}
     (hB : IsTopologicalBasis B) (a : α) :

@@ -1496,13 +1496,6 @@ lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
   rw [hU.isClosed_compl.smul_set_closure_one_eq] at this
   exact this hx
 
-/-- In a topological group, if a compact set `K` is included in an open set `U`, then
-the closure of `K` is also included in `U`. -/
-lemma IsCompact.closure_subset_of_isOpen {K : Set G} (hK : IsCompact K) {U : Set G} (hU : IsOpen U)
-    (h : K ⊆ U) : closure K ⊆ U := by
-  rw [← hU.smul_set_closure_one_eq]
-  exact hK.closure_subset_smul_set_closure_one.trans (smul_subset_smul_right h)
-
 end TopologicalGroup
 
 section FilterMul
