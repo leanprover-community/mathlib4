@@ -286,7 +286,9 @@ noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ sh
 class HasHeart where
   H : Type*
   [cat : Category H]
+  [preadditive : Preadditive H]
   ι : H ⥤ C
+  additive_ι : ι.Additive := by infer_instance
   fullι : Full ι := by infer_instance
   faithful_ι : Faithful ι := by infer_instance
   hι : ι.essImage = t.heart := by simp
@@ -302,8 +304,10 @@ instance : Category t.Heart := ht.cat
 
 def ιHeart : t.Heart ⥤ C := ht.ι
 
+instance : Preadditive t.Heart := ht.preadditive
 instance : Full t.ιHeart := ht.fullι
 instance : Faithful t.ιHeart := ht.faithful_ι
+instance : t.ιHeart.Additive := ht.additive_ι
 
 lemma ιHeart_obj_mem (X : t.Heart) : t.ιHeart.obj X ∈ t.heart := by
   rw [← ht.hι]
