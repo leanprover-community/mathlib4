@@ -41,8 +41,8 @@ universe u v
 variable (α : Type v) [MeasurableSpace α]
 
 /--A mean is a function from the power set of α to ENNReal that
-- assigns the value 1 to the full set α, and
-- is finitely additive under disjoint unions -/
+assigns the value 1 to the full set α, and
+is finitely additive under disjoint unions -/
 structure Mean where
   /-- function giving the measure of a measurable subset-/
   measureOf : {S // MeasurableSet (α := α) S} → NNReal
