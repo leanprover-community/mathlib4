@@ -986,14 +986,6 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
   headStructureEtaReduce reduct
 
-/-- If `type` is a structure, this gives the codomain of field number `nr`. -/
-def updateType (type : Expr) (nr : ℕ) : CoreM Expr := do
-  let fieldName := (getStructureFields (← getEnv) type.getAppFn.constName)[nr]!
-  let params := type.getAppArgs
-  let x := (type.expr.instantiateLevelParams rawUnivs
-          tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
-  return _
-
 /-- Derive lemmas specifying the projections of the declaration.
   `nm`: name of the lemma
   If `todo` is non-empty, it will generate exactly the names in `todo`.
@@ -1102,9 +1094,9 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   if let idx :: rest := toApply then
     let some ⟨newRhs, _⟩ := projInfo[idx]?
       | throwError "unreachable: index of composite projection is out of bounds."
-    -- todo: don't use rhs to infer type.
-    -- However, there are already too many projections applied to lhsAp.
-    let newType ← updateType tgt idx
+    -- we determine the new type by looking what the type is if we applied one of the standard
+    -- projections to this expression
+    let newType ← inferType <| projInfo[idx]!.2.expr.app lhsAp
     trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:{
       indentExpr lhsAp}"
     return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest

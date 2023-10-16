@@ -891,8 +891,6 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 
 /- check interaction with the `@[to_additive]` attribute -/
 
--- set_option trace.simps.debug true
-
 @[to_additive (attr := simps) instAddProd]
 instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
