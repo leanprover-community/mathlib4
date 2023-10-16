@@ -4,32 +4,25 @@ import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.NatTrans
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.InitialSeg
-import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.CategoryTheory.Transfinite.OrderStuff
 
 set_option autoImplicit false
+set_option trace.Meta.isDefEq.assign true
+set_option trace.profiler true
 
 universe v u
 
-local notation C " ~> " D => C ⥤ D
-local notation "ID" => CategoryTheory.CategoryStruct.id  -- type as \b1
-
-open CategoryTheory Limits
+local notation "ID" => CategoryTheory.CategoryStruct.id
 
 namespace CategoryTheory
 
-def equivOfOrderIso {P Q : Type v} [PartialOrder P] [PartialOrder Q] (e : P ≃o Q) : P ≌ Q where
-  functor := e.monotone.functor
-  inverse := e.symm.monotone.functor
-  unitIso := sorry
-  counitIso := sorry
-  functor_unitIso_comp := sorry
+open Limits
+
+section Contraction
 
 structure Contraction (C : Type u) [Category.{v} C] where
   center : C
   hom : (X Y : C) → X ⟶ Y
-  -- iso : (X Y : C) → X ≅ Y
   eq : ∀ {X Y : C} (f g : X ⟶ Y), f = g
 
 variable {C : Type u} [Category.{v} C]
@@ -55,141 +48,36 @@ def Contraction.transportEquiv {D : Type u} [Category.{v} D] (c : Contraction C)
   Contraction D :=
 .ofEquivalencePUnit $ e.trans c.toEquivalencePUnit
 
-end CategoryTheory
+end Contraction
 
-section Prefix
+section misc
 
-class WellOrderedLT (γ : Type v) extends LinearOrder γ, IsWellOrder γ (· < ·)
-
-instance (γ : Type v) [WellOrderedLT γ] (α : γ) : WellOrderedLT {i // i ≤ α} :=
-{ (inferInstance : LinearOrder {i // i ≤ α}) with }
-
-def ltType (γ : Type v) [WellOrderedLT γ] : Ordinal.{v} :=
-Ordinal.type ((· < ·) : γ → γ → Prop)
-
-class WellOrderedTop (γ : Type v) extends WellOrderedLT γ, OrderTop γ
-
-class WellOrderedNoTop (γ : Type v) extends WellOrderedLT γ, NoTopOrder γ
-
-instance {β : Type v} [WellOrderedLT β] : WellOrderedTop (WithTop β) :=
-  { (inferInstance : LinearOrder (WithTop β)) with }
-
-def Prefix (γ δ : Type v) [PartialOrder γ] [PartialOrder δ] : Type v :=
-InitialSeg ((· < ·) : γ → γ → Prop) ((· < ·) : δ → δ → Prop)
-
-instance (γ δ : Type v) [PartialOrder γ] [PartialOrder δ] : CoeFun (Prefix γ δ) (fun _ => γ → δ) where
-  coe ι := ι.toFun
-
-def Prefix.id (γ : Type v) [PartialOrder γ] : Prefix γ γ :=
-InitialSeg.refl _
-
-def Prefix.comp {γ δ ε : Type v} [PartialOrder γ] [PartialOrder δ] [PartialOrder ε] :
-  Prefix δ ε → Prefix γ δ → Prefix γ ε :=
-fun g f => InitialSeg.trans f g
-
-def Prefix.ofOrderIso {γ δ : Type v} [PartialOrder γ] [PartialOrder δ] (e : γ ≃o δ) : Prefix γ δ :=
-InitialSeg.ofIso e.toRelIsoLT
-
-@[simps]
-def Prefix.closed {γ : Type v} [PartialOrder γ] (j : γ) : Prefix {i // i ≤ j} γ where
-  toFun := Subtype.val
-  inj' := Subtype.val_injective
-  map_rel_iff' := by intros; rfl
-  init' := fun a b h => ⟨⟨b, h.le.trans a.2⟩, rfl⟩
-
-def Prefix.open {γ : Type v} [PartialOrder γ] (j : γ) : Prefix {i // i < j} γ where
-  toFun := Subtype.val
-  inj' := Subtype.val_injective
-  map_rel_iff' := by intros; rfl
-  init' := fun a b h => ⟨⟨b, h.trans a.2⟩, rfl⟩
-
-def Prefix.functor {γ δ : Type v} [PartialOrder γ] [PartialOrder δ] (ι : Prefix γ δ) : γ ~> δ :=
-Monotone.functor $ StrictMono.monotone (fun _ _ => ι.map_rel_iff.2)
-
-def Prefix.fixme {γ δ : Type v} [PartialOrder γ] [PartialOrder δ] (ι : Prefix γ δ) (j : γ) :
-  { i // i < j } ≃o { i // i < ι j } where
-  toFun i := ⟨ι i.1, sorry⟩
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry
-  map_rel_iff' := sorry
-
-instance {γ δ : Type v} [WellOrderedLT γ] [WellOrderedLT δ] : Subsingleton (Prefix γ δ) :=
-show Subsingleton (InitialSeg _ _) from inferInstance
-
-/-
--- Auxiliary because the last two hypotheses are redundant for well orders
-def Prefix.equivAux {γ δ : Type v} [PartialOrder γ] [PartialOrder δ] (ι : Prefix γ δ) (κ : Prefix δ γ)
-  (hικ : ι.comp κ = Prefix.id δ) (hκι : κ.comp ι = Prefix.id γ) : γ ≌ δ where
-  functor := ι.functor
-  inverse := κ.functor
-  unitIso := eqToIso $ (congr_arg Prefix.functor hκι).symm
-  counitIso := eqToIso $ (congr_arg Prefix.functor hικ)
-
-def Prefix.equivAux' {γ δ : Type v} [WellOrderedLT γ] [WellOrderedLT δ]
-  (ι : Prefix γ δ) (κ : Prefix δ γ) : γ ≌ δ :=
-Prefix.equivAux ι κ (Subsingleton.elim _ _) (Subsingleton.elim _ _)
-
-def OrderIso.toEquiv {γ δ : Type v} [WellOrderedLT γ] [WellOrderedLT δ]
--/
-
-end Prefix
-
-section cocone
-
-variable {γ : Type v} [PartialOrder γ]
-
--- Do we need this?
-def IsBot' (j : γ) : Prop :=
-∀ k, k ≤ j → k = j
-
-def IsSucc (i j : γ) : Prop :=
-∀ k, k < j ↔ k ≤ i
-
-theorem IsSucc.lt {i j : γ} (h : IsSucc i j) : i < j :=
-(h i).2 le_rfl
-
-theorem IsSucc.le {i j : γ} (h : IsSucc i j) : i ≤ j :=
-le_of_lt h.lt
-
-def IsSucc.hom {i j : γ} (h : IsSucc i j) : i ⟶ j :=
+def _root_.IsSucc.hom {γ : Type v} [PartialOrder γ] {i j : γ} (h : IsSucc i j) : i ⟶ j :=
 homOfLE h.le
 
-def IsLimitStage (j : γ) : Prop :=
-IsLUB {i | i < j} j
-
-inductive AnalyzeType (j : γ)
-| isBot : IsBot j → AnalyzeType j
-| isSucc : (i : γ) → IsSucc i j → AnalyzeType j
-| isLimitStage : IsLimitStage j → AnalyzeType j
-
-def coconeAt (j : γ) : Cocone ((Prefix.open j).functor) :=
+def coconeAt {γ : Type v} [PartialOrder γ] (j : γ) : Cocone ((Prefix.open j).functor) :=
 { pt := j,
   ι := { app := fun i => homOfLE (le_of_lt i.property) } }
 
-def SmoothAt {C : Type u} [Category.{v} C] (F : γ ~> C) (j : γ) : Prop :=
+def SmoothAt {γ : Type v} [PartialOrder γ] {C : Type u} [Category.{v} C] (F : γ ⥤ C) (j : γ) : Prop :=
 Nonempty (IsColimit (F.mapCocone (coconeAt j)))
 
-end cocone
+end misc
 
-def analyze {γ : Type v} [WellOrderedLT γ] (j : γ) : AnalyzeType j :=
-sorry
+section good
 
-namespace CategoryTheory
+open CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-variable (X : C) (F : C ~> C) (η : Functor.id C ⟶ F)
+variable (X : C) (F : C ⥤ C) (η : Functor.id C ⟶ F)
 -- TODO: fancy 1 is untypable, but it's a good thing because it also breaks the server interaction
-variable (γ : Type v)
-
-section diag
-
-variable [WellOrderedLT γ]
+variable (γ : Type v) [WellOrderedLT γ]
 
 structure GoodDiagram where
-  fn : γ ~> C
+  fn : γ ⥤ C
   iso0 : (j : γ) → IsBot j → (fn.obj j ≅ X) -- TODO fix precedence
-  isoStep : (i j : γ) → (h : IsSucc i j) → { φ : fn.obj j ≅ F.obj (fn.obj i) // fn.map h.hom ≫ φ.hom = η.app (fn.obj i) }
+  isoStep : (i j : γ) → (h : IsSucc i j) →
+    { φ : fn.obj j ≅ F.obj (fn.obj i) // fn.map h.hom ≫ φ.hom = η.app (fn.obj i) }
   smooth : ∀ (j : γ), IsLimitStage j → SmoothAt fn j
 
 lemma GoodDiagram.isoStep_eq (D : GoodDiagram X F η γ) {i j : γ} (h : IsSucc i j) :
@@ -204,19 +92,46 @@ lemma GoodDiagram.isoStep_eq (D : GoodDiagram X F η γ) {i j : γ} (h : IsSucc 
     (D1.isoStep i j h).val.hom ≫ F.map (nat.app i) = nat.app j ≫ (D2.isoStep i j h).val.hom :=
     by aesop_cat
 
-instance : Category (GoodDiagram X F η γ) where
+#print GoodDiagramHom.ext
+
+instance : Quiver (GoodDiagram X F η γ) where
   Hom := GoodDiagramHom X F η γ
+
+@[ext] theorem GoodDiagramHom.ext' {D1 D2 : GoodDiagram X F η γ}
+  (x y : D1 ⟶ D2) : x.nat = y.nat → x = y :=
+by intros; apply GoodDiagramHom.ext; assumption
+
+instance : Category (GoodDiagram X F η γ) where
   id D := { nat := ID D.fn }
   comp {D1 D2 D3} f g :=
   { nat := f.nat ≫ g.nat,
-    iso0 := sorry,
-    isoStep := sorry }
-  id_comp := sorry
-  comp_id := sorry
-  assoc := sorry
+    iso0 := fun j hj => by
+      rw [NatTrans.comp_app, Category.assoc, ← g.iso0, ← f.iso0]
+    isoStep := fun i j h => by
+      rw [NatTrans.comp_app, NatTrans.comp_app, F.map_comp,
+          Category.assoc, ← g.isoStep, ← Category.assoc, ← Category.assoc, ← f.isoStep]
+  }
+/-
+  comp_id := by
+    intro D1 D2 f
+    apply GoodDiagramHom.ext
+    ext
+    apply Category.comp_id
+  id_comp := by
+    intro D1 D2 f
+    apply GoodDiagramHom.ext
+    ext
+    apply Category.id_comp
+  assoc := by
+    intros
+    apply GoodDiagramHom.ext
+    ext
+    apply Category.assoc
+-/
 
-lemma GoodDiagramHom.iso0_eq {D1 D2 : GoodDiagram X F η γ} (φ : D1 ⟶ D2)
-  {j : γ} (h : IsBot j) :
+#exit
+
+lemma GoodDiagramHom.iso0_eq {D1 D2 : GoodDiagram X F η γ} (φ : D1 ⟶ D2) {j : γ} (h : IsBot j) :
   φ.nat.app j = (D1.iso0 j h).hom ≫ (D2.iso0 j h).inv :=
 by
   have := (φ.iso0 j h).symm
@@ -230,25 +145,13 @@ by
   rw [← Iso.eq_comp_inv] at this
   simpa
 
-structure GoodDiagramIso (D1 D2 : GoodDiagram X F η γ) where
-  nat : D1.fn ≅ D2.fn
-  iso0 : ∀ j (h : IsBot j), D1.iso0 j h = nat.app j ≪≫ D2.iso0 j h :=
-    by aesop_cat
-  isoStep : ∀ i j (h : IsSucc i j),
-    (D1.isoStep i j h).val ≪≫ F.mapIso (nat.app i) = nat.app j ≪≫ (D2.isoStep i j h).val :=
-    by aesop_cat
+def GoodDiagram.toIso {D1 D2 : GoodDiagram X F η γ} (i : D1 ≅ D2) : (D1.fn ≅ D2.fn) :=
+{ hom := i.hom.nat
+  inv := i.inv.nat
+  hom_inv_id := show (i.hom ≫ i.inv).nat = GoodDiagramHom.nat (ID D1) by simp
+  inv_hom_id := show (i.inv ≫ i.hom).nat = GoodDiagramHom.nat (ID D2) by simp }
 
--- def GoodDiagram.isoEquiv {D1 D2 : GoodDiagram X F η γ} : (D1 ≅ D2) ≃ GoodDiagramIso X F η γ D1 D2 := sorry
-
-def GoodDiagram.toIso {D1 D2 : GoodDiagram X F η γ} : (D1 ≅ D2) → GoodDiagramIso X F η γ D1 D2 := fun i =>
-{ nat := {
-    hom := i.hom.nat
-    inv := i.inv.nat
-    hom_inv_id := show (i.hom ≫ i.inv).nat = GoodDiagramHom.nat (ID D1) by simp
-    inv_hom_id := show (i.inv ≫ i.hom).nat = GoodDiagramHom.nat (ID D2) by simp
-  }
-  iso0 := sorry
-  isoStep := sorry }
+section functorial
 
 variable {δ : Type v} [WellOrderedLT δ]
 variable {X F η γ}
@@ -265,7 +168,7 @@ def GoodDiagram.restr_hom (ι : Prefix γ δ) {D1 D2 : GoodDiagram X F η δ} (f
   iso0 j h := f.iso0 (ι j) sorry
   isoStep i j h := f.isoStep (ι i) (ι j) sorry
 
-def GoodDiagram.restr (ι : Prefix γ δ) : GoodDiagram X F η δ ~> GoodDiagram X F η γ where
+def GoodDiagram.restr (ι : Prefix γ δ) : GoodDiagram X F η δ ⥤ GoodDiagram X F η γ where
   obj := GoodDiagram.restr_obj ι
   map := GoodDiagram.restr_hom ι
   map_id := sorry
@@ -304,24 +207,13 @@ def GoodDiagram.transportContraction (e : γ ≃o δ) :
   Contraction (GoodDiagram X F η δ) → Contraction (GoodDiagram X F η γ) :=
 GoodDiagram.transportContraction' (Prefix.ofOrderIso e) (Prefix.ofOrderIso e.symm)
 
-end diag
+end functorial
 
-section cocone
-
-variable {β : Type v} [PartialOrder β]
-
-def toWithTop : Prefix β (WithTop β) where
-  toFun i := i
-  inj' := Option.some_injective _
-  map_rel_iff' := by intros; simp
-  init' := by
-    intro a b h
-    induction b using WithTop.recTopCoe
-    case top => simp at h
-    case coe b => exact ⟨b, rfl⟩
+end good
 
 open WithTop in
-def extendByCocone (F : β ~> C) (Z : Cocone F) : WithTop β ~> C where
+def extendByCocone {β : Type v} [PartialOrder β] {C : Type u} [Category.{v} C]
+    (F : β ⥤ C) (Z : Cocone F) : WithTop β ⥤ C where
   obj := fun
     | (y : β) => F.obj y
     | ⊤ => Z.pt
@@ -341,9 +233,13 @@ def extendByCocone (F : β ~> C) (Z : Cocone F) : WithTop β ~> C where
     | ⊤, (y2 : β), _, f, g => False.elim (not_top_le_coe _ $ leOfHom f)
     | _, ⊤, (y3 : β), f, g => False.elim (not_top_le_coe _ $ leOfHom g)
 
-end cocone
+-- We will prove Contraction (GoodDiagram X F η γ) for all γ by induction.
+-- First, we separately handle the three cases: IsBot, IsSucc, IsLimitStage.
 
-variable {X F η γ}
+section internal
+
+variable {C : Type u} [Category.{v} C]
+variable (X : C) (F : C ⥤ C) (η : Functor.id C ⟶ F)
 
 namespace bot
 
@@ -383,12 +279,6 @@ theorem homOfLE_self {X : Type _} [PartialOrder X] {x : X} (f : x ⟶ x): f = ID
   rfl
 
 variable {β : Type v} [WellOrderedTop β]
-
-lemma eq_top_of_is_succ_top {i : β} (h : IsSucc (i : WithTop β) ⊤) : i = (⊤ : β) :=
-sorry
-
-@[simp] lemma isSucc_top : IsSucc ((⊤ : β) : WithTop β) (⊤ : WithTop β) :=
-sorry
 
 open WithTop in
 def aux (c : Contraction (GoodDiagram X F η β)) : Contraction (GoodDiagram X F η (WithTop β)) where
@@ -451,40 +341,6 @@ def aux (c : Contraction (GoodDiagram X F η β)) : Contraction (GoodDiagram X F
           rcases eq_top_of_is_succ_top hij with rfl
           simp
         | ⊤, _, hij => False.elim sorry }
-/-
-  iso D1 D2 := (GoodDiagram.isoEquiv X F η _).symm $
-    have I := GoodDiagram.isoEquiv X F η _ $
-      c.iso (D1.restr_obj toWithTop) (D2.restr_obj toWithTop)
-    { nat := NatIso.ofComponents
-        (app := fun
-          | (i : β) => I.nat.app i
-          | ⊤ =>
-            (D1.isoStep (⊤ : β) ⊤ isSucc_top).val ≪≫
-            F.mapIso (I.nat.app _) ≪≫
-            (D2.isoStep (⊤ : β) ⊤ isSucc_top).val.symm)
-        (naturality := @fun
-          | (i1 : β), (i2 : β), f => I.nat.hom.naturality (homOfLE $ coe_le_coe.1 $ leOfHom f)
-          | (i1 : β), ⊤, f => by
-            have : f = homOfLE (coe_le_coe.2 le_top) ≫ homOfLE le_top := rfl
-            simp only [Iso.trans_hom, Functor.mapIso_hom, Iso.app_hom, Iso.symm_hom,
-              this, Functor.map_comp, ← Category.assoc, Iso.comp_inv_eq]
-            slice_lhs 2 3 => erw [GoodDiagram.isoStep_eq X F η _ D1 isSucc_top]
-            slice_rhs 3 4 => erw [GoodDiagram.isoStep_eq X F η _ D2 isSucc_top]
-            erw [← η.naturality, ← Category.assoc, ← Category.assoc,
-              ← I.nat.hom.naturality (homOfLE (le_top : i1 ≤ ⊤))]
-            rfl
-          | ⊤, (i2 : β), f => False.elim (not_top_le_coe _ $ leOfHom f)
-          | ⊤, ⊤, f => by simp)
-      iso0 := fun
-        | (i : β), hi => by simpa using I.iso0 i sorry
-        | ⊤, hi => False.elim sorry
-      isoStep := fun
-        | (i : β), (j : β), hij => by simpa using I.isoStep i j sorry
-        | (i : β), ⊤, hij => by
-          rcases eq_top_of_is_succ_top hij with rfl
-          simp
-        | ⊤, _, hij => False.elim sorry }
--/
   eq := @fun D1 D2 f g => by
     have : ∀ (i : β), f.nat.app i = g.nat.app i := sorry
     apply GoodDiagramHom.ext
@@ -503,34 +359,8 @@ end succ
 namespace limit
 
 variable {β : Type v} [WellOrderedNoTop β]
-
-instance : WellOrderedTop (WithTop β) :=
-  { (inferInstance : LinearOrder (WithTop β)) with }
-
-theorem isLimit_top : IsLimitStage (⊤ : WithTop β) :=
-sorry
-
-def pref (α : β) : Prefix {i // i ≤ α} (WithTop β) where
-  toFun i := i.val
-  inj' := by intro i i' h; ext; simpa using h
-  map_rel_iff' := by intros; simp
-  init' := by
-    intro a b h
-    induction b using WithTop.recTopCoe
-    case top => simp at h
-    case coe b =>
-      have h' : b < a := by simpa using h
-      refine ⟨⟨b, le_trans h'.le a.2⟩, rfl⟩
-
-def pref' (α α' : β) (H : α ≤ α') : Prefix {i // i ≤ α} {i // i ≤ α'} where
-  toFun i := ⟨i.val, le_trans i.property H⟩
-  inj' := by intro i i' h; ext; simpa using h
-  map_rel_iff' := by intros; simp
-  init' := by
-    intro a b h
-    refine ⟨⟨b.1, le_trans h.le a.2⟩, rfl⟩
-
 variable (IH : ∀ (α : β), Contraction (GoodDiagram X F η {i // i ≤ α}))
+variable {X F η}
 
 open WithTop
 
@@ -605,17 +435,6 @@ def aux_hom (D1 D2 : GoodDiagram X F η (WithTop β)) : D1 ⟶ D2 :=
 
 section center
 
-def limit_oe : {i : WithTop β // i < ⊤} ≃o β where
-  toFun := fun
-    | ⟨(i : β), _⟩ => i
-    | ⟨⊤, h⟩ => False.elim sorry
-  invFun := fun i => ⟨i, coe_lt_top i⟩
-  left_inv := fun
-    | ⟨(i : β), _⟩ => rfl
-    | ⟨⊤, h⟩ => False.elim sorry
-  right_inv := fun _ => rfl
-  map_rel_iff' := @fun i j => sorry
-
 def mk_hom {α i i' : β} (h : i ≤ i') (hi : i' ≤ α) :
   (⟨i, h.trans hi⟩ : {i // i ≤ α}) ⟶ (⟨i', hi⟩ : {i // i ≤ α}) :=
 homOfLE h
@@ -623,7 +442,7 @@ homOfLE h
 def aux_iso {α α' i : β} (hi : i ≤ α) (hα : α ≤ α') :
   (IH α).center.fn.obj ⟨i, hi⟩ ≅ (IH α').center.fn.obj ⟨i, hi.trans hα⟩ :=
 have := (IH α).iso (IH α).center (((IH α').center).restr_obj (pref' α α' hα))
-(GoodDiagram.toIso X F η _ this).nat.app ⟨i, hi⟩
+(GoodDiagram.toIso X F η _ this).app ⟨i, hi⟩
 
 lemma aux_iso_id {α i : β} (hi : i ≤ α) :
   aux_iso IH hi le_rfl = Iso.refl _ := by
@@ -648,7 +467,7 @@ lemma aux_iso_nat {α α' i i' : β} (h : i ≤ i') (hi : i' ≤ α) (hα : α �
 let I := (IH α).iso (IH α).center (((IH α').center).restr_obj (pref' α α' hα))
 (I.hom.nat.naturality (mk_hom h hi)).symm
 
-def aux_open : β ~> C where
+def aux_open : β ⥤ C where
   obj := fun α => (IH α).center.fn.obj ⟨α, le_rfl⟩
   map := @fun α α' f =>
     (aux_iso IH le_rfl (leOfHom f)).hom ≫
@@ -668,7 +487,7 @@ def aux_open : β ~> C where
 
 variable [HasColimits C]
 
-noncomputable def aux_closed : WithTop β ~> C :=
+noncomputable def aux_closed : WithTop β ⥤ C :=
 extendByCocone (aux_open IH) (colimit.cocone _)
 
 noncomputable def aux_center : GoodDiagram X F η (WithTop β) where
@@ -697,7 +516,7 @@ noncomputable def aux_center : GoodDiagram X F η (WithTop β) where
       constructor
       apply IsColimit.ofWhiskerEquivalence
         (equivOfOrderIso $ Prefix.fixme (toWithTop.comp (Prefix.closed i)) ⟨i, le_rfl⟩)
-      let G : {j // j ≤ i} ~> C := (Prefix.closed i).functor ⋙ aux_open IH
+      let G : {j // j ≤ i} ⥤ C := (Prefix.closed i).functor ⋙ aux_open IH
       change IsColimit (G.mapCocone (coconeAt ⟨i, le_rfl⟩))
       have φ : G ≅ (IH i).center.fn := NatIso.ofComponents (fun j => aux_iso IH le_rfl j.2) $ by
         intro j j' f
@@ -720,38 +539,7 @@ end center
 
 end limit
 
-namespace succ
-
-variable (γ : Type v) [WellOrderedTop γ] (α : γ) (hα : IsSucc α ⊤)
-
-lemma ne_top_of_le_α (y : {i // i ≤ α}) : ((y : γ) = ⊤) ↔ False := by
-  rcases y with ⟨yv, yp⟩
-  rw [← hα yv] at yp
-  rw [iff_false]
-  exact ne_of_lt yp
-
-def succ_oe' : WithTop {i // i ≤ α} ≃o γ where
-  invFun x := if h : x = ⊤ then ⊤ else WithTop.some ⟨x, (hα _).mp (Ne.lt_top h)⟩
-  toFun := WithTop.recTopCoe ⊤ Subtype.val
-  right_inv := by
-    intro x
-    dsimp only
-    split
-    · symm; assumption
-    · rfl
-  left_inv := by
-    have := ne_top_of_le_α _ α hα
-    intro y
-    induction y using WithTop.recTopCoe <;> simp [this]
-  map_rel_iff' := by
-    have := ne_top_of_le_α _ α hα
-    rintro y y'
-    induction y using WithTop.recTopCoe <;> induction y' using WithTop.recTopCoe <;>
-      dsimp <;> simp [this]
-
-def succ_oe : γ ≃o WithTop {i // i ≤ α} := (succ_oe' γ α hα).symm
-
-end succ
+end internal
 
 section main
 
@@ -764,61 +552,9 @@ def orderTypeRec {C : (γ : Type v) → [WellOrderedTop γ] → Type w}
 h γ (fun β _ _ => orderTypeRec h β)
 termination_by _ γ h => ltType γ
 
-def isoPUnit_of_isBot_top [WellOrderedTop γ] (h : IsBot (⊤ : γ)) : (γ ≃o PUnit) :=
-sorry
-
-def isoWithTop_of_isSucc_top [WellOrderedTop γ] (α : γ) (h : IsSucc α ⊤) :
-  γ ≃o WithTop {i // i ≤ α} :=
-succ.succ_oe γ α h
-
-def ps_closed_of_isSucc [WellOrderedLT γ] (α β : γ) (h : IsSucc α β) :
-  PrincipalSeg ((· < ·) : {i // i ≤ α} → _ → Prop) ((· < ·) : γ → _ → Prop) :=
-{ Prefix.closed α with
-  top := β
-  down' := by
-    simp [IsSucc] at h; simp [h] }
-
-theorem exists_succ [WellOrderedTop γ] (α : γ) (h : α ≠ ⊤) : ∃ β, IsSucc α β :=
-sorry
-
-theorem exists_succ' [WellOrderedNoTop γ] (α : γ) : ∃ β, IsSucc α β :=
-sorry
-
-noncomputable def ps_closed_of_ne_top [WellOrderedTop γ] (α : γ) (h : α ≠ ⊤) :
-  PrincipalSeg ((· < ·) : {i // i ≤ α} → _ → Prop) ((· < ·) : γ → _ → Prop) :=
-have e := exists_succ α h
-ps_closed_of_isSucc α e.choose e.choose_spec
-
-noncomputable def ps_closed_of_notop [WellOrderedNoTop γ] (α : γ) :
-  PrincipalSeg ((· < ·) : {i // i ≤ α} → _ → Prop) ((· < ·) : γ → _ → Prop) :=
-have e := exists_succ' α
-ps_closed_of_isSucc α e.choose e.choose_spec
-
-instance [WellOrderedLT γ] (α : γ) : WellOrderedLT {i // i < α} :=
-  { (inferInstance : LinearOrder {i // i < α}) with }
-
-def noTop [WellOrderedTop γ] (h : IsLimitStage (⊤ : γ)) : WellOrderedNoTop {i : γ // i < ⊤} :=
-  { (inferInstance : WellOrderedLT {i : γ // i < ⊤}) with
-    exists_not_le := sorry }
-
-def isoWithTopOpen [WellOrderedTop γ] : γ ≃o WithTop {i : γ // i < ⊤} :=
-sorry
-
-instance [Preorder γ] (α : γ) : OrderTop {i // i ≤ α} where
-  top := ⟨α, le_rfl⟩
-  le_top i := i.2
-
-instance [WellOrderedLT γ] (α : γ) : WellOrderedTop {i // i ≤ α} :=
-  { (inferInstance : LinearOrder {i // i ≤ α}), (inferInstance : OrderTop {i // i ≤ α}) with }
-
-theorem ltType_closed_lt [WellOrderedLT γ] (α β : γ) (h : α < β) : ltType {i // i ≤ α} < ltType γ :=
-sorry
-
-theorem ltType_closed_le [WellOrderedLT γ] (α : γ) : ltType {i // i ≤ α} ≤ ltType γ :=
-sorry
-
-theorem ltType_open_lt [WellOrderedLT γ] (α : γ) : ltType {i // i < α} < ltType γ :=
-sorry
+variable {C : Type u} [Category.{v} C]
+variable (X : C) (F : C ⥤ C) (η : Functor.id C ⟶ F)
+variable (γ : Type v)
 
 noncomputable def contr [HasColimits C] [WellOrderedTop γ] : Contraction (GoodDiagram X F η γ) := by
   apply orderTypeRec ?_ γ; clear! γ; intros γ _ IH
