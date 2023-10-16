@@ -208,19 +208,16 @@ noncomputable def classes_equiv_quotient (r : Setoid α) : Quotient r ≃ Setoid
   apply Equiv.ofBijective (Quot.lift f f_respects_relation)
   constructor
   · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
-    obtain ⟨a, ha⟩ := Quotient.exists_rep q_a
-    obtain ⟨b, hb⟩ := Quotient.exists_rep q_b
-    simp only [←ha, ←hb, Quotient.lift_mk, Subtype.mk.injEq] at *
+    induction' q_a using Quotient.ind with a
+    induction' q_b using Quotient.ind with b
+    simp only [Subtype.ext_iff, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
     show a ∈ { x | Setoid.r x b }
     rw [←h_eq]
     exact Setoid.refl a
-  · simp only [Quot.surjective_lift f_respects_relation]
+  · rw [Quot.surjective_lift]
     intro ⟨c, a, hc⟩
-    have a_in_c : a ∈ c := by rw [hc]; exact Setoid.refl' r a
-    exists a
-    rw [Subtype.mk.injEq]
-    exact Setoid.eq_of_mem_classes (Setoid.mem_classes r a) (Setoid.refl a) ⟨a, hc⟩ a_in_c
+    exact ⟨a, Subtype.ext hc.symm⟩
 
 section Partition
 
