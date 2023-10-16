@@ -992,10 +992,15 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   `toApply` is non-empty after a custom projection that is a composition of multiple projections
   was just used. In that case we need to apply these projections before we continue changing `lhs`.
   `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
+  `tempLhs` is an expression that represents the left-hand side in the middle of applying a custom
+  projection that is the composition of multiple projections. In that case, the custom projection
+  has already been applied to `lhs`, but we still need the expression `lhs` with only some of the
+  projections applied to it. It's value is unused outside this situation.
   -/
-partial def addProjections (nm : Name) (type lhs rhs : Expr)
-  (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
-  (todo : List (String × Syntax)) (toApply : List ℕ) : MetaM (Array Name) := do
+partial def addProjections (nm : Name) (type lhs tempLhs rhs : Expr)
+    (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
+    (todo : List (String × Syntax)) (toApply : List ℕ) :
+    MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
@@ -1068,7 +1073,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
         ""}`MulEquiv` by giving the corresponding `Equiv` and the proof that it respects {
         ""}multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to {
         ""}unfold the corresponding `Equiv` to get to the `toFun` field."
-      let nms ← addProjections nm type lhs rhs args mustBeStr
+      let nms ← addProjections nm type lhs tempLhs rhs args mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply
       return if addThisProjection then nms.push nm else nms
     if !toApply.isEmpty then
@@ -1092,14 +1097,17 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := toApply then
-    let some ⟨newRhs, _⟩ := projInfo[idx]?
+    let some ⟨newRhs, { expr := projExpr, .. }⟩ := projInfo[idx]?
       | throwError "unreachable: index of composite projection is out of bounds."
     -- we determine the new type by looking what the type is if we applied one of the standard
     -- projections to this expression
-    let newType ← inferType <| projInfo[idx]!.2.expr.app lhsAp
-    trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:{
-      indentExpr lhsAp}"
-    return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest
+    let newTempLhs := projExpr.app <| tempLhs.instantiateLambdasOrApps typeArgs
+    let newType ← inferType newTempLhs
+    trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. lhs with the {
+      ""} custom projection already applied:{indentExpr lhsAp}\n{
+      ""}lhs used to determine the intermediate type: {indentExpr newTempLhs}\n{
+      ""}which has type {indentExpr newType}"
+    return ← addProjections nm newType lhsAp newTempLhs newRhs newArgs false cfg todo rest
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
@@ -1125,10 +1133,11 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
     -- we determine the new type by looking what the type is if we applied one of the standard
     -- projections to this expression
-    let newType ← inferType <| projInfo[projNrs.head!]!.2.expr.app lhsAp
+    let newTempLhs := projInfo[projNrs.head!]!.2.expr.app lhsAp
+    let newType ← inferType newTempLhs
     let newName := updateName nm proj.getString isPrefix
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
-    addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs.tail
+    addProjections newName newType newLhs newTempLhs newRhs newArgs false cfg newTodo projNrs.tail
   return if addThisProjection then nms.push nm else nms
 
 end Simps
@@ -1147,7 +1156,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let todo := todo.pwFilter (·.1 ≠ ·.1) |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
   let mut cfg := cfg
   MetaM.run' <| addProjections ref d.levelParams
-    nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
+    nm d.type lhs lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
