@@ -97,7 +97,7 @@ lemma IsSigmaCompact.image {f : α → β} (hf : Continuous f) {s : Set α} (hs 
     IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- If `f : X → Y` is `Inducing`, the image `f '' s` of a set `s` is σ-compact
-  if and only `s`` is σ-compact. -/
+  if and only `s` is σ-compact. -/
 lemma Inducing.isSigmaCompact_iff {f : α → β} {s : Set α}
     (hf : Inducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
@@ -118,7 +118,7 @@ lemma Inducing.isSigmaCompact_iff {f : α → β} {s : Set α}
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
-  if and only `s`` is σ-compact. -/
+  if and only `s` is σ-compact. -/
 lemma Embedding.isSigmaCompact_iff {f : α → β} {s : Set α}
     (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.toInducing.isSigmaCompact_iff
