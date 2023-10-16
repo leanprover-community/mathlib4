@@ -123,7 +123,22 @@ noncomputable instance [t.homology₀.ShiftSequence ℤ] :
     (S.tStructure t).homology₀.ShiftSequence ℤ :=
   (inferInstance : (S.ι ⋙ t.homology₀).ShiftSequence ℤ)
 
+instance : t.plus.ContainsHeart t where
+  subset _ hX := ⟨0, ⟨hX.2⟩⟩
+
+instance : t.minus.ContainsHeart t where
+  subset _ hX := ⟨0, ⟨hX.1⟩⟩
+
 end Subcategory
+
+namespace TStructure
+
+variable (t : TStructure C) [IsTriangulated C]
+
+abbrev tPlus := t.plus.tStructure t
+abbrev tMinus := t.minus.tStructure t
+
+end TStructure
 
 end Triangulated
 
