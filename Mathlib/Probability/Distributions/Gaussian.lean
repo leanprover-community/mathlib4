@@ -91,13 +91,13 @@ lemma integrable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
 lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPdfReal μ v x) = 1 := by
   rw [←ENNReal.toReal_eq_one_iff]
-  have hfm : AEStronglyMeasurable (gaussianPdfReal μ v) ℙ :=
+  have hfm : AEStronglyMeasurable (gaussianPdfReal μ v) volume :=
     (stronglyMeasurable_gaussianPdfReal μ v).aestronglyMeasurable
   have hf : 0 ≤ₐₛ gaussianPdfReal μ v := ae_of_all _ (gaussianPdfReal_nonneg μ v)
   rw [← integral_eq_lintegral_of_nonneg_ae hf hfm]
   simp only [gaussianPdfReal, gt_iff_lt, zero_lt_two, zero_le_mul_right, ge_iff_le, one_div,
     Nat.cast_ofNat, integral_mul_left]
-  rw [integral_sub_right_eq_self (μ := ℙ) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
+  rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
   simp only [gt_iff_lt, zero_lt_two, zero_le_mul_right, ge_iff_le, div_eq_inv_mul, mul_inv_rev,
     mul_neg]
   simp_rw [←neg_mul]
@@ -172,12 +172,12 @@ lemma gaussianReal_apply_eq_integral (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0)
   · exact ae_of_all _ (gaussianPdfReal_nonneg _ _)
 
 lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    gaussianReal μ v ≪ ℙ := by
+    gaussianReal μ v ≪ volume := by
   rw [gaussianReal_of_var_ne_zero _ hv]
   exact withDensity_absolutelyContinuous _ _
 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    ℙ ≪ gaussianReal μ v := by
+    volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
   refine withDensity_absolutelyContinuous' ?_ ?_ ?_
   · exact (measurable_gaussianPdf _ _).aemeasurable
@@ -185,7 +185,7 @@ lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0)
   · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
 lemma rnDeriv_gaussianReal (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
-    ∂(gaussianReal μ v)/∂ℙ =ₐₛ gaussianPdf μ v := by
+    ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPdf μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
   exact Measure.rnDeriv_withDensity _ (measurable_gaussianPdf μ v)
 
