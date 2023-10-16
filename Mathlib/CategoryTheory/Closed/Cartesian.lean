@@ -111,11 +111,9 @@ abbrev coev : 𝟭 C ⟶ prod.functor.obj A ⋙ exp A :=
 
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
-/-- Morphisms obtained using an exponentiable object. -/
 notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Delaborator for `Prefunctor.obj` -/
 @[delab app.Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := do
   let e ← getExpr
@@ -132,7 +130,6 @@ def delabPrefunctorObjExp : Delab := do
 
 -- porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
-/-- Morphisms from an exponentiable object. -/
 notation:30 B " ^^ " A:30 => (exp A).obj B
 
 @[simp, reassoc]
@@ -165,14 +162,12 @@ def uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 #align category_theory.cartesian_closed.uncurry CategoryTheory.CartesianClosed.uncurry
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
-@[simp, nolint simpNF]
+@[simp]
 theorem homEquiv_apply_eq (f : A ⨯ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.cartesian_closed.hom_equiv_apply_eq CategoryTheory.CartesianClosed.homEquiv_apply_eq
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
-@[simp, nolint simpNF]
+@[simp]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
     ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -439,6 +434,4 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
 
 end Functor
 
-attribute [nolint simpNF] CategoryTheory.CartesianClosed.homEquiv_apply_eq
-  CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 end CategoryTheory

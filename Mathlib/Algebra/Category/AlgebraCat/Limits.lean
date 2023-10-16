@@ -104,39 +104,17 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
   · -- Porting note: we could add a custom `ext` lemma here.
     apply Subtype.ext
     ext j
-    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map_eq_coe]
-    -- This used to be as below but we need `erw` after leanprover/lean4#2644
-    -- simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
-    erw [map_one]
+    simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
     rfl
   · intro x y
     apply Subtype.ext
     ext j
-    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map_eq_coe]
-    -- This used to be as below, but we need `erw` after leanprover/lean4#2644
-    -- simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
-    erw [map_mul]
+    simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
     rfl
-  · simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map_eq_coe]
-    -- The below `simp` was enough before leanprover/lean4#2644
-    -- simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
-    apply Subtype.ext
-    dsimp
-    funext u
-    erw [map_zero]
+  · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
     rfl
   · intro x y
-    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map_eq_coe]
-    -- The below `simp` was enough before leanprover/lean4#2644
-    -- simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
-    apply Subtype.ext
-    dsimp
-    funext u
-    erw [map_add]
+    simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
     rfl
   · intro r
     apply Subtype.ext

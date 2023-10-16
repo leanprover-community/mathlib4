@@ -277,31 +277,23 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.zero_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [MonoidalCategory.hom_apply]
-    rw [LinearMap.zero_apply, TensorProduct.tmul_zero]
+    rw [LinearMap.zero_apply, MonoidalCategory.hom_apply, LinearMap.zero_apply,
+      TensorProduct.tmul_zero]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.zero_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [MonoidalCategory.hom_apply]
-    rw [LinearMap.zero_apply, TensorProduct.zero_tmul]
+    rw [LinearMap.zero_apply, MonoidalCategory.hom_apply, LinearMap.zero_apply,
+      TensorProduct.zero_tmul]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
+    rw [LinearMap.add_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
     erw [MonoidalCategory.hom_apply]
     rw [LinearMap.add_apply, TensorProduct.tmul_add]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
+    rw [LinearMap.add_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
     erw [MonoidalCategory.hom_apply]
     rw [LinearMap.add_apply, TensorProduct.add_tmul]
 
@@ -311,16 +303,12 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.smul_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
-    rw [LinearMap.smul_apply, TensorProduct.tmul_smul]
+    rw [LinearMap.smul_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply,
+      LinearMap.smul_apply, TensorProduct.tmul_smul]
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
-    rw [LinearMap.smul_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [MonoidalCategory.hom_apply, MonoidalCategory.hom_apply]
-    rw [LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
+    rw [LinearMap.smul_apply, MonoidalCategory.hom_apply, MonoidalCategory.hom_apply,
+      LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
 end ModuleCat

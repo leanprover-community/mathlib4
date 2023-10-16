@@ -222,8 +222,7 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
   obtain ⟨y, hy⟩ := h
   simp only [fst, snd, comp_apply]
   change f x = _
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
+  rw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
   congr
   apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
   simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
