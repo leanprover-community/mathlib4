@@ -1182,3 +1182,25 @@ class Artificial (n : Nat) where
   one : Nat
 
 initialize_simps_projections Artificial
+
+
+namespace UnfoldDefs
+
+def myEquiv : ℕ ≃ ℕ where
+  toFun x := x
+  invFun x := x
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+def MyNat := ℕ
+
+@[simps]
+def myEquiv2 : MyNat ≃ MyNat where
+  __ := myEquiv
+
+example : True := by
+  have := myEquiv2_toFun
+  guard_hyp this : ∀ a : MyNat, myEquiv2 a = myEquiv a
+  trivial
+
+end UnfoldDefs
