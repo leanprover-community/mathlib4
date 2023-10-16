@@ -133,7 +133,26 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
 
 end MutuallySingular
 
-lemma add_left_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
+lemma add_left_cancel (μ ν₁ ν₂ : Measure α) [IsFiniteMeasure μ] :
+    μ + ν₁ = μ + ν₂ ↔ ν₁ = ν₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+  ext s -
+  have h1 : ν₁ s = (μ + ν₁) s - μ s := by
+    simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, ge_iff_le, ne_eq]
+    rw [ENNReal.add_sub_cancel_left]
+    exact measure_ne_top _ _
+  have h2 : ν₂ s = (μ + ν₂) s - μ s := by
+    simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, ge_iff_le, ne_eq]
+    rw [ENNReal.add_sub_cancel_left]
+    exact measure_ne_top _ _
+  rw [h1, h, ← h2]
+
+lemma add_right_cancel (μ ν₁ ν₂ : Measure α) [IsFiniteMeasure μ] :
+    ν₁ + μ = ν₂ + μ ↔ ν₁ = ν₂ := by
+  rw [add_comm _ μ, add_comm _ μ]
+  exact add_left_cancel _ _ _
+
+lemma MutuallySingular.add_left_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
     μ + ν₁ = μ + ν₂ ↔ ν₁ = ν₂ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
   obtain ⟨t₁, ht₁, ht₁μ, ht₁ν₁⟩ := h₁
@@ -180,10 +199,10 @@ lemma add_left_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h�
   simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply] at h
   rwa [hμ_eq, zero_add, zero_add, ← h₁_eq, ← h₂_eq] at h
 
-lemma add_right_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
+lemma MutuallySingular.add_right_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
     ν₁ + μ = ν₂ + μ ↔ ν₁ = ν₂ := by
   rw [add_comm _ μ, add_comm _ μ]
-  exact add_left_cancel h₁ h₂
+  exact MutuallySingular.add_left_cancel h₁ h₂
 
 end Measure
 

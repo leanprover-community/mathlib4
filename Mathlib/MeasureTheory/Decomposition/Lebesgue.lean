@@ -473,13 +473,6 @@ theorem rnDeriv_smul_left (ν : Measure α) [IsFiniteMeasure ν]
     suffices (r • ν).singularPart μ + withDensity μ (rnDeriv (r • ν) μ)
         = (r • ν).singularPart μ + r • withDensity μ (rnDeriv ν μ) by
       rwa [add_left_cancel] at this
-      · refine MutuallySingular.mono_ac ((r • ν).mutuallySingular_singularPart μ)
-          AbsolutelyContinuous.rfl ?_
-        exact withDensity_absolutelyContinuous _ _
-      · refine MutuallySingular.mono_ac ((r • ν).mutuallySingular_singularPart μ)
-          AbsolutelyContinuous.rfl ?_
-        refine AbsolutelyContinuous.trans ?_ (withDensity_absolutelyContinuous _ (rnDeriv ν μ))
-        exact absolutelyContinuous_of_le_smul le_rfl
     rw [← (r • ν).haveLebesgueDecomposition_add μ, singularPart_smul, ← smul_add,
       ← ν.haveLebesgueDecomposition_add μ]
 
@@ -517,13 +510,6 @@ theorem rnDeriv_smul_right (ν : Measure α) [IsFiniteMeasure ν]
     suffices ν.singularPart (r • μ) + withDensity (r • μ) (rnDeriv ν (r • μ))
         = ν.singularPart (r • μ) + r⁻¹ • withDensity (r • μ) (rnDeriv ν μ) by
       rwa [add_left_cancel] at this
-      · refine MutuallySingular.mono_ac (ν.mutuallySingular_singularPart (r • μ))
-          AbsolutelyContinuous.rfl ?_
-        exact withDensity_absolutelyContinuous _ _
-      · refine MutuallySingular.mono_ac (ν.mutuallySingular_singularPart (r • μ))
-          AbsolutelyContinuous.rfl ?_
-        refine AbsolutelyContinuous.trans ?_ (withDensity_absolutelyContinuous _ (rnDeriv ν μ))
-        exact absolutelyContinuous_of_le_smul le_rfl
     rw [← ν.haveLebesgueDecomposition_add (r • μ), singularPart_smul_right _ _ _ hr,
       nnreal_smul_eq_coe_smul r, withDensity_smul_measure, ← nnreal_smul_eq_coe_smul, ← smul_assoc,
       smul_eq_mul, inv_mul_cancel hr, one_smul]
@@ -559,12 +545,6 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
   · suffices (ν₁ + ν₂).singularPart μ + μ.withDensity ((ν₁ + ν₂).rnDeriv μ)
         = (ν₁ + ν₂).singularPart μ + μ.withDensity (ν₁.rnDeriv μ + ν₂.rnDeriv μ) by
       rwa [add_left_cancel] at this
-      · refine MutuallySingular.mono_ac ((ν₁ + ν₂).mutuallySingular_singularPart μ)
-          AbsolutelyContinuous.rfl ?_
-        exact withDensity_absolutelyContinuous _ _
-      · refine MutuallySingular.mono_ac ((ν₁ + ν₂).mutuallySingular_singularPart μ)
-          AbsolutelyContinuous.rfl ?_
-        exact withDensity_absolutelyContinuous _ _
     rw [← (ν₁ + ν₂).haveLebesgueDecomposition_add μ, singularPart_add,
       withDensity_add_left (measurable_rnDeriv _ _), add_assoc,
       add_comm (ν₂.singularPart μ), add_assoc, add_comm _ (ν₂.singularPart μ),
