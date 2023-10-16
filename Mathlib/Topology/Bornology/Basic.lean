@@ -335,6 +335,11 @@ class BoundedSpace (α : Type*) [Bornology α] : Prop where
   bounded_univ : Bornology.IsBounded (univ : Set α)
 #align bounded_space BoundedSpace
 
+/-- A finite space is bounded. -/
+instance (priority := 100) BoundedSpace.of_finite {α : Type*} [Bornology α] [Finite α] :
+    BoundedSpace α where
+  bounded_univ := (toFinite _).isBounded
+
 namespace Bornology
 
 variable [Bornology α]
