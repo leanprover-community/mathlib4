@@ -722,9 +722,7 @@ def Scheme.restrictFunctor : Opens X ⥤ Over X where
     Over.homMk
       (IsOpenImmersion.lift (X.ofRestrict _) (X.ofRestrict _) <| by
           dsimp [ofRestrict, LocallyRingedSpace.ofRestrict, Opens.inclusion]
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-          erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
-          rw [Subtype.range_val, Subtype.range_val]
+          rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_val, Subtype.range_val]
           exact i.le)
       (IsOpenImmersion.lift_fac _ _ _)
   map_id U := by
@@ -749,8 +747,7 @@ def Scheme.restrictFunctor : Opens X ⥤ Over X where
   ((X.restrictFunctor.map i).left) =
   IsOpenImmersion.lift (X.ofRestrict V.openEmbedding) (X.ofRestrict U.openEmbedding) (by
     dsimp [ofRestrict, LocallyRingedSpace.ofRestrict, Opens.inclusion]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]; rw [Subtype.range_val, Subtype.range_val]
+    rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_val, Subtype.range_val]
     exact i.le) := rfl
 
 -- Porting note : the `by ...` used to be automatically done by unification magic
@@ -759,8 +756,7 @@ theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1 ≫ X.ofRestrict _ = X.ofRestrict _ :=
   IsOpenImmersion.lift_fac _ _ (by
     dsimp [ofRestrict, LocallyRingedSpace.ofRestrict, Opens.inclusion]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]; rw [Subtype.range_val, Subtype.range_val]
+    rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_val, Subtype.range_val]
     exact i.le)
 #align algebraic_geometry.Scheme.restrict_functor_map_ofRestrict AlgebraicGeometry.Scheme.restrictFunctor_map_ofRestrict
 
@@ -822,11 +818,9 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f
     (H := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance))
     (Y.ofRestrict _) _
   dsimp [Opens.inclusion]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  rw [coe_comp, Set.range_comp]; erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+  rw [coe_comp, Set.range_comp, ContinuousMap.coe_mk, ContinuousMap.coe_mk]
   dsimp
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  rw [Subtype.range_val]; erw [Subtype.range_coe]
+  rw [Subtype.range_val, Subtype.range_coe]
   refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
   rw [← TopCat.epi_iff_surjective]
   infer_instance
@@ -922,8 +916,7 @@ def pullbackRestrictIsoRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
   refine' IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) _
   rw [IsOpenImmersion.range_pullback_fst_of_right]
   dsimp [Opens.inclusion]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]; rw [Subtype.range_val]; erw [Subtype.range_coe]
+  rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_val, Subtype.range_coe]
   rfl
 #align algebraic_geometry.pullback_restrict_iso_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict
 
@@ -1129,9 +1122,8 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]
   ext1; dsimp [Opens.map, Opens.inclusion]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]; erw [ContinuousMap.coe_mk]
-  rw [Subtype.range_val]
+  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, ContinuousMap.coe_mk,
+    Subtype.range_val]
   exact Y.basicOpen_le r
 #align algebraic_geometry.morphism_restrict_restrict_basic_open AlgebraicGeometry.morphismRestrictRestrictBasicOpen
 

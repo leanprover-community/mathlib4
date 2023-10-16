@@ -1337,8 +1337,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- porting note: was in the previous `simp_rw`, no longer works
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [DFinsupp.singleAddHom_apply]
+    rw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
@@ -1363,9 +1362,8 @@ def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Sub
   left_inv x := by
     dsimp only
     letI := fun i => Classical.decEq (V i)
-    rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [DFinsupp.sumAddHom_apply]; rw [DFinsupp.sum_eq_sum_fintype]
+    rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, DFinsupp.liftAddHom_apply,
+      DFinsupp.sumAddHom_apply, DFinsupp.sum_eq_sum_fintype]
     · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
       exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
     · intro i
