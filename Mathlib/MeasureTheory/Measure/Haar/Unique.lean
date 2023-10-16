@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.Analysis.Convolution
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Uniqueness of Haar measure, again
@@ -17,6 +17,31 @@ import Mathlib.Analysis.Convolution
 
 open MeasureTheory Filter Set TopologicalSpace
 open scoped Uniformity Topology ENNReal Pointwise
+
+section
+
+lemma foo {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+    [LocallyCompactSpace G] {k u : Set G}
+    (hk : IsCompact k) (hu : IsOpen u) (h : k ⊆ u) :
+    ∃ f : G → ℝ, Continuous f ∧ EqOn f 1 k ∧ EqOn f 0 u := by
+  let N : Subgroup G := (⊥ : Subgroup G).topologicalClosure
+  let H := G ⧸ N
+  have : N.Normal := Subgroup.is_normal_topologicalClosure ⊥
+  let π := ((↑) : G → H)
+  have : IsClosed (N : Set G) := Subgroup.isClosed_topologicalClosure ⊥
+  let k' := π '' k
+  have k'_comp : IsCompact k' := hk.image continuous_coinduced_rng
+  have k'_closed : IsClosed k' := k'_comp.isClosed
+  let u' := π '' u
+  have u'_open : IsOpen u' := QuotientGroup.isOpenMap_coe N u hu
+  have : k' ⊆ u' := image_subset π h
+  have T := exists_continuous_zero_one_of_closed k'_closed u'_open
+
+
+end
+
+#exit
+
 
 section
 
@@ -276,4 +301,6 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
       ∫ x, f x ∂μ' = c * ∫ x, f x ∂μ := by
   by_cases H : LocallyCompactSpace G; swap
   · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
-    have Z := f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont
+    rcases f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont with hf|hf
+    · simp [hf]
+    · exact (H hf).elim
