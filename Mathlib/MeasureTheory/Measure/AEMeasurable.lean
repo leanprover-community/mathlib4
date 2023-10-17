@@ -50,7 +50,7 @@ lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :
   ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
 
 theorem mono_measure (h : AEMeasurable f μ) (h' : ν ≤ μ) : AEMeasurable f ν :=
-  mono_ac h h'.absolutelyContinuous 
+  mono_ac h h'.absolutelyContinuous
 #align ae_measurable.mono_measure AEMeasurable.mono_measure
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
