@@ -77,15 +77,6 @@ finitely many vertices.
   look like.
 -/
 
-section
-
-
-variable {α β : Type*} {a b : α} {c d : β}
-
-protected lemma Iff.ne : (a = b ↔ c = d) → (a ≠ b ↔ c ≠ d) := Iff.not
-
-end
-
 -- porting note: using `aesop` for automation
 
 -- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
