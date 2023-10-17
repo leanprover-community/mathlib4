@@ -544,7 +544,7 @@ theorem hasDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set 𝕜} (hs
     (hf : ∀ᶠ n in l, DifferentiableOn 𝕜 (f n) s)
     (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasDerivAt g (g' x) x := by
   refine' hasDerivAt_of_tendstoLocallyUniformlyOn hs hf' _ hfg hx
-  filter_upwards [hf] with n h z hz using((h z hz).differentiableAt (hs.mem_nhds hz)).hasDerivAt
+  filter_upwards [hf] with n h z hz using ((h z hz).differentiableAt (hs.mem_nhds hz)).hasDerivAt
 #align has_deriv_at_of_tendsto_locally_uniformly_on' hasDerivAt_of_tendsto_locally_uniformly_on'
 
 theorem hasDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
