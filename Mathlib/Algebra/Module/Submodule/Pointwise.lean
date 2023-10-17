@@ -401,16 +401,13 @@ lemma mem_set_smul_submodule (x : M) [SMulCommClass R R N] :
     rintro ⟨c, hc1, rfl⟩ p hp
     simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
     exact Submodule.sum_mem _ λ r hr ↦ hp (hc1 hr) (c _).2
-
-@[simp] lemma mem_empty_smul_submodule (x : M) : x ∈ (∅ : Set R) • N ↔ x = 0 := by
+@[simp] lemma empty_smul_submodule : (∅ : Set R) • N = ⊥ := by
+  ext
   fconstructor
   · intro hx
     rw [mem_set_smul_submodule_def, Submodule.mem_sInf] at hx
     exact hx ⊥ (λ r _ hr ↦ hr.elim)
   · rintro rfl; exact Submodule.zero_mem _
-
-@[simp] lemma empty_smul_submodule : (∅ : Set R) • N = ⊥ := by
-  ext; apply mem_empty_smul_submodule
 
 @[simp] lemma set_smul_bot_submodule : s • (⊥ : Submodule R M) = ⊥ :=
   eq_bot_iff.mpr fun x hx => show x = 0 by
