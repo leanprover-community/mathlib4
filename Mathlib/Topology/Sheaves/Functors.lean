@@ -65,13 +65,13 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.pushforward TopCat.Sheaf.pushforward
 
 lemma pushforward_forget (f : X ⟶ Y) :
-  pushforward C f ⋙ forget C Y = forget C X ⋙ Presheaf.pushforward C f := rfl
+    pushforward C f ⋙ forget C Y = forget C X ⋙ Presheaf.pushforward C f := rfl
 
 /--
 Pushforward of sheaves is isomorphic (actually definitionally equal) to pushforward of presheaves.
 -/
 def pushforwardForgetIso (f : X ⟶ Y) :
-  pushforward C f ⋙ forget C Y ≅ forget C X ⋙ Presheaf.pushforward C f := Iso.refl _
+    pushforward C f ⋙ forget C Y ≅ forget C X ⋙ Presheaf.pushforward C f := Iso.refl _
 
 variable {C}
 
@@ -93,18 +93,18 @@ def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
 Sites.pushforward A _ _ (Opens.map f)
 
 lemma pullback_eq (f : X ⟶ Y) :
-  pullback A f = forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := rfl
+    pullback A f = forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := rfl
 
 /--
 The pullback of a sheaf is isomorphic (actually definitionally equal) to the sheafification
 of the pullback as a presheaf.
 -/
 def pullbackIso (f : X ⟶ Y) :
-  pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := Iso.refl _
+    pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := Iso.refl _
 
 /-- The adjunction between pullback and pushforward for sheaves on topological spaces. -/
 def pullbackPushforwardAdjunction (f : X ⟶ Y) :
-  pullback A f ⊣ pushforward A f :=
+    pullback A f ⊣ pushforward A f :=
 Sites.pullbackPushforwardAdjunction _ _ _ _ _
 
 instance : IsLeftAdjoint (pullback A f) := ⟨_, pullbackPushforwardAdjunction A f⟩

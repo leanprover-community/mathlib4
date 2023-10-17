@@ -196,11 +196,11 @@ instance : RepresentablyFlat (Opens.map f) := by
   · exact ⟨StructuredArrow.mk $ show U ⟶ (Opens.map f).obj ⊤ from homOfLE le_top⟩
 
 theorem compatiblePreserving_opens_map :
-  CompatiblePreserving (Opens.grothendieckTopology X) (Opens.map f) :=
+    CompatiblePreserving (Opens.grothendieckTopology X) (Opens.map f) :=
 compatiblePreservingOfFlat _ _
 
 theorem coverPreserving_opens_map :
-  CoverPreserving (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X) (Opens.map f) := by
+    CoverPreserving (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X) (Opens.map f) := by
   constructor
   intro U S hS x hx
   obtain ⟨V, i, hi, hxV⟩ := hS (f x) hx
