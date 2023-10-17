@@ -203,7 +203,7 @@ theorem tensorHom_id {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
   simp [tensorHom_def]
 
 theorem whisker_exchange {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
-     W ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
+    W ◁ g ≫ f ▷ Z = f ▷ Y ≫ X ◁ g := by
   simp [← id_tensorHom, ← tensorHom_id, ← tensor_comp]
 
 @[reassoc]
@@ -244,8 +244,7 @@ instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso
 @[simp]
 theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
     inv (f ⊗ g) = inv f ⊗ inv g := by
-  -- Porting note: Replaced `ext` with `aesop_cat_nonterminal`
-  aesop_cat_nonterminal
+  apply IsIso.inv_eq_of_hom_inv_id
   simp [← tensor_comp]
 #align category_theory.monoidal_category.inv_tensor CategoryTheory.MonoidalCategory.inv_tensor
 

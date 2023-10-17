@@ -292,7 +292,7 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
   (Submodule.gi R M).gc.le_u_l_trans hUV hVW
 #align submodule.subset_span_trans Submodule.subset_span_trans
 
-/-- See `submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
+/-- See `Submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
 `span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
@@ -372,6 +372,11 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
 theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 #align submodule.mem_sup' Submodule.mem_sup'
+
+lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
+    ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
+  suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
+  simpa only [h.eq_top] using Submodule.mem_top
 
 variable (p p')
 
@@ -706,6 +711,10 @@ theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
   simp only [span_singleton_le_iff_mem]
 #align submodule.mem_supr Submodule.mem_iSup
 
+theorem mem_sSup {s : Set (Submodule R M)} {m : M} :
+    (m ∈ sSup s) ↔ ∀ N, (∀ p ∈ s, p ≤ N) → m ∈ N := by
+  simp_rw [sSup_eq_iSup, Submodule.mem_iSup, iSup_le_iff]
+
 section
 
 /-- For every element in the span of a set, there exists a finite subset of the set
@@ -838,6 +847,29 @@ theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ Lin
 theorem comap_map_eq_self {f : F} {p : Submodule R M} (h : LinearMap.ker f ≤ p) :
     comap f (map f p) = p := by rw [Submodule.comap_map_eq, sup_of_le_left h]
 #align submodule.comap_map_eq_self Submodule.comap_map_eq_self
+
+lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
+    LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [eq_top_iff]
+    intro x _
+    have : f x ∈ LinearMap.range f := LinearMap.mem_range_self f x
+    rw [← h] at this
+    obtain ⟨y, hy⟩ : ∃ y : S, f.domRestrict S y = f x := this
+    have : (y : M) + (x - y) ∈ S ⊔ (LinearMap.ker f) := Submodule.add_mem_sup y.2 (by simp [← hy])
+    simpa using this
+  · refine le_antisymm (LinearMap.range_domRestrict_le_range f S) ?_
+    rintro x ⟨y, rfl⟩
+    obtain ⟨s, hs, t, ht, rfl⟩ : ∃ s, s ∈ S ∧ ∃ t, t ∈ LinearMap.ker f ∧ s + t = y :=
+      Submodule.mem_sup.1 (by simp [h])
+    exact ⟨⟨s, hs⟩, by simp [LinearMap.mem_ker.1 ht]⟩
+
+@[simp] lemma _root_.LinearMap.surjective_domRestrict_iff
+    {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} (hf : Surjective f) :
+    Surjective (f.domRestrict S) ↔ S ⊔ LinearMap.ker f = ⊤ := by
+  rw [← LinearMap.range_eq_top] at hf ⊢
+  rw [← hf]
+  exact LinearMap.range_domRestrict_eq_range_iff
 
 end AddCommGroup
 

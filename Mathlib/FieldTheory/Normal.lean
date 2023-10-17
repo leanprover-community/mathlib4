@@ -266,7 +266,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
 instance normal_sup
     (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
     Normal F (E ⊔ E' : IntermediateField F K) :=
-  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by intro i; cases i <;> infer_instance)
+  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
 
 -- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
 variable {F K} {L : Type*} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]

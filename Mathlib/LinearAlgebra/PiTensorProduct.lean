@@ -62,6 +62,7 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 multilinear, tensor, tensor product
 -/
 
+suppress_compilation
 
 open Function
 
@@ -112,6 +113,7 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
+unsuppress_compilation in
 -- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
 --scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
 /-- notation for tensor product over some indexed type -/
@@ -307,6 +309,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 
 variable {R}
 
+unsuppress_compilation in
 /-- pure tensor in tensor product over some index type -/
 -- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
 -- was just `tprod R f`.
@@ -314,7 +317,7 @@ notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => 
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
-  ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
+    ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : ∀ i, s i) : tprodCoeff R z f = z • tprod R f := by
@@ -364,10 +367,19 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : ∀ i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
-  rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
-  dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
-  show _ • _ = _
-  rw [one_smul]
+  -- The end of this proof was very different before leanprover/lean4#2644:
+  -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
+  -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
+  -- show _ • _ = _
+  -- rw [one_smul]
+  erw [AddCon.lift_coe]
+  erw [FreeAddMonoid.of]
+  dsimp [FreeAddMonoid.ofList]
+  rw [← one_smul R (φ f)]
+  erw [Equiv.refl_apply]
+  convert one_smul R (φ f)
+  simp
+
 #align pi_tensor_product.lift_aux_tprod PiTensorProduct.liftAux_tprod
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : ∀ i, s i) :

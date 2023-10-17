@@ -6,6 +6,7 @@ Author: Heather Macbeth, Frédéric Dupuis
 
 import Mathlib.Logic.Equiv.LocalEquiv
 
+private axiom test_sorry : ∀ {α}, α
 /-!
 This is a test file for the tactic `mfld_set_tac`. Because this tactic applies a simp-set which
 mostly contains lemmas in advanced parts of mathlib, it is currently impossible to truly test it
@@ -22,47 +23,51 @@ section stub_lemmas
 
 structure LocalHomeomorph (α : Type u) (β : Type u) extends LocalEquiv α β
 
-instance LocalHomeomorph.has_coe_to_fun : CoeFun (LocalHomeomorph α β) (λ _ => α → β) := sorry
+noncomputable
+instance LocalHomeomorph.has_coe_to_fun : CoeFun (LocalHomeomorph α β) (λ _ => α → β) := test_sorry
 
-def LocalHomeomorph.symm (e : LocalHomeomorph α β) : LocalHomeomorph β α := sorry
+noncomputable
+def LocalHomeomorph.symm (_e : LocalHomeomorph α β) : LocalHomeomorph β α := test_sorry
 
 @[mfld_simps] lemma LocalHomeomorph.left_inv (e : LocalHomeomorph α β) {x : α}
-  (h : x ∈ e.toLocalEquiv.source) :
+  (_h : x ∈ e.toLocalEquiv.source) :
   e.symm (e x) = x :=
-sorry
+test_sorry
 
 @[mfld_simps] theorem LocalHomeomorph.symm_to_LocalEquiv (e : LocalHomeomorph α β) :
   e.symm.toLocalEquiv = e.toLocalEquiv.symm :=
-sorry
+test_sorry
 
 @[mfld_simps] lemma LocalHomeomorph.coe_coe (e : LocalHomeomorph α β) :
   (e.toLocalEquiv : α → β) = e :=
-sorry
+test_sorry
 
 @[mfld_simps] lemma LocalHomeomorph.coe_coe_symm (e : LocalHomeomorph α β) :
   (e.toLocalEquiv.symm : β → α) = (e.symm : β → α) :=
-sorry
+test_sorry
 
 structure ModelWithCorners (𝕜 E H : Type u) extends LocalEquiv H E :=
   (source_eq : source = Set.univ)
 
 attribute [mfld_simps] ModelWithCorners.source_eq
 
-def ModelWithCorners.symm (I : ModelWithCorners 𝕜 E H) : LocalEquiv E H := sorry
+noncomputable
+def ModelWithCorners.symm (_I : ModelWithCorners 𝕜 E H) : LocalEquiv E H := test_sorry
 
-instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (λ _ => H → E) := sorry
+noncomputable
+instance ModelWithCorners.has_coe_to_fun : CoeFun (ModelWithCorners 𝕜 E H) (λ _ => H → E) := test_sorry
 
 @[mfld_simps] lemma ModelWithCorners.left_inv (I : ModelWithCorners 𝕜 E H) (x : H) :
   I.symm (I x) = x :=
-sorry
+test_sorry
 
 @[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe (I : ModelWithCorners 𝕜 E H) :
   (I.toLocalEquiv : H → E) = I :=
-sorry
+test_sorry
 
 @[mfld_simps] lemma ModelWithCorners.to_local_equiv_coe_symm (I : ModelWithCorners 𝕜 E H) :
   (I.toLocalEquiv.symm : E → H) = I.symm :=
-sorry
+test_sorry
 
 end stub_lemmas
 
