@@ -210,7 +210,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht
-    filter_upwards [compl_mem_ae_iff.2 A]with x hx
+    filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
     simp only [hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx
