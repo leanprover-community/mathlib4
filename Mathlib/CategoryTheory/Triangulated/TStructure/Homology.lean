@@ -790,13 +790,38 @@ variable {T : Triangle C} (hT : T ∈ distTriang C)
 noncomputable def shortComplex :=
   (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).map t.homology₀
 
-/-lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
+@[simps]
+def ιHeartAddEquiv (X Y : t.Heart) : (X ⟶ Y) ≃+ (t.ιHeart.obj X ⟶ t.ιHeart.obj Y) where
+  toFun f := t.ιHeart.map f
+  invFun g := t.ιHeart.preimage g
+  left_inv f := by simp
+  right_inv g := by simp
+  map_add' := by aesop_cat
+
+noncomputable def addEquivFromHomology₀OfIsLE (X : C) [t.IsLE X 0] (A : t.Heart) :
+    (t.homology₀.obj X ⟶ A) ≃+ (X ⟶ t.ιHeart.obj A)  :=
+  (ιHeartAddEquiv _ _ _).trans
+    (asIso ((preadditiveYoneda.obj
+      (t.ιHeart.obj A)).map (t.toHomology₀ _).op)).addCommGroupIsoToAddEquiv
+
+lemma addEquivFromHomology₀OfIsLE_naturality {X Y : C} (f : X ⟶ Y)
+    [t.IsLE X 0] [t.IsLE Y 0] (A : t.Heart) (y : t.homology₀.obj Y ⟶ A) :
+    f ≫ addEquivFromHomology₀OfIsLE t Y A y =
+      addEquivFromHomology₀OfIsLE t X A (t.homology₀.map f ≫ y) := by
+  change f ≫ t.toHomology₀ Y ≫ t.ιHeart.map y =
+    t.toHomology₀ X ≫ t.ιHeart.map (t.homology₀.map f ≫ y)
+  simp only [Functor.map_comp, toHomology₀_naturality_assoc]
+
+lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
   rw [ShortComplex.exact_and_epi_g_iff_preadditiveYoneda]
   intro A
   let S := (shortComplex t hT).op.map (preadditiveYoneda.obj A)
   let S' := (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).op.map (preadditiveYoneda.obj (t.ιHeart.obj A))
-  refine' (ShortComplex.exact_and_mono_f_iff_of_addEquiv S S' sorry sorry sorry sorry sorry).2 _
+  refine' (ShortComplex.exact_and_mono_f_iff_of_addEquiv S S'
+    (addEquivFromHomology₀OfIsLE t T.obj₃ A) (addEquivFromHomology₀OfIsLE t T.obj₂ A)
+    (addEquivFromHomology₀OfIsLE t T.obj₁ A) (addEquivFromHomology₀OfIsLE_naturality t T.mor₂ A)
+    (addEquivFromHomology₀OfIsLE_naturality t T.mor₁ A)).2 _
   refine' ⟨preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ hT,
     (preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ (rot_of_dist_triangle _ hT)).mono_g _⟩
   apply IsZero.eq_of_src
@@ -804,7 +829,7 @@ noncomputable def shortComplex :=
   intro (x : T.obj₁⟦(1 : ℤ)⟧ ⟶ t.ιHeart.obj A)
   exact t.zero x (-1) 0 (by linarith)
 
-lemma case₂ (h₁ : t.IsLE T.obj₁ 0) :
+/-lemma case₂ (h₁ : t.IsLE T.obj₁ 0) :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
   sorry
 
