@@ -286,8 +286,11 @@ def sageOutput (args : Array String) : IO SageResult := do
   let path := (← getMathlibDir) / "scripts" / "polyrith_sage.py"
   unless ← path.pathExists do
     throw <| IO.userError "could not find python script scripts/polyrith_sage.py"
-  let s ← IO.Process.run { cmd := "python3", args := #[path.toString] ++ args }
-  match Json.parse s >>= fromJson? with
+  let out ← IO.Process.output { cmd := "python3", args := #[path.toString] ++ args }
+  if out.exitCode != 0 then
+    throw <| IO.userError <| "scripts/polyrith_sage.py exited with code "
+        ++ toString out.exitCode ++ ":\n\n" ++ out.stderr
+  match Json.parse out.stdout >>= fromJson? with
   | .ok v => return v
   | .error e => throw <| .userError e
 
