@@ -300,6 +300,7 @@ instance : KleeneAlgebra (Language α) :=
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
 
+@[simp]
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   show a.reverse.reverse ∈ l ↔ a ∈ l
   rw [List.reverse_reverse]
