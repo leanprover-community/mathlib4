@@ -406,8 +406,8 @@ instance : Module R[X] <| AEval R M a where
 
 instance : IsScalarTower R R[X] <| AEval R M a := ⟨by simp [smul_def]⟩
 
-lemma ext (m m' : AEval R M a) : m = m' ↔ m.val = m'.val := by
-  cases m; tauto
+@[ext]
+lemma ext (m m' : AEval R M a) (h : m.val = m'.val): m = m' := by cases m; tauto
 
 end AEval
 
