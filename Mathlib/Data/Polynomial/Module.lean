@@ -363,36 +363,21 @@ Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
 Then `Module.AEval R M a` is the `R[X]`-module with carrier `M`,
 where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
 -/
-structure AEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) where
-  /--
-  The element of `M` corresponding to an element of `Module.AEval R M a`.
-  -/
-  val : M
+def AEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 
 variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
   [Module R M] [IsScalarTower R A M]
 
 namespace AEval
-/--
-The natural equivalence between `Module.AEval R M a` and `M`, taking `⟨m⟩` to `m`.
--/
-def equiv : AEval R M a ≃ M where
-  toFun       := AEval.val
-  invFun      := AEval.mk
-  left_inv _  := rfl
-  right_inv _ := rfl
 
-instance : Coe M <| AEval R M a             := ⟨mk⟩
-instance : AddCommMonoid <| AEval R M a     := (equiv a).addCommMonoid
-instance : Module R <| AEval R M a          := (equiv a).module R
-instance : Module A <| AEval R M a          := (equiv a).module A
-instance : IsScalarTower R A <| AEval R M a := ⟨by simp [Equiv.smul_def]⟩
-instance : SMul R[X] <| AEval R M a         := ⟨fun f m ↦ ⟨aeval a f • m.val⟩⟩
+instance : AddCommMonoid <| AEval R M a     := by assumption
+instance : Module R <| AEval R M a          := by assumption
+instance : Module A <| AEval R M a          := by assumption
+instance : IsScalarTower R A <| AEval R M a := by assumption
+instance : SMul R[X] <| AEval R M a         := ⟨fun f m ↦ aeval a f • m⟩
 
 lemma smul_def (f : R[X]) (m : AEval R M a) : f • m = aeval a f • m := rfl
-
-lemma smul_coe (f : R[X]) (m : M) : f • (m : AEval R M a) = aeval a f • m := rfl
 
 lemma X_smul (m : AEval R M a) : (X : R[X]) • m = a • m := by simp [smul_def]
 
@@ -405,9 +390,6 @@ instance : Module R[X] <| AEval R M a where
   zero_smul := by simp [smul_def]
 
 instance : IsScalarTower R R[X] <| AEval R M a := ⟨by simp [smul_def]⟩
-
-@[ext]
-lemma ext (m m' : AEval R M a) (h : m.val = m'.val): m = m' := by cases m; tauto
 
 end AEval
 
@@ -425,6 +407,6 @@ I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
 
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
 
-lemma AEval'.X_smul_coe (m : M) : (X : R[X]) • (m : AEval' φ) = φ m := by rw [AEval.X_smul]; rfl
+lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
 
 end Module
