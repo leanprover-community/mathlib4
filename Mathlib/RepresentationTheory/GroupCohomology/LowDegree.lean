@@ -25,10 +25,10 @@ for `n = 0, 1, 2`.
 ## Main definitions
 
 * `GroupCohomology.H0 A`: the invariants `Aᴳ` of the `G`-representation on `A`.
-* `GroupCohomology.H1 A`: one cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo
-one coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
-* `GroupCohomology.H2 A`: two cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
-two coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
+* `GroupCohomology.H1 A`: 1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo
+1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
+* `GroupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
+2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
 
 ## TODO
 
@@ -308,7 +308,7 @@ the invariants of the representation, `Aᴳ`. -/
 abbrev H0 := A.ρ.invariants
 
 /-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
-one cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo one coboundaries
+1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
 (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
 abbrev H1 := oneCocycles A ⧸ oneCoboundaries A
 
@@ -316,7 +316,7 @@ abbrev H1 := oneCocycles A ⧸ oneCoboundaries A
 def H1_π : oneCocycles A →ₗ[k] H1 A := (oneCoboundaries A).mkQ
 
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
-two cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo two coboundaries
+2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
 (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
 abbrev H2 := twoCocycles A ⧸ twoCoboundaries A
 
