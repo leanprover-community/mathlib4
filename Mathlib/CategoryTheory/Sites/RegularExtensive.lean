@@ -340,40 +340,90 @@ open Opposite
 variable {α : Type} [Fintype α] (Z : α → C) (F : Cᵒᵖ ⥤ Type max u v)
     (hF : Presieve.IsSheafFor F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)))
 
-instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).hasPullbacks := sorry
+-- instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).hasPullbacks := sorry
 
 instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).extensive := sorry
 
-lemma one : (F.mapIso (opCoproductIsoProduct Z)).inv ≫
+lemma sigma_injective : Function.Injective (fun a => ⟨Z a, (fun j ↦ Sigma.ι Z j) a,
+    Presieve.ofArrows.mk a⟩ : α → Σ(Y : C), { f : Y ⟶ _ //
+    Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j) f }) := by
+  intro a b h
+  simp only [Sigma.mk.inj_iff] at h
+  obtain ⟨ha, hb⟩ := h
+  sorry
+
+
+lemma prod_map_inj : Function.Injective (prod_map (fun j ↦ Sigma.ι Z j) F) := by
+  intro a b h
+  ext ⟨f⟩
+  obtain ⟨c, hc⟩ := sigma_surjective (fun j ↦ Sigma.ι Z j) f
+  rw [← hc]
+  simp [prod_map] at h
+  sorry
+
+lemma prod_map_surj : Function.Surjective (prod_map (fun j ↦ Sigma.ι Z j) F) := by
+  intro a
+  refine ⟨Types.Limit.mk (Discrete.functor (fun (f : (Σ(Y : C),
+    { f : Y ⟶ _ // Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j) f })) ↦ F.obj (op f.fst))) ?_ ?_, ?_⟩
+  · intro ⟨j⟩
+    rw [Discrete.functor_obj]
+    have := map_eq (fun j ↦ Sigma.ι Z j) j
+    rw [this.choose_spec]
+    exact Pi.π (fun a ↦ F.obj (op (Z a))) this.choose a
+  · intro ⟨j⟩ ⟨k⟩ f
+    have := Discrete.eq_of_hom f
+    subst this
+    rfl
+  · dsimp [prod_map]
+    sorry
+
+lemma prod_map_inv_inj : Function.Injective (prod_map_inv (fun j ↦ Sigma.ι Z j) F) := by
+  intro a b h
+  ext ⟨j⟩
+  simp only [prod_map_inv, eqToHom_op] at h
+  sorry
+
+lemma prod_map_inv_surj : Function.Injective (prod_map_inv (fun j ↦ Sigma.ι Z j) F) := sorry
+
+lemma one : F.map (opCoproductIsoProduct Z).inv ≫
     Equalizer.forkMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) ≫ prod_map _ F =
     piComparison F (fun z ↦ op (Z z)) := by
   have : (Equalizer.forkMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) ≫
       prod_map (fun j ↦ Sigma.ι Z j) F) = Pi.lift (fun j ↦ F.map ((fun j ↦ Sigma.ι Z j) j).op) := by
     ext; simp [prod_map, Equalizer.forkMap]
   rw [this]
-  --dsimp only [piComparison]
-  rw [Iso.inv_comp_eq]
-  -- simp only [opCoproductIsoProduct, limit.cone_x, Fan.mk_pt, Equivalence.symm_functor,
-  --   Discrete.natIsoFunctor, Functor.comp_obj, Functor.op_obj, Functor.mapIso_trans,
-  --   Functor.mapIso_symm, Iso.trans_hom, Functor.mapIso_hom, Iso.symm_hom, Functor.mapIso_inv,
-  --   IsLimit.conePointsIsoOfEquivalence_inv, Cones.equivalenceOfReindexing_functor,
-  --   Cones.whiskering_obj, Category.assoc]
-  simp only [opCoproductIsoProduct]
-  -- rw [map_lift_piComparison]
-
-  sorry
-  -- conv =>
-  --   rhs
-  --   congr
-  --   congr
-  --   simp
-  -- ext
-  -- simp [piComparison, Equalizer.forkMap, opCoproductIsoProduct, prod_map]
-  -- sorry
-
+  have t : Pi.lift (fun j ↦ Pi.π (fun a ↦ (op (Z a))) j) = 𝟙 _ := by ext; simp -- why not just simp?
+  have hh : (fun j ↦ (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z j).op) =
+      fun j ↦ Pi.π (fun a ↦ (op (Z a))) j
+  · ext j
+    exact opCoproductIsoProduct_inv_comp_ι _ _
+  have : F.map (Pi.lift (fun j ↦ (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z j).op)) ≫
+      piComparison F (fun z ↦ op (Z z)) =
+      (F.map (opCoproductIsoProduct Z).inv ≫ Pi.lift fun j ↦ F.map ((fun j ↦ Sigma.ι Z j) j).op)
+  · rw [hh, t]
+    ext j x
+    simp only [Functor.map_id, Category.id_comp, piComparison, types_comp_apply,
+      Types.pi_lift_π_apply, ← FunctorToTypes.map_comp_apply, congr_fun hh j]
+  rw [← this, hh]
+  congr
+  ext
+  simp [t]
 
 lemma two : Equalizer.Presieve.firstMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) =
-    Equalizer.Presieve.secondMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) := sorry
+    Equalizer.Presieve.secondMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) := by
+  ext a
+  simp only [Equalizer.Presieve.SecondObj, Equalizer.Presieve.firstMap,
+    Equalizer.Presieve.secondMap]
+  ext ⟨j⟩
+  simp only [Discrete.functor_obj, Types.pi_lift_π_apply, types_comp_apply]
+  obtain ⟨⟨j1, f1, h1⟩, ⟨j2, f2, h2⟩⟩ := j
+  cases' h1 with i1
+  cases' h2 with i2
+  by_cases hi : i1 = i2
+  · rw [hi]
+    sorry
+  · sorry
+
 
 end ExtensiveSheafConditionProof
 
@@ -400,6 +450,7 @@ instance (F : Cᵒᵖ ⥤ Type max u v) (h : ∀ {X : C} (S : Presieve X) [S.ext
     rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at h
     exact fun b ↦ h b (congr_fun (two (fun j ↦ unop (k j)) F) b)
   · sorry
+    -- refine Limits.Pi.hom_ext _ _ (fun f => ?_)
 
     -- rw [isIso_iff_bijective]
     -- refine ⟨fun a b hab ↦ ?_, fun a ↦ ?_⟩
