@@ -1832,7 +1832,7 @@ theorem op_norm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃�
   refine' le_antisymm _ _
   · convert f.op_norm_comp_le g.toLinearIsometry.toContinuousLinearMap
     simp [g.toLinearIsometry.norm_toContinuousLinearMap]
-  · convert(f.comp g.toLinearIsometry.toContinuousLinearMap).op_norm_comp_le
+  · convert (f.comp g.toLinearIsometry.toContinuousLinearMap).op_norm_comp_le
         g.symm.toLinearIsometry.toContinuousLinearMap
     · ext
       simp
@@ -1969,7 +1969,7 @@ protected theorem antilipschitz (e : E ≃SL[σ₁₂] F) :
 theorem one_le_norm_mul_norm_symm [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     1 ≤ ‖(e : E →SL[σ₁₂] F)‖ * ‖(e.symm : F →SL[σ₂₁] E)‖ := by
   rw [mul_comm]
-  convert(e.symm : F →SL[σ₂₁] E).op_norm_comp_le (e : E →SL[σ₁₂] F)
+  convert (e.symm : F →SL[σ₂₁] E).op_norm_comp_le (e : E →SL[σ₁₂] F)
   rw [e.coe_symm_comp_coe, ContinuousLinearMap.norm_id]
 #align continuous_linear_equiv.one_le_norm_mul_norm_symm ContinuousLinearEquiv.one_le_norm_mul_norm_symm
 

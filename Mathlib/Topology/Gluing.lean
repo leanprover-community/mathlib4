@@ -233,7 +233,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
-  rcases(D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
+  rcases (D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
   · rfl
   · dsimp only at *
     -- porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`

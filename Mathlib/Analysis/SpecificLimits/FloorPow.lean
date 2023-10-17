@@ -67,7 +67,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
     filter_upwards [Ici_mem_atTop M]with n hn
     have exN : ∃ N, n < c N := by
-      rcases(tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
+      rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
       exact ⟨N, by linarith only [hN]⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
@@ -130,7 +130,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
     filter_upwards [Ici_mem_atTop M]with n hn
     have exN : ∃ N, n < c N := by
-      rcases(tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
+      rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
       exact ⟨N, by linarith only [hN]⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN

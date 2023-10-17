@@ -1120,7 +1120,7 @@ theorem tendsto_const_mul_pow_atTop_iff :
   refine' ⟨fun h => ⟨_, _⟩, fun h => tendsto_const_mul_pow_atTop h.1 h.2⟩
   · rintro rfl
     simp only [pow_zero, not_tendsto_const_atTop] at h
-  · rcases((h.eventually_gt_atTop 0).and (eventually_ge_atTop 0)).exists with ⟨k, hck, hk⟩
+  · rcases ((h.eventually_gt_atTop 0).and (eventually_ge_atTop 0)).exists with ⟨k, hck, hk⟩
     exact pos_of_mul_pos_left hck (pow_nonneg hk _)
 #align filter.tendsto_const_mul_pow_at_top_iff Filter.tendsto_const_mul_pow_atTop_iff
 

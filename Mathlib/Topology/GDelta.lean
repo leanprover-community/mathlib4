@@ -133,7 +133,7 @@ theorem isGδ_biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
 -- Porting note: Did not recognize notation 𝓤 X, needed to replace with uniformity X
 theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (uniformity X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by
-  rcases(@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
+  rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
   refine' isGδ_biInter (to_countable _) fun n _ => IsOpen.isGδ _
   exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
