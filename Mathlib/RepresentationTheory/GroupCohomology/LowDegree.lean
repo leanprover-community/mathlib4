@@ -8,18 +8,36 @@ import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
 /-!
-# The low-degree cocycles and coboundaries of a `k`-linear `G`-representation
+# The low-degree cohomology of a `k`-linear `G`-representation
 
 Let `k` be a commutative ring and `G` a group. This file gives simple expressions for
-the cocycles and coboundaries of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+the group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
+In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
+the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
+unnecessarily unwieldy in low degree. Moreover, cohomology of a complex is defined as an abstract
+cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
 
+Later this file will contain an identification between the definition in
+`RepresentationTheory.GroupCohomology.Basic`, `groupCohomology A n`, and the `Hn A` in this file,
+for `n = 0, 1, 2`.
 
 ## Main definitions
 
-## Implementation notes
+* `GroupCohomology.H0 A`: the invariants `Aᴳ` of the `G`-representation on `A`.
+* `GroupCohomology.H1 A`: one cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo
+one coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
+* `GroupCohomology.H2 A`: two cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
+two coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
 
 ## TODO
+
+* Identify `Hn A` as defined in this file with `groupCohomology A n` for `n = 0, 1, 2`.
+* Properties of `H1`, like the isomorphism `H1(G, A) ≃ Hom(G, A)` when the representation
+is trivial
+* The relationship between `H2` and group extensions
+* The inflation-restriction exact sequence
+* Nonabelian group cohomology
 
 -/
 
@@ -27,42 +45,34 @@ universe v u
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory Limits Representation
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
 namespace GroupCohomology
 
-open CategoryTheory CategoryTheory.Limits Representation
-
--- to be moved
-@[simp]
-theorem inhomogeneousCochains.d_def (n : ℕ) :
-    (inhomogeneousCochains A).d n (n + 1) = InhomogeneousCochains.d n A :=
-  CochainComplex.of_d _ _ _ _
-
 section Cochains
 
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def zeroCochainsIso : (inhomogeneousCochains A).X 0 ≅ ModuleCat.of k A :=
-  (LinearEquiv.funUnique (Fin 0 → G) k A).toModuleIso
+def zeroCochainsLinearEquiv : (inhomogeneousCochains A).X 0 ≃ₗ[k] A :=
+  LinearEquiv.funUnique (Fin 0 → G) k A
 
 /-- The 1st object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G, A)` as a `k`-module. -/
-def oneCochainsIso : (inhomogeneousCochains A).X 1 ≅ ModuleCat.of k (G → A) :=
-  (LinearEquiv.funCongrLeft k A (Equiv.funUnique (Fin 1) G).symm).toModuleIso
+def oneCochainsLinearEquiv : (inhomogeneousCochains A).X 1 ≃ₗ[k] G → A :=
+  LinearEquiv.funCongrLeft k A (Equiv.funUnique (Fin 1) G).symm
 
 /-- The 2nd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
-to `Fun(G × G, A)`. -/
-def twoCochainsIso : (inhomogeneousCochains A).X 2 ≅ ModuleCat.of k (G × G → A) :=
-  (LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G).symm).toModuleIso
+to `Fun(G², A)` as a `k`-module. -/
+def twoCochainsLinearEquiv : (inhomogeneousCochains A).X 2 ≃ₗ[k] G × G → A :=
+  LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G).symm
 
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
-to `Fun(G × G × G, A)`. -/
-def threeCochainsIso : (inhomogeneousCochains A).X 3 ≅ ModuleCat.of k (G × G × G → A) :=
-  (LinearEquiv.funCongrLeft k A <| ((Equiv.piFinSucc 2 G).trans
-    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G))).symm).toModuleIso
+to `Fun(G³, A)` as a `k`-module. -/
+def threeCochainsLinearEquiv : (inhomogeneousCochains A).X 3 ≃ₗ[k] G × G × G → A :=
+  LinearEquiv.funCongrLeft k A <| ((Equiv.piFinSucc 2 G).trans
+    ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G))).symm
 
 end Cochains
 section Differentials
@@ -112,16 +122,13 @@ square commutes:
   |                    |
   |                    |
   v                    v
-  A ---- d_zero ---> Fun(G, A)
+  A ---- dZero ---> Fun(G, A)
 ```
-where the vertical arrows are `zeroCochainsIso` and `oneCochainsIso` respectively.
+where the vertical arrows are `zeroCochainsLinearEquiv` and `oneCochainsLinearEquiv` respectively.
 -/
-@[reassoc]
-theorem comp_dZero_eq :
-    (zeroCochainsIso A).hom ≫ ModuleCat.ofHom (dZero A) =
-      (inhomogeneousCochains A).d 0 1 ≫ (oneCochainsIso A).hom := by
-  ext x
-  funext y
+theorem dZero_comp_eq : dZero A ∘ₗ (zeroCochainsLinearEquiv A) =
+    oneCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 0 1 := by
+  ext x y
   show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
   simp_rw [Fin.coe_fin_one, zero_add, pow_one, neg_smul, one_smul,
     Finset.sum_singleton, sub_eq_add_neg]
@@ -136,16 +143,13 @@ square commutes:
     |                      |
     |                      |
     v                      v
-  Fun(G, A) -d_one-> Fun(G × G, A)
+  Fun(G, A) -dOne-> Fun(G × G, A)
 ```
-where the vertical arrows are `oneCochainsIso` and `twoCochainsIso` respectively.
+where the vertical arrows are `oneCochainsLinearEquiv` and `twoCochainsLinearEquiv` respectively.
 -/
-@[reassoc]
-theorem comp_dOne_eq :
-    (oneCochainsIso A).hom ≫ ModuleCat.ofHom (dOne A) =
-      (inhomogeneousCochains A).d 1 2 ≫ (twoCochainsIso A).hom := by
-  ext x
-  funext y
+theorem dOne_comp_eq : dOne A ∘ₗ oneCochainsLinearEquiv A =
+    twoCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 1 2 := by
+  ext x y
   show A.ρ y.1 (x _) - x _ + x _ =  _ + _
   rw [Fin.sum_univ_two]
   simp only [Fin.val_zero, zero_add, pow_one, neg_smul, one_smul, Fin.val_one,
@@ -156,21 +160,18 @@ theorem comp_dOne_eq :
 says `dTwo` gives a simpler expression for the 2nd differential: that is, the following
 square commutes:
 ```
-      C²(G, A) ------d²-----> C³(G, A)
+      C²(G, A) -------d²-----> C³(G, A)
         |                         |
         |                         |
         |                         |
         v                         v
-  Fun(G × G, A) --d_two--> Fun(G × G × G, A)
+  Fun(G × G, A) --dTwo--> Fun(G × G × G, A)
 ```
-where the vertical arrows are `twoCochainsIso` and `threeCochainsIso` respectively.
+where the vertical arrows are `twoCochainsLinearEquiv` and `threeCochainsLinearEquiv` respectively.
 -/
-@[reassoc]
-theorem comp_dTwo_eq :
-    (twoCochainsIso A).hom ≫ ModuleCat.ofHom (dTwo A) =
-      (inhomogeneousCochains A).d 2 3 ≫ (threeCochainsIso A).hom := by
-  ext x
-  funext y
+theorem dTwo_comp_eq : dTwo A ∘ₗ twoCochainsLinearEquiv A =
+  threeCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 2 3 := by
+  ext x y
   show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
   rw [Fin.sum_univ_three]
@@ -186,7 +187,10 @@ theorem dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
 
 theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
   show ModuleCat.ofHom (dOne A) ≫ ModuleCat.ofHom (dTwo A) = _
-  simp only [(Iso.eq_inv_comp _).2 (comp_dTwo_eq A), (Iso.eq_inv_comp _).2 (comp_dOne_eq A),
+  have h1 : _ ≫ ModuleCat.ofHom (dOne A) = _ ≫ _ := congr_arg ModuleCat.ofHom (dOne_comp_eq A)
+  have h2 : _ ≫ ModuleCat.ofHom (dTwo A) = _ ≫ _ := congr_arg ModuleCat.ofHom (dTwo_comp_eq A)
+  simp only [←LinearEquiv.toModuleIso_hom] at h1 h2
+  simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1,
     Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc, zero_comp, comp_zero]
 
 end Differentials
@@ -204,16 +208,17 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A)
 
 variable {A}
 
-theorem mem_oneCocycles (f : G → A) :
+theorem mem_oneCocycles_def (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g : G × G, A.ρ g.1 (f g.2) - f (g.1 * g.2) + f g.1 = 0 :=
   LinearMap.mem_ker.trans Function.funext_iff
 
 theorem mem_oneCocycles_iff (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g : G × G, f (g.1 * g.2) = A.ρ g.1 (f g.2) + f g.1 := by
-  simp_rw [mem_oneCocycles, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
+  simp_rw [mem_oneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
+-- not sure whether preferable to the arguments `(f : G → A) (hf : f ∈ oneCocycles A)`
 theorem oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
-  have := (mem_oneCocycles f.1).1 f.2 (1, 1)
+  have := (mem_oneCocycles_def f.1).1 f.2 (1, 1)
   simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
 
 theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
@@ -221,7 +226,7 @@ theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_self g,
     (mem_oneCocycles_iff f.1).1 f.2 (g, g⁻¹)]
 
-theorem mem_twoCocycles (f : G × G → A) :
+theorem mem_twoCocycles_def (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g : G × G × G,
       A.ρ g.1 (f (g.2.1, g.2.2)) - f (g.1 * g.2.1, g.2.2) +
         f (g.1, g.2.1 * g.2.2) - f (g.1, g.2.1) = 0 :=
@@ -231,18 +236,28 @@ theorem mem_twoCocycles_iff (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g : G × G × G,
       f (g.1 * g.2.1, g.2.2) + f (g.1, g.2.1) =
         A.ρ g.1 (f (g.2.1, g.2.2)) + f (g.1, g.2.1 * g.2.2) := by
-  simp_rw [mem_twoCocycles, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
+  simp_rw [mem_twoCocycles_def, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
     add_comm (f (Prod.fst _, _))]
 
-theorem twoCocycles_map_one_fst (g : G) (f : twoCocycles A) :
+theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
     f.1 (1, g) = f.1 (1, 1) := by
   have := ((mem_twoCocycles_iff f.1).1 f.2 (1, (1, g))).symm
   simpa only [map_one, LinearMap.one_apply, one_mul, add_right_inj, this]
 
-theorem twoCocycles_map_one_snd (g : G) (f : twoCocycles A) :
+-- should maybe be the other way around, with a different name?
+theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
     f.1 (g, 1) = A.ρ g (f.1 (1, 1)) := by
   have := (mem_twoCocycles_iff f.1).1 f.2 (g, (1, 1))
   simpa only [mul_one, add_left_inj, this]
+
+-- no idea for naming
+lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
+    A.ρ g (f.1 (g⁻¹, g)) - f.1 (g, g⁻¹)
+      = f.1 (1, 1) - f.1 (g, 1) := by
+  have := (mem_twoCocycles_iff f.1).1 f.2 (g, g⁻¹, g)
+  simp only [mul_right_inv, mul_left_inv, twoCocycles_map_one_fst _ g]
+    at this
+  exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
 end Cocycles
 section Coboundaries
@@ -286,4 +301,27 @@ theorem mem_range_of_mem_twoCoboundaries (f : twoCocycles A) (h : f ∈ twoCobou
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
 end Coboundaries
+section Cohomology
+
+/-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
+the invariants of the representation, `Aᴳ`. -/
+abbrev H0 := A.ρ.invariants
+
+/-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
+one cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo one coboundaries
+(i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
+abbrev H1 := oneCocycles A ⧸ oneCoboundaries A
+
+/-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
+def H1_π : oneCocycles A →ₗ[k] H1 A := (oneCoboundaries A).mkQ
+
+/-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
+two cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo two coboundaries
+(i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
+abbrev H2 := twoCocycles A ⧸ twoCoboundaries A
+
+/-- The quotient map `Z²(G, A) → H²(G, A).` -/
+def H2_π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
+
+end Cohomology
 end GroupCohomology

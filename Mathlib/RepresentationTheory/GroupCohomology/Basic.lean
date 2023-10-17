@@ -199,6 +199,11 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     exact map_zero _
 #align group_cohomology.inhomogeneous_cochains GroupCohomology.inhomogeneousCochains
 
+@[simp]
+theorem inhomogeneousCochains.d_def (n : ℕ) :
+    (inhomogeneousCochains A).d n (n + 1) = InhomogeneousCochains.d n A :=
+  CochainComplex.of_d _ _ _ _
+
 set_option maxHeartbeats 2000000 in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
