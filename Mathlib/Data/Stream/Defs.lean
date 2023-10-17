@@ -39,11 +39,13 @@ def cons (a : α) (s : Stream' α) : Stream' α :=
 scoped infixr:67 " :: " => cons
 
 /-- Head of a stream: `Stream'.head (h :: t) = h`. -/
-abbrev head (s : Stream' α) : α := s.dest.1
+@[inline]
+def head (s : Stream' α) : α := s.dest.1
 #align stream.head Stream'.head
 
 /-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-abbrev tail (s : Stream' α) : Stream' α := s.dest.2 ⟨⟩
+@[inline]
+def tail (s : Stream' α) : Stream' α := s.dest.2 ⟨⟩
 #align stream.tail Stream'.tail
 
 /-- Get the `n`-th element of a stream. -/
@@ -128,7 +130,7 @@ abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
 
 /-- Interleave two streams. -/
 def interleave (s₁ s₂ : Stream' α) : Stream' α :=
-  corecOn (s₁, s₂) (fun ⟨s₁, _⟩ => head s₁) fun ⟨s₁, s₂⟩ => (s₂, tail s₁)
+  corecOn (s₁, s₂) (fun (s₁, _) => head s₁) (fun (s₁, s₂) => (s₂, tail s₁))
 #align stream.interleave Stream'.interleave
 
 infixl:65 " ⋈ " => interleave
