@@ -188,6 +188,7 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
 
 -- Porting Note: Now need much more hand holding: all variables explicit, and need to tidy up
 -- significantly, was `TopCat.Sheaf.extend_hom_app _ _ _ _`
+set_option maxHeartbeats 400000 in
 theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
