@@ -168,8 +168,8 @@ theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
   exact ⟨_, rfl⟩
 #align open_embedding.compatible_preserving OpenEmbedding.compatiblePreserving
 
-theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
-    CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
+theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) : CoverPreserving
+    (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
   constructor
   rintro U S hU _ ⟨x, hx, rfl⟩
   obtain ⟨V, i, hV, hxV⟩ := hU x hx
