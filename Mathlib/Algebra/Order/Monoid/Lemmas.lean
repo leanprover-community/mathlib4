@@ -1696,7 +1696,7 @@ set_option linter.deprecated false
 variable [Add α] [Preorder α]
 
 @[deprecated]
-theorem bit0_mono [CovariantClass α α (+) LE.le] [CovariantClass α α (swap HAdd.hAdd) LE.le] :
+theorem bit0_mono [CovariantClass α α (+) LE.le] [CovariantClass α α (swap (+)) LE.le] :
     Monotone (bit0 : α → α) := fun _ _ h => add_le_add h h
 #align bit0_mono bit0_mono
 

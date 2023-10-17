@@ -384,7 +384,8 @@ end Contra
 
 section Both
 
-variable [CovariantClass α α (+) LE.le] [ContravariantClass α α HAdd.hAdd LE.le]
+variable [CovariantClass α α (+) LE.le] [ContravariantClass α α (+) LE.le]
+variable [CovariantClass α α (+) LE.le] [ContravariantClass α α (+) LE.le]
 
 theorem add_tsub_add_eq_tsub_right (a c b : α) : a + c - (b + c) = a - b := by
   refine' add_tsub_add_le_tsub_right.antisymm (tsub_le_iff_right.2 <| le_of_add_le_add_right _)
