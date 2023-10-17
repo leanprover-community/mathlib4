@@ -313,6 +313,12 @@ lemma ιHeart_obj_mem (X : t.Heart) : t.ιHeart.obj X ∈ t.heart := by
   rw [← ht.hι]
   exact t.ιHeart.obj_mem_essImage X
 
+instance (X : t.Heart) : t.IsLE (t.ιHeart.obj X) 0 :=
+  ⟨(t.ιHeart_obj_mem X).1⟩
+
+instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 :=
+  ⟨(t.ιHeart_obj_mem X).2⟩
+
 lemma mem_essImage_ιHeart_iff (X : C) :
     X ∈ t.ιHeart.essImage ↔ X ∈ t.heart := by
   dsimp [ιHeart]

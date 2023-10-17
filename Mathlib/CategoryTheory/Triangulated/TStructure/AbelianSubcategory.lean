@@ -235,6 +235,8 @@ lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) 
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso α) _ _ _
   all_goals simp
 
+variable (ι)
+
 lemma abelian : Abelian A := by
   apply Abelian.mk'
   intro X₁ X₂ f₁
