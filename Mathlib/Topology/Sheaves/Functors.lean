@@ -16,7 +16,12 @@ the pushforward functor from the category of C-valued sheaves
 on X to that of sheaves on Y, given a continuous map between
 topological spaces X and Y.
 
-TODO: pullback for presheaves and sheaves
+## Main definitions
+- `TopCat.Sheaf.pushforward`: The pushforward functor between sheaf categories over topological spaces.
+- `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.
+- `TopCat.Sheaf.pullbackPushforwardAdjunction`:
+  The adjunction between pullback and pushforward for sheaves on topological spaces.
+
 -/
 
 
@@ -65,7 +70,7 @@ lemma pushforward_forget (f : X ⟶ Y) :
 /--
 Pushforward of sheaves is isomorphic (actually definitionally equal) to pushforward of presheaves.
 -/
-def pushforward_forget_iso (f : X ⟶ Y) :
+def pushforwardForgetIso (f : X ⟶ Y) :
   pushforward C f ⋙ forget C Y ≅ forget C X ⋙ Presheaf.pushforward C f := Iso.refl _
 
 variable {C}
@@ -94,16 +99,16 @@ lemma pullback_eq (f : X ⟶ Y) :
 The pullback of a sheaf is isomorphic (actually definitionally equal) to the sheafification
 of the pullback as a presheaf.
 -/
-def pullback_iso (f : X ⟶ Y) :
+def pullbackIso (f : X ⟶ Y) :
   pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := Iso.refl _
 
 /-- The adjunction between pullback and pushforward for sheaves on topological spaces. -/
-def pullback_pushforward_adjunction (f : X ⟶ Y) :
+def pullbackPushforwardAdjunction (f : X ⟶ Y) :
   pullback A f ⊣ pushforward A f :=
 Sites.pullbackPushforwardAdjunction _ _ _ _ _
 
-instance : IsLeftAdjoint (pullback A f) := ⟨_, pullback_pushforward_adjunction A f⟩
-instance : IsRightAdjoint (pushforward A f) := ⟨_, pullback_pushforward_adjunction A f⟩
+instance : IsLeftAdjoint (pullback A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
+instance : IsRightAdjoint (pushforward A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
 
 
 end Sheaf
