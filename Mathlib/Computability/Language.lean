@@ -301,16 +301,21 @@ instance : KleeneAlgebra (Language α) :=
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
 
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
-  sorry
+  show a.reverse.reverse ∈ l ↔ a ∈ l
+  rw [List.reverse_reverse]
 
 lemma zero_reverse : (0 : Language α).reverse = 0 := by
-  sorry
+  rfl
 
 lemma one_reverse : (1 : Language α).reverse = 1 := by
-  sorry
+  simp only [reverse, mem_one, reverse_eq_nil, setOf_eq_eq_singleton]
+  rfl
 
 lemma reverse_reverse : l.reverse.reverse = l := by
-  sorry
+  ext w
+  convert_to w.reverse.reverse ∈ reverse (reverse l) ↔ w ∈ l using 5
+  · rw [List.reverse_reverse]
+  rw [reverse_mem_reverse, reverse_mem_reverse]
 
 lemma reverse_union : (l + m).reverse = l.reverse + m.reverse := by
   sorry
