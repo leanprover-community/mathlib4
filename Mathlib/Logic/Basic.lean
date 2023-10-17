@@ -706,7 +706,7 @@ theorem not_exists_not : (¬∃ x, ¬p x) ↔ ∀ x, p x := Decidable.not_exists
 #align not_exists_not not_exists_not
 
 lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬ P a := by
-  rw [← Classical.not_forall]; exact em _
+  rw [← not_forall]; exact em _
 
 lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬ P a := by
   rw [← not_exists]; exact em _
