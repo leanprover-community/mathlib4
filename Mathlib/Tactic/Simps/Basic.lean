@@ -994,8 +994,9 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
   `tempLhs` is an expression that represents the left-hand side in the middle of applying a custom
   projection that is the composition of multiple projections. In that case, the custom projection
-  has already been applied to `lhs`, but we still need the expression `lhs` with only some of the
-  projections applied to it. It's value is unused outside this situation.
+  has already been applied in the expression `lhs`, but we also need to keep track of the `lhs`
+  where only some of the projections have been applied to it.
+  Its value is unused outside this situation.
   -/
 partial def addProjections (nm : Name) (type lhs tempLhs rhs : Expr)
     (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
