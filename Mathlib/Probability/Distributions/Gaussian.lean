@@ -225,7 +225,7 @@ lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
 
 section Transformations
 
-variable {Ω : Type} [MeasureSpace Ω] {μ : ℝ} {v : ℝ≥0}
+variable {μ : ℝ} {v : ℝ≥0}
 
 lemma _root_.MeasurableEmbedding.gaussianReal_comap_apply (hv : v ≠ 0)
     {f : ℝ → ℝ} (hf : MeasurableEmbedding f)
@@ -244,6 +244,7 @@ lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ
   exact f.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul' hs h_deriv
     (ae_of_all _ (gaussianPdfReal_nonneg _ _)) (integrable_gaussianPdfReal _ _)
 
+/-- The map of a Gaussian distribution by addition of a constant is a Gaussian. -/
 lemma gaussianReal_map_add_const (y : ℝ) :
     (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
   by_cases hv : v = 0
@@ -264,12 +265,7 @@ lemma gaussianReal_map_add_const (y : ℝ) :
   rw [gaussianReal_apply_eq_integral _ hv hs']
   simp_rw [gaussianPdfReal_sub _ y]
 
-lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v)
-    (hXm : Measurable X) (y : ℝ) :
-    Measure.map (fun ω ↦ X ω + y) ℙ = gaussianReal (μ + y) v := by
-  change Measure.map ((fun ω ↦ ω + y) ∘ X) ℙ = gaussianReal (μ + y) v
-  rw [← Measure.map_map (measurable_id'.add_const _) hXm, hX, gaussianReal_map_add_const y]
-
+/-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
   by_cases hv : v = 0
@@ -308,6 +304,18 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   rw [abs_inv, inv_mul_cancel]
   rwa [ne_eq, abs_eq_zero]
 
+variable {Ω : Type} [MeasureSpace Ω]
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
+has Gaussian law with mean `μ + y` and variance `v`. -/
+lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v)
+    (hXm : Measurable X) (y : ℝ) :
+    Measure.map (fun ω ↦ X ω + y) ℙ = gaussianReal (μ + y) v := by
+  change Measure.map ((fun ω ↦ ω + y) ∘ X) ℙ = gaussianReal (μ + y) v
+  rw [← Measure.map_map (measurable_id'.add_const _) hXm, hX, gaussianReal_map_add_const y]
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
+has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
 lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v)
     (hXm : Measurable X) (c : ℝ) :
     Measure.map (fun ω ↦ c * X ω) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
