@@ -588,6 +588,10 @@ theorem lintegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) : ∫⁻
   by simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_smul, ENNReal.mul_iSup, smul_eq_mul]
 #align measure_theory.lintegral_smul_measure MeasureTheory.lintegral_smul_measure
 
+lemma set_lintegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) (s : Set α) :
+    ∫⁻ a in s, f a ∂(c • μ) = c * ∫⁻ a in s, f a ∂μ := by
+  rw [Measure.restrict_smul, lintegral_smul_measure]
+
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
