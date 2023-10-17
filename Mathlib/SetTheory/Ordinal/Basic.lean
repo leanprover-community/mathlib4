@@ -63,7 +63,7 @@ open Classical Cardinal InitialSeg
 
 universe u v w
 
-variable {α : Type _} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
 /-! ### Well order on an arbitrary type -/

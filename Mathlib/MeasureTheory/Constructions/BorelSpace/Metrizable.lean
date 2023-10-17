@@ -176,8 +176,8 @@ end Limits
 
 section TendstoIndicator
 
-variable {α : Type _} [MeasurableSpace α] {A : Set α}
-variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+variable {α : Type*} [MeasurableSpace α] {A : Set α}
+variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
 
 /-- If the indicator functions of measurable sets `Aᵢ` converge to the indicator function of
 a set `A` along a nontrivial countably generated filter, then `A` is also measurable. -/
