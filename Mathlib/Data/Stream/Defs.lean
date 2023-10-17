@@ -20,7 +20,7 @@ set_option autoImplicit true
 open PFunctor
 
 /-- A polynomial functor which is used to declare `Stream' α`. -/
-def Stream'.Shape (α : Type u) : PFunctor where
+def Stream'.Shape (α : Type u) : PFunctor.{u} where
   A := α
   B := fun _ => PUnit
 
@@ -36,16 +36,17 @@ def cons (a : α) (s : Stream' α) : Stream' α :=
   M.mk ⟨a, fun _ => s⟩
 #align stream.cons Stream'.cons
 
-scoped infixr:67 " :: " => cons
+@[inherit_doc]
+infixr:67 " ::ₛ " => cons
 
-/-- Head of a stream: `Stream'.head (h :: t) = h`. -/
+/-- Head of a stream: `Stream'.head (h ::ₛ t) = h`. -/
 @[inline]
-def head (s : Stream' α) : α := s.dest.1
+def head (s : Stream' α) : α := M.dest s |>.1
 #align stream.head Stream'.head
 
-/-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
+/-- Tail of a stream: `Stream'.tail (h ::ₛ t) = t`. -/
 @[inline]
-def tail (s : Stream' α) : Stream' α := s.dest.2 ⟨⟩
+def tail (s : Stream' α) : Stream' α := M.dest s |>.2 ⟨⟩
 #align stream.tail Stream'.tail
 
 /-- Get the `n`-th element of a stream. -/
@@ -61,16 +62,19 @@ def drop : ℕ → Stream' α → Stream' α
 #align stream.drop Stream'.drop
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
-def All (p : α → Prop) (s : Stream' α) := ∀ n, p (get s n)
+def All (p : α → Prop) (s : Stream' α) : Prop :=
+  ∃ q : Stream' α → Prop, q s ∧ ∀ s', q s' → p (head s') ∧ q (tail s')
 #align stream.all Stream'.All
 
 /-- Proposition saying that at least one element of a stream satisfies a predicate. -/
-def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
+inductive Any (p : α → Prop) : Stream' α → Prop
+  | head (s) : p (head s) → Any p s
+  | tail (s) : Any p (tail s) → Any p s
 #align stream.any Stream'.Any
 
-/-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
+/-- `a ∈ s` means that `a` is the element of `s`. -/
 instance : Membership α (Stream' α) :=
-  ⟨fun a s => Any (fun b => a = b) s⟩
+  ⟨fun a s => Any (Eq a) s⟩
 
 @[inline]
 def corec' (f : α → β × α) : α → Stream' β :=
@@ -93,27 +97,53 @@ def map (f : α → β) : Stream' α → Stream' β :=
 #align stream.map Stream'.map
 
 /-- Zip two streams using a binary operation:
-`Stream'.get n (Stream'.zip f s₁ s₂) = f (Stream'.get s₁) (Stream'.get s₂)`. -/
+- `Stream'.head (Stream'.zipWith f s₁ s₂) = f (Stream'.head s₁) (Stream'.head s₂)`
+- `Stream'.tail (Stream'.zipWith f s₁ s₂) =
+   Stream'.zipWith f (Stream'.tail s₁) (Stream'.tail s₂)` -/
 @[inline]
-def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
+def zipWith (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
   corec (fun (s₁, s₂) => f (head s₁) (head s₂)) (fun (s₁, s₂) => (tail s₁, tail s₂)) (s₁, s₂)
-#align stream.zip Stream'.zip
+#align stream.zip Stream'.zipWith
+
+/-- Zip two streams:
+- `Stream'.head (Stream'.zip s₁ s₂) = (Stream'.head s₁, Stream'.head s₂)`
+- `Stream'.tail (Stream'.zip s₁ s₂) = Stream'.zip (Stream'.tail s₁) (Stream'.tail s₂)` -/
+def zip : Stream' α → Stream' β → Stream' (α × β) :=
+  zipWith Prod.mk
+
+/-- Iterates of a function as a stream. -/
+@[inline]
+def iterate (f : α → α) : α → Stream' α :=
+  corec id f
+#align stream.iterate Stream'.iterate
+
+/-- The stream of natural numbers from `n` :
+- `Stream'.head (Stream'.natsFrom n) = n`
+- `Stream'.tail (Stream'.natsFrom n) = Stream'.natsFrom (n + 1)` -/
+def natsFrom : ℕ → Stream' ℕ :=
+  iterate Nat.succ
+
+/-- The stream of natural numbers. -/
+def nats : Stream' Nat :=
+  natsFrom 0
+#align stream.nats Stream'.nats
+
+/-- Construct a stream from a function of `ℕ → α`. -/
+@[inline]
+def ofFn (f : ℕ → α) : Stream' α :=
+  map f nats
 
 /-- Enumerate a stream by tagging each element with its index. -/
-def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
+def enum (s : Stream' α) : Stream' (ℕ × α) :=
+  zip nats s
 #align stream.enum Stream'.enum
 
-/-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
+/-- The constant stream:
+- `Stream'.head (Stream'.const a) = a`
+- `Stream'.tail (Stream'.const a) = Stream'.const a` -/
 def const (a : α) : Stream' α :=
   corec (fun _ : Unit => a) id ()
 #align stream.const Stream'.const
-
--- porting note: used to be implemented using RecOn
-/-- Iterates of a function as a stream. -/
-def iterate (f : α → α) (a : α) : Stream' α
-  | 0 => a
-  | n + 1 => f (iterate f a n)
-#align stream.iterate Stream'.iterate
 
 -- porting note: this `#align` should be elsewhere but idk where
 #align state StateM
@@ -123,21 +153,18 @@ def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
   corec Prod.fst (cmd.run ∘ Prod.snd) (cmd.run s)
 #align stream.corec_state Stream'.corecState
 
--- corec is also known as unfold
-abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
-  corec g f a
-#align stream.unfolds Stream'.unfolds
+#align stream.unfolds Stream'.corec
 
 /-- Interleave two streams. -/
 def interleave (s₁ s₂ : Stream' α) : Stream' α :=
-  corecOn (s₁, s₂) (fun (s₁, _) => head s₁) (fun (s₁, s₂) => (s₂, tail s₁))
+  corec (fun (s₁, _) => head s₁) (fun (s₁, s₂) => (s₂, tail s₁)) (s₁, s₂)
 #align stream.interleave Stream'.interleave
 
 infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
-def even (s : Stream' α) : Stream' α :=
-  corec (fun s => head s) (fun s => tail (tail s)) s
+def even : Stream' α → Stream' α :=
+  corec head (tail ∘ tail)
 #align stream.even Stream'.even
 
 /-- Elements of a stream with odd indices. -/
@@ -146,17 +173,18 @@ def odd (s : Stream' α) : Stream' α :=
 #align stream.odd Stream'.odd
 
 /-- Append a stream to a list. -/
-def appendStream' : List α → Stream' α → Stream' α
+def hAppend : List α → Stream' α → Stream' α
   | [], s => s
-  | List.cons a l, s => a::appendStream' l s
-#align stream.append_stream Stream'.appendStream'
+  | a :: l, s => a ::ₛ hAppend l s
+#align stream.append_stream Stream'.hAppend
 
-infixl:65 " ++ₛ " => appendStream'
+instance : HAppend (List α) (Stream' α) (Stream' α) where
+  hAppend := hAppend
 
 /-- `take n s` returns a list of the `n` first elements of stream `s` -/
 def take : ℕ → Stream' α → List α
   | 0, _ => []
-  | n + 1, s => List.cons (head s) (take n (tail s))
+  | n + 1, s => head s :: take n (tail s)
 #align stream.take Stream'.take
 
 /-- An auxiliary definition for `Stream'.cycle` corecursive def -/
@@ -167,46 +195,41 @@ protected def cycleF : α × List α × α × List α → α
 /-- An auxiliary definition for `Stream'.cycle` corecursive def -/
 protected def cycleG : α × List α × α × List α → α × List α × α × List α
   | (_, [], v₀, l₀) => (v₀, l₀, v₀, l₀)
-  | (_, List.cons v₂ l₂, v₀, l₀) => (v₂, l₂, v₀, l₀)
+  | (_, v₂ :: l₂, v₀, l₀) => (v₂, l₂, v₀, l₀)
 #align stream.cycle_g Stream'.cycleG
 
 /-- Interpret a nonempty list as a cyclic stream. -/
 def cycle : ∀ l : List α, l ≠ [] → Stream' α
   | [], h => absurd rfl h
-  | List.cons a l, _ => corec Stream'.cycleF Stream'.cycleG (a, l, a, l)
+  | a :: l, _ => corec Stream'.cycleF Stream'.cycleG (a, l, a, l)
 #align stream.cycle Stream'.cycle
 
-/-- Tails of a stream, starting with `Stream'.tail s`. -/
-def tails (s : Stream' α) : Stream' (Stream' α) :=
-  corec id tail (tail s)
+/-- Tails of a stream, starting with `s`. -/
+def tails : Stream' α → Stream' (Stream' α) :=
+  iterate tail
 #align stream.tails Stream'.tails
 
 /-- An auxiliary definition for `Stream'.inits`. -/
 def initsCore (l : List α) (s : Stream' α) : Stream' (List α) :=
-  corecOn (l, s) (fun ⟨a, _⟩ => a) fun p =>
-    match p with
-    | (l', s') => (l' ++ [head s'], tail s')
+  corec (fun (a, _) => a)
+    (fun (l', s') => (List.concat l' (head s'), tail s'))
+    (l, s)
 #align stream.inits_core Stream'.initsCore
 
-/-- Nonempty initial segments of a stream. -/
+/-- Initial segments of a stream. -/
 def inits (s : Stream' α) : Stream' (List α) :=
-  initsCore [head s] (tail s)
+  initsCore [] (tail s)
 #align stream.inits Stream'.inits
 
-/-- A constant stream, same as `Stream'.const`. -/
-def pure (a : α) : Stream' α :=
-  const a
-#align stream.pure Stream'.pure
+#align stream.pure Stream'.const
 
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
-def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (get f n) (get s n)
+def apply : Stream' (α → β) → Stream' α → Stream' β :=
+  zipWith id
 #align stream.apply Stream'.apply
 
+@[inherit_doc]
 infixl:75 " ⊛ " => apply
 -- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
-
-/-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
-def nats : Stream' Nat := fun n => n
-#align stream.nats Stream'.nats
 
 end Stream'

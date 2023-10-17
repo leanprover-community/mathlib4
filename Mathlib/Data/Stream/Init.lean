@@ -3,11 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Std.Tactic.Ext
 import Mathlib.Data.Stream.Defs
-import Mathlib.Logic.Function.Basic
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Data.List.Basic
 
 #align_import data.stream.init from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -20,7 +16,7 @@ name clashes.  -/
 
 set_option autoImplicit true
 
-open Nat Function Option
+open Nat Function Option PFunctor
 
 namespace Stream'
 
@@ -29,33 +25,31 @@ variable {α : Type u} {β : Type v} {δ : Type w}
 instance [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
-protected theorem eta (s : Stream' α) : (head s::tail s) = s :=
-  funext fun i => by cases i <;> rfl
+protected theorem eta (s : Stream' α) : head s ::ₛ tail s = s :=
+  M.mk_dest s
 #align stream.eta Stream'.eta
 
-@[ext]
-protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n) → s₁ = s₂ :=
-  fun h => funext h
-#align stream.ext Stream'.ext
-
 @[simp]
-theorem get_zero_cons (a : α) (s : Stream' α) : get (a::s) 0 = a :=
-  rfl
-#align stream.nth_zero_cons Stream'.get_zero_cons
-
-@[simp]
-theorem head_cons (a : α) (s : Stream' α) : head (a::s) = a :=
-  rfl
+theorem head_cons (a : α) (s : Stream' α) : head (a ::ₛ s) = a := by
+  rw [head, cons, M.dest_mk]
 #align stream.head_cons Stream'.head_cons
 
 @[simp]
-theorem tail_cons (a : α) (s : Stream' α) : tail (a::s) = s :=
-  rfl
+theorem get_zero_cons (a : α) (s : Stream' α) : get (a ::ₛ s) 0 = a :=
+  head_cons a s
+#align stream.nth_zero_cons Stream'.get_zero_cons
+
+@[simp]
+theorem tail_cons (a : α) (s : Stream' α) : tail (a ::ₛ s) = s := by
+  rw [tail, cons, M.dest_mk]
 #align stream.tail_cons Stream'.tail_cons
 
 @[simp]
-theorem get_drop (n m : Nat) (s : Stream' α) : get (drop m s) n = get s (n + m) :=
-  rfl
+theorem get_drop (n m : Nat) (s : Stream' α) : get (drop m s) n = get s (n + m) := by
+  induction m using Nat.recAux generalizing s with
+  | zero => rfl
+  | succ m hm =>
+    rw [drop, hm, ← Nat.add_assoc, get]
 #align stream.nth_drop Stream'.get_drop
 
 theorem tail_eq_drop (s : Stream' α) : tail s = drop 1 s :=
@@ -64,15 +58,18 @@ theorem tail_eq_drop (s : Stream' α) : tail s = drop 1 s :=
 
 @[simp]
 theorem drop_drop (n m : Nat) (s : Stream' α) : drop n (drop m s) = drop (n + m) s := by
-  ext; simp [Nat.add_assoc]
+  induction m using Nat.recAux generalizing s with
+  | zero => rfl
+  | succ m hm =>
+    rw [drop, hm, ← Nat.add_assoc, drop]
 #align stream.drop_drop Stream'.drop_drop
 
 @[simp] theorem get_tail {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
-@[simp] theorem tail_drop' {s : Stream' α} : tail (drop i s) = s.drop (i+1) := by
-  ext; simp [add_comm, add_assoc, add_left_comm]
+@[simp] theorem tail_drop' {s : Stream' α} : tail (drop i s) = s.drop (i + 1) := by
+  rw [tail_eq_drop, drop_drop, Nat.add_comm 1 i]
 
-@[simp] theorem drop_tail' {s : Stream' α} : drop i (tail s) = s.drop (i+1) := rfl
+@[simp] theorem drop_tail' {s : Stream' α} : drop i (tail s) = s.drop (i + 1) := rfl
 
 theorem tail_drop (n : Nat) (s : Stream' α) : tail (drop n s) = drop n (tail s) := by simp
 #align stream.tail_drop Stream'.tail_drop
@@ -82,8 +79,8 @@ theorem get_succ (n : Nat) (s : Stream' α) : get s (succ n) = get (tail s) n :=
 #align stream.nth_succ Stream'.get_succ
 
 @[simp]
-theorem get_succ_cons (n : Nat) (s : Stream' α) (x : α) : get (x::s) n.succ = get s n :=
-  rfl
+theorem get_succ_cons (n : Nat) (s : Stream' α) (x : α) : get (x ::ₛ s) n.succ = get s n := by
+  rw [get, tail_cons]
 #align stream.nth_succ_cons Stream'.get_succ_cons
 
 @[simp] theorem drop_zero {s : Stream' α} : s.drop 0 = s := rfl
@@ -92,15 +89,16 @@ theorem drop_succ (n : Nat) (s : Stream' α) : drop (succ n) s = drop n (tail s)
   rfl
 #align stream.drop_succ Stream'.drop_succ
 
-theorem head_drop (a : Stream' α) (n : ℕ) : (a.drop n).head = a.get n := by simp
+theorem head_drop (a : Stream' α) (n : ℕ) : (a.drop n).head = a.get n := by
+  change get (a.drop n) 0 = get a n
+  rw [get_drop, Nat.zero_add]
 #align stream.head_drop Stream'.head_drop
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stream' α) := fun x y s t h =>
-  ⟨by rw [← get_zero_cons x s, h, get_zero_cons],
-    Stream'.ext fun n => by rw [← get_succ_cons n _ x, h, get_succ_cons]⟩
+  ⟨by rw [← head_cons x s, h, head_cons], by rw [← tail_cons x s, h, tail_cons]⟩
 #align stream.cons_injective2 Stream'.cons_injective2
 
-theorem cons_injective_left (s : Stream' α) : Function.Injective fun x => cons x s :=
+theorem cons_injective_left (s : Stream' α) : Function.Injective (· ::ₛ s) :=
   cons_injective2.left _
 #align stream.cons_injective_left Stream'.cons_injective_left
 
@@ -108,36 +106,146 @@ theorem cons_injective_right (x : α) : Function.Injective (cons x) :=
   cons_injective2.right _
 #align stream.cons_injective_right Stream'.cons_injective_right
 
-theorem all_def (p : α → Prop) (s : Stream' α) : All p s = ∀ n, p (get s n) :=
-  rfl
-#align stream.all_def Stream'.all_def
+theorem all_iff (p : α → Prop) (s : Stream' α) : All p s ↔ ∀ n, p (get s n) := by
+  constructor
+  case mp =>
+    rintro ⟨q, hs, hq⟩ n
+    suffices hn : p (get s n) ∧ q (drop (n + 1) s) from hn.1
+    induction n using Nat.recAux with
+    | zero =>
+      exact hq s hs
+    | succ n hn =>
+      specialize hq _ hn.2
+      rwa [head_drop, tail_drop'] at hq
+  case mpr =>
+    intro h
+    use fun s' => ∀ n, p (get s' n), h
+    intro s' hs'
+    exact ⟨hs' 0, fun n => hs' n.succ⟩
+#align stream.all_def Stream'.all_iff
 
-theorem any_def (p : α → Prop) (s : Stream' α) : Any p s = ∃ n, p (get s n) :=
-  rfl
-#align stream.any_def Stream'.any_def
+theorem any_iff (p : α → Prop) (s : Stream' α) : Any p s ↔ ∃ n, p (get s n) := by
+  constructor
+  case mp =>
+    intro hs
+    induction hs with
+    | head s hs => exact ⟨0, hs⟩
+    | tail s _ hs =>
+      rcases hs with ⟨n, hs⟩
+      exact ⟨n + 1, hs⟩
+  case mpr =>
+    rintro ⟨n, hs⟩
+    induction n using Nat.recAux generalizing s with
+    | zero => exact Any.head s hs
+    | succ n hn => exact Any.tail s <| hn (tail s) hs
+#align stream.any_def Stream'.any_iff
 
 @[simp]
-theorem mem_cons (a : α) (s : Stream' α) : a ∈ a::s :=
-  Exists.intro 0 rfl
+theorem mem_cons (a : α) (s : Stream' α) : a ∈ a ::ₛ s :=
+  Any.head (a ::ₛ s) (head_cons a s).symm
 #align stream.mem_cons Stream'.mem_cons
 
-theorem mem_cons_of_mem {a : α} {s : Stream' α} (b : α) : a ∈ s → a ∈ b::s := fun ⟨n, h⟩ =>
-  Exists.intro (succ n) (by rw [get_succ, tail_cons, h])
+theorem mem_cons_of_mem {a : α} {s : Stream' α} (b : α) (hs : a ∈ s) : a ∈ b ::ₛ s :=
+  Any.tail (b ::ₛ s) (by rwa [tail_cons])
 #align stream.mem_cons_of_mem Stream'.mem_cons_of_mem
 
-theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a = b ∨ a ∈ s :=
-    fun ⟨n, h⟩ => by
-  cases' n with n'
-  · left
-    exact h
-  · right
-    rw [get_succ, tail_cons] at h
-    exact ⟨n', h⟩
+theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} (h : a ∈ b ::ₛ s) : a = b ∨ a ∈ s := by
+  cases h with
+  | head _ ha => left; rwa [head_cons] at ha
+  | tail _ hs => right; rwa [tail_cons] at hs
 #align stream.eq_or_mem_of_mem_cons Stream'.eq_or_mem_of_mem_cons
 
-theorem mem_of_get_eq {n : Nat} {s : Stream' α} {a : α} : a = get s n → a ∈ s := fun h =>
-  Exists.intro n h
+theorem mem_of_get_eq {n : Nat} {s : Stream' α} {a : α} (h : a = get s n) : a ∈ s := by
+  simp only [Membership.mem, any_iff]
+  exists n
 #align stream.mem_of_nth_eq Stream'.mem_of_get_eq
+
+section Bisim
+
+variable (R : Stream' α → Stream' α → Prop)
+
+/-- Streams `s₁` and `s₂` are defined to be bisimulations if
+their heads are equal and tails are bisimulations. -/
+def IsBisimulation :=
+  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → head s₁ = head s₂ ∧ R (tail s₁) (tail s₂)
+#align stream.is_bisimulation Stream'.IsBisimulation
+
+/-- If two streams are bisimilar, then they are equal. -/
+theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (hs : R s₁ s₂) : s₁ = s₂ := by
+  refine M.bisim R ?_ _ _ hs; clear s₁ s₂ hs
+  intro s₁ s₂ hs
+  specialize bisim hs; rcases bisim with ⟨hhs, hts⟩
+  refine ⟨head s₁, fun _ => tail s₁, fun _ => tail s₂, rfl, ?_, ?_⟩
+  · exact Sigma.ext_iff.mpr ⟨hhs.symm, HEq.refl _⟩
+  · exact fun _ => hts
+#align stream.eq_of_bisim Stream'.eq_of_bisim
+
+theorem get_of_bisim (bisim : IsBisimulation R) :
+    ∀ {s₁ s₂} (n), R s₁ s₂ → get s₁ n = get s₂ n ∧ R (drop (n + 1) s₁) (drop (n + 1) s₂)
+  | _, _, 0, h => bisim h
+  | _, _, n + 1, h =>
+    match bisim h with
+    | ⟨_, trel⟩ => get_of_bisim bisim n trel
+#align stream.nth_of_bisim Stream'.get_of_bisim
+
+end Bisim
+
+theorem bisim_simple (s₁ s₂ : Stream' α) :
+    head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
+  eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
+    (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
+      constructor; exact h₁; rw [← h₂, ← h₃]
+      (repeat' constructor) <;> assumption)
+    (And.intro hh (And.intro ht₁ ht₂))
+#align stream.bisim_simple Stream'.bisim_simple
+
+theorem coinduction {s₁ s₂ : Stream' α} :
+    head s₁ = head s₂ →
+      (∀ (β : Type u) (fr : Stream' α → β),
+        fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂ :=
+  fun hh ht =>
+  eq_of_bisim
+    (fun s₁ s₂ =>
+      head s₁ = head s₂ ∧
+        ∀ (β : Type u) (fr : Stream' α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂))
+    (fun s₁ s₂ h =>
+      have h₁ : head s₁ = head s₂ := And.left h
+      have h₂ : head (tail s₁) = head (tail s₂) := And.right h α (@head α) h₁
+      have h₃ :
+        ∀ (β : Type u) (fr : Stream' α → β),
+          fr (tail s₁) = fr (tail s₂) → fr (tail (tail s₁)) = fr (tail (tail s₂)) :=
+        fun β fr => And.right h β fun s => fr (tail s)
+      And.intro h₁ (And.intro h₂ h₃))
+    (And.intro hh ht)
+#align stream.coinduction Stream'.coinduction
+
+section Corec'
+
+theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1 ::ₛ corec' f (f a).2 :=
+  corec_eq _ _ _
+#align stream.corec'_eq Stream'.corec'_eq
+
+end Corec'
+
+section Corec
+
+theorem corec_def (f : α → β) (g : α → α) (a : α) : corec f g a = map f (iterate g a) :=
+  rfl
+#align stream.corec_def Stream'.corec_def
+
+theorem corec_eq (f : α → β) (g : α → α) (a : α) : corec f g a = f a ::ₛ corec f g (g a) := by
+  rw [corec_def, map_eq, head_iterate, tail_iterate]; rfl
+#align stream.corec_eq Stream'.corec_eq
+
+theorem corec_id_id_eq_const (a : α) : corec id id a = const a := by
+  rw [corec_def, map_id, iterate_id]
+#align stream.corec_id_id_eq_const Stream'.corec_id_id_eq_const
+
+theorem corec_id_f_eq_iterate (f : α → α) (a : α) : corec id f a = iterate f a :=
+  rfl
+#align stream.corec_id_f_eq_iterate Stream'.corec_id_f_eq_iterate
+
+end Corec
 
 section Map
 
@@ -294,64 +402,6 @@ theorem get_succ_iterate (n : Nat) (f : α → α) (a : α) :
     get (iterate f a) (succ n) = get (iterate f (f a)) n := by rw [get_succ, tail_iterate]
 #align stream.nth_succ_iterate Stream'.get_succ_iterate
 
-section Bisim
-
-variable (R : Stream' α → Stream' α → Prop)
-
-/-- equivalence relation -/
-local infixl:50 " ~ " => R
-
-/-- Streams `s₁` and `s₂` are defined to be bisimulations if
-their heads are equal and tails are bisimulations. -/
-def IsBisimulation :=
-  ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ →
-      head s₁ = head s₂ ∧ tail s₁ ~ tail s₂
-#align stream.is_bisimulation Stream'.IsBisimulation
-
-theorem get_of_bisim (bisim : IsBisimulation R) :
-    ∀ {s₁ s₂} (n), s₁ ~ s₂ → get s₁ n = get s₂ n ∧ drop (n + 1) s₁ ~ drop (n + 1) s₂
-  | _, _, 0, h => bisim h
-  | _, _, n + 1, h =>
-    match bisim h with
-    | ⟨_, trel⟩ => get_of_bisim bisim n trel
-#align stream.nth_of_bisim Stream'.get_of_bisim
-
--- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun r =>
-  Stream'.ext fun n => And.left (get_of_bisim R bisim n r)
-#align stream.eq_of_bisim Stream'.eq_of_bisim
-
-end Bisim
-
-theorem bisim_simple (s₁ s₂ : Stream' α) :
-    head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
-  eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
-    (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor; exact h₁; rw [← h₂, ← h₃]
-      (repeat' constructor) <;> assumption)
-    (And.intro hh (And.intro ht₁ ht₂))
-#align stream.bisim_simple Stream'.bisim_simple
-
-theorem coinduction {s₁ s₂ : Stream' α} :
-    head s₁ = head s₂ →
-      (∀ (β : Type u) (fr : Stream' α → β),
-      fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂ :=
-  fun hh ht =>
-  eq_of_bisim
-    (fun s₁ s₂ =>
-      head s₁ = head s₂ ∧
-        ∀ (β : Type u) (fr : Stream' α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂))
-    (fun s₁ s₂ h =>
-      have h₁ : head s₁ = head s₂ := And.left h
-      have h₂ : head (tail s₁) = head (tail s₂) := And.right h α (@head α) h₁
-      have h₃ :
-        ∀ (β : Type u) (fr : Stream' α → β),
-          fr (tail s₁) = fr (tail s₂) → fr (tail (tail s₁)) = fr (tail (tail s₂)) :=
-        fun β fr => And.right h β fun s => fr (tail s)
-      And.intro h₁ (And.intro h₂ h₃))
-    (And.intro hh ht)
-#align stream.coinduction Stream'.coinduction
-
 @[simp]
 theorem iterate_id (a : α) : iterate id a = const a :=
   coinduction rfl fun β fr ch => by rw [tail_iterate, tail_const]; exact ch
@@ -367,33 +417,10 @@ theorem map_iterate (f : α → α) (a : α) : iterate f (f a) = map f (iterate 
     exact congrArg f ih
 #align stream.map_iterate Stream'.map_iterate
 
-section Corec
-
-theorem corec_def (f : α → β) (g : α → α) (a : α) : corec f g a = map f (iterate g a) :=
-  rfl
-#align stream.corec_def Stream'.corec_def
-
-theorem corec_eq (f : α → β) (g : α → α) (a : α) : corec f g a = f a::corec f g (g a) := by
-  rw [corec_def, map_eq, head_iterate, tail_iterate]; rfl
-#align stream.corec_eq Stream'.corec_eq
-
-theorem corec_id_id_eq_const (a : α) : corec id id a = const a := by
-  rw [corec_def, map_id, iterate_id]
-#align stream.corec_id_id_eq_const Stream'.corec_id_id_eq_const
-
-theorem corec_id_f_eq_iterate (f : α → α) (a : α) : corec id f a = iterate f a :=
-  rfl
-#align stream.corec_id_f_eq_iterate Stream'.corec_id_f_eq_iterate
-
-end Corec
-
-section Corec'
-
-theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1::corec' f (f a).2 :=
-  corec_eq _ _ _
-#align stream.corec'_eq Stream'.corec'_eq
-
-end Corec'
+@[ext]
+protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n) → s₁ = s₂ :=
+  fun h => funext h
+#align stream.ext Stream'.ext
 
 theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a::unfolds g f (f a) := by
   unfold unfolds; rw [corec_eq]
