@@ -493,8 +493,8 @@ def Cofix (F : Type u → Type u) [Functor F] [QPF F] :=
 /-- This type is similar to `PFunctor.CofixI (QPF.P F)`, but `F` is used instead of
 `(QPF.P F).Obj`. -/
 unsafe inductive CofixI (F : Type u → Type u)
-  /-- Construct `CofixI` from a thunk. -/
-  | mk (t : Thunk (F (CofixI F))) : CofixI F
+  /-- Construct `CofixI` from an infinite structure. -/
+  | mk (t : F (Thunk (CofixI F))) : CofixI F
 
 namespace Cofix
 
@@ -546,7 +546,7 @@ unsafe def ofI : CofixI F → Cofix F :=
 
 /-- Convert `Cofix` to `CofixI`. -/
 @[inline]
-unsafe def ofIMap : F (CofixI F) → F (Cofix F) :=
+unsafe def ofIMap : F (Thunk (CofixI F)) → F (Thunk (Cofix F)) :=
   unsafeCast
 
 /-- Convert `CofixI` to `Cofix`. -/
@@ -556,7 +556,7 @@ unsafe def toI : Cofix F → CofixI F :=
 
 /-- Convert `CofixI` to `Cofix`. -/
 @[inline]
-unsafe def toIMap : F (Cofix F) → F (CofixI F) :=
+unsafe def toIMap : F (Thunk (Cofix F)) → F (Thunk (CofixI F)) :=
   unsafeCast
 
 /-- The implemention of `corec`. This generates data trees lazily. -/
@@ -565,7 +565,7 @@ unsafe def corecUnsafe {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   let rec
     /-- The main loop of `corecUnsafe`. -/
     @[specialize] loop (x : α) : CofixI F :=
-      CofixI.mk <| Thunk.mk <| fun _ => loop <$> g x
+      CofixI.mk <| ((↑) ∘ loop) <$> g x
   ofI (loop x)
 
 /-- corecursor for type defined by `Cofix` -/
@@ -580,7 +580,7 @@ instance [Inhabited (F PUnit)] : Inhabited (Cofix F) where
 /-- The implemention of `dest`. This unfolds `Cofix`. -/
 unsafe def destUnsafe (x : Cofix F) : F (Cofix F) :=
   match toI x with
-  | ⟨t⟩ => ofIMap t.get
+  | ⟨t⟩ => Thunk.get <$> ofIMap t
 
 /-- This unfolds an M-type. -/
 @[implemented_by destUnsafe]
@@ -670,7 +670,7 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
 /-- The implemention of `mk`. -/
 @[inline]
 unsafe def mkUnsafe (x : F (Cofix F)) : Cofix F :=
-  ofI <| CofixI.mk <| Thunk.pure (toIMap x)
+  ofI <| CofixI.mk <| toIMap ((↑) <$> x)
 
 /-- constructor for `Cofix`. -/
 @[implemented_by mkUnsafe]

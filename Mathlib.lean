@@ -1764,7 +1764,6 @@ import Mathlib.Data.Polynomial.Taylor
 import Mathlib.Data.Polynomial.UnitTrinomial
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Prod.MProd
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Prod.TProd
 import Mathlib.Data.QPF.Multivariate.Basic

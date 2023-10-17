@@ -3,8 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.QPF.Univariate.Basic
-import Mathlib.Control.Bifunctor
+import Mathlib.Data.PFunctor.Univariate.M
 
 #align_import data.stream.defs from "leanprover-community/mathlib"@"39af7d3bf61a98e928812dbc3e16f4ea8b795ca3"
 
@@ -18,17 +17,15 @@ Note that we already have `Stream` to represent a similar object, hence the awkw
 
 set_option autoImplicit true
 
-open QPF
+open PFunctor
 
-instance {α : Type u} : QPF (MProd α) where
-  P := { A := α, B := fun _ => PUnit }
-  abs := fun ⟨a, o⟩ => ⟨a, o ⟨⟩⟩
-  repr := fun ⟨a, b⟩ => ⟨a, fun _ => b⟩
-  abs_repr p := by cases p; rfl
-  abs_map f p := by cases p; rfl
+/-- A polynomial functor which is used to declare `Stream' α`. -/
+def Stream'.Shape (α : Type u) : PFunctor where
+  A := α
+  B := fun _ => PUnit
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
-def Stream' (α : Type u) := QPF.Cofix (MProd α)
+def Stream' (α : Type u) := M (Stream'.Shape α)
 #align stream Stream'
 
 namespace Stream'
@@ -36,22 +33,17 @@ namespace Stream'
 /-- Prepend an element to a stream. -/
 @[inline]
 def cons (a : α) (s : Stream' α) : Stream' α :=
-  Cofix.mk ⟨a, s⟩
+  M.mk ⟨a, fun _ => s⟩
 #align stream.cons Stream'.cons
 
 scoped infixr:67 " :: " => cons
-
-/-- Destructor for a stream, returning `⟨a, s⟩` for `cons a s`. -/
-@[inline]
-def dest (s : Stream' α) : MProd α (Stream' α) :=
-  Cofix.dest s
 
 /-- Head of a stream: `Stream'.head (h :: t) = h`. -/
 abbrev head (s : Stream' α) : α := s.dest.1
 #align stream.head Stream'.head
 
 /-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-abbrev tail (s : Stream' α) : Stream' α := s.dest.2
+abbrev tail (s : Stream' α) : Stream' α := s.dest.2 ⟨⟩
 #align stream.tail Stream'.tail
 
 /-- Get the `n`-th element of a stream. -/
@@ -79,13 +71,13 @@ instance : Membership α (Stream' α) :=
   ⟨fun a s => Any (fun b => a = b) s⟩
 
 @[inline]
-def corec' (f : α → MProd β α) : α → Stream' β :=
-  Cofix.corec f
+def corec' (f : α → β × α) : α → Stream' β :=
+  M.corec ((fun (b, a) => ⟨b, fun _ => a⟩) ∘ f)
 #align stream.corec' Stream'.corec'
 
 @[inline]
 def corec (f : α → β) (g : α → α) : α → Stream' β :=
-  corec' (fun a => ⟨f a, g a⟩)
+  corec' (fun a => (f a, g a))
 #align stream.corec Stream'.corec
 
 abbrev corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
@@ -111,7 +103,7 @@ def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
 
 /-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
 def const (a : α) : Stream' α :=
-  corec (fun _ : PUnit => a) id ⟨⟩
+  corec (fun _ : Unit => a) id ()
 #align stream.const Stream'.const
 
 -- porting note: used to be implemented using RecOn

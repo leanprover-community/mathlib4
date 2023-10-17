@@ -7,15 +7,13 @@ import Mathlib.Data.PFunctor.Univariate.M
 
 open PFunctor
 
-def StringGame.CycleP : PFunctor where
+def StringGame.Cycle : PFunctor where
   A := Option String
   B o := bif o.isSome then String else Empty
 
-abbrev StringGame.Cycle := StringGame.CycleP.Obj
+abbrev StringGame := StringGame.Cycle.M
 
-abbrev StringGame := StringGame.CycleP.M
-
-abbrev StringGameIntl := StringGame.CycleP.MIntl
+abbrev StringGameIntl := StringGame.Cycle.MIntl
 
 namespace StringGame
 

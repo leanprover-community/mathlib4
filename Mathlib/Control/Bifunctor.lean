@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Functor
-import Mathlib.Data.Prod.MProd
 import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Common
 
@@ -124,11 +123,6 @@ instance Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
 instance Prod.lawfulBifunctor : LawfulBifunctor Prod := by
   refine' { .. } <;> intros <;> rfl
 #align prod.is_lawful_bifunctor Prod.lawfulBifunctor
-
-instance MProd.bifunctor : Bifunctor MProd where bimap := @MProd.map
-
-instance MProd.lawfulBifunctor : LawfulBifunctor MProd := by
-  refine' { .. } <;> intros <;> rfl
 
 instance Bifunctor.const : Bifunctor Const where bimap f _ := f
 #align bifunctor.const Bifunctor.const

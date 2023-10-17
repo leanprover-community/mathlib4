@@ -727,12 +727,11 @@ def M :=
 set_option linter.uppercaseLean3 false in
 #align pfunctor.MIntl PFunctor.M
 
-/-- This is the meta type of `CofixA F ∞`. This is theorically equivalent to `W` with thunks, but
+/-- This is the meta type of `CofixA F ∞`. This is theorically equivalent to `W`, but
 this can be an infinite structure. -/
 unsafe inductive CofixI (F : PFunctor.{u})
-  /-- Construct `CofixI` from a thunk. Actually, children of the tree is lazy evaluated without
-  thunk, but this is useful to construct the equivalence to `QPF.Cofix`. -/
-  | mk (t : Thunk (F (CofixI F))) : CofixI F
+  /-- Construct `CofixI` from an infinite structure. -/
+  | mk (t : F (CofixI F)) : CofixI F
 
 namespace M
 
@@ -809,7 +808,7 @@ unsafe def corecUnsafe (i : X) : M F :=
   let rec
     /-- The main loop of `corecUnsafe`. -/
     @[specialize] loop (i : X) : CofixI F :=
-      CofixI.mk <| Thunk.mk <| fun _ =>
+      CofixI.mk <|
         match f i with
         | ⟨a, o⟩ => ⟨a, fun b => loop (o b)⟩
   ofI (loop i)
@@ -829,9 +828,7 @@ set_option linter.uppercaseLean3 false in
 /-- The implemention of `dest`. This unfolds an M-type. -/
 unsafe def destUnsafe (x : M F) : F (M F) :=
   match toI x with
-  | ⟨t⟩ =>
-    match t.get with
-    | ⟨a, o⟩ => ⟨a, fun b => ofI (o b)⟩
+  | ⟨⟨a, o⟩⟩ => ⟨a, fun b => ofI (o b)⟩
 
 /-- This unfolds an M-type. -/
 @[implemented_by destUnsafe]
@@ -873,7 +870,7 @@ theorem toIntl_eq_toIntlComputable : @toIntl.{u} = @toIntlComputable.{u} :=
 @[inline]
 unsafe def mkUnsafe (x : F (M F)) : M F :=
   match x with
-  | ⟨a, o⟩ => ofI <| CofixI.mk <| Thunk.pure ⟨a, fun b => toI (o b)⟩
+  | ⟨a, o⟩ => ofI <| CofixI.mk <| ⟨a, fun b => toI (o b)⟩
 
 /-- constructor for M-types -/
 @[implemented_by mkUnsafe]
@@ -1059,12 +1056,12 @@ unsafe def corec'Unsafe {α : Type u} (F : α → M P ⊕ P α) (x : α) : M P :
   let rec
     /-- The main loop of `corec'Unsafe`. -/
     @[specialize] loop (x : α) : CofixI P :=
-      CofixI.mk <| Thunk.mk <| fun _ =>
+      CofixI.mk <|
         match F x with
         | Sum.inr ⟨a, o⟩ => ⟨a, fun b => loop (o b)⟩
         | Sum.inl y =>
           match toI y with
-          | ⟨t⟩ => t.get
+          | ⟨t⟩ => t
   ofI (loop x)
 
 /-- corecursor where it is possible to return a fully formed value at any point
@@ -1073,7 +1070,7 @@ of the computation -/
 def corec' {α : Type u} (F : α → M P ⊕ P α) (x : α) : M P :=
   M.corec
     (fun (s : M P ⊕ α) =>
-      match s >>= F with
+      match Sum.bind s F with
       | Sum.inr a => Sum.inr <$> a
       | Sum.inl y => Sum.inl <$> M.dest y)
     (Sum.inr x)
