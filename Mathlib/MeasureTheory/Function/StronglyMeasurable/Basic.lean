@@ -1709,7 +1709,7 @@ theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι
   refine' ⟨⋃ i, t i, isSeparable_iUnion t_sep, _⟩
   simp only [Measure.ae_sum_eq, mem_iUnion, eventually_iSup]
   intro i
-  filter_upwards [ht i]with x hx
+  filter_upwards [ht i] with x hx
   exact ⟨i, hx⟩
 #align measure_theory.ae_strongly_measurable.sum_measure MeasureTheory.AEStronglyMeasurable.sum_measure
 
