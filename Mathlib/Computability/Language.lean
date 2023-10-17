@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Kleene
@@ -308,8 +308,7 @@ lemma zero_reverse : (0 : Language α).reverse = 0 := by
   rfl
 
 lemma one_reverse : (1 : Language α).reverse = 1 := by
-  simp only [reverse, mem_one, reverse_eq_nil, setOf_eq_eq_singleton]
-  rfl
+  simp [reverse, ←one_def]
 
 lemma reverse_reverse : l.reverse.reverse = l := by
   ext w
@@ -318,10 +317,18 @@ lemma reverse_reverse : l.reverse.reverse = l := by
   rw [reverse_mem_reverse, reverse_mem_reverse]
 
 lemma reverse_union : (l + m).reverse = l.reverse + m.reverse := by
-  sorry
+  ext w
+  apply mem_add
 
-lemma reverse_concatenation : (l * m).reverse = l.reverse * m.reverse := by
-  sorry
+lemma reverse_concatenation : (l * m).reverse = m.reverse * l.reverse := by
+  ext w
+  show
+    (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
+    (∃ u v, u.reverse ∈ m ∧ v.reverse ∈ l ∧ u ++ v = w)
+  constructor <;>
+  · rintro ⟨u, v, hul, hvm, huvw⟩
+    use v.reverse, u.reverse
+    simp_all [← List.reverse_append]
 
 lemma reverse_kstar : l∗.reverse = l.reverse∗ := by
   sorry
