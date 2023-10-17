@@ -21,16 +21,12 @@ def create_query(type: str, n_vars: int, eq_list, goal_type):
     for a description of this method. """
     var_list = ", ".join([f"var{i}" for i in range(n_vars)])
     query = f'''
-if {n_vars!r} != 0:
-    P = PolynomialRing({type_str(type)}, 'var', {n_vars!r})
-    [{var_list}] = P.gens()
-else:
-    # workaround for a Sage bug
-    P = PolynomialRing({type_str(type)}, 'var', 1)
+P = PolynomialRing({type_str(type)}, 'var', {n_vars!r})
+[{var_list}] = P.gens()
 # ensure that the equalities are cast to polynomials
 gens = [P() + eq for eq in {eq_list}]
 p = P({goal_type})
-I = ideal(gens)
+I = P.ideal(gens)
 coeffs = p.lift(I)
 print(serialize_polynomials(coeffs))
 '''
