@@ -124,7 +124,8 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
 #align category_theory.is_initial.is_van_kampen_colimit CategoryTheory.IsInitial.isVanKampenColimit
 
 theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : NatTrans.Equifibered α)
-  (H : C ⥤ D) [PreservesLimitsOfShape WalkingCospan H] : NatTrans.Equifibered (whiskerRight α H) :=
+    (H : C ⥤ D) [PreservesLimitsOfShape WalkingCospan H] :
+    NatTrans.Equifibered (whiskerRight α H) :=
 λ _ _ f ↦ (hα f).map H
 
 theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
