@@ -557,7 +557,6 @@ theorem IsUniversalColimit.map_reflective
     IsUniversalColimit (Gl.mapCocone c) := by
   have := adj.rightAdjointPreservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
-  have : ReflectsLimitsOfShape WalkingCospan Gr := reflectsLimitsOfShapeOfReflectsIsomorphisms
   intros F' c' α f h hα hc'
   let α' := α ≫ (Functor.associator _ _ _).hom ≫ whiskerLeft F adj.counit ≫ F.rightUnitor.hom
   have hα' : NatTrans.Equifibered α' := hα.comp (NatTrans.equifibered_of_isIso _)
@@ -657,7 +656,6 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     IsVanKampenColimit (Gl.mapCocone c) := by
   have := adj.rightAdjointPreservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
-  have : ReflectsLimitsOfShape WalkingCospan Gr := reflectsLimitsOfShapeOfReflectsIsomorphisms
   intro F' c' α f h hα
   refine ⟨?_, H.isUniversal.map_reflective adj c' α f h hα⟩
   intro ⟨hc'⟩ j
