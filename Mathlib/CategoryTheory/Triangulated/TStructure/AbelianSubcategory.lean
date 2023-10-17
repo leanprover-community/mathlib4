@@ -237,7 +237,7 @@ lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) 
 
 variable (ι)
 
-lemma abelian : Abelian A := by
+noncomputable def abelian : Abelian A := by
   apply Abelian.mk'
   intro X₁ X₂ f₁
   obtain ⟨X₃, f₂, f₃, hT⟩ := distinguished_cocone_triangle (ι.map f₁)

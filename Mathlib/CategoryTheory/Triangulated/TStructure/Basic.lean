@@ -294,6 +294,7 @@ class HasHeart where
   hι : ι.essImage = t.heart := by simp
 
 def hasHeartFullSubcategory : t.HasHeart where
+  H := FullSubcategory t.heart
   ι := fullSubcategoryInclusion t.heart
 
 variable [ht : t.HasHeart]

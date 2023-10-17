@@ -2,6 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Abelian
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 
+/-
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
 lemma AddCommGroupCat.isZero (X : AddCommGroupCat) (hX : ∀ (x : X), x = 0) :
@@ -539,3 +540,4 @@ end TStructure
 end Triangulated
 
 end CategoryTheory
+-/

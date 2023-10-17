@@ -13,6 +13,7 @@ variable (C : Type*) [Category C] [Preadditive C] [HasFiniteProducts C]
     (ι : I ⟶ Y) (wι : ι ≫ p = 0) (_hι : IsLimit (KernelFork.ofι _ wι)), f = π ≫ ι)
 
 noncomputable def mk' : Abelian C where
+  toPreadditive := inferInstance
   has_kernels := ⟨fun {X Y} f => by
     obtain ⟨K, i, wi, hi, _⟩ := h f
     exact ⟨_, hi⟩⟩
