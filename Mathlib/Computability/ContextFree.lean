@@ -6,10 +6,11 @@ Authors: Martin Dvorak
 import Mathlib.Computability.Language
 
 /-!
-# Context-Free Grammar
+# Context-Free
 
 This file contains the definition of a context-free grammar, which is a grammar that has a single
 nonterminal symbol on the left-hand side of each rule.
+Then we prove basic properties of context-free languages.
 
 ## Main definitions
 * `ContextFreeGrammar`: A context-free grammar.
@@ -150,9 +151,6 @@ end ContextFreeGrammar
 /-- Context-free languages are defined by context-free grammars. -/
 def Language.IsContextFree (L : Language T) : Prop :=
   ∃ g : ContextFreeGrammar.{uT} T, g.language = L
-
-/-- `L.reverse` is a language that contains exactly all words from `L` backwards. -/
-def Language.reverse (L : Language T) : Language T := { w : List T | w.reverse ∈ L }
 
 private def reverseRule {N : Type uN} (r : ContextFreeRule T N) : ContextFreeRule T N :=
   ⟨r.input, r.output.reverse⟩
