@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Equiv.Option
 
 #align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -546,3 +547,32 @@ instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
 instance subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 #align subsingleton_fin_one subsingleton_fin_one
+
+def Fin.equivOfSuccEquiv (h : Fin (n+1) ≃ Fin (m+1)) : Fin n ≃ Fin m :=
+  Equiv.removeNone <| calc
+    _ ≃ Fin (n+1) := (finSuccEquiv _).symm
+    _ ≃ Fin (m+1) := h
+    _ ≃ _         := finSuccEquiv _
+
+/-!
+  ## Injectivity of Fin
+  As a corollary of these equivalences, we get that `Fin` is injective
+-/
+
+theorem Fin.inj_equiv (eqv : Fin n ≃ Fin m) : n = m := by
+  induction n generalizing m <;> cases m
+  case zero.zero      => rfl
+  case zero.succ      => exact Fin.elim0 <| eqv.symm ⟨0, by simp⟩
+  case succ.zero      => exact Fin.elim0 <| eqv ⟨0, by simp⟩
+  case succ.succ ih _ => rw [ih]; apply Fin.equivOfSuccEquiv eqv
+
+theorem Fin.inj : Fin n = Fin m → n = m :=
+  inj_equiv ∘ Equiv.cast
+
+@[simp] theorem Fin.root_cast_eq_cast (h : Fin n = Fin m) (x : Fin n) :
+    _root_.cast h x = x.cast (inj h) := by
+  cases inj h; simp
+
+@[simp] theorem Fin.eqRec_eq_cast (h : Fin n = Fin m) (x : Fin n) :
+    h ▸ x = x.cast (inj h) := by
+  cases inj h; simp
