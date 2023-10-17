@@ -20,28 +20,73 @@ open scoped Uniformity Topology ENNReal Pointwise
 
 section
 
-lemma foo {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+open Function
+
+instance {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+    [LocallyCompactSpace G] (N : Subgroup G) :
+    LocallyCompactSpace (G ⧸ N) := by
+  refine ⟨fun x n hn ↦ ?_⟩
+  let π := ((↑) : G → G ⧸ N)
+  have C : Continuous π := continuous_coinduced_rng
+  obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
+  have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
+  rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
+  exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
+    s_comp.image C⟩
+
+/-- Urysohn's lemma: if `s ⊆ u` are two sets in a locally compact topological
+gropu `G`, space `X`, with `s` compact and `u` open, then there exists a compactly supported
+continuous function `f : G → ℝ` such that
+* `f` equals one on `s`;
+* `f` equals zero outside of `u`;
+* `0 ≤ f x ≤ 1` for all `x`.
+
+Compare `exists_continuous_one_zero_of_isCompact`, which works in a space which doesn't have to
+be a group, but should be T2. Here, we can avoid separation assumptions by going through the
+quotient space `G ⧸ closure {1}`.
+-/
+lemma exists_continuous_one_zero_of_isCompact_of_group
+    {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
     [LocallyCompactSpace G] {k u : Set G}
     (hk : IsCompact k) (hu : IsOpen u) (h : k ⊆ u) :
-    ∃ f : G → ℝ, Continuous f ∧ EqOn f 1 k ∧ EqOn f 0 u := by
+    ∃ f : G → ℝ, Continuous f ∧ HasCompactSupport f ∧ EqOn f 1 k ∧ EqOn f 0 uᶜ ∧
+      ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+  obtain ⟨L, L_comp, kL, Lu⟩ : ∃ L, IsCompact L ∧ k ⊆ interior L ∧ L ⊆ u :=
+    exists_compact_between hk hu h
+  let v := interior L
+  have hv : IsOpen v := isOpen_interior
   let N : Subgroup G := (⊥ : Subgroup G).topologicalClosure
-  let H := G ⧸ N
   have : N.Normal := Subgroup.is_normal_topologicalClosure ⊥
-  let π := ((↑) : G → H)
+  let π := ((↑) : G → G ⧸ N)
+  have C : Continuous π := continuous_coinduced_rng
   have : IsClosed (N : Set G) := Subgroup.isClosed_topologicalClosure ⊥
-  let k' := π '' k
-  have k'_comp : IsCompact k' := hk.image continuous_coinduced_rng
-  have k'_closed : IsClosed k' := k'_comp.isClosed
-  let u' := π '' u
-  have u'_open : IsOpen u' := QuotientGroup.isOpenMap_coe N u hu
-  have : k' ⊆ u' := image_subset π h
-  have T := exists_continuous_zero_one_of_closed k'_closed u'_open
-
+  have k'_comp : IsCompact (π '' k) := hk.image continuous_coinduced_rng
+  have v'_open : IsOpen (π '' v) := QuotientGroup.isOpenMap_coe N v hv
+  have D : Disjoint (π '' k) (π '' v)ᶜ := disjoint_compl_right_iff_subset.mpr (image_subset π kL)
+  rcases exists_continuous_one_zero_of_isCompact k'_comp v'_open.isClosed_compl D with
+    ⟨⟨f, f_cont⟩, fk', fv', f_range⟩
+  have A : EqOn (f ∘ π) 0 vᶜ := by
+    intro x hx
+    apply fv'
+    contrapose hx
+    simp only [mem_compl_iff, not_not, mem_image] at hx ⊢
+    obtain ⟨y, yv, hy⟩ : ∃ y, y ∈ v ∧ (y : G ⧸ N) = ↑x := hx
+    have : x ∈ v • (closure {1} : Set G) := by
+      rw [← Subgroup.coe_topologicalClosure_bot G]
+      exact ⟨y, y⁻¹ * x, yv, QuotientGroup.eq.mp hy, by dsimp; group⟩
+    rwa [hv.smul_set_closure_one_eq] at this
+  refine ⟨f ∘ π, f_cont.comp C, ?_, ?_, ?_, fun x ↦ by simpa using f_range _⟩
+  · refine HasCompactSupport.intro' L_comp.closure isClosed_closure (fun x hx ↦ ?_)
+    apply A
+    contrapose! hx
+    simp only [mem_compl_iff, not_not] at hx
+    exact interior_subset_closure hx
+  · intro x hx
+    simpa using fk' (mem_image_of_mem QuotientGroup.mk hx)
+  · have : uᶜ ⊆ vᶜ := compl_subset_compl.2 (interior_subset.trans Lu)
+    exact EqOn.mono this A
 
 end
-
-#exit
-
 
 section
 
@@ -299,8 +344,9 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
     ∃ (c : ℝ), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
       ∫ x, f x ∂μ' = c * ∫ x, f x ∂μ := by
-  by_cases H : LocallyCompactSpace G; swap
+/-  by_cases H : LocallyCompactSpace G; swap
   · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
     rcases f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont with hf|hf
     · simp [hf]
-    · exact (H hf).elim
+    · exact (H hf).elim-/
+  sorry
