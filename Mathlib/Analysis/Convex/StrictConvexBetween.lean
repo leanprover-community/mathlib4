@@ -16,10 +16,12 @@ space.
 
 -/
 
+open Metric
 
-variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [StrictConvexSpace ℝ V]
 
-variable [NormedAddTorsor V P] [StrictConvexSpace ℝ V]
+section PseudoMetricSpace
+variable [PseudoMetricSpace P] [NormedAddTorsor V P]
 
 theorem Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) :
     dist p₂ p < max (dist p₁ p) (dist p₃ p) := by
@@ -78,3 +80,21 @@ theorem Collinear.sbtw_of_dist_eq_of_dist_lt {p p₁ p₂ p₃ : P} {r : ℝ}
   · rintro rfl
     exact hp₂.ne hp₃
 #align collinear.sbtw_of_dist_eq_of_dist_lt Collinear.sbtw_of_dist_eq_of_dist_lt
+
+end PseudoMetricSpace
+
+section MetricSpace
+variable [MetricSpace P] [NormedAddTorsor V P] {a b c : P}
+
+/-- If the triangle `abc` is flat (the triangle inequality is an equality), then `b` lies between
+`a` and `c`. -/
+lemma wbtw_of_dist_add_dist_eq_dist (habc : dist a b + dist b c = dist a c) : Wbtw ℝ a b c := by
+  obtain rfl | hac := eq_or_ne a c
+  · simpa [dist_comm, eq_comm] using habc
+  refine ⟨dist a b / dist a c, ⟨by positivity, div_le_one_of_le ?_ $ by positivity⟩, Eq.symm $
+    eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (div_mul_cancel _ $ dist_ne_zero.2 hac).symm ?_⟩
+  · rw [←habc]
+    exact le_add_of_nonneg_right $ by positivity
+  · rwa [one_sub_mul, div_mul_cancel _ $ dist_ne_zero.2 hac, eq_sub_iff_add_eq']
+
+end MetricSpace
