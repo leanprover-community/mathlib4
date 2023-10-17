@@ -618,7 +618,7 @@ theorem IsLittleO.trans_le (hfg : f =o[l] g) (hgk : ∀ x, ‖g x‖ ≤ ‖k x�
 
 theorem isLittleO_irrefl' (h : ∃ᶠ x in l, ‖f' x‖ ≠ 0) : ¬f' =o[l] f' := by
   intro ho
-  rcases((ho.bound one_half_pos).and_frequently h).exists with ⟨x, hle, hne⟩
+  rcases ((ho.bound one_half_pos).and_frequently h).exists with ⟨x, hle, hne⟩
   rw [one_div, ← div_eq_inv_mul] at hle
   exact (half_lt_self (lt_of_le_of_ne (norm_nonneg _) hne.symm)).not_le hle
 #align asymptotics.is_o_irrefl' Asymptotics.isLittleO_irrefl'

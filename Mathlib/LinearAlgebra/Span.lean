@@ -683,7 +683,7 @@ instance : IsCompactlyGenerated (Submodule R M) :=
   ⟨fun s =>
     ⟨(fun x => span R {x}) '' s,
       ⟨fun t ht => by
-        rcases(Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
+        rcases (Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
         apply singleton_span_isCompactElement, by
         rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]⟩⟩⟩
 

@@ -135,7 +135,7 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
   Covers x := by
     let y := (𝒰.Covers x).choose
     have hy : (𝒰.map (𝒰.f x)).val.base y = x := (𝒰.Covers x).choose_spec
-    rcases(f (𝒰.f x)).Covers y with ⟨z, hz⟩
+    rcases (f (𝒰.f x)).Covers y with ⟨z, hz⟩
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).1.base
     use z
     erw [comp_apply]
