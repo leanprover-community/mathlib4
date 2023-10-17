@@ -24,28 +24,17 @@ variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 def IsSigmaCompact (s : Set X) : Prop :=
   ∃ K : ℕ → Set X, (∀ n, IsCompact (K n)) ∧ ⋃ n, K n = s
 
-/-- The empty set is σ-compact. -/
-@[simp]
-lemma isSigmaCompact_empty : IsSigmaCompact (∅ : Set X) := by
-  use fun _ ↦ ∅
-  simp only [isCompact_empty, forall_const, iUnion_empty, and_self]
-
 /-- Compact sets are σ-compact. -/
 lemma IsCompact.isSigmaCompact {s : Set X} (hs : IsCompact s) : IsSigmaCompact s :=
   ⟨fun _ => s, fun _ => hs, iUnion_const _⟩
 
-/-- Countable unions of compact sets are σ-compact. -/
-lemma isSigmaCompact_sUnion_of_isCompact {S : Set (Set X)} (hc : Set.Countable S)
-    (hcomp : ∀ (s : Set X), s ∈ S → IsCompact s) : IsSigmaCompact (⋃₀ S) := by
-  by_cases S = ∅
-  · simp only [h, sUnion_empty, isSigmaCompact_empty]
-  · -- If S is non-empty, choose a surjection f : ℕ → S, this yields a map ℕ → Set X.
-    obtain ⟨f, hf⟩ := (Set.countable_iff_exists_surjective (nmem_singleton_empty.mp h)).mp hc
-    refine ⟨fun n ↦ f n, fun n ↦ hcomp (f n) (Subtype.mem (f n)), ?_⟩
-    rw [Function.Surjective.iUnion_comp hf]
-    exact sUnion_eq_iUnion.symm
+/-- The empty set is σ-compact. -/
+@[simp]
+lemma isSigmaCompact_empty : IsSigmaCompact (∅ : Set X) :=
+  IsCompact.isSigmaCompact isCompact_empty
 
-lemma isSigmaCompact_iUnion_of_isCompact [hι : Countable ι] (s : ι → Set X)
+/-- Countable unions of compact sets are σ-compact. -/
+lemma isSigmaCompact_iUnion_of_isCompact {ι : Type*} [hι : Countable ι] (s : ι → Set X)
     (hcomp : ∀ i, IsCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
   rcases isEmpty_or_nonempty ι
   · simp only [iUnion_of_empty, isSigmaCompact_empty]
@@ -53,10 +42,17 @@ lemma isSigmaCompact_iUnion_of_isCompact [hι : Countable ι] (s : ι → Set X)
     obtain ⟨f, hf⟩ := countable_iff_exists_surjective.mp hι
     exact ⟨s ∘ f, fun n ↦ hcomp (f n), Function.Surjective.iUnion_comp hf _⟩
 
+/-- Countable unions of compact sets are σ-compact. -/
+lemma isSigmaCompact_sUnion_of_isCompact {S : Set (Set X)} (hc : Set.Countable S)
+    (hcomp : ∀ (s : Set X), s ∈ S → IsCompact s) : IsSigmaCompact (⋃₀ S) := by
+  have : Countable S := countable_coe_iff.mpr hc
+  rw [sUnion_eq_iUnion]
+  apply isSigmaCompact_iUnion_of_isCompact _ (fun ⟨s, hs⟩ ↦ hcomp s hs)
+
 /-- Countable unions of σ-compact sets are σ-compact. -/
-lemma isSigmaCompact_iUnion [Countable ι] (s : ι → Set X)
+lemma isSigmaCompact_iUnion {ι : Type*} [Countable ι] (s : ι → Set X)
     (hcomp : ∀ i, IsSigmaCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
-  -- Choose a decomposition s = ⋃ s_i for each s ∈ S.
+  -- Choose a decomposition s_i = ⋃ K_i,j for each i.
   choose K hcomp hcov using fun i ↦ hcomp i
   -- Then, we have a countable union of countable unions of compact sets, i.e. countably many.
   have := calc
@@ -74,7 +70,7 @@ lemma isSigmaCompact_sUnion (S : Set (Set X)) (hc : Set.Countable S)
   apply sUnion_eq_iUnion.symm ▸ isSigmaCompact_iUnion _ hcomp
 
 /-- Countable unions of σ-compact sets are σ-compact. -/
-lemma isSigmaCompact_biUnion {s : Set ι} {S : ι → Set X} (hc : Set.Countable s)
+lemma isSigmaCompact_biUnion {ι : Type*} {s : Set ι} {S : ι → Set X} (hc : Set.Countable s)
     (hcomp : ∀ (i : ι), i ∈ s → IsSigmaCompact (S i)) :
     IsSigmaCompact (⋃ (i : ι) (_ : i ∈ s), S i) := by
   have : Countable ↑s := countable_coe_iff.mpr hc
@@ -89,7 +85,7 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set X} (ht : IsSigmaCompact t)
   rw [← inter_iUnion, hcov]
   exact inter_eq_left.mpr h
 
-/-- If `s` is σ-compact and `f` is continuous on a set `w` containing `s`, `f(s)` is σ-compact.-/
+/-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact.-/
 lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSigmaCompact s)
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
@@ -100,27 +96,32 @@ lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSig
 lemma IsSigmaCompact.image {f : X → Y} (hf : Continuous f) {s : Set X} (hs : IsSigmaCompact s) :
     IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
-/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
-  if and only `s`` is σ-compact.
-This does not hold for merely inducing maps; direction `←` requires injectivity. -/
-lemma Embedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
-    (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
+/-- If `f : X → Y` is `Inducing`, the image `f '' s` of a set `s` is σ-compact
+  if and only `s` is σ-compact. -/
+lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : Inducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
-  · exact fun h ↦ h.image (continuous hf)
+  · exact fun h ↦ h.image hf.continuous
   · rintro ⟨L, hcomp, hcov⟩
-    -- Suppose f '' s is σ-compact; we want to show f is σ-compact.
-    -- Write f(s) as a union of compact sets L n, so s = ⋃ K n with K n := f⁻¹(L n).
-    -- Since f is an embedding, each K n is compact iff L n is.
-    refine ⟨fun n ↦ f ⁻¹' (L n), ?_, ?_⟩
+    -- Suppose f(s) is σ-compact; we want to show s is σ-compact.
+    -- Write f(s) as a union of compact sets L n, so s = ⋃ K n with K n := f⁻¹(L n) ∩ s.
+    -- Since f is inducing, each K n is compact iff L n is.
+    refine ⟨fun n ↦ f ⁻¹' (L n) ∩ s, ?_, ?_⟩
     · intro n
-      have : f '' (f ⁻¹' (L n)) = L n := by
-        have h: L n ⊆ f '' s := hcov.symm ▸ subset_iUnion L n
-        apply Set.image_preimage_eq_of_subset (SurjOn.subset_range h)
-      exact hf.toInducing.isCompact_iff.mpr (this.symm ▸ (hcomp n))
-    · calc ⋃ n, f ⁻¹' L n
-        _ = f ⁻¹' (⋃ n, L n) := by rw [preimage_iUnion]
-        _ = f ⁻¹' (f '' s) := by rw [hcov]
-        _ = s := preimage_image_eq s hf.inj
+      have : f '' (f ⁻¹' (L n) ∩ s) = L n := by
+        rw [image_preimage_inter, inter_eq_left.mpr]
+        exact (subset_iUnion _ n).trans hcov.le
+      apply hf.isCompact_iff.mpr (this.symm ▸ (hcomp n))
+    · calc ⋃ n, f ⁻¹' L n ∩ s
+        _ = f ⁻¹' (⋃ n, L n) ∩ s  := by rw [preimage_iUnion, iUnion_inter]
+        _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
+        _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
+
+/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
+  if and only `s` is σ-compact. -/
+lemma Embedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : Embedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
+  hf.toInducing.isSigmaCompact_iff
 
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
 lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
@@ -147,8 +148,7 @@ lemma isSigmaCompact_univ [h : SigmaCompactSpace X] : IsSigmaCompact (univ : Set
 subspaces that cover the entire space. -/
 lemma SigmaCompactSpace_iff_exists_compact_covering :
     SigmaCompactSpace X ↔ ∃ K : ℕ → Set X, (∀ n, IsCompact (K n)) ∧ ⋃ n, K n = univ := by
-  rw [← isSigmaCompact_univ_iff]
-  rfl
+  rw [← isSigmaCompact_univ_iff, IsSigmaCompact]
 
 lemma SigmaCompactSpace.exists_compact_covering [h : SigmaCompactSpace X] :
     ∃ K : ℕ → Set X, (∀ n, IsCompact (K n)) ∧ ⋃ n, K n = univ :=

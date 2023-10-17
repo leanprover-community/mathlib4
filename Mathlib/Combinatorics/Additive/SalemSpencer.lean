@@ -503,7 +503,7 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
   · rw [tsub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
   convert addRothNumber_map_add_left _ a
   rw [range_eq_Ico, map_eq_image]
-  convert(image_add_left_Ico 0 (b - a) _).symm
+  convert (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 #align add_roth_number_Ico addRothNumber_Ico
 

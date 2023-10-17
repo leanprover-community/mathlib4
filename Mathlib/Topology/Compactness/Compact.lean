@@ -559,7 +559,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : α → β} {b}
   rcases hb with ⟨s, hsb, t, htl, hd⟩
   rcases mem_cocompact.1 (hf hsb) with ⟨K, hKc, hKs⟩
   have : f '' K ∈ l := by
-    filter_upwards [htl, le_principal_iff.1 hle]with y hyt hyf
+    filter_upwards [htl, le_principal_iff.1 hle] with y hyt hyf
     rcases hyf with (rfl | ⟨x, rfl⟩)
     exacts [(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
       mem_image_of_mem _ (not_not.1 fun hxK => hd.le_bot ⟨hKs hxK, hyt⟩)]
@@ -842,8 +842,8 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonem
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
 #align exists_subset_nhds_of_compact_space exists_subset_nhds_of_compactSpace
 
-/-- If `f : α → β` is an `Inducing` map,
-the image `f '' s` of a set `s` is compact if and only if `s` is compact. -/
+/-- If `f : α → β` is an `Inducing` map, the image `f '' s` of a set `s` is compact
+  if and only if `s` is compact. -/
 theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     IsCompact s ↔ IsCompact (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot F_le => ?_⟩
@@ -852,9 +852,8 @@ theorem Inducing.isCompact_iff {f : α → β} (hf : Inducing f) {s : Set α} :
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 #align inducing.is_compact_iff Inducing.isCompact_iff
 
-/-- If `f : α → β` is an `Embedding` (or more generally, an `Inducing` map, see
-`Inducing.isCompact_iff`), the image `f '' s` of a set `s` is compact if and only if the set
-`s` is compact. -/
+/-- If `f : α → β` is an `Embedding`, the image `f '' s` of a set `s` is compact
+  if and only if `s` is compact. -/
 theorem Embedding.isCompact_iff {f : α → β} (hf : Embedding f) :
     IsCompact s ↔ IsCompact (f '' s) := hf.toInducing.isCompact_iff
 #align embedding.is_compact_iff_is_compact_image Embedding.isCompact_iff
