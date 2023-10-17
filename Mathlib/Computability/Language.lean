@@ -297,7 +297,7 @@ instance : KleeneAlgebra (Language α) :=
       rw [pow_succ, ←mul_assoc m l (l^n)]
       exact le_trans (le_mul_congr h le_rfl) ih }
 
-/-- `L.reverse` is a language that contains exactly all words from `L` backwards. -/
+/-- Language `l.reverse` is defined as the set of exactly all words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
 
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
