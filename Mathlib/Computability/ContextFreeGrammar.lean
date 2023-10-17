@@ -208,8 +208,7 @@ theorem Language.IsContextFree.reverse {L : Language T} (CFL : L.IsContextFree) 
     rw [← hgL]
     use reverseGrammar g
     apply Set.eq_of_subset_of_subset
-    · intro w hwg
-      exact reversed_word_in_original_language hwg
+    · exact reversed_word_in_original_language
     · intro w hwg
       have pre_reversal : ∃ g₀, g = reverseGrammar g₀
       · use reverseGrammar g
