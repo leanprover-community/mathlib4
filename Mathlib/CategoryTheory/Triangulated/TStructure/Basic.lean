@@ -220,6 +220,22 @@ lemma isGE_of_shift (X : C) (n a n' : ℤ) (hn' : a + n' = n) [t.IsGE (X⟦a⟧)
   have h := t.isGE_shift (X⟦a⟧) n' (-a) n (by linarith)
   exact t.isGE_of_iso (show X⟦a⟧⟦-a⟧ ≅ X from (shiftEquiv C a).unitIso.symm.app X) n
 
+lemma isLE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n' = n) :
+    t.IsLE (X⟦a⟧) n' ↔ t.IsLE X n := by
+  constructor
+  · intro
+    exact t.isLE_of_shift X n a n' hn'
+  · intro
+    exact t.isLE_shift X n a n' hn'
+
+lemma isGE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n' = n) :
+    t.IsGE (X⟦a⟧) n' ↔ t.IsGE X n := by
+  constructor
+  · intro
+    exact t.isGE_of_shift X n a n' hn'
+  · intro
+    exact t.isGE_shift X n a n' hn'
+
 lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
     [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 := by
   have := t.isLE_shift X n₀ n₀ 0 (add_zero n₀)

@@ -557,6 +557,8 @@ noncomputable instance : Abelian t.Heart := by
 
 end
 
+section
+
 variable [TStructure.HasHeart.{_, _, _, v'} t] [t.HasHomology₀]
 
 section
@@ -948,9 +950,11 @@ variable (T : Triangle C) (hT : T ∈ distTriang C) (n₀ n₁ : ℤ) (h : n₀ 
 def homologyδ : (t.homology n₀).obj T.obj₃ ⟶ (t.homology n₁).obj T.obj₁ :=
   t.homology₀.shiftMap T.mor₃ n₀ n₁ (by linarith)
 
+@[reassoc (attr := simp)]
 lemma homologyδ_comp : t.homologyδ T n₀ n₁ h ≫ (t.homology n₁).map T.mor₁ = 0 :=
   t.homology₀.homology_sequence_δ_comp _ hT _ _ h
 
+@[reassoc (attr := simp)]
 lemma comp_homologyδ : (t.homology n₀).map T.mor₂ ≫ t.homologyδ T n₀ n₁ h = 0 :=
   t.homology₀.comp_homology_sequence_δ _ hT _ _ h
 
@@ -966,6 +970,229 @@ lemma homology_exact₂ (n : ℤ) :
 lemma homology_exact₃ :
     (ShortComplex.mk _ _ (t.comp_homologyδ T hT n₀ n₁ h)).Exact :=
   t.homology₀.homology_sequence_exact₃ _ hT _ _ h
+
+lemma isZero_homology₀_of_isGE_one (X : C) [t.IsGE X 1] :
+    IsZero ((t.homology₀).obj X) := by
+  rw [IsZero.iff_id_eq_zero]
+  apply t.ιHeart.map_injective
+  rw [Functor.map_id, Functor.map_zero, ← IsZero.iff_id_eq_zero]
+  refine' IsZero.of_iso _ (t.homology₀ιHeart.app X)
+  dsimp [truncGELE]
+  rw [IsZero.iff_id_eq_zero, ← Functor.map_id]
+  have : IsZero ((t.truncLE 0).obj X) := by
+    rw [← t.isGE_iff_isZero_truncLE_obj 0 1 (by linarith)]
+    infer_instance
+  rw [IsZero.iff_id_eq_zero] at this
+  rw [this, Functor.map_zero]
+
+lemma isZero_homology_of_isGE (X : C) (q n : ℤ) (hn₁ : q < n) [t.IsGE X n] :
+    IsZero ((t.homology q).obj X) := by
+  have : t.IsGE (X⟦q⟧) (n - q) := t.isGE_shift X n q (n - q) (by linarith)
+  have : t.IsGE (X⟦q⟧) 1 := t.isGE_of_GE (X⟦q⟧) 1 (n - q) (by linarith)
+  exact IsZero.of_iso (t.isZero_homology₀_of_isGE_one (X⟦q⟧))
+    (((t.homology₀.shiftIso q 0 q (by linarith)).app X).symm.trans
+    ((t.homology₀.isoShiftZero ℤ).app (X⟦q⟧)))
+
+lemma isZero_homology₀_of_isLE_neg_one (X : C) [t.IsLE X (-1)] :
+    IsZero ((t.homology₀).obj X) := by
+  rw [IsZero.iff_id_eq_zero]
+  apply t.ιHeart.map_injective
+  rw [Functor.map_id, Functor.map_zero, ← IsZero.iff_id_eq_zero]
+  refine' IsZero.of_iso _ ((t.homology₀ιHeart ≪≫ t.truncGELEIsoLEGE 0 0).app X)
+  dsimp [truncLEGE]
+  rw [IsZero.iff_id_eq_zero, ← Functor.map_id]
+  have : IsZero ((t.truncGE 0).obj X) := by
+    rw [← t.isLE_iff_isZero_truncGE_obj (-1) 0 (by linarith)]
+    infer_instance
+  rw [IsZero.iff_id_eq_zero] at this
+  rw [this, Functor.map_zero]
+
+lemma isZero_homology_of_isLE (X : C) (q n : ℤ) (hn₁ : n < q) [t.IsLE X n] :
+    IsZero ((t.homology q).obj X) := by
+  have : t.IsLE (X⟦q⟧) (n - q) := t.isLE_shift X n q (n - q) (by linarith)
+  have : t.IsLE (X⟦q⟧) (-1) := t.isLE_of_LE (X⟦q⟧) (n - q) (-1) (by linarith)
+  exact IsZero.of_iso (t.isZero_homology₀_of_isLE_neg_one (X⟦q⟧))
+    (((t.homology₀.shiftIso q 0 q (by linarith)).app X).symm.trans
+    ((t.homology₀.isoShiftZero ℤ).app (X⟦q⟧)))
+
+lemma isGE₁_iff_isGE₀_and_isZero_homology₀ (X : C) :
+    t.IsGE X 1 ↔ t.IsGE X 0 ∧ (IsZero (t.homology₀.obj X)) := by
+  constructor
+  · intro _
+    constructor
+    · exact t.isGE_of_GE X 0 1 (by linarith)
+    · apply isZero_homology₀_of_isGE_one
+  · rintro ⟨_, hX⟩
+    rw [t.isGE_iff_isZero_truncLE_obj 0 1 (by linarith)]
+    rw [IsZero.iff_id_eq_zero] at hX
+    replace hX := t.ιHeart.congr_map hX
+    rw [Functor.map_id, Functor.map_zero, ← IsZero.iff_id_eq_zero] at hX
+    refine' IsZero.of_iso hX _
+    exact asIso ((t.truncLE 0).map ((t.truncGEπ 0).app X)) ≪≫
+      (t.homology₀ιHeart ≪≫ t.truncGELEIsoLEGE 0 0).symm.app X
+
+lemma isGE_succ_iff_isGE_and_isZero_homology (X : C) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    t.IsGE X n₁ ↔ t.IsGE X n₀ ∧ (IsZero ((t.homology n₀).obj X)) := by
+  have eq₁ : t.IsGE (X⟦n₀⟧) 1 ↔ t.IsGE X n₁ := t.isGE_shift_iff _ _ _ _ hn₁
+  have eq₂ : t.IsGE (X⟦n₀⟧) 0 ↔ t.IsGE X n₀ := t.isGE_shift_iff _ _ _ _ (by linarith)
+  have e : (t.homology n₀).obj X ≅ t.homology₀.obj (X⟦n₀⟧) :=
+    (t.homology₀.shiftIso n₀ 0 n₀ (add_zero n₀)).symm.app _ ≪≫
+      (t.homology₀.isoShiftZero ℤ ).app _
+  have eq₃ : IsZero ((t.homology n₀).obj X) ↔ IsZero (t.homology₀.obj (X⟦n₀⟧)) :=
+    ⟨fun h => IsZero.of_iso h e.symm, fun h => IsZero.of_iso h e⟩
+  rw [← eq₁, ←eq₂, eq₃]
+  exact t.isGE₁_iff_isGE₀_and_isZero_homology₀ _
+
+lemma isIso_whiskerLeft_ιHeart_truncLEι (b : ℤ) (hb : 0 ≤ b) :
+    IsIso (whiskerLeft t.ιHeart (t.truncLEι b)) := by
+  refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
+  intro X
+  dsimp
+  rw [← t.isLE_iff_isIso_truncLEι_app]
+  exact t.isLE_of_LE _ 0 _ hb
+
+lemma isIso_whiskerLeft_ιHeart_truncGEπ (a : ℤ) (ha : a ≤ 0) :
+    IsIso (whiskerLeft t.ιHeart (t.truncGEπ a)) := by
+  refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
+  intro X
+  dsimp
+  rw [← t.isGE_iff_isIso_truncGEπ_app]
+  exact t.isGE_of_GE _ _ 0 ha
+
+noncomputable def ιHeartTruncLE (b : ℤ) (hb : 0 ≤ b): t.ιHeart ⋙ t.truncLE b ≅ t.ιHeart :=
+  have := t.isIso_whiskerLeft_ιHeart_truncLEι b hb
+  asIso (whiskerLeft t.ιHeart (t.truncLEι b))
+
+noncomputable def ιHeartTruncGE (a : ℤ) (ha : a ≤ 0): t.ιHeart ⋙ t.truncGE a ≅ t.ιHeart :=
+  have := t.isIso_whiskerLeft_ιHeart_truncGEπ a ha
+  (asIso (whiskerLeft t.ιHeart (t.truncGEπ a))).symm
+
+noncomputable def ιHeartTruncGELE (a b : ℤ) (ha : a ≤ 0) (hb : 0 ≤ b) :
+    t.ιHeart ⋙ t.truncGELE a b ≅ t.ιHeart :=
+  (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (t.ιHeartTruncLE b hb) (t.truncGE a) ≪≫ t.ιHeartTruncGE a ha
+
+noncomputable def ιHeartHomology₀ : t.ιHeart ⋙ t.homology₀ ≅ 𝟭 _ :=
+  t.ιHeart.preimageNatIso (Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ t.homology₀ιHeart ≪≫
+    t.ιHeartTruncGELE 0 0 (by rfl) (by rfl) ≪≫ (Functor.leftUnitor _).symm)
+
+noncomputable def ιHeartHomology_zero : t.ιHeart ⋙ t.homology 0 ≅ 𝟭 _ :=
+  isoWhiskerLeft _ (t.homology₀.isoShiftZero ℤ) ≪≫ t.ιHeartHomology₀
+
+instance {A B : t.Heart} (f : A ⟶ B) [Mono f] (n : ℤ) :
+    Mono ((t.homology n).map (t.ιHeart.map f)) := by
+  by_cases n = 0
+  · subst h
+    exact ((MorphismProperty.RespectsIso.monomorphisms _).arrow_mk_iso_iff
+      (((Functor.mapArrowFunctor _ _).mapIso t.ιHeartHomology_zero).app (Arrow.mk f))).2
+      (inferInstance : Mono f)
+  · constructor
+    intros
+    apply IsZero.eq_of_tgt
+    by_cases h' : 0 < n
+    · exact t.isZero_homology_of_isLE _ _ 0 h'
+    · simp only [not_lt] at h'
+      obtain h'' : n < 0 := by
+        obtain h' | rfl := h'.lt_or_eq
+        · linarith
+        · exfalso
+          exact h rfl
+      apply t.isZero_homology_of_isGE _ _ 0 h''
+
+end
+
+section
+
+variable [t.HasHeart]
+
+lemma shortExact_of_distTriang {X₁ X₂ X₃ : t.Heart} {f : X₁ ⟶ X₂}
+    {g : X₂ ⟶ X₃} (δ : t.ιHeart.obj X₃ ⟶ (t.ιHeart.obj X₁)⟦(1 : ℤ)⟧)
+    (h : Triangle.mk (t.ιHeart.map f) (t.ιHeart.map g) δ ∈ distTriang C) :
+    (ShortComplex.mk f g (t.ιHeart.map_injective
+    (by
+      rw [Functor.map_comp, Functor.map_zero]
+      exact comp_dist_triangle_mor_zero₁₂ _ h))).ShortExact := by
+  have : t.HasHomology₀ := t.hasHomology₀
+  have : t.homology₀.ShiftSequence ℤ := Functor.ShiftSequence.tautological _ _
+  have w : f ≫ g = 0 := t.ιHeart.map_injective (by
+    simpa only [Functor.map_comp, Functor.map_zero]
+      using comp_dist_triangle_mor_zero₁₂ _ h)
+  let S := (ShortComplex.mk _ _ w).map (t.ιHeart ⋙ t.homology 0)
+  have : Mono S.f := (t.homology_exact₁ _ h (-1) 0 (by linarith)).mono_g (by
+    apply IsZero.eq_of_src
+    dsimp
+    exact t.isZero_homology_of_isGE _ (-1) 0 (by linarith))
+  have : Epi S.g := (t.homology_exact₃ _ h 0 1 (by linarith)).epi_f (by
+    apply IsZero.eq_of_tgt
+    dsimp
+    exact t.isZero_homology_of_isLE _ 1 0 (by linarith))
+  have hS : S.ShortExact := { exact := t.homology_exact₂ _ h 0 }
+  refine' ShortComplex.shortExact_of_iso _ hS
+  exact ShortComplex.isoMk (t.ιHeartHomology_zero.app X₁) (t.ιHeartHomology_zero.app X₂)
+    (t.ιHeartHomology_zero.app X₃) (t.ιHeartHomology_zero.hom.naturality f).symm
+    (t.ιHeartHomology_zero.hom.naturality g).symm
+
+variable (S : ShortComplex t.Heart) (hS : S.ShortExact)
+
+-- fact: this δ is unique, more generally there is a naturality property with respect to S
+lemma exists_distTriang_of_shortExact :
+    ∃ (δ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X₁)⟦(1 : ℤ)⟧),
+      Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map S.g) δ ∈ distTriang C := by
+  have : t.HasHomology₀ := t.hasHomology₀
+  have : t.homology₀.ShiftSequence ℤ := Functor.ShiftSequence.tautological _ _
+  have := hS
+  obtain ⟨Z, f₂, f₃, h⟩ := distinguished_cocone_triangle (t.ιHeart.map S.f)
+  have := t.cocone_heart_isLE_zero h
+  have : t.IsGE Z 0 := by
+    rw [t.isGE_succ_iff_isGE_and_isZero_homology Z (-1) 0 (by linarith)]
+    constructor
+    · exact t.cocone_heart_isGE_neg_one h
+    · apply (t.homology_exact₃ _ h (-1) 0 (by linarith)).isZero_X₂
+      · apply IsZero.eq_of_src
+        dsimp
+        apply t.isZero_homology_of_isGE _ _ 0 (by linarith)
+      · apply (t.homology_exact₁ _ h (-1) 0 (by linarith)).mono_g_iff.1
+        have := hS.mono_f
+        dsimp
+        infer_instance
+  have hZ : Z ∈ t.heart := by
+    rw [mem_heart_iff]
+    constructor <;> infer_instance
+  let Y := t.heartMk _ hZ
+  let g' : S.X₂ ⟶ Y := t.ιHeart.preimage (f₂ ≫ (t.ιHeartObjHeartMkIso _ hZ).inv)
+  let δ' : t.ιHeart.obj Y ⟶ (t.ιHeart.obj S.X₁)⟦(1 : ℤ)⟧ :=
+    (t.ιHeartObjHeartMkIso _ hZ).hom ≫ f₃
+  have h' : Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map g') δ' ∈ distTriang C := by
+    refine' isomorphic_distinguished _ h _ _
+    refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (t.ιHeartObjHeartMkIso _ hZ) _ _ _
+    all_goals simp
+  obtain ⟨e, he⟩ : ∃ (e : S.X₃ ≅ Y), S.g ≫ e.hom = g' := by
+    have h₁ := hS.gIsCokernel
+    have h₂ := (t.shortExact_of_distTriang _ h').gIsCokernel
+    exact ⟨IsColimit.coconePointUniqueUpToIso h₁ h₂,
+      IsColimit.comp_coconePointUniqueUpToIso_hom h₁ h₂ WalkingParallelPair.one⟩
+  refine' ⟨t.ιHeart.map e.hom ≫ δ', isomorphic_distinguished _ h' _ _⟩
+  refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (t.ιHeart.mapIso e) _ _ _
+  · dsimp
+    simp
+  · dsimp
+    simp only [Functor.image_preimage, id_comp, ← Functor.map_comp, he]
+  · dsimp
+    simp
+
+noncomputable def heartShortExactδ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X₁)⟦(1 : ℤ)⟧ :=
+  (t.exists_distTriang_of_shortExact S hS).choose
+
+@[simps!]
+noncomputable def heartShortExactTriangle : Triangle C :=
+  Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map S.g) (t.heartShortExactδ S hS)
+
+lemma heartShortExactTriangle_distinguished :
+    t.heartShortExactTriangle S hS ∈ distTriang C :=
+  (t.exists_distTriang_of_shortExact S hS).choose_spec
+
+end
 
 end TStructure
 
