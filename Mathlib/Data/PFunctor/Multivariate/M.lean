@@ -335,7 +335,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
     simpa using h₁
   exists ax, dropFun fx, lastFun fx, lastFun fy
   rw [split_dropFun_lastFun, Hdrop, split_dropFun_lastFun]
-  simp
+  simp only [true_and]
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
   simp [(· ⊚ ·), appendFun, splitFun] at h₁
