@@ -632,12 +632,18 @@ theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
 #align ideal.finset_inf_span_singleton Ideal.finset_inf_span_singleton
 
-theorem iInf_span_singleton {ι : Type*} [Fintype ι] (I : ι → R)
+theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
     (hI : ∀ (i j) (_ : i ≠ j), IsCoprime (I i) (I j)) :
-    ⨅ i, Ideal.span ({I i} : Set R) = Ideal.span {∏ i, I i} := by
+    ⨅ i, span ({I i} : Set R) = span {∏ i, I i} := by
   rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
   rwa [Finset.coe_univ, Set.pairwise_univ]
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton
+
+theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
+    {I : ι → ℕ} (hI : ∀ (i j : ι), i ≠ j → (I i).Coprime (I j)) :
+    ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
+  rw [iInf_span_singleton, Nat.cast_prod]
+  exact fun i j h ↦ (hI i j h).cast
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
@@ -2012,6 +2018,9 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
     LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
+  -- This used to be the end of the proof before leanprover/lean4#2644
+  erw [LinearEquiv.coe_ofEq_apply, LinearEquiv.ofInjective_apply, Algebra.coe_lmul_eq_mul,
+    LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
 @[simp]
