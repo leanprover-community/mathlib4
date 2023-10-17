@@ -66,6 +66,52 @@ def _root_.AddEquiv.toIsoULift {A : AddCommGroupCat.{v}} {B : AddCommGroupCat.{v
   AddEquiv.toAddCommGroupCatIso ((addEquivULiftFunctorObj.{v', v} A).trans
     (e.trans (addEquivULiftFunctorObj.{v, v'} B).symm))
 
+lemma mono_iff_ulift {X Y : AddCommGroupCat.{v'}} (f : X ⟶ Y) :
+    Mono (uliftFunctor.{v, v'}.map f) ↔ Mono f := by
+  simp only [mono_iff_injective]
+  constructor
+  · intro h x₁ x₂ eq
+    exact Equiv.ulift.{v, v'}.symm.injective (h (congr_arg ULift.up eq))
+  · intro h x₁ x₂ eq
+    exact Equiv.ulift.{v, v'}.injective (h (congr_arg ULift.down eq))
+
+lemma epi_iff_ulift {X Y : AddCommGroupCat.{v'}} (f : X ⟶ Y) :
+    Epi (uliftFunctor.{v, v'}.map f) ↔ Epi f := by
+  simp only [epi_iff_surjective]
+  constructor
+  · intro h y
+    obtain ⟨x, hx⟩ := h ⟨y⟩
+    exact ⟨x.down, Equiv.ulift.{v, v'}.symm.injective hx⟩
+  · intro h y
+    obtain ⟨x, hx⟩ := h y.down
+    exact ⟨⟨x⟩, Equiv.ulift.{v, v'}.injective hx⟩
+
+section
+
+variable {X₁ X₂ : AddCommGroupCat.{v}} (f : X₁ ⟶ X₂)
+  {X₁' X₂' : AddCommGroupCat.{v'}} (f' : X₁' ⟶ X₂')
+  (e₁ : X₁ ≃+ X₁') (e₂ : X₂ ≃+ X₂')
+  (comm : ∀ (x₁ : X₁), f' (e₁ x₁) = e₂ (f x₁))
+
+@[simps!]
+def arrowIsoMk : Arrow.mk (uliftFunctor.{v', v}.map f) ≅
+    Arrow.mk (uliftFunctor.{v, v'}.map f') :=
+  Arrow.isoMk e₁.toIsoULift e₂.toIsoULift (by
+    ext x₁
+    exact Equiv.ulift.injective (comm x₁.down))
+
+lemma mono_iff_of_addEquiv : Mono f ↔ Mono f' := by
+  rw [← mono_iff_ulift.{v', v} f, ← mono_iff_ulift.{v, v'} f']
+  exact (MorphismProperty.RespectsIso.monomorphisms _).arrow_mk_iso_iff
+    (arrowIsoMk f f' e₁ e₂ comm)
+
+lemma epi_iff_of_addEquiv : Epi f ↔ Epi f' := by
+  rw [← epi_iff_ulift.{v', v} f, ← epi_iff_ulift.{v, v'} f']
+  exact (MorphismProperty.RespectsIso.epimorphisms _).arrow_mk_iso_iff
+    (arrowIsoMk f f' e₁ e₂ comm)
+
+end
+
 section
 
 variable
@@ -74,7 +120,7 @@ variable
   (commf : ∀ (x₁ : S.X₁), S'.f (e₁ x₁) = e₂ (S.f x₁))
   (commg : ∀ (x₂ : S.X₂), S'.g (e₂ x₂) = e₃ (S.g x₂))
 
-def ShortComplexIso.mk : S.map (uliftFunctor.{v', v}) ≅ S'.map (uliftFunctor.{v, v'}) :=
+def shortComplexIsoMk : S.map (uliftFunctor.{v', v}) ≅ S'.map (uliftFunctor.{v, v'}) :=
   ShortComplex.isoMk e₁.toIsoULift e₂.toIsoULift e₃.toIsoULift (by
     ext x₁
     exact Equiv.ulift.injective (commf x₁.down)) (by
@@ -85,7 +131,17 @@ lemma _root_.ShortComplex.ab_exact_iff_of_addEquiv :
     S.Exact ↔ S'.Exact := by
   rw [← ShortComplex.ab_exact_iff_ulift.{v', v} S,
     ← ShortComplex.ab_exact_iff_ulift.{v, v'} S']
-  exact ShortComplex.exact_iff_of_iso (ShortComplexIso.mk S S' e₁ e₂ e₃ commf commg)
+  exact ShortComplex.exact_iff_of_iso (shortComplexIsoMk S S' e₁ e₂ e₃ commf commg)
+
+lemma _root_.ShortComplex.exact_and_mono_f_iff_of_addEquiv :
+    (S.Exact ∧ Mono S.f) ↔ (S'.Exact ∧ Mono S'.f) := by
+  rw [ShortComplex.ab_exact_iff_of_addEquiv S S' e₁ e₂ e₃ commf commg,
+    mono_iff_of_addEquiv S.f S'.f e₁ e₂ commf]
+
+lemma _root_.ShortComplex.exact_and_epi_g_iff_of_addEquiv :
+    (S.Exact ∧ Epi S.g) ↔ (S'.Exact ∧ Epi S'.g) := by
+  rw [ShortComplex.ab_exact_iff_of_addEquiv S S' e₁ e₂ e₃ commf commg,
+    epi_iff_of_addEquiv S.g S'.g e₂ e₃ commg]
 
 end
 
@@ -736,12 +792,17 @@ noncomputable def shortComplex :=
 
 /-lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
-  sorry
-  --let S := fun A => (shortComplex t hT).op.map (preadditiveYoneda.obj A)
-  --let S' := fun A => (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).op.map (preadditiveYoneda.obj A)
-  --suffices ∀ A, (S A).Exact ∧ Mono (S A).f by
-  --  simpa only [ShortComplex.exact_and_epi_g_iff_preadditiveYoneda] using this
-  --intro A
+  rw [ShortComplex.exact_and_epi_g_iff_preadditiveYoneda]
+  intro A
+  let S := (shortComplex t hT).op.map (preadditiveYoneda.obj A)
+  let S' := (ShortComplex.mk _ _ (comp_dist_triangle_mor_zero₁₂ T hT)).op.map (preadditiveYoneda.obj (t.ιHeart.obj A))
+  refine' (ShortComplex.exact_and_mono_f_iff_of_addEquiv S S' sorry sorry sorry sorry sorry).2 _
+  refine' ⟨preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ hT,
+    (preadditiveYoneda_map_distinguished (t.ιHeart.obj A) _ (rot_of_dist_triangle _ hT)).mono_g _⟩
+  apply IsZero.eq_of_src
+  apply AddCommGroupCat.isZero
+  intro (x : T.obj₁⟦(1 : ℤ)⟧ ⟶ t.ιHeart.obj A)
+  exact t.zero x (-1) 0 (by linarith)
 
 lemma case₂ (h₁ : t.IsLE T.obj₁ 0) :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
