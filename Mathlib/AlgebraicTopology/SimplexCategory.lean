@@ -6,7 +6,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Order.Category.NonemptyFinLinOrdCat
+import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 We construct a skeletal model of the simplex category, with objects `ℕ` and the
 morphism `n ⟶ m` being the monotone maps from `Fin (n+1)` to `Fin (m+1)`.
 
-We show that this category is equivalent to `NonemptyFinLinOrdCat`.
+We show that this category is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks
 
@@ -350,10 +350,10 @@ end Generators
 section Skeleton
 
 /-- The functor that exhibits `SimplexCategory` as skeleton
-of `NonemptyFinLinOrdCat` -/
+of `NonemptyFinLinOrd` -/
 @[simps obj map]
-def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrdCat.{v} where
-  obj a := NonemptyFinLinOrdCat.of <| ULift (Fin (a.len + 1))
+def skeletalFunctor : SimplexCategory ⥤ NonemptyFinLinOrd.{v} where
+  obj a := NonemptyFinLinOrd.of <| ULift (Fin (a.len + 1))
   map f := ⟨fun i => ULift.up (f.toOrderHom i.down), fun i j h => f.toOrderHom.monotone h⟩
 #align simplex_category.skeletal_functor SimplexCategory.skeletalFunctor
 
@@ -368,7 +368,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
     simpa
   apply Fintype.card_congr
   exact Equiv.ulift.symm.trans
-    (((skeletalFunctor.{0} ⋙ forget NonemptyFinLinOrdCat).mapIso I).toEquiv.trans Equiv.ulift)
+    (((skeletalFunctor.{0} ⋙ forget NonemptyFinLinOrd).mapIso I).toEquiv.trans Equiv.ulift)
 #align simplex_category.skeletal SimplexCategory.skeletal
 
 namespace SkeletalFunctor
@@ -417,17 +417,17 @@ noncomputable instance isEquivalence : IsEquivalence skeletalFunctor.{v} :=
 end SkeletalFunctor
 
 /-- The equivalence that exhibits `SimplexCategory` as skeleton
-of `NonemptyFinLinOrdCat` -/
-noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrdCat.{v} :=
+of `NonemptyFinLinOrd` -/
+noncomputable def skeletalEquivalence : SimplexCategory ≌ NonemptyFinLinOrd.{v} :=
   Functor.asEquivalence skeletalFunctor
 #align simplex_category.skeletal_equivalence SimplexCategory.skeletalEquivalence
 
 end Skeleton
 
-/-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrdCat`.
+/-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrd`.
 -/
 noncomputable def isSkeletonOf :
-    IsSkeletonOf NonemptyFinLinOrdCat SimplexCategory skeletalFunctor.{v} where
+    IsSkeletonOf NonemptyFinLinOrd SimplexCategory skeletalFunctor.{v} where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
 #align simplex_category.is_skeleton_of SimplexCategory.isSkeletonOf
@@ -475,7 +475,7 @@ theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
     Mono f ↔ Function.Injective f.toOrderHom := by
   rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor.{0}]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.mono_iff_injective, skeletalFunctor.coe_map,
+  rw [NonemptyFinLinOrd.mono_iff_injective, skeletalFunctor.coe_map,
     Function.Injective.of_comp_iff ULift.up_injective,
     Function.Injective.of_comp_iff' _ ULift.down_bijective]
 #align simplex_category.mono_iff_injective SimplexCategory.mono_iff_injective
@@ -486,7 +486,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     Epi f ↔ Function.Surjective f.toOrderHom := by
   rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor.{0}]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrdCat.epi_iff_surjective, skeletalFunctor.coe_map,
+  rw [NonemptyFinLinOrd.epi_iff_surjective, skeletalFunctor.coe_map,
     Function.Surjective.of_comp_iff' ULift.up_bijective,
     Function.Surjective.of_comp_iff _ ULift.down_surjective]
 #align simplex_category.epi_iff_surjective SimplexCategory.epi_iff_surjective
@@ -523,9 +523,13 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
   by_cases b ≤ i
   · use b
+    -- This was not needed before leanprover/lean4#2644
+    dsimp
     rw [Fin.predAbove_below i b (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
+    -- This was not needed before leanprover/lean4#2644
+    dsimp
     rw [Fin.predAbove_above i b.succ _, Fin.pred_succ]
     rw [not_le] at h
     rw [Fin.lt_iff_val_lt_val] at h ⊢
@@ -599,7 +603,9 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   simp only [Hom.toOrderHom_mk, Function.comp_apply, OrderHom.comp_coe, Hom.comp,
     smallCategory_comp, σ, mkHom, OrderHom.coe_mk]
   by_cases h' : x ≤ Fin.castSucc i
-  · rw [Fin.predAbove_below i x h']
+  · -- This was not needed before leanprover/lean4#2644
+    dsimp
+    rw [Fin.predAbove_below i x h']
     have eq := Fin.castSucc_castPred (gt_of_gt_of_ge (Fin.castSucc_lt_last i) h')
     dsimp [δ]
     erw [Fin.succAbove_below i.succ x.castPred _]
@@ -610,10 +616,12 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
+    -- This was not needed before leanprover/lean4#2644
+    conv_rhs => dsimp
     rw [Fin.predAbove_above i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i
     · rw [h'']
-      refine' hi.symm.trans _
+      refine hi.symm.trans ?_
       congr 1
       dsimp [δ]
       erw [Fin.succAbove_below i.succ]
@@ -671,7 +679,10 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       smallCategory_comp]
     by_cases h' : θ.toOrderHom x ≤ i
     · simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
-      rw [Fin.predAbove_below (Fin.castPred i) (θ.toOrderHom x)
+      -- This was not needed before leanprover/lean4#2644
+      dsimp
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [Fin.predAbove_below (Fin.castPred i) (θ.toOrderHom x)
           (by simpa [Fin.castSucc_castPred h] using h')]
       dsimp [δ]
       erw [Fin.succAbove_below i]
@@ -683,11 +694,16 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       rw [Fin.castSucc_castPred]
       apply lt_of_le_of_lt h' h
     · simp only [not_le] at h'
-      simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk,
-        Fin.predAbove_above (Fin.castPred i) (θ.toOrderHom x)
+      -- The next three tactics used to be a simp only call before leanprover/lean4#2644
+      rw [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk, OrderHom.coe_mk]
+      erw [OrderHom.coe_mk]
+      erw [Fin.predAbove_above (Fin.castPred i) (θ.toOrderHom x)
           (by simpa only [Fin.castSucc_castPred h] using h')]
       dsimp [δ]
-      erw [Fin.succAbove_above i _, Fin.succ_pred]
+      rw [Fin.succAbove_above i _]
+      -- This was not needed before leanprover/lean4#2644
+      conv_rhs => dsimp
+      erw [Fin.succ_pred]
       simpa only [Fin.le_iff_val_le_val, Fin.coe_castSucc, Fin.coe_pred] using
         Nat.le_pred_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
@@ -801,9 +817,9 @@ end EpiMono
 to the category attached to the ordered set `{0, 1, ..., n}` -/
 @[simps! obj map]
 def toCat : SimplexCategory ⥤ Cat.{0} :=
-  SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrdCat LinOrdCat ⋙
-      forget₂ LinOrdCat LatCat ⋙ forget₂ LatCat PartOrdCat ⋙
-      forget₂ PartOrdCat PreordCat ⋙ preordCatToCat
+  SimplexCategory.skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd LinOrd ⋙
+      forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
+      forget₂ PartOrd Preord ⋙ preordToCat
 set_option linter.uppercaseLean3 false in
 #align simplex_category.to_Cat SimplexCategory.toCat
 

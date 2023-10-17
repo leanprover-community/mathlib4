@@ -6,7 +6,7 @@ Authors: Scott Morrison, David Renshaw
 import Mathlib.Tactic.Backtrack
 import Mathlib.Tactic.Relation.Symm
 import Lean.Meta.Tactic.Apply
-import Mathlib.Tactic.LabelAttr
+import Std.Tactic.LabelAttr
 import Std.Data.Sum.Basic
 
 /-!
@@ -250,7 +250,7 @@ def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List (TermElabM Expr)
   solveByElim { cfg with backtracking := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
-open Mathlib.Tactic.LabelAttr
+open Std.Tactic.LabelAttr
 
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in

@@ -37,7 +37,9 @@ variable (R A) in
 
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
 the one on the right. -/
-def tensorDistrib : QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def tensorDistrib :
+    QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
@@ -58,13 +60,14 @@ theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
-protected abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+-- `noncomputable` is a performance workaround for mathlib4#7103
+protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    associated (R₁ := A) (Q₁.tmul Q₂)
-      = (associated (R₁ := A) Q₁).tmul (associated (R₁ := R) Q₂) := by
+    associated (R := A) (Q₁.tmul Q₂)
+      = (associated (R := A) Q₁).tmul (associated (R := R) Q₂) := by
   rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
   dsimp
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
@@ -78,7 +81,8 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
 
 variable (A) in
 /-- The base change of a quadratic form. -/
-protected def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
+-- `noncomputable` is a performance workaround for mathlib4#7103
+protected noncomputable def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
   QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticForm.sq (R := A)) Q
 
 @[simp]
@@ -87,7 +91,7 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
   tensorDistrib_tmul _ _ _ _
 
 theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
-    associated (R₁ := A) (Q.baseChange A) = (associated (R₁ := R) Q).baseChange A := by
+    associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange A := by
   dsimp only [QuadraticForm.baseChange, BilinForm.baseChange]
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
 

@@ -167,6 +167,10 @@ theorem mem_stabilizer_submonoid_iff {a : α} {m : M} : m ∈ Stabilizer.submono
 #align add_action.mem_stabilizer_add_submonoid_iff AddAction.mem_stabilizer_addSubmonoid_iff
 
 @[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ Stabilizer.submonoid M a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
+
+@[to_additive]
 theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
   (surjective_smul M a).range_eq
 #align mul_action.orbit_eq_univ MulAction.orbit_eq_univ
@@ -212,6 +216,10 @@ theorem mem_stabilizer_iff {g : G} {a : α} : g ∈ stabilizer G a ↔ g • a =
   Iff.rfl
 #align mul_action.mem_stabilizer_iff MulAction.mem_stabilizer_iff
 #align add_action.mem_stabilizer_iff AddAction.mem_stabilizer_iff
+
+@[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
@@ -346,7 +354,7 @@ def orbitRel.Quotient : Type _ :=
 variable {G α}
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
-@[to_additive "The orbit corresponding to an element of the quotient by `add_action.orbit_rel`"]
+@[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
   Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 #align mul_action.orbit_rel.quotient.orbit MulAction.orbitRel.Quotient.orbit

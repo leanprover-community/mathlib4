@@ -168,15 +168,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₂
 variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
 
-@[simp]
-theorem map_sum {ι : Type*} {t : Finset ι} {g : ι → M} : f (∑ i in t, g i) = ∑ i in t, f (g i) :=
-  f.toAddMonoidHom.map_sum _ _
-#align linear_map.map_sum LinearMap.map_sum
-
-theorem comp_assoc (h : M₃ →ₛₗ[σ₃₄] M₄) :
-    ((h.comp g : M₂ →ₛₗ[σ₂₄] M₄).comp f : M →ₛₗ[σ₁₄] M₄) = h.comp (g.comp f : M →ₛₗ[σ₁₃] M₃) :=
-  rfl
-#align linear_map.comp_assoc LinearMap.comp_assoc
+#align linear_map.map_sum map_sumₓ
 
 
 /-- The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map
@@ -306,32 +298,13 @@ instance [Nontrivial M] : Nontrivial (Module.End R M) := by
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(∑ i in t, f i ) = ∑ i in t, (f i : M → M₂) :=
+    ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
       from { toFun := FunLike.coe,
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
-
-theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
-#align linear_map.coe_pow LinearMap.coe_pow
-
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
-#align linear_map.pow_apply LinearMap.pow_apply
-
-theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
-    (hm : (f ^ k) m = 0) : (f ^ l) m = 0 := by
-  rw [← tsub_add_cancel_of_le hk, pow_add, mul_apply, hm, map_zero]
-#align linear_map.pow_map_zero_of_le LinearMap.pow_map_zero_of_le
-
-theorem commute_pow_left_of_commute {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
-    (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
-  induction' k with k ih
-  · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
-      h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
-#align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
 theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
     {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ} (hG : G ^ k = 0) :
@@ -342,50 +315,9 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
   simpa using hg
 #align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
 
-@[simp]
-theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
-  one_pow n
-#align linear_map.id_pow LinearMap.id_pow
-
 section
 
 variable {f' : M →ₗ[R] M}
-
-theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ', mul_eq_comp]
-#align linear_map.iterate_succ LinearMap.iterate_succ
-
-theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
-  | 0 => surjective_id
-  | n + 1 => by
-    rw [iterate_succ]
-    exact (iterate_surjective h n).comp h
-#align linear_map.iterate_surjective LinearMap.iterate_surjective
-
-theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective (f' ^ n)
-  | 0 => injective_id
-  | n + 1 => by
-    rw [iterate_succ]
-    exact (iterate_injective h n).comp h
-#align linear_map.iterate_injective LinearMap.iterate_injective
-
-theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
-  | 0 => bijective_id
-  | n + 1 => by
-    rw [iterate_succ]
-    exact (iterate_bijective h n).comp h
-#align linear_map.iterate_bijective LinearMap.iterate_bijective
-
-theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
-    Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), iterate_succ, coe_comp] at h
-  exact h.of_comp
-#align linear_map.injective_of_iterate_injective LinearMap.injective_of_iterate_injective
-
-theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
-    Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ, coe_mul] at h
-  exact Surjective.of_comp h
-#align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
 theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
     (hx : x ∈ p) : (f' ^ n) x ∈ p := by
@@ -617,44 +549,6 @@ theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) :
   rfl
 #align submodule.subtype_comp_of_le Submodule.subtype_comp_ofLe
 
-variable (R)
-
-@[simp]
-theorem subsingleton_iff : Subsingleton (Submodule R M) ↔ Subsingleton M :=
-  have h : Subsingleton (Submodule R M) ↔ Subsingleton (AddSubmonoid M) := by
-    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_eq]; rfl
-  h.trans AddSubmonoid.subsingleton_iff
-#align submodule.subsingleton_iff Submodule.subsingleton_iff
-
-@[simp]
-theorem nontrivial_iff : Nontrivial (Submodule R M) ↔ Nontrivial M :=
-  not_iff_not.mp
-    ((not_nontrivial_iff_subsingleton.trans <| subsingleton_iff R).trans
-      not_nontrivial_iff_subsingleton.symm)
-#align submodule.nontrivial_iff Submodule.nontrivial_iff
-
-variable {R}
-
-instance [Subsingleton M] : Unique (Submodule R M) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
-
-instance unique' [Subsingleton R] : Unique (Submodule R M) := by
-  haveI := Module.subsingleton R M; infer_instance
-#align submodule.unique' Submodule.unique'
-
-instance [Nontrivial M] : Nontrivial (Submodule R M) :=
-  (nontrivial_iff R).mpr ‹_›
-
-theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p} :
-    (x : M) ∈ p' ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x x.2 hx, fun h => h.symm ▸ p'.zero_mem⟩
-#align submodule.mem_right_iff_eq_zero_of_disjoint Submodule.mem_right_iff_eq_zero_of_disjoint
-
-theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
-    (x : M) ∈ p ↔ x = 0 :=
-  ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
-#align submodule.mem_left_iff_eq_zero_of_disjoint Submodule.mem_left_iff_eq_zero_of_disjoint
-
 section
 
 variable [RingHomSurjective σ₁₂] {F : Type*} [sc : SemilinearMapClass F σ₁₂ M M₂]
@@ -683,6 +577,22 @@ theorem map_toAddSubmonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map f :=
   SetLike.coe_injective rfl
 #align submodule.map_to_add_submonoid' Submodule.map_toAddSubmonoid'
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A) :
+    (AddSubgroup.toIntSubmodule s).map f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.map f) := rfl
+
+@[simp]
+theorem _root_.MonoidHom.coe_toAdditive_map {G G₂ : Type*} [Group G] [Group G₂] (f : G →* G₂)
+    (s : Subgroup G) :
+    s.toAddSubgroup.map (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup (s.map f) := rfl
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toMultiplicative_map {G G₂ : Type*} [AddGroup G] [AddGroup G₂]
+    (f : G →+ G₂) (s : AddSubgroup G) :
+    s.toSubgroup.map (AddMonoidHom.toMultiplicative f) = AddSubgroup.toSubgroup (s.map f) := rfl
 
 @[simp]
 theorem mem_map {f : F} {p : Submodule R M} {x : M₂} : x ∈ map f p ↔ ∃ y, y ∈ p ∧ f y = x :=
@@ -721,6 +631,14 @@ theorem map_add_le (f g : M →ₛₗ[σ₁₂] M₂) : map (f + g) p ≤ map f 
   rintro x ⟨m, hm, rfl⟩
   exact add_mem_sup (mem_map_of_mem hm) (mem_map_of_mem hm)
 #align submodule.map_add_le Submodule.map_add_le
+
+theorem map_inf_le (f : F) {p q : Submodule R M} :
+    (p ⊓ q).map f ≤ p.map f ⊓ q.map f :=
+  image_inter_subset f p q
+
+theorem map_inf (f : F) {p q : Submodule R M} (hf : Injective f) :
+    (p ⊓ q).map f = p.map f ⊓ q.map f :=
+  SetLike.coe_injective <| Set.image_inter hf
 
 theorem range_map_nonempty (N : Submodule R M) :
     (Set.range (fun ϕ => Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
@@ -766,6 +684,12 @@ def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
 #align submodule.comap_coe Submodule.comap_coe
+
+@[simp]
+theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A₂) :
+    (AddSubgroup.toIntSubmodule s).comap f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.comap f) := rfl
 
 @[simp]
 theorem mem_comap {f : F} {p : Submodule R₂ M₂} : x ∈ comap f p ↔ f x ∈ p :=
@@ -1081,11 +1005,7 @@ section Finsupp
 
 variable {γ : Type*} [Zero γ]
 
-@[simp]
-theorem map_finsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : ι →₀ γ} {g : ι → γ → M} :
-    f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum
-#align linear_map.map_finsupp_sum LinearMap.map_finsupp_sum
+#align linear_map.map_finsupp_sum map_finsupp_sumₓ
 
 theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
@@ -1218,6 +1138,16 @@ theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semirin
   change range ((-LinearMap.id : M₂ →ₗ[R₂] M₂).comp f) = _
   rw [range_comp, Submodule.map_neg, Submodule.map_id]
 #align linear_map.range_neg LinearMap.range_neg
+
+lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (S : Submodule R M) :
+    LinearMap.range (f.domRestrict S) ≤ LinearMap.range f := by
+  rintro x ⟨⟨y, hy⟩, rfl⟩
+  exact LinearMap.mem_range_self f y
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGroup M]
+    [AddCommGroup M₂] (f : M →+ M₂) :
+    LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule f.range := rfl
 
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
@@ -1385,6 +1315,10 @@ theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 #align linear_map.ker_eq_top LinearMap.ker_eq_top
 
+@[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGroup M] [AddCommGroup M₂]
+    (f : M →+ M₂) : LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule f.ker := rfl
+
 section
 
 variable [RingHomSurjective τ₁₂]
@@ -1509,6 +1443,19 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     exact p.sub_mem hxz hx'
 #align linear_map.ker_le_iff LinearMap.ker_le_iff
 
+@[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
+    Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
+  rw [← LinearMap.ker_eq_bot]
+  refine ⟨fun h ↦ le_bot_iff.1 ?_, fun h ↦ le_bot_iff.1 ?_⟩
+  · intro x ⟨hx, h'x⟩
+    have : ⟨x, hx⟩ ∈ LinearMap.ker (LinearMap.domRestrict f S) := by simpa using h'x
+    rw [h] at this
+    simpa using this
+  · rintro ⟨x, hx⟩ h'x
+    have : x ∈ S ⊓ LinearMap.ker f := ⟨hx, h'x⟩
+    rw [h] at this
+    simpa using this
+
 end Ring
 
 section Semifield
@@ -1603,7 +1550,7 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 #align submodule.map_subtype_le Submodule.map_subtype_le
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
-maximal submodule of `p` is just `p `. -/
+maximal submodule of `p` is just `p`. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 #align submodule.map_subtype_top Submodule.map_subtype_top
@@ -1828,10 +1775,7 @@ variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPai
 
 variable (e e' : M ≃ₛₗ[σ₁₂] M₂)
 
-@[simp]
-theorem map_sum {s : Finset ι} (u : ι → M) : e (∑ i in s, u i) = ∑ i in s, e (u i) :=
-  e.toLinearMap.map_sum
-#align linear_equiv.map_sum LinearEquiv.map_sum
+#align linear_equiv.map_sum map_sumₓ
 
 theorem map_eq_comap {p : Submodule R M} :
     (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
@@ -1882,23 +1826,7 @@ end
 
 section Finsupp
 
-variable {γ : Type*}
-
-variable [Semiring R] [Semiring R₂]
-
-variable [AddCommMonoid M] [AddCommMonoid M₂]
-
-variable [Module R M] [Module R₂ M₂] [Zero γ]
-
-variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
-variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
-@[simp]
-theorem map_finsupp_sum (f : M ≃ₛₗ[τ₁₂] M₂) {t : ι →₀ γ} {g : ι → γ → M} :
-    f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum _
-#align linear_equiv.map_finsupp_sum LinearEquiv.map_finsupp_sum
+#align linear_equiv.map_finsupp_sum map_finsupp_sumₓ
 
 end Finsupp
 
@@ -2445,7 +2373,7 @@ end Submodule
 
 namespace Submodule
 
-variable [CommSemiring R] [CommSemiring R₂]
+variable [Semiring R] [Semiring R₂]
 
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 
@@ -2503,14 +2431,6 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
   p.comap_equiv_eq_map_symm _
 #align submodule.order_iso_map_comap_symm_apply' Submodule.orderIsoMapComap_symm_apply'
 
-theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
-  rw [SetLike.le_def]
-  intro m h
-  change c • fₗ m ∈ qₗ
-  change fₗ m ∈ qₗ at h
-  apply qₗ.smul_mem _ h
-#align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
-
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
   rw [SetLike.le_def]
@@ -2519,6 +2439,32 @@ theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
   change f₁ m ∈ q ∧ f₂ m ∈ q at h
   apply q.add_mem h.1 h.2
 #align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
+
+end Submodule
+
+namespace Submodule
+
+variable [CommSemiring R] [CommSemiring R₂]
+
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+
+variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
+
+variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
+
+variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
+
+variable (p : Submodule R M) (q : Submodule R₂ M₂)
+
+variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
+
+theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
+  rw [SetLike.le_def]
+  intro m h
+  change c • fₗ m ∈ qₗ
+  change fₗ m ∈ qₗ at h
+  apply qₗ.smul_mem _ h
+#align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/

@@ -111,7 +111,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       · intro y hy
         refine' (hε y hy).trans (mul_le_mul_of_nonneg_left _ h0.le)
         rw [← dist_eq_norm]
-        exact dist_le_diam_of_mem I.isCompact_Icc.bounded hy hxI
+        exact dist_le_diam_of_mem I.isCompact_Icc.isBounded hy hxI
       rw [two_mul, add_mul]
       exact norm_sub_le_of_le (hε _ (this _ Hl)) (hε _ (this _ Hu))
   calc
@@ -247,7 +247,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     /- At a point `x ∉ s`, we unfold the definition of Fréchet differentiability, then use
         an estimate we proved earlier in this file. -/
     rcases exists_pos_mul_lt ε0 (2 * c) with ⟨ε', ε'0, hlt⟩
-    rcases(nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 ((Hd x hx).def ε'0) with
+    rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 ((Hd x hx).def ε'0) with
       ⟨δ, δ0, Hδ⟩
     refine' ⟨δ, δ0, fun J hle hJδ hxJ hJc => _⟩
     simp only [BoxAdditiveMap.volume_apply, Box.volume_apply, dist_eq_norm]

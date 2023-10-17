@@ -46,10 +46,6 @@ theorem CharP.quotient_iff'' (R : Type*) [CommRing R] (n : ℕ) [CharP R n] (I :
     CharP (R ⧸ I) n ↔ I.comap (Nat.castRingHom R) ≤ RingHom.ker (Nat.castRingHom R) := by
   rw [CharP.quotient_iff', RingHom.ker_eq_comap_bot]; rfl
 
-theorem Finsupp.equivFunOnFinite_const {α β} [Fintype α] [AddCommMonoid β] (b : β) :
-    Finsupp.equivFunOnFinite.symm (fun _ => b : α → β) = ∑ i : α, Finsupp.single i b := by
-  ext; simp [Finsupp.finset_sum_apply]
-
 nonrec theorem Ideal.mem_span_range_iff_exists_fun {ι R} [Fintype ι] [CommSemiring R]
     (g : ι → R) (x : R) :
     x ∈ Ideal.span (Set.range g) ↔ ∃ f : ι → R, ∑ i, f i * g i = x :=
@@ -77,8 +73,8 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
 theorem X0_X1_X2_nmem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
   intro h
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
-    Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1, ←
-    Finsupp.equivFunOnFinite_const] at h
+    Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
+    ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
 
 theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X 0 * X 1 * X 2 * x ∈ kIdeal) : x * x ∈ kIdeal := by
@@ -89,7 +85,7 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
     simp_rw [mul_assoc, support_X_mul, Finset.map_map, Finset.mem_map,
       Function.Embedding.trans_apply, addLeftEmbedding_apply, forall_exists_index,
       and_imp, forall_apply_eq_imp_iff₂, ← add_assoc, ←
-      Fin.sum_univ_three fun i => Finsupp.single i 1, ← Finsupp.equivFunOnFinite_const,
+      Fin.sum_univ_three fun i => Finsupp.single i 1, ← Finsupp.equivFunOnFinite_symm_eq_sum,
       Finsupp.add_apply, Finsupp.equivFunOnFinite_symm_apply_toFun] at h
     refine (h _ hm).imp fun i hi => ⟨Set.mem_univ _, ?_⟩
     rintro hmi
