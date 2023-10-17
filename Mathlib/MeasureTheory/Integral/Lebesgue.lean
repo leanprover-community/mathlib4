@@ -258,7 +258,7 @@ theorem le_iInf_lintegral {ι : Sort*} (f : ι → α → ℝ≥0∞) :
 
 theorem le_iInf₂_lintegral {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i → α → ℝ≥0∞) :
     ∫⁻ a, ⨅ (i) (h : ι' i), f i h a ∂μ ≤ ⨅ (i) (h : ι' i), ∫⁻ a, f i h a ∂μ := by
-  convert(monotone_lintegral μ).map_iInf₂_le f with a
+  convert (monotone_lintegral μ).map_iInf₂_le f with a
   simp only [iInf_apply]
 #align measure_theory.le_infi₂_lintegral MeasureTheory.le_iInf₂_lintegral
 

@@ -880,7 +880,7 @@ theorem limsup_eq_sInf_sSup {ι R : Type*} (F : Filter ι) [CompleteLattice R] (
   refine' le_antisymm _ _
   · rw [limsup_eq]
     refine' sInf_le_sInf fun x hx => _
-    rcases(mem_image _ F.sets x).mp hx with ⟨I, ⟨I_mem_F, hI⟩⟩
+    rcases (mem_image _ F.sets x).mp hx with ⟨I, ⟨I_mem_F, hI⟩⟩
     filter_upwards [I_mem_F] with i hi
     exact hI ▸ le_sSup (mem_image_of_mem _ hi)
   · refine'

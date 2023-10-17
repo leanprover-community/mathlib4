@@ -551,7 +551,7 @@ theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * �
 theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x < 2 * π) :
     cos x = 1 ↔ x = 0 :=
   ⟨fun h => by
-    rcases(cos_eq_one_iff _).1 h with ⟨n, rfl⟩
+    rcases (cos_eq_one_iff _).1 h with ⟨n, rfl⟩
     rw [mul_lt_iff_lt_one_left two_pi_pos] at hx₂
     rw [neg_lt, neg_mul_eq_neg_mul, mul_lt_iff_lt_one_left two_pi_pos] at hx₁
     norm_cast at hx₁ hx₂
