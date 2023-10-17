@@ -328,7 +328,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
         rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
-          (hasDerivAt_update y).differentiableAt]
+          (hasDerivAt_update x i y).differentiableAt]
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ :=
         ContinuousLinearMap.le_op_nnnorm ..
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ := by simp [deriv_update, Pi.nnnorm_single]
