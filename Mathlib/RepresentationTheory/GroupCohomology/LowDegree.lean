@@ -169,8 +169,9 @@ square commutes:
 ```
 where the vertical arrows are `twoCochainsLinearEquiv` and `threeCochainsLinearEquiv` respectively.
 -/
-theorem dTwo_comp_eq : dTwo A ∘ₗ twoCochainsLinearEquiv A =
-  threeCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 2 3 := by
+theorem dTwo_comp_eq :
+    dTwo A ∘ₗ twoCochainsLinearEquiv A =
+      threeCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 2 3 := by
   ext x y
   show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
@@ -277,7 +278,7 @@ def twoCoboundaries : Submodule k (twoCocycles A) :=
 variable {A}
 
 theorem mem_oneCoboundaries_of_dZero_apply (x : A) :
-  ⟨dZero A x, LinearMap.ext_iff.1 (dOne_comp_dZero A) x⟩ ∈ oneCoboundaries A :=
+    ⟨dZero A x, LinearMap.ext_iff.1 (dOne_comp_dZero A) x⟩ ∈ oneCoboundaries A :=
 LinearMap.mem_range_self _ _
 
 theorem mem_oneCoboundaries_of_mem_range (f : G → A) (h : f ∈ LinearMap.range (dZero A)) :
@@ -289,7 +290,7 @@ theorem mem_range_of_mem_oneCoboundaries (f : oneCocycles A) (h : f ∈ oneCobou
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
 theorem mem_twoCoboundaries_of_dOne_apply (x : G → A) :
-  ⟨dOne A x, LinearMap.ext_iff.1 (dTwo_comp_dOne A) x⟩ ∈ twoCoboundaries A :=
+    ⟨dOne A x, LinearMap.ext_iff.1 (dTwo_comp_dOne A) x⟩ ∈ twoCoboundaries A :=
 LinearMap.mem_range_self _ _
 
 theorem mem_twoCoboundaries_of_mem_range (f : G × G → A) (h : f ∈ LinearMap.range (dOne A)) :
