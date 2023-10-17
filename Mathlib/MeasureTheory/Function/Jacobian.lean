@@ -421,7 +421,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
         ∀ (t : Set E) (g : E → E),
           ApproximatesLinearOn g (B.symm : E →L[ℝ] E) t δ → μ (g '' t) ≤ ↑m⁻¹ * μ t :=
       addHaar_image_le_mul_of_det_lt μ B.symm I
-    rcases(this.and self_mem_nhdsWithin).exists with ⟨δ₀, h, h'⟩
+    rcases (this.and self_mem_nhdsWithin).exists with ⟨δ₀, h, h'⟩
     exact ⟨δ₀, h', h⟩
   -- record smallness conditions for `δ` that will be needed to apply `hδ₀` below.
   have L1 : ∀ᶠ δ in 𝓝 (0 : ℝ≥0), Subsingleton E ∨ δ < ‖(B.symm : E →L[ℝ] E)‖₊⁻¹ := by

@@ -480,7 +480,7 @@ protected theorem HasFPowerSeriesAt.eventually (hf : HasFPowerSeriesAt f p x) :
 
 theorem HasFPowerSeriesOnBall.eventually_hasSum (hf : HasFPowerSeriesOnBall f p x r) :
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y)) := by
-  filter_upwards [EMetric.ball_mem_nhds (0 : E) hf.r_pos]using fun _ => hf.hasSum
+  filter_upwards [EMetric.ball_mem_nhds (0 : E) hf.r_pos] using fun _ => hf.hasSum
 #align has_fpower_series_on_ball.eventually_has_sum HasFPowerSeriesOnBall.eventually_hasSum
 
 theorem HasFPowerSeriesAt.eventually_hasSum (hf : HasFPowerSeriesAt f p x) :

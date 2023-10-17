@@ -1035,7 +1035,7 @@ theorem ncard_le_one_iff_eq (hs : s.Finite := by toFinite_tac) :
   rintro (rfl | ⟨a, rfl⟩)
   · exact (not_mem_empty _ hx).elim
   simp_rw [mem_singleton_iff] at hx ⊢; subst hx
-  simp only [forall_eq_apply_imp_iff', imp_self, implies_true]
+  simp only [forall_eq_apply_imp_iff, imp_self, implies_true]
 #align set.ncard_le_one_iff_eq Set.ncard_le_one_iff_eq
 
 theorem ncard_le_one_iff_subset_singleton [Nonempty α]

@@ -459,7 +459,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
-    convert(p n).2 using 3
+    convert (p n).2 using 3
     · rw [pn_fst, ← mem_cylinder_iff_eq, mem_cylinder_iff]
       intro i hi
       rw [hx]
