@@ -154,8 +154,12 @@ example
   · replace card : ℐ.card = 0 ∨ ℐ.card = 1 ∨ ℐ.card = 2
     · interval_cases ℐ.card <;> tauto
     obtain card|card|card := card
-    · sorry
-    · sorry
+    · simp only [Finset.card_eq_zero] at card
+      subst card
+      simp only [iUnion_of_empty, subset_empty_iff, eq_empty_iff_forall_not_mem] at subset_union
+      exact (subset_union 0 J.zero_mem).elim
+    · simp? at card
+      sorry
     · sorry
   · by_cases subset' : ∀ ℐ', ℐ' ⊂ ℐ → ¬ (J : Set R) ⊆ ⋃ (I : ℐ'), I
     · have nonempty : ℐ.filter (fun I ↦ I.IsPrime) ≠ ∅
