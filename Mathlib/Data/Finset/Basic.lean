@@ -3857,32 +3857,33 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
 #align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
 
 variable [DecidableEq α] {s t : Finset α}
+
 /-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
 @[simps!]
 def finsetUnion (s t : Finset α) :
-    ((s ∪ t : Finset α) : Set α) ≃ (s ∪ t : Set α) :=
-  Equiv.Set.ofEq <| coe_union _ _
+    (s ∪ t : Set α) ≃ ((s ∪ t : Finset α) : Set α) :=
+  Equiv.Set.ofEq <| coe_union _ _ |>.symm
 
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
-    (s ∪ t : Finset α) ≃ s ⊕ t :=
-  (Equiv.finsetUnion s t).trans <| Equiv.Set.union (disjoint_coe.mpr h).le_bot
+    s ⊕ t ≃ (s ∪ t : Finset α) :=
+  Equiv.Set.union (disjoint_coe.mpr h).le_bot |>.symm.trans <| Equiv.finsetUnion s t
 
 @[simp]
 theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :
-    (Equiv.Finset.union s t h).symm (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
+    Equiv.Finset.union s t h (Sum.inl x) = ⟨x, Finset.mem_union.mpr <| Or.inl x.2⟩ :=
   rfl
 
 @[simp]
 theorem Finset.union_symm_inr (h : Disjoint s t) (y : t) :
-    (Equiv.Finset.union s t h).symm (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
+    Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
 /-- The type of dependent functions on the disjoint union of finsets `s ∪ t` is equivalent to the
   type of pairs of functions on `s` and on `t`. This is similar to `Equiv.sumPiEquivProdPi`. -/
 def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
-  let e := (Equiv.Finset.union s t h).symm
+  let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
 end Equiv
