@@ -1292,6 +1292,10 @@ instance (X : C) (n : ℤ) : IsIso ((t.truncLE n).map ((t.truncLEι n).app X)) :
   apply t.isIso_truncLE_map_truncLEι_app
   rfl
 
+instance (X : C) (n : ℤ) : IsIso ((t.truncGE n).map ((t.truncGEπ n).app X)) := by
+  apply t.isIso_truncGE_map_truncGEπ_app
+  rfl
+
 lemma isIso_truncGEt_obj_map_truncGEπ_app (a b : ℤt) (h : a ≤ b) (X : C) :
     IsIso ((t.truncGEt.obj b).map ((t.abstractSpectralObject.truncGEπ a).app X)) := by
   obtain (rfl|⟨b, rfl⟩|rfl) := b.three_cases
