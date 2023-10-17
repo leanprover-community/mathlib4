@@ -318,6 +318,14 @@ lemma set_smul_submodule_le (p : Submodule R M)
     s • N ≤ p :=
   sInf_le closed_under_smul
 
+lemma set_smul_submodule_le_iff (p : Submodule R M) :
+    s • N ≤ p ↔
+    ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p := by
+  fconstructor
+  · intro h r n hr hn
+    exact h <| mem_set_smul_submodule_of_mem_mem s N hr hn
+  · apply set_smul_submodule_le
+
 lemma set_smul_submodule_eq_of_le (p : Submodule R M)
     (closed_under_smul : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → r • n ∈ p)
     (le : p ≤ s • N) :
@@ -334,6 +342,10 @@ lemma set_smul_submodule_mono_left {s t : Set R} (le : s ≤ t) :
   set_smul_submodule_le _ _ _ fun _ _ hr hm => mem_set_smul_submodule_of_mem_mem (mem1 := le hr)
     (mem2 := hm)
 
+lemma set_smul_submodule_le_of_le_le {s t : Set R} {p q : Submodule R M}
+    (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
+  le_trans (set_smul_submodule_mono_left _ le_set) <| set_smul_submodule_mono_right _ le_submodule
+
 lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
     (hx : x ∈ s • N)
     (smul₀ : ∀ ⦃r : R⦄ ⦃n : M⦄, r ∈ s → n ∈ N → prop (r • n))
@@ -341,12 +353,12 @@ lemma set_smul_submodule_inductionOn {prop : M → Prop} (x : M)
     (add : ∀ ⦃m₁ m₂ : M⦄, prop m₁ → prop m₂ → prop (m₁ + m₂))
     (zero : prop 0) :
     prop x :=
-  set_smul_submodule_le s N {
-    carrier := {m : M | prop m}
+  set_smul_submodule_le s N
+  { carrier := {m : M | prop m}
     add_mem' := λ {x y} ↦ @add x y
     zero_mem' := zero
-    smul_mem' := smul₁
-  } smul₀ hx
+    smul_mem' := smul₁ }
+    smul₀ hx
 
 lemma set_smul_submodule_eq_submodule_map [SMulCommClass R R N] :
     s • N =
@@ -396,6 +408,20 @@ lemma mem_set_smul_submodule (x : M) [SMulCommClass R R N] :
     rw [mem_set_smul_submodule_def, Submodule.mem_sInf] at hx
     exact hx ⊥ (λ r _ hr ↦ hr.elim)
   · rintro rfl; exact Submodule.zero_mem _
+
+@[simp] lemma empty_smul_submodule : (∅ : Set R) • N = ⊥ := by
+  ext; apply mem_empty_smul_submodule
+
+@[simp] lemma set_smul_bot_submodule : s • (⊥ : Submodule R M) = ⊥ :=
+  eq_bot_iff.mpr fun x hx => show x = 0 by
+    apply set_smul_submodule_inductionOn s ⊥ x hx _ _ _ _
+    · rintro r _ _ (rfl : _ = 0)
+      rw [smul_zero]
+    · rintro r m rfl
+      rw [smul_zero]
+    · rintro _ _ rfl rfl
+      rw [zero_add]
+    · rfl
 
 lemma singleton_set_smul_submodule_eq [SMulCommClass R R M] (r : R) :
     ({r} : Set R) • N = (r • N : Submodule R M) := by
@@ -455,15 +481,7 @@ lemma set_smul_submodule_eq_iSup [SMulCommClass R R M] :
 /-- subset of a ring has a distributive multiplicative action on its submodules-/
 protected def pointwiseSetDistribMulActionSubmodule [SMulCommClass R R M] :
     DistribMulAction (Set R) (Submodule R M) where
-  smul_zero s := show s • ⊥ = ⊥ from eq_bot_iff.mpr fun x hx => show x = 0 by
-    apply set_smul_submodule_inductionOn s ⊥ x hx _ _ _ _
-    · rintro r _ _ (rfl : _ = 0)
-      rw [smul_zero]
-    · rintro r m rfl
-      rw [smul_zero]
-    · rintro _ _ rfl rfl
-      rw [zero_add]
-    · rfl
+  smul_zero s := set_smul_bot_submodule s
   smul_add s x y := le_antisymm
     (set_smul_submodule_le _ _ _ <| by
       rintro r m hr hm
