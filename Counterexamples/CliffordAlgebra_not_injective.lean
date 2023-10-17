@@ -38,14 +38,6 @@ theorem Ideal.comap_span_le {R : Type*} {S : Type*} [Semiring R] [Semiring S] (f
   have := Ideal.apply_coe_mem_map g _ ⟨_, hx⟩
   rwa [Ideal.map_span, Subtype.coe_mk, h x] at this
 
-theorem Ideal.span_le_bot {R : Type*} [Semiring R] (s : Set R) : Ideal.span s ≤ ⊥ ↔ s ≤ {0} :=
-  Submodule.span_le
-
-/-- `char_p.quotient'` as an `iff`. -/
-theorem CharP.quotient_iff'' (R : Type*) [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
-    CharP (R ⧸ I) n ↔ I.comap (Nat.castRingHom R) ≤ RingHom.ker (Nat.castRingHom R) := by
-  rw [CharP.quotient_iff', RingHom.ker_eq_comap_bot]; rfl
-
 nonrec theorem Ideal.mem_span_range_iff_exists_fun {ι R} [Fintype ι] [CommSemiring R]
     (g : ι → R) (x : R) :
     x ∈ Ideal.span (Set.range g) ↔ ∃ f : ι → R, ∑ i, f i * g i = x :=
@@ -108,14 +100,15 @@ instance : CommRing K := Ideal.Quotient.commRing _
 
 theorem comap_C_span_le_bot : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) ≤ ⊥ := by
   refine (Ideal.comap_span_le _ _ (constantCoeff_C _) _).trans ?_
-  refine (Ideal.span_le_bot _).2 ?_
+  refine (Ideal.span_le).2 ?_
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
-  rw [RingHom.map_mul, constantCoeff_X, MulZeroClass.mul_zero, Set.mem_singleton_iff]
+  rw [RingHom.map_mul, constantCoeff_X, MulZeroClass.mul_zero, Submodule.bot_coe,
+    Set.mem_singleton_iff]
 
 /-- `k` has characteristic 2. -/
 instance K.charP : CharP K 2 := by
   dsimp only [K]
-  rw [CharP.quotient_iff'']
+  rw [CharP.quotient_iff_le_ker_natCast]
   have : Nat.castRingHom (MvPolynomial (Fin 3) (ZMod 2)) = C.comp (Nat.castRingHom _) := by
     ext1 r; rfl
   rw [this, ← Ideal.comap_comap, ← RingHom.comap_ker]
