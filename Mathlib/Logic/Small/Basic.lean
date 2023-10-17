@@ -79,10 +79,12 @@ theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 #align small_lift small_lift
 
-/- This instance is useless due to https://github.com/leanprover/lean4/issues/2297 -/
-instance (priority := 100) small_max (α : Type v) : Small.{max w v} α :=
+/- This was an instance but useless due to https://github.com/leanprover/lean4/issues/2297. -/
+lemma small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 #align small_max small_max
+
+instance small_zero (α : Type) : Small.{w} α := small_max α
 
 instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
   small_lift.{v, v+1} α
