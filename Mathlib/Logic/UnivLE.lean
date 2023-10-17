@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Logic.Small.Basic
-
+import Mathlib.SetTheory.Ordinal.Basic
 /-!
 # UnivLE
 
@@ -40,9 +40,8 @@ abbrev UnivLE.{u, v} : Prop := ∀ α : Type u, Small.{v} α
 example : UnivLE.{u, u} := inferInstance
 example : UnivLE.{u, u+1} := inferInstance
 example : UnivLE.{0, u} := inferInstance
-/- Why can't Lean infer the following instances? -/
+/- This instance is useless due to https://github.com/leanprover/lean4/issues/2297 -/
 instance (priority := 100) : UnivLE.{u, max u v} := fun α ↦ small_max.{v} α
-instance (priority := 100) : UnivLE.{u, max v u} := fun α ↦ small_max.{v} α
 
 theorem Small.trans_univLE.{u, v} (α : Type w) [hα : Small.{u} α] [h : UnivLE.{u, v}] :
     Small.{v} α :=
@@ -60,5 +59,23 @@ example : ¬ UnivLE.{u+1, u} := by
   simp only [Small_iff, not_forall, not_exists, not_nonempty_iff]
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
 
-example [∀ α : Type max u v, Small.{v} α] (α : Type u) : Small.{v} α :=
+example [UnivLE.{max u v, v}] (α : Type u) : Small.{v} α :=
   ⟨Shrink.{v, max u v} (ULift.{v} α), ⟨Equiv.ulift.symm.trans (equivShrink (ULift α))⟩⟩
+
+open Cardinal
+
+attribute [pp_with_univ] univ
+
+theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+1} := by
+  rw [← not_iff_not, UnivLE]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
+  -- strange: simp_rw [univ_umax.{v,u}] doesn't work
+  refine ⟨fun ⟨α, le⟩ ↦ ?_, fun h ↦ ?_⟩
+  · rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift] at le
+    exact le.trans_lt (lift_lt_univ'.{u,v+1} #α)
+  · obtain ⟨⟨α⟩, h⟩ := lt_univ'.mp h; use α
+    rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift]
+    exact h.le
+
+-- together with transitivity, this shows UnivLE "IsTotalPreorder"
+theorem univLE_total : UnivLE.{u, v} ∨ UnivLE.{v, u} := by
+  simp_rw [univLE_iff_cardinal_le]; apply le_total
