@@ -174,6 +174,16 @@ def IsometryEquiv.pi [Fintype ι]
   toLinearEquiv := LinearEquiv.piCongrRight fun i => (e i : Mᵢ i ≃ₗ[R] Nᵢ i)
 #align quadratic_form.isometry.pi QuadraticForm.IsometryEquiv.pi
 
+/-- `LinearMap.single` as an isometry. -/
+@[simps!]
+def Isometry.single [Fintype ι] [DecidableEq ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) (i : ι) :
+    Q i →qᵢ pi Q where
+  toLinearMap := LinearMap.single i
+  map_app' m := by
+    dsimp
+    rw [pi_apply, Fintype.sum_eq_single i fun j hj => ?_, Pi.single_eq_same]
+    rw [Pi.single_eq_of_ne hj, map_zero]
+
 theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
     {Q' : ∀ i, QuadraticForm R (Nᵢ i)} (e : ∀ i, (Q i).Equivalent (Q' i)) :
     (pi Q).Equivalent (pi Q') :=
