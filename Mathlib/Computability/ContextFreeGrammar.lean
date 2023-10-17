@@ -201,7 +201,7 @@ private lemma reversed_word_in_original_language {g : ContextFreeGrammar T} {w :
   simp [List.map_reverse]
 
 /-- The class of context-free languages is closed under reversal. -/
-theorem reverseContextFreeLanguage {L : Language T} (CFL : L.IsContextFree) :
+theorem Language.IsContextFree.reverse {L : Language T} (CFL : L.IsContextFree) :
     L.reverse.IsContextFree := by
   cases CFL with
   | intro g hgL =>
