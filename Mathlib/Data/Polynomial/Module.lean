@@ -363,6 +363,7 @@ Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
 Then `Module.AEval R M a` is the `R[X]`-module with carrier `M`,
 where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
 -/
+@[nolint unusedArguments]
 def AEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 
