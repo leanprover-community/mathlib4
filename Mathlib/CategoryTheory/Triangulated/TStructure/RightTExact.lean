@@ -53,6 +53,36 @@ lemma homologyRightTExact_exact₃ :
     (ShortComplex.mk _ _ (F.homologyRightTExact_comp_δ  t₁ t₂ S hS n₀ n₁ hn₁)).Exact :=
   t₂.homology_exact₃ _ (F.map_distinguished _ (t₁.heartShortExactTriangle_distinguished S hS)) _ _ _
 
+instance (X : t₁.Heart) : t₂.IsGE (F.obj (t₁.ιHeart.obj X)) 0 := F.isGE_obj t₁ t₂ _ 0
+
+instance : (F.homologyRightTExact t₁ t₂ 0).PreservesMonomorphisms where
+  preserves {X Y} f _ := by
+    let S := ShortComplex.mk _ _ (cokernel.condition f)
+    have hS : S.ShortExact :=
+      { exact := S.exact_of_g_is_cokernel (cokernelIsCokernel f) }
+    apply (t₂.homology_exact₁ _ (F.map_distinguished _
+      (t₁.heartShortExactTriangle_distinguished S hS)) (-1) 0 (by linarith)).mono_g
+    apply IsZero.eq_of_src
+    dsimp
+    exact t₂.isZero_homology_of_isGE _ _ 0 (by linarith)
+
+lemma homologyRightTExact₀_map_exact (h : S.Exact) [hf : Mono S.f] :
+    (S.map (F.homologyRightTExact t₁ t₂ 0)).Exact := by
+  let S' := ShortComplex.mk _ _ S.f_pOpcycles
+  let φ : S' ⟶ S :=
+    { τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := S.fromOpcycles }
+  have : Mono φ.τ₃ := h.mono_fromOpcycles
+  have hS' : S'.ShortExact :=
+    { exact := (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).2 h }
+  let ψ := (F.homologyRightTExact t₁ t₂ 0).mapShortComplex.map φ
+  have : IsIso ψ.τ₁ := by dsimp; infer_instance
+  have : IsIso ψ.τ₂ := by dsimp; infer_instance
+  have : Mono ψ.τ₃ := by dsimp; infer_instance
+  apply (ShortComplex.exact_iff_of_epi_of_isIso_of_mono ψ).1
+  exact F.homologyRightTExact_exact₂ t₁ t₂ S' hS' 0
+
 end
 
 end Functor
