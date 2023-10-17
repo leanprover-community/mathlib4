@@ -199,7 +199,7 @@ open Mathlib.Tactic.Find
 open Lean Elab Command
 
 elab s:"#assert_match " name_s:ident concl:(turnstyle)? query:term : command => liftTermElabM do
-    let pat ← Lean.Elab.Term.elabTerm query none
+    let pat ← Mathlib.Tactic.Find.elabTerm' query none
     let name := Lean.TSyntax.getId name_s
     let matcher ←
       if concl.isSome
@@ -214,6 +214,18 @@ elab s:"#assert_match " name_s:ident concl:(turnstyle)? query:term : command => 
 #assert_match List.map |- (?a -> ?b) -> List ?a -> List ?b
 
 end ListMapTest
+
+section DefaltingTest
+
+/-- warning: declaration uses 'sorry' -/
+#guard_msgs in
+lemma test_with_zero {α} [Zero α] [HMul α α α] [LE α] {a : α}: 0 ≤ a * a := sorry
+
+-- Tests the defaulting does not kick in below
+
+#assert_match test_with_zero |- 0 ≤ ?a * ?a
+
+
 
 /-- error: Name pattern is too general -/
 #guard_msgs in

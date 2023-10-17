@@ -297,7 +297,7 @@ when a type class constraint has no instances.  -/
 def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
   withTheReader Term.Context ({ ·  with ignoreTCFailures := true, errToSorry := false }) do
     let t ← Term.elabTerm t expectedType?
-    Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+    Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
     return t
 
 /-!
