@@ -40,7 +40,6 @@ import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 ## TODO
 
 Show that the following are finitary extensive:
-- the categories of sheaves over a site
 - `Scheme`
 - `AffineScheme` (`CommRingᵒᵖ`)
 
@@ -129,7 +128,7 @@ theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : 
 λ _ _ f ↦ (hα f).map H
 
 theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
-  (e : c ≅ c') : IsVanKampenColimit c' := by
+    (e : c ≅ c') : IsVanKampenColimit c' := by
   intros F' c'' α f h hα
   have : c'.ι ≫ (Functor.const J).map e.inv.hom = c.ι := by
     ext j
@@ -143,8 +142,8 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
 #align category_theory.is_van_kampen_colimit.of_iso CategoryTheory.IsVanKampenColimit.of_iso
 
 theorem IsVanKampenColimit.precompose_iso {F G : C ⥤ D} {c : Cocone G}
-  (h : IsVanKampenColimit c)
-  (η : F ⟶ G) [IsIso η] : IsVanKampenColimit ((Cocones.precompose η).obj c) := by
+    (h : IsVanKampenColimit c)
+    (η : F ⟶ G) [IsIso η] : IsVanKampenColimit ((Cocones.precompose η).obj c) := by
   intros F' c' α f e hα
   rw [h c' (α ≫ η) f ((Category.assoc _ _ _).trans e) (hα.comp $ NatTrans.equifibered_of_isIso η)]
   apply forall_congr' (λ j ↦ _)
@@ -155,8 +154,8 @@ theorem IsVanKampenColimit.precompose_iso {F G : C ⥤ D} {c : Cocone G}
   · exact NatTrans.congr_app e.symm j
 
 theorem IsVanKampenColimit.of_precompose_iso {F G : C ⥤ D} (c : Cocone G)
-  (η : F ⟶ G) [IsIso η]  (h : IsVanKampenColimit ((Cocones.precompose η).obj c))
-  : IsVanKampenColimit c := by
+    (η : F ⟶ G) [IsIso η]  (h : IsVanKampenColimit ((Cocones.precompose η).obj c)) :
+    IsVanKampenColimit c := by
   apply IsVanKampenColimit.of_iso (h.precompose_iso $ inv η)
   exact Cocones.ext (Iso.refl c.pt) (λ j ↦ by dsimp; simp)
 
@@ -550,10 +549,10 @@ end TopCat
 section Functor
 
 theorem IsUniversalColimit.map_reflective
-  [HasPullbacks C] [HasPullbacks D]
-  {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
-  [PreservesLimitsOfShape WalkingCospan Gl] {F : J ⥤ D} {c : Cocone (F ⋙ Gr)}
-  (H : IsUniversalColimit c) :
+    [HasPullbacks C] [HasPullbacks D]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    [PreservesLimitsOfShape WalkingCospan Gl] {F : J ⥤ D} {c : Cocone (F ⋙ Gr)}
+    (H : IsUniversalColimit c) :
     IsUniversalColimit (Gl.mapCocone c) := by
   have := adj.rightAdjointPreservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
@@ -650,10 +649,10 @@ theorem IsUniversalColimit.map_reflective
         pullback.lift_snd]
 
 theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
-  [HasPullbacks C] [HasPullbacks D]
-  {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
-  [PreservesLimitsOfShape WalkingCospan Gl]
-  {F : J ⥤ D} {c : Cocone (F ⋙ Gr)} (H : IsVanKampenColimit c) :
+    [HasPullbacks C] [HasPullbacks D]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    [PreservesLimitsOfShape WalkingCospan Gl]
+    {F : J ⥤ D} {c : Cocone (F ⋙ Gr)} (H : IsVanKampenColimit c) :
     IsVanKampenColimit (Gl.mapCocone c) := by
   have := adj.rightAdjointPreservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
@@ -718,9 +717,9 @@ theorem IsVanKampenColimit.of_map {D : Type*} [Category D] (G : C ⥤ D) {F : J 
 #align category_theory.is_van_kampen_colimit.of_map CategoryTheory.IsVanKampenColimit.of_map
 
 theorem finitaryExtensive_of_reflective [HasFiniteCoproducts D] [HasPullbacks D]
-  [FinitaryExtensive C] [HasPullbacks C]
-  {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
-  [PreservesLimitsOfShape WalkingCospan Gl] :
+    [FinitaryExtensive C] [HasPullbacks C]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    [PreservesLimitsOfShape WalkingCospan Gl] :
     FinitaryExtensive D := by
   have : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
   constructor
