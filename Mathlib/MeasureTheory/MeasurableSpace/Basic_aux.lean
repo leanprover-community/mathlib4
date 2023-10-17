@@ -53,26 +53,6 @@ theorem MeasurableSet.univ_pi_fintype {δ} {π : δ → Type _} [∀ i, Measurab
 
 variable {δ : Type _} [DecidableEq δ] {π : δ → Type _} [∀ a : δ, MeasurableSpace (π a)]
 
--- unused
-theorem measurable_update'  {a : δ} :
-    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
-  rw [measurable_pi_iff]; intro j
-  dsimp [update]
-  split_ifs with h
-  · subst h
-    dsimp
-    exact measurable_snd
-  · exact measurable_pi_iff.1 measurable_fst _
-
-theorem measurable_update_left {a : δ} {x : π a} :
-    Measurable (update · a x) := by
-  rw [measurable_pi_iff]; intro j
-  dsimp [update]
-  split_ifs with h
-  · subst h
-    exact measurable_const
-  · exact measurable_pi_apply j
-
 -- not yet moved in mathlib
 theorem measurable_updateFinset {s : Finset δ} {x : ∀ i, π i}  : Measurable (updateFinset x s) := by
   simp_rw [updateFinset, measurable_pi_iff]
@@ -87,56 +67,6 @@ variable {α : ι → Type _}
 
 variable [∀ i, MeasurableSpace (α i)]
 
-variable (α)
-
-theorem measurable_eq_mp {i i' : ι} (h : i = i') : Measurable (congr_arg α h).mp := by
-  cases h
-  exact measurable_id
-
-theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : ι} (h : i = i') {f : β → α i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg α h).mp (f x) :=
-  (measurable_eq_mp α h).comp hf
-
-variable {α}
-
-theorem measurable_piCongrLeft (f : ι' ≃ ι) : Measurable (piCongrLeft α f) := by
-  rw [measurable_pi_iff]
-  intro i
-  simp_rw [piCongrLeft_apply_eq_cast]
-  apply Measurable.eq_mp α (f.apply_symm_apply i)
-  exact measurable_pi_apply (f.symm i)
-
-variable (α)
-/-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
-def MeasurableEquiv.piCongrLeft (f : ι' ≃ ι) : (∀ b, α (f b)) ≃ᵐ ∀ a, α a := by
-  refine' { Equiv.piCongrLeft α f with .. }
-  · exact measurable_piCongrLeft f
-  simp only [invFun_as_coe, coe_fn_symm_mk]
-  rw [measurable_pi_iff]
-  exact fun i => measurable_pi_apply (f i)
-variable {α}
-
-theorem MeasurableEquiv.piCongrLeft_eq (f : ι' ≃ ι) :
-    (MeasurableEquiv.piCongrLeft α f : _ → _) = f.piCongrLeft α := by rfl
-
-/-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
-This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
-def MeasurableEquiv.sumPiEquivProdPi (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
-    (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
-  refine' { Equiv.sumPiEquivProdPi α with .. }
-  · refine Measurable.prod ?_ ?_ <;>
-      rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
-  · rw [measurable_pi_iff]; rintro (i|i)
-    exact measurable_pi_iff.1 measurable_fst _
-    exact measurable_pi_iff.1 measurable_snd _
-
-theorem MeasurableEquiv.coe_sumPiEquivProdPi (α : ι ⊕ ι' → Type _) [∀ i, MeasurableSpace (α i)] :
-    (MeasurableEquiv.sumPiEquivProdPi α : _ → _) = Equiv.sumPiEquivProdPi α := by rfl
-
-theorem MeasurableEquiv.coe_sumPiEquivProdPi_symm (α : ι ⊕ ι' → Type _)
-    [∀ i, MeasurableSpace (α i)] :
-    (MeasurableEquiv.sumPiEquivProdPi α |>.symm : _ → _) = (Equiv.sumPiEquivProdPi α).symm := by rfl
-
 -- we really need a linter that warns me if I don't have a `[DecidableEq ι]` argument here.
 -- not yet moved in mathlib
 variable (α) in
@@ -147,14 +77,3 @@ def MeasurableEquiv.piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoi
     .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
 
 end MeasurableOnFamily
-
-open Finset
-
-namespace MeasureTheory
-
-
-theorem Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
-    MeasurableSingletonClass α := by
-  refine' ⟨fun i => _⟩
-  convert MeasurableSet.univ
-  simp [Set.eq_univ_iff_forall]

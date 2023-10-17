@@ -3,7 +3,7 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.ContDiff_aux
+import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Data.Finset.Interval
 import Mathlib.MeasureTheory.Integral.Bochner_aux
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper_aux

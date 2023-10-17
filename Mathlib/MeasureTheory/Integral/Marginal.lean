@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Constructions.Pi_aux
-import Mathlib.MeasureTheory.Integral.Lebesgue_aux
+import Mathlib.MeasureTheory.Integral.Lebesgue
 
 /-!
 # Marginals of multivariate functions
@@ -104,7 +104,7 @@ theorem marginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
       = ∫⁻ (y : π (default : α)), f (updateFinset x {i} (e y)) ∂μ (default : α) := by
         simp_rw [marginal, measurePreserving_piUnique (fun j : ({i} : Finset δ) ↦ μ j) |>.symm _
           |>.lintegral_map_equiv]
-    _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]
+    _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]; rfl
 
 /-- Peel off a single integral from a `marginal` integral at the beginning (compare with
 `marginal_insert'`, which peels off an integral at the end). -/

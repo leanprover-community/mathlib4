@@ -30,13 +30,21 @@ variable (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)]
 
 /-- Some properties of `Measure.pi` -/
 
+-- oops, previous PR was wrong. Don't move these, fix statement
+theorem MeasurableEquiv.piCongrLeft_eq' (f : ι' ≃ ι) :
+    ⇑MeasurableEquiv.piCongrLeft α f = f.piCongrLeft α := by rfl
+
+theorem MeasurableEquiv.coe_sumPiEquivProdPi_symm' (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
+    ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
+
+
 theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f)
       (Measure.pi fun i' => μ (f i')) (Measure.pi μ) where
   measurable := (MeasurableEquiv.piCongrLeft α f).measurable
   map_eq := by
     refine' (pi_eq fun s _ => _).symm
-    rw [MeasurableEquiv.map_apply, MeasurableEquiv.piCongrLeft_eq,
+    rw [MeasurableEquiv.map_apply, MeasurableEquiv.piCongrLeft_eq' f,
       piCongrLeft_preimage_univ_pi, pi_pi _ _, f.prod_comp (fun i => μ i (s i))]
 
 theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type _} [∀ i, MeasurableSpace (π i)]
@@ -46,7 +54,7 @@ theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type _} [�
   measurable := (MeasurableEquiv.sumPiEquivProdPi π).symm.measurable
   map_eq := by
     refine' (pi_eq fun s _ => _).symm
-    simp_rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_sumPiEquivProdPi_symm,
+    simp_rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_sumPiEquivProdPi_symm',
       sumPiEquivProdPi_symm_preimage_univ_pi, Measure.prod_prod, Measure.pi_pi,
       Fintype.prod_sum_type]
 
