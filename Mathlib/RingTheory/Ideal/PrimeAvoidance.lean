@@ -1,4 +1,5 @@
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Tactic.IntervalCases
 
 variable {R : Type _} [CommRing R]
 
@@ -7,7 +8,7 @@ open BigOperators
 
 -- This is the version in wikipedia:
 -- https://en.wikipedia.org/wiki/Prime_avoidance_lemma
-example
+lemma not_subset_union_prime_ideals_of_not_subset_prime_ideal
     (E : AddSubgroup R)
     (multiplicative_closed : ∀ a b : R, a ∈ E → b ∈ E → a * b ∈ E)
     (n : ℕ)
@@ -136,3 +137,78 @@ example
     · push_neg at avoidance
       rcases avoidance with ⟨i, H⟩
       exact not_subset.mpr ⟨z i, z_mem_E _, set_eq1 i ▸ fun r => r.elim (z_not_mem_union _) H⟩
+
+variable [DecidablePred fun I : Ideal R => I.IsPrime]
+
+-- Prime avoidance lemma in stack project
+-- a skeleton
+example
+    (J : Ideal R)
+    (ℐ : Finset (Ideal R))
+    (number_of_non_prime : (ℐ.filter fun I => ¬ I.IsPrime).card ≤ 2)
+    (subset_union : (J : Set R) ⊆ ⋃ (I : ℐ), I) :
+    ∃ I, I ∈ ℐ ∧ (J : Set R) ⊆ I  := by
+  classical
+  induction' ℐ using Finset.strongInductionOn with ℐ ih
+  by_cases card : ℐ.card ≤ 2
+  · replace card : ℐ.card = 0 ∨ ℐ.card = 1 ∨ ℐ.card = 2
+    · interval_cases ℐ.card <;> tauto
+    obtain card|card|card := card
+    · sorry
+    · sorry
+    · sorry
+  · by_cases subset' : ∀ ℐ', ℐ' ⊂ ℐ → ¬ (J : Set R) ⊆ ⋃ (I : ℐ'), I
+    · have nonempty : ℐ.filter (fun I ↦ I.IsPrime) ≠ ∅
+      · intro rid
+        have rid' : ℐ.filter (fun I ↦ ¬ I.IsPrime) = ℐ
+        · rw [Finset.filter_not, rid, Finset.sdiff_empty]
+        rw [rid'] at number_of_non_prime
+        exact card number_of_non_prime
+      rw [← Finset.nonempty_iff_ne_empty] at nonempty
+      obtain ⟨I, hI⟩ := nonempty
+      rw [Finset.mem_filter] at hI
+      obtain ⟨hI1, hI2⟩ := hI
+      let ℐ_hat : Ideal R → Finset (Ideal R) := ℐ.erase
+      have subset_hat : ∀ I : ℐ, ¬ (J : Set R) ⊆ ⋃ (i : ℐ_hat I), i
+      · rintro ⟨I, hI⟩ rid
+        specialize subset' (ℐ_hat I) (Finset.erase_ssubset hI)
+        exact subset' rid
+      -- contrapose! subset_union
+      simp_rw [not_subset] at subset_hat
+      choose x hx1 hx2 using subset_hat
+      let X := ∏ i in (ℐ.erase I).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ + x ⟨I, hI1⟩
+      have hX1 : X ∈ J
+      · refine J.add_mem ?_ (hx1 _)
+        sorry
+      specialize subset_union hX1
+      rw [mem_iUnion] at subset_union
+      obtain ⟨⟨I', hI'₁⟩, hI'₂⟩ := subset_union
+      by_cases H : I = I'
+      · subst H
+        have : ∃ i : ℐ.erase I, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ I
+        · sorry -- use I is prime
+        obtain ⟨⟨i, hi1⟩, hi2⟩ := this
+        rw [Finset.mem_erase] at hi1
+        simp only at hi2
+        specialize hx1 ⟨i, hi1.2⟩
+        specialize hx2 ⟨i, hi1.2⟩
+        simp only [SetLike.mem_coe, Finset.coe_erase, Finset.mem_coe, mem_sUnion, not_exists,
+          not_and] at hx1 hx2
+        refine (hx2 <| mem_iUnion.mpr ⟨⟨I, Finset.mem_erase.mpr ⟨hi1.1.symm, hI'₁⟩⟩, hi2⟩).elim
+      · have mem1 : ∏ i in (ℐ.erase I).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ I'
+        · sorry
+        have mem2 : x ⟨I, hI1⟩ ∈ I'
+        · have := I'.sub_mem hI'₂ mem1
+          simpa only [add_sub_cancel'] using this
+        specialize hx1 ⟨I, hI1⟩
+        specialize hx2 ⟨I, hI1⟩
+        rw [mem_iUnion] at hx2
+        push_neg at hx2
+        refine (hx2 ⟨I', Finset.mem_erase.mpr ⟨Ne.symm H, hI'₁⟩⟩ mem2).elim
+    · -- Use induction hypothesis here
+      push_neg at subset'
+      obtain ⟨ℐ', lt, le⟩ := subset'
+      obtain ⟨I, hI1, hI2⟩ := ih _ lt
+        (le_trans (Finset.card_le_of_subset <| Finset.filter_subset_filter _ lt.1)
+          number_of_non_prime) le
+      exact ⟨I, lt.1 hI1, hI2⟩
