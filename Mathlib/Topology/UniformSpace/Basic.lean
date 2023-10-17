@@ -285,7 +285,7 @@ def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α
   isOpen_inter := fun s t hs ht x ⟨xs, xt⟩ => by
     filter_upwards [hs x xs, ht x xt] with x hxs hxt hx using ⟨hxs hx, hxt hx⟩
   isOpen_sUnion := fun s hs x ⟨t, ts, xt⟩ => by
-    filter_upwards [hs t ts x xt] with p ph h using⟨t, ts, ph h⟩
+    filter_upwards [hs t ts x xt] with p ph h using ⟨t, ts, ph h⟩
 #align uniform_space.core.to_topological_space UniformSpace.Core.toTopologicalSpace
 
 theorem UniformSpace.Core.ext :
