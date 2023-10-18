@@ -308,19 +308,26 @@ variable {Ω : Type} [MeasureSpace Ω]
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
 has Gaussian law with mean `μ + y` and variance `v`. -/
-lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v)
-    (hXm : Measurable X) (y : ℝ) :
+lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (y : ℝ) :
     Measure.map (fun ω ↦ X ω + y) ℙ = gaussianReal (μ + y) v := by
+  have hXm : AEMeasurable X := by
+    by_contra h
+    rw [Measure.map_of_not_aemeasurable h] at hX
+    exact absurd hX.symm (inferInstance : NeZero _).out
   change Measure.map ((fun ω ↦ ω + y) ∘ X) ℙ = gaussianReal (μ + y) v
-  rw [← Measure.map_map (measurable_id'.add_const _) hXm, hX, gaussianReal_map_add_const y]
+  rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.add_const _).aemeasurable hXm, hX,
+    gaussianReal_map_add_const y]
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
 has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
-lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v)
-    (hXm : Measurable X) (c : ℝ) :
+lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (c : ℝ) :
     Measure.map (fun ω ↦ c * X ω) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
+  have hXm : AEMeasurable X := by
+    by_contra h
+    rw [Measure.map_of_not_aemeasurable h] at hX
+    exact absurd hX.symm (inferInstance : NeZero _).out
   change Measure.map ((fun ω ↦ c * ω) ∘ X) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
-  rw [← Measure.map_map (measurable_id'.const_mul c) hXm, hX]
+  rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.const_mul c).aemeasurable hXm, hX]
   exact gaussianReal_map_const_mul c
 
 end Transformations
