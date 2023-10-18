@@ -348,7 +348,7 @@ theorem disjoint_closure_of_disjoint_closed [TopologicalSpace α] [NormalSpace �
     have closed_image : closure (uu ⁻¹' {⟨x, hx⟩}) = uu ⁻¹' {⟨x, hx⟩} := by
       rw [closure_eq_iff_isClosed]
       apply_rules [IsClosed.preimage, continuous_stoneCechExtend,
-      IsCompact.isClosed, isCompact_singleton, continuous_def.2]
+        IsCompact.isClosed, isCompact_singleton, continuous_def.2]
       simp only [preimage_id', imp_self, forall_const]
     rw [←closed_image]
     apply closure_mono
