@@ -702,8 +702,8 @@ theorem not_forall_not : (¬∀ x, ¬p x) ↔ ∃ x, p x := Decidable.not_forall
 
 #align decidable.not_exists_not Decidable.not_exists_not
 
-theorem not_exists_not : (¬∃ x, ¬p x) ↔ ∀ x, p x := Decidable.not_exists_not
-#align not_exists_not not_exists_not
+export Classical (not_exists_not)
+#align not_exists_not Classical.not_exists_not
 
 lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬ P a := by
   rw [← not_forall]; exact em _
