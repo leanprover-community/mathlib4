@@ -233,7 +233,9 @@ theorem not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y�
 #align not_same_ray_iff_abs_lt_norm_sub not_sameRay_iff_abs_lt_norm_sub
 
 /-- In a strictly convex space, the triangle inequality turns into an equality if and only if the
-middle point belongs to the segment joining two other points. -/
+middle point belongs to the segment joining two other points.
+
+TODO: Deduplicate from `dist_add_dist_eq_iff_wbtw`. -/
 theorem dist_add_dist_eq_iff : dist x y + dist y z = dist x z ↔ y ∈ [x -[ℝ] z] := by
   simp only [mem_segment_iff_sameRay, sameRay_iff_norm_add, dist_eq_norm', sub_add_sub_cancel',
     eq_comm]

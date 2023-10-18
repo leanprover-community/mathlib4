@@ -18,7 +18,18 @@ space.
 
 open Metric
 
-variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [StrictConvexSpace ℝ V]
+variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+
+section to_move
+variable [PseudoMetricSpace P] [NormedAddTorsor V P]
+
+-- TODO: Is there a better place for this lemma?
+lemma Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) : dist x y + dist y z = dist x z := by
+  obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h; simp [abs_of_nonneg, ha₀, ha₁, sub_mul]
+
+end to_move
+
+variable [StrictConvexSpace ℝ V]
 
 section PseudoMetricSpace
 variable [PseudoMetricSpace P] [NormedAddTorsor V P]
@@ -87,14 +98,17 @@ section MetricSpace
 variable [MetricSpace P] [NormedAddTorsor V P] {a b c : P}
 
 /-- If the triangle `abc` is flat (the triangle inequality is an equality), then `b` lies between
-`a` and `c`. -/
-lemma wbtw_of_dist_add_dist_eq_dist (habc : dist a b + dist b c = dist a c) : Wbtw ℝ a b c := by
+`a` and `c`.
+
+TODO: Deduplicate from `dist_add_dist_eq_iff`. -/
+lemma dist_add_dist_eq_iff_wbtw : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c := by
   obtain rfl | hac := eq_or_ne a c
-  · simpa [dist_comm, eq_comm] using habc
-  refine ⟨dist a b / dist a c, ⟨by positivity, div_le_one_of_le ?_ $ by positivity⟩, Eq.symm $
-    eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (div_mul_cancel _ $ dist_ne_zero.2 hac).symm ?_⟩
+  · simp [dist_comm, eq_comm]
+  refine ⟨fun habc ↦ ?_, Wbtw.dist_add_dist⟩
+  refine ⟨dist a b / dist a c, ⟨by positivity, div_le_one_of_le ?_ <| by positivity⟩, Eq.symm <|
+    eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (div_mul_cancel _ <| dist_ne_zero.2 hac).symm ?_⟩
   · rw [←habc]
-    exact le_add_of_nonneg_right $ by positivity
-  · rwa [one_sub_mul, div_mul_cancel _ $ dist_ne_zero.2 hac, eq_sub_iff_add_eq']
+    exact le_add_of_nonneg_right <| by positivity
+  · rwa [one_sub_mul, div_mul_cancel _ <| dist_ne_zero.2 hac, eq_sub_iff_add_eq']
 
 end MetricSpace
