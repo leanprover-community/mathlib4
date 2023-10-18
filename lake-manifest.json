@@ -10,14 +10,6 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/nomeata/aesop",
-    "subDir?": null,
-    "rev": "47b7de00a76836fe75742eeda4b1afcf848762d0",
-    "opts": {},
-    "name": "aesop",
-    "inputRev?": "lean-pr-testing-2577",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
     "subDir?": null,
     "rev": "39229f3630d734af7d9cfb5937ddc6b41d3aa6aa",
@@ -39,6 +31,14 @@
     "rev": "c9d62d5991d10c1a260c67b61a3494577a64b814",
     "opts": {},
     "name": "std",
+    "inputRev?": "lean-pr-testing-2577",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/nomeata/aesop",
+    "subDir?": null,
+    "rev": "15d2be13a30b150ad64ddb7bfe1a092f73dba5fa",
+    "opts": {},
+    "name": "aesop",
     "inputRev?": "lean-pr-testing-2577",
     "inherited": false}}],
  "name": "mathlib"}
