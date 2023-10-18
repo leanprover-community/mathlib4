@@ -17,8 +17,6 @@ universe w v v' u u'
 -- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
-namespace Functor
-
 variable (C : Type u) [Category.{v} C] (D : Type u') [Category.{v'} D]
 
 instance (α : Type*) [IsEmpty α] : IsEmpty (Discrete α) := Function.isEmpty Discrete.as
@@ -33,7 +31,7 @@ def functorOfIsEmpty [IsEmpty C] : C ⥤ D where
 variable {C D}
 
 /-- Any two functors out of an empty category are isomorphic. -/
-def isEmptyExt [IsEmpty C] (F G : C ⥤ D) : F ≅ G :=
+def Functor.isEmptyExt [IsEmpty C] (F G : C ⥤ D) : F ≅ G :=
   NatIso.ofComponents isEmptyElim (fun {X} ↦ isEmptyElim X)
 
 variable (C D)
@@ -42,13 +40,15 @@ variable (C D)
 def equivalenceOfIsEmpty [IsEmpty C] [IsEmpty D] : C ≌ D where
   functor := functorOfIsEmpty C D
   inverse := functorOfIsEmpty D C
-  unitIso := isEmptyExt _ _
-  counitIso := isEmptyExt _ _
+  unitIso := Functor.isEmptyExt _ _
+  counitIso := Functor.isEmptyExt _ _
   functor_unitIso_comp := isEmptyElim
 
 /-- Equivalence between two empty categories. -/
 def emptyEquivalence : Discrete.{w} PEmpty ≌ Discrete.{v} PEmpty := equivalenceOfIsEmpty _ _
-#align category_theory.functor.empty_equivalence CategoryTheory.Functor.emptyEquivalence
+#align category_theory.functor.empty_equivalence CategoryTheory.emptyEquivalence
+
+namespace Functor
 
 /-- The canonical functor out of the empty category. -/
 def empty : Discrete.{w} PEmpty ⥤ C :=
