@@ -12,7 +12,7 @@ info: ↑f a : β
 
 set_option pp.beta false in
 /--
-info: ↑f a : (fun x ↦ β) a
+info: ↑f a : (fun x => β) a
 -/
 #guard_msgs in
 #check f a
