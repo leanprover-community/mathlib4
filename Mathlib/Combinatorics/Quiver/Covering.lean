@@ -265,7 +265,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
     obtain ⟨rfl, k⟩ := k
     simp only [heq_eq_eq] at k
     subst k
-    use⟨_, q'.cons eu⟩
+    use ⟨_, q'.cons eu⟩
     simp only [Prefunctor.mapPath_cons, eq_self_iff_true, heq_iff_eq, and_self_iff]
 #align prefunctor.path_star_surjective Prefunctor.pathStar_surjective
 

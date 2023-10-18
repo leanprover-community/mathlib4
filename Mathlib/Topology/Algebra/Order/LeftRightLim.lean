@@ -248,7 +248,7 @@ theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTo
       (hf (le_of_lt hy))
   rcases hx u hu with ⟨v, xv, fvu⟩
   have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
-  filter_upwards [this]with y hy
+  filter_upwards [this] with y hy
   apply (hf hy.2.le).trans_lt fvu
 #align monotone.countable_not_continuous_within_at_Ioi Monotone.countable_not_continuousWithinAt_Ioi
 

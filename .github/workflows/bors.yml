@@ -156,6 +156,11 @@ jobs:
             elan toolchain uninstall `cat lean-toolchain`
           fi
 
+      - name: print lean and lake versions
+        run: |
+          lean --version
+          lake --version
+
       - name: get cache
         run: |
           lake exe cache clean
