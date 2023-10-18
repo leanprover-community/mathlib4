@@ -20,12 +20,12 @@ set_option autoImplicit true
 open PFunctor
 
 /-- A polynomial functor which is used to declare `Stream' α`. -/
-def Stream'.Shape (α : Type u) : PFunctor.{u} where
+def Stream'.shape (α : Type u) : PFunctor.{u} where
   A := α
   B := fun _ => PUnit
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
-def Stream' (α : Type u) := M (Stream'.Shape α)
+def Stream' (α : Type u) := M (Stream'.shape α)
 #align stream Stream'
 
 namespace Stream'
