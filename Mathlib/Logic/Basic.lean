@@ -383,6 +383,10 @@ theorem imp_iff_or_not : b → a ↔ a ∨ ¬b := Decidable.imp_iff_or_not
 theorem not_imp_not : ¬a → ¬b ↔ b → a := Decidable.not_imp_not
 #align not_imp_not not_imp_not
 
+@[simp]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
+  rw [imp_iff_or_not, imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
+
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
 #align function.mtr Function.mtr
@@ -563,6 +567,9 @@ theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
   ⟨heq_of_cast_eq _, fun h ↦ by cases h; rfl⟩
 #align cast_eq_iff_heq cast_eq_iff_heq
 
+theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
+    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
+
 --Porting note: new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
@@ -711,6 +718,12 @@ protected theorem Decidable.not_exists_not [∀ x, Decidable (p x)] : (¬∃ x, 
 theorem not_exists_not : (¬∃ x, ¬p x) ↔ ∀ x, p x := Decidable.not_exists_not
 #align not_exists_not not_exists_not
 
+lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬ P a := by
+  rw [← not_forall]; exact em _
+
+lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬ P a := by
+  rw [← not_exists]; exact em _
+
 theorem forall_imp_iff_exists_imp [ha : Nonempty α] : (∀ x, p x) → b ↔ ∃ x, p x → b := by
   let ⟨a⟩ := ha
   refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
@@ -807,21 +820,21 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
 @[simp] theorem exists_or_eq_right' (y : α) (p : α → Prop) : ∃ x : α, p x ∨ y = x := ⟨y, .inr rfl⟩
 #align exists_or_eq_right' exists_or_eq_right'
 
-theorem forall_apply_eq_imp_iff {f : α → β} {p : β → Prop} :
+theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, f a = b → p b) ↔ ∀ a, p (f a) := by simp
-#align forall_apply_eq_imp_iff forall_apply_eq_imp_iff
+#align forall_apply_eq_imp_iff forall_apply_eq_imp_iff'
 
-@[simp] theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
+@[simp] theorem forall_apply_eq_imp_iff {f : α → β} {p : β → Prop} :
     (∀ b a, f a = b → p b) ↔ ∀ a, p (f a) := by simp [forall_swap]
-#align forall_apply_eq_imp_iff' forall_apply_eq_imp_iff'
+#align forall_apply_eq_imp_iff' forall_apply_eq_imp_iff
 
-theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
+theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, b = f a → p b) ↔ ∀ a, p (f a) := by simp
-#align forall_eq_apply_imp_iff forall_eq_apply_imp_iff
+#align forall_eq_apply_imp_iff forall_eq_apply_imp_iff'
 
-@[simp] theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
+@[simp] theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
     (∀ b a, b = f a → p b) ↔ ∀ a, p (f a) := by simp [forall_swap]
-#align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff'
+#align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff
 
 @[simp] theorem forall_apply_eq_imp_iff₂ {f : α → β} {p : α → Prop} {q : β → Prop} :
     (∀ b a, p a → f a = b → q b) ↔ ∀ a, p a → q (f a) :=
@@ -977,7 +990,7 @@ namespace Classical
 variable {p : α → Prop}
 
 -- use shortened names to avoid conflict when classical namespace is open.
-/-- Any prop `p` is decidable classically. A shorthand for `classical.prop_decidable`. -/
+/-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 #align classical.dec Classical.dec
 
@@ -1279,5 +1292,22 @@ theorem ite_ite_comm (h : P → ¬Q) :
      if Q then b else if P then a else c :=
   dite_dite_comm P Q h
 #align ite_ite_comm ite_ite_comm
+
+variable {R : Prop}
+
+theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
+  by_cases p : P <;> simp [p]
+
+theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := by
+  by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
+
+-- TODO make this a simp lemma in a future PR
+theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
+  by_cases p : P <;> simp [p]
+
+theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
+  by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
 end ite
