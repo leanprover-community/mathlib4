@@ -99,7 +99,7 @@ theorem of_convergence_epsilon :
     ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v - (of v).convergents n| < ε := by
   intro ε ε_pos
   -- use the archimedean property to obtian a suitable N
-  rcases(exists_nat_gt (1 / ε) : ∃ N' : ℕ, 1 / ε < N') with ⟨N', one_div_ε_lt_N'⟩
+  rcases (exists_nat_gt (1 / ε) : ∃ N' : ℕ, 1 / ε < N') with ⟨N', one_div_ε_lt_N'⟩
   let N := max N' 5
   -- set minimum to 5 to have N ≤ fib N work
   exists N

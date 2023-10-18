@@ -978,7 +978,7 @@ theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ →
       let ⟨b₁, bb, hb⟩ := tr_eval_rev H rfl h
       (Part.mem_map_iff _).2 ⟨b₁, hb, bb⟩,
       fun h ↦ by
-      rcases(Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
+      rcases (Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
       rcases tr_eval H rfl ab with ⟨_, rfl, h⟩
       rwa [bb] at h⟩
 #align turing.tr_eval' Turing.tr_eval'
