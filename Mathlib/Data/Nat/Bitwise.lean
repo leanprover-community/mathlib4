@@ -126,12 +126,10 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
 
 lemma binaryRec_of_ne_zero {C : ℕ → Sort*} {z : C 0} {f n} (h : n ≠ 0) :
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
+  rw [Eq.rec_eq_cast]
   conv_lhs => unfold binaryRec
-  simp only [h, eq_mpr_eq_cast, dite_false]
-  apply eq_of_heq
-  trans f (bodd n) (div2 n) (binaryRec z f (div2 n))
-  · apply cast_heq
-  · symm; apply eqRec_heq
+  dsimp only
+  rw [dif_neg h, eq_mpr_eq_cast]
 
 lemma div_two_succ (x : Nat) :
     (succ x) / 2 = if bodd x = true then succ (x / 2) else x / 2 := by
