@@ -2376,3 +2376,15 @@ theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* 
 #align ring_hom.eq_lift_of_right_inverse RingHom.eq_liftOfRightInverse
 
 end RingHom
+
+namespace AlgHom
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
+
+lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+
+lemma coe_ideal_map (I : Ideal A) :
+    Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
+
+end AlgHom

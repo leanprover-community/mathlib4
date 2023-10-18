@@ -35,6 +35,7 @@ to it, we need support functions and lemmas to mediate between constructions.
 universe u v w
 
 /-- n-tuples of types, as a category -/
+@[pp_with_univ]
 def TypeVec (n : ℕ) :=
   Fin2 n → Type*
 #align typevec TypeVec
