@@ -67,7 +67,12 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
      match fp.extension with
      | none
      | "dot" => writeFile fp dotFile
-     | some ext => _ ← runCmdWithInput "dot" #["-T" ++ ext, "-o", o] dotFile
+     | some ext => try
+        _ ← runCmdWithInput "dot" #["-T" ++ ext, "-o", o] dotFile
+      catch ex =>
+        IO.eprintln s!"Error occurred while writing out {fp}."
+        IO.eprintln s!"Make sure you have `graphviz` installed and the file is writable."
+        throw ex
   return 0
 
 /-- Setting up command line options and help text for `lake exe graph`. -/
