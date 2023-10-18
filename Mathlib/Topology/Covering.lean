@@ -279,12 +279,70 @@ lemma connected_uniqueness_of_homotopy_lifting (Y : Type*)[TopologicalSpace Y]  
   rw [PreconnectedSpace.connectedComponent_eq_univ x]
   exact { left := trivial, right := hC }
 
-
-
-
 open unitInterval
 
 
+/-
+
+
+      if hS : S.Nonempty then ⟨sSup ((↑) '' S), by
+      refine' ⟨_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+      obtain ⟨c, hc⟩ := hS
+      exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
+    else ⟨a, le_rfl, h⟩
+    -/
+
+open Classical
+
+noncomputable def tada1 {α : Type*} [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b) :
+    CompleteLattice (Set.Icc a b) :=
+{ Set.Icc.boundedOrder h with
+  sSup := fun S ↦ if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
+    rw [←Set.not_nonempty_iff_eq_empty, not_not] at hS
+    refine' ⟨_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+    obtain ⟨c, hc⟩ := hS
+    exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
+  le_sSup := by
+    intro S c hc
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · simp [hS] at hc
+    · exact le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩
+  sSup_le := by
+    intro S c hc
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · exact c.2.1
+    · exact csSup_le ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
+        (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
+  sInf := fun S ↦ if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
+    rw [←Set.not_nonempty_iff_eq_empty, not_not] at hS
+    refine' ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), _⟩
+    obtain ⟨c, hc⟩ := hS
+    exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
+  sInf_le := by
+    intro S c hc
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · simp [hS] at hc
+    · exact csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩
+  le_sInf := by
+    intro S c hc
+    by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
+    · exact c.2.2
+    · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
+        (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h) }
+
+noncomputable instance tada2 {α : Type*} [ConditionallyCompleteLinearOrder α] {a b : α} (h : a ≤ b) :
+    CompleteLinearOrder (Set.Icc a b) :=
+{ tada1 h, Subtype.linearOrder _ with }
+
+lemma real_key_lemma {α : Type*} [CompleteLinearOrder α] (S : Set α)
+    (convex : ∀ x y, x ≤ y → y ∈ S → x ∈ S)
+    (interior : ∀ x, (∀ y < x, y ∈ S) → ∃ z > x, z ∈ S) : S = Set.univ := by
+
+  sorry
+
+lemma key_lemma (b : Set I) (convex : ∀ x y, x ≤ y → y ∈ b → x ∈ b)
+    (interior : ∀ x, (∀ y < x, y ∈ b) → ∃ z > x, z ∈ b) : b = Set.univ :=
+  real_key_lemma b convex interior
 
 lemma existence_of_path_lifting (hf : IsCoveringMap f)
   (p : ContinuousMap I X) (x':E) (hx': f x' = p 0): ∃ P : ContinuousMap I E, f ∘ P = p ∧ P 0 = x'  := by
