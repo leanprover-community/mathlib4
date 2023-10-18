@@ -479,8 +479,8 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
         inr := inr
         inl_fst := by
           simp only [← cancel_mono T.mor₁, assoc, id_comp, eq, comp_sub, comp_id,
-            comp_dist_triangle_mor_zero₁₂_assoc _ hT, zero_comp, sub_zero]
-        inl_snd := comp_dist_triangle_mor_zero₁₂ _ hT
+            comp_distTriang_mor_zero₁₂_assoc _ hT, zero_comp, sub_zero]
+        inl_snd := comp_distTriang_mor_zero₁₂ _ hT
         inr_fst := by
           simp only [← cancel_mono T.mor₁, assoc, eq, comp_sub, reassoc_of% inr_snd,
             comp_id, sub_self, zero_comp]
