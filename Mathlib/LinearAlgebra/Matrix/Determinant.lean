@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Chris Hughes, Tim Baanen
+Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Block
@@ -11,7 +11,7 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.LinearAlgebra.Alternating
+import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Pi
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -669,9 +669,8 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · intro σ₁ σ₂ h₁ h₂
       dsimp only
       intro h
-      have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x := by
-        intro x
-        exact congr_fun (congr_arg toFun h) x
+      have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
+        FunLike.congr_fun h
       simp only [Sum.map_inr, Sum.map_inl, Perm.sumCongr_apply, Sum.forall, Sum.inl.injEq,
         Sum.inr.injEq] at h2
       ext x
@@ -687,7 +686,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn
         -- Porting note: golfed
-        simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] using
+        simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1
       cases' hx : σ (Sum.inl a) with a2 b

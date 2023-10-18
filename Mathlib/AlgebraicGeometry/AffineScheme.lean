@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
@@ -268,7 +268,10 @@ theorem isAffineOpen_iff_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : Is
     fun hU => hU.imageIsOpenImmersion f⟩
   · rw [Scheme.comp_val_base, coe_comp, Set.range_comp]
     dsimp [Opens.inclusion]
-    rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_coe, Subtype.range_coe]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    rw [Subtype.range_coe]; erw [Subtype.range_coe]
     rfl
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.isAffineOpen_iff_of_isOpenImmersion
@@ -356,7 +359,7 @@ theorem IsAffineOpen.basicOpenIsAffine {X : Scheme} {U : Opens X} (hU : IsAffine
   have :
     hU.fromSpec.val.base '' (hU.fromSpec.val.base ⁻¹' (X.basicOpen f : Set X)) =
       (X.basicOpen f : Set X) := by
-    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset, hU.fromSpec_range]
+    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.fromSpec_range]
     exact Scheme.basicOpen_le _ _
   rw [Scheme.Hom.opensRange_coe, Scheme.comp_val_base, ← this, coe_comp, Set.range_comp]
   -- Porting note : `congr 1` did not work
@@ -519,7 +522,8 @@ theorem isLocalization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U
   -- Porting note : `erw naturality_assoc` for some reason does not work, so changed to a version
   -- where `naturality` is used, the good thing is that `erw` is changed back to `rw`
   simp only [←Category.assoc]
-  rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
+  -- Note: changed `rw` to `simp_rw` to improve performance
+  simp_rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
   -- simp only [Category.assoc]
   -- rw [hU.fromSpec_app_eq]
   dsimp
@@ -744,7 +748,7 @@ theorem IsAffineOpen.basicOpen_union_eq_self_iff {X : Scheme} {U : Opens X}
     apply_fun Set.image hU.fromSpec.1.base at h
     rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range, hU.fromSpec_range]
       at h
-    simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right_iff_subset] at h
+    simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right] at h
     ext1
     refine' Set.Subset.antisymm _ h
     simp only [Set.iUnion_subset_iff, SetCoe.forall, Opens.coe_iSup]

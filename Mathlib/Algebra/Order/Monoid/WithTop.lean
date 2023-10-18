@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
@@ -383,8 +383,8 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
-    CanonicallyOrderedAddMonoid (WithTop α) :=
+instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+    CanonicallyOrderedAddCommMonoid (WithTop α) :=
   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
     le_self_add := fun a b =>
       match a, b with
@@ -393,8 +393,9 @@ instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
       | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
       | ⊤, (b : α) => le_rfl }
 
-instance [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithTop α) :=
-  { WithTop.canonicallyOrderedAddMonoid, WithTop.linearOrder with }
+instance [CanonicallyLinearOrderedAddCommMonoid α] :
+    CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
+  { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
 @[simp, norm_cast]
 theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithTop α) = n :=

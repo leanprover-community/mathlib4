@@ -132,3 +132,24 @@ but is expected to have type
 -/
 #guard_msgs in
 notation3 "error" => idStr Nat.zero
+
+section
+/--
+warning: Could not generate matchers for a delaborator, so notation will not be pretty printed.
+Consider either adjusting the expansions or use `notation3 (prettyPrint := false)`.
+-/
+#guard_msgs in local notation3 "#" n => Fin.mk n (by decide)
+end
+
+section
+local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
+
+example : Fin 5 := #1
+
+/--
+error: failed to reduce to 'true'
+  false
+-/
+#guard_msgs in example : Fin 5 := #6
+
+end

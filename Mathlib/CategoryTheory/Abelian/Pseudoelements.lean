@@ -460,7 +460,7 @@ variable [Limits.HasPullbacks C]
     that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
     Remark: Borceux claims that `s` is unique, but this is false. See
-    `Counterexamples/Pseudoelement` for details. -/
+    `Counterexamples/Pseudoelement.lean` for details. -/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, (pullback.fst : pullback f g ⟶ P) s = p ∧ (pullback.snd : pullback f g ⟶ Q) s = q :=
@@ -484,12 +484,14 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCa
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine' ⟨q a'', _⟩
-    rw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H, ModuleCat.comp_def, LinearMap.comp_apply,
-      ha'', ha']
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H,
+      ModuleCat.comp_def, LinearMap.comp_apply, ha'', ha']
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective q).1 hq a'
     refine' ⟨p a'', _⟩
-    rw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
       ha'', ha']
 set_option linter.uppercaseLean3 false in
 #align category_theory.abelian.pseudoelement.Module.eq_range_of_pseudoequal CategoryTheory.Abelian.Pseudoelement.ModuleCat.eq_range_of_pseudoequal

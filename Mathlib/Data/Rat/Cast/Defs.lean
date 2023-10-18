@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.Lemmas
-import Mathlib.Algebra.Field.Basic
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -143,26 +142,9 @@ theorem cast_mul_of_ne_zero :
     rw [(d₁.commute_cast (_ : α)).inv_right₀.eq]
 #align rat.cast_mul_of_ne_zero Rat.cast_mul_of_ne_zero
 
--- Porting note: rewrote proof
-@[simp]
-theorem cast_inv_nat (n : ℕ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
-  cases' n with n
-  · simp
-  rw [cast_def, inv_coe_nat_num, inv_coe_nat_den, if_neg n.succ_ne_zero,
-    Int.sign_eq_one_of_pos (Nat.cast_pos.mpr n.succ_pos), Int.cast_one, one_div]
-#align rat.cast_inv_nat Rat.cast_inv_nat
-
--- Porting note: proof got a lot easier - is this still the intended statement?
-@[simp]
-theorem cast_inv_int (n : ℤ) : ((n⁻¹ : ℚ) : α) = (n : α)⁻¹ := by
-  cases' n with n n
-  · simp [ofInt_eq_cast, cast_inv_nat]
-  · simp only [ofInt_eq_cast, Int.cast_negSucc, ← Nat.cast_succ, cast_neg, inv_neg, cast_inv_nat]
-#align rat.cast_inv_int Rat.cast_inv_int
-
 @[norm_cast]
 theorem cast_inv_of_ne_zero :
-  ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
+    ∀ {n : ℚ}, (n.num : α) ≠ 0 → (n.den : α) ≠ 0 → ((n⁻¹ : ℚ) : α) = (n : α)⁻¹
   | ⟨n, d, h, c⟩ => fun (n0 : (n : α) ≠ 0) (d0 : (d : α) ≠ 0) => by
     have _ : (n : ℤ) ≠ 0 := fun e => by rw [e] at n0; exact n0 Int.cast_zero
     have _ : (d : ℤ) ≠ 0 :=
@@ -275,3 +257,6 @@ instance isScalarTower_right : IsScalarTower ℚ K K :=
 end Rat
 
 end SMul
+
+-- Guard against import creep regression.
+assert_not_exists add_div

@@ -320,13 +320,13 @@ theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → 
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
-  (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
-cons_subset.2 ⟨ainm, lsubm⟩
+    (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
+  cons_subset.2 ⟨ainm, lsubm⟩
 #align list.cons_subset_of_subset_of_mem List.cons_subset_of_subset_of_mem
 
 theorem append_subset_of_subset_of_subset {l₁ l₂ l : List α} (l₁subl : l₁ ⊆ l) (l₂subl : l₂ ⊆ l) :
-  l₁ ++ l₂ ⊆ l :=
-fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
+    l₁ ++ l₂ ⊆ l :=
+  fun _ h ↦ (mem_append.1 h).elim (@l₁subl _) (@l₂subl _)
 #align list.append_subset_of_subset_of_subset List.append_subset_of_subset_of_subset
 
 -- Porting note: in Std
@@ -651,10 +651,6 @@ theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
     simp
 #align list.length_init List.length_dropLast
 
--- Porting note: `rw [dropLast]` in Lean4 generates a goal `(b::l) ≠ []`
--- so we use this lemma instead
-theorem dropLast_cons_cons (a b : α) (l : List α) : dropLast (a::b::l) = a::dropLast (b::l) := rfl
-
 /-! ### getLast -/
 
 @[simp]
@@ -699,7 +695,7 @@ theorem dropLast_append_getLast : ∀ {l : List α} (h : l ≠ []), dropLast l +
   | [], h => absurd rfl h
   | [a], h => rfl
   | a :: b :: l, h => by
-    rw [dropLast_cons_cons, cons_append, getLast_cons (cons_ne_nil _ _)]
+    rw [dropLast_cons₂, cons_append, getLast_cons (cons_ne_nil _ _)]
     congr
     exact dropLast_append_getLast (cons_ne_nil b l)
 #align list.init_append_last List.dropLast_append_getLast
@@ -782,7 +778,7 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
   | [a], _, rfl => rfl
   | a :: b :: l, c, hc => by
     rw [getLast?_cons_cons] at hc
-    rw [dropLast_cons_cons, cons_append, dropLast_append_getLast? _ hc]
+    rw [dropLast_cons₂, cons_append, dropLast_append_getLast? _ hc]
 #align list.init_append_last' List.dropLast_append_getLast?
 
 theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.iget
@@ -1104,25 +1100,6 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
   The ported versions of the earlier proofs are given in comments.
 -/
 
--- Porting note: these lemmas recover the Lean 3 definition of `findIdx`
-@[simp] theorem findIdx_nil {α : Type*} (p : α → Bool) :
-  [].findIdx p = 0 := rfl
-
-theorem findIdx_cons (p : α → Bool) (b : α) (l : List α) :
-    (b :: l).findIdx p = bif p b then 0 else (l.findIdx p) + 1 := by
-    cases H : p b with
-      | true => simp [H, findIdx, findIdx.go]
-      | false => simp [H, findIdx, findIdx.go, findIdx_go_succ]
-  where
-    findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
-        List.findIdx.go p l (n + 1) = (List.findIdx.go p l n) + 1 := by
-      cases l with
-      | nil => unfold List.findIdx.go; exact Nat.succ_eq_add_one n
-      | cons head tail =>
-        unfold List.findIdx.go
-        cases p head <;> simp only [cond_false, cond_true]
-        exact findIdx_go_succ p tail (n + 1)
-
 -- indexOf_cons_eq _ rfl
 @[simp]
 theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
@@ -1246,7 +1223,7 @@ theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.l
     case succ.succ =>
       congr; cases h₁
       apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
-    all_goals ( dsimp at h₂; cases' h₁ with _ _ h h')
+    all_goals (dsimp at h₂; cases' h₁ with _ _ h h')
     · cases (h x (mem_iff_get?.mpr ⟨_, h₂.symm⟩) rfl)
     · cases (h x (mem_iff_get?.mpr ⟨_, h₂⟩) rfl)
 #align list.nth_injective List.get?_injective
@@ -1877,9 +1854,6 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
 
 /-! ### take, drop -/
 
-@[simp]
-theorem take_zero (l : List α) : take 0 l = [] :=
-  rfl
 #align list.take_zero List.take_zero
 
 #align list.take_nil List.take_nil
@@ -2043,7 +2017,7 @@ theorem dropLast_take {n : ℕ} {l : List α} (h : n < l.length) :
 #align list.init_take List.dropLast_take
 
 theorem dropLast_cons_of_ne_nil {α : Type*} {x : α}
-    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h]
+    {l : List α} (h : l ≠ []) : (x :: l).dropLast = x :: l.dropLast := by simp [h, dropLast]
 #align list.init_cons_of_ne_nil List.dropLast_cons_of_ne_nil
 
 @[simp]
@@ -2068,6 +2042,7 @@ theorem drop_eq_nil_iff_le {l : List α} {k : ℕ} : l.drop k = [] ↔ l.length 
       simpa [Nat.succ_le_succ_iff] using hk h
 #align list.drop_eq_nil_iff_le List.drop_eq_nil_iff_le
 
+@[simp]
 theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := by
   induction' l with hd tl hl generalizing n
   · simp
@@ -2075,6 +2050,10 @@ theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := 
     · simp
     · simp [hl]
 #align list.tail_drop List.tail_drop
+
+@[simp]
+theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
+  induction' l <;> simp
 
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 := by
@@ -2132,17 +2111,8 @@ theorem drop_length_cons {l : List α} (h : l ≠ []) (a : α) :
     exact ih h₁ y
 #align list.drop_length_cons List.drop_length_cons
 
-/-- Dropping the elements up to `n` in `l₁ ++ l₂` is the same as dropping the elements up to `n`
-in `l₁`, dropping the elements up to `n - l₁.length` in `l₂`, and appending them. -/
-theorem drop_append_eq_append_drop {l₁ l₂ : List α} {n : ℕ} :
-    drop n (l₁ ++ l₂) = drop n l₁ ++ drop (n - l₁.length) l₂ := by
-  induction l₁ generalizing n; · simp
-  cases n <;> simp [*]
 #align list.drop_append_eq_append_drop List.drop_append_eq_append_drop
 
-theorem drop_append_of_le_length {l₁ l₂ : List α} {n : ℕ} (h : n ≤ l₁.length) :
-    (l₁ ++ l₂).drop n = l₁.drop n ++ l₂ := by
-  simp [drop_append_eq_append_drop, tsub_eq_zero_iff_le.mpr h]
 #align list.drop_append_of_le_length List.drop_append_of_le_length
 
 /-- Dropping the elements up to `l₁.length + i` in `l₁ + l₂` is the same as dropping the elements
@@ -2352,26 +2322,9 @@ theorem foldr_ext (f g : α → β → β) (b : β) {l : List α} (H : ∀ a ∈
   simp only [foldr, ih H.2, H.1]
 #align list.foldr_ext List.foldr_ext
 
-@[simp]
-theorem foldl_nil (f : α → β → α) (a : α) : foldl f a [] = a :=
-  rfl
 #align list.foldl_nil List.foldl_nil
-
-@[simp]
-theorem foldl_cons (f : α → β → α) (a : α) (b : β) (l : List β) :
-    foldl f a (b :: l) = foldl f (f a b) l :=
-  rfl
 #align list.foldl_cons List.foldl_cons
-
-@[simp]
-theorem foldr_nil (f : α → β → β) (b : β) : foldr f b [] = b :=
-  rfl
 #align list.foldr_nil List.foldr_nil
-
-@[simp]
-theorem foldr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
-    foldr f b (a :: l) = f a (foldr f b l) :=
-  rfl
 #align list.foldr_cons List.foldr_cons
 
 #align list.foldl_append List.foldl_append
@@ -2757,18 +2710,9 @@ section FoldlMFoldrM
 
 variable {m : Type v → Type w} [Monad m]
 
-@[simp]
-theorem foldlM_nil (f : β → α → m β) {b} : List.foldlM f b [] = pure b :=
-  rfl
 #align list.mfoldl_nil List.foldlM_nil
-
 -- Porting note: now in std
 #align list.mfoldr_nil List.foldrM_nil
-
-@[simp]
-theorem foldlM_cons {f : β → α → m β} {b a l} :
-    List.foldlM f b (a :: l) = f b a >>= fun b' => List.foldlM f b' l :=
-  rfl
 #align list.mfoldl_cons List.foldlM_cons
 
 /- Porting note: now in std; now assumes an instance of `LawfulMonad m`, so we make everything
@@ -2804,9 +2748,6 @@ end FoldlMFoldrM
 
 /-! ### intersperse -/
 
-@[simp]
-theorem intersperse_nil {α : Type u} (a : α) : intersperse a [] = [] :=
-  rfl
 #align list.intersperse_nil List.intersperse_nil
 
 @[simp]
@@ -3204,18 +3145,13 @@ section find?
 
 variable {p : α → Bool} {l : List α} {a : α}
 
-@[simp]
-theorem find?_nil (p : α → Bool) : find? p [] = none :=
-  rfl
 #align list.find_nil List.find?_nil
 
--- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
 -- @[simp]
 -- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_pos
 #align list.find_cons_of_pos List.find?_cons_of_pos
 
--- Porting note: List.find? is given @[simp] in Std.Data.List.Init.Lemmas
 -- @[simp]
 -- Later porting note (at time of this lemma moving to Std): removing attribute `nolint simpNF`
 attribute [simp 1100] find?_cons_of_neg
@@ -3558,7 +3494,7 @@ theorem filter_false (l : List α) :
 
 /- Porting note: need a helper theorem for span.loop. -/
 theorem span.loop_eq_take_drop :
-  ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
+    ∀ l₁ l₂ : List α, span.loop p l₁ l₂ = (l₂.reverse ++ takeWhile p l₁, dropWhile p l₁)
   | [], l₂ => by simp [span.loop, takeWhile, dropWhile]
   | (a :: l), l₂ => by
     cases hp : p a <;> simp [hp, span.loop, span.loop_eq_take_drop, takeWhile, dropWhile]
@@ -3592,20 +3528,36 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
 
+@[simp] theorem takeWhile_nil : List.takeWhile p [] = [] := rfl
+
+theorem takeWhile_cons {x : α} :
+    List.takeWhile p (x :: l) = (match p x with
+      | true  => x :: takeWhile p l
+      | false => []) :=
+  rfl
+
+theorem takeWhile_cons_of_pos {x : α} (h : p x) :
+    List.takeWhile p (x :: l) = x :: takeWhile p l := by
+  simp [takeWhile_cons, h]
+
+theorem takeWhile_cons_of_neg {x : α} (h : ¬ p x) :
+    List.takeWhile p (x :: l) = [] := by
+  simp [takeWhile_cons, h]
+
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
   induction' l with x xs IH
-  · simp [takeWhile]
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH]
+  · simp
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH]
 #align list.take_while_eq_self_iff List.takeWhile_eq_self_iff
 
 @[simp]
 theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with x xs IH
-  · simp [takeWhile, true_iff]
+  · simp only [takeWhile_nil, Bool.not_eq_true, true_iff]
     intro h
     simp at h
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH, nthLe_cons]
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH, nthLe_cons]
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
@@ -3622,7 +3574,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
     takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
   induction' l with hd tl IH
-  · simp [takeWhile]
+  · simp
   · by_cases hp : p hd <;> by_cases hq : q hd <;> simp [takeWhile, hp, hq, IH]
 #align list.take_while_take_while List.takeWhile_takeWhile
 
@@ -3827,15 +3779,8 @@ theorem enum_nil : enum ([] : List α) = [] :=
   rfl
 #align list.enum_nil List.enum_nil
 
-@[simp]
-theorem enumFrom_nil (n : ℕ) : enumFrom n ([] : List α) = [] :=
-  rfl
 #align list.enum_from_nil List.enumFrom_nil
 
-@[simp]
-theorem enumFrom_cons (x : α) (xs : List α) (n : ℕ) :
-    enumFrom n (x :: xs) = (n, x) :: enumFrom (n + 1) xs :=
-  rfl
 #align list.enum_from_cons List.enumFrom_cons
 
 @[simp]
@@ -4347,11 +4292,21 @@ theorem getD_cons_succ : getD (x :: xs) (n + 1) d = getD xs n d :=
 #align list.nthd_cons_succ List.getD_cons_succₓ -- argument order
 
 theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
-  induction' l with hd tl IH generalizing n
-  · exact absurd hn (not_lt_of_ge (Nat.zero_le _))
-  · cases n
+  induction l generalizing n with
+  | nil => exact absurd hn (not_lt_of_ge (Nat.zero_le _))
+  | cons head tail ih =>
+    cases n
     · exact getD_cons_zero _ _ _
-    · exact IH _
+    · exact ih _
+
+@[simp]
+theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
+  induction l generalizing n with
+  | nil => rfl
+  | cons head tail ih =>
+    cases n
+    · rfl
+    · simp [ih]
 
 set_option linter.deprecated false in
 @[deprecated getD_eq_get]
@@ -4360,11 +4315,12 @@ theorem getD_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getD n d = l.nthLe n hn 
 #align list.nthd_eq_nth_le List.getD_eq_nthLeₓ -- argument order
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
-  induction' l with hd tl IH generalizing n
-  · exact getD_nil _ _
-  · cases n
+  induction l generalizing n with
+  | nil => exact getD_nil _ _
+  | cons head tail ih =>
+    cases n
     · refine' absurd (Nat.zero_lt_succ _) (not_lt_of_ge hn)
-    · exact IH (Nat.le_of_succ_le_succ hn)
+    · exact ih (Nat.le_of_succ_le_succ hn)
 #align list.nthd_eq_default List.getD_eq_defaultₓ -- argument order
 
 /-- An empty list can always be decidably checked for the presence of an element.
@@ -4379,9 +4335,9 @@ theorem getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;>
 
 @[simp]
 theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
-  induction' r with r IH generalizing n
-  · simp
-  · cases n <;> simp [IH]
+  induction r generalizing n with
+  | zero => simp
+  | succ n ih => cases n <;> simp [ih]
 #align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
@@ -4392,19 +4348,21 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases' lt_or_le n (l ++l').length with h' h'
-  · rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
+  cases lt_or_le n (l ++l').length with
+  | inl h' =>
+    rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
       exact Nat.sub_lt_left_of_lt_add h h'
     · exact not_lt_of_le h
-  · rw [getD_eq_default _ _ h', getD_eq_default]
+  | inr h' =>
+    rw [getD_eq_default _ _ h', getD_eq_default]
     rwa [le_tsub_iff_left h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
 theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
-  cases' lt_or_le n l.length with h h
-  · rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
-  · rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
+  cases lt_or_le n l.length with
+  | inl h => rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
+  | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
 #align list.nthd_eq_get_or_else_nth List.getD_eq_getD_get?ₓ -- argument order
 
 end getD

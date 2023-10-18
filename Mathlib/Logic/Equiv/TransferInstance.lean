@@ -205,7 +205,7 @@ protected def semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α :=
 #align equiv.semigroup_with_zero Equiv.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
-@[reducible, to_additive "Transfer `add_comm_semigroup` across an `Equiv`"]
+@[reducible, to_additive "Transfer `AddCommSemigroup` across an `Equiv`"]
 protected def commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
@@ -534,7 +534,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
     { Equiv.addEquiv e with
       map_smul' := fun r x => by
         apply e.symm.injective
-        simp
+        simp only [toFun_as_coe_apply, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
         exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 #align equiv.linear_equiv Equiv.linearEquiv
 
