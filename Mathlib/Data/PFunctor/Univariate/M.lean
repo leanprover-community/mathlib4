@@ -572,14 +572,14 @@ theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : 
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_cons PFunctor.M.iselect_cons
 
-theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (M.corec f <$> f x₀) := by
+theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   dsimp only [M.corec, M.mk]
   congr with n
   cases' n with n
   · dsimp only [sCorec, Approx.sMk]
   · dsimp only [sCorec, Approx.sMk]
     cases h : f x₀
-    dsimp only [(· <$> ·), PFunctor.map]
+    dsimp only [PFunctor.map]
     congr
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_def PFunctor.M.corec_def
@@ -715,9 +715,9 @@ def corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_on PFunctor.M.corecOn
 
-variable {P : PFunctor.{u}} {α : Type u}
+variable {P : PFunctor.{u}} {α : Type*}
 
-theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = M.corec g <$> g x := by
+theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
   rw [corec_def, dest_mk]
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_corec PFunctor.M.dest_corec
@@ -769,7 +769,7 @@ theorem bisim_equiv (R : M P → M P → Prop)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim_equiv PFunctor.M.bisim_equiv
 
-theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = f <$> g x) :
+theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = P.map f (g x)) :
     f = M.corec g := by
   ext x
   apply bisim' (fun _ => True) _ _ _ _ trivial
@@ -793,14 +793,13 @@ set_option linter.uppercaseLean3 false in
 
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
-def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → Sum (M P) (P X)) (x : α) : M P :=
-  corec₁
-    (fun _ rec (a : Sum (M P) α) =>
-      let y := a >>= F (rec ∘ Sum.inr)
-      match y with
-      | Sum.inr y => y
-      | Sum.inl y => (rec ∘ Sum.inl) <$> M.dest y)
-    (@Sum.inr (M P) _ x)
+def corec' (F : α → M P ⊕ P α) (x : α) : M P :=
+  M.corec
+    (fun (a : M P ⊕ α) =>
+      match Sum.bind a F with
+      | Sum.inr y => P.map Sum.inr y
+      | Sum.inl y => P.map Sum.inl (M.dest y))
+    (Sum.inr x)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec' PFunctor.M.corec'
 
