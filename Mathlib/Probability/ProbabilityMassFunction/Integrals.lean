@@ -22,8 +22,8 @@ open MeasureTheory BigOperators ENNReal TopologicalSpace
 
 section General
 
-variable {α : Type _} [MeasurableSpace α] [MeasurableSingletonClass α]
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc

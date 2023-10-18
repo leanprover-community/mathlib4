@@ -27,6 +27,7 @@ An element of `P.obj α` is a pair `⟨a, f⟩`, where `a` is an element of a ty
 `f : B a → α`. Think of `a` as the shape of the object and `f` as an index to the relevant
 elements of `α`.
 -/
+@[pp_with_univ]
 structure PFunctor where
   /-- The head type -/
   A : Type u
@@ -57,7 +58,7 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P.Obj α) :=
 
 instance : Functor P.Obj where map := @map P
 
-protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a → α) :
+protected theorem map_eq {α β : Type u} (f : α → β) (a : P.A) (g : P.B a → α) :
     @Functor.map P.Obj _ _ _ f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
@@ -65,7 +66,7 @@ protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a �
 protected theorem id_map {α : Type*} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
-protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
+protected theorem comp_map {α β γ : Type u} (f : α → β) (g : β → γ) :
     ∀ x : P.Obj α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.comp_map PFunctor.comp_map
 
