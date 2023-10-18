@@ -33,7 +33,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
-    rcases(mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
+    rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
     have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
     induction hu generalizing s

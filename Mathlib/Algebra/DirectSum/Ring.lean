@@ -312,8 +312,10 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
   -- Porting note: I have no idea how the proof from ml3 worked it used to be
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
   -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
-  rw [mulHom,toAddMonoid,DFinsupp.liftAddHom_apply,DFinsupp.sumAddHom_apply,
-    AddMonoidHom.dfinsupp_sum_apply]
+  rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [DFinsupp.sumAddHom_apply]
+  rw [AddMonoidHom.dfinsupp_sum_apply]
   apply congrArg _
   funext x
   simp_rw [flip_apply]

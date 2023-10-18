@@ -820,21 +820,21 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
 @[simp] theorem exists_or_eq_right' (y : α) (p : α → Prop) : ∃ x : α, p x ∨ y = x := ⟨y, .inr rfl⟩
 #align exists_or_eq_right' exists_or_eq_right'
 
-theorem forall_apply_eq_imp_iff {f : α → β} {p : β → Prop} :
+theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, f a = b → p b) ↔ ∀ a, p (f a) := by simp
-#align forall_apply_eq_imp_iff forall_apply_eq_imp_iff
+#align forall_apply_eq_imp_iff forall_apply_eq_imp_iff'
 
-@[simp] theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
+@[simp] theorem forall_apply_eq_imp_iff {f : α → β} {p : β → Prop} :
     (∀ b a, f a = b → p b) ↔ ∀ a, p (f a) := by simp [forall_swap]
-#align forall_apply_eq_imp_iff' forall_apply_eq_imp_iff'
+#align forall_apply_eq_imp_iff' forall_apply_eq_imp_iff
 
-theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
+theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, b = f a → p b) ↔ ∀ a, p (f a) := by simp
-#align forall_eq_apply_imp_iff forall_eq_apply_imp_iff
+#align forall_eq_apply_imp_iff forall_eq_apply_imp_iff'
 
-@[simp] theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
+@[simp] theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
     (∀ b a, b = f a → p b) ↔ ∀ a, p (f a) := by simp [forall_swap]
-#align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff'
+#align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff
 
 @[simp] theorem forall_apply_eq_imp_iff₂ {f : α → β} {p : α → Prop} {q : β → Prop} :
     (∀ b a, p a → f a = b → q b) ↔ ∀ a, p a → q (f a) :=
