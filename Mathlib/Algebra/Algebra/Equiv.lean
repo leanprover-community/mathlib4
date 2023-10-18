@@ -628,11 +628,10 @@ theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
 
 section OfLinearEquiv
 
-variable (l : A₁ ≃ₗ[R] A₂) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
-  (commutes : ∀ r : R, l (algebraMap R A₁ r) = algebraMap R A₂ r)
+variable (l : A₁ ≃ₗ[R] A₂) (map_one : l 1 = 1) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
 
 /-- Upgrade a linear equivalence to an algebra equivalence,
-given that it distributes over multiplication and action of scalars.
+given that it distributes over multiplication and the identity
 -/
 @[simps apply]
 def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
@@ -640,26 +639,26 @@ def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
     toFun := l
     invFun := l.symm
     map_mul' := map_mul
-    commutes' := commutes }
-#align alg_equiv.of_linear_equiv AlgEquiv.ofLinearEquiv
+    commutes' := (AlgHom.ofLinearMap l map_one map_mul : A₁ →ₐ[R] A₂).commutes }
+#align alg_equiv.of_linear_equiv AlgEquiv.ofLinearEquivₓ
 
 @[simp]
 theorem ofLinearEquiv_symm :
-    (ofLinearEquiv l map_mul commutes).symm =
-      ofLinearEquiv l.symm (ofLinearEquiv l map_mul commutes).symm.map_mul
-        (ofLinearEquiv l map_mul commutes).symm.commutes :=
+    (ofLinearEquiv l map_one map_mul).symm =
+      ofLinearEquiv l.symm (ofLinearEquiv l map_one map_mul).symm.map_one
+        (ofLinearEquiv l map_one map_mul).symm.map_mul :=
   rfl
 #align alg_equiv.of_linear_equiv_symm AlgEquiv.ofLinearEquiv_symm
 
 @[simp]
-theorem ofLinearEquiv_toLinearEquiv (map_mul) (commutes) :
-    ofLinearEquiv e.toLinearEquiv map_mul commutes = e := by
+theorem ofLinearEquiv_toLinearEquiv (map_mul) (map_one) :
+    ofLinearEquiv e.toLinearEquiv map_mul map_one = e := by
   ext
   rfl
 #align alg_equiv.of_linear_equiv_to_linear_equiv AlgEquiv.ofLinearEquiv_toLinearEquiv
 
 @[simp]
-theorem toLinearEquiv_ofLinearEquiv : toLinearEquiv (ofLinearEquiv l map_mul commutes) = l := by
+theorem toLinearEquiv_ofLinearEquiv : toLinearEquiv (ofLinearEquiv l map_one map_mul) = l := by
   ext
   rfl
 #align alg_equiv.to_linear_equiv_of_linear_equiv AlgEquiv.toLinearEquiv_ofLinearEquiv

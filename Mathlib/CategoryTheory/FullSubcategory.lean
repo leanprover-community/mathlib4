@@ -113,6 +113,13 @@ instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 #align category_theory.full_subcategory.category CategoryTheory.FullSubcategory.category
 
+-- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
+
+lemma FullSubcategory.id_def (X : FullSubcategory Z) : 𝟙 X = 𝟙 X.obj := rfl
+
+lemma FullSubcategory.comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
+
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
 -/

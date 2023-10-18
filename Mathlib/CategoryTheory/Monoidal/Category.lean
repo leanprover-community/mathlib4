@@ -244,8 +244,7 @@ instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso
 @[simp]
 theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
     inv (f ⊗ g) = inv f ⊗ inv g := by
-  -- Porting note: Replaced `ext` with `aesop_cat_nonterminal`
-  aesop_cat_nonterminal
+  apply IsIso.inv_eq_of_hom_inv_id
   simp [← tensor_comp]
 #align category_theory.monoidal_category.inv_tensor CategoryTheory.MonoidalCategory.inv_tensor
 
