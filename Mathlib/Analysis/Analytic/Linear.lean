@@ -11,7 +11,7 @@ import Mathlib.Analysis.Analytic.Composition
 # Linear functions are analytic
 
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
-the formal power series `f x = f a + f (x - a)`. We also prove similar results for multlinear maps.
+the formal power series `f x = f a + f (x - a)`. We also prove similar results for multilinear maps.
 -/
 
 
@@ -131,14 +131,14 @@ variable (𝕜)
 lemma analyticAt_id (z : E) : AnalyticAt 𝕜 (id : E → E) z :=
   (ContinuousLinearMap.id 𝕜 E).analyticAt z
 
-/-- Scalar multiplication is analytic (jointly in both variables). Statement is a little
+/-- Scalar multiplication is analytic (jointly in both variables). The statement is a little
 pedantic to allow towers of field extensions.
 
 TODO: can we replace `𝕜'` with a "normed module" in such a way that `analyticAt_mul` is a special
 case of this? -/
 lemma analyticAt_smul
     {𝕝 : Type*} [NormedField 𝕝] [NormedAlgebra 𝕜 𝕝] [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
-    (z : 𝕝 × E) : AnalyticAt 𝕜 (fun x :𝕝 × E ↦ x.1 • x.2) z :=
+    (z : 𝕝 × E) : AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
   (ContinuousLinearMap.lsmul 𝕜 𝕝).analyticAt_bilinear z
 
 /-- Multiplication in a normed algebra over `𝕜` is -/
