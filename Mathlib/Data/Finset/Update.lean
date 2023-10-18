@@ -49,7 +49,7 @@ theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
     {y : ∀ i : ↥s, π i} {z : ∀ i : ↥t, π i} :
     updateFinset (updateFinset x s y) t z =
     updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
-  set e := Equiv.Finset.union s t hst |>.symm
+  set e := Equiv.Finset.union s t hst
   congr with i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
     simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, true_or_iff,
