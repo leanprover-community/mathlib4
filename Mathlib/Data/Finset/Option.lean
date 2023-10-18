@@ -75,6 +75,10 @@ theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s
 theorem some_mem_insertNone {s : Finset α} {a : α} : some a ∈ insertNone s ↔ a ∈ s := by simp
 #align finset.some_mem_insert_none Finset.some_mem_insertNone
 
+lemma none_mem_insertNone {s : Finset α} : none ∈ insertNone s := by simp
+
+lemma insertNone_nonempty {s : Finset α} : insertNone s |>.Nonempty := ⟨none, none_mem_insertNone⟩
+
 @[simp]
 theorem card_insertNone (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insertNone]
 #align finset.card_insert_none Finset.card_insertNone
