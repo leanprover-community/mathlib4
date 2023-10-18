@@ -185,7 +185,7 @@ theorem powersetCardAux_eq_map_coe {n} {l : List α} :
 @[simp]
 theorem mem_powersetCardAux {n} {l : List α} {s} : s ∈ powersetCardAux n l ↔ s ≤ ↑l ∧ card s = n :=
   Quotient.inductionOn s <| by
-    simp only [quot_mk_to_coe, powersetLenAux_eq_map_coe, List.mem_map, mem_sublistsLen,
+    simp only [quot_mk_to_coe, powersetCardAux_eq_map_coe, List.mem_map, mem_sublistsLen,
       coe_eq_coe, coe_le, Subperm, exists_prop, coe_card]
     exact fun l₁ =>
       ⟨fun ⟨l₂, ⟨s, e⟩, p⟩ => ⟨⟨_, p, s⟩, p.symm.length_eq.trans e⟩,
