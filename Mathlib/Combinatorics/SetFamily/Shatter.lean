@@ -189,8 +189,8 @@ lemma vcDim_compress_le (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).vcD
 /-- The **Sauer-Shelah lemma**. -/
 lemma card_shatterer_le_sum_vcDim [Fintype α] :
     𝒜.shatterer.card ≤ ∑ k in Iic 𝒜.vcDim, (Fintype.card α).choose k := by
-  simp_rw [←card_univ, ←card_powersetLen]
+  simp_rw [←card_univ, ←card_powersetCard]
   refine (card_le_of_subset <| fun s hs ↦ mem_biUnion.2 ⟨card s, ?_⟩).trans card_biUnion_le
-  exact ⟨mem_Iic.2 (mem_shatterer.1 hs).card_le_vcDim, mem_powersetLen_univ.2 rfl⟩
+  exact ⟨mem_Iic.2 (mem_shatterer.1 hs).card_le_vcDim, mem_powersetCard_univ.2 rfl⟩
 
 end Finset
