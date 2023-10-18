@@ -209,12 +209,12 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
   | z => simp only [bitwise_zero_left, binaryRec_zero, Bool.cond_eq_ite]
   | f xb x hxb ih =>
     rw [←bit_ne_zero_iff] at hxb
-    simp_rw [binaryRec_of_ne_zero hxb, bodd_bit, div2_bit, eq_rec_constant]
+    simp_rw [binaryRec_of_ne_zero _ _ hxb, bodd_bit, div2_bit, eq_rec_constant]
     induction y using binaryRec' with
     | z => simp only [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
     | f yb y hyb =>
       rw [←bit_ne_zero_iff] at hyb
-      simp_rw [binaryRec_of_ne_zero hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ←div2_val, div2_bit,
+      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ←div2_val, div2_bit,
         eq_rec_constant, ih]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
