@@ -208,27 +208,17 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
       binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n) := by
   funext x y
-  induction' x using Nat.strongInductionOn with x ih generalizing y
-  match x, y with
-  | 0, 0 =>
-    simp only [bitwise_zero, binaryRec_zero, Bool.cond_eq_ite]
-    split_ifs <;> rfl
-  | 0, y + 1 =>
-    simp only [bitwise_zero_left, Bool.cond_eq_ite, binaryRec_zero]
-  | x + 1, 0 =>
-    simp only [bitwise_zero_right, Bool.cond_eq_ite, ne_eq, succ_ne_zero,
-      not_false_eq_true, binaryRec_of_ne_zero, bodd_succ, div2_succ, eq_rec_constant,
-      binaryRec_zero]
-    split_ifs with _ hbodd
-    · conv_lhs => rw [←bit_decomp (x + 1)]
-      simp [hbodd]
-    · conv_lhs => rw [←bit_decomp (x + 1)]
-      simp [hbodd]
-    · rfl
-  | x + 1, y + 1 =>
-    specialize ih ((x+1) / 2) (div_lt_self' ..)
-    simp only [ne_eq, succ_ne_zero, bitwise_of_ne_zero, bodd_succ, ih,
-      Bool.cond_eq_ite, binaryRec_of_ne_zero, div2_val, eq_rec_constant]
+  induction x using binaryRec' generalizing y with
+  | z => simp only [bitwise_zero_left, binaryRec_zero, Bool.cond_eq_ite]
+  | f xb x hxb ih =>
+    rw [←bit_ne_zero_iff] at hxb
+    simp_rw [binaryRec_of_ne_zero hxb, bodd_bit, div2_bit, eq_rec_constant]
+    induction y using binaryRec' with
+    | z => simp only [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
+    | f yb y hyb =>
+      rw [←bit_ne_zero_iff] at hyb
+      simp_rw [binaryRec_of_ne_zero hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ←div2_val, div2_bit,
+        eq_rec_constant, ih]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction' n using Nat.binaryRec with b n hn
