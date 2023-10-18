@@ -272,8 +272,8 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
   use ε, hε.left
   rw [lt_abs]
   left
-  rw [lt_sub_comm, ← one_mul |ε|, ← mul_assoc, ← sub_mul]
-  norm_num [lt_of_le_of_lt hε.right.right, hε.right.left]
+  cancel_denoms
+  linarith [abs_pos.mpr hε.right.left]
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
