@@ -182,8 +182,8 @@ end OrdConnected
 
 section Icc
 
-noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b) :
-    CompleteLattice (Set.Icc a b) :=
+noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
+    {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) :=
 { Set.Icc.boundedOrder h with
   sSup := fun S ↦ if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
     rw [←Set.not_nonempty_iff_eq_empty, not_not] at hS
@@ -218,8 +218,8 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α] {a b
     · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h) }
 
-noncomputable instance Set.Icc.completeLinearOrder {α : Type*} [ConditionallyCompleteLinearOrder α] {a b : α} (h : a ≤ b) :
-    CompleteLinearOrder (Set.Icc a b) :=
+noncomputable instance Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
+    {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) :=
 { Set.Icc.completeLattice h, Subtype.linearOrder _ with }
 
 end Icc
