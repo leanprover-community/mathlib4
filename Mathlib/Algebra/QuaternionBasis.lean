@@ -132,7 +132,7 @@ theorem lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y
   simp only [mul_comm _ c₁, mul_right_comm _ _ c₁]
   simp only [mul_comm _ c₂, mul_right_comm _ _ c₂]
   simp only [← mul_comm c₁ c₂, ← mul_assoc]
-  simp only [mul_re, sub_eq_add_neg, add_smul, neg_smul, mul_imI, <-add_assoc, mul_imJ, mul_imK]
+  simp only [mul_re, sub_eq_add_neg, add_smul, neg_smul, mul_imI, ← add_assoc, mul_imJ, mul_imK]
   abel
 #align quaternion_algebra.basis.lift_mul QuaternionAlgebra.Basis.lift_mul
 
