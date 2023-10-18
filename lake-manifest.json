@@ -2,12 +2,28 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
+   {"url": "https://github.com/nomeata/std4",
+    "subDir?": null,
+    "rev": "a624220290d47253e0d32e27f4d95d3e61636241",
+    "opts": {},
+    "name": "std",
+    "inputRev?": "lean-pr-testing-2577",
+    "inherited": false}},
+  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
     "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
     "opts": {},
     "name": "Qq",
     "inputRev?": "master",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/nomeata/aesop",
+    "subDir?": null,
+    "rev": "15d2be13a30b150ad64ddb7bfe1a092f73dba5fa",
+    "opts": {},
+    "name": "aesop",
+    "inputRev?": "lean-pr-testing-2577",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
@@ -24,21 +40,5 @@
     "opts": {},
     "name": "proofwidgets",
     "inputRev?": "v0.0.18",
-    "inherited": false}},
-  {"git":
-   {"url": "https://github.com/JLimperg/aesop",
-    "subDir?": null,
-    "rev": "15d2be13a30b150ad64ddb7bfe1a092f73dba5fa",
-    "opts": {},
-    "name": "aesop",
-    "inputRev?": "master",
-    "inherited": false}},
-  {"git":
-   {"url": "https://github.com/leanprover/std4",
-    "subDir?": null,
-    "rev": "a4b2584dd4468489d14e9731ff303ec6d674873f",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "main",
     "inherited": false}}],
  "name": "mathlib"}
