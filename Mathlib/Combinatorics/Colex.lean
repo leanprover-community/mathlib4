@@ -30,7 +30,7 @@ fixed size. For example, for size 3, the colex order on ℕ starts
 * `Finset.Colex.forall_lt_mono`: if `s < t` in colex, and everything in `t` is `< a`, then
   everything in `s` is `< a`. This confirms the idea that an enumeration under colex will exhaust
   all sets using elements `< a` before allowing `a` to be included.
-* `Finse.toColex_image_lt_toColex_image`: Strictly monotone functions preserve colex.
+* `Finset.toColex_image_lt_toColex_image`: Strictly monotone functions preserve colex.
 * `Finset.sum_two_pow_le_iff_colex_le`: colex for α = ℕ is the same as binary
   (this also proves binary expansions are unique)
 
