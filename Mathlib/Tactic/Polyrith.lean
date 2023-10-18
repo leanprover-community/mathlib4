@@ -289,7 +289,7 @@ def sageOutput (args : Array String) : IO SageResult := do
   let out ← IO.Process.output { cmd := "python3", args := #[path.toString] ++ args }
   if out.exitCode != 0 then
     throw <| IO.userError <|
-      s!"scripts/polyrith_sage.py exited with code {out.exitCode}:\n¬" ++ out.stderr
+      s!"scripts/polyrith_sage.py exited with code {out.exitCode}:\n\n{out.stderr}"
   match Json.parse out.stdout >>= fromJson? with
   | .ok v => return v
   | .error e => throw <| .userError e
