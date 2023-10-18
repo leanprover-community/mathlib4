@@ -1537,7 +1537,6 @@ def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
   measurable_invFun := h.continuous_invFun.measurable
 #align homemorph.to_measurable_equiv Homemorph.toMeasurableEquiv
 
-
 protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
     (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
   refine ⟨fun K hK ↦ ?_⟩
@@ -1550,8 +1549,6 @@ protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasu
   · apply (MeasurableEquiv.measurableSet_image f.toMeasurableEquiv).2
     exact measurableSet_toMeasurable μ (↑f ⁻¹' K)
 #align is_finite_measure_on_compacts.map IsFiniteMeasureOnCompacts.map
-
-#exit
 
 end BorelSpace
 
