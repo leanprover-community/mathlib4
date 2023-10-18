@@ -24,6 +24,7 @@ open MvFunctor
 
 /-- multivariate polynomial functors
 -/
+@[pp_with_univ]
 structure MvPFunctor (n : ℕ) where
   /-- The head type -/
   A : Type u

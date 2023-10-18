@@ -549,14 +549,14 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.iselect_cons PFunctor.MIntl.iselect_cons
 
 theorem corec_def {X} (f : X → F X) (x₀ : X) :
-    MIntl.corec f x₀ = MIntl.mk (MIntl.corec f <$> f x₀) := by
+    MIntl.corec f x₀ = MIntl.mk (F.map (MIntl.corec f) (f x₀)) := by
   dsimp only [MIntl.corec, MIntl.mk]
   congr with n
   cases' n with n
   · dsimp only [sCorec, Approx.sMk]
   · dsimp only [sCorec, Approx.sMk]
     cases h : f x₀
-    dsimp only [(· <$> ·), PFunctor.map]
+    dsimp only [PFunctor.map]
     congr
 
 theorem ext_aux [Inhabited (MIntl F)] [DecidableEq F.A] {n : ℕ}
@@ -833,12 +833,12 @@ unsafe def destUnsafe (x : M F) : F (M F) :=
 /-- This unfolds an M-type. -/
 @[implemented_by destUnsafe]
 def dest (x : M F) : F (M F) :=
-  ofIntl <$> x.toIntl.dest
+  F.map ofIntl x.toIntl.dest
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest PFunctor.M.dest
 
 @[simp]
-theorem dest_ofIntl (x : MIntl F) : dest (ofIntl x) = ofIntl <$> x.dest := by
+theorem dest_ofIntl (x : MIntl F) : dest (ofIntl x) = F.map ofIntl x.dest := by
   rw [dest, toIntl_ofIntl]
 
 /-- The implemention of `approx`. -/
@@ -875,12 +875,12 @@ unsafe def mkUnsafe (x : F (M F)) : M F :=
 /-- constructor for M-types -/
 @[implemented_by mkUnsafe]
 protected def mk (x : F (M F)) : M F :=
-  ofIntl (MIntl.mk (toIntl <$> x))
+  ofIntl (MIntl.mk (F.map toIntl x))
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk PFunctor.MIntl.mk
 
 @[simp]
-theorem mk_ofIntl_map (x : F (MIntl F)) : M.mk (ofIntl <$> x) = ofIntl (MIntl.mk x) := by
+theorem mk_ofIntl_map (x : F (MIntl F)) : M.mk (F.map ofIntl x) = ofIntl (MIntl.mk x) := by
   simp [M.mk, Functor.map_map]
 
 @[simp]
@@ -954,7 +954,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.cases_on_mk' PFunctor.M.cCasesOn_mk'
 
 theorem corec_def {X} (f : X → F X) (x₀ : X) :
-    M.corec f x₀ = M.mk (M.corec f <$> f x₀) := by
+    M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   simpa [M.corec, M.mk, Functor.map_map, Function.comp] using MIntl.corec_def f x₀
 
 /-- corecursor for `M F` with swapped arguments -/
@@ -963,11 +963,11 @@ abbrev corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_on PFunctor.M.corecOn
 
-variable {P : PFunctor.{u}} {α : Type u}
+variable {P : PFunctor.{u}} {α : Type v}
 
 @[simp]
 theorem dest_corec (g : α → P α) (x : α) :
-    M.dest (M.corec g x) = M.corec g <$> g x := by
+    M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
   rw [corec_def, dest_mk]
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_corec PFunctor.M.dest_corec
@@ -977,8 +977,8 @@ theorem bisim (R : M P → M P → Prop)
       M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   have hm :
-    Function.RightInverse (Functor.map ofIntl : P (MIntl P) → P (M P)) (Functor.map toIntl)
-  · simp [Function.RightInverse, LeftInverse, Functor.map_map]
+    Function.RightInverse (P.map ofIntl : P (MIntl P) → P (M P)) (P.map toIntl)
+  · simp [Function.RightInverse, LeftInverse, PFunctor.map_map]
   simp only [leftInv_ofIntl_toIntl.surjective.forall,
     leftInv_ofIntl_toIntl.surjective.comp_left.exists,
     comp_apply, ← PFunctor.map_eq, dest_ofIntl, hm.injective.eq_iff] at h
@@ -1017,7 +1017,7 @@ theorem bisim_equiv (R : M P → M P → Prop)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim_equiv PFunctor.M.bisim_equiv
 
-theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = f <$> g x) :
+theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = P.map f (g x)) :
     f = M.corec g := by
   ext x
   apply bisim' (fun _ => True) _ _ _ _ trivial
@@ -1052,7 +1052,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The more efficient implemention of `corec'`. -/
 @[inline]
-unsafe def corec'Unsafe {α : Type u} (F : α → M P ⊕ P α) (x : α) : M P :=
+unsafe def corec'Unsafe {α : Type v} (F : α → M P ⊕ P α) (x : α) : M P :=
   let rec
     /-- The main loop of `corec'Unsafe`. -/
     @[specialize] loop (x : α) : CofixI P :=
@@ -1067,12 +1067,12 @@ unsafe def corec'Unsafe {α : Type u} (F : α → M P ⊕ P α) (x : α) : M P :
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
 @[implemented_by corec'Unsafe]
-def corec' {α : Type u} (F : α → M P ⊕ P α) (x : α) : M P :=
+def corec' {α : Type v} (F : α → M P ⊕ P α) (x : α) : M P :=
   M.corec
     (fun (s : M P ⊕ α) =>
       match Sum.bind s F with
-      | Sum.inr a => Sum.inr <$> a
-      | Sum.inl y => Sum.inl <$> M.dest y)
+      | Sum.inr a => P.map Sum.inr a
+      | Sum.inl y => P.map Sum.inl (M.dest y))
     (Sum.inr x)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec' PFunctor.M.corec'
