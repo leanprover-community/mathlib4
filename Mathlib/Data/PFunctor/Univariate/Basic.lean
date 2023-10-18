@@ -27,6 +27,7 @@ An element of `P.obj α` is a pair `⟨a, f⟩`, where `a` is an element of a ty
 `f : B a → α`. Think of `a` as the shape of the object and `f` as an index to the relevant
 elements of `α`.
 -/
+@[pp_with_univ]
 structure PFunctor where
   /-- The head type -/
   A : Type u
