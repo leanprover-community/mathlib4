@@ -624,6 +624,18 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
+theorem card_eq_succ' :
+    s.card = n + 1 ↔ ∃ (a t : _) (h : a ∉ t), cons a t h = s ∧ t.card = n :=
+  ⟨fun h =>
+    let ⟨a, has⟩ := card_pos.mp (h ▸ n.zero_lt_succ : 0 < s.card)
+    _
+    -- ⟨a, s.erase a, s.not_mem_erase a, insert_erase has, by
+    --   simp only [h, card_erase_of_mem has, add_tsub_cancel_right]⟩
+      ,
+    fun ⟨a, t, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_cons hat⟩
+
+#exit
+
 theorem card_eq_succ [DecidableEq α] :
     s.card = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ t.card = n :=
   ⟨fun h =>
@@ -633,27 +645,27 @@ theorem card_eq_succ [DecidableEq α] :
     fun ⟨a, t, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_not_mem hat⟩
 #align finset.card_eq_succ Finset.card_eq_succ
 
-theorem card_eq_two [DecidableEq α] : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
-  constructor
-  · rw [card_eq_succ]
-    simp_rw [card_eq_one]
-    rintro ⟨a, _, hab, rfl, b, rfl⟩
-    exact ⟨a, b, not_mem_singleton.1 hab, rfl⟩
-  · rintro ⟨x, y, h, rfl⟩
-    exact card_doubleton h
+theorem card_eq_two' : s.card = 2 ↔ ∃ (x y : α) (h : x ≠ y), s = cons x {y} (by simp [h]) := by
+  refine ⟨?_, by aesop⟩
+  match s with
+  | mk s nd => rw [card_mk, Multiset.card_eq_two]; aesop
+
+theorem card_eq_two [DecidableEq α] : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} :=
+  by simp only [card_eq_two', cons_eq_insert, exists_prop]
+
 #align finset.card_eq_two Finset.card_eq_two
 
+theorem card_eq_three' :
+    s.card = 3 ↔
+      ∃ (x y z : α) (hxy : x ≠ y) (hxz : x ≠ z) (hyz : y ≠ z),
+        s = cons x (cons y {z} (by simp [*])) (by simp [*]) := by
+  refine ⟨?_, by aesop⟩
+  match s with
+  | mk s nd => rw [card_mk, Multiset.card_eq_three]; aesop
+
 theorem card_eq_three [DecidableEq α] :
-    s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
-  constructor
-  · rw [card_eq_succ]
-    simp_rw [card_eq_two]
-    rintro ⟨a, _, abc, rfl, b, c, bc, rfl⟩
-    rw [mem_insert, mem_singleton, not_or] at abc
-    exact ⟨a, b, c, abc.1, abc.2, bc, rfl⟩
-  · rintro ⟨x, y, z, xy, xz, yz, rfl⟩
-    simp only [xy, xz, yz, mem_insert, card_insert_of_not_mem, not_false_iff, mem_singleton,
-      or_self_iff, card_singleton]
+    s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} :=
+  by simp only [card_eq_three', cons_eq_insert, exists_prop]
 #align finset.card_eq_three Finset.card_eq_three
 
 /-! ### Inductions -/
