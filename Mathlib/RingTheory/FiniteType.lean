@@ -726,7 +726,7 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
     exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
   obtain ⟨F, hFa, hFb⟩ :=
     Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
-      (finite_def.mp (AEval'.Finite_of_Finite _)) this
+      (finite_def.mp inferInstance) this
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro (m : AEval' f) hm
   rw [Ideal.mem_span_singleton'] at hFa

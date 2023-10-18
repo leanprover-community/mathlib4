@@ -43,10 +43,8 @@ lemma smul_def (f : R[X]) (m : AEval R M a) : f • m = aeval a f • m := rfl
 
 lemma X_smul (m : AEval R M a) : (X : R[X]) • m = a • m := by simp [smul_def]
 
-instance : IsScalarTower R R[X] <| AEval R M a := ⟨by simp [smul_def]⟩
-
-instance Finite_of_Finite [Finite R M] : Finite R[X] <| AEval R M a :=
-  Finite.of_restrictScalars_finite R _ _
+instance : IsScalarTower R R[X] <| AEval R M a          := ⟨by simp [smul_def]⟩
+instance [Finite R M] : Finite R[X] <| AEval R M a      := Finite.of_restrictScalars_finite R _ _
 
 end AEval
 
@@ -63,9 +61,7 @@ I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
 @[reducible] def AEval' := AEval R M φ
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
 lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
-
-instance AEval'.Finite_of_Finite [Finite R M] : Finite R[X] <| AEval' φ := by
-  apply AEval.Finite_of_Finite
+instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
 
 end Module
 
