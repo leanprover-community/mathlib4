@@ -738,9 +738,10 @@ theorem integral_Iio_of_hasDerivAt_of_tendsto (hcont : ContinuousOn f (Iic a))
   rw [intervalIntegrable_iff_integrable_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
 
-/-- A very special case of `integral_Iio_of_hasDerivAt_of_tendsto`. -/
-theorem HasCompactSupport.integral_deriv_eq {f : ℝ → E} (hf : ContDiff ℝ 1 f)
-    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, _root_.deriv f x = f b := by
+/-- A special case of `integral_Iio_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
+compact support. -/
+theorem HasCompactSupport.integral_deriv_eq (hf : ContDiff ℝ 1 f) (h2f : HasCompactSupport f)
+    (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
   have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
   rw [integral_Iio_of_hasDerivAt_of_tendsto hf.continuous.continuousOn this, sub_zero]
   refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
