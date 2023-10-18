@@ -762,7 +762,7 @@ lemma AEval'_def : AEval' φ = AEval R M φ := rfl
 
 lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
 
-instance [AddCommGroup M] : AddCommMonoid <| AEval' φ := inferInstance
+instance [AddCommGroup M] : AddCommGroup <| AEval' φ := inferInstance
 
 instance AEval'_Finite_of_Finite [Finite R M] : Finite R[X] <| AEval' φ := by
   apply AEval.Finite_of_Finite
