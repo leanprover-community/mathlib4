@@ -363,7 +363,7 @@ Then `Module.AEval R M a` is the `R[X]`-module with carrier `M`,
 where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
 -/
 @[nolint unusedArguments]
-def AEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 
 variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
