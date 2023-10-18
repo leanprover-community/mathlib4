@@ -355,7 +355,6 @@ theorem disjoint_closure_of_disjoint_closed [TopologicalSpace α] [NormalSpace �
     rw [←stoneCechExtend_extends hg, preimage_comp, image_subset_iff]
   have closureSub: ∀ (x : ℝ), ∀ (u : Set α), (h0: (∀ (o : α), (o ∈ u)  → f o = x))
       → (h : (x ∈ Set.Icc (0 : ℝ) 1)) → closure (stoneCechUnit '' u) ⊆ uu ⁻¹' {⟨x, h⟩} := by
-    simp only
     intros x u hu xicc _
     apply Subset.trans _ (subs x xicc)
     apply closure_mono
