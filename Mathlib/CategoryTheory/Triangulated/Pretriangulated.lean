@@ -462,7 +462,7 @@ lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 `inr : T.obj₃ ⟶ T.obj₂` and `fst : T.obj₂ ⟶ T.obj₁` satisfying suitable relations, this
 is the binary biproduct data expressing that `T.obj₂` identifies to the binary
 biproduct of `T.obj₁` and `T.obj₃`.
-See also `exists_iso_binaryBiproduct_of_dist_triangle`. -/
+See also `exists_iso_binaryBiproduct_of_distTriang`. -/
 @[simps]
 def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mor₃ = 0)
     (inr : T.obj₃ ⟶ T.obj₂) (inr_snd : inr ≫ T.mor₂ = 𝟙 _) (fst : T.obj₂ ⟶ T.obj₁)
@@ -503,7 +503,7 @@ instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
 instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
 instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
 
-lemma exists_iso_binaryBiproduct_of_dist_triangle (T : Triangle C) (hT : T ∈ distTriang C)
+lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
     (zero : T.mor₃ = 0) :
     ∃ (e : T.obj₂ ≅ T.obj₁ ⊞ T.obj₃), T.mor₁ ≫ e.hom = biprod.inl ∧
       T.mor₂ = e.hom ≫ biprod.snd := by
@@ -520,7 +520,7 @@ lemma exists_iso_binaryBiproduct_of_dist_triangle (T : Triangle C) (hT : T ∈ d
 lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
     binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
   obtain ⟨Y, g, h, mem⟩ := distinguished_cocone_triangle₂ (0 : X₂ ⟶ X₁⟦(1 : ℤ)⟧)
-  obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_dist_triangle _ mem rfl
+  obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_distTriang _ mem rfl
   dsimp at he₁ he₂
   refine' isomorphic_distinguished _ mem _ (Iso.symm _)
   refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
