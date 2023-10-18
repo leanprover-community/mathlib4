@@ -216,7 +216,7 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
+    (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 200)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
   let results ← rewritesCore hyps lemmas (← getMCtx) goal target
     -- Don't report duplicate results.
