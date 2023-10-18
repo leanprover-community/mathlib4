@@ -75,29 +75,28 @@ namespace Finset
 
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
-def Colex (α) := Finset α
+@[ext]
+structure Colex (α) := toColex :: (ofColex : Finset α)
 
-instance : Inhabited (Finset.Colex α) := inferInstanceAs (Inhabited (Finset α))
+-- TODO: Why can't we export?
+--export Colex (toColex)
+
+open Colex
 
 /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
-def toColex : Finset α ≃ Colex α := Equiv.refl _
+add_decl_doc toColex
 
 /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
-def ofColex : Colex α ≃ Finset α := Equiv.refl _
+add_decl_doc ofColex
 
-@[simp] lemma toColex_symm_eq : (@toColex α).symm = ofColex := rfl
-@[simp] lemma ofColex_symm_eq : (@ofColex α).symm = toColex := rfl
+instance : Inhabited (Colex α) := ⟨⟨∅⟩⟩
+
 @[simp] lemma toColex_ofColex (s : Colex α) : toColex (ofColex s) = s := rfl
-@[simp] lemma ofColex_toColex (s : Finset α) : ofColex (toColex s) = s := rfl
--- Tagged `nolint simpNF` because eligible for `dsimp`
-@[simp, nolint simpNF] lemma toColex_inj {s t : Finset α} : toColex s = toColex t ↔ s = t := Iff.rfl
-@[simp, nolint simpNF] lemma ofColex_inj {s t : Colex α} : ofColex s = ofColex t ↔ s = t := Iff.rfl
-lemma toColex_ne_toColex {s t : Finset α} : toColex s ≠ toColex t ↔ s ≠ t := Iff.rfl
-lemma ofColex_ne_ofColex {s t : Colex α} : ofColex s ≠ ofColex t ↔ s ≠ t := Iff.rfl
-
-/-- Recursor for `Colex α`. -/
-@[elab_as_elim]
-def Colex.rec {C : Colex α → Sort*} (h : ∀ s, C (toColex s)) : ∀ s, C s := h
+lemma ofColex_toColex (s : Finset α) : ofColex (toColex s) = s := rfl
+lemma toColex_inj {s t : Finset α} : toColex s = toColex t ↔ s = t := by simp
+@[simp] lemma ofColex_inj {s t : Colex α} : ofColex s = ofColex t ↔ s = t := by cases s; cases t; simp
+lemma toColex_ne_toColex {s t : Finset α} : toColex s ≠ toColex t ↔ s ≠ t := by simp
+lemma ofColex_ne_ofColex {s t : Colex α} : ofColex s ≠ ofColex t ↔ s ≠ t := by simp
 
 namespace Colex
 section LT
@@ -124,8 +123,8 @@ lemma toColex_lt_toColex :
     toColex s < toColex t ↔ ∃ k, (∀ ⦃x⦄, k < x → (x ∈ s ↔ x ∈ t)) ∧ k ∉ s ∧ k ∈ t := Iff.rfl
 
 lemma toColex_le_toColex :
-    toColex s ≤ toColex t ↔ s = t ∨ ∃ k, (∀ ⦃x⦄, k < x → (x ∈ s ↔ x ∈ t)) ∧ k ∉ s ∧ k ∈ t :=
-  Iff.rfl
+    toColex s ≤ toColex t ↔ s = t ∨ ∃ k, (∀ ⦃x⦄, k < x → (x ∈ s ↔ x ∈ t)) ∧ k ∉ s ∧ k ∈ t := by
+  simp [le_def]
 
 instance instIsIrrefl : IsIrrefl (Colex α) (· < ·) := ⟨by simp [lt_def]⟩
 
@@ -168,7 +167,7 @@ instance : IsStrictTotalOrder (Colex α) (· < ·) where
     classical
     obtain rfl | hts := eq_or_ne t s
     · simp
-    obtain ⟨k, hk, z⟩ := exists_max_image (ofColex t ∆ ofColex s) id (symmDiff_nonempty.2 hts)
+    obtain ⟨k, hk, z⟩ := exists_max_image _ id (symmDiff_nonempty.2 $ ofColex_ne_ofColex.2 hts)
     refine' (mem_symmDiff.1 hk).imp (fun hk => ⟨k, fun a ha ↦ _, hk.2, hk.1⟩) fun hk ↦
         Or.inr ⟨k, fun a ha ↦ _, hk.2, hk.1⟩ <;>
       simpa [mem_symmDiff, not_or, iff_iff_implies_and_implies, and_comm, not_imp_not]
@@ -300,9 +299,10 @@ lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) 
   by_contra' h
   obtain ⟨⟨s, hs⟩, t, ht⟩ := h
   rw [mem_sdiff] at hs ht
-  obtain hst | rfl | hts := trichotomous_of (· < ·) (toColex s) (toColex t)
+  obtain hst | hst | hts := trichotomous_of (α := Colex α) (· < ·) (toColex s) (toColex t)
   · exact hs.2 $ h₂.2 ht.1 ⟨hst, h₁.1 hs.1⟩
-  · exact ht.2 hs.1
+  · simp only [toColex.injEq] at hst
+    exact ht.2 $ hst ▸ hs.1
   · exact ht.2 $ h₁.2 hs.1 ⟨hts, h₂.1 ht.1⟩
 
 variable [Fintype α]
