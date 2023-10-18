@@ -6,6 +6,10 @@ Authors: Scott Morrison, Reid Barton
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Final
 
+/-!
+# Limits in `Type u` indexed by a `u`-small category.
+-/
+
 set_option autoImplicit true
 
 open CategoryTheory CategoryTheory.Limits
