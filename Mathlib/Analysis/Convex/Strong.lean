@@ -15,7 +15,7 @@ For a real normed space `E`, a uniformly convex function with modulus `φ : ℝ 
 for all `t ∈ [0, 1]`.
 
 A `m`-strongly convex function is a uniformly convex function with modulus `fun r ↦ m / 2 * r ^ 2`.
-If `E` is an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖x‖` being convex.
+If `E` is an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖x‖ ^ 2` being convex.
 
 ## TODO
 
@@ -112,15 +112,15 @@ lemma UniformConvexOn.sub (hf : UniformConvexOn s φ f) (hg : UniformConcaveOn s
 lemma UniformConcaveOn.sub (hf : UniformConcaveOn s φ f) (hg : UniformConvexOn s ψ g) :
     UniformConcaveOn s (φ + ψ) (f - g) := by simpa using hf.add hg.neg
 
-/-- A function `f` from a real normed space is `m`-strongly convex if
-`f (t • x + (1 - t) • y) ≤ t • f x + (1 - t) • f y - t * (1 - t) * φ ‖x - y‖` for all `t ∈ [0, 1]`.
+/-- A function `f` from a real normed space is `m`-strongly convex if it is uniformly convex with
+modulus `φ(r) = m / 2 * r ^ 2`.
 
 In an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖x‖ ^ 2` being convex. -/
 def StrongConvexOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
   UniformConvexOn s fun r ↦ m / (2 : ℝ) * r ^ 2
 
-/-- A function `f` from a real normed space is `m`-strongly concave if
-`t • f x + (1 - t) • f y + t * (1 - t) * φ ‖x - y‖ ≤ f (t • x + (1 - t) • y)` for all `t ∈ [0, 1]`.
+/-- A function `f` from a real normed space is `m`-strongly concave if is strongly concave with
+modulus `φ(r) = m / 2 * r ^ 2`.
 
 In an inner product space, this is equivalent to `x ↦ f x + m / 2 * ‖x‖ ^ 2` being concave. -/
 def StrongConcaveOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
