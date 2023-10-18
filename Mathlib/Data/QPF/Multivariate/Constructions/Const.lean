@@ -70,11 +70,11 @@ theorem get_map (x : (Const n A) α) : Const.get (f <$$> x) = Const.get x := rfl
 #align mvqpf.const.get_map MvQPF.Const.get_map
 
 instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
-  P := MvPFunctor.Const n A
-  abs x := MvPFunctor.Const.get x
-  repr x := MvPFunctor.Const.mk n x
-  abs_repr := fun _ => MvPFunctor.Const.get_mk _
-  abs_map := fun _ => MvPFunctor.Const.get_map _
+  P := MvPFunctor.const n A
+  abs x := MvPFunctor.const.get x
+  repr x := MvPFunctor.const.mk n x
+  abs_repr := fun _ => const.get_mk _
+  abs_map := fun _ => const.get_map _
 #align mvqpf.const.mvqpf MvQPF.Const.mvqpf
 
 end Const

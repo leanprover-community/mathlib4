@@ -701,7 +701,7 @@ end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 
 section map
 
-variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
+variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 /-- The push-forward of a finite measure by a function between measurable spaces. -/
 noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=

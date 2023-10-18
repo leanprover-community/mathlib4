@@ -61,7 +61,7 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
 
 instance : Functor.{v, max u v} P.Obj where map := @map P
 
-protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a → α) :
+protected theorem map_eq {α β : Type u} (f : α → β) (a : P.A) (g : P.B a → α) :
     @Functor.map P.Obj _ _ _ f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
@@ -69,7 +69,7 @@ protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a �
 protected theorem id_map {α : Type v} : ∀ x : P α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
-protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
+protected theorem comp_map {α β γ : Type v} (f : α → β) (g : β → γ) :
     ∀ x : P α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.comp_map PFunctor.comp_map
 
@@ -160,17 +160,17 @@ Composition of polynomial functors.
 namespace PFunctor
 
 /-- functor composition for polynomial functors -/
-def Comp (P₂ P₁ : PFunctor.{u}) : PFunctor.{u} :=
+def comp (P₂ P₁ : PFunctor.{u}) : PFunctor.{u} :=
   ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ => Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
-#align pfunctor.comp PFunctor.Comp
+#align pfunctor.comp PFunctor.comp
 
 /-- constructor for composition -/
-def Comp.mk (P₂ P₁ : PFunctor.{u}) {α : Type} (x : P₂ (P₁ α)) : Comp P₂ P₁ α :=
+def Comp.mk (P₂ P₁ : PFunctor.{u}) {α : Type} (x : P₂ (P₁ α)) : comp P₂ P₁ α :=
   ⟨⟨x.1, Sigma.fst ∘ x.2⟩, fun a₂a₁ => (x.2 a₂a₁.1).2 a₂a₁.2⟩
 #align pfunctor.comp.mk PFunctor.Comp.mk
 
 /-- destructor for composition -/
-def Comp.get (P₂ P₁ : PFunctor.{u}) {α : Type} (x : Comp P₂ P₁ α) : P₂ (P₁ α) :=
+def Comp.get (P₂ P₁ : PFunctor.{u}) {α : Type} (x : comp P₂ P₁ α) : P₂ (P₁ α) :=
   ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
 #align pfunctor.comp.get PFunctor.Comp.get
 

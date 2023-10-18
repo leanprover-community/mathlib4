@@ -80,78 +80,78 @@ instance : LawfulMvFunctor.{u} P.Obj where
   comp_map := @comp_map _ P
 
 /-- Constant functor where the input object does not affect the output -/
-def Const (n : ℕ) (A : Type u) : MvPFunctor n :=
+def const (n : ℕ) (A : Type u) : MvPFunctor n :=
   { A
     B := fun _ _ => PEmpty }
-#align mvpfunctor.const MvPFunctor.Const
+#align mvpfunctor.const MvPFunctor.const
 
 section Const
 
 variable (n) {A : Type u} {α β : TypeVec.{u} n}
 
 /-- Constructor for the constant functor -/
-def Const.mk (x : A) {α} : Const n A α :=
+def const.mk (x : A) {α} : const n A α :=
   ⟨x, fun _ a => PEmpty.elim a⟩
-#align mvpfunctor.const.mk MvPFunctor.Const.mk
+#align mvpfunctor.const.mk MvPFunctor.const.mk
 
 variable {n}
 
 /-- Destructor for the constant functor -/
-def Const.get (x : Const n A α) : A :=
+def const.get (x : const n A α) : A :=
   x.1
-#align mvpfunctor.const.get MvPFunctor.Const.get
+#align mvpfunctor.const.get MvPFunctor.const.get
 
 @[simp]
-theorem Const.get_map (f : α ⟹ β) (x : Const n A α) : Const.get (f <$$> x) = Const.get x := by
+theorem const.get_map (f : α ⟹ β) (x : const n A α) : const.get (f <$$> x) = const.get x := by
   cases x
   rfl
-#align mvpfunctor.const.get_map MvPFunctor.Const.get_map
+#align mvpfunctor.const.get_map MvPFunctor.const.get_map
 
 @[simp]
-theorem Const.get_mk (x : A) : Const.get (Const.mk n x : Const n A α) = x := rfl
-#align mvpfunctor.const.get_mk MvPFunctor.Const.get_mk
+theorem const.get_mk (x : A) : const.get (const.mk n x : const n A α) = x := rfl
+#align mvpfunctor.const.get_mk MvPFunctor.const.get_mk
 
 @[simp]
-theorem Const.mk_get (x : Const n A α) : Const.mk n (Const.get x) = x := by
+theorem const.mk_get (x : const n A α) : const.mk n (const.get x) = x := by
   cases x
-  dsimp [Const.get, Const.mk]
+  dsimp [const.get, const.mk]
   congr with (_⟨⟩)
-#align mvpfunctor.const.mk_get MvPFunctor.Const.mk_get
+#align mvpfunctor.const.mk_get MvPFunctor.const.mk_get
 
 end Const
 
 /-- Functor composition on polynomial functors -/
-def Comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m where
+def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m where
   A := Σ a₂ : P.1, ∀ i, P.2 a₂ i → (Q i).1
   B a i := Σ(j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
-#align mvpfunctor.comp MvPFunctor.Comp
+#align mvpfunctor.comp MvPFunctor.comp
 
 variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
 
 /-- Constructor for functor composition -/
-def Comp.mk (x : P (fun i => Q i α)) : Comp P Q α :=
+def comp.mk (x : P (fun i => Q i α)) : comp P Q α :=
   ⟨⟨x.1, fun _ a => (x.2 _ a).1⟩, fun i a => (x.snd a.fst a.snd.fst).snd i a.snd.snd⟩
-#align mvpfunctor.comp.mk MvPFunctor.Comp.mk
+#align mvpfunctor.comp.mk MvPFunctor.comp.mk
 
 /-- Destructor for functor composition -/
-def Comp.get (x : Comp P Q α) : P (fun i => Q i α) :=
+def comp.get (x : comp P Q α) : P (fun i => Q i α) :=
   ⟨x.1.1, fun i a => ⟨x.fst.snd i a, fun (j : Fin2 m) (b : (Q i).B _ j) => x.snd j ⟨i, ⟨a, b⟩⟩⟩⟩
-#align mvpfunctor.comp.get MvPFunctor.Comp.get
+#align mvpfunctor.comp.get MvPFunctor.comp.get
 
-theorem Comp.get_map (f : α ⟹ β) (x : Comp P Q α) :
-    Comp.get (f <$$> x) = (fun i (x : Q i α) => f <$$> x) <$$> Comp.get x := by
+theorem comp.get_map (f : α ⟹ β) (x : comp P Q α) :
+    comp.get (f <$$> x) = (fun i (x : Q i α) => f <$$> x) <$$> comp.get x := by
   rfl
-#align mvpfunctor.comp.get_map MvPFunctor.Comp.get_map
-
-@[simp]
-theorem Comp.get_mk (x : P (fun i => Q i α)) : Comp.get (Comp.mk x) = x := by
-  rfl
-#align mvpfunctor.comp.get_mk MvPFunctor.Comp.get_mk
+#align mvpfunctor.comp.get_map MvPFunctor.comp.get_map
 
 @[simp]
-theorem Comp.mk_get (x : Comp P Q α) : Comp.mk (Comp.get x) = x := by
+theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := by
   rfl
-#align mvpfunctor.comp.mk_get MvPFunctor.Comp.mk_get
+#align mvpfunctor.comp.get_mk MvPFunctor.comp.get_mk
+
+@[simp]
+theorem comp.mk_get (x : comp P Q α) : comp.mk (comp.get x) = x := by
+  rfl
+#align mvpfunctor.comp.mk_get MvPFunctor.comp.mk_get
 
 /-
 lifting predicates and relations
@@ -229,23 +229,23 @@ variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
 /-- Split polynomial functor, get an n-ary functor
 from an `n+1`-ary functor -/
-def Drop : MvPFunctor n where
+def drop : MvPFunctor n where
   A := P.A
   B a := (P.B a).drop
-#align mvpfunctor.drop MvPFunctor.Drop
+#align mvpfunctor.drop MvPFunctor.drop
 
 /-- Split polynomial functor, get a univariate functor
 from an `n+1`-ary functor -/
-def Last : PFunctor where
+def last : PFunctor where
   A := P.A
   B a := (P.B a).last
-#align mvpfunctor.last MvPFunctor.Last
+#align mvpfunctor.last MvPFunctor.last
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- append arrows of a polynomial functor application -/
 @[reducible]
-def appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.Drop.B a ⟹ α)
-    (f : P.Last.B a → β) : P.B a ⟹ (α ::: β) :=
+def appendContents {α : TypeVec n} {β : Type*} {a : P.A} (f' : P.drop.B a ⟹ α)
+    (f : P.last.B a → β) : P.B a ⟹ (α ::: β) :=
   splitFun f' f
 #align mvpfunctor.append_contents MvPFunctor.appendContents
 
