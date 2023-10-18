@@ -1466,10 +1466,12 @@ theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set 
   rw [iUnion_subtype, ← iUnion_mul_right_image]
   rfl
 
+@[to_additive]
 lemma subset_smul_set_closure_one (s : Set G) : s ⊆ s • (closure {1} : Set G) := by
   have : s ⊆ s • ({1} : Set G) := by simpa using Subset.rfl
   exact this.trans (smul_subset_smul_left subset_closure)
 
+@[to_additive]
 lemma IsCompact.closure_subset_smul_set_closure_one {K : Set G} (hK : IsCompact K) :
     closure K ⊆ K • (closure {1} : Set G) := by
   have : IsClosed (K • (closure {1} : Set G)) :=
@@ -1477,6 +1479,7 @@ lemma IsCompact.closure_subset_smul_set_closure_one {K : Set G} (hK : IsCompact 
   rw [IsClosed.closure_subset_iff this]
   exact subset_smul_set_closure_one K
 
+@[to_additive]
 lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
     F • (closure {1} : Set G) = F := by
   refine Subset.antisymm ?_ (subset_smul_set_closure_one F)
@@ -1485,6 +1488,7 @@ lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
   _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
   _ = F := by simp [hF.closure_eq]
 
+@[to_additive]
 lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U • (closure {1} : Set G) = U := by
   refine Subset.antisymm ?_ (subset_smul_set_closure_one U)
@@ -1844,6 +1848,7 @@ section
 
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [WeaklyLocallyCompactSpace G]
 
+@[to_additive]
 lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
   rcases exists_isCompact_isClosed_nhds_one G with ⟨K, K_comp, K_closed, K_mem⟩
   apply K_comp.of_isClosed_subset isClosed_closure
@@ -1851,6 +1856,7 @@ lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
   apply closure_mono
   simpa using mem_of_mem_nhds K_mem
 
+@[to_additive]
 lemma IsCompact.closure_eq_smul_set_one {K : Set G} (hK : IsCompact K) :
     closure K = K • (closure {1} : Set G) := by
   apply Subset.antisymm hK.closure_subset_smul_set_closure_one ?_
@@ -1860,7 +1866,9 @@ lemma IsCompact.closure_eq_smul_set_one {K : Set G} (hK : IsCompact K) :
   _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
   _ = closure K := by simp
 
-protected lemma IsCompact.closure {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
+@[to_additive]
+protected lemma IsCompact.closure_of_group
+    {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
   rw [hK.closure_eq_smul_set_one, ← image2_smul, ← image_uncurry_prod]
   exact IsCompact.image (hK.prod isCompact_closure_one) continuous_smul
 
