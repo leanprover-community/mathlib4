@@ -4,6 +4,8 @@ universe v₁ v₂ v₃ v₄ v₁' v₂' v₃' v₄' u₁ u₂ u₃ u₄ u₁' u
 
 namespace CategoryTheory
 
+open Limits
+
 namespace IsConnected
 
 variable {C D : Type*} [Category C] [Category D]
@@ -366,13 +368,28 @@ def JRightwardsProdEquivalence :
 
 end
 
-namespace  GuitartExact
+namespace GuitartExact
 
 instance prod [w.GuitartExact] [w'.GuitartExact] :
     (w.prod w').GuitartExact := by
   rw [guitartExact_iff_isConnected_rightwards]
   rintro Y₂ Y₃ g
   exact isConnected_of_equivalent (JRightwardsProdEquivalence w w' g).symm
+
+instance id (F : C₁ ⥤ C₂) : TwoSquare.GuitartExact (show TwoSquare (𝟭 C₁) F F (𝟭 C₂) from 𝟙 F) := by
+  rw [guitartExact_iff_isConnected_rightwards]
+  intro X₂ X₃ (g : F.obj X₂ ⟶ X₃)
+  let Z := JRightwards (show TwoSquare (𝟭 C₁) F F (𝟭 C₂) from 𝟙 F) g
+  let X₀ : Z := StructuredArrow.mk' (CostructuredArrow.mk' X₂ g) (CostructuredArrow.homMk (𝟙 _))
+  have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
+    StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
+      (by simpa using CostructuredArrow.w X.hom))
+  have : Nonempty Z := ⟨X₀⟩
+  change IsConnected Z
+  apply zigzag_isConnected
+  intro X Y
+  exact (zigzag_symmetric (Relation.ReflTransGen.single (Or.inl ⟨φ X⟩))).trans
+    (Relation.ReflTransGen.single (Or.inl ⟨φ Y⟩))
 
 end GuitartExact
 
