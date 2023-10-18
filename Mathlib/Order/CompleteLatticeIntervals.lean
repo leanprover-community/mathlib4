@@ -184,40 +184,36 @@ section Icc
 
 /-- Complete lattice structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
-    {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) :=
-{ Set.Icc.boundedOrder h with
-  sSup := fun S ↦ if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
+    {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) where
+  __ := Set.Icc.boundedOrder h
+  sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
     rw [←Set.not_nonempty_iff_eq_empty, not_not] at hS
     refine' ⟨_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
     obtain ⟨c, hc⟩ := hS
     exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
-  le_sSup := by
-    intro S c hc
+  le_sSup S c hc := by
     by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
     · simp [hS] at hc
     · exact le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩
-  sSup_le := by
-    intro S c hc
+  sSup_le S c hc := by
     by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
     · exact c.2.1
     · exact csSup_le ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
-  sInf := fun S ↦ if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
+  sInf S := if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [←Set.not_nonempty_iff_eq_empty, not_not] at hS
     refine' ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), _⟩
     obtain ⟨c, hc⟩ := hS
     exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
-  sInf_le := by
-    intro S c hc
+  sInf_le S c hc := by
     by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
     · simp [hS] at hc
     · exact csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩
-  le_sInf := by
-    intro S c hc
+  le_sInf S c hc := by
     by_cases hS : S = ∅ <;> simp only [hS, dite_true, dite_false]
     · exact c.2.2
     · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
-        (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h) }
+        (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
 
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
