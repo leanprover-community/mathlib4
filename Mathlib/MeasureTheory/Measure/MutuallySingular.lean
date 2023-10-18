@@ -131,58 +131,6 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
 #align measure_theory.measure.mutually_singular.smul_nnreal MeasureTheory.Measure.MutuallySingular.smul_nnreal
 
-lemma add_left_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
-    μ + ν₁ = μ + ν₂ ↔ ν₁ = ν₂ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-  obtain ⟨t₁, ht₁, ht₁μ, ht₁ν₁⟩ := h₁
-  obtain ⟨t₂, ht₂, ht₂μ, ht₂ν₂⟩ := h₂
-  ext1 s hs
-  have hs_eq : s = (s ∩ (t₁ ∪ t₂)) ∪ (s ∩ (t₁ ∪ t₂)ᶜ) := (Set.inter_union_compl _ _).symm
-  have h₁_eq : ν₁ s = ν₁ (s ∩ (t₁ ∪ t₂)) := by
-    conv_lhs => rw [hs_eq]
-    rw [measure_union _ (hs.inter (ht₁.union ht₂).compl)]
-    · suffices ν₁ (s ∩ (t₁ ∪ t₂)ᶜ) = 0 by rw [this, add_zero]
-      refine measure_mono_null (Set.inter_subset_right _ _) ?_
-      rw [Set.compl_union]
-      exact measure_mono_null (Set.inter_subset_left _ _) ht₁ν₁
-    · rw [Set.disjoint_iff_inter_eq_empty]
-      ext1 x
-      simp only [Set.compl_union, Set.mem_inter_iff, Set.mem_union, Set.mem_compl_iff,
-        Set.mem_empty_iff_false, iff_false, not_and, not_not, and_imp]
-      intro _ hxt _ hx₁
-      cases hxt with
-      | inl h => exact absurd h hx₁
-      | inr h => exact h
-  have h₂_eq : ν₂ s = ν₂ (s ∩ (t₁ ∪ t₂)) := by
-    conv_lhs => rw [hs_eq]
-    rw [measure_union _ (hs.inter (ht₁.union ht₂).compl)]
-    · suffices ν₂ (s ∩ (t₁ ∪ t₂)ᶜ) = 0 by rw [this, add_zero]
-      refine measure_mono_null (Set.inter_subset_right _ _) ?_
-      rw [Set.compl_union]
-      exact measure_mono_null (Set.inter_subset_right _ _) ht₂ν₂
-    · rw [Set.disjoint_iff_inter_eq_empty]
-      ext1 x
-      simp only [Set.compl_union, Set.mem_inter_iff, Set.mem_union, Set.mem_compl_iff,
-        Set.mem_empty_iff_false, iff_false, not_and, not_not, and_imp]
-      intro _ hxt _ hx₁
-      cases hxt with
-      | inl h => exact absurd h hx₁
-      | inr h => exact h
-  have hμ_eq : μ (s ∩ (t₁ ∪ t₂)) = 0 := by
-    refine measure_mono_null (Set.inter_subset_right _ _) ?_
-    refine le_antisymm ((measure_union_le _ _).trans ?_) (zero_le _)
-    simp only [nonpos_iff_eq_zero, add_eq_zero]
-    exact ⟨ht₁μ, ht₂μ⟩
-  rw [Measure.ext_iff] at h
-  specialize h (s ∩ (t₁ ∪ t₂)) (hs.inter (ht₁.union ht₂))
-  simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply] at h
-  rwa [hμ_eq, zero_add, zero_add, ← h₁_eq, ← h₂_eq] at h
-
-lemma add_right_cancel {μ ν₁ ν₂ : Measure α} (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) :
-    ν₁ + μ = ν₂ + μ ↔ ν₁ = ν₂ := by
-  rw [add_comm _ μ, add_comm _ μ]
-  exact MutuallySingular.add_left_cancel h₁ h₂
-
 end MutuallySingular
 
 end Measure
