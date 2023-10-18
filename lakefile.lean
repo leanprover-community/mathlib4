@@ -57,7 +57,7 @@ lean_lib Cache where
   weakLeanArgs := weakLeanArgs
   roots := #[`Cache]
 
-/-- `lake exe cache` retrieves precompiled `.olean` files from a central server. -/
+/-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
 
