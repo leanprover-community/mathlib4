@@ -76,6 +76,9 @@ inductive Any (p : α → Prop) : Stream' α → Prop
 instance : Membership α (Stream' α) :=
   ⟨fun a s => Any (Eq a) s⟩
 
+theorem mem_def {a : α} {s : Stream' α} : a ∈ s ↔ Any (Eq a) s :=
+  Iff.rfl
+
 @[inline]
 def corec' (f : α → β × α) : α → Stream' β :=
   M.corec ((fun (b, a) => ⟨b, fun _ => a⟩) ∘ f)
@@ -124,7 +127,7 @@ def natsFrom : ℕ → Stream' ℕ :=
   iterate Nat.succ
 
 /-- The stream of natural numbers. -/
-def nats : Stream' Nat :=
+abbrev nats : Stream' Nat :=
   natsFrom 0
 #align stream.nats Stream'.nats
 
@@ -218,7 +221,7 @@ def initsCore (l : List α) (s : Stream' α) : Stream' (List α) :=
 
 /-- Initial segments of a stream. -/
 def inits (s : Stream' α) : Stream' (List α) :=
-  initsCore [] (tail s)
+  initsCore [] s
 #align stream.inits Stream'.inits
 
 #align stream.pure Stream'.const
