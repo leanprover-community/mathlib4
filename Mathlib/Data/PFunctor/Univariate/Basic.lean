@@ -27,6 +27,7 @@ An element of `P.obj α` is a pair `⟨a, f⟩`, where `a` is an element of a ty
 `f : B a → α`. Think of `a` as the shape of the object and `f` as an index to the relevant
 elements of `α`.
 -/
+@[pp_with_univ]
 structure PFunctor where
   /-- The head type -/
   A : Type u
@@ -57,7 +58,7 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P.Obj α) :=
 
 instance : Functor P.Obj where map := @map P
 
-protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a → α) :
+protected theorem map_eq {α β : Type u} (f : α → β) (a : P.A) (g : P.B a → α) :
     @Functor.map P.Obj _ _ _ f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
@@ -65,7 +66,7 @@ protected theorem map_eq {α β : Type _} (f : α → β) (a : P.A) (g : P.B a �
 protected theorem id_map {α : Type*} : ∀ x : P.Obj α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
-protected theorem comp_map {α β γ : Type _} (f : α → β) (g : β → γ) :
+protected theorem comp_map {α β γ : Type u} (f : α → β) (g : β → γ) :
     ∀ x : P.Obj α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨_a, _b⟩ => rfl
 #align pfunctor.comp_map PFunctor.comp_map
 
@@ -120,19 +121,19 @@ variable (P)
 /-- `Idx` identifies a location inside the application of a pfunctor.
 For `F : PFunctor`, `x : F.obj α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
-def IdxCat :=
+def Idx :=
   Σx : P.A, P.B x
-#align pfunctor.Idx PFunctor.IdxCat
+#align pfunctor.Idx PFunctor.Idx
 
-instance IdxCat.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.IdxCat :=
+instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
   ⟨⟨default, default⟩⟩
-#align pfunctor.Idx.inhabited PFunctor.IdxCat.inhabited
+#align pfunctor.Idx.inhabited PFunctor.Idx.inhabited
 
 variable {P}
 
 /-- `x.iget i` takes the component of `x` designated by `i` if any is or returns
 a default value -/
-def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P.Obj α) (i : P.IdxCat) : α :=
+def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P.Obj α) (i : P.Idx) : α :=
   if h : i.1 = x.1 then x.2 (cast (congr_arg _ h) i.2) else default
 #align pfunctor.obj.iget PFunctor.Obj.iget
 
@@ -142,7 +143,7 @@ theorem fst_map {α β : Type u} (x : P.Obj α) (f : α → β) : (f <$> x).1 = 
 
 @[simp]
 theorem iget_map [DecidableEq P.A] {α β : Type u} [Inhabited α] [Inhabited β] (x : P.Obj α)
-    (f : α → β) (i : P.IdxCat) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
+    (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
   simp only [Obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
   cases x
   rfl

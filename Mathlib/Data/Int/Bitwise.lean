@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
@@ -20,6 +21,10 @@ import Mathlib.Init.Data.Int.Bitwise
 -/
 
 namespace Int
+
+-- In the `Int` namespace, `xor` will inconveniently resolve to `Int.xor`.
+/-- `bxor` denotes the `xor` function, i.e. the exclusive-or function, on type `Bool`. -/
+local notation "bxor" => _root_.xor
 
 /-! ### bitwise ops -/
 
@@ -43,8 +48,8 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 #align int.bodd_coe Int.bodd_coe
 
 @[simp]
-theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
-  apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
+theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = bxor m.bodd n.bodd := by
+  apply subNatNat_elim m n fun m n i => bodd i = bxor m.bodd n.bodd <;>
   intros i j <;>
   simp only [Int.bodd, Int.bodd_coe, Nat.bodd_add] <;>
   cases Nat.bodd i <;> simp
@@ -71,7 +76,7 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
 #align int.bodd_neg Int.bodd_neg
 
 @[simp]
-theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
+theorem bodd_add (m n : ℤ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
   cases' m with m m <;>
   cases' n with n n <;>
   simp only [ofNat_eq_coe, ofNat_add_negSucc, negSucc_add_ofNat,
@@ -205,9 +210,9 @@ theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
 theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
   | -[n+1] => by
-    dsimp [testBit]
+    dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp [Nat.testBit_succ]
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_succ]
 #align int.test_bit_succ Int.testBit_succ
 
 -- Porting note: TODO
@@ -220,13 +225,12 @@ theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
 theorem bitwise_or : bitwise or = lor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff',
-      negSucc.injEq, Bool.true_or, Nat.land']
-  · rw [Nat.bitwise'_swap, Function.swap]
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, cond_true, lor, Nat.ldiff,
+      negSucc.injEq, Bool.true_or, Nat.land]
+  · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
-    rfl
   · congr
     funext x y
     cases x <;> cases y <;> rfl
@@ -240,45 +244,43 @@ theorem bitwise_and : bitwise and = land := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
-      cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq,
-      Bool.and_false, Nat.land']
-  · rw [Nat.bitwise'_swap, Function.swap]
+      cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq,
+      Bool.and_false, Nat.land]
+  · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
-    rfl
   · congr
     funext x y
     cases x <;> cases y <;> rfl
 #align int.bitwise_and Int.bitwise_and
 
 --Porting note : Was `bitwise_tac` in mathlib
-theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff' := by
+theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
-      cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq,
-      Bool.and_false, Nat.land', Bool.not_true, ldiff', Nat.lor']
+      cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq,
+      Bool.and_false, Nat.land, Bool.not_true, ldiff, Nat.lor]
   · congr
     funext x y
     cases x <;> cases y <;> rfl
   · congr
     funext x y
     cases x <;> cases y <;> rfl
-  · rw [Nat.bitwise'_swap, Function.swap]
+  · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
     cases x <;> cases y <;> rfl
-    rfl
 #align int.bitwise_diff Int.bitwise_diff
 
 --Porting note : Was `bitwise_tac` in mathlib
-theorem bitwise_xor : bitwise xor = lxor' := by
+theorem bitwise_xor : bitwise bxor = xor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
-    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true,
-      cond_false, cond_true, lor, Nat.ldiff', Bool.and_true, negSucc.injEq, Bool.false_xor,
-      Bool.true_xor, Bool.and_false, Nat.land', Bool.not_true, ldiff', Nat.lor', lxor', Nat.lxor']
+    <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, Bool.bne_eq_xor,
+      cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq, Bool.false_xor,
+      Bool.true_xor, Bool.and_false, Nat.land, Bool.not_true, ldiff, Nat.lor, xor, Nat.xor]
   · congr
     funext x y
     cases x <;> cases y <;> rfl
@@ -313,12 +315,12 @@ theorem land_bit (a m b n) : land (bit a m) (bit b n) = bit (a && b) (land m n) 
 #align int.land_bit Int.land_bit
 
 @[simp]
-theorem ldiff_bit (a m b n) : ldiff' (bit a m) (bit b n) = bit (a && not b) (ldiff' m n) := by
+theorem ldiff_bit (a m b n) : ldiff (bit a m) (bit b n) = bit (a && not b) (ldiff m n) := by
   rw [← bitwise_diff, bitwise_bit]
 #align int.ldiff_bit Int.ldiff_bit
 
 @[simp]
-theorem lxor_bit (a m b n) : lxor' (bit a m) (bit b n) = bit (xor a b) (lxor' m n) := by
+theorem lxor_bit (a m b n) : xor (bit a m) (bit b n) = bit (bxor a b) (xor m n) := by
   rw [← bitwise_xor, bitwise_bit]
 #align int.lxor_bit Int.lxor_bit
 
@@ -349,12 +351,12 @@ theorem testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n 
 #align int.test_bit_land Int.testBit_land
 
 @[simp]
-theorem testBit_ldiff (m n k) : testBit (ldiff' m n) k = (testBit m k && not (testBit n k)) := by
+theorem testBit_ldiff (m n k) : testBit (ldiff m n) k = (testBit m k && not (testBit n k)) := by
   rw [← bitwise_diff, testBit_bitwise]
 #align int.test_bit_ldiff Int.testBit_ldiff
 
 @[simp]
-theorem testBit_lxor (m n k) : testBit (lxor' m n) k = xor (testBit m k) (testBit n k) := by
+theorem testBit_lxor (m n k) : testBit (xor m n) k = bxor (testBit m k) (testBit n k) := by
   rw [← bitwise_xor, testBit_bitwise]
 #align int.test_bit_lxor Int.testBit_lxor
 
