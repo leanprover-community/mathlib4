@@ -494,7 +494,9 @@ end CategoryTheory.Aut
 instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
+    let e : X ≃* Y :=
+      { i.toEquiv with
+        map_mul' := by intros; dsimp; erw [Iso.toEquiv_fun, asIso_hom, map_mul] }
     exact IsIso.of_iso e.toGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
@@ -505,7 +507,9 @@ set_option linter.uppercaseLean3 false in
 instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
+    let e : X ≃* Y :=
+      { i.toEquiv with
+        map_mul' := by intros; dsimp; erw [Iso.toEquiv_fun, asIso_hom, map_mul] }
     exact IsIso.of_iso e.toCommGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos

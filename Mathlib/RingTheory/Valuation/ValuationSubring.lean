@@ -387,7 +387,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S | A ≤ S} where
 #align valuation_subring.prime_spectrum_equiv ValuationSubring.primeSpectrumEquiv
 
 /-- An ordered variant of `primeSpectrumEquiv`. -/
-@[simps]
+@[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
@@ -403,8 +403,6 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] ValuationSubring.primeSpectrumEquiv_symm_apply_asIdeal
   ValuationSubring.primeSpectrumEquiv_apply_coe
-  ValuationSubring.primeSpectrumOrderEquiv_apply
-  ValuationSubring.primeSpectrumOrderEquiv_symm_apply
 
 instance linearOrderOverring : LinearOrder {S | A ≤ S} :=
   { (inferInstance : PartialOrder _) with
