@@ -260,7 +260,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
         _ = ∏ i in insert i₀ s, (∫⁻ a, f i a ∂μ) ^ p i := by simp [hi₀]
 
 /-- A version of Hölder with multiple arguments, one of which plays a distinguished role. -/
-theorem lintegral_mul_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
+theorem lintegral_mul_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
     (s : Finset ι) {g : α →  ℝ≥0∞} {f : ι → α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hf : ∀ i ∈ s, AEMeasurable (f i) μ) (q : ℝ) {p : ι → ℝ} (hpq : q + ∑ i in s, p i = 1)
     (hq :  0 ≤ q) (hp : ∀ i ∈ s, 0 ≤ p i) :

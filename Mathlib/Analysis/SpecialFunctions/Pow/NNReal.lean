@@ -198,10 +198,12 @@ theorem _root_.Real.finset_prod_rpow
 
 end Real
 
+@[gcongr]
 theorem rpow_le_rpow {x y : ℝ≥0} {z : ℝ} (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z :=
   Real.rpow_le_rpow x.2 h₁ h₂
 #align nnreal.rpow_le_rpow NNReal.rpow_le_rpow
 
+@[gcongr]
 theorem rpow_lt_rpow {x y : ℝ≥0} {z : ℝ} (h₁ : x < y) (h₂ : 0 < z) : x ^ z < y ^ z :=
   Real.rpow_lt_rpow x.2 h₁ h₂
 #align nnreal.rpow_lt_rpow NNReal.rpow_lt_rpow
@@ -660,10 +662,12 @@ theorem orderIsoRpow_symm_apply (y : ℝ) (hy : 0 < y) :
   rfl
 #align ennreal.order_iso_rpow_symm_apply ENNReal.orderIsoRpow_symm_apply
 
+@[gcongr]
 theorem rpow_le_rpow {x y : ℝ≥0∞} {z : ℝ} (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z :=
   monotone_rpow_of_nonneg h₂ h₁
 #align ennreal.rpow_le_rpow ENNReal.rpow_le_rpow
 
+@[gcongr]
 theorem rpow_lt_rpow {x y : ℝ≥0∞} {z : ℝ} (h₁ : x < y) (h₂ : 0 < z) : x ^ z < y ^ z :=
   strictMono_rpow_of_pos h₂ h₁
 #align ennreal.rpow_lt_rpow ENNReal.rpow_lt_rpow

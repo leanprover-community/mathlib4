@@ -340,6 +340,10 @@ theorem prod_insert_one [DecidableEq α] (h : f a = 1) : ∏ x in insert a s, f 
 #align finset.prod_insert_one Finset.prod_insert_one
 #align finset.sum_insert_zero Finset.sum_insert_zero
 
+@[to_additive]
+theorem prod_insert_div {M : Type*} [CommGroup M] [DecidableEq α] (ha : a ∉ s) {f : α → M} :
+    (∏ x in insert a s, f x) / f a = ∏ x in s, f x := by simp [ha]
+
 @[to_additive (attr := simp)]
 theorem prod_singleton (f : α → β) (a : α) : ∏ x in singleton a, f x = f a :=
   Eq.trans fold_singleton <| mul_one _
