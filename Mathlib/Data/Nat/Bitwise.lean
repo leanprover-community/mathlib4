@@ -93,7 +93,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs <;> simp_all
 #align nat.bitwise_bit Nat.bitwise_bit
 
-lemma bit_mod_two (a x) :
+lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
   simp [bit, bit0, bit1, Bool.cond_eq_ite, ←mul_two]
   split_ifs <;> simp [Nat.add_mod]
@@ -191,17 +191,6 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
     ite_false]
   conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
   split_ifs with hf <;> rfl
-
-lemma binaryRec_of_ne_zero {C : ℕ → Sort*} {z : C 0} {f n} (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  conv_lhs => unfold binaryRec
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
-
-lemma div_two_succ (x : Nat) :
-    (succ x) / 2 = if bodd x = true then succ (x / 2) else x / 2 := by
-  simp only [←div2_val, ←Bool.cond_eq_ite, div2_succ]
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     bitwise f =

@@ -284,6 +284,14 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
   rfl
 #align nat.binary_rec_zero Nat.binaryRec_zero
 
+theorem binaryRec_of_ne_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
+    (h : n ≠ 0) :
+    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
+  rw [Eq.rec_eq_cast]
+  conv_lhs => unfold binaryRec
+  dsimp only
+  rw [dif_neg h, eq_mpr_eq_cast]
+
 /-! bitwise ops -/
 
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
