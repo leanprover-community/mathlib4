@@ -52,14 +52,15 @@ theorem Small.trans_univLE.{u, v} (α : Type w) [hα : Small.{u} α] [h : UnivLE
 theorem UnivLE.trans [UnivLE.{u, v}] [UnivLE.{v, w}] : UnivLE.{u, w} :=
   fun α ↦ Small.trans_univLE α
 
+/- This is the crucial instance that subsumes `univLE_max`. -/
+instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max.{v,u} ‹_›
+
 /- uses small_Pi -/
 example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
 
 example : ¬ UnivLE.{u+1, u} := by
   simp only [Small_iff, not_forall, not_exists, not_nonempty_iff]
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
-
-instance [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max.{v,u} ‹_›
 
 open Cardinal
 

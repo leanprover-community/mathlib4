@@ -207,7 +207,6 @@ In this section we verify that instances are available as expected.
 -/
 section instances
 
-/- TODO: Lean can't infer these now -/
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
