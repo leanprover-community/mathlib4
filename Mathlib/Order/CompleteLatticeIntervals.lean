@@ -218,6 +218,6 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
     {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) :=
-{ Set.Icc.completeLattice h, Subtype.linearOrder _ with }
+  { Set.Icc.completeLattice h, Subtype.linearOrder _ with }
 
 end Icc
