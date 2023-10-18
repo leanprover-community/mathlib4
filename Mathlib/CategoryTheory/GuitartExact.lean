@@ -1,10 +1,27 @@
 import Mathlib.CategoryTheory.Limits.Final
 
+universe v₁ v₂ v₃ v₄ v₁' v₂' v₃' v₄' u₁ u₂ u₃ u₄ u₁' u₂' u₃' u₄'
+
 namespace CategoryTheory
+
+namespace IsConnected
+
+variable {C D : Type*} [Category C] [Category D]
+
+instance [IsConnected C] [IsConnected D] : IsConnected (C × D) := by
+  apply zigzag_isConnected
+  intro ⟨X₁, Y₁⟩ ⟨X₂, Y₂⟩
+  exact (zigzag_obj_of_zigzag (Functor.prod' (𝟭 C) ((Functor.const C).obj Y₁))
+      (isConnected_zigzag X₁ X₂)).trans
+    (zigzag_obj_of_zigzag (Functor.prod' ((Functor.const D).obj X₂) (𝟭 D))
+      (isConnected_zigzag Y₁ Y₂))
+
+end IsConnected
 
 open Category
 
-variable {C₁ C₂ C₃ C₄ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
+variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 
 section
@@ -256,6 +273,112 @@ instance [w.GuitartExact] {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄} (α : L ⟶ 
 
 end GuitartExact
 
+section prod
+
+variable {C₁' : Type u₁'} {C₂' : Type u₂'} {C₃' : Type u₃'} {C₄' : Type u₄'}
+  [Category.{v₁'} C₁'] [Category.{v₂'} C₂'] [Category.{v₃'} C₃'] [Category.{v₄'} C₄']
+  {T' : C₁' ⥤ C₂'} {L' : C₁' ⥤ C₃'} {R' : C₂' ⥤ C₄'} {B' : C₃' ⥤ C₄'}
+  (w' : TwoSquare T' L' R' B')
+
+def prod : TwoSquare (T.prod T') (L.prod L') (R.prod R') (B.prod B') := NatTrans.prod w w'
+
+section
+
+variable {Y₂ : C₂ × C₂'} {Y₃ : C₃ × C₃'} (g : (R.prod R').obj Y₂ ⟶ (B.prod B').obj Y₃)
+
+namespace JRightwardsProdEquivalence
+
+@[simp]
+def functorObj (X : JRightwards (w.prod w') g) : (JRightwards w g.1) × (JRightwards w' g.2) :=
+  ⟨JRightwards.mk w g.1 _ X.hom.left.1 X.right.hom.1
+      (by simpa using congr_arg _root_.Prod.fst X.hom.w),
+    JRightwards.mk w' g.2 _ X.hom.left.2 X.right.hom.2
+      (by simpa using congr_arg _root_.Prod.snd X.hom.w)⟩
+
+@[simps]
+def functor : JRightwards (w.prod w') g ⥤ (JRightwards w g.1) × (JRightwards w' g.2) where
+  obj X := functorObj w w' g X
+  map {X Y} f :=
+    ⟨StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.1
+        (by simpa using congr_arg _root_.Prod.fst f.right.w)) (by
+          ext
+          have eq := StructuredArrow.w f
+          dsimp at eq ⊢
+          rw [← eq]
+          rfl),
+      StructuredArrow.homMk (CostructuredArrow.homMk f.right.left.2
+        (by simpa using congr_arg _root_.Prod.snd f.right.w)) (by
+          ext
+          have eq := StructuredArrow.w f
+          dsimp at eq ⊢
+          rw [← eq]
+          rfl)⟩
+  map_id _ := rfl
+  map_comp f g := rfl
+
+@[simp]
+def inverseObj (X : (JRightwards w g.1) × (JRightwards w' g.2)) : JRightwards (w.prod w') g :=
+  JRightwards.mk _ _ ⟨X.1.right.left, X.2.right.left⟩
+    ⟨X.1.hom.left, X.2.hom.left⟩ ⟨X.1.right.hom, X.2.right.hom⟩ (by
+      dsimp
+      ext
+      · simpa using X.1.hom.w
+      · simpa using X.2.hom.w)
+
+@[simps]
+def inverse : (JRightwards w g.1) × (JRightwards w' g.2) ⥤ JRightwards (w.prod w') g where
+  obj X := inverseObj w w' g X
+  map {X Y} f := StructuredArrow.homMk
+    (CostructuredArrow.homMk ⟨f.1.right.left, f.2.right.left⟩ (by
+      dsimp
+      ext
+      · exact CostructuredArrow.w f.1.right
+      · exact CostructuredArrow.w f.2.right)) (by
+      dsimp
+      ext
+      dsimp
+      ext
+      · have eq := StructuredArrow.w f.1
+        dsimp at eq ⊢
+        rw [← eq]
+        rfl
+      · have eq := StructuredArrow.w f.2
+        dsimp at eq ⊢
+        rw [← eq]
+        rfl)
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+end JRightwardsProdEquivalence
+
+set_option maxHeartbeats 400000 in
+@[simps]
+def JRightwardsProdEquivalence :
+    JRightwards (w.prod w') g ≌ (JRightwards w g.1) × (JRightwards w' g.2) where
+  functor := JRightwardsProdEquivalence.functor w w' g
+  inverse := JRightwardsProdEquivalence.inverse w w' g
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+  functor_unitIso_comp X := by
+    dsimp
+    erw [comp_id, comp_id]
+    rfl
+
+end
+
+namespace  GuitartExact
+
+instance prod [w.GuitartExact] [w'.GuitartExact] :
+    (w.prod w').GuitartExact := by
+  rw [guitartExact_iff_isConnected_rightwards]
+  rintro Y₂ Y₃ g
+  exact isConnected_of_equivalent (JRightwardsProdEquivalence w w' g).symm
+
+end GuitartExact
+
+end prod
+
 end TwoSquare
+
 
 end CategoryTheory

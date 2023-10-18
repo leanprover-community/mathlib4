@@ -1179,6 +1179,7 @@ import Mathlib.CategoryTheory.Localization.DerivabilityStructure
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Existence
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Pointwise
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -1350,6 +1351,7 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 import Mathlib.CategoryTheory.Triangulated.TStructure.AbstractSpectralObject
 import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+import Mathlib.CategoryTheory.Triangulated.TStructure.RightTExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 import Mathlib.CategoryTheory.Triangulated.TStructure.Trunc
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
