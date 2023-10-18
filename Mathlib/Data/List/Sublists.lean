@@ -135,12 +135,16 @@ theorem sublistsAux_eq_bind :
       rw [append_bind, ← ih, bind_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
-theorem sublists_eq_sublistsAux (l : List α) :
-    sublists l = l.foldr sublistsAux [[]] := by
+theorem sublistsFast_eq_sublistsAux (l : List α) :
+    sublistsFast l = l.foldr sublistsAux [[]] := by
   simp only [sublists, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
   rw [← foldr_hom Array.toList]
   · rfl
   · intros _ _; congr <;> simp
+
+@[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
+  ext α l
+  rw [sublists, sublistsFast_eq_sublistsAux, sublistsAux_eq_bind]
 
 #noalign list.sublists_aux₁_eq_sublists_aux
 #noalign list.sublists_aux_cons_eq_sublists_aux₁
