@@ -309,7 +309,7 @@ instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (None
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff_isCompact_image]
+    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff]
     rw [image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 #align emetric.nonempty_compacts.compact_space EMetric.NonemptyCompacts.compactSpace
@@ -382,7 +382,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       let d : NonemptyCompacts α := ⟨⟨c, ‹c.Finite›.isCompact⟩, hc⟩
       have : c ⊆ s := by
         intro x hx
-        rcases(mem_image _ _ _).1 hx.1 with ⟨y, ⟨_, yx⟩⟩
+        rcases (mem_image _ _ _).1 hx.1 with ⟨y, ⟨_, yx⟩⟩
         rw [← yx]
         exact (Fspec y).1
       have : d ∈ v := ⟨‹c.Finite›, this⟩

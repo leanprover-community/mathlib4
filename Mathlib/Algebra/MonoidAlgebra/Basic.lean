@@ -90,6 +90,9 @@ instance MonoidAlgebra.addCommMonoid : AddCommMonoid (MonoidAlgebra k G) :=
   inferInstanceAs (AddCommMonoid (G →₀ k))
 #align monoid_algebra.add_comm_monoid MonoidAlgebra.addCommMonoid
 
+instance MonoidAlgebra.instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (MonoidAlgebra k G) :=
+  inferInstanceAs (IsCancelAdd (G →₀ k))
+
 instance MonoidAlgebra.coeFun : CoeFun (MonoidAlgebra k G) fun _ => G → k :=
   Finsupp.coeFun
 #align monoid_algebra.has_coe_to_fun MonoidAlgebra.coeFun
@@ -602,7 +605,8 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
   unfold MonoidAlgebra
   simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply, smulAddHom_apply,
     smul_single, smul_eq_mul, AddMonoidHom.coe_mulLeft]
-  rw [liftNC_single, liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [liftNC_single, liftNC_single]; rw [AddMonoidHom.coe_coe, map_mul, mul_assoc]
 #align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNC_smul
 
 end MiscTheorems
@@ -761,8 +765,9 @@ theorem ringHom_ext {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidA
     f = g :=
   RingHom.coe_addMonoidHom_injective <|
     addHom_ext fun a b => by
-      rw [← single, ← one_mul a, ← mul_one b, ← single_mul_single, AddMonoidHom.coe_coe f,
-        AddMonoidHom.coe_coe g, f.map_mul, g.map_mul, h₁, h_of]
+      rw [← single, ← one_mul a, ← mul_one b, ← single_mul_single]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [AddMonoidHom.coe_coe f, AddMonoidHom.coe_coe g]; rw [f.map_mul, g.map_mul, h₁, h_of]
 #align monoid_algebra.ring_hom_ext MonoidAlgebra.ringHom_ext
 
 /-- If two ring homomorphisms from `MonoidAlgebra k G` are equal on all `single a 1`
@@ -1110,8 +1115,9 @@ protected noncomputable def opRingEquiv [Monoid G] :
   { opAddEquiv.symm.trans <|
       (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv with
     map_mul' := by
-      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe, AddEquiv.coe_toEquiv,
-        ← AddEquiv.coe_toAddMonoidHom]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
+      rw [← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
         (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
       -- Porting note: Was `ext`.
@@ -1121,9 +1127,12 @@ protected noncomputable def opRingEquiv [Monoid G] :
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, opAddEquiv_apply,
         Function.comp_apply, singleAddHom_apply, AddMonoidHom.compr₂_apply, AddMonoidHom.coe_mul,
         AddMonoidHom.coe_mulLeft, AddMonoidHom.compl₂_apply]
-      rw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        AddEquiv.trans_apply, AddEquiv.trans_apply,
-        MulOpposite.opAddEquiv_symm_apply, MulOpposite.unop_mul (α := MonoidAlgebra k G)]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
+        AddEquiv.trans_apply, AddEquiv.trans_apply, MulOpposite.opAddEquiv_symm_apply]
+      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G)]
+      -- This was not needed before leanprover/lean4#2644
+      erw [unop_op, unop_op, single_mul_single]
       simp }
 #align monoid_algebra.op_ring_equiv MonoidAlgebra.opRingEquiv
 #align monoid_algebra.op_ring_equiv_apply MonoidAlgebra.opRingEquiv_apply
@@ -1196,6 +1205,9 @@ instance inhabited : Inhabited k[G] :=
 instance addCommMonoid : AddCommMonoid k[G] :=
   inferInstanceAs (AddCommMonoid (G →₀ k))
 #align add_monoid_algebra.add_comm_monoid AddMonoidAlgebra.addCommMonoid
+
+instance instIsCancelAdd [IsCancelAdd k] : IsCancelAdd (AddMonoidAlgebra k G) :=
+  inferInstanceAs (IsCancelAdd (G →₀ k))
 
 instance coeFun : CoeFun k[G] fun _ => G → k :=
   Finsupp.coeFun
@@ -1859,17 +1871,21 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
   { MulOpposite.opAddEquiv.symm.trans
       (Finsupp.mapRange.addEquiv (MulOpposite.opAddEquiv : k ≃+ kᵐᵒᵖ)) with
     map_mul' := by
-      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe, AddEquiv.coe_toEquiv,
-        ← AddEquiv.coe_toAddMonoidHom]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
+      rw [← AddEquiv.coe_toAddMonoidHom]
       refine Iff.mpr (AddMonoidHom.map_mul_iff (R := k[G]ᵐᵒᵖ) (S := kᵐᵒᵖ[G]) _) ?_
       -- Porting note: Was `ext`.
       refine AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₁ => AddMonoidHom.ext fun r₁ =>
         AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => ?_
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       dsimp
-      rw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        MulOpposite.opAddEquiv_symm_apply, MulOpposite.unop_mul (α := k[G])]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
+        MulOpposite.opAddEquiv_symm_apply]; rw [MulOpposite.unop_mul (α := k[G])]
       dsimp
+      -- This was not needed before leanprover/lean4#2644
+      erw [mapRange_single, single_mul_single, mapRange_single, mapRange_single]
       simp only [mapRange_single, single_mul_single, ← op_mul, add_comm] }
 #align add_monoid_algebra.op_ring_equiv AddMonoidAlgebra.opRingEquiv
 #align add_monoid_algebra.op_ring_equiv_apply AddMonoidAlgebra.opRingEquiv_apply
