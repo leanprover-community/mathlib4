@@ -19,15 +19,19 @@ def create_query(type: str, n_vars: int, eq_list, goal_type):
     """ Create a query to invoke Sage's `MPolynomial_libsingular.lift`. See
     https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
     for a description of this method. """
-    var_list = ", ".join([f"var{i}" for i in range(n_vars)])
+    var_list = [f"var{i}" for i in range(n_vars)] + ['aux']
     query = f'''
-P = PolynomialRing({type_str(type)}, 'var', {n_vars!r})
-[{var_list}] = P.gens()
-gens = {eq_list}
+import json
+P = {type_str(type)}{var_list}
+[{", ".join(var_list)}] = P.gens()
 p = P({goal_type})
+gens = {eq_list} + [1 - p*aux]
 I = ideal(gens)
-coeffs = p.lift(I)
-print(serialize_polynomials(coeffs))
+coeffs = P(1).lift(I)
+power = max(cf.degree(aux) for cf in coeffs)
+coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
+js = {{'power': power, 'coeffs': [polynomial_to_string(c) for c in coeffs]}}
+print(json.dumps(js))
 '''
     return query
 
@@ -52,7 +56,7 @@ def evaluate_in_sage(query: str) -> str:
 def main():
     '''The system args contain the following:
     0 - the path to this python file
-    1 - a string containing "true" or "false" depending on whether polyrith was called with trace enabled
+    1 - a string containing "tt" or "ff" depending on whether polyrith was called with trace enabled
     2 - a string representing the base type of the target
     3 - the number of variables used
     4 - a list of the polynomial hypotheses/proof terms in terms of the variables
@@ -63,20 +67,21 @@ def main():
     { success: bool,
       data: Optional[list[str]],
       trace: Optional[str],
-      name: Optional[str],
-      value: Optional[str] }
+      error_name: Optional[str],
+      error_value: Optional[str] }
     ```
     '''
     command = create_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
     final_query = polynomial_formatting_functions + "\n" + command
-    if sys.argv[1] == 'true': # trace dry run enabled
+    if sys.argv[1] == 'tt': # trace dry run enabled
         output = dict(success=True, trace=command)
     else:
         try:
             output = dict(success=True, data=evaluate_in_sage(final_query))
         except EvaluationError as e:
-            output = dict(success=False, name=e.ename, value=e.evalue)
+            output = dict(success=False, error_name=e.ename, error_value=e.evalue)
     print(json.dumps(output))
+
 
 if __name__ == "__main__":
     main()

@@ -250,14 +250,20 @@ instance : FromJson Poly where
         mon := mon.mul' (.pow' (← fromJson? (← j.getArrVal? 0)) (← fromJson? (← j.getArrVal? 1)))
       pure mon
 
+/-- A schema for the data reported by the Sage calculation -/
+structure SageCoeffAndPower where
+  /-- The function call produces an array of polynomials
+  parallel to the input list of hypotheses. -/
+  coeffs : Array Poly
+  power  : ℕ
+  deriving FromJson, Repr
+
 /-- The result of a sage call in the success case. -/
 structure SageSuccess where
   /-- The script returns a string containing python script to be sent to the remote server,
   when the tracing option is set. -/
   trace : Option String := none
-  /-- The main result of the function call is an array of polynomials
-  parallel to the input list of hypotheses. -/
-  data : Option (Array Poly) := none
+  data : Option SageCoeffAndPower := none
   deriving FromJson, Repr
 
 /-- The result of a sage call in the failure case. -/
@@ -337,7 +343,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     match ← sageOutput (createSageArgs traceOnly α vars hyps' tgt) with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
-      if let some polys := data then
+      if let some {coeffs := polys, power := pow} := data then
         let vars ← liftM <| (← get).atoms.mapM delab
         let p ← Poly.sumM (polys.zip hyps') fun (p, src, _) => do
           let h := .hyp (← delab (match src with | .input i => hyps[i]! | .fvar h => .fvar h))
