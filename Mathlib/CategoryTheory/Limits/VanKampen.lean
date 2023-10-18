@@ -254,7 +254,7 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
 #align category_theory.has_strict_initial_of_is_universal CategoryTheory.hasStrictInitial_of_isUniversal
 
 theorem isVanKampenColimit_of_isEmpty [HasStrictInitialObjects C] [IsEmpty J] {F : J ⥤ C}
-  (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
+    (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
   have : IsInitial c.pt
   · have := (IsColimit.precomposeInvEquiv (Functor.uniqueFromEmpty _) _).symm
       (hc.whiskerEquivalence (equivalenceOfIsEmpty (Discrete PEmpty.{1}) J))
