@@ -160,17 +160,17 @@ Composition of polynomial functors.
 namespace PFunctor
 
 /-- functor composition for polynomial functors -/
-def Comp (P₂ P₁ : PFunctor.{u}) : PFunctor.{u} :=
+def comp (P₂ P₁ : PFunctor.{u}) : PFunctor.{u} :=
   ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ => Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
-#align pfunctor.comp PFunctor.Comp
+#align pfunctor.comp PFunctor.comp
 
 /-- constructor for composition -/
-def Comp.mk (P₂ P₁ : PFunctor.{u}) {α : Type} (x : P₂ (P₁ α)) : Comp P₂ P₁ α :=
+def Comp.mk (P₂ P₁ : PFunctor.{u}) {α : Type} (x : P₂ (P₁ α)) : comp P₂ P₁ α :=
   ⟨⟨x.1, Sigma.fst ∘ x.2⟩, fun a₂a₁ => (x.2 a₂a₁.1).2 a₂a₁.2⟩
 #align pfunctor.comp.mk PFunctor.Comp.mk
 
 /-- destructor for composition -/
-def Comp.get (P₂ P₁ : PFunctor.{u}) {α : Type} (x : Comp P₂ P₁ α) : P₂ (P₁ α) :=
+def Comp.get (P₂ P₁ : PFunctor.{u}) {α : Type} (x : comp P₂ P₁ α) : P₂ (P₁ α) :=
   ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
 #align pfunctor.comp.get PFunctor.Comp.get
 
