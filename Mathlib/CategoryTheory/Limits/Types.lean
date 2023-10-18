@@ -37,7 +37,7 @@ variable {J : Type v} [Category J] {F : J ⥤ Type u}
 
 /-- Given a section of a functor F into `Type*`,
   construct a cone over F with `PUnit` as the cone point. -/
-def cone_of_section {s} (hs : s ∈ F.sections) : Cone F where
+def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
   pt := PUnit
   π :=
   { app := fun j _ ↦ s j,
@@ -45,16 +45,16 @@ def cone_of_section {s} (hs : s ∈ F.sections) : Cone F where
 
 /-- Given a cone over a functor F into `Type*` and an element in the cone point,
   construct a section of F. -/
-def section_of_cone (c : Cone F) (x : c.pt) : F.sections :=
+def sectionOfCone (c : Cone F) (x : c.pt) : F.sections :=
   ⟨fun j ↦ c.π.app j x, fun f ↦ congr_fun (c.π.naturality f).symm x⟩
 
 theorem isLimit_iff (c : Cone F) :
     Nonempty (IsLimit c) ↔ ∀ s ∈ F.sections, ∃! x : c.pt, ∀ i, c.π.app i x = s i := by
   refine ⟨fun ⟨t⟩ s hs ↦ ?_, fun h ↦ ⟨?_⟩⟩
-  · let cs := cone_of_section hs
+  · let cs := coneOfSection hs
     exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_fun (t.fac cs j) ⟨⟩,
       fun x hx ↦ congr_fun (t.uniq cs (fun _ ↦ x) fun j ↦ funext fun _ ↦ hx j) ⟨⟩⟩
-  · choose x hx using fun c y ↦ h _ (section_of_cone c y).2
+  · choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
     exact ⟨x, fun c j ↦ funext fun y ↦ (hx c y).1 j,
       fun c f hf ↦ funext fun y ↦ (hx c y).2 (f y) (fun j ↦ congr_fun (hf j) y)⟩
 
@@ -63,10 +63,10 @@ sections of `F`.
 -/
 noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
     c.pt ≃ F.sections where
-  toFun := section_of_cone c
-  invFun s := t.lift (cone_of_section s.2) ⟨⟩
-  left_inv x := (congr_fun (t.uniq (cone_of_section _) (fun _ ↦ x) fun _ ↦ rfl) ⟨⟩).symm
-  right_inv s := Subtype.ext (funext fun j ↦ congr_fun (t.fac (cone_of_section s.2) j) ⟨⟩)
+  toFun := sectionOfCone c
+  invFun s := t.lift (coneOfSection s.2) ⟨⟩
+  left_inv x := (congr_fun (t.uniq (coneOfSection _) (fun _ ↦ x) fun _ ↦ rfl) ⟨⟩).symm
+  right_inv s := Subtype.ext (funext fun j ↦ congr_fun (t.fac (coneOfSection s.2) j) ⟨⟩)
 #align category_theory.limits.types.is_limit_equiv_sections CategoryTheory.Limits.Types.isLimitEquivSections
 
 @[simp]
