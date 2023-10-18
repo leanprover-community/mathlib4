@@ -207,8 +207,8 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     | z => simp only [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
     | f yb y hyb =>
       rw [←bit_ne_zero_iff] at hyb
-      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ←div2_val, div2_bit,
-        eq_rec_constant, ih]
+      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ←div2_val,
+        div2_bit, eq_rec_constant, ih]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction' n using Nat.binaryRec with b n hn
