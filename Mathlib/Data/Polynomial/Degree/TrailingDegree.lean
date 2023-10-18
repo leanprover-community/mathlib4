@@ -71,8 +71,8 @@ theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
 #align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
 
--- Porting note: Removed unused argument `[DecidableEq R]`?
-instance TrailingMonic.decidable: Decidable (TrailingMonic p) := inferInstance
+instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
+  inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
 #align polynomial.trailing_monic.decidable Polynomial.TrailingMonic.decidable
 
 @[simp]
