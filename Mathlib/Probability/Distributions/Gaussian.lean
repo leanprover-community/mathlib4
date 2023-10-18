@@ -124,7 +124,11 @@ lemma integral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
 lemma gaussianPdfReal_sub {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
     gaussianPdfReal μ v (x - y) = gaussianPdfReal (μ + y) v x := by
   simp only [gaussianPdfReal]
-  rw [@sub_add_eq_sub_sub_swap]
+  rw [sub_add_eq_sub_sub_swap]
+
+lemma gaussianPdfReal_add {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
+    gaussianPdfReal μ v (x + y) = gaussianPdfReal (μ - y) v x := by
+  rw [sub_eq_add_neg, ← gaussianPdfReal_sub, sub_eq_add_neg, neg_neg]
 
 lemma gaussianPdfReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPdfReal μ v (c⁻¹ * x) = |c| * gaussianPdfReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
@@ -144,6 +148,12 @@ lemma gaussianPdfReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     field_simp
     congr 1
     ring
+
+lemma gaussianPdfReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
+    gaussianPdfReal μ v (c * x)
+      = |c⁻¹| * gaussianPdfReal (c⁻¹ * μ) (⟨(c^2)⁻¹, inv_nonneg.mpr (sq_nonneg _)⟩ * v) x := by
+  conv_lhs => rw [← inv_inv c, gaussianPdfReal_inv_mul (inv_ne_zero hc)]
+  simp
 
 /-- The pdf of a Gaussian distribution on ℝ with mean `μ` and variance `v`. -/
 noncomputable
@@ -265,6 +275,12 @@ lemma gaussianReal_map_add_const (y : ℝ) :
   rw [gaussianReal_apply_eq_integral _ hv hs']
   simp_rw [gaussianPdfReal_sub _ y]
 
+/-- The map of a Gaussian distribution by addition of a constant is a Gaussian. -/
+lemma gaussianReal_map_const_add (y : ℝ) :
+    (gaussianReal μ v).map (y + ·) = gaussianReal (μ + y) v := by
+  simp_rw [add_comm y]
+  exact gaussianReal_map_add_const y
+
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
@@ -304,6 +320,12 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   rw [abs_inv, inv_mul_cancel]
   rwa [ne_eq, abs_eq_zero]
 
+/-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
+lemma gaussianReal_map_mul_const (c : ℝ) :
+    (gaussianReal μ v).map (· * c) = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
+  simp_rw [mul_comm _ c]
+  exact gaussianReal_map_const_mul c
+
 variable {Ω : Type} [MeasureSpace Ω]
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
@@ -318,6 +340,13 @@ lemma gaussianReal_add_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
   rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.add_const _).aemeasurable hXm, hX,
     gaussianReal_map_add_const y]
 
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `y + X`
+has Gaussian law with mean `μ + y` and variance `v`. -/
+lemma gaussianReal_const_add {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (y : ℝ) :
+    Measure.map (fun ω ↦ y + X ω) ℙ = gaussianReal (μ + y) v := by
+  simp_rw [add_comm y]
+  exact gaussianReal_add_const hX y
+
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
 has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
 lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (c : ℝ) :
@@ -329,6 +358,13 @@ lemma gaussianReal_const_mul {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
   change Measure.map ((fun ω ↦ c * ω) ∘ X) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.const_mul c).aemeasurable hXm, hX]
   exact gaussianReal_map_const_mul c
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X * c`
+has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
+lemma gaussianReal_mul_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (c : ℝ) :
+    Measure.map (fun ω ↦ X ω * c) ℙ = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) := by
+  simp_rw [mul_comm _ c]
+  exact gaussianReal_const_mul hX c
 
 end Transformations
 
