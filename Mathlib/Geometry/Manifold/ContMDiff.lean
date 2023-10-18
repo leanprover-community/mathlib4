@@ -16,7 +16,7 @@ basic properties of these notions.
 
 ## Main definitions and statements
 
-Let `M ` and `M'` be two smooth manifolds, with respect to model with corners `I` and `I'`. Let
+Let `M` and `M'` be two smooth manifolds, with respect to model with corners `I` and `I'`. Let
 `f : M → M'`.
 
 * `ContMDiffWithinAt I I' n f s x` states that the function `f` is `Cⁿ` within the set `s`
@@ -587,7 +587,7 @@ theorem contMDiffOn_iff_target :
   constructor
   · refine' fun h' y => ⟨_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert(h''.comp' (chartAt H' y).continuous_toFun).comp' h
+    convert (h''.comp' (chartAt H' y).continuous_toFun).comp' h
     simp
   · exact fun h' x y => (h' y).2 x 0
 #align cont_mdiff_on_iff_target contMDiffOn_iff_target

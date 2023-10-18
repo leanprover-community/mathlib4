@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
@@ -1530,7 +1530,7 @@ theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
   tfae_have 6 → 4
   · intro H a s hs
     rw [← H] at hs
-    rcases(𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
+    rcases (𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
     exact ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, hUs⟩
   tfae_have 4 → 2
   · intro H s a ha
