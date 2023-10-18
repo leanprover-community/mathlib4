@@ -68,7 +68,7 @@ lemma bitwise_zero : bitwise f 0 0 = 0 := by
 @[simp]
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
-  conv_lhs => { unfold bitwise }
+  conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
   simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
@@ -77,12 +77,12 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
-  conv_lhs => { unfold bitwise }
+  conv_lhs => unfold bitwise
   simp only [bit, bit1, bit0, Bool.cond_eq_ite]
-  have h1 x :     (x + x) % 2 = 0   := by ring_nf; apply mul_mod_left
-  have h2 x : (x + x + 1) % 2 = 1   := by ring_nf; apply add_mul_mod_self_right
-  have h3 x :     (x + x) / 2 = x   := by ring_nf; apply mul_div_left _ zero_lt_two
-  have h4 x : (x + x + 1) / 2 = x   := by ring_nf; simp [add_mul_div_right]
+  have h1 x :     (x + x) % 2 = 0 := by ring_nf; apply mul_mod_left
+  have h2 x : (x + x + 1) % 2 = 1 := by ring_nf; apply add_mul_mod_self_right
+  have h3 x :     (x + x) / 2 = x := by ring_nf; apply mul_div_left _ zero_lt_two
+  have h4 x : (x + x + 1) / 2 = x := by ring_nf; simp [add_mul_div_right]
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs <;> simp_all
 #align nat.bitwise_bit Nat.bitwise_bit
 
@@ -107,7 +107,7 @@ lemma bit_mod_two_eq_one_iff (a x) :
 lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
     (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
-  conv_lhs => { unfold bitwise }
+  conv_lhs => unfold bitwise
   have {c x} : (x = 0 → c = true) → bit c x ≠ 0 := by
     simp [bit, bit1, bit0, Bool.cond_eq_ite]
     intro hi hc
@@ -125,8 +125,8 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
 
 lemma binaryRec_of_ne_zero {C : ℕ → Sort*} {z : C 0} {f n} (h : n ≠ 0) :
     binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  conv_lhs => {unfold binaryRec}
-  simp [h]
+  conv_lhs => unfold binaryRec
+  simp only [h, eq_mpr_eq_cast, dite_false]
   apply eq_of_heq
   trans f (bodd n) (div2 n) (binaryRec z f (div2 n))
   · apply cast_heq
@@ -143,22 +143,21 @@ lemma bitwise_eq_binaryRec :
   funext x y
   induction' x using Nat.strongInductionOn with x ih generalizing y
   cases' x with x <;> cases' y with y
-  · simp only [bitwise_zero, binaryRec_zero, Bool.cond_eq_ite];
+  · simp only [bitwise_zero, binaryRec_zero, Bool.cond_eq_ite]
     split_ifs <;> rfl
   · simp only [bitwise_zero_left, Bool.cond_eq_ite, binaryRec_zero]
   · simp only [zero_eq, bitwise_zero_right, Bool.cond_eq_ite, ne_eq, succ_ne_zero,
       not_false_eq_true, binaryRec_of_ne_zero, bodd_succ, div2_succ, eq_rec_constant,
       binaryRec_zero]
     split_ifs with _ hbodd
-    · conv_lhs => { rw [←bit_decomp (succ x)] }; simp [hbodd]
-    · conv_lhs => { rw [←bit_decomp (succ x)] }; simp [hbodd]
+    · conv_lhs => rw [←bit_decomp (succ x)]
+      simp [hbodd]
+    · conv_lhs => rw [←bit_decomp (succ x)]
+      simp [hbodd]
     · rfl
   · specialize ih ((x+1) / 2) (div_lt_self' ..)
-    simp only [
-      show succ x = x + 1 from rfl,
-      ne_eq, succ_ne_zero, not_false_eq_true, bitwise_of_ne_zero, bodd_succ, ih,
-      Bool.cond_eq_ite, binaryRec_of_ne_zero, div2_val, eq_rec_constant
-    ]
+    simp only [succ_eq_add_one, ne_eq, succ_ne_zero, bitwise_of_ne_zero, bodd_succ, ih,
+      Bool.cond_eq_ite, binaryRec_of_ne_zero, div2_val, eq_rec_constant]
 
 @[simp]
 theorem lor_bit : ∀ a m b n, lor (bit a m) (bit b n) = bit (a || b) (lor m n) :=
