@@ -22,6 +22,7 @@ section
 
 open Function
 
+@[to_additive]
 instance {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
     [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) := by
@@ -45,6 +46,7 @@ Compare `exists_continuous_one_zero_of_isCompact`, which works in a space which 
 be a group, but should be T2. Here, we can avoid separation assumptions by going through the
 quotient space `G ⧸ closure {1}`.
 -/
+@[to_additive exists_continuous_one_zero_of_isCompact_of_addGroup]
 lemma exists_continuous_one_zero_of_isCompact_of_group
     {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
     [LocallyCompactSpace G] {k u : Set G}
@@ -76,7 +78,7 @@ lemma exists_continuous_one_zero_of_isCompact_of_group
       exact ⟨y, y⁻¹ * x, yv, QuotientGroup.eq.mp hy, by dsimp; group⟩
     rwa [hv.smul_set_closure_one_eq] at this
   refine ⟨f ∘ π, f_cont.comp C, ?_, ?_, ?_, fun x ↦ by simpa using f_range _⟩
-  · refine HasCompactSupport.intro' L_comp.closure isClosed_closure (fun x hx ↦ ?_)
+  · refine HasCompactSupport.intro' L_comp.closure_of_group isClosed_closure (fun x hx ↦ ?_)
     apply A
     contrapose! hx
     simp only [mem_compl_iff, not_not] at hx
@@ -284,7 +286,7 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
         let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
         have M_comp : IsCompact M :=
           (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
-        have M'_comp : IsCompact (closure M) := M_comp.closure
+        have M'_comp : IsCompact (closure M) := M_comp.closure_of_group
         have : ∀ (p : G × G), p ∉ K ×ˢ closure M → f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1) = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ K; swap
@@ -302,9 +304,7 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
   _ = ∫ y, (∫ x, f (y * x) * (D (y * x))⁻¹ * g x ∂μ) ∂ν := by
       congr with y
       rw [← integral_mul_left_eq_self _ y]
-      congr with x
-      congr
-      group
+      simp
   _ = ∫ x, (∫ y, f (y * x) * (D (y * x))⁻¹ * g x ∂ν) ∂μ := by
       apply (integral_integral_swap_of_hasCompactSupport _ _).symm
       · apply Continuous.mul ?_ (hg.comp continuous_fst)
@@ -317,7 +317,7 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
         let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
         have M_comp : IsCompact M :=
           (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
-        have M'_comp : IsCompact (closure M) := M_comp.closure
+        have M'_comp : IsCompact (closure M) := M_comp.closure_of_group
         have : ∀ (p : G × G), p ∉ L ×ˢ closure M →
             f (p.2 * p.1) * (D (p.2 * p.1))⁻¹ * g p.1 = 0 := by
           rintro ⟨x, y⟩ hxy
@@ -336,12 +336,12 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
   _ = ∫ x, (∫ y, f y * (D y)⁻¹ ∂ν) * g x ∂μ := by
       simp_rw [integral_mul_right]
       congr with x
-      congr 1
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
 
 /-- Given two left-invariant measures which are finite on compacts, they integrate in the same way
 continuous compactly supported functions, up to a multiplicative constant. -/
+@[to_additive]
 lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
