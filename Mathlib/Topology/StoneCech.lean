@@ -337,25 +337,24 @@ theorem disjoint_closure_of_disjoint_closed [TopologicalSpace α] [NormalSpace �
     Disjoint (closure (stoneCechUnit '' s)) (closure (stoneCechUnit '' t)) := by
   let ⟨⟨f, cf⟩, hfs, hft, hf⟩ := exists_continuous_zero_one_of_closed hs ht hd
   let Z := ULift.{u} <| Set.Icc (0 : ℝ) 1
-  haveI : CompactSpace Z := Homeomorph.ulift.symm.compactSpace
+  have : CompactSpace Z := Homeomorph.ulift.symm.compactSpace
   haveI : T2Space Z := Homeomorph.ulift.symm.t2Space
   let g : α → Z := fun y' => ⟨f y', hf y'⟩
-  let hg : Continuous g := continuous_uLift_up.comp (cf.subtype_mk fun y' => hf y')
+  have hg : Continuous g := continuous_uLift_up.comp (cf.subtype_mk hf)
   let uu := stoneCechExtend hg
-  have subs: ∀ (x : ℝ), (h : (x ∈ Set.Icc (0 : ℝ) 1)) →
+  have subs : ∀ (x : ℝ) (h : x ∈ Set.Icc (0 : ℝ) 1),
       closure (stoneCechUnit '' (g ⁻¹' {⟨x, h⟩})) ⊆ uu ⁻¹' {⟨x, h⟩} := by
     intros x hx
     have closed_image : closure (uu ⁻¹' {⟨x, hx⟩}) = uu ⁻¹' {⟨x, hx⟩} := by
       rw [closure_eq_iff_isClosed]
       apply_rules [IsClosed.preimage, continuous_stoneCechExtend,
-      IsCompact.isClosed, isCompact_singleton, continuous_def.2]
+        IsCompact.isClosed, isCompact_singleton, continuous_def.2]
       simp only [preimage_id', imp_self, forall_const]
     rw [←closed_image]
     apply closure_mono
     rw [←stoneCechExtend_extends hg, preimage_comp, image_subset_iff]
   have closureSub: ∀ (x : ℝ), ∀ (u : Set α), (h0: (∀ (o : α), (o ∈ u)  → f o = x))
       → (h : (x ∈ Set.Icc (0 : ℝ) 1)) → closure (stoneCechUnit '' u) ⊆ uu ⁻¹' {⟨x, h⟩} := by
-    simp only
     intros x u hu xicc _
     apply Subset.trans _ (subs x xicc)
     apply closure_mono
