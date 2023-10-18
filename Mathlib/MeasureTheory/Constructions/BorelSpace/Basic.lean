@@ -675,7 +675,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.fst ha.choose_spec.snd
     convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
-      simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right_iff_subset, subset_def, mem_iUnion,
+      simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right, subset_def, mem_iUnion,
         mem_Ici, mem_Iio]
       intro x hx
       rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) x with ⟨z, hzt, hzx⟩
@@ -984,6 +984,9 @@ def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
   measurable_invFun := h.symm.measurable
   toEquiv := h.toEquiv
 #align homeomorph.to_measurable_equiv Homeomorph.toMeasurableEquiv
+
+lemma Homeomorph.measurableEmbedding (h : γ ≃ₜ γ₂) : MeasurableEmbedding h :=
+  h.toMeasurableEquiv.measurableEmbedding
 
 @[simp]
 theorem Homeomorph.toMeasurableEquiv_coe (h : γ ≃ₜ γ₂) : (h.toMeasurableEquiv : γ → γ₂) = h :=

@@ -59,7 +59,8 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
 
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
-@[norm_num mkRat _ _] def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e):= do
+@[norm_num mkRat _ _]
+def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := do
   let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : $e =Q mkRat $a $b := ⟨⟩
   let ra ← derive a
