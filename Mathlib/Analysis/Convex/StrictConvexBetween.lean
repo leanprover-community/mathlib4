@@ -107,7 +107,8 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
         b -ᵥ a ∈ segment ℝ (a -ᵥ a) (c -ᵥ a) := by
     simp only [mem_segment_iff_sameRay, sameRay_iff_norm_add, dist_eq_norm', sub_add_sub_cancel',
       eq_comm]
-  simp_rw [dist_vsub_cancel_right, ← affineSegment_eq_segment, ← affineSegment_vsub_const_image] at this
+  simp_rw [dist_vsub_cancel_right, ← affineSegment_eq_segment, ← affineSegment_vsub_const_image]
+    at this
   rwa [(vsub_left_injective _).mem_set_image] at this
 #align dist_add_dist_eq_iff dist_add_dist_eq_iff
 
@@ -120,8 +121,8 @@ variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [Norm
 lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
     (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
   have : y -ᵥ x ∈ [(0 : E) -[ℝ] z -ᵥ x] := by
-    rw [mem_segment_iff_wbtw, ← dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right, ← dist_eq_norm_vsub', ←
-      dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel'_right, one_mul]
+    rw [mem_segment_iff_wbtw, ←dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right,
+      ←dist_eq_norm_vsub', ←dist_eq_norm_vsub', hxy, hyz, ←add_mul, add_sub_cancel'_right, one_mul]
   obtain rfl | hne := eq_or_ne x z
   · obtain rfl : y = x := by simpa
     simp
