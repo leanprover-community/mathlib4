@@ -119,8 +119,9 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
       · simp at hc
   have ham' := this ham
   have hbn' := this hbn
-  simp [ham', hbn', ←div2_val, div2_bit]
-  conv_rhs => simp [bit, bit1, bit0, Bool.cond_eq_ite]
+  simp only [ham', hbn', bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
+    ite_false]
+  conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
   split_ifs with hf <;> rfl
 
 lemma binaryRec_of_ne_zero {C : ℕ → Sort*} {z : C 0} {f n} (h : n ≠ 0) :
