@@ -13,28 +13,41 @@ import Mathlib.CategoryTheory.DiscreteCategory
 Defines a category structure on `PEmpty`, and the unique functor `PEmpty ⥤ C` for any category `C`.
 -/
 
-universe w v u
+universe w v v' u u'
 -- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory
 
 namespace Functor
 
-variable (C : Type u) [Category.{v} C]
+variable (C : Type u) [Category.{v} C] (D : Type u') [Category.{v'} D]
+
+instance (α : Type*) [IsEmpty α] : IsEmpty (Discrete α) := Function.isEmpty Discrete.as
+
+/-- The (unique) functor from an empty category. -/
+def functorOfIsEmpty [IsEmpty C] : C ⥤ D where
+  obj := isEmptyElim
+  map := fun {X} ↦ isEmptyElim X
+  map_id := fun {X} ↦ isEmptyElim X
+  map_comp := fun {X} ↦ isEmptyElim X
+
+variable {C D}
+
+/-- Any two functors out of an empty category are isomorphic. -/
+def isEmptyExt [IsEmpty C] (F G : C ⥤ D) : F ≅ G :=
+  NatIso.ofComponents isEmptyElim (fun {X} ↦ isEmptyElim X)
+
+variable (C D)
+
+/-- The equivalence between two empty categories. -/
+def equivalenceOfIsEmpty [IsEmpty C] [IsEmpty D] : C ≌ D where
+  functor := functorOfIsEmpty C D
+  inverse := functorOfIsEmpty D C
+  unitIso := isEmptyExt _ _
+  counitIso := isEmptyExt _ _
+  functor_unitIso_comp := isEmptyElim
 
 /-- Equivalence between two empty categories. -/
-def emptyEquivalence : Discrete.{w} PEmpty ≌ Discrete.{v} PEmpty where
-  functor :=
-    { obj := PEmpty.elim ∘ Discrete.as
-      map := fun {X} _ _ => X.as.elim }
-  inverse :=
-    { obj := PEmpty.elim ∘ Discrete.as
-      map := fun {X} _ _ => X.as.elim }
-  unitIso :=
-    { hom := { app := fun X => X.as.elim }
-      inv := { app := fun X => X.as.elim } }
-  counitIso :=
-    { hom := { app := fun X => X.as.elim }
-      inv := { app := fun X => X.as.elim } }
+def emptyEquivalence : Discrete.{w} PEmpty ≌ Discrete.{v} PEmpty := equivalenceOfIsEmpty _ _
 #align category_theory.functor.empty_equivalence CategoryTheory.Functor.emptyEquivalence
 
 /-- The canonical functor out of the empty category. -/
