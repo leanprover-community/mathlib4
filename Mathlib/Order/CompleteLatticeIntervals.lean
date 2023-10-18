@@ -182,6 +182,7 @@ end OrdConnected
 
 section Icc
 
+/-- Complete lattice structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) :=
 { Set.Icc.boundedOrder h with
@@ -218,6 +219,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     · exact le_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h) }
 
+/-- Complete linear order structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
     {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) :=
 { Set.Icc.completeLattice h, Subtype.linearOrder _ with }
