@@ -73,7 +73,9 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
 /-- Setting up command line options and help text for `lake exe graph`. -/
 def graph : Cmd := `[Cli|
   graph VIA importGraphCLI; ["0.0.1"]
-  "Generate representations of a Lean import graph."
+  "Generate representations of a Lean import graph." ++
+  "By default generates the import graph up to `Mathlib`." ++
+  "If you are working in a downstream project, using `lake exe graph --to MyProject`."
 
   FLAGS:
     reduce;               "Remove transitively redundant edges."
