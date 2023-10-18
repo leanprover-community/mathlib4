@@ -21,7 +21,7 @@ In the special case of `ℕ`, it can be thought of as the "binary" ordering. Tha
 on `∑_{i ∈ s} 2^i`. It's defined here on `Finset α` for any linear order `α`.
 
 In the context of the Kruskal-Katona theorem, we are interested in how colex behaves for sets of a
-fixed size. Eg for size 3, the colex order on ℕ starts
+fixed size. For example, for size 3, the colex order on ℕ starts
 `123, 124, 134, 234, 125, 135, 235, 145, 245, 345, ...`
 
 ## Main statements
