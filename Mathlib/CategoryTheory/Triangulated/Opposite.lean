@@ -333,7 +333,7 @@ noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
 lemma contractible_distinguished (X : Cᵒᵖ) :
     contractibleTriangle X ∈ distinguishedTriangles C := by
   rw [mem_distinguishedTriangles_iff']
-  exact ⟨_, inv_rot_of_dist_triangle _ (Pretriangulated.contractible_distinguished X.unop),
+  exact ⟨_, inv_rot_of_distTriang _ (Pretriangulated.contractible_distinguished X.unop),
     ⟨contractibleTriangleIso X⟩⟩
 
 /-- Isomorphism expressing a compatibility of the equivalence `triangleOpEquivalence C`
@@ -383,7 +383,11 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
   simp
 
 /-- The pretriangulated structure on the opposite category of
-a pretriangulated category. -/
+a pretriangulated category. It is a scoped instance, so that we need to
+`open CategoryTheory.Pretriangulated.Opposite` in order to be able
+to use it: the reason is that it relies on the definition of the shift
+on the opposite category `Cᵒᵖ`, for which it is unclear whether it should
+be a global instance or not. -/
 scoped instance : Pretriangulated Cᵒᵖ where
   distinguishedTriangles := distinguishedTriangles C
   isomorphic_distinguished := isomorphic_distinguished
