@@ -353,3 +353,60 @@ theorem comp_smul (p p' : R[X]) (q : PolynomialModule R M) :
 end PolynomialModule
 
 end CommSemiring
+
+namespace Module
+
+open Polynomial
+/--
+Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
+Then `Module.AEval R M a` is the `R[X]`-module with carrier `M`,
+where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
+-/
+@[nolint unusedArguments]
+def AEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
+
+variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
+  [Module R M] [IsScalarTower R A M]
+
+namespace AEval
+
+instance : AddCommMonoid <| AEval R M a     := by assumption
+instance : Module R <| AEval R M a          := by assumption
+instance : Module A <| AEval R M a          := by assumption
+instance : IsScalarTower R A <| AEval R M a := by assumption
+instance : SMul R[X] <| AEval R M a         := ⟨fun f m ↦ aeval a f • m⟩
+
+lemma smul_def (f : R[X]) (m : AEval R M a) : f • m = aeval a f • m := rfl
+
+lemma X_smul (m : AEval R M a) : (X : R[X]) • m = a • m := by simp [smul_def]
+
+instance : Module R[X] <| AEval R M a where
+  one_smul  := by simp [smul_def]
+  mul_smul  := by simp [smul_def, mul_smul]
+  smul_zero := by simp [smul_def]
+  smul_add  := by simp [smul_def]
+  add_smul  := by simp [smul_def, add_smul]
+  zero_smul := by simp [smul_def]
+
+instance : IsScalarTower R R[X] <| AEval R M a := ⟨by simp [smul_def]⟩
+
+end AEval
+
+variable (φ : M →ₗ[R] M)
+/--
+Given and `R`-module `M` and a linear map `φ : M →ₗ[R] M`, `Module.AEval' φ` is the
+`R[X]`-module with elements `⟨m⟩` for `m : M` in which the action of `X` is given by `φ`.
+I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
+-/
+/-
+`Module.AEval'` is defined as a special case of `Module.AEval` in which the `R`-algebra is
+`M →ₗ[R] M`. Lemmas involving `Module.AEval` may be applied to `Module.AEval'`.
+-/
+@[reducible] def AEval' := AEval R M φ
+
+lemma AEval'_def : AEval' φ = AEval R M φ := rfl
+
+lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
+
+end Module
