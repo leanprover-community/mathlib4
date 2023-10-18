@@ -81,9 +81,9 @@ universe u v w x
 
 namespace Set
 
-variable {α : Type _} {s t : Set α}
+variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet {α : Type _} : BooleanAlgebra (Set α) :=
+instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -804,21 +804,21 @@ theorem union_right_comm (s₁ s₂ s₃ : Set α) : s₁ ∪ s₂ ∪ s₃ = s�
 #align set.union_right_comm Set.union_right_comm
 
 @[simp]
-theorem union_eq_left_iff_subset {s t : Set α} : s ∪ t = s ↔ t ⊆ s :=
+theorem union_eq_left {s t : Set α} : s ∪ t = s ↔ t ⊆ s :=
   sup_eq_left
-#align set.union_eq_left_iff_subset Set.union_eq_left_iff_subset
+#align set.union_eq_left_iff_subset Set.union_eq_left
 
 @[simp]
-theorem union_eq_right_iff_subset {s t : Set α} : s ∪ t = t ↔ s ⊆ t :=
+theorem union_eq_right {s t : Set α} : s ∪ t = t ↔ s ⊆ t :=
   sup_eq_right
-#align set.union_eq_right_iff_subset Set.union_eq_right_iff_subset
+#align set.union_eq_right_iff_subset Set.union_eq_right
 
 theorem union_eq_self_of_subset_left {s t : Set α} (h : s ⊆ t) : s ∪ t = t :=
-  union_eq_right_iff_subset.mpr h
+  union_eq_right.mpr h
 #align set.union_eq_self_of_subset_left Set.union_eq_self_of_subset_left
 
 theorem union_eq_self_of_subset_right {s t : Set α} (h : t ⊆ s) : s ∪ t = s :=
-  union_eq_left_iff_subset.mpr h
+  union_eq_left.mpr h
 #align set.union_eq_self_of_subset_right Set.union_eq_self_of_subset_right
 
 @[simp]
@@ -974,22 +974,18 @@ theorem subset_inter_iff {s t r : Set α} : r ⊆ s ∩ t ↔ r ⊆ s ∧ r ⊆ 
   (forall_congr' fun _ => imp_and).trans forall_and
 #align set.subset_inter_iff Set.subset_inter_iff
 
-@[simp]
-theorem inter_eq_left_iff_subset {s t : Set α} : s ∩ t = s ↔ s ⊆ t :=
-  inf_eq_left
-#align set.inter_eq_left_iff_subset Set.inter_eq_left_iff_subset
+@[simp] lemma inter_eq_left : s ∩ t = s ↔ s ⊆ t := inf_eq_left
+#align set.inter_eq_left_iff_subset Set.inter_eq_left
 
-@[simp]
-theorem inter_eq_right_iff_subset {s t : Set α} : s ∩ t = t ↔ t ⊆ s :=
-  inf_eq_right
-#align set.inter_eq_right_iff_subset Set.inter_eq_right_iff_subset
+@[simp] lemma inter_eq_right : s ∩ t = t ↔ t ⊆ s := inf_eq_right
+#align set.inter_eq_right_iff_subset Set.inter_eq_right
 
 theorem inter_eq_self_of_subset_left {s t : Set α} : s ⊆ t → s ∩ t = s :=
-  inter_eq_left_iff_subset.mpr
+  inter_eq_left.mpr
 #align set.inter_eq_self_of_subset_left Set.inter_eq_self_of_subset_left
 
 theorem inter_eq_self_of_subset_right {s t : Set α} : t ⊆ s → s ∩ t = t :=
-  inter_eq_right_iff_subset.mpr
+  inter_eq_right.mpr
 #align set.inter_eq_self_of_subset_right Set.inter_eq_self_of_subset_right
 
 theorem inter_congr_left (ht : s ∩ u ⊆ t) (hu : s ∩ t ⊆ u) : s ∩ t = s ∩ u :=
@@ -1176,7 +1172,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
 #align set.insert_subset_insert Set.insert_subset_insert
 
-theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
+@[simp] theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
   refine' ⟨fun h x hx => _, insert_subset_insert⟩
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts [(ha hx).elim, hxt]

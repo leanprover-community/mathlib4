@@ -144,7 +144,7 @@ def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio 
 /-- Similar to `addSimpTheorem` except that it returns an array of all auto-generated
   simp-theorems. -/
 def addSimpTheorem' (ext : SimpExtension) (declName : Name) (post : Bool) (inv : Bool)
-  (attrKind : AttributeKind) (prio : Nat) : MetaM (Array Name) := do
+    (attrKind : AttributeKind) (prio : Nat) : MetaM (Array Name) := do
   let (auxNames, simpThms) ← mkSimpTheoremsFromConst' declName post inv prio
   for simpThm in simpThms do
     ext.add (SimpEntry.thm simpThm) attrKind
@@ -153,7 +153,7 @@ def addSimpTheorem' (ext : SimpExtension) (declName : Name) (post : Bool) (inv :
 /-- Similar to `AttributeImpl.add` in `mkSimpAttr` except that it doesn't require syntax,
   and returns an array of all auto-generated lemmas. -/
 def addSimpAttr (declName : Name) (ext : SimpExtension) (attrKind : AttributeKind)
-  (post : Bool) (prio : Nat) :
+    (post : Bool) (prio : Nat) :
     MetaM (Array Name) := do
   let info ← getConstInfo declName
   if (← isProp info.type) then
@@ -178,7 +178,7 @@ def addSimpAttr (declName : Name) (ext : SimpExtension) (attrKind : AttributeKin
 /-- Similar to `AttributeImpl.add` in `mkSimpAttr` except that it returns an array of all
   auto-generated lemmas. -/
 def addSimpAttrFromSyntax (declName : Name) (ext : SimpExtension) (attrKind : AttributeKind)
-  (stx : Syntax) : MetaM (Array Name) := do
+    (stx : Syntax) : MetaM (Array Name) := do
   let post := if stx[1].isNone then true else stx[1][0].getKind == ``Lean.Parser.Tactic.simpPost
   let prio ← getAttrParamOptPrio stx[2]
   addSimpAttr declName ext attrKind post prio
