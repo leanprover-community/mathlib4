@@ -2,14 +2,6 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
-   {"url": "https://github.com/nomeata/std4",
-    "subDir?": null,
-    "rev": "fd9204a645759b6a72d899644ef5f31437a3daaa",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "lean-pr-testing-2577",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
     "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
@@ -40,5 +32,13 @@
     "opts": {},
     "name": "proofwidgets",
     "inputRev?": "v0.0.18",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/nomeata/std4",
+    "subDir?": null,
+    "rev": "c9d62d5991d10c1a260c67b61a3494577a64b814",
+    "opts": {},
+    "name": "std",
+    "inputRev?": "lean-pr-testing-2577",
     "inherited": false}}],
  "name": "mathlib"}
