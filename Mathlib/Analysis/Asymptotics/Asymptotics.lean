@@ -330,7 +330,7 @@ theorem isBigOWith_congr (hc : c₁ = c₂) (hf : f₁ =ᶠ[l] f₂) (hg : g₁ 
   simp only [IsBigOWith_def]
   subst c₂
   apply Filter.eventually_congr
-  filter_upwards [hf, hg]with _ e₁ e₂
+  filter_upwards [hf, hg] with _ e₁ e₂
   rw [e₁, e₂]
 #align asymptotics.is_O_with_congr Asymptotics.isBigOWith_congr
 
@@ -494,7 +494,7 @@ theorem IsLittleO.mono (h : f =o[l'] g) (hl : l ≤ l') : f =o[l] g :=
 theorem IsBigOWith.trans (hfg : IsBigOWith c l f g) (hgk : IsBigOWith c' l g k) (hc : 0 ≤ c) :
     IsBigOWith (c * c') l f k := by
   simp only [IsBigOWith_def] at *
-  filter_upwards [hfg, hgk]with x hx hx'
+  filter_upwards [hfg, hgk] with x hx hx'
   calc
     ‖f x‖ ≤ c * ‖g x‖ := hx
     _ ≤ c * (c' * ‖k x‖) := by gcongr
@@ -618,7 +618,7 @@ theorem IsLittleO.trans_le (hfg : f =o[l] g) (hgk : ∀ x, ‖g x‖ ≤ ‖k x�
 
 theorem isLittleO_irrefl' (h : ∃ᶠ x in l, ‖f' x‖ ≠ 0) : ¬f' =o[l] f' := by
   intro ho
-  rcases((ho.bound one_half_pos).and_frequently h).exists with ⟨x, hle, hne⟩
+  rcases ((ho.bound one_half_pos).and_frequently h).exists with ⟨x, hle, hne⟩
   rw [one_div, ← div_eq_inv_mul] at hle
   exact (half_lt_self (lt_of_le_of_ne (norm_nonneg _) hne.symm)).not_le hle
 #align asymptotics.is_o_irrefl' Asymptotics.isLittleO_irrefl'
@@ -1015,7 +1015,7 @@ end
 
 theorem IsBigOWith.prod_left_same (hf : IsBigOWith c l f' k') (hg : IsBigOWith c l g' k') :
     IsBigOWith c l (fun x => (f' x, g' x)) k' := by
-  rw [isBigOWith_iff] at *; filter_upwards [hf, hg]with x using max_le
+  rw [isBigOWith_iff] at *; filter_upwards [hf, hg] with x using max_le
 #align asymptotics.is_O_with.prod_left_same Asymptotics.IsBigOWith.prod_left_same
 
 theorem IsBigOWith.prod_left (hf : IsBigOWith c l f' k') (hg : IsBigOWith c' l g' k') :
@@ -1096,7 +1096,7 @@ theorem IsBigOWith.add (h₁ : IsBigOWith c₁ l f₁ g) (h₂ : IsBigOWith c₂
     IsBigOWith (c₁ + c₂) l (fun x => f₁ x + f₂ x) g := by
   rw [IsBigOWith_def] at *;
     filter_upwards [h₁,
-      h₂]with x hx₁ hx₂ using calc
+      h₂] with x hx₁ hx₂ using calc
         ‖f₁ x + f₂ x‖ ≤ c₁ * ‖g x‖ + c₂ * ‖g x‖ := norm_add_le_of_le hx₁ hx₂
         _ = (c₁ + c₂) * ‖g x‖ := (add_mul _ _ _).symm
 #align asymptotics.is_O_with.add Asymptotics.IsBigOWith.add
@@ -1615,7 +1615,7 @@ theorem IsBigOWith.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} {c₁ c�
     (h₂ : IsBigOWith c₂ l f₂ g₂) :
     IsBigOWith (c₁ * c₂) l (fun x => f₁ x * f₂ x) fun x => g₁ x * g₂ x := by
   simp only [IsBigOWith_def] at *
-  filter_upwards [h₁, h₂]with _ hx₁ hx₂
+  filter_upwards [h₁, h₂] with _ hx₁ hx₂
   apply le_trans (norm_mul_le _ _)
   convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
   rw [norm_mul, mul_mul_mul_comm]

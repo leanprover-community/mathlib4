@@ -620,14 +620,14 @@ theorem sdiff_fundamentalFrontier : s \ fundamentalFrontier G s = fundamentalInt
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_vadd]
 theorem fundamentalFrontier_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalFrontier G (g • s) = g • fundamentalFrontier G s := by
-  simp_rw [fundamentalFrontier, smul_set_inter, smul_set_Union, smul_comm g (_ : G) (_ : Set α)]
+  simp_rw [fundamentalFrontier, smul_set_inter, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 #align measure_theory.fundamental_frontier_smul MeasureTheory.fundamentalFrontier_smul
 #align measure_theory.add_fundamental_frontier_vadd MeasureTheory.addFundamentalFrontier_vadd
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalInterior_vadd]
 theorem fundamentalInterior_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalInterior G (g • s) = g • fundamentalInterior G s := by
-  simp_rw [fundamentalInterior, smul_set_sdiff, smul_set_Union, smul_comm g (_ : G) (_ : Set α)]
+  simp_rw [fundamentalInterior, smul_set_sdiff, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 #align measure_theory.fundamental_interior_smul MeasureTheory.fundamentalInterior_smul
 #align measure_theory.add_fundamental_interior_vadd MeasureTheory.addFundamentalInterior_vadd
 

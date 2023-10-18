@@ -102,7 +102,8 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
     rw [← SetLike.coe_subset_coe, Functor.op_obj]
     dsimp [Opens.inclusion]
     simp only [Set.image_univ, Set.image_subset_iff, Subtype.range_val]
-    rw [ContinuousMap.coe_mk, Subtype.range_val, ContinuousMap.coe_mk, ContinuousMap.coe_mk,
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [ContinuousMap.coe_mk, Subtype.range_val, ContinuousMap.coe_mk, ContinuousMap.coe_mk,
       Subtype.range_val]
     rfl
   have i1 := AlgebraicGeometry.Γ_restrict_isLocalization Y r
@@ -213,23 +214,25 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
   · intro H V e
     let U' := (Opens.map f.val.base).obj U.1
     have e' : U'.openEmbedding.isOpenMap.functor.obj ((Opens.map U'.inclusion).obj V.1) = V.1 := by
-      ext1; refine' Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left_iff_subset.mpr _)
+      ext1; refine' Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left.mpr _)
       erw [Subtype.range_val]
       convert e
-    have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, ?_⟩
+    have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, ?h'⟩
     erw [← X.presheaf.map_comp] at this
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc, ←
-      X.presheaf.map_comp]
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
+      ← X.presheaf.map_comp]
     convert this using 1
-    · -- Porting note: makes instance metavariable like in Lean 3
+    dsimp only [Functor.op, unop_op]
+    rw [Opens.openEmbedding_obj_top]
+    congr 1
+    exact e'.symm
+    case h' =>
       apply
         (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
       -- Porting note: was convert V.2
       erw [e']
       apply V.2
       infer_instance
-    · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
-      congr 1; apply e'.symm
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     erw [← X.presheaf.map_comp]
