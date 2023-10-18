@@ -1082,6 +1082,10 @@ theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in 
     Tendsto f l (𝓝 a) :=
   tendsto_const_nhds.congr' (.symm h)
 
+theorem Filter.EventuallyEq.tendsto {f : β → α} {a : α} (hf : f =ᶠ[l] fun _ ↦ a) :
+    Tendsto f l (𝓝 a) :=
+  tendsto_nhds_of_eventually_eq hf
+
 /-!
 ### Cluster points
 

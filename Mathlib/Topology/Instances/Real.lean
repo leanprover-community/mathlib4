@@ -86,6 +86,9 @@ theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
   rw [← cobounded_eq_cocompact, cobounded_eq]
 #align real.cocompact_eq Real.cocompact_eq
 
+theorem Real.atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
+theorem Real.atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
+
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
 _
