@@ -5,7 +5,9 @@ Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Sites.Coherent
+import Mathlib.Tactic.ApplyFun
 /-!
 
 # The Regular and Extensive Coverages
@@ -92,11 +94,13 @@ by pullbacks (we only require the relevant pullbacks to exist, via `HasPullbacks
 
 TODO: relate this to the class `FinitaryExtensive`
 -/
-class Extensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
+class Preextensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
   /-- Pulling back an isomorphism from a coproduct yields an isomorphism. -/
   sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
     {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
     IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
+
+class Extensive extends Preextensive C, CoproductsDisjoint C
 
 /--
 The regular coverage on a regular category `C`.
@@ -120,7 +124,7 @@ def regularCoverage [Preregular C] : Coverage C where
 /--
 The extensive coverage on an extensive category `C`
 -/
-def extensiveCoverage [Extensive C] : Coverage C where
+def extensiveCoverage [Preextensive C] : Coverage C where
   covering B := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
     S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π) }
   pullback := by
@@ -129,7 +133,7 @@ def extensiveCoverage [Extensive C] : Coverage C where
     let π' : (a : α) → Z' a ⟶ Y := fun a ↦ pullback.fst
     refine ⟨@Presieve.ofArrows C _ _ α Z' π', ⟨?_, ?_⟩⟩
     · constructor
-      exact ⟨hα, Z', π', ⟨by simp only, Extensive.sigma_desc_iso (fun x => π x) f h_iso⟩⟩
+      exact ⟨hα, Z', π', ⟨by simp only, Preextensive.sigma_desc_iso (fun x => π x) f h_iso⟩⟩
     · intro W g hg
       rcases hg with ⟨a⟩
       refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
@@ -138,7 +142,7 @@ def extensiveCoverage [Extensive C] : Coverage C where
 
 
 /-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/
-lemma extensive_regular_generate_coherent [Preregular C] [Extensive C] [Precoherent C] :
+lemma extensive_regular_generate_coherent [Preregular C] [Preextensive C] [Precoherent C] :
     ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck =
     (coherentTopology C) := by
   ext B S
@@ -201,7 +205,7 @@ lemma extensive_regular_generate_coherent [Preregular C] [Extensive C] [Precoher
 
 section ExtensiveSheaves
 
-variable [Extensive C] {C}
+variable [Preextensive C] {C}
 
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
 coproduct to the target. -/
@@ -257,6 +261,19 @@ def prod_map {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) (F
     ∏ fun a => F.obj (op (Z a)) :=
   Pi.lift (fun a => Pi.π (fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) =>
     F.obj (op f.fst)) ⟨Z a, π a, Presieve.ofArrows.mk a⟩)
+
+noncomputable
+def prod_map' {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) (F : Cᵒᵖ ⥤ Type max u v) :
+    (∏ fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) => F.obj (op f.fst)) ⟶
+    ∏ fun a => F.obj (op (Z a)) :=
+  Pi.map' (fun a => ⟨Z a, π a, Presieve.ofArrows.mk a⟩) (fun _ ↦ F.map (𝟙 _))
+
+/-- The canonical map from `Equalizer.FirstObj` to a product indexed by `α` -/
+noncomputable
+def prod_map_inv' {α : Type} {Z : α → C} {X : C} (π : (a : α) → Z a ⟶ X) (F : Cᵒᵖ ⥤ Type max u v) :
+     (∏ fun a => F.obj (op (Z a))) ⟶
+    (∏ fun (f : (Σ(Y : C), { f : Y ⟶ X // Presieve.ofArrows Z π f })) => F.obj (op f.fst)) :=
+  Pi.map' (fun f ↦ (map_eq π f).choose) (fun f ↦ F.map (eqToHom (map_eq π f).choose_spec).op)
 
 /-- The canonical map from `Equalizer.FirstObj` to a product indexed by `α` -/
 noncomputable
@@ -344,37 +361,53 @@ variable {α : Type} [Fintype α] (Z : α → C) (F : Cᵒᵖ ⥤ Type max u v)
 
 instance : (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)).extensive := sorry
 
-lemma sigma_injective : Function.Injective (fun a => ⟨Z a, (fun j ↦ Sigma.ι Z j) a,
+lemma sigma_injective [Extensive C] : Function.Injective (fun a => ⟨Z a, (fun j ↦ Sigma.ι Z j) a,
     Presieve.ofArrows.mk a⟩ : α → Σ(Y : C), { f : Y ⟶ _ //
     Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j) f }) := by
   intro a b h
   simp only [Sigma.mk.inj_iff] at h
-  obtain ⟨ha, hb⟩ := h
+  by_contra hh
+  rw [and_iff_not_or_not] at h
+  apply h
   sorry
+
+lemma eq_comp_of_heq {X Y Z W : C} (h : Y = Z) (f : Y ⟶ W) (g : Z ⟶ W) (i : X ⟶ Y) (j : X ⟶ Z)
+    (hfg : HEq f g) (hij : i = j ≫ eqToHom h.symm) : i ≫ f = j ≫ g := by
+  cases h; cases hfg; cases hij; simp only [eqToHom_refl, Category.comp_id]
+
+lemma heq_of_eq_comp {X Y Z : C} (h : Y = Z) (f : X ⟶ Y) (g : X ⟶ Z) (hfg : f ≫ eqToHom h = g) :
+    HEq f g := by
+  cases h; cases hfg; simp only [eqToHom_refl, Category.comp_id, heq_eq_eq]
 
 
 lemma prod_map_inj : Function.Injective (prod_map (fun j ↦ Sigma.ι Z j) F) := by
   intro a b h
   ext ⟨f⟩
   obtain ⟨c, hc⟩ := sigma_surjective (fun j ↦ Sigma.ι Z j) f
-  rw [← hc]
-  simp [prod_map] at h
-  sorry
+  subst hc
+  apply_fun Pi.π (fun i ↦ F.obj (op (Z i))) c at h
+  simp only [prod_map, Types.pi_lift_π_apply] at h
+  exact h
+
+-- ⟨f⟩ : Discrete (Σ(Y : C), { φ : Y ⟶ ∐ Z // Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j) φ })
 
 lemma prod_map_surj : Function.Surjective (prod_map (fun j ↦ Sigma.ι Z j) F) := by
   intro a
-  refine ⟨Types.Limit.mk (Discrete.functor (fun (f : (Σ(Y : C),
-    { f : Y ⟶ _ // Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j) f })) ↦ F.obj (op f.fst))) ?_ ?_, ?_⟩
-  · intro ⟨j⟩
-    rw [Discrete.functor_obj]
-    have := map_eq (fun j ↦ Sigma.ι Z j) j
-    rw [this.choose_spec]
-    exact Pi.π (fun a ↦ F.obj (op (Z a))) this.choose a
+  let g := fun f ↦ (Pi.π (fun a ↦ F.obj (op (Z a))) (map_eq (fun j ↦ Sigma.ι Z j) f).choose ≫
+    F.map (eqToHom (map_eq (fun j ↦ Sigma.ι Z j) f).choose_spec).op) a
+  refine ⟨Types.Limit.mk (Discrete.functor (fun (f : (Σ(Y : C), { f : Y ⟶ _ //
+      Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j) f })) ↦ F.obj (op f.fst))) (fun f ↦ g f.1) ?_, ?_⟩
   · intro ⟨j⟩ ⟨k⟩ f
-    have := Discrete.eq_of_hom f
-    subst this
+    cases Discrete.eq_of_hom f
     rfl
-  · dsimp [prod_map]
+  · ext ⟨j⟩
+    simp only [Discrete.functor_obj, prod_map, eqToHom_op, types_comp_apply, Types.pi_lift_π_apply,
+      Types.Limit.π_mk, Pi.π]
+    have : ∀ b, limit.π (Discrete.functor (fun a ↦ F.obj (op (Z a)))) b =
+        Pi.π (fun a ↦ F.obj (op (Z a))) b.1 := by intros; rfl
+    rw [this, this]
+    dsimp
+    have h := map_eq (fun j ↦ Sigma.ι Z j)
     sorry
 
 lemma prod_map_inv_inj : Function.Injective (prod_map_inv (fun j ↦ Sigma.ι Z j) F) := by
@@ -384,6 +417,24 @@ lemma prod_map_inv_inj : Function.Injective (prod_map_inv (fun j ↦ Sigma.ι Z 
   sorry
 
 lemma prod_map_inv_surj : Function.Injective (prod_map_inv (fun j ↦ Sigma.ι Z j) F) := sorry
+
+lemma prod_map_comp_inv :
+    prod_map' (fun j ↦ Sigma.ι Z j) F ≫ prod_map_inv' (fun j ↦ Sigma.ι Z j) F = 𝟙 _ := by
+  simp only [prod_map', Functor.map_id, prod_map_inv', eqToHom_op]
+  rw [Pi.map'_comp_map', ← Pi.map'_id_id]
+  refine Pi.map'_eq ?_ ?_
+  · funext x
+    simp only [Function.comp_apply, id_eq]
+    sorry
+  · intro b; ext; simp; sorry
+
+lemma prod_map_inv_comp :
+    prod_map_inv' (fun j ↦ Sigma.ι Z j) F ≫ prod_map' (fun j ↦ Sigma.ι Z j) F  = 𝟙 _ := by
+  simp only [prod_map_inv', eqToHom_op, prod_map', Functor.map_id]
+  rw [Pi.map'_comp_map', ← Pi.map'_id_id]
+  refine Pi.map'_eq ?_ ?_
+  · ext x; simp only [Function.comp_apply, id_eq]; sorry
+  · intro b; ext; simp; sorry
 
 lemma one : F.map (opCoproductIsoProduct Z).inv ≫
     Equalizer.forkMap F (Presieve.ofArrows Z (fun j ↦ Sigma.ι Z j)) ≫ prod_map _ F =
@@ -438,12 +489,13 @@ instance (F : Cᵒᵖ ⥤ Type max u v) (h : ∀ {X : C} (S : Presieve X) [S.ext
   intro K
   let k : J → Cᵒᵖ := fun j ↦ K.obj ⟨j⟩
   let i : K ≅ (Discrete.functor k) := Discrete.natIsoFunctor
-  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ F i.symm ?_
-  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ k _ _ ?_
   let S := (Presieve.ofArrows (fun j ↦ unop (k j)) (fun j ↦ Sigma.ι (fun j ↦ unop (k j)) j))
   specialize h S
+  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ F i.symm ?_
+  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ k _ _ ?_
   have hh : piComparison F (fun j ↦ op (unop (k j))) = piComparison F k := rfl
-  rw [← hh, (one (fun j ↦ (k j).unop) F).symm]
+  rw [← hh]
+  rw [(one (fun j ↦ (k j).unop) F).symm]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ ?_ ?_
   · rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
