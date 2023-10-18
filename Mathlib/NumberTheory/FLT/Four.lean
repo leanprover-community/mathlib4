@@ -305,7 +305,8 @@ theorem not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 
   apply Fermat42.not_minimal hf h2 hp
 #align not_fermat_42 not_fermat_42
 
-theorem fermatLastTheoremFour : FermatLastTheoremWith ℤ 4 := by
+theorem fermatLastTheoremFour : FermatLastTheoremFor 4 := by
+  rw [fermatLastTheoremFor_iff_int]
   intro a b c ha hb _ heq
   apply @not_fermat_42 _ _ (c ^ 2) ha hb
   rw [heq]; ring

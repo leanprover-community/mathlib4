@@ -528,9 +528,10 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
 #align continuous_linear_map.map_smul_of_tower ContinuousLinearMap.map_smul_of_tower
 
+@[deprecated _root_.map_sum]
 protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
     f (∑ i in s, g i) = ∑ i in s, f (g i) :=
-  f.toLinearMap.map_sum
+  map_sum ..
 #align continuous_linear_map.map_sum ContinuousLinearMap.map_sum
 
 @[simp, norm_cast]
@@ -2085,6 +2086,19 @@ theorem prod_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : 
     (e' : M₃ ≃L[R₁] M₄) : (e.prod e').symm = e.symm.prod e'.symm :=
   rfl
 #align continuous_linear_equiv.prod_symm ContinuousLinearEquiv.prod_symm
+
+variable (R₁ M₁ M₂)
+
+/-- Product of modules is commutative up to continuous linear isomorphism. -/
+@[simps! apply toLinearEquiv]
+def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
+  { LinearEquiv.prodComm R₁ M₁ M₂ with
+    continuous_toFun := continuous_swap
+    continuous_invFun := continuous_swap }
+
+@[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
+
+variable {R₁ M₁ M₂}
 
 protected theorem bijective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Bijective e :=
   e.toLinearEquiv.toEquiv.bijective

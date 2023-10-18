@@ -67,7 +67,7 @@ set_option linter.uppercaseLean3 false
 
 attribute [local instance] FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two
 
-variable (V : Type _) (Pt : Type _)
+variable (V : Type*) (Pt : Type*)
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
 

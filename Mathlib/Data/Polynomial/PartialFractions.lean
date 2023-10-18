@@ -47,8 +47,6 @@ variable (R : Type) [CommRing R] [IsDomain R]
 
 open Polynomial
 
-open Polynomial
-
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
@@ -86,7 +84,7 @@ end TwoDenominators
 
 section NDenominators
 
-open BigOperators Classical
+open BigOperators
 
 --Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
@@ -100,6 +98,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     ∃ (q : R[X]) (r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
         ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
+  classical
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
   · refine' ⟨f, fun _ : ι => (0 : R[X]), fun i => _, by simp⟩
     rintro ⟨⟩

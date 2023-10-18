@@ -205,7 +205,8 @@ theorem norm_eq_norm_adjoin [FiniteDimensional K L] [IsSeparable K L] (x : L) :
   letI := isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
   let pbL := Field.powerBasisOfFiniteOfSeparable K⟮x⟯ L
   let pbx := IntermediateField.adjoin.powerBasis (IsSeparable.isIntegral K x)
-  rw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul pbL.basis) _,
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul pbL.basis) _,
     smul_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx.basis]
   simp only [Finset.card_fin, Finset.prod_const]
   congr
@@ -233,13 +234,10 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
   have injKxL := (algebraMap K⟮x⟯ L).injective
   by_cases hx : IsIntegral K x; swap
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx, aroots_def]
-  have hx' : IsIntegral K (AdjoinSimple.gen K x) := by
-    rwa [← isIntegral_algebraMap_iff injKxL, AdjoinSimple.algebraMap_gen]
   rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
-  rw [adjoin.powerBasis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
-  try simp only [AdjoinSimple.algebraMap_gen _ _]
-  try exact hf
-  rfl
+    rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
+    try simp only [AdjoinSimple.algebraMap_gen _ _]
+  exact hf
 #align intermediate_field.adjoin_simple.norm_gen_eq_prod_roots IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots
 
 end IntermediateField
@@ -303,7 +301,7 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [IsSeparable K L] [IsAlg
   have hx := IsSeparable.isIntegral K x
   rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
     norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
-  · exact (prod_embeddings_eq_finrank_pow L (L:= K⟮x⟯) E (adjoin.powerBasis hx)).symm
+  · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
   · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact IsSeparable.separable K _
 #align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings

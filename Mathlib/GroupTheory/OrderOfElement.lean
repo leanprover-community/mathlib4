@@ -97,7 +97,7 @@ theorem isOfFinOrder_iff_coe (H : Submonoid G) (x : H) : IsOfFinOrder x ↔ IsOf
 theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :
     IsOfFinOrder <| f x :=
   (isOfFinOrder_iff_pow_eq_one _).mpr <| by
-    rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
+    rcases (isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
     exact ⟨n, npos, by rw [← f.map_pow, hn, f.map_one]⟩
 #align monoid_hom.is_of_fin_order MonoidHom.isOfFinOrder
 #align add_monoid_hom.is_of_fin_order AddMonoidHom.isOfFinAddOrder
@@ -106,7 +106,7 @@ theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrd
 @[to_additive "If a direct product has finite additive order then so does each component."]
 theorem IsOfFinOrder.apply {η : Type*} {Gs : η → Type*} [∀ i, Monoid (Gs i)] {x : ∀ i, Gs i}
     (h : IsOfFinOrder x) : ∀ i, IsOfFinOrder (x i) := by
-  rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
+  rcases (isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
   exact fun _ => (isOfFinOrder_iff_pow_eq_one _).mpr ⟨n, npos, (congr_fun hn.symm _).symm⟩
 #align is_of_fin_order.apply IsOfFinOrder.apply
 #align is_of_fin_add_order.apply IsOfFinAddOrder.apply
@@ -293,7 +293,7 @@ theorem orderOf_map_dvd {H : Type*} [Monoid H] (ψ : G →* H) (x : G) :
 #align add_order_of_map_dvd addOrderOf_map_dvd
 
 @[to_additive]
-theorem exists_pow_eq_self_of_coprime (h : n.coprime (orderOf x)) : ∃ m : ℕ, (x ^ n) ^ m = x := by
+theorem exists_pow_eq_self_of_coprime (h : n.Coprime (orderOf x)) : ∃ m : ℕ, (x ^ n) ^ m = x := by
   by_cases h0 : orderOf x = 0
   · rw [h0, coprime_zero_right] at h
     exact ⟨1, by rw [h, pow_one, pow_one]⟩
@@ -374,7 +374,7 @@ theorem orderOf_pow'' (h : IsOfFinOrder x) : orderOf (x ^ n) = orderOf x / gcd (
 #align add_order_of_nsmul'' addOrderOf_nsmul''
 
 @[to_additive]
-theorem orderOf_pow_coprime (h : (orderOf y).coprime m) : orderOf (y ^ m) = orderOf y := by
+theorem orderOf_pow_coprime (h : (orderOf y).Coprime m) : orderOf (y ^ m) = orderOf y := by
   by_cases hg : orderOf y = 0
   · rw [m.coprime_zero_left.mp (hg ▸ h), pow_one]
   · rw [orderOf_pow'' y m (hg.imp_symm orderOf_eq_zero), h.gcd_eq_one, Nat.div_one]
@@ -413,7 +413,7 @@ theorem orderOf_mul_dvd_mul_orderOf : orderOf (x * y) ∣ orderOf x * orderOf y 
 #align add_commute.add_order_of_add_dvd_mul_add_order_of AddCommute.addOrderOf_add_dvd_mul_addOrderOf
 
 @[to_additive addOrderOf_add_eq_mul_addOrderOf_of_coprime]
-theorem orderOf_mul_eq_mul_orderOf_of_coprime (hco : (orderOf x).coprime (orderOf y)) :
+theorem orderOf_mul_eq_mul_orderOf_of_coprime (hco : (orderOf x).Coprime (orderOf y)) :
     orderOf (x * y) = orderOf x * orderOf y := by
   rw [orderOf, ← comp_mul_left]
   exact h.function_commute_mul_left.minimalPeriod_of_comp_eq_mul_of_coprime hco
@@ -546,7 +546,7 @@ variable [Group G] {x y : G} {i : ℤ}
 @[to_additive "Inverses of elements of finite additive order have finite additive order."]
 theorem IsOfFinOrder.inv {x : G} (hx : IsOfFinOrder x) : IsOfFinOrder x⁻¹ :=
   (isOfFinOrder_iff_pow_eq_one _).mpr <| by
-    rcases(isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
+    rcases (isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
     refine' ⟨n, npos, by simp_rw [inv_pow, hn, inv_one]⟩
 #align is_of_fin_order.inv IsOfFinOrder.inv
 #align is_of_fin_add_order.neg IsOfFinAddOrder.neg
@@ -749,14 +749,16 @@ noncomputable def finEquivPowers [Finite G] (x : G) :
 #align fin_equiv_powers finEquivPowers
 #align fin_equiv_multiples finEquivMultiples
 
-@[to_additive (attr := simp) finEquivMultiples_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivMultiples_apply]
 theorem finEquivPowers_apply [Finite G] {x : G} {n : Fin (orderOf x)} :
     finEquivPowers x n = ⟨x ^ (n : ℕ), n, rfl⟩ :=
   rfl
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
-@[to_additive (attr := simp) finEquivMultiples_symm_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivMultiples_symm_apply]
 theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, pow_eq_mod_orderOf, Fin.val_mk]
@@ -877,14 +879,16 @@ noncomputable def finEquivZpowers [Finite G] (x : G) :
 #align fin_equiv_zpowers finEquivZpowers
 #align fin_equiv_zmultiples finEquivZmultiples
 
-@[to_additive (attr := simp) finEquivZmultiples_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_apply]
 theorem finEquivZpowers_apply [Finite G] {n : Fin (orderOf x)} :
     finEquivZpowers x n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ :=
   rfl
 #align fin_equiv_zpowers_apply finEquivZpowers_apply
 #align fin_equiv_zmultiples_apply finEquivZmultiples_apply
 
-@[to_additive (attr := simp) finEquivZmultiples_symm_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_symm_apply]
 theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℤ, x ^ m = x ^ n} :
     (finEquivZpowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
   rw [finEquivZpowers, Equiv.symm_trans_apply]
@@ -922,6 +926,12 @@ theorem orderOf_eq_card_zpowers : orderOf x = Fintype.card (zpowers x) :=
   (Fintype.card_fin (orderOf x)).symm.trans (Fintype.card_eq.2 ⟨finEquivZpowers x⟩)
 #align order_eq_card_zpowers orderOf_eq_card_zpowers
 #align add_order_eq_card_zmultiples addOrderOf_eq_card_zmultiples
+
+@[to_additive card_zmultiples_le]
+theorem card_zpowers_le (a : G) {k : ℕ} (k_pos : k ≠ 0)
+    (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
+  rw [← orderOf_eq_card_zpowers]
+  apply orderOf_le_of_pow_eq_one k_pos.bot_lt ha
 
 open QuotientGroup
 
@@ -993,7 +1003,7 @@ theorem zpow_eq_mod_card (n : ℤ) : x ^ n = x ^ (n % Fintype.card G : ℤ) := b
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
-noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).coprime n) : G ≃ G
+noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : G ≃ G
     where
   toFun g := g ^ n
   invFun g := g ^ (Nat.card G).gcdB n
@@ -1011,13 +1021,13 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).coprime n) 
 #align nsmul_coprime nsmulCoprime
 
 @[to_additive] -- Porting note: simp can prove this (so removed simp)
-theorem powCoprime_one {G : Type*} [Group G] (h : (Nat.card G).coprime n) : powCoprime h 1 = 1 :=
+theorem powCoprime_one {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : powCoprime h 1 = 1 :=
   one_pow n
 #align pow_coprime_one powCoprime_one
 #align nsmul_coprime_zero nsmulCoprime_zero
 
 @[to_additive] -- Porting note: simp can prove this (so removed simp)
-theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).coprime n) {g : G} :
+theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).Coprime n) {g : G} :
     powCoprime h g⁻¹ = (powCoprime h g)⁻¹ :=
   inv_pow g n
 #align pow_coprime_inv powCoprime_inv
@@ -1025,7 +1035,7 @@ theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).coprime n) {g : G
 
 @[to_additive add_inf_eq_bot_of_coprime]
 theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
-    (h : Nat.coprime (Fintype.card H) (Fintype.card K)) : H ⊓ K = ⊥ := by
+    (h : Nat.Coprime (Fintype.card H) (Fintype.card K)) : H ⊓ K = ⊥ := by
   refine' (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => _
   rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one, Nat.dvd_gcd_iff]
   exact
