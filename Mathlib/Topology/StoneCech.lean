@@ -337,7 +337,7 @@ theorem disjoint_closure_of_disjoint_closed [TopologicalSpace α] [NormalSpace �
     Disjoint (closure (stoneCechUnit '' s)) (closure (stoneCechUnit '' t)) := by
   let ⟨⟨f, cf⟩, hfs, hft, hf⟩ := exists_continuous_zero_one_of_closed hs ht hd
   let Z := ULift.{u} <| Set.Icc (0 : ℝ) 1
-  haveI : CompactSpace Z := Homeomorph.ulift.symm.compactSpace
+  have : CompactSpace Z := Homeomorph.ulift.symm.compactSpace
   haveI : T2Space Z := Homeomorph.ulift.symm.t2Space
   let g : α → Z := fun y' => ⟨f y', hf y'⟩
   let hg : Continuous g := continuous_uLift_up.comp (cf.subtype_mk fun y' => hf y')
