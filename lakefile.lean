@@ -30,6 +30,7 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
+/-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
 -- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
 -- than the `lean_exe runLinter` inherited from Std, or we always run that.
 -- See https://github.com/leanprover/lean4/issues/2548
@@ -37,6 +38,7 @@ lean_exe runMathlibLinter where
   root := `scripts.runMathlibLinter
   supportInterpreter := true
 
+/-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
   root := `scripts.checkYaml
   supportInterpreter := true
@@ -55,6 +57,7 @@ lean_lib Cache where
   weakLeanArgs := weakLeanArgs
   roots := #[`Cache]
 
+/-- `lake exe cache` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
 
@@ -70,6 +73,7 @@ lean_lib Counterexamples where
 lean_lib ImportGraph where
   roots := #[`ImportGraph]
 
+/-- `lake exe graph` constructs import graphs in `.dot` or graphical formats. -/
 lean_exe graph where
   root := `ImportGraph.Main
   supportInterpreter := true
