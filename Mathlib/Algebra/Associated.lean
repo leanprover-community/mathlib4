@@ -1213,7 +1213,7 @@ theorem DvdNotUnit.not_associated [CancelCommMonoidWithZero α] {p q : α} (h : 
     ¬Associated p q := by
   rintro ⟨a, rfl⟩
   obtain ⟨hp, x, hx, hx'⟩ := h
-  rcases(mul_right_inj' hp).mp hx' with rfl
+  rcases (mul_right_inj' hp).mp hx' with rfl
   exact hx a.isUnit
 #align dvd_not_unit.not_associated DvdNotUnit.not_associated
 

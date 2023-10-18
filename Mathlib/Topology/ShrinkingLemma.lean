@@ -151,7 +151,7 @@ def chainSup (c : Set (PartialRefinement u s)) (hc : IsChain (· ≤ ·) c) (ne 
     · simp_rw [not_exists, not_and, not_imp_not, chainSupCarrier, mem_iUnion₂] at hx
       haveI : Nonempty (PartialRefinement u s) := ⟨ne.some⟩
       choose! v hvc hiv using hx
-      rcases(hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
+      rcases (hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
         ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v i = v j⟩
       rcases mem_iUnion.1 ((v i).subset_iUnion hxs) with ⟨j, hj⟩
       use j
