@@ -338,15 +338,29 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
 
+lemma glou {μ : Measure G} [IsFiniteMeasureOnCompacts μ] :
+    IsFiniteMeasureOnCompacts (μ.map (fun (x : G) ↦ x⁻¹)) := by
+  let f := Homeomorph.inv G
+  change IsFiniteMeasureOnCompacts (μ.map f)
+
+
+#exit
 
 lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
     ∃ (c : ℝ), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
       ∫ x, f x ∂μ' = c * ∫ x, f x ∂μ := by
-/-  by_cases H : LocallyCompactSpace G; swap
+  by_cases H : LocallyCompactSpace G; swap
   · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
     rcases f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont with hf|hf
     · simp [hf]
-    · exact (H hf).elim-/
-  sorry
+    · exact (H hf).elim
+  obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
+      ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
+    rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
+    rcases exists_continuous_one_zero_of_isCompact_of_group hk isOpen_univ (subset_univ _)
+      with ⟨g, g_cont, g_comp, gk, -, hg⟩
+    exact ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, by simp [gk (mem_of_mem_nhds k_mem)]⟩
+  let ν := μ.map (fun (x : G) ↦ x⁻¹)
+  have : IsMulRightInvariant ν :=
