@@ -74,8 +74,12 @@ def _root_.Lean.MVarId.rfl (goal : MVarId) : MetaM Unit := do
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
 relation, that is, a relation which has a reflexive lemma tagged with the attribute [refl].
 -/
+def rflTac : TacticM Unit :=
+  withMainContext do liftMetaFinishingTactic (·.rfl)
+
+@[inherit_doc rflTac]
 elab_rules : tactic
-| `(tactic| rfl) => withMainContext do liftMetaFinishingTactic (·.rfl)
+| `(tactic| rfl) => rflTac
 
 /-- If the goal is the form `x ~ y`, where `~` is a reflexive
 relation, return `some ((· ~ ·), x, y)`. -/

@@ -239,46 +239,17 @@ is at most countable. Superseded by `countable_not_continuousAt` which gives the
 version. -/
 theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTopology β] :
     Set.Countable { x | ¬ContinuousWithinAt f (Ioi x) x } := by
-  /- If `f` is not continuous on the right at `x`, there is an interval `(f x, z x)` which is not
-    reached by `f`. This gives a family of disjoint open intervals in `β`. Such a family can only
-    be countable as `β` is second-countable. -/
-  nontriviality α
-  let s := { x | ¬ContinuousWithinAt f (Ioi x) x }
-  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y := by
-    rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
-    contrapose! hx
-    refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
-    · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
-        (hf (le_of_lt hy))
-    rcases hx u hu with ⟨v, xv, fvu⟩
-    have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
-    filter_upwards [this]with y hy
-    apply (hf hy.2.le).trans_lt fvu
-  -- choose `z x` such that `f` does not take the values in `(f x, z x)`.
-  choose! z hz using this
-  have I : InjOn f s := by
-    apply StrictMonoOn.injOn
-    intro x hx y _ hxy
-    calc
-      f x < z x := (hz x hx).1
-      _ ≤ f y := (hz x hx).2 y hxy
-
-  -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
-  -- (the intervals `(f x, z x)`) is at most countable.
-  have fs_count : (f '' s).Countable := by
-    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
-      rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
-      wlog hle : u ≤ v generalizing u v
-      · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
-      have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
-      apply disjoint_iff_forall_ne.2
-      rintro a ha b hb rfl
-      simp only [I.leftInvOn_invFunOn us, I.leftInvOn_invFunOn vs] at ha hb
-      exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v hlt)).trans hb.1)
-    apply Set.PairwiseDisjoint.countable_of_Ioo A
-    rintro _ ⟨y, ys, rfl⟩
-    simpa only [I.leftInvOn_invFunOn ys] using (hz y ys).1
-  exact MapsTo.countable_of_injOn (mapsTo_image f s) I fs_count
+  apply (countable_image_lt_image_Ioi f).mono
+  rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
+  dsimp
+  contrapose! hx
+  refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
+  · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
+      (hf (le_of_lt hy))
+  rcases hx u hu with ⟨v, xv, fvu⟩
+  have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
+  filter_upwards [this] with y hy
+  apply (hf hy.2.le).trans_lt fvu
 #align monotone.countable_not_continuous_within_at_Ioi Monotone.countable_not_continuousWithinAt_Ioi
 
 /-- In a second countable space, the set of points where a monotone function is not left-continuous

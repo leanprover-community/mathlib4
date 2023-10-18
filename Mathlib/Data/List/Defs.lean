@@ -211,9 +211,9 @@ end mapIdxM
 #align list.lookmap List.lookmap
 #align list.countp List.countP
 #align list.count List.count
-#align list.is_prefix List.isPrefix
-#align list.is_suffix List.isSuffix
-#align list.is_infix List.isInfix
+#align list.is_prefix List.IsPrefix
+#align list.is_suffix List.IsSuffix
+#align list.is_infix List.IsInfix
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
@@ -449,8 +449,8 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
-    List α → F (List β)
+protected def traverse {F : Type u → Type v} [Applicative F]
+    {α : Type*} {β : Type u} (f : α → F β) : List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
