@@ -37,7 +37,6 @@ theorem MeasurableEquiv.piCongrLeft_eq' (f : ι' ≃ ι) :
 theorem MeasurableEquiv.coe_sumPiEquivProdPi_symm' (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
-
 theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f)
       (Measure.pi fun i' => μ (f i')) (Measure.pi μ) where
@@ -64,6 +63,7 @@ theorem measurePreserving_sumPiEquivProdPi {π : ι ⊕ ι' → Type _} [∀ i, 
       (Measure.pi μ) ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) :=
   measurePreserving_sumPiEquivProdPi_symm μ |>.symm
 
+-- not yet moved
 theorem measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t)
     [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h)
@@ -73,6 +73,7 @@ theorem measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : 
   measurePreserving_piCongrLeft (fun i : ↥(s ∪ t) ↦ μ i) e |>.comp <|
     measurePreserving_sumPiEquivProdPi_symm fun b ↦ μ (e b)
 
+-- not yet moved
 -- generalizes `measurePreserving_funUnique`
 theorem measurePreserving_piUnique {π : ι → Type _} [Unique ι] [∀ i, MeasurableSpace (π i)]
     (μ : ∀ i, Measure (π i)) :

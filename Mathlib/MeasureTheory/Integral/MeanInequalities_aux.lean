@@ -33,9 +33,9 @@ end Finset
 namespace Real
 
 -- unused
-theorem prod_rpow {ι} (s : Finset ι) {f : ι → ℝ} (hf : 0 ≤ f) (r : ℝ) :
-    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r :=
-  finset_prod_rpow s f (fun i _ ↦ hf i) r
+-- theorem prod_rpow {ι} (s : Finset ι) {f : ι → ℝ} (hf : 0 ≤ f) (r : ℝ) :
+--     ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r :=
+--   finset_prod_rpow s f (fun i _ ↦ hf i) r
 
 end Real
 
@@ -97,14 +97,11 @@ theorem prod_insert_div [CommGroup β] [DecidableEq α] (ha : a ∉ s) {f : α �
     (∏ x in insert a s, f x) / f a = ∏ x in s, f x := by simp [ha]
 
 attribute [gcongr] ENNReal.rpow_le_rpow
-set_option maxHeartbeats 300000 in
 /-- A version of Hölder with multiple arguments -/
 theorem _root_.ENNReal.lintegral_prod_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
-    (s : Finset ι) (hs : s.Nonempty)
-    {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ) {p : ι → ℝ} (hp : ∑ i in s, p i = 1)
-    (h2p : ∀ i ∈ s, 0 ≤ p i) :
-      ∫⁻ a, ∏ i in s, f i a ^ p i ∂μ ≤
-      ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
+    (s : Finset ι) (hs : s.Nonempty) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
+    {p : ι → ℝ} (hp : ∑ i in s, p i = 1) (h2p : ∀ i ∈ s, 0 ≤ p i) :
+    ∫⁻ a, ∏ i in s, f i a ^ p i ∂μ ≤ ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
   induction s using Finset.induction generalizing p
   case empty =>
     simp at hs
