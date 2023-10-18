@@ -3,10 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteType
-
-#align_import data.polynomial.module from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
-
+import Mathlib.RingTheory.Adjoin.Tower
 /-!
 # Polynomial module
 
@@ -14,18 +11,91 @@ In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R
 
 This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
-
 -/
-
-section CommSemiring
-
 universe u v
-
-open Polynomial
-
 open Polynomial BigOperators
 
+section CommSemiring
+namespace Module
+/--
+Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
+Then `Module.AEval R M a` is the `R[X]`-module with carrier `M`,
+where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
+-/
+@[nolint unusedArguments]
+def AEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 
+variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
+  [Module R M] [IsScalarTower R A M]
+
+namespace AEval
+
+instance : AddCommMonoid <| AEval R M a                 := inferInstanceAs (AddCommMonoid M)
+instance : Module R <| AEval R M a                      := inferInstanceAs (Module R M)
+instance : Module A <| AEval R M a                      := inferInstanceAs (Module A M)
+instance : IsScalarTower R A <| AEval R M a             := inferInstanceAs (IsScalarTower R A M)
+instance [AddCommGroup M] : AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
+instance [Finite R M] : Finite R <| AEval R M a         := inferInstanceAs (Finite R M)
+instance : Module R[X] <| AEval R M a                   := compHom M (aeval a).toRingHom
+
+lemma smul_def (f : R[X]) (m : AEval R M a) : f • m = aeval a f • m := rfl
+
+lemma X_smul (m : AEval R M a) : (X : R[X]) • m = a • m := by simp [smul_def]
+
+instance : IsScalarTower R R[X] <| AEval R M a := ⟨by simp [smul_def]⟩
+
+instance Finite_of_Finite [Finite R M] : Finite R[X] <| AEval R M a :=
+  Finite.of_restrictScalars_finite R _ _
+
+end AEval
+
+variable (φ : M →ₗ[R] M)
+/--
+Given and `R`-module `M` and a linear map `φ : M →ₗ[R] M`, `Module.AEval' φ` is the
+`R[X]`-module with elements `⟨m⟩` for `m : M` in which the action of `X` is given by `φ`.
+I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
+-/
+/-
+`Module.AEval'` is defined as a special case of `Module.AEval` in which the `R`-algebra is
+`M →ₗ[R] M`. Lemmas involving `Module.AEval` may be applied to `Module.AEval'`.
+-/
+@[reducible] def AEval' := AEval R M φ
+lemma AEval'_def : AEval' φ = AEval R M φ := rfl
+lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
+
+instance AEval'.Finite_of_Finite [Finite R M] : Finite R[X] <| AEval' φ := by
+  apply AEval.Finite_of_Finite
+
+end Module
+
+variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M] (f : M →ₗ[R] M)
+
+/-- The structure of a module `M` over a ring `R` as a module over `R[X]` when given a
+choice of how `X` acts by choosing a linear map `f : M →ₗ[R] M` -/
+def modulePolynomialOfEndo : Module R[X] M := inferInstanceAs (Module R[X] (Module.AEval' f))
+#align module_polynomial_of_endo modulePolynomialOfEndo
+
+lemma modulePolynomialOfEndo_def :
+    modulePolynomialOfEndo f = Module.compHom M (Polynomial.aeval f).toRingHom := rfl
+
+theorem modulePolynomialOfEndo_smul_def (n : R[X]) (a : M) :
+    @HSMul.hSMul _ _ _ (by letI := modulePolynomialOfEndo f; infer_instance) n a =
+    Polynomial.aeval f n a :=
+  rfl
+#align module_polynomial_of_endo_smul_def modulePolynomialOfEndo_smul_def
+
+attribute [local simp] modulePolynomialOfEndo_smul_def
+
+theorem modulePolynomialOfEndo.isScalarTower :
+    @IsScalarTower R R[X] M _
+      (by
+        letI := modulePolynomialOfEndo f
+        infer_instance)
+      _ := inferInstanceAs (IsScalarTower R R[X] (Module.AEval' f))
+#align module_polynomial_of_endo.is_scalar_tower modulePolynomialOfEndo.isScalarTower
+
+end CommSemiring
 
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
@@ -44,8 +114,7 @@ instances of `Module R[X] (PolynomialModule R[X])`.
 
 See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2315065.20polynomial.20modules
 for the full discussion.
--/
-@[nolint unusedArguments]
+-/@[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
 #align polynomial_module PolynomialModule
 
@@ -351,5 +420,3 @@ theorem comp_smul (p p' : R[X]) (q : PolynomialModule R M) :
 #align polynomial_module.comp_smul PolynomialModule.comp_smul
 
 end PolynomialModule
-
-end CommSemiring

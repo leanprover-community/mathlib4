@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Noetherian
+import Mathlib.Data.Polynomial.Module
 
 #align_import ring_theory.finite_type from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -709,103 +710,6 @@ end MonoidAlgebra
 
 section Vasconcelos
 
-
-namespace Module
-
-open Polynomial
-/--
-Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
-Then `Module.AEval R M a` is the `R[X]`-module with carrier `M`,
-where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
--/
-@[nolint unusedArguments]
-def AEval (R M: Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
-
-variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
-  [Module R M] [IsScalarTower R A M]
-
-namespace AEval
-
-instance : AddCommMonoid <| AEval R M a     := inferInstanceAs (AddCommMonoid M)
-instance : Module R <| AEval R M a          := inferInstanceAs (Module R M)
-instance : Module A <| AEval R M a          := inferInstanceAs (Module A M)
-instance : IsScalarTower R A <| AEval R M a := inferInstanceAs (IsScalarTower R A M)
-instance [AddCommGroup M] : AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
-instance [Finite R M] : Finite R <| AEval R M a := inferInstanceAs (Finite R M)
-instance : Module R[X] <| AEval R M a := Module.compHom M (Polynomial.aeval a).toRingHom
-
-lemma smul_def (f : R[X]) (m : AEval R M a) : f • m = aeval a f • m := rfl
-
-lemma X_smul (m : AEval R M a) : (X : R[X]) • m = a • m := by simp [smul_def]
-
-instance : IsScalarTower R R[X] <| AEval R M a := ⟨by simp [smul_def]⟩
-
-instance Finite_of_Finite [Finite R M] : Finite R[X] <| AEval R M a :=
-  Finite.of_restrictScalars_finite R _ _
-
-end AEval
-
-variable (φ : M →ₗ[R] M)
-/--
-Given and `R`-module `M` and a linear map `φ : M →ₗ[R] M`, `Module.AEval' φ` is the
-`R[X]`-module with elements `⟨m⟩` for `m : M` in which the action of `X` is given by `φ`.
-I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
--/
-/-
-`Module.AEval'` is defined as a special case of `Module.AEval` in which the `R`-algebra is
-`M →ₗ[R] M`. Lemmas involving `Module.AEval` may be applied to `Module.AEval'`.
--/
-@[reducible] def AEval' := AEval R M φ
-
-lemma AEval'_def : AEval' φ = AEval R M φ := rfl
-
-lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
-
-instance [AddCommGroup M] : AddCommGroup <| AEval' φ := inferInstance
-
-instance AEval'_Finite_of_Finite [Finite R M] : Finite R[X] <| AEval' φ := by
-  apply AEval.Finite_of_Finite
-
-end Module
-
-section CommSemiring
-
-variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M] (f : M →ₗ[R] M)
-
-/-- The structure of a module `M` over a ring `R` as a module over `R[X]` when given a
-choice of how `X` acts by choosing a linear map `f : M →ₗ[R] M` -/
-def modulePolynomialOfEndo : Module R[X] M := inferInstanceAs (Module R[X] (Module.AEval' f))
-  --Module.compHom M (Polynomial.aeval f).toRingHom
-#align module_polynomial_of_endo modulePolynomialOfEndo
-
-lemma modulePolynomialOfEndo_def :
-    modulePolynomialOfEndo f = Module.compHom M (Polynomial.aeval f).toRingHom := rfl
-
-theorem modulePolynomialOfEndo_smul_def (n : R[X]) (a : M) :
-    @HSMul.hSMul _ _ _ (by letI := modulePolynomialOfEndo f; infer_instance) n a =
-    Polynomial.aeval f n a :=
-  rfl
-#align module_polynomial_of_endo_smul_def modulePolynomialOfEndo_smul_def
-
-attribute [local simp] modulePolynomialOfEndo_smul_def
-
-theorem modulePolynomialOfEndo.isScalarTower :
-    @IsScalarTower R R[X] M _
-      (by
-        letI := modulePolynomialOfEndo f
-        infer_instance)
-      _ := by
-  let _ := modulePolynomialOfEndo f
-  constructor
-  intro x y z
-  simp
-#align module_polynomial_of_endo.is_scalar_tower modulePolynomialOfEndo.isScalarTower
-
-end CommSemiring
-
-open Polynomial Module
-
 /-- A theorem/proof by Vasconcelos, given a finite module `M` over a commutative ring, any
 surjective endomorphism of `M` is also injective. Based on,
 https://math.stackexchange.com/a/239419/31917,
@@ -813,16 +717,16 @@ https://www.ams.org/journals/tran/1969-138-00/S0002-9947-1969-0238839-5/.
 This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the
 commutative case, but does not use a Noetherian hypothesis. -/
 theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
-    [AddCommGroup M] [Module R M] [hfg : Finite R M] (f : M →ₗ[R] M)
+    [AddCommGroup M] [Module R M] [Finite R M] (f : M →ₗ[R] M)
     (f_surj : Function.Surjective f) : Function.Injective f := by
   have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤
   · intro a _
-    obtain ⟨(y: AEval' f), rfl⟩ := f_surj a
+    obtain ⟨(y : AEval' f), rfl⟩ := f_surj a
     rw [←AEval'.X_smul]
     exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
   obtain ⟨F, hFa, hFb⟩ :=
     Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
-      (finite_def.mp (AEval'_Finite_of_Finite _)) this
+      (finite_def.mp (AEval'.Finite_of_Finite _)) this
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro (m : AEval' f) hm
   rw [Ideal.mem_span_singleton'] at hFa
