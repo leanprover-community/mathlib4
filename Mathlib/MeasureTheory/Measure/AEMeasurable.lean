@@ -50,7 +50,7 @@ lemma mono_ac (hf : AEMeasurable f ν) (hμν : μ ≪ ν) : AEMeasurable f μ :
   ⟨hf.mk f, hf.measurable_mk, hμν.ae_le hf.ae_eq_mk⟩
 
 theorem mono_measure (h : AEMeasurable f μ) (h' : ν ≤ μ) : AEMeasurable f ν :=
-  mono_ac h (absolutelyContinuous_of_le h')
+  mono_ac h h'.absolutelyContinuous
 #align ae_measurable.mono_measure AEMeasurable.mono_measure
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
@@ -210,7 +210,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
   · have A : μ (toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ) = 0 := by
       rw [measure_toMeasurable, ← compl_mem_ae_iff, compl_compl]
       exact H.ae_eq_mk.and ht
-    filter_upwards [compl_mem_ae_iff.2 A]with x hx
+    filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
     simp only [hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx

@@ -10,14 +10,6 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/JLimperg/aesop",
-    "subDir?": null,
-    "rev": "41c6370eb2f0c9052bee6af0e0a017b9ba8da2b8",
-    "opts": {},
-    "name": "aesop",
-    "inputRev?": "master",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
     "subDir?": null,
     "rev": "39229f3630d734af7d9cfb5937ddc6b41d3aa6aa",
@@ -34,9 +26,17 @@
     "inputRev?": "v0.0.18",
     "inherited": false}},
   {"git":
+   {"url": "https://github.com/JLimperg/aesop",
+    "subDir?": null,
+    "rev": "0bd8465d8a5cfdd53c1ff0fd57ca5eaa53eb455c",
+    "opts": {},
+    "name": "aesop",
+    "inputRev?": "master",
+    "inherited": false}},
+  {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "a093d7a6ac721071d8ba3774b0318063928cd3e2",
+    "rev": "a4b2584dd4468489d14e9731ff303ec6d674873f",
     "opts": {},
     "name": "std",
     "inputRev?": "main",

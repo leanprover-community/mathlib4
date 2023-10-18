@@ -263,8 +263,6 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
 
 open MeasureTheory.SimpleFunc
 
-variable {m0 : MeasurableSpace α}
-
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable
 function with respect to `(μ.withDensity f)` as an integral with respect to `μ`, called the base
 measure. `μ` is often the Lebesgue measure, and in this circumstance `f` is the probability density
@@ -470,5 +468,20 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
   nth_rw 1 [this]
   exact withDensity_absolutelyContinuous _ _
 #align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
+
+variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
+
+lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuous f) :
+    IsLocallyFiniteMeasure (μ.withDensity fun x ↦ f x) := by
+  refine ⟨fun x ↦ ?_⟩
+  rcases (μ.finiteAt_nhds x).exists_mem_basis ((nhds_basis_opens' x).restrict_subset
+    (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
+  refine ⟨U, hUx, ?_⟩
+  rw [withDensity_apply _ hUo.measurableSet]
+  exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, ball_image_iff.2 hUf⟩
+
+lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
+    IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
+  .withDensity_coe <| continuous_real_toNNReal.comp hf
 
 end MeasureTheory
