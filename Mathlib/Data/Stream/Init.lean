@@ -750,7 +750,7 @@ theorem get?_take_succ (n : Nat) (s : Stream' α) :
 #align stream.nth_take_succ Stream'.get?_take_succ
 
 @[simp] theorem dropLast_take {xs : Stream' α} :
-    (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
+    (Stream'.take n xs).dropLast = Stream'.take (n - 1) xs := by
   cases n; case zero => simp
   case succ n => rw [take_succ', List.dropLast_concat, Nat.succ_sub_one]
 
