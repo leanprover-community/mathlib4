@@ -361,8 +361,7 @@ theorem disjoint_closure_of_disjoint_closed [TopologicalSpace α] [NormalSpace �
     apply image_subset
     intros a ha
     rw [mem_preimage, mem_singleton_iff, ULift.up_inj, Subtype.mk.injEq]
-    apply hu
-    exact ha
+    exact hu ha
   have subS : closure (stoneCechUnit '' s) ⊆ uu ⁻¹' {⟨0, by simp⟩} := by
     apply_rules [closureSub 0, hfs]
   have subT : closure (stoneCechUnit '' t) ⊆ uu ⁻¹' {⟨1, by simp⟩} := by
