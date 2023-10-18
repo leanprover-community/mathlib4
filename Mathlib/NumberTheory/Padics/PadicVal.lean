@@ -39,7 +39,7 @@ quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b`
 greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
 language of prime multiplicity.
 
-* `sub_one_mul_padicValNat_factorial_eq_sub_sum_digits`: Legendre's Theorem.  Taking (`p - 1`) times
+* `sub_one_mul_padicValNat_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
 the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
@@ -687,7 +687,7 @@ theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b
 
 Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
 of `n`. -/
-theorem sub_one_mul_padicValNat_factorial_eq_sub_sum_digits [hp : Fact p.Prime] (n : ℕ):
+theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
   rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n), ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
@@ -725,7 +725,7 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fact
   simp only [Nat.choose_eq_factorial_div_factorial h]
   rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
       padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
-  simp only [sub_one_mul_padicValNat_factorial_eq_sub_sum_digits]
+  simp only [sub_one_mul_padicValNat_factorial]
   rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
       digit_sum_le p n, Nat.sub_sub (k + n),  ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
       add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
