@@ -21,7 +21,14 @@ bitwise properties. In the second half of this file, we show properties of the b
 `lor`, `land` and `xor`, which are defined in core.
 
 ## Main results
-* `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
+ equal bits at every position.
+* `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
+  significant `1`-bit of `n`.
+* `lt_of_testBit`: if `n` and `m` are numbers and `i` is a position such that the `i`-th bit of
+  of `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
+  `n < m`.
+
+ equal bits at every position.
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.
 * `lt_of_testBit`: if `n` and `m` are numbers and `i` is a position such that the `i`-th bit of
@@ -101,63 +108,6 @@ lemma bit_mod_two_eq_one_iff (a x) :
     bit a x % 2 = 1 ↔ a := by
   rw [bit_mod_two]; split_ifs <;> simp_all
 
-/-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
-    with assumptions that neither `bit a m` nor `bit b n` are `0`
-    (albeit, phrased as the implications `m = 0 → a = true` and `n = 0 → b = true`) -/
-lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
-    (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
-    bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
-  conv_lhs => unfold bitwise
-  have {c x} : (x = 0 → c = true) → bit c x ≠ 0 := by
-    simp [bit, bit1, bit0, Bool.cond_eq_ite]
-    intro hi hc
-    split_ifs at hc
-    · simp at hc
-    · cases x
-      · specialize hi rfl
-        contradiction
-      · simp at hc
-  have ham' := this ham
-  have hbn' := this hbn
-  simp only [ham', hbn', bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
-    ite_false]
-  conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
-  split_ifs with hf <;> rfl
-
-lemma binaryRec_of_ne_zero {C : ℕ → Sort*} {z : C 0} {f n} (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  conv_lhs => unfold binaryRec
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
-
-lemma div_two_succ (x : Nat) :
-    (succ x) / 2 = if bodd x = true then succ (x / 2) else x / 2 := by
-  simp only [←div2_val, ←Bool.cond_eq_ite, div2_succ]
-
-lemma bitwise_eq_binaryRec :
-    bitwise f =
-    binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
-      binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n) := by
-  funext x y
-  induction' x using Nat.strongInductionOn with x ih generalizing y
-  cases' x with x <;> cases' y with y
-  · simp only [bitwise_zero, binaryRec_zero, Bool.cond_eq_ite]
-    split_ifs <;> rfl
-  · simp only [bitwise_zero_left, Bool.cond_eq_ite, binaryRec_zero]
-  · simp only [zero_eq, bitwise_zero_right, Bool.cond_eq_ite, ne_eq, succ_ne_zero,
-      not_false_eq_true, binaryRec_of_ne_zero, bodd_succ, div2_succ, eq_rec_constant,
-      binaryRec_zero]
-    split_ifs with _ hbodd
-    · conv_lhs => rw [←bit_decomp (succ x)]
-      simp [hbodd]
-    · conv_lhs => rw [←bit_decomp (succ x)]
-      simp [hbodd]
-    · rfl
-  · specialize ih ((x+1) / 2) (div_lt_self' ..)
-    simp only [succ_eq_add_one, ne_eq, succ_ne_zero, bitwise_of_ne_zero, bodd_succ, ih,
-      Bool.cond_eq_ite, binaryRec_of_ne_zero, div2_val, eq_rec_constant]
-
 @[simp]
 theorem lor_bit : ∀ a m b n, lor (bit a m) (bit b n) = bit (a || b) (lor m n) :=
   bitwise_bit
@@ -225,6 +175,60 @@ theorem bit_true : bit true = bit1 :=
 theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
   cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
+
+theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
+  simpa only [not_and, Bool.not_eq_false] using (@bit_eq_zero n b).not
+
+/-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
+with assumptions that neither `bit a m` nor `bit b n` are `0`
+(albeit, phrased as the implications `m = 0 → a = true` and `n = 0 → b = true`) -/
+lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) (n : Nat)
+    (ham : m = 0 → a = true) (hbn : n = 0 → b = true) :
+    bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
+  conv_lhs => unfold bitwise
+  rw [←bit_ne_zero_iff] at ham hbn
+  simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
+    ite_false]
+  conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
+  split_ifs with hf <;> rfl
+
+lemma binaryRec_of_ne_zero {C : ℕ → Sort*} {z : C 0} {f n} (h : n ≠ 0) :
+    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
+  rw [Eq.rec_eq_cast]
+  conv_lhs => unfold binaryRec
+  dsimp only
+  rw [dif_neg h, eq_mpr_eq_cast]
+
+lemma div_two_succ (x : Nat) :
+    (succ x) / 2 = if bodd x = true then succ (x / 2) else x / 2 := by
+  simp only [←div2_val, ←Bool.cond_eq_ite, div2_succ]
+
+lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
+    bitwise f =
+    binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
+      binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n) := by
+  funext x y
+  induction' x using Nat.strongInductionOn with x ih generalizing y
+  match x, y with
+  | 0, 0 =>
+    simp only [bitwise_zero, binaryRec_zero, Bool.cond_eq_ite]
+    split_ifs <;> rfl
+  | 0, y + 1 =>
+    simp only [bitwise_zero_left, Bool.cond_eq_ite, binaryRec_zero]
+  | x + 1, 0 =>
+    simp only [bitwise_zero_right, Bool.cond_eq_ite, ne_eq, succ_ne_zero,
+      not_false_eq_true, binaryRec_of_ne_zero, bodd_succ, div2_succ, eq_rec_constant,
+      binaryRec_zero]
+    split_ifs with _ hbodd
+    · conv_lhs => rw [←bit_decomp (x + 1)]
+      simp [hbodd]
+    · conv_lhs => rw [←bit_decomp (x + 1)]
+      simp [hbodd]
+    · rfl
+  | x + 1, y + 1 =>
+    specialize ih ((x+1) / 2) (div_lt_self' ..)
+    simp only [ne_eq, succ_ne_zero, bitwise_of_ne_zero, bodd_succ, ih,
+      Bool.cond_eq_ite, binaryRec_of_ne_zero, div2_val, eq_rec_constant]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction' n using Nat.binaryRec with b n hn
