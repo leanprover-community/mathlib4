@@ -33,12 +33,12 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
   nontriviality E
   refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
   · simpa only [CstarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
-  · rw [← unitary.toUnits_apply_val u] at hk
+  · rw [← unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk
     rw [← inv_inv (unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
     have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ :=
       by simpa only [norm_inv] using norm_le_norm_of_mem hk
-    simpa [←Units.inv_eq_val_inv] using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
+    simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
 #align unitary.spectrum_subset_circle unitary.spectrum_subset_circle
 
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :

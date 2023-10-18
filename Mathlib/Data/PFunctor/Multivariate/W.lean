@@ -219,7 +219,7 @@ theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := by
   intro x; cases' x with a f
-  apply @wp_ind n P α fun a f => C ⟨a, f⟩; dsimp
+  apply @wp_ind n P α fun a f => C ⟨a, f⟩
   intro a f f' ih'
   dsimp [wMk] at ih
   let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
@@ -272,7 +272,7 @@ set_option linter.uppercaseLean3 false in
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
 @[reducible]
-def objAppend1 {α : TypeVec n} {β : Type _} (a : P.A) (f' : P.drop.B a ⟹ α)
+def objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P.Obj (α ::: β) :=
   ⟨a, splitFun f' f⟩
 #align mvpfunctor.obj_append1 MvPFunctor.objAppend1

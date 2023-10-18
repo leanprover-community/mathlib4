@@ -392,7 +392,7 @@ theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
   refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => _
   rcases exists_between hw with ⟨m, hm₁, hm₂⟩
-  rcases(eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
+  rcases (eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
   exact ⟨i, lt_of_lt_of_le hm₁ hi⟩
 #align measure_theory.ae_cover.supr_lintegral_eq_of_countably_generated MeasureTheory.AECover.iSup_lintegral_eq_of_countably_generated
 
@@ -944,7 +944,7 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
 
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
     IntegrableOn (fun x => f (x * a)) (Ioi c) ↔ IntegrableOn f (Ioi <| c * a) := by
-  simpa only [mul_comm, MulZeroClass.mul_zero] using integrableOn_Ioi_comp_mul_left_iff f c ha
+  simpa only [mul_comm, mul_zero] using integrableOn_Ioi_comp_mul_left_iff f c ha
 #align measure_theory.integrable_on_Ioi_comp_mul_right_iff MeasureTheory.integrableOn_Ioi_comp_mul_right_iff
 
 end IoiIntegrability

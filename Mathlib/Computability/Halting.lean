@@ -180,7 +180,7 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
   exact
     ⟨by infer_instance,
       (cond hf (const false) (const true)).of_eq fun n => by
-        simp
+        simp only [Bool.not_eq_true]
         cases f n <;> rfl⟩
 #align computable_pred.not ComputablePred.not
 
@@ -253,7 +253,8 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
           cases hy.1 hx.1)
       · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
         rw [hk]
-        simp
+        simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
+          Bool.true_eq_decide_iff, and_self, exists_const, Bool.false_eq_decide_iff]
         apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
@@ -377,7 +378,6 @@ theorem rfindOpt {n} {f : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f)
         exists_congr fun a => (and_congr (iff_of_eq _) Iff.rfl).trans (and_congr_right fun h => _)
       · congr
         funext n
-        simp only [Part.some_inj, PFun.coe_val]
         cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ]; rfl
       · have := Nat.rfind_spec h
         simp only [Part.coe_some, Part.mem_some_iff] at this

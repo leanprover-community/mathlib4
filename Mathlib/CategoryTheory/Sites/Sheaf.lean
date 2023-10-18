@@ -107,6 +107,10 @@ def conesEquivSieveCompatibleFamily :
   right_inv x := rfl
 #align category_theory.presheaf.cones_equiv_sieve_compatible_family CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
+  CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
+
 variable {P S E} {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
 
 /-- The cone corresponding to a sieve_compatible family of elements, dot notation enabled. -/
@@ -122,7 +126,7 @@ def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
     of the family. -/
 def homEquivAmalgamation : (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t }
     where
-  toFun l := ⟨l.Hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
+  toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
@@ -615,12 +619,11 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
       · refine' limit.hom_ext (fun j => _)
         dsimp [Equalizer.Presieve.firstMap, firstMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
-        dsimp [Equalizer.Presieve.firstMap, firstMap]
-        erw [piComparison_comp_π_assoc]
+        rw [piComparison_comp_π_assoc]
       · refine' limit.hom_ext (fun j => _)
         dsimp [Equalizer.Presieve.secondMap, secondMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
-        erw [piComparison_comp_π_assoc]
+        rw [piComparison_comp_π_assoc]
       · dsimp
         simp
   · refine' Fork.ext (Iso.refl _) _

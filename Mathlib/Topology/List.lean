@@ -33,7 +33,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
-    rcases(mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
+    rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
     have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
     induction hu generalizing s
@@ -90,7 +90,7 @@ theorem tendsto_cons_iff {β : Type*} {f : List α → β} {b : Filter β} {a : 
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
       (Filter.seq_eq_filter_seq _ _).symm]
     simp [-Filter.map_def, (· ∘ ·), functor_norm]
-  rw [this, Filter.tendsto_map'_iff]; dsimp; rfl
+  rw [this, Filter.tendsto_map'_iff]; rfl
 #align list.tendsto_cons_iff List.tendsto_cons_iff
 
 theorem continuous_cons : Continuous fun x : α × List α => (x.1::x.2 : List α) :=

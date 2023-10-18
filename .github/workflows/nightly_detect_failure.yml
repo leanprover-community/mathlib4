@@ -1,0 +1,25 @@
+name: Post to zulip if the nightly-testing branch is failing.
+
+on:
+  workflow_run:
+    workflows: ["continuous integration"]
+    types:
+      - completed
+
+jobs:
+  handle_failure:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send message on Zulip
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib reviewers'
+        type: 'stream'
+        topic: 'CI failure on the nightly-testing branch'
+        content: |
+          The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).

@@ -35,7 +35,7 @@ def finOneEquiv : Fin 1 ≃ Unit :=
 /-- Equivalence between `Fin 2` and `Bool`. -/
 def finTwoEquiv : Fin 2 ≃ Bool where
   toFun := ![false, true]
-  invFun b := cond b 1 0
+  invFun b := b.casesOn 0 1
   left_inv := Fin.forall_fin_two.2 <| by simp
   right_inv := Bool.forall_bool.2 <| by simp
 #align fin_two_equiv finTwoEquiv
@@ -58,8 +58,7 @@ theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
       Set.pi Set.univ (Fin.cons s <| Fin.cons t finZeroElim) := by
   ext f
-  have : (Fin.cons s (Fin.cons t finZeroElim) : ∀ i, Set (α i)) 1 = t := rfl
-  simp [Fin.forall_fin_two, this]
+  simp [Fin.forall_fin_two]
 #align fin.preimage_apply_01_prod Fin.preimage_apply_01_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/

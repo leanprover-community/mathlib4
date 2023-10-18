@@ -260,7 +260,7 @@ submodule `M'` of `x`, we only need to show that `r ^ n • x ∈ M'` for some `
 theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤)
     (x : M) (H : ∀ r : s, ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M') : x ∈ M' := by
   obtain ⟨s', hs₁, hs₂⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
-  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n  : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
+  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
   choose n₁ n₂ using H
   let N := s'.attach.sup n₁
   have hs' := Ideal.span_pow_eq_top (s' : Set R) hs₂ N
@@ -440,6 +440,9 @@ instance : Mul (Ideal R) :=
 @[simp]
 theorem one_eq_top : (1 : Ideal R) = ⊤ := by erw [Submodule.one_eq_range, LinearMap.range_id]
 #align ideal.one_eq_top Ideal.one_eq_top
+
+theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
+  rw [one_eq_top, eq_top_iff_one, add_eq_sup, Submodule.mem_sup]
 
 theorem mul_mem_mul {r s} (hr : r ∈ I) (hs : s ∈ J) : r * s ∈ I * J :=
   Submodule.smul_mem_smul hr hs
@@ -629,12 +632,18 @@ theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
 #align ideal.finset_inf_span_singleton Ideal.finset_inf_span_singleton
 
-theorem iInf_span_singleton {ι : Type*} [Fintype ι] (I : ι → R)
+theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
     (hI : ∀ (i j) (_ : i ≠ j), IsCoprime (I i) (I j)) :
-    ⨅ i, Ideal.span ({I i} : Set R) = Ideal.span {∏ i, I i} := by
+    ⨅ i, span ({I i} : Set R) = span {∏ i, I i} := by
   rw [← Finset.inf_univ_eq_iInf, finset_inf_span_singleton]
   rwa [Finset.coe_univ, Set.pairwise_univ]
 #align ideal.infi_span_singleton Ideal.iInf_span_singleton
+
+theorem iInf_span_singleton_natCast {R : Type*} [CommRing R] {ι : Type*} [Fintype ι]
+    {I : ι → ℕ} (hI : ∀ (i j : ι), i ≠ j → (I i).Coprime (I j)) :
+    ⨅ (i : ι), span {(I i : R)} = span {((∏ i : ι, I i : ℕ) : R)} := by
+  rw [iInf_span_singleton, Nat.cast_prod]
+  exact fun i j h ↦ (hI i j h).cast
 
 theorem sup_eq_top_iff_isCoprime {R : Type*} [CommSemiring R] (x y : R) :
     span ({x} : Set R) ⊔ span {y} = ⊤ ↔ IsCoprime x y := by
@@ -810,8 +819,8 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
     fun h => by cases' h with h h <;> rw [← Ideal.mul_bot, h, Ideal.mul_comm]⟩
 #align ideal.mul_eq_bot Ideal.mul_eq_bot
 
-instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R)
-    where eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
@@ -824,6 +833,69 @@ theorem span_pair_mul_span_pair (w x y z : R) :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
   simp_rw [span_insert, sup_mul, mul_sup, span_singleton_mul_span_singleton, sup_assoc]
 #align ideal.span_pair_mul_span_pair Ideal.span_pair_mul_span_pair
+
+theorem isCoprime_iff_codisjoint : IsCoprime I J ↔ Codisjoint I J := by
+  rw [IsCoprime, codisjoint_iff]
+  constructor
+  · rintro ⟨x, y, hxy⟩
+    rw [eq_top_iff_one]
+    apply (show x * I + y * J ≤ I ⊔ J from
+      sup_le (mul_le_left.trans le_sup_left) (mul_le_left.trans le_sup_right))
+    rw [hxy]
+    simp only [one_eq_top, Submodule.mem_top]
+  · intro h
+    refine' ⟨1, 1, _⟩
+    simpa only [one_eq_top, top_mul, Submodule.add_eq_sup]
+
+theorem isCoprime_iff_add : IsCoprime I J ↔ I + J = 1 := by
+  rw [isCoprime_iff_codisjoint, codisjoint_iff, add_eq_sup, one_eq_top]
+
+theorem isCoprime_iff_exists : IsCoprime I J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
+  rw [← add_eq_one_iff, isCoprime_iff_add]
+
+theorem isCoprime_iff_sup_eq : IsCoprime I J ↔ I ⊔ J = ⊤ := by
+  rw [isCoprime_iff_codisjoint, codisjoint_iff]
+
+open List in
+theorem isCoprime_tfae : TFAE [IsCoprime I J, Codisjoint I J, I + J = 1,
+    ∃ i ∈ I, ∃ j ∈ J, i + j = 1, I ⊔ J = ⊤] := by
+  rw [← isCoprime_iff_codisjoint, ← isCoprime_iff_add, ← isCoprime_iff_exists,
+      ← isCoprime_iff_sup_eq]
+  simp
+
+theorem _root_.IsCoprime.codisjoint (h : IsCoprime I J) : Codisjoint I J :=
+  isCoprime_iff_codisjoint.mp h
+
+theorem _root_.IsCoprime.add_eq (h : IsCoprime I J) : I + J = 1 := isCoprime_iff_add.mp h
+
+theorem _root_.IsCoprime.exists (h : IsCoprime I J) : ∃ i ∈ I, ∃ j ∈ J, i + j = 1 :=
+  isCoprime_iff_exists.mp h
+
+theorem _root_.IsCoprime.sup_eq (h : IsCoprime I J) : I ⊔ J = ⊤ := isCoprime_iff_sup_eq.mp h
+
+theorem isCoprime_span_singleton_iff (x y : R) :
+    IsCoprime (span <| singleton x) (span <| singleton y) ↔ IsCoprime x y := by
+  simp_rw [isCoprime_iff_codisjoint, codisjoint_iff, eq_top_iff_one, mem_span_singleton_sup,
+    mem_span_singleton]
+  constructor
+  · rintro ⟨a, _, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
+  · rintro ⟨a, b, e⟩; exact ⟨a, _, ⟨b, rfl⟩, mul_comm y b ▸ e⟩
+
+theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
+    (hf : ∀ j ∈ s, IsCoprime I (J j)) : IsCoprime I (⨅ j ∈ s, J j) := by
+  classical
+  simp_rw [isCoprime_iff_add] at *
+  induction s using Finset.induction with
+  | empty =>
+      simp
+  | @insert i s _ hs =>
+      rw [Finset.iInf_insert, inf_comm, one_eq_top, eq_top_iff, ← one_eq_top]
+      set K := ⨅ j ∈ s, J j
+      calc
+        1 = I + K            := (hs fun j hj ↦ hf j (Finset.mem_insert_of_mem hj)).symm
+        _ = I + K*(I + J i)  := by rw [hf i (Finset.mem_insert_self i s), mul_one]
+        _ = (1+K)*I + K*J i  := by ring
+        _ ≤ I + K ⊓ J i      := add_le_add mul_le_left mul_le_inf
 
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
 def radical (I : Ideal R) : Ideal R where
@@ -862,7 +934,7 @@ theorem radical_eq_iff : I.radical = I ↔ I.IsRadical := by
   rw [le_antisymm_iff, and_iff_left le_radical, IsRadical]
 #align ideal.radical_eq_iff Ideal.radical_eq_iff
 
-alias radical_eq_iff ↔ _ IsRadical.radical
+alias ⟨_, IsRadical.radical⟩ := radical_eq_iff
 #align ideal.is_radical.radical Ideal.IsRadical.radical
 
 variable (R)
@@ -1134,7 +1206,6 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
         exact h
       specialize ih hp' hn' h'
       refine' ih.imp id (Or.imp id (Exists.imp fun k => _))
-      simp only [exists_prop]
       exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
     by_cases Ha : f a ≤ f i
     · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
@@ -1947,6 +2018,9 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
     LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
+  -- This used to be the end of the proof before leanprover/lean4#2644
+  erw [LinearEquiv.coe_ofEq_apply, LinearEquiv.ofInjective_apply, Algebra.coe_lmul_eq_mul,
+    LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
 @[simp]
@@ -2022,6 +2096,11 @@ theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr <| not_one_mem_ker f
 #align ring_hom.ker_ne_top RingHom.ker_ne_top
 
+lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
+    (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
+  ext x
+  simp [mem_ker, Ideal.mem_iInf, Function.funext_iff]
+
 end Semiring
 
 section Ring
@@ -2055,6 +2134,10 @@ variable {F : Type*} [Ring R] [Ring S] [rc : RingHomClass F R S] (f : F)
 
 theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker, map_sub, sub_eq_zero]
 #align ring_hom.sub_mem_ker_iff RingHom.sub_mem_ker_iff
+
+@[simp]
+theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
 
 end RingRing
 

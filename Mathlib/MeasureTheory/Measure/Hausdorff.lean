@@ -154,7 +154,6 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
       hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
 #align measure_theory.outer_measure.is_metric.finset_Union_of_pairwise_separated MeasureTheory.OuterMeasure.IsMetric.finset_iUnion_of_pairwise_separated
 
-set_option maxHeartbeats 300000 in
 /-- Caratheodory theorem. If `m` is a metric outer measure, then every Borel measurable set `t` is
 Caratheodory measurable: for any (not necessarily measurable) set `s` we have
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
@@ -735,13 +734,13 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
   -- We start with the trivial case `C = 0`
   rcases (zero_le C).eq_or_lt with (rfl | hC0)
   · rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
-    · simp only [measure_empty, nonpos_iff_eq_zero, MulZeroClass.mul_zero, image_empty]
+    · simp only [measure_empty, nonpos_iff_eq_zero, mul_zero, image_empty]
     have : f '' s = {f x} :=
       haveI : (f '' s).Subsingleton := by simpa [diam_eq_zero_iff] using h.ediam_image_le
       (subsingleton_iff_singleton (mem_image_of_mem f hx)).1 this
     rw [this]
     rcases eq_or_lt_of_le hd with (rfl | h'd)
-    · simp only [ENNReal.rpow_zero, one_mul, MulZeroClass.mul_zero]
+    · simp only [ENNReal.rpow_zero, one_mul, mul_zero]
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨x, hx⟩
     · haveI := noAtoms_hausdorff Y h'd
@@ -837,7 +836,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
       exact (subsingleton_iff_singleton hx).1 this
     rw [this]
     rcases eq_or_lt_of_le hd with (rfl | h'd)
-    · simp only [ENNReal.rpow_zero, one_mul, MulZeroClass.mul_zero]
+    · simp only [ENNReal.rpow_zero, one_mul, mul_zero]
       rw [hausdorffMeasure_zero_singleton]
       exact one_le_hausdorffMeasure_zero_of_nonempty ⟨f x, hx⟩
     · haveI := noAtoms_hausdorff X h'd
@@ -1094,7 +1093,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
     convert this
     · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
       ext e
-      simp
+      simp only [mem_image]
       refine' ⟨fun ⟨x, h⟩ => ⟨x, _⟩, fun ⟨x, h⟩ => ⟨x, _⟩⟩
       · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn]
         exact h

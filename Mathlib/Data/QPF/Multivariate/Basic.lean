@@ -133,7 +133,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     · rw [← hy, ← abs_repr y, h, ← abs_map]; rfl
     intro i j
     apply (f i j).property
-  rintro ⟨a, f, h₀, h₁⟩; dsimp at *
+  rintro ⟨a, f, h₀, h₁⟩
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 #align mvqpf.liftp_iff MvQPF.liftP_iff
@@ -196,7 +196,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     refine' (mem_supp x _ u).mp hh _ _ hu
   rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
-    rcases(mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+    rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'

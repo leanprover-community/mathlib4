@@ -204,7 +204,7 @@ theorem eval₂_repr_eq_eval₂_of_map_eq (h : IsAdjoinRoot S f) (z : S) (w : R[
     (hzw : h.map w = z) : (h.repr z).eval₂ i x = w.eval₂ i x := by
   rw [eq_comm, ← sub_eq_zero, ← h.map_repr z, ← map_sub, h.map_eq_zero_iff] at hzw
   obtain ⟨y, hy⟩ := hzw
-  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, MulZeroClass.zero_mul]
+  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, zero_mul]
 #align is_adjoin_root.eval₂_repr_eq_eval₂_of_map_eq IsAdjoinRoot.eval₂_repr_eq_eval₂_of_map_eq
 
 variable (i x)
@@ -557,7 +557,7 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
         ↑(⟨i, _⟩ : Fin _) := by
         rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
           Finsupp.single_apply_left Fin.val_injective]
-      _ = Pi.single (f:= fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
+      _ = Pi.single (f := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
   · refine (Pi.single_eq_of_ne (f := fun _ => R) ?_ (1 : (fun _ => R) n)).symm
     rintro rfl
     simp [hi] at hn

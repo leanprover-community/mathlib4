@@ -338,31 +338,15 @@ theorem trans_symm (γ : Path x y) (γ' : Path y z) : (γ.trans γ').symm = γ'.
   ext t
   simp only [trans_apply, ← one_div, symm_apply, not_le, Function.comp_apply]
   split_ifs with h h₁ h₂ <;> rw [coe_symm_eq] at h
-  · have ht : (t : ℝ) = 1 / 2 := by
-      refine le_antisymm h₁ ?_
-      rw [sub_le_comm] at h
-      norm_num at h
-      exact h
-    -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
-    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
-    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
-    -- find `LinearOrder X`.
-    simp_rw [unitInterval.symm, ht]
-    norm_num
+  · have ht : (t : ℝ) = 1 / 2 := by linarith
+    norm_num [ht]
   · refine' congr_arg _ (Subtype.ext _)
-    norm_num [unitInterval.symm, sub_sub_eq_add_sub, mul_sub]
-    ring
+    norm_num [sub_sub_eq_add_sub, mul_sub]
   · refine' congr_arg _ (Subtype.ext _)
     norm_num [mul_sub, h]
-    ring
-  · -- porting note: was `linarith [unitInterval.nonneg t, unitInterval.le_one t]` but `linarith`
-    -- doesn't know about `ℚ` yet. https://github.com/leanprover-community/mathlib4/issues/2714
-    -- porting note: although `linarith` now knows about `ℚ`, it still fails here as it doesn't
-    -- find `LinearOrder X`.
-    exfalso
-    rw [sub_le_comm] at h
-    norm_num at h h₂
-    exact (h.trans h₂).ne rfl
+    ring -- TODO norm_num should really do this
+  · exfalso
+    linarith
 #align path.trans_symm Path.trans_symm
 
 @[simp]
@@ -1164,15 +1148,15 @@ theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continu
   exact isPathConnected_univ.image hf
 
 theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
-  {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
+    {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
-  (surjective_quotient_mk X).pathConnectedSpace continuous_coinduced_rng
+  (surjective_quotient_mk' X).pathConnectedSpace continuous_coinduced_rng
 
-/-- This is a special case of `NormedSpace.path_connected` (and
+/-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   Nonempty := inferInstance
@@ -1239,7 +1223,7 @@ theorem locPathConnected_of_bases {p : ι → Prop} {s : X → ι → Set X}
   · intro i pi
     exact ⟨s x i, ⟨(h x).mem_of_mem pi, h' x i pi⟩, by rfl⟩
   · rintro U ⟨U_in, _hU⟩
-    rcases(h x).mem_iff.mp U_in with ⟨i, pi, hi⟩
+    rcases (h x).mem_iff.mp U_in with ⟨i, pi, hi⟩
     tauto
 #align loc_path_connected_of_bases locPathConnected_of_bases
 
@@ -1254,13 +1238,13 @@ theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
     refine' IsClopen.eq_univ ⟨_, _⟩ (by simp)
     · rw [isOpen_iff_mem_nhds]
       intro y y_in
-      rcases(path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
+      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
       apply mem_of_superset U_in
       rw [← pathComponent_congr y_in]
       exact hU.subset_pathComponent (mem_of_mem_nhds U_in)
     · rw [isClosed_iff_nhds]
       intro y H
-      rcases(path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
+      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
       rcases H U U_in with ⟨z, hz, hz'⟩
       exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
 #align path_connected_space_iff_connected_space pathConnectedSpace_iff_connectedSpace

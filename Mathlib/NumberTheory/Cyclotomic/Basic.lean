@@ -171,7 +171,7 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
 #align is_cyclotomic_extension.subsingleton_iff IsCyclotomicExtension.subsingleton_iff
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
-is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1 } ` given by
+is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1 }` given by
 roots of unity of order in `T`. -/
 theorem union_right [h : IsCyclotomicExtension (S ∪ T) A B] :
     IsCyclotomicExtension T (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}) B := by
@@ -352,8 +352,8 @@ theorem numberField [h : NumberField K] [Finite S] [IsCyclotomicExtension S K L]
 /-- A finite cyclotomic extension of an integral noetherian domain is integral -/
 theorem integral [IsDomain B] [IsNoetherianRing A] [Finite S] [IsCyclotomicExtension S A B] :
     Algebra.IsIntegral A B :=
-  isIntegral_of_noetherian <| isNoetherian_of_fg_of_noetherian' <|
-    (IsCyclotomicExtension.finite S A B).out
+  letI := IsCyclotomicExtension.finite S A B; isIntegral_of_noetherian <|
+    isNoetherian_of_isNoetherianRing_of_finite A B
 #align is_cyclotomic_extension.integral IsCyclotomicExtension.integral
 
 /-- If `S` is finite and `IsCyclotomicExtension S K A`, then `finiteDimensional K A`. -/
