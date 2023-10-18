@@ -521,7 +521,7 @@ variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
 def comp : QPF (Functor.Comp F₂ F₁) where
-  P := PFunctor.Comp q₂.P q₁.P
+  P := PFunctor.comp q₂.P q₁.P
   abs {α} := by
     dsimp [Functor.Comp]
     intro p
@@ -530,7 +530,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     dsimp [Functor.Comp]
     intro y
     refine' ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, _⟩
-    dsimp [PFunctor.Comp]
+    dsimp [PFunctor.comp]
     intro x
     exact (repr ((repr y).2 x.1)).snd x.2
   abs_repr {α} := by
@@ -545,7 +545,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     cases' h' : repr (f x) with b g
     dsimp; rw [← h', abs_repr]
   abs_map {α β} f := by
-    dsimp [Functor.Comp, PFunctor.Comp]
+    dsimp [Functor.Comp, PFunctor.comp]
     intro p
     cases' p with a g; dsimp
     cases' a with b h; dsimp
