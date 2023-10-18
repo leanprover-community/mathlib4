@@ -697,6 +697,7 @@ protected theorem Decidable.not_forall {p : α → Prop} [Decidable (∃ x, ¬p 
    not_forall_of_exists_not⟩
 #align decidable.not_forall Decidable.not_forall
 
+@[simp]
 theorem not_forall {p : α → Prop} : (¬∀ x, p x) ↔ ∃ x, ¬p x :=
   Decidable.not_forall
 #align not_forall not_forall
