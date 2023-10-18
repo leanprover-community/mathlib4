@@ -92,7 +92,7 @@ variable {X : TopCat.{x}} {F : Presheaf (Type u) X} {ι : Type x} {U : ι → Op
 
 /-- Given sections over a family of open sets, extend it to include
   sections over pairwise intersections of the open sets. -/
-def obj_pairwise_of_family (sf : ∀ i, F.obj (op (U i))) :
+def objPairwiseOfFamily (sf : ∀ i, F.obj (op (U i))) :
     ∀ i, ((Pairwise.diagram U).op ⋙ F).obj i
   | ⟨Pairwise.single i⟩ => sf i
   | ⟨Pairwise.pair i j⟩ => F.map (infLELeft (U i) (U j)).op (sf i)
@@ -101,7 +101,7 @@ def obj_pairwise_of_family (sf : ∀ i, F.obj (op (U i))) :
   section of the functor `(Pairwise.diagram U).op ⋙ F`. -/
 def IsCompatible.section_pairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
-  refine ⟨obj_pairwise_of_family sf, ?_⟩
+  refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
   rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_|_|_|_)
   · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
@@ -109,8 +109,8 @@ def IsCompatible.section_pairwise {sf} (h : IsCompatible F U sf) :
   · exact (h i' i).symm
   · exact congr_fun (G.map_id <| op <| Pairwise.pair i j) _
 
-theorem isGluing_iff_pairwise {sf} {s} : IsGluing F U sf s ↔
-    ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = obj_pairwise_of_family sf i := by
+theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
+    ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
   refine ⟨fun h ↦ ?_, fun h i ↦ h (op <| Pairwise.single i)⟩
   rintro (i|⟨i,j⟩)
   · exact h i
