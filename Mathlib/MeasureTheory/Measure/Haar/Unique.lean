@@ -228,6 +228,7 @@ open Function MeasureTheory Measure
 variable {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G]
 
+@[to_additive]
 lemma continuous_integral_apply_inv_mul
     {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {g : G → E}
@@ -248,6 +249,7 @@ lemma continuous_integral_apply_inv_mul
       simpa only [Set.mem_inv, mul_inv_rev, inv_inv] using subset_tsupport _ hx
   exact A.continuousAt ht
 
+@[to_additive]
 lemma integral_mulLeftInvariant_mulRightInvariant_combo
     {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
     [IsMulLeftInvariant μ] [IsMulRightInvariant ν] [IsOpenPosMeasure ν]
@@ -338,7 +340,8 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
 
-
+/-- Given two left-invariant measures which are finite on compacts, they integrate in the same way
+continuous compactly supported functions, up to a multiplicative constant. -/
 lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
@@ -355,7 +358,16 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     rcases exists_continuous_one_zero_of_isCompact_of_group hk isOpen_univ (subset_univ _)
       with ⟨g, g_cont, g_comp, gk, -, hg⟩
     exact ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, by simp [gk (mem_of_mem_nhds k_mem)]⟩
+  have int_g_pos : 0 < ∫ x, g x ∂μ := by
+    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
+    · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
+    · exact g_cont.integrable_of_hasCompactSupport g_comp
   let ν := μ.inv
-  have : IsFiniteMeasureOnCompacts ν := by infer_instance
-  have : IsOpenPosMeasure ν := by infer_instance
-  have : IsMulRightInvariant ν := by infer_instance
+  let c := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
+  refine ⟨c, fun f f_cont f_comp ↦ ?_⟩
+  have A : ∫ x, f x ∂μ = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ :=
+    integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
+  rw [← mul_inv_eq_iff_eq_mul₀ int_g_pos.ne'] at A
+  have B : ∫ x, f x ∂μ' = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ' :=
+    integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
+  rwa [← A, mul_assoc, mul_comm] at B
