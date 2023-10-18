@@ -367,7 +367,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
     ext
     simpa
   apply Fintype.card_congr
-  exact (((skeletalFunctor ⋙ forget NonemptyFinLinOrd).mapIso I).toEquiv)
+  exact ((skeletalFunctor ⋙ forget NonemptyFinLinOrd).mapIso I).toEquiv
 #align simplex_category.skeletal SimplexCategory.skeletal
 
 namespace SkeletalFunctor
@@ -464,7 +464,8 @@ theorem mono_iff_injective {n m : SimplexCategory} {f : n ⟶ m} :
     Mono f ↔ Function.Injective f.toOrderHom := by
   rw [← Functor.mono_map_iff_mono skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrd.mono_iff_injective, skeletalFunctor.coe_map]
+  simp only [skeletalFunctor_obj, skeletalFunctor_map,
+    NonemptyFinLinOrd.mono_iff_injective, NonemptyFinLinOrd.coe_of]
 #align simplex_category.mono_iff_injective SimplexCategory.mono_iff_injective
 
 /-- A morphism in `SimplexCategory` is an epimorphism if and only if it is a surjective function
@@ -473,7 +474,8 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     Epi f ↔ Function.Surjective f.toOrderHom := by
   rw [← Functor.epi_map_iff_epi skeletalEquivalence.functor]
   dsimp only [skeletalEquivalence, Functor.asEquivalence_functor]
-  rw [NonemptyFinLinOrd.epi_iff_surjective, skeletalFunctor.coe_map]
+  simp only [skeletalFunctor_obj, skeletalFunctor_map,
+    NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of]
 #align simplex_category.epi_iff_surjective SimplexCategory.epi_iff_surjective
 
 /-- A monomorphism in `SimplexCategory` must increase lengths-/
