@@ -146,8 +146,8 @@ theorem card_one : (1 : Finset α).card = 1 :=
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
-def singletonOneHom : OneHom α (Finset α) :=
-  ⟨singleton, singleton_one⟩
+def singletonOneHom : OneHom α (Finset α) where
+  toFun := singleton; map_one' := singleton_one
 #align finset.singleton_one_hom Finset.singletonOneHom
 #align finset.singleton_zero_hom Finset.singletonZeroHom
 
@@ -487,8 +487,8 @@ theorem image_mul : (s * t).image (f : α → β) = s.image f * t.image f :=
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-def singletonMulHom : α →ₙ* Finset α :=
-  ⟨singleton, fun _ _ => (singleton_mul_singleton _ _).symm⟩
+def singletonMulHom : α →ₙ* Finset α where
+  toFun := singleton; map_mul' _ _ := (singleton_mul_singleton _ _).symm
 #align finset.singleton_mul_hom Finset.singletonMulHom
 #align finset.singleton_add_hom Finset.singletonAddHom
 
@@ -623,7 +623,7 @@ theorem singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
 #align finset.singleton_div Finset.singleton_div
 #align finset.singleton_sub Finset.singleton_sub
 
--- @[to_additive (attr := simp )] -- Porting note: simp can prove this & the additive version
+-- @[to_additive (attr := simp)] -- Porting note: simp can prove this & the additive version
 @[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
@@ -854,7 +854,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -1776,13 +1776,13 @@ scoped[Pointwise]
 multiplicative action on `Finset β`. -/
 protected def distribMulActionFinset [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Finset β) :=
-  Function.Injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_injective coe_smul_finset
+  Function.Injective.distribMulAction coeAddMonoidHom coe_injective coe_smul_finset
 #align finset.distrib_mul_action_finset Finset.distribMulActionFinset
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
 protected def mulDistribMulActionFinset [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Finset β) :=
-  Function.Injective.mulDistribMulAction ⟨⟨(↑), coe_one⟩, coe_mul⟩ coe_injective coe_smul_finset
+  Function.Injective.mulDistribMulAction coeMonoidHom coe_injective coe_smul_finset
 #align finset.mul_distrib_mul_action_finset Finset.mulDistribMulActionFinset
 
 scoped[Pointwise]

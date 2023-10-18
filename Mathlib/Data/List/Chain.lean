@@ -72,7 +72,7 @@ theorem chain_iff_forall₂ :
   | a, [] => by simp
   | a, b :: l => by
     by_cases h : l = [] <;>
-    simp [@chain_iff_forall₂ b l, *]
+    simp [@chain_iff_forall₂ b l, dropLast, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
 theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
@@ -164,9 +164,9 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
 set_option linter.deprecated false in
 @[deprecated chain_iff_get]
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
-        (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
-          ∀ (i) (h : i < length l - 1),
-            R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
+    (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
+    ∀ (i) (h : i < length l - 1),
+    R (nthLe l i (lt_of_lt_pred h)) (nthLe l (i + 1) (lt_pred_iff.mp h)) :=
   by rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
@@ -352,7 +352,9 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
-    simp
+    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
+      get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
+      tsub_zero, add_pos_iff, or_true, forall_true_left, and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
@@ -375,7 +377,7 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
 
 -- porting note: new
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
-  (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+    (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
 | [l], _ => by simp [join]
@@ -469,8 +471,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     /- Bundle l with a proof that it is r-decreasing to form l' -/
     have hl' := (List.chain'_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
-    have : Acc (List.lex_chains r) l'
-    · cases' l with b l
+    have : Acc (List.lex_chains r) l' := by
+      cases' l with b l
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.chain'_cons.1 hl).1

@@ -62,6 +62,7 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 multilinear, tensor, tensor product
 -/
 
+suppress_compilation
 
 open Function
 
@@ -112,6 +113,7 @@ def PiTensorProduct : Type _ :=
 
 variable {R}
 
+unsuppress_compilation in
 -- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
 --scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
 /-- notation for tensor product over some indexed type -/
@@ -275,7 +277,6 @@ end DistribMulAction
 -- to find.
 instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Module R₁ (⨂[R] i, s i) :=
   { PiTensorProduct.distribMulAction' with
-    smul := (· • ·)
     add_smul := fun r r' x ↦
       PiTensorProduct.induction_on' x
         (fun {r f} ↦ by simp_rw [smul_tprodCoeff', add_smul, add_tprodCoeff'])
@@ -308,6 +309,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 
 variable {R}
 
+unsuppress_compilation in
 /-- pure tensor in tensor product over some index type -/
 -- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
 -- was just `tprod R f`.
@@ -315,7 +317,7 @@ notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => 
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
-  ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
+    ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : ∀ i, s i) : tprodCoeff R z f = z • tprod R f := by

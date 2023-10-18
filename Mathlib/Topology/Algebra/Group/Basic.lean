@@ -269,8 +269,8 @@ variable {ι : Type*}
 
 @[to_additive]
 instance Pi.continuousInv {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Inv (C i)]
-    [∀ i, ContinuousInv (C i)] : ContinuousInv (∀ i, C i)
-    where continuous_inv := continuous_pi fun i => (continuous_apply i).inv
+    [∀ i, ContinuousInv (C i)] : ContinuousInv (∀ i, C i) where
+  continuous_inv := continuous_pi fun i => (continuous_apply i).inv
 #align pi.has_continuous_inv Pi.continuousInv
 #align pi.has_continuous_neg Pi.continuousNeg
 
@@ -305,11 +305,11 @@ theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
 
 end PointwiseLimits
 
-instance [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousNeg (Additive H)
-    where continuous_neg := @continuous_inv H _ _ _
+instance [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousNeg (Additive H) where
+  continuous_neg := @continuous_inv H _ _ _
 
-instance [TopologicalSpace H] [Neg H] [ContinuousNeg H] : ContinuousInv (Multiplicative H)
-    where continuous_inv := @continuous_neg H _ _ _
+instance [TopologicalSpace H] [Neg H] [ContinuousNeg H] : ContinuousInv (Multiplicative H) where
+  continuous_inv := @continuous_neg H _ _ _
 
 end ContinuousInv
 
@@ -499,7 +499,7 @@ instance AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
 
 instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [TopologicalAddGroup A] : ContinuousSMul ℤ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_zsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSMul_int
 
 @[to_additive (attr := continuity)]
@@ -604,8 +604,8 @@ theorem tendsto_inv_nhdsWithin_Iic_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻
 end OrderedCommGroup
 
 @[to_additive]
-instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H)
-    where continuous_inv := continuous_inv.prod_map continuous_inv
+instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
+  continuous_inv := continuous_inv.prod_map continuous_inv
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
@@ -1497,37 +1497,46 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 #align topological_group.regular_space TopologicalGroup.regularSpace
 #align topological_add_group.regular_space TopologicalAddGroup.regularSpace
 
-@[to_additive]
-theorem TopologicalGroup.t3Space [T0Space G] : T3Space G :=
-  ⟨⟩
-#align topological_group.t3_space TopologicalGroup.t3Space
-#align topological_add_group.t3_space TopologicalAddGroup.t3Space
-
-@[to_additive]
-theorem TopologicalGroup.t2Space [T0Space G] : T2Space G := by
-  haveI := TopologicalGroup.t3Space G
-  infer_instance
-#align topological_group.t2_space TopologicalGroup.t2Space
-#align topological_add_group.t2_space TopologicalAddGroup.t2Space
+-- `inferInstance` can find these instances now
+#align topological_group.t3_space inferInstance
+#align topological_add_group.t3_space inferInstance
+#align topological_group.t2_space inferInstance
+#align topological_add_group.t2_space inferInstance
 
 variable {G}
 
 @[to_additive]
 theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) :=
   ⟨fun _ ↦ isClosed_singleton, fun h ↦
-    have := TopologicalGroup.t1Space G h; TopologicalGroup.t2Space G⟩
+    have := TopologicalGroup.t1Space G h; inferInstance⟩
 #align topological_group.t2_space_iff_one_closed TopologicalGroup.t2Space_iff_one_closed
 #align topological_add_group.t2_space_iff_zero_closed TopologicalAddGroup.t2Space_iff_zero_closed
 
 @[to_additive]
 theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U ∈ 𝓝 (1 : G), x ∉ U) :
     T2Space G := by
-  suffices T1Space G from TopologicalGroup.t2Space G
+  suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
   rcases H (x * y⁻¹) (by rwa [Ne.def, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
+
+/-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
+is closed, symmetric, and satisfies `V * V ⊆ U`. -/
+@[to_additive "Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
+identity which is closed, symmetric, and satisfies `V + V ⊆ U`."]
+theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
+    ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
+  rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
+  rcases exists_mem_nhds_isClosed_subset (V_open.mem_nhds V_mem) with ⟨W, W_mem, W_closed, hW⟩
+  refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
+    by simp [inter_comm], ?_⟩
+  calc
+  W ∩ W⁻¹ * (W ∩ W⁻¹)
+    ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
+  _ ⊆ V * V := mul_subset_mul hW hW
+  _ ⊆ U := hV
 
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
@@ -1536,7 +1545,7 @@ instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
     [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
   haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
-  exact TopologicalGroup.t3Space _
+  infer_instance
 #align subgroup.t3_quotient_of_is_closed Subgroup.t3_quotient_of_isClosed
 #align add_subgroup.t3_quotient_of_is_closed AddSubgroup.t3_quotient_of_isClosed
 
@@ -1576,14 +1585,14 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff."]
 theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
-    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul (opposite S) G :=
+    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
       have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prod_map continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
-      apply Finite.of_preimage _ (oppositeEquiv S).surjective
+      apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
       simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
@@ -1668,14 +1677,13 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
 #align compact_covered_by_mul_left_translates compact_covered_by_mul_left_translates
 #align compact_covered_by_add_left_translates compact_covered_by_add_left_translates
 
-/-- Every locally compact separable topological group is σ-compact.
+/-- Every weakly locally compact separable topological group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis. -/
-@[to_additive SeparableLocallyCompactAddGroup.sigmaCompactSpace
-  "Every locally
-  compact separable topological group is σ-compact.
+@[to_additive SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
+  "Every weakly locally compact separable topological additive group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis."]
-instance (priority := 100) SeparableLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
-    [LocallyCompactSpace G] : SigmaCompactSpace G := by
+instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
+    [WeaklyLocallyCompactSpace G] : SigmaCompactSpace G := by
   obtain ⟨L, hLc, hL1⟩ := exists_compact_mem_nhds (1 : G)
   refine' ⟨⟨fun n => (fun x => x * denseSeq G n) ⁻¹' L, _, _⟩⟩
   · intro n
@@ -1686,8 +1694,8 @@ instance (priority := 100) SeparableLocallyCompactGroup.sigmaCompactSpace [Separ
       exact (denseRange_denseSeq G).inter_nhds_nonempty
           ((Homeomorph.mulLeft x).continuous.continuousAt <| hL1)
     exact ⟨n, hn⟩
-#align separable_locally_compact_group.sigma_compact_space SeparableLocallyCompactGroup.sigmaCompactSpace
-#align separable_locally_compact_add_group.sigma_compact_space SeparableLocallyCompactAddGroup.sigmaCompactSpace
+#align separable_locally_compact_group.sigma_compact_space SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace
+#align separable_locally_compact_add_group.sigma_compact_space SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
 
 /-- Given two compact sets in a noncompact topological group, there is a translate of the second
 one that is disjoint from the first one. -/
@@ -1715,16 +1723,8 @@ admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
-  rcases exists_open_nhds_one_mul_subset L1 with ⟨V, hVo, hV₁, hVL⟩
-  have hcVL : closure V ⊆ L :=
-    calc
-      closure V = 1 * closure V := (one_mul _).symm
-      _ ⊆ V * closure V :=
-        mul_subset_mul_right <| singleton_subset_iff.2 hV₁
-      _ = V * V := hVo.mul_closure _
-      _ ⊆ L := hVL
-  exact ⟨closure V, isCompact_of_isClosed_subset Lcomp isClosed_closure hcVL, isClosed_closure,
-    hcVL, mem_of_superset (hVo.mem_nhds hV₁) subset_closure⟩
+  rcases exists_mem_nhds_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
+  exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
@@ -1744,7 +1744,7 @@ theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set 
 variable (G)
 
 @[to_additive]
-theorem exists_isCompact_isClosed_nhds_one [LocallyCompactSpace G] :
+theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
   let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
   let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
@@ -1781,11 +1781,13 @@ end
 
 end FilterMul
 
-instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] : TopologicalAddGroup (Additive G)
-    where continuous_neg := @continuous_inv G _ _ _
+instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
+    TopologicalAddGroup (Additive G) where
+  continuous_neg := @continuous_inv G _ _ _
 
 instance {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
-    TopologicalGroup (Multiplicative G) where continuous_inv := @continuous_neg G _ _ _
+    TopologicalGroup (Multiplicative G) where
+  continuous_inv := @continuous_neg G _ _ _
 
 section Quotient
 
@@ -1838,8 +1840,8 @@ open MulOpposite (continuous_op continuous_unop)
 variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
 
 @[to_additive]
-instance [ContinuousMul α] : TopologicalGroup αˣ
-    where continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
+instance [ContinuousMul α] : TopologicalGroup αˣ where
+  continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/

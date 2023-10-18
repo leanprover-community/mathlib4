@@ -153,11 +153,11 @@ def adF : B × B → FreeLieAlgebra R (Generators B) :=
 #align cartan_matrix.relations.ad_F CartanMatrix.Relations.adF
 
 private theorem adE_of_eq_eq_zero (i : B) (h : A i i = 2) : adE R A ⟨i, i⟩ = 0 := by
-  have h' : (-2 : ℤ).toNat = 0 := by rfl
+  have h' : (-2 : ℤ).toNat = 0 := rfl
   simp [adE, h, h']
 
 private theorem adF_of_eq_eq_zero (i : B) (h : A i i = 2) : adF R A ⟨i, i⟩ = 0 := by
-  have h' : (-2 : ℤ).toNat = 0 := by rfl
+  have h' : (-2 : ℤ).toNat = 0 := rfl
   simp [adF, h, h']
 
 /-- The union of all the relations as a subset of the free Lie algebra. -/

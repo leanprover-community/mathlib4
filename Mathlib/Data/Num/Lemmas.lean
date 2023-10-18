@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
@@ -409,9 +410,6 @@ instance commSemiring : CommSemiring Num := by
     { Num.addMonoid,
       Num.addMonoidWithOne with
       mul := (· * ·)
-      one := 1
-      add := (· + ·)
-      zero := 0
       npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
     try { intros; rfl } <;>
     transfer <;>
@@ -925,7 +923,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
     any_goals assumption
     any_goals rw [Nat.bitwise'_zero, p11]; cases g true true <;> rfl
     any_goals rw [Nat.bitwise'_zero_left, this, ← bit_to_nat, p1b]
-    any_goals rw [Nat.bitwise'_zero_right _ gff, this, ← bit_to_nat, pb1]
+    any_goals rw [Nat.bitwise'_zero_right, this, ← bit_to_nat, pb1]
     all_goals
       rw [← show ∀ n : PosNum, ↑(p m n) = Nat.bitwise' g ↑m ↑n from IH]
       rw [← bit_to_nat, pbb]
@@ -1500,7 +1498,6 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     mul_assoc := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
-    one := 1
     one_mul := by transfer
     mul_one := by transfer
     left_distrib := by
@@ -1689,7 +1686,7 @@ theorem gcd_to_nat_aux :
     refine'
       add_le_add_left
         (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) _)) _
-    suffices : 1 ≤ _; simpa using Nat.mul_le_mul_left (pos a) this
+    suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this
     rw [Nat.le_div_iff_mul_le a.cast_pos, one_mul]
     exact le_to_nat.2 ab
 #align num.gcd_to_nat_aux Num.gcd_to_nat_aux

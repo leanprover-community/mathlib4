@@ -496,8 +496,7 @@ theorem natDegree_smul_of_smul_regular {S : Type*} [Monoid S] [DistribMulAction 
     (p : R[X]) (h : IsSMulRegular R k) : (k • p).natDegree = p.natDegree := by
   by_cases hp : p = 0
   · simp [hp]
-  rw [← WithBot.coe_eq_coe, ← Nat.cast_withBot, ←Nat.cast_withBot,
-      ← degree_eq_natDegree hp, ← degree_eq_natDegree,
+  rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree hp, ← degree_eq_natDegree,
     degree_smul_of_smul_regular p h]
   contrapose! hp
   rw [← smul_zero k] at hp
