@@ -163,7 +163,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
   · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
-#align inhomogeneous_cochains.d_eq InhomogeneousCochains.d_eq
+#align inhomogeneous_cochains.d_eq inhomogeneousCochains.d_eq
 
 end inhomogeneousCochains
 
