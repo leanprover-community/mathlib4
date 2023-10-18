@@ -1135,7 +1135,6 @@ lemma shortExact_of_distTriang {X₁ X₂ X₃ : t.Heart} {f : X₁ ⟶ X₂}
 
 variable (S : ShortComplex t.Heart) (hS : S.ShortExact)
 
--- fact: this δ is unique, more generally there is a naturality property with respect to S
 lemma exists_distTriang_of_shortExact :
     ∃ (δ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X₁)⟦(1 : ℤ)⟧),
       Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map S.g) δ ∈ distTriang C := by
@@ -1191,6 +1190,49 @@ noncomputable def heartShortExactTriangle : Triangle C :=
 lemma heartShortExactTriangle_distinguished :
     t.heartShortExactTriangle S hS ∈ distTriang C :=
   (t.exists_distTriang_of_shortExact S hS).choose_spec
+
+lemma heartShortExactδ_unique (δ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X₁)⟦(1 : ℤ)⟧)
+    (hδ : Triangle.mk (t.ιHeart.map S.f) (t.ιHeart.map S.g) δ ∈ distTriang C) :
+    δ = t.heartShortExactδ S hS := by
+  obtain ⟨α, h₁, h₂⟩ := complete_distinguished_triangle_morphism₁ _ _
+    (t.heartShortExactTriangle_distinguished S hS) hδ (𝟙 _) (𝟙 _) (by simp)
+  obtain ⟨β, rfl⟩ := t.ιHeart.map_surjective α
+  dsimp at h₁ h₂
+  obtain rfl : β = 𝟙 _ := by
+    have := hS.mono_f
+    rw [← cancel_mono S.f]
+    apply t.ιHeart.map_injective
+    simpa using h₁.symm
+  simpa using h₂.symm
+
+def mapHeartShortExactTriangle {S₁ S₂ : ShortComplex t.Heart} (φ : S₁ ⟶ S₂)
+    (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) :
+    t.heartShortExactTriangle S₁ hS₁ ⟶ t.heartShortExactTriangle S₂ hS₂ where
+  hom₁ := t.ιHeart.map φ.τ₁
+  hom₂ := t.ιHeart.map φ.τ₂
+  hom₃ := t.ιHeart.map φ.τ₃
+  comm₁ := by
+    dsimp
+    simp only [← Functor.map_comp, φ.comm₁₂]
+  comm₂ := by
+    dsimp
+    simp only [← Functor.map_comp, φ.comm₂₃]
+  comm₃ := by
+    dsimp
+    obtain ⟨α, h₁, h₂⟩ := complete_distinguished_triangle_morphism₁ _ _
+      (t.heartShortExactTriangle_distinguished S₁ hS₁)
+      (t.heartShortExactTriangle_distinguished S₂ hS₂)
+      (t.ιHeart.map φ.τ₂) (t.ιHeart.map φ.τ₃) (by
+        dsimp
+        simp only [← Functor.map_comp, φ.comm₂₃])
+    obtain ⟨β, rfl⟩ := t.ιHeart.map_surjective α
+    dsimp at h₁ h₂
+    obtain rfl : β = φ.τ₁ := by
+      have := hS₂.mono_f
+      rw [← cancel_mono S₂.f]
+      apply t.ιHeart.map_injective
+      simp only [φ.comm₁₂, Functor.map_comp, h₁]
+    exact h₂
 
 end
 
