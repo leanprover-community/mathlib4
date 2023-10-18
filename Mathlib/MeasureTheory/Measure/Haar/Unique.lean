@@ -338,13 +338,6 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
 
-lemma glou {μ : Measure G} [IsFiniteMeasureOnCompacts μ] :
-    IsFiniteMeasureOnCompacts (μ.map (fun (x : G) ↦ x⁻¹)) := by
-  let f := Homeomorph.inv G
-  change IsFiniteMeasureOnCompacts (μ.map f)
-
-
-#exit
 
 lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
@@ -362,5 +355,7 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     rcases exists_continuous_one_zero_of_isCompact_of_group hk isOpen_univ (subset_univ _)
       with ⟨g, g_cont, g_comp, gk, -, hg⟩
     exact ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, by simp [gk (mem_of_mem_nhds k_mem)]⟩
-  let ν := μ.map (fun (x : G) ↦ x⁻¹)
-  have : IsMulRightInvariant ν :=
+  let ν := μ.inv
+  have : IsFiniteMeasureOnCompacts ν := by infer_instance
+  have : IsOpenPosMeasure ν := by infer_instance
+  have : IsMulRightInvariant ν := by infer_instance
