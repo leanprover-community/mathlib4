@@ -29,7 +29,7 @@ variable {J' : Type u} [Category J'] (G : J' ⥤ J) [G.Initial]
 /-- Transfer `CategoryTheory.Limits.Types.limitCone` for `G ⋙ F` to a limit cone over `F`
   across an initial functor G. -/
 noncomputable def limitCone (F : J ⥤ Type u) : Cone F :=
-  (conesEquiv G F).functor.obj <| Types.limitCone.{u, u} (G ⋙ F)
+  extendCone.obj <| Types.limitCone.{u, u} (G ⋙ F)
 
 /-- The transferred cone is a limit. -/
 @[simps!]
@@ -55,15 +55,19 @@ noncomputable def limitConeIsLimit (F : J ⥤ Type u) : IsLimit (limitCone.{v, u
 end Small
 
 /-!
-The results in this section have a `UnivLE.{v, u}` hypothesis,
-but as they only use the constructions from the `CategoryTheory.Limits.Types.UnivLE` namespace
+The results in this section have a `Small.{u} J` hypothesis,
+but as they only use the constructions from the `CategoryTheory.Limits.Types.Small` namespace
 in their definitions (rather than their statements),
 we leave them in the main `CategoryTheory.Limits.Types` namespace.
 -/
-section UnivLE
+section Small
 
-open UnivLE
-variable [UnivLE.{v, u}]
+variable [Small.{u} J]
+
+instance hasLimit (F : J ⥤ Type u) : HasLimit F :=
+  HasLimit.mk
+    { cone := Small.limitCone.{v, u} F
+      isLimit := Small.limitConeIsLimit F }
 
 /--
 The category of types has all limits.
@@ -72,16 +76,10 @@ More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance (priority := 1300) hasLimitsOfSize : HasLimitsOfSize.{v} (Type u) where
+instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{v} (Type u) where
   has_limits_of_shape _ :=
-    { has_limit := fun F =>
-        HasLimit.mk
-          { cone := Small.limitCone.{v, u} F
-            isLimit := Small.limitConeIsLimit F } }
+    { has_limit := fun _ => inferInstance }
 #align category_theory.limits.types.has_limits_of_size CategoryTheory.Limits.Types.hasLimitsOfSize
-
-instance hasLimit (F : J ⥤ Type u) : HasLimit F :=
-  (Types.hasLimitsOfSize.{v, u}.has_limits_of_shape J).has_limit F
 
 /-- The equivalence between the abstract limit of `F` in `TypeMax.{v, u}`
 and the "concrete" definition as the sections of `F`.
@@ -149,17 +147,17 @@ theorem limit_ext (F : J ⥤ Type u) (x y : limit F)
 @[ext]
 theorem limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y :=
-  limit_ext.{v, v} F x y w
+  limit_ext F x y w
 #align category_theory.limits.types.limit_ext' CategoryTheory.Limits.Types.limit_ext'
 
 theorem limit_ext_iff (F : J ⥤ Type u) (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext.{v, u} _ _ _⟩
+  ⟨fun t _ => t ▸ rfl, limit_ext _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff CategoryTheory.Limits.Types.limit_ext_iff
 
 theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext'.{v} _ _ _⟩
+  ⟨fun t _ => t ▸ rfl, limit_ext' _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff' CategoryTheory.Limits.Types.limit_ext_iff'
 
 -- TODO: are there other limits lemmas that should have `_apply` versions?
@@ -202,7 +200,7 @@ theorem Limit.map_π_apply' {F G : J ⥤ Type v} (α : F ⟶ G) (j : J) (x : lim
   congr_fun (limMap_π α j) x
 #align category_theory.limits.types.limit.map_π_apply' CategoryTheory.Limits.Types.Limit.map_π_apply'
 
-end UnivLE
+end Small
 
 /-!
 In this section we verify that instances are available as expected.
@@ -210,8 +208,8 @@ In this section we verify that instances are available as expected.
 section instances
 
 /- TODO: Lean can't infer these now -/
---example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
---example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
 example : HasLimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
 example : HasLimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance

@@ -52,9 +52,12 @@ example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 -- although I don't understand why, and wish it wasn't.
 instance : HasProducts.{v} (Type v) := inferInstance
 
+instance CategoryTheory.small_discrete (α : Type v) [Small.{u} α] : Small.{u} (Discrete α) :=
+  small_map discreteEquiv
+
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
-theorem pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : Type u}
+theorem pi_lift_π_apply {β : Type v} [Small.{u} β] (f : β → Type u) {P : Type u}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
   congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
@@ -70,10 +73,10 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
 @[simp 1001]
-theorem pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
+theorem pi_map_π_apply {β : Type v} [Small.{u} β] {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
-  Limit.map_π_apply.{v, u} _ _ _
+  Limit.map_π_apply _ _ _
 #align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
@@ -396,12 +399,12 @@ theorem productIso_inv_comp_π {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 #align category_theory.limits.types.product_iso_inv_comp_π CategoryTheory.Limits.Types.productIso_inv_comp_π
 
-namespace UnivLE
+namespace Small
 
 /--
-A variant of `productLimitCone` using a `UnivLE` hypothesis rather than a function to `TypeMax`.
+A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `TypeMax`.
 -/
-noncomputable def productLimitCone {J : Type v} (F : J → Type u) [UnivLE.{v, u}] :
+noncomputable def productLimitCone {J : Type v} (F : J → Type u) [Small.{u} J] :
     Limits.LimitCone (Discrete.functor F) where
   cone :=
     { pt := Shrink (∀ j, F j)
@@ -413,28 +416,28 @@ noncomputable def productLimitCone {J : Type v} (F : J → Type u) [UnivLE.{v, u
 
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
-noncomputable def productIso {J : Type v} (F : J → Type u) [UnivLE.{v, u}] :
+noncomputable def productIso {J : Type v} (F : J → Type u) [Small.{u} J] :
     (∏ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 @[simp]
-theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
+theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [Small.{u} J] (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => (equivShrink _).symm f j) = Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
 
 -- Porting note:
 -- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
 @[simp]
-theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
+theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [Small.{u} J] (j : J) (x) :
     (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
   congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]
-theorem productIso_inv_comp_π {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
+theorem productIso_inv_comp_π {J : Type v} (F : J → Type u) [Small.{u} J] (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => ((equivShrink _).symm f) j :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 
-end UnivLE
+end Small
 
 /-- The category of types has `Σ j, f j` as the coproduct of a type family `f : J → Type`.
 -/
