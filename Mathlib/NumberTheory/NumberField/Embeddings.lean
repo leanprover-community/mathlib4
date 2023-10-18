@@ -192,7 +192,7 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   map_one' := by simp only [map_one, one_re]
   map_mul' := by
     simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
-      MulZeroClass.mul_zero, tsub_zero, eq_self_iff_true, forall_const]
+      mul_zero, tsub_zero, eq_self_iff_true, forall_const]
   map_zero' := by simp only [map_zero, zero_re]
   map_add' := by simp only [map_add, add_re, eq_self_iff_true, forall_const]
 #align number_field.complex_embedding.is_real.embedding NumberField.ComplexEmbedding.IsReal.embedding

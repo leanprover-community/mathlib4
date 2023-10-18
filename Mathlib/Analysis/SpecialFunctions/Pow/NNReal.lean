@@ -28,7 +28,7 @@ open Finset Set
 
 namespace NNReal
 
-/-- The nonnegative real power function `x^y`, defined for `x : ℝ≥0` and `y : ℝ ` as the
+/-- The nonnegative real power function `x^y`, defined for `x : ℝ≥0` and `y : ℝ` as the
 restriction of the real power function. For `x > 0`, it is equal to `exp (y log x)`. For `x = 0`,
 one sets `0 ^ 0 = 1` and `0 ^ y = 0` for `y ≠ 0`. -/
 noncomputable def rpow (x : ℝ≥0) (y : ℝ) : ℝ≥0 :=
@@ -422,7 +422,7 @@ theorem zero_rpow_def (y : ℝ) : (0 : ℝ≥0∞) ^ y = if 0 < y then 0 else if
 theorem zero_rpow_mul_self (y : ℝ) : (0 : ℝ≥0∞) ^ y * (0 : ℝ≥0∞) ^ y = (0 : ℝ≥0∞) ^ y := by
   rw [zero_rpow_def]
   split_ifs
-  exacts [MulZeroClass.zero_mul _, one_mul _, top_mul_top]
+  exacts [zero_mul _, one_mul _, top_mul_top]
 #align ennreal.zero_rpow_mul_self ENNReal.zero_rpow_mul_self
 
 @[norm_cast]

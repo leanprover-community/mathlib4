@@ -5,7 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Irreducible
 
 #align_import topology.connected from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
@@ -643,14 +644,14 @@ theorem IsPreconnected.subset_connectedComponentIn {x : α} {F : Set α} (hs : I
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ connectedComponentIn F x := by
   have : IsPreconnected (((↑) : F → α) ⁻¹' s) := by
     refine' inducing_subtype_val.isPreconnected_image.mp _
-    rwa [Subtype.image_preimage_coe, inter_eq_left_iff_subset.mpr hsF]
+    rwa [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
   have h2xs : (⟨x, hsF hxs⟩ : F) ∈ (↑) ⁻¹' s := by
     rw [mem_preimage]
     exact hxs
   have := this.subset_connectedComponent h2xs
   rw [connectedComponentIn_eq_image (hsF hxs)]
   refine' Subset.trans _ (image_subset _ this)
-  rw [Subtype.image_preimage_coe, inter_eq_left_iff_subset.mpr hsF]
+  rw [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
 #align is_preconnected.subset_connected_component_in IsPreconnected.subset_connectedComponentIn
 
 theorem IsConnected.subset_connectedComponent {x : α} {s : Set α} (H1 : IsConnected s)
@@ -771,13 +772,13 @@ theorem isConnected_range [TopologicalSpace β] [ConnectedSpace α] {f : α → 
 #align is_connected_range isConnected_range
 
 theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace β]
-  {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
+    {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
   rw [connectedSpace_iff_univ, ← hf.range_eq]
   exact isConnected_range hf'
 
 instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :
     ConnectedSpace (Quotient s) :=
-  (surjective_quotient_mk _).connectedSpace continuous_coinduced_rng
+  (surjective_quotient_mk' _).connectedSpace continuous_coinduced_rng
 
 theorem DenseRange.preconnectedSpace [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (hf : DenseRange f) (hc : Continuous f) : PreconnectedSpace β :=
@@ -916,7 +917,7 @@ lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
     Subsingleton ι := by
   refine' subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨_, h_closed i⟩)
   rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
-  refine' isClosed_iUnion (fun j ↦ _)
+  refine' isClosed_iUnion_of_finite (fun j ↦ _)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
   · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_closed j
@@ -1347,6 +1348,19 @@ theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι →
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
 #align locally_connected_space_of_connected_bases locallyConnectedSpace_of_connected_bases
 
+theorem OpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
+    {f : β → α} (h : OpenEmbedding f) : LocallyConnectedSpace β := by
+  refine locallyConnectedSpace_of_connected_bases (fun _ s ↦ f ⁻¹' s)
+    (fun x s ↦ (IsOpen s ∧ f x ∈ s ∧ IsConnected s) ∧ s ⊆ range f) (fun x ↦ ?_)
+    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_open_map h.inj h.isOpenMap hxs.2)
+  rw [h.nhds_eq_comap]
+  exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
+    (h.open_range.mem_nhds <| mem_range_self _) |>.comap _
+
+theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
+    LocallyConnectedSpace U :=
+  hU.openEmbedding_subtype_val.locallyConnectedSpace
+
 end LocallyConnectedSpace
 
 section TotallyDisconnected
@@ -1522,7 +1536,7 @@ theorem isTotallyDisconnected_of_isTotallySeparated {s : Set α} (H : IsTotallyS
   rw [huv.inter_eq, inter_empty]
 #align is_totally_disconnected_of_is_totally_separated isTotallyDisconnected_of_isTotallySeparated
 
-alias isTotallyDisconnected_of_isTotallySeparated ← IsTotallySeparated.isTotallyDisconnected
+alias IsTotallySeparated.isTotallyDisconnected := isTotallyDisconnected_of_isTotallySeparated
 #align is_totally_separated.is_totally_disconnected IsTotallySeparated.isTotallyDisconnected
 
 /-- A space is totally separated if any two points can be separated by two disjoint open sets

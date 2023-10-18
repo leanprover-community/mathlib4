@@ -106,7 +106,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     · have := he₂ m
       simp_rw [Nat.Ico_succ_singleton, Finset.inf_singleton]
       linarith
-    · intro n(hmn : m ≤ n)ih
+    · intro n (hmn : m ≤ n) ih
       have : γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤ γ + d (f m (n + 1)) := by
         calc
           γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤
@@ -131,7 +131,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have γ_le_d_s : γ ≤ d s := by
     have hγ : Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 γ) := by
       suffices Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 (γ - 2 * 0)) by
-        simpa only [MulZeroClass.mul_zero, tsub_zero]
+        simpa only [mul_zero, tsub_zero]
       exact
         tendsto_const_nhds.sub <|
           tendsto_const_nhds.mul <|

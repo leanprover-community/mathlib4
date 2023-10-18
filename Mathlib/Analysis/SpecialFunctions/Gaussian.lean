@@ -47,10 +47,6 @@ open scoped Real Topology FourierTransform
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
-notation "cexp" => Complex.exp
-
-notation "rexp" => Real.exp
-
 theorem exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => exp (-b * x ^ 2)) =o[atTop] fun x : ℝ => exp (-x) := by
   have A : (fun x : ℝ => -x - -b * x ^ 2) = fun x => x * (b * x + -1) := by ext x; ring
@@ -90,7 +86,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
     integrableOn_Ici_iff_integrableOn_Ioi]
   refine' ⟨_, integrableOn_rpow_mul_exp_neg_mul_sq hb hs⟩
   rw [← (Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
-      (Homeomorph.neg ℝ).toMeasurableEquiv.measurableEmbedding]
+      (Homeomorph.neg ℝ).measurableEmbedding]
   simp only [Function.comp, neg_sq, neg_preimage, preimage_neg_Iio, neg_neg, neg_zero]
   apply Integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
   · apply Measurable.aestronglyMeasurable
@@ -173,7 +169,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
         (tendsto_pow_atTop two_ne_zero))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
-  simp only [MulZeroClass.mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
+  simp only [mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add]
 #align integral_mul_cexp_neg_mul_sq integral_mul_cexp_neg_mul_sq
 
@@ -257,7 +253,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     refine'
       ContinuousAt.continuousOn fun b hb =>
         (continuousAt_cpow_const (Or.inl _)).comp (continuousAt_const.div continuousAt_id (nv hb))
-    rw [div_re, ofReal_im, ofReal_re, MulZeroClass.zero_mul, zero_div, add_zero]
+    rw [div_re, ofReal_im, ofReal_re, zero_mul, zero_div, add_zero]
     exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))
   · -- equality at 1
     have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
@@ -489,8 +485,8 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
         (by
           refine' Differentiable.differentiableOn (Differentiable.const_mul _ _).cexp
           exact differentiable_pow 2)
-    simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, MulZeroClass.zero_mul, add_zero, neg_re,
-      ofReal_re, add_re, mul_re, I_re, MulZeroClass.mul_zero, I_im, tsub_zero, add_im, mul_im,
+    simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, zero_mul, add_zero, neg_re,
+      ofReal_re, add_re, mul_re, I_re, mul_zero, I_im, tsub_zero, add_im, mul_im,
       mul_one, zero_add, Algebra.id.smul_eq_mul, ofReal_neg] using this
   simp_rw [id.def, ← HI₁]
   have : I₁ = fun T : ℝ => I₂ T + verticalIntegral b c T := by

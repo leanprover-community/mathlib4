@@ -44,7 +44,8 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
     Finsupp.single_eq_pi_single, Matrix.diagonal_mulVec_single, Pi.single_apply, ite_smul,
     zero_smul, Finset.sum_ite_eq', mul_one, if_pos (Finset.mem_univ _), b'.equiv_apply]
   change _ = f * _
-  rw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul,
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul,
     Ideal.selfBasis_def]
   rfl
 #align associated_norm_prod_smith associated_norm_prod_smith
@@ -55,7 +56,6 @@ section Field
 
 variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
-set_option maxHeartbeats 210000 in
 instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
   -- Porting note: we need to do this proof in two stages otherwise it times out

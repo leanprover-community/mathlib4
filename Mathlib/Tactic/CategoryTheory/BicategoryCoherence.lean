@@ -128,6 +128,8 @@ attribute [instance] isIso
 @[reducible]
 def hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f ⟶ g := hom'
 
+attribute [simp] hom hom'
+
 @[simps]
 instance refl (f : a ⟶ b) [LiftHom f] : BicategoricalCoherence f f :=
   ⟨𝟙 _⟩

@@ -127,13 +127,13 @@ protected theorem inductionOn₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α
 -- porting note: `exists` seems to be an invalid identifier
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f ⟦(x, y)⟧ :=
-  (surjective_quotient_mk _).exists.trans Prod.exists
+  (surjective_quotient_mk' _).exists.trans Prod.exists
 #align sym2.exists Sym2.exists
 
 -- porting note: `forall` seems to be an invalid identifier
 protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f ⟦(x, y)⟧ :=
-  (surjective_quotient_mk _).forall.trans Prod.forall
+  (surjective_quotient_mk' _).forall.trans Prod.forall
 #align sym2.forall Sym2.forall
 
 -- porting note: The `⟦⟧` notation does not infer the setoid structure automatically
@@ -219,10 +219,10 @@ def lift₂ :
 
 @[simp]
 theorem lift₂_mk''
-  (f :
+    (f :
     { f : α → α → β → β → γ //
       ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ })
-  (a₁ a₂ : α) (b₁ b₂ : β) : lift₂ f ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧ = (f : α → α → β → β → γ) a₁ a₂ b₁ b₂ :=
+    (a₁ a₂ : α) (b₁ b₂ : β) : lift₂ f ⟦(a₁, a₂)⟧ ⟦(b₁, b₂)⟧ = (f : α → α → β → β → γ) a₁ a₂ b₁ b₂ :=
   rfl
 #align sym2.lift₂_mk Sym2.lift₂_mk''
 
@@ -337,11 +337,11 @@ theorem mem_iff {a b c : α} : a ∈ (⟦(b, c)⟧ : Sym2 α) ↔ a = b ∨ a = 
 #align sym2.mem_iff Sym2.mem_iff
 
 theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
-  ⟨e.out.2, by rw [Prod.mk.eta, e.out_eq]⟩
+  ⟨e.out.2, by rw [e.out_eq]⟩
 #align sym2.out_fst_mem Sym2.out_fst_mem
 
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
-  ⟨e.out.1, by rw [eq_swap, Prod.mk.eta, e.out_eq]⟩
+  ⟨e.out.1, by rw [eq_swap, e.out_eq]⟩
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ (⟦(a, b)⟧ : Sym2 α), p c) ↔ p a ∧ p b := by
@@ -705,7 +705,7 @@ theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : ⟦(
 
 @[simp]
 theorem other_eq_other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) :
-  Mem.other h = Mem.other' h := by rw [← congr_right, other_spec' h, other_spec]
+    Mem.other h = Mem.other' h := by rw [← congr_right, other_spec' h, other_spec]
 #align sym2.other_eq_other' Sym2.other_eq_other'
 
 theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other' h ∈ z := by

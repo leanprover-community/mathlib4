@@ -3,11 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.CharZero.Defs
 
 #align_import algebra.order.monoid.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -351,6 +352,10 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
 
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
+  { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
+      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
+
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
@@ -378,8 +383,8 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
-    CanonicallyOrderedAddMonoid (WithTop α) :=
+instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+    CanonicallyOrderedAddCommMonoid (WithTop α) :=
   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
     le_self_add := fun a b =>
       match a, b with
@@ -388,8 +393,9 @@ instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
       | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
       | ⊤, (b : α) => le_rfl }
 
-instance [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithTop α) :=
-  { WithTop.canonicallyOrderedAddMonoid, WithTop.linearOrder with }
+instance [CanonicallyLinearOrderedAddCommMonoid α] :
+    CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
+  { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
 @[simp, norm_cast]
 theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithTop α) = n :=
@@ -489,6 +495,9 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
   WithTop.addMonoidWithOne
+
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
+  WithTop.charZero
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
   WithTop.addCommMonoidWithOne

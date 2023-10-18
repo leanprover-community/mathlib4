@@ -10,7 +10,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Basis
 
-#align_import linear_algebra.determinant from "leanprover-community/mathlib"@"bd65478311e4dfd41f48bf38c7e3b02fb75d0163"
+#align_import linear_algebra.determinant from "leanprover-community/mathlib"@"0c1d80f5a86b36c1db32e021e8d19ae7809d5b79"
 
 /-!
 # Determinant of families of vectors
@@ -616,6 +616,11 @@ theorem Basis.det_reindex {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Bas
   rw [Basis.det_apply, Basis.toMatrix_reindex', det_reindexAlgEquiv, Basis.det_apply]
 #align basis.det_reindex Basis.det_reindex
 
+theorem Basis.det_reindex' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
+    (e : ι ≃ ι') : (b.reindex e).det = b.det.domDomCongr e :=
+  AlternatingMap.ext fun _ => Basis.det_reindex _ _ _
+#align basis.det_reindex' Basis.det_reindex'
+
 theorem Basis.det_reindex_symm {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
     (v : ι → M) (e : ι' ≃ ι) : (b.reindex e.symm).det (v ∘ e) = b.det v := by
   rw [Basis.det_reindex, Function.comp.assoc, e.self_comp_symm, Function.comp.right_id]
@@ -650,7 +655,7 @@ theorem Basis.det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndepe
       MultilinearMap.toLinearMap_apply]
   · rw [Basis.mk_coord_apply_eq, mul_one, update_eq_self]
     congr
-  · rw [Basis.mk_coord_apply_ne hik, MulZeroClass.mul_zero, eq_comm]
+  · rw [Basis.mk_coord_apply_ne hik, mul_zero, eq_comm]
     exact e.det.map_eq_zero_of_eq _ (by simp [hik, Function.update_apply]) hik
 #align basis.det_smul_mk_coord_eq_det_update Basis.det_smul_mk_coord_eq_det_update
 

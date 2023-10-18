@@ -449,7 +449,7 @@ theorem sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
-    simp only [h, MulZeroClass.mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_coe]
+    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_coe]
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]

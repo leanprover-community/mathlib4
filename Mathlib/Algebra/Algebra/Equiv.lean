@@ -32,7 +32,7 @@ universe u v w u₁ v₁
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
-  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+  protected commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
 #align alg_equiv AlgEquiv
 
 attribute [nolint docBlame] AlgEquiv.toRingEquiv
@@ -72,13 +72,16 @@ instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 #align alg_equiv_class.to_linear_equiv_class AlgEquivClass.toLinearEquivClass
 
+/-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
+This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
+@[coe]
+def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+  { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
+
 instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [_h : AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) where
-  coe f :=
-    { (f : A ≃+* B) with
-      toFun := f
-      invFun := EquivLike.inv f
-      commutes' := AlgHomClass.commutes f }
+    [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
+  ⟨toAlgEquiv⟩
 end AlgEquivClass
 
 namespace AlgEquiv
@@ -105,9 +108,9 @@ instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
     obtain ⟨⟨f,_⟩,_⟩ := f
     obtain ⟨⟨g,_⟩,_⟩ := g
     congr
-  map_add := map_add'
-  map_mul := map_mul'
-  commutes := commutes'
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
+  commutes f := f.commutes'
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
@@ -599,6 +602,10 @@ theorem toAlgHom_toLinearMap : (e : A₁ →ₐ[R] A₂).toLinearMap = e.toLinea
   rfl
 #align alg_equiv.to_alg_hom_to_linear_map AlgEquiv.toAlgHom_toLinearMap
 
+theorem toLinearMap_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+    (ofAlgHom f g h₁ h₂).toLinearMap = f.toLinearMap :=
+  LinearMap.ext fun _ => rfl
+
 @[simp]
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
   rfl
@@ -621,11 +628,10 @@ theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
 
 section OfLinearEquiv
 
-variable (l : A₁ ≃ₗ[R] A₂) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
-  (commutes : ∀ r : R, l (algebraMap R A₁ r) = algebraMap R A₂ r)
+variable (l : A₁ ≃ₗ[R] A₂) (map_one : l 1 = 1) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
 
 /-- Upgrade a linear equivalence to an algebra equivalence,
-given that it distributes over multiplication and action of scalars.
+given that it distributes over multiplication and the identity
 -/
 @[simps apply]
 def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
@@ -633,26 +639,26 @@ def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
     toFun := l
     invFun := l.symm
     map_mul' := map_mul
-    commutes' := commutes }
-#align alg_equiv.of_linear_equiv AlgEquiv.ofLinearEquiv
+    commutes' := (AlgHom.ofLinearMap l map_one map_mul : A₁ →ₐ[R] A₂).commutes }
+#align alg_equiv.of_linear_equiv AlgEquiv.ofLinearEquivₓ
 
 @[simp]
 theorem ofLinearEquiv_symm :
-    (ofLinearEquiv l map_mul commutes).symm =
-      ofLinearEquiv l.symm (ofLinearEquiv l map_mul commutes).symm.map_mul
-        (ofLinearEquiv l map_mul commutes).symm.commutes :=
+    (ofLinearEquiv l map_one map_mul).symm =
+      ofLinearEquiv l.symm (ofLinearEquiv l map_one map_mul).symm.map_one
+        (ofLinearEquiv l map_one map_mul).symm.map_mul :=
   rfl
 #align alg_equiv.of_linear_equiv_symm AlgEquiv.ofLinearEquiv_symm
 
 @[simp]
-theorem ofLinearEquiv_toLinearEquiv (map_mul) (commutes) :
-    ofLinearEquiv e.toLinearEquiv map_mul commutes = e := by
+theorem ofLinearEquiv_toLinearEquiv (map_mul) (map_one) :
+    ofLinearEquiv e.toLinearEquiv map_mul map_one = e := by
   ext
   rfl
 #align alg_equiv.of_linear_equiv_to_linear_equiv AlgEquiv.ofLinearEquiv_toLinearEquiv
 
 @[simp]
-theorem toLinearEquiv_ofLinearEquiv : toLinearEquiv (ofLinearEquiv l map_mul commutes) = l := by
+theorem toLinearEquiv_ofLinearEquiv : toLinearEquiv (ofLinearEquiv l map_one map_mul) = l := by
   ext
   rfl
 #align alg_equiv.to_linear_equiv_of_linear_equiv AlgEquiv.toLinearEquiv_ofLinearEquiv
@@ -753,12 +759,12 @@ instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁
-    where smul_comm r e a := (e.map_smul r a).symm
+instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
+  smul_comm r e a := (e.map_smul r a).symm
 #align alg_equiv.apply_smul_comm_class AlgEquiv.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁
-    where smul_comm e r a := e.map_smul r a
+instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
+  smul_comm e r a := e.map_smul r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 
 @[simp]

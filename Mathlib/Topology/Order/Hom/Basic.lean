@@ -70,6 +70,8 @@ instance (priority := 100) toOrderHomClass  :
 -- for the original coercion. The original one directly exposed
 -- ContinuousOrderHom.mk which allowed simp to apply more eagerly than in all
 -- the other results in `Topology.Order.Hom.Esakia`.
+/-- Turn an element of a type `F` satisfying `ContinuousOrderHomClass F α β` into an actual
+`ContinuousOrderHom`. This is declared as the default coercion from `F` to `α →Co β`. -/
 @[coe]
 def toContinuousOrderHom (f : F) : α →Co β :=
     { toFun := f
@@ -184,11 +186,13 @@ theorem id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
   ext fun _ => rfl
 #align continuous_order_hom.id_comp ContinuousOrderHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_order_hom.cancel_right ContinuousOrderHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -203,4 +207,3 @@ instance [PartialOrder β] : PartialOrder (α →Co β) :=
   PartialOrder.lift ((↑) : (α →Co β) → α → β) FunLike.coe_injective
 
 end ContinuousOrderHom
-

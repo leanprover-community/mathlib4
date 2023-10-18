@@ -45,7 +45,7 @@ namespace RelIso
 
 @[simp]
 theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
-  Function.Surjective.range_eq e.surjective
+  e.surjective.range_eq
 #align rel_iso.range_eq RelIso.range_eq
 
 end RelIso

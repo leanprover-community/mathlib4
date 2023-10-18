@@ -62,8 +62,8 @@ Finally, we glue them together to obtain the main statement
 ## Related results
 
 Are you looking for a result on approximation by continuous functions (not just semicontinuous)?
-See result `measure_theory.Lp.continuous_map_dense`, in the file
-`measure_theory.continuous_map_dense`.
+See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
+`Mathlib/MeasureTheory/Function/ContinuousMapDense.lean`.
 
 ## References
 
@@ -81,7 +81,6 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 /-! ### Lower semicontinuous upper bound for nonnegative functions -/
@@ -110,7 +109,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
           eq_self_iff_true, SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
           SimpleFunc.coe_piecewise, le_zero_iff]
-      · simp only [lintegral_const, MulZeroClass.zero_mul, zero_le, ENNReal.coe_zero]
+      · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have : μ s < μ s + ε / c := by
       have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
       simpa using ENNReal.add_lt_add_left ?aux this
@@ -257,7 +256,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
           exact lintegral_congr_ae (fmeas.ae_eq_mk.fun_comp _)
         · convert g1_int
           simp only [smeas, μs, lintegral_const, Set.univ_inter, MeasurableSet.univ,
-            lintegral_indicator, MulZeroClass.mul_zero, restrict_apply]
+            lintegral_indicator, mul_zero, restrict_apply]
       _ = (∫⁻ x, f x ∂μ) + ε := by simp only [add_assoc, ENNReal.add_halves, zero_add]
 
 #align measure_theory.exists_lt_lower_semicontinuous_lintegral_ge_of_ae_measurable MeasureTheory.exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable
@@ -333,7 +332,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           eq_self_iff_true, SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
           SimpleFunc.coe_piecewise, le_zero_iff]
       · classical
-        simp only [hc, Set.indicator_zero', lintegral_const, MulZeroClass.zero_mul, Pi.zero_apply,
+        simp only [hc, Set.indicator_zero', lintegral_const, zero_mul, Pi.zero_apply,
           SimpleFunc.const_zero, zero_add, zero_le', SimpleFunc.coe_zero,
           Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise, zero_le]
     have μs_lt_top : μ s < ∞ := by
@@ -400,7 +399,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     refine' ⟨fs, fun x => by simpa only [ENNReal.coe_le_coe] using fs_le_f x, _⟩
     convert int_fs.le
     rw [← SimpleFunc.lintegral_eq_lintegral]
-    rfl
+    simp only [SimpleFunc.coe_map, Function.comp_apply]
   have int_fs_lt_top : (∫⁻ x, fs x ∂μ) ≠ ∞ := by
     refine' ne_top_of_le_ne_top int_f (lintegral_mono fun x => _)
     simpa only [ENNReal.coe_le_coe] using fs_le_f x

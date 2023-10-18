@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Chris Hughes, Tim Baanen
+Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Block
@@ -11,7 +11,7 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.LinearAlgebra.Alternating
+import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Pi
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -81,7 +81,7 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   refine' (Finset.sum_eq_single 1 _ _).trans _
   · rintro σ - h2
     cases' not_forall.1 (mt Equiv.ext h2) with x h3
-    convert MulZeroClass.mul_zero (ε σ)
+    convert mul_zero (ε σ)
     apply Finset.prod_eq_zero (mem_univ x)
     exact if_neg h3
   · simp
@@ -147,8 +147,6 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
       mul_swap_involutive i j σ
 #align matrix.det_mul_aux Matrix.det_mul_aux
 
--- Porting note: need to bump for last simp; new after #3414 (reenableeta)
-set_option maxHeartbeats 300000 in
 @[simp]
 theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
   calc
@@ -481,7 +479,7 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
       simp [hs]
     congr
     ext i j
-    rw [A_eq, this, MulZeroClass.zero_mul, add_zero]
+    rw [A_eq, this, zero_mul, add_zero]
   | @insert i s _hi ih =>
     intro c hs k hk A_eq
     have hAi : A i = B i + c i • B k := funext (A_eq i)
@@ -521,7 +519,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   · congr
     ext i j
     refine' Fin.cases (h0 j) (fun i => _) i
-    rw [hsucc, hc i (Fin.succ_pos _), MulZeroClass.zero_mul, add_zero]
+    rw [hsucc, hc i (Fin.succ_pos _), zero_mul, add_zero]
   set M' := updateRow M k.succ (N k.succ) with hM'
   have hM : M = updateRow M' k.succ (M' k.succ + c k • M (Fin.castSucc k)) := by
     ext i j
@@ -541,7 +539,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   intro i j
   rw [Function.update_apply]
   split_ifs with hik
-  · rw [MulZeroClass.zero_mul, add_zero, hM', hik, updateRow_self]
+  · rw [zero_mul, add_zero, hM', hik, updateRow_self]
   rw [hM', updateRow_ne ((Fin.succ_injective _).ne hik), hsucc]
   by_cases hik2 : k < i
   · simp [hc i (Fin.succ_lt_succ_iff.mpr hik2)]
@@ -637,8 +635,8 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
   · intro σ _ hσ
     rw [mem_preserving_snd] at hσ
     obtain ⟨⟨k, x⟩, hkx⟩ := not_forall.mp hσ
-    rw [Finset.prod_eq_zero (Finset.mem_univ (k, x)), MulZeroClass.mul_zero]
-    rw [← @Prod.mk.eta _ _ (σ (k, x)), blockDiagonal_apply_ne]
+    rw [Finset.prod_eq_zero (Finset.mem_univ (k, x)), mul_zero]
+    rw [blockDiagonal_apply_ne]
     exact hkx
 #align matrix.det_block_diagonal Matrix.det_blockDiagonal
 
@@ -671,9 +669,8 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · intro σ₁ σ₂ h₁ h₂
       dsimp only
       intro h
-      have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x := by
-        intro x
-        exact congr_fun (congr_arg toFun h) x
+      have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
+        FunLike.congr_fun h
       simp only [Sum.map_inr, Sum.map_inl, Perm.sumCongr_apply, Sum.forall, Sum.inl.injEq,
         Sum.inr.injEq] at h2
       ext x
@@ -689,13 +686,13 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn
         -- Porting note: golfed
-        simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] using
+        simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1
       cases' hx : σ (Sum.inl a) with a2 b
       · have hn := (not_exists.mp ha) a2
         exact absurd hx.symm hn
-      · rw [Finset.prod_eq_zero (Finset.mem_univ (Sum.inl a)), MulZeroClass.mul_zero]
+      · rw [Finset.prod_eq_zero (Finset.mem_univ (Sum.inl a)), mul_zero]
         rw [hx, fromBlocks_apply₂₁, zero_apply]
 #align matrix.det_from_blocks_zero₂₁ Matrix.det_fromBlocks_zero₂₁
 

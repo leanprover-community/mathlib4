@@ -229,7 +229,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
   rw [this]
   have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
   rw [← t, ofReal_zero, zero_cpow]
-  · rw [MulZeroClass.mul_zero, add_zero]; congr 2; ext1; ring
+  · rw [mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 #align complex.partial_Gamma_add_one Complex.partialGamma_add_one
 
@@ -522,7 +522,7 @@ theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
 theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
   rw [Gamma_eq_integral hs]
   have : (Function.support fun x : ℝ => exp (-x) * x ^ (s - 1)) ∩ Ioi 0 = Ioi 0 := by
-    rw [inter_eq_right_iff_subset]
+    rw [inter_eq_right]
     intro x hx
     rw [Function.mem_support]
     exact mul_ne_zero (exp_pos _).ne' (rpow_pos_of_pos hx _).ne'

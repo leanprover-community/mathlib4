@@ -129,7 +129,7 @@ attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm
 theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
-    simp
+    simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
     refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
     cases bodd n <;> simp [cond, not]
     · rw [Nat.add_comm, Nat.add_succ]
@@ -180,49 +180,52 @@ theorem bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
-/--`shiftl' b m n` performs a left shift of `m` `n` times
+/--`shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
  Returns the corresponding natural number-/
-def shiftl' (b : Bool) (m : ℕ) : ℕ → ℕ
+def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
-  | n + 1 => bit b (shiftl' b m n)
-#align nat.shiftl' Nat.shiftl'
-
-/-- `shiftl m n` produces a natural number whose binary representation
-  is obtained by left-shifting the binary representation of `m` by `n` places -/
-def shiftl : ℕ → ℕ → ℕ :=
-  shiftl' false
-#align nat.shiftl Nat.shiftl
+  | n + 1 => bit b (shiftLeft' b m n)
+#align nat.shiftl' Nat.shiftLeft'
 
 @[simp]
-theorem shiftl_zero (m) : shiftl m 0 = m :=
-  rfl
-#align nat.shiftl_zero Nat.shiftl_zero
+theorem shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
+  | 0 => rfl
+  | n + 1 => by
+    have : 2 * (m * 2^n) = 2^(n+1)*m := by
+      rw [Nat.mul_comm, Nat.mul_assoc, ← pow_succ]; simp
+    simp [shiftLeft', bit_val, shiftLeft'_false, this]
+
+/-- Std4 takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
+@[simp]
+lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 
 @[simp]
-theorem shiftl_succ (m n) : shiftl m (n + 1) = bit0 (shiftl m n) :=
-  rfl
-#align nat.shiftl_succ Nat.shiftl_succ
+lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
-/--`shiftr n m` performs returns the `m`-step right shift operation on `n` and
-returns the resultant number. This is equivalent to performing `⌊n/2ᵐ⌋`-/
-def shiftr : ℕ → ℕ → ℕ
-  | m, 0 => m
-  | m, n + 1 => div2 (shiftr m n)
-#align nat.shiftr Nat.shiftr
+theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
 
-theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
+theorem shiftLeft_succ (m n) : m <<< (n + 1) = 2 * (m <<< n) := by
+  simp only [shiftLeft_eq, Nat.pow_add, Nat.pow_one, ← Nat.mul_assoc, Nat.mul_comm]
+
+@[simp]
+theorem shiftRight_zero : n >>> 0 = n := rfl
+
+@[simp]
+theorem shiftRight_succ (m n) : m >>> (n + 1) = (m >>> n) / 2 := rfl
+
+@[simp]
+theorem zero_shiftRight : ∀ n, 0 >>> n = 0 := by
   intro n
   induction' n with n IH
   case zero =>
-    rw [shiftr]
+    simp [shiftRight]
   case succ =>
-    rw [shiftr, div2, IH]
-    rfl
+    simp [shiftRight, IH]
 
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit (m n : ℕ) : Bool :=
-  bodd (shiftr m n)
+  bodd (m >>> n)
 #align nat.test_bit Nat.testBit
 
 
@@ -305,7 +308,8 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
 
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
-  simp
+  simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
+    Bool.not_true, Bool.and_false, Bool.xor_false_right]
   cases b <;> cases bodd n <;> rfl
 #align nat.bodd_bit Nat.bodd_bit
 
@@ -315,32 +319,28 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
   <;> exact by decide
 #align nat.div2_bit Nat.div2_bit
 
-theorem shiftl'_add (b m n) : ∀ k, shiftl' b m (n + k) = shiftl' b (shiftl' b m n) k
+theorem shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k
   | 0 => rfl
-  | k + 1 => congr_arg (bit b) (shiftl'_add b m n k)
-#align nat.shiftl'_add Nat.shiftl'_add
+  | k + 1 => congr_arg (bit b) (shiftLeft'_add b m n k)
+#align nat.shiftl'_add Nat.shiftLeft'_add
 
-theorem shiftl_add : ∀ m n k, shiftl m (n + k) = shiftl (shiftl m n) k :=
-  shiftl'_add _
-#align nat.shiftl_add Nat.shiftl_add
+theorem shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
+  intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
 
-theorem shiftr_add (m n) : ∀ k, shiftr m (n + k) = shiftr (shiftr m n) k
+theorem shiftRight_add (m n : Nat) : ∀ k, m >>> (n + k) = (m >>> n) >>> k
   | 0 => rfl
-  | k + 1 => congr_arg div2 (shiftr_add m n k)
-#align nat.shiftr_add Nat.shiftr_add
+  | k + 1 => by simp [add_succ, shiftRight_add]
 
-theorem shiftl'_sub (b m) : ∀ {n k}, k ≤ n → shiftl' b m (n - k) = shiftr (shiftl' b m n) k
+theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
   | n, 0, _ => rfl
   | n + 1, k + 1, h => by
-    simp [shiftl']
-    rw [Nat.add_comm, shiftr_add]
-    simp [shiftr, div2_bit]
-    simp [shiftl'_sub, (Nat.le_of_succ_le_succ h)]
-#align nat.shiftl'_sub Nat.shiftl'_sub
+    rw [succ_sub_succ_eq_sub, shiftLeft', Nat.add_comm, shiftRight_add]
+    simp only [shiftLeft'_sub, Nat.le_of_succ_le_succ h, shiftRight_succ, shiftRight_zero]
+    simp [← div2_val, div2_bit]
+#align nat.shiftl'_sub Nat.shiftLeft'_sub
 
-theorem shiftl_sub : ∀ (m) {n k}, k ≤ n → shiftl m (n - k) = shiftr (shiftl m n) k :=
-  shiftl'_sub _
-#align nat.shiftl_sub Nat.shiftl_sub
+theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
+  fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
 @[simp]
 theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
@@ -348,10 +348,10 @@ theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
 #align nat.test_bit_zero Nat.testBit_zero
 
 theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
-  have : bodd (shiftr (shiftr (bit b n) 1) m) = bodd (shiftr n m) := by
-    dsimp [shiftr]
-    rw [div2_bit]
-  rw [← shiftr_add, Nat.add_comm] at this
+  have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
+    dsimp [shiftRight]
+    simp [← div2_val, div2_bit]
+  rw [← shiftRight_add, Nat.add_comm] at this
   exact this
 #align nat.test_bit_succ Nat.testBit_succ
 
@@ -409,14 +409,6 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
   unfold bitwise'; rw [binaryRec_zero]
 #align nat.bitwise_zero_left Nat.bitwise'_zero_left
 
-@[simp]
-theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
-    bitwise' f m 0 = cond (f true false) m 0 := by
-  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero]
-  exact bitwise'_bit_aux h
-#align nat.bitwise_zero_right Nat.bitwise'_zero_right
-
-@[simp]
 theorem bitwise'_zero (f : Bool → Bool → Bool) : bitwise' f 0 0 = 0 := by
   rw [bitwise'_zero_left]
   cases f false true <;> rfl
@@ -441,31 +433,6 @@ theorem bitwise'_bit {f : Bool → Bool → Bool} (h : f false false = false) (a
       · rw [← bitwise'_bit_aux h, ftf] }
   · exact bitwise'_bit_aux h
 #align nat.bitwise_bit Nat.bitwise'_bit
-
-theorem bitwise'_swap {f : Bool → Bool → Bool} (h : f false false = false) :
-    bitwise' (Function.swap f) = Function.swap (bitwise' f) := by
-  funext m n; revert n
-  dsimp [Function.swap]
-  apply binaryRec _ _ m <;> intro n
-  · rw [bitwise'_zero_left, bitwise'_zero_right]
-    exact h
-  · intros a ih m'
-    apply bitCasesOn m'; intro b n'
-    rw [bitwise'_bit, bitwise'_bit, ih] <;> exact h
-#align nat.bitwise_swap Nat.bitwise'_swap
-
--- Porting note:
--- If someone wants to merge `bitwise` and `bitwise'`
--- (and similarly `lor` / `lor'` and `land` / `land'`)
--- they could start by proving the next theorem:
--- lemma bitwise_eq_bitwise' (f : Bool → Bool → Bool) :
---     bitwise f = bitwise' f := by
---   sorry
-
--- @[simp]
--- theorem bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false) (a m b n) :
---     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
---   simp only [bitwise_eq_bitwise', bitwise'_bit h]
 
 @[simp]
 theorem lor'_bit : ∀ a m b n, lor' (bit a m) (bit b n) = bit (a || b) (lor' m n) :=

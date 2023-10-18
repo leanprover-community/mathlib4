@@ -3,6 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.GroupTheory.Submonoid.Basic
 
 /-!
@@ -17,7 +18,7 @@ import Mathlib.GroupTheory.Submonoid.Basic
 
 section MonoidWithZero
 
-variable (M₀ : Type _) [MonoidWithZero M₀]
+variable (M₀ : Type*) [MonoidWithZero M₀]
 
 /-- The collection of elements of a `MonoidWithZero` that are not left zero divisors form a
 `Submonoid`. -/
@@ -41,7 +42,7 @@ def nonZeroDivisorsRight : Submonoid M₀ where
     x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, x * y = 0 → y = 0 :=
   Iff.rfl
 
-lemma nonZeroDivisorsLeft_eq_right (M₀ : Type _) [CommMonoidWithZero M₀] :
+lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
   ext x; simp [mul_comm x]
 

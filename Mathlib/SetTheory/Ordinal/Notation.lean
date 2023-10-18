@@ -719,10 +719,11 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
       simp [split_eq_scale_split' h', split, split']
       have : 1 + (e - 1) = e := by
         refine' repr_inj.1 _
-        simp
+        simp only [repr_add, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
+          repr_sub]
         have := mt repr_inj.1 e0
         refine' Ordinal.add_sub_cancel_of_le _
-        have:= (one_le_iff_ne_zero.2 this)
+        have := (one_le_iff_ne_zero.2 this)
         exact this
       intros
       substs o' m
@@ -1227,7 +1228,7 @@ theorem fastGrowingε₀_one : fastGrowingε₀ 1 = 2 := by
 #align onote.fast_growing_ε₀_one ONote.fastGrowingε₀_one
 
 theorem fastGrowingε₀_two : fastGrowingε₀ 2 = 2048 := by
-  simp [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
+  norm_num [fastGrowingε₀, show oadd 0 1 0 = 1 from rfl, @fastGrowing_limit (oadd 1 1 0) _ rfl,
     show oadd 0 (2 : Nat).succPNat 0 = 3 from rfl, @fastGrowing_succ 3 2 rfl]
 #align onote.fast_growing_ε₀_two ONote.fastGrowingε₀_two
 

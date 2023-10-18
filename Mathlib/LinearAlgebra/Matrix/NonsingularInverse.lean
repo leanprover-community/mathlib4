@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Tim Baanen. All rights reserved.
+Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baanen, Lu-Ming Zhang
+Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.LinearAlgebra.Matrix.Adjugate
@@ -78,7 +78,7 @@ def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
 
 theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟ A = ⅟ A.det • A.adjugate := by
   letI := invertibleOfDetInvertible A
-  convert(rfl : ⅟ A = _)
+  convert (rfl : ⅟ A = _)
 #align matrix.inv_of_eq Matrix.invOf_eq
 
 /-- `A.det` is invertible if `A` has a left inverse. -/
@@ -102,7 +102,7 @@ def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
 
 theorem det_invOf [Invertible A] [Invertible A.det] : (⅟ A).det = ⅟ A.det := by
   letI := detInvertibleOfInvertible A
-  convert(rfl : _ = ⅟ A.det)
+  convert (rfl : _ = ⅟ A.det)
 #align matrix.det_inv_of Matrix.det_invOf
 
 /-- Together `Matrix.detInvertibleOfInvertible` and `Matrix.invertibleOfDetInvertible` form an
@@ -141,29 +141,6 @@ def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
 def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
   ⟨B, mul_eq_one_comm.mp h, h⟩
 #align matrix.invertible_of_right_inverse Matrix.invertibleOfRightInverse
-
-/-- The transpose of an invertible matrix is invertible. -/
-instance invertibleTranspose [Invertible A] : Invertible Aᵀ :=
-  haveI : Invertible Aᵀ.det := by simpa using detInvertibleOfInvertible A
-  invertibleOfDetInvertible Aᵀ
-#align matrix.invertible_transpose Matrix.invertibleTranspose
-
--- porting note: added because Lean can no longer find this instance automatically
-/-- The conjugate transpose of an invertible matrix is invertible. -/
-instance invertibleConjTranspose [StarRing α] [Invertible A] : Invertible Aᴴ :=
-  Invertible.star A
-
-/-- A matrix is invertible if the transpose is invertible. -/
-def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A := by
-  rw [← transpose_transpose A]
-  infer_instance
-#align matrix.invertible__of_invertible_transpose Matrix.invertibleOfInvertibleTranspose
-
-/-- A matrix is invertible if the conjugate transpose is invertible. -/
-def invertibleOfInvertibleConjTranspose [StarRing α] [Invertible Aᴴ] : Invertible A := by
-  rw [← conjTranspose_conjTranspose A, ← star_eq_conjTranspose]
-  infer_instance
-#align matrix.invertible_of_invertible_conj_transpose Matrix.invertibleOfInvertibleConjTranspose
 
 /-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(Matrix n n α)ˣ`-/
 def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
@@ -370,6 +347,20 @@ lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x =
 lemma mul_left_inj_of_invertible [Invertible A] {x y : Matrix m n α} : x * A = y * A ↔ x = y :=
   (mul_left_injective_of_invertible A).eq_iff
 
+section InjectiveMul
+variable [Fintype m] [DecidableEq m]
+variable [Fintype l] [DecidableEq l]
+
+lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
+    Function.Injective (fun x : Matrix l m α => x * A) :=
+  fun _ _ g => by simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr_arg (· * B) g
+
+lemma mul_right_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
+    Function.Injective (fun x : Matrix m l α => B * x) :=
+  fun _ _ g => by simpa only [← Matrix.mul_assoc, Matrix.one_mul, h] using congr_arg (A * ·) g
+
+end InjectiveMul
+
 theorem nonsing_inv_cancel_or_zero : A⁻¹ * A = 1 ∧ A * A⁻¹ = 1 ∨ A⁻¹ = 0 := by
   by_cases h : IsUnit A.det
   · exact Or.inl ⟨nonsing_inv_mul _ h, mul_nonsing_inv _ h⟩
@@ -513,7 +504,7 @@ theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Inve
     ⅟ (diagonal v) = diagonal (⅟ v) := by
   letI := diagonalInvertible v
   -- Porting note: no longer need `haveI := Invertible.subsingleton (diagonal v)`
-  convert(rfl : ⅟ (diagonal v) = _)
+  convert (rfl : ⅟ (diagonal v) = _)
 #align matrix.inv_of_diagonal_eq Matrix.invOf_diagonal_eq
 
 /-- `v` is invertible if `diagonal v` is -/
@@ -639,7 +630,7 @@ theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Inve
     [Invertible (A.submatrix e₁ e₂)] : ⅟ (A.submatrix e₁ e₂) = (⅟ A).submatrix e₂ e₁ := by
   letI := submatrixEquivInvertible A e₁ e₂
   -- Porting note: no longer need `haveI := Invertible.subsingleton (A.submatrix e₁ e₂)`
-  convert(rfl : ⅟ (A.submatrix e₁ e₂) = _)
+  convert (rfl : ⅟ (A.submatrix e₁ e₂) = _)
 #align matrix.inv_of_submatrix_equiv_eq Matrix.invOf_submatrix_equiv_eq
 
 /-- Together `Matrix.submatrixEquivInvertible` and
