@@ -706,7 +706,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
 #align measure_theory.measure_univ_of_is_add_left_invariant MeasureTheory.measure_univ_of_isAddLeftInvariant
 
 @[to_additive]
-lemma MeasurableSet.smul_set_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
+lemma _root_.MeasurableSet.smul_set_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
     s • (closure {1} : Set G) = s := by
   apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) ?_ ?_ ?_ hs
   · intro U hU
@@ -716,16 +716,21 @@ lemma MeasurableSet.smul_set_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
   · rintro f - - h''f
     simp only [iUnion_smul, h''f]
 
-@[to_additive]
-lemma IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
-    μ (closure k) = μ k := by
-  apply le_antisymm ?_ (measure_mono subset_closure)
+@[to_additive (attr := simp)]
+lemma measure_smul_set_closure_one (s : Set G) (μ : Measure G) :
+    μ (s • (closure {1} : Set G)) = μ s := by
+  apply le_antisymm ?_ (measure_mono (subset_smul_set_closure_one s))
   conv_rhs => rw [measure_eq_iInf]
   simp only [le_iInf_iff]
   intro t kt t_meas
   apply measure_mono
-  rw [hk.closure_eq_smul_set_one, ← t_meas.smul_set_closure_one_eq]
+  rw [← t_meas.smul_set_closure_one_eq]
   exact smul_subset_smul_right kt
+
+@[to_additive]
+lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
+    μ (closure k) = μ k := by
+  rw [← hk.smul_set_closure_one_eq_closure, measure_smul_set_closure_one]
 
 end TopologicalGroup
 

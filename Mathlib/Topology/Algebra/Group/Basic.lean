@@ -1472,12 +1472,18 @@ lemma subset_smul_set_closure_one (s : Set G) : s ⊆ s • (closure {1} : Set G
   exact this.trans (smul_subset_smul_left subset_closure)
 
 @[to_additive]
-lemma IsCompact.closure_subset_smul_set_closure_one {K : Set G} (hK : IsCompact K) :
-    closure K ⊆ K • (closure {1} : Set G) := by
-  have : IsClosed (K • (closure {1} : Set G)) :=
-    IsClosed.smul_left_of_isCompact isClosed_closure hK
-  rw [IsClosed.closure_subset_iff this]
-  exact subset_smul_set_closure_one K
+lemma IsCompact.smul_set_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
+    K • (closure {1} : Set G) = closure K := by
+  apply Subset.antisymm ?_ ?_
+  · calc
+    K • (closure {1} : Set G) ⊆ closure K • (closure {1} : Set G) :=
+      smul_subset_smul_right subset_closure
+    _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
+    _ = closure K := by simp
+  · have : IsClosed (K • (closure {1} : Set G)) :=
+      IsClosed.smul_left_of_isCompact isClosed_closure hK
+    rw [IsClosed.closure_subset_iff this]
+    exact subset_smul_set_closure_one K
 
 @[to_additive]
 lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
@@ -1880,19 +1886,9 @@ lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
   simpa using mem_of_mem_nhds K_mem
 
 @[to_additive]
-lemma IsCompact.closure_eq_smul_set_one {K : Set G} (hK : IsCompact K) :
-    closure K = K • (closure {1} : Set G) := by
-  apply Subset.antisymm hK.closure_subset_smul_set_closure_one ?_
-  calc
-  K • (closure {1} : Set G) ⊆ closure K • (closure {1} : Set G) :=
-    smul_subset_smul_right subset_closure
-  _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
-  _ = closure K := by simp
-
-@[to_additive]
 protected lemma IsCompact.closure_of_group
     {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
-  rw [hK.closure_eq_smul_set_one, ← image2_smul, ← image_uncurry_prod]
+  rw [← hK.smul_set_closure_one_eq_closure, ← image2_smul, ← image_uncurry_prod]
   exact IsCompact.image (hK.prod isCompact_closure_one) continuous_smul
 
 end
