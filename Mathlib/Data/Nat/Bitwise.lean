@@ -8,7 +8,9 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.Linarith
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -298,7 +300,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
 #align nat.lt_of_test_bit Nat.lt_of_testBit
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
-  simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_zero h]
+  simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
 
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
@@ -351,7 +353,7 @@ theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
 theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
     testBit (2 ^ w * b.toNat + n) w = b := by
   simp only [testBit, shiftRight_eq_div_pow]
-  rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_zero h, add_zero]
+  rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_of_lt h, add_zero]
   cases' b <;> simp
 
 /-- Generic method to create a natural number by appending bits tail-recursively.
@@ -398,12 +400,11 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
 
 theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
     bitwise f x y < 2 ^ n := by
-  rw [←bitwise'_eq_bitwise f]
-  apply lt_of_testBit n (by simp [testBit_bitwise' h x y n,
+  apply lt_of_testBit n (by simp [testBit_bitwise h x y n,
                                   testBit_eq_false_of_lt hx,
                                   testBit_eq_false_of_lt hy, h])
                         (testBit_two_pow_self n)
-  intro j hj; rw [testBit_bitwise' h x y j]
+  intro j hj; rw [testBit_bitwise h x y j]
   rw [testBit_eq_false_of_lt (lt_trans hx (pow_lt_pow_of_lt_right (by decide) hj))]
   rw [testBit_eq_false_of_lt (lt_trans hy (pow_lt_pow_of_lt_right (by decide) hj)), h]
   rw [testBit_two_pow_of_ne (ne_of_lt hj)]
