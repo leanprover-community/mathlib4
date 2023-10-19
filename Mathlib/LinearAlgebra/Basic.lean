@@ -579,6 +579,22 @@ theorem map_toAddSubmonoid' (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
 #align submodule.map_to_add_submonoid' Submodule.map_toAddSubmonoid'
 
 @[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_map {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A) :
+    (AddSubgroup.toIntSubmodule s).map f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.map f) := rfl
+
+@[simp]
+theorem _root_.MonoidHom.coe_toAdditive_map {G G₂ : Type*} [Group G] [Group G₂] (f : G →* G₂)
+    (s : Subgroup G) :
+    s.toAddSubgroup.map (MonoidHom.toAdditive f) = Subgroup.toAddSubgroup (s.map f) := rfl
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toMultiplicative_map {G G₂ : Type*} [AddGroup G] [AddGroup G₂]
+    (f : G →+ G₂) (s : AddSubgroup G) :
+    s.toSubgroup.map (AddMonoidHom.toMultiplicative f) = AddSubgroup.toSubgroup (s.map f) := rfl
+
+@[simp]
 theorem mem_map {f : F} {p : Submodule R M} {x : M₂} : x ∈ map f p ↔ ∃ y, y ∈ p ∧ f y = x :=
   Iff.rfl
 #align submodule.mem_map Submodule.mem_map
@@ -668,6 +684,12 @@ def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
 #align submodule.comap_coe Submodule.comap_coe
+
+@[simp]
+theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
+    (f : A →+ A₂) (s : AddSubgroup A₂) :
+    (AddSubgroup.toIntSubmodule s).comap f.toIntLinearMap =
+      AddSubgroup.toIntSubmodule (s.comap f) := rfl
 
 @[simp]
 theorem mem_comap {f : F} {p : Submodule R₂ M₂} : x ∈ comap f p ↔ f x ∈ p :=
@@ -1122,6 +1144,11 @@ lemma range_domRestrict_le_range [RingHomSurjective τ₁₂] (f : M →ₛₗ[�
   rintro x ⟨⟨y, hy⟩, rfl⟩
   exact LinearMap.mem_range_self f y
 
+@[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGroup M]
+    [AddCommGroup M₂] (f : M →+ M₂) :
+    LinearMap.range f.toIntLinearMap = AddSubgroup.toIntSubmodule f.range := rfl
+
 /-- A linear map version of `AddMonoidHom.eqLocusM` -/
 def eqLocus (f g : F) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
@@ -1287,6 +1314,10 @@ theorem range_zero [RingHomSurjective τ₁₂] : range (0 : M →ₛₗ[τ₁�
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 #align linear_map.ker_eq_top LinearMap.ker_eq_top
+
+@[simp]
+theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGroup M] [AddCommGroup M₂]
+    (f : M →+ M₂) : LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule f.ker := rfl
 
 section
 
@@ -1519,7 +1550,7 @@ theorem map_subtype_le (p' : Submodule R p) : map p.subtype p' ≤ p := by
 #align submodule.map_subtype_le Submodule.map_subtype_le
 
 /-- Under the canonical linear map from a submodule `p` to the ambient space `M`, the image of the
-maximal submodule of `p` is just `p `. -/
+maximal submodule of `p` is just `p`. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem map_subtype_top : map p.subtype (⊤ : Submodule R p) = p := by simp
 #align submodule.map_subtype_top Submodule.map_subtype_top
@@ -2342,7 +2373,7 @@ end Submodule
 
 namespace Submodule
 
-variable [CommSemiring R] [CommSemiring R₂]
+variable [Semiring R] [Semiring R₂]
 
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 
@@ -2400,14 +2431,6 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
   p.comap_equiv_eq_map_symm _
 #align submodule.order_iso_map_comap_symm_apply' Submodule.orderIsoMapComap_symm_apply'
 
-theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
-  rw [SetLike.le_def]
-  intro m h
-  change c • fₗ m ∈ qₗ
-  change fₗ m ∈ qₗ at h
-  apply qₗ.smul_mem _ h
-#align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
-
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
   rw [SetLike.le_def]
@@ -2416,6 +2439,32 @@ theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
   change f₁ m ∈ q ∧ f₂ m ∈ q at h
   apply q.add_mem h.1 h.2
 #align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
+
+end Submodule
+
+namespace Submodule
+
+variable [CommSemiring R] [CommSemiring R₂]
+
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+
+variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
+
+variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
+
+variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
+
+variable (p : Submodule R M) (q : Submodule R₂ M₂)
+
+variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
+
+theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
+  rw [SetLike.le_def]
+  intro m h
+  change c • fₗ m ∈ qₗ
+  change fₗ m ∈ qₗ at h
+  apply qₗ.smul_mem _ h
+#align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/

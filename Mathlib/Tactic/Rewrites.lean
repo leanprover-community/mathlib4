@@ -5,11 +5,11 @@ Authors: Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
+import Std.Tactic.Relation.Rfl
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Lean.Meta
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
 
@@ -113,18 +113,17 @@ def cachePath : IO FilePath :=
   catch _ =>
     return "build" / "lib" / "MathlibExtras" / "Rewrites.extra"
 
-initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
-  let path ← cachePath
-  if (← path.pathExists) then
-    let (d, r) ← unpickle (DiscrTree (Name × Bool × Nat) true) path
-    return ⟨r, ← DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)⟩
-  else
-    return ⟨none, ← buildDiscrTree⟩
-
 /--
 Retrieve the current cache of lemmas.
 -/
-def rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) := cachedData.cache
+initialize rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) ← unsafe do
+  let path ← cachePath
+  if (← path.pathExists) then
+    let (d, _r) ← unpickle (DiscrTree (Name × Bool × Nat) true) path
+    -- We can drop the `CompactedRegion` value; we do not plan to free it
+    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)
+  else
+    buildDiscrTree
 
 /-- Data structure recording a potential rewrite to report from the `rw?` tactic. -/
 structure RewriteResult where
@@ -152,7 +151,7 @@ def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
   try
     withoutModifyingState <| withMCtx r.mctx do
       -- We use `withReducible` here to follow the behaviour of `rw`.
-      withReducible (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
+      withReducible (← mkFreshExprMVar r.result.eNew).mvarId!.applyRfl
       -- We do not need to record the updated `MetavarContext` here.
       pure { r with rfl? := some true }
   catch _ =>

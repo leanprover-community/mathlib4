@@ -102,7 +102,8 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
     rw [← SetLike.coe_subset_coe, Functor.op_obj]
     dsimp [Opens.inclusion]
     simp only [Set.image_univ, Set.image_subset_iff, Subtype.range_val]
-    rw [ContinuousMap.coe_mk, Subtype.range_val, ContinuousMap.coe_mk, ContinuousMap.coe_mk,
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [ContinuousMap.coe_mk, Subtype.range_val, ContinuousMap.coe_mk, ContinuousMap.coe_mk,
       Subtype.range_val]
     rfl
   have i1 := AlgebraicGeometry.Γ_restrict_isLocalization Y r
@@ -578,7 +579,6 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
   · intro; exact H
 #align ring_hom.property_is_local.affine_locally_of_is_open_immersion RingHom.PropertyIsLocal.affineLocally_of_isOpenImmersion
 
-set_option maxHeartbeats 3000000 in
 theorem affineLocally_of_comp
     (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : R →+* S) (g : S →+* T), P (g.comp f) → P g)
