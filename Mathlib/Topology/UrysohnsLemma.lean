@@ -22,8 +22,9 @@ closed sets `s` and `t` in a normal topological space `X` there exists a continu
 
 We also give the version in a T2 locally compact space where one assumes that `s` is compact and
 `t` is closed, in `exists_continuous_zero_one_of_isCompact`. We write the proof so that it applies
-to both situations. We also deduce a version in a locally compact topological group, without
-the T2 assumption, by applying the previous result in the separated quotient.
+to both situations. We also deduce a version in a locally compact topological group without the T2
+assumption, called `exists_continuous_one_zero_of_isCompact_of_group`, by applying the previous
+result in the separated quotient.
 
 ## Implementation notes
 
@@ -78,6 +79,7 @@ Urysohn's lemma, normal topological space, locally compact topological space
 variable {X : Type*} [TopologicalSpace X]
 
 open Set Filter TopologicalSpace Topology Filter
+open scoped Pointwise
 
 namespace Urysohns
 
@@ -86,7 +88,7 @@ set_option linter.uppercaseLean3 false
 /-- An auxiliary type for the proof of Urysohn's lemma: a pair of a closed set `C` and its
 open neighborhood `U`, together with the assumption that `C` satisfies the property `P C`. The
 latter assumption will make it possible to prove simultaneously both versions of Urysohn's lemma,
-in normal spaces (with `P` always true) and in locally compact spaces (with `P = IsCompact`)
+in normal spaces (with `P` always true) and in locally compact spaces (with `P = IsCompact`).
 We put also in the structure the assumption that, for any such pair, one may find an intermediate
 pair inbetween satisfying `P`, to avoid carrying it around in the argument. -/
 structure CU {X : Type*} [TopologicalSpace X] (P : Set X → Prop) where
