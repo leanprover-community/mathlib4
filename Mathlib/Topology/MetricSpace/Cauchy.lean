@@ -9,10 +9,10 @@ import Mathlib.Topology.MetricSpace.Basic
 ## Cauchy sequences in (pseudo-)metric spaces
 TODO: proper docstring!
 -/
--- TODO: go over copyright, author, imports, variables etc.
+-- TODO: go over copyright and author
 
-open Set Filter TopologicalSpace Bornology
-open scoped BigOperators ENNReal NNReal Uniformity Topology
+open Filter
+open scoped Uniformity Topology
 
 universe u v w
 

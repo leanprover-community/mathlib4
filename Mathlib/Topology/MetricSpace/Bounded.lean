@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 ## Boundedness in metric spaces
@@ -11,8 +12,8 @@ TODO. flesh out this docstring
 
 -/
 
-open Set Filter TopologicalSpace Bornology
-open scoped BigOperators ENNReal NNReal Uniformity Topology
+open Set Filter  Bornology
+open scoped ENNReal Uniformity Topology
 
 universe u v w
 
