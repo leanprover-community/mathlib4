@@ -59,8 +59,6 @@ namespace Std.BitVec
 #noalign bitvec.sborrow
 #noalign bitvec.bits_to_nat
 
-#noalign bitvec.ugt
-#noalign bitvec.uge
 
 
 /-!
@@ -68,12 +66,20 @@ namespace Std.BitVec
 -/
 
 /-- Signed greater than for bitvectors. -/
-protected def sgt (x y : BitVec (w + 1)) : Prop := BitVec.slt y x
+protected def sgt (x y : BitVec w) : Prop := BitVec.slt y x
 #align bitvec.sgt Std.BitVec.sgt
 
 /-- Signed greater than or equal to for bitvectors. -/
-protected def sge (x y : BitVec (w + 1)) : Prop := BitVec.sle y x
+protected def sge (x y : BitVec w) : Prop := BitVec.sle y x
 #align bitvec.sge Std.BitVec.sge
+
+/-- Unsigned greater than for bitvectors. -/
+protected def ugt (x y : BitVec w) : Prop := BitVec.ult y x
+#align bitvec.ugt Std.BitVec.ugt
+
+/-- Signed greater than or equal to for bitvectors. -/
+protected def uge (x y : BitVec w) : Prop := BitVec.ule y x
+#align bitvec.uge Std.BitVec.uge
 
 /-! We add simp-lemmas that rewrite bitvector operations into the equivalent notation -/
 @[simp] lemma append_eq (x : BitVec w) (y : BitVec v)   : BitVec.append x y = x ++ y        := rfl
