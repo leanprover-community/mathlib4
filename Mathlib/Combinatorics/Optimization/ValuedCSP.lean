@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Rat.Order -- will be trimmed after deleting examples
-import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Cases
 import Mathlib.Data.Bool.Basic
 
@@ -32,23 +32,23 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 -/
 
-def n1ary_of_unary {α β : Type _} (f : α → β) : (Fin 1 → α) → β :=
+def n1ary_of_unary {α β : Type*} (f : α → β) : (Fin 1 → α) → β :=
   fun a => f (a 0)
 
-def n2ary_of_binary {α β : Type _} (f : α → α → β) : (Fin 2 → α) → β :=
+def n2ary_of_binary {α β : Type*} (f : α → α → β) : (Fin 2 → α) → β :=
   fun a => f (a 0) (a 1)
 
 /-- A template for a valued CSP problem with costs in `C`. -/
-structure ValuedCspTemplate (C : Type _) [LinearOrderedAddCommMonoid C] where
-  /-- Domain of "labels" -/
+structure ValuedCspTemplate (C : Type*) [LinearOrderedAddCommMonoid C] where
+  /-- Domain of "labels", almost always finite -/
   D : Type
   /-- Cost functions from `D^k` to `C` for any `k` -/
   F : Set (Σ (k : ℕ), (Fin k → D) → C)
 
-variable {C : Type _} [LinearOrderedAddCommMonoid C]
+variable {C : Type*} [LinearOrderedAddCommMonoid C]
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
-structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type _) where
+structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type*) where
   /-- Arity of the function -/
   k : ℕ
   /-- Which cost function is instantiated -/
@@ -58,30 +58,30 @@ structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type _) where
   /-- Which variables are plugged as arguments to the cost function -/
   app : Fin k → ι
 
-def valuedCspTerm_of_unary {Γ : ValuedCspTemplate C} {ι : Type _} {f₁ : Γ.D → C}
+def valuedCspTerm_of_unary {Γ : ValuedCspTemplate C} {ι : Type*} {f₁ : Γ.D → C}
     (ok : ⟨1, n1ary_of_unary f₁⟩ ∈ Γ.F) (i : ι) : ValuedCspTerm Γ ι :=
   ⟨1, n1ary_of_unary f₁, ok, ![i]⟩
 
-def valuedCspTerm_of_binary {Γ : ValuedCspTemplate C} {ι : Type _} {f₂ : Γ.D → Γ.D → C}
+def valuedCspTerm_of_binary {Γ : ValuedCspTemplate C} {ι : Type*} {f₂ : Γ.D → Γ.D → C}
     (ok : ⟨2, n2ary_of_binary f₂⟩ ∈ Γ.F) (i j : ι) : ValuedCspTerm Γ ι :=
   ⟨2, n2ary_of_binary f₂, ok, ![i, j]⟩
 
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
-def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
+def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate C} {ι : Type*}
     (t : ValuedCspTerm Γ ι) (x : ι → Γ.D) : C :=
   t.f (x ∘ t.app)
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
-def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type _) : Type :=
+def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type*) :=
   List (ValuedCspTerm Γ ι)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
-def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
+def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate C} {ι : Type*}
     (I : ValuedCspInstance Γ ι) (x : ι → Γ.D) : C :=
   (I.map (·.evalSolution x)).sum
 
 /-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`.-/
-def ValuedCspInstance.optimumSolution {Γ : ValuedCspTemplate C} {ι : Type _}
+def ValuedCspInstance.optimumSolution {Γ : ValuedCspTemplate C} {ι : Type*}
     (I : ValuedCspInstance Γ ι) (x : ι → Γ.D) : Prop :=
   ∀ y : ι → Γ.D, I.evalSolution x ≤ I.evalSolution y
 
@@ -119,6 +119,7 @@ example : exampleFiniteValuedInstance.optimumSolution ![(0 : ℚ), (0 : ℚ)] :=
   rw [ValuedCspInstance.evalSolution, exampleFiniteValuedInstance,
       List.map_cons, List.map_cons, List.map_nil, List.sum_cons, List.sum_cons, List.sum_nil,
       add_zero]
+  show 0 ≤ |s 0| + |s 1|
   positivity
 
 
