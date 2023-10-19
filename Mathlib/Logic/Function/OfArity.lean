@@ -104,9 +104,8 @@ theorem uncurry_curry {n} (f : (Fin n → α) → α) :
   induction args using Fin.consInduction with
   | h0 => rfl
   | h a as ih =>
-    have := ih (fun args => f (Fin.cons a args))
     dsimp [curry, uncurry, Function.comp]
-    simp only [Fin.cons_zero, Fin.cons_succ, this]
+    simp only [Fin.cons_zero, Fin.cons_succ, ih (f <| Fin.cons a ·)]
 
 end currying
 
