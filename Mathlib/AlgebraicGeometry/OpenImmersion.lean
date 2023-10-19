@@ -373,12 +373,16 @@ end ToScheme
 end PresheafedSpace.IsOpenImmersion
 
 /-- The restriction of a Scheme along an open embedding. -/
-@[simps!]
+@[simps! (config := .lemmasOnly)]
 def Scheme.restrict {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f) :
     Scheme :=
   { PresheafedSpace.IsOpenImmersion.toScheme X (X.toPresheafedSpace.ofRestrict h) with
     toPresheafedSpace := X.toPresheafedSpace.restrict h }
 #align algebraic_geometry.Scheme.restrict AlgebraicGeometry.Scheme.restrict
+
+lemma Scheme.restrict_toPresheafedSpace
+    {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f) :
+    (X.restrict h).toPresheafedSpace = X.toPresheafedSpace.restrict h := rfl
 
 /-- The canonical map from the restriction to the subspace. -/
 @[simps!]
@@ -621,13 +625,24 @@ theorem lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X)
 #align algebraic_geometry.IsOpenImmersion.lift_uniq AlgebraicGeometry.IsOpenImmersion.lift_uniq
 
 /-- Two open immersions with equal range are isomorphic. -/
-@[simps]
 def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) : X ≅ Y where
   hom := lift g f (le_of_eq e)
   inv := lift f g (le_of_eq e.symm)
   hom_inv_id := by rw [← cancel_mono f]; simp
   inv_hom_id := by rw [← cancel_mono g]; simp
 #align algebraic_geometry.IsOpenImmersion.iso_of_range_eq AlgebraicGeometry.IsOpenImmersion.isoOfRangeEq
+
+@[simp, reassoc]
+lemma isoOfRangeEq_hom_fac {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
+    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) :
+    (isoOfRangeEq f g e).hom ≫ g = f :=
+  lift_fac _ _ (le_of_eq e)
+
+@[simp, reassoc]
+lemma isoOfRangeEq_inv_fac {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
+    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) :
+    (isoOfRangeEq f g e).inv ≫ f = g :=
+  lift_fac _ _ (le_of_eq e.symm)
 
 /-- The functor `opens X ⥤ opens Y` associated with an open immersion `f : X ⟶ Y`. -/
 abbrev _root_.AlgebraicGeometry.Scheme.Hom.opensFunctor {X Y : Scheme} (f : X ⟶ Y)

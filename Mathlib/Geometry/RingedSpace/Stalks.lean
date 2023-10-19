@@ -60,6 +60,13 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map_germ AlgebraicGeometry.PresheafedSpace.stalkMap_germ
 
+@[simp, elementwise, reassoc]
+theorem stalkMap_germ' {X Y : PresheafedSpace.{_, _, v} C}
+    (α : X ⟶ Y) (U : Opens Y) (x : X) (hx : α.base x ∈ U) :
+    Y.presheaf.germ ⟨α.base x, hx⟩ ≫ stalkMap α x = α.c.app (op U) ≫
+      X.presheaf.germ (U := (Opens.map α.base).obj U) ⟨x, hx⟩ :=
+  PresheafedSpace.stalkMap_germ α U ⟨x, hx⟩
+
 section Restrict
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk

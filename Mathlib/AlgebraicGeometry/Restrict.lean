@@ -35,10 +35,16 @@ section
 
 variable (X : Scheme)
 
+/-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.1.base).obj U`,
+  the preimage of an open set `U` under `f`. -/
 notation3:90 f:91 "⁻¹ᵁ " U:90 => Prefunctor.obj
   (Functor.toPrefunctor <| Opens.map (PresheafedSpace.Hom.base (LocallyRingedSpace.Hom.val f))) U
 
+/-- `X ∣_ᵤ U` is notation for `X.restrict U.openEmbedding`, the restriction of `X` to an open set
+  `U` of `X`. -/
 notation3:60 X:60 " ∣_ᵤ " U:61 => (Scheme.restrict X (Opens.openEmbedding U))
+
+attribute [nolint docBlame] «term_⁻¹ᵁ_».delab «term_∣_ᵤ_».delab
 
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme} (U : Opens X.carrier) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
@@ -159,18 +165,6 @@ def Scheme.restrictRestrict (X : Scheme) (U : Opens X.carrier) (V : Opens (X ∣
     CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
   rfl
-
-@[simp, reassoc]
-lemma IsOpenImmersion.isoOfRangeEq_hom_fac {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) :
-    (IsOpenImmersion.isoOfRangeEq f g e).hom ≫ g = f :=
-  IsOpenImmersion.lift_fac _ _ (le_of_eq e)
-
-@[simp, reassoc]
-lemma IsOpenImmersion.isoOfRangeEq_inv_fac {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.1.base = Set.range g.1.base) :
-    (IsOpenImmersion.isoOfRangeEq f g e).inv ≫ f = g :=
-  IsOpenImmersion.lift_fac _ _ (le_of_eq e.symm)
 
 @[simp, reassoc]
 lemma Scheme.restrictRestrict_hom_restrict (X : Scheme) (U : Opens X.carrier)
@@ -351,12 +345,12 @@ def morphismRestrictOpensRange {X Y U : Scheme} (f : X ⟶ Y) (g : U ⟶ Y) [hg 
     IsOpenImmersion.isoOfRangeEq g (Y.ofRestrict V.openEmbedding) Subtype.range_coe.symm
   let t : pullback f g ⟶ pullback f (Y.ofRestrict V.openEmbedding) :=
     pullback.map _ _ _ _ (𝟙 _) e.hom (𝟙 _) (by rw [Category.comp_id, Category.id_comp])
-      (by rw [Category.comp_id, IsOpenImmersion.isoOfRangeEq_hom, IsOpenImmersion.lift_fac])
+      (by rw [Category.comp_id, IsOpenImmersion.isoOfRangeEq_hom_fac])
   symm
   refine' Arrow.isoMk (asIso t ≪≫ pullbackRestrictIsoRestrict f V) e _
   rw [Iso.trans_hom, asIso_hom, ← Iso.comp_inv_eq, ← cancel_mono g, Arrow.mk_hom, Arrow.mk_hom,
-    IsOpenImmersion.isoOfRangeEq_inv, Category.assoc, Category.assoc, Category.assoc,
-    IsOpenImmersion.lift_fac, ← pullback.condition, morphismRestrict_ι,
+    Category.assoc, Category.assoc, Category.assoc, IsOpenImmersion.isoOfRangeEq_inv_fac,
+    ← pullback.condition, morphismRestrict_ι,
     pullbackRestrictIsoRestrict_hom_restrict_assoc, pullback.lift_fst_assoc, Category.comp_id]
 #align algebraic_geometry.morphism_restrict_opens_range AlgebraicGeometry.morphismRestrictOpensRange
 
@@ -409,7 +403,6 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
   exact Y.basicOpen_le r
 #align algebraic_geometry.morphism_restrict_restrict_basic_open AlgebraicGeometry.morphismRestrictRestrictBasicOpen
 
-set_option maxHeartbeats 500000 in
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
 -/
 def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
@@ -422,20 +415,15 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
   · exact X.restrictStalkIso (Opens.openEmbedding _) _
   · apply TopCat.Presheaf.stalk_hom_ext
     intro V hxV
-    simp only [TopCat.Presheaf.stalkCongr_hom, CategoryTheory.Category.assoc,
-      CategoryTheory.Iso.trans_hom]
-    erw [PresheafedSpace.restrictStalkIso_hom_eq_germ_assoc]
-    erw [PresheafedSpace.stalkMap_germ_assoc _ V ⟨_, hxV⟩]
-    rw [TopCat.Presheaf.germ_stalkSpecializes'_assoc]
-    -- Porting note : explicit variables and proofs were not necessary
-    erw [PresheafedSpace.stalkMap_germ _ (U.openEmbedding.isOpenMap.functor.obj V)
-      ⟨x.1, ⟨⟨f.1.base x.1, x.2⟩, _, rfl⟩⟩]
-    swap
-    · rw [morphismRestrict_val_base] at hxV
-      exact hxV
-    erw [PresheafedSpace.restrictStalkIso_hom_eq_germ]
-    rw [morphismRestrict_c_app, Category.assoc, TopCat.Presheaf.germ_res]
+    change ↑(f ⁻¹ᵁ U) at x
+    simp only [Scheme.restrict_presheaf_obj, unop_op, Opens.coe_inclusion, Iso.trans_hom,
+      TopCat.Presheaf.stalkCongr_hom, Category.assoc, Scheme.restrict_toPresheafedSpace]
+    rw [PresheafedSpace.restrictStalkIso_hom_eq_germ_assoc,
+      TopCat.Presheaf.germ_stalkSpecializes'_assoc,
+      PresheafedSpace.stalkMap_germ'_assoc, PresheafedSpace.stalkMap_germ', morphismRestrict_c_app,
+      PresheafedSpace.restrictStalkIso_hom_eq_germ, Category.assoc, TopCat.Presheaf.germ_res]
     rfl
+
 #align algebraic_geometry.morphism_restrict_stalk_map AlgebraicGeometry.morphismRestrictStalkMap
 
 instance {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
