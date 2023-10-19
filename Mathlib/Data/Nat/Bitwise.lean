@@ -5,11 +5,8 @@ Authors: Markus Himmel, Alex Keizer
 -/
 import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
-import Mathlib.Data.Nat.Order.Lemmas
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -87,10 +84,10 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
   simp only [bit, bit1, bit0, Bool.cond_eq_ite]
-  have h1 x :     (x + x) % 2 = 0 := by ring_nf; apply mul_mod_left
-  have h2 x : (x + x + 1) % 2 = 1 := by ring_nf; apply add_mul_mod_self_right
-  have h3 x :     (x + x) / 2 = x := by ring_nf; apply mul_div_left _ zero_lt_two
-  have h4 x : (x + x + 1) / 2 = x := by ring_nf; simp [add_mul_div_right]
+  have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
+  have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
+  have h3 x :     (x + x) / 2 = x := by rw [← two_mul, mul_comm]; apply mul_div_left _ zero_lt_two
+  have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs <;> simp_all
 #align nat.bitwise_bit Nat.bitwise_bit
 
@@ -282,9 +279,15 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     simp only [testBit_succ] at hn hm
     have :=
       hn' _ hn hm fun j hj => by convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_succ]
+    have this' : 2 * n < 2 * m := Nat.mul_lt_mul' (le_refl _) this two_pos
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
-    <;> linarith only [this]
+    · exact this'
+    · exact Nat.lt_add_right (2 * n) (2 * m) 1 this'
+    · calc
+        2 * n + 1 < 2 * n + 2 := lt.base _
+        _ ≤ 2 * m := mul_le_mul_left 2 this
+    · exact Nat.succ_lt_succ this'
 #align nat.lt_of_test_bit Nat.lt_of_testBit
 
 @[simp]
@@ -295,7 +298,7 @@ theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
 theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false := by
   rw [testBit, shiftRight_eq_div_pow]
   cases' hm.lt_or_lt with hm hm
-  · rw [Nat.div_eq_zero, bodd_zero]
+  · rw [Nat.div_eq_of_lt, bodd_zero]
     exact Nat.pow_lt_pow_of_lt_right one_lt_two hm
   · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
