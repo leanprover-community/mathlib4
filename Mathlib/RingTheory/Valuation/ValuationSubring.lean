@@ -379,7 +379,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals.-/
 @[simps]
-def primeSpectrumEquiv : PrimeSpectrum A ≃ {S | A ≤ S} where
+def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
   invFun S := ⟨idealOfLE _ S S.2, inferInstance⟩
   left_inv P := by ext1; simp
@@ -387,8 +387,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S | A ≤ S} where
 #align valuation_subring.prime_spectrum_equiv ValuationSubring.primeSpectrumEquiv
 
 /-- An ordered variant of `primeSpectrumEquiv`. -/
-@[simps!]
-def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
+def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
       ⟨fun h => by
@@ -400,9 +399,13 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ValuationSubring.primeSpectrumEquiv_symm_apply_asIdeal
-  ValuationSubring.primeSpectrumEquiv_apply_coe
+@[simp]
+theorem primeSpectrumOrderEquiv_apply (a : PrimeSpectrum A) :
+    primeSpectrumOrderEquiv A a = primeSpectrumEquiv A a := rfl
+
+@[simp]
+theorem primeSpectrumOrderEquiv_symm_apply (a : {S // A ≤ S}) :
+    (primeSpectrumOrderEquiv A).symm a = (primeSpectrumEquiv A).symm a := rfl
 
 instance linearOrderOverring : LinearOrder {S | A ≤ S} :=
   { (inferInstance : PartialOrder _) with
