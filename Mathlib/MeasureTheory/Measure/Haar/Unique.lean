@@ -347,11 +347,13 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
     ∃ (c : ℝ), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
       ∫ x, f x ∂μ' = c * ∫ x, f x ∂μ := by
+  -- The group has to be locally compact, otherwise all integrals vanish and the result is trivial.
   by_cases H : LocallyCompactSpace G; swap
   · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
     rcases f_comp.eq_zero_or_locallyCompactSpace_of_group f_cont with hf|hf
     · simp [hf]
     · exact (H hf).elim
+  -- Fix some nonzero continuous function with compact support `g`.
   obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
       ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
     rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
@@ -362,12 +364,17 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
     · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
     · exact g_cont.integrable_of_hasCompactSupport g_comp
+  -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
+  -- with respect to `μ'` and `μ`.
+  refine ⟨(∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ'), fun f f_cont f_comp ↦ ?_⟩
+  /- use the lemma `integral_mulLeftInvariant_mulRightInvariant_combo` for `μ` and then `μ'`
+  to reexpress the integral of `f` as the integral of `g` times a factor which only depends
+  on a right-invariant measure `ν`. We use `ν = μ.inv` for convenience. -/
   let ν := μ.inv
-  let c := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
-  refine ⟨c, fun f f_cont f_comp ↦ ?_⟩
   have A : ∫ x, f x ∂μ = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ :=
     integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
   rw [← mul_inv_eq_iff_eq_mul₀ int_g_pos.ne'] at A
   have B : ∫ x, f x ∂μ' = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ' :=
     integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
+  /- Since the `ν`-factor is the same for `μ` and `μ'`, this gives the result. -/
   rwa [← A, mul_assoc, mul_comm] at B
