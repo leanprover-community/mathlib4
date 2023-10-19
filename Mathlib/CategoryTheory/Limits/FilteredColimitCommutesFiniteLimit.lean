@@ -138,7 +138,6 @@ end
 
 variable [FinCategory J]
 
-set_option pp.universes true
 /-- This follows this proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 although with different names.

@@ -94,7 +94,7 @@ variable {X : TopCat.{x}} (F : Presheaf (Type u) X) {ι : Type x} (U : ι → Op
 /-- For presheaves of types, terms of `piOpens F U` are just families of sections.
 -/
 def piOpensIsoSectionsFamily : piOpens F U ≃ ∀ i : ι, F.obj (op (U i)) :=
-  (Types.UnivLE.productIso _).toEquiv.trans (equivShrink _).symm
+  (Types.Small.productIso _).toEquiv.trans (equivShrink <| ∀ i, F.obj (op (U i))).symm
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pi_opens_iso_sections_family TopCat.Presheaf.piOpensIsoSectionsFamily
 
