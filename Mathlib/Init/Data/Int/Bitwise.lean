@@ -67,18 +67,18 @@ def lnot : ℤ → ℤ
 
 /--`lor` takes two integers and returns their bitwise `or`-/
 def lor : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.lor m n
+  | (m : ℕ), (n : ℕ) => m ||| n
   | (m : ℕ), -[n +1] => -[Nat.ldiff n m +1]
   | -[m +1], (n : ℕ) => -[Nat.ldiff m n +1]
-  | -[m +1], -[n +1] => -[Nat.land m n +1]
+  | -[m +1], -[n +1] => -[m &&& n +1]
 #align int.lor Int.lor
 
 /--`land` takes two integers and returns their bitwise `and`-/
 def land : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.land m n
+  | (m : ℕ), (n : ℕ) => m &&& n
   | (m : ℕ), -[n +1] => Nat.ldiff m n
   | -[m +1], (n : ℕ) => Nat.ldiff n m
-  | -[m +1], -[n +1] => -[Nat.lor m n +1]
+  | -[m +1], -[n +1] => -[m ||| n +1]
 #align int.land Int.land
 
 -- Porting note: I don't know why `Nat.ldiff` got the prime, but I'm matching this change here
@@ -87,18 +87,18 @@ def land : ℤ → ℤ → ℤ
   boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
-  | (m : ℕ), -[n +1] => Nat.land m n
-  | -[m +1], (n : ℕ) => -[Nat.lor m n +1]
+  | (m : ℕ), -[n +1] => m &&& n
+  | -[m +1], (n : ℕ) => -[m ||| n +1]
   | -[m +1], -[n +1] => Nat.ldiff n m
 #align int.ldiff Int.ldiff
 
 -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
 /--`xor` computes the bitwise `xor` of two natural numbers-/
 protected def xor : ℤ → ℤ → ℤ
-  | (m : ℕ), (n : ℕ) => Nat.xor m n
-  | (m : ℕ), -[n +1] => -[Nat.xor m n +1]
-  | -[m +1], (n : ℕ) => -[Nat.xor m n +1]
-  | -[m +1], -[n +1] => Nat.xor m n
+  | (m : ℕ), (n : ℕ) => (m ^^^ n)
+  | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
+  | -[m +1], (n : ℕ) => -[(m ^^^ n) +1]
+  | -[m +1], -[n +1] => (m ^^^ n)
 #align int.lxor Int.xor
 
 /-- `m <<< n` produces an integer whose binary representation
