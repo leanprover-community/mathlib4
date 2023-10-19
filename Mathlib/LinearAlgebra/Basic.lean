@@ -8,7 +8,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.Set.Finite
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
@@ -912,34 +912,6 @@ theorem submoduleMap_symm_apply (p : Submodule R M)
 
 
 end
-
-section DFinsupp
-
-open DFinsupp
-
-variable [Semiring R] [Semiring R₂]
-
-variable [AddCommMonoid M] [AddCommMonoid M₂]
-
-variable [Module R M] [Module R₂ M₂]
-
-variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
-variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
-variable {γ : ι → Type*} [DecidableEq ι]
-
-
-#align linear_equiv.map_dfinsupp_sum map_dfinsupp_sumₓ
-
-@[simp]
-theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)
-    (g : ∀ i, γ i →+ M) :
-    f (sumAddHom g t) = sumAddHom (fun i => f.toAddEquiv.toAddMonoidHom.comp (g i)) t :=
-  f.toAddEquiv.map_dfinsupp_sumAddHom _ _
-#align linear_equiv.map_dfinsupp_sum_add_hom LinearEquiv.map_dfinsupp_sumAddHom
-
-end DFinsupp
 
 section Uncurry
 

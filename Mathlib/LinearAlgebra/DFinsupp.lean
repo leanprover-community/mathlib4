@@ -589,6 +589,7 @@ section Sum
 variable [∀ i, Zero (γ i)] [∀ (i) (x : γ i), Decidable (x ≠ 0)]
 
 #align linear_map.map_dfinsupp_sum map_dfinsupp_sumₓ
+#align linear_equiv.map_dfinsupp_sum map_dfinsupp_sumₓ
 
 theorem coe_dfinsupp_sum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
@@ -619,3 +620,35 @@ end DFinsupp
 end AddCommMonoid
 
 end LinearMap
+
+namespace LinearEquiv
+
+variable {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} {ι : Type*}
+
+section DFinsupp
+
+open DFinsupp
+
+variable [Semiring R] [Semiring R₂]
+
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+
+variable [Module R M] [Module R₂ M₂]
+
+variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
+
+variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
+
+variable {γ : ι → Type*} [DecidableEq ι]
+
+
+@[simp]
+theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)
+    (g : ∀ i, γ i →+ M) :
+    f (sumAddHom g t) = sumAddHom (fun i => f.toAddEquiv.toAddMonoidHom.comp (g i)) t :=
+  f.toAddEquiv.map_dfinsupp_sumAddHom _ _
+#align linear_equiv.map_dfinsupp_sum_add_hom LinearEquiv.map_dfinsupp_sumAddHom
+
+end DFinsupp
+
+end LinearEquiv
