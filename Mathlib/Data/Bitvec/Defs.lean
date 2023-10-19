@@ -75,10 +75,18 @@ protected def sgt (x y : BitVec (w + 1)) : Prop := BitVec.slt y x
 protected def sge (x y : BitVec (w + 1)) : Prop := BitVec.sle y x
 #align bitvec.sge Std.BitVec.sge
 
-
-@[simp] lemma shiftLeft_def (x : BitVec w) (n: Nat)     : BitVec.shiftLeft x n = x <<< n    := rfl
-@[simp] lemma ushiftRight_def (x : BitVec w) (n: Nat)   : BitVec.ushiftRight x n = x >>> n  := rfl
-@[simp] lemma append_def (x : BitVec w) (y : BitVec v)  : BitVec.append x y = x ++ y        := rfl
+/-! We add simp-lemmas that rewrite bitvector operations into the equivalent notation -/
+@[simp] lemma append_eq (x : BitVec w) (y : BitVec v)   : BitVec.append x y = x ++ y        := rfl
+@[simp] lemma shiftLeft_eq (x : BitVec w) (n: Nat)      : BitVec.shiftLeft x n = x <<< n    := rfl
+@[simp] lemma ushiftRight_eq (x : BitVec w) (n: Nat)    : BitVec.ushiftRight x n = x >>> n  := rfl
+@[simp] lemma not_eq (x : BitVec w)                     : BitVec.not x = ~~~x               := rfl
+@[simp] lemma and_eq (x y : BitVec w)                   : BitVec.and x y = x &&& y          := rfl
+@[simp] lemma or_eq (x y : BitVec w)                    : BitVec.or x y = x ||| y           := rfl
+@[simp] lemma xor_eq (x y : BitVec w)                   : BitVec.xor x y = x ^^^ y          := rfl
+@[simp] lemma neg_eq (x : BitVec w)                     : BitVec.neg x = -x                 := rfl
+@[simp] lemma add_eq (x y : BitVec w)                   : BitVec.add x y = x + y            := rfl
+@[simp] lemma sub_eq (x y : BitVec w)                   : BitVec.sub x y = x - y            := rfl
+@[simp] lemma mul_eq (x y : BitVec w)                   : BitVec.mul x y = x * y            := rfl
 
 /-- Convert a list of booleans to a bitvector. -/
 def to_BV (bs : List Bool) : BitVec bs.length :=
