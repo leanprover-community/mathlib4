@@ -122,35 +122,28 @@ theorem blockTriangular_blockDiagonal [DecidableEq α] (d : α → Matrix m m R)
 
 variable [DecidableEq m]
 
-theorem blockTriangular_id : BlockTriangular (1 : Matrix m m R) b := by
+theorem blockTriangular_one : BlockTriangular (1 : Matrix m m R) b := by
   rw [← @diagonal_one]
   exact blockTriangular_diagonal fun _ ↦ 1
 
 theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
     BlockTriangular (stdBasisMatrix i j c) b := by
-  by_cases h : b i = b j
-  · unfold BlockTriangular stdBasisMatrix
-    aesop
-  · push_neg at h
-    intro r s hrs
-    unfold stdBasisMatrix
-    simp only [of_apply, ite_eq_right_iff, and_imp]
-    intro hr hs
-    rw [← hr, ← hs] at hrs
-    exact hij.trans_lt hrs |>.false.elim
+  intro r s hrs
+  apply StdBasisMatrix.apply_of_ne
+  rintro ⟨rfl, rfl⟩
+  exact (hij.trans_lt hrs).false
 
 theorem blockTriangular_stdBasisMatrix' {i j : m} (hij : b j ≤ b i) (c : R) :
-    BlockTriangular (stdBasisMatrix i j c) (toDual ∘ b) := by
-  have : (toDual ∘ b) i ≤ (toDual ∘ b) j := hij
-  exact blockTriangular_stdBasisMatrix this c
+    BlockTriangular (stdBasisMatrix i j c) (toDual ∘ b) :=
+  blockTriangular_stdBasisMatrix (by exact toDual_le_toDual.mpr hij) _
 
 theorem blockTriangular_transvection {i j : m} (hij : b i ≤ b j) (c : R) :
     BlockTriangular (transvection i j c) b :=
-  blockTriangular_id.add (blockTriangular_stdBasisMatrix hij c)
+  blockTriangular_one.add (blockTriangular_stdBasisMatrix hij c)
 
 theorem blockTriangular_transvection' {i j : m} (hij : b j ≤ b i) (c : R) :
     BlockTriangular (transvection i j c) (OrderDual.toDual ∘ b) :=
-  blockTriangular_id.add (blockTriangular_stdBasisMatrix' hij c)
+  blockTriangular_one.add (blockTriangular_stdBasisMatrix' hij c)
 
 end Preorder
 
