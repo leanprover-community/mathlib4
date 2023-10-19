@@ -1614,7 +1614,7 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
   rw [measurable_pi_iff]
   exact fun i => measurable_pi_apply (f i)
 
-theorem piCongrLeft_eq (f : δ ≃ δ') :
+theorem coe_piCongrLeft (f : δ ≃ δ') :
     ⇑MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
 
 /-- Pi-types are measurably equivalent to iterated products. -/

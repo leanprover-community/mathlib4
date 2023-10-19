@@ -756,7 +756,7 @@ theorem measurePreserving_piCongrLeft (f : ι' ≃ ι) :
   measurable := (MeasurableEquiv.piCongrLeft α f).measurable
   map_eq := by
     refine' (pi_eq fun s _ => _).symm
-    rw [MeasurableEquiv.map_apply, MeasurableEquiv.piCongrLeft_eq f,
+    rw [MeasurableEquiv.map_apply, MeasurableEquiv.coe_piCongrLeft f,
       Equiv.piCongrLeft_preimage_univ_pi, pi_pi _ _, f.prod_comp (fun i => μ i (s i))]
 
 theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι)
@@ -764,7 +764,7 @@ theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f) volume volume :=
   measurePreserving_piCongrLeft (fun _ ↦ volume) f
 
-theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type _} [∀ i, MeasurableSpace (π i)]
+theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type*} [∀ i, MeasurableSpace (π i)]
     (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π).symm
       ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) (Measure.pi μ) where
@@ -775,18 +775,18 @@ theorem measurePreserving_sumPiEquivProdPi_symm {π : ι ⊕ ι' → Type _} [�
       Equiv.sumPiEquivProdPi_symm_preimage_univ_pi, Measure.prod_prod, Measure.pi_pi,
       Fintype.prod_sum_type]
 
-theorem volume_measurePreserving_sumPiEquivProdPi_symm (π : ι ⊕ ι' → Type _)
+theorem volume_measurePreserving_sumPiEquivProdPi_symm (π : ι ⊕ ι' → Type*)
     [∀ i, MeasureSpace (π i)] [∀ i, SigmaFinite (volume : Measure (π i))] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π).symm volume volume :=
   measurePreserving_sumPiEquivProdPi_symm (fun _ ↦ volume)
 
-theorem measurePreserving_sumPiEquivProdPi {π : ι ⊕ ι' → Type _} [∀ i, MeasurableSpace (π i)]
+theorem measurePreserving_sumPiEquivProdPi {π : ι ⊕ ι' → Type*} [∀ i, MeasurableSpace (π i)]
     (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π)
       (Measure.pi μ) ((Measure.pi fun i => μ (.inl i)).prod (Measure.pi fun i => μ (.inr i))) :=
   measurePreserving_sumPiEquivProdPi_symm μ |>.symm
 
-theorem volume_measurePreserving_sumPiEquivProdPi (π : ι ⊕ ι' → Type _)
+theorem volume_measurePreserving_sumPiEquivProdPi (π : ι ⊕ ι' → Type*)
     [∀ i, MeasureSpace (π i)] [∀ i, SigmaFinite (volume : Measure (π i))] :
     MeasurePreserving (MeasurableEquiv.sumPiEquivProdPi π) volume volume :=
   measurePreserving_sumPiEquivProdPi (fun _ ↦ volume)
