@@ -1467,4 +1467,3 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
   exact e.surjective
 
 end TopEquiv
-#lint

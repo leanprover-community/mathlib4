@@ -825,4 +825,3 @@ theorem ofSubalgebras_symm_apply (h : L₁'.map ↑e = L₂') (x : L₂') :
 #align lie_equiv.of_subalgebras_symm_apply LieEquiv.ofSubalgebras_symm_apply
 
 end LieEquiv
-#lint
