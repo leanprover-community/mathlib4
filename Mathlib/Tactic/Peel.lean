@@ -16,6 +16,43 @@ to introduce variables with the supplied names.
 
 open Lean Expr Meta Qq Elab Tactic Mathlib.Tactic
 
+/--
+Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
+
+Given `p q : ℕ → Prop`, `h : ∀ x, p x`, and a goal `⊢ : ∀ x, q x`, the tactic `peel h with h' x`
+will introduce `x : ℕ`, `h' : p x` into the context and the new goal will be `⊢ q x`. This works
+with `∃`, as well as `∀ᶠ` and `∃ᶠ`, and it can even be applied to a sequence of quantifiers. Note
+that this is a logically weaker setup, so using this tactic is not always feasible.
+
+For a more complex example, given a hypothesis and a goal:
+```
+h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε
+⊢ ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) ≤ ε
+```
+(which differ only in `<`/`≤`), applying `peel h with h_peel ε hε N n hn` will yield a tactic state:
+```
+h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε
+ε : ℝ
+hε : 0 < ε
+N n : ℕ
+hn : N ≤ n
+h_peel : 1 / (n + 1 : ℝ) < ε
+⊢ 1 / (n + 1 : ℝ) ≤ ε
+```
+and the goal can be closed with `exact h_peel.le`.
+Note that in this example, `h` and the goal are logically equivalent statements, but `peel`
+*cannot* be immediately applied to show that the goal implies `h`.
+
+`peel` can take an optional numeric argument prior to the supplied hypothesis; in which case it will
+autoname the introduced variables, but they may be inaccessible. However, in this case the user must
+still introduce a single name such as `with h_peel` for the new hypothesis.
+
+This tactic works by repeatedly applying `forall_imp`, `Exists.imp`, `Filter.Eventually.mp`,
+`Filter.Frequently.mp`, and `Filter.eventually_of_forall` and introducing the variables as these
+are applied.
+-/
+syntax (name := peel) "peel" (num)? (ppSpace colGt term) (withArgs)? : tactic
+
 private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
 /-- This is the core to the `peel` tacitc.
@@ -110,43 +147,6 @@ def peelTacArgs (e : Expr) (l : List Name) : TacticM Unit := withMainContext do
       peelTacArgs (.fvar fvarId) (h₁ :: h₃ :: hs)
       let mvarId ← (← getMainGoal).clear fvarId
       replaceMainGoal [mvarId]
-
-/--
-Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
-
-Given `p q : ℕ → Prop`, `h : ∀ x, p x`, and a goal `⊢ : ∀ x, q x`, the tactic `peel h with h' x`
-will introduce `x : ℕ`, `h' : p x` into the context and the new goal will be `⊢ q x`. This works
-with `∃`, as well as `∀ᶠ` and `∃ᶠ`, and it can even be applied to a sequence of quantifiers. Note
-that this is a logically weaker setup, so using this tactic is not always feasible.
-
-For a more complex example, given a hypothesis and a goal:
-```
-h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε
-⊢ ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) ≤ ε
-```
-(which differ only in `<`/`≤`), applying `peel h with h_peel ε hε N n hn` will yield a tactic state:
-```
-h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε
-ε : ℝ
-hε : 0 < ε
-N n : ℕ
-hn : N ≤ n
-h_peel : 1 / (n + 1 : ℝ) < ε
-⊢ 1 / (n + 1 : ℝ) ≤ ε
-```
-and the goal can be closed with `exact h_peel.le`.
-Note that in this example, `h` and the goal are logically equivalent statements, but `peel`
-*cannot* be immediately applied to show that the goal implies `h`.
-
-`peel` can take an optional numeric argument prior to the supplied hypothesis; in which case it will
-autoname the introduced variables, but they may be inaccessible. However, in this case the user must
-still introduce a single name such as `with h_peel` for the new hypothesis.
-
-This tactic works by repeatedly applying `forall_imp`, `Exists.imp`, `Filter.Eventually.mp`,
-`Filter.Frequently.mp`, and `Filter.eventually_of_forall` and introducing the variables as these
-are applied.
--/
-syntax (name := peel) "peel" (num)? (ppSpace colGt term) (withArgs)? : tactic
 
 elab_rules : tactic
   | `(tactic| peel $n:num $e:term) => withMainContext do peelTacNum (← elabTerm e none) n.getNat
