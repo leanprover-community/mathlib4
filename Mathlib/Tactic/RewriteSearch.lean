@@ -126,7 +126,7 @@ namespace SearchNode
 /-- Construct a `SearchNode`. -/
 def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
     MetaM (Option SearchNode) := goal.withContext do
-  let type := (← instantiateMVars (← goal.getType)).consumeMData
+  let type ← whnfR (← instantiateMVars (← goal.getType))
   match type.eq? with
   | none => return none
   | some (_, lhs, rhs) =>
