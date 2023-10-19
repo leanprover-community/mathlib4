@@ -126,14 +126,14 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
 
 /-- Peels `n` quantifiers off the expression `e` and the main goal without naming the introduced
 variables. The expression `e`, with quantifiers removed, is assigned the default name `this`. -/
-def peelTacNum (e : Expr) (n : Nat) : TacticM Unit := withMainContext do
+def peelNum (e : Expr) (n : Nat) : TacticM Unit := withMainContext do
   match n with
   | 0 => pure ()
   | 1 => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
   | n + 2 =>
     let fvar? ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
     if let some fvarId := fvar? then
-      peelTacNum (.fvar fvarId) (n + 1)
+      peelNum (.fvar fvarId) (n + 1)
       let mvarId ← (← getMainGoal).clear fvarId
       replaceMainGoal [mvarId]
 
@@ -141,7 +141,7 @@ def peelTacNum (e : Expr) (n : Nat) : TacticM Unit := withMainContext do
 the main goal and introduces variables with the provided names until the list of names is exhausted.
 Note: the first name in the list is used for the name of the expression `e` with quantifiers
 removed. If `l` is empty, one quantifier is removed with the default name `this`. -/
-def peelTacArgs (e : Expr) (l : List Name) : TacticM Unit := withMainContext do
+def peelArgs (e : Expr) (l : List Name) : TacticM Unit := withMainContext do
   match l with
   | [] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
   | [h] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := h))
@@ -149,12 +149,12 @@ def peelTacArgs (e : Expr) (l : List Name) : TacticM Unit := withMainContext do
   | h₁ :: h₂ :: h₃ :: hs =>
     let fvar? ← liftMetaTacticAux (peelQuantifier · e h₂ h₁)
     if let some fvarId := fvar? then
-      peelTacArgs (.fvar fvarId) (h₁ :: h₃ :: hs)
+      peelArgs (.fvar fvarId) (h₁ :: h₃ :: hs)
       let mvarId ← (← getMainGoal).clear fvarId
       replaceMainGoal [mvarId]
 
 elab_rules : tactic
-  | `(tactic| peel $n:num $e:term) => withMainContext do peelTacNum (← elabTerm e none) n.getNat
-  | `(tactic| peel $e:term) => withMainContext do peelTacArgs (← elabTerm e none) []
+  | `(tactic| peel $n:num $e:term) => withMainContext do peelNum (← elabTerm e none) n.getNat
+  | `(tactic| peel $e:term) => withMainContext do peelArgs (← elabTerm e none) []
   | `(tactic| peel $e:term $h:withArgs) => withMainContext do
-    peelTacArgs (← elabTerm e none) <| ((← getWithArgs h).map Syntax.getId).toList
+    peelArgs (← elabTerm e none) <| ((← getWithArgs h).map Syntax.getId).toList
