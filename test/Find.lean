@@ -119,8 +119,8 @@ Of these, 1 match your patterns.
 /--
 info: Found 2 definitions mentioning List.replicate and HAppend.hAppend.
 Of these, 2 match your patterns.
-• non_linear_pattern_test1
 • non_linear_pattern_test2
+• non_linear_pattern_test1
 -/
 #guard_msgs in
 #find List.replicate ?n _ ++ List.replicate ?m _

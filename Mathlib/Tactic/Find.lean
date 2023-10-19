@@ -48,28 +48,42 @@ def MessageData.bulletListOfConsts {m} [Monad m] [MonadEnv m] [MonadError m]
 namespace Mathlib.Tactic.Find
 
 /-- Sorts a thing with a name so that names defied in modules that come earlier (as per `ModuleIdx`)
-come earlier. Within one module, sort alphabetically.
+come earlier. Within one module, sort according to given function, and finally by Name.
 -/
-def sortByModule' {m} [Monad m] [MonadEnv m] {α} (f : α → Name) (ns : Array α) :
-    m (Array (α × Option ModuleIdx)) := do
+def sortByModule' {m} [Monad m] [MonadEnv m] {α} (name : α → Name) (f : α → Nat)
+    (ns : Array α) : m (Array (α × Option ModuleIdx)) := do
   let env ← getEnv
   return ns
-    |>.map (fun x => (x, env.getModuleIdxFor? (f x)))
-    -- Sort by modindex and then by name.
+    |>.map (fun x => (env.getModuleIdxFor? (name x), f x, x))
+    -- Sort by modindex and then by the given predicate
     -- A ModIdx of none means locally defined, we put them first.
     -- The modindex corresponds to a topological sort of the modules, so basic lemmas come earlier.
-    |>.qsort fun (x1, mi1) (x2, mi2) =>
-      match mi1, mi2 with
-      | none, none => Name.lt (f x1) (f x2)
+    |>.qsort (fun (mi₁, k₁, x₁) (mi₂, k₂, x₂) =>
+      match mi₁, mi₂ with
+      | none, none => Nat.blt k₁ k₂ || Nat.beq k₁ k₂ && Name.lt (name x₁) (name x₂)
       | none, some _ => true
       | some _, none => false
-      | some mi1, some mi2 =>
-        Nat.blt mi1 mi2 || Nat.beq mi1 mi2 && Name.lt (f x1) (f x2)
+      | some mi₁, some mi₂ =>
+        Nat.blt mi₁ mi₂ ||
+        Nat.beq mi₁ mi₂ && (Nat.blt k₁ k₂ || Nat.beq k₁ k₂ && Name.lt (name x₁) (name x₂)))
+    |>.map fun (mi, _k, x) => (x, mi)
 
 /-- See `sortByModule'` --/
-def sortByModule {m} [Monad m] [MonadEnv m] {α} (f : α → Name) (ns : Array α) : m (Array α) := do
-  return (← sortByModule' f ns).map (·.1)
+def sortByModule {m} [Monad m] [MonadEnv m] {α} (name : α → Name) (f : α → Nat)
+    (ns : Array α) : m (Array α) := do
+  return (← sortByModule' name f ns).map (·.1)
 
+/-- In lieu of an real `Lean.Expr.size` function, explicitly fold for now -/
+def exprSize (e : Expr ) : Nat := go e 0
+  where
+  go : Expr → Nat → Nat
+    | Expr.forallE _ d b _, c  => go b (go d (c + 1))
+    | Expr.lam _ d b _, c      => go b (go d (c + 1))
+    | Expr.letE _ t v b _, c   => go b (go v (go t (c + 1)))
+    | Expr.app f a, c          => go a (go f (c + 1))
+    | Expr.mdata _ b, c        => go b (c + 1)
+    | Expr.proj _ _ b, c       => go b (c + 1)
+    | _, c                     => c + 1
 
 /-!
 ## Matching term patterns against conclusions or any subexpression
@@ -266,7 +280,7 @@ def resolveUnqualifiedName (index : Index) (n : Name) : MetaM (Array Name) := do
   let (t₁, t₂) ← index.trieCache.get
   let names := t₁.findSuffix s ++ t₂.findSuffix s
   let names := names.filter ((← getEnv).contains ·)
-  sortByModule id names
+  sortByModule id (fun _ => 0) names
 
 /-- If the `s` at `si` is an identifier not found in he environment, produce a list
 of possible suggestions in place of `s`. -/
@@ -429,8 +443,8 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
     unless (pats.isEmpty) do
       message := message ++ m!"Of these, {hits4.size} match your patterns.\n"
 
-    -- Sort by modindex and then by name.
-    let hits5 ← sortByModule' (·.name) hits4
+    -- Sort by modindex and then by theorem size.
+    let hits5 ← sortByModule' (·.name) (exprSize ·.type) hits4
 
     -- Apply maxShown limit
     let hits6 := hits5.extract 0 maxShown
