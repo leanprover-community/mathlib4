@@ -78,7 +78,7 @@ def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type _) : Type :=
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
 def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate C} {ι : Type _}
     (I : ValuedCspInstance Γ ι) (x : ι → Γ.D) : C :=
-  (I.map (fun t => t.evalSolution x)).sum
+  (I.map (·.evalSolution x)).sum
 
 /-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`.-/
 def ValuedCspInstance.optimumSolution {Γ : ValuedCspTemplate C} {ι : Type _}
