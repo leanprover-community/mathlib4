@@ -72,7 +72,7 @@ build the general theory. We do not define it here.
 
 noncomputable section
 
-variable {𝕜 E F G : Type*}
+variable {𝕜 E F G H α : Type*}
 
 open Topology Classical BigOperators NNReal Filter ENNReal
 
@@ -112,7 +112,8 @@ end FormalMultilinearSeries
 /-! ### The radius of a formal multilinear series -/
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
+  [NormedSpace 𝕜 H]
 
 namespace FormalMultilinearSeries
 
@@ -364,61 +365,7 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
 #align formal_multilinear_series.radius_le_radius_continuous_linear_map_comp FormalMultilinearSeries.radius_le_radius_continuousLinearMap_comp
 
-/-- The radius of the Cartesian product of two formal series is the minimum of their radii. --/
-lemma radius_prod_eq_min
-    (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
-    (p.prod q).radius = min p.radius q.radius := by
-  apply le_antisymm
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
-    rw [le_min_iff]
-    have := (p.prod q).isLittleO_one_of_lt_radius hr
-    constructor
-    all_goals { -- kludge, there is no "work_on_goal" in Lean 4?
-      apply FormalMultilinearSeries.le_radius_of_isBigO
-      refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
-      rw [norm_mul, norm_norm, norm_mul, norm_norm]
-      refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
-      try apply le_max_left
-      try apply le_max_right }
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
-    rw [lt_min_iff] at hr
-    have := ((p.isLittleO_one_of_lt_radius hr.1).add
-      (q.isLittleO_one_of_lt_radius hr.2)).isBigO
-    refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ λ n ↦ ?_).trans this)
-    rw [norm_mul, norm_norm, ←add_mul, norm_mul]
-    refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
-    refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans ?_
-    apply Real.le_norm_self
-
 end FormalMultilinearSeries
-
-lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
-    (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
-  apply le_antisymm
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [←coe_one, ENNReal.coe_le_coe]
-    have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
-    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
-    contrapose! this
-    simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
-      not_eventually]
-    refine ⟨1, one_pos, ?_⟩
-    refine ((eventually_ne_atTop 0).mp (eventually_of_forall ?_)).frequently
-    intro n hn
-    push_neg
-    rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
-      Real.norm_of_nonneg (NNReal.coe_nonneg _), ←NNReal.coe_one,
-      NNReal.coe_lt_coe]
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [←Nat.cast_one, ENNReal.coe_lt_coe_nat, Nat.cast_one] at hr
-    apply FormalMultilinearSeries.le_radius_of_isBigO
-    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
-    refine isBigO_of_le atTop (fun n ↦ ?_)
-    rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact (pow_le_one _ (coe_nonneg r) hr.le)
 
 /-! ### Expanding a function as a power series -/
 
@@ -438,53 +385,11 @@ structure HasFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 
     ∀ {y}, y ∈ EMetric.ball (0 : E) r → HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
 #align has_fpower_series_on_ball HasFPowerSeriesOnBall
 
-lemma HasFPowerSeriesOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ≥0∞}
-    {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
-    (hf : HasFPowerSeriesOnBall f p e r) (hg : HasFPowerSeriesOnBall g q e s) :
-    HasFPowerSeriesOnBall (fun x ↦ (f x, g x)) (p.prod q) e (min r s) where
-  r_le := by
-    rw [p.radius_prod_eq_min]
-    exact min_le_min hf.r_le hg.r_le
-  r_pos := lt_min hf.r_pos hg.r_pos
-  hasSum := by
-    intro y hy
-    simp_rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.prod_apply]
-    refine (hf.hasSum ?_).prod_mk (hg.hasSum ?_)
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
-
-variable (𝕜)
-
-lemma hasFPowerSeriesOnBall_inv_one_sub
-    (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
-    HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 - x)⁻¹) (formalMultilinearSeries_geometric 𝕜 𝕝) 0 1 := by
-  constructor
-  · exact le_of_eq (formalMultilinearSeries_geometric_radius 𝕜 𝕝).symm
-  · exact one_pos
-  · intro y hy
-    simp_rw [zero_add, formalMultilinearSeries_geometric,
-        ContinuousMultilinearMap.mkPiAlgebraFin_apply,
-        List.prod_ofFn, Finset.prod_const,
-        Finset.card_univ, Fintype.card_fin]
-    apply hasSum_geometric_of_norm_lt_1
-    simpa only [←ofReal_one, Metric.emetric_ball, Metric.ball,
-      dist_eq_norm, sub_zero] using hy
-
-variable {𝕜}
-
 /-- Given a function `f : E → F` and a formal multilinear series `p`, we say that `f` has `p` as
 a power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a neighborhood of `0`. -/
 def HasFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) :=
   ∃ r, HasFPowerSeriesOnBall f p x r
 #align has_fpower_series_at HasFPowerSeriesAt
-
-lemma HasFPowerSeriesAt.prod {e : E} {f : E → F} {g : E → G}
-    {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
-    (hf : HasFPowerSeriesAt f p e) (hg : HasFPowerSeriesAt g q e) :
-    HasFPowerSeriesAt (fun x ↦ (f x, g x)) (p.prod q) e := by
-  rcases hf with ⟨_, hf⟩
-  rcases hg with ⟨_, hg⟩
-  exact ⟨_, hf.prod hg⟩
 
 variable (𝕜)
 
@@ -501,20 +406,6 @@ def AnalyticOn (f : E → F) (s : Set E) :=
 #align analytic_on AnalyticOn
 
 variable {𝕜}
-
-/-- The Cartesian product of analytic functions is analytic. -/
-lemma AnalyticAt.prod {e : E} {f : E → F} {g : E → G}
-    (hf : AnalyticAt 𝕜 f e) (hg : AnalyticAt 𝕜 g e) :
-    AnalyticAt 𝕜 (fun x ↦ (f x, g x)) e := by
-  rcases hf with ⟨_, hf⟩
-  rcases hg with ⟨_, hg⟩
-  exact ⟨_, hf.prod hg⟩
-
-/-- The Cartesian product of analytic functions is analytic. -/
-lemma AnalyticOn.prod {f : E → F} {g : E → G} {s : Set E}
-    (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (fun x ↦ (f x, g x)) s :=
-  fun x hx ↦ (hf x hx).prod (hg x hx)
 
 theorem HasFPowerSeriesOnBall.hasFPowerSeriesAt (hf : HasFPowerSeriesOnBall f p x r) :
     HasFPowerSeriesAt f p x :=
@@ -634,10 +525,6 @@ theorem hasFPowerSeriesAt_const {c : F} {e : E} :
 theorem analyticAt_const {v : F} : AnalyticAt 𝕜 (fun _ => v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, hasFPowerSeriesAt_const⟩
 #align analytic_at_const analyticAt_const
-
-lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
-    AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0 :=
-  ⟨_, ⟨_, hasFPowerSeriesOnBall_inv_one_sub 𝕜 𝕝⟩⟩
 
 theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
   fun _ _ => analyticAt_const
@@ -1017,6 +904,10 @@ protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : Continuou
 protected theorem AnalyticOn.continuousOn {s : Set E} (hf : AnalyticOn 𝕜 f s) : ContinuousOn f s :=
   fun x hx => (hf x hx).continuousAt.continuousWithinAt
 #align analytic_on.continuous_on AnalyticOn.continuousOn
+
+/-- Analytic everywhere implies continuous -/
+theorem AnalyticOn.continuous {f : E → F} (fa : AnalyticOn 𝕜 f univ) : Continuous f := by
+  rw [continuous_iff_continuousOn_univ]; exact fa.continuousOn
 
 /-- In a complete space, the sum of a converging power series `p` admits `p` as a power series.
 This is not totally obvious as we need to check the convergence of the series. -/
@@ -1455,6 +1346,11 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     simp [Finset.piecewise]
   apply this
 #align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
+
+/-- Power series terms are analytic as we vary the origin -/
+theorem analyticAt_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) (rp : p.radius > 0) (n : ℕ) :
+    AnalyticAt 𝕜 (fun x ↦ p.changeOrigin x n) 0 :=
+  (FormalMultilinearSeries.hasFPowerSeriesOnBall_changeOrigin p n rp).analyticAt
 
 end FormalMultilinearSeries
 
