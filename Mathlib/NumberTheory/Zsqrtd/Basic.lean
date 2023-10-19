@@ -1048,7 +1048,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
           (a.re + a.im * r : R) * (b.re + b.im * r) =
             a.re * b.re + (a.re * b.im + a.im * b.re) * r + a.im * b.im * (r * r) := by
           ring
-        simp [this, r.prop]
+        simp only [mul_re, Int.cast_add, Int.cast_mul, mul_im, this, r.prop]
         ring }
   invFun f := ⟨f sqrtd, by rw [← f.map_mul, dmuld, map_intCast]⟩
   left_inv r := by
