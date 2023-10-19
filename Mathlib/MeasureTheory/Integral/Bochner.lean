@@ -724,9 +724,12 @@ local notation "Integral" => @integralCLM α E _ _ μ _ _
 -- mathport name: simple_func.integral_clm'
 local notation "sIntegral" => @SimpleFunc.integralCLM α E _ _ μ _
 
-theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ (1 : ℝ) :=
+theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one
 #align measure_theory.L1.norm_Integral_le_one MeasureTheory.L1.norm_Integral_le_one
+
+theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ 1 :=
+  norm_Integral_le_one
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
@@ -735,6 +738,9 @@ theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
     _ ≤ 1 * ‖f‖ := (mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _)
     _ = ‖f‖ := one_mul _
 #align measure_theory.L1.norm_integral_le MeasureTheory.L1.norm_integral_le
+
+theorem nnnorm_integral_le (f : α →₁[μ] E) : ‖integral f‖₊ ≤ ‖f‖₊ :=
+  norm_integral_le f
 
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] E => integral f := by
@@ -967,7 +973,8 @@ theorem norm_integral_le_lintegral_norm (f : α → G) :
 
 theorem ennnorm_integral_le_lintegral_ennnorm (f : α → G) :
     (‖∫ a, f a ∂μ‖₊ : ℝ≥0∞) ≤ ∫⁻ a, ‖f a‖₊ ∂μ := by
-  simp_rw [← ofReal_norm_eq_coe_nnnorm]; apply ENNReal.ofReal_le_of_le_toReal
+  simp_rw [← ofReal_norm_eq_coe_nnnorm]
+  apply ENNReal.ofReal_le_of_le_toReal
   exact norm_integral_le_lintegral_norm f
 #align measure_theory.ennnorm_integral_le_lintegral_ennnorm MeasureTheory.ennnorm_integral_le_lintegral_ennnorm
 
