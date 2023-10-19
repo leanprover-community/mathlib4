@@ -52,7 +52,7 @@ def stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map AlgebraicGeometry.PresheafedSpace.stalkMap
 
-@[elementwise (attr := simp), reassoc (attr := simp)]
+@[elementwise, reassoc]
 theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y)
     (x : (Opens.map α.base).obj U) :
     Y.presheaf.germ ⟨α.base x.1, x.2⟩ ≫ stalkMap α ↑x = α.c.app (op U) ≫ X.presheaf.germ x := by
