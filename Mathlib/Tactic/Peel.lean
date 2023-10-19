@@ -172,11 +172,13 @@ private lemma Filter.frequently_congr {α : Type*} {f : Filter α} {p : α → P
   all_goals refine (Frequently.mp · (h.mono fun _ => ?_))
   exacts [Iff.mp, Iff.mpr]
 
+/-- Peel off a single quantifier from an `↔`. -/
 def peelIffAux : TacticM Unit := withMainContext do
   evalTactic (← `(tactic|
     apply_rules [forall_congr', exists_congr, Filter.eventually_congr,
       Filter.eventually_of_forall, Filter.frequently_congr]))
 
+/-- Peel off `n` quantifiers from an `↔`. -/
 def peelNumIff (n : Nat) : TacticM Unit := withMainContext do
   match n with
     | 0 => pure ()
@@ -187,6 +189,8 @@ def peelNumIff (n : Nat) : TacticM Unit := withMainContext do
       replaceMainGoal [new_goal]
       peelNumIff n
 
+/-- Peel off quantifiers from an `↔` and assign the names given in `l` to the introduced
+variables. -/
 def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
   match l with
     | [] => pure ()
