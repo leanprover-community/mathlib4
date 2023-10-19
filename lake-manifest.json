@@ -10,14 +10,6 @@
     "inputRev?": "main",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/gebner/quote4",
-    "subDir?": null,
-    "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
-    "opts": {},
-    "name": "Qq",
-    "inputRev?": "master",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/leanprover-community/aesop",
     "subDir?": null,
     "rev": "b601328752091a1cfcaebdd6b6b7c30dc5ffd946",
@@ -40,5 +32,13 @@
     "opts": {},
     "name": "proofwidgets",
     "inputRev?": "v0.0.18",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/leanprover-community/quote4",
+    "subDir?": null,
+    "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
+    "opts": {},
+    "name": "Qq",
+    "inputRev?": "master",
     "inherited": false}}],
  "name": "mathlib"}
