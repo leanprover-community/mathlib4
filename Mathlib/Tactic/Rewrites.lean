@@ -235,7 +235,7 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     else
       -- There are side conditions, which we try to discharge using local hypotheses.
       let some _ ← try? do solveByElim result.mvarIds | return none
-      -- If we succeed, we need to reconstruction the expression to report that we rewrote by.
+      -- If we succeed, we need to reconstruct the expression to report that we rewrote by.
       let some expr := result.by? | return none
       let expr ← instantiateMVars expr
       let (expr, symm) := if expr.isAppOfArity ``Eq.symm 4 then
