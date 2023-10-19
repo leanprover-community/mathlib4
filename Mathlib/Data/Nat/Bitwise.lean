@@ -3,7 +3,6 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Lean.Elab.Tactic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Size
 import Mathlib.Tactic.Set
