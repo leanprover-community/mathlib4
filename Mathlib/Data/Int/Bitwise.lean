@@ -280,7 +280,8 @@ theorem bitwise_xor : bitwise bxor = xor := by
   cases' m with m m <;> cases' n with n n <;> try {rfl}
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.or_true, Bool.bne_eq_xor,
       cond_false, cond_true, lor, Nat.ldiff, Bool.and_true, negSucc.injEq, Bool.false_xor,
-      Bool.true_xor, Bool.and_false, Nat.land, Bool.not_true, ldiff, Nat.lor, xor, Nat.xor]
+      Bool.true_xor, Bool.and_false, Nat.land, Bool.not_true, ldiff,
+      HOr.hOr, OrOp.or, Nat.lor, xor, HXor.hXor, Xor.xor, Nat.xor]
   · congr
     funext x y
     cases x <;> cases y <;> rfl
