@@ -26,15 +26,54 @@ variable {w v : Nat}
 
 namespace Std.BitVec
 
+#align bitvec Std.BitVec
+#align bitvec.zero Std.BitVec.zero
+#align bitvec.cong Std.BitVec.cast
+#align bitvec.append Std.BitVec.append
+#align bitvec.shl Std.BitVec.shiftLeft
+#align bitvec.ushr Std.BitVec.ushiftRight
+#align bitvec.sshr Std.BitVec.sshiftRight
+#align bitvec.not Std.BitVec.not
+#align bitvec.and Std.BitVec.and
+#align bitvec.or Std.BitVec.or
+#align bitvec.xor Std.BitVec.xor
+#align bitvec.neg Std.BitVec.neg
+#align bitvec.add Std.BitVec.add
+#align bitvec.sub Std.BitVec.sub
+#align bitvec.mul Std.BitVec.mul
+#align bitvec.ult Std.BitVec.ult
+#align bitvec.ule Std.BitVec.ule
+#align bitvec.slt Std.BitVec.slt
+#align bitvec.sle Std.BitVec.sle
+#align bitvec.of_nat Std.BitVec.ofNat
+#align bitvec.add_lsb Nat.bit
+#align bitvec.to_nat Std.BitVec.toNat
+#align bitvec.of_fin Std.BitVec.ofFin
+#align bitvec.to_fin Std.BitVec.toFin
+#align bitvec.to_int Std.BitVec.toInt
+
+#noalign bitvec.one
+#noalign bitvec.adc
+#noalign bitvec.sbb
+#noalign bitvec.uborrow
+#noalign bitvec.sborrow
+#noalign bitvec.bits_to_nat
+
+#noalign bitvec.ugt
+#noalign bitvec.uge
+
+
 /-!
 ## Bitwise operations
 -/
 
 /-- Signed greater than for bitvectors. -/
 protected def sgt (x y : BitVec (w + 1)) : Prop := BitVec.slt y x
+#align bitvec.sgt Std.BitVec.sgt
 
 /-- Signed greater than or equal to for bitvectors. -/
 protected def sge (x y : BitVec (w + 1)) : Prop := BitVec.sle y x
+#align bitvec.sge Std.BitVec.sge
 
 
 @[simp] lemma shiftLeft_def (x : BitVec w) (n: Nat)     : BitVec.shiftLeft x n = x <<< n    := rfl
