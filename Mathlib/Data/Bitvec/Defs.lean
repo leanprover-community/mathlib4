@@ -89,10 +89,8 @@ protected def sge (x y : BitVec (w + 1)) : Prop := BitVec.sle y x
 @[simp] lemma mul_eq (x y : BitVec w)                   : BitVec.mul x y = x * y            := rfl
 
 /-- Convert a list of booleans to a bitvector. -/
-def to_BV (bs : List Bool) : BitVec bs.length :=
+def ofList (bs : List Bool) : BitVec bs.length :=
   ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
 
-instance : GetElem (BitVec w) Nat Bool (Function.const _ (· < w)) where
-  getElem x i _ := x.getLsb i
 
 end Std.BitVec
