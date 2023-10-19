@@ -61,4 +61,29 @@ instance [W₁.IsMultiplicative] : Category (Φ.RightResolution X₂) where
 
 end RightResolution
 
+section
+
+variable [Φ.HasRightResolutions]
+    {D₂ : Type*} [Category D₂] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
+
+lemma essSurj_of_hasRightResolutions : EssSurj (Φ.functor ⋙ L₂) where
+  mem_essImage X₂ := by
+    have : EssSurj L₂ := Localization.essSurj L₂ W₂
+    have R : Φ.RightResolution (L₂.objPreimage X₂) := Classical.arbitrary _
+    exact ⟨R.X₁, ⟨(Localization.isoOfHom L₂ W₂ _ R.hw).symm ≪≫ L₂.objObjPreimageIso X₂⟩⟩
+
+lemma isIso_iff_of_hasRightResolutions
+    {H : Type*} [Category H] {F G : D₂ ⥤ H} (α : F ⟶ G) :
+    IsIso α ↔ ∀ (X₁ : C₁), IsIso (α.app (L₂.obj (Φ.functor.obj X₁))) := by
+  constructor
+  · intros
+    infer_instance
+  · intro hα
+    suffices ∀ (X₂ : D₂), IsIso (α.app X₂) from NatIso.isIso_of_isIso_app α
+    have := Φ.essSurj_of_hasRightResolutions L₂
+    intro X₂
+    rw [← NatTrans.isIso_app_iff_of_iso α ((Φ.functor ⋙ L₂).objObjPreimageIso X₂)]
+    exact hα ((Φ.functor ⋙ L₂).objPreimage X₂)
+end
+
 end LocalizerMorphism

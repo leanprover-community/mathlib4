@@ -77,6 +77,23 @@ lemma leftKanExtension_ext {G : H ⥤ D} (γ₁ γ₂ : F' ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
   (F'.leftKanExtensionUniversal α).hom_ext hγ
 
+lemma isLeftKanExtension_of_iso {F' : H ⥤ D} {F'' : H ⥤ D} (e : F' ≅ F'')
+    {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F') (α' : F ⟶ L ⋙ F'')
+    (comm : α ≫ whiskerLeft L e.hom = α') [F'.IsLeftKanExtension α] :
+    F''.IsLeftKanExtension α' :=
+  ⟨⟨IsInitial.ofIso (F'.leftKanExtensionUniversal α) (StructuredArrow.isoMk e comm)⟩⟩
+
+lemma isLeftKanExtension_iff_iso {F' : H ⥤ D} {F'' : H ⥤ D} (e : F' ≅ F'')
+    {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F') (α' : F ⟶ L ⋙ F'')
+    (comm : α ≫ whiskerLeft L e.hom = α') :
+    F'.IsLeftKanExtension α ↔ F''.IsLeftKanExtension α' := by
+  constructor
+  · intro _
+    exact isLeftKanExtension_of_iso e α α' comm
+  · intro _
+    refine' isLeftKanExtension_of_iso e.symm α' α _
+    rw [← comm, assoc, ← whiskerLeft_comp, Iso.symm_hom, e.hom_inv_id, whiskerLeft_id', comp_id]
+
 end
 
 class HasRightKanExtension (L : C ⥤ H) (F : C ⥤ D) : Prop where

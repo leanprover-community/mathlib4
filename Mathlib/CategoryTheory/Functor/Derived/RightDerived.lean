@@ -19,6 +19,28 @@ lemma IsRightDerivedFunctor.isLeftKanExtension [L.IsLocalization W] [RF.IsRightD
     RF.IsLeftKanExtension α :=
   IsRightDerivedFunctor.isLeftKanExtension' W
 
+lemma isRightDerivedFunctor_iff_isLeftKanExtension [L.IsLocalization W] :
+    RF.IsRightDerivedFunctor α W ↔ RF.IsLeftKanExtension α := by
+  constructor
+  · intros
+    exact IsRightDerivedFunctor.isLeftKanExtension RF α W
+  · intro h
+    exact ⟨h⟩
+
+section
+
+variable {RF} {RF'}
+
+lemma isRightDerivedFunctor_iff_of_iso (α' : F ⟶ L ⋙ RF') (W : MorphismProperty C)
+    [L.IsLocalization W] (e : RF ≅ RF')
+    (comm : α ≫ whiskerLeft L e.hom = α') :
+    RF.IsRightDerivedFunctor α W ↔
+      RF'.IsRightDerivedFunctor α' W := by
+    simp only [isRightDerivedFunctor_iff_isLeftKanExtension]
+    exact isLeftKanExtension_iff_iso e _ _ comm
+
+end
+
 section
 
 variable [L.IsLocalization W] [RF.IsRightDerivedFunctor α W]
@@ -81,6 +103,19 @@ noncomputable def rightDerivedNatIso (τ : F ≅ F') :
 @[simp]
 noncomputable def rightDerivedFunctorUnique [RF'.IsRightDerivedFunctor α'₂ W] : RF ≅ RF' :=
   rightDerivedNatIso RF RF' α α'₂ W (Iso.refl F)
+
+lemma isRightDerivedFunctor_iff_isIso_rightDerivedDesc
+    (G : H ⥤ D) (β : F ⟶ L ⋙ G) :
+    G.IsRightDerivedFunctor β W ↔ IsIso (RF.rightDerivedDesc α W G β) := by
+  constructor
+  · intro
+    have : RF.rightDerivedDesc α W G β = (rightDerivedNatIso RF G α β W (Iso.refl _)).hom :=
+      rightDerived_ext RF α W _ _ _ (by simp)
+    rw [this]
+    infer_instance
+  · intro h
+    rw [← isRightDerivedFunctor_iff_of_iso α β W (asIso (RF.rightDerivedDesc α W G β)) (by simp)]
+    infer_instance
 
 end
 

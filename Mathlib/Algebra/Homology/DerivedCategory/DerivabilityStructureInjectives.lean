@@ -13,11 +13,6 @@ variable (C D : Type*) [Category C] [Category D] [Abelian C] [Abelian D]
 
 namespace CategoryTheory
 
-lemma NatTrans.isIso_app_iff_of_iso {C₁ C₂ : Type*} [Category C₁] [Category C₂] {F G : C₁ ⥤ C₂}
-    (α : F ⟶ G) {X Y : C₁} (e : X ≅ Y) : IsIso (α.app X) ↔ IsIso (α.app Y) :=
-  MorphismProperty.RespectsIso.arrow_mk_iso_iff (MorphismProperty.RespectsIso.isomorphisms C₂)
-    (Arrow.isoMk (F.mapIso e) (G.mapIso e) (by simp))
-
 abbrev Injectives := FullSubcategory (fun (X : C) => Injective X)
 
 namespace Injectives

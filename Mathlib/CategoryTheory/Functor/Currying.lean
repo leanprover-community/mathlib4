@@ -138,6 +138,11 @@ lemma curry_obj_uncurry_obj (F : C₁ ⥤ C₂ ⥤ D) : curry.obj (uncurry.obj F
   . intros X₁ X₂ f
     aesop_cat
 
+@[simps!]
+def curryObjUncurryObjIso (F : C₁ ⥤ C₂ ⥤ D) : curry.obj (uncurry.obj F) ≅ F :=
+  NatIso.ofComponents (fun X₁ => NatIso.ofComponents (fun X₂ => Iso.refl _) (by aesop_cat))
+    (by aesop_cat)
+
 lemma uncurry_obj_injective {F₁ F₂ : C₁ ⥤ C₂ ⥤ D}
   (h : uncurry.obj F₁ = uncurry.obj F₂) : F₁ = F₂ := by
   rw [← curry_obj_uncurry_obj F₁, ← curry_obj_uncurry_obj F₂, h]
