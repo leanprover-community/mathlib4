@@ -65,3 +65,5 @@ instance OfArity.inhabited {α n} [Inhabited α] : Inhabited (OfArity α n) :=
 #align arity.arity.inhabited Function.OfArity.OfArity.inhabited
 
 end OfArity
+
+end Function
