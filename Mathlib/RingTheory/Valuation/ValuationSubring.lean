@@ -407,7 +407,7 @@ theorem primeSpectrumOrderEquiv_apply (a : PrimeSpectrum A) :
 theorem primeSpectrumOrderEquiv_symm_apply (a : {S // A ≤ S}) :
     (primeSpectrumOrderEquiv A).symm a = (primeSpectrumEquiv A).symm a := rfl
 
-instance linearOrderOverring : LinearOrder {S | A ≤ S} :=
+instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
   { (inferInstance : PartialOrder _) with
     le_total :=
       let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
