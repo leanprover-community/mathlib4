@@ -119,12 +119,7 @@ example : exampleFiniteValuedInstance.optimumSolution ![(0 : ℚ), (0 : ℚ)] :=
   rw [ValuedCspInstance.evalSolution, exampleFiniteValuedInstance,
       List.map_cons, List.map_cons, List.map_nil, List.sum_cons, List.sum_cons, List.sum_nil,
       add_zero]
-  show 0 ≤ |s 0| + |s 1|
-  have s0nn : 0 ≤ |s 0|
-  · exact abs_nonneg (s 0)
-  have s1nn : 0 ≤ |s 1|
-  · exact abs_nonneg (s 1)
-  linarith
+  positivity
 
 
 
