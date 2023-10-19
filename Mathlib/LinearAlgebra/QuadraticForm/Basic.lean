@@ -116,11 +116,9 @@ theorem polar_comm (f : M → R) (x y : M) : polar f x y = polar f y x := by
 theorem polar_add_left_iff {f : M → R} {x x' y : M} :
     polar f (x + x') y = polar f x y + polar f x' y ↔
       f (x + x' + y) + (f x + f x' + f y) = f (x + x') + f (x' + y) + f (y + x) := by
-  simp only [← add_assoc]
   simp only [polar, sub_eq_iff_eq_add, eq_sub_iff_add_eq, sub_add_eq_add_sub, add_sub]
-  simp only [add_right_comm _ (f y) _, add_right_comm _ (f x') (f x)]
-  rw [add_comm y x, add_right_comm _ _ (f (x + y)), add_comm _ (f (x + y)),
-    add_right_comm (f (x + y)), add_left_inj]
+  move_add [f x, f x', f (x + y), f y, f y, ← f (x + x'), x, x', y]
+  exact add_left_inj _
 #align quadratic_form.polar_add_left_iff QuadraticForm.polar_add_left_iff
 
 theorem polar_comp {F : Type*} [CommRing S] [AddMonoidHomClass F R S]

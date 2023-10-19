@@ -79,8 +79,9 @@ theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q +
     · exact
       (div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) _ hq
           ⟨by
-            rw [mul_add, add_left_comm, add_assoc, modByMonic_add_div _ hq, ← add_assoc,
-              add_comm (q * _), modByMonic_add_div _ hq],
+            rw [mul_add]
+            move_add [← _, ← q * _]
+            rw [modByMonic_add_div _ hq, add_assoc, modByMonic_add_div _ hq],
             (degree_add_le _ _).trans_lt
               (max_lt (degree_modByMonic_lt _ hq) (degree_modByMonic_lt _ hq))⟩).2
   · simp_rw [modByMonic_eq_of_not_monic _ hq]

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Parity
+import Mathlib.Tactic.MoveAdd
 
 #align_import algebra.associated from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
@@ -678,8 +679,9 @@ theorem Associated.of_mul_left [CancelCommMonoidWithZero α] {a b c d : α} (h :
   ⟨u * (v : αˣ),
     mul_left_cancel₀ ha
       (by
-        rw [← hv, mul_assoc c (v : α) d, mul_left_comm c, ← hu]
-        simp [hv.symm, mul_assoc, mul_comm, mul_left_comm])⟩
+        rw [← hv, Units.val_mul]
+        move_mul [← c, ← d, ← (v : α), ← b, ← (u : α), ← (v : α)]
+        rw [← hu, ← hv])⟩
 #align associated.of_mul_left Associated.of_mul_left
 
 theorem Associated.of_mul_right [CancelCommMonoidWithZero α] {a b c d : α} :
@@ -832,8 +834,7 @@ instance instMul : Mul (Associates α) :=
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
         rw [← h₁, ← h₂]
-        simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]
-        ⟩⟩
+        apply mul_mul_mul_comm⟩⟩
 
 theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
   rfl
