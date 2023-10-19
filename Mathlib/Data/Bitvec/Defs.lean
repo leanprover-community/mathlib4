@@ -80,11 +80,6 @@ protected def sge (x y : BitVec (w + 1)) : Prop := BitVec.sle y x
 @[simp] lemma ushiftRight_def (x : BitVec w) (n: Nat)   : BitVec.ushiftRight x n = x >>> n  := rfl
 @[simp] lemma append_def (x : BitVec w) (y : BitVec v)  : BitVec.append x y = x ++ y        := rfl
 
-/-- Extract the bitvector between indices i (exclusive) and j (inclusive) where i > j. -/
-@[simp]
-def extract (i j) (x : BitVec w) : BitVec (i - j) :=
-  .ofFin <| x.toInt >>> j
-
 /-- Convert a list of booleans to a bitvector. -/
 def to_BV (bs : List Bool) : BitVec bs.length :=
   ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
