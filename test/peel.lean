@@ -68,6 +68,22 @@ example (x y : ℚ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
   peel 3 (h ε hε)
   linarith
 
+example (x y : ℝ) : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) ↔
+    ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y  - n := by
+  peel with ε hε N n hn
+  constructor
+  all_goals
+    intro
+    linarith
+
+example (x y : ℝ) : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) ↔
+    ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y  - n := by
+  peel 5
+  constructor
+  all_goals
+    intro
+    linarith
+
 example : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) < ε) ↔
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) ≤ ε := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
