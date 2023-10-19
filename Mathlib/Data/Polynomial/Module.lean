@@ -14,6 +14,13 @@ In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R
 
 This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
+
+We also define, given an element `a` in an `R`-algebra `A` and an `A`-module `M`, an `R[X]`-module
+`Module.AEval R M a`, which is a type synonym of `M` with the action of a polynomial `f`
+given by `f • m = Polynomial.aeval a f • m`. In particular `X • m = a • m`.
+
+In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the module `Module.AEval R M a` is
+abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 universe u v
 open Polynomial BigOperators
