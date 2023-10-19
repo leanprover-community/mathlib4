@@ -430,8 +430,6 @@ theorem xor_left_inj {n m m' : ℕ} : m ^^^ n = m' ^^^ n ↔ m = m' :=
   xor_left_injective.eq_iff
 #align nat.lxor_left_inj Nat.xor_left_inj
 
-#check Nat.xor
-
 @[simp]
 theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
   rw [← xor_self n, xor_right_inj, eq_comm]
