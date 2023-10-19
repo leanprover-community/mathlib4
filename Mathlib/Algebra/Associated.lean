@@ -599,7 +599,7 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
     let ⟨u, hu⟩ := h
     ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
       hu ▸ by
-        simp [Units.mul_right_dvd]
+        simp only [IsUnit.mul_iff, Units.isUnit, and_true, IsUnit.mul_right_dvd]
         intro a b
         exact hp.dvd_or_dvd⟩⟩
 #align associated.prime Associated.prime
@@ -832,8 +832,7 @@ instance instMul : Mul (Associates α) :=
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
         rw [← h₁, ← h₂]
-        simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]
-        ⟩⟩
+        simp only [Units.val_mul, mul_left_comm, mul_comm]⟩⟩
 
 theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
   rfl
