@@ -527,6 +527,19 @@ theorem C_add : C (a + b) = C a + C b :=
   C.map_add a b
 #align polynomial.C_add Polynomial.C_add
 
+theorem C_neg : C (-a) = -C a :=
+  RingHom.map_neg C a
+#align polynomial.C_neg Polynomial.C_neg
+
+@[simp]
+theorem Polynomial.natDegree_sub_C {a : R} :
+    Polynomial.natDegree (p - Polynomial.C a) = Polynomial.natDegree p := by
+  rw [sub_eq_add_neg, ← Polynomial.C_neg, Polynomial.natDegree_add_C]
+
+theorem C_sub : C (a - b) = C a - C b :=
+  RingHom.map_sub C a b
+#align polynomial.C_sub Polynomial.C_sub
+
 @[simp]
 theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r) :=
   smul_monomial _ _ r
