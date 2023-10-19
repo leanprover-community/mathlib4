@@ -136,14 +136,14 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
 variables. The expression `e`, with quantifiers removed, is assigned the default name `this`. -/
 def peelNum (e : Expr) (n : Nat) : TacticM Unit := withMainContext do
   match n with
-  | 0 => pure ()
-  | 1 => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
-  | n + 2 =>
-    let fvar? ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
-    if let some fvarId := fvar? then
-      peelNum (.fvar fvarId) (n + 1)
-      let mvarId ← (← getMainGoal).clear fvarId
-      replaceMainGoal [mvarId]
+    | 0 => pure ()
+    | 1 => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
+    | n + 2 =>
+      let fvar? ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
+      if let some fvarId := fvar? then
+        peelNum (.fvar fvarId) (n + 1)
+        let mvarId ← (← getMainGoal).clear fvarId
+        replaceMainGoal [mvarId]
 
 /-- Given a list `l` of names, this continues to peel quantifiers off of the expression `e` and
 the main goal and introduces variables with the provided names until the list of names is exhausted.
@@ -151,15 +151,15 @@ Note: the first name in the list is used for the name of the expression `e` with
 removed. If `l` is empty, one quantifier is removed with the default name `this`. -/
 def peelArgs (e : Expr) (l : List Name) : TacticM Unit := withMainContext do
   match l with
-  | [] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
-  | [h] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := h))
-  | [h₁, h₂] => let _ ← liftMetaTacticAux (peelQuantifier · e h₂ h₁)
-  | h₁ :: h₂ :: h₃ :: hs =>
-    let fvar? ← liftMetaTacticAux (peelQuantifier · e h₂ h₁)
-    if let some fvarId := fvar? then
-      peelArgs (.fvar fvarId) (h₁ :: h₃ :: hs)
-      let mvarId ← (← getMainGoal).clear fvarId
-      replaceMainGoal [mvarId]
+    | [] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
+    | [h] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := h))
+    | [h₁, h₂] => let _ ← liftMetaTacticAux (peelQuantifier · e h₂ h₁)
+    | h₁ :: h₂ :: h₃ :: hs =>
+      let fvar? ← liftMetaTacticAux (peelQuantifier · e h₂ h₁)
+      if let some fvarId := fvar? then
+        peelArgs (.fvar fvarId) (h₁ :: h₃ :: hs)
+        let mvarId ← (← getMainGoal).clear fvarId
+        replaceMainGoal [mvarId]
 
 elab_rules : tactic
   | `(tactic| peel $n:num $e:term) => withMainContext do peelNum (← elabTerm e none) n.getNat
