@@ -1544,9 +1544,8 @@ theorem degree_X_sub_C (a : R) : degree (X - C a) = 1 := by
   rw [sub_eq_add_neg, ← map_neg C a, degree_X_add_C]
 #align polynomial.degree_X_sub_C Polynomial.degree_X_sub_C
 
-@[simp]
-theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 :=
-  natDegree_eq_of_degree_eq_some <| degree_X_sub_C x
+theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 := by
+  rw [natDegree_sub_C, natDegree_X]
 #align polynomial.nat_degree_X_sub_C Polynomial.natDegree_X_sub_C
 
 @[simp]
