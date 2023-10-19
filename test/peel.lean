@@ -98,3 +98,16 @@ example (α : Type*) (f : Filter α) (p q : α → Prop) (h : ∀ᶠ x in f, p x
     ∀ᶠ x in f, q x := by
   peel h with h_peel x
   exact h₁ x h_peel
+
+example {R : Type*} [CommRing R] (h : ∀ x : R, ∃ y : R, x + y = 2) :
+    ∀ x : R, ∃ y : R, (x + y) ^ 2 = 4 := by
+  peel 2 h
+  rw [this]
+  ring
+
+example {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+    (h : ∀ᶠ x in 𝓝 (1 : G), ∃ᶠ y in 𝓝 x, x * y⁻¹ = 1) :
+    ∀ᶠ x in 𝓝 (1 : G), ∃ᶠ y in 𝓝 x, x ^ 2 = y ^ 2 := by
+  peel h with h_peel a b
+  observe : a = b⁻¹⁻¹
+  simp [this]
