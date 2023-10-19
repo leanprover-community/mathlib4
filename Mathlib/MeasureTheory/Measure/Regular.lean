@@ -602,8 +602,8 @@ compact closed subset. See also `MeasurableSet.exists_lt_isCompact_of_ne_top`. -
 theorem _root_.MeasurableSet.exists_isCompact_lt_add [InnerRegularCompactLTTop μ]
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ IsClosed K ∧ μ A < μ K + ε := by
-  rcases InnerRegularCompactLTTop.innerRegular.exists_subset_lt_add ⟨isCompact_empty, isClosed_empty⟩
-    ⟨hA, h'A⟩ h'A hε with ⟨K, KA, ⟨K_comp, K_closed⟩, hK⟩
+  rcases InnerRegularCompactLTTop.innerRegular.exists_subset_lt_add
+    ⟨isCompact_empty, isClosed_empty⟩ ⟨hA, h'A⟩ h'A hε with ⟨K, KA, ⟨K_comp, K_closed⟩, hK⟩
   exact ⟨K, KA, K_comp, K_closed, hK⟩
 
 #align measurable_set.exists_is_compact_lt_add MeasurableSet.exists_isCompact_lt_add
