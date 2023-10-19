@@ -32,10 +32,10 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 -/
 
-def n1ary_of_unary {α β : Type*} (f : α → β) : (Fin 1 → α) → β :=
+def n1aryOfUnary {α β : Type*} (f : α → β) : (Fin 1 → α) → β :=
   fun a => f (a 0)
 
-def n2ary_of_binary {α β : Type*} (f : α → α → β) : (Fin 2 → α) → β :=
+def n2aryOfBinary {α β : Type*} (f : α → α → β) : (Fin 2 → α) → β :=
   fun a => f (a 0) (a 1)
 
 /-- A template for a valued CSP problem with costs in `C`. -/
@@ -58,13 +58,13 @@ structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type*) where
   /-- Which variables are plugged as arguments to the cost function -/
   app : Fin k → ι
 
-def valuedCspTerm_of_unary {Γ : ValuedCspTemplate C} {ι : Type*} {f₁ : Γ.D → C}
-    (ok : ⟨1, n1ary_of_unary f₁⟩ ∈ Γ.F) (i : ι) : ValuedCspTerm Γ ι :=
-  ⟨1, n1ary_of_unary f₁, ok, ![i]⟩
+def valuedCspTermOfUnary {Γ : ValuedCspTemplate C} {ι : Type*} {f₁ : Γ.D → C}
+    (ok : ⟨1, n1aryOfUnary f₁⟩ ∈ Γ.F) (i : ι) : ValuedCspTerm Γ ι :=
+  ⟨1, n1aryOfUnary f₁, ok, ![i]⟩
 
-def valuedCspTerm_of_binary {Γ : ValuedCspTemplate C} {ι : Type*} {f₂ : Γ.D → Γ.D → C}
-    (ok : ⟨2, n2ary_of_binary f₂⟩ ∈ Γ.F) (i j : ι) : ValuedCspTerm Γ ι :=
-  ⟨2, n2ary_of_binary f₂, ok, ![i, j]⟩
+def valuedCspTermOfBinary {Γ : ValuedCspTemplate C} {ι : Type*} {f₂ : Γ.D → Γ.D → C}
+    (ok : ⟨2, n2aryOfBinary f₂⟩ ∈ Γ.F) (i j : ι) : ValuedCspTerm Γ ι :=
+  ⟨2, n2aryOfBinary f₂, ok, ![i, j]⟩
 
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
 def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate C} {ι : Type*}
@@ -93,11 +93,9 @@ def ValuedCspInstance.optimumSolution {Γ : ValuedCspTemplate C} {ι : Type*}
 
 
 
-
-
 -- Example: minimize |x| + |y| where x and y are rational numbers
 
-private def absRat : (Fin 1 → ℚ) → ℚ := @n1ary_of_unary ℚ ℚ Abs.abs
+private def absRat : (Fin 1 → ℚ) → ℚ := @n1aryOfUnary ℚ ℚ Abs.abs
 
 private def exampleAbs : Σ (k : ℕ), (Fin k → ℚ) → ℚ := ⟨1, absRat⟩
 
@@ -107,7 +105,7 @@ private def exampleFiniteValuedCsp : ValuedCspTemplate ℚ :=
 private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCsp.F := rfl
 
 private def exampleFiniteValuedInstance : ValuedCspInstance exampleFiniteValuedCsp (Fin 2) :=
-  [valuedCspTerm_of_unary abs_in 0, valuedCspTerm_of_unary abs_in 1]
+  [valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1]
 
 #eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
 
@@ -141,7 +139,7 @@ instance crispCodomain : LinearOrderedAddCommMonoid Bool where
 
 -- Example: B ≠ A ≠ C ≠ D ≠ B ≠ C with three available labels (i.e., 3-coloring of K₄⁻)
 
-private def beqBool : (Fin 2 → Fin 3) → Bool := n2ary_of_binary BEq.beq
+private def beqBool : (Fin 2 → Fin 3) → Bool := n2aryOfBinary BEq.beq
 
 private def exampleEquality : Σ (k : ℕ), (Fin k → Fin 3) → Bool := ⟨2, beqBool⟩
 
@@ -151,19 +149,19 @@ private def exampleCrispCsp : ValuedCspTemplate Bool :=
 private lemma beq_in : ⟨2, beqBool⟩ ∈ exampleCrispCsp.F := rfl
 
 private def exampleTermAB : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  valuedCspTerm_of_binary beq_in 0 1
+  valuedCspTermOfBinary beq_in 0 1
 
 private def exampleTermBC : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  valuedCspTerm_of_binary beq_in 1 2
+  valuedCspTermOfBinary beq_in 1 2
 
 private def exampleTermCA : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  valuedCspTerm_of_binary beq_in 2 0
+  valuedCspTermOfBinary beq_in 2 0
 
 private def exampleTermBD : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  valuedCspTerm_of_binary beq_in 1 3
+  valuedCspTermOfBinary beq_in 1 3
 
 private def exampleTermCD : ValuedCspTerm exampleCrispCsp (Fin 4) :=
-  valuedCspTerm_of_binary beq_in 2 3
+  valuedCspTermOfBinary beq_in 2 3
 
 private def exampleCrispCspInstance : ValuedCspInstance exampleCrispCsp (Fin 4) :=
   [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
