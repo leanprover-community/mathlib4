@@ -52,12 +52,8 @@ theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
   sorry
 
 theorem toNat_extractLsb {i j} {x : BitVec w} :
-    (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j)) := by
+    (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j + 1)) := by
   simp [extractLsb, extractLsb', shiftRight_eq_div_pow]
-  -- The goal here is
-  -- `⊢ BitVec.toNat x / 2 ^ j % 2 ^ (i - j + 1) = BitVec.toNat x / 2 ^ j % 2 ^ (i - j)`
-  -- That seems like it's false, maybe `extractLsb` behaves different from `extract` before
-  sorry
 
 lemma bne_eq_not (x y : BitVec w) : (x != y) = !(decide (x = y)) := by
   cases' h : x == y <;> rfl

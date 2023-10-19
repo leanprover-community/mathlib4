@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wojciech Nawrocki, Joe Hendrix, Harun Khan, Abdalrhman M Mohamed
+Authors: Harun Khan, Alex Keizer, Abdalrhman M Mohamed
 -/
 
 import Mathlib.Data.Fin.Basic
