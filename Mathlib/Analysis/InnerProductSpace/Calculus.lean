@@ -253,23 +253,23 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
     Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
   use 2⁻¹, by norm_num
   rw [Filter.HasBasis.frequently_iff Metric.nhds_basis_ball]
-  intro r hr
-  obtain ⟨ε, hε⟩ : ∃ ε ∈ Metric.ball 0 r, ε ≠ 0 ∧ f ε ≤ 0 := by
-    by_cases f (r / 2) ≤ 0
-    · use (r / 2)
-      simp [h, abs_of_nonneg hr.le, hr, hr.ne']
-    · use -(r / 2)
+  intro δ hδ
+  obtain ⟨x, hx⟩ : ∃ x ∈ Metric.ball 0 δ, x ≠ 0 ∧ f x ≤ 0 := by
+    by_cases f (δ / 2) ≤ 0
+    · use (δ / 2)
+      simp [h, abs_of_nonneg hδ.le, hδ, hδ.ne']
+    · use -(δ / 2)
       simp only [Metric.mem_ball, dist_zero_right, norm_neg, norm_div, norm_eq_abs,
-        abs_of_nonneg hr.le, norm_ofNat, half_lt_self_iff, hr, ne_eq, neg_eq_zero,
-        div_eq_zero_iff, hr.ne', OfNat.ofNat_ne_zero, or_self,
+        abs_of_nonneg hδ.le, norm_ofNat, half_lt_self_iff, hδ, ne_eq, neg_eq_zero,
+        div_eq_zero_iff, hδ.ne', OfNat.ofNat_ne_zero, or_self,
         not_false_eq_true, map_neg, Left.neg_nonpos_iff, true_and]
       simp only [not_le] at h
       exact h.le
-  use ε, hε.left
+  use x, hx.left
   rw [lt_abs]
   left
   cancel_denoms
-  linarith [abs_pos.mpr hε.right.left]
+  linarith [abs_pos.mpr hx.right.left]
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
