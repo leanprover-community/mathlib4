@@ -7,7 +7,6 @@ import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Tactic.GCongr
 
 #align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
