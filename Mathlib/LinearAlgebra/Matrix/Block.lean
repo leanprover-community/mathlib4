@@ -122,9 +122,8 @@ theorem blockTriangular_blockDiagonal [DecidableEq α] (d : α → Matrix m m R)
 
 variable [DecidableEq m]
 
-theorem blockTriangular_one : BlockTriangular (1 : Matrix m m R) b := by
-  rw [← @diagonal_one]
-  exact blockTriangular_diagonal fun _ ↦ 1
+theorem blockTriangular_one : BlockTriangular (1 : Matrix m m R) b :=
+  blockTriangular_diagonal _
 
 theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
     BlockTriangular (stdBasisMatrix i j c) b := by
