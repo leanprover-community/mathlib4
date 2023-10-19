@@ -22,7 +22,8 @@ closed sets `s` and `t` in a normal topological space `X` there exists a continu
 
 We also give the version in a T2 locally compact space where one assumes that `s` is compact and
 `t` is closed, in `exists_continuous_zero_one_of_isCompact`. We write the proof so that it applies
-to both situations.
+to both situations. We also deduce a version in a locally compact topological group, without
+the T2 assumption, by applying the previous result in the separated quotient.
 
 ## Implementation notes
 
@@ -377,3 +378,56 @@ theorem exists_continuous_one_zero_of_isCompact [T2Space X] [LocallyCompactSpace
   have := h'f x
   simp only [ContinuousMap.coe_mk, ge_iff_le, zero_le_one, not_true, gt_iff_lt, mem_Icc] at this
   simp [this]
+
+/-- Urysohn's lemma: if `s ⊆ u` are two sets in a locally compact topological
+group `G`, with `s` compact and `u` open, then there exists a compactly supported
+continuous function `f : G → ℝ` such that
+* `f` equals one on `s`;
+* `f` equals zero outside of `u`;
+* `0 ≤ f x ≤ 1` for all `x`.
+
+Compare `exists_continuous_one_zero_of_isCompact`, which works in a space which doesn't have to
+be a group, but should be T2. Here, we can avoid separation assumptions by going through the
+quotient space `G ⧸ closure {1}`.
+-/
+@[to_additive exists_continuous_one_zero_of_isCompact_of_addGroup]
+lemma exists_continuous_one_zero_of_isCompact_of_group
+    {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+    [LocallyCompactSpace G] {k u : Set G}
+    (hk : IsCompact k) (hu : IsOpen u) (h : k ⊆ u) :
+    ∃ f : G → ℝ, Continuous f ∧ HasCompactSupport f ∧ EqOn f 1 k ∧ EqOn f 0 uᶜ ∧
+      ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+  obtain ⟨L, L_comp, kL, Lu⟩ : ∃ L, IsCompact L ∧ k ⊆ interior L ∧ L ⊆ u :=
+    exists_compact_between hk hu h
+  let v := interior L
+  have hv : IsOpen v := isOpen_interior
+  let N : Subgroup G := (⊥ : Subgroup G).topologicalClosure
+  have : N.Normal := Subgroup.is_normal_topologicalClosure ⊥
+  let π := ((↑) : G → G ⧸ N)
+  have C : Continuous π := continuous_coinduced_rng
+  have : IsClosed (N : Set G) := Subgroup.isClosed_topologicalClosure ⊥
+  have k'_comp : IsCompact (π '' k) := hk.image continuous_coinduced_rng
+  have v'_open : IsOpen (π '' v) := QuotientGroup.isOpenMap_coe N v hv
+  have D : Disjoint (π '' k) (π '' v)ᶜ := disjoint_compl_right_iff_subset.mpr (image_subset π kL)
+  rcases exists_continuous_one_zero_of_isCompact k'_comp v'_open.isClosed_compl D with
+    ⟨⟨f, f_cont⟩, fk', fv', f_range⟩
+  have A : EqOn (f ∘ π) 0 vᶜ := by
+    intro x hx
+    apply fv'
+    contrapose hx
+    simp only [mem_compl_iff, not_not, mem_image] at hx ⊢
+    obtain ⟨y, yv, hy⟩ : ∃ y, y ∈ v ∧ (y : G ⧸ N) = ↑x := hx
+    have : x ∈ v • (closure {1} : Set G) := by
+      rw [← Subgroup.coe_topologicalClosure_bot G]
+      exact ⟨y, y⁻¹ * x, yv, QuotientGroup.eq.mp hy, by dsimp; group⟩
+    rwa [hv.smul_set_closure_one_eq] at this
+  refine ⟨f ∘ π, f_cont.comp C, ?_, ?_, ?_, fun x ↦ by simpa using f_range _⟩
+  · refine HasCompactSupport.intro' L_comp.closure_of_group isClosed_closure (fun x hx ↦ ?_)
+    apply A
+    contrapose! hx
+    simp only [mem_compl_iff, not_not] at hx
+    exact interior_subset_closure hx
+  · intro x hx
+    simpa using fk' (mem_image_of_mem QuotientGroup.mk hx)
+  · have : uᶜ ⊆ vᶜ := compl_subset_compl.2 (interior_subset.trans Lu)
+    exact EqOn.mono this A

@@ -1489,16 +1489,27 @@ lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
   _ = F := by simp [hF.closure_eq]
 
 @[to_additive]
-lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
-    U • (closure {1} : Set G) = U := by
-  refine Subset.antisymm ?_ (subset_smul_set_closure_one U)
+lemma compl_smul_set_closure_one_eq {t : Set G} (ht : t • (closure {1} : Set G) = t) :
+    tᶜ • (closure {1} : Set G) = tᶜ := by
+  refine Subset.antisymm ?_ (subset_smul_set_closure_one tᶜ)
   rintro - ⟨x, g, hx, hg, rfl⟩
   by_contra H
-  have : x ∈ Uᶜ • (closure {1} : Set G) := by
+  have : x ∈ t • (closure {1} : Set G) := by
     rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
+    simp only [smul_eq_mul, mem_compl_iff, not_not] at H
     exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
-  rw [hU.isClosed_compl.smul_set_closure_one_eq] at this
-  exact this hx
+  rw [ht] at this
+  exact hx this
+
+@[to_additive]
+lemma compl_smul_set_closure_one_eq_iff {t : Set G} :
+    tᶜ • (closure {1} : Set G) = tᶜ ↔ t • (closure {1} : Set G) = t :=
+  ⟨fun h ↦ by simpa using compl_smul_set_closure_one_eq h, fun h ↦ compl_smul_set_closure_one_eq h⟩
+
+@[to_additive]
+lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
+    U • (closure {1} : Set G) = U :=
+  compl_smul_set_closure_one_eq_iff.1 (hU.isClosed_compl.smul_set_closure_one_eq)
 
 end TopologicalGroup
 
@@ -1841,6 +1852,18 @@ theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
   let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
   let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
   ⟨K, Kcl, Kcomp, K1⟩
+
+/-- A quotient of a locally compact group is locally compact. -/
+@[to_additive]
+instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
+  refine ⟨fun x n hn ↦ ?_⟩
+  let π := ((↑) : G → G ⧸ N)
+  have C : Continuous π := continuous_coinduced_rng
+  obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
+  have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
+  rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
+  exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
+    s_comp.image C⟩
 
 end
 

@@ -16,79 +16,7 @@ import Mathlib.Topology.UrysohnsLemma
 -/
 
 open MeasureTheory Filter Set TopologicalSpace
-open scoped Uniformity Topology ENNReal Pointwise
-
-section
-
-open Function
-
-@[to_additive]
-instance {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
-    [LocallyCompactSpace G] (N : Subgroup G) :
-    LocallyCompactSpace (G ⧸ N) := by
-  refine ⟨fun x n hn ↦ ?_⟩
-  let π := ((↑) : G → G ⧸ N)
-  have C : Continuous π := continuous_coinduced_rng
-  obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
-  have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
-  rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
-  exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
-    s_comp.image C⟩
-
-/-- Urysohn's lemma: if `s ⊆ u` are two sets in a locally compact topological
-gropu `G`, space `X`, with `s` compact and `u` open, then there exists a compactly supported
-continuous function `f : G → ℝ` such that
-* `f` equals one on `s`;
-* `f` equals zero outside of `u`;
-* `0 ≤ f x ≤ 1` for all `x`.
-
-Compare `exists_continuous_one_zero_of_isCompact`, which works in a space which doesn't have to
-be a group, but should be T2. Here, we can avoid separation assumptions by going through the
-quotient space `G ⧸ closure {1}`.
--/
-@[to_additive exists_continuous_one_zero_of_isCompact_of_addGroup]
-lemma exists_continuous_one_zero_of_isCompact_of_group
-    {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
-    [LocallyCompactSpace G] {k u : Set G}
-    (hk : IsCompact k) (hu : IsOpen u) (h : k ⊆ u) :
-    ∃ f : G → ℝ, Continuous f ∧ HasCompactSupport f ∧ EqOn f 1 k ∧ EqOn f 0 uᶜ ∧
-      ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  obtain ⟨L, L_comp, kL, Lu⟩ : ∃ L, IsCompact L ∧ k ⊆ interior L ∧ L ⊆ u :=
-    exists_compact_between hk hu h
-  let v := interior L
-  have hv : IsOpen v := isOpen_interior
-  let N : Subgroup G := (⊥ : Subgroup G).topologicalClosure
-  have : N.Normal := Subgroup.is_normal_topologicalClosure ⊥
-  let π := ((↑) : G → G ⧸ N)
-  have C : Continuous π := continuous_coinduced_rng
-  have : IsClosed (N : Set G) := Subgroup.isClosed_topologicalClosure ⊥
-  have k'_comp : IsCompact (π '' k) := hk.image continuous_coinduced_rng
-  have v'_open : IsOpen (π '' v) := QuotientGroup.isOpenMap_coe N v hv
-  have D : Disjoint (π '' k) (π '' v)ᶜ := disjoint_compl_right_iff_subset.mpr (image_subset π kL)
-  rcases exists_continuous_one_zero_of_isCompact k'_comp v'_open.isClosed_compl D with
-    ⟨⟨f, f_cont⟩, fk', fv', f_range⟩
-  have A : EqOn (f ∘ π) 0 vᶜ := by
-    intro x hx
-    apply fv'
-    contrapose hx
-    simp only [mem_compl_iff, not_not, mem_image] at hx ⊢
-    obtain ⟨y, yv, hy⟩ : ∃ y, y ∈ v ∧ (y : G ⧸ N) = ↑x := hx
-    have : x ∈ v • (closure {1} : Set G) := by
-      rw [← Subgroup.coe_topologicalClosure_bot G]
-      exact ⟨y, y⁻¹ * x, yv, QuotientGroup.eq.mp hy, by dsimp; group⟩
-    rwa [hv.smul_set_closure_one_eq] at this
-  refine ⟨f ∘ π, f_cont.comp C, ?_, ?_, ?_, fun x ↦ by simpa using f_range _⟩
-  · refine HasCompactSupport.intro' L_comp.closure_of_group isClosed_closure (fun x hx ↦ ?_)
-    apply A
-    contrapose! hx
-    simp only [mem_compl_iff, not_not] at hx
-    exact interior_subset_closure hx
-  · intro x hx
-    simpa using fk' (mem_image_of_mem QuotientGroup.mk hx)
-  · have : uᶜ ⊆ vᶜ := compl_subset_compl.2 (interior_subset.trans Lu)
-    exact EqOn.mono this A
-
-end
+open scoped Uniformity Topology ENNReal Pointwise NNReal
 
 section
 
@@ -339,13 +267,14 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
 
+
 /-- Given two left-invariant measures which are finite on compacts, they integrate in the same way
 continuous compactly supported functions, up to a multiplicative constant. -/
 @[to_additive]
 lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
-    {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
-    ∃ (c : ℝ), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
+    ∃ (c : ℝ≥0), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
       ∫ x, f x ∂μ' = c * ∫ x, f x ∂μ := by
   -- The group has to be locally compact, otherwise all integrals vanish and the result is trivial.
   by_cases H : LocallyCompactSpace G; swap
@@ -366,7 +295,10 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     · exact g_cont.integrable_of_hasCompactSupport g_comp
   -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
   -- with respect to `μ'` and `μ`.
-  refine ⟨(∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ'), fun f f_cont f_comp ↦ ?_⟩
+  let c : ℝ := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
+  have c_nonneg : 0 ≤ c :=
+    mul_nonneg (inv_nonneg.2 (integral_nonneg g_nonneg)) (integral_nonneg g_nonneg)
+  refine ⟨⟨c, c_nonneg⟩, fun f f_cont f_comp ↦ ?_⟩
   /- use the lemma `integral_mulLeftInvariant_mulRightInvariant_combo` for `μ` and then `μ'`
   to reexpress the integral of `f` as the integral of `g` times a factor which only depends
   on a right-invariant measure `ν`. We use `ν = μ.inv` for convenience. -/
@@ -377,4 +309,14 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
   have B : ∫ x, f x ∂μ' = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ' :=
     integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
   /- Since the `ν`-factor is the same for `μ` and `μ'`, this gives the result. -/
-  rwa [← A, mul_assoc, mul_comm] at B
+  rw [← A, mul_assoc, mul_comm] at B
+  simpa using B
+
+#exit
+
+lemma measure_mulLeftInvariant_unique_of_hasCompactSupport
+    {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
+    ∃ (c : ℝ≥0), ∀ (k : Set G), IsCompact k → μ' k = c * μ k := by
+  rcases integral_mulLeftInvariant_unique_of_hasCompactSupport μ μ' with ⟨c, hc⟩
+  refine ⟨c, fun k hk ↦ ?_⟩
