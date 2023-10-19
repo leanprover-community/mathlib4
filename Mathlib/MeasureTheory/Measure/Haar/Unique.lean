@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
@@ -311,6 +309,27 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
   /- Since the `ν`-factor is the same for `μ` and `μ'`, this gives the result. -/
   rw [← A, mul_assoc, mul_comm] at B
   simpa using B
+
+instance instIsFiniteMeasureOnCompactsRestrict {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+    {μ : Measure X} [IsFiniteMeasureOnCompacts μ] {s : Set X} :
+    IsFiniteMeasureOnCompacts (μ.restrict s) :=
+  ⟨fun k hk ↦ (Measure.le_iff'.1 restrict_le_self k).trans_lt hk.measure_lt_top⟩
+
+lemma glouk {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
+    {μ ν : Measure X} [IsFiniteMeasureOnCompacts μ]
+    (h : ∀ (f : X → ℝ), Continuous f → HasCompactSupport f → ∫ x, f x ∂μ = ∫ x, f x ∂ν)
+    (k : Set X) (hk : IsCompact k) :
+    μ k = ν k := by
+  have : μ k = ⨅ (f : X → ℝ) (hf : Continuous f) (h'f : HasCompactSupport f) (h''f : EqOn f 1 k)
+      (h'''f : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
+    apply le_antisymm ?_
+    · sorry
+    · simp only [le_iInf_iff]
+      intro f f_cont f_comp fk f_nonneg
+      apply Integrable.measure_le_integral
+
+
+
 
 #exit
 

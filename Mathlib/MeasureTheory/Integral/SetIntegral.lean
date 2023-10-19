@@ -810,6 +810,15 @@ theorem set_integral_nonpos_le {s : Set α} (hs : MeasurableSet s) (hf : Strongl
       (hfi.indicator hs) (indicator_nonpos_le_indicator s f)
 #align measure_theory.set_integral_nonpos_le MeasureTheory.set_integral_nonpos_le
 
+lemma Integrable.measure_le_integral (f : α → ℝ) (f_int : Integrable f μ) (f_nonneg : 0 ≤ᵐ[μ] f)
+    {s : Set α} (hs : ∀ x ∈ s, 1 ≤ f x) :
+    μ s ≤ ENNReal.ofReal (∫ x, f x ∂μ) := by
+  rw [ofReal_integral_eq_lintegral_ofReal f_int f_nonneg]
+  apply meas_le_lintegral₀
+  · exact ENNReal.continuous_ofReal.measurable.comp_aemeasurable f_int.1.aemeasurable
+  · intro x hx
+    simpa using ENNReal.ofReal_le_ofReal (hs x hx)
+
 end Nonneg
 
 section IntegrableUnion
