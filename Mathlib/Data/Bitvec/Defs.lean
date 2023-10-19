@@ -109,9 +109,12 @@ def ofBEList (bs : List Bool) : BitVec bs.length :=
 @[simp] lemma neg_ofFin (x : Fin (2^w)) : -(ofFin x) = ofFin (-x) := by
   rw [neg_eq_zero_sub]; rfl
 
-@[simp] lemma ofFin_add_ofFin (x y : Fin (2^w)) : (ofFin x) + (ofFin y) = ofFin (x + y) := rfl
-@[simp] lemma ofFin_sub_ofFin (x y : Fin (2^w)) : (ofFin x) - (ofFin y) = ofFin (x - y) := rfl
-@[simp] lemma ofFin_mul_ofFin (x y : Fin (2^w)) : (ofFin x) * (ofFin y) = ofFin (x * y) := rfl
+@[simp] lemma ofFin_and_ofFin (x y : Fin (2^w)) : (ofFin x) &&& (ofFin y) = ofFin (x &&& y) := rfl
+@[simp] lemma ofFin_or_ofFin  (x y : Fin (2^w)) : (ofFin x) ||| (ofFin y) = ofFin (x ||| y) := rfl
+@[simp] lemma ofFin_xor_ofFin (x y : Fin (2^w)) : (ofFin x) ^^^ (ofFin y) = ofFin (x ^^^ y) := rfl
+@[simp] lemma ofFin_add_ofFin (x y : Fin (2^w)) : (ofFin x) + (ofFin y) = ofFin (x + y)     := rfl
+@[simp] lemma ofFin_sub_ofFin (x y : Fin (2^w)) : (ofFin x) - (ofFin y) = ofFin (x - y)     := rfl
+@[simp] lemma ofFin_mul_ofFin (x y : Fin (2^w)) : (ofFin x) * (ofFin y) = ofFin (x * y)     := rfl
 
 lemma zero_eq_ofFin_zero : 0#w = ofFin 0 := rfl
 lemma one_eq_ofFin_one   : 1#w = ofFin 1 := rfl
