@@ -252,23 +252,19 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
   simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero,
     Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
   use 2⁻¹, by norm_num
-  rw [Filter.frequently_iff]
-  intro U hU
-  obtain ⟨ε, hε⟩ : ∃ ε ∈ U, ε ≠ 0 ∧ f ε ≤ 0 := by
-    obtain ⟨a, b, hab0, habU⟩ := mem_nhds_iff_exists_Ioo_subset.mp hU
-    obtain ⟨ha0, hb0⟩ := Set.mem_Ioo.mp hab0
-    obtain ⟨a', ha'⟩ := Set.nonempty_Ioo.mpr ha0
-    obtain ⟨b', hb'⟩ := Set.nonempty_Ioo.mpr hb0
-    by_cases hf1 : f 1 ≥ 0
-    · use a', habU (Set.Ioo_subset_Ioo_right (le_of_lt hb0) ha'),
-        ne_of_lt (Set.mem_Ioo.mp ha').right
-      rwa [← mul_one a', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
-        ← mul_zero a', mul_le_mul_left_of_neg (Set.mem_Ioo.mp ha').right]
-    · use b', habU (Set.Ioo_subset_Ioo_left (le_of_lt ha0) hb'), ne_of_gt (Set.mem_Ioo.mp hb').left
-      push_neg at hf1
-      rw [← mul_one b', ← smul_eq_mul, ContinuousLinearMap.map_smul, @smul_eq_mul _ _ _ (f 1),
-        ← mul_zero b', mul_le_mul_left (Set.mem_Ioo.mp hb').left]
-      exact le_of_lt hf1
+  rw [Filter.HasBasis.frequently_iff Metric.nhds_basis_ball]
+  intro r hr
+  obtain ⟨ε, hε⟩ : ∃ ε ∈ Metric.ball 0 r, ε ≠ 0 ∧ f ε ≤ 0 := by
+    by_cases f (r / 2) ≤ 0
+    · use (r / 2)
+      simp [h, abs_of_nonneg hr.le, hr, hr.ne']
+    · use -(r / 2)
+      simp only [Metric.mem_ball, dist_zero_right, norm_neg, norm_div, norm_eq_abs,
+        abs_of_nonneg hr.le, norm_ofNat, half_lt_self_iff, hr, ne_eq, neg_eq_zero,
+        div_eq_zero_iff, hr.ne', OfNat.ofNat_ne_zero, or_self,
+        not_false_eq_true, map_neg, Left.neg_nonpos_iff, true_and]
+      simp only [not_le] at h
+      exact h.le
   use ε, hε.left
   rw [lt_abs]
   left
