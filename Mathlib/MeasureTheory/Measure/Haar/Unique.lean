@@ -322,11 +322,14 @@ lemma glouk {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
     μ k = ν k := by
   have : μ k = ⨅ (f : X → ℝ) (hf : Continuous f) (h'f : HasCompactSupport f) (h''f : EqOn f 1 k)
       (h'''f : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
-    apply le_antisymm ?_
-    · sorry
+    apply le_antisymm
     · simp only [le_iInf_iff]
       intro f f_cont f_comp fk f_nonneg
-      apply Integrable.measure_le_integral
+      apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
+      · exact eventually_of_forall f_nonneg
+      · exact fun x hx ↦ by simp [fk hx]
+
+
 
 
 
