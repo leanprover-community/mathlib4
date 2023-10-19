@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.GroupTheory.Abelianization
 
 /-!
 # The topological abelianization of the absolute Galois group.
