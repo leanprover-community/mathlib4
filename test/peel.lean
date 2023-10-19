@@ -3,6 +3,38 @@ import Mathlib.Topology.Instances.Real
 
 open Filter Topology
 
+example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
+  peel 1 h₁
+  exact h₂ _ this
+
+example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
+    ∀ u v, q u v := by
+  peel 2 h₁
+  exact h₂ _ _ this
+
+example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
+  peel h₁
+  exact h₂ _ this
+
+example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
+    ∀ u v, q u v := by
+  peel h₁
+  peel this
+  exact h₂ _ _ this
+
+example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
+  peel h₁ with foo
+  exact h₂ _ foo
+
+example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
+  peel h₁ with foo w
+  exact h₂ w foo
+
+example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
+    ∀ u v, q u v := by
+  peel h₁ with h_peel s t
+  exact h₂ s t h_peel
+
 example (p q : Nat → Prop) (h : ∀ y, p y) (h₁ : ∀ z, p z → q z) : ∀ x, q x := by
   peel h
   exact h₁ _ <| by assumption
@@ -25,17 +57,17 @@ example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
 example (x y : ℚ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y  - n := by
   intro ε hε
-  peel 3 (h ε hε) with h_peel
+  peel 3 (h ε hε)
   linarith
 
 example : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) < ε) ↔
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) ≤ ε := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · peel 5 h with h'
-    exact h'.le
+  · peel 5 h
+    exact this.le
   · intro ε hε
-    peel 3 h (ε / 2) (half_pos hε) with h'
-    exact h'.trans_lt (half_lt_self hε)
+    peel 3 h (ε / 2) (half_pos hε)
+    exact this.trans_lt (half_lt_self hε)
 
 example {f : ℝ → ℝ} (h : ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ≤ |y - x|) :
     ∀ x : ℝ, ∀ᶠ y in 𝓝 x, |f y - f x| ^ 2 ≤ |y - x| ^ 2 := by
