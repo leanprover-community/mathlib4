@@ -18,7 +18,6 @@ module structures on `ℕ →₀ M` of interest. See the docstring of `Polynomia
 universe u v
 open Polynomial BigOperators
 
-section CommSemiring
 namespace Module
 /--
 Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
@@ -67,34 +66,6 @@ lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_
 instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
 
 end Module
-
-variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M] (f : M →ₗ[R] M)
-
-/-- The structure of a module `M` over a ring `R` as a module over `R[X]` when given a
-choice of how `X` acts by choosing a linear map `f : M →ₗ[R] M` -/
-def modulePolynomialOfEndo : Module R[X] M := inferInstanceAs (Module R[X] (Module.AEval' f))
-#align module_polynomial_of_endo modulePolynomialOfEndo
-
-lemma modulePolynomialOfEndo_def :
-    modulePolynomialOfEndo f = Module.compHom M (Polynomial.aeval f).toRingHom := rfl
-
-theorem modulePolynomialOfEndo_smul_def (n : R[X]) (a : M) :
-    @HSMul.hSMul _ _ _ (by letI := modulePolynomialOfEndo f; infer_instance) n a =
-    Polynomial.aeval f n a :=
-  rfl
-#align module_polynomial_of_endo_smul_def modulePolynomialOfEndo_smul_def
-
-attribute [local simp] modulePolynomialOfEndo_smul_def
-
-theorem modulePolynomialOfEndo.isScalarTower :
-    @IsScalarTower R R[X] M _
-      (by
-        letI := modulePolynomialOfEndo f
-        infer_instance)
-      _ := inferInstanceAs (IsScalarTower R R[X] (Module.AEval' f))
-#align module_polynomial_of_endo.is_scalar_tower modulePolynomialOfEndo.isScalarTower
-
-end CommSemiring
 
 /-- The `R[X]`-module `M[X]` for an `R`-module `M`.
 This is isomorphic (as an `R`-module) to `M[X]` when `M` is a ring.
@@ -179,8 +150,12 @@ theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModu
 
 @[semireducible]
 noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
-  modulePolynomialOfEndo (Finsupp.lmapDomain _ _ Nat.succ)
+  inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 #align polynomial_module.polynomial_module PolynomialModule.polynomialModule
+
+lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
+    f • m = (aeval  (Finsupp.lmapDomain M R Nat.succ)) f m:= by
+  rw [Module.AEval.smul_def, LinearMap.smul_def]
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) :=
@@ -188,7 +163,8 @@ instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower 
 
 instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
-  haveI : IsScalarTower R R[X] (PolynomialModule R M) := modulePolynomialOfEndo.isScalarTower _
+  haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
+    inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ
   constructor
   intro x y z
   rw [← @IsScalarTower.algebraMap_smul S R, ← @IsScalarTower.algebraMap_smul S R, smul_assoc]
@@ -198,7 +174,7 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
   simp only [LinearMap.mul_apply, Polynomial.aeval_monomial, LinearMap.pow_apply,
-    Module.algebraMap_end_apply, modulePolynomialOfEndo_smul_def]
+    Module.algebraMap_end_apply, smul_def]
   induction i generalizing r j m with
   | zero =>
     rw [Nat.zero_eq, Function.iterate_zero, zero_add]
