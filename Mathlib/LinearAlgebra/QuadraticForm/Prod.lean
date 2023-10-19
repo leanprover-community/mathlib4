@@ -77,18 +77,6 @@ def IsometryEquiv.prod
   toLinearEquiv := LinearEquiv.prod e₁.toLinearEquiv e₂.toLinearEquiv
 #align quadratic_form.isometry.prod QuadraticForm.IsometryEquiv.prod
 
-/-- `LinearMap.inl` as an isometry. -/
-@[simps!]
-def Isometry.inl (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Q₁ →qᵢ (Q₁.prod Q₂) where
-  toLinearMap := LinearMap.inl R _ _
-  map_app' m₁ := by simp
-
-/-- `LinearMap.inr` as an isometry. -/
-@[simps!]
-def Isometry.inr (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Q₂ →qᵢ (Q₁.prod Q₂) where
-  toLinearMap := LinearMap.inr R _ _
-  map_app' m₁ := by simp
-
 theorem Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₁' : QuadraticForm R N₁} {Q₂' : QuadraticForm R N₂} (e₁ : Q₁.Equivalent Q₁')
     (e₂ : Q₂.Equivalent Q₂') : (Q₁.prod Q₂).Equivalent (Q₁'.prod Q₂') :=
