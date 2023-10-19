@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Adjoin.Tower
+
+#align_import data.polynomial.module from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
+
 /-!
 # Polynomial module
 
@@ -110,7 +113,8 @@ instances of `Module R[X] (PolynomialModule R[X])`.
 
 See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2315065.20polynomial.20modules
 for the full discussion.
--/@[nolint unusedArguments]
+-/
+@[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
 #align polynomial_module PolynomialModule
 
