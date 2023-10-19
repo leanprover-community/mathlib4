@@ -373,7 +373,7 @@ end ToScheme
 end PresheafedSpace.IsOpenImmersion
 
 /-- The restriction of a Scheme along an open embedding. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! (config := .lemmasOnly) carrier, simps! presheaf_map presheaf_obj]
 def Scheme.restrict {U : TopCat} (X : Scheme) {f : U ⟶ TopCat.of X} (h : OpenEmbedding f) :
     Scheme :=
   { PresheafedSpace.IsOpenImmersion.toScheme X (X.toPresheafedSpace.ofRestrict h) with

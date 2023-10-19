@@ -57,7 +57,7 @@ def Scheme.restrictFunctor : Opens X ⥤ Over X where
   map {U V} i :=
     Over.homMk
       (IsOpenImmersion.lift (ιOpens V) (ιOpens U) <| by
-          dsimp [ofRestrict, LocallyRingedSpace.ofRestrict]
+          dsimp [restrict, ofRestrict, LocallyRingedSpace.ofRestrict, Opens.coe_inclusion]
           rw [Subtype.range_val, Subtype.range_val]
           exact i.le)
       (IsOpenImmersion.lift_fac _ _ _)
@@ -91,7 +91,7 @@ def Scheme.restrictFunctor : Opens X ⥤ Over X where
 theorem Scheme.restrictFunctor_map_ofRestrict {U V : Opens X} (i : U ⟶ V) :
     (X.restrictFunctor.map i).1 ≫ ιOpens V = ιOpens U :=
   IsOpenImmersion.lift_fac _ _ (by
-    dsimp [ofRestrict, LocallyRingedSpace.ofRestrict]
+    dsimp [restrict, ofRestrict, LocallyRingedSpace.ofRestrict]
     rw [Subtype.range_val, Subtype.range_val]
     exact i.le)
 #align algebraic_geometry.Scheme.restrict_functor_map_ofRestrict AlgebraicGeometry.Scheme.restrictFunctor_map_ofRestrict
@@ -122,7 +122,7 @@ theorem Scheme.restrictFunctor_map_app {U V : Opens X} (i : U ⟶ V) (W : Opens 
   -- Porting note : `Opens.map_functor_eq` need more help
   have e₂ := (X.restrictFunctor.map i).1.val.c.naturality (eqToHom <| W.map_functor_eq (U := V)).op
   rw [← IsIso.eq_inv_comp] at e₂
-  dsimp at e₁ e₂ ⊢
+  dsimp [restrict] at e₁ e₂ ⊢
   rw [e₂, W.adjunction_counit_map_functor (U := V), ← IsIso.eq_inv_comp, IsIso.inv_comp_eq,
     ← IsIso.eq_comp_inv] at e₁
   simp_rw [eqToHom_map (Opens.map _), eqToHom_map (IsOpenMap.functor _), ← Functor.map_inv,
@@ -192,7 +192,7 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f
   apply IsOpenImmersion.isoOfRangeEq (f := X.ofRestrict _ ≫ f)
     (H := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance))
     (Y.ofRestrict _) _
-  dsimp
+  dsimp[restrict]
   rw [coe_comp, Set.range_comp, Opens.coe_inclusion, Subtype.range_val, Subtype.range_coe]
   refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
   rw [← TopCat.epi_iff_surjective]
@@ -206,7 +206,7 @@ def pullbackRestrictIsoRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     pullback f (Scheme.ιOpens U) ≅ X ∣_ᵤ f ⁻¹ᵁ U := by
   refine' IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) _
   rw [IsOpenImmersion.range_pullback_fst_of_right]
-  dsimp [Opens.coe_inclusion]
+  dsimp [Opens.coe_inclusion, Scheme.restrict]
   rw [Subtype.range_val, Subtype.range_coe]
   rfl
 #align algebraic_geometry.pullback_restrict_iso_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict
@@ -398,7 +398,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]
   ext1
-  dsimp [Opens.map_coe]
+  dsimp [Opens.map_coe, Scheme.restrict]
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, Subtype.range_val]
   exact Y.basicOpen_le r
 #align algebraic_geometry.morphism_restrict_restrict_basic_open AlgebraicGeometry.morphismRestrictRestrictBasicOpen
