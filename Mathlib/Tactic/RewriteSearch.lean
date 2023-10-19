@@ -44,6 +44,20 @@ This limitation would need to be resolved in the `rw?` tactic first.
 
 set_option autoImplicit true
 
+namespace Lean.Expr
+
+@[inline] def app3?' (e : Expr) (fName : Name) : Option (Expr × Expr × Expr) :=
+  if e.isAppOfArity' fName 3 then
+    some (e.appFn!.appFn!.appArg!, e.appFn!.appArg!, e.appArg!)
+  else
+    none
+
+
+@[inline] def eq?' (p : Expr) : Option (Expr × Expr × Expr) :=
+  p.app3?' ``Eq
+
+end Lean.Expr
+
 namespace Mathlib.Tactic.RewriteSearch
 
 open Lean Meta
@@ -111,8 +125,8 @@ namespace SearchNode
 
 /-- Construct a `SearchNode`. -/
 def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
-    MetaM (Option SearchNode) := do
-  let type ← instantiateMVars (← goal.getType)
+    MetaM (Option SearchNode) := goal.withContext do
+  let type := (← instantiateMVars (← goal.getType)).consumeMData
   match type.eq? with
   | none => return none
   | some (_, lhs, rhs) =>
