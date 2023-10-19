@@ -154,7 +154,7 @@ noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
 #align polynomial_module.polynomial_module PolynomialModule.polynomialModule
 
 lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
-    f • m = (aeval  (Finsupp.lmapDomain M R Nat.succ)) f m:= by
+    f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by
   rw [Module.AEval.smul_def, LinearMap.smul_def]
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
