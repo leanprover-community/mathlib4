@@ -413,7 +413,7 @@ noncomputable instance omegaCompletePartialOrder :
 section Inst
 
 theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ c := by
-  simp [OmegaCompletePartialOrder.ωSup, Part.ωSup]
+  simp only [ωSup, Part.ωSup]
   constructor
   · split_ifs with h
     swap

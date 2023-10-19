@@ -480,7 +480,8 @@ theorem tsum_eq_sum {s : Finset β} (hf : ∀ (b) (_ : b ∉ s), f b = 0) :
     contrapose! hx
     rw [nmem_support]
     exact hf _ hx
-  simp [tsum_def, summable_of_ne_finset_zero hf, Set.Finite.subset (finite_toSet s) I]
+  simp only [tsum_def, summable_of_ne_finset_zero hf, Set.Finite.subset (finite_toSet s) I,
+     ite_true, dite_eq_ite]
   exact finsum_eq_sum_of_support_subset f I
 #align tsum_eq_sum tsum_eq_sum
 
