@@ -141,7 +141,6 @@ private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : �
 
 /-- The `Module` derived from `gmodule A M`. -/
 instance module [DecidableEq ι] [GSemiring A] [Gmodule A M] : Module (⨁ i, A i) (⨁ i, M i) where
-  smul := (· • ·)
   one_smul := one_smul' _ _
   mul_smul := mul_smul' _ _
   smul_add r := (smulAddMonoidHom A M r).map_add

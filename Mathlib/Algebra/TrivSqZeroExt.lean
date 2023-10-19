@@ -738,7 +738,6 @@ variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTo
 
 instance algebra' : Algebra S (tsze R M) :=
   { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
-    smul := (· • ·)
     commutes' := fun s x =>
       ext (Algebra.commutes _ _) <|
         show algebraMap S R s • x.snd + op x.fst • (0 : M)

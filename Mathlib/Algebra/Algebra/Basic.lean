@@ -500,7 +500,6 @@ end ULift
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
 instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
   toRingHom := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 #align algebra.of_subsemiring Algebra.ofSubsemiring
@@ -522,7 +521,6 @@ theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap 
 instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
     Algebra S A where -- porting note: don't use `toSubsemiring` because of a timeout
   toRingHom := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 #align algebra.of_subring Algebra.ofSubring
@@ -706,7 +704,6 @@ end RingHom
 section Rat
 
 instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
-  smul := (· • ·)
   smul_def' := DivisionRing.qsmul_eq_mul'
   toRingHom := Rat.castHom α
   commutes' := Rat.cast_commute

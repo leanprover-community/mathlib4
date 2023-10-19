@@ -385,7 +385,6 @@ private theorem zero_smul' (x : LocalizedModule S M) : (0 : Localization S) • 
   rw [← Localization.mk_zero s, mk_smul_mk, zero_smul, zero_mk]
 
 instance isModule : Module (Localization S) (LocalizedModule S M) where
-  smul := (· • ·)
   one_smul := one_smul'
   mul_smul := mul_smul'
   smul_add := smul_add'
@@ -681,7 +680,7 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
 #align localized_module.lift_unique LocalizedModule.lift_unique
 
 end LocalizedModule
-
+#print LocalizedModule.mk
 instance localizedModuleIsLocalizedModule : IsLocalizedModule S (LocalizedModule.mkLinearMap S M)
     where
   map_units s :=
@@ -697,8 +696,9 @@ instance localizedModuleIsLocalizedModule : IsLocalizedModule S (LocalizedModule
       (by
         intro ⟨m, t⟩
         refine' ⟨⟨m, t⟩, _⟩
-        erw [LocalizedModule.smul'_mk, LocalizedModule.mkLinearMap_apply, Submonoid.coe_subtype,
-          LocalizedModule.mk_cancel t])
+        dsimp
+        refine (LocalizedModule.smul'_mk t.1 t m).trans ?_
+        erw [LocalizedModule.mk_cancel t])
   eq_iff_exists' :=
     { mp := fun eq1 => by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
       mpr := fun ⟨c, eq1⟩ =>

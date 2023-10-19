@@ -806,7 +806,6 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
   map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
   map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
   map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero]
-  smul := (· • ·)
   smul_def' c x := by
     induction' x using RatFunc.induction_on' with p q hq
       -- porting note: the first `rw [...]` was not needed
