@@ -284,7 +284,7 @@ variable {I J : Type*} {C : Type*} [Category C]
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
 for `i : I` such that `p i = j`. -/
-abbrev mapObjFun (j : J) := (fun (i : (p ⁻¹' {j})) => X i)
+abbrev mapObjFun (j : J) (i : p ⁻¹' {j}) : C := X i
 
 variable (j : J)
 
@@ -301,12 +301,12 @@ noncomputable def mapObj : GradedObject J C := fun j => ∐ (X.mapObjFun p j)
 /-- The canonical inclusion `X i ⟶ X.mapObj p j` when `i : I` and `j : J` are such
 that `p i = j`. -/
 noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p j :=
-  Sigma.ι (fun (i' : (p ⁻¹' {j})) => X i') ⟨i, hij⟩
+  Sigma.ι (X.mapObjFun p j) ⟨i, hij⟩
 
 /-- Given `X : GradedObject I C`, `p : I → J` and `j : J`,
 `CofanMapObjFun X p j` is the type `Cofan (X.mapObjFun p j)`. The point object of
 such colimits cofans are isomorphic to `X.mapObj p j`, see `CofanMapObjFun.iso`. -/
-abbrev CofanMapObjFun (j : J) := Cofan (X.mapObjFun p j)
+abbrev CofanMapObjFun (j : J) : Type _ := Cofan (X.mapObjFun p j)
 
 -- in order to use the cofan API, some definitions below
 -- have a `simp` attribute rather than `simps`
