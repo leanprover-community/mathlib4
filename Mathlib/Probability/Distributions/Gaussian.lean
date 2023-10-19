@@ -260,20 +260,14 @@ lemma gaussianReal_map_add_const (y : ℝ) :
   by_cases hv : v = 0
   · simp only [hv, ne_eq, not_true, gaussianReal_zero_var]
     exact Measure.map_dirac (measurable_id'.add_const _) _
-  let e : ℝ ≃ᵐ ℝ :=
-  { toFun := fun x ↦ x - y
-    invFun := fun x ↦ x + y
-    left_inv := fun x ↦ by simp
-    right_inv := fun x ↦ by simp
-    measurable_toFun := measurable_id'.add_const _
-    measurable_invFun := measurable_id'.add_const _}
+  let e : ℝ ≃ᵐ ℝ := (Homeomorph.addRight y).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ 1) x) x := fun _ ↦ (hasDerivAt_id _).sub_const y
-  suffices (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v by exact this
+  change (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v
   ext s' hs'
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
   simp only [abs_neg, abs_one, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, one_mul, ne_eq]
   rw [gaussianReal_apply_eq_integral _ hv hs']
-  simp_rw [gaussianPdfReal_sub _ y]
+  simp [gaussianPdfReal_sub _ y, Homeomorph.addRight, ← sub_eq_add_neg]
 
 /-- The map of a Gaussian distribution by addition of a constant is a Gaussian. -/
 lemma gaussianReal_map_const_add (y : ℝ) :
@@ -294,18 +288,11 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     convert (gaussianReal_zero_var 0).symm
     simp only [ne_eq, zero_pow', mul_eq_zero, hv, or_false]
     rfl
-  let e : ℝ ≃ᵐ ℝ :=
-  { toFun := fun x ↦ c⁻¹ * x
-    invFun := fun x ↦ c * x
-    left_inv := fun x ↦ by simp [hc]
-    right_inv := fun x ↦ by simp [hc]
-    measurable_toFun := measurable_id'.const_mul _
-    measurable_invFun := measurable_id'.const_mul _}
+  let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
     suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
     exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
-  suffices (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) by
-    exact this
+  change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   ext s' hs'
   rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
   simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, ne_eq, mul_eq_zero]
@@ -314,7 +301,9 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_eq]
     simp [hc]
-  simp_rw [gaussianPdfReal_inv_mul hc]
+  simp only [Homeomorph.mulLeft₀, Equiv.toFun_as_coe, Equiv.mulLeft₀_apply, Equiv.invFun_as_coe,
+    Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe, Homeomorph.homeomorph_mk_coe_symm,
+    Equiv.coe_fn_symm_mk, gaussianPdfReal_inv_mul hc]
   congr with x
   suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
   rw [abs_inv, inv_mul_cancel]
