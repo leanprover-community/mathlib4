@@ -33,49 +33,47 @@ def n1aryOfUnary {α β : Type*} (f : α → β) : (Fin 1 → α) → β :=
 def n2aryOfBinary {α β : Type*} (f : α → α → β) : (Fin 2 → α) → β :=
   fun a => f (a 0) (a 1)
 
-/-- A template for a valued CSP problem with costs in `C`. -/
-structure ValuedCspTemplate (C : Type*) [LinearOrderedAddCommMonoid C] where
-  /-- Domain of "labels", almost always finite -/
-  D : Type
-  /-- Cost functions from `D^k` to `C` for any `k` -/
-  F : Set (Σ (k : ℕ), (Fin k → D) → C)
+/-- A template for a valued CSP problem over a domain `D` with costs in `C`. -/
+@[reducible]
+def ValuedCspTemplate (D C : Type*) [LinearOrderedAddCommMonoid C] :=
+  Set (Σ (n : ℕ), (Fin n → D) → C) -- Cost functions `D^n → C` for any `n`
 
-variable {C : Type*} [LinearOrderedAddCommMonoid C]
+variable {D C : Type*} [LinearOrderedAddCommMonoid C]
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
-structure ValuedCspTerm (Γ : ValuedCspTemplate C) (ι : Type*) where
+structure ValuedCspTerm (Γ : ValuedCspTemplate D C) (ι : Type*) where
   /-- Arity of the function -/
-  k : ℕ
+  n : ℕ
   /-- Which cost function is instantiated -/
-  f : (Fin k → Γ.D) → C
+  f : (Fin n → D) → C
   /-- The cost function comes from the template -/
-  inΓ : ⟨k, f⟩ ∈ Γ.F
+  inΓ : ⟨n, f⟩ ∈ Γ
   /-- Which variables are plugged as arguments to the cost function -/
-  app : Fin k → ι
+  app : Fin n → ι
 
-def valuedCspTermOfUnary {Γ : ValuedCspTemplate C} {ι : Type*} {f₁ : Γ.D → C}
-    (ok : ⟨1, n1aryOfUnary f₁⟩ ∈ Γ.F) (i : ι) : ValuedCspTerm Γ ι :=
+def valuedCspTermOfUnary {Γ : ValuedCspTemplate D C} {ι : Type*} {f₁ : D → C}
+    (ok : ⟨1, n1aryOfUnary f₁⟩ ∈ Γ) (i : ι) : ValuedCspTerm Γ ι :=
   ⟨1, n1aryOfUnary f₁, ok, ![i]⟩
 
-def valuedCspTermOfBinary {Γ : ValuedCspTemplate C} {ι : Type*} {f₂ : Γ.D → Γ.D → C}
-    (ok : ⟨2, n2aryOfBinary f₂⟩ ∈ Γ.F) (i j : ι) : ValuedCspTerm Γ ι :=
+def valuedCspTermOfBinary {Γ : ValuedCspTemplate D C} {ι : Type*} {f₂ : D → D → C}
+    (ok : ⟨2, n2aryOfBinary f₂⟩ ∈ Γ) (i j : ι) : ValuedCspTerm Γ ι :=
   ⟨2, n2aryOfBinary f₂, ok, ![i, j]⟩
 
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
-def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate C} {ι : Type*}
-    (t : ValuedCspTerm Γ ι) (x : ι → Γ.D) : C :=
+def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate D C} {ι : Type*}
+    (t : ValuedCspTerm Γ ι) (x : ι → D) : C :=
   t.f (x ∘ t.app)
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
-def ValuedCspInstance (Γ : ValuedCspTemplate C) (ι : Type*) :=
+def ValuedCspInstance (Γ : ValuedCspTemplate D C) (ι : Type*) :=
   List (ValuedCspTerm Γ ι)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
-def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate C} {ι : Type*}
-    (I : ValuedCspInstance Γ ι) (x : ι → Γ.D) : C :=
+def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate D C} {ι : Type*}
+    (I : ValuedCspInstance Γ ι) (x : ι → D) : C :=
   (I.map (·.evalSolution x)).sum
 
 /-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`.-/
-def ValuedCspInstance.optimumSolution {Γ : ValuedCspTemplate C} {ι : Type*}
-    (I : ValuedCspInstance Γ ι) (x : ι → Γ.D) : Prop :=
-  ∀ y : ι → Γ.D, I.evalSolution x ≤ I.evalSolution y
+def ValuedCspInstance.OptimumSolution {Γ : ValuedCspTemplate D C} {ι : Type*}
+    (I : ValuedCspInstance Γ ι) (x : ι → D) : Prop :=
+  ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
