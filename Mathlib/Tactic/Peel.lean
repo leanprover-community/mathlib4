@@ -54,7 +54,12 @@ Note that in this example, `h` and the goal are logically equivalent statements,
 autoname the introduced variables, but they may be inaccessible. However, in this case the user must
 still introduce a single name such as `with h_peel` for the new hypothesis.
 
-In addition, the user may supply a term `e` via `... using e` in order to close the goal
+In addition, `peel` supports goals of the form `(∀ x, p x) ↔ ∀ x, q x`, or likewise for any
+other quantifier. In this case, there is no hypothesis or term to supply, but otherwise the syntax
+is the same. So for such goals, the syntax is `peel 1` or `peel with x`, and after which the
+resulting goal is `p x ↔ q x`.
+
+Finally, the user may supply a term `e` via `... using e` in order to close the goal
 immediately. In particular, `peel h using e` is equivalent to `peel h; exact e`. The `using` syntax
 may be paired with any of the other features of `peel`.
 
@@ -62,7 +67,7 @@ This tactic works by repeatedly applying `forall_imp`, `Exists.imp`, `Filter.Eve
 `Filter.Frequently.mp`, and `Filter.eventually_of_forall` and introducing the variables as these
 are applied.
 -/
-syntax (name := peel) "peel" (num)? (ppSpace colGt term) (withArgs)? (usingArg)? : tactic
+syntax (name := peel) "peel" (num)? (ppSpace colGt term)? (withArgs)? (usingArg)? : tactic
 
 private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
@@ -161,12 +166,46 @@ def peelArgs (e : Expr) (l : List Name) : TacticM Unit := withMainContext do
         let mvarId ← (← getMainGoal).clear fvarId
         replaceMainGoal [mvarId]
 
+private lemma Filter.frequently_congr {α : Type*} {f : Filter α} {p : α → Prop} {q : α → Prop}
+    (h : ∀ᶠ (x : α) in f, p x ↔ q x) : (∃ᶠ (x : α) in f, p x) ↔ ∃ᶠ (x : α) in f, q x := by
+  constructor
+  all_goals refine (Frequently.mp · (h.mono fun _ => ?_))
+  exacts [Iff.mp, Iff.mpr]
+
+def peelIffAux : TacticM Unit := withMainContext do
+  evalTactic (← `(tactic|
+    apply_rules [forall_congr', exists_congr, Filter.eventually_congr,
+      Filter.eventually_of_forall, Filter.frequently_congr]))
+
+def peelNumIff (n : Nat) : TacticM Unit := withMainContext do
+  match n with
+    | 0 => pure ()
+    | n + 1 =>
+      peelIffAux
+      let goal ← getMainGoal
+      let (_, new_goal) ← goal.intro1P
+      replaceMainGoal [new_goal]
+      peelNumIff n
+
+def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
+  match l with
+    | [] => pure ()
+    | h :: hs =>
+      peelIffAux
+      let goal ← getMainGoal
+      let (_, new_goal) ← goal.intro h
+      replaceMainGoal [new_goal]
+      peelArgsIff hs
+
 elab_rules : tactic
   | `(tactic| peel $n:num $e:term) => withMainContext do peelNum (← elabTerm e none) n.getNat
   | `(tactic| peel $e:term) => withMainContext do peelArgs (← elabTerm e none) []
   | `(tactic| peel $e:term $h:withArgs) => withMainContext do
     peelArgs (← elabTerm e none) <| ((← getWithArgs h).map Syntax.getId).toList
+  | `(tactic| peel $n:num) => peelNumIff n.getNat
+  | `(tactic| peel $h:withArgs) => withMainContext do
+    peelArgsIff ((← getWithArgs h).map Syntax.getId).toList
 
 macro_rules
-  | `(tactic| peel $[$n:num]? $e:term $[$h:withArgs]? using $u:term) =>
-    `(tactic| peel $[$n:num]? $e:term $[$h:withArgs]?; exact $u)
+  | `(tactic| peel $[$n:num]? $[$e:term]? $[$h:withArgs]? using $u:term) =>
+    `(tactic| peel $[$n:num]? $[$e:term]? $[$h:withArgs]?; exact $u)
