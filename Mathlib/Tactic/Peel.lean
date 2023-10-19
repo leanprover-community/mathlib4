@@ -14,7 +14,7 @@ import Mathlib.Tactic.Basic
 to introduce variables with the supplied names.
 -/
 
-open Lean Expr Meta Qq Elab Tactic
+open Lean Expr Meta Qq Elab Tactic Mathlib.Tactic
 
 private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
@@ -29,68 +29,87 @@ type `q x` where `x : α` has been introduced into the context.
 The special casing for `e`/`goal` pairs of type `r ∧ p` and `r ∧ q` exists primarily to deal with
 quantified statements like `∃ δ > (0 : ℝ), q δ`. -/
 def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Option Name := none) :
-    MetaM (List MVarId) := goal.withContext do
+    MetaM (Option FVarId × List MVarId) := goal.withContext do
   let ty : Q(Prop) ← whnfR (← inferType e)
   let target : Q(Prop) ← whnfR (← goal.getType)
   let freshName ← mkFreshUserName `h_peel
   unless (← isProp ty) && (← isProp target) do
-    return [goal]
+    return (.none, [goal])
   match ty, target with
     | .forallE _ t₁ b₁ _, .forallE n₂ t₂ b₂ c => do
       unless ← isDefEq (← whnfR t₁) (← whnfR t₂) do
-        return [goal]
+        return (.none, [goal])
       let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <| withLocalDecl n₂ c t₂ fun x => do
         mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
       goal.assign (← mkAppM ``forall_imp #[all_imp, e])
-      let (_, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n'.getD freshName]
-      return [new_goal]
+      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n'.getD freshName]
+      return (fvars[1]!, [new_goal])
     | ~q(∃ x : $α₁, $p x), ~q(∃ x : $α₂, $q x) => do
       unless ← isDefEq (← whnfR α₁) (← whnfR α₂) do
-        return [goal]
+        return (.none, [goal])
       let p : Q($α₂ → Prop) := p
       let e : Q(∃ x : $α₂, $p x) := e
       let all_imp : Q(∀ x : $α₂, $p x → $q x) ← mkFreshExprMVar q(∀ x : $α₂, $p x → $q x)
       goal.assign q(Exists.imp $all_imp $e)
-      let (_, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
-      return [new_goal]
+      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
+      return (fvars[1]!, [new_goal])
     | ~q($r ∧ $p), ~q($r' ∧ $q) => do
       unless ← isDefEq q($r) q($r') do
-        return [goal]
+        return (.none, [goal])
       let and_imp : Q($r' → $p → $q) ← mkFreshExprMVar q($r' → $p → $q)
       let e : Q($r' ∧ $p) := e
       goal.assign q(and_imp_left_of_imp_imp $and_imp $e)
-      let (_, new_goal) ← and_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
-      return [new_goal]
+      let (fvars, new_goal) ← and_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
+      return (fvars[1]!, [new_goal])
     | ~q(∀ᶠ (x : $α₁) in $f₁, $p x), ~q(∀ᶠ (x : $α₂) in $f₂, $q x) => do
       unless (← isDefEq (← whnfR α₁) (← whnfR α₂)) && (← isDefEq (← whnfR f₁) (← whnfR f₂)) do
-        return [goal]
+        return (.none, [goal])
       let p : Q($α₂ → Prop) := p
       let e : Q(∀ᶠ (x : $α₂) in $f₂, $p x) := e
       let all_imp : Q(∀ x : $α₂, $p x → $q x) ← mkFreshExprMVar q(∀ x : $α₂, $p x → $q x)
       goal.assign q(Filter.Eventually.mp $e (Filter.eventually_of_forall $all_imp))
-      let (_, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
-      return [new_goal]
+      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
+      return (fvars[1]!, [new_goal])
     | ~q(∃ᶠ (x : $α₁) in $f₁, $p x), ~q(∃ᶠ (x : $α₂) in $f₂, $q x) => do
       unless (← isDefEq (← whnfR α₁) (← whnfR α₂)) && (← isDefEq (← whnfR f₁) (← whnfR f₂)) do
-        return [goal]
+        return (.none, [goal])
       let p : Q($α₂ → Prop) := p
       let e : Q(∃ᶠ (x : $α₂) in $f₂, $p x) := e
       let all_imp : Q(∀ x : $α₂, $p x → $q x) ← mkFreshExprMVar q(∀ x : $α₂, $p x → $q x)
       goal.assign q(Filter.Frequently.mp $e (Filter.eventually_of_forall $all_imp))
-      let (_, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
-      return [new_goal]
+      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
+      return (fvars[1]!, [new_goal])
     | _, _ => do
-      return [goal]
+      return (.none, [goal])
 
-/-- a single application of `peelQuantifier`, lifted to the `Tactic` monad. -/
-def peelTacAux (e : TSyntax `term) (n : Option (TSyntax `ident)) (n' : Option (TSyntax `ident)) :
-    TacticM Unit := withMainContext do
-  let e ← Elab.Term.elabTerm e none
-  match n, n' with
-    | .some n₁, .some n₂ => liftMetaTactic (peelQuantifier · e (.some n₂.getId) (.some n₁.getId))
-    | .none, .some n₂ => liftMetaTactic (peelQuantifier · e (.some n₂.getId))
-    | .some n₁, .none => liftMetaTactic (peelQuantifier · e (n' := .some n₁.getId))
-    | .none, .none => liftMetaTactic (peelQuantifier · e)
+/-- Peels `n` quantifiers off the expression `e` and the main goal without naming the introduced
+variables. The expression `e`, with quantifiers removed, is assigned the default name `this`. -/
+def peelTacNum (e : Expr) (n : Nat) : TacticM Unit := withMainContext do
+  match n with
+  | 0 => pure ()
+  | 1 => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
+  | n + 2 =>
+    let fvar? ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
+    if let some fvarId := fvar? then
+      peelTacNum (.fvar fvarId) (n + 1)
+      let mvarId ← (← getMainGoal).clear fvarId
+      replaceMainGoal [mvarId]
+
+/-- Given a list `l` of names, this continues to peel quantifiers off of the expression `e` and
+the main goal and introduces variables with the provided names until the list of names is exhausted.
+Note: the first name in the list is used for the name of the expression `e` with quantifiers
+removed. If `l` is empty, one quantifier is removed with the default name `this`. -/
+def peelTacArgs (e : Expr) (l : List Name) : TacticM Unit := withMainContext do
+  match l with
+  | [] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := `this))
+  | [h] => let _ ← liftMetaTacticAux (peelQuantifier · e (n' := h))
+  | [h₁, h₂] => let _ ← liftMetaTacticAux (peelQuantifier · e h₂ h₁)
+  | h₁ :: h₂ :: h₃ :: hs =>
+    let fvar? ← liftMetaTacticAux (peelQuantifier · e h₂ h₁)
+    if let some fvarId := fvar? then
+      peelTacArgs (.fvar fvarId) (h₁ :: h₃ :: hs)
+      let mvarId ← (← getMainGoal).clear fvarId
+      replaceMainGoal [mvarId]
 
 /--
 Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
@@ -127,23 +146,10 @@ This tactic works by repeatedly applying `forall_imp`, `Exists.imp`, `Filter.Eve
 `Filter.Frequently.mp`, and `Filter.eventually_of_forall` and introducing the variables as these
 are applied.
 -/
-syntax (name := peel) "peel" (num)? (ppSpace term) (Mathlib.Tactic.withArgs)? : tactic
+syntax (name := peel) "peel" (num)? (ppSpace colGt term) (withArgs)? : tactic
 
-/-- The `peel` tactic. -/
-@[tactic peel] def peelTac : Tactic := fun stx => do
-  match stx with
-    | `(tactic| peel $e:term) => peelTacAux e .none .none
-    | `(tactic| peel $e:term with $n₁:ident) => peelTacAux e (.some n₁) .none
-    | `(tactic| peel $e:term with $n₁:ident $n₂:ident) => peelTacAux e (.some n₁) (.some n₂)
-    | `(tactic| peel $e:term with $n₁:ident $n₂:ident $n₃:ident*) =>
-        evalTactic (← `(tactic| peel $e:term with $n₁ $n₂; have h' := $n₁; clear $n₁;
-          peel h' with $n₁ $n₃:ident*; clear h'))
-    | `(tactic| peel $n:num $e:term with $h₁:ident) =>
-      match n.getNat with
-        | 0 => pure ()
-        | 1 => evalTactic (← `(tactic| peel $e:term with $h₁))
-        | k + 2 =>
-          let j := Syntax.mkNumLit <| toString (k + 1)
-          evalTactic (← `(tactic| peel $e:term with $h₁; have h' := $h₁; clear $h₁;
-            peel $j h' with $h₁; clear h'))
-    | _ => Elab.throwUnsupportedSyntax
+elab_rules : tactic
+  | `(tactic| peel $n:num $e:term) => withMainContext do peelTacNum (← elabTerm e none) n.getNat
+  | `(tactic| peel $e:term) => withMainContext do peelTacArgs (← elabTerm e none) []
+  | `(tactic| peel $e:term $h:withArgs) => withMainContext do
+    peelTacArgs (← elabTerm e none) <| ((← getWithArgs h).map Syntax.getId).toList
