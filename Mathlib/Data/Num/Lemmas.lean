@@ -883,7 +883,8 @@ theorem le_iff_cmp {m n} : m ≤ n ↔ cmp m n ≠ Ordering.gt :=
   not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> exact by decide
 #align num.le_iff_cmp Num.le_iff_cmp
 
-theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool} (p : PosNum → PosNum → Num)
+theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool}
+    (p : PosNum → PosNum → Num)
     (gff : g false false = false) (f00 : f 0 0 = 0)
     (f0n : ∀ n, f 0 (pos n) = cond (g false true) (pos n) 0)
     (fn0 : ∀ n, f (pos n) 0 = cond (g true false) (pos n) 0)
