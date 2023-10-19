@@ -801,8 +801,7 @@ theorem Integrable.prod_mk {f : α → β} {g : α → γ} (hf : Integrable f μ
       eventually_of_forall fun x =>
         calc
           max ‖f x‖ ‖g x‖ ≤ ‖f x‖ + ‖g x‖ := max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
-          _ ≤ ‖‖f x‖ + ‖g x‖‖ := le_abs_self _
-          ⟩
+          _ ≤ ‖‖f x‖ + ‖g x‖‖ := le_abs_self _⟩
 #align measure_theory.integrable.prod_mk MeasureTheory.Integrable.prod_mk
 
 theorem Memℒp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → β} [IsFiniteMeasure μ]
@@ -1448,6 +1447,10 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
   simp [edist_eq_coe_nnnorm]
 #align measure_theory.integrable.norm_to_L1 MeasureTheory.Integrable.norm_toL1
 
+theorem nnnorm_toL1 {f : α → β} (hf : Integrable f μ) :
+    (‖hf.toL1 f‖₊ : ℝ≥0∞) = ∫⁻ a, ‖f a‖₊ ∂μ := by
+  simpa [Integrable.toL1, snorm, snorm'] using ENNReal.coe_toNNReal hf.2.ne
+
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
@@ -1499,16 +1502,12 @@ end restrict
 
 end MeasureTheory
 
+section ContinuousLinearMap
+
 open MeasureTheory
 
 variable {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
-
-theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
-    (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
-  (φ_int.norm.mul_const ‖v‖).mono' (φ_int.aestronglyMeasurable.apply_continuousLinearMap v)
-    (eventually_of_forall fun a => (φ a).le_op_norm v)
-#align measure_theory.integrable.apply_continuous_linear_map MeasureTheory.Integrable.apply_continuousLinearMap
 
 theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E) (φ_int : Integrable φ μ) :
     Integrable (fun a : α => L (φ a)) μ :=
@@ -1516,3 +1515,27 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
     (eventually_of_forall fun a => L.le_op_norm (φ a))
 #align continuous_linear_map.integrable_comp ContinuousLinearMap.integrable_comp
+
+theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
+    (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
+  (ContinuousLinearMap.apply 𝕜 _ v).integrable_comp φ_int
+#align measure_theory.integrable.apply_continuous_linear_map MeasureTheory.Integrable.apply_continuousLinearMap
+
+end ContinuousLinearMap
+
+namespace MeasureTheory
+
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+lemma Integrable.fst {f : α → E × F} (hf : Integrable f μ) : Integrable (fun x ↦ (f x).1) μ :=
+  (ContinuousLinearMap.fst ℝ E F).integrable_comp hf
+
+lemma Integrable.snd {f : α → E × F} (hf : Integrable f μ) : Integrable (fun x ↦ (f x).2) μ :=
+  (ContinuousLinearMap.snd ℝ E F).integrable_comp hf
+
+lemma integrable_prod {f : α → E × F} :
+    Integrable f μ ↔ Integrable (fun x ↦ (f x).1) μ ∧ Integrable (fun x ↦ (f x).2) μ :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
+
+end MeasureTheory

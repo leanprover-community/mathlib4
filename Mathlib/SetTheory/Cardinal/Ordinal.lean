@@ -555,7 +555,7 @@ theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a 
 #align cardinal.mul_eq_max Cardinal.mul_eq_max
 
 @[simp]
-theorem mul_mk_eq_max {α β : Type _} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
+theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
   mul_eq_max (aleph0_le_mk α) (aleph0_le_mk β)
 #align cardinal.mul_mk_eq_max Cardinal.mul_mk_eq_max
 
@@ -735,12 +735,12 @@ theorem add_eq_max' {a b : Cardinal} (ha : ℵ₀ ≤ b) : a + b = max a b := by
 #align cardinal.add_eq_max' Cardinal.add_eq_max'
 
 @[simp]
-theorem add_mk_eq_max {α β : Type _} [Infinite α] : #α + #β = max #α #β :=
+theorem add_mk_eq_max {α β : Type u} [Infinite α] : #α + #β = max #α #β :=
   add_eq_max (aleph0_le_mk α)
 #align cardinal.add_mk_eq_max Cardinal.add_mk_eq_max
 
 @[simp]
-theorem add_mk_eq_max' {α β : Type _} [Infinite β] : #α + #β = max #α #β :=
+theorem add_mk_eq_max' {α β : Type u} [Infinite β] : #α + #β = max #α #β :=
   add_eq_max' (aleph0_le_mk β)
 #align cardinal.add_mk_eq_max' Cardinal.add_mk_eq_max'
 
@@ -810,8 +810,11 @@ theorem add_nat_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : a + n = a :=
   add_eq_left ha ((nat_lt_aleph0 _).le.trans ha)
 #align cardinal.add_nat_eq Cardinal.add_nat_eq
 
+theorem nat_add_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : n + a = a := by
+  rw [add_comm, add_nat_eq n ha]
+
 theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
-  add_eq_left ha (one_le_aleph0.trans ha)
+  add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
 --Porting note: removed `simp`, `simp` can prove it
@@ -1479,7 +1482,7 @@ open scoped Cardinal
 /--
 Bounding the cardinal of an ordinal-indexed union of sets.
 -/
-lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {o : Ordinal} {c : Cardinal}
+lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) :
     #(⋃ j < o, A j) ≤ c := by

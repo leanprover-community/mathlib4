@@ -36,6 +36,8 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Limits
+import Mathlib.Algebra.Category.AlgebraCat.Monoidal
+import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
@@ -484,6 +486,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.StructureSheaf
@@ -566,6 +569,7 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Inverse
 import Mathlib.Analysis.Calculus.Deriv.Linear
 import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Prod
@@ -585,6 +589,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Extend
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Measurable
 import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Analysis.Calculus.FDeriv.Pi
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FDeriv.Star
@@ -1310,6 +1315,7 @@ import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
+import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.EpsilonNFA
@@ -2339,6 +2345,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
+import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
+import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Symmetric
 import Mathlib.LinearAlgebra.QuadraticForm.Real
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
@@ -2801,6 +2809,7 @@ import Mathlib.Probability.CondCount
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Density
+import Mathlib.Probability.Distributions.Gaussian
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Kernel
@@ -3365,7 +3374,10 @@ import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Connected
+import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.ContinuousFunction.Basic
@@ -3481,7 +3493,6 @@ import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartitionOfUnity
-import Mathlib.Topology.PathConnected
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.ProperMap
 import Mathlib.Topology.QuasiSeparated
