@@ -62,6 +62,7 @@ example : ¬ UnivLE.{u+1, u} := by
   simp only [Small_iff, not_forall, not_exists, not_nonempty_iff]
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
 
+
 open Cardinal
 
 theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+1} := by

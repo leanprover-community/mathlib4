@@ -138,6 +138,7 @@ end
 
 variable [FinCategory J]
 
+set_option pp.universes true
 /-- This follows this proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 although with different names.
@@ -181,9 +182,9 @@ theorem colimitLimitToLimitColimit_surjective :
       have t : (f, g j) =
           (((f, 𝟙 (k j)) : (j, k j) ⟶ (j', k j)) ≫ (𝟙 j', g j) : (j, k j) ⟶ (j', k')) := by
         simp only [id_comp, comp_id, prod_comp]
-      erw [Colimit.w_apply', t, FunctorToTypes.map_comp_apply, Colimit.w_apply', e, ←
-        Limit.w_apply' f, ← e]
-      simp
+      erw [Colimit.w_apply'.{v,v}, t, FunctorToTypes.map_comp_apply, Colimit.w_apply'.{v,v}, e,
+        ← Limit.w_apply' f, ← e]
+      simp only [Functor.comp_map, Colimit.ι_map_apply'.{v,v}, curry_obj_map_app]
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`
     -- where these images of `y j` and `y j'` become equal.
