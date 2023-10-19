@@ -44,9 +44,11 @@ lemma ofNat_toNat (x : BitVec w) : BitVec.ofNat w x.toNat = x := by
 lemma ofNat_toNat' (x : BitVec w) (h : v = w):
     HEq x (BitVec.ofNat v x.toNat) := h ▸ heq_of_eq (ofNat_toNat x).symm
 
-theorem toNat_append {x : BitVec w} {y : BitVec v} :
-    (x ++ y).toNat = x.toNat <<< v ||| y.toNat := by
+theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
+    (msbs ++ lsbs).toNat = msbs.toNat <<< v ||| lsbs.toNat := by
   -- `rfl` no longer works
+  simp only [(· ++ ·), Append.append, BitVec.append]
+  rw [toNat_ofNat]
   sorry
 
 theorem toNat_extractLsb {i j} {x : BitVec w} :
