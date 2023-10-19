@@ -75,3 +75,35 @@ theorem blockTriangular_Elementary [LinearOrder α] (i j : n) (c : R) :
     (BlockTriangular.add <| blockTriangular_id <| OrderDual.toDual ∘ b)
 
 end BlockTriangular
+
+variable [Fintype n]
+
+@[simp]
+theorem det_Elementary' (i : n) (c : R): det (Elementary i i c) = 1 + c := by
+  let d (j : n) : R :=
+    if j = i then 1 + c
+    else 1
+  have : Elementary i i c = diagonal d := by
+    unfold Elementary Single diagonal
+    aesop
+  aesop
+
+@[simp]
+theorem det_Elementary {i j : n} (hij : i ≠ j) (c : R): det (Elementary i j c) = 1 := by
+  have hS (k : n) : Single i j c k k = 0 := by
+    unfold Single
+    simp only [of_apply, ite_eq_right_iff, and_imp]
+    intro hki hkj
+    rw [hki.symm.trans hkj] at hij
+    tauto
+  haveI := LinearOrder.lift' (Fintype.equivFin n) (Fintype.equivFin n).injective
+  have h := blockTriangular_Elementary id i j c
+  cases h with
+  | inl h =>
+    rw [det_of_upperTriangular h]
+    unfold Elementary
+    simp [hS]
+  | inr h =>
+    rw [det_of_lowerTriangular _ h]
+    unfold Elementary
+    simp [hS]
