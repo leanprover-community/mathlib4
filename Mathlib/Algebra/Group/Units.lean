@@ -207,7 +207,8 @@ an additive commutative group."]
 instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ :=
   -- note: the original ported file had `{ (inferInstance : Group αˣ) with ... }`
   -- and this was removed because it was causing slowdowns: see lean4#2387
-  { mul_comm := fun _ _ => ext <| mul_comm _ _ }
+  { mul_left_inv := Units.instGroupUnits.mul_left_inv
+    mul_comm := fun _ _ => ext <| mul_comm _ _ }
 #align units.comm_group Units.instCommGroupUnits
 #align add_units.add_comm_group AddUnits.instAddCommGroupAddUnits
 

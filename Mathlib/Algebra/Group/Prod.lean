@@ -286,7 +286,8 @@ instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M �
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
-  { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
+  { Prod.instGroup with
+    toCommMonoid := Prod.instCommMonoid }
 
 end Prod
 

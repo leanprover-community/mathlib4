@@ -139,6 +139,7 @@ instance : Add (LeftInvariantDerivation I G) where
     ⟨X + Y, fun g => by
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
+set_option maxHeartbeats 300000 in
 instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by
     -- porting note: was simp [left_invariant']
