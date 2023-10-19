@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
+import Mathlib.Data.Fin.Tuple.Basic
 
 /-! # Function types of a given arity
 
@@ -16,6 +17,8 @@ Note that it is often preferrable to use `(Fin n → α) → α` in place of `Of
 
 * `Function.OfArity α n`: `n`-ary function `α → α → ... → α`. Defined inductively.
 * `Function.OfArity.const a n`: `n`-ary constant function equal to `a`.
+* `Function.OfArity.uncurry`: convert an `n`-ary function to a function from `Fin n → α`.
+* `Function.OfArity.curry`: convert a function from `Fin n → α` to an `n`-ary function.
 -/
 
 universe u
@@ -63,6 +66,49 @@ theorem const_succ_apply {α : Type u} (a : α) (n : ℕ) (x : α) : const a n.s
 instance OfArity.inhabited {α n} [Inhabited α] : Inhabited (OfArity α n) :=
   ⟨const default _⟩
 #align arity.arity.inhabited Function.OfArity.OfArity.inhabited
+
+section currying
+
+variable {α : Type u}
+
+/-- Uncurry all the arguments of `Function.OfArity α n` to get a function from a tuple.
+
+Note this can be used on raw functions if used-/
+def uncurry {n} (f : Function.OfArity α n) : (Fin n → α) → α :=
+  match n with
+  | 0 => fun _ => f
+  | _ + 1 => fun args => (f (args 0)).uncurry (args ∘ Fin.succ)
+
+/-- Uncurry all the arguments of `Function.OfArity α n` to get a function from a tuple. -/
+def curry {n} (f : (Fin n → α) → α) : Function.OfArity α n :=
+  match n with
+  | 0 => f Fin.elim0
+  | _ + 1 => fun a => curry (fun args => f (Fin.cons a args))
+
+@[simp]
+theorem curry_uncurry {n} (f : Function.OfArity α n) :
+    curry (uncurry f) = f :=
+  match n with
+  | 0 => rfl
+  | n + 1 => funext fun a => by
+    dsimp [curry, uncurry, Function.comp]
+    simp only [Fin.cons_zero, Fin.cons_succ]
+    eta_reduce
+    eta_reduce
+    rw [curry_uncurry]
+
+@[simp]
+theorem uncurry_curry {n} (f : (Fin n → α) → α) :
+    uncurry (curry f) = f := by
+  ext args
+  induction args using Fin.consInduction with
+  | h0 => rfl
+  | h a as ih =>
+    have := ih (fun args => f (Fin.cons a args))
+    dsimp [curry, uncurry, Function.comp]
+    simp only [Fin.cons_zero, Fin.cons_succ, this]
+
+end currying
 
 end OfArity
 
