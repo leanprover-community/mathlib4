@@ -251,7 +251,7 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
   intro f
   simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero,
     Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
-  use 2⁻¹, by norm_num
+  use (1 / 2), by norm_num
   rw [Filter.HasBasis.frequently_iff Metric.nhds_basis_ball]
   intro δ hδ
   obtain ⟨x, hx⟩ : ∃ x ∈ Metric.ball 0 δ, x ≠ 0 ∧ f x ≤ 0 := by
@@ -259,12 +259,8 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
     · use (δ / 2)
       simp [h, abs_of_nonneg hδ.le, hδ, hδ.ne']
     · use -(δ / 2)
-      simp only [Metric.mem_ball, dist_zero_right, norm_neg, norm_div, norm_eq_abs,
-        abs_of_nonneg hδ.le, norm_ofNat, half_lt_self_iff, hδ, ne_eq, neg_eq_zero,
-        div_eq_zero_iff, hδ.ne', OfNat.ofNat_ne_zero, or_self,
-        not_false_eq_true, map_neg, Left.neg_nonpos_iff, true_and]
-      simp only [not_le] at h
-      exact h.le
+      push_neg at h
+      simp [h.le, abs_of_nonneg hδ.le, hδ, hδ.ne']
   use x, hx.left
   rw [lt_abs]
   left
