@@ -12,9 +12,12 @@ import Mathlib.Tactic.Basic
 `peel h with idents*` tries to apply `forall_imp` (or `Exists.imp`, or `Filter.Eventually.mp`,
 `Filter.Frequently.mp` and `Filter.eventually_of_forall`) with the argument `h` and uses `idents*`
 to introduce variables with the supplied names.
+
+Alternatively, one can provide a numeric argument as in `peel 4 h` which will peel 4 quantifiers off
+the expressions automatically name the introduced variables.
 -/
 
-open Lean Expr Meta Qq Elab Tactic Mathlib.Tactic
+open Lean Expr Meta Elab Tactic Mathlib.Tactic
 
 /--
 Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
@@ -67,57 +70,59 @@ The special casing for `e`/`goal` pairs of type `r ∧ p` and `r ∧ q` exists p
 quantified statements like `∃ δ > (0 : ℝ), q δ`. -/
 def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Option Name := none) :
     MetaM (Option FVarId × List MVarId) := goal.withContext do
-  let ty : Q(Prop) ← whnfR (← inferType e)
-  let target : Q(Prop) ← whnfR (← goal.getType)
+  let ty ← whnfR (← inferType e)
+  let target ← whnfR (← goal.getType)
   let freshName ← mkFreshUserName `h_peel
   unless (← isProp ty) && (← isProp target) do
     return (.none, [goal])
-  match ty, target with
-    | .forallE _ t₁ b₁ _, .forallE n₂ t₂ b₂ c => do
-      unless ← isDefEq (← whnfR t₁) (← whnfR t₂) do
+  match ty.getAppFnArgs, target.getAppFnArgs with
+    | (``Exists, #[_, .lam _ t₁ b₁ _]), (``Exists, #[_, .lam n₂ t₂ b₂ c]) =>
+      unless ← isDefEq t₁ t₂ do
         return (.none, [goal])
       let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <| withLocalDecl n₂ c t₂ fun x => do
         mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
-      goal.assign (← mkAppM ``forall_imp #[all_imp, e])
+      goal.assign (← mkAppM ``Exists.imp #[all_imp, e])
       let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n'.getD freshName]
       return (fvars[1]!, [new_goal])
-    | ~q(∃ x : $α₁, $p x), ~q(∃ x : $α₂, $q x) => do
-      unless ← isDefEq (← whnfR α₁) (← whnfR α₂) do
+    | (``And, #[r₁, p]), (``And, #[r₂, q]) =>
+      unless ← isDefEq r₁ r₂ do
         return (.none, [goal])
-      let p : Q($α₂ → Prop) := p
-      let e : Q(∃ x : $α₂, $p x) := e
-      let all_imp : Q(∀ x : $α₂, $p x → $q x) ← mkFreshExprMVar q(∀ x : $α₂, $p x → $q x)
-      goal.assign q(Exists.imp $all_imp $e)
-      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
-      return (fvars[1]!, [new_goal])
-    | ~q($r ∧ $p), ~q($r' ∧ $q) => do
-      unless ← isDefEq q($r) q($r') do
-        return (.none, [goal])
-      let and_imp : Q($r' → $p → $q) ← mkFreshExprMVar q($r' → $p → $q)
-      let e : Q($r' ∧ $p) := e
-      goal.assign q(and_imp_left_of_imp_imp $and_imp $e)
+      let and_imp ← mkFreshExprMVar <| ← mkArrow r₂ (← mkArrow p q)
+      goal.assign (← mkAppM ``and_imp_left_of_imp_imp #[and_imp, e])
       let (fvars, new_goal) ← and_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
       return (fvars[1]!, [new_goal])
-    | ~q(∀ᶠ (x : $α₁) in $f₁, $p x), ~q(∀ᶠ (x : $α₂) in $f₂, $q x) => do
-      unless (← isDefEq (← whnfR α₁) (← whnfR α₂)) && (← isDefEq (← whnfR f₁) (← whnfR f₂)) do
+    | (``Filter.Eventually, #[_, .lam _ _ b₁ _, f₁]),
+        (``Filter.Eventually, #[_, .lam n₂ t₂ b₂ c, f₂]) =>
+      unless ← isDefEq f₁ f₂ do
         return (.none, [goal])
-      let p : Q($α₂ → Prop) := p
-      let e : Q(∀ᶠ (x : $α₂) in $f₂, $p x) := e
-      let all_imp : Q(∀ x : $α₂, $p x → $q x) ← mkFreshExprMVar q(∀ x : $α₂, $p x → $q x)
-      goal.assign q(Filter.Eventually.mp $e (Filter.eventually_of_forall $all_imp))
-      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
+      let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <| withLocalDecl n₂ c t₂ fun x => do
+        mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
+      let event_forall ← mkAppOptM ``Filter.eventually_of_forall #[none, none, f₂, all_imp]
+      goal.assign (← mkAppM ``Filter.Eventually.mp #[e, event_forall])
+      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n'.getD freshName]
       return (fvars[1]!, [new_goal])
-    | ~q(∃ᶠ (x : $α₁) in $f₁, $p x), ~q(∃ᶠ (x : $α₂) in $f₂, $q x) => do
-      unless (← isDefEq (← whnfR α₁) (← whnfR α₂)) && (← isDefEq (← whnfR f₁) (← whnfR f₂)) do
+    | (``Filter.Frequently, #[_, .lam _ _ b₁ _, f₁]),
+        (``Filter.Frequently, #[_, .lam n₂ t₂ b₂ c, f₂]) =>
+      unless ← isDefEq f₁ f₂ do
         return (.none, [goal])
-      let p : Q($α₂ → Prop) := p
-      let e : Q(∃ᶠ (x : $α₂) in $f₂, $p x) := e
-      let all_imp : Q(∀ x : $α₂, $p x → $q x) ← mkFreshExprMVar q(∀ x : $α₂, $p x → $q x)
-      goal.assign q(Filter.Frequently.mp $e (Filter.eventually_of_forall $all_imp))
-      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD `_, n'.getD freshName]
+      let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <| withLocalDecl n₂ c t₂ fun x => do
+        mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
+      let event_forall ← mkAppOptM ``Filter.eventually_of_forall #[none, none, f₂, all_imp]
+      goal.assign (← mkAppM ``Filter.Frequently.mp #[e, event_forall])
+      let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n'.getD freshName]
       return (fvars[1]!, [new_goal])
-    | _, _ => do
-      return (.none, [goal])
+    | _, _ =>
+      match ty, target with
+        | .forallE _ t₁ b₁ _, .forallE n₂ t₂ b₂ c => do
+          unless ← isDefEq (← whnfR t₁) (← whnfR t₂) do
+            return (.none, [goal])
+          let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <|
+            withLocalDecl n₂ c t₂ fun x => do
+              mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
+          goal.assign (← mkAppM ``forall_imp #[all_imp, e])
+          let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n'.getD freshName]
+          return (fvars[1]!, [new_goal])
+        | _, _ => return (.none, [goal])
 
 /-- Peels `n` quantifiers off the expression `e` and the main goal without naming the introduced
 variables. The expression `e`, with quantifiers removed, is assigned the default name `this`. -/
