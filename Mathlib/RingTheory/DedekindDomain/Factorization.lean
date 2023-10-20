@@ -387,6 +387,16 @@ theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
       spanSingleton_one]
   rw [count_well_defined K v one_ne_zero h1, Ideal.span_singleton_one, Ideal.one_eq_top, sub_self]
 
+theorem count_prod {S : Finset (FractionalIdeal R⁰ K)} (hS : ∀ I ∈ S, I ≠ 0) :
+    count K v (∏ I in S, I) = ∑ I in S, (count K v I) := by
+  induction' S using Finset.induction with i S hi hrec
+  . rw [Finset.prod_empty, Finset.sum_empty, count_one]
+  . have hS' : ∀ (I : FractionalIdeal R⁰ K), I ∈ S → I ≠ 0 := fun I hI =>
+      hS I (Finset.mem_insert_of_mem hI)
+    have hS0 : ∏ x in S, x ≠ 0 := Finset.prod_ne_zero_iff.mpr hS'
+    have hi0 : i ≠ 0 := hS i (Finset.mem_insert_self i S)
+    rw [Finset.prod_insert hi, Finset.sum_insert hi, count_mul K v hi0 hS0, hrec hS']
+
 /-- For every `n ∈ ℕ` and every ideal `I`, `val_v(I^n) = n*val_v(I)`. -/
 theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
