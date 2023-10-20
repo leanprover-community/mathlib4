@@ -341,18 +341,12 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
   wπ := comp_zero
   hπ := CokernelCofork.IsColimit.ofEpiOfIsZero _ (by
     have := hS.hasHomology
-    have := hS.epi_toCycles
-    have fac : hkf.lift (KernelFork.ofι _ S.zero) = S.toCycles ≫
-        (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf).hom := by
-      apply Fork.IsLimit.hom_ext hkf
-      simp only [Fork.ofι_pt, parallelPair_obj_zero, Fork.IsLimit.lift_ι, Fork.ι_ofι, assoc,
-        ← toCycles_i]
-      congr 1
-      exact (IsLimit.conePointUniqueUpToIso_hom_comp S.cyclesIsKernel hkf
-        WalkingParallelPair.zero).symm
-    dsimp
-    rw [comp_id, fac]
-    apply epi_comp) (isZero_zero C)
+    refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
+      hS.epi_toCycles
+    refine' Arrow.isoMk (Iso.refl _)
+      (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) _
+    apply Fork.IsLimit.hom_ext hkf
+    simp [IsLimit.conePointUniqueUpToIso]) (isZero_zero C)
 
 /-- Given an exact short complex `S` and a colimit cokernel cofork `cc` for `S.f`, this is the
 right homology data for `S` with `Q := cc.pt` and `H := 0`. -/
@@ -369,17 +363,12 @@ noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
   wι := zero_comp
   hι := KernelFork.IsLimit.ofMonoOfIsZero _ (by
     have := hS.hasHomology
-    have := hS.mono_fromOpcycles
-    have fac : hcc.desc (CokernelCofork.ofπ _ S.zero) =
-      (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel ).hom ≫ S.fromOpcycles := by
-      apply Cofork.IsColimit.hom_ext hcc
-      simp only [Cofork.IsColimit.π_desc, Cofork.π_ofπ, ← p_fromOpcycles, ← assoc]
-      congr 1
-      exact (IsColimit.comp_coconePointUniqueUpToIso_hom hcc S.opcyclesIsCokernel
-        WalkingParallelPair.one).symm
-    dsimp
-    rw [id_comp, fac]
-    apply mono_comp) (isZero_zero C)
+    refine' ((MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff _).2
+      hS.mono_fromOpcycles
+    refine' Arrow.isoMk (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel)
+      (Iso.refl _) _
+    apply Cofork.IsColimit.hom_ext hcc
+    simp [IsColimit.coconePointUniqueUpToIso]) (isZero_zero C)
 
 variable (S)
 
