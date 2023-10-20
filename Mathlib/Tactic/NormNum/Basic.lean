@@ -168,7 +168,8 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   simp only [Int.cast_add, Int.cast_mul, Int.cast_ofNat, ← mul_assoc,
     add_mul, mul_mul_invOf_self_cancel] at h₁
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
-  simp [← mul_assoc, H] at h₁ h₂; rw [h₁, h₂, Nat.cast_commute]
+  simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ←mul_assoc] at h₁ h₂
+  rw [h₁, h₂, Nat.cast_commute]
   simp only [mul_mul_invOf_self_cancel,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
@@ -348,10 +349,10 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (Int.cast (R := α)) h₁
   simp only [Int.cast_mul, Int.cast_ofNat] at h₁
-  simp [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
+  simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp [← mul_assoc] at h₂; rw [H] at h₂
-  simp [mul_mul_invOf_self_cancel] at h₂; rw [h₂, Nat.cast_commute]
+  simp only [mul_mul_invOf_self_cancel'] at h₂; rw [h₂, Nat.cast_commute]
   simp only [mul_mul_invOf_self_cancel,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]

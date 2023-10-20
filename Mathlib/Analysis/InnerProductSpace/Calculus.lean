@@ -245,6 +245,28 @@ theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
   ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
 #align differentiable_at.norm DifferentiableAt.norm
 
+theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
+  rw [DifferentiableAt]
+  push_neg
+  intro f
+  simp only [HasFDerivAt, HasFDerivAtFilter, abs_zero, sub_zero,
+    Asymptotics.isLittleO_iff, norm_eq_abs, not_forall, not_eventually, not_le, exists_prop]
+  use (1 / 2), by norm_num
+  rw [Filter.HasBasis.frequently_iff Metric.nhds_basis_ball]
+  intro δ hδ
+  obtain ⟨x, hx⟩ : ∃ x ∈ Metric.ball 0 δ, x ≠ 0 ∧ f x ≤ 0 := by
+    by_cases f (δ / 2) ≤ 0
+    · use (δ / 2)
+      simp [h, abs_of_nonneg hδ.le, hδ, hδ.ne']
+    · use -(δ / 2)
+      push_neg at h
+      simp [h.le, abs_of_nonneg hδ.le, hδ, hδ.ne']
+  use x, hx.left
+  rw [lt_abs]
+  left
+  cancel_denoms
+  linarith [abs_pos.mpr hx.right.left]
+
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
   simp only [dist_eq_norm]; exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)

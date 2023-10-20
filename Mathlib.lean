@@ -486,6 +486,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.StructureSheaf
@@ -2394,6 +2395,7 @@ import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Function.OfArity
 import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
@@ -3567,8 +3569,6 @@ import Mathlib.Util.Imports
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
-import Mathlib.Util.PPBeta
-import Mathlib.Util.PPBetaOption
 import Mathlib.Util.PiNotation
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
