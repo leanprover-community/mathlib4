@@ -258,9 +258,8 @@ end SeparableAssumption
 
 section FiniteIntermediateField
 
-theorem exists_primitive_element_of_finite_intermediateField :
-    Finite (IntermediateField F E) → ∃ α : E, F⟮α⟯ = ⊤ := by
-  intro h
+theorem exists_primitive_element_of_finite_intermediateField
+    (h : Finite (IntermediateField F E)) : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
     have base : P ⊥ := ⟨0, adjoin_zero⟩
@@ -365,9 +364,9 @@ lemma finite_intermediateField_of_exists_primitive_element.aux_fin
   exact Finite.of_injective i hinj
 
 -- A finite simple extension has only finitely many intermediate fields
-theorem finite_intermediateField_of_exists_primitive_element :
-    (∃ α : E, F⟮α⟯ = ⊤) → Finite (IntermediateField F E) := by
-  intro ⟨α, hprim⟩
+theorem finite_intermediateField_of_exists_primitive_element
+    (h : ∃ α : E, F⟮α⟯ = ⊤) : Finite (IntermediateField F E) := by
+  obtain ⟨α, hprim⟩ := h
   -- Let `f` be the minimal polynomial of `α ∈ E` over `F`
   let f : Polynomial F := minpoly F α
   let G := { g : Polynomial E // g.Monic ∧ g ∣ f.map (algebraMap F E) }
