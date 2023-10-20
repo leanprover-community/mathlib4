@@ -390,7 +390,7 @@ theorem count_self : count K v (v.asIdeal : FractionalIdeal R⁰ K) = 1 := by
     ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one, Associates.count_zero hv_irred,
     ofNat_zero, sub_zero, ofNat_one]
 
-/-- `val_v(v) = n` for every `n ∈ ℕ`. -/
+/-- `val_v(v^n) = n` for every `n ∈ ℕ`. -/
 theorem count_pow_self (n : ℕ) :
     count K v ((v.asIdeal : FractionalIdeal R⁰ K) ^ n) = n := by
   rw [count_pow, count_self, mul_one]
@@ -415,7 +415,7 @@ theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
   · rw [negSucc_coe, count_inv, zpow_ofNat, count_pow]
     ring
 
-/-- `val_v(v) = n` for every `n ∈ ℤ`. -/
+/-- `val_v(v^n) = n` for every `n ∈ ℤ`. -/
 theorem count_zpow_self (n : ℤ) :
     count K v ((v.asIdeal : FractionalIdeal R⁰ K) ^ n) = n := by
   rw [count_zpow, count_self, mul_one]
