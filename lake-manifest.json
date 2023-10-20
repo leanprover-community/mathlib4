@@ -2,12 +2,12 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
-   {"url": "https://github.com/leanprover/std4",
+   {"url": "https://github.com/bustercopley/std4",
     "subDir?": null,
-    "rev": "8e33f882d2281b2e108642d8c9dc982b9cf7dbf3",
+    "rev": "ba792fef93a1e680231ad8b0bc80e7c3b4e7aa5a",
     "opts": {},
     "name": "std",
-    "inputRev?": "lean-pr-testing-2688",
+    "inputRev?": "code-action-document-version-selfcontained",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
