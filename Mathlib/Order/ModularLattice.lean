@@ -409,12 +409,12 @@ theorem disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
   rwa [sup_comm, disjoint_comm] at hsup
 #align disjoint.disjoint_sup_left_of_disjoint_sup_right Disjoint.disjoint_sup_left_of_disjoint_sup_right
 
-theorem isCompl_sup_right_of_isCompl_sup_left [CompleteLattice α] [IsModularLattice α]
+theorem isCompl_sup_right_of_isCompl_sup_left [Lattice α] [BoundedOrder α] [IsModularLattice α]
     (h : Disjoint a b) (hcomp : IsCompl (a ⊔ b) c) :
     IsCompl a (b ⊔ c) :=
   ⟨h.disjoint_sup_right_of_disjoint_sup_left hcomp.disjoint, codisjoint_assoc.mp hcomp.codisjoint⟩
 
-theorem isCompl_sup_left_of_isCompl_sup_right [CompleteLattice α] [IsModularLattice α]
+theorem isCompl_sup_left_of_isCompl_sup_right [Lattice α] [BoundedOrder α] [IsModularLattice α]
     (h : Disjoint b c) (hcomp : IsCompl a (b ⊔ c)) :
     IsCompl (a ⊔ b) c :=
   ⟨h.disjoint_sup_left_of_disjoint_sup_right hcomp.disjoint, codisjoint_assoc.mpr hcomp.codisjoint⟩

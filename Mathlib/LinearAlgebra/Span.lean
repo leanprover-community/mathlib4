@@ -373,6 +373,11 @@ theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 #align submodule.mem_sup' Submodule.mem_sup'
 
+lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
+    ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
+  suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
+  simpa only [h.eq_top] using Submodule.mem_top
+
 variable (p p')
 
 theorem coe_sup : ↑(p ⊔ p') = (p + p' : Set M) := by
@@ -678,7 +683,7 @@ instance : IsCompactlyGenerated (Submodule R M) :=
   ⟨fun s =>
     ⟨(fun x => span R {x}) '' s,
       ⟨fun t ht => by
-        rcases(Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
+        rcases (Set.mem_image _ _ _).1 ht with ⟨x, _, rfl⟩
         apply singleton_span_isCompactElement, by
         rw [sSup_eq_iSup, iSup_image, ← span_eq_iSup_of_singleton_spans, span_eq]⟩⟩⟩
 
@@ -705,6 +710,10 @@ theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
   rw [← span_singleton_le_iff_mem, le_iSup_iff]
   simp only [span_singleton_le_iff_mem]
 #align submodule.mem_supr Submodule.mem_iSup
+
+theorem mem_sSup {s : Set (Submodule R M)} {m : M} :
+    (m ∈ sSup s) ↔ ∀ N, (∀ p ∈ s, p ≤ N) → m ∈ N := by
+  simp_rw [sSup_eq_iSup, Submodule.mem_iSup, iSup_le_iff]
 
 section
 
