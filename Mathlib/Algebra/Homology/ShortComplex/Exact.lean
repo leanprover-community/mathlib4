@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.MorphismProperty
 
 /-!
 # Exact short complexes
@@ -391,34 +392,14 @@ lemma exact_iff_mono_fromOpcycles [S.HasHomology] : S.Exact ↔ Mono S.fromOpcyc
 lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
     S.Exact ↔ Epi (kernel.lift S.g S.f S.zero) := by
   rw [exact_iff_epi_toCycles]
-  have eq₁ : kernel.lift S.g S.f S.zero = S.toCycles ≫ S.cyclesIsoKernel.hom := by
-    simp only [cyclesIsoKernel_hom, ← cancel_mono (kernel.ι S.g), kernel.lift_ι,
-      assoc, toCycles_i]
-  have eq₂ : S.toCycles = kernel.lift S.g S.f S.zero ≫ S.cyclesIsoKernel.inv := by
-    rw [eq₁, assoc, Iso.hom_inv_id, comp_id]
-  constructor
-  · intro
-    rw [eq₁]
-    apply epi_comp
-  · intro
-    rw [eq₂]
-    apply epi_comp
+  apply (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
+  exact Arrow.isoMk (Iso.refl _) S.cyclesIsoKernel (by aesop_cat)
 
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
-  have eq₁ : cokernel.desc S.f S.g S.zero = S.opcyclesIsoCokernel.inv ≫ S.fromOpcycles := by
-    simp only [← cancel_epi (cokernel.π S.f), cokernel.π_desc, opcyclesIsoCokernel_inv,
-      cokernel.π_desc_assoc, p_fromOpcycles]
-  have eq₂ : S.fromOpcycles = S.opcyclesIsoCokernel.hom ≫ cokernel.desc S.f S.g S.zero := by
-    rw [eq₁, Iso.hom_inv_id_assoc]
-  constructor
-  · intro
-    rw [eq₁]
-    apply mono_comp
-  · intro
-    rw [eq₂]
-    apply mono_comp
+  refine' (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm _)
+  exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
 
 end Preadditive
 
