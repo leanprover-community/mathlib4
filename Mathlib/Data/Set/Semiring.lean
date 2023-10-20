@@ -225,7 +225,7 @@ instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
 
 instance [CommMonoid α] : CanonicallyOrderedAdd (SetSemiring α) where
-  exists_add_of_le {_ b} ab := ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
+  exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
   le_self_add := subset_union_left
   le_add_self _ _ := subset_union_right _ _
 
