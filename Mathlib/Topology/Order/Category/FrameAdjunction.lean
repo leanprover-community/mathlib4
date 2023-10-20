@@ -97,36 +97,22 @@ def LocalePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
   map_inf' a b := rfl
   map_top' := rfl
-  map_sSup' S := by simp
-
-/-- The continuous function from a topological space `X` to the points of its frame of opens. -/
-def Neighborhoods : C(X, PT (Opens X)) where
-  toFun := LocalePointOfSpacePoint X
-  continuous_toFun := continuous_def.2 $ by rintro _ ⟨u, rfl⟩; simpa using u.2
-
-/-- The function underlying the counit. -/
-def CounitFun (u : L) : Opens (PT L) where
-  carrier := OpenOfElementHom L u
-  is_open' := by use u; rfl
+  map_sSup' S := by simp [Opens.mem_sSup]
 
 /-- The counit is a frame homomorphism. -/
 def counit_app_cont : FrameHom L (Opens $ PT L) where
-  toFun := CounitFun L
-  map_inf' a b := by simp [CounitFun]
-  map_top' := by simp [CounitFun]; rfl
-  map_sSup' S := by simp [CounitFun]; ext x; simp
-
-/-- The component of the counit at an object of `Locale`. -/
-def counit_app (Lop : Locale) : (pt.comp topToLocale).obj Lop ⟶ Lop where
-  unop := counit_app_cont Lop
+  toFun u := ⟨OpenOfElementHom L u, by use u; rfl⟩
+  map_inf' a b := by simp [OpenOfElementHom]
+  map_top' := by simp [OpenOfElementHom]; rfl
+  map_sSup' S := by simp [OpenOfElementHom]; ext; simp [Opens.coe_mk]
 
 /-- The counit as a natural transformation. -/
 def Counit : pt.comp topToLocale ⟶ 𝟭 Locale where
-  app := counit_app
+  app L := ⟨counit_app_cont L⟩
 
 /-- The unit as a natural transformation. -/
 def Unit : 𝟭 TopCat ⟶ topToLocale.comp pt where
-  app X := Neighborhoods X
+  app X := ⟨LocalePointOfSpacePoint X, continuous_def.2 $ by rintro _ ⟨u, rfl⟩; simpa using u.2⟩
 
 /-- The pair of unit and counit. -/
 def unitCounit : Adjunction.CoreUnitCounit topToLocale pt where
