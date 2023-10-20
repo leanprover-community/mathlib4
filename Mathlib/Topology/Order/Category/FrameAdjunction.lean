@@ -108,21 +108,12 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
   map_top' := by simp
   map_sSup' S := by ext; simp
 
-/-- The counit as a natural transformation. -/
-def Counit : pt.comp topToLocale ⟶ 𝟭 Locale where
-  app L := ⟨counit_app_cont L⟩
-
-/-- The unit as a natural transformation. -/
-def Unit : 𝟭 TopCat ⟶ topToLocale.comp pt where
-  app X := ⟨LocalePointOfSpacePoint X, continuous_def.2 $ by rintro _ ⟨u, rfl⟩; simpa using u.2⟩
-
-/-- The pair of unit and counit. -/
-def unitCounit : Adjunction.CoreUnitCounit topToLocale pt where
-  unit := Unit
-  counit := Counit
-
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
-def adjunctionTopToLocalePT : topToLocale ⊣ pt := Adjunction.mkOfUnitCounit unitCounit
+def adjunctionTopToLocalePT : topToLocale ⊣ pt :=
+  Adjunction.mkOfUnitCounit
+    { unit := { app := fun X ↦ ⟨localePointOfSpacePoint X, continuous_def.2 <|
+        by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
+      counit := { app := fun L ↦ ⟨counitAppCont L⟩ } }
 
 end locale_top_adjunction
 
