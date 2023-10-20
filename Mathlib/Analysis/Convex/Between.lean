@@ -274,14 +274,14 @@ theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
   rw [Wbtw, Wbtw, affineSegment_comm]
 #align wbtw_comm wbtw_comm
 
-alias wbtw_comm ↔ Wbtw.symm _
+alias ⟨Wbtw.symm, _⟩ := wbtw_comm
 #align wbtw.symm Wbtw.symm
 
 theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
   rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
 #align sbtw_comm sbtw_comm
 
-alias sbtw_comm ↔ Sbtw.symm _
+alias ⟨Sbtw.symm, _⟩ := sbtw_comm
 #align sbtw.symm Sbtw.symm
 
 variable (R)
@@ -561,7 +561,7 @@ theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) 
   rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
   rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
-  simp [vsub_vadd_eq_vsub_sub, smul_sub, smul_smul, ← sub_smul]
+  simp only [vadd_vsub, smul_smul, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul]
   ring_nf
 #align wbtw.same_ray_vsub Wbtw.sameRay_vsub
 

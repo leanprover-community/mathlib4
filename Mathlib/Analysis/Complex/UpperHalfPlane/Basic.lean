@@ -180,7 +180,7 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   intro H
   have DET := (mem_glpos _).1 g.prop
   have hz := z.prop
-  simp only [GeneralLinearGroup.det_apply_val] at DET
+  simp only [GeneralLinearGroup.val_det_apply] at DET
   have H1 : (↑ₘg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa [num, denom] using congr_arg Complex.im H
   cases' H1 with H1
   · simp only [H1, Complex.ofReal_zero, denom, zero_mul, zero_add,
@@ -219,7 +219,7 @@ def smulAux (g : GL(2, ℝ)⁺) (z : ℍ) : ℍ :=
     rw [smulAux'_im]
     convert mul_pos ((mem_glpos _).1 g.prop)
         (div_pos z.im_pos (Complex.normSq_pos.mpr (denom_ne_zero g z))) using 1
-    simp only [GeneralLinearGroup.det_apply_val]
+    simp only [GeneralLinearGroup.val_det_apply]
     ring
 #align upper_half_plane.smul_aux UpperHalfPlane.smulAux
 
@@ -404,7 +404,7 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
 nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
-  simp only [GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
+  simp only [GeneralLinearGroup.val_det_apply, coe_GLPos_coe_GL_coe_matrix,
     Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul, coe']
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
 

@@ -1048,7 +1048,7 @@ theorem toFun_inducedStructureEquiv (e : M ≃ N) :
 
 @[simp]
 theorem toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
-  (by
+    (by
     letI : L.Structure N := inducedStructure e
     exact FunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
   rfl

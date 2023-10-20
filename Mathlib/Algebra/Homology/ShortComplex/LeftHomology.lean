@@ -7,14 +7,15 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-/-! LeftHomology of short complexes
+/-!
+# Left Homology of short complexes
 
 Given a short complex `S : ShortComplex C`, which consists of two composable
 maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that `f ≫ g = 0`, we shall define
-here the "left homology" `S.leftHomology` of `S` (TODO). For this, we introduce the
+here the "left homology" `S.leftHomology` of `S`. For this, we introduce the
 notion of "left homology data". Such an `h : S.LeftHomologyData` consists of the
-datum of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
-`K` to the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` to the cokernel
+data of morphisms `i : K ⟶ X₂` and `π : K ⟶ H` such that `i` identifies
+`K` with the kernel of `g : X₂ ⟶ X₃`, and that `π` identifies `H` with the cokernel
 of the induced map `f' : X₁ ⟶ K`.
 
 When such a `S.LeftHomologyData` exists, we shall say that `[S.HasLeftHomology]`
@@ -24,7 +25,7 @@ Similarly, we define `S.cycles` to be the `K` field.
 The dual notion is defined in `RightHomologyData.lean`. In `Homology.lean`,
 when `S` has two compatible left and right homology data (i.e. they give
 the same `H` up to a canonical isomorphism), we shall define `[S.HasHomology]`
-and `S.homology` (TODO).
+and `S.homology`.
 
 -/
 
@@ -41,7 +42,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 
 /-- A left homology data for a short complex `S` consists of morphisms `i : K ⟶ S.X₂` and
 `π : K ⟶ H` such that `i` identifies `K` to the kernel of `g : S.X₂ ⟶ S.X₃`,
-and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` --/
+and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` -/
 structure LeftHomologyData where
   /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
   K : C
@@ -53,11 +54,11 @@ structure LeftHomologyData where
   π : K ⟶ H
   /-- the kernel condition for `i` -/
   wi : i ≫ S.g = 0
-  /-- `i : K ⟶ S.X₂ ` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
+  /-- `i : K ⟶ S.X₂` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
   hi : IsLimit (KernelFork.ofι i wi)
   /-- the cokernel condition for `π` -/
   wπ : hi.lift (KernelFork.ofι _ S.zero) ≫ π = 0
-  /-- `π : K ⟶ H ` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
+  /-- `π : K ⟶ H` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   hπ : IsColimit (CokernelCofork.ofπ π wπ)
 
 initialize_simps_projections LeftHomologyData (-hi, -hπ)
@@ -358,7 +359,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
 @[simps]
@@ -369,7 +370,7 @@ def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
   φK := 𝟙 _
   φH := c.π
 
-/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
+/-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the left homology map
 data (for the identity of `S`) which relates the left homology data
 `LeftHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]

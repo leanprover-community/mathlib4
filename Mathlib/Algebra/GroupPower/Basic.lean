@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.TypeTags
 
 #align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
@@ -103,7 +103,7 @@ theorem pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
 #align pow_two pow_two
 #align two_nsmul two_nsmul
 
-alias pow_two ← sq
+alias sq := pow_two
 #align sq sq
 
 @[to_additive three'_nsmul]
@@ -237,7 +237,7 @@ theorem dvd_pow {x y : M} (hxy : x ∣ y) : ∀ {n : ℕ} (_ : n ≠ 0), x ∣ y
     exact hxy.mul_right _
 #align dvd_pow dvd_pow
 
-alias dvd_pow ← Dvd.dvd.pow
+alias Dvd.dvd.pow := dvd_pow
 
 theorem dvd_pow_self (a : M) {n : ℕ} (hn : n ≠ 0) : a ∣ a ^ n :=
   dvd_rfl.pow hn

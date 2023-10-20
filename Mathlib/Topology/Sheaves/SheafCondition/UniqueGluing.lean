@@ -164,7 +164,8 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
   · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
     -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext fun ⟨i⟩ => funext fun x => ?_
-    simp [res]
+    simp only [Discrete.functor_obj, Functor.const_obj_obj, fork_pt, parallelPair_obj_zero, fork_ι,
+      res._eq_1, types_comp_apply, Types.pi_lift_π_apply]
     simpa using m_spec x i
   · intro l hl
     ext x
@@ -319,8 +320,8 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     · refine' le_trans hcover _
       rw [sup_le_iff]
       constructor
-      · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up True)
-      · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up False)
+      · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up true)
+      · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up false)
     · rintro ⟨_ | _⟩
       any_goals exact h₁
       any_goals exact h₂

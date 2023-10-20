@@ -164,7 +164,7 @@ theorem balanced_iff_smul_mem : Balanced 𝕜 s ↔ ∀ ⦃a : 𝕜⦄, ‖a‖ 
   forall₂_congr fun _a _ha => smul_set_subset_iff
 #align balanced_iff_smul_mem balanced_iff_smul_mem
 
-alias balanced_iff_smul_mem ↔ Balanced.smul_mem _
+alias ⟨Balanced.smul_mem, _⟩ := balanced_iff_smul_mem
 #align balanced.smul_mem Balanced.smul_mem
 
 @[simp]
@@ -184,7 +184,7 @@ theorem Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 
 #align balanced.inter Balanced.inter
 
 theorem balanced_iUnion {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋃ i, f i) :=
-  fun _a ha => (smul_set_Union _ _).subset.trans <| iUnion_mono fun _ => h _ _ ha
+  fun _a ha => (smul_set_iUnion _ _).subset.trans <| iUnion_mono fun _ => h _ _ ha
 #align balanced_Union balanced_iUnion
 
 theorem balanced_iUnion₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
