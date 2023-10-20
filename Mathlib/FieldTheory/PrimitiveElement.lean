@@ -188,28 +188,24 @@ theorem primitive_element_inf_aux_of_finite_intermediateField
   obtain ⟨x, y, hneq⟩ := hinf.exists_pair_ne
   replace hneq : (x : F) ≠ (y : F) := fun h => hneq (SetCoe.ext h)
   have hx : f x = K := Set.mem_singleton_iff.1 $ Set.mem_preimage.1 $ Subtype.mem x
-  have hy : f y = K := Set.mem_singleton_iff.1 $ Set.mem_preimage.1 $ Subtype.mem y
-  simp only at hx hy
   use α + (x : F) • β
   apply le_antisymm
-  · rw [hx, adjoin_le_iff]
+  · simp only [hx, adjoin_le_iff]
     have αxβ_in_K : α + (x : F) • β ∈ F⟮α + (x : F) • β⟯ := mem_adjoin_simple_self F _
     have αyβ_in_K : α + (y : F) • β ∈ F⟮α + (y : F) • β⟯ := mem_adjoin_simple_self F _
-    rw [hx] at αxβ_in_K
-    rw [hy] at αyβ_in_K
+    simp only [hx] at αxβ_in_K
+    simp only [Set.mem_singleton_iff.1 $ Set.mem_preimage.1 $ Subtype.mem y] at αyβ_in_K
     have β_in_K := K.sub_mem αxβ_in_K αyβ_in_K
     rw [show (α + (x : F) • β) - (α + (y : F) • β) = ((x : F) - (y : F)) • β by
-      rw [sub_smul]
-      abel1] at β_in_K
+      rw [sub_smul]; abel1] at β_in_K
     replace β_in_K := K.smul_mem β_in_K (x := ((x : F) - (y : F))⁻¹)
     rw [smul_smul, inv_mul_eq_div, div_self (sub_ne_zero.2 hneq), one_smul] at β_in_K
     have α_in_K : α ∈ K := by
       rw [← add_sub_cancel α ((x : F) • β)]
       exact K.sub_mem αxβ_in_K (K.smul_mem β_in_K (x := (x : F)))
-    exact fun x hx => by
-      cases' hx with hx hx
-      · rwa [← hx] at α_in_K
-      · cases hx; norm_cast
+    rintro x (hx | hx)
+    · rwa [← hx] at α_in_K
+    · cases hx; norm_cast
   · rw [adjoin_simple_le_iff]
     have α_in_Fαβ : α ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert α {β})
     have β_in_Fαβ : β ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert_of_mem α rfl)
