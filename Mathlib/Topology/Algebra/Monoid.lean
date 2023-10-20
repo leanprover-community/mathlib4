@@ -570,7 +570,7 @@ instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A
 
 instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_nsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
 
 @[to_additive (attr := continuity)]

@@ -19,6 +19,8 @@ This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s i
 * `TensorProduct.directSumRight`
 -/
 
+suppress_compilation
+
 universe u v₁ v₂ w₁ w₁' w₂ w₂'
 
 section Ring

@@ -166,7 +166,7 @@ theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? 
   exacts [id, fun h2 => al (IH h2)]
 #align stream.seq.le_stable Stream'.Seq.le_stable
 
-/-- If a sequence terminated at position `n`, it also terminated at `m ≥ n `. -/
+/-- If a sequence terminated at position `n`, it also terminated at `m ≥ n`. -/
 theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.TerminatedAt m → s.TerminatedAt n :=
   le_stable
 #align stream.seq.terminated_stable Stream'.Seq.terminated_stable
@@ -976,7 +976,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
-  simp [ret, bind, map]
+  simp only [bind, map, ret._eq_1, map_nil]
   cases' f a with a s
   apply recOn s <;> intros <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind

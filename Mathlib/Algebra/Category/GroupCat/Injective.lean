@@ -64,8 +64,8 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
         let gₘ := g ⟨m, Submodule.subset_span (Set.mem_singleton _)⟩
         refine ⟨LinearMap.toSpanSingleton ℤ A (DivisibleBy.div gₘ m), fun n hn ↦ ?_⟩
         rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
-        rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g]
-        rfl
+        rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g,
+          SetLike.mk_smul_mk]
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
 instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
@@ -133,7 +133,8 @@ variable {a}
 
 lemma eq_zero_of_toRatCircle_apply_self
     (h : toRatCircle ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
-  rw [toRatCircle, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [toRatCircle, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
     LinearMap.toSpanSingleton_one, AddCircle.coe_eq_zero_iff] at h
   obtain ⟨n, hn⟩ := h
