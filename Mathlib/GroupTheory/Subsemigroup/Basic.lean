@@ -76,7 +76,7 @@ export AddMemClass (add_mem)
 
 attribute [to_additive] MulMemClass
 
-attribute [set_like] mul_mem add_mem
+attribute [aesop safe apply (rule_sets [SetLike])] mul_mem add_mem
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type*) [Mul M] where

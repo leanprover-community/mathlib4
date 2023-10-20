@@ -124,7 +124,7 @@ class AddSubgroupClass (S G : Type*) [SubNegMonoid G] [SetLike S G] extends AddS
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [set_like] inv_mem neg_mem
+attribute [aesop safe apply (rule_sets [SetLike])] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -140,13 +140,13 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := set_like) "An additive subgroup is closed under subtraction."]
+@[to_additive (attr := aesop safe apply (rule_sets [SetLike])) "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 #align div_mem div_mem
 #align sub_mem sub_mem
 
-@[to_additive (attr := set_like)]
+@[to_additive (attr := aesop safe apply (rule_sets [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_ofNat]

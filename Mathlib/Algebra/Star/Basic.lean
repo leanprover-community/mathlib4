@@ -62,7 +62,7 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
-attribute [set_like] star_mem
+attribute [aesop safe apply (rule_sets [SetLike])] star_mem
 
 namespace StarMemClass
 
