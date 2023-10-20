@@ -27,7 +27,7 @@ See `preservesTerminalOfIsSheafForEmpty`.
 See `preservesProductOfIsSheafFor`.
 -/
 
-universe v u w w'
+universe v u
 
 namespace CategoryTheory.Presieve
 
@@ -35,12 +35,6 @@ open Limits Opposite
 
 variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [HasInitial C]
     (hF : (ofArrows (X := ⊥_ C) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
-
-instance : (ofArrows (X := ⊥_ C) Empty.elim instIsEmptyEmpty.elim).hasPullbacks := by
-  constructor
-  intro _ _ _ hf
-  cases' hf with i
-  exact Empty.elim i
 
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
@@ -62,11 +56,10 @@ def preservesTerminalOfIsSheafForEmpty : PreservesLimit (Functor.empty Cᵒᵖ) 
     (F.mapIso (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)) ≪≫
     (terminalIsoIsTerminal (isTerminal_obj_initial_of_isSheafFor_empty_presieve F hF)).symm)
 
-variable [UnivLE.{w, (max u v)}] {α : Type} {X : α → C} [HasCoproduct X]
+variable {α : Type} {X : α → C} [HasCoproduct X]
     [(ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
     (hd : ∀ i j, i ≠ j → IsInitial (pullback (Sigma.ι X i) (Sigma.ι X j)))
     [∀ i, Mono (Sigma.ι X i)]
--- `α` should be `Type w` but this causes problems even though we have `[UnivLE.{w, max u v}]`
 
 variable (X)
 
@@ -140,7 +133,7 @@ theorem prodMap_comp : prodMap X F ≫ removeInitial₁ F X = removeInitial₂ F
     (prodIsoWithoutInitial F X hd).hom := by
   ext; simp [prodMap, removeInitial₁, removeInitial₂, prodIsoWithoutInitial, Pi.map']
 
-theorem iso_prodMap_aux {β : Type w} {Z : β → Type (max w w')} (p : β → Prop)
+theorem iso_prodMap_aux {β : Type v} {Z : β → Type (max u v)} (p : β → Prop)
     [∀ b, Decidable (p b)] (h : ∀ b, p b → Nonempty (Unique (Z b))) :
     IsIso (Pi.map' (fun a ↦ a.val) fun _ ↦ 𝟙 _ :
     (∏ Z) ⟶ ∏ fun (b : {a : β // ¬ (p a)}) ↦ Z b.val) := by
@@ -158,8 +151,8 @@ theorem iso_prodMap_aux {β : Type w} {Z : β → Type (max w w')} (p : β → P
       simp only [Types.pi_lift_π_apply] at hab
       exact hab
   · intro a
-    let i : ∀ (γ : Type w) (Y : γ → Type (max w w')), ∏ Y ≅ (x : γ) → Y x :=
-      fun γ Y ↦ Types.productIso.{w, w'} _
+    let i : ∀ (γ : Type v) (Y : γ → Type (max u v)), ∏ Y ≅ (x : γ) → Y x :=
+      fun γ Y ↦ Types.productIso.{v, max u v} _
     have : ∀ b, p b → Inhabited (Z b) := fun b hb ↦ (h b hb).some.instInhabited
     let a' : (b : β) → Z b := fun b ↦ if hb : p b then @default _ (this b hb)
       else (i {a : β // ¬ (p a)} (fun c ↦ Z c.val)).hom a ⟨b, hb⟩
