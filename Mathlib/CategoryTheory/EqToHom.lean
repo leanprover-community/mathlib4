@@ -98,7 +98,6 @@ theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
   cases w
   simp
 
-@[reassoc (attr := simp)]
 theorem eq_comp_of_heq {X Y Z W : C} (h : Y = Z) {f : Y ⟶ W} {g : Z ⟶ W} {i : X ⟶ Y} {j : X ⟶ Z}
     (h' : HEq f g) (w : i = j ≫ eqToHom h.symm) : i ≫ f = j ≫ g := by
   cases h
