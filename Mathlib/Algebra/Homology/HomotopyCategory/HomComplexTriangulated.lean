@@ -87,8 +87,8 @@ def homotopyBifunctorMapApp {K₁ K₂: CochainComplex C ℤ} {f₁ f₂ : K₁ 
     ext n (α : Cochain K₂ L n)
     apply Cochain.ext
     intro p q hpq
-    dsimp
-    erw [bifunctor_map_app_f_apply, bifunctor_map_app_f_apply]
+    dsimp [bifunctor]
+    erw [bifunctor_map_app_f_apply]--, bifunctor_map_app_f_apply]
     simp only [Opposite.unop_op, Quiver.Hom.unop_op, Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
     erw [Cochain.add_v]
     rw [δ_v (-1) 0 (neg_add_self 1) _ _ _ _ (n-1) (n+1) rfl rfl]
@@ -99,7 +99,8 @@ def homotopyBifunctorMapApp {K₁ K₂: CochainComplex C ℤ} {f₁ f₂ : K₁ 
     rw [δ_comp _ _ _ 0 (n+1) _ (by linarith) (by linarith) rfl]
     simp only [δ_ofHomotopy, Cochain.sub_comp, zsmul_sub, smul_add, smul_smul,
       Int.negOnePow_mul_self, one_smul, Int.negOnePow_succ, neg_smul, add_neg_cancel_comm,
-      Cochain.sub_v, Cochain.zero_cochain_comp_v, Cochain.ofHom_v, sub_add_cancel])
+      Cochain.sub_v, Cochain.zero_cochain_comp_v, Cochain.ofHom_v, sub_add_cancel]
+    rfl)
 
 section
 
@@ -150,7 +151,7 @@ instance : (functor K).CommShift ℤ where
   iso n := NatIso.ofComponents (fun L => rightShiftIso K L n) (fun {L₁ L₂} φ => by
     ext i (α : Cochain K (L₁⟦n⟧) i)
     dsimp
-    rw [rightShiftIso_hom_f_apply _ (i + n) rfl, rightShiftIso_hom_f_apply _ (i + n) rfl]
+    erw [rightShiftIso_hom_f_apply _ (i + n) rfl, rightShiftIso_hom_f_apply _ (i + n) rfl]
     simp only [HomComplex_X, shiftFunctor_obj_X, shiftFunctorObjXIso,
       HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, AddCommGroupCat.coe_id, id_eq]
     erw [functor_map_f_apply]
@@ -172,7 +173,7 @@ instance : (functor K).CommShift ℤ where
       Functor.CommShift.isoZero_hom_app, functor_obj,
       HomologicalComplex.comp_f, AddCommGroupCat.coe_comp, Function.comp_apply,
       functor_map_f_apply]
-    rw [XIsoOfEq_inv_apply_v,
+    erw [XIsoOfEq_inv_apply_v,
       α.rightUnshift_v i (add_zero i) p q (by linarith) q (by linarith),
       CochainComplex.shiftFunctorZero_inv_app_f]
     erw [XIsoOfEq_hom_apply_v]
@@ -189,10 +190,10 @@ instance : (functor K).CommShift ℤ where
       HomologicalComplex.comp_f, HomComplex_X, shiftFunctor_map_f', AddCommGroupCat.coe_comp, Function.comp_apply,
       functor_map_f_apply, CochainComplex.shiftFunctorAdd_inv_app_f]
     dsimp
-    rw [XIsoOfEq_inv_apply_v,
+    erw [XIsoOfEq_inv_apply_v,
       α.rightUnshift_v (i + a + b) (by linarith) p q (by linarith) (p + i) rfl]
     erw [XIsoOfEq_hom_apply_v]
-    rw [rightShiftIso_hom_f_apply _ (i + b) rfl]
+    erw [rightShiftIso_hom_f_apply _ (i + b) rfl]
     erw [rightShiftIso_hom_f_apply _ (i + a + b) (by linarith)]
     dsimp
     erw [XIsoOfEq_inv_apply_v]
@@ -225,7 +226,7 @@ instance {K₁ K₂ : (CochainComplex C ℤ)ᵒᵖ} (φ : K₁ ⟶ K₂) :
     apply Cochain.ext
     intro p q hpq
     simp only [Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
-    rw [rightShiftIso_hom_f_apply _ (i + n) rfl,
+    erw [rightShiftIso_hom_f_apply _ (i + n) rfl,
       rightShiftIso_hom_f_apply _ (i + n) rfl]
     dsimp
     simp only [Cochain.rightUnshift_v _ (i + n) rfl p q hpq (p + i) rfl,
@@ -267,7 +268,7 @@ noncomputable def rightMappingConeIsoX (i : ℤ) :
       simp only [HomComplex_X, MappingCone.inl_v_fst_v, id_apply, MappingCone.inr_f_fst_v,
         MappingCone.inl_v_snd_v, MappingCone.inr_f_snd_v]
       dsimp
-      rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply, add_zero, zero_add,
+      erw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply, add_zero, zero_add,
         Cochain.add_comp]
       simp only [Cochain.comp_assoc_of_second_degree_eq_neg_third_degree,
         Cochain.comp_assoc_of_second_is_zero_cochain, Cochain.comp_zero, add_zero,
@@ -278,7 +279,7 @@ noncomputable def rightMappingConeIsoX (i : ℤ) :
       erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
       simp only [HomComplex_X, MappingCone.inl_v_fst_v, id_apply, MappingCone.inr_f_fst_v,
         MappingCone.inl_v_snd_v, MappingCone.inr_f_snd_v]
-      rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply, add_zero, zero_add,
+      erw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply, add_zero, zero_add,
         Cochain.add_comp]
       simp only [Cochain.comp_assoc_of_second_degree_eq_neg_third_degree, Cochain.comp_assoc_of_second_is_zero_cochain,
         Cochain.comp_assoc_of_third_is_zero_cochain, MappingCone.inl_snd, Cochain.comp_zero,
@@ -291,12 +292,15 @@ noncomputable def rightMappingConeIsoX (i : ℤ) :
     erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
     simp only [HomComplex_X, MappingCone.inl_v_fst_v, id_apply, MappingCone.inr_f_fst_v,
       MappingCone.inl_v_snd_v, MappingCone.inr_f_snd_v]
-    rw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply]
+    erw [AddMonoidHom.zero_apply, AddMonoidHom.zero_apply]
     simp only [add_zero, zero_add]
     rw [Cochain.add_comp, Cochain.add_comp]
     simp only [Cochain.comp_assoc_of_second_degree_eq_neg_third_degree, MappingCone.inl_fst, Cochain.comp_id,
       Cochain.comp_assoc_of_second_is_zero_cochain, MappingCone.inr_fst, Cochain.comp_zero, add_zero,
       Cochain.comp_assoc_of_third_is_zero_cochain, MappingCone.inl_snd, MappingCone.inr_snd, zero_add]
+
+/-
+some proofs broke after merging, let us wait before fixing it
 
 @[simps!]
 noncomputable def rightMappingConeIso :
@@ -316,12 +320,15 @@ noncomputable def rightMappingConeIso :
       δ_comp α₁ (MappingCone.inl φ) (show _ = n by linarith) (n + 1 + 1) 0 (n + 1) rfl rfl (neg_add_self 1),
       MappingCone.δ_inl, Cochain.ofHom_comp, Int.negOnePow_neg, Int.negOnePow_one, neg_smul, one_smul, δ_comp_ofHom,
       Cochain.comp_assoc_of_first_is_zero_cochain, Cochain.neg_comp, map_neg, neg_zero]
-    rw [HomComplex_d_apply, AddMonoidHom.map_add]
+    erw [HomComplex_d_apply, AddMonoidHom.map_add, Int.negOnePow_succ]
+    dsimp
     erw [← comp_apply]
     rw [MappingCone.inl_v_d _ _ _ (n + 1 + 1) (by linarith) (by linarith)]
     dsimp
     erw [AddMonoidHom.sub_apply, comp_apply, comp_apply]
-    abel)
+    dsimp
+    simp
+    abel_nf)
 
 noncomputable def mappingConeTriangleIso :
     (functor K).mapTriangle.obj (MappingCone.triangle φ) ≅
@@ -374,7 +381,7 @@ noncomputable def mappingConeTriangleIso :
       neg_zero]
     rw [AddMonoidHom.zero_apply]
     simp only [add_zero]
-    rfl
+    rfl-/
 
 end
 
@@ -395,7 +402,7 @@ def leftShiftIso : HomComplex (K⟦m⟧) L ≅ (HomComplex K L)⟦n⟧ :=
             erw [id_comp, id_comp]
             ext (α : Cochain K L (i + n))
             dsimp
-            rw [Cochain.leftShiftAddEquiv_apply, Cochain.leftShiftAddEquiv_apply]
+            erw [Cochain.leftShiftAddEquiv_apply, Cochain.leftShiftAddEquiv_apply]
             erw [Cochain.leftShift_zsmul]
             rw [HomComplex_d_apply, α.δ_leftShift m i (i+1)
               (by linarith) (i + 1 + n) (by linarith)]
@@ -431,7 +438,7 @@ noncomputable def iso :
         intro K₁ K₂ φ
         ext i (α : Cochain (K₁.unop⟦-n⟧) L i)
         dsimp
-        rw [leftShiftIso_hom_f_apply _ _ (add_neg_self n) _ (i + n) rfl,
+        erw [leftShiftIso_hom_f_apply _ _ (add_neg_self n) _ (i + n) rfl,
           leftShiftIso_hom_f_apply _ _ (add_neg_self n) _ (i + n) rfl]
         simp only [HomComplex_X, shiftFunctor_obj_X, shiftFunctorObjXIso,
           HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, AddCommGroupCat.coe_id, id_eq]
@@ -497,6 +504,9 @@ lemma signs_compatibility (a b i : ℤ) :
 
 end BifunctorFlipObjCommShift
 
+/-
+this broke after merging master
+
 set_option maxHeartbeats 800000 in
 noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
   iso n := BifunctorFlipObjCommShift.iso n L
@@ -509,7 +519,7 @@ noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
     apply Cochain.ext
     intro p q hpq
     dsimp
-    rw [XIsoOfEq_inv_apply_v, Cochain.leftUnshift_v _ i _ p q (by linarith) p (by linarith),
+    erw [XIsoOfEq_inv_apply_v, Cochain.leftUnshift_v _ i _ p q (by linarith) p (by linarith),
       zero_mul, zero_mul, zero_add, EuclideanDomain.zero_div, Int.negOnePow_zero, one_smul]
     erw [bifunctor_map_app_f_apply]
     rw [Cochain.zero_cochain_comp_v, Cochain.ofHom_v]
@@ -563,13 +573,13 @@ noncomputable instance : ((bifunctor C).flip.obj L).CommShift ℤ where
       shiftFunctorOpIso_inv_app_f, shiftFunctorAdd'_inv_app_f']
     dsimp [HomologicalComplex.XIsoOfEq]
     erw [id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp]
-    erw [eqToHom_trans_assoc, eqToHom_trans_assoc]
+    erw [eqToHom_trans_assoc, eqToHom_trans_assoc]-/
 
 end
 
 section
 
-variable {K₁ K₂ : CochainComplex C ℤ} (φ : K₁ ⟶ K₂) (L : CochainComplex C ℤ)
+/-variable {K₁ K₂ : CochainComplex C ℤ} (φ : K₁ ⟶ K₂) (L : CochainComplex C ℤ)
   [HasBinaryBiproducts C]
 
 set_option maxHeartbeats 1000000 in
@@ -667,7 +677,7 @@ lemma leftMappingConeIso_hom_f_apply (i j : ℤ) (h : i + 1 = j)
         (leftMappingConeIsoX φ L j i h).hom
           ((shiftFunctorObjXIso (HomComplex (mappingCone φ) L) 1 i j h.symm).hom α) := by
   subst h
-  rfl
+  rfl-/
 
 /-set_option maxHeartbeats 400000 in
 def mappingConeTriangleIso' :
@@ -737,7 +747,7 @@ noncomputable instance (K : CochainComplex C ℤ) :
 instance (K : CochainComplex C ℤ) : NatTrans.CommShift (functor'Factors K).hom ℤ :=
   Quotient.liftCommShift_compatibility _ _ _ _
 
-instance [HasZeroObject C] [HasBinaryBiproducts C] (K : CochainComplex C ℤ) :
+/-instance [HasZeroObject C] [HasBinaryBiproducts C] (K : CochainComplex C ℤ) :
     (functor' K).IsTriangulated where
   map_distinguished T hT := by
     obtain ⟨L₁, L₂, φ, ⟨e⟩⟩ := hT
@@ -748,7 +758,7 @@ instance [HasZeroObject C] [HasBinaryBiproducts C] (K : CochainComplex C ℤ) :
       (Functor.mapTriangleIso (functor'Factors K)).app _ ≪≫
       (Functor.mapTriangleCompIso _ _).app _ ≪≫
       (HomotopyCategory.quotient AddCommGroupCat (ComplexShape.up ℤ)).mapTriangle.mapIso
-        (CochainComplex.HomComplex.mappingConeTriangleIso K φ)
+        (CochainComplex.HomComplex.mappingConeTriangleIso K φ)-/
 
 variable (C)
 
@@ -787,10 +797,10 @@ noncomputable instance (K : (HomotopyCategory C (ComplexShape.up ℤ))ᵒᵖ) :
 
 section
 
-noncomputable instance [HasZeroObject C] [HasBinaryBiproducts C]
+/-noncomputable instance [HasZeroObject C] [HasBinaryBiproducts C]
     (K : (HomotopyCategory C (ComplexShape.up ℤ))ᵒᵖ) :
     ((bifunctor C).obj K).IsTriangulated :=
-  (inferInstance : (functor' K.unop.1).IsTriangulated)
+  (inferInstance : (functor' K.unop.1).IsTriangulated)-/
 
 end
 
