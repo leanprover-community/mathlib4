@@ -174,7 +174,7 @@ theorem bit_true : bit true = bit1 :=
 #align nat.bit_tt Nat.bit_true
 
 @[simp]
-theorem bit_eq_zero {n b} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
+theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
   cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
@@ -183,6 +183,7 @@ lemma bit_toNat (b : Bool) : bit b 0 = b.toNat := by cases' b <;> simp
 theorem bodd_eq_bodd_iff {m n}: bodd n = bodd m ↔ n % 2 = m % 2 := by
   cases' hn : bodd n <;> cases' hm : bodd m
   <;> simp [mod_two_of_bodd, hn, hm]
+
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
   simpa only [not_and, Bool.not_eq_false] using (@bit_eq_zero n b).not
 

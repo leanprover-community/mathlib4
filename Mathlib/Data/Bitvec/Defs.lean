@@ -12,14 +12,18 @@ import Std.Data.BitVec
 
 /-!
 # Basic operations on bitvectors
-We define bitvectors. We choose the `Fin` representation over others for its relative efficiency
-(Lean has special support for `Nat`), alignment with `UIntXY` types which are also represented
-with `Fin`, and the fact that bitwise operations on `Fin` are already defined. Some other possible
-representations are `List Bool`, `{ l : List Bool // l.length = w}`, `Fin w → Bool`.
+Std has defined bitvector of length `w` as `Fin (2^w)`.
+Here we define a few more operations on these bitvectors
 
-We also define many bitvector operations from the
-[`QF_BV` logic](https://smtlib.cs.uiowa.edu/logics-all.shtml#QF_BV).
-of SMT-LIBv2.
+## Main definitions
+
+* `Std.BitVec.sgt`: Signed greater-than comparison of bitvectors
+* `Std.BitVec.sge`: Signed greater-equals comparison of bitvectors
+* `Std.BitVec.ugt`: Unsigned greater-than comparison of bitvectors
+* `Std.BitVec.uge`: Unsigned greater-equals comparison of bitvectors
+* `Std.BitVec.ofLEList`: Turn a little-endian list of Booleans into a bitvector
+* `Std.BitVec.ofBEList`: Turn a big-endian list of Booleans into a bitvector
+
 -/
 
 variable {w v : Nat}
@@ -81,22 +85,20 @@ protected def ugt (x y : BitVec w) : Prop := BitVec.ult y x
 protected def uge (x y : BitVec w) : Prop := BitVec.ule y x
 #align bitvec.uge Std.BitVec.uge
 
-/-! We add simp-lemmas that rewrite bitvector operations into the equivalent notation -/
-@[simp] lemma append_eq (x : BitVec w) (y : BitVec v)   : BitVec.append x y = x ++ y        := rfl
-@[simp] lemma shiftLeft_eq (x : BitVec w) (n: Nat)      : BitVec.shiftLeft x n = x <<< n    := rfl
-@[simp] lemma ushiftRight_eq (x : BitVec w) (n: Nat)    : BitVec.ushiftRight x n = x >>> n  := rfl
-@[simp] lemma not_eq (x : BitVec w)                     : BitVec.not x = ~~~x               := rfl
-@[simp] lemma and_eq (x y : BitVec w)                   : BitVec.and x y = x &&& y          := rfl
-@[simp] lemma or_eq (x y : BitVec w)                    : BitVec.or x y = x ||| y           := rfl
-@[simp] lemma xor_eq (x y : BitVec w)                   : BitVec.xor x y = x ^^^ y          := rfl
-@[simp] lemma neg_eq (x : BitVec w)                     : BitVec.neg x = -x                 := rfl
-@[simp] lemma add_eq (x y : BitVec w)                   : BitVec.add x y = x + y            := rfl
-@[simp] lemma sub_eq (x y : BitVec w)                   : BitVec.sub x y = x - y            := rfl
-@[simp] lemma mul_eq (x y : BitVec w)                   : BitVec.mul x y = x * y            := rfl
-
-/-- Convert a list of booleans to a bitvector. -/
-def ofList (bs : List Bool) : BitVec bs.length :=
+/--
+  Convert a list of booleans to a bitvector, using little-endian bit-order.
+  That is, we take the head of the list to be the least significant bit
+-/
+def ofLEList (bs : List Bool) : BitVec bs.length :=
   ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
+
+/--
+  Convert a list of booleans to a bitvector, using big-endian bit order.
+  That is, we take the head of the list to be the least significant bit
+-/
+def ofBEList (bs : List Bool) : BitVec bs.length :=
+  (ofLEList bs.reverse).cast (List.length_reverse ..)
+
 
 
 end Std.BitVec
