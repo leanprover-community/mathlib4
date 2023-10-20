@@ -56,11 +56,12 @@ def PT := FrameHom L Prop
 
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
 points of `L`. -/
+@[simps]
 def OpenOfElementHom : FrameHom L (Set (PT L)) where
   toFun u := {x | x u}
   map_inf' a b := by simp; rfl
   map_top' := by simp; rfl
-  map_sSup' S := by ext; simp
+  map_sSup' S := by ext; simp [Prop.exists_iff]
 
 namespace PT
 
@@ -97,7 +98,7 @@ def LocalePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
   map_inf' a b := rfl
   map_top' := rfl
-  map_sSup' S := by simp [Opens.mem_sSup]
+  map_sSup' S := by simp [Opens.mem_sSup, Prop.exists_iff]
 
 /-- The counit is a frame homomorphism. -/
 def counit_app_cont : FrameHom L (Opens $ PT L) where

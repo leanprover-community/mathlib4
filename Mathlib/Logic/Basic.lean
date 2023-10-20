@@ -959,9 +959,6 @@ theorem ExistsUnique.unique₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingle
   exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩
 #align exists_unique.unique2 ExistsUnique.unique₂
 
-@[simp] lemma elim_exists_prop (q : Prop → Prop) : (∃ p, q p ∧ p) ↔ q True := by
-  refine' ⟨_, λ h ↦ ⟨_, h, trivial⟩⟩; rintro ⟨p, h, hp⟩; simpa [*] using h
-
 end Quantifiers
 
 /-! ### Classical lemmas -/
