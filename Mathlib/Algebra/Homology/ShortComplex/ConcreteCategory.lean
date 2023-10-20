@@ -13,7 +13,7 @@ variable {C : Type _} [Category C] [ConcreteCategory C] [Limits.HasZeroMorphisms
 @[simp]
 lemma zero_apply (x : (forget₂ C Ab).obj S.X₁) :
     ((forget₂ C Ab).map S.g) (((forget₂ C Ab).map S.f) x) = 0 := by
-  rw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
+  erw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
 end
