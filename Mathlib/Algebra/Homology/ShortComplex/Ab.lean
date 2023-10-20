@@ -12,15 +12,9 @@ lemma AddCommGroupCat.hom_ext_from_uliftℤ
     {X : Ab.{u}} (f g : AddCommGroupCat.of (ULift.{u} ℤ) ⟶ X)
     (h : f (ULift.up 1) = g (ULift.up 1)) :
     f = g := by
-  let f' : ℤ →+ X :=
-    { toFun := fun n => f (ULift.up n)
-      map_zero' := f.map_zero
-      map_add' := fun x y => f.map_add _ _ }
-  let g' : ℤ →+ X :=
-    { toFun := fun n => g (ULift.up n)
-      map_zero' := g.map_zero
-      map_add' := fun x y => g.map_add _ _ }
-  have : f' = g' := by ext ; exact h
+  let f' : ℤ →+ X := AddMonoidHom.mk' (fun n => f (ULift.up n)) (fun _ _ => f.map_add _ _)
+  let g' : ℤ →+ X := AddMonoidHom.mk' (fun n => g (ULift.up n)) (fun _ _ => g.map_add _ _)
+  have : f' = g' := by ext; exact h
   ext n
   change f' (ULift.down n) = g' (ULift.down n)
   rw [this]
@@ -53,16 +47,16 @@ namespace ShortComplex
 
 variable (S : ShortComplex Ab.{u})
 
-noncomputable def liftCyclesAb (x : S.X₂) (hx : S.g x = 0) : S.cycles :=
+noncomputable def abLiftCycles (x : S.X₂) (hx : S.g x = 0) : S.cycles :=
   (AddCommGroupCat.homEquivFromUliftℤ S.cycles)
     (S.liftCycles ((AddCommGroupCat.homEquivFromUliftℤ S.X₂).symm x) (by
       ext
       simp [hx]))
 
 @[simp]
-lemma liftCyclesAb_ι (x : S.X₂) (hx : S.g x = 0) :
-    S.iCycles (S.liftCyclesAb x hx) = x := by
-  dsimp [liftCyclesAb]
+lemma abLiftCycles_ι (x : S.X₂) (hx : S.g x = 0) :
+    S.iCycles (S.abLiftCycles x hx) = x := by
+  dsimp [abLiftCycles]
   erw [← comp_apply, liftCycles_i, AddCommGroupCat.homEquivFromUliftℤ_symm_one]
 
 lemma ab_exact_iff :
@@ -71,8 +65,8 @@ lemma ab_exact_iff :
   rw [exact_iff_epi_toCycles, AddCommGroupCat.epi_iff_surjective]
   constructor
   . intro h x₂ hx₂
-    obtain ⟨x₁, hx₁⟩ := h (S.liftCyclesAb x₂ hx₂)
-    exact ⟨x₁, by erw [← S.toCycles_i, comp_apply, hx₁, liftCyclesAb_ι]⟩
+    obtain ⟨x₁, hx₁⟩ := h (S.abLiftCycles x₂ hx₂)
+    exact ⟨x₁, by erw [← S.toCycles_i, comp_apply, hx₁, abLiftCycles_ι]⟩
   . intro hS z
     obtain ⟨x₁, hx₁⟩ := hS (S.iCycles z) (by
       erw [← comp_apply, iCycles_g]
