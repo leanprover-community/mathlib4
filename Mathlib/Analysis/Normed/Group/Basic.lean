@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul

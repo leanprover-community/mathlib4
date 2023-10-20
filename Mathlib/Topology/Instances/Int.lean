@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Int.Interval
 import Mathlib.Topology.MetricSpace.PseudoMetric
 import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Order.Filter.Archimedean
 
 #align_import topology.instances.int from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"

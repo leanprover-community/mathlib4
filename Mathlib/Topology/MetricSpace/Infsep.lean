@@ -3,9 +3,6 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.Cauchy
 import Mathlib.Topology.MetricSpace.Basic
 
 #align_import topology.metric_space.infsep from "leanprover-community/mathlib"@"5316314b553dcf8c6716541851517c1a9715e22b"
