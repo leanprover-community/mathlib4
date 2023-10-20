@@ -28,6 +28,14 @@ This result is not yet formalised.
 
 * `Module.Flat`: the predicate asserting that an `R`-module `M` is flat.
 
+## Main theorems
+
+* `Module.Flat.of_retract`: retracts of flat modules are flat
+* `Module.Flat.of_iso`: modules isomorphic to a flat modules are flat
+* `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
+* `Module.Flat.of_free`: free modules are flat
+* `Module.Flat.of_projective`: projective modules are flat
+
 ## TODO
 
 * Show that tensoring with a flat module preserves injective morphisms.
