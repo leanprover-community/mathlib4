@@ -242,6 +242,8 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
 
 end
 
+end CanonicallyOrderedAddCommMonoid
+
 section CanonicallyLinearOrderedAddCommMonoid
 
 variable [AddZeroClass α] [LinearOrder α] [CanonicallyOrderedAdd α]
