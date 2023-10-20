@@ -83,9 +83,9 @@ theorem toNat_extractLsb {i j} {x : BitVec w} :
 lemma zero_eq_ofFin_zero : 0#w = ofFin 0 := rfl
 lemma one_eq_ofFin_one   : 1#w = ofFin 1 := rfl
 
-/-! Now we can define an instance of `Ring (BitVector w)` straightforwardly in terms of the
-    existing instance `Ring (Fin (2^w))` -/
-instance : Ring (BitVec w) where
+/-! Now we can define an instance of `CommRing (BitVector w)` straightforwardly in terms of the
+    existing instance `CommRing (Fin (2^w))` -/
+instance : CommRing (BitVec w) where
   add_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [add_assoc]
   zero_add        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
   add_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
@@ -96,6 +96,7 @@ instance : Ring (BitVec w) where
   zero_mul        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
   mul_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
   mul_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [mul_assoc]
+  mul_comm        := by intro ⟨_⟩ ⟨_⟩; simp [mul_comm]
   one_mul         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
   mul_one         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
   add_left_neg    := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
