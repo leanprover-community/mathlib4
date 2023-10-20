@@ -185,7 +185,7 @@ private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := b
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0
     · simp [hc]
-    simp [mul_coe hc]
+    simp only [mul_coe hc]
     cases a <;> cases b
     repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
 
