@@ -239,10 +239,10 @@ Note that this builds a `HashMap` containing the results, and so may consume sig
 -/
 def rewritesDedup (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+    (mctx : MetavarContext)
     (goal : MVarId) (target : Expr) : MLList MetaM RewriteResult := MLList.squash fun _ => do
-  return rewritesCore hyps lemmas (← getMCtx) goal target
+  return rewritesCore hyps lemmas mctx goal target
     -- Don't report duplicate results.
-    -- (TODO: we later pretty print results; save them here?)
     -- (TODO: a config flag to disable this,
     -- if distinct-but-pretty-print-the-same results are desirable?)
     |>.mapM (fun r => r.prepare_ppResult)
@@ -253,7 +253,7 @@ def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
-  let results ← rewritesDedup hyps lemmas goal target
+  let results ← rewritesDedup hyps lemmas (← getMCtx) goal target
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
     |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stopAtRfl` is False
     |>.takeUpToFirst (fun r => stopAtRfl && r.rfl? = some true)
