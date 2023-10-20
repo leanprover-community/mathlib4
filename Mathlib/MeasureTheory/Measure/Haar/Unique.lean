@@ -284,7 +284,7 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
   obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
       ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
     rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
-    rcases exists_continuous_one_zero_of_isCompact_of_group hk isOpen_univ (subset_univ _)
+    rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
       with ⟨g, g_cont, g_comp, gk, -, hg⟩
     exact ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, by simp [gk (mem_of_mem_nhds k_mem)]⟩
   have int_g_pos : 0 < ∫ x, g x ∂μ := by

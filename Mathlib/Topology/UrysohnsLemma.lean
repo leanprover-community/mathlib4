@@ -20,9 +20,13 @@ closed sets `s` and `t` in a normal topological space `X` there exists a continu
 * `f` equals one on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
 
-We also give the version in a regular locally compact space where one assumes that `s` is compact
-and `t` is closed, in `exists_continuous_zero_one_of_isCompact`. We write the proof so that it
-applies to both situations.
+We also give versions in a regular locally compact space where one assumes that `s` is compact
+and `t` is closed, in `exists_continuous_zero_one_of_isCompact`
+and `exists_continuous_one_zero_of_isCompact` (the latter providing additionally a function with
+compact support).
+
+We write a generic proof so that it applies both to normal spaces and to regular locally
+compact spaces.
 
 ## Implementation notes
 
@@ -369,7 +373,7 @@ theorem exists_continuous_zero_one_of_isCompact
     fun x hx => c.lim_of_nmem_U _ fun h => h hx, c.lim_mem_Icc⟩
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
-space `X`, with `s` compact and `t` closed, then there exists a continuous
+space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
 
 * `f` equals one on `s`;
@@ -378,10 +382,20 @@ function `f : X → ℝ` such that
 -/
 theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompactSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsClosed t)
-    (hd : Disjoint s t) : ∃ f : C(X, ℝ), EqOn f 1 s ∧ EqOn f 0 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  rcases exists_continuous_zero_one_of_isCompact hs ht hd with ⟨⟨f, hf⟩, hfs, hft, h'f⟩
+    (hd : Disjoint s t) :
+    ∃ f : C(X, ℝ), EqOn f 1 s ∧ EqOn f 0 t ∧ HasCompactSupport f ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+  obtain ⟨k, k_comp, k_closed, sk, kt⟩ : ∃ k, IsCompact k ∧ IsClosed k ∧ s ⊆ interior k ∧ k ⊆ tᶜ :=
+    exists_compact_closed_between hs ht.isOpen_compl hd.symm.subset_compl_left
+  rcases exists_continuous_zero_one_of_isCompact hs isOpen_interior.isClosed_compl
+    (disjoint_compl_right_iff_subset.mpr sk) with ⟨⟨f, hf⟩, hfs, hft, h'f⟩
+  have A : t ⊆ (interior k)ᶜ := subset_compl_comm.mpr (interior_subset.trans kt)
   refine ⟨⟨fun x ↦ 1 - f x, continuous_const.sub hf⟩, fun x hx ↦ by simpa using hfs hx,
-    fun x hx ↦ by simpa [sub_eq_zero] using (hft hx).symm, fun x ↦ ?_⟩
-  have := h'f x
-  simp only [ContinuousMap.coe_mk, ge_iff_le, zero_le_one, not_true, gt_iff_lt, mem_Icc] at this
-  simp [this]
+    fun x hx ↦ by simpa [sub_eq_zero] using (hft (A hx)).symm, ?_, fun x ↦ ?_⟩
+  · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ ?_)
+    simp only [ContinuousMap.coe_mk, sub_eq_zero]
+    apply (hft _).symm
+    contrapose! hx
+    simp only [mem_compl_iff, not_not] at hx
+    exact interior_subset hx
+  · have : 0 ≤ f x ∧ f x ≤ 1 := by simpa using h'f x
+    simp [this]
