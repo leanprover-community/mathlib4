@@ -259,8 +259,7 @@ theorem exists_primitive_element_of_finite_intermediateField
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
     have base : P ⊥ := ⟨0, adjoin_zero⟩
     have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
-      intro K β hK
-      cases' hK with α hK
+      intro K β ⟨α, hK⟩
       rw [← hK, adjoin_simple_adjoin_simple]
       haveI : Infinite F := isEmpty_fintype.mp F_inf
       cases' primitive_element_inf_aux_of_finite_intermediateField F α β with γ hγ
