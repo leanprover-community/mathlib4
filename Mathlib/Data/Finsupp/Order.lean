@@ -169,17 +169,9 @@ theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g
   le_iff' f g <| Subset.refl _
 #align finsupp.le_iff Finsupp.le_iff
 
-lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
-  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
-
-lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
-
 instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 #align finsupp.decidable_le Finsupp.decidableLE
-
-instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
-  decidableLTOfDecidableLE
 
 @[simp]
 theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=
@@ -187,6 +179,24 @@ theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f �
 #align finsupp.single_le_iff Finsupp.single_le_iff
 
 end LE
+
+section Preorder
+variable [AddZeroClass α] [Preorder α] [CanonicallyOrderedAdd α]
+
+instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+  decidableLTOfDecidableLE
+
+end Preorder
+
+section PartialOrder
+variable [AddZeroClass α] [PartialOrder α] [CanonicallyOrderedAdd α]
+
+lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
+  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+
+lemma support_mono {f g : ι →₀ α} (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
+
+end PartialOrder
 
 section
 variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]

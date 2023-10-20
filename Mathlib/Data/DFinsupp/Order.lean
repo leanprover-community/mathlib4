@@ -168,11 +168,6 @@ theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
 #align dfinsupp.le_iff DFinsupp.le_iff
 
-lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
-  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
-
-lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
-
 variable (α)
 
 instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) :=
@@ -187,6 +182,19 @@ theorem single_le_iff {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i :=
 #align dfinsupp.single_le_iff DFinsupp.single_le_iff
 
 end LE
+
+section PartialOrder
+variable [∀ i, AddZeroClass (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i}
+
+variable {α}
+
+lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
+  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+
+lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
+
+end PartialOrder
 
 section
 variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
