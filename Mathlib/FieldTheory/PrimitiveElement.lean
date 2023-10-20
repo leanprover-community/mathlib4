@@ -227,7 +227,7 @@ section SeparableAssumption
 variable [IsSeparable F E]
 
 /-- **Primitive element theorem**: a finite separable field extension `E` of `F` has a
-  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.-/
+  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
@@ -325,12 +325,14 @@ lemma Field.finite_intermediateField_of_exists_primitive_element.aux_2
     exact minpoly.aeval K α
   have hpne0 : q * r ≠ 0 := by
     apply_fun Polynomial.map (algebraMap K'' E)
-    rw [← hqdvdp, hp, Polynomial.map_zero, Polynomial.map_ne_zero_iff $ NoZeroSMulDivisors.algebraMap_injective K E]
+    rw [← hqdvdp, hp, Polynomial.map_zero,
+      Polynomial.map_ne_zero_iff $ NoZeroSMulDivisors.algebraMap_injective K E]
     exact minpoly.ne_zero $ isAlgebraic_iff_isIntegral.1 $ isAlgebraic_of_finite K α
   have hpdeg := IntermediateField.adjoin.finrank (K := K) (x := α) (hx := isIntegral_of_finite K α)
   rw [Field.finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K,
     Field.finite_intermediateField_of_exists_primitive_element.aux_finrank F E K,
-    ← Polynomial.natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K E) (minpoly K α),
+    ← Polynomial.natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K E)
+      (minpoly K α),
     show (minpoly K α).map (algebraMap K E) = g by rfl,
     ← hp,
     Polynomial.natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K'' E),
@@ -397,7 +399,7 @@ theorem Field.finite_intermediateField_of_exists_primitive_element :
 
 /-- **Steinitz theorem**: a finite extension `E` of `F` has a
   primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
-  if and only if there exist only finitely many intermediate fields between `E` and `F`.-/
+  if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
 theorem Field.exists_primitive_element_iff_finite_intermediateField :
     (∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
   ⟨Field.finite_intermediateField_of_exists_primitive_element F E,
