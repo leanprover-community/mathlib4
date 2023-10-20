@@ -690,7 +690,7 @@ theorem length_splitWrtComposition (l : List α) (c : Composition n) :
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
-  · simp
+  · simp [splitWrtCompositionAux]
   have := le_trans (Nat.le_add_right _ _) h
   simp only [splitWrtCompositionAux_cons, this]; dsimp
   rw [length_take, IH] <;> simp [length_drop]
@@ -964,7 +964,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     j ∈ c.boundaries ↔ ∃ i < c.boundaries.card, (c.blocks.take i).sum = j := by
   constructor
   · intro hj
-    rcases(c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
+    rcases (c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
     refine' ⟨i.1, i.2, _⟩
     dsimp at hi

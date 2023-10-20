@@ -50,7 +50,7 @@ universe u v w x
 noncomputable section
 
 open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical BigOperators Topology
-  NNReal
+  NNReal Metric
 
 namespace LinearIsometry
 
@@ -462,6 +462,12 @@ theorem finiteDimensional_of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : 
   simpa using h.image this
 #align finite_dimensional_of_is_compact_closed_ball finiteDimensional_of_isCompact_closedBall
 
+/-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
+theorem finiteDimensional_of_locallyCompactSpace [LocallyCompactSpace E] :
+    FiniteDimensional 𝕜 E := by
+  rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
+  exact finiteDimensional_of_isCompact_closedBall₀ 𝕜 rpos hr
+
 /-- If a function has compact multiplicative support, then either the function is trivial or the
 space is finite-dimensional. -/
 @[to_additive
@@ -482,10 +488,45 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
   obtain ⟨r : ℝ, rpos : 0 < r, hr : Metric.closedBall x r ⊆ Function.mulSupport f⟩ :=
     Metric.nhds_basis_closedBall.mem_iff.1 this
   have : IsCompact (Metric.closedBall x r) :=
-    isCompact_of_isClosed_subset hf Metric.isClosed_ball (hr.trans (subset_mulTSupport _))
+    hf.of_isClosed_subset Metric.isClosed_ball (hr.trans (subset_mulTSupport _))
   exact finiteDimensional_of_isCompact_closedBall 𝕜 rpos this
 #align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
 #align has_compact_support.eq_zero_or_finite_dimensional HasCompactSupport.eq_zero_or_finiteDimensional
+
+/-- A locally compact normed vector space is proper. -/
+lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [LocallyCompactSpace E] : ProperSpace E := by
+  rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
+  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
+  have M : ∀ n (x : E), IsCompact (closedBall x (‖c‖^n * r)) := by
+    intro n x
+    let f : E → E := fun y ↦ c^n • y + x
+    have Cf : Continuous f := (continuous_id.const_smul _).add continuous_const
+    have A : closedBall x (‖c‖^n * r) ⊆ f '' (closedBall 0 r) := by
+      rintro y hy
+      refine ⟨(c^n)⁻¹ • (y - x), ?_, ?_⟩
+      · simpa [dist_eq_norm, norm_smul, inv_mul_le_iff (pow_pos (zero_lt_one.trans hc) _)] using hy
+      · have : c^n ≠ 0 := pow_ne_zero _ (norm_pos_iff.1 (zero_lt_one.trans hc))
+        simp [smul_smul, mul_inv_cancel this]
+    exact (hr.image Cf).of_isClosed_subset isClosed_ball A
+  refine ⟨fun x s ↦ ?_⟩
+  have L : ∀ᶠ n in (atTop : Filter ℕ), s ≤ ‖c‖^n * r := by
+    have : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
+      Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
+    exact Tendsto.eventually_ge_atTop this s
+  rcases L.exists with ⟨n, hn⟩
+  exact (M n x).of_isClosed_subset isClosed_ball (closedBall_subset_closedBall hn)
+
+variable (E)
+lemma properSpace_of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
+    ProperSpace 𝕜 := by
+  have : LocallyCompactSpace 𝕜 := by
+    obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
+    let L : 𝕜 → E := fun t ↦ t • v
+    have : ClosedEmbedding L := closedEmbedding_smul_left hv
+    apply ClosedEmbedding.locallyCompactSpace this
+  exact properSpace_of_locallyCompactSpace 𝕜
 
 end Riesz
 
@@ -538,21 +579,22 @@ theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional
 
 end CompleteField
 
-section ProperField
+section LocallyCompactField
 
 variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [ProperSpace 𝕜]
+  [NormedSpace 𝕜 E] [LocallyCompactSpace 𝕜]
 
-/-- Any finite-dimensional vector space over a proper field is proper.
+/-- Any finite-dimensional vector space over a locally compact field is proper.
 We do not register this as an instance to avoid an instance loop when trying to prove the
 properness of `𝕜`, and the search for `𝕜` as an unknown metavariable. Declare the instance
 explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
+  have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
   exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
 #align finite_dimensional.proper FiniteDimensional.proper
 
-end ProperField
+end LocallyCompactField
 
 /- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
@@ -560,6 +602,16 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] : ProperSpace E :=
   FiniteDimensional.proper ℝ E
 #align finite_dimensional.proper_real FiniteDimensional.proper_real
+
+/-- A submodule of a locally compact space over a complete field is also locally compact (and even
+proper). -/
+instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
+    ProperSpace S := by
+  nontriviality E
+  have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
+  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  exact FiniteDimensional.proper 𝕜 S
 
 /-- If `E` is a finite dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
 `x` that is not equal to the whole space, then there exists a point `y ∈ frontier s` at distance
@@ -589,7 +641,7 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     rcases hx' with ⟨r, hr₀, hrK⟩
     have : FiniteDimensional ℝ E :=
       finiteDimensional_of_isCompact_closedBall ℝ hr₀
-        (isCompact_of_isClosed_subset hK Metric.isClosed_ball hrK)
+        (hK.of_isClosed_subset Metric.isClosed_ball hrK)
     exact exists_mem_frontier_infDist_compl_eq_dist hx hK.ne_univ
   · refine' ⟨x, hx', _⟩
     rw [frontier_eq_closure_inter_closure] at hx'

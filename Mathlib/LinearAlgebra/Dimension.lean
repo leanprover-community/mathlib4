@@ -566,7 +566,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
 #align mk_eq_mk_of_basis mk_eq_mk_of_basis
 
 /-- Given two bases indexed by `ι` and `ι'` of an `R`-module, where `R` satisfies the invariant
-basis number property, an equiv `ι ≃ ι' `. -/
+basis number property, an equiv `ι ≃ ι'`. -/
 def Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
   (Cardinal.lift_mk_eq'.1 <| mk_eq_mk_of_basis v v').some
 #align basis.index_equiv Basis.indexEquiv
@@ -725,7 +725,7 @@ theorem linearIndependent_le_span_finset {ι : Type*} (v : ι → M) (i : Linear
 /-- An auxiliary lemma for `linearIndependent_le_basis`:
 we handle the case where the basis `b` is infinite.
 -/
-theorem linearIndependent_le_infinite_basis {ι : Type*} (b : Basis ι R M) [Infinite ι] {κ : Type _}
+theorem linearIndependent_le_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι] {κ : Type w}
     (v : κ → M) (i : LinearIndependent R v) : #κ ≤ #ι := by
   classical
   by_contra h
@@ -747,7 +747,7 @@ if `b` is a basis for a module `M`,
 and `s` is a linearly independent set,
 then the cardinality of `s` is bounded by the cardinality of `b`.
 -/
-theorem linearIndependent_le_basis {ι : Type*} (b : Basis ι R M) {κ : Type _} (v : κ → M)
+theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w} (v : κ → M)
     (i : LinearIndependent R v) : #κ ≤ #ι := by
   classical
   -- We split into cases depending on whether `ι` is infinite.
@@ -775,8 +775,8 @@ then every maximal linearly independent set has the same cardinality as `b`.
 This proof (along with some of the lemmas above) comes from
 [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 -/
-theorem maximal_linearIndependent_eq_infinite_basis {ι : Type*} (b : Basis ι R M) [Infinite ι]
-    {κ : Type _} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
+theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι]
+    {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
   apply le_antisymm
   · exact linearIndependent_le_basis b v i
   · haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
@@ -1013,6 +1013,10 @@ theorem rank_prod : Module.rank K (V × V') =
 theorem rank_prod' : Module.rank K (V × V₁) = Module.rank K V + Module.rank K V₁ := by simp
 #align rank_prod' rank_prod'
 
+@[simp]
+theorem rank_ulift : Module.rank K (ULift.{w} V) = Cardinal.lift.{w} (Module.rank K V) :=
+  Cardinal.lift_injective.{v} <| Eq.symm <| (lift_lift _).trans ULift.moduleEquiv.symm.lift_rank_eq
+
 section Fintype
 
 variable [∀ i, AddCommGroup (φ i)] [∀ i, Module K (φ i)] [∀ i, Module.Free K (φ i)]
@@ -1118,7 +1122,7 @@ theorem rank_eq_of_surjective (f : V →ₗ[K] V₁) (h : Surjective f) :
 
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
 the family by another vector while retaining linear independence. -/
-theorem exists_linear_independent_cons_of_lt_rank {n : ℕ} {v : Fin n → V}
+theorem exists_linearIndependent_cons_of_lt_rank {n : ℕ} {v : Fin n → V}
     (hv : LinearIndependent K v) (h : n < Module.rank K V) :
     ∃ (x : V), LinearIndependent K (Fin.cons x v) := by
   have A : Submodule.span K (range v) ≠ ⊤ := by
@@ -1136,18 +1140,18 @@ theorem exists_linear_independent_cons_of_lt_rank {n : ℕ} {v : Fin n → V}
 
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
 the family by another vector while retaining linear independence. -/
-theorem exists_linear_independent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
+theorem exists_linearIndependent_snoc_of_lt_rank {n : ℕ} {v : Fin n → V}
     (hv : LinearIndependent K v) (h : n < Module.rank K V) :
     ∃ (x : V), LinearIndependent K (Fin.snoc v x) := by
   simpa [linearIndependent_fin_cons, ← linearIndependent_fin_snoc]
-    using exists_linear_independent_cons_of_lt_rank hv h
+    using exists_linearIndependent_cons_of_lt_rank hv h
 
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
 independent of the first one. -/
-theorem exists_linear_independent_pair_of_one_lt_rank
+theorem exists_linearIndependent_pair_of_one_lt_rank
     (h : 1 < Module.rank K V) {x : V} (hx : x ≠ 0) :
     ∃ y, LinearIndependent K ![x, y] := by
-  obtain ⟨y, hy⟩ := exists_linear_independent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
+  obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
   have : Fin.snoc ![x] y = ![x, y] := Iff.mp List.ofFn_inj rfl
   rw [this] at hy
   exact ⟨y, hy⟩

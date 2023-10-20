@@ -201,9 +201,9 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
-  /-- If a set is not bounded above, its supremum is by convention `Sup ∅`. -/
+  /-- If a set is not bounded above, its supremum is by convention `sSup ∅`. -/
   csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
-  /-- If a set is not bounded below, its infimum is by convention `Inf ∅`. -/
+  /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/
   csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
@@ -885,8 +885,7 @@ lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨆ (h : p), f h = sSup (∅ : Set α) := by
   rw [iSup]
   congr
-  rw [range_eq_empty_iff]
-  exact { false := hp }
+  rwa [range_eq_empty_iff, isEmpty_Prop]
 
 lemma ciInf_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨅ (h : p), f h = sInf (∅ : Set α) :=
@@ -935,23 +934,23 @@ theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → �
 
 /-- Nested intervals lemma: if `f` is a monotone sequence, `g` is an antitone sequence, and
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
-theorem Monotone.ciSup_mem_Inter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
+theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) : (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) := by
   refine' mem_iInter.2 fun n => _
   haveI : Nonempty β := ⟨n⟩
   have : ∀ m, f m ≤ g n := fun m => hf.forall_le_of_antitone hg h m n
   exact ⟨le_ciSup ⟨g <| n, forall_range_iff.2 this⟩ _, ciSup_le this⟩
-#align monotone.csupr_mem_Inter_Icc_of_antitone Monotone.ciSup_mem_Inter_Icc_of_antitone
+#align monotone.csupr_mem_Inter_Icc_of_antitone Monotone.ciSup_mem_iInter_Icc_of_antitone
 
 /-- Nested intervals lemma: if `[f n, g n]` is an antitone sequence of nonempty
 closed intervals, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
-theorem ciSup_mem_Inter_Icc_of_antitone_Icc [SemilatticeSup β] {f g : β → α}
+theorem ciSup_mem_iInter_Icc_of_antitone_Icc [SemilatticeSup β] {f g : β → α}
     (h : Antitone fun n => Icc (f n) (g n)) (h' : ∀ n, f n ≤ g n) :
     (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) :=
-  Monotone.ciSup_mem_Inter_Icc_of_antitone
+  Monotone.ciSup_mem_iInter_Icc_of_antitone
     (fun _ n hmn => ((Icc_subset_Icc_iff (h' n)).1 (h hmn)).1)
     (fun _ n hmn => ((Icc_subset_Icc_iff (h' n)).1 (h hmn)).2) h'
-#align csupr_mem_Inter_Icc_of_antitone_Icc ciSup_mem_Inter_Icc_of_antitone_Icc
+#align csupr_mem_Inter_Icc_of_antitone_Icc ciSup_mem_iInter_Icc_of_antitone_Icc
 
 /-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that
 1) `b` is an upper bound

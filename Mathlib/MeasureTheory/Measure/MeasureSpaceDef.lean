@@ -41,7 +41,7 @@ that two measure are equal.
 A `MeasureSpace` is a class that is a measurable space with a canonical measure.
 The measure is denoted `volume`.
 
-This file does not import `MeasureTheory.MeasurableSpace`, but only `MeasurableSpaceDef`.
+This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `MeasurableSpace.Defs`.
 
 ## References
 
@@ -138,10 +138,11 @@ theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :
 #align measure_theory.measure.ext MeasureTheory.Measure.ext
 
 theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by
-    rintro rfl s _hs
-    rfl, Measure.ext⟩
+  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 #align measure_theory.measure.ext_iff MeasureTheory.Measure.ext_iff
+
+theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
+  ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
 end Measure
 
@@ -260,7 +261,7 @@ theorem measure_iUnion_fintype_le [Fintype β] (f : β → Set α) : μ (⋃ b, 
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert(measure_biUnion_finset_le hs.toFinset f).trans_lt _ using 3
+  convert (measure_biUnion_finset_le hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
   apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]
@@ -423,6 +424,10 @@ theorem ae_all_iff {ι : Sort*} [Countable ι] {p : α → ι → Prop} :
   eventually_countable_forall
 #align measure_theory.ae_all_iff MeasureTheory.ae_all_iff
 
+theorem all_ae_of {ι : Sort _} {p : α → ι → Prop} (hp : ∀ᵐ a ∂μ, ∀ i, p a i) (i : ι) :
+    ∀ᵐ a ∂μ, p a i := by
+  filter_upwards [hp] with a ha using ha i
+
 theorem ae_ball_iff {S : Set ι} (hS : S.Countable) {p : ∀ (_x : α), ∀ i ∈ S, Prop} :
     (∀ᵐ x ∂μ, ∀ i (hi : i ∈ S), p x i hi) ↔ ∀ i (hi : i ∈ S), ∀ᵐ x ∂μ, p x i hi :=
   eventually_countable_ball hS
@@ -559,6 +564,26 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   rw [inter_empty]
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
+/-- Given a predicate on `β` and `set α` where both `α` and `β` are measurable spaces, if the
+predicate holds for almost every `x : β` and
+- `∅ : set α`
+- a family of sets generating the σ-algebra of `α`
+Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
+disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
+
+This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
+on a measurable space `β`. -/
+theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
+    {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
+    (h_eq : m = MeasurableSpace.generateFrom s)
+    (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)
+    (h_compl : ∀ᵐ x ∂μ, ∀ t, MeasurableSet t → C x t → C x tᶜ)
+    (h_union : ∀ᵐ x ∂μ, ∀ f : ℕ → Set α,
+        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
+    ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
+  filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
+    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
+
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
@@ -599,15 +624,15 @@ If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
 irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
-  if h : ∃ (t : _) (_ : t ⊇ s), MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
-    if h' : ∃ (t : _) (_ : t ⊇ s),
-      MeasurableSet t ∧ ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
+  if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
+    if h' : ∃ t, t ⊇ s ∧ MeasurableSet t ∧
+      ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
 #align measure_theory.to_measurable MeasureTheory.toMeasurable
 
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts [hs.choose_spec.fst, h's.choose_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
+  exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 #align measure_theory.subset_to_measurable MeasureTheory.subset_toMeasurable
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
@@ -620,15 +645,15 @@ theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
     MeasurableSet (toMeasurable μ s) := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts [hs.choose_spec.snd.1, h's.choose_spec.snd.1,
+  exacts [hs.choose_spec.2.1, h's.choose_spec.2.1,
           (exists_measurable_superset μ s).choose_spec.2.1]
 #align measure_theory.measurable_set_to_measurable MeasureTheory.measurableSet_toMeasurable
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  · exact measure_congr hs.choose_spec.snd.2
-  · simpa only [inter_univ] using h's.choose_spec.snd.2 univ MeasurableSet.univ
+  · exact measure_congr hs.choose_spec.2.2
+  · simpa only [inter_univ] using h's.choose_spec.2.2 univ MeasurableSet.univ
   · exact (exists_measurable_superset μ s).choose_spec.2.2
 #align measure_theory.measure_to_measurable MeasureTheory.measure_toMeasurable
 

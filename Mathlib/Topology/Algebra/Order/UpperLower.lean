@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Basic
 
-#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
+#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -104,7 +104,7 @@ protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior 
 #align is_upper_set.interior IsUpperSet.interior
 
 protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
-  h.ofDual.interior
+  h.toDual.interior
 #align is_lower_set.interior IsLowerSet.interior
 
 protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by

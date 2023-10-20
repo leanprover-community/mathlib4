@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Compactness.Paracompact
 
 #align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
@@ -15,9 +15,9 @@ import Mathlib.Topology.Paracompact
 
 In this file we provide two instances:
 
-* `EMetric.ParacompactSpace`: a `PseudoEMetricSpace` is paracompact; formalization is based
+* `EMetric.instParacompactSpace`: a `PseudoEMetricSpace` is paracompact; formalization is based
   on [MR0236876];
-* `EMetric.normal_of_metric`: an `EMetricSpace` is a normal topological space.
+* `EMetric.instNormalSpace`: an `EMetricSpace` is a normal topological space.
 
 ## TODO
 
@@ -35,9 +35,9 @@ open ENNReal Topology Set
 namespace EMetric
 
 -- See note [lower instance priority]
-/-- A `PseudoEMetricSpace` is always a paracompact space. Formalization is based
-on [MR0236876]. -/
-instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
+/-- A `PseudoEMetricSpace` is always a paracompact space.
+Formalization is based on [MR0236876]. -/
+instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : ParacompactSpace α := by
   /- We start with trivial observations about `1 / 2 ^ k`. Here and below we use `1 / 2 ^ k` in
     the comments and `2⁻¹ ^ k` in the code. -/
   have pow_pos : ∀ k : ℕ, (0 : ℝ≥0∞) < 2⁻¹ ^ k := fun k =>
@@ -118,7 +118,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   · intro x
     rcases Dcov x with ⟨n, i, hn⟩
     have : D n i ∈ 𝓝 x := IsOpen.mem_nhds (Dopen _ _) hn
-    rcases(nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
+    rcases (nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
       ⟨k, -, hsub : ball x (2⁻¹ ^ k) ⊆ D n i⟩
     set B := ball x (2⁻¹ ^ (n + k + 1))
     refine' ⟨B, ball_mem_nhds _ (pow_pos _), _⟩
@@ -164,10 +164,10 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     simp only [mem_iUnion]
     refine' ⟨I.1, _, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
+#align emetric.paracompact_space EMetric.instParacompactSpace
 
--- see Note [lower instance priority]
-instance (priority := 100) normal_of_emetric [EMetricSpace α] : NormalSpace α :=
-  normal_of_paracompact_t2
-#align emetric.normal_of_emetric EMetric.normal_of_emetric
+-- porting note: no longer an instance because `inferInstance` can find it
+theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
+#align emetric.normal_of_emetric EMetric.t4Space
 
 end EMetric

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Cases
 
 #align_import algebra.group.basic from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -909,8 +910,7 @@ theorem eq_mul_of_div_eq' (h : a / b = c) : a = b * c := by simp [h.symm]
 
 @[to_additive]
 theorem mul_eq_of_eq_div' (h : b = c / a) : a * b = c := by
-  simp [h]
-  rw [mul_comm c, mul_inv_cancel_left]
+  rw [h, div_eq_mul_inv, mul_comm c, mul_inv_cancel_left]
 #align mul_eq_of_eq_div' mul_eq_of_eq_div'
 #align add_eq_of_eq_sub' add_eq_of_eq_sub'
 

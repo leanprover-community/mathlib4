@@ -435,15 +435,15 @@ theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Commute f g) 
 #align function.commute.minimal_period_of_comp_dvd_mul Function.Commute.minimalPeriod_of_comp_dvd_mul
 
 theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Commute f g)
-    (hco : coprime (minimalPeriod f x) (minimalPeriod g x)) :
+    (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices :
+  suffices
     ∀ {f g : α → α},
       Commute f g →
-        coprime (minimalPeriod f x) (minimalPeriod g x) →
-          minimalPeriod f x ∣ minimalPeriod (f ∘ g) x
-  · exact hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
+        Coprime (minimalPeriod f x) (minimalPeriod g x) →
+          minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
+    hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
   intro f g h hco
   refine' hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h _ _).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
@@ -457,7 +457,7 @@ private theorem minimalPeriod_iterate_eq_div_gcd_aux (h : 0 < gcd (minimalPeriod
     rw [IsPeriodicPt, IsFixedPt, ← iterate_mul, ← Nat.mul_div_assoc _ (gcd_dvd_left _ _),
       mul_comm, Nat.mul_div_assoc _ (gcd_dvd_right _ _), mul_comm, iterate_mul]
     exact (isPeriodicPt_minimalPeriod f x).iterate _
-  · apply coprime.dvd_of_dvd_mul_right (coprime_div_gcd_div_gcd h)
+  · apply Coprime.dvd_of_dvd_mul_right (coprime_div_gcd_div_gcd h)
     apply Nat.dvd_of_mul_dvd_mul_right h
     rw [Nat.div_mul_cancel (gcd_dvd_left _ _), mul_assoc, Nat.div_mul_cancel (gcd_dvd_right _ _),
       mul_comm]
@@ -504,7 +504,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp [periodicOrbit]
+  simp only [periodicOrbit._eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 #align function.periodic_orbit_eq_nil_iff_not_periodic_pt Function.periodicOrbit_eq_nil_iff_not_periodic_pt
 

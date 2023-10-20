@@ -157,6 +157,8 @@ instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n 
   Module.Free.pi R _
 #align module.free.matrix Module.Free.matrix
 
+instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
+
 variable (ι)
 
 /-- The product of finitely many free modules is free (non-dependent version to help with typeclass
