@@ -147,15 +147,11 @@ def mk_coe_nat_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
 open Std
 
 /-- Ordering on `Expr`. -/
-def Expr.compare (a b : Expr) : Ordering :=
-  if Expr.lt a b then .lt else if a.equal b then .eq else .gt
+def Expr.Ord : Ord Expr :=
+⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
 
-/-- Ordering on `Expr × Expr`. -/
--- We only define this so we can use `RBSet Expr`. Perhaps `HashSet` would be more appropriate?
-def compare_nat_casts (a b : Expr × Expr) : Ordering :=
-  match Expr.compare a.fst b.fst with
-  | .eq => Expr.compare a.snd b.snd
-  | o => o
+attribute [local instance] Expr.Ord
+
 
 /--
 If `h` is an equality or inequality between natural numbers,
@@ -181,7 +177,7 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) compare_nat_casts) h => do
+    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
       try
         let (a, b) ← getRelSides (← inferType h)
         pure <| (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)
