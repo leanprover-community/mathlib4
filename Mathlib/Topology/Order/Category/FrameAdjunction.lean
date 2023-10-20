@@ -50,20 +50,17 @@ section pt_definition
 variable (L L' : Type*) [CompleteLattice L] [CompleteLattice L']
 
 /-- The type of points of a complete lattice `L`, where a *point* of a complete lattice is,
-by definition, a frame homomorphism from `L` to the frame `Prop`. -/
+by definition, a frame homomorphism from `L` to `Prop`. -/
 @[reducible]
 def PT := FrameHom L Prop
 
-/-- The frame homomorphism from a complete lattice `L` to the frame of sets of points of `L`. -/
+/-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
+points of `L`. -/
 def OpenOfElementHom : FrameHom L (Set (PT L)) where
   toFun u := {x | x u}
   map_inf' a b := by simp; rfl
   map_top' := by simp; rfl
   map_sSup' S := by ext; simp
-
--- TODO: Merging those `variable` breaks
-variable {L L'}
-variable {U : Set (PT L)}
 
 namespace PT
 
@@ -78,27 +75,21 @@ instance instTopologicalSpace : TopologicalSpace (PT L) where
     simp_rw [map_iSup, iSup_Prop_eq, setOf_exists, hf, sUnion_eq_biUnion]
 
 /-- Characterizes when a subset of the space of points is open. -/
-lemma isOpen_iff : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff.rfl
-
-/-- The action of the functor `PT` on frame homomorphisms. -/
-@[reducible]
-def Map (f : FrameHom L' L) : C(PT L, PT L') where
-  toFun := fun p ↦ p.comp f
-  continuous_toFun := continuous_def.2 $ by rintro s ⟨u, rfl⟩; use f u; rfl
+lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff.rfl
 
 end PT
+
 
 /-- The contravariant functor `pt` from the category of locales to the category of
 topological spaces, which sends a frame `L` to the topological space `PT L` of homomorphisms
 from `L` to `Prop` and a frame homomorphism `f` to the continuous function `PT.map f`. -/
 def pt : Locale ⥤ TopCat where
   obj L := ⟨PT L.unop, by infer_instance⟩
-  map f := PT.map f.unop
-
+  map f := ⟨fun p ↦ p.comp f.unop, continuous_def.2 $ by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
 end pt_definition
 
 section locale_top_adjunction
-variable (X : Type*) [TopologicalSpace X] (L : FrmCat)
+variable (X : Type*) [TopologicalSpace X] (L : Locale)
 
 /-- The function that associates with a point `x` of the space `X` a point of the locale of opens
 of `X`. -/
@@ -111,7 +102,7 @@ def LocalePointOfSpacePoint (x : X) : PT (Opens X) where
 
 /-- The continuous function from a topological space `X` to the points of its frame of opens. -/
 def Neighborhoods : C(X, PT (Opens X)) where
-  toFun := frame_point_of_space_point X
+  toFun := LocalePointOfSpacePoint X
   continuous_toFun := continuous_def.2 $ by rintro _ ⟨u, rfl⟩; simpa using u.2
 
 /-- The function underlying the counit. -/
@@ -128,7 +119,7 @@ def counit_app_cont : FrameHom L (Opens $ PT L) where
 
 /-- The component of the counit at an object of `Locale`. -/
 def counit_app (Lop : Locale) : (pt.comp topToLocale).obj Lop ⟶ Lop where
-  unop := counit_app_cont Lop.unop
+  unop := counit_app_cont Lop
 
 /-- The counit as a natural transformation. -/
 def Counit : pt.comp topToLocale ⟶ 𝟭 Locale where
