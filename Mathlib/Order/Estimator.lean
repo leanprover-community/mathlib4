@@ -7,6 +7,8 @@ import Mathlib.Order.RelClasses
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk
+import Mathlib.Data.Prod.Lex
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Improvable lower bounds.
@@ -32,6 +34,7 @@ the exact value.
 -/
 
 set_option autoImplicit true
+set_option relaxedAutoImplicit true
 
 /--
 Given `[EstimatorData a ε]`
@@ -63,18 +66,38 @@ class Estimator [Preorder α] (a : Thunk α) (ε : Type*) extends EstimatorData 
 
 open EstimatorData Set
 
-/--
-A trivial estimator.
--/
-instance [Preorder α] (a : α) : Estimator (Thunk.pure a) { x // x = a } where
-  bound e := e
+section trivial
+
+variable [Preorder α]
+
+/-- A trivial estimator, containing the actual value. -/
+abbrev Estimator.trivial (a : α) : Type* := { b : α // b = a }
+
+instance : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
+
+instance : WellFoundedGT Unit where
+  wf := ⟨fun .unit => ⟨.unit, fun.⟩⟩
+
+instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
+  let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
+  let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
+  f'.wellFoundedGT
+
+instance {a : α} : Estimator (Thunk.pure a) (Estimator.trivial a) where
+  bound b := b.val
   improve _ := none
-  bound_le e := e.property.le
-  improve_spec e := e.property
+  bound_le b := b.prop.le
+  improve_spec b := b.prop
+
+end trivial
+
+section improveUntil
+
+variable [Preorder α]
 
 attribute [local instance] WellFoundedGT.toWellFoundedRelation in
 /-- Implementation of `Estimator.improveUntil`. -/
-def Estimator.improveUntilAux [PartialOrder α]
+def Estimator.improveUntilAux
     (a : Thunk α) (p : α → Bool) [Estimator a ε]
     [WellFoundedGT (range (bound a : ε → α))]
     (e : ε) (r : Bool) : Except (Option ε) ε :=
@@ -91,12 +114,11 @@ termination_by Estimator.improveUntilAux p I e r => (⟨_, mem_range_self e⟩ :
 Improve an estimate until it satisfies a predicate,
 or else return the best available estimate, if any improvement was made.
 -/
-def Estimator.improveUntil [PartialOrder α] (a : Thunk α) (p : α → Bool)
+def Estimator.improveUntil (a : Thunk α) (p : α → Bool)
     [Estimator a ε] [WellFoundedGT (range (bound a : ε → α))] (e : ε) :
     Except (Option ε) ε :=
   Estimator.improveUntilAux a p e false
 
-variable [PartialOrder α]
 
 attribute [local instance] WellFoundedGT.toWellFoundedRelation in
 /--
@@ -132,6 +154,138 @@ theorem Estimator.improveUntil_spec
     | .ok e' => p (bound a e') :=
   Estimator.improveUntilAux_spec a p e false
 
+end improveUntil
+
+/-! Estimators for sums. -/
+section add
+
+variable [Preorder α]
+
+@[simps]
+instance [Add α] {a b : Thunk α} (εa εb : Type*) [EstimatorData a εa] [EstimatorData b εb] :
+    EstimatorData (a + b) (εa × εb) where
+  bound e := bound a e.1 + bound b e.2
+  improve e := match improve a e.1 with
+  | some e' => some { e with fst := e' }
+  | none => match improve b e.2 with
+    | some e' => some { e with snd := e' }
+    | none => none
+
+instance (a b : Thunk ℕ) {εa εb : Type*} [Estimator a εa] [Estimator b εb] :
+    Estimator (a + b) (εa × εb) where
+  bound_le e :=
+    Nat.add_le_add (Estimator.bound_le e.1) (Estimator.bound_le e.2)
+  improve_spec e := by
+    dsimp
+    have s₁ := Estimator.improve_spec (a := a) e.1
+    have s₂ := Estimator.improve_spec (a := b) e.2
+    revert s₁ s₂
+    cases h₁ : improve a e.fst <;> cases h₂ : improve b e.snd <;> intro s₁ s₂ <;> simp_all only
+    · apply Nat.add_lt_add_left s₂
+    · apply Nat.add_lt_add_right s₁
+    · apply Nat.add_lt_add_right s₁
+
+end add
+
+/-! Estimators for lexicographically ordered pairs. -/
+section Lex
+
+/-- Synonym for `Thunk.prod`, putting lexicographic order on the pair of values. -/
+abbrev _root_.Thunk.prodLex (a : Thunk α) (b : Thunk β) : Thunk (α ×ₗ β) := a.prod b
+
+@[simps]
+instance [Preorder α] [Preorder β] {a : Thunk α} {b : Thunk β}
+    [Bot εb] [EstimatorData a εa] [EstimatorData b εb] :
+    EstimatorData (a.prodLex b) (εa × εb) where
+  bound e := toLex (bound a e.1, bound b e.2)
+  improve e := match improve a e.1 with
+  | some e' => some ⟨e', ⊥⟩
+  | none => match improve b e.2 with
+    | some e' => some { e with snd := e' }
+    | none => none
+
+instance [PartialOrder α] [Preorder β] {a : Thunk α} {b : Thunk β}
+    [Bot εb] [Estimator a εa] [Estimator b εb] :
+    Estimator (a.prodLex b) (εa × εb) where
+  bound_le e := by
+    have t₁ := (Estimator.bound_le e.1 : bound a e.1 ≤ _)
+    have t₂ := (Estimator.bound_le e.2 : bound b e.2 ≤ _)
+    exact Prod.Lex.toLex_mono ⟨t₁, t₂⟩
+  improve_spec e := by
+    dsimp
+    have s₁ := Estimator.improve_spec (a := a) e.1
+    have s₂ := Estimator.improve_spec (a := b) e.2
+    revert s₁ s₂
+    cases h₁ : improve a e.fst <;> cases h₂ : improve b e.snd <;> intro s₁ s₂ <;> simp_all only
+    · rfl
+    · apply Prod.Lex.right _ s₂
+    · apply Prod.Lex.left _ _ s₁
+    · apply Prod.Lex.left _ _ s₁
+
+variable [PartialOrder α] [Preorder β]
+
+theorem weHateUsers {p q : α ×ₗ β} (w : p ≤ q) : p.1 ≤ q.1 := by
+  rcases w with ⟨b₁, b₂, h⟩ | ⟨a, h⟩
+  · exact h.le
+  · rfl
+
+variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
+
+open Lean.Elab.Tactic in
+def injectionsTac : TacticM Unit := do
+  evalTactic (← `(tactic| injections))
+
+-- FIXME this is extremely unfortunate:
+instance (a : Thunk α) (b : β) [Estimator a εa] :
+    WellFoundedGT (range (bound (a.prodLex (Thunk.pure b)) : εa × (Estimator.trivial b) → α ×ₗ β)) :=
+  let f : range (bound (a.prodLex (Thunk.pure b)) :
+    εa × (Estimator.trivial b) → α ×ₗ β) ↪o { x : α // x ≤ a.get } × { y : β // y = b } :=
+    { toFun := fun v => ⟨⟨v.1.1, by
+        obtain ⟨_, h⟩ := v.2
+        rw [← h]
+        apply Estimator.bound_le⟩, ⟨b, rfl⟩⟩,
+      inj' := fun x y w => by aesop (add safe tactic injectionsTac)
+      map_rel_iff' := by
+        intro x y
+        constructor
+        · intro w
+          simp_all
+          rcases x with ⟨⟨a, b⟩, h⟩
+          rcases y with ⟨⟨a', b'⟩, h'⟩
+          replace w := lt_or_eq_of_le w
+          simp_all
+          rcases w with lt | rfl
+          · apply Prod.Lex.left _ _ lt
+          · apply Eq.le
+            congr
+            rcases h with ⟨⟨e, ⟨c, rfl⟩⟩, w⟩
+            rcases h' with ⟨⟨e', ⟨c', rfl⟩⟩, w'⟩
+            injection w with _ w
+            injection w' with _ w'
+            subst w w'
+            simp
+        · intro w
+          simpa using weHateUsers w }
+  f.wellFoundedGT
+
+end Lex
+
+/-! Estimator for the first component of a pair. -/
+section fst
+
+variable [PartialOrder α] [PartialOrder β]
+
+/--
+An estimator for `(a, b)` can be turned into an estimator for `a`,
+simply by repeatedly running `improve` until the first factor "improves".
+The hypothesis that `>` is well-founded on `{ q // q ≤ (a, b) }` ensures this terminates.
+-/
+structure Estimator.fst
+    (p : Thunk (α × β)) (ε : Type*) [Estimator p ε] where
+  /-- The wrapped bound for a value in `α × β`,
+  which we will use as a bound for the first component. -/
+  inner : ε
+
 variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
 
 instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
@@ -139,18 +293,7 @@ instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
     Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
   f.wellFoundedGT
 
-/--
-An estimator for `(a, b)` can be turned into an estimator for `a`,
-simply by repeatedly running `improve` until the first factor "improves".
-The hypothesis that `>` is well-founded on `{ q // q ≤ (a, b) }` ensures this terminates.
--/
-structure Estimator.fst [Preorder α] [Preorder β]
-    (p : Thunk (α × β)) (ε : Type*) [Estimator p ε] where
-  /-- The wrapped bound for a value in `α × β`,
-  which we will use as a bound for the first component. -/
-  inner : ε
-
-instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a : Thunk α} {b : Thunk β}
+instance [DecidableRel ((· : α) < ·)] {a : Thunk α} {b : Thunk β}
     (ε : Type*) [Estimator (a.prod b) ε] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }] :
     EstimatorData a (Estimator.fst (a.prod b) ε) where
   bound e := (bound (a.prod b) e.inner).1
@@ -162,8 +305,7 @@ instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a 
 /-- Given an estimator for a pair, we can extract an estimator for the first factor. -/
 -- This isn't an instance as at the sole use case we need to provide
 -- the instance arguments by hand anyway.
-def Estimator.fstInst [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β]
-    [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
+def Estimator.fstInst [DecidableRel ((· : α) < ·)] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
     (a : Thunk α) (b : Thunk β) {ε : Type*} (i : Estimator (a.prod b) ε) :
     Estimator a (Estimator.fst (a.prod b) ε) where
   bound_le e := (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1
@@ -179,3 +321,5 @@ def Estimator.fstInst [PartialOrder α] [DecidableRel ((· : α) < ·)] [Partial
         eq_of_le_of_not_lt
           (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1 w
     | .ok e' => exact fun w => w
+
+end fst

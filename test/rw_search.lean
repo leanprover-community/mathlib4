@@ -15,13 +15,13 @@ example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
 example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b := by
   rw_search
 
-/-- info: Try this: rw [@List.length_append, @List.length_append, @add_rotate, Nat.two_mul] -/
+/-- info: Try this: rw [@List.length_append, @List.length_append, Nat.two_mul, @add_rotate] -/
 #guard_msgs in
 example (xs ys : List α) :
     (xs ++ ys ++ ys).length = 2 * ys.length + xs.length := by
   rw_search
 
-/-- info: Try this: rw [Int.add_right_comm, @add_rotate, Int.add_right_comm, Int.sub_add_cancel] -/
+/-- info: Try this: rw [@add_sub, @eq_sub_iff_add_eq, ← @add_rotate, Int.add_right_comm] -/
 #guard_msgs in
 example {a b c : Int} : a + b = c + b + (a - c) := by
   rw_search

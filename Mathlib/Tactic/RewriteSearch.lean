@@ -123,15 +123,33 @@ structure SearchNode where mk' ::
   /-- The edit distance between the tokenizations of the two sides
   (or `none` if this hasn't been computed yet). -/
   dist? : Option Nat := none
+namespace SearchNode
+
+def editCost : Levenshtein.Cost String String Nat := Levenshtein.stringLogLength
+
+/-- Check whether a goal can be solved by `rfl`, and fill in the `SearchNode.rfl?` field. -/
+def compute_rfl? (n : SearchNode) : MetaM SearchNode := withMCtx n.mctx do
+  if (← try? n.goal.rfl).isSome then
+    pure { n with mctx := ← getMCtx, rfl? := some true }
+  else
+    pure { n with rfl? := some false }
+
+/-- Fill in the `SearchNode.dist?` field with the edit distance between the two sides. -/
+def compute_dist? (n : SearchNode) : SearchNode :=
+  match n.dist? with
+  | some _ => n
+  | none =>
+    { n with dist? := some (levenshtein editCost n.lhs n.rhs) }
 
 instance : ToString SearchNode where
   toString n :=
+  let n := n.compute_dist?
   s!"depth: {n.history.size}\n" ++
+  s!"history: {n.history.map fun p => hash p % 10000}\n" ++
   (match n.history.back? with
     | some (e, true) => s!"rw [← {e}]"
     | some (e, false) => s!"rw [{e}]"
-    | none => "") ++ "\n" ++ n.ppGoal
-namespace SearchNode
+    | none => "") ++ "\n" ++ "-- " ++ n.ppGoal ++ "\n" ++ s!"distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
 
 /-- Construct a `SearchNode`. -/
 def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
@@ -150,19 +168,8 @@ def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarCon
         ppGoal := (← ppExpr type).pretty
         lhs := lhsTokens
         rhs := rhsTokens }
-    trace[rw_search] s!"{r}"
+    -- trace[rw_search] s!"{r}"
     return some r
-
-/-- Check whether a goal can be solved by `rfl`, and fill in the `SearchNode.rfl?` field. -/
-def compute_rfl? (n : SearchNode) : MetaM SearchNode := withMCtx n.mctx do
-  if (← try? n.goal.rfl).isSome then
-    pure { n with mctx := ← getMCtx, rfl? := some true }
-  else
-    pure { n with rfl? := some false }
-
-/-- Fill in the `SearchNode.dist?` field with the edit distance between the two sides. -/
-def compute_dist? (n : SearchNode) : SearchNode :=
-  { n with dist? := some (levenshtein Levenshtein.defaultCost n.lhs n.rhs) }
 
 /-- Construct an initial `SearchNode` from a goal. -/
 def init (goal : MVarId) : MetaM (Option SearchNode) := mk #[] goal
@@ -175,10 +182,13 @@ instance : Ord SearchNode where
   compare := compareOn SearchNode.ppGoal
 
 /-- The priority function for search is Levenshtein distance. -/
-abbrev prio (n : SearchNode) : Thunk Nat :=
-  Thunk.mk fun _ => (levenshtein Levenshtein.defaultCost n.lhs n.rhs)
+abbrev prio (n : SearchNode) : Thunk (Nat ×ₗ Nat) :=
+  ((Thunk.pure n.history.size) + (Thunk.mk fun _ => levenshtein editCost n.lhs n.rhs)).prodLex
+    (Thunk.pure n.ppGoal.length)
 /-- We can obtain lower bounds, and improve them, for the Levenshtein distance. -/
-abbrev estimator (n : SearchNode) : Type := LevenshteinEstimator Levenshtein.defaultCost n.lhs n.rhs
+abbrev estimator (n : SearchNode) : Type :=
+  (Estimator.trivial n.history.size × LevenshteinEstimator editCost n.lhs n.rhs) ×
+    Estimator.trivial n.ppGoal.length
 
 /-- Given a `RewriteResult` from the `rw?` tactic, create a new `SearchNode` with the new goal. -/
 def rewrite (n : SearchNode) (r : Rewrites.RewriteResult) :
@@ -195,8 +205,9 @@ returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (n : SearchNode) : MLList MetaM SearchNode :=
-  rewritesDedup hyps lemmas n.mctx n.goal n.type |>.filterMapM fun r => do n.rewrite r
+    (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
+  trace[rw_search] "searching: {n}"
+  return rewritesDedup hyps lemmas n.mctx n.goal n.type |>.filterMapM fun r => do n.rewrite r
 
 /--
 Perform best first search on the graph of rewrites from the specified `SearchNode`.
@@ -206,9 +217,8 @@ def search (n : SearchNode)
     MLList MetaM SearchNode := .squash fun _ => do
   let hyps ← localHypotheses
   let lemmas ← rewriteLemmas.get
-  -- TODO think about whether we should use `removeDuplicates := true` here (seems unhelpful)
-  -- or if there are other ways we can deduplicate.
   let search := bestFirstSearchCore (maxQueued := maxQueued)
+    (β := String) (removeDuplicatesBy? := some SearchNode.ppGoal)
     prio estimator (rewrites hyps lemmas) n
   let search := if stopAtRfl then
     search.mapM compute_rfl? |>.takeUpToFirst fun n => n.rfl? = some true

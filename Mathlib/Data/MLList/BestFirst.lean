@@ -91,7 +91,7 @@ structure BestFirstNode (prio : α → Thunk ω) (ε : α → Type) where
 
 variable {α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω]
   [∀ a, Estimator (prio a) (ε a)]
-  [∀ a : α, WellFoundedGT (range (bound (prio a) : ε a → ω))]
+  [I : ∀ a : α, WellFoundedGT (range (bound (prio a) : ε a → ω))]
   {m : Type → Type} [Monad m] {β : Type}
 
 /-- Calculate the current best lower bound for the the priority of a node. -/
@@ -286,16 +286,19 @@ the lowest possible `prio a` amongst unvisited neighbours of visited nodes,
 but lazily estimates these priorities to avoid unnecessary computations.
 -/
 def bestFirstSearchCore (f : α → MLList m α) (a : α)
-    (maxQueued : Option Nat := none) (maxDepth : Option Nat := none) (removeDuplicates := true) :
+    (β : Type _) [Ord β] (removeDuplicatesBy? : Option (α → β) := none)
+    (maxQueued : Option Nat := none) (maxDepth : Option Nat := none)  :
     MLList m α :=
-  if removeDuplicates then
-    let f' : α → MLList (StateT (RBSet α compare) m) α := fun a =>
-      (f a).liftM >>= fun b => do
+  match removeDuplicatesBy? with
+  | some g =>
+    let f' : α → MLList (StateT (RBSet β compare) m) α := fun a =>
+      (f a).liftM >>= fun a' => do
+        let b := g a'
         guard !(← get).contains b
         modify fun s => s.insert b
-        pure b
-    implMaxDepth prio ε maxQueued maxDepth f' a |>.runState' (RBSet.empty.insert a)
-  else
+        pure a'
+    implMaxDepth prio ε maxQueued maxDepth f' a |>.runState' (RBSet.empty.insert (g a))
+  | none =>
     implMaxDepth prio ε maxQueued maxDepth f a
 
 end
@@ -333,4 +336,5 @@ def bestFirstSearch (f : α → MLList m α) (a : α)
     (maxQueued : Option Nat := none) (maxDepth : Option Nat := none) (removeDuplicates := true) :
     MLList m α :=
   bestFirstSearchCore Thunk.pure (fun a : α => { x // x = a }) f a
-    maxQueued maxDepth removeDuplicates
+    (β := α) (removeDuplicatesBy? := if removeDuplicates then some id else none)
+    maxQueued maxDepth

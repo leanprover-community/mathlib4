@@ -59,6 +59,28 @@ def defaultCost [DecidableEq α] : Cost α α ℕ where
 
 instance [DecidableEq α] : Inhabited (Cost α α ℕ) := ⟨defaultCost⟩
 
+/--
+Cost structure given by a function.
+Delete and insert cost the same, and substitution costs the greater value.
+-/
+@[simps]
+def weightCost (f : α → ℕ) : Cost α α ℕ where
+  delete a := f a
+  insert b := f b
+  substitute a b := max (f a) (f b)
+
+/--
+Cost structure for strings, where cost is the length of the token.
+-/
+@[simps!]
+def stringLength : Cost String String ℕ := weightCost String.length
+
+/--
+Cost structure for strings, where cost is the log base 2 length of the token.
+-/
+@[simps!]
+def stringLogLength : Cost String String ℕ := weightCost fun s => Nat.log2 (s.length + 1)
+
 variable (C : Cost α β δ)
 
 /--
