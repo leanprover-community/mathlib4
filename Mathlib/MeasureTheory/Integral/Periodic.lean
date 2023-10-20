@@ -85,9 +85,7 @@ instance hasFunDom : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) �
 
 instance : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
   apply MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage
-  rw [IsAddFundamentalDomain.covolume_eq_volume (isAddFundamentalDomain_Ioc' hT.out 0),
-      AddCircle.measure_univ]
-  simp
+  simp [(isAddFundamentalDomain_Ioc' hT.out 0).covolume_eq_volume, AddCircle.measure_univ]
 
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
