@@ -79,7 +79,6 @@ lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff
 
 end PT
 
-
 /-- The contravariant functor `pt` from the category of locales to the category of
 topological spaces, which sends a frame `L` to the topological space `PT L` of homomorphisms
 from `L` to `Prop` and a frame homomorphism `f` to the continuous function `PT.map f`. -/
