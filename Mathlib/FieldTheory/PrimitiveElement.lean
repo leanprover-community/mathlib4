@@ -189,8 +189,7 @@ theorem primitive_element_inf_aux_of_finite_intermediateField
   replace hneq : (x : F) ≠ (y : F) := fun h => hneq (SetCoe.ext h)
   have hx : f x = K := Set.mem_singleton_iff.1 $ Set.mem_preimage.1 $ Subtype.mem x
   have hy : f y = K := Set.mem_singleton_iff.1 $ Set.mem_preimage.1 $ Subtype.mem y
-  simp only at hx
-  simp only at hy
+  simp only at hx hy
   use α + (x : F) • β
   apply le_antisymm
   · rw [hx, adjoin_le_iff]
@@ -282,7 +281,7 @@ lemma finite_intermediateField_of_exists_primitive_element.aux_finrank
   letI : Module K (⊤ : IntermediateField K E) := Algebra.toModule
   apply LinearEquiv.finrank_eq
   exact {
-    toFun := fun x => x.1,
+    toFun x := x.1
     map_add' := fun x y => by simp only [IntermediateField.coe_add],
     map_smul' := fun r x => by
       simp only [AddHom.toFun, RingHom.id_apply]
