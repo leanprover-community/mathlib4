@@ -315,7 +315,7 @@ theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   have n2 : 2 ≤ n := by
     revert n0 n1
     rcases n with (_ | _ | _) <;> simp [succ_le_succ]
-  simp [minFac_eq]
+  simp only [minFac_eq, Nat.isUnit_iff]
   by_cases d2 : 2 ∣ n <;> simp [d2]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine'
