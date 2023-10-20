@@ -214,7 +214,8 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
     leibniz' := fun a b => by
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply, - Ideal.toCotangent_apply]
-      rw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
         ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]
       convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a : _)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b : _) using 1
