@@ -40,7 +40,7 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CommSemiring α,
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
 
 attribute [instance 150] CanonicallyOrderedCommSemiring.toCommSemiring
-attribute [instance 150] CanonicallyOrderedCommSemiring.toCanonicallyOrderedAddMonoid
+attribute [instance 150] CanonicallyOrderedCommSemiring.toCanonicallyOrderedAddCommMonoid
 attribute [instance 0] CanonicallyOrderedCommSemiring.toPartialOrder
 attribute [instance 0] CanonicallyOrderedCommSemiring.toOrderBot
 
