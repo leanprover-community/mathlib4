@@ -4167,15 +4167,15 @@ section Forall
 variable {p q : α → Prop} {l : List α}
 
 @[simp]
-theorem Forall_cons (p : α → Prop) (x : α) : ∀ l : List α, Forall p (x :: l) ↔ p x ∧ Forall p l
+theorem forall_cons (p : α → Prop) (x : α) : ∀ l : List α, Forall p (x :: l) ↔ p x ∧ Forall p l
   | [] => (and_true_iff _).symm
   | _ :: _ => Iff.rfl
-#align list.all₂_cons List.Forall_cons
+#align list.all₂_cons List.forall_cons
 
-theorem Forall_iff_forall : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p x
+theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p x
   | [] => (iff_true_intro <| forall_mem_nil _).symm
-  | x :: l => by rw [forall_mem_cons, Forall_cons, Forall_iff_forall]
-#align list.all₂_iff_forall List.Forall_iff_forall
+  | x :: l => by rw [forall_mem_cons, forall_cons, forall_iff_forall_mem]
+#align list.all₂_iff_forall List.forall_iff_forall_mem
 
 theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
@@ -4183,12 +4183,12 @@ theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → 
 #align list.all₂.imp List.Forall.imp
 
 @[simp]
-theorem Forall_map_iff {p : β → Prop} (f : α → β) : Forall p (l.map f) ↔ Forall (p ∘ f) l := by
+theorem forall_map_iff {p : β → Prop} (f : α → β) : Forall p (l.map f) ↔ Forall (p ∘ f) l := by
   induction l <;> simp [*]
-#align list.all₂_map_iff List.Forall_map_iff
+#align list.all₂_map_iff List.forall_map_iff
 
 instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ =>
-  decidable_of_iff' _ Forall_iff_forall
+  decidable_of_iff' _ forall_iff_forall_mem
 
 end Forall
 

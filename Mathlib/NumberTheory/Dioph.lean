@@ -267,7 +267,7 @@ theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
 theorem sumsq_eq_zero (x) : ∀ l, sumsq l x = 0 ↔ l.Forall fun a : Poly α => a x = 0
   | [] => eq_self_iff_true _
   | p::ps => by
-    rw [List.Forall_cons, ← sumsq_eq_zero _ ps]; rw [sumsq]
+    rw [List.forall_cons, ← sumsq_eq_zero _ ps]; rw [sumsq]
     exact
       ⟨fun h : p x * p x + sumsq ps x = 0 =>
         have : p x = 0 :=

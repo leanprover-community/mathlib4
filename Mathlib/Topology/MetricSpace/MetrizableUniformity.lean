@@ -140,7 +140,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
       intro hLm
       rw [mem_setOf_eq, take_all_of_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
-          sum_eq_zero_iff, ← Forall_iff_forall, Forall_zipWith,
+          sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
           ← chain_append_singleton_iff_forall₂]
           at hm <;>
         [skip; simp]
