@@ -408,10 +408,14 @@ instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
 instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
 #align rat.measurable_space Rat.instMeasurableSpace
 
-instance Empty.instMeasurableSingletonClass : MeasurableSingletonClass Empty := ⟨fun _ => trivial⟩
-#align empty.measurable_singleton_class Empty.instMeasurableSingletonClass
-instance PUnit.instMeasurableSingletonClass : MeasurableSingletonClass PUnit := ⟨fun _ => trivial⟩
-#align punit.measurable_singleton_class PUnit.instMeasurableSingletonClass
+instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
+    MeasurableSingletonClass α := by
+  refine' ⟨fun i => _⟩
+  convert MeasurableSet.univ
+  simp [Set.eq_univ_iff_forall]
+#noalign empty.measurable_singleton_class
+#noalign punit.measurable_singleton_class
+
 instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩
 #align bool.measurable_singleton_class Bool.instMeasurableSingletonClass
 instance Prop.instMeasurableSingletonClass : MeasurableSingletonClass Prop := ⟨fun _ => trivial⟩
@@ -905,16 +909,45 @@ theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fu
   measurable_pi_iff.mpr hf
 #align measurable_pi_lambda measurable_pi_lambda
 
+/-- The function `(f, x) ↦ update f a x : (Π a, π a) × π a → Π a, π a` is measurable. -/
+theorem measurable_update'  {a : δ} [DecidableEq δ] :
+    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
+  rw [measurable_pi_iff]
+  intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    dsimp
+    exact measurable_snd
+  · exact measurable_pi_iff.1 measurable_fst _
+
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
 @[measurability]
-theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) := by
-  refine measurable_pi_lambda _ fun x => ?_
-  rcases eq_or_ne x a with (rfl | hx)
-  · simpa only [update_same] using measurable_id
-  · simpa only [update_noteq hx] using measurable_const
+theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
+  measurable_update'.comp measurable_prod_mk_left
 #align measurable_update measurable_update
+
+theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
+    Measurable (update · a x) :=
+  measurable_update'.comp measurable_prod_mk_right
+
+variable (π) in
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
+  cases h
+  exact measurable_id
+
+variable (π) in
+theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → π i}
+    (hf : Measurable f) : Measurable fun x => (congr_arg π h).mp (f x) :=
+  (measurable_eq_mp π h).comp hf
+
+theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (piCongrLeft π f) := by
+  rw [measurable_pi_iff]
+  intro i
+  simp_rw [piCongrLeft_apply_eq_cast]
+  exact Measurable.eq_mp π (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
 
 /- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
   lemmas, like `MeasurableSet.prod`. -/
@@ -1572,6 +1605,18 @@ def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π
     measurable_pi_lambda _ fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
 #align measurable_equiv.Pi_congr_right MeasurableEquiv.piCongrRight
 
+variable (π) in
+/-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
+def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
+  refine' { Equiv.piCongrLeft π f with .. }
+  · exact measurable_piCongrLeft f
+  simp only [invFun_as_coe, coe_fn_symm_mk]
+  rw [measurable_pi_iff]
+  exact fun i => measurable_pi_apply (f i)
+
+theorem coe_piCongrLeft (f : δ ≃ δ') :
+    ⇑MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
+
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := { fullyApplied := false })]
 def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :
@@ -1628,6 +1673,23 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
   measurable_toFun := measurable_piEquivPiSubtypeProd π p
   measurable_invFun := measurable_piEquivPiSubtypeProd_symm π p
 #align measurable_equiv.pi_equiv_pi_subtype_prod MeasurableEquiv.piEquivPiSubtypeProd
+
+/-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
+This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
+def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
+    (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
+  refine' { Equiv.sumPiEquivProdPi α with .. }
+  · refine Measurable.prod ?_ ?_ <;>
+      rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
+  · rw [measurable_pi_iff]; rintro (i|i)
+    exact measurable_pi_iff.1 measurable_fst _
+    exact measurable_pi_iff.1 measurable_snd _
+
+theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
+    ⇑MeasurableEquiv.sumPiEquivProdPi α = Equiv.sumPiEquivProdPi α := by rfl
+
+theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
+    ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
 to the sum of `s` and `sᶜ`.-/
