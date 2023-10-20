@@ -281,7 +281,7 @@ lemma finite_intermediateField_of_exists_primitive_element.aux_finrank
   letI : Module K (⊤ : IntermediateField K E) := Algebra.toModule
   apply LinearEquiv.finrank_eq
   exact {
-    toFun x := x.1
+    toFun := fun x => x.1,
     map_add' := fun x y => by simp only [IntermediateField.coe_add],
     map_smul' := fun r x => by
       simp only [AddHom.toFun, RingHom.id_apply]
