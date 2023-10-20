@@ -213,7 +213,7 @@ def make_bisecting_pass(change_generator):
         progress_top, file_top = bisect_changes(expected_out, changes_top, filename)
         if progress_top:
             # Some progress in the top half, so try making progress in the bottom half too.
-            logging.debug(f"bisect_changes: top half is done, let's try the bottom too")
+            logging.debug(f"bisect_changes: top half succeeded, let's try the bottom too")
             # TODO: here we might end up retrying some changes that were rejected in `changes_top`
             # (but it should only be a logarithmic number of times, since we're doing bisection)
             _, file_top_and_bot = bisect_changes(expected_out, change_generator(file_top), file_top)
@@ -276,6 +276,15 @@ def make_sorry(filename):
         if source[match.start():match.end()] == ':= sorry\n\n': continue # Skip useless changes.
         yield match.start(), match.end(), ':= sorry\n\n'
 
+def make_proofs_sorry(filename):
+    """Replace the proofs of theorems and lemmas (but not the value of `def`s) with `sorry`"""
+    with open(filename, 'r') as file:
+        source = file.read()
+
+    for match in re.finditer(r'(theorem|lemma).*?(:=.*?\n\n)', source, flags=re.DOTALL):
+        if match.group(2) == ':= sorry\n\n': continue # Skip useless changes.
+        yield match.start(2), match.end(2), ':= sorry\n\n'
+
 def delete_imports(filename):
     """Delete an import statement outright. Compare `replace_imports`."""
     with open(filename, 'r') as file:
@@ -325,6 +334,7 @@ def combine_change_generators(*generators):
 passes = {
     'strip_comments': make_bisecting_pass(strip_comments),
     'delete_align': make_bisecting_pass(delete_align),
+    'make_proofs_sorry': make_bisecting_pass(make_proofs_sorry),
     'delete_or_sorry': make_bottom_up_pass(combine_change_generators(delete_defs, make_sorry)),
     'delete_imports': make_bisecting_pass(delete_imports),
     'replace_imports': make_committing_pass(replace_imports),
