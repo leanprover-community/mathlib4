@@ -255,6 +255,8 @@ structure SageCoeffAndPower where
   /-- The function call produces an array of polynomials
   parallel to the input list of hypotheses. -/
   coeffs : Array Poly
+  /-- Sage produces an exponent (default 1) in the case where the hypothesess
+  sum to a power of the goal. -/
   power  : ℕ
   deriving FromJson, Repr
 
@@ -263,6 +265,8 @@ structure SageSuccess where
   /-- The script returns a string containing python script to be sent to the remote server,
   when the tracing option is set. -/
   trace : Option String := none
+  /-- The main result of the function call is an array of polynomials
+  parallel to the input list of hypotheses and an exponent for the goal. -/
   data : Option SageCoeffAndPower := none
   deriving FromJson, Repr
 
