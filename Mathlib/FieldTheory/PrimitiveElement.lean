@@ -268,27 +268,6 @@ theorem exists_primitive_element_of_finite_intermediateField
     exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
 
-lemma finite_intermediateField_of_exists_primitive_element.aux_finrank
-    (K : IntermediateField F E) :
-    letI : Algebra K (⊤ : IntermediateField K E) := IntermediateField.algebra _
-    letI : Module K (⊤ : IntermediateField K E) := Algebra.toModule
-    finrank K (⊤ : IntermediateField K E) = finrank K E := by
-  letI : Algebra K (⊤ : IntermediateField K E) := IntermediateField.algebra _
-  letI : Module K (⊤ : IntermediateField K E) := Algebra.toModule
-  apply LinearEquiv.finrank_eq
-  exact {
-    toFun := fun x => x.1,
-    map_add' := fun x y => by simp only [IntermediateField.coe_add],
-    map_smul' := fun r x => by
-      simp only [AddHom.toFun, RingHom.id_apply]
-      letI : SMul K K := Algebra.toSMul (self := Algebra.id K)
-      letI : IsScalarTower K K E := IsScalarTower.left K
-      exact IntermediateField.coe_smul (⊤ : IntermediateField K E) r x,
-    invFun := fun x => ⟨x, mem_top⟩,
-    left_inv := fun x => by simp only,
-    right_inv := fun x => by simp only,
-  }
-
 -- TODO: give it a descriptive name if it's useful in other places
 private lemma finite_intermediateField_of_exists_primitive_element.aux_1
     (S : Set E) (hprim : adjoin F S = ⊤) (K : IntermediateField F E) :
@@ -325,18 +304,21 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_2
       Polynomial.map_ne_zero_iff $ NoZeroSMulDivisors.algebraMap_injective K E]
     exact minpoly.ne_zero $ isAlgebraic_iff_isIntegral.1 $ isAlgebraic_of_finite K α
   have hpdeg := IntermediateField.adjoin.finrank (K := K) (x := α) (hx := isIntegral_of_finite K α)
-  rw [Field.finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K,
-    Field.finite_intermediateField_of_exists_primitive_element.aux_finrank F E K,
-    ← Polynomial.natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K E)
-      (minpoly K α),
-    show (minpoly K α).map (algebraMap K E) = g by rfl,
+  letI : Algebra K (⊤ : IntermediateField K E) := IntermediateField.algebra _
+  letI : Module K (⊤ : IntermediateField K E) := Algebra.toModule
+  letI : Algebra K'' (⊤ : IntermediateField K'' E) := IntermediateField.algebra _
+  letI : Module K'' (⊤ : IntermediateField K'' E) := Algebra.toModule
+  rw [finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K,
+    show finrank K (⊤ : IntermediateField K E) = finrank K E from finrank_top K E,
+    ← natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K E) (minpoly K α),
+    show (minpoly K α).map (algebraMap K E) = g from rfl,
     ← hp,
-    Polynomial.natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K'' E),
+    natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K'' E),
     hqdvdp,
-    Polynomial.natDegree_mul (left_ne_zero_of_mul hpne0) (right_ne_zero_of_mul hpne0),
+    natDegree_mul (left_ne_zero_of_mul hpne0) (right_ne_zero_of_mul hpne0),
     ← IntermediateField.adjoin.finrank (K := K'') (x := α) (hx := isIntegral_of_finite K'' α),
-    Field.finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K'',
-    Field.finite_intermediateField_of_exists_primitive_element.aux_finrank F E K''] at hpdeg
+    finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K'',
+    show finrank K'' (⊤ : IntermediateField K'' E) = finrank K'' E from finrank_top K'' E] at hpdeg
   replace hpdeg : finrank K E ≥ finrank K'' E := by linarith only [hpdeg, Nat.le_add_right]
   exact (eq_of_le_of_finrank_le' inf_le_left hpdeg).symm
 
