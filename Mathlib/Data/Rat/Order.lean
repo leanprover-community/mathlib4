@@ -38,7 +38,7 @@ protected def Nonneg (r : ℚ) : Prop :=
 @[simp]
 theorem divInt_nonneg (a : ℤ) {b : ℤ} (h : 0 < b) : (a /. b).Nonneg ↔ 0 ≤ a := by
   generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [num_den'] at ha
-  simp [Rat.Nonneg]
+  simp only [Rat.Nonneg]
   have d0 := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h₁)
   have := (divInt_eq_iff (ne_of_gt h) (ne_of_gt d0)).1 ha
   constructor <;> intro h₂
@@ -111,11 +111,12 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
     numDenCasesOn'' b fun nb db hb hbred => by
       change Rat.blt _ _ = false ↔ _
       unfold Rat.blt
-      simp [-divInt_ofNat, mkRat_eq]
+      simp only [Bool.and_eq_true, decide_eq_true_eq, Bool.ite_eq_false_distrib,
+        decide_eq_false_iff_not, not_lt, ite_eq_left_iff, not_and, not_le]
       split_ifs with h h'
       · rw [Rat.sub_def]
-        simp [Rat.Nonneg]
-        simp [normalize_eq]
+        simp only [Rat.Nonneg, false_iff, not_le]
+        simp only [normalize_eq]
         apply Int.ediv_neg'
         · rw [sub_neg]
           apply lt_of_lt_of_le

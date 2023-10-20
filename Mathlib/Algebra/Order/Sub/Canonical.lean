@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Sub.Defs
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section ExistsAddOfLE
 
@@ -307,7 +307,7 @@ end ExistsAddOfLE
 /-! ### Lemmas in a canonically ordered monoid. -/
 
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
 variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
   [CovariantClass α α (· + ·) (· ≤ ·)] [Sub α] [OrderedSub α] {a b c d : α}
@@ -326,7 +326,7 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
   rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
 
-alias tsub_eq_zero_iff_le ↔ _ tsub_eq_zero_of_le
+alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
 #align tsub_eq_zero_of_le tsub_eq_zero_of_le
 
 attribute [simp] tsub_eq_zero_of_le
@@ -408,12 +408,12 @@ def CanonicallyOrderedAdd.toAddCancelCommMonoid : AddCancelCommMonoid α :=
 
 end Contra
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 /-! ### Lemmas in a linearly canonically ordered monoid. -/
 
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
 variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
   [CovariantClass α α (· + ·) (· ≤ ·)]  [Sub α] [OrderedSub α] {a b c d : α}
@@ -511,4 +511,4 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 #align tsub_add_min tsub_add_min
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid

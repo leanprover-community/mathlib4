@@ -58,7 +58,7 @@ open Function MulOpposite
 
 open BigOperators Pointwise
 
-variable {F α β γ : Type _}
+variable {F α β γ : Type*}
 
 namespace Finset
 
@@ -146,8 +146,8 @@ theorem card_one : (1 : Finset α).card = 1 :=
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
-def singletonOneHom : OneHom α (Finset α) :=
-  ⟨singleton, singleton_one⟩
+def singletonOneHom : OneHom α (Finset α) where
+  toFun := singleton; map_one' := singleton_one
 #align finset.singleton_one_hom Finset.singletonOneHom
 #align finset.singleton_zero_hom Finset.singletonZeroHom
 
@@ -233,7 +233,7 @@ theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty :=
 #align finset.inv_nonempty_iff Finset.inv_nonempty_iff
 #align finset.neg_nonempty_iff Finset.neg_nonempty_iff
 
-alias inv_nonempty_iff ↔ Nonempty.of_inv Nonempty.inv
+alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
 #align finset.nonempty.of_inv Finset.Nonempty.of_inv
 #align finset.nonempty.inv Finset.Nonempty.inv
 
@@ -487,8 +487,8 @@ theorem image_mul : (s * t).image (f : α → β) = s.image f * t.image f :=
 
 /-- The singleton operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-def singletonMulHom : α →ₙ* Finset α :=
-  ⟨singleton, fun _ _ => (singleton_mul_singleton _ _).symm⟩
+def singletonMulHom : α →ₙ* Finset α where
+  toFun := singleton; map_mul' _ _ := (singleton_mul_singleton _ _).symm
 #align finset.singleton_mul_hom Finset.singletonMulHom
 #align finset.singleton_add_hom Finset.singletonAddHom
 
@@ -623,7 +623,7 @@ theorem singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
 #align finset.singleton_div Finset.singleton_div
 #align finset.singleton_sub Finset.singleton_sub
 
--- @[to_additive (attr := simp )] -- Porting note: simp can prove this & the additive version
+-- @[to_additive (attr := simp)] -- Porting note: simp can prove this & the additive version
 @[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
@@ -854,7 +854,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -974,7 +974,7 @@ protected def commMonoid : CommMonoid (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod {ι : Type _} (s : Finset ι) (f : ι → Finset α) :
+theorem coe_prod {ι : Type*} (s : Finset ι) (f : ι → Finset α) :
     ↑(∏ i in s, f i) = ∏ i in s, (f i : Set α) :=
   map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 #align finset.coe_prod Finset.coe_prod
@@ -1776,13 +1776,13 @@ scoped[Pointwise]
 multiplicative action on `Finset β`. -/
 protected def distribMulActionFinset [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Finset β) :=
-  Function.Injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_injective coe_smul_finset
+  Function.Injective.distribMulAction coeAddMonoidHom coe_injective coe_smul_finset
 #align finset.distrib_mul_action_finset Finset.distribMulActionFinset
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
 protected def mulDistribMulActionFinset [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Finset β) :=
-  Function.Injective.mulDistribMulAction ⟨⟨(↑), coe_one⟩, coe_mul⟩ coe_injective coe_smul_finset
+  Function.Injective.mulDistribMulAction coeMonoidHom coe_injective coe_smul_finset
 #align finset.mul_distrib_mul_action_finset Finset.mulDistribMulActionFinset
 
 scoped[Pointwise]
@@ -2093,9 +2093,9 @@ theorem smul_finset_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t 
   image_sdiff _ _ <| MulAction.injective₀ ha
 #align finset.smul_finset_sdiff₀ Finset.smul_finset_sdiff₀
 
-theorem smul_finset_symm_diff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
+theorem smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff _ _ <| MulAction.injective₀ ha
-#align finset.smul_finset_symm_diff₀ Finset.smul_finset_symm_diff₀
+#align finset.smul_finset_symm_diff₀ Finset.smul_finset_symmDiff₀
 
 theorem smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by

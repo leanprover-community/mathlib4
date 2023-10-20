@@ -42,7 +42,7 @@ theorem even_iff : Even n ↔ n % 2 = 0 :=
 instance : DecidablePred (Even : ℕ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ => by rw [hm, add_mod, mul_mod_right]; rfl,
+  ⟨fun ⟨m, hm⟩ => by norm_num [hm, add_mod],
     fun h => ⟨n / 2, (mod_add_div n 2).symm.trans (by rw [h, add_comm])⟩⟩
 #align nat.odd_iff Nat.odd_iff
 
@@ -290,7 +290,7 @@ namespace Function
 
 namespace Involutive
 
-variable {α : Type _} {f : α → α} {n : ℕ}
+variable {α : Type*} {f : α → α} {n : ℕ}
 
 set_option linter.deprecated false in
 section
@@ -331,7 +331,7 @@ end Involutive
 
 end Function
 
-variable {R : Type _} [Monoid R] [HasDistribNeg R] {n : ℕ}
+variable {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
 
 theorem neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n :=
   ⟨fun h' => of_not_not fun hn => h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h',

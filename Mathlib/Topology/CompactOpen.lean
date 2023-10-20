@@ -5,7 +5,7 @@ Authors: Reid Barton
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Maps
 
 #align_import topology.compact_open from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
@@ -43,7 +43,7 @@ namespace ContinuousMap
 
 section CompactOpen
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -161,7 +161,7 @@ theorem continuous_comp' [LocallyCompactSpace β] :
       exact mem_prod.mpr ⟨hKL, image_subset_iff.mpr hLU⟩)
 #align continuous_map.continuous_comp' ContinuousMap.continuous_comp'
 
-theorem continuous.comp' {X : Type _} [TopologicalSpace X] [LocallyCompactSpace β] {f : X → C(α, β)}
+theorem continuous.comp' {X : Type*} [TopologicalSpace X] [LocallyCompactSpace β] {f : X → C(α, β)}
     {g : X → C(β, γ)} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg : Continuous fun x => (f x, g x))
@@ -277,13 +277,13 @@ theorem nhds_compactOpen_eq_sInf_nhds_induced (f : C(α, β)) :
   simp [nhds_iInf, nhds_induced]
 #align continuous_map.nhds_compact_open_eq_Inf_nhds_induced ContinuousMap.nhds_compactOpen_eq_sInf_nhds_induced
 
-theorem tendsto_compactOpen_restrict {ι : Type _} {l : Filter ι} {F : ι → C(α, β)} {f : C(α, β)}
+theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(α, β)} {f : C(α, β)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set α) :
     Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) :=
   (continuous_restrict s).continuousAt.tendsto.comp hFf
 #align continuous_map.tendsto_compact_open_restrict ContinuousMap.tendsto_compactOpen_restrict
 
-theorem tendsto_compactOpen_iff_forall {ι : Type _} {l : Filter ι} (F : ι → C(α, β)) (f : C(α, β)) :
+theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → C(α, β)) (f : C(α, β)) :
     Filter.Tendsto F l (𝓝 f) ↔
     ∀ (s) (hs : IsCompact s), Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) := by
     rw [compactOpen_eq_sInf_induced]
@@ -292,8 +292,8 @@ theorem tendsto_compactOpen_iff_forall {ι : Type _} {l : Filter ι} (F : ι →
 
 /-- A family `F` of functions in `C(α, β)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `α`. -/
-theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space β]
-    {ι : Type _} {l : Filter ι} [Filter.NeBot l] (F : ι → C(α, β)) :
+theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace α] [T2Space β]
+    {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(α, β)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
     ∀ (s : Set α) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
   constructor
@@ -314,11 +314,7 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
       exact tendsto_nhds_unique h₁ h₂
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
-    have hs : ∀ x : α, ∃ (s : _), IsCompact s ∧ s ∈ 𝓝 x := by
-      intro x
-      obtain ⟨s, hs, hs'⟩ := exists_compact_mem_nhds x
-      exact ⟨s, hs, hs'⟩
-    refine ⟨liftCover' _ _ h hs, ?_⟩
+    refine ⟨liftCover' _ _ h exists_compact_mem_nhds, ?_⟩
     rw [tendsto_compactOpen_iff_forall]
     intro s hs
     rw [liftCover_restrict']
@@ -451,7 +447,7 @@ open ContinuousMap
 
 namespace Homeomorph
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -489,7 +485,7 @@ end Homeomorph
 
 section QuotientMap
 
-variable {X₀ X Y Z : Type _} [TopologicalSpace X₀] [TopologicalSpace X] [TopologicalSpace Y]
+variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [TopologicalSpace Y]
   [TopologicalSpace Z] [LocallyCompactSpace Y] {f : X₀ → X}
 
 theorem QuotientMap.continuous_lift_prod_left (hf : QuotientMap f) {g : X × Y → Z}

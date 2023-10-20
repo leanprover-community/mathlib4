@@ -29,7 +29,7 @@ open Set Filter Topology
 
 section PartialOrder
 
-variable {α β : Type _} [TopologicalSpace α] [PartialOrder α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [PartialOrder α] [TopologicalSpace β]
 
 theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
     ContinuousWithinAt f (Ioi a) a ↔ ContinuousWithinAt f (Ici a) a := by
@@ -53,7 +53,7 @@ end PartialOrder
 
 section TopologicalSpace
 
-variable {α β : Type _} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β]
 
 theorem nhds_left_sup_nhds_right (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]

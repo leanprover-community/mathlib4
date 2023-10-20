@@ -33,7 +33,7 @@ the main constructions deal with continuous group morphisms.
 
 noncomputable section
 
-variable {M R α β : Type _}
+variable {M R α β : Type*}
 
 section Group
 
@@ -69,7 +69,6 @@ section Zero
 instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) :=
   { (inferInstance : MulAction M $ Completion α) with
-    smul := (· • ·)
     smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
     zero_smul :=
       ext' (continuous_const_smul _) continuous_const fun a ↦ by
@@ -169,7 +168,6 @@ instance uniformAddGroup : UniformAddGroup (Completion α) :=
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) :=
   { (inferInstance : MulAction M $ Completion α) with
-    smul := (· • ·)
     smul_add := fun r x y ↦
       induction_on₂ x y
         (isClosed_eq ((continuous_fst.add continuous_snd).const_smul _)
@@ -217,7 +215,6 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
     Module R (Completion α) :=
   { (inferInstance : DistribMulAction R $ Completion α),
     (inferInstance : MulActionWithZero R $ Completion α) with
-    smul := (· • ·)
     add_smul := fun a b ↦
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by
@@ -288,7 +285,7 @@ theorem AddMonoidHom.completion_zero :
     simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 #align add_monoid_hom.completion_zero AddMonoidHom.completion_zero
 
-theorem AddMonoidHom.completion_add {γ : Type _} [AddCommGroup γ] [UniformSpace γ]
+theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
     [UniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
     AddMonoidHom.completion (f + g) (hf.add hg) =
     AddMonoidHom.completion f hf + AddMonoidHom.completion g hg := by

@@ -22,7 +22,7 @@ multiplication is defined by `a • some b = some (a • b)` and `a • none = n
 -/
 
 
-variable {M N α : Type _}
+variable {M N α : Type*}
 
 namespace Option
 

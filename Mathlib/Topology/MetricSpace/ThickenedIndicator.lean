@@ -43,7 +43,7 @@ open NNReal ENNReal Set Metric EMetric Filter
 
 noncomputable section thickenedIndicator
 
-variable {α : Type _} [PseudoEMetricSpace α]
+variable {α : Type*} [PseudoEMetricSpace α]
 
 /-- The `δ`-thickened indicator of a set `E` is the function that equals `1` on `E`
 and `0` outside a `δ`-thickening of `E` and interpolates (continuously) between
@@ -63,8 +63,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
   rw [show (fun x : α => (1 : ℝ≥0∞) - infEdist x E / ENNReal.ofReal δ) = sub ∘ f by rfl]
   apply (@ENNReal.continuous_nnreal_sub 1).comp
   apply (ENNReal.continuous_div_const (ENNReal.ofReal δ) _).comp continuous_infEdist
-  norm_num
-  exact δ_pos
+  norm_num [δ_pos]
 #align continuous_thickened_indicator_aux continuous_thickenedIndicatorAux
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
@@ -252,7 +251,7 @@ end thickenedIndicator
 
 section indicator
 
-variable {α : Type _} [PseudoEMetricSpace α] {β : Type _} [One β]
+variable {α : Type*} [PseudoEMetricSpace α] {β : Type*} [One β]
 
 /-- Pointwise, the multiplicative indicators of δ-thickenings of a set eventually coincide
 with the multiplicative indicator of the set as δ>0 tends to zero. -/

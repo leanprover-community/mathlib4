@@ -38,7 +38,7 @@ namespace Idempotents
 
 namespace Karoubi
 
-variable {C : Type _} [Category.{v} C] [Preadditive C]
+variable {C : Type*} [Category.{v} C] [Preadditive C]
 
 namespace Biproducts
 

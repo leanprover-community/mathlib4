@@ -15,6 +15,8 @@ import Mathlib.Control.Basic
 This file defines the functor structure of `Set`.
 -/
 
+set_option autoImplicit true
+
 universe u
 
 open Function
@@ -51,7 +53,7 @@ theorem pure_def (a : α) : (pure a : Set α) = {a} :=
 
 /-- `Set.image2` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem image2_def {α β γ : Type _} (f : α → β → γ) (s : Set α) (t : Set β) :
+theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : Set β) :
     image2 f s t = f <$> s <*> t := by
   ext
   simp
@@ -71,5 +73,25 @@ instance : Alternative Set :=
   { Set.monad with
     orElse := fun s t => s ∪ (t ())
     failure := ∅ }
+
+/-! ## Monadic coercion lemmas -/
+
+variable {β : Set α} {γ : Set β}
+
+theorem mem_coe_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
+  ⟨_, ⟨⟨_, rfl⟩, _, ⟨ha', rfl⟩, rfl⟩⟩
+
+theorem coe_subset : (γ : Set α) ⊆ β := by
+  intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
+
+theorem mem_of_mem_coe (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
+  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
+
+theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
+  eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
+
+theorem image_coe_eq_restrict_image {f : α → δ} : f '' γ = β.restrict f '' γ :=
+  ext fun _ =>
+    ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
 
 end Set

@@ -27,10 +27,10 @@ be satisfied by itself and all stricter types.
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of continuous open maps from `α` to `β`, aka Priestley homomorphisms. -/
-structure ContinuousOpenMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] extends
+structure ContinuousOpenMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] extends
   ContinuousMap α β where
   map_open' : IsOpenMap toFun
 #align continuous_open_map ContinuousOpenMap
@@ -42,7 +42,7 @@ section
 /-- `ContinuousOpenMapClass F α β` states that `F` is a type of continuous open maps.
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
-class ContinuousOpenMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class ContinuousOpenMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
 #align continuous_open_map_class ContinuousOpenMapClass
@@ -151,15 +151,16 @@ theorem id_comp (f : α →CO β) : (ContinuousOpenMap.id β).comp f = f :=
   ext fun _ => rfl
 #align continuous_open_map.id_comp ContinuousOpenMap.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : β →CO γ} {f : α →CO β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_open_map.cancel_right ContinuousOpenMap.cancel_right
 
+@[simp]
 theorem cancel_left {g : β →CO γ} {f₁ f₂ : α →CO β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_open_map.cancel_left ContinuousOpenMap.cancel_left
 
 end ContinuousOpenMap
-

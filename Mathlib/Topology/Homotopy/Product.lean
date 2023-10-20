@@ -55,7 +55,7 @@ open ContinuousMap
 
 section Pi
 
-variable {I A : Type _} {X : I → Type _} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
+variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
   {f g : ∀ i, C(A, X i)} {S : Set A}
 
 -- Porting note: this definition is already in `Topology.Homotopy.Basic`
@@ -85,7 +85,7 @@ end Pi
 
 section Prod
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {A : Type _} [TopologicalSpace A]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {A : Type*} [TopologicalSpace A]
   {f₀ f₁ : C(A, α)} {g₀ g₁ : C(A, β)} {S : Set A}
 
 /-- The product of homotopies `F` and `G`,
@@ -124,7 +124,7 @@ local infixl:70 " ⬝ " => Quotient.comp
 
 section Pi
 
-variable {ι : Type _} {X : ι → Type _} [∀ i, TopologicalSpace (X i)] {as bs cs : ∀ i, X i}
+variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {as bs cs : ∀ i, X i}
 
 /-- The product of a family of path homotopies. This is just a specialization of `HomotopyRel`. -/
 def piHomotopy (γ₀ γ₁ : ∀ i, Path (as i) (bs i)) (H : ∀ i, Path.Homotopy (γ₀ i) (γ₁ i)) :
@@ -184,7 +184,7 @@ end Pi
 
 section Prod
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {a₁ a₂ a₃ : α} {b₁ b₂ b₃ : β}
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {a₁ a₂ a₃ : α} {b₁ b₂ b₃ : β}
   {p₁ p₁' : Path a₁ a₂} {p₂ p₂' : Path b₁ b₂} (q₁ : Path.Homotopic.Quotient a₁ a₂)
   (q₂ : Path.Homotopic.Quotient b₁ b₂)
 

@@ -23,7 +23,7 @@ open Pointwise
 
 namespace Finset
 
-variable {α : Type _} [DecidableEq α] [CommGroup α] (s : Finset α) {t : Finset α}
+variable {α : Type*} [DecidableEq α] [CommGroup α] (s : Finset α) {t : Finset α}
 
 /-- **Ruzsa's covering lemma**. -/
 @[to_additive "**Ruzsa's covering lemma**"]

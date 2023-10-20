@@ -3,8 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.PresheafedSpace.Gluing
-import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
+import Mathlib.AlgebraicGeometry.OpenImmersion
 
 #align_import algebraic_geometry.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
@@ -378,7 +378,6 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   rw [𝒰.gluedCover.ι_eq_iff]
   right
   use e.hom ⟨⟨x, y⟩, h⟩
-  simp_rw [← comp_apply]
   constructor
   -- Porting note: in the two subproofs below, added the `change` lines
   · change (e.hom ≫ _) ⟨(x, y), h⟩ = x

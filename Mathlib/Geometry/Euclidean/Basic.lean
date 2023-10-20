@@ -65,7 +65,7 @@ Euclidean affine spaces.
 -/
 
 
-variable {V : Type _} {P : Type _}
+variable {V : Type*} {P : Type*}
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 
@@ -79,8 +79,8 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
 
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
-theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
-    (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
+theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
+    (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type*} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
     (h₂ : ∑ i in s₂, w₂ i = 0) :
     ⟪s₁.weightedVSub p₁ w₁, s₂.weightedVSub p₂ w₂⟫ =
       (-∑ i₁ in s₁, ∑ i₂ in s₂, w₁ i₁ * w₂ i₂ * (dist (p₁ i₁) (p₂ i₂) * dist (p₁ i₁) (p₂ i₂))) /
@@ -94,7 +94,7 @@ theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ 
 /-- The distance between two points given with `affineCombination`,
 in terms of the pairwise distances between the points in that
 combination. -/
-theorem dist_affineCombination {ι : Type _} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
+theorem dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
     (h₁ : ∑ i in s, w₁ i = 1) (h₂ : ∑ i in s, w₂ i = 1) : by
       have a₁ := s.affineCombination ℝ p w₁
       have a₂ := s.affineCombination ℝ p w₂
@@ -183,7 +183,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     rcases hv' with ⟨t₂, rfl⟩
     exact ⟨t₁, t₂, hv⟩
   rcases hv (p -ᵥ p₁) (vsub_mem_direction hps hp₁s) with ⟨t₁, t₂, hpt⟩
-  simp only [hpt, inner_add_right, inner_smul_right, ho, MulZeroClass.mul_zero, add_zero,
+  simp only [hpt, inner_add_right, inner_smul_right, ho, mul_zero, add_zero,
     mul_eq_zero, inner_self_eq_zero, vsub_eq_zero_iff_eq, hc.symm, or_false_iff] at hop
   rw [hop, zero_smul, zero_add, ← eq_vadd_iff_vsub_eq] at hpt
   subst hpt
@@ -617,7 +617,7 @@ theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
     dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁
-  convert(reflection s).dist_map p₁ p₂
+  convert (reflection s).dist_map p₁ p₂
   rw [hp₁]
 #align euclidean_geometry.dist_reflection_eq_of_mem EuclideanGeometry.dist_reflection_eq_of_mem
 

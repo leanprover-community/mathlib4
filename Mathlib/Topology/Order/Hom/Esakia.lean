@@ -35,15 +35,15 @@ be satisfied by itself and all stricter types.
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of pseudo-epimorphisms, aka p-morphisms, aka bounded maps, from `α` to `β`. -/
-structure PseudoEpimorphism (α β : Type _) [Preorder α] [Preorder β] extends α →o β where
+structure PseudoEpimorphism (α β : Type*) [Preorder α] [Preorder β] extends α →o β where
   exists_map_eq_of_map_le' ⦃a : α⦄ ⦃b : β⦄ : toFun a ≤ b → ∃ c, a ≤ c ∧ toFun c = b
 #align pseudo_epimorphism PseudoEpimorphism
 
 /-- The type of Esakia morphisms, aka continuous pseudo-epimorphisms, from `α` to `β`. -/
-structure EsakiaHom (α β : Type _) [TopologicalSpace α] [Preorder α] [TopologicalSpace β]
+structure EsakiaHom (α β : Type*) [TopologicalSpace α] [Preorder α] [TopologicalSpace β]
   [Preorder β] extends α →Co β where
   exists_map_eq_of_map_le' ⦃a : α⦄ ⦃b : β⦄ : toFun a ≤ b → ∃ c, a ≤ c ∧ toFun c = b
 #align esakia_hom EsakiaHom
@@ -53,7 +53,7 @@ section
 /-- `PseudoEpimorphismClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
 You should extend this class when you extend `PseudoEpimorphism`. -/
-class PseudoEpimorphismClass (F : Type _) (α β : outParam <| Type _) [Preorder α] [Preorder β]
+class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
     extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align pseudo_epimorphism_class PseudoEpimorphismClass
@@ -61,7 +61,7 @@ class PseudoEpimorphismClass (F : Type _) (α β : outParam <| Type _) [Preorder
 /-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `EsakiaHom`. -/
-class EsakiaHomClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α] [Preorder α]
+class EsakiaHomClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α] [Preorder α]
     [TopologicalSpace β] [Preorder β] extends ContinuousOrderHomClass F α β where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align esakia_hom_class EsakiaHomClass
@@ -122,6 +122,8 @@ instance : CoeFun (PseudoEpimorphism α β) fun _ => α → β :=
   FunLike.hasCoeToFun
 
 @[simp]
+theorem toOrderHom_eq_coe (f : PseudoEpimorphism α β) : ⇑f.toOrderHom = f := rfl
+
 theorem toFun_eq_coe {f : PseudoEpimorphism α β} : f.toFun = (f : α → β) := rfl
 #align pseudo_epimorphism.to_fun_eq_coe PseudoEpimorphism.toFun_eq_coe
 
@@ -206,11 +208,13 @@ theorem id_comp (f : PseudoEpimorphism α β) : (PseudoEpimorphism.id β).comp f
   ext fun _ => rfl
 #align pseudo_epimorphism.id_comp PseudoEpimorphism.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : PseudoEpimorphism β γ} {f : PseudoEpimorphism α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align pseudo_epimorphism.cancel_right PseudoEpimorphism.cancel_right
 
+@[simp]
 theorem cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -344,15 +348,16 @@ theorem id_comp (f : EsakiaHom α β) : (EsakiaHom.id β).comp f = f :=
   ext fun _ => rfl
 #align esakia_hom.id_comp EsakiaHom.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : EsakiaHom β γ} {f : EsakiaHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 #align esakia_hom.cancel_right EsakiaHom.cancel_right
 
+@[simp]
 theorem cancel_left {g : EsakiaHom β γ} {f₁ f₂ : EsakiaHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align esakia_hom.cancel_left EsakiaHom.cancel_left
 
 end EsakiaHom
-

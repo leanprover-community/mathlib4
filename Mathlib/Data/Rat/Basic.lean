@@ -36,13 +36,8 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom
 namespace Rat
 
 instance field : Field ℚ :=
-  { Rat.commRing, Rat.commGroupWithZero with
-    zero := 0
-    add := (· + ·)
-    neg := Neg.neg
-    one := 1
-    mul := (· * ·)
-    inv := Inv.inv
+  { mul_inv_cancel := Rat.commGroupWithZero.mul_inv_cancel
+    inv_zero := Rat.commGroupWithZero.inv_zero
     ratCast := Rat.cast
     ratCast_mk := fun a b h1 h2 => (num_div_den _).symm
     qsmul := (· * ·) }

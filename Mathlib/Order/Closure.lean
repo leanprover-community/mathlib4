@@ -53,7 +53,7 @@ universe u
 /-! ### Closure operator -/
 
 
-variable (α : Type _) {ι : Sort _} {κ : ι → Sort _}
+variable (α : Type*) {ι : Sort*} {κ : ι → Sort*}
 
 /-- A closure operator on the preorder `α` is a monotone function which is extensive (every `x`
 is less than its closure) and idempotent. -/
@@ -214,11 +214,13 @@ theorem eq_mk₃_closed (c : ClosureOperator α) :
   rfl
 #align closure_operator.eq_mk₃_closed ClosureOperator.eq_mk₃_closed
 
-/-- The property `p` fed into the `mk₃` constructor implies being closed. -/
-theorem mem_mk₃_closed {f : α → α} {p : α → Prop} {hf : ∀ x, x ≤ f x} {hfp : ∀ x, p (f x)}
-    {hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y} {x : α} (hx : p x) : x ∈ (mk₃ f p hf hfp hmin).closed :=
-  (hmin le_rfl hx).antisymm (hf _)
-#align closure_operator.mem_mk₃_closed ClosureOperator.mem_mk₃_closed
+/-- The property `p` fed into the `mk₃` constructor exactly corresponds to being closed. -/
+@[simp] theorem mem_mk₃_closed {f : α → α} {p : α → Prop} {hf hfp hmin} {x : α} :
+  x ∈ (mk₃ f p hf hfp hmin).closed ↔ p x := by
+  refine' ⟨λ hx ↦ _, λ hx ↦ (hmin le_rfl hx).antisymm (hf _)⟩
+  rw [←closure_eq_self_of_mem_closed _ hx]
+  exact hfp _
+#align closure_operator.mem_mk₃_closed ClosureOperator.mem_mk₃_closedₓ
 
 end PartialOrder
 
@@ -292,7 +294,7 @@ end ClosureOperator
 /-! ### Lower adjoint -/
 
 
-variable {α} {β : Type _}
+variable {α} {β : Type*}
 
 /-- A lower adjoint of `u` on the preorder `α` is a function `l` such that `l` and `u` form a Galois
 connection. It allows us to define closure operators whose output does not match the input. In

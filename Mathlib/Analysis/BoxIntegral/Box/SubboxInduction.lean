@@ -37,7 +37,7 @@ namespace BoxIntegral
 
 namespace Box
 
-variable {ι : Type _} {I J : Box ι}
+variable {ι : Type*} {I J : Box ι}
 
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
@@ -150,7 +150,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   -- sufficiently large `m`. This contradicts `hJp`.
   set z : ι → ℝ := ⨆ m, (J m).lower
   have hzJ : ∀ m, z ∈ Box.Icc (J m) :=
-    mem_iInter.1 (ciSup_mem_Inter_Icc_of_antitone_Icc
+    mem_iInter.1 (ciSup_mem_iInter_Icc_of_antitone_Icc
       ((@Box.Icc ι).monotone.comp_antitone hJmono) fun m ↦ (J m).lower_le_upper)
   have hJl_mem : ∀ m, (J m).lower ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).lower_mem_Icc
   have hJu_mem : ∀ m, (J m).upper ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).upper_mem_Icc
@@ -168,7 +168,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   · exact
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (eventually_of_forall hJu_mem)
   rcases H_nhds z (h0 ▸ hzJ 0) with ⟨U, hUz, hU⟩
-  rcases(tendsto_lift'.1 (hJlz.Icc hJuz) U hUz).exists with ⟨m, hUm⟩
+  rcases (tendsto_lift'.1 (hJlz.Icc hJuz) U hUz).exists with ⟨m, hUm⟩
   exact hJp m (hU (J m) (hJle m) m (hzJ m) hUm (hJsub m))
 #align box_integral.box.subbox_induction_on' BoxIntegral.Box.subbox_induction_on'
 

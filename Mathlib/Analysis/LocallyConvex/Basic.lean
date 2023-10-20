@@ -43,7 +43,7 @@ open Set
 
 open Pointwise Topology
 
-variable {𝕜 𝕝 E : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {𝕜 𝕝 E : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section SeminormedRing
 
@@ -93,7 +93,7 @@ theorem absorbs_union : Absorbs 𝕜 s (u ∪ v) ↔ Absorbs 𝕜 s u ∧ Absorb
     fun h => h.1.union h.2⟩
 #align absorbs_union absorbs_union
 
-theorem absorbs_iUnion_finset {ι : Type _} {t : Finset ι} {f : ι → Set E} :
+theorem absorbs_iUnion_finset {ι : Type*} {t : Finset ι} {f : ι → Set E} :
     Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
   classical
     induction' t using Finset.induction_on with i t _ht hi
@@ -108,7 +108,7 @@ theorem absorbs_iUnion_finset {ι : Type _} {t : Finset ι} {f : ι → Set E} :
     exact ⟨h i (Finset.mem_insert_self i t), fun i' hi' => h i' (Finset.mem_insert_of_mem hi')⟩
 #align absorbs_Union_finset absorbs_iUnion_finset
 
-theorem Set.Finite.absorbs_iUnion {ι : Type _} {s : Set E} {t : Set ι} {f : ι → Set E}
+theorem Set.Finite.absorbs_iUnion {ι : Type*} {s : Set E} {t : Set ι} {f : ι → Set E}
     (hi : t.Finite) : Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
   lift t to Finset ι using hi
   simp only [Finset.mem_coe]
@@ -164,7 +164,7 @@ theorem balanced_iff_smul_mem : Balanced 𝕜 s ↔ ∀ ⦃a : 𝕜⦄, ‖a‖ 
   forall₂_congr fun _a _ha => smul_set_subset_iff
 #align balanced_iff_smul_mem balanced_iff_smul_mem
 
-alias balanced_iff_smul_mem ↔ Balanced.smul_mem _
+alias ⟨Balanced.smul_mem, _⟩ := balanced_iff_smul_mem
 #align balanced.smul_mem Balanced.smul_mem
 
 @[simp]
@@ -184,7 +184,7 @@ theorem Balanced.inter (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 
 #align balanced.inter Balanced.inter
 
 theorem balanced_iUnion {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋃ i, f i) :=
-  fun _a ha => (smul_set_Union _ _).subset.trans <| iUnion_mono fun _ => h _ _ ha
+  fun _a ha => (smul_set_iUnion _ _).subset.trans <| iUnion_mono fun _ => h _ _ ha
 #align balanced_Union balanced_iUnion
 
 theorem balanced_iUnion₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :

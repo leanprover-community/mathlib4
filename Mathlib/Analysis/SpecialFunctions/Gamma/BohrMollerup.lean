@@ -49,7 +49,7 @@ open scoped Nat ENNReal Topology BigOperators Real
 section Convexity
 
 -- Porting note: move the following lemmas to `Analysis.Convex.Function`
-variable {𝕜 E β : Type _} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜] [SMul 𝕜 E] [AddCommMonoid E]
+variable {𝕜 E β : Type*} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜] [SMul 𝕜 E] [AddCommMonoid E]
   [OrderedAddCommMonoid β]
 
 theorem ConvexOn.congr [SMul 𝕜 β] (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
@@ -86,12 +86,12 @@ theorem ConcaveOn.add_const [Module 𝕜 β] (hf : ConcaveOn 𝕜 s f) (b : β) 
   hf.add (concaveOn_const _ hf.1)
 #align concave_on.add_const ConcaveOn.add_const
 
-theorem StrictConvexOn.add_const {γ : Type _} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
     [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add_convexOn (convexOn_const _ hf.1)
 #align strict_convex_on.add_const StrictConvexOn.add_const
 
-theorem StrictConcaveOn.add_const {γ : Type _} {f : E → γ} [OrderedCancelAddCommMonoid γ]
+theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
     [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add_concaveOn (concaveOn_const _ hf.1)
 #align strict_concave_on.add_const StrictConcaveOn.add_const
@@ -397,7 +397,8 @@ end BohrMollerup
 -- (section)
 section StrictMono
 
-theorem Gamma_two : Gamma 2 = 1 := by simpa [one_add_one_eq_two] using Gamma_nat_eq_factorial 1
+theorem Gamma_two : Gamma 2 = 1 := by
+  simpa [one_add_one_eq_two, Nat.factorial] using Gamma_nat_eq_factorial 1
 #align real.Gamma_two Real.Gamma_two
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
@@ -428,7 +429,7 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
     convexOn_Gamma.strict_mono_of_lt (by norm_num : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
-  rw [inter_eq_right_iff_subset]
+  rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
 #align real.Gamma_strict_mono_on_Ici Real.Gamma_strictMonoOn_Ici
 

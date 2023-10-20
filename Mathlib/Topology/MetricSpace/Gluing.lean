@@ -48,6 +48,8 @@ isometrically and in a way compatible with `f n`.
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -307,7 +309,7 @@ namespace Sigma
 
 /- Copy of the previous paragraph, but for arbitrary disjoint unions instead of the disjoint union
 of two spaces. I.e., work with sigma types instead of sum types. -/
-variable {ι : Type _} {E : ι → Type _} [∀ i, MetricSpace (E i)]
+variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
 open Classical
 

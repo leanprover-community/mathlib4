@@ -30,7 +30,7 @@ open BigOperators
 
 open Finset
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 
@@ -45,7 +45,7 @@ section LE
 
 variable [LE α]
 
-instance : LE (ι →₀ α) :=
+instance instLEFinsupp : LE (ι →₀ α) :=
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
 theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=
@@ -146,7 +146,7 @@ instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α 
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
 section LE
 variable [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α]
@@ -169,9 +169,17 @@ theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g
   le_iff' f g <| Subset.refl _
 #align finsupp.le_iff Finsupp.le_iff
 
+lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
+  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+
+lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
+
 instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 #align finsupp.decidable_le Finsupp.decidableLE
+
+instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+  decidableLTOfDecidableLE
 
 @[simp]
 theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=
@@ -236,7 +244,7 @@ end
 
 end CanonicallyOrderedAddMonoid
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
 variable [AddZeroClass α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
@@ -262,7 +270,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
     rfl
 #align finsupp.disjoint_iff Finsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid
 
 /-! ### Some lemmas about `ℕ` -/
 

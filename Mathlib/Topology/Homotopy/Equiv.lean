@@ -169,7 +169,7 @@ def prodCongr (h₁ : X ≃ₕ Y) (h₂ : Z ≃ₕ Z') : (X × Z) ≃ₕ (Y × Z
 
 /-- If `X i` is homotopy equivalent to `Y i` for each `i`, then the space of functions (a.k.a. the
 indexed product) `∀ i, X i` is homotopy equivalent to `∀ i, Y i`. -/
-def piCongrRight {ι : Type _} {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+def piCongrRight {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] (h : ∀ i, X i ≃ₕ Y i) :
     (∀ i, X i) ≃ₕ (∀ i, Y i) where
   toFun := .piMap fun i ↦ (h i).toFun

@@ -22,7 +22,7 @@ open DFinsupp Finset
 
 open BigOperators Pointwise
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace Finset
 

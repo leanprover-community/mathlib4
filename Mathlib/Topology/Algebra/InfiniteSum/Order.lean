@@ -20,7 +20,7 @@ This file provides lemmas about the interaction of infinite sums and order opera
 open Finset Filter Function BigOperators
 open scoped Classical
 
-variable {ι κ α : Type _}
+variable {ι κ α : Type*}
 
 section Preorder
 
@@ -88,7 +88,7 @@ theorem isLUB_hasSum (h : ∀ i, 0 ≤ f i) (hf : HasSum f a) :
 
 theorem le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ a :=
   calc
-    f i = ∑ i in {i}, f i := Finset.sum_singleton.symm
+    f i = ∑ i in {i}, f i := by rw [sum_singleton]
     _ ≤ a := sum_le_hasSum _ (by simpa) hf
 #align le_has_sum le_hasSum
 
@@ -190,7 +190,7 @@ theorem tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < 
 
 end OrderedAddCommGroup
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
 variable [OrderedAddCommMonoid α] [CanonicallyOrderedAdd α] [TopologicalSpace α]
   [OrderClosedTopology α] {f : ι → α} {a : α}
@@ -219,7 +219,7 @@ theorem isLUB_hasSum' (hf : HasSum f a) : IsLUB (Set.range fun s => ∑ i in s, 
   isLUB_of_tendsto_atTop (Finset.sum_mono_set f) hf
 #align is_lub_has_sum' isLUB_hasSum'
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 section LinearOrder
 
@@ -256,7 +256,7 @@ theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [Unifo
   _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 
-alias summable_abs_iff ↔ Summable.of_abs Summable.abs
+alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 #align summable.of_abs Summable.of_abs
 #align summable.abs Summable.abs
 

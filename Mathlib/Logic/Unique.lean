@@ -6,7 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
 
 #align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -43,6 +43,7 @@ for good definitional properties of the default term.
 
 -/
 
+set_option autoImplicit true
 
 universe u v w
 
@@ -82,7 +83,7 @@ equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def uniqueOfSubsingleton {α : Sort _} [Subsingleton α] (a : α) : Unique α where
+def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
@@ -148,7 +149,7 @@ theorem default_eq (a : α) : default = a :=
 #align unique.default_eq Unique.default_eq
 
 -- see Note [lower instance priority]
-instance (priority := 100) : Subsingleton α :=
+instance (priority := 100) instSubsingleton : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
 
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=
@@ -203,10 +204,12 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
-  ext x
-  rw [Subsingleton.elim x default]
-  rfl
+theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
+    f = Function.const α (f a) :=
+  funext fun x ↦ Subsingleton.elim x a ▸ rfl
+
+theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) :=
+  eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
@@ -242,7 +245,7 @@ protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective 
 #align function.injective.unique Function.Injective.unique
 
 /-- If a constant function is surjective, then the codomain is a singleton. -/
-def Surjective.uniqueOfSurjectiveConst (α : Type _) {β : Type _} (b : β)
+def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
     (h : Function.Surjective (Function.const α b)) : Unique β :=
   @uniqueOfSubsingleton _ (subsingleton_of_forall_eq b <| h.forall.mpr fun _ ↦ rfl) b
 #align function.surjective.unique_of_surjective_const Function.Surjective.uniqueOfSurjectiveConst

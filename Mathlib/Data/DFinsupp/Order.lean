@@ -23,7 +23,7 @@ open BigOperators
 
 open Finset
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace DFinsupp
 
@@ -126,12 +126,12 @@ end Zero
 /-! ### Algebraic order structures -/
 
 
-instance (α : ι → Type _) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
+instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : AddCommMonoid (DFinsupp α)),
     (inferInstance : PartialOrder (DFinsupp α)) with
     add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type _) [∀ i, OrderedCancelAddCommMonoid (α i)] :
+instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
     OrderedCancelAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
     le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
@@ -140,7 +140,7 @@ instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) 
     ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
 variable (α)
 
@@ -167,6 +167,11 @@ theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
 #align dfinsupp.le_iff DFinsupp.le_iff
+
+lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
+  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+
+lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
 variable (α)
 
@@ -250,7 +255,7 @@ end
 
 end CanonicallyOrderedAddMonoid
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
 variable [∀ i, AddZeroClass (α i)] [∀ i, LinearOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
   [DecidableEq ι] {f g : Π₀ i, α i}
@@ -275,6 +280,6 @@ nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := b
   rfl
 #align dfinsupp.disjoint_iff DFinsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid
 
 end DFinsupp

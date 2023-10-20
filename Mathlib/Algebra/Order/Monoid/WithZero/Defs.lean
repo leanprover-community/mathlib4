@@ -19,7 +19,7 @@ universe u
 variable {α : Type u}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
-class LinearOrderedCommMonoidWithZero (α : Type _) extends LinearOrderedCommMonoid α,
+class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
   CommMonoidWithZero α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
@@ -143,7 +143,7 @@ protected def orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : 
     add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
 #align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
-section CanonicallyOrderedMonoid
+section CanonicallyOrderedCommMonoid
 
 instance existsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
     ExistsAddOfLE (WithZero α) :=
@@ -175,6 +175,6 @@ instance canonicallyOrderedAdd [OrderedAddCommMonoid α] [CanonicallyOrderedAdd 
       · exact WithZero.coe_le_coe.2 le_add_self }
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAdd
 
-end CanonicallyOrderedMonoid
+end CanonicallyOrderedCommMonoid
 
 end WithZero

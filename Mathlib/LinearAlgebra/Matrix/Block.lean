@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
+Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.Tactic.FinCases
 
@@ -24,7 +24,7 @@ matrices built out of blocks.
 ## Main results
   * `Matrix.det_of_blockTriangular`: the determinant of a block triangular matrix
     is equal to the product of the determinants of all the blocks
-  * `Matrix.det_of_upperTriangular` and `matrix.det_of_lowerTriangular`: the determinant of
+  * `Matrix.det_of_upperTriangular` and `Matrix.det_of_lowerTriangular`: the determinant of
     a triangular matrix is the product of the entries along the diagonal
 
 ## Tags
@@ -40,7 +40,7 @@ open BigOperators Matrix
 
 universe v
 
-variable {α β m n o : Type _} {m' n' : α → Type _}
+variable {α β m n o : Type*} {m' n' : α → Type*}
 
 variable {R : Type v} [CommRing R] {M N : Matrix m m R} {b : m → α}
 
@@ -120,6 +120,30 @@ theorem blockTriangular_blockDiagonal [DecidableEq α] (d : α → Matrix m m R)
   exact h
 #align matrix.block_triangular_block_diagonal Matrix.blockTriangular_blockDiagonal
 
+variable [DecidableEq m]
+
+theorem blockTriangular_one : BlockTriangular (1 : Matrix m m R) b :=
+  blockTriangular_diagonal _
+
+theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
+    BlockTriangular (stdBasisMatrix i j c) b := by
+  intro r s hrs
+  apply StdBasisMatrix.apply_of_ne
+  rintro ⟨rfl, rfl⟩
+  exact (hij.trans_lt hrs).false
+
+theorem blockTriangular_stdBasisMatrix' {i j : m} (hij : b j ≤ b i) (c : R) :
+    BlockTriangular (stdBasisMatrix i j c) (toDual ∘ b) :=
+  blockTriangular_stdBasisMatrix (by exact toDual_le_toDual.mpr hij) _
+
+theorem blockTriangular_transvection {i j : m} (hij : b i ≤ b j) (c : R) :
+    BlockTriangular (transvection i j c) b :=
+  blockTriangular_one.add (blockTriangular_stdBasisMatrix hij c)
+
+theorem blockTriangular_transvection' {i j : m} (hij : b j ≤ b i) (c : R) :
+    BlockTriangular (transvection i j c) (OrderDual.toDual ∘ b) :=
+  blockTriangular_one.add (blockTriangular_stdBasisMatrix' hij c)
+
 end Preorder
 
 section LinearOrder
@@ -132,8 +156,8 @@ theorem BlockTriangular.mul [Fintype m] {M N : Matrix m m R} (hM : BlockTriangul
   apply Finset.sum_eq_zero
   intro k _
   by_cases hki : b k < b i
-  · simp_rw [hM hki, MulZeroClass.zero_mul]
-  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_lt hki)), MulZeroClass.mul_zero]
+  · simp_rw [hM hki, zero_mul]
+  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_lt hki)), mul_zero]
 #align matrix.block_triangular.mul Matrix.BlockTriangular.mul
 
 end LinearOrder
@@ -250,13 +274,13 @@ theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTr
 
 theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) (k : α) :
-    ((M⁻¹.toBlock (fun i => b i < k) fun i => b i < k) ⬝
+    ((M⁻¹.toBlock (fun i => b i < k) fun i => b i < k) *
         M.toBlock (fun i => b i < k) fun i => b i < k) =
       1 := by
   let p i := b i < k
   have h_sum :
-    M⁻¹.toBlock p p ⬝ M.toBlock p p +
-        (M⁻¹.toBlock p fun i => ¬p i) ⬝ M.toBlock (fun i => ¬p i) p =
+    M⁻¹.toBlock p p * M.toBlock p p +
+        (M⁻¹.toBlock p fun i => ¬p i) * M.toBlock (fun i => ¬p i) p =
       1 :=
     by rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
   have h_zero : M.toBlock (fun i => ¬p i) p = 0 := by
@@ -287,14 +311,14 @@ theorem toBlock_inverse_eq_zero [LinearOrder α] [Invertible M] (hM : BlockTrian
     (M⁻¹.toBlock (fun i => k ≤ b i) fun i => b i < k) = 0 := by
   let p i := b i < k
   let q i := ¬b i < k
-  have h_sum : M⁻¹.toBlock q p ⬝ M.toBlock p p + M⁻¹.toBlock q q ⬝ M.toBlock q p = 0 := by
+  have h_sum : M⁻¹.toBlock q p * M.toBlock p p + M⁻¹.toBlock q q * M.toBlock q p = 0 := by
     rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_disjoint]
     rw [disjoint_iff_inf_le]
     exact fun i h => h.1 h.2
   have h_zero : M.toBlock q p = 0 := by
     ext i j
     simpa using hM (lt_of_lt_of_le j.2 <| le_of_not_lt i.2)
-  have h_mul_eq_zero : M⁻¹.toBlock q p ⬝ M.toBlock p p = 0 := by simpa [h_zero] using h_sum
+  have h_mul_eq_zero : M⁻¹.toBlock q p * M.toBlock p p = 0 := by simpa [h_zero] using h_sum
   haveI : Invertible (M.toBlock p p) := hM.invertibleToBlock k
   have : (fun i => k ≤ b i) = q := by
     ext

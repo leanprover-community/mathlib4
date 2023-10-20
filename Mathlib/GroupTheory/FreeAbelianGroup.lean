@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Pi
-import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.Algebra.Module.Basic
 
@@ -27,7 +27,7 @@ file, but the category-theoretic adjunction statement is in
 
 ## Main definitions
 
-Here we use the following variables: `(α β : Type _) (A : Type _) [AddCommGroup A]`
+Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup A]`
 
 * `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
 group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
@@ -439,7 +439,6 @@ instance one [One α] : One (FreeAbelianGroup α) :=
 
 instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalNonAssocRing with
-    mul := (· * ·)
     mul_assoc := fun x y z ↦ by
       refine' FreeAbelianGroup.induction_on z (by simp only [mul_zero])
           (fun L3 ↦ _) (fun L3 ih ↦ _) fun z₁ z₂ ih₁ ih₂ ↦ _
@@ -457,12 +456,11 @@ instance nonUnitalRing [Semigroup α] : NonUnitalRing (FreeAbelianGroup α) :=
 
 section Monoid
 
-variable {R : Type _} [Monoid α] [Ring R]
+variable {R : Type*} [Monoid α] [Ring R]
 
 instance ring : Ring (FreeAbelianGroup α) :=
   { FreeAbelianGroup.nonUnitalRing _,
     FreeAbelianGroup.one _ with
-    mul := (· * ·)
     mul_one := fun x ↦ by
       dsimp only [(· * ·), Mul.mul, OfNat.ofNat, One.one]
       rw [lift.of]
@@ -583,7 +581,7 @@ instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
 #align free_abelian_group.pempty_unique FreeAbelianGroup.pemptyUnique
 
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def punitEquiv (T : Type _) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
+def punitEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
   toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
   invFun n := n • of Inhabited.default
   left_inv z := FreeAbelianGroup.induction_on z
@@ -599,7 +597,7 @@ def punitEquiv (T : Type _) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
 #align free_abelian_group.punit_equiv FreeAbelianGroup.punitEquiv
 
 /-- Isomorphic types have isomorphic free abelian groups. -/
-def equivOfEquiv {α β : Type _} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
+def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
   toFun := map f
   invFun := map f.symm
   left_inv := by

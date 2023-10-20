@@ -14,6 +14,7 @@ import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Lean.Linter
+import Std.Data.List.Count
 
 /-!
 # Simps attribute
@@ -89,7 +90,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     getSimpTheorems
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
-    config      := cfg
+    config       := cfg
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !hasStar then
@@ -187,7 +188,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -204,7 +205,7 @@ derives two `simp` lemmas:
 
   Example:
   ```lean
-  structure MyProd (α β : Type _) := (fst : α) (snd : β)
+  structure MyProd (α β : Type*) := (fst : α) (snd : β)
   @[simps fst fst_fst snd] def foo : Prod ℕ ℕ × MyProd ℕ ℕ := ⟨⟨1, 2⟩, 3, 4⟩
   ```
   generates
@@ -507,7 +508,7 @@ partial def getCompositeOfProjectionsAux
   Note that this function is similar to elaborating dot notation, but it can do a little more.
   Example: if we do
   ```
-  structure gradedFun (A : ℕ → Type _) where
+  structure gradedFun (A : ℕ → Type*) where
     toFun := ∀ i j, A i →+ A j →+ A (i + j)
   initialize_simps_projections (toFun_toFun_toFun → myMul)
   ```
@@ -541,7 +542,7 @@ def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionDa
 
 /-- Execute the projection renamings (and turning off projections) as specified by `rules`. -/
 def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array ProjectionRule) :
-  CoreM (Array ParsedProjectionData) := do
+    CoreM (Array ParsedProjectionData) := do
   let projs : Array ParsedProjectionData := rules.foldl (init := projs) fun projs rule ↦
     match rule with
     | .rename strName strStx newName newStx =>
@@ -589,7 +590,7 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
   Generates the default projection, and looks for a custom projection declared by the user,
   and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
-  (rawUnivs : List Level) : CoreM ParsedProjectionData := do
+    (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' <|
     getCompositeOfProjections str proj.strName.getString
@@ -626,8 +627,8 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
 /-- Checks if there are declarations in the current file in the namespace `{str}.Simps` that are
   not used. -/
 def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
-  CoreM Unit := do
-  let nrCustomProjections := projs.toList.countp (·.isCustom)
+    CoreM Unit := do
+  let nrCustomProjections := projs.toList.countP (·.isCustom)
   let env ← getEnv
   let customDeclarations := env.constants.map₂.foldl (init := #[]) fun xs nm _ =>
     if (str ++ `Simps).isPrefixOf nm && !nm.isInternal' then xs.push nm else xs
@@ -646,7 +647,7 @@ an applicable name. (e.g. `Iso.inv`)
 Implementation note: getting rid of TermElabM is tricky, since `Expr.mkAppOptM` doesn't allow to
 keep metavariables around, which are necessary for `OutParam`. -/
 def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args : Array Expr) :
-  TermElabM <| Option (Expr × Name) := do
+    TermElabM <| Option (Expr × Name) := do
   if let some ⟨className, isNotation, findArgs⟩ :=
     notationClassAttr.find? (← getEnv) proj.strName then
     let findArgs ← unsafe evalConst findArgType findArgs
@@ -685,7 +686,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
 Find custom projections, automatically found by simps.
 These come from `FunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
-  CoreM (Array ParsedProjectionData) := do
+    CoreM (Array ParsedProjectionData) := do
   let strDecl ← getConstInfo str
   trace[simps.debug] "debug: {projs}"
   MetaM.run' <| TermElabM.run' (s := {levelNames := strDecl.levelParams}) <|

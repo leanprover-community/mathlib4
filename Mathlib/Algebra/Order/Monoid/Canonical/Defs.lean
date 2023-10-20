@@ -14,6 +14,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 # Canonically ordered monoids
 -/
 
+set_option autoImplicit true
+
 
 universe u
 
@@ -341,7 +343,7 @@ theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M] {x y :
 instance (priority := 10) of_gt' [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M] [One M]
     {y : M} [Fact (1 < y)] :
   -- Porting note: Fact.out has different type signature from mathlib3
-  NeZero y := of_gt <| @Fact.out (1 < y) _
+  [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
 set_option linter.deprecated false in
