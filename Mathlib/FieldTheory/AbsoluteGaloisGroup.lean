@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
 /-!
 # The topological abelianization of the absolute Galois group.
@@ -29,7 +30,7 @@ field, algebraic closure, galois group, abelianization
 
 namespace Field
 
-variable (K : Type _) [Field K]
+variable (K : Type*) [Field K]
 
 /-! ### The absolute Galois group -/
 
@@ -52,20 +53,20 @@ instance absoluteGaloisGroup.commutator_closure_isNormal :
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
   `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
-def absoluteGaloisGroup_abelianization :=
-  G_K K ⧸ Subgroup.topologicalClosure (commutator (G_K K))
+def absoluteGaloisGroup_abelianization := TopologicalAbelianization (G_K K)
 
 local notation "G_K_ab" => absoluteGaloisGroup_abelianization
 
-noncomputable instance : Group (G_K_ab K) :=
-  QuotientGroup.Quotient.group (commutator (G_K K)).topologicalClosure
+noncomputable instance : Group (G_K_ab K) := TopologicalAbelianization.group (G_K K)
+
+noncomputable instance : CommGroup (G_K_ab K) := TopologicalAbelianization.commGroup (G_K K)
 
 /-- `absoluteGaloisGroup_abelianization` is a topological space with the quotient topology. -/
 noncomputable instance : TopologicalSpace (G_K_ab K) :=
-  QuotientGroup.Quotient.topologicalSpace (Subgroup.topologicalClosure (commutator (G_K K)))
+  TopologicalAbelianization.topologicalSpace (G_K K)
 
 /-- `absoluteGaloisGroup_abelianization` is a topological group with the quotient topology. -/
 instance : TopologicalGroup (G_K_ab K) :=
-  topologicalGroup_quotient (commutator (G_K K)).topologicalClosure
+  TopologicalAbelianization.topologicalGroup (G_K K)
 
 end Field
