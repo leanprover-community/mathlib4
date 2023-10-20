@@ -144,7 +144,7 @@ Ring Theory:
     unique factorisation domain (UFD): 'UniqueFactorizationMonoid'
     greatest common divisor: 'GCDMonoid.gcd'
     least common multiple: 'GCDMonoid.lcm'
-    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.instUniqueFactorizationMonoidMvPolynomialToCommSemiringToCancelCommMonoidWithZeroCommSemiringInstIsDomainMvPolynomialToCommSemiringToSemiringCommSemiring'
+    $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.uniqueFactorizationMonoid'
     principal ideal domain: 'Submodule.IsPrincipal'
     Euclidean rings: 'EuclideanDomain'
     Euclid's' algorithm: 'Nat.xgcd'
