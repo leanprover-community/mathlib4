@@ -228,6 +228,43 @@ def make_bisecting_pass(change_generator):
 
     return decomposable_pass
 
+def sequence_passes(*passes):
+    """Apply minimization passes in sequence.
+
+    Useful as an input to other pass combinators such as `loop_pass`.
+    """
+    def sequenced_pass(expected_out, filename):
+        current_file = original_file
+        progress = False
+        for minimize_pass in passes:
+            pass_progress, new_file = minimize_pass(expected_out, current_file)
+            if pass_progress:
+                progress = True
+                logging.info(f"sequence_pass: succeeded; continuing with {new_file}")
+                current_file = new_file
+        return progress, current_file
+
+    return sequenced_pass
+
+def loop_pass(minimize_pass):
+    """Repeat a minimization pass until it no longer applies.
+
+    Useful if you want to feed the output of a pass into itself.
+    """
+    def looping_pass(expected_out, filename):
+        current_file = original_file
+        progress = False
+        pass_progress = True
+        while pass_progress:
+            pass_progress, new_file = minimize_pass(expected_out, current_file)
+            if pass_progress:
+                progress = True
+                logging.info(f"loop_pass: succeeded; repeating on {new_file}")
+                current_file = new_file
+        return progress, current_file
+
+    return looping_pass
+
 def strip_comments(filename):
     """Delete all comments from the source."""
     with open(filename, 'r') as file:
@@ -294,6 +331,25 @@ def delete_imports(filename):
         yield match.start(), match.end(), ''
 
 def replace_imports(filename):
+    """Replace an import statement with just the imports of that file. Compare `delete_imports`."""
+    with open(filename, 'r') as file:
+        source = file.read()
+
+    for match in re.finditer(r'^import (.*)$', source, flags=re.MULTILINE):
+        import_name = match.group(1)
+        import_filename = import_to_filename(import_name)
+        try:
+            with open(import_filename, 'r') as imported_file:
+                replaced_imports = sorted(set(imports_in(imported_file.read())))
+        except OSError:
+            logging.warn(f"replace_imports: file not found: {import_filename}")
+            continue
+        import_source = '\n'.join(f'import {file}' for file in replaced_imports)
+
+        logging.debug(f"replace_imports: import {import_name} -> {replaced_imports}")
+        yield match.start(), match.end(), import_source
+
+def include_imports(filename):
     """Replace an import statement with all the code in the file it imports. Compare `delete_imports`."""
     with open(filename, 'r') as file:
         source = file.read()
@@ -327,6 +383,9 @@ def delete_lines(filename):
         yield match.start(), match.end(), ''
 
 def combine_change_generators(*generators):
+    """Return changes from both generators in an arbitrary order.
+
+    Useful for when you want to choose between a fast but risky operation (e.g. deleting a declaration) and a slower but more likely operation (e.g. setting its value to sorry)."""
     def combined_generator(*args, **kwargs):
         for generator in generators:
             yield from generator(*args, **kwargs)
@@ -340,8 +399,10 @@ passes = {
     'delete_align': make_bisecting_pass(delete_align),
     'make_proofs_sorry': make_bisecting_pass(make_proofs_sorry),
     'delete_or_sorry': make_bottom_up_pass(combine_change_generators(delete_defs, make_sorry)),
-    'delete_imports': make_bisecting_pass(delete_imports),
-    'replace_imports': make_committing_pass(replace_imports),
+    'minimize_imports': loop_pass(sequence_passes(
+        make_bisecting_pass(delete_imports),
+        make_bisecting_pass(replace_imports))),
+    'include_imports': make_committing_pass(include_imports),
 }
 
 def minimize_file(original_file):
