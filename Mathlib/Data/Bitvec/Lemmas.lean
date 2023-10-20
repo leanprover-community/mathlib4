@@ -18,13 +18,26 @@ open Nat
 
 variable {w v : Nat}
 
+/-! We add simp-lemmas that rewrite bitvector operations into the equivalent notation -/
+@[simp] lemma append_eq (x : BitVec w) (y : BitVec v)   : BitVec.append x y = x ++ y        := rfl
+@[simp] lemma shiftLeft_eq (x : BitVec w) (n: Nat)      : BitVec.shiftLeft x n = x <<< n    := rfl
+@[simp] lemma ushiftRight_eq (x : BitVec w) (n: Nat)    : BitVec.ushiftRight x n = x >>> n  := rfl
+@[simp] lemma not_eq (x : BitVec w)                     : BitVec.not x = ~~~x               := rfl
+@[simp] lemma and_eq (x y : BitVec w)                   : BitVec.and x y = x &&& y          := rfl
+@[simp] lemma or_eq (x y : BitVec w)                    : BitVec.or x y = x ||| y           := rfl
+@[simp] lemma xor_eq (x y : BitVec w)                   : BitVec.xor x y = x ^^^ y          := rfl
+@[simp] lemma neg_eq (x : BitVec w)                     : BitVec.neg x = -x                 := rfl
+@[simp] lemma add_eq (x y : BitVec w)                   : BitVec.add x y = x + y            := rfl
+@[simp] lemma sub_eq (x y : BitVec w)                   : BitVec.sub x y = x - y            := rfl
+@[simp] lemma mul_eq (x y : BitVec w)                   : BitVec.mul x y = x * y            := rfl
+
 -- @[norm_cast]
 theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   ⟨(match x, y, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
 -- @[norm_cast]
-theorem toFin_lt_toFin {x y : BitVec w} : (x.toFin < y.toFin) = (x < y) := rfl
+theorem toNat_lt_toNat {x y : BitVec w} : (x.toNat < y.toNat) = (x < y) := rfl
 
 @[simp]
 lemma ofNat_eq_mod_two_pow (n : Nat) : (BitVec.ofNat w n).toNat = n % 2^w := rfl
@@ -47,9 +60,12 @@ lemma ofNat_toNat' (x : BitVec w) (h : v = w):
 theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
     (msbs ++ lsbs).toNat = msbs.toNat <<< v ||| lsbs.toNat := by
   -- `rfl` no longer works
-  simp only [(· ++ ·), Append.append, BitVec.append]
-  rw [toNat_ofNat]
-  sorry
+  rcases msbs with ⟨msbs, hm⟩
+  rcases lsbs with ⟨lsbs, hl⟩
+  simp only [HAppend.hAppend, append, toNat_ofFin]
+  rw [toNat_ofNat (Nat.add_comm w v ▸ append_lt hl hm)]
+
+
 
 theorem toNat_extractLsb {i j} {x : BitVec w} :
     (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j + 1)) := by
