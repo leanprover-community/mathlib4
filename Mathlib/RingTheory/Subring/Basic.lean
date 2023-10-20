@@ -482,7 +482,7 @@ abbrev toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
 #align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
-abbrev subtype (s : Subring R) : s →+* R :=
+def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 #align subring.subtype Subring.subtype
 

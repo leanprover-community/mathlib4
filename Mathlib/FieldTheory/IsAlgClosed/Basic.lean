@@ -318,8 +318,7 @@ AlgHom.comp
   (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
 
 -- porting note: this was much faster in lean 3
-set_option maxHeartbeats 200000 in
-set_option synthInstance.maxHeartbeats 40000 in
+set_option synthInstance.maxHeartbeats 30000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
