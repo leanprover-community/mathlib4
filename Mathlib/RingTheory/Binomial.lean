@@ -176,10 +176,10 @@ def descFactorial (r:R) : ℕ → R
   | (n+1) => (r-n) * (descFactorial r n)
 
 theorem descFactorial_zero (r : R) :
-  descFactorial r 0 = 1 := rfl
+    descFactorial r 0 = 1 := rfl
 
 theorem descFactorial_succ (r : R) (n : ℕ) :
-  descFactorial r (n+1) = (r - n) * (descFactorial r n) := by rfl
+    descFactorial r (n+1) = (r - n) * (descFactorial r n) := by rfl
 
 theorem zero_descFactorial_succ [Ring R] : ∀ (k : ℕ), descFactorial (0:R) k.succ = 0
   | 0 => by
