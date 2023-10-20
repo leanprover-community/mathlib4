@@ -104,7 +104,8 @@ Data structure containing the history of a rewrite search.
 -/
 structure SearchNode where mk' ::
   /-- The lemmas used so far. -/
-  history : Array (Expr × Bool)
+  -- The first component is the index amongst successful rewrites at the previous node.
+  history : Array (Nat × Expr × Bool)
   /-- The metavariable context after rewriting.
   We carry this around so the search can safely backtrack. -/
   mctx : MetavarContext
@@ -147,12 +148,12 @@ instance : ToString SearchNode where
   s!"depth: {n.history.size}\n" ++
   s!"history: {n.history.map fun p => hash p % 10000}\n" ++
   (match n.history.back? with
-    | some (e, true) => s!"rw [← {e}]"
-    | some (e, false) => s!"rw [{e}]"
+    | some (_, e, true) => s!"rw [← {e}]"
+    | some (_, e, false) => s!"rw [{e}]"
     | none => "") ++ "\n" ++ "-- " ++ n.ppGoal ++ "\n" ++ s!"distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
 
 /-- Construct a `SearchNode`. -/
-def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
+def mk (history : Array (Nat × Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
     MetaM (Option SearchNode) := goal.withContext do
   let type ← whnfR (← instantiateMVars (← goal.getType))
   match type.eq? with
@@ -174,28 +175,31 @@ def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarCon
 /-- Construct an initial `SearchNode` from a goal. -/
 def init (goal : MVarId) : MetaM (Option SearchNode) := mk #[] goal
 /-- Add an additional step to the `SearchNode` history. -/
-def push (n : SearchNode) (expr : Expr) (symm : Bool) (g : MVarId)
+def push (n : SearchNode) (expr : Expr) (symm : Bool) (k : Nat) (g : MVarId)
     (ctx : Option MetavarContext := none) : MetaM (Option SearchNode) :=
-  mk (n.history.push (expr, symm)) g ctx
+  mk (n.history.push (k, expr, symm)) g ctx
+
+def lastIdx (n : SearchNode) : Nat :=
+  match n.history.back? with
+  | some (k, _) => k
+  | none => 0
 
 instance : Ord SearchNode where
-  compare := compareOn SearchNode.ppGoal
+  compare := compareOn fun n => toLex (toLex (n.ppGoal.length, n.lastIdx), n.ppGoal)
 
 /-- The priority function for search is Levenshtein distance. -/
-abbrev prio (n : SearchNode) : Thunk (Nat ×ₗ Nat) :=
-  ((Thunk.pure n.history.size) + (Thunk.mk fun _ => levenshtein editCost n.lhs n.rhs)).prodLex
-    (Thunk.pure n.ppGoal.length)
+abbrev prio (n : SearchNode) : Thunk Nat :=
+  (Thunk.pure n.history.size) + (Thunk.mk fun _ => levenshtein editCost n.lhs n.rhs)
 /-- We can obtain lower bounds, and improve them, for the Levenshtein distance. -/
 abbrev estimator (n : SearchNode) : Type :=
-  (Estimator.trivial n.history.size × LevenshteinEstimator editCost n.lhs n.rhs) ×
-    Estimator.trivial n.ppGoal.length
+  Estimator.trivial n.history.size × LevenshteinEstimator editCost n.lhs n.rhs
 
 /-- Given a `RewriteResult` from the `rw?` tactic, create a new `SearchNode` with the new goal. -/
-def rewrite (n : SearchNode) (r : Rewrites.RewriteResult) :
+def rewrite (n : SearchNode) (r : Rewrites.RewriteResult) (k : Nat) :
     MetaM (Option SearchNode) :=
   withMCtx r.mctx do
     let goal' ← n.goal.replaceTargetEq r.result.eNew r.result.eqProof
-    n.push r.expr r.symm goal' (← getMCtx)
+    n.push r.expr r.symm k goal' (← getMCtx)
 
 /--
 Given a pair of `DiscrTree` trees
@@ -207,7 +211,7 @@ def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
   trace[rw_search] "searching: {n}"
-  return rewritesDedup hyps lemmas n.mctx n.goal n.type |>.filterMapM fun r => do n.rewrite r
+  return rewritesDedup hyps lemmas n.mctx n.goal n.type |>.enum |>.filterMapM fun ⟨k, r⟩ => do n.rewrite r k
 
 /--
 Perform best first search on the graph of rewrites from the specified `SearchNode`.
@@ -259,5 +263,5 @@ elab_rules : tactic |
   setMCtx min.mctx
   replaceMainGoal [min.goal]
   let type? := if min.rfl? = some true then none else some (← min.goal.getType)
-  addRewriteSuggestion tk min.history.toList
+  addRewriteSuggestion tk (min.history.toList.map (·.2))
     type? (origSpan? := ← getRef)
