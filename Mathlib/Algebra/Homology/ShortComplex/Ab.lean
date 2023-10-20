@@ -75,7 +75,7 @@ lemma ab_exact_iff :
     apply_fun S.iCycles
     · erw [← hx₁, ← comp_apply, toCycles_i]
       rfl
-    . rw [← AddCommGroupCat.mono_iff_injective]
+    · rw [← AddCommGroupCat.mono_iff_injective]
       infer_instance
 
 lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
