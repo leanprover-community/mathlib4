@@ -75,8 +75,7 @@ def sortByModule {m} [Monad m] [MonadEnv m] {α} (name : α → Name) (f : α �
 
 /-- In lieu of an real `Lean.Expr.size` function, explicitly fold for now -/
 def exprSize (e : Expr ) : Nat := go e 0
-  where
-  go : Expr → Nat → Nat
+  where @[nolint docBlame] go : Expr → Nat → Nat
     | Expr.forallE _ d b _, c  => go b (go d (c + 1))
     | Expr.lam _ d b _, c      => go b (go d (c + 1))
     | Expr.letE _ t v b _, c   => go b (go v (go t (c + 1)))
