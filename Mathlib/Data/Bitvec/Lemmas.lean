@@ -31,24 +31,21 @@ variable {w v : Nat}
 @[simp] lemma sub_eq (x y : BitVec w)                   : BitVec.sub x y = x - y            := rfl
 @[simp] lemma mul_eq (x y : BitVec w)                   : BitVec.mul x y = x * y            := rfl
 
--- @[norm_cast]
 theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   ⟨(match x, y, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
--- @[norm_cast]
 theorem toNat_lt_toNat {x y : BitVec w} : (x.toNat < y.toNat) = (x < y) := rfl
 
 @[simp]
 lemma ofNat_eq_mod_two_pow (n : Nat) : (BitVec.ofNat w n).toNat = n % 2^w := rfl
 
--- @[norm_cast]
 lemma toNat_ofNat {m} (h : m < 2^w) : (BitVec.ofNat w m).toNat = m := Fin.val_cast_of_lt h
 
 @[simp]
 lemma toNat_ofFin (x : Fin (2^w)) : (ofFin x).toNat = x.val := rfl
 
--- @[norm_cast]
+@[simp]
 lemma ofNat_toNat (x : BitVec w) : BitVec.ofNat w x.toNat = x := by
   rcases x with ⟨x⟩
   simp [BitVec.ofNat]
