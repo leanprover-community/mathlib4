@@ -409,13 +409,13 @@ theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x�
   exact
     { ht₀ := Real.closedBall_eq_Icc ▸ mem_closedBall_self hε0.le
       hR := le_of_lt <| half_pos <| lt_min hR₁ hR₂
-      lipschitz := fun _ _ => hlip.mono <| Subset.trans
-        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂)
-        (Subset.trans (Metric.ball_subset_ball <| min_le_left _ _) hball)
+      lipschitz := fun _ _ => hlip.mono <|
+        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
+        (Metric.ball_subset_ball <| min_le_left _ _).trans hball
       cont := fun _ _ => continuousOn_const
-      norm_le := fun _ _ x hx => hbdd' x <| mem_of_mem_of_subset hx <| Subset.trans
-        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂)
-        (Subset.trans (Metric.ball_subset_ball <| min_le_right _ _) (subset_refl _))
+      norm_le := fun _ _ x hx => hbdd' x <| mem_of_mem_of_subset hx <|
+        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
+        (Metric.ball_subset_ball <| min_le_right _ _).trans (subset_refl _)
       C_mul_le_R := by
         rw [add_sub_cancel', sub_sub_cancel, max_self, hε, mul_div_left_comm, div_self, mul_one]
         exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
