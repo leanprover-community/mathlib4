@@ -14,7 +14,7 @@ We define the `set_like` tactic as an `aesop` wrapper.
 
 /-- The `set_like` attribute used to tag statements concerning `SetLike` objects for the `set_like`
 tactic.  This registers `aesop` rules in the `SetLike` rule set as `safe apply` rules. Passing a
-positive integer to the `set_like` attribute (as in `@[set_like 10]`) can be used to adjust the
+positive integer to the `set_like` attribute (as in `@[aesop safe 10 apply (rule_sets [SetLike])]`) can be used to adjust the
 `aesop` penalty.
 
 This attribute should be placed on lemmas like `add_mem` or `zero_mem` which apply to subobject

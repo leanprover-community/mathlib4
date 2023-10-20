@@ -175,7 +175,7 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 #align set_like.coe_mem SetLike.coe_mem
 
-@[set_like 20]
+@[aesop safe 20 apply (rule_sets [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
 -- porting note: removed `@[simp]` because `simpNF` linter complained
