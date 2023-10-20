@@ -725,10 +725,10 @@ theorem ret_bind (a) (f : α → Computation β) : bind (pure a) f = f a := by
   · intro c₁ c₂ h
     match c₁, c₂, h with
     | _, _, Or.inl ⟨rfl, rfl⟩ =>
-      simp [bind, Bind.f]
+      simp only [BisimO, bind, Bind.f, corec_eq, rmap, destruct_pure]
       cases' destruct (f a) with b cb <;> simp [Bind.g]
     | _, c, Or.inr rfl =>
-      simp [Bind.f]
+      simp only [BisimO, Bind.f, corec_eq, rmap]
       cases' destruct c with b cb <;> simp [Bind.g]
   · simp
 #align computation.ret_bind Computation.ret_bind

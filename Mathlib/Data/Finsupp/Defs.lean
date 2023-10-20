@@ -542,7 +542,8 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     Function.update f a b
   mem_support_toFun i := by
     classical
-    simp [Function.update, Ne.def]
+    rw [Function.update]
+    simp only [eq_rec_constant, dite_eq_ite, ne_eq]
     split_ifs with hb ha ha <;>
       try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
@@ -1004,6 +1005,14 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
 instance addZeroClass : AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 #align finsupp.add_zero_class Finsupp.addZeroClass
+
+instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+
+instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
+
+instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
