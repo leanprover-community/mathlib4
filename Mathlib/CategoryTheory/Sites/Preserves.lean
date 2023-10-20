@@ -8,9 +8,11 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.Tactic.ApplyFun
 
-universe v u w
+universe v u w w'
 
-open CategoryTheory Limits Opposite
+namespace CategoryTheory.Presieve
+
+open Limits Opposite
 
 variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [HasInitial C]
     (hF : (Presieve.ofArrows (X := ⊥_ C) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
@@ -45,9 +47,11 @@ variable [UnivLE.{w, (max u v)}] {α : Type} {X : α → C} [HasCoproduct X]
     [(Presieve.ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
     (hd : ∀ i j, i ≠ j → IsInitial (pullback (Sigma.ι X i) (Sigma.ι X j)))
     [∀ i, Mono (Sigma.ι X i)]
--- `α` should be `Type w`
+-- `α` should be `Type w` but this causes problems even though we have `[UnivLE.{w, max u v}]`
 
 variable (X)
+
+section -- TODO: put this section in an auxilliary namespace and find better names.
 
 /-- The canonical map from `Equalizer.FirstObj` to a product indexed by `α` -/
 noncomputable
@@ -75,10 +79,6 @@ lemma sigma_surjective :
     Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f } // ¬ (Nonempty (IsInitial g.fst)) }) :=
   fun ⟨⟨_, _, hg⟩, prop⟩ ↦ by cases' hg with i; exact ⟨⟨i, prop⟩, rfl⟩
 
-lemma eq_comp_of_heq' {X Y Z W : C} (h : Y = Z) (f : Y ⟶ W) (g : Z ⟶ W) (i : X ⟶ Y) (j : X ⟶ Z)
-    (hfg : HEq f g) (hij : i = j ≫ eqToHom h.symm) : i ≫ f = j ≫ g := by
-  cases h; cases hfg; cases hij; simp only [eqToHom_refl, Category.comp_id]
-
 lemma sigma_injective :
     Function.Injective (fun a ↦ ⟨⟨X a.val, Sigma.ι X a.val, Presieve.ofArrows.mk a.val⟩, a.prop⟩ :
     {i : α // ¬ (Nonempty (IsInitial (X i))) } → {g : Σ(Y : C), { f : Y ⟶ ∐ X //
@@ -91,7 +91,7 @@ lemma sigma_injective :
   apply a.prop
   constructor
   refine IsInitial.ofIso hd ⟨pullback.fst, pullback.lift (𝟙 _) (eqToHom h.1) ?_, ?_, ?_⟩
-  · refine eq_comp_of_heq' h.1 (Sigma.ι X a.val) (Sigma.ι X b.val) (𝟙 _) (eqToHom h.1) ?_ ?_
+  · refine eq_comp_of_heq h.1 ?_ ?_
     · rw [Subtype.heq_iff_coe_heq ?_ ?_] at h
       · exact h.2
       · rw [h.1]
@@ -111,9 +111,9 @@ def prod_iso₄ : (∏ fun (f : {g : Σ(Y : C), { f : Y ⟶ ∐ X //
 lemma prod_map_comp : prod_map X F ≫ prod_map₂ F X = prod_map₃ F X ≫ (prod_iso₄ F X hd).hom := by
   ext; simp [prod_map, prod_map₂, prod_map₃, prod_iso₄, Pi.map']
 
-instance iso_prod_map_aux {β : Type w} {Z : β → Type (max w (max u v))} (p : β → Prop)
+instance iso_prod_map_aux {β : Type w} {Z : β → Type (max w w')} (p : β → Prop)
     [∀ b, Decidable (p b)] (h : ∀ b, p b → Nonempty (Unique (Z b))) :
-    IsIso (Pi.map'.{w, w} (fun a ↦ a.val) fun _ ↦ 𝟙 _ :
+    IsIso (Pi.map' (fun a ↦ a.val) fun _ ↦ 𝟙 _ :
     (∏ Z) ⟶ ∏ fun (b : {a : β // ¬ (p a)}) ↦ Z b.val) := by
   rw [isIso_iff_bijective]
   refine ⟨?_, ?_⟩
@@ -129,8 +129,8 @@ instance iso_prod_map_aux {β : Type w} {Z : β → Type (max w (max u v))} (p :
       simp only [Types.pi_lift_π_apply] at hab
       exact hab
   · intro a
-    let i : ∀ (γ : Type w) (Y : γ → Type (max w (max u v))), ∏ Y ≅ (x : γ) → Y x :=
-      fun γ Y ↦ Types.productIso.{w, (max u v)} _
+    let i : ∀ (γ : Type w) (Y : γ → Type (max w w')), ∏ Y ≅ (x : γ) → Y x :=
+      fun γ Y ↦ Types.productIso.{w, w'} _
     haveI : ∀ b, p b → Inhabited (Z b) := fun b hb ↦ (h b hb).some.instInhabited
     let a' : (b : β) → Z b := fun b ↦ if hb : p b then @default _ (this b hb)
       else (i {a : β // ¬ (p a)} (fun c ↦ Z c.val)).hom a ⟨b, hb⟩
@@ -144,18 +144,19 @@ instance iso_prod_map_aux {β : Type w} {Z : β → Type (max w (max u v))} (p :
     rw [← types_comp_apply (g := Pi.π _ _)]
     simp only [Types.productIso_inv_comp_π]
     exact dif_neg j.prop
+-- TODO: find better home and move
 
 open Classical in
 instance is_iso₂ : IsIso (prod_map₂ F X) :=
   let _ := preservesTerminalOfIsSheafForEmpty F hF
-  iso_prod_map_aux.{v, u, 0} (fun b ↦ Nonempty (IsInitial.{v, u} (X b))) fun b ⟨hb⟩ ↦
+  iso_prod_map_aux (fun b ↦ Nonempty (IsInitial.{v, u} (X b))) fun b ⟨hb⟩ ↦
     ⟨(Types.isTerminalEquivUnique _).toFun <|
     IsTerminal.isTerminalObj F (op (X b)) (terminalOpOfInitial hb )⟩
 
 open Classical in
 instance is_iso₃ : IsIso (prod_map₃ F X) :=
   let _ := preservesTerminalOfIsSheafForEmpty F hF
-  iso_prod_map_aux.{v, u, max u v} (fun (g : Σ(Y : C),
+  iso_prod_map_aux.{max u v, max u v} (fun (g : Σ(Y : C),
     { f : Y ⟶ ∐ X // Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f }) ↦ Nonempty (IsInitial g.fst))
     fun b ⟨hb⟩ ↦ ⟨(Types.isTerminalEquivUnique _) <|
     IsTerminal.isTerminalObj F (op b.fst) (terminalOpOfInitial hb )⟩
@@ -217,6 +218,8 @@ lemma two : Equalizer.Presieve.firstMap F (Presieve.ofArrows X (fun j ↦ Sigma.
       injective_of_mono _
     simp
 
+end
+
 variable (hF' : (Presieve.ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F)
 
 noncomputable
@@ -228,3 +231,5 @@ instance : PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
     rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
     exact fun b ↦ hF' b (congr_fun (two F hF X hd) b)
   · exact iso_prod_map F hF X hd
+
+end CategoryTheory.Presieve
