@@ -268,11 +268,11 @@ theorem exists_primitive_element_of_finite_intermediateField
     exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
 
--- TODO: give it a descriptive name if it's useful in other places
-private lemma finite_intermediateField_of_exists_primitive_element.aux_1
-    (S : Set E) (hprim : adjoin F S = ⊤) (K : IntermediateField F E) :
-    adjoin K S = ⊤ := by
-  apply restrictScalars_injective (K := F) (L' := K) (L := E)
+-- TODO: move it to suitable file
+lemma _root_.IntermediateField.adjoin_eq_top_of_adjoin_eq_top (A B C: Type*)
+    [Field A] [Field B] [Field C] [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+    {S : Set C} (hprim : adjoin A S = ⊤) : adjoin B S = ⊤ := by
+  apply restrictScalars_injective (K := A) (L' := B) (L := C)
   rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
     coe_restrictScalars, ← adjoin_le_iff]
 
@@ -308,7 +308,7 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_2
   letI : Module K (⊤ : IntermediateField K E) := Algebra.toModule
   letI : Algebra K'' (⊤ : IntermediateField K'' E) := IntermediateField.algebra _
   letI : Module K'' (⊤ : IntermediateField K'' E) := Algebra.toModule
-  rw [finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K,
+  rw [IntermediateField.adjoin_eq_top_of_adjoin_eq_top F K E hprim,
     show finrank K (⊤ : IntermediateField K E) = finrank K E from finrank_top K E,
     ← natDegree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective K E) (minpoly K α),
     show (minpoly K α).map (algebraMap K E) = g from rfl,
@@ -317,7 +317,7 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_2
     hqdvdp,
     natDegree_mul (left_ne_zero_of_mul hpne0) (right_ne_zero_of_mul hpne0),
     ← IntermediateField.adjoin.finrank (K := K'') (x := α) (hx := isIntegral_of_finite K'' α),
-    finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K'',
+    IntermediateField.adjoin_eq_top_of_adjoin_eq_top F K'' E hprim,
     show finrank K'' (⊤ : IntermediateField K'' E) = finrank K'' E from finrank_top K'' E] at hpdeg
   replace hpdeg : finrank K E ≥ finrank K'' E := by linarith only [hpdeg, Nat.le_add_right]
   exact inf_eq_left.1 (eq_of_le_of_finrank_le' inf_le_left hpdeg)
