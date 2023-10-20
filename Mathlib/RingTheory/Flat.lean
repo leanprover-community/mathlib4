@@ -77,8 +77,24 @@ class Flat (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] 
 
 namespace Flat
 
+variable (R : Type u) [CommRing R]
+
+open LinearMap Submodule
+
+instance self (R : Type u) [CommRing R] : Flat R R :=
+  ⟨by
+    intro I _
+    rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
+    convert Subtype.coe_injective using 1
+    ext x
+    simp only [Function.comp_apply, LinearEquiv.coe_toEquiv, rid_symm_apply, comp_apply, mul_one,
+      lift.tmul, Submodule.subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
+#align module.flat.self Module.Flat.self
+
+variable (M : Type v) [AddCommGroup M] [Module R M]
+
 /-- A reformulation of the flat property. -/
-lemma iff_rTensor_injective (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] :
+lemma iff_rTensor_injective:
     Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
   have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
     (TensorProduct.lift ((lsmul R M).comp I.subtype))
@@ -95,23 +111,11 @@ lemma iff_rTensor_injective (R : Type u) (M : Type v) [CommRing R] [AddCommGroup
     rw [← aux]
     simp [h₁ hI]
 
-open LinearMap Submodule
-
-instance self (R : Type u) [CommRing R] : Flat R R :=
-  ⟨by
-    intro I _
-    rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
-    convert Subtype.coe_injective using 1
-    ext x
-    simp only [Function.comp_apply, LinearEquiv.coe_toEquiv, rid_symm_apply, comp_apply, mul_one,
-      lift.tmul, Submodule.subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
-#align module.flat.self Module.Flat.self
-
+variable (N : Type w) [AddCommGroup N] [Module R N]
 
 /-- A retract of a flat `R`-module is flat. -/
-lemma of_retract (R : Type u) (M : Type v) (N : Type w)
-    [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [f : Flat R M]
-    (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.comp i = LinearMap.id) : Flat R N := by
+lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.comp i = LinearMap.id) :
+    Flat R N := by
   rw [iff_rTensor_injective] at *
   intro I hI
   have h₁ : Function.Injective (lTensor R i)
@@ -128,17 +132,21 @@ lemma of_retract (R : Type u) (M : Type v) (N : Type w)
   simp
 
 /-- A `R`-module isomorphic to a flat `R`-module is flat. -/
-lemma of_iso (R : Type u) (M : Type v) (N : Type w) [CommRing R] [AddCommGroup M] [AddCommGroup N]
-    [Module R M] [Module R N] [f : Flat R M] (e : N ≃ₗ[R] M) : Flat R N := by
+lemma of_iso [f : Flat R M] (e : N ≃ₗ[R] M) : Flat R N := by
   have h : e.symm.toLinearMap.comp e.toLinearMap = LinearMap.id := by simp
   exact of_retract _ _ _ e.toLinearMap e.symm.toLinearMap h
 
-open DirectSum
+end Flat
+
+namespace Flat
+
+open DirectSum LinearMap Submodule
+
+variable (R : Type u) [CommRing R]
 
 /-- A direct sum of flat `R`-modules is flat. -/
-instance directSum (R : Type u) [CommRing R] (ι : Type v) (M : ι → Type w)
-    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] :
-    Flat R (⨁ i, M i) := by
+instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
+    [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] : Flat R (⨁ i, M i) := by
   classical
   rw [iff_rTensor_injective]
   intro I hI
@@ -178,25 +186,22 @@ instance directSum (R : Type u) [CommRing R] (ι : Type v) (M : ι → Type w)
   simp [f]
 
 /-- Free `R`-modules over discrete types are flat. -/
-instance finsupp (R : Type u) [CommRing R] (ι : Type v) :
-    Flat R (ι →₀ R) :=
+instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
   let _ := Classical.decEq ι
   of_iso R _ _ (finsuppLEquivDirectSum R R ι)
 
-instance of_free (R : Type) [CommRing R] (M: Type w)
-    [AddCommGroup M] [Module R M] [Free R M] : Flat R M :=
-  of_iso R _ _ (Free.repr R M)
+variable (M : Type v) [AddCommGroup M] [Module R M]
+
+instance of_free [Free R M] : Flat R M := of_iso R _ _ (Free.repr R M)
 
 /-- A projective module with a discrete type of generator is flat -/
-lemma of_projective_surj (R : Type u) [CommRing R] (ι : Type v) [DecidableEq ι] (M : Type w)
-    [AddCommGroup M] [Module R M] [Projective R M] (p : (ι →₀ R) →ₗ[R] M) (hp : Surjective p) :
+lemma of_projective_surj (ι : Type w) [Projective R M] (p : (ι →₀ R) →ₗ[R] M) (hp : Surjective p) :
     Flat R M := by
   have h := Module.projective_lifting_property p (LinearMap.id) hp
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he
 
-instance of_projective (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M]
-    [Module R M] [h : Projective R M] : Flat R M := by
+instance of_projective [h : Projective R M] : Flat R M := by
   rw [Module.projective_def'] at h
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he
