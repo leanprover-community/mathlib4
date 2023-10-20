@@ -390,9 +390,15 @@ theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf 
 
 end DoubleCounting
 
+section CanonicallyOrderedMul
 
 variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
+@[to_additive (attr := simp) sum_eq_zero_iff]
+theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
+  prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
+#align finset.prod_eq_one_iff' Finset.prod_eq_one_iff'
+#align finset.sum_eq_zero_iff Finset.sum_eq_zero_iff
 
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x in s, f x ≤ ∏ x in t, f x :=
