@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike.Macro
+import Mathlib.Tactic.SetLike
 
 #align_import data.set_like.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
