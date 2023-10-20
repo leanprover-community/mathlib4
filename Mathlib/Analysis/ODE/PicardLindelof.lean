@@ -408,7 +408,7 @@ theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x�
   refine' ⟨ε, hε0, L, min R₁ R₂ / 2, 1 + ‖v x₀‖, _⟩
   exact
     { ht₀ := Real.closedBall_eq_Icc ▸ mem_closedBall_self hε0.le
-      hR := le_of_lt <| half_pos <| lt_min hR₁ hR₂
+      hR := by positivity
       lipschitz := fun _ _ => hlip.mono <|
         (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
         (Metric.ball_subset_ball <| min_le_left _ _).trans hball
