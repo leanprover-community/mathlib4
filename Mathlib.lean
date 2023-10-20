@@ -1206,6 +1206,7 @@ import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Plus
+import Mathlib.CategoryTheory.Sites.Preserves
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pushforward
 import Mathlib.CategoryTheory.Sites.RegularExtensive
