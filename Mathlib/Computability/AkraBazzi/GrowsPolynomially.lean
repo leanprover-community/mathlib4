@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Akra-Bazzi theorem: The polynomial growth condition
@@ -26,7 +27,11 @@ this issue doesn't seem to arise in practice.
 
 set_option autoImplicit false
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
+
+
 open Finset Real Filter Asymptotics BigOperators
+open scoped Topology
 
 namespace AkraBazziRecurrence
 
@@ -39,7 +44,136 @@ def GrowsPolynomially (f : ℝ → ℝ) : Prop :=
 
 namespace GrowsPolynomially
 
+lemma foo {f : ℝ → ℝ} (hf : ∀ (m : ℕ), ∃ c₁ ∈ Set.Ioi 0, ∃ c₂ ∈ Set.Ioi 0,
+    ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (((1:ℝ)/2)^m * x) x, f u ∈ Set.Icc (c₁ * (f x)) (c₂ * f x)) :
+    GrowsPolynomially f := by
+  intro b hb
+  have h₁ : Tendsto (fun (n : ℕ) => ((1 : ℝ) / 2) ^ (n : ℕ)) atTop (𝓝 0) :=
+    tendsto_pow_atTop_nhds_0_of_lt_1 (by norm_num) (by norm_num)
+  have h₂ : ∀ᶠ (n : ℕ) in atTop, ((1:ℝ) / 2) ^ n ≤ b := h₁.eventually <| eventually_le_nhds hb.1
+  rw [eventually_atTop] at h₂
+  obtain ⟨m, hm⟩ := h₂
+  have hf' := hf m
+  obtain ⟨c₁, hc₁, c₂, hc₂, H⟩ := hf'
+  refine ⟨c₁, hc₁, c₂, hc₂, ?_⟩
+  filter_upwards [H, eventually_ge_atTop 0] with x hx hx_nonneg
+  intro u hu
+  have hu' : u ∈ Set.Icc (((1:ℝ)/2)^m * x) x := by
+    refine ⟨?_, hu.2⟩
+    calc ((1:ℝ)/2)^m * x ≤ b * x := by gcongr; exact hm m (le_refl _)
+                   _ ≤ u := hu.1
+  exact hx u hu'
+
+lemma of_half {f : ℝ → ℝ} (hf : ∃ c₁ ∈ Set.Ioi 0, ∃ c₂ ∈ Set.Ioi 0,
+    ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (1/2 * x) x, f u ∈ Set.Icc (c₁ * (f x)) (c₂ * f x)) :
+    GrowsPolynomially f := by
+  apply foo
+  intro m
+  induction m with
+  | zero => sorry
+  | succ m h_ind =>
+    obtain ⟨c₁, hc₁, c₂, hc₂, H⟩ := hf
+    obtain ⟨c₃, hc₃, c₄, hc₄, H'⟩ := h_ind
+    sorry
+
+lemma bar {R : Type _} [LinearOrderedRing R] {P : R → Prop} (x₀ x₁ r : R) (hr : 0 < r)
+    (base : ∀ x ∈ Set.Icc x₀ x₁, P x)
+    (step : ∀ x ≥ x₁, (∀ z ∈ Set.Icc x₀ x, P z) → (∀ z ∈ Set.Icc x (x+r), P z)) :
+    ∀ x ≥ x₀, P x := by
+  sorry
+
 variable {f : ℝ → ℝ} (hf : GrowsPolynomially f)
+
+lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
+  obtain ⟨c₁, hc₁, c₂, hc₂, h⟩ := hf (1 /2) (by norm_num)
+  rcases lt_trichotomy c₁ c₂ with hlt|heq|hgt
+  case inl =>  -- c₁ < c₂
+    left
+    filter_upwards [h, eventually_ge_atTop 0] with x hx hx_nonneg
+    have h' : 3 / 4 * x ∈ Set.Icc (1 / 2 * x) x := by
+      rw [Set.mem_Icc]
+      exact ⟨by gcongr ?_ * x; norm_num, by linarith⟩
+    have hu := hx (3/4 * x) h'
+    have hu := Set.nonempty_of_mem hu
+    rw [Set.nonempty_Icc] at hu
+    have hu' : 0 ≤ (c₂ - c₁) * f x := by linarith
+    exact nonneg_of_mul_nonneg_right hu' (by linarith)
+  case inr.inr =>   -- c₂ < c₁
+    right
+    filter_upwards [h, eventually_ge_atTop 0] with x hx hx_nonneg
+    have h' : 3 / 4 * x ∈ Set.Icc (1 / 2 * x) x := by
+      rw [Set.mem_Icc]
+      exact ⟨by gcongr ?_ * x; norm_num, by linarith⟩
+    have hu := hx (3/4 * x) h'
+    have hu := Set.nonempty_of_mem hu
+    rw [Set.nonempty_Icc] at hu
+    have hu' : (c₁ - c₂) * f x ≤ 0 := by linarith
+    exact nonpos_of_mul_nonpos_right hu' (by linarith)
+  case inr.inl =>   -- c₁ = c₂
+    have c₂_eq_one : c₂ = 1 := by
+      sorry
+    simp only [c₂_eq_one] at *
+    have hmain : ∃ c, ∀ᶠ x in atTop, f x = c := by
+      simp only [heq, Set.Icc_self, Set.mem_singleton_iff, one_mul] at h
+      rw [eventually_atTop] at h
+      obtain ⟨n₀, hn₀⟩ := h
+      refine ⟨f (max n₀ 2), ?_⟩
+      rw [eventually_atTop]
+      refine ⟨2 * max n₀ 2, ?_⟩
+      suffices ∀ (b : ℝ), b ≥ max n₀ 2 → f b = f (max n₀ 2) by
+        intro b hb
+        refine this b ?_
+        calc b ≥ 2 * max n₀ 2 := hb
+             _ ≥ _ := by norm_num
+      refine bar (R := ℝ) (max n₀ 2) (2 * max n₀ 2) 1 zero_lt_one ?_ ?_
+      sorry
+      intro x₀ hx₀ hyp_ind z hz
+      --have h : f z = f (1/2 * z) := by
+      --  have : 1/2 * z ∈ Set.Icc (max n₀ 2) x₀ := by sorry
+      --  rw [hyp_ind (1/2 * z) this]
+      --  sorry
+      --have hn₀' := hn₀ (1/2 * z)
+      --refine (hn₀ z ?z_ge_n₀ _ ?_).symm
+      have hn₀' : f (1/2 * z) = f z := by
+        refine hn₀ z ?lb (1/2 * z) ?memIcc
+        case lb =>
+          calc n₀ ≤ max n₀ 2  := by simp
+                _ ≤ 2 * max n₀ 2 := by norm_num
+                _ ≤ x₀ := hx₀
+                _ ≤ z := hz.1
+        case memIcc =>
+          refine ⟨le_refl _, ?_⟩
+          nth_rewrite 2 [←one_mul z]
+          gcongr
+          · calc 0 ≤ 2 * max n₀ 2  := by norm_num
+                 _ ≤ z := hx₀.trans hz.1
+          · norm_num
+      have H : f (1/2 * z) = f (max n₀ 2) := by
+        refine hyp_ind (1/2 * z) ⟨?lb, ?ub⟩
+        case lb =>
+          rw [←mul_le_mul_left (a := 2) (by norm_num)]
+          calc _ ≤ x₀ := hx₀
+               _ ≤ z := hz.1
+               _ = _ := by simp
+        case ub =>
+          rw [←mul_le_mul_left (a := 2) (by norm_num)]
+          calc _ = z  := by simp
+               _ ≤ x₀ + 1 := hz.2
+               _ ≤ x₀ + x₀ := by
+                  gcongr
+                  calc 1 ≤ max n₀ 2  := by norm_num
+                       _ ≤ 2 * max n₀ 2 := by norm_num
+                       _ ≤ x₀ := hx₀
+               _ = 2 * x₀ := by rw [two_mul]
+      rw [←H, hn₀']
+    obtain ⟨c, hc⟩ := hmain
+    rcases le_or_lt 0 c with hpos|hneg
+    case inl =>
+      exact Or.inl <| by filter_upwards [hc] with _ hc; simpa only [hc]
+    case inr =>
+      right
+      filter_upwards [hc] with x hc
+      exact le_of_lt <| by simpa only [hc]
 
 lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) :
     ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ≤ c * f x := by
