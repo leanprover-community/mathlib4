@@ -50,7 +50,6 @@ ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
-ERR_NSP = 18 # non-terminal simp
 
 exceptions = []
 
@@ -194,30 +193,6 @@ def four_spaces_in_second_line(lines, path):
                         errors += [(ERR_IND, next_line_nr, path)]
                         new_next_line = ' ' * 4 + stripped_next_line
         newlines.append((next_line_nr, new_next_line))
-    return errors, newlines
-
-def nonterminal_simp_check(lines, path):
-    errors = []
-    newlines = []
-    annotated_lines = list(annotate_comments(lines))
-    for (line_nr, line, is_comment), (_, next_line, _) in zip(annotated_lines,
-                                                              annotated_lines[1:]):
-        # Check if the current line matches whitespace followed by "simp"
-        new_line = line
-        if (not is_comment) and re.search(r"^\s*simp( \[.*\])?( at .*)?$", line):
-            # Calculate the number of spaces before the first non-space character in the line
-            num_spaces = len(line) - len(line.lstrip())
-            # Calculate the number of spaces before the first non-space character in the next line
-            stripped_next_line = next_line.lstrip()
-            if not (next_line == '\n' or next_line.startswith("#") or stripped_next_line.startswith("--") or "rfl" in next_line):
-                num_next_spaces = len(next_line) - len(stripped_next_line)
-                # Check if the number of leading spaces is the same
-                if num_spaces == num_next_spaces:
-                    # If so, the tactics are in the same block, so the simp is nonterminal
-                    errors += [(ERR_NSP, line_nr, path)]
-                    new_line = line.replace("simp", "simp?")
-        newlines.append((line_nr, new_line))
-    newlines.append(lines[-1])
     return errors, newlines
 
 def long_lines_check(lines, path):
@@ -368,8 +343,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
-        if errno == ERR_NSP:
-            output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
 
 def lint(path, fix=False):
     with path.open(encoding="utf-8", newline="") as f:
@@ -382,8 +355,7 @@ def lint(path, fix=False):
                             four_spaces_in_second_line,
                             long_lines_check,
                             isolated_by_dot_semicolon_check,
-                            set_option_check,
-                            nonterminal_simp_check]:
+                            set_option_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
