@@ -58,7 +58,7 @@ open Topology BigOperators ENNReal
 
 open Set Function Filter
 
-variable {α : Type _} [TopologicalSpace α] {β : Type _} [Preorder β] {f g : α → β} {x : α}
+variable {α : Type*} [TopologicalSpace α] {β : Type*} [Preorder β] {f g : α → β} {x : α}
   {s t : Set α} {y z : β}
 
 /-! ### Main definitions -/
@@ -264,7 +264,7 @@ theorem LowerSemicontinuous.isOpen_preimage (hf : LowerSemicontinuous f) (y : β
 
 section
 
-variable {γ : Type _} [LinearOrder γ]
+variable {γ : Type*} [LinearOrder γ]
 
 theorem lowerSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     LowerSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Iic y) := by
@@ -302,9 +302,9 @@ end
 
 section
 
-variable {γ : Type _} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
+variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
-variable {δ : Type _} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
+variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
 
 theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
@@ -313,7 +313,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
   by_cases h : ∃ l, l < f x
   · obtain ⟨z, zlt, hz⟩ : ∃ z < f x, Ioc z (f x) ⊆ g ⁻¹' Ioi y :=
       exists_Ioc_subset_of_mem_nhds (hg (Ioi_mem_nhds hy)) h
-    filter_upwards [hf z zlt]with a ha
+    filter_upwards [hf z zlt] with a ha
     calc
       y < g (min (f x) (f a)) := hz (by simp [zlt, ha, le_refl])
       _ ≤ g (f a) := gmon (min_le_right _ _)
@@ -367,7 +367,7 @@ end
 
 section
 
-variable {ι : Type _} {γ : Type _} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
+variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
   [OrderTopology γ]
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
@@ -388,7 +388,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
     by_cases hx₂ : ∃ l, l < g x
     · obtain ⟨z₂, z₂lt, h₂⟩ : ∃ z₂ < g x, Ioc z₂ (g x) ⊆ v :=
         exists_Ioc_subset_of_mem_nhds (v_open.mem_nhds xv) hx₂
-      filter_upwards [hf z₁ z₁lt, hg z₂ z₂lt]with z h₁z h₂z
+      filter_upwards [hf z₁ z₁lt, hg z₂ z₂lt] with z h₁z h₂z
       have A1 : min (f z) (f x) ∈ u := by
         by_cases H : f z ≤ f x
         · simp [H]
@@ -407,7 +407,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
         _ ≤ f z + g z := add_le_add (min_le_left _ _) (min_le_left _ _)
 
     · simp only [not_exists, not_lt] at hx₂
-      filter_upwards [hf z₁ z₁lt]with z h₁z
+      filter_upwards [hf z₁ z₁lt] with z h₁z
       have A1 : min (f z) (f x) ∈ u := by
         by_cases H : f z ≤ f x
         · simp [H]
@@ -423,7 +423,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
     by_cases hx₂ : ∃ l, l < g x
     · obtain ⟨z₂, z₂lt, h₂⟩ : ∃ z₂ < g x, Ioc z₂ (g x) ⊆ v :=
         exists_Ioc_subset_of_mem_nhds (v_open.mem_nhds xv) hx₂
-      filter_upwards [hg z₂ z₂lt]with z h₂z
+      filter_upwards [hg z₂ z₂lt] with z h₂z
       have A2 : min (g z) (g x) ∈ v := by
         by_cases H : g z ≤ g x
         · simp [H]
@@ -545,7 +545,7 @@ end
 
 section
 
-variable {ι : Sort _} {δ δ' : Type _} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
+variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
 
 theorem lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddAbove (range fun i => f i y))
@@ -555,7 +555,7 @@ theorem lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
   · simpa only [iSup_of_empty'] using lowerSemicontinuousWithinAt_const
   · intro y hy
     rcases exists_lt_of_lt_ciSup hy with ⟨i, hi⟩
-    filter_upwards [h i y hi, bdd]with y hy hy' using hy.trans_le (le_ciSup hy' i)
+    filter_upwards [h i y hi, bdd] with y hy hy' using hy.trans_le (le_ciSup hy' i)
 #align lower_semicontinuous_within_at_csupr lowerSemicontinuousWithinAt_ciSup
 
 theorem lowerSemicontinuousWithinAt_iSup {f : ι → α → δ}
@@ -629,7 +629,7 @@ end
 
 section
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
@@ -790,7 +790,7 @@ theorem UpperSemicontinuous.isOpen_preimage (hf : UpperSemicontinuous f) (y : β
 
 section
 
-variable {γ : Type _} [LinearOrder γ]
+variable {γ : Type*} [LinearOrder γ]
 
 theorem upperSemicontinuous_iff_isClosed_preimage {f : α → γ} :
     UpperSemicontinuous f ↔ ∀ y, IsClosed (f ⁻¹' Ici y) := by
@@ -828,9 +828,9 @@ end
 
 section
 
-variable {γ : Type _} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
+variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
-variable {δ : Type _} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
+variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
 
 theorem ContinuousAt.comp_upperSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : UpperSemicontinuousWithinAt f s x) (gmon : Monotone g) :
@@ -882,7 +882,7 @@ end
 
 section
 
-variable {ι : Type _} {γ : Type _} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
+variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
   [OrderTopology γ]
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
@@ -991,7 +991,7 @@ end
 
 section
 
-variable {ι : Sort _} {δ δ' : Type _} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
+variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
 
 theorem upperSemicontinuousWithinAt_ciInf {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddBelow (range fun i => f i y))
@@ -1065,7 +1065,7 @@ end
 
 section
 
-variable {γ : Type _} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
+variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
 theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ} :
     ContinuousWithinAt f s x ↔
@@ -1078,16 +1078,16 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
   · rcases exists_Ioc_subset_of_mem_nhds hv Hl with ⟨l, lfx, hl⟩
     by_cases Hu : ∃ u, f x < u
     · rcases exists_Ico_subset_of_mem_nhds hv Hu with ⟨u, fxu, hu⟩
-      filter_upwards [h₁ l lfx, h₂ u fxu]with a lfa fau
+      filter_upwards [h₁ l lfx, h₂ u fxu] with a lfa fau
       cases' le_or_gt (f a) (f x) with h h
       · exact hl ⟨lfa, h⟩
       · exact hu ⟨le_of_lt h, fau⟩
     · simp only [not_exists, not_lt] at Hu
-      filter_upwards [h₁ l lfx]with a lfa using hl ⟨lfa, Hu (f a)⟩
+      filter_upwards [h₁ l lfx] with a lfa using hl ⟨lfa, Hu (f a)⟩
   · simp only [not_exists, not_lt] at Hl
     by_cases Hu : ∃ u, f x < u
     · rcases exists_Ico_subset_of_mem_nhds hv Hu with ⟨u, fxu, hu⟩
-      filter_upwards [h₂ u fxu]with a lfa
+      filter_upwards [h₂ u fxu] with a lfa
       apply hu
       exact ⟨Hl (f a), lfa⟩
     · simp only [not_exists, not_lt] at Hu

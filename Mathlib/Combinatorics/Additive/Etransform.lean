@@ -34,7 +34,7 @@ open MulOpposite
 
 open Pointwise
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 namespace Finset
 
@@ -75,9 +75,9 @@ theorem mulDysonEtransform.card :
 theorem mulDysonEtransform_idem :
     mulDysonEtransform e (mulDysonEtransform e x) = mulDysonEtransform e x := by
   ext : 1 <;> dsimp
-  · rw [smul_finset_inter, smul_inv_smul, inter_comm, union_eq_left_iff_subset]
+  · rw [smul_finset_inter, smul_inv_smul, inter_comm, union_eq_left]
     exact inter_subset_union
-  · rw [smul_finset_union, inv_smul_smul, union_comm, inter_eq_left_iff_subset]
+  · rw [smul_finset_union, inv_smul_smul, union_comm, inter_eq_left]
     exact inter_subset_union
 #align finset.mul_dyson_e_transform_idem Finset.mulDysonEtransform_idem
 #align finset.add_dyson_e_transform_idem Finset.addDysonEtransform_idem

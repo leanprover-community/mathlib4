@@ -47,7 +47,7 @@ open Function Set
 
 open Affine Classical
 
-variable {𝕜 E F ι : Type _} {π : ι → Type _}
+variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
 section SMul
 
@@ -107,7 +107,7 @@ protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB
   ⟨hCB, fun _ hx₁B _ hx₂B _ hxC hx ↦ hAC.2 (hBA hx₁B) (hBA hx₂B) hxC hx⟩
 #align is_extreme.mono IsExtreme.mono
 
-theorem isExtreme_iInter {ι : Sort _} [Nonempty ι] {F : ι → Set E}
+theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
   refine' ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
@@ -199,12 +199,12 @@ theorem extremePoints_prod (s : Set E) (t : Set F) :
     refine' (h (mk_mem_prod hx₁ hx.2) (mk_mem_prod hx₂ hx.2) _).imp (congr_arg Prod.fst)
         (congr_arg Prod.fst)
     rw [← Prod.image_mk_openSegment_left]
-    exact ⟨_, hx_fst, Prod.mk.eta⟩
+    exact ⟨_, hx_fst, rfl⟩
   · rintro x₁ hx₁ x₂ hx₂ hx_snd
     refine' (h (mk_mem_prod hx.1 hx₁) (mk_mem_prod hx.1 hx₂) _).imp (congr_arg Prod.snd)
         (congr_arg Prod.snd)
     rw [← Prod.image_mk_openSegment_right]
-    exact ⟨_, hx_snd, Prod.mk.eta⟩
+    exact ⟨_, hx_snd, rfl⟩
   · rintro x₁ hx₁ x₂ hx₂ ⟨a, b, ha, hb, hab, hx'⟩
     simp_rw [Prod.ext_iff]
     exact and_and_and_comm.1

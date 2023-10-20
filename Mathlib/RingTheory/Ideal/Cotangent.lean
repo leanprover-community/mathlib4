@@ -166,7 +166,7 @@ theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
   rfl
 #align ideal.cotangent_equiv_ideal_symm_apply Ideal.cotangentEquivIdeal_symm_apply
 
-variable {A B : Type _} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 /-- The lift of `f : A →ₐ[R] B` to `A ⧸ J ^ 2 →ₐ[R] B` with `J` being the kernel of `f`. -/
 def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRingHom ^ 2 →ₐ[R] B := by
@@ -196,7 +196,7 @@ end Ideal
 
 namespace LocalRing
 
-variable (R : Type _) [CommRing R] [LocalRing R]
+variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
 @[reducible]

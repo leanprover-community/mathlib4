@@ -25,7 +25,7 @@ This file defines notions of a point in an affine space being between two given 
 -/
 
 
-variable (R : Type _) {V V' P P' : Type _}
+variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap
 
@@ -70,8 +70,10 @@ theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
 theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
   -- porting note: added as this doesn't do anything in `simp_rw` any more
   rw [affineSegment]
+  -- Note: when adding "simp made no progress" in lean4#2336,
+  -- had to change `lineMap_same` to `lineMap_same _`. Not sure why?
   -- porting note: added `_ _` and `Function.const`
-  simp_rw [lineMap_same, AffineMap.coe_const _ _, Function.const,
+  simp_rw [lineMap_same _, AffineMap.coe_const _ _, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 #align affine_segment_same affineSegment_same
 
@@ -272,14 +274,14 @@ theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
   rw [Wbtw, Wbtw, affineSegment_comm]
 #align wbtw_comm wbtw_comm
 
-alias wbtw_comm ↔ Wbtw.symm _
+alias ⟨Wbtw.symm, _⟩ := wbtw_comm
 #align wbtw.symm Wbtw.symm
 
 theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
   rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
 #align sbtw_comm sbtw_comm
 
-alias sbtw_comm ↔ Sbtw.symm _
+alias ⟨Sbtw.symm, _⟩ := sbtw_comm
 #align sbtw.symm Sbtw.symm
 
 variable (R)
@@ -339,8 +341,7 @@ theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
   refine' ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, _⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
     vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z x, ← @neg_one_smul R, ← add_smul, ← sub_eq_add_neg]
-  have : z -ᵥ x ≠ 0 := by simpa using hxz.symm
-  simp [smul_ne_zero, this, sub_eq_zero, ht.1.ne.symm, ht.2.ne]
+  simp [smul_ne_zero, sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
 #align sbtw_iff_mem_image_Ioo_and_ne sbtw_iff_mem_image_Ioo_and_ne
 
 variable (R)
@@ -522,7 +523,7 @@ theorem Sbtw.trans_wbtw_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : 
 #align sbtw.trans_wbtw_right_ne Sbtw.trans_wbtw_right_ne
 
 theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZeroSMulDivisors R V]
-    {ι : Type _} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
+    {ι : Type*} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
     (hw : ∑ i in s, w i = 1) (hw₁ : ∑ i in s, w₁ i = 1) (hw₂ : ∑ i in s, w₂ i = 1)
     (h : s.affineCombination R p w ∈
       line[R, s.affineCombination R p w₁, s.affineCombination R p w₂])
@@ -531,7 +532,6 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
       (s.affineCombination R p w₂) := by
   rw [affineCombination_mem_affineSpan_pair ha hw hw₁ hw₂] at h
   rcases h with ⟨r, hr⟩
-  dsimp only at hr
   rw [hr i his, sbtw_mul_sub_add_iff] at hs
   change ∀ i ∈ s, w i = (r • (w₂ - w₁) + w₁) i at hr
   rw [s.affineCombination_congr hr fun _ _ => rfl]
@@ -561,7 +561,7 @@ theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) 
   rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
   rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
   refine' Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', _⟩)
-  simp [vsub_vadd_eq_vsub_sub, smul_sub, smul_smul, ← sub_smul]
+  simp only [vadd_vsub, smul_smul, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul]
   ring_nf
 #align wbtw.same_ray_vsub Wbtw.sameRay_vsub
 
@@ -631,7 +631,6 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h₂s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
-  dsimp only at h₁s h₂s
   rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)

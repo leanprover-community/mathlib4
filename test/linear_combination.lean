@@ -1,6 +1,9 @@
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
 
+
+set_option autoImplicit true
+
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
@@ -193,6 +196,28 @@ example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
+
+/-! ### Cases with exponent -/
+
+example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : x + y*z = 0 := by
+  linear_combination (exp := 2) (-y * z ^ 2 + x) * h + (z ^ 2 + 2 * z + 1) * h2
+
+example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : y*z = -x := by
+  linear_combination (norm := skip) (exp := 2) (-y * z ^ 2 + x) * h + (z ^ 2 + 2 * z + 1) * h2
+  ring
+
+example (K : Type)
+    [Field K]
+    [CharZero K]
+    {x y z : K}
+    (h₂ : y ^ 3 + x * (3 * z ^ 2) = 0)
+    (h₁ : x ^ 3 + z * (3 * y ^ 2) = 0)
+    (h₀ : y * (3 * x ^ 2) + z ^ 3 = 0)
+    (h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0) :
+    x = 0 := by
+  linear_combination (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
+    x * y * z * h₀ + y * z * h / 7
+
 
 /-! ### Regression tests -/
 

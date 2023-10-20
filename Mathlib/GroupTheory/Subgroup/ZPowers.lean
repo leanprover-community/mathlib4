@@ -16,11 +16,11 @@ subgroup, subgroups
 -/
 
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {A : Type _} [AddGroup A]
+variable {A : Type*} [AddGroup A]
 
-variable {N : Type _} [Group N]
+variable {N : Type*} [Group N]
 
 namespace Subgroup
 
@@ -132,7 +132,7 @@ instance (a : A) : Countable (zmultiples a) :=
 
 section Ring
 
-variable {R : Type _} [Ring R] (r : R) (k : ℤ)
+variable {R : Type*} [Ring R] (r : R) (k : ℤ)
 
 @[simp]
 theorem int_cast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
@@ -147,6 +147,11 @@ theorem int_cast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
 end Ring
 
 end AddSubgroup
+
+@[simp] lemma Int.range_castAddHom {A : Type*} [AddGroupWithOne A] :
+    (Int.castAddHom A).range = AddSubgroup.zmultiples 1 := by
+  ext a
+  simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
 
 @[to_additive (attr := simp) map_zmultiples]
 theorem MonoidHom.map_zpowers (f : G →* N) (x : G) :
@@ -198,10 +203,10 @@ theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by
 #align subgroup.zpowers_le Subgroup.zpowers_le
 #align add_subgroup.zmultiples_le AddSubgroup.zmultiples_le
 
-alias zpowers_le ↔ _ zpowers_le_of_mem
+alias ⟨_, zpowers_le_of_mem⟩ := zpowers_le
 #align subgroup.zpowers_le_of_mem Subgroup.zpowers_le_of_mem
 
-alias AddSubgroup.zmultiples_le ↔ _ _root_.AddSubgroup.zmultiples_le_of_mem
+alias ⟨_, _root_.AddSubgroup.zmultiples_le_of_mem⟩ := AddSubgroup.zmultiples_le
 #align add_subgroup.zmultiples_le_of_mem AddSubgroup.zmultiples_le_of_mem
 
 attribute [to_additive existing zmultiples_le_of_mem] zpowers_le_of_mem

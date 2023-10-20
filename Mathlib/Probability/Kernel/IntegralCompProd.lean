@@ -39,7 +39,7 @@ open scoped Topology ENNReal MeasureTheory ProbabilityTheory
 
 open Set Function Real ENNReal MeasureTheory Filter ProbabilityTheory ProbabilityTheory.kernel
 
-variable {α β γ E : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β γ E : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} [NormedAddCommGroup E] {κ : kernel α β} [IsSFiniteKernel κ]
   {η : kernel (α × β) γ} [IsSFiniteKernel η] {a : α}
 
@@ -75,7 +75,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_compProd [Norm
     filter_upwards [ae_ae_of_ae_compProd hf.ae_eq_mk] with _ hx using integral_congr_ae hx⟩
 #align measure_theory.ae_strongly_measurable.integral_kernel_comp_prod MeasureTheory.AEStronglyMeasurable.integral_kernel_compProd
 
-theorem _root_.MeasureTheory.AEStronglyMeasurable.compProd_mk_left {δ : Type _} [TopologicalSpace δ]
+theorem _root_.MeasureTheory.AEStronglyMeasurable.compProd_mk_left {δ : Type*} [TopologicalSpace δ]
     {f : β × γ → δ} (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
     ∀ᵐ x ∂κ a, AEStronglyMeasurable (fun y => f (x, y)) (η (a, x)) := by
   filter_upwards [ae_ae_of_ae_compProd hf.ae_eq_mk] with x hx using
@@ -153,7 +153,7 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E] [C
 /-! ### Bochner integral -/
 
 
-variable [NormedSpace ℝ E] [CompleteSpace E] {E' : Type _} [NormedAddCommGroup E']
+variable [NormedSpace ℝ E] [CompleteSpace E] {E' : Type*} [NormedAddCommGroup E']
   [CompleteSpace E'] [NormedSpace ℝ E']
 
 theorem kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E')
@@ -238,7 +238,7 @@ theorem kernel.continuous_integral_integral :
   simp_rw [← kernel.lintegral_compProd _ _ _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ←
     ofReal_zero]
   refine' (continuous_ofReal.tendsto 0).comp _
-  rw [← tendsto_iff_norm_tendsto_zero]
+  rw [← tendsto_iff_norm_sub_tendsto_zero]
   exact tendsto_id
 #align probability_theory.kernel.continuous_integral_integral ProbabilityTheory.kernel.continuous_integral_integral
 

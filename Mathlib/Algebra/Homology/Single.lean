@@ -38,7 +38,7 @@ variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V] [HasZeroObject V]
 
 namespace HomologicalComplex
 
-variable {ι : Type _} [DecidableEq ι] (c : ComplexShape ι)
+variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 
 /-- The functor `V ⥤ HomologicalComplex V c` creating a chain complex supported in a single degree.
 
@@ -437,7 +437,7 @@ def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
           simp
         · exact hf
         · rw [C.shape, comp_zero]
-          simp
+          simp only [Nat.zero_eq, ComplexShape.up_Rel, zero_add]
           exact j.succ_succ_ne_one.symm }
   left_inv f := by
     ext i

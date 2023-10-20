@@ -23,6 +23,8 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
+set_option autoImplicit true
+
 
 universe uR uS uT uA
 
@@ -274,11 +276,11 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
   rfl
 #align ring_quot.smul_quot RingQuot.smul_quot
 
-instance [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R] [IsScalarTower S T R] :
-    IsScalarTower S T (RingQuot r) :=
+instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
+    [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
+instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
@@ -392,10 +394,10 @@ instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) 
 instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
-instance (r : R → R → Prop) : Inhabited (RingQuot r) :=
+instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
-instance [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
+instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
   toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
   map_one' := by simp [← one_quot]
@@ -424,7 +426,7 @@ theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r
 #align ring_quot.mk_ring_hom_rel RingQuot.mkRingHom_rel
 
 theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
-  simp [mkRingHom_def]
+  simp only [mkRingHom_def, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
   rintro ⟨⟨⟩⟩
   simp
 #align ring_quot.mk_ring_hom_surjective RingQuot.mkRingHom_surjective

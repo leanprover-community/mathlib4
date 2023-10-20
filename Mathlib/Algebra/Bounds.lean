@@ -25,7 +25,7 @@ open Pointwise
 
 section InvNeg
 
-variable {G : Type _} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
+variable {G : Type*} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
   [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
@@ -92,7 +92,7 @@ end InvNeg
 
 section mul_add
 
-variable {M : Type _} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
+variable {M : Type*} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
@@ -141,7 +141,7 @@ section ConditionallyCompleteLattice
 
 section Right
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
@@ -160,7 +160,7 @@ end Right
 
 section Left
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]

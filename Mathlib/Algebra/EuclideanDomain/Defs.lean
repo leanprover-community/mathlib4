@@ -3,7 +3,6 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
@@ -139,7 +138,7 @@ theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
   exact div_add_mod _ _
 #align euclidean_domain.div_add_mod' EuclideanDomain.div_add_mod'
 
-theorem mod_eq_sub_mul_div {R : Type _} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
+theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
   calc
     a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel' _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
@@ -273,7 +272,7 @@ theorem gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
 theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
-  Prod.mk.eta.symm
+  rfl
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 
 end GCD

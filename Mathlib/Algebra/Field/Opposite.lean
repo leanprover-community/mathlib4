@@ -13,9 +13,11 @@ import Mathlib.Data.Int.Cast.Lemmas
 # Field structure on the multiplicative/additive opposite
 -/
 
+set_option autoImplicit true
+
 namespace MulOpposite
 
-variable (α : Type _)
+variable (α : Type*)
 
 @[to_additive]
 instance ratCast [RatCast α] : RatCast αᵐᵒᵖ :=

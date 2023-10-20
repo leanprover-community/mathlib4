@@ -42,7 +42,7 @@ open scoped InnerProduct ComplexConjugate
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 
@@ -117,7 +117,7 @@ theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPosi
 
 section Complex
 
-variable {E' : Type _} [NormedAddCommGroup E'] [InnerProductSpace ℂ E'] [CompleteSpace E']
+variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E'] [CompleteSpace E']
 
 theorem isPositive_iff_complex (T : E' →L[ℂ] E') :
     IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by

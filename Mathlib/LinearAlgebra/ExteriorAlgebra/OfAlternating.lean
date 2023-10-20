@@ -25,14 +25,14 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 -/
 
 
-variable {R M N N' : Type _}
+variable {R M N N' : Type*}
 
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
 
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
-instance AlternatingMap.instModuleAddCommGroup {ι : Type _} :
+instance AlternatingMap.instModuleAddCommGroup {ι : Type*} :
     Module R (AlternatingMap R M N ι) := by
   infer_instance
 #align alternating_map.module_add_comm_group AlternatingMap.instModuleAddCommGroup

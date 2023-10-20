@@ -30,7 +30,7 @@ namespace AbsoluteValue
 
 section OrderedSemiring
 
-variable {R S : Type _} [EuclideanDomain R] [OrderedSemiring S]
+variable {R S : Type*} [EuclideanDomain R] [OrderedSemiring S]
 
 variable (abv : AbsoluteValue R S)
 

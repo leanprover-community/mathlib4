@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.RunCmd
 
+set_option autoImplicit true
 /--
 info: Try this: (show_term exact 37) says exact 37
 -/
@@ -39,7 +40,7 @@ example : true := by
 -- Check that `says` does not reverify the right-hand-side.
 set_option says.no_verify_in_CI true in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says simp only []
+  simp? says skip
   simp
 
 -- Check that with `says.verify` `says` will reverify that the left-hand-side constructs
@@ -62,6 +63,11 @@ error: Tactic `simp` did not produce any messages.
 example : True := by
   simp says
   trivial
+
+set_option says.verify true in
+example (x y : List α) : (x ++ y).length = x.length + y.length := by
+  simp? says simp only [List.length_append]
+  -- This is a comment to test that `says` ignores following comments.
 
 set_option says.no_verify_in_CI true in
 example : True := by

@@ -13,6 +13,8 @@ import Mathlib.CategoryTheory.Types
 We show `UnivLE.{u, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)`.
 -/
 
+set_option autoImplicit true
+
 open CategoryTheory
 
 noncomputable section

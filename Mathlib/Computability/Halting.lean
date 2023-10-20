@@ -61,7 +61,7 @@ end Nat.Partrec
 
 namespace Partrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -161,7 +161,7 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 
 namespace ComputablePred
 
-variable {α : Type _} {σ : Type _}
+variable {α : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable σ]
 
@@ -180,7 +180,7 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
   exact
     ⟨by infer_instance,
       (cond hf (const false) (const true)).of_eq fun n => by
-        simp
+        simp only [Bool.not_eq_true]
         cases f n <;> rfl⟩
 #align computable_pred.not ComputablePred.not
 
@@ -253,7 +253,8 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
           cases hy.1 hx.1)
       · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
         rw [hk]
-        simp
+        simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
+          Bool.true_eq_decide_iff, and_self, exists_const, Bool.false_eq_decide_iff]
         apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
@@ -333,8 +334,6 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
   simp [(Part.bind_some_eq_map _ _).symm]; exact hf.bind hg
 #align nat.partrec'.map Nat.Partrec'.map
 
-attribute [-instance] Part.instZeroPart
-
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
   vector-valued functions.-/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=
@@ -379,7 +378,6 @@ theorem rfindOpt {n} {f : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f)
         exists_congr fun a => (and_congr (iff_of_eq _) Iff.rfl).trans (and_congr_right fun h => _)
       · congr
         funext n
-        simp only [Part.some_inj, PFun.coe_val]
         cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ]; rfl
       · have := Nat.rfind_spec h
         simp only [Part.coe_some, Part.mem_some_iff] at this

@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.Perm.List
 
 # Properties of cyclic permutations constructed from lists/cycles
 
-In the following, `{α : Type _} [Fintype α] [DecidableEq α]`.
+In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 
 ## Main definitions
 
@@ -49,7 +49,7 @@ to show it takes a long time. TODO: is this because computing the cycle factors 
 
 open Equiv Equiv.Perm List
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace List
 
@@ -189,7 +189,7 @@ nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
   simpa using formPerm_reverse _ h
 #align cycle.form_perm_reverse Cycle.formPerm_reverse
 
-nonrec theorem formPerm_eq_formPerm_iff {α : Type _} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
+nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
@@ -356,7 +356,8 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
     simp [Nat.succ_le_succ_iff] at hl
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
   · refine' ext_get (by simp) fun k hk hk' => _
-    simp [formPerm_pow_apply_nthLe _ hn, Nat.mod_eq_of_lt hk']
+    simp only [Nat.zero_eq, get_map, get_range, formPerm_pow_apply_nthLe _ hn, zero_add,
+      Nat.mod_eq_of_lt hk']
     rw [nthLe_eq]
   · simpa [hs] using get_mem _ _ _
 #align equiv.perm.to_list_form_perm_nontrivial Equiv.Perm.toList_formPerm_nontrivial
@@ -517,8 +518,8 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
     right_inv := Fintype.leftInverse_bijInv _ }
 #align equiv.perm.iso_cycle' Equiv.Perm.isoCycle'
 
-notation3 "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
-  Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff _)
+notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+  Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
 unsafe instance repr_perm [Repr α] : Repr (Perm α) :=
   ⟨fun f _ => repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)

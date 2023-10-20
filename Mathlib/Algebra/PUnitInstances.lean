@@ -18,6 +18,8 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
+set_option autoImplicit true
+
 namespace PUnit
 
 @[to_additive]
@@ -46,7 +48,8 @@ theorem one_eq : (1 : PUnit) = unit :=
 #align punit.one_eq PUnit.one_eq
 #align punit.zero_eq PUnit.zero_eq
 
-@[to_additive (attr := simp)]
+-- note simp can prove this when the Boolean ring structure is introduced
+@[to_additive]
 theorem mul_eq : x * y = unit :=
   rfl
 #align punit.mul_eq PUnit.mul_eq
@@ -109,7 +112,7 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
+instance canonicallyOrderedAddCommMonoid: CanonicallyOrderedAddCommMonoid PUnit := by
   refine'
     { PUnit.commRing, PUnit.completeBooleanAlgebra with
       exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
@@ -117,7 +120,7 @@ instance canonicallyOrderedAddMonoid: CanonicallyOrderedAddMonoid PUnit := by
     trivial
 
 instance linearOrderedCancelAddCommMonoid: LinearOrderedCancelAddCommMonoid PUnit where
-  __ := PUnit.canonicallyOrderedAddMonoid
+  __ := PUnit.canonicallyOrderedAddCommMonoid
   __ := PUnit.linearOrder
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
@@ -131,7 +134,7 @@ instance smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
-theorem smul_eq {R : Type _} (y : PUnit) (r : R) : r • y = unit :=
+theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
   rfl
 #align punit.smul_eq PUnit.smul_eq
 #align punit.vadd_eq PUnit.vadd_eq

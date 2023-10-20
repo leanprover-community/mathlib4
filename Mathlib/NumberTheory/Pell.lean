@@ -220,7 +220,7 @@ theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 
 theorem x_ne_zero (h₀ : 0 ≤ d) (a : Solution₁ d) : a.x ≠ 0 := by
   intro hx
   have h : 0 ≤ d * a.y ^ 2 := mul_nonneg h₀ (sq_nonneg _)
-  rw [a.prop_y, hx, sq, MulZeroClass.zero_mul, zero_sub] at h
+  rw [a.prop_y, hx, sq, zero_mul, zero_sub] at h
   exact not_le.mpr (neg_one_lt_zero : (-1 : ℤ) < 0) h
 #align pell.solution₁.x_ne_zero Pell.Solution₁.x_ne_zero
 
@@ -228,7 +228,7 @@ theorem x_ne_zero (h₀ : 0 ≤ d) (a : Solution₁ d) : a.x ≠ 0 := by
 theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := by
   intro hy
   have prop := a.prop
-  rw [hy, sq (0 : ℤ), MulZeroClass.zero_mul, MulZeroClass.mul_zero, sub_zero] at prop
+  rw [hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero] at prop
   exact lt_irrefl _ (((one_lt_sq_iff <| zero_le_one.trans ha.le).mpr ha).trans_eq prop)
 #align pell.solution₁.y_ne_zero_of_one_lt_x Pell.Solution₁.y_ne_zero_of_one_lt_x
 
@@ -258,7 +258,7 @@ theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) :
 theorem eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 ↔ a.y = 0 := by
   refine' ⟨fun H => H.elim (fun h => by simp [h]) fun h => by simp [h], fun H => _⟩
   have prop := a.prop
-  rw [H, sq (0 : ℤ), MulZeroClass.mul_zero, MulZeroClass.mul_zero, sub_zero, sq_eq_one_iff] at prop
+  rw [H, sq (0 : ℤ), mul_zero, mul_zero, sub_zero, sq_eq_one_iff] at prop
   exact prop.imp (fun h => ext h H) fun h => ext h H
 #align pell.solution₁.eq_one_or_neg_one_iff_y_eq_zero Pell.Solution₁.eq_one_or_neg_one_iff_y_eq_zero
 
@@ -273,7 +273,7 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
     -- Porting note: was
-    -- rw [zero_pow two_pos, zero_add, MulZeroClass.zero_mul, zero_add]
+    -- rw [zero_pow two_pos, zero_add, zero_mul, zero_add]
     -- exact one_pos
     -- but this relied on the exact output of `ring_nf`
     simp
@@ -672,7 +672,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     simp only [pow_zero]
     ext <;> simp only [x_one, y_one]
     · have prop := a.prop
-      rw [← hy, sq (0 : ℤ), MulZeroClass.zero_mul, MulZeroClass.mul_zero, sub_zero,
+      rw [← hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero,
         sq_eq_one_iff] at prop
       refine' prop.resolve_right fun hf => _
       have := (hax.trans_eq hax').le.trans_eq hf

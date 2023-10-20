@@ -18,13 +18,13 @@ convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaa
 -/
 
 
-open MeasureTheory MeasureTheory.Measure Set Metric Filter
+open MeasureTheory MeasureTheory.Measure Set Metric Filter Bornology
 
 open FiniteDimensional (finrank)
 
 open scoped Topology NNReal ENNReal
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {s : Set E}
 
 namespace Convex
@@ -42,11 +42,11 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- Without loss of generality, `s` is bounded. Indeed, `∂s ⊆ ⋃ n, ∂(s ∩ ball x (n + 1))`, hence it
     suffices to prove that `∀ n, μ (s ∩ ball x (n + 1)) = 0`; the latter set is bounded.
     -/
-  suffices H : ∀ t : Set E, Convex ℝ t → x ∈ interior t → Bounded t → μ (frontier t) = 0
+  suffices H : ∀ t : Set E, Convex ℝ t → x ∈ interior t → IsBounded t → μ (frontier t) = 0
   · let B : ℕ → Set E := fun n => ball x (n + 1)
     have : μ (⋃ n : ℕ, frontier (s ∩ B n)) = 0 := by
       refine' measure_iUnion_null fun n =>
-        H _ (hs.inter (convex_ball _ _)) _ (bounded_ball.mono (inter_subset_right _ _))
+        H _ (hs.inter (convex_ball _ _)) _ (isBounded_ball.subset (inter_subset_right _ _))
       rw [interior_inter, isOpen_ball.interior_eq]
       exact ⟨hx, mem_ball_self (add_pos_of_nonneg_of_pos n.cast_nonneg zero_lt_one)⟩
     refine' measure_mono_null (fun y hy => _) this; clear this
@@ -59,8 +59,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   intro s hs hx hb
   /- Since `s` is bounded, we have `μ (interior s) ≠ ∞`, hence it suffices to prove
     `μ (closure s) ≤ μ (interior s)`. -/
-  replace hb : μ (interior s) ≠ ∞
-  exact (hb.mono interior_subset).measure_lt_top.ne
+  replace hb : μ (interior s) ≠ ∞ := (hb.subset interior_subset).measure_lt_top.ne
   suffices μ (closure s) ≤ μ (interior s) by
     rwa [frontier, measure_diff interior_subset_closure isOpen_interior.measurableSet hb,
       tsub_eq_zero_iff_le]
@@ -68,8 +67,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`,
     where `d = finrank ℝ E`. -/
   set d : ℕ := FiniteDimensional.finrank ℝ E
-  have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := by
-    intro r hr
+  have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := fun r hr ↦ by
     refine' (measure_mono <|
       hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq _
     rw [addHaar_image_homothety, ← NNReal.coe_pow, NNReal.abs_eq, ENNReal.ofReal_coe_nnreal]

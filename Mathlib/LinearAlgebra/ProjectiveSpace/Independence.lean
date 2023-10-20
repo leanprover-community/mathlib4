@@ -31,7 +31,7 @@ ambient vector space. Similarly for the definition of dependence.
 -/
 
 
-variable {ι K V : Type _} [Field K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
+variable {ι K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
 
 namespace Projectivization
 

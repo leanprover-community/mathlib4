@@ -45,7 +45,7 @@ open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 /-- A category is idempotent complete iff all idempotent endomorphisms `p`
 split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
@@ -118,7 +118,7 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
 #align category_theory.idempotents.is_idempotent_complete_iff_idempotents_have_kernels CategoryTheory.Idempotents.isIdempotentComplete_iff_idempotents_have_kernels
 
 /-- An abelian category is idempotent complete. -/
-instance (priority := 100) isIdempotentComplete_of_abelian (D : Type _) [Category D] [Abelian D] :
+instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category D] [Abelian D] :
     IsIdempotentComplete D := by
   rw [isIdempotentComplete_iff_idempotents_have_kernels]
   intros
@@ -154,7 +154,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     rfl
 #align category_theory.idempotents.split_iff_of_iso CategoryTheory.Idempotents.split_iff_of_iso
 
-theorem Equivalence.isIdempotentComplete {D : Type _} [Category D] (ε : C ≌ D)
+theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
   refine' ⟨_⟩
   intro X' p hp
@@ -174,7 +174,7 @@ theorem Equivalence.isIdempotentComplete {D : Type _} [Category D] (ε : C ≌ D
 #align category_theory.idempotents.equivalence.is_idempotent_complete CategoryTheory.Idempotents.Equivalence.isIdempotentComplete
 
 /-- If `C` and `D` are equivalent categories, that `C` is idempotent complete iff `D` is. -/
-theorem isIdempotentComplete_iff_of_equivalence {D : Type _} [Category D] (ε : C ≌ D) :
+theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C ≌ D) :
     IsIdempotentComplete C ↔ IsIdempotentComplete D := by
   constructor
   · exact Equivalence.isIdempotentComplete ε

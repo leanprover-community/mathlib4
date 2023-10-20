@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Hom.Group
-import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Hom.Group.Defs
+import Mathlib.Algebra.Group.Commute.Defs
 
 #align_import algebra.hom.commute from "leanprover-community/mathlib"@"6eb334bd8f3433d5b08ba156b8ec3e6af47e1904"
 
@@ -16,7 +16,7 @@ import Mathlib.Algebra.Group.Commute
 
 section Commute
 
-variable {F M N : Type _} [Mul M] [Mul N] {a x y : M}
+variable {F M N : Type*} [Mul M] [Mul N] {a x y : M}
 
 @[to_additive (attr := simp)]
 protected theorem SemiconjBy.map [MulHomClass F M N] (h : SemiconjBy a x y) (f : F) :

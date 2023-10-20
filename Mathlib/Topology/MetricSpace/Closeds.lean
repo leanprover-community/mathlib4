@@ -185,7 +185,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
   have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=
     ENNReal.Tendsto.const_mul
       (ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 <| by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)
-  rw [MulZeroClass.mul_zero] at this
+  rw [mul_zero] at this
   obtain ⟨N, hN⟩ : ∃ N, ∀ b ≥ N, ε > 2 * B b :=
     ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
@@ -309,7 +309,7 @@ instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (None
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff_isCompact_image]
+    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff]
     rw [image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 #align emetric.nonempty_compacts.compact_space EMetric.NonemptyCompacts.compactSpace
@@ -382,7 +382,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       let d : NonemptyCompacts α := ⟨⟨c, ‹c.Finite›.isCompact⟩, hc⟩
       have : c ⊆ s := by
         intro x hx
-        rcases(mem_image _ _ _).1 hx.1 with ⟨y, ⟨_, yx⟩⟩
+        rcases (mem_image _ _ _).1 hx.1 with ⟨y, ⟨_, yx⟩⟩
         rw [← yx]
         exact (Fspec y).1
       have : d ∈ v := ⟨‹c.Finite›, this⟩
@@ -407,8 +407,8 @@ variable {α : Type u} [MetricSpace α]
 edistance between two such sets is finite. -/
 instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
-    hausdorffEdist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.bounded
-      y.isCompact.bounded
+    hausdorffEdist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
+      y.isCompact.isBounded
 #align metric.nonempty_compacts.metric_space Metric.NonemptyCompacts.metricSpace
 
 /-- The distance on `NonemptyCompacts α` is the Hausdorff distance, by construction -/

@@ -29,20 +29,18 @@ documentation](https://leanprover.github.io/documentation/), the documentation
 of mathlib consists of:
 
 - [The mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html): documentation [generated
-  automatically](https://github.com/leanprover-community/doc-gen4) from the source `.lean` files.
+  automatically](https://github.com/leanprover/doc-gen4) from the source `.lean` files.
 - A description of [currently covered theories](https://leanprover-community.github.io/theories.html),
   as well as an [overview](https://leanprover-community.github.io/mathlib-overview.html) for mathematicians.
 - Some [extra Lean documentation](https://leanprover-community.github.io/learn.html) not specific to mathlib (see "Miscellaneous topics")
 - Documentation for people who would like to [contribute to mathlib](https://leanprover-community.github.io/contribute/index.html)
 
-Much of the discussion surrounding mathlib occurs in a
-[Zulip chat room](https://leanprover.zulipchat.com/). Since this
-chatroom is only visible to registered users, we provide an
-[openly accessible archive](https://leanprover-community.github.io/archive/)
-of the public discussions. This is useful for quick reference; for a
-better browsing interface, and to participate in the discussions, we strongly
-suggest joining the chat. Questions from users at all levels of expertise are
-welcomed.
+Much of the discussion surrounding mathlib occurs in a [Zulip chat
+room](https://leanprover.zulipchat.com/), and you are welcome to join, or read
+along without signing up.  Questions from users at all levels of expertise are
+welcome!  We also provide an [archive of the public
+discussions](https://leanprover-community.github.io/archive/), which is useful
+for quick reference.
 
 ## Transitioning from Lean 3
 
@@ -117,6 +115,7 @@ Please refer to
 For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
 
 * Anne Baanen (@Vierkantor): algebra, number theory, tactics
+* Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory, performance
 * Reid Barton (@rwbarton): category theory, topology
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
@@ -139,6 +138,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Kyle Miller (@kmill): combinatorics, documentation
 * Scott Morrison (@semorrison): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
+* Joël Riou (@joelriou): category theory, homology, algebraic geometry
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 
