@@ -265,7 +265,6 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
 
-
 /-- Given two left-invariant measures which are finite on compacts, they integrate in the same way
 continuous compactly supported functions, up to a multiplicative constant. -/
 @[to_additive]
@@ -285,8 +284,11 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
       ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
     rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
     rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
-      with ⟨g, g_cont, g_comp, gk, -, hg⟩
-    exact ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, by simp [gk (mem_of_mem_nhds k_mem)]⟩
+      with ⟨⟨g, g_cont⟩, gk, -, g_comp, hg⟩
+    refine ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, ?_⟩
+    have := gk (mem_of_mem_nhds k_mem)
+    simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
+    simp [this]
   have int_g_pos : 0 < ∫ x, g x ∂μ := by
     apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
     · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
@@ -316,18 +318,26 @@ instance instIsFiniteMeasureOnCompactsRestrict {X : Type*} [TopologicalSpace X] 
   ⟨fun k hk ↦ (Measure.le_iff'.1 restrict_le_self k).trans_lt hk.measure_lt_top⟩
 
 lemma glouk {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
-    {μ ν : Measure X} [IsFiniteMeasureOnCompacts μ]
-    (h : ∀ (f : X → ℝ), Continuous f → HasCompactSupport f → ∫ x, f x ∂μ = ∫ x, f x ∂ν)
-    (k : Set X) (hk : IsCompact k) :
-    μ k = ν k := by
-  have : μ k = ⨅ (f : X → ℝ) (hf : Continuous f) (h'f : HasCompactSupport f) (h''f : EqOn f 1 k)
+    {μ : Measure X} [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
+    [LocallyCompactSpace X] [RegularSpace X]
+    {k : Set X} (hk : IsCompact k) :
+    μ k = ⨅ (f : X → ℝ) (hf : Continuous f) (h'f : HasCompactSupport f) (h''f : EqOn f 1 k)
       (h'''f : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
-    apply le_antisymm
-    · simp only [le_iInf_iff]
-      intro f f_cont f_comp fk f_nonneg
-      apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
-      · exact eventually_of_forall f_nonneg
-      · exact fun x hx ↦ by simp [fk hx]
+  apply le_antisymm
+  · simp only [le_iInf_iff]
+    intro f f_cont f_comp fk f_nonneg
+    apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
+    · exact eventually_of_forall f_nonneg
+    · exact fun x hx ↦ by simp [fk hx]
+  · apply le_of_forall_lt' (fun r hr ↦ ?_)
+    simp only [iInf_lt_iff, exists_prop, exists_and_left]
+    obtain ⟨U, kU, U_open, mu_U⟩ : ∃ U, k ⊆ U ∧ IsOpen U ∧ μ U < r :=
+      hk.exists_isOpen_lt_of_lt r hr
+    obtain ⟨⟨f, f_cont⟩, fk, fU, f_comp, f_range⟩ : ∃ (f : C(X, ℝ)), EqOn f 1 k ∧ EqOn f 0 Uᶜ
+        ∧ HasCompactSupport f ∧ ∀ (x : X), f x ∈ Icc 0 1 := exists_continuous_one_zero_of_isCompact
+      hk U_open.isClosed_compl (disjoint_compl_right_iff_subset.mpr kU)
+    refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, ?_⟩
+
 
 
 
