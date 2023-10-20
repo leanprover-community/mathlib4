@@ -61,7 +61,7 @@ theorem Forall_zipWith {f : α → β → γ} {p : γ → Prop} :
   | [], [], _ => by simp
   | a :: l₁, b :: l₂, h => by
     simp only [length_cons, succ_inj'] at h
-    simp [Forall_zipWith h]
+    simp [all₂_zipWith h]
 #align list.all₂_zip_with List.Forall_zipWith
 
 theorem lt_length_left_of_zipWith {f : α → β → γ} {i : ℕ} {l : List α} {l' : List β}

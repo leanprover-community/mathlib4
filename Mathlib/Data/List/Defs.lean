@@ -221,10 +221,11 @@ end mapIdxM
 #align list.forall₂ List.Forall₂
 
 /-- `l.Forall p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
-`List.Forall p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2 ∧ True`. -/
+`List.Forall p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 @[simp]
 def Forall (p : α → Prop) : List α → Prop
   | [] => True
+  | x :: [] => p x
   | x :: l => p x ∧ Forall p l
 #align list.all₂ List.Forall
 
