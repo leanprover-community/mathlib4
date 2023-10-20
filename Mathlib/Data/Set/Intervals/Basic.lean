@@ -1170,7 +1170,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp only [gt_iff_lt, not_lt, ge_iff_le, Subset.antisymm_iff] at e
       simp only [le_antisymm_iff]
       cases' h with h h <;>
-      simp only [gt_iff_lt, not_lt, ge_iff_le, Ico_subset_Ico_iff h] at e  <;>
+      simp only [gt_iff_lt, not_lt, ge_iff_le, Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
