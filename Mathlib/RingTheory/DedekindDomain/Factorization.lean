@@ -195,7 +195,7 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
 #align ideal.finprod_count Ideal.finprod_count
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
-theorem finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
+theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
     ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
   apply Associates.eq_of_eq_counts
@@ -216,7 +216,7 @@ ideals of `R`. -/
 theorem finprod_heightOneSpectrum_factorization_coe {I : Ideal R} (hI : I ≠ 0) :
     (∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) = I := by
-  conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization I hI]
+  conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization hI]
   rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
   simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
     zpow_ofNat]
@@ -280,6 +280,16 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
     let J := choose (choose_spec (exists_eq_spanSingleton_mul I))
     ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
+
+/-- val_v(0) = 0. -/
+lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dif_pos]
+
+lemma count_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
+    count K v I = ((Associates.mk v.asIdeal).count (Associates.mk
+      (choose (choose_spec (exists_eq_spanSingleton_mul I)))).factors -
+      (Associates.mk v.asIdeal).count
+        (Associates.mk (Ideal.span {choose (exists_eq_spanSingleton_mul I)})).factors : ℤ) := by
+  simp only [count, dif_neg hI]
 
 /-- `val_v(I)` does not depend on the choice of `a` and `J` used to represent `I`. -/
 theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
@@ -350,10 +360,6 @@ theorem count_mul' (I I' : FractionalIdeal R⁰ K) :
     by_cases hI : I = 0
     · rw [hI, MulZeroClass.zero_mul, count, dif_pos (Eq.refl _)]
     · rw [h hI, MulZeroClass.mul_zero, count, dif_pos (Eq.refl _)]
-
-/-- val_v(0) = 0. -/
-theorem count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by
-  rw [count, dif_pos (Eq.refl _)]
 
 /-- val_v(1) = 0. -/
 theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
@@ -483,6 +489,16 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
   · rw [finprod_cond_ne _ _ h_supp, Finset.prod_ne_zero_iff]
     intros w _
     exact zpow_ne_zero _ (coeIdeal_ne_zero.mpr w.ne_bot)
+
+/-- If `I` is a nonzero fractional ideal, then `I` is equal to the product `∏_v v^(count K v I)`. -/
+theorem finprod_heightOneSpectrum_factorization' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0):
+    ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^ (count K v I) = I := by
+  have h := (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
+  conv_rhs => rw [← finprod_heightOneSpectrum_factorization hI h]
+  apply finprod_congr
+  intro w
+  apply congr_arg
+  rw [count_ne_zero K w hI]
 
 variable {K}
 
