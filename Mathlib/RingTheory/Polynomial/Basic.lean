@@ -1222,6 +1222,28 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
   exact ufm_of_gcd_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
+/-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
+only finitely many monic factors.
+(Note that its factors up to unit may be more than monic factors.)
+See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
+noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
+    Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
+  set G := { g : D[X] // g.Monic ∧ g ∣ f }
+  let y : Associates $ D[X] := Associates.mk f
+  have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
+  let H := { x : Associates $ D[X] // x ∣ y }
+  let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
+  let i : G → H := fun x => ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
+  have hinj : Function.Injective i := fun x y heq => by
+    rw [Subtype.mk.injEq, Associates.mk_eq_mk_iff_associated] at heq
+    obtain ⟨z, h⟩ := heq
+    obtain ⟨c, ⟨_, h2⟩⟩ := isUnit_iff.1 (Units.isUnit z)
+    have h' := congr_arg leadingCoeff h
+    rw [mul_comm, leadingCoeff_mul_monic x.2.1, y.2.1, ← h2, leadingCoeff_C] at h'
+    rw [← h2, h', map_one, mul_one] at h
+    rwa [Subtype.mk.injEq]
+  exact Fintype.ofInjective i hinj
+
 end Polynomial
 
 namespace MvPolynomial

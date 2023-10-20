@@ -322,26 +322,6 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_2
   replace hpdeg : finrank K E ≥ finrank K'' E := by linarith only [hpdeg, Nat.le_add_right]
   exact (eq_of_le_of_finrank_le' inf_le_left hpdeg).symm
 
-lemma finite_intermediateField_of_exists_primitive_element.aux_fin
-    (f : Polynomial E) (h : f ≠ 0) :
-    Finite { g : Polynomial E // g.Monic ∧ g ∣ f } := by
-  set G := { g : Polynomial E // g.Monic ∧ g ∣ f }
-  let y : Associates $ Polynomial E := Associates.mk f
-  have hy : y ≠ 0 := Associates.mk_ne_zero.mpr h
-  let H := { x : Associates $ Polynomial E // x ∣ y }
-  have hfin : Finite H := @Finite.of_fintype _ $ UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
-  let i : G → H := fun x => ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
-  have hinj : Function.Injective i := fun x y heq => by
-    rw [Subtype.mk.injEq, Associates.mk_eq_mk_iff_associated] at heq
-    obtain ⟨z, h⟩ := heq
-    obtain ⟨c, ⟨_, h2⟩⟩ := Polynomial.isUnit_iff.1 (Units.isUnit z)
-    have h' := congr_arg Polynomial.leadingCoeff h
-    rw [mul_comm, Polynomial.leadingCoeff_mul_monic x.2.1, y.2.1,
-      ← h2, Polynomial.leadingCoeff_C] at h'
-    rw [← h2, h', map_one, mul_one] at h
-    rwa [Subtype.mk.injEq]
-  exact Finite.of_injective i hinj
-
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element
     (h : ∃ α : E, F⟮α⟯ = ⊤) : Finite (IntermediateField F E) := by
@@ -350,8 +330,8 @@ theorem finite_intermediateField_of_exists_primitive_element
   let f : Polynomial F := minpoly F α
   let G := { g : Polynomial E // g.Monic ∧ g ∣ f.map (algebraMap F E) }
   -- Then `f` has only finitely many monic factors
-  have hfin : Finite G := Field.finite_intermediateField_of_exists_primitive_element.aux_fin
-    E (f.map (algebraMap F E)) $ by
+  have hfin : Finite G := @Finite.of_fintype _ $ fintypeSubtypeMonicDvd
+    (f.map (algebraMap F E)) $ by
       rw [Polynomial.map_ne_zero_iff $ NoZeroSMulDivisors.algebraMap_injective F E]
       exact minpoly.ne_zero_of_finite F α
   -- If `K` is an intermediate field of `E/F`, let `g` be the minimal polynomial of `α` over `K`
