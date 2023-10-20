@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Basic
 
@@ -1221,6 +1222,30 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
   { ‹CommGroup G›, Group.toDivisionMonoid with }
 
 end CommGroup
+
+def npowBinaryRec [One M] [Mul M] (n : ℕ) : M → M :=
+  n.binaryRec (C := fun _ ↦ M → M) (fun _ ↦ 1)
+    (fun
+      | false, _, f, a => f (a * a)
+      | true, _, f, a => a * f (a * a))
+
+def nsmulBinaryRec [Zero M] [Add M] (n : ℕ) : M → M :=
+  n.binaryRec (C := fun _ ↦ M → M) (fun _ ↦ 0)
+    (fun
+      | false, _, f, a => f (a + a)
+      | true, _, f, a => a + f (a + a))
+
+attribute [to_additive existing] npowBinaryRec
+
+def zpowBinaryRec {M : Type*} [One M] [Mul M] [Inv M] : ℤ → M → M
+  | Int.ofNat n, a => npowBinaryRec n a
+  | Int.negSucc n, a => (npowBinaryRec n.succ a)⁻¹
+
+def zsmulBinaryRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
+  | Int.ofNat n, a => nsmulBinaryRec n a
+  | Int.negSucc n, a => -nsmulBinaryRec n.succ a
+
+attribute [to_additive existing] zpowBinaryRec
 
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.

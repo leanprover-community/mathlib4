@@ -33,16 +33,6 @@ variable {α : Type*} {M : Type u} {N : Type v} {G : Type w} {H : Type x} {A : T
 
 section Monoid
 
-@[simp]
-theorem nsmul_one [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
-  let f : ℕ →+ A :=
-  { toFun := fun n ↦ n • (1 : A),
-    map_zero' := by simp [zero_nsmul],
-    map_add' := by simp [add_nsmul] }
-  refine' eq_natCast' f _
-  simp
-#align nsmul_one nsmul_one
-
 variable [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B]
 
 instance invertiblePow (m : M) [Invertible m] (n : ℕ) :

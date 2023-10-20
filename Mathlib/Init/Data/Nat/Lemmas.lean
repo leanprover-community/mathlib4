@@ -557,6 +557,31 @@ theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
 
 #align nat.sub_mul_mod Nat.sub_mul_mod
 
+@[simp]
+theorem mod_two_ne_one (n : ℕ) : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h]
+#align nat.mod_two_ne_one Nat.mod_two_ne_one
+
+@[simp]
+theorem mod_two_ne_zero (n : ℕ) : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h]
+#align nat.mod_two_ne_zero Nat.mod_two_ne_zero
+
+@[simp]
+theorem mod_two_add_succ_mod_two (n : ℕ) : n % 2 + (n + 1) % 2 = 1 := by
+  rw [add_mod]
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h]
+#align nat.mod_two_add_succ_mod_two Nat.mod_two_add_succ_mod_two
+
+@[simp]
+theorem succ_mod_two_add_mod_two (n : ℕ) : (n + 1) % 2 + n % 2 = 1 := by
+  rw [Nat.add_comm, mod_two_add_succ_mod_two]
+#align nat.succ_mod_two_add_mod_two Nat.succ_mod_two_add_mod_two
+
+theorem succ_mod_two_eq_one_sub_mod_two (n : ℕ) : (n + 1) % 2 = 1 - n % 2 := by
+  rw [add_mod]
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h]
+
 /-! div -/
 
 #align nat.div_def Nat.div_eq

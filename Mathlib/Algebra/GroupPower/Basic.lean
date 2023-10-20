@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Data.Nat.Cast.Defs
 
 #align_import algebra.group_power.basic from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
@@ -515,3 +516,111 @@ theorem zpow_zpow_self : Commute (a ^ m) (a ^ n) :=
 #align add_commute.zsmul_zsmul_self AddCommute.zsmul_zsmul_self
 
 end Commute
+
+lemma npowBinaryRec_eq [Monoid M] (n : ℕ) (a : M) :
+    npowBinaryRec n a = a ^ n := by
+  if n0 : n = 0 then
+    rw [n0, pow_zero]
+    rfl
+  else
+    rw [npowBinaryRec, Nat.binaryRec, dif_neg n0]
+    dsimp
+    cases hb : n.bodd <;> dsimp
+    · rw [← npowBinaryRec, npowBinaryRec_eq n.div2, ← pow_two, ← pow_mul,
+        show 2 * Nat.div2 n = n.div2.bit false from n.div2.bit0_val.symm, ← hb, n.bit_decomp]
+    ·  rw [← npowBinaryRec, npowBinaryRec_eq n.div2, ← pow_two, ← pow_mul, ← pow_succ,
+        show 2 * Nat.div2 n + 1 = n.div2.bit true from n.div2.bit1_val.symm, ← hb, n.bit_decomp]
+  decreasing_by exact Nat.binaryRec_decreasing n0
+
+lemma nsmulBinaryRec_eq [AddMonoid M] (n : ℕ) (a : M) :
+    nsmulBinaryRec n a = n • a := by
+  if n0 : n = 0 then
+    rw [n0, zero_nsmul]
+    rfl
+  else
+    rw [nsmulBinaryRec, Nat.binaryRec, dif_neg n0]
+    dsimp
+    cases hb : n.bodd <;> dsimp
+    · rw [← nsmulBinaryRec, nsmulBinaryRec_eq n.div2, ← two_nsmul, ← mul_nsmul,
+        show 2 * Nat.div2 n = n.div2.bit false from n.div2.bit0_val.symm, ← hb, n.bit_decomp]
+    ·  rw [← nsmulBinaryRec, nsmulBinaryRec_eq n.div2, ← two_nsmul, ← mul_nsmul, ← succ_nsmul,
+        show 2 * Nat.div2 n + 1 = n.div2.bit true from n.div2.bit1_val.symm, ← hb, n.bit_decomp]
+  decreasing_by exact Nat.binaryRec_decreasing n0
+
+attribute [to_additive (attr := simp) existing] npowBinaryRec_eq
+
+@[to_additive (attr := simp)]
+lemma npowBinaryRec_zero [Mul M] [One M] (a : M) :
+    npowBinaryRec 0 a = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma npowBinaryRec_succ [Monoid M] (n : ℕ) (a : M) :
+    npowBinaryRec (n + 1) a = a * npowBinaryRec n a := by
+  rw [npowBinaryRec_eq, npowBinaryRec_eq, pow_succ]
+
+def Monoid.replaceNPowBinaryRec (m : Monoid M) : Monoid M :=
+  { m with
+    npow := npowBinaryRec
+    npow_zero := npowBinaryRec_zero
+    npow_succ := npowBinaryRec_succ }
+
+def AddMonoid.replaceNSMulBinaryRec (m : AddMonoid M) : AddMonoid M :=
+  { m with
+    nsmul := nsmulBinaryRec
+    nsmul_zero := nsmulBinaryRec_zero
+    nsmul_succ := nsmulBinaryRec_succ }
+
+attribute [to_additive existing] Monoid.replaceNPowBinaryRec
+
+def DivInvMonoid.replaceNPowZPowBinaryRec (m : DivInvMonoid M) : DivInvMonoid M :=
+  { m with
+    npow := npowBinaryRec
+    npow_zero := npowBinaryRec_zero
+    npow_succ := npowBinaryRec_succ
+    zpow := zpowBinaryRec
+    zpow_zero' := fun _ ↦ rfl
+    zpow_succ' := npowBinaryRec_succ
+    zpow_neg' := fun _ _ ↦ rfl }
+
+def SubNegMonoid.replaceNSMulZSMulBinaryRec (m : SubNegMonoid M) : SubNegMonoid M :=
+  { m with
+    nsmul := nsmulBinaryRec
+    nsmul_zero := nsmulBinaryRec_zero
+    nsmul_succ := nsmulBinaryRec_succ
+    zsmul := zsmulBinaryRec
+    zsmul_zero' := fun _ ↦ rfl
+    zsmul_succ' := nsmulBinaryRec_succ
+    zsmul_neg' := fun _ _ ↦ rfl }
+
+@[simp]
+theorem nsmul_one [AddMonoidWithOne A] (n : ℕ) : n • (1 : A) = n := by
+  induction' n with n ih
+  · rw [zero_nsmul, Nat.cast_zero]
+  · rw [succ_nsmul', Nat.cast_succ, ih]
+#align nsmul_one nsmul_one
+
+namespace Nat
+
+/-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
+protected def binCast [Zero R] [One R] [Add R] : ℕ → R :=
+  (nsmulBinaryRec · 1)
+#align nat.bin_cast Nat.binCast
+
+@[simp]
+theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : ℕ) : R) := by
+  rw [Nat.binCast, nsmulBinaryRec_eq, nsmul_one]
+
+end Nat
+
+/-- `AddMonoidWithOne` implementation using binary recursion. -/
+@[reducible]
+protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+  { ‹One R›, ‹AddMonoid R› with
+    natCast := Nat.binCast,
+    natCast_zero := rfl,
+    natCast_succ := fun n => by
+      dsimp only [NatCast.natCast]
+      letI : AddMonoidWithOne R := AddMonoidWithOne.unary
+      rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
+#align add_monoid_with_one.binary AddMonoidWithOne.binary

@@ -30,25 +30,37 @@ local notation "bxor" => _root_.xor
 namespace Nat
 set_option linter.deprecated false
 
-/-- `boddDiv2 n` returns a 2-tuple of type `(Bool,Nat)`
-    where the `Bool` value indicates whether `n` is odd or not
-    and the `Nat` value returns `⌊n/2⌋` -/
-def boddDiv2 : ℕ → Bool × ℕ
-  | 0 => (false, 0)
-  | succ n =>
-    match boddDiv2 n with
-    | (false, m) => (true, m)
-    | (true, m) => (false, succ m)
-#align nat.bodd_div2 Nat.boddDiv2
+section bitwise
+variable {f : Bool → Bool → Bool}
+
+@[simp]
+lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
+  rfl
+#align nat.bitwise_zero_left Nat.bitwise_zero_left
+
+@[simp]
+lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
+  unfold bitwise
+  simp only [ite_self, decide_False, Nat.zero_div, ite_true]
+  split_ifs with h
+  · rw [h]
+  all_goals rfl
+#align nat.bitwise_zero_right Nat.bitwise_zero_right
+
+lemma bitwise_zero : bitwise f 0 0 = 0 := by
+  simp only [bitwise_zero_right, ite_self]
+#align nat.bitwise_zero Nat.bitwise_zero
+
+end bitwise
 
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
 def div2 (n : ℕ) : ℕ :=
-  (boddDiv2 n).2
+  n >>> 1
 #align nat.div2 Nat.div2
 
 /-- `bodd n` returns `true` if `n` is odd-/
 def bodd (n : ℕ) : Bool :=
-  (boddDiv2 n).1
+  (1 &&& n) != 0
 #align nat.bodd Nat.bodd
 
 @[simp]
@@ -64,11 +76,26 @@ theorem bodd_two : bodd 2 = false :=
   rfl
 #align nat.bodd_two Nat.bodd_two
 
+theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
+  dsimp [bodd, (· &&& ·), AndOp.and, land]
+  unfold bitwise
+  by_cases n0 : n = 0
+  · simp [n0]
+  · simp only [ite_false, decide_True, Bool.true_and, decide_eq_true_eq, n0,
+      show 1 / 2 = 0 by decide, bitwise_zero_right, Nat.zero_add]
+    split_ifs with h
+    · exact h
+    · exact (mod_two_ne_one _).mp h
+#align nat.mod_two_of_bodd Nat.mod_two_of_bodd
+
+theorem bodd_eq_mod_two_bne_zero (n : ℕ) : bodd n = (n % 2 != 0) := by
+  rw [mod_two_of_bodd]
+  cases bodd n with | false | true => rfl
+
 @[simp]
 theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
-  simp only [bodd, boddDiv2]
-  let ⟨b,m⟩ := boddDiv2 n
-  cases b <;> rfl
+  simp only [bodd_eq_mod_two_bne_zero, succ_eq_add_one, succ_mod_two_eq_one_sub_mod_two]
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h]
 #align nat.bodd_succ Nat.bodd_succ
 
 @[simp]
@@ -87,19 +114,6 @@ theorem bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
     cases bodd m <;> cases bodd n <;> rfl
 #align nat.bodd_mul Nat.bodd_mul
 
-theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
-  have := congr_arg bodd (mod_add_div n 2)
-  simp [not] at this
-  have _ : ∀ b, and false b = false := by
-    intro b
-    cases b <;> rfl
-  have _ : ∀ b, bxor b false = b := by
-    intro b
-    cases b <;> rfl
-  rw [← this]
-  cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
-#align nat.mod_two_of_bodd Nat.mod_two_of_bodd
-
 @[simp]
 theorem div2_zero : div2 0 = 0 :=
   rfl
@@ -113,28 +127,21 @@ theorem div2_two : div2 2 = 1 :=
   rfl
 #align nat.div2_two Nat.div2_two
 
+theorem div2_eq_div_two (n : ℕ) : div2 n = n / 2 := rfl
+
+theorem bodd_add_div2 (n : ℕ) : cond (bodd n) 1 0 + 2 * div2 n = n := by
+  rw [← mod_two_of_bodd, div2_eq_div_two, Nat.mod_add_div]
+#align nat.bodd_add_div2 Nat.bodd_add_div2
+
 @[simp]
 theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
-  simp only [bodd, boddDiv2, div2]
-  cases' boddDiv2 n with fst snd
-  cases fst
-  case mk.false =>
-    simp
-  case mk.true =>
-    simp
+  apply Nat.eq_of_mul_eq_mul_left (by decide : 0 < 2)
+  apply Nat.add_left_cancel (n := cond (bodd (succ n)) 1 0)
+  rw (config := {occs := .pos [1]}) [bodd_add_div2, bodd_succ, ← bodd_add_div2 n]
+  cases bodd n <;> simp [succ_eq_add_one, Nat.add_comm 1, Nat.mul_add]
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
-
-theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
-  | 0 => rfl
-  | succ n => by
-    simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
-    refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
-    cases bodd n <;> simp [cond, not]
-    · rw [Nat.add_comm, Nat.add_succ]
-    · rw [succ_mul, Nat.add_comm 1, Nat.add_succ]
-#align nat.bodd_add_div2 Nat.bodd_add_div2
 
 theorem div2_val (n) : div2 n = n / 2 := by
   refine'
@@ -239,17 +246,10 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   For a predicate `C : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for all natural numbers. -/
-def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
-  fun n =>
-    if n0 : n = 0 then by
-      simp only [n0]
-      exact z
-    else by
-      let n' := div2 n
-      have _x : bit (bodd n) n' = n := by
-        apply bit_decomp n
-      rw [←_x]
-      exact f (bodd n) n' (binaryRec z f n')
+@[specialize]
+def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) (n : ℕ) : C n :=
+  if n0 : n = 0 then by rw [n0]; exact z
+  else by rw [← n.bit_decomp]; exact f n.bodd n.div2 (binaryRec z f n.div2)
   decreasing_by exact binaryRec_decreasing n0
 #align nat.binary_rec Nat.binaryRec
 
@@ -341,22 +341,16 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
   by_cases h : bit b n = 0
   -- Note: this renames the original `h : f false 0 z = z` to `h'` and leaves `h : bit b n = 0`
   case pos h' =>
-    simp only [dif_pos h]
-    generalize binaryRec z f (bit b n) = e
-    revert e
+    rw [dif_pos h]
     have bf := bodd_bit b n
     have n0 := div2_bit b n
     rw [h] at bf n0
-    simp at bf n0
+    dsimp at bf n0
     subst bf n0
-    rw [binaryRec_zero]
-    intros
-    rw [h']
-    rfl
+    exact h'.symm
   case neg h' =>
     simp only [dif_neg h]
-    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
-      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
+    generalize bit_decomp (bit b n) = e
     revert e
     rw [bodd_bit, div2_bit]
     intros; rfl
