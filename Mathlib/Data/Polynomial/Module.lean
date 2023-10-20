@@ -55,6 +55,29 @@ lemma X_smul (m : AEval R M a) : (X : R[X]) • m = a • m := by simp [smul_def
 instance : IsScalarTower R R[X] <| AEval R M a          := ⟨by simp [smul_def]⟩
 instance [Finite R M] : Finite R[X] <| AEval R M a      := Finite.of_restrictScalars_finite R _ _
 
+variable (R M)
+/--
+The canonical linear equivalence between `Module.AEval R M a` and `M` as an `R`-module.
+-/
+def equiv_self : AEval R M a ≃ₗ[R] M where
+  toFun       := id
+  invFun      := id
+  map_add'    := by tauto
+  map_smul'   := by tauto
+  left_inv    := by tauto
+  right_inv   := by tauto
+
+/--
+The canonical linear equivalence between `Module.AEval R M a` and `M` as an `A`-module, where `a : A`.
+-/
+def equiv_self₂ : AEval R M a ≃ₗ[A] M where
+  toFun       := id
+  invFun      := id
+  map_add'    := by tauto
+  map_smul'   := by tauto
+  left_inv    := by tauto
+  right_inv   := by tauto
+
 end AEval
 
 variable (φ : M →ₗ[R] M)
@@ -71,6 +94,10 @@ I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
 lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
 instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
+/--
+The canonical linear equivalence between `Module.AEval' φ` and `M`, where `φ : M →ₗ[R] M`.
+-/
+def AEval'_equiv_self : AEval' φ ≃ₗ[R] M := AEval.equiv_self R M φ
 
 end Module
 
