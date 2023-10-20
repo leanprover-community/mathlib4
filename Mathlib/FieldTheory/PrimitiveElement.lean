@@ -258,7 +258,7 @@ end SeparableAssumption
 
 section FiniteIntermediateField
 
-theorem Field.exists_primitive_element_of_finite_intermediateField :
+theorem exists_primitive_element_of_finite_intermediateField :
     Finite (IntermediateField F E) → ∃ α : E, F⟮α⟯ = ⊤ := by
   intro h
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
@@ -274,7 +274,7 @@ theorem Field.exists_primitive_element_of_finite_intermediateField :
     exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
 
-lemma Field.finite_intermediateField_of_exists_primitive_element.aux_finrank
+lemma finite_intermediateField_of_exists_primitive_element.aux_finrank
     (K : IntermediateField F E) :
     letI : Algebra K (⊤ : IntermediateField K E) := IntermediateField.algebra _
     letI : Module K (⊤ : IntermediateField K E) := Algebra.toModule
@@ -295,14 +295,14 @@ lemma Field.finite_intermediateField_of_exists_primitive_element.aux_finrank
     right_inv := fun x => by simp only,
   }
 
-lemma Field.finite_intermediateField_of_exists_primitive_element.aux_1
+lemma finite_intermediateField_of_exists_primitive_element.aux_1
     (S : Set E) (hprim : adjoin F S = ⊤) (K : IntermediateField F E) :
     adjoin K S = ⊤ := by
   apply restrictScalars_injective (K := F) (L' := K) (L := E)
   rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
     coe_restrictScalars, ← adjoin_le_iff]
 
-lemma Field.finite_intermediateField_of_exists_primitive_element.aux_2
+lemma finite_intermediateField_of_exists_primitive_element.aux_2
     (α : E) (hprim : F⟮α⟯ = ⊤) (K K' : IntermediateField F E)
     (heq : (minpoly K α).map (algebraMap K E) = (minpoly K' α).map (algebraMap K' E)) :
     K = K ⊓ K' := by
@@ -344,7 +344,7 @@ lemma Field.finite_intermediateField_of_exists_primitive_element.aux_2
   replace hpdeg : finrank K E ≥ finrank K'' E := by linarith only [hpdeg, Nat.le_add_right]
   exact (eq_of_le_of_finrank_le' inf_le_left hpdeg).symm
 
-lemma Field.finite_intermediateField_of_exists_primitive_element.aux_fin
+lemma finite_intermediateField_of_exists_primitive_element.aux_fin
     (f : Polynomial E) (h : f ≠ 0) :
     Finite { g : Polynomial E // g.Monic ∧ g ∣ f } := by
   set G := { g : Polynomial E // g.Monic ∧ g ∣ f }
@@ -365,7 +365,7 @@ lemma Field.finite_intermediateField_of_exists_primitive_element.aux_fin
   exact Finite.of_injective i hinj
 
 -- A finite simple extension has only finitely many intermediate fields
-theorem Field.finite_intermediateField_of_exists_primitive_element :
+theorem finite_intermediateField_of_exists_primitive_element :
     (∃ α : E, F⟮α⟯ = ⊤) → Finite (IntermediateField F E) := by
   intro ⟨α, hprim⟩
   -- Let `f` be the minimal polynomial of `α ∈ E` over `F`
@@ -400,7 +400,7 @@ theorem Field.finite_intermediateField_of_exists_primitive_element :
 /-- **Steinitz theorem**: a finite extension `E` of `F` has a
   primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
   if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
-theorem Field.exists_primitive_element_iff_finite_intermediateField :
+theorem exists_primitive_element_iff_finite_intermediateField :
     (∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
   ⟨Field.finite_intermediateField_of_exists_primitive_element F E,
     Field.exists_primitive_element_of_finite_intermediateField F E⟩
