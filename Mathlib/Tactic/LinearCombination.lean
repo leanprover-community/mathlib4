@@ -106,20 +106,6 @@ partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Ter
     some <$> e.toSyntax
   return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
 
-/-- A configuration object for `linear_combination`. -/
-structure Config where
-  /-- whether or not the normalization step should be used -/
-  normalize := true
-  /-- whether to make separate subgoals for both sides or just one for `lhs - rhs = 0` -/
-  twoGoals := false
-  /-- the tactic used for normalization when checking
-  if the weighted sum is equivalent to the goal (when `normalize` is `true`). -/
-  normTac : Syntax.Tactic := Unhygienic.run `(tactic| ring_nf)
-  deriving Inhabited
-
-/-- Function elaborating `LinearCombination.Config` -/
-declare_config_elab elabConfig Config
-
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
 theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
