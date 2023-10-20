@@ -293,14 +293,16 @@ lemma finite_intermediateField_of_exists_primitive_element.aux_finrank
     right_inv := fun x => by simp only,
   }
 
-lemma finite_intermediateField_of_exists_primitive_element.aux_1
+-- TODO: give it a descriptive name if it's useful in other places
+private lemma finite_intermediateField_of_exists_primitive_element.aux_1
     (S : Set E) (hprim : adjoin F S = ⊤) (K : IntermediateField F E) :
     adjoin K S = ⊤ := by
   apply restrictScalars_injective (K := F) (L' := K) (L := E)
   rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
     coe_restrictScalars, ← adjoin_le_iff]
 
-lemma finite_intermediateField_of_exists_primitive_element.aux_2
+-- TODO: give it a descriptive name if it's useful in other places
+private lemma finite_intermediateField_of_exists_primitive_element.aux_2
     (α : E) (hprim : F⟮α⟯ = ⊤) (K K' : IntermediateField F E)
     (heq : (minpoly K α).map (algebraMap K E) = (minpoly K' α).map (algebraMap K' E)) :
     K = K ⊓ K' := by
