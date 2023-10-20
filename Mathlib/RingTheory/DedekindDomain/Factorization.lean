@@ -252,6 +252,25 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
 
 /-- For a nonzero `k = r/s ∈ K`, the fractional ideal `(k)` is equal to the product
 `∏_v v^(val_v(r) - val_v(s))`. -/
+theorem finprod_heightOneSpectrum_factorization_principal_fraction {n : R} (hn : n ≠ 0) (d : ↥R⁰) :
+    ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
+      ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {n} : Ideal R)).factors -
+        (Associates.mk v.asIdeal).count (Associates.mk ((Ideal.span {(↑d : R)}) :
+        Ideal R)).factors : ℤ) = spanSingleton R⁰ (mk' K n d) := by
+  have hd_ne_zero : (algebraMap R K) (d : R) ≠ 0 :=
+    map_ne_zero_of_mem_nonZeroDivisors _ (IsFractionRing.injective R K) d.property
+  have h0 : spanSingleton R⁰ (mk' K n d) ≠ 0 := by
+    rw [spanSingleton_ne_zero_iff, IsFractionRing.mk'_eq_div, ne_eq, div_eq_zero_iff, not_or]
+    exact ⟨(map_ne_zero_iff (algebraMap R K) (IsFractionRing.injective R K)).mpr hn, hd_ne_zero⟩
+  have hI : spanSingleton R⁰ (mk' K n d) =
+      spanSingleton R⁰ ((algebraMap R K) d)⁻¹ * ↑(Ideal.span {n} : Ideal R) := by
+    rw [coeIdeal_span_singleton, spanSingleton_mul_spanSingleton]
+    apply congr_arg
+    rw [IsFractionRing.mk'_eq_div, div_eq_mul_inv, mul_comm]
+  exact finprod_heightOneSpectrum_factorization h0 hI
+
+/-- For a nonzero `k = r/s ∈ K`, the fractional ideal `(k)` is equal to the product
+`∏_v v^(val_v(r) - val_v(s))`. -/
 theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R⁰ K} (hI : I ≠ 0)
     (k : K) (hk : I = spanSingleton R⁰ k) :
     ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
@@ -261,14 +280,13 @@ theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R
           (choose_spec (mk'_surjective R⁰ k)) : ↥R⁰) : R)}) : Ideal R)).factors : ℤ) = I := by
   set n : R := choose (mk'_surjective R⁰ k)
   set d : ↥R⁰ := choose (choose_spec (mk'_surjective R⁰ k))
-  have hd_ne_zero : (algebraMap R K) (d : R) ≠ 0 :=
-    map_ne_zero_of_mem_nonZeroDivisors _ (IsFractionRing.injective R K) d.property
-  have haJ' : I = spanSingleton R⁰ ((algebraMap R K) d)⁻¹ * ↑(Ideal.span {n} : Ideal R) := by
-    rw [hk, coeIdeal_span_singleton, spanSingleton_mul_spanSingleton]
-    apply congr_arg
-    rw [eq_inv_mul_iff_mul_eq₀ hd_ne_zero, mul_comm, ← eq_mk'_iff_mul_eq, eq_comm]
-    exact choose_spec (choose_spec (mk'_surjective R⁰ k))
-  exact finprod_heightOneSpectrum_factorization hI haJ'
+  have hnd : mk' K n d = k := choose_spec (choose_spec (mk'_surjective R⁰ k))
+  have hn0 : n ≠ 0 := by
+    by_contra h
+    rw [← hnd, h, IsFractionRing.mk'_eq_div, _root_.map_zero,
+      zero_div, spanSingleton_zero] at hk
+    exact hI hk
+  rw [finprod_heightOneSpectrum_factorization_principal_fraction hn0 d, hk, hnd]
 
 variable (K)
 
