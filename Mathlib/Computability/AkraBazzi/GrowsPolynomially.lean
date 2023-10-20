@@ -85,7 +85,7 @@ lemma bar {R : Type _} [LinearOrderedRing R] {P : R → Prop} (x₀ x₁ r : R) 
 variable {f : ℝ → ℝ} (hf : GrowsPolynomially f)
 
 lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
-  obtain ⟨c₁, hc₁, c₂, hc₂, h⟩ := hf (1 /2) (by norm_num)
+  obtain ⟨c₁, _, c₂, _, h⟩ := hf (1/2) (by norm_num)
   rcases lt_trichotomy c₁ c₂ with hlt|heq|hgt
   case inl =>  -- c₁ < c₂
     left
@@ -110,9 +110,6 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
     have hu' : (c₁ - c₂) * f x ≤ 0 := by linarith
     exact nonpos_of_mul_nonpos_right hu' (by linarith)
   case inr.inl =>   -- c₁ = c₂
-    have c₂_eq_one : c₂ = 1 := by
-      sorry
-    simp only [c₂_eq_one] at *
     have hmain : ∃ c, ∀ᶠ x in atTop, f x = c := by
       simp only [heq, Set.Icc_self, Set.mem_singleton_iff, one_mul] at h
       rw [eventually_atTop] at h
@@ -121,20 +118,30 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
       rw [eventually_atTop]
       refine ⟨2 * max n₀ 2, ?_⟩
       suffices ∀ (b : ℝ), b ≥ max n₀ 2 → f b = f (max n₀ 2) by
-        intro b hb
-        refine this b ?_
+        refine fun b hb => this b ?_
         calc b ≥ 2 * max n₀ 2 := hb
              _ ≥ _ := by norm_num
       refine bar (R := ℝ) (max n₀ 2) (2 * max n₀ 2) 1 zero_lt_one ?_ ?_
-      sorry
+      · have hn₀_le : n₀ ≤ 2 * max n₀ 2 := by
+          calc n₀ ≤ max n₀ 2 := by simp
+                _ ≤ 2 * max n₀ 2 := by norm_num
+        have h₁ := hn₀ (2 * max n₀ 2) hn₀_le
+        have h₂ := hn₀ (2 * max n₀ 2) hn₀_le (max n₀ 2) ⟨by simp, by norm_num⟩
+        rw [h₂]
+        refine fun x hx => h₁ x ⟨?_, hx.2⟩
+        calc _ = max n₀ 2 := by simp
+             _ ≤ x := hx.1
       intro x₀ hx₀ hyp_ind z hz
-      --have h : f z = f (1/2 * z) := by
-      --  have : 1/2 * z ∈ Set.Icc (max n₀ 2) x₀ := by sorry
-      --  rw [hyp_ind (1/2 * z) this]
-      --  sorry
-      --have hn₀' := hn₀ (1/2 * z)
-      --refine (hn₀ z ?z_ge_n₀ _ ?_).symm
-      have hn₀' : f (1/2 * z) = f z := by
+      have z_nonneg : 0 ≤ z := by
+        calc 0 ≤ 2 * max n₀ 2  := by norm_num
+             _ ≤ z := hx₀.trans hz.1
+      have hc₂_z : f z = c₂ * f z := by
+        refine hn₀ z ?_ z ⟨by linarith, le_rfl⟩
+        calc n₀ ≤ max n₀ 2 := by simp
+              _ ≤ 2 * max n₀ 2 := by norm_num
+              _ ≤ x₀ := hx₀
+              _ ≤ z := hz.1
+      have hn₀' : f (1/2 * z) = c₂ * f z := by
         refine hn₀ z ?lb (1/2 * z) ?memIcc
         case lb =>
           calc n₀ ≤ max n₀ 2  := by simp
@@ -145,9 +152,7 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
           refine ⟨le_refl _, ?_⟩
           nth_rewrite 2 [←one_mul z]
           gcongr
-          · calc 0 ≤ 2 * max n₀ 2  := by norm_num
-                 _ ≤ z := hx₀.trans hz.1
-          · norm_num
+          norm_num
       have H : f (1/2 * z) = f (max n₀ 2) := by
         refine hyp_ind (1/2 * z) ⟨?lb, ?ub⟩
         case lb =>
@@ -166,6 +171,7 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
                        _ ≤ x₀ := hx₀
                _ = 2 * x₀ := by rw [two_mul]
       rw [←H, hn₀']
+      exact hc₂_z
     obtain ⟨c, hc⟩ := hmain
     rcases le_or_lt 0 c with hpos|hneg
     case inl =>
