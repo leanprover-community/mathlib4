@@ -521,7 +521,7 @@ theorem finprod_heightOneSpectrum_factorization' {I : FractionalIdeal R⁰ K} (h
 variable {K}
 
 /-- If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many maximal ideals of `R`. -/
-theorem finite_factors {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
+theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     {J : Ideal R} (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
     ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite,
       ((Associates.mk v.asIdeal).count (Associates.mk J).factors : ℤ) -
@@ -544,5 +544,11 @@ theorem finite_factors {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     exact hv (Eq.refl 0)
   exact Finite.subset (Finite.union (Ideal.finite_factors (ideal_factor_ne_zero hI haJ))
     (Ideal.finite_factors (constant_factor_ne_zero hI haJ))) h_subset
+
+/-- If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many maximal ideals of `R`. -/
+theorem finite_factors {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
+    ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, count K v I = 0 := by
+  convert finite_factors' hI (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
+  rw [count_ne_zero K _ hI]
 
 end FractionalIdeal
