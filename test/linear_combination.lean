@@ -207,14 +207,14 @@ example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : y*z = -x := by
   ring
 
 example (K : Type)
-  [Field K]
-  [CharZero K]
-  {x y z : K}
-  (h₂ : y ^ 3 + x * (3 * z ^ 2) = 0)
-  (h₁ : x ^ 3 + z * (3 * y ^ 2) = 0)
-  (h₀ : y * (3 * x ^ 2) + z ^ 3 = 0)
-  (h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0) :
-  x = 0 := by
+    [Field K]
+    [CharZero K]
+    {x y z : K}
+    (h₂ : y ^ 3 + x * (3 * z ^ 2) = 0)
+    (h₁ : x ^ 3 + z * (3 * y ^ 2) = 0)
+    (h₀ : y * (3 * x ^ 2) + z ^ 3 = 0)
+    (h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0) :
+    x = 0 := by
   linear_combination (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
     x * y * z * h₀ + y * z * h / 7
 

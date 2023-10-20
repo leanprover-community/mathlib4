@@ -112,8 +112,7 @@ theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) :
   rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
-  (H : (a' - b')^n - (a - b) = 0) :
-  a' = b' := by
+    (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
 /-- Implementation of `linear_combination` and `linear_combination2`. -/
