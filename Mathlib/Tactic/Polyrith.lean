@@ -353,7 +353,8 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
         let stx := (withRef (← getRef) <| p.toSyntax vars).run
         let tac ←
           if let .const 0 := p then `(tactic| linear_combination)
-          else `(tactic| linear_combination $stx:term)
+          else if pow = 1 then `(tactic| linear_combination $stx:term)
+          else `(tactic| linear_combination (exp := $(quote pow)) $stx:term)
         try
           guard (← Elab.runTactic g tac).1.isEmpty
         catch _ => throwError
