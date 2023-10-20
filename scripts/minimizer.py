@@ -208,20 +208,19 @@ def make_bisecting_pass(change_generator):
         changes_top = changes[:len(changes) // 2]
         changes_bot = changes[len(changes) // 2:]
 
-        # Otherwise, maybe there are some changes in the top half of the file that make progress.
-        logging.debug(f"bisect_changes: trying to change the top half")
-        progress_top, file_top = bisect_changes(expected_out, changes_top, filename)
-        if progress_top:
-            # Some progress in the top half, so try making progress in the bottom half too.
-            logging.debug(f"bisect_changes: top half succeeded, let's try the bottom too")
-            # TODO: here we might end up retrying some changes that were rejected in `changes_top`
-            # (but it should only be a logarithmic number of times, since we're doing bisection)
-            _, file_top_and_bot = bisect_changes(expected_out, change_generator(file_top), file_top)
-            # No matter whether we had progress in the bottom, we had progress in the top.
+        # Otherwise, maybe there are some changes in the bottom half of the file that make progress.
+        # We do the bottom half before the top half, since we can re-use the changes in the top half (while file indices in the bottom depend on those in the top)
+        logging.debug(f"bisect_changes: trying to change the bottom half")
+        progress_bot, file_bot = bisect_changes(expected_out, changes_bot, filename)
+        if progress_bot:
+            # Some progress in the bottom half, so try making progress in the top half too.
+            logging.debug(f"bisect_changes: bottom half succeeded, let's try the top too")
+            _, file_top_and_bot = bisect_changes(expected_out, changes_top, file_bot)
+            # No matter whether we had progress in the top, we had progress in the bottom.
             return True, file_top_and_bot
         else:
-            logging.debug(f"bisect_changes: trying to change the bottom half")
-            return bisect_changes(expected_out, changes_bot, filename)
+            logging.debug(f"bisect_changes: trying to change only the top half")
+            return bisect_changes(expected_out, changes_top, filename)
 
     def decomposable_pass(expected_out, filename):
         return bisect_changes(expected_out, change_generator(filename), filename)
