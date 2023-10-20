@@ -47,10 +47,6 @@ open scoped Real Topology FourierTransform
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
-notation "cexp" => Complex.exp
-
-notation "rexp" => Real.exp
-
 theorem exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => exp (-b * x ^ 2)) =o[atTop] fun x : ℝ => exp (-x) := by
   have A : (fun x : ℝ => -x - -b * x ^ 2) = fun x => x * (b * x + -1) := by ext x; ring
@@ -90,7 +86,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
     integrableOn_Ici_iff_integrableOn_Ioi]
   refine' ⟨_, integrableOn_rpow_mul_exp_neg_mul_sq hb hs⟩
   rw [← (Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
-      (Homeomorph.neg ℝ).toMeasurableEquiv.measurableEmbedding]
+      (Homeomorph.neg ℝ).measurableEmbedding]
   simp only [Function.comp, neg_sq, neg_preimage, preimage_neg_Iio, neg_neg, neg_zero]
   apply Integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
   · apply Measurable.aestronglyMeasurable

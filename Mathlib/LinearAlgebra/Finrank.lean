@@ -374,24 +374,24 @@ theorem span_lt_top_of_card_lt_finrank {s : Set V} [Fintype s]
 
 /-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
 dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
-theorem exists_linear_independent_snoc_of_lt_finrank {n : ℕ} {v : Fin n → V}
+theorem exists_linearIndependent_snoc_of_lt_finrank {n : ℕ} {v : Fin n → V}
     (hv : LinearIndependent K v) (h : n < finrank K V) :
     ∃ (x : V), LinearIndependent K (Fin.snoc v x) :=
-  exists_linear_independent_snoc_of_lt_rank hv (lt_rank_of_lt_finrank h)
+  exists_linearIndependent_snoc_of_lt_rank hv (lt_rank_of_lt_finrank h)
 
 /-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
 dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
-theorem exists_linear_independent_cons_of_lt_finrank {n : ℕ} {v : Fin n → V}
+theorem exists_linearIndependent_cons_of_lt_finrank {n : ℕ} {v : Fin n → V}
     (hv : LinearIndependent K v) (h : n < finrank K V) :
     ∃ (x : V), LinearIndependent K (Fin.cons x v) :=
-  exists_linear_independent_cons_of_lt_rank hv (lt_rank_of_lt_finrank h)
+  exists_linearIndependent_cons_of_lt_rank hv (lt_rank_of_lt_finrank h)
 
 /-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
 vector linearly independent of the first one. -/
-theorem exists_linear_independent_pair_of_one_lt_finrank
+theorem exists_linearIndependent_pair_of_one_lt_finrank
     (h : 1 < finrank K V) {x : V} (hx : x ≠ 0) :
     ∃ y, LinearIndependent K ![x, y] :=
-  exists_linear_independent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
+  exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
 
 end DivisionRing
 
@@ -502,6 +502,9 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
 #align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] finsetBasisOfTopLeSpanOfCardEqFinrank_repr_apply
 
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]

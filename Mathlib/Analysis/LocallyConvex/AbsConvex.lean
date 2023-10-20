@@ -164,7 +164,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   refine' SeminormFamily.withSeminorms_of_hasBasis _ _
   refine' (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => _) fun s hs => _
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩
-    convert(gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
   refine' ⟨s, ⟨_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs
@@ -173,7 +173,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine'
     ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
-      isOpen_biInter (t.finite_toSet) fun S _ => _,
+      isOpen_biInter_finset fun S _ => _,
       balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
       convex_iInter₂ fun _ _ => Seminorm.convex_ball _ _ _⟩
   -- The only nontrivial part is to show that the ball is open

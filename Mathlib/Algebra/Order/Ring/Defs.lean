@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
@@ -144,7 +145,10 @@ attribute [instance 0] OrderedSemiring.toPartialOrder
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends CommSemiring α, OrderedSemiring α
+class OrderedCommSemiring (α : Type u) extends CommSemiring α, OrderedSemiring α where
+  mul_le_mul_of_nonneg_right a b c ha hc :=
+    -- parentheses ensure this generates an `optParam` rather than an `autoParam`
+    (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
 
 attribute [instance 200] OrderedCommSemiring.toCommSemiring
@@ -380,7 +384,7 @@ theorem one_lt_mul_of_lt_of_le (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
   ha.trans_le <| le_mul_of_one_le_right (zero_le_one.trans ha.le) hb
 #align one_lt_mul_of_lt_of_le one_lt_mul_of_lt_of_le
 
-alias one_lt_mul_of_le_of_lt ← one_lt_mul
+alias one_lt_mul := one_lt_mul_of_le_of_lt
 #align one_lt_mul one_lt_mul
 
 theorem mul_lt_one_of_nonneg_of_lt_one_left (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
@@ -852,7 +856,7 @@ instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosRefle
   ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.toMulPosReflectLT
 
-theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
+theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine' Decidable.or_iff_not_and_not.2 _
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
@@ -863,7 +867,7 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b
   · subst ha
     exact ((ab le_rfl).asymm (nab le_rfl)).elim
   · exact mul_neg_of_neg_of_pos ha (nab ha.le)
-#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg
+#align nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
 
 theorem nonneg_of_mul_nonneg_left (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
   le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_le h
@@ -1107,7 +1111,7 @@ theorem mul_neg_iff : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
 #align mul_neg_iff mul_neg_iff
 
 theorem mul_nonneg_iff : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
-  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg, fun h =>
+  ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
 #align mul_nonneg_iff mul_nonneg_iff
 

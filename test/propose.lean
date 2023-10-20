@@ -43,9 +43,9 @@ def bar (n : Nat) (x : String) : Nat × String := (n + x.length, x)
 
 -- FIXME notice a bug here: should not generate `let this✝` with an inaccessible name.
 /--
-info: Try this: let this✝ : ℕ × String := bar p.fst p.snd
+info: Try this: let this✝ : ℕ × String := bar p.1 p.2
 ---
-info: Try this: let this✝ : ℕ × String := bar p.fst p.snd
+info: Try this: let this✝ : ℕ × String := bar p.1 p.2
 -/
 #guard_msgs in
 example (p : Nat × String) : True := by
@@ -70,6 +70,8 @@ example (K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
 info: Try this: have : IsUnit p := isUnit_of_dvd_one h
 ---
 info: Try this: have : p ≠ 1 := ne_one hp
+---
+info: Try this: have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := dvd_mul hp
 ---
 info: Try this: have : p ∣ a := Prime.dvd_of_dvd_pow hp h
 ---

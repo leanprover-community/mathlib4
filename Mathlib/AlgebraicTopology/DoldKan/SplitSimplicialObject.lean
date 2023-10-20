@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
-#align_import algebraic_topology.dold_kan.split_simplicial_object from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
+#align_import algebraic_topology.dold_kan.split_simplicial_object from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -164,7 +164,7 @@ theorem ιSummand_comp_d_comp_πSummand_eq_zero (j k : ℕ) (A : IndexSet (op [j
 #align simplicial_object.splitting.ι_summand_comp_d_comp_π_summand_eq_zero SimplicialObject.Splitting.ιSummand_comp_d_comp_πSummand_eq_zero
 
 /-- If `s` is a splitting of a simplicial object `X` in a preadditive category,
-`s.nondeg_complex` is a chain complex which is given in degree `n` by
+`s.nondegComplex` is a chain complex which is given in degree `n` by
 the nondegenerate `n`-simplices of `X`. -/
 @[simps]
 noncomputable def nondegComplex : ChainComplex C ℕ where

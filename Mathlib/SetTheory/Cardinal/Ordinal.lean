@@ -24,7 +24,9 @@ using ordinals.
   It is an order isomorphism between ordinals and cardinals.
 * The function `Cardinal.aleph` gives the infinite cardinals listed by their
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on.
+  uncountable cardinal, and so on. The notation `ω_` combines the latter with `Cardinal.ord`,
+  giving an enumeration of (infinite) initial ordinals.
+  Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
@@ -553,7 +555,7 @@ theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a 
 #align cardinal.mul_eq_max Cardinal.mul_eq_max
 
 @[simp]
-theorem mul_mk_eq_max {α β : Type _} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
+theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
   mul_eq_max (aleph0_le_mk α) (aleph0_le_mk β)
 #align cardinal.mul_mk_eq_max Cardinal.mul_mk_eq_max
 
@@ -733,12 +735,12 @@ theorem add_eq_max' {a b : Cardinal} (ha : ℵ₀ ≤ b) : a + b = max a b := by
 #align cardinal.add_eq_max' Cardinal.add_eq_max'
 
 @[simp]
-theorem add_mk_eq_max {α β : Type _} [Infinite α] : #α + #β = max #α #β :=
+theorem add_mk_eq_max {α β : Type u} [Infinite α] : #α + #β = max #α #β :=
   add_eq_max (aleph0_le_mk α)
 #align cardinal.add_mk_eq_max Cardinal.add_mk_eq_max
 
 @[simp]
-theorem add_mk_eq_max' {α β : Type _} [Infinite β] : #α + #β = max #α #β :=
+theorem add_mk_eq_max' {α β : Type u} [Infinite β] : #α + #β = max #α #β :=
   add_eq_max' (aleph0_le_mk β)
 #align cardinal.add_mk_eq_max' Cardinal.add_mk_eq_max'
 
@@ -808,8 +810,11 @@ theorem add_nat_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : a + n = a :=
   add_eq_left ha ((nat_lt_aleph0 _).le.trans ha)
 #align cardinal.add_nat_eq Cardinal.add_nat_eq
 
+theorem nat_add_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : n + a = a := by
+  rw [add_comm, add_nat_eq n ha]
+
 theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
-  add_eq_left ha (one_le_aleph0.trans ha)
+  add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
 --Porting note: removed `simp`, `simp` can prove it
@@ -1446,3 +1451,46 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 -- end Bit
 
 end Cardinal
+
+section Initial
+
+namespace Ordinal
+
+/--
+`ω_ o` is a notation for the *initial ordinal* of cardinality
+`aleph o`. Thus, for example `ω_ 0 = ω`.
+-/
+scoped notation "ω_" o => ord <| aleph o
+
+/--
+`ω₁` is the first uncountable ordinal.
+-/
+scoped notation "ω₁" => ord <| aleph 1
+
+lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
+
+section OrdinalIndices
+/-!
+### Cardinal operations with ordinal indices
+
+Results on cardinality of ordinal-indexed families of sets.
+-/
+namespace Cardinal
+
+open scoped Cardinal
+
+/--
+Bounding the cardinal of an ordinal-indexed union of sets.
+-/
+lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
+    (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
+    (hA : ∀ j < o, #(A j) ≤ c) :
+    #(⋃ j < o, A j) ≤ c := by
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoOut.symm.surjective.range_comp]
+  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hc)
+  rw [mk_ordinal_out]
+  exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+
+end Cardinal
+
+end OrdinalIndices

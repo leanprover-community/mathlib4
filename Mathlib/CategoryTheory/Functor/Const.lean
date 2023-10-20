@@ -101,8 +101,8 @@ def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F
 #align category_theory.functor.const_comp CategoryTheory.Functor.constComp
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
-instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C)
-    where map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
+instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
+  map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
 
 end
 
