@@ -130,7 +130,7 @@ def editCost : Levenshtein.Cost String String Nat := Levenshtein.stringLogLength
 
 /-- Check whether a goal can be solved by `rfl`, and fill in the `SearchNode.rfl?` field. -/
 def compute_rfl? (n : SearchNode) : MetaM SearchNode := withMCtx n.mctx do
-  if (← try? n.goal.rfl).isSome then
+  if (← try? n.goal.applyRfl).isSome then
     pure { n with mctx := ← getMCtx, rfl? := some true }
   else
     pure { n with rfl? := some false }

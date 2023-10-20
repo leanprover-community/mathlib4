@@ -5,13 +5,14 @@ Authors: Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
+import Std.Tactic.Relation.Rfl
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Tactic.Cache
 import Mathlib.Lean.Meta
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
+import Mathlib.Tactic.SolveByElim
 
 /-!
 # The `rewrites` tactic.
@@ -29,6 +30,20 @@ We could try discharging side goals via `assumption` or `solve_by_elim`.
 -/
 
 set_option autoImplicit true
+
+namespace Lean.Meta
+
+/-- Extract the lemma, with arguments, that was used to produce a `RewriteResult`. -/
+-- This assumes that `r.eqProof` was constructed as:
+-- `mkAppN (mkConst ``Eq.ndrec [u1, u2]) #[α, a, motive, h₁, b, h₂]`
+-- and we want `h₂`.
+def RewriteResult.by? (r : RewriteResult) : Option Expr :=
+  if r.eqProof.isAppOfArity ``Eq.ndrec 6 then
+    r.eqProof.getArg! 5
+  else
+    none
+
+end Lean.Meta
 
 namespace Mathlib.Tactic.Rewrites
 
@@ -154,7 +169,7 @@ def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
   try
     withoutModifyingState <| withMCtx r.mctx do
       -- We use `withReducible` here to follow the behaviour of `rw`.
-      withReducible (← mkFreshExprMVar r.result.eNew).mvarId!.rfl
+      withReducible (← mkFreshExprMVar r.result.eNew).mvarId!.applyRfl
       -- We do not need to record the updated `MetavarContext` here.
       pure { r with rfl? := some true }
   catch _ =>
@@ -176,6 +191,15 @@ def RewriteResult.ppResult (r : RewriteResult) : MetaM String :=
     return pp
   else
     return (← ppExpr r.result.eNew).pretty
+
+/-- Shortcut for calling `solveByElim`. -/
+def solveByElim (goals : List MVarId) (depth : Nat := 6) : MetaM PUnit := do
+  -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
+  -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
+  let cfg : SolveByElim.Config :=
+    { maxDepth := depth, exfalso := false, symm := true }
+  let [] ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
+    | failure
 
 /--
 Find lemmas which can rewrite the goal.
@@ -226,12 +250,19 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
     let some result ← try? do goal.rewrite target expr symm
       | return none
-    return if result.mvarIds.isEmpty then
-      some ⟨expr, symm, weight, result, none, none, ← getMCtx⟩
+    if result.mvarIds.isEmpty then
+      return some ⟨expr, symm, weight, result, none, none, ← getMCtx⟩
     else
-      -- TODO Perhaps allow new goals? Try closing them with solveByElim?
-      -- A challenge is knowing what suggestions to print if we do so!
-      none
+      -- There are side conditions, which we try to discharge using local hypotheses.
+      let some _ ← try? do solveByElim result.mvarIds | return none
+      -- If we succeed, we need to reconstruct the expression to report that we rewrote by.
+      let some expr := result.by? | return none
+      let expr ← instantiateMVars expr
+      let (expr, symm) := if expr.isAppOfArity ``Eq.symm 4 then
+          (expr.getArg! 3, true)
+        else
+          (expr, false)
+      return some ⟨expr, symm, weight, result, none, none, ← getMCtx⟩
 
 /--
 Find lemmas which can rewrite the goal, and deduplicate based on pretty-printed results.
