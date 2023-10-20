@@ -425,7 +425,7 @@ theorem count_zpow_self (n : ℤ) :
   rw [count_zpow, count_self, mul_one]
 
 /-- If `v ≠ w` are two maximal ideals of `R`, then `val_v(w) = 0`. -/
-theorem count_maximal_coprime (w : HeightOneSpectrum R) (hw : w ≠ v) :
+theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
     count K v (w.asIdeal : FractionalIdeal R⁰ K) = 0 := by
   have hw_fact : (w.asIdeal : FractionalIdeal R⁰ K) =
       spanSingleton R⁰ ((algebraMap R K) 1)⁻¹ * ↑w.asIdeal := by
@@ -443,6 +443,12 @@ theorem count_maximal_coprime (w : HeightOneSpectrum R) (hw : w ≠ v) :
   rw [Associates.mk_eq_mk_iff_associated, associated_iff_eq, ← HeightOneSpectrum.ext_iff]
   exact Ne.symm hw
 
+theorem count_maximal (w : HeightOneSpectrum R) :
+    count K v (w.asIdeal : FractionalIdeal R⁰ K) = if w = v then 1 else 0 := by
+  split_ifs with h
+  . rw [h, count_self]
+  . exact count_maximal_coprime K v h
+
 /-- `val_v(∏_{w ≠ v} w^{exps w}) = 0`. -/
 theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     count K v (∏ᶠ (w : HeightOneSpectrum R) (_ : w ≠ v),
@@ -454,7 +460,7 @@ theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     · rw [count_mul' K v, if_pos h, hI, hI', add_zero]
     · rw [count_mul' K v, if_neg h]
   · intro w hw
-    rw [count_zpow, count_maximal_coprime K v w hw, MulZeroClass.mul_zero]
+    rw [count_zpow, count_maximal_coprime K v hw, MulZeroClass.mul_zero]
 
 /-- If `exps` is finitely supported, then `val_v(∏_w w^{exps w}) = exps v`. -/
 theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
