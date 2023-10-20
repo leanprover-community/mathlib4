@@ -25,12 +25,12 @@ A measure is `Regular` if it satisfies the following properties:
   set `U` is the supremum of `μ K` over all compact sets `K` contained in `U`.
 
 A measure is `InnerRegular` if it is inner regular for measurable sets with respect to compact
-closed sets: the measure of any measurable set `s` is the supremum of `μ K` over all compact closed
+closed sets: the measure of any measurable set `s` is the supremum of `μ K` over all compact
 sets contained in `s`.
 
 A measure is `InnerRegularCompactLTTop` if it is inner regular for measurable sets of finite
-measure with respect to compact closed sets: the measure of any measurable set `s` is the supremum
-of `μ K` over all compact closed sets contained in `s`.
+measure with respect to compact sets: the measure of any measurable set `s` is the supremum
+of `μ K` over all compact sets contained in `s`.
 
 There is a reason for this zoo of regularity classes:
 * A finite measure on a metric space is always weakly regular. Therefore, in probability theory,
@@ -266,10 +266,10 @@ class OuterRegular (μ : Measure α) : Prop where
 /-- A measure `μ` is regular if
   - it is finite on all compact sets;
   - it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
-  - it is inner regular for open sets, using compact closed sets:
-    `μ(U) = sup {μ(K) | K ⊆ U compact closed}` for `U` open. -/
+  - it is inner regular for open sets, using compact sets:
+    `μ(U) = sup {μ(K) | K ⊆ U compact}` for `U` open. -/
 class Regular (μ : Measure α) extends IsFiniteMeasureOnCompacts μ, OuterRegular μ : Prop where
-  innerRegular : InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s) IsOpen
+  innerRegular : InnerRegularWRT μ IsCompact IsOpen
 #align measure_theory.measure.regular MeasureTheory.Measure.Regular
 
 /-- A measure `μ` is weakly regular if
@@ -282,26 +282,35 @@ class WeaklyRegular (μ : Measure α) extends OuterRegular μ : Prop where
 #align measure_theory.measure.weakly_regular.inner_regular MeasureTheory.Measure.WeaklyRegular.innerRegular
 
 /-- A measure `μ` is inner regular if, for any measurable set `s`, then
-`μ(s) = sup {μ(K) | K ⊆ s compact closed}`. -/
+`μ(s) = sup {μ(K) | K ⊆ s compact}`. -/
 class InnerRegular (μ : Measure α) : Prop where
-  protected innerRegular : InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s)
-    (fun s ↦ MeasurableSet s)
+  protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s)
 
-/-- A measure `μ` is inner regular for finite measure sets with respect to compact closed sets:
-for any measurable set `s` with finite measure, then `μ(s) = sup {μ(K) | K ⊆ s compact closed}`.
+/-- A measure `μ` is inner regular for finite measure sets with respect to compact sets:
+for any measurable set `s` with finite measure, then `μ(s) = sup {μ(K) | K ⊆ s compact}`.
 The main interest of this class is that it is satisfied for both natural Haar measures (the
 regular one and the inner regular one). -/
 class InnerRegularCompactLTTop (μ : Measure α) : Prop where
-  protected innerRegular : InnerRegularWRT μ (fun s ↦ IsCompact s ∧ IsClosed s)
-    (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞)
+  protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞)
 
 -- see Note [lower instance priority]
 /-- A regular measure is weakly regular. -/
-instance (priority := 100) Regular.weaklyRegular [Regular μ] : WeaklyRegular μ where
+instance (priority := 100) Regular.weaklyRegular [T2Space α] [Regular μ] : WeaklyRegular μ where
   innerRegular _U hU r hr :=
     let ⟨K, hKU, hcK, hK⟩ := Regular.innerRegular hU r hr
-    ⟨K, hKU, hcK.2, hK⟩
+    ⟨K, hKU, hcK.isClosed, hK⟩
 #align measure_theory.measure.regular.weakly_regular MeasureTheory.Measure.Regular.weaklyRegular
+
+
+instance (priority := 100) Regular.weaklyRegular_of_locallyCompactSpace
+    [LocallyCompactSpace α] [RegularSpace α] [Regular μ] : WeaklyRegular μ where
+  innerRegular _U hU r hr :=
+    let ⟨K, hKU, hcK, hK⟩ := Regular.innerRegular hU r hr
+
+    ⟨K, hKU, hcK.isClosed, hK⟩
+
+
+#exit
 
 namespace OuterRegular
 

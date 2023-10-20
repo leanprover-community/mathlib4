@@ -1561,6 +1561,12 @@ theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
   Iff.mpr ((regularSpace_TFAE α).out 0 3) h
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset
 
+/-- A locally compact T2 space is regular. -/
+instance [LocallyCompactSpace α] [T2Space α] : RegularSpace α := by
+  apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
+  rcases local_compact_nhds hx with ⟨k, kx, ks, hk⟩
+  exact ⟨k, kx, hk.isClosed, ks⟩
+
 variable [RegularSpace α] {a : α} {s : Set α}
 
 theorem disjoint_nhdsSet_nhds : Disjoint (𝓝ˢ s) (𝓝 a) ↔ a ∉ closure s := by
@@ -1614,6 +1620,24 @@ theorem IsCompact.closure_subset_of_isOpen
       rcases exists_mem_nhds_isClosed_subset (hu.mem_nhds (h hx)) with ⟨F, F_mem, F_closed, Fu⟩
       exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
   exact (closure_minimal sF F_closed).trans Fu
+
+/-- In a (possibly non-Hausdorff) regular locally compact space, for every containment `K ⊆ U`
+  of a compact set `K` in an open set `U`, there is a compact closed neighborhood `L` such
+  that `K ⊆ L ⊆ U`: equivalently, there is a compact closed set `L` such that `K ⊆ interior L`
+  and `L ⊆ U`. -/
+theorem exists_compact_closed_between [LocallyCompactSpace α] {K U : Set α} (hK : IsCompact K)
+    (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U := by
+  rcases exists_compact_between hK hU h_KU with ⟨L, L_comp, KL, LU⟩
+  rcases exists_compact_between hK isOpen_interior KL with ⟨M, M_comp, KM, ML⟩
+  refine ⟨closure M, ?_, isClosed_closure, ?_, ?_⟩
+  · have : closure M ∩ L = closure M := by
+      apply inter_eq_self_of_subset_left
+      exact (M_comp.closure_subset_of_isOpen isOpen_interior ML).trans interior_subset
+    rw [← this]
+    apply L_comp.inter_left isClosed_closure
+  · exact KM.trans (interior_mono subset_closure)
+  · apply M_comp.closure_subset_of_isOpen hU
+    exact ML.trans (interior_subset.trans LU)
 
 theorem TopologicalSpace.IsTopologicalBasis.nhds_basis_closure {B : Set (Set α)}
     (hB : IsTopologicalBasis B) (a : α) :
