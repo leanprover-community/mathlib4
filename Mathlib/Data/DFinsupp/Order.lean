@@ -253,7 +253,7 @@ theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
 
 end
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
