@@ -110,9 +110,8 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
 
 /-- A retract of a flat `R`-module is flat. -/
 lemma of_retract (R : Type u) (M : Type v) (N : Type w)
-    [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [f : Flat R M] 
-    (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.comp i = LinearMap.id)
-    : Flat R N := by
+    [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [f : Flat R M]
+    (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.comp i = LinearMap.id) : Flat R N := by
   rw [iff_rTensor_injective] at *
   intro I hI
   have h₁ : Function.Injective (lTensor R i)
@@ -130,7 +129,7 @@ lemma of_retract (R : Type u) (M : Type v) (N : Type w)
 
 /-- A `R`-module isomorphic to a flat `R`-module is flat. -/
 lemma of_iso (R : Type u) (M : Type v) (N : Type w) [CommRing R] [AddCommGroup M] [AddCommGroup N]
-    [Module R M] [Module R N] [f : Flat R M] (e : N ≃ₗ[R] M)  : Flat R N := by
+    [Module R M] [Module R N] [f : Flat R M] (e : N ≃ₗ[R] M) : Flat R N := by
   have h : e.symm.toLinearMap.comp e.toLinearMap = LinearMap.id := by simp
   exact of_retract _ _ _ e.toLinearMap e.symm.toLinearMap h
 
@@ -138,7 +137,7 @@ open DirectSum
 
 /-- A direct sum of flat `R`-modules is flat. -/
 instance directSum (R : Type u) [CommRing R] (ι : Type v) (M : ι → Type w)
-    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))]:
+    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] :
     Flat R (⨁ i, M i) := by
   classical
   rw [iff_rTensor_injective]
