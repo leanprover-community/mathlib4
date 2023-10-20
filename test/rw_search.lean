@@ -2,6 +2,9 @@ import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true
 
+-- You can enable tracing of the `rw_search` algorithm using
+-- set_option trace.rw_search true
+
 /-- info: Try this: rw [@List.length_append, Nat.add_comm] -/
 #guard_msgs in
 example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by

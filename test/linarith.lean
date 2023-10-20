@@ -7,6 +7,9 @@ private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit true
 
+-- You can enable tracing of the `linarith` algorithm using
+-- set_option trace.linarith true
+
 example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
 

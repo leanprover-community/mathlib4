@@ -136,6 +136,9 @@ structure RewriteResult where
   weight : Nat
   /-- The result from the `rw` tactic. -/
   result : Meta.RewriteResult
+  /-- Pretty-printed result. -/
+  -- This is an `Option` so that it can be computed lazily.
+  ppResult? : Option String
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   -- This is an `Option` so that it can be computed lazily.
   rfl? : Option Bool
@@ -156,6 +159,23 @@ def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
       pure { r with rfl? := some true }
   catch _ =>
     pure { r with rfl? := some false }
+
+/-- Pretty print the result of the rewrite, and store it for later use. -/
+def RewriteResult.prepare_ppResult (r : RewriteResult) : MetaM RewriteResult := do
+  if let some _ := r.ppResult? then
+    return r
+  else
+    return { r with ppResult? := some ((← ppExpr r.result.eNew).pretty) }
+
+/--
+Pretty print the result of the rewrite.
+If this will be done more than once you should use `prepare_ppResult`
+-/
+def RewriteResult.ppResult (r : RewriteResult) : MetaM String :=
+  if let some pp := r.ppResult? then
+    return pp
+  else
+    return (← ppExpr r.result.eNew).pretty
 
 /--
 Find lemmas which can rewrite the goal.
@@ -207,23 +227,33 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     let some result ← try? do goal.rewrite target expr symm
       | return none
     return if result.mvarIds.isEmpty then
-      some ⟨expr, symm, weight, result, none, ← getMCtx⟩
+      some ⟨expr, symm, weight, result, none, none, ← getMCtx⟩
     else
       -- TODO Perhaps allow new goals? Try closing them with solveByElim?
       -- A challenge is knowing what suggestions to print if we do so!
       none
+
+/--
+Find lemmas which can rewrite the goal, and deduplicate based on pretty-printed results.
+Note that this builds a `HashMap` containing the results, and so may consume significant memory.
+-/
+def rewritesDedup (hyps : Array (Expr × Bool × Nat))
+    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+    (goal : MVarId) (target : Expr) : MLList MetaM RewriteResult := MLList.squash fun _ => do
+  return rewritesCore hyps lemmas (← getMCtx) goal target
+    -- Don't report duplicate results.
+    -- (TODO: we later pretty print results; save them here?)
+    -- (TODO: a config flag to disable this,
+    -- if distinct-but-pretty-print-the-same results are desirable?)
+    |>.mapM (fun r => r.prepare_ppResult)
+    |>.dedupBy (fun r => pure r.ppResult?)
 
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
-  let results ← rewritesCore hyps lemmas (← getMCtx) goal target
-    -- Don't report duplicate results.
-    -- (TODO: we later pretty print results; save them here?)
-    -- (TODO: a config flag to disable this,
-    -- if distinct-but-pretty-print-the-same results are desirable?)
-    |>.dedupBy (fun r => do pure <| (← ppExpr r.result.eNew).pretty)
+  let results ← rewritesDedup hyps lemmas goal target
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
     |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stopAtRfl` is False
     |>.takeUpToFirst (fun r => stopAtRfl && r.rfl? = some true)

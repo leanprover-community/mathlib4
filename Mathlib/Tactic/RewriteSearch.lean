@@ -63,6 +63,9 @@ namespace Mathlib.Tactic.RewriteSearch
 open Lean Meta
 open Mathlib.Tactic.Rewrites
 
+initialize registerTraceClass `rw_search
+initialize registerTraceClass `rw_search.detail
+
 /-- Separate a string into a list of strings by pulling off initial `(` or `]` characters,
 and pulling off terminal `)`, `]`, or `,` characters. -/
 partial def splitDelimiters (s : String) : List String :=
@@ -121,6 +124,13 @@ structure SearchNode where mk' ::
   (or `none` if this hasn't been computed yet). -/
   dist? : Option Nat := none
 
+instance : ToString SearchNode where
+  toString n :=
+  s!"depth: {n.history.size}\n" ++
+  (match n.history.back? with
+    | some (e, true) => s!"rw [← {e}]"
+    | some (e, false) => s!"rw [{e}]"
+    | none => "") ++ "\n" ++ n.ppGoal
 namespace SearchNode
 
 /-- Construct a `SearchNode`. -/
@@ -132,7 +142,7 @@ def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarCon
   | some (_, lhs, rhs) =>
     let lhsTokens ← tokenize lhs
     let rhsTokens ← tokenize rhs
-    return some
+    let r :=
       { history := history
         mctx := ← ctx.getDM getMCtx
         goal := goal
@@ -140,6 +150,8 @@ def mk (history : Array (Expr × Bool)) (goal : MVarId) (ctx : Option MetavarCon
         ppGoal := (← ppExpr type).pretty
         lhs := lhsTokens
         rhs := rhsTokens }
+    trace[rw_search] s!"{r}"
+    return some r
 
 /-- Check whether a goal can be solved by `rfl`, and fill in the `SearchNode.rfl?` field. -/
 def compute_rfl? (n : SearchNode) : MetaM SearchNode := withMCtx n.mctx do
@@ -184,7 +196,7 @@ returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (n : SearchNode) : MLList MetaM SearchNode :=
-  rewritesCore hyps lemmas n.mctx n.goal n.type |>.filterMapM fun r => do n.rewrite r
+  rewritesDedup hyps lemmas n.mctx n.goal n.type |>.filterMapM fun r => do n.rewrite r
 
 /--
 Perform best first search on the graph of rewrites from the specified `SearchNode`.
