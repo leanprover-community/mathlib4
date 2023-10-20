@@ -41,7 +41,7 @@ topological space, frame, locale, Stone duality, adjunction, points
 
 open CategoryTheory Order Set Topology TopologicalSpace
 
-namespace CategoryTheory.Locale
+namespace Locale
 
 /- ### Definition of the points functor `pt` --/
 
