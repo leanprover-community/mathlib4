@@ -233,13 +233,13 @@ def sequence_passes(*passes):
     Useful as an input to other pass combinators such as `loop_pass`.
     """
     def sequenced_pass(expected_out, filename):
-        current_file = original_file
+        current_file = filename
         progress = False
         for minimize_pass in passes:
             pass_progress, new_file = minimize_pass(expected_out, current_file)
             if pass_progress:
                 progress = True
-                logging.info(f"sequence_pass: succeeded; continuing with {new_file}")
+                logging.info(f"sequence_passes: succeeded; continuing with {new_file}")
                 current_file = new_file
         return progress, current_file
 
@@ -251,7 +251,7 @@ def loop_pass(minimize_pass):
     Useful if you want to feed the output of a pass into itself.
     """
     def looping_pass(expected_out, filename):
-        current_file = original_file
+        current_file = filename
         progress = False
         pass_progress = True
         while pass_progress:
