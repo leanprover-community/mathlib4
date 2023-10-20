@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.Tactic.ApplyFun
 
@@ -22,50 +21,25 @@ instance : (Presieve.ofArrows (X := ⊥_ C) Empty.elim instIsEmptyEmpty.elim).ha
   cases' hf with i
   exact Empty.elim i
 
-instance : IsEmpty (Σ(Y : C), {f : Y ⟶ ⊥_ C //
-    (Presieve.ofArrows (X := ⊥_ C) Empty.elim instIsEmptyEmpty.elim) f}) := by
-  constructor
-  rintro ⟨_, _, ⟨i⟩⟩
-  exact Empty.elim i
-
-lemma isoTerminalComparisonOfIsSheafForEmpty : IsIso (terminalComparison F) := by
-  rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
-  rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF
-  intro b
-  let S := (Presieve.ofArrows (X := ⊥_ C) Empty.elim instIsEmptyEmpty.elim)
-  let SO := (fg : (Σ(Y : C), {f : Y ⟶ ⊥_ C // S f}) × (Σ(Y : C), {f : Y ⟶ ⊥_ C // S f})) →
-      F.obj ((op (@pullback _ _ _ _ _ fg.1.2.1 fg.2.2.1
-      (Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2))))
-  let i : Equalizer.Presieve.SecondObj F S ≅ SO :=
-      (Types.productIso.{(max u v), v} _)
-  specialize hF ((Types.productIso.{(max u v), v} _).inv (IsEmpty.elim inferInstance)) ?_
-  · have hU : Subsingleton SO := (Pi.uniqueOfIsEmpty _).instSubsingleton
-    apply_fun i.hom using injective_of_mono _
-    exact hU.allEq _ _
-  · obtain ⟨x, _, h⟩ := hF
-    let i' : ⊤_ Cᵒᵖ ≅ op (⊥_ C) := (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial))
-    refine ⟨(F.mapIso i').inv x, by simp, ?_⟩
-    intro z _
-    apply_fun (F.mapIso i').hom using injective_of_mono _
-    simp only [inv_hom_id_apply]
-    apply h
-    ext Y g hg
-    cases' hg with i
-    cases i
-
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
 initial object, then `F` takes the initial object to the terminal object.
 -/
 noncomputable
-def preservesTerminalOfIsSheafForEmpty : PreservesLimit (Functor.empty Cᵒᵖ) F :=
-  letI := isoTerminalComparisonOfIsSheafForEmpty F hF
-  PreservesTerminal.ofIsoComparison F
+def isTerminal_obj_initial_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op (⊥_ C))) := by
+  refine @IsTerminal.ofUnique _ _ _ fun Y ↦ ?_
+  choose t h using hF (by tauto) (by tauto)
+  exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
-instance {α : Type w} {X : α → C} {B : C} (π : (a : α) → X a ⟶ B)
-    [(Presieve.ofArrows X π).hasPullbacks] (a b : α) : HasPullback (π a) (π b) :=
-  Presieve.hasPullbacks.has_pullbacks (Presieve.ofArrows.mk _) (Presieve.ofArrows.mk _)
--- TODO: move
+/--
+If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
+initial object, then `F` preserves terminal objects.
+-/
+noncomputable
+def preservesTerminalOfIsSheafForEmpty : PreservesLimit (Functor.empty Cᵒᵖ) F :=
+  preservesTerminalOfIso F
+    (F.mapIso (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)) ≪≫
+    (terminalIsoIsTerminal (isTerminal_obj_initial_of_isSheafFor_empty_presieve F hF)).symm)
 
 variable [UnivLE.{w, (max u v)}] {α : Type} {X : α → C} [HasCoproduct X]
     [(Presieve.ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
@@ -101,7 +75,7 @@ lemma sigma_surjective :
     Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f } // ¬ (Nonempty (IsInitial g.fst)) }) :=
   fun ⟨⟨_, _, hg⟩, prop⟩ ↦ by cases' hg with i; exact ⟨⟨i, prop⟩, rfl⟩
 
-lemma eq_comp_of_heq {X Y Z W : C} (h : Y = Z) (f : Y ⟶ W) (g : Z ⟶ W) (i : X ⟶ Y) (j : X ⟶ Z)
+lemma eq_comp_of_heq' {X Y Z W : C} (h : Y = Z) (f : Y ⟶ W) (g : Z ⟶ W) (i : X ⟶ Y) (j : X ⟶ Z)
     (hfg : HEq f g) (hij : i = j ≫ eqToHom h.symm) : i ≫ f = j ≫ g := by
   cases h; cases hfg; cases hij; simp only [eqToHom_refl, Category.comp_id]
 
@@ -117,7 +91,7 @@ lemma sigma_injective :
   apply a.prop
   constructor
   refine IsInitial.ofIso hd ⟨pullback.fst, pullback.lift (𝟙 _) (eqToHom h.1) ?_, ?_, ?_⟩
-  · refine eq_comp_of_heq h.1 (Sigma.ι X a.val) (Sigma.ι X b.val) (𝟙 _) (eqToHom h.1) ?_ ?_
+  · refine eq_comp_of_heq' h.1 (Sigma.ι X a.val) (Sigma.ι X b.val) (𝟙 _) (eqToHom h.1) ?_ ?_
     · rw [Subtype.heq_iff_coe_heq ?_ ?_] at h
       · exact h.2
       · rw [h.1]
@@ -139,7 +113,7 @@ lemma prod_map_comp : prod_map X F ≫ prod_map₂ F X = prod_map₃ F X ≫ (pr
 
 instance iso_prod_map_aux {β : Type w} {Z : β → Type (max w (max u v))} (p : β → Prop)
     [∀ b, Decidable (p b)] (h : ∀ b, p b → Nonempty (Unique (Z b))) :
-    IsIso (Pi.map' (fun a ↦ a.val) fun _ ↦ 𝟙 _ :
+    IsIso (Pi.map'.{w, w} (fun a ↦ a.val) fun _ ↦ 𝟙 _ :
     (∏ Z) ⟶ ∏ fun (b : {a : β // ¬ (p a)}) ↦ Z b.val) := by
   rw [isIso_iff_bijective]
   refine ⟨?_, ?_⟩
@@ -174,8 +148,8 @@ instance iso_prod_map_aux {β : Type w} {Z : β → Type (max w (max u v))} (p :
 open Classical in
 instance is_iso₂ : IsIso (prod_map₂ F X) :=
   let _ := preservesTerminalOfIsSheafForEmpty F hF
-  iso_prod_map_aux.{v, u, 0} (fun b ↦ Nonempty (IsInitial (X b))) fun b ⟨hb⟩ ↦
-    ⟨(Types.isTerminalEquivUnique _) <|
+  iso_prod_map_aux.{v, u, 0} (fun b ↦ Nonempty (IsInitial.{v, u} (X b))) fun b ⟨hb⟩ ↦
+    ⟨(Types.isTerminalEquivUnique _).toFun <|
     IsTerminal.isTerminalObj F (op (X b)) (terminalOpOfInitial hb )⟩
 
 open Classical in
