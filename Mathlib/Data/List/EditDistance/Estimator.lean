@@ -133,7 +133,7 @@ instance [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
   Estimator.fstInst (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) (estimator' C xs ys)
 
 /-- The initial estimator for Levenshtein distances. -/
-instance [CanonicallyLinearOrderedAddCommMonoid δ]
+instance [LinearOrderedAddCommMonoid δ] [CanonicallyOrderedAdd δ]
     (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
     Bot (LevenshteinEstimator C xs ys) where
   bot :=
