@@ -50,6 +50,7 @@ noncomputable section
 open scoped BigOperators Classical nonZeroDivisors
 
 open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
+  Classical
 
 variable {R : Type*} [CommRing R] {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
@@ -254,20 +255,19 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
 theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R⁰ K} (hI : I ≠ 0)
     (k : K) (hk : I = spanSingleton R⁰ k) :
     ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
-      ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {Classical.choose
+      ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {choose
           (mk'_surjective R⁰ k)} : Ideal R)).factors -
-        (Associates.mk v.asIdeal).count (Associates.mk ((Ideal.span {(↑(Classical.choose
-          (Classical.choose_spec (mk'_surjective R⁰ k)) : ↥R⁰) : R)}) : Ideal R)).factors : ℤ) =
-      I := by
-  set n : R := Classical.choose (mk'_surjective R⁰ k)
-  set d : ↥R⁰ := Classical.choose (Classical.choose_spec (mk'_surjective R⁰ k))
+        (Associates.mk v.asIdeal).count (Associates.mk ((Ideal.span {(↑(choose
+          (choose_spec (mk'_surjective R⁰ k)) : ↥R⁰) : R)}) : Ideal R)).factors : ℤ) = I := by
+  set n : R := choose (mk'_surjective R⁰ k)
+  set d : ↥R⁰ := choose (choose_spec (mk'_surjective R⁰ k))
   have hd_ne_zero : (algebraMap R K) (d : R) ≠ 0 :=
     map_ne_zero_of_mem_nonZeroDivisors _ (IsFractionRing.injective R K) d.property
   have haJ' : I = spanSingleton R⁰ ((algebraMap R K) d)⁻¹ * ↑(Ideal.span {n} : Ideal R) := by
     rw [hk, coeIdeal_span_singleton, spanSingleton_mul_spanSingleton]
     apply congr_arg
     rw [eq_inv_mul_iff_mul_eq₀ hd_ne_zero, mul_comm, ← eq_mk'_iff_mul_eq, eq_comm]
-    exact Classical.choose_spec (Classical.choose_spec (mk'_surjective R⁰ k))
+    exact choose_spec (choose_spec (mk'_surjective R⁰ k))
   exact finprod_heightOneSpectrum_factorization hI haJ'
 
 variable (K)
@@ -276,8 +276,8 @@ variable (K)
 then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we set `val_v(I) = 0`. -/
 def count (I : FractionalIdeal R⁰ K) : ℤ :=
   dite (I = 0) (fun _ : I = 0 => 0) fun _ : ¬I = 0 =>
-    let a := Classical.choose (exists_eq_spanSingleton_mul I)
-    let J := Classical.choose (Classical.choose_spec (exists_eq_spanSingleton_mul I))
+    let a := choose (exists_eq_spanSingleton_mul I)
+    let J := choose (choose_spec (exists_eq_spanSingleton_mul I))
     ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
 
@@ -286,12 +286,11 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     {J : Ideal R} (h_aJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
     count K v I = ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
       (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ) := by
-  set a₁ := Classical.choose (exists_eq_spanSingleton_mul I)
-  set J₁ := Classical.choose (Classical.choose_spec (exists_eq_spanSingleton_mul I))
+  set a₁ := choose (exists_eq_spanSingleton_mul I)
+  set J₁ := choose (choose_spec (exists_eq_spanSingleton_mul I))
   have h_a₁J₁ : I = spanSingleton R⁰ ((algebraMap R K) a₁)⁻¹ * ↑J₁ :=
-    (Classical.choose_spec (Classical.choose_spec (exists_eq_spanSingleton_mul I))).2
-  have h_a₁_ne_zero : a₁ ≠ 0 :=
-    (Classical.choose_spec (Classical.choose_spec (exists_eq_spanSingleton_mul I))).1
+    (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).2
+  have h_a₁_ne_zero : a₁ ≠ 0 := (choose_spec (choose_spec (exists_eq_spanSingleton_mul I))).1
   have h_J₁_ne_zero : J₁ ≠ 0 := ideal_factor_ne_zero hI h_a₁J₁
   have h_a_ne_zero : Ideal.span {a} ≠ 0 := constant_factor_ne_zero hI h_aJ
   have h_J_ne_zero : J ≠ 0 := ideal_factor_ne_zero hI h_aJ
@@ -372,7 +371,7 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
   · rw [pow_succ, count_mul']
     by_cases hI : I = 0
     · have h_neg : ¬(I ≠ 0 ∧ I ^ n ≠ 0) := by
-        rw [not_and, Classical.not_not, Ne.def]
+        rw [not_and, not_not, Ne.def]
         intro h
         exact absurd hI h
       rw [if_neg h_neg, hI, count_zero, MulZeroClass.mul_zero]
@@ -465,7 +464,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
         {v : HeightOneSpectrum R | exps v ≠ 0} := by
       intro v hv
       by_contra h
-      rw [mem_setOf_eq, Classical.not_not] at h
+      rw [mem_setOf_eq, not_not] at h
       rw [mem_setOf_eq, h, zpow_zero] at hv
       exact hv (Eq.refl 1)
     exact Finite.subset h_exps h_subset
@@ -495,8 +494,8 @@ theorem finite_factors {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     by_contra h_nmem
     rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_nmem
     push_neg at h_nmem
-    rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, Classical.not_not,
-      ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, Classical.not_not] at h_nmem
+    rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
+      ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_nmem
     rw [mem_setOf_eq, h_nmem.1, h_nmem.2, sub_self] at hv
     exact hv (Eq.refl 0)
   exact Finite.subset (Finite.union (Ideal.finite_factors (ideal_factor_ne_zero hI haJ))
