@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetricStuff
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 #align_import topology.metric_space.basic from "leanprover-community/mathlib"@"8047de4d911cdef39c2d646165eea972f7f9f539"
 
