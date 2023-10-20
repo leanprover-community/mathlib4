@@ -223,14 +223,3 @@ def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α
   -- `DiscrTree.getMatch` returns results in batches, with more specific lemmas coming later.
   -- Hence we reverse this list, so we try out more specific lemmas earlier.
   return (← locals.getMatch e).reverse ++ (← imports.getMatch e).reverse
-
-/--
-A structure that holds a value and possibly a pointer to a memory region, if we
-unpickled that value from disk.
--/
-structure WithCompactedRegion (α : Type) where
-  /-- The referenced `CompatedRegion` -/
-  pointer? : Option CompactedRegion
-  /-- The wrapped value -/
-  val : α
-deriving Nonempty

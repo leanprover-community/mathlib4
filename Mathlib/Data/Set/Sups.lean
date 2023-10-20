@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.SupClosed
 
 #align_import data.set.sups from "leanprover-community/mathlib"@"20715f4ac6819ef2453d9e5106ecd086a5dc2a5e"
 
@@ -20,7 +21,7 @@ This file defines a few binary operations on `Set α` for use in set family comb
 
 ## Notation
 
-We define the following notation in locale `set_family`:
+We define the following notation in locale `SetFamily`:
 * `s ⊻ t`
 * `s ⊼ t`
 
@@ -32,7 +33,7 @@ We define the following notation in locale `set_family`:
 
 open Function
 
-variable {α : Type*}
+variable {F α β : Type*}
 
 /-- Notation typeclass for pointwise supremum `⊻`. -/
 class HasSups (α : Type*) where
@@ -45,8 +46,7 @@ class HasInfs (α : Type*) where
 #align has_infs HasInfs
 
 -- mathport name: «expr ⊻ »
-infixl:74
-  " ⊻ " => HasSups.sups
+infixl:74 " ⊻ " => HasSups.sups
   -- This notation is meant to have higher precedence than `⊔` and `⊓`, but still within the
   -- realm of other binary notation
 
@@ -56,8 +56,7 @@ infixl:75 " ⊼ " => HasInfs.infs
 namespace Set
 
 section Sups
-
-variable [SemilatticeSup α] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeSup α] [SemilatticeSup β] [SupHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊻ t` is the set of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasSups : HasSups (Set α) :=
@@ -170,6 +169,18 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
   image2_inter_subset_right
 #align set.sups_inter_subset_right Set.sups_inter_subset_right
 
+lemma image_sups (f : F) (s t : Set α) : f '' (s ⊻ t) = f '' s ⊻ f '' t :=
+  image_image2_distrib $ map_sup f
+
+lemma subset_sups_self : s ⊆ s ⊻ s := λ _a ha ↦ mem_sups.2 ⟨_, ha, _, ha, sup_idem⟩
+lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
+
+@[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed s :=
+  subset_sups_self.le.le_iff_eq.symm.trans sups_subset_self
+
+lemma sep_sups_le (s t : Set α) (a : α) :
+    {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
+
 variable (s t u)
 
 theorem iUnion_image_sup_left : ⋃ a ∈ s, (· ⊔ ·) a '' t = s ⊻ t :=
@@ -212,7 +223,7 @@ end Sups
 
 section Infs
 
-variable [SemilatticeInf α] (s s₁ s₂ t t₁ t₂ u v : Set α)
+variable [SemilatticeInf α] [SemilatticeInf β] [InfHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Set α)
 
 /-- `s ⊼ t` is the set of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasInfs : HasInfs (Set α) :=
@@ -324,6 +335,18 @@ theorem infs_inter_subset_left : (s₁ ∩ s₂) ⊼ t ⊆ s₁ ⊼ t ∩ s₂ �
 theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼ t₂ :=
   image2_inter_subset_right
 #align set.infs_inter_subset_right Set.infs_inter_subset_right
+
+lemma image_infs (f : F) (s t : Set α) : f '' (s ⊼ t) = f '' s ⊼ f '' t :=
+  image_image2_distrib $ map_inf f
+
+lemma subset_infs_self : s ⊆ s ⊼ s := λ _a ha ↦ mem_infs.2 ⟨_, ha, _, ha, inf_idem⟩
+lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
+
+@[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed s :=
+  subset_infs_self.le.le_iff_eq.symm.trans infs_self_subset
+
+lemma sep_infs_le (s t : Set α) (a : α) :
+    {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by ext; aesop
 
 variable (s t u)
 

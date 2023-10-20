@@ -1110,6 +1110,17 @@ theorem sUnion_subset_iff {s : Set (Set α)} {t : Set α} : ⋃₀s ⊆ t ↔ �
   sSup_le_iff
 #align set.sUnion_subset_iff Set.sUnion_subset_iff
 
+/-- `sUnion` is monotone under taking a subset of each set. -/
+lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
+    ⋃₀ s ⊆ ⋃₀ (f '' s) :=
+  fun _ ⟨t, htx, hxt⟩ ↦ ⟨f t, mem_image_of_mem f htx, hf t hxt⟩
+
+/-- `sUnion` is monotone under taking a superset of each set. -/
+lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
+    ⋃₀ (f '' s) ⊆ ⋃₀ s :=
+  -- If t ∈ f '' s is arbitrary; t = f u for some u : Set α.
+  fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (hut ▸ hf u) hxt⟩
+
 theorem subset_sInter {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t ⊆ t') : t ⊆ ⋂₀ S :=
   le_sInf h
 #align set.subset_sInter Set.subset_sInter
@@ -1871,6 +1882,10 @@ theorem iUnion_prod {ι ι' α β} (s : ι → Set α) (t : ι' → Set β) :
   ext
   simp
 #align set.Union_prod Set.iUnion_prod
+
+/-- Analogue of `iSup_prod` for sets. -/
+lemma iUnion_prod' (f : β × γ → Set α) : ⋃ x : β × γ, f x = ⋃ (i : β) (j : γ), f (i, j) :=
+  iSup_prod
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
