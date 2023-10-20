@@ -102,9 +102,9 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
 
 /-- A retract of a flat `R`-module is flat. -/
 lemma of_retract (R : Type u) (M : Type v) (N : Type w)
-    [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [f : Flat R M] 
     (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.comp i = LinearMap.id)
-    (f : Flat R M) : Flat R N := by
+    : Flat R N := by
   rw [iff_rTensor_injective] at *
   intro I hI
   have h₁ : Function.Injective (lTensor R i)
@@ -122,15 +122,15 @@ lemma of_retract (R : Type u) (M : Type v) (N : Type w)
 
 /-- A `R`-module isomorphic to a flat `R`-module is flat. -/
 lemma of_iso (R : Type u) (M : Type v) (N : Type w) [CommRing R] [AddCommGroup M] [AddCommGroup N]
-    [Module R M] [Module R N] (e : N ≃ₗ[R] M) (f : Flat R M) : Flat R N := by
+    [Module R M] [Module R N] [f : Flat R M] (e : N ≃ₗ[R] M)  : Flat R N := by
   have h : e.symm.toLinearMap.comp e.toLinearMap = LinearMap.id := by simp
-  exact of_retract _ _ _ e.toLinearMap e.symm.toLinearMap h f
+  exact of_retract _ _ _ e.toLinearMap e.symm.toLinearMap h
 
 open DirectSum
 
 /-- A direct sum of flat `R`-modules is flat. -/
-lemma directSum (R : Type u) [CommRing R] (ι : Type v) (M : ι → Type w)
-    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] (F : (i : ι) → (Flat R (M i))) :
+instance directSum (R : Type u) [CommRing R] (ι : Type v) (M : ι → Type w)
+    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))]:
     Flat R (⨁ i, M i) := by
   classical
   rw [iff_rTensor_injective]
@@ -174,11 +174,11 @@ lemma directSum (R : Type u) [CommRing R] (ι : Type v) (M : ι → Type w)
 instance finsupp (R : Type u) [CommRing R] (ι : Type v) :
     Flat R (ι →₀ R) :=
   let _ := Classical.decEq ι
-  of_iso R _ _ (finsuppLEquivDirectSum R R ι) (directSum R ι _ (fun _ ↦ (self R)))
+  of_iso R _ _ (finsuppLEquivDirectSum R R ι)
 
 instance of_free (R : Type) [CommRing R] (M: Type w)
     [AddCommGroup M] [Module R M] [Free R M] : Flat R M :=
-  of_iso R _ _ (Free.repr R M) (finsupp R _ )
+  of_iso R _ _ (Free.repr R M)
 
 /-- A projective module with a discrete type of generator is flat -/
 lemma of_projective_surj (R : Type u) [CommRing R] (ι : Type v) [DecidableEq ι] (M : Type w)
@@ -186,13 +186,13 @@ lemma of_projective_surj (R : Type u) [CommRing R] (ι : Type v) [DecidableEq ι
     Flat R M := by
   have h := Module.projective_lifting_property p (LinearMap.id) hp
   cases h with
-    | _ e he => exact of_retract R _ _ _ _ he (finsupp R _)
+    | _ e he => exact of_retract R _ _ _ _ he
 
 instance of_projective (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M]
     [Module R M] [h : Projective R M] : Flat R M := by
   rw [Module.projective_def'] at h
   cases h with
-    | _ e he => exact of_retract R _ _ _ _ he (@finsupp R _ (dec_ι := Classical.decEq _))
+    | _ e he => exact of_retract R _ _ _ _ he
 
 end Flat
 
