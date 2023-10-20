@@ -390,8 +390,8 @@ theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
 theorem count_prod {S : Finset (FractionalIdeal R⁰ K)} (hS : ∀ I ∈ S, I ≠ 0) :
     count K v (∏ I in S, I) = ∑ I in S, (count K v I) := by
   induction' S using Finset.induction with i S hi hrec
-  . rw [Finset.prod_empty, Finset.sum_empty, count_one]
-  . have hS' : ∀ (I : FractionalIdeal R⁰ K), I ∈ S → I ≠ 0 := fun I hI =>
+  ·  rw [Finset.prod_empty, Finset.sum_empty, count_one]
+  · have hS' : ∀ (I : FractionalIdeal R⁰ K), I ∈ S → I ≠ 0 := fun I hI =>
       hS I (Finset.mem_insert_of_mem hI)
     have hS0 : ∏ x in S, x ≠ 0 := Finset.prod_ne_zero_iff.mpr hS'
     have hi0 : i ≠ 0 := hS i (Finset.mem_insert_self i S)
@@ -480,8 +480,8 @@ theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
 theorem count_maximal (w : HeightOneSpectrum R) :
     count K v (w.asIdeal : FractionalIdeal R⁰ K) = if w = v then 1 else 0 := by
   split_ifs with h
-  . rw [h, count_self]
-  . exact count_maximal_coprime K v h
+  · rw [h, count_self]
+  · exact count_maximal_coprime K v h
 
 /-- `val_v(∏_{w ≠ v} w^{exps w}) = 0`. -/
 theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
