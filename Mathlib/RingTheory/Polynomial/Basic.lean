@@ -1229,9 +1229,9 @@ See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
 noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
     Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
   set G := { g : D[X] // g.Monic ∧ g ∣ f }
-  let y : Associates $ D[X] := Associates.mk f
+  let y : Associates D[X] := Associates.mk f
   have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
-  let H := { x : Associates $ D[X] // x ∣ y }
+  let H := { x : Associates D[X] // x ∣ y }
   let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
   let i : G → H := fun x => ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
   have hinj : Function.Injective i := fun x y heq => by
