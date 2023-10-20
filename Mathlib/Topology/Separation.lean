@@ -1724,6 +1724,26 @@ instance {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)] [∀ 
 
 end RegularSpace
 
+section ClosableCompactSubsetOpenSpace
+
+/-- A class of topological spaces in which, given a compact set included inside an open set, there
+exists a closed set inbetween. Satisfied notably for T2 spaces and regular spaces, and useful
+when discussing classes of regular measures. -/
+class ClosableCompactSubsetOpenSpace (α : Type*) [TopologicalSpace α] : Prop :=
+  closableCompactSubsetOpen : ∀ (K U : Set α), IsCompact K → IsOpen U → K ⊆ U →
+    ∃ L, IsClosed L ∧ K ⊆ L ∧ L ⊆ U
+
+export ClosableCompactSubsetOpenSpace (closableCompactSubsetOpen)
+
+instance [T2Space α] : ClosableCompactSubsetOpenSpace α :=
+  ⟨fun K _U K_comp _U_open KU ↦ ⟨K, K_comp.isClosed, Subset.rfl, KU⟩⟩
+
+instance [RegularSpace α] : ClosableCompactSubsetOpenSpace α :=
+  ⟨fun K _U K_comp U_open KU ↦
+    ⟨closure K, isClosed_closure, subset_closure, K_comp.closure_subset_of_isOpen U_open KU⟩⟩
+
+end ClosableCompactSubsetOpenSpace
+
 section T3
 
 /-- A T₃ space is a T₀ space which is a regular space. Any T₃ space is a T₁ space, a T₂ space, and
