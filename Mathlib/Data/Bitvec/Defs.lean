@@ -94,7 +94,7 @@ def ofLEList (bs : List Bool) : BitVec bs.length :=
 
 /--
   Convert a list of booleans to a bitvector, using big-endian bit order.
-  That is, we take the head of the list to be the least significant bit
+  That is, we take the head of the list to be the most significant bit
 -/
 def ofBEList (bs : List Bool) : BitVec bs.length :=
   (ofLEList bs.reverse).cast (List.length_reverse ..)
