@@ -12,10 +12,10 @@ import Mathlib.Data.Multiset.Pi
 namespace List
 
 namespace Pi
-variable {ι : Type _} [DecidableEq ι] {α : ι → Sort _}
+variable {ι : Type*} [DecidableEq ι] {α : ι → Sort*}
 
-/-- Given `α : ι → Sort _`, `pi.nil α` is the trivial dependent function out of the empty list. -/
-def nil (α : ι → Sort _) : (∀ i ∈ ([] : List ι), α i) :=
+/-- Given `α : ι → Sort*`, `pi.nil α` is the trivial dependent function out of the empty list. -/
+def nil (α : ι → Sort*) : (∀ i ∈ ([] : List ι), α i) :=
   fun.
 
 variable {i : ι} {l : List ι}
@@ -29,49 +29,53 @@ is restricted to `l`.  -/
 def tail (f : ∀ j ∈ (i :: l), α j) : ∀ j ∈ l, α j :=
   fun j hj ↦ f j (mem_cons_of_mem _ hj)
 
-/-- Given `α : ι → Sort _`, a list `l` and a term `i`, as well as a term `a : α i` and a
+variable (i l)
+
+/-- Given `α : ι → Sort*`, a list `l` and a term `i`, as well as a term `a : α i` and a
 function `f` such that `f j : α j` for all `j` in `l`, `Pi.cons a f` is a function `g` such
 that `g k : α k` for all `k` in `i :: l`. -/
 def cons (a : α i) (f : ∀ j ∈ l, α j) : ∀ j ∈ (i :: l), α j :=
-  Multiset.Pi.cons (ι := ι) (m := l) a f
+  Multiset.Pi.cons (ι := ι) l _ a f
 
-lemma cons_def (a : α i) (f : ∀ j ∈ l, α j) : cons a f =
+variable {i l}
+
+lemma cons_def (a : α i) (f : ∀ j ∈ l, α j) : cons _ _ a f =
     fun j hj ↦ if h : j = i then h.symm.rec a else f j <| (mem_cons.1 hj).resolve_left h :=
   rfl
 
 @[simp] lemma _root_.Multiset.Pi.cons_coe {l : List ι} (a : α i) (f : ∀ j ∈ l, α j) :
-    Multiset.Pi.cons (ι := ι) (m := l) a f = cons a f :=
+    Multiset.Pi.cons l _ a f = cons _ _ a f :=
   rfl
 
 @[simp] lemma cons_eta (f : ∀ j ∈ (i :: l), α j) :
-    cons (head f) (tail f) = f :=
+    cons _ _ (head f) (tail f) = f :=
   Multiset.Pi.cons_eta (ι := ι) (m := l) f
 
 lemma cons_map (a : α i) (f : ∀ j ∈ l, α j)
-    {α' : ι → Sort _} (φ : ∀ ⦃j⦄, α j → α' j) :
-    cons (φ a) (fun j hj ↦ φ (f j hj)) = (fun j hj ↦ φ ((cons a f) j hj)) :=
+    {α' : ι → Sort*} (φ : ∀ ⦃j⦄, α j → α' j) :
+    cons _ _ (φ a) (fun j hj ↦ φ (f j hj)) = (fun j hj ↦ φ ((cons _ _ a f) j hj)) :=
   Multiset.Pi.cons_map _ _ _
 
 lemma forall_rel_cons_ext {r : ∀ ⦃i⦄, α i → α i → Prop} {a₁ a₂ : α i} {f₁ f₂ : ∀ j ∈ l, α j}
     (ha : r a₁ a₂) (hf : ∀ (i : ι) (hi : i ∈ l), r (f₁ i hi) (f₂ i hi)) :
-    ∀ j hj, r (cons a₁ f₁ j hj) (cons a₂ f₂ j hj) :=
+    ∀ j hj, r (cons _ _ a₁ f₁ j hj) (cons _ _ a₂ f₂ j hj) :=
   Multiset.Pi.forall_rel_cons_ext (ι := ι) (m := l) ha hf
 
 end Pi
 
-variable {ι : Type _} [DecidableEq ι] {α : ι → Type _}
+variable {ι : Type*} [DecidableEq ι] {α : ι → Type*}
 
 /-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
 def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i)
   |       [],  _ => [List.Pi.nil α]
-  | (i :: l), fs => (fs i).bind (fun b ↦ (pi l fs).map (List.Pi.cons b))
+  | (i :: l), fs => (fs i).bind (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
 
 @[simp] lemma pi_nil (t : ∀ i, List (α i)) :
     pi [] t = [Pi.nil α] :=
   rfl
 
 @[simp] lemma pi_cons (i : ι) (l : List ι) (t : ∀ j, List (α j)) :
-    pi (i :: l) t = ((t i).bind fun b ↦ (pi l t).map <| Pi.cons b) :=
+    pi (i :: l) t = ((t i).bind fun b ↦ (pi l t).map <| Pi.cons _ _ b) :=
   rfl
 
 lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :

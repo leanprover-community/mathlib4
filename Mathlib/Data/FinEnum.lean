@@ -211,7 +211,7 @@ instance (priority := 100) [FinEnum α] : Fintype α where
 end FinEnum
 
 namespace List
-variable {α : Type _} [FinEnum α] {β : α → Type _} [∀ a, FinEnum (β a)]
+variable {α : Type*} [FinEnum α] {β : α → Type*} [∀ a, FinEnum (β a)]
 open FinEnum
 
 theorem mem_pi_toList (xs : List α)
@@ -220,7 +220,7 @@ theorem mem_pi_toList (xs : List α)
 #align fin_enum.mem_pi List.mem_pi_toList
 
 /-- enumerate all functions whose domain and range are finitely enumerable -/
-def Pi.enum (β : α → Type _) [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
+def Pi.enum (β : α → Type*) [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
   (pi (toList α) fun x => toList (β x)).map (fun f x => f x (mem_toList _))
 #align fin_enum.pi.enum List.Pi.enum
 
