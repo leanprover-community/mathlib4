@@ -258,14 +258,14 @@ variable [Preadditive C] [Preadditive D] (S : ShortComplex C)
 lemma exact_iff_mono [HasZeroObject C] (hf : S.f = 0) :
     S.Exact ↔ Mono S.g := by
   constructor
-  . intro h
+  · intro h
     have := h.hasHomology
     simp only [exact_iff_isZero_homology] at h
     have := S.isIso_pOpcycles hf
     have := mono_of_isZero_kernel' _ S.homologyIsKernel h
     rw [← S.p_fromOpcycles]
     apply mono_comp
-  . intro
+  · intro
     rw [(HomologyData.ofIsLimitKernelFork S hf _
       (KernelFork.IsLimit.ofMonoOfIsZero (KernelFork.ofι (0 : 0 ⟶ S.X₂) zero_comp)
         inferInstance (isZero_zero C))).exact_iff]
@@ -274,14 +274,14 @@ lemma exact_iff_mono [HasZeroObject C] (hf : S.f = 0) :
 lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
     S.Exact ↔ Epi S.f := by
   constructor
-  . intro h
+  · intro h
     have := h.hasHomology
     simp only [exact_iff_isZero_homology] at h
     haveI := S.isIso_iCycles hg
     haveI : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
     rw [← S.toCycles_i]
     apply epi_comp
-  . intro
+  · intro
     rw [(HomologyData.ofIsColimitCokernelCofork S hg _
       (CokernelCofork.IsColimit.ofEpiOfIsZero (CokernelCofork.ofπ (0 : S.X₂ ⟶ 0) comp_zero)
         inferInstance (isZero_zero C))).exact_iff]
@@ -310,18 +310,18 @@ lemma Exact.mono_fromOpcycles (hS : S.Exact) [S.HasRightHomology] : Mono S.fromO
 lemma LeftHomologyData.exact_iff_epi_f' [S.HasHomology] (h : LeftHomologyData S) :
     S.Exact ↔ Epi h.f' := by
   constructor
-  . intro hS
+  · intro hS
     exact hS.epi_f' h
-  . intro
+  · intro
     simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_epi h.π, ← cancel_epi h.f',
       comp_id, h.f'_π, comp_zero]
 
 lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData S) :
     S.Exact ↔ Mono h.g' := by
   constructor
-  . intro hS
+  · intro hS
     exact hS.mono_g' h
-  . intro
+  · intro
     simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_mono h.ι, ← cancel_mono h.g',
       id_comp, h.ι_g', zero_comp]
 
@@ -397,10 +397,10 @@ lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
   have eq₂ : S.toCycles = kernel.lift S.g S.f S.zero ≫ S.cyclesIsoKernel.inv := by
     rw [eq₁, assoc, Iso.hom_inv_id, comp_id]
   constructor
-  . intro
+  · intro
     rw [eq₁]
     apply epi_comp
-  . intro
+  · intro
     rw [eq₂]
     apply epi_comp
 
@@ -413,10 +413,10 @@ lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
   have eq₂ : S.fromOpcycles = S.opcyclesIsoCokernel.hom ≫ cokernel.desc S.f S.g S.zero := by
     rw [eq₁, Iso.hom_inv_id_assoc]
   constructor
-  . intro
+  · intro
     rw [eq₁]
     apply mono_comp
-  . intro
+  · intro
     rw [eq₂]
     apply mono_comp
 
