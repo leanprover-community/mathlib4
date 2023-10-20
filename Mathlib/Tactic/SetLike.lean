@@ -14,4 +14,4 @@ This module defines the `SetLike` Aesop rule set which is used by the
 they're declared is imported, so we must put this declaration into its own file.
 -/
 
-declare_aesop_rule_sets [SetLike]
+declare_aesop_rule_sets [SetLike] (default := true)
