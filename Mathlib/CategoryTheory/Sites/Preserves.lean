@@ -67,26 +67,139 @@ instance {α : Type w} {X : α → C} {B : C} (π : (a : α) → X a ⟶ B)
   Presieve.hasPullbacks.has_pullbacks (Presieve.ofArrows.mk _) (Presieve.ofArrows.mk _)
 -- TODO: move
 
-variable {α : Type} [UnivLE.{w, (max u v)}] {X : α → C} [HasCoproduct X]
+variable [UnivLE.{w, (max u v)}] {α : Type} {X : α → C} [HasCoproduct X]
     [(Presieve.ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
     (hd : ∀ i j, i ≠ j → IsInitial (pullback (Sigma.ι X i) (Sigma.ι X j)))
     [∀ i, Mono (Sigma.ι X i)]
 -- `α` should be `Type w`
 
+variable (X)
+
 /-- The canonical map from `Equalizer.FirstObj` to a product indexed by `α` -/
 noncomputable
-def prod_map {B : C} (π : (a : α) → X a ⟶ B) (F : Cᵒᵖ ⥤ Type max u v) :
-    (∏ fun (f : (Σ(Y : C), { f : Y ⟶ B // Presieve.ofArrows X π f })) => F.obj (op f.fst)) ⟶
-    ∏ fun a => F.obj (op (X a)) :=
-  Pi.lift (fun a => Pi.π (fun (f : (Σ(Y : C), { f : Y ⟶ B // Presieve.ofArrows X π f })) =>
-    F.obj (op f.fst)) ⟨X a, π a, Presieve.ofArrows.mk a⟩)
+def prod_map (F : Cᵒᵖ ⥤ Type (max u v)) :
+    (∏ fun (f : (Σ(Y : C), { f : Y ⟶ ∐ X // Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f })) ↦
+    F.obj (op f.fst)) ⟶ ∏ fun a ↦ F.obj (op (X a)) :=
+  Pi.map' (fun a ↦ ⟨X a, (fun i ↦ Sigma.ι X i) a, Presieve.ofArrows.mk a⟩) (fun _ ↦ 𝟙 _)
+
+noncomputable
+def prod_map₂ : (∏ fun a ↦ F.obj (op (X a))) ⟶
+    ∏ fun (a : {i : α // ¬ (Nonempty (IsInitial (X i))) }) ↦ F.obj (op (X a.val)) :=
+  Pi.map' (fun a ↦ a.val) fun _ ↦ 𝟙 _
+
+noncomputable
+def prod_map₃ : (∏ fun (f :
+    (Σ(Y : C), { f : Y ⟶ ∐ X // Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f })) ↦
+    F.obj (op f.fst)) ⟶ ∏ fun (f : {g : Σ(Y : C), { f : Y ⟶ ∐ X //
+    Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f } // ¬ (Nonempty (IsInitial g.fst)) }) ↦
+    F.obj (op f.val.fst) :=
+  Pi.map' (fun a ↦ a.val) fun _ ↦ 𝟙 _
+
+lemma sigma_surjective :
+    Function.Surjective (fun a ↦ ⟨⟨X a.val, Sigma.ι X a.val, Presieve.ofArrows.mk a.val⟩, a.prop⟩ :
+    {i : α // ¬ (Nonempty (IsInitial (X i))) } → {g : Σ(Y : C), { f : Y ⟶ ∐ X //
+    Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f } // ¬ (Nonempty (IsInitial g.fst)) }) :=
+  fun ⟨⟨_, _, hg⟩, prop⟩ ↦ by cases' hg with i; exact ⟨⟨i, prop⟩, rfl⟩
+
+lemma eq_comp_of_heq {X Y Z W : C} (h : Y = Z) (f : Y ⟶ W) (g : Z ⟶ W) (i : X ⟶ Y) (j : X ⟶ Z)
+    (hfg : HEq f g) (hij : i = j ≫ eqToHom h.symm) : i ≫ f = j ≫ g := by
+  cases h; cases hfg; cases hij; simp only [eqToHom_refl, Category.comp_id]
+
+lemma sigma_injective :
+    Function.Injective (fun a ↦ ⟨⟨X a.val, Sigma.ι X a.val, Presieve.ofArrows.mk a.val⟩, a.prop⟩ :
+    {i : α // ¬ (Nonempty (IsInitial (X i))) } → {g : Σ(Y : C), { f : Y ⟶ ∐ X //
+    Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f } // ¬ (Nonempty (IsInitial g.fst)) }) := by
+  intro a b h
+  simp only [Subtype.mk.injEq, Sigma.mk.inj_iff] at h
+  ext
+  by_contra hh
+  specialize hd _ _ hh
+  apply a.prop
+  constructor
+  refine IsInitial.ofIso hd ⟨pullback.fst, pullback.lift (𝟙 _) (eqToHom h.1) ?_, ?_, ?_⟩
+  · refine eq_comp_of_heq h.1 (Sigma.ι X a.val) (Sigma.ι X b.val) (𝟙 _) (eqToHom h.1) ?_ ?_
+    · rw [Subtype.heq_iff_coe_heq ?_ ?_] at h
+      · exact h.2
+      · rw [h.1]
+      · rw [h.1]
+    · simp
+  · exact IsInitial.hom_ext hd _ _
+  · simp
+
+noncomputable
+def prod_iso₄ : (∏ fun (f : {g : Σ(Y : C), { f : Y ⟶ ∐ X //
+    Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f } // ¬ (Nonempty (IsInitial g.fst)) }) ↦
+    F.obj (op f.val.fst)) ≅
+    ∏ fun (a : {i : α // ¬ (Nonempty (IsInitial (X i))) }) ↦ F.obj (op (X a.val)) :=
+  (Pi.whiskerEquiv (Equiv.ofBijective _ ⟨sigma_injective X hd, (sigma_surjective X)⟩)
+    (fun _ ↦ Iso.refl _)).symm
+
+lemma prod_map_comp : prod_map X F ≫ prod_map₂ F X = prod_map₃ F X ≫ (prod_iso₄ F X hd).hom := by
+  ext; simp [prod_map, prod_map₂, prod_map₃, prod_iso₄, Pi.map']
+
+instance iso_prod_map_aux {β : Type w} {Z : β → Type (max w (max u v))} (p : β → Prop)
+    [∀ b, Decidable (p b)] (h : ∀ b, p b → Nonempty (Unique (Z b))) :
+    IsIso (Pi.map' (fun a ↦ a.val) fun _ ↦ 𝟙 _ :
+    (∏ Z) ⟶ ∏ fun (b : {a : β // ¬ (p a)}) ↦ Z b.val) := by
+  rw [isIso_iff_bijective]
+  refine ⟨?_, ?_⟩
+  · intro a b hab
+    ext ⟨j⟩
+    simp only [Pi.map', Category.comp_id] at hab
+    simp only [Discrete.functor_obj]
+    by_cases hj : p j
+    · obtain ⟨hj'⟩ := h j hj
+      replace hj' := hj'.instSubsingleton
+      exact hj'.allEq  _ _
+    · apply_fun Pi.π (fun (b : {a : β // ¬ (p a)}) ↦ Z b.val) ⟨j, hj⟩ at hab
+      simp only [Types.pi_lift_π_apply] at hab
+      exact hab
+  · intro a
+    let i : ∀ (γ : Type w) (Y : γ → Type (max w (max u v))), ∏ Y ≅ (x : γ) → Y x :=
+      fun γ Y ↦ Types.productIso.{w, (max u v)} _
+    haveI : ∀ b, p b → Inhabited (Z b) := fun b hb ↦ (h b hb).some.instInhabited
+    let a' : (b : β) → Z b := fun b ↦ if hb : p b then @default _ (this b hb)
+      else (i {a : β // ¬ (p a)} (fun c ↦ Z c.val)).hom a ⟨b, hb⟩
+    use (i _ Z).inv a'
+    apply_fun (i {a : β // ¬ (p a)} (fun c ↦ Z c.val)).hom using injective_of_mono _
+    ext j
+    simp only [Types.productIso_hom_comp_eval_apply]
+    rw [← types_comp_apply (g := Pi.π _ _)]
+    simp only [Pi.map'_comp_π]
+    simp only [types_comp_apply, types_id_apply]
+    rw [← types_comp_apply (g := Pi.π _ _)]
+    simp only [Types.productIso_inv_comp_π]
+    exact dif_neg j.prop
+
+open Classical in
+instance is_iso₂ : IsIso (prod_map₂ F X) :=
+  let _ := preservesTerminalOfIsSheafForEmpty F hF
+  iso_prod_map_aux.{v, u, 0} (fun b ↦ Nonempty (IsInitial (X b))) fun b ⟨hb⟩ ↦
+    ⟨(Types.isTerminalEquivUnique _) <|
+    IsTerminal.isTerminalObj F (op (X b)) (terminalOpOfInitial hb )⟩
+
+open Classical in
+instance is_iso₃ : IsIso (prod_map₃ F X) :=
+  let _ := preservesTerminalOfIsSheafForEmpty F hF
+  iso_prod_map_aux.{v, u, max u v} (fun (g : Σ(Y : C),
+    { f : Y ⟶ ∐ X // Presieve.ofArrows X (fun i ↦ Sigma.ι X i) f }) ↦ Nonempty (IsInitial g.fst))
+    fun b ⟨hb⟩ ↦ ⟨(Types.isTerminalEquivUnique _) <|
+    IsTerminal.isTerminalObj F (op b.fst) (terminalOpOfInitial hb )⟩
+
+instance iso_prod_map : IsIso (prod_map X F) := by
+  haveI := is_iso₂ F hF X
+  haveI : IsIso (prod_map X F ≫ prod_map₂ F X) := by
+    rw [prod_map_comp F X hd]
+    haveI := is_iso₃ F hF X
+    exact IsIso.comp_isIso
+  exact IsIso.of_isIso_comp_right (prod_map X F) (prod_map₂ F X)
 
 lemma one : F.map (opCoproductIsoProduct X).inv ≫
-    Equalizer.forkMap F (Presieve.ofArrows X (fun j ↦ Sigma.ι X j)) ≫ prod_map _ F =
+    Equalizer.forkMap F (Presieve.ofArrows X (fun j ↦ Sigma.ι X j)) ≫ prod_map X F =
     piComparison F (fun z ↦ op (X z)) := by
   have : (Equalizer.forkMap F (Presieve.ofArrows X (fun j ↦ Sigma.ι X j)) ≫
-      prod_map (fun j ↦ Sigma.ι X j) F) = Pi.lift (fun j ↦ F.map ((fun j ↦ Sigma.ι X j) j).op) := by
-    ext; simp [prod_map, Equalizer.forkMap]
+      prod_map X F) = Pi.lift (fun j ↦ F.map ((fun j ↦ Sigma.ι X j) j).op) := by
+    ext; simp [prod_map, Pi.map', Equalizer.forkMap]
   rw [this]
   have t : Pi.lift (fun j ↦ Pi.π (fun a ↦ (op (X a))) j) = 𝟙 _ := by ext; simp -- why not just simp?
   have hh : (fun j ↦ (opCoproductIsoProduct X).inv ≫ (Sigma.ι X j).op) =
@@ -130,38 +243,7 @@ lemma two : Equalizer.Presieve.firstMap F (Presieve.ofArrows X (fun j ↦ Sigma.
       injective_of_mono _
     simp
 
-lemma sigma_surjective {B : C} (π : (a : α) → X a ⟶ B) :
-    Function.Surjective (fun a ↦ ⟨X a, π a, Presieve.ofArrows.mk a⟩ :
-    α → Σ(Y : C), { f : Y ⟶ B // Presieve.ofArrows X π f }) :=
-  fun ⟨_, ⟨_, hf⟩⟩ ↦ by cases' hf with a _; exact ⟨a, rfl⟩
-
-lemma prod_map_inj : Function.Injective (prod_map (fun j ↦ Sigma.ι X j) F) := by
-  intro a b h
-  ext ⟨f⟩
-  obtain ⟨c, hc⟩ := sigma_surjective (fun j ↦ Sigma.ι X j) f
-  subst hc
-  apply_fun Pi.π (fun i ↦ F.obj (op (X i))) c at h
-  simp only [prod_map, Types.pi_lift_π_apply] at h
-  exact h
-
 variable (hF' : (Presieve.ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F)
-
-lemma map_eq {B : C} (π : (a : α) → X a ⟶ B)
-    (f : Σ(Y : C), { f : Y ⟶ B // Presieve.ofArrows X π f }) :
-    ∃ i, f.fst = X i := by
-  obtain ⟨Y, g, h⟩ := f
-  cases' h with i
-  exact ⟨i, rfl⟩
-
-variable (X) in
-lemma sigma_injective : Function.Injective
-  ((fun a ↦ ⟨X a.val, Sigma.ι X a.val, Presieve.ofArrows.mk a.val⟩) :
-   {a : α // ∀ b, X a = X b → a = b} →
-    Σ(Y : C), {f : Y ⟶ ∐ X // (Presieve.ofArrows X (fun i ↦ Sigma.ι X i)) f}) := by
-  intro a b h
-  simp only [Sigma.mk.inj_iff] at h
-  ext
-  exact a.prop b h.1
 
 noncomputable
 instance : PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
@@ -170,19 +252,5 @@ instance : PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance (@IsIso.comp_isIso _ _ _ _ _ _ _ ?_ ?_)
   · rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
     rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-    exact fun b ↦ hF' b (congr_fun (two F hF hd) b)
-  · rw [isIso_iff_bijective]
-    refine ⟨prod_map_inj _, ?_⟩
-    intro a
-    dsimp at a
-    let i : ∏ (fun x ↦ F.obj (op (X x))) ≅ (x : α) → F.obj (op (X x)) := Types.productIso _
-    let b : (f : Σ(Y : C), {f : Y ⟶ ∐ X // (Presieve.ofArrows X (fun i ↦ Sigma.ι X i)) f}) →
-        F.obj (op f.fst) := by
-      intro f
-      rw [(map_eq (fun j ↦ Sigma.ι X j) f).choose_spec]
-      exact i.hom a (map_eq (fun j ↦ Sigma.ι X j) f).choose
-    use (Types.productIso.{max u v, v} _).inv b
-    simp only [prod_map, eq_mpr_eq_cast, Types.productIso_hom_comp_eval_apply]
-    ext ⟨j⟩
-    simp only [Discrete.functor_obj, Pi.lift, Types.pi_lift_π_apply, Pi.π]
-    sorry
+    exact fun b ↦ hF' b (congr_fun (two F hF X hd) b)
+  · exact iso_prod_map F hF X hd
