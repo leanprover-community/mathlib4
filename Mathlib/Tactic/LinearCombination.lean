@@ -146,6 +146,10 @@ to get subgoals from `linear_combination` or with `skip` to disable normalizatio
 -/
 syntax normStx := atomic(" (" &"norm" " := ") withoutPosition(tactic) ")"
 
+/--
+The `(exp := n)` syntax for `linear_combination` says to take the goal to the `n`th power before
+subtracting the given combination of hypotheses.
+-/
 syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
 
 /--
@@ -172,6 +176,10 @@ Note: The left and right sides of all the equalities should have the same
   * To get a subgoal in the case that it is not immediately provable, use
     `ring_nf` as the normalization tactic.
   * To avoid normalization entirely, use `skip` as the normalization tactic.
+* `linear_combination (exp := n) e` will take the goal to the `n`th power before subtracting the
+  combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination (exp := n) e`
+  will change the goal to `(t1 - t2)^n = 0` before proceeding as above.
+  This feature is not supported for `linear_combination2`.
 * `linear_combination2 e` is the same as `linear_combination e` but it produces two
   subgoals instead of one: rather than proving that `(a - b) - (a' - b') = 0` where
   `a' = b'` is the linear combination from `e` and `a = b` is the goal,
