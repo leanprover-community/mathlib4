@@ -325,8 +325,8 @@ class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
   extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
-attribute [instance 150] CanonicallyLinearOrderedAddCommMonoid.toCanonicallyOrderedAddMonoid
-attribute [instance 100] CanonicallyLinearOrderedAddCommMonoid.toLinearOrder
+attribute [instance 150] CanonicallyLinearOrderedAddCommMonoid.toCanonicallyOrderedAddCommMonoid
+attribute [instance 100] CanonicallyLinearOrderedAddCommMonoid.toLinearOrderedAddCommMonoid
 attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMin
 attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMax
 attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toOrd
@@ -338,11 +338,13 @@ class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
 
-attribute [instance 150] CanonicallyLinearOrderedCommMonoid.toCanonicallyOrderedMonoid
-attribute [instance 100] CanonicallyLinearOrderedCommMonoid.toLinearOrder
+attribute [instance 150] CanonicallyLinearOrderedCommMonoid.toCanonicallyOrderedCommMonoid
+attribute [instance 100] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMin
 attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMax
 attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toOrd
+
+attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 
 section CanonicallyLinearOrderedCommMonoid
 
