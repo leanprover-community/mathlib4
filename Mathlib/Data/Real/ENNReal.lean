@@ -352,6 +352,14 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 @[simp, norm_cast] theorem coe_lt_coe : (↑r : ℝ≥0∞) < ↑q ↔ r < q := WithTop.coe_lt_coe
 #align ennreal.coe_lt_coe ENNReal.coe_lt_coe
 
+-- Needed until `@[gcongr]` accepts iff statements
+alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
+attribute [gcongr] ENNReal.coe_le_coe_of_le
+
+-- Needed until `@[gcongr]` accepts iff statements
+alias ⟨_, coe_lt_coe_of_le⟩ := coe_lt_coe
+attribute [gcongr] ENNReal.coe_lt_coe_of_le
+
 theorem coe_mono : Monotone some := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
 

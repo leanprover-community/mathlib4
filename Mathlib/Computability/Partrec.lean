@@ -568,7 +568,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
     fun n => by
     cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
     congr; funext n
-    simp [Part.map_map, (· ∘ ·)]
+    simp only [map_map, Function.comp]
     refine map_id' (fun b => ?_) _
     cases b <;> rfl
 #align partrec.rfind Partrec.rfind
@@ -607,7 +607,7 @@ theorem vector_mOfFn :
       (∀ i, Partrec (f i)) → Partrec fun a : α => Vector.mOfFn fun i => f i a
   | 0, _, _ => const _
   | n + 1, f, hf => by
-    simp [Vector.mOfFn]
+    simp only [Vector.mOfFn, Nat.add_eq, Nat.add_zero, pure_eq_some, bind_eq_bind]
     exact
       (hf 0).bind
         (Partrec.bind ((vector_mOfFn fun i => hf i.succ).comp fst)
@@ -744,7 +744,7 @@ theorem list_ofFn :
       (∀ i, Computable (f i)) → Computable fun a => List.ofFn fun i => f i a
   | 0, _, _ => const []
   | n + 1, f, hf => by
-    simp [List.ofFn_succ]
+    simp only [List.ofFn_succ]
     exact list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
 #align computable.list_of_fn Computable.list_ofFn
 

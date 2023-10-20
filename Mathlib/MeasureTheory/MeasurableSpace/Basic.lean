@@ -408,10 +408,14 @@ instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
 instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
 #align rat.measurable_space Rat.instMeasurableSpace
 
-instance Empty.instMeasurableSingletonClass : MeasurableSingletonClass Empty := ⟨fun _ => trivial⟩
-#align empty.measurable_singleton_class Empty.instMeasurableSingletonClass
-instance PUnit.instMeasurableSingletonClass : MeasurableSingletonClass PUnit := ⟨fun _ => trivial⟩
-#align punit.measurable_singleton_class PUnit.instMeasurableSingletonClass
+instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
+    MeasurableSingletonClass α := by
+  refine' ⟨fun i => _⟩
+  convert MeasurableSet.univ
+  simp [Set.eq_univ_iff_forall]
+#noalign empty.measurable_singleton_class
+#noalign punit.measurable_singleton_class
+
 instance Bool.instMeasurableSingletonClass : MeasurableSingletonClass Bool := ⟨fun _ => trivial⟩
 #align bool.measurable_singleton_class Bool.instMeasurableSingletonClass
 instance Prop.instMeasurableSingletonClass : MeasurableSingletonClass Prop := ⟨fun _ => trivial⟩
@@ -610,6 +614,11 @@ theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable
   hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
 #align measurable.subtype_mk Measurable.subtype_mk
 
+@[measurability]
+protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
+    Measurable (rangeFactorization f) :=
+  hf.subtype_mk
+
 theorem Measurable.subtype_map {f : α → β} {p : α → Prop} {q : β → Prop} (hf : Measurable f)
     (hpq : ∀ x, p x → q (f x)) : Measurable (Subtype.map f hpq) :=
   (hf.comp measurable_subtype_coe).subtype_mk
@@ -630,13 +639,16 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
     MeasurableSet (inclusion h '' u) :=
   (measurable_subtype_coe hs).image_inclusion' h hu
 
+theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
+    (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
+  convert (hs.subtype_image hsu).union (ht.subtype_image htu)
+  simp [image_preimage_eq_inter_range, ← inter_distrib_left, univ_subset_iff.1 h]
+
 theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs : MeasurableSet s)
     (ht : MeasurableSet t) (h : univ ⊆ s ∪ t) (hc : Measurable fun a : s => f a)
-    (hd : Measurable fun a : t => f a) : Measurable f := fun u hu => by
-  convert (hs.subtype_image (hc hu)).union (ht.subtype_image (hd hu))
-  change f ⁻¹' u = (↑) '' ((↑) ⁻¹' (f ⁻¹' u) : Set s) ∪ (↑) '' ((↑) ⁻¹' (f ⁻¹' u) : Set t)
-  rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, Subtype.range_coe,
-    Subtype.range_coe, ← inter_distrib_left, univ_subset_iff.1 h, inter_univ]
+    (hd : Measurable fun a : t => f a) : Measurable f := fun _u hu =>
+  .of_union_cover hs ht h (hc hu) (hd hu)
 #align measurable_of_measurable_union_cover measurable_of_measurable_union_cover
 
 theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (hs : MeasurableSet s)
@@ -897,16 +909,45 @@ theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fu
   measurable_pi_iff.mpr hf
 #align measurable_pi_lambda measurable_pi_lambda
 
+/-- The function `(f, x) ↦ update f a x : (Π a, π a) × π a → Π a, π a` is measurable. -/
+theorem measurable_update'  {a : δ} [DecidableEq δ] :
+    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
+  rw [measurable_pi_iff]
+  intro j
+  dsimp [update]
+  split_ifs with h
+  · subst h
+    dsimp
+    exact measurable_snd
+  · exact measurable_pi_iff.1 measurable_fst _
+
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
 @[measurability]
-theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) := by
-  refine measurable_pi_lambda _ fun x => ?_
-  rcases eq_or_ne x a with (rfl | hx)
-  · simpa only [update_same] using measurable_id
-  · simpa only [update_noteq hx] using measurable_const
+theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
+  measurable_update'.comp measurable_prod_mk_left
 #align measurable_update measurable_update
+
+theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
+    Measurable (update · a x) :=
+  measurable_update'.comp measurable_prod_mk_right
+
+variable (π) in
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
+  cases h
+  exact measurable_id
+
+variable (π) in
+theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → π i}
+    (hf : Measurable f) : Measurable fun x => (congr_arg π h).mp (f x) :=
+  (measurable_eq_mp π h).comp hf
+
+theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (piCongrLeft π f) := by
+  rw [measurable_pi_iff]
+  intro i
+  simp_rw [piCongrLeft_apply_eq_cast]
+  exact Measurable.eq_mp π (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
 
 /- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
   lemmas, like `MeasurableSet.prod`. -/
@@ -1564,6 +1605,18 @@ def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π
     measurable_pi_lambda _ fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
 #align measurable_equiv.Pi_congr_right MeasurableEquiv.piCongrRight
 
+variable (π) in
+/-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
+def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
+  refine' { Equiv.piCongrLeft π f with .. }
+  · exact measurable_piCongrLeft f
+  simp only [invFun_as_coe, coe_fn_symm_mk]
+  rw [measurable_pi_iff]
+  exact fun i => measurable_pi_apply (f i)
+
+theorem coe_piCongrLeft (f : δ ≃ δ') :
+    ⇑MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
+
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := { fullyApplied := false })]
 def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h : ∀ i, i ∈ l) :
@@ -1620,6 +1673,23 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
   measurable_toFun := measurable_piEquivPiSubtypeProd π p
   measurable_invFun := measurable_piEquivPiSubtypeProd_symm π p
 #align measurable_equiv.pi_equiv_pi_subtype_prod MeasurableEquiv.piEquivPiSubtypeProd
+
+/-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
+This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
+def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
+    (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
+  refine' { Equiv.sumPiEquivProdPi α with .. }
+  · refine Measurable.prod ?_ ?_ <;>
+      rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
+  · rw [measurable_pi_iff]; rintro (i|i)
+    exact measurable_pi_iff.1 measurable_fst _
+    exact measurable_pi_iff.1 measurable_snd _
+
+theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
+    ⇑MeasurableEquiv.sumPiEquivProdPi α = Equiv.sumPiEquivProdPi α := by rfl
+
+theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
+    ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
 to the sum of `s` and `sᶜ`.-/
@@ -1798,6 +1868,10 @@ theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @Countab
   rcases h₁ with ⟨⟨b₁, hb₁c, rfl⟩⟩
   rcases h₂ with ⟨⟨b₂, hb₂c, rfl⟩⟩
   exact @mk _ (_ ⊔ _) ⟨_, hb₁c.union hb₂c, generateFrom_sup_generateFrom⟩
+
+instance (priority := 100) [MeasurableSpace α] [Finite α] : CountablyGenerated α where
+  isCountablyGenerated :=
+    ⟨{s | MeasurableSet s}, Set.to_countable _, generateFrom_measurableSet.symm⟩
 
 instance [MeasurableSpace α] [CountablyGenerated α] {p : α → Prop} :
     CountablyGenerated { x // p x } := .comap _
