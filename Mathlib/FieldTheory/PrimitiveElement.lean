@@ -280,7 +280,7 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_1
 private lemma finite_intermediateField_of_exists_primitive_element.aux_2
     (α : E) (hprim : F⟮α⟯ = ⊤) (K K' : IntermediateField F E)
     (heq : (minpoly K α).map (algebraMap K E) = (minpoly K' α).map (algebraMap K' E)) :
-    K = K ⊓ K' := by
+    K ≤ K' := by
   set g := (minpoly K α).map (algebraMap K E)
   set K'' := K ⊓ K'
   let p : Polynomial K'' := Finset.sum g.support fun n => C ⟨g.coeff n,
@@ -320,7 +320,7 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_2
     finite_intermediateField_of_exists_primitive_element.aux_1 F E _ hprim K'',
     show finrank K'' (⊤ : IntermediateField K'' E) = finrank K'' E from finrank_top K'' E] at hpdeg
   replace hpdeg : finrank K E ≥ finrank K'' E := by linarith only [hpdeg, Nat.le_add_right]
-  exact (eq_of_le_of_finrank_le' inf_le_left hpdeg).symm
+  exact inf_eq_left.1 (eq_of_le_of_finrank_le' inf_le_left hpdeg)
 
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element
@@ -348,10 +348,9 @@ theorem finite_intermediateField_of_exists_primitive_element
   -- The map `K ↦ g` is injective
   have hinj : Function.Injective g := fun K K' heq => by
     rw [Subtype.mk.injEq] at heq
-    have h := Field.finite_intermediateField_of_exists_primitive_element.aux_2
-      F E α hprim K K' heq
-    rwa [inf_comm, ← Field.finite_intermediateField_of_exists_primitive_element.aux_2
-      F E α hprim K' K heq.symm] at h
+    exact le_antisymm
+      (Field.finite_intermediateField_of_exists_primitive_element.aux_2 F E α hprim K K' heq)
+      (Field.finite_intermediateField_of_exists_primitive_element.aux_2 F E α hprim K' K heq.symm)
   -- Therefore there are only finitely many intermediate fields
   exact Finite.of_injective g hinj
 
