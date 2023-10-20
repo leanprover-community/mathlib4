@@ -396,7 +396,7 @@ theorem count_pow_self (n : ℕ) :
   rw [count_pow, count_self, mul_one]
 
 /-- `val_v(I⁻ⁿ) = -val_v(Iⁿ)` for every `n ∈ ℤ`. -/
-theorem count_inv (n : ℤ) (I : FractionalIdeal R⁰ K) :
+theorem count_neg_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ (-n)) = - count K v (I ^ n) := by
   by_cases hI : I = 0
   · by_cases hn : n = 0
@@ -406,13 +406,17 @@ theorem count_inv (n : ℤ) (I : FractionalIdeal R⁰ K) :
       ← zpow_add₀ hI, neg_add_self, zpow_zero]
     exact count_one K v
 
+theorem count_inv  (I : FractionalIdeal R⁰ K) :
+    count K v (I⁻¹) = - count K v I := by
+  rw [← zpow_neg_one, count_neg_zpow K v (1 : ℤ) I, zpow_one]
+
 /-- `val_v(Iⁿ) = n*val_v(I)` for every `n ∈ ℤ`. -/
 theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
   cases' n with n
   · rw [ofNat_eq_coe, zpow_ofNat]
     exact count_pow K v n I
-  · rw [negSucc_coe, count_inv, zpow_ofNat, count_pow]
+  · rw [negSucc_coe, count_neg_zpow, zpow_ofNat, count_pow]
     ring
 
 /-- `val_v(v^n) = n` for every `n ∈ ℤ`. -/
