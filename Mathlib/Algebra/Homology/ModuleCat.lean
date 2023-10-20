@@ -115,9 +115,13 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
   erw [map_add, CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
     CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
     ModuleCat.toKernelSubobject_arrow, imageToKernel_arrow_apply, imageSubobject_arrow_comp_apply]
-  rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i, LinearMap.add_apply,
-    LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext, comp_apply, comp_apply,
-    x.2, map_zero]
+  rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [LinearMap.add_apply]
+  rw [LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [comp_apply, comp_apply, comp_apply]
+  erw [x.2, map_zero]
   dsimp
   abel-/
 

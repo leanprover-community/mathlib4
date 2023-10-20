@@ -51,10 +51,10 @@ lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
   constructor
   . rintro ⟨T', e', hT'⟩
     exact ⟨T'.rotate, (rotate D).mapIso e' ≪≫ L.mapTriangleRotateIso.app T',
-      rot_of_dist_triangle T' hT'⟩
+      rot_of_distTriang T' hT'⟩
   . rintro ⟨T', e', hT'⟩
     exact ⟨T'.invRotate, (triangleRotation D).unitIso.app T ≪≫ (invRotate D).mapIso e' ≪≫
-      L.mapTriangleInvRotateIso.app T',  inv_rot_of_dist_triangle T' hT'⟩
+      L.mapTriangleInvRotateIso.app T',  inv_rot_of_distTriang T' hT'⟩
 
 end Functor
 

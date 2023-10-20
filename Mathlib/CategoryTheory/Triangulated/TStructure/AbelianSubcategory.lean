@@ -47,12 +47,12 @@ lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 := by
   apply (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
   simp only [Functor.comp_map, Functor.map_comp, shift_ι_map_ιK,
     assoc, Functor.map_zero]
-  erw [comp_dist_triangle_mor_zero₃₁ _ hT, comp_zero]
+  erw [comp_distTriang_mor_zero₃₁ _ hT, comp_zero]
 
 lemma mor₁_πQ : f₁ ≫ πQ f₂ β = 0 := by
   apply ι.map_injective
   simp only [Functor.map_comp, Functor.map_zero, ι_map_πQ]
-  erw [comp_dist_triangle_mor_zero₁₂_assoc _ hT, zero_comp]
+  erw [comp_distTriang_mor_zero₁₂_assoc _ hT, zero_comp]
 
 variable {α β}
 
@@ -183,7 +183,7 @@ noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
     (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (f₃ : ι.obj X₃ ⟶ (ι.obj X₁)⟦(1 : ℤ)⟧)
     (hT : Triangle.mk (ι.map f₁) (ι.map f₂) f₃ ∈ distTriang C) :
     IsLimit (KernelFork.ofι f₁ (show f₁ ≫ f₂ = 0 from ι.map_injective (by
-        erw [Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT, ι.map_zero]))) := by
+        erw [Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, ι.map_zero]))) := by
   have hT' : Triangle.mk (𝟙 ((ι.obj X₁)⟦(1 : ℤ)⟧)) (0 : _ ⟶ ι.obj 0) 0 ∈ distTriang C := by
     refine' isomorphic_distinguished _ (contractible_distinguished
       (((ι ⋙ shiftFunctor C (1 : ℤ)).obj X₁))) _ _
@@ -192,18 +192,18 @@ noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
       rw [IsZero.iff_id_eq_zero, ← ι.map_id, id_zero, ι.map_zero]) (isZero_zero C))
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
   refine' IsLimit.ofIsoLimit (AbelianSubcategory.isLimitKernelFork hι
-    (rot_of_dist_triangle _ hT) hT') _
-  exact Fork.ext (mulIso (-1) (Iso.refl _)) ((ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
+    (rot_of_distTriang _ hT) hT') _
+  exact Fork.ext (-(Iso.refl _)) ((ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
     (by simp))
 
 noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
     (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (f₃ : ι.obj X₃ ⟶ (ι.obj X₁)⟦(1 : ℤ)⟧)
     (hT : Triangle.mk (ι.map f₁) (ι.map f₂) f₃ ∈ distTriang C) :
     IsColimit (CokernelCofork.ofπ f₂ (show f₁ ≫ f₂ = 0 from ι.map_injective (by
-        erw [Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT, ι.map_zero]))) := by
+        erw [Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, ι.map_zero]))) := by
   have hT' : Triangle.mk (0 : ((ι ⋙ shiftFunctor C (1 : ℤ)).obj 0) ⟶ _) (𝟙 (ι.obj X₃)) 0 ∈
       distTriang C := by
-    refine' isomorphic_distinguished _ (inv_rot_of_dist_triangle _ (contractible_distinguished (ι.obj X₃))) _ _
+    refine' isomorphic_distinguished _ (inv_rot_of_distTriang _ (contractible_distinguished (ι.obj X₃))) _ _
     refine' Triangle.isoMk _ _ (IsZero.iso _ _) (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by simp)
     · dsimp
       rw [IsZero.iff_id_eq_zero, ← Functor.map_id, ← Functor.map_id, id_zero,
@@ -245,8 +245,8 @@ noncomputable def abelian : Abelian A := by
   have comm : f₂ ≫ β = ι.map (πQ f₂ β) := by simp
   have := epi_πQ hι hT hT'
   obtain ⟨I, i, δ, hI⟩ := exists_distinguished_triangle_of_epi hι hA (πQ f₂ β)
-  have H := someOctahedron comm (rot_of_dist_triangle _ hT) (rot_of_dist_triangle _ hT')
-    (rot_of_dist_triangle _ hI)
+  have H := someOctahedron comm (rot_of_distTriang _ hT) (rot_of_distTriang _ hT')
+    (rot_of_distTriang _ hI)
   obtain ⟨m₁, hm₁⟩ : ∃ (m₁ : X₁ ⟶ I), (shiftFunctor C (1 : ℤ)).map (ι.map m₁) = H.m₁ :=
     ⟨(ι ⋙ shiftFunctor C (1 : ℤ)).preimage H.m₁, Functor.image_preimage (ι ⋙ _) _⟩
   obtain ⟨m₃ : ι.obj I ⟶ (ι.obj K)⟦(1 : ℤ)⟧, hm₃⟩ :
@@ -255,7 +255,7 @@ noncomputable def abelian : Abelian A := by
   have Hmem' : Triangle.mk (ι.map (ιK f₃ α)) (ι.map m₁) (-m₃) ∈ distTriang C := by
     rw [rotate_distinguished_triangle, ← Triangle.shift_distinguished_iff _ 1]
     refine' isomorphic_distinguished _ H.mem _ _
-    refine' Triangle.isoMk _ _ (mulIso (-1) (Iso.refl _)) (Iso.refl _) (Iso.refl _) _ _ _
+    refine' Triangle.isoMk _ _ (-(Iso.refl _)) (Iso.refl _) (Iso.refl _) _ _ _
     · dsimp
       simp [hm₁]
     · dsimp

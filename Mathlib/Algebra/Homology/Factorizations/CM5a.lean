@@ -182,7 +182,7 @@ lemma homologyMap_comp₁₂_eq_zero_of_distinguished (n : ℤ) :
   rw [← homologyMap_comp]
   apply homologyMap_eq_zero_of_Q_map_eq_zero
   rw [Functor.map_comp]
-  exact Pretriangulated.comp_dist_triangle_mor_zero₁₂ _ hT
+  exact Pretriangulated.comp_distTriang_mor_zero₁₂ _ hT
 
 lemma homology_exact₂_of_distinguished (n : ℤ) :
     (ShortComplex.mk (homologyMap T.mor₁ n) (homologyMap T.mor₂ n)
@@ -196,7 +196,7 @@ lemma homology_exact₂_of_distinguished (n : ℤ) :
 lemma comp_homologyδOfDistinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyMap T.mor₂ n₀ ≫ homologyδOfDistinguished T n₀ n₁ h = 0 := by
   have hT' : DerivedCategory.Q.mapTriangle.obj T.rotate ∈ distTriang _ :=
-    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.rot_of_dist_triangle _ hT) _
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.rot_of_distTriang _ hT) _
       (DerivedCategory.Q.mapTriangleRotateIso.app T).symm
   have eq := homologyMap_comp₁₂_eq_zero_of_distinguished T.rotate hT' n₀
   dsimp at eq
@@ -207,7 +207,7 @@ lemma homology_exact₃_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
     (ShortComplex.mk (homologyMap T.mor₂ n₀) (homologyδOfDistinguished T n₀ n₁ h)
       (comp_homologyδOfDistinguished T hT n₀ n₁ h)).Exact := by
   have hT' : DerivedCategory.Q.mapTriangle.obj T.rotate ∈ distTriang _ :=
-    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.rot_of_dist_triangle _ hT) _
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.rot_of_distTriang _ hT) _
       (DerivedCategory.Q.mapTriangleRotateIso.app T).symm
   refine' ShortComplex.exact_of_iso _ (homology_exact₂_of_distinguished _ hT' n₀)
   refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
@@ -231,7 +231,7 @@ lemma homologyδOfDistinguished_comp (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   -- this vanishing and the exactness
   have := hT
   have hT' : DerivedCategory.Q.mapTriangle.obj T.invRotate ∈ distTriang _ :=
-    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_dist_triangle _ hT) _
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_distTriang _ hT) _
       (DerivedCategory.Q.mapTriangleInvRotateIso.app T).symm
   have eq := homologyMap_comp₁₂_eq_zero_of_distinguished T.invRotate hT' n₁
   dsimp at eq
@@ -257,11 +257,11 @@ lemma homology_exact₁_of_distinguished (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
     (ShortComplex.mk (homologyδOfDistinguished T n₀ n₁ h) (homologyMap T.mor₁ n₁)
       (homologyδOfDistinguished_comp T hT n₀ n₁ h)).Exact := by
   have hT' : DerivedCategory.Q.mapTriangle.obj T.invRotate ∈ distTriang _ :=
-    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_dist_triangle _ hT) _
+    Pretriangulated.isomorphic_distinguished _ (Pretriangulated.inv_rot_of_distTriang _ hT) _
       (DerivedCategory.Q.mapTriangleInvRotateIso.app T).symm
   refine' ShortComplex.exact_of_iso _ (homology_exact₂_of_distinguished _ hT' n₁)
   refine' ShortComplex.isoMk
-    (mulIso (-1) ((((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀ (by linarith)).app T.obj₃))) (Iso.refl _) (Iso.refl _) _ _
+    (-((((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso (-1) n₁ n₀ (by linarith)).app T.obj₃))) (Iso.refl _) (Iso.refl _) _ _
   · dsimp [homologyδOfDistinguished]
     simp only [neg_smul, one_smul, neg_comp, homologyMap_neg, comp_id, neg_inj]
     erw [← NatTrans.naturality_assoc]
@@ -516,7 +516,7 @@ lemma Q_map_triangle_distinguished : DerivedCategory.Q.mapTriangle.obj (triangle
   refine' Pretriangulated.isomorphic_distinguished _ _ _
     ((DerivedCategory.Q.mapTriangle.mapIso (triangleIso f)) ≪≫
       (DerivedCategory.Q.mapTriangleInvRotateIso.app (MappingCone.triangle f)).symm)
-  refine' Pretriangulated.inv_rot_of_dist_triangle _ _
+  refine' Pretriangulated.inv_rot_of_distTriang _ _
   rw [DerivedCategory.mem_distTriang_iff]
   exact ⟨_, _, _, ⟨Iso.refl _⟩⟩
 

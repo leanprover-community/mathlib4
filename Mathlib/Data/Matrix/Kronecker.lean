@@ -427,6 +427,8 @@ open Matrix TensorProduct
 
 section Module
 
+suppress_compilation
+
 variable [CommSemiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
 
 variable [Module R α] [Module R β] [Module R γ]

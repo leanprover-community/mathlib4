@@ -64,7 +64,7 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
         homEquiv_unit, Functor.comp_obj,
         Functor.map_comp, unit_naturality_assoc, right_triangle_components, comp_id] at eq
       rw [eq, assoc, assoc]
-      erw [comp_dist_triangle_mor_zero₁₂ _ mem, comp_zero, comp_zero]
+      erw [comp_distTriang_mor_zero₁₂ _ mem, comp_zero, comp_zero]
     have := isIso_of_yoneda_map_bijective (adj.homEquiv _ _ h) (fun Y => by
       constructor
       · intro φ₁ φ₂ hφ
@@ -76,7 +76,7 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
             dsimp
             simp only [assoc]
             rw [← F.commShiftIso_hom_naturality, ← F.map_comp_assoc,
-              comp_dist_triangle_mor_zero₃₁ _ hT, F.map_zero, zero_comp, comp_zero])
+              comp_distTriang_mor_zero₃₁ _ hT, F.map_zero, zero_comp, comp_zero])
         dsimp at ψ hψ
         obtain ⟨α, hα⟩ : ∃ α, α = φ - ψ ≫ (adj.homEquiv _ _) h := ⟨_, rfl⟩
         have hα₀ : α ≫ F.map T.mor₃ = 0 := by

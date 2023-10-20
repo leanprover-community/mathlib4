@@ -168,9 +168,15 @@ lemma add_left_neg_iff (oper : ObjOperation₂ X) (neg : ObjOperation₁ X) (zer
       ((yonedaEquiv _) oper).add_left_neg ((ObjOperation₁.yonedaEquiv _) neg)
       ((ObjOperation₀.yonedaEquiv _) zero) := by
   apply (ObjOperation₁.yonedaEquiv X).injective.eq_iff''
-  all_goals
   . apply (ObjOperation₁.yonedaEquiv X).symm.injective
+    simp only [Equiv.symm_apply_apply, Types.natTransConcat, yoneda_obj_obj, NatTrans.id_app,
+      types_id_apply]
+    congr
     simp [ObjOperation₁.yonedaEquiv, CategoryTheory.yonedaEquiv]
+    rfl
+  . apply (ObjOperation₁.yonedaEquiv X).symm.injective
+    simp only [Equiv.symm_apply_apply, Types.natTransConcat, yoneda_obj_obj, NatTrans.id_app,
+      types_id_apply]
     rfl
 
 lemma add_left_neg_iff' (oper : Types.functorOperation₂ (yoneda.obj X))
@@ -366,10 +372,14 @@ lemma assoc_iff (oper : ObjOperation₂ X) :
     simp
     rfl
   . apply (ObjOperation₃.yonedaEquiv X).symm.injective
-    dsimp [ObjOperation₃.yonedaEquiv, ObjOperation₃.yonedaEquiv', yonedaEquiv, yonedaEquiv']
-    simp only [← Category.assoc, prod.comp_lift, limit.lift_π, BinaryFan.mk_pt,
-      BinaryFan.π_app_left, BinaryFan.mk_fst, limit.lift_π_assoc, pair_obj_right,
-      BinaryFan.π_app_right, BinaryFan.mk_snd]
+    simp only [Equiv.symm_apply_apply, Types.functorConcat₃, Types.natTransConcat,
+      Types.functorConcat_obj, yoneda_obj_obj, Types.functorPr₃₁_app, Types.functorPr₃₂_app,
+      Types.functorPr₃₃_app, Prod.mk.eta, FunctorToTypes.comp,
+      ObjOperation₃.yonedaEquiv, ObjOperation₃.yonedaEquiv', yonedaEquiv, yonedaEquiv']
+    dsimp
+    dsimp only [FunLike.coe, EquivLike.coe]
+    congr
+    aesop_cat
 
 lemma assoc_iff' (oper : Types.functorOperation₂ (yoneda.obj X)) :
     oper.assoc ↔ ((yonedaEquiv _).symm oper).assoc := by

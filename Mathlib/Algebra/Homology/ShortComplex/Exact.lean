@@ -153,10 +153,19 @@ lemma exact_iff_iCycles_pOpcycles_zero [S.HasHomology] :
 lemma exact_iff_kernel_ι_comp_cokernel_π_zero [S.HasHomology]
     [HasKernel S.g] [HasCokernel S.f] :
     S.Exact ↔ kernel.ι S.g ≫ cokernel.π S.f = 0 := by
-  haveI : HasCokernel _ := HasLeftHomology.hasCokernel S
-  haveI : HasKernel _ := HasRightHomology.hasKernel S
+  haveI := HasLeftHomology.hasCokernel S
+  haveI := HasRightHomology.hasKernel S
   exact S.exact_iff_i_p_zero (LeftHomologyData.ofHasKernelOfHasCokernel S)
     (RightHomologyData.ofHasCokernelOfHasKernel S)
+
+/- The notion of exactness given by `ShortComplex.Exact` is equivalent to
+the one given by the previous API `CategoryTheory.Exact` in the case of
+abelian categories.
+lemma _root_.CategoryTheory.exact_iff_shortComplex_exact
+    {A : Type*} [Category A] [Abelian A] (S : ShortComplex A) :
+    CategoryTheory.Exact S.f S.g ↔ S.Exact := by
+  simp only [Abelian.exact_iff, S.zero,
+    S.exact_iff_kernel_ι_comp_cokernel_π_zero, true_and]-/
 
 variable {S}
 
@@ -183,34 +192,34 @@ variable {S}
 lemma LeftHomologyData.exact_map_iff (h : S.LeftHomologyData) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [h.IsPreservedBy F] [(S.map F).HasHomology] :
     (S.map F).Exact ↔ IsZero (F.obj h.H) :=
-    (h.map F).exact_iff
+  (h.map F).exact_iff
 
 lemma RightHomologyData.exact_map_iff (h : S.RightHomologyData) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [h.IsPreservedBy F] [(S.map F).HasHomology] :
     (S.map F).Exact ↔ IsZero (F.obj h.H) :=
-    (h.map F).exact_iff
+  (h.map F).exact_iff
 
 lemma Exact.map_of_preservesLeftHomologyOf (h : S.Exact) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
     [(S.map F).HasHomology] : (S.map F).Exact := by
-    have := h.hasHomology
-    rw [(S.leftHomologyData).exact_iff, IsZero.iff_id_eq_zero] at h
-    rw [(S.leftHomologyData).exact_map_iff F, IsZero.iff_id_eq_zero,
-      ← F.map_id, h, F.map_zero]
+  have := h.hasHomology
+  rw [S.leftHomologyData.exact_iff, IsZero.iff_id_eq_zero] at h
+  rw [S.leftHomologyData.exact_map_iff F, IsZero.iff_id_eq_zero,
+    ← F.map_id, h, F.map_zero]
 
 lemma Exact.map_of_preservesRightHomologyOf (h : S.Exact) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [F.PreservesRightHomologyOf S]
     [(S.map F).HasHomology] : (S.map F).Exact := by
-    have : S.HasHomology := h.hasHomology
-    rw [(S.rightHomologyData).exact_iff, IsZero.iff_id_eq_zero] at h
-    rw [(S.rightHomologyData).exact_map_iff F, IsZero.iff_id_eq_zero,
-      ← F.map_id, h, F.map_zero]
+  have : S.HasHomology := h.hasHomology
+  rw [S.rightHomologyData.exact_iff, IsZero.iff_id_eq_zero] at h
+  rw [S.rightHomologyData.exact_map_iff F, IsZero.iff_id_eq_zero,
+    ← F.map_id, h, F.map_zero]
 
 lemma Exact.map (h : S.Exact) (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] : (S.map F).Exact := by
-    have := h.hasHomology
-    exact h.map_of_preservesLeftHomologyOf F
+  have := h.hasHomology
+  exact h.map_of_preservesLeftHomologyOf F
 
 variable (S)
 
@@ -228,16 +237,16 @@ lemma exact_map_iff_of_faithful [S.HasHomology]
     . intro h
       exact h.map F
 
-
 variable {S}
 
+@[reassoc]
 lemma Exact.comp_eq_zero (h : S.Exact) {X Y : C} {a : X ⟶ S.X₂} (ha : a ≫ S.g = 0)
-  {b : S.X₂ ⟶ Y} (hb : S.f ≫ b = 0) : a ≫ b = 0 := by
-    have := h.hasHomology
-    have eq := h
-    rw [exact_iff_iCycles_pOpcycles_zero] at eq
-    rw [← S.liftCycles_i a ha, ← S.p_descOpcycles b hb, assoc, reassoc_of% eq,
-      zero_comp, comp_zero]
+    {b : S.X₂ ⟶ Y} (hb : S.f ≫ b = 0) : a ≫ b = 0 := by
+  have := h.hasHomology
+  have eq := h
+  rw [exact_iff_iCycles_pOpcycles_zero] at eq
+  rw [← S.liftCycles_i a ha, ← S.p_descOpcycles b hb, assoc, reassoc_of% eq,
+    zero_comp, comp_zero]
 
 lemma Exact.isZero_of_both_zeros (ex : S.Exact) (hf : S.f = 0) (hg : S.g = 0) :
     IsZero S.X₂ :=

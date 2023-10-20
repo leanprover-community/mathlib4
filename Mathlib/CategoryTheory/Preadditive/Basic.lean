@@ -443,15 +443,37 @@ theorem hasCoequalizers_of_hasCokernels [HasCokernels C] : HasCoequalizers C :=
 
 end Equalizers
 
-@[simps]
-def mulIso {C : Type _} [Category C] [Preadditive C]
-  {X Y : C} (a : Units ℤ) (e : X ≅ Y) : X ≅ Y where
-  hom := (a : ℤ) • e.hom
-  inv := ((a⁻¹ : Units ℤ) : ℤ) • e.inv
-  hom_inv_id := by
-    simp only [comp_zsmul, zsmul_comp, smul_smul, Units.inv_mul, one_smul, e.hom_inv_id]
-  inv_hom_id := by
-    simp only [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id]
+section
+
+variable {C : Type*} [Category C] [Preadditive C] {X Y : C}
+
+instance : SMul (Units ℤ) (X ≅ Y) where
+  smul a e :=
+    { hom := (a : ℤ) • e.hom
+      inv := ((a⁻¹ : Units ℤ) : ℤ) • e.inv
+      hom_inv_id := by
+        simp only [comp_zsmul, zsmul_comp, smul_smul, Units.inv_mul, one_smul, e.hom_inv_id]
+      inv_hom_id := by
+        simp only [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id] }
+
+@[simp]
+lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = (a : ℤ) • e.hom := rfl
+
+@[simp]
+lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = ((a⁻¹ : Units ℤ) : ℤ) • e.inv := rfl
+
+instance : Neg (X ≅ Y) where
+  neg e :=
+    { hom := -e.hom
+      inv := -e.inv }
+
+@[simp]
+lemma neg_iso_hom (e : X ≅ Y) : (-e).hom = -e.hom := rfl
+
+@[simp]
+lemma neg_iso_inv (e : X ≅ Y) : (-e).inv = -e.inv := rfl
+
+end
 
 end Preadditive
 

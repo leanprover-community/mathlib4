@@ -151,6 +151,8 @@ lemma iso_hom_app (X : D) :
   obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_self]
   simp [iso, iso', adj₃, ofNatIsoLeft, adj₂, comp, Equivalence.toAdjunction, shiftEquiv',
     equivHomsetLeftOfNatIso, adj₁]
+  dsimp
+  simp
 
 lemma iso_inv_app (X : D) :
     (iso adj a).inv.app X =

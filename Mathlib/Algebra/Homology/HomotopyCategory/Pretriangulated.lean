@@ -277,7 +277,7 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
 set_option maxHeartbeats 400000 in
 noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') :=
-  Triangle.isoMk _ _ (Iso.refl _) (mulIso ((-1 : Units ℤ) ^ n) (Iso.refl _)) (shiftIso φ n)
+  Triangle.isoMk _ _ (Iso.refl _) (((-1 : Units ℤ) ^ n) • (Iso.refl _)) (shiftIso φ n)
     (by
       dsimp
       simp only [zsmul_comp, comp_zsmul, smul_smul, id_comp, comp_id]

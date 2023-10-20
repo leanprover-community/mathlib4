@@ -300,12 +300,12 @@ lemma extClass_γhmul : hS.extClass •[add_zero 1] (newExt.ofHom S.g) = 0 := by
   dsimp [extClass]
   simp only [mul_zero, Int.negOnePow_zero, one_smul]
   erw [ShiftedHom.mk₀_γhmul]
-  exact comp_dist_triangle_mor_zero₂₃ _ (hS.singleTriangle_distinguished)
+  exact comp_distTriang_mor_zero₂₃ _ (hS.singleTriangle_distinguished)
 
 lemma γhmul_extClass : (newExt.ofHom S.f) •[zero_add 1] hS.extClass = 0 := by
   apply newExt.hom_injective
   dsimp [extClass]
-  have eq := comp_dist_triangle_mor_zero₃₁ _ (hS.singleTriangle_distinguished)
+  have eq := comp_distTriang_mor_zero₃₁ _ (hS.singleTriangle_distinguished)
   rw [ShiftedHom.γhmul_eq]
   dsimp [newExt.ofHom, ShiftedHom.mk₀] at eq ⊢
   simp only [mul_one, Functor.map_comp, assoc, reassoc_of% eq, zero_comp, Nat.cast_zero,

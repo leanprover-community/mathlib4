@@ -67,10 +67,11 @@ noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
     ext p q hpq
     obtain rfl : q = p + 1 + 1 := by linarith
     dsimp [mappingCone]
+    have : Int.negOnePow 2 = 1 := by simp
     simp only [δ_v 1 2 (by linarith) _ p (p+1+1) (by linarith) (p+1) (p+1) (by linarith) rfl,
       Int.negOnePow_succ, Int.negOnePow_one, Cochain.mk_v, Cochain.ofHom_v, HomologicalComplex.id_f, comp_id, not_true,
       neg_neg, dite_eq_ite, ite_true, add_comp, neg_comp, assoc,
-      biprod.inl_fst, biprod.inr_fst, comp_zero, add_zero, smul_neg, one_smul, add_right_neg])
+      biprod.inl_fst, biprod.inr_fst, comp_zero, add_zero, smul_neg, one_smul, add_right_neg, this])
 
 noncomputable def snd : Cochain (mappingCone φ) G 0 :=
   Cochain.mk (fun p q hpq => biprod.snd ≫ (Cochain.ofHom (𝟙 G)).v p q hpq)

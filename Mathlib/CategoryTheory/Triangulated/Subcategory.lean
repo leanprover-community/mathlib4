@@ -194,9 +194,9 @@ lemma W_eq_W' : S.W = S.W' := by
   intro X Y f
   constructor
   . rintro ⟨Z, g, h, H, mem⟩
-    exact ⟨_, _, _, inv_rot_of_dist_triangle _ H, S.shift _ (-1) mem⟩
+    exact ⟨_, _, _, inv_rot_of_distTriang _ H, S.shift _ (-1) mem⟩
   . rintro ⟨Z, g, h, H, mem⟩
-    exact ⟨_, _, _, rot_of_dist_triangle _ H, S.shift _ 1 mem⟩
+    exact ⟨_, _, _, rot_of_distTriang _ H, S.shift _ 1 mem⟩
 
 variable {S}
 
@@ -255,8 +255,8 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
     obtain ⟨q, hq⟩ := Triangle.yoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
     refine' ⟨Y', r, _, _⟩
-    . exact ⟨_, _, _, rot_of_dist_triangle _ mem', S.shift _ _ mem⟩
-    . have eq := comp_dist_triangle_mor_zero₁₂ _ mem'
+    . exact ⟨_, _, _, rot_of_distTriang _ mem', S.shift _ _ mem⟩
+    . have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
@@ -275,7 +275,7 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
     refine' ⟨Y', r, _, _⟩
     . exact ⟨_, _, _, mem', mem⟩
-    . have eq := comp_dist_triangle_mor_zero₁₂ _ mem'
+    . have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
       rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
 
@@ -288,7 +288,7 @@ lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
 lemma mul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     S.W ((↑((-1 : Units ℤ)^n) : ℤ)  • f) ↔ S.W f :=
   S.respectsIsoW.arrow_mk_iso_iff
-    (Arrow.isoMk (Preadditive.mulIso ((-1 : Units ℤ)^n) (Iso.refl _)) (Iso.refl _)
+    (Arrow.isoMk (((-1 : Units ℤ)^n) • (Iso.refl _)) (Iso.refl _)
       (by dsimp ; simp only [Preadditive.zsmul_comp, id_comp, comp_id]))
 
 instance WIsCompatibleWithShift : S.W.IsCompatibleWithShift ℤ := ⟨by
@@ -361,19 +361,19 @@ instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
 
 lemma ext₁ [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)
     (h₃ : T.obj₃ ∈ S.set) : T.obj₁ ∈ S.set :=
-  S.ext₂ _ (inv_rot_of_dist_triangle _ hT) (S.shift _ _ h₃) h₂
+  S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
 
 lemma ext₃ [S.set.RespectsIso] (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
     (h₂ : T.obj₂ ∈ S.set) : T.obj₃ ∈ S.set :=
-  S.ext₂ _ (rot_of_dist_triangle _ hT) h₂ (S.shift _ _ h₁)
+  S.ext₂ _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
 lemma ext₁' (T : Triangle C) (hT : T ∈ distTriang C) (h₂ : T.obj₂ ∈ S.set)
     (h₃ : T.obj₃ ∈ S.set) : T.obj₁ ∈ S.set.isoClosure :=
-  S.ext₂' _ (inv_rot_of_dist_triangle _ hT) (S.shift _ _ h₃) h₂
+  S.ext₂' _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂
 
 lemma ext₃' (T : Triangle C) (hT : T ∈ distTriang C) (h₁ : T.obj₁ ∈ S.set)
     (h₂ : T.obj₂ ∈ S.set) : T.obj₃ ∈ S.set.isoClosure :=
-  S.ext₂' _ (rot_of_dist_triangle _ hT) h₂ (S.shift _ _ h₁)
+  S.ext₂' _ (rot_of_distTriang _ hT) h₂ (S.shift _ _ h₁)
 
 noncomputable example [IsTriangulated C] : Pretriangulated (S.W.Localization) := inferInstance
 

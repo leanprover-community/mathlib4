@@ -63,7 +63,7 @@ noncomputable def liftCyclesAb (x : S.X₂) (hx : S.g x = 0) : S.cycles :=
 lemma liftCyclesAb_ι (x : S.X₂) (hx : S.g x = 0) :
     S.iCycles (S.liftCyclesAb x hx) = x := by
   dsimp [liftCyclesAb]
-  rw [← comp_apply, liftCycles_i, AddCommGroupCat.homEquivFromUliftℤ_symm_one]
+  erw [← comp_apply, liftCycles_i, AddCommGroupCat.homEquivFromUliftℤ_symm_one]
 
 lemma ab_exact_iff :
     S.Exact ↔ ∀ (x₂ : S.X₂) (_ : S.g x₂ = 0),
@@ -72,14 +72,15 @@ lemma ab_exact_iff :
   constructor
   . intro h x₂ hx₂
     obtain ⟨x₁, hx₁⟩ := h (S.liftCyclesAb x₂ hx₂)
-    exact ⟨x₁, by rw [← S.toCycles_i, comp_apply, hx₁, liftCyclesAb_ι]⟩
+    exact ⟨x₁, by erw [← S.toCycles_i, comp_apply, hx₁, liftCyclesAb_ι]⟩
   . intro hS z
     obtain ⟨x₁, hx₁⟩ := hS (S.iCycles z) (by
-      rw [← comp_apply, iCycles_g]
+      erw [← comp_apply, iCycles_g]
       rfl)
     refine' ⟨x₁, _⟩
     apply_fun S.iCycles
-    . rw [← hx₁, ← comp_apply, toCycles_i]
+    . erw [← hx₁, ← comp_apply, toCycles_i]
+      rfl
     . rw [← AddCommGroupCat.mono_iff_injective]
       infer_instance
 
@@ -102,7 +103,7 @@ lemma ab_exact_iff_range_eq_ker :
   · intro h
     refine' le_antisymm _ h
     rintro _ ⟨x₁, rfl⟩
-    rw [AddMonoidHom.mem_ker, ← comp_apply, S.zero]
+    erw [AddMonoidHom.mem_ker, ← comp_apply, S.zero]
     rfl
   · intro h
     rw [h]

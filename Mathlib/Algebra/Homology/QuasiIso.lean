@@ -544,7 +544,7 @@ instance CategoryTheory.Functor.map_quasiIsoAt_of_preservesHomology
     [((F.mapHomologicalComplex c).obj L).HasHomology n]
     [hf : QuasiIsoAt f n] : QuasiIsoAt ((F.mapHomologicalComplex c).map f) n := by
   rw [quasiIsoAt_iff] at hf ⊢
-  exact ShortComplex.quasiIso_map_of_preservesRightHomology ((HomologicalComplex.shortComplexFunctor C c n).map f) F
+  exact ShortComplex.quasiIso_map_of_preservesRightHomology F ((HomologicalComplex.shortComplexFunctor C c n).map f)
 
 instance CategoryTheory.Functor.map_quasiIso_of_preservesHomology
     [F.PreservesHomology] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]
@@ -561,7 +561,7 @@ lemma CategoryTheory.Functor.quasiIsoAt_of_map_quasiIsoAt_of_preservesHomology
     QuasiIsoAt f n := by
   rw [quasiIsoAt_iff] at hf ⊢
   exact (ShortComplex.quasiIso_map_iff_of_preservesRightHomology
-    ((HomologicalComplex.shortComplexFunctor C c n).map f) F).1  hf
+    F ((HomologicalComplex.shortComplexFunctor C c n).map f)).1  hf
 
 lemma CategoryTheory.Functor.quasiIso_of_map_quasiIso_of_preservesHomology
     [F.PreservesHomology] [ReflectsIsomorphisms F] [∀ n, K.HasHomology n] [∀ n, L.HasHomology n]

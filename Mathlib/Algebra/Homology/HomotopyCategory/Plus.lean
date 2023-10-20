@@ -28,7 +28,7 @@ def subcategoryPlus : Subcategory (HomotopyCategory C (ComplexShape.up ℤ)) whe
     obtain ⟨f : T.obj₃.as ⟶ T.obj₁.as⟦(1 : ℤ)⟧, hf⟩ := (quotient _ _ ).map_surjective
       (T.mor₃ ≫ ((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).inv.app T.obj₁.as)
     let T₁ := T.rotate.rotate
-    have hT₁ : T₁ ∈ distTriang _ := rot_of_dist_triangle _ (rot_of_dist_triangle _ hT)
+    have hT₁ : T₁ ∈ distTriang _ := rot_of_distTriang _ (rot_of_distTriang _ hT)
     let T₂ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
       (CochainComplex.MappingCone.triangle f)
     have hT₂ : T₂ ∈ distTriang _ := by exact ⟨_, _, f, ⟨Iso.refl _⟩⟩

@@ -29,8 +29,8 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
   (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙ shortComplexFunctor' C _ i j k ≅
     shortComplexFunctor' C _ i' j' k' :=
   NatIso.ofComponents (fun K => ShortComplex.isoMk
-    (mulIso ((-1 : Units ℤ)^n) ((shiftEval C n i i' hi).app K))
-    ((shiftEval C n j j' hj).app K) (mulIso ((-1 : Units ℤ)^n) ((shiftEval C n k k' hk).app K))
+    (((-1 : Units ℤ)^n) • ((shiftEval C n i i' hi).app K))
+    ((shiftEval C n j j' hj).app K) (((-1 : Units ℤ)^n) • ((shiftEval C n k k' hk).app K))
     (by
       dsimp
       simp only [zsmul_comp, XIsoOfEq_hom_comp_d, d_comp_XIsoOfEq_hom, n.negOnePow_def])

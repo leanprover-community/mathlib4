@@ -196,23 +196,23 @@ variable (T T')
 lemma comp_homology_sequence_δ :
     (F.shift n₀).map T.mor₂ ≫ F.homology_sequence_δ T n₀ n₁ h = 0 := by
   dsimp only [homology_sequence_δ]
-  rw [← F.shiftMap_comp', comp_dist_triangle_mor_zero₂₃ _ hT, shiftMap_zero]
+  rw [← F.shiftMap_comp', comp_distTriang_mor_zero₂₃ _ hT, shiftMap_zero]
 
 @[simp]
 lemma homology_sequence_δ_comp :
     F.homology_sequence_δ T n₀ n₁ h ≫ (F.shift n₁).map T.mor₁ = 0 := by
   dsimp only [homology_sequence_δ]
-  rw [← F.shiftMap_comp, comp_dist_triangle_mor_zero₃₁ _ hT, shiftMap_zero]
+  rw [← F.shiftMap_comp, comp_distTriang_mor_zero₃₁ _ hT, shiftMap_zero]
 
 lemma homology_sequence_comp  :
     (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map T.mor₂ = 0 := by
-  rw [← Functor.map_comp, comp_dist_triangle_mor_zero₁₂ _ hT, Functor.map_zero]
+  rw [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero]
 
 lemma homology_sequence_exact₂ :
   (ShortComplex.mk _ _ (F.homology_sequence_comp T hT n₀)).Exact := by
   refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (Triangle.shift_distinguished _ hT n₀))
   refine' ShortComplex.isoMk ((F.isoShift n₀).app _)
-    (mulIso ((-1 : Units ℤ)^n₀) ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
+    (((-1 : Units ℤ)^n₀) • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
   . dsimp
     simp only [comp_zsmul, zsmul_comp, Functor.map_zsmul, smul_smul,
       ← Int.negOnePow_def, Int.negOnePow_mul_self, one_smul, isoShift_hom_naturality]
@@ -221,7 +221,7 @@ lemma homology_sequence_exact₂ :
 
 lemma homology_sequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homology_sequence_δ T hT _ _ h)).Exact := by
-  refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (rot_of_dist_triangle _ hT) n₀)
+  refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
     ((F.shiftIso 1 n₀ n₁ (by linarith)).app _) _ _
   . dsimp
@@ -231,8 +231,8 @@ lemma homology_sequence_exact₃ :
 
 lemma homology_sequence_exact₁ :
     (ShortComplex.mk _ _ (F.homology_sequence_δ_comp T hT _ _ h)).Exact := by
-  refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (inv_rot_of_dist_triangle _ hT) n₁)
-  refine' ShortComplex.isoMk (mulIso (-1) ((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
+  refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
+  refine' ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
     (Iso.refl _) (Iso.refl _) _ _
   . dsimp
     simp only [neg_smul, one_smul, homology_sequence_δ, neg_comp, comp_id,
@@ -246,7 +246,7 @@ lemma homology_sequence_epi_shift_map_mor₁_iff :
   constructor
   . intro H
     rw [← cancel_epi ((F.shift n₀).map T.mor₁), ← Functor.map_comp,
-      comp_dist_triangle_mor_zero₁₂ _ hT, Functor.map_zero, comp_zero]
+      comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero, comp_zero]
   . intro H
     refine' (ShortComplex.exact_iff_epi _ _).1 ((F.homology_sequence_exact₂ _ hT n₀))
     exact H
@@ -276,7 +276,7 @@ lemma homology_sequence_mono_shift_map_mor₂_iff :
   constructor
   . intro H
     rw [← cancel_mono ((F.shift n₁).map T.mor₂), ← Functor.map_comp,
-      comp_dist_triangle_mor_zero₁₂ _ hT, Functor.map_zero, zero_comp]
+      comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero, zero_comp]
   . intro H
     refine' (ShortComplex.exact_iff_mono _ _).1 ((F.homology_sequence_exact₂ _ hT n₁))
     exact H
@@ -304,7 +304,7 @@ lemma IsHomological.W_eq_homologicalKernelW [F.IsHomological] :
       (F.homology_sequence_exact₃ _ mem n _ rfl).isZero_of_both_zeros _ _⟩
     . dsimp
       have := hf n
-      have zero : f ≫ g = 0 := comp_dist_triangle_mor_zero₁₂ _ mem
+      have zero : f ≫ g = 0 := comp_distTriang_mor_zero₁₂ _ mem
       simp only [← cancel_epi (F.map (f⟦n⟧')), ← Functor.map_comp, zero,
         Functor.map_zero, comp_zero]
     . dsimp

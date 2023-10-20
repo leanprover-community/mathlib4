@@ -25,7 +25,7 @@ lemma triangle_map_ext' (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f�
     rw [H, sub_self]
   intro f hf
   ext
-  . obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_dist_triangle _ hT') f.hom₁ (by
+  . obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_distTriang _ hT') f.hom₁ (by
       have eq := f.comm₁
       dsimp at eq ⊢
       rw [← eq, hf, comp_zero])
@@ -240,17 +240,17 @@ lemma triangleLTGE_distinguished (n : ℤ) (X : C) :
 @[reassoc (attr := simp)]
 lemma truncLTι_comp_truncGEπ_app (n : ℤ) (X : C) :
     (t.truncLTι n).app X ≫ (t.truncGEπ n).app X = 0 :=
-  comp_dist_triangle_mor_zero₁₂ _ ((t.triangleLTGE_distinguished n X))
+  comp_distTriang_mor_zero₁₂ _ ((t.triangleLTGE_distinguished n X))
 
 @[reassoc (attr := simp)]
 lemma truncGEπ_comp_truncGEδLT_app (n : ℤ) (X : C) :
     (t.truncGEπ n).app X ≫ (t.truncGEδLT n).app X = 0 :=
-  comp_dist_triangle_mor_zero₂₃ _ ((t.triangleLTGE_distinguished n X))
+  comp_distTriang_mor_zero₂₃ _ ((t.triangleLTGE_distinguished n X))
 
 @[reassoc (attr := simp)]
 lemma truncGEδLT_comp_truncLTι_app (n : ℤ) (X : C) :
     (t.truncGEδLT n).app X ≫ ((t.truncLTι n).app X)⟦(1 : ℤ)⟧' = 0 :=
-  comp_dist_triangle_mor_zero₃₁ _ ((t.triangleLTGE_distinguished n X))
+  comp_distTriang_mor_zero₃₁ _ ((t.triangleLTGE_distinguished n X))
 
 @[reassoc (attr := simp)]
 lemma truncLTι_comp_truncGEπ (n : ℤ) :
@@ -727,7 +727,7 @@ lemma distinguished (n : ℤt) (X : C) :
   . exact isomorphic_distinguished _ (contractible_distinguished X) _
       (triangleLTGETopIso t X)
   . exact isomorphic_distinguished _
-      (inv_rot_of_dist_triangle _ (contractible_distinguished X)) _
+      (inv_rot_of_distTriang _ (contractible_distinguished X)) _
       (triangleLTGEBotIso t X)
   . exact isomorphic_distinguished _ (t.triangleLTGE_distinguished n X) _
       (triangleLTGEIso t n X)
@@ -793,7 +793,7 @@ lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
   constructor
   . intro h
     obtain ⟨e, he⟩ := t.triangle_iso_exists (n-1) n (by linarith) _ _
-      (inv_rot_of_dist_triangle _ (contractible_distinguished X))
+      (inv_rot_of_distTriang _ (contractible_distinguished X))
       (t.triangleLTGE_distinguished n X) (Iso.refl X)
       (t.isLE_of_iso (shiftFunctor C (-1 : ℤ)).mapZeroObject.symm _)
       (by dsimp ; infer_instance) (by dsimp ; infer_instance) (by dsimp ; infer_instance)
@@ -865,7 +865,7 @@ lemma to_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
   suffices ∀ (f : Y ⟶ (t.truncLE n).obj X) (_ : f ≫ (t.truncLEι n).app X = 0), f = 0 by
     rw [← sub_eq_zero, this (f₁ - f₂) (by rw [sub_comp, sub_eq_zero, h])]
   intro f hf
-  obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_dist_triangle _
+  obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_distTriang _
     (t.triangleLEGT_distinguished n X)) f hf
   have hg' := t.zero_of_isLE_of_isGE g n (n+2) (by linarith) (by infer_instance)
     (by dsimp ; apply (t.isGE_shift _ (n+1) (-1) (n+2) (by linarith)))
@@ -1143,9 +1143,9 @@ lemma isIso₂_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
   rw [isIso_truncGEmap_iff _ _ _ _ h]
   obtain ⟨X, f, k, mem⟩ := distinguished_cocone_triangle₁ (T.mor₂ ≫ (t.truncGEπ n₁).app T.obj₃)
   refine' ⟨_, _, _, mem, _⟩
-  have H := someOctahedron rfl (rot_of_dist_triangle _ hT)
-    (rot_of_dist_triangle _ (t.triangleLEGE_distinguished n₀ n₁ h T.obj₃))
-    (rot_of_dist_triangle _ mem)
+  have H := someOctahedron rfl (rot_of_distTriang _ hT)
+    (rot_of_distTriang _ (t.triangleLEGE_distinguished n₀ n₁ h T.obj₃))
+    (rot_of_distTriang _ mem)
   have : t.IsLE (X⟦(1 : ℤ)⟧) (n₀-1) := t.isLE₂ _ H.mem (n₀-1)
     (t.isLE_shift T.obj₁ n₀ 1 (n₀-1) (by linarith))
     (t.isLE_shift ((t.truncLE n₀).obj T.obj₃) n₀ 1 (n₀-1) (by linarith))

@@ -1100,25 +1100,6 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
   The ported versions of the earlier proofs are given in comments.
 -/
 
--- Porting note: these lemmas recover the Lean 3 definition of `findIdx`
-@[simp] theorem findIdx_nil {α : Type*} (p : α → Bool) :
-  [].findIdx p = 0 := rfl
-
-theorem findIdx_cons (p : α → Bool) (b : α) (l : List α) :
-    (b :: l).findIdx p = bif p b then 0 else (l.findIdx p) + 1 := by
-    cases H : p b with
-      | true => simp [H, findIdx, findIdx.go]
-      | false => simp [H, findIdx, findIdx.go, findIdx_go_succ]
-  where
-    findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
-        List.findIdx.go p l (n + 1) = (List.findIdx.go p l n) + 1 := by
-      cases l with
-      | nil => unfold List.findIdx.go; exact Nat.succ_eq_add_one n
-      | cons head tail =>
-        unfold List.findIdx.go
-        cases p head <;> simp only [cond_false, cond_true]
-        exact findIdx_go_succ p tail (n + 1)
-
 -- indexOf_cons_eq _ rfl
 @[simp]
 theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
@@ -1606,7 +1587,7 @@ theorem insertNth_comm (a b : α) :
   | i + 1, 0, l => fun h => (Nat.not_lt_zero _ h).elim
   | i + 1, j + 1, [] => by simp
   | i + 1, j + 1, c :: l => fun h₀ h₁ => by
-    simp [insertNth]
+    simp only [insertNth_succ_cons, insertNth._eq_1, cons.injEq, true_and]
     exact insertNth_comm a b i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
 #align list.insert_nth_comm List.insertNth_comm
 
@@ -4311,11 +4292,21 @@ theorem getD_cons_succ : getD (x :: xs) (n + 1) d = getD xs n d :=
 #align list.nthd_cons_succ List.getD_cons_succₓ -- argument order
 
 theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
-  induction' l with hd tl IH generalizing n
-  · exact absurd hn (not_lt_of_ge (Nat.zero_le _))
-  · cases n
+  induction l generalizing n with
+  | nil => exact absurd hn (not_lt_of_ge (Nat.zero_le _))
+  | cons head tail ih =>
+    cases n
     · exact getD_cons_zero _ _ _
-    · exact IH _
+    · exact ih _
+
+@[simp]
+theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
+  induction l generalizing n with
+  | nil => rfl
+  | cons head tail ih =>
+    cases n
+    · rfl
+    · simp [ih]
 
 set_option linter.deprecated false in
 @[deprecated getD_eq_get]
@@ -4324,11 +4315,12 @@ theorem getD_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getD n d = l.nthLe n hn 
 #align list.nthd_eq_nth_le List.getD_eq_nthLeₓ -- argument order
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
-  induction' l with hd tl IH generalizing n
-  · exact getD_nil _ _
-  · cases n
+  induction l generalizing n with
+  | nil => exact getD_nil _ _
+  | cons head tail ih =>
+    cases n
     · refine' absurd (Nat.zero_lt_succ _) (not_lt_of_ge hn)
-    · exact IH (Nat.le_of_succ_le_succ hn)
+    · exact ih (Nat.le_of_succ_le_succ hn)
 #align list.nthd_eq_default List.getD_eq_defaultₓ -- argument order
 
 /-- An empty list can always be decidably checked for the presence of an element.
@@ -4343,9 +4335,9 @@ theorem getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;>
 
 @[simp]
 theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
-  induction' r with r IH generalizing n
-  · simp
-  · cases n <;> simp [IH]
+  induction r generalizing n with
+  | zero => simp
+  | succ n ih => cases n <;> simp [ih]
 #align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
@@ -4356,19 +4348,21 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases' lt_or_le n (l ++l').length with h' h'
-  · rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
+  cases lt_or_le n (l ++l').length with
+  | inl h' =>
+    rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
       exact Nat.sub_lt_left_of_lt_add h h'
     · exact not_lt_of_le h
-  · rw [getD_eq_default _ _ h', getD_eq_default]
+  | inr h' =>
+    rw [getD_eq_default _ _ h', getD_eq_default]
     rwa [le_tsub_iff_left h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
 theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
-  cases' lt_or_le n l.length with h h
-  · rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
-  · rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
+  cases lt_or_le n l.length with
+  | inl h => rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
+  | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
 #align list.nthd_eq_get_or_else_nth List.getD_eq_getD_get?ₓ -- argument order
 
 end getD
