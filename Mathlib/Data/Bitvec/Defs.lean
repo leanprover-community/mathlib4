@@ -99,41 +99,4 @@ def ofLEList (bs : List Bool) : BitVec bs.length :=
 def ofBEList (bs : List Bool) : BitVec bs.length :=
   (ofLEList bs.reverse).cast (List.length_reverse ..)
 
-
-
-/-!
-  ## Distributivity of ofFin
-  We add simp-lemmas that show how `ofFin` distributes over various bitvector operations, showing
-  that bitvector operations are equivalent to `Fin` operations
--/
-@[simp] lemma neg_ofFin (x : Fin (2^w)) : -(ofFin x) = ofFin (-x) := by
-  rw [neg_eq_zero_sub]; rfl
-
-@[simp] lemma ofFin_and_ofFin (x y : Fin (2^w)) : (ofFin x) &&& (ofFin y) = ofFin (x &&& y) := rfl
-@[simp] lemma ofFin_or_ofFin  (x y : Fin (2^w)) : (ofFin x) ||| (ofFin y) = ofFin (x ||| y) := rfl
-@[simp] lemma ofFin_xor_ofFin (x y : Fin (2^w)) : (ofFin x) ^^^ (ofFin y) = ofFin (x ^^^ y) := rfl
-@[simp] lemma ofFin_add_ofFin (x y : Fin (2^w)) : (ofFin x) + (ofFin y) = ofFin (x + y)     := rfl
-@[simp] lemma ofFin_sub_ofFin (x y : Fin (2^w)) : (ofFin x) - (ofFin y) = ofFin (x - y)     := rfl
-@[simp] lemma ofFin_mul_ofFin (x y : Fin (2^w)) : (ofFin x) * (ofFin y) = ofFin (x * y)     := rfl
-
-lemma zero_eq_ofFin_zero : 0#w = ofFin 0 := rfl
-lemma one_eq_ofFin_one   : 1#w = ofFin 1 := rfl
-
-/-! Now we can define an instance of `Ring (BitVector w)` straightforwardly in terms of the
-    existing instance `Ring (Fin (2^w))` -/
-instance : Ring (BitVec w) where
-  add_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [add_assoc]
-  zero_add        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  add_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  sub_eq_add_neg  := by intro ⟨_⟩ ⟨_⟩; simp [sub_eq_add_neg]
-  add_comm        := by intro ⟨_⟩ ⟨_⟩; simp [add_comm]
-  left_distrib    := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [left_distrib]
-  right_distrib   := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [right_distrib]
-  zero_mul        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  mul_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  mul_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [mul_assoc]
-  one_mul         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
-  mul_one         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
-  add_left_neg    := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-
 end Std.BitVec
