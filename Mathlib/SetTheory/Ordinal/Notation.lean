@@ -328,7 +328,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
   | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by -- TODO: golf
     rw [cmp]
     have IHe := @cmp_compares _ _ h₁.fst h₂.fst
-    simp only [Ordering.Compares, gt_iff_lt] at IHe ; revert IHe
+    simp only [Ordering.Compares, gt_iff_lt] at IHe; revert IHe
     cases cmp e₁ e₂
     case lt => intro IHe; exact oadd_lt_oadd_1 h₁ IHe
     case gt => intro IHe; exact oadd_lt_oadd_1 h₂ IHe
