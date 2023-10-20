@@ -301,9 +301,13 @@ def replace_imports(filename):
     for match in re.finditer(r'^import (.*)$', source, flags=re.MULTILINE):
         import_name = match.group(1)
         import_filename = import_to_filename(import_name)
-        logging.debug(f"replace_imports: import {import_name} -> <include {import_filename}>")
-        with open(import_filename, 'r') as imported_file:
-            import_source = imported_file.read()
+        logging.debug(f"include_imports: import {import_name} -> <include {import_filename}>")
+        try:
+            with open(import_filename, 'r') as imported_file:
+                import_source = imported_file.read()
+        except OSError:
+            logging.warn(f"include_imports: file not found: {import_filename}")
+            continue
         yield match.start(), match.end(), '\n\nsection\n\n' + import_source + '\n\nend\n\n'
 
 def delete_defs(filename):
