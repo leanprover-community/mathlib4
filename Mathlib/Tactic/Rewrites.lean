@@ -214,7 +214,9 @@ See also `rewrites` for a more convenient interface.
 -- so there is no opportunity for `← getMCtx` to record the context at the call site.
 def rewritesCore (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (ctx : MetavarContext) (goal : MVarId) (target : Expr) (side : SideConditions := .solveByElim) :
+    (ctx : MetavarContext) (goal : MVarId) (target : Expr)
+    (forbidden : NameSet := ∅)
+    (side : SideConditions := .solveByElim) :
     MLList MetaM RewriteResult := MLList.squash fun _ => do
   -- Get all lemmas which could match some subexpression
   let candidates := (← lemmas.1.getSubexpressionMatches target)
@@ -230,6 +232,7 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
   let mut backward : NameSet := ∅
   let mut deduped := #[]
   for (l, s, w) in candidates do
+    if forbidden.contains l then continue
     if s then
       if ¬ backward.contains l then
         deduped := deduped.push (l, s, w)
@@ -278,8 +281,9 @@ Note that this builds a `HashMap` containing the results, and so may consume sig
 def rewritesDedup (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (mctx : MetavarContext) (goal : MVarId) (target : Expr)
-    (side : SideConditions := .solveByElim) : MLList MetaM RewriteResult :=
-  rewritesCore hyps lemmas mctx goal target side
+    (forbidden : NameSet := ∅) (side : SideConditions := .solveByElim) :
+    MLList MetaM RewriteResult :=
+  rewritesCore hyps lemmas mctx goal target forbidden side
     -- Don't report duplicate results.
     -- (TODO: a config flag to disable this,
     -- if distinct-but-pretty-print-the-same results are desirable?)
@@ -290,9 +294,10 @@ def rewritesDedup (hyps : Array (Expr × Bool × Nat))
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
     (goal : MVarId) (target : Expr)
-    (side : SideConditions := .solveByElim) (stopAtRfl : Bool := false) (max : Nat := 20)
+    (forbidden : NameSet := ∅) (side : SideConditions := .solveByElim)
+    (stopAtRfl : Bool := false) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
-  let results ← rewritesDedup hyps lemmas (← getMCtx) goal target side
+  let results ← rewritesDedup hyps lemmas (← getMCtx) goal target forbidden side
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
     |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stopAtRfl` is False
     |>.takeUpToFirst (fun r => stopAtRfl && r.rfl? = some true)
@@ -310,19 +315,25 @@ def rewrites (hyps : Array (Expr × Bool × Nat))
 
 open Lean.Parser.Tactic
 
+syntax forbidden := " [" (("-" ident),*,?) "]"
+
 /--
 `rw?` tries to find a lemma which can rewrite the goal.
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
+
+You can use `rw? [-my_lemma, -my_theorem]` to prevent `rw?` using the named lemmas.
 -/
-syntax (name := rewrites') "rw?" (ppSpace location)? : tactic
+syntax (name := rewrites') "rw?" (ppSpace location)? (forbidden)? : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic |
-    `(tactic| rw?%$tk $[$loc]?) => do
+    `(tactic| rw?%$tk $[$loc]? $[[ $[-$forbidden],* ]]?) => do
   let lems ← rewriteLemmas.get
+  let forbidden : NameSet :=
+    ((forbidden.getD #[]).map Syntax.getId).foldl (init := ∅) fun s n => s.insert n
   reportOutOfHeartbeats `rewrites tk
   let goal ← getMainGoal
   -- TODO fix doc of core to say that * fails only if all failed
@@ -332,7 +343,7 @@ elab_rules : tactic |
       if a.isImplementationDetail then return
       let target ← instantiateMVars (← f.getType)
       let hyps ← localHypotheses (except := [f])
-      let results ← rewrites hyps lems goal target (stopAtRfl := false)
+      let results ← rewrites hyps lems goal target (stopAtRfl := false) forbidden
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
         throwError "Could not find any lemmas which can rewrite the hypothesis {
@@ -348,7 +359,7 @@ elab_rules : tactic |
     do withMainContext do
       let target ← instantiateMVars (← goal.getType)
       let hyps ← localHypotheses
-      let results ← rewrites hyps lems goal target (stopAtRfl := true)
+      let results ← rewrites hyps lems goal target (stopAtRfl := true) forbidden
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
         throwError "Could not find any lemmas which can rewrite the goal"

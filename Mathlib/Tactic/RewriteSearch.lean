@@ -126,7 +126,15 @@ structure SearchNode where mk' ::
   dist? : Option Nat := none
 namespace SearchNode
 
-def editCost : Levenshtein.Cost String String Nat := Levenshtein.stringLogLength
+/--
+What is the cost for changing a token?
+`Levenshtein.defaultCost` just uses constant cost `1` for any token.
+
+It may be interesting to try others.
+the only one I've experimented with so far is `Levenshtein.stringLogLengthCost`,
+which performs quite poorly!
+-/
+def editCost : Levenshtein.Cost String String Nat := Levenshtein.defaultCost
 
 /-- Check whether a goal can be solved by `rfl`, and fill in the `SearchNode.rfl?` field. -/
 def compute_rfl? (n : SearchNode) : MetaM SearchNode := withMCtx n.mctx do
@@ -142,15 +150,17 @@ def compute_dist? (n : SearchNode) : SearchNode :=
   | none =>
     { n with dist? := some (levenshtein editCost n.lhs n.rhs) }
 
-instance : ToString SearchNode where
-  toString n :=
+def toString (n : SearchNode) : MetaM String := do
   let n := n.compute_dist?
-  s!"depth: {n.history.size}\n" ++
-  s!"history: {n.history.map fun p => hash p % 10000}\n" ++
-  (match n.history.back? with
-    | some (_, e, true) => s!"rw [← {e}]"
-    | some (_, e, false) => s!"rw [{e}]"
-    | none => "") ++ "\n" ++ "-- " ++ n.ppGoal ++ "\n" ++ s!"distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
+  let tac ← match n.history.back? with
+  | some (_, e, true) => do let pp ← ppExpr e; pure s!"rw [← {pp}]"
+  | some (_, e, false) => do let pp ← ppExpr e; pure s!"rw [{pp}]"
+  | none => pure ""
+  return s!"depth: {n.history.size}\n" ++
+    s!"history: {n.history.map fun p => hash p % 10000}\n" ++
+    tac ++ "\n" ++
+    "-- " ++ n.ppGoal ++ "\n" ++
+    s!"distance: {n.dist?.get!}+{n.history.size}, {n.ppGoal.length}"
 
 /-- Construct a `SearchNode`. -/
 def mk (history : Array (Nat × Expr × Bool)) (goal : MVarId) (ctx : Option MetavarContext := none) :
@@ -187,12 +197,21 @@ def lastIdx (n : SearchNode) : Nat :=
 instance : Ord SearchNode where
   compare := compareOn fun n => toLex (toLex (n.ppGoal.length, n.lastIdx), n.ppGoal)
 
+/--
+A somewhat arbitrary penalty function.
+It would be interesting to add coefficents here and tweak them, and then profile the performance.
+
+Note that `n.lastIdx` penalises using later lemmas from a particular call to `rw?` at a node,
+but once we have moved on to the next node these penalties are "forgiven".
+-/
+def penalty (n : SearchNode) : Nat := n.history.size + n.lastIdx.log2 + n.ppGoal.length.log2
+
 /-- The priority function for search is Levenshtein distance. -/
 abbrev prio (n : SearchNode) : Thunk Nat :=
-  (Thunk.pure n.history.size) + (Thunk.mk fun _ => levenshtein editCost n.lhs n.rhs)
+  (Thunk.pure n.penalty) + (Thunk.mk fun _ => levenshtein editCost n.lhs n.rhs)
 /-- We can obtain lower bounds, and improve them, for the Levenshtein distance. -/
 abbrev estimator (n : SearchNode) : Type :=
-  Estimator.trivial n.history.size × LevenshteinEstimator editCost n.lhs n.rhs
+  Estimator.trivial n.penalty × LevenshteinEstimator editCost n.lhs n.rhs
 
 /-- Given a `RewriteResult` from the `rw?` tactic, create a new `SearchNode` with the new goal. -/
 def rewrite (n : SearchNode) (r : Rewrites.RewriteResult) (k : Nat) :
@@ -209,21 +228,30 @@ returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
-  trace[rw_search] "searching: {n}"
-  return rewritesDedup hyps lemmas n.mctx n.goal n.type |>.enum |>.filterMapM fun ⟨k, r⟩ => do n.rewrite r k
+    (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
+  if ← isTracingEnabledFor `rw_search then do
+    trace[rw_search] "searching:\n{← toString n}"
+  return rewritesCore hyps lemmas n.mctx n.goal n.type forbidden
+    |>.enum
+    |>.filterMapM fun ⟨k, r⟩ => do n.rewrite r k
 
 /--
 Perform best first search on the graph of rewrites from the specified `SearchNode`.
 -/
 def search (n : SearchNode)
-    (stopAtRfl := true) (stopAtDistZero := true) (maxQueued : Option Nat := none) :
+    (stopAtRfl := true) (stopAtDistZero := true)
+    (forbidden : NameSet := ∅) (maxQueued : Option Nat := none) :
     MLList MetaM SearchNode := .squash fun _ => do
   let hyps ← localHypotheses
   let lemmas ← rewriteLemmas.get
   let search := bestFirstSearchCore (maxQueued := maxQueued)
     (β := String) (removeDuplicatesBy? := some SearchNode.ppGoal)
-    prio estimator (rewrites hyps lemmas) n
+    prio estimator (rewrites hyps lemmas forbidden) n
+  let search ←
+    if ← isTracingEnabledFor `rw_search then do
+      pure <| search.mapM fun n => do trace[rw_search] "{← toString n}"; pure n
+    else
+      pure search
   let search := if stopAtRfl then
     search.mapM compute_rfl? |>.takeUpToFirst fun n => n.rfl? = some true
   else
@@ -248,18 +276,26 @@ The search is a best-first search, minimising the Levenshtein edit distance betw
 the pretty-printed expressions on either side of the equality.
 (The strings are tokenized at spaces,
 separating delimiters `(`, `)`, `[`, `]`, and `,` into their own tokens.)
+
+You can use `rw_search [-my_lemma, -my_theorem]`
+to prevent `rw_search` from using the names theorems.
 -/
-syntax "rw_search" : tactic
+syntax "rw_search" (forbidden)? : tactic
 
 elab_rules : tactic |
-    `(tactic| rw_search%$tk) => do
+    `(tactic| rw_search%$tk $[[ $[-$forbidden],* ]]?) => do
+  let forbidden : NameSet :=
+    ((forbidden.getD #[]).map Syntax.getId).foldl (init := ∅) fun s n => s.insert n
   let .some init ← SearchNode.init (← getMainGoal) | throwError "Goal is not an equality."
-  let results := init.search |>.whileAtLeastHeartbeatsPercent 20
+  let results := init.search (forbidden := forbidden) |>.whileAtLeastHeartbeatsPercent 20
   let results ← results.force
   let min ← match results with
   | [] => failure
   | h :: t =>
-    pure <| t.foldl (init := h) fun r₁ r₂ => if r₁.dist?.getD 0 ≤ r₂.dist?.getD 0 then r₁ else r₂
+      pure <| t.foldl (init := h) fun r₁ r₂ =>
+        if r₁.rfl? = some true then r₁
+        else if r₂.rfl? = some true then r₂
+        else if r₁.dist?.getD 0 ≤ r₂.dist?.getD 0 then r₁ else r₂
   setMCtx min.mctx
   replaceMainGoal [min.goal]
   let type? := if min.rfl? = some true then none else some (← min.goal.getType)

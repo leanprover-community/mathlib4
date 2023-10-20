@@ -5,25 +5,32 @@ set_option autoImplicit true
 -- You can enable tracing of the `rw_search` algorithm using
 -- set_option trace.rw_search true
 
-set_option maxHeartbeats 600000
+-- You can get timing information (very useful if tweaking the search algorithm!) using
+-- set_option profiler true
 
 /-- info: Try this: rw [@List.length_append, Nat.add_comm] -/
 #guard_msgs in
 example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
   rw_search
 
-/-- info: Try this: rw [← @add_rotate, ← vadd_eq_add, ← @add_rotate, @add_right_comm] -/
+/-- info: Try this: rw [@add_right_comm, ← @add_assoc, @add_assoc, @add_add_add_comm, ← @add_assoc] -/
 #guard_msgs in
 example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b := by
   rw_search
 
-/-- info: Try this: rw [@List.length_append, @List.length_append, Nat.two_mul, @add_rotate] -/
+/-- info: Try this: rw [@List.length_append, @List.length_append, @add_rotate, @Nat.add_right_cancel_iff, Nat.two_mul] -/
 #guard_msgs in
 example (xs ys : List α) :
     (xs ++ ys ++ ys).length = 2 * ys.length + xs.length := by
   rw_search
 
-/-- info: Try this: rw [@add_sub, @eq_sub_iff_add_eq, ← @add_rotate, Int.add_right_comm] -/
+/-- info: Try this: rw [@List.length_append, @List.length_append, Nat.two_mul, Nat.add_assoc, @add_rotate', Nat.add_assoc] -/
+#guard_msgs in
+example (xs ys : List α) :
+    (xs ++ ys ++ ys).length = 2 * ys.length + xs.length := by
+  rw_search [-add_rotate]
+
+/-- info: Try this: rw [Int.add_right_comm, @add_right_cancel_iff, @add_sub, @add_sub_cancel'] -/
 #guard_msgs in
 example {a b c : Int} : a + b = c + b + (a - c) := by
   rw_search

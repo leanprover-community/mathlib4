@@ -73,13 +73,13 @@ def weightCost (f : α → ℕ) : Cost α α ℕ where
 Cost structure for strings, where cost is the length of the token.
 -/
 @[simps!]
-def stringLength : Cost String String ℕ := weightCost String.length
+def stringLengthCost : Cost String String ℕ := weightCost String.length
 
 /--
 Cost structure for strings, where cost is the log base 2 length of the token.
 -/
 @[simps!]
-def stringLogLength : Cost String String ℕ := weightCost fun s => Nat.log2 (s.length + 1)
+def stringLogLengthCost : Cost String String ℕ := weightCost fun s => Nat.log2 (s.length + 1)
 
 variable (C : Cost α β δ)
 

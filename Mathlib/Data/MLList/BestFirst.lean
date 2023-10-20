@@ -25,7 +25,7 @@ Options:
 * `maxDepth` allows bounding the search depth
 * `maxQueued` implements "beam" search,
   by discarding elements from the priority queue when it grows too large
-* `removeDuplicates` maintains an `RBSet` of previously visited nodes;
+* `removeDuplicatesBy?` maintains an `RBSet` of previously visited nodes;
   otherwise if the graph is not a tree nodes may be visited multiple times.
 -/
 
