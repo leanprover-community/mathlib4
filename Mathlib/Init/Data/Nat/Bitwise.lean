@@ -176,9 +176,12 @@ theorem bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
 def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
 #align nat.bit_cases_on Nat.bitCasesOn
 
-theorem bit_zero : bit false 0 = 0 :=
-  rfl
-#align nat.bit_zero Nat.bit_zero
+@[simp]
+theorem bit_zero {b} : bit b 0 = b.toNat := by
+  cases b <;> rfl
+
+theorem bit_false_zero : bit false 0 = 0 := rfl
+#align nat.bit_zero Nat.bit_false_zero
 
 /--`shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.

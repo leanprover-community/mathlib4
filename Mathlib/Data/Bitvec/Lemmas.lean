@@ -59,24 +59,13 @@ lemma ofNat_toNat' (x : BitVec w) (h : v = w):
 
 theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
     (msbs ++ lsbs).toNat = msbs.toNat <<< v ||| lsbs.toNat := by
-  -- `rfl` no longer works
   rcases msbs with ⟨msbs, hm⟩
   rcases lsbs with ⟨lsbs, hl⟩
   simp only [HAppend.hAppend, append, toNat_ofFin]
   rw [toNat_ofNat (Nat.add_comm w v ▸ append_lt hl hm)]
 
-
-
 theorem toNat_extractLsb {i j} {x : BitVec w} :
     (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j + 1)) := by
   simp [extractLsb, extractLsb', shiftRight_eq_div_pow]
-
-lemma bne_eq_not (x y : BitVec w) : (x != y) = !(decide (x = y)) := by
-  cases' h : x == y <;> rfl
-
-theorem get_eq_testBit {x : BitVec w} {i} : x.getLsb i = x.toNat.testBit i := by
-  cases' h : bodd (x.toNat >>> i)
-  <;> simp [bne_eq_not, mod_two_of_bodd, h, ← toNat_inj, testBit]
-  <;> sorry
 
 end Std.BitVec

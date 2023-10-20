@@ -178,9 +178,7 @@ theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false :
   cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
-lemma bit_toNat (b : Bool) : bit b 0 = b.toNat := by cases' b <;> simp
-
-theorem bodd_eq_bodd_iff {m n}: bodd n = bodd m ↔ n % 2 = m % 2 := by
+theorem bodd_eq_bodd_iff {m n} : bodd n = bodd m ↔ n % 2 = m % 2 := by
   cases' hn : bodd n <;> cases' hm : bodd m
   <;> simp [mod_two_of_bodd, hn, hm]
 
@@ -384,10 +382,10 @@ theorem ofBits_lt {f i} : ofBits f 0 i < 2 ^ i := by
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
 theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f 0 j).testBit i = f i := by
   induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
-  · simp [lt_one_iff.1 h1, ofBits]
+  · simp only [ofBits, bit_zero, lt_one_iff.1 h1]; cases (f 0) <;> rfl
   · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
     · rw [← ih h1, ofBits, ofBits_eq_pow_mul_add, testBit_two_pow_mul_add h1]
-    · rw [h1, ofBits, ofBits_eq_pow_mul_add, bit_toNat, testBit_two_pow_mul_toNat_add (ofBits_lt)]
+    · rw [h1, ofBits, ofBits_eq_pow_mul_add, bit_zero, testBit_two_pow_mul_toNat_add (ofBits_lt)]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
