@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.GradedObject.Map
+/-import Mathlib.CategoryTheory.GradedObject.Map
 
 namespace CategoryTheory
 
@@ -67,3 +67,4 @@ end
 end GradedObject
 
 end CategoryTheory
+-/

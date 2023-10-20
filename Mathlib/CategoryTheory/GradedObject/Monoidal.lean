@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+/-import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 namespace CategoryTheory
 
@@ -438,3 +438,4 @@ variable
 end GradedObject
 
 end CategoryTheory
+-/

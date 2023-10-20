@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+/-import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 namespace CategoryTheory
 
@@ -409,3 +409,4 @@ end
 end GradedObject
 
 end CategoryTheory
+-/
