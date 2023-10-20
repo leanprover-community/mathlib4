@@ -89,7 +89,8 @@ theorem bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
 
 theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
-  simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.xor_false_right] at this
+  simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and,
+    Bool.xor_false_right] at this
   have _ : ∀ b, and false b = false := by
     intro b
     cases b <;> rfl
