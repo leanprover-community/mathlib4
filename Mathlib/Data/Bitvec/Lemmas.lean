@@ -65,4 +65,20 @@ theorem toNat_extractLsb {i j} {x : BitVec w} :
     (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j + 1)) := by
   simp [extractLsb, extractLsb', shiftRight_eq_div_pow]
 
+lemma bodd_eq_mod_two_bne_zero (n) : bodd n = (n % 2 != 0) := by
+  rw [mod_two_of_bodd]; cases bodd n <;> rfl
+
+lemma and_shiftLeft (x y z : ℕ) : x &&& y <<< z = (x >>> z &&& y) <<< z := by
+  sorry
+
+lemma shiftLeft_bne_zero_eq (x y : ℕ) : (x <<< y != 0) = (x != 0) := by
+  sorry
+
+lemma mod_two_eq_and_one (x : ℕ) : x % 2 = x &&& 1 := by
+  sorry
+
+theorem getLsb_eq_testBit {i} {x : BitVec w} : getLsb x i = x.toNat.testBit i := by
+  simp only [getLsb, testBit, bodd_eq_mod_two_bne_zero, and_shiftLeft, shiftLeft_bne_zero_eq,
+    mod_two_eq_and_one]
+
 end Std.BitVec
