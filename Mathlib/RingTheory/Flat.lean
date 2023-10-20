@@ -129,9 +129,10 @@ lemma of_iso (R : Type u) (M : Type v) (N : Type w) [CommRing R] [AddCommGroup M
 open DirectSum
 
 /-- A direct sum of flat `R`-modules is flat. -/
-lemma directSum (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι] (M : ι → Type w)
+lemma directSum (R : Type u) [CommRing R] (ι : Type v) (M : ι → Type w)
     [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] (F : (i : ι) → (Flat R (M i))) :
     Flat R (⨁ i, M i) := by
+  classical
   rw [iff_rTensor_injective]
   intro I hI
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]
@@ -169,13 +170,13 @@ lemma directSum (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι
     h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
-set_option linter.unusedVariables false in
 /-- Free `R`-modules over discrete types are flat. -/
-instance finsupp (R : Type u) [CommRing R] (ι : Type v) [dec_ι : DecidableEq ι] :
+instance finsupp (R : Type u) [CommRing R] (ι : Type v) :
     Flat R (ι →₀ R) :=
+  let _ := Classical.decEq ι
   of_iso R _ _ (finsuppLEquivDirectSum R R ι) (directSum R ι _ (fun _ ↦ (self R)))
 
-noncomputable instance of_free (R : Type) [CommRing R] (M: Type w)
+instance of_free (R : Type) [CommRing R] (M: Type w)
     [AddCommGroup M] [Module R M] [Free R M] : Flat R M :=
   of_iso R _ _ (Free.repr R M) (finsupp R _ )
 
@@ -187,7 +188,7 @@ lemma of_projective_surj (R : Type u) [CommRing R] (ι : Type v) [DecidableEq ι
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he (finsupp R _)
 
-noncomputable instance of_projective (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M]
+instance of_projective (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M]
     [Module R M] [h : Projective R M] : Flat R M := by
   rw [Module.projective_def'] at h
   cases h with
