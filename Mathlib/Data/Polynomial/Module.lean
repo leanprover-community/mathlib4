@@ -68,7 +68,8 @@ def equiv_self : AEval R M a ≃ₗ[R] M where
   right_inv   := by tauto
 
 /--
-The canonical linear equivalence between `Module.AEval R M a` and `M` as an `A`-module, where `a : A`.
+The canonical linear equivalence between `Module.AEval R M a` and `M` as an `A`-module,
+where `a : A`.
 -/
 def equiv_self₂ : AEval R M a ≃ₗ[A] M where
   toFun       := id
