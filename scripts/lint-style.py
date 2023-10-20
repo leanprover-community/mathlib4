@@ -213,7 +213,7 @@ def nonterminal_simp_check(lines, path):
                 num_next_spaces = len(next_line) - len(stripped_next_line)
                 # Check if the number of leading spaces is the same
                 if num_spaces == num_next_spaces:
-                    # If so, the simp is nonterminal
+                    # If so, the tactics are in the same block, so the simp is nonterminal
                     errors += [(ERR_NSP, line_nr, path)]
                     new_line = line.replace("simp", "simp?")
         newlines.append((line_nr, new_line))
