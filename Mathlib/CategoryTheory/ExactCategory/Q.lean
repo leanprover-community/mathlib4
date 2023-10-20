@@ -50,7 +50,7 @@ lemma Hom.mk'_surjective {X Y : Q C} (φ : Hom X Y) : ∃ (Z : C) (j : Z ⟶ X.o
     (hi : AdmissibleMono i) (hj : AdmissibleEpi j), φ = Hom.mk' _ _ j i  := by
   refine' ⟨_ , φ.j, φ.i.arrow, inferInstance, inferInstance, _⟩
   refine' Hom.ext _ _ (Subobject.isoOfEq _ _ (Subobject.mk_arrow φ.i).symm) _ _
-  . dsimp
+  · dsimp
     simp
   . dsimp [mk']
     simp only [← assoc]
