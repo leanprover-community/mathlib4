@@ -47,7 +47,7 @@ lemma cons_def (a : α i) (f : ∀ j ∈ l, α j) : cons _ _ a f =
     Multiset.Pi.cons l _ a f = cons _ _ a f :=
   rfl
 
-@[simp] lemma cons_eta (f : ∀ j ∈ (i :: l), α j) :
+@[simp] lemma cons_eta (f : ∀ j ∈ i :: l, α j) :
     cons _ _ (head f) (tail f) = f :=
   Multiset.Pi.cons_eta (ι := ι) (m := l) f
 
@@ -67,8 +67,8 @@ variable {ι : Type*} [DecidableEq ι] {α : ι → Type*}
 
 /-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
 def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i)
-  |       [],  _ => [List.Pi.nil α]
-  | (i :: l), fs => (fs i).bind (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
+  |     [],  _ => [List.Pi.nil α]
+  | i :: l, fs => (fs i).bind (fun b ↦ (pi l fs).map (List.Pi.cons _ _ b))
 
 @[simp] lemma pi_nil (t : ∀ i, List (α i)) :
     pi [] t = [Pi.nil α] :=
