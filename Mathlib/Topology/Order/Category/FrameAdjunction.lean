@@ -41,13 +41,13 @@ topological space, frame, locale, Stone duality, adjunction, points
 
 open CategoryTheory Order Set Topology TopologicalSpace
 
-namespace CategoryTheory
-namespace Locale
+namespace CategoryTheory.Locale
 
 /- ### Definition of the points functor `pt` --/
 
 section pt_definition
-variable (L L' : Type*) [CompleteLattice L] [CompleteLattice L']
+
+variable (L : Type*) [CompleteLattice L]
 
 /-- The type of points of a complete lattice `L`, where a *point* of a complete lattice is,
 by definition, a frame homomorphism from `L` to `Prop`. -/
@@ -57,10 +57,10 @@ def PT := FrameHom L Prop
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
 points of `L`. -/
 @[simps]
-def OpenOfElementHom : FrameHom L (Set (PT L)) where
+def openOfElementHom : FrameHom L (Set (PT L)) where
   toFun u := {x | x u}
-  map_inf' a b := by simp; rfl
-  map_top' := by simp; rfl
+  map_inf' a b := by simp [Set.setOf_and]
+  map_top' := by simp
   map_sSup' S := by ext; simp [Prop.exists_iff]
 
 namespace PT
@@ -68,7 +68,7 @@ namespace PT
 /-- The topology on the set of points of the complete lattice `L`. -/
 instance instTopologicalSpace : TopologicalSpace (PT L) where
   IsOpen s := ∃ u, {x | x u} = s
-  isOpen_univ := ⟨⊤, by simp [Prop.top_eq_true]⟩
+  isOpen_univ := ⟨⊤, by simp⟩
   isOpen_inter := by rintro s t ⟨u, rfl⟩ ⟨v, rfl⟩; use u ⊓ v; simp_rw [map_inf]; rfl
   isOpen_sUnion S hS := by
     choose f hf using hS
@@ -84,28 +84,29 @@ end PT
 topological spaces, which sends a frame `L` to the topological space `PT L` of homomorphisms
 from `L` to `Prop` and a frame homomorphism `f` to the continuous function `PT.map f`. -/
 def pt : Locale ⥤ TopCat where
-  obj L := ⟨PT L.unop, by infer_instance⟩
-  map f := ⟨fun p ↦ p.comp f.unop, continuous_def.2 $ by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
+  obj L := ⟨PT L.unop, inferInstance⟩
+  map f := ⟨fun p ↦ p.comp f.unop, continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
 end pt_definition
 
 section locale_top_adjunction
+
 variable (X : Type*) [TopologicalSpace X] (L : Locale)
 
 /-- The function that associates with a point `x` of the space `X` a point of the locale of opens
 of `X`. -/
 @[simps]
-def LocalePointOfSpacePoint (x : X) : PT (Opens X) where
+def localePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
   map_inf' a b := rfl
   map_top' := rfl
-  map_sSup' S := by simp [Opens.mem_sSup, Prop.exists_iff]
+  map_sSup' S := by simp [Prop.exists_iff]
 
 /-- The counit is a frame homomorphism. -/
-def counit_app_cont : FrameHom L (Opens $ PT L) where
-  toFun u := ⟨OpenOfElementHom L u, by use u; rfl⟩
-  map_inf' a b := by simp [OpenOfElementHom]
-  map_top' := by simp [OpenOfElementHom]; rfl
-  map_sSup' S := by simp [OpenOfElementHom]; ext; simp [Opens.coe_mk]
+def counitAppCont : FrameHom L (Opens <| PT L) where
+  toFun u := ⟨openOfElementHom L u, u, rfl⟩
+  map_inf' a b := by simp
+  map_top' := by simp
+  map_sSup' S := by ext; simp
 
 /-- The counit as a natural transformation. -/
 def Counit : pt.comp topToLocale ⟶ 𝟭 Locale where
@@ -126,4 +127,3 @@ def adjunctionTopToLocalePT : topToLocale ⊣ pt := Adjunction.mkOfUnitCounit un
 end locale_top_adjunction
 
 end Locale
-end CategoryTheory
