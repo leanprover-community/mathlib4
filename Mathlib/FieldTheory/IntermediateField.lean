@@ -423,6 +423,10 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
   SetLike.coe_injective <| Set.image_image _ _ _
 #align intermediate_field.map_map IntermediateField.map_map
 
+theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
+    S.map f ≤ T.map f :=
+  SetLike.coe_mono (Set.image_subset f h)
+
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
 field `E` of `L/K`, `intermediate_field_equiv_map e E` is the induced equivalence
 between `E` and `E.map e` -/
@@ -432,13 +436,15 @@ def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E �
 
 /- We manually add these two simp lemmas because `@[simps]` before `intermediate_field_map`
   led to a timeout. -/
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
     ↑(intermediateFieldMap e E a) = e a :=
   rfl
 #align intermediate_field.intermediate_field_map_apply_coe IntermediateField.intermediateFieldMap_apply_coe
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem intermediateFieldMap_symm_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L)
     (a : E.map e.toAlgHom) : ↑((intermediateFieldMap e E).symm a) = e.symm a :=
   rfl
@@ -717,10 +723,8 @@ theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
   rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
 #align intermediate_field.is_integral_iff IntermediateField.isIntegral_iff
 
-theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) := by
-  by_cases hx : IsIntegral K x
-  · exact minpoly.eq_of_algebraMap_eq (algebraMap S L).injective hx rfl
-  · exact (minpoly.eq_zero hx).trans (minpoly.eq_zero (mt isIntegral_iff.mpr hx)).symm
+theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
+  (minpoly.algebraMap_eq (algebraMap S L).injective x).symm
 #align intermediate_field.minpoly_eq IntermediateField.minpoly_eq
 
 end IntermediateField

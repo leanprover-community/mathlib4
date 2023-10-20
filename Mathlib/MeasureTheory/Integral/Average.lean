@@ -603,10 +603,10 @@ theorem exists_not_mem_null_integral_le (hf : Integrable f μ) (hN : μ N = 0) :
 end ProbabilityMeasure
 end FirstMomentReal
 
-section FirstMomentEnnreal
+section FirstMomentENNReal
 variable {N : Set α} {f : α → ℝ≥0∞}
 
-/-- **First moment method**. A measurable function is smaller than its mean on a set of ositive
+/-- **First moment method**. A measurable function is smaller than its mean on a set of positive
 measure. -/
 theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
     (hf : AEMeasurable f (μ.restrict s)) : 0 < μ {x ∈ s | f x ≤ ⨍⁻ a in s, f a ∂μ} := by
@@ -626,7 +626,7 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
     exact measure_eq_top_of_lintegral_ne_top hf h
 #align measure_theory.measure_le_set_laverage_pos MeasureTheory.measure_le_setLaverage_pos
 
-/-- **First moment method**. A measurable function is greater than its mean on a set of ositive
+/-- **First moment method**. A measurable function is greater than its mean on a set of positive
 measure. -/
 theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s μ)
     (hint : ∫⁻ a in s, f a ∂μ ≠ ∞) : 0 < μ {x ∈ s | ⨍⁻ a in s, f a ∂μ ≤ f x} := by
@@ -649,21 +649,21 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
     exact measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint
 #align measure_theory.measure_set_laverage_le_pos MeasureTheory.measure_setLaverage_le_pos
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ean. -/
+/-- **First moment method**. The minimum of a measurable function is smaller than its mean. -/
 theorem exists_le_setLaverage (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : AEMeasurable f (μ.restrict s)) :
     ∃ x ∈ s, f x ≤ ⨍⁻ a in s, f a ∂μ :=
   let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_le_setLaverage_pos hμ hμ₁ hf).ne'
   ⟨x, hx, h⟩
 #align measure_theory.exists_le_set_laverage MeasureTheory.exists_le_setLaverage
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ean. -/
+/-- **First moment method**. The maximum of a measurable function is greater than its mean. -/
 theorem exists_setLaverage_le (hμ : μ s ≠ 0) (hs : NullMeasurableSet s μ)
     (hint : ∫⁻ a in s, f a ∂μ ≠ ∞) : ∃ x ∈ s, ⨍⁻ a in s, f a ∂μ ≤ f x :=
   let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_setLaverage_le_pos hμ hs hint).ne'
   ⟨x, hx, h⟩
 #align measure_theory.exists_set_laverage_le MeasureTheory.exists_setLaverage_le
 
-/-- **First moment method**. A measurable function is greater than its mean on a set of ositive
+/-- **First moment method**. A measurable function is greater than its mean on a set of positive
 measure. -/
 theorem measure_laverage_le_pos (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠ ∞) :
     0 < μ {x | ⨍⁻ a, f a ∂μ ≤ f x} := by
@@ -671,13 +671,13 @@ theorem measure_laverage_le_pos (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠
     @measure_setLaverage_le_pos _ _ _ _ f (measure_univ_ne_zero.2 hμ) nullMeasurableSet_univ
 #align measure_theory.measure_laverage_le_pos MeasureTheory.measure_laverage_le_pos
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ean. -/
+/-- **First moment method**. The maximum of a measurable function is greater than its mean. -/
 theorem exists_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠ ∞) : ∃ x, ⨍⁻ a, f a ∂μ ≤ f x :=
   let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_laverage_le_pos hμ hint).ne'
   ⟨x, hx⟩
 #align measure_theory.exists_laverage_le MeasureTheory.exists_laverage_le
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ean, while
+/-- **First moment method**. The maximum of a measurable function is greater than its mean, while
 avoiding a null set. -/
 theorem exists_not_mem_null_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a : α, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ⨍⁻ a, f a ∂μ ≤ f x := by
@@ -690,7 +690,7 @@ theorem exists_not_mem_null_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a : α, 
 section FiniteMeasure
 variable [IsFiniteMeasure μ]
 
-/-- **First moment method**. A measurable function is smaller than its mean on a set of ositive
+/-- **First moment method**. A measurable function is smaller than its mean on a set of positive
 measure. -/
 theorem measure_le_laverage_pos (hμ : μ ≠ 0) (hf : AEMeasurable f μ) :
     0 < μ {x | f x ≤ ⨍⁻ a, f a ∂μ} := by
@@ -698,13 +698,13 @@ theorem measure_le_laverage_pos (hμ : μ ≠ 0) (hf : AEMeasurable f μ) :
     measure_le_setLaverage_pos (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _) hf.restrict
 #align measure_theory.measure_le_laverage_pos MeasureTheory.measure_le_laverage_pos
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ean. -/
+/-- **First moment method**. The minimum of a measurable function is smaller than its mean. -/
 theorem exists_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ) : ∃ x, f x ≤ ⨍⁻ a, f a ∂μ :=
   let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_le_laverage_pos hμ hf).ne'
   ⟨x, hx⟩
 #align measure_theory.exists_le_laverage MeasureTheory.exists_le_laverage
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ean, while
+/-- **First moment method**. The minimum of a measurable function is smaller than its mean, while
 avoiding a null set. -/
 theorem exists_not_mem_null_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ⨍⁻ a, f a ∂μ := by
@@ -734,18 +734,18 @@ theorem measure_lintegral_le_pos (hint : ∫⁻ a, f a ∂μ ≠ ∞) : 0 < μ {
     measure_laverage_le_pos (IsProbabilityMeasure.ne_zero μ) hint
 #align measure_theory.measure_lintegral_le_pos MeasureTheory.measure_lintegral_le_pos
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ntegral. -/
+/-- **First moment method**. The minimum of a measurable function is smaller than its integral. -/
 theorem exists_le_lintegral (hf : AEMeasurable f μ) : ∃ x, f x ≤ ∫⁻ a, f a ∂μ := by
   simpa only [laverage_eq_lintegral] using exists_le_laverage (IsProbabilityMeasure.ne_zero μ) hf
 #align measure_theory.exists_le_lintegral MeasureTheory.exists_le_lintegral
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ntegral. -/
+/-- **First moment method**. The maximum of a measurable function is greater than its integral. -/
 theorem exists_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) : ∃ x, ∫⁻ a, f a ∂μ ≤ f x := by
   simpa only [laverage_eq_lintegral] using
     exists_laverage_le (IsProbabilityMeasure.ne_zero μ) hint
 #align measure_theory.exists_lintegral_le MeasureTheory.exists_lintegral_le
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ntegral,
+/-- **First moment method**. The minimum of a measurable function is smaller than its integral,
 while avoiding a null set. -/
 theorem exists_not_mem_null_le_lintegral (hf : AEMeasurable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ∫⁻ a, f a ∂μ := by
@@ -753,7 +753,7 @@ theorem exists_not_mem_null_le_lintegral (hf : AEMeasurable f μ) (hN : μ N = 0
     exists_not_mem_null_le_laverage (IsProbabilityMeasure.ne_zero μ) hf hN
 #align measure_theory.exists_not_mem_null_le_lintegral MeasureTheory.exists_not_mem_null_le_lintegral
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ntegral,
+/-- **First moment method**. The maximum of a measurable function is greater than its integral,
 while avoiding a null set. -/
 theorem exists_not_mem_null_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ∫⁻ a, f a ∂μ ≤ f x := by
@@ -762,7 +762,7 @@ theorem exists_not_mem_null_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) (h
 #align measure_theory.exists_not_mem_null_lintegral_le MeasureTheory.exists_not_mem_null_lintegral_le
 
 end ProbabilityMeasure
-end FirstMomentEnnreal
+end FirstMomentENNReal
 
 /-- If the average of a function `f` along a sequence of sets `aₙ` converges to `c` (more precisely,
 we require that `⨍ y in a i, ‖f y - c‖ ∂μ` tends to `0`), then the integral of `gₙ • f` also tends

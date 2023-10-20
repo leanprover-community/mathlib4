@@ -37,7 +37,6 @@ variable (R : Type*) [CommRing R] [Nontrivial R]
 
 open Polynomial Function Fin LinearMap
 
-set_option maxHeartbeats 210000 in
 /-- Any commutative ring satisfies the `StrongRankCondition`. -/
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R := by
   suffices ∀ n, ∀ f : (Fin (n + 1) → R) →ₗ[R] Fin n → R, ¬Injective f by

@@ -281,7 +281,7 @@ theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (
   · exact (vsub_sub_vsub_cancel_right p1 p3 p2).symm
 #align euclidean_geometry.dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 
-alias dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle ← law_cos
+alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 #align euclidean_geometry.law_cos EuclideanGeometry.law_cos
 
 /-- **Isosceles Triangle Theorem**: Pons asinorum, angle-at-point form. -/

@@ -18,12 +18,17 @@ included in `t`. For example,
 `Finset.Icc {0, 1} {0, 1, 2, 3} = {{0, 1}, {0, 1, 2}, {0, 1, 3}, {0, 1, 2, 3}}`
 and
 `Finset.Icc {0, 1, 2} {0, 1, 3} = {}`.
+
+In addition, this file gives characterizations of monotone and strictly monotone functions
+out of `Finset α` in terms of `Finset.insert`
 -/
 
 
 variable {α : Type*}
 
 namespace Finset
+
+section Decidable
 
 variable [DecidableEq α] (s t : Finset α)
 
@@ -124,5 +129,90 @@ theorem card_Iic_finset : (Iic s).card = 2 ^ s.card := by rw [Iic_eq_powerset, c
 theorem card_Iio_finset : (Iio s).card = 2 ^ s.card - 1 := by
   rw [Iio_eq_ssubsets, ssubsets, card_erase_of_mem (mem_powerset_self _), card_powerset]
 #align finset.card_Iio_finset Finset.card_Iio_finset
+
+end Decidable
+
+variable {s t : Finset α}
+
+section Cons
+
+lemma covby_cons {i : α} (hi : i ∉ s) : s ⋖ cons i s hi :=
+  Covby.of_image ⟨⟨((↑) : Finset α → Set α), coe_injective⟩, coe_subset⟩ <| by
+    simp only [RelEmbedding.coe_mk, Function.Embedding.coeFn_mk, coe_cons, mem_coe]
+    exact_mod_cast Set.covby_insert (show i ∉ (s : Set α) from hi)
+
+lemma covby_iff : s ⋖ t ↔ ∃ i : α, ∃ hi : i ∉ s, t = cons i s hi := by
+  constructor
+  · intro hst
+    obtain ⟨i, hi, his⟩ := ssubset_iff_exists_cons_subset.mp hst.1
+    exact ⟨i, hi, .symm <| eq_of_le_of_not_lt his <| hst.2 <| ssubset_cons hi⟩
+  · rintro ⟨i, hi, rfl⟩
+    exact covby_cons hi
+
+/-- A function `f` from `Finset α` is monotone if and only if `f s ≤ f (cons i s hi)` for all
+`s` and `i ∉ s`. -/
+theorem monotone_iff {β : Type*} [Preorder β] (f : Finset α → β) :
+    Monotone f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s ≤ f (cons i s hi) := by
+  classical
+  simp only [monotone_iff_forall_covby, covby_iff, forall_exists_index, and_imp]
+  aesop
+
+/-- A function `f` from `Finset α` is strictly monotone if and only if `f s < f (insert i s)` for
+all `s` and `i ∉ s`. -/
+theorem strictMono_iff {β : Type*} [Preorder β] (f : Finset α → β) :
+    StrictMono f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f s < f (cons i s hi) := by
+  classical
+  simp only [strictMono_iff_forall_covby, covby_iff, forall_exists_index, and_imp]
+  aesop
+
+/-- A function `f` from `Finset α` is antitone if and only if `f (cons i s hi) ≤ f s` for all
+`s` and `i ∉ s`. -/
+theorem antitone_iff {β : Type*} [Preorder β] (f : Finset α → β) :
+    Antitone f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f (cons i s hi) ≤ f s :=
+  monotone_iff (β := βᵒᵈ) f
+
+/-- A function `f` from `Finset α` is strictly antitone if and only if `f (cons i s hi) < f s` for
+all `s` and `i ∉ s`. -/
+theorem strictAnti_iff {β : Type*} [Preorder β] (f : Finset α → β) :
+    StrictAnti f ↔ ∀ s : Finset α, ∀ {i} (hi : i ∉ s), f (cons i s hi) < f s :=
+  strictMono_iff (β := βᵒᵈ) f
+
+end Cons
+
+section Insert
+
+variable [DecidableEq α]
+
+lemma covby_insert {i : α} (hi : i ∉ s) : s ⋖ insert i s := by
+  simpa using covby_cons hi
+
+lemma covby_iff' : s ⋖ t ↔ ∃ i : α, i ∉ s ∧ t = insert i s := by
+  simp [covby_iff]
+
+/-- A function `f` from `Finset α` is monotone if and only if `f s ≤ f (insert i s)` for all
+`s` and `i ∉ s`. -/
+theorem monotone_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    Monotone f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s ≤ f (insert i s) := by
+  simp [monotone_iff]
+
+/-- A function `f` from `Finset α` is strictly monotone if and only if `f s < f (insert i s)` for
+all `s` and `i ∉ s`. -/
+theorem strictMono_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    StrictMono f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s < f (insert i s) := by
+  simp [strictMono_iff]
+
+/-- A function `f` from `Finset α` is antitone if and only if `f (insert i s) ≤ f s` for all
+`s` and `i ∉ s`. -/
+theorem antitone_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    Antitone f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f (insert i s) ≤ f s :=
+  monotone_iff' (β := βᵒᵈ) f
+
+/-- A function `f` from `Finset α` is strictly antitone if and only if `f (insert i s) < f s` for
+all `s` and `i ∉ s`. -/
+theorem strictAnti_iff' {β : Type*} [Preorder β] (f : Finset α → β) :
+    StrictAnti f ↔ ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f (insert i s) < f s :=
+  strictMono_iff' (β := βᵒᵈ) f
+
+end Insert
 
 end Finset

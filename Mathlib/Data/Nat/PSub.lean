@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.Basic
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.psub from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -107,7 +108,7 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 theorem psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k
-    simp [Option.bind_eq_bind, Option.bind_some]
+    simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
     simp [*, Nat.add_succ]
 #align nat.psub_add Nat.psub_add
 

@@ -101,6 +101,9 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   continuous_toFun := X.toΓSpec_continuous
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_base AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
+
 variable (r : Γ.obj (op X))
 
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
@@ -299,9 +302,17 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       --Porting Note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
+      -- leanprover/lean4#2644
+      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
+        = toΓSpecFun Y (f.val.base x) := by erw [ContinuousMap.coe_mk]; rfl
+      erw [this]
+      have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
+        = toΓSpecFun X x := by erw [ContinuousMap.coe_mk]
+      erw [this]
       dsimp [toΓSpecFun]
-      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
@@ -333,17 +344,6 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
--- Porting note : the two unification hint is to help compile `locallyRingedSpaceAdjunction`
--- faster, from 900000 to normal maxHeartbeats
-/-- opposite of composition of two functors -/
-unif_hint uh_functor_op1 where ⊢
-  Functor.op (Spec.toLocallyRingedSpace.rightOp ⋙ Γ) ≟
-  Spec.toLocallyRingedSpace.{u} ⋙ Γ.rightOp in
-
-/-- opposite of identity functor -/
-unif_hint uh_functor_op2 where ⊢
-  Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ in
-
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 --Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
@@ -365,11 +365,11 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
 
 lemma locallyRingedSpaceAdjunction_unit :
-  locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
+    locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_unit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_unit
 
 lemma locallyRingedSpaceAdjunction_counit :
-  locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
+    locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
 
 -- Porting Note: Commented
@@ -449,7 +449,8 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf,
     SpecΓIdentity_inv_app, Category.id_comp] at this
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
-  rw [SpecΓIdentity_hom_app]
+  -- Note: changed from `rw` to `simp_rw` to improve performance
+  simp_rw [SpecΓIdentity_hom_app]
   convert this using 1
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 

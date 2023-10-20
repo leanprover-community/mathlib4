@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Relation.Symm
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Logic.Equiv.Basic
 
 set_option autoImplicit true

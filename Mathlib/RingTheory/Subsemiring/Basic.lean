@@ -166,6 +166,9 @@ instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] [SetLike 
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subsemiring_class.to_linear_ordered_comm_semiring SubsemiringClass.toLinearOrderedCommSemiring
 
+instance instCharZero [CharZero R] : CharZero s :=
+  ⟨Function.Injective.of_comp (f := Subtype.val) (g := Nat.cast (R := s)) Nat.cast_injective⟩
+
 end SubsemiringClass
 
 end SubsemiringClass
@@ -1311,6 +1314,9 @@ theorem ofLeftInverseS_symm_apply {g : S → R} {f : R →+* S} (h : Function.Le
 def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map e.toRingHom :=
   { e.toAddEquiv.addSubmonoidMap s.toAddSubmonoid, e.toMulEquiv.submonoidMap s.toSubmonoid with }
 #align ring_equiv.subsemiring_map RingEquiv.subsemiringMap
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] RingEquiv.subsemiringMap_symm_apply_coe RingEquiv.subsemiringMap_apply_coe
 
 end RingEquiv
 
