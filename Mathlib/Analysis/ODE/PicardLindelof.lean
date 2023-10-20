@@ -396,7 +396,7 @@ variable {v : E → E} (t₀ : ℝ) {x₀ : E}
 /-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
   Picard-Lindelöf theorem. -/
 theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x₀) :
-  ∃ ε > (0 : ℝ), ∃ L R C, IsPicardLindelof (fun _ => v) (t₀ - ε) t₀ (t₀ + ε) x₀ L R C := by
+    ∃ ε > (0 : ℝ), ∃ L R C, IsPicardLindelof (fun _ => v) (t₀ - ε) t₀ (t₀ + ε) x₀ L R C := by
   obtain ⟨L, s, hs, hlip⟩ := hv.exists_lipschitzOnWith
   obtain ⟨R₁, hR₁ : 0 < R₁, hball⟩ := Metric.mem_nhds_iff.mp hs
   obtain ⟨R₂, hR₂ : 0 < R₂, hbdd⟩ := Metric.continuousAt_iff.mp hv.continuousAt.norm 1 zero_lt_one
