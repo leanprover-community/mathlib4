@@ -682,7 +682,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
   induction s generalizing l₁
   case slnil => cases h₂
   case cons r₁ r₂ b s' ih =>
-    simp at h₂
+    simp only [Bool.not_eq_true, mem_cons] at h₂
     cases' h₂ with e m
     · subst b
       exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
@@ -730,7 +730,7 @@ protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ 
   induction' d with a l₁' h d IH
   · exact ⟨nil, Perm.nil, nil_sublist _⟩
   · cases' forall_mem_cons.1 H with H₁ H₂
-    simp at h
+    simp only [ne_eq, forall_mem_ne] at h
     exact cons_subperm_of_mem d h H₁ (IH H₂)
 #align list.nodup.subperm List.Nodup.subperm
 
@@ -866,7 +866,7 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
     · cases' l₂ with b l₂
       · rfl
       specialize H b
-      simp at H
+      simp only [nodup_nil, find?_nil, not_mem_nil, count_nil, nodup_cons, count_cons_self] at H
       contradiction
     · have : a ∈ l₂ := count_pos_iff_mem.1 (by rw [← H, count_pos_iff_mem]; simp)
       refine' ((IH fun b => _).cons a).trans (perm_cons_erase this).symm
@@ -1201,7 +1201,7 @@ theorem perm_of_mem_permutationsAux :
   · exact (IH1 _ m).trans perm_middle
   · subst e
     have p : l₁ ++ l₂ ~ is := by
-      simp [permutations] at m
+      simp only [Bool.not_eq_true, mem_cons] at m
       cases' m with e m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
@@ -1218,7 +1218,7 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp [Nat.factorial, Nat.add_succ, mul_comm] at IH1
+  simp only [factorial, add_eq, add_zero, mul_comm] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, mul_comm (_ + 1),

@@ -437,7 +437,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       exact hA₃ n
     · rw [not_lt, le_zero_iff] at hb
       specialize hA₃ 0
-      simp [hb, le_zero_iff] at hA₃
+      simp? [hb, le_zero_iff] at hA₃
       assumption
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push_neg at h

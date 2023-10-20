@@ -65,7 +65,8 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
   (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
   simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *]
   · rename_i h₂ h₁ heq ih
-    simp [Iterator.curr, get_cons_addChar, Iterator.next, next, *] at *
+    simp only [Iterator.next, next, Iterator.curr, get_cons_addChar, lt_self_iff_false,
+      decide_False, ite_true, *] at *
     repeat rw [Pos.addChar_right_comm _ c]
     exact ih
   · rename_i h₂ h₁ hne
@@ -165,7 +166,7 @@ instance : LinearOrder String where
     simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt,
       List.LT', toList]
     split_ifs <;>
-    simp [List.lt_iff_lex_lt] at * <;>
+    simp only [List.lt_iff_lex_lt] at * <;>
     contradiction
 
 end String

@@ -134,7 +134,7 @@ theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :
   normal_iff.2 fun x => by
     cases' h.out (f.symm x) with hx hhx
     have H := map_isIntegral f.toAlgHom hx
-    simp [AlgEquiv.toAlgHom_eq_coe] at H
+    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] at H
     use H
     apply Polynomial.splits_of_splits_of_dvd (algebraMap F E') (minpoly.ne_zero hx)
     · rw [← AlgHom.comp_algebraMap f.toAlgHom]

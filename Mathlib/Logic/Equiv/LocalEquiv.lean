@@ -557,7 +557,7 @@ protected theorem ext {e e' : LocalEquiv α β} (h : ∀ x, e x = e' x)
   have I' : e' '' e'.source = e'.target := e'.image_source_eq_target
   rw [A, hs, I'] at I
   cases e; cases e'
-  simp [*] at *
+  simp only [coe_symm_mk, mk.injEq] at *
   simp [*]
 #align local_equiv.ext LocalEquiv.ext
 
@@ -920,16 +920,16 @@ def prod (e : LocalEquiv α β) (e' : LocalEquiv γ δ) : LocalEquiv (α × γ) 
   toFun p := (e p.1, e' p.2)
   invFun p := (e.symm p.1, e'.symm p.2)
   map_source' p hp := by
-    simp at hp
+    simp only [mem_prod] at hp
     simp [hp]
   map_target' p hp := by
-    simp at hp
+    simp only [mem_prod] at hp
     simp [map_target, hp]
   left_inv' p hp := by
-    simp at hp
+    simp only [mem_prod] at hp
     simp [hp]
   right_inv' p hp := by
-    simp at hp
+    simp only [mem_prod] at hp
     simp [hp]
 #align local_equiv.prod LocalEquiv.prod
 

@@ -42,7 +42,7 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     rcases eq_or_ne θ 0 with (rfl | h'θ)
     · simpa using hr
     · right
-      simp at hr
+      simp only [mem_Ioi] at hr
       simpa only [ne_of_gt hr, Ne.def, mem_setOf_eq, mul_eq_zero, false_or_iff,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by

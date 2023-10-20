@@ -349,7 +349,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   have i₁_lt_i : i₁ < i := Nat.pred_lt (ne_of_gt i_pos)
   have i₁_succ : i₁.succ = i := Nat.succ_pred_eq_of_pos i_pos
   have := Nat.find_min (c.index_exists j.2) i₁_lt_i
-  simp [lt_trans i₁_lt_i (c.index j).2, i₁_succ] at this
+  simp only [i₁_succ, lt_trans i₁_lt_i (c.index j).2, and_true, not_lt] at this
   exact Nat.lt_le_antisymm H this
 #align composition.size_up_to_index_le Composition.sizeUpTo_index_le
 
@@ -820,13 +820,13 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · convert hj1
     · simp only [or_iff_not_imp_left]
       intro i_mem i_ne_zero i_ne_last
-      simp [Fin.ext_iff] at i_ne_zero i_ne_last
+      simp only [Fin.ext_iff, Fin.val_zero, Fin.val_last] at i_ne_zero i_ne_last
       have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
         rw [add_comm]
         exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
       refine' ⟨⟨i - 1, _⟩, _, _⟩
       · have : (i : ℕ) < n + 1 := i.2
-        simp [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this
+        simp only [Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
         exact Nat.pred_lt_pred i_ne_zero this
       · convert i_mem
         simp only [ge_iff_le]

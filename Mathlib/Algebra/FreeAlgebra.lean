@@ -461,7 +461,8 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
       · simp
         rfl
       · intro x y ih
-        simp at ih
+        simp only [MonoidAlgebra.of_apply, AlgHom.coe_comp, Function.comp_apply,
+          MonoidAlgebra.lift_single, one_smul, AlgHom.coe_id, id_eq] at ih
         simp [ih])
     (by
       ext
@@ -570,7 +571,8 @@ theorem induction {C : FreeAlgebra R X → Prop}
   suffices : a = lift R of a
   · rw [this]
     exact Subtype.prop (lift R of a)
-  simp [AlgHom.ext_iff] at of_id
+  simp only [AlgHom.ext_iff, AlgHom.coe_id, id_eq, AlgHom.coe_comp, Subalgebra.coe_val,
+    Function.comp_apply] at of_id
   exact of_id a
 #align free_algebra.induction FreeAlgebra.induction
 

@@ -328,7 +328,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
   | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by -- TODO: golf
     rw [cmp]
     have IHe := @cmp_compares _ _ h₁.fst h₂.fst
-    simp [Ordering.Compares] at IHe; revert IHe
+    simp only [Ordering.Compares, gt_iff_lt] at IHe ; revert IHe
     cases cmp e₁ e₂
     case lt => intro IHe; exact oadd_lt_oadd_1 h₁ IHe
     case gt => intro IHe; exact oadd_lt_oadd_1 h₂ IHe
@@ -374,7 +374,7 @@ theorem NF.of_dvd_omega_opow {b e n a} (h : NF (ONote.oadd e n a))
     b ≤ repr e ∧ ω ^ b ∣ repr a := by
   have := mt repr_inj.1 (fun h => by injection h : ONote.oadd e n a ≠ 0)
   have L := le_of_not_lt fun l => not_le_of_lt (h.below_of_lt l).repr_lt (le_of_dvd this d)
-  simp at d
+  simp only [repr] at d
   exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
 #align onote.NF.of_dvd_omega_opow ONote.NF.of_dvd_omega_opow
 
@@ -979,7 +979,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       rw [opow_add, opow_mul, opow_omega, add_one_eq_succ]
       congr
       conv_lhs =>
-        simp [HPow.hPow]
+        simp? [HPow.hPow]
         simp [Pow.pow, opow, Ordinal.succ_ne_zero]
       · simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
       · rw [←Nat.cast_succ, lt_omega]

@@ -135,7 +135,8 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
       simp [Set.ext_iff, ha']
     · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
           isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
-      simp [Set.ext_iff] at vu
+      simp only [Set.ext_iff, mem_iUnion, mem_setOf_eq, exists_prop, Subtype.exists,
+        exists_and_right] at vu
       have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
         simp only [compl_Iio, iUnion_coe_set, Set.ext_iff, mem_Ioi, mem_iUnion, mem_Ici,
           exists_prop, Subtype.exists, exists_and_right]

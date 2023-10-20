@@ -360,7 +360,7 @@ theorem DiophList.all₂ (l : List (Set <| α → ℕ)) (d : l.All₂ Dioph) :
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
   exact ⟨ULift Empty, [], fun _ => by simp⟩
-  simp at d
+  simp only [List.all₂_cons] at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl
@@ -437,7 +437,7 @@ theorem ex_dioph {S : Set (Sum α β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
         ⟨t ∘ inl,
           (pe _).2
             ⟨t ∘ inr, by
-              simp at ht
+              simp only [Poly.map_apply] at ht
               rwa [show (v ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ t ∘ inl) ⊗ t ∘ inr from
                 funext fun s => by cases' s with a b <;> try { cases a <;> rfl }; rfl] at ht⟩⟩⟩⟩
 #align dioph.ex_dioph Dioph.ex_dioph
@@ -456,7 +456,7 @@ theorem ex1_dioph {S : Set (Option α → ℕ)} : Dioph S → Dioph {v | ∃ x, 
         ⟨t none,
           (pe _).2
             ⟨t ∘ some, by
-              simp at ht
+              simp only [Poly.map_apply] at ht
               rwa [show (v ⊗ t) ∘ (inr none ::ₒ inl ⊗ inr ∘ some) = t none ::ₒ v ⊗ t ∘ some from
                 funext fun s => by cases' s with a b <;> try { cases a <;> rfl }; rfl] at ht ⟩⟩⟩⟩
 #align dioph.ex1_dioph Dioph.ex1_dioph

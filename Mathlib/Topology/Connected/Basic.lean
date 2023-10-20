@@ -1019,7 +1019,7 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
     specialize h u v hu hv hs
     contrapose! huv
     rw [← nonempty_iff_ne_empty]
-    simp [not_subset] at huv
+    simp only [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
@@ -1081,7 +1081,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     specialize h u v hu hv hs
     contrapose! huv
     rw [← nonempty_iff_ne_empty]
-    simp [not_subset] at huv
+    simp only [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv

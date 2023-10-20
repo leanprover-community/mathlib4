@@ -287,7 +287,7 @@ instance : Field (SplittingField f) :=
       apply_fun e
       have : e a ≠ 0 := fun w' => by
         apply w
-        simp at w'
+        simp only [AddEquivClass.map_eq_zero_iff] at w'
         exact w'
       simp only [map_mul, AlgEquiv.apply_symm_apply, ne_eq, AddEquivClass.map_eq_zero_iff, map_one]
       rw [mul_inv_cancel]

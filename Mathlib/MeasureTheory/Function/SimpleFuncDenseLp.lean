@@ -87,7 +87,7 @@ theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     (h₀ : (0 : E) ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s 0 h₀ n x‖ ≤ ‖f x‖ + ‖f x‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
-  simp [edist_comm (0 : E), edist_eq_coe_nnnorm] at this
+  simp only [edist_comm (0 : E), edist_eq_coe_nnnorm] at this
   exact_mod_cast this
 #align measure_theory.simple_func.norm_approx_on_zero_le MeasureTheory.SimpleFunc.norm_approxOn_zero_le
 

@@ -818,7 +818,7 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
   · simp [mulHead, replaceHead]
   · specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
-    simp [replaceHead, ← mul_assoc] at *
+    simp only [ne_eq, replaceHead, head, append_prod, ← mul_assoc] at *
     congr 1
 #align free_product.neword.mul_head_prod Monoid.CoprodI.NeWord.mulHead_prod
 

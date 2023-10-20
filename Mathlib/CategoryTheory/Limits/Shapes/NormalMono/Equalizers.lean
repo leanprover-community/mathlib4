@@ -52,7 +52,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
   HasLimit.mk
     { cone :=
         PullbackCone.mk a' b' <| by
-          simp at ha' hb'
+          simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι] at ha' hb'
           rw [ha', hb']
       isLimit :=
         PullbackCone.IsLimit.mk _

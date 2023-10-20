@@ -3689,7 +3689,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   ext s hs
   rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
-  simp [Measure.ext_iff'] at h
+  simp only [ext_iff', add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply] at h
   simp [hs, h]
 
 @[simp] lemma add_left_inj (μ ν₁ ν₂ : Measure α) [SigmaFinite μ] :

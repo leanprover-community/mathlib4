@@ -92,7 +92,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
-  simp [bit, bit0, bit1, Bool.cond_eq_ite, ←mul_two]
+  simp only [bit, bit1, bit0, ← mul_two, Bool.cond_eq_ite]
   split_ifs <;> simp [Nat.add_mod]
 
 @[simp]

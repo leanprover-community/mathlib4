@@ -307,7 +307,7 @@ protected theorem dist_triangle (x y z : ∀ n, E n) : dist x z ≤ dist x y + d
 
 protected theorem eq_of_dist_eq_zero (x y : ∀ n, E n) (hxy : dist x y = 0) : x = y := by
   rcases eq_or_ne x y with (rfl | h); · rfl
-  simp [dist_eq_of_ne h] at hxy
+  simp only [dist_eq_of_ne h, one_div, inv_pow, inv_eq_zero] at hxy
   exact (two_ne_zero (pow_eq_zero hxy)).elim
 #align pi_nat.eq_of_dist_eq_zero PiNat.eq_of_dist_eq_zero
 

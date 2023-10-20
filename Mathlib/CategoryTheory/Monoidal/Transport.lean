@@ -172,7 +172,9 @@ abbrev induced (F : D ⥤ C) [Faithful F] (fData : InducingFunctorData F):
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
     have := associator_naturality (F.map f₁) (F.map f₂) (F.map f₃)
     dsimp
-    simp [fData.associator_eq, fData.tensorHom_eq]
+    simp only [Functor.map_comp, fData.tensorHom_eq, fData.associator_eq, Iso.trans_assoc,
+      Iso.trans_hom, tensorIso_hom, Iso.refl_hom, Iso.symm_hom, assoc, Iso.inv_hom_id_assoc,
+      Iso.cancel_iso_hom_left]
     simp_rw [←assoc, ←tensor_comp, assoc, Iso.inv_hom_id, ←assoc]
     congr 1
     conv_rhs => rw [←comp_id (F.map f₁), ←id_comp (F.map f₁)]

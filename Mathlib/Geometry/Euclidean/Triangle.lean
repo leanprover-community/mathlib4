@@ -241,12 +241,12 @@ theorem angle_add_angle_sub_add_angle_sub_eq_pi {x y : V} (hx : x ≠ 0) (hy : y
     norm_cast at h3lt
   interval_cases n
   · rw [hn] at hcos
-    simp at hcos
+    simp only [Int.cast_zero, zero_mul, Real.cos_zero] at hcos
     norm_num at hcos
   · rw [hn]
     norm_num
   · rw [hn] at hcos
-    simp at hcos
+    simp only [Int.int_cast_ofNat, Real.cos_two_pi] at hcos
     norm_num at hcos
 #align inner_product_geometry.angle_add_angle_sub_add_angle_sub_eq_pi InnerProductGeometry.angle_add_angle_sub_add_angle_sub_eq_pi
 
