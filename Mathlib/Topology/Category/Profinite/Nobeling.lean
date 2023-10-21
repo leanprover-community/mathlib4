@@ -352,7 +352,7 @@ theorem eval_eq (l : Products I) (x : C) :
   · simp only [List.map_map]
     apply List.prod_eq_one
     simp only [List.mem_map, Function.comp_apply]
-    intro _ ⟨i, hi, hrfl⟩; cases hrfl -- TODO: why can't `intro` take a `rfl` pattern here?
+    rintro _ ⟨i, hi, rfl⟩
     exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push_neg at h
@@ -426,7 +426,7 @@ theorem eval_mem_span_goodProducts (l : Products I) :
     suffices : Products.eval C '' {m | m < l} ⊆ Submodule.span ℤ (Set.range (GoodProducts.eval C))
     · rw [← Submodule.span_le] at this
       exact this hl
-    intro a ⟨m, hm, hrfl⟩; cases hrfl -- TODO: why does `intro` not accept a `rfl` pattern here?
+    rintro a ⟨m, hm, rfl⟩
     exact h m hm
 
 end Products
