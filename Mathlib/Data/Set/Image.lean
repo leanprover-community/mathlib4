@@ -170,7 +170,7 @@ theorem preimage_comp_eq : preimage (g ∘ f) = preimage f ∘ preimage g :=
 
 theorem preimage_iterate_eq {f : α → α} {n : ℕ} : Set.preimage f^[n] = (Set.preimage f)^[n] := by
   induction' n with n ih; · simp
-  rw [iterate_succ, iterate_succ', Set.preimage_comp_eq, ih]
+  rw [iterate_succ, iterate_succ', preimage_comp_eq, ih]
 #align set.preimage_iterate_eq Set.preimage_iterate_eq
 
 theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
@@ -741,7 +741,7 @@ theorem _root_.Nat.mem_range_succ (i : ℕ) : i ∈ range Nat.succ ↔ 0 < i :=
     exact Nat.succ_pos n, fun h => ⟨_, Nat.succ_pred_eq_of_pos h⟩⟩
 #align nat.mem_range_succ Nat.mem_range_succ
 
-theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : s ⊆ Set.range f) :
+theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : s ⊆ range f) :
     (f ⁻¹' s).Nonempty :=
   let ⟨_, hy⟩ := hs
   let ⟨x, hx⟩ := hf hy
@@ -1409,13 +1409,13 @@ theorem coe_image {p : α → Prop} {s : Set (Subtype p)} :
 @[simp]
 theorem coe_image_of_subset {s t : Set α} (h : t ⊆ s) : (↑) '' { x : ↥s | ↑x ∈ t } = t := by
   ext x
-  rw [Set.mem_image]
+  rw [mem_image]
   exact ⟨fun ⟨_, hx', hx⟩ => hx ▸ hx', fun hx => ⟨⟨x, h hx⟩, hx, rfl⟩⟩
 #align subtype.coe_image_of_subset Subtype.coe_image_of_subset
 
 theorem range_coe {s : Set α} : range ((↑) : s → α) = s := by
-  rw [← Set.image_univ]
-  simp [-Set.image_univ, coe_image]
+  rw [← image_univ]
+  simp [-image_univ, coe_image]
 #align subtype.range_coe Subtype.range_coe
 
 /-- A variant of `range_coe`. Try to use `range_coe` if possible.

@@ -425,7 +425,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
   toLocalEquiv := LocalEquiv.pi fun i => (I i).toLocalEquiv
-  source_eq := by simp only [Set.pi_univ, mfld_simps]
+  source_eq := by simp only [pi_univ, mfld_simps]
   unique_diff' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).unique_diff'
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
@@ -645,11 +645,11 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   simp only at he he_symm he' he'_symm
   constructor <;> simp only [LocalEquiv.prod_source, LocalHomeomorph.prod_toLocalEquiv]
   · have h3 := ContDiffOn.prod_map he he'
-    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3
+    rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
   · have h3 := ContDiffOn.prod_map he_symm he'_symm
-    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3
+    rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
 #align cont_diff_groupoid_prod contDiffGroupoid_prod
@@ -732,7 +732,7 @@ def analyticGroupoid : StructureGroupoid H :=
         apply And.intro
         · intro x hx
           rcases h (I.symm x) (mem_preimage.mp hx.left) with ⟨v, hv⟩
-          exact hv.right.right.left x ⟨Set.mem_preimage.mpr ⟨hx.left, hv.right.left⟩, hx.right⟩
+          exact hv.right.right.left x ⟨mem_preimage.mpr ⟨hx.left, hv.right.left⟩, hx.right⟩
         · apply mapsTo'.mp
           simp only [MapsTo]
           intro x hx
@@ -914,7 +914,7 @@ end SmoothManifoldWithCorners
 theorem LocalHomeomorph.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] (e : LocalHomeomorph M H)
-    (h : e.source = Set.univ) :
+    (h : e.source = univ) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ (e.singletonChartedSpace h) :=
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
