@@ -351,7 +351,7 @@ theorem reindex_dioph (f : α → β) : ∀ _ : Dioph S, Dioph {v | v ∘ f ∈ 
 
 variable {β}
 
-theorem DiophList.Forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
+theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     Dioph {v | l.Forall fun S : Set (α → ℕ) => v ∈ S} := by
   suffices ∃ (β : _) (pl : List (Poly (Sum α β))), ∀ v, List.Forall (fun S : Set _ => S v) l ↔
           ∃ t, List.Forall (fun p : Poly (Sum α β) => p (v ⊗ t) = 0) pl
@@ -386,9 +386,9 @@ theorem DiophList.Forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
                     (fun x : Sum α γ => (v ⊗ t) ((inl ⊗ fun x : γ => inr (inr x)) x)) =
                       v ⊗ t ∘ inr
                     from funext fun s => by cases' s with a b <;> rfl] at hq ⟩⟩⟩⟩
-#align dioph.dioph_list.all₂ Dioph.DiophList.Forall
+#align dioph.dioph_list.all₂ Dioph.DiophList.forall
 
-theorem inter (d : Dioph S) (d' : Dioph S') : Dioph (S ∩ S') := DiophList.Forall [S, S'] ⟨d, d'⟩
+theorem inter (d : Dioph S) (d' : Dioph S') : Dioph (S ∩ S') := DiophList.forall [S, S'] ⟨d, d'⟩
 #align dioph.inter Dioph.inter
 
 theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
