@@ -25,7 +25,7 @@ lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
   have : ∀ i, Epi (S.g.f i) := fun i => (hS' i).epi_g
   rw [isIso_iff_mono_and_epi]
   constructor
-  . rw [mono_homologyMap_iff_up_to_refinements _ (n-1) n (n+1) (by simp) (by simp)]
+  · rw [mono_homologyMap_iff_up_to_refinements _ (n-1) n (n+1) (by simp) (by simp)]
     intro A₀ a ha b hb
     obtain ⟨a₁, a₂, ha₁₂⟩ := to_break _ a _ rfl
     simp [ha₁₂, to_ext_iff _ _ _ (n+2) (show n + 1 + 1 = n + 2 by linarith),
@@ -46,11 +46,11 @@ lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
       d_fst_v', comp_neg, inl_v_fst_v_assoc, inl_v_snd_v, inr_f_snd_v, zero_add,
       d_snd_v', inl_v_snd_v_assoc, zero_comp]
     constructor
-    . simp only [← cancel_mono (S.f.f (n+1)), assoc, neg_comp, ← S.f.comm,
+    · simp only [← cancel_mono (S.f.f (n+1)), assoc, neg_comp, ← S.f.comm,
         ← reassoc_of% he, d_comp_d, sub_comp, comp_zero, sub_zero]
       simp only [← add_eq_zero_iff_eq_neg, ← comp_add, ha.2, comp_zero]
-    . rw [← he, sub_add_cancel]
-  . rw [epi_homologyMap_iff_up_to_refinements _ (n-1) n (n+1) (by simp) (by simp)]
+    · rw [← he, sub_add_cancel]
+  · rw [epi_homologyMap_iff_up_to_refinements _ (n-1) n (n+1) (by simp) (by simp)]
     intro A₀ a ha
     obtain ⟨A₁, π₁, hπ₁, b, hb⟩ := surjective_up_to_refinements_of_epi (S.g.f n) a
     obtain ⟨A₂, π₂, hπ₂, c, hc⟩ := (hS' (n+1)).exact.exact_up_to_refinements (b ≫ S.X₂.d n (n+1)) (by
@@ -59,16 +59,16 @@ lemma isIso_homologyMap_fromOfShortComplex (n : ℤ) :
     dsimp at c hc
     refine' ⟨A₂, π₂ ≫ π₁, epi_comp _ _ , -c ≫ (inl S.f).v (n+1) n (by linarith) +
         π₂ ≫ b ≫ (inr S.f).f n, _, 0, _ ⟩
-    . dsimp
+    · dsimp
       simp [to_ext_iff _ _ _ (n + 2) (show n + 1 + 1 = n + 2 by linarith),
         d_fst_v _ n (n+1) (n+2) (by linarith) (by linarith)]
       constructor
-      . simp only [← cancel_mono (S.f.f (n+2)), assoc, zero_comp, ← S.f.comm,
+      · simp only [← cancel_mono (S.f.f (n+2)), assoc, zero_comp, ← S.f.comm,
           ← reassoc_of% hc, d_comp_d, comp_zero]
-      . dsimp
+      · dsimp
         simp only [d_snd_v _ n (n + 1) rfl, comp_add, inl_v_fst_v_assoc,
           inl_v_snd_v_assoc, zero_comp, add_zero, hc, add_left_neg]
-    . dsimp [fromOfShortComplex]
+    · dsimp [fromOfShortComplex]
       simp only [hb, assoc, add_comp, neg_comp, inl_v_desc_f, HomComplex.Cochain.zero_v,
         comp_zero, neg_zero, inr_f_desc_f, zero_add, ComplexShape.up_Rel,
         sub_add_cancel, not_true, zero_comp, add_zero]

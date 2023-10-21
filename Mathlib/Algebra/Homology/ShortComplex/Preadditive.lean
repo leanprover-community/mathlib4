@@ -518,9 +518,9 @@ variable {φ₁ φ₂}
 lemma eq_add_null_homotopic (h : Homotopy φ₁ φ₂) :
     φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
   ext
-  . dsimp ; rw [h.comm₁] ; abel
-  . dsimp ; rw [h.comm₂] ; abel
-  . dsimp ; rw [h.comm₃] ; abel
+  · dsimp; rw [h.comm₁] ; abel
+  · dsimp; rw [h.comm₂] ; abel
+  · dsimp; rw [h.comm₃] ; abel
 
 variable (S₁ S₂)
 

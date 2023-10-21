@@ -30,17 +30,17 @@ lemma Abelian.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
   rw [← AddCommGroupCat.mono_iff_injective]
   constructor
-  . intro
+  · intro
     infer_instance
-  . apply Functor.mono_of_mono_map
+  · apply Functor.mono_of_mono_map
 
 lemma Abelian.epi_iff_injective {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget₂ C Ab).map f) := by
   rw [← AddCommGroupCat.epi_iff_surjective]
   constructor
-  . intro
+  · intro
     infer_instance
-  . apply Functor.epi_of_epi_map
+  · apply Functor.epi_of_epi_map
 
 namespace ShortComplex
 

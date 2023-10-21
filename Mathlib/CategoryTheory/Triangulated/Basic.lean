@@ -344,9 +344,9 @@ def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
       comm₃ := NatTrans.congr_app comm₃ j }
   naturality _ _ φ := by
     ext
-    . exact hom₁.naturality φ
-    . exact hom₂.naturality φ
-    . exact hom₃.naturality φ
+    · exact hom₁.naturality φ
+    · exact hom₂.naturality φ
+    · exact hom₃.naturality φ
 
 @[simps!]
 def functorHomMk'

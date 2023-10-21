@@ -424,12 +424,12 @@ lemma rotate_distinguished_triangle' (T : Triangle (HomotopyCategory C (ComplexS
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     (((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app K ≪≫
       HomotopyCategory.isoOfHomotopyEquiv (CochainComplex.MappingCone.rotateHomotopyEquiv φ)) _ _ _
-  . dsimp
+  · dsimp
     simp only [comp_id, id_comp]
-  . dsimp
+  · dsimp
     simp only [assoc, Iso.hom_inv_id_app_assoc,
       CochainComplex.MappingCone.rotateHomotopyEquiv_comm₂, id_comp]
-  . dsimp
+  · dsimp
     simp only [CategoryTheory.Functor.map_id, comp_id, assoc,
       CochainComplex.MappingCone.rotateHomotopyEquiv_comm₃'_assoc,
       neg_comp, comp_neg, neg_inj]
@@ -459,8 +459,8 @@ lemma invRotate_distinguished_triangle' (T : Triangle (HomotopyCategory C (Compl
 lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :
     T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
   constructor
-  . exact rotate_distinguished_triangle' T
-  . intro hT
+  · exact rotate_distinguished_triangle' T
+  · intro hT
     exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
       ((triangleRotation _).unitIso.app T)
 

@@ -7,9 +7,9 @@ lemma Function.Injective.eq_iff'' {X Y : Type _} {f : X → Y} (hf : Function.In
     (x₁ x₂ : X) (y₁ y₂ : Y) (h₁ : f x₁ = y₁) (h₂ : f x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
   subst h₁ h₂
   constructor
-  . intro h
+  · intro h
     rw [h]
-  . apply hf
+  · apply hf
 
 namespace CategoryTheory
 
@@ -149,9 +149,9 @@ lemma comm_iff (oper : ObjOperation₂ X) :
   dsimp only [comm, Types.functorOperation₂.comm]
   rw [swap_yonedaEquiv_apply]
   constructor
-  . intro h
+  · intro h
     simp only [← h]
-  . apply (yonedaEquiv X).injective
+  · apply (yonedaEquiv X).injective
 
 lemma comm_iff' (oper : Types.functorOperation₂ (yoneda.obj X)) :
     oper.comm ↔ ((yonedaEquiv _).symm oper).comm := by
@@ -168,13 +168,13 @@ lemma add_left_neg_iff (oper : ObjOperation₂ X) (neg : ObjOperation₁ X) (zer
       ((yonedaEquiv _) oper).add_left_neg ((ObjOperation₁.yonedaEquiv _) neg)
       ((ObjOperation₀.yonedaEquiv _) zero) := by
   apply (ObjOperation₁.yonedaEquiv X).injective.eq_iff''
-  . apply (ObjOperation₁.yonedaEquiv X).symm.injective
+  · apply (ObjOperation₁.yonedaEquiv X).symm.injective
     simp only [Equiv.symm_apply_apply, Types.natTransConcat, yoneda_obj_obj, NatTrans.id_app,
       types_id_apply]
     congr
     simp [ObjOperation₁.yonedaEquiv, CategoryTheory.yonedaEquiv]
     rfl
-  . apply (ObjOperation₁.yonedaEquiv X).symm.injective
+  · apply (ObjOperation₁.yonedaEquiv X).symm.injective
     simp only [Equiv.symm_apply_apply, Types.natTransConcat, yoneda_obj_obj, NatTrans.id_app,
       types_id_apply]
     rfl
@@ -237,10 +237,10 @@ lemma map_swap (h : ObjOperation₂ X) (F : C ⥤ D) [HasBinaryProduct (F.obj X)
     ← cancel_epi  (PreservesLimitPair.iso F X X).hom,
     Category.assoc, Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc]
   apply prod.hom_ext
-  . simp only [PreservesLimitPair.iso_hom, prod.comp_lift, prodComparison_snd,
+  · simp only [PreservesLimitPair.iso_hom, prod.comp_lift, prodComparison_snd,
       prodComparison_fst, limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left,
       BinaryFan.mk_fst, Category.assoc, ← F.map_comp]
-  . simp only [PreservesLimitPair.iso_hom, prod.comp_lift, prodComparison_snd,
+  · simp only [PreservesLimitPair.iso_hom, prod.comp_lift, prodComparison_snd,
       prodComparison_fst, limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right,
       BinaryFan.mk_snd, Category.assoc, ← F.map_comp]
 
@@ -256,22 +256,22 @@ lemma add_zero.map {add : ObjOperation₂ X} {zero : ObjOperation₀ X}
     (add.map F).add_zero (zero.map F) := by
   dsimp only [add_zero]
   refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
-  . dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
+  · dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc,
       Iso.inv_hom_id, Category.comp_id]
     apply prod.hom_ext
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp,
         Functor.map_id]
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_snd, ← F.map_comp]
       rw [F.map_comp, ← Category.assoc]
       congr 1
       rw [← cancel_mono (PreservesTerminal.iso F).hom]
       apply Subsingleton.elim
-  . apply F.map_id
+  · apply F.map_id
 
 lemma zero_add.map {add : ObjOperation₂ X} {zero : ObjOperation₀ X}
     (h : add.zero_add zero) (F : C ⥤ D) [HasTerminal D] [PreservesLimit (Functor.empty C) F]
@@ -279,21 +279,21 @@ lemma zero_add.map {add : ObjOperation₂ X} {zero : ObjOperation₀ X}
     (add.map F).zero_add (zero.map F) := by
   --dsimp only [add_zero]
   refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
-  . dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
+  · dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc,
       Iso.inv_hom_id, Category.comp_id]
     apply prod.hom_ext
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp ]
       rw [F.map_comp, ← Category.assoc]
       congr 1
       rw [← cancel_mono (PreservesTerminal.iso F).hom]
       apply Subsingleton.elim
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_snd, ← F.map_comp, F.map_id]
-  . apply F.map_id
+  · apply F.map_id
 
 lemma add_left_neg.map {add : ObjOperation₂ X} {neg : ObjOperation₁ X} {zero : ObjOperation₀ X}
     (h : add.add_left_neg neg zero) (F : C ⥤ D) [HasTerminal D] [PreservesLimit (Functor.empty C) F]
@@ -301,17 +301,17 @@ lemma add_left_neg.map {add : ObjOperation₂ X} {neg : ObjOperation₁ X} {zero
     (add.map F).add_left_neg (neg.map F) (zero.map F) := by
   --dsimp only [add_zero]
   refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₁ X) => f.map F) h).trans _)
-  . dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
+  · dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
     apply prod.hom_ext
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp]
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_snd, ← F.map_comp, F.map_id]
-  . dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
+  · dsimp [ObjOperation₂.map, ObjOperation₁.map, ObjOperation₀.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     rw [← cancel_mono (PreservesTerminal.iso F).hom]
@@ -368,10 +368,10 @@ def assoc (oper : ObjOperation₂ X) : Prop :=
 lemma assoc_iff (oper : ObjOperation₂ X) :
     oper.assoc ↔ ((yonedaEquiv _) oper).assoc := by
   apply (ObjOperation₃.yonedaEquiv X).injective.eq_iff''
-  . apply (ObjOperation₃.yonedaEquiv X).symm.injective
+  · apply (ObjOperation₃.yonedaEquiv X).symm.injective
     simp
     rfl
-  . apply (ObjOperation₃.yonedaEquiv X).symm.injective
+  · apply (ObjOperation₃.yonedaEquiv X).symm.injective
     simp only [Equiv.symm_apply_apply, Types.functorConcat₃, Types.natTransConcat,
       Types.functorConcat_obj, yoneda_obj_obj, Types.functorPr₃₁_app, Types.functorPr₃₂_app,
       Types.functorPr₃₃_app, Prod.mk.eta, FunctorToTypes.comp,
@@ -393,50 +393,50 @@ lemma assoc.map {add : ObjOperation₂ X} (h : add.assoc) (F : C ⥤ D)
   (add.map F).assoc := by
   dsimp only [assoc] at h ⊢
   refine' Eq.trans _ ((congr_arg (fun (f : ObjOperation₃ X) => f.map F) h).trans _)
-  . dsimp [ObjOperation₃.map, ObjOperation₂.map]
+  · dsimp [ObjOperation₃.map, ObjOperation₂.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
     apply prod.hom_ext
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp]
       simp only [F.map_comp, ← Category.assoc]
       congr 1
       simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
         Category.comp_id]
       apply prod.hom_ext
-      . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+      · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
           PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp,
           PreservesLimitPair.iso_inv_comp_map_fst]
-      . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+      · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
           PreservesLimitPair.iso_hom, Category.assoc, prodComparison_snd, ← F.map_comp]
         simp only [F.map_comp, PreservesLimitPair.iso_inv_comp_map_snd_assoc,
           limit.lift_π_assoc, BinaryFan.mk_pt, pair_obj_right, BinaryFan.π_app_right,
           BinaryFan.mk_snd, Category.assoc, PreservesLimitPair.iso_inv_comp_map_fst]
-    . simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+    · simp only [limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
         PreservesLimitPair.iso_hom, Category.assoc, prodComparison_snd, ← F.map_comp]
       simp only [Functor.map_comp, PreservesLimitPair.iso_inv_comp_map_snd_assoc,
         limit.lift_π_assoc, BinaryFan.mk_pt, pair_obj_right, BinaryFan.π_app_right,
         BinaryFan.mk_snd, Category.assoc, PreservesLimitPair.iso_inv_comp_map_snd]
-  . dsimp [ObjOperation₃.map, ObjOperation₂.map]
+  · dsimp [ObjOperation₃.map, ObjOperation₂.map]
     simp only [F.map_comp, ← Category.assoc]
     congr 1
     simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
       Category.comp_id]
     apply prod.hom_ext
-    . simp only [PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp,
+    · simp only [PreservesLimitPair.iso_hom, Category.assoc, prodComparison_fst, ← F.map_comp,
         limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
         PreservesLimitPair.iso_inv_comp_map_fst]
-    . simp only [PreservesLimitPair.iso_hom, Category.assoc, prodComparison_snd, limit.lift_π,
+    · simp only [PreservesLimitPair.iso_hom, Category.assoc, prodComparison_snd, limit.lift_π,
         BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd, ← F.map_comp]
       simp only [F.map_comp, ← Category.assoc]
       congr 1
       simp only [← cancel_mono (PreservesLimitPair.iso F X X).hom, Category.assoc, Iso.inv_hom_id,
         Category.comp_id]
       apply prod.hom_ext
-      . simp
-      . simp
+      · simp
+      · simp
 
 end ObjOperation₂
 

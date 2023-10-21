@@ -49,9 +49,9 @@ instance whiskeringRightDiscrete_isLocalization (J : Type) [Finite J] [W.Contain
       isoWhiskerRight ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight E.unitIso.symm L₁) _ ≪≫ isoWhiskerRight L₁.leftUnitor _⟩
   refine' Functor.IsLocalization.of_equivalences L₁ W₁ L₂ W₂ E E' _ _
-  . intro X Y f hf
+  · intro X Y f hf
     exact MorphismProperty.subset_isoClosure _ _ (fun ⟨j⟩ => hf j)
-  . intro X Y f hf
+  · intro X Y f hf
     have : ∀ (j : Discrete J), IsIso ((L₂.map f).app j) :=
       fun j => Localization.inverts L W _ (hf j)
     apply NatIso.isIso_of_isIso_app

@@ -47,8 +47,8 @@ lemma shortExact_of_iso (e : S₁ ≅ S₂) (h : S₁.ShortExact) : S₂.ShortEx
 
 lemma shortExact_iff_of_iso (e : S₁ ≅ S₂) : S₁.ShortExact ↔ S₂.ShortExact := by
   constructor
-  . exact shortExact_of_iso e
-  . exact shortExact_of_iso e.symm
+  · exact shortExact_of_iso e
+  · exact shortExact_of_iso e.symm
 
 lemma ShortExact.op (h : S.ShortExact) : S.op.ShortExact where
   exact := h.exact.op
@@ -111,10 +111,10 @@ lemma ShortExact.isIso_f_iff {S : ShortComplex C} (hS : S.ShortExact) [Balanced 
   have := hS.mono_f
   have := hS.epi_g
   constructor
-  . intro hf
+  · intro hf
     simp only [IsZero.iff_id_eq_zero, ← cancel_epi S.g, ← cancel_epi S.f,
       S.zero_assoc, zero_comp]
-  . intro hX₃
+  · intro hX₃
     have : Epi S.f := (S.exact_iff_epi (hX₃.eq_of_tgt _ _)).1 hS.exact
     apply isIso_of_mono_of_epi
 
@@ -124,10 +124,10 @@ lemma ShortExact.isIso_g_iff  {S : ShortComplex C} (hS : S.ShortExact) [Balanced
   have := hS.mono_f
   have := hS.epi_g
   constructor
-  . intro hf
+  · intro hf
     simp only [IsZero.iff_id_eq_zero, ← cancel_mono S.f, ← cancel_mono S.g,
       S.zero, zero_comp, assoc, comp_zero]
-  . intro hX₁
+  · intro hX₁
     have : Mono S.g := (S.exact_iff_mono (hX₁.eq_of_src _ _)).1 hS.exact
     apply isIso_of_mono_of_epi
 

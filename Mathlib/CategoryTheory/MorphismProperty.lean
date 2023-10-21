@@ -565,9 +565,9 @@ lemma map_isInvertedBy_iff {E : Type _} [Category E]
   (P : MorphismProperty C) (F : C ⥤ D) (G : D ⥤ E) :
     (P.map F).IsInvertedBy G ↔ P.IsInvertedBy (F ⋙ G) := by
   constructor
-  . intro h _ _ f hf
+  · intro h _ _ f hf
     exact h _ (map_mem_map P F f hf)
-  . intro h _ _ f ⟨_, _, f', hf', ⟨iso⟩⟩
+  · intro h _ _ f ⟨_, _, f', hf', ⟨iso⟩⟩
     rw [← isomorphisms.iff]
     exact (RespectsIso.arrow_mk_iso_iff (RespectsIso.isomorphisms E)
       (G.mapArrow.mapIso iso)).1 (h _ hf')
@@ -581,9 +581,9 @@ lemma subset_inverseImage_iff_map_subset (P : MorphismProperty C) (Q : MorphismP
   (hQ : Q.RespectsIso)
     (F : C ⥤ D) : P ⊆ Q.inverseImage F ↔ P.map F ⊆ Q := by
   constructor
-  . intro h _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
+  · intro h _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
     simpa only [← hQ.arrow_mk_iso_iff e] using h _ hf'
-  . intro h _ _ f hf
+  · intro h _ _ f hf
     exact h _ (map_mem_map P F f hf)
 
 lemma map_inverseImage_subset (P : MorphismProperty D) (F : C ⥤ D) :
@@ -594,9 +594,9 @@ lemma map_inverseImage_eq_of_isEquivalence (P : MorphismProperty D) (hP : P.Resp
     (F : C ⥤ D) [IsEquivalence F] :
   (P.inverseImage F).map F = P := by
   apply le_antisymm
-  . intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
+  · intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
     exact (hP.arrow_mk_iso_iff e).1 hf'
-  . intro _ _ f hf
+  · intro _ _ f hf
     exact ⟨_, _, F.inv.map f,
       (hP.arrow_mk_iso_iff (((Functor.mapArrowFunctor _ _).mapIso
         F.asEquivalence.counitIso.symm).app (Arrow.mk f))).1 hf,
@@ -605,10 +605,10 @@ lemma map_inverseImage_eq_of_isEquivalence (P : MorphismProperty D) (hP : P.Resp
 lemma isoClosure_inverseImage_equivalenceInverse (P : MorphismProperty C) (E : C ≌ D) :
     P.isoClosure.inverseImage E.inverse = P.map E.functor := by
   apply le_antisymm
-  . intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
+  · intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
     refine' ⟨_, _, f', hf', ⟨(E.inverse.mapArrow).preimageIso (_ ≪≫ e)⟩⟩
     exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso.symm).app (Arrow.mk f')
-  . intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
+  · intro _ _ f ⟨_, _, f', hf', ⟨e⟩⟩
     refine' ⟨_, _, f', hf', ⟨_ ≪≫ E.inverse.mapArrow.mapIso e⟩⟩
     exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso).app (Arrow.mk f')
 

@@ -145,10 +145,10 @@ noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
       comm₁ := by
         dsimp
         ext
-        . simp only [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero,
+        · simp only [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero,
             limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
             ← F.map_comp, F.map_id]
-        . simp only [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero,
+        · simp only [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero,
             limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
             ← F.map_comp, F.map_zero]
       comm₂ := by simp

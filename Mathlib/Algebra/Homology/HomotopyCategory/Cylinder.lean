@@ -81,17 +81,17 @@ lemma homotopyEquivalences_isInvertedBy_iff {D : Type _} [Category D]
     (homotopyEquivalences C (ComplexShape.up ℤ)).IsInvertedBy F ↔
       ∀ ⦃K L : CochainComplex C ℤ⦄ (f₁ f₂ : K ⟶ L) (_ : Homotopy f₁ f₂), F.map f₁ = F.map f₂ := by
   constructor
-  . intros hF K L f₁ f₂ h
+  · intros hF K L f₁ f₂ h
     have : IsIso (F.map (cylinder.π : _ ⟶ K)) := hF _ ⟨cylinder.homotopyEquiv K, rfl⟩
     have eq : F.map (cylinder.inl : K ⟶ _) = F.map cylinder.inr := by
       simp only [← cancel_mono (F.map (cylinder.π : _ ⟶ K)), ← F.map_comp, cylinder.π,
         cylinder.inl_desc, cylinder.inr_desc]
     simpa only [← F.map_comp, cylinder.inl_desc, cylinder.inr_desc]
       using eq =≫ F.map (cylinder.desc _ _ h)
-  . rintro hF K L _ ⟨e, rfl⟩
+  · rintro hF K L _ ⟨e, rfl⟩
     refine' ⟨⟨F.map e.inv, _, _⟩⟩
-    . rw [← F.map_comp, hF  _ _ e.homotopyHomInvId, F.map_id]
-    . rw [← F.map_comp, hF  _ _ e.homotopyInvHomId, F.map_id]
+    · rw [← F.map_comp, hF  _ _ e.homotopyHomInvId, F.map_id]
+    · rw [← F.map_comp, hF  _ _ e.homotopyInvHomId, F.map_id]
 
 end CochainComplex
 
@@ -112,8 +112,8 @@ def localization_strict_universal_property (D : Type _) [Category D] :
   fac F hF := Quotient.lift_spec _ _ _
   uniq F₁ F₂ h := by
     rw [Quotient.lift_unique _ _ _ F₁ rfl, Quotient.lift_unique _ _ _ F₂ h.symm]
-    . rfl
-    . intro K L f₁ f₂ ⟨h⟩
+    · rfl
+    · intro K L f₁ f₂ ⟨h⟩
       dsimp
       rw [eq_of_homotopy _ _ h]
 

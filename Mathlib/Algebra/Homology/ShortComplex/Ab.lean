@@ -64,10 +64,10 @@ lemma ab_exact_iff :
       ∃ (x₁ : S.X₁), S.f x₁ = x₂ := by
   rw [exact_iff_epi_toCycles, AddCommGroupCat.epi_iff_surjective]
   constructor
-  . intro h x₂ hx₂
+  · intro h x₂ hx₂
     obtain ⟨x₁, hx₁⟩ := h (S.abLiftCycles x₂ hx₂)
     exact ⟨x₁, by erw [← S.toCycles_i, comp_apply, hx₁, abLiftCycles_ι]⟩
-  . intro hS z
+  · intro hS z
     obtain ⟨x₁, hx₁⟩ := hS (S.iCycles z) (by
       erw [← comp_apply, iCycles_g]
       rfl)

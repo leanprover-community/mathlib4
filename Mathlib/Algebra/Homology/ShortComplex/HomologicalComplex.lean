@@ -88,9 +88,9 @@ variable (i)
 @[reassoc (attr := simp)]
 lemma iCycles_d (j : ι) : K.iCycles i ≫ K.d i j = 0 := by
   by_cases hij : c.Rel i j
-  . obtain rfl := c.next_eq' hij
+  · obtain rfl := c.next_eq' hij
     exact (K.sc i).iCycles_g
-  . rw [K.shape _ _ hij, comp_zero]
+  · rw [K.shape _ _ hij, comp_zero]
 
 noncomputable def cyclesIsKernel (i j : ι) (hij : c.Rel i j) [K.HasHomology i]:
     IsLimit (KernelFork.ofι (K.iCycles i) (K.iCycles_d i j)) := by
@@ -123,9 +123,9 @@ lemma liftCycles_homologyπ_eq_zero_of_boundary {A : C} (k : A ⟶ K.X i) (j : �
     (hj : c.next i = j) {i' : ι} (x : A ⟶ K.X i') (hx : k = x ≫ K.d i' i) :
     K.liftCycles k j hj (by rw [hx, assoc, K.d_comp_d, comp_zero]) ≫ K.homologyπ i = 0 := by
   by_cases c.Rel i' i
-  . obtain rfl := c.prev_eq' h
+  · obtain rfl := c.prev_eq' h
     exact (K.sc i).liftCycles_homologyπ_eq_zero_of_boundary _ x hx
-  . have : liftCycles K k j hj (by rw [hx, assoc, K.d_comp_d, comp_zero]) = 0 := by
+  · have : liftCycles K k j hj (by rw [hx, assoc, K.d_comp_d, comp_zero]) = 0 := by
       rw [K.shape _ _ h, comp_zero] at hx
       rw [← cancel_mono (K.iCycles i), zero_comp, liftCycles_i, hx]
     rw [this, zero_comp]
@@ -172,9 +172,9 @@ variable (i)
 @[reassoc (attr := simp)]
 lemma d_pOpcycles (X : HomologicalComplex C c) (i j : ι) [X.HasHomology j] : X.d i j ≫ X.pOpcycles j = 0 := by
   by_cases hij : c.Rel i j
-  . obtain rfl := c.prev_eq' hij
+  · obtain rfl := c.prev_eq' hij
     exact (X.sc j).f_pOpcycles
-  . rw [X.shape _ _ hij, zero_comp]
+  · rw [X.shape _ _ hij, zero_comp]
 
 noncomputable def opcyclesIsCokernel (i j : ι) (hij : c.Rel i j) [K.HasHomology j]:
     IsColimit (CokernelCofork.ofπ (K.pOpcycles j) (K.d_pOpcycles i j)) := by
@@ -546,31 +546,31 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
     else f.f _ - g.f _ - ho.hom _ i ≫ L.d _ _
   h₀_f := by
     split_ifs with h
-    . dsimp
+    · dsimp
       simp only [assoc, d_comp_d, comp_zero]
-    . dsimp
+    · dsimp
       rw [L.shape _ _ h, comp_zero]
   g_h₃ := by
     split_ifs with h
-    . dsimp
+    · dsimp
       simp
-    . dsimp
+    · dsimp
       rw [K.shape _ _ h, zero_comp]
   comm₁ := by
     dsimp
     split_ifs with h
-    . rw [ho.comm (c.prev i)]
+    · rw [ho.comm (c.prev i)]
       dsimp [dFrom, dTo, fromNext, toPrev]
       rw [congr_arg (fun j => d K (c.prev i) j ≫ ho.hom j (c.prev i)) (c.next_eq' h)]
-    . abel
+    · abel
   comm₂ := ho.comm i
   comm₃ := by
     dsimp
     split_ifs with h
-    . rw [ho.comm (c.next i)]
+    · rw [ho.comm (c.next i)]
       dsimp [dFrom, dTo, fromNext, toPrev]
       rw [congr_arg (fun j => ho.hom (c.next i) j ≫ L.d j (c.next i)) (c.prev_eq' h)]
-    . abel
+    · abel
 
 lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.HasHomology i] :
     homologyMap f i = homologyMap g i :=

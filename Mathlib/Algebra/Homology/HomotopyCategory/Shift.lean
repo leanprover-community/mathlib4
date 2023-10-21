@@ -210,9 +210,9 @@ noncomputable def singleShiftIso_hom_app (X : C) (i : ℤ) :
     (((HomologicalComplex.single C (ComplexShape.up ℤ) a').obj X)⟦n⟧).X i ⟶
       ((HomologicalComplex.single C (ComplexShape.up ℤ) a).obj X).X i := by
   by_cases i = a
-  . refine' (singleObjXIsoOfEq C (ComplexShape.up ℤ) a' X (i+n) (by linarith)).hom ≫
+  · refine' (singleObjXIsoOfEq C (ComplexShape.up ℤ) a' X (i+n) (by linarith)).hom ≫
       (singleObjXIsoOfEq C (ComplexShape.up ℤ) a X i h).inv
-  . exact 0
+  · exact 0
 
 lemma singleShiftIso_hom_app_self (X : C) :
     singleShiftIso_hom_app n a a' ha' X a =
@@ -227,15 +227,15 @@ lemma singleShiftIso_hom_app_self (X : C) :
 instance (X : C) (i : ℤ) : IsIso (singleShiftIso_hom_app n a a' ha' X i) := by
   dsimp only [singleShiftIso_hom_app]
   split_ifs with h
-  . infer_instance
-  . refine' ⟨⟨0, IsZero.eq_of_src _ _ _ , IsZero.eq_of_src _ _ _⟩⟩
-    . dsimp
+  · infer_instance
+  · refine' ⟨⟨0, IsZero.eq_of_src _ _ _ , IsZero.eq_of_src _ _ _⟩⟩
+    · dsimp
       apply isZeroSingleObjX C (ComplexShape.up ℤ)
       change i + n ≠ a'
       intro h'
       apply h
       linarith
-    . exact isZeroSingleObjX C (ComplexShape.up ℤ) _ _ _ h
+    · exact isZeroSingleObjX C (ComplexShape.up ℤ) _ _ _ h
 
 variable (C)
 
@@ -248,12 +248,12 @@ noncomputable def singleShiftIso [HasZeroObject C] (n a a' : ℤ) (ha' : n + a =
     (fun f => by
       ext i
       by_cases i = a
-      . subst h
+      · subst h
         obtain rfl : i + n = a' := by linarith
         dsimp [singleShiftIso_hom_app, asIso, singleObjXIsoOfEq]
         rw [dif_pos rfl, dif_pos rfl, dif_pos rfl, dif_pos rfl]
         simp
-      . dsimp
+      · dsimp
         rw [dif_neg, dif_neg h, zero_comp, comp_zero]
         intro h'
         apply h

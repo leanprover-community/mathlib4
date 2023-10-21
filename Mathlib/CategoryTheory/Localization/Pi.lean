@@ -24,7 +24,7 @@ instance pi [Finite J] :
   suffices P J
     by apply this
   apply @Finite.induction_empty_option P
-  . intro J₁ J₂ e hJ₁ C₂ D₂ hC₂ _ L₂ W₂ _ _
+  · intro J₁ J₂ e hJ₁ C₂ D₂ hC₂ _ L₂ W₂ _ _
     let C₁ := fun j => (C₂ (e j))
     let D₁ := fun j => (D₂ (e j))
     let L₁ : ∀ j, C₁ j ⥤ D₁ j := fun j => (L₂ (e j))
@@ -48,12 +48,12 @@ instance pi [Finite J] :
       rintro j _ rfl _ _ g hg
       exact hg
     exact H (e.apply_symm_apply i) _ hf'
-  . intro C D _ _ L W _ _
+  · intro C D _ _ L W _ _
     haveI : ∀ j, IsEquivalence (L j) := by rintro ⟨⟩
     refine' of_equivalence _ _ (fun _ _ _ _ => _)
     rw [MorphismProperty.isomorphisms.iff, isIso_pi_iff]
     rintro ⟨⟩
-  . intro J _ hJ C D _ _ L W _ _
+  · intro J _ hJ C D _ _ L W _ _
     let C' := fun j => C (some j)
     let D' := fun j => D (some j)
     let L' : ∀ j, C' j ⥤ D' j := fun j => L (some j)
@@ -70,12 +70,12 @@ instance pi [Finite J] :
         ⟨NatIso.pi' (by rintro (_|i) <;> apply Iso.refl)⟩
     refine' IsLocalization.of_equivalences L₁ W₁ L₂ W₂
       (pi_option_equivalence C).symm (pi_option_equivalence D).symm _ _
-    . intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
+    · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
       refine' ⟨_, _, (pi_option_equivalence C).inverse.map f, _, ⟨Iso.refl _⟩⟩
-      . rintro (_|i)
-        . exact hf₁
-        . apply hf₂
-    . apply MorphismProperty.IsInvertedBy.pi
+      · rintro (_|i)
+        · exact hf₁
+        · apply hf₂
+    · apply MorphismProperty.IsInvertedBy.pi
       rintro (_|i) <;> apply Localization.inverts
 
 instance pi' [Finite J] :

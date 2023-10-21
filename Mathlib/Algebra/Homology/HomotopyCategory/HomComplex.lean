@@ -452,7 +452,7 @@ lemma δ_shape (hnm : ¬ n + 1 = m) (z : Cochain F G n) : δ n m z = 0 := by
   ext p q hpq
   dsimp [δ, Cochain.v, Cochain.mk]
   rw [F.shape, G.shape, comp_zero, zero_add, zero_comp, smul_zero]
-  . rfl
+  · rfl
   all_goals
     change ¬ _=_
     rintro h
@@ -470,11 +470,11 @@ def δ_hom : Cochain F G n →+ Cochain F G m where
   map_add' _ _ := by
     dsimp only
     by_cases n + 1 = m
-    . ext p q hpq
+    · ext p q hpq
       dsimp
       simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.add_v, add_comp, comp_add, zsmul_add]
       abel
-    . simp only [δ_shape _ _ h, add_zero]
+    · simp only [δ_shape _ _ h, add_zero]
 
 variable {F G}
 
@@ -546,10 +546,10 @@ lemma δ_comp_zero_cochain {n₁ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
 @[simp]
 lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
   by_cases h : p = 1
-  . subst h
+  · subst h
     ext
     simp
-  . rw [δ_shape]
+  · rw [δ_shape]
     intro
     apply h
     linarith
@@ -613,9 +613,9 @@ lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁
 
 lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ := by
   constructor
-  . rintro rfl
+  · rintro rfl
     rfl
-  . apply ext
+  · apply ext
 
 variable (F G n)
 
@@ -656,9 +656,9 @@ def mk (z : Cochain F G n) (m : ℤ) (hnm : n+1 = m) (h : δ n m z = 0) : Cocycl
 @[simp]
 lemma δ_eq_zero {n : ℤ} (z : Cocycle F G n) (m : ℤ) : δ n m (z : Cochain F G n) = 0 := by
   by_cases h : n+1 = m
-  . rw [← mem_iff n m h]
+  · rw [← mem_iff n m h]
     exact z.2
-  . apply δ_shape n m h
+  · apply δ_shape n m h
 
 @[simps!]
 def ofHom (φ : F ⟶ G) : Cocycle F G 0 := mk (Cochain.ofHom φ) 1 (zero_add 1) (by simp)
@@ -1348,7 +1348,7 @@ lemma rightUnshift_comp {m : ℤ} {a : ℤ} (γ' : Cochain L (M⟦a⟧) m) {nm :
 lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a = m) :
     δ n' m' (γ.rightShift a n' hn') = a.negOnePow • (δ n m γ).rightShift a m' hm' := by
   by_cases hnm : n + 1 = m
-  . have hnm' : n' + 1 = m' := by linarith
+  · have hnm' : n' + 1 = m' := by linarith
     ext p q hpq
     dsimp
     rw [(δ n m γ).rightShift_v a m' hm' p q hpq _ rfl,
@@ -1362,7 +1362,7 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
       smul_smul, add_right_inj]
     congr
     rw [← hm', add_comm m', Int.negOnePow_add, ← mul_assoc, Int.negOnePow_mul_self, one_mul]
-  . have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
+  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, rightShift_zero, smul_zero]
 
 lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (m m' : ℤ) (hm' : m' + a = m) :
@@ -1375,7 +1375,7 @@ lemma δ_rightUnshift {a n' : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn 
 lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m') :
     δ n' m' (γ.leftShift a n' hn') = a.negOnePow • (δ n m γ).leftShift a m' hm' := by
   by_cases hnm : n + 1 = m
-  . have hnm' : n' + 1 = m' := by linarith
+  · have hnm' : n' + 1 = m' := by linarith
     ext p q hpq
     dsimp
     rw [(δ n m γ).leftShift_v a m' hm' p q hpq (p+a) (by linarith)]
@@ -1388,25 +1388,25 @@ lemma δ_leftShift (a n' m' : ℤ) (hn' : n + a = n') (m : ℤ) (hm' : m + a = m
       shiftFunctor_obj_d', comp_add, smul_add, shiftFunctor_obj_X, smul_smul, zsmul_comp,
       comp_zsmul]
     congr 2
-    . rw [Int.negOnePow_add, Int.negOnePow_add, ← mul_assoc, ← hnm', add_comm n', mul_add,
+    · rw [Int.negOnePow_add, Int.negOnePow_add, ← mul_assoc, ← hnm', add_comm n', mul_add,
         Int.negOnePow_add, mul_one, ← mul_assoc, Int.negOnePow_mul_self, one_mul]
-    . simp only [Int.negOnePow_add, Int.negOnePow_one, mul_one, ← hn', ← hm', mul_add, ← hnm,
+    · simp only [Int.negOnePow_add, Int.negOnePow_one, mul_one, ← hn', ← hm', mul_add, ← hnm,
         mul_neg]
       ring
-  . have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
+  · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by linarith)
     rw [δ_shape _ _ hnm', δ_shape _ _ hnm, leftShift_zero, smul_zero]
 
 @[simp]
 lemma δ_shift (a m : ℤ) :
     δ n m (γ.shift a) = a.negOnePow • (δ n m γ).shift a := by
   by_cases hnm : n + 1 = m
-  . ext p q hpq
+  · ext p q hpq
     dsimp
     simp only [shift_v, sub_add_cancel, shiftFunctor_obj_d',
       δ_v n m hnm _ p q hpq (q-1) (p+1) rfl rfl,
       δ_v n m hnm _ (p+a) (q+a) (by linarith) (q-1+a) (p+1+a) (by linarith) (by linarith),
       smul_add, comp_zsmul, zsmul_comp, smul_smul, mul_comm a.negOnePow]
-  . rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
+  · rw [δ_shape _ _ hnm, δ_shape _ _ hnm, shift_zero, smul_zero]
 
 def single {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) :
     Cochain K L n :=
@@ -1502,8 +1502,8 @@ lemma δ_comp_zero_cocycle {n : ℤ} (z₁ : Cochain F G n) (z₂ : Cocycle G K 
     δ n m (z₁ •[add_zero n] (z₂ : Cochain G K 0)) =
       (δ n m z₁) •[add_zero m] (z₂ : Cochain G K 0) := by
   by_cases hnm : n + 1 = m
-  . simp only [δ_comp_zero_cochain _ _ _ hnm, Cocycle.δ_eq_zero, Cochain.comp_zero, zero_add]
-  . simp only [δ_shape _ _ hnm, Cochain.zero_comp]
+  · simp only [δ_comp_zero_cochain _ _ _ hnm, Cocycle.δ_eq_zero, Cochain.comp_zero, zero_add]
+  · simp only [δ_shape _ _ hnm, Cochain.zero_comp]
 
 @[simp]
 lemma δ_comp_ofHom {n : ℤ} (z₁ : Cochain F G n) (f : G ⟶ K) (m : ℤ) :
@@ -1516,9 +1516,9 @@ lemma δ_zero_cocycle_comp {n : ℤ} (z₁ : Cocycle F G 0) (z₂ : Cochain G K 
     δ n m ((z₁ : Cochain F G 0) •[zero_add n] z₂) =
       (z₁ : Cochain F G 0) •[zero_add m] (δ n m z₂) := by
   by_cases hnm : n + 1 = m
-  . simp only [δ_zero_cochain_comp _ _ _ hnm, Cocycle.δ_eq_zero, Cochain.zero_comp,
+  · simp only [δ_zero_cochain_comp _ _ _ hnm, Cocycle.δ_eq_zero, Cochain.zero_comp,
       smul_zero, add_zero]
-  . simp only [δ_shape _ _ hnm, Cochain.comp_zero]
+  · simp only [δ_shape _ _ hnm, Cochain.comp_zero]
 
 @[simp]
 lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :

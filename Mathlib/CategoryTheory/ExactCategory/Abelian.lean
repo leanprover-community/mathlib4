@@ -36,18 +36,18 @@ lemma respectsIso_shortExact : (@shortExact C _).RespectsIso :=
 lemma fAdmissible_iff_mono {X Y : C} (f : X ⟶ Y) :
     ShortComplex.fAdmissible shortExact f ↔ Mono f := by
   constructor
-  . rintro ⟨_, _, _, H⟩
+  · rintro ⟨_, _, _, H⟩
     exact H.mono_f
-  . intro h
+  · intro h
     exact ⟨_, _, cokernel.condition f,
       { exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _) }⟩
 
 lemma gAdmissible_iff_epi {X Y : C} (f : X ⟶ Y) :
     ShortComplex.gAdmissible shortExact f ↔ Epi f := by
   constructor
-  . rintro ⟨_, _, _, H⟩
+  · rintro ⟨_, _, _, H⟩
     exact H.epi_g
-  . intro h
+  · intro h
     exact ⟨_, _, kernel.condition f,
       { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel _) }⟩
 

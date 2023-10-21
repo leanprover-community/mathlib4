@@ -152,9 +152,9 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : Roof W X Y} (h₁₂ : roofRel z₁ z₂
   obtain ⟨Z₇, w, hw, fac'⟩ := ext _ _ _ z₂.hs eq
   simp only [Category.assoc] at fac'
   refine' ⟨Z₇, t₁ ≫ v₄ ≫ w, u₃ ≫ v₅ ≫ w, _, _, _⟩
-  . rw [reassoc_of% fac]
-  . rw [reassoc_of% hft, ← fac', reassoc_of% hfu]
-  . rw [← reassoc_of% fac, ← reassoc_of% hsu, ← Category.assoc]
+  · rw [reassoc_of% fac]
+  · rw [reassoc_of% hft, ← fac', reassoc_of% hfu]
+  · rw [← reassoc_of% fac, ← reassoc_of% hsu, ← Category.assoc]
     exact W.comp_mem _ _ hu (W.comp_mem _ _ hv₅ hw)
 
 end roofRel
@@ -180,11 +180,11 @@ lemma comp₀_rel {X Y Z : C} (z : Roof W X Y) (z' : Roof W Y Z)
   obtain ⟨Y, t, ht, fac⟩ := ext _ _ _ z.hs eq
   simp only [Category.assoc] at fac
   refine' ⟨Y, H.g ≫ t, H.s' ≫ t, _, _, _⟩
-  . dsimp [comp₀]
+  · dsimp [comp₀]
     simp only [Category.assoc, H.fac_assoc]
-  . dsimp [comp₀]
+  · dsimp [comp₀]
     simp only [Category.assoc, ← fac]
-  . dsimp [comp₀]
+  · dsimp [comp₀]
     simp only [Category.assoc, ← H.fac_assoc]
     exact W.comp_mem _ _ z'.hs (W.comp_mem _ _ sq'.hs' (W.comp_mem _ _ H.hs' ht))
 
@@ -224,7 +224,7 @@ variable {W}
 noncomputable def Hom.comp {X Y Z : C} :
     Hom W X Y → Hom W Y Z → Hom W X Z := by
   refine' Quot.lift₂ (fun z z' => Roof.comp z z') _ _
-  . rintro z₁₂ z₂₃ z₂₃' ⟨Y, t, t', hst, hft, ht⟩
+  · rintro z₁₂ z₂₃ z₂₃' ⟨Y, t, t', hst, hft, ht⟩
     have sq := toSq z₁₂.s z₁₂.hs z₂₃.f
     have sq' := toSq z₁₂.s z₁₂.hs z₂₃'.f
     have H₀ := toSq sq.s' sq.hs' t
@@ -239,15 +239,15 @@ noncomputable def Hom.comp {X Y Z : C} :
     rw [Roof.comp_eq _ _ sq, Roof.comp_eq _ _ sq']
     apply Quot.sound
     refine' ⟨Z, H₀.g ≫ H₁.g ≫ u, H₀'.g ≫ H₁.s' ≫ u, _, _, _⟩
-    . simp only [Roof.comp₀, Category.assoc, ← H₀.fac_assoc, ← H₀'.fac_assoc,
+    · simp only [Roof.comp₀, Category.assoc, ← H₀.fac_assoc, ← H₀'.fac_assoc,
         reassoc_of% hst, reassoc_of% H₁.fac]
-    . simp only [Roof.comp₀, Category.assoc, fac]
-    . simp only [Roof.comp₀, Category.assoc]
+    · simp only [Roof.comp₀, Category.assoc, fac]
+    · simp only [Roof.comp₀, Category.assoc]
       rw [← H₀.fac_assoc, ← H₁.fac_assoc, ← Category.assoc]
       exact W.comp_mem _ _ ht
         (W.comp_mem _ _ H₀'.hs'
         (W.comp_mem _ _ H₁.hs' hu))
-  . rintro z₁₂ z₁₂' z₂₃ ⟨Y, t, t', hst, hft, ht⟩
+  · rintro z₁₂ z₁₂' z₂₃ ⟨Y, t, t', hst, hft, ht⟩
     have sq := toSq z₁₂.s z₁₂.hs z₂₃.f
     have sq' := toSq z₁₂'.s z₁₂'.hs z₂₃.f
     have H := toSq (z₁₂.s ≫ t) ht (z₂₃.f ≫ sq.s')
@@ -260,20 +260,20 @@ noncomputable def Hom.comp {X Y Z : C} :
     rw [Roof.comp_eq _ _ sq, Roof.comp_eq _ _ sq']
     apply Quot.sound
     refine' roofRel.trans _ (roofRel.trans (_ : roofRel z z') (symm _))
-    . have eq : z₁₂.s ≫ sq.g ≫ H.s' = z₁₂.s ≫ t ≫ H.g := by
+    · have eq : z₁₂.s ≫ sq.g ≫ H.s' = z₁₂.s ≫ t ≫ H.g := by
         have h := H.fac
         simp only [Category.assoc] at h
         rw [← h, sq.fac_assoc]
       obtain ⟨Z, u, hu, fac⟩ := ext _ _ _ z₁₂.hs eq
       simp only [Category.assoc] at fac
       refine' ⟨Z, H.s' ≫ u, u, _, _, _⟩
-      . simp only [Roof.comp₀, Category.assoc, Category.comp_id]
-      . simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
-      . simp only [Roof.comp₀, Category.assoc]
+      · simp only [Roof.comp₀, Category.assoc, Category.comp_id]
+      · simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
+      · simp only [Roof.comp₀, Category.assoc]
         exact W.comp_mem _ _ z₂₃.hs
           (W.comp_mem _ _ sq.hs'
           (W.comp_mem _ _ H.hs' hu))
-    . have T := toSq (sq.s' ≫ H.s') (W.comp_mem _ _ sq.hs' H.hs') (sq'.s' ≫ H'.s')
+    · have T := toSq (sq.s' ≫ H.s') (W.comp_mem _ _ sq.hs' H.hs') (sq'.s' ≫ H'.s')
       have Tfac := T.fac
       have fac := H.fac
       have fac' := H'.fac
@@ -283,23 +283,23 @@ noncomputable def Hom.comp {X Y Z : C} :
       obtain ⟨Z, u, hu, fac''⟩ := ext _ _ _ z₁₂.hs eq
       simp only [Category.assoc] at fac''
       refine' ⟨Z, T.g ≫ u, T.s' ≫ u, _, _, _⟩
-      . simp only [Category.assoc, reassoc_of% Tfac]
-      . rw [Category.assoc, Category.assoc, Category.assoc, Category.assoc, fac'', reassoc_of% hft]
-      . simp only [Category.assoc, ← reassoc_of% Tfac]
+      · simp only [Category.assoc, reassoc_of% Tfac]
+      · rw [Category.assoc, Category.assoc, Category.assoc, Category.assoc, fac'', reassoc_of% hft]
+      · simp only [Category.assoc, ← reassoc_of% Tfac]
         exact W.comp_mem _ _ z₂₃.hs
           (W.comp_mem _ _ sq'.hs'
           (W.comp_mem _ _ H'.hs'
           (W.comp_mem _ _ T.hs' hu)))
-    . have eq : z₁₂'.s ≫ sq'.g ≫ H'.s' = z₁₂'.s ≫ t' ≫ H'.g := by
+    · have eq : z₁₂'.s ≫ sq'.g ≫ H'.s' = z₁₂'.s ≫ t' ≫ H'.g := by
         have h := H'.fac
         simp only [Category.assoc] at h
         rw [← h, sq'.fac_assoc]
       obtain ⟨Z, u, hu, fac⟩ := ext _ _ _ z₁₂'.hs eq
       simp only [Category.assoc] at fac
       refine' ⟨Z, H'.s' ≫ u, u, _, _, _⟩
-      . simp only [Roof.comp₀, Category.assoc, Category.comp_id]
-      . simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
-      . simp only [Roof.comp₀, Category.assoc]
+      · simp only [Roof.comp₀, Category.assoc, Category.comp_id]
+      · simp only [Roof.comp₀, Category.assoc, Category.comp_id, fac]
+      · simp only [Roof.comp₀, Category.assoc]
         exact W.comp_mem _ _ z₂₃.hs
           (W.comp_mem _ _ sq'.hs'
           (W.comp_mem _ _ H'.hs' hu))
@@ -399,7 +399,7 @@ lemma comp_Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).map s ≫ Qinv s hs =
   dsimp [Roof.comp₀]
   apply Quot.sound
   refine' ⟨Y, 𝟙 Y, s, by simp, _ , by simpa using hs⟩
-  . simp only [Category.comp_id, Roof.ofHom_Z, Roof.ofHom_f]
+  · simp only [Category.comp_id, Roof.ofHom_Z, Roof.ofHom_f]
     erw [Category.id_comp]
 
 noncomputable def iso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
@@ -476,9 +476,9 @@ lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : (Q W) ⋙ lift F hF = F :=
 
 lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ := by
   refine' Functor.ext _ _
-  . rintro ⟨X⟩
+  · rintro ⟨X⟩
     exact Functor.congr_obj h X
-  . rintro ⟨X⟩ ⟨Y⟩ ⟨f : Roof W X Y⟩
+  · rintro ⟨X⟩ ⟨Y⟩ ⟨f : Roof W X Y⟩
     have eq := facOfRoof f
     dsimp only [homOfRoof] at eq
     have eq' : F₂.map (Qinv f.s f.hs) = eqToHom (Functor.congr_obj h.symm f.Z) ≫
@@ -566,29 +566,29 @@ lemma map_eq_iff' {X Y : C} (z₁ z₂ : Roof W X Y) :
     z₁.map L = z₂.map L ↔ roofRel z₁ z₂ := by
   have H : Localization.homOfRoof z₁ = Localization.homOfRoof z₂ ↔ roofRel z₁ z₂ := by
     constructor
-    . intro h
+    · intro h
       dsimp only [Localization.homOfRoof] at h
       rw [Quot.eq] at h
       induction' h with _ _ _ _ _ _ _ h₁ _ _ _ _ _ h₂ h₃
-      . assumption
-      . apply refl
-      . exact h₁.symm
-      . exact h₂.trans h₃
-    . apply Quot.sound
+      · assumption
+      · apply refl
+      · exact h₁.symm
+      · exact h₂.trans h₃
+    · apply Quot.sound
   refine' Iff.trans _ H
   simp only [Roof.map_eq]
   constructor
-  . intro h
+  · intro h
     apply (CategoryTheory.Localization.uniq (Localization.Q W) L W).functor.map_injective
     simpa only [NatIso.cancel_natIso_inv_left, NatIso.cancel_natIso_hom_right
       (Localization.compUniqFunctor (Localization.Q W) L W)] using h
-  . intro h
+  · intro h
     rw [h]
 
 lemma map_eq_iff {X Y : C} (f₁ f₂ : X ⟶ Y) :
     L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (_ : W s), f₁ ≫ s = f₂ ≫ s := by
   constructor
-  . intro h
+  · intro h
     have h' : (Roof.ofHom W f₁).map L = (Roof.ofHom W f₂).map L := by simpa using h
     rw [map_eq_iff'] at h'
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h'
@@ -596,7 +596,7 @@ lemma map_eq_iff {X Y : C} (f₁ f₂ : X ⟶ Y) :
     simp only [Category.id_comp] at hst ht
     subst hst
     exact ⟨Z, t₁, ht, hft⟩
-  . rintro ⟨Z, s, hs, fac⟩
+  · rintro ⟨Z, s, hs, fac⟩
     rw [← cancel_mono (Localization.isoOfHom L W s hs).hom]
     dsimp
     simp only [← L.map_comp, fac]
@@ -654,13 +654,13 @@ lemma fac {X Y : C} (f : L.obj X ⟶ L.obj Y) :
 lemma map_eq_iff {X Y : C} (f₁ f₂ : X ⟶ Y) :
     L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Z ⟶ X) (_ : W s), s ≫ f₁ = s ≫ f₂ := by
   refine' Iff.trans _ ((HasLeftCalculusOfFractions.map_eq_iff L.op W.op f₁.op f₂.op).trans _)
-  . constructor
-    . apply Quiver.Hom.unop_inj
-    . apply Quiver.Hom.op_inj
-  . constructor
-    . rintro ⟨Z, s, hs, fac⟩
+  · constructor
+    · apply Quiver.Hom.unop_inj
+    · apply Quiver.Hom.op_inj
+  · constructor
+    · rintro ⟨Z, s, hs, fac⟩
       exact ⟨_, s.unop, hs, Quiver.Hom.op_inj fac⟩
-    . rintro ⟨Z, s, hs, fac⟩
+    · rintro ⟨Z, s, hs, fac⟩
       exact ⟨_, s.op, hs, Quiver.Hom.unop_inj fac⟩
 
 end HasRightCalculusOfFractions

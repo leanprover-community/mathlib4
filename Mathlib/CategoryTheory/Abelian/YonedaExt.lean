@@ -20,20 +20,20 @@ noncomputable def fromSingleEquiv (A : C) (K : HomologicalComplex C c) (i j : ι
         else 0
       comm' := fun k l hkl => by
         by_cases hk : k = i
-        . subst hk
+        · subst hk
           dsimp
           obtain rfl : l = j := (c.next_eq' hkl).symm.trans (c.next_eq' hij)
           simp only [Category.comp_id, Category.id_comp, ite_true, Category.assoc, zero_comp]
           rw [f.2, comp_zero]
-        . dsimp
+        · dsimp
           rw [dif_neg hk, zero_comp, zero_comp] }
   left_inv φ := by
     ext k
     by_cases hk : k = i
-    . subst hk
+    · subst hk
       dsimp
       simp
-    . dsimp
+    · dsimp
       rw [dif_neg hk]
       apply IsZero.eq_of_src
       dsimp
@@ -55,20 +55,20 @@ noncomputable def toSingleEquiv (A : C) (K : HomologicalComplex C c) (i j : ι) 
         else 0
       comm' := fun k l hkl => by
         by_cases hk : l = j
-        . subst hk
+        · subst hk
           dsimp
           obtain rfl : k = i := (c.prev_eq' hkl).symm.trans (c.prev_eq' hij)
           simp
           rw [reassoc_of% f.2, zero_comp]
-        . dsimp
+        · dsimp
           rw [dif_neg hk, comp_zero, comp_zero] }
   left_inv φ := by
     ext k
     by_cases hk : k = j
-    . subst hk
+    · subst hk
       dsimp
       simp
-    . dsimp
+    · dsimp
       rw [dif_neg hk]
       apply IsZero.eq_of_tgt
       dsimp
@@ -155,9 +155,9 @@ noncomputable def Z : CochainComplex C ℤ where
   shape i j hij := by
     dsimp [Z.d]
     split_ifs
-    . rfl
-    . rfl
-    . rw [E.K.shape, zero_comp, comp_zero]
+    · rfl
+    · rfl
+    · rw [E.K.shape, zero_comp, comp_zero]
       dsimp at hij ⊢
       intro
       apply hij
@@ -182,7 +182,7 @@ lemma Z_d_eq (a b : ℤ) (i j : ℤ) (hi : a + n + 1 = i)
 lemma isZero_Z_X_of_le (a : ℤ) (ha : a ≤ -n-2) : IsZero (E.Z.X a) := by
   dsimp [Z, Z.X]
   rw [if_neg] ; swap
-  . rintro rfl
+  · rintro rfl
     have hn : 0 ≤ (n : ℤ) := Nat.cast_nonneg n
     linarith
   exact E.K.isZero_of_isStrictlyGE 0 _ (by linarith)
@@ -190,9 +190,9 @@ lemma isZero_Z_X_of_le (a : ℤ) (ha : a ≤ -n-2) : IsZero (E.Z.X a) := by
 lemma isZero_Z_X_of_ge (a : ℤ) (ha : 1 ≤ a) : IsZero (E.Z.X a) := by
   dsimp [Z, Z.X]
   obtain (ha'|rfl) := ha.lt_or_eq
-  . rw [if_neg (by linarith)]
+  · rw [if_neg (by linarith)]
     exact E.K.isZero_of_isStrictlyLE (n+2) _ (by linarith)
-  . simp only [ite_true]
+  · simp only [ite_true]
     exact isZero_zero _
 
 instance : E.Z.IsStrictlyLE 0 where
@@ -230,11 +230,11 @@ lemma ZToX₂_f_self (n' : ℤ) (hn' : n' + n + 1 = 0) :
 lemma isZero_homology_ZToX₁ (d : ℤ) (hd : d ≠ 0) :
     IsZero (E.Z.homology d) := by
   by_cases 0 < d
-  . apply ShortComplex.isZero_homology_of_isZero_X₂
+  · apply ShortComplex.isZero_homology_of_isZero_X₂
     dsimp
     apply isZero_Z_X_of_ge
     linarith
-  . have hd' : d + 1 ≠ 1 := fun _ => hd (by linarith)
+  · have hd' : d + 1 ≠ 1 := fun _ => hd (by linarith)
     refine' IsZero.of_iso (E.hK' (d+n+1)) (ShortComplex.homologyMapIso
       ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (d-1) d (d+1)
         (by simp) (by simp)).app E.Z ≪≫ _ ≪≫
@@ -242,8 +242,8 @@ lemma isZero_homology_ZToX₁ (d : ℤ) (hd : d ≠ 0) :
           (by simp) (by simp only [CochainComplex.next] ; linarith)).app E.K).symm))
     refine' ShortComplex.isoMk (Z.XIso E _ _ (by linarith) (by linarith))
       (Z.XIso E _ _ rfl (by linarith)) (Z.XIso E _ _ (by linarith) hd') _ _
-    . simp [E.Z_d_eq (d-1) d (d+n) (d+n+1) (by linarith) (by linarith) (by linarith) (by linarith)]
-    . simp [E.Z_d_eq d (d+1) (d+n+1) (d+n+2) (by linarith) (by linarith) (by linarith) hd']
+    · simp [E.Z_d_eq (d-1) d (d+n) (d+n+1) (by linarith) (by linarith) (by linarith) (by linarith)]
+    · simp [E.Z_d_eq d (d+1) (d+n+1) (d+n+2) (by linarith) (by linarith) (by linarith) hd']
 
 @[simps]
 noncomputable def shortComplex : ShortComplex C where
@@ -262,8 +262,8 @@ lemma shortComplex_exact : E.shortComplex.Exact := by
       (by simp) (by simp ; linarith)).symm.app _))
   refine' ShortComplex.isoMk (by exact Z.XIso E (-1) n (by linarith) (by linarith))
     (Z.XIso E 0 (n+1) (by linarith) (by linarith)) E.iso₁.symm _ _
-  . simp [E.Z_d_eq (-1) 0 n (n+1) (by linarith) (by linarith) (by linarith) (by linarith)]
-  . simp
+  · simp [E.Z_d_eq (-1) 0 n (n+1) (by linarith) (by linarith) (by linarith) (by linarith)]
+  · simp
 
 attribute [local instance] epi_comp
 
@@ -314,7 +314,7 @@ instance : QuasiIso E.ZToX₁ where
   quasiIso n := by
     rw [quasiIsoAt_iff_isIso_homologyMap]
     by_cases n = 0
-    . subst h
+    · subst h
       suffices IsIso (ShortComplex.homologyMap
           ((HomologicalComplex.shortComplexFunctor' _ _ (-1) 0 1).map E.ZToX₁)) from
         (NatIso.isIso_map_iff (isoWhiskerRight
@@ -324,7 +324,7 @@ instance : QuasiIso E.ZToX₁ where
       dsimp
       erw [id_comp]
       infer_instance
-    . refine' ⟨0, IsZero.eq_of_src (E.isZero_homology_ZToX₁ n h) _ _,
+    · refine' ⟨0, IsZero.eq_of_src (E.isZero_homology_ZToX₁ n h) _ _,
         IsZero.eq_of_src (ShortComplex.isZero_homology_of_isZero_X₂ _ _) _ _⟩
       dsimp
       rw [if_neg h]

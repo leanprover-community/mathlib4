@@ -49,10 +49,10 @@ lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (T : Triangle D) :
   T ∈ L.essImageDistTriang ↔ T.rotate ∈ L.essImageDistTriang := by
   constructor
-  . rintro ⟨T', e', hT'⟩
+  · rintro ⟨T', e', hT'⟩
     exact ⟨T'.rotate, (rotate D).mapIso e' ≪≫ L.mapTriangleRotateIso.app T',
       rot_of_distTriang T' hT'⟩
-  . rintro ⟨T', e', hT'⟩
+  · rintro ⟨T', e', hT'⟩
     exact ⟨T'.invRotate, (triangleRotation D).unitIso.app T ≪≫ (invRotate D).mapIso e' ≪≫
       L.mapTriangleInvRotateIso.app T',  inv_rot_of_distTriang T' hT'⟩
 
@@ -116,9 +116,9 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
       (e₁.inv.hom₂ ≫ b ≫ e₂.hom.hom₂) (by
         rw [reassoc_of% comm₁, reassoc_of% fac, assoc, assoc, comm₁'])
     refine' ⟨e₁.hom.hom₃ ≫ c ≫ e₂.inv.hom₃, _, _⟩
-    . rw [reassoc_of% comm₂, reassoc_of% hc₁, ← reassoc_of% comm₂',
+    · rw [reassoc_of% comm₂, reassoc_of% hc₁, ← reassoc_of% comm₂',
         Iso.hom_inv_id_triangle_hom₃, comp_id, Iso.hom_inv_id_triangle_hom₂_assoc]
-    . simp only [← comm₃, ← reassoc_of% hc₂, ← reassoc_of% comm₃',
+    · simp only [← comm₃, ← reassoc_of% hc₂, ← reassoc_of% comm₃',
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app_assoc,
         Iso.hom_inv_id_triangle_hom₁_assoc, ← Functor.map_comp, assoc,
         Iso.hom_inv_id_triangle_hom₁, comp_id]
@@ -152,10 +152,10 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   obtain ⟨c, hc₁, hc₂⟩ := Pretriangulated.complete_distinguished_triangle_morphism
     T₁ T₃ hT₁ hT₃ a' (b' ≫ s₂'') fac₂.symm
   refine' ⟨L.map c ≫ inv (L.map α), _, _⟩
-  . simp only [assoc, ← cancel_mono (L.map α), IsIso.inv_hom_id, comp_id, ← L.map_comp, hc₁, hα₁]
+  · simp only [assoc, ← cancel_mono (L.map α), IsIso.inv_hom_id, comp_id, ← L.map_comp, hc₁, hα₁]
     simp only [Triangle.mk_obj₃, Triangle.mk_obj₂, Triangle.mk_mor₂, Functor.map_comp,
       reassoc_of% hb', Localization.isoOfHom_inv_hom_id_assoc]
-  . simp only [ha', Functor.map_comp, assoc, ← L.commShiftIso_hom_naturality_assoc a' (1 : ℤ)]
+  · simp only [ha', Functor.map_comp, assoc, ← L.commShiftIso_hom_naturality_assoc a' (1 : ℤ)]
     simp only [← Functor.map_comp_assoc, hc₂, Triangle.mk_mor₃, assoc,
       ← cancel_mono ((L.commShiftIso (1 : ℤ)).hom.app T₂.obj₁), Iso.inv_hom_id_app]
     simp only [comp_id, Functor.comp_obj, ← cancel_mono ((L.map s₁)⟦(1 : ℤ)⟧'), assoc,
@@ -201,13 +201,13 @@ lemma isTriangulated_of_exists_lifting_composable_morphisms [Pretriangulated D]
       _, _, L.map_distinguished _ h₁₂,
       _, _, L.map_distinguished _ h₂₃,
       _, _, h₁₃', ⟨_⟩⟩
-  . dsimp
+  · dsimp
     simp only [← cancel_epi e₁.hom, ← reassoc_of% comm₁, Iso.hom_inv_id,
       Iso.hom_inv_id_assoc, comp_id]
-  . dsimp
+  · dsimp
     simp only [← cancel_epi e₂.hom, ← reassoc_of% comm₂, Iso.hom_inv_id,
       Iso.hom_inv_id_assoc, comp_id]
-  . exact
+  · exact
     { m₁ := L.map H.m₁
       m₃ := L.map H.m₃
       comm₁ := by simpa using L.congr_map H.comm₁
@@ -233,9 +233,9 @@ lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
   refine' ⟨Y₁, Y₂, Y₃, f', g',
     (Localization.isoOfHom L W s hs) ≪≫ L.objObjPreimageIso X₁, L.objObjPreimageIso X₂,
     (Localization.isoOfHom L W s' hs').symm ≪≫ L.objObjPreimageIso X₃, _, _⟩
-  . simp only [← cancel_epi (Localization.isoOfHom L W s hs).inv, Iso.trans_hom, assoc,
+  · simp only [← cancel_epi (Localization.isoOfHom L W s hs).inv, Iso.trans_hom, assoc,
       Iso.inv_hom_id_assoc, ← reassoc_of% hf', Iso.inv_hom_id, comp_id]
-  . simp only [← cancel_mono (Localization.isoOfHom L W s' hs').inv, Iso.trans_hom, Iso.symm_hom,
+  · simp only [← cancel_mono (Localization.isoOfHom L W s' hs').inv, Iso.trans_hom, Iso.symm_hom,
       ← reassoc_of% hg', Iso.inv_hom_id, comp_id]
 
 end
@@ -360,13 +360,13 @@ variable {C D : Type _} [Category C] [Category D] [HasZeroObject C] [HasZeroObje
 lemma distTriang_iff (T : Triangle D) :
     (T ∈ distTriang D) ↔ T ∈ L.essImageDistTriang := by
   constructor
-  . intro hT
+  · intro hT
     let f := L.mapArrow.objPreimage T.mor₁
     obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦(1 : ℤ)⟧, mem⟩ :=
       Pretriangulated.distinguished_cocone_triangle f.hom
     exact ⟨_, (exists_iso_of_arrow_iso T _ hT (L.map_distinguished _ mem)
       (L.mapArrow.objObjPreimageIso T.mor₁).symm).choose, mem⟩
-  . rintro ⟨T₀, e, hT₀⟩
+  · rintro ⟨T₀, e, hT₀⟩
     exact isomorphic_distinguished _ (L.map_distinguished _ hT₀) _ e
 
 end

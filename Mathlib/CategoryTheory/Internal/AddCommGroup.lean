@@ -357,9 +357,9 @@ noncomputable def mapInternalAb : Internal.Ab C ⥤ Internal.Ab D where
         simp only [Category.assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id, Category.comp_id]
         simp only [PreservesLimitPair.iso_hom]
         ext
-        . simp only [Category.assoc, prodComparison_fst, prod.map_fst,
+        · simp only [Category.assoc, prodComparison_fst, prod.map_fst,
           prodComparison_fst_assoc, ← F.map_comp]
-        . simp only [Category.assoc, prodComparison_snd, prod.map_snd,
+        · simp only [Category.assoc, prodComparison_snd, prod.map_snd,
           prodComparison_snd_assoc, ← F.map_comp] }
 
 noncomputable def mapInternalAddCommGroupCat :

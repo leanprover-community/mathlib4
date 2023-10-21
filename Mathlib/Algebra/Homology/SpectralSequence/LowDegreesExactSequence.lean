@@ -46,10 +46,10 @@ variable {H : ℤ → C} (h : E.StronglyConvergesTo H)
 lemma hasEdgeMonoAtVerticalLine (p q r : ℤ) [E.HasPage r] (hr : p + 1 ≤ r) :
     E.HasEdgeMonoAt ⟨p, q⟩ r := by
   by_cases 0 ≤ q
-  . obtain ⟨q, rfl⟩ := Int.eq_ofNat_of_zero_le h
+  · obtain ⟨q, rfl⟩ := Int.eq_ofNat_of_zero_le h
     apply hasEdgeMonoAt_of_isFirstQuadrant
     exact hr
-  . simp only [not_le] at h
+  · simp only [not_le] at h
     constructor
     intro pq hpq
     apply IsZero.eq_of_tgt
@@ -59,11 +59,11 @@ lemma hasEdgeMonoAtVerticalLine (p q r : ℤ) [E.HasPage r] (hr : p + 1 ≤ r) :
 lemma hasEdgeEpiAtHorizontalLine (p q r : ℤ) [E.HasPage r] (hr : q + 2 ≤ r) :
     E.HasEdgeEpiAt ⟨p, q⟩ r := by
   by_cases 0 ≤ p
-  . obtain ⟨p, rfl⟩ := Int.eq_ofNat_of_zero_le h
+  · obtain ⟨p, rfl⟩ := Int.eq_ofNat_of_zero_le h
     apply hasEdgeEpiAt_of_isFirstQuadrant
     dsimp
     exact hr
-  . simp only [not_le] at h
+  · simp only [not_le] at h
     constructor
     intro pq hpq
     apply IsZero.eq_of_src
@@ -174,10 +174,10 @@ noncomputable def shortComplex₄ [E.HasPage 2] : ShortComplex₄ C :=
 lemma shortComplex₄_exact [E.HasPage 2] :
     (shortComplex₄ h).Exact := by
   apply ShortComplex₄.connectShortComplex_exact'
-  . exact (shortComplexDegreeOne_shortExact h).exact
-  . exact (shortComplex₄d₂_exact E).exact₂
-  . infer_instance
-  . dsimp
+  · exact (shortComplexDegreeOne_shortExact h).exact
+  · exact (shortComplex₄d₂_exact E).exact₂
+  · infer_instance
+  · dsimp
     infer_instance
 
 @[simps!]
@@ -190,11 +190,11 @@ noncomputable def shortComplex₄' [E.HasPage 2] : ShortComplex₄ C :=
 lemma shortComplex₄'_exact [E.HasPage 2] :
     (shortComplex₄' h).Exact := by
   apply ShortComplex₄.connectShortComplex_exact'
-  . exact (shortComplex₄d₂_exact E).exact₃
-  . exact ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
-  . dsimp
+  · exact (shortComplex₄d₂_exact E).exact₃
+  · exact ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
+  · dsimp
     infer_instance
-  . infer_instance
+  · infer_instance
 
 end LowDegreesExactSequence
 

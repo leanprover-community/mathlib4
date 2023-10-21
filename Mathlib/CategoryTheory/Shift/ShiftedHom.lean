@@ -121,8 +121,8 @@ instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (ShiftedHom M X₁ X₂)
   γhmul_assoc a b c α β γ ab bc abc hab hbc habc := by
     simp only [γhmul_eq, assoc, Functor.map_comp]
     rw [shiftFunctorAdd'_assoc_inv_app c b a bc ab abc] ; rotate_left
-    . rw [add_comm b a, hab]
-    . rw [add_assoc, add_comm b a, hab, add_comm c, habc]
+    · rw [add_comm b a, hab]
+    · rw [add_assoc, add_comm b a, hab, add_comm c, habc]
     dsimp
     rw [← NatTrans.naturality_assoc]
     rfl

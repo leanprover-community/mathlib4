@@ -117,21 +117,21 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
 lemma shift_setLE (a n n' : ℤ) (hn' : a + n = n'): ((t.setLE n).shift a) = t.setLE n' := by
   ext X
   constructor
-  . intro hX
+  · intro hX
     rw [Set.mem_shift_iff] at hX
     apply ((setLE t n').mem_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
       (t.shift_mem_setLE n (-a) n' (by linarith) _ hX)
-  . intro hX
+  · intro hX
     exact t.shift_mem_setLE _ _ _ hn' X hX
 
 lemma shift_setGE (a n n' : ℤ) (hn' : a + n = n'): ((t.setGE n).shift a) = t.setGE n' := by
   ext X
   constructor
-  . intro hX
+  · intro hX
     rw [Set.mem_shift_iff] at hX
     apply ((setGE t n').mem_iff_of_iso ((shiftEquiv C a).unitIso.symm.app X)).1
       (t.shift_mem_setGE n (-a) n' (by linarith) _ hX)
-  . intro hX
+  · intro hX
     exact t.shift_mem_setGE _ _ _ hn' X hX
 
 lemma setLE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ⊆ t.setLE n₁ := by
@@ -154,8 +154,8 @@ lemma setLE_monotone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setLE n₀ ⊆ t.
     exact (ha n).trans (hb (n+a))
   intro a
   induction' a with a ha
-  . exact H_zero
-  . exact H_add a 1 _ rfl ha H_one
+  · exact H_zero
+  · exact H_add a 1 _ rfl ha H_one
 
 lemma setGE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setGE n₁ ⊆ t.setGE n₀ := by
   let H := fun (a : ℕ) => ∀ (n : ℤ), t.setGE (n + a) ⊆ t.setGE n
@@ -177,8 +177,8 @@ lemma setGE_antitone (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) : t.setGE n₁ ⊆ t.
     exact (hb (n + a)).trans (ha n)
   intro a
   induction' a with a ha
-  . exact H_zero
-  . exact H_add a 1 _ rfl ha H_one
+  · exact H_zero
+  · exact H_add a 1 _ rfl ha H_one
 
 class IsLE (X : C) (n : ℤ) : Prop where
   mem : X ∈ t.setLE n
@@ -244,8 +244,8 @@ lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
   apply (shiftFunctor C n₀).map_injective
   simp only [Functor.map_zero]
   apply t.zero'
-  . apply t.mem_of_isLE
-  . apply t.mem_of_isGE
+  · apply t.mem_of_isLE
+  · apply t.mem_of_isGE
 
 lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
     (_ : t.IsLE X n₀) (_ : t.IsGE Y n₁) : f = 0 :=
@@ -261,9 +261,9 @@ def heart : Set C := t.setLE 0 ∩ t.setGE 0
 lemma mem_heart_iff (X : C) :
     X ∈ t.heart ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
   constructor
-  . rintro ⟨h₁, h₂⟩
+  · rintro ⟨h₁, h₂⟩
     exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
-  . rintro ⟨h₁, h₂⟩
+  · rintro ⟨h₁, h₂⟩
     exact ⟨t.mem_of_isLE _ _, t.mem_of_isGE _ _⟩
 
 instance : t.heart.RespectsIso where

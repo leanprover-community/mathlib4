@@ -40,9 +40,9 @@ lemma hom_injective (e₁ e₂ : newExt X Y n) (h : e₁.hom = e₂.hom) : e₁ 
 
 lemma ext_iff (e₁ e₂ : newExt X Y n) : e₁ = e₂ ↔ e₁.hom = e₂.hom := by
   constructor
-  . rintro rfl
+  · rintro rfl
     rfl
-  . apply hom_injective
+  · apply hom_injective
 
 lemma mk_surjective (e : newExt X Y n) : ∃ (f : _), e = mk f := ⟨e.hom, rfl⟩
 
@@ -161,10 +161,10 @@ instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (newExt X₃ X₄)
     simp only [ShiftedHom.zsmul_γhmul, ShiftedHom.γhmul_zsmul, smul_smul,
       ← Int.negOnePow_add]
     congr 1
-    . congr 1
+    · congr 1
       simp only [← h₁₂, ← h₂₃, Nat.cast_add, add_mul, mul_add]
       abel
-    . symm
+    · symm
       apply IsAssocGradedHMul.γhmul_assoc
 
 @[simp]

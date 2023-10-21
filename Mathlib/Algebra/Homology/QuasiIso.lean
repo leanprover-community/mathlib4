@@ -393,9 +393,9 @@ lemma quasiIsoAt_iff_comp_left'' (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
     (hφ : QuasiIsoAt φ n) :
     QuasiIsoAt (φ ≫ φ') n ↔ QuasiIsoAt φ' n := by
   constructor
-  . intro hφφ'
+  · intro hφφ'
     exact quasiIsoAt_of_comp_left φ φ' n
-  . intro hφ
+  · intro hφ
     infer_instance
 
 @[simp]
@@ -411,9 +411,9 @@ lemma quasiIso_iff_comp_left'' (φ : C ⟶ D) (φ' : D ⟶ E)
     (hφ : QuasiIso φ) :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ' := by
   constructor
-  . intro
+  · intro
     exact quasiIso_of_comp_left φ φ'
-  . intro hφ'
+  · intro hφ'
     infer_instance
 
 @[simp]
@@ -457,9 +457,9 @@ lemma quasiIsoAt_iff_comp_right'' (φ : C ⟶ D) (φ' : D ⟶ E) (n : ι)
     (hφ' : QuasiIsoAt φ' n) :
     QuasiIsoAt (φ ≫ φ') n ↔ QuasiIsoAt φ n := by
   constructor
-  . intro hφφ'
+  · intro hφφ'
     exact quasiIsoAt_of_comp_right φ φ' n
-  . intro hφ
+  · intro hφ
     infer_instance
 
 @[simp]
@@ -475,9 +475,9 @@ lemma quasiIso_iff_comp_right'' (φ : C ⟶ D) (φ' : D ⟶ E)
     (hφ' : QuasiIso φ') :
     QuasiIso (φ ≫ φ') ↔ QuasiIso φ := by
   constructor
-  . intro
+  · intro
     exact quasiIso_of_comp_right φ φ'
-  . intro hφ
+  · intro hφ
     infer_instance
 
 @[simp]

@@ -58,19 +58,19 @@ namespace Arrow
 lemma isIso_iff {C : Type _} [Category C] {X Y : Arrow C} (f : X ⟶ Y) :
     IsIso f ↔ IsIso f.left ∧ IsIso f.right := by
   constructor
-  . intro hf
+  · intro hf
     constructor
-    . change IsIso ((Comma.fst _ _).map f)
+    · change IsIso ((Comma.fst _ _).map f)
       infer_instance
-    . change IsIso ((Comma.snd _ _).map f)
+    · change IsIso ((Comma.snd _ _).map f)
       infer_instance
-  . rintro ⟨hf₁, hf₂⟩
+  · rintro ⟨hf₁, hf₂⟩
     refine' ⟨CommaMorphism.mk (inv f.left) (inv f.right) _, _, _⟩
-    . dsimp
+    · dsimp
       simp only [← cancel_epi f.left, Arrow.w_assoc f,
         IsIso.hom_inv_id_assoc, IsIso.hom_inv_id, comp_id]
-    . aesop_cat
-    . aesop_cat
+    · aesop_cat
+    · aesop_cat
 
 end Arrow
 
@@ -249,8 +249,8 @@ lemma zero₃' {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
   subst hfg
   obtain rfl : φ = (Arrow₂.δ₁Toδ₀.app (Arrow₂.mk f g)) := by
     ext
-    . exact hφ₁
-    . exact hφ₂
+    · exact hφ₁
+    · exact hφ₂
   refine' X.zero₃ n₀ n₁ hn₁ _
 
 @[simps, pp_dot]
@@ -712,14 +712,14 @@ lemma shortComplex₄Ψ_exact₂ : (X.shortComplex₄Ψ n₀ n₁ hn₁).shortCo
   dsimp at x₂ hx₂
   refine' ⟨A₁, π₁, hπ₁,
     (X.kernelSequenceCycles_obj_exact n₀ n₁ hn₁ (Arrow₂.mk f₂ f₃)).lift x₂ _, _⟩
-  . dsimp
+  · dsimp
     have eq := (X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₁Toδ₀.app (Arrow₃.mk f₁ f₂ f₃))
     dsimp at eq
     erw [Functor.map_id, id_comp] at eq
     erw [eq, ← reassoc_of% hx₂, hx₁]
     rw [assoc]
     erw [X.opcyclesToHδ₁_Hδ₁Toδ₀_app n₀ n₁ hn₁ (Arrow₂.mk f₁ f₂), comp_zero, comp_zero]
-  . dsimp
+  · dsimp
     rw [← cancel_mono ((X.opcyclesToHδ₁ n₀ n₁ hn₁).app (Arrow₂.mk f₁ f₂)), assoc]
     simp only [← hx₁, hx₂]
     erw [assoc, X.ψ_comp_app n₀ n₁ hn₁ (Arrow₃.mk f₁ f₂ f₃), ShortComplex.Exact.lift_f_assoc]
@@ -865,8 +865,8 @@ lemma cokernelSequenceE_exact : (X.cokernelSequenceE n₀ n₁ n₂ hn₁ hn₂)
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).homologyIsCokernel)
   refine' ShortComplex.isoMk (Iso.refl _)
     (X.δ₃PullbackCyclesIsoShortComplexECycles n₀ n₁ n₂ hn₁ hn₂) (Iso.refl _) _ _
-  . simp
-  . simp [cyclesπ]
+  · simp
+  · simp [cyclesπ]
 
 @[simps!]
 noncomputable def cokernelSequenceEObj (D : Arrow₃ ι) : ShortComplex C :=
@@ -943,8 +943,8 @@ lemma kernelSequenceE_exact : (X.kernelSequenceE n₀ n₁ n₂ hn₁ hn₂).Exa
     (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).homologyIsKernel)
   refine' ShortComplex.isoMk (Iso.refl _)
     (X.δ₀PullbackOpcyclesIsoShortComplexEOpcycles n₀ n₁ n₂ hn₁ hn₂) (Iso.refl _) _ _
-  . simp [opcyclesι]
-  . simp
+  · simp [opcyclesι]
+  · simp
 
 @[simps!]
 noncomputable def kernelSequenceEObj (D : Arrow₃ ι) : ShortComplex C :=
@@ -987,12 +987,12 @@ noncomputable def dToTgtΦ :
   refine' (X.δ₄PullbackKernelSequenceTgtΦ_exact n₁ n₂ hn₂).lift
     ((X.δ₀PullbackCokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).desc
       (whiskerLeft Arrow₄.δ₄ (X.Ψ n₁ n₂ hn₂)) _) _
-  . ext ⟨f₁, f₂, f₃, f₄⟩
+  · ext ⟨f₁, f₂, f₃, f₄⟩
     have eq := congr_app (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero (Arrow₃.mk f₁ (f₂ ≫ f₃) f₄)
     dsimp [shortComplexE] at eq
     dsimp [Arrow₃.δ₁, Arrow₃.δ₃, Arrow₄.δ₄]
     erw [assoc, X.comp_ψ_app n₁ n₂ hn₂ (Arrow₃.mk f₁ f₂ f₃), reassoc_of% eq, zero_comp]
-  . rw [← cancel_epi (X.δ₀PullbackCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂).g,
+  · rw [← cancel_epi (X.δ₀PullbackCokernelSequenceE n₀ n₁ n₂ hn₁ hn₂).g,
       ShortComplex.Exact.g_desc_assoc, comp_zero]
     ext D
     exact congr_app (X.shortComplex₄Ψ n₁ n₂ hn₂).zero₂ (Arrow₄.δ₄.obj D)
@@ -1060,12 +1060,12 @@ noncomputable def dFromSrcΦ :
   refine' (X.δ₀PullbackCokernelSequenceSrcΦ_exact n₀ n₁ hn₁).desc
     ((X.δ₄PullbackKernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂).lift
     (whiskerLeft Arrow₄.δ₀ (X.Ψ n₀ n₁ hn₁)) _) _
-  . ext ⟨f₁, f₂, f₃, f₄⟩
+  · ext ⟨f₁, f₂, f₃, f₄⟩
     have eq := congr_app (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero (Arrow₃.mk f₁ (f₂ ≫ f₃) f₄)
     dsimp [shortComplexE] at eq
     dsimp [Arrow₃.δ₀, Arrow₃.δ₂, Arrow₄.δ₀]
     erw [X.ψ_comp_app_assoc n₀ n₁ hn₁ (Arrow₃.mk f₂ f₃ f₄), eq, comp_zero]
-  . rw [← cancel_mono (X.δ₄PullbackKernelSequenceE n₀ n₁ n₂ hn₁ hn₂).f, zero_comp,
+  · rw [← cancel_mono (X.δ₄PullbackKernelSequenceE n₀ n₁ n₂ hn₁ hn₂).f, zero_comp,
       assoc, ShortComplex.Exact.lift_f]
     ext D
     exact congr_app (X.shortComplex₄Ψ n₀ n₁ hn₁).zero₁ (Arrow₄.δ₀.obj D)
@@ -1260,10 +1260,10 @@ noncomputable def kernelSequenceE' : ShortComplex C where
       ((X.δ n₁ n₂ hn₂).app (Arrow₂.mk f₁ (f₂ ≫ f₃)))
   zero := by
     ext
-    . dsimp [EιH]
+    · dsimp [EιH]
       erw [assoc, assoc, biprod.lift_fst, zero_comp,
         X.opcyclesToHδ₁_Hδ₁Toδ₀_app n₀ n₁ hn₁, comp_zero]
-    . dsimp [EιH]
+    · dsimp [EιH]
       rw [assoc, assoc, biprod.lift_snd, zero_comp]
       exact (X.kernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ (Arrow₃.mk f₁ f₂ f₃)).zero
 
@@ -1302,10 +1302,10 @@ noncomputable def cokernelSequenceE' : ShortComplex C where
   g := (X.HπE n₀ n₁ n₂ hn₁ hn₂).app (Arrow₃.mk f₁ f₂ f₃)
   zero := by
     ext
-    . dsimp [HπE]
+    · dsimp [HπE]
       erw [biprod.inl_desc_assoc, comp_zero,
         X.Hδ₂Toδ₁_Hδ₁ToCycles_app_assoc n₁ n₂ hn₂, zero_comp]
-    . dsimp [HπE]
+    · dsimp [HπE]
       erw [biprod.inr_desc_assoc, comp_zero, ← assoc]
       exact (X.cokernelSequenceEObj n₀ n₁ n₂ hn₁ hn₂ (Arrow₃.mk f₁ f₂ f₃)).zero
 
@@ -1382,9 +1382,9 @@ lemma kernelSequenceD_exact : (X.kernelSequenceD n₀ n₁ n₂ n₃ hn₁ hn₂
       (y₀ ≫ (X.EιH n₀ n₁ n₂ hn₁ hn₂).app _) (by
       dsimp
       ext
-      . simp only [assoc, biprod.lift_fst, zero_comp]
+      · simp only [assoc, biprod.lift_fst, zero_comp]
         exact hy₀₁
-      . simp only [assoc, biprod.lift_snd, zero_comp]
+      · simp only [assoc, biprod.lift_snd, zero_comp]
         exact hy₀)
   dsimp at y₁ hy₁
   refine' ⟨A₀, 𝟙 _, inferInstance, y₁, _⟩
@@ -1559,9 +1559,9 @@ def imagesLemmaInput (D : Arrow₃ ι) : Abelian.ImagesLemmaInput C where
     simp only [← Functor.map_comp]
     congr 1
     ext
-    . dsimp
+    · dsimp
       simp
-    . rfl
+    · rfl
   fac₂ := by
     dsimp
     simp only [← Functor.map_comp]
@@ -1787,13 +1787,13 @@ lemma isIso_E_map {D₁ D₂ : Arrow₃ ι} (φ : D₁ ⟶ D₂) (α : D₂.X₀
   dsimp [E]
   rw [ShortComplex.isIso_homology_map_iff]
   apply ShortComplex.isIso_homologyMap_of_epi_of_isIso_of_mono'
-  . exact X.epi_H_map₂ B n₀ _ hφ₂ β
-  . dsimp [shortComplexE]
+  · exact X.epi_H_map₂ B n₀ _ hφ₂ β
+  · dsimp [shortComplexE]
     have : IsIso (Arrow₃.gMor.map φ) := by
       refine @Arrow.isIso_of_isIso_left_of_isIso_right _ _ _ _ _ ?_ ?_
       all_goals dsimp ; infer_instance
     infer_instance
-  . exact X.mono_H_map₁ B n₂ _ hφ₁ α
+  · exact X.mono_H_map₁ B n₂ _ hφ₁ α
 
 @[simps! hom]
 noncomputable def asIsoEMap {D₁ D₂ : Arrow₃ ι} (φ : D₁ ⟶ D₂) (α : D₂.X₀ ⟶ B.γ₁ n₂)

@@ -22,10 +22,10 @@ def preservesLimitsOfShapeOfIsZero : PreservesLimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
     apply IsLimit.ofIsZero
-    . rw [Functor.isZero_iff]
+    · rw [Functor.isZero_iff]
       intro X
       apply hG
-    . apply hG⟩⟩
+    · apply hG⟩⟩
 
 def IsColimit.ofIsZero (c : Cocone F) (hc : IsZero c.pt) : IsColimit c where
   desc _ := 0
@@ -36,10 +36,10 @@ def preservesColimitsOfShapeOfIsZero : PreservesColimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hc => by
     rw [Functor.isZero_iff] at hG
     apply IsColimit.ofIsZero
-    . rw [Functor.isZero_iff]
+    · rw [Functor.isZero_iff]
       intro X
       apply hG
-    . apply hG⟩⟩
+    · apply hG⟩⟩
 
 end CategoryTheory.Limits
 
@@ -217,17 +217,17 @@ noncomputable instance [HasLimitsOfShape J C] (i : ι) :
     PreservesLimitsOfShape J (single C c i) :=
   preservesLimitsOfShapeOfEval _ (fun j => by
     by_cases i = j
-    . subst h
+    · subst h
       exact preservesLimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c i).symm
-    . exact preservesLimitsOfShapeOfIsZero _ (isZeroSingleCompEval C c _ _ h))
+    · exact preservesLimitsOfShapeOfIsZero _ (isZeroSingleCompEval C c _ _ h))
 
 noncomputable instance [HasColimitsOfShape J C] (i : ι) :
     PreservesColimitsOfShape J (single C c i) :=
   preservesColimitsOfShapeOfEval _ (fun j => by
     by_cases i = j
-    . subst h
+    · subst h
       exact preservesColimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c i).symm
-    . exact preservesColimitsOfShapeOfIsZero _ (isZeroSingleCompEval C c _ _ h))
+    · exact preservesColimitsOfShapeOfIsZero _ (isZeroSingleCompEval C c _ _ h))
 
 noncomputable instance [HasFiniteLimits C] (i : ι) :
     PreservesFiniteLimits (single C c i) := ⟨by intros ; infer_instance⟩

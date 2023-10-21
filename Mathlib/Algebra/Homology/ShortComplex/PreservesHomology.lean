@@ -774,9 +774,9 @@ lemma quasiIso_map_iff_of_preservesRightHomology
   have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]
   constructor
-  . intro
+  · intro
     exact isIso_of_reflects_iso _ F
-  . intro
+  · intro
     infer_instance
 
 end

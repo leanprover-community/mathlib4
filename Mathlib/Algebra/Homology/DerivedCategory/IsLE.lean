@@ -56,27 +56,27 @@ lemma exists_iso_single [HasZeroObject C] (n : ℤ) [K.IsStrictlyGE n] [K.IsStri
     ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) := by
   refine' ⟨K.X n, ⟨_⟩⟩
   refine' HomologicalComplex.Hom.isoOfComponents _ _
-  . intro i
+  · intro i
     by_cases i = n
-    . subst h
+    · subst h
       exact (singleObjXSelf _ _ _ _).symm
-    . refine' IsZero.isoZero _ ≪≫ (IsZero.isoZero _).symm
-      . by_cases hi' : i ≤ n
-        . refine' K.isZero_of_isStrictlyGE n i _
+    · refine' IsZero.isoZero _ ≪≫ (IsZero.isoZero _).symm
+      · by_cases hi' : i ≤ n
+        · refine' K.isZero_of_isStrictlyGE n i _
           cases hi'.lt_or_eq <;> tauto
-        . exact K.isZero_of_isStrictlyLE n i (by linarith)
-      . dsimp
+        · exact K.isZero_of_isStrictlyLE n i (by linarith)
+      · dsimp
         rw [if_neg h]
         exact isZero_zero _
-  . intro i j (hij : i + 1 = j)
+  · intro i j (hij : i + 1 = j)
     simp only [single_obj_d, comp_zero]
     by_cases i < n
-    . apply (K.isZero_of_isStrictlyGE n i h).eq_of_src
-    . apply IsZero.eq_of_tgt
+    · apply (K.isZero_of_isStrictlyGE n i h).eq_of_src
+    · apply IsZero.eq_of_tgt
       dsimp
       rw [if_neg]
-      . exact isZero_zero _
-      . linarith
+      · exact isZero_zero _
+      · linarith
 
 instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
@@ -216,19 +216,19 @@ instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsGE n] :
 lemma isLE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsLE n ↔ K.IsLE n := by
   constructor
-  . intro
+  · intro
     exact ⟨fun i hi => IsZero.of_iso (isZero_of_isLE _ n i hi)
       ((homologyFunctorFactors C i).app K).symm⟩
-  . intro
+  · intro
     infer_instance
 
 lemma isGE_Q_obj_iff (K : CochainComplex C ℤ) (n : ℤ) :
     (Q.obj K).IsGE n ↔ K.IsGE n := by
   constructor
-  . intro
+  · intro
     exact ⟨fun i hi => IsZero.of_iso (isZero_of_isGE _ n i hi)
       ((homologyFunctorFactors C i).app K).symm⟩
-  . intro
+  · intro
     infer_instance
 
 lemma isLE_shift [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsLE n' := ⟨fun i hi =>
@@ -261,33 +261,33 @@ lemma distTriang₃_isGE_iff (T : Triangle (DerivedCategory C)) (hT : T ∈ dist
       (Mono ((homologyFunctor C n₁).map T.mor₁)) := by
   simp only [HomologySequence.mono_homologyMap_mor₁_iff _ hT n₀ n₁ h]
   constructor
-  . simp only [fun (i : ℤ) =>
+  · simp only [fun (i : ℤ) =>
       HomologySequence.isIso_homologyMap_mor₁_iff _ hT (i-1) i (by linarith)]
     intro H
     constructor
-    . intro i hi
+    · intro i hi
       constructor
-      . apply IsZero.eq_of_src
+      · apply IsZero.eq_of_src
         exact T.obj₃.isZero_of_isGE n₁ _ (by linarith)
-      . apply IsZero.eq_of_tgt
+      · apply IsZero.eq_of_tgt
         exact T.obj₃.isZero_of_isGE n₁ _ (by linarith)
-    . apply IsZero.eq_of_src
+    · apply IsZero.eq_of_src
       exact T.obj₃.isZero_of_isGE n₁ n₀ (by linarith)
-  . subst h
+  · subst h
     intro ⟨h₀, h₁⟩
     constructor
     intro i hi
     apply (HomologySequence.exact₃ _ hT i (i+1) rfl).isZero_of_both_zeros
-    . dsimp
+    · dsimp
       have h' := h₀ i (by linarith)
       rw [HomologySequence.isIso_homologyMap_mor₁_iff _ hT (i-1) i (by linarith)] at h'
       exact h'.2
-    . dsimp
+    · dsimp
       by_cases i < n₀
-      . have h' := h₀ (i+1) (by linarith)
+      · have h' := h₀ (i+1) (by linarith)
         rw [HomologySequence.isIso_homologyMap_mor₁_iff _ hT i (i+1) (by linarith)] at h'
         exact h'.1
-      . obtain rfl : n₀ = i := by linarith
+      · obtain rfl : n₀ = i := by linarith
         exact h₁
 
 instance (A : C) (n : ℤ) : IsLE ((singleFunctor C n).obj A) n := by

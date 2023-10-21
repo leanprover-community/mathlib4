@@ -20,8 +20,8 @@ lemma of_hasBinaryBiproduct_fst_snd (X₁ X₂ : C) [HasBinaryBiproduct X₁ X�
         fac := fun s => by rintro (_|_|_) <;> aesop_cat
         uniq := fun s m hm => by
           apply biprod.hom_ext
-          . simpa using hm WalkingCospan.left
-          . simpa using hm WalkingCospan.right }⟩
+          · simpa using hm WalkingCospan.left
+          · simpa using hm WalkingCospan.right }⟩
 
 end IsPullback
 
@@ -37,10 +37,10 @@ def fAdmissible : MorphismProperty C := fun _ Y f =>
 
 lemma fAdmissible_respectsIso [S.RespectsIso] : (fAdmissible S).RespectsIso := by
   constructor
-  . intro X X' Y e f ⟨Z, g, zero, mem⟩
+  · intro X X' Y e f ⟨Z, g, zero, mem⟩
     refine' ⟨Z, g, by rw [assoc, zero, comp_zero], S.mem_of_iso _ mem⟩
     exact ShortComplex.isoMk e.symm (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
-  . intro X Y Y' e f ⟨Z, g, zero, mem⟩
+  · intro X Y Y' e f ⟨Z, g, zero, mem⟩
     refine' ⟨Z, e.inv ≫ g, by rw [assoc, e.hom_inv_id_assoc, zero], S.mem_of_iso _ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) e (Iso.refl _) (by aesop_cat) (by aesop_cat)
 
@@ -49,10 +49,10 @@ def gAdmissible : MorphismProperty C := fun Y _ g =>
 
 lemma gAdmissible_respectsIso [S.RespectsIso] : (gAdmissible S).RespectsIso := by
   constructor
-  . intro Y Y' Z e g ⟨X, f, zero, mem⟩
+  · intro Y Y' Z e g ⟨X, f, zero, mem⟩
     refine' ⟨X, f ≫ e.inv, by rw [assoc, e.inv_hom_id_assoc, zero], S.mem_of_iso _ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) e.symm (Iso.refl _) (by aesop_cat) (by aesop_cat)
-  . intro Y Z Z' e g ⟨X, f, zero, mem⟩
+  · intro Y Z Z' e g ⟨X, f, zero, mem⟩
     refine' ⟨X, f, by rw [reassoc_of% zero, zero_comp], S.mem_of_iso _ mem⟩
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) e (by aesop_cat) (by aesop_cat)
 
@@ -225,9 +225,9 @@ instance (X₁ X₂ : C) : AdmissibleEpi (biprod.fst : X₁ ⊞ X₂ ⟶ X₁) :
 lemma binaryBiproduct_shortExact (X₁ X₂ : C) :
     ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp) ∈ shortExact C := by
   apply shortExact_of_admissibleEpi_of_isLimit
-  . dsimp
+  · dsimp
     infer_instance
-  . exact(ShortComplex.Splitting.ofHasBinaryBiproduct X₁ X₂).fIsKernel
+  · exact(ShortComplex.Splitting.ofHasBinaryBiproduct X₁ X₂).fIsKernel
 
 instance (X₁ X₂ : C) : AdmissibleMono (biprod.inl : _ ⟶ X₁ ⊞ X₂) where
   mem' := ⟨_, _, _, binaryBiproduct_shortExact X₁ X₂⟩
@@ -246,19 +246,19 @@ instance {Y' : C} (f : X ⟶ Y) (g : Y' ⟶ Y) [hf : AdmissibleMono f] [Admissib
     rw [← pullback.condition_assoc, hp, comp_zero])
   have hS : S ∈ shortExact C := by
     apply shortExact_of_admissibleEpi_of_isLimit
-    . dsimp
+    · dsimp
       infer_instance
-    . exact KernelFork.IsLimit.ofι _ _
+    · exact KernelFork.IsLimit.ofι _ _
         (fun a ha => pullback.lift (KernelFork.IsLimit.lift' hf'' (a ≫ g)
           (by rw [assoc, ha])).1 a (by exact (KernelFork.IsLimit.lift' _ _ _).2))
         (fun a ha => by dsimp ; simp)
         (fun a ha b hb => by
           dsimp at a b ha hb
           apply pullback.hom_ext
-          . dsimp
+          · dsimp
             rw [← cancel_mono f, assoc, pullback.condition, reassoc_of% hb]
             simpa using (KernelFork.IsLimit.lift' hf'' (a ≫ g) (by rw [assoc, ha])).2.symm
-          . dsimp
+          · dsimp
             simp [hb])
   exact ⟨_, _, _, hS⟩
 

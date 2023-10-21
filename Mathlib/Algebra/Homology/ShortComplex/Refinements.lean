@@ -25,9 +25,9 @@ lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :
     Epi f ↔ ∀ ⦃A : C⦄ (a : A ⟶ Y),
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (a' : A' ⟶ X), π ≫ a = a' ≫ f := by
   constructor
-  . intro _ A a
+  · intro _ A a
     exact ⟨pullback a f, pullback.fst, inferInstance, pullback.snd, pullback.condition⟩
-  . intro hf
+  · intro hf
     obtain ⟨A, π, hπ, a', fac⟩ := hf (𝟙 Y)
     rw [comp_id] at fac
     exact epi_of_epi_fac fac.symm
@@ -42,11 +42,11 @@ lemma ShortComplex.exact_iff_exact_up_to_refinements :
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
   rw [S.exact_iff_epi_toCycles, epi_iff_surjective_up_to_refinements]
   constructor
-  . intro hS
+  · intro hS
     intro _ a ha
     obtain ⟨A', π, hπ, x₁, fac⟩ := hS (S.liftCycles a ha)
     exact ⟨A', π, hπ, x₁, by simpa only [assoc, liftCycles_i, toCycles_i] using fac =≫ S.iCycles⟩
-  . intro hS
+  · intro hS
     intro _ a
     obtain ⟨A', π, hπ, x₁, fac⟩ := hS (a ≫ S.iCycles) (by simp)
     exact ⟨A', π, hπ, x₁, by simp only [← cancel_mono S.iCycles, assoc, toCycles_i, fac]⟩
@@ -64,14 +64,14 @@ lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f :
     {c : CokernelCofork f} (hc : IsColimit c) {A : C} (y : A ⟶ Y) :
     y ≫ c.π = 0 ↔ ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ X), π ≫ y = x ≫ f := by
   constructor
-  . intro hy
+  · intro hy
     let T := ShortComplex.mk _ _ c.condition
     have hT := T.exact_of_g_is_cokernel
       (IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp)))
     rw [T.exact_iff_exact_up_to_refinements] at hT
     obtain ⟨A', π, hπ, x₁, fac⟩ := hT y hy
     exact ⟨A', π, hπ, x₁, fac⟩
-  . rintro ⟨A', π, hπ, x, fac⟩
+  · rintro ⟨A', π, hπ, x, fac⟩
     dsimp
     simp only [← cancel_epi π, comp_zero, reassoc_of% fac, condition]
 
@@ -80,13 +80,13 @@ lemma ShortComplex.liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
     S.liftCycles x₂ hx₂ ≫ S.homologyπ = 0 ↔
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
   constructor
-  . intro h
+  · intro h
     erw [CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements
       S.homologyIsCokernel] at h
     obtain ⟨A', π, hπ, x₁, fac⟩ := h
     refine' ⟨A', π, hπ, x₁, _⟩
     simpa only [assoc, liftCycles_i, toCycles_i] using fac =≫ S.iCycles
-  . intro ⟨A, π, hπ, x₁, fac⟩
+  · intro ⟨A, π, hπ, x₁, fac⟩
     simp only [← cancel_epi π, S.comp_liftCycles_assoc, comp_zero]
     exact S.liftCycles_homologyπ_eq_zero_of_boundary _ x₁ fac
 
@@ -136,14 +136,14 @@ lemma ShortComplex.mono_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
         ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S₁.X₁),
           π ≫ x₂ = x₁ ≫ S₁.f := by
   constructor
-  . intro h A x₂ hx₂ y₁ fac
+  · intro h A x₂ hx₂ y₁ fac
     suffices S₁.liftCycles x₂ hx₂ ≫ S₁.homologyπ = 0 by
       simpa only [S₁.liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements] using this
     simp only [← cancel_mono (homologyMap φ), zero_comp, assoc,
       homologyπ_naturality, liftCycles_comp_cyclesMap_assoc,
       S₂.liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements]
     exact ⟨A, 𝟙 A, inferInstance, y₁, by simpa using fac⟩
-  . intro h
+  · intro h
     rw [Preadditive.mono_iff_cancel_zero]
     intro A γ hγ
     obtain ⟨A₁, π₁, hπ₁, z, hz, fac⟩ := S₁.eq_liftCycles_homologyπ_up_to_refinements γ
@@ -165,7 +165,7 @@ lemma ShortComplex.epi_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
         ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₂ : A' ⟶ S₁.X₂) (_ : x₂ ≫ S₁.g = 0)
           (y₁ : A' ⟶ S₂.X₁), π ≫ y₂ = x₂ ≫ φ.τ₂ + y₁ ≫ S₂.f := by
   constructor
-  . intro h
+  · intro h
     rw [epi_iff_surjective_up_to_refinements] at h
     intro A y₂ hy₂
     obtain ⟨A₁, π₁, hπ₁, γ, hγ⟩ := h (S₂.liftCycles y₂ hy₂ ≫ S₂.homologyπ)
@@ -176,7 +176,7 @@ lemma ShortComplex.epi_homologyMap_iff_up_to_refinements (φ : S₁ ⟶ S₂) :
     obtain ⟨A₃, π₃, hπ₃, x₁, hx₁⟩ := hγ
     exact ⟨A₃, π₃ ≫ π₂ ≫ π₁, inferInstance, π₃ ≫ x₂, by simp only [assoc, hx₂, comp_zero],
       x₁, by simpa only [assoc] using hx₁⟩
-  . intro h
+  · intro h
     rw [epi_iff_surjective_up_to_refinements]
     intro A γ
     obtain ⟨A₁, π₁, hπ₁, y₂, hy₂, fac⟩ := S₂.eq_liftCycles_homologyπ_up_to_refinements γ

@@ -295,9 +295,9 @@ variable {C}
 lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
     IsIso f ↔ ∀ i, IsIso (f i) := by
   constructor
-  . intro _ i
+  · intro _ i
     exact IsIso.of_iso (Pi.isoApp (asIso f) i)
-  . intro
+  · intro
     exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
 
 namespace NatIso
@@ -352,8 +352,8 @@ def pi_option_equivalence :
     (Functor.pi' (fun i => (Pi.eval _ (some i))))
   inverse := Functor.pi' (by
     rintro (_|i)
-    . exact Prod.fst _ _
-    . exact Prod.snd _ _ ⋙ (Pi.eval _ i))
+    · exact Prod.fst _ _
+    · exact Prod.snd _ _ ⋙ (Pi.eval _ i))
   unitIso := by
     apply NatIso.pi'
     rintro (_|i) <;> apply Iso.refl

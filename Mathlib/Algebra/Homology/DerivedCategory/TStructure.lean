@@ -61,13 +61,13 @@ def t : TStructure (DerivedCategory C) where
   exists_triangle_zero_one X := by
     obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle (X.truncLEι 0)
     refine' ⟨_, _, _, _, _, _, _, mem⟩
-    . change (X.truncLE 0).IsLE 0
+    · change (X.truncLE 0).IsLE 0
       infer_instance
-    . apply (distTriang₃_isGE_iff _ mem 0 1 (by simp)).2
+    · apply (distTriang₃_isGE_iff _ mem 0 1 (by simp)).2
       dsimp
       constructor
-      . exact X.isIso_homologyMap_truncLEι 0
-      . rw [mono_iff_cancel_zero]
+      · exact X.isIso_homologyMap_truncLEι 0
+      · rw [mono_iff_cancel_zero]
         intros
         apply IsZero.eq_of_tgt
         exact X.isZero_homology_truncLE 0 1 (by linarith)
@@ -88,9 +88,9 @@ lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
   refine' ⟨X'.truncGE a, inferInstance, inferInstance,
     CochainComplex.truncGEmap s a ≫ inv (X.truncGEπ a), _,
       CochainComplex.truncGEmap g a ≫ inv (Y.truncGEπ a), _⟩
-  . rw [Q.map_comp]
+  · rw [Q.map_comp]
     infer_instance
-  . simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
+  · simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
       ← cancel_epi (Q.map s), IsIso.hom_inv_id_assoc]
     simp only [← Functor.map_comp_assoc, ← CochainComplex.truncGEπ_naturality s a]
     simp only [Functor.map_comp, assoc, IsIso.hom_inv_id_assoc]
@@ -111,9 +111,9 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
   refine' ⟨Y'.truncLE b, inferInstance, inferInstance,
     inv (X.truncLEι b) ≫ CochainComplex.truncLEmap g b,
     inv (Y.truncLEι b) ≫ CochainComplex.truncLEmap s b, _, _⟩
-  . rw [Q.map_comp]
+  · rw [Q.map_comp]
     infer_instance
-  . simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
+  · simp only [Functor.map_comp, Functor.map_inv, IsIso.inv_comp, IsIso.inv_inv, assoc, fac,
       ← cancel_mono (Q.map s), IsIso.inv_hom_id, comp_id]
     simp only [← Functor.map_comp, ← CochainComplex.truncLEι_naturality s b]
     simp only [Functor.map_comp, IsIso.inv_hom_id_assoc]

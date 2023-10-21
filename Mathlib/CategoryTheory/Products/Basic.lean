@@ -134,7 +134,7 @@ def sectl (C : Type u₁) [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D
   map f := (f, 𝟙 Z)
 #align category_theory.prod.sectl CategoryTheory.Prod.sectl
 
-/-- `sectr Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` . -/
+/-- `sectr Z D` is the functor `D ⥤ C × D` given by `Y ↦ (Z, Y)` · -/
 @[simps]
 def sectr {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.{v₂} D] : D ⥤ C × D
     where
@@ -312,8 +312,8 @@ def prod' {F G : A ⥤ B × C} (τ₁ : F ⋙ Prod.fst _ _ ⟶ G ⋙ Prod.fst _ 
   naturality := fun _ _ f => by
     dsimp
     ext
-    . exact τ₁.naturality f
-    . exact τ₂.naturality f }
+    · exact τ₁.naturality f
+    · exact τ₂.naturality f }
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
    use instead `α.prod β` or `NatTrans.prod α β`. -/
@@ -356,9 +356,9 @@ def prod (E₁ : C₁ ≌ D₁) (E₂ : C₂ ≌ D₂) : C₁ × C₂ ≌ D₁ �
   functor_unitIso_comp := by
     intro ⟨x₁, x₂⟩
     apply Prod.ext
-    . dsimp
+    · dsimp
       simp
-    . dsimp
+    · dsimp
       simp
 
 end Equivalence

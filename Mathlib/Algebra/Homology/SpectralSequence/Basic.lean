@@ -123,11 +123,11 @@ def shortComplex'Iso (r : ℤ) [E.HasPage r] (pq₁ pq₂ pq₃ pq₁' pq₂' pq
   refine' ShortComplex.isoMk
     (eqToIso (by dsimp ; congr ; rw [← add_left_inj (degrees r), h₁₂, h₁₂', h₂]))
     (eqToIso (by dsimp ; congr)) (eqToIso (by dsimp ; congr ; rw [← h₂₃, ← h₂₃', h₂])) _ _
-  . subst h₂
+  · subst h₂
     obtain rfl : pq₁ = pq₁' := by simpa only [add_left_inj] using h₁₂.trans h₁₂'.symm
     dsimp
     rw [id_comp, comp_id]
-  . subst h₂
+  · subst h₂
     obtain rfl : pq₃ = pq₃' := h₂₃.symm.trans h₂₃'
     dsimp
     rw [id_comp, comp_id]
@@ -344,8 +344,8 @@ noncomputable def isoPageSucc (r r' : ℤ) [E.HasPage r] [E.HasPage r']
       E.page r' pq := by
     refine' Iso.symm _ ≪≫ E.iso r r' hr' pq
     refine' (ShortComplex.HomologyData.ofZeros _ _ _).left.homologyIso
-    . exact E.d_to_eq_zero pq r ((E.rToMin_le_rMin pq).trans hr) _ _
-    . exact E.d_from_eq_zero pq r ((E.rFromMin_le_rMin pq).trans hr) _ _
+    · exact E.d_to_eq_zero pq r ((E.rToMin_le_rMin pq).trans hr) _ _
+    · exact E.d_from_eq_zero pq r ((E.rFromMin_le_rMin pq).trans hr) _ _
 
 instance (r : ℤ) [E.HasPage r] (k : ℕ) : E.HasPage (r + k) :=
   E.hasPage_of_le r (r+k) (by simp only [le_add_iff_nonneg_right, Nat.cast_nonneg])
@@ -354,8 +354,8 @@ noncomputable def isoPageOfAddNat (r : ℤ) [E.HasPage r] (hr : E.rMin pq ≤ r)
     E.page r pq ≅
       E.page (r+k) pq := by
   induction' k with _ e
-  . exact E.pageIsoOfEq _ _ (by simp) _
-  . exact e ≪≫ E.isoPageSucc _ _ _ (hr.trans (by simp))
+  · exact E.pageIsoOfEq _ _ (by simp) _
+  · exact e ≪≫ E.isoPageSucc _ _ _ (hr.trans (by simp))
       (by simp only [Nat.cast_succ, add_assoc])
 
 noncomputable def isoPageOfLE'
@@ -382,8 +382,8 @@ end
 @[pp_dot]
 noncomputable def pageInfinity (pq : ℤ × ℤ) : C := by
   by_cases E.HasInfinityPageAt pq
-  . exact E.page (E.rMin pq) pq
-  . exact 0
+  · exact E.page (E.rMin pq) pq
+  · exact 0
 
 @[pp_dot]
 noncomputable def pageInfinityIso (pq : ℤ × ℤ) [E.HasInfinityPageAt pq] :
@@ -499,17 +499,17 @@ lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
     exact this d φ hd.symm
   intro d
   induction' d with d hd
-  . intro i j φ hij
+  · intro i j φ hij
     simp only [Nat.zero_eq, Nat.cast_zero, add_zero] at hij
     subst hij
     obtain rfl : φ = 𝟙 _ := Subsingleton.elim _ _
     constructor
-    . intros
+    · intros
       exfalso
       linarith
-    . intro
+    · intro
       infer_instance
-  . intro i j' φ hij'
+  · intro i j' φ hij'
     simp only [Nat.cast_succ, ← add_assoc ] at hij'
     subst hij'
     have hij : i ≤ i + d := by linarith
@@ -519,7 +519,7 @@ lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
         rw [← Functor.map_comp]
         congr
     constructor
-    . intro h₁₂
+    · intro h₁₂
       have : Epi (h.filtration.map φ) := IsIso.epi_of_iso (h.filtration.map φ)
       have := epi_of_epi_fac fac.symm
       have h₁ : IsIso (h.filtration.map (homOfLE hjj')) := isIso_of_mono_of_epi _
@@ -528,10 +528,10 @@ lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
       rw [hd _ rfl] at h₂
       intro k hk hk'
       by_cases k ≤ i + d
-      . exact h₂ _ hk h
-      . obtain rfl : k = i + d + 1 := by linarith
+      · exact h₂ _ hk h
+      · obtain rfl : k = i + d + 1 := by linarith
         exact h₁
-    . intro hij'
+    · intro hij'
       have : IsIso (h.filtration.map (homOfLE hij)) := by
         rw [hd _ rfl]
         intro k hk hk'
@@ -548,12 +548,12 @@ lemma isZero_filtration_obj_iff_of_le (i j : ℤ) (hij : i ≤ j):
         ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k))) := by
   rw [← h.isIso_filtration_map_iff (homOfLE hij)]
   constructor
-  . intro hj
+  · intro hj
     have : IsZero (h.filtration.obj i) := by
       simp only [IsZero.iff_id_eq_zero, ← cancel_mono (h.filtration.map (homOfLE hij))]
       exact hj.eq_of_tgt _ _
     exact ⟨this, ⟨0, this.eq_of_src _ _, hj.eq_of_src _ _⟩⟩
-  . rintro ⟨hi, _⟩
+  · rintro ⟨hi, _⟩
     exact IsZero.of_iso hi (asIso (h.filtration.map (homOfLE hij))).symm
 
 lemma isZero_filtration_obj_iff (j : ℤ) :
@@ -565,19 +565,19 @@ lemma isZero_filtration_obj_iff (j : ℤ) :
     rw [h.isZero_filtration_obj_iff_of_le (k-1) i (by linarith)] at hi
     exact hi.2 k (by linarith) hk
   by_cases hij : j ≤ i
-  . rw [h.isZero_filtration_obj_iff_of_le j i (by linarith)] at hi
+  · rw [h.isZero_filtration_obj_iff_of_le j i (by linarith)] at hi
     simp only [hi.1, true_iff]
     intro k hk
     exact this _ (by linarith)
-  . simp only [not_le] at hij
+  · simp only [not_le] at hij
     simp only [h.isZero_filtration_obj_iff_of_le i j (by linarith), hi, true_and]
     constructor
-    . intro H k hk
+    · intro H k hk
       by_cases hik : i < k
-      . exact H k hik hk
-      . simp only [not_lt] at hik
+      · exact H k hik hk
+      · simp only [not_lt] at hik
         exact this k hik
-    . tauto
+    · tauto
 
 lemma isIso_filtrationι_iff_of_le (i j : ℤ) (hij : i ≤ j):
     IsIso (h.filtrationι i) ↔
@@ -585,13 +585,13 @@ lemma isIso_filtrationι_iff_of_le (i j : ℤ) (hij : i ≤ j):
         ∀ (k : ℤ), i < k → k ≤ j → IsZero (E.pageInfinity (c.position n k))) := by
   rw [← h.isIso_filtration_map_iff (homOfLE hij)]
   constructor
-  . intro hi
+  · intro hi
     have fac := (h.filtration_map_ι (homOfLE hij))
     have := epi_of_epi_fac fac
     have : IsIso (h.filtrationι j) := isIso_of_mono_of_epi _
     simp only [this, true_and]
     exact IsIso.of_isIso_fac_right fac
-  . rintro ⟨_, _⟩
+  · rintro ⟨_, _⟩
     rw [← h.filtration_map_ι (homOfLE hij)]
     infer_instance
 
@@ -604,19 +604,19 @@ lemma isIso_filtrationι_iff (j : ℤ) :
     rw [h.isIso_filtrationι_iff_of_le i k (by linarith)] at hi
     exact hi.2 k hk (by rfl)
   by_cases hij : i ≤ j
-  . rw [h.isIso_filtrationι_iff_of_le i j (by linarith)] at hi
+  · rw [h.isIso_filtrationι_iff_of_le i j (by linarith)] at hi
     simp only [hi.1, true_iff]
     intro k hk
     exact this _ (by linarith)
-  . simp only [not_le] at hij
+  · simp only [not_le] at hij
     simp only [h.isIso_filtrationι_iff_of_le j i (by linarith), hi, true_and]
     constructor
-    . intro H k hk
+    · intro H k hk
       by_cases hik : i < k
-      . exact this _ hik
-      . simp only [not_lt] at hik
+      · exact this _ hik
+      · simp only [not_lt] at hik
         exact H k hk hik
-    . tauto
+    · tauto
 
 lemma isIso_π_iff' (j : ℤ) (pq : ℤ × ℤ) (hpq : c.position n j = pq) (i : ℤ) (hij : i + 1 = j) :
     IsIso (h.π j pq hpq) ↔ IsZero (h.filtration.obj i) :=
@@ -828,23 +828,23 @@ lemma hasEdgeEpiAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] 
 instance (pq : ℤ × ℤ) : E.HasInfinityPageAt pq where
   nonempty_hasEdgeEpiSet' := by
     by_cases pq.2 < 0
-    . refine' ⟨max r₀ 1, _⟩
+    · refine' ⟨max r₀ 1, _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
       exact ⟨this, ⟨fun pq' hpq' =>
         IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inr h)) _ _⟩⟩
-    . refine' ⟨max r₀ (pq.2 + 2), _⟩
+    · refine' ⟨max r₀ (pq.2 + 2), _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
       exact ⟨this, E.hasEdgeEpiAt_of_isFirstQuadrant pq r' ((le_max_right _ _).trans hr')⟩
   nonempty_hasEdgeMonoSet' := by
     by_cases pq.1 < 0
-    . refine' ⟨max r₀ 0, _⟩
+    · refine' ⟨max r₀ 0, _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
       refine' ⟨this, ⟨fun pq' hpq' =>
         IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inl h)) _ _⟩⟩
-    . refine' ⟨max r₀ (pq.1 + 1), _⟩
+    · refine' ⟨max r₀ (pq.1 + 1), _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
       exact ⟨this, E.hasEdgeMonoAt_of_isFirstQuadrant pq r' ((le_max_right _ _).trans hr')⟩
@@ -868,14 +868,14 @@ lemma rFromMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
 lemma rMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
     E.rMin pq ≤ max r₀ (max (pq.1 + 1) (pq.2 + 2)) := by
   apply max_le
-  . apply (E.rToMin_le_of_isFirstQuadrant pq).trans
+  · apply (E.rToMin_le_of_isFirstQuadrant pq).trans
     apply max_le
-    . apply le_max_left
-    . exact (le_max_left _ _).trans (le_max_right _ _)
-  . apply (E.rFromMin_le_of_isFirstQuadrant pq).trans
+    · apply le_max_left
+    · exact (le_max_left _ _).trans (le_max_right _ _)
+  · apply (E.rFromMin_le_of_isFirstQuadrant pq).trans
     apply max_le
-    . apply le_max_left
-    . exact (le_max_right _ _).trans (le_max_right _ _)
+    · apply le_max_left
+    · exact (le_max_right _ _).trans (le_max_right _ _)
 
 lemma isZero_pageInfinity_of_isFirstQuadrant (pq : ℤ × ℤ)
     (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.pageInfinity pq) :=

@@ -9,18 +9,18 @@ lemma CategoryTheory.Limits.biprod.is_zero_iff
     [HasZeroMorphisms C] (A B : C)
     [HasBinaryBiproduct A B] : IsZero (biprod A B) ↔ IsZero A ∧ IsZero B := by
   constructor
-  . intro h
+  · intro h
     simp only [IsZero.iff_id_eq_zero]
     constructor
-    . rw [← cancel_mono (biprod.inl : _ ⟶ A ⊞ B)]
+    · rw [← cancel_mono (biprod.inl : _ ⟶ A ⊞ B)]
       apply h.eq_of_tgt
-    . rw [← cancel_mono (biprod.inr : _ ⟶ A ⊞ B)]
+    · rw [← cancel_mono (biprod.inr : _ ⟶ A ⊞ B)]
       apply h.eq_of_tgt
-  . rintro ⟨hA, hB⟩
+  · rintro ⟨hA, hB⟩
     rw [IsZero.iff_id_eq_zero]
     apply biprod.hom_ext
-    . apply hA.eq_of_tgt
-    . apply hB.eq_of_tgt
+    · apply hA.eq_of_tgt
+    · apply hB.eq_of_tgt
 
 namespace CochainComplex
 
@@ -174,9 +174,9 @@ lemma to_ext_iff {A : C} {n₁ : ℤ} (f g : A ⟶ (mappingCone φ).X n₁) (n�
       g ≫ (fst φ : Cochain (mappingCone φ) F 1).v n₁ n₂ h ∧
       f ≫ (snd φ).v n₁ n₁ (add_zero n₁) = g ≫ (snd φ).v n₁ n₁ (add_zero n₁) := by
   constructor
-  . rintro rfl
+  · rintro rfl
     tauto
-  . rintro ⟨h₁, h₂⟩
+  · rintro ⟨h₁, h₂⟩
     rw [← cancel_mono (𝟙 _), id_X φ n₁ n₂ h]
     simp only [comp_add, reassoc_of% h₁, reassoc_of% h₂]
 
@@ -197,9 +197,9 @@ lemma from_ext_iff {A : C} {n₁ : ℤ} (f g : (mappingCone φ).X n₁ ⟶ A)
     (inl φ).v n₂ n₁ (by rw [← h, add_neg_cancel_right]) ≫ g ∧
     (inr φ).f n₁ ≫ f = (inr φ).f n₁ ≫ g := by
   constructor
-  . rintro rfl
+  · rintro rfl
     tauto
-  . rintro ⟨h₁, h₂⟩
+  · rintro ⟨h₁, h₂⟩
     rw [← cancel_epi (𝟙 _), id_X φ n₁ n₂ h]
     simp only [add_comp, assoc, h₁, h₂]
 
@@ -219,16 +219,16 @@ lemma cochain_from_ext_iff {K : CochainComplex C ℤ} {n : ℤ} (γ₁ γ₂ : C
       (Cochain.ofHom (inr φ)) •[zero_add n] γ₁ =
         (Cochain.ofHom (inr φ)) •[zero_add n] γ₂ := by
   constructor
-  . rintro rfl
+  · rintro rfl
     tauto
-  . rintro ⟨h₁, h₂⟩
+  · rintro ⟨h₁, h₂⟩
     ext p q hpq
     dsimp
     rw [from_ext_iff _ _ _ _ rfl]
     constructor
-    . simpa only [Cochain.comp_v _ _ hn' (p+1) p q (by linarith) hpq]
+    · simpa only [Cochain.comp_v _ _ hn' (p+1) p q (by linarith) hpq]
         using Cochain.congr_v h₁ (p+1) q (by linarith)
-    . simpa only [Cochain.zero_cochain_comp_v, Cochain.ofHom_v] using Cochain.congr_v h₂ p q hpq
+    · simpa only [Cochain.zero_cochain_comp_v, Cochain.ofHom_v] using Cochain.congr_v h₂ p q hpq
 
 lemma cochain_to_ext_iff {K : CochainComplex C ℤ} {n : ℤ} (γ₁ γ₂ : Cochain K (mappingCone φ) n)
     (n' : ℤ) (hn' : n + 1 = n'):
@@ -236,16 +236,16 @@ lemma cochain_to_ext_iff {K : CochainComplex C ℤ} {n : ℤ} (γ₁ γ₂ : Coc
         γ₂ •[hn'] (fst φ : Cochain (mappingCone φ) F 1) ∧
       γ₁ •[add_zero n] (snd φ) = γ₂ •[add_zero n] (snd φ) := by
   constructor
-  . rintro rfl
+  · rintro rfl
     tauto
-  . rintro ⟨h₁, h₂⟩
+  · rintro ⟨h₁, h₂⟩
     ext p q hpq
     dsimp
     rw [to_ext_iff _ _ _ _ rfl]
     constructor
-    . simpa only [Cochain.comp_v _ _ hn' p q (q+1) hpq rfl]
+    · simpa only [Cochain.comp_v _ _ hn' p q (q+1) hpq rfl]
         using Cochain.congr_v h₁ p (q+1) (by linarith)
-    . simpa only [Cochain.comp_zero_cochain_v] using Cochain.congr_v h₂ p q hpq
+    · simpa only [Cochain.comp_zero_cochain_v] using Cochain.congr_v h₂ p q hpq
 
 @[reassoc]
 lemma inl_v_d (n₁ n₂ n₃ : ℤ) (h₁₂ : n₁ + (-1) = n₂) (h₁₃ : n₃ + (-1) = n₁) :
@@ -263,12 +263,12 @@ lemma inl_v_d (n₁ n₂ n₃ : ℤ) (h₁₂ : n₁ + (-1) = n₂) (h₁₃ : n
 lemma inr_f_d (n₁ n₂ : ℤ) :
     (inr φ).f n₁ ≫ (mappingCone φ).d n₁ n₂ = G.d n₁ n₂ ≫ (inr φ).f n₂ := by
   by_cases h : n₁ + 1 = n₂
-  . dsimp [mappingCone, inr]
+  · dsimp [mappingCone, inr]
     subst h
     simp only [Cochain.ofHom_v, HomologicalComplex.id_f, id_comp, ComplexShape.up_Rel,
       not_true, dite_eq_ite, ite_true, comp_add, comp_neg,
       biprod.inr_fst_assoc, zero_comp, neg_zero, add_zero, biprod.inr_snd_assoc, zero_add]
-  . rw [(mappingCone φ).shape _ _ h, G.shape _ _ h, zero_comp, comp_zero]
+  · rw [(mappingCone φ).shape _ _ h, G.shape _ _ h, zero_comp, comp_zero]
 
 @[reassoc]
 lemma d_fst_v (n₁ n₂ n₃ : ℤ) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
@@ -476,8 +476,8 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
     simp only [δ_descCochain _ _ _ _ (neg_add_self 1), neg_add_self, Int.negOnePow_zero, one_smul,
       cochain_from_ext_iff _ _ _ _ (add_zero (-1))]
     constructor
-    . simp only [h₁, Cochain.comp_add, inl_fst_assoc, inl_snd_assoc, add_zero]
-    . simp only [Cochain.ofHom_comp] at h₂
+    · simp only [h₁, Cochain.comp_add, inl_fst_assoc, inl_snd_assoc, add_zero]
+    · simp only [Cochain.ofHom_comp] at h₂
       simp only [h₂, Cochain.comp_add, inr_fst_assoc, add_zero, inr_snd_assoc, zero_add]⟩)
 
 noncomputable def liftCochain {K : CochainComplex C ℤ} {n m : ℤ}
@@ -599,11 +599,11 @@ noncomputable def liftHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : K ⟶ map
       simp only [δ_liftCochain φ α β (neg_add_self 1) 1 (zero_add 1),
         cochain_to_ext_iff _ _ _ _ (zero_add 1)]
       constructor
-      . simp only [h₁, Cochain.add_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
+      · simp only [h₁, Cochain.add_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
           Cochain.neg_comp,
           inl_fst, Cochain.comp_id, inr_fst, Cochain.comp_zero, add_zero,
           Cochain.comp_assoc_of_second_degree_eq_neg_third_degree]
-      . simp only [h₂, Cochain.add_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
+      · simp only [h₂, Cochain.add_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
           Cochain.neg_comp, Cochain.comp_assoc_of_third_is_zero_cochain, inl_snd,
           Cochain.comp_zero, neg_zero, inr_snd, Cochain.comp_id, zero_add]⟩
 

@@ -178,10 +178,10 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
       Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.MappingCone.triangle f)) := by
   constructor
-  . rintro ⟨T', e, ⟨X, Y, f, ⟨e'⟩⟩⟩
+  · rintro ⟨T', e, ⟨X, Y, f, ⟨e'⟩⟩⟩
     exact ⟨_, _, f, ⟨e ≪≫ Qh.mapTriangle.mapIso e' ≪≫
       (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).symm.app _⟩⟩
-  . rintro ⟨X, Y, f, ⟨e⟩⟩
+  · rintro ⟨X, Y, f, ⟨e⟩⟩
     refine' isomorphic_distinguished _ (Qh.map_distinguished _ _) _
       (e ≪≫ (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
@@ -290,13 +290,13 @@ variable {C}
 lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
     IsIso (Qh.map f) ↔ HomotopyCategory.qis C f := by
   constructor
-  . intro hf
+  · intro hf
     rw [HomotopyCategory.mem_qis_iff]
     intro n
     rw [← NatIso.isIso_map_iff (homologyFunctorFactorsh C n) f]
     dsimp
     infer_instance
-  . intro hf
+  · intro hf
     exact Localization.inverts Qh (HomotopyCategory.qis C) _ hf
 
 lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
@@ -319,10 +319,10 @@ instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) [QuasiIso φ] : IsIso (Q.ma
 instance : Q.IsLocalization (HomologicalComplex.qis C (ComplexShape.up ℤ)) := by
   refine' Functor.IsLocalization.comp (HomotopyCategory.quotient _ _) Qh
     (HomologicalComplex.homotopyEquivalences _ _) (HomotopyCategory.qis C) _ _ _ _
-  . intro X Y f hf
+  · intro X Y f hf
     exact (isIso_Q_map_iff f).2 hf
-  . apply HomologicalComplex.homotopyEquivalences_subset_qis
-  . rintro ⟨K : CochainComplex C ℤ⟩ ⟨L : CochainComplex C ℤ⟩ f hf
+  · apply HomologicalComplex.homotopyEquivalences_subset_qis
+  · rintro ⟨K : CochainComplex C ℤ⟩ ⟨L : CochainComplex C ℤ⟩ f hf
     obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
     apply MorphismProperty.map_mem_map
     simpa only [HomotopyCategory.mem_qis_iff'] using hf
@@ -330,9 +330,9 @@ instance : Q.IsLocalization (HomologicalComplex.qis C (ComplexShape.up ℤ)) := 
 lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
   constructor
-  . intro hf n
+  · intro hf n
     infer_instance
-  . intro hf
+  · intro hf
     let g := (Functor.mapArrow Qh).objPreimage (Arrow.mk f)
     refine' ((MorphismProperty.RespectsIso.isomorphisms (DerivedCategory C)).arrow_iso_iff
       ((Functor.mapArrow Qh).objObjPreimageIso (Arrow.mk f))).1 _
@@ -349,16 +349,16 @@ lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
 lemma isZero_iff (K : DerivedCategory C) :
     IsZero K ↔ ∀ (n : ℤ), IsZero ((homologyFunctor C n).obj K) := by
   constructor
-  . intro hK n
+  · intro hK n
     rw [IsZero.iff_id_eq_zero, ← ((homologyFunctor C n).map_id K),
       (IsZero.iff_id_eq_zero K).1 hK, Functor.map_zero]
-  . intro hK
+  · intro hK
     have : IsIso (0 : K ⟶ 0) := by
       rw [isIso_iff]
       intro n
       refine' ⟨0, _, _⟩
-      . apply (hK n).eq_of_src
-      . rw [zero_comp, ← (homologyFunctor C n).map_id, id_zero,
+      · apply (hK n).eq_of_src
+      · rw [zero_comp, ← (homologyFunctor C n).map_id, id_zero,
           Functor.map_zero]
     exact IsZero.of_iso (isZero_zero _) (asIso (0 : K ⟶ 0))
 
@@ -386,11 +386,11 @@ noncomputable def triangleOfSESIso :
   have := isIso_Q_map_fromOfShortComplex hS
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     (asIso (Q.map (CochainComplex.MappingCone.fromOfShortComplex S))) _ _ _
-  . dsimp [triangleOfSES]
+  · dsimp [triangleOfSES]
     simp only [comp_id, id_comp]
-  . dsimp [triangleOfSES, CochainComplex.MappingCone.fromOfShortComplex, asIso]
+  · dsimp [triangleOfSES, CochainComplex.MappingCone.fromOfShortComplex, asIso]
     rw [id_comp, ← Q.map_comp, CochainComplex.MappingCone.inr_desc]
-  . dsimp [triangleOfSES, triangleOfSESδ]
+  · dsimp [triangleOfSES, triangleOfSESδ]
     rw [CategoryTheory.Functor.map_id, comp_id, IsIso.hom_inv_id_assoc]
 
 lemma triangleOfSES_distinguished :

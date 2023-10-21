@@ -140,31 +140,31 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
   rw [id_comp] at rel₂₂
   refine' ⟨iso₁₂.hom.hom₃ ≫ H.m₁ ≫ iso₁₃.inv.hom₃,
     iso₁₃.hom.hom₃ ≫ H.m₃ ≫ iso₂₃.inv.hom₃, _, _, _, _, _⟩
-  . rw [reassoc_of% eq₁₂, ← cancel_mono iso₁₃.hom.hom₃, assoc, assoc, assoc, assoc,
+  · rw [reassoc_of% eq₁₂, ← cancel_mono iso₁₃.hom.hom₃, assoc, assoc, assoc, assoc,
       iso₁₃.inv_hom_id_triangle_hom₃, eq₁₃, reassoc_of% comm₂₃, ← rel₁₂]
     dsimp
     rw [comp_id]
-  . rw [← cancel_mono (e₁.hom⟦(1 : ℤ)⟧'), eq₁₂', assoc, assoc, assoc, eq₁₃',
+  · rw [← cancel_mono (e₁.hom⟦(1 : ℤ)⟧'), eq₁₂', assoc, assoc, assoc, eq₁₃',
       iso₁₃.inv_hom_id_triangle_hom₃_assoc, ← rel₁₃]
-  . rw [reassoc_of% eq₁₃, reassoc_of% rel₂₂, ← cancel_mono iso₂₃.hom.hom₃, assoc, assoc,
+  · rw [reassoc_of% eq₁₃, reassoc_of% rel₂₂, ← cancel_mono iso₂₃.hom.hom₃, assoc, assoc,
       iso₂₃.inv_hom_id_triangle_hom₃, eq₂₃]
     dsimp
     rw [comp_id]
-  . rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc,assoc, eq₂₃',
+  · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc,assoc, eq₂₃',
       iso₂₃.inv_hom_id_triangle_hom₃_assoc, ← rel₂₃, ← Functor.map_comp, comm₁₂,
       Functor.map_comp, reassoc_of% eq₁₃']
-  . refine' isomorphic_distinguished _ H.mem _ _
+  · refine' isomorphic_distinguished _ H.mem _ _
     refine' Triangle.isoMk _ _ (Triangle.π₃.mapIso iso₁₂) (Triangle.π₃.mapIso iso₁₃)
       (Triangle.π₃.mapIso iso₂₃) _ _ _
-    . dsimp
+    · dsimp
       simp only [assoc, assoc, Iso.inv_hom_id_triangle_hom₃]
       dsimp
       rw [comp_id]
-    . dsimp
+    · dsimp
       simp only [assoc, assoc, Iso.inv_hom_id_triangle_hom₃]
       dsimp
       rw [comp_id]
-    . dsimp
+    · dsimp
       rw [assoc, ← Functor.map_comp, eq₁₂, Functor.map_comp, reassoc_of% eq₂₃']
 
 end Octahedron

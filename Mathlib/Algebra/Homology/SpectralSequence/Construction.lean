@@ -49,15 +49,15 @@ noncomputable def d (r : ℤ) (hr : 2 ≤ r) (pq pq' : ℤ × ℤ) (hpq' : pq + 
     (ιℤt.mapArrow₅.obj
       (Arrow₅.mkOfLE (pq'.2-r+2) pq'.2 (pq.2-r+2) pq.2 (pq.2+1) (pq.2+r-1))) ≫
       Iso.inv (pageIsoE X r hr _ _ _ _ _ _ _ _ _ _ _ _)
-  . linarith
-  . dsimp
+  · linarith
+  · dsimp
     linarith
-  . rfl
-  . rfl
-  . dsimp
+  · rfl
+  · rfl
+  · dsimp
     congr 1
     linarith
-  . dsimp
+  · dsimp
     congr 1
     linarith
 
@@ -122,28 +122,28 @@ noncomputable def shortComplexIso (r : ℤ) (hr : 2 ≤ r) (pq pq' pq'' : ℤ ×
   refine' ShortComplex.isoMk (pageIsoE X r hr pq n₀ n₁ n₂ hn₁ hn₂ hn _ _ hD₅ hD₆ hD₇)
     (pageIsoE X r hr pq' n₁ n₂ n₃ hn₂ hn₃ (by linarith) _ _ hD₃ hD₄ _)
     (pageIsoE X r hr pq'' n₂ n₃ n₄ hn₃ hn₄ (by linarith) _ hD₀ hD₁ hD₂ _) _ _
-  . dsimp
+  · dsimp
     rw [hD₄]
     congr 1
     linarith
-  . dsimp
+  · dsimp
     rw [hD₂]
     congr 1
     linarith
-  . dsimp
+  · dsimp
     rw [hD₅]
     congr 1
     linarith
-  . dsimp
+  · dsimp
     rw [hD₃]
     congr 1
     linarith
-  . dsimp [shortComplexEEEObj]
+  · dsimp [shortComplexEEEObj]
     rw [d_eq X r hr pq pq' hpq' n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃ (by linarith)
       ((Arrow₇.δ₀ ⋙ Arrow₆.δ₀).obj D), assoc, assoc]
     erw [Iso.inv_hom_id, comp_id]
     rfl
-  . dsimp [shortComplexEEEObj]
+  · dsimp [shortComplexEEEObj]
     rw [d_eq X r hr pq' pq'' hpq'' n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄ (by linarith)
       ((Arrow₇.δ₇ ⋙ Arrow₆.δ₆).obj D), assoc, assoc]
     erw [Iso.inv_hom_id, comp_id]
@@ -212,12 +212,12 @@ lemma toE₂CohomologicalSpectralSequence_isZero_page
   apply X.isZero_E_of_isZero_H
   dsimp at hpq ⊢
   cases hpq
-  . apply X.isZero₂_H (Bounds.quadrantUR p₀ q₀)
+  · apply X.isZero₂_H (Bounds.quadrantUR p₀ q₀)
     apply homOfLE
     dsimp
     simp
     linarith
-  . apply X.isZero₁_H (Bounds.quadrantUR p₀ q₀)
+  · apply X.isZero₁_H (Bounds.quadrantUR p₀ q₀)
     apply homOfLE
     dsimp
     simp
@@ -253,13 +253,13 @@ noncomputable def toE₂CohomologicalSpectralSequencePageInfinityIso (pq : ℤ �
     X.isoEInfty n₀ n₁ n₂ hn₁ hn₂ Bounds.firstQuadrant _ _ _ ≪≫
     Functor.mapIso _ (Arrow.isoMk (eqToIso hD₀.symm) (eqToIso hD₁.symm)
       (Subsingleton.elim _ _))
-  . refine' homOfLE _
+  · refine' homOfLE _
     dsimp
     simp only [ℤt.mk_le_mk_iff]
     change pq.2 - r + 2 ≤ 0
     have : pq.2 +2 ≤ r := (le_max_right _ _ ).trans (le_max_right _ _)
     linarith
-  . refine' homOfLE _
+  · refine' homOfLE _
     dsimp
     simp only [ℤt.mk_le_mk_iff, sub_zero, ge_iff_le, max_le_iff,
       add_le_iff_nonpos_left, le_max_iff, le_add_iff_nonneg_left, hn₁, ← hn]
@@ -316,10 +316,10 @@ noncomputable def toE₂CohomologicalSpectralSequenceStronglyConvergesToOfBounds
             simp only [Prod.mk.injEq] at hpq
             congr 1
             linarith)).symm _ _
-        . dsimp
+        · dsimp
           simp only [id_comp, comp_id]
           rfl
-        . dsimp
+        · dsimp
           simp only [id_comp, Iso.cancel_iso_inv_right]
           rfl }
 

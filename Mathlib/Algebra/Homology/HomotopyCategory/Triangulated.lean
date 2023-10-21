@@ -125,16 +125,16 @@ lemma mappingConeCompTriangle_distinguished :
   refine' ⟨_, _, (CochainComplex.MappingCone.mappingConeCompTriangle f g).mor₁, ⟨_⟩⟩
   refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (isoOfHomotopyEquiv
     (CochainComplex.MappingCone.mappingConeCompHomotopyEquiv f g)) _ _ _
-  . dsimp
+  · dsimp
     simp
-  . rw [← cancel_mono (isoOfHomotopyEquiv
+  · rw [← cancel_mono (isoOfHomotopyEquiv
       (CochainComplex.MappingCone.mappingConeCompHomotopyEquiv f g)).inv,
       assoc, Iso.hom_inv_id, comp_id, Iso.refl_hom, id_comp,
       isoOfHomotopyEquiv_inv]
     simp only [Functor.mapTriangle_obj, Triangle.mk_mor₂]
     rw [← CochainComplex.MappingCone.mappingConeCompHomotopyEquiv_comm₁]
     simp
-  . simp only [Functor.mapTriangle_obj, Triangle.mk_mor₃,
+  · simp only [Functor.mapTriangle_obj, Triangle.mk_mor₃,
       ← CochainComplex.MappingCone.mappingConeCompHomotopyEquiv_comm₂ f g]
     simp
 
@@ -159,11 +159,11 @@ noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ
       (((HomotopyCategory.quotient _ _).mapTriangle.map β).comm₃)
     refine' isomorphic_distinguished _ (mappingConeCompTriangle_distinguished u₁₂ u₂₃) _ _
     refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _ _
-    . dsimp
+    · dsimp
       simp
-    . dsimp
+    · dsimp
       simp
-    . dsimp
+    · dsimp
       erw [CategoryTheory.Functor.map_id, comp_id, id_comp, Functor.map_comp, assoc, assoc,
         ← NatTrans.naturality]
       rfl)

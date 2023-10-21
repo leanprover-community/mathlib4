@@ -52,7 +52,7 @@ lemma Hom.mk'_surjective {X Y : Q C} (φ : Hom X Y) : ∃ (Z : C) (j : Z ⟶ X.o
   refine' Hom.ext _ _ (Subobject.isoOfEq _ _ (Subobject.mk_arrow φ.i).symm) _ _
   · dsimp
     simp
-  . dsimp [mk']
+  · dsimp [mk']
     simp only [← assoc]
     refine' (Category.id_comp φ.j).symm.trans _
     congr
@@ -65,10 +65,10 @@ lemma Hom.ext' {X Y : Q C} {Z₁ Z₂ : C}
     Hom.mk' X Y j₁ i₁ = Hom.mk' X Y j₂ i₂ := by
   refine' Hom.ext _ _ (Subobject.underlyingIso i₁ ≪≫ e ≪≫ (Subobject.underlyingIso i₂).symm)
     _ _
-  . dsimp [mk']
+  · dsimp [mk']
     simp only [assoc, Subobject.underlyingIso_arrow, ← comm₁,
       Subobject.underlyingIso_hom_comp_eq_mk]
-  . dsimp [mk']
+  · dsimp [mk']
     simp only [assoc, Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left, comm₂]
 
 noncomputable def Hom.id (X : Q C) : Hom X X :=
@@ -125,13 +125,13 @@ noncomputable instance : Category (Q C) where
       Hom.comp_eq j₂₃ i₂₃ j₃₄ i₃₄ (pullback.fst : Z₂₄ ⟶ _) pullback.snd,
       Hom.comp_eq _ _ j₃₄ i₃₄ (pullback.fst : Z₁₄ ⟶ _) (pullback.snd ≫ pullback.snd),
       Hom.comp_eq j₁₂ i₁₂ _ _ (pullback.fst ≫ pullback.fst : Z₁₄ ⟶ _) pullback.snd]
-    . simp only [assoc]
-    . exact (IsPullback.paste_horiz_iff (IsPullback.of_hasPullback i₁₂ j₂₃) pullback.condition).2
+    · simp only [assoc]
+    · exact (IsPullback.paste_horiz_iff (IsPullback.of_hasPullback i₁₂ j₂₃) pullback.condition).2
         (IsPullback.of_hasPullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _))
-    . exact (IsPullback.paste_vert_iff (IsPullback.of_hasPullback i₂₃ j₃₄) pullback.condition).2
+    · exact (IsPullback.paste_vert_iff (IsPullback.of_hasPullback i₂₃ j₃₄) pullback.condition).2
         (IsPullback.of_hasPullback (pullback.snd : Z₁₃ ⟶ _) (pullback.fst : Z₂₄ ⟶ _))
-    . exact (IsPullback.of_hasPullback i₂₃ j₃₄)
-    . exact (IsPullback.of_hasPullback i₁₂ j₂₃)
+    · exact (IsPullback.of_hasPullback i₂₃ j₃₄)
+    · exact (IsPullback.of_hasPullback i₁₂ j₂₃)
 
 end Q
 

@@ -35,17 +35,17 @@ def admissibleSplitEpi := ShortComplex.gAdmissible (splitShortExact C)
 lemma admissibleSplitMono_op : (admissibleSplitMono _).op = admissibleSplitEpi Cᵒᵖ := by
   ext X Y f
   constructor
-  . rintro ⟨_, _, _, h⟩
+  · rintro ⟨_, _, _, h⟩
     exact ⟨_, _, _, splitShortExact_op _ h⟩
-  . rintro ⟨_, _, _, h⟩
+  · rintro ⟨_, _, _, h⟩
     exact ⟨_, _, _, splitShortExact_unop _ h⟩
 
 lemma admissibleSplitEpi_op : (admissibleSplitEpi _).op = admissibleSplitMono Cᵒᵖ := by
   ext X Y f
   constructor
-  . rintro ⟨_, _, _, h⟩
+  · rintro ⟨_, _, _, h⟩
     exact ⟨_, _, _, splitShortExact_op _ h⟩
-  . rintro ⟨_, _, _, h⟩
+  · rintro ⟨_, _, _, h⟩
     exact ⟨_, _, _, splitShortExact_unop _ h⟩
 
 lemma admissibleSplitMono_unop : (admissibleSplitMono Cᵒᵖ).unop = admissibleSplitEpi C := by
@@ -68,10 +68,10 @@ noncomputable def isColimitSplitShortExactPushoutCocone (S : ShortComplex C) (h 
     (fun s => by simp)
     (fun s m h₁ h₂ => by
       ext
-      . dsimp
+      · dsimp
         simp only [biprod.inl_desc, ← h₁, Preadditive.add_comp, assoc,
           Preadditive.comp_add, h.s_g_assoc, self_eq_add_right, h₂, h.s_r_assoc, zero_comp]
-      . simp [h₂])
+      · simp [h₂])
 
 lemma admissibleSplitMono_coquarrable {X Y : C} (f : X ⟶ Y) (hf : (admissibleSplitMono C) f) :
     MorphismProperty.coquarrable C f := by
@@ -91,26 +91,26 @@ lemma admissibleSplitMono_stableUnderComposition :
     (admissibleSplitMono C).StableUnderComposition := by
   rintro X Y Z f₁ f₂ ⟨A₁, g₁, zero₁, ⟨h₁⟩⟩ ⟨A₂, g₂, zero₂, ⟨h₂⟩⟩
   refine' ⟨A₁ ⊞ A₂, biprod.lift (h₂.r ≫ g₁) g₂, _, ⟨_⟩⟩
-  . ext
-    . simp only [assoc, biprod.lift_fst, zero_comp]
+  · ext
+    · simp only [assoc, biprod.lift_fst, zero_comp]
       rw [h₂.f_r_assoc, zero₁]
-    . simp [zero₂]
-  . exact
+    · simp [zero₂]
+  · exact
     { r := h₂.r ≫ h₁.r
       s := biprod.desc (h₁.s ≫ f₂) h₂.s
       s_g := by
         dsimp
         ext
-        . dsimp
+        · dsimp
           simp only [assoc, biprod.lift_fst, biprod.inl_desc_assoc, id_comp, biprod.inl_fst]
           rw [h₂.f_r_assoc, h₁.s_g]
-        . dsimp
+        · dsimp
           simp only [biprod.inl_desc_assoc, assoc, biprod.lift_snd, comp_id, biprod.inl_snd,
             zero₂, comp_zero]
-        . dsimp
+        · dsimp
           simp only [assoc, biprod.lift_fst, biprod.inr_desc_assoc,
             h₂.s_r_assoc, zero_comp, id_comp, biprod.inr_fst]
-        . dsimp
+        · dsimp
           simp only [assoc, biprod.lift_snd, biprod.inr_desc_assoc, id_comp, biprod.inr_snd]
           rw [h₂.s_g]
       f_r := by
@@ -145,10 +145,10 @@ lemma admissibleSplitMono_stableUnderCobaseChange :
       rw [assoc, hφ₂, h.s_g]
     id := by
       apply PushoutCocone.IsColimit.hom_ext sq.isColimit
-      . dsimp
+      · dsimp
         simp only [Preadditive.comp_add, reassoc_of% hψ₁, reassoc_of% hφ₁, zero_comp, add_zero]
         erw [comp_id]
-      . dsimp
+      · dsimp
         erw [Preadditive.comp_add, reassoc_of% hψ₂, reassoc_of% hφ₂, comp_id, sq.w,
           h.g_s_assoc, Preadditive.sub_comp, id_comp, assoc, add_sub_cancel'_right] }
 

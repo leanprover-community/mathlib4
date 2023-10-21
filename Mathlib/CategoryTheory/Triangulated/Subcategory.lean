@@ -193,9 +193,9 @@ lemma W_eq_W' : S.W = S.W' := by
   apply MorphismProperty.ext
   intro X Y f
   constructor
-  . rintro ⟨Z, g, h, H, mem⟩
+  · rintro ⟨Z, g, h, H, mem⟩
     exact ⟨_, _, _, inv_rot_of_distTriang _ H, S.shift _ (-1) mem⟩
-  . rintro ⟨Z, g, h, H, mem⟩
+  · rintro ⟨Z, g, h, H, mem⟩
     exact ⟨_, _, _, rot_of_distTriang _ H, S.shift _ 1 mem⟩
 
 variable {S}
@@ -255,8 +255,8 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
     obtain ⟨q, hq⟩ := Triangle.yoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle q
     refine' ⟨Y', r, _, _⟩
-    . exact ⟨_, _, _, rot_of_distTriang _ mem', S.shift _ _ mem⟩
-    . have eq := comp_distTriang_mor_zero₁₂ _ mem'
+    · exact ⟨_, _, _, rot_of_distTriang _ mem', S.shift _ _ mem⟩
+    · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
@@ -274,8 +274,8 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     obtain ⟨q, hq⟩ := Triangle.coyoneda_exact₂ _ H _ hf₂
     obtain ⟨Y', r, t, mem'⟩ := distinguished_cocone_triangle₁ q
     refine' ⟨Y', r, _, _⟩
-    . exact ⟨_, _, _, mem', mem⟩
-    . have eq := comp_distTriang_mor_zero₁₂ _ mem'
+    · exact ⟨_, _, _, mem', mem⟩
+    · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
       rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
 
@@ -300,13 +300,13 @@ instance WIsCompatibleWithShift : S.W.IsCompatibleWithShift ℤ := ⟨by
   apply MorphismProperty.ext
   intro X Y f
   constructor
-  . intro hf
+  · intro hf
     have H := S.respectsIsoW.arrow_mk_iso_iff
      ((Arrow.mapArrowNatIsoOfNatIso (shiftEquiv C n).unitIso).app (Arrow.mk f))
     dsimp at H
     rw [H]
     exact this _ hf (-n)
-  . intro hf
+  · intro hf
     exact this _ hf n⟩
 
 variable {S}
@@ -330,14 +330,14 @@ lemma pi_finite_stable [S.set.RespectsIso] {J : Type} [Finite J] (X : J → C) (
     ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, X j ∈ S.set), (∏ X) ∈ S.set
   change P J
   apply @Finite.induction_empty_option
-  . intro J₁ J₂ e hJ₁ _ X hX
+  · intro J₁ J₂ e hJ₁ _ X hX
     have : Finite J₁ := Finite.of_equiv _ e.symm
     exact Set.mem_of_iso _ (productIsoOfEquiv X e) (hJ₁ (fun j₁ => X (e j₁)) (fun j₁ => hX _))
-  . intro _ X _
+  · intro _ X _
     refine' Set.mem_of_iso _ (IsZero.isoZero _).symm S.zero
     rw [IsZero.iff_id_eq_zero]
     ext ⟨⟩
-  . intro J _ hJ _ X hX
+  · intro J _ hJ _ X hX
     exact Set.mem_of_iso _ (productOptionIso  X).symm
       (S.binary_product_stable _ _ (hJ (fun j => X (some j)) (fun j => hX _)) (hX none))
 
@@ -445,8 +445,8 @@ instance : Pretriangulated S.category where
     rw [hc'] at hc₁
     rw [hc', assoc, ← Functor.commShiftIso_hom_naturality] at hc₂
     refine' ⟨c', ⟨S.ι.map_injective _, S.ι.map_injective _⟩⟩
-    . simpa using hc₁
-    . rw [← cancel_mono ((Functor.commShiftIso (ι S) (1 : ℤ)).hom.app T₂.obj₁),
+    · simpa using hc₁
+    · rw [← cancel_mono ((Functor.commShiftIso (ι S) (1 : ℤ)).hom.app T₂.obj₁),
         S.ι.map_comp, S.ι.map_comp, assoc, assoc, hc₂]
 
 instance : S.ι.IsTriangulated := ⟨fun _ hT => hT⟩
@@ -487,10 +487,10 @@ lemma span_LE (S : Set C) (A : Subcategory C) (hA : S ⊆ A.set ) :
     span S ≤ A := by
   intro X (hX : setSpan S X)
   induction' hX with Y hY Y n _ hY T hT _ _ h₁ h₃
-  . exact hA hY
-  . exact A.zero
-  . exact A.shift Y n hY
-  . exact A.ext₂ T hT h₁ h₃
+  · exact hA hY
+  · exact A.zero
+  · exact A.shift Y n hY
+  · exact A.ext₂ T hT h₁ h₃
 
 def iInf {ι : Type _} (S : ι → Subcategory C) : Subcategory C where
   set := Set.iInter (fun i => (S i).set)
@@ -520,9 +520,9 @@ lemma mem_sInf_set_iff (S : Set (Subcategory C)) (X : C) :
   dsimp [sInf]
   rw [mem_iInf_set_iff]
   constructor
-  . intro hX A hA
+  · intro hX A hA
     exact hX ⟨_, hA⟩
-  . intro hX A
+  · intro hX A
     exact hX A.1 A.2
 
 instance : InfSet (Subcategory C) where
@@ -565,8 +565,8 @@ instance : Lattice (Subcategory C) where
     rintro X ⟨_, ⟨B, hB, rfl⟩, hX⟩
     simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hB
     obtain (rfl|rfl) := hB
-    . exact h₁₃ hX
-    . exact h₂₃ hX
+    · exact h₁₃ hX
+    · exact h₂₃ hX
   inf S₁ S₂ :=
     { set := S₁.set ∩ S₂.set
       zero := ⟨S₁.zero, S₂.zero⟩

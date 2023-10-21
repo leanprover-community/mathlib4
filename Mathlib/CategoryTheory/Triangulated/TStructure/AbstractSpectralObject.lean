@@ -302,15 +302,15 @@ noncomputable def triangleObjIsoTriangleLTGEPrecompTruncGELTObj (D : Arrow₂ ι
     F.triangle.obj D ≅ F.triangleLTGEPrecompTruncGELT.obj D := by
   refine' Triangle.functorIsoMk _ _ (F.truncLTGELTIsoTruncGELT.app D) (Iso.refl _)
     (F.truncGEGELTIsoTruncGELT.app D) _ _ _
-  . ext X
+  · ext X
     dsimp [triangleLTGEPrecompTruncGELT]
     rw [comp_id]
     exact (F.truncLTGELTIsoTruncGELT_compatibility D X).symm
-  . ext X
+  · ext X
     dsimp [triangleLTGEPrecompTruncGELT]
     rw [id_comp]
     exact F.truncGEGELTIsoTruncGELT_compatibility D X
-  . ext X
+  · ext X
     dsimp [truncGELTδ, triangleLTGEPrecompTruncGELT, whiskeringRight₂, triangleLTGE]
     simp only [Functor.map_id, id_comp, assoc]
     rw [← Functor.map_comp, ← NatTrans.comp_app, Iso.inv_hom_id_app, NatTrans.id_app]
@@ -320,10 +320,10 @@ noncomputable def triangleIsoTriangleLTGEPrecompTruncGELT :
     F.triangle ≅ F.triangleLTGEPrecompTruncGELT :=
   NatIso.ofComponents F.triangleObjIsoTriangleLTGEPrecompTruncGELTObj (fun φ => by
     ext X
-    . exact congr_app (F.truncLTGELTIsoTruncGELT.hom.naturality φ) X
-    . dsimp [triangle, triangleLTGEPrecompTruncGELT, triangleLTGE]
+    · exact congr_app (F.truncLTGELTIsoTruncGELT.hom.naturality φ) X
+    · dsimp [triangle, triangleLTGEPrecompTruncGELT, triangleLTGE]
       rw [comp_id, id_comp]
-    . exact congr_app (F.truncGEGELTIsoTruncGELT.hom.naturality φ) X)
+    · exact congr_app (F.truncGEGELTIsoTruncGELT.hom.naturality φ) X)
 
 lemma triangle_distinguished (D : Arrow₂ ι) (X : C) :
     (F.triangle.obj D).obj X ∈ distTriang C :=

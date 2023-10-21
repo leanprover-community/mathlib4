@@ -299,12 +299,12 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
   refine @IsIso.comp_isIso  _ _ _ _ _ _ _ inferInstance ?_
   rw [ChainComplex.isIso_descOpcycles_iff]
   constructor
-  . infer_instance
-  . rw [ShortComplex.exact_iff_mono]
-    . dsimp
+  · infer_instance
+  · rw [ShortComplex.exact_iff_mono]
+    · dsimp
       simp only [Functor.map_id]
       infer_instance
-    . simp
+    · simp
 
 def Functor.fromLeftDerivedZero (F : C ⥤ D) [F.Additive] :
     F.leftDerived 0 ⟶ F where
@@ -363,9 +363,9 @@ instance [PreservesFiniteColimits F] {X : C} (P : ProjectiveResolution X) :
       rw [ChainComplex.quasiIsoAt₀_iff,
         ShortComplex.quasiIso_iff_of_zeros'] at this
       rotate_left
-      . simp
-      . rfl
-      . rfl
+      · simp
+      · rfl
+      · rfl
       exact this.2
     exact hS.map_of_epi_of_preservesCokernel F
       (by dsimp; infer_instance) inferInstance

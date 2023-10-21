@@ -186,12 +186,12 @@ instance : Epi S.L₁.toCycles := by
 
 instance : IsIso (cyclesMap S.v₀₁') := by
   refine' ⟨⟨S.L₀'.liftCycles (pullback.lift (S.L₁.iCycles) 0 (by simp)) (by simp [L₀']), _, _⟩⟩
-  . simp only [← cancel_mono S.L₀'.iCycles, assoc, id_comp, liftCycles_i]
+  · simp only [← cancel_mono S.L₀'.iCycles, assoc, id_comp, liftCycles_i]
     apply pullback.hom_ext
-    . rw [assoc, pullback.lift_fst, cyclesMap_i, v₀₁'_τ₂]
-    . rw [assoc, pullback.lift_snd, comp_zero]
+    · rw [assoc, pullback.lift_fst, cyclesMap_i, v₀₁'_τ₂]
+    · rw [assoc, pullback.lift_snd, comp_zero]
       exact S.L₀'.iCycles_g.symm
-  . simp only [← cancel_mono S.L₁.iCycles, liftCycles_comp_cyclesMap, v₀₁'_τ₂, limit.lift_π,
+  · simp only [← cancel_mono S.L₁.iCycles, liftCycles_comp_cyclesMap, v₀₁'_τ₂, limit.lift_π,
       PullbackCone.mk_π_app, liftCycles_i, id_comp]
 
 lemma L₀'_exact : S.L₀'.Exact := by
@@ -383,20 +383,20 @@ noncomputable def functorL₀' : SnakeInput C ⥤ ShortComplex C where
     comm₁₂ := by
       dsimp [L₀']
       apply pullback.hom_ext
-      . simp only [assoc, limit.lift_π, PullbackCone.mk_π_app, limit.lift_π_assoc, f.f₁.comm₁₂]
-      . simp only [assoc, limit.lift_π, PullbackCone.mk_π_app, comp_zero,
+      · simp only [assoc, limit.lift_π, PullbackCone.mk_π_app, limit.lift_π_assoc, f.f₁.comm₁₂]
+      · simp only [assoc, limit.lift_π, PullbackCone.mk_π_app, comp_zero,
           limit.lift_π_assoc, zero_comp]
     comm₂₃ := pullback.lift_snd _ _ _ }
   map_id _ := by
     ext
-    . aesop_cat
-    . apply pullback.hom_ext <;> simp
-    . aesop_cat
+    · aesop_cat
+    · apply pullback.hom_ext <;> simp
+    · aesop_cat
   map_comp _ _ := by
     ext
-    . aesop_cat
-    . apply pullback.hom_ext <;> simp
-    . aesop_cat
+    · aesop_cat
+    · apply pullback.hom_ext <;> simp
+    · aesop_cat
 
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by

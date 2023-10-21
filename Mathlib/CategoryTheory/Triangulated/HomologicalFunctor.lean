@@ -213,10 +213,10 @@ lemma homology_sequence_exact₂ :
   refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (Triangle.shift_distinguished _ hT n₀))
   refine' ShortComplex.isoMk ((F.isoShift n₀).app _)
     (((-1 : Units ℤ)^n₀) • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
-  . dsimp
+  · dsimp
     simp only [comp_zsmul, zsmul_comp, Functor.map_zsmul, smul_smul,
       ← Int.negOnePow_def, Int.negOnePow_mul_self, one_smul, isoShift_hom_naturality]
-  . dsimp
+  · dsimp
     simp only [zsmul_comp, map_zsmul, isoShift_hom_naturality, ← Int.negOnePow_def]
 
 lemma homology_sequence_exact₃ :
@@ -224,9 +224,9 @@ lemma homology_sequence_exact₃ :
   refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   refine' ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
     ((F.shiftIso 1 n₀ n₁ (by linarith)).app _) _ _
-  . dsimp
+  · dsimp
     simp
-  . dsimp [homology_sequence_δ, shiftMap]
+  · dsimp [homology_sequence_δ, shiftMap]
     simp only [id_comp]
 
 lemma homology_sequence_exact₁ :
@@ -234,29 +234,29 @@ lemma homology_sequence_exact₁ :
   refine' ShortComplex.exact_of_iso _ (F.homology_sequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
   refine' ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
     (Iso.refl _) (Iso.refl _) _ _
-  . dsimp
+  · dsimp
     simp only [neg_smul, one_smul, homology_sequence_δ, neg_comp, comp_id,
       Functor.map_neg, F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1)
       (neg_add_self 1) n₀ n₁ (by linarith)]
-  . dsimp
+  · dsimp
     simp
 
 lemma homology_sequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 := by
   constructor
-  . intro H
+  · intro H
     rw [← cancel_epi ((F.shift n₀).map T.mor₁), ← Functor.map_comp,
       comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero, comp_zero]
-  . intro H
+  · intro H
     refine' (ShortComplex.exact_iff_epi _ _).1 ((F.homology_sequence_exact₂ _ hT n₀))
     exact H
 
 lemma homology_sequence_mono_shift_map_mor₁_iff :
     Mono ((F.shift n₁).map T.mor₁) ↔ F.homology_sequence_δ T n₀ n₁ h = 0 := by
   constructor
-  . intro H
+  · intro H
     rw [← cancel_mono ((F.shift n₁).map T.mor₁), zero_comp, F.homology_sequence_δ_comp _ hT]
-  . intro H
+  · intro H
     refine' (ShortComplex.exact_iff_mono _ _).1 (F.homology_sequence_exact₁ _ hT _  _ h)
     exact H
 
@@ -266,27 +266,27 @@ lemma homology_sequence_isIso_shift_map_mor₁_iff :
   rw [← F.homology_sequence_mono_shift_map_mor₁_iff _ hT,
     ← F.homology_sequence_epi_shift_map_mor₁_iff _ hT]
   constructor
-  . intro h
+  · intro h
     exact ⟨inferInstance, inferInstance⟩
-  . rintro ⟨h₀, h₁⟩
+  · rintro ⟨h₀, h₁⟩
     apply isIso_of_mono_of_epi
 
 lemma homology_sequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₁).map T.mor₂) ↔ (F.shift n₁).map T.mor₁ = 0 := by
   constructor
-  . intro H
+  · intro H
     rw [← cancel_mono ((F.shift n₁).map T.mor₂), ← Functor.map_comp,
       comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero, zero_comp]
-  . intro H
+  · intro H
     refine' (ShortComplex.exact_iff_mono _ _).1 ((F.homology_sequence_exact₂ _ hT n₁))
     exact H
 
 lemma homology_sequence_epi_shift_map_mor₂_iff :
     Epi ((F.shift n₀).map T.mor₂) ↔ F.homology_sequence_δ T n₀ n₁ h = 0 := by
   constructor
-  . intro H
+  · intro H
     rw [← cancel_epi ((F.shift n₀).map T.mor₂), comp_zero, F.comp_homology_sequence_δ _ hT]
-  . intro H
+  · intro H
     refine' (ShortComplex.exact_iff_epi _ _).1 (F.homology_sequence_exact₃ _ hT _  _ h)
     exact H
 
@@ -298,20 +298,20 @@ lemma IsHomological.W_eq_homologicalKernelW [F.IsHomological] :
   apply MorphismProperty.ext
   intro X Y f
   constructor
-  . intro hf
+  · intro hf
     obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle f
     refine' ⟨Z, g, h, mem, fun n =>
       (F.homology_sequence_exact₃ _ mem n _ rfl).isZero_of_both_zeros _ _⟩
-    . dsimp
+    · dsimp
       have := hf n
       have zero : f ≫ g = 0 := comp_distTriang_mor_zero₁₂ _ mem
       simp only [← cancel_epi (F.map (f⟦n⟧')), ← Functor.map_comp, zero,
         Functor.map_zero, comp_zero]
-    . dsimp
+    · dsimp
       have := hf (n + 1)
       simp only [← cancel_mono (F.map (f⟦n+1⟧')), zero_comp]
       exact F.homology_sequence_δ_comp _ mem n (n+1) rfl
-  . intro hf n
+  · intro hf n
     obtain ⟨Z, g, h, mem, hZ⟩ := hf
     have : Mono (F.map (f⟦n⟧')) := (ShortComplex.exact_iff_mono _ ((hZ _).eq_of_src _ _)).1
       (F.homology_sequence_exact₁ _ mem (n-1) n (by linarith))
