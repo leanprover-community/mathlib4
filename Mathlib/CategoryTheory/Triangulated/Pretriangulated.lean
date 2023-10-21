@@ -555,7 +555,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     `φ' : T' ⟶ productTriangle T` with `T'` distinguished, and such that
     `φ'.hom₁` and `φ'.hom₂` are identities. Then, it suffices to show that
     `φ'.hom₃` is an isomorphism, which is achieved by using Yoneda's lemma
-    and a diagram chase. -/
+    and diagram chases. -/
   let f₁ := Pi.map (fun j => (T j).mor₁)
   obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
   let T' := Triangle.mk f₁ f₂ f₃
@@ -573,6 +573,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       all_goals infer_instance
     exact isomorphic_distinguished _ hT' _ (asIso φ').symm
   refine' isIso_of_yoneda_map_bijective _ (fun A => ⟨_, _⟩)
+  /- the proofs by diagram chase start here -/
   · suffices Mono φ'.hom₃ by
       intro a₁ a₂ ha
       simpa only [← cancel_mono φ'.hom₃] using ha
