@@ -377,6 +377,7 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
   rw [mul_div, eq_div_iff h.ne', nsmul_eq_mul, mul_right_comm, ← Nat.cast_mul,
     (mul_left_injective₀ hp.out.ne').eq_iff, Nat.cast_inj, mul_comm] at hk
   exact (Nat.le_of_dvd h0 ⟨_, hk.symm⟩).not_lt hn
+#align add_circle.add_order_of_period_div AddCircle.addOrderOf_period_div
 
 variable (p)
 
