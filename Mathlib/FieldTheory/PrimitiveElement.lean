@@ -204,11 +204,11 @@ end PrimitiveElementInf
 
 variable (F E : Type*) [Field F] [Field E]
 
-variable [Algebra F E] [FiniteDimensional F E]
+variable [Algebra F E]
 
 section SeparableAssumption
 
-variable [IsSeparable F E]
+variable [FiniteDimensional F E] [IsSeparable F E]
 
 /-- **Primitive element theorem**: a finite separable field extension `E` of `F` has a
   primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
@@ -242,8 +242,17 @@ end SeparableAssumption
 
 section FiniteIntermediateField
 
+theorem isAlgebraic_of_finite_intermediateField
+    (h : Finite (IntermediateField F E)) : Algebra.IsAlgebraic F E := by
+  sorry
+
+theorem finiteDimensional_of_finite_intermediateField
+    (h : Finite (IntermediateField F E)) : FiniteDimensional F E := by
+  sorry
+
 theorem exists_primitive_element_of_finite_intermediateField
     (h : Finite (IntermediateField F E)) : ∃ α : E, F⟮α⟯ = ⊤ := by
+  haveI := finiteDimensional_of_finite_intermediateField F E h
   rcases finite_or_infinite F with (F_finite | F_inf)
   · exact exists_primitive_element_of_finite_bot F E
   · let P : IntermediateField F E → Prop := fun K ↦ ∃ α : E, F⟮α⟯ = K
@@ -265,7 +274,7 @@ lemma _root_.IntermediateField.adjoin_eq_top_of_adjoin_eq_top (A B C: Type*)
 
 -- TODO: give it a descriptive name if it's useful in other places
 private lemma finite_intermediateField_of_exists_primitive_element.aux_2
-    (α : E) (hprim : F⟮α⟯ = ⊤) (K K' : IntermediateField F E)
+    [FiniteDimensional F E] (α : E) (hprim : F⟮α⟯ = ⊤) (K K' : IntermediateField F E)
     (heq : (minpoly K α).map (algebraMap K E) = (minpoly K' α).map (algebraMap K' E)) :
     K ≤ K' := by
   set g := (minpoly K α).map (algebraMap K E)
@@ -290,9 +299,14 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_2
   convert natDegree_le_of_dvd dvd_p hp.2.2.ne_zero using 1
   rw [hp.2.1, natDegree_map]
 
+theorem finiteDimensional_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
+    (h : ∃ α : E, F⟮α⟯ = ⊤) : FiniteDimensional F E := by
+  sorry
+
 -- A finite simple extension has only finitely many intermediate fields
-theorem finite_intermediateField_of_exists_primitive_element
+theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
     (h : ∃ α : E, F⟮α⟯ = ⊤) : Finite (IntermediateField F E) := by
+  haveI := finiteDimensional_of_exists_primitive_element F E halg h
   obtain ⟨α, hprim⟩ := h
   -- Let `f` be the minimal polynomial of `α ∈ E` over `F`
   let f : F[X] := minpoly F α
@@ -315,13 +329,14 @@ theorem finite_intermediateField_of_exists_primitive_element
   -- Therefore there are only finitely many intermediate fields
   exact Finite.of_injective g hinj
 
-/-- **Steinitz theorem**: a finite extension `E` of `F` has a
+/-- **Steinitz theorem**: an algebraic extension `E` of `F` has a
   primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
   if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
 theorem exists_primitive_element_iff_finite_intermediateField :
-    (∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
-  ⟨Field.finite_intermediateField_of_exists_primitive_element F E,
-    Field.exists_primitive_element_of_finite_intermediateField F E⟩
+    (Algebra.IsAlgebraic F E ∧ ∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
+  ⟨fun ⟨halg, h⟩ ↦ finite_intermediateField_of_exists_primitive_element F E halg h,
+    fun h ↦ ⟨isAlgebraic_of_finite_intermediateField F E h,
+      exists_primitive_element_of_finite_intermediateField F E h⟩⟩
 
 end FiniteIntermediateField
 
