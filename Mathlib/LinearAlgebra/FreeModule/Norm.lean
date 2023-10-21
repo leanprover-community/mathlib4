@@ -69,9 +69,6 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   refine AdjoinRoot.powerBasis ?_
   refine I.smithCoeffs_ne_zero b hI i
 
--- Porting note: this proof was already slow in mathlib3 and it is even slower now
--- See: https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 1000000 in
 /-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
 theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F[X] S]
