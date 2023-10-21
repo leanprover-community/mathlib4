@@ -238,21 +238,19 @@ theorem comm_stdBasisMatrix'' {i j : n} {M : Matrix n n α}
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
 theorem comm_all_stdBasisMatrix_nondiag [Inhabited n] {M : Matrix n n α}
     (hM : ∀ (i j : n), i ≠ j → stdBasisMatrix i j 1 * M = M * stdBasisMatrix i j 1) :
-    ∃ (c : α), M = c • (1 : Matrix n n α) := by
-  let i : n := default
-  use M i i
+    M = M default default • (1 : Matrix n n α) := by
   rw [← Matrix.ext_iff]
   intro j k
   by_cases h : j = k
-  · by_cases hij : i = j
+  · by_cases hij : default = j
     · simp [hij, h]
     · push_neg at hij
       rw [h] at hij
-      simp [comm_stdBasisMatrix'' <| hM k i hij.symm, h]
+      simp [comm_stdBasisMatrix'' <| hM k default hij.symm, h]
   · push_neg at h
-    by_cases hij : i = j
+    by_cases hij : default = j
     · simp [hij, comm_stdBasisMatrix' (hM k j h.symm) h, h]
-    · simp [comm_stdBasisMatrix (hM i j hij) h.symm, h]
+    · simp [comm_stdBasisMatrix (hM default j hij) h.symm, h]
 
 end Commute
 
