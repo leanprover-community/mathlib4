@@ -5,6 +5,7 @@ Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
 import Lean
 import Std.Tactic.OpenPrivate
+import Std.Lean.Meta.DiscrTree
 
 /-!
 # Helper functions for using the simplifier.
@@ -21,26 +22,15 @@ def Lean.PHashSet.toList [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α
 
 namespace Lean
 
-namespace Meta.DiscrTree
-
-partial def Trie.getElements : Trie α s → Array α
-  | Trie.node vs children =>
-    vs ++ children.concatMap fun (_, child) ↦ child.getElements
-
-def getElements (d : DiscrTree α s) : Array α :=
-  d.1.toList.toArray.concatMap fun (_, child) => child.getElements
-
-end Meta.DiscrTree
-
 namespace Meta.Simp
 open Elab.Tactic
 
 instance : ToFormat SimpTheorems where
   format s :=
 f!"pre:
-{s.pre.getElements.toList}
+{s.pre.values.toList}
 post:
-{s.post.getElements.toList}
+{s.post.values.toList}
 lemmaNames:
 {s.lemmaNames.toList.map (·.key)}
 toUnfold: {s.toUnfold.toList}
