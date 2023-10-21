@@ -85,6 +85,22 @@ example (h : 2 * (4 * a + d * 5 * b) ≠ (40 * c - 32 * a + b * 2 * 5 * d - 40 *
   cancel_denoms
   assumption
 
+example (h : 27 ≤ (a + 3) ^ 3) : 1 ≤ (a / 3 + 1) ^ 3 := by
+  cancel_denoms
+  assumption
+
+example (h : a > 2) : 1 < 2⁻¹ * a := by
+  cancel_denoms
+  assumption
+
+example (h : 6 * b = a⁻¹ * 3 + c * 2): b = a⁻¹ * 2⁻¹ + c * 3⁻¹ := by
+  cancel_denoms
+  assumption
+
+example (h : a * 5 + b * 6 = 30 * c) : a * 2⁻¹ * 3⁻¹ + b * 5⁻¹ = c := by
+  cancel_denoms
+  assumption
+
 end
 
 section
