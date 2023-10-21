@@ -142,7 +142,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
       let (v1, t1) := findCancelFactor e1
       let n := v1 ^ k
       (n, .node n t1 <| .node k .nil .nil)
-    | none => (1, .nil)
+    | none => (1, .node 1 .nil .nil)
   | (``Inv.inv, #[_, _, e]) =>
     match e.nat? with
     | some q => (q, .node q .nil <| .node q .nil .nil)
@@ -163,6 +163,7 @@ by `findCancelFactor`.
 partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
     (e : Q($α)) : MetaM Expr := do
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
+  trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
   | .node _ lhs rhs, ~q($e1 + $e2) => do
     let v1 ← mkProdPrf α sα v lhs e1
@@ -173,6 +174,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     let v2 ← mkProdPrf α sα v rhs e2
     mkAppM ``CancelDenoms.sub_subst #[v1, v2]
   | .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
+    trace[CancelDenoms] "recursing into mul"
     let v1 ← mkProdPrf α sα ln lhs e1
     let v2 ← mkProdPrf α sα (v / ln) rhs e2
     have ln' := (← mkOfNat α amwo <| mkRawNatLit ln).1
