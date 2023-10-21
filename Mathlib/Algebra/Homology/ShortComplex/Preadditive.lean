@@ -357,7 +357,7 @@ section Homotopy
 
 variable (φ₁ φ₂ : S₁ ⟶ S₂)
 
-/-- An homotopy between two morphisms of short complexes `S₁ ⟶ S₂` consists of various
+/-- A homotopy between two morphisms of short complexes `S₁ ⟶ S₂` consists of various
 maps and conditions which will be sufficient to show that they induce the same morphism
 in homology. -/
 @[ext]
