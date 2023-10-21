@@ -315,6 +315,10 @@ def rewrites (hyps : Array (Expr × Bool × Nat))
 
 open Lean.Parser.Tactic
 
+/--
+Syntax for excluding some names, e.g. `[-my_lemma, -my_theorem]`.
+-/
+-- TODO: allow excluding local hypotheses.
 syntax forbidden := " [" (("-" ident),*,?) "]"
 
 /--

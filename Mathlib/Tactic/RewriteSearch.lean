@@ -44,20 +44,6 @@ This limitation would need to be resolved in the `rw?` tactic first.
 
 set_option autoImplicit true
 
-namespace Lean.Expr
-
-@[inline] def app3?' (e : Expr) (fName : Name) : Option (Expr × Expr × Expr) :=
-  if e.isAppOfArity' fName 3 then
-    some (e.appFn!.appFn!.appArg!, e.appFn!.appArg!, e.appArg!)
-  else
-    none
-
-
-@[inline] def eq?' (p : Expr) : Option (Expr × Expr × Expr) :=
-  p.app3?' ``Eq
-
-end Lean.Expr
-
 namespace Mathlib.Tactic.RewriteSearch
 
 open Lean Meta
@@ -150,6 +136,7 @@ def compute_dist? (n : SearchNode) : SearchNode :=
   | none =>
     { n with dist? := some (levenshtein editCost n.lhs n.rhs) }
 
+/-- Represent a search node as string, solely for debugging. -/
 def toString (n : SearchNode) : MetaM String := do
   let n := n.compute_dist?
   let tac ← match n.history.back? with
@@ -189,6 +176,7 @@ def push (n : SearchNode) (expr : Expr) (symm : Bool) (k : Nat) (g : MVarId)
     (ctx : Option MetavarContext := none) : MetaM (Option SearchNode) :=
   mk (n.history.push (k, expr, symm)) g ctx
 
+/-- Report the index of the most recently applied lemma, in the ordering returned by `rw?`. -/
 def lastIdx (n : SearchNode) : Nat :=
   match n.history.back? with
   | some (k, _) => k
