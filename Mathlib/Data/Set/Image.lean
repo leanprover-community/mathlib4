@@ -290,6 +290,13 @@ theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) 
   image_congr fun x _ => h x
 #align set.image_congr' Set.image_congr'
 
+/-- Variant of `image_congr`, for one function being the identity. -/
+theorem Set.image_congr'' {α β : Type*} {f : α → β} {g : β → α} {s : Set α}
+    (h : ∀ x : α, x ∈ s → (g ∘ f) x = x) : g ∘ f '' s = s := by
+  have : ∀ x : α, x ∈ s → (g ∘ f) x = id x := fun x hx  ↦ id_def ▸ h x hx
+  rw [Set.image_congr (this)]
+  aesop
+
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) :=
   Subset.antisymm (ball_image_of_ball fun _ ha => mem_image_of_mem _ <| mem_image_of_mem _ ha)
     (ball_image_of_ball <| ball_image_of_ball fun _ ha => mem_image_of_mem _ ha)

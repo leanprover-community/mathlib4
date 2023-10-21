@@ -198,6 +198,10 @@ theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 #align local_equiv.map_source LocalEquiv.map_source
 
+-- like `e.map_source'`, but stated in terms of images
+lemma LocalEquiv.map_source'' : e '' e.source ⊆ e.target :=
+  fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
 @[simp, mfld_simps]
 theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=
   e.map_target' h
