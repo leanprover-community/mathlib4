@@ -194,7 +194,7 @@ theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
 #align orientation.volume_form_zero_pos Orientation.volumeForm_zero_pos
 
 theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
-    Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
+    Orientation.volumeForm (-(positiveOrientation : Orientation ℝ E (Fin 0))) =
       -AlternatingMap.constLinearEquivOfIsEmpty 1 := by
   simp_rw [volumeForm, Or.by_cases, positiveOrientation]
   apply if_neg
