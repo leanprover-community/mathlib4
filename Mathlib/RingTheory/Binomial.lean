@@ -40,26 +40,23 @@ variable [Semiring R]
 namespace Ring
 
 /-- `ascPochEval` directly evaluates the `n`-th ascending Pochhammer polynomial at an element `r`.-/
-def ascPochEval (r : R) : ℕ → R
-  | 0 => 1
-  | (k + 1) => (ascPochEval r k) * (r + k)
+noncomputable def ascPochEval (r : R) (n : ℕ) : R :=
+    Polynomial.eval r (ascPochhammer R n)
 
-theorem ascPochEval_zero (r : R) : ascPochEval r 0 = 1 := rfl
+theorem ascPochEval_zero (r : R) : ascPochEval r 0 = 1 := by
+  unfold ascPochEval
+  rw [ascPochhammer_zero R, Polynomial.eval_one]
 
 theorem ascPochEval_succ (r : R) (k : ℕ) :
-    ascPochEval r (k.succ) = (ascPochEval r k) * (r + k) := rfl
+    ascPochEval r (k.succ) = (ascPochEval r k) * (r + k) := by
+  unfold ascPochEval
+  rw [ascPochhammer_succ_eval]
 
 theorem ascPochEval_cast (n : ℕ) : ∀ (k : ℕ), ascPochEval (n : R) k = ascPochEval n k
   | 0 => by rw [ascPochEval_zero, ascPochEval_zero, Nat.cast_one]
   | (k + 1) => by
     rw [ascPochEval_succ, ascPochEval_succ, Nat.cast_mul, ascPochEval_cast n k, Nat.cast_add]
     norm_cast
-
-theorem ascPochEval_eq_ascPochhammer_eval (r : R) :
-    ∀ (k : ℕ), ascPochEval r k = Polynomial.eval r (ascPochhammer R k)
-  | 0 => by rw [ascPochhammer_zero, Polynomial.eval_one, ascPochEval_zero]
-  | (k + 1) => by
-    rw [ascPochhammer_succ_eval, ← ascPochEval_eq_ascPochhammer_eval r k, ascPochEval_succ]
 
 theorem translate_comm_ascPochEval (r s : R) (k : ℕ) (h : Commute r s) : ∀ (n : ℕ),
     Commute (r + k) (ascPochEval s n)
@@ -83,8 +80,6 @@ end Semiring
 
 section BinomialSemiring
 
-namespace Ring
-
 /-- A semiring is binomial if multiplication by nonzero natural numbers is injective and pochhammer
 evaluations are divisible by the corresponding factorial. -/
 class BinomialSemiring (R: Type u) extends Semiring R where
@@ -93,7 +88,9 @@ class BinomialSemiring (R: Type u) extends Semiring R where
   /-- The multichoose function witnesses the divisibility of pochhammer n (evaluated at r) by n! -/
   multichoose : R → ℕ → R
   /-- pochhammer n (evaluated at r) is divisible by n! (witnessed by multichoose) -/
-  factorial_mul_multichoose : ∀ (r : R) (n : ℕ), n.factorial * multichoose r n = ascPochEval r n
+  factorial_mul_multichoose : ∀ (r : R) (n : ℕ), n.factorial * multichoose r n = Ring.ascPochEval r n
+
+namespace Ring
 
 theorem inj_smul_pos [BinomialSemiring R] (n : ℕ) (r s : R) (h: n ≠ 0) :
     n * r = n * s → r = s := BinomialSemiring.inj_smul_pos n r s h
