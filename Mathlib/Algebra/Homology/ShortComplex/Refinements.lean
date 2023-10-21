@@ -22,12 +22,6 @@ However, if `f : X ⟶ Y` is an epimorphism in `C` and `A : C`,
 `(A ⟶ X) → (A ⟶ Y)` may fail to be surjective (unless `p` is a split
 epimorphism).
 
-There are several notions of "pseudo-elements" in objects in abelian
-categories that can be used in order to fix this. However, the notion
-introduced in `CategoryTheory.Abelian.Pseudoelements` is not powerful
-or convenient enough for some applications: the main reason is that
-these pseudoelements do not have an extensionality lemma.
-
 In this file, the basic result is `epi_iff_surjective_up_to_refinements`
 which states that `f : X ⟶ Y` is a morphism in an abelian category,
 then it is an epimorphism if and only if for all `y : A ⟶ Y`,
@@ -39,7 +33,7 @@ precomposition by an epimorphism `π ≫ y` is a refinement of `y`. Then,
 we get that an epimorphism is a morphism that is "surjective up to refinements".
 (This result is similar to the fact that a morphism of sheaves on
 a topological space or a site is epi iff sections can be lifted
-locally.  Then, arguing "up to refinements" is very similar to
+locally. Then, arguing "up to refinements" is very similar to
 arguing locally for a Grothendieck topology. It is even likely that
 it is a particular case (consider the canonical topology on
 the abelian category `C`).
@@ -47,6 +41,24 @@ the abelian category `C`).
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
 (see `ShortComplex.exact_iff_exact_up_to_refinements`).
+
+As it is outlined in the documentation of the file
+`CategoryTheory.Abelian.Pseudoelements`, the Freyd-Mitchell
+embedding theorem implies the existence of a faithful and exact functor `ι`
+from an abelian category `C` to the category of abelian groups. If we
+define a pseudo-element of `X : C` to be an element in `ι.obj X`, one
+may do diagram chases in any abelian category using these pseudo-elements.
+However, using this approach would require proving this embedding theorem!
+Currently, mathlib contains a weaker notion of pseudo-elements
+`CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
+using this notion, but there is the issue that for this notion
+of pseudo-elements a morphism `X ⟶ Y` in `C` is not determined by
+its action on pseudo-elements. On the contrary, the approach consisting
+of working up to refinements does not require the introduction of
+other types: we only need to work with morphisms `A ⟶ X` in `C` which
+we may consider as being "sort of elements of `X`". One may carry
+diagram-chasing by tracking these morphisms and sometimes introducing
+an auxiliary epimorphism `A' ⟶ A`.
 
 ## References
 * George Bergman, A note on abelian categories – translating element-chasing proofs,
