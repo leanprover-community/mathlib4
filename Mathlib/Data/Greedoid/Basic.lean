@@ -1257,7 +1257,7 @@ theorem kernelClosureOperator_idempotent :
 
 end Kernel
 
-def monotoneClosureOperator (s : Finset α) : Finset α :=
+def monotoneClosureOperator (G : Greedoid α) (s : Finset α) : Finset α :=
   univ.filter fun a => ∀ {t}, s ⊆ t → G.closure t = t → a ∈ t
 
 section MonotoneClosureOperator
