@@ -318,14 +318,12 @@ lemma homologyMap'_neg :
 
 @[simp]
 lemma homologyMap'_add :
-    homologyMap' (φ + φ') h₁ h₂ = homologyMap' φ h₁ h₂ +
-      homologyMap' φ' h₁ h₂ :=
+    homologyMap' (φ + φ') h₁ h₂ = homologyMap' φ h₁ h₂ + homologyMap' φ' h₁ h₂ :=
   leftHomologyMap'_add _ _
 
 @[simp]
 lemma homologyMap'_sub :
-    homologyMap' (φ - φ') h₁ h₂ = homologyMap' φ h₁ h₂ -
-      homologyMap' φ' h₁ h₂ :=
+    homologyMap' (φ - φ') h₁ h₂ = homologyMap' φ h₁ h₂ - homologyMap' φ' h₁ h₂ :=
   leftHomologyMap'_sub _ _
 
 variable (φ φ')
