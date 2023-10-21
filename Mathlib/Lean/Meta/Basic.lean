@@ -30,14 +30,12 @@ type `t`. It uses `forallMetaTelescopeReducing`.
 def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
     (e t : Expr) (kind : MetavarKind := MetavarKind.natural) :
     MetaM (Array Expr × Array BinderInfo × Expr) := do
-  let mut mvs : Array Expr := #[]
-  let mut bis : Array BinderInfo := #[]
   let (ms, bs, tp) ← forallMetaTelescopeReducing e (some 1) kind
   unless ms.size == 1 do
     if ms.size == 0 then throwError m!"Failed: {← ppExpr e} is not the type of a function."
     else throwError m!"Failed"
-  mvs := ms
-  bis := bs
+  let mut mvs := ms
+  let mut bis := bs
   let mut out : Expr := tp
   while !(← isDefEq (← inferType mvs.toList.getLast!) t) do
     let (ms, bs, tp) ← forallMetaTelescopeReducing out (some 1) kind
