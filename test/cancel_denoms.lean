@@ -101,6 +101,14 @@ example (h : a * 5 + b * 6 = 30 * c) : a * 2⁻¹ * 3⁻¹ + b * 5⁻¹ = c := b
   cancel_denoms
   assumption
 
+example (h : 5 * a^2 + 4 * b^3 = 0) : a ^ 2 / 4 + b ^ 3 / 5 = 0 := by
+  cancel_denoms
+  assumption
+
+example (h : 5 * a^3 * b^2 = 72 * c) : (a/2)^3 * (b/3)^2 = c/5 := by
+  cancel_denoms
+  assumption
+
 end
 
 section
