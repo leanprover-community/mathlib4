@@ -10,9 +10,11 @@ import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
-import Mathlib.Topology.Connected
+import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.Separation
+import Mathlib.Tactic.Widget.Conv
+import Mathlib.Tactic.Widget.Congrm
 
 /-!
 
@@ -226,16 +228,12 @@ def spanCone : Cone (spanFunctor hC) where
   π :=
   { app := fun J ↦ ⟨ProjRestrict C (· ∈ unop J), continuous_projRestrict _ _⟩
     naturality := by
-      intro _ _ h
-      simp only [Functor.const_obj_obj, spanFunctor, ProjRestricts, Homeomorph.setCongr,
-        Homeomorph.homeomorph_mk_coe, ProjRestrict, Functor.const_obj_map, Category.id_comp]
+      intro X Y h
+      simp only [Functor.const_obj_obj, Homeomorph.setCongr,
+        Homeomorph.homeomorph_mk_coe, Functor.const_obj_map, Category.id_comp]
       congr
-      ext x i
-      dsimp [Proj]
-      split_ifs with h₁ h₂
-      · rfl
-      · simp only [(leOfHom h.unop h₁), not_true] at h₂
-      · rfl }
+      rw [← projRestricts_comp_projRestrict C (leOfHom h.unop)]
+      rfl }
 
 /-- The isomorphism of cones `spanCone ≅ Profinite.indexCone` -/
 noncomputable
@@ -285,25 +283,12 @@ def eval (l : Products I) := (l.1.map (e C)).prod
 def isGood (l : Products I) : Prop :=
   l.eval C ∉ Submodule.span ℤ ((Products.eval C) '' {m | m < l})
 
-theorem rel_head!_of_mem {i : I} {l : Products I} (hi : i ∈ l.val) : i ≤ l.val.head! := by
-  have h := l.prop
-  rw [List.chain'_iff_pairwise, ← List.cons_head!_tail (List.ne_nil_of_mem hi)] at h
-  rw [← List.cons_head!_tail (List.ne_nil_of_mem hi)] at hi
-  simp only [List.find?, List.mem_cons] at hi
-  cases' hi with hi hi
-  · exact le_of_eq hi
-  · exact le_of_lt (List.rel_of_sorted_cons h i hi)
+theorem rel_head!_of_mem {i : I} {l : Products I} (hi : i ∈ l.val) : i ≤ l.val.head! :=
+  List.rel_head!_of_sorted' (List.chain'_iff_pairwise.mp l.prop) hi
 
 theorem head!_le_of_lt {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
-    q.val.head! ≤ l.val.head! := by
-  by_cases hl : l.val = []
-  · rw [lt_iff_lex_lt, hl] at h
-    simp only [List.Lex.not_nil_right] at h
-  · by_contra hh
-    simp only [not_le] at hh
-    have := List.Lex.rel (r := (·<·)) (l₁ := l.val.tail) (l₂ := q.val.tail) hh
-    rw [List.cons_head!_tail hq, List.cons_head!_tail hl, ← lt_iff_lex_lt, ← not_le] at this
-    exact this (le_of_lt h)
+    q.val.head! ≤ l.val.head! :=
+  List.head!_le_of_lt l.val q.val ((List.lt_iff_lex_lt q.val l.val).mpr h) hq
 
 end Products
 
@@ -1543,8 +1528,8 @@ theorem linearIndependent_iff_sum :
 theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
     (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
-  rw [← sum_equiv_comp_eval_eq_elim C hsC ho]
-  simp only [Equiv.toFun_as_coe, EquivLike.range_comp]
+  rw [← sum_equiv_comp_eval_eq_elim C hsC ho, Equiv.toFun_as_coe,
+    EquivLike.range_comp (e := sum_equiv C hsC ho)]
 
 
 theorem square_commutes : SumEval C ho ∘ Sum.inl =
@@ -1726,10 +1711,10 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   apply Submodule.add_mem
   · apply Submodule.finsupp_sum_mem
     intro q _
-    rw [LinearMap.map_smul]
+    erw [LinearMap.map_smul (fₗ := πs C o) (c := w q) (x := eval (C.proj (ord I · < o)) q)]
     apply Submodule.smul_mem
     apply Submodule.subset_span
-    dsimp [eval]
+    dsimp only [eval]
     rw [Products.eval_πs C (Products.prop_of_isGood _ _ q.prop)]
     refine ⟨q.val, ⟨?_, rfl⟩⟩
     simp only [Products.lt_iff_lex_lt, Set.mem_setOf_eq]
@@ -1766,7 +1751,7 @@ theorem linearIndependent_comp_of_eval
     LinearIndependent ℤ (eval (C' C ho)) →
     LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
   dsimp [SumEval, ModuleCat.ofHom]
-  rw [max_eq_eval_unapply C hsC ho]
+  erw [max_eq_eval_unapply C hsC ho]
   intro h
   let f := MaxToGood C hC hsC ho h₁
   have hf : f.Injective := maxToGood_injective C hC hsC ho h₁
