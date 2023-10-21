@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
 import Mathlib.Data.Int.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Shift.Basic
 
 #align_import category_theory.triangulated.basic from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
@@ -198,5 +199,26 @@ lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₂ = eqToHom (by subst h; rfl) := by subst h; rfl
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
+
+/-- The obvious triangle `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
+@[simps!]
+def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
+    Triangle C :=
+  Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
+
+/-- The obvious triangle `X₁ ⟶ X₁ ⨯ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
+@[simps!]
+def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] :
+    Triangle C :=
+  Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
+
+/-- The canonical isomorphism of triangles
+`binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
+@[simps!]
+def binaryProductTriangleIsoBinaryBiproductTriangle
+    (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
+    binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
+  Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
+    (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 end CategoryTheory.Pretriangulated
