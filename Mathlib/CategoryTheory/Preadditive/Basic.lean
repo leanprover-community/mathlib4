@@ -243,6 +243,15 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
   mono_of_cancel_zero f fun g h => by rw [← kernel.lift_ι f g h, w, Limits.comp_zero]
 #align category_theory.preadditive.mono_of_kernel_zero CategoryTheory.Preadditive.mono_of_kernel_zero
 
+lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
+    (h : IsZero c.pt) : Mono f := mono_of_cancel_zero _ (fun g hg => by
+  obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
+  rw [← ha, h.eq_of_tgt a 0, Limits.zero_comp])
+
+lemma mono_of_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] (h : IsZero (kernel f)) :
+    Mono f :=
+  mono_of_isZero_kernel' _ (kernelIsKernel _) h
+
 theorem epi_of_cancel_zero {P Q : C} (f : P ⟶ Q) (h : ∀ {R : C} (g : Q ⟶ R), f ≫ g = 0 → g = 0) :
     Epi f :=
   ⟨fun {Z} g g' hg =>
@@ -258,6 +267,15 @@ theorem epi_of_cokernel_zero {X Y : C} {f : X ⟶ Y} [HasColimit (parallelPair f
     (w : cokernel.π f = 0) : Epi f :=
   epi_of_cancel_zero f fun g h => by rw [← cokernel.π_desc f g h, w, Limits.zero_comp]
 #align category_theory.preadditive.epi_of_cokernel_zero CategoryTheory.Preadditive.epi_of_cokernel_zero
+
+lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
+    (h : IsZero c.pt) : Epi f := epi_of_cancel_zero _ (fun g hg => by
+  obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
+  rw [← ha, h.eq_of_src a 0, Limits.comp_zero])
+
+lemma epi_of_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (h : IsZero (cokernel f)) :
+    Epi f :=
+  epi_of_isZero_cokernel' _ (cokernelIsCokernel _) h
 
 namespace IsIso
 
