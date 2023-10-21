@@ -206,34 +206,6 @@ lemma fatou_argument_integral_nonneg
       congr
       exact (Real.norm_of_nonneg (f_nn x)).symm
 
--- A direct proof attempt (should be discarded).
-lemma fatou_argument_integral_nonneg'
-    {μ : Measure Ω} [IsFiniteMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsFiniteMeasure (μs i)]
-    {f : Ω →ᵇ ℝ} (f_nn : 0 ≤ f)
-    (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
-      ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
-  simp_rw [(f.integrable _).integral_eq_integral_meas_lt (eventually_of_forall f_nn)]
-  have rwr := @integral_eq_lintegral_of_nonneg_ae ℝ _ (volume.restrict (Set.Ioi 0))
-          (fun t ↦ ENNReal.toReal (μ {x | t < f x})) (eventually_of_forall ?_) ?_
-  have rwr' := fun i ↦ @integral_eq_lintegral_of_nonneg_ae ℝ _ (volume.restrict (Set.Ioi 0))
-            (fun t ↦ ENNReal.toReal (μs i {x | t < f x})) (eventually_of_forall ?_) ?_
-  simp only [rwr, ne_eq, rwr', ge_iff_le]
-  · --have aux : ∀ t, IsOpen {a : Ω | t < f a} :=
-    --  fun t ↦ (continuous_def.mp f.continuous) _ isOpen_Ioi
-    --have obs := fun t ↦ h_opens _ (aux t)
-    --have := @lintegral_liminf_le
-
-    --have earlier := fatou_argument_lintegral f.continuous f_nn h_opens
-    sorry
-  · exact fun _ ↦ by simp only [Pi.zero_apply, ENNReal.toReal_nonneg]
-  · apply Measurable.aestronglyMeasurable
-    apply ENNReal.measurable_toReal.comp (Antitone.measurable ?_)
-    exact fun x y hxy ↦ measure_mono (fun z hz ↦ lt_of_le_of_lt hxy hz)
-  · exact fun _ ↦ by simp only [Pi.zero_apply, ENNReal.toReal_nonneg]
-  · apply Measurable.aestronglyMeasurable
-    apply ENNReal.measurable_toReal.comp (Antitone.measurable ?_)
-    exact fun x y hxy ↦ measure_mono (fun z hz ↦ lt_of_le_of_lt hxy hz)
-
 lemma reduction_to_liminf {ι : Type*} {L : Filter ι} [NeBot L]
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
