@@ -819,6 +819,28 @@ lemma Integrable.measure_le_integral {f : α → ℝ} (f_int : Integrable f μ) 
   · intro x hx
     simpa using ENNReal.ofReal_le_ofReal (hs x hx)
 
+lemma integral_le_measure {f : α → ℝ} {s : Set α}
+    (hs : ∀ x ∈ s, f x ≤ 1) (h's : ∀ x ∈ sᶜ, f x ≤ 0) :
+    ENNReal.ofReal (∫ x, f x ∂μ) ≤ μ s := by
+  by_cases H : Integrable f μ; swap
+  · simp [integral_undef H]
+  let g x := max (f x) 0
+  have g_int : Integrable g μ := H.pos_part
+  have : ENNReal.ofReal (∫ x, f x ∂μ) ≤ ENNReal.ofReal (∫ x, g x ∂μ) := by
+    apply ENNReal.ofReal_le_ofReal
+    exact integral_mono H g_int (fun x ↦ le_max_left _ _)
+  apply this.trans
+  rw [ofReal_integral_eq_lintegral_ofReal g_int (eventually_of_forall (fun x ↦ le_max_right _ _))]
+  apply lintegral_le_meas
+  · intro x
+    apply ENNReal.ofReal_le_of_le_toReal
+    by_cases H : x ∈ s
+    · simpa using hs x H
+    · apply le_trans _ zero_le_one
+      simpa using h's x H
+  · intro x hx
+    simpa using h's x hx
+
 end Nonneg
 
 section IntegrableUnion
