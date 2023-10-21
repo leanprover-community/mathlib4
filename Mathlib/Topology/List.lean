@@ -33,7 +33,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
-    rcases(mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
+    rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
     have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
     induction hu generalizing s
@@ -197,7 +197,7 @@ theorem tendsto_insertNth {n : ℕ} {i : Fin (n + 1)} {a : α} :
       Tendsto (fun p : α × Vector α n => insertNth p.1 i p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertNth a i l))
   | ⟨l, hl⟩ => by
     rw [insertNth, tendsto_subtype_rng]
-    simp [insertNth_val]
+    simp only [insertNth_val]
     exact List.tendsto_insertNth tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 #align vector.tendsto_insert_nth Vector.tendsto_insertNth
 

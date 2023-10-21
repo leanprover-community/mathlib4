@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.SubsetProperties
-import Mathlib.Topology.Connected
-import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.Compactness.SigmaCompact
+import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
@@ -71,7 +71,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 If the space is also compact:
 
 * `normalOfCompactT2`: A compact T₂ space is a `NormalSpace`.
-* `connected_components_eq_Inter_clopen`: The connected component of a point
+* `connectedComponent_eq_iInter_clopen`: The connected component of a point
   is the intersection of all its clopen neighbourhoods.
 * `compact_t2_tot_disc_iff_tot_sep`: Being a `TotallyDisconnectedSpace`
   is equivalent to being a `TotallySeparatedSpace`.
@@ -1530,7 +1530,7 @@ theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
   tfae_have 6 → 4
   · intro H a s hs
     rw [← H] at hs
-    rcases(𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
+    rcases (𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
     exact ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, hUs⟩
   tfae_have 4 → 2
   · intro H s a ha

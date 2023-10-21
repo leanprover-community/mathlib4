@@ -279,9 +279,9 @@ example (u v x y A B : ℚ)
  by nlinarith
 
 example (u v x y A B : ℚ) : (0 < A) → (A ≤ 1) → (1 ≤ B)
-→ (x ≤ B) → ( y ≤ B)
+→ (x ≤ B) → (y ≤ B)
 → (0 ≤ u ) → (0 ≤ v )
-→ (u < A) → ( v < A)
+→ (u < A) → (v < A)
 → (u * y + v * x + u * v < 3 * A * B) := by
   intros
   nlinarith
@@ -535,3 +535,4 @@ example {α : Type} [LinearOrderedCommRing α] (n : Nat) : -(n : α) ≤ 0 := by
 
 example {α : Type} [LinearOrderedCommRing α] (n : Nat) (a : α) (h : a ≥ 2): a * (n : α) + 5 ≥ 4 := by
   nlinarith
+example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith

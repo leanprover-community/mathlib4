@@ -54,11 +54,11 @@ structure LeftHomologyData where
   π : K ⟶ H
   /-- the kernel condition for `i` -/
   wi : i ≫ S.g = 0
-  /-- `i : K ⟶ S.X₂ ` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
+  /-- `i : K ⟶ S.X₂` is a kernel of `g : S.X₂ ⟶ S.X₃` -/
   hi : IsLimit (KernelFork.ofι i wi)
   /-- the cokernel condition for `π` -/
   wπ : hi.lift (KernelFork.ofι _ S.zero) ≫ π = 0
-  /-- `π : K ⟶ H ` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
+  /-- `π : K ⟶ H` is a cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   hπ : IsColimit (CokernelCofork.ofπ π wπ)
 
 initialize_simps_projections LeftHomologyData (-hi, -hπ)

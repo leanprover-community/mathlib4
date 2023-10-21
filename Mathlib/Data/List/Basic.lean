@@ -320,7 +320,7 @@ theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → 
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
-  (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
+    (ainm : a ∈ m) (lsubm : l ⊆ m) : a::l ⊆ m :=
   cons_subset.2 ⟨ainm, lsubm⟩
 #align list.cons_subset_of_subset_of_mem List.cons_subset_of_subset_of_mem
 
@@ -1100,25 +1100,6 @@ theorem indexOf_nil (a : α) : indexOf a [] = 0 :=
   The ported versions of the earlier proofs are given in comments.
 -/
 
--- Porting note: these lemmas recover the Lean 3 definition of `findIdx`
-@[simp] theorem findIdx_nil {α : Type*} (p : α → Bool) :
-  [].findIdx p = 0 := rfl
-
-theorem findIdx_cons (p : α → Bool) (b : α) (l : List α) :
-    (b :: l).findIdx p = bif p b then 0 else (l.findIdx p) + 1 := by
-    cases H : p b with
-      | true => simp [H, findIdx, findIdx.go]
-      | false => simp [H, findIdx, findIdx.go, findIdx_go_succ]
-  where
-    findIdx_go_succ (p : α → Bool) (l : List α) (n : ℕ) :
-        List.findIdx.go p l (n + 1) = (List.findIdx.go p l n) + 1 := by
-      cases l with
-      | nil => unfold List.findIdx.go; exact Nat.succ_eq_add_one n
-      | cons head tail =>
-        unfold List.findIdx.go
-        cases p head <;> simp only [cond_false, cond_true]
-        exact findIdx_go_succ p tail (n + 1)
-
 -- indexOf_cons_eq _ rfl
 @[simp]
 theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
@@ -1242,7 +1223,7 @@ theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.l
     case succ.succ =>
       congr; cases h₁
       apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
-    all_goals ( dsimp at h₂; cases' h₁ with _ _ h h')
+    all_goals (dsimp at h₂; cases' h₁ with _ _ h h')
     · cases (h x (mem_iff_get?.mpr ⟨_, h₂.symm⟩) rfl)
     · cases (h x (mem_iff_get?.mpr ⟨_, h₂⟩) rfl)
 #align list.nth_injective List.get?_injective
@@ -1606,7 +1587,7 @@ theorem insertNth_comm (a b : α) :
   | i + 1, 0, l => fun h => (Nat.not_lt_zero _ h).elim
   | i + 1, j + 1, [] => by simp
   | i + 1, j + 1, c :: l => fun h₀ h₁ => by
-    simp [insertNth]
+    simp only [insertNth_succ_cons, insertNth._eq_1, cons.injEq, true_and]
     exact insertNth_comm a b i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
 #align list.insert_nth_comm List.insertNth_comm
 
@@ -2061,6 +2042,7 @@ theorem drop_eq_nil_iff_le {l : List α} {k : ℕ} : l.drop k = [] ↔ l.length 
       simpa [Nat.succ_le_succ_iff] using hk h
 #align list.drop_eq_nil_iff_le List.drop_eq_nil_iff_le
 
+@[simp]
 theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := by
   induction' l with hd tl hl generalizing n
   · simp
@@ -2068,6 +2050,10 @@ theorem tail_drop (l : List α) (n : ℕ) : (l.drop n).tail = l.drop (n + 1) := 
     · simp
     · simp [hl]
 #align list.tail_drop List.tail_drop
+
+@[simp]
+theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
+  induction' l <;> simp
 
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 := by
@@ -3542,20 +3528,36 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
 
+@[simp] theorem takeWhile_nil : List.takeWhile p [] = [] := rfl
+
+theorem takeWhile_cons {x : α} :
+    List.takeWhile p (x :: l) = (match p x with
+      | true  => x :: takeWhile p l
+      | false => []) :=
+  rfl
+
+theorem takeWhile_cons_of_pos {x : α} (h : p x) :
+    List.takeWhile p (x :: l) = x :: takeWhile p l := by
+  simp [takeWhile_cons, h]
+
+theorem takeWhile_cons_of_neg {x : α} (h : ¬ p x) :
+    List.takeWhile p (x :: l) = [] := by
+  simp [takeWhile_cons, h]
+
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
   induction' l with x xs IH
-  · simp [takeWhile]
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH]
+  · simp
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH]
 #align list.take_while_eq_self_iff List.takeWhile_eq_self_iff
 
 @[simp]
 theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
   induction' l with x xs IH
-  · simp [takeWhile, true_iff]
+  · simp only [takeWhile_nil, Bool.not_eq_true, true_iff]
     intro h
     simp at h
-  · by_cases hp : p x <;> simp [hp, takeWhile, IH, nthLe_cons]
+  · by_cases hp : p x <;> simp [hp, takeWhile_cons, IH, nthLe_cons]
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
@@ -3572,7 +3574,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
     takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
   induction' l with hd tl IH
-  · simp [takeWhile]
+  · simp
   · by_cases hp : p hd <;> by_cases hq : q hd <;> simp [takeWhile, hp, hq, IH]
 #align list.take_while_take_while List.takeWhile_takeWhile
 
@@ -4290,11 +4292,21 @@ theorem getD_cons_succ : getD (x :: xs) (n + 1) d = getD xs n d :=
 #align list.nthd_cons_succ List.getD_cons_succₓ -- argument order
 
 theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
-  induction' l with hd tl IH generalizing n
-  · exact absurd hn (not_lt_of_ge (Nat.zero_le _))
-  · cases n
+  induction l generalizing n with
+  | nil => exact absurd hn (not_lt_of_ge (Nat.zero_le _))
+  | cons head tail ih =>
+    cases n
     · exact getD_cons_zero _ _ _
-    · exact IH _
+    · exact ih _
+
+@[simp]
+theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
+  induction l generalizing n with
+  | nil => rfl
+  | cons head tail ih =>
+    cases n
+    · rfl
+    · simp [ih]
 
 set_option linter.deprecated false in
 @[deprecated getD_eq_get]
@@ -4303,11 +4315,12 @@ theorem getD_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getD n d = l.nthLe n hn 
 #align list.nthd_eq_nth_le List.getD_eq_nthLeₓ -- argument order
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
-  induction' l with hd tl IH generalizing n
-  · exact getD_nil _ _
-  · cases n
+  induction l generalizing n with
+  | nil => exact getD_nil _ _
+  | cons head tail ih =>
+    cases n
     · refine' absurd (Nat.zero_lt_succ _) (not_lt_of_ge hn)
-    · exact IH (Nat.le_of_succ_le_succ hn)
+    · exact ih (Nat.le_of_succ_le_succ hn)
 #align list.nthd_eq_default List.getD_eq_defaultₓ -- argument order
 
 /-- An empty list can always be decidably checked for the presence of an element.
@@ -4322,9 +4335,9 @@ theorem getD_singleton_default_eq (n : ℕ) : [d].getD n d = d := by cases n <;>
 
 @[simp]
 theorem getD_replicate_default_eq (r n : ℕ) : (replicate r d).getD n d = d := by
-  induction' r with r IH generalizing n
-  · simp
-  · cases n <;> simp [IH]
+  induction r generalizing n with
+  | zero => simp
+  | succ n ih => cases n <;> simp [ih]
 #align list.nthd_replicate_default_eq List.getD_replicate_default_eqₓ -- argument order
 
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
@@ -4335,19 +4348,21 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases' lt_or_le n (l ++l').length with h' h'
-  · rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
+  cases lt_or_le n (l ++l').length with
+  | inl h' =>
+    rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
       exact Nat.sub_lt_left_of_lt_add h h'
     · exact not_lt_of_le h
-  · rw [getD_eq_default _ _ h', getD_eq_default]
+  | inr h' =>
+    rw [getD_eq_default _ _ h', getD_eq_default]
     rwa [le_tsub_iff_left h, ← length_append]
 #align list.nthd_append_right List.getD_append_rightₓ -- argument order
 
 theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
-  cases' lt_or_le n l.length with h h
-  · rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
-  · rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
+  cases lt_or_le n l.length with
+  | inl h => rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
+  | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
 #align list.nthd_eq_get_or_else_nth List.getD_eq_getD_get?ₓ -- argument order
 
 end getD

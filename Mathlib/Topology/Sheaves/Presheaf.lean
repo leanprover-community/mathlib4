@@ -185,7 +185,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
-  (h : f = g) (ℱ : X.Presheaf C) (U) :
+    (h : f = g) (ℱ : X.Presheaf C) (U) :
     (pushforwardEq h ℱ).hom.app U =
       ℱ.map (by dsimp [Functor.op]; apply Quiver.Hom.op; apply eqToHom; rw [h]) :=
   by simp [pushforwardEq]

@@ -95,6 +95,10 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v} where
   map_comp f g := by ext; dsimp; simp
 #align category_theory.preadditive_coyoneda CategoryTheory.preadditiveCoyoneda
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.preadditiveYoneda_map_app_apply
+  CategoryTheory.preadditiveCoyoneda_map_app_apply
+
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where
 #align category_theory.additive_yoneda_obj CategoryTheory.additive_yonedaObj
 
