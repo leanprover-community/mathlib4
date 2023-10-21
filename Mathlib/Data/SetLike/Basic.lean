@@ -140,6 +140,8 @@ theorem coe_set_eq : (p : Set B) = q ↔ p = q :=
   coe_injective.eq_iff
 #align set_like.coe_set_eq SetLike.coe_set_eq
 
+@[norm_cast] lemma coe_ne_coe : (p : Set B) ≠ q ↔ p ≠ q := coe_injective.ne_iff
+
 theorem ext' (h : (p : Set B) = q) : p = q :=
   coe_injective h
 #align set_like.ext' SetLike.ext'
