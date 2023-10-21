@@ -118,8 +118,8 @@ protected theorem isLocallyHomeomorphOn (hf : IsCoveringMapOn f s) :
             e.open_baseSet.prod (singletons_open_iff_discrete.2 (hf (f x) hx).1 ⟨x, rfl⟩)
           open_target := e.open_baseSet
           map_source' := fun p => And.left
-          map_target' := fun p hf => ⟨hf, rfl⟩
-          left_inv' := fun p hf => Prod.ext rfl hf.2.symm
+          map_target' := fun p hp => ⟨hp, rfl⟩
+          left_inv' := fun p hp => Prod.ext rfl hp.2.symm
           right_inv' := fun p _ => rfl
           continuous_toFun := continuous_fst.continuousOn
           continuous_invFun := (continuous_id'.prod_mk continuous_const).continuousOn },
@@ -195,7 +195,7 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
 /-- Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
   `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
   that covers `f⁻¹(V)` such that for every `i`, (1) `f` is injective on `U_i`, (2) `V` is
-  contained in the image `f(U_i), and (3) the open sets in `V` are determined by their preimages
+  contained in the image `f(U_i)`, and (3) the open sets in `V` are determined by their preimages
   in `U_i`. Then `f` admits a `Trivialization` over the base set `V`. -/
 noncomputable def IsOpen.trivialization_discrete (hE : Nonempty E ∨ f.Surjective)
     {ι} [Nonempty ι] [t : TopologicalSpace ι] [d : DiscreteTopology ι] (U : ι → Set E) (V : Set X)
