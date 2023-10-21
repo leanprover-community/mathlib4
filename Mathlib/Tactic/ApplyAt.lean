@@ -25,12 +25,12 @@ original `i`.
 -/
 elab "apply" t:term "at" i:ident : tactic => withMainContext do
   let f ← Term.elabTerm (← `(@$t)) none
-  let some ldecl := (← getLCtx).findFromUserName? i.getId |
-    throwErrorAt i m!"Identifier {i} not found"
+  let some ldecl := (← getLCtx).findFromUserName? i.getId
+    | throwErrorAt i m!"Identifier {i} not found"
   let (mvs, bis, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal
   let mainGoal ← mainGoal.tryClear ldecl.fvarId
-  for (m,b) in mvs.zip bis do
+  for (m, b) in mvs.zip bis do
     if b.isInstImplicit && !(← m.mvarId!.isAssigned) then
       try m.mvarId!.inferInstance
       catch _ => continue
