@@ -645,15 +645,6 @@ theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α
   update_comp_eq_of_injective' g hf i a
 #align function.update_comp_eq_of_injective Function.update_comp_eq_of_injective
 
-theorem pred_update (P : ∀ ⦃a⦄, β a → Prop) (f : ∀ a, β a) (a' : α) (v : β a') (a : α) :
-    P (update f a' v a) ↔ a = a' ∧ P v ∨ a ≠ a' ∧ P (f a) := by
-  rw [update]
-  by_cases h : a = a'
-  · subst h
-    simp
-  · rw [← Ne.def] at h
-    simp [h]
-
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
     f j (update g i v j) = update (fun k ↦ f k (g k)) i (f i v) j := by
@@ -672,6 +663,9 @@ theorem apply_update₂ {ι : Sort*} [DecidableEq ι] {α β γ : ι → Sort*} 
   · simp [h]
 #align function.apply_update₂ Function.apply_update₂
 
+theorem pred_update (P : ∀ ⦃a⦄, β a → Prop) (f : ∀ a, β a) (a' : α) (v : β a') (a : α) :
+    P (update f a' v a) ↔ a = a' ∧ P v ∨ a ≠ a' ∧ P (f a) := by
+  rw [apply_update P, update_apply, ite_prop_iff_or]
 
 theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α') (i : α) (v : α') :
     f ∘ update g i v = update (f ∘ g) i (f v) :=

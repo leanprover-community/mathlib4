@@ -1035,6 +1035,11 @@ theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
 #align finset.mem_disj_union Finset.mem_disjUnion
 
+@[simp, norm_cast]
+theorem coe_disjUnion {s t : Finset α} (h : Disjoint s t) :
+    (disjUnion s t h : Set α) = (s : Set α) ∪ t :=
+  Set.ext <| by simp
+
 theorem disjUnion_comm (s t : Finset α) (h : Disjoint s t) :
     disjUnion s t h = disjUnion t s h.symm :=
   eq_of_veq <| add_comm _ _
@@ -3861,16 +3866,10 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
 
 variable [DecidableEq α] {s t : Finset α}
 
-/-- `s ∪ t` (using finset union) is equivalent to `s ∪ t` (using set union) -/
-@[simps!]
-def finsetUnion (s t : Finset α) :
-    (s ∪ t : Set α) ≃ ((s ∪ t : Finset α) : Set α) :=
-  Equiv.Set.ofEq <| coe_union _ _ |>.symm
-
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.Set.union (disjoint_coe.mpr h).le_bot |>.symm.trans <| Equiv.finsetUnion s t
+  Equiv.Set.ofEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h).le_bot) |>.symm
 
 @[simp]
 theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :
