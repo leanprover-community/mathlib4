@@ -304,11 +304,9 @@ instance (priority := 100) Regular.weaklyRegular [ClosableCompactSubsetOpenSpace
   constructor
   intro U hU r hr
   rcases Regular.innerRegular hU r hr with ⟨K, KU, K_comp, hK⟩
-  rcases closableCompactSubsetOpen K U K_comp hU KU with ⟨L, L_closed, KL, LU⟩
-  exact ⟨L, LU, L_closed, hK.trans_le (measure_mono KL)⟩
+  exact ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
+    hK.trans_le (measure_mono subset_closure)⟩
 #align measure_theory.measure.regular.weakly_regular MeasureTheory.Measure.Regular.weaklyRegular
-
-
 
 namespace OuterRegular
 
@@ -600,8 +598,8 @@ lemma innerRegularWRT_isClosed_isOpen [ClosableCompactSubsetOpenSpace α] [Opens
     [h : InnerRegular μ] : InnerRegularWRT μ IsClosed IsOpen := by
   intro U hU r hr
   rcases h.innerRegular hU.measurableSet r hr with ⟨K, KU, K_comp, hK⟩
-  rcases closableCompactSubsetOpen K U K_comp hU KU with ⟨L, L_closed, KL, LU⟩
-  exact ⟨L, LU, L_closed, hK.trans_le (measure_mono KL)⟩
+  exact ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
+    hK.trans_le (measure_mono subset_closure)⟩
 
 end InnerRegular
 
