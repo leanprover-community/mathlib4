@@ -27,7 +27,7 @@ variable {ι R S : Type*} {F : Filter ι} [NeBot F]
 (and the filter is bounded from above and below). -/
 theorem AntitoneOn.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
     {R' : Set R} (f_decr : AntitoneOn f R') (f_cont : ContinuousAt f F.limsSup)
-    (hF : Filter.principal R' ≤ F)
+    (hF : F ≤ Filter.principal R')
     (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
     (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) :
     f F.limsSup = F.liminf f := by
@@ -78,7 +78,7 @@ theorem AntitoneOn.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R �
 
 theorem MonotoneOn.map_limsInf_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
     {R' : Set R} (f_incr : MonotoneOn f R') (f_cont : ContinuousAt f F.limsInf)
-    (hF : Filter.principal R' ≤ F)
+    (hF : F ≤ Filter.principal R')
     (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
     (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) :
     f F.limsInf = F.liminf f := by
@@ -87,7 +87,7 @@ theorem MonotoneOn.map_limsInf_of_continuousAt {F : Filter R} [NeBot F] {f : R �
 
 theorem MonotoneOn.map_liminf_of_continuousAt {F : Filter ι} [NeBot F]
     {f : R → S} {R' : Set R} (f_incr : MonotoneOn f R')
-    (a : ι → R) (f_cont : ContinuousAt f (F.liminf a)) (hF : Filter.principal R' ≤ F.map a)
+    (a : ι → R) (f_cont : ContinuousAt f (F.liminf a)) (hF : F.map a ≤ Filter.principal R')
     (bdd_above : F.IsBoundedUnder (· ≤ ·) a := by isBoundedDefault)
     (bdd_below : F.IsBoundedUnder (· ≥ ·) a := by isBoundedDefault) :
     f (F.liminf a) = F.liminf (f ∘ a) := by
@@ -146,6 +146,17 @@ theorem BoundedContinuousFunction.lintegral_le_edist_mul
   apply le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (bound x)))
   simp
 
+lemma ENNReal.monotoneOn_toReal : MonotoneOn ENNReal.toReal {∞}ᶜ :=
+  fun _ _ _ hy x_le_y ↦ toReal_mono hy x_le_y
+
+-- Argh. :|
+lemma Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
+  apply lipschitzWith_iff_dist_le_mul.mpr
+  intro x y
+  simp only [NNReal.coe_one, one_mul, NNReal.dist_eq, coe_toNNReal', ge_iff_le, Real.dist_eq]
+  simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
+    lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
+
 -- NOTE: I think this is the version I prefer to use, after all...
 lemma fatou_argument_integral_nonneg
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
@@ -158,27 +169,24 @@ lemma fatou_argument_integral_nonneg
   convert (ENNReal.toReal_le_toReal ?_ ?_).mpr earlier
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (eventually_of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
-    have aux : MonotoneOn ENNReal.toReal {∞}ᶜ := by sorry
-    apply (@MonotoneOn.map_liminf_of_continuousAt ℕ ℝ≥0∞ ℝ _ _ _ _ atTop _ ENNReal.toReal {∞}ᶜ aux
-              (fun i ↦ ∫⁻ (x : Ω), ENNReal.ofReal (f x) ∂(μs i)) ?_ ?_ ?_ ?_).symm
-    have lip : LipschitzWith 1 Real.toNNReal := by sorry
-    let g := BoundedContinuousFunction.comp _ lip f
+    let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
       simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
+    apply (@MonotoneOn.map_liminf_of_continuousAt ℕ ℝ≥0∞ ℝ _ _ _ _ atTop _ ENNReal.toReal {∞}ᶜ
+            ENNReal.monotoneOn_toReal
+            (fun i ↦ ∫⁻ (x : Ω), ENNReal.ofReal (f x) ∂(μs i)) ?_ ?_ ?_ ?_).symm
     · apply (NNReal.continuous_coe.comp_continuousOn ENNReal.continuousOn_toNNReal).continuousAt
-      have obs : {x : ℝ≥0∞ | x ≠ ∞} = Set.Iio ∞ := by sorry
+      have obs : {x : ℝ≥0∞ | x ≠ ∞} = Set.Iio ∞ := by
+        ext x
+        simp only [ne_eq, Set.mem_setOf_eq, Set.mem_Iio, ne_iff_lt_iff_le, le_top]
       rw [obs]
       apply Iio_mem_nhds
-      have lip : LipschitzWith 1 Real.toNNReal := by sorry
-      let g := BoundedContinuousFunction.comp _ lip f
       apply lt_of_le_of_lt (liminf_le_of_frequently_le (frequently_of_forall bound))
       exact ENNReal.coe_lt_top
-    · --rw [le_map_iff]
-      --intro s hs
-      --simp
-      --rw [principal_le_iff]
-      sorry
+    · simp only [le_principal_iff, mem_map, Set.preimage_compl, mem_atTop_sets, ge_iff_le,
+                 Set.mem_compl_iff, Set.mem_preimage, Set.mem_singleton_iff]
+      exact ⟨0, fun i _ ↦ (lt_of_le_of_lt (bound i) ENNReal.coe_lt_top).ne⟩
     · exact ⟨∞, eventually_of_forall (fun x ↦ by simp only [le_top])⟩
     · exact ⟨0, eventually_of_forall (fun x ↦ by simp only [ge_iff_le, zero_le])⟩
   · exact (f.lintegral_of_real_lt_top μ).ne
