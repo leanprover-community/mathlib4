@@ -99,7 +99,7 @@ def objPairwiseOfFamily (sf : ∀ i, F.obj (op (U i))) :
 
 /-- Given a compatible family of sections over open sets, extend it to a
   section of the functor `(Pairwise.diagram U).op ⋙ F`. -/
-def IsCompatible.section_pairwise {sf} (h : IsCompatible F U sf) :
+def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
