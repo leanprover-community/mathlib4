@@ -12,6 +12,8 @@ Let $M$ be a topological manifold (not necessarily C^n or smooth).
 * `locallyCompact_of_finiteDimensional_of_boundaryless`: If `M` is finite-dimensional, boundaryless
   and the underlying field `𝕜` is locally compact (such as ℝ, ℂ or the p-adic numbers),
   `M` is locally compact.
+* `sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryless`: In particular,
+  if `M` is also secound countable, it is sigma-compact.
 
 **TODO:**
 * adapt the argument to include manifolds with boundary; this probably requires a
@@ -72,8 +74,17 @@ lemma localCompactness_aux [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E]
 /-- A finite-dimensional manifold without boundary modelled on a locally compact field
   (such as ℝ, ℂ or the p-adic numbers) is locally compact. -/
 -- FIXME: make this an instance!
--- TODO: also allow manifolds with boundary.
 lemma Manifold.locallyCompact_of_finiteDimensional_of_boundaryless
     [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] (hI : ModelWithCorners.Boundaryless I) :
     LocallyCompactSpace M := by
   exact { local_compact_nhds := fun x n hn ↦ localCompactness_aux I hI hn }
+
+open TopologicalSpace
+/-- A finite-dimensional second-countable manifold without boundary
+  modelled on a locally compact field (such as ℝ, ℂ or the p-adic numbers) is σ-compact. -/
+-- FIXME: make this an instance!
+lemma Manifold.sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryless
+    [SecondCountableTopology M] [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E]
+  (hI : ModelWithCorners.Boundaryless I) : SigmaCompactSpace M := by
+  have : LocallyCompactSpace M := Manifold.locallyCompact_of_finiteDimensional_of_boundaryless I hI
+  apply sigmaCompactSpace_of_locally_compact_second_countable
