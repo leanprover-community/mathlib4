@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+import Mathlib.Algebra.Homology.Localization
 import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
@@ -122,5 +123,23 @@ instance IsLocalization :
       (HomologicalComplex.homotopyEquivalences _ _) :=
   Functor.IsLocalization.mk' _ _ (localization_strict_universal_property _ _)
   (localization_strict_universal_property _ _)
+
+section
+
+variable [CategoryWithHomology C]
+    [(HomologicalComplex.qis C (ComplexShape.up ℤ)).HasLocalization]
+
+instance : (ComplexShape.up ℤ).QFactorsThroughHomotopy C where
+  factors {K L f g} hfg := by
+    have h := HomologicalComplexUpToQis.Q_inverts_homotopyEquivalences C (ComplexShape.up ℤ)
+    rw [CochainComplex.homotopyEquivalences_isInvertedBy_iff] at h
+    exact h _ _ hfg
+
+example  :
+    HomologicalComplexUpToQis.Qh.IsLocalization
+      (HomotopyCategory.qis C (ComplexShape.up ℤ)) :=
+  inferInstance
+
+end
 
 end HomotopyCategory

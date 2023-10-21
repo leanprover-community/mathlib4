@@ -61,6 +61,13 @@ variable (C : Type*) [Category C] {ι : Type*} (c : ComplexShape ι) [Preadditiv
   [CategoryWithHomology C] [(HomologicalComplex.qis C c).HasLocalization]
   [c.QFactorsThroughHomotopy C]
 
+lemma HomologicalComplexUpToQis.Q_inverts_homotopyEquivalences :
+    (HomologicalComplex.homotopyEquivalences C c).IsInvertedBy
+      HomologicalComplexUpToQis.Q :=
+  MorphismProperty.IsInvertedBy.of_subset _ _ _
+    (Localization.inverts Q (HomologicalComplex.qis C c))
+    (HomologicalComplex.homotopyEquivalences_subset_qis C c)
+
 namespace HomotopyCategory
 
 def qis : MorphismProperty (HomotopyCategory C c) :=
@@ -127,6 +134,8 @@ section
 variable [(HomotopyCategory.quotient C c).IsLocalization
   (HomologicalComplex.homotopyEquivalences C c)]
 
+-- this shall apply to cochain complexes because of the main result in
+-- `Algebra.Homology.HomotopyCategory.Cylinder`
 instance : HomologicalComplexUpToQis.Qh.IsLocalization (HomotopyCategory.qis C c) :=
   Functor.IsLocalization.of_comp (HomotopyCategory.quotient C c)
     Qh (HomologicalComplex.homotopyEquivalences C c)
