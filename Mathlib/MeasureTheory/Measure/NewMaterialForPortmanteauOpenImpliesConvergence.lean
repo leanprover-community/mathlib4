@@ -22,6 +22,39 @@ variable {ι R S : Type*} {F : Filter ι} [NeBot F]
   [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
   [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
 
+--#check Antitone.map_sInf_of_continuousAt'
+
+/-- A function that is continuous at the supremum of a nonempty set and monotone on the set
+sends this supremum to the supremum of the image of this set. -/
+theorem MonotoneOn.map_sSup_of_continuousAt' {α β : Type*}
+  [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+  [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β]
+  {f : α → β} {A A' : Set α} (hA : A ⊆ A') (Cf : ContinuousAt f (sSup A))
+  (Mf : MonotoneOn f A') (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by bddDefault) :
+    f (sSup A) = sSup (f '' A) :=
+  --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
+  .symm <| ((isLUB_csSup A_nonemp A_bdd).isLUB_of_tendsto (Mf.mono hA) A_nonemp <|
+    Cf.mono_left inf_le_left).csSup_eq (A_nonemp.image f)
+
+/-- A function that is continuous at the supremum of a nonempty set and monotone on the set
+sends this supremum to the supremum of the image of this set. -/
+theorem AntitoneOn.map_sInf_of_continuousAt' {α β : Type*}
+  [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+  [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β]
+  {f : α → β} {A A' : Set α} (hA : A ⊆ A') (Cf : ContinuousAt f (sInf A))
+  (Af : AntitoneOn f A') (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by bddDefault) :
+    f (sInf A) = sSup (f '' A) := by
+  sorry
+
+theorem AntitoneOn.map_limsSup_of_continuousAt₀ {F : Filter R} [NeBot F] {f : R → S}
+    {R' : Set R} (f_decr : AntitoneOn f R') (f_cont : ContinuousAt f F.limsSup)
+    (hF : F ≤ Filter.principal R')
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    f F.limsSup = F.liminf f := by
+  --simp only [le_principal_iff] at hF
+  sorry
+
 /-- An antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsSup` to the `Filter.liminf` of the image if the function is continuous at the `limsSup`
 (and the filter is bounded from above and below). -/
@@ -31,7 +64,58 @@ theorem AntitoneOn.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R �
     (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
     (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) :
     f F.limsSup = F.liminf f := by
-  sorry
+  have cobdd : F.IsCobounded (· ≤ ·) := bdd_below.isCobounded_flip
+  apply le_antisymm
+  · rw [limsSup]
+    have := @AntitoneOn.map_sInf_of_continuousAt' R S _ _ _ _ _ _ _ f
+            {a | ∀ᶠ (n : R) in F, n ≤ a} R' _ f_cont f_decr bdd_above cobdd
+    rw [this]
+    --rw [limsSup, f_decr.map_sInf_of_continuousAt' f_cont bdd_above cobdd]
+    apply le_of_forall_lt
+    intro c hc
+    simp only [liminf, limsInf, eventually_map] at hc ⊢
+    obtain ⟨d, hd, h'd⟩ :=
+      exists_lt_of_lt_csSup (bdd_above.recOn fun x hx ↦ ⟨f x, Set.mem_image_of_mem f hx⟩) hc
+    apply lt_csSup_of_lt ?_ ?_ h'd
+    · --exact (Antitone.isBoundedUnder_le_comp f_decr bdd_below).isCoboundedUnder_flip
+      sorry
+    · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
+      filter_upwards [he] with x hx --using (fe_eq_d.symm ▸ f_decr hx)
+      sorry
+  · by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
+    · rcases h' with ⟨c, c_lt, hc⟩
+      have B : ∃ᶠ n in F, F.limsSup ≤ n := by
+        apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
+        intro x hx
+        by_contra'
+        have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
+        simp only [hc, Set.not_nonempty_empty] at this
+      --apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
+      --exact (B.mono fun x hx ↦ f_decr hx)
+      sorry
+    push_neg at h'
+    by_contra' H
+    have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
+      --lt_irrefl (F.liminf f) <| lt_of_le_of_lt
+      --  (liminf_le_of_frequently_le (frequently_of_forall (fun r ↦ f_decr (maybe_bot r)))
+      --    (bdd_above.isBoundedUnder f_decr)) H
+      sorry
+    obtain ⟨l, l_lt, h'l⟩ : ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f }
+    · apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
+      simpa [IsBot] using not_bot
+    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
+      contrapose! h'
+      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
+    have B : F.liminf f ≤ f m := by
+      apply liminf_le_of_frequently_le _ _
+      · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
+        --exact fun x hx ↦ f_decr hx.le
+        sorry
+      · --exact IsBounded.isBoundedUnder f_decr bdd_above
+        sorry
+    have I : f m < F.liminf f := h'l ⟨l_m, m_lt.le⟩
+    exact lt_irrefl _ (B.trans_lt I)
+
 /-
   have cobdd : F.IsCobounded (· ≤ ·) := bdd_below.isCobounded_flip
   apply le_antisymm
@@ -254,9 +338,8 @@ lemma ProbabilityMeasure.tendsto_iff_forall_nonneg_integral_tendsto {γ : Type _
   simp_rw [fx_eq]
   convert tendsto_add.comp (Tendsto.prod_mk_nhds key (@tendsto_const_nhds _ _ _ (-‖f‖) F)) <;> simp
 
-theorem le_liminf_open_implies_convergence
-  {ι : Type*} {μ : ProbabilityMeasure Ω} {μs : ℕ → ProbabilityMeasure Ω}
-  (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
+theorem le_liminf_open_implies_convergence {μ : ProbabilityMeasure Ω}
+  {μs : ℕ → ProbabilityMeasure Ω} (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
   refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
   apply reduction_to_liminf
