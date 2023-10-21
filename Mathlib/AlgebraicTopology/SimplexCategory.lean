@@ -261,7 +261,8 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.
   ext ⟨k, hk⟩
   simp at H hk
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
-  simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
+  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
+    Fin.coe_castLT, dite_eq_ite, Fin.coe_castSucc, Fin.val_succ]
   split_ifs
   all_goals try simp <;> linarith
   all_goals cases k <;> simp at * <;> linarith
@@ -275,7 +276,8 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   ext ⟨j, hj⟩
   simp at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
-  simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
+  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
+    Fin.coe_castLT, dite_eq_ite]
   split_ifs
   any_goals simp
   all_goals linarith
@@ -314,7 +316,8 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
   rcases j with ⟨j, hj⟩
   simp at H hk
   dsimp [δ, σ, Fin.predAbove, Fin.succAbove]
-  simp [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.dite_val]
+  simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred, ge_iff_le,
+    Fin.coe_castLT, dite_eq_ite, Fin.coe_castSucc, Fin.val_succ]
   split_ifs
   all_goals try simp <;> linarith
   all_goals cases k <;> simp at * <;> linarith
@@ -339,7 +342,8 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   rcases j with ⟨j, hj⟩
   simp at H hk
   dsimp [σ, Fin.predAbove]
-  simp [Fin.lt_iff_val_lt_val, Fin.ite_val]
+  simp only [Fin.lt_iff_val_lt_val, Fin.ite_val, Fin.coe_pred, ge_iff_le, dite_eq_ite,
+    Fin.coe_castLT]
   split_ifs
   all_goals try linarith
   all_goals cases k <;> simp at *; linarith

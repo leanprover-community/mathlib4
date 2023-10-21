@@ -264,7 +264,8 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
         simp only [length] at hm
         have specializedIH := @IH n ls (Nat.lt_of_succ_lt_succ hm)
         simp only [le_of_lt (Nat.lt_of_succ_lt_succ hm), min_eq_left] at specializedIH
-        simp [le_of_lt hm, specializedIH, true_and_iff, min_eq_left, eq_self_iff_true, length, take]
+        simp only [take, length, ge_iff_le, le_of_lt hm, min_eq_left, take_cons_succ, cons.injEq,
+          specializedIH, true_and]
         exact ⟨Nat.succ_le_succ, Nat.le_of_succ_le_succ⟩
 #align list.prefix_take_le_iff List.prefix_take_le_iff
 

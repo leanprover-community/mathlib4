@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.RunCmd
+import Aesop
 
 set_option autoImplicit true
 /--
@@ -89,3 +90,18 @@ example : True := by
     run_tac do guard (← IO.getEnv "CI").isSome
     simp says trivial
   trivial
+
+-- Check that verification works even with multi-line suggestions, as produced by aesop
+def P : Prop := True
+def Q : Prop := True
+@[simp]
+def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
+@[simp]
+def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
+/--
+info: Try this: aesop? says simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+    very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+-/
+#guard_msgs in
+example : P := by
+  aesop? says
