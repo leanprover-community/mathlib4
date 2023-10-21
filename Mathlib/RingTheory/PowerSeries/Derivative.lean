@@ -107,8 +107,8 @@ variable {R}
 
 @[simp] theorem fDerivative_C (r : R) : d⁄dX R (C R r) = 0 := fDerivativeFun_C r
 
-@[simp] theorem coeff_fDerivative (f : R⟦X⟧) (n : ℕ) : coeff R n (d⁄dX R f) = coeff R (n + 1) f * (n + 1) :=
-  coeff_fDerivativeFun f n
+@[simp] theorem coeff_fDerivative (f : R⟦X⟧) (n : ℕ) :
+    coeff R n (d⁄dX R f) = coeff R (n + 1) f * (n + 1) := coeff_fDerivativeFun f n
 
 theorem fDerivative_coe (f : R[X]) : d⁄dX R f = derivative f := fDerivativeFun_coe f
 
@@ -120,7 +120,8 @@ theorem fDerivative_coe (f : R[X]) : d⁄dX R f = derivative f := fDerivativeFun
   · rw [h, cast_zero, zero_add]
   · rfl
 
-theorem trunc_fDerivative (f : R⟦X⟧) (n : ℕ) : trunc n (d⁄dX R f) = derivative (trunc (n + 1) f) := by
+theorem trunc_fDerivative (f : R⟦X⟧) (n : ℕ) :
+    trunc n (d⁄dX R f) = derivative (trunc (n + 1) f) := by
   apply Polynomial.coe_inj.mp
   rw [←fDerivative_coe]
   apply trunc_fDerivativeFun
