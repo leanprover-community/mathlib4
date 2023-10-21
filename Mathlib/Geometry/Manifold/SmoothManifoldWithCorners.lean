@@ -1004,7 +1004,7 @@ theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.ex
 -- like `e.extend_left_inv' I`, but stated in terms of images
 lemma extend_left_inv' {t : Set M} {e : LocalHomeomorph M H} (ht: t ⊆ e.source) :
     ((e.extend I).symm ∘ (e.extend I)) '' t = t :=
-  Set.image_congr'' (fun _ hx ↦ e.extend_left_inv _ (ht hx))
+  image_congr'' (fun _ hx ↦ e.extend_left_inv _ (ht hx))
 
 theorem extend_source_mem_nhds {x : M} (h : x ∈ f.source) : (f.extend I).source ∈ 𝓝 x :=
   (isOpen_extend_source f I).mem_nhds <| by rwa [f.extend_source I]
@@ -1033,7 +1033,7 @@ lemma extend_isOpenMapOn_source [I.Boundaryless] {e : LocalHomeomorph M H}
 
 /-- If I has no boundary, `(e.extend I).symm` is an open map on its source. -/
 lemma extend_symm_isOpenMapOn_target [I.Boundaryless] {e : LocalHomeomorph M H} {t : Set E}
-   (ht : IsOpen t) (hte : t ⊆ (e.extend I).target) : IsOpen ((e.extend I).symm '' t) := by
+    (ht : IsOpen t) (hte : t ⊆ (e.extend I).target) : IsOpen ((e.extend I).symm '' t) := by
   have h : IsOpen (I.invFun '' t) := I.toOpenEmbedding_symm.open_iff_image_open.mp ht
   have : (e.extend I).target = I.symm ⁻¹' e.target := by
     let r := e.extend_target I
