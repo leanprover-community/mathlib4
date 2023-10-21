@@ -136,6 +136,16 @@ lemma fatou_argument_lintegral
                 (fun s t hst ↦ measure_mono (fun ω hω ↦ lt_of_le_of_lt hst hω)))
   rfl
 
+theorem BoundedContinuousFunction.lintegral_le_edist_mul
+  {μ : Measure Ω} [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ≥0) :
+    (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) := by
+  have bound : ∀ x, f x ≤ nndist 0 f := by
+    intro x
+    convert nndist_coe_le_nndist x
+    simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
+  apply le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (bound x)))
+  simp
+
 -- NOTE: I think this is the version I prefer to use, after all...
 lemma fatou_argument_integral_nonneg
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
@@ -151,9 +161,24 @@ lemma fatou_argument_integral_nonneg
     have aux : MonotoneOn ENNReal.toReal {∞}ᶜ := by sorry
     apply (@MonotoneOn.map_liminf_of_continuousAt ℕ ℝ≥0∞ ℝ _ _ _ _ atTop _ ENNReal.toReal {∞}ᶜ aux
               (fun i ↦ ∫⁻ (x : Ω), ENNReal.ofReal (f x) ∂(μs i)) ?_ ?_ ?_ ?_).symm
-    · --have := ENNReal.continuousOn_toNNReal
+    have lip : LipschitzWith 1 Real.toNNReal := by sorry
+    let g := BoundedContinuousFunction.comp _ lip f
+    have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
+      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
+            BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
+    · apply (NNReal.continuous_coe.comp_continuousOn ENNReal.continuousOn_toNNReal).continuousAt
+      have obs : {x : ℝ≥0∞ | x ≠ ∞} = Set.Iio ∞ := by sorry
+      rw [obs]
+      apply Iio_mem_nhds
+      have lip : LipschitzWith 1 Real.toNNReal := by sorry
+      let g := BoundedContinuousFunction.comp _ lip f
+      apply lt_of_le_of_lt (liminf_le_of_frequently_le (frequently_of_forall bound))
+      exact ENNReal.coe_lt_top
+    · --rw [le_map_iff]
+      --intro s hs
+      --simp
+      --rw [principal_le_iff]
       sorry
-    · sorry
     · exact ⟨∞, eventually_of_forall (fun x ↦ by simp only [le_top])⟩
     · exact ⟨0, eventually_of_forall (fun x ↦ by simp only [ge_iff_le, zero_le])⟩
   · exact (f.lintegral_of_real_lt_top μ).ne
