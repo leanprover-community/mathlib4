@@ -63,6 +63,13 @@ theorem sub_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n
 theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := by simp [*]
 #align cancel_factors.neg_subst CancelDenoms.neg_subst
 
+theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
+    (h1 : n * e1 = t1) (h2 : l * n ^ e2 = k) : k * (e1 ^ e2) = l * t1 ^ e2 := by
+  rw [←h2, ←h1, mul_pow, mul_assoc]
+
+theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
+    k * (e ⁻¹) = n := by rw [←div_eq_mul_inv, ←h3, mul_div_cancel _ h2]
+
 theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
@@ -129,6 +136,17 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
       (n, .node n t1 <| .node q .nil .nil)
     | none => (1, .node 1 .nil .nil)
   | (``Neg.neg, #[_, _, e]) => findCancelFactor e
+  | (``HPow.hPow, #[_, ℕ, _, _, e1, e2]) =>
+    match e2.nat? with
+    | some k =>
+      let (v1, t1) := findCancelFactor e1
+      let n := v1 ^ k
+      (n, .node n t1 <| .node k .nil .nil)
+    | none => (1, .node 1 .nil .nil)
+  | (``Inv.inv, #[_, _, e]) =>
+    match e.nat? with
+    | some q => (q, .node q .nil <| .node q .nil .nil)
+    | none => (1, .node 1 .nil .nil)
   | _ => (1, .node 1 .nil .nil)
 
 def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
@@ -145,6 +163,7 @@ by `findCancelFactor`.
 partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
     (e : Q($α)) : MetaM Expr := do
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
+  trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
   | .node _ lhs rhs, ~q($e1 + $e2) => do
     let v1 ← mkProdPrf α sα v lhs e1
@@ -155,6 +174,7 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
     let v2 ← mkProdPrf α sα v rhs e2
     mkAppM ``CancelDenoms.sub_subst #[v1, v2]
   | .node _ lhs@(.node ln _ _) rhs, ~q($e1 * $e2) => do
+    trace[CancelDenoms] "recursing into mul"
     let v1 ← mkProdPrf α sα ln lhs e1
     let v2 ← mkProdPrf α sα (v / ln) rhs e2
     have ln' := (← mkOfNat α amwo <| mkRawNatLit ln).1
@@ -177,6 +197,24 @@ partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree 
   | t, ~q(-$e) => do
     let v ← mkProdPrf α sα v t e
     mkAppM ``CancelDenoms.neg_subst #[v]
+  | .node _ lhs@(.node k1 _ _) (.node k2 .nil .nil), ~q($e1 ^ $e2) => do
+    let v1 ← mkProdPrf α sα k1 lhs e1
+    have l := v / (k1 ^ k2)
+    have k1' := (← mkOfNat α amwo <| mkRawNatLit k1).1
+    have v' := (← mkOfNat α amwo <| mkRawNatLit v).1
+    have l' := (← mkOfNat α amwo <| mkRawNatLit l).1
+    let ntp : Q(Prop) := q($l' * $k1' ^ $e2 = $v')
+    let npf ← synthesizeUsingNormNum ntp
+    mkAppM ``CancelDenoms.pow_subst #[v1, npf]
+  | .node _ .nil (.node rn _ _), ~q($e ⁻¹) => do
+    have rn' := (← mkOfNat α amwo <| mkRawNatLit rn).1
+    have vrn' := (← mkOfNat α amwo <| mkRawNatLit <| v / rn).1
+    have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
+    let ntp : Q(Prop) := q($rn' ≠ 0)
+    let npf ← synthesizeUsingNormNum ntp
+    let ntp2 : Q(Prop) := q($vrn' * $rn' = $v')
+    let npf2 ← synthesizeUsingNormNum ntp2
+    mkAppM ``CancelDenoms.inv_subst #[npf, npf2]
   | _, _ => do
     have v' := (← mkOfNat α amwo <| mkRawNatLit <| v).1
     let e' ← mkAppM ``HMul.hMul #[v', e]
