@@ -422,7 +422,7 @@ open FinsetFamily
   ext u
   simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
-  · rwa [←inter_distrib_right, inter_eq_right_iff_subset]
+  · rwa [←inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact union_subset_union hv hw
 
@@ -430,7 +430,7 @@ open FinsetFamily
   ext u
   simp only [mem_infs, mem_powerset, le_eq_subset, inf_eq_inter]
   refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
-  · rwa [←inter_inter_distrib_right, inter_eq_right_iff_subset]
+  · rwa [←inter_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
     exact inter_subset_inter hv hw
 

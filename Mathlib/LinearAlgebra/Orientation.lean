@@ -201,7 +201,7 @@ theorem orientation_unitsSMul [Nontrivial R] (e : Basis ι R M) (w : ι → Unit
   rw [Basis.orientation, Basis.orientation, smul_rayOfNeZero, ray_eq_iff,
     e.det.eq_smul_basis_det (e.unitsSMul w), det_unitsSMul_self, Units.smul_def, smul_smul]
   norm_cast
-  simp
+  simp only [mul_left_inv, Units.val_one, one_smul]
   exact SameRay.rfl
 #align basis.orientation_units_smul Basis.orientation_unitsSMul
 
@@ -344,7 +344,8 @@ theorem det_adjustToOrientation [Nontrivial R] [Nonempty ι] (e : Basis ι R M)
   · left
     rfl
   · right
-    simp [e.det_unitsSMul, ← Units.coe_prod, Finset.prod_update_of_mem]
+    simp only [e.det_unitsSMul, ne_eq, Finset.mem_univ, Finset.prod_update_of_mem, not_true,
+      Pi.one_apply, Finset.prod_const_one, mul_one, inv_neg', inv_one, Units.val_neg, Units.val_one]
     ext
     simp
 #align basis.det_adjust_to_orientation Basis.det_adjustToOrientation
