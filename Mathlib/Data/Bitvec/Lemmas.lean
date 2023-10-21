@@ -35,7 +35,7 @@ theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   ⟨(match x, y, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
-theorem toNat_lt_toNat {x y : BitVec w} : (x.toNat < y.toNat) = (x < y) := rfl
+theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y := rfl
 
 @[simp]
 lemma ofNat_eq_mod_two_pow (n : Nat) : (BitVec.ofNat w n).toNat = n % 2^w := rfl
