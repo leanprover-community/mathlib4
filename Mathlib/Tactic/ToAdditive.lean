@@ -15,8 +15,8 @@ import Std.Data.Option.Basic
 import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
-import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
-import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
+import Std.Tactic.Relation.Rfl -- just to copy the attribute
+import Std.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -912,10 +912,10 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
         src} and the target declaration {tgt}."
     warnAttr stx Std.Tactic.Ext.extExtension
-      (fun b n => (b.tree.elements.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
-    warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
-    warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
+      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
+    warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Std.Tactic.symmExt (·.values.contains ·) thisAttr `symm src tgt
+    warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times

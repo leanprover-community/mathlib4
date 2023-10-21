@@ -6,6 +6,8 @@ Authors: Koundinya Vajjha, Thomas Browning
 
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Data.Int.Log
+
+
 /-!
 
 The nth Harmonic number is not an integer. We formalize the proof using
@@ -35,7 +37,7 @@ lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
 
 /-- The 2-adic valuation of the n-th harmonic number is the negative of the logarithm
     of n. -/
-theorem padicValRat_two_harmonic {n : ℕ} : padicValRat 2 (harmonic n) = -Nat.log 2 n := by
+theorem padicValRat_two_harmonic (n : ℕ) : padicValRat 2 (harmonic n) = -Nat.log 2 n := by
   induction' n with n ih
   · simp
   · rcases eq_or_ne n 0 with rfl | hn
@@ -48,6 +50,12 @@ theorem padicValRat_two_harmonic {n : ℕ} : padicValRat 2 (harmonic n) = -Nat.l
         (harmonic_pos hn).ne' (inv_ne_zero (Nat.cast_ne_zero.mpr n.succ_ne_zero)) key, ih,
         padicValRat.inv, padicValRat.of_nat, min_neg_neg, neg_inj, ← Nat.cast_max, Nat.cast_inj]
     exact Nat.max_log_padicValNat_succ_eq_log_succ n
+
+/-- The 2-adic norm of the n-th harmonic number is 2 raised to the logarithm of n in base 2. -/
+lemma padicNorm_two_harmonic {n : ℕ} (hn : n ≠ 0) :
+    ‖(harmonic n : ℚ_[2])‖ = 2 ^ (Nat.log 2 n) := by
+  rw [padicNormE.eq_padicNorm, padicNorm.eq_zpow_of_nonzero (harmonic_pos hn).ne',
+    padicValRat_two_harmonic, neg_neg, zpow_coe_nat, Rat.cast_pow, Rat.cast_coe_nat, Nat.cast_ofNat]
 
 /-- The n-th harmonic number is not an integer for n ≥ 2. -/
 theorem harmonic_not_int {n : ℕ} (h : 2 ≤ n) : ¬ (harmonic n).isInt := by

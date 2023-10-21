@@ -426,7 +426,7 @@ theorem dvd_of_mem_factorization {n p : ℕ} (h : p ∈ n.factorization.support)
 theorem factorization_lt {n : ℕ} (p : ℕ) (hn : n ≠ 0) : n.factorization p < n := by
   by_cases pp : p.Prime
   case neg =>
-    simp [factorization_eq_zero_of_non_prime n pp]
+    simp only [factorization_eq_zero_of_non_prime n pp]
     exact hn.bot_lt
   rw [← pow_lt_iff_lt_right pp.two_le]
   apply lt_of_le_of_lt (ord_proj_le p hn)
