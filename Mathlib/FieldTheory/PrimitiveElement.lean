@@ -119,11 +119,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
       have α_in_Fγ : α ∈ F⟮γ⟯ := by
         rw [← add_sub_cancel α (c • β)]
         exact F⟮γ⟯.sub_mem (mem_adjoin_simple_self F γ) (F⟮γ⟯.toSubalgebra.smul_mem β_in_Fγ c)
-      exact fun x hx => by
-        -- Porting note: was `by cases hx <;> cases hx <;> cases hx <;> assumption`
-        cases' hx with hx hx
-        · rwa [← hx] at α_in_Fγ
-        · cases hx; norm_cast
+      rintro x (rfl | rfl) <;> assumption
     · rw [adjoin_simple_le_iff]
       have α_in_Fαβ : α ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert α {β})
       have β_in_Fαβ : β ∈ F⟮α, β⟯ := subset_adjoin F {α, β} (Set.mem_insert_of_mem α rfl)
