@@ -211,7 +211,7 @@ theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
   -- Porting note: was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
-  simp [image, or_imp]
+  simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · obtain ⟨hx, rfl|hy⟩ := h
     · exact Or.inl ⟨x, hx, rfl, rfl⟩
@@ -955,7 +955,7 @@ theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
     f.piCongrLeft α ⁻¹' univ.pi t = univ.pi fun i => t (f i) := by
   simpa [f.surjective.range_eq] using piCongrLeft_preimage_pi f univ t
 
-theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type _) (t : ∀ i, Set (π i)) :
+theorem sumPiEquivProdPi_symm_preimage_univ_pi (π : ι ⊕ ι' → Type*) (t : ∀ i, Set (π i)) :
     (sumPiEquivProdPi π).symm ⁻¹' univ.pi t =
     univ.pi (fun i => t (.inl i)) ×ˢ univ.pi fun i => t (.inr i) := by
   ext

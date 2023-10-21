@@ -1246,14 +1246,6 @@ section Ring
 
 variable [Ring R] {p q r : R[X]}
 
-theorem C_neg : C (-a) = -C a :=
-  RingHom.map_neg C a
-#align polynomial.C_neg Polynomial.C_neg
-
-theorem C_sub : C (a - b) = C a - C b :=
-  RingHom.map_sub C a b
-#align polynomial.C_sub Polynomial.C_sub
-
 @[simp]
 protected theorem map_sub {S} [Ring S] (f : R →+* S) : (p - q).map f = p.map f - q.map f :=
   (mapRingHom f).map_sub p q

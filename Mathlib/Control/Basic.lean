@@ -59,8 +59,8 @@ theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
 @[functor_norm]
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
-  simp [← pure_seq]
-  simp [seq_assoc, ← comp_map, (· ∘ ·)]
+  simp only [← pure_seq]
+  simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
   simp [pure_seq]
 #align seq_map_assoc seq_map_assoc
 
