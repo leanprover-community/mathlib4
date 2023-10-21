@@ -530,7 +530,7 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     simp only [Cofork.π_ofπ, comp_id]
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
   have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
-      (by rw [hg'] ; dsimp ; infer_instance) (isZero_zero _)
+      (by rw [hg']; dsimp; infer_instance) (isZero_zero _)
   exact
     { Q := S.X₃
       H := 0
