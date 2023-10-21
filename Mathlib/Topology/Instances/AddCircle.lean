@@ -479,7 +479,7 @@ theorem finite_setOf_add_order_eq {n : ℕ} (hn : 0 < n) :
 theorem finite_torsion {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | n • u = 0 }.Finite := by
   convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))
-  simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]; rfl
+  simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]
 
 end FiniteOrderPoints
 
