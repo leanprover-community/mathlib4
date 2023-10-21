@@ -13,8 +13,6 @@ import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.Separation
-import Mathlib.Tactic.Widget.Conv
-import Mathlib.Tactic.Widget.Congrm
 
 /-!
 
