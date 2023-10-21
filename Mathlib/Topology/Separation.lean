@@ -1605,40 +1605,6 @@ theorem hasBasis_opens_closure (a : α) : (𝓝 a).HasBasis (fun s => a ∈ s �
   (nhds_basis_opens a).nhds_closure
 #align has_basis_opens_closure hasBasis_opens_closure
 
-/-- In a (possibly non-Hausdorff) regular space, if a compact set `s` is contained in an
-open set `u`, then its closure is also contained in `u`. -/
-theorem IsCompact.closure_subset_of_isOpen
-    {u : Set α} (hs : IsCompact s) (hu : IsOpen u) (h : s ⊆ u) : closure s ⊆ u := by
-  obtain ⟨F, sF, F_closed, Fu⟩ : ∃ F, s ⊆ F ∧ IsClosed F ∧ F ⊆ u := by
-    apply hs.induction_on (p := fun t ↦ ∃ F, t ⊆ F ∧ IsClosed F ∧ F ⊆ u)
-    · exact ⟨∅, by simp⟩
-    · intro t' t ht't ⟨F, tF, F_closed, Fu⟩
-      exact ⟨F, ht't.trans tF, F_closed, Fu⟩
-    · intro t t' ⟨F, tF, F_closed, Fu⟩ ⟨F', t'F', F'_closed, F'u⟩
-      exact ⟨F ∪ F', union_subset_union tF t'F', F_closed.union F'_closed, union_subset Fu F'u⟩
-    · intro x hx
-      rcases exists_mem_nhds_isClosed_subset (hu.mem_nhds (h hx)) with ⟨F, F_mem, F_closed, Fu⟩
-      exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
-  exact (closure_minimal sF F_closed).trans Fu
-
-/-- In a (possibly non-Hausdorff) regular locally compact space, for every containment `K ⊆ U`
-  of a compact set `K` in an open set `U`, there is a compact closed neighborhood `L` such
-  that `K ⊆ L ⊆ U`: equivalently, there is a compact closed set `L` such that `K ⊆ interior L`
-  and `L ⊆ U`. -/
-theorem exists_compact_closed_between [LocallyCompactSpace α] {K U : Set α} (hK : IsCompact K)
-    (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U := by
-  rcases exists_compact_between hK hU h_KU with ⟨L, L_comp, KL, LU⟩
-  rcases exists_compact_between hK isOpen_interior KL with ⟨M, M_comp, KM, ML⟩
-  refine ⟨closure M, ?_, isClosed_closure, ?_, ?_⟩
-  · have : closure M ∩ L = closure M := by
-      apply inter_eq_self_of_subset_left
-      exact (M_comp.closure_subset_of_isOpen isOpen_interior ML).trans interior_subset
-    rw [← this]
-    apply L_comp.inter_left isClosed_closure
-  · exact KM.trans (interior_mono subset_closure)
-  · apply M_comp.closure_subset_of_isOpen hU
-    exact ML.trans (interior_subset.trans LU)
-
 theorem TopologicalSpace.IsTopologicalBasis.nhds_basis_closure {B : Set (Set α)}
     (hB : IsTopologicalBasis B) (a : α) :
     (𝓝 a).HasBasis (fun s : Set α => a ∈ s ∧ s ∈ B) closure := by
@@ -1726,21 +1692,55 @@ end RegularSpace
 
 section ClosableCompactSubsetOpenSpace
 
-/-- A class of topological spaces in which, given a compact set included inside an open set, there
-exists a closed set inbetween. Satisfied notably for T2 spaces and regular spaces, and useful
+/-- A class of topological spaces in which, given a compact set included inside an open set, then
+the closure of the compact set is also included in the open set.
+Satisfied notably for T2 spaces and regular spaces, and useful
 when discussing classes of regular measures. -/
 class ClosableCompactSubsetOpenSpace (α : Type*) [TopologicalSpace α] : Prop :=
-  closableCompactSubsetOpen : ∀ (K U : Set α), IsCompact K → IsOpen U → K ⊆ U →
-    ∃ L, IsClosed L ∧ K ⊆ L ∧ L ⊆ U
+  closure_subset_of_isOpen : ∀ (K U : Set α), IsCompact K → IsOpen U → K ⊆ U → closure K ⊆ U
 
-export ClosableCompactSubsetOpenSpace (closableCompactSubsetOpen)
+theorem IsCompact.closure_subset_of_isOpen [ClosableCompactSubsetOpenSpace α]
+    {s : Set α} (hs : IsCompact s) {u : Set α} (hu : IsOpen u) (h : s ⊆ u) :
+    closure s ⊆ u :=
+  ClosableCompactSubsetOpenSpace.closure_subset_of_isOpen s u hs hu h
 
 instance [T2Space α] : ClosableCompactSubsetOpenSpace α :=
-  ⟨fun K _U K_comp _U_open KU ↦ ⟨K, K_comp.isClosed, Subset.rfl, KU⟩⟩
+  ⟨fun K _U K_comp _U_open KU ↦ by rwa [K_comp.isClosed.closure_eq]⟩
 
-instance [RegularSpace α] : ClosableCompactSubsetOpenSpace α :=
-  ⟨fun K _U K_comp U_open KU ↦
-    ⟨closure K, isClosed_closure, subset_closure, K_comp.closure_subset_of_isOpen U_open KU⟩⟩
+/-- In a (possibly non-Hausdorff) regular space, if a compact set `s` is contained in an
+open set `u`, then its closure is also contained in `u`. -/
+instance [RegularSpace α] : ClosableCompactSubsetOpenSpace α := by
+  refine ⟨fun s u hs hu h ↦ ?_⟩
+  obtain ⟨F, sF, F_closed, Fu⟩ : ∃ F, s ⊆ F ∧ IsClosed F ∧ F ⊆ u := by
+    apply hs.induction_on (p := fun t ↦ ∃ F, t ⊆ F ∧ IsClosed F ∧ F ⊆ u)
+    · exact ⟨∅, by simp⟩
+    · intro t' t ht't ⟨F, tF, F_closed, Fu⟩
+      exact ⟨F, ht't.trans tF, F_closed, Fu⟩
+    · intro t t' ⟨F, tF, F_closed, Fu⟩ ⟨F', t'F', F'_closed, F'u⟩
+      exact ⟨F ∪ F', union_subset_union tF t'F', F_closed.union F'_closed, union_subset Fu F'u⟩
+    · intro x hx
+      rcases exists_mem_nhds_isClosed_subset (hu.mem_nhds (h hx)) with ⟨F, F_mem, F_closed, Fu⟩
+      exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
+  exact (closure_minimal sF F_closed).trans Fu
+
+/-- In a (possibly non-Hausdorff) regular locally compact space, for every containment `K ⊆ U`
+  of a compact set `K` in an open set `U`, there is a compact closed neighborhood `L` such
+  that `K ⊆ L ⊆ U`: equivalently, there is a compact closed set `L` such that `K ⊆ interior L`
+  and `L ⊆ U`. -/
+theorem exists_compact_closed_between [LocallyCompactSpace α] [ClosableCompactSubsetOpenSpace α]
+    {K U : Set α} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
+    ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U := by
+  rcases exists_compact_between hK hU h_KU with ⟨L, L_comp, KL, LU⟩
+  rcases exists_compact_between hK isOpen_interior KL with ⟨M, M_comp, KM, ML⟩
+  refine ⟨closure M, ?_, isClosed_closure, ?_, ?_⟩
+  · have : closure M ∩ L = closure M := by
+      apply inter_eq_self_of_subset_left
+      exact (M_comp.closure_subset_of_isOpen isOpen_interior ML).trans interior_subset
+    rw [← this]
+    apply L_comp.inter_left isClosed_closure
+  · exact KM.trans (interior_mono subset_closure)
+  · apply M_comp.closure_subset_of_isOpen hU
+    exact ML.trans (interior_subset.trans LU)
 
 end ClosableCompactSubsetOpenSpace
 
