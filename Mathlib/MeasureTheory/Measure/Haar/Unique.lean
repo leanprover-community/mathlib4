@@ -317,12 +317,13 @@ instance instIsFiniteMeasureOnCompactsRestrict {X : Type*} [TopologicalSpace X] 
     IsFiniteMeasureOnCompacts (μ.restrict s) :=
   ⟨fun k hk ↦ (Measure.le_iff'.1 restrict_le_self k).trans_lt hk.measure_lt_top⟩
 
-lemma glouk {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
-    {μ : Measure X} [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
-    [LocallyCompactSpace X] [RegularSpace X]
-    {k : Set X} (hk : IsCompact k) :
-    μ k = ⨅ (f : X → ℝ) (hf : Continuous f) (h'f : HasCompactSupport f) (h''f : EqOn f 1 k)
-      (h'''f : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
+lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
+    {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
+    {k : Set X} (hk : IsCompact k)
+    (μ : Measure X) [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
+    [LocallyCompactSpace X] [RegularSpace X] :
+    μ k = ⨅ (f : X → ℝ) (_ : Continuous f) (_ : HasCompactSupport f) (_ : EqOn f 1 k)
+      (_ : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
   apply le_antisymm
   · simp only [le_iInf_iff]
     intro f f_cont f_comp fk f_nonneg
@@ -337,18 +338,17 @@ lemma glouk {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
         ∧ HasCompactSupport f ∧ ∀ (x : X), f x ∈ Icc 0 1 := exists_continuous_one_zero_of_isCompact
       hk U_open.isClosed_compl (disjoint_compl_right_iff_subset.mpr kU)
     refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, ?_⟩
+    exact (integral_le_measure (fun x _hx ↦ (f_range x).2) (fun x hx ↦ (fU hx).le)).trans_lt mu_U
 
-
-
-
-
-
-
-#exit
-
-lemma measure_mulLeftInvariant_unique_of_hasCompactSupport
-    {μ μ' : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
-    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
-    ∃ (c : ℝ≥0), ∀ (k : Set G), IsCompact k → μ' k = c * μ k := by
+@[to_additive]
+lemma measure_mulLeftInvariant_unique_of_ne_top
+    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
+    [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']:
+    ∃ (c : ℝ≥0), ∀ (s : Set G), μ s < ∞ → μ' s < ∞ → μ' s = (c • μ) s := by
   rcases integral_mulLeftInvariant_unique_of_hasCompactSupport μ μ' with ⟨c, hc⟩
-  refine ⟨c, fun k hk ↦ ?_⟩
+  refine ⟨c, fun s hs h's ↦ ?_⟩
+  have A : ∀ k, IsCompact k → μ' k = (c • μ) k := by
+    intro k hk
+    rw [hk.measure_eq_biInf_integral_hasCompactSupport μ',
+        hk.measure_eq_biInf_integral_hasCompactSupport (c • μ)]
