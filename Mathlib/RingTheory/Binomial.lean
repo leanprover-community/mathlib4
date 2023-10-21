@@ -88,7 +88,8 @@ class BinomialSemiring (R: Type u) extends Semiring R where
   /-- The multichoose function witnesses the divisibility of pochhammer n (evaluated at r) by n! -/
   multichoose : R → ℕ → R
   /-- pochhammer n (evaluated at r) is divisible by n! (witnessed by multichoose) -/
-  factorial_mul_multichoose : ∀ (r : R) (n : ℕ), n.factorial * multichoose r n = Ring.ascPochEval r n
+  factorial_mul_multichoose : ∀ (r : R) (n : ℕ),
+    n.factorial * multichoose r n = Ring.ascPochEval r n
 
 namespace Ring
 
