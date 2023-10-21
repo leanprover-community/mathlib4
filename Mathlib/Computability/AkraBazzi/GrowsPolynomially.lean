@@ -86,6 +86,46 @@ lemma _root_.induction_Icc_add {R : Type*} [LinearOrderedField R] [FloorSemiring
               _ = max (x - r) (x₀ + r) + r := by rw [max_add_add_right]
   termination_by induction_Icc_add x₀ r hr base step x hx => ⌊(x-x₀)/r⌋₊
 
+open Real in
+lemma _root_.Real.induction_Icc_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
+    (base : ∀ x ∈ Set.Icc x₀ (r * x₀), P x)
+    (step : ∀ x ≥ r * x₀, (∀ z ∈ Set.Ico x₀ x, P z) → (∀ z ∈ Set.Icc x (r * x), P z)) :
+    ∀ x ≥ x₀, P x := by
+  have hr_nonzero : r ≠ 0 := by positivity
+  have r_pos : 0 < r := by positivity
+  have hx₀r_pos : 0 < x₀ * r := by positivity
+  intro x hx
+  have x_pos : 0 < x :=
+    calc 0 < x₀ := hx₀
+         _ ≤ x := hx
+  have h₁ : P x = P (exp (log x)) := by rw [exp_log x_pos]
+  rw [h₁]
+  refine induction_Icc_add (P := P ∘ exp) (log x₀) (log r) (log_pos hr) ?base ?step _ (by gcongr)
+  case base =>
+    refine fun z hz => base (exp z) ⟨by rw [←exp_log hx₀]; exact exp_monotone hz.1, ?_⟩
+    have h₂ := exp_monotone hz.2
+    rwa [←log_mul (ne_of_lt hx₀).symm hr_nonzero, exp_log hx₀r_pos, mul_comm] at h₂
+  case step =>
+    intro y hy hyp_ind z hz
+    refine step (exp y) ?y_prop ?main (exp z) ?z_prop
+    case y_prop =>
+      have h₂ := exp_monotone hy
+      rwa [←log_mul (ne_of_lt hx₀).symm hr_nonzero, exp_log hx₀r_pos, mul_comm] at h₂
+    case main =>
+      intro z hz
+      have z_pos : 0 < z := calc
+        0 < x₀ := hx₀
+        _ ≤ z := hz.1
+      rw [←exp_log z_pos]
+      refine hyp_ind (log z) ⟨log_le_log' hx₀ hz.1, ?_⟩
+      rw [←log_exp y]
+      refine log_lt_log z_pos hz.2
+    case z_prop =>
+      refine ⟨exp_le_exp.mpr hz.1, ?_⟩
+      have := exp_le_exp.mpr hz.2
+      rwa [exp_add, exp_log r_pos, mul_comm] at this
+
+
 variable {f : ℝ → ℝ} (hf : GrowsPolynomially f)
 
 lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
