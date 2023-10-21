@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Homology.Factorizations.CM5b
 import Mathlib.Algebra.Homology.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.TruncGE
-import Mathlib.CategoryTheory.Abelian.YonedaExt
+import Mathlib.Algebra.Homology.SingleExtra
 import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 
 open CategoryTheory Category Limits Preadditive ZeroObject
