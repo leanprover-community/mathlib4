@@ -1408,7 +1408,7 @@ instance Compl.decidableMem (j : α) : Decidable (j ∈ sᶜ) :=
 
 theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = Function.update (s.piecewise f g) j (f j) := by
-  simp [piecewise]
+  simp only [piecewise, mem_insert_iff]
   ext i
   by_cases h : i = j
   · rw [h]
