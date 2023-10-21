@@ -360,10 +360,14 @@ maps and conditions which will be sufficient to show that they induce the same m
 in homology. -/
 @[ext]
 structure Homotopy where
+  /-- a morphism `S₁.X₁ ⟶ S₂.X₁` -/
   h₀ : S₁.X₁ ⟶ S₂.X₁
   h₀_f : h₀ ≫ S₂.f = 0 := by aesop_cat
+  /-- a morphism `S₁.X₂ ⟶ S₂.X₁` -/
   h₁ : S₁.X₂ ⟶ S₂.X₁
+  /-- a morphism `S₁.X₃ ⟶ S₂.X₂` -/
   h₂ : S₁.X₃ ⟶ S₂.X₂
+  /-- a morphism `S₁.X₃ ⟶ S₂.X₃` -/
   h₃ : S₁.X₃ ⟶ S₂.X₃
   g_h₃ : S₁.g ≫ h₃ = 0 := by aesop_cat
   comm₁ : φ₁.τ₁ = S₁.f ≫ h₁ + h₀ + φ₂.τ₁ := by aesop_cat
