@@ -229,7 +229,8 @@ instance [CommMonoid α] : CanonicallyOrderedAdd (SetSemiring α) where
   le_self_add := subset_union_left
   le_add_self _ _ := subset_union_right _ _
 
-instance [CommMonoid α] : OrderedCommSemiring (SetSemiring α) := inferInstance
+instance [CommMonoid α] : OrderedCommSemiring (SetSemiring α) :=
+  CanonicallyOrderedAdd.toOrderedCommSemiring
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/

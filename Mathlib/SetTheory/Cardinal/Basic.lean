@@ -686,7 +686,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
   le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
   le_add_self a _ := (zero_add a).ge.trans <| add_le_add_right (Cardinal.zero_le _) _
 
-instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} := inferInstance
+instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
+  CanonicallyOrderedAdd.toOrderedCommSemiring
 
 instance orderBot : OrderBot Cardinal.{u} := inferInstance
 

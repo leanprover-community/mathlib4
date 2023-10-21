@@ -89,7 +89,7 @@ end LinearOrderedSemifield
 
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  inferInstance
+  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 #align nonneg.linear_ordered_comm_group_with_zero Nonneg.linearOrderedCommGroupWithZero
 
 end Nonneg
