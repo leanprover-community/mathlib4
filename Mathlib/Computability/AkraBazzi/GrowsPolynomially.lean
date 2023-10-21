@@ -29,9 +29,11 @@ set_option autoImplicit false
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
-
 open Finset Real Filter Asymptotics BigOperators
 open scoped Topology
+
+@[gcongr] lemma Nat.floor_le_floor {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+  ∀ x y : α, x ≤ y → ⌊x⌋₊ ≤ ⌊y⌋₊ := Nat.floor_mono
 
 namespace AkraBazziRecurrence
 
@@ -44,43 +46,45 @@ def GrowsPolynomially (f : ℝ → ℝ) : Prop :=
 
 namespace GrowsPolynomially
 
-lemma foo {f : ℝ → ℝ} (hf : ∀ (m : ℕ), ∃ c₁ ∈ Set.Ioi 0, ∃ c₂ ∈ Set.Ioi 0,
-    ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (((1:ℝ)/2)^m * x) x, f u ∈ Set.Icc (c₁ * (f x)) (c₂ * f x)) :
-    GrowsPolynomially f := by
-  intro b hb
-  have h₁ : Tendsto (fun (n : ℕ) => ((1 : ℝ) / 2) ^ (n : ℕ)) atTop (𝓝 0) :=
-    tendsto_pow_atTop_nhds_0_of_lt_1 (by norm_num) (by norm_num)
-  have h₂ : ∀ᶠ (n : ℕ) in atTop, ((1:ℝ) / 2) ^ n ≤ b := h₁.eventually <| eventually_le_nhds hb.1
-  rw [eventually_atTop] at h₂
-  obtain ⟨m, hm⟩ := h₂
-  have hf' := hf m
-  obtain ⟨c₁, hc₁, c₂, hc₂, H⟩ := hf'
-  refine ⟨c₁, hc₁, c₂, hc₂, ?_⟩
-  filter_upwards [H, eventually_ge_atTop 0] with x hx hx_nonneg
-  intro u hu
-  have hu' : u ∈ Set.Icc (((1:ℝ)/2)^m * x) x := by
-    refine ⟨?_, hu.2⟩
-    calc ((1:ℝ)/2)^m * x ≤ b * x := by gcongr; exact hm m (le_refl _)
-                   _ ≤ u := hu.1
-  exact hx u hu'
-
-lemma of_half {f : ℝ → ℝ} (hf : ∃ c₁ ∈ Set.Ioi 0, ∃ c₂ ∈ Set.Ioi 0,
-    ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (1/2 * x) x, f u ∈ Set.Icc (c₁ * (f x)) (c₂ * f x)) :
-    GrowsPolynomially f := by
-  apply foo
-  intro m
-  induction m with
-  | zero => sorry
-  | succ m h_ind =>
-    obtain ⟨c₁, hc₁, c₂, hc₂, H⟩ := hf
-    obtain ⟨c₃, hc₃, c₄, hc₄, H'⟩ := h_ind
-    sorry
-
-lemma bar {R : Type _} [LinearOrderedRing R] {P : R → Prop} (x₀ x₁ r : R) (hr : 0 < r)
-    (base : ∀ x ∈ Set.Icc x₀ x₁, P x)
-    (step : ∀ x ≥ x₁, (∀ z ∈ Set.Icc x₀ x, P z) → (∀ z ∈ Set.Icc x (x+r), P z)) :
-    ∀ x ≥ x₀, P x := by
-  sorry
+lemma _root_.induction_Icc_add {R : Type*} [LinearOrderedField R] [FloorSemiring R] {P : R → Prop} (x₀ r : R) (hr : 0 < r)
+    (base : ∀ x ∈ Set.Icc x₀ (x₀ + r), P x)
+    (step : ∀ x ≥ x₀ + r, (∀ z ∈ Set.Ico x₀ x, P z) → (∀ z ∈ Set.Icc x (x+r), P z)) :
+    ∀ x ≥ x₀, P x :=
+  fun x hx =>
+    if hx' : x ≤ x₀ + r then
+      base x ⟨hx, hx'⟩
+    else by
+      push_neg at hx'
+      let x₂ := max (x-r) (x₀+r)
+      refine step x₂ (by simp) (fun z hz => ?_) x ?_
+      · have _ : ⌊(z-x₀)/r⌋₊ < ⌊(x-x₀)/r⌋₊ := by   -- Needed for termination checker
+          rcases le_or_lt (x₀+r) (x-r) with hmax'|hmax'
+          · have hmax : x₂ = x-r := max_eq_left hmax'
+            simp [hmax] at hz
+            calc _ ≤ ⌊(x - r - x₀)/r⌋₊ := by gcongr; exact le_of_lt hz.2
+                 _ < ⌊(x - x₀)/r⌋₊ := by
+                    simp only [sub_div, ne_eq, div_self (ne_of_lt hr).symm]
+                    rw [sub_sub, add_comm, ←sub_sub, Nat.floor_sub_one]
+                    refine Nat.sub_lt ?_ zero_lt_one
+                    calc 0 < 1 := zero_lt_one
+                         _ = ⌊(x₀ + r)/r - x₀/r⌋₊ := by simp [add_div, div_self (ne_of_lt hr).symm]
+                         _ ≤ _ := by gcongr
+          · have hmax : x₂ = x₀ + r := max_eq_right (le_of_lt hmax')
+            simp [hmax] at hz
+            calc _ = 0 := by
+                    rw [Nat.floor_eq_zero, div_lt_one hr]
+                    linarith
+                 _ < 1 := zero_lt_one
+                 _ = ⌊(x₀ + r - x₀)/r⌋₊ := by simp [div_self (ne_of_lt hr).symm]
+                 _ ≤ _ := by gcongr
+        exact induction_Icc_add x₀ r hr base step z hz.1
+      · refine ⟨?_, ?_⟩
+        · rcases max_cases (x-r) (x₀+r) with ⟨hmax, _⟩|⟨hmax, _⟩
+          · simp [hmax, le_of_lt hr]
+          · simp [hmax, le_of_lt hx']
+        · calc x ≤ max (x - r + r) (x₀ + r + r) := by simp
+              _ = max (x - r) (x₀ + r) + r := by rw [max_add_add_right]
+  termination_by induction_Icc_add x₀ r hr base step x hx => ⌊(x-x₀)/r⌋₊
 
 variable {f : ℝ → ℝ} (hf : GrowsPolynomially f)
 
@@ -121,57 +125,65 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
         refine fun b hb => this b ?_
         calc b ≥ 2 * max n₀ 2 := hb
              _ ≥ _ := by norm_num
-      refine bar (R := ℝ) (max n₀ 2) (2 * max n₀ 2) 1 zero_lt_one ?_ ?_
-      · have hn₀_le : n₀ ≤ 2 * max n₀ 2 := by
+      refine foo (R := ℝ) (max n₀ 2) 1 zero_lt_one ?base ?step
+      case base =>
+        have hn₀_le : n₀ ≤ max n₀ 2 + 1 := by
           calc n₀ ≤ max n₀ 2 := by simp
-                _ ≤ 2 * max n₀ 2 := by norm_num
-        have h₁ := hn₀ (2 * max n₀ 2) hn₀_le
-        have h₂ := hn₀ (2 * max n₀ 2) hn₀_le (max n₀ 2) ⟨by simp, by norm_num⟩
+                _ ≤ max n₀ 2 + 1 := by norm_num
+        have h₁ := hn₀ (max n₀ 2 + 1) hn₀_le
+        have h₂ := hn₀ (max n₀ 2 + 1) hn₀_le (max n₀ 2) ⟨by simp, by norm_num⟩
         rw [h₂]
         refine fun x hx => h₁ x ⟨?_, hx.2⟩
-        calc _ = max n₀ 2 := by simp
-             _ ≤ x := hx.1
-      intro x₀ hx₀ hyp_ind z hz
-      have z_nonneg : 0 ≤ z := by
-        calc 0 ≤ 2 * max n₀ 2  := by norm_num
-             _ ≤ z := hx₀.trans hz.1
-      have hc₂_z : f z = c₂ * f z := by
-        refine hn₀ z ?_ z ⟨by linarith, le_rfl⟩
-        calc n₀ ≤ max n₀ 2 := by simp
-              _ ≤ 2 * max n₀ 2 := by norm_num
-              _ ≤ x₀ := hx₀
-              _ ≤ z := hz.1
-      have hn₀' : f (1/2 * z) = c₂ * f z := by
-        refine hn₀ z ?lb (1/2 * z) ?memIcc
-        case lb =>
-          calc n₀ ≤ max n₀ 2  := by simp
-                _ ≤ 2 * max n₀ 2 := by norm_num
+        calc _ ≤ 1/2 * (max n₀ 2 + max n₀ 2) := by
+                  gcongr
+                  calc 1 ≤ 2 := by norm_num
+                       _ ≤ max n₀ 2 := by simp
+             _ ≤ _ := by
+                  rw [←two_mul]
+                  ring_nf
+                  exact hx.1
+      case step =>
+        intro x₀ hx₀ hyp_ind z hz
+        have z_nonneg : 0 ≤ z := by
+          calc 0 ≤ max n₀ 2 + 1  := by positivity
+               _ ≤ z := hx₀.trans hz.1
+        have hc₂_z : f z = c₂ * f z := by
+          refine hn₀ z ?_ z ⟨by linarith, le_rfl⟩
+          calc n₀ ≤ max n₀ 2 := by simp
+                _ ≤ max n₀ 2 + 1 := by norm_num
                 _ ≤ x₀ := hx₀
                 _ ≤ z := hz.1
-        case memIcc =>
-          refine ⟨le_refl _, ?_⟩
-          nth_rewrite 2 [←one_mul z]
-          gcongr
-          norm_num
-      have H : f (1/2 * z) = f (max n₀ 2) := by
-        refine hyp_ind (1/2 * z) ⟨?lb, ?ub⟩
-        case lb =>
-          rw [←mul_le_mul_left (a := 2) (by norm_num)]
-          calc _ ≤ x₀ := hx₀
-               _ ≤ z := hz.1
-               _ = _ := by simp
-        case ub =>
-          rw [←mul_le_mul_left (a := 2) (by norm_num)]
-          calc _ = z  := by simp
-               _ ≤ x₀ + 1 := hz.2
-               _ ≤ x₀ + x₀ := by
-                  gcongr
-                  calc 1 ≤ max n₀ 2  := by norm_num
-                       _ ≤ 2 * max n₀ 2 := by norm_num
-                       _ ≤ x₀ := hx₀
-               _ = 2 * x₀ := by rw [two_mul]
-      rw [←H, hn₀']
-      exact hc₂_z
+        have hn₀' : f (1/2 * z) = c₂ * f z := by
+          refine hn₀ z ?lb (1/2 * z) ?memIcc
+          case lb =>
+            calc n₀ ≤ max n₀ 2  := by simp
+                  _ ≤ max n₀ 2 + 1 := by norm_num
+                  _ ≤ x₀ := hx₀
+                  _ ≤ z := hz.1
+          case memIcc =>
+            refine ⟨le_refl _, ?_⟩
+            nth_rewrite 2 [←one_mul z]
+            gcongr
+            norm_num
+        have H : f (1/2 * z) = f (max n₀ 2) := by
+          refine hyp_ind (1/2 * z) ⟨?lb, ?ub⟩
+          case lb =>
+            rw [←mul_le_mul_left (a := 2) (by norm_num)]
+            calc _ ≤ x₀ := hx₀
+                 _ ≤ z := hz.1
+                 _ = _ := by simp
+          case ub =>
+            rw [←mul_le_mul_left (a := 2) (by norm_num)]
+            calc _ = z  := by simp
+                 _ ≤ x₀ + 1 := hz.2
+                 _ ≤ x₀ + x₀ := by
+                    gcongr
+                    calc 1 ≤ max n₀ 2  := by norm_num
+                         _ ≤ 2 * max n₀ 2 := by norm_num
+                         _ ≤ x₀ := hx₀
+                 _ = 2 * x₀ := by rw [two_mul]
+        rw [←H, hn₀']
+        exact hc₂_z
     obtain ⟨c, hc⟩ := hmain
     rcases le_or_lt 0 c with hpos|hneg
     case inl =>
