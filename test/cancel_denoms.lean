@@ -109,6 +109,10 @@ example (h : 5 * a^3 * b^2 = 72 * c) : (a/2)^3 * (b/3)^2 = c/5 := by
   cancel_denoms
   assumption
 
+example (h: (5 * a ^ 3 + 8)^2 = 1600 * c) : ((a / 2) ^ 3 + 1/5)^2 = c := by
+  cancel_denoms
+  assumption
+
 end
 
 section
