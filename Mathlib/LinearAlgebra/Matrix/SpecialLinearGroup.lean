@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Wen Yang
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Matrix.Transvection
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import linear_algebra.matrix.special_linear_group from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
@@ -238,6 +240,55 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   map_one' := Subtype.ext <| f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 #align matrix.special_linear_group.map Matrix.SpecialLinearGroup.map
+
+section center
+
+variable [Inhabited n]
+
+/-- `N = Fintype.card n` -/
+local notation " N " => (Nat.toPNat (Fintype.card n) (Fintype.card_pos_iff.mpr instNonempty))
+
+theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) :
+    A = A.val default default • (1 : Matrix n n R) := by
+  have hA := Subgroup.mem_center_iff.mp A.property
+  replace hA (t : TransvectionStruct n R) := hA ⟨t.toMatrix, by simp⟩
+  conv at hA =>
+    intro t
+    rw [Subtype.ext_iff]
+  exact TransvectionStruct.comm_all_TransvectionStruct hA
+
+/-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
+in which the scalars are the `n`-th roots of `1`.-/
+def center_iso_RootsOfUnity : Subgroup.center (SpecialLinearGroup n R) ≃* (rootsOfUnity N R) where
+  toFun A := rootsOfUnity.mkOfPowEq (A.val default default) <| by
+    have hA := center_scalar A
+    replace hA : det A.val.val = (A.val default default) ^ (N : ℕ) := by
+      rw [hA]
+      norm_num
+      exact rfl
+    rw [← hA, @det_coe]
+  invFun a := ⟨⟨a.val • (1 : Matrix n n R), by
+    have hN : N = Fintype.card n := by aesop
+    aesop⟩, by
+      rw [Subgroup.mem_center_iff]
+      aesop⟩
+  left_inv A := by
+    refine SetCoe.ext <| SetCoe.ext ?_
+    conv_rhs => rw [center_scalar A]
+  right_inv _ := by
+    refine SetCoe.ext <| Units.eq_iff.mp ?_
+    simp [instHSMul, SMul.smul]
+  map_mul' A B := by
+    simp only
+    have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
+    conv_lhs =>
+      arg 1
+      rw [hAB, center_scalar]
+    refine SetCoe.ext <| Units.eq_iff.mp ?_
+    have := mul_comm (B.val default default) (A.val default default)
+    simp [this]
+
+end center
 
 section cast
 
