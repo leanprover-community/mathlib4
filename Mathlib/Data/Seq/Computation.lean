@@ -214,6 +214,28 @@ theorem think_empty : (∅ : Computation α) = think ∅ :=
   dest_eq_think dest_empty
 #align computation.think_empty Computation.think_empty
 
+theorem succ_stable (s : Computation α) {a m} (hs : runFor s m = some a) :
+    runFor s (m + 1) = some a := by
+  induction m using Nat.recAux generalizing s with
+  | zero =>
+    cases s with
+    | pure a' => simpa using hs
+    | think s => simp at hs
+  | succ m hm =>
+    cases s with
+    | pure a' => simpa using hs
+    | think s =>
+      simp at hs
+      rw [runFor, dest_think, Sum.elim_inr]
+      exact hm s hs
+
+theorem le_stable (s : Computation α) {a m n} (hmn : m ≤ n) (hs : runFor s m = some a) :
+    runFor s n = some a := by
+  induction hmn with
+  | refl => exact hs
+  | @step m' _ hm' => exact succ_stable s hm'
+#align computation.le_stable Computation.le_stable
+
 section Bisim
 
 variable (R : Computation α → Computation α → Prop)
@@ -251,39 +273,29 @@ end Bisim
 -- It's more of a stretch to use ∈ for this relation, but it
 -- asserts that the computation limits to the given value.
 /-- Assertion that a `Computation` limits to a given value -/
-protected def Mem (a : α) (s : Computation α) :=
-  ∃ n, runFor s n = some a
+protected inductive Mem (a : α) : Computation α → Prop
+  | pure {c} : dest c = Sum.inl a → Computation.Mem a c
+  | think {c s} : dest c = Sum.inr s → Computation.Mem a s → Computation.Mem a c
 #align computation.mem Computation.Mem
 
 instance : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
-theorem succ_stable (s : Computation α) {a m} (hs : runFor s m = some a) :
-    runFor s (m + 1) = some a := by
-  induction m using Nat.recAux generalizing s with
-  | zero =>
-    cases s with
-    | pure a' => simpa using hs
-    | think s => simp at hs
-  | succ m hm =>
-    cases s with
-    | pure a' => simpa using hs
-    | think s =>
-      simp at hs
-      rw [runFor, dest_think, Sum.elim_inr]
-      exact hm s hs
-
-theorem le_stable (s : Computation α) {a m n} (hmn : m ≤ n) (hs : runFor s m = some a) :
-    runFor s n = some a := by
-  induction hmn with
-  | refl => exact hs
-  | @step m' _ hm' => exact succ_stable s hm'
-#align computation.le_stable Computation.le_stable
-
-theorem mem_unique {s : Computation α} {a b : α} : a ∈ s → b ∈ s → a = b
-  | ⟨m, ha⟩, ⟨n, hb⟩ => by
-    injection
-      (le_stable s (le_max_left m n) ha).symm.trans (le_stable s (le_max_right m n) hb)
+theorem mem_unique {s : Computation α} {a b : α} (ha : a ∈ s) (hb : b ∈ s) : a = b := by
+  induction ha with
+  | @pure s hs₁ =>
+    induction hb with
+    | @pure s hs₂ =>
+      rw [hs₁] at hs₂; injection hs₂
+    | @think s s' hs₂ _ _ =>
+      rw [hs₁] at hs₂; injection hs₂
+  | @think s s' hs₁ _ hs' =>
+    induction hb with
+    | @pure s hs₂ =>
+      rw [hs₁] at hs₂; injection hs₂
+    | @think s s'' hs₂ hs'' _ =>
+      rw [hs₁] at hs₂; injection hs₂ with hs₂; subst hs₂
+      exact hs' hs''
 #align computation.mem_unique Computation.mem_unique
 
 theorem Mem.left_unique : Relator.LeftUnique ((· ∈ ·) : α → Computation α → Prop) := fun _ _ _ =>
