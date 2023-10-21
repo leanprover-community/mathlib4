@@ -503,7 +503,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     simp only [Fork.ι_ofι, id_comp]
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
   have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
-      (by rw [hf'] ; infer_instance) (isZero_zero _)
+      (by rw [hf']; infer_instance) (isZero_zero _)
   exact
     { K := S.X₁
       H := 0
