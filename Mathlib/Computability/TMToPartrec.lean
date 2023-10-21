@@ -1536,7 +1536,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     simp only [Option.mem_def, TM2.stepAux, elim_main, decide_False, elim_update_main, ne_eq,
       Function.update_noteq, elim_rev, elim_update_rev, decide_True, Function.update_same,
       cond_true, cond_false]
-    convert unrev_ok using 2
+    convert unrev_ok using 1
     simp only [elim_update_rev, elim_rev, elim_main, List.reverseAux_nil, elim_update_main]
     rfl
   simp only [trNum, Num.succ, Num.succ']

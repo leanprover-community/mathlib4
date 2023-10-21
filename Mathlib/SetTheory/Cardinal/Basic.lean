@@ -1883,13 +1883,13 @@ def toPartENat : Cardinal →+ PartENat where
         rw [← Nat.cast_add, toNat_cast, Nat.cast_add]
       · simp_rw [if_neg hy, PartENat.add_top]
         contrapose! hy
-        simp only [ne_eq, ite_eq_right_iff,
-          PartENat.natCast_ne_top, not_forall, exists_prop, and_true] at hy
+        simp only [ne_eq, ite_eq_right_iff, PartENat.natCast_ne_top, not_forall, exists_prop,
+          and_true, not_false_eq_true] at hy
         exact le_add_self.trans_lt hy
     · simp_rw [if_neg hx, PartENat.top_add]
       contrapose! hx
-      simp only [ne_eq, ite_eq_right_iff,
-      PartENat.natCast_ne_top, not_forall, exists_prop, and_true] at hx
+      simp only [ne_eq, ite_eq_right_iff, PartENat.natCast_ne_top, not_forall, exists_prop,
+        and_true, not_false_eq_true] at hx
       exact le_self_add.trans_lt hx
 #align cardinal.to_part_enat Cardinal.toPartENat
 

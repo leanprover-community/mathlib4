@@ -699,7 +699,7 @@ theorem crossing_pos_eq (hab : a < b) :
       split_ifs with h₁ h₂ h₂
       · simp_rw [← sub_le_iff_le_add, hf ω]
       · refine' False.elim (h₂ _)
-        simp_all only [Set.mem_Ici]
+        simp_all only [Set.mem_Ici, not_true_eq_false]
       · refine' False.elim (h₁ _)
         simp_all only [Set.mem_Ici]
       · rfl
@@ -709,7 +709,7 @@ theorem crossing_pos_eq (hab : a < b) :
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf' ω]
     · refine' False.elim (h₂ _)
-      simp_all only [Set.mem_Iic]
+      simp_all only [Set.mem_Iic, not_true_eq_false]
     · refine' False.elim (h₁ _)
       simp_all only [Set.mem_Iic]
     · rfl

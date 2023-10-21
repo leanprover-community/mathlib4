@@ -229,10 +229,10 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
   · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil, getLast_append, ne_eq,
-  append_eq_nil, and_false, forall_true_left]
+      append_eq_nil, and_false, not_false_eq_true, forall_true_left]
     refine' ⟨fun h => _ , fun h => _⟩
-    · intro pa; simp only [pa] at h
-    · simp only [h]
+    · intro pa; simp [pa] at h
+    · simp [h]
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by

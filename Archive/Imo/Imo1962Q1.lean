@@ -132,6 +132,7 @@ Now we combine these cases to show that 153846 is the smallest solution.
 
 theorem satisfied_by_153846 : ProblemPredicate 153846 := by
   norm_num [ProblemPredicate]
+  decide
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 
 theorem no_smaller_solutions (n : ℕ) (h1 : ProblemPredicate n) : n ≥ 153846 := by

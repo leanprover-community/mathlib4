@@ -322,7 +322,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
         contrapose! H
         rcases H with ⟨s, ⟨b⟩⟩
         exact ⟨_, ⟨(b.map e.symm).reindexFinsetRange⟩⟩
-      simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg]
+      simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg, not_false_eq_true]
 #align linear_map.det_conj LinearMap.det_conj
 
 /-- If a linear map is invertible, so is its determinant. -/

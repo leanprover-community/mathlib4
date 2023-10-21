@@ -1003,7 +1003,8 @@ theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
     -- Porting note: `Ne` is required.
     simpa only [mul_one] using
       mul_le_mul_left'
-        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp only [h, mul_zero, Ne] at b0) a
+        (one_le_iff_ne_zero.2 fun h : b = 0 => by
+          simp only [h, mul_zero, Ne, not_true_eq_false] at b0) a
 #align ordinal.le_of_dvd Ordinal.le_of_dvd
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
