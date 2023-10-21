@@ -101,6 +101,7 @@ where
   map_smul'         := fDerivativeFun_smul
   map_one_eq_zero'  := fDerivativeFun_one
   leibniz'          := fDerivativeFun_mul
+/--Abbreviation of `PowerSeries.fDerivative`, the formal derivative on `R⟦X⟧`.-/
 scoped notation "d⁄dX" => fDerivative
 
 variable {R}
