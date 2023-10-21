@@ -881,10 +881,10 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
    fun {n} h => by
     cases e : Computation.get (get? s (n + 1))
     · assumption
-    have := mem_of_get_eq _ e
+    have := Computation.mem_of_get_eq _ e
     simp [get?] at this h
     cases' head_some_of_head_tail_some this with a' h'
-    have := mem_unique h' (@mem_of_get_eq _ _ _ _ h)
+    have := mem_unique h' (@Computation.mem_of_get_eq _ _ _ _ h)
     contradiction⟩
 #align stream.wseq.to_seq Stream'.WSeq.toSeq
 
@@ -966,7 +966,7 @@ theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
 #align stream.wseq.mem_cons Stream'.WSeq.mem_cons
 
 theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
-  intro h; have := h; cases' h with n e; revert s; simp [Stream'.nth]
+  intro h; have := h; cases' h with n e; revert s; simp [Stream'.get]
   induction' n with n IH <;> intro s <;> induction' s using WSeq.recOn with x s s <;>
     simp <;> intro m e <;>
     injections
