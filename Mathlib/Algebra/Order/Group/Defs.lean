@@ -35,8 +35,8 @@ class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
 
-attribute [instance 200] OrderedAddCommGroup.toAddCommGroup
-attribute [instance 150] OrderedAddCommGroup.toPartialOrder
+attribute [instance 50] OrderedAddCommGroup.toAddCommGroup
+attribute [instance 50] OrderedAddCommGroup.toPartialOrder
 
 /-- An ordered commutative group is a commutative group
 with a partial order in which multiplication is strictly monotone. -/
@@ -45,8 +45,8 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
 
-attribute [instance 200] OrderedCommGroup.toCommGroup
-attribute [instance 150] OrderedCommGroup.toPartialOrder
+attribute [instance 50] OrderedCommGroup.toCommGroup
+attribute [instance 50] OrderedCommGroup.toPartialOrder
 
 attribute [to_additive] OrderedCommGroup
 
@@ -1123,7 +1123,7 @@ class LinearOrderedAddCommGroupWithTop (α : Type u) extends SubNegMonoid α,
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
 
-attribute [instance 150] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+attribute [instance 50] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
 attribute [instance 100] LinearOrderedAddCommGroupWithTop.toLinearOrderedAddCommMonoidWithTop
 attribute [instance 50] LinearOrderedAddCommGroupWithTop.toNontrivial
 attribute [instance 0] LinearOrderedAddCommGroupWithTop.toMin

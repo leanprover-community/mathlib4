@@ -39,7 +39,7 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CommSemiring α,
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
 
-attribute [instance 150] CanonicallyOrderedCommSemiring.toCommSemiring
+attribute [instance 50] CanonicallyOrderedCommSemiring.toCommSemiring
 attribute [instance 150] CanonicallyOrderedCommSemiring.toCanonicallyOrderedAddCommMonoid
 attribute [instance 0] CanonicallyOrderedCommSemiring.toPartialOrder
 attribute [instance 0] CanonicallyOrderedCommSemiring.toOrderBot
