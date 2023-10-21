@@ -18,7 +18,7 @@ Alternatively, the yoneda presheaf functor which sends `X` to the
 presheaf of maps `A ⟶ X` for all `A : C` preserves and reflects
 monomorphisms.
 
-However, if `f : X ⟶ Y` is an epimorphism in `C` and `A : C`,
+However, if `p : X ⟶ Y` is an epimorphism in `C` and `A : C`,
 `(A ⟶ X) → (A ⟶ Y)` may fail to be surjective (unless `p` is a split
 epimorphism).
 
