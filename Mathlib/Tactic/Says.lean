@@ -19,6 +19,9 @@ The typical usage case is:
 ```
 simp? [X] says simp only [X, Y, Z]
 ```
+
+If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
+runs `X` and verifies that it still prints "Try this: Y".
 -/
 
 open Lean Elab Tactic
@@ -97,6 +100,14 @@ If you write `X says`, where `X` is a tactic that produces a "Try this: Y" messa
 then you will get a message "Try this: X says Y".
 Once you've clicked to replace `X says` with `X says Y`,
 afterwards `X says Y` will only run `Y`.
+
+The typical usage case is:
+```
+simp? [X] says simp only [X, Y, Z]
+```
+
+If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
+runs `X` and verifies that it still prints "Try this: Y".
 -/
 syntax (name := says) tactic " says" (colGt tacticSeq)? : tactic
 
