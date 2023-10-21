@@ -590,7 +590,7 @@ end Order
 lemma Nat.sum_two_pow_lt {n : ℕ} {s : Finset ℕ} (hs : ∀ k ∈ s, k < n) :
     ∑ k in s, 2 ^ k < 2 ^ n := by
   calc
-    ∑ k in s, 2 ^ k ≤ ∑ k in range n, 2 ^ k := sum_le_sum_of_subset fun k hk ↦ mem_range.2 <| hs _ hk
+    ∑ k in s, 2 ^ k ≤ ∑ k in range n, 2 ^ k := sum_le_sum_of_subset fun k hk ↦ mem_range.2 $ hs _ hk
     _ = 2 ^ n - 1 := by
         simp_rw [←one_add_one_eq_two, ←geom_sum_mul_add 1 n, mul_one, add_tsub_cancel_right]
     _ < 2 ^ n := tsub_lt_self (by positivity) zero_lt_one
