@@ -584,3 +584,13 @@ theorem geom_sum_neg_iff [LinearOrderedRing α] (hn : n ≠ 0) :
 #align geom_sum_neg_iff geom_sum_neg_iff
 
 end Order
+
+/-- If all the elements of a finset of naturals are less than `n`, then the sum of their powers of
+`2` is less than `2 ^ n`. -/
+lemma Nat.sum_two_pow_lt {n : ℕ} {s : Finset ℕ} (hs : ∀ k ∈ s, k < n) :
+    ∑ k in s, 2 ^ k < 2 ^ n := by
+  calc
+    ∑ k in s, 2 ^ k ≤ ∑ k in range n, 2 ^ k := sum_le_sum_of_subset fun k hk ↦ mem_range.2 <| hs _ hk
+    _ = 2 ^ n - 1 := by
+        simp_rw [←one_add_one_eq_two, ←geom_sum_mul_add 1 n, mul_one, add_tsub_cancel_right]
+    _ < 2 ^ n := tsub_lt_self (by positivity) zero_lt_one
