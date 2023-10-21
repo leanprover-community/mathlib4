@@ -1605,9 +1605,10 @@ theorem rankFeasibleFamily_submodular
   simp only [add_le_add_iff_right, rank_le_basisRank]
 
 theorem rankFeasible_iff_subset_subset_monotoneClosure :
-    G.rankFeasible s ↔ ∀ t ∈ G.bases s, s ⊆ G.monotoneClosureOperator t := by
+    G.rankFeasible s ↔ ∀ {t}, t ∈ G.bases s → s ⊆ G.monotoneClosureOperator t := by
   constructor <;> intro h
-  · sorry
+  · intro t ht
+    sorry
   · sorry
 
 /- The following instance will be created later.
