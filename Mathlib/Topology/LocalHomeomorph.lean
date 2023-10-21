@@ -145,6 +145,10 @@ theorem map_source {x : α} (h : x ∈ e.source) : e x ∈ e.target :=
   e.map_source' h
 #align local_homeomorph.map_source LocalHomeomorph.map_source
 
+-- like `e.map_source'`, but stated in terms of images
+lemma map_source'' : e '' e.source ⊆ e.target :=
+  fun _ ⟨_, hx, hex⟩ ↦ mem_of_eq_of_mem (id hex.symm) (e.map_source' hx)
+
 @[simp, mfld_simps]
 theorem map_target {x : β} (h : x ∈ e.target) : e.symm x ∈ e.source :=
   e.map_target' h
@@ -442,6 +446,17 @@ theorem preimage_eventuallyEq_target_inter_preimage_inter {e : LocalHomeomorph �
 theorem preimage_open_of_open {s : Set β} (hs : IsOpen s) : IsOpen (e.source ∩ e ⁻¹' s) :=
   e.continuousOn.preimage_open_of_open e.open_source hs
 #align local_homeomorph.preimage_open_of_open LocalHomeomorph.preimage_open_of_open
+
+/-- A local homeomorphism is an open map on its source. -/
+lemma isOpenMapOn_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) : IsOpen (e '' s) := by
+  rw [(image_eq_target_inter_inv_preimage (e := e) hse)]
+  exact e.continuous_invFun.preimage_open_of_open e.open_target hs
+
+/-- The inverse of a local homeomorphism `e` is an open map on `e.target`. -/
+lemma isOpenMapOn_target_symm {t : Set β} (ht : IsOpen t) (hte : t ⊆ e.target) :
+    IsOpen (e.invFun '' t) := by
+  have r : e.invFun '' t = e.source ∩ ↑e ⁻¹' t := symm_image_eq_source_inter_preimage (e := e) hte
+  exact r ▸ e.continuous_toFun.preimage_open_of_open e.open_source ht
 
 /-!
 ### `LocalHomeomorph.IsImage` relation
