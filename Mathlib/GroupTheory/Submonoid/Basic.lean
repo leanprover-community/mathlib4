@@ -134,7 +134,7 @@ attribute [to_additive] Submonoid SubmonoidClass
 @[to_additive (attr := aesop safe apply (rule_sets [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
-  | 0 => by set_like
+  | 0 => by aesop
   | n + 1 => by
     rw [pow_succ]
     exact mul_mem hx (pow_mem hx n)
@@ -284,8 +284,8 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
 instance : Inf (Submonoid M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
-      one_mem' := by set_like
-      mul_mem' := by set_like }⟩
+      one_mem' := by aesop
+      mul_mem' := by aesop }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
@@ -303,8 +303,8 @@ theorem mem_inf {p p' : Submonoid M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x 
 instance : InfSet (Submonoid M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
-      one_mem' := by set_like
-      mul_mem' := by set_like }⟩
+      one_mem' := by aesop
+      mul_mem' := by aesop }⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (S : Set (Submonoid M)) : ((sInf S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
@@ -396,10 +396,6 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Submonoid M, s ⊆ S �
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align submonoid.subset_closure Submonoid.subset_closure
 #align add_submonoid.subset_closure AddSubmonoid.subset_closure
-
-@[to_additive (attr := set_like 20)]
-lemma mem_closure_of_mem {x : M} (hx : x ∈ s) : x ∈ closure s :=
-  subset_closure hx
 
 @[to_additive]
 theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>

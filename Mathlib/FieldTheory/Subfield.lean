@@ -706,10 +706,6 @@ theorem subset_closure {s : Set K} : s ⊆ closure s :=
   Set.Subset.trans Subring.subset_closure (subring_closure_le s)
 #align subfield.subset_closure Subfield.subset_closure
 
-@[set_like 20]
-theorem mem_closure_of_mem {s : Set K} {x : K} (hx : x ∈ s) : x ∈ Subfield.closure s :=
-  subset_closure hx
-
 theorem not_mem_of_not_mem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 #align subfield.not_mem_of_not_mem_closure Subfield.not_mem_of_not_mem_closure

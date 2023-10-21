@@ -143,7 +143,7 @@ variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] 
 @[to_additive (attr := aesop safe apply (rule_sets [SetLike]))
   "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
-  rw [div_eq_mul_inv]; set_like
+  rw [div_eq_mul_inv]; aesop
 #align div_mem div_mem
 #align sub_mem sub_mem
 
@@ -179,7 +179,7 @@ theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
 theorem mul_mem_cancel_right {x y : G} (h : x ∈ H) : y * x ∈ H ↔ y ∈ H :=
   -- Porting note: whut? why do we need this?
   haveI : SubmonoidClass S G := SubgroupClass.toSubmonoidClass
-  ⟨fun hba => by simpa using mul_mem hba (inv_mem h), by set_like⟩
+  ⟨fun hba => by simpa using mul_mem hba (inv_mem h), by aesop⟩
 #align mul_mem_cancel_right mul_mem_cancel_right
 #align add_mem_cancel_right add_mem_cancel_right
 
@@ -971,7 +971,7 @@ lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a 
 instance : Inf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
-      inv_mem' := by set_like }⟩
+      inv_mem' := by aesop }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Subgroup G) : ((p ⊓ p' : Subgroup G) : Set G) = (p : Set G) ∩ p' :=
@@ -1116,10 +1116,6 @@ theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K �
 theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK => hK hx
 #align subgroup.subset_closure Subgroup.subset_closure
 #align add_subgroup.subset_closure AddSubgroup.subset_closure
-
-@[to_additive (attr := set_like 20)]
-lemma mem_closure_of_mem {x : G} (hx : x ∈ k) : x ∈ closure k :=
-  subset_closure hx
 
 @[to_additive]
 theorem not_mem_of_not_mem_closure {P : G} (hP : P ∉ closure k) : P ∉ k := fun h =>
@@ -1371,7 +1367,7 @@ variable {N : Type*} [Group N] {P : Type*} [Group P]
 def comap {N : Type*} [Group N] (f : G →* N) (H : Subgroup N) : Subgroup G :=
   { H.toSubmonoid.comap f with
     carrier := f ⁻¹' H
-    inv_mem' := by set_like }
+    inv_mem' := by aesop }
 #align subgroup.comap Subgroup.comap
 #align add_subgroup.comap AddSubgroup.comap
 
@@ -1832,8 +1828,8 @@ variable {η : Type*} {f : η → Type*}
 def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (I : Set η) (s : ∀ i, Submonoid (f i)) :
     Submonoid (∀ i, f i) where
   carrier := I.pi fun i => (s i).carrier
-  one_mem' := by set_like
-  mul_mem' := by set_like
+  one_mem' := by aesop
+  mul_mem' := by aesop
 #align submonoid.pi Submonoid.pi
 #align add_submonoid.pi AddSubmonoid.pi
 
@@ -2528,7 +2524,7 @@ instance normalClosure_normal : (normalClosure s).Normal :=
 theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : normalClosure s ≤ N := by
   intro a w
   refine' closure_induction w (fun x hx => conjugatesOfSet_subset h hx) _ _ _
-    <;> set_like
+    <;> aesop
 #align subgroup.normal_closure_le_normal Subgroup.normalClosure_le_normal
 
 theorem normalClosure_subset_iff {N : Subgroup G} [N.Normal] : s ⊆ N ↔ normalClosure s ≤ N :=

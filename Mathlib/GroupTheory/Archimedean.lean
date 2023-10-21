@@ -46,7 +46,7 @@ theorem AddSubgroup.cyclic_of_min {H : AddSubgroup G} {a : G}
     by_contra h
     have h : a ≤ g - k • a := by
       refine' a_min ⟨_, _⟩
-      · set_like
+      · aesop
       · exact lt_of_le_of_ne nonneg (Ne.symm h)
     have h' : ¬a ≤ g - k • a := not_le.mpr lt
     contradiction

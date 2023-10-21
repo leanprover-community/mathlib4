@@ -7,7 +7,6 @@ Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.SetLike.Macro
 
 #align_import group_theory.subsemigroup.basic from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
@@ -217,7 +216,7 @@ theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
 instance : Inf (Subsemigroup M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
-      mul_mem' := by set_like }⟩
+      mul_mem' := by aesop }⟩
 
 @[to_additive (attr := simp)]
 theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
@@ -235,7 +234,7 @@ theorem mem_inf {p p' : Subsemigroup M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧
 instance : InfSet (Subsemigroup M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
-      mul_mem' := by set_like }⟩
+      mul_mem' := by aesop }⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (S : Set (Subsemigroup M)) : ((sInf S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
@@ -312,10 +311,6 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ 
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subsemigroup.subset_closure Subsemigroup.subset_closure
 #align add_subsemigroup.subset_closure AddSubsemigroup.subset_closure
-
-@[to_additive (attr := set_like 20)]
-lemma mem_closure_of_mem {x : M} (hx : x ∈ s) : x ∈ closure s :=
-  subset_closure hx
 
 @[to_additive]
 theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>

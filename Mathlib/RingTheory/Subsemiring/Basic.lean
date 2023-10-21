@@ -813,10 +813,6 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : Subsemirin
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subsemiring.subset_closure Subsemiring.subset_closure
 
-@[set_like 20]
-lemma mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s :=
-  subset_closure hx
-
 theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 #align subsemiring.not_mem_of_not_mem_closure Subsemiring.not_mem_of_not_mem_closure

@@ -9,7 +9,6 @@ import Mathlib.Algebra.Field.Opposite
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.SetLike.Macro
 
 #align_import algebra.star.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
