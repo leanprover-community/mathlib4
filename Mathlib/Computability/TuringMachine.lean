@@ -978,7 +978,7 @@ theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ →
       let ⟨b₁, bb, hb⟩ := tr_eval_rev H rfl h
       (Part.mem_map_iff _).2 ⟨b₁, hb, bb⟩,
       fun h ↦ by
-      rcases(Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
+      rcases (Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
       rcases tr_eval H rfl ab with ⟨_, rfl, h⟩
       rwa [bb] at h⟩
 #align turing.tr_eval' Turing.tr_eval'
@@ -1840,7 +1840,7 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
     stepAux (readAux l₂.length fun v ↦ f (a ::ᵥ v)) v
       (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))
   · dsimp [readAux, stepAux]
-    simp
+    simp only [ListBlank.head_cons, Tape.move_right_mk', ListBlank.tail_cons]
     cases a <;> rfl
   rw [← ListBlank.append, IH]
   rfl

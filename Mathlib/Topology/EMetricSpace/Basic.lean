@@ -3,7 +3,6 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
@@ -809,17 +808,25 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
 #align emetric.subset_countable_closure_of_almost_dense_set EMetric.subset_countable_closure_of_almost_dense_set
 
 open TopologicalSpace in
-/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
-metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
-general to be contained in `s`. -/
-theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
-    SeparableSpace s := by
+/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
+subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
+of separability does not need in general to be contained in `s`. -/
+theorem _root_.TopologicalSpace.IsSeparable.exists_countable_dense_subset
+    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
     rcases hs with ⟨t, htc, hst⟩
     refine ⟨t, htc, hst.trans fun x hx => ?_⟩
     rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
     exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
-  rcases subset_countable_closure_of_almost_dense_set _ this with ⟨t, hts, htc, hst⟩
+  exact subset_countable_closure_of_almost_dense_set _ this
+
+open TopologicalSpace in
+/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
+metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
+general to be contained in `s`. -/
+theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
+    SeparableSpace s := by
+  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
   refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, ?_⟩⟩
   rwa [inducing_subtype_val.dense_iff, Subtype.forall]

@@ -203,7 +203,7 @@ end Pi
 
 theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
-  @Sum.elim_lam_const_lam_const α β γ n
+  Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_nat_cast_nat_cast Sum.elim_natCast_natCast
 
 -- Guard against import creep regression.

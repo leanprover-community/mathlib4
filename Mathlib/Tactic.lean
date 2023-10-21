@@ -4,7 +4,7 @@ import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Backtracking
+import Mathlib.Tactic.Backtrack
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Cache
@@ -20,6 +20,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Change
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Classical
+import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
@@ -66,7 +67,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LabelAttr
 import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
@@ -89,6 +89,7 @@ import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
@@ -142,8 +143,7 @@ import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
-import Mathlib.Tactic.SetLike.Init
-import Mathlib.Tactic.SetLike.Macro
+import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
@@ -155,6 +155,7 @@ import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
+import Mathlib.Tactic.SuppressCompilation
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
@@ -169,5 +170,11 @@ import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CommDiag
+import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.Conv
+import Mathlib.Tactic.Widget.Gcongr
+import Mathlib.Tactic.Widget.SelectInsertParamsClass
+import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify

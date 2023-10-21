@@ -104,7 +104,7 @@ variable (S : Subalgebra R A)
 instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
-@[set_like]
+@[aesop safe apply (rule_sets [SetLike])]
 theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
@@ -749,6 +749,9 @@ def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map e
       ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
       exact e.commutes _ }
 #align alg_equiv.subalgebra_map AlgEquiv.subalgebraMap
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgEquiv.subalgebraMap_apply_coe AlgEquiv.subalgebraMap_symm_apply_coe
 
 end AlgEquiv
 

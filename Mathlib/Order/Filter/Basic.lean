@@ -266,7 +266,7 @@ elab_rules : tactic
       return [m.mvarId!]
   liftMetaTactic fun goal => do
     goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-  evalTactic <|← `(tactic| dsimp only [Set.mem_setOf_eq])
+  evalTactic <|← `(tactic| dsimp (config := {zeta := false}) only [Set.mem_setOf_eq])
   if let some l := wth then
     evalTactic <|← `(tactic| intro $[$l]*)
   if let some e := usingArg then
@@ -378,6 +378,10 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
   · rcases h with ⟨t, hts, tfin, h⟩
     exact mem_of_superset ((sInter_mem tfin).2 fun V hV => GenerateSets.basic <| hts hV) h
 #align filter.mem_generate_iff Filter.mem_generate_iff
+
+@[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
+le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) $
+  le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
 `s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
@@ -1938,7 +1942,7 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
 lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
-  s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
+    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
 by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
 #align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
 
@@ -1980,7 +1984,7 @@ def kernMap (m : α → β) (f : Filter α) : Filter β where
   sets_of_superset := by
     rintro _ t ⟨s, hs, rfl⟩ hst
     refine ⟨s ∪ m ⁻¹' t, mem_of_superset hs (subset_union_left s _), ?_⟩
-    rw [kernImage_union_preimage, union_eq_right_iff_subset.mpr hst]
+    rw [kernImage_union_preimage, union_eq_right.mpr hst]
   inter_sets := by
     rintro _ _ ⟨s₁, h₁, rfl⟩ ⟨s₂, h₂, rfl⟩
     exact ⟨s₁ ∩ s₂, f.inter_sets h₁ h₂, Set.preimage_kernImage.u_inf⟩
@@ -2333,8 +2337,8 @@ theorem map_comap_of_mem {f : Filter β} {m : α → β} (hf : range m ∈ f) : 
 #align filter.map_comap_of_mem Filter.map_comap_of_mem
 
 instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (Filter α) (Filter β) (map c) fun f => ∀ᶠ x : α in f, p x
-    where prf f hf := ⟨comap c f, map_comap_of_mem <| hf.mono CanLift.prf⟩
+    CanLift (Filter α) (Filter β) (map c) fun f => ∀ᶠ x : α in f, p x where
+  prf f hf := ⟨comap c f, map_comap_of_mem <| hf.mono CanLift.prf⟩
 #align filter.can_lift Filter.canLift
 
 theorem comap_le_comap_iff {f g : Filter β} {m : α → β} (hf : range m ∈ f) :
@@ -2763,7 +2767,7 @@ theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
     exact seq_mem_seq (image_mem_map ht) hu
 #align filter.prod_map_seq_comm Filter.prod_map_seq_comm
 
-theorem seq_eq_filter_seq {α β : Type _} (f : Filter (α → β)) (g : Filter α) :
+theorem seq_eq_filter_seq {α β : Type u} (f : Filter (α → β)) (g : Filter α) :
     f <*> g = seq f g :=
   rfl
 #align filter.seq_eq_filter_seq Filter.seq_eq_filter_seq
@@ -2893,10 +2897,12 @@ variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
 open Function Set
 
 /-- The *kernel* of a filter is the intersection of all its sets. -/
-def ker (f : Filter α) : Set α := ⋂ s ∈ f, s
+def ker (f : Filter α) : Set α := ⋂₀ f.sets
 
-@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_iInter₂
-@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_iInter₂_iff
+lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
+
+@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_sInter
+@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_sInter_iff
 
 /-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
 def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
@@ -2906,7 +2912,7 @@ GaloisConnection.toGaloisCoinsertion (λ s f ↦ by simp [principal_le_iff]) $ b
 lemma ker_mono : Monotone (ker : Filter α → Set α) := gi_principal_ker.gc.monotone_u
 lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_ker.u_surjective
 
-@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := iInter₂_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
+@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := sInter_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
 @[simp] lemma ker_top : ker (⊤ : Filter α) = univ := gi_principal_ker.gc.u_top
 @[simp] lemma ker_eq_univ : ker f = univ ↔ f = ⊤ := gi_principal_ker.gc.u_eq_top.trans $ by simp
 @[simp] lemma ker_inf (f g : Filter α) : ker (f ⊓ g) = ker f ∩ ker g := gi_principal_ker.gc.u_inf

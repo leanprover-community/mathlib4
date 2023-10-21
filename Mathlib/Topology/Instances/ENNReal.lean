@@ -120,7 +120,7 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ⊤) :
 theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥0∞}
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
     (hfg : (fun x => (f x).toReal) =ᶠ[l] fun x => (g x).toReal) : f =ᶠ[l] g := by
-  filter_upwards [hfi, hgi, hfg]with _ hfx hgx _
+  filter_upwards [hfi, hgi, hfg] with _ hfx hgx _
   rwa [← ENNReal.toReal_eq_toReal hfx hgx]
 #align ennreal.eventually_eq_of_to_real_eventually_eq ENNReal.eventuallyEq_of_toReal_eventuallyEq
 
@@ -720,7 +720,7 @@ theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x :
   simp_rw [not_exists, not_frequently, not_lt] at h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
-  filter_upwards [h (-r)]with i hi using(le_neg.1 hi).trans (neg_le_abs_self _)
+  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs_self _)
 #align ennreal.exists_frequently_lt_of_liminf_ne_top' ENNReal.exists_frequently_lt_of_liminf_ne_top'
 
 theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x : ι → ℝ}
@@ -733,20 +733,20 @@ theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x 
     obtain ⟨q, hq⟩ := exists_rat_gt R
     refine' ⟨q, q + 1, (lt_add_iff_pos_right _).2 zero_lt_one, _, _⟩
     · refine' fun hcon => hR _
-      filter_upwards [hcon]with x hx using not_lt.2 (lt_of_lt_of_le hq (not_lt.1 hx)).le
+      filter_upwards [hcon] with x hx using not_lt.2 (lt_of_lt_of_le hq (not_lt.1 hx)).le
     · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
         not_exists, not_forall, not_le, exists_prop] at hbdd
       refine' fun hcon => hbdd ↑(q + 1) _
-      filter_upwards [hcon]with x hx using not_lt.1 hx
+      filter_upwards [hcon] with x hx using not_lt.1 hx
   · obtain ⟨R, hR⟩ := exists_frequently_lt_of_liminf_ne_top' hf
     obtain ⟨q, hq⟩ := exists_rat_lt R
     refine' ⟨q - 1, q, (sub_lt_self_iff _).2 zero_lt_one, _, _⟩
     · simp only [IsBoundedUnder, IsBounded, eventually_map, eventually_atTop, ge_iff_le,
         not_exists, not_forall, not_le, exists_prop] at hbdd
       refine' fun hcon => hbdd ↑(q - 1) _
-      filter_upwards [hcon]with x hx using not_lt.1 hx
+      filter_upwards [hcon] with x hx using not_lt.1 hx
     · refine' fun hcon => hR _
-      filter_upwards [hcon]with x hx using not_lt.2 ((not_lt.1 hx).trans hq.le)
+      filter_upwards [hcon] with x hx using not_lt.2 ((not_lt.1 hx).trans hq.le)
 #align ennreal.exists_upcrossings_of_not_bounded_under ENNReal.exists_upcrossings_of_not_bounded_under
 
 end Liminf
@@ -1513,25 +1513,25 @@ namespace Real
 
 /-- For a bounded set `s : Set ℝ`, its `EMetric.diam` is equal to `sSup s - sInf s` reinterpreted as
 `ℝ≥0∞`. -/
-theorem ediam_eq {s : Set ℝ} (h : Bounded s) :
+theorem ediam_eq {s : Set ℝ} (h : Bornology.IsBounded s) :
     EMetric.diam s = ENNReal.ofReal (sSup s - sInf s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp
   refine' le_antisymm (Metric.ediam_le_of_forall_dist_le fun x hx y hy => _) _
-  · have := Real.subset_Icc_sInf_sSup_of_bounded h
+  · have := Real.subset_Icc_sInf_sSup_of_isBounded h
     exact Real.dist_le_of_mem_Icc (this hx) (this hy)
   · apply ENNReal.ofReal_le_of_le_toReal
     rw [← Metric.diam, ← Metric.diam_closure]
-    have h' := Real.bounded_iff_bddBelow_bddAbove.1 h
+    have h' := Real.isBounded_iff_bddBelow_bddAbove.1 h
     calc sSup s - sInf s ≤ dist (sSup s) (sInf s) := le_abs_self _
     _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h'.2)
         (csInf_mem_closure hne h'.1)
 #align real.ediam_eq Real.ediam_eq
 
 /-- For a bounded set `s : Set ℝ`, its `Metric.diam` is equal to `sSup s - sInf s`. -/
-theorem diam_eq {s : Set ℝ} (h : Bounded s) : Metric.diam s = sSup s - sInf s := by
+theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup s - sInf s := by
   rw [Metric.diam, Real.ediam_eq h, ENNReal.toReal_ofReal]
-  rw [Real.bounded_iff_bddBelow_bddAbove] at h
+  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
   exact sub_nonneg.2 (Real.sInf_le_sSup s h.1 h.2)
 #align real.diam_eq Real.diam_eq
 
@@ -1539,13 +1539,13 @@ theorem diam_eq {s : Set ℝ} (h : Bounded s) : Metric.diam s = sSup s - sInf s 
 theorem ediam_Ioo (a b : ℝ) : EMetric.diam (Ioo a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_lt b a with (h | h)
   · simp [h]
-  · rw [Real.ediam_eq (bounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
+  · rw [Real.ediam_eq (isBounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
 #align real.ediam_Ioo Real.ediam_Ioo
 
 @[simp]
 theorem ediam_Icc (a b : ℝ) : EMetric.diam (Icc a b) = ENNReal.ofReal (b - a) := by
   rcases le_or_lt a b with (h | h)
-  · rw [Real.ediam_eq (bounded_Icc _ _), csSup_Icc h, csInf_Icc h]
+  · rw [Real.ediam_eq (isBounded_Icc _ _), csSup_Icc h, csInf_Icc h]
   · simp [h, h.le]
 #align real.ediam_Icc Real.ediam_Icc
 

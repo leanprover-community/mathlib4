@@ -114,7 +114,7 @@ theorem ext {S T : ConvexCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :
   SetLike.ext h
 #align convex_cone.ext ConvexCone.ext
 
-@[set_like]
+@[aesop safe apply (rule_sets [SetLike])]
 theorem smul_mem {c : 𝕜} {x : E} (hc : 0 < c) (hx : x ∈ S) : c • x ∈ S :=
   S.smul_mem' hc hx
 #align convex_cone.smul_mem ConvexCone.smul_mem
@@ -228,27 +228,9 @@ protected theorem convex : Convex 𝕜 (S : Set E) :=
 
 end Module
 
-end OrderedSemiring
-
-section LinearOrderedField
-
-variable [LinearOrderedField 𝕜]
-
-section AddCommMonoid
+section Maps
 
 variable [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
-
-section MulAction
-
-variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
-
-theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
-  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
-#align convex_cone.smul_mem_iff ConvexCone.smul_mem_iff
-
-end MulAction
-
-section Module
 
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
@@ -259,6 +241,10 @@ def map (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) : ConvexCone 𝕜 F where
   add_mem' := fun _ ⟨x₁, hx₁, hy₁⟩ _ ⟨x₂, hx₂, hy₂⟩ =>
     hy₁ ▸ hy₂ ▸ f.map_add x₁ x₂ ▸ mem_image_of_mem f (S.add_mem hx₁ hx₂)
 #align convex_cone.map ConvexCone.map
+
+@[simp, norm_cast]
+theorem coe_map (S : ConvexCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
+  rfl
 
 @[simp]
 theorem mem_map {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 E} {y : F} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
@@ -306,9 +292,25 @@ theorem mem_comap {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 F} {x : E} : x ∈
   Iff.rfl
 #align convex_cone.mem_comap ConvexCone.mem_comap
 
-end Module
+end Maps
 
-end AddCommMonoid
+end OrderedSemiring
+
+section LinearOrderedField
+
+variable [LinearOrderedField 𝕜]
+
+section MulAction
+
+variable [AddCommMonoid E]
+
+variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
+
+theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
+#align convex_cone.smul_mem_iff ConvexCone.smul_mem_iff
+
+end MulAction
 
 section OrderedAddCommGroup
 

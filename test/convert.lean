@@ -3,6 +3,7 @@ import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Set.Image
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
 namespace Tests
@@ -62,22 +63,22 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
   convert h
   · guard_target = (HAdd.hAdd : Nat → Nat → Nat) = HMul.hMul
-    sorry
+    exact test_sorry
   · guard_target = n = 2
-    sorry
+    exact test_sorry
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
   convert (config := .unfoldSameFun) h
   guard_target = n + n = 2 * n
-  sorry
+  exact test_sorry
 
 example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
     ∀ ε > 0, q ε := by
   convert h using 2 with ε hε
   guard_hyp hε : ε > 0
   guard_target = q ε ↔ p ε
-  sorry
+  exact test_sorry
 
 class Fintype (α : Type _) where
   card : Nat
@@ -95,7 +96,7 @@ example : @Fintype.card Bool instFintypeBool = 2 := by
 example : @Fintype.card Bool instFintypeBool = 2 := by
   convert Fintype.foo' _ using 1
   guard_target = Fintype (Option Bool)
-  sorry
+  exact test_sorry
 
 example : True := by
   convert_to ?x + ?y = ?z
@@ -111,8 +112,8 @@ example [Fintype α] [Fintype β] : Fintype.card α = Fintype.card β := by
   guard_target = Fintype.card α = Fintype.card β
   congr! (config := {typeEqs := true})
   · guard_target = α = β
-    sorry
+    exact test_sorry
   · rename_i inst1 inst2 h
     guard_target = HEq inst1 inst2
-    have : Subsingleton (Fintype α) := sorry
+    have : Subsingleton (Fintype α) := test_sorry
     congr!
