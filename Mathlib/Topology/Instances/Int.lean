@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Interval
+import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Cauchy
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Order.Filter.Archimedean
 
@@ -85,4 +88,3 @@ theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by
 #align int.cofinite_eq Int.cofinite_eq
 
 end Int
-
