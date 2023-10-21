@@ -222,6 +222,9 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
     rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_succ], mul_zero]
 #align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
 
+theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
+  simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
+
 @[simp]
 theorem zero_testBit (i : ℕ) : testBit 0 i = false := by
   simp only [testBit, zero_shiftRight, bodd_zero]
@@ -297,9 +300,6 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
         _ ≤ 2 * m := mul_le_mul_left 2 this
     · exact Nat.succ_lt_succ this'
 #align nat.lt_of_test_bit Nat.lt_of_testBit
-
-theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
-  simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
 
 @[simp]
 theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
