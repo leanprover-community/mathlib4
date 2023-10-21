@@ -23,7 +23,6 @@ diameter of a subset, and its relation to boundedness
 ## Tags
 
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
-
 -/
 
 open Set Filter  Bornology

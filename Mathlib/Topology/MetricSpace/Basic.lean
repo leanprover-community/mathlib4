@@ -31,8 +31,6 @@ Additional useful definitions:
 * `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
 * `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
 * `ProperSpace α`: A `PseudoMetricSpace` where all closed balls are compact.
-* `Metric.diam s` : The `iSup` of the distances of members of `s`.
-  Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 
 TODO (anyone): Add "Main results" section.
 

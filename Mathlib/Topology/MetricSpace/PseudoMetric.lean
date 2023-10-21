@@ -10,15 +10,18 @@ import Mathlib.Topology.Bornology.Constructions
 
 /-!
 ## Pseudo-metric spaces
-TODO insert proper docstring
-definition of pseudometric space, distance, extended distance and basic API
+
+Definition and basic properties of pseudo-metric spaces.
+
+Main definitions
+* pseudometric space, distance, extended distance and basic API
+* ball, closed ball, sphere
 noteworthy result: triangle ineq for polygons
-ball, closed ball, sphere
 noteworthy: forall_of_forall_mem_Ball, forall_of_forall_mem_closedBall
 
+continue reviewing after line 700!
+TODO: insert proper docstring/flesh this out!
 -/
--- TODO: go over copyright, author, imports, variables etc.
-
 
 open Set Filter TopologicalSpace Bornology
 open scoped BigOperators ENNReal NNReal Uniformity Topology
