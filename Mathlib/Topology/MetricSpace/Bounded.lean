@@ -7,8 +7,22 @@ import Mathlib.Topology.MetricSpace.PseudoMetric
 import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
-## Boundedness in metric spaces
-TODO. flesh out this docstring
+## Boundedness in (pseudo)-metric spaces
+
+This file contains on definition, and various results on boundedness in pseudo-metric spaces.
+* `Metric.diam s` : The `iSup` of the distances of members of `s`.
+  Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
+
+* `isBounded_iff_subset_closedBall`: a non-empty set is bounded iff it is is included in some closed ball
+* describing the cobounded filter, relating to the cocompact filter
+* compact and totally bounded sets are bounded
+* the **Heine–Borel theorem**: in a proper space, a closed bounded set is compact.
+* `cobounded_eq_cocompact`: in a proper space, cobounded and compact sets are the same
+diameter of a subset, and its relation to boundedness
+
+## Tags
+
+metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 
 -/
 

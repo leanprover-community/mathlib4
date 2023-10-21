@@ -7,9 +7,18 @@ import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
-TODO: proper docstring!
+
+Various results on Cauchy sequences in (pseudo-)metric spaces, including
+
+* `Metric.complete_of_cauchySeq_tendsto` A pseudo-metric space is complete iff each Cauchy sequences
+converges to some limit point.
+* `cauchySeq_bdd`: a Cauchy sequence on the natural numbers is bounded
+* various characterisation of Cauchy and uniformly Cauchy sequences
+
+## Tags
+
+metric, pseudo_metric, Cauchy sequence
 -/
--- TODO: go over copyright and author
 
 open Filter
 open scoped Uniformity Topology
@@ -32,6 +41,7 @@ theorem Metric.complete_of_convergent_controlled_sequences (B : ℕ → Real) (h
     (fun n => { p : α × α | dist p.1 p.2 < B n }) (fun n => dist_mem_uniformity <| hB n) H
 #align metric.complete_of_convergent_controlled_sequences Metric.complete_of_convergent_controlled_sequences
 
+/-- A pseudo-metric space is complete iff every Cauchy sequence converges. -/
 theorem Metric.complete_of_cauchySeq_tendsto :
     (∀ u : ℕ → α, CauchySeq u → ∃ a, Tendsto u atTop (𝓝 a)) → CompleteSpace α :=
   EMetric.complete_of_cauchySeq_tendsto
@@ -57,7 +67,7 @@ theorem Metric.cauchySeq_iff' {u : β → α} :
 
 -- see Note [nolint_ge]
 /-- In a pseudometric space, uniform Cauchy sequences are characterized by the fact that,
-eventually, the distance between all its elements is uniformly, arbitrarily small -/
+eventually, the distance between all its elements is uniformly, arbitrarily small. -/
 -- porting note: no attr @[nolint ge_or_gt]
 theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : Set γ} :
     UniformCauchySeqOn F atTop s ↔ ∀ ε > (0 : ℝ),
