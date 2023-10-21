@@ -56,6 +56,10 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
     Subtype.coe_injective.eq_iff]; rfl
 #align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
 
+theorem Algebra.coe_norm_int {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) :
+    Algebra.norm ℤ x = Algebra.norm ℚ (x : K) :=
+  (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
+
 end Rat
 
 variable (K : Type*) [Field K]
@@ -135,7 +139,7 @@ instance [NumberField K] : Finite (torsion K) := inferInstance
 /-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
-/-- The order of the torsion subgroup as positive integer. -/
+/-- The order of the torsion subgroup as a positive integer. -/
 def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
 
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
@@ -174,10 +178,10 @@ This section is devoted to the proof of Dirichlet's unit theorem.
 We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a
 distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup (see
 `logEmbedding_eq_zero_iff`) and that its image, called `unitLattice`, is a full `ℤ`-lattice. It
-follows that `unitLattice` is a free `ℤ`-module (see `unitLattice_moduleFree `) of rank
+follows that `unitLattice` is a free `ℤ`-module (see `instModuleFree_unitLattice`) of rank
 `card (InfinitePlaces K) - 1` (see `unitLattice_rank`). To prove that the `unitLattice` is a full
 `ℤ`-lattice, we need to prove that it is discrete (see `unitLattice_inter_ball_finite`) and that it
-spans the full space over `ℝ` (see ` unitLattice_span_eq_top`); this is the main part of the proof,
+spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the main part of the proof,
 see the section `span_top` below for more details.
 -/
 
@@ -368,7 +372,7 @@ theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K)
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :
-     w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
+    w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
   induction m with
   | zero =>
       exfalso
@@ -392,14 +396,12 @@ theorem seq_norm_le (n : ℕ) :
         simp only [Nat.lt_one_iff.mp hB, CharP.cast_eq_zero, mul_zero, zero_le]
       simp only [ne_eq, seq, map_one, Int.natAbs_one, this]
   | succ n =>
-      rw [← Nat.cast_le (α := ℚ), Int.cast_natAbs, Int.cast_abs]
-      change |algebraMap ℤ ℚ _| ≤ _
-      rw [← Algebra.norm_localization ℤ (Sₘ := K) (nonZeroDivisors ℤ)]
+      rw [← Nat.cast_le (α := ℚ), Int.cast_natAbs, Int.cast_abs, Algebra.coe_norm_int]
       exact (seq_next K w₁ hB (seq K w₁ hB n).prop).choose_spec.2.2
 
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
 image by the `logEmbedding` of these units  is `ℝ`-linearly independent, see
-`unit_lattice_span_eq_top`. -/
+`unitLattice_span_eq_top`. -/
 theorem exists_unit (w₁ : InfinitePlace K ) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
   obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
@@ -510,9 +512,8 @@ def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (tor
     (QuotientAddGroup.quotientKerEquivOfSurjective
       (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (fun x => ?_))
   · ext
-    rw [AddMonoidHom.mem_ker, AddMonoidHom.mem_ker, logEmbedding_eq_zero_iff,
-      MonoidHom.toAdditive_apply_apply, ofMul_eq_zero, QuotientGroup.mk'_apply,
-      QuotientGroup.eq_one_iff]
+    rw [MonoidHom.coe_toAdditive_ker, QuotientGroup.ker_mk', AddMonoidHom.mem_ker,
+      logEmbedding_eq_zero_iff]
     rfl
   · refine ⟨Additive.ofMul x.out', ?_⟩
     simp only [MonoidHom.toAdditive_apply_apply, toMul_ofMul, QuotientGroup.mk'_apply,
@@ -524,6 +525,26 @@ instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
 
 instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Finite.equiv (unitLatticeEquiv K)
+
+-- Note that we prove this instance first and then deduce from it the instance
+-- `Monoid.FG (𝓞 K)ˣ`, and not the other way around, due to no `Subgroup` version
+-- of `Submodule.fg_of_fg_map_of_fg_inf_ker` existing.
+instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
+  rw [Module.finite_def]
+  refine Submodule.fg_of_fg_map_of_fg_inf_ker
+    (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))).toIntLinearMap ?_ ?_
+  · rw [Submodule.map_top, LinearMap.range_eq_top.mpr
+      (by exact QuotientGroup.mk'_surjective (torsion K)), ← Module.finite_def]
+    infer_instance
+  · rw [inf_of_le_right le_top, AddMonoidHom.coe_toIntLinearMap_ker, MonoidHom.coe_toAdditive_ker,
+      QuotientGroup.ker_mk', Submodule.fg_iff_add_subgroup_fg,
+      AddSubgroup.toIntSubmodule_toAddSubgroup, ← AddGroup.fg_iff_addSubgroup_fg]
+    have : Finite (Subgroup.toAddSubgroup (torsion K)) := (inferInstance : Finite (torsion K))
+    exact AddGroup.fg_of_finite
+
+instance : Monoid.FG (𝓞 K)ˣ := by
+  rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
+  infer_instance
 
 theorem rank_modTorsion :
     FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
@@ -541,7 +562,7 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
-`exist_unique_eq_mul_prod`) are given by the representation of the unit of `basisModTorsion`. -/
+`exist_unique_eq_mul_prod`) are given by the representation of the unit on `basisModTorsion`. -/
 theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈ torsion K)
     (h : x = ζ * ∏ i, (fundSystem K i) ^ (f i)) :
     f = (basisModTorsion K).repr (Additive.ofMul ↑x) := by

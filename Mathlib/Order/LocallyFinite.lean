@@ -1085,7 +1085,9 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
           not_exists, not_and, and_imp, Embedding.some, forall_const]
     | (a : α), (b : α), (x : α) => by
         simp only [some, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
-          some_le_some, aux]
+          some_le_some]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
@@ -1093,23 +1095,40 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [some, Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, some_le_some, aux,
           top, some_lt_none, and_true]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
+      -- This used to be in the above `simp` before
+      -- leanprover/lean4#2644
+      erw [aux]
 
 variable (a b : α)
 
@@ -1513,22 +1532,3 @@ lemma toFinset_Iio (a : α) [Fintype (Iio a)] : (Iio a).toFinset = Finset.Iio a 
 
 end LocallyFiniteOrderBot
 end Set
-namespace Finset
-variable {α : Type*}
-
-section SemilatticeSup
-variable [SemilatticeSup α] [OrderBot α] [LocallyFiniteOrderBot α]
-
-@[simp] lemma sup_Iic (a : α) : (Iic a).sup id = a :=
-  le_antisymm (Finset.sup_le λ _ ↦ mem_Iic.1) $ le_sup (f := id) $ mem_Iic.2 $ le_refl a
-
-end SemilatticeSup
-
-section SemilatticeInf
-variable [SemilatticeInf α] [OrderTop α] [LocallyFiniteOrderTop α]
-
-@[simp] lemma inf_Ici (a : α) : (Ici a).inf id = a :=
-  le_antisymm (inf_le (f := id) $ mem_Ici.2 $ le_refl a) $ Finset.le_inf λ _ ↦ mem_Ici.1
-
-end SemilatticeInf
-end Finset

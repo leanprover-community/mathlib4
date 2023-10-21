@@ -304,7 +304,7 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉₊ :=
 theorem ceil_intCast {α : Type*} [LinearOrderedRing α] [FloorSemiring α] (z : ℤ) :
     ⌈(z : α)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
-    simp
+    simp only [ceil_le, Int.toNat_le]
     norm_cast
 #align nat.ceil_int_cast Nat.ceil_intCast
 
@@ -1022,7 +1022,7 @@ theorem fract_fract (a : α) : fract (fract a) = fract a :=
 theorem fract_add (a b : α) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
   ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
     unfold fract
-    simp [sub_eq_add_neg]
+    simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
     abel⟩
 #align int.fract_add Int.fract_add
 

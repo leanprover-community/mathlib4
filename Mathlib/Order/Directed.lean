@@ -129,10 +129,10 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     (hf : Directed (· ≤ ·) f) (he : Function.Injective e) :
     Directed (· ≤ ·) (Function.extend e f ⊥) := by
   intro a b
-  rcases(em (∃ i, e i = a)).symm with (ha | ⟨i, rfl⟩)
+  rcases (em (∃ i, e i = a)).symm with (ha | ⟨i, rfl⟩)
   · use b
     simp [Function.extend_apply' _ _ _ ha]
-  rcases(em (∃ i, e i = b)).symm with (hb | ⟨j, rfl⟩)
+  rcases (em (∃ i, e i = b)).symm with (hb | ⟨j, rfl⟩)
   · use e i
     simp [Function.extend_apply' _ _ _ hb]
   rcases hf i j with ⟨k, hi, hj⟩

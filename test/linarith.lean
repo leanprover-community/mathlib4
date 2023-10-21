@@ -279,9 +279,9 @@ example (u v x y A B : ℚ)
  by nlinarith
 
 example (u v x y A B : ℚ) : (0 < A) → (A ≤ 1) → (1 ≤ B)
-→ (x ≤ B) → ( y ≤ B)
+→ (x ≤ B) → (y ≤ B)
 → (0 ≤ u ) → (0 ≤ v )
-→ (u < A) → ( v < A)
+→ (u < A) → (v < A)
 → (u * y + v * x + u * v < 3 * A * B) := by
   intros
   nlinarith
@@ -524,3 +524,5 @@ noncomputable instance : LinearOrderedField (P c d) := test_sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
+
+example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith

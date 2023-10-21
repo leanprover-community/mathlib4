@@ -20,7 +20,7 @@ This file contains lemmas dealing with different flavours of induction on polyno
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 
@@ -149,6 +149,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
     (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
     (MX : ∀ p, p ≠ 0 → M p → M (p * X)) : M p :=
+  letI := Classical.decEq R
   if hp : p = 0 then hp ▸ M0
   else by
     have wf : degree (divX p) < degree p := degree_divX_lt hp
