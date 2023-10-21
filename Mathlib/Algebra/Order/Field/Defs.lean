@@ -35,7 +35,7 @@ variable {α : Type*}
 class LinearOrderedSemifield (α : Type*) extends Semifield α, LinearOrderedCommSemiring α
 #align linear_ordered_semifield LinearOrderedSemifield
 
-attribute [instance 150] LinearOrderedSemifield.toSemifield
+attribute [instance 50] LinearOrderedSemifield.toSemifield
 attribute [instance 100] LinearOrderedSemifield.toLinearOrderedCommSemiring
 attribute [instance 0] LinearOrderedSemifield.toPartialOrder
 attribute [instance 0] LinearOrderedSemifield.toMin
@@ -46,7 +46,7 @@ attribute [instance 0] LinearOrderedSemifield.toOrd
 class LinearOrderedField (α : Type*) extends Field α, LinearOrderedCommRing α
 #align linear_ordered_field LinearOrderedField
 
-attribute [instance 150] LinearOrderedField.toField
+attribute [instance 50] LinearOrderedField.toField
 attribute [instance 100] LinearOrderedField.toLinearOrderedCommRing
 attribute [instance 0] LinearOrderedField.toPartialOrder
 attribute [instance 0] LinearOrderedField.toMin

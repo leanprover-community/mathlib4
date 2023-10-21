@@ -36,7 +36,7 @@ class LinearOrderedCommGroupWithZero (α : Type*) extends CommGroupWithZero α,
     LinearOrderedCommMonoidWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
 
-attribute [instance 200] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+attribute [instance 50] LinearOrderedCommGroupWithZero.toCommGroupWithZero
 attribute [instance 100] LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero
 attribute [instance 0] LinearOrderedCommGroupWithZero.toPartialOrder
 attribute [instance 0] LinearOrderedCommGroupWithZero.toMin

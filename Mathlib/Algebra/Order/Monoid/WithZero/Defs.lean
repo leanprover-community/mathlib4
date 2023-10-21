@@ -25,7 +25,7 @@ class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 
-attribute [instance 150] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+attribute [instance 50] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
 attribute [instance 100] LinearOrderedCommMonoidWithZero.toLinearOrderedCommMonoid
 attribute [instance 0] LinearOrderedCommMonoidWithZero.toPartialOrder
 attribute [instance 0] LinearOrderedCommMonoidWithZero.toMin

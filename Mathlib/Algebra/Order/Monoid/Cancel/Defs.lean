@@ -29,8 +29,8 @@ class OrderedCancelAddCommMonoid (α : Type u) extends AddCommMonoid α, Partial
   protected le_of_add_le_add_left : ∀ a b c : α, a + b ≤ a + c → b ≤ c
 #align ordered_cancel_add_comm_monoid OrderedCancelAddCommMonoid
 
-attribute [instance 150] OrderedCancelAddCommMonoid.toAddCommMonoid
-attribute [instance 100] OrderedCancelAddCommMonoid.toPartialOrder
+attribute [instance 50] OrderedCancelAddCommMonoid.toAddCommMonoid
+attribute [instance 50] OrderedCancelAddCommMonoid.toPartialOrder
 
 /-- An ordered cancellative commutative monoid
 is a commutative monoid with a partial order,
@@ -42,8 +42,8 @@ class OrderedCancelCommMonoid (α : Type u) extends CommMonoid α, PartialOrder 
   protected le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
 #align ordered_cancel_comm_monoid OrderedCancelCommMonoid
 
-attribute [instance 150] OrderedCancelCommMonoid.toCommMonoid
-attribute [instance 100] OrderedCancelCommMonoid.toPartialOrder
+attribute [instance 50] OrderedCancelCommMonoid.toCommMonoid
+attribute [instance 50] OrderedCancelCommMonoid.toPartialOrder
 
 attribute [to_additive OrderedCancelAddCommMonoid] OrderedCancelCommMonoid
 
