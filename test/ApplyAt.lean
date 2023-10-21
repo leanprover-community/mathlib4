@@ -8,6 +8,13 @@ example {α β : Type*} (f : α → β) (a : α) : β := by
   guard_hyp a :ₛ β
   exact a
 
+/-- `apply at` cannot clear mvarid if still used. -/
+example {α : Type} (γ : α → Type) (a : α) (f : α → γ a) : γ a := by
+  apply f at a
+  rename_i a₂
+  guard_hyp a :ₛ γ a₂
+  exact a
+
 example {α β : Type*} (f : α → β) (a b : α) (h : a = b) : f a = f b := by
   apply congr_arg f at h
   guard_hyp h :ₛ f a = f b
@@ -56,16 +63,30 @@ example {α β γ δ : Type*} (f : {_ : α} → {_ : β} → (g : γ) → δ) (g
   guard_hyp g :ₛ δ
   assumption'
 
+/--
+error: Failed to find γ as the type of a parameter of α → β.
+-/
+#guard_msgs in
+example {α β γ : Type*} (f : α → β) (_g : γ) : β × γ  := by
+  apply f at _g
+
+/--
+error: Failed: α is not the type of a function.
+-/
+#guard_msgs in
+example {α β : Type*} (a : α) (_b : β) : α × β := by
+  apply a at _b
+
 example {α β γ : Type*} (f : α → β) (g : γ) (a : α) : β × γ  := by
   fail_if_success apply f at g
   apply f at a
   guard_hyp a :ₛ β
-  exact (a,g)
+  exact (a, g)
 
 example {α β : Type*} (a : α) (b : β) : α × β := by
   fail_if_success apply a at b
-  exact (a,b)
+  exact (a, b)
 
 example {α β : Type*} (a : α) (b : β) : α × β := by
   fail_if_success apply a at b
-  exact (a,b)
+  exact (a, b)
