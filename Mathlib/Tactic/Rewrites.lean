@@ -271,6 +271,22 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
             (expr, false)
         return some ⟨expr, symm, weight, result, none, none, ← getMCtx⟩
 
+/--
+Find lemmas which can rewrite the goal, and deduplicate based on pretty-printed results.
+Note that this builds a `HashMap` containing the results, and so may consume significant memory.
+-/
+def rewritesDedup (hyps : Array (Expr × Bool × Nat))
+    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+    (mctx : MetavarContext)
+    (goal : MVarId) (target : Expr) (side : SideConditions := .solveByElim) :
+    MLList MetaM RewriteResult := MLList.squash fun _ => do
+  return rewritesCore hyps lemmas mctx goal target side
+    -- Don't report duplicate results.
+    -- (TODO: a config flag to disable this,
+    -- if distinct-but-pretty-print-the-same results are desirable?)
+    |>.mapM (fun r => r.prepare_ppResult)
+    |>.dedupBy (fun r => pure r.ppResult?)
+
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
