@@ -126,7 +126,7 @@ theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGlu
   simp_rw [isSheaf_iff_isSheafPairwiseIntersections, IsSheafPairwiseIntersections,
     Types.isLimit_iff, IsSheafUniqueGluing, isGluing_iff_pairwise]
   refine forall₂_congr fun ι U ↦ ⟨fun h sf cpt ↦ ?_, fun h s hs ↦ ?_⟩
-  · exact h _ cpt.section_pairwise.prop
+  · exact h _ cpt.sectionPairwise.prop
   · specialize h (fun i ↦ s <| op <| Pairwise.single i) fun i j ↦
       (hs <| op <| Pairwise.Hom.left i j).trans (hs <| op <| Pairwise.Hom.right i j).symm
     convert h; ext (i|⟨i,j⟩)
