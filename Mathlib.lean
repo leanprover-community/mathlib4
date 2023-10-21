@@ -678,6 +678,7 @@ import Mathlib.Analysis.Convex.StoneSeparation
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Analysis.Convex.StrictConvexBetween
 import Mathlib.Analysis.Convex.StrictConvexSpace
+import Mathlib.Analysis.Convex.Strong
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convolution
@@ -1332,6 +1333,7 @@ import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Basic
+import Mathlib.Condensed.Equivalence
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
@@ -3221,6 +3223,7 @@ import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
