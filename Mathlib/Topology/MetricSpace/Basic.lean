@@ -57,9 +57,10 @@ universe u v w
 variable {α : Type u} {β : Type v} {X ι : Type*}
 
 /-- Construct a uniform structure from a distance function and metric space axioms -/
-def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist x x = 0)
-    (dist_comm : ∀ x y : α, dist x y = dist y x)
-    (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
+def UniformSpace.ofDist (A : ℝ≥0) [Fact (1 ≤ A)] (dist : α → α → ℝ)
+    (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
+    (dist_triangle : ∀ x y z : α, dist x z ≤ A * (dist x y + dist y z)) : UniformSpace α :=
+  have : Fact (0 < A) := .mk (by linarith)
   .ofFun dist dist_self dist_comm dist_triangle fun ε ε0 =>
     ⟨ε / 2, half_pos ε0, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
 #align uniform_space_of_dist UniformSpace.ofDist
@@ -67,8 +68,9 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
 -- porting note: dropped the `dist_self` argument
 /-- Construct a bornology from a distance function and metric space axioms. -/
 @[reducible]
-def Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
-    (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
+def Bornology.ofDist {α : Type*} (A : ℝ≥0) [Fact (1 ≤ A)] (dist : α → α → ℝ)
+    (dist_comm : ∀ x y, dist x y = dist y x)
+    (dist_triangle : ∀ x y z, dist x z ≤ A * (dist x y + dist y z)) : Bornology α :=
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C }
     ⟨0, fun x hx y => hx.elim⟩ (fun s ⟨c, hc⟩ t h => ⟨c, fun x hx y hy => hc (h hx) (h hy)⟩)
     (fun s hs t ht => by
@@ -99,16 +101,29 @@ export Dist (dist)
 -- the uniform structure and the emetric space structure are embedded in the metric space structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
 /-- This is an internal lemma used inside the default of `PseudoMetricSpace.edist`. -/
-private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
+private theorem dist_nonneg' {α} {x y : α} (A : ℝ) [Fact (1 ≤ A)] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
-    (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : 0 ≤ dist x y :=
-  have : 0 ≤ 2 * dist x y :=
+    (dist_triangle : ∀ x y z : α, dist x z ≤ A * (dist x y + dist y z)) : 0 ≤ dist x y :=
+  have : 1 ≤ A := Fact.out
+  have : 0 ≤ (A * 2) * dist x y :=
     calc 0 = dist x x := (dist_self _).symm
-    _ ≤ dist x y + dist y x := dist_triangle _ _ _
-    _ = 2 * dist x y := by rw [two_mul, dist_comm]
-  nonneg_of_mul_nonneg_right this two_pos
+    _ ≤ A * (dist x y + dist y x) := dist_triangle _ _ _
+    _ = (A * 2) * dist x y := by rw [mul_assoc, two_mul, dist_comm]
+  nonneg_of_mul_nonneg_right this (by positivity)
 
 #noalign pseudo_metric_space.edist_dist_tac -- porting note: todo: restore
+
+class QuasiPseudoMetricSpace (α : Type u) (A : outParam ℝ) [Fact (1 ≤ A)] extends Dist α : Type u where
+  dist_self : ∀ x : α, dist x x = 0
+  dist_comm : ∀ x y : α, dist x y = dist y x
+  dist_triangle : ∀ x y z : α, dist x z ≤ A * (dist x y + dist y z)
+  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.some ⟨dist x y, dist_nonneg' A _ ‹_› ‹_› ‹_›⟩
+  edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) -- porting note: todo: add := by _
+  toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
+  uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
+  toBornology : Bornology α := Bornology.ofDist dist dist_comm dist_triangle
+  cobounded_sets : (Bornology.cobounded α).sets =
+    { s | ∃ C : ℝ, ∀ x ∈ sᶜ, ∀ y ∈ sᶜ, dist x y ≤ C } := by intros; rfl
 
 /-- Pseudo metric and Metric spaces
 

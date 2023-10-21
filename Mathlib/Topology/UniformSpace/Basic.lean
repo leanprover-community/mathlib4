@@ -393,10 +393,11 @@ theorem UniformSpace.replaceTopology_eq {α : Type*} [i : TopologicalSpace α] (
 -- porting note: rfc: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
 /-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
 distance in a (usual or extended) metric space or an absolute value on a ring. -/
-def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
+def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedCommSemiring β]
+    (A : β) [Fact (0 < A)]
     (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
-    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
+    (triangle : ∀ x y z, d x z ≤ A * (d x y + d y z))
+    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, A * (x + y) < ε) :
     UniformSpace α :=
 .ofCore
   { uniformity := ⨅ r > 0, 𝓟 { x | d x.1 x.2 < r }
@@ -408,11 +409,12 @@ def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
         fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
 #align uniform_space.of_fun UniformSpace.ofFun
 
-theorem UniformSpace.hasBasis_ofFun {α : Type u} {β : Type v} [LinearOrderedAddCommMonoid β]
+theorem UniformSpace.hasBasis_ofFun {α : Type u} {β : Type v} [LinearOrderedCommSemiring β]
+    (A : β) [Fact (0 < A)]
     (h₀ : ∃ x : β, 0 < x) (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
-    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
-    𝓤[.ofFun d refl symm triangle half].HasBasis ((0 : β) < ·) (fun ε => { x | d x.1 x.2 < ε }) :=
+    (triangle : ∀ x y z, d x z ≤ A * (d x y + d y z))
+    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, A * (x + y) < ε) :
+    𝓤[.ofFun A d refl symm triangle half].HasBasis ((0 : β) < ·) (fun ε => { x | d x.1 x.2 < ε }) :=
   hasBasis_biInf_principal'
     (fun ε₁ h₁ ε₂ h₂ => ⟨min ε₁ ε₂, lt_min h₁ h₂, fun _x hx => lt_of_lt_of_le hx (min_le_left _ _),
       fun _x hx => lt_of_lt_of_le hx (min_le_right _ _)⟩) h₀

@@ -51,16 +51,32 @@ class EDist (α : Type*) where
 export EDist (edist)
 
 /-- Creating a uniform space from an extended distance. -/
-def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
-    (edist_comm : ∀ x y : α, edist x y = edist y x)
-    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : UniformSpace α :=
-  .ofFun edist edist_self edist_comm edist_triangle fun ε ε0 =>
-    ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
-      (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩
+def uniformSpaceOfEDist (A : ℝ≥0) [Fact (1 ≤ A)] (edist : α → α → ℝ≥0∞)
+    (edist_self : ∀ x : α, edist x x = 0) (edist_comm : ∀ x y : α, edist x y = edist y x)
+    (edist_triangle : ∀ x y z : α, edist x z ≤ A * (edist x y + edist y z)) : UniformSpace α :=
+  have h1 : 1 ≤ A := Fact.out
+  have h2 : 0 < (A : ℝ≥0∞) := zero_lt_one.trans_le (by exact_mod_cast h1)
+  have : Fact (0 < (A : ℝ≥0∞)) := .mk h2
+  .ofFun (A : ℝ≥0∞) edist edist_self edist_comm edist_triangle fun ε ε0 =>
+    ⟨ε / (2 * A), by sorry, fun _ h₁ _ h₂ =>
+      sorry⟩
 #align uniform_space_of_edist uniformSpaceOfEDist
 
 -- the uniform structure is embedded in the emetric space structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
+/-- Extended (quasi) (pseudo) metric spaces, with an extended distance `edist` possibly taking the
+value ∞ -/
+class QuasiPseudoEMetricSpace (α : Type u) (A : outParam ℝ≥0) [fact : Fact (1 ≤ A)] extends
+    EDist α : Type u where
+  edist_self : ∀ x : α, edist x x = 0
+  edist_comm : ∀ x y : α, edist x y = edist y x
+  edist_qtriangle : ∀ x y z : α, edist x z ≤ A * (edist x y + edist y z)
+  toUniformSpace : UniformSpace α :=
+    uniformSpaceOfEDist A edist edist_self edist_comm edist_qtriangle
+  uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } := by rfl
+
+attribute [instance] QuasiPseudoEMetricSpace.toUniformSpace
+
 /-- Extended (pseudo) metric spaces, with an extended distance `edist` possibly taking the
 value ∞
 
@@ -74,31 +90,30 @@ on a product.
 
 Continuity of `edist` is proved in `Topology.Instances.ENNReal`
 -/
-class PseudoEMetricSpace (α : Type u) extends EDist α : Type u where
-  edist_self : ∀ x : α, edist x x = 0
-  edist_comm : ∀ x y : α, edist x y = edist y x
-  edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z
-  toUniformSpace : UniformSpace α := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
-  uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } := by rfl
+class PseudoEMetricSpace (α : Type u) extends
+  QuasiPseudoEMetricSpace (fact := .mk le_rfl) α : Type u
 #align pseudo_emetric_space PseudoEMetricSpace
-
-attribute [instance] PseudoEMetricSpace.toUniformSpace
 
 /- Pseudoemetric spaces are less common than metric spaces. Therefore, we work in a dedicated
 namespace, while notions associated to metric spaces are mostly in the root namespace. -/
 variable [PseudoEMetricSpace α]
 
-export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
+export QuasiPseudoEMetricSpace (edist_self edist_comm edist_qtriangle)
 
 attribute [simp] edist_self
 
+theorem edist_triangle (x y z : α) : edist x z ≤ edist x y + edist y z :=
+  calc edist x z ≤ 1 * (edist x y + edist y z) := by apply edist_qtriangle (fact := .mk le_rfl)
+    _ = edist x y + edist y z := by rw [one_mul]
+#align edist_triangle edist_triangle
+
 /-- Triangle inequality for the extended distance -/
 theorem edist_triangle_left (x y z : α) : edist x y ≤ edist z x + edist z y := by
-  rw [edist_comm z]; apply edist_triangle
+  rw [edist_comm (fact := .mk le_rfl) z]; apply edist_triangle
 #align edist_triangle_left edist_triangle_left
 
 theorem edist_triangle_right (x y z : α) : edist x y ≤ edist x z + edist y z := by
-  rw [edist_comm y]; apply edist_triangle
+  rw [edist_comm (fact := .mk le_rfl) y]; apply edist_triangle
 #align edist_triangle_right edist_triangle_right
 
 theorem edist_congr_right {x y z : α} (h : edist x y = 0) : edist x z = edist y z := by
