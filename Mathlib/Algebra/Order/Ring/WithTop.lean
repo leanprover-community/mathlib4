@@ -12,7 +12,7 @@ import Mathlib.Tactic.Tauto
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
-The main results of this section are `WithTop.commSemiring` and
+The main results of this section are `WithTop.orderedCommSemiring` and
 `WithBot.orderedCommSemiring`.
 -/
 
@@ -226,6 +226,11 @@ instance commSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd
     CommSemiring (WithTop α) :=
   { WithTop.commMonoidWithZero with
     toSemiring := semiring }
+
+instance orderedCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [NoZeroDivisors α] [Nontrivial α] :
+    OrderedCommSemiring (WithTop α) :=
+  CanonicallyOrderedAdd.toOrderedCommSemiring
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := { fullyApplied := false })]

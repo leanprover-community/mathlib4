@@ -58,8 +58,7 @@ open BigOperators Function
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  OrderedCommSemiring, Inhabited
+  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring, Inhabited
 #align nnreal NNReal
 
 namespace NNReal
@@ -78,6 +77,9 @@ noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
+
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
