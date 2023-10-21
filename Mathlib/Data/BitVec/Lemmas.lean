@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Harun Khan
 -/
 
-import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.BitVec.Defs
 
 /-!
 # Basic Theorems About Bitvectors

@@ -1361,8 +1361,8 @@ import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Array.Lemmas
 import Mathlib.Data.BinaryHeap
-import Mathlib.Data.Bitvec.Defs
-import Mathlib.Data.Bitvec.Lemmas
+import Mathlib.Data.BitVec.Defs
+import Mathlib.Data.BitVec.Lemmas
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bool.Count
