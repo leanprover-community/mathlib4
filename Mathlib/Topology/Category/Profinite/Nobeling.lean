@@ -86,48 +86,42 @@ theorem surjective_projRestrict :
     Function.Surjective (ProjRestrict C J) := by
   intro x
   obtain ⟨y, hy⟩ := x.prop
-  refine ⟨⟨y, hy.1⟩, ?_⟩
-  exact Subtype.ext hy.2
+  refine ⟨⟨y, hy.1⟩, Subtype.ext hy.2⟩
 
 theorem proj_eq_self {x : I → Bool} (h : ∀ i, x i ≠ false → J i) : Proj J x = x := by
   ext i
   simp only [Proj, ite_eq_left_iff]
-  rw [← not_imp_not, not_not, eq_comm, ← ne_eq]
-  exact h i
+  contrapose!
+  simpa only [ne_comm] using h i
 
 theorem proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ false → J i) : C.proj J = C := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨y, hy⟩ := h
-    suffices x = y by rw [this]; exact hy.1
-    rw [← hy.2, proj_eq_self]
-    exact fun i ↦ hh i y hy.1
-  · refine ⟨x, ⟨h, ?_⟩⟩
+  · obtain ⟨y, hy, rfl⟩ := h
+    rwa [proj_eq_self]
+    exact (hh · y hy)
+  · refine ⟨x, h, ?_⟩
     rw [proj_eq_self]
-    exact fun i ↦ hh i x h
+    exact (hh · x h)
 
 theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
     (Proj J : (I → Bool) → (I → Bool)) := by
   ext x i
   dsimp [Proj]
-  split_ifs with hh hh'
-  · rfl
-  · exfalso; exact hh' (h i hh)
-  · rfl
+  split_ifs with hh hh' <;> aesop
 
 theorem proj_eq_of_subset (h : ∀ i, J i → K i) : (C.proj K).proj J = C.proj J := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨y, hy⟩ := h
-    obtain ⟨z, hz⟩ := hy.1
-    rw [← hy.2, ← hz.2]
-    suffices Proj J z = (Proj J ∘ Proj K) z by exact ⟨z, ⟨hz.1, this⟩⟩
+  · obtain ⟨y, hy, rfl⟩ := h
+    obtain ⟨z, hz, rfl⟩ := hy
+    suffices Proj J z = (Proj J ∘ Proj K) z by exact ⟨z, ⟨hz, this⟩⟩
     rw [proj_comp_of_subset J K h]
-  · obtain ⟨y, hy⟩ := h
+  · obtain ⟨y, hy, rfl⟩ := h
     dsimp [Set.proj]
     rw [← Set.image_comp]
-    refine ⟨y, ⟨hy.1, ?_⟩⟩
-    rw [← hy.2, proj_comp_of_subset J K h]
+    refine ⟨y, ⟨hy, ?_⟩⟩
+    rw [proj_comp_of_subset J K h]
 
 variable {J K L}
 
@@ -141,34 +135,24 @@ theorem continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRest
   Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
 
 theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (ProjRestricts C h) :=
-  Function.Surjective.comp (Homeomorph.surjective _) (surjective_projRestrict _ _)
+  (Homeomorph.surjective _).comp (surjective_projRestrict _ _)
 
 variable (J) in
-theorem projRestricts_eq_id  :
-    ProjRestricts C (fun i (h : J i) ↦ h) = id := by
-  ext x i
-  simp only [Set.proj, Proj, ProjRestricts_coe, id_eq, ite_eq_left_iff]
-  obtain ⟨y, hy⟩ := x.prop
-  intro h
-  rw [← hy.2, Proj, if_neg h]
+theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
+  ext ⟨x, y, hy, rfl⟩ i
+  simp (config := { contextual := true }) only [Set.proj, Proj, ProjRestricts_coe, id_eq, if_true]
 
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
   simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe]
-  split_ifs with h hh
-  · rfl
-  · exfalso; exact hh (hJK i h)
-  · rfl
+  split_ifs with h hh <;> aesop
 
 theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
   simp only [Set.proj, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
-  split_ifs with hh hh'
-  · rfl
-  · exfalso; exact hh' (h i hh)
-  · rfl
+  split_ifs with hh hh' <;> aesop
 
 variable (J)
 
@@ -177,13 +161,12 @@ open Profinite ContinuousMap
 /-- The objectwise map in the isomorphism `spanFunctor ≅ Profinite.indexFunctor`. -/
 def iso_map : C(C.proj J, (IndexFunctor.obj C J)) :=
   ⟨fun x ↦ ⟨fun i ↦ x.val i.val, by
-    obtain ⟨y, hy⟩ := x.prop
-    refine ⟨y, hy.1, ?_⟩
-    rw [precomp, coe_mk, ← hy.2]
-    ext i
-    exact (if_pos i.prop).symm⟩, by
+    rcases x with ⟨x, y, hy, rfl⟩
+    refine ⟨y, hy, ?_⟩
+    ext ⟨i, hi⟩
+    simp [precomp, Proj, hi]⟩, by
     refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
-    exact (Continuous.comp (continuous_apply i.val) continuous_subtype_val)⟩
+    exact (continuous_apply i.val).comp continuous_subtype_val⟩
 
 lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
@@ -191,14 +174,12 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     rw [Subtype.ext_iff] at h
     by_cases hi : J i
     · exact congr_fun h ⟨i, hi⟩
-    · obtain ⟨c, hc⟩ := a.prop
-      obtain ⟨d, hd⟩ := b.prop
-      rw [← hc.2, ← hd.2, Proj, Proj, if_neg hi, if_neg hi]
+    · rcases a with ⟨_, c, hc, rfl⟩
+      rcases b with ⟨_, d, hd, rfl⟩
+      simp only [Proj, if_neg hi]
   · refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
-    · obtain ⟨y, hy⟩ := a.prop
-      refine ⟨y, hy.1, ?_⟩
-      rw [← hy.2]
-      rfl
+    · rcases a with ⟨_, y, hy, rfl⟩
+      exact ⟨y, hy, rfl⟩
     · ext i
       exact dif_pos i.prop
 
@@ -206,11 +187,8 @@ variable (K)
 
 lemma iso_naturality (h : ∀ i, J i → K i) :
     iso_map C J ∘ ProjRestricts C h = IndexFunctor.map C h ∘ iso_map C K := by
-  ext x i
-  simp only [iso_map, ContinuousMap.coe_mk, Function.comp_apply, ProjRestricts_coe,
-    Proj._eq_1, precomp._eq_1, Set.coe_inclusion]
-  rw [if_pos i.prop]
-  rfl
+  ext _ ⟨i, hi⟩
+  exact if_pos hi
 
 lemma cones_naturality :
     iso_map C J ∘ ProjRestrict C J = IndexFunctor.π_app C J := by
@@ -244,8 +222,8 @@ def spanIsoIndex : spanFunctor hC ≅ indexFunctor hC := NatIso.ofComponents
 noncomputable
 def spanCone : Cone (spanFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
-  π := {
-    app := fun J ↦ ⟨ProjRestrict C (· ∈ unop J), continuous_projRestrict _ _⟩
+  π :=
+  { app := fun J ↦ ⟨ProjRestrict C (· ∈ unop J), continuous_projRestrict _ _⟩
     naturality := by
       intro _ _ h
       simp only [Functor.const_obj_obj, spanFunctor, ProjRestricts, Homeomorph.setCongr,
@@ -256,8 +234,7 @@ def spanCone : Cone (spanFunctor hC) where
       split_ifs with h₁ h₂
       · rfl
       · simp only [(leOfHom h.unop h₁), not_true] at h₂
-      · rfl
-  }
+      · rfl }
 
 /-- The isomorphism of cones `spanCone ≅ Profinite.indexCone` -/
 noncomputable
@@ -284,9 +261,8 @@ def e (i : I) : LocallyConstant C ℤ where
   toFun := fun f ↦ (if f.val i then 1 else 0)
   isLocallyConstant := by
     rw [IsLocallyConstant.iff_continuous]
-    exact Continuous.comp (continuous_of_discreteTopology :
-      Continuous (fun (a : Bool) ↦ (if a then (1 : ℤ) else 0)))
-      (Continuous.comp (continuous_apply i) continuous_subtype_val)
+    exact (continuous_of_discreteTopology (f := fun (a : Bool) ↦ (if a then (1 : ℤ) else 0))).comp
+      ((continuous_apply i).comp continuous_subtype_val)
 
 /-- Formal products of the form `e C i₁ ··· e C iᵣ` with `i₁ > ··· > iᵣ`. -/
 def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
@@ -340,13 +316,13 @@ def eval (l : {l : Products I // l.isGood C}) : LocallyConstant C ℤ :=
   Products.eval C l.1
 
 theorem injective : Function.Injective (eval C) := by
-  intro ⟨a,ha⟩ ⟨b,hb⟩ h
+  intro ⟨a, ha⟩ ⟨b, hb⟩ h
   dsimp [eval] at h
-  apply Or.elim3 (trichotomous_of (·<·) a b : a < b ∨ a = b ∨ b < a)
-  · intro h'; exfalso; apply hb; rw [← h]
+  rcases lt_trichotomy a b with (h'|rfl|h')
+  · exfalso; apply hb; rw [← h]
     exact Submodule.subset_span ⟨a, ⟨h',rfl⟩⟩
-  · exact fun h ↦ Subtype.eq h
-  · intro h'; exfalso; apply ha; rw [h]
+  · rfl
+  · exfalso; apply ha; rw [h]
     exact Submodule.subset_span ⟨b, ⟨h',rfl⟩⟩
 
 /-- The image of the good products in the module `LocallyConstant C ℤ`. -/
@@ -374,14 +350,10 @@ theorem eval_eq (l : Products I) (x : C) :
   rw [eval, map_list_prod]
   split_ifs with h
   · simp only [List.map_map]
-    suffices : ∀ y, y ∈ List.map (LocallyConstant.evalMonoidHom x ∘ e C) l.val → y = 1
-    · exact List.prod_eq_one this
-    intro y hy
-    simp only [List.mem_map, Function.comp_apply] at hy
-    obtain ⟨i,hi⟩ := hy
-    specialize h i hi.1
-    dsimp [e] at hi
-    rw [← hi.2, if_pos h]
+    apply List.prod_eq_one
+    simp only [List.mem_map, Function.comp_apply]
+    intro _ ⟨i, hi, hrfl⟩; cases hrfl -- TODO: why can't `intro` take a `rfl` pattern here?
+    exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push_neg at h
     convert h with i
@@ -394,13 +366,10 @@ theorem evalFacProp {l : Products I} (J : I → Prop)
   ext x
   dsimp [ProjRestrict]
   rw [Products.eval_eq, Products.eval_eq]
-  have : ∀ i ∈ l.val, x.val i = if J i then x.val i else false
-  · intro i hi; split_ifs with h' <;> [rfl; simp only [h i hi, not_true] at h']
-  split_ifs with h₁ h₂ h₂
-  · rfl
-  · exfalso; apply h₂; intro i hi; rw [← h₁ i hi]; exact this i hi
-  · exfalso; apply h₁; intro i hi; rw [← h₂ i hi]; exact (this i hi).symm
-  · rfl
+  congr
+  apply forall_congr; intro i
+  apply forall_congr; intro hi
+  simp [h i hi, Proj]
 
 theorem evalFacPropsAux {l : Products I} (J K : I → Prop) (hJK : ∀ i, J i → K i)
     [∀ j, Decidable (J j)] [∀ j, Decidable (K j)] :
@@ -408,8 +377,7 @@ theorem evalFacPropsAux {l : Products I} (J K : I → Prop) (hJK : ∀ i, J i �
     l.eval ((C.proj K).proj J) := by
   ext _
   simp only [Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe, Function.comp_apply,
-    Equiv.setCongr_apply]
-  rw [Products.eval_eq, Products.eval_eq]
+    Equiv.setCongr_apply, Products.eval_eq]
 
 theorem evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]
@@ -426,25 +394,23 @@ theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j
   suffices : eval (C.proj J) l = 0
   · rw [this]
     exact Submodule.zero_mem _
-  ext ⟨_, ⟨_, ⟨_, hh⟩⟩⟩
-  rw [eval_eq]
-  split_ifs with h
-  · exfalso
-    apply h'
-    specialize h i hi
-    simp only [← hh, Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at h
-    exact h.1
+  ext ⟨_, ⟨_, ⟨_, rfl⟩⟩⟩
+  rw [eval_eq, if_neg]
   · rfl
+  · intro h
+    specialize h i hi
+    simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at h
+    exact h' h.1
 
 instance : IsWellFounded (Products I) (·<·) := by
   have : (fun (l m : Products I) ↦ l < m) = (fun l m ↦ List.Lex (·<·) l.val m.val)
   · ext l m
     exact Products.lt_iff_lex_lt l m
   rw [this]
-  have hflip : (·>· : I → I → Prop) = flip (·<· : I → I → Prop) := rfl
   dsimp [Products]
+  have hflip : (·>· : I → I → Prop) = flip (·<· : I → I → Prop) := rfl
   rw [hflip]
-  exact inferInstance
+  infer_instance
 
 theorem eval_mem_span_goodProducts (l : Products I) :
     l.eval C ∈ Submodule.span ℤ (Set.range (GoodProducts.eval C)) := by
@@ -460,10 +426,8 @@ theorem eval_mem_span_goodProducts (l : Products I) :
     suffices : Products.eval C '' {m | m < l} ⊆ Submodule.span ℤ (Set.range (GoodProducts.eval C))
     · rw [← Submodule.span_le] at this
       exact this hl
-    intro a ha
-    obtain ⟨m, hm⟩ := ha
-    rw [← hm.2]
-    exact h m hm.1
+    intro a ⟨m, hm, hrfl⟩; cases hrfl -- TODO: why does `intro` not accept a `rfl` pattern here?
+    exact h m hm
 
 end Products
 
