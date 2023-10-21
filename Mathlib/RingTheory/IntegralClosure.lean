@@ -227,7 +227,7 @@ theorem FG_adjoin_singleton_of_integral (x : A) (hx : IsIntegral R x) :
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin (Set.mem_singleton _)) k
   intro r hr; change r ∈ Algebra.adjoin R ({x} : Set A) at hr
   rw [Algebra.adjoin_singleton_eq_range_aeval] at hr
-  rcases(aeval x).mem_range.mp hr with ⟨p, rfl⟩
+  rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
   rw [← modByMonic_add_div p hfm]
   rw [← aeval_def] at hfx
   rw [AlgHom.map_add, AlgHom.map_mul, hfx, zero_mul, add_zero]
@@ -348,7 +348,7 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
       rw [Algebra.algebraMap_eq_smul_one]
       exact smul_mem (span S₀ (insert (1 : A) (y : Set A))) y' (subset_span (Or.inl rfl))
   have foo : ∀ z, z ∈ S₁ ↔ z ∈ Algebra.adjoin (↥S₀) (y : Set A)
-  simp [this]
+  simp only [this, Finset.univ_eq_attach, Subalgebra.mem_toSubring, forall_const]
   haveI : IsNoetherianRing S₀ := is_noetherian_subring_closure _ (Finset.finite_toSet _)
   refine'
     isIntegral_of_submodule_noetherian (Algebra.adjoin S₀ ↑y)

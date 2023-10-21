@@ -115,6 +115,68 @@ notation3 "⋃ "(...)", "r:60:(scoped f => iUnion f) => r
 /-- Notation for `Set.iInter`. Indexed intersection of a family of sets -/
 notation3 "⋂ "(...)", "r:60:(scoped f => iInter f) => r
 
+section delaborators
+
+open Lean Lean.PrettyPrinter.Delaborator
+
+/-- Delaborator for indexed unions. -/
+@[delab app.Set.iUnion]
+def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  unless f.isLambda do failure
+  let prop ← Meta.isProp ι
+  let dep := f.bindingBody!.hasLooseBVar 0
+  let ppTypes ← getPPOption getPPFunBinderTypes
+  let stx ← SubExpr.withAppArg do
+    let dom ← SubExpr.withBindingDomain delab
+    withBindingBodyUnusedName $ fun x => do
+      let x : TSyntax `ident := .mk x
+      let body ← delab
+      if prop && !dep then
+        `(⋃ (_ : $dom), $body)
+      else if prop || ppTypes then
+        `(⋃ ($x:ident : $dom), $body)
+      else
+        `(⋃ $x:ident, $body)
+  -- Cute binders
+  let stx : Term ←
+    match stx with
+    | `(⋃ $x:ident, ⋃ (_ : $y:ident ∈ $s), $body)
+    | `(⋃ ($x:ident : $_), ⋃ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⋃ $x:ident ∈ $s, $body) else pure stx
+    | _ => pure stx
+  return stx
+
+/-- Delaborator for indexed intersections. -/
+@[delab app.Set.iInter]
+def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  unless f.isLambda do failure
+  let prop ← Meta.isProp ι
+  let dep := f.bindingBody!.hasLooseBVar 0
+  let ppTypes ← getPPOption getPPFunBinderTypes
+  let stx ← SubExpr.withAppArg do
+    let dom ← SubExpr.withBindingDomain delab
+    withBindingBodyUnusedName $ fun x => do
+      let x : TSyntax `ident := .mk x
+      let body ← delab
+      if prop && !dep then
+        `(⋂ (_ : $dom), $body)
+      else if prop || ppTypes then
+        `(⋂ ($x:ident : $dom), $body)
+      else
+        `(⋂ $x:ident, $body)
+  -- Cute binders
+  let stx : Term ←
+    match stx with
+    | `(⋂ $x:ident, ⋂ (_ : $y:ident ∈ $s), $body)
+    | `(⋂ ($x:ident : $_), ⋂ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⋂ $x:ident ∈ $s, $body) else pure stx
+    | _ => pure stx
+  return stx
+
+end delaborators
+
 @[simp]
 theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
   rfl
@@ -1109,6 +1171,17 @@ theorem sUnion_subset {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t' ⊆ 
 theorem sUnion_subset_iff {s : Set (Set α)} {t : Set α} : ⋃₀s ⊆ t ↔ ∀ t' ∈ s, t' ⊆ t :=
   sSup_le_iff
 #align set.sUnion_subset_iff Set.sUnion_subset_iff
+
+/-- `sUnion` is monotone under taking a subset of each set. -/
+lemma sUnion_mono_subsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, t ⊆ f t) :
+    ⋃₀ s ⊆ ⋃₀ (f '' s) :=
+  fun _ ⟨t, htx, hxt⟩ ↦ ⟨f t, mem_image_of_mem f htx, hf t hxt⟩
+
+/-- `sUnion` is monotone under taking a superset of each set. -/
+lemma sUnion_mono_supsets {s : Set (Set α)} {f : Set α → Set α} (hf : ∀ t : Set α, f t ⊆ t) :
+    ⋃₀ (f '' s) ⊆ ⋃₀ s :=
+  -- If t ∈ f '' s is arbitrary; t = f u for some u : Set α.
+  fun _ ⟨_, ⟨u, hus, hut⟩, hxt⟩ ↦ ⟨u, hus, (hut ▸ hf u) hxt⟩
 
 theorem subset_sInter {S : Set (Set α)} {t : Set α} (h : ∀ t' ∈ S, t ⊆ t') : t ⊆ ⋂₀ S :=
   le_sInf h
