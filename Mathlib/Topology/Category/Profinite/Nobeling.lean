@@ -28,7 +28,8 @@ This file proves Nöbeling's theorem,
 
 We follow the proof of theorem 5.4 in [scholze2019condensed], in which the idea is to embed `S` in
 a product of `I` copies of `Bool`, choosing a well-ordering on `I` and using ordinal induction over
-that well-order.
+that well-order. Here we can let `I` be the set of clopen subsets of `S` since `S` is totally
+separated.
 
 For `i : I`, let `e S i : LocallyConstant (S : Set (I → Bool)) ℤ` denote the map
 `fun f ↦ (if f.val i then 1 else 0)`.
@@ -199,7 +200,7 @@ open CategoryTheory Limits Opposite
 
 variable {C} (hC : IsCompact C)
 
-/-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
+/-- The functor from the poset of finsets of `I` to  `Profinite`, indexing the limit. -/
 noncomputable
 def spanFunctor :
     (Finset I)ᵒᵖ ⥤ Profinite.{u} where
