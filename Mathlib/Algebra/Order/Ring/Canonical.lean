@@ -82,8 +82,7 @@ instance (priority := 100) toOrderedCommMonoid
   mul_le_mul_left _ _ := mul_le_mul_left'
 #align canonically_ordered_comm_semiring.to_ordered_comm_monoid CanonicallyOrderedAdd.toOrderedCommMonoid
 
--- see Note [lower instance priority]
-instance (priority := 100) toOrderedCommSemiring
+abbrev toOrderedCommSemiring
     [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
     [CovariantClass α α (· + ·) (· ≤ ·)] :
     OrderedCommSemiring α where
@@ -93,7 +92,7 @@ instance (priority := 100) toOrderedCommSemiring
   mul_le_mul_of_nonneg_left := fun _ _ _ h _ => mul_le_mul_left' h _
   mul_le_mul_of_nonneg_right := fun _ _ _ h _ => mul_le_mul_right' h _
 #align canonically_ordered_comm_semiring.to_ordered_comm_semiring CanonicallyOrderedAdd.toOrderedCommSemiring
---[OrderedSemiring α] [CanonicallyOrderedAdd α]
+
 @[simp]
 theorem mul_pos [NonUnitalNonAssocSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
     [NoZeroDivisors α] {a b : α} :

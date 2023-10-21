@@ -16,8 +16,7 @@ import Mathlib.Algebra.Order.WithZero
 
 variable {α : Type _} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
 
--- See note [lower instance priority]
-instance (priority := 100) CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
+abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α :=
   { ‹LinearOrderedSemifield α› with
     mul_le_mul_left := fun a b h c ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
