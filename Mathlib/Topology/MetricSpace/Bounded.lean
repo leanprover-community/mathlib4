@@ -13,10 +13,13 @@ This file contains on definition, and various results on boundedness in pseudo-m
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
   Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 
-* `isBounded_iff_subset_closedBall`: a non-empty set is bounded iff it is is included in some closed ball
+* `isBounded_iff_subset_closedBall`: a non-empty set is bounded if and only if
+   it is is included in some closed ball
 * describing the cobounded filter, relating to the cocompact filter
-* compact and totally bounded sets are bounded
-* the **Heine–Borel theorem**: in a proper space, a closed bounded set is compact.
+* `IsCompact.isBounded`: compact sets are bounded
+* `TotallyBounded.isBounded`: totally bounded sets are bounded
+* `isCompact_iff_isClosed_bounded`, the **Heine–Borel theorem**:
+   in a proper space, a set is compact if and only if it is closed and bounded.
 * `cobounded_eq_cocompact`: in a proper space, cobounded and compact sets are the same
 diameter of a subset, and its relation to boundedness
 
