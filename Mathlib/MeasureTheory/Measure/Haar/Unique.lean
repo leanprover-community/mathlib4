@@ -265,14 +265,15 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
       conv_rhs => rw [← integral_mul_right_eq_self _ x]
   _ = (∫ y, f y * (D y)⁻¹ ∂ν) * ∫ x, g x ∂μ := integral_mul_left _ _
 
-/-- Given two left-invariant measures which are finite on compacts, they integrate in the same way
+/-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
+compacts, they coincide in the following sense: they give the same value to the integral of
 continuous compactly supported functions, up to a multiplicative constant. -/
 @[to_additive]
 lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
     ∃ (c : ℝ≥0), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
-      ∫ x, f x ∂μ' = c * ∫ x, f x ∂μ := by
+      ∫ x, f x ∂μ' = ∫ x, f x ∂(c • μ) := by
   -- The group has to be locally compact, otherwise all integrals vanish and the result is trivial.
   by_cases H : LocallyCompactSpace G; swap
   · refine ⟨0, fun f f_cont f_comp ↦ ?_⟩
@@ -310,12 +311,18 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
     integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
   /- Since the `ν`-factor is the same for `μ` and `μ'`, this gives the result. -/
   rw [← A, mul_assoc, mul_comm] at B
-  simpa using B
+  simp only [B, integral_smul_nnreal_measure]
+  rfl
 
 instance instIsFiniteMeasureOnCompactsRestrict {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
     {μ : Measure X} [IsFiniteMeasureOnCompacts μ] {s : Set X} :
     IsFiniteMeasureOnCompacts (μ.restrict s) :=
   ⟨fun k hk ↦ (Measure.le_iff'.1 restrict_le_self k).trans_lt hk.measure_lt_top⟩
+
+instance instIsFiniteMeasureOnCompactsSmul {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+    {μ : Measure X} [IsFiniteMeasureOnCompacts μ] (c : ℝ≥0) :
+    IsFiniteMeasureOnCompacts (c • μ) :=
+  ⟨fun _k hk ↦ ENNReal.mul_lt_top ENNReal.coe_ne_top (hk.measure_lt_top).ne⟩
 
 lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -340,15 +347,59 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, ?_⟩
     exact (integral_le_measure (fun x _hx ↦ (f_range x).2) (fun x hx ↦ (fU hx).le)).trans_lt mu_U
 
+/-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
+compacts and inner regular for finite measure sets with respect to compact sets,
+they coincide in the following sense: they give the same value to finite measure sets,
+up to a multiplicative constant. -/
 @[to_additive]
 lemma measure_mulLeftInvariant_unique_of_ne_top
     (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']:
     ∃ (c : ℝ≥0), ∀ (s : Set G), μ s < ∞ → μ' s < ∞ → μ' s = (c • μ) s := by
+  /- We know that the measures integrate in the same way continuous compactly supported functions,
+  up to a constant `c`. We will use this constant `c`. -/
   rcases integral_mulLeftInvariant_unique_of_hasCompactSupport μ μ' with ⟨c, hc⟩
   refine ⟨c, fun s hs h's ↦ ?_⟩
+  /- By regularity, every compact set may be approximated by a continuous compactly supported
+  function. Therefore, the measures coincide on compact sets. -/
   have A : ∀ k, IsCompact k → μ' k = (c • μ) k := by
     intro k hk
     rw [hk.measure_eq_biInf_integral_hasCompactSupport μ',
         hk.measure_eq_biInf_integral_hasCompactSupport (c • μ)]
+    congr with f
+    congr with f_cont
+    congr with f_comp
+    congr with _fk
+    congr with _f_nonneg
+    congr 1
+    exact hc f f_cont f_comp
+  /- By regularity, every measurable set of finite measure may be approximated by compactsets.
+  Therefore, the measures coincide on measurable sets of finite measure. -/
+  have B : ∀ s, MeasurableSet s → μ s < ∞ → μ' s < ∞ → μ' s = (c • μ) s := by
+    intro s s_meas hs h's
+    have : (c • μ) s ≠ ∞ := by simp [ENNReal.mul_eq_top, hs.ne]
+    rw [s_meas.measure_eq_iSup_isCompact_of_ne_top h's.ne,
+        s_meas.measure_eq_iSup_isCompact_of_ne_top this]
+    congr with K
+    congr with _Ks
+    congr with K_comp
+    exact A K K_comp
+  /- Finally, replace an arbitrary finite measure set with a measurable version, and use the
+  version for measurable sets. -/
+  let t := toMeasurable μ' s ∩ toMeasurable μ s
+  have st : s ⊆ t := subset_inter (subset_toMeasurable μ' s) (subset_toMeasurable μ s)
+  have mu'_t : μ' t = μ' s := by
+    apply le_antisymm
+    · exact (measure_mono (inter_subset_left _ _)).trans (measure_toMeasurable s).le
+    · exact measure_mono st
+  have mu_t : μ t = μ s := by
+    apply le_antisymm
+    · exact (measure_mono (inter_subset_right _ _)).trans (measure_toMeasurable s).le
+    · exact measure_mono st
+  simp only [← mu'_t, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, ← mu_t,
+    nnreal_smul_coe_apply]
+  apply B
+  · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)
+  · exact mu_t.le.trans_lt hs
+  · exact mu'_t.le.trans_lt h's
