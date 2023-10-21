@@ -35,7 +35,8 @@ theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   ⟨(match x, y, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
-theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y := by aesop
+theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y :=
+  ⟨id, id⟩
 
 @[simp]
 lemma ofNat_eq_mod_two_pow (n : Nat) : (BitVec.ofNat w n).toNat = n % 2^w := rfl
@@ -65,17 +66,8 @@ theorem toNat_extractLsb {i j} {x : BitVec w} :
     (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j + 1)) := by
   simp [extractLsb, extractLsb', shiftRight_eq_div_pow]
 
-lemma bodd_eq_mod_two_bne_zero (n) : bodd n = (n % 2 != 0) := by
-  rw [mod_two_of_bodd]; cases bodd n <;> rfl
-
-lemma and_two_pow {n i} : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
-  apply eq_of_testBit_eq; intro j
-  rw [mul_comm, testBit_land]
-  cases' h : n.testBit i <;> cases' (ne_or_eq i j) with h1 h1
-  <;> simp [testBit_two_pow_of_ne _, *] at * <;> assumption
-
 theorem getLsb_eq_testBit {i} {x : BitVec w} : getLsb x i = x.toNat.testBit i := by
-  simp only [getLsb, Nat.shiftLeft_eq, one_mul, and_two_pow]
+  simp only [getLsb, Nat.shiftLeft_eq, one_mul, Nat.and_two_pow]
   cases' testBit (BitVec.toNat x) i
   <;> simp [pos_iff_ne_zero.mp (two_pow_pos i)]
 

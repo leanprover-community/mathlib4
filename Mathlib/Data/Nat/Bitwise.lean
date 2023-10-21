@@ -326,6 +326,12 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
+lemma and_two_pow {n i} : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
+  apply eq_of_testBit_eq; intro j
+  rw [mul_comm, testBit_land]
+  cases' h : n.testBit i <;> cases' (ne_or_eq i j) with h1 h1
+  <;> simp [testBit_two_pow_of_ne _, *] at * <;> assumption
+
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
