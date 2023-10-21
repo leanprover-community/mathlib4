@@ -8,16 +8,15 @@ import Mathlib.Topology.Category.Locale
 /-!
 # Adjunction between Locales and Topological Spaces
 
-This file defines functors between the categories of Locales and Topological Spaces
-and proves that they form an adjunction.
+This file defines the point functor from the category of locales to topological spaces
+and proves that it is right adjoint to the forgetful functor from topological spaces to locales.
 
 ## Main declarations
 
-* `pt`: the *points* functor from the category of locales to the category of topological spaces.
-* `topToLocale`: the forgetful functor from the category of topological spaces to the category of
-  locales.
+* `Locale.pt`: the *points* functor from the category of locales to the category of topological
+spaces.
 
-- `locale_top_adjunction`: the theorem that topToLocale is left adjoint to pt.
+* `Locale.adjunctionTopToLocalePT`: the adjunction between the functors `topToLocale` and `pt`.
 
 ## Motivation
 
@@ -25,10 +24,9 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 
 ## Implementation notes
 
-- In naming the various functions below, we follow common terminology and reserve the word *point*
+* In naming the various functions below, we follow common terminology and reserve the word *point*
   for an inhabitant of a type `X` which is a topological space, while we use the word *element* for
   an inhabitant of a type `L` which is a locale.
-
 
 ## References
 
@@ -75,14 +73,15 @@ instance instTopologicalSpace : TopologicalSpace (PT L) where
     use ⨆ t, ⨆ ht, f t ht
     simp_rw [map_iSup, iSup_Prop_eq, setOf_exists, hf, sUnion_eq_biUnion]
 
-/-- Characterizes when a subset of the space of points is open. -/
+/-- Characterization of when a subset of the space of points is open. -/
 lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff.rfl
 
 end PT
 
-/-- The contravariant functor `pt` from the category of locales to the category of
-topological spaces, which sends a frame `L` to the topological space `PT L` of homomorphisms
-from `L` to `Prop` and a frame homomorphism `f` to the continuous function `PT.map f`. -/
+/-- The covariant functor `pt` from the category of locales to the category of
+topological spaces, which sends a locale `L` to the topological space `PT L` of homomorphisms
+from `L` to `Prop` and a locale homomorphism `f` to a continuous function between the spaces
+of points. -/
 def pt : Locale ⥤ TopCat where
   obj L := ⟨PT L.unop, inferInstance⟩
   map f := ⟨fun p ↦ p.comp f.unop, continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
@@ -92,8 +91,8 @@ section locale_top_adjunction
 
 variable (X : Type*) [TopologicalSpace X] (L : Locale)
 
-/-- The function that associates with a point `x` of the space `X` a point of the locale of opens
-of `X`. -/
+/-- The unit of the adjunction between locales and topological spaces, which associates with
+a point `x` of the space `X` a point of the locale of opens of `X`. -/
 @[simps]
 def localePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
