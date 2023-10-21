@@ -211,7 +211,7 @@ by
 example (h1 : 1 > 0) : ∃ (n : Nat) (_h : n > 0), n = n := by
   use 1
 
--- Regression test: `use` needs to elaborate its argument inside the correct local context
+-- Regression test: `use` needs to ensure it does calculations inside the correct local contexts
 example : let P : Nat → Prop := fun _x => ∃ _n : Nat, True; P 1 := by
   intro P
   use 1
