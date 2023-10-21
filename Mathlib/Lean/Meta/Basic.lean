@@ -23,9 +23,16 @@ def Lean.Meta.preservingMCtx (x : MetaM α) : MetaM α := do
 open Lean Meta
 
 /--
-This function is similar to `forallMetaTelescopeReducing` except that
-it will construct mvars until it reaches one whose type is defeq to the given
-type `t`. It uses `forallMetaTelescopeReducing`.
+This function is similar to `forallMetaTelescopeReducing`: Given `e` of the
+form `forall ..xs, A`, this combinator will create a new metavariable for
+each `x` in `xs` until it reaches an `x` whose type is defeq to `t`,
+and instantiate `A` with these, while also reducing `A` if needed.
+It uses `forallMetaTelescopeReducing`.
+
+This function returns a triple `(mvs, bis, out)` where
+- `mvs` is an array containing the new metavariables.
+- `bis` is an array containing the binder infos for the `mvs`.
+- `out` is `e` but instantiated with the `mvs`.
 -/
 def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
     (e t : Expr) (kind : MetavarKind := MetavarKind.natural) :
