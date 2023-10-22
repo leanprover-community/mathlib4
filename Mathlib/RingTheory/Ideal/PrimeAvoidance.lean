@@ -158,9 +158,36 @@ example
       subst card
       simp only [iUnion_of_empty, subset_empty_iff, eq_empty_iff_forall_not_mem] at subset_union
       exact (subset_union 0 J.zero_mem).elim
-    · simp? at card
-      sorry
-    · sorry
+    · rw [Finset.card_eq_one_iff] at card
+      obtain ⟨i, rfl⟩ := card
+      simp only [Finset.mem_singleton, SetLike.coe_subset_coe, exists_eq_left]
+      intro x hx
+      specialize subset_union hx
+      simp only [Set.mem_iUnion, SetLike.mem_coe, Subtype.exists, Finset.mem_singleton, exists_prop,
+        exists_eq_left] at subset_union
+      exact subset_union
+    · rw [Finset.card_eq_two_iff] at card
+      obtain ⟨a, b, hab, rfl⟩ := card
+      simp only [Finset.mem_singleton, Finset.mem_insert, SetLike.coe_subset_coe, exists_eq_or_imp,
+        exists_eq_left]
+      simp only [iUnion_subtype, Finset.mem_singleton, Finset.mem_insert, iUnion_iUnion_eq_or_left,
+        iUnion_iUnion_eq_left] at subset_union
+      by_contra rid -- subset_union
+      push_neg at rid
+      rcases rid with ⟨h1, h2⟩
+      change ¬ (J : Set R) ⊆ _ at h1 h2
+      rw [not_subset_iff_exists_mem_not_mem] at h1 h2
+      rcases h1 with ⟨x, hx1, hx2⟩
+      rcases h2 with ⟨y, hy1, hy2⟩
+      have subset_union' := subset_union
+      specialize subset_union <| J.add_mem hx1 hy1
+      rcases subset_union with h|h
+      · refine (subset_union' hy1).elim (fun h' => hx2 ?_) (fun h' => hy2 h')
+        convert a.sub_mem h h'
+        simp only [SetLike.mem_coe, add_sub_cancel]
+      · refine (subset_union' hx1).elim (fun h' => hx2 h') (fun h' => hy2 ?_)
+        convert b.sub_mem h h'
+        simp only [SetLike.mem_coe, add_sub_cancel']
   · by_cases subset' : ∀ ℐ', ℐ' ⊂ ℐ → ¬ (J : Set R) ⊆ ⋃ (I : ℐ'), I
     · have nonempty : ℐ.filter (fun I ↦ I.IsPrime) ≠ ∅
       · intro rid
@@ -177,7 +204,6 @@ example
       · rintro ⟨I, hI⟩ rid
         specialize subset' (ℐ_hat I) (Finset.erase_ssubset hI)
         exact subset' rid
-      -- contrapose! subset_union
       simp_rw [not_subset] at subset_hat
       choose x hx1 hx2 using subset_hat
       let X := ∏ i in (ℐ.erase I).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ + x ⟨I, hI1⟩
