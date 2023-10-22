@@ -37,6 +37,7 @@ namespace ProjectiveSpecialLinearGroup
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R] [Inhabited n]
     {α : Type*}
 
+/-- A version of `Quotient.liftOn'` specialized for projective special linear group.-/
 def lift (f : SpecialLinearGroup n R → α)
     (hf : ∀ (A B : SpecialLinearGroup n R), ∀ (c : R),
     (c ^ Fintype.card n = 1 ∧ A.val = c • B.val) → f A = f B)
