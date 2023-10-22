@@ -911,8 +911,8 @@ theorem DiffSide_of_B_Para_Para (Bfgh : B f g h) (bL : OnLine b L) (hQ : OnLine 
 
 theorem DiffSide_of_B_B_Para (Babe : B a b e) (Bfgh : B f g h) (aL : OnLine a L) (bL : OnLine b L)
     (hS : OnLine h S) (bS : OnLine b S) (bP : OnLine b P) (gP : OnLine g P) (eR : OnLine e R)
-    (fR : OnLine f R) (fQ : OnLine f Q) (gQ : OnLine g Q) (ParaPR : Para P R) (ParaQL : Para Q L)
-    : DiffSide a g S := DiffSide_of_sameside_sameside bL bS bP aL hS gP (sameside_of_Para_online
+    (fR : OnLine f R) (fQ : OnLine f Q) (gQ : OnLine g Q) (ParaPR : Para P R) (ParaQL : Para Q L) :
+    DiffSide a g S := DiffSide_of_sameside_sameside bL bS bP aL hS gP (sameside_of_Para_online
   gQ (onLine_3_of_B Bfgh fQ gQ) ParaQL) $ sameside_of_DiffSide_DiffSide
     (DiffSide_of_sameside_DiffSide (sameside_of_Para_online' eR fR ParaPR) $
     DiffSide_of_B_offline' (B_symm Babe) bP (offline_of_Para' eR ParaPR)) $ DiffSide_of_B_offline'
@@ -1771,8 +1771,8 @@ theorem lines_inter_of_pgram (Babe : B a b e) (Bfgh : B f g h) (pgram1 : Paragra
 
 theorem lines_inter_of_pgram' (Babe : B a b e) (Bfgh : B f g h) (pgram1 : Paragram f g b e Q P L R)
     (pgram2 : Paragram a b g h L P Q M) (bS : OnLine b S) (hS : OnLine h S) (kS : OnLine k S)
-    (kR : OnLine k R) (kN : OnLine k N) (paraMR : Para M R) (paraLN : Para L N) (paraQN : Para Q N)
-    : ∃ m, OnLine m P ∧ OnLine m N ∧ B g b m := by
+    (kR : OnLine k R) (kN : OnLine k N) (paraMR : Para M R) (paraLN : Para L N) (paraQN : Para Q N):
+    ∃ m, OnLine m P ∧ OnLine m N ∧ B g b m := by
   have ⟨fQ, gQ, _, _, _, eL, eR, fR, paraQL, paraPR⟩ := pgram1
   have ⟨aL, bL, bP, gP, _, hQ, hM, _, _, paraPM⟩ := pgram2
   rcases lines_inter_of_para (ne_line_of_online hQ (offline_of_Para' hM paraPM)) gP gQ paraQN
