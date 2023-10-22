@@ -79,7 +79,14 @@ def respectsIso_qis : (qis C c).RespectsIso := by
   exact ((MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff
     ((homologyFunctor C c i).mapArrow.mapIso e)).1 (hf i)
 
+lemma homologyFunctor_inverts_qis (i : ι) :
+    (qis C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
+
 variable {C c}
+
+lemma mem_qis_iff {X Y : HomotopyCategory C c} (f : X ⟶ Y) :
+    qis C c f ↔ ∀ (n : ι), IsIso ((homologyFunctor _ _ n).map f) := by
+  rfl
 
 lemma quotient_map_mem_qis_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     qis C c ((quotient C c).map f) ↔ HomologicalComplex.qis C c f := by
@@ -128,6 +135,12 @@ lemma Qh_inverts_qis : (HomotopyCategory.qis C c).IsInvertedBy Qh := by
 instance :
     (HomotopyCategory.quotient C c ⋙ Qh).IsLocalization (HomologicalComplex.qis C c) :=
   Functor.IsLocalization.of_iso _ (quotientCompQhIso C c).symm
+
+noncomputable def homologyFunctorFactorsh (i : ι ): Qh ⋙ homologyFunctor C c i ≅
+    HomotopyCategory.homologyFunctor C c i :=
+  Quotient.natIsoLift _ ((Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
+    homologyFunctorFactors C c i  ≪≫ (HomotopyCategory.homologyFunctorFactors C c i).symm)
 
 section
 

@@ -459,6 +459,45 @@ lemma ofComp_compatibility :
 
 end CommShift
 
+namespace CommShift
+
+variable {C D E : Type*} [Category C] [Category D]
+  {F : C ⥤ D} {G : C ⥤ D} (e : F ≅ G)
+  (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
+  [F.CommShift A]
+
+namespace OfIso
+
+end OfIso
+
+def ofIso : G.CommShift A where
+  iso a := isoWhiskerLeft _ e.symm ≪≫ F.commShiftIso a ≪≫ isoWhiskerRight e _
+  zero := by
+    ext X
+    simp only [comp_obj, F.commShiftIso_zero A, Iso.trans_hom, isoWhiskerLeft_hom,
+      Iso.symm_hom, isoWhiskerRight_hom, NatTrans.comp_app, whiskerLeft_app,
+      isoZero_hom_app, whiskerRight_app, assoc]
+    erw [← e.inv.naturality_assoc, ← NatTrans.naturality,
+      e.inv_hom_id_app_assoc]
+  add a b := by
+    ext X
+    simp only [comp_obj, F.commShiftIso_add, Iso.trans_hom, isoWhiskerLeft_hom,
+      Iso.symm_hom, isoWhiskerRight_hom, NatTrans.comp_app, whiskerLeft_app,
+      isoAdd_hom_app, whiskerRight_app, assoc, map_comp, NatTrans.naturality_assoc,
+      NatIso.cancel_natIso_inv_left]
+    simp only [← Functor.map_comp_assoc, e.hom_inv_id_app_assoc]
+    simp only [← NatTrans.naturality, comp_obj, comp_map, map_comp, assoc]
+
+lemma ofIso_compatibility :
+    letI := ofIso e A
+    NatTrans.CommShift e.hom A := by
+  letI := ofIso e A
+  refine' ⟨fun a => _⟩
+  dsimp [commShiftIso, ofIso]
+  rw [← whiskerLeft_comp_assoc, e.hom_inv_id, whiskerLeft_id', id_comp]
+
+end CommShift
+
 end Functor
 
 end CategoryTheory

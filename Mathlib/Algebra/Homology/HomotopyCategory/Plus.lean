@@ -59,7 +59,7 @@ namespace Plus
 
 abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (subcategoryPlus C).ι
 
-def qis : MorphismProperty (Plus A) := (HomotopyCategory.qis A).inverseImage (ι A)
+def qis : MorphismProperty (Plus A) := (HomotopyCategory.qis A _).inverseImage (ι A)
 
 instance : (qis A).IsMultiplicative := by
   dsimp only [qis]

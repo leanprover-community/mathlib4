@@ -22,9 +22,9 @@ lemma qis_eq_subcategoryAcyclic_W :
   ext K L f
   obtain ⟨M, g, h, mem⟩ := Pretriangulated.distinguished_cocone_triangle f
   have mem' := (HomotopyCategory.Plus.ι C).map_distinguished _ mem
-  erw [(subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem]
-  dsimp [qis, MorphismProperty.inverseImage, HomotopyCategory.qis]
-  erw [(HomotopyCategory.subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem']
+  erw [(subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem,
+    ← (HomotopyCategory.subcategoryAcyclic C).mem_W_iff_of_distinguished _ mem',
+    ← HomotopyCategory.qis_eq_subcategoryAcyclic_W]
   rfl
 
 end Plus
@@ -64,7 +64,7 @@ variable (C)
 lemma Qh_inverts : (HomotopyCategory.Plus.qis C).IsInvertedBy Plus.Qh := by
   intro X Y f hf
   have : IsIso (ι.map (Qh.map f)) :=
-    Localization.inverts DerivedCategory.Qh (HomotopyCategory.qis C) _ hf
+    Localization.inverts DerivedCategory.Qh (HomotopyCategory.qis C _) _ hf
   exact isIso_of_reflects_iso (Qh.map f) ι
 
 namespace QhIsLocalization
@@ -145,7 +145,7 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
   have hψ : DerivedCategory.Plus.ι.map φ =
     (QhObjIso K hK).hom ≫ ψ ≫ (QhObjIso L hL).inv := by simp
   obtain ⟨K', g, s, hs, eq⟩ :=
-    MorphismProperty.HasLeftCalculusOfFractions.fac DerivedCategory.Qh (HomotopyCategory.qis C) ψ
+    MorphismProperty.HasLeftCalculusOfFractions.fac DerivedCategory.Qh (HomotopyCategory.qis C _) ψ
   rw [← isIso_Qh_map_iff] at hs
   obtain ⟨K'', hK'', f, _⟩ := right_localizing s hL hs
   let α' : K ⟶ K'' := g ≫ f
@@ -202,7 +202,7 @@ instance : Faithful (π C ⋙ Plus.ι) := by
   simp only [zero_comp] at hφ
   obtain ⟨L', s, hs, eq⟩ := hφ
   have : IsIso (DerivedCategory.Qh.map s) := by
-    rw [isIso_Qh_map_iff]
+    rw [isIso_Qh_map_iff, HomotopyCategory.qis_eq_subcategoryAcyclic_W]
     exact hs
   obtain ⟨L'', hL'', t, ht⟩ := right_localizing s L.2 inferInstance
   rw [← LocQ.map_zero, MorphismProperty.HasLeftCalculusOfFractions.map_eq_iff LocQ

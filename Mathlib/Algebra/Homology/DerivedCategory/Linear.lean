@@ -14,17 +14,19 @@ namespace DerivedCategory
 
 noncomputable instance : Linear R (DerivedCategory C) :=
   Localization.linear R (DerivedCategory.Qh : _ ⥤ DerivedCategory C)
-    (HomotopyCategory.qis C)
+    (HomotopyCategory.qis C _)
 
 instance : Functor.Linear R (DerivedCategory.Qh : _ ⥤ DerivedCategory C) :=
   Localization.functor_linear _ _ _
 
-instance : Functor.Linear R (DerivedCategory.Q : _ ⥤ DerivedCategory C) := by
-  dsimp [Q]
-  infer_instance
+instance : Functor.Linear R (DerivedCategory.Q : _ ⥤ DerivedCategory C) :=
+  Functor.linear_of_iso R (quotientCompQhIso C)
 
 instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Linear R := by
-  dsimp [DerivedCategory]
+  rw [← Localization.functor_linear_iff
+    Qh (HomotopyCategory.subcategoryAcyclic C).W R
+    (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
+    (shiftFunctor (DerivedCategory C) n)]
   infer_instance
 
 end DerivedCategory

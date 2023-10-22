@@ -246,6 +246,15 @@ end
 def evaluationIso {F G : SingleFunctors C D A} (e : F ≅ G) (n : A) : F.functor n ≅ G.functor n :=
   (evaluation C D n).mapIso e
 
+@[simps!]
+def postCompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShift A]
+    [NatTrans.CommShift e.hom A]:
+    F.postComp G ≅ F.postComp G' :=
+  isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
+    ext X
+    dsimp
+    simp [NatTrans.CommShift.shift_app e.hom n])
+
 end SingleFunctors
 
 end CategoryTheory
