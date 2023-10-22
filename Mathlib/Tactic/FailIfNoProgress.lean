@@ -108,12 +108,40 @@ def Config.anyChanges : Config := { MVarIdComparisonConfig.anyChanges with eqKin
 details; does check local instances.) -/
 def Config.onlyExprs : Config := { MVarIdComparisonConfig.onlyExprs with }
 
-/-! ## TacticM implementations -/
+/-- Don't compare anything. Useful when only overriding a single field via `{ .none with ... }` -/
+def Config.nothing : Config := { MVarIdComparisonConfig.nothing with }
 
-/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. Return the resulting list
-of goals otherwise. By default, this compares each of their types and local contexts before and
-after `tacs` is run; if any changes are seen, "progress" has been made, and the tactics succeed.
-Otherwise, we fail.
+
+/-! ## MetaM version -/
+
+/-- Auxiliary function for `failIfNoProgress` with arbitrary return type. Demands a function which
+"squashes" an element of the return type to an `MVarId`, so that we can compare it to the initial
+argument; or to nothing, if it does not represent a single goal (in which case we have made
+progress, and return). -/
+@[inline] def failIfNoProgressAux {α} (squash : α → Option MVarId) (goal : MVarId)
+    (tac : MVarId → MetaM α) (cfg : FailIfNoProgress.Config := {}) : MetaM α := do
+  let decl ← goal.getDecl
+  let l ← tac goal
+  -- If progress was made, we return `l`
+  if let .quick := cfg.mode then
+    if ← goal.isAssigned then
+      return l
+    else
+      throwError "no progress made on goal; goal was not assigned"
+  else
+    let some newGoal := squash l | return l
+    unless ← goal.compare newGoal cfg.toMVarIdComparisonConfig cfg.toExprComparisonConfig decl do
+      return l
+    -- We reach here only if no progress was made
+    throwError "no progress made on goal; obtained {newGoal}"
+
+/-- Run `tac : MVarId → MetaM (List MVarId)` on `goal`, and fail if no progress is made. Return the
+resulting list of goals otherwise. By default, this compares each of their types and local contexts
+before and after `tacs` is run; if any changes are seen, "progress" has been made, and the tactics
+succeed. Otherwise, we fail.
+
+See `failIfNoProgress'` and `failIfNoProgress1` for `tac : MVarId → MetaM MVarId` and
+`tac : MVarId → MetaM (Option MVarId)`, respectively.
 
 `cfg` can be used to specify what kind of comparison to perform when checking for "progress". By
 default, only "observable" changes are checked. For instance, internal `MVarId`s and `FVarId`s are
@@ -125,22 +153,24 @@ The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any
 
 For more information, see the documentation for `FailIfNoProgress.Config`.
 -/
-def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
-    (cfg : FailIfNoProgress.Config := {}) : TacticM (List MVarId) := do
-  let decl ← goal.getDecl
-  let l ← run goal tacs
-  -- If progress was made, we return `l`
-  if let .quick := cfg.mode then
-    if ← goal.isAssigned then return l
-  else
-    let [newGoal] := l | return l
-    unless (← goal.compare newGoal cfg.toMVarIdComparisonConfig cfg.toExprComparisonConfig decl) do 
-      return l
-  -- We reach here only if no progress was made
-  let resultMsg ← match cfg.mode with
-  | .quick => pure m!"no goals were assigned"
-  | .normal => do pure m!"obtained\n{← getGoals}"
-  throwError "no progress made on goal; {resultMsg}"
+def _root_.Lean.MVarId.failIfNoProgress (goal : MVarId) (tac : MVarId → MetaM (List MVarId))
+    (cfg : FailIfNoProgress.Config := {}) : MetaM (List MVarId) :=
+  failIfNoProgressAux (fun | [g] => some g | _ => none) goal tac cfg
+
+/-- Like `MVarId.failIfNoProgress`, but has `tac : MVarId → MetaM MVarId` instead of
+`tac : MVarId → MetaM (List MVarId)`. See `MVarId.failIfNoProgress` for more details. -/
+def _root_.Lean.MVarId.failIfNoProgress' (goal : MVarId) (tac : MVarId → MetaM MVarId)
+    (cfg : FailIfNoProgress.Config := {}) : MetaM MVarId :=
+  failIfNoProgressAux some goal tac cfg
+
+/-- Like `MVarId.failIfNoProgress`, but has `(tac : MVarId → MetaM (Option MVarId))` instead of
+`(tac : MVarId → MetaM (List MVarId))`. See `MVarId.failIfNoProgress` for more details. -/
+def _root_.Lean.MVarId.failIfNoProgress1 (goal : MVarId) (tac : MVarId → MetaM (Option MVarId))
+    (cfg : FailIfNoProgress.Config := {}) : MetaM (Option MVarId) :=
+  failIfNoProgressAux id goal tac cfg
+
+
+/-! ## `TacticM` -/
 
 /-- Run `tacs`, and fail if no progress is made. Return the result otherwise. By default, this
 compares each of their types and local contexts before and after `tacs` is run; if any changes are
@@ -156,7 +186,7 @@ The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any
 
 For more information, see the documentation for `FailIfNoProgress.Config`.
 -/
-def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) : TacticM α := do
+def failIfNoProgress {α} (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) : TacticM α := do
   let goals₁ ← getGoals
   let decls₁ ← goals₁.mapM (·.getDecl)
   let result ← tacs
@@ -174,6 +204,7 @@ def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
       | .normal => do pure m!"obtained\n{← getGoals}"
     let pluralization := if goals₁.length = 1 then "" else "s"
     throwError "no progress made on goal{pluralization}; {resultMsg}"
+
 
 /-! ## Tactic syntax implementation -/
 
