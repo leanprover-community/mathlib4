@@ -128,8 +128,12 @@ theorem disjoint_atTop_atBot [PartialOrder α] [Nontrivial α] : Disjoint (atTop
   disjoint_atBot_atTop.symm
 #align filter.disjoint_at_top_at_bot Filter.disjoint_atTop_atBot
 
+theorem hasAntitoneBasis_atTop [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] :
+    (@atTop α _).HasAntitoneBasis Ici :=
+  .iInf_principal fun _ _ ↦ Ici_subset_Ici.2
+
 theorem atTop_basis [Nonempty α] [SemilatticeSup α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
-  hasBasis_iInf_principal (directed_of_sup fun _ _ => Ici_subset_Ici.2)
+  hasAntitoneBasis_atTop.1
 #align filter.at_top_basis Filter.atTop_basis
 
 theorem atTop_eq_generate_Ici [SemilatticeSup α] : atTop = generate (range (Ici (α := α))) := by
@@ -1578,10 +1582,9 @@ theorem map_atBot_eq_of_gc [SemilatticeInf α] [SemilatticeInf β] {f : α → �
 theorem map_val_atTop_of_Ici_subset [SemilatticeSup α] {a : α} {s : Set α} (h : Ici a ⊆ s) :
     map ((↑) : s → α) atTop = atTop := by
   haveI : Nonempty s := ⟨⟨a, h le_rfl⟩⟩
-  have : Directed (· ≥ ·) fun x : s => 𝓟 (Ici x) := by
-    intro x y
+  have : Directed (· ≥ ·) fun x : s => 𝓟 (Ici x) := fun x y ↦ by
     use ⟨x ⊔ y ⊔ a, h le_sup_right⟩
-    simp only [ge_iff_le, principal_mono, Ici_subset_Ici, ← Subtype.coe_le_coe, Subtype.coe_mk]
+    simp only [principal_mono, Ici_subset_Ici, ← Subtype.coe_le_coe, Subtype.coe_mk]
     exact ⟨le_sup_left.trans le_sup_left, le_sup_right.trans le_sup_left⟩
   simp only [le_antisymm_iff, atTop, le_iInf_iff, le_principal_iff, mem_map, mem_setOf_eq,
     map_iInf_eq this, map_principal]
