@@ -97,7 +97,7 @@ theorem isOfFinOrder_iff_coe (H : Submonoid G) (x : H) : IsOfFinOrder x ↔ IsOf
 theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :
     IsOfFinOrder <| f x :=
   (isOfFinOrder_iff_pow_eq_one _).mpr <| by
-    rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
+    rcases (isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
     exact ⟨n, npos, by rw [← f.map_pow, hn, f.map_one]⟩
 #align monoid_hom.is_of_fin_order MonoidHom.isOfFinOrder
 #align add_monoid_hom.is_of_fin_order AddMonoidHom.isOfFinAddOrder
@@ -106,7 +106,7 @@ theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrd
 @[to_additive "If a direct product has finite additive order then so does each component."]
 theorem IsOfFinOrder.apply {η : Type*} {Gs : η → Type*} [∀ i, Monoid (Gs i)] {x : ∀ i, Gs i}
     (h : IsOfFinOrder x) : ∀ i, IsOfFinOrder (x i) := by
-  rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
+  rcases (isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
   exact fun _ => (isOfFinOrder_iff_pow_eq_one _).mpr ⟨n, npos, (congr_fun hn.symm _).symm⟩
 #align is_of_fin_order.apply IsOfFinOrder.apply
 #align is_of_fin_add_order.apply IsOfFinAddOrder.apply
@@ -546,7 +546,7 @@ variable [Group G] {x y : G} {i : ℤ}
 @[to_additive "Inverses of elements of finite additive order have finite additive order."]
 theorem IsOfFinOrder.inv {x : G} (hx : IsOfFinOrder x) : IsOfFinOrder x⁻¹ :=
   (isOfFinOrder_iff_pow_eq_one _).mpr <| by
-    rcases(isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
+    rcases (isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
     refine' ⟨n, npos, by simp_rw [inv_pow, hn, inv_one]⟩
 #align is_of_fin_order.inv IsOfFinOrder.inv
 #align is_of_fin_add_order.neg IsOfFinAddOrder.neg
@@ -749,14 +749,16 @@ noncomputable def finEquivPowers [Finite G] (x : G) :
 #align fin_equiv_powers finEquivPowers
 #align fin_equiv_multiples finEquivMultiples
 
-@[to_additive (attr := simp) finEquivMultiples_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivMultiples_apply]
 theorem finEquivPowers_apply [Finite G] {x : G} {n : Fin (orderOf x)} :
     finEquivPowers x n = ⟨x ^ (n : ℕ), n, rfl⟩ :=
   rfl
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
-@[to_additive (attr := simp) finEquivMultiples_symm_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivMultiples_symm_apply]
 theorem finEquivPowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, pow_eq_mod_orderOf, Fin.val_mk]
@@ -877,14 +879,16 @@ noncomputable def finEquivZpowers [Finite G] (x : G) :
 #align fin_equiv_zpowers finEquivZpowers
 #align fin_equiv_zmultiples finEquivZmultiples
 
-@[to_additive (attr := simp) finEquivZmultiples_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_apply]
 theorem finEquivZpowers_apply [Finite G] {n : Fin (orderOf x)} :
     finEquivZpowers x n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ :=
   rfl
 #align fin_equiv_zpowers_apply finEquivZpowers_apply
 #align fin_equiv_zmultiples_apply finEquivZmultiples_apply
 
-@[to_additive (attr := simp) finEquivZmultiples_symm_apply]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_symm_apply]
 theorem finEquivZpowers_symm_apply [Finite G] (x : G) (n : ℕ) {hn : ∃ m : ℤ, x ^ m = x ^ n} :
     (finEquivZpowers x).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ (orderOf_pos x)⟩ := by
   rw [finEquivZpowers, Equiv.symm_trans_apply]
