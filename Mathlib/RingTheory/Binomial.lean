@@ -70,7 +70,8 @@ theorem translate_comm_ascFactorial (r s : R) (k : ℕ) (h : Commute r s) : ∀ 
     exact Commute.one_right (r + ↑k)
   | (n + 1) => by
     rw [ascFactorial_succ]
-    exact (translate_comm_ascFactorial r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
+    exact (translate_comm_ascFactorial r s k h n).mul_right
+      (Nat.add_cast_commute_add_cast r s k n h)
 
 theorem ascFactorial_add_right (r : R) (n : ℕ) : ∀ (k : ℕ),
     ascFactorial r (n + k) = ascFactorial r n * ascFactorial (r + n) k
