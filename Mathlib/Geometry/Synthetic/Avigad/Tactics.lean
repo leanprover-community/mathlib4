@@ -29,7 +29,7 @@ lemma ar213  : area a b c = area b a c :=
 lemma ar321  : area a b c = area c b a :=
   by rw [(area_invariant a b c).2]; rw [(area_invariant c b a).1]
 
-lemma col213  : colinear a b c ↔ colinear b a c := by
+lemma col213  : Colinear a b c ↔ Colinear b a c := by
   constructor
   all_goals
     intro h
@@ -37,7 +37,7 @@ lemma col213  : colinear a b c ↔ colinear b a c := by
     use L
     exact and_left_comm.mp hL
 
-lemma col231 : colinear a b c ↔ colinear b c a := by
+lemma col231 : Colinear a b c ↔ Colinear b c a := by
   constructor
   all_goals
     intro h
@@ -46,35 +46,35 @@ lemma col231 : colinear a b c ↔ colinear b c a := by
   exact and_rotate.mp hL
   exact and_rotate.mpr hL
 
-lemma col132 : colinear a b c ↔ colinear a c b := by conv => rhs; rw [col213]; rw [col231]
+lemma col132 : Colinear a b c ↔ Colinear a c b := by conv => rhs; rw [col213]; rw [col231]
 
-lemma col312 : colinear a b c ↔ colinear c a b := by conv => lhs; rw [← col231]
+lemma col312 : Colinear a b c ↔ Colinear c a b := by conv => lhs; rw [← col231]
 
-lemma col321 : colinear a b c ↔ colinear c b a := by conv => rhs; rw [col231]; rw [col213]
+lemma col321 : Colinear a b c ↔ Colinear c b a := by conv => rhs; rw [col231]; rw [col213]
 
-lemma tr132  : triangle a b c ↔ triangle a c b := by
-  constructor; all_goals dsimp [triangle]; rw [col132]; tauto
+lemma tr132  : Triangle a b c ↔ Triangle a c b := by
+  constructor; all_goals dsimp [Triangle]; rw [col132]; tauto
 
-lemma tr213  : triangle a b c ↔ triangle b a c := by
-  constructor; all_goals dsimp [triangle]; rw [col213]; tauto
+lemma tr213  : Triangle a b c ↔ Triangle b a c := by
+  constructor; all_goals dsimp [Triangle]; rw [col213]; tauto
 
-lemma tr231  : triangle a b c ↔ triangle b c a := by
-  constructor; all_goals dsimp [triangle]
+lemma tr231  : Triangle a b c ↔ Triangle b c a := by
+  constructor; all_goals dsimp [Triangle]
   rw [col231]; tauto
   rw [← col231]; tauto
 
-lemma tr312  : triangle a b c ↔ triangle c a b := by
-  constructor; all_goals dsimp [triangle]
+lemma tr312  : Triangle a b c ↔ Triangle c a b := by
+  constructor; all_goals dsimp [Triangle]
   rw [col312]; tauto
   rw [← col312]; tauto
 
-lemma tr321  : triangle a b c ↔ triangle c b a := by
-  constructor; all_goals dsimp [triangle]; rw [col321]; tauto
+lemma tr321  : Triangle a b c ↔ Triangle c b a := by
+  constructor; all_goals dsimp [Triangle]; rw [col321]; tauto
 
 lemma ss21 {a b : Point} {L : Line}: SameSide a b L ↔ SameSide b a L := by
-  constructor; repeat exact sameside_symm
+  constructor; repeat exact sameSide_symm
 
-lemma ds21 {a b : Point} {L : Line}: diffside a b L ↔ diffside b a L := by
+lemma ds21 {a b : Point} {L : Line}: DiffSide a b L ↔ DiffSide b a L := by
   constructor
   all_goals
     intro h
@@ -82,7 +82,7 @@ lemma ds21 {a b : Point} {L : Line}: diffside a b L ↔ diffside b a L := by
     rw [ss21] at nss
     exact ⟨ nbL, naL, nss ⟩
 
-lemma para21 {L M : Line}: para L M ↔ para M L := by
+lemma Para21 {L M : Line}: Para L M ↔ Para M L := by
   constructor
   all_goals
     intros p e
@@ -124,11 +124,11 @@ elab "area_nf" : conv => withMainContext do
   else if lte n3 n2 && lte n2 n1 then
     evalTactic (← `(tactic| rw [@ar321 _ _ _] )) -- cba
 
-/-- ## Conv tactic `colinear_nf`
-A conv tactic for permuting the variables in an `colinear` expression. A building block for the
+/-- ## Conv tactic `Colinear_nf`
+A conv tactic for permuting the variables in an `Colinear` expression. A building block for the
 `perm` tactic.
  -/
-elab "colinear_nf" : conv => withMainContext do
+elab "Colinear_nf" : conv => withMainContext do
   let tgt ← instantiateMVars (← Conv.getLhs)
   let n1 ← getNthArgName tgt 1
   let n2 ← getNthArgName tgt 2
@@ -146,11 +146,11 @@ elab "colinear_nf" : conv => withMainContext do
   else if lte n3 n2 && lte n2 n1 then
     evalTactic (← `(tactic| rw [@col321 _ _ _] )) -- cba
 
-/-- ## Conv tactic `triangle_nf`
-A conv tactic for permuting the variables in an `triangle` expression. A building block for the
+/-- ## Conv tactic `Triangle_nf`
+A conv tactic for permuting the variables in an `Triangle` expression. A building block for the
 `perm` tactic.
  -/
-elab "triangle_nf" : conv => withMainContext do
+elab "Triangle_nf" : conv => withMainContext do
   let tgt ← instantiateMVars (← Conv.getLhs)
   let n1 ← getNthArgName tgt 1
   let n2 ← getNthArgName tgt 2
@@ -201,27 +201,27 @@ elab "sameside_nf" : conv => withMainContext do
   if n2.lt n1 then
     evalTactic (← `(tactic| rw [@ss21 _ _] ))
 
-/-- ## Conv tactic `diffside_nf`
-A conv tactic for permuting the variables in an `diffside` expression. A building block for the
+/-- ## Conv tactic `DiffSide_nf`
+A conv tactic for permuting the variables in an `DiffSide` expression. A building block for the
 `perm` tactic.
  -/
-elab "diffside_nf" : conv => withMainContext do
+elab "DiffSide_nf" : conv => withMainContext do
   let tgt ← instantiateMVars (← Conv.getLhs)
   let n1 ← getNthArgName tgt 1
   let n2 ← getNthArgName tgt 2
   if n2.lt n1 then
     evalTactic (← `(tactic| rw [@ds21 _ _] ))
 
-/-- ## Conv tactic `para_nf`
-A conv tactic for permuting the variables in an `para` expression. A building block for the `perm`
+/-- ## Conv tactic `Para_nf`
+A conv tactic for permuting the variables in an `Para` expression. A building block for the `perm`
 tactic.
  -/
-elab "para_nf" : conv => withMainContext do
+elab "Para_nf" : conv => withMainContext do
   let tgt ← instantiateMVars (← Conv.getLhs)
   let n1 ← getNthArgName tgt 1
   let n2 ← getNthArgName tgt 2
   if n2.lt n1 then
-    evalTactic (← `(tactic| rw [@para21 _ _] ))
+    evalTactic (← `(tactic| rw [@Para21 _ _] ))
 
 /-- ## Tactic perm
 A custom experimental tactic for permuting the variables in geometric primitives. The ordering is
@@ -232,31 +232,31 @@ Usage:
 - `perm at *` permutes the variables in the goal and all hypotheses
 - `perm [t1 t2 ...]` adds permuted proof terms `t1, t2, ...` to the local context, then runs `perm`
 In each of these variants but the last, `perm` can be replaced with `perm only [perm_type]`, where
-`perm_type` is one of area, colinear, triangle, length, angle, sameside, diffside.
+`perm_type` is one of area, Colinear, Triangle, length, angle, sameside, DiffSide.
  -/
 syntax "perm" (" [" term,* "]")? ("only [" ident "]")? ("at " ident,* )? ("at *")? : tactic
 macro_rules
   | `(tactic| perm) => `(tactic|
     (
       try conv in (occs := *) area _ _ _ => all_goals area_nf
-      try conv in (occs := *) colinear _ _ _ => all_goals colinear_nf
-      try conv in (occs := *) triangle _ _ _ => all_goals triangle_nf
+      try conv in (occs := *) Colinear _ _ _ => all_goals Colinear_nf
+      try conv in (occs := *) Triangle _ _ _ => all_goals Triangle_nf
       try conv in (occs := *) length _ _ => all_goals length_nf
       try conv in (occs := *) angle _ _ _ => all_goals angle_nf
       try conv in (occs := *) SameSide _ _ _ => all_goals sameside_nf
-      try conv in (occs := *) diffside _ _ _ => all_goals diffside_nf
-      try conv in (occs := *) para _ _ => all_goals para_nf
+      try conv in (occs := *) DiffSide _ _ _ => all_goals DiffSide_nf
+      try conv in (occs := *) Para _ _ => all_goals Para_nf
     ))
   | `(tactic| perm at $h) => `(tactic|
     (
       try conv at $h in (occs := *) area _ _ _ => all_goals area_nf
-      try conv at $h in (occs := *) colinear _ _ _ => all_goals colinear_nf
-      try conv at $h in (occs := *) triangle _ _ _ => all_goals triangle_nf
+      try conv at $h in (occs := *) Colinear _ _ _ => all_goals Colinear_nf
+      try conv at $h in (occs := *) Triangle _ _ _ => all_goals Triangle_nf
       try conv at $h in (occs := *) length _ _ => all_goals length_nf
       try conv at $h in (occs := *) angle _ _ _ => all_goals angle_nf
       try conv at $h in (occs := *) SameSide _ _ _ => all_goals sameside_nf
-      try conv at $h in (occs := *) diffside _ _ _ => all_goals diffside_nf
-      try conv at $h in (occs := *) para _ _ => all_goals para_nf
+      try conv at $h in (occs := *) DiffSide _ _ _ => all_goals DiffSide_nf
+      try conv at $h in (occs := *) Para _ _ => all_goals Para_nf
     ))
   | `(tactic| perm at $h:ident, $hs:ident,*) => `(tactic| perm at $h; perm at $hs,*)
 
@@ -289,32 +289,32 @@ elab_rules: tactic
   | `(tactic| perm only [$perm_type:ident]) => do
     if perm_type == mkIdent `area then
         evalTactic (← `(tactic| try conv in (occs := *) area _ _ _ => all_goals area_nf))
-    else if perm_type == mkIdent `colinear then
-      evalTactic (← `(tactic| try conv in (occs := *) colinear _ _ _ => all_goals colinear_nf))
-    else if perm_type == mkIdent `triangle then
-      evalTactic (← `(tactic| try conv in (occs := *) triangle _ _ _ => all_goals triangle_nf))
+    else if perm_type == mkIdent `Colinear then
+      evalTactic (← `(tactic| try conv in (occs := *) Colinear _ _ _ => all_goals Colinear_nf))
+    else if perm_type == mkIdent `Triangle then
+      evalTactic (← `(tactic| try conv in (occs := *) Triangle _ _ _ => all_goals Triangle_nf))
     else if perm_type == mkIdent `length then
       evalTactic (← `(tactic| try conv in (occs := *) length _ _ => all_goals length_nf))
     else if perm_type == mkIdent `angle then
       evalTactic (← `(tactic| try conv in (occs := *) angle _ _ _ => all_goals angle_nf))
     else if perm_type == mkIdent `SameSide then
       evalTactic (← `(tactic| try conv in (occs := *) SameSide _ _ _ => all_goals sameside_nf))
-    else if perm_type == mkIdent `diffside then
-      evalTactic (← `(tactic| try conv in (occs := *) diffside _ _ _ => all_goals diffside_nf))
-    else if perm_type == mkIdent `para then
-      evalTactic (← `(tactic| try conv in (occs := *) para _ _ => all_goals para_nf))
+    else if perm_type == mkIdent `DiffSide then
+      evalTactic (← `(tactic| try conv in (occs := *) DiffSide _ _ _ => all_goals DiffSide_nf))
+    else if perm_type == mkIdent `Para then
+      evalTactic (← `(tactic| try conv in (occs := *) Para _ _ => all_goals Para_nf))
     else
       throwError "permutation type {perm_type} is not valid, please use one of
-        'area/colinear/triangle/length/angle/sameside/diffside/para'"
+        'area/Colinear/Triangle/length/angle/sameside/DiffSide/Para'"
   | `(tactic| perm only [$perm_type:ident] at $h:ident) => withMainContext do
     if perm_type == mkIdent `area then
       evalTactic (← `(tactic| try conv at $h in (occs := *) area _ _ _ => all_goals area_nf))
-    else if perm_type == mkIdent `colinear then
-      evalTactic (← `(tactic| try conv at $h in (occs := *) colinear _ _ _
-        => all_goals colinear_nf))
-    else if perm_type == mkIdent `triangle then
-      evalTactic (← `(tactic| try conv at $h in (occs := *) triangle _ _ _
-        => all_goals triangle_nf))
+    else if perm_type == mkIdent `Colinear then
+      evalTactic (← `(tactic| try conv at $h in (occs := *) Colinear _ _ _
+        => all_goals Colinear_nf))
+    else if perm_type == mkIdent `Triangle then
+      evalTactic (← `(tactic| try conv at $h in (occs := *) Triangle _ _ _
+        => all_goals Triangle_nf))
     else if perm_type == mkIdent `length then
       evalTactic (← `(tactic| try conv at $h in (occs := *) length _ _ => all_goals length_nf))
     else if perm_type == mkIdent `angle then
@@ -322,14 +322,14 @@ elab_rules: tactic
     else if perm_type == mkIdent `SameSide then
       evalTactic (← `(tactic| try conv at $h in (occs := *) SameSide _ _ _
         => all_goals sameside_nf))
-    else if perm_type == mkIdent `diffside then
-      evalTactic (← `(tactic| try conv at $h in (occs := *) diffside _ _ _
-        => all_goals diffside_nf))
-    else if perm_type == mkIdent `para then
-      evalTactic (← `(tactic| try conv at $h in (occs := *) para _ _ => all_goals para_nf))
+    else if perm_type == mkIdent `DiffSide then
+      evalTactic (← `(tactic| try conv at $h in (occs := *) DiffSide _ _ _
+        => all_goals DiffSide_nf))
+    else if perm_type == mkIdent `Para then
+      evalTactic (← `(tactic| try conv at $h in (occs := *) Para _ _ => all_goals Para_nf))
     else
       throwError "permutation type {perm_type} is not valid, please use one of
-        'area/colinear/triangle/length/angle/sameside/diffside'"
+        'area/Colinear/Triangle/length/angle/sameside/DiffSide'"
   | `(tactic| perm at *) => withMainContext do
     evalTactic (← `(tactic| perm))
     for ldecl in ← getLCtx do
