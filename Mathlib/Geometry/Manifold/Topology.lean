@@ -9,9 +9,13 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 # Topological property of topological or smooth manifolds
 In this file, we prove a few basic topological properties of manifolds.
 Let $M$ be a topological manifold (not necessarily C^n or smooth).
-* `locallyCompact_of_finiteDimensional_of_boundaryless`: If `M` is finite-dimensional
+* `locallyCompact_of_finiteDimensional_of_boundaryless`: If `M` is finite-dimensional, boundaryless
   and the underlying field `𝕜` is locally compact (such as ℝ, ℂ or the p-adic numbers),
   `M` is locally compact.
+
+**TODO:**
+* adapt the argument to include manifolds with boundary; this probably requires a
+stronger definition of boundary to show local compactness of the half-spaces
 -/
 
 open Set Topology
