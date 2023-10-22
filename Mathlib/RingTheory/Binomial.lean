@@ -39,39 +39,44 @@ variable [Semiring R]
 
 namespace Ring
 
-/-- `ascPochEval` directly evaluates the `n`-th ascending Pochhammer polynomial at an element `r`.-/
-noncomputable def ascPochEval (r : R) (n : ℕ) : R :=
-    Polynomial.eval r (ascPochhammer R n)
+/-- `ascFactorial`, also known as the rising factorial function, is the product
+`r (r+1) ⋯ (r + n - 1)`.  In other words, it recursively evaluates the `n`-th ascending Pochhammer
+polynomial at a semiring element `r`.-/
+def ascFactorial (r : R) : ℕ → R
+  | 0 => 1
+  | (k + 1) => (ascFactorial r k) * (r + k)
 
-theorem ascPochEval_zero (r : R) : ascPochEval r 0 = 1 := by
-  unfold ascPochEval
-  rw [ascPochhammer_zero R, Polynomial.eval_one]
+theorem ascFactorial_zero (r : R) : ascFactorial r 0 = 1 := rfl
 
-theorem ascPochEval_succ (r : R) (k : ℕ) :
-    ascPochEval r (k.succ) = (ascPochEval r k) * (r + k) := by
-  unfold ascPochEval
-  rw [ascPochhammer_succ_eval]
+theorem ascFactorial_succ (r : R) (k : ℕ) :
+    ascFactorial r (k.succ) = (ascFactorial r k) * (r + k) := rfl
 
-theorem ascPochEval_cast (n : ℕ) : ∀ (k : ℕ), ascPochEval (n : R) k = ascPochEval n k
-  | 0 => by rw [ascPochEval_zero, ascPochEval_zero, Nat.cast_one]
+theorem ascFactorial_cast (n : ℕ) : ∀ (k : ℕ), ascFactorial (n : R) k = ascFactorial n k
+  | 0 => by rw [ascFactorial_zero, ascFactorial_zero, Nat.cast_one]
   | (k + 1) => by
-    rw [ascPochEval_succ, ascPochEval_succ, Nat.cast_mul, ascPochEval_cast n k, Nat.cast_add]
+    rw [ascFactorial_succ, ascFactorial_succ, Nat.cast_mul, ascFactorial_cast n k, Nat.cast_add]
     norm_cast
 
-theorem translate_comm_ascPochEval (r s : R) (k : ℕ) (h : Commute r s) : ∀ (n : ℕ),
-    Commute (r + k) (ascPochEval s n)
+theorem ascFactorial_eq_ascPochhammer_eval (r : R) :
+    ∀ (k : ℕ), ascFactorial r k = Polynomial.eval r (ascPochhammer R k)
+  | 0 => by rw [ascPochhammer_zero, Polynomial.eval_one, ascFactorial_zero]
+  | (k + 1) => by
+    rw [ascPochhammer_succ_eval, ← ascFactorial_eq_ascPochhammer_eval r k, ascFactorial_succ]
+
+theorem translate_comm_ascFactorial (r s : R) (k : ℕ) (h : Commute r s) : ∀ (n : ℕ),
+    Commute (r + k) (ascFactorial s n)
   | 0 => by
-    rw [ascPochEval_zero]
+    rw [ascFactorial_zero]
     exact Commute.one_right (r + ↑k)
   | (n + 1) => by
-    rw [ascPochEval_succ]
-    exact (translate_comm_ascPochEval r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
+    rw [ascFactorial_succ]
+    exact (translate_comm_ascFactorial r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
 
-theorem ascPochEval_add_right (r : R) (n : ℕ) : ∀ (k : ℕ),
-    ascPochEval r (n + k) = ascPochEval r n * ascPochEval (r + n) k
-  | 0 => by rw [add_zero, ascPochEval_zero, mul_one]
+theorem ascFactorial_add_right (r : R) (n : ℕ) : ∀ (k : ℕ),
+    ascFactorial r (n + k) = ascFactorial r n * ascFactorial (r + n) k
+  | 0 => by rw [add_zero, ascFactorial_zero, mul_one]
   | (k + 1) => by
-    rw [← add_assoc, ascPochEval_succ, ascPochEval_add_right r n k, ascPochEval_succ, mul_assoc,
+    rw [← add_assoc, ascFactorial_succ, ascFactorial_add_right r n k, ascFactorial_succ, mul_assoc,
     Nat.cast_add, add_assoc]
 
 end Ring
@@ -80,16 +85,16 @@ end Semiring
 
 section BinomialSemiring
 
-/-- A semiring is binomial if multiplication by nonzero natural numbers is injective and pochhammer
-evaluations are divisible by the corresponding factorial. -/
+/-- A semiring is binomial if multiplication by nonzero natural numbers is injective and ascending
+factorials are divisible by the corresponding factorial. -/
 class BinomialSemiring (R: Type u) extends Semiring R where
   /-- Multiplication by positive integers is injective -/
   inj_smul_pos (n : ℕ) (r s : R) (h: n ≠ 0) : n * r = n * s → r = s
-  /-- The multichoose function witnesses the divisibility of pochhammer n (evaluated at r) by n! -/
+  /-- The multichoose function witnesses the divisibility of ascFactorial r n by n! -/
   multichoose : R → ℕ → R
-  /-- pochhammer n (evaluated at r) is divisible by n! (witnessed by multichoose) -/
+  /-- ascFactorial r n is divisible by n! (witnessed by multichoose) -/
   factorial_mul_multichoose : ∀ (r : R) (n : ℕ),
-    n.factorial * multichoose r n = Ring.ascPochEval r n
+    n.factorial * multichoose r n = Ring.ascFactorial r n
 
 namespace Ring
 
@@ -105,8 +110,8 @@ replacement. -/
 def multichoose [BinomialSemiring R] (r : R) (n : ℕ) : R :=
   BinomialSemiring.multichoose r n
 
-theorem factorial_mul_multichoose_eq_ascPochEval [BinomialSemiring R] (r : R) (n : ℕ) :
-    n.factorial * multichoose r n = ascPochEval r n :=
+theorem factorial_mul_multichoose_eq_ascFactorial [BinomialSemiring R] (r : R) (n : ℕ) :
+    n.factorial * multichoose r n = ascFactorial r n :=
   BinomialSemiring.factorial_mul_multichoose r n
 
 end Ring
