@@ -47,8 +47,7 @@ namespace Bool
 theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
 #align cond_a_a Bool.cond_self
 
-@[simp]
-theorem xor_self (b : Bool) : xor b b = false := by cases b <;> simp
+theorem xor_self (b : Bool) : xor b b = false := by simp
 #align bxor_self Bool.xor_self
 
 @[simp]
@@ -167,10 +166,12 @@ theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
 theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
 #align band_coe_iff Bool.and_coe_iff
 
-@[simp]
-theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
-  cases a <;> cases b <;> exact by decide
+theorem xor_coe_iff (a b : Bool) : xor a b ↔ ¬a = b := by simp
 #align bxor_coe_iff Bool.xor_coe_iff
+
+@[simp]
+theorem xor'_coe_iff (a b : Bool) : Xor' a b ↔ ¬a = b := by
+  cases a <;> cases b <;> decide
 
 @[simp]
 theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :

@@ -20,8 +20,5 @@ apparently `xor` didn't make the cut.
 
 /-- Boolean XOR -/
 @[inline]
-def xor : Bool → Bool → Bool
-  | true, false => true
-  | false, true => true
-  | _, _ => false
+abbrev xor : Bool → Bool → Bool := (· != ·)
 #align bxor xor
