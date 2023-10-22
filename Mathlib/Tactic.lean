@@ -90,6 +90,7 @@ import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
@@ -169,5 +170,11 @@ import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CommDiag
+import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.Conv
+import Mathlib.Tactic.Widget.Gcongr
+import Mathlib.Tactic.Widget.SelectInsertParamsClass
+import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify

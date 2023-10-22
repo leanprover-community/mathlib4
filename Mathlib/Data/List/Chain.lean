@@ -352,7 +352,9 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
-    simp
+    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
+      get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
+      tsub_zero, add_pos_iff, or_true, forall_true_left, and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
