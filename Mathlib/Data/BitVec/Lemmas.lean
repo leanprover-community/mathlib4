@@ -52,8 +52,13 @@ lemma ofNat_toNat (x : BitVec w) : BitVec.ofNat w x.toNat = x := by
   simp [BitVec.ofNat]
   apply Fin.cast_val_eq_self x
 
-lemma ofNat_toNat' (x : BitVec w) (h : v = w):
-    HEq x (BitVec.ofNat v x.toNat) := h ▸ heq_of_eq (ofNat_toNat x).symm
+@[simp]
+lemma cast_eq (x : BitVec w) (h : w = w) : x.cast h = x :=
+  rfl
+
+lemma ofNat_toNat' (x : BitVec w) (h : w = v):
+    BitVec.ofNat v x.toNat = x.cast h := by
+  cases h; rw [ofNat_toNat, cast_eq]
 
 theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
     (msbs ++ lsbs).toNat = msbs.toNat <<< v ||| lsbs.toNat := by
