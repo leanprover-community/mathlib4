@@ -12,7 +12,7 @@ In this file we prove the Pythagorean theorem (Euclid I.47) using Avigad's axiom
 geometry.
 -/
 
-variable [i : IncidenceGeometry] {a a1 a2 b b1 b2 c d e f g h j k l x y :
+variable [I : IncidenceGeometry] {a a1 a2 b b1 b2 c d e f g h i j k l m n o p q s x y :
   IncidenceGeometry.Point} {L M N O P Q R S T U W V X : IncidenceGeometry.Line}
   {α β : IncidenceGeometry.Circle} {r : ℝ}
 namespace IncidenceGeometry
@@ -287,6 +287,9 @@ theorem online_of_B_online (Babc : B a b c) (aL : OnLine a L) (cL : ¬OnLine c L
 theorem online_of_B_online' (Babc : B a b c) (bL : OnLine b L) (cL : ¬OnLine c L) : ¬OnLine a L :=
   fun aL => cL (onLine_3_of_B Babc aL bL)
 
+theorem online_of_B_online'' (Babc : B a b c) (aL : OnLine a L) (bL : ¬OnLine b L) : ¬OnLine c L :=
+  fun cL => bL (onLine_2_of_B Babc aL cL)
+
 theorem sameside_of_B_online_3 (Babc : B a b c) (aL : OnLine a L) (cL : ¬OnLine c L) :
     SameSide b c L := sameSide_of_B_not_onLine_2 Babc aL $ online_of_B_online Babc aL cL
 
@@ -303,6 +306,8 @@ theorem tri_of_B_B_tri (Babd : B a b d) (Bace : B a c e) (tri_abc : Triangle a b
 theorem ne_21_of_B (Babc : B a b c) : b ≠ a := Ne.symm $ ne_12_of_B Babc
 
 theorem ne_32_of_B (Babc : B a b c) : c ≠ b := Ne.symm $ ne_23_of_B Babc
+
+theorem ne_31_of_B (Babc : B a b c) : c ≠ a := Ne.symm $ ne_13_of_B Babc
 
 theorem sameSide_or_of_diffSide' (cL : ¬OnLine c L) (abL : DiffSide a b L) :
     SameSide a c L ∨ SameSide b c L := sameSide_or_of_diffSide abL.1 abL.2.1 cL abL.2.2
@@ -780,6 +785,146 @@ theorem sameside_of_pyth (Beld : B e l d) (aX : OnLine a X) (lX : OnLine l X)
   exact sameSide_trans (sameSide_trans (sameside_of_B_online_3 Beld eQ $ offline_of_Para dO ParaOQ)
     $ sameSide_symm $ sameside_of_Para_online' aX lX ParaQX) $ sameSide_symm $
     sameside_of_Para_online cO dO ParaOQ
+
+theorem tri_tri_B_B_of_int (bL : OnLine b L) (cL : OnLine c L) (aM : OnLine a M) (cM : OnLine c M)
+    (aN : OnLine a N) (bN : OnLine b N) (adL : SameSide a d L) (bdM : SameSide b d M)
+    (cdN : SameSide c d N) : ∃ e, B a e c ∧ B b d e ∧ Triangle a b e ∧ Triangle c d e := by
+rcases line_of_pts b d with ⟨P, bP, dP⟩
+rcases line_of_pts c d with ⟨O, cO, dO⟩
+have caP := DiffSide_of_sameside_sameside bL bP bN cL dP aN adL cdN
+rcases pt_B_of_DiffSide caP with ⟨e, eP, Bcea⟩
+have beO := DiffSide_of_sameside_sameside cL cO cM bL dO (onLine_2_of_B Bcea cM aM)
+  (by perma[sameSide_trans adL $
+    by perma[sameside_of_B_online_3 Bcea cL $ not_onLine_of_sameSide adL]]) bdM
+have Bbde := B_of_col_DiffSide ⟨P, bP, dP, eP⟩ dO beO
+exact ⟨e, B_symm Bcea, B_of_col_DiffSide ⟨P, bP, dP, eP⟩ dO beO,
+  by perma[Triangle_of_ne_online (ne_13_of_B Bbde) bP eP caP.2.1],
+  by perma[Triangle_of_ne_online (ne_23_of_B Bbde) dP eP caP.1]⟩
+
+theorem line_circle_inter_sameside_of_offline (aL : OnLine a L) (aM : OnLine a M) (cM : OnLine c M)
+    (cL : ¬OnLine c L) (aα : CenterCircle a α) :
+    ∃ d, OnLine d M ∧ SameSide c d L ∧ OnCircle d α := by
+rcases pts_of_lineCircleInter $ lineCircleInter_of_inside_onLine aM (inside_circle_of_center aα)
+  with ⟨d, e, de, dM, eM, dα, eα⟩
+have Bdae := B_of_lineCircleInter de aM dM eM dα eα (inside_circle_of_center aα)
+have dL : ¬OnLine d L := --turn into API
+  fun dL => cL (by rwa[line_unique_of_pts de dM eM dL (onLine_3_of_B Bdae dL aL)] at cM)
+rcases sameSide_or_of_diffSide' cL (DiffSide_of_B_offline'' Bdae dL aL) with dcL | ecL
+exact ⟨d, dM, by perma[dcL], dα⟩; exact ⟨e, eM, by perma[ecL], eα⟩
+
+/--Euclid I.2, generalization-/
+theorem len_eq_of_sameside (bc : b ≠ c) (aM : OnLine a M) (bM : OnLine b M) (bL : OnLine b L)
+    (cL : OnLine c L) (aL : ¬OnLine a L) :
+    ∃ d, OnLine d L ∧ SameSide c d M ∧ length a b = length b d := by
+rcases circle_of_ne $ ne_of_online bL aL with ⟨α, bα, aα⟩
+rcases line_circle_inter_sameside_of_offline bM bL cL
+  (offline_of_ne_online_offline bc bL cL bM aM aL) bα with ⟨d, dL, cdM, dα⟩
+exact ⟨d, dL, cdM, by perma[length_eq_of_oncircle bα aα dα]⟩
+
+theorem offLine_of_angle_lt (ad : a ≠ d) (dL : OnLine d L) (cN : OnLine c N) (dN : OnLine d N)
+    (bcL : SameSide b c L) (adb_lt_adc : angle a d b < angle a d c) : ¬OnLine b N := by
+  rcases line_of_pts d b with ⟨M, dM, bM⟩
+  intro bN; rw[line_unique_of_pts (ne_of_sameside dL bcL) bN dN bM dM] at cN
+  linperm[angle_extension_of_sameside ad dL ⟨M, dM, bM, cN⟩ bcL]
+
+theorem sameside_of_B_not_online_3 (Babc : B a b c) (aL : OnLine a L) (cL : ¬OnLine c L) :
+    SameSide b c L := sameSide_of_B_not_onLine_2 Babc aL $ online_of_B_online Babc aL cL
+
+theorem sameside_of_sameside_sameside (dL : OnLine d L) (dM : OnLine d M) (dN : OnLine d N)
+    (cN : OnLine c N) (eN : OnLine e N) (ceM : SameSide c e M) (bcL : SameSide b c L) :
+    SameSide c e L := by
+  by_cases ce : c = e; rw[←ce]; exact sameSide_rfl_of_not_onLine $ not_onLine_of_sameSide $
+    sameSide_symm bcL
+  rcases B_or_B_of_sameside ce dM ⟨N, dN, cN, eN⟩ ceM with Bet | Bet
+  exact sameSide_of_B_not_onLine_2 Bet dL $ not_onLine_of_sameSide $ sameSide_symm bcL
+  perma[sameside_of_B_not_online_3 Bet dL $ not_onLine_of_sameSide $ sameSide_symm bcL]
+
+theorem DiffSide_of_angle_lt (ad : a ≠ d) (dL : OnLine d L) (dM : OnLine d M) (dN : OnLine d N)
+    (aL : OnLine a L) (bM : OnLine b M) (cN : OnLine c N) (aM : ¬OnLine a M)
+    (bcL : SameSide b c L) (adb_lt_adc : angle a d b < angle a d c) : DiffSide a c M := by
+  by_cases acM : SameSide a c M;
+    linperm[angle_add_of_sameside dL aL dM bM bcL acM, angle_nonneg c d b]
+  exact ⟨aM, offline_of_online_offline (ne_of_sameside dL $ sameSide_symm bcL).symm bM dM dN cN $
+    offLine_of_angle_lt ad dL cN dN bcL adb_lt_adc, acM⟩ --golf?
+
+theorem online_sameside_DiffSide_len_ang_tri_of_ang_lt (tri_def : Triangle d e f)
+    (dL : OnLine d L) (eL : OnLine e L) (hM : OnLine h M) (dM : OnLine d M) (dN : OnLine d N)
+    (fN : OnLine f N) (hfL : SameSide h f L) (edf_edh : angle e d f < angle e d h) :
+    ∃ g, OnLine g M ∧ ¬OnLine f M ∧ SameSide h g L ∧ length f d = length d g ∧
+    angle h d e = angle g d e ∧ 0 < angle d g e ∧ Triangle g d f ∧ DiffSide e g N := by
+  have fM := offLine_of_angle_lt (ne_21_of_tri tri_def) dL hM dM (sameSide_symm hfL) $ by linperm
+  rcases len_eq_of_sameside (ne_of_sameside' dL hfL) fN dN dM hM fM with ⟨g, gM, hgN, fd_dg⟩
+  have hgL := sameside_of_sameside_sameside dL dN dM hM gM hgN $ sameSide_symm hfL
+  have tri_gdf := Triangle_of_ne_online (ne_of_sameside dN $ sameSide_symm hgN) gM dM fM
+  have hde_gde := angle_extension_of_sameside (ne_21_of_tri tri_def) dL ⟨M, dM, hM, gM⟩ hgL
+  exact ⟨g, gM, fM, hgL, fd_dg, hde_gde, zero_lt_angle_of_tri $ tri321 $ Triangle_of_ne_online
+    (ne_12_of_tri tri_def) dL eL $ not_onLine_of_sameSide $ sameSide_symm hgL, tri_gdf,
+    DiffSide_of_angle_lt (ne_21_of_tri tri_def) dL dN dM eL fN gM (online_2_of_Triangle dN fN
+    tri_def) (sameSide_symm $ sameSide_trans hgL hfL) $ by linperm⟩
+
+theorem sameside_of_not_sameside_Para (bc : b ≠ c) (eh : e ≠ h) (eL : OnLine e L) (eR : OnLine e R)
+    (eS : OnLine e S) (hL : OnLine h L) (cR : OnLine c R) (bS : OnLine b S) (bN : OnLine b N)
+    (cN : OnLine c N) (bhR : ¬SameSide b h R) (ParaLN : Para L N) : SameSide c h S :=
+sameSide_symm $ sameside_of_sameside_DiffSide eL eR eS hL cR bS (sameside_of_Para_online' cN bN
+    ParaLN) ⟨offline_of_online_offline eh cR eR eL hL (offline_of_Para' cN ParaLN),
+    offline_of_online_offline bc.symm eR cR cN bN (offline_of_Para eL ParaLN), not_sameSide_symm
+    bhR⟩
+
+theorem not_Para (ParaLM : ¬Para L M) : ∃ a, OnLine a L ∧ OnLine a M := by
+  unfold Para at ParaLM; push_neg at ParaLM; exact ParaLM
+
+/-- area of a Triangle cannot equal the area of its subTriangle -/
+lemma tri_sum_contra (bO : OnLine b O) (dO : OnLine d O) (eO : OnLine e O) (cO : ¬OnLine c O)
+    (ar: area b c d = area b c e) : ¬B b e d := by
+  intro Bbed; apply cO; apply (area_zero_iff_onLine (ne_32_of_B Bbed) dO eO).mp
+  linperm [(area_add_iff_B (ne_12_of_B Bbed) (ne_23_of_B Bbed) (ne_31_of_B Bbed) bO eO dO cO).mp
+      Bbed]
+
+theorem ne_of_Para_Para (ab : a ≠ b) (aM : OnLine a M) (aN : OnLine a N) (bN : OnLine b N)
+    (cM : OnLine c M) (ParaLM : Para L M) (ParaLN : ¬Para L N) : b ≠ c := fun bc => ParaLN (by rwa
+  [line_unique_of_pts ab aM (by rwa[←bc] at cM) aN bN] at ParaLM)
+
+theorem B_of_B_Para (Bakc : B a k c) (col_aeb : Colinear a e b) (bM : OnLine b M) (cM : OnLine c M)
+    (eN : OnLine e N) (kN : OnLine k N) (aN : ¬OnLine a N) (ParaMN : Para M N) : B a e b :=
+  B_of_col_DiffSide col_aeb eN $ DiffSide_symm $ DiffSide_of_sameside_DiffSide
+    (sameside_of_Para_online cM bM ParaMN) (DiffSide_symm $ DiffSide_of_B_offline' Bakc kN aN)
+
+theorem not_B_of_sameside (abL : SameSide a b L) (cL : OnLine c L) : ¬B a c b :=
+  fun Bacb => (DiffSide_of_B_offline' Bacb cL (not_onLine_of_sameSide abL)).2.2 abL
+
+theorem B_of_B_Para_Para (Babc : B a b c) (aL : OnLine a L) (aM : OnLine a M) (bO : OnLine b O)
+    (cP : OnLine c P) (dM : OnLine d M) (dO : OnLine d O) (eM : OnLine e M) (eP : OnLine e P)
+    (ParaPO : Para P O) (ParaPL : Para P L) (ParaOL : Para O L) : B e d a := by
+  have Bead := not_B_of_sameside (sameSide_symm (sameSide_trans (sameside_of_Para_online bO dO
+    ParaOL) (sameSide_trans (sameSide_symm (sameside_of_B_not_online_3 Babc aL (offline_of_Para cP
+    ParaPL))) (sameside_of_Para_online cP eP ParaPL)))) aL
+  have := B_or_B_of_sameside (ne_of_Para dO aL ParaOL).symm eP ⟨M, eM, aM, dM⟩ (sameSide_trans
+    (sameside_of_B_not_online_3 (B_symm Babc) cP (offline_of_Para' aL ParaPL))
+    (sameside_of_Para_online' bO dO ParaPO)); tauto
+
+theorem DiffSide_of_B_Para_Para (Bfgh : B f g h) (bL : OnLine b L) (hQ : OnLine h Q)
+    (hM : OnLine h M) (hS : OnLine h S) (gP : OnLine g P) (fR : OnLine f R) (bS : OnLine b S)
+    (bP : OnLine b P) (kS : OnLine k S) (kR : OnLine k R) (ParaPR : Para P R) (ParaMR : Para M R)
+    (ParaPM : Para P M) (ParaQL : Para Q L) : DiffSide h k L := DiffSide_of_B_offline'
+  (B_symm $ B_of_B_Para_Para (B_symm Bfgh) hM hS gP fR bS bP kS kR (Para_symm ParaPR)
+    (Para_symm ParaMR) ParaPM) bL (offline_of_Para hQ ParaQL)
+
+theorem DiffSide_of_B_B_Para (Babe : B a b e) (Bfgh : B f g h) (aL : OnLine a L) (bL : OnLine b L)
+    (hS : OnLine h S) (bS : OnLine b S) (bP : OnLine b P) (gP : OnLine g P) (eR : OnLine e R)
+    (fR : OnLine f R) (fQ : OnLine f Q) (gQ : OnLine g Q) (ParaPR : Para P R) (ParaQL : Para Q L)
+    : DiffSide a g S := DiffSide_of_sameside_sameside bL bS bP aL hS gP (sameside_of_Para_online
+  gQ (onLine_3_of_B Bfgh fQ gQ) ParaQL) $ sameside_of_DiffSide_DiffSide
+    (DiffSide_of_sameside_DiffSide (sameside_of_Para_online' eR fR ParaPR) $
+    DiffSide_of_B_offline' (B_symm Babe) bP (offline_of_Para' eR ParaPR)) $ DiffSide_of_B_offline'
+    Bfgh gP (offline_of_Para' fR ParaPR)
+
+theorem B_of_B_B_Para (Babe : B a b e) (Bfgh : B f g h) (aL : OnLine a L) (bL : OnLine b L)
+    (hM : OnLine h M) (hS : OnLine h S) (hQ : OnLine h Q) (bS : OnLine b S) (bP : OnLine b P)
+    (gP : OnLine g P) (eR : OnLine e R) (fR : OnLine f R) (fQ : OnLine f Q) (kS : OnLine k S)
+    (kR : OnLine k R) (ParaPR : Para P R) (ParaQL : Para Q L) (ParaPM : Para P M)
+    (ParaMR : Para M R) : B f e k := B_of_col_DiffSide ⟨R, fR, eR, kR⟩ (onLine_3_of_B Babe aL bL)
+  $ DiffSide_of_sameside_DiffSide (sameside_of_Para_online hQ fQ ParaQL) $ DiffSide_of_B_Para_Para
+    Bfgh bL hQ hM hS gP fR bS bP kS kR ParaPR ParaMR ParaPM ParaQL
  ---------------------------------------- Book I Refactored ---------------------------------------
 /-- Euclid I.1, construction of two equilateral Triangles -/
 theorem iseqtri_iseqtri_DiffSide_of_ne (ab : a ≠ b) : ∃ c d L, OnLine a L ∧
@@ -1019,6 +1164,22 @@ theorem internal_lt_external' (Babc : B a b c) (tri_abd : Triangle a b d) :
     tri_143_of_tri_col (ne_23_of_B Bdbe) (by perma) $ col_213_of_col $ col_of_B Bdbe
   linperm
 
+/-- Euclid I.17, Any two angles of a Triangle sum to less than two right angles-/
+theorem two_ang_lt_two_right_of_tri (tri_abc : Triangle a b c) :
+    angle a b c + angle a c b < 2 * rightangle := by
+  rcases length_eq_B_of_ne (ne_32_of_tri tri_abc) (ne_23_of_tri tri_abc) with ⟨d, Bcbd, _⟩
+  rcases line_of_pts c b with ⟨L, cL, bL⟩
+  have bca_lt_abd := internal_lt_external' Bcbd $ tri321 tri_abc
+  have cbd_split := two_right_of_flat_angle Bcbd cL bL (online_1_of_Triangle bL cL tri_abc)
+  linperm
+
+/-- Euclid I.17 corollary, An obtuse angle in a Triangle is bigger than the other two angles-/
+theorem ang_lt_obtuse_of_tri (tri_abc : Triangle a b c) (right_lt_abc : rightangle < angle a b c) :
+    angle b a c < angle a b c ∧ angle a c b < angle a b c := by
+  have abc_acb_ra := two_ang_lt_two_right_of_tri tri_abc
+  have cba_cab_ra := two_ang_lt_two_right_of_tri $ tri321 tri_abc
+  exact ⟨by linperm, by linperm⟩
+
 /-- Euclid I.18, Opposite larger sides you have larger angles in a Triangle-/
 theorem ang_lt_of_len_lt (tri_abc : Triangle a b c) (len_lt : length c a < length c b) :
     angle c b a < angle c a b := by
@@ -1057,6 +1218,23 @@ theorem len_lt_of_tri (tri_abc : Triangle a b c) : length a b < length a c + len
     length b c < length b a + length c a ∧ length c a < length c b + length a b :=
   ⟨len_lt_of_tri' tri_abc, len_lt_of_tri' $ by perma, len_lt_of_tri' $ by perma⟩
 
+/--Euclid I.21, with one Triangle in another and sharing a base, the sum of the other two sides of
+   the outer Triangle is larger than that for the inner Triangle, and the top angle of the outer
+   Triangle is smaller than that of the interior Triangle-/
+theorem angle_len_leq_of_tri_in_out (bL : OnLine b L) (cL : OnLine c L) (aM : OnLine a M)
+    (cM : OnLine c M) (aN : OnLine a N) (bN : OnLine b N) (adL : SameSide a d L)
+    (bdM : SameSide b d M) (cdN : SameSide c d N) :
+    length b d + length c d < length a b + length a c ∧ angle b a c < angle b d c := by
+rcases tri_tri_B_B_of_int bL cL aM cM aN bN adL bdM cdN with ⟨e, Baec, Bbde, tri_abe, tri_cde⟩
+have be_lt_ba_ea := (len_lt_of_tri tri_abe).2.1
+have cd_lt_ce_de := (len_lt_of_tri tri_cde).1
+have ac_split := length_sum_of_B Baec
+have be_split := length_sum_of_B Bbde
+have dec_lt_cdb := internal_lt_external' (B_symm Bbde) (tri321 tri_cde)
+have eab_lt_bec := internal_lt_external' Baec (tri132_of_tri123 tri_abe)
+exact ⟨by linperm, by linperm[angle_extension_of_B (ne_23_of_B Baec) (B_symm Bbde),
+  angle_extension_of_B (ne_of_sameside bL adL) Baec]⟩
+
 /--Euclid I.22, making a Triangle with prescribed lengths-/
 theorem Triangle_of_ineq (aL : OnLine a L) (bL : OnLine b L) (fL : ¬OnLine f L)
     (ab_lt_a1a2_b1b2 : length a b < length a1 a2 + length b1 b2)
@@ -1074,6 +1252,13 @@ theorem Triangle_of_ineq (aL : OnLine a L) (bL : OnLine b L) (fL : ¬OnLine f L)
   have : length a c = length a e := length_eq_of_oncircle aα cα eα
   have : length b d = length b e := length_eq_of_oncircle bβ dβ eβ
   exact ⟨e, by linarith, by linarith, efL⟩
+
+/--Euclid I.22, corollary, if you are copying a triangle-/
+theorem triangle_copy (tri_def : Triangle d e f) (aL : OnLine a L) (bL : OnLine b L)
+    (gL : ¬OnLine g L) (ab_de : length a b = length d e) :
+    ∃ c, length a c = length d f ∧ length b c = length e f ∧ SameSide c g L :=
+  Triangle_of_ineq aL bL gL (by linarith[len_lt_of_tri tri_def] : length a b < length d f +
+    length e f) (by linperm[len_lt_of_tri tri_def]) (by linperm[len_lt_of_tri tri_def])
 
 /--Euclid I.23, copying an angle-/
 theorem angle_copy (ab : a ≠ b) (aL : OnLine a L) (bL : OnLine b L) (jL : ¬OnLine j L)
@@ -1096,6 +1281,64 @@ theorem angle_copy' (ab : a ≠ b) (aL : OnLine a L) (bL : OnLine b L) (jL : ¬O
   rcases angle_copy ab aL bL fL tri_cde with ⟨h, hab_ecd, hfL⟩
   refine ⟨h, hab_ecd, DiffSide_of_sameside_DiffSide (sameSide_symm hfL) $ DiffSide_symm
     ⟨jL, fL, jfL⟩⟩
+
+theorem sameside_of_len_lt_tri (dN : OnLine d N) (fN : OnLine f N) (fO : OnLine f O)
+    (gO : OnLine g O) (tri_def : Triangle d e f) (tri_gdf : Triangle g d f) (egN : DiffSide e g N)
+    (ab_le_ac : length d e ≤ length d f) (tri_fge : ¬Colinear f g e)
+    (dgf_dfg : angle d g f = angle d f g) : SameSide d e O := by
+  by_contra deO
+  rcases pt_B_of_DiffSide ⟨online_2_of_Triangle gO fO tri_gdf, online_3_of_Triangle fO gO
+    tri_fge, deO⟩ with ⟨x, xO, Bdxe⟩
+  have xgN := DiffSide_of_sameside_DiffSide (sameSide_symm $ sameside_of_B_not_online_3 Bdxe dN
+    (online_2_of_Triangle dN fN tri_def)) egN
+  have tri_xfd := Triangle_of_ne_online (ne_12_of_B $ B_of_col_DiffSide ⟨O, xO, fO, gO⟩ fN xgN)
+    xO fO $ online_2_of_Triangle gO fO tri_gdf
+  have dfg_lt_ra := two_ang_lt_two_right_of_tri $ tri213 tri_gdf
+  have gfx_split := two_right_of_flat_angle (B_of_col_DiffSide ⟨O, xO, fO, gO⟩ fN xgN) xO fO $
+    online_2_of_Triangle gO fO tri_gdf
+  have fxd_xfd := (ang_lt_obtuse_of_tri tri_xfd (by linperm)).1
+  have df_dx := len_lt_of_ang_lt (tri213 tri_xfd) $ by linperm
+  linperm[len_pos_of_nq (ne_23_of_B Bdxe), length_sum_of_B Bdxe]
+
+/--Euclid I.24, If two Triangles have two congruent sides, and the included angle of one is bigger
+   than the other then the opposite side is also bigger than that of the other Triangle-/
+theorem opp_lt_of_ss_lt (tri_abc : Triangle a b c) (tri_def : Triangle d e f)
+    (ab_de : length a b = length d e) (ac_df : length a c = length d f)
+    (edf_lt_bac : angle e d f < angle b a c) : length e f < length b c := by
+  wlog ab_le_ac : length a b ≤ length a c generalizing b c e f; perma[this (by perma) (by perma)
+    ac_df ab_de (by perma) $ by linperm]
+  rcases line_of_pts d e with ⟨L, dL, eL⟩
+  rcases line_of_pts d f with ⟨N, dN, fN⟩
+  rcases line_of_pts f e with ⟨P, fP, eP⟩
+  rcases angle_copy (ne_12_of_tri tri_def) dL eL (online_3_of_Triangle dL eL tri_def) tri_abc
+    with ⟨h, hde_cab, hfL⟩
+  rcases line_of_pts d h with ⟨M, dM, hM⟩
+  rcases online_sameside_DiffSide_len_ang_tri_of_ang_lt tri_def dL eL hM dM dN fN hfL (by linperm)
+    with ⟨g, gM, fM, hgL, fd_dg, hde_gde, nn_dge, tri_gdf, egN⟩
+  rcases line_of_pts f g with ⟨O, fO, gO⟩
+  have dgf_dfg := angle_eq_of_iso ⟨tri213 tri_gdf, by linperm⟩
+  have bc_eg := (sas ab_de (by linperm : length a c = length d g) $ by linperm).1
+  by_cases tri_fge : Colinear f g e; linperm[length_sum_of_B $ B_of_col_DiffSide (by perma
+    [tri_fge]) fN egN, len_pos_of_nq (ne_of_online gM fM)]
+  have gfe_split := angle_add_of_sameside fO gO fP eP (sameSide_symm $ sameside_of_len_lt_tri dN fN
+    fO gO tri_def tri_gdf egN (by linarith) tri_fge dgf_dfg) $ sameside_of_sameside_DiffSide fO fN
+    fP gO dN eP (sameside_of_len_lt_tri dN fN fO gO tri_def tri_gdf egN (by linarith) tri_fge
+    dgf_dfg) $ DiffSide_symm egN
+  have dgf_split := angle_add_of_sameside gM dM gO fO (sameSide_symm $
+    sameside_of_sameside_DiffSide dL dN dM eL fN gM (sameSide_symm $ sameSide_trans hgL hfL) egN) $
+    sameside_of_len_lt_tri dN fN fO gO tri_def tri_gdf egN (by linarith) tri_fge dgf_dfg
+  have ef_eg := len_lt_of_ang_lt tri_fge (by linperm[zero_lt_angle_of_tri $ tri321 tri_def])
+  rwa[bc_eg]
+
+/--Euclid I.25, the converse of I.24-/
+theorem ang_lt_of_ss_lt (tri_abc : Triangle a b c) (tri_def : Triangle d e f)
+    (ab_de : length a b = length d e) (ac_df : length a c = length d f)
+    (ef_bc : length e f < length b c) : angle e d f < angle b a c := by
+  by_cases edf_bac : angle e d f = angle b a c;
+  have bc_ef := (sas ab_de ac_df edf_bac.symm).1; linperm
+  by_cases bac_edf : angle b a c < angle e d f;
+  have bc_lt_ef := opp_lt_of_ss_lt tri_def tri_abc ab_de.symm ac_df.symm bac_edf; linperm
+  push_neg at bac_edf; exact Ne.lt_of_le edf_bac bac_edf
 
 /--Euclid I.26, if two Triangles have two corresponding angles equal and the included sides equal,
    then they are congruent-/
@@ -1154,6 +1397,28 @@ theorem Para_of_ang_eq (bc : b ≠ c) (aM : OnLine a M) (bM : OnLine b M) (bL : 
     $ DiffSide_of_sameside_DiffSide aeL adL) $ by perma[Triangle_of_ne_online bc bL cL $
                 not_onLine_of_sameSide $ sameSide_symm aeL]
   linperm[angle_extension_of_sameside bc.symm bL ⟨M, bM, aM, eMN.1⟩ aeL]
+
+/--Euclid I.28 part 1, If the exterior angle is equal to the internal and opposite angle then we
+    have parallel Lines-/
+theorem para_of_ext_ang_eq (Bebc : B e b c) (bM : OnLine b M) (fM : OnLine f M)
+    (bL : OnLine b L) (cL : OnLine c L) (cN : OnLine c N) (dN : OnLine d N) (fdL : SameSide f d L)
+    (ebf_bcd : angle e b f = angle b c d) : Para M N := by
+  rcases length_eq_B_of_ne (ne_of_sameside bL fdL) $ ne_of_sameside' bL fdL with ⟨a, Bfba, _⟩
+  have ebf_cba := vertical_angle Bebc Bfba (onLine_3_of_B (B_symm Bebc) cL bL) bL
+    $ online_of_B_online' Bfba bL (DiffSide_of_B_sameside Bfba bL fdL).1
+  exact Para_of_ang_eq (ne_23_of_B Bebc) (onLine_3_of_B Bfba fM bM) bM bL cL cN dN
+    (DiffSide_of_B_sameside Bfba bL fdL) $ by linperm
+
+/--Euclid I.28 part 2, If the sum of the interior angles is equal to two right angles then we have
+    parallel Lines-/
+theorem para_of_int_ang_sum (bc : b ≠ c) (aM : OnLine a M) (bM : OnLine b M) (bL : OnLine b L)
+    (cL : OnLine c L) (cN : OnLine c N) (dN : OnLine d N) (adL : SameSide a d L)
+    (abc_bcd : angle a b c + angle b c d = 2 * rightangle) : Para M N := by
+  rcases length_eq_B_of_ne (ne_of_sameside bL adL) $ ne_of_sameside' bL adL with ⟨e, Babe, _⟩
+  have abe_split := two_right_of_flat_angle Babe aM bM $ online_3_of_Triangle aM bM $
+    tri_of_sameside bc bL cL adL
+  exact Para_of_ang_eq bc (onLine_3_of_B Babe aM bM) bM bL cL cN dN
+    (DiffSide_of_B_sameside Babe bL adL) $ by linperm
 
 /--Euclid I.29, basic properties of alternate, exterior, and interior angles with Parallel lines-/
 theorem alternate_eq_of_Para (aM : OnLine a M) (bM : OnLine b M) (bL : OnLine b L)
@@ -1221,6 +1486,12 @@ theorem Para_trans (MN : M ≠ N) (ParaLM : Para L M) (ParaLN : Para L N) : Para
     (Para_symm ParaLN)
   linarith[zero_lt_angle_of_tri $ Triangle_of_ne_online (ne_of_sameside xO baO).symm int.2 bN
     (not_onLine_of_sameSide $ sameSide_symm yaN)]
+
+/--Euclid I.30, a corollary, a contrapositive of sorts of I.30-/
+theorem lines_inter_of_para (LM : L ≠ M) (aL : OnLine a L) (aM : OnLine a M) (paraMN : Para M N) :
+    ∃ b, OnLine b L ∧ OnLine b N := by
+  by_cases paraLN : Para L N; have := Para_trans LM (Para_symm paraLN) (Para_symm paraMN) a; tauto
+  unfold Para at paraLN; push_neg at paraLN; exact paraLN
 
 /--Euclid I.31, through a point off a line there exists a Parallel line-/
 theorem Para_of_offline (aM : ¬OnLine a M) : ∃ N, OnLine a N ∧ Para M N := by
@@ -1334,6 +1605,31 @@ theorem area_eq_of_Paragram (pgram1 : Paragram a d c b L M N O) (pgram2 : Paragr
   have ar4 := area_add_of_B_offline Bfea fL aL $ offline_of_Para' bN ParaLN
   linperm
 
+/--Euclid I.36, generalization of I.35 to parallelograms with a distance-/
+theorem area_eq_of_far_Paragram (pgram1 : Paragram a d c b L M N O)
+    (pgram2 : Paragram e h g f L P N Q) (bc_fg : length b c = length f g) :
+    area a d b + area d b c = area f g e + area g e h := by
+  have ⟨aL, dL, dM, cM, cN, bN, bO, aO, paraLN, paraMO⟩ := pgram1
+  have ⟨eL, hL, hP, gP, gN, fN, fQ, eQ, _, paraPQ⟩ := pgram2
+  rcases line_of_pts e c with ⟨R, eR, cR⟩
+  wlog bhR : SameSide b h R generalizing a b c d M O R; rcases line_of_pts b e with ⟨S, bS, eS⟩
+  have quad_comm := Paragram_area_comm pgram1
+  have key := this ⟨dL, aL, aO, bO, bN, cN, cM, dM, paraLN, Para_symm paraMO⟩ (by linperm) dL aL aO
+    bO bN cN cM dM (Para_symm paraMO) S eS bS $ sameside_of_not_sameside_Para (ne_of_Para' cM bO
+    paraMO) (ne_of_Para' hP eQ paraPQ) eL eR eS hL cR bS bN cN bhR paraLN; perm at *;
+    rw[quad_comm,key]
+  rcases line_of_pts b h with ⟨T, bT, hT⟩
+  rcases B_diagonal_of_quad hL eL eR cR cN bN (sameside_of_Para_online hL eL paraLN)
+    (sameside_of_Para_online' cN bN paraLN) (sameSide_symm bhR)
+    with ⟨_, _, S, _, _, _, _, eS, bS, _, _, _, hcS⟩
+  have eh_gf := len_eq_of_Parallelogram pgram2
+  have ⟨hL, eL, eR, cR, cN, bN, bT, hT, _, paraRT⟩ :=
+    pgram_of_Para_len_eq hL eL eR cR cN bN bT hT eS bS hcS paraLN (by linperm)
+  have pgram3_pgram1 := area_eq_of_Paragram ⟨hL, eL, eR, cR, cN, bN, bT, hT, paraLN, paraRT⟩ pgram1
+  have pgram3_pgram2 := area_eq_of_Paragram ⟨cN, bN, bT, hT, hL, eL, eR, cR, Para_symm paraLN,
+    Para_symm paraRT⟩ ⟨fN, gN, gP, hP, hL, eL, eQ, fQ, Para_symm paraLN, paraPQ⟩
+  linperm
+
 /--Proof of the construction of the Parallelogram from the Triangle in I.37, used twice so worth
     having as its own lemma-/
 lemma Paragram_of_tri_Para (bc : b ≠ c) (bM : OnLine b M) (cM : OnLine c M) (aN : OnLine a N)
@@ -1357,6 +1653,44 @@ theorem area_eq_of_tri (aL : OnLine a L) (dL : OnLine d L) (bM : OnLine b M) (cM
   have half_pgram2 := area_eq_of_Parallelogram pgram2
   linperm
 
+/--Euclid I.38, the analog of I.35 for Triangles-/
+theorem area_eq_of_tri_far (aL : OnLine a L) (dL : OnLine d L) (bM : OnLine b M) (cM : OnLine c M)
+    (eM : OnLine e M) (fM : OnLine f M) (bc_ef : length b c = length e f) (paraLM : Para L M) :
+    area a b c = area d e f := by
+  by_cases ef : e = f; rw[ef, eq_of_length_zero (by rwa[length_zero_of_eq ef] at bc_ef :
+    length b c = 0)]; linperm[degenerate_area c a, degenerate_area f d]
+  rcases Paragram_of_tri_Para (ne_of_ne_len ef bc_ef.symm) bM cM aL (Para_symm paraLM)
+    with ⟨g, N, O, pgram1⟩
+  rcases Paragram_of_tri_Para ef eM fM dL (Para_symm paraLM) with ⟨h, P, Q, pgram2⟩
+  have pgram_eq := area_eq_of_far_Paragram pgram1 pgram2 bc_ef
+  have half_pgram1 := area_eq_of_Parallelogram pgram1
+  have half_pgram2 := area_eq_of_Parallelogram pgram2
+  linperm[Paragram_area_comm pgram2]
+
+/--Euclid I.40, equal area Triangles on the same side must be on the same parallels-/
+theorem para_of_tri_sameside_area_far (ad : a ≠ d) (tri_abc : Triangle a b c)
+    (tri_def : Triangle d e f) (bL : OnLine b L) (cL : OnLine c L) (eL : OnLine e L)
+    (fL : OnLine f L) (aM : OnLine a M) (dM : OnLine d M) (adL : SameSide a d L)
+    (bc_ef : length b c = length e f) (eq_tri : area a b c = area d e f) : Para L M := by
+  by_contra paraLM
+  rcases line_of_pts e d with ⟨O, eO, dO⟩
+  rcases Para_of_offline $ online_1_of_Triangle bL cL tri_abc with ⟨N, aN, paraLN⟩
+  rcases lines_inter_of_para (ne_line_of_online dO $ online_1_of_Triangle eL
+    fL tri_def).symm eO eL paraLN with ⟨g, gO, gN⟩
+  have abc_gef := area_eq_of_tri_far aN gN bL cL eL fL bc_ef $ Para_symm paraLN
+  by_cases Begd : B e g d; exact tri_sum_contra eO dO gO (online_3_of_Triangle dO eO tri_def)
+    (by linperm) Begd
+  by_cases Bedg : B e d g; exact tri_sum_contra eO gO dO (online_3_of_Triangle dO eO tri_def)
+    (by linperm) Bedg
+  have := B_or_B_of_sameside (ne_of_Para_Para ad aN aM dM gN paraLN paraLM) eL ⟨O, eO, dO, gO⟩
+    (sameSide_trans adL $ sameside_of_Para_online' aN gN paraLN); tauto
+
+/--Euclid I.39, equal area Triangles on the same side must be on the same parallels-/
+theorem para_of_tri_sameside_area (ad : a ≠ d) (tri_abc : Triangle a b c) (tri_dbc : Triangle d b c)
+    (bL : OnLine b L) (cL : OnLine c L) (aM : OnLine a M) (dM : OnLine d M) (adL : SameSide a d L)
+    (eq_tri : area a b c = area b c d) : Para L M :=
+  para_of_tri_sameside_area_far ad tri_abc tri_dbc bL cL bL cL aM dM adL rfl (by linperm)
+
 /--Euclid I.41, if a Parallelogram shares the same Parallels as a
   Triangle and the same base, then the Parallelogram has twice the area of the Triangle-/
 theorem twice_pgram_of_tri  (eL : OnLine e L) (pgram : Paragram a b c d L M N O) :
@@ -1365,6 +1699,151 @@ theorem twice_pgram_of_tri  (eL : OnLine e L) (pgram : Paragram a b c d L M N O)
   have pgram_eq := area_eq_of_Parallelogram pgram
   have tri_eq := area_eq_of_tri pgram.2.1 eL cN dN ParaLM
   linperm
+
+/--Euclid I.42, to construct a parallelogram with the area of a given Triangle and with a given
+  angle-/
+theorem pgram_of_angle_tri (hi : h ≠ i) (tri_abc : Triangle a b c) (tri_def : Triangle d e f)
+    (hL : OnLine h L) (iL : OnLine i L) (nL : ¬OnLine n L) : ∃ j l m M N O,
+    B h i j ∧ Paragram m l i j N M L O ∧ area j i l + area l m j = area a b c ∧ SameSide n l L ∧
+    angle l i j = angle d e f := by
+  rcases bisect_segment (ne_23_of_tri tri_abc) with ⟨g, Bbgc, bg_cg⟩
+  rcases length_eq_B_of_ne_four hi (ne_12_of_B Bbgc) with ⟨j, Bhij, bg_ij⟩
+  rcases triangle_copy (tri321 $ tri_of_B_tri (B_symm Bbgc) (tri132_of_tri123 tri_abc)) iL
+    (onLine_3_of_B Bhij hL iL) nL bg_ij.symm with ⟨k, ik_ba, jk_ga, knL⟩
+  rcases Para_of_offline (not_onLine_of_sameSide knL) with ⟨N, kN, paraLN⟩
+  rcases angle_copy (ne_23_of_B Bhij) iL (onLine_3_of_B Bhij hL iL) (not_onLine_of_sameSide knL)
+    (tri231_of_tri123 tri_def) with ⟨o, oij_def, okL⟩
+  rcases line_of_pts i o with ⟨M', iM', oM'⟩
+  rcases lines_inter_of_para (ne_line_of_online oM' (not_onLine_of_sameSide okL)).symm iM' iL paraLN
+    with ⟨l, lM', lN⟩
+  rcases Paragram_of_tri_Para (ne_32_of_B Bhij) (onLine_3_of_B Bhij hL iL) iL lN paraLN
+    with ⟨m, M, O, pgram⟩; have ⟨_, lN, lM, iM, iL, _⟩ := pgram
+  rcases line_of_pts b c with ⟨Q, bQ, cQ⟩
+  rcases Para_of_offline (online_1_of_Triangle bQ cQ tri_abc) with ⟨R, aR, paraQR⟩
+  have abg_acg := area_eq_of_tri_far aR aR bQ (onLine_2_of_B Bbgc bQ cQ) cQ
+    (onLine_2_of_B Bbgc bQ cQ) bg_cg (Para_symm paraQR)
+  have para_split := twice_pgram_of_tri kN pgram
+  have bga_ijk := area_eq_of_SSS bg_ij ik_ba.symm jk_ga.symm
+  have abc_split := area_add_of_B_offline Bbgc bQ cQ (online_1_of_Triangle bQ cQ tri_abc)
+  exact ⟨j, l, m, M, N, O, Bhij, pgram, by linperm, sameSide_trans knL (sameside_of_Para_online' kN
+    lN paraLN), by linperm[angle_extension_of_sameside (ne_32_of_B Bhij) iL ⟨M, iM, (by rwa
+      [line_unique_of_pts (ne_of_Para iL lN paraLN) iM lM iM' lM'] : OnLine o M), lM⟩
+                    (sameSide_symm $ sameSide_trans (sameside_of_Para_online' kN lN paraLN) okL)]⟩
+
+/--Euclid I.43, complementary parallelograms accross the diameter of a parallelogram are equal-/
+theorem pgram_complement_eq (Bakc : B a k c) (hM : OnLine h M) (hQ : OnLine h Q) (fN : OnLine f N)
+    (fP : OnLine f P) (pgram1 : Paragram d a b c O L M N) (pgram2 : Paragram g a e k O L P Q) :
+    area k d g + area k d f = area k b e + area k b h := by
+  have ⟨dO, _, _, bL, bM, cM, cN, dN, paraOM, paraLN⟩ := pgram1
+  have ⟨gO, aO, aL, eL, eP, kP, kQ, gQ, paraOP, paraLQ⟩ := pgram2
+  have paraPM := Para_trans (ne_line_of_online cM (DiffSide_of_B_offline' Bakc kP
+    (offline_of_Para aO paraOP)).2.1) paraOP paraOM
+  have paraQN := Para_trans (ne_line_of_online kQ $ not_onLine_of_sameSide $
+    sameside_of_B_not_online_3 (B_symm Bakc) cN (offline_of_Para aL paraLN)).symm paraLQ paraLN
+  have dac_abc := area_eq_of_Parallelogram pgram1
+  have gak_aek := area_eq_of_Parallelogram pgram2
+  have fkc_khc := area_eq_of_Parallelogram ⟨fP, kP, kQ, hQ, hM, cM, cN, fN, paraPM, paraQN⟩
+  have kab_split := area_add_of_B_offline (B_of_B_Para Bakc ⟨L, aL, eL, bL⟩ bM cM eP kP
+    (offline_of_Para aO paraOP) (Para_symm paraPM)) aL bL (offline_of_Para' kQ paraLQ)
+  have kcb_split := area_add_of_B_offline (B_of_B_Para (B_symm Bakc) ⟨M, cM, hM, bM⟩ bL aL hQ kQ
+    (offline_of_Para' cN paraQN) paraLQ) cM bM (offline_of_Para kP paraPM)
+  have kad_split := area_add_of_B_offline (B_of_B_Para Bakc ⟨O, aO, gO, dO⟩ dN cN gQ kQ
+    (offline_of_Para aL paraLQ) (Para_symm paraQN)) aO dO (offline_of_Para' kP paraOP)
+  have kcd_split := area_add_of_B_offline (B_of_B_Para (B_symm Bakc) ⟨N, cN, fN, dN⟩ dO aO fP kP
+    (offline_of_Para' cM paraPM) paraOP) cN dN (offline_of_Para kQ paraQN)
+  have bac_split := area_add_of_B Bakc $ tri132_of_tri123 $ Triangle_of_ne_online
+    (ne_of_Para bL cN paraLN) bM cM (offline_of_Para aO paraOM)
+  have dca_split := area_add_of_B (B_symm Bakc) $ tri132_of_tri123 $ Triangle_of_ne_online
+    (ne_of_Para dN aL $ Para_symm paraLN) dO aO (offline_of_Para' cM paraOM)
+  linperm
+
+theorem lines_inter_of_pgram (Babe : B a b e) (Bfgh : B f g h) (pgram1 : Paragram f g b e Q P L R)
+    (pgram2 : Paragram a b g h L P Q M) (bS : OnLine b S) (hS : OnLine h S) (paraMR : Para M R) :
+    ∃ k, OnLine k S ∧ OnLine k R ∧ B h b k ∧ ¬OnLine k Q := by
+  have ⟨fQ, _, _, _, _, _, eR, fR, paraQL, paraPR⟩ := pgram1
+  have ⟨aL, bL, bP, gP, _, hQ, hM, _, _, paraPM⟩ := pgram2
+  rcases lines_inter_of_para (ne_line_of_online bS (offline_of_Para bP paraPM)).symm hS hM paraMR
+    with ⟨k, kS, kR⟩
+  exact ⟨k, kS, kR, B_symm $ B_of_B_Para_Para (B_symm Bfgh) hM hS gP fR bS bP kS kR (Para_symm
+    paraPR) (Para_symm paraMR) paraPM, online_2_of_Triangle fQ hQ $ Triangle_of_ne_online
+    (ne_13_of_B $ B_of_B_B_Para Babe Bfgh aL bL hM hS hQ bS bP gP eR fR fQ kS kR paraPR paraQL
+    paraPM paraMR) fR kR (offline_of_Para hM paraMR)⟩
+
+theorem lines_inter_of_pgram' (Babe : B a b e) (Bfgh : B f g h) (pgram1 : Paragram f g b e Q P L R)
+    (pgram2 : Paragram a b g h L P Q M) (bS : OnLine b S) (hS : OnLine h S) (kS : OnLine k S)
+    (kR : OnLine k R) (kN : OnLine k N) (paraMR : Para M R) (paraLN : Para L N) (paraQN : Para Q N)
+    : ∃ m, OnLine m P ∧ OnLine m N ∧ B g b m := by
+  have ⟨fQ, gQ, _, _, _, eL, eR, fR, paraQL, paraPR⟩ := pgram1
+  have ⟨aL, bL, bP, gP, _, hQ, hM, _, _, paraPM⟩ := pgram2
+  rcases lines_inter_of_para (ne_line_of_online hQ (offline_of_Para' hM paraPM)) gP gQ paraQN
+    with ⟨m, mP, mN⟩
+  exact ⟨m, mP, mN, B_of_sq (B_of_B_B_Para Babe Bfgh aL bL hM hS hQ bS bP gP eR fR
+    fQ kS kR paraPR paraQL paraPM paraMR) eL bL bP paraQL (Para_symm paraLN) ⟨fR, kR, kN, mN, mP,
+    gP, gQ, fQ, Para_symm paraPR, Para_symm paraQN⟩⟩
+
+/--Euclid I.44, make a parallelogram on a segment with a prescribed area and angle-/
+theorem pgram_seg_of_tri_ang (ab : a ≠ b) (aL : OnLine a L) (bL : OnLine b L)
+    (tri_nop : Triangle n o p) (tri_qrs : Triangle q j s) (iL : ¬OnLine i L) :
+    ∃ l m M N O, Paragram a b m l L M N O ∧ area l b a + area l b m = area n o p ∧
+    angle a b m = angle q j s ∧ DiffSide m i L := by
+  rcases pgram_of_angle_tri ab tri_nop tri_qrs aL bL iL with ⟨e, g, f, P, Q, R, Babe, pgram1,
+    pgram_tri, igL, gbe_qjs⟩; have ⟨fQ, gQ, gP, bP, bL, eL, eR, fR, paraQL, paraPR⟩ := pgram1
+  rcases length_eq_B_of_ne_four (ne_of_Para gP fR paraPR).symm ab with ⟨h, Bfgh, ab_gh⟩
+  rcases line_of_pts h a with ⟨M, hM, aM⟩
+  rcases line_of_pts h b with ⟨S, hS, bS⟩
+  have pgram2 := pgram_of_Para_len_eq aL bL bP gP gQ (onLine_3_of_B Bfgh fQ gQ) hM aM bS hS
+    (DiffSide_of_B_B_Para Babe Bfgh aL bL hS bS bP gP eR fR fQ gQ paraPR paraQL)
+    (Para_symm paraQL) (by linperm); have ⟨aL, bL, bP, gP, gQ, hQ, hM, aM, _, paraPM⟩ := pgram2
+  have paraMR := Para_trans (ne_line_of_online aM $ not_onLine_of_sameSide $ sameSide_symm $
+    sameSide_of_B_not_onLine_2 (B_symm Babe) eR (offline_of_Para bP paraPR)).symm paraPM paraPR
+  rcases lines_inter_of_pgram Babe Bfgh pgram1 pgram2 bS hS paraMR with ⟨k, kS, kR, Bhbk, kQ⟩
+  rcases Para_of_offline kQ with ⟨N, kN, paraQN⟩
+  rcases lines_inter_of_para (ne_line_of_online gQ (offline_of_Para gP paraPM)) hM hQ paraQN
+    with ⟨l, lM, lN⟩
+  have paraLN := Para_trans (ne_line_of_online kN (DiffSide_of_B_Para_Para Bfgh bL hQ hM hS gP fR
+    bS bP kS kR paraPR paraMR paraPM paraQL).2.1) paraQL paraQN
+  rcases lines_inter_of_pgram' Babe Bfgh pgram1 pgram2 bS hS kS kR kN paraMR paraLN paraQN
+    with ⟨m, mP, mN, Bgbm⟩
+  have pgram_pgram := pgram_complement_eq Bhbk eR eL mN mP ⟨lM, hM, hQ, fQ, fR, kR,
+     kN, lN, paraMR, paraQN⟩ ⟨aM, hM, hQ, gQ, gP, bP, bL, aL, Para_symm paraPM, paraQL⟩
+  have gbe_mba := vertical_angle Bgbm (B_symm Babe) gP bP (offline_of_Para' eR paraPR)
+  exact ⟨l, m, P, N, M, ⟨aL, bL, bP, mP, mN, lN, lM, aM, paraLN, paraPM⟩, by
+    linperm[Paragram_area_comm pgram1], by linperm, DiffSide_symm $ DiffSide_of_sameside_DiffSide
+    (sameSide_symm igL) $ DiffSide_of_B_offline' Bgbm bL (offline_of_Para gQ paraQL)⟩
+
+/--Euclid I.45, from a quadrilateral contructing a parallelogram with its area-/
+theorem pgram_of_quad (nf : n ≠ f) (tri_abd : Triangle a b d) (tri_cbd : Triangle c b d)
+    (tri_eij : Triangle e i j) (nL : OnLine n L) (fL : OnLine f L) (pL : ¬OnLine p L) :
+    ∃ k m l M N O, B n f k ∧ Paragram f k m l L M N O ∧ area f m k + area f m l = area a b d +
+    area c b d ∧ angle k f l = angle e i j ∧ SameSide l p L := by
+  rcases pgram_of_angle_tri nf tri_abd tri_eij nL fL pL with ⟨k, g, h, O, P, M, Bnfk, pgram1,
+    abd_pgram, pgL, gfk_eij⟩; have ⟨hP, gP, gO, fO, fL, kL, kM, hM, paraPL, paraOM⟩ := pgram1
+  rcases pgram_seg_of_tri_ang (ne_of_Para' gO hM paraOM) hP gP tri_cbd tri_eij
+    (offline_of_Para' fL paraPL) with ⟨m, l, O', N, M', pgram2, cbd_pgram, hgm_eij, lfP⟩
+  have ⟨hP, gP, gO', lO', lN, mN, mM', hM', paraPN, paraOM'⟩ := pgram2
+  have kfgh_right := interior_rightangles_of_Para kL fL fO gO gP hP
+    (sameside_of_Para_online' kM hM paraOM) (Para_symm paraPL)
+  have Blgf := flat_of_two_right_angle (ne_of_Para gO hM paraOM) gP hP lfP (by linperm)
+  have mghl_right := interior_rightangles_of_Para mM' hM' hP gP gO' lO'
+    (sameside_of_Para_online' mN lN paraPN) (Para_symm paraOM')
+  have khg_hgl := alternate_eq_of_Para kM hM hP gP gO (onLine_3_of_B (B_symm Blgf) fO gO)
+    (DiffSide_of_sameside_DiffSide (sameside_of_Para_online' fL kL paraPL) (DiffSide_symm lfP))
+    (Para_symm paraOM)
+  have Bkhm := flat_of_two_right_angle (ne_of_Para gO hM paraOM).symm hP gP
+    (DiffSide_of_sameside_DiffSide (sameside_of_Para_online' fL kL paraPL) (DiffSide_symm
+    (DiffSide_of_sameside_DiffSide (sameside_of_Para_online' lN mN paraPN) lfP))) (by linperm)
+  have paraLN := Para_trans (ne_line_of_online lN $ online_of_B_online'' (B_symm Blgf) fL
+    (offline_of_Para gP paraPL)) paraPL paraPN
+  have pgram_split := quad_add_of_quad (B_symm Blgf) Bkhm fO gO lN mN kM hM
+    (sameside_of_Para_online fO (onLine_3_of_B (B_symm Blgf) fO gO) paraOM)
+    (sameside_of_Para_online' (onLine_3_of_B Bkhm kM hM) hM paraOM)
+    (sameside_of_Para_online fL kL paraLN)
+  exact ⟨k, m, l, M, N, O, Bnfk, ⟨fL, kL, kM, onLine_3_of_B Bkhm kM hM, mN, lN, onLine_3_of_B
+    (B_symm Blgf) fO gO, fO, paraLN, Para_symm paraOM⟩, by
+    linperm[Paragram_area_comm pgram1, Paragram_area_comm pgram2], by
+    linperm[angle_extension_of_B (ne_of_Para fO kM $ Para_symm paraOM) (B_symm Blgf)],
+      sameSide_trans (sameside_of_B_online_3 (B_symm Blgf) fL (online_of_B_online'' (B_symm Blgf)
+      fL (offline_of_Para gP paraPL))) (sameSide_symm pgL)⟩
 
 /--Euclid I.46, constructing a Square out of a segment-/
 theorem Square_of_len (ab : a ≠ b) (aL : OnLine a L) (bL : OnLine b L) (fL : ¬OnLine f L) :
