@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.Algebra.GradedHMul
 import Mathlib.CategoryTheory.Linear.LinearFunctor
@@ -7,7 +7,8 @@ namespace CategoryTheory
 
 open Category Preadditive
 
-variable {C : Type _} [Category C] (M : Type _) [AddCommMonoid M] [HasShift C M]
+variable {C D : Type _} [Category C] [Category D]
+  (M : Type _) [AddCommMonoid M] [HasShift C M] [HasShift D M]
 
 def ShiftedHom (X Y : C) : GradedType M := fun (n : M) => X ⟶ (Y⟦n⟧)
 
@@ -151,6 +152,45 @@ lemma smul_γhmul {p q n : M} (x : R) (α : ShiftedHom M X Y p)
   rw [γhmul_eq, γhmul_eq, Linear.smul_comp]
 
 end Linear
+
+def map {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M] :
+    ShiftedHom M (F.obj X) (F.obj Y) m :=
+  F.map x ≫ (F.commShiftIso m).hom.app Y
+
+lemma map_eq {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M] :
+    x.map F = F.map x ≫ (F.commShiftIso m).hom.app Y := rfl
+
+lemma map_comp {X Y Z : C} {p q r : M} (h : p + q = r)
+    (α : ShiftedHom M X Y p) (β : ShiftedHom M Y Z q) (F : C ⥤ D) [F.CommShift M] :
+    (α •[h] β).map F = (α.map F) •[h] (β.map F) := by
+  have h' : q + p = r := by rw [add_comm q, h]
+  simp only [γhmul_eq, map_eq, F.commShiftIso_add' h',
+    Functor.CommShift.isoAdd'_hom_app, ← Functor.map_comp_assoc]
+  simp only [Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.map_comp,
+    Functor.commShiftIso_hom_naturality_assoc]
+
+noncomputable def map' {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M]
+    {X' Y' : D} (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') : ShiftedHom M X' Y' m :=
+  (mk₀ e₁.inv (0 : M) rfl) •[zero_add m] (x.map F •[add_zero m] (mk₀ e₂.hom (0 : M) rfl))
+
+lemma map'_eq {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M]
+    {X' Y' : D} (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') :
+    x.map' F e₁ e₂ = (mk₀ e₁.inv (0 : M) rfl) •[zero_add m]
+      (x.map F •[add_zero m] (mk₀ e₂.hom (0 : M) rfl)) := rfl
+
+lemma map'_comp {X Y Z : C} {p q r : M} (h : p + q = r)
+    (α : ShiftedHom M X Y p) (β : ShiftedHom M Y Z q) (F : C ⥤ D) [F.CommShift M]
+    {X' Y' Z' : D} (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') (e₃ : F.obj Z ≅ Z') :
+    (α •[h] β).map' F e₁ e₃ = (α.map' F e₁ e₂) •[h] (β.map' F e₂ e₃) := by
+  simp only [map'_eq, map_comp]
+  rw [γhmul_assoc_of_first_degree_eq_zero,
+    γhmul_assoc_of_second_degree_eq_zero,
+    γhmul_assoc_of_third_degree_eq_zero]
+  conv_rhs =>
+    congr
+    · skip
+    · rw [← γhmul_assoc_of_first_degree_eq_zero]
+  rw [mk₀_comp, e₂.hom_inv_id, ← one_eq, one_γhmul]
 
 end ShiftedHom
 
