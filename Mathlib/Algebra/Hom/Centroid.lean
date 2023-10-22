@@ -400,6 +400,7 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
 
+/-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
   toFun z := {
     toFun := fun a => z * a
@@ -436,6 +437,7 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
+/-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α := {
   centerToCentroid with
   invFun := fun T => ⟨T 1, {
