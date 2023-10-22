@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
-import Mathlib.Order.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -50,7 +50,7 @@ namespace UpperSet
 variable [SemilatticeInf α] {s : UpperSet α} {a : α}
 
 @[simp] lemma infIrred_Ici (a : α) : InfIrred (Ici a) := by
-  refine' ⟨fun h ↦ Ici_ne_top _ h.eq_top, fun s t hst ↦ _⟩
+  refine' ⟨fun h ↦ Ici_ne_top h.eq_top, fun s t hst ↦ _⟩
   have := mem_Ici_iff.2 (le_refl a)
   rw [←hst] at this
   exact this.imp (fun ha ↦ le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_left) fun ha ↦
@@ -61,7 +61,8 @@ variable [Finite α]
 @[simp] protected lemma infIrred : InfIrred s ↔ ∃ a, Ici a = s := by
   refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
-    exact ⟨a, (hs.2 $ erase_inf_Ici has ha).resolve_left (lt_erase ha).ne'⟩
+    exact ⟨a, (hs.2 $ erase_inf_Ici ha $ by simpa [eq_comm] using has).resolve_left
+      (lt_erase.2 ha).ne'⟩
   · rintro ⟨a, rfl⟩
     exact infIrred_Ici _
 
@@ -71,7 +72,7 @@ namespace LowerSet
 variable [SemilatticeSup α] {s : LowerSet α} {a : α}
 
 @[simp] lemma supIrred_Iic (a : α) : SupIrred (Iic a) := by
-  refine' ⟨fun h ↦ Iic_ne_bot _ h.eq_bot, fun s t hst ↦ _⟩
+  refine' ⟨fun h ↦ Iic_ne_bot h.eq_bot, fun s t hst ↦ _⟩
   have := mem_Iic_iff.2 (le_refl a)
   rw [←hst] at this
   exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm $ Iic_le.2 ha) fun ha ↦
@@ -82,7 +83,8 @@ variable [Finite α]
 @[simp] protected lemma supIrred : SupIrred s ↔ ∃ a, Iic a = s := by
   refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
-    exact ⟨a, (hs.2 $ erase_sup_Iic has ha).resolve_left (erase_lt ha).ne⟩
+    exact ⟨a, (hs.2 $ erase_sup_Iic ha $ by simpa [eq_comm] using has).resolve_left
+      (erase_lt.2 ha).ne⟩
   · rintro ⟨a, rfl⟩
     exact supIrred_Iic _
 
