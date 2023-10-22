@@ -44,21 +44,8 @@ set_option linter.deprecated false
 section
 variable {f : Bool → Bool → Bool}
 
-@[simp]
-lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
-  rfl
 #align nat.bitwise_zero_left Nat.bitwise_zero_left
-
-@[simp]
-lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
-  unfold bitwise
-  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
-  rintro ⟨⟩
-  split_ifs <;> rfl
 #align nat.bitwise_zero_right Nat.bitwise_zero_right
-
-lemma bitwise_zero : bitwise f 0 0 = 0 := by
-  simp only [bitwise_zero_right, ite_self]
 #align nat.bitwise_zero Nat.bitwise_zero
 
 @[simp]
@@ -68,15 +55,6 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp [mod_two_of_bodd, cond]; cases bodd x <;> rfl
   simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
-  split_ifs <;> rfl
-
-theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
-    (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  rw [binaryRec]
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -187,7 +165,6 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
   simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
     ite_false]
   conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
-  split_ifs with hf <;> rfl
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     bitwise f =
