@@ -622,7 +622,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
   have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
-    filter_upwards [(isOpen_lt continuous_const continuous_norm).eventually_mem εr]with e he
+    filter_upwards [(isOpen_lt continuous_const continuous_norm).eventually_mem εr] with e he
     have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
     calc
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by

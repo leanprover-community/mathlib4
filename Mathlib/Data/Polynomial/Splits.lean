@@ -331,7 +331,7 @@ theorem degree_eq_card_roots {p : K[X]} {i : K →+* L} (p_ne_zero : p ≠ 0) (h
 
 theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree i.injective <| by
-      convert(natDegree_eq_card_roots hf).symm
+      convert (natDegree_eq_card_roots hf).symm
       rw [map_id]).symm
 #align polynomial.roots_map Polynomial.roots_map
 

@@ -545,11 +545,6 @@ theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
     (f₁ ≫ pullback.fst) (f₂ ≫ pullback.fst) g
     (by rw [Category.assoc, Category.assoc, pullback.condition])
     (by rw [Category.assoc, Category.assoc, pullback.condition])
-  -- Porting note : added this instance
-  haveI hg₁ : IsOpenImmersion g₁ := by
-    apply (config := { allowSynthFailures := true }) Scheme.pullback_map_isOpenImmersion
-    · exact PresheafedSpace.IsOpenImmersion.comp (hf := hf₁) _
-    · exact PresheafedSpace.IsOpenImmersion.comp (hf := hf₂) _
   specialize H g₁
   rw [← affine_cancel_left_isIso hP.1 (pullbackDiagonalMapIso f _ f₁ f₂).hom]
   convert H

@@ -382,7 +382,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       let d : NonemptyCompacts α := ⟨⟨c, ‹c.Finite›.isCompact⟩, hc⟩
       have : c ⊆ s := by
         intro x hx
-        rcases(mem_image _ _ _).1 hx.1 with ⟨y, ⟨_, yx⟩⟩
+        rcases (mem_image _ _ _).1 hx.1 with ⟨y, ⟨_, yx⟩⟩
         rw [← yx]
         exact (Fspec y).1
       have : d ∈ v := ⟨‹c.Finite›, this⟩
