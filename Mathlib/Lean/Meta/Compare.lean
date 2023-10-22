@@ -198,6 +198,35 @@ implementation details; does check local instances.) -/
 def MVarIdComparisonConfig.onlyExprs : MVarIdComparisonConfig where
   compareMetavarDecls? := some .onlyExprs
 
+/-! ### Nothing
+
+Don't compare anything. The purpose of these presets is to give the user a blank slate; this way,
+they can override only the fields they want to compare.
+-/
+
+/-- Don't compare anything. Useful when only overriding a single field via `{ .none with ... }` -/
+def LocalDeclComparisonConfig.nothing : LocalDeclComparisonConfig where
+  checkUserName   := false
+  checkType       := false
+  checkLetValue   := false
+  checkBinderInfo := false
+
+/-- Don't compare anything. Useful when only overriding a single field via `{ .none with ... }` -/
+def LocalContextComparisonConfig.nothing : LocalContextComparisonConfig where
+  toLocalDeclComparisonConfig := .nothing
+
+/-- Don't compare anything. Useful when only overriding a single field via `{ .none with ... }` -/
+def MetavarDeclComparisonConfig.nothing : MetavarDeclComparisonConfig where
+  checkUserName       := false
+  checkTarget         := false
+  checkLocalInstances := false
+  checkMetavarKind    := false
+  compareLocalContexts? := none
+
+/-- Don't compare anything. Useful when only overriding a single field via `{ .none with ... }` -/
+def MVarIdComparisonConfig.nothing : MVarIdComparisonConfig where
+  compareMetavarDecls? := none
+
 end Mathlib.Meta
 
 /-! # Comparisons -/
