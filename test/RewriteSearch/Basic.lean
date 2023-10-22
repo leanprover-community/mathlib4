@@ -13,7 +13,7 @@ set_option autoImplicit true
 example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
   rw_search
 
-/-- info: Try this: rw [@add_right_comm, ← @add_assoc, @add_assoc, @add_add_add_comm, ← @add_assoc] -/
+/-- info: Try this: rw [← @add_assoc, @add_right_comm, @add_assoc, @add_add_add_comm, ← @add_assoc, @add_right_comm] -/
 #guard_msgs in
 example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b := by
   rw_search
