@@ -524,3 +524,5 @@ noncomputable instance : LinearOrderedField (P c d) := test_sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
+
+example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith
