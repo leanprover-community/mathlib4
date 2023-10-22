@@ -642,12 +642,30 @@ end OrderedCommSemiring
 
 section StrictOrderedCommSemiring
 
-variable [StrictOrderedCommSemiring R] [Nontrivial R] {f : ι → R} {s : Finset ι}
+variable [StrictOrderedCommSemiring R] {f : ι → R} {s : Finset ι}
 
 -- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
 #align finset.prod_pos Finset.prod_pos
+
+theorem prod_lt_prod {t : Finset ℕ} {f g : ℕ → R} (hf : ∀ n ∈ t, 0 < f n)
+    (hfg : ∀ n ∈ t, f n ≤ g n) (hlt : ∃ n ∈ t, f n < g n) :
+    ∏ p in t, f p < ∏ p in t, g p := by
+  obtain ⟨i, hi, hilt⟩ := hlt
+  rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
+  apply mul_lt_mul hilt
+  · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
+      (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
+  · exact prod_pos fun j hj => hf j (mem_of_mem_erase hj)
+  · exact le_of_lt <| (hf i hi).trans hilt
+
+theorem prod_lt_prod_of_nonempty {t : Finset ℕ} {f g : ℕ → R} (hf : ∀ n : ℕ, n ∈ t → 0 < f n)
+    (hfg : ∀ n : ℕ, n ∈ t → f n < g n) (h_ne : t.Nonempty) :
+    ∏ p in t, f p < ∏ p in t, g p := by
+  apply prod_lt_prod hf fun n hn => le_of_lt (hfg n hn)
+  obtain ⟨n, hn⟩ := h_ne
+  exact ⟨n, hn, hfg n hn⟩
 
 end StrictOrderedCommSemiring
 
