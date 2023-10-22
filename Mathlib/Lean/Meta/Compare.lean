@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Murrills
 -/
 import Lean
-import Std
+import Mathlib.Lean.Meta
 
 /-!
 # Configurable comparisons in MetaM
@@ -245,10 +245,6 @@ def LocalContext.compare (lctx₁ lctx₂ : LocalContext) (cfg : LocalContextCom
   let l₂ := lctx₂.decls.toList.reduceOption.filter f
   if l₁.length ≠ l₂.length then return false
   compareListM (·.compare · cfg.toLocalDeclComparisonConfig ecfg) l₁ l₂
-
-instance : BEq MetavarKind where beq
-  | .natural, .natural | .synthetic, .synthetic | .syntheticOpaque, .syntheticOpaque => true
-  | _, _ => false
 
 /-- Compare two `MVarId`s by comparing their types and their local contexts, according to
 `config`. -/

@@ -163,6 +163,9 @@ end Lean.MVarId
 
 namespace Lean.Meta
 
+-- Currently (October 2023), `MetavarKind` does not derive `BEq`
+deriving instance BEq for MetavarKind
+
 /-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
 def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
   let mut hs := #[]
