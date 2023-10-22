@@ -18,7 +18,7 @@ Some of the main results include
 
 noncomputable section
 
-open Classical Polynomial
+open Polynomial
 
 open Finsupp Finset
 
@@ -35,6 +35,7 @@ variable [Semiring R] {p q r : R[X]}
 section Degree
 
 theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :=
+  letI := Classical.decEq R
   if h0 : p.comp q = 0 then by rw [h0, natDegree_zero]; exact Nat.zero_le _
   else
     WithBot.coe_le_coe.1 <|
@@ -201,6 +202,7 @@ theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.co
 theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :
     degree (s.sum f) = s.sup fun i => degree (f i) := by
+  classical
   induction' s using Finset.induction_on with x s hx IH
   · simp
   · simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]

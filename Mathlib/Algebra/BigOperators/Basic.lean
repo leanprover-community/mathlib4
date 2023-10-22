@@ -1460,12 +1460,12 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x in s, f x ^ n
 #align finset.prod_pow Finset.prod_pow
 #align finset.sum_nsmul Finset.sum_nsmul
 
-/-- A product over `Finset.powersetLen` which only depends on the size of the sets is constant. -/
+/-- A product over `Finset.powersetCard` which only depends on the size of the sets is constant. -/
 @[to_additive
-"A sum over `Finset.powersetLen` which only depends on the size of the sets is constant."]
-lemma prod_powersetLen (n : ℕ) (s : Finset α) (f : ℕ → β) :
-    ∏ t in powersetLen n s, f t.card = f n ^ s.card.choose n := by
-  rw [prod_eq_pow_card, card_powersetLen]; rintro a ha; rw [(mem_powersetLen.1 ha).2]
+"A sum over `Finset.powersetCard` which only depends on the size of the sets is constant."]
+lemma prod_powersetCard (n : ℕ) (s : Finset α) (f : ℕ → β) :
+    ∏ t in powersetCard n s, f t.card = f n ^ s.card.choose n := by
+  rw [prod_eq_pow_card, card_powersetCard]; rintro a ha; rw [(mem_powersetCard.1 ha).2]
 
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
@@ -2133,11 +2133,11 @@ theorem finset_sum_eq_sup_iff_disjoint {β : Type*} {i : Finset β} {f : β → 
 #align multiset.finset_sum_eq_sup_iff_disjoint Multiset.finset_sum_eq_sup_iff_disjoint
 
 theorem sup_powerset_len {α : Type*} [DecidableEq α] (x : Multiset α) :
-    (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetLen k) = x.powerset := by
+    (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetCard k) = x.powerset := by
   convert bind_powerset_len x using 1
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
   exact
-    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetLen x h)
+    Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
 #align multiset.sup_powerset_len Multiset.sup_powerset_len
 
 @[simp]
