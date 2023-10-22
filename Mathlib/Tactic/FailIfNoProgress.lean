@@ -25,6 +25,7 @@ having any effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
 
 * Tracing to show what progress was made when `fail_if_no_progress` succeeds
   (i.e. `fail_if_no_progress?`)
+* More general tools to diff metaprogramming-relevant states
 
 -/
 
@@ -45,9 +46,10 @@ other checks are performed. -/
 deriving Repr, Inhabited
 
 /--
-Config data for `failIfNoProgress`, `fail_if_no_progress`, and `runAndFailIfNoProgress`. This
-determines which aspects of two lists of goals are compared and the nature of the checks made. Any
-difference in the compared aspects indicates "progress".
+Config data for `fail_if_no_progress` (the user-facing tactic), `MVarId.failIfNoProgress` (in
+`MetaM`), and `failIfNoProgress` (in `TacticM`). This determines which aspects of two lists of
+goals are compared and the nature of the checks made. Any difference in the compared aspects
+indicates "progress".
 
 By default, we only compare "observable" properties; internal bookkeeping like `MVarId`s and
 `FVarId`s are not checked by default. The following are the fields of this config and its

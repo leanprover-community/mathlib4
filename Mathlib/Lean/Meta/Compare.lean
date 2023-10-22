@@ -34,7 +34,7 @@ every aspect of the objects and only the expressions appearing in the object, re
 
 ## Implementation notes
 
-We use the following pattern for specifying e.g. the `LocalContextComparisonConfig` in the 
+We use the following pattern for specifying e.g. the `LocalContextComparisonConfig` in the
 `MetavarDeclComparisonConfig`:
 ```
 structure MetavarDeclComparisonConfig where
@@ -43,22 +43,25 @@ structure MetavarDeclComparisonConfig where
 ```
 If `compareLocalContexts?` is `none`, we don't compare local contexts at all.
 
-However, this pattern means that the config for comparing `Expr`s, which is needed both when 
-comparing `LocalContext`s and `MetavarDecl`s, can't simply be extended by 
-`LocalContextComparisonConfig`, as that's not always present in `MetavarDeclComparisonConfig`. It 
-also can't simply be extended by *both* `LocalContextComparisonConfig` and 
-`MetavarDeclComparisonConfig` (using this pattern), as then changing the setting in 
-`MetavarDeclComparisonConfig` wouldn't propagate that setting down into 
+However, this pattern means that the config for comparing `Expr`s, which is needed both when
+comparing `LocalContext`s and `MetavarDecl`s, can't simply be extended by
+`LocalContextComparisonConfig`, as that's not always present in `MetavarDeclComparisonConfig`. It
+also can't simply be extended by *both* `LocalContextComparisonConfig` and
+`MetavarDeclComparisonConfig` (using this pattern), as then changing the setting in
+`MetavarDeclComparisonConfig` wouldn't propagate that setting down into
 `LocalContextComparisonConfig`.
 
 As such, we also pass `ExprComparisonConfig` as an argument to each `compare` function.
 
 ## Possible future features
 
-* Different `ExprComparisonConfig`s for each location expressions are compared, ideally with
-default propagation from the top level when writing configs, one way or another
+* Different `ExprComparisonConfig`s for each location expressions are compared, ideally in such a
+way that we can specify a "global" setting, then optionally override this at each location that
+expressions are compared
 * Configs to tweak list comparisons: `canLose`, `canGain`, `orderless`
-* Custom overrides for comparison and preprocessing functions via configs
+* Custom overrides for the comparison and preprocessing functions given here via configs
+* Generic means of constructing comparison functions along with their configs to reduce boilerplate
+in this file
 -/
 
 namespace Mathlib.Meta
@@ -242,8 +245,8 @@ def Expr.compare (e₁ e₂ : Expr) (config : ExprComparisonConfig := {}) : Meta
   | ⟨.beq, _⟩ => pure (e₁ == e₂)
   | ⟨.defEq, t⟩ => withTransparency t <| withNewMCtxDepth <| isDefEq e₁ e₂
 
-/-- Compares two lists monadically. Does not check length first. Unrelated to `ListM`. -/
-private def compareListM (eq : α → α → MetaM Bool) (l₁ l₂ : List α) : MetaM Bool :=
+/-- Compares two lists monadically. Does not check length first. -/
+private def compareListM {α} (eq : α → α → MetaM Bool) (l₁ l₂ : List α) : MetaM Bool :=
   l₁.zip l₂ |>.allM fun (a, b) => eq a b
 
 /-- Compare two `LocalDecl`s according to the configs. The settings in `ExprComparisonConfig` will
