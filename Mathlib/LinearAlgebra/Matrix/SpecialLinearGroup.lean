@@ -254,16 +254,33 @@ theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) :
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
+theorem mem_center_iff {A : SpecialLinearGroup n R} :
+    A ∈ Subgroup.center (SpecialLinearGroup n R) ↔
+    A.val default default ^ (Fintype.card n) = 1 ∧
+    A = A.val default default • (1 : Matrix n n R) := by
+  constructor
+  · intro hA
+    have hA2 := center_scalar ⟨A, hA⟩
+    refine (and_iff_left hA2).mpr ?_
+    have hA1 : det A.val = (1 : R) := det_coe A
+    rw [hA2, det_smul_of_tower] at hA1
+    revert hA1
+    simp
+  · intro ⟨_, hA⟩ _
+    rw [ext_iff]
+    simp only [coe_mul]
+    rw [hA]
+    simp
+
+/-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
+in which the scalars are the `n`-th roots of `1`.-/
 def center_iso_RootsOfUnity :
     Subgroup.center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R
     where
   toFun A := rootsOfUnity.mkOfPowEq (A.val default default) <| by
-    have hA : det A.val.val = (A.val default default) ^ ((Fintype.card n).toPNat' : ℕ) := by
-      rw [center_scalar A]
-      simp [Fintype.card_pos_iff.mpr]
-    rw [← hA, @det_coe]
+    simp [mem_center_iff.mp A.property |>.1]
   invFun a := ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
-      rw [Subgroup.mem_center_iff]
+      intro _
       aesop⟩
   left_inv A := by
     refine SetCoe.ext <| SetCoe.ext ?_
