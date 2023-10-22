@@ -284,7 +284,15 @@ partial def mkExprMatcher (stx : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   let (lctx, boundFVars) ← setupLCtx (← getLCtx) boundNames
   withLCtx lctx (← getLocalInstances) do
-    let patt ← Term.elabPattern stx none
+    let patt ←
+      try
+        Term.elabPattern stx none
+      catch e =>
+        logException e
+        trace[notation3] "Could not elaborate pattern{indentD stx}\nError: {e.toMessageData}"
+        -- Convert the exception into an `OptionT` failure so that the `(prettyPrint := false)`
+        -- suggestion appears.
+        failure
     trace[notation3] "Generating matcher for pattern {patt}"
     exprToMatcher boundFVars {} patt
 
