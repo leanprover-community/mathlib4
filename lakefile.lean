@@ -46,7 +46,7 @@ lean_exe checkYaml where
 meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
-require std from git "https://github.com/thorimur/std4" @ "rw-bug-pre-adapt"
+require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "nightly"
