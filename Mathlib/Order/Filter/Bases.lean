@@ -847,6 +847,10 @@ theorem HasAntitoneBasis.map {l : Filter α} {s : ι'' → Set α} {m : α → �
   ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_subset _ <| hf.2 h⟩
 #align filter.has_antitone_basis.map Filter.HasAntitoneBasis.map
 
+lemma HasAntitoneBasis.iInf_principal {ι : Type*} [SemilatticeSup ι] [Nonempty ι]
+    {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
+  ⟨hasBasis_iInf_principal hs.directed_ge, hs⟩
+
 end SameType
 
 section TwoTypes
