@@ -214,24 +214,32 @@ variable [i : IncidenceGeometry]
 namespace IncidenceGeometry
 -------------------------------------------------- Definitions -----------------------------------
 /--Points being on different sides of a line-/
-def DiffSide a b L := ¬OnLine a L ∧ ¬OnLine b L ∧ ¬SameSide a b L
+def DiffSide (a b : Point) (L : Line) := ¬OnLine a L ∧ ¬OnLine b L ∧ ¬SameSide a b L
+
 /--A point being outside a circle-/
-def OutCircle a α := ¬OnCircle a α ∧ ¬InCircle a α
+def OutCircle (a : Point) (α : Circle) := ¬OnCircle a α ∧ ¬InCircle a α
+
 /--Points being colinear-/
-def Colinear a b c := ∃ L : Line, OnLine a L ∧ OnLine b L ∧ OnLine c L
+def Colinear (a b c : Point) := ∃ L : Line, OnLine a L ∧ OnLine b L ∧ OnLine c L
+
 /--Definition of a triangle-/
-def Triangle a b c := ¬Colinear a b c
+def Triangle (a b c : Point) := ¬Colinear a b c
+
 /--Definition of an equilateral triangle-/
-def EqTri a b c := Triangle a b c ∧ length a b = length a c ∧ length b a = length b c
+def EqTri (a b c : Point) := Triangle a b c ∧ length a b = length a c ∧ length b a = length b c
   ∧ length c a = length c b
+
 /--Definition of an isosoles triangle-/
-def IsoTri a b c := Triangle a b c ∧ length a b = length a c
+def IsoTri (a b c : Point) := Triangle a b c ∧ length a b = length a c
+
 /--Definition of parallel-/
-def Para M N := ∀ e, ¬OnLine e M ∨ ¬OnLine e N
+def Para (M N : Line) := ∀ e, ¬OnLine e M ∨ ¬OnLine e N
+
 /--Definition of parallelogram-/
-def Paragram a b c d L M N O := OnLine a L ∧ OnLine b L ∧ OnLine b M ∧
+def Paragram (a b c d : Point) (L M N O : Line) := OnLine a L ∧ OnLine b L ∧ OnLine b M ∧
     OnLine c M ∧ OnLine c N ∧ OnLine d N ∧ OnLine d O ∧ OnLine a O ∧ Para L N ∧ Para M O
+
 /--Definition of a square-/
-def Square a b c d := length a b = length b c ∧ length a b = length c d ∧
+def Square (a b c d : Point) := length a b = length b c ∧ length a b = length c d ∧
     length a b = length d a ∧ angle a b c = rightangle ∧ angle b c d = rightangle ∧
     angle c d a = rightangle ∧ angle d a b = rightangle
