@@ -470,19 +470,18 @@ theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ 
 section Center
 
 /-- The center of a semiring `R` is the set of elements that commute with everything in `R` -/
-def center (R) [NonUnitalSemiring R] : NonUnitalSubsemiring R :=
+def center (R) [NonUnitalNonAssocSemiring R] : NonUnitalSubsemiring R :=
   { Subsemigroup.center R with
-    carrier := Set.center R
     zero_mem' := Set.zero_mem_center R
     add_mem' := Set.add_mem_center }
 #align non_unital_subsemiring.center NonUnitalSubsemiring.center
 
-theorem coe_center (R) [NonUnitalSemiring R] : ↑(center R) = Set.center R :=
+theorem coe_center (R) [NonUnitalNonAssocSemiring R] : ↑(center R) = Set.center R :=
   rfl
 #align non_unital_subsemiring.coe_center NonUnitalSubsemiring.coe_center
 
 @[simp]
-theorem center_toSubsemigroup (R) [NonUnitalSemiring R] :
+theorem center_toSubsemigroup (R) [NonUnitalNonAssocSemiring R] :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
