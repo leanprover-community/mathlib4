@@ -158,7 +158,7 @@ example
       subst card
       simp only [iUnion_of_empty, subset_empty_iff, eq_empty_iff_forall_not_mem] at subset_union
       exact (subset_union 0 J.zero_mem).elim
-    · rw [Finset.card_eq_one_iff] at card
+    · rw [Finset.card_eq_one] at card
       obtain ⟨i, rfl⟩ := card
       simp only [Finset.mem_singleton, SetLike.coe_subset_coe, exists_eq_left]
       intro x hx
@@ -166,8 +166,8 @@ example
       simp only [Set.mem_iUnion, SetLike.mem_coe, Subtype.exists, Finset.mem_singleton, exists_prop,
         exists_eq_left] at subset_union
       exact subset_union
-    · rw [Finset.card_eq_two_iff] at card
-      obtain ⟨a, b, hab, rfl⟩ := card
+    · rw [Finset.card_eq_two] at card
+      obtain ⟨a, b, -, rfl⟩ := card
       simp only [Finset.mem_singleton, Finset.mem_insert, SetLike.coe_subset_coe, exists_eq_or_imp,
         exists_eq_left]
       simp only [iUnion_subtype, Finset.mem_singleton, Finset.mem_insert, iUnion_iUnion_eq_or_left,
@@ -206,17 +206,38 @@ example
         exact subset' rid
       simp_rw [not_subset] at subset_hat
       choose x hx1 hx2 using subset_hat
+      have hx3 : ∀ i, x i ∈ i.1
+      · rintro i
+        specialize hx2 i
+        specialize hx1 i
+        contrapose! hx2
+        specialize subset_union hx1
+        rw [Set.mem_iUnion] at subset_union ⊢
+        rcases subset_union with ⟨j, hj⟩
+        exact ⟨⟨j.1, Finset.mem_erase.mpr ⟨fun r => hx2 <| r ▸ hj, j.2⟩⟩, hj⟩
+
+
       let X := ∏ i in (ℐ.erase I).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ + x ⟨I, hI1⟩
       have hX1 : X ∈ J
       · refine J.add_mem ?_ (hx1 _)
-        sorry
+        apply Ideal.prod_mem_of_mem
+        have H : (ℐ.erase I).Nonempty
+        · rw [← Finset.card_pos, Finset.card_erase_eq_ite, if_pos hI1]
+          simp only [ge_iff_le, tsub_pos_iff_lt]
+          linarith
+        simp_rw [Finset.mem_attach, true_and_iff]
+        rcases H with ⟨c, hc⟩
+        exact ⟨⟨c, hc⟩, hx1 _⟩
       specialize subset_union hX1
       rw [mem_iUnion] at subset_union
       obtain ⟨⟨I', hI'₁⟩, hI'₂⟩ := subset_union
       by_cases H : I = I'
       · subst H
         have : ∃ i : ℐ.erase I, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ I
-        · sorry -- use I is prime
+        · have := I.sub_mem hI'₂ (hx3 ⟨I, hI1⟩)
+          simp only [add_sub_cancel] at this
+          simp_rw [Ideal.IsPrime.prod_mem_iff_exists_mem, Finset.mem_attach, true_and_iff] at this
+          exact this
         obtain ⟨⟨i, hi1⟩, hi2⟩ := this
         rw [Finset.mem_erase] at hi1
         simp only at hi2
@@ -226,7 +247,9 @@ example
           not_and] at hx1 hx2
         refine (hx2 <| mem_iUnion.mpr ⟨⟨I, Finset.mem_erase.mpr ⟨hi1.1.symm, hI'₁⟩⟩, hi2⟩).elim
       · have mem1 : ∏ i in (ℐ.erase I).attach, x ⟨i.1, Finset.erase_subset _ _ i.2⟩ ∈ I'
-        · sorry
+        · apply Ideal.prod_mem_of_mem
+          simp_rw [Finset.mem_attach, true_and_iff]
+          exact ⟨⟨I', Finset.mem_erase.mpr ⟨Ne.symm H, hI'₁⟩⟩, hx3 _⟩
         have mem2 : x ⟨I, hI1⟩ ∈ I'
         · have := I'.sub_mem hI'₂ mem1
           simpa only [add_sub_cancel'] using this

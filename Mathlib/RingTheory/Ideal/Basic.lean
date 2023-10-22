@@ -563,6 +563,19 @@ theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
   mul_comm b a ▸ I.mul_mem_left b h
 #align ideal.mul_mem_right Ideal.mul_mem_right
 
+theorem prod_mem_of_mem {ι : Type*} {t : Finset ι} {f : ι → α} :
+    (∃ c ∈ t, f c ∈ I) → (∏ i in t, f i) ∈ I := by
+  classical
+  induction' t using Finset.induction_on with j t hj ih
+  · simp only [Finset.not_mem_empty, false_and, exists_false, Finset.prod_empty, IsEmpty.forall_iff]
+  · rintro ⟨c, hc1, hc2⟩
+    rw [Finset.mem_insert] at hc1
+    rcases hc1 with rfl|hc1 <;> rw [Finset.prod_insert hj]
+    · exact I.mul_mem_right _ hc2
+    · specialize ih ⟨c, hc1, hc2⟩
+      exact I.mul_mem_left _ ih
+
+
 variable {b}
 
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
@@ -581,6 +594,24 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 #align ideal.is_prime.pow_mem_iff_mem Ideal.IsPrime.pow_mem_iff_mem
+
+theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal α} (hI : I.IsPrime)
+    {ι : Type*} {t : Finset ι} {f : ι → α} :
+    (∏ i in t, f i) ∈ I ↔ ∃ c ∈ t, f c ∈ I := by
+  fconstructor
+  · classical
+    induction' t using Finset.induction_on with j t hj ih
+    · intro rid
+      simp only [Finset.prod_empty] at rid
+      rw [← Ideal.eq_top_iff_one] at rid
+      exact (hI.1 rid).elim
+    · intro rid
+      rw [Finset.prod_insert hj] at rid
+      rcases hI.mem_or_mem rid with rid|rid
+      · exact ⟨j, Finset.mem_insert.mpr <| Or.intro_left _ rfl, rid⟩
+      · obtain ⟨c, hc1, hc2⟩ := ih rid
+        exact ⟨c, Finset.mem_insert.mpr <| Or.intro_right _ hc1, hc2⟩
+  · apply prod_mem_of_mem
 
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈

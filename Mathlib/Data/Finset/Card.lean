@@ -171,30 +171,6 @@ theorem card_erase_eq_ite : (s.erase a).card = if a ∈ s then s.card - 1 else s
   Multiset.card_erase_eq_ite
 #align finset.card_erase_eq_ite Finset.card_erase_eq_ite
 
-theorem card_eq_one_iff : card s = 1 ↔ ∃ (a : α), s = {a} := by
-  fconstructor
-  · intro hs
-    induction' s using Finset.induction_on with a s ha H ih
-    · simp only [card_empty, zero_ne_one] at hs
-    · rw [card_insert_of_not_mem ha] at hs
-      simp only [add_left_eq_self, card_eq_zero] at hs
-      subst hs
-      simp only [insert_emptyc_eq, singleton_inj, exists_eq']
-  · rintro ⟨a, rfl⟩; apply card_singleton
-
-theorem card_eq_two_iff : s.card = 2 ↔ ∃ (a b : α), a ≠ b ∧ s = {a, b} := by
-  fconstructor
-  · intro hs
-    induction' s using Finset.induction_on with a s ha H ih
-    · simp only [card_empty, OfNat.zero_ne_ofNat] at hs
-    · rw [card_insert_of_not_mem ha] at hs
-      simp only [succ.injEq] at hs
-      obtain ⟨A, rfl⟩ := card_eq_one_iff.mp hs
-      simp only [mem_singleton] at ha
-      exact ⟨a, A, ha, rfl⟩
-  · rintro ⟨_, _, h, rfl⟩
-    apply card_doubleton h
-
 end InsertErase
 
 @[simp]
