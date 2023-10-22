@@ -117,26 +117,34 @@ lemma Manifold.locallyPathConnected : LocPathConnectedSpace M := by
     exact ⟨s, ⟨hsopen.mem_nhds hxs, hspconn⟩, hsn⟩
   exact { path_connected_basis := aux }
 
--- TODO: does a path-connected space admit an open connected basis??
-
 -- FIXME: make this an instance?
+-- FUTURE: move to `Topology/PathConnected.lean`
 lemma LocallyConnected.ofLocallyPathConnected {X : Type*} [TopologicalSpace X]
     [hx: LocPathConnectedSpace X] : LocallyConnectedSpace X := by
   have : ∀ (x : X), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id :=
     LocPathConnectedSpace.path_connected_basis (X := X)
-  have aux : ∀ (x : X), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsConnected s) id := by
-    -- follows from this and IsPathConnected.isConnected
+  have aux : ∀ (x : X), Filter.HasBasis (𝓝 x) (fun s ↦ IsOpen s ∧ x ∈ s ∧ IsConnected s) id := by
+    -- Follows from `this` and path-connected => connected.
+    -- One tweak: an open subset of a path-connected set is path-connected.
     intro x
-    let h := this x
-    rw [Filter.hasBasis_iff] at h ⊢
-    intro t
+    specialize this x
+    rw [Filter.hasBasis_iff] at this ⊢
+    intro s
     constructor
-    · intro hyp
-      obtain ⟨i, ⟨hin, hipconn⟩ , stuff⟩ := (h t).mp hyp
-      refine ⟨i, ⟨hin, hipconn.isConnected⟩, stuff⟩
-    · exact fun ⟨i, ⟨hin, hiconn⟩, hit⟩ ↦ Filter.mem_of_superset hin hit
-  -- TODO: doesn't work, I need a basis of open **connected** sets.
-  sorry --exact { open_connected_basis := aux }
+    · intro h
+      obtain ⟨n, ⟨hn, hipconn⟩ , stuff⟩ := (this s).mp h
+      obtain ⟨t, htn, ht, hxt⟩ := mem_nhds_iff.mp hn
+      refine ⟨t, ⟨ht, hxt, ?_⟩ , Subset.trans htn stuff⟩
+      -- gap in mathlib: missing definitions, API and lemma
+      --   no definition of locally connected or locally path-connected sets yet,
+      --   need a lemma that s is locally (path-)connected iff it's a Locally(Path)ConnectedSpace
+      --   missing lemma: an open subset of a path-connected set is path-connected
+      -- Then, this is just applying the lemma to `ht` and `hipconn`.
+      -- only step mathlib has is `let r := locPathConnected_of_isOpen ht`
+      have : IsPathConnected t := sorry
+      exact IsPathConnected.isConnected this
+    · exact fun ⟨i, ⟨hin, hxi, _⟩, hit⟩ ↦ Filter.mem_of_superset ((hin.mem_nhds_iff).mpr hxi) hit
+  exact { open_connected_basis := aux }
 
 /-- A real manifold is locally connected. -/
 lemma Manifold.locallyConnected : LocallyConnectedSpace M := by
