@@ -318,12 +318,12 @@ namespace Subsemigroup
 
 section
 
-variable (M) [Semigroup M]
+variable (M)
 
 /-- The center of a semigroup `M` is the set of elements that commute with everything in `M` -/
 @[to_additive
       "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
-def center : Subsemigroup M where
+def center [Mul M] : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center
 #align subsemigroup.center Subsemigroup.center
@@ -333,7 +333,7 @@ def center : Subsemigroup M where
 #noalign subsemigroup.coe_center
 #noalign add_subsemigroup.coe_center
 
-variable {M}
+variable {M} [Semigroup M]
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
