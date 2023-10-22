@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Hom.GroupInstances
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -398,6 +399,33 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   simp only [Function.comp_apply]
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
+
+def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
+  toFun z := {
+    toFun := fun a => z * a
+    map_zero' := by
+      simp only [mul_zero]
+    map_add' := fun a b => by
+      simp only [mul_add]
+    map_mul_left' := fun a b => by
+      simp only
+      rw [((Set.mem_center_iff _).mp z.prop).comm, ((Set.mem_center_iff _).mp z.prop).right_assoc,
+        ((Set.mem_center_iff _).mp z.prop).comm]
+    map_mul_right' := fun a b => by
+      simp only
+      rw [((Set.mem_center_iff _).mp z.prop).left_assoc]
+  }
+  map_zero' := by
+    simp
+    exact rfl
+  map_add' := fun z₁ z₂ => by
+    ext a
+    show (z₁ + z₂) * a = z₁ * a + z₂ * a
+    rw [add_mul]
+  map_mul' := fun z₁ z₂ => by
+    ext a
+    show  (z₁ * z₂) * a = z₁ * (z₂ * a)
+    rw [((Set.mem_center_iff _).mp z₁.prop).left_assoc]
 
 end NonUnitalNonAssocSemiring
 
