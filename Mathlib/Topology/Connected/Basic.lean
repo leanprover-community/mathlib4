@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.Clopen
 import Mathlib.Topology.Irreducible
