@@ -199,8 +199,13 @@ I tried out a various (positive) linear combinations of
 * `.lastIdx / 10` is almost as good.
 * `.history.size` makes things worse (similarly with `.log2`).
 * `.ppGoal.length` makes little difference (similarly with `.log2`).
-(Here testing consisting of running the current `rw_search` test suite,
-rejecting values for which any failed, and trying to minimize the run time.)
+Here testing consisting of running the current `rw_search` test suite,
+rejecting values for which any failed, and trying to minimize the run time reported by
+```shell
+lake build &&  \
+time (lake env lean test/RewriteSearch/Basic.lean; \
+  lake env lean test/RewriteSearch/Polynomial.lean)
+```
 
 With a larger test suite it might be worth running this minimization again,
 and considering other penalty functions.
