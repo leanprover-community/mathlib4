@@ -1281,8 +1281,7 @@ theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   simp
 #align fin.le_sub_one_iff Fin.le_sub_one_iff
 
-set_option synthInstance.maxHeartbeats 30000 in
-@[simp]
+@[simp, nolint simpNF] -- lint timeout
 theorem sub_one_lt_iff {n : ℕ} {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
   not_iff_not.1 <| by simp only [not_lt, le_sub_one_iff, le_zero_iff]
 #align fin.sub_one_lt_iff Fin.sub_one_lt_iff

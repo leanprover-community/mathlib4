@@ -760,8 +760,7 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_mk (p : R[X]) :
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.quot_map_C_map_span_mk_equiv_quot_map_C_quot_map_span_mk_mk AdjoinRoot.quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_mk
 
-set_option synthInstance.maxHeartbeats 30000 in
-@[simp]
+@[simp, nolint simpNF] -- lint timeout
 theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk (p : R[X]) :
     (quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk I f).symm (quotQuotMk (I.map C) (span {f}) p) =
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X])))
