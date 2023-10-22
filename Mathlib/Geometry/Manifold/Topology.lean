@@ -8,12 +8,15 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 /-!
 # Topological property of topological or smooth manifolds
 In this file, we prove a few basic topological properties of manifolds.
-Let $M$ be a topological manifold (not necessarily C^n or smooth).
+Let $M$ be a topological manifold (not necessarily `C^n` or smooth).
 * `locallyCompact_of_finiteDimensional_of_boundaryless`: If `M` is finite-dimensional, boundaryless
   and the underlying field `𝕜` is locally compact (such as ℝ, ℂ or the p-adic numbers),
   `M` is locally compact.
 * `sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryless`: In particular,
   if `M` is also secound countable, it is sigma-compact.
+* `locallyPathConnected`, `locallyConnected`: A real manifold (without boundary?!) is
+  locally path-connected and locally connected.
+* `connected_iff_pathConnected`: In particular, `M` is path-connected if and only if it is connected.
 
 **TODO:**
 * adapt the argument to include manifolds with boundary; this probably requires a
@@ -22,6 +25,7 @@ stronger definition of boundary to show local compactness of the half-spaces
 
 open Set Topology
 
+section Compactness
 variable
   {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -88,3 +92,59 @@ lemma Manifold.sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryl
   (hI : ModelWithCorners.Boundaryless I) : SigmaCompactSpace M := by
   have : LocallyCompactSpace M := Manifold.locallyCompact_of_finiteDimensional_of_boundaryless I hI
   apply sigmaCompactSpace_of_locally_compact_second_countable
+end Compactness
+
+section Real
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners ℝ E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  -- Let M be a real topological manifold.
+  [HasGroupoid M (contDiffGroupoid 0 I)]
+
+lemma locallyPathConnected_aux {x : M} {n : Set M} (hn: n ∈ 𝓝 x) :
+    ∃ s : Set M, IsOpen s ∧ x ∈ s ∧ s ⊆ n ∧ IsPathConnected s := by
+  sorry
+
+/-- A real manifold is locally path-connected. -/
+-- FIXME: make this an instance?
+lemma Manifold.locallyPathConnected : LocPathConnectedSpace M := by
+  have aux : ∀ (x : M), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id := by
+    intro x
+    rw [Filter.hasBasis_iff]
+    intro n
+    refine ⟨fun hn ↦ ?_, fun ⟨i, ⟨hiopen, _, _⟩, hin⟩ ↦ Filter.mem_of_superset hiopen hin⟩
+    obtain ⟨s, hsopen, hxs, hsn, hspconn⟩ := locallyPathConnected_aux hn
+    exact ⟨s, ⟨hsopen.mem_nhds hxs, hspconn⟩, hsn⟩
+  exact { path_connected_basis := aux }
+
+-- TODO: does a path-connected space admit an open connected basis??
+
+-- FIXME: make this an instance?
+lemma LocallyConnected.ofLocallyPathConnected {X : Type*} [TopologicalSpace X]
+    [hx: LocPathConnectedSpace X] : LocallyConnectedSpace X := by
+  have : ∀ (x : X), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id :=
+    LocPathConnectedSpace.path_connected_basis (X := X)
+  have aux : ∀ (x : X), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsConnected s) id := by
+    -- follows from this and IsPathConnected.isConnected
+    intro x
+    let h := this x
+    rw [Filter.hasBasis_iff] at h ⊢
+    intro t
+    constructor
+    · intro hyp
+      obtain ⟨i, ⟨hin, hipconn⟩ , stuff⟩ := (h t).mp hyp
+      refine ⟨i, ⟨hin, hipconn.isConnected⟩, stuff⟩
+    · exact fun ⟨i, ⟨hin, hiconn⟩, hit⟩ ↦ Filter.mem_of_superset hin hit
+  -- TODO: doesn't work, I need a basis of open **connected** sets.
+  sorry --exact { open_connected_basis := aux }
+
+/-- A real manifold is locally connected. -/
+lemma Manifold.locallyConnected : LocallyConnectedSpace M := by
+  have : LocPathConnectedSpace M := locallyPathConnected
+  exact LocallyConnected.ofLocallyPathConnected
+
+lemma Manifold.connected_iff_pathConnected : PathConnectedSpace M ↔ ConnectedSpace M := by
+  have : LocPathConnectedSpace M := locallyPathConnected
+  exact pathConnectedSpace_iff_connectedSpace
+
+end Real
