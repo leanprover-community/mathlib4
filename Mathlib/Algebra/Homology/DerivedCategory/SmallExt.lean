@@ -177,6 +177,29 @@ noncomputable def smallExtEquivLargeExt [HasSmallExt.{w} C] [HasDerivedCategory.
       (HomologicalComplex.qis C (ComplexShape.up ℤ)) _ _ _ _).trans
     ((largeExtAddEquivHom.{w'} X Y n)).symm))
 
+variable [HasSmallExt.{w} C]
+
+noncomputable instance (X Y Z : C) :
+    HasGradedHMul (SmallExt.{w} Y Z) (SmallExt.{w} X Y) (SmallExt.{w} X Z) where
+  γhmul' p q r h α β :=
+    letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+    equivShrink (LargeExt.{max u v} X Z r)
+      (((equivShrink (LargeExt Y Z p)).symm α) •[h]
+        ((equivShrink (LargeExt X Y q)).symm β))
+
+/-lemma smallExtEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
+    (α : SmallExt.{w} Y Z p) (β : SmallExt.{w} X Y q) (h : p + q = r) :
+    smallExtEquivLargeExt X Z r (α •[h] β) =
+      smallExtEquivLargeExt Y Z p α •[h] smallExtEquivLargeExt X Y q β  := by
+  sorry
+
+lemma smallExtEquivLargeExt_symm_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
+    (α : LargeExt.{w'} Y Z p) (β : LargeExt.{w'} X Y q) (h : p + q = r) :
+    (smallExtEquivLargeExt X Z r).symm (α •[h] β) =
+      (smallExtEquivLargeExt Y Z p).symm α •[h] (smallExtEquivLargeExt X Y q).symm β := by
+  apply (smallExtEquivLargeExt X Z r).injective
+  simp [smallExtEquivLargeExt_γhmul]-/
+
 end Abelian
 
 end CategoryTheory
