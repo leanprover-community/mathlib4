@@ -42,9 +42,9 @@ notation3:90 f:91 "⁻¹ᵁ " U:90 => Prefunctor.obj
 
 /-- `X ∣_ᵤ U` is notation for `X.restrict U.openEmbedding`, the restriction of `X` to an open set
   `U` of `X`. -/
-notation3:60 X:60 " ∣_ᵤ " U:61 => (Scheme.restrict X (Opens.openEmbedding U))
-
-attribute [nolint docBlame] «term_⁻¹ᵁ_».delab «term_∣_ᵤ_».delab
+-- Note: the `Scheme.restrict X (Opens.openEmbedding U)` fails to elaborate on its own
+-- so we can't generate a pretty printer for the notation.
+notation3:60 (prettyPrint := false) X:60 " ∣_ᵤ " U:61 => Scheme.restrict X (Opens.openEmbedding U)
 
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme} (U : Opens X.carrier) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
