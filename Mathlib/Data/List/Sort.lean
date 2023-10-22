@@ -74,7 +74,7 @@ theorem head!_le_of_sorted [Inhabited α] [Preorder α] {a : α} {l : List α} (
   · exact le_rfl
   · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
 
-theorem rel_head!_of_sorted' [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· > ·) l)
+theorem le_head!_of_sorted' [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· > ·) l)
     (ha : a ∈ l) : a ≤ l.head! := by
   rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
   cases ha
