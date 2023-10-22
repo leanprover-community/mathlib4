@@ -258,8 +258,27 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
       case step =>
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by sorry
-        have z_to_half_z : f (1/2 * z) = f z := by sorry -- via hn₀
-        have half_z_to_base : f (1/2 * z) = f (max n₀ 2) := by sorry -- via hyp_ind
+        have le_2n : max n₀ 2 ≤ 2^n * max n₀ 2 := by
+          nth_rewrite 1 [←one_mul (max n₀ 2)]
+          gcongr
+          norm_cast
+          rw [←pow_zero 2]
+          gcongr
+          · norm_num
+          · simp
+        have n₀_le_z : n₀ ≤ z := by
+          calc n₀ ≤ max n₀ 2 := by simp
+                _ ≤ 2^n * max n₀ 2 := le_2n
+                _ ≤ _ := by exact_mod_cast hz.1
+        have fz_eq_c₂fz : f z = c₂ * f z := hn₀ z n₀_le_z z ⟨by linarith, le_rfl⟩
+        have z_to_half_z' : f (1/2 * z) = c₂ * f z := hn₀ z n₀_le_z (1/2 * z) ⟨le_rfl, by linarith⟩
+        have z_to_half_z : f (1/2 * z) = f z := by rwa [←fz_eq_c₂fz] at z_to_half_z'
+        have half_z_to_base : f (1/2 * z) = f (max n₀ 2) := by
+          -- via hyp_ind
+          refine hyp_ind (1/2 * z) ⟨?_, ?_⟩
+          calc max n₀ 2 ≤ 2 ^ n * max n₀ 2 := by exact_mod_cast le_2n
+                      _ ≤ z := by exact_mod_cast hz.1
+          sorry
         rw [←z_to_half_z, half_z_to_base]
         --have hn₀' := by
         --  refine hn₀ (2 ^ n * max n₀ 2) ?_ (1/2 * z) ?_
