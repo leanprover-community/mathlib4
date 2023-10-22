@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.Ext
+import Mathlib.Algebra.Homology.DerivedCategory.LargeExt
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleExtra
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -262,8 +262,8 @@ noncomputable def shiftedHom (m : ℕ) (hm : n + 1 = m) :
       (SingleFunctors.evaluationIso (DerivedCategory.singleFunctorsPostCompQIso C) (-m)).inv.app X₂ ≫
       ((DerivedCategory.singleFunctors C).shiftIso m (-m) 0 (add_right_neg _)).inv.app X₂
 
-noncomputable def extClass (m : ℕ) (hm : n + 1 = m) : newExt X₁ X₂ m :=
-  newExt.mk (shiftedHom E m hm)
+noncomputable def largeExtClass (m : ℕ) (hm : n + 1 = m) : LargeExt X₁ X₂ m :=
+  LargeExt.mk (shiftedHom E m hm)
 
 section composition
 
