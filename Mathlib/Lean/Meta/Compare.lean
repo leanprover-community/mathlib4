@@ -80,8 +80,8 @@ deriving Repr, Inhabited
 
 /-- Returns `true` if using `BEq` (`.beq`) and `false` if using `isDefEq` (`.defEq`). -/
 def EqKind.isBEq : EqKind → Bool
-| .beq   => true
-| .defEq => false
+  | .beq   => true
+  | .defEq => false
 
 /-- Config data for comparing expressions. -/
 structure ExprComparisonConfig where
@@ -299,8 +299,8 @@ goals ought to be compared across two different monad states: then the decl's ca
 the right time and passed in later.
 -/
 def MVarId.compare (goal₁ goal₂ : MVarId) (cfg : MVarIdComparisonConfig := {})
-    (ecfg : ExprComparisonConfig := {}) (decl₁ decl₂ : Option MetavarDecl := none)
-    : MetaM Bool := do
+    (ecfg : ExprComparisonConfig := {}) (decl₁ decl₂ : Option MetavarDecl := none) :
+    MetaM Bool := do
   pure (! cfg.checkMVarId || goal₁ == goal₂)
   <&&> do
     let some mdcfg := cfg.compareMetavarDecls? | pure true
@@ -323,8 +323,8 @@ decl's can be obtained at the right time and passed in later. This does not chec
 `goalsᵢ.length == declsᵢ.length`.
 -/
 def compareGoalList (goals₁ goals₂ : List MVarId) (cfg : MVarIdComparisonConfig := {})
-    (ecfg : ExprComparisonConfig := {}) (decls₁ decls₂ : Option (List MetavarDecl) := none)
-    : MetaM Bool :=
+    (ecfg : ExprComparisonConfig := {}) (decls₁ decls₂ : Option (List MetavarDecl) := none) :
+    MetaM Bool :=
   (pure <| (goals₁.length == goals₂.length)
     && (! cfg.checkMVarId || goals₁ == goals₂))
   <&&> do
