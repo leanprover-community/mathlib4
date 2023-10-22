@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.euclidean.angle.oriented.basic
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+
+#align_import geometry.euclidean.angle.oriented.basic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Oriented angles.
@@ -44,7 +41,7 @@ namespace Orientation
 
 attribute [local instance] Complex.finrank_real_complex_fact
 
-variable {V V' : Type _}
+variable {V V' : Type*}
 
 variable [NormedAddCommGroup V] [NormedAddCommGroup V']
 
@@ -885,7 +882,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     refine' ⟨h, not_and_or.1 fun h0 => _⟩
     obtain ⟨h0, h1⟩ := h0
     rw [h1] at h0 hm
-    rw [MulZeroClass.zero_mul, add_zero] at h0
+    rw [zero_mul, add_zero] at h0
     simp [h0] at hm
   · rcases h with ⟨m, h, hm⟩
     change m 0 • x + m 1 • y = 0 at h
@@ -895,7 +892,7 @@ theorem oangle_smul_add_right_eq_zero_or_eq_pi_iff {x y : V} (r : ℝ) :
     refine' ⟨h, not_and_or.1 fun h0 => _⟩
     obtain ⟨h0, h1⟩ := h0
     rw [h1] at h0 hm
-    rw [MulZeroClass.zero_mul, sub_zero] at h0
+    rw [zero_mul, sub_zero] at h0
     simp [h0] at hm
 #align orientation.oangle_smul_add_right_eq_zero_or_eq_pi_iff Orientation.oangle_smul_add_right_eq_zero_or_eq_pi_iff
 
@@ -1057,7 +1054,7 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
     (o.oangle (r₁ • x + r₂ • y) (r₃ • x + r₄ • y)).sign =
       SignType.sign (r₁ * r₄ - r₂ * r₃) * (o.oangle x y).sign := by
   by_cases hr₁ : r₁ = 0
-  · rw [hr₁, zero_smul, MulZeroClass.zero_mul, zero_add, zero_sub, Left.sign_neg,
+  · rw [hr₁, zero_smul, zero_mul, zero_add, zero_sub, Left.sign_neg,
       oangle_sign_smul_left, add_comm, oangle_sign_smul_add_smul_right, oangle_rev,
       Real.Angle.sign_neg, sign_mul, mul_neg, mul_neg, neg_mul, mul_assoc]
   · rw [← o.oangle_sign_smul_add_right (r₁ • x + r₂ • y) (r₃ • x + r₄ • y) (-r₃ / r₁), smul_add,
@@ -1068,7 +1065,6 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
       mul_comm r₃]
 #align orientation.oangle_sign_smul_add_smul_smul_add_smul Orientation.oangle_sign_smul_add_smul_smul_add_smul
 
-set_option maxHeartbeats 350000 in
 /-- A base angle of an isosceles triangle is acute, oriented vector angle form. -/
 theorem abs_oangle_sub_left_toReal_lt_pi_div_two {x y : V} (h : ‖x‖ = ‖y‖) :
     |(o.oangle (y - x) y).toReal| < π / 2 := by

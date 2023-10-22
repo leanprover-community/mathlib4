@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.rdrop
-! leanprover-community/mathlib commit 26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Infix
+
+#align_import data.list.rdrop from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
 /-!
 
 # Dropping or taking from lists on the right
@@ -36,7 +33,7 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 -/
 
 
-variable {α : Type _} (p : α → Bool) (l : List α) (n : ℕ)
+variable {α : Type*} (p : α → Bool) (l : List α) (n : ℕ)
 
 namespace List
 
@@ -156,7 +153,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
       rw [← h]
       simp only [H]
-      exact List.isSuffix.sublist (dropWhile_suffix p)
+      exact List.IsSuffix.sublist (dropWhile_suffix p)
     · have := h (by simp only [length, Nat.succ_pos])
       rw [nthLe, get] at this
       simp_rw [this]

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.log.base
-! leanprover-community/mathlib commit f23a09ce6d3f367220dc3cecad6b7eb69eb01690
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Int.Log
+
+#align_import analysis.special_functions.log.base from "leanprover-community/mathlib"@"f23a09ce6d3f367220dc3cecad6b7eb69eb01690"
 
 /-!
 # Real logarithm base `b`
@@ -105,10 +102,8 @@ theorem mul_logb {a b c : ℝ} (h₁ : b ≠ 0) (h₂ : b ≠ 1) (h₃ : b ≠ -
 #align real.mul_logb Real.mul_logb
 
 theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -1) :
-    logb a c / logb b c = logb a b := by
-  unfold logb
-  -- TODO: div_div_div_cancel_left is missing for `group_with_zero`,
-  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
+    logb a c / logb b c = logb a b :=
+  div_div_div_cancel_left' _ _ <| log_ne_zero.mpr ⟨h₁, h₂, h₃⟩
 #align real.div_logb Real.div_logb
 
 section BPosAndNeOne
@@ -422,7 +417,7 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 -- TODO add other limits and continuous API lemmas analogous to those in Log.lean
 open BigOperators
 
-theorem logb_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
+theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     logb b (∏ i in s, f i) = ∑ i in s, logb b (f i) := by
   classical
     induction' s using Finset.induction_on with a s ha ih

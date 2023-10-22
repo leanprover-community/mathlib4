@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.exterior_algebra.grading
-! leanprover-community/mathlib commit 34020e531ebc4e8aac6d449d9eecbcd1508ea8d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import linear_algebra.exterior_algebra.grading from "leanprover-community/mathlib"@"34020e531ebc4e8aac6d449d9eecbcd1508ea8d0"
 
 /-!
 # Results about the grading structure of the exterior algebra
@@ -23,7 +20,7 @@ The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior
 
 namespace ExteriorAlgebra
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 variable (R M)
 
@@ -48,23 +45,21 @@ theorem GradedAlgebra.ι_apply (m : M) :
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
 -- synthesize 0 in the next theorem
-instance (α : Type _) [MulZeroClass α] : Zero α := MulZeroClass.toZero
+instance (α : Type*) [MulZeroClass α] : Zero α := MulZeroClass.toZero
 
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
-  refine Dfinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
+  refine DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
-set_option maxHeartbeats 400000 in
 /-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 def GradedAlgebra.liftι :
-  ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
+    ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
     (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i : Submodule R (ExteriorAlgebra R M)) :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem GradedAlgebra.liftι_eq (i : ℕ)
     (x : (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i :
       Submodule R (ExteriorAlgebra R M))) :
@@ -81,21 +76,20 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
   induction hx using Submodule.pow_induction_on_left' with
   | hr => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
   | hadd _ _ _ _ _ ihx ihy => simp_rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
-  | hmul _ hm _ _ _ ih  =>
+  | hmul _ hm _ _ _ ih =>
       obtain ⟨_, rfl⟩ := hm
       simp_rw [AlgHom.map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,
         DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
 #align exterior_algebra.graded_algebra.lift_ι_eq ExteriorAlgebra.GradedAlgebra.liftι_eq
 
-set_option maxHeartbeats 400000 in
 /-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ · : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
-    -- the proof from here onward is identical to the `tensor_algebra` case
+    -- the proof from here onward is identical to the `TensorAlgebra` case
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.hermitian
-! leanprover-community/mathlib commit caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import linear_algebra.matrix.hermitian from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
 /-! # Hermitian matrices
 
@@ -29,7 +26,7 @@ self-adjoint matrix, hermitian matrix
 
 namespace Matrix
 
-variable {α β : Type _} {m n : Type _} {A : Matrix n n α}
+variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
@@ -197,24 +194,24 @@ section NonUnitalSemiring
 variable [NonUnitalSemiring α] [StarRing α] [NonUnitalSemiring β] [StarRing β]
 
 /-- Note this is more general than `IsSelfAdjoint.mul_star_self` as `B` can be rectangular. -/
-theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) : (A ⬝ Aᴴ).IsHermitian :=
+theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) : (A * Aᴴ).IsHermitian :=
   by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 #align matrix.is_hermitian_mul_conj_transpose_self Matrix.isHermitian_mul_conjTranspose_self
 
 /-- Note this is more general than `IsSelfAdjoint.star_mul_self` as `B` can be rectangular. -/
-theorem isHermitian_transpose_mul_self [Fintype m] (A : Matrix m n α) : (Aᴴ ⬝ A).IsHermitian := by
+theorem isHermitian_transpose_mul_self [Fintype m] (A : Matrix m n α) : (Aᴴ * A).IsHermitian := by
   rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 #align matrix.is_hermitian_transpose_mul_self Matrix.isHermitian_transpose_mul_self
 
 /-- Note this is more general than `IsSelfAdjoint.conjugate'` as `B` can be rectangular. -/
 theorem isHermitian_conjTranspose_mul_mul [Fintype m] {A : Matrix m m α} (B : Matrix m n α)
-    (hA : A.IsHermitian) : (Bᴴ ⬝ A ⬝ B).IsHermitian := by
+    (hA : A.IsHermitian) : (Bᴴ * A * B).IsHermitian := by
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 #align matrix.is_hermitian_conj_transpose_mul_mul Matrix.isHermitian_conjTranspose_mul_mul
 
 /-- Note this is more general than `IsSelfAdjoint.conjugate` as `B` can be rectangular. -/
 theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : Matrix n m α)
-    (hA : A.IsHermitian) : (B ⬝ A ⬝ Bᴴ).IsHermitian := by
+    (hA : A.IsHermitian) : (B * A * Bᴴ).IsHermitian := by
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 #align matrix.is_hermitian_mul_mul_conj_transpose Matrix.isHermitian_mul_mul_conjTranspose
 
@@ -273,7 +270,7 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 /-- A matrix is hermitian iff the corresponding linear map is self adjoint. -/
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
-  rw [LinearMap.IsSymmetric, (PiLp.equiv 2 fun _ : n => α).symm.surjective.forall₂]
+  rw [LinearMap.IsSymmetric, (WithLp.equiv 2 (n → α)).symm.surjective.forall₂]
   simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_piLp_equiv_symm, toLin'_apply,
     star_mulVec, dotProduct_mulVec]
   constructor

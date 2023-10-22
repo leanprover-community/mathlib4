@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.laurent_series
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.RingTheory.Localization.FractionRing
+
+#align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Laurent Series
@@ -32,7 +29,7 @@ noncomputable section
 universe u
 
 /-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
-abbrev LaurentSeries (R : Type _) [Zero R] :=
+abbrev LaurentSeries (R : Type*) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
@@ -128,7 +125,7 @@ theorem coe_algebraMap [CommSemiring R] :
 #align laurent_series.coe_algebra_map LaurentSeries.coe_algebraMap
 
 /-- The localization map from power series to Laurent series. -/
-@[simps!]
+@[simps (config := { rhsMd := .all, simpRhs := true })]
 instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by
@@ -164,9 +161,11 @@ instance of_powerSeries_localization [CommRing R] :
       intro m
       have h := hc (m + n)
       simp only at h
-      rwa [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
         add_comm m, PowerSeries.coeff, Finsupp.single_add, MvPowerSeries.coeff_add_monomial_mul,
         one_mul] at h
+      assumption
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed
@@ -182,7 +181,7 @@ namespace PowerSeries
 
 open LaurentSeries
 
-variable {R' : Type _} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
+variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
 @[norm_cast] -- Porting note: simp can prove this
 theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
@@ -239,7 +238,7 @@ set_option linter.uppercaseLean3 false in
 #align power_series.coe_X PowerSeries.coe_X
 
 @[simp, norm_cast]
-theorem coe_smul {S : Type _} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
+theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
     ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]

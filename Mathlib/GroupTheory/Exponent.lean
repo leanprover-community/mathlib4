@@ -2,11 +2,6 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module group_theory.exponent
-! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.NoncommPiCoprod
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ByContra
+
+#align_import group_theory.exponent from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 
 /-!
 # Exponent of a group
@@ -309,7 +306,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
   have hpk' : orderOf (t ^ p ^ k) = orderOf t / p ^ k := by
     rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]
   obtain ⟨a, ha⟩ := Nat.exists_eq_add_of_lt hpe
-  have hcoprime : (orderOf (t ^ p ^ k)).coprime (orderOf g) := by
+  have hcoprime : (orderOf (t ^ p ^ k)).Coprime (orderOf g) := by
     rw [hg, Nat.coprime_pow_right_iff (pos_of_gt hpe), Nat.coprime_comm]
     apply Or.resolve_right (Nat.coprime_or_dvd_of_prime hp _)
     nth_rw 1 [← pow_one p]
@@ -389,4 +386,3 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
 end CommGroup
-

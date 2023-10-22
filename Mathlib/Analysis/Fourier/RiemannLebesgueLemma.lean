@@ -2,20 +2,17 @@
 Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.fourier.riemann_lebesgue_lemma
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.EMetricSpace.Paracompact
+
+#align_import analysis.fourier.riemann_lebesgue_lemma from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # The Riemann-Lebesgue Lemma
@@ -47,7 +44,7 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -55,7 +52,7 @@ open MeasureTheory Filter Complex Set FiniteDimensional
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal
 
-variable {E V : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
+variable {E V : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
 
 local notation "e" => Real.fourierChar
 
@@ -100,7 +97,7 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
   -- rw [integral_add_right_eq_self (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
   --       ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
   -- Unfortunately now we need to specify `volume`, and call `dsimp`.
-  have := @integral_add_right_eq_self _ _ _ _ _ _ volume _ _ _ (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
+  have := @integral_add_right_eq_self _ _ _ _ _ volume _ _ _ (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
     ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
   erw [this] -- Porting note, we can avoid `erw` by first calling `dsimp at this ⊢`.
   simp only [neg_smul, integral_neg]

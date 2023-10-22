@@ -2,16 +2,13 @@
 Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.primitive_element
-! leanprover-community/mathlib commit df76f43357840485b9d04ed5dee5ab115d420e87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
+
+#align_import field_theory.primitive_element from "leanprover-community/mathlib"@"df76f43357840485b9d04ed5dee5ab115d420e87"
 
 /-!
 # Primitive Element Theorem
@@ -48,7 +45,7 @@ namespace Field
 
 section PrimitiveElementFinite
 
-variable (F : Type _) [Field F] (E : Type _) [Field E] [Algebra F E]
+variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 /-! ### Primitive element theorem for finite fields -/
 
@@ -82,7 +79,7 @@ end PrimitiveElementFinite
 
 section PrimitiveElementInf
 
-variable {F : Type _} [Field F] [Infinite F] {E : Type _} [Field E] (ϕ : F →+* E) (α β : E)
+variable {F : Type*} [Field F] [Infinite F] {E : Type*} [Field E] (ϕ : F →+* E) (α β : E)
 
 theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
     ∃ c : F, ∀ α' ∈ (f.map ϕ).roots, ∀ β' ∈ (g.map ϕ).roots, -(α' - α) / (β' - β) ≠ ϕ c := by
@@ -179,7 +176,7 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
 
 end PrimitiveElementInf
 
-variable (F E : Type _) [Field F] [Field E]
+variable (F E : Type*) [Field F] [Field E]
 
 variable [Algebra F E] [FiniteDimensional F E]
 
@@ -197,7 +194,7 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
       intro K β hK
       cases' hK with α hK
       rw [← hK, adjoin_simple_adjoin_simple]
-      haveI : Infinite F := is_empty_fintype.mp F_inf
+      haveI : Infinite F := isEmpty_fintype.mp F_inf
       cases' primitive_element_inf_aux F α β with γ hγ
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤
@@ -220,7 +217,7 @@ end SeparableAssumption
 end Field
 
 @[simp]
-theorem AlgHom.card (F E K : Type _) [Field F] [Field E] [Field K] [IsAlgClosed K] [Algebra F E]
+theorem AlgHom.card (F E K : Type*) [Field F] [Field E] [Field K] [IsAlgClosed K] [Algebra F E]
     [FiniteDimensional F E] [IsSeparable F E] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E := by
   convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.syntax
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+
+#align_import model_theory.syntax from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # Basics on First-Order Syntax
@@ -65,9 +62,9 @@ namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
-variable {α : Type u'} {β : Type v'} {γ : Type _}
+variable {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
 
@@ -152,7 +149,7 @@ def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β)
 
 --Porting note: universes in different order
 /-- Restricts a term to use only a set of the given variables on the left side of a sum. -/
-def restrictVarLeft [DecidableEq α] {γ : Type _} :
+def restrictVarLeft [DecidableEq α] {γ : Type*} :
     ∀ (t : L.Term (Sum α γ)) (_f : t.varFinsetLeft → β), L.Term (Sum β γ)
   | var (Sum.inl a), f => var (Sum.inl (f ⟨a, mem_singleton_self a⟩))
   | var (Sum.inr a), _f => var (Sum.inr a)
@@ -248,7 +245,7 @@ instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) :=
 
 /-- Raises all of the `Fin`-indexed variables of a term greater than or equal to `m` by `n'`. -/
 def liftAt {n : ℕ} (n' m : ℕ) : L.Term (Sum α (Fin n)) → L.Term (Sum α (Fin (n + n'))) :=
-  relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i)
+  relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n')
 #align first_order.language.term.lift_at FirstOrder.Language.Term.liftAt
 
 --Porting note: universes in different order
@@ -648,7 +645,6 @@ theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
 #align first_order.language.bounded_formula.relabel_sum_inl FirstOrder.Language.BoundedFormula.relabel_sum_inl
 
 /-- Substitutes the variables in a given formula with terms. -/
-@[simp]
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
   φ.mapTermRel (fun _ t => t.subst (Sum.elim (Term.relabel Sum.inl ∘ f) (var ∘ Sum.inr)))
     (fun _ => id) fun _ => id
@@ -671,6 +667,15 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (Sum α (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 #align first_order.language.bounded_formula.to_formula FirstOrder.Language.BoundedFormula.toFormula
+
+/-- take the disjunction of a finite set of formulas -/
+noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (. ⊔ .) ⊥
+
+/-- take the conjunction of a finite set of formulas -/
+noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (s.toList.map f).foldr (. ⊓ .) ⊤
+
 
 variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
 
@@ -1023,17 +1028,33 @@ def graph (f : L.Functions n) : L.Formula (Fin (n + 1)) :=
 #align first_order.language.formula.graph FirstOrder.Language.Formula.graph
 
 /-- The negation of a formula. -/
-protected nonrec def not (φ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
   φ.not
 #align first_order.language.formula.not FirstOrder.Language.Formula.not
 
 /-- The implication between formulas, as a formula. -/
-protected def imp : L.Formula α → L.Formula α → L.Formula α :=
+protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
 
+/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
+
+/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
+into a `L.Formula β` by renaming variables with the map `f` and then universally
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
+    (φ : L.Formula α) : L.Formula β :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
+
 /-- The biimplication between formulas, as a formula. -/
-protected nonrec def iff (φ ψ : L.Formula α) : L.Formula α :=
+protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 #align first_order.language.formula.iff FirstOrder.Language.Formula.iff
 

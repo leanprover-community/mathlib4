@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module number_theory.cyclotomic.gal
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+
+#align_import number_theory.cyclotomic.gal from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Galois group of cyclotomic extensions
@@ -42,7 +39,7 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
 -/
 
 
-variable {n : ℕ+} (K : Type _) [Field K] {L : Type _} {μ : L}
+variable {n : ℕ+} (K : Type*) [Field K] {L : Type*} {μ : L}
 
 open Polynomial IsCyclotomicExtension
 
@@ -81,7 +78,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   convert hfg
   rw [hμ.eq_orderOf]
   -- Porting note: was `{occs := occurrences.pos [2]}`
-  conv_rhs => rw [← hμ.toRootsOfUnity_coe_val]
+  conv_rhs => rw [← hμ.val_toRootsOfUnity_coe]
   rw [orderOf_units, orderOf_subgroup]
 #align is_primitive_root.aut_to_pow_injective IsPrimitiveRoot.autToPow_injective
 
@@ -101,7 +98,7 @@ noncomputable def Aut.commGroup : CommGroup (L ≃ₐ[K] L) :=
 variable (h : Irreducible (cyclotomic n K)) {K} (L)
 
 /-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
-  `f μ = μ ^ k` for any root of unity `μ`. A  strengthening of `IsPrimitiveRoot.autToPow`. -/
+  `f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
 @[simps]
 noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L
@@ -134,12 +131,12 @@ noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
 -- Porting note: was `rw ← hζ.coe_to_roots_of_unity_coe at key {occs := occurrences.pos [1, 5]}`.
       conv at key =>
         congr; congr
-        rw [← hζ.toRootsOfUnity_coe_val]
+        rw [← hζ.val_toRootsOfUnity_coe]
         rfl; rfl
-        rw [← hζ.toRootsOfUnity_coe_val]
+        rw [← hζ.val_toRootsOfUnity_coe]
       simp only [← rootsOfUnity.coe_pow] at key
       replace key := rootsOfUnity.coe_injective key
-      rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hζ.toRootsOfUnity_coe_val, ←
+      rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hζ.val_toRootsOfUnity_coe, ←
         (zeta_spec n K L).eq_orderOf, ← ZMod.eq_iff_modEq_nat] at key
       simp only [ZMod.nat_cast_val, ZMod.cast_id', id.def] at key
       exact Units.ext key }

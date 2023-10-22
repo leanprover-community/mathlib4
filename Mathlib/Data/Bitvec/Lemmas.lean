@@ -2,15 +2,12 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.bitvec.basic
-! leanprover-community/mathlib commit 008af8bb14b3ebef7e04ec3b0d63b947dee4d26a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Fin.Basic
 import Mathlib.Tactic.NormNum
+
+#align_import data.bitvec.basic from "leanprover-community/mathlib"@"008af8bb14b3ebef7e04ec3b0d63b947dee4d26a"
 
 /-!
 # Basic Theorems About Bitvectors
@@ -46,7 +43,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
   conv in addLsb x b =>
     rw [← h]
   clear h
-  simp
+  simp only [List.foldl_append, List.foldl_cons, List.foldl_nil]
   induction' xs with x xs xs_ih generalizing x
   · simp
     unfold addLsb
@@ -60,7 +57,7 @@ theorem toNat_append {m : ℕ} (xs : Bitvec m) (b : Bool) :
 --  unfold bits_to_nat add_lsb List.foldl cond
 --  simp [cond_to_bool_mod_two]
 theorem bits_toNat_decide (n : ℕ) : Bitvec.toNat (decide (n % 2 = 1) ::ᵥ Vector.nil) = n % 2 := by
-  simp [bitsToNat_toList]
+  simp only [bitsToNat_toList, Vector.toList_singleton, Vector.head_cons]
   unfold bitsToNat addLsb List.foldl
   simp [Nat.cond_decide_mod_two, -Bool.cond_decide]
 #align bitvec.bits_to_nat_to_bool Bitvec.bits_toNat_decide
@@ -91,7 +88,7 @@ theorem toNat_eq_foldr_reverse {n : ℕ} (v : Bitvec n) :
 #align bitvec.to_nat_eq_foldr_reverse Bitvec.toNat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
-  suffices : v.toNat + 1 ≤ 2 ^ n; simpa
+  suffices v.toNat + 1 ≤ 2 ^ n by simpa
   rw [toNat_eq_foldr_reverse]
   cases' v with xs h
   dsimp [Bitvec.toNat, bitsToNat]

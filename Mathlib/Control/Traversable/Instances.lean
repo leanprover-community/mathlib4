@@ -2,16 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.traversable.instances
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Functor
+
+#align_import control.traversable.instances from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # LawfulTraversable instances
@@ -165,7 +162,7 @@ protected theorem traverse_map {α β γ : Type u} (g : α → β) (f : β → G
 variable [LawfulApplicative F] [LawfulApplicative G]
 
 protected theorem id_traverse {σ α} (x : σ ⊕ α) :
-  Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
+    Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
 #align sum.id_traverse Sum.id_traverse
 
 protected theorem comp_traverse {α β γ : Type u} (f : β → F γ) (g : α → G β) (x : σ ⊕ α) :

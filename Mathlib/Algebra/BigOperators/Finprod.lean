@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.big_operators.finprod
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.IndicatorFunction
+
+#align_import algebra.big_operators.finprod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Finite products and sums over types and sets
@@ -50,11 +47,11 @@ This notation works for functions `f : p → M`, where `p : Prop`, so the follow
 
 ## Implementation notes
 
-`Finsum` and `Finprod` is "yet another way of doing finite sums and products in Lean". However
+`finsum` and `finprod` is "yet another way of doing finite sums and products in Lean". However
 experiments in the wild (e.g. with matroids) indicate that it is a helpful approach in settings
 where the user is not interested in computability and wants to do reasoning without running into
 typeclass diamonds caused by the constructive finiteness used in definitions such as `Finset` and
-`Fintype`. By sticking solely to `Set.finite` we avoid these problems. We are aware that there are
+`Fintype`. By sticking solely to `Set.Finite` we avoid these problems. We are aware that there are
 other solutions but for beginner mathematicians this approach is easier in practice.
 
 Another application is the construction of a partition of unity from a collection of “bump”
@@ -82,7 +79,7 @@ open Function Set
 -- Porting note: Used to be section Sort
 section sort
 
-variable {G M N : Type _} {α β ι : Sort _} [CommMonoid M] [CommMonoid N]
+variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
 
 open BigOperators
 
@@ -113,14 +110,14 @@ open Std.ExtendedBinder
 
 -- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
 
-/-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the the
+/-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
 -- Porting note: removed scoped[BigOperators], `notation3` doesn't mesh with `scoped[Foo]`
 
-/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the the
+/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
@@ -174,29 +171,29 @@ notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
 --          (finprod (α := $t) fun $h => $p))))
 
 @[to_additive]
-theorem finprod_eq_prod_pLift_of_mulSupport_toFinset_subset {f : α → M}
+theorem finprod_eq_prod_plift_of_mulSupport_toFinset_subset {f : α → M}
     (hf : (mulSupport (f ∘ PLift.down)).Finite) {s : Finset (PLift α)} (hs : hf.toFinset ⊆ s) :
     ∏ᶠ i, f i = ∏ i in s, f i.down := by
   rw [finprod, dif_pos]
   refine' Finset.prod_subset hs fun x _ hxf => _
   rwa [hf.mem_toFinset, nmem_mulSupport] at hxf
-#align finprod_eq_prod_plift_of_mul_support_to_finset_subset finprod_eq_prod_pLift_of_mulSupport_toFinset_subset
-#align finsum_eq_sum_plift_of_support_to_finset_subset finsum_eq_sum_pLift_of_support_toFinset_subset
+#align finprod_eq_prod_plift_of_mul_support_to_finset_subset finprod_eq_prod_plift_of_mulSupport_toFinset_subset
+#align finsum_eq_sum_plift_of_support_to_finset_subset finsum_eq_sum_plift_of_support_toFinset_subset
 
 @[to_additive]
-theorem finprod_eq_prod_pLift_of_mulSupport_subset {f : α → M} {s : Finset (PLift α)}
+theorem finprod_eq_prod_plift_of_mulSupport_subset {f : α → M} {s : Finset (PLift α)}
     (hs : mulSupport (f ∘ PLift.down) ⊆ s) : ∏ᶠ i, f i = ∏ i in s, f i.down :=
-  finprod_eq_prod_pLift_of_mulSupport_toFinset_subset (s.finite_toSet.subset hs) fun x hx => by
+  finprod_eq_prod_plift_of_mulSupport_toFinset_subset (s.finite_toSet.subset hs) fun x hx => by
     rw [Finite.mem_toFinset] at hx
     exact hs hx
-#align finprod_eq_prod_plift_of_mul_support_subset finprod_eq_prod_pLift_of_mulSupport_subset
-#align finsum_eq_sum_plift_of_support_subset finsum_eq_sum_pLift_of_support_subset
+#align finprod_eq_prod_plift_of_mul_support_subset finprod_eq_prod_plift_of_mulSupport_subset
+#align finsum_eq_sum_plift_of_support_subset finsum_eq_sum_plift_of_support_subset
 
 @[to_additive (attr := simp)]
 theorem finprod_one : (∏ᶠ _ : α, (1 : M)) = 1 := by
   have : (mulSupport fun x : PLift α => (fun _ => 1 : α → M) x.down) ⊆ (∅ : Finset (PLift α)) :=
     fun x h => by simp at h
-  rw [finprod_eq_prod_pLift_of_mulSupport_subset this, Finset.prod_empty]
+  rw [finprod_eq_prod_plift_of_mulSupport_subset this, Finset.prod_empty]
 #align finprod_one finprod_one
 #align finsum_zero finsum_zero
 
@@ -215,13 +212,13 @@ theorem finprod_false (f : False → M) : ∏ᶠ i, f i = 1 :=
 #align finsum_false finsum_false
 
 @[to_additive]
-theorem finprod_eq_single (f : α → M) (a : α) (ha : ∀ (x) (_ : x ≠ a), f x = 1) :
+theorem finprod_eq_single (f : α → M) (a : α) (ha : ∀ x, x ≠ a → f x = 1) :
     ∏ᶠ x, f x = f a := by
   have : mulSupport (f ∘ PLift.down) ⊆ ({PLift.up a} : Finset (PLift α)) := by
     intro x
     contrapose
     simpa [PLift.eq_up_iff_down_eq] using ha x.down
-  rw [finprod_eq_prod_pLift_of_mulSupport_subset this, Finset.prod_singleton]
+  rw [finprod_eq_prod_plift_of_mulSupport_subset this, Finset.prod_singleton]
 #align finprod_eq_single finprod_eq_single
 #align finsum_eq_single finsum_eq_single
 
@@ -281,39 +278,39 @@ theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
 #align finprod_induction finprod_induction
 #align finsum_induction finsum_induction
 
-theorem finprod_nonneg {R : Type _} [OrderedCommSemiring R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
+theorem finprod_nonneg {R : Type*} [OrderedCommSemiring R] {f : α → R} (hf : ∀ x, 0 ≤ f x) :
     0 ≤ ∏ᶠ x, f x :=
   finprod_induction (fun x => 0 ≤ x) zero_le_one (fun _ _ => mul_nonneg) hf
 #align finprod_nonneg finprod_nonneg
 
 @[to_additive finsum_nonneg]
-theorem one_le_finprod' {M : Type _} [OrderedCommMonoid M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
+theorem one_le_finprod' {M : Type*} [OrderedCommMonoid M] {f : α → M} (hf : ∀ i, 1 ≤ f i) :
     1 ≤ ∏ᶠ i, f i :=
   finprod_induction _ le_rfl (fun _ _ => one_le_mul) hf
 #align one_le_finprod' one_le_finprod'
 #align finsum_nonneg finsum_nonneg
 
 @[to_additive]
-theorem MonoidHom.map_finprod_pLift (f : M →* N) (g : α → M)
+theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : (mulSupport <| g ∘ PLift.down).Finite) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
-  rw [finprod_eq_prod_pLift_of_mulSupport_subset h.coe_toFinset.ge,
-    finprod_eq_prod_pLift_of_mulSupport_subset, f.map_prod]
+  rw [finprod_eq_prod_plift_of_mulSupport_subset h.coe_toFinset.ge,
+    finprod_eq_prod_plift_of_mulSupport_subset, f.map_prod]
   rw [h.coe_toFinset]
   exact mulSupport_comp_subset f.map_one (g ∘ PLift.down)
-#align monoid_hom.map_finprod_plift MonoidHom.map_finprod_pLift
-#align add_monoid_hom.map_finsum_plift AddMonoidHom.map_finsum_pLift
+#align monoid_hom.map_finprod_plift MonoidHom.map_finprod_plift
+#align add_monoid_hom.map_finsum_plift AddMonoidHom.map_finsum_plift
 
 @[to_additive]
 theorem MonoidHom.map_finprod_Prop {p : Prop} (f : M →* N) (g : p → M) :
     f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) :=
-  f.map_finprod_pLift g (Set.toFinite _)
+  f.map_finprod_plift g (Set.toFinite _)
 #align monoid_hom.map_finprod_Prop MonoidHom.map_finprod_Prop
 #align add_monoid_hom.map_finsum_Prop AddMonoidHom.map_finsum_Prop
 
 @[to_additive]
 theorem MonoidHom.map_finprod_of_preimage_one (f : M →* N) (hf : ∀ x, f x = 1 → x = 1) (g : α → M) :
     f (∏ᶠ i, g i) = ∏ᶠ i, f (g i) := by
-  by_cases hg : (mulSupport <| g ∘ PLift.down).Finite; · exact f.map_finprod_pLift g hg
+  by_cases hg : (mulSupport <| g ∘ PLift.down).Finite; · exact f.map_finprod_plift g hg
   rw [finprod, dif_neg, f.map_one, finprod, dif_neg]
   exacts [Infinite.mono (fun x hx => mt (hf (g x.down)) hx) hg, hg]
 #align monoid_hom.map_finprod_of_preimage_one MonoidHom.map_finprod_of_preimage_one
@@ -334,18 +331,20 @@ theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) =
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
-theorem finsum_smul {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+theorem finsum_smul {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     (f : ι → R) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x := by
-  rcases eq_or_ne x 0 with (rfl | hx); · simp
-  exact ((smulAddHom R M).flip x).map_finsum_of_injective (smul_left_injective R hx) _
+  rcases eq_or_ne x 0 with (rfl | hx)
+  · simp
+  · exact ((smulAddHom R M).flip x).map_finsum_of_injective (smul_left_injective R hx) _
 #align finsum_smul finsum_smul
 
 /-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `smul_finsum'`. -/
-theorem smul_finsum {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+theorem smul_finsum {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     (c : R) (f : ι → M) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i := by
-  rcases eq_or_ne c 0 with (rfl | hc); · simp
-  exact (smulAddHom R M c).map_finsum_of_injective (smul_right_injective M hc) _
+  rcases eq_or_ne c 0 with (rfl | hc)
+  · simp
+  · exact (smulAddHom R M c).map_finsum_of_injective (smul_right_injective M hc) _
 #align smul_finsum smul_finsum
 
 @[to_additive]
@@ -359,7 +358,7 @@ end sort
 -- Porting note: Used to be section Type
 section type
 
-variable {α β ι G M N : Type _} [CommMonoid M] [CommMonoid N]
+variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
 
 open BigOperators
 
@@ -391,7 +390,7 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
   have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
     exact image_subset _ h
-  rw [finprod_eq_prod_pLift_of_mulSupport_subset this]
+  rw [finprod_eq_prod_plift_of_mulSupport_subset this]
   simp only [Finset.prod_map, Equiv.coe_toEmbedding]
   congr
 #align finprod_eq_prod_of_mul_support_subset finprod_eq_prod_of_mulSupport_subset
@@ -593,6 +592,14 @@ theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : �
 #align finprod_eq_one_of_forall_eq_one finprod_eq_one_of_forall_eq_one
 #align finsum_eq_zero_of_forall_eq_zero finsum_eq_zero_of_forall_eq_zero
 
+@[to_additive finsum_pos']
+theorem one_lt_finprod' {M : Type*} [OrderedCancelCommMonoid M] {f : ι → M}
+    (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
+  rcases h' with ⟨i, hi⟩
+  rw [finprod_eq_prod _ hf]
+  refine Finset.one_lt_prod' (fun i _ ↦ h i) ⟨i, ?_, hi⟩
+  simpa only [Finite.mem_toFinset, mem_mulSupport] using ne_of_gt hi
+
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
 -/
@@ -614,7 +621,7 @@ theorem finprod_mul_distrib (hf : (mulSupport f).Finite) (hg : (mulSupport g).Fi
       mem_union, mem_mulSupport]
     intro x
     contrapose!
-    rintro ⟨hf,hg⟩
+    rintro ⟨hf, hg⟩
     simp [hf, hg]
 #align finprod_mul_distrib finprod_mul_distrib
 #align finsum_add_distrib finsum_add_distrib
@@ -684,7 +691,7 @@ theorem finprod_mem_mul_distrib (hs : s.Finite) :
 @[to_additive]
 theorem MonoidHom.map_finprod {f : α → M} (g : M →* N) (hf : (mulSupport f).Finite) :
     g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
-  g.map_finprod_pLift f <| hf.preimage <| Equiv.plift.injective.injOn _
+  g.map_finprod_plift f <| hf.preimage <| Equiv.plift.injective.injOn _
 #align monoid_hom.map_finprod MonoidHom.map_finprod
 #align add_monoid_hom.map_finsum AddMonoidHom.map_finsum
 
@@ -696,13 +703,13 @@ theorem finprod_pow (hf : (mulSupport f).Finite) (n : ℕ) : (∏ᶠ i, f i) ^ n
 
 /-- See also `finsum_smul` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem finsum_smul' {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] {f : ι → R}
+theorem finsum_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {f : ι → R}
     (hf : (support f).Finite) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x :=
   ((smulAddHom R M).flip x).map_finsum hf
 
 /-- See also `smul_finsum` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem smul_finsum' {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] (c : R) {f : ι → M}
+theorem smul_finsum' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (c : R) {f : ι → M}
     (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
   (smulAddHom R M c).map_finsum hf
 
@@ -1153,13 +1160,13 @@ theorem finprod_mem_induction (p : M → Prop) (hp₀ : p 1) (hp₁ : ∀ x y, p
 #align finprod_mem_induction finprod_mem_induction
 #align finsum_mem_induction finsum_mem_induction
 
-theorem finprod_cond_nonneg {R : Type _} [OrderedCommSemiring R] {p : α → Prop} {f : α → R}
+theorem finprod_cond_nonneg {R : Type*} [OrderedCommSemiring R] {p : α → Prop} {f : α → R}
     (hf : ∀ x, p x → 0 ≤ f x) : 0 ≤ ∏ᶠ (x) (_ : p x), f x :=
   finprod_nonneg fun x => finprod_nonneg <| hf x
 #align finprod_cond_nonneg finprod_cond_nonneg
 
 @[to_additive]
-theorem single_le_finprod {M : Type _} [OrderedCommMonoid M] (i : α) {f : α → M}
+theorem single_le_finprod {M : Type*} [OrderedCommMonoid M] (i : α) {f : α → M}
     (hf : (mulSupport f).Finite) (h : ∀ j, 1 ≤ f j) : f i ≤ ∏ᶠ j, f j := by
   classical calc
       f i ≤ ∏ j in insert i hf.toFinset, f j :=
@@ -1169,7 +1176,7 @@ theorem single_le_finprod {M : Type _} [OrderedCommMonoid M] (i : α) {f : α �
 #align single_le_finprod single_le_finprod
 #align single_le_finsum single_le_finsum
 
-theorem finprod_eq_zero {M₀ : Type _} [CommMonoidWithZero M₀] (f : α → M₀) (x : α) (hx : f x = 0)
+theorem finprod_eq_zero {M₀ : Type*} [CommMonoidWithZero M₀] (f : α → M₀) (x : α) (hx : f x = 0)
     (hf : (mulSupport f).Finite) : ∏ᶠ x, f x = 0 := by
   nontriviality
   rw [finprod_eq_prod f hf]
@@ -1204,12 +1211,12 @@ theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s
 #align prod_finprod_comm prod_finprod_comm
 #align sum_finsum_comm sum_finsum_comm
 
-theorem mul_finsum {R : Type _} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
+theorem mul_finsum {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (r * ∑ᶠ a : α, f a) = ∑ᶠ a : α, r * f a :=
   (AddMonoidHom.mulLeft r).map_finsum h
 #align mul_finsum mul_finsum
 
-theorem finsum_mul {R : Type _} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
+theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
 #align finsum_mul finsum_mul
@@ -1240,8 +1247,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
     ∀ a,
       (∏ i : β in (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i)) =
         (Finset.filter (fun ab => Prod.fst ab = a) s).prod f := by
-    refine' fun a => Finset.prod_bij (fun b _ => (a, b)) _ _ _ _ <;>-- `finish` closes these goals
-      try simp; done
+    refine' fun a => Finset.prod_bij (fun b _ => (a, b)) _ _ _ _ <;> simp
     suffices ∀ a' b, (a', b) ∈ s → a' = a → (a, b) ∈ s ∧ a' = a by simpa
     rintro a' b hp rfl
     exact ⟨hp, rfl⟩
@@ -1251,7 +1257,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
       (s.mulSupport_of_fiberwise_prod_subset_image f Prod.fst),
     ← Finset.prod_fiberwise_of_maps_to (t := Finset.image Prod.fst s) _ f]
   -- `finish` could close the goal here
-  simp only [Finset.mem_image, Prod.mk.eta]
+  simp only [Finset.mem_image]
   exact fun x hx => ⟨x, hx, rfl⟩
 #align finprod_mem_finset_product' finprod_mem_finset_product'
 #align finsum_mem_finset_product' finsum_mem_finset_product'
@@ -1267,7 +1273,7 @@ theorem finprod_mem_finset_product (s : Finset (α × β)) (f : α × β → M) 
 #align finsum_mem_finset_product finsum_mem_finset_product
 
 @[to_additive]
-theorem finprod_mem_finset_product₃ {γ : Type _} (s : Finset (α × β × γ)) (f : α × β × γ → M) :
+theorem finprod_mem_finset_product₃ {γ : Type*} (s : Finset (α × β × γ)) (f : α × β × γ → M) :
     (∏ᶠ (abc) (_ : abc ∈ s), f abc) = ∏ᶠ (a) (b) (c) (_ : (a, b, c) ∈ s), f (a, b, c) := by
   classical
     rw [finprod_mem_finset_product']
@@ -1286,7 +1292,7 @@ theorem finprod_curry (f : α × β → M) (hf : (mulSupport f).Finite) :
 #align finsum_curry finsum_curry
 
 @[to_additive]
-theorem finprod_curry₃ {γ : Type _} (f : α × β × γ → M) (h : (mulSupport f).Finite) :
+theorem finprod_curry₃ {γ : Type*} (f : α × β × γ → M) (h : (mulSupport f).Finite) :
     ∏ᶠ abc, f abc = ∏ᶠ (a) (b) (c), f (a, b, c) := by
   rw [finprod_curry f h]
   congr

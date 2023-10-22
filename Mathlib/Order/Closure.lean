@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.closure
-! leanprover-community/mathlib commit f252872231e87a5db80d9938fc05530e70f23a94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.GaloisConnection
 import Mathlib.Order.Hom.Basic
+
+#align_import order.closure from "leanprover-community/mathlib"@"f252872231e87a5db80d9938fc05530e70f23a94"
 
 /-!
 # Closure operators between preorders
@@ -56,7 +53,7 @@ universe u
 /-! ### Closure operator -/
 
 
-variable (α : Type _) {ι : Sort _} {κ : ι → Sort _}
+variable (α : Type*) {ι : Sort*} {κ : ι → Sort*}
 
 /-- A closure operator on the preorder `α` is a monotone function which is extensive (every `x`
 is less than its closure) and idempotent. -/
@@ -69,8 +66,10 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
-instance [Preorder α] : CoeFun (ClosureOperator α) fun _ => α → α :=
-  ⟨fun c => c.toFun⟩
+instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
+  coe c := c.1
+  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact FunLike.ext' h
+  map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply)
 
@@ -167,7 +166,7 @@ theorem le_closure_iff (x y : α) : x ≤ c y ↔ c x ≤ c y :=
 #align closure_operator.le_closure_iff ClosureOperator.le_closure_iff
 
 /-- An element `x` is closed for the closure operator `c` if it is a fixed point for it. -/
-def closed : Set α := fun x => c x = x
+def closed : Set α := {x | c x = x}
 #align closure_operator.closed ClosureOperator.closed
 
 theorem mem_closed_iff (x : α) : x ∈ c.closed ↔ c x = x :=
@@ -215,11 +214,13 @@ theorem eq_mk₃_closed (c : ClosureOperator α) :
   rfl
 #align closure_operator.eq_mk₃_closed ClosureOperator.eq_mk₃_closed
 
-/-- The property `p` fed into the `mk₃` constructor implies being closed. -/
-theorem mem_mk₃_closed {f : α → α} {p : α → Prop} {hf : ∀ x, x ≤ f x} {hfp : ∀ x, p (f x)}
-    {hmin : ∀ ⦃x y⦄, x ≤ y → p y → f x ≤ y} {x : α} (hx : p x) : x ∈ (mk₃ f p hf hfp hmin).closed :=
-  (hmin le_rfl hx).antisymm (hf _)
-#align closure_operator.mem_mk₃_closed ClosureOperator.mem_mk₃_closed
+/-- The property `p` fed into the `mk₃` constructor exactly corresponds to being closed. -/
+@[simp] theorem mem_mk₃_closed {f : α → α} {p : α → Prop} {hf hfp hmin} {x : α} :
+  x ∈ (mk₃ f p hf hfp hmin).closed ↔ p x := by
+  refine' ⟨λ hx ↦ _, λ hx ↦ (hmin le_rfl hx).antisymm (hf _)⟩
+  rw [←closure_eq_self_of_mem_closed _ hx]
+  exact hfp _
+#align closure_operator.mem_mk₃_closed ClosureOperator.mem_mk₃_closedₓ
 
 end PartialOrder
 
@@ -260,7 +261,7 @@ theorem closure_sup_closure_left (x y : α) : c (c x ⊔ y) = c (x ⊔ y) :=
 #align closure_operator.closure_sup_closure_left ClosureOperator.closure_sup_closure_left
 
 theorem closure_sup_closure_right (x y : α) : c (x ⊔ c y) = c (x ⊔ y) := by
-  rw [sup_comm, closure_sup_closure_left, sup_comm]
+  rw [sup_comm, closure_sup_closure_left, sup_comm (a := x)]
 #align closure_operator.closure_sup_closure_right ClosureOperator.closure_sup_closure_right
 
 theorem closure_sup_closure (x y : α) : c (c x ⊔ c y) = c (x ⊔ y) := by
@@ -293,7 +294,7 @@ end ClosureOperator
 /-! ### Lower adjoint -/
 
 
-variable {α} {β : Type _}
+variable {α} {β : Type*}
 
 /-- A lower adjoint of `u` on the preorder `α` is a function `l` such that `l` and `u` form a Galois
 connection. It allows us to define closure operators whose output does not match the input. In
@@ -311,8 +312,7 @@ variable (α)
 
 /-- The identity function as a lower adjoint to itself. -/
 @[simps]
-protected def id [Preorder α] : LowerAdjoint (id : α → α)
-    where
+protected def id [Preorder α] : LowerAdjoint (id : α → α) where
   toFun x := x
   gc' := GaloisConnection.id
 #align lower_adjoint.id LowerAdjoint.id
@@ -382,7 +382,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
 /-- An element `x` is closed for `l : LowerAdjoint u` if it is a fixed point: `u (l x) = x` -/
-def closed : Set α := fun x => u (l x) = x
+def closed : Set α := {x | u (l x) = x}
 #align lower_adjoint.closed LowerAdjoint.closed
 
 theorem mem_closed_iff (x : α) : x ∈ l.closed ↔ u (l x) = x :=

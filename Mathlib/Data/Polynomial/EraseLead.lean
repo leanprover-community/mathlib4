@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.erase_lead
-! leanprover-community/mathlib commit fa256f00ce018e7b40e1dc756e403c86680bf448
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import data.polynomial.erase_lead from "leanprover-community/mathlib"@"fa256f00ce018e7b40e1dc756e403c86680bf448"
 
 /-!
 # Erase the leading term of a univariate polynomial
@@ -26,13 +23,13 @@ and thus works for polynomials over semirings as well as rings.
 
 noncomputable section
 
-open Classical Polynomial
+open Polynomial
 
 open Polynomial Finset
 
 namespace Polynomial
 
-variable {R : Type _} [Semiring R] {f : R[X]}
+variable {R : Type*} [Semiring R] {f : R[X]}
 
 /-- `eraseLead f` for a polynomial `f` is the polynomial obtained by
 subtracting from `f` the leading term of `f`. -/
@@ -76,13 +73,13 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.erase_lead_add_C_mul_X_pow Polynomial.eraseLead_add_C_mul_X_pow
 
 @[simp]
-theorem self_sub_monomial_natDegree_leadingCoeff {R : Type _} [Ring R] (f : R[X]) :
+theorem self_sub_monomial_natDegree_leadingCoeff {R : Type*} [Ring R] (f : R[X]) :
     f - monomial f.natDegree f.leadingCoeff = f.eraseLead :=
   (eq_sub_iff_add_eq.mpr (eraseLead_add_monomial_natDegree_leadingCoeff f)).symm
 #align polynomial.self_sub_monomial_nat_degree_leading_coeff Polynomial.self_sub_monomial_natDegree_leadingCoeff
 
 @[simp]
-theorem self_sub_C_mul_X_pow {R : Type _} [Ring R] (f : R[X]) :
+theorem self_sub_C_mul_X_pow {R : Type*} [Ring R] (f : R[X]) :
     f - C f.leadingCoeff * X ^ f.natDegree = f.eraseLead := by
   rw [C_mul_X_pow_eq_monomial, self_sub_monomial_natDegree_leadingCoeff]
 set_option linter.uppercaseLean3 false in
@@ -128,6 +125,7 @@ theorem eraseLead_card_support' {c : ℕ} (fc : f.support.card = c + 1) :
 
 @[simp]
 theorem eraseLead_monomial (i : ℕ) (r : R) : eraseLead (monomial i r) = 0 := by
+  classical
   by_cases hr : r = 0
   · subst r
     simp only [monomial_zero_right, eraseLead_zero]
@@ -253,7 +251,7 @@ theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
 * `φ` maps to `0` all monomials of degree less than `k`,
 * `φ` maps each monomial `m` in `R[x]` to a polynomial `φ m` of degree `fu (deg m)`.
 Then, `φ` maps each polynomial `p` in `R[x]` to a polynomial of degree `fu (deg p)`. -/
-theorem mono_map_natDegree_eq {S F : Type _} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
+theorem mono_map_natDegree_eq {S F : Type*} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
     {p : R[X]} (k : ℕ) (fu : ℕ → ℕ) (fu0 : ∀ {n}, n ≤ k → fu n = 0)
     (fc : ∀ {n m}, k ≤ n → n < m → fu n < fu m) (φ_k : ∀ {f : R[X]}, f.natDegree < k → φ f = 0)
     (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = fu n) :
@@ -273,7 +271,7 @@ theorem mono_map_natDegree_eq {S F : Type _} [Semiring S] [AddMonoidHomClass F R
       · rwa [φ_k (not_le.mp FG), zero_add]
 #align polynomial.mono_map_nat_degree_eq Polynomial.mono_map_natDegree_eq
 
-theorem map_natDegree_eq_sub {S F : Type _} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
+theorem map_natDegree_eq_sub {S F : Type*} [Semiring S] [AddMonoidHomClass F R[X] S[X]] {φ : F}
     {p : R[X]} {k : ℕ} (φ_k : ∀ f : R[X], f.natDegree < k → φ f = 0)
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
@@ -282,7 +280,7 @@ theorem map_natDegree_eq_sub {S F : Type _} [Semiring S] [AddMonoidHomClass F R[
     (φ_k _) φ_mon
 #align polynomial.map_nat_degree_eq_sub Polynomial.map_natDegree_eq_sub
 
-theorem map_natDegree_eq_natDegree {S F : Type _} [Semiring S] [AddMonoidHomClass F R[X] S[X]]
+theorem map_natDegree_eq_natDegree {S F : Type*} [Semiring S] [AddMonoidHomClass F R[X] S[X]]
     {φ : F} (p) (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n) :
     (φ p).natDegree = p.natDegree :=
   (map_natDegree_eq_sub (fun f h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans
@@ -315,22 +313,22 @@ theorem card_support_eq {n : ℕ} :
   · exact fun hf => ⟨0, 0, fun x => x.elim0, fun x => x.elim0, card_support_eq_zero.mp hf⟩
   · intro h
     obtain ⟨k, x, hk, hx, hf⟩ := hn (eraseLead_card_support' h)
-    have H : ¬∃ k : Fin n, Fin.castSuccEmb k = Fin.last n := by
+    have H : ¬∃ k : Fin n, Fin.castSucc k = Fin.last n := by
       rintro ⟨i, hi⟩
-      exact i.castSuccEmb_lt_last.ne hi
+      exact i.castSucc_lt_last.ne hi
     refine'
-      ⟨Function.extend Fin.castSuccEmb k fun _ => f.natDegree,
-        Function.extend Fin.castSuccEmb x fun _ => f.leadingCoeff, _, _, _⟩
+      ⟨Function.extend Fin.castSucc k fun _ => f.natDegree,
+        Function.extend Fin.castSucc x fun _ => f.leadingCoeff, _, _, _⟩
     · intro i j hij
-      have hi : i ∈ Set.range (Fin.castSuccEmb : Fin n ↪o Fin (n + 1)) := by
-        rw [Fin.range_castSuccEmb, Set.mem_def]
+      have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
+        rw [Fin.range_castSucc, Set.mem_def]
         exact lt_of_lt_of_le hij (Nat.lt_succ_iff.mp j.2)
       obtain ⟨i, rfl⟩ := hi
-      rw [Fin.castSuccEmb.injective.extend_apply]
-      by_cases hj : ∃ j₀, Fin.castSuccEmb j₀ = j
+      rw [Fin.strictMono_castSucc.injective.extend_apply]
+      by_cases hj : ∃ j₀, Fin.castSucc j₀ = j
       · obtain ⟨j, rfl⟩ := hj
-        rwa [Fin.castSuccEmb.injective.extend_apply, hk.lt_iff_lt,
-          ← Fin.castSuccEmb_lt_castSuccEmb_iff]
+        rwa [Fin.strictMono_castSucc.injective.extend_apply, hk.lt_iff_lt,
+          ← Fin.castSucc_lt_castSucc_iff]
       · rw [Function.extend_apply' _ _ _ hj]
         apply lt_natDegree_of_mem_eraseLead_support
         rw [mem_support_iff, hf, finset_sum_coeff]
@@ -340,14 +338,14 @@ theorem card_support_eq {n : ℕ} :
           rw [coeff_C_mul, coeff_X_pow, if_neg (hk.injective.ne hji.symm), mul_zero]
         · exact fun hi => (hi (mem_univ i)).elim
     · intro i
-      by_cases hi : ∃ i₀, Fin.castSuccEmb i₀ = i
+      by_cases hi : ∃ i₀, Fin.castSucc i₀ = i
       · obtain ⟨i, rfl⟩ := hi
-        rw [Fin.castSuccEmb.injective.extend_apply]
+        rw [Fin.strictMono_castSucc.injective.extend_apply]
         exact hx i
       · rw [Function.extend_apply' _ _ _ hi, Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, h]
         exact n.succ_ne_zero
-    · rw [Fin.sum_univ_castSuccEmb]
-      simp only [Fin.castSuccEmb.injective.extend_apply]
+    · rw [Fin.sum_univ_castSucc]
+      simp only [Fin.strictMono_castSucc.injective.extend_apply]
       rw [← hf, Function.extend_apply', Function.extend_apply', eraseLead_add_C_mul_X_pow]
       all_goals exact H
 #align polynomial.card_support_eq Polynomial.card_support_eq
@@ -368,7 +366,7 @@ theorem card_support_eq_two :
   refine' ⟨fun h => _, _⟩
   · obtain ⟨k, x, hk, hx, rfl⟩ := card_support_eq.mp h
     refine' ⟨k 0, k 1, hk Nat.zero_lt_one, x 0, x 1, hx 0, hx 1, _⟩
-    rw [Fin.sum_univ_castSuccEmb, Fin.sum_univ_one]
+    rw [Fin.sum_univ_castSucc, Fin.sum_univ_one]
     rfl
   · rintro ⟨k, m, hkm, x, y, hx, hy, rfl⟩
     exact card_support_binomial hkm.ne hx hy
@@ -383,7 +381,7 @@ theorem card_support_eq_three :
     refine'
       ⟨k 0, k 1, k 2, hk Nat.zero_lt_one, hk (Nat.lt_succ_self 1), x 0, x 1, x 2, hx 0, hx 1, hx 2,
         _⟩
-    rw [Fin.sum_univ_castSuccEmb, Fin.sum_univ_castSuccEmb, Fin.sum_univ_one]
+    rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc, Fin.sum_univ_one]
     rfl
   · rintro ⟨k, m, n, hkm, hmn, x, y, z, hx, hy, hz, rfl⟩
     exact card_support_trinomial hkm hmn hx hy hz

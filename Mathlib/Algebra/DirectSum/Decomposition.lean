@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
-
-! This file was ported from Lean 3 source module algebra.direct_sum.decomposition
-! leanprover-community/mathlib commit 4e861f25ba5ceef42ba0712d8ffeb32f38ad6441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.Submodule.Basic
+
+#align_import algebra.direct_sum.decomposition from "leanprover-community/mathlib"@"4e861f25ba5ceef42ba0712d8ffeb32f38ad6441"
 
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
@@ -34,7 +31,7 @@ bundled homs, but means we don't have to repeat statements for different types o
 -/
 
 
-variable {ι R M σ : Type _}
+variable {ι R M σ : Type*}
 
 open DirectSum BigOperators
 
@@ -140,7 +137,7 @@ lemma decomposeAddEquiv_apply (a : M) :
 
 @[simp]
 lemma decomposeAddEquiv_symm_apply (a : ⨁ i, ℳ i) :
-  (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
+    (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
 
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=
@@ -187,7 +184,7 @@ end AddCommMonoid
 
 /-- The `-` in the statements below doesn't resolve without this line.
 
-This seems to a be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
+This seems to be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
 the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
 instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
 to be found by unification rather than synthesis, then everything works fine without this
@@ -237,16 +234,37 @@ variable [Decomposition ℳ]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 a module to a direct sum of components. -/
-@[simps! (config := { fullyApplied := false })]
 def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
   LinearEquiv.symm
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
 #align direct_sum.decompose_linear_equiv DirectSum.decomposeLinearEquiv
 
+@[simp] theorem decomposeLinearEquiv_apply (m : M) :
+    decomposeLinearEquiv ℳ m = decompose ℳ m := rfl
+
+@[simp] theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
+    (decomposeLinearEquiv ℳ).symm m = (decompose ℳ).symm m := rfl
+
 @[simp]
 theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompose ℳ x :=
   map_smul (decomposeLinearEquiv ℳ) r x
 #align direct_sum.decompose_smul DirectSum.decompose_smul
+
+@[simp] theorem decomposeLinearEquiv_symm_comp_lof (i : ι) :
+    (decomposeLinearEquiv ℳ).symm ∘ₗ lof R ι (ℳ ·) i = (ℳ i).subtype :=
+  LinearMap.ext <| decompose_symm_of _
+
+/-- Two linear maps from a module with a decomposition agree if they agree on every piece.
+
+Note this cannot be `@[ext]` as `ℳ` cannot be inferred. -/
+theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[R] N⦄
+    (h : ∀ i, f ∘ₗ (ℳ i).subtype = g ∘ₗ (ℳ i).subtype) : f = g :=
+  LinearMap.ext <| (decomposeLinearEquiv ℳ).symm.surjective.forall.mpr <|
+    suffices f ∘ₗ (decomposeLinearEquiv ℳ).symm
+           = (g ∘ₗ (decomposeLinearEquiv ℳ).symm : (⨁ i, ℳ i) →ₗ[R] N) from
+      FunLike.congr_fun this
+    linearMap_ext _ fun i => by
+      simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 
 end Module
 

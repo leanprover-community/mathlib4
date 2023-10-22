@@ -2,14 +2,11 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module data.polynomial.unit_trinomial
-! leanprover-community/mathlib commit 302eab4f46abb63de520828de78c04cb0f9b5836
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Data.Polynomial.Mirror
+
+#align_import data.polynomial.unit_trinomial from "leanprover-community/mathlib"@"302eab4f46abb63de520828de78c04cb0f9b5836"
 
 /-!
 # Unit Trinomials
@@ -36,7 +33,7 @@ open Finset
 
 section Semiring
 
-variable {R : Type _} [Semiring R] (k m n : ℕ) (u v w : R)
+variable {R : Type*} [Semiring R] (k m n : ℕ) (u v w : R)
 
 /-- Shorthand for a trinomial -/
 noncomputable def trinomial :=
@@ -189,7 +186,7 @@ theorem isUnitTrinomial_iff :
   rw [if_neg hkm.ne, if_neg (hkm.trans hmn).ne] at hx
   rw [if_neg hkm.ne', if_neg hmn.ne] at hy
   rw [if_neg (hkm.trans hmn).ne', if_neg hmn.ne'] at hz
-  simp_rw [MulZeroClass.mul_zero, zero_add, add_zero] at hx hy hz
+  simp_rw [mul_zero, zero_add, add_zero] at hx hy hz
   exact ⟨k, m, n, hkm, hmn, hx.unit, hy.unit, hz.unit, rfl⟩
 #align polynomial.is_unit_trinomial_iff Polynomial.isUnitTrinomial_iff
 
@@ -228,7 +225,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   have key : n - m + k < n := by rwa [← lt_tsub_iff_right, tsub_lt_tsub_iff_left_of_le hmn.le]
   rw [hp, trinomial_mirror hkm hmn u.ne_zero w.ne_zero]
   simp_rw [trinomial_def, C_mul_X_pow_eq_monomial, add_mul, mul_add, monomial_mul_monomial,
-    toFinsupp_add, toFinsupp_monomial, Finsupp.filter_add]
+    toFinsupp_add, toFinsupp_monomial]
   -- Porting note: added next line (less powerful `simp`).
   rw [Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add,
     Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add]

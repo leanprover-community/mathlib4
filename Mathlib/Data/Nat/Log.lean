@@ -2,14 +2,10 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
-Ported by: Rémy Degenne
-
-! This file was ported from Lean 3 source module data.nat.log
-! leanprover-community/mathlib commit 3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Pow
+
+#align_import data.nat.log from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
 
 /-!
 # Natural number logarithms
@@ -321,7 +317,7 @@ theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
 #align nat.clog_pow Nat.clog_pow
 
 theorem pow_pred_clog_lt_self {b : ℕ} (hb : 1 < b) {x : ℕ} (hx : 1 < x) :
-  b ^ (clog b x).pred < x := by
+    b ^ (clog b x).pred < x := by
   rw [← not_le, le_pow_iff_clog_le hb, not_le]
   exact pred_lt (clog_pos hb hx).ne'
 #align nat.pow_pred_clog_lt_self Nat.pow_pred_clog_lt_self

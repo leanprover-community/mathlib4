@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.ergodic.measure_preserving
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+
+#align_import dynamics.ergodic.measure_preserving from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Measure preserving maps
@@ -31,7 +28,7 @@ measure preserving map, measure
 -/
 
 
-variable {α β γ δ : Type _} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace MeasureTheory
@@ -64,6 +61,11 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 #align measure_theory.measure_preserving.ae_measurable MeasureTheory.MeasurePreserving.aemeasurable
+
+@[nontriviality]
+theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
+    MeasurePreserving f μa μb :=
+  ⟨measurable_of_subsingleton_codomain _, Subsingleton.elim _ _⟩
 
 theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
@@ -137,6 +139,15 @@ protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
 #align measure_theory.measure_preserving.iterate MeasureTheory.MeasurePreserving.iterate
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
+
+lemma measure_symmDiff_preimage_iterate_le
+    (hf : MeasurePreserving f μ μ) (hs : MeasurableSet s) (n : ℕ) :
+    μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
+  induction' n with n ih; simp
+  simp only [add_smul, one_smul, ← n.add_one]
+  refine' le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih _)
+  replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff $ hf.measurable hs
+  rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/

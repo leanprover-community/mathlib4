@@ -2,15 +2,12 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.multiplicity
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import ring_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Multiplicity of a divisor
@@ -27,7 +24,7 @@ several basic results on it.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Nat Part
 
@@ -298,7 +295,7 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
       fun h => by cases h <;> simp [*]⟩
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
 
-alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
+alias ⟨_, _root_.has_dvd.dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos
 
 end Monoid
 
@@ -506,7 +503,7 @@ theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
         ⟨s, mul_right_cancel₀ hp.1 (by
               rw [add_assoc, tsub_add_cancel_of_le (succ_le_of_lt hm0)]
               simp_all [mul_comm, mul_assoc, mul_left_comm, pow_add])⟩
-termination_by finite_mul_aux _ _ n m  => n+m
+termination_by finite_mul_aux _ _ n m => n+m
 #align multiplicity.finite_mul_aux multiplicity.finite_mul_aux
 
 theorem finite_mul {p a b : α} (hp : Prime p) : Finite p a → Finite p b → Finite p (a * b) :=
@@ -585,7 +582,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
     cases' not_and_or.1 h with h h <;> simp [eq_top_iff_not_finite.2 h]
 #align multiplicity.mul multiplicity.mul
 
-theorem Finset.prod {β : Type _} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
+theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     multiplicity p (∏ x in s, f x) = ∑ x in s, multiplicity p (f x) := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -628,7 +625,7 @@ end CancelCommMonoidWithZero
 
 section Valuation
 
-variable {R : Type _} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
+variable {R : Type*} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 /-- `multiplicity` of a prime in an integral domain as an additive valuation to `PartENat`. -/
 noncomputable def addValuation (hp : Prime p) : AddValuation R PartENat :=
@@ -650,13 +647,13 @@ section Nat
 open multiplicity
 
 theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
-    (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.coprime a b) : multiplicity p a = 0 := by
+    (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.Coprime a b) : multiplicity p a = 0 := by
   rw [multiplicity_le_multiplicity_iff] at hle
   rw [← nonpos_iff_eq_zero, ← not_lt, PartENat.pos_iff_one_le, ← Nat.cast_one, ←
     pow_dvd_iff_le_multiplicity]
   intro h
   have := Nat.dvd_gcd h (hle _ h)
-  rw [coprime.gcd_eq_one hab, Nat.dvd_one, pow_one] at this
+  rw [Coprime.gcd_eq_one hab, Nat.dvd_one, pow_one] at this
   exact hp this
 #align multiplicity_eq_zero_of_coprime multiplicity_eq_zero_of_coprime
 

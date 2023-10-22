@@ -2,16 +2,13 @@
 Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module algebraic_topology.fundamental_groupoid.product
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Products
 import Mathlib.Topology.Homotopy.Product
+
+#align_import algebraic_topology.fundamental_groupoid.product from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Fundamental groupoid preserves products
@@ -50,7 +47,7 @@ def proj (i : I) : πₓ (TopCat.of (∀ i, X i)) ⥤ πₓ (X i) :=
   πₘ ⟨_, continuous_apply i⟩
 #align fundamental_groupoid_functor.proj FundamentalGroupoidFunctor.proj
 
-/-- The projection map is precisely path.homotopic.proj interpreted as a functor -/
+/-- The projection map is precisely `Path.Homotopic.proj` interpreted as a functor -/
 @[simp]
 theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ ⟶ x₁) :
     (proj X i).map p = @Path.Homotopic.proj _ _ _ _ _ i p :=
@@ -116,11 +113,12 @@ theorem coneDiscreteComp_obj_mapCone :
 /-- This is `piIso.inv` as a cone morphism (in fact, isomorphism) -/
 def piTopToPiCone :
     Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i)
-    where Hom := CategoryTheory.Functor.pi' (proj X)
+    where
+  hom := CategoryTheory.Functor.pi' (proj X)
 #align fundamental_groupoid_functor.pi_Top_to_pi_cone FundamentalGroupoidFunctor.piTopToPiCone
 
 instance : IsIso (piTopToPiCone X) :=
-  haveI : IsIso (piTopToPiCone X).Hom := (inferInstance : IsIso (piIso X).inv)
+  haveI : IsIso (piTopToPiCone X).hom := (inferInstance : IsIso (piIso X).inv)
   Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
 
 /-- The fundamental groupoid functor preserves products -/
@@ -176,7 +174,6 @@ def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
   map_id := by
     rintro ⟨x₀, x₁⟩
     simp only [CategoryTheory.prod_id, FundamentalGroupoid.id_eq_path_refl]
-    dsimp
     rfl
   map_comp {x y z} f g :=
     match x, y, z, f, g with

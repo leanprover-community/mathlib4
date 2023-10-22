@@ -2,15 +2,12 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
-
-! This file was ported from Lean 3 source module order.filter.zero_and_bounded_at_filter
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Analysis.Asymptotics.Asymptotics
+
+#align_import order.filter.zero_and_bounded_at_filter from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Zero and Bounded at filter
@@ -25,7 +22,7 @@ that are `BoundedAtFilter`.
 
 namespace Filter
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Topology
 
@@ -50,7 +47,7 @@ nonrec theorem ZeroAtFilter.neg [TopologicalSpace β] [AddGroup β] [ContinuousN
     {f : α → β} (hf : ZeroAtFilter l f) : ZeroAtFilter l (-f) := by simpa using hf.neg
 #align filter.zero_at_filter.neg Filter.ZeroAtFilter.neg
 
-theorem ZeroAtFilter.smul {𝕜 : Type _} [TopologicalSpace 𝕜] [TopologicalSpace β] [Zero 𝕜] [Zero β]
+theorem ZeroAtFilter.smul {𝕜 : Type*} [TopologicalSpace 𝕜] [TopologicalSpace β] [Zero 𝕜] [Zero β]
     [SMulWithZero 𝕜 β] [ContinuousSMul 𝕜 β] {l : Filter α} {f : α → β} (c : 𝕜)
     (hf : ZeroAtFilter l f) : ZeroAtFilter l (c • f) := by simpa using hf.const_smul c
 #align filter.zero_at_filter.smul Filter.ZeroAtFilter.smul
@@ -101,7 +98,7 @@ theorem BoundedAtFilter.neg [NormedAddCommGroup β] {l : Filter α} {f : α → 
   hf.neg_left
 #align filter.bounded_at_filter.neg Filter.BoundedAtFilter.neg
 
-theorem BoundedAtFilter.smul {𝕜 : Type _} [NormedField 𝕜] [NormedAddCommGroup β] [NormedSpace 𝕜 β]
+theorem BoundedAtFilter.smul {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup β] [NormedSpace 𝕜 β]
     {l : Filter α} {f : α → β} (c : 𝕜) (hf : BoundedAtFilter l f) : BoundedAtFilter l (c • f) :=
   hf.const_smul_left c
 #align filter.bounded_at_filter.smul Filter.BoundedAtFilter.smul

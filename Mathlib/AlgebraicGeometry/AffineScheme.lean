@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.AffineScheme
-! leanprover-community/mathlib commit 88474d1b5af6d37c2ab728b757771bced7f5194c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
+
+#align_import algebraic_geometry.AffineScheme from "leanprover-community/mathlib"@"88474d1b5af6d37c2ab728b757771bced7f5194c"
 
 /-!
 # Affine schemes
@@ -223,7 +220,7 @@ def IsAffineOpen.fromSpec {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) :
 
 instance IsAffineOpen.isOpenImmersion_fromSpec {X : Scheme} {U : Opens X}
     (hU : IsAffineOpen U) : IsOpenImmersion hU.fromSpec := by
-  delta IsAffineOpen.fromSpec; dsimp; simp only [Scheme.comp_val]
+  delta IsAffineOpen.fromSpec; dsimp
   -- Porting note : this was automatic
   repeat apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
 #align algebraic_geometry.is_affine_open.is_open_immersion_from_Spec AlgebraicGeometry.IsAffineOpen.isOpenImmersion_fromSpec
@@ -271,7 +268,10 @@ theorem isAffineOpen_iff_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : Is
     fun hU => hU.imageIsOpenImmersion f⟩
   · rw [Scheme.comp_val_base, coe_comp, Set.range_comp]
     dsimp [Opens.inclusion]
-    rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Subtype.range_coe, Subtype.range_coe]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    rw [Subtype.range_coe]; erw [Subtype.range_coe]
     rfl
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.isAffineOpen_iff_of_isOpenImmersion
@@ -359,7 +359,7 @@ theorem IsAffineOpen.basicOpenIsAffine {X : Scheme} {U : Opens X} (hU : IsAffine
   have :
     hU.fromSpec.val.base '' (hU.fromSpec.val.base ⁻¹' (X.basicOpen f : Set X)) =
       (X.basicOpen f : Set X) := by
-    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset, hU.fromSpec_range]
+    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.fromSpec_range]
     exact Scheme.basicOpen_le _ _
   rw [Scheme.Hom.opensRange_coe, Scheme.comp_val_base, ← this, coe_comp, Set.range_comp]
   -- Porting note : `congr 1` did not work
@@ -501,7 +501,6 @@ instance basicOpenSectionsToAffine_isIso {X : Scheme} {U : Opens X} (hU : IsAffi
     rw [hU.fromSpec_range]
     exact RingedSpace.basicOpen_le _ _
 
-set_option maxHeartbeats 310000 in
 theorem isLocalization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (f : X.presheaf.obj (op U)) : IsLocalization.Away f (X.presheaf.obj (op <| X.basicOpen f)) := by
   apply
@@ -522,7 +521,8 @@ theorem isLocalization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U
   -- Porting note : `erw naturality_assoc` for some reason does not work, so changed to a version
   -- where `naturality` is used, the good thing is that `erw` is changed back to `rw`
   simp only [←Category.assoc]
-  rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
+  -- Note: changed `rw` to `simp_rw` to improve performance
+  simp_rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
   -- simp only [Category.assoc]
   -- rw [hU.fromSpec_app_eq]
   dsimp
@@ -606,7 +606,7 @@ theorem IsAffineOpen.fromSpec_primeIdealOf {X : Scheme} {U : Opens X} (hU : IsAf
 
 -- Porting note : the original proof does not compile under 0 `heartbeat`, so partially rewritten
 -- but after the rewrite, I still can't get it compile under `200000`
-set_option maxHeartbeats 640000 in
+set_option maxHeartbeats 400000 in
 theorem IsAffineOpen.isLocalization_stalk_aux {X : Scheme} (U : Opens X)
     [IsAffine (X.restrict U.openEmbedding)] :
     (inv (ΓSpec.adjunction.unit.app (X.restrict U.openEmbedding))).1.c.app
@@ -629,7 +629,7 @@ theorem IsAffineOpen.isLocalization_stalk_aux {X : Scheme} (U : Opens X)
   rw [eqToHom_trans]
 #align algebraic_geometry.is_affine_open.is_localization_stalk_aux AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux
 
-set_option maxHeartbeats 3200000 in
+set_option maxHeartbeats 800000 in
 theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
     hU.fromSpec.val.c.app (op U) ≫ (Scheme.Spec.obj <| op (X.presheaf.obj <| op U)).presheaf.germ
@@ -660,7 +660,6 @@ theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : 
   rw [Category.id_comp]
   rfl
 
-set_option maxHeartbeats 800000 in
 theorem IsAffineOpen.isLocalization_stalk' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
   haveI : IsAffine _ := hU
@@ -698,7 +697,7 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   convert hU.isLocalization_stalk' y hx
 #align algebraic_geometry.is_affine_open.is_localization_stalk AlgebraicGeometry.IsAffineOpen.isLocalization_stalk
 
-/-- The basic open set of a section `f` on an an affine open as an `X.affineOpens`. -/
+/-- The basic open set of a section `f` on an affine open as an `X.affineOpens`. -/
 @[simps]
 def Scheme.affineBasicOpen (X : Scheme) {U : X.affineOpens} (f : X.presheaf.obj <| op U) :
     X.affineOpens :=
@@ -747,7 +746,7 @@ theorem IsAffineOpen.basicOpen_union_eq_self_iff {X : Scheme} {U : Opens X}
     apply_fun Set.image hU.fromSpec.1.base at h
     rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range, hU.fromSpec_range]
       at h
-    simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right_iff_subset] at h
+    simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right] at h
     ext1
     refine' Set.Subset.antisymm _ h
     simp only [Set.iUnion_subset_iff, SetCoe.forall, Opens.coe_iSup]

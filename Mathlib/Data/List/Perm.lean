@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.perm
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Range
 import Mathlib.Data.Nat.Factorial.Basic
+
+#align_import data.list.perm from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
 /-!
 # List Permutations
@@ -215,8 +212,8 @@ theorem singleton_perm {a : α} {l : List α} : [a] ~ l ↔ [a] = l :=
   @replicate_perm α 1 a l
 #align list.singleton_perm List.singleton_perm
 
-alias perm_singleton ↔ Perm.eq_singleton _
-alias singleton_perm ↔ Perm.singleton_eq _
+alias ⟨Perm.eq_singleton, _⟩ := perm_singleton
+alias ⟨Perm.singleton_eq, _⟩ := singleton_perm
 
 theorem singleton_perm_singleton {a b : α} : [a] ~ [b] ↔ a = b := by simp
 #align list.singleton_perm_singleton List.singleton_perm_singleton
@@ -242,11 +239,9 @@ theorem Perm.filterMap (f : α → Option β) {l₁ l₂ : List α} (p : l₁ ~ 
   induction p with
   | nil => simp
   | cons x _p IH =>
-    simp only [filterMap]
     cases h : f x
       <;> simp [h, filterMap, IH, Perm.cons]
   | swap x y l₂ =>
-    simp only [filterMap]
     cases hx : f x
       <;> cases hy : f y
         <;> simp [hx, hy, filterMap, swap]
@@ -326,7 +321,7 @@ section Rel
 
 open Relator
 
-variable {γ : Type _} {δ : Type _} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {γ : Type*} {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
 -- mathport name: «expr ∘r »
 local infixr:80 " ∘r " => Relation.Comp
@@ -469,40 +464,40 @@ theorem Sublist.exists_perm_append : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ →
     ⟨l, p.cons a⟩
 #align list.sublist.exists_perm_append List.Sublist.exists_perm_append
 
-theorem Perm.countp_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
-    countp p l₁ = countp p l₂ := by
-  rw [countp_eq_length_filter, countp_eq_length_filter]; exact (s.filter _).length_eq
-#align list.perm.countp_eq List.Perm.countp_eq
+theorem Perm.countP_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
+    countP p l₁ = countP p l₂ := by
+  rw [countP_eq_length_filter, countP_eq_length_filter]; exact (s.filter _).length_eq
+#align list.perm.countp_eq List.Perm.countP_eq
 
-theorem Subperm.countp_le (p : α → Bool) {l₁ l₂ : List α} :
-    l₁ <+~ l₂ → countp p l₁ ≤ countp p l₂
-  | ⟨_l, p', s⟩ => p'.countp_eq p ▸ s.countp_le p
-#align list.subperm.countp_le List.Subperm.countp_le
+theorem Subperm.countP_le (p : α → Bool) {l₁ l₂ : List α} :
+    l₁ <+~ l₂ → countP p l₁ ≤ countP p l₂
+  | ⟨_l, p', s⟩ => p'.countP_eq p ▸ s.countP_le p
+#align list.subperm.countp_le List.Subperm.countP_le
 
-theorem Perm.countp_congr (s : l₁ ~ l₂) {p p' : α → Bool}
-    (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countp p = l₂.countp p' := by
-  rw [← s.countp_eq p']
+theorem Perm.countP_congr (s : l₁ ~ l₂) {p p' : α → Bool}
+    (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countP p = l₂.countP p' := by
+  rw [← s.countP_eq p']
   clear s
   induction' l₁ with y s hs
   · rfl
   · simp only [mem_cons, forall_eq_or_imp] at hp
-    simp only [countp_cons, hs hp.2, hp.1]
-#align list.perm.countp_congr List.Perm.countp_congr
+    simp only [countP_cons, hs hp.2, hp.1]
+#align list.perm.countp_congr List.Perm.countP_congr
 
-theorem countp_eq_countp_filter_add (l : List α) (p q : α → Bool) :
-    l.countp p = (l.filter q).countp p + (l.filter fun a => ¬q a).countp p := by
-  rw [← countp_append]
-  exact Perm.countp_eq _ (filter_append_perm _ _).symm
-#align list.countp_eq_countp_filter_add List.countp_eq_countp_filter_add
+theorem countP_eq_countP_filter_add (l : List α) (p q : α → Bool) :
+    l.countP p = (l.filter q).countP p + (l.filter fun a => ¬q a).countP p := by
+  rw [← countP_append]
+  exact Perm.countP_eq _ (filter_append_perm _ _).symm
+#align list.countp_eq_countp_filter_add List.countP_eq_countP_filter_add
 
 theorem Perm.count_eq [DecidableEq α] {l₁ l₂ : List α} (p : l₁ ~ l₂) (a) :
     count a l₁ = count a l₂ :=
-  p.countp_eq _
+  p.countP_eq _
 #align list.perm.count_eq List.Perm.count_eq
 
 theorem Subperm.count_le [DecidableEq α] {l₁ l₂ : List α} (s : l₁ <+~ l₂) (a) :
     count a l₁ ≤ count a l₂ :=
-  s.countp_le _
+  s.countP_le _
 #align list.subperm.count_le List.Subperm.count_le
 
 theorem Perm.foldl_eq' {f : β → α → β} {l₁ l₂ : List α} (p : l₁ ~ l₂) :
@@ -529,7 +524,7 @@ theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : Left
     Eq.trans (r₁ a) (r₂ a)
 #align list.perm.foldr_eq List.Perm.foldr_eq
 
-theorem Perm.rec_heq {β : List α → Sort _} {f : ∀ a l, β l → β (a :: l)} {b : β []} {l l' : List α}
+theorem Perm.rec_heq {β : List α → Sort*} {f : ∀ a l, β l → β (a :: l)} {b : β []} {l l' : List α}
     (hl : Perm l l') (f_congr : ∀ {a l l' b b'}, Perm l l' → HEq b b' → HEq (f a l b) (f a l' b'))
     (f_swap : ∀ {a a' l b}, HEq (f a (a' :: l) (f a' l b)) (f a' (a :: l) (f a l b))) :
     HEq (@List.rec α β b f l) (@List.rec α β b f l') := by
@@ -575,7 +570,6 @@ theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (h
     rw [mul_assoc z, mul_assoc z, h]
 #align list.perm.prod_eq' List.Perm.prod_eq'
 #align list.perm.sum_eq' List.Perm.sum_eq'
--- Porting note: TODO do I need to do anything to handle the to_additive instance?
 
 variable [CommMonoid α]
 
@@ -675,7 +669,7 @@ theorem subperm_cons (a : α) {l₁ l₂ : List α} : a :: l₁ <+~ a :: l₂ �
     · exact ⟨u, p.cons_inv, s'⟩, fun ⟨l, p, s⟩ => ⟨a :: l, p.cons a, s.cons₂ _⟩⟩
 #align list.subperm_cons List.subperm_cons
 
-alias subperm_cons ↔ subperm.of_cons subperm.cons
+alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 #align list.subperm.of_cons List.subperm.of_cons
 #align list.subperm.cons List.subperm.cons
 
@@ -874,7 +868,7 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
       specialize H b
       simp at H
       contradiction
-    · have : a ∈ l₂ := count_pos.1 (by rw [← H]; simp)
+    · have : a ∈ l₂ := count_pos_iff_mem.1 (by rw [← H, count_pos_iff_mem]; simp)
       refine' ((IH fun b => _).cons a).trans (perm_cons_erase this).symm
       specialize H b
       rw [(perm_cons_erase this).count_eq] at H
@@ -884,13 +878,13 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
 theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
-  suffices : l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l
-  { simp (config := { contextual := true }) [count_replicate, h, h.symm, this] }
+  suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
+    simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
   simp_rw [Ne.def, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
     not_mem_nil, or_false, or_comm]
 #align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
-theorem Subperm.cons_right {α : Type _} {l l' : List α} (x : α) (h : l <+~ l') : l <+~ x :: l' :=
+theorem Subperm.cons_right {α : Type*} {l l' : List α} (x : α) (h : l <+~ l') : l <+~ x :: l' :=
   h.trans (sublist_cons x l').subperm
 #align list.subperm.cons_right List.Subperm.cons_right
 
@@ -900,8 +894,8 @@ theorem subperm_append_diff_self_of_count_le {l₁ l₂ : List α}
   induction' l₁ with hd tl IH generalizing l₂
   · simp
   · have : hd ∈ l₂ := by
-      rw [← count_pos]
-      exact lt_of_lt_of_le (count_pos.mpr (mem_cons_self _ _)) (h hd (mem_cons_self _ _))
+      rw [← count_pos_iff_mem]
+      exact lt_of_lt_of_le (count_pos_iff_mem.mpr (mem_cons_self _ _)) (h hd (mem_cons_self _ _))
     replace := perm_cons_erase this
     refine' Perm.trans _ this.symm
     rw [cons_append, diff_cons, perm_cons]
@@ -960,7 +954,7 @@ theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup 
 #align list.perm.dedup List.Perm.dedup
 
 -- attribute [congr]
-theorem Perm.insert (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.insert a ~ l₂.insert a :=
+protected theorem Perm.insert (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.insert a ~ l₂.insert a :=
   if h : a ∈ l₁ then by simpa [h, p.subset h] using p
   else by simpa [h, mt p.mem_iff.2 h] using p.cons a
 #align list.perm.insert List.Perm.insert
@@ -969,7 +963,7 @@ theorem perm_insert_swap (x y : α) (l : List α) :
     List.insert x (List.insert y l) ~ List.insert y (List.insert x l) := by
   by_cases xl : x ∈ l <;> by_cases yl : y ∈ l <;> simp [xl, yl]
   by_cases xy : x = y; · simp [xy]
-  simp [List.insert, xl, yl, xy, Ne.symm xy]
+  simp only [List.insert, Bool.not_eq_true, mem_cons, xy, xl, or_self, ite_false, Ne.symm xy, yl]
   constructor
 #align list.perm_insert_swap List.perm_insert_swap
 
@@ -988,20 +982,20 @@ theorem perm_insertNth {α} (x : α) (l : List α) {n} (h : n ≤ l.length) :
 #align list.perm_insert_nth List.perm_insertNth
 
 theorem Perm.union_right {l₁ l₂ : List α} (t₁ : List α) (h : l₁ ~ l₂) :
-    l₁.union t₁ ~ l₂.union t₁ := by
+    l₁ ∪ t₁ ~ l₂ ∪ t₁ := by
   induction' h with a _ _ _ ih _ _ _ _ _ _ _ _ ih_1 ih_2 <;> try simp
   · exact ih.insert a
   · apply perm_insert_swap
   · exact ih_1.trans ih_2
 #align list.perm.union_right List.Perm.union_right
 
-theorem Perm.union_left (l : List α) {t₁ t₂ : List α} (h : t₁ ~ t₂) : l.union t₁ ~ l.union t₂ := by
+theorem Perm.union_left (l : List α) {t₁ t₂ : List α} (h : t₁ ~ t₂) : l ∪ t₁ ~ l ∪ t₂ := by
   induction l <;> simp [*, Perm.insert]
 #align list.perm.union_left List.Perm.union_left
 
 -- @[congr]
 theorem Perm.union {l₁ l₂ t₁ t₂ : List α} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
-    l₁.union t₁ ~ l₂.union t₂ :=
+    l₁ ∪ t₁ ~ l₂ ∪ t₂ :=
   (p₁.union_right t₁).trans (p₂.union_left l₂)
 #align list.perm.union List.Perm.union
 
@@ -1049,7 +1043,7 @@ theorem Perm.pairwise_iff {R : α → α → Prop} (S : Symmetric R) :
   · have : a ∈ l₂ := p.subset (mem_cons_self _ _)
     rcases mem_split this with ⟨s₂, t₂, rfl⟩
     have p' := (p.trans perm_middle).cons_inv
-    refine' (pairwise_middle S).2 (pairwise_cons.2 ⟨fun b m => _, IH _ p'⟩)
+    refine' (pairwise_middle @S).2 (pairwise_cons.2 ⟨fun b m => _, IH _ p'⟩)
     exact h _ (p'.symm.subset m)
 #align list.perm.pairwise_iff List.Perm.pairwise_iff
 
@@ -1135,7 +1129,7 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     · simp [lookmap_cons_some _ _ h₁, h₂]
       apply swap
     · simp [lookmap_cons_some _ _ h₁, lookmap_cons_some _ _ h₂]
-      rcases(pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
+      rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
       exact Perm.refl _
   · refine' (IH₁ H).trans (IH₂ ((p₁.pairwise_iff _).1 H))
     exact fun a b h c h₁ d h₂ => (h d h₂ c h₁).imp Eq.symm Eq.symm
@@ -1155,10 +1149,10 @@ theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
     exact fun a b h h₁ h₂ => h h₂ h₁
 #align list.perm.erasep List.Perm.erasep
 
-theorem Perm.take_inter {α : Type _} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
+theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
-  exact Perm.trans (show xs.take n ~ xs.filter (. ∈ xs.take n) by
+  exact Perm.trans (show xs.take n ~ xs.filter (· ∈ xs.take n) by
       conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
     (Perm.filter _ h)
 #align list.perm.take_inter List.Perm.take_inter
@@ -1266,7 +1260,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
 #align list.mem_permutations List.mem_permutations
 
 --Porting note: temporary theorem to solve diamond issue
-private theorem DecEq_eq {α : Type _} [DecidableEq α] :
+private theorem DecEq_eq {α : Type*} [DecidableEq α] :
      instBEqList = @instBEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂
@@ -1278,7 +1272,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (permutations'Aux b l).bind (permutations'Aux a) := by
   induction' l with c l ih
   · simp [swap]
-  simp [permutations'Aux]
+  simp only [permutations'Aux, cons_bind, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
     ∀ a b,
@@ -1299,8 +1293,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
   induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
-  · simp only [permutations']
-    exact IH.bind_right _
+  · exact IH.bind_right _
   · dsimp [permutations']
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left
@@ -1430,7 +1423,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       nthLe_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
   · rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
       hk']
-  · rcases(Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
+  · rcases (Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
     · rw [nthLe_insertNth_self _ _ _ (Nat.succ_le_of_lt hk)]
       convert hk' using 1
       exact nthLe_insertNth_add_succ _ _ _ 0 _

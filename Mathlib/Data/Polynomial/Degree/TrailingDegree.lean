@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.degree.trailing_degree
-! leanprover-community/mathlib commit 302eab4f46abb63de520828de78c04cb0f9b5836
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import data.polynomial.degree.trailing_degree from "leanprover-community/mathlib"@"302eab4f46abb63de520828de78c04cb0f9b5836"
 
 /-!
 # Trailing degree of univariate polynomials
@@ -29,7 +26,7 @@ noncomputable section
 
 open Function Polynomial Finsupp Finset
 
-open BigOperators Classical Polynomial
+open BigOperators Polynomial
 
 namespace Polynomial
 
@@ -74,8 +71,8 @@ theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
 #align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
 
--- Porting note: Removed unused argument `[DecidableEq R]`?
-instance TrailingMonic.decidable: Decidable (TrailingMonic p) := inferInstance
+instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
+  inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
 #align polynomial.trailing_monic.decidable Polynomial.TrailingMonic.decidable
 
 @[simp]
@@ -180,7 +177,7 @@ theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n := by
   -- Porting note: Needed to account for different coercion behaviour & add the lemma below
   have : Nat.cast n = WithTop.some n := rfl
-  exact mt fun h => by rw [natTrailingDegree, h, this, ←WithTop.some_eq_coe, Option.getD_coe]
+  exact mt fun h => by rw [natTrailingDegree, h, this, ←WithTop.some_eq_coe, Option.getD_some]
 #align polynomial.trailing_degree_ne_of_nat_trailing_degree_ne Polynomial.trailingDegree_ne_of_natTrailingDegree_ne
 
 theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}
@@ -210,10 +207,12 @@ theorem natTrailingDegree_monomial (ha : a ≠ 0) : natTrailingDegree (monomial 
 #align polynomial.nat_trailing_degree_monomial Polynomial.natTrailingDegree_monomial
 
 theorem natTrailingDegree_monomial_le : natTrailingDegree (monomial n a) ≤ n :=
+  letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (natTrailingDegree_monomial ha).le
 #align polynomial.nat_trailing_degree_monomial_le Polynomial.natTrailingDegree_monomial_le
 
 theorem le_trailingDegree_monomial : ↑n ≤ trailingDegree (monomial n a) :=
+  letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (trailingDegree_monomial ha).ge
 #align polynomial.le_trailing_degree_monomial Polynomial.le_trailingDegree_monomial
 
@@ -502,7 +501,7 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type _}
+variable [Semiring R] {p q : R[X]} {ι : Type*}
 
 theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
     (h : trailingDegree p < trailingDegree q) : coeff q (natTrailingDegree p) = 0 :=

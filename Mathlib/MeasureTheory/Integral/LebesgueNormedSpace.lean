@@ -2,14 +2,11 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.integral.lebesgue_normed_space
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import measure_theory.integral.lebesgue_normed_space from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
 
@@ -18,9 +15,9 @@ open MeasureTheory Filter ENNReal Set
 
 open NNReal ENNReal
 
-variable {α β γ δ : Type _} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
-theorem aemeasurable_withDensity_iff {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace.SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
     (hf : Measurable f) {g : α → E} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔

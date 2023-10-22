@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.abs_max
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.Topology.Algebra.Order.ExtrClosure
+
+#align_import analysis.complex.abs_max from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Maximum modulus principle
@@ -82,7 +79,7 @@ maximum modulus principle, complex analysis
 -/
 
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap
+open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
 
@@ -370,7 +367,7 @@ variable [Nontrivial E]
 set `U` and is continuous on its closure, then there exists a point `z ∈ frontier U` such that
 `(‖f ·‖)` takes it maximum value on `closure U` at `z`. -/
 theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F} {U : Set E}
-    (hb : Bounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
+    (hb : IsBounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
     ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   have hc : IsCompact (closure U) := hb.isCompact_closure
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w
@@ -387,7 +384,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a bounded set `U` and
 `‖f z‖ ≤ C` for any `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
-theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : Bounded U)
+theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : IsBounded U)
     (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
@@ -402,7 +399,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : B
   replace hd : DiffContOnCl ℂ (f ∘ e) (e ⁻¹' U)
   exact hd.comp hde.diffContOnCl (mapsTo_preimage _ _)
   have h₀ : (0 : ℂ) ∈ e ⁻¹' U := by simpa only [mem_preimage, lineMap_apply_zero]
-  rcases exists_mem_frontier_isMaxOn_norm (hL.bounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
+  rcases exists_mem_frontier_isMaxOn_norm (hL.isBounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
   calc
     ‖f z‖ = ‖f (e 0)‖ := by simp only [lineMap_apply_zero]
     _ ≤ ‖f (e ζ)‖ := (hζ (subset_closure h₀))
@@ -411,7 +408,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : B
 
 /-- If two complex differentiable functions `f g : E → F` are equal on the boundary of a bounded set
 `U`, then they are equal on `closure U`. -/
-theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U)
+theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
   suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0; · simpa [sub_eq_zero] using H
@@ -421,7 +418,7 @@ theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded 
 
 /-- If two complex differentiable functions `f g : E → F` are equal on the boundary of a bounded set
 `U`, then they are equal on `U`. -/
-theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U) (hf : DiffContOnCl ℂ f U)
+theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U) (hf : DiffContOnCl ℂ f U)
     (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) : EqOn f g U :=
   (eqOn_closure_of_eqOn_frontier hU hf hg hfg).mono subset_closure
 #align complex.eq_on_of_eq_on_frontier Complex.eqOn_of_eqOn_frontier

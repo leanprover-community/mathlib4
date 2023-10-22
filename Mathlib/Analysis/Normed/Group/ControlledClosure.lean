@@ -2,14 +2,11 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.normed.group.controlled_closure
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.SpecificLimits.Normed
+
+#align_import analysis.normed.group.controlled_closure from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
@@ -24,9 +21,9 @@ open Filter Finset
 
 open Topology BigOperators
 
-variable {G : Type _} [NormedAddCommGroup G] [CompleteSpace G]
+variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
 
-variable {H : Type _} [NormedAddCommGroup H]
+variable {H : Type*} [NormedAddCommGroup H]
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G` and a subgroup `K` of `H`, if every
 element `x` of `K` has a preimage under `f` whose norm is at most `C*‖x‖` then the same holds for
@@ -121,13 +118,13 @@ an isometric immersion `j : NormedAddGroupHom K H` has a preimage under `f` whos
 This is useful in particular if `j` is the inclusion of a normed group into its completion
 (in this case the closure is the full target group).
 -/
-theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Type _}
+theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Type*}
     [SeminormedAddCommGroup K] {j : NormedAddGroupHom K H} (hj : ∀ x, ‖j x‖ = ‖x‖) {C ε : ℝ}
     (hC : 0 < C) (hε : 0 < ε) (hyp : ∀ k, ∃ g, f g = j k ∧ ‖g‖ ≤ C * ‖k‖) :
     f.SurjectiveOnWith j.range.topologicalClosure (C + ε) := by
   replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖
   · intro h h_in
-    rcases(j.mem_range _).mp h_in with ⟨k, rfl⟩
+    rcases (j.mem_range _).mp h_in with ⟨k, rfl⟩
     rw [hj]
     exact hyp k
   exact controlled_closure_of_complete hC hε hyp

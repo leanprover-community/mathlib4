@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.tagged
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
+
+#align_import analysis.box_integral.partition.tagged from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Tagged partitions
@@ -36,7 +33,7 @@ open Set Function
 
 namespace BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-- A tagged prepartition is a prepartition enriched with a tagged point for each box of the
 prepartition. For simplicity we require that `tag` is defined for all boxes in `ι → ℝ` but
@@ -287,7 +284,7 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
     (hJ : J ∈ π.boxes) : diam (Box.Icc J) ≤ 2 * r (π.tag J) :=
   calc
     diam (Box.Icc J) ≤ diam (closedBall (π.tag J) (r <| π.tag J)) :=
-      diam_mono (h J hJ) bounded_closedBall
+      diam_mono (h J hJ) isBounded_closedBall
     _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).2)
 #align box_integral.tagged_prepartition.is_subordinate.diam_le BoxIntegral.TaggedPrepartition.IsSubordinate.diam_le
 

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.cycle
-! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.List.Rotate
+
+#align_import data.list.cycle from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
 /-!
 # Cycles of a list
@@ -30,7 +27,7 @@ is different.
 
 namespace List
 
-variable {α : Type _} [DecidableEq α]
+variable {α : Type*} [DecidableEq α]
 
 /-- Return the `z` such that `x :: z :: _` appears in `xs`, or `default` if there is no such `z`. -/
 def nextOr : ∀ (_ : List α) (_ _ : α), α
@@ -202,7 +199,8 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [← Option.some_inj] at hk'
     rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
     rw [hk']
-    simp [getLast_eq_get]
+    simp only [getLast_eq_get, length_cons, ge_iff_le, Nat.succ_sub_succ_eq_sub,
+      nonpos_iff_eq_zero, add_eq_zero_iff, and_false, tsub_zero, get_cons_succ]
     simpa using hk
 #align list.next_last_cons List.next_getLast_cons
 
@@ -400,7 +398,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
 
 set_option linter.deprecated false in
 theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    prev l.reverse x (mem_reverse'.mpr hx) = next l x hx := by
+    prev l.reverse x (mem_reverse.mpr hx) = next l x hx := by
   obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
   have key : l.length - 1 - k < l.length :=
@@ -418,8 +416,8 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
-    next l.reverse x (mem_reverse'.mpr hx) = prev l x hx := by
-  convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x ((mem_reverse _ _).mpr hx)).symm
+    next l.reverse x (mem_reverse.mpr hx) = prev l x hx := by
+  convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
@@ -447,13 +445,13 @@ open List
 /-- `Cycle α` is the quotient of `List α` by cyclic permutation.
 Duplicates are allowed.
 -/
-def Cycle (α : Type _) : Type _ :=
+def Cycle (α : Type*) : Type _ :=
   Quotient (IsRotated.setoid α)
 #align cycle Cycle
 
 namespace Cycle
 
-variable {α : Type _}
+variable {α : Type*}
 
 --Porting note: new definition
 /-- The coercion from `List α` to `Cycle α` -/
@@ -555,7 +553,7 @@ theorem reverse_coe (l : List α) : (l : Cycle α).reverse = l.reverse :=
 
 @[simp]
 theorem mem_reverse_iff {a : α} {s : Cycle α} : a ∈ s.reverse ↔ a ∈ s :=
-  Quot.inductionOn s fun _ => mem_reverse'
+  Quot.inductionOn s fun _ => mem_reverse
 #align cycle.mem_reverse_iff Cycle.mem_reverse_iff
 
 @[simp]
@@ -686,7 +684,7 @@ theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬S
 /-- The `s : Cycle α` as a `Multiset α`.
 -/
 def toMultiset (s : Cycle α) : Multiset α :=
-  Quotient.liftOn' s (↑) fun _ _  h => Multiset.coe_eq_coe.mpr h.perm
+  Quotient.liftOn' s (↑) fun _ _ h => Multiset.coe_eq_coe.mpr h.perm
 #align cycle.to_multiset Cycle.toMultiset
 
 @[simp]
@@ -710,27 +708,27 @@ theorem toMultiset_eq_nil {s : Cycle α} : s.toMultiset = 0 ↔ s = Cycle.nil :=
 #align cycle.to_multiset_eq_nil Cycle.toMultiset_eq_nil
 
 /-- The lift of `list.map`. -/
-def map {β : Type _} (f : α → β) : Cycle α → Cycle β :=
+def map {β : Type*} (f : α → β) : Cycle α → Cycle β :=
   Quotient.map' (List.map f) fun _ _ h => h.map _
 #align cycle.map Cycle.map
 
 @[simp]
-theorem map_nil {β : Type _} (f : α → β) : map f nil = nil :=
+theorem map_nil {β : Type*} (f : α → β) : map f nil = nil :=
   rfl
 #align cycle.map_nil Cycle.map_nil
 
 @[simp]
-theorem map_coe {β : Type _} (f : α → β) (l : List α) : map f ↑l = List.map f l :=
+theorem map_coe {β : Type*} (f : α → β) (l : List α) : map f ↑l = List.map f l :=
   rfl
 #align cycle.map_coe Cycle.map_coe
 
 @[simp]
-theorem map_eq_nil {β : Type _} (f : α → β) (s : Cycle α) : map f s = nil ↔ s = nil :=
+theorem map_eq_nil {β : Type*} (f : α → β) (s : Cycle α) : map f s = nil ↔ s = nil :=
   Quotient.inductionOn' s (by simp)
 #align cycle.map_eq_nil Cycle.map_eq_nil
 
 @[simp]
-theorem mem_map {β : Type _} {f : α → β} {b : β} {s : Cycle α} :
+theorem mem_map {β : Type*} {f : α → β} {b : β} {s : Cycle α} :
     b ∈ s.map f ↔ ∃ a, a ∈ s ∧ f a = b :=
   Quotient.inductionOn' s (by simp)
 #align cycle.mem_map Cycle.mem_map
@@ -953,7 +951,7 @@ theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
     rw [← coe_cons_eq_coe_append, chain_coe_cons, getLast_append_singleton])
 #align cycle.chain_ne_nil Cycle.chain_ne_nil
 
-theorem chain_map {β : Type _} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
+theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
     Chain r (s.map f) ↔ Chain (fun a b => r (f a) (f b)) s :=
   Quotient.inductionOn' s fun l => by
     cases' l with a l

@@ -2,17 +2,14 @@
 Copyright (c) 2021 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Adam Topaz, Johan Commelin
-
-! This file was ported from Lean 3 source module algebraic_topology.alternating_face_map_complex
-! leanprover-community/mathlib commit 88bca0ce5d22ebfd9e73e682e51d60ea13b48347
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+
+#align_import algebraic_topology.alternating_face_map_complex from "leanprover-community/mathlib"@"88bca0ce5d22ebfd9e73e682e51d60ea13b48347"
 
 /-!
 
@@ -59,7 +56,7 @@ namespace AlternatingFaceMapComplex
 -/
 
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 variable (X : SimplicialObject C)
 
@@ -106,17 +103,17 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     rintro ⟨i, j⟩ ⟨i', j'⟩ hij hij' h
     rw [Prod.mk.inj_iff]
     exact ⟨by simpa using congr_arg Prod.snd h,
-      by simpa [Fin.castSuccEmb_castLT] using congr_arg Fin.castSuccEmb (congr_arg Prod.fst h)⟩
+      by simpa [Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
     simp only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
       not_le, Finset.mem_filter, true_and] at hij'
-    refine' ⟨(j'.pred _, Fin.castSuccEmb i'), _, _⟩
+    refine' ⟨(j'.pred <| _, Fin.castSucc i'), _, _⟩
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
     · simpa only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
-        Fin.coe_castSuccEmb, Fin.coe_pred, true_and] using Nat.le_pred_of_lt hij'
-    · simp only [Fin.castLT_castSuccEmb, Fin.succ_pred]
+        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_pred_of_lt hij'
+    · simp only [Fin.castLT_castSucc, Fin.succ_pred]
 #align algebraic_topology.alternating_face_map_complex.d_squared AlgebraicTopology.AlternatingFaceMapComplex.d_squared
 
 /-!
@@ -162,7 +159,7 @@ theorem map_f (f : X ⟶ Y) (n : ℕ) : (map f).f n = f.app (op [n]) :=
 
 end AlternatingFaceMapComplex
 
-variable (C : Type _) [Category C] [Preadditive C]
+variable (C : Type*) [Category C] [Preadditive C]
 
 /-- The alternating face map complex, as a functor -/
 def alternatingFaceMapComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
@@ -192,7 +189,7 @@ theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y)
   rfl
 #align algebraic_topology.alternating_face_map_complex_map_f AlgebraicTopology.alternatingFaceMapComplex_map_f
 
-theorem map_alternatingFaceMapComplex {D : Type _} [Category D] [Preadditive D] (F : C ⥤ D)
+theorem map_alternatingFaceMapComplex {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
       (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D := by
@@ -248,7 +245,7 @@ end AlternatingFaceMapComplex
 ## Construction of the natural inclusion of the normalized Moore complex
 -/
 
-variable {A : Type _} [Category A] [Abelian A]
+variable {A : Type*} [Category A] [Abelian A]
 
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :
@@ -288,8 +285,8 @@ variable (A)
 /-- The inclusion map of the Moore complex in the alternating face map complex,
 as a natural transformation -/
 @[simps]
-def inclusionOfMooreComplex : normalizedMooreComplex A ⟶ alternatingFaceMapComplex A
-    where app := inclusionOfMooreComplexMap
+def inclusionOfMooreComplex : normalizedMooreComplex A ⟶ alternatingFaceMapComplex A where
+  app := inclusionOfMooreComplexMap
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.inclusion_of_Moore_complex AlgebraicTopology.inclusionOfMooreComplex
 

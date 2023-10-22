@@ -2,23 +2,20 @@
 Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.big_operators.fin
-! leanprover-community/mathlib commit cc5dd6244981976cc9da7afc4eee5682b037a013
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
 
+#align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
+
 /-!
 # Big operators and `Fin`
 
 Some results about products and sums over the type `Fin`.
 
-The most important results are the induction formulas `Fin.prod_univ_castSuccEmb`
+The most important results are the induction formulas `Fin.prod_univ_castSucc`
 and `Fin.prod_univ_succ`, and the formula `Fin.prod_const` for the product of a
 constant function. These results have variants for sums instead of products.
 
@@ -31,7 +28,7 @@ open BigOperators
 
 open Finset
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -71,8 +68,9 @@ is the product of `f x`, for some `x : Fin (n + 1)` times the remaining product 
 `f x`, for some `x : Fin (n + 1)` plus the remaining product"]
 theorem prod_univ_succAbove [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) (x : Fin (n + 1)) :
     ∏ i, f i = f x * ∏ i : Fin n, f (x.succAbove i) := by
-  rw [univ_succAbove, prod_cons, Finset.prod_map _ x.succAbove.toEmbedding,
+  rw [univ_succAbove, prod_cons, Finset.prod_map _ x.succAboveEmb.toEmbedding,
     RelEmbedding.coe_toEmbedding]
+  rfl
 #align fin.prod_univ_succ_above Fin.prod_univ_succAbove
 #align fin.sum_univ_succ_above Fin.sum_univ_succAbove
 
@@ -90,11 +88,11 @@ theorem prod_univ_succ [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
 is the product of `f (Fin.last n)` plus the remaining product -/
 @[to_additive "A sum of a function `f : Fin (n + 1) → β` over all `Fin (n + 1)` is the sum of
 `f (Fin.last n)` plus the remaining sum"]
-theorem prod_univ_castSuccEmb [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
-    ∏ i, f i = (∏ i : Fin n, f (Fin.castSuccEmb i)) * f (last n) := by
+theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
+    ∏ i, f i = (∏ i : Fin n, f (Fin.castSucc i)) * f (last n) := by
   simpa [mul_comm] using prod_univ_succAbove f (last n)
-#align fin.prod_univ_cast_succ Fin.prod_univ_castSuccEmb
-#align fin.sum_univ_cast_succ Fin.sum_univ_castSuccEmb
+#align fin.prod_univ_cast_succ Fin.prod_univ_castSucc
+#align fin.sum_univ_cast_succ Fin.sum_univ_castSucc
 
 @[to_additive]
 theorem prod_cons [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
@@ -116,14 +114,14 @@ theorem prod_univ_two [CommMonoid β] (f : Fin 2 → β) : ∏ i, f i = f 0 * f 
 
 @[to_additive]
 theorem prod_univ_three [CommMonoid β] (f : Fin 3 → β) : ∏ i, f i = f 0 * f 1 * f 2 := by
-  rw [prod_univ_castSuccEmb, prod_univ_two]
+  rw [prod_univ_castSucc, prod_univ_two]
   rfl
 #align fin.prod_univ_three Fin.prod_univ_three
 #align fin.sum_univ_three Fin.sum_univ_three
 
 @[to_additive]
 theorem prod_univ_four [CommMonoid β] (f : Fin 4 → β) : ∏ i, f i = f 0 * f 1 * f 2 * f 3 := by
-  rw [prod_univ_castSuccEmb, prod_univ_three]
+  rw [prod_univ_castSucc, prod_univ_three]
   rfl
 #align fin.prod_univ_four Fin.prod_univ_four
 #align fin.sum_univ_four Fin.sum_univ_four
@@ -131,7 +129,7 @@ theorem prod_univ_four [CommMonoid β] (f : Fin 4 → β) : ∏ i, f i = f 0 * f
 @[to_additive]
 theorem prod_univ_five [CommMonoid β] (f : Fin 5 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 := by
-  rw [prod_univ_castSuccEmb, prod_univ_four]
+  rw [prod_univ_castSucc, prod_univ_four]
   rfl
 #align fin.prod_univ_five Fin.prod_univ_five
 #align fin.sum_univ_five Fin.sum_univ_five
@@ -139,7 +137,7 @@ theorem prod_univ_five [CommMonoid β] (f : Fin 5 → β) :
 @[to_additive]
 theorem prod_univ_six [CommMonoid β] (f : Fin 6 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 := by
-  rw [prod_univ_castSuccEmb, prod_univ_five]
+  rw [prod_univ_castSucc, prod_univ_five]
   rfl
 #align fin.prod_univ_six Fin.prod_univ_six
 #align fin.sum_univ_six Fin.sum_univ_six
@@ -147,7 +145,7 @@ theorem prod_univ_six [CommMonoid β] (f : Fin 6 → β) :
 @[to_additive]
 theorem prod_univ_seven [CommMonoid β] (f : Fin 7 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 * f 6 := by
-  rw [prod_univ_castSuccEmb, prod_univ_six]
+  rw [prod_univ_castSucc, prod_univ_six]
   rfl
 #align fin.prod_univ_seven Fin.prod_univ_seven
 #align fin.sum_univ_seven Fin.sum_univ_seven
@@ -155,12 +153,12 @@ theorem prod_univ_seven [CommMonoid β] (f : Fin 7 → β) :
 @[to_additive]
 theorem prod_univ_eight [CommMonoid β] (f : Fin 8 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 * f 6 * f 7 := by
-  rw [prod_univ_castSuccEmb, prod_univ_seven]
+  rw [prod_univ_castSucc, prod_univ_seven]
   rfl
 #align fin.prod_univ_eight Fin.prod_univ_eight
 #align fin.sum_univ_eight Fin.sum_univ_eight
 
-theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type _} [CommSemiring R] (a b : R) :
+theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
     (∑ s : Finset (Fin n), a ^ s.card * b ^ (n - s.card)) = (a + b) ^ n := by
   simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
 #align fin.sum_pow_mul_eq_add_pow Fin.sum_pow_mul_eq_add_pow
@@ -172,29 +170,29 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n 
 #align fin.sum_const Fin.sum_const
 
 @[to_additive]
-theorem prod_Ioi_zero {M : Type _} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
+theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     ∏ i in Ioi 0, v i = ∏ j : Fin n, v j.succ := by
   rw [Ioi_zero_eq_map, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmbedding]
 #align fin.prod_Ioi_zero Fin.prod_Ioi_zero
 #align fin.sum_Ioi_zero Fin.sum_Ioi_zero
 
 @[to_additive]
-theorem prod_Ioi_succ {M : Type _} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
+theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     ∏ j in Ioi i.succ, v j = ∏ j in Ioi i, v j.succ := by
   rw [Ioi_succ, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmbedding]
 #align fin.prod_Ioi_succ Fin.prod_Ioi_succ
 #align fin.sum_Ioi_succ Fin.sum_Ioi_succ
 
 @[to_additive]
-theorem prod_congr' {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :
-    (∏ i : Fin a, f (castIso h i)) = ∏ i : Fin b, f i := by
+theorem prod_congr' {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :
+    (∏ i : Fin a, f (cast h i)) = ∏ i : Fin b, f i := by
   subst h
   congr
 #align fin.prod_congr' Fin.prod_congr'
 #align fin.sum_congr' Fin.sum_congr'
 
 @[to_additive]
-theorem prod_univ_add {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M) :
+theorem prod_univ_add {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M) :
     (∏ i : Fin (a + b), f i) = (∏ i : Fin a, f (castAdd b i)) * ∏ i : Fin b, f (natAdd a i) := by
   rw [Fintype.prod_equiv finSumFinEquiv.symm f fun i => f (finSumFinEquiv.toFun i)]
   · apply Fintype.prod_sum_type
@@ -204,7 +202,7 @@ theorem prod_univ_add {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) �
 #align fin.sum_univ_add Fin.sum_univ_add
 
 @[to_additive]
-theorem prod_trunc {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
+theorem prod_trunc {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M)
     (hf : ∀ j : Fin b, f (natAdd a j) = 1) :
     (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLE (Nat.le.intro rfl) i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
@@ -231,7 +229,7 @@ theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [pa
 
 @[to_additive]
 theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
-    partialProd f j.succ = partialProd f (Fin.castSuccEmb j) * f j := by
+    partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
   simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt, ← Option.coe_def]
 #align fin.partial_prod_succ Fin.partialProd_succ
 #align fin.partial_sum_succ Fin.partialSum_succ
@@ -245,26 +243,26 @@ theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
 #align fin.partial_sum_succ' Fin.partialSum_succ'
 
 @[to_additive]
-theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
+theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
     (f 0 • partialProd fun i : Fin n => (f i)⁻¹ * f i.succ) = f :=
   funext fun x => Fin.inductionOn x (by simp) fun x hx => by
-    simp only [coe_eq_castSuccEmb, Pi.smul_apply, smul_eq_mul] at hx ⊢
+    simp only [coe_eq_castSucc, Pi.smul_apply, smul_eq_mul] at hx ⊢
     rw [partialProd_succ, ← mul_assoc, hx, mul_inv_cancel_left]
 #align fin.partial_prod_left_inv Fin.partialProd_left_inv
 #align fin.partial_sum_left_neg Fin.partialSum_left_neg
 
 @[to_additive]
-theorem partialProd_right_inv {G : Type _} [Group G] (f : Fin n → G) (i : Fin n) :
-    (partialProd f (Fin.castSuccEmb i))⁻¹ * partialProd f i.succ = f i := by
+theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n) :
+    (partialProd f (Fin.castSucc i))⁻¹ * partialProd f i.succ = f i := by
   cases' i with i hn
   induction i with
   | zero => simp [-Fin.succ_mk, partialProd_succ]
   | succ i hi =>
     specialize hi (lt_trans (Nat.lt_succ_self i) hn)
-    simp only [Fin.coe_eq_castSuccEmb, Fin.succ_mk, Fin.castSuccEmb_mk] at hi ⊢
+    simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi ⊢
     rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
     rw [Nat.succ_eq_add_one] at hn
-    simp only [partialProd_succ, mul_inv_rev, Fin.castSuccEmb_mk]
+    simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
     -- Porting note: was
     -- assoc_rw [hi, inv_mul_cancel_left]
     rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
@@ -282,22 +280,22 @@ Useful for defining group cohomology. -/
       If `k = j`, it says `-(g₀ + g₁ + ... + gₖ₋₁) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ + gₖ₊₁`.
       If `k > j`, it says `-(g₀ + g₁ + ... + gₖ) + (g₀ + g₁ + ... + gₖ₊₁) = gₖ₊₁.`
       Useful for defining group cohomology."]
-theorem inv_partialProd_mul_eq_contractNth {G : Type _} [Group G] (g : Fin (n + 1) → G)
+theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1) → G)
     (j : Fin (n + 1)) (k : Fin n) :
-    (partialProd g (j.succ.succAbove (Fin.castSuccEmb k)))⁻¹ * partialProd g (j.succAbove k).succ =
+    (partialProd g (j.succ.succAbove (Fin.castSucc k)))⁻¹ * partialProd g (j.succAbove k).succ =
       j.contractNth (· * ·) g k := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [succAbove_below, succAbove_below, partialProd_right_inv, contractNth_apply_of_lt]
     · assumption
-    · rw [castSuccEmb_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
+    · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
-  · rwa [succAbove_below, succAbove_above, partialProd_succ, castSuccEmb_fin_succ, ← mul_assoc,
+  · rwa [succAbove_below, succAbove_above, partialProd_succ, castSucc_fin_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
-    · rw [castSuccEmb_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
+    · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
   · rwa [succAbove_above, succAbove_above, partialProd_succ, partialProd_succ,
-      castSuccEmb_fin_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
+      castSucc_fin_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
     · exact le_iff_val_le_val.2 (le_of_lt h)
     · rw [le_iff_val_le_val, val_succ]
       exact Nat.succ_le_of_lt h
@@ -311,14 +309,14 @@ end Fin
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
-  Equiv.ofRightInverseOfCardLe (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
+  Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
       induction' n with n ih
       · simp
       cases m
       · dsimp only [Nat.zero_eq] at f -- porting note: added, wrong zero
         exact isEmptyElim (f <| Fin.last _)
-      simp_rw [Fin.sum_univ_castSuccEmb, Fin.coe_castSuccEmb, Fin.val_last]
+      simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
       rw [← one_add_mul (_ : ℕ), add_comm, pow_succ]
       -- porting note: added, wrong `succ`
@@ -355,16 +353,16 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
     (finFunctionFinEquiv (Pi.single i j) : ℕ) = j * m ^ (i : ℕ) := by
   rw [finFunctionFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero, MulZeroClass.zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
 #align fin_function_fin_equiv_single finFunctionFinEquiv_single
 
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
-  Equiv.ofRightInverseOfCardLe (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
+  Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
       induction' m with m ih
       · simp
-      rw [Fin.prod_univ_castSuccEmb, Fin.sum_univ_castSuccEmb]
+      rw [Fin.prod_univ_castSucc, Fin.sum_univ_castSucc]
       suffices
         ∀ (n : Fin m → ℕ) (nn : ℕ) (f : ∀ i : Fin m, Fin (n i)) (fn : Fin nn),
           ((∑ i : Fin m, ↑(f i) * ∏ j : Fin i, n (Fin.castLE i.prop.le j)) + ↑fn * ∏ j, n j) <
@@ -372,7 +370,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         replace := this (Fin.init n) (n (Fin.last _)) (Fin.init f) (f (Fin.last _))
         rw [← Fin.snoc_init_self f]
         simp (config := { singlePass := true }) only [← Fin.snoc_init_self n]
-        simp_rw [Fin.snoc_castSuccEmb, Fin.snoc_last, Fin.snoc_init_self n]
+        simp_rw [Fin.snoc_castSucc, Fin.snoc_last, Fin.snoc_init_self n]
         exact this
       intro n nn f fn
       cases nn
@@ -439,7 +437,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
       j * ∏ j, n (Fin.castLE i.is_lt.le j) := by
   rw [finPiFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero, MulZeroClass.zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
 #align fin_pi_fin_equiv_single finPiFinEquiv_single
 
 namespace List
@@ -490,7 +488,7 @@ end CommMonoid
 
 -- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
 @[to_additive]
-theorem alternatingProd_eq_finset_prod {G : Type _} [CommGroup G] :
+theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]

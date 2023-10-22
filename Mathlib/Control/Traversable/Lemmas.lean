@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.traversable.lemmas
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+
+#align_import control.traversable.lemmas from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
 
 /-!
 # Traversing collections
@@ -125,7 +122,7 @@ theorem traverse_comp (g : α → F β) (h : β → G γ) :
 #align traversable.traverse_comp Traversable.traverse_comp
 
 theorem traverse_eq_map_id' (f : β → γ) :
-  traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
+    traverse (m := Id) (pure ∘ f) = pure ∘ (map f : t β → t γ) := by
   ext
   exact traverse_eq_map_id _ _
 #align traversable.traverse_eq_map_id' Traversable.traverse_eq_map_id'

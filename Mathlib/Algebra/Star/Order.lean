@@ -2,14 +2,11 @@
 Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.star.order
-! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.Submonoid.Basic
+
+#align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-! # Star ordered rings
 
@@ -78,7 +75,7 @@ instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R
 -- see note [lower instance priority]
 instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder R]
     [StarOrderedRing R] : OrderedAddCommGroup R where
-  add_le_add_left := @add_le_add_left  _ _ _ _
+  add_le_add_left := @add_le_add_left _ _ _ _
 
 #align star_ordered_ring.to_ordered_add_comm_group StarOrderedRing.toOrderedAddCommGroup
 
@@ -93,9 +90,9 @@ If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 `StarOrderedRing.ofNonnegIff` for a more convenient version.
  -/
 @[reducible]
-def ofLeIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
+def ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
-  le_iff := fun x y => by
+  le_iff x y := by
     refine' ⟨fun h => _, _⟩
     · obtain ⟨p, hp⟩ := (h_le_iff x y).mp h
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
@@ -107,7 +104,7 @@ def ofLeIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
       · rintro a b ha hb x y rfl
         rw [← add_assoc]
         exact (ha _ _ rfl).trans (hb _ _ rfl)
-#align star_ordered_ring.of_le_iff StarOrderedRing.ofLeIffₓ
+#align star_ordered_ring.of_le_iff StarOrderedRing.ofLEIffₓ
 
 -- set note [reducible non-instances]
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
@@ -118,7 +115,7 @@ def ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s)) :
     StarOrderedRing R where
-  le_iff := fun x y => by
+  le_iff x y := by
     haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
     simpa only [← sub_eq_iff_eq_add', sub_nonneg, exists_eq_right'] using h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff StarOrderedRing.ofNonnegIff
@@ -135,7 +132,7 @@ instances. -/
 def ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ ∃ s, x = star s * s) : StarOrderedRing R :=
-  ofLeIff <| by
+  ofLEIff <| by
     haveI : CovariantClass R R (· + ·) (· ≤ ·) := ⟨fun _ _ _ h => h_add h _⟩
     simpa [sub_eq_iff_eq_add', sub_nonneg] using fun x y => h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff' StarOrderedRing.ofNonnegIff'
@@ -162,7 +159,7 @@ theorem star_mul_self_nonneg' (r : R) : 0 ≤ r * star r := by
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
   refine' AddSubmonoid.closure_induction ha (fun x hx => _)
-    (by rw [MulZeroClass.mul_zero, MulZeroClass.zero_mul]) fun x y hx hy => _
+    (by rw [mul_zero, zero_mul]) fun x y hx hy => _
   · obtain ⟨x, rfl⟩ := hx
     convert star_mul_self_nonneg (x * c) using 1
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]

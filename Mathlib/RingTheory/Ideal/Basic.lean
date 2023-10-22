@@ -2,19 +2,15 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
-
-! This file was ported from Lean 3 source module ring_theory.ideal.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.CompactlyGenerated
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
+
+#align_import ring_theory.ideal.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 
@@ -39,7 +35,7 @@ variable {α : Type u} {β : Type v}
 
 open Set Function
 
-open Classical BigOperators Pointwise
+open BigOperators Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
 `a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup.  -/
@@ -75,7 +71,7 @@ theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
 #align ideal.ext Ideal.ext
 
-theorem sum_mem (I : Ideal α) {ι : Type _} {t : Finset ι} {f : ι → α} :
+theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
     (∀ c ∈ t, f c ∈ I) → (∑ i in t, f i) ∈ I :=
   Submodule.sum_mem I
 #align ideal.sum_mem Ideal.sum_mem
@@ -163,6 +159,9 @@ theorem span_singleton_one : span ({1} : Set α) = ⊤ :=
   (eq_top_iff_one _).2 <| subset_span <| mem_singleton _
 #align ideal.span_singleton_one Ideal.span_singleton_one
 
+theorem isCompactElement_top : CompleteLattice.IsCompactElement (⊤ : Ideal α) := by
+  simpa only [← span_singleton_one] using Submodule.singleton_span_isCompactElement 1
+
 theorem mem_span_insert {s : Set α} {x y} :
     x ∈ span (insert y s) ↔ ∃ a, ∃ z ∈ span s, x = a * y + z :=
   Submodule.mem_span_insert
@@ -195,7 +194,7 @@ theorem span_singleton_eq_bot {x} : span ({x} : Set α) = ⊥ ↔ x = 0 :=
   Submodule.span_singleton_eq_bot
 #align ideal.span_singleton_eq_bot Ideal.span_singleton_eq_bot
 
-theorem span_singleton_ne_top {α : Type _} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
+theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
     Ideal.span ({x} : Set α) ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr fun h1 =>
     let ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp h1
@@ -216,7 +215,7 @@ theorem span_eq_top_iff_finite (s : Set α) :
   exact ⟨Submodule.mem_span_finite_of_mem_span, fun ⟨s', h₁, h₂⟩ => span_mono h₁ h₂⟩
 #align ideal.span_eq_top_iff_finite Ideal.span_eq_top_iff_finite
 
-theorem mem_span_singleton_sup {S : Type _} [CommSemiring S] {x y : S} {I : Ideal S} :
+theorem mem_span_singleton_sup {S : Type*} [CommSemiring S] {x y : S} {I : Ideal S} :
     x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : S, ∃ b ∈ I, a * y + b = x := by
   rw [Submodule.mem_sup]
   constructor
@@ -280,7 +279,7 @@ theorem zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 :=
   I.ne_top_iff_one.1 h <| hz ▸ I.zero_mem
 #align ideal.zero_ne_one_of_proper Ideal.zero_ne_one_of_proper
 
-theorem bot_prime {R : Type _} [Ring R] [IsDomain R] : (⊥ : Ideal R).IsPrime :=
+theorem bot_prime {R : Type*} [Ring R] [IsDomain R] : (⊥ : Ideal R).IsPrime :=
   ⟨fun h => one_ne_zero (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 #align ideal.bot_prime Ideal.bot_prime
@@ -412,7 +411,7 @@ theorem mem_sup_right {S T : Ideal R} : ∀ {x : R}, x ∈ T → x ∈ S ⊔ T :
   @le_sup_right _ _ S T
 #align ideal.mem_sup_right Ideal.mem_sup_right
 
-theorem mem_iSup_of_mem {ι : Sort _} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
+theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
   @le_iSup _ _ _ S _
 #align ideal.mem_supr_of_mem Ideal.mem_iSup_of_mem
 
@@ -431,7 +430,7 @@ theorem mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J 
 #align ideal.mem_inf Ideal.mem_inf
 
 @[simp 1001] -- porting note: increased priority to appease `simpNF`
-theorem mem_iInf {ι : Sort _} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
+theorem mem_iInf {ι : Sort*} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
   Submodule.mem_iInf _
 #align ideal.mem_infi Ideal.mem_iInf
 
@@ -585,7 +584,8 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 #align ideal.is_prime.pow_mem_iff_mem Ideal.IsPrime.pow_mem_iff_mem
 
-theorem pow_multiset_sum_mem_span_pow (s : Multiset α) (n : ℕ) : s.sum ^ (Multiset.card s * n + 1) ∈
+theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
+    s.sum ^ (Multiset.card s * n + 1) ∈
     span ((s.map fun (x:α) ↦ x ^ (n + 1)).toFinset : Set α) := by
   induction' s using Multiset.induction_on with a s hs
   · simp
@@ -613,6 +613,7 @@ theorem pow_multiset_sum_mem_span_pow (s : Multiset α) (n : ℕ) : s.sum ^ (Mul
 
 theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ i in s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
+  classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
     Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
 #align ideal.sum_pow_mem_span_pow Ideal.sum_pow_mem_span_pow
@@ -724,7 +725,7 @@ section CommRing
 
 namespace Ideal
 
-theorem mul_sub_mul_mem {R : Type _} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
+theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
     (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
@@ -738,7 +739,7 @@ end CommRing
 -- about `CommSemiring`s.
 namespace Ring
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by

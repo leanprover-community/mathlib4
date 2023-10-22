@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
-
-! This file was ported from Lean 3 source module data.int.cast.defs
-! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Cast.Defs
+
+#align_import data.int.cast.defs from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 /-!
 # Cast of integers
@@ -28,8 +25,6 @@ Preferentially, the homomorphism is written as a coercion.
 
 
 universe u
-
-attribute [simp] Int.ofNat_eq_coe
 
 /-- Default value for `IntCast.intCast` in an `AddGroupWithOne`. -/
 protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
@@ -66,5 +61,3 @@ class AddCommGroupWithOne (R : Type u)
 #align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
 #align add_comm_group_with_one.to_add_comm_monoid_with_one AddCommGroupWithOne.toAddCommMonoidWithOne
-
-open Nat

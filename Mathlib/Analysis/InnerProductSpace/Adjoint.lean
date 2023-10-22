@@ -2,14 +2,11 @@
 Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.adjoint
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import analysis.inner_product_space.adjoint from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Adjoint of operators on Hilbert spaces
@@ -43,6 +40,7 @@ adjoint
 
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -50,7 +48,7 @@ open IsROrC
 
 open scoped ComplexConjugate
 
-variable {𝕜 E F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
@@ -67,10 +65,12 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [CompleteSpace G]
 
+-- Note: made noncomputable to stop excess compilation
+-- leanprover-community/mathlib4#7103
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
-def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
+noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
   (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : NormedSpace.Dual 𝕜 E →L⋆[𝕜] E)).comp
     (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] NormedSpace.Dual 𝕜 E)
 #align continuous_linear_map.adjoint_aux ContinuousLinearMap.adjointAux
@@ -145,9 +145,8 @@ theorem adjoint_comp (A : F →L[𝕜] G) (B : E →L[𝕜] F) : (A ∘L B)† =
   simp only [adjoint_inner_right, ContinuousLinearMap.coe_comp', Function.comp_apply]
 #align continuous_linear_map.adjoint_comp ContinuousLinearMap.adjoint_comp
 
--- Porting note: Originally `‖A x‖ ^ 2`. But this didn't work because the exponent was `2 : ℝ`.
 theorem apply_norm_sq_eq_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
-    HPow.hPow ‖A x‖ 2 = re ⟪(A† * A) x, x⟫ := by
+    ‖A x‖ ^ 2 = re ⟪(A† * A) x, x⟫ := by
   have h : ⟪(A† * A) x, x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_left]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_left ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_left
@@ -157,9 +156,8 @@ theorem apply_norm_eq_sqrt_inner_adjoint_left (A : E →L[𝕜] E) (x : E) :
   rw [← apply_norm_sq_eq_inner_adjoint_left, Real.sqrt_sq (norm_nonneg _)]
 #align continuous_linear_map.apply_norm_eq_sqrt_inner_adjoint_left ContinuousLinearMap.apply_norm_eq_sqrt_inner_adjoint_left
 
--- Porting note: Originally `‖A x‖ ^ 2`. But this didn't work because the exponent was `2 : ℝ`.
 theorem apply_norm_sq_eq_inner_adjoint_right (A : E →L[𝕜] E) (x : E) :
-    HPow.hPow ‖A x‖ 2 = re ⟪x, (A† * A) x⟫ := by
+    ‖A x‖ ^ 2 = re ⟪x, (A† * A) x⟫ := by
   have h : ⟪x, (A† * A) x⟫ = ⟪A x, A x⟫ := by rw [← adjoint_inner_right]; rfl
   rw [h, ← inner_self_eq_norm_sq (𝕜 := 𝕜) _]
 #align continuous_linear_map.apply_norm_sq_eq_inner_adjoint_right ContinuousLinearMap.apply_norm_sq_eq_inner_adjoint_right
@@ -208,7 +206,7 @@ instance : Star (E →L[𝕜] E) :=
 instance : InvolutiveStar (E →L[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarSemigroup (E →L[𝕜] E) :=
+instance : StarMul (E →L[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →L[𝕜] E) :=
@@ -226,7 +224,6 @@ theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ Continuous
   Iff.rfl
 #align continuous_linear_map.is_self_adjoint_iff' ContinuousLinearMap.isSelfAdjoint_iff'
 
-set_option maxHeartbeats 300000 in -- Porting note: Added to prevent timeout.
 instance : CstarRing (E →L[𝕜] E) :=
   ⟨by
     intro A
@@ -250,7 +247,7 @@ instance : CstarRing (E →L[𝕜] E) :=
 
 section Real
 
-variable {E' : Type _} {F' : Type _}
+variable {E' : Type*} {F' : Type*}
 
 variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
 
@@ -360,47 +357,58 @@ namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
 
-section synthOrder
-
-/- porting note: Lean correctly determines that there is no good synthesization order for this
-instance, but in this case it is only a local instance with low priority so we circumvent the
-check. In addition, note that this instance is not actually needed for the *statement* of
-`LinearMap.adjoint`. -/
-set_option synthInstance.checkSynthOrder false
-attribute [local instance 20] FiniteDimensional.complete
+/- Porting note: Lean can't use `FiniteDimensional.complete` since it was generalized to topological
+vector spaces. Use local instances instead. -/
 
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
 finite-dimensional inner product space `F`. -/
 def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
+  /- Note: Instead of the two instances above, the following works:
+    ```
+      have := FiniteDimensional.complete 𝕜
+      have := FiniteDimensional.complete 𝕜
+    ```
+    But removing one of the `have`s makes it fail. The reason is that `E` and `F` don't live
+    in the same universe, so the first `have` can no longer be used for `F` after its universe
+    metavariable has been assigned to that of `E`!
+  -/
   ((LinearMap.toContinuousLinearMap : (E →ₗ[𝕜] F) ≃ₗ[𝕜] E →L[𝕜] F).trans
       ContinuousLinearMap.adjoint.toLinearEquiv).trans
     LinearMap.toContinuousLinearMap.symm
 #align linear_map.adjoint LinearMap.adjoint
 
 theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.toContinuousLinearMap (LinearMap.adjoint A) =
       ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 #align linear_map.adjoint_to_continuous_linear_map LinearMap.adjoint_toContinuousLinearMap
 
 theorem adjoint_eq_toClm_adjoint (A : E →ₗ[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.adjoint A = ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 #align linear_map.adjoint_eq_to_clm_adjoint LinearMap.adjoint_eq_toClm_adjoint
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_left _ x y
 #align linear_map.adjoint_inner_left LinearMap.adjoint_inner_left
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 #align linear_map.adjoint_inner_right LinearMap.adjoint_inner_right
-
-end synthOrder
 
 /-- The adjoint is involutive. -/
 @[simp]
@@ -431,7 +439,7 @@ theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all basis vectors `x` and `y`. -/
-theorem eq_adjoint_iff_basis {ι₁ : Type _} {ι₂ : Type _} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
+theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
     (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ (i₁ : ι₁) (i₂ : ι₂), ⟪A (b₁ i₁), b₂ i₂⟫ = ⟪b₁ i₁, B (b₂ i₂)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
@@ -439,13 +447,13 @@ theorem eq_adjoint_iff_basis {ι₁ : Type _} {ι₂ : Type _} (b₁ : Basis ι�
   exact ext_inner_right_basis b₂ fun i₂ => by simp only [adjoint_inner_left, h i₁ i₂]
 #align linear_map.eq_adjoint_iff_basis LinearMap.eq_adjoint_iff_basis
 
-theorem eq_adjoint_iff_basis_left {ι : Type _} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
+theorem eq_adjoint_iff_basis_left {ι : Type*} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i y, ⟪A (b i), y⟫ = ⟪b i, B y⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => Basis.ext b fun i => _⟩
   exact ext_inner_right 𝕜 fun y => by simp only [h i, adjoint_inner_left]
 #align linear_map.eq_adjoint_iff_basis_left LinearMap.eq_adjoint_iff_basis_left
 
-theorem eq_adjoint_iff_basis_right {ι : Type _} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
+theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
   ext x
@@ -459,7 +467,7 @@ instance : Star (E →ₗ[𝕜] E) :=
 instance : InvolutiveStar (E →ₗ[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarSemigroup (E →ₗ[𝕜] E) :=
+instance : StarMul (E →ₗ[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →ₗ[𝕜] E) :=
@@ -484,7 +492,7 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
 
 section Real
 
-variable {E' : Type _} {F' : Type _}
+variable {E' : Type*} {F' : Type*}
 
 variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
 
@@ -527,7 +535,7 @@ end LinearMap
 
 namespace Matrix
 
-variable {m n : Type _} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+variable {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
 
 open scoped ComplexConjugate
 

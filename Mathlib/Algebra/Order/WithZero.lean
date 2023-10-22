@@ -2,11 +2,6 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.order.with_zero
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Units.GroupWithZero
 import Mathlib.Algebra.GroupWithZero.InjSurj
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.TypeTags
+
+#align_import algebra.order.with_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -35,15 +32,16 @@ in another file. However, the lemmas about it are stated here.
 
 
 /-- A linearly ordered commutative group with a zero element. -/
-class LinearOrderedCommGroupWithZero (α : Type _) extends LinearOrderedCommMonoidWithZero α,
+class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
 
-variable {α : Type _}
+variable {α : Type*}
 
 variable {a b c d x y z : α}
 
-instance [LinearOrderedAddCommMonoidWithTop α] :
+instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
+    [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
     zero := Multiplicative.ofAdd (⊤ : α)
@@ -61,7 +59,8 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
     mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
 
-instance [LinearOrderedCommMonoid α] : LinearOrderedCommMonoidWithZero (WithZero α) :=
+instance instLinearOrderedCommMonoidWithZeroWithZero [LinearOrderedCommMonoid α] :
+    LinearOrderedCommMonoidWithZero (WithZero α) :=
   { WithZero.linearOrder, WithZero.commMonoidWithZero with
     mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
 #align with_zero.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroWithZero
@@ -79,7 +78,7 @@ The following facts are true more generally in a (linearly) ordered commutative 
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
 @[reducible]
-def Function.Injective.linearOrderedCommMonoidWithZero {β : Type _} [Zero β] [One β] [Mul β]
+def Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [One β] [Mul β]
     [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
@@ -111,7 +110,8 @@ theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
 theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
 #align ne_zero_of_lt ne_zero_of_lt
 
-instance : LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
+instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
+    LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
     top := (0 : α)
     top_add' := fun a ↦ zero_mul (Additive.toMul a)

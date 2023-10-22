@@ -2,11 +2,6 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Sean Leather
-
-! This file was ported from Lean 3 source module control.fold
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.FreeMonoid.Basic
@@ -15,6 +10,8 @@ import Mathlib.Control.Traversable.Lemmas
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Category.KleisliCat
+
+#align_import control.fold from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 
@@ -30,10 +27,8 @@ primitive and `foldMap_hom` as a defining property.
 ```
 def foldMap {α ω} [One ω] [Mul ω] (f : α → ω) : t α → ω := ...
 
-lemma foldMap_hom (α β)
-  [Monoid α] [Monoid β] (f : α →* β)
-  (g : γ → α) (x : t γ) :
-  f (foldMap g x) = foldMap (f ∘ g) x :=
+lemma foldMap_hom (α β) [Monoid α] [Monoid β] (f : α →* β) (g : γ → α) (x : t γ) :
+    f (foldMap g x) = foldMap (f ∘ g) x :=
 ...
 ```
 
@@ -324,6 +319,7 @@ theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
   simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+  rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
 @[simp]

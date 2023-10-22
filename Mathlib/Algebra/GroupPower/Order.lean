@@ -2,11 +2,6 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module algebra.group_power.order
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.WithZero
@@ -14,6 +9,9 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Data.Nat.Order.Basic
+
+#align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Lemmas about the interaction of power operations with order
@@ -25,7 +23,7 @@ depend on this file.
 
 open Function
 
-variable {β A G M R : Type _}
+variable {β A G M R : Type*}
 
 section Monoid
 
@@ -290,16 +288,6 @@ theorem lt_of_pow_lt_pow' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
 #align lt_of_pow_lt_pow' lt_of_pow_lt_pow'
 #align lt_of_nsmul_lt_nsmul lt_of_nsmul_lt_nsmul
 
-@[to_additive]
-theorem min_lt_max_of_mul_lt_mul {a b c d : M} (h : a * b < c * d) : min a b < max c d :=
-  lt_of_pow_lt_pow' 2 <| by
-    simp_rw [pow_two]
-    exact
-      (mul_le_mul' inf_le_left inf_le_right).trans_lt
-        (h.trans_le <| mul_le_mul' le_sup_left le_sup_right)
-#align min_lt_max_of_mul_lt_mul min_lt_max_of_mul_lt_mul
-#align min_lt_max_of_add_lt_add min_lt_max_of_add_lt_add
-
 @[to_additive min_lt_of_add_lt_two_nsmul]
 theorem min_lt_of_mul_lt_sq {a b c : M} (h : a * b < c ^ 2) : min a b < c := by
   simpa using min_lt_max_of_mul_lt_mul (h.trans_eq <| pow_two _)
@@ -341,7 +329,7 @@ end CovariantLTSwap
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n) :
     x ^ n < 1 ↔ x < 1 :=
-  haveI := Mul.to_covariantClass_left M
+  haveI := covariantClass_le_of_lt M M (· * ·)
   pow_lt_one_iff hn.ne'
 #align left.nsmul_neg_iff Left.nsmul_neg_iff
 
@@ -354,9 +342,8 @@ theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n 
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   ⟨fun H =>
     not_le.mp fun k =>
-      H.not_le <|
-        haveI := Mul.to_covariantClass_right M
-        Right.one_le_pow_of_le k,
+      haveI := covariantClass_le_of_lt M M (swap (· * ·))
+      H.not_le <| Right.one_le_pow_of_le k,
     Right.pow_lt_one_of_lt hn⟩
 #align right.pow_lt_one_iff Right.pow_lt_one_iff
 #align right.nsmul_neg_iff Right.nsmul_neg_iff
@@ -459,7 +446,7 @@ theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m :=
 theorem pow_le_pow_of_le_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i := by
   intro i
   induction i with
-  | zero =>  simp
+  | zero => simp
   | succ k ih =>
     rw [pow_succ, pow_succ]
     apply mul_le_mul hab
@@ -509,6 +496,14 @@ theorem pow_lt_pow_iff (h : 1 < a) : a ^ n < a ^ m ↔ n < m :=
 theorem pow_le_pow_iff (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
   (pow_strictMono_right h).le_iff_le
 #align pow_le_pow_iff pow_le_pow_iff
+
+theorem self_lt_pow (h : 1 < a) (h2 : 1 < m) : a < a ^ m := by
+  calc
+    a = a ^ 1 := (pow_one _).symm
+    _ < a ^ m := pow_lt_pow h h2
+
+theorem self_le_pow (h : 1 ≤ a) (h2 : 1 ≤ m) : a ≤ a ^ m :=
+  le_self_pow h <| Nat.one_le_iff_ne_zero.mp h2
 
 theorem strictAnti_pow (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti fun n : ℕ => a ^ n :=
   strictAnti_nat_of_succ_lt fun n => by
@@ -651,7 +646,7 @@ theorem sq_nonneg (a : R) : 0 ≤ a ^ 2 :=
   pow_bit0_nonneg a 1
 #align sq_nonneg sq_nonneg
 
-alias sq_nonneg ← pow_two_nonneg
+alias pow_two_nonneg := sq_nonneg
 #align pow_two_nonneg pow_two_nonneg
 
 theorem pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n :=
@@ -662,7 +657,7 @@ theorem sq_pos_of_ne_zero (a : R) (h : a ≠ 0) : 0 < a ^ 2 :=
   pow_bit0_pos h 1
 #align sq_pos_of_ne_zero sq_pos_of_ne_zero
 
-alias sq_pos_of_ne_zero ← pow_two_pos_of_ne_zero
+alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
 #align pow_two_pos_of_ne_zero pow_two_pos_of_ne_zero
 
 theorem pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 := by
@@ -761,7 +756,7 @@ theorem two_mul_le_add_sq (a b : R) : 2 * a * b ≤ a ^ 2 + b ^ 2 :=
   sub_nonneg.mp ((sub_add_eq_add_sub _ _ _).subst ((sub_sq a b).subst (sq_nonneg _)))
 #align two_mul_le_add_sq two_mul_le_add_sq
 
-alias two_mul_le_add_sq ← two_mul_le_add_pow_two
+alias two_mul_le_add_pow_two := two_mul_le_add_sq
 #align two_mul_le_add_pow_two two_mul_le_add_pow_two
 
 end LinearOrderedCommRing

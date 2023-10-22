@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finsupp.defs
-! leanprover-community/mathlib commit 842328d9df7e96fd90fc424e115679c15fb23a71
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.GroupTheory.Submonoid.Basic
+
+#align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
 /-!
 # Type of functions with finite support
@@ -90,11 +87,11 @@ open Finset Function
 
 open BigOperators
 
-variable {α β γ ι M M' N P G H R S : Type _}
+variable {α β γ ι M M' N P G H R S : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
-structure Finsupp (α : Type _) (M : Type _) [Zero M] where
+structure Finsupp (α : Type*) (M : Type*) [Zero M] where
   /-- The support of a finitely supported function (aka `Finsupp`). -/
   support : Finset α
   /-- The underlying function of a bundled finitely supported function (aka `Finsupp`). -/
@@ -263,7 +260,7 @@ theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunO
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
 @[simps!]
-noncomputable def _root_.Equiv.finsuppUnique {ι : Type _} [Unique ι] : (ι →₀ M) ≃ M :=
+noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 #align equiv.finsupp_unique Equiv.finsuppUnique
 #align equiv.finsupp_unique_symm_apply_support_val Equiv.finsuppUnique_symm_apply_support_val
@@ -545,9 +542,10 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     Function.update f a b
   mem_support_toFun i := by
     classical
-    simp [Function.update, Ne.def]
+    rw [Function.update]
+    simp only [eq_rec_constant, dite_eq_ite, ne_eq]
     split_ifs with hb ha ha <;>
-    simp only [*, not_false_iff, iff_true, not_true, iff_false]
+      try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
       simp
     · rw [Finset.mem_erase]
@@ -737,8 +735,8 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
   rfl
 #align finsupp.of_support_finite_coe Finsupp.ofSupportFinite_coe
 
-instance canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite
-    where prf f hf := ⟨ofSupportFinite f hf, rfl⟩
+instance canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
+  prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 #align finsupp.can_lift Finsupp.canLift
 
 end OfSupportFinite
@@ -1008,6 +1006,14 @@ instance addZeroClass : AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 #align finsupp.add_zero_class Finsupp.addZeroClass
 
+instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+
+instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
+
+instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
+
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
 See `Finsupp.lsingle` in `LinearAlgebra/Finsupp` for the stronger version as a linear map. -/
@@ -1216,7 +1222,9 @@ instance addMonoid : AddMonoid (α →₀ M) :=
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
 instance neg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1274,12 +1282,17 @@ instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_group Finsupp.addGroup
 
 instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddGroup := Finsupp.addGroup }
 #align finsupp.add_comm_group Finsupp.addCommGroup
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module init.meta.well_founded_tactics
-! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 prelude
 import Mathlib.Init.Data.Nat.Lemmas
+
+#align_import init.meta.well_founded_tactics from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 -- Porting note: meta code used to implement well-founded recursion is not ported
 
@@ -21,7 +18,7 @@ theorem Nat.lt_add_of_zero_lt_left (a b : Nat) (h : 0 < b) : a < a + b :=
 
 theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a :=
   suffices 0 < a + 1 by
-    simp [Nat.add_comm]
+    simp only [Nat.add_comm]
     assumption
   Nat.zero_lt_succ _
 #align nat.zero_lt_one_add Nat.zero_lt_one_add

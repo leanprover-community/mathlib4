@@ -1,0 +1,33 @@
+- attributes:
+    description: build
+    time: &time
+      runner: perf_stat
+      perf_stat:
+        properties: ['wall-clock', 'task-clock', 'instructions', 'branches', 'branch-misses']
+      rusage_properties: ['maxrss']
+  run_config:
+    <<: *time
+    cmd: |
+      bash -c 'set -eo pipefail; lake clean && LEAN_PATH=$(lean --print-libdir) lake build -v --lean ./scripts/bench/fake-root/bin/lean | ./scripts/bench/accumulate_profile.py | grep -v took'
+    parse_output: true
+- attributes:
+    description: lint
+  run_config:
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'instructions']
+    cmd: |
+      make lint
+- attributes:
+    description: size
+  run_config:
+    cmd: |
+      bash -c "
+      set -euxo pipefail &&
+      echo -n '.lean|lines: ' &&
+      find Mathlib -name '*.lean' -print0 | wc -l --files0-from=- | tail -1 | cut -d' ' -f 1
+      echo -n '.olean|bytes: ' &&
+      find build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1
+      "
+    max_runs: 1
+    runner: output

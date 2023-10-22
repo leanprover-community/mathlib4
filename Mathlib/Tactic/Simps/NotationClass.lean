@@ -46,7 +46,7 @@ We partly define this as a separate definition so that the unused arguments lint
 def findArgType : Type := Name → Name → Array Expr → MetaM (Array (Option Expr))
 
 /-- Find arguments for a notation class -/
-def defaultfindArgs : findArgType := λ _ className args =>  do
+def defaultfindArgs : findArgType := λ _ className args => do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   if arity == args.size then
@@ -80,7 +80,7 @@ def findOneArgs : findArgType := λ _ _ args =>
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
 /-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
-def findCoercionArgs : findArgType := λ str className args =>  do
+def findCoercionArgs : findArgType := λ str className args => do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
   let eStr := mkAppN (← mkConstWithLevelParams str) args

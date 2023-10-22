@@ -18,6 +18,7 @@ import Archive.Imo.Imo1998Q2
 import Archive.Imo.Imo2001Q2
 import Archive.Imo.Imo2001Q6
 import Archive.Imo.Imo2005Q3
+import Archive.Imo.Imo2005Q4
 import Archive.Imo.Imo2006Q3
 import Archive.Imo.Imo2006Q5
 import Archive.Imo.Imo2008Q2
@@ -51,3 +52,4 @@ import Archive.Wiedijk100Theorems.Partition
 import Archive.Wiedijk100Theorems.PerfectNumbers
 import Archive.Wiedijk100Theorems.SolutionOfCubic
 import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
+import Archive.ZagierTwoSquares

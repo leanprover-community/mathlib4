@@ -2,11 +2,6 @@
 Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module ring_theory.valuation.valuation_ring
-! leanprover-community/mathlib commit c163ec99dfc664628ca15d215fce0a5b9c265b68
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Ideal.LocalRing
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Bezout
 import Mathlib.Tactic.FieldSimp
+
+#align_import ring_theory.valuation.valuation_ring from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 
 /-!
 # Valuation Rings
@@ -48,7 +45,7 @@ class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop where
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
 lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
-  ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
+    ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
 
 namespace ValuationRing
 
@@ -131,7 +128,7 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
 -- into two parts
 noncomputable instance : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
-  le_trans :=  by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
+  le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by
     rintro ⟨a⟩ ⟨b⟩ ⟨e, rfl⟩ ⟨f, hf⟩
     by_cases hb : b = 0; · simp [hb]
@@ -157,8 +154,8 @@ noncomputable instance linearOrderedCommGroupWithZero :
   mul_le_mul_left := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
     use c; simp only [Algebra.smul_def]; ring
-  zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [MulZeroClass.zero_mul]; apply Setoid.refl'
-  mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [MulZeroClass.mul_zero]; apply Setoid.refl'
+  zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
+  mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
   zero_le_one := ⟨0, by rw [zero_smul]⟩
   exists_pair_ne := by
     use 0, 1
@@ -281,7 +278,7 @@ end
 
 section
 
-variable {R : Type _} [CommRing R] [IsDomain R] {K : Type _}
+variable {R : Type*} [CommRing R] [IsDomain R] {K : Type*}
 
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
@@ -328,8 +325,8 @@ theorem iff_isInteger_or_isInteger :
   · intro H
     constructor
     intro a b
-    by_cases ha : a = 0; · subst ha; exact ⟨0, Or.inr <| MulZeroClass.mul_zero b⟩
-    by_cases hb : b = 0; · subst hb; exact ⟨0, Or.inl <| MulZeroClass.mul_zero a⟩
+    by_cases ha : a = 0; · subst ha; exact ⟨0, Or.inr <| mul_zero b⟩
+    by_cases hb : b = 0; · subst hb; exact ⟨0, Or.inl <| mul_zero a⟩
     replace ha := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr ha
     replace hb := (map_ne_zero_iff _ (IsFractionRing.injective R K)).mpr hb
     obtain ⟨c, e⟩ | ⟨c, e⟩ := H (algebraMap R K a / algebraMap R K b)
@@ -395,7 +392,7 @@ protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
 
 end
 
-theorem _root_.Function.Surjective.valuationRing {R S : Type _} [CommRing R] [IsDomain R]
+theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
     [ValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
   ⟨fun a b => by

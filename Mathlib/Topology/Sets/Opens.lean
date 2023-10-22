@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module topology.sets.opens
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
@@ -14,6 +9,8 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Order.CompactlyGenerated
 import Mathlib.Order.Copy
+
+#align_import topology.sets.opens from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Open sets
@@ -56,7 +53,7 @@ open Filter Function Order Set
 
 open Topology
 
-variable {ι α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {ι α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace TopologicalSpace
 
@@ -187,6 +184,8 @@ theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
 #align topological_space.opens.coe_bot TopologicalSpace.Opens.coe_bot
 
+@[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
+
 -- porting note: new lemma
 @[simp, norm_cast]
 theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
@@ -196,6 +195,8 @@ theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
 theorem coe_top : ((⊤ : Opens α) : Set α) = Set.univ :=
   rfl
 #align topological_space.opens.coe_top TopologicalSpace.Opens.coe_top
+
+@[simp] theorem mk_univ : (⟨univ, isOpen_univ⟩ : Opens α) = ⊤ := rfl
 
 -- porting note: new lemma
 @[simp, norm_cast]
@@ -327,7 +328,7 @@ theorem isBasis_iff_cover {B : Set (Opens α)} :
 
 /-- If `α` has a basis consisting of compact opens, then an open set in `α` is compact open iff
   it is a finite union of some elements in the basis -/
-theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type _} (b : ι → Opens α)
+theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Opens α)
     (hb : IsBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i : Set α)) (U : Set α) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   apply isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis fun i : ι => (b i).1

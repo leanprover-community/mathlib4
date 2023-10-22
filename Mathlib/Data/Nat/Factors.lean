@@ -2,15 +2,12 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.factors
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
+
+#align_import data.nat.factors from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 # Prime numbers
@@ -23,8 +20,6 @@ This file deals with the factors of natural numbers.
 - `Nat.factors_unique`: uniqueness of the prime factorisation
 
 -/
-
-set_option autoImplicit false
 
 open Bool Subtype
 
@@ -208,7 +203,7 @@ theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.perm_factors_mul Nat.perm_factors_mul
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
-theorem perm_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) :
+theorem perm_factors_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
     (a * b).factors ~ a.factors ++ b.factors := by
   rcases a.eq_zero_or_pos with (rfl | ha)
   · simp [(coprime_zero_left _).mp hab]
@@ -221,7 +216,7 @@ theorem factors_sublist_right {n k : ℕ} (h : k ≠ 0) : n.factors <+ (n * k).f
   cases' n with hn
   · simp [zero_mul]
   apply sublist_of_subperm_of_sorted _ (factors_sorted _) (factors_sorted _)
-  simp [(perm_factors_mul (Nat.succ_ne_zero _) h).subperm_left]
+  simp only [(perm_factors_mul (Nat.succ_ne_zero _) h).subperm_left]
   exact (sublist_append_left _ _).subperm
 #align nat.factors_sublist_right Nat.factors_sublist_right
 
@@ -262,7 +257,7 @@ theorem mem_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) {p : ℕ} :
 #align nat.mem_factors_mul Nat.mem_factors_mul
 
 /-- The sets of factors of coprime `a` and `b` are disjoint -/
-theorem coprime_factors_disjoint {a b : ℕ} (hab : a.coprime b) :
+theorem coprime_factors_disjoint {a b : ℕ} (hab : a.Coprime b) :
     List.Disjoint a.factors b.factors := by
   intro q hqa hqb
   apply not_prime_one
@@ -270,13 +265,13 @@ theorem coprime_factors_disjoint {a b : ℕ} (hab : a.coprime b) :
   exact prime_of_mem_factors hqa
 #align nat.coprime_factors_disjoint Nat.coprime_factors_disjoint
 
-theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) (p : ℕ) :
+theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : Coprime a b) (p : ℕ) :
     p ∈ (a * b).factors ↔ p ∈ a.factors ∪ b.factors := by
   rcases a.eq_zero_or_pos with (rfl | ha)
   · simp [(coprime_zero_left _).mp hab]
   rcases b.eq_zero_or_pos with (rfl | hb)
   · simp [(coprime_zero_right _).mp hab]
-  rw [mem_factors_mul ha.ne' hb.ne', List.mem_union]
+  rw [mem_factors_mul ha.ne' hb.ne', List.mem_union_iff]
 #align nat.mem_factors_mul_of_coprime Nat.mem_factors_mul_of_coprime
 
 open List

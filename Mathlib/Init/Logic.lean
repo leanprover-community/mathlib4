@@ -5,15 +5,18 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
+import Std.Tactic.Relation.Rfl
 import Std.Logic
 import Std.WF
-import Mathlib.Tactic.Alias
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
+import Mathlib.Util.Imports
+import Mathlib.Tactic.ProjectionNotation
+
+set_option autoImplicit true
 
 #align opt_param_eq optParam_eq
 
@@ -35,9 +38,9 @@ import Mathlib.Tactic.Relation.Trans
 
 /- Eq -/
 
-alias proofIrrel ← proof_irrel
-alias congrFun ← congr_fun
-alias congrArg ← congr_arg
+alias proof_irrel := proofIrrel
+alias congr_fun := congrFun
+alias congr_arg := congrArg
 
 @[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
@@ -59,7 +62,7 @@ attribute [symm] Ne.symm
 
 /- HEq -/
 
-alias eqRec_heq ← eq_rec_heq
+alias eq_rec_heq := eqRec_heq
 
 -- FIXME This is still rejected after #857
 -- attribute [refl] HEq.refl
@@ -119,7 +122,7 @@ instance : Trans Iff Iff Iff where
 #align not_iff_not_of_iff not_congr
 #align not_non_contradictory_iff_absurd not_not_not
 
-alias not_not_not ↔ not_of_not_not_not _
+alias ⟨not_of_not_not_not, _⟩ := not_not_not
 
 -- FIXME
 -- attribute [congr] not_congr
@@ -288,9 +291,9 @@ def recOn_false [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u} 
   cast (by match h with | .isFalse _ => rfl) h₄
 #align decidable.rec_on_false Decidable.recOn_false
 
-alias byCases ← by_cases
-alias byContradiction ← by_contradiction
-alias not_not ← not_not_iff
+alias by_cases := byCases
+alias by_contradiction := byContradiction
+alias not_not_iff := not_not
 
 @[deprecated not_or] theorem not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
     ¬(p ∨ q) ↔ ¬p ∧ ¬q := not_or
@@ -301,12 +304,12 @@ end Decidable
 #align decidable_of_decidable_of_eq decidable_of_decidable_of_eq
 #align or.by_cases Or.by_cases
 
-alias instDecidableOr ← Or.decidable
-alias instDecidableAnd ← And.decidable
-alias instDecidableNot ← Not.decidable
-alias instDecidableIff ← Iff.decidable
-alias instDecidableTrue ← decidableTrue
-alias instDecidableFalse ← decidableFalse
+alias Or.decidable := instDecidableOr
+alias And.decidable := instDecidableAnd
+alias Not.decidable := instDecidableNot
+alias Iff.decidable := instDecidableIff
+alias decidableTrue := instDecidableTrue
+alias decidableFalse := instDecidableFalse
 
 #align decidable.true decidableTrue
 #align decidable.false decidableFalse
@@ -475,7 +478,7 @@ lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Refle
 
 lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := λ _ _ => h.symm
 
-lemma Equivalence.transitive  {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
+lemma Equivalence.transitive {r : β → β → Prop}(h : Equivalence r) : Transitive r :=
   λ _ _ _ => h.trans
 
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
@@ -663,3 +666,5 @@ end Binary
 #align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
+
+attribute [pp_dot] Iff.mp Iff.mpr False.elim Eq.symm Eq.trans

@@ -2,14 +2,12 @@
 Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.computation.translations
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Translations
+
+#align_import algebra.continued_fractions.computation.translations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
@@ -48,7 +46,7 @@ namespace GeneralizedContinuedFraction
 open GeneralizedContinuedFraction (of)
 
 -- Fix a discrete linear ordered floor field and a value `v`.
-variable {K : Type _} [LinearOrderedField K] [FloorRing K] {v : K}
+variable {K : Type*} [LinearOrderedField K] [FloorRing K] {v : K}
 
 namespace IntFractPair
 
@@ -255,7 +253,8 @@ theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFract
     (of v).s.get? n = some ⟨1, (IntFractPair.of ifp_n.fr⁻¹).b⟩ :=
   have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
     cases ifp_n
-    simp [IntFractPair.stream, stream_nth_eq, nth_fr_ne_zero]
+    simp only [IntFractPair.stream, Nat.add_eq, add_zero, stream_nth_eq, Option.some_bind,
+      ite_eq_right_iff]
     intro; contradiction
   get?_of_eq_some_of_succ_get?_intFractPair_stream this
 #align generalized_continued_fraction.nth_of_eq_some_of_nth_int_fract_pair_stream_fr_ne_zero GeneralizedContinuedFraction.get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero
@@ -268,7 +267,7 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
   rw [of, IntFractPair.seq1]
   simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
     Stream'.Seq.get?, Stream'.map]
-  rw [← Stream'.nth_succ, Stream'.nth, Option.map]
+  rw [← Stream'.get_succ, Stream'.get, Option.map]
   split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
 #align generalized_continued_fraction.of_s_head_aux GeneralizedContinuedFraction.of_s_head_aux
 

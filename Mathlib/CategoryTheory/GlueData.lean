@@ -2,17 +2,14 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.glue_data
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+
+#align_import category_theory.glue_data from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Gluing data
@@ -231,11 +228,11 @@ instance π_epi : Epi D.π := by
 
 end
 
-theorem types_π_surjective (D : GlueData (Type _)) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData (Type*)) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
-theorem types_ι_jointly_surjective (D : GlueData (Type _)) (x : D.glued) :
+theorem types_ι_jointly_surjective (D : GlueData (Type*)) (x : D.glued) :
     ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
@@ -244,7 +241,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type _)) (x : D.glued) :
   rw [← show (colimit.isoColimitCocone (Types.coproductColimitCocone _)).inv _ = x' from
       ConcreteCategory.congr_hom
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
-  rcases(colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
+  rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
     simp [← Multicoequalizer.ι_sigmaπ, -Multicoequalizer.ι_sigmaπ]
     rfl ⟩

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Anatole Dedecker
-
-! This file was ported from Lean 3 source module analysis.calculus.deriv.add
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Add
+
+#align_import analysis.calculus.deriv.add from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # One-dimensional derivatives of sums etc
@@ -160,7 +157,7 @@ section Sum
 
 open BigOperators
 
-variable {ι : Type _} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
+variable {ι : Type*} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 
 theorem HasDerivAtFilter.sum (h : ∀ i ∈ u, HasDerivAtFilter (A i) (A' i) x L) :
     HasDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
@@ -378,4 +375,3 @@ theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
 #align deriv_const_sub deriv_const_sub
 
 end Sub
-

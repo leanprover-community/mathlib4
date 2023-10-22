@@ -2,13 +2,10 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.mfderiv
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+
+#align_import geometry.manifold.mfderiv from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-!
 # The derivative of functions between smooth manifolds
@@ -77,7 +74,7 @@ definition, differentiability implies continuity).
 
 *Warning*: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
 that one is given a smooth submanifold `N`, and a function which is smooth on `N` (i.e., its
-restriction to the subtype  `N` is smooth). Then, in the whole manifold `M`, the property
+restriction to the subtype `N` is smooth). Then, in the whole manifold `M`, the property
 `MDifferentiableOn I I' f N` holds. However, `mfderivWithin I I' f N` is not uniquely defined
 (what values would one choose for vectors that are transverse to `N`?), which can create issues down
 the road. The problem here is that knowing the value of `f` along `N` does not determine the
@@ -95,6 +92,8 @@ the space of equivalence classes of smooth curves in the manifold.
 ## Tags
 Derivative, manifold
 -/
+
+set_option autoImplicit true
 
 
 noncomputable section
@@ -117,11 +116,10 @@ this specific chart.
 We use the names `MDifferentiable` and `mfderiv`, where the prefix letter `m` means "manifold".
 -/
 
-
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type _} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') {M' : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') {M' : Type*}
   [TopologicalSpace M'] [ChartedSpace H' M']
 
 /-- Property in the model space of a model with corners of being differentiable within at set at a
@@ -224,8 +222,7 @@ def MDifferentiableAt (f : M → M') (x : M) :=
 
 theorem mdifferentiableAt_iff_liftPropAt (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ LiftPropAt (DifferentiableWithinAtProp I I') f x := by
-  -- porting note: was `congrm ∧`
-  apply Iff.and
+  congrm ?_ ∧ ?_
   · rw [continuousWithinAt_univ]
   · -- porting note: `rfl` wasn't needed
     simp [DifferentiableWithinAtProp, Set.univ_inter]; rfl
@@ -319,15 +316,17 @@ section DerivativesProperties
 
 /-! ### Unique differentiability sets in manifolds -/
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M]
-  --
-  {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  {E'' : Type _} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type _} [TopologicalSpace H'']
-  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type _} [TopologicalSpace M''] [ChartedSpace H'' M'']
+variable
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   {f f₀ f₁ : M → M'} {x : M} {s t : Set M} {g : M' → M''} {u : Set M'}
 
 theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
@@ -507,10 +506,10 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivWithinAt I I' f s x f')
     simp only [union_inter_distrib_right, preimage_union]
 #align has_mfderiv_within_at.union HasMFDerivWithinAt.union
 
-theorem HasMFDerivWithinAt.nhdsWithin (h : HasMFDerivWithinAt I I' f s x f') (ht : s ∈ 𝓝[t] x) :
+theorem HasMFDerivWithinAt.mono_of_mem (h : HasMFDerivWithinAt I I' f s x f') (ht : s ∈ 𝓝[t] x) :
     HasMFDerivWithinAt I I' f t x f' :=
   (hasMFDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
-#align has_mfderiv_within_at.nhds_within HasMFDerivWithinAt.nhdsWithin
+#align has_mfderiv_within_at.nhds_within HasMFDerivWithinAt.mono_of_mem
 
 theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivWithinAt I I' f s x f') (hs : s ∈ 𝓝 x) :
     HasMFDerivAt I I' f x f' := by
@@ -658,7 +657,7 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
     (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x
-  · rwa [mdifferentiableWithinAt_inter'] at h 
+  · rwa [mdifferentiableWithinAt_inter'] at h
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds I' (f x)
   rw [mdifferentiableWithinAt_iff]
@@ -902,7 +901,8 @@ theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundl
     (hs : UniqueMDiffWithinAt I s p.1) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
   refine TotalSpace.ext _ _ (h p.1 hp) ?_
-  simp only [tangentMapWithin, h p.1 hp, mfderivWithin_congr hs h (h _ hp), HEq.refl]
+  -- This used to be `simp only`, but we need `erw` after leanprover/lean4#2644
+  rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr hs h (h _ hp)]
 #align tangent_map_within_congr tangentMapWithin_congr
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
@@ -1061,8 +1061,8 @@ this and related statements.
 -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {f : E → E'}
   {s : Set E} {x : E}
 
 theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
@@ -1070,8 +1070,8 @@ theorem uniqueMDiffWithinAt_iff_uniqueDiffWithinAt :
   simp only [UniqueMDiffWithinAt, mfld_simps]
 #align unique_mdiff_within_at_iff_unique_diff_within_at uniqueMDiffWithinAt_iff_uniqueDiffWithinAt
 
-alias uniqueMDiffWithinAt_iff_uniqueDiffWithinAt ↔ UniqueMDiffWithinAt.uniqueDiffWithinAt
-  UniqueDiffWithinAt.uniqueMDiffWithinAt
+alias ⟨UniqueMDiffWithinAt.uniqueDiffWithinAt, UniqueDiffWithinAt.uniqueMDiffWithinAt⟩ :=
+  uniqueMDiffWithinAt_iff_uniqueDiffWithinAt
 #align unique_mdiff_within_at.unique_diff_within_at UniqueMDiffWithinAt.uniqueDiffWithinAt
 #align unique_diff_within_at.unique_mdiff_within_at UniqueDiffWithinAt.uniqueMDiffWithinAt
 
@@ -1079,7 +1079,7 @@ theorem uniqueMDiffOn_iff_uniqueDiffOn : UniqueMDiffOn 𝓘(𝕜, E) s ↔ Uniqu
   simp [UniqueMDiffOn, UniqueDiffOn, uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
 #align unique_mdiff_on_iff_unique_diff_on uniqueMDiffOn_iff_uniqueDiffOn
 
-alias uniqueMDiffOn_iff_uniqueDiffOn ↔ UniqueMDiffOn.uniqueDiffOn UniqueDiffOn.uniqueMDiffOn
+alias ⟨UniqueMDiffOn.uniqueDiffOn, UniqueDiffOn.uniqueMDiffOn⟩ := uniqueMDiffOn_iff_uniqueDiffOn
 #align unique_mdiff_on.unique_diff_on UniqueMDiffOn.uniqueDiffOn
 #align unique_diff_on.unique_mdiff_on UniqueDiffOn.uniqueMDiffOn
 
@@ -1094,8 +1094,8 @@ theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt {f'} :
     HasFDerivWithinAt.continuousWithinAt
 #align has_mfderiv_within_at_iff_has_fderiv_within_at hasMFDerivWithinAt_iff_hasFDerivWithinAt
 
-alias hasMFDerivWithinAt_iff_hasFDerivWithinAt ↔ HasMFDerivWithinAt.hasFDerivWithinAt
-  HasFDerivWithinAt.hasMFDerivWithinAt
+alias ⟨HasMFDerivWithinAt.hasFDerivWithinAt, HasFDerivWithinAt.hasMFDerivWithinAt⟩ :=
+  hasMFDerivWithinAt_iff_hasFDerivWithinAt
 #align has_mfderiv_within_at.has_fderiv_within_at HasMFDerivWithinAt.hasFDerivWithinAt
 #align has_fderiv_within_at.has_mfderiv_within_at HasFDerivWithinAt.hasMFDerivWithinAt
 
@@ -1104,11 +1104,11 @@ theorem hasMFDerivAt_iff_hasFDerivAt {f'} :
   rw [← hasMFDerivWithinAt_univ, hasMFDerivWithinAt_iff_hasFDerivWithinAt, hasFDerivWithinAt_univ]
 #align has_mfderiv_at_iff_has_fderiv_at hasMFDerivAt_iff_hasFDerivAt
 
-alias hasMFDerivAt_iff_hasFDerivAt ↔ HasMFDerivAt.hasFDerivAt HasFDerivAt.hasMFDerivAt
+alias ⟨HasMFDerivAt.hasFDerivAt, HasFDerivAt.hasMFDerivAt⟩ := hasMFDerivAt_iff_hasFDerivAt
 #align has_mfderiv_at.has_fderiv_at HasMFDerivAt.hasFDerivAt
 #align has_fderiv_at.has_mfderiv_at HasFDerivAt.hasMFDerivAt
 
-/-- For maps between vector spaces, `MDifferentiableWithinAt` and `fdifferentiable_within_at`
+/-- For maps between vector spaces, `MDifferentiableWithinAt` and `DifferentiableWithinAt`
 coincide -/
 theorem mdifferentiableWithinAt_iff_differentiableWithinAt :
     MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x := by
@@ -1116,8 +1116,9 @@ theorem mdifferentiableWithinAt_iff_differentiableWithinAt :
   exact ⟨fun H => H.2, fun H => ⟨H.continuousWithinAt, H⟩⟩
 #align mdifferentiable_within_at_iff_differentiable_within_at mdifferentiableWithinAt_iff_differentiableWithinAt
 
-alias mdifferentiableWithinAt_iff_differentiableWithinAt ↔
-  MDifferentiableWithinAt.differentiableWithinAt DifferentiableWithinAt.mdifferentiableWithinAt
+alias ⟨MDifferentiableWithinAt.differentiableWithinAt,
+    DifferentiableWithinAt.mdifferentiableWithinAt⟩ :=
+  mdifferentiableWithinAt_iff_differentiableWithinAt
 #align mdifferentiable_within_at.differentiable_within_at MDifferentiableWithinAt.differentiableWithinAt
 #align differentiable_within_at.mdifferentiable_within_at DifferentiableWithinAt.mdifferentiableWithinAt
 
@@ -1128,8 +1129,8 @@ theorem mdifferentiableAt_iff_differentiableAt :
   exact ⟨fun H => H.2, fun H => ⟨H.continuousAt, H⟩⟩
 #align mdifferentiable_at_iff_differentiable_at mdifferentiableAt_iff_differentiableAt
 
-alias mdifferentiableAt_iff_differentiableAt ↔ MDifferentiableAt.differentiableAt
-  DifferentiableAt.mdifferentiableAt
+alias ⟨MDifferentiableAt.differentiableAt, DifferentiableAt.mdifferentiableAt⟩ :=
+  mdifferentiableAt_iff_differentiableAt
 #align mdifferentiable_at.differentiable_at MDifferentiableAt.differentiableAt
 #align differentiable_at.mdifferentiable_at DifferentiableAt.mdifferentiableAt
 
@@ -1140,8 +1141,8 @@ theorem mdifferentiableOn_iff_differentiableOn :
     mdifferentiableWithinAt_iff_differentiableWithinAt]
 #align mdifferentiable_on_iff_differentiable_on mdifferentiableOn_iff_differentiableOn
 
-alias mdifferentiableOn_iff_differentiableOn ↔ MDifferentiableOn.differentiableOn
-  DifferentiableOn.mdifferentiableOn
+alias ⟨MDifferentiableOn.differentiableOn, DifferentiableOn.mdifferentiableOn⟩ :=
+  mdifferentiableOn_iff_differentiableOn
 #align mdifferentiable_on.differentiable_on MDifferentiableOn.differentiableOn
 #align differentiable_on.mdifferentiable_on DifferentiableOn.mdifferentiableOn
 
@@ -1151,8 +1152,8 @@ theorem mdifferentiable_iff_differentiable :
   simp only [MDifferentiable, Differentiable, mdifferentiableAt_iff_differentiableAt]
 #align mdifferentiable_iff_differentiable mdifferentiable_iff_differentiable
 
-alias mdifferentiable_iff_differentiable ↔ MDifferentiable.differentiable
-  Differentiable.mdifferentiable
+alias ⟨MDifferentiable.differentiable, Differentiable.mdifferentiable⟩ :=
+  mdifferentiable_iff_differentiable
 #align mdifferentiable.differentiable MDifferentiable.differentiable
 #align differentiable.mdifferentiable Differentiable.mdifferentiable
 
@@ -1181,13 +1182,13 @@ section SpecificFunctions
 /-! ### Differentiability of specific functions -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {E'' : Type _} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
-  {H'' : Type _} [TopologicalSpace H''] (I'' : ModelWithCorners 𝕜 E'' H'') {M'' : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  [SmoothManifoldWithCorners I' M'] {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {H'' : Type*} [TopologicalSpace H''] (I'' : ModelWithCorners 𝕜 E'' H'') {M'' : Type*}
   [TopologicalSpace M''] [ChartedSpace H'' M''] [SmoothManifoldWithCorners I'' M'']
 
 namespace ContinuousLinearMap
@@ -1561,7 +1562,6 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
         mfderiv (I.prod I') I'' (fun z : M × M' => f (z.1, p.2)) p +
           mfderiv (I.prod I') I'' (fun z : M × M' => f (p.1, z.2)) p := by
   dsimp only
-  rw [← @Prod.mk.eta _ _ p] at hf
   erw [mfderiv_comp_of_eq hf ((mdifferentiableAt_fst I I').prod_mk (mdifferentiableAt_const _ _))
       rfl,
     mfderiv_comp_of_eq hf ((mdifferentiableAt_const _ _).prod_mk (mdifferentiableAt_snd I I')) rfl,
@@ -1580,7 +1580,7 @@ section Arithmetic
 
 /-! #### Arithmetic
 
-Note that in the in `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
+Note that in the `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
 `TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
 canonical, but in this case (the tangent space of a vector space) it is canonical.
  -/
@@ -1690,7 +1690,7 @@ end Group
 
 section AlgebraOverRing
 
-variable {I} {z : M} {F' : Type _} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I} {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
@@ -1730,7 +1730,7 @@ end AlgebraOverRing
 
 section AlgebraOverCommRing
 
-variable {I} {z : M} {F' : Type _} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I} {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
@@ -1883,13 +1883,13 @@ end SpecificFunctions
 
 namespace LocalHomeomorph.MDifferentiable
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type _} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type _} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _}
-  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type _} [NormedAddCommGroup E'']
-  [NormedSpace 𝕜 E''] {H'' : Type _} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
-  {M'' : Type _} [TopologicalSpace M''] [ChartedSpace H'' M''] {e : LocalHomeomorph M M'}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*}
+  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
+  [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] {e : LocalHomeomorph M M'}
   (he : e.MDifferentiable I I') {e' : LocalHomeomorph M' M''}
 
 nonrec theorem symm : e.symm.MDifferentiable I' I := he.symm
@@ -1987,8 +1987,8 @@ end LocalHomeomorph.MDifferentiable
 
 section extChartAt
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {s : Set M} {x y : M}
 
 theorem hasMFDerivAt_extChartAt (h : y ∈ (chartAt H x).source) :
@@ -2017,14 +2017,14 @@ end extChartAt
 
 section UniqueMDiff
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type _}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type _}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type _} [TopologicalSpace M'] [ChartedSpace H' M']
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   [SmoothManifoldWithCorners I' M'] {s : Set M}
 
-/-- If `s` has the unique differential property at `x`, `f` is differetiable within `s` at x` and
+/-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at x` and
 its derivative has Dense range, then `f '' s` has the Unique differential property at `f x`. -/
 theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
     {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivWithinAt I I' f s x f')
@@ -2038,7 +2038,7 @@ theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
     rintro _ ⟨y, ⟨⟨hys, hfy⟩, -⟩, rfl⟩
     exact ⟨⟨_, hys, ((extChartAt I' (f x)).left_inv hfy).symm⟩, mem_range_self _⟩
 
-/-- If `s` has the unique differential, `f` is differetiable on `s` and its derivative at every
+/-- If `s` has the unique differential, `f` is differentiable on `s` and its derivative at every
 point of `s` has dense range, then `f '' s` has the unique differential property. This version
 uses `HaMFDerivWithinAt` predicate. -/
 theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
@@ -2047,7 +2047,7 @@ theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
     UniqueMDiffOn I' (f '' s) :=
   ball_image_iff.2 fun x hx ↦ (hs x hx).image_denseRange (hf x hx) (hd x hx)
 
-/-- If `s` has the unique differential, `f` is differetiable on `s` and its derivative at every
+/-- If `s` has the unique differential, `f` is differentiable on `s` and its derivative at every
 point of `s` has dense range, then `f '' s` has the unique differential property. -/
 theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
     (hf : MDifferentiableOn I I' f s) (hd : ∀ x ∈ s, DenseRange (mfderivWithin I I' f s x)) :
@@ -2099,7 +2099,7 @@ theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : 
 
 open Bundle
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type _}
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
   [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [∀ b, AddCommMonoid (Z b)]
   [∀ b, Module 𝕜 (Z b)] [FiberBundle F Z] [VectorBundle 𝕜 F Z] [SmoothVectorBundle F Z I]
 

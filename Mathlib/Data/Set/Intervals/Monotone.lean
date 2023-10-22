@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.monotone
-! leanprover-community/mathlib commit 4d06b17aea8cf2e220f0b0aa46cd0231593c5c97
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.Order.SuccPred.Basic
+
+#align_import data.set.intervals.monotone from "leanprover-community/mathlib"@"4d06b17aea8cf2e220f0b0aa46cd0231593c5c97"
 
 /-!
 # Monotonicity on intervals
@@ -23,7 +20,7 @@ open Set
 
 section Ixx
 
-variable {α β : Type _} [Preorder α] [Preorder β] {f g : α → β} {s : Set α}
+variable {α β : Type*} [Preorder α] [Preorder β] {f g : α → β} {s : Set α}
 
 theorem antitone_Ici : Antitone (Ici : α → Set α) := fun _ _ => Ici_subset_Ici.2
 #align antitone_Ici antitone_Ici
@@ -185,7 +182,7 @@ end Ixx
 
 section iUnion
 
-variable {α β : Type _} [SemilatticeSup α] [LinearOrder β] {f g : α → β} {a b : β}
+variable {α β : Type*} [SemilatticeSup α] [LinearOrder β] {f g : α → β} {a b : β}
 
 theorem iUnion_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone g)
     (ha : IsGLB (range f) a) (hb : IsLUB (range g) b) : ⋃ x, Ioo (f x) (g x) = Ioo a b :=
@@ -201,7 +198,7 @@ section SuccOrder
 
 open Order
 
-variable {α β : Type _} [PartialOrder α]
+variable {α β : Type*} [PartialOrder α]
 
 theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot α] {n : α} {φ : α → α}
     (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by

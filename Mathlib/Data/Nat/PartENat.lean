@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.part_enat
-! leanprover-community/mathlib commit 114ff8a4a7935cb7531062200bff375e7b1d6d85
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Part
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Tactic.NormNum
+
+#align_import data.nat.part_enat from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
 /-!
 # Natural numbers with infinity
@@ -24,7 +21,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddMonoid PartENat`
+* `CanonicallyOrderedAddCommMonoid PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -152,18 +149,12 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
   exact PartENat.casesOn'
 #align part_enat.cases_on PartENat.casesOn
 
--- Porting note : The last instance in this file (`LinearOrderedAddCommMonoidWithTop`)
--- causes the linter to complain here because with that instance `simp` could
--- proof `top_add`. Therefore the linter has been silenced here.
-@[nolint simpNF, simp]
+-- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
   Part.ext' (false_and_iff _) fun h => h.left.elim
 #align part_enat.top_add PartENat.top_add
 
--- Porting note : The last instance in this file (`LinearOrderedAddCommMonoidWithTop`)
--- causes the linter to complain here because with that instance `simp` could
--- proof `add_top`. Therefore the linter has been silenced here.@[nolint simpNF, simp]
-@[nolint simpNF, simp]
+-- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
 #align part_enat.add_top PartENat.add_top
 
@@ -229,7 +220,7 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 #align part_enat.decidable_le PartENat.decidableLe
 
-/-- The coercion `ℕ → partENat` preserves `0` and addition. -/
+/-- The coercion `ℕ → PartENat` preserves `0` and addition. -/
 def natCast_AddMonoidHom : ℕ →+ PartENat where
   toFun := some
   map_zero' := Nat.cast_zero
@@ -401,7 +392,7 @@ theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
       rfl
 #align part_enat.pos_iff_one_le PartENat.pos_iff_one_le
 
-instance isTotal: IsTotal PartENat (· ≤ ·) where
+instance isTotal : IsTotal PartENat (· ≤ ·) where
   total x y :=
     PartENat.casesOn (P := fun z => z ≤ y ∨ y ≤ z) x (Or.inr le_top)
       (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
@@ -418,24 +409,24 @@ noncomputable instance linearOrder : LinearOrder PartENat :=
       rw [@sup_eq_maxDefault PartENat _ (id _) _]
       rfl }
 
-instance boundedOrder: BoundedOrder PartENat :=
+instance boundedOrder : BoundedOrder PartENat :=
   { PartENat.orderTop, PartENat.orderBot with }
 
-noncomputable instance lattice: Lattice PartENat :=
+noncomputable instance lattice : Lattice PartENat :=
   { PartENat.semilatticeSup with
     inf := min
     inf_le_left := min_le_left
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance orderedAddCommMonoid: OrderedAddCommMonoid PartENat :=
+noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
   { PartENat.linearOrder, PartENat.addCommMonoid with
     add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.casesOn c (by simp) fun c =>
+      PartENat.casesOn c (by simp [top_add]) fun c =>
         ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
-noncomputable instance : CanonicallyOrderedAddMonoid PartENat :=
+noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
   { PartENat.semilatticeSup, PartENat.orderBot,
     PartENat.orderedAddCommMonoid with
     le_self_add := fun a b =>
@@ -511,7 +502,7 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
   norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
 #align part_enat.add_one_le_iff_lt PartENat.add_one_le_iff_lt
 
-theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e:= by
+theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e := by
   rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, add_one_le_iff_lt (natCast_ne_top n)]
 #align part_enat.coe_succ_le_succ_iff PartENat.coe_succ_le_iff
 
@@ -525,14 +516,14 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   norm_cast; apply Nat.lt_succ_of_le; norm_cast at h
 #align part_enat.lt_add_one_iff_lt PartENat.lt_add_one_iff_lt
 
-lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n :=
-by rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, lt_add_one_iff_lt hx]
+lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n := by
+  rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, lt_add_one_iff_lt hx]
 #align part_enat.lt_coe_succ_iff_le PartENat.lt_coe_succ_iff_le
 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
-  <;> simp
+  <;> simp [top_add, add_top]
   simp only [←Nat.cast_add, PartENat.natCast_ne_top, forall_const]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
@@ -540,7 +531,7 @@ protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a +
   rcases ne_top_iff.1 hc with ⟨c, rfl⟩
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
-  <;> simp [add_eq_top_iff, natCast_ne_top, @eq_comm _ (⊤ : PartENat)]
+  <;> simp [add_eq_top_iff, natCast_ne_top, @eq_comm _ (⊤ : PartENat), top_add]
   simp only [←Nat.cast_add, add_left_cancel_iff, PartENat.natCast_inj, add_comm, forall_const]
 #align part_enat.add_right_cancel_iff PartENat.add_right_cancel_iff
 
@@ -646,11 +637,11 @@ example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_none : ofENat Option.none = ⊤ := by rfl
+lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 
 -- Porting note : new
 @[simp]
-lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := by rfl
+lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
 -- Porting note : new
 @[simp, norm_cast]
@@ -770,9 +761,9 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
 instance : WellFoundedLT PartENat :=
   ⟨lt_wf⟩
 
-instance isWellOrder: IsWellOrder PartENat (· < ·) := {}
+instance isWellOrder : IsWellOrder PartENat (· < ·) := {}
 
-instance wellFoundedRelation: WellFoundedRelation PartENat :=
+instance wellFoundedRelation : WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩
 
 section Find

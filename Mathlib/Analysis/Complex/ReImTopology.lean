@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.re_im_topology
-! leanprover-community/mathlib commit 468b141b14016d54b479eb7a0fff1e360b7e3cf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+
+#align_import analysis.complex.re_im_topology from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
 
 /-!
 # Closure, interior, and frontier of preimages under `re` and `im`
@@ -213,6 +210,6 @@ theorem IsClosed.reProdIm (hs : IsClosed s) (ht : IsClosed t) : IsClosed (s ×�
   (hs.preimage continuous_re).inter (ht.preimage continuous_im)
 #align is_closed.re_prod_im IsClosed.reProdIm
 
-theorem Metric.Bounded.reProdIm (hs : Bounded s) (ht : Bounded t) : Bounded (s ×ℂ t) :=
-  antilipschitz_equivRealProd.bounded_preimage (hs.prod ht)
-#align metric.bounded.re_prod_im Metric.Bounded.reProdIm
+theorem Bornology.IsBounded.reProdIm (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ℂ t) :=
+  antilipschitz_equivRealProd.isBounded_preimage (hs.prod ht)
+#align metric.bounded.re_prod_im Bornology.IsBounded.reProdIm

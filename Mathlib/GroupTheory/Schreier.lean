@@ -2,15 +2,12 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.schreier
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.Transfer
+
+#align_import group_theory.schreier from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Schreier's Lemma
@@ -35,7 +32,7 @@ namespace Subgroup
 
 open MemRightTransversals
 
-variable {G : Type _} [Group G] {H : Subgroup G} {R S : Set G}
+variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
 theorem closure_mul_image_mul_eq_top
     (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (1 : G) ∈ R) (hS : closure S = ⊤) :
@@ -155,7 +152,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
       (center G).index ^ ((center G).index * Nat.card (commutatorSet G) + 1) := by
   -- First handle the case when `Z(G)` has infinite index and `[G : Z(G)]` is defined to be `0`
   by_cases hG : (center G).index = 0
-  · simp_rw [hG, MulZeroClass.zero_mul, zero_add, pow_one, dvd_zero]
+  · simp_rw [hG, zero_mul, zero_add, pow_one, dvd_zero]
   haveI : FiniteIndex (center G) := ⟨hG⟩
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ']

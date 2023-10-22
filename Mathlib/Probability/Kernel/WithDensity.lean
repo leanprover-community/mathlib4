@@ -2,14 +2,11 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.with_density
-! leanprover-community/mathlib commit c0d694db494dd4f9aa57f2714b6e4c82b4ebc113
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import probability.kernel.with_density from "leanprover-community/mathlib"@"c0d694db494dd4f9aa57f2714b6e4c82b4ebc113"
 
 /-!
 # With Density
@@ -40,7 +37,7 @@ open scoped MeasureTheory ENNReal NNReal BigOperators
 
 namespace ProbabilityTheory.kernel
 
-variable {α β ι : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 variable {κ : kernel α β} {f : α → β → ℝ≥0∞}
 
@@ -83,7 +80,7 @@ theorem lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
   simp_rw [Pi.mul_apply]
 #align probability_theory.kernel.lintegral_with_density ProbabilityTheory.kernel.lintegral_withDensity
 
-theorem integral_withDensity {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+theorem integral_withDensity {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} [IsSFiniteKernel κ] {a : α} {g : α → β → ℝ≥0}
     (hg : Measurable (Function.uncurry g)) :
     ∫ b, f b ∂withDensity κ (fun a b => g a b) a = ∫ b, g a b • f b ∂κ a := by

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.real.sqrt
-! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Tactic.Positivity
+
+#align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-!
 # Square root of a real number
@@ -38,6 +35,8 @@ this sequence actually converges to `Real.sqrt (mk f)`.
 
 square root
 -/
+
+set_option autoImplicit true
 
 open Set Filter
 open scoped Filter NNReal Topology
@@ -127,7 +126,7 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 
 @[simp] theorem sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 end NNReal
 
@@ -151,7 +150,7 @@ theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
 
 /- TODO(Mario): finish the proof
 theorem sqrt_aux_converges (f : cau_seq ℚ abs) : ∃ h x, 0 ≤ x ∧ x * x = max 0 (mk f) ∧
-  mk ⟨sqrt_aux f, h⟩ = x :=
+    mk ⟨sqrt_aux f, h⟩ = x :=
 begin
   rcases sqrt_exists (le_max_left 0 (mk f)) with ⟨x, x0, hx⟩,
   suffices : ∃ h, mk ⟨sqrt_aux f, h⟩ = x,
@@ -352,7 +351,7 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
   lt_iff_lt_of_le_iff_le (Iff.trans (by simp [le_antisymm_iff, sqrt_nonneg]) sqrt_eq_zero')
 #align real.sqrt_pos Real.sqrt_pos
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
 end Real
@@ -467,6 +466,11 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
+/-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
+`ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
+want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
+In addition, providing this instance here makes it available earlier in the import
+hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
 instance : StarOrderedRing ℝ :=
   StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
@@ -477,7 +481,7 @@ end Real
 
 open Real
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
     Tendsto (fun x => sqrt (f x)) l (𝓝 (sqrt x)) :=

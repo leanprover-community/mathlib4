@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
-
-! This file was ported from Lean 3 source module algebra.char_p.basic
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Nilpotent
+
+#align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
 /-!
 # Characteristic of semirings
@@ -24,7 +21,7 @@ open Finset
 
 open BigOperators
 
-variable {R : Type _}
+variable {R : Type*}
 
 namespace Commute
 
@@ -102,8 +99,8 @@ variable (R)
 
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
- -/
+This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+-/
 @[mk_iff charP_iff]
 class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
   cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
@@ -113,7 +110,7 @@ class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
 -- porting note: the field of the structure had implicit arguments where they were
 -- explicit in Lean 3
 theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (x : ℕ) :
-  (x : R) = 0 ↔ p ∣ x :=
+    (x : R) = 0 ↔ p ∣ x :=
 CharP.cast_eq_zero_iff' (R := R) (p := p) x
 
 @[simp]
@@ -180,12 +177,12 @@ theorem CharP.exists [NonAssocSemiring R] : ∃ p, CharP R p :=
                     rwa [← Nat.mod_add_div x (Nat.find (not_forall.1 H)), Nat.cast_add,
                       Nat.cast_mul,
                       of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
-                      MulZeroClass.zero_mul, add_zero] at H1,
+                      zero_mul, add_zero] at H1,
                     H2⟩)),
           fun H1 => by
           rw [← Nat.mul_div_cancel' H1, Nat.cast_mul,
             of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
-            MulZeroClass.zero_mul]⟩⟩⟩
+            zero_mul]⟩⟩⟩
 #align char_p.exists CharP.exists
 
 theorem CharP.exists_unique [NonAssocSemiring R] : ∃! p, CharP R p :=
@@ -322,7 +319,7 @@ theorem CharP.neg_one_pow_char_pow [CommRing R] (p n : ℕ) [CharP R p] [Fact p.
   rw [← add_pow_char_pow, add_left_neg, zero_pow (pow_pos (Fact.out (p := Nat.Prime p)).pos _)]
 #align char_p.neg_one_pow_char_pow CharP.neg_one_pow_char_pow
 
-theorem RingHom.charP_iff_charP {K L : Type _} [DivisionRing K] [Semiring L] [Nontrivial L]
+theorem RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
     (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
   simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, f.map_zero]
 #align ring_hom.char_p_iff_char_p RingHom.charP_iff_charP
@@ -418,7 +415,7 @@ theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R 
   (frobenius R p).map_multiset_sum _
 #align multiset_sum_pow_char multiset_sum_pow_char
 
-theorem sum_pow_char {ι : Type _} (s : Finset ι) (f : ι → R) :
+theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
     (∑ i in s, f i) ^ p = ∑ i in s, f i ^ p :=
   (frobenius R p).map_sum _ _
 #align sum_pow_char sum_pow_char
@@ -451,7 +448,7 @@ theorem frobenius_inj [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP
 
 /-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
 then every `a : R` is a square. -/
-theorem isSquare_of_charTwo' {R : Type _} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
+theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
     (a : R) : IsSquare a := by
   cases nonempty_fintype R
   exact
@@ -465,9 +462,12 @@ section
 
 variable [NonAssocRing R]
 
-theorem charP_to_charZero (R : Type _) [AddGroupWithOne R] [CharP R 0] : CharZero R :=
+theorem charP_to_charZero (R : Type*) [AddGroupWithOne R] [CharP R 0] : CharZero R :=
   charZero_of_inj_zero fun n h0 => eq_zero_of_zero_dvd ((cast_eq_zero_iff R 0 n).mp h0)
 #align char_p.char_p_to_char_zero CharP.charP_to_charZero
+
+theorem charP_zero_iff_charZero (R : Type*) [AddGroupWithOne R] : CharP R 0 ↔ CharZero R :=
+  ⟨fun _ ↦ charP_to_charZero R, fun _ ↦ ofCharZero R⟩
 
 theorem cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
   calc
@@ -486,6 +486,9 @@ theorem char_ne_zero_of_finite (p : ℕ) [CharP R p] [Finite R] : p ≠ 0 := by
 theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=
   char_ne_zero_of_finite R (ringChar R)
 #align char_p.ring_char_ne_zero_of_finite CharP.ringChar_ne_zero_of_finite
+
+theorem ringChar_zero_iff_CharZero [NonAssocRing R] : ringChar R = 0 ↔ CharZero R := by
+  rw [ringChar.eq_iff, charP_zero_iff_charZero]
 
 end
 
@@ -572,7 +575,7 @@ theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
 
 end Ring
 
-section CharOne
+section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
@@ -585,8 +588,7 @@ instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
       r = 1 * r := by rw [one_mul]
       _ = (1 : ℕ) * r := by rw [Nat.cast_one]
       _ = 0 * r := by rw [CharP.cast_eq_zero]
-      _ = 0 := by rw [MulZeroClass.zero_mul]
-
+      _ = 0 := by rw [zero_mul]
 
 theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
   false_of_nontrivial_of_subsingleton R
@@ -609,14 +611,19 @@ theorem ringChar_of_prime_eq_zero [Nontrivial R] {p : ℕ} (hprime : Nat.Prime p
   Or.resolve_left ((Nat.dvd_prime hprime).1 (ringChar.dvd hp0)) ringChar_ne_one
 #align char_p.ring_char_of_prime_eq_zero CharP.ringChar_of_prime_eq_zero
 
-end CharOne
+theorem charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
+    CharP R p ↔ (p : R) = 0 :=
+  ⟨fun _ => cast_eq_zero R p,
+   fun hp0 => (ringChar_of_prime_eq_zero hp hp0) ▸ inferInstance⟩
+
+end NonAssocSemiring
 
 end CharP
 
 section
 
 /-- We have `2 ≠ 0` in a nontrivial ring whose characteristic is not `2`. -/
-protected theorem Ring.two_ne_zero {R : Type _} [NonAssocSemiring R] [Nontrivial R]
+protected theorem Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 := by
   rw [Ne.def, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
   exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
@@ -625,13 +632,13 @@ protected theorem Ring.two_ne_zero {R : Type _} [NonAssocSemiring R] [Nontrivial
 -- We have `CharP.neg_one_ne_one`, which assumes `[Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)]`.
 -- This is a version using `ringChar` instead.
 /-- Characteristic `≠ 2` and nontrivial implies that `-1 ≠ 1`. -/
-theorem Ring.neg_one_ne_one_of_char_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
+theorem Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h =>
   Ring.two_ne_zero hR (one_add_one_eq_two (α := R) ▸ neg_eq_iff_add_eq_zero.mp h)
 #align ring.neg_one_ne_one_of_char_ne_two Ring.neg_one_ne_one_of_char_ne_two
 
 /-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/
-theorem Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
+theorem Ring.eq_self_iff_eq_zero_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     [NoZeroDivisors R] (hR : ringChar R ≠ 2) {a : R} : -a = a ↔ a = 0 :=
   ⟨fun h =>
     (mul_eq_zero.mp <| (two_mul a).trans <| neg_eq_iff_add_eq_zero.mp h).resolve_left
@@ -653,14 +660,14 @@ theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 
       intro k
       constructor
       · intro h
-        rw [← Nat.mod_add_div k n, Nat.cast_add, Nat.cast_mul, H, MulZeroClass.zero_mul,
+        rw [← Nat.mod_add_div k n, Nat.cast_add, Nat.cast_mul, H, zero_mul,
           add_zero] at h
         rw [Nat.dvd_iff_mod_eq_zero]
         apply hR _ (Nat.mod_lt _ _) h
         rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
         exact ⟨0⟩
       · rintro ⟨k, rfl⟩
-        rw [Nat.cast_mul, H, MulZeroClass.zero_mul] }
+        rw [Nat.cast_mul, H, zero_mul] }
 #align char_p_of_ne_zero charP_of_ne_zero
 
 theorem charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p : ℕ) [hp : Fact p.Prime] (n : ℕ)
@@ -706,32 +713,13 @@ section
 
 /-- If two integers from `{0, 1, -1}` result in equal elements in a ring `R`
 that is nontrivial and of characteristic not `2`, then they are equal. -/
-theorem Int.cast_injOn_of_ringChar_ne_two {R : Type _} [NonAssocRing R] [Nontrivial R]
+theorem Int.cast_injOn_of_ringChar_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : ({0, 1, -1} : Set ℤ).InjOn ((↑) : ℤ → R) := by
-  intro a ha b hb h
-  apply eq_of_sub_eq_zero
-  by_contra hf
-  replace ha : a = 0 ∨ a = 1 ∨ a = -1 := ha
-  replace hb : b = 0 ∨ b = 1 ∨ b = -1 := hb
-  have hh : a - b = 1 ∨ b - a = 1 ∨ a - b = 2 ∨ b - a = 2 := by
-    rcases ha with (ha | ha | ha) <;> rcases hb with (hb | hb | hb)
-    pick_goal 5
-    pick_goal 9
-    -- move goals with `a = b` to the front
-    iterate 3 rw [ha, hb, sub_self] at hf; tauto
-    -- 6 goals remain
-    all_goals rw [ha, hb]; norm_num
-  have h' : ((a - b : ℤ) : R) = 0 := by exact_mod_cast sub_eq_zero_of_eq h
-  have h'' : ((b - a : ℤ) : R) = 0 := by exact_mod_cast sub_eq_zero_of_eq h.symm
-  rcases hh with (hh | hh | hh | hh)
-  · rw [hh, (by norm_cast : ((1 : ℤ) : R) = 1)] at h'
-    exact one_ne_zero h'
-  · rw [hh, (by norm_cast : ((1 : ℤ) : R) = 1)] at h''
-    exact one_ne_zero h''
-  · rw [hh, (by norm_cast : ((2 : ℤ) : R) = 2)] at h'
-    exact Ring.two_ne_zero hR h'
-  · rw [hh, (by norm_cast : ((2 : ℤ) : R) = 2)] at h''
-    exact Ring.two_ne_zero hR h''
+  rintro _ (rfl | rfl | rfl) _ (rfl | rfl | rfl) h <;>
+  simp only
+    [cast_neg, cast_one, cast_zero, neg_eq_zero, one_ne_zero, zero_ne_one, zero_eq_neg] at h ⊢
+  · exact (Ring.neg_one_ne_one_of_char_ne_two hR).symm h
+  · exact (Ring.neg_one_ne_one_of_char_ne_two hR) h
 #align int.cast_inj_on_of_ring_char_ne_two Int.cast_injOn_of_ringChar_ne_two
 
 end
@@ -750,3 +738,18 @@ theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p 
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero
+
+namespace CharZero
+
+theorem charZero_iff_forall_prime_ne_zero
+    [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] :
+    CharZero R ↔ ∀ p : ℕ, p.Prime → (p : R) ≠ 0 := by
+  refine ⟨fun h p hp => by simp [hp.ne_zero], fun h => ?_⟩
+  let p := ringChar R
+  cases CharP.char_is_prime_or_zero R p with
+  | inl hp => simpa using h p hp
+  | inr h =>
+    haveI : CharP R 0 := h ▸ inferInstance
+    exact CharP.charP_to_charZero R
+
+end CharZero

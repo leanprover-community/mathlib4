@@ -2,13 +2,11 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.seq.parallel
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Prod
 import Mathlib.Data.Seq.WSeq
+
+#align_import data.seq.parallel from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Parallel computation
@@ -65,7 +63,7 @@ theorem terminates_parallel.aux :
     cases' e with a e
     have : corec parallel.aux1 (l, S) = return a := by
       apply destruct_eq_pure
-      simp [parallel.aux1]
+      simp only [parallel.aux1, rmap, corec_eq]
       rw [e]
     rw [this]
     -- Porting note: This line is required.
@@ -78,14 +76,14 @@ theorem terminates_parallel.aux :
     induction' l with c l IH <;> simp at m
     cases' m with e m
     · rw [← e]
-      simp [parallel.aux2]
+      simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]
       cases' List.foldr (fun c o =>
         match o with
         | Sum.inl a => Sum.inl a
         | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr List.nil) l with a' ls
       exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
     · cases' IH m with a' e
-      simp [parallel.aux2]
+      simp only [parallel.aux2, rmap, List.foldr_cons]
       simp [parallel.aux2] at e
       rw [e]
       exact ⟨a', rfl⟩
@@ -120,7 +118,7 @@ theorem terminates_parallel.aux :
     · exact lem1 _ _ ⟨a, h⟩
     · have H2 : corec parallel.aux1 (l, S) = think _ := by
         apply destruct_eq_think
-        simp [parallel.aux1]
+        simp only [parallel.aux1, rmap, corec_eq]
         rw [h]
       rw [H2]
       refine @Computation.think_terminates _ _ ?_
@@ -157,7 +155,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       skip
       infer_instance
     · apply destruct_eq_think
-      simp [parallel.aux1]
+      simp only [corec_eq, rmap, parallel.aux1._eq_1]
       rw [h, H]
     · rw [C]
       refine @Computation.think_terminates _ _ ?_
@@ -177,7 +175,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       skip
       infer_instance
     · apply destruct_eq_think
-      simp [parallel.aux1]
+      simp only [corec_eq, rmap, parallel.aux1._eq_1]
       rw [h]
     · rw [C]
       refine @Computation.think_terminates _ _ ?_
@@ -193,7 +191,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
           rw [e]
           rfl
         rw [D]
-        simp [parallel.aux1]
+        simp only
         have TT := TT l'
         rwa [Seq.destruct_eq_nil D, Seq.tail_nil] at TT
       · have D : Seq.destruct S = some (o, S.tail) := by
@@ -292,13 +290,13 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
           c1 = map f (corec parallel.aux1 (l, S)) ∧
             c2 = corec parallel.aux1 (l.map (map f), S.map (map f)))
       _ ⟨[], S, rfl, rfl⟩
-  intro c1 c2 h;
+  intro c1 c2 h
   exact
     match c1, c2, h with
     | _, _, ⟨l, S, rfl, rfl⟩ => by
       have : parallel.aux2 (l.map (map f))
           = lmap f (rmap (List.map (map f)) (parallel.aux2 l)) := by
-        simp [parallel.aux2]
+        simp only [parallel.aux2, rmap, lmap]
         induction' l with c l IH <;> simp
         rw [IH]
         cases List.foldr (fun c o =>
@@ -307,10 +305,10 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
             | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr List.nil) l <;>
           simp [parallel.aux2]
         cases destruct c <;> simp
-      simp [parallel.aux1]
+      simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1._eq_1]
       rw [this]
       cases' parallel.aux2 l with a l' <;> simp
-      induction' S using WSeq.recOn with c S S <;> simp <;> simp [parallel.aux1] <;>
+      induction' S using WSeq.recOn with c S S <;> simp <;>
         exact ⟨_, _, rfl, rfl⟩
 #align computation.map_parallel Computation.map_parallel
 

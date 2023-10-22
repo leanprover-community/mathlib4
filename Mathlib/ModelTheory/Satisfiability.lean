@@ -2,15 +2,12 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.satisfiability
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Skolem
+
+#align_import model_theory.satisfiability from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # First-Order Satisfiability
@@ -129,7 +126,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
       exact ⟨ModelType.of T M'⟩⟩
 #align first_order.language.Theory.is_satisfiable_iff_is_finitely_satisfiable FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable
 
-theorem isSatisfiable_directed_union_iff {ι : Type _} [Nonempty ι] {T : ι → L.Theory}
+theorem isSatisfiable_directed_union_iff {ι : Type*} [Nonempty ι] {T : ι → L.Theory}
     (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
   refine' ⟨fun h' i => h'.mono (Set.subset_iUnion _ _), fun h' => _⟩
   rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
@@ -189,7 +186,7 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   rw [lift_lift]
 #align first_order.language.Theory.exists_large_model_of_infinite_model FirstOrder.Language.Theory.exists_large_model_of_infinite_model
 
-theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type _} (T : ι → L.Theory) :
+theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : ι → L.Theory) :
     IsSatisfiable (⋃ i, T i) ↔ ∀ s : Finset ι, IsSatisfiable (⋃ i ∈ s, T i) := by
   classical
     refine'
@@ -344,7 +341,7 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
   exact h
 #align first_order.language.Theory.models_iff_not_satisfiable FirstOrder.Language.Theory.models_iff_not_satisfiable
 
-theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ) (M : Type _)
+theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ) (M : Type*)
     [L.Structure M] [M ⊨ T] [Nonempty M] : M ⊨ φ := by
   rw [models_iff_not_satisfiable] at h
   contrapose! h
@@ -355,6 +352,33 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
     exact ⟨h, inferInstance⟩
   exact Model.isSatisfiable M
 #align first_order.language.Theory.models_bounded_formula.realize_sentence FirstOrder.Language.Theory.ModelsBoundedFormula.realize_sentence
+
+theorem models_of_models_theory {T' : L.Theory}
+    (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
+    {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := by
+  simp only [models_sentence_iff] at h
+  intro M
+  have hM : M ⊨ T' := T'.model_iff.2 (fun ψ hψ => h ψ hψ M)
+  let M' : ModelType T' := ⟨M⟩
+  exact hφ M'
+
+/-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
+theory iff there is a finite subset `T0` of the theory such that `φ` is modeled by `T0` -/
+theorem models_iff_finset_models {φ : L.Sentence} :
+    T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
+  simp only [models_iff_not_satisfiable]
+  rw [← not_iff_not, not_not, isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  push_neg
+  letI := Classical.decEq (Sentence L)
+  constructor
+  · intro h T0 hT0
+    simpa using h (T0 ∪ {Formula.not φ})
+      (by
+        simp only [Finset.coe_union, Finset.coe_singleton]
+        exact Set.union_subset_union hT0 (Set.Subset.refl _))
+  · intro h T0 hT0
+    exact IsSatisfiable.mono (h (T0.erase (Formula.not φ))
+      (by simpa using hT0)) (by simp)
 
 /-- A theory is complete when it is satisfiable and models each sentence or its negation. -/
 def IsComplete (T : L.Theory) : Prop :=
@@ -376,7 +400,7 @@ theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not �
     exact hφn h.1.some (hφ _)
 #align first_order.language.Theory.is_complete.models_not_iff FirstOrder.Language.Theory.IsComplete.models_not_iff
 
-theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type _) [L.Structure M]
+theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L.Structure M]
     [M ⊨ T] [Nonempty M] : M ⊨ φ ↔ T ⊨ᵇ φ := by
   cases' h.2 φ with hφ hφn
   · exact iff_of_true (hφ.realize_sentence M) hφ

@@ -2,14 +2,11 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module order.countable_dense_linear_order
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Data.Finset.Lattice
+
+#align_import order.countable_dense_linear_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -44,7 +41,7 @@ namespace Order
     suppose `lo`, `hi`, are finite subsets with all of `lo` strictly
     before `hi`. Then there is an element of `α` strictly between `lo`
     and `hi`. -/
-theorem exists_between_finsets {α : Type _} [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
     [NoMaxOrder α] [nonem : Nonempty α] (lo hi : Finset α) (lo_lt_hi : ∀ x ∈ lo, ∀ y ∈ hi, x < y) :
     ∃ m : α, (∀ x ∈ lo, x < m) ∧ ∀ y ∈ hi, m < y :=
   if nlo : lo.Nonempty then
@@ -69,7 +66,7 @@ theorem exists_between_finsets {α : Type _} [LinearOrder α] [DenselyOrdered α
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 #align order.exists_between_finsets Order.exists_between_finsets
 
-variable (α β : Type _) [LinearOrder α] [LinearOrder β]
+variable (α β : Type*) [LinearOrder α] [LinearOrder β]
 
 -- Porting note: Mathport warning: expanding binder collection (p q «expr ∈ » f)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
@@ -145,7 +142,7 @@ variable (β)
     partial isomorphism can be extended to one defined at `a`. -/
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
-  carrier f := ∃ b : β, (a, b) ∈ f.val
+  carrier := {f | ∃ b : β, (a, b) ∈ f.val}
   mem_gt f := by
     cases' exists_across f a with b a_b
     refine
@@ -166,7 +163,7 @@ variable (α) {β}
     partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
-  carrier f := ∃ a, (a, b) ∈ f.val
+  carrier := {f | ∃ a, (a, b) ∈ f.val}
   mem_gt f := by
     rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine' ⟨f'.comm, ⟨a, _⟩, _⟩
@@ -213,8 +210,8 @@ theorem embedding_from_countable_to_dense [Encodable α] [DenselyOrdered β] [No
   refine
     ⟨RelEmbedding.trans (OrderEmbedding.ofStrictMono (fun a ↦ (F a).val) fun a₁ a₂ ↦ ?_)
         (OrderEmbedding.subtype _)⟩
-  rcases(F a₁).prop with ⟨f, hf, ha₁⟩
-  rcases(F a₂).prop with ⟨g, hg, ha₂⟩
+  rcases (F a₁).prop with ⟨f, hf, ha₁⟩
+  rcases (F a₂).prop with ⟨g, hg, ha₂⟩
   rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 #align order.embedding_from_countable_to_dense Order.embedding_from_countable_to_dense
@@ -229,8 +226,8 @@ theorem iso_of_countable_dense [Encodable α] [DenselyOrdered α] [NoMinOrder α
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inl a))
   let G b := invOfIdeal b our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inr b))
   ⟨OrderIso.ofCmpEqCmp (fun a ↦ (F a).val) (fun b ↦ (G b).val) fun a b ↦ by
-      rcases(F a).prop with ⟨f, hf, ha⟩
-      rcases(G b).prop with ⟨g, hg, hb⟩
+      rcases (F a).prop with ⟨f, hf, ha⟩
+      rcases (G b).prop with ⟨g, hg, hb⟩
       rcases our_ideal.directed _ hf _ hg with ⟨m, _, fm, gm⟩
       exact m.prop (a, _) (fm ha) (_, b) (gm hb)⟩
 #align order.iso_of_countable_dense Order.iso_of_countable_dense

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.elements
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PUnit
+
+#align_import category_theory.elements from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # The category of elements
@@ -88,14 +85,14 @@ theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = �
 
 end CategoryOfElements
 
-noncomputable instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
+instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
     Groupoid F.Elements
     where
   inv {p q} f :=
-    ⟨inv f.val,
+    ⟨Groupoid.inv f.val,
       calc
-        F.map (inv f.val) q.2 = F.map (inv f.val) (F.map f.val p.2) := by rw [f.2]
-        _ = (F.map f.val ≫ F.map (inv f.val)) p.2 := rfl
+        F.map (Groupoid.inv f.val) q.2 = F.map (Groupoid.inv f.val) (F.map f.val p.2) := by rw [f.2]
+        _ = (F.map f.val ≫ F.map (Groupoid.inv f.val)) p.2 := rfl
         _ = p.2 := by
           rw [← F.map_comp]
           simp

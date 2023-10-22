@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.support
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # The topological support of a function
@@ -34,7 +31,7 @@ Furthermore, we say that `f` has compact support if the topological support of `
 
 open Function Set Filter Topology
 
-variable {X α α' β γ δ M E R : Type _}
+variable {X α α' β γ δ M E R : Type*}
 
 section One
 
@@ -87,12 +84,12 @@ theorem range_eq_image_mulTSupport_or (f : X → α) :
 #align range_eq_image_mul_tsupport_or range_eq_image_mulTSupport_or
 #align range_eq_image_tsupport_or range_eq_image_tsupport_or
 
-theorem tsupport_mul_subset_left {α : Type _} [MulZeroClass α] {f g : X → α} :
+theorem tsupport_mul_subset_left {α : Type*} [MulZeroClass α] {f g : X → α} :
     (tsupport fun x => f x * g x) ⊆ tsupport f :=
   closure_mono (support_mul_subset_left _ _)
 #align tsupport_mul_subset_left tsupport_mul_subset_left
 
-theorem tsupport_mul_subset_right {α : Type _} [MulZeroClass α] {f g : X → α} :
+theorem tsupport_mul_subset_right {α : Type*} [MulZeroClass α] {f g : X → α} :
     (tsupport fun x => f x * g x) ⊆ tsupport g :=
   closure_mono (support_mul_subset_right _ _)
 #align tsupport_mul_subset_right tsupport_mul_subset_right
@@ -160,6 +157,11 @@ theorem HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
 #align has_compact_support.intro HasCompactSupport.intro
 
 @[to_additive]
+theorem HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
+    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+  isCompact_closure_of_subset_compact hK h
+
+@[to_additive]
 theorem HasCompactMulSupport.isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
   hf
 #align has_compact_mul_support.is_compact HasCompactMulSupport.isCompact
@@ -173,7 +175,7 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
       fun _ => not_imp_comm.mpr fun hx => subset_mulTSupport f hx⟩,
     fun h =>
       let ⟨_C, hC⟩ := mem_coclosed_compact'.mp h
-      isCompact_of_isClosed_subset hC.2.1 (isClosed_mulTSupport _) (closure_minimal hC.2.2 hC.1)⟩
+      IsCompact.of_isClosed_subset hC.2.1 (isClosed_mulTSupport _) (closure_minimal hC.2.2 hC.1)⟩
 #align has_compact_mul_support_iff_eventually_eq hasCompactMulSupport_iff_eventuallyEq
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 
@@ -188,7 +190,7 @@ theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompa
 @[to_additive]
 theorem HasCompactMulSupport.mono' {f' : α → γ} (hf : HasCompactMulSupport f)
     (hff' : mulSupport f' ⊆ mulTSupport f) : HasCompactMulSupport f' :=
-  isCompact_of_isClosed_subset hf isClosed_closure <| closure_minimal hff' isClosed_closure
+  IsCompact.of_isClosed_subset hf isClosed_closure <| closure_minimal hff' isClosed_closure
 #align has_compact_mul_support.mono' HasCompactMulSupport.mono'
 #align has_compact_support.mono' HasCompactSupport.mono'
 
@@ -217,7 +219,7 @@ theorem hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) :
 theorem HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
     (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
   rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
-  refine' isCompact_of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure _
+  refine' IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure _
   rw [hg.toEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
 #align has_compact_mul_support.comp_closed_embedding HasCompactMulSupport.comp_closedEmbedding
@@ -228,7 +230,7 @@ theorem HasCompactMulSupport.comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  filter_upwards [hf, hf₂]using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
+  filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 
@@ -299,7 +301,7 @@ end MulZeroClass
 
 namespace LocallyFinite
 
-variable {ι : Type _} {U : ι → Set X} [TopologicalSpace X] [One R]
+variable {ι : Type*} {U : ι → Set X} [TopologicalSpace X] [One R]
 
 -- porting note: todo: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family

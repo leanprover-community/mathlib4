@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
-
-! This file was ported from Lean 3 source module number_theory.kummer_dedekind
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.IsAdjoinRoot
+
+#align_import number_theory.kummer_dedekind from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Kummer-Dedekind theorem
@@ -56,7 +53,7 @@ kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
 
 
-variable (R : Type _) {S : Type _} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
 
@@ -66,7 +63,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
     biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [MulZeroClass.zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 #align conductor conductor
@@ -110,10 +107,11 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     rw [Algebra.id.smul_eq_mul, mul_assoc, mul_comm, mul_assoc, Set.mem_image]
     refine Exists.intro
         (algebraMap R R<x> a * ⟨l a * algebraMap R S p,
-          show l a * algebraMap R S p ∈ R<x> from ?_⟩) ?_
+          show l a * algebraMap R S p ∈ R<x> from ?h⟩) ?_
+    case h =>
+      rw [mul_comm]
+      exact mem_conductor_iff.mp (Ideal.mem_comap.mp hp) _
     · refine ⟨?_, ?_⟩
-      · rw [mul_comm]
-        exact mem_conductor_iff.mp (Ideal.mem_comap.mp hp) _
       · rw [mul_comm]
         apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
       · simp only [RingHom.map_mul, mul_comm (algebraMap R S p) (l a)]
@@ -146,7 +144,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
         (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
       rw [← this, ← temp]
       obtain ⟨a, ha⟩ := (Set.mem_image _ _ _).mp (prod_mem_ideal_map_of_mem_conductor hp
-          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy ))
+          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
           simp only [ha.right, map_add, AlgHom.map_mul, add_right_inj]; rfl⟩
@@ -248,7 +246,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
       Polynomial.map_monic_ne_zero (minpoly.monic hx')) (span_singleton_eq_bot.mp h)
-  · refine (normalizedFactorsEquivSpanNormalizedFactors  ?_).symm
+  · refine (normalizedFactorsEquivSpanNormalizedFactors ?_).symm
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 #align kummer_dedekind.normalized_factors_map_equiv_normalized_factors_min_poly_mk KummerDedekind.normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
 

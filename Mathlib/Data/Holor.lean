@@ -2,14 +2,11 @@
 Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module data.holor
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import data.holor from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Basic properties of holors
@@ -330,7 +327,7 @@ theorem cprankMax_nil [Monoid α] [AddMonoid α] (x : Holor α nil) : CPRankMax 
 #align holor.cprank_max_nil Holor.cprankMax_nil
 
 theorem cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
-  CPRankMax 1 x := by
+    CPRankMax 1 x := by
   have h' := CPRankMax.succ 0 x 0 h CPRankMax.zero
   rwa [zero_add, add_zero] at h'
 #align holor.cprank_max_1 Holor.cprankMax_1
@@ -366,7 +363,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
-      intro x s(h_x_notin_s : x ∉ s)ih h_cprank
+      intro x s (h_x_notin_s : x ∉ s) ih h_cprank
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]

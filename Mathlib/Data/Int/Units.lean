@@ -2,15 +2,13 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.units
-! leanprover-community/mathlib commit 641b6a82006416ec431b2987b354af9311fed4f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Tactic.Common
+
+#align_import data.int.units from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
 /-!
 # Lemmas about units in `ℤ`.
@@ -33,6 +31,21 @@ theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
   simpa only [Units.ext_iff, units_natAbs] using natAbs_eq u
 #align int.units_eq_one_or Int.units_eq_one_or
 
+@[simp]
+theorem units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
+  rcases units_eq_one_or u with rfl | rfl <;> decide
+
+@[simp]
+theorem neg_units_ne_self (u : ℤˣ) : -u ≠ u := (units_ne_neg_self u).symm
+
+theorem units_ne_iff_eq_neg {u u' : ℤˣ} : u ≠ u' ↔ u = -u' := by
+  rcases units_eq_one_or u with rfl | rfl <;>
+  rcases units_eq_one_or u' with rfl | rfl <;>
+  decide
+
+theorem isUnit_ne_iff_eq_neg {u u' : ℤ} (hu : IsUnit u) (hu' : IsUnit u') : u ≠ u' ↔ u = -u' := by
+  simpa only [Ne, Units.ext_iff] using units_ne_iff_eq_neg (u := hu.unit) (u' := hu'.unit)
+
 theorem isUnit_eq_one_or {a : ℤ} : IsUnit a → a = 1 ∨ a = -1
   | ⟨_, hx⟩ => hx ▸ (units_eq_one_or _).imp (congr_arg Units.val) (congr_arg Units.val)
 #align int.is_unit_eq_one_or Int.isUnit_eq_one_or
@@ -44,10 +57,8 @@ theorem isUnit_iff {a : ℤ} : IsUnit a ↔ a = 1 ∨ a = -1 := by
   · exact isUnit_one.neg
 #align int.is_unit_iff Int.isUnit_iff
 
-theorem isUnit_eq_or_eq_neg {a b : ℤ} (ha : IsUnit a) (hb : IsUnit b) : a = b ∨ a = -b := by
-  rcases isUnit_eq_one_or hb with (rfl | rfl)
-  · exact isUnit_eq_one_or ha
-  · rwa [or_comm, neg_neg, ← isUnit_iff]
+theorem isUnit_eq_or_eq_neg {a b : ℤ} (ha : IsUnit a) (hb : IsUnit b) : a = b ∨ a = -b :=
+  or_iff_not_imp_left.mpr (isUnit_ne_iff_eq_neg ha hb).mp
 #align int.is_unit_eq_or_eq_neg Int.isUnit_eq_or_eq_neg
 
 theorem eq_one_or_neg_one_of_mul_eq_one {z w : ℤ} (h : z * w = 1) : z = 1 ∨ z = -1 :=
@@ -91,7 +102,7 @@ theorem isUnit_iff_natAbs_eq {n : ℤ} : IsUnit n ↔ n.natAbs = 1 := by
   simp [natAbs_eq_iff, isUnit_iff, Nat.cast_zero]
 #align int.is_unit_iff_nat_abs_eq Int.isUnit_iff_natAbs_eq
 
-alias isUnit_iff_natAbs_eq ↔ IsUnit.natAbs_eq _
+alias ⟨IsUnit.natAbs_eq, _⟩ := isUnit_iff_natAbs_eq
 #align int.is_unit.nat_abs_eq Int.IsUnit.natAbs_eq
 
 -- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,

@@ -2,17 +2,14 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.box.basic
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import analysis.box_integral.box.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -64,7 +61,7 @@ open NNReal Classical Topology
 
 namespace BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-!
 ### Rectangular box: definition and partial order
@@ -73,7 +70,7 @@ variable {ι : Type _}
 
 /-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
-structure Box (ι : Type _) where
+structure Box (ι : Type*) where
   (lower upper : ι → ℝ)
   lower_lt_upper : ∀ i, lower i < upper i
 #align box_integral.box BoxIntegral.Box

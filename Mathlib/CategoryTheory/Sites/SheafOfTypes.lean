@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.sheaf_of_types
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+
+#align_import category_theory.sites.sheaf_of_types from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Sheaves of types on a Grothendieck topology
@@ -156,18 +153,21 @@ Equation (5). Viewing the type `FamilyOfElements` as the middle object of the fo
 https://stacks.math.columbia.edu/tag/00VM, this condition expresses that `pr₀* (x) = pr₁* (x)`,
 using the notation defined there.
 -/
-def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [HasPullbacks C] : Prop :=
+def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
-    P.map (pullback.fst : pullback f₁ f₂ ⟶ _).op (x f₁ h₁) = P.map pullback.snd.op (x f₂ h₂)
+    haveI := hasPullbacks.has_pullbacks h₁ h₂
+    P.map (pullback.fst : Limits.pullback f₁ f₂ ⟶ _).op (x f₁ h₁) = P.map pullback.snd.op (x f₂ h₂)
 #align category_theory.presieve.family_of_elements.pullback_compatible CategoryTheory.Presieve.FamilyOfElements.PullbackCompatible
 
-theorem pullbackCompatible_iff (x : FamilyOfElements P R) [HasPullbacks C] :
+theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
     x.Compatible ↔ x.PullbackCompatible := by
   constructor
   · intro t Y₁ Y₂ f₁ f₂ hf₁ hf₂
     apply t
+    haveI := hasPullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
+    haveI := hasPullbacks.has_pullbacks  hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t hf₁ hf₂,
       ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
 #align category_theory.presieve.pullback_compatible_iff CategoryTheory.Presieve.pullbackCompatible_iff
@@ -372,7 +372,7 @@ theorem FamilyOfElements.Compatible.compPresheafMap (f : P ⟶ Q) {x : FamilyOfE
 The given element `t` of `P.obj (op X)` is an *amalgamation* for the family of elements `x` if every
 restriction `P.map f.op t = x_f` for every arrow `f` in the presieve `R`.
 
-This is the definition given in  https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents,
+This is the definition given in https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents,
 and https://ncatlab.org/nlab/show/matching+family, as well as [MM92], Chapter III, Section 4,
 equation (2).
 -/
@@ -792,23 +792,23 @@ Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamil
  -/
 
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
-  (hx : FamilyOfElements.Compatible x) :
-     Cocone (R.diagram)  where
+    (hx : FamilyOfElements.Compatible x) :
+    Cocone (R.diagram) where
   pt := W
-  ι  := {
-    app := fun f => x f.obj.hom f.property
-    naturality := by
-      intro g₁ g₂ F
-      simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
+  ι :=
+    { app := fun f => x f.obj.hom f.property
+      naturality := by
+        intro g₁ g₂ F
+        simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
           Functor.const_obj_obj, Functor.comp_map, fullSubcategoryInclusion.map, Over.forget_map,
           Functor.const_obj_map, Category.comp_id]
-      rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
-      apply hx
-      simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp]
-  }
+        rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
+        apply hx
+        simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
 
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
-      FamilyOfElements (yoneda.obj s.pt) R := fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
+    FamilyOfElements (yoneda.obj s.pt) R :=
+  fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
 
 end Presieve
 
@@ -845,21 +845,21 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
   constructor
   · intro H
     refine Nonempty.intro ?_
-    exact {
-    desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+    exact
+    { desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
         (yonedaFamily_fromCocone_compatible S s) |>.choose
-    fac := by
-      intro s f
-      replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
-         (yonedaFamily_fromCocone_compatible S s)
-      have ht := H.choose_spec.1 f.obj.hom f.property
-      aesop_cat
-    uniq := by
-      intro s Fs HFs
-      replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+      fac := by
+        intro s f
+        replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
           (yonedaFamily_fromCocone_compatible S s)
-      apply H.choose_spec.2 Fs
-      exact fun _ f hf => HFs ⟨Over.mk f, hf⟩  }
+        have ht := H.choose_spec.1 f.obj.hom f.property
+        aesop_cat
+      uniq := by
+        intro s Fs HFs
+        replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+          (yonedaFamily_fromCocone_compatible S s)
+        apply H.choose_spec.2 Fs
+        exact fun _ f hf => HFs ⟨Over.mk f, hf⟩ }
   · intro H W x hx
     replace H := Classical.choice H
     let s := compatibleYonedaFamily_toCocone S W x hx
@@ -890,8 +890,8 @@ variable {P R}
 -- porting note: added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
-    (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₁ =
-      (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₂) : z₁ = z₂ := by
+    (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
+      (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₂) : z₁ = z₂ := by
   apply Limits.Types.limit_ext
   rintro ⟨⟨Y, f, hf⟩⟩
   exact h Y f hf
@@ -940,8 +940,8 @@ variable {P S}
 -- porting note: added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
-    (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₁ =
-      (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₂) : z₁ = z₂ := by
+    (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =
+      (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₂) : z₁ = z₂ := by
   apply Limits.Types.limit_ext
   rintro ⟨⟨Y, Z, g, f, hf⟩⟩
   apply h
@@ -1016,34 +1016,40 @@ https://stacks.math.columbia.edu/tag/00VM and the definition of `isSheafFor`.
 
 namespace Presieve
 
-variable [HasPullbacks C]
+variable [R.hasPullbacks]
 
 /-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[simp] def SecondObj : Type max v₁ u₁ :=
   ∏ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
+    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 #align category_theory.equalizer.presieve.second_obj CategoryTheory.Equalizer.Presieve.SecondObj
 
 /-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
+  Pi.lift fun fg =>
+    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    Pi.π _ _ ≫ P.map pullback.fst.op
 #align category_theory.equalizer.presieve.first_map CategoryTheory.Equalizer.Presieve.firstMap
 
-instance : Inhabited (SecondObj P (⊥ : Presieve X)) :=
+instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
   ⟨firstMap _ _ default⟩
 
 /-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
+  Pi.lift fun fg =>
+    haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
+    Pi.π _ _ ≫ P.map pullback.snd.op
 #align category_theory.equalizer.presieve.second_map CategoryTheory.Equalizer.Presieve.secondMap
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
   dsimp
-  ext
+  ext fg
   simp only [firstMap, secondMap, forkMap]
   simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
+  haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
   rw [← P.map_comp, ← op_comp, pullback.condition]
   simp
 #align category_theory.equalizer.presieve.w CategoryTheory.Equalizer.Presieve.w

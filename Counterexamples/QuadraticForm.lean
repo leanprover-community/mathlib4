@@ -2,15 +2,12 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module quadratic_form
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.ZMod.Basic
+
+#align_import quadratic_form from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # `QuadraticForm R M` and `Subtype BilinForm.IsSymm` are distinct notions in characteristic 2
@@ -21,7 +18,7 @@ The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' 
 -/
 
 
-variable (F : Type _) [Nontrivial F] [CommRing F] [CharP F 2]
+variable (F : Type*) [Nontrivial F] [CommRing F] [CharP F 2]
 
 open BilinForm
 
@@ -54,7 +51,7 @@ theorem B_ne_zero : B F ≠ 0 := fun h => by simpa using BilinForm.congr_fun h (
 This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
 -/
 theorem BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
-    ¬∀ {R M : Type u} [Semiring R] [AddCommMonoid M], ∀ [Module R M],
+    ¬∀ {R M : Type u} [CommSemiring R] [AddCommMonoid M], ∀ [Module R M],
       Set.InjOn (toQuadraticForm : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
   let F := ULift.{u} (ZMod 2)

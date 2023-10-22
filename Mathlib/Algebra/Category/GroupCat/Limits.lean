@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Over
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+
+#align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of (commutative) (additive) groups has all limits
@@ -31,13 +28,6 @@ universe v u
 noncomputable section
 
 variable {J : Type v} [SmallCategory J]
-
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs)
-  "An alias for `AddGroupCat.{max u v}`, to deal around unification issues."]
-abbrev GroupCatMax.{u1, u2} := GroupCat.{max u1 u2}
-
 
 namespace GroupCat
 
@@ -137,8 +127,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of groups has all limits. -/
 @[to_additive "The category of additive groups has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u}
-    where has_limits_of_shape J _ :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u} where
+  has_limits_of_shape J _ :=
     { has_limit :=
         -- Porting note: add this instance to help Lean unify universe levels
         fun F => letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
@@ -220,12 +210,6 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_preserves_limits AddGroupCat.forgetPreservesLimits
 
 end GroupCat
-
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommGroupCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs)
-  "An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues."]
-abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 
 namespace CommGroupCat
 
@@ -334,8 +318,8 @@ of groups.)
   (That is, the underlying group could have been computed instead as limits in the category
     of additive groups.)"]
 noncomputable instance forget₂GroupPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u})
-    where preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
+    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) where
+  preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂_Group_preserves_limits_of_size CommGroupCat.forget₂GroupPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
@@ -384,7 +368,7 @@ set_option linter.uppercaseLean3 false in
 /-- The forgetful functor from commutative groups to types preserves all limits. (That is, the
 underlying types could have been computed instead as limits in the category of types.)
 -/
-@[to_additive AddCommGroupCat.forgetPreservesLimits
+@[to_additive
   "The forgetful functor from additive commutative groups to types preserves all limits.
   (That is, the underlying types could have been computed instead as limits in the category of
   types.)"]
@@ -401,7 +385,11 @@ noncomputable instance forgetPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_preserves_limits_of_size CommGroupCat.forgetPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimits
+#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimitsOfSize
+
+@[to_additive]
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) :=
+  CommGroupCat.forgetPreservesLimitsOfSize.{u, u}
 
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGroupCat) : HasProduct f := by infer_instance
@@ -419,7 +407,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, FunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
-        simpa using (AddSubgroup.coe_zero _).symm
+        simp [(AddSubgroup.coe_zero _).symm]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         change _ = _ + _
@@ -476,5 +464,9 @@ def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
   Over.isoMk (kernelIsoKer f)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AddCommGroupCat.kernelIsoKerOver_inv_left_apply
+  AddCommGroupCat.kernelIsoKerOver_hom_left_apply_coe
 
 end AddCommGroupCat

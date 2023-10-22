@@ -2,20 +2,17 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.linear_map
-! leanprover-community/mathlib commit 62c0a4ef1441edb463095ea02a06e87f3dfe135c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.matrix.charpoly.linear_map from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
 /-!
 
 # Cayley-Hamilton theorem for f.g. modules.
 
-Given a fixed finite spanning set `b : ι → M` of a `R`-module `M`, we say that a matrix `M`
+Given a fixed finite spanning set `b : ι → M` of an `R`-module `M`, we say that a matrix `M`
 represents an endomorphism `f : M →ₗ[R] M` if the matrix as an endomorphism of `ι → R` commutes
 with `f` via the projection `(ι → R) →ₗ[R] M` given by `b`.
 
@@ -26,9 +23,9 @@ This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbit
 -/
 
 
-variable {ι : Type _} [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 
-variable {M : Type _} [AddCommGroup M] (R : Type _) [CommRing R] [Module R M] (I : Ideal R)
+variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I : Ideal R)
 
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
@@ -231,7 +228,8 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
   classical
     cases subsingleton_or_nontrivial R
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
-    obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ := Module.Finite.out
+    obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
+      Module.Finite.out (R := R) (M := M)
     -- Porting note: `H` was `rfl`
     obtain ⟨A, H, h⟩ :=
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)

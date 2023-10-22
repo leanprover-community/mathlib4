@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.primrec
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
+
+#align_import computability.primrec from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # The primitive recursive functions
@@ -42,9 +39,9 @@ namespace Nat
 -- without having to then add all the other underscores
 
 -- /-- The non-dependent recursor on naturals. -/
--- def elim {C : Sort _} : C → (ℕ → C → C) → ℕ → C :=
+-- def elim {C : Sort*} : C → (ℕ → C → C) → ℕ → C :=
 --   @Nat.rec fun _ => C
--- example {C : Sort _} (base : C) (succ : ℕ → C → C) (a : ℕ) :
+-- example {C : Sort*} (base : C) (succ : ℕ → C → C) (a : ℕ) :
 --   a.elim base succ = a.rec base succ := rfl
 
 #align nat.elim Nat.rec
@@ -57,9 +54,9 @@ namespace Nat
 -- at inferring motive types (I think this is the reason)
 
 -- /-- Cases on whether the input is 0 or a successor. -/
--- def cases {C : Sort _} (a : C) (f : ℕ → C) : ℕ → C :=
+-- def cases {C : Sort*} (a : C) (f : ℕ → C) : ℕ → C :=
 --   Nat.elim a fun n _ => f n
--- example {C : Sort _} (a : C) (f : ℕ → C) (n : ℕ) :
+-- example {C : Sort*} (a : C) (f : ℕ → C) (n : ℕ) :
 --   n.cases a f = n.casesOn a f := rfl
 
 #align nat.cases Nat.casesOn
@@ -156,7 +153,7 @@ end Nat
 
 /-- A `Primcodable` type is an `Encodable` type for which
   the encode/decode functions are primitive recursive. -/
-class Primcodable (α : Type _) extends Encodable α where
+class Primcodable (α : Type*) extends Encodable α where
   -- porting note: was `prim [] `.
   -- This means that `prim` does not take the type explicitly in Lean 4
   prim : Nat.Primrec fun n => Encodable.encode (decode n)
@@ -187,7 +184,7 @@ instance unit : Primcodable PUnit :=
   ⟨(casesOn1 1 zero).of_eq fun n => by cases n <;> simp⟩
 #align primcodable.unit Primcodable.unit
 
-instance option {α : Type _} [h : Primcodable α] : Primcodable (Option α) :=
+instance option {α : Type*} [h : Primcodable α] : Primcodable (Option α) :=
   ⟨(casesOn1 1 ((casesOn1 0 (.comp .succ .succ)).comp (@Primcodable.prim α _))).of_eq fun n => by
     cases n with
       | zero => rfl
@@ -213,7 +210,7 @@ def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -327,7 +324,7 @@ instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β)
   ⟨((casesOn' zero ((casesOn' zero .succ).comp (pair right ((@Primcodable.prim β).comp left)))).comp
           (pair right ((@Primcodable.prim α).comp left))).of_eq
       fun n => by
-      simp [Nat.unpaired]
+      simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
       cases @decode α _ n.unpair.1; · simp
       cases @decode β _ n.unpair.2 <;> simp⟩
 #align primcodable.prod Primcodable.prod
@@ -336,7 +333,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type _} {σ : Type _} [Primcodable α] [Primcodable σ]
+variable {α : Type*} {σ : Type*} [Primcodable α] [Primcodable σ]
 
 open Nat.Primrec
 
@@ -346,7 +343,7 @@ theorem fst {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.fst α β
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
-    simp
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 #align primrec.fst Primrec.fst
@@ -357,7 +354,7 @@ theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
-    simp
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 #align primrec.snd Primrec.snd
@@ -410,7 +407,7 @@ def PrimrecRel {α β} [Primcodable α] [Primcodable β] (s : α → β → Prop
 
 namespace Primrec₂
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -470,7 +467,7 @@ end Primrec₂
 
 section Comp
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -520,7 +517,7 @@ theorem PrimrecRel.of_eq {α β} [Primcodable α] [Primcodable β] {r s : α →
 
 namespace Primrec₂
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -551,7 +548,7 @@ end Primrec₂
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
@@ -571,9 +568,10 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
                 Nat.Primrec.right.pair <| Nat.Primrec.right.comp Nat.Primrec.left).comp <|
           Nat.Primrec.id.pair <| (@Primcodable.prim α).comp Nat.Primrec.left).of_eq
       fun n => by
-      simp
+      simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
+        Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
-      simp [encodek]
+      simp only [encode_some, encodek, Option.map_some', Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
       simp [*, encodek]
 #align primrec.nat_elim Primrec.nat_rec
@@ -771,7 +769,7 @@ protected theorem decode₂ : Primrec (decode₂ α) :=
 #align primrec.decode₂ Primrec.decode₂
 
 theorem list_findIdx₁ {p : α → β → Bool} (hp : Primrec₂ p) :
-  ∀ l : List β, Primrec fun a => l.findIdx (p a)
+    ∀ l : List β, Primrec fun a => l.findIdx (p a)
 | [] => const 0
 | a :: l => (cond (hp.comp .id (const a)) (const 0) (succ.comp (list_findIdx₁ hp l))).of_eq fun n =>
   by simp [List.findIdx_cons]
@@ -868,7 +866,7 @@ end Primrec
 
 section
 
-variable {α : Type _} {β : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
@@ -905,8 +903,8 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     (fst.comp <|
       nat_iterate (encode_iff.2 hf) (pair hg hf) <|
       hG)
-  suffices : ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n)
-  · refine hF.of_eq fun a => ?_
+  suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
+    refine hF.of_eq fun a => ?_
     rw [this, List.take_all_of_le (length_le_encode _)]
   introv
   dsimp only
@@ -914,7 +912,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
   generalize g a = x
   induction' n with n IH generalizing l x
   · rfl
-  simp
+  simp only [iterate_succ, comp_apply]
   cases' l with b l <;> simp [IH]
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
@@ -934,7 +932,7 @@ end
 
 namespace Primcodable
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 variable [Primcodable α] [Primcodable β]
 
@@ -950,7 +948,7 @@ instance sum : Primcodable (Sum α β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp [decodeSum]
+          simp only [decodeSum, Nat.boddDiv2_eq]
           cases Nat.bodd n <;> simp [decodeSum]
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
@@ -989,7 +987,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
@@ -1161,7 +1159,7 @@ end Primrec
 
 namespace Primcodable
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 variable [Primcodable α] [Primcodable β]
 
@@ -1219,7 +1217,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type _} {β : Type _} {γ : Type _} {σ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 

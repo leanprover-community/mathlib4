@@ -2,13 +2,10 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.ordinal.principal
-! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.FixedPoint
+
+#align_import set_theory.ordinal.principal from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
 ### Principal ordinals
@@ -91,35 +88,21 @@ theorem nfp_le_of_principal {op : Ordinal → Ordinal → Ordinal} {a o : Ordina
 
 /-! ### Principal ordinals are unbounded -/
 
-
-/-- The least strict upper bound of `op` applied to all pairs of ordinals less than `o`. This is
-essentially a two-argument version of `Ordinal.blsub`. -/
-def blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Ordinal :=
-  lsub fun x : o.out.α × o.out.α => op (typein LT.lt x.1) (typein LT.lt x.2)
-#align ordinal.blsub₂ Ordinal.blsub₂
-
-theorem lt_blsub₂ (op : Ordinal.{u} → Ordinal.{u} → Ordinal.{max u v})
-  {o a b : Ordinal.{u}} (ha : a < o)
-    (hb : b < o) : op a b < blsub₂.{u, v} op o := by
-  convert lt_lsub.{v, u}
-      (fun x : (Quotient.out.{u+2} o).α × (Quotient.out.{u+2} o).α =>
-        op (typein.{u} LT.lt x.fst) (typein.{u} LT.lt x.snd))
-      (Prod.mk.{u, u} (enum.{u} LT.lt a (by rwa [type_lt])) (enum.{u} LT.lt b (by rwa [type_lt])))
-  <;> simp only [typein_enum]
-#align ordinal.lt_blsub₂ Ordinal.lt_blsub₂
-
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
-    Principal op (nfp (blsub₂.{u, u} op) o) := fun a b ha hb => by
+    Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) :=
+  fun a b ha hb => by
   rw [lt_nfp] at *
   cases' ha with m hm
   cases' hb with n hn
-  cases' le_total ((blsub₂.{u, u} op)^[m] o) ((blsub₂.{u, u} op)^[n] o) with h h
+  cases' le_total
+    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[m] o)
+    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h
   · use n + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ op (hm.trans_le h) hn
+    exact lt_blsub₂ (@fun a _ b _ => op a b) (hm.trans_le h) hn
   · use m + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ op hm (hn.trans_le h)
+    exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
 #align ordinal.principal_nfp_blsub₂ Ordinal.principal_nfp_blsub₂
 
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
@@ -201,10 +184,10 @@ theorem add_omega_opow {a b : Ordinal} (h : a < (omega^b)) : a + (omega^b) = (om
   · rw [opow_zero, ← succ_zero, lt_succ_iff, Ordinal.le_zero] at h
     rw [h, zero_add]
   · rw [opow_succ] at h
-    rcases(lt_mul_of_limit omega_isLimit).1 h with ⟨x, xo, ax⟩
+    rcases (lt_mul_of_limit omega_isLimit).1 h with ⟨x, xo, ax⟩
     refine' le_trans (add_le_add_right (le_of_lt ax) _) _
     rw [opow_succ, ← mul_add, add_omega xo]
-  · rcases(lt_opow_of_limit omega_ne_zero l).1 h with ⟨x, xb, ax⟩
+  · rcases (lt_opow_of_limit omega_ne_zero l).1 h with ⟨x, xb, ax⟩
     exact
       (((add_isNormal a).trans (opow_isNormal one_lt_omega)).limit_le l).2 fun y yb =>
         (add_le_add_left (opow_le_opow_right omega_pos (le_max_right _ _)) _).trans
@@ -353,11 +336,11 @@ theorem mul_lt_omega_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < (omega^c)) (h
   rcases zero_or_succ_or_limit c with (rfl | ⟨c, rfl⟩ | l)
   · exact (lt_irrefl _).elim c0
   · rw [opow_succ] at ha
-    rcases((mul_isNormal <| opow_pos _ omega_pos).limit_lt omega_isLimit).1 ha with ⟨n, hn, an⟩
+    rcases ((mul_isNormal <| opow_pos _ omega_pos).limit_lt omega_isLimit).1 ha with ⟨n, hn, an⟩
     apply (mul_le_mul_right' (le_of_lt an) _).trans_lt
     rw [opow_succ, mul_assoc, mul_lt_mul_iff_left (opow_pos _ omega_pos)]
     exact principal_mul_omega hn hb
-  · rcases((opow_isNormal one_lt_omega).limit_lt l).1 ha with ⟨x, hx, ax⟩
+  · rcases ((opow_isNormal one_lt_omega).limit_lt l).1 ha with ⟨x, hx, ax⟩
     refine' (mul_le_mul' (le_of_lt ax) (le_of_lt hb)).trans_lt _
     rw [← opow_succ, opow_lt_opow_iff_right one_lt_omega]
     exact l.2 _ hx
@@ -371,7 +354,7 @@ theorem mul_omega_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < (omega^omega^b
   refine'
     le_antisymm _
       (by simpa only [one_mul] using mul_le_mul_right' (one_le_iff_pos.2 a0) (omega^omega^b))
-  rcases(lt_opow_of_limit omega_ne_zero (opow_isLimit_left omega_isLimit b0)).1 h with ⟨x, xb, ax⟩
+  rcases (lt_opow_of_limit omega_ne_zero (opow_isLimit_left omega_isLimit b0)).1 h with ⟨x, xb, ax⟩
   apply (mul_le_mul_right' (le_of_lt ax) _).trans
   rw [← opow_add, add_omega_opow xb]
 #align ordinal.mul_omega_opow_opow Ordinal.mul_omega_opow_opow

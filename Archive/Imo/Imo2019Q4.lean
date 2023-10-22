@@ -2,16 +2,13 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module imo.imo2019_q4
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Tactic.GCongr
+
+#align_import imo.imo2019_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2019 Q4
@@ -32,7 +29,7 @@ individually.
 
 open scoped Nat BigOperators
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Nat hiding zero_le Prime
 
@@ -90,7 +87,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   -- The implication `←` holds.
   constructor
   swap
-  · rintro (h | h) <;> simp [Prod.ext_iff] at h  <;> rcases h with ⟨rfl, rfl⟩ <;>
+  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;>
     norm_num [prod_range_succ, succ_mul]
   intro h
   -- We know that n < 6.
@@ -100,9 +97,9 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   · left; congr; norm_num at h; rw [factorial_eq_one] at h; apply antisymm h
     apply succ_le_of_lt hk
   -- n = 2
-  · right; congr; rw [prod_range_succ] at h; norm_num at h; norm_cast at h; rw [← factorial_inj]
+  · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rw [← factorial_inj]
     exact h; rw [h]; norm_num
-  all_goals exfalso; (repeat rw [prod_range_succ] at h); norm_num at h; norm_cast at h
+  all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
   · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> norm_num
   -- n = 4

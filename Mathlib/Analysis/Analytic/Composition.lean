@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
-
-! This file was ported from Lean 3 source module analysis.analytic.composition
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Combinatorics.Composition
+
+#align_import analysis.analytic.composition from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Composition of analytic functions
@@ -45,7 +42,7 @@ summability of the norms, this implies the overall convergence.
 * `has_fpower_series_at.comp` states that if two functions `g` and `f` admit power series expansions
   `q` and `p`, then `g ∘ f` admits a power series expansion given by `q.comp p`.
 * `analytic_at.comp` states that the composition of analytic functions is analytic.
-* `formal_multilinear_series.comp_assoc` states that composition is associative on formal
+* `FormalMultilinearSeries.comp_assoc` states that composition is associative on formal
   multilinear series.
 
 ## Implementation details
@@ -71,7 +68,7 @@ in more details below in the paragraph on associativity.
 
 noncomputable section
 
-variable {𝕜 : Type _} {E F G H : Type _}
+variable {𝕜 : Type*} {E F G H : Type*}
 
 open Filter List
 
@@ -652,7 +649,7 @@ and `comp_partial_sum_target m M N`, yielding equal sums for functions that corr
 other under the bijection. As `comp_change_of_variables m M N` is a dependent function, stating
 that it is a bijection is not directly possible, but the consequence on sums can be stated
 more easily. -/
-theorem compChangeOfVariables_sum {α : Type _} [AddCommMonoid α] (m M N : ℕ)
+theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     (f : (Σ n : ℕ, Fin n → ℕ) → α) (g : (Σ n, Composition n) → α)
     (h : ∀ (e) (he : e ∈ compPartialSumSource m M N), f e = g (compChangeOfVariables m M N e he)) :
     ∑ e in compPartialSumSource m M N, f e = ∑ e in compPartialSumTarget m M N, g e := by
@@ -707,7 +704,7 @@ theorem compPartialSumTarget_tendsto_atTop :
     aesop
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
-    obtain ⟨n, hn⟩ : BddAbove ↑(Finset.univ.image fun i : Fin c.length => c.blocksFun i) :=
+    obtain ⟨n, hn⟩ : BddAbove ((Finset.univ.image fun i : Fin c.length => c.blocksFun i) : Set ℕ) :=
       Finset.bddAbove _
     refine'
       ⟨max n c.length + 1, bot_le, lt_of_le_of_lt (le_max_right n c.length) (lt_add_one _), fun j =>
@@ -746,7 +743,7 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-set_option maxHeartbeats 450000 in
+set_option maxHeartbeats 300000 in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, then
 `g ∘ f` admits the power series `q.comp p` at `x`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
@@ -881,6 +878,16 @@ theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt �
   (hq.comp hp).analyticAt
 #align analytic_at.comp AnalyticAt.comp
 
+/-- If two functions `g` and `f` are analytic respectively on `s.image f` and `s`, then `g ∘ f` is
+analytic on `s`. -/
+theorem AnalyticOn.comp' {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g (s.image f))
+    (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (g ∘ f) s :=
+  fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
+
+theorem AnalyticOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g t)
+    (hf : AnalyticOn 𝕜 f s) (st : Set.MapsTo f s t) : AnalyticOn 𝕜 (g ∘ f) s :=
+  comp' (mono hg (Set.mapsTo'.mp st)) hf
+
 /-!
 ### Associativity of the composition of formal multilinear series
 
@@ -929,11 +936,11 @@ made of two blocks of length `4` and `9`, i.e., `c = [4, 9]`. But one can also r
 the new first block was initially made of two blocks of size `2`, so `d₀ = [2, 2]`, and the new
 second block was initially made of three blocks of size `3`, `4` and `2`, so `d₁ = [3, 4, 2]`.
 
-This equivalence is called `composition.sigma_equiv_sigma_pi n` below.
+This equivalence is called `Composition.sigma_equiv_sigma_pi n` below.
 
 We start with preliminary results on compositions, of a very specialized nature, then define the
-equivalence `composition.sigma_equiv_sigma_pi n`, and we deduce finally the associativity of
-composition of formal multilinear series in `formal_multilinear_series.comp_assoc`.
+equivalence `Composition.sigmaEquivSigmaPi n`, and we deduce finally the associativity of
+composition of formal multilinear series in `FormalMultilinearSeries.comp_assoc`.
 -/
 
 
@@ -975,7 +982,6 @@ theorem sigma_pi_composition_eq_iff
         ofFn fun i : Fin (Composition.length a') => (b' i).blocks.sum at this
     simpa [Composition.blocks_sum, Composition.ofFn_blocksFun] using this
   induction h
-  simp only [true_and_iff, eq_self_iff_true, heq_iff_eq]
   ext1
   · rfl
   · simp only [heq_eq_eq, ofFn_inj] at H ⊢
@@ -1013,7 +1019,7 @@ theorem length_gather (a : Composition n) (b : Composition a.length) :
 
 -- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
 set_option linter.deprecated false in
-/-- An auxiliary function used in the definition of `sigma_equiv_sigma_pi` below, associating to
+/-- An auxiliary function used in the definition of `sigmaEquivSigmaPi` below, associating to
 two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by the length of
 `a.gather b`, the subcomposition of `a` made of those blocks belonging to the `i`-th block of
 `a.gather b`. -/
@@ -1173,8 +1179,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       rw [get_of_eq (splitWrtComposition_join _ _ _)]
       · simp only [get_ofFn]
         rfl
-      · simp only [map_ofFn]
-        congr
+      · congr
       · simp only [map_ofFn]
         rfl
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
@@ -1200,7 +1205,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     simpa only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
       compAlongComposition_apply, Finset.sum_sigma', applyComposition,
       ContinuousMultilinearMap.map_sum]
-  /- Now, we use `composition.sigma_equiv_sigma_pi n` to change
+  /- Now, we use `Composition.sigmaEquivSigmaPi n` to change
     variables in the second sum, and check that we get exactly the same sums. -/
   rw [← (sigmaEquivSigmaPi n).sum_comp]
   /- To check that we have the same terms, we should check that we apply the same component of
@@ -1211,7 +1216,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   apply Finset.sum_congr rfl
   rintro ⟨a, b⟩ _
   dsimp [sigmaEquivSigmaPi]
-  -- check that the `r` components are the same. Based on `composition.length_gather`
+  -- check that the `r` components are the same. Based on `Composition.length_gather`
   apply r.congr (Composition.length_gather a b).symm
   intro i hi1 hi2
   -- check that the `q` components are the same. Based on `length_sigma_composition_aux`

@@ -2,14 +2,14 @@
 Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.char_zero.defs
-! leanprover-community/mathlib commit d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.NormCast.Tactic
+import Mathlib.Tactic.Cases
+import Mathlib.Algebra.NeZero
+
+#align_import algebra.char_zero.defs from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
 /-!
 
@@ -30,15 +30,18 @@ from the natural numbers into it is injective.
 * Unify with `CharP` (possibly using an out-parameter)
 -/
 
+set_option autoImplicit true
+
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)
+
 *Warning*: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.
 * `CharZero R` requires an injection `ℕ ↪ R`;
 * `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`.
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `counterexamples/char_p_zero_ne_char_zero`.
- -/
+This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+-/
 class CharZero (R) [AddMonoidWithOne R] : Prop where
   /-- An additive monoid with one has characteristic zero if the canonical map `ℕ → R` is
   injective. -/
@@ -103,21 +106,21 @@ namespace OfNat
 
 variable [AddMonoidWithOne R] [CharZero R]
 
-@[simp] lemma ofNat_ne_zero (n : ℕ) [h : n.AtLeastTwo] : (ofNat n : R) ≠ 0 :=
+@[simp] lemma ofNat_ne_zero (n : ℕ) [h : n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 0 :=
   Nat.cast_ne_zero.2 <| ne_of_gt <| lt_trans Nat.one_pos h.prop
 
-@[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (ofNat n : R) :=
+@[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (no_index (ofNat n) : R) :=
   (ofNat_ne_zero n).symm
 
-@[simp] lemma ofNat_ne_one (n : ℕ) [h : n.AtLeastTwo] : (ofNat n : R) ≠ 1 := by
+@[simp] lemma ofNat_ne_one (n : ℕ) [h : n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 1 := by
   rw [← Nat.cast_eq_ofNat, ← @Nat.cast_one R, Ne.def, Nat.cast_inj]
   exact ne_of_gt h.prop
 
-@[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ ofNat n :=
+@[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ no_index (ofNat n) :=
   (ofNat_ne_one n).symm
 
 @[simp] lemma ofNat_eq_ofNat {m n : ℕ} [m.AtLeastTwo] [n.AtLeastTwo] :
-    (ofNat m : R) = ofNat n ↔ (ofNat m : ℕ) = ofNat n :=
+    (no_index (ofNat m) : R) = no_index (ofNat n) ↔ (ofNat m : ℕ) = ofNat n :=
   Nat.cast_inj
 
 end OfNat

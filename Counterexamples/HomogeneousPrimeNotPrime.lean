@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
-
-! This file was ported from Lean 3 source module homogeneous_prime_not_prime
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.DeriveFintype
+
+#align_import homogeneous_prime_not_prime from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
@@ -26,9 +23,9 @@ statement is false.
 We achieve this by considering the ring `R=ℤ/4ℤ`. We first give the two element set `ι = {0, 1}` a
 structure of linear ordered additive commutative monoid by setting `0 + 0 = 0` and `_ + _ = 1` and
 `0 < 1`. Then we use `ι` to grade `R²` by setting `{(a, a) | a ∈ R}` to have grade `0`; and
-`{(0, b) | b ∈ R}` to have grade 1. Then the ideal `I = span {(0, 2)} ⊆ ℤ/4ℤ` is homogeneous and not
-prime. But it is homogeneously prime, i.e. if `(a, b), (c, d)` are two homogeneous elements then
-`(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
+`{(0, b) | b ∈ R}` to have grade 1. Then the ideal `I = span {(2, 2)} ⊆ ℤ/4ℤ × ℤ/4ℤ` is homogeneous
+and not prime. But it is homogeneously prime, i.e. if `(a, b), (c, d)` are two homogeneous elements
+then `(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
 
 
 ## Tags
@@ -49,19 +46,19 @@ abbrev Two :=
   WithZero Unit
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.two Counterexample.CounterexampleNotPrimeButHomogeneousPrime.Two
 
-instance Two.LinearOrder : LinearOrder Two :=
+instance Two.instLinearOrder : LinearOrder Two :=
   inferInstance
 
-instance Two.AddCommMonoid : AddCommMonoid Two :=
+instance Two.instAddCommMonoid : AddCommMonoid Two :=
   inferInstance
 
 instance : LinearOrderedAddCommMonoid Two :=
-  { Two.LinearOrder, Two.AddCommMonoid with
+  { Two.instLinearOrder, Two.instAddCommMonoid with
     add_le_add_left := by
       delta Two WithZero; decide }
 section
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-- The grade 0 part of `R²` is `{(a, a) | a ∈ R}`. -/
 def submoduleZ : Submodule R (R × R) where
@@ -92,9 +89,9 @@ theorem grading.mul_mem :
       a * b ∈ grading R (i + j)
   | 0, 0, a, b, (ha : a.1 = a.2), (hb : b.1 = b.2) => show a.1 * b.1 = a.2 * b.2 by rw [ha, hb]
   | 0, 1, a, b, (_ : a.1 = a.2), (hb : b.1 = 0) =>
-    show a.1 * b.1 = 0 by rw [hb, MulZeroClass.mul_zero]
-  | 1, 0, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, MulZeroClass.zero_mul]
-  | 1, 1, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, MulZeroClass.zero_mul]
+    show a.1 * b.1 = 0 by rw [hb, mul_zero]
+  | 1, 0, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, zero_mul]
+  | 1, 1, a, b, (ha : a.1 = 0), _ => show a.1 * b.1 = 0 by rw [ha, zero_mul]
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.mul_mem Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.mul_mem
 
 end
@@ -107,7 +104,7 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
     of (grading R ·) 0 ⟨(zz.1, zz.1), rfl⟩ +
     of (grading R ·) 1 ⟨(0, zz.2 - zz.1), rfl⟩
   map_zero' := by
-    refine' Dfinsupp.ext (fun (i : Two) =>
+    refine' DFinsupp.ext (fun (i : Two) =>
         Option.casesOn i _ (fun (i_1 : Unit) => PUnit.casesOn i_1 _)) <;> rfl
   map_add' := by
     rintro ⟨a1, b1⟩ ⟨a2, b2⟩

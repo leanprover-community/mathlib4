@@ -2,15 +2,12 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.circumcenter
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.DeriveFintype
+
+#align_import geometry.euclidean.circumcenter from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Circumcenter and circumradius
@@ -43,7 +40,7 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 open AffineSubspace
@@ -51,7 +48,7 @@ open AffineSubspace
 /-- `p` is equidistant from two points in `s` if and only if its
 `orthogonalProjection` is. -/
 theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p1 p2 : P} (p3 : P) (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
+    [HasOrthogonalProjection s.direction] {p1 p2 : P} (p3 : P) (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
     dist p1 p3 = dist p2 p3 ↔
       dist p1 (orthogonalProjection s p3) = dist p2 (orthogonalProjection s p3) := by
   rw [← mul_self_inj_of_nonneg dist_nonneg dist_nonneg, ←
@@ -64,7 +61,7 @@ theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Non
 /-- `p` is equidistant from a set of points in `s` if and only if its
 `orthogonalProjection` is. -/
 theorem dist_set_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
+    [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
     (Set.Pairwise ps fun p1 p2 => dist p1 p = dist p2 p) ↔
       Set.Pairwise ps fun p1 p2 =>
         dist p1 (orthogonalProjection s p) = dist p2 (orthogonalProjection s p) :=
@@ -79,7 +76,7 @@ points of a set of points in `s` if and only if there exists (possibly
 different) `r` such that its `orthogonalProjection` has that distance
 from all the points in that set. -/
 theorem exists_dist_eq_iff_exists_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
+    [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
     (∃ r, ∀ p1 ∈ ps, dist p1 p = r) ↔ ∃ r, ∀ p1 ∈ ps, dist p1 ↑(orthogonalProjection s p) = r := by
   have h := dist_set_eq_iff_dist_orthogonalProjection_eq hps p
   simp_rw [Set.pairwise_eq_iff_exists_eq] at h
@@ -93,9 +90,9 @@ subspace whose direction is complete, such that there is a unique
 and a point `p` not in that subspace, there is a unique (circumcenter,
 circumradius) pair for the set with `p` added, in the span of the
 subspace with `p` added. -/
-theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace s.direction]
-    {ps : Set P} (hnps : ps.Nonempty) {p : P} (hps : ps ⊆ s) (hp : p ∉ s)
-    (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
+theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
+    [HasOrthogonalProjection s.direction] {ps : Set P} (hnps : ps.Nonempty) {p : P} (hps : ps ⊆ s)
+    (hp : p ∉ s) (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
     ∃! cs₂ : Sphere P,
       cs₂.center ∈ affineSpan ℝ (insert p (s : Set P)) ∧ insert p ps ⊆ (cs₂ : Set P) := by
   haveI : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
@@ -190,7 +187,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
 in the affine subspace they span. -/
-theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type _} [hne : Nonempty ι] [Finite ι]
+theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonempty ι] [Finite ι]
     {p : ι → P} (ha : AffineIndependent ℝ p) :
     ∃! cs : Sphere P, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ (cs : Set P) := by
   cases nonempty_fintype ι
@@ -206,12 +203,12 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type _} [hne : Nonem
       use ⟨p i, 0⟩
       simp only [Set.range_unique, AffineSubspace.mem_affineSpan_singleton]
       constructor
-      · simp_rw [hi default, Set.singleton_subset_iff, Sphere.mem_coe, mem_sphere, dist_self]
+      · simp_rw [hi default, Set.singleton_subset_iff]
         exact ⟨⟨⟩, by simp only [Metric.sphere_zero, Set.mem_singleton_iff]⟩
       · rintro ⟨cc, cr⟩
         simp only
         rintro ⟨rfl, hdist⟩
-        simp [Set.singleton_subset_iff, Sphere.mem_coe, mem_sphere, dist_self] at hdist
+        simp [Set.singleton_subset_iff] at hdist
         rw [hi default, hdist]
     · have i := hne.some
       let ι2 := { x // x ≠ i }
@@ -248,7 +245,7 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The circumsphere of a simplex. -/
@@ -537,7 +534,7 @@ def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex 
 #align affine.simplex.point_index_embedding Affine.Simplex.pointIndexEmbedding
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
-theorem sum_pointsWithCircumcenter {α : Type _} [AddCommMonoid α] {n : ℕ}
+theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
     (f : PointsWithCircumcenterIndex n → α) :
     ∑ i, f i = (∑ i : Fin (n + 1), f (point_index i)) + f circumcenter_index := by
   have h : univ = insert circumcenter_index (univ.map (pointIndexEmbedding n)) := by
@@ -726,14 +723,14 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace FiniteDimensional
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- Given a nonempty affine subspace, whose direction is complete,
 that contains a set of points, those points are cospherical if and
 only if they are equidistant from some point in that subspace. -/
 theorem cospherical_iff_exists_mem_of_complete {s : AffineSubspace ℝ P} {ps : Set P} (h : ps ⊆ s)
-    [Nonempty s] [CompleteSpace s.direction] :
+    [Nonempty s] [HasOrthogonalProjection s.direction] :
     Cospherical ps ↔ ∃ center ∈ s, ∃ radius : ℝ, ∀ p ∈ ps, dist p center = radius := by
   constructor
   · rintro ⟨c, hcr⟩

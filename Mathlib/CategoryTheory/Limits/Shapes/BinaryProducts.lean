@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.binary_products
-! leanprover-community/mathlib commit fec1d95fc61c750c1ddbb5b1f7f48b8e811a80d7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Over
+
+#align_import category_theory.limits.shapes.binary_products from "leanprover-community/mathlib"@"fec1d95fc61c750c1ddbb5b1f7f48b8e811a80d7"
 
 /-!
 # Binary (co)products
@@ -535,7 +532,7 @@ abbrev prod (X Y : C) [HasBinaryProduct X Y] :=
   limit (pair X Y)
 #align category_theory.limits.prod CategoryTheory.Limits.prod
 
-/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y ` or
+/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or
     `X ⨿ Y`. -/
 abbrev coprod (X Y : C) [HasBinaryCoproduct X Y] :=
   colimit (pair X Y)
@@ -617,7 +614,7 @@ abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶
 #align category_theory.limits.coprod.desc CategoryTheory.Limits.coprod.desc
 
 /-- codiagonal arrow of the binary coproduct -/
-abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶  X :=
+abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
 #align category_theory.limits.codiag CategoryTheory.Limits.codiag
 
@@ -801,7 +798,7 @@ instance isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] 
   IsIso.of_iso (prod.mapIso (asIso f) (asIso g))
 #align category_theory.limits.is_iso_prod CategoryTheory.Limits.isIso_prod
 
-instance prod.map_mono {C : Type _} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
+instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryProduct W X] [HasBinaryProduct Y Z] : Mono (prod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
@@ -941,7 +938,7 @@ instance isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct
   IsIso.of_iso (coprod.mapIso (asIso f) (asIso g))
 #align category_theory.limits.is_iso_coprod CategoryTheory.Limits.isIso_coprod
 
-instance coprod.map_epi {C : Type _} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
+instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] : Epi (coprod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext

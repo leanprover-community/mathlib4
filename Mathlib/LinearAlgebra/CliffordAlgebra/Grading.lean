@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.grading
-! leanprover-community/mathlib commit 34020e531ebc4e8aac6d449d9eecbcd1508ea8d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import linear_algebra.clifford_algebra.grading from "leanprover-community/mathlib"@"34020e531ebc4e8aac6d449d9eecbcd1508ea8d0"
 
 /-!
 # Results about the grading structure of the clifford algebra
@@ -22,7 +19,7 @@ The main result is `CliffordAlgebra.gradedAlgebra`, which says that the clifford
 
 namespace CliffordAlgebra
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 variable {Q : QuadraticForm R M}
 
@@ -121,12 +118,11 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   | h0 =>
     rw [AlgHom.map_zero]
     apply Eq.symm
-    apply Dfinsupp.single_eq_zero.mpr; rfl
+    apply DFinsupp.single_eq_zero.mpr; rfl
   | hadd x y hx hy ihx ihy =>
     rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
 
-set_option maxHeartbeats 300000 in
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
@@ -142,7 +138,6 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     (by apply GradedAlgebra.lift_ι_eq Q)
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
-set_option maxHeartbeats 300000 in
 theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
@@ -244,7 +239,6 @@ theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx := by
   refine' evenOdd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
-  simp_rw [ZMod.val_zero, pow_zero]
   rintro ⟨r, rfl⟩
   exact hr r
 #align clifford_algebra.even_induction CliffordAlgebra.even_induction

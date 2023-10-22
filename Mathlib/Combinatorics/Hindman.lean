@@ -2,15 +2,12 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module combinatorics.hindman
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Data.Stream.Init
+
+#align_import combinatorics.hindman from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Hindman's theorem on finite sums
@@ -255,7 +252,7 @@ set_option linter.uppercaseLean3 false in
 #align hindman.FS_iter_tail_sub_FS Hindman.FS_iter_tail_sub_FS
 
 @[to_additive]
-theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.nth i ∈ FP a := by
+theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.get i ∈ FP a := by
   induction' i with i ih generalizing a
   · apply FP.head
   · apply FP.tail
@@ -267,7 +264,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
-    a.nth i * a.nth j ∈ FP a := by
+    a.get i * a.get j ∈ FP a := by
   refine' FP_drop_subset_FP _ i _
   rw [← Stream'.head_drop]
   apply FP.cons
@@ -275,7 +272,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   -- Porting note: need to fix breakage of Set notation
   change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
-  rw [Stream'.tail_eq_drop, Stream'.nth_drop, Stream'.nth_drop] at this
+  rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
   convert this
   rw [hd, add_comm, Nat.succ_add, Nat.add_succ]
 set_option linter.uppercaseLean3 false in
@@ -285,7 +282,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
-    (s.prod fun i => a.nth i) ∈ FP a := by
+    (s.prod fun i => a.get i) ∈ FP a := by
   refine' FP_drop_subset_FP _ (s.min' hs) _
   induction' s using Finset.strongInduction with s ih
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]

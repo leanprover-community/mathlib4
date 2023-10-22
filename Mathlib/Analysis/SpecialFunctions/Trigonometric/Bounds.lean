@@ -2,13 +2,10 @@
 Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.bounds
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+
+#align_import analysis.special_functions.trigonometric.bounds from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # Polynomial bounds for trigonometric functions
@@ -36,7 +33,7 @@ sin, cos, tan, angle
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Set
 
@@ -68,7 +65,7 @@ theorem sin_gt_sub_cube {x : ℝ} (h : 0 < x) (h' : x ≤ 1) : x - x ^ 3 / 4 < s
   have := neg_le_of_abs_le (sin_bound <| show |x| ≤ 1 by rwa [hx])
   rw [le_sub_iff_add_le, hx] at this
   refine' lt_of_lt_of_le _ this
-  have : x ^ 3 / ↑4 - x ^ 3 / ↑6 = x ^ 3 * 12⁻¹ := by ring
+  have : x ^ 3 / ↑4 - x ^ 3 / ↑6 = x ^ 3 * 12⁻¹ := by norm_num [div_eq_mul_inv, ← mul_sub]
   rw [add_comm, sub_add, sub_neg_eq_add, sub_lt_sub_iff_left, ← lt_sub_iff_add_lt', this]
   refine' mul_lt_mul' _ (by norm_num) (by norm_num) (pow_pos h 3)
   apply pow_le_pow_of_le_one h.le h'

@@ -2,14 +2,11 @@
 Copyright (c) 2020. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Yury Kudryashov
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.inverse_triangle_sum
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Real.Basic
+
+#align_import wiedijk_100_theorems.inverse_triangle_sum from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Sum of the Reciprocals of the Triangular Numbers
@@ -38,6 +35,6 @@ theorem Theorem100.inverse_triangle_sum :
   simp_rw [if_neg (Nat.succ_ne_zero _), Nat.succ_eq_add_one]
   have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast; norm_num
   push_cast
-  field_simp [Nat.cast_add_one_ne_zero]
+  field_simp
   ring
 #align theorem_100.inverse_triangle_sum Theorem100.inverse_triangle_sum

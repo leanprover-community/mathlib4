@@ -2,16 +2,13 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.convex.extrema
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.LocalExtr
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import analysis.convex.extrema from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Minima and maxima of convex functions
@@ -21,7 +18,7 @@ a global minimum, and likewise for concave functions.
 -/
 
 
-variable {E β : Type _} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [TopologicalAddGroup E]
+variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [TopologicalAddGroup E]
   [ContinuousSMul ℝ E] [OrderedAddCommGroup β] [Module ℝ β] [OrderedSMul ℝ β] {s : Set E}
 
 open Set Filter Function
@@ -41,8 +38,8 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn_Icc {f : ℝ → β} {a b : ℝ} (a_
   have H₁ : ∀ᶠ y in 𝓝[>] a, f a ≤ f y :=
     h_local_min.filter_mono (nhdsWithin_mono _ Ioi_subset_Ici_self)
   have H₂ : ∀ᶠ y in 𝓝[>] a, y ∈ Ioc a c := Ioc_mem_nhdsWithin_Ioi (left_mem_Ico.2 a_lt_c)
-  rcases(H₁.and H₂).exists with ⟨y, hfy, hy_ac⟩
-  rcases(Convex.mem_Ioc a_lt_c).mp hy_ac with ⟨ya, yc, ya₀, yc₀, yac, rfl⟩
+  rcases (H₁.and H₂).exists with ⟨y, hfy, hy_ac⟩
+  rcases (Convex.mem_Ioc a_lt_c).mp hy_ac with ⟨ya, yc, ya₀, yc₀, yac, rfl⟩
   suffices : ya • f a + yc • f a ≤ ya • f a + yc • f c
   exact (smul_le_smul_iff_of_pos yc₀).1 (le_of_add_le_add_left this)
   calc

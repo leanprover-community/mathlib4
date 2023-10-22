@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.periodic_pts
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Data.List.Cycle
@@ -14,6 +9,8 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
+
+#align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
 /-!
 # Periodic points
@@ -49,7 +46,9 @@ open Set
 
 namespace Function
 
-variable {α : Type _} {β : Type _} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
+open Function (Commute)
+
+variable {α : Type*} {β : Type*} {f fa : α → α} {fb : β → β} {x y : α} {m n : ℕ}
 
 /-- A point `x` is a periodic point of `f : α → α` of period `n` if `f^[n] x = x`.
 Note that we do not require `0 < n` in this definition. Many theorems about periodic points
@@ -424,27 +423,27 @@ theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPer
     rwa [← isPeriodicPt_iff_minimalPeriod_dvd]
 #align function.minimal_period_eq_prime_pow Function.minimalPeriod_eq_prime_pow
 
-theorem Commute.minimalPeriod_of_comp_dvd_lcm {g : α → α} (h : Function.Commute f g) :
+theorem Commute.minimalPeriod_of_comp_dvd_lcm {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ Nat.lcm (minimalPeriod f x) (minimalPeriod g x) := by
   rw [← isPeriodicPt_iff_minimalPeriod_dvd]
   exact (isPeriodicPt_minimalPeriod f x).comp_lcm h (isPeriodicPt_minimalPeriod g x)
 #align function.commute.minimal_period_of_comp_dvd_lcm Function.Commute.minimalPeriod_of_comp_dvd_lcm
 
-theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Function.Commute f g) :
+theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ minimalPeriod f x * minimalPeriod g x :=
   dvd_trans h.minimalPeriod_of_comp_dvd_lcm (lcm_dvd_mul _ _)
 #align function.commute.minimal_period_of_comp_dvd_mul Function.Commute.minimalPeriod_of_comp_dvd_mul
 
-theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Function.Commute f g)
-    (hco : coprime (minimalPeriod f x) (minimalPeriod g x)) :
+theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Commute f g)
+    (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices :
+  suffices
     ∀ {f g : α → α},
       Commute f g →
-        coprime (minimalPeriod f x) (minimalPeriod g x) →
-          minimalPeriod f x ∣ minimalPeriod (f ∘ g) x
-  · exact hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
+        Coprime (minimalPeriod f x) (minimalPeriod g x) →
+          minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
+    hco.mul_dvd_of_dvd_of_dvd (this h hco) (h.comp_eq.symm ▸ this h.symm hco.symm)
   intro f g h hco
   refine' hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h _ _).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
@@ -458,7 +457,7 @@ private theorem minimalPeriod_iterate_eq_div_gcd_aux (h : 0 < gcd (minimalPeriod
     rw [IsPeriodicPt, IsFixedPt, ← iterate_mul, ← Nat.mul_div_assoc _ (gcd_dvd_left _ _),
       mul_comm, Nat.mul_div_assoc _ (gcd_dvd_right _ _), mul_comm, iterate_mul]
     exact (isPeriodicPt_minimalPeriod f x).iterate _
-  · apply coprime.dvd_of_dvd_mul_right (coprime_div_gcd_div_gcd h)
+  · apply Coprime.dvd_of_dvd_mul_right (coprime_div_gcd_div_gcd h)
     apply Nat.dvd_of_mul_dvd_mul_right h
     rw [Nat.div_mul_cancel (gcd_dvd_left _ _), mul_assoc, Nat.div_mul_cancel (gcd_dvd_right _ _),
       mul_comm]
@@ -505,7 +504,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp [periodicOrbit]
+  simp only [periodicOrbit._eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 #align function.periodic_orbit_eq_nil_iff_not_periodic_pt Function.periodicOrbit_eq_nil_iff_not_periodic_pt
 
@@ -590,11 +589,47 @@ end -- noncomputable
 
 end Function
 
+namespace Function
+
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+
+@[simp]
+theorem iterate_prod_map (f : α → α) (g : β → β) (n : ℕ) :
+    (Prod.map f g)^[n] = Prod.map (f^[n]) (g^[n]) := by induction n <;> simp [*, Prod.map_comp_map]
+#align function.iterate_prod_map Function.iterate_prod_map
+
+@[simp]
+theorem isFixedPt_prod_map (x : α × β) :
+    IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
+  Prod.ext_iff
+#align function.is_fixed_pt_prod_map Function.isFixedPt_prod_map
+
+@[simp]
+theorem isPeriodicPt_prod_map (x : α × β) :
+    IsPeriodicPt (Prod.map f g) n x ↔ IsPeriodicPt f n x.1 ∧ IsPeriodicPt g n x.2 := by
+  simp [IsPeriodicPt]
+#align function.is_periodic_pt_prod_map Function.isPeriodicPt_prod_map
+
+theorem minimalPeriod_prod_map (f : α → α) (g : β → β) (x : α × β) :
+    minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
+  eq_of_forall_dvd <| by cases x; simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
+#align function.minimal_period_prod_map Function.minimalPeriod_prod_map
+
+theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map f g) x := by
+  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_left _ _
+#align function.minimal_period_fst_dvd Function.minimalPeriod_fst_dvd
+
+theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
+  rw [minimalPeriod_prod_map]; exact Nat.dvd_lcm_right _ _
+#align function.minimal_period_snd_dvd Function.minimalPeriod_snd_dvd
+
+end Function
+
 namespace MulAction
 
 open Function
 
-variable {α β : Type _} [Group α] [MulAction α β] {a : α} {b : β}
+variable {α β : Type*} [Group α] [MulAction α β] {a : α} {b : β}
 
 @[to_additive]
 theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :

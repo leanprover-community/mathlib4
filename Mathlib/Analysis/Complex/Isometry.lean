@@ -2,15 +2,12 @@
 Copyright (c) 2021 François Sunatori. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: François Sunatori
-
-! This file was ported from Lean 3 source module analysis.complex.isometry
-! leanprover-community/mathlib commit ae690b0c236e488a0043f6faa8ce3546e7f2f9c5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+
+#align_import analysis.complex.isometry from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
 
 /-!
 # Isometries of the Complex Plane
@@ -158,7 +155,10 @@ theorem toMatrix_rotation (a : circle) :
     LinearMap.toMatrix basisOneI basisOneI (rotation a).toLinearEquiv =
       Matrix.planeConformalMatrix (re a) (im a) (by simp [pow_two, ← normSq_apply]) := by
   ext i j
-  simp [LinearMap.toMatrix_apply]
+  simp only [LinearMap.toMatrix_apply, coe_basisOneI, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toLinearEquiv, rotation_apply, coe_basisOneI_repr, mul_re, mul_im,
+    Matrix.val_planeConformalMatrix, Matrix.of_apply, Matrix.cons_val', Matrix.empty_val',
+    Matrix.cons_val_fin_one]
   fin_cases i <;> fin_cases j <;> simp
 #align to_matrix_rotation toMatrix_rotation
 

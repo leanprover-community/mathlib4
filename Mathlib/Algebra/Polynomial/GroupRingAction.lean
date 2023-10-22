@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.polynomial.group_ring_action
-! leanprover-community/mathlib commit afad8e438d03f9d89da2914aa06cb4964ba87a18
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.GroupTheory.GroupAction.Quotient
+
+#align_import algebra.polynomial.group_ring_action from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"
 
 /-!
 # Group action on rings applied to polynomials
@@ -21,13 +18,13 @@ This file contains instances and definitions relating `MulSemiringAction` to `Po
 -/
 
 
-variable (M : Type _) [Monoid M]
+variable (M : Type*) [Monoid M]
 
 open Polynomial
 
 namespace Polynomial
 
-variable (R : Type _) [Semiring R]
+variable (R : Type*) [Semiring R]
 
 variable {M}
 
@@ -47,7 +44,6 @@ variable (M)
 
 noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
   { Polynomial.distribMulAction with
-    smul := (· • ·)
     smul_one := fun m ↦
       smul_eq_map R m ▸ Polynomial.map_one (MulSemiringAction.toRingHom M R m)
     smul_mul := fun m _ _ ↦
@@ -63,7 +59,7 @@ theorem smul_X (m : M) : (m • X : R[X]) = X :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.smul_X Polynomial.smul_X
 
-variable (S : Type _) [CommSemiring S] [MulSemiringAction M S]
+variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
 
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
   Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
@@ -72,7 +68,7 @@ theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m
       eval_pow, eval_X, smul_mul', smul_pow']
 #align polynomial.smul_eval_smul Polynomial.smul_eval_smul
 
-variable (G : Type _) [Group G]
+variable (G : Type*) [Group G]
 
 theorem eval_smul' [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
     f.eval (g • x) = g • (g⁻¹ • f).eval x := by
@@ -89,16 +85,15 @@ end Polynomial
 section CommRing
 set_option linter.uppercaseLean3 false  -- porting note: `prod_X_*`
 
-variable (G : Type _) [Group G] [Fintype G]
+variable (G : Type*) [Group G] [Fintype G]
 
-variable (R : Type _) [CommRing R] [MulSemiringAction G R]
+variable (R : Type*) [CommRing R] [MulSemiringAction G R]
 
 open MulAction
 
-open Classical
-
 /-- the product of `(X - g • x)` over distinct `g • x`. -/
 noncomputable def prodXSubSmul (x : R) : R[X] :=
+  letI := Classical.decEq R
   (Finset.univ : Finset (G ⧸ MulAction.stabilizer G x)).prod fun g ↦
     Polynomial.X - Polynomial.C (ofQuotientStabilizer G x g)
 #align prod_X_sub_smul prodXSubSmul
@@ -108,11 +103,13 @@ theorem prodXSubSmul.monic (x : R) : (prodXSubSmul G R x).Monic :=
 #align prod_X_sub_smul.monic prodXSubSmul.monic
 
 theorem prodXSubSmul.eval (x : R) : (prodXSubSmul G R x).eval x = 0 :=
+  letI := Classical.decEq R
   (map_prod ((Polynomial.aeval x).toRingHom.toMonoidHom : R[X] →* R) _ _).trans <|
     Finset.prod_eq_zero (Finset.mem_univ <| QuotientGroup.mk 1) <| by simp
 #align prod_X_sub_smul.eval prodXSubSmul.eval
 
 theorem prodXSubSmul.smul (x : R) (g : G) : g • prodXSubSmul G R x = prodXSubSmul G R x :=
+  letI := Classical.decEq R
   Finset.smul_prod.trans <|
     Fintype.prod_bijective _ (MulAction.bijective g) _ _ fun g' ↦ by
       rw [ofQuotientStabilizer_smul, smul_sub, Polynomial.smul_X, Polynomial.smul_C]
@@ -129,9 +126,9 @@ namespace MulSemiringActionHom
 
 variable {M}
 
-variable {P : Type _} [CommSemiring P] [MulSemiringAction M P]
+variable {P : Type*} [CommSemiring P] [MulSemiringAction M P]
 
-variable {Q : Type _} [CommSemiring Q] [MulSemiringAction M Q]
+variable {Q : Type*} [CommSemiring Q] [MulSemiringAction M Q]
 
 open Polynomial
 

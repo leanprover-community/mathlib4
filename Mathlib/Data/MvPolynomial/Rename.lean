@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.rename
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Basic
+
+#align_import data.mv_polynomial.rename from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Renaming variables of polynomials
@@ -49,7 +46,7 @@ open Set Function Finsupp AddMonoidAlgebra
 
 open BigOperators
 
-variable {σ τ α R S : Type _} [CommSemiring R] [CommSemiring S]
+variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 
 namespace MvPolynomial
 
@@ -263,9 +260,11 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use rename (Set.inclusion <| s₁.subset_union_left s₂) q₁
     use rename (Set.inclusion <| s₁.subset_union_right s₂) q₂
     constructor -- porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · rw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
+    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
       rfl
-    · rw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
+    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
       rfl
 #align mv_polynomial.exists_finset_rename₂ MvPolynomial.exists_finset_rename₂
 
@@ -324,7 +323,7 @@ theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
 #align mv_polynomial.coeff_rename_ne_zero MvPolynomial.coeff_rename_ne_zero
 
 @[simp]
-theorem constantCoeff_rename {τ : Type _} (f : σ → τ) (φ : MvPolynomial σ R) :
+theorem constantCoeff_rename {τ : Type*} (f : σ → τ) (φ : MvPolynomial σ R) :
     constantCoeff (rename f φ) = constantCoeff φ := by
   apply φ.induction_on
   · intro a

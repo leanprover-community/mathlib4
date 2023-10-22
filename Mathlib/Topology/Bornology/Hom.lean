@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.bornology.hom
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Bornology.Basic
+
+#align_import topology.bornology.hom from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Locally bounded maps
@@ -30,10 +27,10 @@ be satisfied by itself and all stricter types.
 
 open Bornology Filter Function Set
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of bounded maps from `α` to `β`, the maps which send a bounded set to a bounded set. -/
-structure LocallyBoundedMap (α β : Type _) [Bornology α] [Bornology β] where
+structure LocallyBoundedMap (α β : Type*) [Bornology α] [Bornology β] where
   /-- The function underlying a locally bounded map -/
   toFun : α → β
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
@@ -46,7 +43,7 @@ section
 /-- `LocallyBoundedMapClass F α β` states that `F` is a type of bounded maps.
 
 You should extend this class when you extend `LocallyBoundedMap`. -/
-class LocallyBoundedMapClass (F : Type _) (α β : outParam <| Type _) [Bornology α]
+class LocallyBoundedMapClass (F : Type*) (α β : outParam <| Type*) [Bornology α]
     [Bornology β] extends FunLike F α fun _ => β where
   /-- The pullback of the `Bornology.cobounded` filter under the function is contained in the
   cobounded filter. Equivalently, the function maps bounded sets to bounded sets. -/
@@ -57,10 +54,10 @@ end
 
 export LocallyBoundedMapClass (comap_cobounded_le)
 
-theorem IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] {f : F}
+theorem Bornology.IsBounded.image [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] (f : F)
     {s : Set α} (hs : IsBounded s) : IsBounded (f '' s) :=
   comap_cobounded_le_iff.1 (comap_cobounded_le f) hs
-#align is_bounded.image IsBounded.image
+#align is_bounded.image Bornology.IsBounded.image
 
 /-- Turn an element of a type `F` satisfying `LocallyBoundedMapClass F α β` into an actual
 `LocallyBoundedMap`. This is declared as the default coercion from `F` to
@@ -191,12 +188,14 @@ theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f
   ext fun _ => rfl
 #align locally_bounded_map.id_comp LocallyBoundedMap.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
 -- porting note: unification was not strong enough to do `congrArg _`.
 #align locally_bounded_map.cancel_right LocallyBoundedMap.cancel_right
 
+@[simp]
 theorem cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

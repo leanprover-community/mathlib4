@@ -2,14 +2,11 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module field_theory.subfield
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Order.Field.InjSurj
+
+#align_import field_theory.subfield from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
 /-!
 # Subfields
@@ -54,7 +51,7 @@ Notation used here:
 
 ## Implementation notes
 
-A subfield is implemented as a subring which is is closed under `⁻¹`.
+A subfield is implemented as a subring which is closed under `⁻¹`.
 
 Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆` and `∩`), although
 `∈` is defined as membership of a subfield's underlying set.
@@ -71,13 +68,13 @@ universe u v w
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Field M]
 
 /-- `SubfieldClass S K` states `S` is a type of subsets `s ⊆ K` closed under field operations. -/
-class SubfieldClass (S K : Type _) [Field K] [SetLike S K] extends SubringClass S K,
+class SubfieldClass (S K : Type*) [Field K] [SetLike S K] extends SubringClass S K,
   InvMemClass S K : Prop
 #align subfield_class SubfieldClass
 
 namespace SubfieldClass
 
-variable (S : Type _) [SetLike S K] [h : SubfieldClass S K]
+variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
 -- See note [lower instance priority]
 /-- A subfield contains `1`, products and inverses.
@@ -91,6 +88,7 @@ instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
 
 variable {S}
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
 #align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
@@ -104,9 +102,15 @@ theorem coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
 #align subfield_class.coe_rat_cast SubfieldClass.coe_rat_cast
 
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
+@[aesop safe apply (rule_sets [SetLike])]
 theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
   simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
 #align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
+
+@[aesop safe apply (rule_sets [SetLike])]
+lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
+    (OfScientific.ofScientific n b m : K) ∈ s :=
+  SubfieldClass.coe_rat_mem ..
 
 instance (s : S) : SMul ℚ s :=
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
@@ -195,7 +199,7 @@ theorem coe_set_mk (S : Subring K) (h) : ((⟨S, h⟩ : Subfield K) : Set K) = S
 
 @[simp]
 theorem mk_le_mk {S S' : Subring K} (h h') : (⟨S, h⟩ : Subfield K) ≤ (⟨S', h'⟩ : Subfield K) ↔
-      S ≤ S' :=
+    S ≤ S' :=
   Iff.rfl
 #align subfield.mk_le_mk Subfield.mk_le_mk
 
@@ -306,13 +310,13 @@ protected theorem multiset_sum_mem (m : Multiset K) : (∀ a ∈ m, a ∈ s) →
 #align subfield.multiset_sum_mem Subfield.multiset_sum_mem
 
 /-- Product of elements of a subfield indexed by a `Finset` is in the subfield. -/
-protected theorem prod_mem {ι : Type _} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
+protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
     (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subfield.prod_mem Subfield.prod_mem
 
 /-- Sum of elements in a `Subfield` indexed by a `Finset` is in the `Subfield`. -/
-protected theorem sum_mem {ι : Type _} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
+protected theorem sum_mem {ι : Type*} {t : Finset ι} {f : ι → K} (h : ∀ c ∈ t, f c ∈ s) :
     (∑ i in t, f i) ∈ s :=
   sum_mem h
 #align subfield.sum_mem Subfield.sum_mem
@@ -418,7 +422,7 @@ theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K)  :=
   rfl
 #align subfield.coe_subtype Subfield.coe_subtype
 
-theorem toSubring_subtype_eq_subtype (F : Type _) [Field F] (S : Subfield F) :
+theorem toSubring_subtype_eq_subtype (F : Type*) [Field F] (S : Subfield F) :
     S.toSubring.subtype = S.subtype :=
   rfl
 #align subfield.to_subring.subtype_eq_subtype Subfield.toSubring_subtype_eq_subtype
@@ -655,7 +659,7 @@ instance : CompleteLattice (Subfield K) :=
     le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun  _ _ _ => And.right
+    inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
 /-! # subfield closure of a subset -/
@@ -697,7 +701,7 @@ theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSub
 #align subfield.subring_closure_le Subfield.subring_closure_le
 
 /-- The subfield generated by a set includes the set. -/
-@[simp]
+@[simp, aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_closure {s : Set K} : s ⊆ closure s :=
   Set.Subset.trans Subring.subset_closure (subring_closure_le s)
 #align subfield.subset_closure Subfield.subset_closure
@@ -788,7 +792,7 @@ theorem map_sup (s t : Subfield K) (f : K →+* L) : (s ⊔ t).map f = s.map f �
   (gc_map_comap f).l_sup
 #align subfield.map_sup Subfield.map_sup
 
-theorem map_iSup {ι : Sort _} (f : K →+* L) (s : ι → Subfield K) :
+theorem map_iSup {ι : Sort*} (f : K →+* L) (s : ι → Subfield K) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align subfield.map_supr Subfield.map_iSup
@@ -797,7 +801,7 @@ theorem comap_inf (s t : Subfield L) (f : K →+* L) : (s ⊓ t).comap f = s.com
   (gc_map_comap f).u_inf
 #align subfield.comap_inf Subfield.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : K →+* L) (s : ι → Subfield L) :
+theorem comap_iInf {ι : Sort*} (f : K →+* L) (s : ι → Subfield L) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align subfield.comap_infi Subfield.comap_iInf

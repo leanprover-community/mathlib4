@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module data.polynomial.expand
-! leanprover-community/mathlib commit bbeb185db4ccee8ed07dc48449414ebfa39cb821
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
+
+#align_import data.polynomial.expand from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -25,7 +22,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 
 universe u v w
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 
@@ -153,9 +150,9 @@ set_option linter.uppercaseLean3 false in
 
 theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.natDegree * p := by
   cases' p.eq_zero_or_pos with hp hp
-  · rw [hp, coe_expand, pow_zero, MulZeroClass.mul_zero, ← C_1, eval₂_hom, natDegree_C]
+  · rw [hp, coe_expand, pow_zero, mul_zero, ← C_1, eval₂_hom, natDegree_C]
   by_cases hf : f = 0
-  · rw [hf, AlgHom.map_zero, natDegree_zero, MulZeroClass.zero_mul]
+  · rw [hf, AlgHom.map_zero, natDegree_zero, zero_mul]
   have hf1 : expand R p f ≠ 0 := mt (expand_eq_zero hp).1 hf
   rw [← WithBot.coe_eq_coe]
   convert (degree_eq_natDegree hf1).symm -- Porting note: was `rw [degree_eq_natDegree hf1]`
@@ -194,7 +191,7 @@ theorem expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval 
 #align polynomial.expand_eval Polynomial.expand_eval
 
 @[simp]
-theorem expand_aeval {A : Type _} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
+theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
     aeval r (expand R p P) = aeval (r ^ p) P := by
   refine' Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => _) fun n a _ => by simp
   rw [AlgHom.map_add, aeval_add, aeval_add, hf, hg]

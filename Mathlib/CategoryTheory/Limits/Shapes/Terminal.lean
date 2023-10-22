@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.terminal
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Category.Preorder
+
+#align_import category_theory.limits.shapes.terminal from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Initial and terminal objects in a category.
@@ -80,16 +77,23 @@ def IsTerminal.ofUnique (Y : C) [h : ∀ X : C, Unique (X ⟶ Y)] : IsTerminal Y
   fac := fun _ ⟨j⟩ => j.elim
 #align category_theory.limits.is_terminal.of_unique CategoryTheory.Limits.IsTerminal.ofUnique
 
+/-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
+    (as explicit arguments). -/
+def IsTerminal.ofUniqueHom {Y : C} (h : ∀ X : C, X ⟶ Y) (uniq : ∀ (X : C) (m : X ⟶ Y), m = h X) :
+    IsTerminal Y :=
+  have : ∀ X : C, Unique (X ⟶ Y) := fun X ↦ ⟨⟨h X⟩, uniq X⟩
+  IsTerminal.ofUnique Y
+
 /-- If `α` is a preorder with top, then `⊤` is a terminal object. -/
-def isTerminalTop {α : Type _} [Preorder α] [OrderTop α] : IsTerminal (⊤ : α) :=
+def isTerminalTop {α : Type*} [Preorder α] [OrderTop α] : IsTerminal (⊤ : α) :=
   IsTerminal.ofUnique _
 #align category_theory.limits.is_terminal_top CategoryTheory.Limits.isTerminalTop
 
 /-- Transport a term of type `IsTerminal` across an isomorphism. -/
 def IsTerminal.ofIso {Y Z : C} (hY : IsTerminal Y) (i : Y ≅ Z) : IsTerminal Z :=
   IsLimit.ofIsoLimit hY
-    { hom := { Hom := i.hom }
-      inv := { Hom := i.inv } }
+    { hom := { hom := i.hom }
+      inv := { hom := i.inv } }
 #align category_theory.limits.is_terminal.of_iso CategoryTheory.Limits.IsTerminal.ofIso
 
 /-- An object `X` is initial iff for every `Y` there is a unique morphism `X ⟶ Y`. -/
@@ -114,16 +118,23 @@ def IsInitial.ofUnique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : IsInitial X w
   fac := fun _ ⟨j⟩ => j.elim
 #align category_theory.limits.is_initial.of_unique CategoryTheory.Limits.IsInitial.ofUnique
 
+/-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
+    (as explicit arguments). -/
+def IsInitial.ofUniqueHom {X : C} (h : ∀ Y : C, X ⟶ Y) (uniq : ∀ (Y : C) (m : X ⟶ Y), m = h Y) :
+    IsInitial X :=
+  have : ∀ Y : C, Unique (X ⟶ Y) := fun Y ↦ ⟨⟨h Y⟩, uniq Y⟩
+  IsInitial.ofUnique X
+
 /-- If `α` is a preorder with bot, then `⊥` is an initial object. -/
-def isInitialBot {α : Type _} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
+def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
   IsInitial.ofUnique _
 #align category_theory.limits.is_initial_bot CategoryTheory.Limits.isInitialBot
 
 /-- Transport a term of type `is_initial` across an isomorphism. -/
 def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
   IsColimit.ofIsoColimit hX
-    { hom := { Hom := i.hom }
-      inv := { Hom := i.inv } }
+    { hom := { hom := i.hom }
+      inv := { hom := i.inv } }
 #align category_theory.limits.is_initial.of_iso CategoryTheory.Limits.IsInitial.ofIso
 
 /-- Give the morphism to a terminal object from any other. -/
@@ -439,7 +450,7 @@ theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 #align category_theory.limits.has_initial_of_has_terminal_op CategoryTheory.Limits.hasInitial_of_hasTerminal_op
 
-instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
+instance {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
     { cone :=
@@ -449,7 +460,7 @@ instance {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
 
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
-def limitConstTerminal {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C] :
+def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
     limit ((CategoryTheory.Functor.const J).obj (⊤_ C)) ≅ ⊤_ C where
   hom := terminal.from _
   inv :=
@@ -459,13 +470,13 @@ def limitConstTerminal {J : Type _} [Category J] {C : Type _} [Category C] [HasT
 #align category_theory.limits.limit_const_terminal CategoryTheory.Limits.limitConstTerminal
 
 @[reassoc (attr := simp)]
-theorem limitConstTerminal_inv_π {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C]
+theorem limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
       terminal.from _ := by aesop_cat
 #align category_theory.limits.limit_const_terminal_inv_π CategoryTheory.Limits.limitConstTerminal_inv_π
 
-instance {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
+instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
     HasColimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) :=
   HasColimit.mk
     { cocone :=
@@ -475,7 +486,7 @@ instance {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
 
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
-def colimitConstInitial {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
+def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
     colimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) ≅ ⊥_ C where
   hom :=
     colimit.desc ((CategoryTheory.Functor.const J).obj (⊥_ C))
@@ -485,7 +496,7 @@ def colimitConstInitial {J : Type _} [Category J] {C : Type _} [Category C] [Has
 #align category_theory.limits.colimit_const_initial CategoryTheory.Limits.colimitConstInitial
 
 @[reassoc (attr := simp)]
-theorem ι_colimitConstInitial_hom {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C]
+theorem ι_colimitConstInitial_hom {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C]
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
       initial.to _ := by aesop_cat
@@ -521,7 +532,6 @@ every morphism out of it is a monomorphism. -/
 theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mono (hI.to X)) :
     InitialMonoClass C where
   isInitial_mono_from {I'} X hI' := by
-    dsimp
     rw [hI'.hom_ext (hI'.to X) ((hI'.uniqueUpToIso hI).hom ≫ hI.to X)]
     apply mono_comp
 #align category_theory.limits.initial_mono_class.of_is_initial CategoryTheory.Limits.InitialMonoClass.of_isInitial

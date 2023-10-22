@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.ring_homs
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
+
+#align_import number_theory.padics.ring_homs from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
 /-!
 
@@ -112,10 +109,10 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     Int.cast_mul, zero_mul, add_zero] at this
   push_cast
   rw [mul_right_comm, mul_assoc, ← this]
-  suffices rdcp : r.den.coprime p
+  suffices rdcp : r.den.Coprime p
   · rw [rdcp.gcd_eq_one]
     simp only [mul_one, cast_one, sub_self]
-  apply coprime.symm
+  apply Coprime.symm
   apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
   rw [← Int.coe_nat_dvd, ← norm_int_lt_one_iff_dvd, not_lt]
   apply ge_of_eq
@@ -127,7 +124,7 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
   let n := modPart p r
   rw [norm_lt_one_iff_dvd, ← (isUnit_den r h).dvd_mul_right]
   suffices ↑p ∣ r.num - n * r.den by
-    convert(Int.castRingHom ℤ_[p]).map_dvd this
+    convert (Int.castRingHom ℤ_[p]).map_dvd this
     simp only [sub_mul, Int.cast_ofNat, eq_intCast, Int.cast_mul, sub_left_inj, Int.cast_sub]
     apply Subtype.coe_injective
     simp only [coe_mul, Subtype.coe_mk, coe_nat_cast]
@@ -344,7 +341,6 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
   dsimp [appr]
   split_ifs with h
   · exact ih
-  dsimp
   rw [add_comm, add_tsub_assoc_of_le (appr_mono _ (Nat.le_add_right m k))]
   apply dvd_add _ ih
   apply dvd_mul_of_dvd_left
@@ -366,7 +362,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
   simp only [map_natCast, ZMod.nat_cast_self, RingHom.map_pow, RingHom.map_mul, ZMod.nat_cast_val]
   have hc' : c ≠ 0 := by
     rintro rfl
-    simp only [MulZeroClass.mul_zero] at hc
+    simp only [mul_zero] at hc
     contradiction
   conv_rhs =>
     congr
@@ -387,7 +383,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     rw [DiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
     exact irreducible_p
   · rw [zero_pow hc0]
-    simp only [sub_zero, ZMod.cast_zero, MulZeroClass.mul_zero]
+    simp only [sub_zero, ZMod.cast_zero, mul_zero]
     rw [unitCoeff_spec hc']
     exact (dvd_pow_self (p : ℤ_[p]) hc0.ne').mul_left _
 #align padic_int.appr_spec PadicInt.appr_spec
@@ -407,7 +403,7 @@ def toZModPow (n : ℕ) : ℤ_[p] →+* ZMod (p ^ n) :=
 #align padic_int.to_zmod_pow PadicInt.toZModPow
 
 theorem ker_toZModPow (n : ℕ) :
-  RingHom.ker (toZModPow n : ℤ_[p] →+* ZMod (p ^ n)) = Ideal.span {(p : ℤ_[p]) ^ n} := by
+    RingHom.ker (toZModPow n : ℤ_[p] →+* ZMod (p ^ n)) = Ideal.span {(p : ℤ_[p]) ^ n} := by
   ext x
   rw [RingHom.mem_ker]
   constructor
@@ -480,7 +476,7 @@ section lift
 
 open CauSeq PadicSeq
 
-variable {R : Type _} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
+variable {R : Type*} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
   (f_compat : ∀ (k1 k2) (hk : k1 ≤ k2), (ZMod.castHom (pow_dvd_pow p hk) _).comp (f k2) = f k1)
 
 /-- Given a family of ring homs `f : Π n : ℕ, R →+* ZMod (p ^ n)`,
@@ -677,7 +673,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
     rfl
 #align padic_int.ext_of_to_zmod_pow PadicInt.ext_of_toZModPow
 
-theorem toZModPow_eq_iff_ext {R : Type _} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
+theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
     (∀ n, (toZModPow n).comp g = (toZModPow n).comp g') ↔ g = g' := by
   constructor
   · intro hg

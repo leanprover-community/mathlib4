@@ -2,15 +2,12 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module combinatorics.composition
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import combinatorics.composition from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Compositions
@@ -305,8 +302,8 @@ theorem orderEmbOfFin_boundaries :
 /-- Embedding the `i`-th block of a composition (identified with `Fin (c.blocks_fun i)`) into
 `Fin n` at the relevant position. -/
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
-  (Fin.natAdd <| c.sizeUpTo i).trans <|
-    Fin.castLE <|
+  (Fin.natAddEmb <| c.sizeUpTo i).trans <|
+    Fin.castLEEmb <|
       calc
         c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ _).symm
         _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2
@@ -644,7 +641,7 @@ join operation.
 
 namespace List
 
-variable {α : Type _}
+variable {α : Type*}
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -693,7 +690,7 @@ theorem length_splitWrtComposition (l : List α) (c : Composition n) :
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
-  · simp
+  · simp [splitWrtCompositionAux]
   have := le_trans (Nat.le_add_right _ _) h
   simp only [splitWrtCompositionAux_cons, this]; dsimp
   rw [length_take, IH] <;> simp [length_drop]
@@ -862,8 +859,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
         rwa [h₂]
     · intro h
       apply Or.inr
-      use i
-      exact ⟨h, rfl⟩
+      use i, h
 #align composition_as_set_equiv compositionAsSetEquiv
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
@@ -968,7 +964,7 @@ theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     j ∈ c.boundaries ↔ ∃ i < c.boundaries.card, (c.blocks.take i).sum = j := by
   constructor
   · intro hj
-    rcases(c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
+    rcases (c.boundaries.orderIsoOfFin rfl).surjective ⟨j, hj⟩ with ⟨i, hi⟩
     rw [Subtype.ext_iff, Subtype.coe_mk] at hi
     refine' ⟨i.1, i.2, _⟩
     dsimp at hi

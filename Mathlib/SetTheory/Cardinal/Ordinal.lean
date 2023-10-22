@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module set_theory.cardinal.ordinal
-! leanprover-community/mathlib commit 7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.Linarith
+
+#align_import set_theory.cardinal.ordinal from "leanprover-community/mathlib"@"7c2ce0c2da15516b4e65d0c9e254bb6dc93abd1f"
 
 /-!
 # Cardinals and ordinals
@@ -27,7 +24,9 @@ using ordinals.
   It is an order isomorphism between ordinals and cardinals.
 * The function `Cardinal.aleph` gives the infinite cardinals listed by their
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on.
+  uncountable cardinal, and so on. The notation `ω_` combines the latter with `Cardinal.ord`,
+  giving an enumeration of (infinite) initial ordinals.
+  Thus `ω_ 0 = ω` and `ω₁ = ω_ 1` is the first uncountable ordinal.
 * The function `Cardinal.beth` enumerates the Beth cardinals. `beth 0 = ℵ₀`,
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
@@ -348,7 +347,7 @@ theorem aleph0_lt_aleph_one : ℵ₀ < aleph 1 := by
   apply lt_succ
 #align cardinal.aleph_0_lt_aleph_one Cardinal.aleph0_lt_aleph_one
 
-theorem countable_iff_lt_aleph_one {α : Type _} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
+theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 #align cardinal.countable_iff_lt_aleph_one Cardinal.countable_iff_lt_aleph_one
 
@@ -459,12 +458,12 @@ theorem beth_le {o₁ o₂ : Ordinal} : beth o₁ ≤ beth o₂ ↔ o₁ ≤ o�
 #align cardinal.beth_le Cardinal.beth_le
 
 theorem aleph_le_beth (o : Ordinal) : aleph o ≤ beth o := by
-  apply limitRecOn o
-  · simp
-  · intro o h
+  induction o using limitRecOn with
+  | H₁ => simp
+  | H₂ o h =>
     rw [aleph_succ, beth_succ, succ_le_iff]
     exact (cantor _).trans_le (power_le_power_left two_ne_zero h)
-  · intro o ho IH
+  | H₃ o ho IH =>
     rw [aleph_limit ho, beth_limit ho]
     exact ciSup_mono (bddAbove_of_small _) fun x => IH x.1 x.2
 #align cardinal.aleph_le_beth Cardinal.aleph_le_beth
@@ -556,7 +555,7 @@ theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a 
 #align cardinal.mul_eq_max Cardinal.mul_eq_max
 
 @[simp]
-theorem mul_mk_eq_max {α β : Type _} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
+theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
   mul_eq_max (aleph0_le_mk α) (aleph0_le_mk β)
 #align cardinal.mul_mk_eq_max Cardinal.mul_mk_eq_max
 
@@ -576,12 +575,12 @@ theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
 #align cardinal.mul_aleph_0_eq Cardinal.mul_aleph0_eq
 
 --Porting note: removed `simp`, `simp` can prove it
-theorem aleph0_mul_mk_eq {α : Type _} [Infinite α] : ℵ₀ * #α = #α :=
+theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
   aleph0_mul_eq (aleph0_le_mk α)
 #align cardinal.aleph_0_mul_mk_eq Cardinal.aleph0_mul_mk_eq
 
 --Porting note: removed `simp`, `simp` can prove it
-theorem mk_mul_aleph0_eq {α : Type _} [Infinite α] : #α * ℵ₀ = #α :=
+theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 #align cardinal.mk_mul_aleph_0_eq Cardinal.mk_mul_aleph0_eq
 
@@ -736,12 +735,12 @@ theorem add_eq_max' {a b : Cardinal} (ha : ℵ₀ ≤ b) : a + b = max a b := by
 #align cardinal.add_eq_max' Cardinal.add_eq_max'
 
 @[simp]
-theorem add_mk_eq_max {α β : Type _} [Infinite α] : #α + #β = max #α #β :=
+theorem add_mk_eq_max {α β : Type u} [Infinite α] : #α + #β = max #α #β :=
   add_eq_max (aleph0_le_mk α)
 #align cardinal.add_mk_eq_max Cardinal.add_mk_eq_max
 
 @[simp]
-theorem add_mk_eq_max' {α β : Type _} [Infinite β] : #α + #β = max #α #β :=
+theorem add_mk_eq_max' {α β : Type u} [Infinite β] : #α + #β = max #α #β :=
   add_eq_max' (aleph0_le_mk β)
 #align cardinal.add_mk_eq_max' Cardinal.add_mk_eq_max'
 
@@ -811,12 +810,15 @@ theorem add_nat_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : a + n = a :=
   add_eq_left ha ((nat_lt_aleph0 _).le.trans ha)
 #align cardinal.add_nat_eq Cardinal.add_nat_eq
 
+theorem nat_add_eq {a : Cardinal} (n : ℕ) (ha : ℵ₀ ≤ a) : n + a = a := by
+  rw [add_comm, add_nat_eq n ha]
+
 theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
-  add_eq_left ha (one_le_aleph0.trans ha)
+  add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
 --Porting note: removed `simp`, `simp` can prove it
-theorem mk_add_one_eq {α : Type _} [Infinite α] : #α + 1 = #α :=
+theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 #align cardinal.mk_add_one_eq Cardinal.mk_add_one_eq
 
@@ -992,7 +994,7 @@ theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
 theorem mk_list_eq_mk (α : Type u) [Infinite α] : #(List α) = #α :=
   have H1 : ℵ₀ ≤ #α := aleph0_le_mk α
   Eq.symm <|
-    le_antisymm ((le_def _ _).2 ⟨⟨fun a => [a], fun _ => by simp⟩⟩)  <|
+    le_antisymm ((le_def _ _).2 ⟨⟨fun a => [a], fun _ => by simp⟩⟩) <|
       calc
         #(List α) = sum fun n : ℕ => #α ^ (n : Cardinal.{u}) := mk_list_eq_sum_pow α
         _ ≤ sum fun _ : ℕ => #α := sum_le_sum _ _ fun n => pow_le H1 <| nat_lt_aleph0 n
@@ -1093,7 +1095,8 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     refine' le_trans (mk_preimage_of_injective _ _ fun x y => Sum.inl.inj) _
     apply mk_range_le
   rintro ⟨s, ⟨g⟩⟩
-  use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val else Sum.inr ⟨⟩
+  use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
+               else Sum.inr (ULift.up 0)
   apply Subtype.eq; ext x
   constructor
   · rintro ⟨y, h⟩
@@ -1144,19 +1147,19 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
 /-! ### Properties of `compl` -/
 
 
-theorem mk_compl_of_infinite {α : Type _} [Infinite α] (s : Set α) (h2 : #s < #α) :
+theorem mk_compl_of_infinite {α : Type*} [Infinite α] (s : Set α) (h2 : #s < #α) :
     #(sᶜ : Set α) = #α := by
   refine' eq_of_add_eq_of_aleph0_le _ h2 (aleph0_le_mk α)
   exact mk_sum_compl s
 #align cardinal.mk_compl_of_infinite Cardinal.mk_compl_of_infinite
 
-theorem mk_compl_finset_of_infinite {α : Type _} [Infinite α] (s : Finset α) :
+theorem mk_compl_finset_of_infinite {α : Type*} [Infinite α] (s : Finset α) :
     #((↑s)ᶜ : Set α) = #α := by
   apply mk_compl_of_infinite
   exact (finset_card_lt_aleph0 s).trans_le (aleph0_le_mk α)
 #align cardinal.mk_compl_finset_of_infinite Cardinal.mk_compl_finset_of_infinite
 
-theorem mk_compl_eq_mk_compl_infinite {α : Type _} [Infinite α] {s t : Set α} (hs : #s < #α)
+theorem mk_compl_eq_mk_compl_infinite {α : Type*} [Infinite α] {s t : Set α} (hs : #s < #α)
     (ht : #t < #α) : #(sᶜ : Set α) = #(tᶜ : Set α) := by
   rw [mk_compl_of_infinite s hs, mk_compl_of_infinite t ht]
 #align cardinal.mk_compl_eq_mk_compl_infinite Cardinal.mk_compl_eq_mk_compl_infinite
@@ -1191,7 +1194,7 @@ theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α
 /-! ### Extending an injection to an equiv -/
 
 
-theorem extend_function {α β : Type _} {s : Set α} (f : s ↪ β)
+theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   intros; have := h; cases' this with g
   let h : α ≃ β :=
@@ -1209,7 +1212,7 @@ theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set 
   rw [mk_range_eq_lift.{u, v, max u v}]; exact f.2
 #align cardinal.extend_function_finite Cardinal.extend_function_finite
 
-theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs : #s < #α)
+theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : #s < #α)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   cases fintypeOrInfinite α
   · exact extend_function_finite f h
@@ -1448,3 +1451,46 @@ theorem extend_function_of_lt {α β : Type _} {s : Set α} (f : s ↪ β) (hs :
 -- end Bit
 
 end Cardinal
+
+section Initial
+
+namespace Ordinal
+
+/--
+`ω_ o` is a notation for the *initial ordinal* of cardinality
+`aleph o`. Thus, for example `ω_ 0 = ω`.
+-/
+scoped notation "ω_" o => ord <| aleph o
+
+/--
+`ω₁` is the first uncountable ordinal.
+-/
+scoped notation "ω₁" => ord <| aleph 1
+
+lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
+
+section OrdinalIndices
+/-!
+### Cardinal operations with ordinal indices
+
+Results on cardinality of ordinal-indexed families of sets.
+-/
+namespace Cardinal
+
+open scoped Cardinal
+
+/--
+Bounding the cardinal of an ordinal-indexed union of sets.
+-/
+lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
+    (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
+    (hA : ∀ j < o, #(A j) ≤ c) :
+    #(⋃ j < o, A j) ≤ c := by
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoOut.symm.surjective.range_comp]
+  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hc)
+  rw [mk_ordinal_out]
+  exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+
+end Cardinal
+
+end OrdinalIndices

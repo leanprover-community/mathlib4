@@ -2,15 +2,12 @@
 Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.gamma.basic
-! leanprover-community/mathlib commit cca40788df1b8755d5baf17ab2f27dacc2e17acb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.MellinTransform
+
+#align_import analysis.special_functions.gamma.basic from "leanprover-community/mathlib"@"cca40788df1b8755d5baf17ab2f27dacc2e17acb"
 
 /-!
 # The Gamma function
@@ -227,13 +224,12 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (Gamma_integrand_deriv_integrable_B hs hX),
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
-  simp only [sub_left_inj, add_left_inj]
   have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
       (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
   have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
-  dsimp at t; rw [← t, ofReal_zero, zero_cpow]
-  · rw [MulZeroClass.mul_zero, add_zero]; congr 2; ext1; ring
+  rw [← t, ofReal_zero, zero_cpow]
+  · rw [mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 #align complex.partial_Gamma_add_one Complex.partialGamma_add_one
 
@@ -526,7 +522,7 @@ theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
 theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
   rw [Gamma_eq_integral hs]
   have : (Function.support fun x : ℝ => exp (-x) * x ^ (s - 1)) ∩ Ioi 0 = Ioi 0 := by
-    rw [inter_eq_right_iff_subset]
+    rw [inter_eq_right]
     intro x hx
     rw [Function.mem_support]
     exact mul_ne_zero (exp_pos _).ne' (rpow_pos_of_pos hx _).ne'

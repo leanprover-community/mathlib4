@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.minimal
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Topology.Algebra.ConstMulAction
+
+#align_import dynamics.minimal from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Minimal action of a group
@@ -32,7 +29,7 @@ open Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/
-class AddAction.IsMinimal (M α : Type _) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
+class AddAction.IsMinimal (M α : Type*) [AddMonoid M] [TopologicalSpace α] [AddAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (AddAction.orbit M x)
 #align add_action.is_minimal AddAction.IsMinimal
@@ -40,14 +37,14 @@ class AddAction.IsMinimal (M α : Type _) [AddMonoid M] [TopologicalSpace α] [A
 /-- An action of a monoid `M` on a topological space is called *minimal* if the `M`-orbit of every
 point `x : α` is dense. -/
 @[to_additive]
-class MulAction.IsMinimal (M α : Type _) [Monoid M] [TopologicalSpace α] [MulAction M α] :
+class MulAction.IsMinimal (M α : Type*) [Monoid M] [TopologicalSpace α] [MulAction M α] :
     Prop where
   dense_orbit : ∀ x : α, Dense (MulAction.orbit M x)
 #align mul_action.is_minimal MulAction.IsMinimal
 
 open MulAction Set
 
-variable (M G : Type _) {α : Type _} [Monoid M] [Group G] [TopologicalSpace α] [MulAction M α]
+variable (M G : Type*) {α : Type*} [Monoid M] [Group G] [TopologicalSpace α] [MulAction M α]
   [MulAction G α]
 
 @[to_additive]

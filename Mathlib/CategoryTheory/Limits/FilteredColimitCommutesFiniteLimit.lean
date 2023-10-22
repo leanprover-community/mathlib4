@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.filtered_colimit_commutes_finite_limit
-! leanprover-community/mathlib commit 3f409bd9df181d26dd223170da7b6830ece18442
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.limits.filtered_colimit_commutes_finite_limit from "leanprover-community/mathlib"@"3f409bd9df181d26dd223170da7b6830ece18442"
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -322,10 +319,10 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
 
 instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
-  have : IsIso (colimitLimitToLimitColimitCone F).Hom := by
-    suffices : IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
-      lim.map (whiskerRight (currying.unitIso.app F).inv colim))
-    apply IsIso.comp_isIso
+  have : IsIso (colimitLimitToLimitColimitCone F).hom := by
+    suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
+        lim.map (whiskerRight (currying.unitIso.app F).inv colim)) by
+      apply IsIso.comp_isIso
     infer_instance
   apply Cones.cone_iso_of_hom_iso
 #align category_theory.limits.colimit_limit_to_limit_colimit_cone_iso CategoryTheory.Limits.colimitLimitToLimitColimitCone_iso

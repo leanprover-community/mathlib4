@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
-
-! This file was ported from Lean 3 source module category_theory.cofiltered_system
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Filtered
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+
+#align_import category_theory.cofiltered_system from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Cofiltered systems
@@ -249,7 +246,7 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
       rw [mem_preimage, ← map_comp_apply, h₄, ← Category.assoc, map_comp_apply, h₃,
         ← map_comp_apply]
       apply mem_iInter.1 hx
-    · simp_rw [toPreimages_map, MapsTo.val_restrict_apply, Subtype.coe_mk]
+    · simp_rw [toPreimages_map, MapsTo.val_restrict_apply]
       rw [← Category.assoc, map_comp_apply, h₃, map_comp_apply]
 #align category_theory.functor.is_mittag_leffler.to_preimages CategoryTheory.Functor.IsMittagLeffler.toPreimages
 

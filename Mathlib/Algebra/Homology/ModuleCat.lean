@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.Module
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
+
+#align_import algebra.homology.Module from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Complexes of modules
@@ -31,7 +28,7 @@ open CategoryTheory Limits HomologicalComplex
 
 variable {R : Type v} [Ring R]
 
-variable {ι : Type _} {c : ComplexShape ι} {C D : HomologicalComplex (ModuleCat.{u} R) c}
+variable {ι : Type*} {c : ComplexShape ι} {C D : HomologicalComplex (ModuleCat.{u} R) c}
 
 namespace ModuleCat
 
@@ -75,9 +72,12 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem cyclesMap_toCycles (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
     (cyclesMap f i) (toCycles x) = toCycles ⟨f.f i x.1, by
-      rw [LinearMap.mem_ker, Hom.comm_from_apply, x.2, map_zero]⟩ := by
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      rw [LinearMap.mem_ker]; erw [Hom.comm_from_apply, x.2, map_zero]⟩ := by
   ext
-  rw [cyclesMap_arrow_apply, toKernelSubobject_arrow, toKernelSubobject_arrow]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [cyclesMap_arrow_apply, toKernelSubobject_arrow, toKernelSubobject_arrow]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Module.cycles_map_to_cycles ModuleCat.cyclesMap_toCycles
 
@@ -115,9 +115,13 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
   erw [map_add, CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
     CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
     ModuleCat.toKernelSubobject_arrow, imageToKernel_arrow_apply, imageSubobject_arrow_comp_apply]
-  rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i, LinearMap.add_apply,
-    LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext, comp_apply, comp_apply,
-    x.2, map_zero]
+  rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [LinearMap.add_apply]
+  rw [LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [comp_apply, comp_apply, comp_apply]
+  erw [x.2, map_zero]
   dsimp
   abel
 

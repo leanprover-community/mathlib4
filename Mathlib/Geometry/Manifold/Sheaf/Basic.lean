@@ -2,14 +2,11 @@
 Copyright © 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.sheaf.basic
-! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.Topology.Sheaves.LocalPredicate
+
+#align_import geometry.manifold.sheaf.basic from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-! # Generic construction of a sheaf from a `LocalInvariantProp` on a manifold
 
@@ -40,7 +37,7 @@ open Set TopologicalSpace StructureGroupoid StructureGroupoid.LocalInvariantProp
 
 universe u
 
-variable {H : Type _} [TopologicalSpace H] {H' : Type _} [TopologicalSpace H']
+variable {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   {G : StructureGroupoid H} {G' : StructureGroupoid H'} {P : (H → H') → Set H → H → Prop}
   (M : Type u) [TopologicalSpace M] [ChartedSpace H M] (M' : Type u) [TopologicalSpace M']
   [ChartedSpace H' M']

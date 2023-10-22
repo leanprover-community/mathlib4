@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module topology.continuous_function.basic
-! leanprover-community/mathlib commit 55d771df074d0dd020139ee1cd4b95521422df9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.continuous_function.basic from "leanprover-community/mathlib"@"55d771df074d0dd020139ee1cd4b95521422df9f"
 
 /-!
 # Continuous bundled maps
@@ -29,7 +26,7 @@ When possible, instead of parametrizing results over `(f : C(α, β))`,
 you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
-structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
+structure ContinuousMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
   /-- The function `α → β` -/
   protected toFun : α → β
   /-- Proposition that `toFun` is continuous -/
@@ -44,7 +41,7 @@ section
 /-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
+class ContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends FunLike F α fun _ => β where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
@@ -58,7 +55,7 @@ attribute [continuity] map_continuous
 
 section ContinuousMapClass
 
-variable {F α β : Type _} [TopologicalSpace α] [TopologicalSpace β] [ContinuousMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [ContinuousMapClass F α β]
 
 theorem map_continuousAt (f : F) (a : α) : ContinuousAt f a :=
   (map_continuous f).continuousAt
@@ -80,7 +77,7 @@ end ContinuousMapClass
 
 namespace ContinuousMap
 
-variable {α β γ δ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
 instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
@@ -99,6 +96,8 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
+instance : CanLift (α → β) C(α, β) FunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+
 /-- See note [custom simps projection]. -/
 def Simps.apply (f : C(α, β)) : α → β := f
 
@@ -106,7 +105,7 @@ def Simps.apply (f : C(α, β)) : α → β := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp] -- Porting note: removed `norm_cast` attribute
-protected theorem coe_coe {F : Type _} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
+protected theorem coe_coe {F : Type*} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
   rfl
 #align continuous_map.coe_coe ContinuousMap.coe_coe
 
@@ -271,11 +270,13 @@ theorem comp_const (f : C(β, γ)) (b : β) : f.comp (const α b) = const α (f 
   ext fun _ => rfl
 #align continuous_map.comp_const ContinuousMap.comp_const
 
+@[simp]
 theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
   ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
 #align continuous_map.cancel_right ContinuousMap.cancel_right
 
+@[simp]
 theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -287,7 +288,7 @@ instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
 
 section Prod
 
-variable {α₁ α₂ β₁ β₂ : Type _} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
+variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
   [TopologicalSpace β₂]
 
 /-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
@@ -324,9 +325,15 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 
+/-- `Sigma.mk i` as a bundled continuous map. -/
+@[simps apply]
+def sigmaMk {ι : Type*} {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] (i : ι) :
+    C(Y i, Σ i, Y i) where
+  toFun := Sigma.mk i
+
 section Pi
 
-variable {I A : Type _} {X Y : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
+variable {I A : Type*} {X Y : I → Type*} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
   [∀ i, TopologicalSpace (Y i)]
 
 /-- Abbreviation for product of continuous maps, which is continuous -/
@@ -349,6 +356,10 @@ def eval (i : I) : C(∀ j, X j, X i) where
 @[simps!]
 def piMap (f : ∀ i, C(X i, Y i)) : C((i : I) → X i, (i : I) → Y i) :=
   .pi fun i ↦ (f i).comp (eval i)
+
+/-- "Precomposition" as a continuous map between dependent types. -/
+def precomp {ι : Type*} (φ : ι → I) : C((i : I) → X i, (i : ι) → X (φ i)) :=
+  ⟨_, Pi.continuous_precomp' φ⟩
 
 end Pi
 
@@ -377,6 +388,11 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
   rfl
 #align continuous_map.restrict_apply_mk ContinuousMap.restrict_apply_mk
 
+theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
+    Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
+  FunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
+    congr_arg FunLike.coe h
+
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]
 def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
@@ -387,7 +403,7 @@ end Restrict
 
 section Gluing
 
-variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
+variable {ι : Type*} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
   (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
   (hS : ∀ x : α, ∃ i, S i ∈ nhds x)
 
@@ -396,7 +412,7 @@ of each point in `α` and the functions `φ i` agree pairwise on intersections, 
 construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover : C(α, β) :=
   haveI H : ⋃ i, S i = Set.univ :=
-    Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
+    Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
     simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous
@@ -455,7 +471,7 @@ end ContinuousMap
 
 namespace Homeomorph
 
-variable {α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 

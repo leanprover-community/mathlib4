@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.ergodic.conservative
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.Combinatorics.Pigeonhole
+
+#align_import dynamics.ergodic.conservative from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Conservative systems
@@ -47,7 +44,7 @@ open Classical Set Filter MeasureTheory Finset Function TopologicalSpace
 
 open Classical Topology
 
-variable {ι : Type _} {α : Type _} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
+variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
 namespace MeasureTheory
 
@@ -95,7 +92,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
   have hT : MeasurableSet T :=
     hs.inter (MeasurableSet.biUnion (to_countable _) fun _ _ => hf.measurable.iterate _ hs)
   have hμT : μ T = 0 := by
-    convert(measure_biUnion_null_iff <| to_countable _).2 hN
+    convert (measure_biUnion_null_iff <| to_countable _).2 hN
     rw [← inter_iUnion₂]
     rfl
   have : μ ((s ∩ f^[n] ⁻¹' s) \ T) ≠ 0 := by rwa [measure_diff_null hμT]
@@ -125,7 +122,7 @@ theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ) (hs
     simp only [setOf_forall, ← compl_setOf]
     exact
       hs.inter (MeasurableSet.biInter (to_countable _) fun m _ => hf.measurable.iterate m hs.compl)
-  rcases(hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
+  rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
 #align measure_theory.conservative.measure_mem_forall_ge_image_not_mem_eq_zero MeasureTheory.Conservative.measure_mem_forall_ge_image_not_mem_eq_zero
@@ -189,7 +186,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   · exact Conservative.id μ
   -- Discharge the trivial case `n = 0`
   refine' ⟨hf.1.iterate _, fun s hs hs0 => _⟩
-  rcases(hf.frequently_ae_mem_and_frequently_image_mem hs hs0).exists with ⟨x, _, hx⟩
+  rcases (hf.frequently_ae_mem_and_frequently_image_mem hs hs0).exists with ⟨x, _, hx⟩
   /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,
     then we choose two of these values `k < l` such that `k ≡ l [MOD (n + 1)]`.
     Then `f^[k] x ∈ s` and `f^[n + 1]^[(l - k) / (n + 1)] (f^[k] x) = f^[l] x ∈ s`. -/
@@ -201,7 +198,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
     exact (Nat.modEq_iff_dvd' hkl.le).1 hn
   refine' ⟨f^[k] x, hk, m, _, _⟩
   · intro hm
-    rw [hm, MulZeroClass.mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
+    rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
     exact this.not_lt hkl
   · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
     exact hkl.le

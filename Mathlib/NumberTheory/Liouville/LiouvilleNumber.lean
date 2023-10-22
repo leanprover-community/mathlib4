@@ -2,13 +2,10 @@
 Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
-
-! This file was ported from Lean 3 source module number_theory.liouville.liouville_number
-! leanprover-community/mathlib commit 04e80bb7e8510958cd9aacd32fe2dc147af0b9f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Liouville.Basic
+
+#align_import number_theory.liouville.liouville_number from "leanprover-community/mathlib"@"04e80bb7e8510958cd9aacd32fe2dc147af0b9f1"
 
 /-!
 
@@ -86,7 +83,7 @@ protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / 
 
 theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
     Summable fun i : ℕ => 1 / m ^ (i + (k + 1))! := by
-  convert(summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
+  convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 #align liouville_number.remainder_summable LiouvilleNumber.remainder_summable
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=

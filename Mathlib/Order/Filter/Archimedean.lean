@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.archimedean
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.GCongr
+
+#align_import order.filter.archimedean from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields
@@ -22,7 +19,7 @@ well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a
 -/
 
 
-variable {α R : Type _}
+variable {α R : Type*}
 
 open Filter Set Function
 
@@ -168,7 +165,7 @@ theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
   refine' tendsto_atTop.2 fun b => _
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   rw [nsmul_eq_mul'] at hn
-  filter_upwards [tendsto_atTop.1 hf (n * max b 0)]with x hx
+  filter_upwards [tendsto_atTop.1 hf (n * max b 0)] with x hx
   calc
     b ≤ 1 * max b 0 := by
     { rw [one_mul]
@@ -187,7 +184,7 @@ theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :
   refine' tendsto_atTop.2 fun b => _
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   have hn' : 1 ≤ (n : R) * r := by rwa [nsmul_eq_mul] at hn
-  filter_upwards [tendsto_atTop.1 hf (max b 0 * n)]with x hx
+  filter_upwards [tendsto_atTop.1 hf (max b 0 * n)] with x hx
   calc
     b ≤ max b 0 * 1 := by
     { rw [mul_one]

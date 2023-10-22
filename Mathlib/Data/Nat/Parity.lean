@@ -2,15 +2,12 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
-
-! This file was ported from Lean 3 source module data.nat.parity
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime
 import Mathlib.Algebra.Parity
+
+#align_import data.nat.parity from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Parity of natural numbers
@@ -45,7 +42,7 @@ theorem even_iff : Even n ↔ n % 2 = 0 :=
 instance : DecidablePred (Even : ℕ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ => by rw [hm, add_mod, mul_mod_right]; rfl,
+  ⟨fun ⟨m, hm⟩ => by norm_num [hm, add_mod],
     fun h => ⟨n / 2, (mod_add_div n 2).symm.trans (by rw [h, add_comm])⟩⟩
 #align nat.odd_iff Nat.odd_iff
 
@@ -293,7 +290,7 @@ namespace Function
 
 namespace Involutive
 
-variable {α : Type _} {f : α → α} {n : ℕ}
+variable {α : Type*} {f : α → α} {n : ℕ}
 
 set_option linter.deprecated false in
 section
@@ -334,7 +331,7 @@ end Involutive
 
 end Function
 
-variable {R : Type _} [Monoid R] [HasDistribNeg R] {n : ℕ}
+variable {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
 
 theorem neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n :=
   ⟨fun h' => of_not_not fun hn => h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h',

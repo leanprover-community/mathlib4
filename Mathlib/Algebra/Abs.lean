@@ -2,13 +2,11 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module algebra.abs
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Basic
+
+#align_import algebra.abs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!
 # Absolute value
 
@@ -38,7 +36,7 @@ absolute
 /--
 Absolute value is a unary operator with properties similar to the absolute value of a real number.
 -/
-class Abs (α : Type _) where
+class Abs (α : Type*) where
   /-- The absolute value function. -/
   abs : α → α
 
@@ -48,7 +46,7 @@ export Abs (abs)
 
 /-- The positive part of an element admitting a decomposition into positive and negative parts.
 -/
-class PosPart (α : Type _) where
+class PosPart (α : Type*) where
   /-- The positive part function. -/
   pos : α → α
 
@@ -56,7 +54,7 @@ class PosPart (α : Type _) where
 
 /-- The negative part of an element admitting a decomposition into positive and negative parts.
 -/
-class NegPart (α : Type _) where
+class NegPart (α : Type*) where
   /-- The negative part function. -/
   neg : α → α
 

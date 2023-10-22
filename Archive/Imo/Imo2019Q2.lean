@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module imo.imo2019_q2
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Sphere.SecondInter
+
+#align_import imo.imo2019_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2019 Q2
@@ -70,7 +67,7 @@ set_option linter.uppercaseLean3 false
 
 attribute [local instance] FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two
 
-variable (V : Type _) (Pt : Type _)
+variable (V : Type*) (Pt : Type*)
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
 

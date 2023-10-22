@@ -2,15 +2,12 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.complex.circle
-! leanprover-community/mathlib commit ad3dfaca9ea2465198bcf58aa114401c324e29d1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Analysis.Normed.Field.UnitBall
+
+#align_import analysis.complex.circle from "leanprover-community/mathlib"@"ad3dfaca9ea2465198bcf58aa114401c324e29d1"
 
 /-!
 # The circle
@@ -116,8 +113,8 @@ def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=
 #align circle.of_conj_div_self circle.ofConjDivSelf
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
-def expMapCircle : C(ℝ, circle)
-    where toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
+def expMapCircle : C(ℝ, circle) where
+  toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
 #align exp_map_circle expMapCircle
 
 @[simp]
@@ -128,7 +125,7 @@ theorem expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Co
 @[simp]
 theorem expMapCircle_zero : expMapCircle 0 = 1 :=
   Subtype.ext <| by
-    rw [expMapCircle_apply, ofReal_zero, MulZeroClass.zero_mul, exp_zero, Submonoid.coe_one]
+    rw [expMapCircle_apply, ofReal_zero, zero_mul, exp_zero, Submonoid.coe_one]
 #align exp_map_circle_zero expMapCircle_zero
 
 @[simp]

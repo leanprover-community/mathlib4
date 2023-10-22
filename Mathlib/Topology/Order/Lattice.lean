@@ -2,14 +2,11 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module topology.order.lattice
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Constructions
+
+#align_import topology.order.lattice from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Topological lattices
@@ -27,6 +24,8 @@ class `TopologicalLattice` as a topological space and lattice `L` extending `Con
 topological, lattice
 -/
 
+set_option autoImplicit true
+
 
 open Filter
 
@@ -36,7 +35,7 @@ open Topology
 `⊓:L×L → L` be an infimum. Then `L` is said to have *(jointly) continuous infimum* if the map
 `⊓:L×L → L` is continuous.
 -/
-class ContinuousInf (L : Type _) [TopologicalSpace L] [Inf L] : Prop where
+class ContinuousInf (L : Type*) [TopologicalSpace L] [Inf L] : Prop where
   /-- The infimum is continuous -/
   continuous_inf : Continuous fun p : L × L => p.1 ⊓ p.2
 #align has_continuous_inf ContinuousInf
@@ -45,37 +44,37 @@ class ContinuousInf (L : Type _) [TopologicalSpace L] [Inf L] : Prop where
 `⊓:L×L → L` be a supremum. Then `L` is said to have *(jointly) continuous supremum* if the map
 `⊓:L×L → L` is continuous.
 -/
-class ContinuousSup (L : Type _) [TopologicalSpace L] [Sup L] : Prop where
+class ContinuousSup (L : Type*) [TopologicalSpace L] [Sup L] : Prop where
   /-- The supremum is continuous -/
   continuous_sup : Continuous fun p : L × L => p.1 ⊔ p.2
 #align has_continuous_sup ContinuousSup
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousSup (L : Type _) [TopologicalSpace L] [Inf L]
-    [ContinuousInf L] : ContinuousSup Lᵒᵈ
-    where continuous_sup := @ContinuousInf.continuous_inf L _ _ _
+instance (priority := 100) OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Inf L]
+    [ContinuousInf L] : ContinuousSup Lᵒᵈ where
+  continuous_sup := @ContinuousInf.continuous_inf L _ _ _
 #align order_dual.has_continuous_sup OrderDual.continuousSup
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousInf (L : Type _) [TopologicalSpace L] [Sup L]
-    [ContinuousSup L] : ContinuousInf Lᵒᵈ
-    where continuous_inf := @ContinuousSup.continuous_sup L _ _ _
+instance (priority := 100) OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Sup L]
+    [ContinuousSup L] : ContinuousInf Lᵒᵈ where
+  continuous_inf := @ContinuousSup.continuous_sup L _ _ _
 #align order_dual.has_continuous_inf OrderDual.continuousInf
 
 /-- Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.
 Then `L` is said to be a *topological lattice*.
 -/
-class TopologicalLattice (L : Type _) [TopologicalSpace L] [Lattice L] extends ContinuousInf L,
-  ContinuousSup L
+class TopologicalLattice (L : Type*) [TopologicalSpace L] [Lattice L]
+  extends ContinuousInf L, ContinuousSup L : Prop
 #align topological_lattice TopologicalLattice
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderDual.topologicalLattice (L : Type _) [TopologicalSpace L]
+instance (priority := 100) OrderDual.topologicalLattice (L : Type*) [TopologicalSpace L]
     [Lattice L] [TopologicalLattice L] : TopologicalLattice Lᵒᵈ where
 #align order_dual.topological_lattice OrderDual.topologicalLattice
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrder.topologicalLattice {L : Type _} [TopologicalSpace L]
+instance (priority := 100) LinearOrder.topologicalLattice {L : Type*} [TopologicalSpace L]
     [LinearOrder L] [OrderClosedTopology L] : TopologicalLattice L
     where
   continuous_inf := continuous_min

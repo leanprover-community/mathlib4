@@ -2,15 +2,12 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.cubing_a_cube
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Intervals.Disjoint
+
+#align_import wiedijk_100_theorems.cubing_a_cube from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 Proof that a cube (in dimension n ≥ 3) cannot be cubed:
@@ -140,7 +137,7 @@ def unitCube : Cube n :=
 
 @[simp]
 theorem side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
-  rw [unitCube, side]; norm_num
+  norm_num [unitCube, side]
 #align theorems_100.«82».cube.side_unit_cube Theorems100.«82».Cube.side_unitCube
 
 end Cube
@@ -257,7 +254,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor; rw [side, unitCube]; norm_num; exact hv
+      rw [forall_fin_succ, h0]; constructor; norm_num [side, unitCube]; exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
     use i
     constructor

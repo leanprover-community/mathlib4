@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Junyan Xu
-
-! This file was ported from Lean 3 source module order.extension.well
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.Lex
 import Mathlib.SetTheory.Ordinal.Arithmetic
+
+#align_import order.extension.well from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Extend a well-founded order to a well-order
@@ -75,7 +72,7 @@ theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
 end WellFounded
 
 /-- A type alias for `α`, intended to extend a well-founded order on `α` to a well-order. -/
-def WellOrderExtension (α : Type _) : Type _ := α
+def WellOrderExtension (α : Type*) : Type _ := α
 #align well_order_extension WellOrderExtension
 
 instance [Inhabited α] : Inhabited (WellOrderExtension α) := ‹_›

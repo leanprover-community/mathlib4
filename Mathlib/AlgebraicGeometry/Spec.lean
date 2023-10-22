@@ -2,18 +2,15 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
-
-! This file was ported from Lean 3 source module algebraic_geometry.Spec
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Algebra.Module.LocalizedModule
+
+#align_import algebraic_geometry.Spec from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
@@ -190,11 +187,9 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
         toOpen R U ≫ β.c.app (op U)) :
     α = β := by
   ext : 1
-  -- See https://github.com/leanprover/std4/pull/158
-  swap
   · exact w
   · apply
-      ((TopCat.Sheaf.pushforward β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
+      ((TopCat.Sheaf.pushforward _ β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
     intro r
     apply (StructureSheaf.to_basicOpen_epi R r).1
     -- Porting note : was a one-liner `simpa using h r`
@@ -246,7 +241,8 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        rw [stalkIso_hom, stalkIso_inv, comp_apply, comp_apply, localizationToStalk_of]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        rw [stalkIso_hom, stalkIso_inv]; erw [comp_apply, comp_apply]; rw [localizationToStalk_of]
         erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
@@ -313,6 +309,9 @@ def toSpecΓ (R : CommRingCat) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.to_Spec_Γ AlgebraicGeometry.toSpecΓ
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
+
 instance isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global
 set_option linter.uppercaseLean3 false in
@@ -321,7 +320,7 @@ set_option linter.uppercaseLean3 false in
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
-  -- Porting note : `ext` failed to pickup one the three lemmas
+  -- Porting note : `ext` failed to pick up one of the three lemmas
   refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm;
   apply Localization.localRingHom_to_map
 set_option linter.uppercaseLean3 false in
@@ -333,7 +332,7 @@ def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents (fun R =>
     -- Porting note : In Lean3, this `IsIso` is synthesized automatically
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
-    asIso (toSpecΓ R)) fun {X Y} f => by exact Spec_Γ_naturality (R := X) (S := Y) f
+    asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_identity AlgebraicGeometry.SpecΓIdentity
 

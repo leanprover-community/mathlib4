@@ -2,15 +2,12 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.bool.basic
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
+
+#align_import data.bool.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Booleans
@@ -22,6 +19,8 @@ relation to decidable propositions.
 bool, boolean, Bool, De Morgan
 
 -/
+
+set_option autoImplicit true
 
 namespace Bool
 
@@ -136,7 +135,7 @@ theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
 theorem cond_not {α} (b : Bool) (t e : α) : cond (!b) t e = cond b e t := by cases b <;> rfl
 #align bool.cond_bnot Bool.cond_not
 
-theorem not_ne_id : not ≠ id := fun h ↦ ff_ne_tt <| congrFun h true
+theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
 theorem coe_bool_iff : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
@@ -260,6 +259,8 @@ theorem or_not_self : ∀ x, (x || !x) = true := by decide
 theorem not_or_self : ∀ x, (!x || x) = true := by decide
 #align bool.bnot_bor_self Bool.not_or_self
 
+theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
+
 theorem xor_comm : ∀ a b, xor a b = xor b a := by decide
 #align bool.bxor_comm Bool.xor_comm
 
@@ -381,7 +382,7 @@ def ofNat (n : Nat) : Bool :=
 #align bool.of_nat Bool.ofNat
 
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
-  simp only [ofNat, ne_eq, _root_.decide_not];
+  simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
   | isTrue hn => rw [decide_eq_true hn]; exact false_le
   | isFalse hn =>
@@ -393,7 +394,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
   cases h with
   | inl h => subst h; exact Nat.zero_le _
-  | inr h => subst h; cases b₀ <;> simp;
+  | inr h => subst h; cases b₀ <;> simp
 #align bool.to_nat_le_to_nat Bool.toNat_le_toNat
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
@@ -401,8 +402,8 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 #align bool.of_nat_to_nat Bool.ofNat_toNat
 
 @[simp]
-theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
-  ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
+theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
+  ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
     exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 #align bool.injective_iff Bool.injective_iff

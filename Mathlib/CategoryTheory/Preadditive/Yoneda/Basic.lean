@@ -2,16 +2,13 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.preadditive.yoneda.basic
-! leanprover-community/mathlib commit 09f981f72d43749f1fa072deade828d9c1e185bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Preadditive
+
+#align_import category_theory.preadditive.yoneda.basic from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 
 /-!
 # The Yoneda embedding for preadditive categories
@@ -97,6 +94,10 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGroupCat.{v} where
   map_id _ := by ext; dsimp; simp
   map_comp f g := by ext; dsimp; simp
 #align category_theory.preadditive_coyoneda CategoryTheory.preadditiveCoyoneda
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.preadditiveYoneda_map_app_apply
+  CategoryTheory.preadditiveCoyoneda_map_app_apply
 
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where
 #align category_theory.additive_yoneda_obj CategoryTheory.additive_yonedaObj

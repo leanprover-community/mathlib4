@@ -2,14 +2,11 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.weighted_homogeneous
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Weighted homogeneous polynomials
@@ -50,11 +47,11 @@ open BigOperators
 
 open Set Function Finset Finsupp AddMonoidAlgebra
 
-variable {R M : Type _} [CommSemiring R]
+variable {R M : Type*} [CommSemiring R]
 
 namespace MvPolynomial
 
-variable {σ : Type _}
+variable {σ : Type*}
 
 section AddCommMonoid
 
@@ -179,6 +176,7 @@ variable {R}
 theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
     weightedHomogeneousSubmodule R w m * weightedHomogeneousSubmodule R w n ≤
       weightedHomogeneousSubmodule R w (m + n) := by
+  classical
   rw [Submodule.mul_le]
   intro φ hφ ψ hψ c hc
   rw [coeff_mul] at hc
@@ -186,7 +184,7 @@ theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
   have aux : coeff d φ ≠ 0 ∧ coeff e ψ ≠ 0 := by
     contrapose! H
     by_cases h : coeff d φ = 0 <;>
-      simp_all only [Ne.def, not_false_iff, MulZeroClass.zero_mul, MulZeroClass.mul_zero]
+      simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
   rw [← Finsupp.mem_antidiagonal.mp hde, ← hφ aux.1, ← hψ aux.2, map_add]
 #align mv_polynomial.weighted_homogeneous_submodule_mul MvPolynomial.weightedHomogeneousSubmodule_mul
 
@@ -270,7 +268,7 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
 
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
-theorem sum {ι : Type _} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
+theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
     (h : ∀ i ∈ s, IsWeightedHomogeneous w (φ i) n) : IsWeightedHomogeneous w (∑ i in s, φ i) n :=
   (weightedHomogeneousSubmodule R w n).sum_mem h
 #align mv_polynomial.is_weighted_homogeneous.sum MvPolynomial.IsWeightedHomogeneous.sum
@@ -284,7 +282,7 @@ theorem mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (hψ : IsWeighte
 
 /-- A product of weighted homogeneous polynomials is weighted homogeneous, with weighted degree
   equal to the sum of the weighted degrees. -/
-theorem prod {ι : Type _} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :
+theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :
     (∀ i ∈ s, IsWeightedHomogeneous w (φ i) (n i)) →
       IsWeightedHomogeneous w (∏ i in s, φ i) (∑ i in s, n i) := by
   classical
@@ -443,11 +441,11 @@ end WeightedHomogeneousComponent
 
 end AddCommMonoid
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [CanonicallyOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 
-/-- If `M` is a `CanonicallyOrderedAddMonoid`, then the `weightedHomogeneousComponent`
+/-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
 @[simp]
 theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
@@ -465,6 +463,6 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
     exact ⟨i, hi, hw i⟩
 #align mv_polynomial.weighted_homogeneous_component_zero MvPolynomial.weightedHomogeneousComponent_zero
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 end MvPolynomial

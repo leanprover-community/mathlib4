@@ -2,14 +2,11 @@
 Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module analysis.convex.cone.dual
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection
+
+#align_import analysis.convex.cone.dual from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Convex cones in inner product spaces
@@ -30,14 +27,14 @@ open Set LinearMap
 
 open Classical Pointwise
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 /-! ### The dual cone -/
 
 
 section Dual
 
-variable {H : Type _} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
 
 open RealInnerProductSpace
 
@@ -103,7 +100,7 @@ theorem innerDualCone_insert (x : H) (s : Set H) :
   rw [insert_eq, innerDualCone_union]
 #align inner_dual_cone_insert innerDualCone_insert
 
-theorem innerDualCone_iUnion {ι : Sort _} (f : ι → Set H) :
+theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
   refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) _
   intro x hx y hy

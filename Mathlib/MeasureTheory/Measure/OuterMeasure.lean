@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
+
+#align_import measure_theory.measure.outer_measure from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
 
 /-!
 # Outer Measures
@@ -39,7 +36,7 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 ## Main definitions and statements
 
 * `OuterMeasure.boundedBy` is the greatest outer measure that is at most the given function.
-  If you know that the given functions sends `∅` to `0`, then `OuterMeasure.ofFunction` is a
+  If you know that the given function sends `∅` to `0`, then `OuterMeasure.ofFunction` is a
   special case.
 * `caratheodory` is the Carathéodory-measurable space of an outer measure.
 * `sInf_eq_boundedBy_sInfGen` is a characterization of the infimum of outer measures.
@@ -67,7 +64,7 @@ open Classical BigOperators NNReal Topology ENNReal MeasureTheory
 namespace MeasureTheory
 
 /-- An outer measure is a countably subadditive monotone function that sends `∅` to `0`. -/
-structure OuterMeasure (α : Type _) where
+structure OuterMeasure (α : Type*) where
   measureOf : Set α → ℝ≥0∞
   empty : measureOf ∅ = 0
   mono : ∀ {s₁ s₂}, s₁ ⊆ s₂ → measureOf s₁ ≤ measureOf s₂
@@ -82,7 +79,7 @@ namespace OuterMeasure
 
 section Basic
 
-variable {α β R R' : Type _} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
+variable {α β R R' : Type*} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
 
 instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) where
   coe m := m.measureOf
@@ -298,7 +295,7 @@ instance instSMul : SMul R (OuterMeasure α) :=
     { measureOf := fun s => c • m s
       empty := by simp; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
-        simp
+        simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
         exact ENNReal.mul_left_mono (m.mono h)
       iUnion_nat := fun s => by
@@ -343,9 +340,9 @@ instance addCommMonoid : AddCommMonoid (OuterMeasure α) :=
 /-- `(⇑)` as an `AddMonoidHom`. -/
 @[simps]
 def coeFnAddMonoidHom : OuterMeasure α →+ Set α → ℝ≥0∞ where
-    toFun := (⇑)
-    map_zero' := coe_zero
-    map_add' := coe_add
+  toFun := (⇑)
+  map_zero' := coe_zero
+  map_add' := coe_add
 #align measure_theory.outer_measure.coe_fn_add_monoid_hom MeasureTheory.OuterMeasure.coeFnAddMonoidHom
 
 instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
@@ -533,7 +530,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
       empty := by simp
       mono := fun {s t} h => m.mono <| image_subset f h
       iUnion_nat := fun s => by
-        simp
+        simp only
         rw [image_iUnion]
         apply m.iUnion_nat }
   map_add' m₁ m₂ := rfl
@@ -650,7 +647,7 @@ section OfFunction
 
 --porting note: "set_option eqn_compiler.zeta true" removed
 
-variable {α : Type _} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
+variable {α : Type*} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
 /-- Given any function `m` assigning measures to sets satisying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
@@ -685,7 +682,7 @@ protected def ofFunction : OuterMeasure α :=
         intro i
         apply Subset.trans (hf i).1
         apply iUnion_subset
-        simp
+        simp only [Nat.pairEquiv_symm_apply]
         rw [iUnion_unpair]
         intro j
         apply subset_iUnion₂ i }
@@ -761,8 +758,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ <| subset_union_left _ _) (hI _ <| subset_union_right _ _)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
-      (@tsum_union_disjoint _ _ _ _ _ (fun i => μ (f i)) _ _ _ hd ENNReal.summable
-          ENNReal.summable).symm
+      (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
       (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
         ENNReal.summable ENNReal.summable)
@@ -828,7 +824,7 @@ end OfFunction
 
 section BoundedBy
 
-variable {α : Type _} (m : Set α → ℝ≥0∞)
+variable {α : Type*} (m : Set α → ℝ≥0∞)
 
 /-- Given any function `m` assigning measures to sets, there is a unique maximal outer measure `μ`
   satisfying `μ s ≤ m s` for all `s : Set α`. This is the same as `OuterMeasure.ofFunction`,
@@ -943,8 +939,8 @@ def IsCaratheodory (s : Set α) : Prop :=
 #align measure_theory.outer_measure.is_caratheodory MeasureTheory.OuterMeasure.IsCaratheodory
 
 theorem isCaratheodory_iff_le' {s : Set α} :
-  IsCaratheodory m s ↔ ∀ t, m (t ∩ s) + m (t \ s) ≤ m t :=
-    forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| le_inter_add_diff _
+    IsCaratheodory m s ↔ ∀ t, m (t ∩ s) + m (t \ s) ≤ m t :=
+  forall_congr' fun _ => le_antisymm_iff.trans <| and_iff_right <| le_inter_add_diff _
 #align measure_theory.outer_measure.is_caratheodory_iff_le' MeasureTheory.OuterMeasure.isCaratheodory_iff_le'
 
 @[simp]
@@ -1061,7 +1057,7 @@ protected theorem iUnion_eq_of_caratheodory {s : ℕ → Set α}
 
 end CaratheodoryMeasurable
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ : m ∅ = 0}
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) :
@@ -1115,7 +1111,7 @@ theorem le_sum_caratheodory {ι} (m : ι → OuterMeasure α) :
 
 theorem le_smul_caratheodory (a : ℝ≥0∞) (m : OuterMeasure α) :
     m.caratheodory ≤ (a • m).caratheodory := fun s h t => by
-      simp [smul_apply]
+      simp only [smul_apply, smul_eq_mul]
       rw [(isCaratheodory_iff m).mp h t]
       simp [mul_add]
 #align measure_theory.outer_measure.le_smul_caratheodory MeasureTheory.OuterMeasure.le_smul_caratheodory
@@ -1246,7 +1242,8 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
       image_preimage_eq_inter_range]
     exact image_subset _ ht
   · refine' ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono _
-    simp
+    simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
+      image_subset_iff]
     exact subset_refl _
 #align measure_theory.outer_measure.map_infi_comap MeasureTheory.OuterMeasure.map_iInf_comap
 
@@ -1306,7 +1303,7 @@ open OuterMeasure
 
 section Extend
 
-variable {α : Type _} {P : α → Prop}
+variable {α : Type*} {P : α → Prop}
 
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
@@ -1339,14 +1336,14 @@ theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
 #align measure_theory.le_extend MeasureTheory.le_extend
 
 -- TODO: why this is a bad `congr` lemma?
-theorem extend_congr {β : Type _} {Pb : β → Prop} {mb : ∀ s : β, Pb s → ℝ≥0∞} {sa : α} {sb : β}
+theorem extend_congr {β : Type*} {Pb : β → Prop} {mb : ∀ s : β, Pb s → ℝ≥0∞} {sa : α} {sb : β}
     (hP : P sa ↔ Pb sb) (hm : ∀ (ha : P sa) (hb : Pb sb), m sa ha = mb sb hb) :
     extend m sa = extend mb sb :=
   iInf_congr_Prop hP fun _h => hm _ _
 #align measure_theory.extend_congr MeasureTheory.extend_congr
 
 @[simp]
-theorem extend_top {α : Type _} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
+theorem extend_top {α : Type*} {P : α → Prop} : extend (fun _ _ => ∞ : ∀ s : α, P s → ℝ≥0∞) = ⊤ :=
   funext fun _ => iInf_eq_top.mpr fun _ => rfl
 #align measure_theory.extend_top MeasureTheory.extend_top
 
@@ -1354,7 +1351,7 @@ end Extend
 
 section ExtendSet
 
-variable {α : Type _} {P : Set α → Prop}
+variable {α : Type*} {P : Set α → Prop}
 
 variable {m : ∀ s : Set α, P s → ℝ≥0∞}
 
@@ -1545,7 +1542,7 @@ end ExtendSet
 
 section MeasurableSpace
 
-variable {α : Type _} [MeasurableSpace α]
+variable {α : Type*} [MeasurableSpace α]
 
 variable {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
 
@@ -1591,7 +1588,7 @@ end MeasurableSpace
 
 namespace OuterMeasure
 
-variable {α : Type _} [MeasurableSpace α] (m : OuterMeasure α)
+variable {α : Type*} [MeasurableSpace α] (m : OuterMeasure α)
 
 /-- Given an outer measure `m` we can forget its value on non-measurable sets, and then consider
   `m.trim`, the unique maximal outer measure less than that function. -/
@@ -1603,7 +1600,7 @@ theorem le_trim : m ≤ m.trim := by
   apply le_ofFunction.mpr
   intro s
   apply le_iInf
-  simp
+  simp only [le_refl, implies_true]
   apply extend_empty <;> simp
 #align measure_theory.outer_measure.le_trim MeasureTheory.OuterMeasure.le_trim
 
@@ -1627,15 +1624,15 @@ theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun
 #align measure_theory.outer_measure.trim_mono MeasureTheory.OuterMeasure.trim_mono
 
 theorem le_trim_iff {m₁ m₂ : OuterMeasure α} :
-  m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s := by
-    let me := extend (fun s (_p : MeasurableSet s) => measureOf m₂ s)
-    have me_empty : me ∅ = 0 := by apply extend_empty; simp; simp
-    have : m₁ ≤ OuterMeasure.ofFunction me me_empty ↔
-            (∀ (s : Set α), measureOf m₁ s ≤ me s) := le_ofFunction
-    apply this.trans
-    apply forall_congr'
-    intro s
-    apply le_iInf_iff
+    m₁ ≤ m₂.trim ↔ ∀ s, MeasurableSet s → m₁ s ≤ m₂ s := by
+  let me := extend (fun s (_p : MeasurableSet s) => measureOf m₂ s)
+  have me_empty : me ∅ = 0 := by apply extend_empty; simp; simp
+  have : m₁ ≤ OuterMeasure.ofFunction me me_empty ↔
+          (∀ (s : Set α), measureOf m₁ s ≤ me s) := le_ofFunction
+  apply this.trans
+  apply forall_congr'
+  intro s
+  apply le_iInf_iff
 #align measure_theory.outer_measure.le_trim_iff MeasureTheory.OuterMeasure.le_trim_iff
 
 theorem trim_le_trim_iff {m₁ m₂ : OuterMeasure α} :
@@ -1722,7 +1719,7 @@ a measurable set `t ⊇ s` such that `μ i t = (μ i).trim s` for all `i`. -/
 theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι → OuterMeasure α)
     (s : Set α) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ∀ i, μ i t = (μ i).trim s := by
   choose t hst ht hμt using fun i => (μ i).exists_measurable_superset_eq_trim s
-  replace hst := subset_iInter  hst
+  replace hst := subset_iInter hst
   replace ht := MeasurableSet.iInter ht
   refine' ⟨⋂ i, t i, hst, ht, fun i => le_antisymm _ _⟩
   exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (mono' _ hst).trans_eq ((μ i).trim_eq ht)]
@@ -1749,7 +1746,7 @@ theorem trim_add (m₁ m₂ : OuterMeasure α) : (m₁ + m₂).trim = m₁.trim 
 #align measure_theory.outer_measure.trim_add MeasureTheory.OuterMeasure.trim_add
 
 /-- `trim` respects scalar multiplication. -/
-theorem trim_smul {R : Type _} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
+theorem trim_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
     (m : OuterMeasure α) : (c • m).trim = c • m.trim :=
   ext <| trim_op (smul_apply c m)
 #align measure_theory.outer_measure.trim_smul MeasureTheory.OuterMeasure.trim_smul
@@ -1762,16 +1759,15 @@ theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.tri
 /-- `trim` sends the supremum of a countable family of outer measures to the supremum
 of the trimmed measures. -/
 theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
-  trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
-    simp_rw [← @iSup_plift_down _ ι]
-    ext1 s
-    haveI : Countable (Option <| PLift ι) := by exact instCountableOption
-    obtain ⟨t, _, _, hμt⟩ :=
-      exists_measurable_superset_forall_eq_trim
-        (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s
-    simp only [Option.forall, Option.elim'] at hμt
-    simp only [iSup_apply, ← hμt.1]
-    exact iSup_congr hμt.2
+    trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
+  simp_rw [← @iSup_plift_down _ ι]
+  ext1 s
+  obtain ⟨t, _, _, hμt⟩ :=
+    exists_measurable_superset_forall_eq_trim
+      (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s
+  simp only [Option.forall, Option.elim'] at hμt
+  simp only [iSup_apply, ← hμt.1]
+  exact iSup_congr hμt.2
 #align measure_theory.outer_measure.trim_supr MeasureTheory.OuterMeasure.trim_iSup
 
 /-- The trimmed property of a measure μ states that `μ.toOuterMeasure.trim = μ.toOuterMeasure`.

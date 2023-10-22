@@ -2,13 +2,10 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.equicontinuity
-! leanprover-community/mathlib commit 01ad394a11bf06b950232720cf7e8fc6b22f0d6a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.UniformConvergence
+
+#align_import topology.algebra.equicontinuity from "leanprover-community/mathlib"@"01ad394a11bf06b950232720cf7e8fc6b22f0d6a"
 
 /-!
 # Algebra-related equicontinuity criterions
@@ -20,7 +17,7 @@ open Function
 open UniformConvergence
 
 @[to_additive]
-theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [TopologicalSpace G]
+theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [TopologicalSpace G]
     [UniformSpace M] [Group G] [Group M] [TopologicalGroup G] [UniformGroup M]
     [MonoidHomClass hom G M] (F : ι → hom)
     (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
@@ -36,7 +33,7 @@ theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [Topologica
 #align equicontinuous_of_equicontinuous_at_zero equicontinuous_of_equicontinuousAt_zero
 
 @[to_additive]
-theorem uniformEquicontinuous_of_equicontinuousAt_one {ι G M hom : Type _} [UniformSpace G]
+theorem uniformEquicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [UniformSpace G]
     [UniformSpace M] [Group G] [Group M] [UniformGroup G] [UniformGroup M] [MonoidHomClass hom G M]
     (F : ι → hom) (hf : EquicontinuousAt ((↑) ∘ F) (1 : G)) :
     UniformEquicontinuous ((↑) ∘ F) := by

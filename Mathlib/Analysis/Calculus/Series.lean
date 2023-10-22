@@ -2,15 +2,12 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.series
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Data.Nat.Cast.WithTop
+
+#align_import analysis.calculus.series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Smoothness of series
@@ -31,7 +28,7 @@ open Set Metric TopologicalSpace Function Asymptotics Filter
 
 open scoped Topology NNReal BigOperators
 
-variable {α β 𝕜 E F : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {α β 𝕜 E F : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 /-! ### Continuity -/
@@ -44,7 +41,7 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
     TendstoUniformlyOn (fun t : Finset α => fun x => ∑ n in t, f n x) (fun x => ∑' n, f n x) atTop
       s := by
   refine' tendstoUniformlyOn_iff.2 fun ε εpos => _
-  filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos]with t ht x hx
+  filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos] with t ht x hx
   have A : Summable fun n => ‖f n x‖ :=
     summable_of_nonneg_of_le (fun n => norm_nonneg _) (fun n => hfu n x hx) hu
   rw [dist_eq_norm, ← sum_add_tsum_subtype_compl (summable_of_summable_norm A) t, add_sub_cancel']
@@ -282,7 +279,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
       ext1 x
       refine' (sum_add_tsum_subtype_compl _ T).symm
       refine' summable_of_norm_bounded_eventually _ (hv 0 (zero_le _)) _
-      filter_upwards [h'f 0 (zero_le _)]with i hi
+      filter_upwards [h'f 0 (zero_le _)] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x
     rw [this]
     apply (ContDiff.sum fun i _ => (hf i).of_le hm).add

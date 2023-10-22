@@ -2,17 +2,14 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.cont_diff_def
-! leanprover-community/mathlib commit 3a69562db5a458db8322b190ec8d9a8bbd8a5b14
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+
+#align_import analysis.calculus.cont_diff_def from "leanprover-community/mathlib"@"3a69562db5a458db8322b190ec8d9a8bbd8a5b14"
 
 /-!
 # Higher differentiability
@@ -166,8 +163,11 @@ open Classical BigOperators NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
+/-
+Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
   NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+-/
 
 open Set Fin Filter Function
 
@@ -524,7 +524,7 @@ theorem contDiffWithinAt_insert {y : E} :
   simp_rw [ContDiffWithinAt, insert_comm x y, nhdsWithin_insert_of_ne h]
 #align cont_diff_within_at_insert contDiffWithinAt_insert
 
-alias contDiffWithinAt_insert ↔ ContDiffWithinAt.of_insert ContDiffWithinAt.insert'
+alias ⟨ContDiffWithinAt.of_insert, ContDiffWithinAt.insert'⟩ := contDiffWithinAt_insert
 #align cont_diff_within_at.of_insert ContDiffWithinAt.of_insert
 #align cont_diff_within_at.insert' ContDiffWithinAt.insert'
 
@@ -742,7 +742,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt {n : ℕ} :
         (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffOn 𝕜 n f' u := by
   constructor
   · intro h x hx
-    rcases(h x hx) n.succ le_rfl with ⟨u, hu, p, Hp⟩
+    rcases (h x hx) n.succ le_rfl with ⟨u, hu, p, Hp⟩
     refine'
       ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
         Hp.hasFDerivWithinAt (WithTop.coe_le_coe.2 (Nat.le_add_left 1 n)) hy, _⟩
@@ -812,6 +812,14 @@ theorem iteratedFDerivWithin_succ_eq_comp_left {n : ℕ} :
         fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s :=
   rfl
 #align iterated_fderiv_within_succ_eq_comp_left iteratedFDerivWithin_succ_eq_comp_left
+
+theorem fderivWithin_iteratedFDerivWithin {s : Set E} {n : ℕ} :
+    fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s =
+      (continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) => E) F).symm ∘
+        iteratedFDerivWithin 𝕜 (n + 1) f s := by
+  rw [iteratedFDerivWithin_succ_eq_comp_left]
+  ext1 x
+  simp only [Function.comp_apply, LinearIsometryEquiv.symm_apply_apply]
 
 theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
     ‖fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x‖ =
@@ -1011,7 +1019,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro m hm x hx
-    rcases(h x hx) m.succ (ENat.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
+    rcases (h x hx) m.succ (ENat.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
     rw [insert_eq_of_mem hx] at hu
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
     rw [inter_comm] at ho
@@ -1558,15 +1566,21 @@ theorem fderiv_iteratedFDeriv {n : ℕ} :
   simp only [Function.comp_apply, LinearIsometryEquiv.symm_apply_apply]
 #align fderiv_iterated_fderiv fderiv_iteratedFDeriv
 
-theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
-    HasCompactSupport (iteratedFDeriv 𝕜 n f) := by
+theorem tsupport_iteratedFDeriv_subset (n : ℕ) : tsupport (iteratedFDeriv 𝕜 n f) ⊆ tsupport f := by
   induction' n with n IH
   · rw [iteratedFDeriv_zero_eq_comp]
-    apply hf.comp_left
-    exact LinearIsometryEquiv.map_zero _
+    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
+      subset_closure) isClosed_closure
   · rw [iteratedFDeriv_succ_eq_comp_left]
-    apply (IH.fderiv 𝕜).comp_left
-    exact LinearIsometryEquiv.map_zero _
+    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
+      ((support_fderiv_subset 𝕜).trans IH)) isClosed_closure
+
+theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n f) ⊆ tsupport f :=
+  subset_closure.trans (tsupport_iteratedFDeriv_subset n)
+
+theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
+    HasCompactSupport (iteratedFDeriv 𝕜 n f) :=
+  hf.of_isClosed_subset isClosed_closure (tsupport_iteratedFDeriv_subset n)
 #align has_compact_support.iterated_fderiv HasCompactSupport.iteratedFDeriv
 
 theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
@@ -1700,7 +1714,7 @@ theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
 continuous. -/
 theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
     Continuous fun p : E × E => (fderiv 𝕜 f p.1 : E → F) p.2 :=
-  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMapApply.continuous
+  have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMap_apply.continuous
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B

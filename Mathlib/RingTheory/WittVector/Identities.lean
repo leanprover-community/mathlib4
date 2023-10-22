@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.identities
-! leanprover-community/mathlib commit 0798037604b2d91748f9b43925fb7570a5f3256c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Frobenius
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.MulP
+
+#align_import ring_theory.witt_vector.identities from "leanprover-community/mathlib"@"0798037604b2d91748f9b43925fb7570a5f3256c"
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -33,7 +30,7 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 
 namespace WittVector
 
-variable {p : ℕ} {R : Type _} [hp : Fact p.Prime] [CommRing R]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p

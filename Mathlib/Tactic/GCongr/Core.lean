@@ -3,7 +3,9 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.Backtracking
+import Mathlib.Init.Order.Defs
+import Mathlib.Tactic.Backtrack
+import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
 
 /-!
@@ -55,15 +57,15 @@ situations according to whether the goal compares constant-left-multiplications,
 constant-right-multiplications, or fully varying multiplications:
 ```
 theorem mul_le_mul_of_nonneg_left [Mul α] [Zero α] [Preorder α] [PosMulMono α]
-    {a b c : α}  (h : b ≤ c) (a0 : 0 ≤ a) :
+    {a b c : α} (h : b ≤ c) (a0 : 0 ≤ a) :
     a * b ≤ a * c
 
 theorem mul_le_mul_of_nonneg_right [Mul α] [Zero α] [Preorder α] [MulPosMono α]
-    {a b c : α}  (h : b ≤ c) (a0 : 0 ≤ a) :
+    {a b c : α} (h : b ≤ c) (a0 : 0 ≤ a) :
     b * a ≤ c * a
 
 theorem mul_le_mul [MulZeroClass α] [Preorder α] [PosMulMono α] [MulPosMono α]
-    {a b c d : α}  (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) :
+    {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) :
     a * c ≤ b * d
 ```
 The advantage of this approach is that the lemmas with fewer "varying" input pairs typically require
@@ -349,29 +351,23 @@ partial def _root_.Lean.MVarId.gcongr
 
 open Elab Tactic
 
--- TODO remove this after https://github.com/leanprover/std4/pull/137 is merged
-def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
-  let .true ← isDefEq (← g.getType) (← inferType e) | failure
-  g.checkNotAssigned `myExact
-  g.assign e
-
 /-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
 @[gcongr_forward] def exactRefl : ForwardExt where
   eval h goal := do
     let m ← mkFreshExprMVar none
-    goal.exact (← mkAppOptM ``Eq.subst #[h, m])
-    goal.rfl
+    goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
+    goal.applyRfl
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.exact (← mkAppM ``le_of_lt #[h])
+  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
 
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.symm).exact h
+  eval h goal := do (← goal.applySymm).assignIfDefeq h
 
 @[gcongr_forward] def exact : ForwardExt where
-  eval := MVarId.exact
+  eval e m := m.assignIfDefeq e
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from

@@ -2,11 +2,6 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.function.jacobian
-! leanprover-community/mathlib commit b84aee748341da06a6d78491367e2c0e9f15e8a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.MeasureTheory.Constructions.Polish
+
+#align_import measure_theory.function.jacobian from "leanprover-community/mathlib"@"b84aee748341da06a6d78491367e2c0e9f15e8a5"
 
 /-!
 # Change of variables in higher-dimensional integrals
@@ -92,14 +89,14 @@ Change of variables in integrals
 -/
 
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set FiniteDimensional Asymptotics
   TopologicalSpace
 
 open scoped NNReal ENNReal Topology Pointwise
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] {s : Set E} {f : E → E} {f' : E → E →L[ℝ] E}
 
 /-!
@@ -312,7 +309,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       Tendsto (fun ε => μ (closedBall 0 ε + A '' closedBall 0 1)) (𝓝[>] 0)
         (𝓝 (d * μ (closedBall 0 1))) := by
       convert L1
-      exact (add_haar_image_continuousLinearMap _ _ _).symm
+      exact (addHaar_image_continuousLinearMap _ _ _).symm
     have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) :=
       (ENNReal.mul_lt_mul_right (measure_closedBall_pos μ _ zero_lt_one).ne'
             measure_closedBall_lt_top.ne).2
@@ -351,11 +348,11 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       μ (f '' (s ∩ closedBall x r)) ≤ μ ({f x} + r • (A '' closedBall 0 1 + closedBall 0 ε)) :=
         measure_mono K
       _ = ENNReal.ofReal (r ^ finrank ℝ E) * μ (A '' closedBall 0 1 + closedBall 0 ε) := by
-        simp only [abs_of_nonneg r0, add_haar_smul, image_add_left, abs_pow, singleton_add,
+        simp only [abs_of_nonneg r0, addHaar_smul, image_add_left, abs_pow, singleton_add,
           measure_preimage_add]
       _ ≤ ENNReal.ofReal (r ^ finrank ℝ E) * (m * μ (closedBall 0 1)) := by
         rw [add_comm]; exact mul_le_mul_left' hε.le _
-      _ = m * μ (closedBall x r) := by simp only [add_haar_closedBall' μ _ r0]; ring
+      _ = m * μ (closedBall x r) := by simp only [addHaar_closedBall' μ _ r0]; ring
   -- covering `s` by closed balls with total measure very close to `μ s`, one deduces that the
   -- measure of `f '' s` is at most `m * (μ s + a)` for any positive `a`.
   have J : ∀ᶠ a in 𝓝[>] (0 : ℝ≥0∞), μ (f '' s) ≤ m * (μ s + a) := by
@@ -403,7 +400,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   -- exclude first the trivial case where `m = 0`.
   rcases eq_or_lt_of_le (zero_le m) with (rfl | mpos)
   · apply eventually_of_forall
-    simp only [forall_const, MulZeroClass.zero_mul, imp_true_iff, zero_le, ENNReal.coe_zero]
+    simp only [forall_const, zero_mul, imp_true_iff, zero_le, ENNReal.coe_zero]
   have hA : A.det ≠ 0 := by
     intro h; simp only [h, ENNReal.not_lt_zero, ENNReal.ofReal_zero, abs_zero] at hm
   -- let `B` be the continuous linear equiv version of `A`.
@@ -424,7 +421,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
         ∀ (t : Set E) (g : E → E),
           ApproximatesLinearOn g (B.symm : E →L[ℝ] E) t δ → μ (g '' t) ≤ ↑m⁻¹ * μ t :=
       addHaar_image_le_mul_of_det_lt μ B.symm I
-    rcases(this.and self_mem_nhdsWithin).exists with ⟨δ₀, h, h'⟩
+    rcases (this.and self_mem_nhdsWithin).exists with ⟨δ₀, h, h'⟩
     exact ⟨δ₀, h', h⟩
   -- record smallness conditions for `δ` that will be needed to apply `hδ₀` below.
   have L1 : ∀ᶠ δ in 𝓝 (0 : ℝ≥0), Subsingleton E ∨ δ < ‖(B.symm : E →L[ℝ] E)‖₊⁻¹ := by
@@ -439,11 +436,11 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
       Tendsto (fun δ => ‖(B.symm : E →L[ℝ] E)‖₊ * (‖(B.symm : E →L[ℝ] E)‖₊⁻¹ - δ)⁻¹ * δ) (𝓝 0)
         (𝓝 (‖(B.symm : E →L[ℝ] E)‖₊ * (‖(B.symm : E →L[ℝ] E)‖₊⁻¹ - 0)⁻¹ * 0)) := by
       rcases eq_or_ne ‖(B.symm : E →L[ℝ] E)‖₊ 0 with (H | H)
-      · simpa only [H, MulZeroClass.zero_mul] using tendsto_const_nhds
+      · simpa only [H, zero_mul] using tendsto_const_nhds
       refine' Tendsto.mul (tendsto_const_nhds.mul _) tendsto_id
       refine' (Tendsto.sub tendsto_const_nhds tendsto_id).inv₀ _
       simpa only [tsub_zero, inv_eq_zero, Ne.def] using H
-    simp only [MulZeroClass.mul_zero] at this
+    simp only [mul_zero] at this
     exact (tendsto_order.1 this).2 δ₀ δ₀pos
   -- let `δ` be small enough, and `f` approximated by `B` up to `δ`.
   filter_upwards [L1, L2]
@@ -485,7 +482,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       Tendsto (fun ε : ℝ => ((δ : ℝ) + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε) (𝓝[>] 0)
         (𝓝 ((δ + 0) * (‖z‖ + 0) + ‖f' x - A‖ * 0)) :=
       Tendsto.mono_left (Continuous.tendsto (by continuity) 0) nhdsWithin_le_nhds
-    simp only [add_zero, MulZeroClass.mul_zero] at this
+    simp only [add_zero, mul_zero] at this
     apply le_of_tendsto_of_tendsto tendsto_const_nhds this
     filter_upwards [self_mem_nhdsWithin]
     exact H
@@ -503,7 +500,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   -- `f y - f x` is well approximated by `f' x (y - x)`.
   have B₂ : ∀ᶠ r in 𝓝[>] (0 : ℝ), {x} + r • closedBall z ε ⊆ ball x ρ := by
     apply nhdsWithin_le_nhds
-    exact eventually_singleton_add_smul_subset bounded_closedBall (ball_mem_nhds x ρpos)
+    exact eventually_singleton_add_smul_subset isBounded_closedBall (ball_mem_nhds x ρpos)
   -- fix a small positive `r` satisfying the above properties, as well as a corresponding `y`.
   obtain ⟨r, ⟨y, ⟨ys, hy⟩⟩, rρ, rpos⟩ :
     ∃ r : ℝ,
@@ -600,7 +597,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
     _ ≤ ∑' n, ((Real.toNNReal |(A n).det| + 1 : ℝ≥0) : ℝ≥0∞) * 0 := by
       refine' ENNReal.tsum_le_tsum fun n => mul_le_mul_left' _ _
       exact le_trans (measure_mono (inter_subset_left _ _)) (le_of_eq hs)
-    _ = 0 := by simp only [tsum_zero, MulZeroClass.mul_zero]
+    _ = 0 := by simp only [tsum_zero, mul_zero]
 #align measure_theory.add_haar_image_eq_zero_of_differentiable_on_of_add_haar_eq_zero MeasureTheory.addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero
 
 /-- A version of Sard lemma in fixed dimension: given a differentiable function from `E` to `E` and
@@ -681,7 +678,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
         (𝓝 (((0 : ℝ≥0) : ℝ≥0∞) * μ (closedBall 0 R))) :=
       ENNReal.Tendsto.mul_const (ENNReal.tendsto_coe.2 tendsto_id)
         (Or.inr measure_closedBall_lt_top.ne)
-    simp only [MulZeroClass.zero_mul, ENNReal.coe_zero] at this
+    simp only [zero_mul, ENNReal.coe_zero] at this
     exact Tendsto.mono_left this nhdsWithin_le_nhds
   apply le_antisymm _ (zero_le _)
   apply ge_of_tendsto B
@@ -896,7 +893,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux2 (hs : MeasurableSet s) (h
     refine' tendsto_const_nhds.add _
     refine' ENNReal.Tendsto.mul_const _ (Or.inr h's)
     exact ENNReal.Tendsto.const_mul (ENNReal.tendsto_coe.2 tendsto_id) (Or.inr ENNReal.coe_ne_top)
-  simp only [add_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero, ENNReal.coe_zero] at this
+  simp only [add_zero, zero_mul, mul_zero, ENNReal.coe_zero] at this
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin]
   rintro ε (εpos : 0 < ε)
@@ -959,7 +956,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
       exact hB.trans_lt (half_lt_self δ'pos)
     rcases eq_or_ne A.det 0 with (hA | hA)
     · refine' ⟨δ'', half_pos δ'pos, I'', _⟩
-      simp only [hA, forall_const, MulZeroClass.zero_mul, ENNReal.ofReal_zero, imp_true_iff,
+      simp only [hA, forall_const, zero_mul, ENNReal.ofReal_zero, imp_true_iff,
         zero_le, abs_zero]
     let m : ℝ≥0 := Real.toNNReal |A.det| - ε
     have I : (m : ℝ≥0∞) < ENNReal.ofReal |A.det| := by
@@ -1050,7 +1047,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux2 (hs : MeasurableSet s) (h
     refine' tendsto_const_nhds.add _
     refine' ENNReal.Tendsto.mul_const _ (Or.inr h's)
     exact ENNReal.Tendsto.const_mul (ENNReal.tendsto_coe.2 tendsto_id) (Or.inr ENNReal.coe_ne_top)
-  simp only [add_zero, MulZeroClass.zero_mul, MulZeroClass.mul_zero, ENNReal.coe_zero] at this
+  simp only [add_zero, zero_mul, mul_zero, ENNReal.coe_zero] at this
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin]
   rintro ε (εpos : 0 < ε)
@@ -1207,7 +1204,7 @@ theorem integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (hs : Measurable
 /-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Bochner integral of a function
 `g : E → F` on `f '' s` coincides with the integral of `|(f' x).det| • g ∘ f` on `s`. -/
-theorem integral_image_eq_integral_abs_det_fderiv_smul [CompleteSpace F] (hs : MeasurableSet s)
+theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) (g : E → F) :
     ∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ := by
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
@@ -1222,7 +1219,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul [CompleteSpace F] (hs : M
 #align measure_theory.integral_image_eq_integral_abs_det_fderiv_smul MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul
 
 -- Porting note: move this to `Topology.Algebra.Module.Basic` when port is over
-theorem det_one_smulRight {𝕜 : Type _} [NormedField 𝕜] (v : 𝕜) :
+theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
   have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
     ext1
@@ -1249,14 +1246,14 @@ theorem integrableOn_image_iff_integrableOn_abs_deriv_smul {s : Set ℝ} {f : �
 `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then the Bochner integral of a
 function `g : ℝ → F` on `f '' s` coincides with the integral of `|(f' x)| • g ∘ f` on `s`. -/
 theorem integral_image_eq_integral_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ} {f' : ℝ → ℝ}
-    [CompleteSpace F] (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x)
+    (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x)
     (hf : InjOn f s) (g : ℝ → F) : ∫ x in f '' s, g x = ∫ x in s, |f' x| • g (f x) := by
   simpa only [det_one_smulRight] using
     integral_image_eq_integral_abs_det_fderiv_smul volume hs
       (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
 #align measure_theory.integral_image_eq_integral_abs_deriv_smul MeasureTheory.integral_image_eq_integral_abs_deriv_smul
 
-theorem integral_target_eq_integral_abs_det_fderiv_smul [CompleteSpace F] {f : LocalHomeomorph E E}
+theorem integral_target_eq_integral_abs_det_fderiv_smul {f : LocalHomeomorph E E}
     (hf' : ∀ x ∈ f.source, HasFDerivAt f (f' x) x) (g : E → F) :
     ∫ x in f.target, g x ∂μ = ∫ x in f.source, |(f' x).det| • g (f x) ∂μ := by
   have : f '' f.source = f.target := LocalEquiv.image_source_eq_target f.toLocalEquiv

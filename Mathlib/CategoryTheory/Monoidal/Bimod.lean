@@ -2,15 +2,12 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Oleksandr Manzyuk
-
-! This file was ported from Lean 3 source module category_theory.monoidal.Bimod
-! leanprover-community/mathlib commit 4698e35ca56a0d4fa53aa5639c3364e0a77f4eba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+
+#align_import category_theory.monoidal.Bimod from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
 
 /-!
 # The category of bimodule objects over a pair of monoid objects.
@@ -975,7 +972,6 @@ theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_exchange_Bimod Bimod.whisker_exchange_bimod
 
-set_option maxHeartbeats 400000 in
 theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P : Bimod X Y)
     (Q : Bimod Y Z) :
     tensorHom (associatorBimod M N P).hom (𝟙 Q) ≫

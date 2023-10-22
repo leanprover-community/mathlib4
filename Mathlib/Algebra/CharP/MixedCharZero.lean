@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.char_p.mixed_char_zero
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Tactic.FieldSimp
+
+#align_import algebra.char_p.mixed_char_zero from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Equal and mixed characteristic
@@ -59,7 +56,7 @@ equivalent conditions.
 - Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.PAdics].
 -/
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-!
 ### Mixed characteristic
@@ -191,7 +188,7 @@ theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (
   -- But `n` generates the ideal, so its image is clearly zero.
   rw [← map_natCast (Ideal.Quotient.mk _), Nat.cast_zero, Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span (Set.mem_singleton _)
-#align equal_char_zero.pnat_coe_is_unit  EqualCharZero.PNat.isUnit_natCast
+#align equal_char_zero.pnat_coe_is_unit EqualCharZero.PNat.isUnit_natCast
 
 @[coe]
 noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=
@@ -233,7 +230,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
       intro a b
       field_simp
       trans (↑((a * b).num * a.den * b.den) : R)
-      · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
+      · simp_rw [Int.cast_mul, Int.cast_ofNat]
         ring
       rw [Rat.mul_num_den' a b]
       simp
@@ -241,7 +238,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
       intro a b
       field_simp
       trans (↑((a + b).num * a.den * b.den) : R)
-      · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
+      · simp_rw [Int.cast_mul, Int.cast_ofNat]
         ring
       rw [Rat.add_num_den' a b]
       simp }

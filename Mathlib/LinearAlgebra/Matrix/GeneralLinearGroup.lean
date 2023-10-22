@@ -2,15 +2,12 @@
 Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.general_linear_group
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+
+#align_import linear_algebra.matrix.general_linear_group from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -70,12 +67,12 @@ def det : GL n R →* Rˣ where
   toFun A :=
     { val := (↑A : Matrix n n R).det
       inv := (↑A⁻¹ : Matrix n n R).det
-      val_inv := by rw [← det_mul, ← mul_eq_mul, A.mul_inv, det_one]
-      inv_val := by rw [← det_mul, ← mul_eq_mul, A.inv_mul, det_one] }
+      val_inv := by rw [← det_mul, A.mul_inv, det_one]
+      inv_val := by rw [← det_mul, A.inv_mul, det_one] }
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
-#align matrix.general_linear_group.coe_det_apply Matrix.GeneralLinearGroup.det_apply_val
+#align matrix.general_linear_group.coe_det_apply Matrix.GeneralLinearGroup.val_det_apply
 
 /-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
@@ -93,7 +90,7 @@ noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :
 #align matrix.general_linear_group.mk'' Matrix.GeneralLinearGroup.mk''
 
 /-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`-/
-def mkOfDetNeZero {K : Type _} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
+def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 #align matrix.general_linear_group.mk_of_det_ne_zero Matrix.GeneralLinearGroup.mkOfDetNeZero
 
@@ -111,7 +108,7 @@ section CoeLemmas
 variable (A B : GL n R)
 
 @[simp]
-theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) ⬝ (↑B : Matrix n n R) :=
+theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
   rfl
 #align matrix.general_linear_group.coe_mul Matrix.GeneralLinearGroup.coe_mul
 
@@ -216,7 +213,7 @@ each element. -/
 instance : Neg (GLPos n R) :=
   ⟨fun g =>
     ⟨-g, by
-      rw [mem_glpos, GeneralLinearGroup.det_apply_val, Units.val_neg, det_neg,
+      rw [mem_glpos, GeneralLinearGroup.val_det_apply, Units.val_neg, det_neg,
         (Fact.out (p := Even <| Fintype.card n)).neg_one_pow, one_mul]
       exact g.prop⟩⟩
 

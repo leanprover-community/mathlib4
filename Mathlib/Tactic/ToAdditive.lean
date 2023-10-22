@@ -2,7 +2,6 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
-Ported by: E.W.Ayers
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
@@ -16,8 +15,8 @@ import Std.Data.Option.Basic
 import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
-import Mathlib.Tactic.Relation.Rfl -- just to copy the attribute
-import Mathlib.Tactic.Relation.Symm -- just to copy the attribute
+import Std.Tactic.Relation.Rfl -- just to copy the attribute
+import Std.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -30,15 +29,17 @@ and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Command Std
 
-/-- The  `to_additive_ignore_args` attribute. -/
+/-- The `to_additive_ignore_args` attribute. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
-/-- The  `to_additive_relevant_arg` attribute. -/
+/-- The `to_additive_relevant_arg` attribute. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-/-- The  `to_additive_reorder` attribute. -/
+/-- The `to_additive_reorder` attribute. -/
 syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
-/-- The  `to_additive_change_numeral` attribute. -/
+/-- The `to_additive_change_numeral` attribute. -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
@@ -74,7 +75,7 @@ def endCapitalNames : Lean.RBMap String (List String) compare :=
 This function takes a String and splits it into separate parts based on the following
 (naming conventions)[https://github.com/leanprover-community/mathlib4/wiki#naming-convention].
 
-E.g. `#eval  "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
+E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
 -/
 partial def String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) : List String :=
@@ -95,7 +96,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        fun x : String ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -286,15 +287,13 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
-  let size := cacheSize
   let rec visit (e : Expr) (inApp := false) : OptionT FindM Unit := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
       else
         return
-    if ← visited e size then
-      failure
+    checkVisited e
     match e with
     | x@(.app e a)       =>
         visit e true <|> do
@@ -311,7 +310,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | _                  => failure
-  Option.isNone <| Id.run <| (visit e).run' initCache
+  Option.isNone <| Id.run <| (visit e).run' mkPtrSet
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant
@@ -323,7 +322,7 @@ e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`.
 -/
 def additiveTest (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
+    (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
   unsafe additiveTestUnsafe findTranslation? ignore e
 
 /-- Swap the first two elements of a list -/
@@ -478,9 +477,8 @@ def reorderLambda (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr :=
     mkLambdaFVars (xs.permute! reorder) e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl
-  (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := [])
-  : MetaM ConstantInfo := do
+def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
+    MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
@@ -615,7 +613,7 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
 def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
-  (thisAttr attrName src tgt : Name) : CoreM Unit := do
+    (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (ext.getState (← getEnv)) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
       m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. {
@@ -628,19 +626,19 @@ def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ
 
 /-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
 def warnAttr [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
-  (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
+    (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (f ·.stateStack.head!.state ·) thisAttr attrName src tgt
 
 /-- Warn the user when the multiplicative declaration has a parametric attribute. -/
 def warnParametricAttr (stx : Syntax) (attr : ParametricAttribute β)
-  (thisAttr attrName src tgt : Name) : CoreM Unit :=
+    (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 
 /-- `runAndAdditivize names desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
-  (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
+    (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
@@ -799,6 +797,8 @@ def fixAbbreviation : List String → List String
   | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
   | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
   | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+  | "unique" :: "Prods" :: s          => "uniqueSums" :: fixAbbreviation s
+  | "Unique" :: "Prods" :: s          => "UniqueSums" :: fixAbbreviation s
   | "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
   | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
   | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
@@ -911,11 +911,11 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         ""}calling @[{thisAttr}]. The preferred method is to use {
         ""}`@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both {
         src} and the target declaration {tgt}."
-    warnAttr stx Std.Tactic.Ext.extExtension (fun b n => (b.elements.any fun t => t.declName = n))
-      thisAttr `ext src tgt
-    warnAttr stx Mathlib.Tactic.reflExt (·.elements.contains ·) thisAttr `refl src tgt
-    warnAttr stx Mathlib.Tactic.symmExt (·.elements.contains ·) thisAttr `symm src tgt
-    warnAttr stx Mathlib.Tactic.transExt (·.elements.contains ·) thisAttr `trans src tgt
+    warnAttr stx Std.Tactic.Ext.extExtension
+      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
+    warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
+    warnAttr stx Std.Tactic.symmExt (·.values.contains ·) thisAttr `symm src tgt
+    warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
@@ -1086,7 +1086,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type _} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
@@ -1096,7 +1096,7 @@ attribute is added to the generated lemma only, to additivize it again.
 This is useful for lemmas about `Pow` to generate both lemmas about `SMul` and `VAdd`. Example:
 ```
 @[to_additive (attr := to_additive VAdd_lemma, simp) SMul_lemma]
-lemma Pow_lemma ...
+lemma Pow_lemma ... :=
 ```
 In the above example, the `simp` is added to all 3 lemmas. All other options to `to_additive`
 (like the generated name or `(reorder := ...)`) are not passed down,

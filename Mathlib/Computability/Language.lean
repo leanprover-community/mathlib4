@@ -2,16 +2,14 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.language
-! leanprover-community/mathlib commit a239cd3e7ac2c7cde36c913808f9d40c411344f6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.DeriveFintype
+
+#align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
 
 /-!
 # Languages
@@ -27,7 +25,7 @@ open List Set Computability
 
 universe v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
@@ -37,7 +35,7 @@ def Language (α) :=
 instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
 instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
 instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance : CompleteBooleanAlgebra (Language α) := Set.instCompleteBooleanAlgebraSet
+instance : CompleteAtomicBooleanAlgebra (Language α) := Set.completeAtomicBooleanAlgebra
 
 namespace Language
 
@@ -48,14 +46,13 @@ variable {l m : Language α} {a b x : List α}
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
-  ⟨fun _ => False⟩
+  ⟨(∅ : Set _)⟩
 
 /-- `1 : Language α` contains only one element `[]`. -/
 instance : One (Language α) :=
-  ⟨fun l => l = []⟩
+  ⟨{[]}⟩
 
-instance : Inhabited (Language α) :=
-  ⟨fun _ => False⟩
+instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 
 /-- The sum of two languages is their union. -/
 instance : Add (Language α) :=
@@ -133,7 +130,7 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 #align language.nil_mem_kstar Language.nil_mem_kstar
 
-instance : Semiring (Language α) where
+instance instSemiring : Semiring (Language α) where
   add := (· + ·)
   add_assoc := union_assoc
   zero := 0
@@ -182,16 +179,11 @@ theorem kstar_def_nonempty (l : Language α) :
   constructor
   · rintro ⟨S, rfl, h⟩
     refine' ⟨S.filter fun l ↦ ¬List.isEmpty l, by simp, fun y hy ↦ _⟩
-    simp [mem_filter, List.isEmpty_iff_eq_nil] at hy
     -- Porting note: The previous code was:
-    -- exact ⟨h y hy.1, hy.2⟩
-    --
-    -- The goal `y ≠ []` for the second argument cannot be resolved
-    -- by `hy.2 : isEmpty y = False`.
-    let ⟨hyl, hyr⟩ := hy
-    apply And.intro (h y hyl)
-    cases y <;> simp only [ne_eq, not_true, not_false_iff]
-    contradiction
+    -- rw [mem_filter, empty_iff_eq_nil] at hy
+    rw [mem_filter, decide_not, Bool.decide_coe, Bool.not_eq_true', ← Bool.bool_iff_false,
+      isEmpty_iff_eq_nil] at hy
+    exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 #align language.kstar_def_nonempty Language.kstar_def_nonempty
@@ -241,16 +233,8 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     constructor
     · rintro rfl
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
-    · -- Porting note: The previous code was:
-      -- rintro ⟨_, rfl, rfl, _⟩
-      -- rfl
-      --
-      -- The code reports an error for the second `rfl`.
-      rintro ⟨_, rfl, h₀, _⟩
-      simp; intros _ h₁
-      rw [length_eq_zero] at h₀
-      rw [h₀] at h₁
-      contradiction
+    · rintro ⟨_, rfl, rfl, _⟩
+      rfl
   · simp only [pow_succ, mem_mul, ihn]
     constructor
     · rintro ⟨a, b, ha, ⟨S, rfl, rfl, hS⟩, rfl⟩
@@ -293,7 +277,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
 instance : KleeneAlgebra (Language α) :=
-  { Language.instSemiringLanguage, Set.instCompleteBooleanAlgebraSet with
+  { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
     one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
@@ -314,3 +298,14 @@ instance : KleeneAlgebra (Language α) :=
       exact le_trans (le_mul_congr h le_rfl) ih }
 
 end Language
+
+/-- Symbols for use by all kinds of grammars. -/
+inductive Symbol (T N : Type*)
+  /-- Terminal symbols (of the same type as the language) -/
+  | terminal    (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  | nonterminal (n : N) : Symbol T N
+deriving
+  DecidableEq, Repr, Fintype
+
+attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

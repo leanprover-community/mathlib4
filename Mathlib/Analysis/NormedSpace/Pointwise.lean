@@ -2,14 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed_space.pointwise
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.pointwise from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
@@ -24,7 +21,7 @@ open Metric Set
 
 open Pointwise Topology
 
-variable {𝕜 E : Type _}
+variable {𝕜 E : Type*}
 
 section SMulZeroClass
 
@@ -113,18 +110,18 @@ theorem smul_closedBall' {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) :
 
 /-- Image of a bounded set in a normed space under scalar multiplication by a constant is
 bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
-theorem Metric.Bounded.smul₀ {s : Set E} (hs : Bounded s) (c : 𝕜) : Bounded (c • s) :=
-  (lipschitzWith_smul c).bounded_image hs
-#align metric.bounded.smul Metric.Bounded.smul₀
+theorem Bornology.IsBounded.smul₀ {s : Set E} (hs : IsBounded s) (c : 𝕜) : IsBounded (c • s) :=
+  (lipschitzWith_smul c).isBounded_image hs
+#align metric.bounded.smul Bornology.IsBounded.smul₀
 
 /-- If `s` is a bounded set, then for small enough `r`, the set `{x} + r • s` is contained in any
 fixed neighborhood of `x`. -/
-theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bounded s) {u : Set E}
-    (hu : u ∈ 𝓝 x) : ∀ᶠ r in 𝓝 (0 : 𝕜), {x} + r • s ⊆ u := by
+theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bornology.IsBounded s)
+    {u : Set E} (hu : u ∈ 𝓝 x) : ∀ᶠ r in 𝓝 (0 : 𝕜), {x} + r • s ⊆ u := by
   obtain ⟨ε, εpos, hε⟩ : ∃ ε : ℝ, 0 < ε ∧ closedBall x ε ⊆ u := nhds_basis_closedBall.mem_iff.1 hu
-  obtain ⟨R, Rpos, hR⟩ : ∃ R : ℝ, 0 < R ∧ s ⊆ closedBall 0 R := hs.subset_ball_lt 0 0
+  obtain ⟨R, Rpos, hR⟩ : ∃ R : ℝ, 0 < R ∧ s ⊆ closedBall 0 R := hs.subset_closedBall_lt 0 0
   have : Metric.closedBall (0 : 𝕜) (ε / R) ∈ 𝓝 (0 : 𝕜) := closedBall_mem_nhds _ (div_pos εpos Rpos)
-  filter_upwards [this]with r hr
+  filter_upwards [this] with r hr
   simp only [image_add_left, singleton_add]
   intro y hy
   obtain ⟨z, zs, hz⟩ : ∃ z : E, z ∈ s ∧ r • z = -x + y := by simpa [mem_smul_set] using hy
@@ -134,7 +131,7 @@ theorem eventually_singleton_add_smul_subset {x : E} {s : Set E} (hs : Bounded s
       _ ≤ ε / R * R :=
         (mul_le_mul (mem_closedBall_zero_iff.1 hr) (mem_closedBall_zero_iff.1 (hR zs))
           (norm_nonneg _) (div_pos εpos Rpos).le)
-      _ = ε := by field_simp [Rpos.ne']
+      _ = ε := by field_simp
   have : y = x + r • z := by simp only [hz, add_neg_cancel_left]
   apply hε
   simpa only [this, dist_eq_norm, add_sub_cancel', mem_closedBall] using I
@@ -417,7 +414,9 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   refine' ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
     ⟨r • ‖y - x‖⁻¹ • (y - x) + x, _⟩⟩
   have : ‖y - x‖ ≠ 0 := by simpa [sub_eq_zero]
-  simp [norm_smul, this, Real.norm_of_nonneg hr]
+  simp only [mem_sphere_iff_norm, add_sub_cancel, norm_smul, Real.norm_eq_abs, norm_inv, norm_norm,
+    ne_eq, norm_eq_zero]
+  simp only [abs_norm, ne_eq, norm_eq_zero]
   rw [inv_mul_cancel this, mul_one, abs_eq_self.mpr hr]
 #align normed_space.sphere_nonempty NormedSpace.sphere_nonempty
 

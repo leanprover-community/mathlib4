@@ -2,15 +2,12 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module order.height
-! leanprover-community/mathlib commit bf27744463e9620ca4e4ebe951fe83530ae6949b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Tactic.TFAE
+
+#align_import order.height from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
 /-!
 
@@ -51,7 +48,7 @@ open OrderDual
 
 universe u v
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -98,7 +95,7 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
   cases' (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha ha <;>
     rw [chainHeight_eq_iSup_subtype] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
-      not_bddAbove_iff'.mp ((WithTop.iSup_coe_eq_top _).mp ha) n
+      not_bddAbove_iff'.mp (WithTop.iSup_coe_eq_top.1 ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
       (l.length_take n).trans <| min_eq_left <| le_of_not_ge h₃⟩
   · rw [ENat.iSup_coe_lt_top] at ha
@@ -247,7 +244,7 @@ theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight = s.chainHeight := by
   apply le_antisymm <;>
   · rw [chainHeight_le_chainHeight_iff]
     rintro l ⟨h₁, h₂⟩
-    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i ((mem_reverse i l).mp h)⟩,
+    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i (mem_reverse.mp h)⟩,
       (length_reverse _).symm⟩
 #align set.chain_height_dual Set.chainHeight_dual
 
