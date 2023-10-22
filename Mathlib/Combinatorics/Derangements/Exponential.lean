@@ -48,7 +48,8 @@ theorem numDerangements_tendsto_inv_e :
   refine' Finset.sum_congr (refl _) _
   intro k hk
   have h_le : k ≤ n := Finset.mem_range_succ_iff.mp hk
-  rw [Nat.ascFactorial_eq_div, add_tsub_cancel_of_le h_le]
+  rw [Nat.ascFactorial_eq_div (k+1) (n-k) (Nat.succ_pos k), add_right_comm,
+    add_tsub_cancel_of_le h_le, add_tsub_cancel_right k, add_tsub_cancel_right n]
   push_cast [Nat.factorial_dvd_factorial h_le]
   field_simp [Nat.factorial_ne_zero]
   ring
