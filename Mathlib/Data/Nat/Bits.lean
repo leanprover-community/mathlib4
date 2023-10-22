@@ -32,13 +32,8 @@ universe u
 
 variable {n : ℕ}
 
-/-! ### `boddDiv2_eq` and `bodd` -/
+/-! ### `bodd` and `div2` -/
 
-
-@[simp]
-theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := by
-  unfold bodd div2; cases boddDiv2 n; rfl
-#align nat.bodd_div2_eq Nat.boddDiv2_eq
 
 @[simp]
 theorem bodd_bit0 (n) : bodd (bit0 n) = false :=
