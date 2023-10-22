@@ -714,7 +714,7 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
           · simp at h
             by_cases w : j = j'
             · cases w
-              simp only [heq_eq_eq, forall_true_left] at h
+              simp at h
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=

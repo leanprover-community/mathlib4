@@ -461,8 +461,7 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
       · simp
         rfl
       · intro x y ih
-        simp only [MonoidAlgebra.of_apply, AlgHom.coe_comp, Function.comp_apply,
-          MonoidAlgebra.lift_single, one_smul, AlgHom.coe_id, id_eq] at ih
+        simp at ih
         simp [ih])
     (by
       ext
