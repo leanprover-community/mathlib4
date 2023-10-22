@@ -142,7 +142,7 @@ variable [DecidablePred fun I : Ideal R => I.IsPrime]
 
 -- Prime avoidance lemma in stack project
 -- a skeleton
-example
+theorem Ideal.subset_of_subset_union_with_at_most_two_non_primes
     (J : Ideal R)
     (ℐ : Finset (Ideal R))
     (number_of_non_prime : (ℐ.filter fun I => ¬ I.IsPrime).card ≤ 2)
