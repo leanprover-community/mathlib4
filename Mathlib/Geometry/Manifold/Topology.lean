@@ -14,13 +14,14 @@ Let $M$ be a topological manifold (not necessarily `C^n` or smooth).
   `M` is locally compact.
 * `sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryless`: In particular,
   if `M` is also secound countable, it is sigma-compact.
-* `locallyPathConnected`, `locallyConnected`: A real manifold (without boundary?!) is
+* `locallyPathConnected`, `locallyConnected`: A real manifold (without boundary) is
   locally path-connected and locally connected.
-* `connected_iff_pathConnected`: In particular, `M` is path-connected if and only if it is connected.
+* `connected_iff_pathConnected`: `M` is path-connected if and only if it is connected.
 
 **TODO:**
 * adapt the argument to include manifolds with boundary; this probably requires a
-stronger definition of boundary to show local compactness of the half-spaces
+stronger definition of boundary to show local compactness of the half-spaces. This also requires a
+better argument, that extended charts map neighbourhoods of boundary points to neighbourhoods.
 -/
 
 open Set Topology
@@ -32,6 +33,12 @@ variable
   (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- Let M be a topological manifold over the field 𝕜.
   [HasGroupoid M (contDiffGroupoid 0 I)]
+
+-- missing lemma in mathlib; move to `Topology/PathConnected`
+-- XXX: the corresponding statement for connectedness is `IsConnected.image` -> make consistent :-)
+theorem IsPathConnected.image_of_continuousOn
+    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {s : Set X}
+    (hs : IsPathConnected s) (hf : ContinuousOn f s) : IsPathConnected (f '' s) := sorry
 
 /-- Auxiliary lemma for local compactness of `M`. -/
 lemma localCompactness_aux [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E]
@@ -101,20 +108,60 @@ variable
   -- Let M be a real topological manifold.
   [HasGroupoid M (contDiffGroupoid 0 I)]
 
-lemma locallyPathConnected_aux {x : M} {n : Set M} (hn: n ∈ 𝓝 x) :
-    ∃ s : Set M, IsOpen s ∧ x ∈ s ∧ s ⊆ n ∧ IsPathConnected s := by
-  sorry
+-- FIXME: can I deduplicate with `locallyCompact_aux`?
+-- TODO: generalise this (and all results using it) to mathfolds with boundary.
+lemma locallyPathConnected_aux [I.Boundaryless] {x : M} {n : Set M} (hn: n ∈ 𝓝 x) :
+    ∃ s : Set M, s ∈ 𝓝 x ∧ s ⊆ n ∧ IsPathConnected s := by
+  -- Assume `n` is contained in some chart at x. (Choose the distinguished chart from our atlas.)
+  let chart := chartAt H x
+  let echart := extChartAt I x
+  -- Shrink n so it is contained in chart.source.
+  have hn : n ∩ echart.source ∈ 𝓝 x := Filter.inter_mem hn
+    (chart.extend_source_mem_nhds _ (mem_chart_source H x))
+  -- Apply the chart to obtain a neighbourhood `n'` of $echart x ∈ E$.
+  let x' := echart x
+  let n' := echart '' (n ∩ echart.source)
+  have hn' : n' ∈ 𝓝 x' := by
+    let r := chart.map_extend_nhds I (mem_chart_source H x)
+    rw [I.range_eq_univ, nhdsWithin_univ, ← extChartAt] at r
+    exact r ▸ Filter.image_mem_map hn
+  -- The normed space `E` is locally path-connected.
+  -- In particular, x' has a path-connected neighbourhood s' ⊆ n'.
+  have : LocPathConnectedSpace E := by infer_instance
+  let r := this.path_connected_basis x'
+  rw [Filter.hasBasis_iff] at r
+  obtain ⟨s', ⟨hs', hs'conn⟩, hsn'⟩ := (r n').mp hn'
+  -- Transport back: s := echart ⁻¹ (s') is a compact neighbourhood of x.
+  let s := echart.symm '' s'
+  have hstarget : s' ⊆ echart.target := calc s'
+    _ ⊆ n' := hsn'
+    _ ⊆ echart '' (echart.source) := image_subset _ (inter_subset_right _ _)
+    _ ⊆ echart.target := LocalEquiv.map_source'' echart
+  refine ⟨s, ?_, ?_, ?_⟩
+  · -- FIXME: (how to) avoid the additional rewrites?
+    let r := chart.extend_image_mem_nhds_symm I hs' hstarget
+    have : LocalHomeomorph.extend chart I = echart := rfl
+    rw [this, ← image_eta, (extChartAt_to_inv I x)] at r
+    apply r
+  · calc s
+      _ ⊆ echart.symm '' n' := image_subset echart.symm hsn'
+      _ = (echart.symm ∘ echart) '' (n ∩ echart.source) := by rw [image_comp]
+      _ = n ∩ echart.source := by
+        rw [extChartAt_source]
+        apply chart.extend_left_inv' _ (inter_subset_right _ _)
+      _ ⊆ n := inter_subset_left _ _
+  · exact hs'conn.image_of_continuousOn ((chart.continuousOn_extend_symm I).mono hstarget)
 
-/-- A real manifold is locally path-connected. -/
+/-- A real manifold without boundary is locally path-connected. -/
 -- FIXME: make this an instance?
-lemma Manifold.locallyPathConnected : LocPathConnectedSpace M := by
+lemma Manifold.locallyPathConnected [I.Boundaryless] : LocPathConnectedSpace M := by
   have aux : ∀ (x : M), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id := by
     intro x
     rw [Filter.hasBasis_iff]
     intro n
-    refine ⟨fun hn ↦ ?_, fun ⟨i, ⟨hiopen, _, _⟩, hin⟩ ↦ Filter.mem_of_superset hiopen hin⟩
-    obtain ⟨s, hsopen, hxs, hsn, hspconn⟩ := locallyPathConnected_aux hn
-    exact ⟨s, ⟨hsopen.mem_nhds hxs, hspconn⟩, hsn⟩
+    refine ⟨fun hn ↦ ?_, fun ⟨i, ⟨hi, _⟩, hin⟩ ↦ Filter.mem_of_superset hi hin⟩
+    obtain ⟨s, hs, hsn, hspconn⟩ := locallyPathConnected_aux I hn
+    exact ⟨s, ⟨hs, hspconn⟩, hsn⟩
   exact { path_connected_basis := aux }
 
 -- FIXME: make this an instance?
@@ -146,13 +193,15 @@ lemma LocallyConnected.ofLocallyPathConnected {X : Type*} [TopologicalSpace X]
     · exact fun ⟨i, ⟨hin, hxi, _⟩, hit⟩ ↦ Filter.mem_of_superset ((hin.mem_nhds_iff).mpr hxi) hit
   exact { open_connected_basis := aux }
 
-/-- A real manifold is locally connected. -/
-lemma Manifold.locallyConnected : LocallyConnectedSpace M := by
-  have : LocPathConnectedSpace M := locallyPathConnected
+/-- A real manifold without boundary is locally connected. -/
+lemma Manifold.locallyConnected [I.Boundaryless] : LocallyConnectedSpace M := by
+  have : LocPathConnectedSpace M := locallyPathConnected I
   exact LocallyConnected.ofLocallyPathConnected
 
-lemma Manifold.connected_iff_pathConnected : PathConnectedSpace M ↔ ConnectedSpace M := by
-  have : LocPathConnectedSpace M := locallyPathConnected
+/-- A real manifold without boundary is connected if and only if it is path-connected. -/
+lemma Manifold.connected_iff_pathConnected [I.Boundaryless] :
+    PathConnectedSpace M ↔ ConnectedSpace M := by
+  have : LocPathConnectedSpace M := locallyPathConnected I
   exact pathConnectedSpace_iff_connectedSpace
 
 end Real
