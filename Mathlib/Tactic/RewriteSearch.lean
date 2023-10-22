@@ -187,12 +187,29 @@ instance : Ord SearchNode where
 
 /--
 A somewhat arbitrary penalty function.
-It would be interesting to add coefficents here and tweak them, and then profile the performance.
-
-Note that `n.lastIdx` penalises using later lemmas from a particular call to `rw?` at a node,
+Note that `n.lastIdx` penalizes using later lemmas from a particular call to `rw?` at a node,
 but once we have moved on to the next node these penalties are "forgiven".
+
+(You might in interpret this as encouraging
+the algorithm to "trust" the ordering provided by `rw?`.)
+
+I tried out a various (positive) linear combinations of
+`.history.size`, `.lastIdx`, and `.ppGoal.length` (and also the `.log2`s of these).
+* `.lastIdx.log2` is quite good, and the best coefficient is around 1.
+* `.lastIdx / 10` is almost as good.
+* `.history.size` makes things worse (similarly with `.log2`).
+* `.ppGoal.length` makes little difference (similarly with `.log2`).
+(Here testing consisting of running the current `rw_search` test suite,
+rejecting values for which any failed, and trying to minimize the run time.)
+
+With a larger test suite it might be worth running this minimization again,
+and considering other penalty functions.
+
+(If you do this, please choose a penalty function which is in the interior of the region
+where the test suite works.
+I think it would be a bad idea to optimize the run time at the expense of fragility.)
 -/
-def penalty (n : SearchNode) : Nat := n.history.size + n.lastIdx.log2 + n.ppGoal.length.log2
+def penalty (n : SearchNode) : Nat := n.lastIdx.log2 + n.ppGoal.length.log2
 
 /-- The priority function for search is Levenshtein distance. -/
 abbrev prio (n : SearchNode) : Thunk Nat :=
