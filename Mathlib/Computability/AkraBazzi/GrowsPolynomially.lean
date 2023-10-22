@@ -46,46 +46,6 @@ def GrowsPolynomially (f : ℝ → ℝ) : Prop :=
 
 namespace GrowsPolynomially
 
-lemma _root_.induction_Icc_add {R : Type*} [LinearOrderedField R] [FloorSemiring R] {P : R → Prop} (x₀ r : R) (hr : 0 < r)
-    (base : ∀ x ∈ Set.Icc x₀ (x₀ + r), P x)
-    (step : ∀ x ≥ x₀ + r, (∀ z ∈ Set.Ico x₀ x, P z) → (∀ z ∈ Set.Icc x (x+r), P z)) :
-    ∀ x ≥ x₀, P x :=
-  fun x hx =>
-    if hx' : x ≤ x₀ + r then
-      base x ⟨hx, hx'⟩
-    else by
-      push_neg at hx'
-      let x₂ := max (x-r) (x₀+r)
-      refine step x₂ (by simp) (fun z hz => ?_) x ?_
-      · have _ : ⌊(z-x₀)/r⌋₊ < ⌊(x-x₀)/r⌋₊ := by   -- Needed for termination checker
-          rcases le_or_lt (x₀+r) (x-r) with hmax'|hmax'
-          · have hmax : x₂ = x-r := max_eq_left hmax'
-            simp [hmax] at hz
-            calc _ ≤ ⌊(x - r - x₀)/r⌋₊ := by gcongr; exact le_of_lt hz.2
-                 _ < ⌊(x - x₀)/r⌋₊ := by
-                    simp only [sub_div, ne_eq, div_self (ne_of_lt hr).symm]
-                    rw [sub_sub, add_comm, ←sub_sub, Nat.floor_sub_one]
-                    refine Nat.sub_lt ?_ zero_lt_one
-                    calc 0 < 1 := zero_lt_one
-                         _ = ⌊(x₀ + r)/r - x₀/r⌋₊ := by simp [add_div, div_self (ne_of_lt hr).symm]
-                         _ ≤ _ := by gcongr
-          · have hmax : x₂ = x₀ + r := max_eq_right (le_of_lt hmax')
-            simp [hmax] at hz
-            calc _ = 0 := by
-                    rw [Nat.floor_eq_zero, div_lt_one hr]
-                    linarith
-                 _ < 1 := zero_lt_one
-                 _ = ⌊(x₀ + r - x₀)/r⌋₊ := by simp [div_self (ne_of_lt hr).symm]
-                 _ ≤ _ := by gcongr
-        exact induction_Icc_add x₀ r hr base step z hz.1
-      · refine ⟨?_, ?_⟩
-        · rcases max_cases (x-r) (x₀+r) with ⟨hmax, _⟩|⟨hmax, _⟩
-          · simp [hmax, le_of_lt hr]
-          · simp [hmax, le_of_lt hx']
-        · calc x ≤ max (x - r + r) (x₀ + r + r) := by simp
-              _ = max (x - r) (x₀ + r) + r := by rw [max_add_add_right]
-  termination_by induction_Icc_add x₀ r hr base step x hx => ⌊(x-x₀)/r⌋₊
-
 lemma _root_.induction_Ico_add {R : Type*} [LinearOrderedField R] [FloorSemiring R] {P : R → Prop}
     (x₀ r : R) (hr : 0 < r) (base : ∀ x ∈ Set.Ico x₀ (x₀ + r), P x)
     (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (x₀ + r*n), P z) →
@@ -124,45 +84,6 @@ lemma _root_.induction_Ico_add {R : Type*} [LinearOrderedField R] [FloorSemiring
                 rw [mul_comm r, div_mul_cancel _ (ne_of_lt hr).symm]; simp
              _ < _ := by gcongr; exact Nat.lt_floor_add_one _
   termination_by induction_Ico_add x₀ r hr base step x hx => Nat.floor ((x-x₀)/r)
-
-open Real in
-lemma _root_.Real.induction_Icc_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
-    (base : ∀ x ∈ Set.Icc x₀ (r * x₀), P x)
-    (step : ∀ x ≥ r * x₀, (∀ z ∈ Set.Ico x₀ x, P z) → (∀ z ∈ Set.Icc x (r * x), P z)) :
-    ∀ x ≥ x₀, P x := by
-  have hr_nonzero : r ≠ 0 := by positivity
-  have r_pos : 0 < r := by positivity
-  have hx₀r_pos : 0 < x₀ * r := by positivity
-  intro x hx
-  have x_pos : 0 < x :=
-    calc 0 < x₀ := hx₀
-         _ ≤ x := hx
-  have h₁ : P x = P (exp (log x)) := by rw [exp_log x_pos]
-  rw [h₁]
-  refine induction_Icc_add (P := P ∘ exp) (log x₀) (log r) (log_pos hr) ?base ?step _ (by gcongr)
-  case base =>
-    refine fun z hz => base (exp z) ⟨by rw [←exp_log hx₀]; exact exp_monotone hz.1, ?_⟩
-    have h₂ := exp_monotone hz.2
-    rwa [←log_mul (ne_of_lt hx₀).symm hr_nonzero, exp_log hx₀r_pos, mul_comm] at h₂
-  case step =>
-    intro y hy hyp_ind z hz
-    refine step (exp y) ?y_prop ?main (exp z) ?z_prop
-    case y_prop =>
-      have h₂ := exp_monotone hy
-      rwa [←log_mul (ne_of_lt hx₀).symm hr_nonzero, exp_log hx₀r_pos, mul_comm] at h₂
-    case main =>
-      intro z hz
-      have z_pos : 0 < z := calc
-        0 < x₀ := hx₀
-        _ ≤ z := hz.1
-      rw [←exp_log z_pos]
-      refine hyp_ind (log z) ⟨log_le_log' hx₀ hz.1, ?_⟩
-      rw [←log_exp y]
-      refine log_lt_log z_pos hz.2
-    case z_prop =>
-      refine ⟨exp_le_exp.mpr hz.1, ?_⟩
-      have := exp_le_exp.mpr hz.2
-      rwa [exp_add, exp_log r_pos, mul_comm] at this
 
 open Real in
 lemma _root_.Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
@@ -241,23 +162,22 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
       simp only [heq, Set.Icc_self, Set.mem_singleton_iff, one_mul] at h
       rw [eventually_atTop] at h
       obtain ⟨n₀, hn₀⟩ := h
-      have hc₂ : f (max n₀ 2) = c₂ * f (max n₀ 2) :=
-        hn₀ (max n₀ 2) (by simp) (max n₀ 2) ⟨by norm_num [-le_max_iff], le_rfl⟩
       refine ⟨f (max n₀ 2), ?_⟩
       rw [eventually_atTop]
       refine ⟨max n₀ 2, ?_⟩
       refine Real.induction_Ico_mul _ 2 (by norm_num) (by positivity) ?base ?step
       case base =>
         intro x ⟨hxlb, hxub⟩
-        sorry
-        --simp only [one_div, ge_iff_le, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-        --  mul_inv_cancel_left₀] at hxub
-        --have := by
-        --  refine hn₀ (max n₀ 2) (by simp) x ⟨hxlb, le_of_lt hxub⟩
-        --rwa [←hc₂] at this
+        have h₁ := calc n₀ ≤ 1 * max n₀ 2 := by simp
+                        _ ≤ 2 * max n₀ 2 := by gcongr; norm_num
+        have h₂ := hn₀ (2 * max n₀ 2) h₁ (max n₀ 2) ⟨by simp [-max_le_iff, hxlb], by linarith⟩
+        rw [h₂]
+        exact hn₀ (2 * max n₀ 2) h₁ x ⟨by simp [-max_le_iff, hxlb], le_of_lt hxub⟩
       case step =>
         intro n hn hyp_ind z hz
-        have z_nonneg : 0 ≤ z := by sorry
+        have z_nonneg : 0 ≤ z := by
+          calc (0:ℝ) ≤ (2:ℝ)^n * max n₀ 2 := by positivity
+                  _ ≤ z := hz.1
         have le_2n : max n₀ 2 ≤ 2^n * max n₀ 2 := by
           nth_rewrite 1 [←one_mul (max n₀ 2)]
           gcongr
@@ -275,32 +195,19 @@ lemma eventually_atTop_nonneg_or_nonpos : (∀ᶠ x in atTop, 0 ≤ f x) ∨ (�
         have z_to_half_z : f (1/2 * z) = f z := by rwa [←fz_eq_c₂fz] at z_to_half_z'
         have half_z_to_base : f (1/2 * z) = f (max n₀ 2) := by
           -- via hyp_ind
-          refine hyp_ind (1/2 * z) ⟨?_, ?_⟩
-          calc max n₀ 2 ≤ 2 ^ n * max n₀ 2 := by exact_mod_cast le_2n
-                      _ ≤ z := by exact_mod_cast hz.1
-          sorry
+          refine hyp_ind (1/2 * z) ⟨?lb, ?ub⟩
+          case lb =>
+            calc max n₀ 2 ≤ ((1:ℝ)/(2:ℝ)) * 2 ^ 1 * max n₀ 2 := by simp
+                        _ ≤ ((1:ℝ)/(2:ℝ)) * 2 ^ n * max n₀ 2 := by gcongr; norm_num
+                        _ ≤ _ := by rw [mul_assoc]; gcongr; exact_mod_cast hz.1
+          case ub =>
+            have h₁ : (2:ℝ)^n = ((1:ℝ)/(2:ℝ)) * 2^(n+1) := by
+              simp only [one_div, pow_add, pow_one, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
+              ring
+            rw [h₁, mul_assoc]
+            gcongr
+            exact_mod_cast hz.2
         rw [←z_to_half_z, half_z_to_base]
-        --have hn₀' := by
-        --  refine hn₀ (2 ^ n * max n₀ 2) ?_ (1/2 * z) ?_
-        --  · calc n₀ ≤ 1 * max n₀ 2 := by simp
-        --        _ ≤ _ := by
-        --          gcongr
-        --          norm_cast
-        --          rw [←pow_zero 2]
-        --          gcongr
-        --          · norm_num
-        --          · simp
-        --  · refine ⟨?_, ?_⟩
-        --    · gcongr; exact_mod_cast hz.1
-        --    · have h₁ := le_of_lt hz.2
-        --      simp only [pow_add, pow_one, ge_iff_le] at h₁
-        --      rw [mul_comm _ 2] at h₁
-        --      have h₂ := (mul_le_mul_left (by norm_num : 0 < (1:ℝ) / (2:ℝ))).mpr h₁
-        --      calc _ ≤ (1:ℝ)/(2:ℝ) * ((2:ℝ) * 2^n * max n₀ 2) := by exact_mod_cast h₂
-        --           _ = _ := by ring
-        --have hn₀'' := by
-        --  refine hn₀ (2 ^ (n+1) * max n₀ 2) ?_ (2 ^ n * max n₀ 2) ?_
-        --  sorry
     obtain ⟨c, hc⟩ := hmain
     rcases le_or_lt 0 c with hpos|hneg
     case inl =>
