@@ -232,21 +232,32 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
         zero_mul]
 #align nat.choose_mul_succ_eq Nat.choose_mul_succ_eq
 
-theorem ascFactorial_eq_factorial_mul_choose (n k : ℕ) :
-    (n + 1).ascFactorial k = k ! * (n + k).choose k := by
-  rw [mul_comm]
-  apply mul_right_cancel₀ (factorial_ne_zero (n + k - k))
-  rw [choose_mul_factorial_mul_factorial (le_add_left k n), add_tsub_cancel_right,
-    ← add_tsub_cancel_right (n + k) 1, add_right_comm, ← factorial_mul_ascFactorial (n + 1)
-    (choose_eq_zero_iff.mp rfl), mul_comm, add_tsub_cancel_right]
+theorem ascFactorial_eq_factorial_mul_choose (n : ℕ) : ∀ (k : ℕ),
+    n.ascFactorial k = k ! * (n + k - 1).choose k
+  | 0 => by
+    rw [ascFactorial_zero, choose_zero_right, factorial_zero, mul_one]
+  | (k+1) => by
+    cases n with
+    | zero =>
+      rw [zero_ascFactorial]
+      simp only [zero_eq, zero_add, ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+        add_tsub_cancel_right, choose_succ_self, mul_zero]
+    | succ n =>
+      apply mul_right_cancel₀ (factorial_ne_zero (n + 1 - 1))
+      rw [mul_comm _ (n + 1 - 1).factorial, factorial_mul_ascFactorial (n+1)
+        (lt_succ.mpr (zero_le n)), add_succ_sub_one, add_succ_sub_one, add_zero,
+        Nat.add_right_comm n 1 k, mul_comm (k+1).factorial]
+      nth_rw 3 [← Nat.add_sub_cancel n (k+1)]
+      have h : k + 1 ≤ n + k + 1 := le_add_left (k + 1) n
+      rw [← add_assoc, choose_mul_factorial_mul_factorial h]
 #align nat.asc_factorial_eq_factorial_mul_choose Nat.ascFactorial_eq_factorial_mul_choose
 
-theorem factorial_dvd_ascFactorial (n k : ℕ) : k ! ∣ (n + 1).ascFactorial k :=
-  ⟨(n + k).choose k, ascFactorial_eq_factorial_mul_choose _ _⟩
+theorem factorial_dvd_ascFactorial (n k : ℕ) : k ! ∣ n.ascFactorial k :=
+  ⟨(n + k - 1).choose k, ascFactorial_eq_factorial_mul_choose _ _⟩
 #align nat.factorial_dvd_asc_factorial Nat.factorial_dvd_ascFactorial
 
 theorem choose_eq_asc_factorial_div_factorial (n k : ℕ) :
-    (n + k).choose k = (n + 1).ascFactorial k / k ! := by
+    (n + k - 1).choose k = n.ascFactorial k / k ! := by
   apply mul_left_cancel₀ (factorial_ne_zero k)
   rw [← ascFactorial_eq_factorial_mul_choose]
   exact (Nat.mul_div_cancel' <| factorial_dvd_ascFactorial _ _).symm

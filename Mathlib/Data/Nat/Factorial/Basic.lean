@@ -243,12 +243,17 @@ theorem ascFactorial_succ {n k : ℕ} : n.ascFactorial k.succ = (n + k) * n.ascF
   rfl
 #align nat.asc_factorial_succ Nat.ascFactorial_succ
 
-@[simp]
 theorem zero_ascFactorial : ∀ (k : ℕ), (0 : ℕ).ascFactorial k.succ = 0
   | 0 => by
     simp only
   | (k+1) => by
     rw [ascFactorial_succ, zero_ascFactorial k, mul_zero]
+
+@[simp]
+theorem one_ascFactorial : ∀ (k : ℕ), (1 : ℕ).ascFactorial k = k.factorial
+  | 0 => ascFactorial_zero 1
+  | (k+1) => by
+    rw [ascFactorial_succ, one_ascFactorial k, add_comm, factorial_succ]
 
 theorem succ_ascFactorial (n : ℕ) :
     ∀ k, n * n.succ.ascFactorial k = (n + k) * n.ascFactorial k
