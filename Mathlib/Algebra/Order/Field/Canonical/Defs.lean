@@ -16,6 +16,7 @@ import Mathlib.Algebra.Order.WithZero
 
 variable {α : Type _} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
 
+@[nolint docBlame]
 abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α :=
   { ‹LinearOrderedSemifield α› with

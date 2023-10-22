@@ -82,6 +82,7 @@ instance (priority := 100) toOrderedCommMonoid
   mul_le_mul_left _ _ := mul_le_mul_left'
 #align canonically_ordered_comm_semiring.to_ordered_comm_monoid CanonicallyOrderedAdd.toOrderedCommMonoid
 
+@[nolint docBlame]
 abbrev toOrderedCommSemiring
     [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
     [CovariantClass α α (· + ·) (· ≤ ·)] :
