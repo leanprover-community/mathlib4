@@ -243,9 +243,6 @@ section center
 
 variable [Inhabited n]
 
-/-- `N = Fintype.card n` -/
-local notation " N " => (Nat.toPNat (Fintype.card n) (Fintype.card_pos_iff.mpr instNonempty))
-
 theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) :
     A = A.val default default • (1 : Matrix n n R) := by
   have hA := Subgroup.mem_center_iff.mp A.property
@@ -257,17 +254,15 @@ theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) :
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
-def center_iso_RootsOfUnity : Subgroup.center (SpecialLinearGroup n R) ≃* (rootsOfUnity N R) where
+def center_iso_RootsOfUnity :
+    Subgroup.center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R
+    where
   toFun A := rootsOfUnity.mkOfPowEq (A.val default default) <| by
-    have hA := center_scalar A
-    replace hA : det A.val.val = (A.val default default) ^ (N : ℕ) := by
-      rw [hA]
-      norm_num
-      exact rfl
+    have hA : det A.val.val = (A.val default default) ^ ((Fintype.card n).toPNat' : ℕ) := by
+      rw [center_scalar A]
+      simp [Fintype.card_pos_iff.mpr]
     rw [← hA, @det_coe]
-  invFun a := ⟨⟨a.val • (1 : Matrix n n R), by
-    have hN : N = Fintype.card n := by aesop
-    aesop⟩, by
+  invFun a := ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
       rw [Subgroup.mem_center_iff]
       aesop⟩
   left_inv A := by
