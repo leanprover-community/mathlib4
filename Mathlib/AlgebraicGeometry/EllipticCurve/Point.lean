@@ -511,8 +511,6 @@ lemma Y_eq_of_Y_ne (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) : y₁ = 
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.Y_eq_of_Y_ne WeierstrassCurve.Y_eq_of_Y_ne
 
--- porting note: increased `maxHeartbeats` for `ring1`
-set_option synthInstance.maxHeartbeats 30000 in
 lemma XYIdeal_eq₂ (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   -- porting note: removed assumption `h₂` explicitly
@@ -717,8 +715,6 @@ variable {F : Type u} [Field F] {W : WeierstrassCurve F} {x₁ x₂ y₁ y₂ : 
   (h₁ : W.nonsingular x₁ y₁) (h₂ : W.nonsingular x₂ y₂) (h₁' : W.equation x₁ y₁)
   (h₂' : W.equation x₂ y₂)
 
--- porting note: increased `maxHeartbeats` for `ring1`
-set_option maxHeartbeats 800000 in
 lemma XYIdeal_neg_mul : XYIdeal W x₁ (C <| W.negY x₁ y₁) * XYIdeal W x₁ (C y₁) = XIdeal W x₁ := by
   have Y_rw :
     (Y - C (C y₁)) * (Y - C (C (W.negY x₁ y₁))) -
@@ -760,9 +756,6 @@ private lemma XYIdeal'_mul_inv :
   rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W _ _, XYIdeal_neg_mul h₁,
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x₁]
 
--- porting note: increased `maxHeartbeats` for `ring1`
-set_option synthInstance.maxHeartbeats 60000 in
-set_option maxHeartbeats 600000 in
 lemma XYIdeal_mul_XYIdeal (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
     XIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) * (XYIdeal W x₁ (C y₁) * XYIdeal W x₂ (C y₂)) =
       YIdeal W (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) *
