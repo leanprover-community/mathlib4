@@ -299,6 +299,26 @@ lemma singleTriangle_distinguished :
       erw [Functor.map_id, comp_id]
       rfl)
 
+lemma eq_singleδ_iff_distinguished
+    (α : (singleFunctor C 0).obj S.X₃ ⟶
+      ((singleFunctor C 0).obj S.X₁)⟦(1 : ℤ)⟧) :
+      α = hS.singleδ ↔
+        Triangle.mk ((singleFunctor C 0).map S.f)
+          ((singleFunctor C 0).map S.g) α ∈ distTriang (DerivedCategory C) := by
+  constructor
+  · rintro rfl
+    apply singleTriangle_distinguished
+  · intro h
+    obtain ⟨φ, hφ₁, hφ₂⟩ := complete_distinguished_triangle_morphism _ _ h hS.singleTriangle_distinguished
+      (𝟙 _) (𝟙 _) (by simp)
+    obtain ⟨φ, rfl⟩ := (singleFunctor C 0).map_surjective φ
+    obtain rfl : φ = 𝟙 _ := by
+      have := hS.epi_g
+      rw [← cancel_epi S.g]
+      apply (singleFunctor C 0).map_injective
+      simpa using hφ₁
+    simpa using hφ₂
+
 noncomputable def largeExtClass : LargeExt S.X₃ S.X₁ 1 :=
   LargeExt.mk hS.singleδ
 

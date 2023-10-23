@@ -10,6 +10,33 @@ noncomputable def addEquivShrink (α : Type v) [AddCommGroup α] [Small.{w} α] 
 
 namespace CategoryTheory
 
+namespace ShortComplex
+
+namespace Exact
+
+variable {S : ShortComplex AddCommGroupCat.{v}} (hS : S.Exact)
+
+lemma small_X₂ (h₁ : Small.{w} S.X₁) (h₃ : Small.{w} S.X₃) : Small.{w} S.X₂ := by
+  rw [S.ab_exact_iff] at hS
+  let g' : S.X₂ → S.g.range := fun x₂ => ⟨S.g x₂, ⟨_, rfl⟩⟩
+  have hg' : Function.Surjective g' := fun ⟨x, hx⟩ => by
+    obtain ⟨y, rfl⟩ := hx
+    exact ⟨y, rfl⟩
+  obtain ⟨s, hs⟩ : ∃ (s : S.g.range → S.X₂), ∀ x, g' (s x) = x :=
+    ⟨fun x => (hg' x).choose, fun x => (hg' x).choose_spec⟩
+  let π : (S.X₁ × S.g.range) → S.X₂ := fun ⟨x₁, y⟩ => S.f x₁ + s y
+  have hπ : Function.Surjective π := by
+    rintro x₂
+    let x₃ : S.g.range := ⟨S.g x₂, ⟨_, rfl⟩⟩
+    obtain ⟨x₁, hx₁⟩ := hS (x₂ - s x₃) (by
+      simpa only [map_sub, sub_eq_zero, Subtype.mk.injEq] using (hs x₃).symm)
+    exact ⟨⟨x₁, x₃⟩, by simp only [hx₁, sub_add_cancel]⟩
+  exact small_of_surjective.{w} hπ
+
+end Exact
+
+end ShortComplex
+
 open Limits
 
 section
@@ -144,6 +171,8 @@ noncomputable def singleFunctorCompUniqFunctor (n : ℤ) :
 end DerivedCategory
 
 namespace CategoryTheory
+
+open Category
 
 namespace Abelian
 
@@ -289,10 +318,30 @@ namespace ShortExact
 
 variable {C : Type u} [Category.{v} C] [Abelian C] {S : ShortComplex C} (hS : S.ShortExact)
 
-/-lemma largeExtAddEquivLargeExt_largeExtClass
+lemma largeExtAddEquivLargeExt_largeExtClass
     [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C] :
     largeExtAddEquivLargeExt.{w, w'} _ _ _ (largeExtClass.{w} hS) = largeExtClass.{w'} hS := by
-  sorry
+  have := DerivedCategory.shiftFunctorAdditive.{w} C
+  rw [LargeExt.ext_iff]
+  dsimp [largeExtClass]
+  rw [hS.eq_singleδ_iff_distinguished]
+  refine' Pretriangulated.isomorphic_distinguished _ ((DerivedCategory.uniq.{w, w'} C).functor.map_distinguished _
+    (ShortComplex.ShortExact.singleTriangle_distinguished.{w} hS)) _ (Iso.symm _)
+  refine' Pretriangulated.Triangle.isoMk _ _
+    ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app S.X₁)
+    ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app S.X₂)
+    ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app S.X₃)
+    _ _ _
+  · exact (DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).hom.naturality S.f
+  · exact (DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).hom.naturality S.g
+  · dsimp only [largeExtAddEquivLargeExt, ShiftedHom.map'AddEquiv, FunLike.coe, EquivLike.coe,
+      ShiftedHom.map'Equiv]
+    dsimp
+    simp only [ShiftedHom.map'_eq, Category.assoc, Iso.app_inv, Iso.app_hom,
+      ShiftedHom.γhmul_mk₀, ShiftedHom.mk₀_γhmul]
+    erw [Iso.hom_inv_id_app_assoc]
+    rw [ShiftedHom.map_eq, assoc]
+    rfl
 
 noncomputable def smallExtClass [HasSmallExt.{w} C] : SmallExt.{w} S.X₃ S.X₁ 1 :=
   letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
@@ -311,7 +360,7 @@ lemma smallExtAddEquivLargeExt_smallExtClass [HasDerivedCategory.{w'} C] [HasSma
     simp only [AddEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm,
       Equiv.toFun_as_coe_apply, Equiv.symm_apply_apply, AddEquiv.coe_toEquiv]
   rw [h, ← largeExtAddEquivLargeExt_largeExtClass.{max u v, max u v} hS,
-    AddEquiv.symm_apply_apply, largeExtAddEquivLargeExt_largeExtClass.{max u v, w'} hS]-/
+    AddEquiv.symm_apply_apply, largeExtAddEquivLargeExt_largeExtClass.{max u v, w'} hS]
 
 end ShortExact
 
