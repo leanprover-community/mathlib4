@@ -144,7 +144,13 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
   refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => ?_
   dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
     AddMonoidHom.mul_apply, Finsupp.singleAddHom_apply]
+  -- This was not needed before leanprover/lean4#2644
+  erw [AddMonoidHom.compl₂_apply]
+  -- This was not needed before leanprover/lean4#2644
+  erw [AddMonoidHom.coe_mk]
   simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, toDirectSum_single]
+  -- This was not needed before leanprover/lean4#2644
+  dsimp
   erw [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
     AddMonoidAlgebra.toDirectSum_single]
   simp only [AddMonoidHom.coe_comp, AddMonoidHom.coe_mul, AddMonoidHom.coe_mk, ZeroHom.coe_mk,

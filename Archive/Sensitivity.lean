@@ -216,6 +216,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
     dsimp [ε, e]
     simp
+    rfl
   · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals

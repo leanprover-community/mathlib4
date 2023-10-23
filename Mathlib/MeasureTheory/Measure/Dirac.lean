@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.MutuallySingular
 /-!
 # Dirac measure
 
@@ -148,3 +148,7 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
     rwa [ae_dirac_eq]
   · rw [restrict_eq_zero, dirac_apply, indicator_of_not_mem has]
 #align measure_theory.restrict_dirac MeasureTheory.restrict_dirac
+
+lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
+    Measure.dirac x ⟂ₘ μ :=
+  ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩
