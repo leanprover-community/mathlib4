@@ -126,7 +126,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
 theorem LocallyIntegrableOn.aestronglyMeasurable [SecondCountableTopology X]
     (hf : LocallyIntegrableOn f s μ) : AEStronglyMeasurable f (μ.restrict s) := by
   rcases hf.exists_nat_integrableOn with ⟨u, -, su, hu⟩
-  have : s = ⋃ n, u n ∩ s := by rw [← iUnion_inter]; exact (inter_eq_right_iff_subset.mpr su).symm
+  have : s = ⋃ n, u n ∩ s := by rw [← iUnion_inter]; exact (inter_eq_right.mpr su).symm
   rw [this, aestronglyMeasurable_iUnion_iff]
   exact fun i : ℕ => (hu i).aestronglyMeasurable
 #align measure_theory.locally_integrable_on.ae_strongly_measurable MeasureTheory.LocallyIntegrableOn.aestronglyMeasurable
@@ -515,7 +515,7 @@ theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' 
   rcases IsCompact.exists_bound_of_continuousOn hK hg' with ⟨C, hC⟩
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g x‖ := by
-    filter_upwards [ae_restrict_mem hA]with x hx
+    filter_upwards [ae_restrict_mem hA] with x hx
     refine' (norm_mul_le _ _).trans _
     rw [mul_comm]
     apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
@@ -534,7 +534,7 @@ theorem IntegrableOn.continuousOn_mul_of_subset (hg : ContinuousOn g K) (hg' : I
   rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg' ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g' x‖ := by
-    filter_upwards [ae_restrict_mem hA]with x hx
+    filter_upwards [ae_restrict_mem hA] with x hx
     refine' (norm_mul_le _ _).trans _
     apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
   exact

@@ -299,7 +299,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
     where
   obj Y := mk <| F.map Y.hom
-  map f := Over.homMk (F.map f.left) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
+  map f := Over.homMk (F.map f.left)
+    (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
 #align category_theory.over.post CategoryTheory.Over.post
 
 end
@@ -524,7 +525,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m  : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 
@@ -536,7 +537,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps]
 def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
-  map f := Under.homMk (F.map f.right) (by aesop_cat_nonterminal; erw [← F.map_comp, w])
+  map f := Under.homMk (F.map f.right)
+    (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
 #align category_theory.under.post CategoryTheory.Under.post
 
 end

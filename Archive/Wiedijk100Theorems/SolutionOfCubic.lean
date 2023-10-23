@@ -43,7 +43,7 @@ section Field
 
 open Polynomial
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 variable [Invertible (2 : K)] [Invertible (3 : K)]
 

@@ -1085,7 +1085,9 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
           not_exists, not_and, and_imp, Embedding.some, forall_const]
     | (a : α), (b : α), (x : α) => by
         simp only [some, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
-          some_le_some, aux]
+          some_le_some]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
@@ -1093,23 +1095,40 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [some, Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, some_le_some, aux,
           top, some_lt_none, and_true]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
+      -- This used to be in the above `simp` before
+      -- leanprover/lean4#2644
+      erw [aux]
 
 variable (a b : α)
 
@@ -1470,3 +1489,46 @@ instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } :
   ext
   simp
   rfl
+
+namespace Set
+variable {α : Type*} [Preorder α]
+
+section LocallyFiniteOrder
+variable [LocallyFiniteOrder α]
+
+@[simp] lemma toFinset_Icc (a b : α) [Fintype (Icc a b)] : (Icc a b).toFinset = Finset.Icc a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ico (a b : α) [Fintype (Ico a b)] : (Ico a b).toFinset = Finset.Ico a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ioc (a b : α) [Fintype (Ioc a b)] : (Ioc a b).toFinset = Finset.Ioc a b := by
+  ext; simp
+
+@[simp] lemma toFinset_Ioo (a b : α) [Fintype (Ioo a b)] : (Ioo a b).toFinset = Finset.Ioo a b := by
+  ext; simp
+
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderTop
+variable [LocallyFiniteOrderTop α]
+
+@[simp]
+lemma toFinset_Ici (a : α) [Fintype (Ici a)] : (Ici a).toFinset = Finset.Ici a := by ext; simp
+
+@[simp]
+lemma toFinset_Ioi (a : α) [Fintype (Ioi a)] : (Ioi a).toFinset = Finset.Ioi a := by ext; simp
+
+end LocallyFiniteOrderTop
+
+section LocallyFiniteOrderBot
+variable [LocallyFiniteOrderBot α]
+
+@[simp]
+lemma toFinset_Iic (a : α) [Fintype (Iic a)] : (Iic a).toFinset = Finset.Iic a := by ext; simp
+
+@[simp]
+lemma toFinset_Iio (a : α) [Fintype (Iio a)] : (Iio a).toFinset = Finset.Iio a := by ext; simp
+
+end LocallyFiniteOrderBot
+end Set

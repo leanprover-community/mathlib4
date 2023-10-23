@@ -185,7 +185,7 @@ protected theorem heq_fun_iff {α : Sort*} {k l : ℕ} (h : k = l) {f : Fin k �
 If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equal on each pair,
 then they coincide (in the heq sense). -/
 protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
-  {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
+    {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
     HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
   subst h
   subst h'
@@ -1264,7 +1264,8 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
 @[simp]
 theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   rcases k with ⟨_ | k, hk⟩
-  simp [lt_iff_val_lt_val]
+  simp only [zero_eq, zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, add_pos_iff,
+    or_true]
   have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
     rw [add_right_comm, add_assoc, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
@@ -1657,7 +1658,7 @@ theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p)
     rw [if_pos]
     rfl
     exact H
-    simp
+    simp only [castSucc_mk, mk_lt_mk, not_lt]
     apply le_of_lt H
   · rw [dif_pos]
     rw [if_neg]
