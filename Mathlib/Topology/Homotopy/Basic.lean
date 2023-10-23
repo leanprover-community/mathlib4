@@ -701,6 +701,11 @@ theorem equivalence : Equivalence fun f g : C(X, Y) => HomotopicRel f g S :=
   ⟨refl, by apply symm, by apply trans⟩
 #align continuous_map.homotopic_rel.equivalence ContinuousMap.HomotopicRel.equivalence
 
+def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
+    (g.comp f₀).HomotopyRel (g.comp f₁) S where
+  toHomotopy := F.hcomp (ContinuousMap.Homotopy.refl g)
+  prop' t x hx := congr_arg g (F.prop t x hx)
+
 end HomotopicRel
 
 @[simp] theorem homotopicRel_empty {f₀ f₁ : C(X, Y)} : HomotopicRel f₀ f₁ ∅ ↔ Homotopic f₀ f₁ :=
