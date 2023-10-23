@@ -20,6 +20,7 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
@@ -107,9 +108,6 @@ end PiLp
 namespace EuclideanSpace
 
 open BigOperators ENNReal
-
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 @[simp]
 theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :

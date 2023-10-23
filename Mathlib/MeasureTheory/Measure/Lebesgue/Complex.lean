@@ -20,6 +20,7 @@ used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`, d
 of `MeasureTheory.measurePreserving`).
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open MeasureTheory
 
@@ -65,12 +66,9 @@ theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRea
   (volume_preserving_finTwoArrow ℝ).comp volume_preserving_equiv_pi
 #align complex.volume_preserving_equiv_real_prod Complex.volume_preserving_equiv_real_prod
 
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
-
 @[simp]
 theorem volume_ball (a : ℂ) (r : ℝ) :
-    volume (Metric.ball a r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
+    volume (Metric.ball a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
   rw [Measure.addHaar_ball_center, ← EuclideanSpace.volume_ball 0,
     ← (volume_preserving_equiv_pi.symm).measure_preimage measurableSet_ball,
     ← ((EuclideanSpace.volume_preserving_measurableEquiv (Fin 2)).symm).measure_preimage
@@ -83,7 +81,7 @@ theorem volume_ball (a : ℂ) (r : ℝ) :
 
 @[simp]
 theorem volume_closedBall (a : ℂ) (r : ℝ) :
-     volume (Metric.closedBall a r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
+     volume (Metric.closedBall a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
   rw [MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
 
 end Complex
