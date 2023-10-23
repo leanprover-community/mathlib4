@@ -702,11 +702,14 @@ theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve
 
 section Arrows
 
-variable {B : C} {I : Type*} (X : I → C) (π : (i : I) → X i ⟶ B) (P)
+variable {B : C} {I : Type*} {X : I → C} (π : (i : I) → X i ⟶ B) (P)
+
+def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
+  ∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
+    P.map gi.op (x i) = P.map gj.op (x j)
 
 theorem isSheafFor_arrows_of_explicit : (∀ (x : (i : I) → P.obj (op (X i))),
-    (∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
-    P.map gi.op (x i) = P.map gj.op (x j)) →
+    Arrows.Compatible P π x →
     ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
   intro h x hx
   obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
@@ -717,19 +720,25 @@ theorem isSheafFor_arrows_of_explicit : (∀ (x : (i : I) → P.obj (op (X i))),
 
 variable [(ofArrows X π).hasPullbacks]
 
-instance (i j : I) : HasPullback (π i) (π j) :=
-  Presieve.hasPullbacks.has_pullbacks (Presieve.ofArrows.mk _) (Presieve.ofArrows.mk _)
+def Arrows.PullbackCompatible (x : (i : I) → P.obj (op (X i))) : Prop :=
+  ∀ i j, P.map (pullback.fst (f := π i) (g := π j)).op (x i) =
+    P.map (pullback.snd (f := π i) (g := π j)).op (x j)
 
-theorem isSheafFor_arrows_of_explicit_pullbacks : (∀ (x : (i : I) → P.obj (op (X i))),
-    (∀ i j, P.map (pullback.fst (f := π i) (g := π j)).op (x i) =
-    P.map (pullback.snd (f := π i) (g := π j)).op (x j)) →
-    ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
-  intro h x hx
-  rw [pullbackCompatible_iff] at hx
-  obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _)) (fun i j ↦ hx (ofArrows.mk _) (ofArrows.mk _))
-  refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
-  cases' hf with i
-  exact hA i
+theorem Arrows.pullbackCompatible_iff (x : (i : I) → P.obj (op (X i))) :
+    Compatible P π x ↔ PullbackCompatible P π x := by
+  constructor
+  · intro t i j
+    apply t
+    exact pullback.condition
+  · intro t i j Z gi gj comm
+    rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t i j,
+      ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
+
+theorem isSheafFor_arrows_of_explicit_pullbacks :
+    (∀ (x : (i : I) → P.obj (op (X i))), Arrows.PullbackCompatible P π x →
+      ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
+  simp_rw [← Arrows.pullbackCompatible_iff]
+  exact isSheafFor_arrows_of_explicit _ _
 
 end Arrows
 

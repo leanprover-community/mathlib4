@@ -191,6 +191,10 @@ class hasPullbacks (R : Presieve X) : Prop where
 
 instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
 
+instance {α : Type v₂} {X : α → C} {B : C} (π : (a : α) → X a ⟶ B)
+    [(Presieve.ofArrows X π).hasPullbacks] (a b : α) : HasPullback (π a) (π b) :=
+  Presieve.hasPullbacks.has_pullbacks (Presieve.ofArrows.mk _) (Presieve.ofArrows.mk _)
+
 section FunctorPushforward
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
