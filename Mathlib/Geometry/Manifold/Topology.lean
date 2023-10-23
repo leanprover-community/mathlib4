@@ -14,9 +14,7 @@ Let $M$ be a topological manifold (not necessarily `C^n` or smooth).
   `M` is locally compact.
 * `sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryless`: In particular,
   if `M` is also secound countable, it is sigma-compact.
-* `locallyPathConnected`, `locallyConnected`: A real manifold (without boundary) is
-  locally path-connected and locally connected.
-* `connected_iff_pathConnected`: `M` is path-connected if and only if it is connected.
+* `locallyPathConnected`: A real manifold (without boundary) is locally path-connected.
 
 **TODO:** adapt the argument to include manifolds with boundary,
 * this requires adapting the argument "neighbourhoods in `E` are mapped to neighbourhoods in `M`"
@@ -159,45 +157,5 @@ lemma Manifold.locallyPathConnected [I.Boundaryless] : LocPathConnectedSpace M :
     obtain ⟨s, hs, hsn, hspconn⟩ := locallyPathConnected_aux I hn
     exact ⟨s, ⟨hs, hspconn⟩, hsn⟩
   exact { path_connected_basis := aux }
-
--- FIXME: make this an instance?
--- FUTURE: move to `Topology/PathConnected.lean`
-lemma LocallyConnected.ofLocallyPathConnected {X : Type*} [TopologicalSpace X]
-    [hx: LocPathConnectedSpace X] : LocallyConnectedSpace X := by
-  have : ∀ (x : X), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id :=
-    LocPathConnectedSpace.path_connected_basis (X := X)
-  have aux : ∀ (x : X), Filter.HasBasis (𝓝 x) (fun s ↦ IsOpen s ∧ x ∈ s ∧ IsConnected s) id := by
-    -- Follows from `this` and path-connected => connected.
-    -- One tweak: an open subset of a path-connected set is path-connected.
-    intro x
-    specialize this x
-    rw [Filter.hasBasis_iff] at this ⊢
-    intro s
-    constructor
-    · intro h
-      obtain ⟨n, ⟨hn, hipconn⟩ , stuff⟩ := (this s).mp h
-      obtain ⟨t, htn, ht, hxt⟩ := mem_nhds_iff.mp hn
-      refine ⟨t, ⟨ht, hxt, ?_⟩ , Subset.trans htn stuff⟩
-      -- gap in mathlib: missing definitions, API and lemma
-      --   no definition of locally connected or locally path-connected sets yet,
-      --   need a lemma that s is locally (path-)connected iff it's a Locally(Path)ConnectedSpace
-      --   missing lemma: an open subset of a path-connected set is path-connected
-      -- Then, this is just applying the lemma to `ht` and `hipconn`.
-      -- only step mathlib has is `let r := locPathConnected_of_isOpen ht`
-      have : IsPathConnected t := sorry
-      exact IsPathConnected.isConnected this
-    · exact fun ⟨i, ⟨hin, hxi, _⟩, hit⟩ ↦ Filter.mem_of_superset ((hin.mem_nhds_iff).mpr hxi) hit
-  exact { open_connected_basis := aux }
-
-/-- A real manifold without boundary is locally connected. -/
-lemma Manifold.locallyConnected [I.Boundaryless] : LocallyConnectedSpace M := by
-  have : LocPathConnectedSpace M := locallyPathConnected I
-  exact LocallyConnected.ofLocallyPathConnected
-
-/-- A real manifold without boundary is connected if and only if it is path-connected. -/
-lemma Manifold.connected_iff_pathConnected [I.Boundaryless] :
-    PathConnectedSpace M ↔ ConnectedSpace M := by
-  have : LocPathConnectedSpace M := locallyPathConnected I
-  exact pathConnectedSpace_iff_connectedSpace
 
 end Real
