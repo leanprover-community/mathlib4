@@ -94,6 +94,37 @@ end MorphismProperty
 
 end
 
+end CategoryTheory
+
+namespace DerivedCategory
+
+open CategoryTheory
+
+variable (C : Type u) [Category.{v} C] [Abelian C]
+
+variable [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
+
+noncomputable abbrev uniq : DerivedCategory.{w} C ≌ DerivedCategory.{w'} C :=
+  (Localization.uniq DerivedCategory.Q DerivedCategory.Q
+    (HomologicalComplex.qis C (ComplexShape.up ℤ)))
+
+instance : (uniq.{w, w'} C).functor.Additive :=
+  Functor.additive_of_preserves_binary_products _
+
+noncomputable instance : (uniq.{w, w'} C).functor.CommShift ℤ :=
+  Functor.CommShift.localized' (uniq.{w, w'} C).functor DerivedCategory.Q
+    (HomologicalComplex.qis C (ComplexShape.up ℤ)) ℤ DerivedCategory.Q
+
+noncomputable def QCompUniqIso : DerivedCategory.Q ⋙ (uniq.{w, w'} C).functor ≅ DerivedCategory.Q :=
+  Localization.Lifting.iso _ (HomologicalComplex.qis C (ComplexShape.up ℤ)) _ _
+
+instance : NatTrans.CommShift (QCompUniqIso.{w, w'} C).hom ℤ := by
+  apply Functor.CommShift.localized'_compatibility
+
+end DerivedCategory
+
+namespace CategoryTheory
+
 namespace Abelian
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
@@ -167,15 +198,20 @@ noncomputable instance [HasSmallExt.{w} C] (X Y : C) (n : ℕ) :
 
 abbrev newExt [HasSmallExt.{v} C] (X Y : C) (n : ℕ) : Type v := SmallExt.{v} X Y n
 
+noncomputable def largeExtEquivLargeExt [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
+    (X Y : C) (n : ℕ) :
+    LargeExt.{w} X Y n ≃+ LargeExt.{w'} X Y n :=
+  ((largeExtAddEquivHom.{w} X Y n).trans
+    ((MorphismProperty.localizationsAddEquivHom
+      (HomologicalComplex.qis C (ComplexShape.up ℤ)) _ _ _ _).trans
+    ((largeExtAddEquivHom.{w'} X Y n)).symm))
+
 noncomputable def smallExtEquivLargeExt [HasSmallExt.{w} C] [HasDerivedCategory.{w'} C]
     (X Y : C) (n : ℕ) :
     SmallExt.{w} X Y n ≃+ LargeExt.{w'} X Y n := by
   letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
-  exact (addEquivShrink (LargeExt.{max u v} X Y n)).symm.trans
-    ((largeExtAddEquivHom.{max u v} X Y n).trans
-    ((MorphismProperty.localizationsAddEquivHom
-      (HomologicalComplex.qis C (ComplexShape.up ℤ)) _ _ _ _).trans
-    ((largeExtAddEquivHom.{w'} X Y n)).symm))
+  refine' (addEquivShrink (LargeExt.{max u v} X Y n)).symm.trans
+    (largeExtEquivLargeExt.{max u v, w'} X Y n)
 
 variable [HasSmallExt.{w} C]
 
@@ -187,11 +223,29 @@ noncomputable instance (X Y Z : C) :
       (((equivShrink (LargeExt Y Z p)).symm α) •[h]
         ((equivShrink (LargeExt X Y q)).symm β))
 
-/-lemma smallExtEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
+lemma SmallExt.γhmul_eq {X Y Z : C} {p q r : ℕ}
+    (α : SmallExt.{w} Y Z p) (β : SmallExt.{w} X Y q) (h : p + q = r) :
+    letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+    α •[h] β = equivShrink (LargeExt.{max u v} X Z r)
+      (((equivShrink (LargeExt Y Z p)).symm α) •[h]
+        ((equivShrink (LargeExt X Y q)).symm β)) := rfl
+
+/-lemma largeExtEquivLargeExt_γhmul [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
+    {X Y Z : C} {p q r : ℕ}
+    (α : LargeExt.{w} Y Z p) (β : LargeExt.{w} X Y q) (h : p + q = r) :
+    largeExtEquivLargeExt.{w, w'} X Z r (α •[h] β) =
+      largeExtEquivLargeExt.{w, w'} Y Z p α •[h] largeExtEquivLargeExt.{w, w'} X Y q β  :=
+  sorry
+
+lemma smallExtEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
     (α : SmallExt.{w} Y Z p) (β : SmallExt.{w} X Y q) (h : p + q = r) :
     smallExtEquivLargeExt X Z r (α •[h] β) =
       smallExtEquivLargeExt Y Z p α •[h] smallExtEquivLargeExt X Y q β  := by
-  sorry
+  letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+  dsimp [smallExtEquivLargeExt, addEquivShrink, AddEquiv.trans]
+  dsimp only [FunLike.coe, EquivLike.coe]
+  dsimp
+  rw [SmallExt.γhmul_eq, Equiv.symm_apply_apply, largeExtEquivLargeExt_γhmul]
 
 lemma smallExtEquivLargeExt_symm_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
     (α : LargeExt.{w'} Y Z p) (β : LargeExt.{w'} X Y q) (h : p + q = r) :

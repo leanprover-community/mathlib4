@@ -18,13 +18,14 @@ a shift by `A`, and the localization functor is compatible with the shift.
 
 --/
 
-universe v₁ v₂ u₁ u₂ w
+universe v₁ v₂ v₃ u₁ u₂ u₃ w
 
 namespace CategoryTheory
 
-variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
+  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] (F : D ⥤ E)
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
-  (A : Type w) [AddMonoid A] [HasShift C A]
+  (A : Type w) [AddMonoid A] [HasShift C A] [HasShift E A]
 
 namespace MorphismProperty
 
@@ -97,5 +98,18 @@ noncomputable instance MorphismProperty.commShift_Q'
   Functor.CommShift.localized W.Q' W A
 
 attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q'
+
+noncomputable def Functor.CommShift.localized' (F' : C ⥤ E) [HasShift D A] [F'.CommShift A]
+    [Localization.Lifting L W F' F] [L.CommShift A] :
+    F.CommShift A :=
+  Functor.CommShift.induced (Localization.Lifting.iso L W F' F) A
+    ⟨⟨(inferInstance : Full (Localization.whiskeringLeftFunctor' L W E))⟩,
+      (inferInstance : Faithful (Localization.whiskeringLeftFunctor' L W E))⟩
+
+lemma Functor.CommShift.localized'_compatibility (F' : C ⥤ E) [HasShift D A] [F'.CommShift A]
+    [Localization.Lifting L W F' F] [L.CommShift A] :
+    letI := Functor.CommShift.localized' F L W A F'
+    NatTrans.CommShift (Localization.Lifting.iso L W F' F).hom A := by
+  apply Functor.CommShift.induced_compatibility
 
 end CategoryTheory

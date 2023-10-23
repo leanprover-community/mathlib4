@@ -25,8 +25,11 @@ used for both quotient and localized shifts.
 
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D]
-  (F : C ⥤ D) {A : Type _} [AddMonoid A] [HasShift C A]
+open Category
+
+variable {C D E : Type _} [Category C] [Category D] [Category E]
+  (F : C ⥤ D) {G : D ⥤ E} {G' : C ⥤ E} (e : F ⋙ G ≅ G')
+  {A : Type _} [AddMonoid A] [HasShift C A]
   (s : A → D ⥤ D) (i : ∀ a, F ⋙ s a ≅ shiftFunctor C a ⋙ F)
   (hF : Nonempty (Full ((whiskeringLeft C D D).obj F)) ∧ Faithful ((whiskeringLeft C D D).obj F))
 
@@ -242,5 +245,91 @@ lemma Functor.commShiftIso_eq_ofInduced (a : A) :
     letI := HasShift.induced F A s i hF
     letI := Functor.CommShift.ofInduced F A s i hF
     F.commShiftIso a = (i a).symm := rfl
+
+namespace Functor
+
+namespace CommShift
+
+variable {F} {A}
+variable
+  (hF' : Nonempty (Full ((whiskeringLeft C D E).obj F)) ∧ Faithful ((whiskeringLeft C D E).obj F))
+  [HasShift D A] [HasShift E A] [F.CommShift A] [G'.CommShift A]
+
+namespace Induced
+
+noncomputable def iso (a : A) : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor E a :=
+  letI := hF'.1.some
+  letI := hF'.2
+  ((whiskeringLeft C D E).obj F).preimageIso
+    ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a).symm G ≪≫
+    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫ G'.commShiftIso a ≪≫
+    isoWhiskerRight e.symm _ ≪≫ Functor.associator _ _ _)
+
+@[simp]
+lemma iso_hom_app (a : A) (X : C) :
+    (iso e hF' a).hom.app (F.obj X) =
+      G.map ((F.commShiftIso a).inv.app X) ≫ e.hom.app (X⟦a⟧) ≫ (G'.commShiftIso a).hom.app X ≫
+        (e.inv.app X)⟦a⟧' := by
+  letI := hF'.1.some
+  have h : whiskerLeft F (iso e hF' a).hom = _ :=
+    ((whiskeringLeft C D E).obj F).image_preimage _
+  exact (NatTrans.congr_app h X).trans (by simp)
+
+end Induced
+
+variable (A)
+
+noncomputable def induced : G.CommShift A where
+  iso := Induced.iso e hF'
+  zero := by
+    ext1
+    letI := hF'.2
+    apply ((whiskeringLeft C D E).obj F).map_injective
+    ext X
+    dsimp
+    simp only [Induced.iso_hom_app, comp_obj, F.commShiftIso_zero A,
+      isoZero_inv_app, map_comp, G'.commShiftIso_zero A, isoZero_hom_app, assoc]
+    erw [e.hom.naturality_assoc]
+    rw [← G'.map_comp_assoc, Iso.inv_hom_id_app]
+    dsimp
+    rw [Functor.map_id, id_comp, ← NatTrans.naturality]
+    dsimp
+    rw [Iso.hom_inv_id_app_assoc]
+  add a b := by
+    ext1
+    letI := hF'.2
+    apply ((whiskeringLeft C D E).obj F).map_injective
+    ext X
+    dsimp
+    simp only [Induced.iso_hom_app, comp_obj, F.commShiftIso_add, isoAdd_inv_app,
+      map_comp, G'.commShiftIso_add, isoAdd_hom_app, assoc, Induced.iso_hom_app]
+    conv_rhs =>
+      erw [← NatTrans.naturality_assoc, Induced.iso_hom_app]
+    dsimp
+    rw [assoc, assoc, assoc, ← (shiftFunctor E b).map_comp_assoc, e.inv_hom_id_app,
+      Functor.map_id, id_comp]
+    erw [← NatTrans.naturality_assoc]
+    dsimp
+    slice_lhs 4 6 => rw [← G.map_comp_assoc, ← F.map_comp, Iso.inv_hom_id_app]
+    dsimp
+    simp only [assoc, Functor.map_id, id_comp, ← NatTrans.naturality]
+    rfl
+
+lemma induced_compatibility :
+    letI := induced e A hF'
+    NatTrans.CommShift e.hom A := by
+  letI := induced e A hF'
+  constructor
+  intro a
+  ext X
+  dsimp
+  simp only [commShiftIso_comp_hom_app, show G.commShiftIso a = Induced.iso e hF' a by rfl,
+    comp_obj, Induced.iso_hom_app, assoc, ← Functor.map_comp,
+    Iso.inv_hom_id_app, ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
+    Functor.map_id, id_comp, comp_id]
+
+end CommShift
+
+end Functor
 
 end CategoryTheory

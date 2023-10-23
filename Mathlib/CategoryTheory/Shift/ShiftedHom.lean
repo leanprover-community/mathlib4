@@ -128,6 +128,18 @@ instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (ShiftedHom M X₁ X₂)
     rw [← NatTrans.naturality_assoc]
     rfl
 
+lemma comp_mk₀_injective (f : Y ⟶ Z) {n : M} (α β : ShiftedHom M X Y n) [IsIso f]
+    (h : α •[add_zero n] (mk₀ f (0 : M) rfl) = β •[add_zero n] (mk₀ f (0 : M) rfl)): α = β := by
+  rw [← γhmul_one α, ← γhmul_one β, one_eq, ← IsIso.hom_inv_id f,
+    ← mk₀_comp f (inv f) (0 : M) 0 0 rfl rfl (add_zero 0),
+    ← γhmul_assoc_of_second_degree_eq_zero, ← γhmul_assoc_of_second_degree_eq_zero, h]
+
+lemma mk₀_comp_injective (f : X ⟶ Y) {n : M} (α β : ShiftedHom M Y Z n) [IsIso f]
+    (h : (mk₀ f (0 : M) rfl) •[zero_add n] α = (mk₀ f (0 : M) rfl) •[zero_add n] β) : α = β := by
+  rw [← one_γhmul α, ← one_γhmul β, one_eq, ← IsIso.inv_hom_id f,
+    ← mk₀_comp (inv f) f (0 : M) 0 0 rfl rfl (add_zero 0),
+    γhmul_assoc_of_second_degree_eq_zero, γhmul_assoc_of_second_degree_eq_zero, h]
+
 section Linear
 
 variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]
@@ -160,6 +172,10 @@ def map {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M]
 lemma map_eq {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M] :
     x.map F = F.map x ≫ (F.commShiftIso m).hom.app Y := rfl
 
+lemma map_add {X Y : C} {m : M} (x y : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M]
+    [Preadditive C] [Preadditive D] [F.Additive] : (x + y).map F = x.map F + y.map F := by
+  rw [map_eq, F.map_add, add_comp, map_eq, map_eq]
+
 lemma map_comp {X Y Z : C} {p q r : M} (h : p + q = r)
     (α : ShiftedHom M X Y p) (β : ShiftedHom M Y Z q) (F : C ⥤ D) [F.CommShift M] :
     (α •[h] β).map F = (α.map F) •[h] (β.map F) := by
@@ -191,6 +207,53 @@ lemma map'_comp {X Y Z : C} {p q r : M} (h : p + q = r)
     · skip
     · rw [← γhmul_assoc_of_first_degree_eq_zero]
   rw [mk₀_comp, e₂.hom_inv_id, ← one_eq, one_γhmul]
+
+def mapEquiv (X Y : C) (m : M) (F : C ⥤ D) [F.CommShift M] [Full F] [Faithful F] :
+    ShiftedHom M X Y m ≃ ShiftedHom M (F.obj X) (F.obj Y) m where
+  toFun x := x.map F
+  invFun y := F.preimage (y ≫ (F.commShiftIso m).inv.app Y)
+  left_inv x := by simp [map]
+  right_inv y := by simp [map]
+
+def mapAddEquiv (X Y : C) (m : M)  (F : C ⥤ D) [F.CommShift M] [Full F] [Faithful F]
+    [Preadditive C] [Preadditive D] [F.Additive] :
+    ShiftedHom M X Y m ≃+ ShiftedHom M (F.obj X) (F.obj Y) m where
+  toEquiv := mapEquiv X Y m F
+  map_add' _ _ := map_add _ _ _
+
+noncomputable def map'Equiv (F : C ⥤ D) {X Y : C} {X' Y' : D}
+    (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') (m : M) [F.CommShift M] [Full F] [Faithful F] :
+    ShiftedHom M X Y m ≃ ShiftedHom M X' Y' m where
+  toFun x := x.map' F e₁ e₂
+  invFun y := (mapEquiv X Y m F).symm ((mk₀ e₁.hom (0 : M) rfl) •[zero_add m] (y •[add_zero m] (mk₀ e₂.inv (0 : M) rfl)))
+  left_inv x := by
+    apply (mapEquiv X Y m F).injective
+    rw [Equiv.apply_symm_apply]
+    dsimp only
+    rw [map'_eq]
+    rw [γhmul_assoc_of_first_degree_eq_zero,
+      γhmul_assoc_of_second_degree_eq_zero, mk₀_comp, e₂.hom_inv_id, ← one_eq, γhmul_one,
+      ← γhmul_assoc_of_first_degree_eq_zero, mk₀_comp, e₁.hom_inv_id, ← one_eq, one_γhmul]
+    rfl
+  right_inv y := by
+    dsimp
+    rw [map'_eq]
+    apply comp_mk₀_injective e₂.inv
+    apply mk₀_comp_injective e₁.hom
+    rw [γhmul_assoc_of_first_degree_eq_zero, γhmul_assoc_of_second_degree_eq_zero,
+      mk₀_comp, e₂.hom_inv_id, ← one_eq, γhmul_one,
+      ← γhmul_assoc_of_first_degree_eq_zero, mk₀_comp, e₁.hom_inv_id, ← one_eq, one_γhmul]
+    apply (mapEquiv X Y m F).apply_symm_apply
+
+noncomputable def map'AddEquiv (F : C ⥤ D) {X Y : C} {X' Y' : D}
+    (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') (m : M) [F.CommShift M] [Full F] [Faithful F]
+    [Preadditive C] [Preadditive D] [F.Additive]
+    [∀ (a : M), (shiftFunctor D a).Additive] :
+    ShiftedHom M X Y m ≃+ ShiftedHom M X' Y' m where
+  toEquiv := map'Equiv F e₁ e₂ m
+  map_add' x y := by
+    dsimp [map'Equiv]
+    rw [map'_eq, map_add, add_γhmul, γhmul_add, map'_eq, map'_eq]
 
 end ShiftedHom
 
