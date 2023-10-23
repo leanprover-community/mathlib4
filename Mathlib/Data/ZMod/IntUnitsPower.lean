@@ -49,3 +49,12 @@ lemma z₂pow_add (s : ℤˣ) (x y : ZMod 2) : s ^ (x + y) = s ^ x * s ^ y := by
   simp only [z₂pow_def]
   rw [ZMod.val_add, ←pow_eq_pow_mod, pow_add]
   fin_cases s <;> simp
+
+/-! The next two lemmas are mathematically not interesting as `-` coincides with `+` and `/` with
+`*`, but they match the api for powers by `ℤ`. -/
+
+lemma z₂pow_sub (s : ℤˣ) (x y : ZMod 2) : s ^ (x - y) = s ^ x / s ^ y := by
+  simp only [CharTwo.sub_eq_add, z₂pow_add, Int.units_div_eq_mul]
+
+lemma z₂pow_neg (s : ℤˣ) (x : ZMod 2) : s ^ (-x) = (s ^ x)⁻¹ := by
+  simp only [CharTwo.neg_eq, Int.units_inv_eq_self]
