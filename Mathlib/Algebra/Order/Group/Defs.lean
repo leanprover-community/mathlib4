@@ -705,7 +705,7 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 #align div_le_div_iff_right div_le_div_iff_right
@@ -727,7 +727,7 @@ alias ⟨le_of_sub_nonneg, sub_nonneg_of_le⟩ := sub_nonneg
 #align sub_nonneg_of_le sub_nonneg_of_le
 #align le_of_sub_nonneg le_of_sub_nonneg
 
-@[to_additive (attr := simp) sub_nonpos]
+@[to_additive sub_nonpos]
 theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
   rw [← mul_le_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_le_one' div_le_one'
@@ -753,6 +753,8 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 #align div_le_iff_le_mul div_le_iff_le_mul
 #align sub_le_iff_le_add sub_le_iff_le_add
 
+attribute [simp] div_le_iff_le_mul
+
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
 -- (a renamed version of) `tsub_le_iff_right`?
 -- see Note [lower instance priority]
@@ -769,7 +771,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
