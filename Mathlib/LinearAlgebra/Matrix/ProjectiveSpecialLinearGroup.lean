@@ -32,29 +32,67 @@ abbrev ProjectiveSpecialLinearGroup : Type _ :=
 /-- `PSL(n, R)` is the projective special linear group `SL(n, R)/Z(SL(n, R))`.-/
 scoped[MatrixGroups] notation "PSL(" n ", " R ")" => Matrix.ProjectiveSpecialLinearGroup (Fin n) R
 
-namespace ProjectiveSpecialLinearGroup
-
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R] [Inhabited n]
     {α : Type*}
 
-/-- A version of `Quotient.liftOn'` specialized for projective special linear group.-/
-def lift (f : SpecialLinearGroup n R → α)
-    (hf : ∀ (A B : SpecialLinearGroup n R), ∀ (c : R),
-    (c ^ Fintype.card n = 1 ∧ A.val = c • B.val) → f A = f B)
-    (g : ProjectiveSpecialLinearGroup n R) : α :=
-  Quotient.liftOn' g f fun A B hAB => by
-    rw [@QuotientGroup.leftRel_apply] at hAB
-    replace ⟨hc, hAB⟩ := SpecialLinearGroup.mem_center_iff.mp hAB
-    set c := (A⁻¹ * B).val default default
-    refine hf A B (c ^ (Fintype.card n - 1)) ⟨?hc, ?_⟩
-    · rw [@pow_right_comm, hc, @one_pow]
-    · replace hAB := congrArg (HSMul.hSMul <| c ^ (Fintype.card n - 1)) hAB
-      rw [SpecialLinearGroup.coe_mul] at hAB
-      have hn : 0 < Fintype.card n := Fintype.card_pos_iff.mpr instNonempty
-      rw [@smul_smul, ← @pow_succ', Nat.sub_add_cancel hn, hc, one_smul, ← mul_smul_comm] at hAB
-      have : A.val * A⁻¹.val * (c ^ (Fintype.card n - 1) • B.val) = A.val := by
-        rw [mul_assoc, hAB, mul_one]
-      rw [← this, ← @SpecialLinearGroup.coe_mul, @mul_inv_self,
-          SpecialLinearGroup.coe_one, @Matrix.one_mul]
+namespace SpecialLinearGroup
 
-end ProjectiveSpecialLinearGroup
+open SpecialLinearGroup
+
+/-- This is a converter to help you with `quotient.liftOn'` and `quotient.liftOn₂'`.
+
+Example :
+```lean
+instance : SMul PSL(2, ℝ) ℍ where
+  smul g := Quotient.liftOn' g (· • ·) <| by
+    intro A B hAB
+    rw [@QuotientGroup.leftRel_apply] at hAB
+    rw [SpecialLinearGroup.coset_center_iff] at hAB
+```
+-/
+theorem coset_center_iff
+    {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
+    ∃ (c : R), (c ^ Fintype.card n = 1 ∧ B.val = c • A.val) := by
+  constructor
+  · intro hAB
+    obtain ⟨hc, hAB⟩ := mem_center_iff.mp hAB
+    set c := (A⁻¹ * B).val default default
+    use c
+    replace hAB := congrArg (HMul.hMul A.val) hAB
+    rw [coe_mul, ← mul_assoc, mul_smul, mul_one, ← coe_mul,
+        @mul_inv_self, coe_one, one_mul] at hAB
+    exact ⟨hc, hAB⟩
+  · intro hc
+    choose c hc hAB using hc
+    replace hAB := congrArg (HMul.hMul A⁻¹.val) hAB
+    rw [@mul_smul, ← coe_mul, ← coe_mul, @mul_left_inv] at hAB
+    refine mem_center_iff.mpr ?_
+    have : (A⁻¹ * B) default default = c := by
+      rw [hAB, @smul_apply]
+      simp
+    rw [this]
+    exact ⟨hc, hAB⟩
+
+section SL2
+
+variable [Fact (Even (Fintype.card n))] {hn : Fintype.card n = 2} [NoZeroDivisors R]
+
+/-- This is a converter to help you with `quotient.liftOn'` and `quotient.liftOn₂'`.
+
+Example :
+```lean
+instance : SMul PSL(2, ℝ) ℍ where
+  smul g := Quotient.liftOn' g (· • ·) <| by
+    intro A B hAB
+    rw [@QuotientGroup.leftRel_apply, SpecialLinearGroup.coset_center_iff_2] at hAB
+```
+-/
+theorem coset_center_iff_2
+    {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
+    (B = A ∨ B = -A) := by
+  rw [coset_center_iff]
+  aesop
+
+end SL2
+
+end SpecialLinearGroup
