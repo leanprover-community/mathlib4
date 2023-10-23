@@ -4,7 +4,7 @@
  [{"git":
    {"url": "https://github.com/thorimur/std4",
     "subDir?": null,
-    "rev": "27f708a7ee3ef2cfe46a43bef7888a1919bfcdd6",
+    "rev": "4298098844094010117d0db4ca3f38d86bacfb28",
     "opts": {},
     "name": "std",
     "inputRev?": "lean4-2679",
@@ -20,10 +20,10 @@
   {"git":
    {"url": "https://github.com/semorrison/aesop",
     "subDir?": null,
-    "rev": "41d4d8e08a5ba0a6aea4c65ca38310c8ddb074a6",
+    "rev": "5c8d78e23721a4610cae41974e1867da7985494c",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "bump_2621",
+    "inputRev?": "use_replay",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/mhuisi/lean4-cli.git",
@@ -34,7 +34,7 @@
     "inputRev?": "nightly",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover-community/ProofWidgets4",
+   {"url": "https://github.com/EdAyers/ProofWidgets4",
     "subDir?": null,
     "rev": "27715d1daf32b9657dc38cd52172d77b19bde4ba",
     "opts": {},
