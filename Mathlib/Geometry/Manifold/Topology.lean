@@ -6,7 +6,8 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
-# Topological property of topological or smooth manifolds
+# Topological properties of topological or smooth manifolds
+
 In this file, we prove a few basic topological properties of manifolds.
 Let $M$ be a topological manifold (not necessarily `C^n` or smooth).
 * `locallyCompact_of_finiteDimensional_of_boundaryless`: If `M` is finite-dimensional, boundaryless
