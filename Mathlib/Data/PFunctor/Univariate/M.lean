@@ -142,7 +142,7 @@ theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) :
   apply n_ih
 #align pfunctor.approx.P_corec PFunctor.Approx.P_corec
 
-/-- `Path F` provides indices to access internal nodes in `Corec F` -/
+/-- `Path F` provides indices to access internal nodes in `CofixA F n` or `M F`. -/
 def Path (F : PFunctor.{u}) :=
   List F.Idx
 #align pfunctor.approx.path PFunctor.Approx.Path
@@ -152,6 +152,33 @@ instance Path.inhabited : Inhabited (Path F) :=
 #align pfunctor.approx.path.inhabited PFunctor.Approx.Path.inhabited
 
 open List Nat
+
+/-- `IsPathA p x` tells us if `p` is a valid path through `x`. -/
+inductive IsPathA : (p : Path F) → {n : ℕ} → (x : CofixA F n) → Prop
+  | nil {n} (x : CofixA F n) : IsPathA [] x
+  | cons {ps : Path F} {n} (a) (o : F.B a → CofixA F n) (b : F.B a) :
+    IsPathA ps (o b) → IsPathA (⟨a, b⟩ :: ps) (CofixA.intro a o)
+
+def IsPathA.destCons {n a b ps} (x : CofixA F (n + 1)) (hx : IsPathA (⟨a, b⟩ :: ps) x) :
+    { o : F.B a → CofixA F n // IsPathA ps (o b) } :=
+  match x with
+  | CofixA.intro a₂ o =>
+    have ha₂ : a₂ = a := by cases hx; rfl
+    ⟨cast (congr_arg (fun a₃ => F.B a₃ → CofixA F n) ha₂) o, by cases hx; assumption⟩
+
+/-- follow a path through a value of `CofixA F (n + length p)` and return the subtree
+found at the end of the path. -/
+def subtree' (p : Path F) {n : ℕ} (x : CofixA F (n + length p)) (hx : IsPathA p x) : CofixA F n :=
+  match p with
+  | [] => x
+  | ⟨_, b⟩ :: ps =>
+    let ⟨o, ho⟩ := IsPathA.destCons x hx
+    subtree' ps (o b) ho
+
+/-- similar to `subtree'` but returns the data at the end of the path instead
+of the whole subtree -/
+def select' (p : Path F) {n : ℕ} (x : CofixA F (n + 1 + length p)) (hx : IsPathA p x) : F.A :=
+  head' (subtree' p x hx)
 
 instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
@@ -292,6 +319,16 @@ theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.a
   truncate_eq_of_agree _ _ (x.consistent _)
 #align pfunctor.M.truncate_approx PFunctor.M.truncate_approx
 
+theorem approx_eta (x : M F) (n : ℕ) :
+    x.approx (n + 1) = CofixA.intro (head x) (fun i => (children x i).approx n) := by
+  rw [Approx.approx_eta (x.approx (n + 1))]
+  dsimp only [children]
+  have hx : head' (approx x (n + 1)) = head x := head_eq_head' x n |>.symm
+  congr 1
+  refine hfunext (congr_arg F.B hx) fun a₁ a₂ ha => ?_
+  congr 1
+  symm; rw [cast_eq_iff_heq]; symm; assumption
+
 /-- The implemention of `dest`. This unfolds an M-type. -/
 unsafe def destUnsafe (x : M F) : F (M F) :=
   match toI x with
@@ -333,14 +370,7 @@ theorem approx_eq_approxComputable : @approx.{u} = @approxComputable.{u} := by
   funext F x n
   induction n generalizing x with
   | zero      => apply cofixA_eq_zero
-  | succ n hn =>
-    rw [approx_eta (approx x (succ n))]
-    simp only [approxComputable, dest, children, ← hn]
-    have hx : head' (approx x (succ n)) = head x := head_eq_head' x n |>.symm
-    congr 1
-    refine hfunext (congr_arg F.B hx) fun a₁ a₂ ha => ?_
-    congr 1
-    symm; rw [cast_eq_iff_heq]; symm; assumption
+  | succ n hn => simp only [approxComputable, dest, ← hn, ← approx_eta]
 
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
@@ -354,7 +384,7 @@ namespace Approx
 /-- generates the approximations needed for `M.mk` -/
 protected def sMk (x : F (M F)) : ∀ n, CofixA F n
   | 0 => CofixA.continue
-  | succ n => CofixA.intro x.1 fun i => (x.2 i).approx n
+  | n + 1 => CofixA.intro x.1 fun i => (x.2 i).approx n
 #align pfunctor.M.approx.s_mk PFunctor.M.Approx.sMk
 
 protected theorem P_mk (x : F (M F)) : AllAgree (Approx.sMk x)
@@ -399,26 +429,9 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
   intro n
   dsimp only [M.mk]
-  induction' n with n
-  · apply @Subsingleton.elim _ CofixA.instSubsingleton
-  dsimp only [Approx.sMk, dest, head]
-  cases' h : x.approx (succ n) with _ hd ch
-  have h' : hd = head' (x.approx 1) := by
-    rw [← head_succ' n, h, head']
-    apply x.consistent
-  revert ch
-  rw [h']
-  intros ch h
-  congr
-  · ext a
-    dsimp only [children]
-    generalize hh : cast _ a = a''
-    rw [cast_eq_iff_heq] at hh
-    revert a''
-    rw [h]
-    intros _ hh
-    cases hh
-    rfl
+  induction n with
+  | zero => apply cofixA_eq_zero
+  | succ n => simp only [Approx.sMk, dest, ← approx_eta]
 #align pfunctor.M.mk_dest PFunctor.M.mk_dest
 
 theorem mk_inj {x y : F (M F)} (h : M.mk x = M.mk y) : x = y := by
@@ -692,16 +705,14 @@ section Bisim
 
 variable (R : M F → M F → Prop)
 
-local infixl:50 " ~ " => R
-
 /-- Bisimulation is the standard proof technique for equality between
 infinite tree-like structures -/
 structure IsBisimulation : Prop where
   /-- The head of the trees are equal -/
-  head : ∀ {a a'} {f f'}, M.mk ⟨a, f⟩ ~ M.mk ⟨a', f'⟩ → a = a'
+  head : ∀ {a a'} {f f'}, R (M.mk ⟨a, f⟩) (M.mk ⟨a', f'⟩) → a = a'
   /-- The tails are equal -/
   tail : ∀ {a} {f f' : F.B a → M F},
-    M.mk ⟨a, f⟩ ~ M.mk ⟨a, f'⟩ → ∀ i : F.B a, f i ~ f' i
+    R (M.mk ⟨a, f⟩) (M.mk ⟨a, f'⟩) → ∀ i : F.B a, R (f i) (f' i)
 #align pfunctor.M.is_bisimulation PFunctor.M.IsBisimulation
 
 theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
@@ -710,7 +721,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
         iselect ps s₁ = iselect ps s₂ ∧
           ∃ (a : _) (f f' : F.B a → M F),
             isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
-              isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
+              isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, R (f i) (f' i) := by
   intro h₀ hh
   induction' s₁ using PFunctor.M.cCasesOn' with a f
   rename_i h₁ hh₁
