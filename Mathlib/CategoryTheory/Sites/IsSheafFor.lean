@@ -700,4 +700,37 @@ theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve
   isSheafFor_subsieve_aux P h (by simpa using trans (𝟙 _)) fun Y f _ => (trans f).isSeparatedFor
 #align category_theory.presieve.is_sheaf_for_subsieve CategoryTheory.Presieve.isSheafFor_subsieve
 
+section Arrows
+
+variable {B : C} {I : Type*} (X : I → C) (π : (i : I) → X i ⟶ B) (P)
+
+theorem isSheafFor_arrows_of_explicit : (∀ (x : (i : I) → P.obj (op (X i))),
+    (∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
+    P.map gi.op (x i) = P.map gj.op (x j)) →
+    ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
+  intro h x hx
+  obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
+    (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
+  refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
+  cases' hf with i
+  exact hA i
+
+variable [(ofArrows X π).hasPullbacks]
+
+instance (i j : I) : HasPullback (π i) (π j) :=
+  Presieve.hasPullbacks.has_pullbacks (Presieve.ofArrows.mk _) (Presieve.ofArrows.mk _)
+
+theorem isSheafFor_arrows_of_explicit_pullbacks : (∀ (x : (i : I) → P.obj (op (X i))),
+    (∀ i j, P.map (pullback.fst (f := π i) (g := π j)).op (x i) =
+    P.map (pullback.snd (f := π i) (g := π j)).op (x j)) →
+    ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
+  intro h x hx
+  rw [pullbackCompatible_iff] at hx
+  obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _)) (fun i j ↦ hx (ofArrows.mk _) (ofArrows.mk _))
+  refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
+  cases' hf with i
+  exact hA i
+
+end Arrows
+
 end Presieve
