@@ -277,13 +277,14 @@ theorem alternatingGeometric_eq : alternatingGeometric (R := R) = (1 + X)⁻¹ :
   · rw [map_add, map_one, constantCoeff_X, add_zero]
     exact one_ne_zero
 
-theorem D_alternatingGeometric : D R alternatingGeometric = -(1 + X)⁻¹ ^ 2 := by
-  rw [alternatingGeometric_eq, D_inv', map_add, D_one, D_X, zero_add, mul_one]
+theorem fDerivative_alternatingGeometric : d⁄dX R alternatingGeometric = -(1 + X)⁻¹ ^ 2 := by
+  rw [alternatingGeometric_eq, fDerivative_inv', map_add, fDerivative_one, fDerivative_X, zero_add,
+    mul_one]
 
-@[simp] theorem D_exp : D R exp = exp := by
+@[simp] theorem fDerivative_exp : d⁄dX R exp = exp := by
   ext n
-  simp only [coeff_exp, coeff_D, factorial_succ, cast_mul, cast_add, cast_one, mul_comm, ←div_div,
-    one_div, map_div₀, map_inv₀, map_natCast, map_add, map_one, smul_eq_mul, mul_div]
+  simp only [coeff_exp, coeff_fDerivative, factorial_succ, cast_mul, cast_add, cast_one, mul_comm,
+    ←div_div, one_div, map_div₀, map_inv₀, map_natCast, map_add, map_one, smul_eq_mul, mul_div]
   rw [mul_div_cancel]
   exact cast_add_one_ne_zero n
 
@@ -291,9 +292,9 @@ theorem D_alternatingGeometric : D R alternatingGeometric = -(1 + X)⁻¹ ^ 2 :=
     exp ∘ᶠ (-f) = (exp ∘ᶠ f)⁻¹ := by
   have : constantCoeff R (-f) = 0 := by rwa [map_neg, neg_eq_zero]
   rw [PowerSeries.eq_inv_iff_mul_eq_one]
-  · apply D.ext
-    · rw [Derivation.leibniz, D_comp', D_comp', D_exp, Derivation.map_one_eq_zero,
-        map_neg, mul_neg, smul_neg, smul_eq_mul, smul_eq_mul,
+  · apply fDerivative.ext
+    · rw [Derivation.leibniz, fDerivative_comp', fDerivative_comp', fDerivative_exp,
+        fDerivative_one, map_neg, mul_neg, smul_neg, smul_eq_mul, smul_eq_mul,
         ←mul_assoc, mul_comm (exp ∘ᶠ (-f) : R⟦X⟧), mul_assoc, add_neg_self]
       exact this
       exact hf
@@ -311,8 +312,9 @@ theorem D_alternatingGeometric : D R alternatingGeometric = -(1 + X)⁻¹ ^ 2 :=
     rw [constantCoeff_comp eq, constantCoeff_exp]
     exact one_ne_zero
     rw [map_add, hf, hg, add_zero]
-  apply D.ext
-  · rw [D_mul, D_mul, D_comp', D_comp', D_comp', D_exp, D_one, map_neg, map_add]
+  apply fDerivative.ext
+  · rw [fDerivative_mul, fDerivative_mul, fDerivative_comp', fDerivative_comp', fDerivative_comp',
+      fDerivative_exp, fDerivative_one, map_neg, map_add]
     ring
     exact hf
     exact hg
@@ -327,18 +329,18 @@ theorem D_alternatingGeometric : D R alternatingGeometric = -(1 + X)⁻¹ ^ 2 :=
 theorem hasComp_logOneAdd {f : R⟦X⟧} : f.hasComp logOneAdd := by
   apply hasComp_of_constantCoeff_eq_zero constantCoeff_logOneAdd
 
-@[simp] theorem D_logOneAdd : D R logOneAdd = (1 + X)⁻¹ := by
+@[simp] theorem fDerivative_logOneAdd : d⁄dX R logOneAdd = (1 + X)⁻¹ := by
   rw [PowerSeries.eq_inv_iff_mul_eq_one]
   ext n
-  rw [mul_add, mul_one, map_add, coeff_D, logOneAdd, coeff_mk, cast_add,
+  rw [mul_add, mul_one, map_add, coeff_fDerivative, logOneAdd, coeff_mk, cast_add,
     cast_one, div_mul_cancel]
   cases n with
   | zero =>
     rw [coeff_zero_mul_X, coeff_zero_one, pow_succ, pow_zero, mul_one, add_zero, neg_neg]
   | succ n =>
     have : n + 1 ≠ 0 := succ_ne_zero n
-    rw [coeff_succ_mul_X, coeff_D, coeff_mk, coeff_one, cast_add, cast_one, div_mul_cancel,
-      pow_succ, neg_one_mul, succ_eq_add_one, neg_add_self, if_neg this]
+    rw [coeff_succ_mul_X, coeff_fDerivative, coeff_mk, coeff_one, cast_add, cast_one,
+      div_mul_cancel, pow_succ, neg_one_mul, succ_eq_add_one, neg_add_self, if_neg this]
     rwa [←cast_one, ←cast_add, cast_ne_zero]
   · rw [←cast_one, ←cast_add, cast_ne_zero]
     exact succ_ne_zero n
@@ -351,8 +353,9 @@ theorem const_exp_sub_one : constantCoeff R (exp - 1) = 0 := by
 theorem hasComp_exp_sub_one {f : R⟦X⟧} : f.hasComp (exp - 1) := by
   apply hasComp_of_constantCoeff_eq_zero const_exp_sub_one
 
-theorem D_log_comp_exp : D R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
-  rw [D_comp' const_exp_sub_one, D_logOneAdd, map_sub, D_one, sub_zero, D_exp]
+theorem fDerivative_log_comp_exp : d⁄dX R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
+  rw [fDerivative_comp' const_exp_sub_one, fDerivative_logOneAdd, map_sub, fDerivative_one,
+    sub_zero, fDerivative_exp]
   have : (1 + X : R⟦X⟧) ∘ᶠ (exp - 1) = exp
   · rw [add_comp hasComp_exp_sub_one hasComp_exp_sub_one,
       X_comp, one_comp, add_sub_cancel'_right]
@@ -363,8 +366,8 @@ theorem D_log_comp_exp : D R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
     exact one_ne_zero
 
 @[simp] theorem logOneAdd_comp_exp_sub_one : (logOneAdd ∘ᶠ (exp - 1) : R⟦X⟧) = X := by
-  apply D.ext
-  · rw [D_log_comp_exp, D_X]
+  apply fDerivative.ext
+  · rw [fDerivative_log_comp_exp, fDerivative_X]
   · rw [constantCoeff_comp const_exp_sub_one, constantCoeff_X, constantCoeff_logOneAdd]
 
 theorem logOneAdd_comp_mul_sub_one (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
@@ -374,9 +377,10 @@ theorem logOneAdd_comp_mul_sub_one (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
     rw [map_sub, map_mul, map_add, map_add, hf, hg, map_one, add_zero, mul_one, sub_self]
   have : constantCoeff R (1 + X) ≠ 0
   · rw [map_add, map_one, constantCoeff_X, add_zero]; exact one_ne_zero
-  apply D.ext
-  · rw [D_comp' eq, map_sub, D_mul, map_add, map_add, map_add, D_one, D_comp' hf,
-      D_comp' hg, zero_add, sub_zero, zero_add, mul_add, D_logOneAdd, add_comm]
+  apply fDerivative.ext
+  · rw [fDerivative_comp' eq, map_sub, fDerivative_mul, map_add, map_add, map_add, fDerivative_one,
+      fDerivative_comp' hf, fDerivative_comp' hg, zero_add, sub_zero, zero_add, mul_add,
+      fDerivative_logOneAdd, add_comm]
     congr 1
     · rw [inv_comp' this eq, add_comp one_hasComp X_hasComp, one_comp, X_comp,
         add_comm, sub_add_cancel, inv_comp' this hf, add_comp one_hasComp X_hasComp,
@@ -392,14 +396,17 @@ theorem logOneAdd_comp_mul_sub_one (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
       constantCoeff_logOneAdd, add_zero]
 
 @[simp] theorem exp_comp_logOneAdd : exp ∘ᶠ logOneAdd = (1 + X : R⟦X⟧) := by
-  apply D.ext
-  · rw [D_comp' constantCoeff_logOneAdd, map_add, D_one, zero_add, D_exp]
-    apply D.ext
-    · rw [D_mul, D_comp' constantCoeff_logOneAdd, D_exp, D_X, D_one, D_logOneAdd, D_inv', map_add,
-        D_one, D_X, zero_add, mul_one, pow_two, mul_neg, ←mul_assoc, mul_comm, neg_add_self]
-    · rw [D_X, map_one, D_logOneAdd, map_mul, constantCoeff_comp constantCoeff_logOneAdd,
-        constantCoeff_inv, map_add, map_one, constantCoeff_X, add_zero, inv_one, mul_one,
-        constantCoeff_exp]
+  apply fDerivative.ext
+  · rw [fDerivative_comp' constantCoeff_logOneAdd, map_add, fDerivative_one, zero_add,
+      fDerivative_exp]
+    apply fDerivative.ext
+    · rw [fDerivative_mul, fDerivative_comp' constantCoeff_logOneAdd, fDerivative_exp,
+        fDerivative_X, fDerivative_one, fDerivative_logOneAdd, fDerivative_inv', map_add,
+        fDerivative_one, fDerivative_X, zero_add, mul_one, pow_two, mul_neg, ←mul_assoc,
+        mul_comm, neg_add_self]
+    · rw [fDerivative_X, map_one, fDerivative_logOneAdd, map_mul,
+        constantCoeff_comp constantCoeff_logOneAdd, constantCoeff_inv, map_add, map_one,
+        constantCoeff_X, add_zero, inv_one, mul_one, constantCoeff_exp]
   · rw [constantCoeff_comp constantCoeff_logOneAdd, constantCoeff_exp, map_add, constantCoeff_one,
       constantCoeff_X, add_zero]
 
@@ -407,30 +414,30 @@ theorem constantCoeff_polylog_succ (n : ℕ) : constantCoeff R (polylog n.succ) 
   rw [polylog, ←coeff_zero_eq_constantCoeff, coeff_mk, pow_succ,
     cast_zero, inv_zero, zero_mul]
 
-theorem D_polylog_one : D R (polylog 1) = (1 - X)⁻¹ := by
+theorem fDerivative_polylog_one : d⁄dX R (polylog 1) = (1 - X)⁻¹ := by
   rw [PowerSeries.eq_inv_iff_mul_eq_one, mul_sub, mul_one]
   · ext m
     cases m with
     | zero =>
-      rw [map_sub, coeff_D, coeff_zero_mul_X, coeff_zero_eq_constantCoeff,
+      rw [map_sub, coeff_fDerivative, coeff_zero_mul_X, coeff_zero_eq_constantCoeff,
         sub_zero, cast_zero, zero_add, mul_one, map_one, polylog, coeff_mk,
         cast_one, pow_one, inv_one]
     | succ n =>
-      rw [map_sub, coeff_succ_mul_X, coeff_one, polylog, coeff_D, coeff_D, coeff_mk,
-        coeff_mk, pow_one, pow_one, cast_add, cast_add, cast_one, if_neg n.succ_ne_zero,
+      rw [map_sub, coeff_succ_mul_X, coeff_one, polylog, coeff_fDerivative, coeff_fDerivative,
+        coeff_mk, coeff_mk, pow_one, pow_one, cast_add, cast_add, cast_one, if_neg n.succ_ne_zero,
         inv_mul_cancel, inv_mul_cancel, sub_self] <;> apply cast_add_one_ne_zero
   · rw [map_sub, map_one, constantCoeff_X, sub_zero]
     exact one_ne_zero
 
 
 
-theorem X_mul_X_polylog_succ (d : ℕ) : X * D R (polylog (d + 2)) = polylog (d + 1) := by
+theorem X_mul_X_polylog_succ (d : ℕ) : X * d⁄dX R (polylog (d + 2)) = polylog (d + 1) := by
   ext n
   cases n with
   | zero =>
     rw [coeff_zero_X_mul, coeff_zero_eq_constantCoeff, constantCoeff_polylog_succ]
   | succ n =>
-    rw [coeff_succ_X_mul, polylog, polylog, coeff_mk, coeff_D, coeff_mk, ←cast_succ,
+    rw [coeff_succ_X_mul, polylog, polylog, coeff_mk, coeff_fDerivative, coeff_mk, ←cast_succ,
       succ_eq_add_one, pow_succ', mul_assoc, inv_mul_cancel, mul_one]
     rw [cast_ne_zero]
     exact n.succ_ne_zero
