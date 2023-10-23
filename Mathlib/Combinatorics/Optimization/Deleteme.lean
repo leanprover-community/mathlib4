@@ -32,7 +32,7 @@ private def exampleFiniteValuedCsp : ValuedCsp ℚ ℚ := {exampleAbs}
 private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCsp := rfl
 
 private def exampleFiniteValuedInstance : exampleFiniteValuedCsp.Instance (Fin 2) :=
-  Multiset.ofList [valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1]
+  {valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1}
 
 #eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
 
