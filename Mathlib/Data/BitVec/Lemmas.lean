@@ -53,7 +53,7 @@ lemma ofNat_toNat (x : BitVec w) : BitVec.ofNat w x.toNat = x := by
   apply Fin.cast_val_eq_self x
 
 @[simp]
-lemma cast_eq (x : BitVec w) (h : w = w) : x.cast h = x :=
+lemma cast_eq (x : BitVec w) : x.cast rfl = x :=
   rfl
 
 lemma ofNat_toNat' (x : BitVec w) (h : w = v):
