@@ -237,8 +237,10 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
 section Ranges
 
 
-/-- From `l: List ℕ`, construct `ml: List (List ℕ)` such that
-  `ml.map List.length = l` and `ml.join = range l.sum` -/
+/-- From `l : List ℕ`, construct `l.ranges : List (List ℕ)` such that
+  `l.ranges.map List.length = l` and `l.ranges.join = range l.sum`
+
+  As an example, `[1,2,3].ranges = [[0],[1,2],[3,4,5]]` -/
 def ranges : List ℕ → List (List ℕ)
   | [] => nil
   | a::l => range a::(ranges l).map (map (Nat.add a))
@@ -320,6 +322,16 @@ theorem ranges_lt (l : List ℕ) {s : List ℕ} {n : ℕ}
       obtain ⟨m, hm, rfl⟩ := mem_map.mp hn
       simp only [List.sum_cons, Nat.add_def, add_lt_add_iff_left]
       exact hl ht hm
+
+/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
+theorem ranges_lt_iff (l : List ℕ) {n : ℕ} :
+    (∃ s ∈ List.ranges l,  n ∈ s) ↔ n ∈ range l.sum := by
+  constructor
+  · rintro ⟨s, hs, hn⟩
+    simp only [mem_range]
+    exact l.ranges_lt hs hn
+  · intro hn
+    sorry
 
 end Ranges
 
