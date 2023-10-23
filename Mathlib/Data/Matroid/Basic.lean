@@ -895,7 +895,8 @@ theorem Basis.insert_basis_insert (hI : M.Basis I X) (h : M.Indep (insert e I)) 
   simp_rw [←union_singleton] at *
   exact hI.union_basis_union (h.subset (subset_union_right _ _)).basis_self h
 
-theorem Base.base_of_basis_superset (hB : M.Base B) (hBX : B ⊆ X) (hIX : M.Basis I X) : M.Base I := by
+theorem Base.base_of_basis_superset (hB : M.Base B) (hBX : B ⊆ X) (hIX : M.Basis I X) :
+    M.Base I := by
   by_contra h
   obtain ⟨e,heBI,he⟩ := hIX.indep.exists_insert_of_not_base h hB
   exact heBI.2 (hIX.mem_of_insert_indep (hBX heBI.1) he)
