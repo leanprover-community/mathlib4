@@ -219,7 +219,8 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃]
+        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
+          or_self, h₃]
         rw [mul_assoc, add_mul, add_mul, mul_assoc, add_assoc]
         congr 2
         ac_rfl
@@ -273,7 +274,8 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ =>
       numDenCasesOn' c fun n₃ d₃ h₃ => by
-        simp [h₁, h₂, h₃, mul_ne_zero]
+        simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
+          or_self, h₃, mul_def']
         rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul
@@ -511,6 +513,10 @@ theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q
   rfl
 #align rat.coe_int_num_of_denom_eq_one Rat.coe_int_num_of_den_eq_one
 
+lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
+  rw [Rat.isInt, Nat.beq_eq_true_eq] at h
+  exact (Rat.coe_int_num_of_den_eq_one h).symm
+
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
   ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
@@ -542,7 +548,7 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 end Casts
 
 theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
-  simp [mkRat]
+  simp only [mkRat, zero_mk]
   by_cases d = 0
   · simp [h]
   · simp [h, HDiv.hDiv, Rat.div, Div.div]

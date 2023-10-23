@@ -31,7 +31,7 @@ namespace Theorems100
 
 local notation "√" => Real.sqrt
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Heron's formula**: The area of a triangle with side lengths `a`, `b`, and `c` is

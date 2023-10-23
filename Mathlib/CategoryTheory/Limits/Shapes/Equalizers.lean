@@ -169,7 +169,7 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
   counitIso :=
     NatIso.ofComponents (fun j => eqToIso (by
             induction' j with X
-            cases X <;> rfl ))
+            cases X <;> rfl))
       (fun {i} {j} f => by
       induction' i with i
       induction' j with j

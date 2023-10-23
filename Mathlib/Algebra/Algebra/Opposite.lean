@@ -37,8 +37,6 @@ variable [IsScalarTower R S A]
 
 namespace MulOpposite
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
-
 instance MulOpposite.instAlgebra : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
@@ -119,7 +117,7 @@ protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
 theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingHom :=
   rfl
 
-/-- The 'unopposite' of an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`. Inverse to `ring_hom.op`. -/
+/-- The 'unopposite' of an algebra hom `Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 abbrev unop : (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) ≃ (A →ₐ[R] B) := AlgHom.op.symm
 
 theorem toRingHom_unop (f : Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) : f.unop.toRingHom = RingHom.unop f.toRingHom :=
