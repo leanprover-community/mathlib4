@@ -128,6 +128,8 @@ variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
 theorem hasStrictDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝕂}
     (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) :
     HasStrictDerivAt (exp 𝕂) (exp 𝕂 x) x := by
+    -- was `simpa using (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt` before
+    -- leanprover/lean4#2478 but now `Pi.smul_apply` doesn't fire in `simp`
     have := (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt
     dsimp at this
     rw [Pi.smul_apply] at this

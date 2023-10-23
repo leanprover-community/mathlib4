@@ -147,12 +147,15 @@ private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulR
   simp only [Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.one_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.add_apply,
     ContinuousLinearMap.coe_smul']
+  -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
   rw [Pi.smul_apply, Pi.smul_apply]
   simp
 
 nonrec theorem HasStrictDerivAt.cpow (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x)
     (h0 : 0 < (f x).re ∨ (f x).im ≠ 0) : HasStrictDerivAt (fun x => f x ^ g x)
       (g x * f x ^ (g x - 1) * f' + f x ^ g x * Complex.log (f x) * g') x := by
+  -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
+  -- used to be `by simpa using (hf.cpow hg h0).hasStrictDerivAt`
   have := (hf.cpow hg h0).hasStrictDerivAt
   dsimp at this
   rw [Pi.smul_apply, Pi.smul_apply] at this
@@ -312,6 +315,7 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
   convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
     (hf.prod hg) using 1
+  -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
   dsimp
   rw [Pi.smul_apply, Pi.smul_apply]
   simp [mul_assoc, mul_comm, mul_left_comm]
@@ -322,6 +326,8 @@ theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
   cases' hx.lt_or_lt with hx hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
       ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const _ _))
+    -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
+    -- used to be `convert this using 1; simp`
     convert this using 1
     dsimp
     rw [Pi.smul_apply, Pi.smul_apply]
@@ -349,6 +355,8 @@ theorem hasStrictDerivAt_const_rpow_of_neg {a x : ℝ} (ha : a < 0) :
     HasStrictDerivAt (fun x => a ^ x) (a ^ x * log a - exp (log a * x) * sin (x * π) * π) x := by
   have := (hasStrictFDerivAt_rpow_of_neg (a, x) ha).comp_hasStrictDerivAt x
     ((hasStrictDerivAt_const _ _).prod (hasStrictDerivAt_id _))
+  -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
+  -- used to be `by simpa using (hasStrictFDerivAt_rpow_of_neg (a, x) ha).comp_hasStrictDerivAt x`
   dsimp at this
   convert this using 1
   rw [Pi.smul_apply, Pi.smul_apply]
@@ -584,6 +592,7 @@ theorem HasDerivWithinAt.rpow (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWit
     (h : 0 < f x) : HasDerivWithinAt (fun x => f x ^ g x)
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) s x := by
   convert (hf.hasFDerivWithinAt.rpow hg.hasFDerivWithinAt h).hasDerivWithinAt using 1
+  -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
   dsimp; rw [Pi.smul_apply, Pi.smul_apply]; dsimp; ring
 #align has_deriv_within_at.rpow HasDerivWithinAt.rpow
 

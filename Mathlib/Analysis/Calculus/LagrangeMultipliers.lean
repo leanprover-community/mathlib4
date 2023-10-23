@@ -94,6 +94,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
       simpa only [mul_one, Algebra.id.smul_eq_mul] using Λ.map_smul (f' x) 1
     have H₂ : f' x * Λ 1 + Λ₀ * φ' x = 0 := by simpa only [Algebra.id.smul_eq_mul, H₁] using hfΛ x
     dsimp
+    -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp`
     rw [Pi.smul_apply]
     simpa [mul_comm] using H₂
 #align is_local_extr_on.exists_multipliers_of_has_strict_fderiv_at_1d IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d

@@ -1883,6 +1883,7 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
         simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
       map_smul' := fun m c => by
         ext x
+        -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp`
         dsimp
         rw [Pi.smul_apply]
         simp only [smul_smul, coe_smulRightₗ, Algebra.id.smul_eq_mul, coe_smul', smulRight_apply,

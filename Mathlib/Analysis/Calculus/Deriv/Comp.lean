@@ -125,6 +125,7 @@ theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[�
     (hL : Tendsto f L'' L') : HasFDerivAtFilter (h₂ ∘ f) (h₂' • f') x L'' := by
   convert (hh₂.restrictScalars 𝕜).comp x hf hL
   ext x
+  -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp`
   dsimp
   rw [Pi.smul_apply]
   simp [mul_comm]
@@ -136,6 +137,7 @@ theorem HasStrictDerivAt.comp_hasStrictFDerivAt {f : E → 𝕜'} {f' : E →L[�
   rw [HasStrictDerivAt] at hh
   convert (hh.restrictScalars 𝕜).comp x hf
   ext x
+  -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp`
   dsimp
   rw [Pi.smul_apply]
   simp [mul_comm]

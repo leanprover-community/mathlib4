@@ -496,6 +496,7 @@ instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{
     let i := asIso ((forget GroupCat).map f)
     let e : X ≃* Y :=
       { i.toEquiv with
+        -- Was `by aesop` before leanprover/lean4#2478
         map_mul' := by intros; dsimp; erw [Iso.toEquiv_fun, asIso_hom, map_mul] }
     exact IsIso.of_iso e.toGroupCatIso
 set_option linter.uppercaseLean3 false in
@@ -509,6 +510,7 @@ instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGr
     let i := asIso ((forget CommGroupCat).map f)
     let e : X ≃* Y :=
       { i.toEquiv with
+        -- Was `by aesop` before leanprover/lean4#2478
         map_mul' := by intros; dsimp; erw [Iso.toEquiv_fun, asIso_hom, map_mul] }
     exact IsIso.of_iso e.toCommGroupCatIso
 set_option linter.uppercaseLean3 false in

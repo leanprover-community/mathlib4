@@ -100,6 +100,9 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹
     · rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
+    -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
+    -- used to be `simp [reflection_orthogonalComplement_singleton_eq_neg,
+    -- real_inner_self_eq_norm_sq, two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]`
     dsimp
     simp only [add_sub_cancel', ContinuousLinearMap.comp_id, neg_smul, smul_neg,
       dist_self_add_left, div_eq_mul_inv, mul_pow, inv_pow, eqOn_singleton,

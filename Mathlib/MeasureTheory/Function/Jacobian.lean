@@ -1223,6 +1223,7 @@ theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
   have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
     ext1
+    -- After leanprover/lean4#2478 `Pi.smul_apply` no longer fires in `simp
     dsimp
     rw [Pi.smul_apply]
     simp
