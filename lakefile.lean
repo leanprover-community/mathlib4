@@ -81,3 +81,17 @@ lean_exe graph where
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]
+
+/-- Synchronize the Lean toolchain and run `cache get` after a `lake update` in a dependent
+project. -/
+post_update pkg do
+  unless pkg.name == `mathlib do
+  let wsToolchainFile := (← getRootPackage).dir / "lean-toolchain"
+  let mathlibToolchain ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
+  logInfo s!"{pkg.name}: making sure the lean toolchain matches the one of Mathlib."
+  IO.FS.writeFile wsToolchainFile mathlibToolchain
+  logInfo s!"{pkg.name}: getting Mathlib cache."
+  let exeFile ← runBuild cache.build >>= (·.await)
+  let exitCode ← env exeFile.toString #["get"]
+  if exitCode ≠ 0 then
+    error s!"{pkg.name}: failed to fetch Mathlib cache after updating"
