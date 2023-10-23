@@ -166,7 +166,6 @@ def mk (history : Array (Nat × Expr × Bool)) (goal : MVarId) (ctx : Option Met
         ppGoal := (← ppExpr type).pretty
         lhs := lhsTokens
         rhs := rhsTokens }
-    -- trace[rw_search] s!"{r}"
     return some r
 
 /-- Construct an initial `SearchNode` from a goal. -/
