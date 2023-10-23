@@ -21,8 +21,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 open scoped Topology Classical BigOperators NNReal ENNReal
 
-open Function (uncurry)
-
 open Set Filter Asymptotics
 
 noncomputable section
