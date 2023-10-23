@@ -42,7 +42,8 @@ lemma isNat_neg_of_isNegNat {a : ℤ} {b : ℕ} (h : IsInt a (- b)) :
 partial def evalIntMod.go (a b : Q(ℤ)) : MetaM (NormNum.Result q($a % $b)) := do
   let ra ← derive (u := Level.zero) a
   let rb ← derive (u := Level.zero) b
-  let rec core : (b : Q(ℤ)) → Result b → MetaM (Result (u := Level.zero) (α := q(ℤ)) q($a % $b)) :=
+  let rec /-- Given a result for evaluating `a b` in `ℤ`, evaluate `a % b`. -/
+    core : (b : Q(ℤ)) → Result b → MetaM (Result (u := Level.zero) (α := q(ℤ)) q($a % $b)) :=
   fun b rb => match rb with
     | (.isNegNat inst nb pb) => do
       have : $inst =Q Int.instRingInt := ⟨⟩
