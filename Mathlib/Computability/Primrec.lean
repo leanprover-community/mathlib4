@@ -324,7 +324,7 @@ instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β)
   ⟨((casesOn' zero ((casesOn' zero .succ).comp (pair right ((@Primcodable.prim β).comp left)))).comp
           (pair right ((@Primcodable.prim α).comp left))).of_eq
       fun n => by
-      simp [Nat.unpaired]
+      simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
       cases @decode α _ n.unpair.1; · simp
       cases @decode β _ n.unpair.2 <;> simp⟩
 #align primcodable.prod Primcodable.prod
@@ -571,7 +571,7 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
         Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
-      simp [encodek]
+      simp only [encode_some, encodek, Option.map_some', Option.some_bind, Option.map_map]
       induction' n.unpair.2 with m <;> simp [encodek]
       simp [*, encodek]
 #align primrec.nat_elim Primrec.nat_rec
@@ -948,7 +948,7 @@ instance sum : Primcodable (Sum α β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp [decodeSum]
+          simp only [decodeSum, Nat.boddDiv2_eq]
           cases Nat.bodd n <;> simp [decodeSum]
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩

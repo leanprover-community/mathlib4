@@ -3,14 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Pi
 import Mathlib.Topology.Bases
-import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
-import Mathlib.Order.Minimal
 /-!
 # Compact sets and compact spaces
 
@@ -558,7 +554,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : α → β} {b}
   rcases hb with ⟨s, hsb, t, htl, hd⟩
   rcases mem_cocompact.1 (hf hsb) with ⟨K, hKc, hKs⟩
   have : f '' K ∈ l := by
-    filter_upwards [htl, le_principal_iff.1 hle]with y hyt hyf
+    filter_upwards [htl, le_principal_iff.1 hle] with y hyt hyf
     rcases hyf with (rfl | ⟨x, rfl⟩)
     exacts [(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
       mem_image_of_mem _ (not_not.1 fun hxK => hd.le_bot ⟨hKs hxK, hyt⟩)]
