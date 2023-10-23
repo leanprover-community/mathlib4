@@ -582,7 +582,7 @@ need right away.
 
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
   /-- Multiplication by a natural number. -/
   protected nsmul : ℕ → M → M := nsmulRec
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
@@ -591,15 +591,15 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
 
-attribute [instance 150] AddSemigroup.toAdd
-attribute [instance 50] AddZeroClass.toAdd
+attribute [instance 50] AddSemigroup.toAdd
+attribute [instance 150] AddZeroClass.toAdd
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
   /-- Raising to the power of a natural number. -/
   protected npow : ℕ → M → M := npowRec
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
@@ -612,7 +612,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_succ' Monoid.npow_succ
 
 -- Bug #660
-attribute [to_additive existing] Monoid.toMulOneClass
+attribute [to_additive existing] Monoid.toSemigroup
 
 @[default_instance high] instance Monoid.Pow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
