@@ -29,12 +29,16 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   there is two disjoint open sets, one containing `x`, and the other `y`.
 * `T25Space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
-* `T3Space`: A T₃ space, is one where given any closed `C` and `x ∉ C`,
-  there is disjoint open sets containing `x` and `C` respectively. In `mathlib`, T₃ implies T₂.₅.
+* `RegularSpace`: A regular space is one where, given any closed `C` and `x ∉ C`,
+  there are disjoint open sets containing `x` and `C` respectively. Such a space is not necessarily
+  Hausdorff.
+* `T3Space`: A T₃ space is a T0 regular space. In `mathlib`, T₃ implies T₂.₅.
 * `NormalSpace`: A normal space, is one where given two disjoint closed sets,
   we can find two open sets that separate them.
 * `T4Space`: A T₄ space is a normal T₁ space. T₄ implies T₃.
-* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*
+* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*, is a space in which,
+  given two sets `s` and `t` such that the closure of `s` is disjoint from `t`, and conversely,
+  then `s` and `t` have disjoint neighborhoods.
 
 ## Main results
 
@@ -1723,10 +1727,10 @@ instance [RegularSpace α] : ClosableCompactSubsetOpenSpace α := by
       exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
   exact (closure_minimal sF F_closed).trans Fu
 
-/-- In a (possibly non-Hausdorff) regular locally compact space, for every containment `K ⊆ U`
-  of a compact set `K` in an open set `U`, there is a compact closed neighborhood `L` such
-  that `K ⊆ L ⊆ U`: equivalently, there is a compact closed set `L` such that `K ⊆ interior L`
-  and `L ⊆ U`. -/
+/-- In a (possibly non-Hausdorff) locally compact space with the `ClosableCompactSubsetOpenSpace`
+  property (for instance regular spaces), for every containment `K ⊆ U` of a compact set `K` in an
+  open set `U`, there is a compact closed neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently,
+  there is a compact closed set `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
 theorem exists_compact_closed_between [LocallyCompactSpace α] [ClosableCompactSubsetOpenSpace α]
     {K U : Set α} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
     ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U := by
@@ -1741,6 +1745,12 @@ theorem exists_compact_closed_between [LocallyCompactSpace α] [ClosableCompactS
   · exact KM.trans (interior_mono subset_closure)
   · apply M_comp.closure_subset_of_isOpen hU
     exact ML.trans (interior_subset.trans LU)
+
+protected theorem IsCompact.closure [WeaklyLocallyCompactSpace α] [ClosableCompactSubsetOpenSpace α]
+    {K : Set α} (hK : IsCompact K) : IsCompact (closure K) := by
+  rcases exists_compact_superset hK with ⟨L, L_comp, hL⟩
+  exact L_comp.of_isClosed_subset isClosed_closure
+    ((hK.closure_subset_of_isOpen isOpen_interior hL).trans interior_subset)
 
 end ClosableCompactSubsetOpenSpace
 
