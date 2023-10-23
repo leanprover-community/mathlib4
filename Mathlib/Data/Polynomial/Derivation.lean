@@ -166,5 +166,9 @@ theorem eval₂ (d : Derivation R A M) (f : R[X]) :
     d (f.eval₂ (algebraMap R A) a) = f.derivative.eval₂ (algebraMap R A) a • d a :=
   comp_eval₂_eq a d f
 
+theorem aeval (d : Derivation R A M) (f : R[X]) :
+    d (aeval a f) = aeval a (derivative f) • d a :=
+  comp_eval₂_eq a d f
+
 end Derivation
 end eval₂

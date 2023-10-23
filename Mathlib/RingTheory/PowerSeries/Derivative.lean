@@ -173,9 +173,6 @@ theorem trunc_fDerivative' (f : R⟦X⟧) (n : ℕ) :
   | succ n =>
     rw [succ_sub_one, trunc_fDerivative]
 
-theorem fDerivative_aeval (f : R[X]) (g : R⟦X⟧) :
-    d⁄dX R (aeval g f) = aeval g (derivative f) * d⁄dX R g := (d⁄dX R).eval₂ g f
-
 /--
 A special case of the "chain rule" for formal power series in one variable:
 
@@ -185,7 +182,7 @@ The more general case is `D_comp`.
 -/
 theorem fDerivative_coe_comp (f : R[X]) (g : R⟦X⟧) :
     d⁄dX R (f ∘ᶠ g) = (d⁄dX R f) ∘ᶠ g * d⁄dX R g := by
-  rw [coe_comp_eq_aeval, fDerivative_aeval, fDerivative_coe, coe_comp_eq_aeval]
+  rw [coe_comp_eq_aeval, Derivation.aeval, fDerivative_coe, coe_comp_eq_aeval, smul_eq_mul]
 
 open Finset Finset.Nat
 /--
