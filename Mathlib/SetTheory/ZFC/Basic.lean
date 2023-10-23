@@ -556,7 +556,8 @@ namespace Resp
 
 /-- Helper function for `PSet.eval`. -/
 def evalAux :
-    ∀ {n}, { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
+    ∀ {n},
+      { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
   | 0 => ⟨fun a => ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
   | n + 1 =>
     let F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
@@ -573,7 +574,8 @@ def eval (n) : Resp n → OfArity ZFSet.{u} ZFSet.{u} n :=
   evalAux.1
 #align pSet.resp.eval PSet.Resp.eval
 
-theorem eval_val {n f x} : (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
+theorem eval_val {n f x} :
+    (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
   rfl
 #align pSet.resp.eval_val PSet.Resp.eval_val
 
@@ -589,7 +591,8 @@ class inductive Definable (n) : OfArity ZFSet.{u} ZFSet.{u} n → Type (u + 1)
 attribute [instance] Definable.mk
 
 /-- The evaluation of a function respecting equivalence is definable, by that same function. -/
-def Definable.EqMk {n} (f) : ∀ {s : OfArity ZFSet.{u} ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
+def Definable.EqMk {n} (f) :
+    ∀ {s : OfArity ZFSet.{u} ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
   | _, rfl => ⟨f⟩
 #align pSet.definable.eq_mk PSet.Definable.EqMk
 
