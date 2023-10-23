@@ -114,13 +114,7 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
 lemma Fin.mem_piFinset_succ_iff {n : ℕ} {α : Fin (n + 1) → Type*} (p : (i : Fin (n + 1)) → α i)
     (S : (i : Fin (n + 1)) → Finset (α i)) :
     p ∈ Fintype.piFinset S ↔ p 0 ∈ S 0 ∧ Fin.tail p ∈ Fintype.piFinset (Fin.tail S) := by
-  simp only [Fintype.mem_piFinset]
-  constructor
-  · exact fun ha_1 ↦ ⟨ha_1 0, fun a_1 ↦ ha_1 (Fin.succ a_1)⟩
-  · intro ⟨ha11, ha12⟩ a1
-    rcases Fin.eq_zero_or_eq_succ a1 with rfl | ⟨j, rfl⟩
-    · assumption
-    · apply ha12
+  simp only [Fintype.mem_piFinset, forall_fin_succ, Fin.tail]
 
 @[simp]
 lemma Fin.cons_mem_piFinset_cons_iff {α} {n : ℕ} (p : Fin n → α) (x : α)
