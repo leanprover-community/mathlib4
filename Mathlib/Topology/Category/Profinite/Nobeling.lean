@@ -18,7 +18,7 @@ import Mathlib.Topology.Separation
 
 # Nöbeling's theorem
 
-This file proves Nöbeling's theorem,
+This file proves Nöbeling's theorem.
 
 ## Main result
 
@@ -282,7 +282,7 @@ def isGood (l : Products I) : Prop :=
   l.eval C ∉ Submodule.span ℤ ((Products.eval C) '' {m | m < l})
 
 theorem rel_head!_of_mem {i : I} {l : Products I} (hi : i ∈ l.val) : i ≤ l.val.head! :=
-  List.rel_head!_of_sorted' (List.chain'_iff_pairwise.mp l.prop) hi
+  List.Sorted.le_head! (List.chain'_iff_pairwise.mp l.prop) hi
 
 theorem head!_le_of_lt {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! :=
