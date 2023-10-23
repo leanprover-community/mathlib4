@@ -1923,6 +1923,7 @@ import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.ZMod.IntUnitsPower
 import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.Data.ZMod.Units
