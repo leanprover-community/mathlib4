@@ -753,6 +753,8 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 #align div_le_iff_le_mul div_le_iff_le_mul
 #align sub_le_iff_le_add sub_le_iff_le_add
 
+-- Note: we intentionally don't have `@[simp]` for the additive version,
+-- since the LHS simplifies with `tsub_le_iff_right`
 attribute [simp] div_le_iff_le_mul
 
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
@@ -1065,7 +1067,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
 -- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
 -- Note: we intentionally don't have `@[simp]` for the additive version,
 -- since the LHS simplifies with `tsub_le_iff_right`
-@[to_additive, simp]
+@[to_additive]
 theorem div_le_div_flip {α : Type*} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
