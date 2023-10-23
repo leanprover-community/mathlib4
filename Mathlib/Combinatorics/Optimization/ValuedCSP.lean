@@ -27,12 +27,14 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 -/
 
-/-- A template for a valued CSP problem over a domain `D` with costs in `C`. -/
-@[reducible]
-def ValuedCsp (D C : Type*) [LinearOrderedAddCommMonoid C] :=
+/-- A template for a valued CSP problem over a domain `D` with costs in `C`.
+Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
+`Real`, `NNReal`, `EReal`, `ENNReal`, and tuples made of any of those types. -/
+@[reducible, nolint unusedArguments]
+def ValuedCsp (D C : Type*) [OrderedAddCommMonoid C] :=
   Set (Σ (n : ℕ), (Fin n → D) → C) -- Cost functions `D^n → C` for any `n`
 
-variable {D C : Type*} [LinearOrderedAddCommMonoid C]
+variable {D C : Type*} [OrderedAddCommMonoid C]
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCsp.Term (Γ : ValuedCsp D C) (ι : Type*) where
