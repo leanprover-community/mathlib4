@@ -3,11 +3,26 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Cases
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Fin.Tuple.Curry
+
+
+
+def valuedCspTermOfUnary {D C : Type} [LinearOrderedAddCommMonoid C]
+    {Γ : ValuedCspTemplate D C} {ι : Type*} {f : D → C}
+    (ok : ⟨1, Function.OfArity.uncurry f⟩ ∈ Γ) (i : ι) : ValuedCspTerm Γ ι :=
+  ⟨1, Function.OfArity.uncurry f, ok, ![i]⟩
+
+def valuedCspTermOfBinary {D C : Type} [LinearOrderedAddCommMonoid C]
+    {Γ : ValuedCspTemplate D C} {ι : Type*} {f : D → D → C}
+    (ok : ⟨2, Function.OfArity.uncurry f⟩ ∈ Γ) (i j : ι) : ValuedCspTerm Γ ι :=
+  ⟨2, Function.OfArity.uncurry f, ok, ![i, j]⟩
+
+
 
 
 -- Example: minimize |x| + |y| where x and y are rational numbers
 
-private def absRat : (Fin 1 → ℚ) → ℚ := @n1aryOfUnary ℚ ℚ Abs.abs
+private def absRat : (Fin 1 → ℚ) → ℚ := Function.OfArity.uncurry Abs.abs
 
 private def exampleAbs : Σ (n : ℕ), (Fin n → ℚ) → ℚ := ⟨1, absRat⟩
 
@@ -20,8 +35,8 @@ private def exampleFiniteValuedInstance : ValuedCspInstance exampleFiniteValuedC
 
 #eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
 
-example : exampleFiniteValuedInstance.optimumSolution ![(0 : ℚ), (0 : ℚ)] := by
-  unfold ValuedCspInstance.optimumSolution
+example : exampleFiniteValuedInstance.OptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
+  unfold ValuedCspInstance.OptimumSolution
   unfold exampleFiniteValuedCsp
   intro s
   convert_to 0 ≤ ValuedCspInstance.evalSolution exampleFiniteValuedInstance s
@@ -50,7 +65,7 @@ instance crispCodomain : LinearOrderedAddCommMonoid Bool where
 
 -- Example: B ≠ A ≠ C ≠ D ≠ B ≠ C with three available labels (i.e., 3-coloring of K₄⁻)
 
-private def beqBool : (Fin 2 → Fin 3) → Bool := n2aryOfBinary BEq.beq
+private def beqBool : (Fin 2 → Fin 3) → Bool := Function.OfArity.uncurry BEq.beq
 
 private def exampleEquality : Σ (n : ℕ), (Fin n → Fin 3) → Bool := ⟨2, beqBool⟩
 
@@ -106,7 +121,7 @@ private def exampleSolutionIncorrect7 : Fin 4 → Fin 3 := ![2, 2, 0, 2]
 #eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect6 -- `true` means WRONG here
 #eval exampleCrispCspInstance.evalSolution exampleSolutionIncorrect7 -- `true` means WRONG here
 
-example : exampleCrispCspInstance.optimumSolution exampleSolutionCorrect0 := by
+example : exampleCrispCspInstance.OptimumSolution exampleSolutionCorrect0 := by
   intro _
   apply Bool.false_le
 

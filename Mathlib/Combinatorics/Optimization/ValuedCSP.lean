@@ -27,12 +27,6 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 -/
 
-def n1aryOfUnary {α β : Type*} (f : α → β) : (Fin 1 → α) → β :=
-  fun a => f (a 0)
-
-def n2aryOfBinary {α β : Type*} (f : α → α → β) : (Fin 2 → α) → β :=
-  fun a => f (a 0) (a 1)
-
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`. -/
 @[reducible]
 def ValuedCspTemplate (D C : Type*) [LinearOrderedAddCommMonoid C] :=
@@ -50,14 +44,6 @@ structure ValuedCspTerm (Γ : ValuedCspTemplate D C) (ι : Type*) where
   inΓ : ⟨n, f⟩ ∈ Γ
   /-- Which variables are plugged as arguments to the cost function -/
   app : Fin n → ι
-
-def valuedCspTermOfUnary {Γ : ValuedCspTemplate D C} {ι : Type*} {f₁ : D → C}
-    (ok : ⟨1, n1aryOfUnary f₁⟩ ∈ Γ) (i : ι) : ValuedCspTerm Γ ι :=
-  ⟨1, n1aryOfUnary f₁, ok, ![i]⟩
-
-def valuedCspTermOfBinary {Γ : ValuedCspTemplate D C} {ι : Type*} {f₂ : D → D → C}
-    (ok : ⟨2, n2aryOfBinary f₂⟩ ∈ Γ) (i j : ι) : ValuedCspTerm Γ ι :=
-  ⟨2, n2aryOfBinary f₂, ok, ![i, j]⟩
 
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
 def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate D C} {ι : Type*}
