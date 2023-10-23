@@ -1501,11 +1501,11 @@ theorem tr_respects :
   fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
     cases' l₁ with l₁; · exact rfl
     simp only [trCfg, TM1.step, FRespects, Option.map]
-    induction' M l₁ with _ q IH _ q IH _ q IH generalizing v T
-    case move d q IH => exact TransGen.head rfl (IH _ _)
-    case write a q IH => exact TransGen.head rfl (IH _ _)
-    case load a q IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
-    case branch p q₁ q₂ IH₁ IH₂ =>
+    induction' M l₁ with _ _ IH _ _ IH _ _ IH generalizing v T
+    case move _ _ IH => exact TransGen.head rfl (IH _ _)
+    case write _ _ IH => exact TransGen.head rfl (IH _ _)
+    case load _ _ IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
+    case branch p _ _ IH₁ IH₂ =>
       unfold TM1.stepAux; cases e : p T.1 v
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₂ _ _)
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₁ _ _)
