@@ -17,7 +17,7 @@ This file defines a few binary operations on `Finset α` for use in set family c
 ## Main declarations
 
 * `Finset.sups s t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`.
-* `Finset.infss t`: Finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`.
+* `Finset.infs s t`: Finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`.
 * `Finset.disjSups s t`: Finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a`
   and `b` are disjoint.
 * `Finset.diffs`: Finset of elements of the form `a \ b` where `a ∈ s`, `b ∈ t`.
