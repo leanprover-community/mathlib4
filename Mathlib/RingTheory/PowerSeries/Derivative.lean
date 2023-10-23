@@ -126,6 +126,10 @@ where
   map_smul'         := fDerivativeFun_smul
   map_one_eq_zero'  := fDerivativeFun_one
   leibniz'          := fDerivativeFun_mul
+
+/--
+The formal derivative of a formal power series.
+-/
 scoped notation "d⁄dX" => fDerivative
 
 section CommutativeSemiring
