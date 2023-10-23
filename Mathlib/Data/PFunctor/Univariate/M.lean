@@ -669,10 +669,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
               isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh
   induction' s₁ using PFunctor.M.casesOn' with a f
-  rename_i h₁ hh₁
   induction' s₂ using PFunctor.M.casesOn' with a' f'
-  rename_i h₁' hh₁' h₂ hh₂
-  clear h₁ hh₁ h₂ hh₂ hh₁'
   obtain rfl : a = a' := bisim.head h₀
   induction' ps with i ps ps_ih generalizing a f f'
   · exists rfl, a, f, f', rfl, rfl
