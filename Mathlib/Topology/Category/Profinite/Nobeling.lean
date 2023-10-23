@@ -420,7 +420,7 @@ theorem GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (
   refine ⟨fun h ↦ le_trans h (Submodule.span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ ?_⟩
   refine le_trans h ?_
   rw [Submodule.span_le]
-  intro f ⟨l, hrfl⟩; cases hrfl -- TODO: why does `intro` not accept a `rfl` pattern here?
+  rintro f ⟨l, rfl⟩
   exact Products.eval_mem_span_goodProducts C l
 
 end Products
@@ -435,19 +435,12 @@ noncomputable
 def πJ : LocallyConstant (C.proj (· ∈ J)) ℤ →ₗ[ℤ] LocallyConstant C ℤ :=
   LocallyConstant.comapₗ ℤ _ (continuous_projRestrict C (· ∈ J))
 
-theorem πJ_of_eval (l : Products I) (hl : l.isGood (C.proj (· ∈ J))) :
+theorem eval_eq_πJ (l : Products I) (hl : l.isGood (C.proj (· ∈ J))) :
     l.eval C = πJ C J (l.eval (C.proj (· ∈ J))) := by
   ext f
   simp only [πJ, LocallyConstant.comapₗ, LinearMap.coe_mk, AddHom.coe_mk,
     (continuous_projRestrict C (· ∈ J)), LocallyConstant.coe_comap, Function.comp_apply]
   exact (congr_fun (Products.evalFacProp C (· ∈ J) (Products.prop_of_isGood  C (· ∈ J) hl)) _).symm
-
-theorem mem_J_of_x_true (x : C.proj (· ∈ J)) (i : I) : x.val i = true → i ∈ J := by
-  intro hi
-  rcases x with ⟨_, y, hx, hrfl⟩
-  cases hrfl -- TODO: why does `rcases` not accept a `rfl` pattern on the previous line?
-  simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hi
-  exact hi.1
 
 /-- `C.proj (· ∈ J)` is finite for a finite set `J`. -/
 noncomputable
@@ -464,27 +457,27 @@ instance : Fintype (C.proj (· ∈ J)) := by
 open Classical in
 /-- The Kronecker delta as a locally constant map from `C.proj (· ∈ J)` to `ℤ`. -/
 noncomputable
-def SpanFinBasis (x : C.proj (· ∈ J)) : LocallyConstant (C.proj (· ∈ J)) ℤ where
+def spanFinBasis (x : C.proj (· ∈ J)) : LocallyConstant (C.proj (· ∈ J)) ℤ where
   toFun := fun y ↦ if y = x then 1 else 0
   isLocallyConstant :=
     haveI : DiscreteTopology (C.proj (· ∈ J)) := discrete_of_t1_of_finite
     IsLocallyConstant.of_discrete _
 
 open Classical in
-theorem SpanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (SpanFinBasis C J)) := by
+theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C J)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
   use Finsupp.onFinset (Finset.univ) f.toFun (fun _ _ ↦ Finset.mem_univ _)
   ext x
   change LocallyConstant.evalₗ ℤ x _ = _
   simp only [zsmul_eq_mul, map_finsupp_sum, LocallyConstant.evalₗ_apply,
-    LocallyConstant.coe_mul, Pi.mul_apply, SpanFinBasis, LocallyConstant.coe_mk, mul_ite, mul_one,
+    LocallyConstant.coe_mul, Pi.mul_apply, spanFinBasis, LocallyConstant.coe_mk, mul_ite, mul_one,
     mul_zero, Finsupp.sum_ite_eq, Finsupp.mem_support_iff, ne_eq, ite_not]
   split_ifs with h <;> [exact h.symm; rfl]
 
-/-- A list of locally constant maps whose product is `SpanFinBasis C J x` (see
+/-- A list of locally constant maps whose product is `spanFinBasis C J x` (see
     `factors_prod_eq_basis`) -/
-def Factors (x : C.proj (· ∈ J)) : List (LocallyConstant (C.proj (· ∈ J)) ℤ) :=
+def factors (x : C.proj (· ∈ J)) : List (LocallyConstant (C.proj (· ∈ J)) ℤ) :=
   List.map (fun i ↦ if x.val i = true then e (C.proj (· ∈ J)) i else (1 - (e (C.proj (· ∈ J)) i)))
     (J.sort (·≥·))
 
@@ -494,12 +487,11 @@ theorem list_prod_apply (x : C) (l : List (LocallyConstant C ℤ)) :
   rfl
 
 theorem factors_prod_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : y = x) :
-    (Factors C J x).prod y = 1 := by
+    (factors C J x).prod y = 1 := by
   rw [list_prod_apply (C.proj (· ∈ J)) y _]
   apply List.prod_eq_one
-  simp only [h, List.mem_map, LocallyConstant.evalMonoidHom, Factors]
-  intro _ ⟨a, ⟨b, _, hrfl₁⟩, hrfl₂⟩; cases hrfl₁; cases hrfl₂
-  -- TODO: why does `intro` not accept a `rfl` patterns on the line above?
+  simp only [h, List.mem_map, LocallyConstant.evalMonoidHom, factors]
+  rintro _ ⟨a, ⟨b, _, rfl⟩, rfl⟩
   dsimp
   split_ifs with hh
   · rw [e, LocallyConstant.coe_mk, if_pos hh]
@@ -507,16 +499,16 @@ theorem factors_prod_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : 
     simp only [LocallyConstant.toFun_eq_coe, LocallyConstant.coe_one, Pi.one_apply, sub_zero]
 
 theorem e_mem_of_eq_true {x : (Set.proj C (· ∈ J))} {a : I} (hx : x.val a = true) :
-    e (Set.proj C (· ∈ J)) a ∈ Factors C J x := by
+    e (Set.proj C (· ∈ J)) a ∈ factors C J x := by
   rcases x with ⟨_, z, hz, rfl⟩
-  simp only [Factors, List.mem_map, Finset.mem_sort]
+  simp only [factors, List.mem_map, Finset.mem_sort]
   refine ⟨a, ⟨?_, if_pos hx⟩⟩
   simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hx
   exact hx.1
 
 theorem one_sub_e_mem_of_ne_true {x y : (Set.proj C (· ∈ J))} {a : I} (ha : y.val a ≠ x.val a)
-    (hx : x.val a ≠ true) : 1 - e (Set.proj C (· ∈ J)) a ∈ Factors C J x := by
-  simp only [Factors, List.mem_map]
+    (hx : x.val a ≠ true) : 1 - e (Set.proj C (· ∈ J)) a ∈ factors C J x := by
+  simp only [factors, List.mem_map]
   refine ⟨a, ⟨?_, if_neg hx⟩⟩
   simp only [Finset.mem_sort]
   obtain ⟨z, hz⟩ := y.prop
@@ -527,7 +519,7 @@ theorem one_sub_e_mem_of_ne_true {x y : (Set.proj C (· ∈ J))} {a : I} (ha : y
   exact ha.1
 
 theorem factors_prod_eq_basis_of_ne {x y : (Set.proj C (· ∈ J))} (h : y ≠ x) :
-    (Factors C J x).prod y = 0 := by
+    (factors C J x).prod y = 0 := by
   rw [list_prod_apply (C.proj (· ∈ J)) y _]
   apply List.prod_eq_zero
   simp only [List.mem_map]
@@ -549,9 +541,9 @@ theorem factors_prod_eq_basis_of_ne {x y : (Set.proj C (· ∈ J))} (h : y ≠ x
     rwa [hx, ne_eq, Bool.not_eq_false] at ha
 
 theorem factors_prod_eq_basis (x : C.proj (· ∈ J)) :
-    (Factors C J x).prod = SpanFinBasis C J x := by
+    (factors C J x).prod = spanFinBasis C J x := by
   ext y
-  dsimp [SpanFinBasis]
+  dsimp [spanFinBasis]
   split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h;
     exact factors_prod_eq_basis_of_ne _ _ h]
 
@@ -569,13 +561,13 @@ theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α :=
 
 theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (· ∈ J)))) := by
   rw [span_iff_products]
-  refine le_trans (SpanFinBasis.span C J) ?_
+  refine le_trans (spanFinBasis.span C J) ?_
   rw [Submodule.span_le]
   intro f hf
   obtain ⟨x, hx⟩ := hf
   rw [← hx, ← factors_prod_eq_basis]
   let l := J.sort (·≥·)
-  dsimp [Factors]
+  dsimp [factors]
   suffices : l.Chain' (·>·) → (l.map (fun i ↦ if x.val i = true then e (C.proj (· ∈ J)) i
       else (1 - (e (C.proj (· ∈ J)) i)))).prod ∈
       Submodule.span ℤ ((Products.eval (C.proj (· ∈ J))) '' {m | m.val ≤ l})
@@ -761,7 +753,7 @@ theorem GoodProducts.span (hC : IsClosed C) :
   obtain ⟨y, ⟨m, hm⟩, hy⟩ := hl
   rw [← hm] at hy
   rw [← hy]
-  exact ⟨m.val, πJ_of_eval C K m.val m.prop⟩
+  exact ⟨m.val, eval_eq_πJ C K m.val m.prop⟩
 
 end Span
 
