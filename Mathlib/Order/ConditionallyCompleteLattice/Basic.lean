@@ -1135,8 +1135,7 @@ open Function
 
 variable [IsWellOrder α (· < ·)]
 
-theorem sInf_eq_argmin_on (hs : s.Nonempty) :
-    sInf s = argminOn id (@IsWellFounded.wf α (· < ·) _) s hs :=
+theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id (@wellFounded_lt α _) s hs :=
   IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩
 #align Inf_eq_argmin_on sInf_eq_argmin_on
 
