@@ -8,13 +8,13 @@ import Mathlib.Data.Fin.Tuple.Curry
 
 
 def valuedCspTermOfUnary {D C : Type} [LinearOrderedAddCommMonoid C]
-    {Γ : ValuedCspTemplate D C} {ι : Type*} {f : D → C}
-    (ok : ⟨1, Function.OfArity.uncurry f⟩ ∈ Γ) (i : ι) : ValuedCspTerm Γ ι :=
+    {Γ : ValuedCsp D C} {ι : Type*} {f : D → C}
+    (ok : ⟨1, Function.OfArity.uncurry f⟩ ∈ Γ) (i : ι) : Γ.Term ι :=
   ⟨1, Function.OfArity.uncurry f, ok, ![i]⟩
 
 def valuedCspTermOfBinary {D C : Type} [LinearOrderedAddCommMonoid C]
-    {Γ : ValuedCspTemplate D C} {ι : Type*} {f : D → D → C}
-    (ok : ⟨2, Function.OfArity.uncurry f⟩ ∈ Γ) (i j : ι) : ValuedCspTerm Γ ι :=
+    {Γ : ValuedCsp D C} {ι : Type*} {f : D → D → C}
+    (ok : ⟨2, Function.OfArity.uncurry f⟩ ∈ Γ) (i j : ι) : Γ.Term ι :=
   ⟨2, Function.OfArity.uncurry f, ok, ![i, j]⟩
 
 
@@ -26,21 +26,21 @@ private def absRat : (Fin 1 → ℚ) → ℚ := Function.OfArity.uncurry Abs.abs
 
 private def exampleAbs : Σ (n : ℕ), (Fin n → ℚ) → ℚ := ⟨1, absRat⟩
 
-private def exampleFiniteValuedCsp : ValuedCspTemplate ℚ ℚ := {exampleAbs}
+private def exampleFiniteValuedCsp : ValuedCsp ℚ ℚ := {exampleAbs}
 
 private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCsp := rfl
 
-private def exampleFiniteValuedInstance : ValuedCspInstance exampleFiniteValuedCsp (Fin 2) :=
+private def exampleFiniteValuedInstance : exampleFiniteValuedCsp.Instance (Fin 2) :=
   [valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1]
 
 #eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
 
 example : exampleFiniteValuedInstance.OptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
-  unfold ValuedCspInstance.OptimumSolution
+  unfold ValuedCsp.Instance.OptimumSolution
   unfold exampleFiniteValuedCsp
   intro s
-  convert_to 0 ≤ ValuedCspInstance.evalSolution exampleFiniteValuedInstance s
-  rw [ValuedCspInstance.evalSolution, exampleFiniteValuedInstance,
+  convert_to 0 ≤ exampleFiniteValuedInstance.evalSolution s
+  rw [ValuedCsp.Instance.evalSolution, exampleFiniteValuedInstance,
       List.map_cons, List.map_cons, List.map_nil, List.sum_cons, List.sum_cons, List.sum_nil,
       add_zero]
   show 0 ≤ |s 0| + |s 1|
@@ -69,26 +69,26 @@ private def beqBool : (Fin 2 → Fin 3) → Bool := Function.OfArity.uncurry BEq
 
 private def exampleEquality : Σ (n : ℕ), (Fin n → Fin 3) → Bool := ⟨2, beqBool⟩
 
-private def exampleCrispCsp : ValuedCspTemplate (Fin 3) Bool := {exampleEquality}
+private def exampleCrispCsp : ValuedCsp (Fin 3) Bool := {exampleEquality}
 
 private lemma beq_in : ⟨2, beqBool⟩ ∈ exampleCrispCsp := rfl
 
-private def exampleTermAB : ValuedCspTerm exampleCrispCsp (Fin 4) :=
+private def exampleTermAB : exampleCrispCsp.Term (Fin 4) :=
   valuedCspTermOfBinary beq_in 0 1
 
-private def exampleTermBC : ValuedCspTerm exampleCrispCsp (Fin 4) :=
+private def exampleTermBC : exampleCrispCsp.Term (Fin 4) :=
   valuedCspTermOfBinary beq_in 1 2
 
-private def exampleTermCA : ValuedCspTerm exampleCrispCsp (Fin 4) :=
+private def exampleTermCA : exampleCrispCsp.Term (Fin 4) :=
   valuedCspTermOfBinary beq_in 2 0
 
-private def exampleTermBD : ValuedCspTerm exampleCrispCsp (Fin 4) :=
+private def exampleTermBD : exampleCrispCsp.Term (Fin 4) :=
   valuedCspTermOfBinary beq_in 1 3
 
-private def exampleTermCD : ValuedCspTerm exampleCrispCsp (Fin 4) :=
+private def exampleTermCD : exampleCrispCsp.Term (Fin 4) :=
   valuedCspTermOfBinary beq_in 2 3
 
-private def exampleCrispCspInstance : ValuedCspInstance exampleCrispCsp (Fin 4) :=
+private def exampleCrispCspInstance : exampleCrispCsp.Instance (Fin 4) :=
   [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
 
 private def exampleSolutionCorrect0 : Fin 4 → Fin 3 :=   ![0, 1, 2, 0]

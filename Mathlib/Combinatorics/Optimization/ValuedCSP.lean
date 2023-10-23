@@ -14,12 +14,12 @@ General-Valued CSP is a very broad class of problems in discrete optimization.
 General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finite-Valued CSP.
 
 ## Main definitions
-* `ValuedCspTemplate`: A VCSP template; fixes a domain, a codomain, and allowed cost functions.
-* `ValuedCspTerm`: One summand in a VCSP instance; calls a concrete function from given template.
-* `ValuedCspTerm.evalSolution`: An evaluation of the VCSP term for given solution.
-* `ValuedCspInstance`: An instance of a VCSP problem over given template.
-* `ValuedCspInstance.evalSolution`: An evaluation of the VCSP instance for given solution.
-* `ValuedCspInstance.optimumSolution`: Is given solution a minimum of the VCSP instance?
+* `ValuedCsp`: A VCSP template; fixes a domain, a codomain, and allowed cost functions.
+* `ValuedCsp.Term`: One summand in a VCSP instance; calls a concrete function from given template.
+* `ValuedCsp.Term.evalSolution`: An evaluation of the VCSP term for given solution.
+* `ValuedCsp.Instance`: An instance of a VCSP problem over given template.
+* `ValuedCsp.Instance.evalSolution`: An evaluation of the VCSP instance for given solution.
+* `ValuedCsp.Instance.OptimumSolution`: Is given solution a minimum of the VCSP instance?
 
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
@@ -29,13 +29,13 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`. -/
 @[reducible]
-def ValuedCspTemplate (D C : Type*) [LinearOrderedAddCommMonoid C] :=
+def ValuedCsp (D C : Type*) [LinearOrderedAddCommMonoid C] :=
   Set (Σ (n : ℕ), (Fin n → D) → C) -- Cost functions `D^n → C` for any `n`
 
 variable {D C : Type*} [LinearOrderedAddCommMonoid C]
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
-structure ValuedCspTerm (Γ : ValuedCspTemplate D C) (ι : Type*) where
+structure ValuedCsp.Term (Γ : ValuedCsp D C) (ι : Type*) where
   /-- Arity of the function -/
   n : ℕ
   /-- Which cost function is instantiated -/
@@ -46,20 +46,20 @@ structure ValuedCspTerm (Γ : ValuedCspTemplate D C) (ι : Type*) where
   app : Fin n → ι
 
 /-- Evaluation of a `Γ` term `t` for given solution `x`. -/
-def ValuedCspTerm.evalSolution {Γ : ValuedCspTemplate D C} {ι : Type*}
-    (t : ValuedCspTerm Γ ι) (x : ι → D) : C :=
+def ValuedCsp.Term.evalSolution {Γ : ValuedCsp D C} {ι : Type*}
+    (t : Γ.Term ι) (x : ι → D) : C :=
   t.f (x ∘ t.app)
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
-def ValuedCspInstance (Γ : ValuedCspTemplate D C) (ι : Type*) :=
-  List (ValuedCspTerm Γ ι)
+def ValuedCsp.Instance (Γ : ValuedCsp D C) (ι : Type*) :=
+  List (Γ.Term ι)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
-def ValuedCspInstance.evalSolution {Γ : ValuedCspTemplate D C} {ι : Type*}
-    (I : ValuedCspInstance Γ ι) (x : ι → D) : C :=
+def ValuedCsp.Instance.evalSolution {Γ : ValuedCsp D C} {ι : Type*}
+    (I : Γ.Instance ι) (x : ι → D) : C :=
   (I.map (·.evalSolution x)).sum
 
 /-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`.-/
-def ValuedCspInstance.OptimumSolution {Γ : ValuedCspTemplate D C} {ι : Type*}
-    (I : ValuedCspInstance Γ ι) (x : ι → D) : Prop :=
+def ValuedCsp.Instance.OptimumSolution {Γ : ValuedCsp D C} {ι : Type*}
+    (I : Γ.Instance ι) (x : ι → D) : Prop :=
   ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
