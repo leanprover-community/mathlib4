@@ -114,7 +114,8 @@ theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
-    DifferentiableAt 𝕜 f x := by use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
+    DifferentiableAt 𝕜 f x := by 
+  use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
     DifferentiableWithinAt 𝕜 f s x := HasFDerivWithinAt.differentiableWithinAt h
@@ -135,20 +136,19 @@ theorem gradient_eq {f' : F → F} (h : ∀ x, HasGradientAt f (f' x) x) : ∇ f
 
 variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
-theorem toDual_eq_StarRingEnd : ((toDual 𝕜 𝕜) g') 1 = starRingEnd 𝕜 g' := by simp
-
-theorem StarRingEnd_eq_toDual : ((toDual 𝕜 𝕜) (starRingEnd 𝕜 g')) 1 = g' := by simp
+section OneDimension
 
 theorem Mul_one_eq_SterRingEnd (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
     (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
   refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro v; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
+  simp; intro v; rw [mul_comm]
 
 theorem SterRingEnd_eq_Mul_one (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
     g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
   refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
-  rw [RingHomCompTriple.comp_apply, RingHom.id_apply]
+  simp; intro v; rw [mul_comm v g']
+
+end OneDimension
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
@@ -160,16 +160,16 @@ theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
     HasDerivAt g (starRingEnd 𝕜 g') u := by
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, toDual_eq_StarRingEnd] at h
-  exact h
+  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
+  simp at h; exact h
 
-theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasGradientAt g g' u) :
+theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u : ℝ} (h : HasGradientAt g g' u) :
     HasDerivAt g g' u := h.hasDerivAt
 
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, StarRingEnd_eq_toDual]
-  exact h
+  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt]
+  simp; exact h
 
 theorem HasDerivAt.hasGradientAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasDerivAt g g' u) :
     HasGradientAt g g' u := h.hasGradientAt
@@ -184,19 +184,6 @@ theorem gradient_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
 theorem gradient_deriv' {g : ℝ → ℝ} {u: ℝ} : ∇ g u = deriv g u := gradient_deriv
 
 open Filter
-
-/-- If a function f has a derivative f' at x, a rescaled version of f around x converges to f',
-i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` tends to infinity
-and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `< f', v >`. This lemma
-expresses this fact, for functions having a derivative within a set. Its specific formulation is
-useful for tangent cone related discussions. -/
-theorem HasGradientWithinAt.lim (h : HasGradientWithinAt f f' s x) {α : Type*} (l : Filter α)
-    {c : α → 𝕜} {d : α → F} {v : F} (dtop : ∀ᶠ n in l, x + d n ∈ s)
-    (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
-    Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 ⟪f', v⟫) := by
-  have : _ := (HasGradientWithinAt_iff_HasFDerivWithinAt.mp h).lim l dtop clim cdlim
-  rw [toDual_apply] at this
-  exact this
 
 section GradientProperties
 
