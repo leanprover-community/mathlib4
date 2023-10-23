@@ -19,8 +19,10 @@ is automatically complete. All dually for `⊓`.
 
 * `SupClosed`: Predicate for a set to be closed under join (`a ∈ s` and `b ∈ s` imply `a ⊔ b ∈ s`).
 * `InfClosed`: Predicate for a set to be closed under meet (`a ∈ s` and `b ∈ s` imply `a ⊓ b ∈ s`).
+* `IsSublattice`: Predicate for a set to be closed under meet and join.
 * `supClosure`: Sup-closure. Smallest sup-closed set containing a given set.
 * `infClosure`: Inf-closure. Smallest inf-closed set containing a given set.
+* `latticeClosure`: Smallest sublattice containing a given set.
 * `SemilatticeSup.toCompleteSemilatticeSup`: A join-semilattice where every sup-closed set has a
   least upper bound is automatically complete.
 * `SemilatticeInf.toCompleteSemilatticeInf`: A meet-semilattice where every inf-closed set has a
@@ -164,41 +166,43 @@ variable {ι : Sort*} [Lattice α] [Lattice β] {S : Set (Set α)} {f : ι → S
 
 open Set
 
-/-- A set `s` is *lattice-closed* if `a ⊔ b ∈ s` and `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/
-structure LatticeClosed (s : Set α) : Prop where
+/-- A set `s` is a *sublattice* if `a ⊔ b ∈ s` and `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`.
+Note: This is not the preferred way to declare a sublattice. One should instead use `Sublattice`.
+TODO: Define `Sublattice`. -/
+structure IsSublattice (s : Set α) : Prop where
   supClosed : SupClosed s
   infClosed : InfClosed s
 
-@[simp] lemma latticeClosed_empty : LatticeClosed (∅ : Set α) := ⟨supClosed_empty, infClosed_empty⟩
-@[simp] lemma latticeClosed_singleton : LatticeClosed ({a} : Set α) :=
+@[simp] lemma isSublattice_empty : IsSublattice (∅ : Set α) := ⟨supClosed_empty, infClosed_empty⟩
+@[simp] lemma isSublattice_singleton : IsSublattice ({a} : Set α) :=
   ⟨supClosed_singleton, infClosed_singleton⟩
 
-@[simp] lemma latticeClosed_univ : LatticeClosed (Set.univ : Set α) :=
+@[simp] lemma isSublattice_univ : IsSublattice (Set.univ : Set α) :=
   ⟨supClosed_univ, infClosed_univ⟩
 
-lemma LatticeClosed.inter (hs : LatticeClosed s) (ht : LatticeClosed t) : LatticeClosed (s ∩ t) :=
+lemma IsSublattice.inter (hs : IsSublattice s) (ht : IsSublattice t) : IsSublattice (s ∩ t) :=
   ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
 
-lemma latticeClosed_sInter (hS : ∀ s ∈ S, LatticeClosed s) : LatticeClosed (⋂₀ S) :=
+lemma isSublattice_sInter (hS : ∀ s ∈ S, IsSublattice s) : IsSublattice (⋂₀ S) :=
   ⟨supClosed_sInter fun _s hs ↦ (hS _ hs).1, infClosed_sInter fun _s hs ↦ (hS _ hs).2⟩
 
-lemma latticeClosed_iInter (hf : ∀ i, LatticeClosed (f i)) : LatticeClosed (⋂ i, f i) :=
+lemma isSublattice_iInter (hf : ∀ i, IsSublattice (f i)) : IsSublattice (⋂ i, f i) :=
   ⟨supClosed_iInter fun _i ↦ (hf _).1, infClosed_iInter fun _i ↦ (hf _).2⟩
 
-lemma LatticeClosed.preimage [LatticeHomClass F β α] (hs : LatticeClosed s) (f : F) :
-    LatticeClosed (f ⁻¹' s) := ⟨hs.1.preimage _, hs.2.preimage _⟩
+lemma IsSublattice.preimage [LatticeHomClass F β α] (hs : IsSublattice s) (f : F) :
+    IsSublattice (f ⁻¹' s) := ⟨hs.1.preimage _, hs.2.preimage _⟩
 
-lemma LatticeClosed.image [LatticeHomClass F α β] (hs : LatticeClosed s) (f : F) :
-    LatticeClosed (f '' s) := ⟨hs.1.image _, hs.2.image _⟩
+lemma IsSublattice.image [LatticeHomClass F α β] (hs : IsSublattice s) (f : F) :
+    IsSublattice (f '' s) := ⟨hs.1.image _, hs.2.image _⟩
 
-lemma LatticeClosed_range [LatticeHomClass F α β] (f : F) : LatticeClosed (Set.range f) :=
+lemma IsSublattice_range [LatticeHomClass F α β] (f : F) : IsSublattice (Set.range f) :=
   ⟨supClosed_range _, infClosed_range _⟩
 
-lemma LatticeClosed.prod {t : Set β} (hs : LatticeClosed s) (ht : LatticeClosed t) :
-    LatticeClosed (s ×ˢ t) := ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
+lemma IsSublattice.prod {t : Set β} (hs : IsSublattice s) (ht : IsSublattice t) :
+    IsSublattice (s ×ˢ t) := ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
 
-lemma latticeClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {s : Set ι}
-    {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, LatticeClosed (t i)) : LatticeClosed (s.pi t) :=
+lemma isSublattice_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {s : Set ι}
+    {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, IsSublattice (t i)) : IsSublattice (s.pi t) :=
   ⟨supClosed_pi λ _i hi ↦ (ht _ hi).1, infClosed_pi λ _i hi ↦ (ht _ hi).2⟩
 
 @[simp] lemma supClosed_preimage_toDual {s : Set αᵒᵈ} :
@@ -213,16 +217,16 @@ lemma latticeClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] 
 @[simp] lemma infClosed_preimage_ofDual {s : Set α} :
     InfClosed (ofDual ⁻¹' s) ↔ SupClosed s := Iff.rfl
 
-@[simp] lemma latticeClosed_preimage_toDual {s : Set αᵒᵈ} :
-    LatticeClosed (toDual ⁻¹' s) ↔ LatticeClosed s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
+@[simp] lemma isSublattice_preimage_toDual {s : Set αᵒᵈ} :
+    IsSublattice (toDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
 
-@[simp] lemma latticeClosed_preimage_ofDual :
-    LatticeClosed (ofDual ⁻¹' s) ↔ LatticeClosed s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
+@[simp] lemma isSublattice_preimage_ofDual :
+    IsSublattice (ofDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.2, h.1⟩, fun h ↦ ⟨h.2, h.1⟩⟩
 
 alias ⟨_, InfClosed.dual⟩ := supClosed_preimage_ofDual
 alias ⟨_, SupClosed.dual⟩ := infClosed_preimage_ofDual
-alias ⟨_, LatticeClosed.dual⟩ := latticeClosed_preimage_ofDual
-alias ⟨_, LatticeClosed.of_dual⟩ := latticeClosed_preimage_toDual
+alias ⟨_, IsSublattice.dual⟩ := isSublattice_preimage_ofDual
+alias ⟨_, IsSublattice.of_dual⟩ := isSublattice_preimage_toDual
 
 end Lattice
 
@@ -235,7 +239,7 @@ variable [LinearOrder α]
 @[simp] protected lemma LinearOrder.infClosed (s : Set α) : InfClosed s :=
 λ a ha b hb ↦ by cases le_total a b <;> simp [*]
 
-@[simp] protected lemma LinearOrder.latticeClosed (s : Set α) : LatticeClosed s :=
+@[simp] protected lemma LinearOrder.isSublattice (s : Set α) : IsSublattice s :=
   ⟨LinearOrder.supClosed _, LinearOrder.infClosed _⟩
 
 end LinearOrder
@@ -384,26 +388,26 @@ variable [Lattice α] {s t : Set α}
 
 /-- Every set in a join-semilattice generates a set closed under join. -/
 def latticeClosure : ClosureOperator (Set α) :=
-  ClosureOperator.ofPred LatticeClosed $ fun _ ↦ latticeClosed_sInter
+  ClosureOperator.ofPred IsSublattice $ fun _ ↦ isSublattice_sInter
 
 @[simp] lemma subset_latticeClosure : s ⊆ latticeClosure s := latticeClosure.le_closure _
 
-@[simp] lemma latticeClosed_latticeClosure : LatticeClosed (latticeClosure s) :=
+@[simp] lemma isSublattice_latticeClosure : IsSublattice (latticeClosure s) :=
   ClosureOperator.ofPred_spec _
 
-lemma latticeClosure_min (hst : s ⊆ t) (ht : LatticeClosed t) : latticeClosure s ⊆ t := by
+lemma latticeClosure_min (hst : s ⊆ t) (ht : IsSublattice t) : latticeClosure s ⊆ t := by
   rw [latticeClosure, ClosureOperator.ofPred]
   exact ClosureOperator.closure_le_mk₃_iff hst ht
 
 lemma latticeClosure_mono : Monotone (latticeClosure : Set α → Set α) := latticeClosure.monotone
 
-@[simp] lemma latticeClosure_eq_self : latticeClosure s = s ↔ LatticeClosed s :=
+@[simp] lemma latticeClosure_eq_self : latticeClosure s = s ↔ IsSublattice s :=
   ClosureOperator.mem_closed_ofPred
 
-@[simp] lemma latticeClosure_closed : latticeClosure.closed = {s : Set α | LatticeClosed s} :=
+@[simp] lemma latticeClosure_closed : latticeClosure.closed = {s : Set α | IsSublattice s} :=
   ClosureOperator.closed_ofPred
 
-alias ⟨_, LatticeClosed.latticeClosure_eq⟩ := latticeClosure_eq_self
+alias ⟨_, IsSublattice.latticeClosure_eq⟩ := latticeClosure_eq_self
 
 lemma latticeClosure_idem (s : Set α) : latticeClosure (latticeClosure s) = latticeClosure s :=
   latticeClosure.idempotent _
@@ -432,13 +436,13 @@ protected lemma InfClosed.supClosure (hs : InfClosed s) : InfClosed (supClosure 
     fun i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)
 
 @[simp] lemma supClosure_infClosure (s : Set α) : supClosure (infClosure s) = latticeClosure s :=
-  le_antisymm (supClosure_min (infClosure_min subset_latticeClosure latticeClosed_latticeClosure.2)
-    latticeClosed_latticeClosure.1) $ latticeClosure_min (subset_infClosure.trans subset_supClosure)
+  le_antisymm (supClosure_min (infClosure_min subset_latticeClosure isSublattice_latticeClosure.2)
+    isSublattice_latticeClosure.1) $ latticeClosure_min (subset_infClosure.trans subset_supClosure)
       ⟨supClosed_supClosure, infClosed_infClosure.supClosure⟩
 
 @[simp] lemma infClosure_supClosure (s : Set α) : infClosure (supClosure s) = latticeClosure s :=
-  le_antisymm (infClosure_min (supClosure_min subset_latticeClosure latticeClosed_latticeClosure.1)
-    latticeClosed_latticeClosure.2) $ latticeClosure_min (subset_supClosure.trans subset_infClosure)
+  le_antisymm (infClosure_min (supClosure_min subset_latticeClosure isSublattice_latticeClosure.1)
+    isSublattice_latticeClosure.2) $ latticeClosure_min (subset_supClosure.trans subset_infClosure)
       ⟨supClosed_supClosure.infClosure, infClosed_infClosure⟩
 
 lemma Set.Finite.latticeClosure (hs : s.Finite) : (latticeClosure s).Finite := by
