@@ -212,14 +212,4 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
 
-theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : lt l' l) (hl' : l' ≠ []) :
-    l'.head! ≤ l.head! := by
-  rw [lt_iff_lex_lt l' l] at h
-  by_cases hl : l = []
-  · simp only [hl, List.Lex.not_nil_right] at h
-  · by_contra hh
-    have := List.Lex.rel (r := (·<·)) (l₁ := l.tail) (l₂ := l'.tail) (not_le.mp hh)
-    rw [List.cons_head!_tail hl', List.cons_head!_tail hl] at this
-    exact asymm h this
-
 end List
