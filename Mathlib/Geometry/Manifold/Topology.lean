@@ -10,7 +10,7 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 In this file, we prove a few basic topological properties of manifolds.
 Let $M$ be a topological manifold (not necessarily `C^n` or smooth).
 * `locallyCompact_of_finiteDimensional_of_boundaryless`: If `M` is finite-dimensional, boundaryless
-  and the underlying field `𝕜` is locally compact (such as ℝ, ℂ or the p-adic numbers),
+  and the underlying field `𝕜` is locally compact (such as ℝ, ℂ or the $p$-adic numbers),
   `M` is locally compact.
 * `sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryless`: In particular,
   if `M` is also secound countable, it is sigma-compact.
@@ -18,10 +18,12 @@ Let $M$ be a topological manifold (not necessarily `C^n` or smooth).
   locally path-connected and locally connected.
 * `connected_iff_pathConnected`: `M` is path-connected if and only if it is connected.
 
-**TODO:**
-* adapt the argument to include manifolds with boundary; this probably requires a
-stronger definition of boundary to show local compactness of the half-spaces. This also requires a
-better argument, that extended charts map neighbourhoods of boundary points to neighbourhoods.
+**TODO:** adapt the argument to include manifolds with boundary,
+* this requires adapting the argument "neighbourhoods in `E` are mapped to neighbourhoods in `M`"
+  to points with boundary
+* this also requires a stronger definition of manifolds with boundary, to allow arguing that
+  $range I ⊆ E$ is locally compact/locally path-connected if `H` is.
+  (Right now, $ℚ ⊆ ℝ$ is allowed by the definition, in which that statement is false.)
 -/
 
 open Set Topology
@@ -77,8 +79,8 @@ lemma localCompactness_aux [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E]
   · apply hscompact.image_of_continuousOn ((chart.continuousOn_extend_symm I).mono hstarget)
 
 /-- A finite-dimensional manifold without boundary modelled on a locally compact field
-  (such as ℝ, ℂ or the p-adic numbers) is locally compact. -/
--- FIXME: make this an instance!
+  (such as ℝ, ℂ or the $p$-adic numbers) is locally compact. -/
+-- FIXME: should this be an instance?
 lemma Manifold.locallyCompact_of_finiteDimensional_of_boundaryless
     [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] (hI : ModelWithCorners.Boundaryless I) :
     LocallyCompactSpace M := by
@@ -86,8 +88,8 @@ lemma Manifold.locallyCompact_of_finiteDimensional_of_boundaryless
 
 open TopologicalSpace
 /-- A finite-dimensional second-countable manifold without boundary
-  modelled on a locally compact field (such as ℝ, ℂ or the p-adic numbers) is σ-compact. -/
--- FIXME: make this an instance!
+  modelled on a locally compact field (such as ℝ, ℂ or the $p$-adic numbers) is σ-compact. -/
+-- FIXME: should this be an instance?
 lemma Manifold.sigmaCompact_of_finiteDimensional_of_secondCountable_of_boundaryless
     [SecondCountableTopology M] [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E]
   (hI : ModelWithCorners.Boundaryless I) : SigmaCompactSpace M := by
@@ -102,8 +104,7 @@ variable
   -- Let M be a real topological manifold.
   [HasGroupoid M (contDiffGroupoid 0 I)]
 
--- FIXME: can I deduplicate with `locallyCompact_aux`?
--- TODO: generalise this (and all results using it) to mathfolds with boundary.
+-- FIXME: can I deduplicate this proof with `locallyCompact_aux`?
 lemma locallyPathConnected_aux [I.Boundaryless] {x : M} {n : Set M} (hn: n ∈ 𝓝 x) :
     ∃ s : Set M, s ∈ 𝓝 x ∧ s ⊆ n ∧ IsPathConnected s := by
   -- Assume `n` is contained in some chart at x. (Choose the distinguished chart from our atlas.)
@@ -148,6 +149,7 @@ lemma locallyPathConnected_aux [I.Boundaryless] {x : M} {n : Set M} (hn: n ∈ �
 
 /-- A real manifold without boundary is locally path-connected. -/
 -- FIXME: make this an instance?
+-- FUTURE: show M is locally simply connected and deduce local path-connectedness from that
 lemma Manifold.locallyPathConnected [I.Boundaryless] : LocPathConnectedSpace M := by
   have aux : ∀ (x : M), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id := by
     intro x
