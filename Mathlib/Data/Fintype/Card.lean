@@ -1219,7 +1219,8 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
   have hc'_lt : ∀ l ∈ c.ranges, ∀ n ∈ l, n < Fintype.card α := by
     intro l hl n hn
     apply lt_of_lt_of_le _ hc
-    apply ranges_lt c hl hn
+    rw [← mem_mem_ranges_iff_mem_range]
+    exact ⟨l, hl, hn⟩
   let l := (ranges c).pmap klift' hc'_lt
   have hl : ∀ (a : List ℕ) (ha : a ∈ c.ranges),
     (klift' a (hc'_lt a ha)).map Fin.valEmbedding = a := by
@@ -1241,7 +1242,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     obtain ⟨u, hu, rfl⟩ := mem_pmap.mp ht
     apply Nodup.of_map
     rw [hl u hu]
-    apply ranges_nodup c u hu
+    exact ranges_nodup hu
   · -- pairwise disjoint
     refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) ?_
     · -- List.Pairwise List.disjoint l
