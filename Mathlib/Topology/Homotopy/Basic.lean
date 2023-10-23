@@ -664,6 +664,7 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f
   prop' t x hx := by simpa only [← h₀, ← h₁] using F.prop t x hx
 #align continuous_map.homotopy_rel.cast ContinuousMap.HomotopyRel.cast
 
+/-- Post-compose a homotopy relative to a set by a continuous function. -/
 @[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
     (g.comp f₀).HomotopyRel (g.comp f₁) S where
   toHomotopy := F.hcomp (ContinuousMap.Homotopy.refl g)
