@@ -34,12 +34,6 @@ variable
   -- Let M be a topological manifold over the field 𝕜.
   [HasGroupoid M (contDiffGroupoid 0 I)]
 
--- missing lemma in mathlib; move to `Topology/PathConnected`
--- XXX: the corresponding statement for connectedness is `IsConnected.image` -> make consistent :-)
-theorem IsPathConnected.image_of_continuousOn
-    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y} {s : Set X}
-    (hs : IsPathConnected s) (hf : ContinuousOn f s) : IsPathConnected (f '' s) := sorry
-
 /-- Auxiliary lemma for local compactness of `M`. -/
 lemma localCompactness_aux [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E]
     (hI : ModelWithCorners.Boundaryless I) {x : M} {n : Set M} (hn : n ∈ 𝓝 x) :
@@ -150,7 +144,7 @@ lemma locallyPathConnected_aux [I.Boundaryless] {x : M} {n : Set M} (hn: n ∈ �
         rw [extChartAt_source]
         apply chart.extend_left_inv' _ (inter_subset_right _ _)
       _ ⊆ n := inter_subset_left _ _
-  · exact hs'conn.image_of_continuousOn ((chart.continuousOn_extend_symm I).mono hstarget)
+  · exact hs'conn.image' ((chart.continuousOn_extend_symm I).mono hstarget)
 
 /-- A real manifold without boundary is locally path-connected. -/
 -- FIXME: make this an instance?
