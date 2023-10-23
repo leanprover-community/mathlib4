@@ -3,20 +3,39 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
 # Reflexive coequalizers
 
-We define reflexive pairs as a pair of morphisms which have a common section. We say a category has
-reflexive coequalizers if it has coequalizers of all reflexive pairs.
-Reflexive coequalizers often enjoy nicer properties than general coequalizers, and feature heavily
-in some versions of the monadicity theorem.
+This file deals with reflexive pairs, which are pairs of morphisms with a common section.
+
+A reflexive coequalizer is a coequalizer of such a pair. These kind of coequalizers often enjoy
+nicer properties than general coequalizers, and feature heavily in some versions of the monadicity
+theorem.
 
 We also give some examples of reflexive pairs: for an adjunction `F ⊣ G` with counit `ε`, the pair
 `(FGε_B, ε_FGB)` is reflexive. If a pair `f,g` is a kernel pair for some morphism, then it is
 reflexive.
+
+## Main definitions
+
+* `IsReflexivePair` is the predicate that f and g have a common section.
+* `WalkingReflexivePair` is the diagram indexing pairs with a common section.
+* A `reflexiveCofork` is a cocone on a diagram indexed by `WalkingReflexivePair`.
+* `forgetReflexion` is the functor forgetting the common section.
+* `HasReflexiveCoequalizers` is the predicate that a category has all colimits of reflexive pairs.
+* `ofIsReflexivePairColimitEquiv`: an isomorphism promoting the coequalizer of a reflexive pair to
+  the colimit of a diagram out of the walking reflexive pair
+
+## Main statements
+
+* `IsKernelPair.isReflexivePair`: A kernel pair is a reflexive pair
+* `forgetReflexion_final`: The functor forgetting the reflexion is final.
+* `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only iff it
+  has all colimits of shape `WalkingReflexivePair`.
 
 # TODO
 * If `C` has binary coproducts and reflexive coequalizers, then it has all coequalizers.
@@ -24,6 +43,8 @@ reflexive.
   coequalizers.
 * If `C` is locally cartesian closed and has reflexive coequalizers, then it has images: in fact
   regular epi (and hence strong epi) images.
+* Bundle the reflexive pairs of kernel pairs and of adjunction as functors out of the walking
+  reflexive pair.
 -/
 
 
@@ -145,6 +166,359 @@ instance (priority := 100) hasReflexiveCoequalizers_of_hasCoequalizers [HasCoequ
 /-- If `C` has equalizers, then it has coreflexive equalizers. -/
 instance (priority := 100) hasCoreflexiveEqualizers_of_hasEqualizers [HasEqualizers C] :
     HasCoreflexiveEqualizers C where has_eq A B f g _ := by infer_instance
+
+end Limits
+
+end CategoryTheory
+
+namespace CategoryTheory
+
+universe v v₂ u u₂
+
+namespace Limits
+
+/-- The type of objects for the diagram indexing reflexive (co)equalizers -/
+inductive WalkingReflexivePair : Type where
+  | zero
+  | one
+  deriving DecidableEq, Inhabited
+
+open WalkingReflexivePair
+
+/-- The type of morphisms for the diagram indexing reflexive (co)equalizers -/
+inductive WalkingReflexivePairHom : (WalkingReflexivePair → WalkingReflexivePair → Type)
+  | left : WalkingReflexivePairHom one zero
+  | right : WalkingReflexivePairHom one zero
+  | reflexion : WalkingReflexivePairHom zero one
+  | left_reflexion : WalkingReflexivePairHom one one
+  | right_reflexion : WalkingReflexivePairHom one one
+  | id (X : WalkingReflexivePair) : WalkingReflexivePairHom X X
+  deriving DecidableEq
+
+attribute [-simp, nolint simpNF] WalkingReflexivePairHom.id.sizeOf_spec
+
+open WalkingReflexivePairHom
+
+/-- Composition of morphisms in the diagram indexing reflexive (co)equalizers -/
+def WalkingReflexivePairHom.comp :
+    ∀ { X Y Z : WalkingReflexivePair } (_ : WalkingReflexivePairHom X Y)
+      (_ : WalkingReflexivePairHom Y Z), WalkingReflexivePairHom X Z
+  | _, _, _, id _, h => h
+  | _, _, _, h, id _ => h
+  | _, _, _, reflexion, left => id zero
+  | _, _, _, reflexion, right => id zero
+  | _, _, _, reflexion, right_reflexion => reflexion
+  | _, _, _, reflexion, left_reflexion => reflexion
+  | _, _, _, left, reflexion => left_reflexion
+  | _, _, _, right, reflexion => right_reflexion
+  | _, _, _, right_reflexion, right_reflexion => right_reflexion
+  | _, _, _, right_reflexion, left_reflexion => right_reflexion
+  | _, _, _, right_reflexion, right => right
+  | _, _, _, right_reflexion, left => right
+  | _, _, _, left_reflexion, left => left
+  | _, _, _, left_reflexion, right => left
+  | _, _, _, left_reflexion, right_reflexion => left_reflexion
+  | _, _, _, left_reflexion, left_reflexion => left_reflexion
+
+theorem WalkingReflexivePairHom.id_comp
+    {X Y : WalkingReflexivePair} (g : WalkingReflexivePairHom X Y) : comp (id X) g = g := by
+  cases g <;> rfl
+
+theorem WalkingReflexivePairHom.comp_id
+    {X Y : WalkingReflexivePair} (f : WalkingReflexivePairHom X Y) : comp f (id Y) = f := by
+  cases f <;> rfl
+
+theorem WalkingReflexivePairHom.assoc {X Y Z W : WalkingReflexivePair}
+    (f : WalkingReflexivePairHom X Y) (g: WalkingReflexivePairHom Y Z)
+    (h : WalkingReflexivePairHom Z W) : comp (comp f g) h = comp f (comp g h) := by
+  cases f <;> cases g <;> cases h <;> rfl
+
+instance walkingReflexivePairCategory : SmallCategory WalkingReflexivePair where
+  Hom := WalkingReflexivePairHom
+  id := id
+  comp := comp
+  comp_id := comp_id
+  id_comp := id_comp
+  assoc := assoc
+
+@[simp]
+theorem walkingReflexivePairHom_id (X : WalkingReflexivePair) :
+    WalkingReflexivePairHom.id X = 𝟙 X := by rfl
+
+@[simp]
+theorem walkingReflexivePairHom_left_comp_reflexion : left.comp reflexion = left_reflexion := rfl
+
+@[simp]
+theorem walkingReflexivePairHom_right_comp_reflexion : right.comp reflexion = right_reflexion := rfl
+
+@[simp]
+theorem WalkingReflexivePairHom.id.sizeOf_spec' (X : WalkingReflexivePair) :
+    (WalkingReflexivePairHom._sizeOf_inst X X).sizeOf (𝟙 X) = 1 + sizeOf X := by cases X <;> rfl
+
+/-- The forgetful functor forgetting the common section -/
+def forgetReflexion : WalkingParallelPair ⥤ WalkingReflexivePair :=
+  { obj := fun x => match x with
+      | WalkingParallelPair.one => zero
+      | WalkingParallelPair.zero => one
+    map := fun f => match f with
+      | WalkingParallelPairHom.left => left
+      | WalkingParallelPairHom.right => right
+      | WalkingParallelPairHom.id _ => WalkingReflexivePairHom.id _
+    map_comp := by
+      intro _ _ _ f g; cases f <;> cases g <;> rfl }
+
+variable {C : Type u} [Category.{v} C]
+
+@[simp]
+lemma whisker_forgetReflexion_zero (F : WalkingReflexivePair ⥤ C) :
+    (forgetReflexion ⋙  F).obj WalkingParallelPair.one = F.obj zero := rfl
+
+@[simp]
+lemma whisker_forgetReflexion_one (F : WalkingReflexivePair ⥤ C) :
+    (forgetReflexion ⋙  F).obj WalkingParallelPair.zero = F.obj one := rfl
+
+@[simp]
+lemma whisker_forgetReflexion_left (F : WalkingReflexivePair ⥤ C) :
+    (forgetReflexion ⋙  F).map WalkingParallelPairHom.left = F.map left := rfl
+
+@[simp]
+lemma whisker_forgetReflexion_right (F : WalkingReflexivePair ⥤ C) :
+    (forgetReflexion ⋙  F).map WalkingParallelPairHom.right = F.map right := rfl
+
+/-- The forgetful functor is a final functor -/
+instance forgetReflexion_final : Functor.Final forgetReflexion := by
+  constructor
+  set e₀ : (StructuredArrow one forgetReflexion) :=
+    StructuredArrow.mk (Y := WalkingParallelPair.zero) (id one)
+  set e₁ : (StructuredArrow zero forgetReflexion) :=
+    StructuredArrow.mk (Y := WalkingParallelPair.one) (id zero)
+  intro x
+  have h : Inhabited (StructuredArrow x forgetReflexion)
+  . constructor
+    cases x with
+    | one => exact e₀
+    | zero => exact e₁
+  cases x with
+    | zero => apply IsConnected.of_induct (j₀ := e₁)
+              intro p h₁ h₂ t
+              rcases t with ⟨l, y, f⟩
+              cases y <;> cases f
+              . set r : StructuredArrow zero forgetReflexion :=
+                  StructuredArrow.mk (Y := WalkingParallelPair.zero) reflexion
+                change r ∈ p
+                suffices f : r ⟶  e₁ by exact (h₂ f).mpr h₁
+                exact StructuredArrow.homMk (WalkingParallelPairHom.left)
+              . exact h₁
+    | one => apply IsConnected.of_induct (j₀ := e₀)
+             intro p h₁ h₂ t
+             rcases t with ⟨l, y, f⟩
+             set rₗ : StructuredArrow one forgetReflexion :=
+                StructuredArrow.mk (Y := WalkingParallelPair.one) left
+             set rᵣ : StructuredArrow one forgetReflexion :=
+                StructuredArrow.mk (Y := WalkingParallelPair.one) right
+             have hrₗ : rₗ ∈ p
+             . suffices f : e₀ ⟶  rₗ by exact (h₂ f).mp h₁
+               exact StructuredArrow.homMk WalkingParallelPairHom.left
+             have hrᵣ : rᵣ ∈ p
+             . suffices f : e₀ ⟶  rᵣ by exact (h₂ f).mp h₁
+               exact StructuredArrow.homMk WalkingParallelPairHom.right
+             cases y <;> cases f
+             rotate_right 3
+             . exact h₁
+             . exact hrₗ
+             . exact hrᵣ
+             . set v : StructuredArrow one forgetReflexion :=
+                StructuredArrow.mk (Y := WalkingParallelPair.zero) left_reflexion
+               suffices f : v ⟶  rₗ by exact (h₂ f).mpr hrₗ
+               exact StructuredArrow.homMk (WalkingParallelPairHom.left)
+             . set v : StructuredArrow one forgetReflexion :=
+                StructuredArrow.mk (Y := WalkingParallelPair.zero) right_reflexion
+               suffices f : v ⟶  rᵣ by exact (h₂ f).mpr hrᵣ
+               exact StructuredArrow.homMk (WalkingParallelPairHom.right)
+
+variable {A B : C}
+
+/-- Bundle the data of a parallel pair along with a common section as a functor out of the walking
+reflexive pair -/
+def reflexivePair (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B) :
+  (WalkingReflexivePair ⥤ C) where
+  obj x :=
+    match x with
+    | zero => B
+    | one => A
+  map h :=
+    match h with
+    | WalkingReflexivePairHom.id _ => 𝟙 _
+    | left => f
+    | right => g
+    | reflexion => s
+    | right_reflexion => g ≫  s
+    | left_reflexion => f ≫  s
+  map_comp := by
+    rintro _ _ _ ⟨⟩ g <;> cases g <;> try {rfl} <;>
+    try {simp [← Category.assoc, sl, sr]; rfl} <;> try {simp}
+
+/-- (Noncomputably) bundle the data of a reflexive pair as a functor out of the walking reflexive
+pair -/
+noncomputable def ofIsReflexivePair (f g : A ⟶ B) [IsReflexivePair f g] :
+    (WalkingReflexivePair ⥤ C) where
+  obj x :=
+    match x with
+    | zero => B
+    | one => A
+  map h :=
+    match h with
+    | WalkingReflexivePairHom.id _ => 𝟙 _
+    | left => f
+    | right => g
+    | reflexion => commonSection f g
+    | right_reflexion => g ≫  (commonSection f g)
+    | left_reflexion => f ≫  (commonSection f g)
+  map_comp := by
+    rintro _ _ _ ⟨⟩ g <;> cases g <;> try {rfl} <;>
+    try {dsimp; simp [↑ section_comp_left, ↑ section_comp_right]; rfl} <;> try {simp}
+
+noncomputable def forgetReflexionOfIsReflexivePairIso (f g : A ⟶ B) [IsReflexivePair f g] :
+    (forgetReflexion ⋙  (ofIsReflexivePair f g)) ≅ parallelPair f g := diagramIsoParallelPair _
+
+end Limits
+
+namespace Limits
+
+open WalkingReflexivePair
+
+open WalkingReflexivePairHom
+
+variable {C : Type u} [Category.{v} C]
+
+@[simp]
+theorem reflexivePair_reflexion_comp_left (F : WalkingReflexivePair ⥤ C) :
+    F.map reflexion ≫  F.map left = 𝟙 F.obj zero :=
+  ((F.map_id zero).symm.trans (F.map_comp reflexion left)).symm
+
+@[simp]
+theorem reflexivePair_reflexion_comp_right (F : WalkingReflexivePair ⥤ C) :
+    F.map reflexion ≫  F.map right = 𝟙 F.obj zero :=
+  ((F.map_id zero).symm.trans (F.map_comp reflexion right)).symm
+
+@[simp]
+theorem reflexivePair_left_comp_reflexion (F : WalkingReflexivePair ⥤ C) :
+  F.map left_reflexion = F.map left ≫ F.map reflexion := F.map_comp left reflexion
+
+@[simp]
+theorem reflexivePair_right_comp_reflexion (F : WalkingReflexivePair ⥤ C) :
+  F.map right_reflexion = F.map right ≫ F.map reflexion := F.map_comp right reflexion
+
+/-- Any functor out of `WalkingReflexivePair` is isomorphic to the reflexive pair built out of the
+images of its morphisms -/
+def diagramIsoReflexivePair (F : WalkingReflexivePair ⥤ C) :
+    F ≅ reflexivePair (F.map left) (F.map right) (F.map reflexion)
+    ((F.map_id zero).symm.trans (F.map_comp reflexion left)).symm
+    ((F.map_id zero).symm.trans (F.map_comp reflexion right)).symm
+    := NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) <| by
+      rintro _ _ f; cases f <;> try {dsimp; simp; try rfl}
+
+variable {F : WalkingReflexivePair ⥤ C}
+
+/-- Any functor out of the WalkingReflexivePair yields a reflexive pair -/
+instance to_isReflexivePair :
+    IsReflexivePair (F.map left) (F.map right) :=
+  ⟨F.map reflexion, reflexivePair_reflexion_comp_left F, reflexivePair_reflexion_comp_right F⟩
+
+abbrev ReflexiveCofork (F : WalkingReflexivePair ⥤ C) := Cocone F
+
+namespace ReflexiveCofork
+
+def π (G : ReflexiveCofork F) := G.ι.app zero
+
+def condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
+  erw [Cocone.w G left, Cocone.w G right]
+
+@[simp]
+lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
+
+def toCofork (G : ReflexiveCofork F) : (Cofork (F.map left) (F.map right)) :=
+ (Cocones.precompose (diagramIsoParallelPair (_ ⋙  F)).symm.hom).obj <| G.whisker forgetReflexion
+
+@[simp]
+lemma toCofork.π (G : ReflexiveCofork F) : Cofork.π (G.toCofork) = G.π := by
+  dsimp only [toCofork, Cofork.π]
+  simp only [parallelPair_obj_one, Functor.comp_obj, Functor.comp_map, Iso.symm_hom,
+    Cocones.precompose_obj_pt, Cocone.whisker_pt, Functor.const_obj_obj, Cocones.precompose_obj_ι,
+    Cocone.whisker_ι, NatTrans.comp_app, diagramIsoParallelPair_inv_app, eqToHom_refl,
+    whiskerLeft_app]
+  erw [Category.id_comp]
+  rfl
+
+end ReflexiveCofork
+
+/-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
+coforks on the underlying parallel pair. -/
+noncomputable def forgetReflexionEquiv : Cocone F ≌ Cofork (F.map left) (F.map right) :=
+  (Functor.Final.coconesEquiv _ F).symm.trans
+    (Cocones.precomposeEquivalence (diagramIsoParallelPair (forgetReflexion ⋙  F))).symm
+
+instance reflexivePair_hasColimit_of_hasCoequalizer
+    [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F := by
+  suffices _ : HasColimit (forgetReflexion ⋙ F)
+  . apply Functor.Final.hasColimit_of_comp forgetReflexion
+  exact @Limits.hasColimitOfIso _ _ _ _ _ _ h (diagramIsoParallelPair _)
+
+/-- The colimit of a functor out of the walking reflexive pair is the same as the colimit of the
+underlying parallel pair. -/
+noncomputable def forgetReflexionColimitEquiv [HasCoequalizer (F.map left) (F.map right)] :
+    colimit F ≅ coequalizer (F.map left) (F.map right) :=
+  (Functor.Final.colimitIso forgetReflexion F).symm.trans
+    <| HasColimit.isoOfNatIso (diagramIsoParallelPair (forgetReflexion ⋙ F))
+
+@[simp]
+lemma forgetReflexionEquiv_obj (G : ReflexiveCofork F) :
+    forgetReflexionEquiv.functor.obj G = G.toCofork := rfl
+
+noncomputable def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
+    IsColimit (G.toCofork) ≃ IsColimit G :=
+  (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans
+    (Functor.Final.isColimitWhiskerEquiv _ _)
+
+variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g]
+
+instance ofIsReflexivePairHasColimit_of_hasCoequalizer [HasCoequalizer f g] :
+    HasColimit (ofIsReflexivePair f g) := by
+  suffices _ : HasColimit (forgetReflexion ⋙ (ofIsReflexivePair f g))
+  . apply Functor.Final.hasColimit_of_comp forgetReflexion
+  exact Limits.hasColimitOfIso (forgetReflexionOfIsReflexivePairIso f g)
+
+/-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
+walking reflexive pair -/
+noncomputable def ofIsReflexivePairColimitEquiv [HasCoequalizer f g] :
+    colimit (ofIsReflexivePair f g) ≅ coequalizer f g :=
+  (Functor.Final.colimitIso _ _).symm.trans
+    <| HasColimit.isoOfNatIso (forgetReflexionOfIsReflexivePairIso _ _)
+
+end Limits
+
+namespace Limits
+
+open WalkingReflexivePair
+
+open WalkingReflexivePairHom
+
+variable {C : Type u} [Category.{v} C]
+
+/-- A category has coequalizers of reflexive pairs if and only if it has all colimits indexed by the
+walking reflexive pair. -/
+theorem hasReflexiveCoequalizers_iff :
+    (HasColimitsOfShape WalkingReflexivePair C) ↔ (HasReflexiveCoequalizers C) := by
+  constructor
+  . intro h
+    constructor
+    intro _ _ f g h₁
+    set F := @ofIsReflexivePair _ _ _ _ _ _ h₁
+    exact @Limits.hasColimitOfIso _ _ _ _ _ _
+      (Functor.Final.comp_hasColimit _)
+      (diagramIsoParallelPair (forgetReflexion ⋙ F)).symm
+  . intro h
+    exact ⟨by infer_instance⟩
 
 end Limits
 
