@@ -97,6 +97,8 @@ decl's of two `MVarId`'s, and if so, how. If `none`, the decl's are ignored.
   * `checkLocalDeclKind := false`
 -/
 structure Config extends ExprComparisonConfig, MVarIdComparisonConfig where
+  /-- Either `.normal` (the default) or `.quick`. When `.quick`, we only check if the goal has been
+  assigned. -/
   mode : FailIfNoProgress.Mode := .normal
 deriving Repr, Inhabited
 
