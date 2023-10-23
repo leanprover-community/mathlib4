@@ -93,8 +93,6 @@ theorem curry_uncurry {n} (f : Function.OfArity α n) :
   | n + 1 => funext fun a => by
     dsimp [curry, uncurry, Function.comp]
     simp only [Fin.cons_zero, Fin.cons_succ]
-    eta_reduce
-    eta_reduce
     rw [curry_uncurry]
 
 @[simp]
