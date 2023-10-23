@@ -581,7 +581,7 @@ end HomotopicWith
 A `HomotopyRel f₀ f₁ S` is a homotopy between `f₀` and `f₁` which is fixed on the points in `S`.
 -/
 abbrev HomotopyRel (f₀ f₁ : C(X, Y)) (S : Set X) :=
-  HomotopyWith f₀ f₁ fun f => ∀ x ∈ S, f x = f₀ x
+  HomotopyWith f₀ f₁ fun f ↦ ∀ x ∈ S, f x = f₀ x
 #align continuous_map.homotopy_rel ContinuousMap.HomotopyRel
 
 namespace HomotopyRel
