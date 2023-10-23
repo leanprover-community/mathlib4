@@ -33,18 +33,20 @@ namespace CategoryTheory.Presieve
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [HasInitial C]
-    (hF : (ofArrows (X := ⊥_ C) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
+variable {C : Type u} [Category.{v} C] (I : C) (F : Cᵒᵖ ⥤ Type (max u v))
+    (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
 
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
 initial object, then `F` takes the initial object to the terminal object.
 -/
 noncomputable
-def isTerminal_obj_initial_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op (⊥_ C))) := by
+def isTerminal_obj_initial_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   refine @IsTerminal.ofUnique _ _ _ fun Y ↦ ?_
   choose t h using hF (by tauto) (by tauto)
   exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
+
+variable {I} (hI : IsInitial I)
 
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
@@ -52,9 +54,11 @@ initial object, then `F` preserves terminal objects.
 -/
 noncomputable
 def preservesTerminalOfIsSheafForEmpty : PreservesLimit (Functor.empty Cᵒᵖ) F :=
-  preservesTerminalOfIso F
-    (F.mapIso (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)) ≪≫
-    (terminalIsoIsTerminal (isTerminal_obj_initial_of_isSheafFor_empty_presieve F hF)).symm)
+  haveI := hI.hasInitial
+  (preservesTerminalOfIso F
+    ((F.mapIso (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)) ≪≫
+    (F.mapIso (initialIsoIsInitial hI).symm.op) ≪≫
+    (terminalIsoIsTerminal (isTerminal_obj_initial_of_isSheafFor_empty_presieve I F hF)).symm)))
 
 variable {α : Type} {X : α → C} [HasCoproduct X]
     [(ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
@@ -168,7 +172,7 @@ theorem iso_prodMap_aux {β : Type v} {Z : β → Type (max u v)} (p : β → Pr
 
 open Classical in
 theorem iso_prodMap : IsIso (prodMap X F) :=
-  let _ := preservesTerminalOfIsSheafForEmpty F hF
+  let _ := preservesTerminalOfIsSheafForEmpty F hF hI
   have _ : IsIso (removeInitial₁ F X) :=
     iso_prodMap_aux (fun b ↦ Nonempty (IsInitial.{v, u} (X b))) fun b ⟨hb⟩ ↦
       ⟨(Types.isTerminalEquivUnique _).toFun <|
@@ -224,10 +228,12 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.firstMap F (ofArrows X (fun j
     apply Mono.right_cancellation (f := Sigma.ι X i)
     exact pullback.condition
   · haveI := preservesTerminalOfIsSheafForEmpty F hF
+    haveI := hI.hasInitial
     let i₁ : op (pullback (Sigma.ι X i) (Sigma.ι X j)) ≅ op (⊥_ _) :=
       (initialIsoIsInitial (hd i j hi)).op
     let i₂ : op (⊥_ C) ≅ (⊤_ Cᵒᵖ) :=
       (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)).symm
+    let _ := preservesTerminalOfIsSheafForEmpty F hF hI
     apply_fun (F.mapIso i₁ ≪≫ F.mapIso i₂ ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _
     simp
@@ -248,7 +254,7 @@ def preservesProductOfIsSheafFor (hF' : (ofArrows X (fun i ↦ Sigma.ι X i)).Is
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance (@IsIso.comp_isIso _ _ _ _ _ _ _ ?_ ?_)
   · rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
     rw [Equalizer.Presieve.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-    exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF X hd) b)
-  · exact iso_prodMap F hF X hd
+    exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI X hd) b)
+  · exact iso_prodMap F hF hI X hd
 
 end CategoryTheory.Presieve
