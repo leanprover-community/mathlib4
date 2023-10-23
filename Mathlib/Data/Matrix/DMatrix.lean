@@ -81,7 +81,7 @@ def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
 
 -- port note: Old proof is Pi.inhabited.
 instance [inst : ∀ i j, Inhabited (α i j)] : Inhabited (DMatrix m n α) :=
-  ⟨fun i j => (inst i j).default⟩
+  Pi.inhabited
 
 instance [∀ i j, Add (α i j)] : Add (DMatrix m n α) :=
   Pi.instAdd
@@ -118,7 +118,7 @@ instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
 
 -- Port note: old proof is Pi.Subsingleton
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
-  by constructor; simp only [DMatrix, eq_iff_true_of_subsingleton, implies_true]
+  Pi.subsingleton
 
 @[simp]
 theorem zero_apply [∀ i j, Zero (α i j)] (i j) : (0 : DMatrix m n α) i j = 0 := rfl
