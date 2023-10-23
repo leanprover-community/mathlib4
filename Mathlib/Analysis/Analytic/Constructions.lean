@@ -38,7 +38,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 ### Cartesian products are analytic
 -/
 
-/-- The radius of the Cartesian product of two formal series is the minimum of their radii. --/
+/-- The radius of the Cartesian product of two formal series is the minimum of their radii. -/
 lemma FormalMultilinearSeries.radius_prod_eq_min
     (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
     (p.prod q).radius = min p.radius q.radius := by
