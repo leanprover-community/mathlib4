@@ -179,7 +179,6 @@ instance : OrderedAddCommMonoid (Submodule R M) :=
 instance : CanonicallyOrderedAdd (Submodule R M) where
   exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
   le_self_add := fun _a _b => le_sup_left
-  le_add_self := fun _a _b => le_sup_right
 
 section
 

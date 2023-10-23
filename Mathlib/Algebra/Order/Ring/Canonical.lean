@@ -67,7 +67,7 @@ namespace CanonicallyOrderedAdd
 
 -- see Note [lower instance priority]
 instance (priority := 100) toCovariantClassMulLE
-    [Mul α] [Add α] [LeftDistribClass α] [LE α] [CanonicallyOrderedAdd α] :
+    [NonUnitalNonAssocSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CovariantClass α α (· * ·) (· ≤ ·) := by
   refine' ⟨fun a b c h => _⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩

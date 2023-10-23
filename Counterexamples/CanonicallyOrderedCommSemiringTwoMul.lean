@@ -260,7 +260,6 @@ instance : OrderedCommSemiring L := inferInstance
 instance : CanonicallyOrderedAdd L where
   exists_add_of_le := @(exists_add_of_le)
   le_self_add := le_self_add
-  le_add_self a b := by rw [add_comm]; exact le_self_add _ _
 
 instance : NoZeroDivisors L where
   eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero)

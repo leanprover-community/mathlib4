@@ -479,7 +479,6 @@ variable {R : Type*} [CommRing R] [IsJacobson R]
 
 variable (P : Ideal R[X]) [hP : P.IsMaximal]
 
-set_option maxHeartbeats 210000 in
 theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ P → x = 0) :
     IsMaximal (comap (C : R →+* R[X]) P : Ideal R) := by
   let P' := comap (C : R →+* R[X]) P

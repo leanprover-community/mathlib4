@@ -138,7 +138,7 @@ end Lattice
 
 section CanonicallyOrdered
 
-variable [AddZeroClass α] [PartialOrder α] [CanonicallyOrderedAdd α] [LocallyFiniteOrder α]
+variable [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [LocallyFiniteOrder α]
 
 variable (f : ι →₀ α)
 

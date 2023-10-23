@@ -178,8 +178,7 @@ instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
     CanonicallyOrderedAdd α :=
   { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
-    le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
-    le_add_self := fun a b ↦ add_eq_left_iff_le.1 <| by rw [add_assoc, add_idem] }
+    le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
 #align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAdd
 
 -- See note [lower instance priority]

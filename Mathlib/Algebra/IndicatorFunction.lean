@@ -895,7 +895,7 @@ end Order
 
 section CanonicallyOrderedMul
 
-variable [MulOneClass M] [Preorder M] [CanonicallyOrderedMul M]
+variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
 
 @[to_additive]
 theorem mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=

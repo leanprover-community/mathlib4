@@ -664,7 +664,6 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
 
 instance : CanonicallyOrderedAdd (Multiset α) where
   le_self_add := le_add_right
-  le_add_self := le_add_left
   exists_add_of_le h := leInductionOn h fun s =>
       let ⟨l, p⟩ := s.exists_perm_append
       ⟨l, Quot.sound p⟩

@@ -114,9 +114,9 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
 
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd PUnit := by
   refine'
-    { exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
-    intros <;>
-    trivial
+    { exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. }
+  intros
+  trivial
 
 instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where
   __ := PUnit.canonicallyOrderedAdd

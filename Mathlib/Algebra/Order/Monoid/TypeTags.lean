@@ -96,15 +96,15 @@ instance Multiplicative.existsMulOfLe [Add α] [LE α] [ExistsAddOfLE α] :
 instance Additive.existsAddOfLe [Mul α] [LE α] [ExistsMulOfLE α] : ExistsAddOfLE (Additive α) :=
   ⟨@exists_mul_of_le α _ _ _⟩
 
-instance Multiplicative.canonicallyOrderedMul [Add α] [LE α] [CanonicallyOrderedAdd α] :
+instance Multiplicative.canonicallyOrderedMul
+    [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedMul (Multiplicative α) where
   le_self_mul _ _ := le_self_add (α := α)
-  le_mul_self _ _ := le_add_self (α := α)
 
-instance Additive.canonicallyOrderedAdd [Mul α] [LE α] [CanonicallyOrderedMul α] :
+instance Additive.canonicallyOrderedAdd
+    [Monoid α] [PartialOrder α] [CanonicallyOrderedMul α] :
     CanonicallyOrderedAdd (Additive α) where
   le_self_add _ _ := le_self_mul (α := α)
-  le_add_self _ _ := le_mul_self (α := α)
 
 namespace Additive
 

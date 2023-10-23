@@ -1158,7 +1158,6 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
 instance : CanonicallyOrderedMul (Associates α) where
   exists_mul_of_le h := h
   le_self_mul _ b := ⟨b, rfl⟩
-  le_mul_self _ b := ⟨b, mul_comm _ _⟩
 
 instance : OrderBot (Associates α) where
   bot_le _ := bot_le

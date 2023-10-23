@@ -383,19 +383,13 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAdd [Add α] [LE α] [CanonicallyOrderedAdd α] :
+instance canonicallyOrderedAdd [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithTop α) :=
   { le_self_add := fun a b =>
       match a, b with
       | ⊤, ⊤ => le_top
       | (a : α), ⊤ => le_top
       | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
-      | ⊤, (b : α) => le_top
-    le_add_self := fun a b =>
-      match a, b with
-      | ⊤, ⊤ => le_top
-      | (a : α), ⊤ => le_top
-      | (a : α), (b : α) => WithTop.coe_le_coe.2 le_add_self
       | ⊤, (b : α) => le_top }
 
 @[simp, norm_cast]

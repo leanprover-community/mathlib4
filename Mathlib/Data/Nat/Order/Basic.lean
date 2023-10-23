@@ -68,8 +68,7 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ
 
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd ℕ :=
   { exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
-    le_self_add := Nat.le_add_right,
-    le_add_self := Nat.le_add_left }
+    le_self_add := Nat.le_add_right }
 
 instance noZeroDivisors : NoZeroDivisors ℕ :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }

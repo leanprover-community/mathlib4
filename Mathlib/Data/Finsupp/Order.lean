@@ -146,10 +146,9 @@ instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α 
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
-section CanonicallyOrderedAddCommMonoid
+section AddMonoid
 
-section LE
-variable [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α]
+variable [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -169,37 +168,27 @@ theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g
   le_iff' f g <| Subset.refl _
 #align finsupp.le_iff Finsupp.le_iff
 
+lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
+  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+
+lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
+
 instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 #align finsupp.decidable_le Finsupp.decidableLE
+
+instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+  decidableLTOfDecidableLE
 
 @[simp]
 theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=
   (le_iff' _ _ support_single_subset).trans <| by simp
 #align finsupp.single_le_iff Finsupp.single_le_iff
 
-end LE
+end AddMonoid
 
-section Preorder
-variable [AddZeroClass α] [Preorder α] [CanonicallyOrderedAdd α]
-
-instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
-  decidableLTOfDecidableLE
-
-end Preorder
-
-section PartialOrder
-variable [AddZeroClass α] [PartialOrder α] [CanonicallyOrderedAdd α]
-
-lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
-  fun f g h a ha ↦ by rw [mem_support_iff, ←pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
-
-lemma support_mono {f g : ι →₀ α} (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
-
-end PartialOrder
-
-section
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+section AddCommMonoid
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
 
 @[simp]
 theorem add_eq_zero_iff [CovariantClass α α (· + ·) (· ≤ ·)]
@@ -221,7 +210,6 @@ instance orderedSub : OrderedSub (ι →₀ α) :=
 instance [CovariantClass α α (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (ι →₀ α) where
   exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
   le_self_add := fun _f _g _x => le_self_add
-  le_add_self := fun _f _g _x => le_add_self
 
 @[simp]
 theorem coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g :=
@@ -250,13 +238,11 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
   simp (config := { contextual := true }) [subset_iff]
 #align finsupp.subset_support_tsub Finsupp.subset_support_tsub
 
-end
-
-end CanonicallyOrderedAddCommMonoid
+end AddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [AddZeroClass α] [LinearOrder α] [CanonicallyOrderedAdd α]
+variable [AddMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by

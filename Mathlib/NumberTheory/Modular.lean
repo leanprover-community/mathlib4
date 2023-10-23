@@ -233,7 +233,6 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   · rfl
 #align modular_group.tendsto_lc_row0 ModularGroup.tendsto_lcRow0
 
-set_option maxHeartbeats 210000 in
 /-- This replaces `(g•z).re = a/c + *` in the standard theory with the following novel identity:
   `g • z = (a c + b d) / (c^2 + d^2) + (d z - c) / ((c^2 + d^2) (c z + d))`
   which does not need to be decomposed depending on whether `c = 0`. -/

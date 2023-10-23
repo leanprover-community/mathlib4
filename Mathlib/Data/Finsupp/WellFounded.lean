@@ -53,7 +53,7 @@ theorem Lex.wellFounded' [IsTrichotomous α r] (hr : WellFounded (Function.swap 
 #align finsupp.lex.well_founded' Finsupp.Lex.wellFounded'
 
 instance Lex.wellFoundedLT {α N} [LT α] [IsTrichotomous α (· < ·)] [hα : WellFoundedGT α]
-    [AddZeroClass N] [Preorder N] [CanonicallyOrderedAdd N]
+    [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N]
     [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
   ⟨Lex.wellFounded' (fun n => (zero_le n).not_lt) hN.wf hα.wf⟩
 #align finsupp.lex.well_founded_lt Finsupp.Lex.wellFoundedLT
@@ -76,7 +76,7 @@ protected theorem wellFoundedLT [Zero N] [Preorder N] [WellFoundedLT N] (hbot : 
 #align finsupp.well_founded_lt Finsupp.wellFoundedLT
 
 instance wellFoundedLT' {N}
-    [AddZeroClass N] [Preorder N] [CanonicallyOrderedAdd N] [WellFoundedLT N] :
+    [AddMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   Finsupp.wellFoundedLT fun a => (zero_le a).not_lt
 #align finsupp.well_founded_lt' Finsupp.wellFoundedLT'

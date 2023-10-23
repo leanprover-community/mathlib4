@@ -31,7 +31,7 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 #align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
 instance (priority := 100) CanonicallyOrderedAdd.toZeroLEOneClass
-    [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
+    [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
   ⟨zero_le 1⟩
 #align canonically_ordered_add_monoid.to_zero_le_one_class CanonicallyOrderedAdd.toZeroLEOneClass
 
@@ -166,13 +166,7 @@ instance canonicallyOrderedAdd [OrderedAddCommMonoid α] [CanonicallyOrderedAdd 
       · exact bot_le
       induction b using WithZero.cases_on
       · exact le_rfl
-      · exact WithZero.coe_le_coe.2 le_self_add
-    le_add_self := fun a b => by
-      induction a using WithZero.cases_on
-      · exact bot_le
-      induction b using WithZero.cases_on
-      · exact le_rfl
-      · exact WithZero.coe_le_coe.2 le_add_self }
+      · exact WithZero.coe_le_coe.2 le_self_add }
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAdd
 
 end CanonicallyOrderedCommMonoid

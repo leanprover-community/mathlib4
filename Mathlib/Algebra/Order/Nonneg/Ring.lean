@@ -321,7 +321,6 @@ def coeRingHom [OrderedSemiring α] : { x : α // 0 ≤ x } →+* α :=
 instance canonicallyOrderedAdd [OrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } :=
   { le_self_add := fun _ b => le_add_of_nonneg_right b.2
-    le_add_self := fun _ b => le_add_of_nonneg_left b.2
     exists_add_of_le := fun {a b} h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
 #align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAdd

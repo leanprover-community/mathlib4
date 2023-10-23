@@ -194,7 +194,7 @@ section OrderedAddMonoid
 
 variable [LinearOrder ι]
 
-instance Lex.orderBot [∀ i, AddZeroClass (α i)] [∀ i, PartialOrder (α i)]
+instance Lex.orderBot [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, CanonicallyOrderedAdd (α i)] :
     OrderBot (Lex (Π₀ i, α i)) where
   bot := 0

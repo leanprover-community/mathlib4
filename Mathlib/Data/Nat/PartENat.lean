@@ -431,10 +431,6 @@ instance : CanonicallyOrderedAdd PartENat :=
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun b =>
         PartENat.casesOn a (top_add _).ge fun a =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
-    le_add_self := fun a b =>
-      PartENat.casesOn b (le_top.trans_eq (top_add _).symm) fun b =>
-        PartENat.casesOn a (add_top _).ge fun a =>
-          (coe_le_coe.2 le_add_self).trans_eq (Nat.cast_add _ _)
     exists_add_of_le := fun {a b} =>
       PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
         PartENat.casesOn a (fun h => ((natCast_lt_top _).not_le h).elim) fun a h =>
