@@ -162,7 +162,7 @@ theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
     HasDerivAt g (starRingEnd 𝕜 g') u := by
   rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
   simp only [ContinuousLinearMap.strongUniformity_topology_eq, toDual_apply, IsROrC.inner_apply,
-    mul_one] at h ; exact h
+    mul_one] at h; exact h
 
 theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u : ℝ} (h : HasGradientAt g g' u) :
     HasDerivAt g g' u := h.hasDerivAt
