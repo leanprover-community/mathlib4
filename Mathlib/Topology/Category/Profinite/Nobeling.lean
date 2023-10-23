@@ -420,8 +420,7 @@ theorem GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (
   refine ⟨fun h ↦ le_trans h (Submodule.span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ ?_⟩
   refine le_trans h ?_
   rw [Submodule.span_le]
-  intro f ⟨l,hl⟩
-  rw [← hl]
+  intro f ⟨l, hrfl⟩; cases hrfl -- TODO: why does `intro` not accept a `rfl` pattern here?
   exact Products.eval_mem_span_goodProducts C l
 
 end Products
@@ -445,8 +444,8 @@ theorem πJ_of_eval (l : Products I) (hl : l.isGood (C.proj (· ∈ J))) :
 
 theorem mem_J_of_x_true (x : C.proj (· ∈ J)) (i : I) : x.val i = true → i ∈ J := by
   intro hi
-  obtain ⟨y, hx⟩ := x.prop
-  rw [← hx.2] at hi
+  rcases x with ⟨_, y, hx, hrfl⟩
+  cases hrfl -- TODO: why does `rcases` not accept a `rfl` pattern on the previous line?
   simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hi
   exact hi.1
 
@@ -455,17 +454,11 @@ noncomputable
 instance : Fintype (C.proj (· ∈ J)) := by
   let f : C.proj (· ∈ J) → (J → Bool) := fun x j ↦ x.val j.val
   refine Fintype.ofInjective f ?_
-  intro x y h
+  intro ⟨_, x, hx, rfl⟩ ⟨_, y, hy, rfl⟩ h
   ext i
   by_cases hi : i ∈ J
   · exact congrFun h ⟨i, hi⟩
-  · obtain ⟨x', hx⟩ := x.prop
-    obtain ⟨y', hy⟩ := y.prop
-    rw [← hx.2, ← hy.2]
-    dsimp [Proj]
-    split_ifs with hh
-    · simp only [hh, not_true] at hi
-    · rfl
+  · simp only [Proj, if_neg hi]
 
 
 open Classical in
@@ -504,16 +497,10 @@ theorem factors_prod_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : 
     (Factors C J x).prod y = 1 := by
   rw [list_prod_apply (C.proj (· ∈ J)) y _]
   apply List.prod_eq_one
-  intro n hn
-  simp only [List.mem_map] at hn
-  obtain ⟨a, ha⟩ := hn
-  rw [← ha.2]
-  dsimp [LocallyConstant.evalMonoidHom]
-  rw [h]
-  dsimp [Factors] at ha
-  simp only [List.mem_map] at ha
-  obtain ⟨b, hb⟩ := ha.1
-  rw [← hb.2]
+  simp only [h, List.mem_map, LocallyConstant.evalMonoidHom, Factors]
+  intro _ ⟨a, ⟨b, _, hrfl₁⟩, hrfl₂⟩; cases hrfl₁; cases hrfl₂
+  -- TODO: why does `intro` not accept a `rfl` patterns on the line above?
+  dsimp
   split_ifs with hh
   · rw [e, LocallyConstant.coe_mk, if_pos hh]
   · rw [LocallyConstant.sub_apply, e, LocallyConstant.coe_mk, LocallyConstant.coe_mk, if_neg hh]
@@ -521,12 +508,10 @@ theorem factors_prod_eq_basis_of_eq {x y : (Set.proj C fun x ↦ x ∈ J)} (h : 
 
 theorem e_mem_of_eq_true {x : (Set.proj C (· ∈ J))} {a : I} (hx : x.val a = true) :
     e (Set.proj C (· ∈ J)) a ∈ Factors C J x := by
-  simp only [Factors, List.mem_map]
+  rcases x with ⟨_, z, hz, rfl⟩
+  simp only [Factors, List.mem_map, Finset.mem_sort]
   refine ⟨a, ⟨?_, if_pos hx⟩⟩
-  simp only [Finset.mem_sort]
-  obtain ⟨z, hz⟩ := x.prop
-  rw [← hz.2, Proj] at hx
-  simp only [Bool.ite_eq_true_distrib, if_false_right_eq_and] at hx
+  simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hx
   exact hx.1
 
 theorem one_sub_e_mem_of_ne_true {x y : (Set.proj C (· ∈ J))} {a : I} (ha : y.val a ≠ x.val a)
