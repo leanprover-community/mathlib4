@@ -42,6 +42,18 @@ theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
     exact ⟨h x, fun h' => h'.symm ▸ I.zero_mem⟩⟩
 #align char_p.quotient' CharP.quotient'
 
+/-- `CharP.quotient'` as an `Iff`. -/
+theorem quotient_iff {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
+    CharP (R ⧸ I) n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 := by
+  refine ⟨fun _ x hx => ?_, CharP.quotient' n I⟩
+  rw [CharP.cast_eq_zero_iff R n, ←CharP.cast_eq_zero_iff (R ⧸ I) n _]
+  exact (Submodule.Quotient.mk_eq_zero I).mpr hx
+
+/-- `CharP.quotient_iff`, but stated in terms of inclusions of ideals. -/
+theorem quotient_iff_le_ker_natCast {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
+    CharP (R ⧸ I) n ↔ I.comap (Nat.castRingHom R) ≤ RingHom.ker (Nat.castRingHom R) := by
+  rw [CharP.quotient_iff, RingHom.ker_eq_comap_bot]; rfl
+
 end CharP
 
 theorem Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
