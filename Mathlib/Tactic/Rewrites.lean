@@ -57,9 +57,12 @@ def forwardWeight := 2
 /-- Weight to multiply the "specificity" of a rewrite lemma by when rewriting backwards. -/
 def backwardWeight := 1
 
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
+
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
-    MetaM (Array (Array (DiscrTree.Key true) × (Name × Bool × Nat))) := do
+    MetaM (Array (Array DiscrTree.Key × (Name × Bool × Nat))) := do
   if constInfo.isUnsafe then return #[]
   if ← name.isBlackListed then return #[]
   -- We now remove some injectivity lemmas which are not useful to rewrite by.
@@ -73,8 +76,8 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     match type.getAppFnArgs with
     | (``Eq, #[_, lhs, rhs])
     | (``Iff, #[lhs, rhs]) => do
-      let lhsKey ← DiscrTree.mkPath lhs
-      let rhsKey ← DiscrTree.mkPath rhs
+      let lhsKey ← DiscrTree.mkPath lhs discrTreeConfig
+      let rhsKey ← DiscrTree.mkPath rhs discrTreeConfig
       return #[(lhsKey, (name, false, forwardWeight * lhsKey.size)),
         (rhsKey, (name, true, backwardWeight * rhsKey.size))]
     | _ => return #[]
@@ -89,8 +92,8 @@ def localHypotheses (except : List FVarId := []) : MetaM (Array (Expr × Bool ×
     match type.getAppFnArgs with
     | (``Eq, #[_, lhs, rhs])
     | (``Iff, #[lhs, rhs]) => do
-      let lhsKey : Array (DiscrTree.Key true) ← DiscrTree.mkPath lhs
-      let rhsKey : Array (DiscrTree.Key true) ← DiscrTree.mkPath rhs
+      let lhsKey : Array DiscrTree.Key ← DiscrTree.mkPath lhs discrTreeConfig
+      let rhsKey : Array DiscrTree.Key ← DiscrTree.mkPath rhs discrTreeConfig
       result := result.push (h, false, forwardWeight * lhsKey.size)
         |>.push (h, true, backwardWeight * rhsKey.size)
     | _ => pure ()
@@ -102,15 +105,15 @@ def localHypotheses (except : List FVarId := []) : MetaM (Array (Expr × Bool ×
 -- `build/lib/MathlibExtras/Rewrites.extra`
 -- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
-    (lemmas : DiscrTree (Name × Bool × Nat) true) : MetaM (DiscrTree (Name × Bool × Nat) true) := do
+    (lemmas : DiscrTree (Name × Bool × Nat)) : MetaM (DiscrTree (Name × Bool × Nat)) := do
   let mut lemmas := lemmas
   for (key, value) in ← processLemma name constInfo do
-    lemmas := lemmas.insertIfSpecific key value
+    lemmas := lemmas.insertIfSpecific key value discrTreeConfig
   return lemmas
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × Bool × Nat)) :=
-  DiscrTreeCache.mk "rw?: init cache" processLemma
+  DiscrTreeCache.mk "rw?: init cache" processLemma (config := discrTreeConfig)
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -134,9 +137,9 @@ Retrieve the current cache of lemmas.
 initialize rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × Bool × Nat) true) path
+    let (d, _r) ← unpickle (DiscrTree (Name × Bool × Nat)) path
     -- We can drop the `CompactedRegion` value; we do not plan to free it
-    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)
+    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d) (config := discrTreeConfig)
   else
     buildDiscrTree
 
@@ -211,12 +214,12 @@ See also `rewrites` for a more convenient interface.
 -- because `MLList.squash` executes lazily,
 -- so there is no opportunity for `← getMCtx` to record the context at the call site.
 def rewritesCore (hyps : Array (Expr × Bool × Nat))
-    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+    (lemmas : DiscrTree (Name × Bool × Nat) × DiscrTree (Name × Bool × Nat))
     (ctx : MetavarContext) (goal : MVarId) (target : Expr) :
     MLList MetaM RewriteResult := MLList.squash fun _ => do
   -- Get all lemmas which could match some subexpression
-  let candidates := (← lemmas.1.getSubexpressionMatches target)
-    ++ (← lemmas.2.getSubexpressionMatches target)
+  let candidates := (← lemmas.1.getSubexpressionMatches target discrTreeConfig)
+    ++ (← lemmas.2.getSubexpressionMatches target discrTreeConfig)
 
   -- Sort them by our preferring weighting
   -- (length of discriminant key, doubled for the forward implication)
@@ -269,7 +272,7 @@ Find lemmas which can rewrite the goal, and deduplicate based on pretty-printed 
 Note that this builds a `HashMap` containing the results, and so may consume significant memory.
 -/
 def rewritesDedup (hyps : Array (Expr × Bool × Nat))
-    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+    (lemmas : DiscrTree (Name × Bool × Nat) × DiscrTree (Name × Bool × Nat))
     (mctx : MetavarContext)
     (goal : MVarId) (target : Expr) : MLList MetaM RewriteResult := MLList.squash fun _ => do
   return rewritesCore hyps lemmas mctx goal target
@@ -281,7 +284,7 @@ def rewritesDedup (hyps : Array (Expr × Bool × Nat))
 
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
-    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+    (lemmas : DiscrTree (Name × Bool × Nat) × DiscrTree (Name × Bool × Nat))
     (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
   let results ← rewritesDedup hyps lemmas (← getMCtx) goal target

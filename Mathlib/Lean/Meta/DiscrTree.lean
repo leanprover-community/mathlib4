@@ -18,12 +18,12 @@ namespace Lean.Meta.DiscrTree
 Inserts a new key into a discrimination tree,
 but only if it is not of the form `#[*]` or `#[=, *, *, *]`.
 -/
-def insertIfSpecific [BEq α] (d : DiscrTree α s)
-    (keys : Array (DiscrTree.Key s)) (v : α) : DiscrTree α s :=
+def insertIfSpecific [BEq α] (d : DiscrTree α)
+    (keys : Array Key) (v : α) (config : WhnfCoreConfig) : DiscrTree α :=
   if keys == #[Key.star] || keys == #[Key.const `Eq 3, Key.star, Key.star, Key.star] then
     d
   else
-    d.insertCore keys v
+    d.insertCore keys v config
 
 /--
 Find keys which match the expression, or some subexpression.
@@ -36,31 +36,33 @@ Implementation: we reverse the results from `getMatch`,
 so that we return lemmas matching larger subexpressions first,
 and amongst those we return more specific lemmas first.
 -/
-partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Array α) := do
+partial def getSubexpressionMatches (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) :
+    MetaM (Array α) := do
   match e with
   | .bvar _ => return #[]
   | .forallE _ _ _ _ => forallTelescope e (fun args body => do
       args.foldlM (fun acc arg => do
-          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg)))
-        (← d.getSubexpressionMatches body).reverse)
+          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg) config))
+        (← d.getSubexpressionMatches body config).reverse)
   | .lam _ _ _ _
   | .letE _ _ _ _ _ => lambdaLetTelescope e (fun args body => do
       args.foldlM (fun acc arg => do
-          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg)))
-        (← d.getSubexpressionMatches body).reverse)
+          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg) config))
+        (← d.getSubexpressionMatches body config).reverse)
   | _ =>
-    e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e).reverse
+    e.foldlM (fun a f => do
+      pure <| a ++ (← d.getSubexpressionMatches f config)) (← d.getMatch e config).reverse
 
 variable {m : Type → Type} [Monad m]
 
 
 /-- The explicit stack of `Trie.mapArrays` -/
-private inductive Ctxt {α β s}
+private inductive Ctxt {α β}
   | empty : Ctxt
-  | ctxt : Array (Key s × Trie β s) → Array β → Array (Key s × Trie α s) → Key s → Ctxt → Ctxt
+  | ctxt : Array (Key × Trie β) → Array β → Array (Key × Trie α) → Key → Ctxt → Ctxt
 
 /-- Apply a function to the array of values at each node in a `DiscrTree`. -/
-partial def Trie.mapArrays (t : Trie α s) (f : Array α → Array β) : Trie β s :=
+partial def Trie.mapArrays (t : Trie α) (f : Array α → Array β) : Trie β :=
   let .node vs0 cs0 := t
   go (.mkEmpty cs0.size) (f vs0) cs0.reverse Ctxt.empty
 where
@@ -77,7 +79,7 @@ where
       go (.mkEmpty cs'.size) (f vs') cs'.reverse (.ctxt cs vs todo.pop k ps)
 
 /-- Apply a function to the array of values at each node in a `DiscrTree`. -/
-def mapArrays (d : DiscrTree α s) (f : Array α → Array β) : DiscrTree β s :=
+def mapArrays (d : DiscrTree α) (f : Array α → Array β) : DiscrTree β :=
   { root := d.root.map (fun t => t.mapArrays f) }
 
 end Lean.Meta.DiscrTree
