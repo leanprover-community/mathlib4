@@ -1219,7 +1219,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
   have hc'_lt : ∀ l ∈ c.ranges, ∀ n ∈ l, n < Fintype.card α := by
     intro l hl n hn
     apply lt_of_lt_of_le _ hc
-    rw [← mem_mem_ranges_iff_mem_range]
+    rw [← mem_mem_ranges_iff_lt_sum]
     exact ⟨l, hl, hn⟩
   let l := (ranges c).pmap klift' hc'_lt
   have hl : ∀ (a : List ℕ) (ha : a ∈ c.ranges),

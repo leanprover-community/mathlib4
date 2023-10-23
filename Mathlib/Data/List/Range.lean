@@ -289,7 +289,7 @@ theorem ranges_join (l : List ℕ) :
     rfl
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
-theorem mem_mem_ranges_iff_mem_range (l : List ℕ) {n : ℕ} :
+theorem mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ List.ranges l,  n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_join, mem_join]
 
@@ -300,14 +300,6 @@ theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) :
   rw [ranges_join]
   exact nodup_range (sum l)
 
-/- /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum` -/
-theorem ranges_lt (l : List ℕ) {s : List ℕ} {n : ℕ}
-    (hs : s ∈ List.ranges l) (hn : n ∈ s) :
-    n < l.sum := by
-  rw [← mem_range, ← mem_mem_ranges_iff_lt]
-  exact ⟨s, hs, hn⟩
- -/
-
- end Ranges
+end Ranges
 
 end List
