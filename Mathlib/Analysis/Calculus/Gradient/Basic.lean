@@ -141,12 +141,12 @@ section OneDimension
 theorem Mul_one_eq_SterRingEnd (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
     (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
   refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro v; rw [mul_comm]
+  simp; intro v; simp [mul_comm]
 
 theorem SterRingEnd_eq_Mul_one (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
     g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
   refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro v; rw [mul_comm v g']
+  simp; intro v; simp [mul_comm]
 
 end OneDimension
 
@@ -161,7 +161,8 @@ theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
     HasDerivAt g (starRingEnd 𝕜 g') u := by
   rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
-  simp at h; exact h
+  simp only [ContinuousLinearMap.strongUniformity_topology_eq, toDual_apply, IsROrC.inner_apply,
+    mul_one] at h ; exact h
 
 theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u : ℝ} (h : HasGradientAt g g' u) :
     HasDerivAt g g' u := h.hasDerivAt
@@ -169,7 +170,8 @@ theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u : ℝ} (h : HasGradien
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
   rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt]
-  simp; exact h
+  simp only [ContinuousLinearMap.strongUniformity_topology_eq, toDual_apply, IsROrC.inner_apply,
+    RingHomCompTriple.comp_apply, RingHom.id_apply, mul_one]; exact h
 
 theorem HasDerivAt.hasGradientAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasDerivAt g g' u) :
     HasGradientAt g g' u := h.hasGradientAt
