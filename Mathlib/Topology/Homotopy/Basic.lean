@@ -664,6 +664,11 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f
   prop' t x hx := by simpa only [← h₀, ← h₁] using F.prop t x hx
 #align continuous_map.homotopy_rel.cast ContinuousMap.HomotopyRel.cast
 
+@[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
+    (g.comp f₀).HomotopyRel (g.comp f₁) S where
+  toHomotopy := F.hcomp (ContinuousMap.Homotopy.refl g)
+  prop' t x hx := congr_arg g (F.prop t x hx)
+
 end HomotopyRel
 
 /-- Given continuous maps `f₀` and `f₁`, we say `f₀` and `f₁` are homotopic relative to a set `S` if
@@ -700,11 +705,6 @@ theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicRel f g S) (h₁ : Homotopi
 theorem equivalence : Equivalence fun f g : C(X, Y) => HomotopicRel f g S :=
   ⟨refl, by apply symm, by apply trans⟩
 #align continuous_map.homotopic_rel.equivalence ContinuousMap.HomotopicRel.equivalence
-
-def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
-    (g.comp f₀).HomotopyRel (g.comp f₁) S where
-  toHomotopy := F.hcomp (ContinuousMap.Homotopy.refl g)
-  prop' t x hx := congr_arg g (F.prop t x hx)
 
 end HomotopicRel
 
