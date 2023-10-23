@@ -114,7 +114,7 @@ theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
-    DifferentiableAt 𝕜 f x := by 
+    DifferentiableAt 𝕜 f x := by
   use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
