@@ -42,6 +42,8 @@ Given `M : Matroid α` ...
 * `FiniteRk M` means that the bases of `M` are finite.
 * `InfiniteRk M` means that the bases of `M` are infinite.
 * `RkPos M` means that the bases of `M` are nonempty.
+* `Finitary M` means that a set is independent if and only if all its finite subsets are
+    independent.
 
 * `aesop_mat` : a tactic designed to prove `X ⊆ M.E` for some set `X` and matroid `M`.
 
@@ -59,7 +61,7 @@ There are a few design decisions worth discussing.
 
   However, generalizing different definitions of a finite matroid
   to the infinite in the obvious way (i.e. by simply allowing the ground set to be infinite)
-  gives a number of different notions of 'infinite matroid' that disagree with eachother,
+  gives a number of different notions of 'infinite matroid' that disagree with each other,
   and that all lack nice properties.
   Many different competing notions of infinite matroid were studied through the years;
   in fact, the problem of which definition is the best was only really solved in 2013,
@@ -120,6 +122,9 @@ There are a few design decisions worth discussing.
   The tactic `aesop_mat` exists specifically to discharge such goals
   with minimal fuss (using default values).
   The tactic works fairly well, but has room for improvement.
+  Even though the carrier set is written `M.E`,
+  we mirror common informal practice by referring explicitly to the `ground` set
+  rather than the notation `E` in lemma names.
 
   A related decision is to not have matroids themselves be a typeclass.
   This would make things be notationally simpler
@@ -155,12 +160,12 @@ def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
 def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X : Set α) : Prop :=
   ∀ I, P I → I ⊆ X → (maximals (· ⊆ ·) {Y | P Y ∧ I ⊆ Y ∧ Y ⊆ X}).Nonempty
 
-/-- A `Matroid α` is a `ground` set of type `Set α`, and a nonempty collection of its subsets
+/-- A `Matroid α` is a ground set `E` of type `Set α`, and a nonempty collection of its subsets
   satisfying the exchange property and the maximal subset property. Each such set is called a
   `Base` of `M`. -/
 @[ext] structure Matroid (α : Type _) where
-  /-- `M` has a ground set. -/
-  (ground : Set α)
+  /-- `M` has a ground set `E`. -/
+  (E : Set α)
   /-- `M` has a predicate `Base` definining its bases -/
   (Base : Set α → Prop)
   /-- There is at least one `Base` -/
@@ -170,20 +175,15 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
   (base_exchange' : Matroid.ExchangeProperty Base)
   /-- Every subset `I` of a set `X` for which `I` is contained in a base is contained in a maximal
     subset of `X` that is contained in a base. -/
-  (maximality' : ∀ X, X ⊆ ground → Matroid.ExistsMaximalSubsetProperty (∃ B, Base B ∧ · ⊆ B) X)
+  (maximality' : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty (∃ B, Base B ∧ · ⊆ B) X)
   /-- every base is contained in the ground set -/
-  (subset_ground' : ∀ B, Base B → B ⊆ ground)
+  (subset_ground' : ∀ B, Base B → B ⊆ E)
 
 namespace Matroid
 
 variable {α : Type _} {M : Matroid α}
 
 attribute [pp_dot] Base
-
-/-- We write `M.E` for the ground set of a matroid `M`-/
-@[pp_dot] def E (M : Matroid α) : Set α := M.ground
-
-@[simp] theorem ground_eq_E (M : Matroid α) : M.ground = M.E := rfl
 
 /-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
 class Finite (M : Matroid α) : Prop where
@@ -345,13 +345,13 @@ theorem Base.eq_of_subset_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hB�
     B₁ = B₂ :=
   M.base_exchange'.antichain hB₁ hB₂ hB₁B₂
 
-theorem Base.card_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
+theorem Base.encard_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
   M.base_exchange'.encard_diff_eq hB₁ hB₂
 
 theorem Base.ncard_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).ncard = (B₂ \ B₁).ncard := by
-  rw [ncard_def, hB₁.card_diff_comm hB₂, ←ncard_def]
+  rw [ncard_def, hB₁.encard_diff_comm hB₂, ←ncard_def]
 
 theorem Base.card_eq_card_of_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     B₁.encard = B₂.encard := by
@@ -406,11 +406,11 @@ theorem finite_or_infiniteRk (M : Matroid α) : FiniteRk M ∨ InfiniteRk M :=
 
 theorem Base.diff_finite_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).Finite ↔ (B₂ \ B₁).Finite :=
-  finite_iff_finite_of_encard_eq_encard (hB₁.card_diff_comm hB₂)
+  finite_iff_finite_of_encard_eq_encard (hB₁.encard_diff_comm hB₂)
 
 theorem Base.diff_infinite_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).Infinite ↔ (B₂ \ B₁).Infinite :=
-  infinite_iff_infinite_of_encard_eq_encard (hB₁.card_diff_comm hB₂)
+  infinite_iff_infinite_of_encard_eq_encard (hB₁.encard_diff_comm hB₂)
 
 theorem eq_of_base_iff_base_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ B, B ⊆ M₁.E → (M₁.Base B ↔ M₂.Base B)) : M₁ = M₂ := by
@@ -544,7 +544,7 @@ theorem Base.dep_of_insert (hB : M.Base B) (heB : e ∉ B) (he : e ∈ M.E := by
 
 /-- If the difference of two Bases is a singleton, then they differ by an insertion/removal -/
 theorem Base.eq_exchange_of_diff_eq_singleton (hB : M.Base B) (hB' : M.Base B') (h : B \ B' = {e}) :
-  ∃ f ∈ B' \ B, B' = (insert f B) \ {e} := by
+    ∃ f ∈ B' \ B, B' = (insert f B) \ {e} := by
   obtain ⟨f, hf, hb⟩ := hB.exchange hB' (h.symm.subset (mem_singleton e))
   have hne : f ≠ e := by rintro rfl; exact hf.2 (h.symm.subset (mem_singleton f)).1
   rw [insert_diff_singleton_comm hne] at hb
@@ -555,7 +555,7 @@ theorem Base.eq_exchange_of_diff_eq_singleton (hB : M.Base B) (hB' : M.Base B') 
 theorem Base.exchange_base_of_indep (hB : M.Base B) (hf : f ∉ B)
     (hI : M.Indep (insert f (B \ {e}))) : M.Base (insert f (B \ {e})) := by
   obtain ⟨B', hB', hIB'⟩ := hI.exists_base_supset
-  have hcard := hB'.card_diff_comm hB
+  have hcard := hB'.encard_diff_comm hB
   rw [insert_subset_iff, ←diff_eq_empty, diff_diff_comm, diff_eq_empty, subset_singleton_iff_eq]
     at hIB'
   obtain ⟨hfB, (h | h)⟩ := hIB'
@@ -606,6 +606,35 @@ theorem eq_of_indep_iff_indep_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M�
 theorem eq_iff_indep_iff_indep_forall {M₁ M₂ : Matroid α} :
   M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
 ⟨fun h ↦ by (subst h; simp), fun h ↦ eq_of_indep_iff_indep_forall h.1 h.2⟩
+
+/-- A `Finitary` matroid is one where a set is independent if and only if it all
+  its finite subsets are independent, or equivalently a matroid whose circuits are finite. -/
+class Finitary (M : Matroid α) : Prop where
+  /-- `I` is independent if all its finite subsets are independent. -/
+  indep_of_forall_finite : ∀ I, (∀ J, J ⊆ I → J.Finite → M.Indep J) → M.Indep I
+
+theorem indep_of_forall_finite_subset_indep {M : Matroid α} [Finitary M] (I : Set α)
+    (h : ∀ J, J ⊆ I → J.Finite → M.Indep J) : M.Indep I :=
+  Finitary.indep_of_forall_finite I h
+
+theorem indep_iff_forall_finite_subset_indep {M : Matroid α} [Finitary M] :
+    M.Indep I ↔ ∀ J, J ⊆ I → J.Finite → M.Indep J :=
+  ⟨fun h _ hJI _ ↦ h.subset hJI, Finitary.indep_of_forall_finite I⟩
+
+instance finitary_of_finiteRk {M : Matroid α} [FiniteRk M] : Finitary M :=
+⟨ by
+  refine fun I hI ↦ I.finite_or_infinite.elim (hI _ Subset.rfl) (fun h ↦ False.elim ?_)
+  obtain ⟨B, hB⟩ := M.exists_base
+  obtain ⟨I₀, hI₀I, hI₀fin, hI₀card⟩ := h.exists_subset_ncard_eq (B.ncard + 1)
+  obtain ⟨B', hB', hI₀B'⟩ := hI _ hI₀I hI₀fin
+  have hle := ncard_le_of_subset hI₀B' hB'.finite
+  rw [hI₀card, hB'.ncard_eq_ncard_of_base hB, Nat.add_one_le_iff] at hle
+  exact hle.ne rfl ⟩
+
+/-- Matroids obey the maximality axiom -/
+theorem existsMaximalSubsetProperty_indep (M : Matroid α) :
+    ∀ X, X ⊆ M.E → ExistsMaximalSubsetProperty M.Indep X :=
+  M.maximality'
 
 end dep_indep
 
@@ -667,7 +696,7 @@ theorem basis_iff' :
     and_congr_left_iff, and_congr_right_iff, @Imp.swap (_ ⊆ X)]
 
 theorem basis_iff (hX : X ⊆ M.E := by aesop_mat) :
-  M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) :=
+    M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) :=
 by rw [basis_iff', and_iff_left hX]
 
 theorem basis'_iff_basis_inter_ground : M.Basis' I X ↔ M.Basis I (X ∩ M.E) := by
