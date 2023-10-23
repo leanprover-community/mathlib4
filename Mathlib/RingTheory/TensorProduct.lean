@@ -695,8 +695,8 @@ Pairs of algebra morphisms that commute are equivalent to algebra morphisms from
 
 This is `Algebra.TensorProduct.lift` as an equivalence.
 
-See also `SuperTensorProduct.liftEquiv` for an alternative commutativity requirement for
-`ZMod 2`-graded algebra. -/
+See also `GradedTensorProduct.liftEquiv` for an alternative commutativity requirement for graded
+algebra. -/
 @[simps]
 def liftEquiv [IsScalarTower R S A] [IsScalarTower R S C] :
     {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}

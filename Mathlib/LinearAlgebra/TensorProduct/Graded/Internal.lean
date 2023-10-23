@@ -7,25 +7,26 @@ import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
-# Graded tensor products over super- (`ZMod 2`-graded) algebras
+# Graded tensor products over graded algebras
 
 The graded tensor product $A \hat\otimes_R B$ is imbued with a multiplication defined on homogeneous
 tensors by:
 
 $$(a \otimes b) \cdot (a' \otimes b') = (-1)^{\deg a' \deg b} (a \cdot a') \otimes (b \cdot b')$$
 
-where $A$ and $B$ are algebras graded by `ZMod 2`, also known as superalgebras.
+where $A$ and $B$ are algebras graded by `ℕ`, `ℤ`, or `ι` (or more generally, any index
+that satisfies `Module ι (Additive ℤˣ)`).
 
 ## Main results
 
-* `SuperTensorProduct R 𝒜 ℬ`: for families of submodules of `A` and `B` that form a graded algebra,
+* `GradedTensorProduct R 𝒜 ℬ`: for families of submodules of `A` and `B` that form a graded algebra,
   this is a type alias for `A ⊗'[R] B` with the appropriate multiplication.
-* `SuperTensorProduct.instAlgebra`: the ring structure induced by this multiplication.
-* `SuperTensorProduct.liftEquiv`: a universal property for graded tensor products
+* `GradedTensorProduct.instAlgebra`: the ring structure induced by this multiplication.
+* `GradedTensorProduct.liftEquiv`: a universal property for graded tensor products
 
 ## Notation
 
-`𝒜 ⊗'[R] ℬ` is notation for `SuperTensorProduct R 𝒜 ℬ`.
+`𝒜 ⊗'[R] ℬ` is notation for `GradedTensorProduct R 𝒜 ℬ`.
 
 ## References
 
@@ -39,13 +40,13 @@ Show that the tensor product of graded algebras is itself a graded algebra.
 
 suppress_compilation
 
-local notation "ℤ₂" => ZMod 2
 open scoped TensorProduct
 
-variable {R A B : Type*}
+variable {R ι A B : Type*}
 
+variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
 variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable (𝒜 : ZMod 2 → Submodule R A) (ℬ : ZMod 2 → Submodule R B)
+variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
 
 open DirectSum
@@ -56,18 +57,18 @@ variable (R) in
 
 This has notation `𝒜 ⊗'[R] ℬ`. -/
 @[nolint unusedArguments]
-def SuperTensorProduct
-    (𝒜 : ZMod 2 → Submodule R A) (ℬ : ZMod 2 → Submodule R B)
+def GradedTensorProduct
+    (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
     [GradedAlgebra 𝒜] [GradedAlgebra ℬ] :
     Type _ :=
   A ⊗[R] B
 
-namespace SuperTensorProduct
+namespace GradedTensorProduct
 
 open TensorProduct
 
-@[inherit_doc SuperTensorProduct]
-scoped[TensorProduct] notation:100 𝒜 " ⊗'[" R "] " ℬ:100 => SuperTensorProduct R 𝒜 ℬ
+@[inherit_doc GradedTensorProduct]
+scoped[TensorProduct] notation:100 𝒜 " ⊗'[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
 
 instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ⊗'[R] ℬ) :=
   Algebra.TensorProduct.instAddCommGroupWithOne
@@ -140,9 +141,9 @@ theorem mulHom_apply (x y : 𝒜 ⊗'[R] ℬ) :
       = (auxEquiv R 𝒜 ℬ).symm (gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y)) :=
   rfl
 
-/-- The multipication on the super tensor product.
+/-- The multipication on the graded tensor product.
 
-See `SuperTensorProduct.coe_mul_coe` for a characterization on pure tensors. -/
+See `GradedTensorProduct.coe_mul_coe` for a characterization on pure tensors. -/
 instance : Mul (𝒜 ⊗'[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ⊗'[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
@@ -171,7 +172,7 @@ instance instRing : Ring (𝒜 ⊗'[R] ℬ) where
 
 set_option maxHeartbeats 800000 in
 /-- The characterization of this multiplication on partially homogenous elements. -/
-theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
+theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
@@ -189,23 +190,23 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) 
   simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
 
 /-- A special case for when `b₁` has grade 0. -/
-theorem tmul_zero_coe_mul_coe_tmul {i₂ : ℤ₂} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :
+theorem tmul_zero_coe_mul_coe_tmul {i₂ : ι} (a₁ : A) (b₁ : ℬ 0) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
       ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
-  rw [tmul_coe_mul_coe_tmul, zero_mul, z₂pow_zero, one_smul]
+  rw [tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul]
 
 /-- A special case for when `a₂` has grade 0. -/
-theorem tmul_coe_mul_zero_coe_tmul {j₁ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 0) (b₂ : B) :
+theorem tmul_coe_mul_zero_coe_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 0) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (b₁ : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) =
       ((a₁ * a₂ : A) ⊗ₜ' (b₁ * b₂ : B)) := by
-  rw [tmul_coe_mul_coe_tmul, mul_zero, z₂pow_zero, one_smul]
+  rw [tmul_coe_mul_coe_tmul, mul_zero, uzpow_zero, one_smul]
 
-theorem tmul_one_mul_coe_tmul {i₂ : ℤ₂} (a₁ : A) (a₂ : 𝒜 i₂) (b₂ : B) :
+theorem tmul_one_mul_coe_tmul {i₂ : ι} (a₁ : A) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (1 : B) * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) = (a₁ * a₂ : A) ⊗ₜ' (b₂ : B) := by
   convert tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) a₂ b₂
   rw [SetLike.coe_gOne, one_mul]
 
-theorem tmul_coe_mul_one_tmul {j₁ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (b₂ : B) :
+theorem tmul_coe_mul_one_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (b₁ : B) * (1 : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ) = (a₁ : A) ⊗ₜ' (b₁ * b₂ : B) := by
   convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
   rw [SetLike.coe_gOne, mul_one]
@@ -231,7 +232,7 @@ def includeLeftRingHom : A →+* 𝒜 ⊗'[R] ℬ where
     simp_rw [tmul, sum_tmul, map_sum, Finset.mul_sum]
     congr
     ext i
-    rw [←SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, z₂pow_zero, one_smul,
+    rw [←SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul,
       SetLike.coe_gOne, one_mul]
 
 instance instAlgebra : Algebra R (𝒜 ⊗'[R] ℬ) where
@@ -247,12 +248,12 @@ instance instAlgebra : Algebra R (𝒜 ⊗'[R] ℬ) where
 
 lemma algebraMap_def (r : R) : algebraMap R (𝒜 ⊗'[R] ℬ) r = algebraMap R A r ⊗ₜ'[R] 1 := rfl
 
-theorem tmul_algebraMap_mul_coe_tmul {i₂ : ℤ₂} (a₁ : A) (r : R) (a₂ : 𝒜 i₂) (b₂ : B) :
+theorem tmul_algebraMap_mul_coe_tmul {i₂ : ι} (a₁ : A) (r : R) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ⊗ₜ'[R] algebraMap R B r * (a₂ : A) ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ)
       = (a₁ * a₂ : A) ⊗ₜ' (algebraMap R B r * b₂ : B) :=
   tmul_zero_coe_mul_coe_tmul 𝒜 ℬ a₁ (GAlgebra.toFun (A := (ℬ ·)) r) a₂ b₂
 
-theorem tmul_coe_mul_algebraMap_tmul {j₁ : ℤ₂} (a₁ : A) (b₁ : ℬ j₁) (r : R) (b₂ : B) :
+theorem tmul_coe_mul_algebraMap_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (r : R) (b₂ : B) :
     (a₁ ⊗ₜ'[R] (b₁ : B) * algebraMap R A r ⊗ₜ'[R] b₂ : 𝒜 ⊗'[R] ℬ)
       = (a₁ * algebraMap R A r : A) ⊗ₜ' (b₁ * b₂ : B) :=
   tmul_coe_mul_zero_coe_tmul 𝒜 ℬ a₁ b₁ (GAlgebra.toFun (A := (𝒜 ·)) r) b₂
@@ -361,11 +362,11 @@ def comm : (𝒜 ⊗'[R] ℬ) ≃ₐ[R] (ℬ ⊗'[R] 𝒜) :=
     auxEquiv R ℬ 𝒜 (comm 𝒜 ℬ x) = gradedComm R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
 
-@[simp] lemma comm_coe_tmul_coe {i j : ℤ₂} (a : 𝒜 i) (b : ℬ j) :
+@[simp] lemma comm_coe_tmul_coe {i j : ι} (a : 𝒜 i) (b : ℬ j) :
     comm 𝒜 ℬ (a ⊗ₜ' b) = (-1 : ℤˣ)^(j * i) • (b ⊗ₜ' a : ℬ ⊗'[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ←lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), zsmul_eq_smul_cast R, map_smul, auxEquiv_tmul, decompose_coe,
       lof_eq_of]
 
-end SuperTensorProduct
+end GradedTensorProduct
