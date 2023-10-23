@@ -161,10 +161,8 @@ inductive IsPathA : (p : Path F) → {n : ℕ} → (x : CofixA F n) → Prop
 
 def IsPathA.destCons {n a b ps} (x : CofixA F (n + 1)) (hx : IsPathA (⟨a, b⟩ :: ps) x) :
     { o : F.B a → CofixA F n // IsPathA ps (o b) } :=
-  match x with
-  | CofixA.intro a₂ o =>
-    have ha₂ : a₂ = a := by cases hx; rfl
-    ⟨cast (congr_arg (fun a₃ => F.B a₃ → CofixA F n) ha₂) o, by cases hx; assumption⟩
+  have ha₂ : head' x = a := by cases hx; rfl
+  ⟨cast (congr_arg (fun a₂ => F.B a₂ → CofixA F n) ha₂) (children' x), by cases hx; assumption⟩
 
 /-- follow a path through a value of `CofixA F (n + length p)` and return the subtree
 found at the end of the path. -/
