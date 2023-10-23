@@ -592,7 +592,7 @@ theorem ground_indep_iff_base : M.Indep M.E ↔ M.Base M.E :=
   ⟨fun h ↦ h.base_of_maximal (fun _ hJ hEJ ↦ hEJ.antisymm hJ.subset_ground), Base.indep⟩
 
 theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.Base B') :
-  ∃ e ∈ B' \ I, M.Indep (insert e I) :=
+    ∃ e ∈ B' \ I, M.Indep (insert e I) :=
 (hB.indep.subset hIB.subset).exists_insert_of_not_base
     (fun hI ↦ hIB.ne (hI.eq_of_subset_base hB hIB.subset)) hB'
 
@@ -604,7 +604,7 @@ theorem eq_of_indep_iff_indep_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M�
   eq_of_base_iff_base_forall hE (fun B _ ↦ by simp_rw [base_iff_maximal_indep, h'])
 
 theorem eq_iff_indep_iff_indep_forall {M₁ M₂ : Matroid α} :
-  M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
+    M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
 ⟨fun h ↦ by (subst h; simp), fun h ↦ eq_of_indep_iff_indep_forall h.1 h.2⟩
 
 /-- A `Finitary` matroid is one where a set is independent if and only if it all
@@ -900,7 +900,7 @@ theorem Indep.exists_base_subset_union_base (hI : M.Indep I) (hB : M.Base B) :
   exact ⟨B', hB.base_of_basis_supset (subset_union_right _ _) hB', hIB', hB'.subset⟩
 
 theorem Basis.inter_eq_of_subset_indep (hIX : M.Basis I X) (hIJ : I ⊆ J) (hJ : M.Indep J) :
-  J ∩ X = I :=
+    J ∩ X = I :=
 (subset_inter hIJ hIX.subset).antisymm'
   (fun _ he ↦ hIX.mem_of_insert_indep he.2 (hJ.subset (insert_subset he.1 hIJ)))
 
