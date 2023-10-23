@@ -37,7 +37,6 @@ open Classical
 theorem prod_pow_eq_pow_sum {x : β} {f : α → ℕ} :
     ∀ {s : Finset α}, ∏ i in s, x ^ f i = x ^ ∑ x in s, f x := by
   apply Finset.induction
-  · simp
   · intro a s has H
     rw [Finset.prod_insert has, Finset.sum_insert has, pow_add, H]
 #align finset.prod_pow_eq_pow_sum Finset.prod_pow_eq_pow_sum
