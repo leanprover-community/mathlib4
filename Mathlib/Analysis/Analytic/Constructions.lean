@@ -149,9 +149,8 @@ pedantic to allow towers of field extensions.
 
 TODO: can we replace `𝕜'` with a "normed module" in such a way that `analyticAt_mul` is a special
 case of this? -/
-lemma analyticAt_smul
-    {𝕝 : Type*} [NormedField 𝕝] [NormedAlgebra 𝕜 𝕝] [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
-    (z : 𝕝 × E) : AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
+lemma analyticAt_smul [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] (z : 𝕝 × E) :
+    AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
   (ContinuousLinearMap.lsmul 𝕜 𝕝).analyticAt_bilinear z
 
 /-- Multiplication in a normed algebra over `𝕜` is -/
@@ -161,8 +160,7 @@ lemma analyticAt_mul (z : A × A) : AnalyticAt 𝕜 (fun x : A × A ↦ x.1 * x.
 namespace AnalyticAt
 
 /-- Scalar multiplication of one analytic function by another. -/
-lemma smul {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedSpace 𝕝 F] [NormedAlgebra 𝕜 𝕝]
-    [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
+lemma smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f • g) z :=
   @AnalyticAt.comp 𝕜 E (𝕝 × F) F _ _ _ _ _ _ _
