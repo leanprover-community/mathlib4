@@ -1713,8 +1713,6 @@ end
 
 section
 
-open scoped Topology
-
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 /-- A compact set is covered by finitely many left multiplicative translates of a set
@@ -1870,26 +1868,6 @@ instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N
   rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
   exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
     s_comp.image C⟩
-
-end
-
-section
-
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [WeaklyLocallyCompactSpace G]
-
-@[to_additive]
-lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
-  rcases exists_isCompact_isClosed_nhds_one G with ⟨K, K_comp, K_closed, K_mem⟩
-  apply K_comp.of_isClosed_subset isClosed_closure
-  rw [← IsClosed.closure_eq K_closed]
-  apply closure_mono
-  simpa using mem_of_mem_nhds K_mem
-
-@[to_additive]
-protected lemma IsCompact.closure_of_group
-    {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
-  rw [← hK.smul_set_closure_one_eq_closure, ← image2_smul, ← image_uncurry_prod]
-  exact IsCompact.image (hK.prod isCompact_closure_one) continuous_smul
 
 end
 
