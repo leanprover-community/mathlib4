@@ -81,7 +81,7 @@ theorem volume_ball (a : ℂ) (r : ℝ) :
 
 @[simp]
 theorem volume_closedBall (a : ℂ) (r : ℝ) :
-     volume (Metric.closedBall a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
+    volume (Metric.closedBall a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
   rw [MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
 
 end Complex
