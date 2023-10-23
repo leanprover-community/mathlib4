@@ -27,8 +27,8 @@ identity are contained in "Mathlib.RingTheory.PowerSeries.WellKnown".
 
 - `PowerSeries.fDerivative_mul`  : the product rule (Leibniz' rule) for differentiating.
 - `PowerSeries.fDerivative_comp` : the chain rule for differentiating power series.
-- `PowerSeries.fDerivative.ext`  : two power series are equal if they have the same derivatives and the same
-constant terms.
+- `PowerSeries.fDerivative.ext`  : two power series are equal if they have the same derivatives
+                                    and the same constant terms.
 
 ## Notation
 
