@@ -300,7 +300,9 @@ variable [AddCommGroup F] [AddCommGroup G]
 
 variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module 𝕜 F] [Module 𝕜 G]
 
-instance : IsScalarTower ℝ≥0 ℝ≥0 ℝ := IsScalarTower.left _
+-- Porting note: even though this instance is found immediately by typeclass search,
+-- it seems to be needed below!?
+noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
