@@ -25,8 +25,8 @@ def FermatLastTheoremWith (α : Type*) [Semiring α] (n : ℕ) : Prop :=
 def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
 
 /-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial integer solution
-when `n ≥ 3`. -/
-def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
+when `n > 2`. -/
+def FermatLastTheorem : Prop := ∀ n > 2, FermatLastTheoremFor n
 
 lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
   fun _ _ _ _ _ _ ↦ by norm_num
