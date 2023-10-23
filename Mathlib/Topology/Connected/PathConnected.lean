@@ -961,6 +961,7 @@ theorem isPathConnected_iff :
     fun ⟨⟨b, b_in⟩, h⟩ => ⟨b, b_in, fun x_in => h _ b_in _ x_in⟩⟩
 #align is_path_connected_iff isPathConnected_iff
 
+/-- If `f` is continuous on `F` and `F` is path-connected, so is `f(F)`. -/
 theorem IsPathConnected.image' {Y : Type*} [TopologicalSpace Y] (hF : IsPathConnected F)
     {f : X → Y} (hf : ContinuousOn f F) : IsPathConnected (f '' F) := by
   rcases hF with ⟨x, x_in, hx⟩
@@ -969,9 +970,24 @@ theorem IsPathConnected.image' {Y : Type*} [TopologicalSpace Y] (hF : IsPathConn
   refine ⟨(hx y_in).somePath.map' ?_, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
   exact hf.mono (range_subset_iff.2 (hx y_in).somePath_mem)
 
+/-- If `f` is continuous and `F` is path-connected, so is `f(F)`. -/
 theorem IsPathConnected.image {Y : Type*} [TopologicalSpace Y] (hF : IsPathConnected F) {f : X → Y}
     (hf : Continuous f) : IsPathConnected (f '' F) := hF.image' hf.continuousOn
 #align is_path_connected.image IsPathConnected.image
+
+/-- If `h : X → Y` is a homeomorphism, `h(s)` is path-connected iff `s` is. -/
+-- this is not in `Homeomorph.lean` to avoid import cycles; this file imports Homeomorph for XXX
+@[simp]
+theorem Homeomorph.isPathConnected_image {s : Set X} (h : X ≃ₜ Y) :
+    IsPathConnected (h '' s) ↔ IsPathConnected s :=
+  ⟨fun hs ↦ by simpa only [image_symm, preimage_image] using hs.image h.symm.continuous,
+   fun hs ↦ hs.image h.continuous⟩
+
+/-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is path-connected iff `s` is. -/
+@[simp]
+theorem Homeomorph.isPathConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
+    IsPathConnected (h ⁻¹' s) ↔ IsPathConnected s := by
+  rw [← Homeomorph.image_symm]; exact h.symm.isPathConnected_image
 
 theorem IsPathConnected.mem_pathComponent (h : IsPathConnected F) (x_in : x ∈ F) (y_in : y ∈ F) :
     y ∈ pathComponent x :=
