@@ -309,7 +309,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
       simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
       simp_rw [mul_assoc (f a₁), ←mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
-        smul_mul_assoc, smul_smul, z₂pow_mul_self, one_smul])
+        smul_mul_assoc, smul_smul, Int.units_mul_self, one_smul])
 
 @[simp]
 theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
@@ -328,7 +328,7 @@ def liftEquiv :
   invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
     dsimp
     rw [←F.map_mul, ←F.map_mul, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
-      tmul_one_mul_one_tmul, smul_smul, z₂pow_mul_self, one_smul]⟩
+      tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
   left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
