@@ -270,17 +270,19 @@ instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :
 @[simp]
 theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
   rfl
+#align of_mul_pow ofMul_pow
 
 @[simp]
 theorem toMul_nsmul [Monoid α] (n : ℕ) (a : Additive α) : toMul (n • a) = toMul a ^ n :=
   rfl
 
 @[simp]
-theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
+theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
   rfl
+#align of_add_nsmul ofAdd_nsmul
 
 @[simp]
-theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
+theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
   rfl
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
@@ -382,17 +384,19 @@ instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplic
 @[simp]
 theorem ofMul_zpow [DivInvMonoid α] (z : ℤ) (a : α) : ofMul (a ^ z) = z • ofMul a :=
   rfl
+#align of_mul_zpow ofMul_zpow
 
 @[simp]
 theorem toMul_zsmul [DivInvMonoid α] (z : ℤ) (a : Additive α) : toMul (z • a) = toMul a ^ z :=
   rfl
 
 @[simp]
-theorem toAdd_zpow [SubNegMonoid α] (a : Multiplicative α) (z : ℤ) : toAdd (a ^ z) = z • toAdd a :=
+theorem ofAdd_zsmul [SubNegMonoid α] (z : ℤ) (a : α) : ofAdd (z • a) = ofAdd a ^ z :=
   rfl
+#align of_add_zsmul ofAdd_zsmul
 
 @[simp]
-theorem ofAdd_zsmul [SubNegMonoid α] (z : ℤ) (a : α) : ofAdd (z • a) = ofAdd a ^ z :=
+theorem toAdd_zpow [SubNegMonoid α] (a : Multiplicative α) (z : ℤ) : toAdd (a ^ z) = z • toAdd a :=
   rfl
 
 instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=
