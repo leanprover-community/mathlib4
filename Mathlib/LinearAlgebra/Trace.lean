@@ -209,7 +209,7 @@ theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
-  ext f m; simp
+  ext f m; simp [trace_eq_contract_apply R (Module.Dual R M)]
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
 theorem trace_prodMap :
