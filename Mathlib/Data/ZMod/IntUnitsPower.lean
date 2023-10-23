@@ -22,10 +22,33 @@ See also the related `negOnePow`.
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
+variable {R} [Semiring R] [Module R (Additive ℤˣ)]
+
+instance : SMul (ZMod 2) (Additive ℤˣ) where
+  smul z au := .ofMul <| Additive.toMul au ^ z.val
+
+lemma ZMod.smul_units_def (z : ZMod 2) (au : Additive ℤˣ) :
+    z • au = z.val • au := rfl
+
+lemma ZMod.natCast_smul_units (n : ℕ) (au : Additive ℤˣ) : (n : ZMod 2) • au = n • au :=
+  (Int.units_pow_eq_pow_mod_two au n).symm
+
+instance : Module (ZMod 2) (Additive ℤˣ) where
+  smul z au := .ofMul <| Additive.toMul au ^ z.val
+  one_smul au := Additive.toMul.injective <| pow_one _
+  mul_smul z₁ z₂ au := Additive.toMul.injective <| by
+    dsimp only [ZMod.smul_units_def]
+    convert pow_mul (Additive.toMul au) z₂.val z₁.val using 1
+    rw [←z₂pow_natCast, Nat.cast_mul, ZMod.nat_cast_zmod_val, ZMod.nat_cast_zmod_val]
+  smul_zero := _
+  smul_add := _
+  add_smul := _
+  zero_smul := _
+
 /-- There is a canonical power operation by `ℤˣ` on `ZMod 2`.
 
 In lemma names, this operations is called `z₂pow` to match `zpow`. -/
-instance : Pow ℤˣ (ZMod 2) where
+instance : Pow ℤˣ R where
   pow s z₂ := s ^ z₂.val
 
 lemma z₂pow_def (s : ℤˣ) (x : ZMod 2) : s ^ x = s ^ x.val := rfl
