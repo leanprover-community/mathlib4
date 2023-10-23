@@ -216,7 +216,7 @@ I think it would be a bad idea to optimize the run time at the expense of fragil
 -/
 def penalty (n : SearchNode) : Nat := n.lastIdx.log2 + n.ppGoal.length.log2
 
-/-- The priority function for search is Levenshtein distance. -/
+/-- The priority function for search is Levenshtein distance plus a penalty. -/
 abbrev prio (n : SearchNode) : Thunk Nat :=
   (Thunk.pure n.penalty) + (Thunk.mk fun _ => levenshtein editCost n.lhs n.rhs)
 /-- We can obtain lower bounds, and improve them, for the Levenshtein distance. -/
