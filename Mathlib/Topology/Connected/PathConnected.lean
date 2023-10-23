@@ -976,7 +976,7 @@ theorem IsPathConnected.image {Y : Type*} [TopologicalSpace Y] (hF : IsPathConne
 #align is_path_connected.image IsPathConnected.image
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is path-connected iff `s` is. -/
--- this is not in `Homeomorph.lean` to avoid import cycles; this file imports Homeomorph for XXX
+-- this is not in `Homeomorph.lean` to avoid import cycles
 @[simp]
 theorem Homeomorph.isPathConnected_image {s : Set X} (h : X ≃ₜ Y) :
     IsPathConnected (h '' s) ↔ IsPathConnected s :=
