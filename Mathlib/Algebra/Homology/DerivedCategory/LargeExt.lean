@@ -116,11 +116,18 @@ lemma γhmul_hom {p q n : ℕ} (α : LargeExt Y Z p) (β : LargeExt X Y q) (hpq 
   (α •[hpq] β).hom =
     ((p * q : ℕ) : ℤ).negOnePow • β.hom •[by rw [← hpq, Nat.cast_add, add_comm]] α.hom := rfl
 
+lemma γhmul_eq {p q n : ℕ} (α : LargeExt Y Z p) (β : LargeExt X Y q) (hpq : p + q = n) :
+  (α •[hpq] β) = mk (((p * q : ℕ) : ℤ).negOnePow • β.hom •[show q + (p : ℤ) = n by
+      rw [← hpq, Nat.cast_add, add_comm]] α.hom) := rfl
+
 noncomputable example {p q n : ℕ} (α : LargeExt Y Z p) (β : LargeExt X Y q) (hpq : p + q = n) :
     LargeExt X Z n := α •[hpq] β
 
 noncomputable example (f : LargeExt Y Z n) (g : X ⟶ Y) : LargeExt X Z n :=
   f •[add_zero n] (LargeExt.ofHom g)
+
+lemma mk_zsmul (a : ℤ) (f : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n) :
+    mk (a • f) = a • mk f := rfl
 
 @[simp]
 lemma γhmul_add {p q n : ℕ} (α : LargeExt Y Z p) (β₁ β₂ : LargeExt X Y q) (hpq : p + q = n) :

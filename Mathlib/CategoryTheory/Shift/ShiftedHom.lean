@@ -176,6 +176,11 @@ lemma map_add {X Y : C} {m : M} (x y : ShiftedHom M X Y m) (F : C ⥤ D) [F.Comm
     [Preadditive C] [Preadditive D] [F.Additive] : (x + y).map F = x.map F + y.map F := by
   rw [map_eq, F.map_add, add_comp, map_eq, map_eq]
 
+def map_zsmul (a : ℤ) {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M]
+    [Preadditive C] [Preadditive D] [F.Additive] :
+    (a • x).map F = a • (x.map F) := by
+  rw [map_eq, map_eq, F.map_zsmul, Preadditive.zsmul_comp]
+
 lemma map_comp {X Y Z : C} {p q r : M} (h : p + q = r)
     (α : ShiftedHom M X Y p) (β : ShiftedHom M Y Z q) (F : C ⥤ D) [F.CommShift M] :
     (α •[h] β).map F = (α.map F) •[h] (β.map F) := by
@@ -193,6 +198,13 @@ lemma map'_eq {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommSh
     {X' Y' : D} (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') :
     x.map' F e₁ e₂ = (mk₀ e₁.inv (0 : M) rfl) •[zero_add m]
       (x.map F •[add_zero m] (mk₀ e₂.hom (0 : M) rfl)) := rfl
+
+lemma map'_zsmul (a : ℤ) {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M]
+    [Preadditive C] [Preadditive D] [F.Additive]
+    [∀ (a : M), (shiftFunctor D a).Additive]
+    {X' Y' : D} (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') :
+    (a • x).map' F e₁ e₂ = a • (x.map' F e₁ e₂) := by
+  rw [map'_eq, map'_eq, map_zsmul, zsmul_γhmul, γhmul_zsmul]
 
 lemma map'_comp {X Y Z : C} {p q r : M} (h : p + q = r)
     (α : ShiftedHom M X Y p) (β : ShiftedHom M Y Z q) (F : C ⥤ D) [F.CommShift M]

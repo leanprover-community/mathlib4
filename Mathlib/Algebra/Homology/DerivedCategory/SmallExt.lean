@@ -115,11 +115,31 @@ noncomputable instance : (uniq.{w, w'} C).functor.CommShift ℤ :=
   Functor.CommShift.localized' (uniq.{w, w'} C).functor DerivedCategory.Q
     (HomologicalComplex.qis C (ComplexShape.up ℤ)) ℤ DerivedCategory.Q
 
-noncomputable def QCompUniqIso : DerivedCategory.Q ⋙ (uniq.{w, w'} C).functor ≅ DerivedCategory.Q :=
+noncomputable def QCompUniqFunctorIso : DerivedCategory.Q ⋙ (uniq.{w, w'} C).functor ≅ DerivedCategory.Q :=
   Localization.Lifting.iso _ (HomologicalComplex.qis C (ComplexShape.up ℤ)) _ _
 
-instance : NatTrans.CommShift (QCompUniqIso.{w, w'} C).hom ℤ := by
+instance : NatTrans.CommShift (QCompUniqFunctorIso.{w, w'} C).hom ℤ := by
   apply Functor.CommShift.localized'_compatibility
+
+instance shiftFunctorAdditive (n : ℤ) : (shiftFunctor (DerivedCategory.{w} C) n).Additive := inferInstance
+
+-- this is buggy...
+instance [∀ (n : ℤ), (shiftFunctor (DerivedCategory.{w} C) n).Additive] :
+    (uniq.{w, w'} C).functor.IsTriangulated where
+  map_distinguished T hT := by
+    rw [mem_distTriang_iff] at hT ⊢
+    obtain ⟨K, L, f, ⟨e⟩⟩ := hT
+    refine' ⟨_, _, f, ⟨(uniq.{w, w'} C).functor.mapTriangle.mapIso e ≪≫
+      (Functor.mapTriangleCompIso _ _).symm.app _ ≪≫
+      (Functor.mapTriangleIso (QCompUniqFunctorIso.{w, w'} C)).app _⟩⟩
+
+noncomputable def singleFunctorCompUniqFunctor (n : ℤ) :
+    singleFunctor.{w} C n ⋙ (uniq.{w, w'} C).functor ≅ singleFunctor.{w'} C n :=
+  isoWhiskerRight ((SingleFunctors.evaluation C (DerivedCategory.{w} C) n).mapIso
+      (singleFunctorsPostCompQIso.{w} C)) (uniq.{w, w'} C).functor ≪≫
+    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (QCompUniqFunctorIso.{w, w'} C) ≪≫
+    ((SingleFunctors.evaluation C (DerivedCategory.{w'} C) n).mapIso
+      (singleFunctorsPostCompQIso.{w'} C)).symm
 
 end DerivedCategory
 
@@ -198,20 +218,19 @@ noncomputable instance [HasSmallExt.{w} C] (X Y : C) (n : ℕ) :
 
 abbrev newExt [HasSmallExt.{v} C] (X Y : C) (n : ℕ) : Type v := SmallExt.{v} X Y n
 
-noncomputable def largeExtEquivLargeExt [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
+noncomputable def largeExtAddEquivLargeExt [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
     (X Y : C) (n : ℕ) :
     LargeExt.{w} X Y n ≃+ LargeExt.{w'} X Y n :=
-  ((largeExtAddEquivHom.{w} X Y n).trans
-    ((MorphismProperty.localizationsAddEquivHom
-      (HomologicalComplex.qis C (ComplexShape.up ℤ)) _ _ _ _).trans
-    ((largeExtAddEquivHom.{w'} X Y n)).symm))
+  ShiftedHom.map'AddEquiv (DerivedCategory.uniq.{w, w'} C).functor
+    ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app X)
+    ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app Y) (n : ℤ)
 
-noncomputable def smallExtEquivLargeExt [HasSmallExt.{w} C] [HasDerivedCategory.{w'} C]
+noncomputable def smallExtAddEquivLargeExt [HasSmallExt.{w} C] [HasDerivedCategory.{w'} C]
     (X Y : C) (n : ℕ) :
-    SmallExt.{w} X Y n ≃+ LargeExt.{w'} X Y n := by
+    SmallExt.{w} X Y n ≃+ LargeExt.{w'} X Y n :=
   letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
-  refine' (addEquivShrink (LargeExt.{max u v} X Y n)).symm.trans
-    (largeExtEquivLargeExt.{max u v, w'} X Y n)
+  (addEquivShrink (LargeExt.{max u v} X Y n)).symm.trans
+    (largeExtAddEquivLargeExt.{max u v, w'} X Y n)
 
 variable [HasSmallExt.{w} C]
 
@@ -230,30 +249,72 @@ lemma SmallExt.γhmul_eq {X Y Z : C} {p q r : ℕ}
       (((equivShrink (LargeExt Y Z p)).symm α) •[h]
         ((equivShrink (LargeExt X Y q)).symm β)) := rfl
 
-/-lemma largeExtEquivLargeExt_γhmul [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
+lemma largeExtAddEquivLargeExt_γhmul [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
     {X Y Z : C} {p q r : ℕ}
     (α : LargeExt.{w} Y Z p) (β : LargeExt.{w} X Y q) (h : p + q = r) :
-    largeExtEquivLargeExt.{w, w'} X Z r (α •[h] β) =
-      largeExtEquivLargeExt.{w, w'} Y Z p α •[h] largeExtEquivLargeExt.{w, w'} X Y q β  :=
-  sorry
+    largeExtAddEquivLargeExt.{w, w'} X Z r (α •[h] β) =
+      largeExtAddEquivLargeExt.{w, w'} Y Z p α •[h] largeExtAddEquivLargeExt.{w, w'} X Y q β  := by
+  rw [LargeExt.ext_iff]
+  dsimp only [largeExtAddEquivLargeExt, ShiftedHom.map'AddEquiv, FunLike.coe, EquivLike.coe,
+    Equiv.toFun, ShiftedHom.map'Equiv]
+  rw [LargeExt.γhmul_hom]
+  erw [← ShiftedHom.map'_comp]
+  rw [LargeExt.γhmul_eq, LargeExt.mk_zsmul, ShiftedHom.map'_zsmul]
+  rfl
 
-lemma smallExtEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
+lemma smallExtAddEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
     (α : SmallExt.{w} Y Z p) (β : SmallExt.{w} X Y q) (h : p + q = r) :
-    smallExtEquivLargeExt X Z r (α •[h] β) =
-      smallExtEquivLargeExt Y Z p α •[h] smallExtEquivLargeExt X Y q β  := by
+    smallExtAddEquivLargeExt X Z r (α •[h] β) =
+      smallExtAddEquivLargeExt Y Z p α •[h] smallExtAddEquivLargeExt X Y q β  := by
   letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
-  dsimp [smallExtEquivLargeExt, addEquivShrink, AddEquiv.trans]
+  dsimp [smallExtAddEquivLargeExt, addEquivShrink, AddEquiv.trans]
   dsimp only [FunLike.coe, EquivLike.coe]
   dsimp
-  rw [SmallExt.γhmul_eq, Equiv.symm_apply_apply, largeExtEquivLargeExt_γhmul]
+  rw [SmallExt.γhmul_eq, Equiv.symm_apply_apply, largeExtAddEquivLargeExt_γhmul]
 
-lemma smallExtEquivLargeExt_symm_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
+lemma smallExtAddEquivLargeExt_symm_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
     (α : LargeExt.{w'} Y Z p) (β : LargeExt.{w'} X Y q) (h : p + q = r) :
-    (smallExtEquivLargeExt X Z r).symm (α •[h] β) =
-      (smallExtEquivLargeExt Y Z p).symm α •[h] (smallExtEquivLargeExt X Y q).symm β := by
-  apply (smallExtEquivLargeExt X Z r).injective
-  simp [smallExtEquivLargeExt_γhmul]-/
+    (smallExtAddEquivLargeExt X Z r).symm (α •[h] β) =
+      (smallExtAddEquivLargeExt Y Z p).symm α •[h] (smallExtAddEquivLargeExt X Y q).symm β := by
+  apply (smallExtAddEquivLargeExt X Z r).injective
+  simp [smallExtAddEquivLargeExt_γhmul]
 
 end Abelian
+
+namespace ShortComplex
+
+open CategoryTheory Abelian
+
+namespace ShortExact
+
+variable {C : Type u} [Category.{v} C] [Abelian C] {S : ShortComplex C} (hS : S.ShortExact)
+
+/-lemma largeExtAddEquivLargeExt_largeExtClass
+    [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C] :
+    largeExtAddEquivLargeExt.{w, w'} _ _ _ (largeExtClass.{w} hS) = largeExtClass.{w'} hS := by
+  sorry
+
+noncomputable def smallExtClass [HasSmallExt.{w} C] : SmallExt.{w} S.X₃ S.X₁ 1 :=
+  letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+  (smallExtAddEquivLargeExt.{w, max u v} S.X₃ S.X₁ 1).symm hS.largeExtClass
+
+lemma smallExtAddEquivLargeExt_smallExtClass [HasDerivedCategory.{w'} C] [HasSmallExt.{w} C] :
+    smallExtAddEquivLargeExt.{w, w'} _ _ _ (smallExtClass.{w} hS) = largeExtClass.{w'} hS := by
+  letI : HasDerivedCategory C := MorphismProperty.HasLocalization.standard _
+  have h : smallExtAddEquivLargeExt.{w, w'} _ _ _ (smallExtClass.{w} hS) =
+      (largeExtAddEquivLargeExt.{max u v, w'} S.X₃ S.X₁ 1)
+      ((largeExtAddEquivLargeExt.{max u v, max u v} S.X₃ S.X₁ 1).symm
+      (largeExtClass.{max u v} hS)) := by
+    dsimp only [smallExtAddEquivLargeExt, smallExtClass, AddEquiv.trans, AddEquiv.symm,
+      FunLike.coe, EquivLike.coe, Equiv.toFun, addEquivShrink, Equiv.symm, Equiv.trans,
+      Function.comp]
+    simp only [AddEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm,
+      Equiv.toFun_as_coe_apply, Equiv.symm_apply_apply, AddEquiv.coe_toEquiv]
+  rw [h, ← largeExtAddEquivLargeExt_largeExtClass.{max u v, max u v} hS,
+    AddEquiv.symm_apply_apply, largeExtAddEquivLargeExt_largeExtClass.{max u v, w'} hS]-/
+
+end ShortExact
+
+end ShortComplex
 
 end CategoryTheory
