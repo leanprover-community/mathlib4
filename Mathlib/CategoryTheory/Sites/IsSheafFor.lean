@@ -708,6 +708,14 @@ def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
   ∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
     P.map gi.op (x i) = P.map gj.op (x j)
 
+theorem eq_of_eq (x : (i : I) → P.obj (op (X i))) (hx : Arrows.Compatible P π x) (i j : I)
+    (h_obj : X i = X j) (h_map : π i = eqToHom h_obj ≫ π j) :
+    x i = P.map (eqToHom h_obj).op (x j) := by
+  specialize hx i j (X i) (𝟙 _) (eqToHom h_obj)
+  simp only [id_comp, op_id, FunctorToTypes.map_id_apply, eqToHom_op] at hx
+  simp only [eqToHom_op]
+  exact hx h_map
+
 theorem isSheafFor_arrows_of_explicit : (∀ (x : (i : I) → P.obj (op (X i))),
     Arrows.Compatible P π x →
     ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
@@ -717,6 +725,43 @@ theorem isSheafFor_arrows_of_explicit : (∀ (x : (i : I) → P.obj (op (X i))),
   refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
   cases' hf with i
   exact hA i
+
+theorem isSheafFor_arrows_of_explicit_converse : (ofArrows X π).IsSheafFor P →
+    (∀ (x : (i : I) → P.obj (op (X i))),
+    Arrows.Compatible P π x →
+    ∃! t, ∀ i, P.map (π i).op t = x i) := by
+  intro h x hx
+  have : ∀ Y (f : Y ⟶ B) (_ : ofArrows X π f), ∃ (i : I) (h : X i = Y), f = eqToHom h.symm ≫ π i := by
+      intro Y f hf
+      cases' hf with i
+      exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
+  specialize h ?_
+  · intro Y f hf
+    exact P.map (eqToHom (this Y f hf).choose_spec.choose.symm).op (x _)
+  specialize h ?_
+  · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
+    cases' h₁ with i
+    cases' h₂ with j
+    dsimp
+    simp only [← FunctorToTypes.map_comp_apply]
+    apply hx
+    simp only [unop_op, Quiver.Hom.unop_op, eqToHom_op, eqToHom_unop, assoc]
+    rwa [← (this _ (π i) (ofArrows.mk _)).choose_spec.choose_spec,
+      ← (this _ (π j) (ofArrows.mk _)).choose_spec.choose_spec]
+  obtain ⟨t, ht₁, ht₂⟩ := h
+  refine ⟨t, ?_, ?_⟩
+  · intro i
+    specialize ht₁ (π i) (ofArrows.mk _)
+    rw [ht₁]
+    refine (eq_of_eq P π x hx _ _ _ ?_).symm
+    exact (this _ (π i) (ofArrows.mk _)).choose_spec.choose_spec
+  · intro y hy
+    apply ht₂
+    intro Y f hf
+    cases' hf with i
+    rw [hy i]
+    refine (eq_of_eq P π x hx _ _ _ ?_)
+    exact (this _ (π i) (ofArrows.mk _)).choose_spec.choose_spec
 
 variable [(ofArrows X π).hasPullbacks]
 
