@@ -760,7 +760,7 @@ theorem ext_of_Ioc_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
   exact h hab
 #align measure_theory.measure.ext_of_Ioc_finite MeasureTheory.Measure.ext_of_Ioc_finite
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
 theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMaxOrder α]
@@ -786,7 +786,7 @@ theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     exact h hlt
 #align measure_theory.measure.ext_of_Ico' MeasureTheory.Measure.ext_of_Ico'
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 open-closed intervals. -/
 theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMinOrder α]
@@ -796,7 +796,7 @@ theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   exacts [hμ hab, h hab]
 #align measure_theory.measure.ext_of_Ioc' MeasureTheory.Measure.ext_of_Ioc'
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
 theorem ext_of_Ico {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
     [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
@@ -805,7 +805,7 @@ theorem ext_of_Ico {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
   μ.ext_of_Ico' ν (fun _ _ _ => measure_Ico_lt_top.ne) h
 #align measure_theory.measure.ext_of_Ico MeasureTheory.Measure.ext_of_Ico
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 open-closed intervals. -/
 theorem ext_of_Ioc {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
     [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
@@ -821,7 +821,7 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [IsFiniteMeasure μ] (h : ∀ a, μ (Iic a) = ν (Iic a)) : μ = ν := by
   refine' ext_of_Ioc_finite μ ν _ fun a b hlt => _
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
-    have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (directed_of_sup fun _ _ => id)
+    have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
     simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
   rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic,
     measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic, h a, h b]

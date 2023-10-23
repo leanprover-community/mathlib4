@@ -3386,9 +3386,8 @@ theorem iSup_restrict_spanningSets [SigmaFinite μ] (hs : MeasurableSet s) :
     ⨆ i, μ.restrict (spanningSets μ i) s = μ s :=
   calc
     ⨆ i, μ.restrict (spanningSets μ i) s = μ.restrict (⋃ i, spanningSets μ i) s :=
-      (restrict_iUnion_apply_eq_iSup (directed_of_sup (monotone_spanningSets μ)) hs).symm
+      (restrict_iUnion_apply_eq_iSup (monotone_spanningSets μ).directed_le hs).symm
     _ = μ s := by rw [iUnion_spanningSets, restrict_univ]
-
 #align measure_theory.measure.supr_restrict_spanning_sets MeasureTheory.Measure.iSup_restrict_spanningSets
 
 /-- In a σ-finite space, any measurable set of measure `> r` contains a measurable subset of
