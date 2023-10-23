@@ -678,6 +678,7 @@ import Mathlib.Analysis.Convex.StoneSeparation
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Analysis.Convex.StrictConvexBetween
 import Mathlib.Analysis.Convex.StrictConvexSpace
+import Mathlib.Analysis.Convex.Strong
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convolution
@@ -1332,6 +1333,7 @@ import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Basic
+import Mathlib.Condensed.Equivalence
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
@@ -1408,6 +1410,7 @@ import Mathlib.Data.Fin.Interval
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Fin.Tuple.BubbleSortInduction
+import Mathlib.Data.Fin.Tuple.Curry
 import Mathlib.Data.Fin.Tuple.Monotone
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.Reflection
@@ -2395,6 +2398,7 @@ import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Function.OfArity
 import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
@@ -3220,6 +3224,7 @@ import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
@@ -3484,6 +3489,7 @@ import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Order.Category.AlexDisc
+import Mathlib.Topology.Order.Category.FrameAdjunction
 import Mathlib.Topology.Order.Hom.Basic
 import Mathlib.Topology.Order.Hom.Esakia
 import Mathlib.Topology.Order.Lattice
