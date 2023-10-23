@@ -1,10 +1,10 @@
 import Mathlib.Combinatorics.Optimization.ValuedCSP
 import Mathlib.Data.Rat.Order
+import Mathlib.Data.Bool.Basic
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Cases
-import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fin.Tuple.Curry
-
 
 
 def valuedCspTermOfUnary {D C : Type} [LinearOrderedAddCommMonoid C]
@@ -20,6 +20,7 @@ def valuedCspTermOfBinary {D C : Type} [LinearOrderedAddCommMonoid C]
 
 
 
+
 -- Example: minimize |x| + |y| where x and y are rational numbers
 
 private def absRat : (Fin 1 → ℚ) → ℚ := Function.OfArity.uncurry Abs.abs
@@ -31,7 +32,7 @@ private def exampleFiniteValuedCsp : ValuedCsp ℚ ℚ := {exampleAbs}
 private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCsp := rfl
 
 private def exampleFiniteValuedInstance : exampleFiniteValuedCsp.Instance (Fin 2) :=
-  [valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1]
+  Multiset.ofList [valuedCspTermOfUnary abs_in 0, valuedCspTermOfUnary abs_in 1]
 
 #eval exampleFiniteValuedInstance.evalSolution ![(3 : ℚ), (-2 : ℚ)]
 
@@ -40,10 +41,9 @@ example : exampleFiniteValuedInstance.OptimumSolution ![(0 : ℚ), (0 : ℚ)] :=
   unfold exampleFiniteValuedCsp
   intro s
   convert_to 0 ≤ exampleFiniteValuedInstance.evalSolution s
-  rw [ValuedCsp.Instance.evalSolution, exampleFiniteValuedInstance,
-      List.map_cons, List.map_cons, List.map_nil, List.sum_cons, List.sum_cons, List.sum_nil,
-      add_zero]
-  show 0 ≤ |s 0| + |s 1|
+  rw [ValuedCsp.Instance.evalSolution, exampleFiniteValuedInstance]
+  convert_to 0 ≤ |s 0| + |s 1|
+  · simp [valuedCspTermOfUnary, ValuedCsp.Term.evalSolution, Function.OfArity.uncurry]
   positivity
 
 
@@ -89,7 +89,7 @@ private def exampleTermCD : exampleCrispCsp.Term (Fin 4) :=
   valuedCspTermOfBinary beq_in 2 3
 
 private def exampleCrispCspInstance : exampleCrispCsp.Instance (Fin 4) :=
-  [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
+  Multiset.ofList [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
 
 private def exampleSolutionCorrect0 : Fin 4 → Fin 3 :=   ![0, 1, 2, 0]
 private def exampleSolutionCorrect1 : Fin 4 → Fin 3 :=   ![1, 2, 3, 1]
@@ -124,12 +124,3 @@ private def exampleSolutionIncorrect7 : Fin 4 → Fin 3 := ![2, 2, 0, 2]
 example : exampleCrispCspInstance.OptimumSolution exampleSolutionCorrect0 := by
   intro _
   apply Bool.false_le
-
-
-
-
-
--- What kind of infinite sets of functions can appear in `Γ.F` ...
-example : Set ((Fin 5 → Fin 2) → ℕ) :=
-  { f | ∃ (m n k : ℕ),
-        f = (fun x => 10 * m + 8 * n + (if x 0 = x 1 then 1 else 0) * k) }

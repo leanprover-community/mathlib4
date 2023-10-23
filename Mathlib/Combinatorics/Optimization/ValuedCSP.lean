@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Fin.VecNotation
+import Mathlib.Algebra.BigOperators.Multiset.Basic
 
 /-!
 
@@ -52,7 +52,7 @@ def ValuedCsp.Term.evalSolution {Γ : ValuedCsp D C} {ι : Type*}
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
 def ValuedCsp.Instance (Γ : ValuedCsp D C) (ι : Type*) :=
-  List (Γ.Term ι)
+  Multiset (Γ.Term ι)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
 def ValuedCsp.Instance.evalSolution {Γ : ValuedCsp D C} {ι : Type*}
