@@ -869,13 +869,11 @@ theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset �
   rw [strongDownwardInduction]
 #align multiset.strong_downward_induction_on_eq Multiset.strongDownwardInductionOn_eq
 
-/-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
-theorem wellFounded_lt : WellFounded ((· < ·) : Multiset α → Multiset α → Prop) :=
-  Subrelation.wf Multiset.card_lt_of_lt (measure Multiset.card).2
-#align multiset.well_founded_lt Multiset.wellFounded_lt
+#align multiset.well_founded_lt wellFounded_lt
 
-instance is_wellFounded_lt : WellFoundedLT (Multiset α) :=
-  ⟨wellFounded_lt⟩
+/-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
+instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
+  ⟨Subrelation.wf Multiset.card_lt_of_lt (measure Multiset.card).2⟩
 #align multiset.is_well_founded_lt Multiset.is_wellFounded_lt
 
 /-! ### `Multiset.replicate` -/

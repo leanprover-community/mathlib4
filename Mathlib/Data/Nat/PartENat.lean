@@ -755,7 +755,7 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]
-    exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
+    exact InvImage.wf _ wellFounded_lt
 #align part_enat.lt_wf PartENat.lt_wf
 
 instance : WellFoundedLT PartENat :=

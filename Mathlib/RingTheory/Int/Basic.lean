@@ -37,8 +37,7 @@ instance : WfDvdMonoid ℕ :=
   ⟨by
     refine'
       RelHomClass.wellFounded
-        (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, _⟩ : DvdNotUnit →r (· < ·))
-        (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
+        (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, _⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt
     intro a b h
     cases' a with a
     · exfalso
