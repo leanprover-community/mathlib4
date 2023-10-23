@@ -105,6 +105,14 @@ theorem uncurry_curry {n} (f : (Fin n → α) → α) :
     dsimp [curry, uncurry, Function.comp]
     simp only [Fin.cons_zero, Fin.cons_succ, ih (f <| Fin.cons a ·)]
 
+/-- `Equiv.curry` for n-ary functions. -/
+@[simps]
+def curryEquiv (n : ℕ) : ((Fin n → α) → α) ≃ OfArity α n where
+  toFun := curry
+  invFun := uncurry
+  left_inv := uncurry_curry
+  right_inv := curry_uncurry
+
 end currying
 
 end OfArity
