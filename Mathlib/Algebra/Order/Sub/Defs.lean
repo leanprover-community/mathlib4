@@ -58,14 +58,12 @@ class OrderedSub (α : Type*) [LE α] [Add α] [Sub α] : Prop where
 #align has_ordered_sub OrderedSub
 
 section Add
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
-@[simp default]
-theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α} :
-    a - b ≤ c ↔ a ≤ c + b :=
+@[simp]
+theorem tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 #align tsub_le_iff_right tsub_le_iff_right
-
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b : α}
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
