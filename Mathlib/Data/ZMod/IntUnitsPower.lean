@@ -11,9 +11,13 @@ import Mathlib.Data.ZMod.Basic
 /-!
 # The power operator by `ZMod 2` on `ℤˣ`
 
-In future we could generalize this to `Pow G (Zmod n)` where `orderOf g = n`.
-
 See also the related `negOnePow`.
+
+## TODO
+
+* Generalize this to `Pow G (Zmod n)` where `orderOf g = n`.
+* Abstract this with a `LawfulPow` typeclass such that we can reuse the same lemmas for `z₂pow`,
+  `npow`, and `zpow`.
 -/
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
