@@ -23,10 +23,8 @@ namespace UpperHalfPlane
 namespace PSL2R
 
 instance PSLsmul : SMul PSL(2, ℝ) ℍ where
-  smul g := Quotient.liftOn' g (· • ·) <| by
-    intro A B hAB
-    rw [@QuotientGroup.leftRel_apply] at hAB
-    rw [SpecialLinearGroup.coset_center_iff_2] at hAB
+  smul g := Quotient.liftOn' g (· • ·) fun A B hAB => by
+    rw [@QuotientGroup.leftRel_apply, SpecialLinearGroup.coset_center_iff_2] at hAB
     · cases hAB with
       | inl hAB =>
         rw [hAB]
@@ -44,10 +42,8 @@ instance PSLaction : MulAction PSL(2, ℝ) ℍ :=
       (QuotientGroup.mk'_surjective <| Subgroup.center SL(2, ℝ)) fun _ _ => rfl
 
 instance PSLisometric : IsometricSMul PSL(2, ℝ) ℍ where
-  isometry_smul g := Quotient.inductionOn' g <| by
-    intro A
-    have := isometry_smul ℍ A
-    refine Eq.subst ?_ this
+  isometry_smul g := Quotient.inductionOn' g fun A => by
+    refine Eq.subst ?_ <| isometry_smul ℍ A
     aesop
 
 end PSL2R
