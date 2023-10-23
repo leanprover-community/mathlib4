@@ -606,6 +606,7 @@ theorem pow_dvd_of_mul_eq_pow [GCDMonoid α] {a b c d₁ d₂ : α} (ha : a ≠ 
   have h3 : d₁ ^ k ∣ a := by
     apply (dvd_gcd_mul_of_dvd_mul h2).trans
     rw [IsUnit.mul_left_dvd _ _ _ h1]
+    rfl
   have h4 : d₁ ^ k ≠ 0 := by
     intro hdk
     rw [hdk] at h3
