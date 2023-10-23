@@ -285,10 +285,12 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 #align tensor_product.add_smul TensorProduct.add_smul
 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
-  { TensorProduct.addCommSemigroup _ _,
-    TensorProduct.addMonoid _ _ with
+  { TensorProduct.addCommSemigroup _ _ with
     toAddZeroClass := TensorProduct.addZeroClass _ _
-    nsmul := fun n v => n • v }
+    nsmul := fun n v => n • v
+    nsmul_zero := by simp [TensorProduct.zero_smul]
+    nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+      forall_const] }
 
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
