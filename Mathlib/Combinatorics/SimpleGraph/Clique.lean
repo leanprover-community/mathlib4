@@ -175,6 +175,9 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_Adj, Function.Embedding.coe_subtype,
     f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
+  -- This used to be the end of the proof before leanprover/lean4#2644
+  erw [Function.Embedding.coe_subtype, f.map_adj_iff]
+  simp
 #align simple_graph.not_clique_free_of_top_embedding SimpleGraph.not_cliqueFree_of_top_embedding
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
@@ -236,6 +239,43 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   obtain ⟨v, w, hn, he⟩ := exists_ne_map_eq_of_card_lt (Sigma.fst ∘ f) (by simp [hc])
   rw [← top_adj, ← f.map_adj_iff, comap_Adj, top_adj] at hn
   exact absurd he hn
+
+/-- Clique-freeness is preserved by `replaceVertex`. -/
+theorem cliqueFree_of_replaceVertex_cliqueFree [DecidableEq α] (s t : α) (h : G.CliqueFree n) :
+    (G.replaceVertex s t).CliqueFree n := by
+  contrapose h
+  obtain ⟨⟨f, hi⟩, ha⟩ := topEmbeddingOfNotCliqueFree h
+  simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq] at ha
+  rw [not_cliqueFree_iff]
+  by_cases mt : t ∈ Set.range f
+  · obtain ⟨x, hx⟩ := mt
+    by_cases ms : s ∈ Set.range f
+    · obtain ⟨y, hy⟩ := ms
+      by_cases hst : s = t
+      · simp_all [not_cliqueFree_iff]
+      · replace ha := @ha x y; simp_all
+    · use ⟨fun v => if v = x then s else f v, ?_⟩
+      swap
+      · intro a b
+        dsimp only
+        split_ifs
+        · simp_all
+        · intro; simp_all
+        · intro; simp_all
+        · apply hi
+      intro a b
+      simp only [Function.Embedding.coeFn_mk, top_adj, ne_eq]
+      split_ifs with h1 h2 h2
+      · simp_all
+      · have := (@ha b x).mpr h2
+        split_ifs at this; subst h1; tauto
+      · have := (@ha a x).mpr h1
+        split_ifs at this; subst h2; tauto
+      · rw [← @ha a b]
+        have := (@hi a x).mt h1
+        have := (@hi b x).mt h2
+        simp_all
+  · use ⟨f, hi⟩; simp_all
 
 end CliqueFree
 

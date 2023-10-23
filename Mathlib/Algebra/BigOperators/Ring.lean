@@ -68,6 +68,11 @@ end Semiring
 
 section Semiring
 
+theorem dvd_sum [NonUnitalSemiring β]
+    {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
+  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
+#align finset.dvd_sum Finset.dvd_sum
+
 variable [NonAssocSemiring β]
 
 theorem sum_mul_boole [DecidableEq α] (s : Finset α) (f : α → β) (a : α) :
@@ -209,10 +214,6 @@ theorem sum_pow_mul_eq_add_pow {α R : Type*} [CommSemiring R] (a b : R) (s : Fi
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 #align finset.sum_pow_mul_eq_add_pow Finset.sum_pow_mul_eq_add_pow
 
-theorem dvd_sum {b : β} {s : Finset α} {f : α → β} (h : ∀ x ∈ s, b ∣ f x) : b ∣ ∑ x in s, f x :=
-  Multiset.dvd_sum fun y hy => by rcases Multiset.mem_map.1 hy with ⟨x, hx, rfl⟩; exact h x hx
-#align finset.dvd_sum Finset.dvd_sum
-
 @[norm_cast]
 theorem prod_natCast (s : Finset α) (f : α → ℕ) : ↑(∏ x in s, f x : ℕ) = ∏ x in s, (f x : β) :=
   (Nat.castRingHom β).map_prod f s
@@ -262,7 +263,7 @@ theorem prod_powerset_insert [DecidableEq α] [CommMonoid β] {s : Finset α} {x
       "A sum over `powerset s` is equal to the double sum over sets of subsets of `s` with
       `card s = k`, for `k = 1, ..., card s`"]
 theorem prod_powerset [CommMonoid β] (s : Finset α) (f : Finset α → β) :
-    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetLen j s, f t := by
+    ∏ t in powerset s, f t = ∏ j in range (card s + 1), ∏ t in powersetCard j s, f t := by
   rw [powerset_card_disjiUnion, prod_disjiUnion]
 #align finset.prod_powerset Finset.prod_powerset
 #align finset.sum_powerset Finset.sum_powerset

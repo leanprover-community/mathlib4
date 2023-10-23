@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Basic
 
-#align_import data.set.image from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
+#align_import data.set.image from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
 /-!
 # Images and preimages of sets
@@ -106,6 +106,7 @@ theorem preimage_diff (f : α → β) (s t : Set β) : f ⁻¹' (s \ t) = f ⁻�
 @[simp]
 lemma preimage_symmDiff {f : α → β} (s t : Set β) : f ⁻¹' (s ∆ t) = (f ⁻¹' s) ∆ (f ⁻¹' t) :=
   rfl
+#align set.preimage_symm_diff Set.preimage_symmDiff
 
 @[simp]
 theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
@@ -149,6 +150,16 @@ theorem preimage_const (b : β) (s : Set β) [Decidable (b ∈ s)] :
   exacts [preimage_const_of_mem hb, preimage_const_of_not_mem hb]
 #align set.preimage_const Set.preimage_const
 
+/-- If preimage of each singleton under `f : α → β` is either empty or the whole type,
+then `f` is a constant. -/
+lemma exists_eq_const_of_preimage_singleton [Nonempty β] {f : α → β}
+    (hf : ∀ b : β, f ⁻¹' {b} = ∅ ∨ f ⁻¹' {b} = univ) : ∃ b, f = const α b := by
+  rcases em (∃ b, f ⁻¹' {b} = univ) with ⟨b, hb⟩ | hf'
+  · exact ⟨b, funext fun x ↦ eq_univ_iff_forall.1 hb x⟩
+  · have : ∀ x b, f x ≠ b := fun x b ↦
+      eq_empty_iff_forall_not_mem.1 ((hf b).resolve_right fun h ↦ hf' ⟨b, h⟩) x
+    exact ⟨Classical.arbitrary β, funext fun x ↦ absurd rfl (this x _)⟩
+
 theorem preimage_comp {s : Set γ} : g ∘ f ⁻¹' s = f ⁻¹' (g ⁻¹' s) :=
   rfl
 #align set.preimage_comp Set.preimage_comp
@@ -179,6 +190,12 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
   let ⟨x, hx⟩ := hf
   ⟨f x, hx⟩
 #align set.nonempty_of_nonempty_preimage Set.nonempty_of_nonempty_preimage
+
+@[simp] theorem preimage_singleton_true (p : α → Prop) : p ⁻¹' {True} = {a | p a} := by ext; simp
+#align set.preimage_singleton_true Set.preimage_singleton_true
+
+@[simp] theorem preimage_singleton_false (p : α → Prop) : p ⁻¹' {False} = {a | ¬p a} := by ext; simp
+#align set.preimage_singleton_false Set.preimage_singleton_false
 
 theorem preimage_subtype_coe_eq_compl {α : Type*} {s u v : Set α} (hsuv : s ⊆ u ∪ v)
     (H : s ∩ (u ∩ v) = ∅) : ((↑) : s → α) ⁻¹' u = ((↑) ⁻¹' v)ᶜ := by
@@ -1091,7 +1108,7 @@ theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
 theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :
     (range fun x => if p x then f x else g x) ⊆ range f ∪ range g := by
   rw [range_subset_iff]; intro x; by_cases h : p x
-  simp [if_pos h, mem_union, mem_range_self]
+  simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
   simp [if_neg h, mem_union, mem_range_self]
 #align set.range_ite_subset Set.range_ite_subset
 
@@ -1353,6 +1370,10 @@ theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set �
 theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s : Set α) :
     f ⁻¹' (g ⁻¹' s) = s := by rw [← preimage_comp, h.comp_eq_id, preimage_id]
 #align function.left_inverse.preimage_preimage Function.LeftInverse.preimage_preimage
+
+protected theorem Involutive.preimage {f : α → α} (hf : Involutive f) : Involutive (preimage f) :=
+  hf.rightInverse.preimage_preimage
+#align function.involutive.preimage Function.Involutive.preimage
 
 end Function
 

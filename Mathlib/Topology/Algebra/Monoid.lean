@@ -26,7 +26,7 @@ open Classical Set Filter TopologicalSpace
 
 open Classical Topology BigOperators Pointwise
 
-variable {ι α X M N : Type*} [TopologicalSpace X]
+variable {ι α M N X : Type*} [TopologicalSpace X]
 
 @[to_additive (attr := continuity)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
@@ -570,7 +570,7 @@ instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A
 
 instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_nsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
 
 @[to_additive (attr := continuity)]

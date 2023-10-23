@@ -34,6 +34,8 @@ import Mathlib.RingTheory.IsTensorProduct
 - Define the `IsKaehlerDifferential` predicate.
 -/
 
+suppress_compilation
+
 section KaehlerDifferential
 
 open scoped TensorProduct
@@ -212,7 +214,8 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
     leibniz' := fun a b => by
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply, - Ideal.toCotangent_apply]
-      rw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
         ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]
       convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a : _)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b : _) using 1
@@ -477,6 +480,7 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
       Set.range fun x : R => single (algebraMap R S x) 1)
 #align kaehler_differential.ker_total KaehlerDifferential.kerTotal
 
+unsuppress_compilation in
 -- Porting note: was `local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)`
 -- but `notation3` wants an explicit expansion to be able to generate a pretty printer.
 local notation3 x "𝖣" y =>
@@ -590,6 +594,7 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Al
 
 variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
 
+unsuppress_compilation in
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
 local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
@@ -699,4 +704,3 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
 end ExactSequence
 
 end KaehlerDifferential
-

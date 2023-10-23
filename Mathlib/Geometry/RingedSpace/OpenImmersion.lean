@@ -685,7 +685,7 @@ theorem isIso_of_subset {X Y : PresheafedSpace C} (f : X ⟶ Y)
     (hU : (U : Set Y.carrier) ⊆ Set.range f.base) : IsIso (f.c.app <| op U) := by
   have : U = H.base_open.isOpenMap.functor.obj ((Opens.map f.base).obj U) := by
     ext1
-    exact (Set.inter_eq_left_iff_subset.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
+    exact (Set.inter_eq_left.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
   convert H.c_iso ((Opens.map f.base).obj U)
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.is_iso_of_subset AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isIso_of_subset
 
@@ -840,7 +840,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
       -- Porting note : was `apply (config := { instances := False }) ...`
       -- See https://github.com/leanprover/lean4/issues/2273
       have h := TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
-          (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward f.base).obj X.sheaf from ⟨f.c⟩)
+          (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.base).obj X.sheaf from ⟨f.c⟩)
       refine @h _ ?_
       rintro ⟨_, y, hy, rfl⟩
       specialize H y

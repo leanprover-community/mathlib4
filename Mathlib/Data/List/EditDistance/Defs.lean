@@ -37,12 +37,12 @@ theorem levenshtein_cons_cons :
 ```
 -/
 
-variable {α β δ : Type _} [AddZeroClass δ] [Min δ]
+variable {α β δ : Type*} [AddZeroClass δ] [Min δ]
 
 namespace Levenshtein
 
 /-- A cost structure for Levenshtein edit distance. -/
-structure Cost (α β : Type _) (δ : Type _) where
+structure Cost (α β δ : Type*) where
   /-- Cost to delete an element from a list. -/
   delete : α → δ
   /-- Cost in insert an element into a list. -/
@@ -251,21 +251,17 @@ theorem suffixLevenshtein_eq_tails_map (xs ys) :
 
 @[simp]
 theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
-  simp [levenshtein]
+  simp [levenshtein, suffixLevenshtein]
 
 @[simp]
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
-  dsimp [levenshtein]
+  dsimp [levenshtein, suffixLevenshtein, impl]
   congr
   rw [List.getLast_eq_get]
   congr
   rw [show (List.length _) = 1 from _]
-  induction ys with
-  | nil => simp
-  | cons y ys ih =>
-    simp only [List.foldr]
-    rw [impl_length] <;> simp [ih]
+  induction ys <;> simp
 
 @[simp]
 theorem levenshtein_cons_nil (x : α) (xs : List α) :

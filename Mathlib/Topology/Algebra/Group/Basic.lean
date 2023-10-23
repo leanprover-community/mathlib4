@@ -38,7 +38,7 @@ open Classical Set Filter TopologicalSpace Function Topology Pointwise MulOpposi
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {G : Type w} {H : Type x}
+variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
 section ContinuousMulGroup
 
@@ -499,7 +499,7 @@ instance AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
 
 instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [TopologicalAddGroup A] : ContinuousSMul ℤ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_zsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSMul_int
 
 @[to_additive (attr := continuity)]
@@ -1017,7 +1017,7 @@ which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a
   The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace`"]
 theorem TopologicalGroup.exists_antitone_basis_nhds_one :
     ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
-  rcases(𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
+  rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
   have :=
     ((hu.prod_nhds hu).tendsto_iff hu).mp
       (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))
@@ -1522,6 +1522,22 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
 
+/-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
+is closed, symmetric, and satisfies `V * V ⊆ U`. -/
+@[to_additive "Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
+identity which is closed, symmetric, and satisfies `V + V ⊆ U`."]
+theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
+    ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
+  rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
+  rcases exists_mem_nhds_isClosed_subset (V_open.mem_nhds V_mem) with ⟨W, W_mem, W_closed, hW⟩
+  refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
+    by simp [inter_comm], ?_⟩
+  calc
+  W ∩ W⁻¹ * (W ∩ W⁻¹)
+    ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
+  _ ⊆ V * V := mul_subset_mul hW hW
+  _ ⊆ U := hV
+
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
 @[to_additive]
@@ -1569,14 +1585,14 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff."]
 theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
-    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul (opposite S) G :=
+    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
       have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prod_map continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
-      apply Finite.of_preimage _ (oppositeEquiv S).surjective
+      apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
       simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
@@ -1707,16 +1723,8 @@ admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
-  rcases exists_open_nhds_one_mul_subset L1 with ⟨V, hVo, hV₁, hVL⟩
-  have hcVL : closure V ⊆ L :=
-    calc
-      closure V = 1 * closure V := (one_mul _).symm
-      _ ⊆ V * closure V :=
-        mul_subset_mul_right <| singleton_subset_iff.2 hV₁
-      _ = V * V := hVo.mul_closure _
-      _ ⊆ L := hVL
-  exact ⟨closure V, Lcomp.of_isClosed_subset isClosed_closure hcVL, isClosed_closure,
-    hcVL, mem_of_superset (hVo.mem_nhds hV₁) subset_closure⟩
+  rcases exists_mem_nhds_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
+  exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/

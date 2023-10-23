@@ -254,7 +254,7 @@ theorem corec_eq (f : β → Sum α β) (b : β) : destruct (corec f b) = rmap (
   dsimp [corec, destruct]
   rw [show Stream'.corec' (Corec.f f) (Sum.inr b) 0 =
     Sum.rec Option.some (λ _ => none) (f b) by
-    dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.nth, Stream'.iterate]
+    dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
     | Sum.inr x => rfl
@@ -360,7 +360,7 @@ theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminat
 theorem terminates_def (s : Computation α) : Terminates s ↔ ∃ n, (s.1 n).isSome :=
   ⟨fun ⟨⟨a, n, h⟩⟩ =>
     ⟨n, by
-      dsimp [Stream'.nth] at h
+      dsimp [Stream'.get] at h
       rw [← h]
       exact rfl⟩,
     fun ⟨n, h⟩ => ⟨⟨Option.get _ h, n, (Option.eq_some_of_isSome h).symm⟩⟩⟩
@@ -646,7 +646,7 @@ def terminatesRecOn
 def map (f : α → β) : Computation α → Computation β
   | ⟨s, al⟩ =>
     ⟨s.map fun o => Option.casesOn o none (some ∘ f), fun n b => by
-      dsimp [Stream'.map, Stream'.nth]
+      dsimp [Stream'.map, Stream'.get]
       induction' e : s n with a <;> intro h
       · contradiction
       · rw [al e]; exact h⟩
@@ -725,10 +725,10 @@ theorem ret_bind (a) (f : α → Computation β) : bind (pure a) f = f a := by
   · intro c₁ c₂ h
     match c₁, c₂, h with
     | _, _, Or.inl ⟨rfl, rfl⟩ =>
-      simp [bind, Bind.f]
+      simp only [BisimO, bind, Bind.f, corec_eq, rmap, destruct_pure]
       cases' destruct (f a) with b cb <;> simp [Bind.g]
     | _, c, Or.inr rfl =>
-      simp [Bind.f]
+      simp only [BisimO, Bind.f, corec_eq, rmap]
       cases' destruct c with b cb <;> simp [Bind.g]
   · simp
 #align computation.ret_bind Computation.ret_bind
@@ -1076,12 +1076,12 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
 #align computation.lift_rel.trans Computation.LiftRel.trans
 
 theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  -- Porting note: The code below was:
+  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, by apply LiftRel.symm; apply symm,
+    by apply LiftRel.trans; apply trans⟩
+  -- Porting note: The code above was:
   -- | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, LiftRel.symm R symm, LiftRel.trans R trans⟩
   --
   -- The code fails to identify `symm` as being symmetric.
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, by apply LiftRel.symm; apply symm,
-    by apply LiftRel.trans; apply trans⟩
 #align computation.lift_rel.equiv Computation.LiftRel.equiv
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :
