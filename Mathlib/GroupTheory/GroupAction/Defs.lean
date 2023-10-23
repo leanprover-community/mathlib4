@@ -579,7 +579,7 @@ This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/
 add_decl_doc AddMonoid.toAddAction
 
 @[to_additive]
-instance IsScalarTower.left : IsScalarTower M M α :=
+instance (priority := high) IsScalarTower.left : IsScalarTower M M α :=
   ⟨fun x y z => mul_smul x y z⟩
 #align is_scalar_tower.left IsScalarTower.left
 #align vadd_assoc_class.left VAddAssocClass.left
