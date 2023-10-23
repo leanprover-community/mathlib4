@@ -1780,17 +1780,16 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 #align fin.coe_of_nat_eq_mod Fin.coe_ofNat_eq_mod
 
+theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
+    (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
+  ⟨fun H => ⟨fun _ => H _, H _⟩, fun ⟨H0, H1⟩ i => Fin.lastCases H1 H0 i⟩
+
+-- to match `Fin.eq_zero_or_eq_succ`
 theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
     (∃ j : Fin n, i = j.castSucc) ∨ i = last n := by
-  obtain ⟨i : ℕ, hi : i < n + 1⟩ := i
-  by_cases h : i < n
-  · left
-    use ⟨i, by assumption⟩
-    simp only [castSucc_mk]
-  · right
-    apply eq_of_val_eq
-    simp only [val_last]
-    exact Nat.eq_of_lt_succ_of_not_lt hi h
+  induction i using reverseInduction with
+  | last => right; rfl
+  | cast n => left; exact ⟨_, rfl⟩
 
 section Mul
 
