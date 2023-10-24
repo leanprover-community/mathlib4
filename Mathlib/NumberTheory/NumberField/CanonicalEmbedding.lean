@@ -402,8 +402,8 @@ noncomputable def minkowskiBound : ℝ≥0∞ :=
 
 theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
   refine mul_lt_top ?_ ?_
-  · exact ne_of_lt (fundamentalDomain_isBounded (latticeBasis K)).measure_lt_top
-  · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
+  · exact (fundamentalDomain_isBounded (latticeBasis K)).measure_lt_top.ne
+  · exact pow_ne_top two_ne_top
 
 variable {f : InfinitePlace K → ℝ≥0}
 
