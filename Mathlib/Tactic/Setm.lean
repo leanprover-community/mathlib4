@@ -3,13 +3,17 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.Tactic.Set
-import Mathlib.Tactic.Change
+import Lean
 
 /-!
 # The `setm` tactic
 
-The `setm` tactic ("`set` with matching") is TODO WRITE THIS
+The `setm` tactic ("`set` with matching") is used for introducing `let` declarations representing
+subexpressions of the goal or in the types of local hypotheses.
+
+For example, if the goal is `⊢ (x + 5) ^ 2 + (2 * y + x) * (x + 5) + 3 = 28` (with `x y : ℕ`), then
+`setm ?a ^ 2 + ?b * ?a + 3 = 28` would introduce `a : ℕ := x + 5` and `b : ℕ := 2 * y + 5` into the
+context and change the goal to `a ^ 2 + b * a + 3 = 28`
 -/
 
 namespace Mathlib.Tactic
@@ -17,10 +21,10 @@ open Lean Parser Tactic Elab Tactic Meta
 
 initialize registerTraceClass `Tactic.setm
 
-/--
-TODO: Write docs
--/
-
+/-- This is the core to the `setm` tactic. It takes an expression `e` and pattern `stx` containing
+named holes whose form should match `e`. For each named hole in `stx`, we create a `let` declaration
+of the same name whose value is filled by the corresponding subexpression of `e`. We then return
+the expression `e` with its subexpressions replaced by these named variables. -/
 def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext do
   let (origPattern, mvarIds) ← elabTermWithHoles stx none (←getMainTag) (allowNaturalHoles := true)
   /- Named holes are by default syntheticOpaque and not assignable, so we change that -/
@@ -70,16 +74,33 @@ def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext 
   /- At the end, return the `origPattern` -/
   return origPattern
 
+/-- Apply `setMCore` to the type of the provided `fvar` and the pattern `stx`. Then replace the type
+of `fvar` to be the definitionally equal expression returned by `setMCore`. -/
 def setMLocalDecl (stx : TSyntax `term) (fvar : FVarId) : TacticM Unit := withMainContext do
   let pattern ← setMCore (← fvar.getType) stx
   let goal ← (← getMainGoal).changeLocalDecl fvar pattern false
   replaceMainGoal [goal]
 
+/-- Apply `setMCore` to the type of the main goal and the pattern `stx`. Then replace the goal
+with the definitionally equal expression returned by `setMCore`. -/
 def setMTarget (stx : TSyntax `term) : TacticM Unit := withMainContext do
   let pattern ← setMCore (← getMainTarget) stx
   let goal ← (← getMainGoal).change pattern false
   replaceMainGoal [goal]
 
+/--
+The `setm` tactic ("`set` with matching") matches a pattern containing named holes the type of a
+local declaration (using the `at h` syntax) or the main goal, and introduces `let` bound variables
+representing subexpressions whose location corresponds to the given named hole. These variables are
+also substituted into the type of declaration (or main goal).
+
+For example, if the goal is `⊢ (x + 5) ^ 2 + (2 * y + x) * (x + 5) + 3 = 28` (with `x y : ℕ`), then
+`setm ?a ^ 2 + ?b * ?a + 3 = 28` would introduce `a : ℕ := x + 5` and `b : ℕ := 2 * y + 5` into the
+context and change the goal to `a ^ 2 + b * a + 3 = 28`.
+
+Likewise if the local context contains `h : (x + 5) ^ 2 + (2 * y + x) * (x + 5) + 3 = 28`
+(with `x y : ℕ`), then `setm ?a ^ 2 + ?b * ?a + 3 = 28 at h` would introduce `a : ℕ := x + 5` and
+`b : ℕ := 2 * y + 5` into the context and changes the type to `h : a ^ 2 + b * a + 3 = 28`. -/
 elab (name := setM) "setm" ppSpace colGt stx:term loc:(location)? : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc
