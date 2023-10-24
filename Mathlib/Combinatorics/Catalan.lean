@@ -192,7 +192,7 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
 theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
-    simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, mem_antidiagonal, *]
+    simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
   exact (Nat.succ_ne_zero _).symm
 #align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNumNodesEq
 
