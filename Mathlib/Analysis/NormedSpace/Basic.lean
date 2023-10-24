@@ -335,26 +335,27 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rwa [norm_pos_iff]
 #align normed_space.exists_lt_norm NormedSpace.exists_lt_norm
 
-protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
-  let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
-  let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
-  hx.not_le (hR x trivial)
-#align normed_space.unbounded_univ NormedSpace.unbounded_univ
+protected theorem NormedSpace.unboundedSpace : UnboundedSpace E :=
+  ⟨fun h ↦
+    let ⟨R, hR⟩ := h.exists_norm_le
+    let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
+    hx.not_le (hR x trivial)⟩
+#align normed_space.unbounded_univ NormedSpace.unboundedSpace
 
 /-- A normed vector space over a nontrivially normed field is a noncompact space. This cannot be
 an instance because in order to apply it, Lean would have to search for `NormedSpace 𝕜 E` with
 unknown `𝕜`. We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
 protected theorem NormedSpace.noncompactSpace : NoncompactSpace E :=
-  ⟨fun h => NormedSpace.unbounded_univ 𝕜 _ h.isBounded⟩
+  have := NormedSpace.unboundedSpace 𝕜 E; inferInstance
 #align normed_space.noncompact_space NormedSpace.noncompactSpace
 
-instance (priority := 100) NontriviallyNormedField.noncompactSpace : NoncompactSpace 𝕜 :=
-  NormedSpace.noncompactSpace 𝕜 𝕜
-#align nontrivially_normed_field.noncompact_space NontriviallyNormedField.noncompactSpace
+instance (priority := 100) NontriviallyNormedField.unboundedSpace : UnboundedSpace 𝕜 :=
+  NormedSpace.unboundedSpace 𝕜 𝕜
+#align nontrivially_normed_field.noncompact_space NontriviallyNormedField.unboundedSpace
 
-instance (priority := 100) RealNormedSpace.noncompactSpace [NormedSpace ℝ E] : NoncompactSpace E :=
-  NormedSpace.noncompactSpace ℝ E
-#align real_normed_space.noncompact_space RealNormedSpace.noncompactSpace
+instance (priority := 100) RealNormedSpace.unboundedSpace [NormedSpace ℝ E] : UnboundedSpace E :=
+  NormedSpace.unboundedSpace ℝ E
+#align real_normed_space.noncompact_space RealNormedSpace.unboundedSpace
 
 end NontriviallyNormedSpace
 
