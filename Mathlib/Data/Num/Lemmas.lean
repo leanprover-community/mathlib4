@@ -1454,21 +1454,21 @@ instance linearOrder : LinearOrder ZNum where
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
-instance addCommGroup : AddCommGroup ZNum where
+instance addMonoid : AddMonoid ZNum where
   add := (· + ·)
   add_assoc := by transfer
   zero := 0
   zero_add := zero_add
   add_zero := add_zero
+
+instance addCommGroup : AddCommGroup ZNum where
   add_comm := by transfer
   neg := Neg.neg
   add_left_neg := by transfer
 #align znum.add_comm_group ZNum.addCommGroup
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
-  { ZNum.addCommGroup with
-    one := 1
-    natCast := fun n => ZNum.ofInt' n
+  { natCast := fun n => ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
     natCast_succ := fun n =>
       show (Num.ofNat' (n + 1)).toZNum = (Num.ofNat' n).toZNum + 1 by
@@ -1485,9 +1485,8 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   transfer_rw
   exact fun h => _root_.add_le_add_left h c
 
-instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
-  { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
-    mul := (· * ·)
+instance commRing : CommRing ZNum :=
+  { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul_assoc := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
@@ -1499,7 +1498,10 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     right_distrib := by
       transfer
       simp [mul_add, _root_.mul_comm]
-    mul_comm := mul_comm
+    mul_comm := mul_comm }
+
+instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
+  { ZNum.linearOrder, ZNum.commRing with
     exists_pair_ne := ⟨0, 1, by decide⟩
     add_le_add_left := add_le_add_left
     mul_pos := fun a b =>

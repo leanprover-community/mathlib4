@@ -1013,6 +1013,7 @@ instance instCommMonoidWithZero : CommMonoidWithZero (Associates α) where
       rintro ⟨a⟩
       show Associates.mk (a * 0) = Associates.mk 0
       rw [mul_zero]
+    mul_comm := mul_comm
 
 instance instOrderTop : OrderTop (Associates α) where
   top := 0

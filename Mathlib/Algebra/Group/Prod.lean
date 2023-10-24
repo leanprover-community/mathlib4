@@ -278,8 +278,7 @@ instance [MonoidWithZero M] [MonoidWithZero N] : MonoidWithZero (M × N) :=
     mul_zero := by simp }
 
 instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
+  { mul_comm := mul_comm }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
