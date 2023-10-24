@@ -86,8 +86,7 @@ notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 
 section
 /--
-warning: Could not generate matchers for a delaborator, so notation will not be pretty printed.
-Consider either adjusting the expansions or use `notation3 (prettyPrint := false)`.
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
 -/
 #guard_msgs in local notation3 "#" n => Fin.mk n (by decide)
 end
