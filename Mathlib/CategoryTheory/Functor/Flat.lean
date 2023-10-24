@@ -233,10 +233,10 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     -- expands `let` definitions by default, so we have to switch this off with `zeta = false`;
     -- secondly, `simp` is not rewriting `Comma.eqToHom_right` for some reason (just like)
     -- 30 lines above here
-    have e₃ := e₁.symm.trans e₂
-    simp (config := {zeta := false}) at e₃ -- should turn `e₃` into the goal
-    rw [Comma.eqToHom_right, Comma.eqToHom_right] at e₃ -- this is a `simp` lemma
-    simpa (config := {zeta := false}) using e₃
+    convert e₁.symm.trans e₂ <;>
+      -- This should just be `simp`, but mysteriously `simp` won't use `Comma.eqToHom_right`,
+      -- as above.
+      (simp; rw [Comma.eqToHom_right]; simp)
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
