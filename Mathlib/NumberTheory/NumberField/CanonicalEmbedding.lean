@@ -400,6 +400,7 @@ variable [NumberField K]
 noncomputable def minkowskiBound : ℝ≥0∞ :=
   volume (fundamentalDomain (latticeBasis K)) * 2 ^ (finrank ℝ (E K))
 
+set_option synthInstance.maxHeartbeats 100000 in
 theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
   refine mul_lt_top ?_ ?_
   · exact (fundamentalDomain_isBounded (latticeBasis K)).measure_lt_top.ne
