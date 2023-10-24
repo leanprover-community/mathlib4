@@ -150,7 +150,7 @@ def derive (e : Expr) : MetaM Simp.Result := do
 
   let config : Simp.Config := {
     zeta := true
-    beta := false
+    beta := true
     eta  := false
     proj := false
     iota := false
