@@ -154,7 +154,7 @@ attribute [local differentiability]
 -- Mathlib/Analysis/NormedSpace/AffineIsometry.lean
 -- @[continuity]
 -- protected theorem continuous : Continuous f := sorry
-AffineMap.differentiable  -- Mathlib.Analysis.Calculus.Deriv.AffineMap
+    AffineMap.differentiable  -- Mathlib.Analysis.Calculus.Deriv.AffineMap
 
         -- -- Mathlib/Analysis/NormedSpace/Banach.lean
         -- @[continuity]
@@ -942,15 +942,15 @@ AffineMap.differentiable  -- Mathlib.Analysis.Calculus.Deriv.AffineMap
 
 -- Other potential candidates that did not have an analog
 
-    IsBoundedLinearMap.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Linear
-    ContinuousLinearMap.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Linear
-    Differentiable.iterate  -- Mathlib.Analysis.Calculus.FDeriv.Comp
+--     IsBoundedLinearMap.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Linear
+--     ContinuousLinearMap.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Linear
+--     Differentiable.iterate  -- Mathlib.Analysis.Calculus.FDeriv.Comp
     differentiable_fst  -- Mathlib.Analysis.Calculus.FDeriv.Prod
     differentiable_snd  -- Mathlib.Analysis.Calculus.FDeriv.Prod
     Differentiable.fst  -- Mathlib.Analysis.Calculus.FDeriv.Prod
     Differentiable.snd  -- Mathlib.Analysis.Calculus.FDeriv.Prod
-    Differentiable.prod  -- Mathlib.Analysis.Calculus.FDeriv.Prod
-    IsBoundedBilinearMap.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Bilinear
+--     Differentiable.prod  -- Mathlib.Analysis.Calculus.FDeriv.Prod
+--     IsBoundedBilinearMap.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Bilinear
     Differentiable.const_mul  -- Mathlib.Analysis.Calculus.FDeriv.Mul
     Differentiable.mul_const  -- Mathlib.Analysis.Calculus.FDeriv.Mul
     Differentiable.pow  -- Mathlib.Analysis.Calculus.FDeriv.Mul
@@ -969,43 +969,59 @@ AffineMap.differentiable  -- Mathlib.Analysis.Calculus.Deriv.AffineMap
     Differentiable.add  -- Mathlib.Analysis.Calculus.FDeriv.Add
     Differentiable.const_smul  -- Mathlib.Analysis.Calculus.FDeriv.Add
     Differentiable.div_const  -- Mathlib.Analysis.Calculus.Deriv.Mul
-    Differentiable.restrictScalars  -- Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+--     Differentiable.restrictScalars  -- Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
     Differentiable.inv  -- Mathlib.Analysis.Calculus.Deriv.Inv
     Differentiable.div  -- Mathlib.Analysis.Calculus.Deriv.Inv
-    ContinuousLinearEquiv.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Equiv
-    LinearIsometryEquiv.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Equiv
-    ContDiff.differentiable  -- Mathlib.Analysis.Calculus.ContDiffDef
-    ContDiff.differentiable_iteratedFDeriv  -- Mathlib.Analysis.Calculus.ContDiffDef
-    HasFTaylorSeriesUpTo.differentiable  -- Mathlib.Analysis.Calculus.ContDiffDef
+--     ContinuousLinearEquiv.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Equiv
+--     LinearIsometryEquiv.differentiable  -- Mathlib.Analysis.Calculus.FDeriv.Equiv
+--     ContDiff.differentiable  -- Mathlib.Analysis.Calculus.ContDiffDef
+--     ContDiff.differentiable_iteratedFDeriv  -- Mathlib.Analysis.Calculus.ContDiffDef
+--     HasFTaylorSeriesUpTo.differentiable  -- Mathlib.Analysis.Calculus.ContDiffDef
     differentiable_neg  -- Mathlib.Analysis.Calculus.Deriv.Add
-    differentiable_tsum  -- Mathlib.Analysis.Calculus.Series
-    differentiable_inner  -- Mathlib.Analysis.InnerProductSpace.Calculus
-    ContDiff.differentiable_iteratedDeriv  -- Mathlib.Analysis.Calculus.IteratedDeriv
-    Conformal.differentiable  -- Mathlib.Analysis.Calculus.Conformal.NormedSpace
+    -- differentiable_tsum  -- Mathlib.Analysis.Calculus.Series
+    -- differentiable_inner  -- Mathlib.Analysis.InnerProductSpace.Calculus
+--     ContDiff.differentiable_iteratedDeriv  -- Mathlib.Analysis.Calculus.IteratedDeriv
+--     Conformal.differentiable  -- Mathlib.Analysis.Calculus.Conformal.NormedSpace
     Real.differentiable_exp  -- Mathlib.Analysis.SpecialFunctions.ExpDeriv
     Complex.differentiable_exp  -- Mathlib.Analysis.SpecialFunctions.ExpDeriv
-    expNegInvGlue.differentiable_polynomial_eval_inv_mul  -- Mathlib.Analysis.SpecialFunctions.SmoothTransition
+--     expNegInvGlue.differentiable_polynomial_eval_inv_mul  -- Mathlib.Analysis.SpecialFunctions.SmoothTransition
     Differentiable.star  -- Mathlib.Analysis.Calculus.FDeriv.Star
-    Differentiable.zpow  -- Mathlib.Analysis.Calculus.Deriv.ZPow
-    differentiable_circleMap  -- Mathlib.MeasureTheory.Integral.CircleIntegral
-    MDifferentiable.differentiable  -- Mathlib.Geometry.Manifold.MFDeriv
+--     Differentiable.zpow  -- Mathlib.Analysis.Calculus.Deriv.ZPow
+--     differentiable_circleMap  -- Mathlib.MeasureTheory.Integral.CircleIntegral
+--     MDifferentiable.differentiable  -- Mathlib.Geometry.Manifold.MFDeriv
     Differentiable.clog  -- Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
     Differentiable.rpow  -- Mathlib.Analysis.SpecialFunctions.Pow.Deriv
     Real.differentiable_arctan  -- Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
     Differentiable.arctan  -- Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
-    Complex.differentiable_one_div_Gamma  -- Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-    Differentiable.inversion  -- Mathlib.Geometry.Euclidean.Inversion.Calculus
-    differentiable_completed_zeta₀  -- Mathlib.NumberTheory.ZetaFunction
-    differentiable_mellin_zetaKernel₂  -- Mathlib.NumberTheory.ZetaFunction
+--     Complex.differentiable_one_div_Gamma  -- Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+--     Differentiable.inversion  -- Mathlib.Geometry.Euclidean.Inversion.Calculus
+    -- differentiable_completed_zeta₀  -- Mathlib.NumberTheory.ZetaFunction
+    -- differentiable_mellin_zetaKernel₂  -- Mathlib.NumberTheory.ZetaFunction
 
 
 
--- set_option trace.aesop true
+set_option trace.aesop true
+
+section RealExamplesAndTests
+open Real
+
+example : Differentiable ℝ (fun (x : ℝ) ↦ x) := by
+    differentiability
+
+example : Differentiable ℝ (fun (x : ℝ) ↦ sin x) := by
+    differentiability
+
+example : Differentiable ℝ (fun (x : ℝ) ↦ exp x) := by
+    differentiability
 
 
--- TODO this should work but doesn't, maybe because of search depth or something like that
-example : Differentiable ℝ (fun x ↦ x * Real.exp x + 3) := by
-    differentiability?
+example : Differentiable ℝ (fun x ↦ x * 999 *  cosh x + 3) := by
+    differentiability
+
+-- problem: the tactic splits trig functions into complex exponentials
+-- and then fails...
+example : Differentiable ℝ (fun x ↦ ( sin (sin x))) := by
+    sorry
 
 -- Note: aesop's question-mark-mode seems to output things that don't actually close the goal
 -- without manually adjusting some things
@@ -1014,15 +1030,21 @@ example : Differentiable ℝ (fun x ↦ x * Real.exp x + 3) := by
 -- This is due to copied over (from `continuity`) settings of tactic.
 -- I'm not sure why those options are used.
 
-example : Differentiable ℝ (fun x ↦
+
+
+example : Differentiable ℝ (fun (x : ℝ) ↦
 (sin x * exp x + 3) * 999 * (cosh (cos x)))
 := by
     differentiability
 
-example : Differentiable ℂ (fun x ↦
+section ComplexExamplesAndTests
+open Complex
+
+example : Differentiable ℂ (fun (x : ℂ) ↦
 (sin x * exp x + 3) * 999 * (cosh (cos x)))
 := by
-    differentiability
+    sorry
+
 
 section CopiedOverFromContinuity
 
