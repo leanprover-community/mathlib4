@@ -198,7 +198,7 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type _}
       apply symmega
       apply List.Perm.swap,
     show
-      List.map (f ∘ ![ ![ ω ![a, b] 0 , ω ![a, b] 0 ], ![ ω ![a, b] 1 , ω ![a, b] 1 ]]) (List.finRange 2) =
+      List.map (f ∘ ![![ω ![a, b] 0, ω ![a, b] 0], ![ω ![a, b] 1, ω ![a, b] 1]]) (List.finRange 2) =
       [ f ![ ω ![a, b] 0 , ω ![a, b] 0 ] , f ![ ω ![a, b] 1 , ω ![a, b] 1 ] ] by
       rfl,
     show
