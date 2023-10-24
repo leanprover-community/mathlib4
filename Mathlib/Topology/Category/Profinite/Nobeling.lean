@@ -64,11 +64,8 @@ def Proj : (I → Bool) → (I → Bool) :=
 @[simp]
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
-  refine continuous_pi ?_
-  intro i
   dsimp [Proj]
-  dsimp [Proj]
-  continuity says
+  continuity? says
     apply continuous_pi
     intro i
     split
