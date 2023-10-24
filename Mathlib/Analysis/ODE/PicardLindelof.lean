@@ -419,6 +419,7 @@ theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x�
       C_mul_le_R := by
         rw [add_sub_cancel', sub_sub_cancel, max_self, hε, mul_div_left_comm, div_self, mul_one]
         exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
+#align exists_is_picard_lindelof_const_of_cont_diff_on_nhds exists_isPicardLindelof_const_of_contDiffAt
 
 variable [CompleteSpace E]
 
@@ -430,6 +431,7 @@ theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt (hv : ContDiffAt ℝ 1 v x
   obtain ⟨f, hf1, hf2⟩ := hpl.exists_forall_hasDerivWithinAt_Icc_eq x₀
   exact ⟨ε, hε, f, hf1, fun t ht =>
     (hf2 t (Ioo_subset_Icc_self ht)).hasDerivAt (Icc_mem_nhds ht.1 ht.2)⟩
+#align exists_forall_deriv_at_Ioo_eq_of_cont_diff_on_nhds exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt
 
 /-- A time-independent, continuously differentiable ODE admits a solution in some open interval. -/
 theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
