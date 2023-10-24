@@ -342,7 +342,7 @@ theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg
 
 @[simp]
 theorem toBoolAlg_add (a b : α) : toBoolAlg (a + b) = toBoolAlg a ∆ toBoolAlg b :=
-  (ofBoolAlg_symmDiff _ _).symm
+  (ofBoolAlg_symmDiff a b).symm
 #align to_boolalg_add toBoolAlg_add
 
 /-- Turn a ring homomorphism from Boolean rings `α` to `β` into a bounded lattice homomorphism

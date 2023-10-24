@@ -119,7 +119,7 @@ theorem encard_insert_of_not_mem (has : a ∉ s) : (insert a s).encard = s.encar
   rw [←union_singleton, encard_union_eq (by simpa), encard_singleton]
 
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
-  refine' h.induction_on (by simpa using WithTop.zero_lt_top) _
+  refine' h.induction_on (by simp) _
   rintro a t hat _ ht'
   rw [encard_insert_of_not_mem hat]
   exact lt_tsub_iff_right.1 ht'

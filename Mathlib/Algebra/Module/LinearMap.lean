@@ -209,7 +209,7 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
 
 -- Porting note: adding this instance prevents a timeout in `ext_ring_op`
 instance instFunLike {σ : R →+* S} : NDFunLike (M →ₛₗ[σ] M₃) M M₃ :=
-  { AddHomClass.toFunLike with }
+  { AddHomClass.toNDFunLike with }
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₗ[R] M₂) : DistribMulActionHom R M M₂ :=
