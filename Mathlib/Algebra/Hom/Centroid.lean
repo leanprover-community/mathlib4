@@ -431,6 +431,33 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
 lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
     (centerToCentroid z) a = z * a := rfl
 
+local notation "L" => AddMonoid.End.mulLeft
+
+lemma center_iff_op_centroid (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔
+    (L a) ∈ Set.range CentroidHom.toEnd ∧ ∀ (b : α), Commute a b := by
+  constructor
+  · intro ha
+    constructor
+    · rw [Set.mem_range]
+      use centerToCentroid ⟨a, ha⟩
+      rfl
+    · intro b
+      rw [Commute, SemiconjBy, Set.IsMulCentral.comm ha b]
+  · intro hla
+    simp at hla
+    obtain ⟨⟨T,hT⟩,hc⟩  := hla
+    have e1 (d : α ): T d = a * d := (FunLike.congr (id hT.symm) rfl).symm
+    constructor
+    · intro b
+      exact hc b
+    · intro b c
+      rw [← e1, map_mul_right, e1]
+    · intro b c
+      rw [← Commute.eq (hc b), ← e1, ←e1, ← map_mul_left, ← map_mul_right]
+    · intro b c
+      rw [← Commute.eq (hc c), ← e1, ← map_mul_left, ← Commute.eq (hc (b *c)), ← e1, map_mul_right]
+
 end NonUnitalNonAssocSemiring
 
 section NonAssocSemiring
