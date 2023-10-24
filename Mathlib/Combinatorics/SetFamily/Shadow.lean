@@ -96,7 +96,9 @@ theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ �
   mem_shadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 #align finset.erase_mem_shadow Finset.erase_mem_shadow
 
-/-- `t ∈ ∂𝒜` iff `t` is exactly one element less than something from `𝒜` -/
+/-- `t ∈ ∂𝒜` iff `t` is exactly one element less than something from `𝒜`.
+
+See also `Finset.mem_shadow_iff_exists_mem_card_add_one`. -/
 lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = 1 := by
   simp_rw [mem_shadow_iff, ←covby_iff_card_sdiff_eq_one, covby_iff_exists_erase, eq_comm]
 
@@ -107,27 +109,51 @@ theorem mem_shadow_iff_insert_mem : s ∈ ∂ 𝒜 ↔ ∃ a, a ∉ s ∧ insert
   aesop
 #align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
-/-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`. -/
-lemma mem_shadow_iterate_iff_exists_sdiff {𝒜 : Finset (Finset α)} {t : Finset α} (k : ℕ) :
-    t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = k := by
-  induction' k with k ih generalizing 𝒜 t
+/-- `s ∈ ∂ 𝒜` iff `s` is exactly one element less than something from `𝒜`.
+
+See also `Finset.mem_shadow_iff_exists_sdiff`. -/
+lemma mem_shadow_iff_exists_mem_card_add_one :
+    s ∈ ∂ 𝒜 ↔ ∃ t ∈ 𝒜, s ⊆ t ∧ t.card = s.card + 1 := by
+  refine mem_shadow_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+    and_congr_right fun hst ↦ ?_
+  rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
+  exact card_mono hst
+#align finset.mem_shadow_iff_exists_mem_card_add_one Finset.mem_shadow_iff_exists_mem_card_add_one
+
+/-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
+
+See also `Finset.mem_shadow_iff_exists_mem_card_add`. -/
+lemma mem_shadow_iterate_iff_exists_sdiff :
+    s ∈ ∂^[k] 𝒜 ↔ ∃ t ∈ 𝒜, s ⊆ t ∧ (t \ s).card = k := by
+  induction' k with k ih generalizing 𝒜 s
   · simp only [sdiff_eq_empty_iff_subset, Function.iterate_zero, id.def, card_eq_zero, exists_prop]
-    refine' ⟨fun p ↦ ⟨t, p, Subset.rfl, Subset.rfl⟩, _⟩
-    rintro ⟨s, hs, hst, hts⟩
+    refine' ⟨fun p ↦ ⟨s, p, Subset.rfl, Subset.rfl⟩, _⟩
+    rintro ⟨t, hs, hst, hts⟩
     rwa [subset_antisymm hst hts]
   simp only [exists_prop, Function.comp_apply, Function.iterate_succ, ih,
     mem_shadow_iff_insert_mem]
   clear ih
   constructor
-  · rintro ⟨s, ⟨a, ha, hs⟩, hts, rfl⟩
+  · rintro ⟨t, ⟨a, ha, hs⟩, hts, rfl⟩
     refine' ⟨_, hs, hts.trans $ subset_insert _ _, _⟩
     rw [insert_sdiff_of_not_mem _ $ not_mem_mono hts ha,
       card_insert_of_not_mem $ not_mem_mono (sdiff_subset _ _) ha]
-  · rintro ⟨s, hs, hts, hk⟩
-    obtain ⟨a, ha⟩ : (s \ t).Nonempty := by rw [←card_pos, hk]; exact Nat.succ_pos _
-    refine' ⟨erase s a, ⟨a, not_mem_erase _ _, _⟩, subset_erase.2 ⟨hts, (mem_sdiff.1 ha).2⟩, _⟩
+  · rintro ⟨t, hs, hts, hk⟩
+    obtain ⟨a, ha⟩ : (t \ s).Nonempty := by rw [←card_pos, hk]; exact Nat.succ_pos _
+    refine' ⟨erase t a, ⟨a, not_mem_erase _ _, _⟩, subset_erase.2 ⟨hts, (mem_sdiff.1 ha).2⟩, _⟩
     · rwa [insert_erase (mem_sdiff.1 ha).1]
     · rw [erase_sdiff_comm, card_erase_of_mem ha, hk, succ_sub_one]
+
+/-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
+
+See also `Finset.mem_shadow_iterate_iff_exists_sdiff`. -/
+lemma mem_shadow_iterate_iff_exists_mem_card_add :
+    s ∈ ∂^[k] 𝒜 ↔ ∃ t ∈ 𝒜, s ⊆ t ∧ t.card = s.card + k := by
+  refine mem_shadow_iterate_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+    and_congr_right fun hst ↦ ?_
+  rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
+  exact card_mono hst
+#align finset.mem_shadow_iff_exists_mem_card_add Finset.mem_shadow_iterate_iff_exists_mem_card_add
 
 /-- The shadow of a family of `r`-sets is a family of `r - 1`-sets. -/
 protected theorem _root_.Set.Sized.shadow (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
@@ -151,54 +177,11 @@ theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
   rw [← h𝒜 (erase_mem_shadow hs ha), card_erase_add_one ha]
 #align finset.sized_shadow_iff Finset.sized_shadow_iff
 
-/-- `s ∈ ∂ 𝒜` iff `s` is exactly one element less than something from `𝒜` -/
-theorem mem_shadow_iff_exists_mem_card_add_one :
-    s ∈ ∂ 𝒜 ↔ ∃ t ∈ 𝒜, s ⊆ t ∧ t.card = s.card + 1 := by
-  refine' mem_shadow_iff_insert_mem.trans ⟨_, _⟩
-  · rintro ⟨a, ha, hs⟩
-    exact ⟨insert a s, hs, subset_insert _ _, card_insert_of_not_mem ha⟩
-  · rintro ⟨t, ht, hst, h⟩
-    obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} :=
-      card_eq_one.1 (by rw [card_sdiff hst, h, add_tsub_cancel_left])
-    exact
-      ⟨a, fun hat => not_mem_sdiff_of_mem_right hat (ha.superset <| mem_singleton_self a),
-       by rwa [insert_eq a s, ← ha, sdiff_union_of_subset hst]⟩
-#align finset.mem_shadow_iff_exists_mem_card_add_one Finset.mem_shadow_iff_exists_mem_card_add_one
-
 /-- Being in the shadow of `𝒜` means we have a superset in `𝒜`. -/
 theorem exists_subset_of_mem_shadow (hs : s ∈ ∂ 𝒜) : ∃ t ∈ 𝒜, s ⊆ t :=
   let ⟨t, ht, hst⟩ := mem_shadow_iff_exists_mem_card_add_one.1 hs
   ⟨t, ht, hst.1⟩
 #align finset.exists_subset_of_mem_shadow Finset.exists_subset_of_mem_shadow
-
-/-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`. -/
-theorem mem_shadow_iff_exists_mem_card_add :
-    s ∈ ∂ ^[k] 𝒜 ↔ ∃ t ∈ 𝒜, s ⊆ t ∧ t.card = s.card + k := by
-  induction' k with k ih generalizing 𝒜 s
-  · refine' ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, _⟩
-    rintro ⟨t, ht, hst, hcard⟩
-    rwa [eq_of_subset_of_card_le hst hcard.le]
-  simp only [exists_prop, Function.comp_apply, Function.iterate_succ]
-  refine' ih.trans _
-  clear ih
-  constructor
-  · rintro ⟨t, ht, hst, hcardst⟩
-    obtain ⟨u, hu, htu, hcardtu⟩ := mem_shadow_iff_exists_mem_card_add_one.1 ht
-    refine' ⟨u, hu, hst.trans htu, _⟩
-    rw [hcardtu, hcardst]
-    rfl
-  · rintro ⟨t, ht, hst, hcard⟩
-    obtain ⟨u, hsu, hut, hu⟩ :=
-      Finset.exists_intermediate_set k
-        (by
-          rw [add_comm, hcard]
-          exact le_succ _)
-        hst
-    rw [add_comm] at hu
-    refine' ⟨u, mem_shadow_iff_exists_mem_card_add_one.2 ⟨t, ht, hut, _⟩, hsu, hu⟩
-    rw [hcard, hu]
-    rfl
-#align finset.mem_shadow_iff_exists_mem_card_add Finset.mem_shadow_iff_exists_mem_card_add
 
 end Shadow
 
