@@ -2,6 +2,14 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
+   {"url": "https://github.com/leanprover/std4",
+    "subDir?": null,
+    "rev": "f91a64c789426debe48827ae6ef9efc8fa96bfcc",
+    "opts": {},
+    "name": "std",
+    "inputRev?": "main",
+    "inherited": false}},
+  {"git":
    {"url": "https://github.com/leanprover-community/quote4",
     "subDir?": null,
     "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
@@ -28,9 +36,10 @@
   {"git":
    {"url": "https://github.com/leanprover-community/ProofWidgets4",
     "subDir?": null,
-    "rev": "27715d1daf32b9657dc38cd52172d77b19bde4ba",
+    "rev": "5382e38eca1e2537d75d4c4705a9e744424b0037",
     "opts": {},
     "name": "proofwidgets",
+<<<<<<< HEAD
     "inputRev?": "v0.0.18",
     "inherited": false}},
   {"git":
@@ -40,5 +49,8 @@
     "opts": {},
     "name": "std",
     "inputRev?": "nightly-testing",
+=======
+    "inputRev?": "v0.0.19",
+>>>>>>> origin/master
     "inherited": false}}],
  "name": "mathlib"}
