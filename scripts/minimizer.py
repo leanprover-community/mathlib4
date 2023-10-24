@@ -59,9 +59,12 @@ def compile_file(filename):
         logging.info(result.stderr)
     return result
 
-def try_compile(expected_out, new_file):
+def try_compile(original_file, expected_out, new_file):
     new_out = compile_file(new_file)
-    return substantially_similar(expected_out, new_out)
+    progress = substantially_similar(expected_out, new_out)
+    if progress:
+        make_definitive(original_file, new_file)
+    return progress
 
 def imports_in(source):
     for match in re.finditer(r'^import (.*)$', source, flags=re.MULTILINE):
@@ -126,7 +129,7 @@ def make_committing_pass(change_generator, bottom_up=False):
     By default, we try changes from the top of the file downwards.
     If `bottom_up` is true, then we try changes from the bottom of the file upwards.
     """
-    def decomposable_pass(expected_out, filename):
+    def decomposable_pass(original_file, expected_out, filename):
         changes = sorted(list(change_generator(filename)), reverse=bottom_up)
 
         for i, change in enumerate(changes):
@@ -134,7 +137,7 @@ def make_committing_pass(change_generator, bottom_up=False):
             changed, new_file = apply_changes([change], filename)
             if not changed: continue
 
-            if try_compile(expected_out, new_file):
+            if try_compile(original_file, expected_out, new_file):
                 logging.info(f"committing_pass: change {i} succeeded")
                 return True, new_file
 
@@ -153,7 +156,7 @@ def make_bottom_up_pass(change_generator):
     The resulting minimization pass will go from the bottom to the top of the file to figure which subset of edits make progress,
     trying each change once.
     """
-    def decomposable_pass(expected_out, filename):
+    def decomposable_pass(original_file, expected_out, filename):
         changes = sorted(list(change_generator(filename)))
 
         current_file = filename
@@ -163,7 +166,7 @@ def make_bottom_up_pass(change_generator):
             changed, new_file = apply_changes([change], current_file)
             if not changed: continue
 
-            if try_compile(expected_out, new_file):
+            if try_compile(original_file, expected_out, new_file):
                 logging.info(f"bottom_up_pass: change {i} succeeded")
                 progress = True
                 current_file = new_file
@@ -183,7 +186,7 @@ def make_bisecting_pass(change_generator):
     The resulting minimization pass will use bisection to figure which subset of edits make progress.
     """
 
-    def bisect_changes(expected_out, changes, filename):
+    def bisect_changes(original_file, expected_out, changes, filename):
         # Turn the change set from an iterable into a sorted list, so we can check for its length
         # and earlier changes apply to the earlier half of the file.
         # Moreover, sorting this list should help with determinism.
@@ -198,7 +201,7 @@ def make_bisecting_pass(change_generator):
         logging.debug(f"bisect_changes: applying {len(changes)} changes")
         changed, new_file = apply_changes(changes, filename)
         if not changed: return False, filename
-        if try_compile(expected_out, new_file):
+        if try_compile(original_file, expected_out, new_file):
             return True, new_file
 
         if len(changes) == 1:
@@ -211,19 +214,19 @@ def make_bisecting_pass(change_generator):
         # Otherwise, maybe there are some changes in the bottom half of the file that make progress.
         # We do the bottom half before the top half, since we can re-use the changes in the top half (while file indices in the bottom depend on those in the top)
         logging.debug(f"bisect_changes: trying to change the bottom half")
-        progress_bot, file_bot = bisect_changes(expected_out, changes_bot, filename)
+        progress_bot, file_bot = bisect_changes(original_file, expected_out, changes_bot, filename)
         if progress_bot:
             # Some progress in the bottom half, so try making progress in the top half too.
             logging.debug(f"bisect_changes: bottom half succeeded, let's try the top too")
-            _, file_top_and_bot = bisect_changes(expected_out, changes_top, file_bot)
+            _, file_top_and_bot = bisect_changes(original_file, expected_out, changes_top, file_bot)
             # No matter whether we had progress in the top, we had progress in the bottom.
             return True, file_top_and_bot
         else:
             logging.debug(f"bisect_changes: trying to change only the top half")
-            return bisect_changes(expected_out, changes_top, filename)
+            return bisect_changes(original_file, expected_out, changes_top, filename)
 
-    def decomposable_pass(expected_out, filename):
-        return bisect_changes(expected_out, change_generator(filename), filename)
+    def decomposable_pass(original_file, expected_out, filename):
+        return bisect_changes(original_file, expected_out, change_generator(filename), filename)
 
     return decomposable_pass
 
@@ -232,7 +235,7 @@ def sequence_passes(*passes):
 
     Useful as an input to other pass combinators such as `loop_pass`.
     """
-    def sequenced_pass(expected_out, filename):
+    def sequenced_pass(original_file, expected_out, filename):
         current_file = filename
         progress = False
         for minimize_pass in passes:
@@ -250,7 +253,7 @@ def loop_pass(minimize_pass):
 
     Useful if you want to feed the output of a pass into itself.
     """
-    def looping_pass(expected_out, filename):
+    def looping_pass(original_file, expected_out, filename):
         current_file = filename
         progress = False
         pass_progress = True
@@ -439,7 +442,7 @@ def minimize_file(original_file):
         for pass_name, minimize_pass in passes.items():
             logging.debug(f"minimize_file: running {pass_name} on {current_file}")
             try:
-                pass_progress, new_file = minimize_pass(expected_out, current_file)
+                pass_progress, new_file = minimize_pass(original_file, expected_out, current_file)
                 if pass_progress:
                     logging.info(f"minimize_file: success: {pass_name} modified {current_file} -> {new_file}")
                     progress = True
