@@ -141,7 +141,7 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
+class OrderedCommSemiring (α : Type u) extends CommSemiring α, OrderedSemiring α where
   mul_le_mul_of_nonneg_right a b c ha hc :=
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
