@@ -54,7 +54,7 @@ noncomputable def isometryEquivSumSquares [DecidableEq ι] (w' : ι → ℂ) :
   split_ifs with h
   · simp only [h, zero_smul, zero_mul]
   have hww' : w' j = w j := by simp only [dif_neg h, Units.val_mk0]
-  simp only [one_mul, Units.val_mk0, smul_eq_mul]
+  simp (config := {zeta := false}) only [one_mul, Units.val_mk0, smul_eq_mul]
   rw [hww']
   suffices v j * v j = w j ^ (-(1 / 2 : ℂ)) * w j ^ (-(1 / 2 : ℂ)) * w j * v j * v j by
     rw [this]; ring
