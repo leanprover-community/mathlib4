@@ -498,7 +498,7 @@ attribute [inherit_doc FirstOrder.Language.Hom.map_rel'] FirstOrder.Language.Emb
 
 namespace Hom
 
-instance ndfunLike : NDFunLike (M →[L] N) M N where
+instance funLike : NDFunLike (M →[L] N) M N where
   coe := Hom.toFun
   coe_injective' f g h := by cases f; cases g; cases h; rfl
 #align first_order.language.hom.fun_like FirstOrder.Language.Hom.funLike

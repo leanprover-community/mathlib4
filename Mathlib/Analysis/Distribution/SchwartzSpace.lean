@@ -92,7 +92,7 @@ open SchwartzSpace
 -- porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
-instance instNDFunLike : NDFunLike 𝓢(E, F) E F where
+instance instFunLike : NDFunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align schwartz_map.fun_like SchwartzMap.instFunLike

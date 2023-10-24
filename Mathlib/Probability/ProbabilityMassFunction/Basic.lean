@@ -46,7 +46,7 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
-instance ndfunLike : NDFunLike (PMF α) α ℝ≥0∞ where
+instance funLike : NDFunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective' _ _ h := Subtype.eq h
 #align pmf.fun_like PMF.funLike

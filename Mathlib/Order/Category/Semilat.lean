@@ -69,7 +69,7 @@ instance : LargeCategory.{u} SemilatSupCat where
 
 -- Porting note: added
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instNDFunLike (X Y : SemilatSupCat) : NDFunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : SemilatSupCat) : NDFunLike (X ⟶ Y) X Y :=
   show NDFunLike (SupBotHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory SemilatSupCat where
@@ -123,7 +123,7 @@ instance : LargeCategory.{u} SemilatInfCat where
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
 -- Porting note: added
-instance instNDFunLike (X Y : SemilatInfCat) : NDFunLike (X ⟶ Y) X Y :=
+instance instFunLike (X Y : SemilatInfCat) : NDFunLike (X ⟶ Y) X Y :=
   show NDFunLike (InfTopHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory SemilatInfCat where

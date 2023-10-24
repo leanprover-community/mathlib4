@@ -65,7 +65,7 @@ namespace PolynomialModule
 noncomputable instance : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
 
-instance ndfunLike : NDFunLike (PolynomialModule R M) ℕ M :=
+instance funLike : NDFunLike (PolynomialModule R M) ℕ M :=
   Finsupp.funLike
 
 instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=

@@ -86,7 +86,7 @@ instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance Hom_NDFunLike (X Y : MonCat) : NDFunLike (X ⟶ Y) X Y :=
+instance Hom_FunLike (X Y : MonCat) : NDFunLike (X ⟶ Y) X Y :=
   show NDFunLike (X →* Y) X Y by infer_instance
 
 -- porting note: added
@@ -208,7 +208,7 @@ instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance Hom_NDFunLike (X Y : CommMonCat) : NDFunLike (X ⟶ Y) X Y :=
+instance Hom_FunLike (X Y : CommMonCat) : NDFunLike (X ⟶ Y) X Y :=
   show NDFunLike (X →* Y) X Y by infer_instance
 
 -- porting note: added

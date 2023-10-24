@@ -68,7 +68,7 @@ namespace ElementaryEmbedding
 
 attribute [coe] toFun
 
-instance ndfunLike : NDFunLike (M ↪ₑ[L] N) M N where
+instance funLike : NDFunLike (M ↪ₑ[L] N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
