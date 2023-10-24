@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Adjunction
+import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -536,7 +537,7 @@ lemma distinguished_iff_op (T : Triangle C) :
 
 namespace Opposite
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 600000 in
 scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
   have : ∀ ⦃X₁ X₂ X₃ : C⦄ (u₁₂ : X₁ ⟶ X₂) (u₂₃ : X₂ ⟶ X₃),
     ∃ (Z₁₂ Z₂₃ Z₁₃ : C)
@@ -863,5 +864,22 @@ lemma coproductTriangle_distinguished (hT : ∀ j, T j ∈ distTriang C) :
 end
 
 end Pretriangulated
+
+namespace Functor
+
+open Pretriangulated.Opposite Pretriangulated
+
+variable {C}
+variable [HasShift C ℤ] [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [Pretriangulated C]
+
+lemma map_distinguished_op_exact {A : Type*} [Category A] [Abelian A] (F : Cᵒᵖ ⥤ A)
+    [F.PreservesZeroMorphisms]
+    [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
+    ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
+  F.map_distinguished_exact _ (op_distinguished T hT)
+
+
+end Functor
 
 end CategoryTheory

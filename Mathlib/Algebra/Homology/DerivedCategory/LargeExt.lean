@@ -7,8 +7,6 @@ universe w v u
 open CategoryTheory Category Preadditive DerivedCategory Limits Pretriangulated
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
-
---attribute [instance] MorphismProperty.HasLocalization.standard
 variable [HasDerivedCategory.{w} C]
 
 namespace CategoryTheory
@@ -17,26 +15,22 @@ namespace Abelian
 
 variable (X Y Z : C) (n : ℕ)
 
-def LargeExt : Type w :=
-  ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n
+structure LargeExt : Type w where
+  hom : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n
 
 namespace LargeExt
 
 variable {X Y Z n}
 
-@[pp_dot]
-def hom (e : LargeExt X Y n) :
-  ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n := e
+--lemma mk_hom
+--    (f : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n) :
+--    (mk f).hom = f := rfl
 
-def mk (f : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n) :
-    LargeExt X Y n := f
-
-@[simp]
-lemma mk_hom
-    (f : ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n) :
-    (mk f).hom = f := rfl
-
-lemma hom_injective (e₁ e₂ : LargeExt X Y n) (h : e₁.hom = e₂.hom) : e₁ = e₂ := h
+lemma hom_injective (e₁ e₂ : LargeExt X Y n) (h : e₁.hom = e₂.hom) : e₁ = e₂ := by
+  cases e₁
+  cases e₂
+  subst h
+  rfl
 
 lemma ext_iff (e₁ e₂ : LargeExt X Y n) : e₁ = e₂ ↔ e₁.hom = e₂.hom := by
   constructor
@@ -46,9 +40,23 @@ lemma ext_iff (e₁ e₂ : LargeExt X Y n) : e₁ = e₂ ↔ e₁.hom = e₂.hom
 
 lemma mk_surjective (e : LargeExt X Y n) : ∃ (f : _), e = mk f := ⟨e.hom, rfl⟩
 
-noncomputable instance : AddCommGroup (LargeExt X Y n) := by
-  dsimp only [LargeExt]
-  infer_instance
+variable (X Y n)
+
+@[simps]
+def equiv :
+    LargeExt X Y n ≃ ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n where
+  toFun := hom
+  invFun := mk
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+noncomputable instance : AddCommGroup (LargeExt X Y n) := Equiv.addCommGroup (equiv X Y n)
+
+@[simps!]
+def addEquiv :
+    LargeExt X Y n ≃+ ShiftedHom ℤ ((singleFunctor _ 0).obj X) ((singleFunctor _ 0).obj Y) n where
+  toEquiv := equiv X Y n
+  map_add' _ _ := rfl
 
 @[simp]
 lemma add_hom (x y : LargeExt X Y n) : (x + y).hom = x.hom + y.hom := rfl
@@ -70,10 +78,10 @@ lemma zsmul_hom (a : ℤ) (x : LargeExt X Y n) :
     AddMonoidHom.mk' (fun e => e.hom) (by simp)
   apply φ.map_zsmul
 
+variable {X Y}
+
 noncomputable def ofHom (f : X ⟶ Y) : LargeExt X Y 0 :=
   mk (ShiftedHom.mk₀ ((singleFunctor _ 0).map f) ((0 : ℕ) : ℤ) rfl)
-
-variable (X Y)
 
 noncomputable def ofHomAddEquiv : (X ⟶ Y) ≃+ LargeExt X Y 0 where
   toFun f := ofHom f
@@ -82,12 +90,12 @@ noncomputable def ofHomAddEquiv : (X ⟶ Y) ≃+ LargeExt X Y 0 where
   left_inv f := by
     apply (singleFunctor C 0).map_injective
     simp only [Functor.image_preimage, ofHom, ShiftedHom.mk₀, assoc, Iso.inv_hom_id_app,
-      Functor.id_obj, comp_id, mk_hom]
+      Functor.id_obj, comp_id]
   right_inv g := by
     apply hom_injective
     dsimp only [ofHom, ShiftedHom.mk₀]
     simp only [Functor.image_preimage, assoc, Iso.hom_inv_id_app,
-      comp_id, mk_hom]
+      comp_id]
   map_add' x y := by
     apply hom_injective
     simp [ofHom]
@@ -99,10 +107,12 @@ lemma one_hom : (1 : LargeExt X X 0).hom = ShiftedHom.mk₀ (𝟙 _) ((0 : ℕ) 
   rw [← (singleFunctor C 0).map_id]
   rfl
 
+variable (X)
+
 @[simp]
 lemma ofHom_id : ofHom (𝟙 X) = 1 := rfl
 
-variable {X Y}
+variable {X}
 
 -- the signs are there for consistency with the composition
 -- of Yoneda Ext, see Verdier, proposition III 3.2.5
@@ -240,9 +250,7 @@ end
 
 variable {R : Type*} [Ring R] [Linear R C]
 
-noncomputable instance : Module R (LargeExt X Y n) := by
-  dsimp only [LargeExt]
-  infer_instance
+noncomputable instance : Module R (LargeExt X Y n) := (equiv X Y n).module R
 
 @[simp]
 lemma smul_hom (a : R) (x : LargeExt X Y n) :
@@ -259,6 +267,18 @@ lemma γhmul_smul {p q n : ℕ} (α : LargeExt Y Z p) (a : R) (β : LargeExt X Y
   apply hom_injective
   simp only [γhmul_hom, smul_hom, ShiftedHom.smul_γhmul,
     Module.smul_zsmul, Module.zsmul_smul]
+
+@[simps!]
+noncomputable def leftSMul {Y Z : C} {p : ℕ} (α : LargeExt Y Z p)
+    (X : C) (q : ℕ) (n : ℕ) (hpq : p + q = n) :
+    LargeExt X Y q →+ LargeExt X Z n :=
+  AddMonoidHom.mk' (fun β => α •[hpq] β) (by simp)
+
+@[simps!]
+noncomputable def rightSMul {X Y : C} {q : ℕ} (β : LargeExt X Y q)
+    (Z : C) (p : ℕ) (n : ℕ) (hpq : p + q = n) :
+    LargeExt Y Z p →+ LargeExt X Z n :=
+  AddMonoidHom.mk' (fun α => α •[hpq] β) (by simp)
 
 end LargeExt
 
@@ -337,6 +357,39 @@ lemma γhmul_extClass : (LargeExt.ofHom S.f) •[zero_add 1] hS.largeExtClass = 
   dsimp [LargeExt.ofHom, ShiftedHom.mk₀] at eq ⊢
   simp only [mul_one, Functor.map_comp, assoc, reassoc_of% eq, zero_comp, Nat.cast_zero,
     Int.negOnePow_zero, one_smul]
+
+section
+
+variable (A : C) (n n₀ n₁ : ℕ) (hn₁ : n₀ + 1 = n₁)
+variable (S)
+
+@[simp]
+noncomputable def covariantLargeExtArrow₂₂ : Arrow₂ AddCommGroupCat :=
+  Arrow₂.mk' (AddCommGroupCat.ofHom ((LargeExt.ofHom S.f).leftSMul A n n  (zero_add n)))
+    (AddCommGroupCat.ofHom ((LargeExt.ofHom S.g).leftSMul A n n (zero_add n)))
+
+variable {S}
+
+/-lemma covariantLargeExtArrow₂₂Iso :
+    covariantLargeExtArrow₂₂ S A n ≅ ((shortComplexOfDistTriangle (hS.singleTriangle⟦(n : ℤ)⟧)
+      (Triangle.shift_distinguished _ hS.singleTriangle_distinguished _)).map
+    (preadditiveCoyoneda.obj (Opposite.op ((singleFunctor C 0).obj A)))).arrow₂ :=
+  AddCommGroupCat.arrow₂IsoMk (LargeExt.addEquiv A S.X₁ n)
+    (LargeExt.addEquiv A S.X₂ n) (LargeExt.addEquiv A S.X₃ n) (fun x₁ => by
+      obtain ⟨x₁, rfl⟩ := (LargeExt.equiv _ _ _).symm.surjective x₁
+      dsimp [LargeExt.addEquiv, LargeExt.equiv]
+      dsimp only [FunLike.coe, ZeroHom.toFun, ModuleCat.ofHom, LinearMap.toAddMonoidHom, EquivLike.coe]
+      dsimp [ZeroHom.toFun, LargeExt.leftSMul]
+      sorry) sorry
+
+lemma covariantLargeExtArrow₂₂_zero : (covariantLargeExtArrow₂₂ S A n).Zero :=
+  Arrow₂.zero_of_arrow₂Iso (covariantLargeExtArrow₂₂Iso hS A n)
+
+lemma covariant_largeExt_exact₂ :
+    (ShortComplex.mk _ _ (covariantLargeExtArrow₂₂_zero hS A n)).Exact :=
+  exact_of_arrow₂Iso (covariantLargeExtArrow₂₂Iso hS A n) (by apply Functor.map_distinguished_exact) -/
+
+end
 
 /- needs refactor as the signs have been changed...
 lemma covariant_LargeExt_exact₁ {A : C} {n₁ : ℕ}

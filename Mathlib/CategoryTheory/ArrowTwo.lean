@@ -1,6 +1,9 @@
 import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 namespace CategoryTheory
+
+open Category
 
 variable (C : Type _) [Category C]
 
@@ -117,6 +120,26 @@ def obj₁ : Arrow₂ C ⥤ C where
 def obj₂ : Arrow₂ C ⥤ C where
   obj D := D.X₂
   map φ := φ.τ₂
+
+@[simp]
+def Zero [Limits.HasZeroMorphisms C] (D : Arrow₂ C) : Prop := D.f ≫ D.g = 0
+
+@[simps]
+def homMk {D D' : Arrow₂ C} (τ₀ : D.X₀ ⟶ D'.X₀) (τ₁ : D.X₁ ⟶ D'.X₁) (τ₂ : D.X₂ ⟶ D'.X₂)
+  (commf : τ₀ ≫ D'.f = D.f ≫ τ₁) (commg : τ₁ ≫ D'.g = D.g ≫ τ₂) : D ⟶ D' where
+  τ₀ := τ₀
+  τ₁ := τ₁
+  τ₂ := τ₂
+
+def isoMk {D D' : Arrow₂ C} (e₀ : D.X₀ ≅ D'.X₀) (e₁ : D.X₁ ≅ D'.X₁) (e₂ : D.X₂ ≅ D'.X₂)
+    (commf : e₀.hom ≫ D'.f = D.f ≫ e₁.hom) (commg : e₁.hom ≫ D'.g = D.g ≫ e₂.hom) :
+    D ≅ D' where
+  hom := homMk e₀.hom e₁.hom e₂.hom commf commg
+  inv := homMk e₀.inv e₁.inv e₂.inv
+    (by rw [← cancel_mono e₁.hom, assoc, assoc, ← commf,
+      e₀.inv_hom_id_assoc, e₁.inv_hom_id, comp_id])
+    (by rw [← cancel_mono e₂.hom, assoc, assoc, ← commg,
+      e₁.inv_hom_id_assoc, e₂.inv_hom_id, comp_id])
 
 end Arrow₂
 

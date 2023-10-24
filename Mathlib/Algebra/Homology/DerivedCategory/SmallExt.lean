@@ -199,12 +199,13 @@ noncomputable def largeExtAddEquivHom [HasDerivedCategory.{w'} C] (X Y : C) (n :
     LargeExt X Y n ≃+
       (DerivedCategory.Q.obj ((CochainComplex.singleFunctor C 0).obj X) ⟶
       DerivedCategory.Q.obj ((CochainComplex.singleFunctor C (-n)).obj Y)) :=
-  addEquivHomOfIsos
-    (((SingleFunctors.evaluation _ _ 0).mapIso
-      (DerivedCategory.singleFunctorsPostCompQIso C)).app X)
-    (((DerivedCategory.singleFunctors C).shiftIso n (-n) 0 (by linarith)).app Y ≪≫
-      ((SingleFunctors.evaluation _ _ (-n : ℤ)).mapIso
-      (DerivedCategory.singleFunctorsPostCompQIso C)).app Y)
+  (LargeExt.addEquiv.{w'} X Y n).trans
+    (addEquivHomOfIsos
+      (((SingleFunctors.evaluation _ _ 0).mapIso
+        (DerivedCategory.singleFunctorsPostCompQIso C)).app X)
+      (((DerivedCategory.singleFunctors C).shiftIso n (-n) 0 (by linarith)).app Y ≪≫
+        ((SingleFunctors.evaluation _ _ (-n : ℤ)).mapIso
+        (DerivedCategory.singleFunctorsPostCompQIso C)).app Y))
 
 variable (C)
 
@@ -250,9 +251,11 @@ abbrev newExt [HasSmallExt.{v} C] (X Y : C) (n : ℕ) : Type v := SmallExt.{v} X
 noncomputable def largeExtAddEquivLargeExt [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} C]
     (X Y : C) (n : ℕ) :
     LargeExt.{w} X Y n ≃+ LargeExt.{w'} X Y n :=
-  ShiftedHom.map'AddEquiv (DerivedCategory.uniq.{w, w'} C).functor
-    ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app X)
-    ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app Y) (n : ℤ)
+  (LargeExt.addEquiv.{w} X Y n).trans
+    ((ShiftedHom.map'AddEquiv (DerivedCategory.uniq.{w, w'} C).functor
+      ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app X)
+      ((DerivedCategory.singleFunctorCompUniqFunctor.{w, w'} C 0).app Y) (n : ℤ)).trans
+      (LargeExt.addEquiv.{w'} X Y n).symm)
 
 noncomputable def smallExtAddEquivLargeExt [HasSmallExt.{w} C] [HasDerivedCategory.{w'} C]
     (X Y : C) (n : ℕ) :
@@ -283,13 +286,19 @@ lemma largeExtAddEquivLargeExt_γhmul [HasDerivedCategory.{w} C] [HasDerivedCate
     (α : LargeExt.{w} Y Z p) (β : LargeExt.{w} X Y q) (h : p + q = r) :
     largeExtAddEquivLargeExt.{w, w'} X Z r (α •[h] β) =
       largeExtAddEquivLargeExt.{w, w'} Y Z p α •[h] largeExtAddEquivLargeExt.{w, w'} X Y q β  := by
+  obtain ⟨f, rfl⟩ := (LargeExt.equiv _ _ _).symm.surjective α
+  obtain ⟨g, rfl⟩ := (LargeExt.equiv _ _ _).symm.surjective β
   rw [LargeExt.ext_iff]
   dsimp only [largeExtAddEquivLargeExt, ShiftedHom.map'AddEquiv, FunLike.coe, EquivLike.coe,
-    Equiv.toFun, ShiftedHom.map'Equiv]
-  rw [LargeExt.γhmul_hom]
+    ShiftedHom.map'Equiv, AddEquiv.trans]
+  simp only [AddEquiv.toEquiv_eq_coe, Iso.app_hom, Iso.app_inv, ShiftedHom.γhmul_mk₀,
+    ShiftedHom.mk₀_γhmul, Equiv.toFun_as_coe_apply, AddEquiv.toEquiv_symm, Equiv.toFun_as_coe,
+    Equiv.coe_trans, AddEquiv.coe_toEquiv_symm, Equiv.coe_fn_mk, Equiv.invFun_as_coe,
+    Equiv.trans_apply, AddEquiv.coe_toEquiv, LargeExt.addEquiv_apply, LargeExt.γhmul_hom,
+    Nat.cast_mul, LargeExt.equiv_symm_apply_hom, Function.comp_apply,
+    LargeExt.addEquiv_symm_apply_hom]
   erw [← ShiftedHom.map'_comp]
-  rw [LargeExt.γhmul_eq, LargeExt.mk_zsmul, ShiftedHom.map'_zsmul]
-  rfl
+  rw [ShiftedHom.map'_zsmul]
 
 lemma smallExtAddEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
     (α : SmallExt.{w} Y Z p) (β : SmallExt.{w} X Y q) (h : p + q = r) :

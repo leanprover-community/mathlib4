@@ -114,6 +114,10 @@ lemma exact_of_iso (e : S₁ ≅ S₂) (h : S₁.Exact) : S₂.Exact := by
 lemma exact_iff_of_iso (e : S₁ ≅ S₂) : S₁.Exact ↔ S₂.Exact :=
   ⟨exact_of_iso e, exact_of_iso e.symm⟩
 
+def exact_of_arrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂)
+    (hS : S.Exact) : (mkOfArrow₂Iso e).Exact :=
+  exact_of_iso (isoOfArrow₂Iso e).symm hS
+
 lemma exact_of_isZero_X₂ (h : IsZero S.X₂) : S.Exact := by
   rw [(HomologyData.ofZeros S (IsZero.eq_of_tgt h _ _) (IsZero.eq_of_src h _ _)).exact_iff]
   exact h
