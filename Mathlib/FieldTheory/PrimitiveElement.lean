@@ -308,7 +308,18 @@ theorem _root_.IntermediateField.finiteDimensional_adjoin_of_finite_of_isAlgebra
 theorem finiteDimensional_of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   have halg := isAlgebraic_of_finite_intermediateField F E
-  sorry
+  let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
+  haveI : Finite IF := Subtype.finite
+  haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦
+    adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg x)
+  have hfin := finiteDimensional_iSup_of_finite (t := fun (K : IF) ↦ K.1)
+  have htop : ⨆ (K : IF), K.1 = ⊤ := by
+    apply le_antisymm le_top
+    intro x _
+    exact le_iSup (fun (K : IF) ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
+  rw [htop] at hfin
+  have := (topEquiv (F := F) (E := E)).toLinearEquiv
+  exact FiniteDimensional.of_surjective this.toLinearMap this.surjective
 
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] : ∃ α : E, F⟮α⟯ = ⊤ := by
