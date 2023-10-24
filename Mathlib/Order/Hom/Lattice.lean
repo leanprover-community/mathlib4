@@ -343,7 +343,7 @@ instance : SupHomClass (SupHom α β) α β where
 directly. -/
 -- porting note: replaced `CoeFun` with `NDFunLike` so that we use `FunLike.coe` instead of `toFun`
 instance : NDFunLike (SupHom α β) α β :=
-  SupHomClass.toFunLike
+  SupHomClass.toNDFunLike
 
 @[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
 #align sup_hom.to_fun_eq_coe SupHom.toFun_eq_coe
@@ -530,7 +530,7 @@ instance : InfHomClass (InfHom α β) α β where
 /-- Helper instance for when there's too many metavariables to apply `NDFunLike.hasCoeToFun`
 directly. -/
 instance : NDFunLike (InfHom α β) α β :=
-  InfHomClass.toFunLike
+  InfHomClass.toNDFunLike
 
 @[simp] lemma toFun_eq_coe (f : InfHom α β) : f.toFun = (f : α → β) := rfl
 #align inf_hom.to_fun_eq_coe InfHom.toFun_eq_coe
@@ -726,7 +726,7 @@ instance : SupBotHomClass (SupBotHom α β) α β
 
 -- porting note: replaced `CoeFun` instance with `NDFunLike` instance
 instance : NDFunLike (SupBotHom α β) α β :=
-  SupHomClass.toFunLike
+  SupHomClass.toNDFunLike
 
 lemma toFun_eq_coe (f : SupBotHom α β) : f.toFun = f := rfl
 #align sup_bot_hom.to_fun_eq_coe SupBotHom.toFun_eq_coe
@@ -882,7 +882,7 @@ instance : InfTopHomClass (InfTopHom α β) α β
 /-- Helper instance for when there's too many metavariables to apply `NDFunLike.hasCoeToFun`
 directly. -/
 instance : NDFunLike (InfTopHom α β) α β :=
-  InfHomClass.toFunLike
+  InfHomClass.toNDFunLike
 
 theorem toFun_eq_coe (f : InfTopHom α β) : f.toFun = f := rfl
 #align inf_top_hom.to_fun_eq_coe InfTopHom.toFun_eq_coe
@@ -1031,7 +1031,7 @@ instance : LatticeHomClass (LatticeHom α β) α β
 /-- Helper instance for when there's too many metavariables to apply `NDFunLike.hasCoeToFun`
 directly. -/
 instance : NDFunLike (LatticeHom α β) α β :=
-  SupHomClass.toFunLike
+  SupHomClass.toNDFunLike
 
 lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl
 #align lattice_hom.to_fun_eq_coe LatticeHom.toFun_eq_coe
