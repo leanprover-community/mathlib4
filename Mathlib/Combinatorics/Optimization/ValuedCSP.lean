@@ -68,13 +68,16 @@ def ValuedCsp.Instance.IsOptimumSolution {Γ : ValuedCsp D C} {ι : Type*}
     (I : Γ.Instance ι) (x : ι → D) : Prop :=
   ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
 
+/-- TODO description -/
 def Function.HasMaxCutPropertyAt (f : (Fin 2 → D) → C) (a b : D) : Prop :=
   f ![a, b] = f ![b, a] ∧  -- `argmin f` is exactly `{ ![a, b] , ![b, a] }`
     ∀ x y : D, f ![a, b] ≤ f ![x, y] ∧ (f ![a, b] = f ![x, y] → a = x ∧ b = y ∨ a = y ∧ b = x)
 
+/-- TODO description -/
 def Function.HasMaxCutProperty (f : (Fin 2 → D) → C) : Prop :=
   ∃ a b : D, a ≠ b ∧ f.HasMaxCutPropertyAt a b
 
+/-- TODO description -/
 def FractionalOperation (D : Type*) (m k : ℕ) : Type _ :=
   (Fin m → D) → (Fin k → D)
 
@@ -97,25 +100,30 @@ def Function.AdmitsFractional {D C : Type} [OrderedAddCommMonoid C] {n m k : ℕ
 They should be defeq to the definitions below.
 -/
 
+/-- TODO description -/
 def FractionalOperation.tt {m k n : ℕ}
     (ω : FractionalOperation D m k) (x : (Fin m → (Fin n → D)))
     (a : Fin k) (b : Fin n) : D :=
   (ω (fun (i : Fin m) => x i b)) a
 
+/-- TODO description -/
 def Function.AdmitsFractional {n m k : ℕ}
     (f : (Fin n → D) → C) (ω : FractionalOperation D m k) : Prop :=
   ∀ x : (Fin m → (Fin n → D)),
     m • List.sum (List.map (f ∘ (ω.tt x)) (List.finRange k)) ≤
     k • List.sum (List.map (f ∘ x) (List.finRange m))
 
+/-- TODO description -/
 def FractionalOperation.IsFractionalPolymorphismFor {m k : ℕ}
     (ω : FractionalOperation D m k) (Γ : ValuedCsp D C) : Prop :=
   ∀ f ∈ Γ, f.snd.AdmitsFractional ω
 
+/-- TODO description -/
 def FractionalOperation.IsSymmetric {m k : ℕ}
     (ω : FractionalOperation D m k) : Prop :=
   ∀ x y : (Fin m → D), List.ofFn x ~ List.ofFn y → ω x = ω y
 
+/-- TODO description -/
 def FractionalOperation.IsSymmetricFractionalPolymorphismFor {m k : ℕ}
     (ω : FractionalOperation D m k) (Γ : ValuedCsp D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
