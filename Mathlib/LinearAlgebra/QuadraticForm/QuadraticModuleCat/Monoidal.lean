@@ -70,7 +70,6 @@ end instMonoidalCategory
 
 open instMonoidalCategory
 
-set_option maxHeartbeats 400000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))

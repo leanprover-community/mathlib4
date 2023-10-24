@@ -56,7 +56,7 @@ the trace Form. See also `killingForm`. -/
 noncomputable def traceForm : L →ₗ[R] L →ₗ[R] R :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 
-@[simp] lemma traceForm_apply_apply (x y : L) :
+lemma traceForm_apply_apply (x y : L) :
     traceForm R L M x y = trace R _ (φ x ∘ₗ φ y) :=
   rfl
 
@@ -91,6 +91,12 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
       = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, LinearMap.neg_apply]
     _ = - traceForm R L M y ⁅x, z⁆ := by rw [traceForm_apply_lie_apply]
 
+/-- This lemma justifies the terminology "invariant" for trace forms. -/
+@[simp] lemma lie_traceForm_eq_zero (x : L) : ⁅x, traceForm R L M⁆ = 0 := by
+  ext y z
+  rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
+    LinearMap.zero_apply, traceForm_apply_lie_apply', sub_self]
+
 @[simp] lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent R L M] :
     traceForm R L M = 0 := by
   ext x y
@@ -98,11 +104,37 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEndomorphism_of_isNilpotent₂ R L M x y
 
+/-- The upper and lower central series of `L` are orthogonal wrt the trace form of any Lie module
+`M`. -/
+lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
+    (hx : x ∈ (⊤ : LieIdeal R L).lcs L k) (hy : y ∈ (⊥ : LieIdeal R L).ucs k) :
+    traceForm R L M x y = 0 := by
+  induction' k with k ih generalizing x y
+  · replace hy : y = 0 := by simpa using hy
+    simp [hy]
+  · rw [LieSubmodule.ucs_succ, LieSubmodule.mem_normalizer] at hy
+    simp_rw [LieIdeal.lcs_succ, ← LieSubmodule.mem_coeSubmodule,
+      LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.mem_top, true_and] at hx
+    refine Submodule.span_induction hx ?_ ?_ (fun z w hz hw ↦ ?_) (fun t z hz ↦ ?_)
+    · rintro - ⟨z, w, hw, rfl⟩
+      rw [← lie_skew, map_neg, LinearMap.neg_apply, neg_eq_zero, traceForm_apply_lie_apply]
+      exact ih hw (hy _)
+    · simp
+    · simp [hz, hw]
+    · simp [hz]
+
+lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
+    (hx : x ∈ lowerCentralSeries R L L 1) (hy : y ∈ LieAlgebra.center R L) :
+    traceForm R L M x y = 0 := by
+  apply traceForm_eq_zero_if_mem_lcs_of_mem_ucs R L M 1
+  · simpa using hx
+  · simpa using hy
+
 -- This is barely worth having: it usually follows from `LieModule.traceForm_eq_zero_of_isNilpotent`
 @[simp] lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
     traceForm R L M = 0 := by
   ext x y
-  suffices φ x ∘ₗ φ y = 0 by simp [this]
+  suffices φ x ∘ₗ φ y = 0 by simp [traceForm_apply_apply, this]
   ext m
   simp
 
@@ -213,13 +245,17 @@ noncomputable def killingCompl : LieIdeal R L :=
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
   ext
-  simp [-LieModule.traceForm_apply_apply, LinearMap.ext_iff]
+  simp [LinearMap.ext_iff]
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
     killingForm R I = I.restrictBilinear (killingForm R L) :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I $ by simp
+
+lemma restrictBilinear_killingForm :
+    I.restrictBilinear (killingForm R L) = LieModule.traceForm R I L :=
+  rfl
 
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
     I ≤ LieIdeal.killingCompl R L ⊤ := by
@@ -266,6 +302,10 @@ lemma ker_restrictBilinear_of_isCartanSubalgebra_eq_bot
     simp [LinearMap.ker_restrictBilinear_eq_of_codisjoint h this]
   intro m₀ h₀ m₁ h₁
   exact killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting R L H (le_zeroRootSubalgebra R L H h₀) h₁
+
+lemma restrictBilinear_killingForm (H : LieSubalgebra R L) :
+    H.restrictBilinear (killingForm R L) = LieModule.traceForm R H L :=
+  rfl
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
 over fields with positive characteristic. -/
