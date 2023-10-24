@@ -239,7 +239,7 @@ def sequence_passes(*passes):
         current_file = filename
         progress = False
         for minimize_pass in passes:
-            pass_progress, new_file = minimize_pass(expected_out, current_file)
+            pass_progress, new_file = minimize_pass(original_file, expected_out, current_file)
             if pass_progress:
                 progress = True
                 logging.info(f"sequence_passes: succeeded; continuing with {new_file}")
@@ -258,7 +258,7 @@ def loop_pass(minimize_pass):
         progress = False
         pass_progress = True
         while pass_progress:
-            pass_progress, new_file = minimize_pass(expected_out, current_file)
+            pass_progress, new_file = minimize_pass(original_file, expected_out, current_file)
             if pass_progress:
                 progress = True
                 logging.info(f"loop_pass: succeeded; repeating on {new_file}")
