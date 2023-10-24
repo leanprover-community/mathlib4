@@ -144,14 +144,28 @@ end Bornology
 ### Bounded spaces
 -/
 
-
 open Bornology
 
-instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := by
-  simp [← cobounded_eq_bot_iff, cobounded_prod]
+lemma boundedSpace_prod :
+    BoundedSpace (α × β) ↔ IsEmpty α ∨ IsEmpty β ∨ BoundedSpace α ∧ BoundedSpace β := by
+  simp_rw [← isBounded_univ, ← univ_prod_univ, isBounded_prod, univ_eq_empty_iff]
 
-instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
-  simp [← cobounded_eq_bot_iff, cobounded_pi]
+lemma unboundedSpace_prod :
+    UnboundedSpace (α × β) ↔ Nonempty α ∧ Nonempty β ∧ (UnboundedSpace α ∨ UnboundedSpace β) := by
+  simp_rw [← not_boundedSpace_iff, boundedSpace_prod, not_or, not_and_or, not_isEmpty_iff]
+
+lemma boundedSpace_pi :
+    BoundedSpace (∀ i, π i) ↔ (∃ i, IsEmpty (π i)) ∨ ∀ i, BoundedSpace (π i) := by
+  simp_rw [← isBounded_univ, ← pi_univ univ, isBounded_pi, univ_eq_empty_iff]
+
+lemma unboundedSpace_pi :
+    UnboundedSpace (∀ i, π i) ↔ (∀ i, Nonempty (π i)) ∧ ∃ i, UnboundedSpace (π i) := by
+  simp_rw [← not_boundedSpace_iff, ← not_isEmpty_iff, boundedSpace_pi]; push_neg; rfl
+
+instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) :=
+  boundedSpace_prod.2 <| .inr <| .inr ⟨‹_›, ‹_›⟩
+
+instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := boundedSpace_pi.2 <| .inr ‹_›
 
 theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
@@ -184,17 +198,12 @@ The bornology on those type synonyms is inherited without change.
 -/
 
 
-instance : Bornology (Additive α) :=
-  ‹Bornology α›
-
-instance : Bornology (Multiplicative α) :=
-  ‹Bornology α›
-
-instance [BoundedSpace α] : BoundedSpace (Additive α) :=
-  ‹BoundedSpace α›
-
-instance [BoundedSpace α] : BoundedSpace (Multiplicative α) :=
-  ‹BoundedSpace α›
+instance : Bornology (Additive α) := ‹Bornology α›
+instance : Bornology (Multiplicative α) := ‹Bornology α›
+instance [BoundedSpace α] : BoundedSpace (Additive α) := ‹BoundedSpace α›
+instance [UnboundedSpace α] : UnboundedSpace (Additive α) := ‹UnboundedSpace α›
+instance [BoundedSpace α] : BoundedSpace (Multiplicative α) := ‹BoundedSpace α›
+instance [UnboundedSpace α] : UnboundedSpace (Multiplicative α) := ‹UnboundedSpace α›
 
 /-!
 ### Order dual
@@ -203,8 +212,6 @@ The bornology on this type synonym is inherited without change.
 -/
 
 
-instance : Bornology αᵒᵈ :=
-  ‹Bornology α›
-
-instance [BoundedSpace α] : BoundedSpace αᵒᵈ :=
-  ‹BoundedSpace α›
+instance : Bornology αᵒᵈ := ‹Bornology α›
+instance [BoundedSpace α] : BoundedSpace αᵒᵈ := ‹BoundedSpace α›
+instance [UnboundedSpace α] : UnboundedSpace αᵒᵈ := ‹UnboundedSpace α›

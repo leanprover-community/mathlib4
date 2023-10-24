@@ -1949,13 +1949,13 @@ theorem closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
     (closure_minimal (singleton_subset_iff.2 (dist_self x).le) isClosed_ball)
 #align metric.closed_ball_zero' Metric.closedBall_zero'
 
-lemma eventually_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+lemma eventually_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :
     ∀ᶠ r in 𝓝 (0 : ℝ), IsCompact (closedBall x r) := by
-  rcases local_compact_nhds (x := x) (n := univ) univ_mem with ⟨s, hs, -, s_compact⟩
+  rcases exists_compact_mem_nhds x with ⟨s, s_compact, hs⟩
   filter_upwards [eventually_closedBall_subset hs] with r hr
   exact IsCompact.of_isClosed_subset s_compact isClosed_ball hr
 
-lemma exists_isCompact_closedBall [LocallyCompactSpace α] (x : α) :
+lemma exists_isCompact_closedBall [WeaklyLocallyCompactSpace α] (x : α) :
     ∃ r, 0 < r ∧ IsCompact (closedBall x r) := by
   have : ∀ᶠ r in 𝓝[>] 0, IsCompact (closedBall x r) :=
     eventually_nhdsWithin_of_eventually_nhds (eventually_isCompact_closedBall x)
@@ -2473,6 +2473,11 @@ theorem _root_.IsCompact.isBounded {s : Set α} (h : IsCompact s) : IsBounded s 
   h.totallyBounded.isBounded
 #align is_compact.bounded IsCompact.isBounded
 
+instance (priority := 100) [CompactSpace α] : BoundedSpace α := ⟨isCompact_univ.isBounded⟩
+
+instance (priority := 100) [UnboundedSpace α] : NoncompactSpace α :=
+  ⟨mt IsCompact.isBounded unbounded_univ⟩
+
 #align metric.bounded_of_finite Set.Finite.isBounded
 #align set.finite.bounded Set.Finite.isBounded
 #align metric.bounded_singleton Bornology.isBounded_singleton
@@ -2515,10 +2520,7 @@ theorem isBounded_range_of_tendsto_cofinite {f : β → α} {a : α} (hf : Tends
     (hf.prod_map hf).mono_right <| nhds_prod_eq.symm.trans_le (nhds_le_uniformity a)
 #align metric.bounded_range_of_tendsto_cofinite Metric.isBounded_range_of_tendsto_cofinite
 
-/-- In a compact space, all sets are bounded -/
-theorem isBounded_of_compactSpace [CompactSpace α] : IsBounded s :=
-  isCompact_univ.isBounded.subset (subset_univ _)
-#align metric.bounded_of_compact_space Metric.isBounded_of_compactSpace
+#align metric.bounded_of_compact_space Bornology.IsBounded.all
 
 theorem isBounded_range_of_tendsto (u : ℕ → α) {x : α} (hu : Tendsto u atTop (𝓝 x)) :
     IsBounded (range u) :=
@@ -2604,10 +2606,19 @@ theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
   ⟨fun h => ⟨h.isClosed, h.isBounded⟩, fun h => isCompact_of_isClosed_isBounded h.1 h.2⟩
 #align metric.is_compact_iff_is_closed_bounded Metric.isCompact_iff_isClosed_bounded
 
-theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
-    CompactSpace α ↔ IsBounded (univ : Set α) :=
-  ⟨@isBounded_of_compactSpace α _ _, fun hb => ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
-#align metric.compact_space_iff_bounded_univ Metric.compactSpace_iff_isBounded_univ
+theorem compactSpace_iff_boundedSpace [ProperSpace α] : CompactSpace α ↔ BoundedSpace α :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨isCompact_of_isClosed_isBounded isClosed_univ (.all _)⟩⟩
+#align metric.compact_space_iff_bounded_univ Metric.compactSpace_iff_boundedSpace
+
+lemma noncompactSpace_iff_unboundedSpace [ProperSpace α] :
+    NoncompactSpace α ↔ UnboundedSpace α := by
+  rw [← not_compactSpace_iff, ← not_boundedSpace_iff, compactSpace_iff_boundedSpace]
+
+instance (priority := 100) [ProperSpace α] [BoundedSpace α] : CompactSpace α :=
+  compactSpace_iff_boundedSpace.2 ‹_›
+
+instance (priority := 100) [ProperSpace α] [NoncompactSpace α] : UnboundedSpace α :=
+  noncompactSpace_iff_unboundedSpace.1 ‹_›
 
 section ConditionallyCompleteLinearOrder
 
@@ -2730,22 +2741,23 @@ alias ⟨_root_.Bornology.IsBounded.ediam_ne_top, _⟩ := isBounded_iff_ediam_ne
 theorem ediam_eq_top_iff_unbounded : EMetric.diam s = ⊤ ↔ ¬IsBounded s :=
   isBounded_iff_ediam_ne_top.not_left.symm
 
+lemma ediam_univ_eq_top_iff_unboundedSpace :
+    EMetric.diam (univ : Set α) = ∞ ↔ UnboundedSpace α := by
+  rw [ediam_eq_top_iff_unbounded, isBounded_univ, not_boundedSpace_iff]
+
 theorem ediam_univ_eq_top_iff_noncompact [ProperSpace α] :
     EMetric.diam (univ : Set α) = ∞ ↔ NoncompactSpace α := by
-  rw [← not_compactSpace_iff, compactSpace_iff_isBounded_univ, isBounded_iff_ediam_ne_top,
-    Classical.not_not]
+  rw [ediam_univ_eq_top_iff_unboundedSpace, noncompactSpace_iff_unboundedSpace]
 #align metric.ediam_univ_eq_top_iff_noncompact Metric.ediam_univ_eq_top_iff_noncompact
 
 @[simp]
-theorem ediam_univ_of_noncompact [ProperSpace α] [NoncompactSpace α] :
-    EMetric.diam (univ : Set α) = ∞ :=
-  ediam_univ_eq_top_iff_noncompact.mpr ‹_›
-#align metric.ediam_univ_of_noncompact Metric.ediam_univ_of_noncompact
+theorem ediam_univ_eq_top [UnboundedSpace α] : EMetric.diam (univ : Set α) = ∞ :=
+  ediam_univ_eq_top_iff_unboundedSpace.mpr ‹_›
+#align metric.ediam_univ_of_noncompact Metric.ediam_univ_eq_top
 
 @[simp]
-theorem diam_univ_of_noncompact [ProperSpace α] [NoncompactSpace α] : diam (univ : Set α) = 0 := by
-  simp [diam]
-#align metric.diam_univ_of_noncompact Metric.diam_univ_of_noncompact
+theorem diam_univ_of_unbounded [UnboundedSpace α] : diam (univ : Set α) = 0 := by simp [diam]
+#align metric.diam_univ_of_noncompact Metric.diam_univ_of_unbounded
 
 /-- The distance between two points in a set is controlled by the diameter of the set. -/
 theorem dist_le_diam_of_mem (h : IsBounded s) (hx : x ∈ s) (hy : y ∈ s) : dist x y ≤ diam s :=
