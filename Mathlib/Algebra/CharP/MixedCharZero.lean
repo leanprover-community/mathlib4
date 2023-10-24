@@ -379,9 +379,7 @@ theorem split_by_characteristic_localRing [LocalRing R]
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
   refine' split_by_characteristic R _ h_equal h_mixed
   intro p p_pos p_char
-  have x := 4
   have p_ppow : IsPrimePow (p : ℕ) := or_iff_not_imp_left.mp (charP_zero_or_prime_power R p) p_pos
-  have y := 4
   exact h_pos p p_ppow p_char
 #align split_by_characteristic_local_ring split_by_characteristic_localRing
 
