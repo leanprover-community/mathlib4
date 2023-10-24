@@ -538,6 +538,7 @@ theorem factors_prod_eq_basis (x : C.proj (· ∈ J)) :
   split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h;
     exact factors_prod_eq_basis_of_ne _ _ h]
 
+-- TODO: move to a more general file
 theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α := α) (·≥·)]
     (s : Finset α) : (s.sort (·≥·)).Chain' (·>·) := by
   rw [List.chain'_iff_pairwise]
@@ -586,11 +587,11 @@ theorem _root_.List.le_cons (a : I) {as m : List I} (hmas : m ≤ as) : a :: m �
   exact (List.lt_iff_lex_lt _ _).mp
     (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr hmas))
 
-theorem GoodProducts.finsupp_sum_mem_span_eval
-  {a : I} {as : List I} (ha : List.Chain' (· > ·) (a :: as)) {c : Products I →₀ ℤ}
-  (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as}) :
-  (Finsupp.sum c fun a_1 b ↦ e (C.proj (· ∈ J)) a * b • Products.eval (C.proj (· ∈ J)) a_1) ∈
-    Submodule.span ℤ (Products.eval (C.proj (· ∈ J)) '' {m | m.val ≤ a :: as}) := by
+theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
+    (ha : List.Chain' (· > ·) (a :: as)) {c : Products I →₀ ℤ}
+    (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as}) :
+    (Finsupp.sum c fun a_1 b ↦ e (C.proj (· ∈ J)) a * b • Products.eval (C.proj (· ∈ J)) a_1) ∈
+      Submodule.span ℤ (Products.eval (C.proj (· ∈ J)) '' {m | m.val ≤ a :: as}) := by
   apply Submodule.finsupp_sum_mem
   intro m hm
   have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
