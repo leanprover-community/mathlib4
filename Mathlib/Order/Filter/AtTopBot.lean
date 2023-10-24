@@ -1126,6 +1126,7 @@ theorem tendsto_const_mul_pow_atTop_iff :
 
 lemma tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : α ↦ x ^ n) atTop atTop := by
   lift n to ℕ+ using hn; simp
+#align tendsto_zpow_at_top_at_top Filter.tendsto_zpow_atTop_atTop
 
 end LinearOrderedSemifield
 
