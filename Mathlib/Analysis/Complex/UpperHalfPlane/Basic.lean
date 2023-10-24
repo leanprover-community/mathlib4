@@ -264,6 +264,7 @@ namespace ModularGroup
 
 variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
 
+/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
 @[coe]
 def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
