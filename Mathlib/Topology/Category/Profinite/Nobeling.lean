@@ -851,6 +851,7 @@ section ProductsFactorisation
 
 namespace Products
 
+-- TODO: extract a general `List.Lex` lemma
 theorem lt_of_head!_lt {l : Products I} {o : Ordinal}
     (hlhead : l.val ≠ [] → ord I (l.val.head!) < o) (a : I) (ha : a ∈ l.val) : ord I a < o := by
   refine lt_of_le_of_lt ?_ (hlhead (List.ne_nil_of_mem ha))
@@ -881,6 +882,7 @@ theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     LocallyConstant.coe_comap]
   exact evalFacProps C (fun (i : I) ↦ ord I i < o₁) (fun (i : I) ↦ ord I i < o₂) hlt _
 
+-- TODO: extract general `List.Lex`/`Ordinal` API.
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (hmltl : m < l)
     (hlt : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o := by
   rw [← lt_iff_head!_lt] at hlt ⊢
