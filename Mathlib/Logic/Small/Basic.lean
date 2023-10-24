@@ -79,7 +79,7 @@ theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 #align small_lift small_lift
 
-instance (priority := 100) small_max (α : Type v) : Small.{max w v} α :=
+theorem small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 #align small_max small_max
 
