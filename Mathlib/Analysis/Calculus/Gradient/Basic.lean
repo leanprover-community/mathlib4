@@ -161,18 +161,18 @@ theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
     HasDerivAt g (starRingEnd 𝕜 g') u := by
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
-  simp only [ContinuousLinearMap.strongUniformity_topology_eq, toDual_apply, IsROrC.inner_apply,
-    mul_one] at h; exact h
+  have : (toDual 𝕜 𝕜) g' 1 = ((starRingEnd 𝕜) g') := by simp
+  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, this] at h
+  exact h
 
 theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u : ℝ} (h : HasGradientAt g g' u) :
     HasDerivAt g g' u := h.hasDerivAt
 
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt]
-  simp only [ContinuousLinearMap.strongUniformity_topology_eq, toDual_apply, IsROrC.inner_apply,
-    RingHomCompTriple.comp_apply, RingHom.id_apply, mul_one]; exact h
+  have : g' = ((toDual 𝕜 𝕜) ((starRingEnd 𝕜) g')) 1 := by simp
+  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, ← this]
+  exact h
 
 theorem HasDerivAt.hasGradientAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasDerivAt g g' u) :
     HasGradientAt g g' u := h.hasGradientAt
