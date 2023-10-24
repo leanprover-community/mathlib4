@@ -555,7 +555,6 @@ protected def algebra (e : α ≃ β) [Semiring β] :
   · intro r x
     simp only [Function.comp_apply, RingHom.coe_comp]
     have p := ringEquiv_symm_apply e
-    dsimp at p
     erw [p]
     clear p
     apply (ringEquiv e).injective

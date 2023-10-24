@@ -107,10 +107,10 @@ variable {M}
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
-      rw [← AlgHom.map_add]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_add]
       exact RingQuot.mkAlgHom_rel R Rel.add
     map_smul' := fun r x => by
-      rw [← AlgHom.map_smul]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_smul]
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 #align tensor_algebra.ι TensorAlgebra.ι
 

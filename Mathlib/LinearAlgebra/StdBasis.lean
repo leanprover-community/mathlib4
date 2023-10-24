@@ -182,7 +182,6 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
     exact (hs j).map' _ (ker_stdBasis _ _ _)
   apply linearIndependent_iUnion_finite hs'
   · intro j J _ hiJ
-    simp only
     have h₀ :
       ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
         LinearMap.range (stdBasis R Ms j) := by

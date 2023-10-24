@@ -945,7 +945,7 @@ theorem sum_mk : sum (mk L) = List.sum (L.map fun x => cond x.2 x.1 (-x.1)) :=
 
 @[simp]
 theorem sum.of {x : α} : sum (of x) = x :=
-  prod.of
+  @prod.of _ (_) _
 #align free_group.sum.of FreeGroup.sum.of
 
 -- note: there are no bundled homs with different notation in the domain and codomain, so we copy
