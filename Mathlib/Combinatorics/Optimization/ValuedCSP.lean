@@ -62,6 +62,6 @@ def ValuedCsp.Instance.evalSolution {Γ : ValuedCsp D C} {ι : Type*}
   (I.map (·.evalSolution x)).sum
 
 /-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`.-/
-def ValuedCsp.Instance.OptimumSolution {Γ : ValuedCsp D C} {ι : Type*}
+def ValuedCsp.Instance.IsOptimumSolution {Γ : ValuedCsp D C} {ι : Type*}
     (I : Γ.Instance ι) (x : ι → D) : Prop :=
   ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
