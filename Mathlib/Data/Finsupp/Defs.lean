@@ -116,12 +116,13 @@ section Basic
 
 variable [Zero M]
 
-instance funLike : NDFunLike (α →₀ M) α M :=
-  ⟨toFun, by
+instance funLike : NDFunLike (α →₀ M) α M where
+  coe := toFun
+  coe_injective' := by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
     congr
     ext a
-    exact (hf _).trans (hg _).symm⟩
+    exact (hf _).trans (hg _).symm
 #align finsupp.fun_like Finsupp.funLike
 
 /-- Helper instance for when there are too many metavariables to apply the `FunLike` instance
@@ -774,7 +775,7 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
-  ext fun a => by simp only [hf, zero_apply, mapRange_apply]
+  ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
 #align finsupp.map_range_zero Finsupp.mapRange_zero
 
 @[simp]
