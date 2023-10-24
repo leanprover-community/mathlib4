@@ -124,7 +124,8 @@ theorem fDerivative_coe (f : R[X]) : d⁄dX R f = derivative f := fDerivativeFun
 theorem trunc_fDerivative (f : R⟦X⟧) (n : ℕ) :
     trunc n (d⁄dX R f) = derivative (trunc (n + 1) f) := by apply trunc_fDerivativeFun
 
-theorem trunc_fDerivative' (f : R⟦X⟧) (n : ℕ) : trunc (n-1) (d⁄dX R f) = derivative (trunc n f) := by
+theorem trunc_fDerivative' (f : R⟦X⟧) (n : ℕ) :
+    trunc (n-1) (d⁄dX R f) = derivative (trunc n f) := by
   cases n with
   | zero =>
     simp only [zero_eq, ge_iff_le, tsub_eq_zero_of_le]
