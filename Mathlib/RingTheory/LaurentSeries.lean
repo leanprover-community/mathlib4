@@ -169,6 +169,7 @@ instance of_powerSeries_localization [CommRing R] :
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed
+@[nolint docBlame] -- linter bug?
 local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
 instance {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
