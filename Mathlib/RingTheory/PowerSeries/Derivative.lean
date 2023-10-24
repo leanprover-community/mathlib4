@@ -59,19 +59,19 @@ theorem fDerivativeFun_C (r : R) : fDerivativeFun (C R r) = 0 := by
   · rw [zero_mul, map_zero]
 
 theorem trunc_fDerivativeFun (f : R⟦X⟧) (n : ℕ) :
-    (trunc n f.fDerivativeFun : R⟦X⟧) = fDerivativeFun ↑(trunc (n + 1) f) := by
+    trunc n f.fDerivativeFun = derivative (trunc (n + 1) f):= by
   ext d
-  rw [coeff_coe, coeff_trunc]
+  rw [coeff_trunc]
   split_ifs with h
   · have : d + 1 < n + 1 := succ_lt_succ_iff.2 h
-    rw [coeff_fDerivativeFun, coeff_fDerivativeFun, coeff_coe, coeff_trunc, if_pos this]
+    rw [coeff_fDerivativeFun, coeff_derivative, coeff_trunc, if_pos this]
   · have : ¬d + 1 < n + 1 := by rwa [succ_lt_succ_iff]
-    rw [coeff_fDerivativeFun, coeff_coe, coeff_trunc, if_neg this, zero_mul]
+    rw [coeff_derivative, coeff_trunc, if_neg this, zero_mul]
 
 --A special case of `fDerivativeFun_mul`, used in its proof.
 private theorem fDerivativeFun_coe_mul_coe (f g : R[X]) : fDerivativeFun (f * g : R⟦X⟧) =
-    f * fDerivativeFun (g : R⟦X⟧) + g * fDerivativeFun (f : R⟦X⟧) := by
-  rw [←coe_mul, fDerivativeFun_coe, derivative_mul, fDerivativeFun_coe, fDerivativeFun_coe,
+    f * derivative g + g * derivative f  := by
+  rw [←coe_mul, fDerivativeFun_coe, derivative_mul,
     add_comm, mul_comm _ g, ←coe_mul, ←coe_mul, Polynomial.coe_add]
 
 /-- Leibniz rule for formal power series.-/
@@ -122,12 +122,9 @@ theorem fDerivative_coe (f : R[X]) : d⁄dX R f = derivative f := fDerivativeFun
   · rfl
 
 theorem trunc_fDerivative (f : R⟦X⟧) (n : ℕ) :
-    trunc n (d⁄dX R f) = derivative (trunc (n + 1) f) := by
-  apply Polynomial.coe_inj.mp
-  rw [←fDerivative_coe]
-  apply trunc_fDerivativeFun
+    trunc n (d⁄dX R f) = derivative (trunc (n + 1) f) := by apply trunc_fDerivativeFun
 
-theorem trunc_D' (f : R⟦X⟧) (n : ℕ) : trunc (n-1) (d⁄dX R f) = derivative (trunc n f) := by
+theorem trunc_fDerivative' (f : R⟦X⟧) (n : ℕ) : trunc (n-1) (d⁄dX R f) = derivative (trunc n f) := by
   cases n with
   | zero =>
     simp only [zero_eq, ge_iff_le, tsub_eq_zero_of_le]
