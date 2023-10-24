@@ -265,12 +265,12 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
 variable (hP : RingHom.PropertyIsLocal @P)
 
 lemma Localization.coe_algEquiv {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
-  [CommSemiring S] [Algebra R S] [IsLocalization M S] :
+    [CommSemiring S] [Algebra R S] [IsLocalization M S] :
   (Localization.algEquiv M S : Localization M →+* S) =
     IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
 
 lemma Localization.coe_algEquiv_symm {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
-  [CommSemiring S] [Algebra R S] [IsLocalization M S] :
+    [CommSemiring S] [Algebra R S] [IsLocalization M S] :
   ((Localization.algEquiv M S).symm : S →+* Localization M) =
     IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
 
@@ -294,7 +294,7 @@ lemma _root_.RingHom.OfLocalizationSpanTarget.ofIsLocalization
     RingHom.comp_id]
 
 lemma Scheme.map_basicOpen' (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
-  U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
     (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
   refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
   erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
@@ -304,11 +304,11 @@ lemma Scheme.map_basicOpen' (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <|
   congr
 
 lemma Scheme.map_basicOpen (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
-  U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen r := by
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen r := by
   rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq]
 
 lemma Scheme.map_basicOpen_map (X : Scheme) (U : Opens X) (r : X.presheaf.obj (op U)) :
-  U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen <|
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen <|
     X.presheaf.map (eqToHom U.openEmbedding_obj_top).op r) = X.basicOpen r := by
   rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq, Scheme.basicOpen_res_eq]
 

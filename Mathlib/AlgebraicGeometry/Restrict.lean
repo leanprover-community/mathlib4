@@ -48,10 +48,10 @@ notation3:60 X:60 " ∣_ᵤ " U:61 => (Scheme.restrict X (Opens.openEmbedding U)
 abbrev Scheme.ιOpens {X : Scheme} (U : Opens X.carrier) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
 
 lemma Scheme.ofRestrict_val_c_app_self {X : Scheme} (U : Opens X) :
-  (X.ofRestrict U.openEmbedding).1.c.app (op U) = X.presheaf.map (eqToHom (by simp)).op := rfl
+    (X.ofRestrict U.openEmbedding).1.c.app (op U) = X.presheaf.map (eqToHom (by simp)).op := rfl
 
 lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme} (U : Opens X) {V W : Opens U}
-  (e : U.openEmbedding.isOpenMap.functor.obj V = U.openEmbedding.isOpenMap.functor.obj W) :
+    (e : U.openEmbedding.isOpenMap.functor.obj V = U.openEmbedding.isOpenMap.functor.obj W) :
   X.presheaf.map (eqToHom e).op =
     (X ∣_ᵤ U).presheaf.map (eqToHom <| U.openEmbedding.functor_obj_injective e).op := rfl
 
