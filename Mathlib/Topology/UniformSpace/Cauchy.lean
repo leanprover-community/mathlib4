@@ -564,7 +564,8 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   have : { p : α × α | (f p.1, f p.2) ∈ t } ∈ 𝓤 α := hf ht
   let ⟨c, hfc, hct⟩ := hs _ this
   ⟨f '' c, hfc.image f, by
-    simp [image_subset_iff]
+    simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
+      preimage_iUnion, preimage_setOf_eq]
     simp [subset_def] at hct
     intro x hx; simp
     exact hct x hx⟩

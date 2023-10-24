@@ -1587,7 +1587,7 @@ theorem insertNth_comm (a b : α) :
   | i + 1, 0, l => fun h => (Nat.not_lt_zero _ h).elim
   | i + 1, j + 1, [] => by simp
   | i + 1, j + 1, c :: l => fun h₀ h₁ => by
-    simp [insertNth]
+    simp only [insertNth_succ_cons, insertNth._eq_1, cons.injEq, true_and]
     exact insertNth_comm a b i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
 #align list.insert_nth_comm List.insertNth_comm
 
@@ -4160,37 +4160,37 @@ end ZipRight
 #noalign list.to_chunks_join
 #noalign list.to_chunks_length_le
 
-/-! ### all₂ -/
+/-! ### Forall -/
 
-section All₂
+section Forall
 
 variable {p q : α → Prop} {l : List α}
 
 @[simp]
-theorem all₂_cons (p : α → Prop) (x : α) : ∀ l : List α, All₂ p (x :: l) ↔ p x ∧ All₂ p l
+theorem forall_cons (p : α → Prop) (x : α) : ∀ l : List α, Forall p (x :: l) ↔ p x ∧ Forall p l
   | [] => (and_true_iff _).symm
   | _ :: _ => Iff.rfl
-#align list.all₂_cons List.all₂_cons
+#align list.all₂_cons List.forall_cons
 
-theorem all₂_iff_forall : ∀ {l : List α}, All₂ p l ↔ ∀ x ∈ l, p x
+theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p x
   | [] => (iff_true_intro <| forall_mem_nil _).symm
-  | x :: l => by rw [forall_mem_cons, all₂_cons, all₂_iff_forall]
-#align list.all₂_iff_forall List.all₂_iff_forall
+  | x :: l => by rw [forall_mem_cons, forall_cons, forall_iff_forall_mem]
+#align list.all₂_iff_forall List.forall_iff_forall_mem
 
-theorem All₂.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, All₂ p l → All₂ q l
+theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
-  | x :: l => by simp; rw [←and_imp]; exact And.imp (h x) (All₂.imp h)
-#align list.all₂.imp List.All₂.imp
+  | x :: l => by simp; rw [←and_imp]; exact And.imp (h x) (Forall.imp h)
+#align list.all₂.imp List.Forall.imp
 
 @[simp]
-theorem all₂_map_iff {p : β → Prop} (f : α → β) : All₂ p (l.map f) ↔ All₂ (p ∘ f) l := by
+theorem forall_map_iff {p : β → Prop} (f : α → β) : Forall p (l.map f) ↔ Forall (p ∘ f) l := by
   induction l <;> simp [*]
-#align list.all₂_map_iff List.all₂_map_iff
+#align list.all₂_map_iff List.forall_map_iff
 
-instance (p : α → Prop) [DecidablePred p] : DecidablePred (All₂ p) := fun _ =>
-  decidable_of_iff' _ all₂_iff_forall
+instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ =>
+  decidable_of_iff' _ forall_iff_forall_mem
 
-end All₂
+end Forall
 
 /-! ### Retroattributes
 

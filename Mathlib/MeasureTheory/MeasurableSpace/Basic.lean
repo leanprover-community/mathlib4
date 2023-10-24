@@ -1315,13 +1315,17 @@ def refl (α : Type*) [MeasurableSpace α] : α ≃ᵐ α where
 instance instInhabited : Inhabited (α ≃ᵐ α) := ⟨refl α⟩
 
 /-- The composition of equivalences between measurable spaces. -/
+@[pp_dot]
 def trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : α ≃ᵐ γ where
   toEquiv := ab.toEquiv.trans bc.toEquiv
   measurable_toFun := bc.measurable_toFun.comp ab.measurable_toFun
   measurable_invFun := ab.measurable_invFun.comp bc.measurable_invFun
 #align measurable_equiv.trans MeasurableEquiv.trans
 
+theorem coe_trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : ⇑(ab.trans bc) = bc ∘ ab := rfl
+
 /-- The inverse of an equivalence between measurable spaces. -/
+@[pp_dot]
 def symm (ab : α ≃ᵐ β) : β ≃ᵐ α where
   toEquiv := ab.toEquiv.symm
   measurable_toFun := ab.measurable_invFun
@@ -1614,8 +1618,8 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
   rw [measurable_pi_iff]
   exact fun i => measurable_pi_apply (f i)
 
-theorem piCongrLeft_eq (f : δ ≃ δ') :
-    MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
+theorem coe_piCongrLeft (f : δ ≃ δ') :
+    ⇑MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
 
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := { fullyApplied := false })]
@@ -1686,10 +1690,10 @@ def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)]
     exact measurable_pi_iff.1 measurable_snd _
 
 theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
-    MeasurableEquiv.sumPiEquivProdPi α = Equiv.sumPiEquivProdPi α := by rfl
+    ⇑MeasurableEquiv.sumPiEquivProdPi α = Equiv.sumPiEquivProdPi α := by rfl
 
 theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
-    (MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
+    ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
 to the sum of `s` and `sᶜ`.-/
