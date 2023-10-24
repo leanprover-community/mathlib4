@@ -149,7 +149,7 @@ def derive (e : Expr) : MetaM Simp.Result := do
   let e ← instantiateMVars e
 
   let config : Simp.Config := {
-    zeta := true
+    zeta := false
     beta := false
     eta  := false
     proj := false
