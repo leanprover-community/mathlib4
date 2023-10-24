@@ -24,10 +24,10 @@ for `n = 0, 1, 2`.
 
 ## Main definitions
 
-* `GroupCohomology.H0 A`: the invariants `Aᴳ` of the `G`-representation on `A`.
-* `GroupCohomology.H1 A`: 1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo
+* `groupCohomology.H0 A`: the invariants `Aᴳ` of the `G`-representation on `A`.
+* `groupCohomology.H1 A`: 1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo
 1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
-* `GroupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
+* `groupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
 2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
 
 ## TODO
@@ -49,7 +49,7 @@ open CategoryTheory Limits Representation
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
-namespace GroupCohomology
+namespace groupCohomology
 
 section Cochains
 
@@ -325,4 +325,4 @@ abbrev H2 := twoCocycles A ⧸ twoCoboundaries A
 def H2_π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
 
 end Cohomology
-end GroupCohomology
+end groupCohomology
