@@ -860,7 +860,6 @@ theorem find_spec :
       split_ifs at hi with hl
       · simp only [Option.mem_def, Option.some.injEq] at hi
         exact hi ▸ hl
-      · exact (Option.not_mem_none _ hi).elim
     · rw [h] at hi
       dsimp at hi
       rw [← Option.some_inj.1 hi]
