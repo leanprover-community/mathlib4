@@ -10,7 +10,7 @@
     "inputRev?": "lean-pr-testing-2679",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/gebner/quote4",
+   {"url": "https://github.com/leanprover-community/quote4",
     "subDir?": null,
     "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
     "opts": {},
@@ -18,15 +18,15 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/semorrison/aesop",
+   {"url": "https://github.com/leanprover-community/aesop",
     "subDir?": null,
-    "rev": "5c8d78e23721a4610cae41974e1867da7985494c",
+    "rev": "9dc4a1097a690216eaa7cf2d2290efd447e60d7a",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "use_replay",
+    "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/mhuisi/lean4-cli.git",
+   {"url": "https://github.com/leanprover/lean4-cli",
     "subDir?": null,
     "rev": "39229f3630d734af7d9cfb5937ddc6b41d3aa6aa",
     "opts": {},
@@ -34,7 +34,7 @@
     "inputRev?": "nightly",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/EdAyers/ProofWidgets4",
+   {"url": "https://github.com/leanprover-community/ProofWidgets4",
     "subDir?": null,
     "rev": "27715d1daf32b9657dc38cd52172d77b19bde4ba",
     "opts": {},
