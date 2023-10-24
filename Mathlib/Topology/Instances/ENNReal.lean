@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.T5
 import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.Metrizable.Basic
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
 
@@ -46,6 +47,9 @@ instance : T4Space ℝ≥0∞ := inferInstance
 
 instance : SecondCountableTopology ℝ≥0∞ :=
   orderIsoUnitIntervalBirational.toHomeomorph.embedding.secondCountableTopology
+
+instance : MetrizableSpace ENNReal :=
+  orderIsoUnitIntervalBirational.toHomeomorph.embedding.metrizableSpace
 
 theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
   coe_strictMono.embedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
