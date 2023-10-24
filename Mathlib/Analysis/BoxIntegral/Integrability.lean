@@ -71,7 +71,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   simp only [mem_closedBall, dist_eq_norm, ← indicator_const_smul_apply,
     sum_indicator_eq_sum_filter, ← sum_smul, ← sub_smul, norm_smul, Real.norm_eq_abs, ←
     Prepartition.filter_boxes, ← Prepartition.measure_iUnion_toReal]
-  refine' mul_le_mul_of_nonneg_right _ (norm_nonneg y)
+  gcongr
   set t := (π.filter (π.tag · ∈ s)).iUnion
   change abs ((μ t).toReal - (μ (s ∩ I)).toReal) ≤ ε
   have htU : t ⊆ U ∩ I := by
@@ -135,7 +135,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
       ‖(μ ↑J).toReal • f (π.tag J)‖ ≤ (μ J).toReal * n := fun J hJ ↦ by
     rw [TaggedPrepartition.mem_filter] at hJ
     rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
-    exact mul_le_mul_of_nonneg_left (hJ.2 ▸ Nat.le_ceil _) ENNReal.toReal_nonneg
+    gcongr
+    exact hJ.2 ▸ Nat.le_ceil _
   refine' (norm_sum_le_of_le _ this).trans _; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
   generalize hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
@@ -256,7 +257,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     rw [← hπp.iUnion_eq, π.measure_iUnion_toReal, sum_mul, integralSum]
     refine' dist_sum_sum_le_of_le _ fun J _ => _; dsimp
     rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
-    refine' mul_le_mul_of_nonneg_left _ ENNReal.toReal_nonneg
+    gcongr
     rw [← dist_eq_norm']; exact hNxε _
   · /- We group the terms of both sums by the values of `Nx (π.tag J)`.
         For each `N`, the sum of Bochner integrals over the boxes is equal
