@@ -432,31 +432,34 @@ lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α })
     (centerToCentroid z) a = z * a := rfl
 
 local notation "L" => AddMonoid.End.mulLeft
+local notation "R" => AddMonoid.End.mulRight
 
 lemma center_iff_op_centroid (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔
-    (L a) ∈ Set.range CentroidHom.toEnd ∧ ∀ (b : α), Commute a b := by
+    a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
   constructor
   · intro ha
     constructor
+    · apply AddMonoidHom.ext
+      intro b
+      rw [AddMonoid.End.mulLeft_apply_apply, AddMonoid.End.mulRight_apply_apply]
+      exact Set.IsMulCentral.comm ha b
     · rw [Set.mem_range]
       use centerToCentroid ⟨a, ha⟩
       rfl
-    · intro b
-      rw [Commute, SemiconjBy, Set.IsMulCentral.comm ha b]
   · intro hla
     simp at hla
-    obtain ⟨⟨T,hT⟩,hc⟩  := hla
-    have e1 (d : α ): T d = a * d := (FunLike.congr (id hT.symm) rfl).symm
+    obtain ⟨hc,⟨T,hT⟩⟩  := hla
+    have e1 (d : α) : T d = a * d := (FunLike.congr (id hT.symm) rfl).symm
+    have e2 (d : α) : a * d = d * a := FunLike.congr (hc) rfl
     constructor
     · intro b
-      exact hc b
+      exact e2 b
     · intro b c
       rw [← e1, map_mul_right, e1]
     · intro b c
-      rw [← Commute.eq (hc b), ← e1, ←e1, ← map_mul_left, ← map_mul_right]
+      rw [← e2, ← e1, ←e1, ← map_mul_left, ← map_mul_right]
     · intro b c
-      rw [← Commute.eq (hc c), ← e1, ← map_mul_left, ← Commute.eq (hc (b *c)), ← e1, map_mul_right]
+      rw [← e2, ← e2, ← e1, ← e1, ← map_mul_left]
 
 end NonUnitalNonAssocSemiring
 
