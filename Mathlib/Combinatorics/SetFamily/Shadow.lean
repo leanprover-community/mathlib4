@@ -5,6 +5,7 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Data.Finset.Sups
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Tactic.TFAE
 
 #align_import combinatorics.set_family.shadow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -96,26 +97,16 @@ theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ �
   mem_shadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 #align finset.erase_mem_shadow Finset.erase_mem_shadow
 
-/-- `t` is in the shadow of `𝒜` iff we can add an element to it so that the resulting finset is in
-`𝒜`. -/
-theorem mem_shadow_iff_insert_mem : s ∈ ∂ 𝒜 ↔ ∃ (a : _) (_ : a ∉ s), insert a s ∈ 𝒜 := by
-  refine' mem_shadow_iff.trans ⟨_, _⟩
-  · rintro ⟨s, hs, a, ha, rfl⟩
-    refine' ⟨a, not_mem_erase a s, _⟩
-    rwa [insert_erase ha]
-  · rintro ⟨a, ha, hs⟩
-    exact ⟨insert a s, hs, a, mem_insert_self _ _, erase_insert ha⟩
-#align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
-
 /-- `t ∈ ∂𝒜` iff `t` is exactly one element less than something from `𝒜` -/
 lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = 1 := by
-  simp_rw [mem_shadow_iff_insert_mem, card_eq_one]
-  constructor
-  · rintro ⟨i, hi, ht⟩
-    exact ⟨insert i t, ht, subset_insert _ _, i, insert_sdiff_cancel hi⟩
-  · rintro ⟨s, hs, hts, a, ha⟩
-    refine' ⟨a, (mem_sdiff.1 $ (ext_iff.1 ha _).2 $ mem_singleton_self _).2, _⟩
-    rwa [insert_eq, ←ha, sdiff_union_of_subset hts]
+  simp_rw [mem_shadow_iff, ←covby_iff_card_sdiff_eq_one, covby_iff_exists_erase, eq_comm]
+
+/-- `t` is in the shadow of `𝒜` iff we can add an element to it so that the resulting finset is in
+`𝒜`. -/
+theorem mem_shadow_iff_insert_mem : s ∈ ∂ 𝒜 ↔ ∃ a, a ∉ s ∧ insert a s ∈ 𝒜 := by
+  simp_rw [mem_shadow_iff_exists_sdiff, ←covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
+  aesop
+#align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
 /-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`. -/
 lemma mem_shadow_iterate_iff_exists_sdiff {𝒜 : Finset (Finset α)} {t : Finset α} (k : ℕ) :
