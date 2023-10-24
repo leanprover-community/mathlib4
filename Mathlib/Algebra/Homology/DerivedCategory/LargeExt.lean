@@ -1,8 +1,53 @@
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.CategoryTheory.Shift.ShiftedHom
+import Mathlib.Data.Int.Units
 
 universe w v u
+
+section
+
+variable {X Y : Type*} [AddCommGroup X] [AddCommGroup Y]
+
+@[simp]
+lemma Units.mul_self (a : ℤˣ) : a * a = 1 := by
+  obtain rfl | rfl := Int.units_eq_one_or a
+  all_goals simp
+
+instance : Neg (AddEquiv X Y) where
+  neg e :=
+    { toFun := fun x => -e x
+      invFun := fun y => -e.symm y
+      left_inv := fun x => by simp
+      right_inv := fun y => by simp
+      map_add' := fun x y => by
+        dsimp
+        rw [e.map_add]
+        abel }
+
+instance : SMul ℤˣ (AddEquiv X Y) where
+  smul a e :=
+    { toFun := fun x => a • e x
+      invFun := fun y => a • e.symm y
+      left_inv := fun x => by
+        dsimp
+        erw [map_zsmul, smul_smul]
+        rw [Units.mul_self, AddEquiv.symm_apply_apply, one_smul]
+      right_inv := fun y => by
+        dsimp
+        erw [map_zsmul, smul_smul]
+        rw [Units.mul_self, AddEquiv.apply_symm_apply, one_smul]
+      map_add' := fun x y => by
+        dsimp
+        rw [e.map_add, smul_add] }
+
+lemma AddEquiv.neg_apply' (e : AddEquiv X Y) (x : X) :
+    (-e) x = -e x := rfl
+
+lemma AddEquiv.neg_symm_apply (e : AddEquiv X Y) (y : Y) :
+    (-e).symm y = -e.symm y := rfl
+
+end
 
 open CategoryTheory Category Preadditive DerivedCategory Limits Pretriangulated
 
@@ -374,12 +419,13 @@ variable {S}
     covariantLargeExtArrow₂₂ S A n ≅ ((shortComplexOfDistTriangle (hS.singleTriangle⟦(n : ℤ)⟧)
       (Triangle.shift_distinguished _ hS.singleTriangle_distinguished _)).map
     (preadditiveCoyoneda.obj (Opposite.op ((singleFunctor C 0).obj A)))).arrow₂ :=
-  AddCommGroupCat.arrow₂IsoMk (LargeExt.addEquiv A S.X₁ n)
+  AddCommGroupCat.arrow₂IsoMk ((-1 : Units ℤ)^n • LargeExt.addEquiv A S.X₁ n)
     (LargeExt.addEquiv A S.X₂ n) (LargeExt.addEquiv A S.X₃ n) (fun x₁ => by
       obtain ⟨x₁, rfl⟩ := (LargeExt.equiv _ _ _).symm.surjective x₁
       dsimp [LargeExt.addEquiv, LargeExt.equiv]
       dsimp only [FunLike.coe, ZeroHom.toFun, ModuleCat.ofHom, LinearMap.toAddMonoidHom, EquivLike.coe]
       dsimp [ZeroHom.toFun, LargeExt.leftSMul]
+      simp
       sorry) sorry
 
 lemma covariantLargeExtArrow₂₂_zero : (covariantLargeExtArrow₂₂ S A n).Zero :=
