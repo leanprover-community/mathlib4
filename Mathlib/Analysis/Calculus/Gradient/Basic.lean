@@ -54,7 +54,7 @@ def HasGradientAtFilter (f : F → 𝕜) (f' x : F) (L : Filter F) :=
 
 /-- `f` has the gradient `f'` at the point `x` within the subset `s` if
   `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`.-/
-def HasGradientWithinAt (f : F → 𝕜) (f' : F) (s : Set F) (x : F):=
+def HasGradientWithinAt (f : F → 𝕜) (f' : F) (s : Set F) (x : F) :=
   HasGradientAtFilter f f' x (𝓝[s] x)
 
 /-- `f` has the gradient `f'` at the point `x` if
