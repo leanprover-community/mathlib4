@@ -202,8 +202,8 @@ if it admits an injective map that preserves `0` and `+` to an additive cancel c
 protected def cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : CancelCommMonoid M₁ :=
-  { hf.commMonoid f one mul npow with
-    toLeftCancelMonoid := hf.leftCancelMonoid f one mul npow }
+  { hf.leftCancelMonoid f one mul npow with
+    toCommMonoid := hf.commMonoid f one mul npow }
 #align function.injective.cancel_comm_monoid Function.Injective.cancelCommMonoid
 #align function.injective.add_cancel_comm_monoid Function.Injective.addCancelCommMonoid
 

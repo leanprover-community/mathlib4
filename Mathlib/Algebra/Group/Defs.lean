@@ -730,19 +730,19 @@ class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 
 /-- Commutative version of `AddCancelMonoid`. -/
-class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
+class AddCancelCommMonoid (M : Type u) extends AddCommMonoid M, AddLeftCancelMonoid M
 #align add_cancel_comm_monoid AddCancelCommMonoid
 
 attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
 
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
-class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+class CancelCommMonoid (M : Type u) extends CommMonoid M, LeftCancelMonoid M
 #align cancel_comm_monoid CancelCommMonoid
 
 attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
 
-attribute [to_additive existing] CancelCommMonoid.toCommMonoid
+attribute [to_additive existing] CancelCommMonoid.toLeftCancelMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
