@@ -39,6 +39,8 @@ import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
+import Mathlib.Tactic.Differentiability
+import Mathlib.Tactic.Differentiability.Init
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Explode
