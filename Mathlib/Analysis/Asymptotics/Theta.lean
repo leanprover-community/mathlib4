@@ -147,6 +147,9 @@ theorem _root_.Filter.EventuallyEq.trans_isTheta {f₁ f₂ : α → E} {g : α 
 instance : Trans (α := α → E) (β := α → E) (γ := α → F) (EventuallyEq l) (IsTheta l) (IsTheta l) :=
   ⟨EventuallyEq.trans_isTheta⟩
 
+lemma _root_.Filter.EventuallyEq.isTheta {f g : α → E} (h : f =ᶠ[l] g) : f =Θ[l] g :=
+  h.trans_isTheta isTheta_rfl
+
 @[simp]
 theorem isTheta_norm_left : (fun x ↦ ‖f' x‖) =Θ[l] g ↔ f' =Θ[l] g := by simp [IsTheta]
 #align asymptotics.is_Theta_norm_left Asymptotics.isTheta_norm_left
