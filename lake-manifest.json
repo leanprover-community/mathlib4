@@ -4,10 +4,10 @@
  [{"git":
    {"url": "https://github.com/thorimur/std4",
     "subDir?": null,
-    "rev": "4298098844094010117d0db4ca3f38d86bacfb28",
+    "rev": "e2c9456a6dcb0c7a5f61ebd6197cdad479df20bd",
     "opts": {},
     "name": "std",
-    "inputRev?": "lean4-2679",
+    "inputRev?": "lean-pr-testing-2679",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/gebner/quote4",
