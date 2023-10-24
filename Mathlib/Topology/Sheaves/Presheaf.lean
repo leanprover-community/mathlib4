@@ -78,16 +78,22 @@ attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
 /-- `restrict_tac` solves relations among subsets (copied from `aesop cat`) -/
 macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (options := { introsTransparency? := some .default, terminal := true })
-  (rule_sets [$(Lean.mkIdent `Restrict):ident]))
+  aesop $c* (options :=
+    { terminal := true, assumptionTransparency := .reducible, maxRuleApplications := 300 })
+  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 /-- `restrict_tac?` passes along `Try this` from `aesop` -/
 macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop? $c* (options := { introsTransparency? := some .default, terminal := true })
-  (rule_sets [$(Lean.mkIdent `Restrict):ident]))
+  aesop? $c* (options :=
+    { terminal := true, assumptionTransparency := .reducible, maxRuleApplications := 300 })
+  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
-example {X : TopCat} {v w x y z : Opens X} (h₀ : v ≤ x) (h₁ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v ≤ y :=
+attribute[aesop 10% (rule_sets [Restrict])] le_trans le_of_eq
+attribute[aesop safe -1000 (rule_sets [Restrict])] Aesop.BuiltinRules.assumption
+
+example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (e' : v 1 = v 2)
+    (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y :=
   by restrict_tac
 
 
