@@ -262,35 +262,6 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
 
 variable (hP : RingHom.PropertyIsLocal @P)
 
-lemma Localization.coe_algEquiv {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
-    [CommSemiring S] [Algebra R S] [IsLocalization M S] :
-  (Localization.algEquiv M S : Localization M →+* S) =
-    IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
-
-lemma Localization.coe_algEquiv_symm {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*)
-    [CommSemiring S] [Algebra R S] [IsLocalization M S] :
-  ((Localization.algEquiv M S).symm : S →+* Localization M) =
-    IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
-
-@[simp]
-lemma AlgEquiv.toRingEquiv_toRingHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-    [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B) : (↑(↑f : A ≃+* B) : A →+* B) = f := rfl
-
-lemma _root_.RingHom.OfLocalizationSpanTarget.ofIsLocalization
-    {P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop}
-    (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
-    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)
-    (hT : ∀ r : s, ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T)
-      (_ : IsLocalization.Away (r : S) T), P ((algebraMap S T).comp f)) : P f := by
-  apply hP _ s hs
-  intros r
-  obtain ⟨T, _, _, _, hT⟩ := hT r
-  convert hP'.1 _
-    (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
-  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
-    AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
-    RingHom.comp_id]
-
 lemma Scheme.map_basicOpen' (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
     U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
     (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
