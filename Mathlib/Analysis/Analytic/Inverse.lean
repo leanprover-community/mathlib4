@@ -393,7 +393,8 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
           ∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
             ∏ j, r * (a ^ c.blocksFun j * p (c.blocksFun j)) := by
       simp_rw [mul_sum]
-      congr! with k _ c
+      apply sum_congr rfl fun k _ => ?_
+      apply sum_congr rfl fun c _ => ?_
       rw [prod_mul_distrib, prod_mul_distrib, prod_pow_eq_pow_sum, Composition.sum_blocksFun,
         prod_const, card_fin]
       ring
@@ -427,7 +428,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
         ← sum_sigma' (Ico 2 (n + 1))
           (fun k : ℕ => (Fintype.piFinset fun _ : Fin k => Ico 1 n : Finset (Fin k → ℕ)))
           (fun n e => ∏ j : Fin n, r * (a ^ e j * p (e j)))]
-      congr! with j
+      apply sum_congr rfl fun j _ => ?_
       simp only [← @MultilinearMap.mkPiAlgebra_apply ℝ (Fin j) _ ℝ]
       simp only [←
         MultilinearMap.map_sum_finset (MultilinearMap.mkPiAlgebra ℝ (Fin j) ℝ) fun _ (m : ℕ) =>
@@ -461,7 +462,8 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
               ‖(i.symm : F →L[𝕜] E).compContinuousMultilinearMap
                   (∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
                     p.compAlongComposition (p.rightInv i) c)‖ := by
-      congr! 2 with j hj
+      congr 1
+      apply sum_congr rfl fun j hj => ?_
       rw [rightInv_coeff _ _ _ (mem_Ico.1 hj).1, norm_neg]
     _ ≤
         a * ‖(i.symm : F →L[𝕜] E)‖ +
