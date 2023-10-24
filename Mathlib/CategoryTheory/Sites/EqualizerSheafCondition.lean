@@ -259,6 +259,34 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
     simp [forkMap]
 #align category_theory.equalizer.presieve.sheaf_condition CategoryTheory.Equalizer.Presieve.sheaf_condition
 
+namespace Arrows
+
+open Presieve
+
+variable {B : C} {I : Type w} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{w, max v u}]
+  [(ofArrows X π).hasPullbacks]
+
+def FirstObj : Type max v u := ∏ (fun i ↦ P.obj (op (X i)))
+
+def SecondObj : Type max v u  :=
+  ∏ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
+
+def forkMap : P.obj (op B) ⟶ FirstObj P X := Pi.lift (fun i ↦ P.map (π i).op)
+
+def firstMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
+
+def secondMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
+
+theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
+  ext i
+  simp only [forkMap, firstMap, secondMap]
+  -- simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
+  sorry
+
+-- theorem sheaf_condition :
+
+end Arrows
+
 end Presieve
 
 end
