@@ -704,86 +704,74 @@ section Arrows
 
 variable {B : C} {I : Type*} {X : I → C} (π : (i : I) → X i ⟶ B) (P)
 
+/--
+A more explicit version of `FamilyOfElements.Compatible` for a `Presieve.ofArrows`.
+-/
 def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
   ∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
     P.map gi.op (x i) = P.map gj.op (x j)
 
-theorem eq_of_eq (x : (i : I) → P.obj (op (X i))) (hx : Arrows.Compatible P π x) (i j : I)
-    (h_obj : X i = X j) (h_map : π i = eqToHom h_obj ≫ π j) :
+theorem Arrows.compatible_inj (x : (i : I) → P.obj (op (X i))) (hx : Compatible P π x)
+    (i j : I) (h_obj : X i = X j) (h_map : π i = eqToHom h_obj ≫ π j) :
     x i = P.map (eqToHom h_obj).op (x j) := by
   specialize hx i j (X i) (𝟙 _) (eqToHom h_obj)
   simp only [id_comp, op_id, FunctorToTypes.map_id_apply, eqToHom_op] at hx
   simp only [eqToHom_op]
   exact hx h_map
 
-theorem isSheafFor_arrows_of_explicit : (∀ (x : (i : I) → P.obj (op (X i))),
-    Arrows.Compatible P π x →
-    ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
-  intro h x hx
-  obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
-    (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
-  refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
-  cases' hf with i
-  exact hA i
-
-theorem isSheafFor_arrows_of_explicit_converse : (ofArrows X π).IsSheafFor P →
-    (∀ (x : (i : I) → P.obj (op (X i))),
-    Arrows.Compatible P π x →
+theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
+    (∀ (x : (i : I) → P.obj (op (X i))), Arrows.Compatible P π x →
     ∃! t, ∀ i, P.map (π i).op t = x i) := by
-  intro h x hx
-  have : ∀ Y (f : Y ⟶ B) (_ : ofArrows X π f), ∃ (i : I) (h : X i = Y), f = eqToHom h.symm ≫ π i := by
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
+  · specialize h (fun Y f hf ↦
+      P.map (eqToHom (ofArrows_surj π f hf).choose_spec.choose.symm).op (x _)) ?_
+    · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
+      cases' h₁ with i
+      cases' h₂ with j
+      dsimp
+      simp only [← FunctorToTypes.map_comp_apply]
+      apply hx
+      simp only [unop_op, Quiver.Hom.unop_op, eqToHom_op, eqToHom_unop, assoc]
+      rwa [← (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec,
+        ← (ofArrows_surj π (π j) (ofArrows.mk _)).choose_spec.choose_spec]
+    obtain ⟨t, ht₁, ht₂⟩ := h
+    refine ⟨t, fun i ↦ ?_, fun y hy ↦ ?_⟩
+    · rw [ht₁ (π i) (ofArrows.mk _)]
+      exact (Arrows.compatible_inj P π x hx _ _ _
+        (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec).symm
+    · apply ht₂
       intro Y f hf
       cases' hf with i
-      exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
-  specialize h ?_
-  · intro Y f hf
-    exact P.map (eqToHom (this Y f hf).choose_spec.choose.symm).op (x _)
-  specialize h ?_
-  · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
-    cases' h₁ with i
-    cases' h₂ with j
-    dsimp
-    simp only [← FunctorToTypes.map_comp_apply]
-    apply hx
-    simp only [unop_op, Quiver.Hom.unop_op, eqToHom_op, eqToHom_unop, assoc]
-    rwa [← (this _ (π i) (ofArrows.mk _)).choose_spec.choose_spec,
-      ← (this _ (π j) (ofArrows.mk _)).choose_spec.choose_spec]
-  obtain ⟨t, ht₁, ht₂⟩ := h
-  refine ⟨t, ?_, ?_⟩
-  · intro i
-    specialize ht₁ (π i) (ofArrows.mk _)
-    rw [ht₁]
-    refine (eq_of_eq P π x hx _ _ _ ?_).symm
-    exact (this _ (π i) (ofArrows.mk _)).choose_spec.choose_spec
-  · intro y hy
-    apply ht₂
-    intro Y f hf
+      rw [hy i]
+      exact (Arrows.compatible_inj P π x hx _ _ _
+        (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec)
+  · obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
+      (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
+    refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
     cases' hf with i
-    rw [hy i]
-    refine (eq_of_eq P π x hx _ _ _ ?_)
-    exact (this _ (π i) (ofArrows.mk _)).choose_spec.choose_spec
+    exact hA i
 
 variable [(ofArrows X π).hasPullbacks]
 
+/--
+A more explicit version of `FamilyOfElements.PullbackCompatible` for a `Presieve.ofArrows`.
+-/
 def Arrows.PullbackCompatible (x : (i : I) → P.obj (op (X i))) : Prop :=
   ∀ i j, P.map (pullback.fst (f := π i) (g := π j)).op (x i) =
     P.map (pullback.snd (f := π i) (g := π j)).op (x j)
 
 theorem Arrows.pullbackCompatible_iff (x : (i : I) → P.obj (op (X i))) :
     Compatible P π x ↔ PullbackCompatible P π x := by
-  constructor
-  · intro t i j
-    apply t
+  refine ⟨fun t i j ↦ ?_, fun t i j Z gi gj comm ↦ ?_⟩
+  · apply t
     exact pullback.condition
-  · intro t i j Z gi gj comm
-    rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t i j,
+  · rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t i j,
       ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
 
-theorem isSheafFor_arrows_of_explicit_pullbacks :
+theorem isSheafFor_arrows_iff_pullbacks : (ofArrows X π).IsSheafFor P ↔
     (∀ (x : (i : I) → P.obj (op (X i))), Arrows.PullbackCompatible P π x →
-      ∃! t, ∀ i, P.map (π i).op t = x i) → (ofArrows X π).IsSheafFor P := by
-  simp_rw [← Arrows.pullbackCompatible_iff]
-  exact isSheafFor_arrows_of_explicit _ _
+    ∃! t, ∀ i, P.map (π i).op t = x i) := by
+  simp_rw [← Arrows.pullbackCompatible_iff, isSheafFor_arrows_iff]
 
 end Arrows
 
