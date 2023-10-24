@@ -70,9 +70,9 @@ def children' : ∀ {n} (x : CofixA F (succ n)), F.B (head' x) → CofixA F n
   | _, CofixA.intro _ f => f
 #align pfunctor.approx.children' PFunctor.Approx.children'
 
-theorem approx_eta {n : ℕ} (x : CofixA F (n + 1)) : x = CofixA.intro (head' x) (children' x) := by
+theorem CofixA.eta {n : ℕ} (x : CofixA F (n + 1)) : x = CofixA.intro (head' x) (children' x) := by
   cases x; rfl
-#align pfunctor.approx.approx_eta PFunctor.Approx.approx_eta
+#align pfunctor.approx.approx_eta PFunctor.Approx.CofixA.eta
 
 /-- Relation between two approximations of the cofix of a pfunctor
 that state they both contain the same data until one of them is truncated -/
@@ -143,7 +143,7 @@ theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) :
 #align pfunctor.approx.P_corec PFunctor.Approx.P_corec
 
 /-- `Path F` provides indices to access internal nodes in `CofixA F n` or `M F`. -/
-def Path (F : PFunctor.{u}) :=
+abbrev Path (F : PFunctor.{u}) :=
   List F.Idx
 #align pfunctor.approx.path PFunctor.Approx.Path
 
@@ -155,23 +155,42 @@ open List Nat
 
 /-- `IsPathA p x` tells us if `p` is a valid path through `x`. -/
 inductive IsPathA : (p : Path F) → {n : ℕ} → (x : CofixA F n) → Prop
+  /-- `[]` is a valid path for arbitrary `x`. -/
   | nil {n} (x : CofixA F n) : IsPathA [] x
-  | cons {ps : Path F} {n} (a) (o : F.B a → CofixA F n) (b : F.B a) :
-    IsPathA ps (o b) → IsPathA (⟨a, b⟩ :: ps) (CofixA.intro a o)
+  /-- If `ps` is a valid path of `o i`, then
+  `⟨a, i⟩ :: ps` is a valid path of `CofixA.intro a o`. -/
+  | cons {ps : Path F} {n} (a) (o : F.B a → CofixA F n) (i : F.B a) :
+    IsPathA ps (o i) → IsPathA (⟨a, i⟩ :: ps) (CofixA.intro a o)
 
-def IsPathA.destCons {n a b ps} (x : CofixA F (n + 1)) (hx : IsPathA (⟨a, b⟩ :: ps) x) :
-    { o : F.B a → CofixA F n // IsPathA ps (o b) } :=
+theorem isPathA_cons' {ps : Path F} {n a} {o : F.B a → CofixA F n} {i : F.B a}
+    (hps : IsPathA (⟨a, i⟩ :: ps) (CofixA.intro a o)) : IsPathA ps (o i) := by
+  cases hps
+  assumption
+
+/-- Destruct `IsPathA.cons` constructively. -/
+def IsPathA.destCons {n a i ps} (x : CofixA F (n + 1)) (hx : IsPathA (⟨a, i⟩ :: ps) x) :
+    { o : F.B a → CofixA F n // IsPathA ps (o i) } :=
   have ha₂ : head' x = a := by cases hx; rfl
-  ⟨cast (congr_arg (fun a₂ => F.B a₂ → CofixA F n) ha₂) (children' x), by cases hx; assumption⟩
+  ⟨fun i => children' x (cast (congr_arg F.B ha₂.symm) i), by cases hx; assumption⟩
 
 /-- follow a path through a value of `CofixA F (n + length p)` and return the subtree
 found at the end of the path. -/
-def subtree' (p : Path F) {n : ℕ} (x : CofixA F (n + length p)) (hx : IsPathA p x) : CofixA F n :=
+def subtree' (p : Path F) {n} (x : CofixA F (n + length p)) (hx : IsPathA p x) : CofixA F n :=
   match p with
   | [] => x
-  | ⟨_, b⟩ :: ps =>
+  | ⟨_, i⟩ :: ps =>
     let ⟨o, ho⟩ := IsPathA.destCons x hx
-    subtree' ps (o b) ho
+    subtree' ps (o i) ho
+
+@[simp]
+theorem subtree'_nil {n} {x : CofixA F n} (hx : IsPathA [] x) : subtree' [] x hx = x :=
+  rfl
+
+@[simp]
+theorem subtree'_cons {ps : Path F} {n} (a) (o : F.B a → CofixA F (n + length ps)) (i : F.B a)
+    (hx : IsPathA (⟨a, i⟩ :: ps) (CofixA.intro a o)) :
+    subtree' (⟨a, i⟩ :: ps) (CofixA.intro a o) hx = subtree' ps (o i) (isPathA_cons' hx) :=
+  rfl
 
 /-- similar to `subtree'` but returns the data at the end of the path instead
 of the whole subtree -/
@@ -213,9 +232,9 @@ open Approx
 /-- For polynomial functor `F`, `M F` is its final coalgebra -/
 @[opaque_repr]
 structure M where
-  /-- constructor for `M` as a structure of the internal definition. Not optimized.
+  /-- constructor for `M` as a structure of the internal definition.
   Consider using `corec` before use this. -/
-  mk' ::
+  protected mk' ::
   /-- An `n`-th level approximation, for each depth `n` -/
   approx : ∀ n, CofixA F n
   /-- Each approximation agrees with the next -/
@@ -319,7 +338,7 @@ theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.a
 
 theorem approx_eta (x : M F) (n : ℕ) :
     x.approx (n + 1) = CofixA.intro (head x) (fun i => (children x i).approx n) := by
-  rw [Approx.approx_eta (x.approx (n + 1))]
+  rw [CofixA.eta (x.approx (n + 1))]
   dsimp only [children]
   have hx : head' (approx x (n + 1)) = head x := head_eq_head' x n |>.symm
   congr 1
@@ -359,16 +378,26 @@ theorem children_eq_childrenComputable : @children = @childrenComputable :=
 /-- The implemention of `approx`. -/
 def approxComputable (x : M F) : (n : ℕ) → CofixA F n
   | 0      => CofixA.continue
-  | succ n =>
-    match dest x with
-    | ⟨a, o⟩ => CofixA.intro a fun b => approxComputable (o b) n
+  | succ n => CofixA.intro (head x) fun b => approxComputable (children x b) n
 
 @[csimp]
 theorem approx_eq_approxComputable : @approx.{u} = @approxComputable.{u} := by
   funext F x n
   induction n generalizing x with
   | zero      => apply cofixA_eq_zero
-  | succ n hn => simp only [approxComputable, dest, ← hn, ← approx_eta]
+  | succ n hn => simp only [approxComputable, ← hn, ← approx_eta]
+
+/-- The implemention of `M.casesOn`. -/
+@[specialize]
+def casesOnComputable {motive : M F → Sort*} (x : M F)
+    (mk' : (approx : (n : ℕ) → CofixA F n) → (consistent : AllAgree approx) →
+      motive (M.mk' approx consistent)) :
+    motive x :=
+  mk' (approx x) (consistent x)
+
+@[csimp]
+theorem casesOn_eq_casesOnComputable : @M.casesOn.{v, u} = @M.casesOnComputable.{v, u} :=
+  rfl
 
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
@@ -384,6 +413,11 @@ protected def sMk (x : F (M F)) : ∀ n, CofixA F n
   | 0 => CofixA.continue
   | n + 1 => CofixA.intro x.1 fun i => (x.2 i).approx n
 #align pfunctor.M.approx.s_mk PFunctor.M.Approx.sMk
+
+@[simp]
+theorem sMk_succ (x : F (M F)) (n : ℕ) :
+    Approx.sMk x (n + 1) = CofixA.intro x.1 fun i => (x.2 i).approx n :=
+  rfl
 
 protected theorem P_mk (x : F (M F)) : AllAgree (Approx.sMk x)
   | 0 => by constructor
@@ -402,7 +436,7 @@ unsafe def mkUnsafe (x : F (M F)) : M F :=
   | ⟨a, o⟩ => ofI <| CofixI.mk <| ⟨a, fun b => toI (o b)⟩
 
 /-- constructor for M-types -/
-@[implemented_by mkUnsafe]
+@[implemented_by mkUnsafe, simps]
 protected def mk (x : F (M F)) : M F where
   approx := Approx.sMk x
   consistent := Approx.P_mk x
@@ -529,66 +563,176 @@ theorem cCasesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
 
 /-- `IsPath p x` tells us if `p` is a valid path through `x` -/
 inductive IsPath : Path F → M F → Prop
+  /-- `[]` is a valid path for arbitrary `x`. -/
   | nil (x : M F) : IsPath [] x
-  | cons (xs : Path F) {a} (x : M F) (f : F.B a → M F) (i : F.B a) :
-    x = M.mk ⟨a, f⟩ → IsPath xs (f i) → IsPath (⟨a, i⟩ :: xs) x
+  /-- If `ps` is a valid path of `o i`, then
+  `⟨a, i⟩ :: ps` is a valid path of `M.mk ⟨a, f⟩`. -/
+  | cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a) :
+    IsPath ps (f i) → IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)
 #align pfunctor.M.is_path PFunctor.M.IsPath
 
-theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :
-    IsPath (⟨a', i⟩ :: xs) (M.mk ⟨a, f⟩) → a = a' := by
-  generalize h : M.mk ⟨a, f⟩ = x
-  rintro (_ | ⟨_, _, _, _, rfl, _⟩)
+theorem isPath_cons {ps : Path F} {a a'} {f : F.B a → M F} {i : F.B a'}
+    (hps : IsPath (⟨a', i⟩ :: ps) (M.mk ⟨a, f⟩)) : a = a' := by
+  generalize h : M.mk ⟨a, f⟩ = x at hps
+  cases hps
   cases mk_inj h
   rfl
 #align pfunctor.M.is_path_cons PFunctor.M.isPath_cons
 
-theorem isPath_cons' {xs : Path F} {a} {f : F.B a → M F} {i : F.B a} :
-    IsPath (⟨a, i⟩ :: xs) (M.mk ⟨a, f⟩) → IsPath xs (f i) := by
-  generalize h : M.mk ⟨a, f⟩ = x
-  rintro (_ | ⟨_, _, _, _, rfl, hp⟩)
+theorem isPath_cons' {ps : Path F} {a} {f : F.B a → M F} {i : F.B a}
+    (hps : IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)) : IsPath ps (f i) := by
+  generalize h : M.mk ⟨a, f⟩ = x at hps
+  cases hps
   cases mk_inj h
-  exact hp
+  assumption
 #align pfunctor.M.is_path_cons' PFunctor.M.isPath_cons'
 
+@[simp]
+theorem isPath_cons_iff {ps : Path F} {a} {f : F.B a → M F} {i : F.B a} :
+    IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) ↔ IsPath ps (f i) :=
+  ⟨isPath_cons', IsPath.cons _ _ _⟩
+
+theorem IsPath.isPathA {p : Path F} {x : (n : ℕ) → CofixA F n} {hx : AllAgree x}
+    (hmx : IsPath p (M.mk' x hx)) (n : ℕ) : IsPathA p (x (n + length p)) := by
+  generalize hy : M.mk' x hx = y at hmx
+  induction hmx generalizing x hx with
+  | nil x => constructor
+  | @cons ps a f i _ hps =>
+    simp [M.mk, Approx.sMk] at hy; clear hx; subst hy
+    simp; constructor
+    cases hf : f i
+    exact hps hf.symm
+
+/-- `IsPath` is decidable if `F.A` has decidable equality. -/
+def IsPath.dec [DecidableEq F.A] (p : Path F) (x : M F) : Decidable (IsPath p x) :=
+  match p with
+  | [] => isTrue (IsPath.nil x)
+  | ⟨a, i⟩ :: ps =>
+    if ha : head x = a then
+      @decidable_of_iff _ (IsPath ps (children x (cast (congr_arg F.B ha.symm) i)))
+        (by
+          subst ha
+          conv_rhs => arg 2; rw [← mk_dest x, dest]
+          symm; exact isPath_cons_iff)
+        (dec ps (children x (cast (congr_arg F.B ha.symm) i)))
+    else
+      isFalse <| by
+        intro hx
+        rw [← mk_dest x, dest] at hx
+        exact ha (isPath_cons hx)
+
+instance [DecidableEq F.A] (p : Path F) (x : M F) : Decidable (IsPath p x) :=
+  IsPath.dec p x
+
+/-- Destruct `IsPath.cons` constructively. -/
+def IsPath.destCons {a b ps} (x : M F) (hx : IsPath (⟨a, b⟩ :: ps) x) :
+    { o : F.B a → M F // IsPath ps (o b) } :=
+  have ha₂ : head x = a := by
+    rw [← mk_dest x, dest] at hx; exact isPath_cons hx
+  ⟨fun i => children x (cast (congr_arg F.B ha₂.symm) i), by
+    subst ha₂
+    conv at hx => arg 2; rw [← mk_dest x, dest]
+    exact isPath_cons' hx⟩
+
+theorem IsPath.destCons_isPath_cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a)
+    (hps : IsPath ps (f i)) : IsPath.destCons (M.mk ⟨a, f⟩) (IsPath.cons a f i hps) = ⟨f, hps⟩ := by
+  rfl
+
 /-- follow a path through a value of `M F` and return the subtree
-found at the end of the path if it is a valid path for that value and
-return a default tree -/
-def isubtree [DecidableEq F.A] [Inhabited (M F)] : Path F → M F → M F
-  | [], x => x
-  | ⟨a, i⟩ :: ps, x =>
-    PFunctor.M.cCasesOn' x (fun a' f =>
-      if h : a = a' then
-        isubtree ps (f <| cast (by rw [h]) i)
-      else
-        default (α := M F)
-    )
-#align pfunctor.M.isubtree PFunctor.M.isubtree
+found at the end of the path. -/
+def subtree (p : Path F) (x : M F) (hx : IsPath p x) : M F :=
+  match p with
+  | [] => x
+  | ⟨_, b⟩ :: ps =>
+    let ⟨o, ho⟩ := IsPath.destCons x hx
+    subtree ps (o b) ho
 
-/-- similar to `isubtree` but returns the data at the end of the path instead
+@[simp]
+theorem subtree_nil {x : M F} (hx : IsPath [] x) : subtree [] x hx = x :=
+  rfl
+
+@[simp]
+theorem subtree_cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a)
+    (hps : IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)) :
+    subtree (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) hps = subtree ps (f i) (isPath_cons' hps) :=
+  rfl
+
+theorem subtree'_eq_subtree_approx {p : Path F} {x : (n : ℕ) → CofixA F n} {hx : AllAgree x}
+    (hp : IsPath p (M.mk' x hx)) (n : ℕ) :
+    subtree' p (x (n + length p)) (hp.isPathA n) = approx (subtree p (M.mk' x hx) hp) n := by
+  change
+    subtree' p (approx (M.mk' x hx) (n + length p))
+        (hp.isPathA (x := approx (M.mk' x hx)) (hx := consistent (M.mk' x hx)) n) =
+      approx (subtree p (M.mk' x hx) hp) n
+  generalize M.mk' x hx = y at hp; clear x hx
+  induction hp with
+  | nil x => simp
+  | @cons ps a f i hps hpsᵢ =>
+    simp [add_succ]
+    exact hpsᵢ
+
+/-- follow a path through a value of `M F` and return the subtree
+found at the end of the path if it is a valid path for that value -/
+def subtree? [DecidableEq F.A] (p : Path F) (x : M F) : Option (M F) :=
+  if hp : IsPath p x then
+    some (subtree p x hp)
+  else
+    none
+#align pfunctor.M.isubtree PFunctor.M.subtree?
+
+/-- similar to `subtree` but returns the data at the end of the path instead
 of the whole subtree -/
-def iselect [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) : M F → F.A :=
-  fun x : M F => head <| isubtree ps x
-#align pfunctor.M.iselect PFunctor.M.iselect
+def select (p : Path F) (x : M F) (hx : IsPath p x) : F.A :=
+  head (subtree p x hx)
 
-theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x : M F)
-    (h : ¬IsPath ps x) : iselect ps x = head default := by
-  induction' ps with ps_hd ps_tail ps_ih generalizing x
-  · exfalso
-    apply h
-    constructor
-  · cases' ps_hd with a i
-    induction' x using PFunctor.M.cCasesOn' with x_a x_f
-    simp only [iselect, isubtree] at ps_ih ⊢
-    by_cases h'' : a = x_a
-    subst x_a
-    · simp only [dif_pos, eq_self_iff_true, cCasesOn_mk']
-      rw [ps_ih]
-      intro h'
-      apply h
-      constructor <;> try rfl
-      apply h'
-    · simp [*]
-#align pfunctor.M.iselect_eq_default PFunctor.M.iselect_eq_default
+@[simp]
+theorem select_nil (x : M F) (hx : IsPath [] x) : select [] x hx = head x :=
+  rfl
+
+@[simp]
+theorem select_cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a)
+    (hps : IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)) :
+    select (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) hps = select ps (f i) (isPath_cons' hps) :=
+  rfl
+
+theorem select'_eq_select {p : Path F} {x : (n : ℕ) → CofixA F n} {hx : AllAgree x}
+    (hp : IsPath p (M.mk' x hx)) (n : ℕ) :
+    select' p (x (n + 1 + length p)) (hp.isPathA (n + 1)) = select p (M.mk' x hx) hp := by
+  unfold select select'
+  rw [subtree'_eq_subtree_approx (n := n + 1) hp, head'_eq_head]
+
+/-- similar to `subtree?` but returns the data at the end of the path instead
+of the whole subtree -/
+def select? [DecidableEq F.A] (p : Path F) (x : M F) : Option F.A :=
+  Option.map head (subtree? p x)
+#align pfunctor.M.iselect PFunctor.M.select?
+
+theorem IsPath.concat_select {p : Path F} {x : M F} (hx : IsPath p x) (i) :
+    IsPath (p ++ [⟨select p x hx, i⟩]) x := by
+  induction hx with
+  | nil x =>
+    simp
+    conv => arg 2; rw [← mk_dest x, dest]
+    constructor; constructor
+  | @cons ps a f i₂ hps hpsᵢ =>
+    simp
+    apply hpsᵢ
+
+theorem subtree_concat_select {p : Path F} {x : M F} (hp : IsPath p x) (i) :
+    subtree (p ++ [⟨select p x hp, i⟩]) x (hp.concat_select i) =
+      children (subtree p x hp) i := by
+  induction hp with
+  | nil x =>
+    simp
+    conv_lhs => arg 2; rw [← mk_dest x, dest]
+  | @cons ps a f i₂ hps hpsᵢ =>
+    simp
+    apply hpsᵢ
+
+theorem select?_eq_none [DecidableEq F.A] (ps : Path F) (x : M F)
+    (h : ¬IsPath ps x) : select? ps x = none := by
+  simp [select?, subtree?, h]
+#align pfunctor.M.iselect_eq_default PFunctor.M.select?_eq_none
 
 @[simp]
 theorem head_mk (x : F (M F)) : head (M.mk x) = x.1 :=
@@ -610,23 +754,22 @@ theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Id
 #align pfunctor.M.ichildren_mk PFunctor.M.ichildren_mk
 
 @[simp]
-theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a}
+theorem subtree?_cons [DecidableEq F.A] (ps : Path F) {a}
     (f : F.B a → M F) {i : F.B a} :
-    isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
-  simp only [isubtree, ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, cCasesOn_mk']; rfl
-#align pfunctor.M.isubtree_cons PFunctor.M.isubtree_cons
+    subtree? (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = subtree? ps (f i) := by
+  simp [subtree?]
+#align pfunctor.M.isubtree_cons PFunctor.M.subtree?_cons
 
 @[simp]
-theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
-    iselect nil (M.mk ⟨a, f⟩) = a := rfl
-#align pfunctor.M.iselect_nil PFunctor.M.iselect_nil
+theorem select?_nil [DecidableEq F.A] {a} (f : F.B a → M F) :
+    select? [] (M.mk ⟨a, f⟩) = a := rfl
+#align pfunctor.M.iselect_nil PFunctor.M.select?_nil
 
 @[simp]
-theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)]
-    (ps : Path F) {a} (f : F.B a → M F) {i} :
-    iselect (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = iselect ps (f i) := by
-  simp only [iselect, isubtree_cons]
-#align pfunctor.M.iselect_cons PFunctor.M.iselect_cons
+theorem select?_cons [DecidableEq F.A] (ps : Path F) {a} (f : F.B a → M F) {i} :
+    select? (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = select? ps (f i) := by
+  simp [select?]
+#align pfunctor.M.iselect_cons PFunctor.M.select?_cons
 
 theorem corec_def {X} (f : X → F X) (x₀ : X) :
     M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
@@ -640,16 +783,16 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) :
     congr
 #align pfunctor.M.corec_def PFunctor.M.corec_def
 
-theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ}
+theorem ext_aux [DecidableEq F.A] {n : ℕ}
     (x y z : M F) (hx : Agree' n z x)
-    (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → iselect ps x = iselect ps y) :
+    (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → select? ps x = select? ps y) :
     x.approx (n + 1) = y.approx (n + 1) := by
   induction' n with n n_ih generalizing x y z
   · specialize hrec [] rfl
     induction x using PFunctor.M.cCasesOn'
     induction y using PFunctor.M.cCasesOn'
-    simp only [iselect_nil] at hrec
-    subst hrec
+    simp only [select?_nil] at hrec
+    cases hrec
     simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
                 heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
   · cases hx
@@ -673,15 +816,13 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ}
     · solve_by_elim
     introv h
     specialize hrec (⟨_, i⟩ :: ps) (congr_arg _ h)
-    simp only [iselect_cons] at hrec
+    simp only [select?_cons] at hrec
     exact hrec
 #align pfunctor.M.ext_aux PFunctor.M.ext_aux
 
 open PFunctor.Approx
 
-attribute [local instance] Classical.propDecidable
-
-theorem ext [Inhabited (M F)] (x y : M F) (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
+theorem ext [DecidableEq F.A] (x y : M F) (H : ∀ ps : Path F, select? ps x = select? ps y) :
     x = y := by
   apply ext'; intro i
   induction' i with i i_ih
@@ -694,7 +835,7 @@ theorem ext [Inhabited (M F)] (x y : M F) (H : ∀ ps : Path F, iselect ps x = i
     · rw [← agree_iff_agree', i_ih]
       apply y.consistent
     introv H'
-    dsimp only [iselect] at H
+    dsimp only [select?] at H
     cases H'
     apply H ps
 #align pfunctor.M.ext PFunctor.M.ext
@@ -713,13 +854,13 @@ structure IsBisimulation : Prop where
     R (M.mk ⟨a, f⟩) (M.mk ⟨a, f'⟩) → ∀ i : F.B a, R (f i) (f' i)
 #align pfunctor.M.is_bisimulation PFunctor.M.IsBisimulation
 
-theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
-    (R s₁ s₂) →
+theorem nth_of_bisim [DecidableEq F.A] (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
+    R s₁ s₂ →
       IsPath ps s₁ ∨ IsPath ps s₂ →
-        iselect ps s₁ = iselect ps s₂ ∧
+        select? ps s₁ = select? ps s₂ ∧
           ∃ (a : _) (f f' : F.B a → M F),
-            isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
-              isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, R (f i) (f' i) := by
+            M.mk ⟨a, f⟩ ∈ subtree? ps s₁ ∧
+              M.mk ⟨a, f'⟩ ∈ subtree? ps s₂ ∧ ∀ i : F.B a, R (f i) (f' i) := by
   intro h₀ hh
   induction' s₁ using PFunctor.M.cCasesOn' with a f
   induction' s₂ using PFunctor.M.cCasesOn' with a' f'
@@ -729,11 +870,11 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
     apply bisim.tail h₀
   cases' i with a' i
   obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
-  dsimp only [iselect] at ps_ih ⊢
+  dsimp only [select?] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
   induction' h : f i using PFunctor.M.cCasesOn' with a₀ f₀
   induction' h' : f' i using PFunctor.M.cCasesOn' with a₁ f₁
-  simp only [h, h', isubtree_cons] at ps_ih ⊢
+  simp only [h, h', subtree?_cons] at ps_ih ⊢
   rw [h, h'] at h₁
   obtain rfl : a₀ = a₁ := bisim.head h₁
   apply ps_ih _ _ _ h₁
@@ -741,17 +882,17 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
   apply Or.imp isPath_cons' isPath_cons' hh
 #align pfunctor.M.nth_of_bisim PFunctor.M.nth_of_bisim
 
-theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) :
+theorem eq_of_bisim (bisim : IsBisimulation R) :
     ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
-  inhabit M F
-  introv Hr; apply ext
-  introv
-  by_cases h : IsPath ps s₁ ∨ IsPath ps s₂
-  · have H := nth_of_bisim R bisim _ _ ps Hr h
-    exact H.left
-  · rw [not_or] at h
-    cases' h with h₀ h₁
-    simp only [iselect_eq_default, *, not_false_iff]
+  classical
+    introv Hr; apply ext
+    introv
+    by_cases h : IsPath ps s₁ ∨ IsPath ps s₂
+    · have H := nth_of_bisim R bisim _ _ ps Hr h
+      exact H.left
+    · rw [not_or] at h
+      cases' h with h₀ h₁
+      simp only [select?_eq_none, *, not_false_iff]
 #align pfunctor.M.eq_of_bisim PFunctor.M.eq_of_bisim
 
 end Bisim
@@ -776,7 +917,6 @@ theorem bisim (R : M P → M P → Prop)
       M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   introv h'
-  haveI := Inhabited.mk x.head
   apply eq_of_bisim R _ _ _ h'; clear h' x y
   constructor <;> introv ih <;> rcases h _ _ ih with ⟨a'', g, g', h₀, h₁, h₂⟩ <;> clear h
   · replace h₀ := congr_arg Sigma.fst h₀
@@ -831,6 +971,61 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   intro i
   exact ⟨f' i, trivial, rfl, rfl⟩
 #align pfunctor.M.corec_unique PFunctor.M.corec_unique
+
+namespace mk'Computable
+
+/-- The loop used in `mk'Computable`. -/
+noncomputable def loop (x : (n : ℕ) → CofixA P n) (hx : AllAgree x) :
+    { p : Path P // IsPath p (M.mk' x hx) } → P { p : Path P // IsPath p (M.mk' x hx) }
+  | ⟨p, hp⟩ =>
+    ⟨select p (M.mk' x hx) hp, fun i =>
+      ⟨p ++ [⟨select p (M.mk' x hx) hp, i⟩], IsPath.concat_select hp i⟩⟩
+
+/-- The implemention of `mk'Computable.loop`. -/
+def loopComputable (x : (n : ℕ) → CofixA P n) (hx : AllAgree x) :
+    { p : Path P // IsPath p (M.mk' x hx) } → P { p : Path P // IsPath p (M.mk' x hx) }
+  | ⟨p, hp⟩ =>
+    ⟨select' p (x (0 + 1 + length p)) (hp.isPathA (0 + 1)), fun i =>
+      ⟨concat p ⟨select' p (x (0 + 1 + length p)) (hp.isPathA (0 + 1)), i⟩, by
+        revert i; rw [select'_eq_select hp]; intro i
+        rw [concat_eq_append]; apply IsPath.concat_select⟩⟩
+
+@[csimp]
+theorem loop_eq_loopComputable : @loop.{u} = @loopComputable.{u} := by
+  funext P x hx ⟨p, hp⟩
+  simp [loop, loopComputable, PFunctor.Obj]
+  have hx : select p (M.mk' x hx) hp = select' p (x (0 + 1 + length p)) (hp.isPathA (0 + 1)) := by
+    rw [select'_eq_select hp]
+  constructor
+  · assumption
+  · refine hfunext (congr_arg P.B hx) (fun i₁ i₂ hi => ?_)
+    simp
+    constructor <;> assumption
+
+end mk'Computable
+
+/-- The implemention of `M.mk'`. -/
+def mk'Computable (x : (n : ℕ) → CofixA P n) (hx : AllAgree x) : M P :=
+  M.corec (mk'Computable.loop x hx) ⟨[], IsPath.nil (M.mk' x hx)⟩
+
+@[csimp]
+theorem mk'_eq_mk'Computable : @M.mk'.{u} = @M.mk'Computable.{u} := by
+  funext P x hx
+  change M.mk' x hx = M.mk'Computable (approx (M.mk' x hx)) (consistent (M.mk' x hx))
+  generalize M.mk' x hx = y; clear x hx
+  suffices
+      (fun s : { p : Path P // IsPath p y } =>
+          match s with
+          | ⟨p, hp⟩ => subtree p y hp) =
+        M.corec (M.mk'Computable.loop (approx y) (consistent y)) by
+    simp [M.mk'Computable, ← this]
+  apply corec_unique
+  rintro ⟨p, hp⟩
+  simp [dest, Function.comp, mk'Computable.loop, PFunctor.Obj]
+  constructor
+  · rfl
+  · ext i
+    rw [subtree_concat_select hp i]
 
 /-- corecursor where the state of the computation can be sent downstream
 in the form of a recursive call -/

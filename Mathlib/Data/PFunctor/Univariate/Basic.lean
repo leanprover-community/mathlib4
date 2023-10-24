@@ -132,7 +132,7 @@ variable (P)
 /-- `Idx` identifies a location inside the application of a pfunctor.
 For `F : PFunctor`, `x : F α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
-def Idx :=
+abbrev Idx :=
   Σ x : P.A, P.B x
 #align pfunctor.Idx PFunctor.Idx
 

@@ -13,8 +13,6 @@ def StringGame.Cycle : PFunctor where
 
 abbrev StringGame := StringGame.Cycle.M
 
-abbrev StringGameIntl := StringGame.Cycle.MIntl
-
 namespace StringGame
 
 instance : AndThen StringGame where
@@ -53,36 +51,12 @@ def nameQuiz (familyName firstName : String) : StringGame :=
   quiz "What's my family name?" familyName (hintLengthDiff familyName) >>
     quiz "Right! So, what's my first name?" firstName (hintLengthDiff firstName)
 
+def etaExpand (game : StringGame) : StringGame :=
+  M.mk' (M.approx game) (M.consistent game)
+
 end StringGame
 
-namespace StringGameIntl
-
-open StringGame
-
-@[specialize]
-def quiz (question : String) (correct : String) (hint : String → String) : StringGameIntl :=
-  let cycle (answer : String) : Cycle String :=
-    if answer = correct then
-      ⟨none, Empty.elim⟩
-    else
-      ⟨some (hint answer), id⟩
-  MIntl.mk ⟨some question, MIntl.corec cycle⟩
-
-def eval (game : StringGameIntl) (answers : List String)
-    (finished : String := "Right! The game is over!") : String :=
-  match MIntl.dest game, answers with
-  | ⟨some _, answered⟩, answer :: answers => eval (answered answer) answers finished
-  | ⟨some hint, _⟩, [] => hint
-  | ⟨none, _⟩, _ => finished
-
-def familyNameQuiz (familyName : String) : StringGameIntl :=
-  quiz "What's my family name?" familyName (hintLengthDiff familyName)
-
-end StringGameIntl
-
 def myGame : StringGame := StringGame.nameQuiz "Miyahara" "Kō"
-
-def myGameIntl : StringGameIntl := StringGameIntl.familyNameQuiz "Miyahara"
 
 #eval
   myGame.eval ["Keizer"]
@@ -92,7 +66,7 @@ def myGameIntl : StringGameIntl := StringGameIntl.familyNameQuiz "Miyahara"
 
 -- benchmark, too slow:
 -- #eval
---   myGameIntl.eval (List.replicate 1000 "Keizer")
+--   myGame.etaExpand.eval (List.replicate 1000 "Keizer")
 
 #eval
   myGame.eval ["Keizer", "Carneiro"]
@@ -108,3 +82,6 @@ def myGameIntl : StringGameIntl := StringGameIntl.familyNameQuiz "Miyahara"
 
 #eval
   myGame.eval ["Keizer", "Carneiro", "Miyahara", "Mario", "Ko", "Kō"]
+
+#eval
+  myGame.etaExpand.eval ["Keizer", "Carneiro", "Miyahara", "Mario", "Ko", "Kō"]
