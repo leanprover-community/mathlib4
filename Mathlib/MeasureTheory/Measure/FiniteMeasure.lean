@@ -244,7 +244,8 @@ theorem coeFn_zero : (⇑(0 : FiniteMeasure Ω) : Set Ω → ℝ≥0) = (0 : Set
 @[simp, norm_cast]
 theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥0) = (⇑μ + ⇑ν : Set Ω → ℝ≥0) := by
   funext
-  simp [← ENNReal.coe_eq_coe]
+  simp only [Pi.add_apply, ← ENNReal.coe_eq_coe, ne_eq, ennreal_coeFn_eq_coeFn_toMeasure,
+    ENNReal.coe_add]
   norm_cast
 #align measure_theory.finite_measure.coe_fn_add MeasureTheory.FiniteMeasure.coeFn_add
 
@@ -252,7 +253,8 @@ theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥
 theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) :
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
   funext
-  simp [← ENNReal.coe_eq_coe, ENNReal.coe_smul]
+  simp only [Pi.smul_apply, ← ENNReal.coe_eq_coe, ne_eq, ennreal_coeFn_eq_coeFn_toMeasure,
+    ENNReal.coe_smul]
   norm_cast
 #align measure_theory.finite_measure.coe_fn_smul MeasureTheory.FiniteMeasure.coeFn_smul
 
@@ -701,7 +703,7 @@ end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 
 section map
 
-variable {Ω Ω' : Type _} [MeasurableSpace Ω] [MeasurableSpace Ω']
+variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 /-- The push-forward of a finite measure by a function between measurable spaces. -/
 noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
