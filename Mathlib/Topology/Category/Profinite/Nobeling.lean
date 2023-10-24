@@ -869,9 +869,8 @@ theorem lt_iff_head!_lt {l : Products I} {o : Ordinal} :
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (C.proj (ord I · < o))) = l.eval C := by
-  rw [← LocallyConstant.coe_inj]
-  simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap]
-  exact evalFacProp C (ord I · < o) hlt
+  simpa only [← LocallyConstant.coe_inj, πs_apply, continuous_projRestrict,
+    LocallyConstant.coe_comap] using evalFacProp C (ord I · < o) hlt
 
 theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :
@@ -905,47 +904,29 @@ theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
     (πs C o) '' (eval (C.proj (ord I · < o)) '' { m | m < l }) := by
   ext f
-  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · obtain ⟨m,hm⟩ := hf
-    rw [← eval_πs C (lt_ord_of_lt hm.1 hl)] at hm
-    rw [← hm.2]
-    simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
-    use m
-    exact ⟨hm.1, by rfl⟩
-  · rw [← Set.image_comp] at hf
-    obtain ⟨m,hm⟩ := hf
-    rw [← hm.2, Function.comp_apply, eval_πs C (lt_ord_of_lt hm.1 hl)]
-    simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
-    exact ⟨m, ⟨hm.1, by rfl⟩⟩
+  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
+  apply exists_congr; intro m
+  apply and_congr_right; intro hm
+  rw [eval_πs C (lt_ord_of_lt hm hl)]
 
 theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (C.proj (ord I · < o₂)) '' { m | m < l } =
     (πs' C h) '' (eval (C.proj (ord I · < o₁)) '' { m | m < l }) := by
   ext f
-  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · obtain ⟨m,hm⟩ := hf
-    rw [← eval_πs' C h (lt_ord_of_lt hm.1 hl)] at hm
-    rw [← hm.2]
-    simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
-    use m
-    exact ⟨hm.1, by rfl⟩
-  · rw [← Set.image_comp] at hf
-    obtain ⟨m,hm⟩ := hf
-    rw [← hm.2, Function.comp_apply, eval_πs' C h (lt_ord_of_lt hm.1 hl)]
-    simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
-    use m
-    exact ⟨hm.1, by rfl⟩
+  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
+  apply exists_congr; intro m
+  apply and_congr_right; intro hm
+  rw [eval_πs' C h (lt_ord_of_lt hm hl)]
 
 theorem head_lt_ord_of_isGood {l : Products I} {o : Ordinal}
-    (h : l.isGood (C.proj (ord I · < o))) : l.val ≠ [] → ord I (l.val.head!) < o :=
-  fun hn ↦ prop_of_isGood  C (ord I · < o) h l.val.head! (List.head!_mem_self hn)
+    (h : l.isGood (C.proj (ord I · < o))) (hn : l.val ≠ []) : ord I (l.val.head!) < o :=
+  prop_of_isGood C (ord I · < o) h l.val.head! (List.head!_mem_self hn)
 
 theorem isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : l.isGood (C.proj (ord I · < o₁))) : l.isGood (C.proj (ord I · < o₂)) := by
   intro hl'
   apply hl
-  rwa [eval_πs_image' C h (prop_of_isGood  C _ hl),
-    ← eval_πs' C h (prop_of_isGood  C _ hl),
+  rwa [eval_πs_image' C h (prop_of_isGood  C _ hl), ← eval_πs' C h (prop_of_isGood  C _ hl),
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C h)] at hl'
 
 end Products
@@ -963,22 +944,18 @@ def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
 /-- The map from the image of the `GoodProducts` in `LocallyConstant (C.proj (ord I · < o)) ℤ`
     to `smaller C o` -/
 noncomputable
-def range_equiv_smaller_toFun (o : Ordinal) :
-    range (C.proj (ord I · < o)) → smaller C o :=
-  fun x ↦ ⟨πs C o ↑x, by dsimp [smaller]; use x.val; exact ⟨x.property, rfl⟩ ⟩
+def range_equiv_smaller_toFun (o : Ordinal) (x : range (C.proj (ord I · < o))) : smaller C o :=
+  ⟨πs C o ↑x, x.val, x.property, rfl⟩
 
 theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
-  refine ⟨fun a b hab ↦ ?_, fun ⟨a,ha⟩ ↦ ?_⟩
-  · dsimp [range_equiv_smaller_toFun] at hab
-    ext1
+  dsimp [range_equiv_smaller_toFun]
+  refine ⟨fun a b hab ↦ ?_, fun ⟨a, b, hb⟩ ↦ ?_⟩
+  · ext1
     simp only [Subtype.mk.injEq] at hab
     exact injective_πs C o hab
-  · obtain ⟨b,hb⟩ := ha
-    use ⟨b,hb.1⟩
-    dsimp [range_equiv_smaller_toFun]
-    simp only [Subtype.mk.injEq]
-    exact hb.2
+  · use ⟨b, hb.1⟩
+    simpa only [Subtype.mk.injEq] using hb.2
 
 /-- The equivalence from the image of the `GoodProducts` in
     `LocallyConstant (C.proj (ord I · < o)) ℤ` to `smaller C o` -/
