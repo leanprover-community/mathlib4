@@ -68,6 +68,8 @@ class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
 
 export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
+attribute [simp] mem_antidiagonal
+
 /-- All HasAntidiagonal are equal -/
 instance (μ : Type*) [AddMonoid μ] :
     Subsingleton (HasAntidiagonal μ) := by
