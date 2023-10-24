@@ -640,6 +640,8 @@ theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x => (⌈x⌉₊ : R) / x) atT
 
 lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (λ x ↦ x / n) atTop atTop := by
   simp_rw [←@Nat.floor_div_eq_div ℚ]
-  exact tendsto_nat_floor_atTop.comp (tendsto_nat_cast_atTop_atTop.atTop_div_const $ by positivity)
+  apply tendsto_nat_floor_atTop.comp
+  apply Tendsto.atTop_div_const (by positivity)
+  · apply tendsto_nat_cast_atTop_atTop
 
 end
