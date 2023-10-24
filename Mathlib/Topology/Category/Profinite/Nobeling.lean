@@ -551,10 +551,10 @@ theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α :=
   exact Finset.sort_sorted _ _
 
 -- TODO: this lemma is purely about lists, and should be moved to the appropriate API file
-theorem GoodProducts.extracted_1
-  (a : I) (as : List I) (ha : List.Chain' (fun x x_1 ↦ x > x_1) (a :: as))
-  (m : List I) (hm : List.Chain' (fun x x_1 ↦ x > x_1) m)
-  (hmas : m ≤ as) : List.Chain' (fun x x_1 ↦ x > x_1) (a :: m) := by
+theorem _root_.List.Chain'.cons_of_le
+  {a : I} {as m : List I} (ha : List.Chain' (· > ·) (a :: as))
+  (hm : List.Chain' (· > ·) m)
+  (hmas : m ≤ as) : List.Chain' (· > ·) (a :: m) := by
   cases m with
   | nil => simp only [List.chain'_singleton]
   | cons b bs =>
@@ -577,39 +577,38 @@ theorem GoodProducts.extracted_1
         rw [ge_iff_le, le_iff_lt_or_eq]
         exact Or.inr hmas.1
 
-theorem GoodProducts.extracted_2
-  (a : I) (as : List I) (ha : List.Chain' (fun x x_1 ↦ x > x_1) (a :: as)) (c : Products I →₀ ℤ)
-  (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as})
-  (hsm :
-    ∀ (c : ℤ) (x : LocallyConstant ↑(Set.proj C fun x ↦ x ∈ J) ℤ),
-      e (Set.proj C fun x ↦ x ∈ J) a * c • x = c • (e (Set.proj C fun x ↦ x ∈ J) a * x)) :
-  (Finsupp.sum c fun a_1 b ↦ e (Set.proj C fun x ↦ x ∈ J) a * b • Products.eval (Set.proj C fun x ↦ x ∈ J) a_1) ∈
-    Submodule.span ℤ (Products.eval (Set.proj C fun x ↦ x ∈ J) '' {m | m.val ≤ a :: as}) := by
+-- TODO: this lemma is purely about lists, and should be moved to the appropriate API file
+theorem _root_.List.le_cons (a : I) {as m : List I} (hmas : m ≤ as) : a :: m ≤ a :: as := by
+  rw [le_iff_lt_or_eq] at hmas ⊢
+  refine hmas.imp ?_ (congr_arg _)
+  intro hmas
+  have haa : ¬(a < a) := gt_irrefl a
+  exact (List.lt_iff_lex_lt _ _).mp
+    (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr hmas))
+
+theorem GoodProducts.finsupp_sum_mem_span_eval
+  {a : I} {as : List I} (ha : List.Chain' (· > ·) (a :: as)) {c : Products I →₀ ℤ}
+  (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as}) :
+  (Finsupp.sum c fun a_1 b ↦ e (C.proj (· ∈ J)) a * b • Products.eval (C.proj (· ∈ J)) a_1) ∈
+    Submodule.span ℤ (Products.eval (C.proj (· ∈ J)) '' {m | m.val ≤ a :: as}) := by
   apply Submodule.finsupp_sum_mem
   intro m hm
+  have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
+  dsimp at hsm
   rw [hsm]
   apply Submodule.smul_mem
   apply Submodule.subset_span
   have hmas : m.val ≤ as
   · apply hc
     simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm
-  refine ⟨⟨a :: m.val, ?_⟩, ⟨?_, ?_⟩⟩
-  · exact GoodProducts.extracted_1 _ _ ha m.val m.prop hmas
-  · simp only [Set.mem_setOf_eq]
-    -- TODO: the remaining proof in this subgoal could be extracted into an API lemma
-    rw [le_iff_lt_or_eq] at hmas ⊢
-    refine hmas.imp ?_ (congr_arg _)
-    intro hmas
-    have haa : ¬(a < a) := gt_irrefl a
-    exact (List.lt_iff_lex_lt _ _).mp
-      (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr hmas))
-  · simp only [Products.eval, List.map, List.prod_cons]
+  refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.le_cons a hmas, ?_⟩⟩
+  simp only [Products.eval, List.map, List.prod_cons]
 
 theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (· ∈ J)))) := by
   rw [span_iff_products]
   refine le_trans (spanFinBasis.span C J) ?_
   rw [Submodule.span_le]
-  intro _ ⟨x, hrfl⟩; cases hrfl -- TODO: why does `intro` not accept a `rfl` pattern here?
+  rintro _ ⟨x, rfl⟩
   rw [← factors_prod_eq_basis]
   let l := J.sort (·≥·)
   dsimp [factors]
@@ -631,16 +630,15 @@ theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.pr
     obtain ⟨c, hc, hc'⟩ := ih
     rw [← hc']; clear hc'
     have hmap := fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
-    have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
-    dsimp at hsm hmap ⊢
+    dsimp at hmap ⊢
     split_ifs
     · rw [hmap]
-      exact GoodProducts.extracted_2 _ _ _ _ ha _ hc hsm
+      exact finsupp_sum_mem_span_eval _ _ ha hc
     · ring_nf
       rw [hmap]
       apply Submodule.add_mem
       · apply Submodule.neg_mem
-        exact GoodProducts.extracted_2 _ _ _ _ ha _ hc hsm
+        exact finsupp_sum_mem_span_eval _ _ ha hc
       · apply Submodule.finsupp_sum_mem
         intro m hm
         apply Submodule.smul_mem
