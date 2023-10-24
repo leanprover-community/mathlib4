@@ -220,14 +220,14 @@ end mapIdxM
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
 
-/-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
-`List.All₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
+/-- `l.Forall p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
+`List.Forall p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 @[simp]
-def All₂ (p : α → Prop) : List α → Prop
+def Forall (p : α → Prop) : List α → Prop
   | [] => True
   | x :: [] => p x
-  | x :: l => p x ∧ All₂ p l
-#align list.all₂ List.All₂
+  | x :: l => p x ∧ Forall p l
+#align list.all₂ List.Forall
 
 #align list.transpose List.transpose
 #align list.sections List.sections
@@ -449,8 +449,8 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 /-- Map each element of a `List` to an action, evaluate these actions in order,
     and collect the results.
 -/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
-    List α → F (List β)
+protected def traverse {F : Type u → Type v} [Applicative F]
+    {α : Type*} {β : Type u} (f : α → F β) : List α → F (List β)
   | [] => pure []
   | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
