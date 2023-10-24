@@ -65,7 +65,8 @@ def Proj : (I → Bool) → (I → Bool) :=
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
   dsimp [Proj]
-  continuity says
+  continuity? says
+    rename_i _ inst_1 _ inst_3 _ _
     apply continuous_pi
     intro i
     split
@@ -1088,7 +1089,8 @@ def SwapTrue : (I → Bool) → I → Bool :=
 theorem continuous_swapTrue  :
     Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
   dsimp [SwapTrue]
-  continuity says
+  continuity? says
+    rename_i _ inst_1 inst_2
     apply continuous_pi
     intro i
     apply Continuous.comp'
