@@ -534,6 +534,11 @@ theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
   · exact GammaIntegral_convergent hs
 #align real.Gamma_pos_of_pos Real.Gamma_pos_of_pos
 
+theorem Gamma_nonneg_of_nonneg {s : ℝ} (hs : 0 ≤ s) : 0 ≤ Gamma s := by
+  obtain rfl | h := eq_or_lt_of_le hs
+  · rw [Gamma_zero]
+  · exact (Gamma_pos_of_pos h).le
+
 open Lean.Meta Qq in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
@@ -544,6 +549,9 @@ def _root_.Mathlib.Meta.Positivity.evalGamma :
   | .positive pa =>
     let pa' ← mkAppM ``Gamma_pos_of_pos #[pa]
     pure (.positive pa')
+  | .nonnegative pa =>
+    let pa' ← mkAppM ``Gamma_nonneg_of_nonneg #[pa]
+    pure (.nonnegative pa')
   | _ => pure .none
 
 /-- The Gamma function does not vanish on `ℝ` (except at non-positive integers, where the function
