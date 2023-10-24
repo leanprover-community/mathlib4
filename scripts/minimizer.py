@@ -373,6 +373,29 @@ def delete_defs(filename):
     for match in re.finditer(r'\n\n.*?\n\n', source, flags=re.DOTALL):
         yield match.start(), match.end(), '\n\n'
 
+def delete_sections(filename):
+    """Try to delete entire sections all at once"""
+    with open(filename, 'r') as file:
+        source = file.read()
+
+    for match in re.finditer(r'(section|namespace) ([^\s]*)', source, flags=re.DOTALL):
+        section_name = match.group(2)
+        if section_name:
+            end_statement = f'\nend {section_name}\n'
+            end_index = source.find(end_statement, match.start())
+            next_section_index = source.find(f'\nsection {section_name}\n', match.start())
+            next_namespace_index = source.find(f'\nsection {section_name}\n', match.start())
+        else:
+            end_statement = '\nend\n'
+            end_index = source.find(end_statement, match.start())
+            next_section_index = source.find('\nsection\n', match.start())
+            next_namespace_index = source.find('\nnamespace\n', match.start())
+
+        # Only try to delete the innermost section each time.
+        if end_index != -1 and (next_section_index == -1 or end_index < next_section_index) and (next_namespace_index == -1 or end_index < next_namespace_index):
+            logging.debug(f"delete_sections: section/namespace {section_name}")
+            yield match.start(), end_index + len(end_statement), '\n\n'
+
 def delete_lines(filename):
     """Erase whole lines."""
     with open(filename, 'r') as file:
@@ -397,6 +420,7 @@ passes = {
     'strip_comments': make_bisecting_pass(strip_comments),
     'delete_align': make_bisecting_pass(delete_align),
     'make_proofs_sorry': make_bisecting_pass(make_proofs_sorry),
+    'delete_sections': make_bottom_up_pass(delete_sections),
     'delete_or_sorry': make_bottom_up_pass(combine_change_generators(delete_defs, make_sorry)),
     'minimize_imports': loop_pass(sequence_passes(
         make_bisecting_pass(delete_imports),
