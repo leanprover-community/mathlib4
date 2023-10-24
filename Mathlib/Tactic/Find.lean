@@ -314,8 +314,8 @@ def suggestQualifiedNames {kind} (index : Index) (s : TSyntax kind) (si : Source
   let suggestedNames ← resolveUnqualifiedName index n
   return suggestedNames.map fun sugg => replaceIdentAt si sugg s
 
-/-- If the `s` at `si` is an identifier as a `find_filter`, suggest replacing it with
-with a string filter -/
+/-- If the `s` at the subexpression `needle` is an identifier `find_filter`, suggest replacing it
+with a name string filter. -/
 partial def suggestQuoted' (needle : SourceInfo) (s : Syntax) : Syntax :=
   match s with
   | .node si₁ ``find_filter #[.ident si₂ str _n _prs]  =>
@@ -327,6 +327,8 @@ partial def suggestQuoted' (needle : SourceInfo) (s : Syntax) : Syntax :=
     .node si kind <| cs.map (suggestQuoted' needle)
   | _ => s
 
+/-- If the `s` at the subexpression `needle` is an identifier `find_filter`, suggest replacing it
+with a name string filter. -/
 partial def suggestQuoted {kind} (needle : SourceInfo) : TSyntax kind → Array (TSyntax kind)
   | .mk s =>
     let s' := suggestQuoted' needle s
