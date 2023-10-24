@@ -969,19 +969,16 @@ theorem linearIndependent_iff_smaller (o : Ordinal) :
   exact linearIndependent_equiv _
 
 theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ ⊆ smaller C o₂ := by
-  intro f hf
-  dsimp only [smaller] at *
-  obtain ⟨g, hg⟩ := hf
-  simp only [Set.mem_image]
+  rintro f ⟨g, hg, rfl⟩
+  simp only [smaller, Set.mem_image]
   use πs' C h g
+  obtain ⟨⟨l, gl⟩, rfl⟩ := hg
   refine ⟨?_, ?_⟩
-  · dsimp only [range] at hg ⊢
-    obtain ⟨⟨l,gl⟩, hl⟩ := hg.1
-    use ⟨l, Products.isGood_mono C h gl⟩
+  · use ⟨l, Products.isGood_mono C h gl⟩
     ext x
-    rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood  C _ gl), ← hl, eval]
+    rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood  C _ gl), eval]
   · rw [← LocallyConstant.coe_inj, coe_πs C o₂, ← LocallyConstant.toFun_eq_coe, coe_πs',
-      Function.comp.assoc, projRestricts_comp_projRestrict C _, ← hg.2, coe_πs]
+      Function.comp.assoc, projRestricts_comp_projRestrict C _, coe_πs]
     rfl
 
 end GoodProducts
@@ -994,35 +991,30 @@ variable {o : Ordinal} (ho : o.IsLimit) (hsC : contained C o)
 
 theorem Products.limitOrdinal (l : Products I) : l.isGood (C.proj (ord I · < o)) ↔
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (C.proj (ord I · < o')) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by obtain ⟨o',⟨ho',hl⟩⟩ := h; exact isGood_mono C (le_of_lt ho') hl⟩
+  refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
   have ha : ⊥ < o := by rw [Ordinal.bot_eq_zero, Ordinal.pos_iff_ne_zero]; exact ho.1
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o
   · simp only [Finset.sup_lt_iff ha, List.mem_toFinset]
-    exact fun b hb ↦ ho.2 _ (prop_of_isGood  C (ord I · < o) h b hb)
+    exact fun b hb ↦ ho.2 _ (prop_of_isGood C (ord I · < o) h b hb)
+  refine ⟨hslt, fun he ↦ h ?_⟩
   have hlt : ∀ i ∈ l.val, ord I i < Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
   · intro i hi
     simp only [Finset.lt_sup_iff, List.mem_toFinset, Order.lt_succ_iff]
-    exact ⟨i, hi, le_refl _⟩
-  refine ⟨hslt, fun he ↦ ?_⟩
-  apply h
+    exact ⟨i, hi, le_rfl⟩
   rwa [eval_πs_image' C (le_of_lt hslt) hlt, ← eval_πs' C (le_of_lt hslt) hlt,
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C _)]
 
 theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.val) := by
   ext p
+  simp only [smaller, range, Set.mem_iUnion, Set.mem_image, Set.mem_range, Subtype.exists]
   refine ⟨fun hp ↦ ?_, fun hp ↦ ?_⟩
-  · simp only [smaller, range, Set.mem_iUnion, Set.mem_image, Set.mem_range, Subtype.exists]
-    obtain ⟨⟨l,hl⟩,hp⟩ := hp
+  · obtain ⟨l, hl, rfl⟩ := hp
     rw [contained_eq_proj C o hsC, Products.limitOrdinal C ho] at hl
-    obtain ⟨o',ho'⟩ := hl
+    obtain ⟨o', ho'⟩ := hl
     refine ⟨o', ho'.1, eval (C.proj (ord I · < o')) ⟨l, ho'.2⟩, ⟨l, ho'.2, rfl⟩, ?_⟩
-    rw [← hp]
     exact Products.eval_πs C (Products.prop_of_isGood  C _ ho'.2)
-  · simp only [range, Set.mem_range, Subtype.exists]
-    simp only [Set.mem_iUnion, Subtype.exists, exists_prop] at hp
-    obtain ⟨o', ⟨h, ⟨f, ⟨⟨⟨l, hl⟩, hlf⟩, hf⟩⟩⟩⟩  := hp
-    rw [← hf, ← hlf]
+  · obtain ⟨o', h, _, ⟨l, hl, rfl⟩, rfl⟩ := hp
     refine ⟨l, ?_, (Products.eval_πs C (Products.prop_of_isGood  C _ hl)).symm⟩
     rw [contained_eq_proj C o hsC]
     exact Products.isGood_mono C (le_of_lt h) hl
@@ -1058,36 +1050,22 @@ def C0 := C ∩ {f | f (term I ho) = false}
 def C1 := C ∩ {f | f (term I ho) = true}
 
 theorem isClosed_C0 : IsClosed (C0 C ho) := by
-  refine IsClosed.inter hC ?_
-  have h : Continuous ((fun f ↦ f (term I ho) : (I → Bool) → Bool)) :=
-      continuous_apply (term I ho)
-  exact (continuous_iff_isClosed.mp h) {false} (isClosed_discrete _)
+  refine hC.inter ?_
+  have h : Continuous (fun (f : I → Bool) ↦ f (term I ho)) := continuous_apply (term I ho)
+  exact IsClosed.preimage h (s := {false}) (isClosed_discrete _)
 
 theorem isClosed_C1 : IsClosed (C1 C ho) := by
-  refine IsClosed.inter hC ?_
-  have h : Continuous ((fun f ↦ f (term I ho) : (I → Bool) → Bool)) :=
-      continuous_apply (term I ho)
-  exact (continuous_iff_isClosed.mp h) {true} (isClosed_discrete _)
+  refine hC.inter ?_
+  have h : Continuous (fun (f : I → Bool) ↦ f (term I ho)) := continuous_apply (term I ho)
+  exact IsClosed.preimage h (s := {true}) (isClosed_discrete _)
 
 theorem contained_C1 : contained ((C1 C ho).proj (ord I · < o)) o :=
   contained_proj _ _
 
 theorem union_C0C1_eq : (C0 C ho) ∪ (C1 C ho) = C := by
   ext x
-  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · dsimp [C0, C1] at hx
-    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
-    rw [← and_or_left] at hx
-    exact hx.1
-  · dsimp [C0, C1]
-    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq]
-    rw [← and_or_left]
-    refine ⟨hx, ?_⟩
-    by_cases h : x (term I ho) = false
-    · left
-      assumption
-    · right
-      simpa only [← Bool.not_eq_false]
+  simp only [C0, C1, Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq,
+    ← and_or_left, and_iff_left_iff_imp, Bool.dichotomy (x (term I ho)), implies_true]
 
 /-- The intersection of `C0` and the projection of `C1`. We will apply the inductive hypothesis to
     this set. -/
@@ -1118,24 +1096,18 @@ variable {o}
 
 theorem swapTrue_mem_C1 (f : (C1 C ho).proj (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
-  obtain ⟨f, ⟨g, hg⟩⟩ := f
-  suffices : SwapTrue o f = g
-  · rw [this]; exact hg.1
+  obtain ⟨f, g, hg, rfl⟩ := f
+  convert hg
   dsimp [SwapTrue]
   ext i
   split_ifs with h
   · rw [ord_term ho] at h
-    rw [← h]
-    exact hg.1.2.symm
-  · dsimp [Proj] at hg
-    rw [← congr_fun hg.2 i]
-    simp only [ite_eq_left_iff, not_lt]
+    simpa only [← h] using hg.2.symm
+  · simp only [Proj, ite_eq_left_iff, not_lt, @eq_comm _ false, ← Bool.not_eq_true]
+    specialize hsC g hg.1 i
     intro h'
-    have hh := Order.succ_le_of_lt (lt_of_le_of_ne h' (Ne.symm h))
-    specialize hsC g hg.1.1 i
-    rw [← not_imp_not] at hsC
-    simp only [not_lt, Bool.not_eq_true] at hsC
-    exact (hsC hh).symm
+    contrapose! hsC
+    exact ⟨hsC, Order.succ_le_of_lt (h'.lt_of_ne' h)⟩
 
 /-- The first way to map `C'` into `C`. -/
 def CC'₀ : C' C ho → C := fun g ↦ ⟨g.val,g.prop.1.1⟩
