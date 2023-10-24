@@ -392,20 +392,21 @@ def Mcongr : q.P.M → q.P.M → Prop := fun x y => ∃ r, IsPrecongr r ∧ r x 
 set_option linter.uppercaseLean3 false in
 #align qpf.Mcongr QPF.Mcongr
 
-/-- Internal definition for `Cofix`. This data structure is inefficient a little so we override the
-data structure. -/
-def CofixIntl (F : Type u → Type u) [Functor F] [q : QPF F] :=
+/-- coinductive type defined as the final coalgebra of a qpf -/
+def Cofix (F : Type u → Type u) [Functor F] [q : QPF F] :=
   Quot (@Mcongr F _ q)
+#align qpf.cofix QPF.Cofix
 
-instance [Inhabited q.P.A] : Inhabited (CofixIntl F) :=
+instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
   ⟨Quot.mk _ default⟩
 
-/-- corecursor for type defined by `CofixIntl` -/
-def CofixIntl.corec {α : Type _} (g : α → F α) (x : α) : CofixIntl F :=
+/-- corecursor for type defined by `Cofix` -/
+def Cofix.corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
   Quot.mk _ (corecF g x)
+#align qpf.cofix.corec QPF.Cofix.corec
 
-/-- destructor for type defined by `CofixIntl` -/
-def CofixIntl.dest : CofixIntl F → F (CofixIntl F) :=
+/-- destructor for type defined by `Cofix` -/
+def Cofix.dest : Cofix F → F (Cofix F) :=
   Quot.lift (fun x => Quot.mk Mcongr <$> abs (PFunctor.M.dest x))
     (by
       rintro x y ⟨r, pr, rxy⟩
@@ -417,18 +418,20 @@ def CofixIntl.dest : CofixIntl F → F (CofixIntl F) :=
       conv =>
         lhs
         rw [comp_map, ← abs_map, pr rxy, abs_map, ← comp_map])
+#align qpf.cofix.dest QPF.Cofix.dest
 
-theorem CofixIntl.dest_corec {α : Type u} (g : α → F α) (x : α) :
-    CofixIntl.dest (CofixIntl.corec g x) = CofixIntl.corec g <$> g x := by
+theorem Cofix.dest_corec {α : Type u} (g : α → F α) (x : α) :
+    Cofix.dest (Cofix.corec g x) = Cofix.corec g <$> g x := by
   conv =>
     lhs
-    rw [CofixIntl.dest, CofixIntl.corec];
+    rw [Cofix.dest, Cofix.corec];
   dsimp
   rw [corecF_eq, abs_map, abs_repr, ← comp_map]; rfl
+#align qpf.cofix.dest_corec QPF.Cofix.dest_corec
 
 -- Porting note: Needed to add `(motive := _)` to get `Quot.inductionOn` to work
-private theorem CofixIntl.bisim_aux (r : CofixIntl F → CofixIntl F → Prop) (h' : ∀ x, r x x)
-    (h : ∀ x y, r x y → Quot.mk r <$> CofixIntl.dest x = Quot.mk r <$> CofixIntl.dest y) :
+private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, r x x)
+    (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
   intro x
   apply Quot.inductionOn (motive := _) x
@@ -463,12 +466,12 @@ private theorem CofixIntl.bisim_aux (r : CofixIntl F → CofixIntl F → Prop) (
     rw [← PFunctor.map_map _ _ f, ← PFunctor.map_map _ _ (Quot.mk r), abs_map, abs_map, abs_map]
   refine' ⟨r', this, rxy⟩
 
-theorem CofixIntl.bisim_rel (r : CofixIntl F → CofixIntl F → Prop)
-    (h : ∀ x y, r x y → Quot.mk r <$> CofixIntl.dest x = Quot.mk r <$> CofixIntl.dest y) :
+theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
+    (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
   let r' (x y) := x = y ∨ r x y
   intro x y rxy
-  apply CofixIntl.bisim_aux r'
+  apply Cofix.bisim_aux r'
   · intro x
     left
     rfl
@@ -481,172 +484,11 @@ theorem CofixIntl.bisim_rel (r : CofixIntl F → CofixIntl F → Prop)
     rw [@comp_map _ _ q _ _ _ (Quot.mk r), @comp_map _ _ q _ _ _ (Quot.mk r)]
     rw [h _ _ r'xy]
   right; exact rxy
-
--- TODO(Miyahara): Use `opaque_repr` attribute after lean4#2292
-/-- Wrap `CofixIntl`. This is used to implement `Cofix`. -/
-opaque CofixSpec (F : Type u → Type u) [Functor F] [QPF F] : (T : Type u) × (T ≃ CofixIntl F) :=
-  ⟨CofixIntl F, Equiv.refl _⟩
-
-/-- coinductive type defined as the final coalgebra of a qpf -/
-def Cofix (F : Type u → Type u) [Functor F] [QPF F] :=
-  (CofixSpec F).1
-#align qpf.cofix QPF.Cofix
-
-/-- This type is similar to `PFunctor.CofixI (QPF.P F)`, but `F` is used instead of
-`(QPF.P F).Obj`. -/
-unsafe inductive CofixI (F : Type u → Type u)
-  /-- Construct `CofixI` from an infinite structure. -/
-  | mk (t : F (Thunk (CofixI F))) : CofixI F
-
-namespace Cofix
-
-open Function
-
-/-- Construct the internal model from `Cofix`. -/
-noncomputable def toIntl (x : Cofix F) : CofixIntl F :=
-  (CofixSpec F).2 x
-
-/-- Construct `Cofix` from the internal model. -/
-noncomputable def ofIntl (x : CofixIntl F) : Cofix F :=
-  (CofixSpec F).2.symm x
-
-theorem leftInv_ofIntl_toIntl : LeftInverse (ofIntl : CofixIntl F → Cofix F) toIntl :=
-  (CofixSpec F).2.left_inv'
-
-@[simp]
-theorem toIntl_comp_ofIntl : (toIntl : Cofix F → CofixIntl F) ∘ ofIntl = id :=
-  (CofixSpec F).2.self_comp_symm
-
-@[simp]
-theorem toIntl_ofIntl (x : CofixIntl F) : toIntl (ofIntl x) = x :=
-  (CofixSpec F).2.apply_symm_apply x
-
-theorem rightInv_ofIntl_toIntl : RightInverse (ofIntl : CofixIntl F → Cofix F) toIntl :=
-  (CofixSpec F).2.right_inv'
-
-@[simp]
-theorem ofIntl_comp_toIntl : (ofIntl : CofixIntl F → Cofix F) ∘ toIntl = id :=
-  (CofixSpec F).2.symm_comp_self
-
-@[simp]
-theorem eta (x : Cofix F) : ofIntl (toIntl x) = x :=
-  (CofixSpec F).2.symm_apply_apply x
-
-@[simp]
-theorem ofIntl.injEq (x y : CofixIntl F) : (ofIntl x = ofIntl y) = (x = y) :=
-  propext ((CofixSpec F).2.symm.injective.eq_iff)
-
-@[elab_as_elim]
-theorem ind {motive : Cofix F → Prop}
-    (ofIntl : (x : CofixIntl F) → motive (ofIntl x)) (y : Cofix F) : motive y :=
-  eta y ▸ ofIntl (toIntl y)
-
-/-- Convert `Cofix` to `CofixI`. -/
-@[inline]
-unsafe def ofI : CofixI F → Cofix F :=
-  unsafeCast
-
-/-- Convert `Cofix` to `CofixI`. -/
-@[inline]
-unsafe def ofIMap : F (Thunk (CofixI F)) → F (Thunk (Cofix F)) :=
-  unsafeCast
-
-/-- Convert `CofixI` to `Cofix`. -/
-@[inline]
-unsafe def toI : Cofix F → CofixI F :=
-  unsafeCast
-
-/-- Convert `CofixI` to `Cofix`. -/
-@[inline]
-unsafe def toIMap : F (Thunk (Cofix F)) → F (Thunk (CofixI F)) :=
-  unsafeCast
-
-/-- The implemention of `corec`. This generates data trees lazily. -/
-@[inline]
-unsafe def corecUnsafe {α : Type _} (g : α → F α) (x : α) : Cofix F :=
-  let rec
-    /-- The main loop of `corecUnsafe`. -/
-    @[specialize] loop (x : α) : CofixI F :=
-      CofixI.mk <| ((↑) ∘ loop) <$> g x
-  ofI (loop x)
-
-/-- corecursor for type defined by `Cofix` -/
-@[implemented_by corecUnsafe]
-def corec {α : Type _} (g : α → F α) (x : α) : Cofix F :=
-  ofIntl (CofixIntl.corec g x)
-#align qpf.cofix.corec QPF.CofixIntl.corec
-
-instance [Inhabited (F PUnit)] : Inhabited (Cofix F) where
-  default := Cofix.corec (fun _ => default) PUnit.unit
-
-/-- The implemention of `dest`. This unfolds `Cofix`. -/
-unsafe def destUnsafe (x : Cofix F) : F (Cofix F) :=
-  match toI x with
-  | ⟨t⟩ => Thunk.get <$> ofIMap t
-
-/-- This unfolds an M-type. -/
-@[implemented_by destUnsafe]
-def dest (x : Cofix F) : F (Cofix F) :=
-  ofIntl <$> x.toIntl.dest
-#align qpf.cofix.dest QPF.CofixIntl.dest
-
-@[simp]
-theorem dest_ofIntl (x : CofixIntl F) : dest (ofIntl x) = ofIntl <$> x.dest := by
-  rw [dest, toIntl_ofIntl]
-
-/-- The implemention of `toIntl`. -/
-def toIntlComputable : Cofix F → CofixIntl F :=
-  CofixIntl.corec Cofix.dest
-
-@[csimp]
-theorem toIntl_eq_toIntlComputable : @toIntl.{u} = @toIntlComputable.{u} := by
-  funext F _ _ x; cases' x using ind with x
-  rw [toIntl_ofIntl, toIntlComputable]
-  refine CofixIntl.bisim_rel (fun x₁ x₂ => CofixIntl.corec Cofix.dest (ofIntl x₁) = x₂) ?_ _ _ rfl
-  clear x; rintro x _ rfl
-  simp only [CofixIntl.dest_corec, dest_ofIntl, ← comp_map]
-  exact map_congr (fun x => Quot.sound rfl)
-
-@[simp]
-theorem dest_corec {α : Type u} (g : α → F α) (x : α) : dest (corec g x) = corec g <$> g x := by
-  simp only [corec, dest, toIntl_ofIntl, CofixIntl.dest_corec, ← comp_map, comp]
-#align qpf.cofix.dest_corec QPF.Cofix.dest_corec
-
-theorem bisim_rel (r : Cofix F → Cofix F → Prop)
-    (h : ∀ x y, r x y → Quot.mk r <$> dest x = Quot.mk r <$> dest y) :
-    ∀ x y, r x y → x = y := by
-  have hm :
-    Function.RightInverse
-      (Functor.map (Quot.map toIntl (fun _ _ h => by rw [eta, eta]; exact h)) :
-        F (Quot r) → F (Quot (fun x₁ x₂ => r (ofIntl x₁) (ofIntl x₂))))
-      (Functor.map (Quot.map ofIntl (fun _ _ h => h)))
-  · intro x; simp [← comp_map, comp]
-    conv_rhs => rw [← id_map x]
-    apply map_congr; rintro ⟨x⟩; simp [Quot.map]
-  simp [leftInv_ofIntl_toIntl.surjective.forall, dest_ofIntl, ← hm.injective.eq_iff, ← comp_map,
-    comp, Quot.map] at h
-  intro x₁ x₂ hx; cases x₁ using ind; cases x₂ using ind; rw [ofIntl.injEq]
-  exact CofixIntl.bisim_rel (fun x₁ x₂ => r (ofIntl x₁) (ofIntl x₂)) h _ _ hx
 #align qpf.cofix.bisim_rel QPF.Cofix.bisim_rel
 
-/-- The implemention of `ofIntl`. -/
-def ofIntlComputable : CofixIntl F → Cofix F :=
-  Cofix.corec CofixIntl.dest
-
-@[csimp]
-theorem ofIntl_eq_ofIntlComputable : @ofIntl.{u} = @ofIntlComputable.{u} := by
-  funext F _ _ x
-  rw [ofIntlComputable]
-  refine
-    Cofix.bisim_rel (fun x₁ x₂ => ∃ x, ofIntl x = x₁ ∧ corec CofixIntl.dest x = x₂) ?_ _ _
-      ⟨x, rfl, rfl⟩
-  clear x; rintro _ _ ⟨x, rfl, rfl⟩
-  simp only [dest_corec, dest_ofIntl, ← comp_map]
-  exact map_congr (fun x => Quot.sound ⟨x, rfl, rfl⟩)
-
-theorem bisim (r : Cofix F → Cofix F → Prop)
-    (h : ∀ x y, r x y → Liftr r (dest x) (dest y)) : ∀ x y, r x y → x = y := by
-  apply bisim_rel
+theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
+    (h : ∀ x y, r x y → Liftr r (Cofix.dest x) (Cofix.dest y)) : ∀ x y, r x y → x = y := by
+  apply Cofix.bisim_rel
   intro x y rxy
   rcases (liftr_iff r _ _).mp (h x y rxy) with ⟨a, f₀, f₁, dxeq, dyeq, h'⟩
   rw [dxeq, dyeq, ← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
@@ -655,9 +497,8 @@ theorem bisim (r : Cofix F → Cofix F → Prop)
   apply h'
 #align qpf.cofix.bisim QPF.Cofix.bisim
 
-theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
-    (h : ∀ x, Q x → ∃ a f f',
-      dest (u x) = abs ⟨a, f⟩ ∧ dest (v x) = abs ⟨a, f'⟩ ∧
+theorem Cofix.bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
+    (h : ∀ x, Q x → ∃ a f f', Cofix.dest (u x) = abs ⟨a, f⟩ ∧ Cofix.dest (v x) = abs ⟨a, f'⟩ ∧
         ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : Cofix F => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
@@ -668,18 +509,6 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
       refine' ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
     _ _ ⟨x, Qx, rfl, rfl⟩
 #align qpf.cofix.bisim' QPF.Cofix.bisim'
-
-/-- The implemention of `mk`. -/
-@[inline]
-unsafe def mkUnsafe (x : F (Cofix F)) : Cofix F :=
-  ofI <| CofixI.mk <| toIMap ((↑) <$> x)
-
-/-- constructor for `Cofix`. -/
-@[implemented_by mkUnsafe]
-protected def mk (x : F (Cofix F)) : Cofix F :=
-  corec (Functor.map dest) x
-
-end Cofix
 
 end QPF
 
