@@ -83,6 +83,9 @@ theorem small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 #align small_max small_max
 
+instance small_zero (α : Type) : Small.{v} α :=
+  small_max.{v} α
+
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
 #align small_ulift small_ulift
