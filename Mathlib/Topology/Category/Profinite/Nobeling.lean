@@ -506,16 +506,13 @@ theorem e_mem_of_eq_true {x : (Set.proj C (· ∈ J))} {a : I} (hx : x.val a = t
   simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hx
   exact hx.1
 
-theorem one_sub_e_mem_of_ne_true {x y : (Set.proj C (· ∈ J))} {a : I} (ha : y.val a ≠ x.val a)
-    (hx : x.val a ≠ true) : 1 - e (Set.proj C (· ∈ J)) a ∈ factors C J x := by
-  simp only [factors, List.mem_map]
-  refine ⟨a, ⟨?_, if_neg hx⟩⟩
-  simp only [Finset.mem_sort]
-  obtain ⟨z, hz⟩ := y.prop
-  simp only [Bool.not_eq_true] at hx
-  rw [hx, ne_eq, Bool.not_eq_false] at ha
-  rw [← hz.2, Proj] at ha
-  simp only [Bool.ite_eq_true_distrib, if_false_right_eq_and] at ha
+theorem one_sub_e_mem_of_false {x y : (Set.proj C (· ∈ J))} {a : I} (ha : y.val a = true)
+    (hx : x.val a = false) : 1 - e (Set.proj C (· ∈ J)) a ∈ factors C J x := by
+  simp only [factors, List.mem_map, Finset.mem_sort]
+  use a
+  simp only [hx, ite_false, and_true]
+  rcases y with ⟨_, z, hz, rfl⟩
+  simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at ha
   exact ha.1
 
 theorem factors_prod_eq_basis_of_ne {x y : (Set.proj C (· ∈ J))} (h : y ≠ x) :
@@ -523,22 +520,16 @@ theorem factors_prod_eq_basis_of_ne {x y : (Set.proj C (· ∈ J))} (h : y ≠ x
   rw [list_prod_apply (C.proj (· ∈ J)) y _]
   apply List.prod_eq_zero
   simp only [List.mem_map]
-  have h' : y.val ≠ x.val
-  · intro hh
-    apply h
-    exact Subtype.ext hh
-  rw [Function.ne_iff] at h'
-  obtain ⟨a, ha⟩ := h'
-  by_cases hx : x.val a = true
+  obtain ⟨a, ha⟩ : ∃ a, y.val a ≠ x.val a
+  · contrapose! h; ext; apply h
+  cases hx : x.val a
+  · rw [hx, ne_eq, Bool.not_eq_false] at ha
+    refine ⟨1 - (e (C.proj (· ∈ J)) a), ⟨one_sub_e_mem_of_false _ _ ha hx, ?_⟩⟩
+    rw [e, LocallyConstant.evalMonoidHom_apply, LocallyConstant.sub_apply,
+      LocallyConstant.coe_one, Pi.one_apply, LocallyConstant.coe_mk, if_pos ha, sub_self]
   · refine ⟨e (C.proj (· ∈ J)) a, ⟨e_mem_of_eq_true _ _ hx, ?_⟩⟩
     rw [hx] at ha
     rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.coe_mk, if_neg ha]
-  · refine ⟨1 - (e (C.proj (· ∈ J)) a), ⟨one_sub_e_mem_of_ne_true _ _ ha hx, ?_⟩⟩
-    rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.sub_apply, LocallyConstant.coe_one,
-      LocallyConstant.coe_mk, sub_eq_zero]
-    refine Eq.symm (if_pos ?_)
-    simp only [Bool.not_eq_true] at hx
-    rwa [hx, ne_eq, Bool.not_eq_false] at ha
 
 theorem factors_prod_eq_basis (x : C.proj (· ∈ J)) :
     (factors C J x).prod = spanFinBasis C J x := by
@@ -559,13 +550,67 @@ theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α :=
   rw [List.chain'_iff_pairwise]
   exact Finset.sort_sorted _ _
 
+-- TODO: this lemma is purely about lists, and should be moved to the appropriate API file
+theorem GoodProducts.extracted_1
+  (a : I) (as : List I) (ha : List.Chain' (fun x x_1 ↦ x > x_1) (a :: as))
+  (m : List I) (hm : List.Chain' (fun x x_1 ↦ x > x_1) m)
+  (hmas : m ≤ as) : List.Chain' (fun x x_1 ↦ x > x_1) (a :: m) := by
+  cases m with
+  | nil => simp only [List.chain'_singleton]
+  | cons b bs =>
+    apply hm.cons
+    cases as with
+    | nil =>
+      simp only [le_iff_lt_or_eq, or_false] at hmas
+      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+    | cons a' as =>
+      rw [List.chain'_cons] at ha
+      refine gt_of_gt_of_ge ha.1 ?_
+      rw [le_iff_lt_or_eq] at hmas
+      cases' hmas with hmas hmas
+      · by_contra' hh
+        rw [← not_le] at hmas
+        apply hmas
+        apply le_of_lt
+        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
+      · simp only [List.cons.injEq] at hmas
+        rw [ge_iff_le, le_iff_lt_or_eq]
+        exact Or.inr hmas.1
+
+theorem GoodProducts.extracted_2
+  (a : I) (as : List I) (ha : List.Chain' (fun x x_1 ↦ x > x_1) (a :: as)) (c : Products I →₀ ℤ)
+  (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as})
+  (hsm :
+    ∀ (c : ℤ) (x : LocallyConstant ↑(Set.proj C fun x ↦ x ∈ J) ℤ),
+      e (Set.proj C fun x ↦ x ∈ J) a * c • x = c • (e (Set.proj C fun x ↦ x ∈ J) a * x)) :
+  (Finsupp.sum c fun a_1 b ↦ e (Set.proj C fun x ↦ x ∈ J) a * b • Products.eval (Set.proj C fun x ↦ x ∈ J) a_1) ∈
+    Submodule.span ℤ (Products.eval (Set.proj C fun x ↦ x ∈ J) '' {m | m.val ≤ a :: as}) := by
+  apply Submodule.finsupp_sum_mem
+  intro m hm
+  rw [hsm]
+  apply Submodule.smul_mem
+  apply Submodule.subset_span
+  have hmas : m.val ≤ as
+  · apply hc
+    simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm
+  refine ⟨⟨a :: m.val, ?_⟩, ⟨?_, ?_⟩⟩
+  · exact GoodProducts.extracted_1 _ _ ha m.val m.prop hmas
+  · simp only [Set.mem_setOf_eq]
+    -- TODO: the remaining proof in this subgoal could be extracted into an API lemma
+    rw [le_iff_lt_or_eq] at hmas ⊢
+    refine hmas.imp ?_ (congr_arg _)
+    intro hmas
+    have haa : ¬(a < a) := gt_irrefl a
+    exact (List.lt_iff_lex_lt _ _).mp
+      (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr hmas))
+  · simp only [Products.eval, List.map, List.prod_cons]
+
 theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (· ∈ J)))) := by
   rw [span_iff_products]
   refine le_trans (spanFinBasis.span C J) ?_
   rw [Submodule.span_le]
-  intro f hf
-  obtain ⟨x, hx⟩ := hf
-  rw [← hx, ← factors_prod_eq_basis]
+  intro _ ⟨x, hrfl⟩; cases hrfl -- TODO: why does `intro` not accept a `rfl` pattern here?
+  rw [← factors_prod_eq_basis]
   let l := J.sort (·≥·)
   dsimp [factors]
   suffices : l.Chain' (·>·) → (l.map (fun i ↦ if x.val i = true then e (C.proj (· ∈ J)) i
@@ -574,159 +619,44 @@ theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.pr
   · exact Submodule.span_mono (Set.image_subset_range _ _) (this (Finset.sort_chain'_gt _))
   induction l with
   | nil =>
-    · intro _
-      apply Submodule.subset_span
-      exact ⟨⟨[], List.chain'_nil⟩,⟨Or.inl rfl, rfl⟩⟩
+    intro _
+    apply Submodule.subset_span
+    exact ⟨⟨[], List.chain'_nil⟩,⟨Or.inl rfl, rfl⟩⟩
   | cons a as ih =>
-    · rw [List.map_cons, List.prod_cons]
-      by_cases h : x.val a = true
-      · intro ha
-        rw [List.chain'_cons'] at ha
-        specialize ih ha.2
-        rw [← List.chain'_cons'] at ha
-        rw [Finsupp.mem_span_image_iff_total] at ih
-        obtain ⟨c, hc⟩ := ih
-        rw [Finsupp.mem_supported, Finsupp.total_apply] at hc
-        rw [← hc.2, if_pos h]
-        have hmap :=
-          fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
-        dsimp at hmap ⊢
-        rw [hmap]
-        apply Submodule.finsupp_sum_mem
+    rw [List.map_cons, List.prod_cons]
+    intro ha
+    specialize ih (by rw [List.chain'_cons'] at ha; exact ha.2)
+    rw [Finsupp.mem_span_image_iff_total] at ih
+    simp only [Finsupp.mem_supported, Finsupp.total_apply] at ih
+    obtain ⟨c, hc, hc'⟩ := ih
+    rw [← hc']; clear hc'
+    have hmap := fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
+    have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
+    dsimp at hsm hmap ⊢
+    split_ifs
+    · rw [hmap]
+      exact GoodProducts.extracted_2 _ _ _ _ ha _ hc hsm
+    · ring_nf
+      rw [hmap]
+      apply Submodule.add_mem
+      · apply Submodule.neg_mem
+        exact GoodProducts.extracted_2 _ _ _ _ ha _ hc hsm
+      · apply Submodule.finsupp_sum_mem
         intro m hm
-        have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
-        dsimp at hsm
-        rw [hsm]
         apply Submodule.smul_mem
         apply Submodule.subset_span
-        have hmas : m.val ≤ as
-        · apply hc.1
-          simp only [Finset.mem_coe, Finsupp.mem_support_iff]
-          exact hm
-        refine ⟨⟨a :: m.val, ?_⟩, ⟨?_, ?_⟩⟩
-        · by_cases hmnil : m.val = []
-          · rw [hmnil]
-            simp only [List.chain'_singleton]
-          · rw [← List.cons_head!_tail hmnil, List.chain'_cons]
-            refine ⟨?_, ?_⟩
-            · have hasnil : as ≠ []
-              · intro hna
-                apply hmnil
-                rw [hna, le_iff_lt_or_eq] at hmas
-                cases' hmas with hmas hmas
-                · exfalso; apply List.Lex.not_nil_right (·<·) m.val; exact hmas
-                · exact hmas
-              rw [← List.cons_head!_tail hasnil, List.chain'_cons] at ha
-              refine gt_of_gt_of_ge ha.1 ?_
-              rw [ge_iff_le, le_iff_lt_or_eq]
-              rw [le_iff_lt_or_eq] at hmas
-              cases' hmas with hmas hmas
-              · rw [← le_iff_lt_or_eq]
-                by_contra hh
-                simp only [not_le] at hh
-                rw [← List.cons_head!_tail hmnil, ← List.cons_head!_tail hasnil, ← not_le] at hmas
-                apply hmas
-                apply le_of_lt
-                exact (Iff.mp (List.lt_iff_lex_lt _ _) (List.lt.head _ _ hh))
-              · right
-                rw [hmas]
-            · rw [List.cons_head!_tail hmnil]
-              exact m.prop
-        · simp only [Set.mem_setOf_eq]
-          rw [le_iff_lt_or_eq] at hmas ⊢
-          cases' hmas with hmas hmas
-          · left
-            have haa : ¬(a < a) := gt_irrefl a
-            exact Iff.mp (List.lt_iff_lex_lt _ _) (List.lt.tail haa haa
-              (Iff.mpr (List.lt_iff_lex_lt _ _) hmas))
-          · right
-            rw [hmas]
-        · simp only [Products.eval, List.map, List.prod_cons]
-      · intro ha
-        rw [List.chain'_cons'] at ha
-        specialize ih ha.2
-        rw [← List.chain'_cons'] at ha
-        rw [Finsupp.mem_span_image_iff_total] at ih
-        obtain ⟨c, hc⟩ := ih
-        rw [Finsupp.mem_supported, Finsupp.total_apply] at hc
-        rw [← hc.2, if_neg h]
-        have hmap :=
-          fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)) c g
-        dsimp at hmap ⊢
-        ring_nf
-        rw [hmap]
-        apply Submodule.add_mem
-        · apply Submodule.neg_mem
-          apply Submodule.finsupp_sum_mem
-          intro m hm
-          have hsm := (LinearMap.mulLeft ℤ (e (C.proj (· ∈ J)) a)).map_smul
-          dsimp at hsm
-          rw [hsm]
-          apply Submodule.smul_mem
-          apply Submodule.subset_span
-          have hmas : m.val ≤ as
-          · apply hc.1
-            simp only [Finset.mem_coe, Finsupp.mem_support_iff]
-            exact hm
-          refine ⟨⟨a :: m.val, ?_⟩, ⟨?_, ?_⟩⟩
-          · by_cases hmnil : m.val = []
-            · rw [hmnil]
-              simp only [List.chain'_singleton]
-            · rw [← List.cons_head!_tail hmnil, List.chain'_cons]
-              refine ⟨?_, ?_⟩
-              · have hasnil : as ≠ []
-                · intro hna
-                  apply hmnil
-                  rw [hna, le_iff_lt_or_eq] at hmas
-                  cases' hmas with hmas hmas
-                  · exfalso; apply List.Lex.not_nil_right (·<·) m.val; exact hmas
-                  · exact hmas
-                rw [← List.cons_head!_tail hasnil, List.chain'_cons] at ha
-                refine gt_of_gt_of_ge ha.1 ?_
-                rw [ge_iff_le, le_iff_lt_or_eq]
-                rw [le_iff_lt_or_eq] at hmas
-                cases' hmas with hmas hmas
-                · rw [← le_iff_lt_or_eq]
-                  by_contra hh
-                  simp only [not_le] at hh
-                  rw [← List.cons_head!_tail hmnil, ← List.cons_head!_tail hasnil, ← not_le] at hmas
-                  apply hmas
-                  apply le_of_lt
-                  exact (Iff.mp (List.lt_iff_lex_lt _ _) (List.lt.head _ _ hh))
-                · right
-                  rw [hmas]
-              · rw [List.cons_head!_tail hmnil]
-                exact m.prop
-          · simp only [Set.mem_setOf_eq]
-            rw [le_iff_lt_or_eq] at hmas ⊢
-            cases' hmas with hmas hmas
-            · left
-              have haa : ¬(a < a) := gt_irrefl a
-              exact Iff.mp (List.lt_iff_lex_lt _ _) (List.lt.tail haa haa
-                (Iff.mpr (List.lt_iff_lex_lt _ _) hmas))
-            · right
-              rw [hmas]
-          · simp only [Products.eval, List.map, List.prod_cons]
-        · apply Submodule.finsupp_sum_mem
-          intro m hm
-          apply Submodule.smul_mem
-          apply Submodule.subset_span
-          have hmas : m.val ≤ as
-          · apply hc.1
-            simp only [Finset.mem_coe, Finsupp.mem_support_iff]
-            exact hm
-          refine ⟨m, ⟨?_, rfl⟩⟩
-          simp only [Set.mem_setOf_eq]
-          refine le_trans hmas ?_
-          by_cases hasnil : as = []
-          · rw [hasnil]
-            apply le_of_lt
-            exact List.nil_lt_cons a []
-          · apply le_of_lt
-            rw [← List.cons_head!_tail hasnil] at ha ⊢
-            rw [List.chain'_cons] at ha
-            have hlex := List.lt.head as.tail (as.head! :: as.tail) ha.1
-            exact (Iff.mp (List.lt_iff_lex_lt _ _) hlex)
+        refine ⟨m, ⟨?_, rfl⟩⟩
+        simp only [Set.mem_setOf_eq]
+        have hmas : m.val ≤ as :=
+          hc (by simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm)
+        refine le_trans hmas ?_
+        cases as with
+        | nil => exact (List.nil_lt_cons a []).le
+        | cons b bs =>
+          apply le_of_lt
+          rw [List.chain'_cons] at ha
+          have hlex := List.lt.head bs (b :: bs) ha.1
+          exact (List.lt_iff_lex_lt _ _).mp hlex
 
 end Fin
 
@@ -743,23 +673,17 @@ theorem GoodProducts.span (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
   rw [span_iff_products]
   intro f _
-  have hf : ∃ K f', f = πJ C K f' := fin_comap_jointlySurjective C hC f
-  obtain ⟨K, f', hf⟩ := hf
-  rw [hf]
-  have hf' := spanFin C K (Submodule.mem_top : f' ∈ ⊤)
-  have := Submodule.apply_mem_span_image_of_mem_span (πJ C K) hf'
-  refine Submodule.span_mono ?_ this
-  intro l hl
-  obtain ⟨y, ⟨m, hm⟩, hy⟩ := hl
-  rw [← hm] at hy
-  rw [← hy]
+  obtain ⟨K, f', rfl⟩ : ∃ K f', f = πJ C K f' := fin_comap_jointlySurjective C hC f
+  refine Submodule.span_mono ?_ <| Submodule.apply_mem_span_image_of_mem_span (πJ C K) <|
+    spanFin C K (Submodule.mem_top : f' ∈ ⊤)
+  rintro l ⟨y, ⟨m, rfl⟩, rfl⟩
   exact ⟨m.val, eval_eq_πJ C K m.val m.prop⟩
 
 end Span
 
 variable (I)
 
-/-- An term of `I` regarded as an ordinal. -/
+/-- A term of `I` regarded as an ordinal. -/
 def ord (i : I) : Ordinal := Ordinal.typein ((·<·) : I → I → Prop) i
 
 /-- An ordinal regarded as a term of `I`. -/
@@ -783,25 +707,22 @@ theorem ord_term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Pro
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · subst h
     exact term_ord_aux ho
-  · rw [← h]
+  · subst h
     exact ord_term_aux ho
 
 /-- A predicate saying that `C` is "small" enough to satisfy the inductive hypothesis. -/
 def contained (o : Ordinal) : Prop := ∀ f, f ∈ C → ∀ (i : I), f i = true → ord I i < o
 
 theorem Products.prop_of_isGood_of_contained  {l : Products I} (o : Ordinal) (h : l.isGood C)
-    (hsC : contained C o) : ∀ a, a ∈ l.val → ord I a < o := by
-  intro i hi
+    (hsC : contained C o) (i : I) (hi : i ∈ l.val) : ord I i < o := by
   by_contra h'
   apply h
   suffices : eval C l = 0
-  · rw [this]
-    exact Submodule.zero_mem _
+  · simp [this, Submodule.zero_mem]
   ext x
-  rw [eval_eq]
-  split_ifs with h
-  · exfalso; apply h'; exact hsC x.val x.prop i (h i hi)
-  · rfl
+  simp only [eval_eq, LocallyConstant.coe_zero, Pi.zero_apply, ite_eq_right_iff, one_ne_zero]
+  contrapose! h'
+  exact hsC x.val x.prop i (h'.1 i hi)
 
 section Zero
 
@@ -809,9 +730,9 @@ instance : Subsingleton (LocallyConstant (∅ : Set (I → Bool)) ℤ) :=
   subsingleton_iff.mpr (fun _ _ ↦ LocallyConstant.ext isEmptyElim)
 
 instance : IsEmpty { l // Products.isGood (∅ : Set (I → Bool)) l } :=
-    isEmpty_iff.mpr (fun ⟨l, hl⟩ ↦ hl (by
-  rw [subsingleton_iff.mp inferInstance (Products.eval ∅ l) 0]
-  exact Submodule.zero_mem _ ))
+  isEmpty_iff.mpr fun ⟨l, hl⟩ ↦ hl <| by
+    rw [subsingleton_iff.mp inferInstance (Products.eval ∅ l) 0]
+    exact Submodule.zero_mem _
 
 theorem GoodProducts.linearIndependentEmpty :
     LinearIndependent ℤ (eval (∅ : Set (I → Bool))) := linearIndependent_empty_type
@@ -826,15 +747,13 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
 
 instance {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (LocallyConstant α ℤ) := by
   refine ⟨0, 1, fun h ↦ ?_⟩
-  rw [LocallyConstant.ext_iff] at h
   apply @zero_ne_one ℤ
-  exact h default
+  exact FunLike.congr_fun h default
 
 theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil:= by
   intro h
-  rw [Products.lt_nil_empty] at h
-  simp only [Products.eval, List.map, List.prod_nil, Set.image_empty, Submodule.span_empty,
-    Submodule.mem_bot, one_ne_zero] at h
+  simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,
+    Submodule.span_empty, Submodule.mem_bot, one_ne_zero] at h
 
 theorem Products.span_nil_eq_top :
     Submodule.span ℤ (eval ({fun _ ↦ false} : Set (I → Bool)) '' {nil}) = ⊤ := by
@@ -844,8 +763,7 @@ theorem Products.span_nil_eq_top :
   refine ⟨f default, ?_⟩
   simp only [eval, List.map, List.prod_nil, zsmul_eq_mul, mul_one]
   ext x
-  have : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
-  rw [this]
+  obtain rfl : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
   rfl
 
 /-- There is a unique `GoodProducts` for the singleton `{fun _ ↦ false}`. -/
@@ -855,30 +773,25 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
   uniq := by
     intro ⟨⟨l, hl⟩, hll⟩
     ext
-    cases' (List.Lex.nil_left_or_eq_nil l : List.Lex (·<·) [] l ∨ l = []) with h h
-    · exfalso
-      apply hll
-      have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩ }
-      · simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff,
-          Set.mem_setOf_eq]
-      apply Submodule.span_mono (Set.image_subset _ he)
-      rw [Products.span_nil_eq_top]
-      exact Submodule.mem_top
-    · exact Subtype.ext h
+    apply Subtype.ext
+    apply (List.Lex.nil_left_or_eq_nil l (r := (·<·))).resolve_left
+    intro _
+    apply hll
+    have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩}
+    · simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_setOf_eq]
+    apply Submodule.span_mono (Set.image_subset _ he)
+    rw [Products.span_nil_eq_top]
+    exact Submodule.mem_top
 
 instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
   constructor
   intro c f h
-  by_cases hc : c = 0
-  · exact Or.inl hc
-  · right
-    ext x
-    rw [LocallyConstant.ext_iff] at h
-    apply_fun fun (y : ℤ) ↦ c * y
-    · simp at h
-      simp
-      exact h x
-    · exact mul_right_injective₀ hc
+  rw [or_iff_not_imp_left]
+  intro hc
+  ext x
+  apply mul_right_injective₀ hc
+  simp [LocallyConstant.ext_iff] at h ⊢
+  exact h x
 
 theorem GoodProducts.linearIndependentSingleton :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
@@ -899,11 +812,9 @@ theorem isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (C.proj (ord I 
   (continuous_proj (ord I · < o)).isClosedMap C hC
 
 theorem contained_proj (o : Ordinal) : contained (C.proj (ord I · < o)) o := by
-  intro x hx j hj
-  obtain ⟨_, ⟨_, h⟩⟩ := hx
+  intro x ⟨_, ⟨_, h⟩⟩ j hj
   dsimp [Proj] at h
-  rw [← congr_fun h j] at hj
-  simp only [Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
+  simp only [← congr_fun h j, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
   exact hj.1
 
 /-- The `ℤ`-linear map induced by precomposition of the projection `C → C.proj (ord I · < o)`. -/
