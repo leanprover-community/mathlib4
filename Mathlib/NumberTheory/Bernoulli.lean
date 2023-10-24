@@ -191,7 +191,7 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
   rw [sub_mul, h, mul_sub X, sub_right_inj, ← neg_sub, mul_neg, neg_eq_iff_eq_neg]
   suffices evalNegHom (B * (exp ℚ - 1)) * exp ℚ = evalNegHom (X * exp ℚ) * exp ℚ by
     rw [map_mul, map_mul] at this --Porting note: Why doesn't simp do this?
-    simpa [mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
+    simpa [(map_one), mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
   congr
 #align bernoulli'_odd_eq_zero bernoulli'_odd_eq_zero
 
@@ -326,7 +326,7 @@ theorem sum_range_pow (n p : ℕ) :
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
       mul_assoc _ _ (q.succ ! : ℚ), mul_comm _ (q.succ ! : ℚ), ← mul_assoc, div_mul_eq_mul_div]
     simp only [add_eq, add_zero, ge_iff_le, IsUnit.mul_iff, Nat.isUnit_iff, succ.injEq, cast_mul,
-      cast_succ, MonoidHom.coe_mk, OneHom.coe_mk, coeff_exp, Algebra.id.map_eq_id, one_div,
+      cast_succ, MonoidHom.coe_mk, (OneHom.coe_mk), coeff_exp, Algebra.id.map_eq_id, one_div,
       map_inv₀, map_natCast, coeff_mk, mul_inv_rev]
     rw [mul_comm ((n : ℚ) ^ (q - m + 1)), ← mul_assoc _ _ ((n : ℚ) ^ (q - m + 1)), ← one_div,
       mul_one_div, div_div, tsub_add_eq_add_tsub (le_of_lt_succ h), cast_div, cast_mul]
@@ -351,7 +351,7 @@ theorem sum_range_pow (n p : ℕ) :
       use 1
       simp
     have h_r : exp ℚ ^ n - 1 = X * mk fun p => coeff ℚ (p + 1) (exp ℚ ^ n) := by
-      have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp
+      have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp [(map_one)]
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
     -- porting note: altered proof slightly
