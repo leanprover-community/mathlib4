@@ -267,7 +267,7 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
-  { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
+  { mul_left_cancel := by simp }
 
 instance [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) :=
   { zero_mul := by simp,
