@@ -336,6 +336,11 @@ def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_identity AlgebraicGeometry.SpecΓIdentity
 
+@[reassoc]
+theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+    (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
+      SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
+
 end SpecΓ
 
 /-- The stalk map of `Spec M⁻¹R ⟶ Spec R` is an iso for each `p : Spec M⁻¹R`. -/

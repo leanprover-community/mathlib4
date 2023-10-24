@@ -190,6 +190,9 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrie
     eqToHom_op]
 #align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_val_c_app
 
+theorem _root_.AlgebraicGeometry.Scheme.inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    (inv f).val.c.app (op ⊤) = inv (f.val.c.app (op ⊤)) := by simp
+
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
 abbrev Hom.appLe {X Y : Scheme} (f : X ⟶ Y) {V : Opens X.carrier} {U : Opens Y.carrier}
@@ -351,6 +354,10 @@ theorem basicOpen_mul : X.basicOpen (f * g) = X.basicOpen f ⊓ X.basicOpen g :=
 theorem basicOpen_of_isUnit {f : X.presheaf.obj (op U)} (hf : IsUnit f) : X.basicOpen f = U :=
   RingedSpace.basicOpen_of_isUnit _ hf
 #align algebraic_geometry.Scheme.basic_open_of_is_unit AlgebraicGeometry.Scheme.basicOpen_of_isUnit
+
+instance algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
+    Algebra (X.presheaf.obj (op U)) (X.presheaf.obj (op <| X.basicOpen f)) :=
+  (X.presheaf.map (homOfLE <| RingedSpace.basicOpen_le _ f : _ ⟶ U).op).toAlgebra
 
 end BasicOpen
 
