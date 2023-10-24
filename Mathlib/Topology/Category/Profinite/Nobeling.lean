@@ -65,13 +65,11 @@ def Proj : (I → Bool) → (I → Bool) :=
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
   dsimp [Proj]
-  continuity? says
-    rename_i _ inst_1 _ inst_3 _ _
-    apply continuous_pi
-    intro i
-    split
-    · apply continuous_apply
-    · apply continuous_const
+  apply continuous_pi
+  intro i
+  split
+  · apply continuous_apply
+  · apply continuous_const
 
 /-- The image of `Proj π J` -/
 def _root_.Set.proj : Set (I → Bool) := (Proj J) '' C
@@ -1089,13 +1087,11 @@ def SwapTrue : (I → Bool) → I → Bool :=
 theorem continuous_swapTrue  :
     Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
   dsimp [SwapTrue]
-  continuity? says
-    rename_i _ inst_1 inst_2
-    apply continuous_pi
-    intro i
-    apply Continuous.comp'
-    · apply continuous_bot
-    · apply continuous_apply
+  apply continuous_pi
+  intro i
+  apply Continuous.comp'
+  · apply continuous_bot
+  · apply continuous_apply
 
 variable {o}
 
