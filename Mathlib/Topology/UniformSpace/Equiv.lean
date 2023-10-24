@@ -349,7 +349,7 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
 def piCongrLeft {ι ι' : Type*} {β : ι' → Type*} [∀ j, UniformSpace (β j)]
     (e : ι ≃ ι') : (∀ i, β (e i)) ≃ᵤ ∀ j, β j where
   uniformContinuous_toFun := uniformContinuous_pi.mpr <| e.forall_congr_left.mp <| fun i ↦ by
-    simpa only [Equiv.toFun_as_coe_apply, Equiv.piCongrLeft_apply_apply] using
+    simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using
       Pi.uniformContinuous_proj _ i
   uniformContinuous_invFun := Pi.uniformContinuous_precomp' _ e
   toEquiv := Equiv.piCongrLeft _ e
