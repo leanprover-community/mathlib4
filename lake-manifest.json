@@ -4,10 +4,10 @@
  [{"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "f91a64c789426debe48827ae6ef9efc8fa96bfcc",
+    "rev": "03c9aa99d510bdc52001c941366b31e7329489f5",
     "opts": {},
     "name": "std",
-    "inputRev?": "main",
+    "inputRev?": "nightly-testing",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
@@ -39,18 +39,6 @@
     "rev": "5382e38eca1e2537d75d4c4705a9e744424b0037",
     "opts": {},
     "name": "proofwidgets",
-<<<<<<< HEAD
-    "inputRev?": "v0.0.18",
-    "inherited": false}},
-  {"git":
-   {"url": "https://github.com/leanprover/std4",
-    "subDir?": null,
-    "rev": "3fa2bbd630243e78ce99622272462be8a6ab49e1",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "nightly-testing",
-=======
     "inputRev?": "v0.0.19",
->>>>>>> origin/master
     "inherited": false}}],
  "name": "mathlib"}
