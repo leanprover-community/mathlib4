@@ -1584,3 +1584,34 @@ theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp
 #align ordinal.type_fin Ordinal.type_fin
 
 end Ordinal
+
+/-! ### Sorted lists -/
+
+namespace List.Sorted
+
+theorem lt_iff_head!_lt [Inhabited α] [LinearOrder α] [IsWellOrder α (· < ·)]
+    {l : List α} (o : Ordinal) (hl : l.Sorted (· > ·)) :
+    (l ≠ [] → Ordinal.typein (· < ·) l.head! < o) ↔ ∀ i ∈ l, Ordinal.typein (· < ·) i < o := by
+  refine ⟨fun h _ ha ↦ lt_of_le_of_lt ?_ (h (List.ne_nil_of_mem ha)),
+    fun h hn ↦ h l.head! (List.head!_mem_self hn)⟩
+  simp only [Ordinal.typein_le_typein, not_lt]
+  exact hl.le_head! ha
+
+theorem lt_ord_of_lt [Inhabited α] [LinearOrder α] [IsWellOrder α (· < ·)]
+    {l m : List α} {o : Ordinal} (hl : l.Sorted (· > ·)) (hm : m.Sorted (· > ·)) (hmltl : m < l)
+    (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) : ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
+  rw [← hl.lt_iff_head!_lt o] at hlt
+  rw [← hm.lt_iff_head!_lt o]
+  intro hm
+  replace hmltl : List.Lex (· < ·) m l := hmltl
+  by_cases hl : l = []
+  · rw [hl] at hmltl
+    simp only [List.Lex.not_nil_right] at hmltl
+  · suffices hml : m.head! ≤ l.head! by refine lt_of_le_of_lt ?_ (hlt hl); simpa
+    rw [← List.cons_head!_tail hl] at hmltl
+    rw [← List.cons_head!_tail hm] at hmltl
+    by_contra hn
+    simp only [not_le] at hn
+    exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hn) hmltl
+
+end List.Sorted
