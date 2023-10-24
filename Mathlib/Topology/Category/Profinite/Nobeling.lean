@@ -1142,24 +1142,17 @@ def Linear_CC' : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ
 
 theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
-  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁]
   ext x
-  rw [LocallyConstant.sub_apply]
-  simp only [continuous_CC'₁, LocallyConstant.coe_comap, continuous_projRestrict,
-    Function.comp_apply, continuous_CC'₀, LocallyConstant.coe_zero, Pi.zero_apply]
-  suffices :
-    ProjRestrict C (ord I · < o) (CC'₁ C hsC ho x) = ProjRestrict C (ord I · < o) (CC'₀ C ho x)
-  · rw [this]
-    simp only [sub_self]
-  dsimp [CC'₀, CC'₁, ProjRestrict, Proj]
+  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.sub_apply]
+  simp only [continuous_CC'₀, continuous_CC'₁, LocallyConstant.coe_comap, continuous_projRestrict,
+    Function.comp_apply, sub_eq_zero]
+  congr 1
   ext i
-  dsimp
-  split_ifs with h
-  · dsimp [SwapTrue]
-    split_ifs with h'
-    · simp only [h', lt_self_iff_false] at h
-    · rfl
-  · rfl
+  dsimp [CC'₀, CC'₁, ProjRestrict, Proj]
+  apply if_ctx_congr Iff.rfl _ (fun _ ↦ rfl)
+  simp only [SwapTrue, ite_eq_right_iff]
+  intro h₁ h₂
+  exact (h₁.ne h₂).elim
 
 theorem C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x = x := by
   ext i
@@ -1193,43 +1186,32 @@ open Classical in
 theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, πs C o y = f := by
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
-  rw [sub_eq_zero, ← LocallyConstant.coe_inj, LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _),
-    LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
+  simp only [sub_eq_zero, ← LocallyConstant.coe_inj, LocallyConstant.coe_comap,
+    continuous_CC'₀, continuous_CC'₁] at hf
   let C₀C : C0 C ho → C := fun x ↦ ⟨x.val, x.prop.1⟩
   have h₀ : Continuous C₀C := Continuous.subtype_mk continuous_induced_dom _
   let C₁C : (C1 C ho).proj (ord I · < o) → C :=
     fun x ↦ ⟨SwapTrue o x.val, (swapTrue_mem_C1 C hsC ho x).1⟩
   have h₁ : Continuous C₁C := Continuous.subtype_mk
-    (Continuous.comp (continuous_swapTrue o) continuous_subtype_val) _
+    ((continuous_swapTrue o).comp continuous_subtype_val) _
   refine ⟨LocallyConstant.piecewise' ?_ (isClosed_C0 C hC ho)
       (isClosed_proj _ o (isClosed_C1 C hC ho)) (f.comap C₀C) (f.comap C₁C) ?_, ?_⟩
-  · intro x hx
+  · rintro _ ⟨y, hyC, rfl⟩
     simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_univ, iff_true]
-    obtain ⟨y, ⟨hyC, hy⟩⟩ := hx
     rw [← union_C0C1_eq C ho] at hyC
-    cases' hyC with hyC hyC
-    · rw [C0_projOrd C hsC ho hyC] at hy
-      rw [← hy]
-      exact Or.inl hyC
-    · exact Or.inr ⟨y, ⟨hyC, hy⟩⟩
+    refine hyC.imp (fun hyC ↦ ?_) (fun hyC ↦ ⟨y, hyC, rfl⟩)
+    rwa [C0_projOrd C hsC ho hyC]
   · intro x hx
-    simp only [Set.coe_setOf, Set.mem_setOf_eq, LocallyConstant.congrLeft, Equiv.invFun_as_coe,
-      Homeomorph.coe_symm_toEquiv, Equiv.toFun_as_coe, Homeomorph.coe_toEquiv, Equiv.coe_fn_mk,
-      LocallyConstant.toFun_eq_coe, Homeomorph.continuous, LocallyConstant.coe_comap, h₀,
-      Function.comp_apply, h₁]
-    exact (congrFun hf ⟨x, hx⟩).symm
-  · ext ⟨x,hx⟩
+    simpa only [h₀, h₁, LocallyConstant.coe_comap] using (congrFun hf ⟨x, hx⟩).symm
+  · ext ⟨x, hx⟩
     rw [← union_C0C1_eq C ho] at hx
     cases' hx with hx₀ hx₁
-    · simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap, Function.comp_apply]
-      have hx₀' : ProjRestrict C (ord I · < o) ⟨x, hx⟩ = x
-      · simp only [ProjRestrict, Set.MapsTo.val_restrict_apply]
-        exact C0_projOrd C hsC ho hx₀
-      simp only [hx₀', hx₀, LocallyConstant.piecewise'_apply_left, h₀, LocallyConstant.coe_comap,
-        Function.comp_apply]
+    · have hx₀' : ProjRestrict C (ord I · < o) ⟨x, hx⟩ = x
+      · simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using C0_projOrd C hsC ho hx₀
+      simp only [hx₀', hx₀, h₀, LocallyConstant.piecewise'_apply_left, LocallyConstant.coe_comap,
+        Function.comp_apply, πs_apply, continuous_projRestrict]
     · have hx₁' : (ProjRestrict C (ord I · < o) ⟨x, hx⟩).val ∈ (C1 C ho).proj (ord I · < o)
-      · simp only [ProjRestrict, Set.MapsTo.val_restrict_apply]
-        exact ⟨x, ⟨hx₁, rfl⟩⟩
+      · simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using ⟨x, hx₁, rfl⟩
       simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap, Function.comp_apply,
         hx₁', LocallyConstant.piecewise'_apply_right, h₁]
       congr
@@ -1240,16 +1222,13 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
   rw [ModuleCat.mono_iff_injective]
   exact injective_πs _ _
 
-theorem succ_exact : CategoryTheory.Exact
-    (ModuleCat.ofHom (πs C o))
-    (ModuleCat.ofHom (Linear_CC' C hsC ho)) := by
+theorem succ_exact :
+    CategoryTheory.Exact (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho)) := by
   rw [ModuleCat.exact_iff]
   ext f
   rw [LinearMap.mem_ker, LinearMap.mem_range]
-  refine ⟨fun ⟨y,hy⟩ ↦ ?_, fun hf ↦ ?_⟩
-  · rw [← hy]
-    dsimp [ModuleCat.ofHom]
-    exact CC_comp_zero _ _ _ y
+  refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun hf ↦ ?_⟩
+  · simpa only [ModuleCat.ofHom, ← hy] using CC_comp_zero _ _ _ y
   · exact CC_exact _ hC _ ho hf
 
 end ExactSequence
@@ -1264,12 +1243,10 @@ def MaxProducts : Set (Products I) := {l | l.isGood C ∧ term I ho ∈ l.val}
 
 theorem union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ MaxProducts C ho := by
   ext l
-  dsimp [GoodProducts, MaxProducts]
-  simp only [Set.mem_union, Set.mem_setOf_eq]
+  simp only [GoodProducts, MaxProducts, Set.mem_union, Set.mem_setOf_eq]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_cases hh : term I ho ∈ l.val
-    · right
-      exact ⟨h, hh⟩
+    · exact Or.inr ⟨h, hh⟩
     · left
       intro he
       apply h
@@ -1278,16 +1255,15 @@ theorem union_succ : GoodProducts C = GoodProducts (C.proj (ord I · < o)) ∪ M
       simp only [not_imp_not] at hh
       have hh' : ∀ a ∈ l.val, ord I a < o
       · intro a ha
-        refine lt_of_le_of_ne (h' a ha) ?_
+        refine (h' a ha).lt_of_ne ?_
         rw [ne_eq, ord_term ho a]
-        intro hta
-        simp only [hta, ha, not_true] at hh
+        rintro rfl
+        contradiction
       rwa [Products.eval_πs_image C hh', ← Products.eval_πs C hh',
         Submodule.apply_mem_span_image_iff_mem_span (injective_πs _ _)]
-  · refine Or.elim h (fun hh ↦ ?_) (fun hh ↦ ?_)
-    · have := Products.isGood_mono C (le_of_lt (Order.lt_succ o)) hh
-      rwa [contained_eq_proj C (Order.succ o) hsC]
-    · exact hh.1
+  · refine h.elim (fun hh ↦ ?_) And.left
+    have := Products.isGood_mono C (Order.lt_succ o).le hh
+    rwa [contained_eq_proj C (Order.succ o) hsC]
 
 /-- The inclusion map from the sum of `GoodProducts (C.proj (ord I · < o))` and
     `(MaxProducts C ho)` to `Products I`. -/
@@ -1311,9 +1287,8 @@ theorem sum_to_range :
     `(MaxProducts C ho)` to `GoodProducts C`. -/
 noncomputable
 def sum_equiv : GoodProducts (C.proj (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
-  Equiv.trans (Equiv.trans (Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho))
-    (Equiv.Set.ofEq (sum_to_range C ho)))
-    (Equiv.Set.ofEq (union_succ C hsC ho).symm)
+  calc _ ≃ Set.range (sum_to C ho) := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
+       _ ≃ _ := Equiv.Set.ofEq <| by rw [sum_to_range C ho, union_succ C hsC ho]
 
 theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
     (Sum.elim (fun (l : GoodProducts (C.proj (ord I · < o))) ↦ Products.eval C l.1)
@@ -1370,12 +1345,8 @@ theorem square_commutes : SumEval C ho ∘ Sum.inl =
 
 end GoodProducts
 
-theorem swapTrue_eq_true : ∀ x, SwapTrue o x (term I ho) = true := by
-  intro x
-  dsimp [SwapTrue]
-  split_ifs with h
-  · rfl
-  · simp only [ord_term_aux, not_true] at h
+theorem swapTrue_eq_true (x : I → Bool) : SwapTrue o x (term I ho) = true := by
+  simp only [SwapTrue, ord_term_aux, ite_true]
 
 theorem mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
   intro x ⟨_,⟨y,⟨_,hy⟩⟩⟩
