@@ -538,7 +538,7 @@ theorem factors_prod_eq_basis (x : C.proj (· ∈ J)) :
   split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h;
     exact factors_prod_eq_basis_of_ne _ _ h]
 
--- TODO: move to a more general file
+-- #7895
 theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α := α) (·≥·)]
     (s : Finset α) : (s.sort (·≥·)).Chain' (·>·) := by
   rw [List.chain'_iff_pairwise]
@@ -551,7 +551,7 @@ theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α :=
   rw [List.chain'_iff_pairwise]
   exact Finset.sort_sorted _ _
 
--- TODO: this lemma is purely about lists, and should be moved to the appropriate API file
+-- #7896
 theorem _root_.List.Chain'.cons_of_le {a : I} {as m : List I}
     (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
     List.Chain' (· > ·) (a :: m) := by
@@ -577,7 +577,7 @@ theorem _root_.List.Chain'.cons_of_le {a : I} {as m : List I}
         rw [ge_iff_le, le_iff_lt_or_eq]
         exact Or.inr hmas.1
 
--- TODO: this lemma is purely about lists, and should be moved to the appropriate API file
+-- #7897
 theorem _root_.List.le_cons (a : I) {as m : List I} (hmas : m ≤ as) : a :: m ≤ a :: as := by
   rw [le_iff_lt_or_eq] at hmas ⊢
   refine hmas.imp ?_ (congr_arg _)
@@ -851,22 +851,34 @@ section ProductsFactorisation
 
 namespace Products
 
--- TODO: extract a general `List.Lex` lemma
-theorem lt_of_head!_lt {l : Products I} {o : Ordinal}
-    (hlhead : l.val ≠ [] → ord I (l.val.head!) < o) (a : I) (ha : a ∈ l.val) : ord I a < o := by
-  refine lt_of_le_of_lt ?_ (hlhead (List.ne_nil_of_mem ha))
-  simp only [ord, Ordinal.typein_le_typein, not_lt]
-  have hh := List.chain'_iff_pairwise.mp l.prop
-  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at hh
-  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at ha
-  simp only [List.find?, List.mem_cons] at ha
-  cases' ha with ha ha
-  · exact le_of_eq ha
-  · exact le_of_lt (List.rel_of_pairwise_cons hh ha)
+theorem _root_.List.Sorted.lt_iff_head!_lt {l : List I} (o : Ordinal) (hl : l.Sorted (· > ·)) :
+    (l ≠ [] → Ordinal.typein (· < ·) l.head! < o) ↔ ∀ i ∈ l, Ordinal.typein (· < ·) i < o := by
+  refine ⟨fun h _ ha ↦ lt_of_le_of_lt ?_ (h (List.ne_nil_of_mem ha)),
+    fun h hn ↦ h l.head! (List.head!_mem_self hn)⟩
+  simp only [Ordinal.typein_le_typein, not_lt]
+  exact hl.le_head! ha
 
-theorem lt_iff_head!_lt {l : Products I} {o : Ordinal} :
-    (l.val ≠ [] → ord I (l.val.head!) < o) ↔ ∀ i ∈ l.val, ord I i < o :=
-  ⟨lt_of_head!_lt, fun h hn ↦ h l.val.head! (List.head!_mem_self hn)⟩
+theorem _root_.List.Sorted.lt_ord_of_lt {l m : List I} {o : Ordinal} (hl : l.Sorted (· > ·))
+    (hm : m.Sorted (· > ·)) (hmltl : m < l) (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) :
+    ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
+  rw [← List.Sorted.lt_iff_head!_lt o hl] at hlt
+  rw [← List.Sorted.lt_iff_head!_lt o hm]
+  intro hm
+  replace hmltl : List.Lex (· < ·) m l := hmltl
+  by_cases hl : l = []
+  · rw [hl] at hmltl
+    simp only [List.Lex.not_nil_right] at hmltl
+  · suffices hml : m.head! ≤ l.head! by refine lt_of_le_of_lt ?_ (hlt hl); simpa
+    rw [← List.cons_head!_tail hl] at hmltl
+    rw [← List.cons_head!_tail hm] at hmltl
+    by_contra hn
+    simp only [not_le] at hn
+    exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hn) hmltl
+
+-- TODO: extract general `List.Lex`/`Ordinal` API.
+theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
+    (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
+  List.Sorted.lt_ord_of_lt (List.chain'_iff_pairwise.mp l.2) (List.chain'_iff_pairwise.mp m.2) h₁ h₂
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (C.proj (ord I · < o))) = l.eval C := by
@@ -880,27 +892,6 @@ theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
   simp only [πs'_apply, LocallyConstant.toFun_eq_coe, continuous_projRestricts,
     LocallyConstant.coe_comap]
   exact evalFacProps C (fun (i : I) ↦ ord I i < o₁) (fun (i : I) ↦ ord I i < o₂) hlt _
-
--- TODO: extract general `List.Lex`/`Ordinal` API.
-theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (hmltl : m < l)
-    (hlt : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o := by
-  rw [← lt_iff_head!_lt] at hlt ⊢
-  intro hm
-  rw [lt_iff_lex_lt] at hmltl
-  by_cases hl : l.val = []
-  · rw [hl] at hmltl
-    simp only [List.Lex.not_nil_right] at hmltl
-  · suffices hml : m.val.head! ≤ l.val.head!
-    · refine lt_of_le_of_lt ?_ (hlt hl)
-      simp only [ord, Ordinal.typein_le_typein, not_lt]
-      exact hml
-    rw [← List.cons_head!_tail hl] at hmltl
-    rw [← List.cons_head!_tail hm] at hmltl
-    by_contra hn
-    simp only [not_le] at hn
-    have hml : List.Lex (·<·) (l.val.head! :: l.val.tail) (m.val.head! :: m.val.tail) :=
-      List.Lex.rel hn
-    exact List.Lex.isAsymm.aux _ _ _ hml hmltl
 
 theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
