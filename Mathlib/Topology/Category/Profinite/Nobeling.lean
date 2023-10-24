@@ -852,6 +852,7 @@ section ProductsFactorisation
 
 namespace Products
 
+-- #7899
 theorem _root_.List.Sorted.lt_iff_head!_lt {l : List I} (o : Ordinal) (hl : l.Sorted (· > ·)) :
     (l ≠ [] → Ordinal.typein (· < ·) l.head! < o) ↔ ∀ i ∈ l, Ordinal.typein (· < ·) i < o := by
   refine ⟨fun h _ ha ↦ lt_of_le_of_lt ?_ (h (List.ne_nil_of_mem ha)),
@@ -859,6 +860,7 @@ theorem _root_.List.Sorted.lt_iff_head!_lt {l : List I} (o : Ordinal) (hl : l.So
   simp only [Ordinal.typein_le_typein, not_lt]
   exact hl.le_head! ha
 
+-- #7899
 theorem _root_.List.Sorted.lt_ord_of_lt {l m : List I} {o : Ordinal} (hl : l.Sorted (· > ·))
     (hm : m.Sorted (· > ·)) (hmltl : m < l) (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) :
     ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
@@ -876,7 +878,6 @@ theorem _root_.List.Sorted.lt_ord_of_lt {l m : List I} {o : Ordinal} (hl : l.Sor
     simp only [not_le] at hn
     exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hn) hmltl
 
--- TODO: extract general `List.Lex`/`Ordinal` API.
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
   List.Sorted.lt_ord_of_lt (List.chain'_iff_pairwise.mp l.2) (List.chain'_iff_pairwise.mp m.2) h₁ h₂
