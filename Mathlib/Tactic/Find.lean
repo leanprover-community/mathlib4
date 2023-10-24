@@ -12,6 +12,7 @@ import Mathlib.Tactic.Cache
 import Mathlib.Lean.Data.NameRel
 import Mathlib.Lean.Data.RBTree
 import Mathlib.Control.Monad.Writer
+import Mathlib.Init.Data.List.Instances
 
 /-!
 # The `#find` command and tactic.
@@ -225,6 +226,29 @@ def Index.mkFromCache (init : NameRel × SuffixTrie) : IO Index := do
   pure ⟨c1, c2⟩
 
 /-!
+## The #find syntax and elaboration helpers
+-/
+
+open Parser
+
+/-- The turnstyle uesd bin `#find`, unicode or ascii allowed -/
+syntax turnstyle := patternIgnore("⊢ " <|> "|- ")
+/-- a single `#find` filter. The `term` can also be an ident or a strlit,
+these are distinguished in `parseFindFilters` -/
+syntax find_filter := (turnstyle term) <|> term
+
+/-- The argument to `#find`, a list of filters -/
+syntax find_filters := find_filter,*
+
+/-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
+when a type class constraint has no instances.  -/
+def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
+  withTheReader Term.Context ({ ·  with ignoreTCFailures := true, errToSorry := false }) do
+    let t ← Term.elabTerm t expectedType?
+    Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
+    return t
+
+/-!
 ## Generating suggestions for unresolvable names
 
 For `#find` it is really helpful if, when the user entered a term with a name that cannot
@@ -232,7 +256,7 @@ be resolved, we use the name trie to see if it exists maybe in some qualified fo
 simple `ident` patterns, this is straight forward, but for expressions it is harder: The term
 elaborator simply throws an unstructured expression.
 
-So we’ll use the source refernce from that exception, check if there is an `.ident` at tht position
+So we’ll use the source reference from that exception, check if there is an `.ident` at tht position
 in the source, check if the name there does not resolve in the environments, generate
 possible suggestions, and re-assemble the syntax.
 
@@ -290,28 +314,24 @@ def suggestQualifiedNames {kind} (index : Index) (s : TSyntax kind) (si : Source
   let suggestedNames ← resolveUnqualifiedName index n
   return suggestedNames.map fun sugg => replaceIdentAt si sugg s
 
-/-!
-## The #find syntax and elaboration helpers
--/
+/-- If the `s` at `si` is an identifier as a `find_filter`, suggest replacing it with
+with a string filter -/
+partial def suggestQuoted' (needle : SourceInfo) (s : Syntax) : Syntax :=
+  match s with
+  | .node si₁ ``find_filter #[.ident si₂ str _n _prs]  =>
+    if SourceInfo.beq needle si₂ then
+      .node si₁ ``find_filter #[Syntax.mkStrLit str.toString]
+    else
+      s
+  | .node si kind cs =>
+    .node si kind <| cs.map (suggestQuoted' needle)
+  | _ => s
 
-open Parser
+partial def suggestQuoted {kind} (needle : SourceInfo) : TSyntax kind → Array (TSyntax kind)
+  | .mk s =>
+    let s' := suggestQuoted' needle s
+    if s == s' then  #[] else #[.mk s']
 
-/-- The turnstyle uesd bin `#find`, unicode or ascii allowed -/
-syntax turnstyle := patternIgnore("⊢ " <|> "|- ")
-/-- a single `#find` filter. The `term` can also be an ident or a strlit,
-these are distinguished in `parseFindFilters` -/
-syntax find_filter := (turnstyle term) <|> term
-
-/-- The argument to `#find`, a list of filters -/
-syntax find_filters := find_filter,*
-
-/-- A variant of `Lean.Elab.Term.elabTerm` that does not complain for example
-when a type class constraint has no instances.  -/
-def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
-  withTheReader Term.Context ({ ·  with ignoreTCFailures := true, errToSorry := false }) do
-    let t ← Term.elabTerm t expectedType?
-    Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
-    return t
 
 /-!
 ## The core find tactic engine
@@ -389,8 +409,9 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
         | _ => throwErrorAt args "unexpected argument to #find"
     catch e => do
       let .error ref msg := e | throw e
-      let suggestions ← suggestQualifiedNames index args (.fromRef ref)
-      return .error ⟨ref, msg, suggestions⟩
+      let suggestions1 := suggestQuoted (.fromRef ref) args
+      let suggestions2 ← suggestQualifiedNames index args (.fromRef ref)
+      return .error ⟨ref, msg, suggestions1 ++ suggestions2⟩
 
     -- Collect set of names to query the index by
     let needles : NameSet :=

@@ -84,9 +84,14 @@ Of these, 0 match your patterns.
 #guard_msgs in
 #find (_ = my_true)
 
-/-- error: unknown identifier 'doesn'texist' -/
+/--
+error: unknown identifier 'doesn'texist'
+---
+info: Try this: "doesn'texist"
+-/
 #guard_msgs in
 #find doesn'texist
+
 
 /-- error: unknown identifier 'doesn'texist' -/
 #guard_msgs in
@@ -280,6 +285,8 @@ theorem TestDefinition_eq_true:
 /--
 error: unknown identifier 'TestDefinition'
 ---
+info: Try this: "TestDefinition"
+---
 info: Try this: Namespaced.TestDefinition
 -/
 #guard_msgs in
@@ -299,6 +306,8 @@ theorem NamespcedB.AnotherTestDefinition_eq_true:
 /--
 error: unknown identifier 'AnotherTestDefinition'
 ---
+info: Try this: "AnotherTestDefinition"
+---
 info: Try this: NamespacedA.AnotherTestDefinition
 ---
 info: Try this: NamespacedB.AnotherTestDefinition
@@ -310,6 +319,8 @@ info: Try this: NamespacedC.AnotherTestDefinition
 
 /--
 error: unknown identifier 'AnotherTestDefinition'
+---
+info: Try this: "some string before", "AnotherTestDefinition", some (Expr after)
 ---
 info: Try this: "some string before", NamespacedA.AnotherTestDefinition, some (Expr after)
 ---
