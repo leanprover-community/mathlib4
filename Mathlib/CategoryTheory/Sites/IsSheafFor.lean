@@ -711,36 +711,48 @@ def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
   ∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
     P.map gi.op (x i) = P.map gj.op (x j)
 
-lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofArrows X π)) (t : P.obj (op B)) :
+lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofArrows X π))
+    (t : P.obj (op B)) :
     x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) := by
-  constructor
-  · intro h i
-    exact h _ (ofArrows.mk i)
-  · intro h Y f hf
-    obtain ⟨i, rfl, hi⟩ := ofArrows_surj π f hf
-    obtain rfl : f = π i := by simpa using hi
-    exact h i
+  refine ⟨fun h i ↦ h _ (ofArrows.mk i), fun h Y f hf ↦ ?_⟩
+  obtain ⟨i, rfl, hi⟩ := ofArrows_surj π f hf
+  obtain rfl : f = π i := by simpa using hi
+  exact h i
 
 namespace Arrows.Compatible
 
 variable {x : (i : I) → P.obj (op (X i))} (hx : Compatible P π x)
 variable {P π}
 
-lemma exists_familyOfElements :
+theorem exists_familyOfElements :
     ∃ (x' : FamilyOfElements P (ofArrows X π)), ∀ (i : I), x' _ (ofArrows.mk i) = x i := by
-  sorry
+  use (fun Y f hf ↦ P.map (eqToHom (ofArrows_surj π f hf).choose_spec.choose.symm).op (x _))
+  intro i
+  specialize hx i (ofArrows_surj π (π i) (ofArrows.mk _)).choose (X i) (𝟙 _)
+    (eqToHom (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose.symm) ?_
+  · simp [← (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec]
+  rw [← hx]
+  simp
 
+/--
+A `FamilyOfElements` associated to an explicit family of elements.
+-/
+noncomputable
 def familyOfElements {x : (i : I) → P.obj (op (X i))}
-    (hx : Compatible P π x) : FamilyOfElements P (ofArrows X π) := by
-  sorry
+    (hx : Compatible P π x) : FamilyOfElements P (ofArrows X π) :=
+  (exists_familyOfElements hx).choose
 
 @[simp]
-lemma familyOfElements_ofArrows_mk (i : I) :
-    hx.familyOfElements _ (ofArrows.mk i) = x i := sorry
+theorem familyOfElements_ofArrows_mk (i : I) :
+    hx.familyOfElements _ (ofArrows.mk i) = x i :=
+  (exists_familyOfElements hx).choose_spec _
 
-def familyOfElements_compatible {x : (i : I) → P.obj (op (X i))}
+theorem familyOfElements_compatible {x : (i : I) → P.obj (op (X i))}
     (hx : Compatible P π x) : hx.familyOfElements.Compatible := by
-  sorry
+  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
+  cases' h₁ with i
+  cases' h₂ with j
+  simp [hx i j Z g₁ g₂ hgf]
 
 end Arrows.Compatible
 
