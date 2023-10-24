@@ -242,9 +242,22 @@ end SeparableAssumption
 
 section FiniteIntermediateField
 
+-- TODO: move it to suitable file
+theorem _root_.IntermediateField.mem_adjoin_iff {S : Set E} (x : E) :
+    x ∈ adjoin F S ↔ (∃ r s : MvPolynomial S F,
+      x = MvPolynomial.aeval Subtype.val r / MvPolynomial.aeval Subtype.val s) := by
+  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
+    Algebra.adjoin_eq_range, AlgHom.mem_range, exists_exists_eq_and]
+  tauto
+
+-- TODO: move it to suitable file
 theorem _root_.IntermediateField.mem_adjoin_simple_iff {α : E} (x : E) :
-    x ∈ F⟮α⟯ ↔ (∃ r s : F[X], x = aeval α r / aeval α s) := by
-  sorry
+    x ∈ F⟮α⟯ ↔ (∃ r s : Polynomial F, x = aeval α r / aeval α s) := by
+  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
+    Algebra.adjoin_singleton_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
+  tauto
 
 theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hm : 0 < m) (hmn : m < n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
@@ -279,8 +292,22 @@ theorem isAlgebraic_of_finite_intermediateField
   · contradiction
   · exact isAlgebraic_of_adjoin_eq_adjoin F E n.succ_pos (Nat.add_lt_add_right hmn 1) heq.symm
 
+-- TODO: move it to suitable file
+theorem _root_.IntermediateField.finiteDimensional_adjoin_of_finite_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic F E) (S : Set E) [Finite S] :
+    FiniteDimensional F (adjoin F S) := by
+  let t : S → IntermediateField F E := fun x ↦ F⟮x.1⟯
+  have h : ∀ x : S, FiniteDimensional F (t x) := fun x ↦
+    adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg x.1)
+  have hfin := finiteDimensional_iSup_of_finite (t := t)
+  have := (gc (F := F) (E := E)).l_iSup (f := fun (x : S) ↦ {x.1})
+  simp only [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype,
+    Set.setOf_mem_eq] at this
+  rwa [← this] at hfin
+
 theorem finiteDimensional_of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
+  have halg := isAlgebraic_of_finite_intermediateField F E
   sorry
 
 theorem exists_primitive_element_of_finite_intermediateField
@@ -305,20 +332,32 @@ lemma _root_.IntermediateField.adjoin_eq_top_of_adjoin_eq_top (A B C: Type*)
   rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
     coe_restrictScalars, ← adjoin_le_iff]
 
--- TODO: give it a descriptive name if it's useful in other places
-private lemma finite_intermediateField_of_exists_primitive_element.aux_2
-    [FiniteDimensional F E] (α : E) (hprim : F⟮α⟯ = ⊤) (K K' : IntermediateField F E)
-    (heq : (minpoly K α).map (algebraMap K E) = (minpoly K' α).map (algebraMap K' E)) :
-    K ≤ K' := by
+-- TODO: move it to suitable file
+lemma _root_.IntermediateField.eq_adjoin_minpoly_coeff_of_exists_primitive_element
+    [FiniteDimensional F E] (α : E) (hprim : F⟮α⟯ = ⊤) (K : IntermediateField F E) :
+    K = adjoin F ((minpoly K α).map (algebraMap K E)).frange := by
   set g := (minpoly K α).map (algebraMap K E)
-  have g_lifts : g ∈ lifts (algebraMap ↑(K ⊓ K') E)
-  · refine g.lifts_iff_coeff_lifts.mpr fun n ↦ ?_
-    erw [Subtype.range_val]; constructor
-    · rw [coeff_map]; apply Subtype.mem
-    · rw [heq, coeff_map]; apply Subtype.mem
+  set K' : IntermediateField F E := adjoin F g.frange
+  have hsub : K' ≤ K := by
+    rw [adjoin_le_iff]
+    intro x
+    rw [Finset.mem_coe, mem_frange_iff]
+    rintro ⟨n, _, rfl⟩
+    rw [coeff_map]
+    apply Subtype.mem
+  have g_lifts : g ∈ lifts (algebraMap K' E) := by
+    refine g.lifts_iff_coeff_lifts.mpr fun n ↦ ?_
+    erw [Subtype.range_val]
+    by_cases hn : n ∈ g.support
+    · have h2 : ({coeff g n} : Set E) ⊆ g.frange := by
+        rw [Set.singleton_subset_iff, Finset.mem_coe, mem_frange_iff]
+        exact ⟨n, hn, rfl⟩
+      exact adjoin.mono F _ _ h2 <| mem_adjoin_simple_self F (coeff g n)
+    · rw [not_mem_support_iff.1 hn]
+      exact zero_mem K'
   obtain ⟨p, hp⟩ := g.lifts_and_natDegree_eq_and_monic
     g_lifts ((minpoly.monic <| isIntegral_of_finite K α).map _)
-  have dvd_p : minpoly ↑(K ⊓ K') α ∣ p
+  have dvd_p : minpoly K' α ∣ p
   · apply minpoly.dvd
     rw [aeval_def, eval₂_eq_eval_map, hp.1, ← eval₂_eq_eval_map, ← aeval_def]
     exact minpoly.aeval K α
@@ -327,7 +366,7 @@ private lemma finite_intermediateField_of_exists_primitive_element.aux_2
     have := adjoin.finrank (isIntegral_of_finite K α)
     erw [adjoin_eq_top_of_adjoin_eq_top F K E hprim, finrank_top K E] at this
     exact this
-  refine inf_eq_left.mp (eq_of_le_of_finrank_le' inf_le_left ?_)
+  refine (eq_of_le_of_finrank_le' hsub ?_).symm
   simp_rw [finrank_eq]
   convert natDegree_le_of_dvd dvd_p hp.2.2.ne_zero using 1
   rw [hp.2.1, natDegree_map]
@@ -360,9 +399,9 @@ theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsA
   -- The map `K ↦ g` is injective
   have hinj : Function.Injective g := fun K K' heq ↦ by
     rw [Subtype.mk.injEq] at heq
-    apply le_antisymm <;>
-      apply Field.finite_intermediateField_of_exists_primitive_element.aux_2 F E α hprim
-    exacts [heq, heq.symm]
+    apply_fun fun f : E[X] ↦ adjoin F (f.frange : Set E) at heq
+    rwa [← eq_adjoin_minpoly_coeff_of_exists_primitive_element F E _ hprim K,
+      ← eq_adjoin_minpoly_coeff_of_exists_primitive_element F E _ hprim K'] at heq
   -- Therefore there are only finitely many intermediate fields
   exact Finite.of_injective g hinj
 
