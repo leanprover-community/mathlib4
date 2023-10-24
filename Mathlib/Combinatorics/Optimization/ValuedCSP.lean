@@ -75,7 +75,7 @@ def Function.HasMaxCutPropertyAt (f : (Fin 2 → D) → C) (a b : D) : Prop :=
 def Function.HasMaxCutProperty (f : (Fin 2 → D) → C) : Prop :=
   ∃ a b : D, a ≠ b ∧ f.HasMaxCutPropertyAt a b
 
-def FractionalOperation (D : Type _) (m k : ℕ) : Type* :=
+def FractionalOperation (D : Type*) (m k : ℕ) : Type _ :=
   (Fin m → D) → (Fin k → D)
 
 /-
@@ -144,8 +144,8 @@ lemma apply222tt (ω : FractionalOperation D 2 2) (a b c d : D) :
     | 0 => simp [FractionalOperation.tt, h1]
     | 1 => simp [FractionalOperation.tt, h1]
 
-private lemma two_nsmul_le_two_nsmul {C : Type*} [LinearOrderedAddCommMonoid C] {x y : C}
-    [CovariantClass C C (· + ·) (· < ·)]
+private lemma two_nsmul_le_two_nsmul {C : Type*} {x y : C}
+    [LinearOrderedAddCommMonoid C] [CovariantClass C C (· + ·) (· < ·)]
     (hyp : 2 • x ≤ 2 • y) : x ≤ y :=
   le_of_nsmul_le_nsmul (by decide) hyp
 
