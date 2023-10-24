@@ -68,7 +68,7 @@ namespace ElementaryEmbedding
 
 attribute [coe] toFun
 
-instance funLike : FunLike (M ↪ₑ[L] N) M fun _ => N where
+instance ndfunLike : NDFunLike (M ↪ₑ[L] N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -132,7 +132,7 @@ theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
 #align first_order.language.elementary_embedding.injective FirstOrder.Language.ElementaryEmbedding.injective
 
 instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
-  { show FunLike (M ↪ₑ[L] N) M fun _ => N from inferInstance with injective' := injective }
+  { show NDFunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
 #align first_order.language.elementary_embedding.embedding_like FirstOrder.Language.ElementaryEmbedding.embeddingLike
 
 @[simp]

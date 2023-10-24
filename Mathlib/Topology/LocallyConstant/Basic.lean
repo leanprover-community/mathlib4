@@ -250,7 +250,7 @@ namespace LocallyConstant
 instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
   ⟨⟨_, IsLocallyConstant.const default⟩⟩
 
-instance : FunLike (LocallyConstant X Y) X (fun _ => Y) where
+instance : NDFunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
   coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 

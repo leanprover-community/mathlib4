@@ -121,7 +121,7 @@ instance : Inhabited (Con M) :=
 --Porting note: upgraded to FunLike
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
-instance : FunLike (Con M) M (fun _ => M → Prop) :=
+instance : NDFunLike (Con M) M (M → Prop) :=
   { coe := fun c => fun x y => @Setoid.r _ c.toSetoid x y
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩

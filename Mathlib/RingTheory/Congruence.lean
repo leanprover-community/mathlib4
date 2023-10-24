@@ -75,9 +75,9 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
---Porting note: upgrade to `FunLike`
+--Porting note: upgrade to `NDFunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R fun _ => R → Prop :=
+instance : NDFunLike (RingCon R) R (R → Prop) :=
   { coe := fun c => c.r,
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩

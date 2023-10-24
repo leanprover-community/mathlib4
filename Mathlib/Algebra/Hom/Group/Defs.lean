@@ -91,7 +91,7 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
 You should extend this typeclass when you extend `ZeroHom`.
 -/
 class ZeroHomClass (F : Type*) (M N : outParam (Type*)) [Zero M] [Zero N]
-  extends FunLike F M fun _ => N where
+  extends NDFunLike F M N where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass
@@ -120,7 +120,7 @@ structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
 You should declare an instance of this typeclass when you extend `AddHom`.
 -/
 class AddHomClass (F : Type*) (M N : outParam (Type*)) [Add M] [Add N]
-  extends FunLike F M fun _ => N where
+  extends NDFunLike F M N where
   /-- The proposition that the function preserves addition -/
   map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
 #align add_hom_class AddHomClass
@@ -185,7 +185,7 @@ You should extend this typeclass when you extend `OneHom`.
 -/
 @[to_additive]
 class OneHomClass (F : Type*) (M N : outParam (Type*)) [One M] [One N]
-  extends FunLike F M fun _ => N where
+  extends NDFunLike F M N where
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 #align one_hom_class OneHomClass
@@ -281,7 +281,7 @@ You should declare an instance of this typeclass when you extend `MulHom`.
 -/
 @[to_additive]
 class MulHomClass (F : Type*) (M N : outParam (Type*)) [Mul M] [Mul N]
-  extends FunLike F M fun _ => N where
+  extends NDFunLike F M N where
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
@@ -443,7 +443,7 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
     (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
   | (n : ℕ) => by rw [zpow_ofNat, map_pow, zpow_ofNat]
-  | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc, ← zpow_negSucc]
+  | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc]
 #align map_zpow' map_zpow'
 #align map_zsmul' map_zsmul'
 

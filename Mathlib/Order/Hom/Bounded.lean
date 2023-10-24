@@ -65,7 +65,7 @@ section
 
 You should extend this class when you extend `TopHom`. -/
 class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] extends
-  FunLike F α fun _ => β where
+  NDFunLike F α β where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align top_hom_class TopHomClass
@@ -74,7 +74,7 @@ class TopHomClass (F : Type*) (α β : outParam <| Type*) [Top α] [Top β] exte
 
 You should extend this class when you extend `BotHom`. -/
 class BotHomClass (F : Type*) (α β : outParam <| Type*) [Bot α] [Bot β] extends
-  FunLike F α fun _ => β where
+  NDFunLike F α β where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align bot_hom_class BotHomClass

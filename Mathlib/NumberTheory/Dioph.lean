@@ -98,7 +98,7 @@ namespace Poly
 
 section
 
-instance funLike : FunLike (Poly α) (α → ℕ) fun _ => ℤ :=
+instance NDfunLike : ndFunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
 #align poly.fun_like Poly.funLike
 

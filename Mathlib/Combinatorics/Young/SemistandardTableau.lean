@@ -63,7 +63,7 @@ structure Ssyt (μ : YoungDiagram) where
 
 namespace Ssyt
 
-instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ ↦ ℕ → ℕ where
+instance ndfunLike {μ : YoungDiagram} : NDFunLike (Ssyt μ) ℕ (ℕ → ℕ) where
   coe := Ssyt.entry
   coe_injective' T T' h := by
     cases T

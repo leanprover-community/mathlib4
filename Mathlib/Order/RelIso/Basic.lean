@@ -65,7 +65,7 @@ The relations `r` and `s` are `outParam`s since figuring them out from a goal is
 matching problem that Lean usually can't do unaided.
 -/
 class RelHomClass (F : Type*) {α β : outParam <| Type*} (r : outParam <| α → α → Prop)
-  (s : outParam <| β → β → Prop) extends FunLike F α fun _ => β where
+  (s : outParam <| β → β → Prop) extends NDFunLike F α β where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)
 #align rel_hom_class RelHomClass

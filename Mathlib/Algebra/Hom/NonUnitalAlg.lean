@@ -119,12 +119,12 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
 
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 
--- Porting note: Replaced with FunLike instance
+-- Porting note: Replaced with NDFunLike instance
 -- /-- see Note [function coercion] -/
 -- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
 --   ⟨toFun⟩
 
-instance : FunLike (A →ₙₐ[R] B) A fun _ => B where
+instance : NDFunLike (A →ₙₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 

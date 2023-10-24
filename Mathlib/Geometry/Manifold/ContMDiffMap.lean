@@ -49,7 +49,7 @@ namespace ContMDiffMap
 
 variable {I} {I'} {M} {M'} {n}
 
-instance funLike : FunLike C^n⟮I, M; I', M'⟯ M fun _ => M' where
+instance ndfunLike : NDFunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 #align cont_mdiff_map.fun_like ContMDiffMap.funLike

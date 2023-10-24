@@ -1398,7 +1398,7 @@ section AddCommMonoid
 
 variable [PartialOrder Γ] [AddCommMonoid R] {α : Type*}
 
-instance : FunLike (SummableFamily Γ R α) α fun _ => HahnSeries Γ R where
+instance : NDFunLike (SummableFamily Γ R α) α (HahnSeries Γ R) where
   coe := toFun
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 

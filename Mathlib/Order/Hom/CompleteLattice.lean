@@ -84,7 +84,7 @@ section
 
 You should extend this class when you extend `sSupHom`. -/
 class sSupHomClass (F : Type*) (α β : outParam <| Type*) [SupSet α] [SupSet β] extends
-  FunLike F α fun _ => β where
+  NDFunLike F α β where
   /-- The proposition that members of `sSupHomClass`s commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align Sup_hom_class sSupHomClass
@@ -93,7 +93,7 @@ class sSupHomClass (F : Type*) (α β : outParam <| Type*) [SupSet α] [SupSet �
 
 You should extend this class when you extend `sInfHom`. -/
 class sInfHomClass (F : Type*) (α β : outParam <| Type*) [InfSet α] [InfSet β] extends
-  FunLike F α fun _ => β where
+  NDFunLike F α β where
   /-- The proposition that members of `sInfHomClass`s commute with arbitrary infima/meets. -/
   map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
 #align Inf_hom_class sInfHomClass

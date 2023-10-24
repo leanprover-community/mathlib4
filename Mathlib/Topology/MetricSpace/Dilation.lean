@@ -71,7 +71,7 @@ infixl:25 " →ᵈ " => Dilation
 /-- `DilationClass F α β r` states that `F` is a type of `r`-dilations.
 You should extend this typeclass when you extend `Dilation`. -/
 class DilationClass (F : Type*) (α β : outParam <| Type*) [PseudoEMetricSpace α]
-    [PseudoEMetricSpace β] extends FunLike F α fun _ => β where
+    [PseudoEMetricSpace β] extends NDFunLike F α β where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y
 #align dilation_class DilationClass
 

@@ -101,9 +101,9 @@ instance : EquivLike (α ≃ β) α β where
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
 /-- Helper instance when inference gets stuck on following the normal chain
-`EquivLike → EmbeddingLike → FunLike → CoeFun`. -/
-instance : FunLike (α ≃ β) α (fun _ => β) :=
-  EmbeddingLike.toFunLike
+`EquivLike → EmbeddingLike → NDFunLike → FunLike → CoeFun`. -/
+instance : NDFunLike (α ≃ β) α β :=
+  EmbeddingLike.toNDFunLike
 
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
   rfl

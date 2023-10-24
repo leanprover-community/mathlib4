@@ -27,7 +27,7 @@ namespace MyHom
 variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "morphism class" design below:
-instance : FunLike (MyHom A B) A (λ _, B) :=
+instance : NDFunLike (MyHom A B) A B :=
   { coe := MyHom.toFun, coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply
@@ -59,7 +59,7 @@ Continuing the example above:
 /-- `MyHomClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyHom`. -/
 class MyHomClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
-  extends FunLike F A (λ _, B) :=
+  extends NDFunLike F A B :=
 (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
 
 @[simp] lemma map_op {F A B : Type*} [MyClass A] [MyClass B] [MyHomClass F A B]
@@ -220,5 +220,17 @@ protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
 #align fun_like.congr_arg FunLike.congr_arg
 
 end FunLike
+
+/-- The class `NDFunLike F α β` expresses that terms of type `F` have an
+injective coercion to functions from `α` to `β`.
+
+This typeclass is used in the definition of the homomorphism typeclasses,
+such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
+-/
+class NDFunLike (F : Sort*) (α : outParam <| Sort*) (β : outParam <| Sort*) extends
+  FunLike F α fun _ ↦ β
+
+instance (priority := 110) hasCoeToFun {F α β} [NDFunLike F α β] : CoeFun F fun _ ↦ α → β where
+  coe := NDFunLike.toFunLike.coe
 
 end NonDependent

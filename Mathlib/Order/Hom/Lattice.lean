@@ -100,7 +100,7 @@ section
 
 You should extend this class when you extend `SupHom`. -/
 class SupHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] extends
-  FunLike F α fun _ => β where
+  NDFunLike F α β where
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
 #align sup_hom_class SupHomClass
@@ -109,7 +109,7 @@ class SupHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] exte
 
 You should extend this class when you extend `InfHom`. -/
 class InfHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] extends
-  FunLike F α fun _ => β where
+  NDFunLike F α β where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align inf_hom_class InfHomClass
@@ -341,8 +341,8 @@ instance : SupHomClass (SupHom α β) α β where
 
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
 directly. -/
--- porting note: replaced `CoeFun` with `FunLike` so that we use `FunLike.coe` instead of `toFun`
-instance : FunLike (SupHom α β) α fun _ => β :=
+-- porting note: replaced `CoeFun` with `NDFunLike` so that we use `FunLike.coe` instead of `toFun`
+instance : NDFunLike (SupHom α β) α β :=
   SupHomClass.toFunLike
 
 @[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
@@ -527,9 +527,9 @@ instance : InfHomClass (InfHom α β) α β where
   coe_injective' f g h := by cases f; cases g; congr
   map_inf := InfHom.map_inf'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `NDFunLike.hasCoeToFun`
 directly. -/
-instance : FunLike (InfHom α β) α fun _ => β :=
+instance : NDFunLike (InfHom α β) α β :=
   InfHomClass.toFunLike
 
 @[simp] lemma toFun_eq_coe (f : InfHom α β) : f.toFun = (f : α → β) := rfl
@@ -724,8 +724,8 @@ instance : SupBotHomClass (SupBotHom α β) α β
   map_sup f := f.map_sup'
   map_bot f := f.map_bot'
 
--- porting note: replaced `CoeFun` instance with `FunLike` instance
-instance : FunLike (SupBotHom α β) α fun _ => β :=
+-- porting note: replaced `CoeFun` instance with `NDFunLike` instance
+instance : NDFunLike (SupBotHom α β) α β :=
   SupHomClass.toFunLike
 
 lemma toFun_eq_coe (f : SupBotHom α β) : f.toFun = f := rfl
@@ -879,9 +879,9 @@ instance : InfTopHomClass (InfTopHom α β) α β
   map_inf f := f.map_inf'
   map_top f := f.map_top'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `NDFunLike.hasCoeToFun`
 directly. -/
-instance : FunLike (InfTopHom α β) α fun _ => β :=
+instance : NDFunLike (InfTopHom α β) α β :=
   InfHomClass.toFunLike
 
 theorem toFun_eq_coe (f : InfTopHom α β) : f.toFun = f := rfl
@@ -1028,9 +1028,9 @@ instance : LatticeHomClass (LatticeHom α β) α β
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `NDFunLike.hasCoeToFun`
 directly. -/
-instance : FunLike (LatticeHom α β) α fun _ => β :=
+instance : NDFunLike (LatticeHom α β) α β :=
   SupHomClass.toFunLike
 
 lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl

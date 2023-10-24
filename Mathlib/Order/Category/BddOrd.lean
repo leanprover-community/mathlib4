@@ -63,8 +63,8 @@ instance largeCategory : LargeCategory.{u} BddOrd where
 
 -- Porting note: added.
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : BddOrd) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (BoundedOrderHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : BddOrd) : NDFunLike (X ⟶ Y) X Y :=
+  show NDFunLike (BoundedOrderHom X Y) X Y from inferInstance
 
 instance concreteCategory : ConcreteCategory BddOrd where
   forget :=

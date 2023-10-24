@@ -76,7 +76,7 @@ scalar multiplication by `M`.
 
 You should extend this class when you extend `MulActionHom`. -/
 class SMulHomClass (F : Type*) (M X Y : outParam <| Type*) [SMul M X] [SMul M Y] extends
-  FunLike F X fun _ => Y where
+  NDFunLike F X Y where
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass

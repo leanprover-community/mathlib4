@@ -116,7 +116,7 @@ section Basic
 
 variable [Zero M]
 
-instance funLike : FunLike (α →₀ M) α fun _ => M :=
+instance ndfunLike : NDFunLike (α →₀ M) α M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
     congr
