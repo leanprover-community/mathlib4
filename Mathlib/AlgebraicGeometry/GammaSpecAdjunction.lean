@@ -454,6 +454,11 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
   convert this using 1
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
+@[reassoc]
+theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+    (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
+      SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
+
 theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme} (U : Opens X) :
     SpecΓIdentity.hom.app (X.presheaf.obj (op U)) =
       Scheme.Γ.map (Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op).op ≫
