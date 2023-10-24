@@ -16,14 +16,10 @@ This file defines the antidiagonals of ℕ × ℕ as finsets: the `n`-th antidia
 pairs `(i, j)` such that `i + j = n`. This is useful for polynomial multiplication and more
 generally for sums going from `0` to `n`.
 
-
 ## Notes
 
-This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`.
-
-It coincides with the output of `Finset.antidiagonal` defined in `Data.Finset.Antidiagonal`
-but the definition here is inherited from an actual list.
-
+This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
+instance enabling `Finset.antidiagonal` on `Nat`.
 -/
 
 open Function
