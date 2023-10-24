@@ -85,7 +85,7 @@ abbrev fromPath {X : TopCat} {x : X} (p : Path.Homotopic.Quotient x x) : Fundame
   fromArrow p
 #align fundamental_group.from_path FundamentalGroup.fromPath
 
-/-- The group homomorphism between fundamental groups induced by a continuous map. -/
+/-- The homomorphism between fundamental groups induced by a continuous map. -/
 def map (f : C(X, Y)) : FundamentalGroup X x₀ →* FundamentalGroup Y (f x₀) :=
   (FundamentalGroupoid.map f).mapAut x₀
 
