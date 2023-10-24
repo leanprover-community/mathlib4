@@ -193,29 +193,6 @@ def WithScottHomeomorph : WithScott α ≃ₜ α :=
 
 end preorder
 
-section morphisms
-
-variable [Preorder α] [Preorder β]
-
-open TopologicalSpace
-
-lemma UpperSetTopology_Monotone_coinduced_LE' {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-    {f : α → β}  (hf : Monotone f) : coinduced f t₁ ≤ @Scott β _ := le_sup_of_le_left (by
-  rwa [← continuous_iff_coinduced_le,
-    ← @IsUpperSet.monotone_iff_continuous α β _ _ t₁ (upperSet β) _ _ ])
-
-lemma UpperSetTopology_Monotone_coinduced_LE {t₁ : TopologicalSpace α} [Topology.IsUpperSet α]
-    {t₂ : TopologicalSpace β} [IsScott β] {f : α → β} (hf : Monotone f) :
-    coinduced f t₁ ≤ t₂ := by
-  rw [IsScott.topology_eq β]
-  apply UpperSetTopology_Monotone_coinduced_LE' hf
-
-lemma continuous_of_monotone_of_upperSetTopology [TopologicalSpace α] [Topology.IsUpperSet α]
-    [TopologicalSpace β] [IsScott β] {f : α → β} (hf : Monotone f)  : Continuous f :=
-  continuous_iff_coinduced_le.mpr (UpperSetTopology_Monotone_coinduced_LE hf)
-
-end morphisms
-
 section preorder
 
 variable [Preorder α] [TopologicalSpace α] [IsScott α] {u : Set α}
