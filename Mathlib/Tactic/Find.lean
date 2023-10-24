@@ -575,7 +575,9 @@ elab "#find " args:find_filters : command => liftTermElabM do
     match ← find cachedIndex args with
     | .error ⟨s, warn, suggestions⟩ => do
       Lean.logErrorAt s warn
-      suggestions.forM fun sugg => Std.Tactic.TryThis.addSuggestion args sugg
+      unless suggestions.isEmpty do
+        Std.Tactic.TryThis.addSuggestions args <| suggestions.map fun sugg =>
+          { suggestion := .tsyntax sugg }
     | .ok result =>
       let names := result.hits.map (·.1.name)
       Lean.logInfo $ result.header ++ (← MessageData.bulletListOfConsts names)

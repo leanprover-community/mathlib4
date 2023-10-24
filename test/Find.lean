@@ -87,7 +87,8 @@ Of these, 0 match your patterns.
 /--
 error: unknown identifier 'doesn'texist'
 ---
-info: Try this: "doesn'texist"
+info: Try these:
+• "doesn'texist"
 -/
 #guard_msgs in
 #find doesn'texist
@@ -285,9 +286,9 @@ theorem TestDefinition_eq_true:
 /--
 error: unknown identifier 'TestDefinition'
 ---
-info: Try this: "TestDefinition"
----
-info: Try this: Namespaced.TestDefinition
+info: Try these:
+• "TestDefinition"
+• Namespaced.TestDefinition
 -/
 #guard_msgs in
 #find TestDefinition
@@ -306,13 +307,11 @@ theorem NamespcedB.AnotherTestDefinition_eq_true:
 /--
 error: unknown identifier 'AnotherTestDefinition'
 ---
-info: Try this: "AnotherTestDefinition"
----
-info: Try this: NamespacedA.AnotherTestDefinition
----
-info: Try this: NamespacedB.AnotherTestDefinition
----
-info: Try this: NamespacedC.AnotherTestDefinition
+info: Try these:
+• "AnotherTestDefinition"
+• NamespacedA.AnotherTestDefinition
+• NamespacedB.AnotherTestDefinition
+• NamespacedC.AnotherTestDefinition
 -/
 #guard_msgs in
 #find AnotherTestDefinition
@@ -320,13 +319,11 @@ info: Try this: NamespacedC.AnotherTestDefinition
 /--
 error: unknown identifier 'AnotherTestDefinition'
 ---
-info: Try this: "some string before", "AnotherTestDefinition", some (Expr after)
----
-info: Try this: "some string before", NamespacedA.AnotherTestDefinition, some (Expr after)
----
-info: Try this: "some string before", NamespacedB.AnotherTestDefinition, some (Expr after)
----
-info: Try this: "some string before", NamespacedC.AnotherTestDefinition, some (Expr after)
+info: Try these:
+• "some string before", "AnotherTestDefinition", some (Expr after)
+• "some string before", NamespacedA.AnotherTestDefinition, some (Expr after)
+• "some string before", NamespacedB.AnotherTestDefinition, some (Expr after)
+• "some string before", NamespacedC.AnotherTestDefinition, some (Expr after)
 -/
 #guard_msgs in
 #find "some string before", AnotherTestDefinition, some (Expr after)
@@ -336,11 +333,10 @@ info: Try this: "some string before", NamespacedC.AnotherTestDefinition, some (E
 /--
 error: unknown identifier 'AnotherTestDefinition'
 ---
-info: Try this: "some string before", NamespacedA.AnotherTestDefinition = _, some (Expr after)
----
-info: Try this: "some string before", NamespacedB.AnotherTestDefinition = _, some (Expr after)
----
-info: Try this: "some string before", NamespacedC.AnotherTestDefinition = _, some (Expr after)
+info: Try these:
+• "some string before", NamespacedA.AnotherTestDefinition = _, some (Expr after)
+• "some string before", NamespacedB.AnotherTestDefinition = _, some (Expr after)
+• "some string before", NamespacedC.AnotherTestDefinition = _, some (Expr after)
 -/
 #guard_msgs in
 #find "some string before", AnotherTestDefinition = _, some (Expr after)
@@ -348,11 +344,10 @@ info: Try this: "some string before", NamespacedC.AnotherTestDefinition = _, som
 /--
 error: unknown identifier 'AnotherTestDefinition'
 ---
-info: Try this: "some string before", |- NamespacedA.AnotherTestDefinition = _, some (Expr after)
----
-info: Try this: "some string before", |- NamespacedB.AnotherTestDefinition = _, some (Expr after)
----
-info: Try this: "some string before", |- NamespacedC.AnotherTestDefinition = _, some (Expr after)
+info: Try these:
+• "some string before", |- NamespacedA.AnotherTestDefinition = _, some (Expr after)
+• "some string before", |- NamespacedB.AnotherTestDefinition = _, some (Expr after)
+• "some string before", |- NamespacedC.AnotherTestDefinition = _, some (Expr after)
 -/
 #guard_msgs in
 #find "some string before", |- AnotherTestDefinition = _, some (Expr after)
