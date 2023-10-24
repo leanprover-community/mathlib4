@@ -42,7 +42,7 @@ $\mathrm{H}^n(G, A)$.
 * `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
 $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
 * `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above two complexes.
-* `group_cohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
+* `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
 second complex, `inhomogeneousCochains A`.
 * `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
 (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
@@ -205,7 +205,7 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
 
 @[simp]
 theorem inhomogeneousCochains.d_def (n : ℕ) :
-    (inhomogeneousCochains A).d n (n + 1) = InhomogeneousCochains.d n A :=
+    (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d n A :=
   CochainComplex.of_d _ _ _ _
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
