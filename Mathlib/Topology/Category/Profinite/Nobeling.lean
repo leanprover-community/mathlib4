@@ -1347,12 +1347,8 @@ theorem swapTrue_eq_true (x : I → Bool) : SwapTrue o x (term I ho) = true := b
   simp only [SwapTrue, ord_term_aux, ite_true]
 
 theorem mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
-  intro x ⟨_,⟨y,⟨_,hy⟩⟩⟩
-  rw [← hy]
-  dsimp [Proj]
-  split_ifs with h
-  · simp only [ord_term_aux, lt_self_iff_false] at h
-  · rfl
+  rintro x ⟨_, y, _, rfl⟩
+  simp only [Proj, ord_term_aux, lt_self_iff_false, ite_false]
 
 /-- `List.tail` as a `Products`. -/
 def Products.Tail (l : Products I) : Products I :=
@@ -1399,35 +1395,27 @@ theorem Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
   · rw [← max_eq_o_cons_tail ho l hl hlh]; exact l.prop
   rw [max_eq_o_cons_tail' ho l hl hlh hlc, Products.evalCons]
   ext x
-  simp only [Linear_CC', Linear_CC'₁, LocallyConstant.comapₗ, Linear_CC'₀, Subtype.coe_eta,
+  simp only [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.comapₗ, Subtype.coe_eta,
     LinearMap.sub_apply, LinearMap.coe_mk, AddHom.coe_mk, LocallyConstant.sub_apply,
-    continuous_CC'₁, LocallyConstant.coe_comap, LocallyConstant.coe_mul, Function.comp_apply,
-    Pi.mul_apply, continuous_CC'₀]
+    continuous_CC'₀, continuous_CC'₁, LocallyConstant.coe_comap, LocallyConstant.coe_mul,
+    Function.comp_apply, Pi.mul_apply]
   rw [CC'₁, CC'₀, Products.eval_eq, Products.eval_eq, Products.eval_eq]
   simp only [mul_ite, mul_one, mul_zero]
   have hi' : ∀ i, i ∈ l.Tail.val → (x.val i = SwapTrue o x.val i)
   · intro i hi
-    rw [SwapTrue, eq_comm]
-    simp only [ite_eq_right_iff]
-    rw [ord_term ho]
-    intro h
-    exfalso
-    apply ne_of_gt _ h
-    rw [← gt_iff_lt]
-    exact List.Chain.rel hlc hi
-  split_ifs with h₁ h₂ h₂ h₃ h₄ h₅ h₆
-  <;> dsimp [e]
-  · split_ifs with hh₁ hh₂
-    · exfalso; rwa [mem_C'_eq_false C ho x x.prop, Bool.coe_false] at hh₂
+    simp only [SwapTrue, @eq_comm _ (x.val i), ite_eq_right_iff, ord_term ho]
+    rintro rfl
+    exact ((List.Chain.rel hlc hi).ne rfl).elim
+  have H :
+    (∀ i, i ∈ l.Tail.val → (x.val i = true)) = (∀ i, i ∈ l.Tail.val → (SwapTrue o x.val i = true))
+  · apply forall_congr; intro i; apply forall_congr; intro hi; rw [hi' i hi]
+  simp only [H]
+  split_ifs with h₁ h₂ h₃ <;> dsimp [e]
+  · rw [if_pos (swapTrue_eq_true _ _), if_neg]
     · rfl
-    · exfalso; exact hh₁ (swapTrue_eq_true _ _)
-    · exfalso; exact hh₁ (swapTrue_eq_true _ _)
+    · simp [mem_C'_eq_false C ho x x.prop, Bool.coe_false]
   · push_neg at h₂; obtain ⟨i, hi⟩ := h₂; exfalso; rw [hi' i hi.1] at hi; exact hi.2 (h₁ i hi.1)
-  · push_neg at h₂; obtain ⟨i, hi⟩ := h₂; exfalso; rw [hi' i hi.1] at hi; exact hi.2 (h₁ i hi.1)
-  · push_neg at h₂; obtain ⟨i, hi⟩ := h₂; exfalso; rw [hi' i hi.1] at hi; exact hi.2 (h₁ i hi.1)
-  · push_neg at h₁; obtain ⟨i, hi⟩ := h₁; exfalso; rw [← hi' i hi.1] at hi; exact hi.2 (h₄ i hi.1)
-  · push_neg at h₁; obtain ⟨i, hi⟩ := h₁; exfalso; rw [← hi' i hi.1] at hi; exact hi.2 (h₄ i hi.1)
-  · push_neg at h₁; obtain ⟨i, hi⟩ := h₁; exfalso; rw [← hi' i hi.1] at hi; exact hi.2 (h₆ i hi.1)
+  · push_neg at h₁; obtain ⟨i, hi⟩ := h₁; exfalso; rw [← hi' i hi.1] at hi; exact hi.2 (h₃ i hi.1)
   · rfl
 
 namespace GoodProducts
