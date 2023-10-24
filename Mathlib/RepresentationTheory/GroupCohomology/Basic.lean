@@ -30,6 +30,10 @@ This gives us for free a proof that our $d^n$ squares to zero. It also gives us 
 $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
 `Rep k G`.
 
+To talk about cohomology in low degree, please see the file
+`RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for `H⁰, H¹, H²`
+than the definition `groupCohomology` in this file.
+
 ## Main definitions
 
 * `groupCohomology.linearYonedaObjResolution A`: a complex whose objects are the representation
