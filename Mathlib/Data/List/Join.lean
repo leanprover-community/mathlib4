@@ -229,7 +229,7 @@ theorem join_reverse (L : List (List α)) :
 #align list.join_reverse List.join_reverse
 
 /-- Any member of `l : List (List α))` is a sublist of `l.join` -/
-lemma List.sublist_join (l : List (List α)) (s : List α) (hs : s ∈ l) :
+lemma sublist_join (l : List (List α)) (s : List α) (hs : s ∈ l) :
     List.Sublist s (l.join) := by
   induction l with
   | nil =>
