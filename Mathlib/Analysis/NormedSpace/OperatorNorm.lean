@@ -987,7 +987,6 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 /-- Porting note: Local instances for `norm_precompR_le`.
 Should be by `inferInstance`, and indeed not be needed. -/
 local instance : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
-@[nolint docBlame] -- docBlame linter bug?
 local instance : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
