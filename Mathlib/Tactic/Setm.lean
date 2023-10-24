@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
 import Lean
+import Mathlib.Tactic.DefEqTransformations
 
 /-!
 # The `setm` tactic
@@ -68,6 +69,8 @@ def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext 
           evalTactic (←`(tactic| have $ha : $a = $(←Term.exprToSyntax mvarAss) := rfl))
           mvarIdOld.assign (.fvar fvarId)
         | none => throwError "File a bug report!"
+      mvarIdOld.setUserName <| (← mkFreshUserName (← mvarIdOld.getDecl).userName)
+      mvarIdNew.setUserName <| (← mkFreshUserName (← mvarIdNew.getDecl).userName)
   else
     throwError f!"setm: pattern is not definitionally equal to the goal."
 
