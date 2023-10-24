@@ -168,6 +168,7 @@ instance of_powerSeries_localization [CommRing R] :
       assumption
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
+/-- `LaurentSeries K` is the field of fractions of the ring `PowerSeries K` -/
 -- Porting note: this instance is needed
 local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
 instance {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
