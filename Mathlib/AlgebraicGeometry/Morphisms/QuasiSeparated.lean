@@ -301,7 +301,7 @@ theorem quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : Q
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : Opens X.carrier) (hU : IsAffineOpen U)
     (f : X.presheaf.obj (op U)) (x : X.presheaf.obj (op <| X.basicOpen f)) :
     ∃ (n : ℕ) (y : X.presheaf.obj (op U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
-  have := (isLocalization_basicOpen hU f).2
+  have := (hU.isLocalization_basicOpen f).2
   obtain ⟨⟨y, _, n, rfl⟩, d⟩ := this x
   use n, y
   delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict
@@ -336,7 +336,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   --   isLocalization_basicOpen S.2 (X.presheaf.map (homOfLE <| le_trans h₁ le_sup_left).op f)
   obtain ⟨⟨_, n, rfl⟩, e⟩ :=
     (@IsLocalization.eq_iff_exists _ _ _ _ _ _
-      (isLocalization_basicOpen S.2 (X.presheaf.map (homOfLE <| le_trans h₁ le_sup_left).op f))
+      (S.2.isLocalization_basicOpen (X.presheaf.map (homOfLE <| le_trans h₁ le_sup_left).op f))
         (X.presheaf.map (homOfLE <| h₁).op
           (X.presheaf.map (homOfLE le_sup_left).op f ^ n₂ * y₁))
         (X.presheaf.map (homOfLE <| h₂).op
