@@ -552,10 +552,9 @@ theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α :=
   exact Finset.sort_sorted _ _
 
 -- TODO: this lemma is purely about lists, and should be moved to the appropriate API file
-theorem _root_.List.Chain'.cons_of_le
-  {a : I} {as m : List I} (ha : List.Chain' (· > ·) (a :: as))
-  (hm : List.Chain' (· > ·) m)
-  (hmas : m ≤ as) : List.Chain' (· > ·) (a :: m) := by
+theorem _root_.List.Chain'.cons_of_le {a : I} {as m : List I}
+    (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
+    List.Chain' (· > ·) (a :: m) := by
   cases m with
   | nil => simp only [List.chain'_singleton]
   | cons b bs =>
