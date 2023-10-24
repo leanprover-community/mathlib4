@@ -51,7 +51,6 @@ noncomputable def isometryEquivSumSquares [DecidableEq ι] (w' : ι → ℂ) :
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
   erw [hsum, smul_eq_mul]
-  simp only [w] -- Unfold `w` so we can split the `if` in its definition.
   split_ifs with h
   · simp only [h, zero_smul, zero_mul]
   have hww' : w' j = w j := by simp only [dif_neg h, Units.val_mk0]
