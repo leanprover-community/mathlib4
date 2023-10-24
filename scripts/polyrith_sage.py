@@ -42,10 +42,6 @@ else:
 '''
     return query
 
-def log(str):
-    with open('logfile.txt', 'w') as out:
-        out.write(str)
-
 class EvaluationError(Exception):
     def __init__(self, ename, evalue, message='Error in Sage communication'):
         self.ename = ename
@@ -89,7 +85,6 @@ def main():
     '''
     command = create_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
     final_query = polynomial_formatting_functions + "\n" + command
-    log(final_query)
     if sys.argv[1] == 'true': # trace dry run enabled
         output = dict(success=True, trace=command)
     else:
