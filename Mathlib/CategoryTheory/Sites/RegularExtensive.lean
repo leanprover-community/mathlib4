@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Coherent
+import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.Tactic.ApplyFun
 /-!
 
