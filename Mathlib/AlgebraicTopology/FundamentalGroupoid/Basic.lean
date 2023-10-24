@@ -316,33 +316,20 @@ theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p 
 theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x⟧ := rfl
 #align fundamental_groupoid.id_eq_path_refl FundamentalGroupoid.id_eq_path_refl
 
+/-- The functor on fundamental groupoid induced by a continuous map. -/
+def map (f : C(X, Y)) : FundamentalGroupoid X ⥤ FundamentalGroupoid Y where
+  obj := f
+  map {X Y} p := p.mapFn f
+  map_id _ := rfl
+  map_comp {X Y Z} p q := Quotient.inductionOn₂ p q fun a b ↦ by
+    simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
+
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
-  map f :=
-    { obj := f
-      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
-      map_id := fun X => rfl
-      map_comp := fun {x y z} p q => by
-        refine Quotient.inductionOn₂ p q fun a b => ?_
-        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
-        -- This was not needed before leanprover/lean4#2644
-        erw [ ← Path.Homotopic.comp_lift]; rfl}
-  map_id X := by
-    simp only
-    change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
-    congr
-    ext x y p
-    refine' Quotient.inductionOn p fun q => _
-    rw [← Path.Homotopic.map_lift]
-    conv_rhs => rw [← q.map_id]
-  map_comp f g := by
-    simp only
-    congr
-    ext x y p
-    refine' Quotient.inductionOn p fun q => _
-    simp only [Quotient.map_mk, Path.map_map, Quotient.eq']
-    rfl
+  map := map
+  map_id X := by simp only [map]; congr; ext x y ⟨p⟩; rfl
+  map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
 scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor

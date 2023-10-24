@@ -637,8 +637,8 @@ def trans (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) : Homotopy
   prop' t x hx := by
     simp only [Homotopy.trans]
     split_ifs
-    · simp [HomotopyWith.extendProp F (2 * t) x hx, F.fst_eq_snd hx, G.fst_eq_snd hx]
-    · simp [HomotopyWith.extendProp G (2 * t - 1) x hx, F.fst_eq_snd hx, G.fst_eq_snd hx]
+    · simp [HomotopyWith.extendProp F (2 * t) x hx]
+    · simp [HomotopyWith.extendProp G (2 * t - 1) x hx, F.fst_eq_snd hx]
 #align continuous_map.homotopy_rel.trans ContinuousMap.HomotopyRel.trans
 
 theorem trans_apply (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel f₁ f₂ S) (x : I × X) :
