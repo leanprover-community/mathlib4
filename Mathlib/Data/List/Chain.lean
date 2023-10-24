@@ -441,7 +441,7 @@ theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     Relation.ReflTransGen.refl
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain
 
-theorem List.Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
+theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
     List.Chain' (· > ·) (a :: m) := by
   cases m with
