@@ -53,7 +53,7 @@ def ValuedCsp.Term.evalSolution {Γ : ValuedCsp D C} {ι : Type*}
   t.f (x ∘ t.app)
 
 /-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
-def ValuedCsp.Instance (Γ : ValuedCsp D C) (ι : Type*) :=
+def ValuedCsp.Instance (Γ : ValuedCsp D C) (ι : Type*) : Type _ :=
   Multiset (Γ.Term ι)
 
 /-- Evaluation of a `Γ` instance `I` for given solution `x`. -/
