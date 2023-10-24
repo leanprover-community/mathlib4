@@ -166,7 +166,7 @@ variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σi, α i} {b
 theorem sigmaLift_nonempty :
     (sigmaLift f a b).Nonempty ↔ ∃ h : a.1 = b.1, (f (h ▸ a.2) b.2).Nonempty := by
   simp_rw [nonempty_iff_ne_empty, sigmaLift]
-  split_ifs with h <;> simp [h]
+  split <;> simp_all
 #align finset.sigma_lift_nonempty Finset.sigmaLift_nonempty
 
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
@@ -189,7 +189,7 @@ variable (f a b)
 theorem card_sigmaLift :
     (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
   simp_rw [sigmaLift]
-  split_ifs with h <;> simp [h]
+  split <;> simp_all
 #align finset.card_sigma_lift Finset.card_sigmaLift
 
 end SigmaLift

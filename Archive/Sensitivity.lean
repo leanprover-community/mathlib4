@@ -318,7 +318,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
     dsimp [f]
     simp [Q.not_adjacent_zero]
   · intro p q
-    have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
+    have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
     all_goals
       repeat rw [Bool.cond_true]

@@ -105,7 +105,7 @@ def hσ' (q : ℕ) : ∀ n m, c.Rel m n → (K[X].X n ⟶ K[X].X m) := fun n m h
 theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _[n] ⟶ X _[m]) = 0 := by
   simp only [hσ', hσ]
-  split_ifs
+  split
   exact zero_comp
 #align algebraic_topology.dold_kan.hσ'_eq_zero AlgebraicTopology.DoldKan.hσ'_eq_zero
 
@@ -114,7 +114,7 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
         eqToHom (by congr) := by
   simp only [hσ', hσ]
-  split_ifs
+  split
   · exfalso
     linarith
   · have h' := tsub_eq_of_eq_add ha
@@ -161,7 +161,7 @@ theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : Simplicia
   subst h
   simp only [hσ', eqToHom_refl, comp_id]
   unfold hσ
-  split_ifs
+  split
   · rw [zero_comp, comp_zero]
   · simp only [zsmul_comp, comp_zsmul]
     erw [f.naturality]
@@ -186,7 +186,7 @@ theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Addit
     (hσ' q n m hnm : K[((whiskering _ _).obj G).obj X].X n ⟶ _) =
       G.map (hσ' q n m hnm : K[X].X n ⟶ _) := by
   unfold hσ' hσ
-  split_ifs
+  split
   · simp only [Functor.map_zero, zero_comp]
   · simp only [eqToHom_map, Functor.map_comp, Functor.map_zsmul]
     rfl

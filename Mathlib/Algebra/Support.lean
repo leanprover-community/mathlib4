@@ -485,7 +485,7 @@ theorem mulSupport_mulSingle_of_ne (h : b ≠ 1) : mulSupport (mulSingle a b) = 
 
 @[to_additive]
 theorem mulSupport_mulSingle [DecidableEq B] :
-    mulSupport (mulSingle a b) = if b = 1 then ∅ else {a} := by split_ifs with h <;> simp [h]
+    mulSupport (mulSingle a b) = if b = 1 then ∅ else {a} := by split <;> simp_all
 #align pi.mul_support_mul_single Pi.mulSupport_mulSingle
 #align pi.support_single Pi.support_single
 

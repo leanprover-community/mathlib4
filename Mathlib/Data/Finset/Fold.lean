@@ -87,7 +87,7 @@ theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b
     induction' s using Finset.induction_on with x s hx IH generalizing hd
     · simp
     · simp only [Finset.fold_insert hx, IH, if_false, Finset.insert_ne_empty]
-      split_ifs
+      split
       · rw [hc.comm]
       · exact h
 #align finset.fold_const Finset.fold_const

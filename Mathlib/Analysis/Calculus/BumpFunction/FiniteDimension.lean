@@ -517,7 +517,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         · simp only [le_refl, zero_le_one, and_self]
       symmetric := fun R x => by
         simp only
-        split_ifs
+        split
         · simp only [y_neg, smul_neg]
         · rfl
       smooth := by

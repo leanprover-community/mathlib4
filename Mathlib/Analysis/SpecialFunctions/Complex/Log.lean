@@ -123,7 +123,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_abs, Real.log_pow,
       Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
-    split_ifs
+    split
     · rw [add_sub_right_comm, sub_add_cancel']
     · rw [add_sub_right_comm, sub_add_cancel']
   · rwa [inv_pos, Complex.normSq_pos]

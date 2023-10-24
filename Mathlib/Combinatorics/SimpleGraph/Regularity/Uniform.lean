@@ -163,7 +163,7 @@ noncomputable def nonuniformWitness (ε : 𝕜) (s t : Finset α) : Finset α :=
 
 theorem nonuniformWitness_subset (h : ¬G.IsUniform ε s t) : G.nonuniformWitness ε s t ⊆ s := by
   unfold nonuniformWitness
-  split_ifs
+  split
   · exact G.left_nonuniformWitnesses_subset h
   · exact G.right_nonuniformWitnesses_subset fun i => h i.symm
 #align simple_graph.nonuniform_witness_subset SimpleGraph.nonuniformWitness_subset
@@ -171,7 +171,7 @@ theorem nonuniformWitness_subset (h : ¬G.IsUniform ε s t) : G.nonuniformWitnes
 theorem le_card_nonuniformWitness (h : ¬G.IsUniform ε s t) :
     (s.card : 𝕜) * ε ≤ (G.nonuniformWitness ε s t).card := by
   unfold nonuniformWitness
-  split_ifs
+  split
   · exact G.left_nonuniformWitnesses_card h
   · exact G.right_nonuniformWitnesses_card fun i => h i.symm
 #align simple_graph.le_card_nonuniform_witness SimpleGraph.le_card_nonuniformWitness

@@ -980,7 +980,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
         · right; exact if_pos H3
         · left; exact H3
       right
-      split_ifs <;> [rfl; exact H2]
+      split <;> [rfl; exact H2]
     have H3 : ∀ aux, (⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨i ::ₘ s, aux⟩⟩ : Π₀ i, β i) =
         ⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨s, H2⟩⟩ :=
       fun _ ↦ ext fun _ => rfl
@@ -1043,24 +1043,24 @@ end AddMonoid
 @[simp]
 theorem mk_add [∀ i, AddZeroClass (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i} :
     mk s (x + y) = mk s x + mk s y :=
-  ext fun i => by simp only [add_apply, mk_apply]; split_ifs <;> [rfl; rw [zero_add]]
+  ext fun i => by simp only [add_apply, mk_apply]; split <;> [rfl; rw [zero_add]]
 #align dfinsupp.mk_add DFinsupp.mk_add
 
 @[simp]
 theorem mk_zero [∀ i, Zero (β i)] {s : Finset ι} : mk s (0 : ∀ i : (↑s : Set ι), β i.1) = 0 :=
-  ext fun i => by simp only [mk_apply]; split_ifs <;> rfl
+  ext fun i => by simp only [mk_apply]; split <;> rfl
 #align dfinsupp.mk_zero DFinsupp.mk_zero
 
 @[simp]
 theorem mk_neg [∀ i, AddGroup (β i)] {s : Finset ι} {x : ∀ i : (↑s : Set ι), β i.1} :
     mk s (-x) = -mk s x :=
-  ext fun i => by simp only [neg_apply, mk_apply]; split_ifs <;> [rfl; rw [neg_zero]]
+  ext fun i => by simp only [neg_apply, mk_apply]; split <;> [rfl; rw [neg_zero]]
 #align dfinsupp.mk_neg DFinsupp.mk_neg
 
 @[simp]
 theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : Set ι), β i.1} :
     mk s (x - y) = mk s x - mk s y :=
-  ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
+  ext fun i => by simp only [sub_apply, mk_apply]; split <;> [rfl; rw [sub_zero]]
 #align dfinsupp.mk_sub DFinsupp.mk_sub
 
 /-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
@@ -1079,7 +1079,7 @@ variable [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i
 @[simp]
 theorem mk_smul {s : Finset ι} (c : γ) (x : ∀ i : (↑s : Set ι), β (i : ι)) :
     mk s (c • x) = c • mk s x :=
-  ext fun i => by simp only [smul_apply, mk_apply]; split_ifs <;> [rfl; rw [smul_zero]]
+  ext fun i => by simp only [smul_apply, mk_apply]; split <;> [rfl; rw [smul_zero]]
 #align dfinsupp.mk_smul DFinsupp.mk_smul
 
 @[simp]

@@ -248,7 +248,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
   · let v i := if i ≤ n then u i else x
     have vs : ∀ i, v i ∈ s := fun i ↦ by
       simp only
-      split_ifs
+      split
       · exact us i
       · exact hx
     have hv : Monotone v := by
@@ -303,7 +303,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       have C : ¬i + 1 = N := hi.ne.symm
       have D : i + 1 - 1 = i := Nat.pred_succ i
       rw [if_neg A, if_neg B, if_neg C, D]
-      split_ifs
+      split
       · exact hN.2.le.trans (hu (le_of_not_lt A))
       · exact hu (Nat.pred_le _)
   refine' ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), _⟩, _⟩

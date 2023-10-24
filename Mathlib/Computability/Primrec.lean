@@ -1509,14 +1509,14 @@ theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
   refine' (if_lt fss s fss s).of_eq fun v => _
-  simp [Nat.unpair]; split_ifs <;> rfl
+  simp [Nat.unpair]; split <;> rfl
 #align nat.primrec'.unpair₁ Nat.Primrec'.unpair₁
 
 theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.2 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
   refine' (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v => _
-  simp [Nat.unpair]; split_ifs <;> rfl
+  simp [Nat.unpair]; split <;> rfl
 #align nat.primrec'.unpair₂ Nat.Primrec'.unpair₂
 
 theorem of_prim {n f} : Primrec f → @Primrec' n f :=

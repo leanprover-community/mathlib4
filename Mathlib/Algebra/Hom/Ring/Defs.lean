@@ -573,13 +573,13 @@ protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
 @[simp]
 theorem map_ite_zero_one {F : Type*} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 0 1) = ite p 0 1 := by
-  split_ifs with h <;> simp [h]
+  split <;> simp_all
 #align ring_hom.map_ite_zero_one RingHom.map_ite_zero_one
 
 @[simp]
 theorem map_ite_one_zero {F : Type*} [RingHomClass F α β] (f : F) (p : Prop) [Decidable p] :
     f (ite p 1 0) = ite p 1 0 := by
-  split_ifs with h <;> simp [h]
+  split <;> simp_all
 #align ring_hom.map_ite_one_zero RingHom.map_ite_one_zero
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/

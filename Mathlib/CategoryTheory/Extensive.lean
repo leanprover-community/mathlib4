@@ -361,7 +361,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, _⟩
       dsimp
-      split_ifs <;> rfl
+      split <;> rfl
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, hx⟩
       dsimp
@@ -370,7 +370,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       · rfl
     · intro s m e₁ e₂
       ext x
-      split_ifs
+      split
       · rw [← e₁]
         rfl
       · rw [← e₂]
@@ -450,7 +450,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
   · intro s m e₁ e₂
     ext x
     change m x = dite _ _ _
-    split_ifs
+    split
     · rw [← e₁]
       rfl
     · rw [← e₂]

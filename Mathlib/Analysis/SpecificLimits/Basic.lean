@@ -493,7 +493,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Cou
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
   refine' ⟨fun i => if h : i ∈ s then f ⟨i, h⟩ else 1, fun i => _, ⟨c, _, hcε⟩⟩
   · conv_rhs => simp
-    split_ifs
+    split
     exacts [hf0 _, zero_lt_one]
   · simpa only [Subtype.coe_prop, dif_pos, Subtype.coe_eta]
 #align set.countable.exists_pos_has_sum_le Set.Countable.exists_pos_hasSum_le

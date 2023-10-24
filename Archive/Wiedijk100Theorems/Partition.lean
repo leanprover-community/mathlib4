@@ -141,7 +141,7 @@ theorem cut_zero {ι : Type*} (s : Finset ι) : cut s 0 = {0} := by
   -- use the definition.
   rw [cut, range_one, pi_const_singleton, map_singleton, Function.Embedding.coeFn_mk,
     filter_singleton, if_pos, singleton_inj]
-  · ext; split_ifs <;> rfl
+  · ext; split <;> rfl
   rw [sum_eq_zero_iff]
   intro x hx
   apply dif_pos hx

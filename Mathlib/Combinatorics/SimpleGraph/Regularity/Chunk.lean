@@ -182,7 +182,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
 
 theorem card_chunk (hm : m ≠ 0) : (chunk hP G ε hU).parts.card = 4 ^ P.parts.card := by
   unfold chunk
-  split_ifs
+  split
   · rw [card_parts_equitabilise _ _ hm, tsub_add_cancel_of_le]
     exact le_of_lt a_add_one_le_four_pow_parts_card
   · rw [card_parts_equitabilise _ _ hm, tsub_add_cancel_of_le a_add_one_le_four_pow_parts_card]

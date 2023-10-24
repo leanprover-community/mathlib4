@@ -273,7 +273,7 @@ multiplicative and holds on the factors. -/
 theorem finprod_induction {f : α → M} (p : M → Prop) (hp₀ : p 1)
     (hp₁ : ∀ x y, p x → p y → p (x * y)) (hp₂ : ∀ i, p (f i)) : p (∏ᶠ i, f i) := by
   rw [finprod]
-  split_ifs
+  split
   exacts [Finset.prod_induction _ _ hp₁ hp₀ fun i _ => hp₂ _, hp₀]
 #align finprod_induction finprod_induction
 #align finsum_induction finsum_induction

@@ -2091,7 +2091,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum (f : ∀ i, G i) (s₁ s₂ : Finset �
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
     dsimp only
-    split_ifs <;> simp only [eq_self_iff_true, norm_neg]
+    split <;> simp only [eq_self_iff_true, norm_neg]
   have :
     ‖(∑ i in s₁ \ s₂, V i (F i)) + ∑ i in s₂ \ s₁, V i (F i)‖ ^ 2 =
       (∑ i in s₁ \ s₂, ‖F i‖ ^ 2) + ∑ i in s₂ \ s₁, ‖F i‖ ^ 2 := by

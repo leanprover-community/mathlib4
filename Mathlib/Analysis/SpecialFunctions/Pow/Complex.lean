@@ -49,7 +49,7 @@ theorem cpow_zero (x : ℂ) : x ^ (0 : ℂ) = 1 := by simp [cpow_def]
 @[simp]
 theorem cpow_eq_zero_iff (x y : ℂ) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   simp only [cpow_def]
-  split_ifs <;> simp [*, exp_ne_zero]
+  split <;> simp [*, exp_ne_zero]
 #align complex.cpow_eq_zero_iff Complex.cpow_eq_zero_iff
 
 @[simp]

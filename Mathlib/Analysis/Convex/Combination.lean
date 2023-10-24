@@ -224,7 +224,7 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
     · intro i _
       simp only
-      split_ifs <;> assumption
+      split <;> assumption
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]
     · intro i hi
       simp only [Finset.mem_singleton, Finset.mem_insert] at hi
@@ -357,7 +357,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     rw [Finset.mem_coe] at hx
     refine' ⟨_, _, _, Finset.centerMass_ite_eq _ _ _ hx⟩
     · intros
-      split_ifs
+      split
       exacts [zero_le_one, le_refl 0]
     · rw [Finset.sum_ite_eq, if_pos hx]
   · rintro x ⟨wx, hwx₀, hwx₁, rfl⟩ y ⟨wy, hwy₀, hwy₁, rfl⟩ a b ha hb hab

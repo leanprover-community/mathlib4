@@ -541,7 +541,7 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
         (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z =
             sum f fun a b => if a = y then b * r else 0 := by simp only [mul_apply, A, H]
         _ = if y ∈ f.support then f y * r else 0 := (f.support.sum_ite_eq' _ _)
-        _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
+        _ = f y * r := by split <;> simp_all
 #align monoid_algebra.mul_single_apply_aux MonoidAlgebra.mul_single_apply_aux
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
@@ -572,7 +572,7 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
           (mul_apply _ _ _).trans <| sum_single_index this
         _ = f.sum fun a b => ite (a = z) (r * b) 0 := by simp only [H]
         _ = if z ∈ f.support then r * f z else 0 := (f.support.sum_ite_eq' _ _)
-        _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
+        _ = _ := by split <;> simp_all
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :

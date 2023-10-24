@@ -124,7 +124,7 @@ def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
 
 @[simp]
 theorem univBall_source (c : P) (r : ℝ) : (univBall c r).source = univ := by
-  unfold univBall; split_ifs <;> rfl
+  unfold univBall; split <;> rfl
 
 theorem univBall_target (c : P) {r : ℝ} (hr : 0 < r) : (univBall c r).target = ball c r := by
   rw [univBall, dif_pos hr]; rfl
@@ -137,7 +137,7 @@ theorem ball_subset_univBall_target (c : P) (r : ℝ) : ball c r ⊆ (univBall c
 
 @[simp]
 theorem univBall_apply_zero (c : P) (r : ℝ) : univBall c r 0 = c := by
-  unfold univBall; split_ifs <;> simp
+  unfold univBall; split <;> simp
 
 @[simp]
 theorem univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0 := by

@@ -108,7 +108,7 @@ theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp
 @[simp]
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
   unfold compl
-  split_ifs <;> simp
+  split <;> simp
 #align matrix.compl_apply Matrix.compl_apply
 
 @[simp]

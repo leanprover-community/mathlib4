@@ -315,7 +315,7 @@ def mk' (l u : ι → ℝ) : WithBot (Box ι) :=
 @[simp]
 theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := by
   rw [mk']
-  split_ifs with h <;> simpa using h
+  split <;> simp_all
 #align box_integral.box.mk'_eq_bot BoxIntegral.Box.mk'_eq_bot
 
 @[simp]

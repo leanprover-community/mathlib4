@@ -308,7 +308,7 @@ theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
   classical
     obtain rfl | hc := eq_or_ne c 0
     · simp_rw [zero_smul, preimage_const]
-      split_ifs
+      split
       · exact strictConvex_univ
       · exact strictConvex_empty
     refine' hs.linear_preimage (LinearMap.lsmul _ _ c) _ (smul_right_injective E hc)

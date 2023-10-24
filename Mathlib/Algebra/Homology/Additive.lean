@@ -304,7 +304,7 @@ def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
     fun f => by
     ext i
     dsimp
-    split_ifs with h <;> simp [h]
+    split <;> simp_all
 #align homological_complex.single_map_homological_complex HomologicalComplex.singleMapHomologicalComplex
 
 variable (F : V ⥤ W) [Functor.Additive F] (c)

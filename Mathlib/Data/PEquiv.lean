@@ -215,7 +215,7 @@ def ofSet (s : Set α) [DecidablePred (· ∈ s)] :
 #align pequiv.of_set PEquiv.ofSet
 
 theorem mem_ofSet_self_iff {s : Set α} [DecidablePred (· ∈ s)] {a : α} : a ∈ ofSet s a ↔ a ∈ s :=
-  by dsimp [ofSet]; split_ifs <;> simp [*]
+  by dsimp [ofSet]; split <;> simp [*]
 #align pequiv.mem_of_set_self_iff PEquiv.mem_ofSet_self_iff
 
 theorem mem_ofSet_iff {s : Set α} [DecidablePred (· ∈ s)] {a b : α} :
@@ -345,7 +345,7 @@ theorem mem_single (a : α) (b : β) : b ∈ single a b a :=
 #align pequiv.mem_single PEquiv.mem_single
 
 theorem mem_single_iff (a₁ a₂ : α) (b₁ b₂ : β) : b₁ ∈ single a₂ b₂ a₁ ↔ a₁ = a₂ ∧ b₁ = b₂ := by
-  dsimp [single]; split_ifs <;> simp [*, eq_comm]
+  dsimp [single]; split <;> simp [*, eq_comm]
 #align pequiv.mem_single_iff PEquiv.mem_single_iff
 
 @[simp]
@@ -366,7 +366,7 @@ theorem single_trans_of_mem (a : α) {b : β} {c : γ} {f : β ≃. γ} (h : c �
     (single a b).trans f = single a c := by
   ext
   dsimp [single, PEquiv.trans]
-  split_ifs <;> simp_all
+  split <;> simp_all
 #align pequiv.single_trans_of_mem PEquiv.single_trans_of_mem
 
 theorem trans_single_of_mem {a : α} {b : β} (c : γ) {f : α ≃. β} (h : b ∈ f a) :
@@ -394,7 +394,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   dsimp [PEquiv.trans, single]
   simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and]
   intros
-  split_ifs <;> simp_all
+  split <;> simp_all
 #align pequiv.trans_single_of_eq_none PEquiv.trans_single_of_eq_none
 
 theorem single_trans_of_eq_none (a : α) {b : β} {f : β ≃. δ} (h : f b = none) :
@@ -450,8 +450,8 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
             rw [← h2] at hg
             simp only [iff_true] at hf hg
             rw [hf, hg] }
-    inf_le_left := fun _ _ _ _ => by simp; split_ifs <;> simp [*]
-    inf_le_right := fun _ _ _ _ => by simp; split_ifs <;> simp [*]
+    inf_le_left := fun _ _ _ _ => by simp; split <;> simp [*]
+    inf_le_right := fun _ _ _ _ => by simp; split <;> simp [*]
     le_inf := fun f g h fg gh a b => by
       intro H
       have hf := fg a b H

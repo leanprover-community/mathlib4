@@ -86,7 +86,7 @@ theorem sum_lt_half_of_not_tendsto
       ∑ p in range n, ite (Nat.Prime p) (1 / (p : ℝ)) 0 := by
     simp only [sum_filter]
   have hf : ∀ n : ℕ, 0 ≤ ite (Nat.Prime n) (1 / (n : ℝ)) 0 := by
-    intro n; split_ifs
+    intro n; split
     · simp only [one_div, inv_nonneg, Nat.cast_nonneg]
     · exact le_rfl
   rw [h0, ← summable_iff_not_tendsto_nat_atTop_of_nonneg hf, summable_iff_vanishing] at h

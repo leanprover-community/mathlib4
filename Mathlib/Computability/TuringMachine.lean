@@ -2584,7 +2584,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
         rw [List.getI_eq_default, List.getI_eq_default] <;>
           simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
             List.length_append, List.length_map]
-    · split_ifs <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
+    · split <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
       rw [Function.update_noteq h']
   case peek f =>
     rw [Function.update_eq_self]
@@ -2626,7 +2626,7 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
           rw [List.getI_eq_default, List.getI_eq_default] <;>
             simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
               List.length_append, List.length_map]
-      · split_ifs <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
+      · split <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
         rw [Function.update_noteq h']
 #align turing.TM2to1.tr_respects_aux₂ Turing.TM2to1.tr_respects_aux₂
 

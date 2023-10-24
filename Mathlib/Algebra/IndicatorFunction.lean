@@ -262,7 +262,7 @@ theorem mulIndicator_comp_of_one {g : M → N} (hg : g 1 = 1) :
     mulIndicator s (g ∘ f) = g ∘ mulIndicator s f := by
   funext
   simp only [mulIndicator]
-  split_ifs <;> simp [*]
+  split <;> simp [*]
 #align set.mul_indicator_comp_of_one Set.mulIndicator_comp_of_one
 #align set.indicator_comp_of_zero Set.indicator_comp_of_zero
 
@@ -286,7 +286,7 @@ theorem mulIndicator_one_preimage (s : Set M) :
     t.mulIndicator 1 ⁻¹' s ∈ ({Set.univ, ∅} : Set (Set α)) := by
   classical
     rw [mulIndicator_one', preimage_one]
-    split_ifs <;> simp
+    split <;> simp
 #align set.mul_indicator_one_preimage Set.mulIndicator_one_preimage
 #align set.indicator_zero_preimage Set.indicator_zero_preimage
 
@@ -334,7 +334,7 @@ theorem mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :
     · tauto
     · left
       tauto
-  · rintro (⟨hr, ⟨x, hx⟩⟩ | ⟨x, ⟨hx, hxs⟩⟩) <;> use x <;> split_ifs <;> tauto
+  · rintro (⟨hr, ⟨x, hx⟩⟩ | ⟨x, ⟨hx, hxs⟩⟩) <;> use x <;> split <;> tauto
 #align set.mem_range_mul_indicator Set.mem_range_mulIndicator
 #align set.mem_range_indicator Set.mem_range_indicator
 
@@ -391,7 +391,7 @@ theorem mulIndicator_mul (s : Set α) (f g : α → M) :
     (mulIndicator s fun a => f a * g a) = fun a => mulIndicator s f a * mulIndicator s g a := by
   funext
   simp only [mulIndicator]
-  split_ifs
+  split
   · rfl
   rw [mul_one]
 #align set.mul_indicator_mul Set.mulIndicator_mul
@@ -481,7 +481,7 @@ variable {A : Type*} [AddMonoid A] [Monoid M] [DistribMulAction M A]
 theorem indicator_smul_apply (s : Set α) (r : α → M) (f : α → A) (x : α) :
     indicator s (fun x => r x • f x) x = r x • indicator s f x := by
   dsimp only [indicator]
-  split_ifs
+  split
   exacts [rfl, (smul_zero (r x)).symm]
 #align set.indicator_smul_apply Set.indicator_smul_apply
 
@@ -509,7 +509,7 @@ variable {A : Type*} [Zero A] [Zero M] [SMulWithZero M A]
 theorem indicator_smul_apply_left (s : Set α) (r : α → M) (f : α → A) (x : α) :
     indicator s (fun x => r x • f x) x = indicator s r x • f x := by
   dsimp only [indicator]
-  split_ifs
+  split
   exacts [rfl, (zero_smul _ (f x)).symm]
 
 theorem indicator_smul_left (s : Set α) (r : α → M) (f : α → A) :
@@ -706,7 +706,7 @@ theorem indicator_mul (s : Set α) (f g : α → M) :
     (indicator s fun a => f a * g a) = fun a => indicator s f a * indicator s g a := by
   funext
   simp only [indicator]
-  split_ifs
+  split
   · rfl
   rw [mul_zero]
 #align set.indicator_mul Set.indicator_mul
@@ -714,7 +714,7 @@ theorem indicator_mul (s : Set α) (f g : α → M) :
 theorem indicator_mul_left (s : Set α) (f g : α → M) :
     indicator s (fun a => f a * g a) a = indicator s f a * g a := by
   simp only [indicator]
-  split_ifs
+  split
   · rfl
   rw [zero_mul]
 #align set.indicator_mul_left Set.indicator_mul_left

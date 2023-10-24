@@ -1112,7 +1112,7 @@ theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β
 @[to_additive (attr := simp)]
 theorem prod_ite_irrel (p : Prop) [Decidable p] (s : Finset α) (f g : α → β) :
     ∏ x in s, (if p then f x else g x) = if p then ∏ x in s, f x else ∏ x in s, g x := by
-  split_ifs with h <;> rfl
+  split <;> rfl
 #align finset.prod_ite_irrel Finset.prod_ite_irrel
 #align finset.sum_ite_irrel Finset.sum_ite_irrel
 
@@ -1120,7 +1120,7 @@ theorem prod_ite_irrel (p : Prop) [Decidable p] (s : Finset α) (f g : α → β
 theorem prod_dite_irrel (p : Prop) [Decidable p] (s : Finset α) (f : p → α → β) (g : ¬p → α → β) :
     ∏ x in s, (if h : p then f h x else g h x) =
       if h : p then ∏ x in s, f h x else ∏ x in s, g h x := by
-  split_ifs with h <;> rfl
+  split <;> rfl
 #align finset.prod_dite_irrel Finset.prod_dite_irrel
 #align finset.sum_dite_irrel Finset.sum_dite_irrel
 

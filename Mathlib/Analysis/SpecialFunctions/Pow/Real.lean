@@ -64,7 +64,7 @@ theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mu
 
 theorem rpow_eq_zero_iff_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   simp only [rpow_def_of_nonneg hx]
-  split_ifs <;> simp [*, exp_ne_zero]
+  split <;> simp [*, exp_ne_zero]
 #align real.rpow_eq_zero_iff_of_nonneg Real.rpow_eq_zero_iff_of_nonneg
 
 open Real

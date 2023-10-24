@@ -252,12 +252,12 @@ variable {U V W X Y Z : C}
 
 theorem tensor_dite {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
     (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) = if h : P then f ⊗ g h else f ⊗ g' h :=
-  by split_ifs <;> rfl
+  by split <;> rfl
 #align category_theory.monoidal_category.tensor_dite CategoryTheory.MonoidalCategory.tensor_dite
 
 theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
     (g' : ¬P → (Y ⟶ Z)) : (if h : P then g h else g' h) ⊗ f = if h : P then g h ⊗ f else g' h ⊗ f :=
-  by split_ifs <;> rfl
+  by split <;> rfl
 #align category_theory.monoidal_category.dite_tensor CategoryTheory.MonoidalCategory.dite_tensor
 
 @[reassoc, simp]

@@ -226,11 +226,11 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
   · exact of_decide_eq_true rfl
   cases' x with head tail
   · rw [rmatch, deriv]
-    split_ifs
+    split
     · tauto
     · simp [List.singleton_inj]; tauto
   · rw [rmatch, rmatch, deriv]
-    split_ifs with h
+    split
     · simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
     · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
 #align regular_expression.char_rmatch_iff RegularExpression.char_rmatch_iff

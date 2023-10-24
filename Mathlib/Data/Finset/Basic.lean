@@ -2768,7 +2768,7 @@ theorem filter_false_of_mem (h : ∀ x ∈ s, ¬p x) : s.filter p = ∅ := filte
 
 @[simp]
 theorem filter_const (p : Prop) [Decidable p] (s : Finset α) :
-    (s.filter fun _a => p) = if p then s else ∅ := by split_ifs <;> simp [*]
+    (s.filter fun _a => p) = if p then s else ∅ := by split <;> simp [*]
 #align finset.filter_const Finset.filter_const
 
 theorem filter_congr {s : Finset α} (H : ∀ x ∈ s, p x ↔ q x) : filter p s = filter q s :=
@@ -2854,7 +2854,7 @@ theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     filter p (cons a s ha) =
       (if p a then {a} else ∅ : Finset α).disjUnion (filter p s)
         (by
-          split_ifs
+          split
           · rw [disjoint_singleton_left]
             exact mem_filter.not.mpr <| mt And.left ha
           · exact disjoint_empty_left _) := by
@@ -3840,14 +3840,12 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
       invFun := Option.elim' default (↑)
       left_inv := fun x => by
         dsimp only
-        split_ifs <;> simp [*]
+        split <;> simp [*]
       right_inv := by
         rintro (_ | ⟨x, h⟩)
         · simp
         · dsimp only
-          split_ifs with hi
-          · simp [h] at hi
-          · simp }⟩
+          split_ifs <;> simp_all }⟩
 #align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
 
 end Equiv

@@ -193,13 +193,13 @@ end NonAssocSemiring
 
 @[to_additive]
 theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
+    (a * if P then b else c) = if P then a * b else a * c := by split <;> rfl
 #align mul_ite mul_ite
 #align add_ite add_ite
 
 @[to_additive]
 theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
+    (if P then a else b) * c = if P then a * c else b * c := by split <;> rfl
 #align ite_mul ite_mul
 #align ite_add ite_add
 

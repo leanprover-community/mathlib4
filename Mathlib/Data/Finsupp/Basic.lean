@@ -1210,7 +1210,7 @@ theorem curry_apply (f : α × β →₀ M) (x : α) (y : β) : f.curry x y = f 
     have : ∀ b : α × β, single b.fst (single b.snd (f b)) x y = if b = (x, y) then f b else 0 := by
       rintro ⟨b₁, b₂⟩
       simp only [ne_eq, single_apply, Prod.ext_iff, ite_and]
-      split_ifs <;> simp [single_apply, *]
+      split <;> simp [single_apply, *]
     rw [Finsupp.curry, sum_apply, sum_apply, sum_eq_single, this, if_pos rfl]
     · intro b _ b_ne
       rw [this b, if_neg b_ne]

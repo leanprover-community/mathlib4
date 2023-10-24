@@ -1148,7 +1148,7 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   · cases h
     · simp!
     · simp! only
-      split_ifs with h' <;> subst_vars <;> simp [*]
+      split <;> subst_vars <;> simp [*]
 #align simple_graph.walk.take_spec SimpleGraph.Walk.take_spec
 
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
@@ -1460,7 +1460,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
   | nil => rfl
   | cons _ _ ih =>
     simp only [bypass]
-    split_ifs
+    split
     · trans
       apply length_dropUntil_le
       rw [length_cons]
@@ -1479,7 +1479,7 @@ theorem support_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.support ⊆ 
   | nil => simp!
   | cons _ _ ih =>
     simp! only
-    split_ifs
+    split
     · apply List.Subset.trans (support_dropUntil_subset _ _)
       apply List.subset_cons_of_subset
       assumption
@@ -1498,7 +1498,7 @@ theorem darts_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.darts ⊆ p.da
   | nil => simp!
   | cons _ _ ih =>
     simp! only
-    split_ifs
+    split
     · apply List.Subset.trans (darts_dropUntil_subset _ _)
       apply List.subset_cons_of_subset _ ih
     · rw [darts_cons]

@@ -280,7 +280,7 @@ theorem nullHomotopicMap'_comp (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) 
   erw [nullHomotopicMap_comp]
   congr
   ext i j
-  split_ifs
+  split
   · rfl
   · rw [zero_comp]
 #align homotopy.null_homotopic_map'_comp Homotopy.nullHomotopicMap'_comp
@@ -302,7 +302,7 @@ theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X 
   erw [comp_nullHomotopicMap]
   congr
   ext i j
-  split_ifs
+  split
   · rfl
   · rw [comp_zero]
 #align homotopy.comp_null_homotopic_map' Homotopy.comp_nullHomotopicMap'
@@ -326,7 +326,7 @@ theorem map_nullHomotopicMap' {W : Type*} [Category W] [Preadditive W] (G : V �
   erw [map_nullHomotopicMap]
   congr
   ext i j
-  split_ifs
+  split
   · rfl
   · rw [G.map_zero]
 #align homotopy.map_null_homotopic_map' Homotopy.map_nullHomotopicMap'
@@ -374,7 +374,7 @@ theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ + h k₁ k₂ r₂₁ ≫ D.d k₂ k₁ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f r₂₁ r₁₀]
-  split_ifs
+  split
   rfl
 #align homotopy.null_homotopic_map'_f Homotopy.nullHomotopicMap'_f
 
@@ -393,7 +393,7 @@ theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
     (nullHomotopicMap' h).f k₀ = h k₀ k₁ r₁₀ ≫ D.d k₁ k₀ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f_of_not_rel_left r₁₀ hk₀]
-  split_ifs
+  split
   rfl
 #align homotopy.null_homotopic_map'_f_of_not_rel_left Homotopy.nullHomotopicMap'_f_of_not_rel_left
 
@@ -412,7 +412,7 @@ theorem nullHomotopicMap'_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f_of_not_rel_right r₁₀ hk₁]
-  split_ifs
+  split
   rfl
 #align homotopy.null_homotopic_map'_f_of_not_rel_right Homotopy.nullHomotopicMap'_f_of_not_rel_right
 

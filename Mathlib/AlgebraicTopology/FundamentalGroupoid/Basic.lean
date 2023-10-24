@@ -55,7 +55,7 @@ theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
 
 theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
   dsimp only [reflTransSymmAux]
-  split_ifs
+  split
   · constructor
     · apply mul_nonneg
       · apply mul_nonneg

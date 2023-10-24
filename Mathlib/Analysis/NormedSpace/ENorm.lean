@@ -133,7 +133,7 @@ instance partialOrder : PartialOrder (ENorm 𝕜 V) where
 /-- The `ENorm` sending each non-zero vector to infinity. -/
 noncomputable instance : Top (ENorm 𝕜 V) :=
   ⟨{  toFun := fun x => if x = 0 then 0 else ⊤
-      eq_zero' := fun x => by simp only; split_ifs <;> simp [*]
+      eq_zero' := fun x => by simp only; split <;> simp [*]
       map_add_le' := fun x y => by
         simp only
         split_ifs with hxy hx hy hy hx hy hy <;> try simp [*]

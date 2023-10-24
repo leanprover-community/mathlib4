@@ -550,7 +550,7 @@ theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.
   induction' k with _ _ _ _ _ _ _ _ _ k_ih _ _ k_ih generalizing v <;>
     simp only [Cont.eval, Cont.then, bind_assoc, pure_bind, *]
   · simp only [← k_ih]
-  · split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
+  · split <;> [rfl; simp only [← k_ih, bind_assoc]]
 #align turing.to_partrec.cont.then_eval Turing.ToPartrec.Cont.then_eval
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
@@ -586,7 +586,7 @@ theorem stepRet_then {k k' : Cont} {v} : stepRet (k.then k') v = (stepRet k v).t
   case comp =>
     rw [← stepNormal_then]
   case fix _ k_ih =>
-    split_ifs
+    split
     · rw [← k_ih]
     · rw [← stepNormal_then]
       rfl
@@ -737,7 +737,7 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     rw [IH, bind_pure_comp]
   case fix f k IH =>
     rw [Cont.eval, stepRet]; simp only [bind_pure_comp]
-    split_ifs; · exact IH
+    split; · exact IH
     simp only [← bind_pure_comp, bind_assoc, cont_eval_fix (code_is_ok _)]
     congr; funext; rw [bind_pure_comp, ← IH]
     exact reaches_eval (ReflTransGen.single rfl)
@@ -1947,7 +1947,7 @@ theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
 #align turing.partrec_to_TM2.supports_bUnion Turing.PartrecToTM2.supports_biUnion
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
-  dsimp only; split_ifs <;> exact H
+  dsimp only; split <;> exact H
 #align turing.partrec_to_TM2.head_supports Turing.PartrecToTM2.head_supports
 
 theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (Λ'.ret k)) := by
@@ -1999,7 +1999,7 @@ theorem trStmts₁_supports' {S q K} (H₁ : (q : Λ').Supports S) (H₂ : trStm
 theorem trNormal_supports {S c k} (Hk : codeSupp c k ⊆ S) : (trNormal c k).Supports S := by
   induction c generalizing k <;> simp [Λ'.Supports, head]
   case zero' => exact Finset.union_subset_right Hk
-  case succ => intro; split_ifs <;> exact Finset.union_subset_right Hk
+  case succ => intro; split <;> exact Finset.union_subset_right Hk
   case tail => exact Finset.union_subset_right Hk
   case cons f fs IHf _ =>
     apply IHf
