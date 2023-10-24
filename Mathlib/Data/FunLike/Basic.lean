@@ -211,6 +211,8 @@ variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 
+instance (priority := 110) ndHasCoeToFun : CoeFun F fun _ ↦ α → β where coe := FunLike.coe
+
 protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
   congr (congr_arg _ h₁) h₂
 #align fun_like.congr FunLike.congr
