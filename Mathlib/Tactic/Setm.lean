@@ -45,7 +45,7 @@ def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext 
   /- We let isDefEq match the given pattern -/
   let mctx ← getMCtx
   let mdecls := mctx.decls
-  if ←isDefEq e newPattern then
+  if ← isDefEq e newPattern then
     /- We iterate over the (old, new) vars -/
     mvarIdsPairs.forM fun (mvarIdOld, mvarExprNew) => do
       let mvarIdNew := mvarExprNew.mvarId!
@@ -53,7 +53,7 @@ def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext 
       | Name.anonymous => return ()
       | name =>
         let a := mkIdent name
-        let ha := mkIdent $ name.appendBefore "h"
+       let ha := mkIdent <| name.appendBefore "h"
         let goal ← getMainGoal
         match (←getExprMVarAssignment? mvarIdNew) with
         | .some mvarAss =>
