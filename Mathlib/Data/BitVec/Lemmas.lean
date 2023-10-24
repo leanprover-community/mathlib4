@@ -67,9 +67,14 @@ theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
   simp only [HAppend.hAppend, append, toNat_ofFin]
   rw [toNat_ofNat (Nat.add_comm w v ▸ append_lt hl hm)]
 
+@[simp]
+lemma extractLsb_eq {w : ℕ} (hi lo : ℕ) (a : BitVec w) :
+    extractLsb hi lo a = extractLsb' lo (hi - lo + 1) a :=
+  rfl
+
 theorem toNat_extractLsb {i j} {x : BitVec w} :
-    (extractLsb i j x).toNat = x.toNat / 2 ^ j % (2 ^ (i - j + 1)) := by
-  simp [extractLsb, extractLsb', shiftRight_eq_div_pow]
+    (extractLsb' i j x).toNat = x.toNat / 2 ^ i % (2 ^ j) := by
+  simp only [extractLsb', ofNat_eq_mod_two_pow, shiftRight_eq_div_pow]
 
 theorem getLsb_eq_testBit {i} {x : BitVec w} : getLsb x i = x.toNat.testBit i := by
   simp only [getLsb, Nat.shiftLeft_eq, one_mul, Nat.and_two_pow]
