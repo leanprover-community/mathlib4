@@ -89,13 +89,11 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
   let target ← whnfR (← goal.getType)
   let n' ← n'.getDM (mkFreshUserName `h_peel)
   unless (← isProp ty) && (← isProp target) do
-    logError m!"either {← ppExpr ty} or {← ppExpr target} is not a proposition"
-    return (none, [goal])
+    throwError m!"either {ty} or {target} is not a proposition"
   match ty.getAppFnArgs, target.getAppFnArgs with
     | (``Exists, #[_, .lam _ t₁ b₁ _]), (``Exists, #[_, .lam n₂ t₂ b₂ c]) =>
       unless ← isDefEq t₁ t₂ do
-        logError m!"matched ∃, but {← ppExpr t₁} and {← ppExpr t₂} are not definitionally equal"
-        return (none, [goal])
+        throwError m!"matched ∃, but {t₁} and {t₂} are not definitionally equal"
       let all_imp ← mkFreshExprMVar <| ← withLocalDecl n₂ c t₂ fun x => do
         mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
       goal.assign (← mkAppM ``Exists.imp #[all_imp, e])
@@ -103,8 +101,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
       return (fvars[1]!, [new_goal])
     | (``And, #[r₁, p]), (``And, #[r₂, q]) =>
       unless ← isDefEq r₁ r₂ do
-        logError m!"matched ∧, but {← ppExpr r₁} and {← ppExpr r₂} are not definitionally equal"
-        return (none, [goal])
+        throwError m!"matched ∧, but {r₁} and {r₂} are not definitionally equal"
       let and_imp ← mkFreshExprMVar <| ← mkArrow r₂ (← mkArrow p q)
       goal.assign (← mkAppM ``and_imp_left_of_imp_imp #[and_imp, e])
       let (fvars, new_goal) ← and_imp.mvarId!.introN 2 [n.getD `_, n']
@@ -112,8 +109,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
     | (``Filter.Eventually, #[_, .lam _ _ b₁ _, f₁]),
         (``Filter.Eventually, #[_, .lam n₂ t₂ b₂ c, f₂]) =>
       unless ← isDefEq f₁ f₂ do
-        logError m!"matched ∀ᶠ, but {← ppExpr f₁} and {← ppExpr f₂} are not definitionally equal"
-        return (none, [goal])
+        throwError m!"matched ∀ᶠ, but {f₁} and {f₂} are not definitionally equal"
       let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <| withLocalDecl n₂ c t₂ fun x => do
         mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
       let event_forall ← mkAppOptM ``Filter.eventually_of_forall #[none, none, f₂, all_imp]
@@ -123,8 +119,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
     | (``Filter.Frequently, #[_, .lam _ _ b₁ _, f₁]),
         (``Filter.Frequently, #[_, .lam n₂ t₂ b₂ c, f₂]) =>
       unless ← isDefEq f₁ f₂ do
-        logError m!"matched ∃ᶠ, but {← ppExpr f₁} and {← ppExpr f₂} are not definitionally equal"
-        return (none, [goal])
+        throwError m!"matched ∃ᶠ, but {f₁} and {f₂} are not definitionally equal"
       let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <| withLocalDecl n₂ c t₂ fun x => do
         mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
       let event_forall ← mkAppOptM ``Filter.eventually_of_forall #[none, none, f₂, all_imp]
@@ -135,8 +130,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
       match ty, target with
         | .forallE _ t₁ b₁ _, .forallE n₂ t₂ b₂ c => do
           unless ← isDefEq t₁ t₂ do
-            logError m!"matched ∀, but {← ppExpr t₁} and {← ppExpr t₂} are not definitionally equal"
-            return (none, [goal])
+            throwError m!"matched ∀, but {t₁} and {t₂} are not definitionally equal"
           let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <|
             withLocalDecl n₂ c t₂ fun x => do
               mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
@@ -144,8 +138,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
           let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n']
           return (fvars[1]!, [new_goal])
         | _, _ => do
-          logError m!"could not match {← ppExpr ty} and {← ppExpr target} as quantified expressions"
-          return (none, [goal])
+          throwError m!"could not match {ty} and {target} as quantified expressions"
 
 /-- Peels `n` quantifiers off the expression `e` and the main goal without naming the introduced
 variables. The expression `e`, with quantifiers removed, is assigned the default name `this`. -/
