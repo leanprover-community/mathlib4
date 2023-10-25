@@ -302,11 +302,13 @@ theorem snd_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).snd = 
 
 variable (R M) in
 /-- `TrivSqZeroExt.fst` as an `AddMonoidHom` -/
+@[simps]
 def fstAddHom [AddZeroClass R] [AddZeroClass M] : tsze R M →+ R where
   toFun := fst; map_zero' := fst_zero; map_add' := fst_add
 
 variable (R M) in
 /-- `TrivSqZeroExt.snd` as an `AddMonoidHom` -/
+@[simps]
 def sndAddHom [AddZeroClass R] [AddZeroClass M] : tsze R M →+ M where
   toFun := snd; map_zero' := snd_zero; map_add' := snd_add
 
@@ -437,13 +439,13 @@ variable (R M)
 /-- The canonical `R`-linear inclusion `M → TrivSqZeroExt R M`. -/
 @[simps apply]
 def inrHom [Semiring R] [AddCommMonoid M] [Module R M] : M →ₗ[R] tsze R M where
-  __ := inrAddHom _ _; map_smul' := inr_smul _
+  toFun := inr; __ := inrAddHom _ _; map_smul' := inr_smul _
 #align triv_sq_zero_ext.inr_hom TrivSqZeroExt.inrHom
 
 /-- The canonical `R`-linear projection `TrivSqZeroExt R M → M`. -/
 @[simps apply]
 def sndHom [Semiring R] [AddCommMonoid M] [Module R M] : tsze R M →ₗ[R] M where
-  __ := sndAddHom _ _; map_smul' := snd_smul
+  toFun := snd; __ := sndAddHom _ _; map_smul' := snd_smul
 #align triv_sq_zero_ext.snd_hom TrivSqZeroExt.sndHom
 
 end Additive
@@ -836,6 +838,9 @@ def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →�
     (show algebraMap R' A 1 + f (0 : M) = 1 by rw [map_zero, map_one, add_zero])
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
+        dsimp
+        -- porting note: these are dsimp lemmas, but there is a simp bug that makes them not apply
+        simp only [(LinearMap.add_apply), (LinearMap.comp_apply)]
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hf, smul_zero,
           op_smul_eq_smul]
