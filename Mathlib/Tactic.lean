@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
@@ -89,6 +90,7 @@ import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Tactic.Monotonicity.Lemmas
+import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
@@ -142,6 +144,7 @@ import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic

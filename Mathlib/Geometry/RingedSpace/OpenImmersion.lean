@@ -840,7 +840,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : OpenEmbedding f.
       -- Porting note : was `apply (config := { instances := False }) ...`
       -- See https://github.com/leanprover/lean4/issues/2273
       have h := TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
-          (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward f.base).obj X.sheaf from ⟨f.c⟩)
+          (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.base).obj X.sheaf from ⟨f.c⟩)
       refine @h _ ?_
       rintro ⟨_, y, hy, rfl⟩
       specialize H y
