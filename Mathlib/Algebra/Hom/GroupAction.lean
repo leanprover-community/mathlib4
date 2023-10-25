@@ -253,7 +253,7 @@ theorem ofEq_coe {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) :
 
 @[simp]
 theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
-  (f.ofEq h) a = f a :=
+    (f.ofEq h) a = f a :=
   rfl
 #align equivariant_map.of_eq_apply MulActionHom.ofEq_apply
 
@@ -311,7 +311,7 @@ theorem comp_apply
 
 @[simp]
 theorem id_comp' (f : X →ₑ[φ] Y) :
-  (MulActionHom.id N).comp' f (CompTriple.id_comp) = f :=
+    (MulActionHom.id N).comp' f (CompTriple.id_comp) = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
@@ -658,35 +658,35 @@ lemma comp_eq_comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
 
 @[simp]
 theorem comp_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (x : A) :
-  g.comp f x = g (f x) :=
+    g.comp f x = g (f x) :=
   rfl
 #align distrib_mul_action_hom.comp_apply DistribMulActionSemiHom.comp_apply
 
 @[simp]
 theorem comp'_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) {κ : CompTriple φ ψ χ} (x : A) :
-  g.comp' f κ x = g (f x) :=
+    g.comp' f κ x = g (f x) :=
   rfl
 
 @[simp]
 theorem id_comp (f : A →ₑ+[φ] B) :
-  comp (DistribMulActionSemiHom.id N) f = f :=
+    comp (DistribMulActionSemiHom.id N) f = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.id_comp DistribMulActionSemiHom.id_comp
 
 @[simp]
 theorem id_comp' (f : A →ₑ+[φ] B) :
-  comp' (DistribMulActionSemiHom.id N) f (CompTriple.id_comp) = f :=
+    comp' (DistribMulActionSemiHom.id N) f (CompTriple.id_comp) = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
 theorem comp_id (f : A →ₑ+[φ] B) :
-  comp f (DistribMulActionSemiHom.id M) = f :=
+    comp f (DistribMulActionSemiHom.id M) = f :=
   ext fun x => by rw [comp_apply, id_apply]
 #align distrib_mul_action_hom.comp_id DistribMulActionSemiHom.comp_id
 
 @[simp]
 theorem comp'_id (f : A →ₑ+[φ] B) :
-  f.comp' (DistribMulActionSemiHom.id M) (CompTriple.comp_id)= f :=
+    f.comp' (DistribMulActionSemiHom.id M) (CompTriple.comp_id)= f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 /-- The inverse of a bijective `DistribMulActionSemiHom` is a `DistribMulActionSemiHom`. -/
@@ -839,7 +839,7 @@ see also Algebra.Hom.Group -/
 `MulSemiringActionHom M X Y`. -/
 @[coe]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
-  [MulSemiringActionSemiHomClass F φ R S] (f : F) : R →ₑ+*[φ] S :=
+    [MulSemiringActionSemiHomClass F φ R S] (f : F) : R →ₑ+*[φ] S :=
  { (f : R →+* S),  (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
@@ -936,11 +936,11 @@ def comp (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) : R →ₑ+*[ψ ∘ φ] T
 #align mul_semiring_action_hom.comp MulSemiringActionHom.comp
 
 theorem comp_eq_comp' (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) :
-  g.comp f = g.comp' f (CompTriple.comp) := rfl
+    g.comp f = g.comp' f (CompTriple.comp) := rfl
 
 @[simp]
 theorem comp'_apply (g : S →ₑ+*[ψ] T) (f : R →ₑ+*[φ] S) {κ : CompTriple φ ψ χ} (x : R) :
-  g.comp' f κ x = g (f x) :=
+    g.comp' f κ x = g (f x) :=
   rfl
 
 @[simp]

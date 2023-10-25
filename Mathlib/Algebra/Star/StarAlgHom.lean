@@ -214,8 +214,9 @@ def comp (f : B →⋆ₙₐ[R] C) (g : A →⋆ₙₐ[R] B) : A →⋆ₙₐ[R]
     map_star' := fun a ↦ by
       change f (g (star a)) = star (f (g a))
       simp only [map_star]
-      /- simp only [map_star, NonUnitalAlgHom.toFun_eq_coe, eq_self_iff_true, NonUnitalAlgHom.coe_comp,
-        coe_toNonUnitalAlgHom, Function.comp_apply, forall_const] -/ }
+      /- simp only [map_star, NonUnitalAlgHom.toFun_eq_coe, eq_self_iff_true,
+        NonUnitalAlgHom.coe_comp, coe_toNonUnitalAlgHom, Function.comp_apply,
+        forall_const] -/ }
 #align non_unital_star_alg_hom.comp NonUnitalStarAlgHom.comp
 
 @[simp]
