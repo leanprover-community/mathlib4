@@ -110,8 +110,8 @@ def FractionalOperation.tt {m k n : ℕ}
 def Function.AdmitsFractional {n m k : ℕ}
     (f : (Fin n → D) → C) (ω : FractionalOperation D m k) : Prop :=
   ∀ x : (Fin m → (Fin n → D)),
-    m • ((List.finRange k).map (f ∘ (ω.tt x))).sum ≤
-    k • ((List.finRange m).map (f ∘ x) ).sum
+    m • ((List.finRange k).map fun i => f (ω.tt x i)).sum ≤
+    k • ((List.finRange m).map fun i => f (x i)).sum
 
 /-- TODO description -/
 def FractionalOperation.IsFractionalPolymorphismFor {m k : ℕ}
