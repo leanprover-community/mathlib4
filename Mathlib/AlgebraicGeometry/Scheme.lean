@@ -190,7 +190,7 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrie
     eqToHom_op]
 #align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_val_c_app
 
-theorem _root_.AlgebraicGeometry.Scheme.inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+theorem inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).val.c.app (op ⊤) = inv (f.val.c.app (op ⊤)) := by simp
 
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
