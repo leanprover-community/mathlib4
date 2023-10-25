@@ -63,30 +63,30 @@ namespace HadamardThreeLines
 variable (z : ℂ)
 
 /-- The strip in the complex plane containing all `z ∈ ℂ` such that `z.re ∈ Ioo a b`. -/
-def strip (a: ℝ) (b: ℝ) := re ⁻¹' Ioo a b
+def strip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Ioo a b
 
 /-- The strip in the complex plane containing all `z ∈ ℂ` such that `z.re ∈ Icc a b`. -/
-def closedStrip (a: ℝ) (b: ℝ) := re ⁻¹' Icc a b
+def closedStrip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Icc a b
 
 /-- The strip in the complex plane containing all `z ∈ ℂ` such that `z.re ∈ Ioo a b` and
 `z.im ∈ Ioo (-T) T`. -/
-def bddStrip (a: ℝ) (b: ℝ) (T: ℝ) :=  re ⁻¹' Ioo a b ∩ im ⁻¹' Ioo (-T) T
+def bddStrip (a : ℝ) (b : ℝ) (T : ℝ) : Set ℂ :=  re ⁻¹' Ioo a b ∩ im ⁻¹' Ioo (-T) T
 
 /-- The strip in the complex plane containing all `z ∈ ℂ` such that `z.re ∈ Icc a b` and
 `z.im ∈ Icc (-T) T`. -/
-def closedBddStrip (a: ℝ) (b: ℝ) (T: ℝ) :=  re ⁻¹' Icc a b ∩ im ⁻¹' Icc (-T) T
+def closedBddStrip (a : ℝ) (b : ℝ) (T : ℝ) : Set ℂ :=  re ⁻¹' Icc a b ∩ im ⁻¹' Icc (-T) T
 
 /-- The filter along the vertical strip `re ⁻¹' Ioo a b` and `|z.im| atTop` -/
 def cocompactStrip (a b : ℝ) : Filter ℂ :=
-  comap im (cocompact ℝ) ⊓ (comap re (principal  (Icc a b)))
+  comap im (cocompact ℝ) ⊓ (comap re (principal (Icc a b)))
 
 /-- The supremum of the absolute value of `f` on imaginary lines. (Fixed real part) -/
-noncomputable def sSupAbsIm (f : ℂ → ℂ) (x : ℝ) :=  sSup ((abs ∘ f) '' (re ⁻¹' {x}))
+noncomputable def sSupAbsIm (f : ℂ → ℂ) (x : ℝ) : ℝ  :=  sSup ((abs ∘ f) '' (re ⁻¹' {x}))
 
 
 /-- The inverse of the interpolation of sSupAbsIm on the two boundaries. -/
-noncomputable def invInterpStrip (f : ℂ → ℂ) (z : ℂ): ℂ :=
-  if (sSupAbsIm f (0:ℝ)) = (0:ℝ) ∨ (sSupAbsIm f (1:ℝ)) = (0:ℝ)
+noncomputable def invInterpStrip (f : ℂ → ℂ) (z : ℂ) : ℂ :=
+  if (sSupAbsIm f (0 : ℝ)) = (0 : ℝ) ∨ (sSupAbsIm f (1 : ℝ)) = (0 : ℝ)
     then 0
     else (sSupAbsIm f 0)^(z-1) * (sSupAbsIm f 1)^(-z)
 
@@ -94,7 +94,7 @@ noncomputable def invInterpStrip (f : ℂ → ℂ) (z : ℂ): ℂ :=
 private noncomputable def F (f : ℂ → ℂ) := fun z ↦ f z • invInterpStrip f z
 
 /-- Similar to F only 'easier'. Useful for proof steps. -/
-private noncomputable def F' (n: ℕ) (f: ℂ → ℂ) := fun z ↦ F f z • exp ((z^2-1) * (n : ℝ)⁻¹)
+private noncomputable def F' (n : ℕ) (f : ℂ → ℂ) := fun z ↦ F f z • exp ((z^2-1) * (n : ℝ)⁻¹)
 
 
 -- Small lemma : Sup of abs is nonneg
@@ -105,17 +105,17 @@ lemma sSupAbsIm_nonneg (f : ℂ → ℂ) (x : ℝ) : 0 ≤ sSupAbsIm f x := by
 
 
 -- Definition rewrites for inv_interp_strip
-lemma inv_interp_strip_of_pos_def (f: ℂ → ℂ ) (h0: 0 < sSupAbsIm f 0) (h1: 0 < sSupAbsIm f 1) :
+lemma inv_interp_strip_of_pos_def (f : ℂ → ℂ ) (h0 : 0 < sSupAbsIm f 0) (h1 : 0 < sSupAbsIm f 1) :
     invInterpStrip f z = (sSupAbsIm f 0)^(z-1) * (sSupAbsIm f 1)^(-z) := by
   simp only [ne_of_gt h0, ne_of_gt h1, invInterpStrip, if_false, or_false]
 
 
-lemma inv_interp_strip_of_zero_def (f: ℂ → ℂ ) (h: (sSupAbsIm f 0) = 0 ∨ (sSupAbsIm f 1) = 0) :
+lemma inv_interp_strip_of_zero_def (f : ℂ → ℂ ) (h : (sSupAbsIm f 0) = 0 ∨ (sSupAbsIm f 1) = 0) :
     invInterpStrip f z = 0 :=
   if_pos h
 
 -- Differentiable continuous function inv_interp_strip
-lemma inv_interp_strip_diff_cont (f: ℂ → ℂ) : DiffContOnCl ℂ (invInterpStrip f) (strip 0 1) := by
+lemma inv_interp_strip_diff_cont (f : ℂ → ℂ) : DiffContOnCl ℂ (invInterpStrip f) (strip 0 1) := by
   by_cases (sSupAbsIm f 0) = 0 ∨ (sSupAbsIm f 1) = 0
   -- Case everywhere 0
   -- Starting with Lemma to handle rewriting of invInterpStrip as a function.
@@ -133,7 +133,7 @@ lemma inv_interp_strip_diff_cont (f: ℂ → ℂ) : DiffContOnCl ℂ (invInterpS
   apply Differentiable.diffContOnCl
   intro z
   -- Same strategy.
-  have hpos: invInterpStrip f = fun (z:ℂ) ↦ (sSupAbsIm f 0)^(z-1) * (sSupAbsIm f 1)^(-z) := by
+  have hpos: invInterpStrip f = fun (z : ℂ) ↦ (sSupAbsIm f 0)^(z-1) * (sSupAbsIm f 1)^(-z) := by
     funext z
     rw [inv_interp_strip_of_pos_def z f (lt_of_le_of_ne (sSupAbsIm_nonneg f 0) h0)
     (lt_of_le_of_ne (sSupAbsIm_nonneg f 1) h1)]
@@ -148,7 +148,7 @@ lemma inv_interp_strip_diff_cont (f: ℂ → ℂ) : DiffContOnCl ℂ (invInterpS
 
 
 
-lemma F'_diff_cont (f: ℂ → ℂ) (n : ℕ) (hd : DiffContOnCl ℂ f (strip 0 1)) :
+lemma F'_diff_cont (f : ℂ → ℂ) (n : ℕ) (hd : DiffContOnCl ℂ f (strip 0 1)) :
     DiffContOnCl ℂ (F' n f) (strip 0 1) := by
   apply DiffContOnCl.smul (DiffContOnCl.smul hd (inv_interp_strip_diff_cont f) ) _
   apply Differentiable.diffContOnCl
@@ -161,7 +161,7 @@ lemma F'_diff_cont (f: ℂ → ℂ) (n : ℕ) (hd : DiffContOnCl ℂ f (strip 0 
 
 
 -- The function f is bounded by sSupAbsIm
-lemma f_le_Sup (f : ℂ → ℂ) (z : ℂ) (hD: z ∈ (closedStrip 0 1))
+lemma f_le_Sup (f : ℂ → ℂ) (z : ℂ) (hD : z ∈ (closedStrip 0 1))
     (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) : abs (f z) ≤ sSupAbsIm f (z.re) := by
   apply le_csSup _ _
   · apply BddAbove.mono (image_subset (abs ∘ f) _) hB
@@ -178,7 +178,7 @@ lemma cocompact_strip.basis : HasBasis (cocompactStrip 0 1) (fun _ : ℝ × ℝ 
   exact HasBasis.inf_principal (HasBasis.comap _ (HasBasis.sup atBot_basis atTop_basis)) _
 
 lemma cocompact_strip.mem_sets {s : Set ℂ} : s ∈ cocompactStrip 0 1 ↔ ∃ T, ∀ (z : ℂ),
-    z.re ∈ Icc 0 (1:ℝ) → T ≤ |z.im| → z ∈ s := by
+    z.re ∈ Icc 0 (1 : ℝ) → T ≤ |z.im| → z ∈ s := by
   rw [HasBasis.mem_iff cocompact_strip.basis]
   constructor
   · rintro ⟨⟨a,b⟩, h⟩
@@ -226,13 +226,13 @@ lemma cocompact_strip.eventually_sq_re_le_one : ∀ᶠ (z : ℂ) in
   exact hz.2
 
 -- Smoothly decreasing function when the real part is bounded eventually ≤ 1
-lemma expterm_eventually_le_one (C : ℝ) (n : ℕ) (hn: 1 ≤ n) : ∀ᶠ (z : ℂ)
+lemma expterm_eventually_le_one (C : ℝ) (n : ℕ) (hn : 1 ≤ n) : ∀ᶠ (z : ℂ)
     in (comap Complex.im (cocompact ℝ) ⊓ (comap Complex.re (principal  (Icc 0 1)))),
-    C * abs (exp ((z^(2:ℕ)-1) * (n : ℝ)⁻¹) ) ≤ 1 := by
+    C * abs (exp ((z^(2 : ℕ)-1) * (n : ℝ)⁻¹) ) ≤ 1 := by
   apply eventually_le_of_tendsto_lt  (zero_lt_one' ℝ) _
   simp only [abs_exp]
-  rw [ show (fun z : ℂ ↦ C * Real.exp (((z^(2:ℕ)-1) * (n : ℝ)⁻¹).re))
-    = (fun z : ℂ ↦ C * Real.exp ((z.re^(2:ℕ) - z.im^(2:ℕ) - 1) * (n : ℝ)⁻¹)) by
+  rw [ show (fun z : ℂ ↦ C * Real.exp (((z^(2 : ℕ)-1) * (n : ℝ)⁻¹).re))
+    = (fun z : ℂ ↦ C * Real.exp ((z.re^(2 : ℕ) - z.im^(2 : ℕ) - 1) * (n : ℝ)⁻¹)) by
       ext1 z
       nth_rewrite 1 [← re_add_im z]
       simp only [mul_re, sub_re, ofReal_im, mul_zero, tsub_zero, ofReal_re]
@@ -242,7 +242,7 @@ lemma expterm_eventually_le_one (C : ℝ) (n : ℕ) (hn: 1 ≤ n) : ∀ᶠ (z : 
   nth_rewrite 2 [← mul_zero C]
   apply Tendsto.const_mul C _
   rw [Real.tendsto_exp_comp_nhds_zero]
-  apply Tendsto.atBot_mul_const (show 0 < (n:ℝ)⁻¹ by
+  apply Tendsto.atBot_mul_const (show 0 < (n : ℝ)⁻¹ by
     simp only [inv_pos, Nat.cast_pos, lt_of_lt_of_le zero_lt_one hn])
   -- x.re ^ 2 - x.im ^ 2 - 1 Tendsto at_bot
   apply tendsto_atBot_add_const_right _ (-1) _
@@ -253,14 +253,14 @@ lemma expterm_eventually_le_one (C : ℝ) (n : ℕ) (hn: 1 ≤ n) : ∀ᶠ (z : 
 
 
 -- The function F is bounded above because f is.
-lemma F_BddAbove (f: ℂ → ℂ) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) :
+lemma F_BddAbove (f : ℂ → ℂ) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) :
     BddAbove ((abs ∘ F f) '' (closedStrip 0 1)) := by
   -- Rewriting goal
   simp only [F, image_congr, comp_apply, map_mul]
   rw [bddAbove_def] at *
   cases' hB with B hB
   -- Using bound
-  use B * ((max 1 ((sSupAbsIm f 0)^ (-(1:ℝ)))) * max 1 ((sSupAbsIm f 1)^ (-(1:ℝ))))
+  use B * ((max 1 ((sSupAbsIm f 0)^ (-(1 : ℝ)))) * max 1 ((sSupAbsIm f 1)^ (-(1 : ℝ))))
   simp only [smul_eq_mul, map_mul, mem_image, forall_exists_index,
    and_imp, forall_apply_eq_imp_iff₂]
   intros z hset
@@ -306,7 +306,7 @@ lemma F_BddAbove (f: ℂ → ℂ) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 
           (neg_le_neg_iff.mpr hset.2)]
 
 
-lemma F'_eventually_le_one (f: ℂ → ℂ) (n : ℕ) (hn: 1 ≤ n)
+lemma F'_eventually_le_one (f : ℂ → ℂ) (n : ℕ) (hn : 1 ≤ n)
     (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) :
     ∀ᶠ (z : ℂ) in (cocompactStrip 0 1), (abs ∘ (F' n f)) z ≤ 1 := by
   simp only [F', comp_apply, map_mul, Algebra.id.smul_eq_mul, ofReal_nat_cast, map_mul]
@@ -325,8 +325,8 @@ lemma F'_eventually_le_one (f: ℂ → ℂ) (n : ℕ) (hn: 1 ≤ n)
       (le_trans (map_nonneg _ _) hF')) hexp
 
 -- Proof that the edges are bounded by one
-lemma F_edge_le_one (f: ℂ → ℂ) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1)))
-    (hz: z ∈ re ⁻¹' {0, 1}) :  abs (F f z) ≤ 1 := by
+lemma F_edge_le_one (f : ℂ → ℂ) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1)))
+    (hz : z ∈ re ⁻¹' {0, 1}) : abs (F f z) ≤ 1 := by
   simp only [F, Algebra.id.smul_eq_mul, map_mul]
   cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 0) with hpos hzero
   · cases' lt_or_eq_of_le (sSupAbsIm_nonneg f 1) with h1pos h1zero
@@ -358,8 +358,8 @@ lemma F_edge_le_one (f: ℂ → ℂ) (hB : BddAbove ((abs ∘ f) '' (closedStrip
 
 
 -- Edges of F' are constructed to be ≤ 1
-lemma edges_le_one (f: ℂ → ℂ) (n : ℕ) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1)))
-    (hz: z ∈ re ⁻¹' {0, 1}) : (abs ∘ F' n f) z ≤ 1 := by
+lemma edges_le_one (f : ℂ → ℂ) (n : ℕ) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1)))
+    (hz : z ∈ re ⁻¹' {0, 1}) : (abs ∘ F' n f) z ≤ 1 := by
   -- Small useful lemma
   have hdivnat : 0 ≤ ((n : ℂ)⁻¹).re := by
     simp only [← ofReal_nat_cast n, ← ofReal_inv n, ofReal_re, inv_nonneg, Nat.cast_nonneg]
@@ -399,7 +399,7 @@ lemma edges_le_one (f: ℂ → ℂ) (n : ℕ) (hB : BddAbove ((abs ∘ f) '' (cl
 -- Show the Theorem on the members of the sequence (F') that tends to F.
 lemma abs_le_interp_on_closed_strip_sequence (f : ℂ → ℂ) (z : ℂ)
     (hd : DiffContOnCl ℂ f (strip 0 1)) (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1)))
-    (hz: z ∈ closedStrip 0 1) (n: ℕ) (hn: 1 ≤ n) : (abs ∘ F' n f) z ≤ 1 := by
+    (hz : z ∈ closedStrip 0 1) (n : ℕ) (hn : 1 ≤ n) : (abs ∘ F' n f) z ≤ 1 := by
   rcases (Eventually.exists_mem (F'_eventually_le_one f n hn hB)) with ⟨w, ⟨h_w, h_h⟩⟩
   rw [cocompact_strip.mem_sets] at h_w
   cases' h_w with B h_w
@@ -439,7 +439,7 @@ lemma abs_le_interp_on_closed_strip_sequence (f : ℂ → ℂ) (z : ℂ)
       · replace hfz_re := mem_of_mem_inter_left hfz2
         rw [frontier_Ioo (zero_lt_one' ℝ)] at hfz_re
         exact edges_le_one z f n hB hfz_re
-    -- Local goal: z ∈ closure (bddStrip 0 1 T) with h: |z.im| ≤ T and hz: z ∈ strip 0 1.
+    -- Local goal: z ∈ closure (bddStrip 0 1 T) with h : |z.im| ≤ T and hz : z ∈ strip 0 1.
     · rw [bddStrip, ← Set.reProdIm, closure_reProdIm, closure_Ioo (zero_ne_one' ℝ), closure_Ioo,
       Set.reProdIm, mem_inter_iff]
       refine ⟨hz, ?_⟩
@@ -477,7 +477,7 @@ and differentiable on `(0,1)`, then for `M(x) := sup ((abs ∘ f) '' (re ⁻¹' 
 `∀ z ∈ [0,1]` the inequality `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds.
 -/
 theorem abs_le_interp_on_closedStrip (f : ℂ → ℂ) (hd : DiffContOnCl ℂ f (strip 0 1))
-   (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) (z : ℂ) (hz: z ∈ closedStrip 0 1) :
+   (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) (z : ℂ) (hz : z ∈ closedStrip 0 1) :
    (abs (f z • invInterpStrip f z)) ≤ 1 := by
   apply le_of_tendsto (F_seq_to_F_abs f z) _
   rw [eventually_iff_exists_mem]
