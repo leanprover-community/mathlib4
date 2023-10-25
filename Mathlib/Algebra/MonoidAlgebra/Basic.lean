@@ -8,6 +8,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Data.Finsupp.Basic
 
 #align_import algebra.monoid_algebra.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
@@ -664,7 +665,7 @@ values on the functions `single a 1`. -/
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   NonUnitalAlgHom.to_distribMulActionHom_injective <|
-    Finsupp.distribMulActionHom_ext' fun a => DistribMulActionHom.ext_ring (h a)
+    Finsupp.distribMulActionSemiHom_ext' fun a => DistribMulActionSemiHom.ext_ring (h a)
 #align monoid_algebra.non_unital_alg_hom_ext MonoidAlgebra.nonUnitalAlgHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
@@ -686,7 +687,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
         -- Porting note: `dsimp` is required for beta reduction.
         dsimp only []
         rw [Finsupp.smul_sum, sum_smul_index']
-        · simp_rw [smul_assoc]
+        · simp_rw [smul_assoc, id_eq]
         · intro m
           exact zero_smul k (f m)
       map_mul' := fun a₁ a₂ => by
