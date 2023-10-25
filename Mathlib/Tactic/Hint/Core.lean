@@ -13,17 +13,18 @@ namespace Mathlib.Tactic.Hint
 
 open Lean Elab Tactic MessageData Std.Tactic TryThis
 
+/-- This extension stores tactics used in `hint`. -/
 initialize hintExtension : SimplePersistentEnvExtension Syntax.Tactic (Array Syntax.Tactic) ←
   registerSimplePersistentEnvExtension {
     addEntryFn := Array.push
     addImportedFn := Array.foldl (fun a₁ a₂ => a₂ ++ a₁) #[]
   }
 
-syntax (name := addHintTactic) "add_hint_tactic " tactic : command
-
 /-- `add_hint_tactic t` runs the tactic `t` whenever `hint` is invoked.
 The typical use case is `add_hint_tactic foo` for some interactive tactic `foo`.
 -/
+syntax (name := addHintTactic) "add_hint_tactic " tactic : command
+
 elab_rules : command
   | `(command| add_hint_tactic $tac:tactic) =>
     let tac : Syntax.Tactic := ⟨tac.raw.copyHeadTailInfoFrom .missing⟩
