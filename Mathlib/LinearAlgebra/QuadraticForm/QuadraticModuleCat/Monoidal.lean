@@ -86,7 +86,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
-        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
+        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
         rfl }
 
 variable (R) in
