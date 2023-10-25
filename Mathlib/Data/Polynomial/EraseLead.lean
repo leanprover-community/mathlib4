@@ -23,7 +23,7 @@ and thus works for polynomials over semirings as well as rings.
 
 noncomputable section
 
-open Classical Polynomial
+open Polynomial
 
 open Polynomial Finset
 
@@ -125,6 +125,7 @@ theorem eraseLead_card_support' {c : ℕ} (fc : f.support.card = c + 1) :
 
 @[simp]
 theorem eraseLead_monomial (i : ℕ) (r : R) : eraseLead (monomial i r) = 0 := by
+  classical
   by_cases hr : r = 0
   · subst r
     simp only [monomial_zero_right, eraseLead_zero]

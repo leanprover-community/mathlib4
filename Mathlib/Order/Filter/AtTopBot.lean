@@ -912,9 +912,9 @@ theorem tendsto_neg_atBot_iff : Tendsto (fun x => -f x) l atBot ↔ Tendsto f l 
 
 end OrderedGroup
 
-section StrictOrderedSemiring
+section OrderedSemiring
 
-variable [StrictOrderedSemiring α] {l : Filter β} {f g : β → α}
+variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
 
 set_option linter.deprecated false in
 @[deprecated] theorem tendsto_bit1_atTop : Tendsto bit1 (atTop : Filter α) atTop :=
@@ -925,7 +925,7 @@ theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop
     Tendsto (fun x => f x * g x) l atTop := by
   refine' tendsto_atTop_mono' _ _ hg
   filter_upwards [hg.eventually (eventually_ge_atTop 0),
-    hf.eventually (eventually_ge_atTop 1)]with _ using le_mul_of_one_le_left
+    hf.eventually (eventually_ge_atTop 1)] with _ using le_mul_of_one_le_left
 #align filter.tendsto.at_top_mul_at_top Filter.Tendsto.atTop_mul_atTop
 
 theorem tendsto_mul_self_atTop : Tendsto (fun x : α => x * x) atTop atTop :=
@@ -938,16 +938,16 @@ theorem tendsto_pow_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (fun x : α => x ^ 
   tendsto_atTop_mono' _ ((eventually_ge_atTop 1).mono fun _x hx => le_self_pow hx hn) tendsto_id
 #align filter.tendsto_pow_at_top Filter.tendsto_pow_atTop
 
-end StrictOrderedSemiring
+end OrderedSemiring
 
 theorem zero_pow_eventuallyEq [MonoidWithZero α] :
     (fun n : ℕ => (0 : α) ^ n) =ᶠ[atTop] fun _ => 0 :=
   eventually_atTop.2 ⟨1, fun _n hn => zero_pow (zero_lt_one.trans_le hn)⟩
 #align filter.zero_pow_eventually_eq Filter.zero_pow_eventuallyEq
 
-section StrictOrderedRing
+section OrderedRing
 
-variable [StrictOrderedRing α] {l : Filter β} {f g : β → α}
+variable [OrderedRing α] {l : Filter β} {f g : β → α}
 
 theorem Tendsto.atTop_mul_atBot (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot := by
@@ -969,7 +969,7 @@ theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot
   simpa only [neg_mul_neg] using this
 #align filter.tendsto.at_bot_mul_at_bot Filter.Tendsto.atBot_mul_atBot
 
-end StrictOrderedRing
+end OrderedRing
 
 section LinearOrderedAddCommGroup
 
@@ -1120,9 +1120,13 @@ theorem tendsto_const_mul_pow_atTop_iff :
   refine' ⟨fun h => ⟨_, _⟩, fun h => tendsto_const_mul_pow_atTop h.1 h.2⟩
   · rintro rfl
     simp only [pow_zero, not_tendsto_const_atTop] at h
-  · rcases((h.eventually_gt_atTop 0).and (eventually_ge_atTop 0)).exists with ⟨k, hck, hk⟩
+  · rcases ((h.eventually_gt_atTop 0).and (eventually_ge_atTop 0)).exists with ⟨k, hck, hk⟩
     exact pos_of_mul_pos_left hck (pow_nonneg hk _)
 #align filter.tendsto_const_mul_pow_at_top_iff Filter.tendsto_const_mul_pow_atTop_iff
+
+lemma tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : α ↦ x ^ n) atTop atTop := by
+  lift n to ℕ+ using hn; simp
+#align tendsto_zpow_at_top_at_top Filter.tendsto_zpow_atTop_atTop
 
 end LinearOrderedSemifield
 
@@ -1591,7 +1595,7 @@ theorem map_val_atTop_of_Ici_subset [SemilatticeSup α] {a : α} {s : Set α} (h
     rintro _ ⟨y, hy, rfl⟩
     exact le_trans le_sup_left (Subtype.coe_le_coe.2 hy)
   · intro x
-    filter_upwards [mem_atTop (↑x ⊔ a)]with b hb
+    filter_upwards [mem_atTop (↑x ⊔ a)] with b hb
     exact ⟨⟨b, h <| le_sup_right.trans hb⟩, Subtype.coe_le_coe.1 (le_sup_left.trans hb), rfl⟩
 #align filter.map_coe_at_top_of_Ici_subset Filter.map_val_atTop_of_Ici_subset
 

@@ -60,7 +60,6 @@ theorem forget₂_map_associator_hom (X Y Z : AlgebraCat.{u} R) :
         (forget₂ _ (ModuleCat R) |>.obj Z)).hom := by
   rfl
 
-set_option maxHeartbeats 400000 in
 theorem forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
     (forget₂ (AlgebraCat R) (ModuleCat R)).map (associator X Y Z).inv =
       (α_
