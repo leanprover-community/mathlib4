@@ -38,6 +38,7 @@ theorem range_rec {α : Type*} (x : α) (f : ℕ → α → α) :
     (Set.range fun n => Nat.rec x f n : Set α) =
       {x} ∪ Set.range fun n => Nat.rec (f 0 x) (f ∘ succ) n := by
   convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm using 4
+  · rfl
   dsimp
   rename_i n
   induction' n with n ihn

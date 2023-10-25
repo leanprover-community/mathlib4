@@ -221,9 +221,7 @@ theorem obj_ε_app (n : M) (X : C) :
     (F.obj n).map (F.ε.app X) = (F.map (λ_ n).inv).app X ≫ (F.μIso (𝟙_ M) n).inv.app X := by
   refine' Eq.trans _ (Category.id_comp _)
   rw [← Category.assoc, ← IsIso.comp_inv_eq, ← IsIso.comp_inv_eq, Category.assoc]
-  convert left_unitality_app F n X
-  · simp
-  · simp
+  convert left_unitality_app F n X <;> simp
 #align category_theory.obj_ε_app CategoryTheory.obj_ε_app
 
 -- porting note: linter claims `simp can prove it`, but cnot
@@ -247,8 +245,7 @@ theorem ε_app_obj (n : M) (X : C) :
     F.ε.app ((F.obj n).obj X) = (F.map (ρ_ n).inv).app X ≫ (F.μIso n (𝟙_ M)).inv.app X := by
   refine' Eq.trans _ (Category.id_comp _)
   rw [← Category.assoc, ← IsIso.comp_inv_eq, ← IsIso.comp_inv_eq, Category.assoc]
-  convert right_unitality_app F n X using 1
-  simp
+  convert right_unitality_app F n X using 1 <;> simp
 #align category_theory.ε_app_obj CategoryTheory.ε_app_obj
 
 @[simp]

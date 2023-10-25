@@ -1070,7 +1070,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
     map_rel_iff' := by
       intros a b
       apply le_iff_le_of_cmp_eq_cmp
-      convert (h a (f b)).symm
+      convert (h a (f b)).symm <;> try rfl
       apply gf }
 #align order_iso.of_cmp_eq_cmp OrderIso.ofCmpEqCmp
 

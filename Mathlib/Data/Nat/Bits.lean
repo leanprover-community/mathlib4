@@ -229,8 +229,7 @@ theorem bit1_bits (n : ℕ) : (bit1 n).bits = true :: n.bits :=
 #align nat.bit1_bits Nat.bit1_bits
 
 @[simp]
-theorem one_bits : Nat.bits 1 = [true] := by
-  convert bit1_bits 0
+theorem one_bits : Nat.bits 1 = [true] := bit1_bits 0
 #align nat.one_bits Nat.one_bits
 
 -- TODO Find somewhere this can live.

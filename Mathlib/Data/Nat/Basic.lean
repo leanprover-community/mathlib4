@@ -330,8 +330,7 @@ theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
 theorem self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
   cases n
   · rfl
-  · rw [two_mul]
-    convert (add_succ_sub_one (Nat.succ _) _).symm
+  · rw [two_mul, add_succ_sub_one, succ_sub_one]
 
 theorem sub_one_add_self (n : ℕ) : (n - 1) + n = 2 * n - 1 :=
   add_comm _ n ▸ self_add_sub_one n

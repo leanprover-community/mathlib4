@@ -1316,7 +1316,7 @@ theorem wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithTop.toDual a) := WellFounded.apply (WithBot.wellFounded_lt
-      (by convert h using 1)) _
+      (by convert h using 1 <;> rfl)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
@@ -1331,7 +1331,7 @@ theorem _root_.WithBot.wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithBot.toDual a) :=
-      WellFounded.apply (WithTop.wellFounded_lt (by convert h using 1)) _
+      WellFounded.apply (WithTop.wellFounded_lt (by convert h using 1 <;> rfl)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac

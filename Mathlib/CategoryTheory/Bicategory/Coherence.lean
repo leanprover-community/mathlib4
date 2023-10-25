@@ -95,7 +95,7 @@ theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : 
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) := by
   rcases η with ⟨⟨⟩⟩
   cases Discrete.ext _ _ (by assumption)
-  convert (inclusionPath a b).map_id _
+  convert (inclusionPath a b).map_id _ <;> rfl
 #align category_theory.free_bicategory.preinclusion_map₂ CategoryTheory.FreeBicategory.preinclusion_map₂
 
 /-- The normalization of the composition of `p : Path a b` and `f : Hom b c`.
