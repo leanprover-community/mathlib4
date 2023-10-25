@@ -333,7 +333,7 @@ theorem comp_id (f : X →ₑ[φ] Y) : f.comp (MulActionHom.id M) = f := by simp
 
 @[simp]
 theorem comp'_assoc {Q T : Type _} [SMul Q T]
-  {η : P → Q} {θ : M → Q} {ζ : N → Q}
+    {η : P → Q} {θ : M → Q} {ζ : N → Q}
   (h : Z →ₑ[η] T) (g : Y →ₑ[ψ] Z) (f : X →ₑ[φ] Y)
   {κ : CompTriple φ ψ χ} {κ' : CompTriple χ η θ}
   {ξ : CompTriple ψ η ζ} {ξ' : CompTriple φ ζ θ} :
