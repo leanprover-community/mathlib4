@@ -176,20 +176,13 @@ private lemma Filter.frequently_congr {α : Type*} {f : Filter α} {p : α → P
 
 /-- Peel off a single quantifier from an `↔`. -/
 def peelIffAux : TacticM Unit := withMainContext do
-  evalTactic (← `(tactic|
-    apply_rules [forall_congr', exists_congr, Filter.eventually_congr,
-      Filter.eventually_of_forall, Filter.frequently_congr]))
-
-/-- Peel off `n` quantifiers from an `↔`. -/
-def peelNumIff (n : Nat) : TacticM Unit := withMainContext do
-  match n with
-    | 0 => pure ()
-    | n + 1 =>
-      peelIffAux
-      let goal ← getMainGoal
-      let (_, new_goal) ← goal.intro1P
-      replaceMainGoal [new_goal]
-      peelNumIff n
+  evalTactic (← `(tactic| focus
+    first | apply forall_congr'
+          | apply exists_congr
+          | apply Filter.eventually_congr
+          | apply Filter.frequently_congr
+          | fail "failed to apply a quantifier congruence lemma."
+    try apply Filter.eventually_of_forall))
 
 /-- Peel off quantifiers from an `↔` and assign the names given in `l` to the introduced
 variables. -/
@@ -208,7 +201,7 @@ elab_rules : tactic
   | `(tactic| peel $e:term) => withMainContext do peelArgs (← elabTerm e none) []
   | `(tactic| peel $e:term $h:withArgs) => withMainContext do
     peelArgs (← elabTerm e none) <| ((← getWithArgs h).map Syntax.getId).toList
-  | `(tactic| peel $n:num) => peelNumIff n.getNat
+  | `(tactic| peel $n:num) => peelArgsIff <| .replicate n.getNat `_
   | `(tactic| peel $h:withArgs) => withMainContext do
     peelArgsIff ((← getWithArgs h).map Syntax.getId).toList
 
