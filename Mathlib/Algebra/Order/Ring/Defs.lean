@@ -141,7 +141,7 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
+class OrderedCommSemiring (α : Type u) extends CommSemiring α, OrderedSemiring α where
   mul_le_mul_of_nonneg_right a b c ha hc :=
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
@@ -158,7 +158,7 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
 
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
-class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
+class OrderedCommRing (α : Type u) extends CommRing α, OrderedRing α
 #align ordered_comm_ring OrderedCommRing
 
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
@@ -175,7 +175,7 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
 
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
+class StrictOrderedCommSemiring (α : Type u) extends CommSemiring α, StrictOrderedSemiring α
 #align strict_ordered_comm_semiring StrictOrderedCommSemiring
 
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
@@ -189,7 +189,7 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
+class StrictOrderedCommRing (α : Type*) extends CommRing α, StrictOrderedRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
