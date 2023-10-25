@@ -25,6 +25,10 @@ See `preservesTerminalOfIsSheafForEmpty`.
 * If `F` furthermore satisfies the sheaf condition with respect to the presieve consisting of the
   inclusion arrows in a coproduct in `C`, then `F` preserves the corresponding product.
 See `preservesProductOfIsSheafFor`.
+
+* If `F` preserves a product, then it satisfies the sheaf condition with respect to the
+  corresponding presieve of arrows.
+See `isSheafFor_of_preservesProduct`.
 -/
 
 universe v u
@@ -33,20 +37,24 @@ namespace CategoryTheory.Presieve
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C] (I : C) (F : Cᵒᵖ ⥤ Type (max u v))
-    (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
+variable {C : Type u} [Category.{v} C] {I : C} (hI : IsInitial I) (F : Cᵒᵖ ⥤ Type (max u v))
+    (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F) {α : Type}
+    (X : α → C) [HasCoproduct X] [(ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
+    (hd : ∀ i j, i ≠ j → IsInitial (pullback (Sigma.ι X i) (Sigma.ι X j)))
+    [∀ i, Mono (Sigma.ι X i)]
 
+namespace Preserves
+
+variable (I) in
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
 initial object, then `F` takes the initial object to the terminal object.
 -/
 noncomputable
-def isTerminal_obj_initial_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
+def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   refine @IsTerminal.ofUnique _ _ _ fun Y ↦ ?_
   choose t h using hF (by tauto) (by tauto)
   exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
-
-variable {I} (hI : IsInitial I)
 
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
@@ -58,12 +66,7 @@ def preservesTerminalOfIsSheafForEmpty : PreservesLimit (Functor.empty Cᵒᵖ) 
   (preservesTerminalOfIso F
     ((F.mapIso (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)) ≪≫
     (F.mapIso (initialIsoIsInitial hI).symm.op) ≪≫
-    (terminalIsoIsTerminal (isTerminal_obj_initial_of_isSheafFor_empty_presieve I F hF)).symm)))
-
-variable {α : Type} (X : α → C) [HasCoproduct X]
-    [(ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
-    (hd : ∀ i j, i ≠ j → IsInitial (pullback (Sigma.ι X i) (Sigma.ι X j)))
-    [∀ i, Mono (Sigma.ι X i)]
+    (terminalIsoIsTerminal (isTerminal_of_isSheafFor_empty_presieve I F hF)).symm)))
 
 theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (fun j ↦ Sigma.ι X j) =
     Equalizer.Presieve.Arrows.secondMap F X (fun j ↦ Sigma.ι X j) := by
@@ -76,25 +79,20 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (fun j �
       pullback.snd (f := Sigma.ι X i) (g := Sigma.ι X i) by rw [this]
     apply Mono.right_cancellation (f := Sigma.ι X i)
     exact pullback.condition
-  · haveI := preservesTerminalOfIsSheafForEmpty F hF
+  · haveI := preservesTerminalOfIsSheafForEmpty hI F hF
     haveI := hI.hasInitial
     let i₁ : op (pullback (Sigma.ι X i) (Sigma.ι X j)) ≅ op (⊥_ _) :=
       (initialIsoIsInitial (hd i j hi)).op
     let i₂ : op (⊥_ C) ≅ (⊤_ Cᵒᵖ) :=
       (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)).symm
-    let _ := preservesTerminalOfIsSheafForEmpty F hF hI
+    let _ := preservesTerminalOfIsSheafForEmpty hI F hF
     apply_fun (F.mapIso i₁ ≪≫ F.mapIso i₂ ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _
     simp
 
-/--
-If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it
-preserves the product corresponding to the presieve of arrows.
--/
-noncomputable
-def preservesProductOfIsSheafFor (hF' : (ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F) :
-    PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
-  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
+theorem piComparison_fac : piComparison F (fun x ↦ op (X x)) =
+    F.map (opCoproductIsoProduct X).inv ≫
+    Equalizer.Presieve.Arrows.forkMap F X (fun i ↦ Sigma.ι X i) := by
   have h₁ : Pi.lift (fun j ↦ Pi.π (fun a ↦ (op (X a))) j) = 𝟙 _ := by ext; simp
   have h₂ : (fun j ↦ (opCoproductIsoProduct X).inv ≫ (Sigma.ι X j).op) =
     fun j ↦ Pi.π (fun a ↦ (op (X a))) j := by ext; exact opCoproductIsoProduct_inv_comp_ι _ _
@@ -104,14 +102,45 @@ def preservesProductOfIsSheafFor (hF' : (ofArrows X (fun i ↦ Sigma.ι X i)).Is
   · ext j x
     simp only [h₂, h₁, Functor.map_id, Category.id_comp, piComparison, types_comp_apply,
       Types.pi_lift_π_apply, ← FunctorToTypes.map_comp_apply, congr_fun h₂ j]
-  have : piComparison F (fun x ↦ op (X x)) = F.map (opCoproductIsoProduct X).inv ≫
-      Equalizer.Presieve.Arrows.forkMap F X (fun i ↦ Sigma.ι X i)
-  · rw [Equalizer.Presieve.Arrows.forkMap, ← h₃, h₂, h₁]
-    simp
-  rw [this]
+  rw [Equalizer.Presieve.Arrows.forkMap, ← h₃, h₂, h₁]
+  simp
+
+end Preserves
+
+open CategoryTheory.Presieve.Preserves
+
+/--
+If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it
+preserves the product corresponding to the presieve of arrows.
+-/
+noncomputable
+def preservesProductOfIsSheafFor (hF' : (ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F) :
+    PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
+  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
+  rw [piComparison_fac]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-  exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI X hd) b)
+  exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap hI F hF X hd) b)
+
+theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F] :
+    (ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F := by
+  rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
+  have hc : IsIso (piComparison F (fun x ↦ op (X x))) := inferInstance
+  rw [piComparison_fac, isIso_iff_bijective, Function.bijective_iff_existsUnique] at hc
+  intro b _
+  obtain ⟨t, ht₁, ht₂⟩ := hc b
+  refine ⟨F.map (opCoproductIsoProduct X).inv t, ht₁, fun y hy ↦ ?_⟩
+  specialize ht₂ (F.map (opCoproductIsoProduct X).hom y)
+  apply_fun (F.mapIso (opCoproductIsoProduct X)).hom using injective_of_mono _
+  simp only [Functor.mapIso_hom, FunctorToTypes.map_hom_map_inv_apply]
+  apply ht₂
+  simpa only [types_comp_apply, FunctorToTypes.map_inv_map_hom_apply]
+
+theorem isSheafFor_iff_preservesProduct : (ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F ↔
+    Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
+  refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor hI _ hF X hd hF'⟩, fun hF' ↦ ?_⟩
+  let _ := hF'.some
+  exact isSheafFor_of_preservesProduct F X
 
 end CategoryTheory.Presieve
