@@ -169,7 +169,8 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
     (Finset.univ.sum fun x : n => Finsupp.single x (ite (i = x) a 0)) = Finsupp.single i a := by
   rw [Finset.sum_congr_set {i} (fun x : n => Finsupp.single x (ite (i = x) a 0)) fun _ =>
       Finsupp.single i a]
-  · simp
+  · simp only [Finset.univ_unique, default_coe_singleton, Finset.sum_const, Finset.card_singleton,
+      one_smul]
   · intro x hx
     rw [Set.mem_singleton_iff] at hx
     simp [hx]
