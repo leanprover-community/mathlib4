@@ -81,37 +81,18 @@ def Function.HasMaxCutProperty (f : (Fin 2 → D) → C) : Prop :=
 def FractionalOperation (D : Type*) (m k : ℕ) : Type _ :=
   (Fin m → D) → (Fin k → D)
 
-/-
-For documentation purposes, here is a "less compact" version of the upcoming two definitions:
-
-[import Mathlib.Data.Matrix.Basic]
-
-def FractionalOperation.tt {D : Type} {m k n : ℕ}
+/-- TODO description -/
+def FractionalOperation.tt {D : Type*} {m k n : ℕ}
     (ω : FractionalOperation D m k) (x : (Fin m → (Fin n → D))) :
     (Fin k → (Fin n → D)) :=
-  swap (fun (i : Fin n) => ω (swap x i))
-
-def Function.AdmitsFractional {D C : Type} [OrderedAddCommMonoid C] {n m k : ℕ}
-    (f : (Fin n → D) → C) (ω : FractionalOperation D m k) : Prop :=
-  ∀ x : (Fin m → (Fin n → D)),
-    m • List.sum (List.map (fun i => f ((ω.tt x) i)) (List.finRange k)) ≤
-    k • List.sum (List.map (fun i => f (      x  i)) (List.finRange m))
-
-They should be defeq to the definitions below.
--/
-
-/-- TODO description -/
-def FractionalOperation.tt {m k n : ℕ}
-    (ω : FractionalOperation D m k) (x : (Fin m → (Fin n → D)))
-    (a : Fin k) (b : Fin n) : D :=
-  (ω (fun (i : Fin m) => x i b)) a
+  Function.swap (fun (i : Fin n) => ω (Function.swap x i))
 
 /-- TODO description -/
 def Function.AdmitsFractional {n m k : ℕ}
     (f : (Fin n → D) → C) (ω : FractionalOperation D m k) : Prop :=
   ∀ x : (Fin m → (Fin n → D)),
-    m • ((List.finRange k).map fun i => f (ω.tt x i)).sum ≤
-    k • ((List.finRange m).map fun i => f (x i)).sum
+    m • ((List.finRange k).map (fun i => f (ω.tt x i))).sum ≤
+    k • ((List.finRange m).map (fun i => f (     x i))).sum
 
 /-- TODO description -/
 def FractionalOperation.IsFractionalPolymorphismFor {m k : ℕ}
@@ -140,8 +121,8 @@ lemma apply222tt (ω : FractionalOperation D 2 2) (a b c d : D) :
       | 0 => rfl
       | 1 => rfl
     match i with
-    | 0 => simp [FractionalOperation.tt, h0]
-    | 1 => simp [FractionalOperation.tt, h0]
+    | 0 => simp [FractionalOperation.tt, Function.swap, h0]
+    | 1 => simp [FractionalOperation.tt, Function.swap, h0]
   | 1 =>
     have h1 : ∀ k : Fin 2, ![ ![a, b] , ![c, d] ] k 1 = ![ b , d ] k
     · intro k
@@ -149,8 +130,8 @@ lemma apply222tt (ω : FractionalOperation D 2 2) (a b c d : D) :
       | 0 => rfl
       | 1 => rfl
     match i with
-    | 0 => simp [FractionalOperation.tt, h1]
-    | 1 => simp [FractionalOperation.tt, h1]
+    | 0 => simp [FractionalOperation.tt, Function.swap, h1]
+    | 1 => simp [FractionalOperation.tt, Function.swap, h1]
 
 private lemma two_nsmul_le_two_nsmul {C : Type*} {x y : C}
     [LinearOrderedAddCommMonoid C] [CovariantClass C C (· + ·) (· < ·)]
@@ -190,7 +171,8 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
     exact Ne.lt_of_le hne hle
   have tt_le := two_nsmul_le_two_nsmul (contr ![ ![a, b] , ![b, a] ])
   clear contr
-  rw [
+  simp only [FractionalOperation.tt, Function.swap] at tt_le
+  /-rw [
     show
       List.map (f ∘ ![ ![a, b] , ![b, a] ]) (List.finRange 2) =
       [ f ![a, b] , f ![b, a] ] by
@@ -227,4 +209,5 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
     rcases fne equ with ⟨ha0, hb0⟩ | ⟨ha0, hb0⟩ <;>
     · rw [← hb0] at ha0
       exact hab ha0
-  exact todo_name tt_le wrong0 wrong1
+  exact todo_name tt_le wrong0 wrong1-/
+  sorry -- TODO fix
