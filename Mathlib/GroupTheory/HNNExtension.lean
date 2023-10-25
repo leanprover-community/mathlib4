@@ -121,9 +121,12 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
       inv_mem' := inv _ }
   let f : HNNExtension G A B φ →* S :=
     lift (HNNExtension.of.codRestrict S of)
-      ⟨HNNExtension.t, t⟩ (by intro a; ext; simp [equiv_eq_conj, mul_assoc])
+      ⟨HNNExtension.t, t⟩ (by
+        intro a
+        ext
+        simp (config := {dsimp := false}) [equiv_eq_conj, mul_assoc])
   have hf : S.subtype.comp f = MonoidHom.id _ :=
-    hom_ext (by ext; simp) (by simp)
+    hom_ext (by ext; simp (config := {dsimp := false})) (by simp (config := {dsimp := false}))
   show motive (MonoidHom.id _ x)
   rw [← hf]
   exact (f x).2
