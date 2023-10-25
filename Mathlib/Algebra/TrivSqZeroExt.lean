@@ -781,7 +781,7 @@ def fstHom : tsze R M →ₐ[S] R where
 
 variable {R R' S M}
 
-theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
+theorem algHom_ext {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A⦄
     (h : ∀ m, f (inr m) = g (inr m)) : f = g :=
   AlgHom.toLinearMap_injective <|
     linearMap_ext (fun _r => (f.commutes _).trans (g.commutes _).symm) h

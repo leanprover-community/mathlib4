@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DualNumber
+import Mathlib.Algebra.DualQuaternion
 import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
@@ -289,16 +290,23 @@ def quaternionBasis : QuaternionAlgebra.Basis (CliffordAlgebra (Q c₁ c₂)) c�
 
 variable {c₁ c₂}
 
+/-- The embedding of the vector space into the quaternions. -/
+@[simps]
+def mkQuaternion : R × R →ₗ[R] ℍ[R,c₁,c₂] where
+  toFun v := (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
+  map_add' v₁ v₂ := by simp
+  map_smul' r v := by dsimp; rw [mul_zero]; rfl
+
+theorem mkQuaternion_mul_mkQuaternion (v : R × R) :
+    mkQuaternion v * mkQuaternion v = algebraMap _ ℍ[R,c₁,c₂] (Q c₁ c₂ v) := by
+  dsimp
+  ext
+  all_goals dsimp; ring
+
 /-- Intermediate result of `CliffordAlgebraQuaternion.equiv`: clifford algebras over
 `CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
 def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂] :=
-  CliffordAlgebra.lift (Q c₁ c₂)
-    ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
-        map_add' := fun v₁ v₂ => by simp
-        map_smul' := fun r v => by dsimp; rw [mul_zero]; rfl }, fun v => by
-      dsimp
-      ext
-      all_goals dsimp; ring⟩
+  CliffordAlgebra.lift (Q c₁ c₂) ⟨mkQuaternion, mkQuaternion_mul_mkQuaternion⟩
 #align clifford_algebra_quaternion.to_quaternion CliffordAlgebraQuaternion.toQuaternion
 
 @[simp]
@@ -429,3 +437,75 @@ theorem equiv_symm_eps :
 #align clifford_algebra_dual_number.equiv_symm_eps CliffordAlgebraDualNumber.equiv_symm_eps
 
 end CliffordAlgebraDualNumber
+
+namespace CliffordAlgebraDualQuaternion
+open scoped Quaternion
+open scoped DualNumber
+
+variable {R : Type*} [CommRing R]
+
+variable (R) in
+/-- `Q R` is a quadratic form over `(R × R) × R` such that `CliffordAlgebra (Q R)` is isomorphic
+as an `R`-algebra to `R[ℍ[R]]`. -/
+def Q : QuadraticForm R ((R × R) × R) :=
+  (CliffordAlgebraQuaternion.Q (-1) (-1)).prod 0
+
+@[simp]
+theorem Q_apply (v : (R × R) × R) : Q R v = CliffordAlgebraQuaternion.Q (-1) (-1) v.1 := by
+  simp [Q]
+
+/-- The quaternion basis vectors within the algebra. -/
+@[simps! i j k]
+def quaternionBasis : QuaternionAlgebra.Basis (CliffordAlgebra (Q R)) (-1 : R) (-1) :=
+  (CliffordAlgebraQuaternion.quaternionBasis (-1) (-1)).compHom <|
+    CliffordAlgebra.map (QuadraticForm.Isometry.inl _ _)
+
+def mkDualQuaternion : (R × R) × R →ₗ[R] ℍ[R][ε] :=
+  (LinearMap.prodMap CliffordAlgebraQuaternion.mkQuaternion {
+    toFun := fun er => ⟨0, 0, 0, er⟩
+    map_add' := fun x y => by ext <;> simp
+    map_smul' := fun x y => by ext <;> simp
+  })
+
+@[simp]
+lemma mkDualQuaternion_fst (v : (R × R) × R) :
+  (mkDualQuaternion v).fst = CliffordAlgebraQuaternion.mkQuaternion v.1 := rfl
+
+@[simp]
+lemma mkDualQuaternion_snd (v : (R × R) × R) :
+    (mkDualQuaternion v).snd = ⟨0, 0, 0, v.2⟩ :=  rfl
+
+theorem mkDualQuaternion_mul_mkDualQuaternion (v : (R × R) × R) :
+    mkDualQuaternion v * mkDualQuaternion v = algebraMap _ _ (Q R v) := by
+  ext : 1
+  · simp [-CliffordAlgebraQuaternion.Q_apply]
+    rw [CliffordAlgebraQuaternion.mkQuaternion_mul_mkQuaternion]
+    rfl
+  · simp [-CliffordAlgebraQuaternion.Q_apply, TrivSqZeroExt.algebraMap_eq_inl']
+    ext <;> simp [mul_comm]
+
+/-- Intermediate result of `CliffordAlgebraQuaternion.equiv`: clifford algebras over
+`CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
+def toDualQuaternion : CliffordAlgebra (Q R) →ₐ[R] ℍ[R][ε] :=
+  CliffordAlgebra.lift (Q R)
+    ⟨mkDualQuaternion, mkDualQuaternion_mul_mkDualQuaternion⟩
+
+def ofDualQuaternion : ℍ[R][ε] →ₐ[R] CliffordAlgebra (Q R) :=
+  AlgHom.comp _ (Quaternion.dualNumberEquiv (R := R)).symm.toAlgHom
+
+/-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
+the dual numbers. -/
+protected def equiv : CliffordAlgebra (Q R) ≃ₐ[R] ℍ[R][ε] :=
+  AlgEquiv.ofAlgHom
+    toDualQuaternion
+    _
+    _
+    _
+    -- (CliffordAlgebra.lift (0 : QuadraticForm R R) ⟨inrHom R _, fun m => inr_mul_inr _ m m⟩)
+    -- (DualNumber.lift ⟨ι (R := R) _ 1, ι_mul_ι (1 : R) 1⟩)
+    -- -- This used to be a single `simp` before leanprover/lean4#2644
+    -- (by ext : 1; simp; erw [lift_ι_apply]; simp)
+    -- -- This used to be a single `simp` before leanprover/lean4#2644
+    -- (by ext : 2; simp; erw [lift_ι_apply]; simp)
+
+end CliffordAlgebraDualQuaternion

@@ -37,7 +37,7 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 -/
 
 
-variable {R : Type*}
+variable {R A B : Type*}
 
 /-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
 abbrev DualNumber (R : Type*) : Type _ :=
@@ -94,20 +94,23 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A] ⦃f g : R[ε
   algHom_ext' <| LinearMap.ext_ring <| h
 #align dual_number.alg_hom_ext DualNumber.algHom_ext
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+
 
 /-- A universal property of the dual numbers, providing a unique `R[ε] →ₐ[R] A` for every element
 of `A` which squares to `0`.
 
 This isomorphism is named to match the very similar `Complex.lift`. -/
 @[simps!]
-def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
+def lift : { e : B // e * e = 0 } ≃ (A[ε] →ₐ[R] B) :=
   Equiv.trans
-    (show { e : A // e * e = 0 } ≃ { f : R →ₗ[R] A // ∀ x y, f x * f y = 0 } from
-      (LinearMap.ringLmapEquivSelf R ℕ A).symm.toEquiv.subtypeEquiv fun a => by
-        dsimp
-        simp_rw [smul_mul_smul]
-        refine' ⟨fun h x y => h.symm ▸ smul_zero _, fun h => by simpa using h 1 1⟩)
+    _
+    -- (show { e : A // e * e = 0 } ≃ { f : A →ₗ[R] B // ∀ x y, f x * f y = 0 } from _)
+      -- (LinearMap.ringLmapEquivSelf R ℕ A).symm.toEquiv.subtypeEquiv fun a => by
+      --   dsimp
+      --   simp_rw [smul_mul_smul]
+      --   refine' ⟨fun h x y => h.symm ▸ smul_zero _, fun h => by simpa using h 1 1⟩)
     TrivSqZeroExt.lift
 #align dual_number.lift DualNumber.lift
 
