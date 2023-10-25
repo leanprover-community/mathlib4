@@ -118,12 +118,12 @@ theorem ContinuousOn.preimage_clopen_of_clopen {f : α → β} {s : Set α} {t :
 #align continuous_on.preimage_clopen_of_clopen ContinuousOn.preimage_clopen_of_clopen
 
 /-- The intersection of a disjoint covering by two open sets of a clopen set will be clopen. -/
-theorem isClopen_inter_of_disjoint_cover_clopen {Z a b : Set α} (h : IsClopen Z) (cover : Z ⊆ a ∪ b)
-    (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen (Z ∩ a) := by
+theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set α} (h : IsClopen s) (cover : s ⊆ a ∪ b)
+    (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen (s ∩ a) := by
   refine' ⟨IsOpen.inter h.1 ha, _⟩
-  have : IsClosed (Z ∩ bᶜ) := IsClosed.inter h.2 (isClosed_compl_iff.2 hb)
+  have : IsClosed (s ∩ bᶜ) := IsClosed.inter h.2 (isClosed_compl_iff.2 hb)
   convert this using 1
-  refine' (inter_subset_inter_right Z hab.subset_compl_right).antisymm _
+  refine' (inter_subset_inter_right s hab.subset_compl_right).antisymm _
   rintro x ⟨hx₁, hx₂⟩
   exact ⟨hx₁, by simpa [not_mem_of_mem_compl hx₂] using cover hx₁⟩
 #align is_clopen_inter_of_disjoint_cover_clopen isClopen_inter_of_disjoint_cover_clopen
