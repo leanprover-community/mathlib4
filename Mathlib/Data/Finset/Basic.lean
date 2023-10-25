@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Cover
-import Mathlib.Tactic.TFAE
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -1981,7 +1980,7 @@ theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b
 #align finset.insert_erase Finset.insert_erase
 
 lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : erase s a = t ↔ s = insert a t := by
-  have := insert_erase hs; aesop
+  aesop
 
 lemma insert_erase_invOn :
     Set.InvOn (insert a) (λ s ↦ erase s a) {s : Finset α | a ∈ s} {s : Finset α | a ∉ s} :=
