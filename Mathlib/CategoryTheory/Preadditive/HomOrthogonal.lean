@@ -93,7 +93,7 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
       apply o.eq_zero h
   right_inv z := by
     ext i ⟨j, w⟩ ⟨k, ⟨⟩⟩
-    simp? says simp only [biproduct.matrix_components, of_apply, eqToHom_refl, Category.id_comp]
+    simp? says simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
     split_ifs with h
     · simp
     · exfalso
