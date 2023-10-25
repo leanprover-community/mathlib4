@@ -62,6 +62,26 @@ instance ΓRestrictAlgebra {X : Scheme} {Y : TopCat} {f : Y ⟶ X} (hf : OpenEmb
   (Scheme.Γ.map (X.ofRestrict hf).op).toAlgebra
 #align algebraic_geometry.Γ_restrict_algebra AlgebraicGeometry.ΓRestrictAlgebra
 
+lemma Scheme.map_basicOpen' (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
+    (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
+  refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
+  erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
+  rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
+    op_id, CategoryTheory.Functor.map_id]
+  congr
+  exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
+
+lemma Scheme.map_basicOpen (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen r := by
+  rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq]
+
+lemma Scheme.map_basicOpen_map (X : Scheme) (U : Opens X) (r : X.presheaf.obj (op U)) :
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen <|
+    X.presheaf.map (eqToHom U.openEmbedding_obj_top).op r) = X.basicOpen r := by
+  rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq, Scheme.basicOpen_res_eq]
+
+
 -- Porting note : `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
 -- @[simps obj_left obj_hom mapLeft]
