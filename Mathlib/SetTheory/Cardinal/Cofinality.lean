@@ -1026,7 +1026,7 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (w : #α < 
 /-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
 has an infinite fiber.
 -/
-theorem exists_infinite_fiber {β α : Type _} (f : β → α) (w : #α < #β) (w' : Infinite α) :
+theorem exists_infinite_fiber {β α : Type u} (f : β → α) (w : #α < #β) (w' : Infinite α) :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
   simp_rw [Cardinal.infinite_iff] at w' ⊢
   cases' infinite_pigeonhole_card_lt f w w' with a ha
@@ -1250,3 +1250,20 @@ theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (b1 : 1 < b) : a < cof
 #align cardinal.lt_cof_power Cardinal.lt_cof_power
 
 end Cardinal
+
+section Omega1
+
+namespace Ordinal
+
+open Cardinal
+open scoped Ordinal
+
+lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
+    sup o < ω₁ := by
+  apply sup_lt_ord_lift _ ho
+  rw [Cardinal.isRegular_aleph_one.cof_eq]
+  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
+
+end Ordinal
+
+end Omega1

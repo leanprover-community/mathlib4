@@ -15,6 +15,7 @@ In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of t
 `TensorAlgebra.equivDirectSum`.
 -/
 
+suppress_compilation
 
 open scoped DirectSum TensorProduct
 
@@ -79,7 +80,7 @@ namespace TensorAlgebra
 /-- The canonical map from a direct sum of tensor powers to the tensor algebra. -/
 def ofDirectSum : (⨁ n, (⨂[R]^n) M) →ₐ[R] TensorAlgebra R M :=
   DirectSum.toAlgebra _ _ (fun _ => TensorPower.toTensorAlgebra) TensorPower.toTensorAlgebra_gOne
-    (fun {_ _} => TensorPower.toTensorAlgebra_gMul) TensorPower.toTensorAlgebra_galgebra_toFun
+    (fun {_ _} => TensorPower.toTensorAlgebra_gMul)
 #align tensor_algebra.of_direct_sum TensorAlgebra.ofDirectSum
 
 @[simp]
@@ -156,7 +157,6 @@ theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
   rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn]
   simp_rw [Function.comp, toDirectSum_ι]
-  dsimp only
   rw [DirectSum.list_prod_ofFn_of_eq_dProd]
   apply DirectSum.of_eq_of_gradedMonoid_eq
   rw [GradedMonoid.mk_list_dProd]

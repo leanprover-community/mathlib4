@@ -24,6 +24,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 
 -/
 
+suppress_compilation
 
 universe u u'
 
@@ -161,7 +162,7 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
     rw [← f.map_one, ← f.map_zero]
     congr
   replace e : 0 * x = 1 * x := congr_arg (· * x) e
-  rw [one_mul, MulZeroClass.zero_mul, ← f.map_zero] at e
+  rw [one_mul, zero_mul, ← f.map_zero] at e
   exact e
 set_option linter.uppercaseLean3 false in
 #align CommRing.CommRing_has_strict_terminal_objects CommRingCat.commRingCat_hasStrictTerminalObjects
@@ -206,7 +207,8 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
     dsimp at eq1 eq2
-    rw [←eq1, ←eq2]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [←eq1, ←eq2]
     rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.prod_fan_is_limit CommRingCat.prodFanIsLimit

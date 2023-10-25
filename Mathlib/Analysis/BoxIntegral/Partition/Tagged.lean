@@ -284,7 +284,7 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
     (hJ : J ∈ π.boxes) : diam (Box.Icc J) ≤ 2 * r (π.tag J) :=
   calc
     diam (Box.Icc J) ≤ diam (closedBall (π.tag J) (r <| π.tag J)) :=
-      diam_mono (h J hJ) bounded_closedBall
+      diam_mono (h J hJ) isBounded_closedBall
     _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).2)
 #align box_integral.tagged_prepartition.is_subordinate.diam_le BoxIntegral.TaggedPrepartition.IsSubordinate.diam_le
 

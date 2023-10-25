@@ -356,7 +356,7 @@ open TensorProduct
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on their
 tensor product `V ⊗[k] W`.
 -/
-def tprod : Representation k G (V ⊗[k] W) where
+noncomputable def tprod : Representation k G (V ⊗[k] W) where
   toFun g := TensorProduct.map (ρV g) (ρW g)
   map_one' := by simp only [_root_.map_one, TensorProduct.map_one]
   map_mul' g h := by simp only [_root_.map_mul, TensorProduct.map_mul]
@@ -413,11 +413,11 @@ def linHom : Representation k G (V →ₗ[k] W) where
   map_one' :=
     LinearMap.ext fun x => by
       dsimp -- Porting note: now needed
-      simp_rw [coe_mk, inv_one, map_one, one_apply, one_eq_id, comp_id, id_comp]
+      simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
   map_mul' g h :=
     LinearMap.ext fun x => by
       dsimp -- Porting note: now needed
-      simp_rw [coe_mul, coe_mk, Function.comp_apply, mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
+      simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
 #align representation.lin_hom Representation.linHom
 
 @[simp]

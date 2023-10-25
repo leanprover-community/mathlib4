@@ -247,7 +247,7 @@ theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => ex
   have h4 := h3.mul (isBigO_refl (fun t : ℝ => 1 / (sqrt t : ℂ)) (𝓝[>] 0)).norm_right
   refine h4.congr' ?_ ?_
   · refine eventually_of_mem self_mem_nhdsWithin fun x hx => ?_
-    simp_rw [← mul_assoc]
+    dsimp
     rw [mul_comm, ← mul_assoc, one_div_mul_cancel, one_mul]
     exact ofReal_ne_zero.mpr ((sqrt_ne_zero <| le_of_lt hx).mpr (ne_of_gt hx))
   · refine eventually_of_mem self_mem_nhdsWithin fun x _ => ?_
@@ -377,12 +377,12 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       have : ContinuousAt riemannCompletedZeta₀ 0 :=
         differentiable_completed_zeta₀.continuous.continuousAt
-      simpa only [id.def, MulZeroClass.mul_zero] using Tendsto.mul this tendsto_id
+      simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
     · refine tendsto_const_nhds.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun t ht => ?_)
       simp_rw [one_div_mul_cancel ht]
     · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       suffices ContinuousAt (fun z : ℂ => 1 / (z - 1)) 0 by
-        simpa only [id.def, MulZeroClass.mul_zero] using Tendsto.mul this tendsto_id
+        simpa only [id.def, mul_zero] using Tendsto.mul this tendsto_id
       refine continuousAt_const.div (continuousAt_id.sub continuousAt_const) ?_
       simpa only [zero_sub] using neg_ne_zero.mpr one_ne_zero
   -- Now the main proof.
@@ -397,7 +397,7 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
     have S_nhds : {(1 : ℂ)}ᶜ ∈ 𝓝 (0 : ℂ) := isOpen_compl_singleton.mem_nhds hs'
     refine ((Complex.differentiableOn_update_limUnder_of_isLittleO S_nhds
         (fun t ht => (c1 t ht.2 ht.1).differentiableWithinAt) ?_) 0 hs').differentiableAt S_nhds
-    simp only [zero_div, div_zero, Complex.Gamma_zero, MulZeroClass.mul_zero, cpow_zero, sub_zero]
+    simp only [zero_div, div_zero, Complex.Gamma_zero, mul_zero, cpow_zero, sub_zero]
     -- Remains to show completed zeta is `o (s ^ (-1))` near 0.
     refine (isBigO_const_of_tendsto c2 <| one_ne_zero' ℂ).trans_isLittleO ?_
     rw [isLittleO_iff_tendsto']
@@ -689,7 +689,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
   have h_Ga_ne3 : Gamma ((s + 1) / 2) ≠ 0 := by
     have h_Ga_aux : Gamma s ≠ 0 := Complex.Gamma_ne_zero hs
     contrapose! h_Ga_aux
-    rw [h_Ga_eq, h_Ga_aux, MulZeroClass.mul_zero, MulZeroClass.zero_mul, zero_div]
+    rw [h_Ga_eq, h_Ga_aux, mul_zero, zero_mul, zero_div]
   rw [riemannZeta, Function.update_noteq (by rwa [sub_ne_zero, ne_comm] : 1 - s ≠ 0),
     Function.update_noteq hs_ne, riemannCompletedZeta_one_sub, mul_div, eq_div_iff h_Ga_ne1,
     mul_comm, ← mul_div_assoc]
@@ -702,7 +702,7 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
       rw [← sub_sub, sub_self, zero_sub, neg_div, mul_div_cancel_left _ (two_ne_zero' ℂ)]
     rw [this, Complex.Gamma_neg_nat_eq_zero, div_zero]
     have : (π : ℂ) * (1 - (1 + 2 * ↑n)) / 2 = ↑(-n : ℤ) * π := by push_cast; field_simp; ring
-    rw [this, Complex.sin_int_mul_pi, MulZeroClass.mul_zero, MulZeroClass.zero_mul]
+    rw [this, Complex.sin_int_mul_pi, mul_zero, zero_mul]
   have h_Ga_ne4 : Gamma ((1 - s) / 2) ≠ 0 := by
     rw [Ne.def, Complex.Gamma_eq_zero_iff]
     contrapose! hs_pos_odd
@@ -738,7 +738,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
       rw [Nat.cast_mul, ← neg_mul, Nat.cast_two, Nat.cast_succ, riemannZeta_neg_two_mul_nat_add_one,
         bernoulli_eq_bernoulli'_of_ne_one]
       swap; · apply ne_of_gt; norm_num
-      rw [bernoulli'_odd_eq_zero ⟨m + 1, rfl⟩ (by norm_num), Rat.cast_zero, MulZeroClass.mul_zero,
+      rw [bernoulli'_odd_eq_zero ⟨m + 1, rfl⟩ (by norm_num), Rat.cast_zero, mul_zero,
         zero_div]
   · -- k = 2 * m + 1 : the interesting case
     rw [Odd.neg_one_pow ⟨m, rfl⟩]

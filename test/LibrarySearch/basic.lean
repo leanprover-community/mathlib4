@@ -4,6 +4,8 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
 import Mathlib.Data.Nat.Prime
 
+set_option autoImplicit true
+
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
@@ -54,7 +56,7 @@ example : x < x + 1 := exact?%
 /-- info: Try this: exact p -/
 #guard_msgs in
 example (P : Prop) (p : P) : P := by apply?
-/-- info: Try this: exact False.elim (np p) -/
+/-- info: Try this: exact (np p).elim -/
 #guard_msgs in
 example (P : Prop) (p : P) (np : ¬P) : false := by apply?
 /-- info: Try this: exact h x rfl -/
@@ -80,7 +82,7 @@ by apply?
 example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
 by apply?
 
-/-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
+/-- info: Try this: exact (Nat.mul_sub_left_distrib n m k).symm -/
 #guard_msgs in
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 by apply?
@@ -155,7 +157,7 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
 
 -- We even find `iff` results:
-/-- info: Try this: exact Iff.mp (Nat.dvd_add_left h₁) h₂ -/
+/-- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
 #guard_msgs in
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by apply?
 
@@ -167,13 +169,13 @@ example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by appl
 opaque f : ℕ → ℕ
 axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
-/-- info: Try this: exact Iff.mpr (F a b) h -/
+/-- info: Try this: exact (F a b).mpr h -/
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
--- FIXME `apply? using x` is apparently partially broken at present.
--- This is returning `exact []`.
--- example (L _M : List (List ℕ)) : List ℕ := by apply? using L
+/-- info: Try this: exact List.join L -/
+#guard_msgs in
+example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 
 -- Could be any number of results
 #guard_msgs (drop info) in
@@ -215,3 +217,7 @@ example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
 #guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   exact?
+
+-- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/exact.3F.20recent.20regression.3F/near/387691588
+lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
+  exact? says exact dvd_of_mul_left_dvd h

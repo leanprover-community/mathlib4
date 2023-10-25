@@ -201,7 +201,7 @@ theorem exact_of_map_injectiveResolution (P : InjectiveResolution X) [PreservesF
   Preadditive.exact_of_iso_of_exact' (F.map (P.ι.f 0)) (F.map (P.cocomplex.d 0 1)) _ _ (Iso.refl _)
     (Iso.refl _)
     (HomologicalComplex.xNextIso ((F.mapHomologicalComplex _).obj P.cocomplex) rfl).symm (by simp)
-    (by rw [Iso.refl_hom, Category.id_comp, Iso.symm_hom, HomologicalComplex.dFrom_eq] <;> congr )
+    (by rw [Iso.refl_hom, Category.id_comp, Iso.symm_hom, HomologicalComplex.dFrom_eq] <;> congr)
     (preserves_exact_of_preservesFiniteLimits_of_mono _ P.exact₀)
 #align category_theory.abelian.functor.exact_of_map_injective_resolution CategoryTheory.Abelian.Functor.exact_of_map_injectiveResolution
 

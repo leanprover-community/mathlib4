@@ -520,7 +520,7 @@ theorem add_isLimit (a) {b} : IsLimit b → IsLimit (a + b) :=
   (add_isNormal a).isLimit
 #align ordinal.add_is_limit Ordinal.add_isLimit
 
-alias add_isLimit ← IsLimit.add
+alias IsLimit.add := add_isLimit
 #align ordinal.is_limit.add Ordinal.IsLimit.add
 
 /-! ### Subtraction on ordinals-/

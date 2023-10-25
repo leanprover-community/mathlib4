@@ -64,7 +64,7 @@ theorem aeval_apply_of_hasEigenvector {f : End K V} {p : K[X]} {μ : K} {x : V}
 
 theorem isRoot_of_hasEigenvalue {f : End K V} {μ : K} (h : f.HasEigenvalue μ) :
     (minpoly K f).IsRoot μ := by
-  rcases(Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
+  rcases (Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
   refine' Or.resolve_right (smul_eq_zero.1 _) ne0
   simp [← aeval_apply_of_hasEigenvector ⟨H, ne0⟩, minpoly.aeval K f]
 #align module.End.is_root_of_has_eigenvalue Module.End.isRoot_of_hasEigenvalue
@@ -81,7 +81,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have p_ne_0 : p ≠ 0 := by
     intro con
     apply minpoly.ne_zero f.isIntegral
-    rw [hp, con, MulZeroClass.mul_zero]
+    rw [hp, con, mul_zero]
   have : (aeval f) p = 0 := by
     have h_aeval := minpoly.aeval K f
     revert h_aeval

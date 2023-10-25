@@ -102,10 +102,8 @@ theorem mul_logb {a b c : ℝ} (h₁ : b ≠ 0) (h₂ : b ≠ 1) (h₃ : b ≠ -
 #align real.mul_logb Real.mul_logb
 
 theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -1) :
-    logb a c / logb b c = logb a b := by
-  unfold logb
-  -- TODO: div_div_div_cancel_left is missing for `group_with_zero`,
-  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
+    logb a c / logb b c = logb a b :=
+  div_div_div_cancel_left' _ _ <| log_ne_zero.mpr ⟨h₁, h₂, h₃⟩
 #align real.div_logb Real.div_logb
 
 section BPosAndNeOne

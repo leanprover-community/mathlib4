@@ -1165,7 +1165,7 @@ theorem affineSpan_nonempty : (affineSpan k s : Set P).Nonempty ↔ s.Nonempty :
   spanPoints_nonempty k s
 #align affine_span_nonempty affineSpan_nonempty
 
-alias affineSpan_nonempty ↔ _ _root_.Set.Nonempty.affineSpan
+alias ⟨_, _root_.Set.Nonempty.affineSpan⟩ := affineSpan_nonempty
 #align set.nonempty.affine_span Set.Nonempty.affineSpan
 
 /-- The affine span of a nonempty set is nonempty. -/
@@ -1793,8 +1793,8 @@ theorem parallel_iff_direction_eq_and_eq_bot_iff_eq_bot {s₁ s₂ : AffineSubsp
     · rw [hs₁, bot_parallel_iff_eq_bot]
       exact hb.1 hs₁
     · have hs₂ : s₂ ≠ ⊥ := hb.not.1 hs₁
-      rcases(nonempty_iff_ne_bot s₁).2 hs₁ with ⟨p₁, hp₁⟩
-      rcases(nonempty_iff_ne_bot s₂).2 hs₂ with ⟨p₂, hp₂⟩
+      rcases (nonempty_iff_ne_bot s₁).2 hs₁ with ⟨p₁, hp₁⟩
+      rcases (nonempty_iff_ne_bot s₂).2 hs₂ with ⟨p₂, hp₂⟩
       refine' ⟨p₂ -ᵥ p₁, (eq_iff_direction_eq_of_mem hp₂ _).2 _⟩
       · rw [mem_map]
         refine' ⟨p₁, hp₁, _⟩

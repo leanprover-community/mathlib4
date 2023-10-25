@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
+import Mathlib.Tactic.Classical
 
 #align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -339,7 +340,7 @@ protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  funext fun _ => Prod.mk.eta
+  rfl
 #align pi.prod_fst_snd Pi.prod_fst_snd
 
 -- Porting note : simp now unfolds the lhs, so we are not marking these as simp.

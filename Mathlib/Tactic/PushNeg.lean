@@ -7,7 +7,7 @@ Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Lo
 import Lean
 import Mathlib.Lean.Expr
 import Mathlib.Logic.Basic
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
 
 set_option autoImplicit true
@@ -108,7 +108,7 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
   let myctx : Simp.Context :=
-    { config := { eta := true },
+    { config := { eta := true, zeta := false },
       simpTheorems := #[ ]
       congrTheorems := (← getSimpCongrTheorems) }
   (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })

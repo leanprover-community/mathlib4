@@ -72,7 +72,7 @@ variable (θ : ℂ)
 value `cos (n * θ)`. -/
 @[simp]
 theorem T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
-  | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, MulZeroClass.zero_mul, cos_zero]
+  | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, zero_mul, cos_zero]
   | 1 => by simp only [eval_X, one_mul, T_one, Nat.cast_one]
   | n + 2 => by
     -- Porting note: partially rewrote proof for lean4 numerals.

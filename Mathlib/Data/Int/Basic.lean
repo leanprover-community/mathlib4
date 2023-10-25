@@ -7,7 +7,6 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone.Basic
-import Mathlib.Logic.Nontrivial
 
 #align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
@@ -63,6 +62,17 @@ instance instCommRingInt : CommRing ℤ where
   intCast_negSucc _ := rfl
 
 @[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
+
+@[simp, norm_cast]
+theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fun m => by
+  obtain ⟨m, rfl | rfl⟩ := Int.eq_nat_or_neg m
+  · induction m with
+    | zero => simp
+    | succ m ih => simp_all [add_mul]
+  · induction m with
+    | zero => simp
+    | succ m ih => simp_all [add_mul]
+#align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
 
 @[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
 

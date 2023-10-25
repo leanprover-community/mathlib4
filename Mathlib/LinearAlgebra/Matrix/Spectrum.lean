@@ -24,7 +24,7 @@ spectral theorem, diagonalization theorem
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] [DecidableEq 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
+variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
 
 variable {A : Matrix n n 𝕜}
 
@@ -63,7 +63,7 @@ noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
   (eigenvectorBasis hA).toBasis.toMatrix (PiLp.basisFun _ 𝕜 n)
 #align matrix.is_hermitian.eigenvector_matrix_inv Matrix.IsHermitian.eigenvectorMatrixInv
 
-theorem eigenvectorMatrix_mul_inv : hA.eigenvectorMatrix ⬝ hA.eigenvectorMatrixInv = 1 := by
+theorem eigenvectorMatrix_mul_inv : hA.eigenvectorMatrix * hA.eigenvectorMatrixInv = 1 := by
   apply Basis.toMatrix_mul_toMatrix_flip
 #align matrix.is_hermitian.eigenvector_matrix_mul_inv Matrix.IsHermitian.eigenvectorMatrix_mul_inv
 
@@ -86,7 +86,7 @@ theorem transpose_eigenvectorMatrix_apply (i : n) :
 theorem eigenvectorMatrixInv_apply (i j : n) :
     hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
   rw [eigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
-    OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, PiLp.equiv_symm_single,
+    OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, WithLp.equiv_symm_single,
     EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
 #align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
 
@@ -105,7 +105,7 @@ diagonalized by a change of basis.
 For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem :
-    hA.eigenvectorMatrixInv ⬝ A = diagonal ((↑) ∘ hA.eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
+    hA.eigenvectorMatrixInv * A = diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
   rw [eigenvectorMatrixInv, PiLp.basis_toMatrix_basisFun_mul]
   ext i j
   have := isHermitian_iff_isSymmetric.1 hA
@@ -118,7 +118,7 @@ theorem spectral_theorem :
     rfl
   · simp only [diagonal_mul, (· ∘ ·), eigenvalues]
     rw [eigenvectorBasis, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
-      OrthonormalBasis.repr_reindex, eigenvalues₀, PiLp.basisFun_apply, PiLp.equiv_symm_single]
+      OrthonormalBasis.repr_reindex, eigenvalues₀, PiLp.basisFun_apply, WithLp.equiv_symm_single]
 #align matrix.is_hermitian.spectral_theorem Matrix.IsHermitian.spectral_theorem
 
 theorem eigenvalues_eq (i : n) :
@@ -144,9 +144,9 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
 allows direct rewriting of A since: $ A = V D V⁻¹$ -/
 lemma spectral_theorem' :
-    A = hA.eigenvectorMatrix ⬝ diagonal ((↑) ∘ hA.eigenvalues) ⬝ hA.eigenvectorMatrixInv := by
+    A = hA.eigenvectorMatrix * diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
-    congr_arg (hA.eigenvectorMatrix ⬝ ·) hA.spectral_theorem
+    congr_arg (hA.eigenvectorMatrix * ·) hA.spectral_theorem
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by

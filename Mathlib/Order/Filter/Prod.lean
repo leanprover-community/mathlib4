@@ -196,14 +196,14 @@ theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α ×
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  refine' (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2, Prod.mk.eta]
+  refine' (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
 #align filter.eventually.diag_of_prod_left Filter.Eventually.diag_of_prod_left
 
 theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α × γ × γ → Prop} :
     (∀ᶠ x in f ×ˢ (g ×ˢ g), p x) → ∀ᶠ x : α × γ in f ×ˢ g, p (x.1, x.2, x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  refine' (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2, Prod.mk.eta]
+  refine' (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 #align filter.eventually.diag_of_prod_right Filter.Eventually.diag_of_prod_right
 
 theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
@@ -370,7 +370,7 @@ theorem Tendsto.prod_map {δ : Type*} {f : α → γ} {g : β → δ} {a : Filte
 
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map m (f ×ˢ g) = (f.map fun a b => m (a, b)).seq g := by
-  simp [Filter.ext_iff, mem_prod_iff, mem_map_seq_iff]
+  simp only [Filter.ext_iff, mem_map, mem_prod_iff, mem_map_seq_iff, exists_and_left]
   intro s
   constructor
   exact fun ⟨t, ht, s, hs, h⟩ => ⟨s, hs, t, ht, fun x hx y hy => @h ⟨x, y⟩ ⟨hx, hy⟩⟩

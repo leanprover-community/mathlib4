@@ -139,6 +139,21 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root this hx
 #align is_alg_closed.of_exists_root IsAlgClosed.of_exists_root
 
+theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
+    [IsAlgClosed k] : IsAlgClosed k' := by
+  apply IsAlgClosed.of_exists_root
+  intro p hmp hp
+  have hpe : degree (p.map e.symm.toRingHom) ≠ 0 := by
+    rw [degree_map]
+    exact ne_of_gt (degree_pos_of_irreducible hp)
+  rcases IsAlgClosed.exists_root (k := k) (p.map e.symm) hpe with ⟨x, hx⟩
+  use e x
+  rw [IsRoot] at hx
+  apply e.symm.injective
+  rw [map_zero, ← hx]
+  clear hx hpe hp hmp
+  induction p using Polynomial.induction_on <;> simp_all
+
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
@@ -193,6 +208,8 @@ instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field
     (minpoly.irreducible (isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _))).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 
+namespace IsAlgClosed
+
 namespace lift
 
 /- In this section, the homomorphism from any algebraic extension into an algebraically
@@ -208,9 +225,11 @@ open Subalgebra AlgHom Function
 /-- This structure is used to prove the existence of a homomorphism from any algebraic extension
 into an algebraic closure -/
 structure SubfieldWithHom where
+  /-- The corresponding `Subalgebra` -/
   carrier : Subalgebra K L
+  /-- The embedding into the algebraically closed field -/
   emb : carrier →ₐ[K] M
-#align lift.subfield_with_hom lift.SubfieldWithHom
+#align lift.subfield_with_hom IsAlgClosed.lift.SubfieldWithHom
 
 variable {K L M hL}
 
@@ -227,11 +246,11 @@ noncomputable instance : Inhabited (SubfieldWithHom K L M) :=
 
 theorem le_def : E₁ ≤ E₂ ↔ ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x :=
   Iff.rfl
-#align lift.subfield_with_hom.le_def lift.SubfieldWithHom.le_def
+#align lift.subfield_with_hom.le_def IsAlgClosed.lift.SubfieldWithHom.le_def
 
 theorem compat (h : E₁ ≤ E₂) : ∀ x, E₂.emb (inclusion h.fst x) = E₁.emb x := by
   rw [le_def] at h; cases h; assumption
-#align lift.subfield_with_hom.compat lift.SubfieldWithHom.compat
+#align lift.subfield_with_hom.compat IsAlgClosed.lift.SubfieldWithHom.compat
 
 instance : Preorder (SubfieldWithHom K L M) where
   le := (· ≤ ·)
@@ -268,24 +287,24 @@ theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
          ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
            intro x
            simp⟩⟩
-#align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
+#align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded IsAlgClosed.lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
 
 variable (K L M)
 
 theorem exists_maximal_subfieldWithHom : ∃ E : SubfieldWithHom K L M, ∀ N, E ≤ N → N ≤ E :=
   exists_maximal_of_chains_bounded maximal_subfieldWithHom_chain_bounded le_trans
-#align lift.subfield_with_hom.exists_maximal_subfield_with_hom lift.SubfieldWithHom.exists_maximal_subfieldWithHom
+#align lift.subfield_with_hom.exists_maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.exists_maximal_subfieldWithHom
 
 /-- The maximal `SubfieldWithHom`. We later prove that this is equal to `⊤`. -/
 noncomputable def maximalSubfieldWithHom : SubfieldWithHom K L M :=
   Classical.choose (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom lift.SubfieldWithHom.maximalSubfieldWithHom
+#align lift.subfield_with_hom.maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom
 
 theorem maximalSubfieldWithHom_is_maximal :
     ∀ N : SubfieldWithHom K L M,
       maximalSubfieldWithHom K L M ≤ N → N ≤ maximalSubfieldWithHom K L M :=
   Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
+#align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
 -- Porting note: split out this definition from `maximalSubfieldWithHom_eq_top`
 /-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
@@ -299,8 +318,7 @@ AlgHom.comp
   (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
 
 -- porting note: this was much faster in lean 3
-set_option maxHeartbeats 800000 in
-set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxHeartbeats 200000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
@@ -332,13 +350,11 @@ theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier =
   refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
   show x ∈ Algebra.adjoin N {(x : L)}
   exact Algebra.subset_adjoin (Set.mem_singleton x)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
+#align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
 
 end SubfieldWithHom
 
 end lift
-
-namespace IsAlgClosed
 
 variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
@@ -360,8 +376,11 @@ variable {M}
 
 private theorem FractionRing.isAlgebraic :
     letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+    letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
+  have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   intro
   exact
     (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
@@ -371,6 +390,10 @@ private theorem FractionRing.isAlgebraic :
   closed extension of R. -/
 noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI := FractionRing.liftAlgebra R M
+  letI := FractionRing.liftAlgebra R (FractionRing S)
+  have := FractionRing.isScalarTower_liftAlgebra R M
+  have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have : Algebra.IsAlgebraic (FractionRing R) (FractionRing S) :=
     FractionRing.isAlgebraic hS
   let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M this

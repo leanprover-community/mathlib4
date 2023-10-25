@@ -199,8 +199,8 @@ between those functors applied to homological complexes.
 -/
 @[simps]
 def NatTrans.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ⟶ G)
-    (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c
-    where app C := { f := fun i => α.app _ }
+    (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
+  app C := { f := fun i => α.app _ }
 #align category_theory.nat_trans.map_homological_complex CategoryTheory.NatTrans.mapHomologicalComplex
 
 @[simp]

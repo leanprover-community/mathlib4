@@ -30,9 +30,9 @@ open scoped Real
 
 theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 := by
   have h : (exp (θ * I) + exp (-θ * I)) / 2 = 0 ↔ exp (2 * θ * I) = -1 := by
-    rw [@div_eq_iff _ _ (exp (θ * I) + exp (-θ * I)) 2 0 two_ne_zero, MulZeroClass.zero_mul,
+    rw [@div_eq_iff _ _ (exp (θ * I) + exp (-θ * I)) 2 0 two_ne_zero, zero_mul,
       add_eq_zero_iff_eq_neg, neg_eq_neg_one_mul, ← div_eq_iff (exp_ne_zero _), ← exp_sub]
-    field_simp only; congr 3; ring_nf
+    congr 3; ring_nf
   rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
   refine' exists_congr fun x => _
   refine' (iff_of_eq <| congr_arg _ _).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
@@ -63,9 +63,9 @@ theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π
 theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
   have h := (sin_two_mul θ).symm
   rw [mul_assoc] at h
-  rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← MulZeroClass.zero_mul (1 / 2 : ℂ), mul_one_div,
+  rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← zero_mul (1 / 2 : ℂ), mul_one_div,
     CancelDenoms.cancel_factors_eq_div h two_ne_zero, mul_comm]
-  simpa only [zero_div, MulZeroClass.zero_mul, Ne.def, not_false_iff, field_simps] using
+  simpa only [zero_div, zero_mul, Ne.def, not_false_iff, field_simps] using
     sin_eq_zero_iff
 #align complex.tan_eq_zero_iff Complex.tan_eq_zero_iff
 
@@ -176,7 +176,7 @@ theorem cos_surjective : Function.Surjective cos := by
       ⟨w, hw⟩
     refine' ⟨w, _, hw⟩
     rintro rfl
-    simp only [zero_add, one_ne_zero, MulZeroClass.mul_zero] at hw
+    simp only [zero_add, one_ne_zero, mul_zero] at hw
   refine' ⟨log w / I, cos_eq_iff_quadratic.2 _⟩
   rw [div_mul_cancel _ I_ne_zero, exp_log w₀]
   convert hw using 1

@@ -189,7 +189,7 @@ theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x 
   refine' ⟨_, IsIntegral.isAlgebraic K⟩
   rintro ⟨p, hp, hpx⟩
   refine' ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
-  rw [← aeval_def, AlgHom.map_mul, hpx, MulZeroClass.zero_mul]
+  rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]
 #align is_algebraic_iff_is_integral isAlgebraic_iff_isIntegral
 
 protected theorem Algebra.isAlgebraic_iff_isIntegral :
@@ -383,7 +383,7 @@ theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeva
   rw [RingHom.map_zero]
   convert aeval_eq
   conv_rhs => rw [← divX_mul_X_add p]
-  rw [AlgHom.map_add, AlgHom.map_mul, h, MulZeroClass.zero_mul, zero_add, aeval_C]
+  rw [AlgHom.map_add, AlgHom.map_mul, h, zero_mul, zero_add, aeval_C]
 #align inv_eq_of_root_of_coeff_zero_ne_zero inv_eq_of_root_of_coeff_zero_ne_zero
 
 theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}

@@ -248,9 +248,6 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1
-  -- Porting note: added the next two lines
-  erw [smul_eq_mul]
-  simp only [map_zpow₀, map_natCast]
   linear_combination φ(p, k) c * hmb
 #align witt_vector.isocrystal_classification WittVector.isocrystal_classification
 

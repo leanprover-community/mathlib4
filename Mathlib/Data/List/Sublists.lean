@@ -60,7 +60,6 @@ theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
 theorem sublists'_eq_sublists'Aux (l : List α) :
     sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
-  dsimp only
   rw [← List.foldr_hom Array.toList]
   · rfl
   · intros _ _; congr <;> simp
@@ -133,15 +132,17 @@ theorem sublistsAux_eq_bind :
   List.reverseRecOn r
     (by simp [sublistsAux])
     (fun r l ih => by
-      rw [bind_append, ← ih, bind_singleton, sublistsAux, foldl_append]
+      rw [append_bind, ← ih, bind_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
-theorem sublists_eq_sublistsAux (l : List α) :
-    sublists l = l.foldr sublistsAux [[]] := by
-  simp only [sublists, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
-  rw [← foldr_hom Array.toList]
-  · rfl
-  · intros _ _; congr <;> simp
+@[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
+  ext α l : 2
+  trans l.foldr sublistsAux [[]]
+  · rw [sublistsAux_eq_bind, sublists]
+  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
+    rw [← foldr_hom Array.toList]
+    · rfl
+    · intros _ _; congr <;> simp
 
 #noalign list.sublists_aux₁_eq_sublists_aux
 #noalign list.sublists_aux_cons_eq_sublists_aux₁
@@ -155,7 +156,7 @@ theorem sublists_eq_sublistsAux (l : List α) :
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
-  simp only [sublists_eq_sublistsAux, foldr_append, sublistsAux_eq_bind]
+  simp only [sublists, foldr_append]
   induction l₁
   · case nil => simp
   · case cons a l₁ ih =>
@@ -377,11 +378,11 @@ theorem nodup_sublists' {l : List α} : Nodup (sublists' l) ↔ Nodup l := by
   rw [sublists'_eq_sublists, nodup_map_iff reverse_injective, nodup_sublists, nodup_reverse]
 #align list.nodup_sublists' List.nodup_sublists'
 
-alias nodup_sublists ↔ nodup.of_sublists nodup.sublists
+alias ⟨nodup.of_sublists, nodup.sublists⟩ := nodup_sublists
 #align list.nodup.of_sublists List.nodup.of_sublists
 #align list.nodup.sublists List.nodup.sublists
 
-alias nodup_sublists' ↔ nodup.of_sublists' nodup.sublists'
+alias ⟨nodup.of_sublists', nodup.sublists'⟩ := nodup_sublists'
 #align list.nodup.of_sublists' List.nodup.of_sublists'
 #align list.nodup.sublists' List.nodup.sublists'
 

@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
@@ -10,7 +11,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Set.Basic
@@ -52,7 +53,7 @@ theorem pow_card_le_prod [Monoid M] [Preorder M]
 #align list.card_nsmul_le_sum List.card_nsmul_le_sum
 
 @[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedMonoid M] (l : List M) :
+theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid M] (l : List M) :
     l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩
@@ -84,7 +85,7 @@ theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod :
   exact dvd_mul_right _ _
 #align list.dvd_prod List.dvd_prod
 
-theorem dvd_sum [Semiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
+theorem dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
   induction' l with x l ih
   · exact dvd_zero _
   · rw [List.sum_cons]

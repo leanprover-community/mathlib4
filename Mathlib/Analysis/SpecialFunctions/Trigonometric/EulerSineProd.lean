@@ -75,9 +75,9 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   convert (config := { sameFun := true })
     integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_cos_comp_const_mul hz x) _ _ using 2
   · ext1 x; rw [mul_comm]
-  · rw [Complex.ofReal_zero, MulZeroClass.mul_zero, Complex.sin_zero, zero_div,
-      MulZeroClass.mul_zero, sub_zero, cos_pi_div_two, Complex.ofReal_zero,
-      zero_pow (by positivity : 0 < n), MulZeroClass.zero_mul, zero_sub, ← integral_neg, ←
+  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div,
+      mul_zero, sub_zero, cos_pi_div_two, Complex.ofReal_zero,
+      zero_pow (by positivity : 0 < n), zero_mul, zero_sub, ← integral_neg, ←
       integral_const_mul]
     refine' integral_congr fun x _ => _
     field_simp; ring
@@ -117,8 +117,8 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     ring_nf
   · -- now a tedious rearrangement of terms
     -- gather into a single integral, and deal with continuity subgoals:
-    rw [sin_zero, cos_pi_div_two, Complex.ofReal_zero, zero_pow, MulZeroClass.zero_mul,
-      MulZeroClass.mul_zero, MulZeroClass.zero_mul, MulZeroClass.zero_mul, sub_zero, zero_sub, ←
+    rw [sin_zero, cos_pi_div_two, Complex.ofReal_zero, zero_pow, zero_mul,
+      mul_zero, zero_mul, zero_mul, sub_zero, zero_sub, ←
       integral_neg, ← integral_const_mul, ← integral_const_mul, ← integral_sub]
     rotate_left
     · apply Continuous.intervalIntegrable
@@ -217,10 +217,10 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
   rcases eq_or_ne z 0 with (rfl | hz)
   · simp
   induction' n with n hn
-  · simp_rw [Nat.zero_eq, MulZeroClass.mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
+  · simp_rw [Nat.zero_eq, mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
-      MulZeroClass.mul_zero, Complex.sin_zero, zero_div, sub_zero,
+      mul_zero, Complex.sin_zero, zero_div, sub_zero,
       (by push_cast; field_simp; ring : 2 * z * ↑(π / 2) = π * z)]
     field_simp [Complex.ofReal_ne_zero.mpr pi_pos.ne']
     ring
@@ -233,7 +233,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       rw [integral_cos_pow_eq]
       dsimp only
       rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ,
-        MulZeroClass.zero_mul, MulZeroClass.zero_mul, MulZeroClass.zero_mul, sub_zero, zero_div,
+        zero_mul, zero_mul, zero_mul, sub_zero, zero_div,
         zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_eq_ofNat]
     rw [this]
     change
@@ -325,7 +325,7 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
     (Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).continuousOn
   convert tendsto_integral_cos_pow_mul_div this using 1
   · ext1 n; congr 2 with x : 1; rw [mul_comm]
-  · rw [Complex.ofReal_zero, MulZeroClass.mul_zero, Complex.cos_zero]
+  · rw [Complex.ofReal_zero, mul_zero, Complex.cos_zero]
 #align complex.tendsto_euler_sin_prod Complex.tendsto_euler_sin_prod
 
 /-- Euler's infinite product formula for the real sine function. -/

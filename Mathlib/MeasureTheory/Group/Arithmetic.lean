@@ -388,7 +388,7 @@ theorem nullMeasurableSet_eq_fun {E} [MeasurableSpace E] [AddGroup E] [Measurabl
     [MeasurableSub₂ E] {f g : α → E} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { x | f x = g x } μ := by
   apply (measurableSet_eq_fun hf.measurable_mk hg.measurable_mk).nullMeasurableSet.congr
-  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk]with x hfx hgx
+  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
   change (hf.mk f x = hg.mk g x) = (f x = g x)
   simp only [hfx, hgx]
 #align null_measurable_set_eq_fun nullMeasurableSet_eq_fun

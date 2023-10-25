@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -52,7 +53,7 @@ The corresponding lemma in this file is `succ_nth_convergent_eq_squashGCF_nth_co
 
 - `GeneralizedContinuedFraction.convergents_eq_convergents'` shows the equivalence under a strict
 positivity restriction on the sequence.
-- `continued_fractions.convergents_eq_convergents'` shows the equivalence for (regular) continued
+- `ContinuedFraction.convergents_eq_convergents'` shows the equivalence for (regular) continued
 fractions.
 
 ## References

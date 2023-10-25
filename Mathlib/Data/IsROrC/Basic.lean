@@ -74,9 +74,12 @@ class IsROrC (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K
   /-- only an instance in the `ComplexOrder` locale -/
   [toPartialOrder : PartialOrder K]
   le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  -- note we cannot put this in the `extends` clause
+  [toDecidableEq : DecidableEq K]
 #align is_R_or_C IsROrC
 
 scoped[ComplexOrder] attribute [instance 100] IsROrC.toPartialOrder
+attribute [instance 100] IsROrC.toDecidableEq
 
 end
 
@@ -414,11 +417,11 @@ open List in
 theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
   tfae_have 1 → 4
   · intro h
-    rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, MulZeroClass.mul_zero, zero_div,
+    rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
       ofReal_zero]
   tfae_have 4 → 3
   · intro h
-    conv_rhs => rw [← re_add_im z, h, ofReal_zero, MulZeroClass.zero_mul, add_zero]
+    conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
   tfae_have 3 → 2; exact fun h => ⟨_, h⟩
   tfae_have 2 → 1; exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
@@ -454,7 +457,7 @@ variable {K}
 /-- The norm squared function. -/
 def normSq : K →*₀ ℝ where
   toFun z := re z * re z + im z * im z
-  map_zero' := by simp only [add_zero, MulZeroClass.mul_zero, map_zero]
+  map_zero' := by simp only [add_zero, mul_zero, map_zero]
   map_one' := by simp only [one_im, add_zero, mul_one, one_re, mul_zero]
   map_mul' z w := by
     simp only [mul_im, mul_re]
@@ -828,7 +831,7 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
   conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
-  mul_im_I_ax z := by simp only [MulZeroClass.mul_zero, AddMonoidHom.zero_apply]
+  mul_im_I_ax z := by simp only [mul_zero, AddMonoidHom.zero_apply]
   le_iff_re_im := (and_iff_left rfl).symm
 #align real.is_R_or_C Real.isROrC
 

@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Analysis.Convex.PartitionOfUnity
 
 #align_import topology.metric_space.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

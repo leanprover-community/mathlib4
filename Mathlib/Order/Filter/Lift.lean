@@ -423,7 +423,7 @@ theorem prod_def {f : Filter α} {g : Filter β} :
     iInf_prod, iInf_and] using iInf_congr fun i => iInf_comm
 #align filter.prod_def Filter.prod_def
 
-alias mem_prod_self_iff ← mem_prod_same_iff
+alias mem_prod_same_iff := mem_prod_self_iff
 #align filter.mem_prod_same_iff Filter.mem_prod_same_iff
 
 theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
