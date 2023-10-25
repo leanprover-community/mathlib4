@@ -178,7 +178,15 @@ example (h : ∃ y : ℕ, ∀ x, x ≠ y) : ∀ x : ℕ, ∃ y, x ≠ y := by
   exact fun x => ⟨y, hy x⟩
 
 /--
-error: ℕ and ℤ are not definitionally equal
+error: matched ∀, but ℕ and ℤ are not definitionally equal
+-/
+#guard_msgs in
+example (h : ∀ n : ℕ, 0 ≤ n) : ∀ n : ℤ, 0 ≤ n := by
+  peel h
+  admit
+
+/--
+error: matched ∃, but ℕ and ℤ are not definitionally equal
 -/
 #guard_msgs in
 example (h : ∃ n : ℕ, 0 ≤ n) : ∃ n : ℤ, 0 ≤ n := by
@@ -186,7 +194,7 @@ example (h : ∃ n : ℕ, 0 ≤ n) : ∃ n : ℤ, 0 ≤ n := by
   admit
 
 /--
-error: atTop and atBot are not definitionally equal
+error: matched ∃ᶠ, but atTop and atBot are not definitionally equal
 -/
 #guard_msgs in
 example (h : ∃ᶠ n : ℕ in atTop, 0 ≤ n) : ∃ᶠ n : ℕ in atBot, 0 ≤ n := by
@@ -194,7 +202,7 @@ example (h : ∃ᶠ n : ℕ in atTop, 0 ≤ n) : ∃ᶠ n : ℕ in atBot, 0 ≤ 
   admit
 
 /--
-error: atTop and atBot are not definitionally equal
+error: matched ∀ᶠ, but atTop and atBot are not definitionally equal
 -/
 #guard_msgs in
 example (h : ∀ᶠ n : ℕ in atTop, 0 ≤ n) : ∀ᶠ n : ℕ in atBot, 0 ≤ n := by
