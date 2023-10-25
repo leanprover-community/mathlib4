@@ -90,12 +90,10 @@ def inr [Zero R] (m : M) : tsze R M :=
 #align triv_sq_zero_ext.fst TrivSqZeroExt.fst
 #align triv_sq_zero_ext.snd TrivSqZeroExt.snd
 
-@[simp]
 theorem fst_mk (r : R) (m : M) : fst ⟨r, m⟩ = r :=
   rfl
 #align triv_sq_zero_ext.fst_mk TrivSqZeroExt.fst_mk
 
-@[simp]
 theorem snd_mk (r : R) (m : M) : snd ⟨r, m⟩ = m :=
   rfl
 #align triv_sq_zero_ext.snd_mk TrivSqZeroExt.snd_mk
@@ -246,10 +244,10 @@ instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [M
   equivProd.module S
 
 variable (S R M) in
+/-- `TrivSqZeroExt.equivProd` as a linear equivalence. -/
 @[simps!]
 def linearEquivProd [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
-  tsze R M ≃ₗ[S] R × M := equivProd.linearEquiv S
-
+    tsze R M ≃ₗ[S] R × M := equivProd.linearEquiv S
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
   rfl
