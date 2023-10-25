@@ -142,7 +142,7 @@ This is `σ` from Proposition 4.8, page 84 of
 -/
 @[simps!]
 def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
-  (Q.prod <| -Q) →qᵢ QuadraticForm.dualProd R M where
+    (Q.prod <| -Q) →qᵢ QuadraticForm.dualProd R M where
   toLinearMap := LinearMap.prod
     (Q.associated.toLin.comp (LinearMap.fst _ _ _) + Q.associated.toLin.comp (LinearMap.snd _ _ _))
     (LinearMap.fst _ _ _ - LinearMap.snd _ _ _)

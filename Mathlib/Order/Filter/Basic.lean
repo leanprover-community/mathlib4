@@ -846,7 +846,7 @@ theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻
 theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
     (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets := by
   rw [iInf_eq_iInf_finset, iInf_sets_eq]
-  exact directed_of_sup fun _ _ => biInf_mono
+  exact directed_of_isDirected_le fun _ _ => biInf_mono
 #align filter.infi_sets_eq_finite Filter.iInf_sets_eq_finite
 
 theorem iInf_sets_eq_finite' (f : ι → Filter α) :
@@ -1942,7 +1942,7 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
 lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
-  s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
+    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
 by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
 #align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
 
@@ -1984,7 +1984,7 @@ def kernMap (m : α → β) (f : Filter α) : Filter β where
   sets_of_superset := by
     rintro _ t ⟨s, hs, rfl⟩ hst
     refine ⟨s ∪ m ⁻¹' t, mem_of_superset hs (subset_union_left s _), ?_⟩
-    rw [kernImage_union_preimage, union_eq_right_iff_subset.mpr hst]
+    rw [kernImage_union_preimage, union_eq_right.mpr hst]
   inter_sets := by
     rintro _ _ ⟨s₁, h₁, rfl⟩ ⟨s₂, h₂, rfl⟩
     exact ⟨s₁ ∩ s₂, f.inter_sets h₁ h₂, Set.preimage_kernImage.u_inf⟩
@@ -2767,7 +2767,7 @@ theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
     exact seq_mem_seq (image_mem_map ht) hu
 #align filter.prod_map_seq_comm Filter.prod_map_seq_comm
 
-theorem seq_eq_filter_seq {α β : Type _} (f : Filter (α → β)) (g : Filter α) :
+theorem seq_eq_filter_seq {α β : Type u} (f : Filter (α → β)) (g : Filter α) :
     f <*> g = seq f g :=
   rfl
 #align filter.seq_eq_filter_seq Filter.seq_eq_filter_seq

@@ -576,14 +576,24 @@ theorem comp_assoc
 
 variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁₂] M₂}
 
-@[simp]
-theorem cancel_right (hg : Function.Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
-  ⟨fun h ↦ ext <| hg.forall.2 (ext_iff.1 h), fun h ↦ h ▸ rfl⟩
-#align linear_map.cancel_right LinearMap.cancel_right
+/-- The linear map version of `Function.Surjective.injective_comp_right` -/
+lemma _root_.Function.Surjective.injective_linearMapComp_right (hg : Surjective g) :
+    Injective fun f : M₂ →ₛₗ[σ₂₃] M₃ ↦ f.comp g :=
+  fun _ _ h ↦ ext <| hg.forall.2 (ext_iff.1 h)
 
 @[simp]
-theorem cancel_left (hf : Function.Injective f) : f.comp g = f.comp g' ↔ g = g' :=
-  ⟨fun h ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
+theorem cancel_right (hg : Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
+  hg.injective_linearMapComp_right.eq_iff
+#align linear_map.cancel_right LinearMap.cancel_right
+
+/-- The linear map version of `Function.Injective.comp_left` -/
+lemma _root_.Function.Injective.injective_linearMapComp_left (hf : Injective f) :
+    Injective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g :=
+  fun g₁ g₂ (h : f.comp g₁ = f.comp g₂) ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply]
+
+@[simp]
+theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=
+  hf.injective_linearMapComp_left.eq_iff
 #align linear_map.cancel_left LinearMap.cancel_left
 
 end

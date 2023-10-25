@@ -12,7 +12,7 @@ import Mathlib.Probability.Independence.Kernel
 
 * A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if for
   any finite set of indices `s = {i_1, ..., i_n}`, for any sets `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`,
-  `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `. It will be used for families of π-systems.
+  `μ (⋂ i in s, f i) = ∏ i in s, μ (f i)`. It will be used for families of π-systems.
 * A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
   measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
   define is independent. I.e., `m : ι → MeasurableSpace Ω` is independent with respect to a
@@ -97,7 +97,7 @@ def IndepSets [MeasurableSpace Ω] (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by
 measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
 define is independent. `m : ι → MeasurableSpace Ω` is independent with respect to measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
-`f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `. -/
+`f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i)`. -/
 def iIndep (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac) :
     Prop :=
   kernel.iIndep m (kernel.const Unit μ) (Measure.dirac () : Measure Unit)

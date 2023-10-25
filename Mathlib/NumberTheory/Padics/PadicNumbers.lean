@@ -604,9 +604,8 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
   by_contra' h
   cases' cauchy₂ f hε with N hN
   rcases h N with ⟨i, hi, hge⟩
-  have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := by
-    intro h
-    unfold PadicSeq.norm at hge; split_ifs at hge
+  have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
+    rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge; exact not_le_of_gt hε hge
   apply not_le_of_gt _ hge

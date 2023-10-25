@@ -112,7 +112,7 @@ theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
 discriminant of `b`.
 -/
 theorem Algebra.discr_localizationLocalization (b : Basis ι R S) :
-  Algebra.discr Rₘ (b.localizationLocalization Rₘ M Sₘ) =
+    Algebra.discr Rₘ (b.localizationLocalization Rₘ M Sₘ) =
     algebraMap R Rₘ (Algebra.discr R b) := by
   rw [Algebra.discr_def, Algebra.discr_def, RingHom.map_det,
     Algebra.traceMatrix_localizationLocalization]
