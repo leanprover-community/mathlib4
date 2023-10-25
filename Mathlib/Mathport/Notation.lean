@@ -542,6 +542,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       if hasBindersItem then
         result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
       elabCommand <| ← `(command|
+        /-- Pretty printer defined by `notation3` command. -/
         def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|
           getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
       trace[notation3] "Defined delaborator {currNamespace ++ delabName}"
@@ -550,8 +551,12 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       for key in delabKeys do
         elabCommand <| ← `(command| attribute [delab $(mkIdent key)] $(Lean.mkIdent delabName))
     else
-      logWarning s!"Could not generate matchers for a delaborator, so notation will not be pretty{
-        ""} printed. Consider either adjusting the expansions or use{
-        ""} `notation3 (prettyPrint := false)`."
+      logWarning s!"Was not able to generate a pretty printer for this notation.{
+        ""} If you do not expect it to be pretty printable, then you can use{
+        ""} `notation3 (prettyPrint := false)`.{
+        ""} If the notation expansion refers to section variables, be sure to do `local notation3`.{
+        ""} Otherwise, you might be able to adjust the notation expansion to make it matchable;{
+        ""} pretty printing relies on deriving an expression matcher from the expansion.{
+        ""} (Use `set_option trace.notation3 true` to get some debug information.)"
 
 initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
