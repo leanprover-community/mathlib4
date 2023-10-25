@@ -651,7 +651,7 @@ def comp (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) : A →ₑ+[ψ ∘ φ] C :=
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
 def comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (κ : CompTriple φ ψ χ) :
-   A →ₑ+[χ] C :=
+    A →ₑ+[χ] C :=
   { MulActionHom.comp' (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B) κ,
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 
