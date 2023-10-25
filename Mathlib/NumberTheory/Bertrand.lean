@@ -52,14 +52,14 @@ namespace Bertrand
 This is not best possible: it actually holds for 464 ≤ x.
 -/
 theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
-    x * (2 * x) ^ sqrt (2 * x) * 4 ^ (2 * x / 3) ≤ 4 ^ x := by
-  let f : ℝ → ℝ := fun x => log x + sqrt (2 * x) * log (2 * x) - log 4 / 3 * x
-  have hf' : ∀ x, 0 < x → 0 < x * (2 * x) ^ sqrt (2 * x) / 4 ^ (x / 3) := fun x h =>
+    x * (2 * x) ^ √(2 * x) * 4 ^ (2 * x / 3) ≤ 4 ^ x := by
+  let f : ℝ → ℝ := fun x => log x + √(2 * x) * log (2 * x) - log 4 / 3 * x
+  have hf' : ∀ x, 0 < x → 0 < x * (2 * x) ^ √(2 * x) / 4 ^ (x / 3) := fun x h =>
     div_pos (mul_pos h (rpow_pos_of_pos (mul_pos two_pos h) _)) (rpow_pos_of_pos four_pos _)
-  have hf : ∀ x, 0 < x → f x = log (x * (2 * x) ^ sqrt (2 * x) / 4 ^ (x / 3)) := by
+  have hf : ∀ x, 0 < x → f x = log (x * (2 * x) ^ √(2 * x) / 4 ^ (x / 3)) := by
     intro x h5
     have h6 := mul_pos (zero_lt_two' ℝ) h5
-    have h7 := rpow_pos_of_pos h6 (sqrt (2 * x))
+    have h7 := rpow_pos_of_pos h6 (√(2 * x))
     rw [log_div (mul_pos h5 h7).ne' (rpow_pos_of_pos four_pos _).ne', log_mul h5.ne' h7.ne',
       log_rpow h6, log_rpow zero_lt_four, ← mul_div_right_comm, ← mul_div, mul_comm x]
   have h5 : 0 < x := lt_of_lt_of_le (by norm_num1) n_large
@@ -87,7 +87,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
   refine' ⟨18, 512, by norm_num1, by norm_num1, n_large, _, _⟩
-  · have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
+  · have : √(2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonneg_iff, this]
     rw [one_le_div] <;> norm_num1
     apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
@@ -96,7 +96,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     apply rpow_pos_of_pos; norm_num1
     apply hf' 18; norm_num1
     norm_num1
-  · have : sqrt (2 * 512) = 32 :=
+  · have : √(2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
     have : (512 : ℝ) = 2 ^ (9 : ℕ)

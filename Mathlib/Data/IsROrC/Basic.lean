@@ -538,7 +538,7 @@ theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z 
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
 #align is_R_or_C.norm_sq_sub IsROrC.normSq_sub
 
-theorem sqrt_normSq_eq_norm {z : K} : Real.sqrt (normSq z) = ‖z‖ := by
+theorem sqrt_normSq_eq_norm {z : K} : √(normSq z) = ‖z‖ := by
   rw [normSq_eq_def', Real.sqrt_sq (norm_nonneg _)]
 #align is_R_or_C.sqrt_norm_sq_eq_norm IsROrC.sqrt_normSq_eq_norm
 
@@ -876,7 +876,7 @@ def toStarOrderedRing : StarOrderedRing K :=
       rw [IsROrC.le_iff_re_im, map_zero, map_zero, IsROrC.star_def, eq_comm]
       constructor
       · rintro ⟨hr, hi⟩
-        refine ⟨Real.sqrt (IsROrC.re x), ?_⟩
+        refine ⟨(√(IsROrC.re x) : ℝ), ?_⟩
         have := (IsROrC.is_real_TFAE x).out 2 3
         rw [IsROrC.conj_ofReal, ← IsROrC.ofReal_mul, Real.mul_self_sqrt hr, eq_comm, this, hi]
       · rintro ⟨s, rfl⟩

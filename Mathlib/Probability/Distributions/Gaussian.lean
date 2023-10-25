@@ -36,11 +36,11 @@ section GaussianPdf
 /-- Probability density function of the gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianPdfReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
-  (Real.sqrt (2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
+  (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
 
 lemma gaussianPdfReal_def (μ : ℝ) (v : ℝ≥0) :
     gaussianPdfReal μ v =
-      fun x ↦ (Real.sqrt (2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
+      fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
 
 @[simp]
 lemma gaussianPdfReal_zero_var (m : ℝ) : gaussianPdfReal m 0 = 0 := by
@@ -71,11 +71,11 @@ lemma integrable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
   rw [gaussianPdfReal_def]
   by_cases hv : v = 0
   · simp [hv]
-  let g : ℝ → ℝ := fun x ↦ (Real.sqrt (2 * π * v))⁻¹ * rexp (- x ^ 2 / (2 * v))
+  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (- x ^ 2 / (2 * v))
   have hg : Integrable g := by
-    suffices g = fun x ↦ (Real.sqrt (2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
+    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
       rw [this]
-      refine (integrable_exp_neg_mul_sq ?_).const_mul (Real.sqrt (2 * π * v))⁻¹
+      refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
     ext x
     simp only [gt_iff_lt, zero_lt_two, zero_le_mul_left, NNReal.zero_le_coe, Real.sqrt_mul',

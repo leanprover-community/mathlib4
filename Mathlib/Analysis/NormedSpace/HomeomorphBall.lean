@@ -40,8 +40,8 @@ noncomputable section
 See also `Homeomorph.unitBall`. -/
 @[simps (config := .lemmasOnly)]
 def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
-  toFun x := (1 + ‖x‖ ^ 2).sqrt⁻¹ • x
-  invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
+  toFun x := (√(1 + ‖x‖ ^ 2))⁻¹ • x
+  invFun y := (√(1 - ‖(y : E)‖ ^ 2))⁻¹ • (y : E)
   source := univ
   target := ball 0 1
   map_source' x _ := by
@@ -61,12 +61,12 @@ def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
   open_source := isOpen_univ
   open_target := isOpen_ball
   continuous_toFun := by
-    suffices Continuous fun (x:E) => (1 + ‖x‖ ^ 2).sqrt⁻¹
+    suffices Continuous fun (x:E) => (√(1 + ‖x‖ ^ 2))⁻¹
      from (this.smul continuous_id).continuousOn
     refine' Continuous.inv₀ _ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
     continuity
   continuous_invFun := by
-    have : ∀ y ∈ ball (0 : E) 1, (1 - ‖(y : E)‖ ^ 2).sqrt ≠ 0 := fun y hy ↦ by
+    have : ∀ y ∈ ball (0 : E) 1, √(1 - ‖(y : E)‖ ^ 2) ≠ 0 := fun y hy ↦ by
       rw [Real.sqrt_ne_zero']
       nlinarith [norm_nonneg y, mem_ball_zero_iff.1 hy]
     exact ContinuousOn.smul (ContinuousOn.inv₀

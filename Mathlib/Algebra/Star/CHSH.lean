@@ -133,13 +133,8 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       simp only [star_add, star_sub, star_mul, star_ofNat, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
     rw [idem']
-    conv_rhs =>
-      arg 2
-      arg 1
-      rw [← sa]
-    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg P) _
-    · simp
-    · norm_num
+    apply smul_nonneg (by norm_num)
+    simpa only [sa] using star_mul_self_nonneg P
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
 set_option linter.uppercaseLean3 false in
@@ -151,9 +146,6 @@ which we hide in a namespace as they are unlikely to be useful elsewhere.
 -/
 
 
--- mathport name: «expr√2»
-local notation "√2" => (Real.sqrt 2 : ℝ)
-
 namespace TsirelsonInequality
 
 /-!
@@ -164,14 +156,14 @@ we prepare some easy lemmas about √2.
 
 -- This calculation, which we need for Tsirelson's bound,
 -- defeated me. Thanks for the rescue from Shing Tak Lam!
-theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * √2⁻¹ + 4 * (√2⁻¹ * 2⁻¹)) := by
+theorem tsirelson_inequality_aux : √(2 : ℝ) * √2 ^ 3 = √2 * (2 * (√2)⁻¹ + 4 * ((√2)⁻¹ * 2⁻¹)) := by
   ring_nf
   rw [mul_inv_cancel (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
   convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
     (try simp only [← pow_mul]) <;> norm_num
 #align tsirelson_inequality.tsirelson_inequality_aux TsirelsonInequality.tsirelson_inequality_aux
 
-theorem sqrt_two_inv_mul_self : √2⁻¹ * √2⁻¹ = (2⁻¹ : ℝ) := by
+theorem sqrt_two_inv_mul_self : (√2)⁻¹ * (√2)⁻¹ = (2⁻¹ : ℝ) := by
   rw [← mul_inv]
   norm_num
 #align tsirelson_inequality.sqrt_two_inv_mul_self TsirelsonInequality.sqrt_two_inv_mul_self
@@ -191,13 +183,14 @@ of the difference.
 -/
 theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R] [OrderedSMul ℝ R]
     [StarModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
-    A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
+    A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √(2 : ℝ) ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
     rw [zsmul_eq_smul_cast ℝ, ← mul_smul]
-  let P := √2⁻¹ • (A₁ + A₀) - B₀
-  let Q := √2⁻¹ • (A₁ - A₀) + B₁
-  have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = √2⁻¹ • (P ^ 2 + Q ^ 2) := by
+  let P := (√2 : ℝ)⁻¹ • (A₁ + A₀) - B₀
+  let Q := (√2 : ℝ)⁻¹ • (A₁ - A₀) + B₁
+  have w : (√2 : ℝ) ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ =
+      (√2 : ℝ)⁻¹ • (P ^ 2 + Q ^ 2) := by
     dsimp
     -- distribute out all the powers and products appearing on the RHS
     simp only [sq, sub_mul, mul_sub, add_mul, mul_add, smul_add, smul_sub]
@@ -217,31 +210,14 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
     -- just look at the coefficients now:
     congr
     exact mul_left_cancel₀ (by norm_num) tsirelson_inequality_aux
-  have pos : 0 ≤ √2⁻¹ • (P ^ 2 + Q ^ 2) := by
+  have pos : (0 : R) ≤ (√2 : ℝ)⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by
       simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
     have Q_sa : star Q = Q := by
       simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
-    have P2_nonneg : 0 ≤ P ^ 2 := by
-      rw [sq]
-      conv =>
-        congr
-        skip
-        congr
-        rw [← P_sa]
-      convert (star_mul_self_nonneg P)
-    have Q2_nonneg : 0 ≤ Q ^ 2 := by
-      rw [sq]
-      conv =>
-        congr
-        skip
-        congr
-        rw [← Q_sa]
-      convert (star_mul_self_nonneg Q)
-    convert smul_le_smul_of_nonneg (add_nonneg P2_nonneg Q2_nonneg)
-        (le_of_lt (show 0 < √2⁻¹ by norm_num))
-    -- `norm_num` can't directly show `0 ≤ √2⁻¹`
-    simp
+    have P2_nonneg : 0 ≤ P ^ 2 := by simpa only [P_sa, sq] using star_mul_self_nonneg P
+    have Q2_nonneg : 0 ≤ Q ^ 2 := by simpa only [Q_sa, sq] using star_mul_self_nonneg Q
+    exact smul_nonneg (by positivity) (add_nonneg P2_nonneg Q2_nonneg)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add, w, Nat.cast_zero] using pos
 #align tsirelson_inequality tsirelson_inequality
