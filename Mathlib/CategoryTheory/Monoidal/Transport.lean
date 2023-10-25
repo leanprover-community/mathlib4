@@ -44,33 +44,33 @@ variable {D : Type u₂} [Category.{v₂} D]
 definitions of `⊗`, `𝟙_`, `▷`, `◁` that are preserved by `F`.
 -/
 structure InducingFunctorData [MonoidalCategoryStruct D] (F : D ⥤ C) where
-  /-- Analogous to the reversed version of `CategoryTheory.LaxMonoidalFunctor.μIso` -/
-  μIsoSymm : ∀ X Y,
-    F.obj (X ⊗ Y) ≅ F.obj X ⊗ F.obj Y
+  /-- Analogous to `CategoryTheory.LaxMonoidalFunctor.μIso` -/
+  μIso : ∀ X Y,
+    F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y)
   whiskerLeft_eq : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂),
-    F.map (X ◁ f) = (μIsoSymm _ _).hom ≫ (F.obj X ◁ F.map f) ≫ (μIsoSymm _ _).inv :=
+    F.map (X ◁ f) = (μIso _ _).inv ≫ (F.obj X ◁ F.map f) ≫ (μIso _ _).hom :=
     by aesop_cat
   whiskerRight_eq : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D),
-    F.map (f ▷ Y) = (μIsoSymm _ _).hom ≫ (F.map f ▷ F.obj Y) ≫ (μIsoSymm _ _).inv :=
+    F.map (f ▷ Y) = (μIso _ _).inv ≫ (F.map f ▷ F.obj Y) ≫ (μIso _ _).hom :=
     by aesop_cat
   tensorHom_eq : ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂),
-    F.map (f ⊗ g) = (μIsoSymm _ _).hom ≫ (F.map f ⊗ F.map g) ≫ (μIsoSymm _ _).inv :=
+    F.map (f ⊗ g) = (μIso _ _).inv ≫ (F.map f ⊗ F.map g) ≫ (μIso _ _).hom :=
     by aesop_cat
-  /-- Analogous to the reversed version of `CategoryTheory.LaxMonoidalFunctor.εIso` -/
-  εIsoSymm : F.obj (𝟙_ _) ≅ 𝟙_ _
+  /-- Analogous to `CategoryTheory.LaxMonoidalFunctor.εIso` -/
+  εIso : 𝟙_ _ ≅ F.obj (𝟙_ _)
   associator_eq : ∀ X Y Z : D,
     F.map (α_ X Y Z).hom =
-      ((μIsoSymm _ _ ≪≫ (μIsoSymm _ _ ⊗ .refl _))
+      (((μIso _ _).symm ≪≫ ((μIso _ _).symm ⊗ .refl _))
         ≪≫ α_ (F.obj X) (F.obj Y) (F.obj Z)
-        ≪≫ ((.refl _ ⊗ (μIsoSymm _ _).symm) ≪≫ (μIsoSymm _ _).symm)).hom :=
+        ≪≫ ((.refl _ ⊗ μIso _ _) ≪≫ μIso _ _)).hom :=
     by aesop_cat
   leftUnitor_eq : ∀ X : D,
     F.map (λ_ X).hom =
-      ((μIsoSymm _ _ ≪≫ (εIsoSymm ⊗ .refl _)) ≪≫ λ_ (F.obj X)).hom :=
+      (((μIso _ _).symm ≪≫ (εIso.symm ⊗ .refl _)) ≪≫ λ_ (F.obj X)).hom :=
     by aesop_cat
   rightUnitor_eq : ∀ X : D,
     F.map (ρ_ X).hom =
-      ((μIsoSymm _ _ ≪≫ (.refl _ ⊗ εIsoSymm)) ≪≫ ρ_ (F.obj X)).hom :=
+      (((μIso _ _).symm ≪≫ (.refl _ ⊗ εIso.symm)) ≪≫ ρ_ (F.obj X)).hom :=
     by aesop_cat
 
 -- these are theorems so don't need docstrings (std4#217)
@@ -95,7 +95,7 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
     MonoidalCategory.{v₂} D where
   tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
     rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
-    simp only [tensorHom_def, assoc, Iso.inv_hom_id_assoc]
+    simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
   tensor_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
   tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
   whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
@@ -158,8 +158,8 @@ def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
     MonoidalFunctor D C :=
   letI := induced F fData
   { toFunctor := F
-    ε := fData.εIsoSymm.inv
-    μ := fun X Y => (fData.μIsoSymm X Y).inv
+    ε := fData.εIso.hom
+    μ := fun X Y => (fData.μIso X Y).hom
     μ_natural := by cases fData; aesop_cat
     associativity := by cases fData; aesop_cat
     left_unitality := by cases fData; aesop_cat
@@ -191,8 +191,8 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse
-    { μIsoSymm := fun X Y => (e.unitIso.app _).symm
-      εIsoSymm := (e.unitIso.app _).symm }
+    { μIso := fun X Y => e.unitIso.app _
+      εIso := e.unitIso.app _ }
 #align category_theory.monoidal.transport CategoryTheory.Monoidal.transport
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/

@@ -76,8 +76,8 @@ set_option maxHeartbeats 800000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
-    { μIsoSymm := fun X Y => Iso.refl _
-      εIsoSymm := Iso.refl _
+    { μIso := fun X Y => Iso.refl _
+      εIso := Iso.refl _
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_module_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
