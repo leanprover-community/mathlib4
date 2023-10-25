@@ -846,7 +846,7 @@ theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻
 theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
     (⨅ i, f i).sets = ⋃ t : Finset ι, (⨅ i ∈ t, f i).sets := by
   rw [iInf_eq_iInf_finset, iInf_sets_eq]
-  exact directed_of_sup fun _ _ => biInf_mono
+  exact directed_of_isDirected_le fun _ _ => biInf_mono
 #align filter.infi_sets_eq_finite Filter.iInf_sets_eq_finite
 
 theorem iInf_sets_eq_finite' (f : ι → Filter α) :

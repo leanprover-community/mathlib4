@@ -163,7 +163,8 @@ theorem IsCompact.elim_directed_cover {ι : Type v} [hι : Nonempty ι] (hs : Is
 theorem IsCompact.elim_finite_subcover {ι : Type v} (hs : IsCompact s) (U : ι → Set α)
     (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
   hs.elim_directed_cover _ (fun _ => isOpen_biUnion fun i _ => hUo i)
-    (iUnion_eq_iUnion_finset U ▸ hsU) (directed_of_sup fun _ _ h => biUnion_subset_biUnion_left h)
+    (iUnion_eq_iUnion_finset U ▸ hsU)
+    (directed_of_isDirected_le fun _ _ h => biUnion_subset_biUnion_left h)
 #align is_compact.elim_finite_subcover IsCompact.elim_finite_subcover
 
 theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set α)
@@ -227,7 +228,8 @@ theorem IsCompact.elim_finite_subfamily_closed {s : Set α} {ι : Type v} (hs : 
     (Z : ι → Set α) (hZc : ∀ i, IsClosed (Z i)) (hsZ : (s ∩ ⋂ i, Z i) = ∅) :
     ∃ t : Finset ι, (s ∩ ⋂ i ∈ t, Z i) = ∅ :=
   hs.elim_directed_family_closed _ (fun t ↦ isClosed_biInter fun _ _ ↦ hZc _)
-    (by rwa [← iInter_eq_iInter_finset]) (directed_of_sup fun _ _ h ↦ biInter_subset_biInter_left h)
+    (by rwa [← iInter_eq_iInter_finset])
+    (directed_of_isDirected_le fun _ _ h ↦ biInter_subset_biInter_left h)
 #align is_compact.elim_finite_subfamily_closed IsCompact.elim_finite_subfamily_closed
 
 /-- If `s` is a compact set in a topological space `α` and `f : ι → Set α` is a locally finite
@@ -274,7 +276,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ �
     (hZd : ∀ i, Z (i + 1) ⊆ Z i) (hZn : ∀ i, (Z i).Nonempty) (hZ0 : IsCompact (Z 0))
     (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty :=
   have Zmono : Antitone Z := antitone_nat_of_succ_le hZd
-  have hZd : Directed (· ⊇ ·) Z := directed_of_sup Zmono
+  have hZd : Directed (· ⊇ ·) Z := Zmono.directed_ge
   have : ∀ i, Z i ⊆ Z 0 := fun i => Zmono <| zero_le i
   have hZc : ∀ i, IsCompact (Z i) := fun i => hZ0.of_isClosed_subset (hZcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed Z hZd hZn hZc hZcl
