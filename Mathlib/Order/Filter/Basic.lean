@@ -1340,7 +1340,7 @@ theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x
 
 @[simp]
 theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ NeBot f := by
-  simp [Filter.Frequently, -not_eventually, eventually_false_iff_eq_bot, neBot_iff]
+  simp [frequently_iff_neBot]
 #align filter.frequently_true_iff_ne_bot Filter.frequently_true_iff_neBot
 
 @[simp]
