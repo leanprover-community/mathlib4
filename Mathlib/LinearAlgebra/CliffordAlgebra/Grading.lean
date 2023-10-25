@@ -173,26 +173,9 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx := by
   apply Submodule.iSup_induction' (C := P) _ (hr 0 (Submodule.zero_mem _)) @hadd
   refine' Subtype.rec _
-  -- porting note: was `simp_rw [Subtype.coe_mk, ZMod.nat_coe_zmod_eq_iff, add_comm n.val]`
-  -- leanprover/lean4#1926 is to blame.
-  dsimp only [Subtype.coe_mk]
-  let hlean1926 : ∀ val : ℕ, ↑val = n ↔ ∃ k, val = 2 * k + ZMod.val n := by
-    intro val
-    simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
-  have := fun val : ℕ => forall_prop_congr'
-    (q := fun property => ∀ x (hx : x ∈ LinearMap.range (ι Q) ^ val),
-      P x (Submodule.mem_iSup_of_mem { val := val, property := property } hx))
-    (hq := fun property => Iff.rfl) (hp := hlean1926 val)
-  simp_rw [this]; clear this
-  -- end porting note
+  simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv
-  -- porting note: was `simp_rw [pow_add, pow_mul]`
-  -- leanprover/lean4#1926 is to blame.
-  refine (forall_prop_congr' (hq := fun property => Iff.rfl) (
-    show xv ∈ LinearMap.range (ι Q) ^ (2 * k + ZMod.val n)
-        ↔ xv ∈ (LinearMap.range (ι Q) ^ 2) ^ k * LinearMap.range (ι Q) ^ ZMod.val n by
-      simp_rw [pow_add, pow_mul])).mpr ?_
-  -- end porting note
+  simp_rw [pow_add, pow_mul]
   intro hxv
   induction hxv using Submodule.mul_induction_on' with
   | hm a ha b hb =>
@@ -205,13 +188,7 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
       apply hadd ihx ihy
     | hmul x hx n'' y hy ihy =>
       revert hx
-      -- porting note: was `simp_rw [pow_two]`
-      -- leanprover/lean4#1926 is to blame.
-      let hlean1926'' : x ∈ LinearMap.range (ι Q) ^ 2
-          ↔ x ∈ LinearMap.range (ι Q) * LinearMap.range (ι Q) := by
-        rw [pow_two]
-      refine (forall_prop_congr' (hq := fun property => Iff.rfl) hlean1926'').mpr ?_
-      -- end porting note
+      simp_rw [pow_two]
       intro hx2
       induction hx2 using Submodule.mul_induction_on' with
       | hm m hm n hn =>
