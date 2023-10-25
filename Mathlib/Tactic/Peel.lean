@@ -85,9 +85,9 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
     MetaM (Option FVarId × List MVarId) := goal.withContext do
   let ty ← whnfR (← inferType e)
   let target ← whnfR (← goal.getType)
-  let freshName ← mkFreshUserName `h_peel
+  let n' ← n'.getDM (mkFreshUserName `h_peel)
   unless (← isProp ty) && (← isProp target) do
-    return (.none, [goal])
+    return (none, [goal])
   match ty.getAppFnArgs, target.getAppFnArgs with
     | (``Exists, #[_, .lam _ t₁ b₁ _]), (``Exists, #[_, .lam n₂ t₂ b₂ c]) =>
       unless ← isDefEq t₁ t₂ do
@@ -127,7 +127,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
     | _, _ =>
       match ty, target with
         | .forallE _ t₁ b₁ _, .forallE n₂ t₂ b₂ c => do
-          unless ← isDefEq (← whnfR t₁) (← whnfR t₂) do
+          unless ← isDefEq t₁ t₂ do
             return (.none, [goal])
           let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <|
             withLocalDecl n₂ c t₂ fun x => do
