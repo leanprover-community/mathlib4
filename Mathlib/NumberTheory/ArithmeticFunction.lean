@@ -84,8 +84,8 @@ section Zero
 variable [Zero R]
 
 --  porting note: used to be `CoeFun`
-instance : NDFunLike (ArithmeticFunction R) ℕ R :=
-  inferInstanceAs (NDFunLike (ZeroHom ℕ R) ℕ R)
+instance : FunLike (ArithmeticFunction R) ℕ fun _ ↦ R :=
+  inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ fun _ ↦ R)
 
 @[simp]
 theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
@@ -1024,9 +1024,7 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
   dsimp only [coe_mk, ZeroHom.toFun_eq_coe, Eq.ndrec, ZeroHom.coe_mk]
   simp only [IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_and, mul_ite, ite_mul,
     zero_mul, mul_zero]
-  rw [cardFactors_mul hn hm] -- porting note: `simp` does not seem to use this lemma.
-  simp only [moebius, ZeroHom.coe_mk, squarefree_mul hnm, ite_and, cardFactors_mul hn hm]
-  rw [pow_add, ite_mul_zero_left, ite_mul_zero_right]
+  rw [cardFactors_mul hn hm, pow_add, ite_mul_zero_left, ite_mul_zero_right]
   split_ifs <;>  -- porting note: added
   simp           -- porting note: added
 #align nat.arithmetic_function.is_multiplicative_moebius Nat.ArithmeticFunction.isMultiplicative_moebius
