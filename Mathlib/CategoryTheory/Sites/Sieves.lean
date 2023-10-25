@@ -458,6 +458,8 @@ theorem generate_top : generate (⊤ : Presieve X) = ⊤ :=
 /-- Given a morphism `h : Y ⟶ X`, send a sieve S on X to a sieve on Y
     as the inverse image of S with `_ ≫ h`.
     That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
+-- todo: we're abusing `Set α = α → Prop` here and elsewhere. This means that `simps` generates
+-- lemmas that also abuse this (e.g. `pullback_apply`).
 @[simps]
 def pullback (h : Y ⟶ X) (S : Sieve X) : Sieve Y
     where
@@ -484,7 +486,7 @@ theorem pullback_inter {f : Y ⟶ X} (S R : Sieve X) :
 #align category_theory.sieve.pullback_inter CategoryTheory.Sieve.pullback_inter
 
 theorem pullback_eq_top_iff_mem (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
-  rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
+  simp_rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
 #align category_theory.sieve.pullback_eq_top_iff_mem CategoryTheory.Sieve.pullback_eq_top_iff_mem
 
 theorem pullback_eq_top_of_mem (S : Sieve X) {f : Y ⟶ X} : S f → S.pullback f = ⊤ :=
@@ -574,7 +576,7 @@ theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presie
   · rintro ⟨_, h, k, hk, rfl⟩
     cases' hk with W g hg
     change (Sieve.generate R).pullback f (h ≫ pullback.snd)
-    rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
+    simp_rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
     exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst)
   · rintro ⟨W, h, k, hk, comm⟩
     exact ⟨_, _, _, Presieve.pullbackArrows.mk _ _ hk, pullback.lift_snd _ _ comm⟩
