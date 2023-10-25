@@ -353,7 +353,7 @@ variable {Y₁ : Type*} [SMul M Y₁]
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
 def inverse (f : X →[M] Y₁) (g : Y₁ → X)
-  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X
     where
   toFun := g
   map_smul' m x :=
