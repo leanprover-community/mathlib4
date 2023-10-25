@@ -114,8 +114,8 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     · simp only [Category.comp_id, Category.id_comp] at ih ⊢
       -- porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
       -- versions in this `have` clause (elsewhere too).
-      have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by
-        convert Functor.map_comp Φ p (Quiver.Hom.toPath f')
+      have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') :=
+        Functor.map_comp Φ p (Quiver.Hom.toPath f')
       rw [this, ih]
 #align category_theory.paths.lift_unique CategoryTheory.Paths.lift_unique
 

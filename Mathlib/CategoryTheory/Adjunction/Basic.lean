@@ -369,7 +369,7 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G :=
         left_inv := fun f => by
           change F.map (_ ≫ _) ≫ _ = _
           rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
-          convert id_comp f
+          convert id_comp f <;> try rfl
           have t := congrArg (fun (s : NatTrans (𝟭 C ⋙ F) (F ⋙ 𝟭 D)) => s.app X) adj.left_triangle
           dsimp at t
           simp only [id_comp] at t
@@ -377,7 +377,7 @@ def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G :=
         right_inv := fun g => by
           change _ ≫ G.map (_ ≫ _) = _
           rw [G.map_comp, ← assoc, ← Functor.comp_map, ← adj.unit.naturality, assoc]
-          convert comp_id g
+          convert comp_id g <;> try rfl
           have t := congrArg (fun t : NatTrans (G ⋙ 𝟭 C) (𝟭 D ⋙ G) => t.app Y) adj.right_triangle
           dsimp at t
           simp only [id_comp] at t

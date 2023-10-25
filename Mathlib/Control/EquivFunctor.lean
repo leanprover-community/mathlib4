@@ -50,10 +50,10 @@ def mapEquiv : f α ≃ f β where
   toFun := EquivFunctor.map e
   invFun := EquivFunctor.map e.symm
   left_inv x := by
-    convert (congr_fun (EquivFunctor.map_trans' e e.symm) x).symm
+    rw [← comp_apply (f := map e.symm), ← EquivFunctor.map_trans']
     simp
   right_inv y := by
-    convert (congr_fun (EquivFunctor.map_trans' e.symm e) y).symm
+    rw [← comp_apply (f := map e), ← EquivFunctor.map_trans']
     simp
 #align equiv_functor.map_equiv EquivFunctor.mapEquiv
 
@@ -68,7 +68,7 @@ theorem mapEquiv_symm_apply (y : f β) : (mapEquiv f e).symm y = EquivFunctor.ma
 
 @[simp]
 theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := by
- simp [EquivFunctor.mapEquiv]; rfl
+  simp [EquivFunctor.mapEquiv]; rfl
 #align equiv_functor.map_equiv_refl EquivFunctor.mapEquiv_refl
 
 @[simp]
