@@ -149,7 +149,7 @@ def lift :
 
 -- When applied to `ε`, `DualNumber.lift` produces the element of `B` that squares to 0.
 theorem lift_apply_eps
-  (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
+    (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
     lift fe (ε : A[ε]) = fe.val.2 := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, map_one, one_mul, zero_add]
 #align dual_number.lift_apply_eps DualNumber.lift_apply_eps
