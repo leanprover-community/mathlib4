@@ -459,7 +459,7 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
       (by
         rw [mul_comm (_ + _), mul_add, mul_mk'_eq_mk'_of_mul, mk'_add_eq_iff_add_mul_eq_mul,
           mul_comm (_ * _), ← mul_assoc, add_comm, ← map_mul, mul_mk'_eq_mk'_of_mul,
-          add_comm _ (mk' _ _ _), mk'_add_eq_iff_add_mul_eq_mul]
+          mk'_add_eq_iff_add_mul_eq_mul]
         simp only [map_add, Submonoid.coe_mul, map_mul]
         ring)
 #align is_localization.mk'_add IsLocalization.mk'_add
