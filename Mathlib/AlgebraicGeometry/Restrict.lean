@@ -44,6 +44,8 @@ notation3:90 f:91 "⁻¹ᵁ " U:90 => Prefunctor.obj
   `U` of `X`. -/
 notation3:60 X:60 " ∣_ᵤ " U:61 => (Scheme.restrict X (Opens.openEmbedding U))
 
+attribute [nolint docBlame] «term_⁻¹ᵁ_».delab «term_∣_ᵤ_».delab
+
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme} (U : Opens X.carrier) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
 
@@ -55,7 +57,7 @@ lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme} (U : Opens X) {V W : 
   X.presheaf.map (eqToHom e).op =
     (X ∣_ᵤ U).presheaf.map (eqToHom <| U.openEmbedding.functor_obj_injective e).op := rfl
 
-instance _root_.AlgebraicGeometry.ΓRestrictAlgebra {X : Scheme} {Y : TopCat} {f : Y ⟶ X} (hf : OpenEmbedding f) :
+instance ΓRestrictAlgebra {X : Scheme} {Y : TopCat} {f : Y ⟶ X} (hf : OpenEmbedding f) :
     Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op <| X.restrict hf)) :=
   (Scheme.Γ.map (X.ofRestrict hf).op).toAlgebra
 #align algebraic_geometry.Γ_restrict_algebra AlgebraicGeometry.ΓRestrictAlgebra
