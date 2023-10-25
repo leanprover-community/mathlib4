@@ -104,24 +104,15 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
   pentagon W X Y Z := F.map_injective <| by
     have := MonoidalCategory.pentagon (F.obj W) (F.obj X) (F.obj Y) (F.obj Z)
     simp only [Functor.map_comp, fData.tensorHom_eq, fData.associator_eq, Iso.trans_assoc,
-      Iso.trans_hom, tensorIso_hom, Iso.refl_hom, Iso.symm_hom, Functor.map_id, comp_tensor_id,
-      associator_conjugation, tensor_id, assoc, id_tensor_comp, Iso.inv_hom_id_assoc,
-      tensor_inv_hom_id_assoc, id_comp, inv_hom_id_tensor_assoc, id_tensor_comp_tensor_id_assoc,
-      Iso.cancel_iso_hom_left]
-    congr 1
-    simp only [←assoc]
-    congr 2
-    simp only [assoc, ←tensor_comp, id_comp, Iso.inv_hom_id, tensor_id]
-    congr 1
-    conv_rhs => rw [←tensor_id_comp_id_tensor]
-    simp only [assoc]
-    congr 1
-    rw [Iso.inv_comp_eq]
-    conv_lhs => rw [←id_comp (𝟙 (F.obj W)), tensor_comp]
-    slice_lhs 0 2 => rw [this]
-    rw [assoc]
-    congr 1
-    rw [←associator_naturality, tensor_id]
+      Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, Functor.map_id, comp_tensor_id,
+      associator_conjugation, tensor_id, assoc, id_tensor_comp, Iso.hom_inv_id_assoc,
+      tensor_hom_inv_id_assoc, id_comp, hom_inv_id_tensor_assoc, Iso.inv_hom_id_assoc,
+      id_tensor_comp_tensor_id_assoc, Iso.cancel_iso_inv_left]
+    slice_lhs 6 8 =>
+      rw [← id_tensor_comp, hom_inv_id_tensor, tensor_id, comp_id,
+        tensor_id]
+    simp only [comp_id, assoc, pentagon_assoc, Iso.inv_hom_id_assoc,
+      ← associator_naturality_assoc, tensor_id, tensor_id_comp_id_tensor_assoc]
   leftUnitor_naturality {X Y : D} f := F.map_injective <| by
     have := leftUnitor_naturality (F.map f)
     simp only [Functor.map_comp, fData.tensorHom_eq, Functor.map_id, fData.leftUnitor_eq,
