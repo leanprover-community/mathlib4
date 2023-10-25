@@ -494,6 +494,14 @@ instance {X : C} (S : Presieve X) [S.extensive]
 
 end ExtensiveSheafConditionProof
 
+lemma isSheafFor_extensive_of_preservesFiniteProducts' {X : C} (S : Presieve X) [S.extensive]
+    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] :
+    Presieve.IsSheafFor F S := by
+  obtain ⟨α, _, Z, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
+  subst hS
+  -- refine @Presieve.isSheafFor_of_preservesProduct _ _ F α Z _ sorry ?_
+  sorry
+
 open ExtensiveSheafConditionProof
 
 lemma isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
