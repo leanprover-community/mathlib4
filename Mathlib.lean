@@ -3508,6 +3508,7 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.ProperMap
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Semicontinuous
+import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Sequences
