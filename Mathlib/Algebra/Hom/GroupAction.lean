@@ -365,7 +365,7 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
 def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' φ)
-  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y →ₑ[φ'] X
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y →ₑ[φ'] X
     where
   toFun := g
   map_smul' m x :=
