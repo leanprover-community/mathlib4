@@ -508,7 +508,8 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   use k
   intro j hj
   refine' lt_of_le_of_lt _ hk
-  dsimp -- Need to do beta reduction first, as `norm_cast` doesn't. Added to adapt to leanprover/lean4#2734.
+  dsimp -- Need to do beta reduction first, as `norm_cast` doesn't. 
+        -- Added to adapt to leanprover/lean4#2734.
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
   exact_mod_cast pow_dvd_nthHom_sub f_compat r k j hj
