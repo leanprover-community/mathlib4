@@ -34,8 +34,8 @@ structure Congr!.Config where
   transparency level specified by `preTransparency`, which is `.reducible` by default. -/
   closePre : Bool := true
   /-- If `closePost := true`, then try to close goals that remain after no more congruence
-  lemmas can be applied, using the same tactics as `closePre`. These tactics are applied
-  with current tactic transparency level. -/
+  lemmas can be applied, using the same tactics as `closePre`. These tactics are applied with the
+  transparency level specified by `postTransparency`, which is `.reducible` by default. -/
   closePost : Bool := true
   /-- The transparency level to use when applying a congruence theorem.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
@@ -44,6 +44,11 @@ structure Congr!.Config where
   This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
   By default this is `.reducible`, which prevents unfolding of most definitions. -/
   preTransparency : TransparencyMode := TransparencyMode.reducible
+  /-- The transparency level to use when trying to close goals that remain after
+  applying congruence lemmas.
+  This includes trying to prove the goal by `rfl` and using the `assumption` tactic.
+  By default this is `.reducible`, which prevents unfolding of most definitions. -/
+  postTransparency : TransparencyMode := TransparencyMode.reducible
   /-- For passes that synthesize a congruence lemma using one side of the equality,
   we run the pass both for the left-hand side and the right-hand side. If `preferLHS` is `true`
   then we start with the left-hand side.
@@ -116,6 +121,7 @@ def Congr!.Config.unfoldSameFun : Congr!.Config where
   sameFun := true
   transparency := .default
   preTransparency := .default
+  postTransparency := .default
 
 /-- Whether the given number of arguments is allowed to be considered. -/
 def Congr!.Config.numArgsOk (config : Config) (numArgs : Nat) : Bool :=
@@ -618,7 +624,7 @@ def Lean.MVarId.congrN! (mvarId : MVarId)
 where
   post (mvarId : MVarId) : CongrMetaM Unit := do
     for mvarId in ← mvarId.introsClean do
-      if let some mvarId ← mvarId.postCongr! config then
+      if let some mvarId ← withTransparency config.postTransparency <| mvarId.postCongr! config then
         modify (fun s => {s with goals := s.goals.push mvarId})
       else
         trace[congr!] "Dispatched goal by post-processing step."
