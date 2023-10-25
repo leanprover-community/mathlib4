@@ -67,6 +67,20 @@ theorem rel_of_sorted_cons {a : α} {l : List α} : Sorted r (a :: l) → ∀ b 
   rel_of_pairwise_cons
 #align list.rel_of_sorted_cons List.rel_of_sorted_cons
 
+theorem Sorted.head!_le [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· < ·) l)
+    (ha : a ∈ l) : l.head! ≤ a := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
+
+theorem Sorted.le_head! [Inhabited α] [Preorder α] {a : α} {l : List α} (h : Sorted (· > ·) l)
+    (ha : a ∈ l) : a ≤ l.head! := by
+  rw [← List.cons_head!_tail (List.ne_nil_of_mem ha)] at h ha
+  cases ha
+  · exact le_rfl
+  · exact le_of_lt (rel_of_sorted_cons h a (by assumption))
+
 @[simp]
 theorem sorted_cons {a : α} {l : List α} : Sorted r (a :: l) ↔ (∀ b ∈ l, r a b) ∧ Sorted r l :=
   pairwise_cons
