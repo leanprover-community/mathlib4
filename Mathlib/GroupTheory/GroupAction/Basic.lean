@@ -212,6 +212,17 @@ end Stabilizers
 
 end MulAction
 
+/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
+The general theory of such `k` is elaborated by `IsSMulRegular`.
+The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
+theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
+    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
+    a = b := by
+  rw [← sub_eq_zero]
+  refine' h _ _
+  rw [smul_sub, h', sub_self]
+#align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor
+
 namespace MulAction
 
 variable (G : Type u) [Group G] (α : Type v) [MulAction G α]
@@ -492,14 +503,3 @@ noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel 
 #align add_action.stabilizer_equiv_stabilizer_of_orbit_rel AddAction.stabilizerEquivStabilizerOfOrbitRel
 
 end AddAction
-
-/-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
-The general theory of such `k` is elaborated by `IsSMulRegular`.
-The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
-theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAssocRing R]
-    [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
-    a = b := by
-  rw [← sub_eq_zero]
-  refine' h _ _
-  rw [smul_sub, h', sub_self]
-#align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor
