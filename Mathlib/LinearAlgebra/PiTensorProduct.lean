@@ -417,28 +417,34 @@ def lift : MultilinearMap R s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
 
 variable {φ : MultilinearMap R s E}
 
+-- Why is it necessary to replace `lift` with `lift.toLinearMap` here?
 @[simp]
-theorem lift.tprod (f : ∀ i, s i) : lift φ (tprod R f) = φ f :=
+theorem lift.tprod (f : ∀ i, s i) : lift.toLinearMap φ (tprod R f) = φ f :=
   liftAux_tprod φ f
 #align pi_tensor_product.lift.tprod PiTensorProduct.lift.tprod
 
+-- Why is it necessary to replace `lift` with `lift.toLinearMap` here?
 theorem lift.unique' {φ' : (⨂[R] i, s i) →ₗ[R] E}
-    (H : φ'.compMultilinearMap (PiTensorProduct.tprod R) = φ) : φ' = lift φ :=
+    (H : φ'.compMultilinearMap (PiTensorProduct.tprod R) = φ) :
+    φ' = lift.toLinearMap φ :=
   ext <| H.symm ▸ (lift.symm_apply_apply φ).symm
 #align pi_tensor_product.lift.unique' PiTensorProduct.lift.unique'
 
+-- Why is it necessary to replace `lift` with `lift.toLinearMap` here?
 theorem lift.unique {φ' : (⨂[R] i, s i) →ₗ[R] E} (H : ∀ f, φ' (PiTensorProduct.tprod R f) = φ f) :
-    φ' = lift φ :=
+    φ' = lift.toLinearMap φ :=
   lift.unique' (MultilinearMap.ext H)
 #align pi_tensor_product.lift.unique PiTensorProduct.lift.unique
 
+-- Why is it necessary to replace `lift.symm` with `lift.symm.toLinearMap` here?
 @[simp]
-theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm φ' = φ'.compMultilinearMap (tprod R) :=
+theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm.toLinearMap φ' = φ'.compMultilinearMap (tprod R) :=
   rfl
 #align pi_tensor_product.lift_symm PiTensorProduct.lift_symm
 
+-- Why is it necessary to replace `lift` with `lift.toLinearMap` here?
 @[simp]
-theorem lift_tprod : lift (tprod R : MultilinearMap R s _) = LinearMap.id :=
+theorem lift_tprod : lift.toLinearMap (tprod R : MultilinearMap R s _) = LinearMap.id :=
   Eq.symm <| lift.unique' rfl
 #align pi_tensor_product.lift_tprod PiTensorProduct.lift_tprod
 
@@ -446,13 +452,14 @@ section
 
 variable (R M)
 
+-- Why is it necessary to replace `lift` with `lift.toLinearMap` here?
 /-- Re-index the components of the tensor power by `e`.
 
 For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
 -/
 def reindex (e : ι ≃ ι₂) : (⨂[R] _ : ι, M) ≃ₗ[R] ⨂[R] _ : ι₂, M :=
-  LinearEquiv.ofLinear (lift (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _ : ι₂, M))))
-    (lift (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] _ : ι, M))))
+  LinearEquiv.ofLinear (lift.toLinearMap (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _ : ι₂, M))))
+    (lift.toLinearMap (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] _ : ι, M))))
     (by
       ext
       simp only [LinearMap.comp_apply, LinearMap.id_apply, lift_tprod,
@@ -487,14 +494,14 @@ theorem reindex_comp_tprod (e : ι ≃ ι₂) :
 
 @[simp]
 theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ : ι₂ ↦ M) E) :
-    lift φ ∘ₗ ↑(reindex R M e) = lift (φ.domDomCongr e.symm) := by
+    lift.toLinearMap φ ∘ₗ (reindex R M e).toLinearMap = lift.toLinearMap (φ.domDomCongr e.symm) := by
   ext
   simp
 #align pi_tensor_product.lift_comp_reindex PiTensorProduct.lift_comp_reindex
 
 @[simp]
 theorem lift_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ ↦ M) E) (x : ⨂[R] _, M) :
-    lift φ (reindex R M e x) = lift (φ.domDomCongr e.symm) x :=
+    lift.toLinearMap φ (reindex R M e x) = lift.toLinearMap (φ.domDomCongr e.symm) x :=
   LinearMap.congr_fun (lift_comp_reindex e φ) x
 #align pi_tensor_product.lift_reindex PiTensorProduct.lift_reindex
 
@@ -532,7 +539,7 @@ variable (ι)
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
 def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
-  toFun := lift (constOfIsEmpty R _ 1)
+  toFun := lift.toLinearMap (constOfIsEmpty R _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
     refine x.induction_on ?_ ?_
@@ -540,6 +547,8 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where
       simp only [map_smulₛₗ, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr
+      --  simp only [LinearEquiv.coe_coe, map_smul, smul_eq_mul]
+      -- convert mul_one x
       aesop
     · simp only
       intro x y hx hy
