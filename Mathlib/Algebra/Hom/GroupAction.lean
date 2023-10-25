@@ -67,7 +67,7 @@ lemma comp {M N P : Type _}
   CompTriple φ ψ  (ψ.comp φ) := {comp_eq := rfl}
 
 lemma comp_inv {M N : Type _} {φ : M → N} {ψ : N → M} (h : Function.RightInverse φ ψ):
-  CompTriple φ ψ id := {comp_eq := h.id }
+    CompTriple φ ψ id := {comp_eq := h.id }
 
 lemma apply {M N P : Type _}
     {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :
