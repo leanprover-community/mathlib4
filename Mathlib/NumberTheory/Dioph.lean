@@ -98,8 +98,9 @@ namespace Poly
 
 section
 
-instance NDfunLike : ndFunLike (Poly α) (α → ℕ) ℤ :=
-  ⟨Subtype.val, Subtype.val_injective⟩
+instance funLike : NDFunLike (Poly α) (α → ℕ) ℤ where
+  coe := Subtype.val
+  coe_injective' := Subtype.val_injective
 #align poly.fun_like Poly.funLike
 
 -- Porting note: This instance is not necessary anymore

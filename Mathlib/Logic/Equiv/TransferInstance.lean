@@ -554,10 +554,7 @@ protected def algebra (e : α ≃ β) [Semiring β] :
   · exact ((ringEquiv e).symm : β →+* α).comp (algebraMap R β)
   · intro r x
     simp only [Function.comp_apply, RingHom.coe_comp]
-    have p := ringEquiv_symm_apply e
-    dsimp at p
-    erw [p]
-    clear p
+    erw [ringEquiv_symm_apply e]
     apply (ringEquiv e).injective
     simp only [(ringEquiv e).map_mul]
     simp [Algebra.commutes]

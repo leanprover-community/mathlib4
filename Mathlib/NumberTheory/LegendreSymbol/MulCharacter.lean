@@ -71,9 +71,9 @@ structure MulChar extends MonoidHom R R' where
   map_nonunit' : ∀ a : R, ¬IsUnit a → toFun a = 0
 #align mul_char MulChar
 
-instance funLike : NDFunLike (MulChar R R') R R' :=
-  ⟨fun χ => χ.toFun,
-    fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
+instance funLike : NDFunLike (MulChar R R') R R' where
+  coe χ := χ.toFun
+  coe_injective' χ₀ χ₁ h := by cases χ₀; cases χ₁; congr; apply MonoidHom.ext fun _ ↦ congr_fun h _
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type*) (R R' : outParam <| Type*) [CommMonoid R]
