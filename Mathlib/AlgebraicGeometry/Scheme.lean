@@ -333,6 +333,11 @@ theorem basicOpen_le : X.basicOpen f ≤ U :=
   RingedSpace.basicOpen_le _ _
 #align algebraic_geometry.Scheme.basic_open_le AlgebraicGeometry.Scheme.basicOpen_le
 
+@[sheaf_restrict]
+lemma basicOpen_restrict (i : V ⟶ U) (f : X.presheaf.obj (op U)) :
+    X.basicOpen (f |_ₕ i) ≤ X.basicOpen f :=
+  (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
+
 @[simp]
 theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y.carrier}
     (r : Y.presheaf.obj <| op U) :
