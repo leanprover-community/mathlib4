@@ -441,7 +441,6 @@ lemma disjoint_prod {f' : Filter α} {g' : Filter β} :
 
 /-- `p ∧ q` occurs frequently along the product of two filters
 iff both `p` and `q` occur frequently along the corresponding filters. -/
-@[simp]
 theorem frequently_prod_and {p : α → Prop} {q : β → Prop} :
     (∃ᶠ x in f ×ˢ g, p x.1 ∧ q x.2) ↔ (∃ᶠ a in f, p a) ∧ ∃ᶠ b in g, q b := by
   simp only [frequently_iff_neBot, ← prod_neBot, ← prod_inf_prod, prod_principal_principal]
