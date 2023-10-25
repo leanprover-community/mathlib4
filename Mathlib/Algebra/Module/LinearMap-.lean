@@ -235,7 +235,7 @@ instance instFunLike {σ : R →+* S} : FunLike (M →ₛₗ[σ] M₃) M (λ _ �
 
 /-- The `DistribMulActionHom` underlying a `LinearMap`. -/
 def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) :
-  DistribMulActionHom σ M M₃ :=
+    DistribMulActionHom σ M M₃ :=
   { f with map_zero' := show f 0 = 0 from map_zero f }
 #align linear_map.to_distrib_mul_action_hom LinearMap.toDistribMulActionHom
 
