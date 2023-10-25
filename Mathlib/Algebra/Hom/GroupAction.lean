@@ -962,7 +962,7 @@ theorem comp'_id (f : R →ₑ+*[φ] S) :
 
 @[simp]
 theorem comp_id (f : R →ₑ+*[φ] S) :
-  f.comp (MulSemiringActionHom.id M) = f := by
+    f.comp (MulSemiringActionHom.id M) = f := by
   rw [comp_eq_comp', comp'_id]
 #align mul_semiring_action_hom.comp_id MulSemiringActionHom.comp_id
 
