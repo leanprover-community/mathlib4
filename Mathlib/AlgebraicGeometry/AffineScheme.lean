@@ -328,9 +328,12 @@ theorem _root_.AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
   simp [eqToHom_map]
 #align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
 
+-- Doesn't build without the `IsAffine` instance but the linter complains
+@[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
     SpecΓIdentity.hom.app (X.presheaf.obj <| op U) ≫ hU.fromSpec.1.c.app (op U) =
       (𝖲𝗉𝖾𝖼 𝓞ₓ(U)).presheaf.map (eqToHom hU.fromSpec_base_preimage).op := by
+  have : IsAffine _ := hU
   delta IsAffineOpen.fromSpec Scheme.isoSpec
   rw [Scheme.comp_val_c_app, Scheme.comp_val_c_app, SpecΓIdentity_hom_app_presheaf_obj,
     Scheme.ofRestrict_val_c_app_self]
