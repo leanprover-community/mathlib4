@@ -711,40 +711,63 @@ def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
   ∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
     P.map gi.op (x i) = P.map gj.op (x j)
 
-theorem Arrows.compatible_inj (x : (i : I) → P.obj (op (X i))) (hx : Compatible P π x)
-    (i j : I) (h_obj : X i = X j) (h_map : π i = eqToHom h_obj ≫ π j) :
-    x i = P.map (eqToHom h_obj).op (x j) := by
-  specialize hx i j (X i) (𝟙 _) (eqToHom h_obj)
-  simp only [id_comp, op_id, FunctorToTypes.map_id_apply, eqToHom_op] at hx
-  simp only [eqToHom_op]
-  exact hx h_map
+lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofArrows X π))
+    (t : P.obj (op B)) :
+    x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) := by
+  refine ⟨fun h i ↦ h _ (ofArrows.mk i), fun h Y f hf ↦ ?_⟩
+  obtain ⟨i, rfl, hi⟩ := ofArrows_surj π f hf
+  obtain rfl : f = π i := by simpa using hi
+  exact h i
+
+namespace Arrows.Compatible
+
+variable {x : (i : I) → P.obj (op (X i))} (hx : Compatible P π x)
+variable {P π}
+
+theorem exists_familyOfElements :
+    ∃ (x' : FamilyOfElements P (ofArrows X π)), ∀ (i : I), x' _ (ofArrows.mk i) = x i := by
+  use (fun Y f hf ↦ P.map (eqToHom (ofArrows_surj π f hf).choose_spec.choose.symm).op (x _))
+  intro i
+  specialize hx i (ofArrows_surj π (π i) (ofArrows.mk _)).choose (X i) (𝟙 _)
+    (eqToHom (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose.symm) ?_
+  · simp [← (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec]
+  rw [← hx]
+  simp
+
+/--
+A `FamilyOfElements` associated to an explicit family of elements.
+-/
+noncomputable
+def familyOfElements {x : (i : I) → P.obj (op (X i))}
+    (hx : Compatible P π x) : FamilyOfElements P (ofArrows X π) :=
+  (exists_familyOfElements hx).choose
+
+@[simp]
+theorem familyOfElements_ofArrows_mk (i : I) :
+    hx.familyOfElements _ (ofArrows.mk i) = x i :=
+  (exists_familyOfElements hx).choose_spec _
+
+theorem familyOfElements_compatible {x : (i : I) → P.obj (op (X i))}
+    (hx : Compatible P π x) : hx.familyOfElements.Compatible := by
+  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
+  cases' h₁ with i
+  cases' h₂ with j
+  simp [hx i j Z g₁ g₂ hgf]
+
+end Arrows.Compatible
 
 theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
     (∀ (x : (i : I) → P.obj (op (X i))), Arrows.Compatible P π x →
     ∃! t, ∀ i, P.map (π i).op t = x i) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
-  · specialize h (fun Y f hf ↦
-      P.map (eqToHom (ofArrows_surj π f hf).choose_spec.choose.symm).op (x _)) ?_
-    · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
-      cases' h₁ with i
-      cases' h₂ with j
-      dsimp
-      simp only [← FunctorToTypes.map_comp_apply]
-      apply hx
-      simp only [unop_op, Quiver.Hom.unop_op, eqToHom_op, eqToHom_unop, assoc]
-      rwa [← (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec,
-        ← (ofArrows_surj π (π j) (ofArrows.mk _)).choose_spec.choose_spec]
-    obtain ⟨t, ht₁, ht₂⟩ := h
-    refine ⟨t, fun i ↦ ?_, fun y hy ↦ ?_⟩
-    · rw [ht₁ (π i) (ofArrows.mk _)]
-      exact (Arrows.compatible_inj P π x hx _ _ _
-        (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec).symm
-    · apply ht₂
-      intro Y f hf
-      cases' hf with i
-      rw [hy i]
-      exact (Arrows.compatible_inj P π x hx _ _ _
-        (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec)
+  · obtain ⟨t, ht₁, ht₂⟩ := h _ hx.familyOfElements_compatible
+    refine' ⟨t, fun i => _, _⟩
+    · rw [ht₁ _ (ofArrows.mk i), Arrows.Compatible.familyOfElements_ofArrows_mk]
+    · intro t' ht'
+      apply ht₂
+      rw [FamilyOfElements.isAmalgamation_iff_ofArrows]
+      intro i
+      simp only [ht', Arrows.Compatible.familyOfElements_ofArrows_mk]
   · obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
     refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
