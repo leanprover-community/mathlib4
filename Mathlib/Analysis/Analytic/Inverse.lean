@@ -472,13 +472,13 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
               (I *
                 ∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
                   C * r ^ c.length * ∏ j, ‖p.rightInv i (c.blocksFun j)‖) := by
-      gcongr with j
+      gcongr _ + Finset.sum _ (_ * ?_) with j -- we provide patterns to speed up the calls
       apply (ContinuousLinearMap.norm_compContinuousMultilinearMap_le _ _).trans
-      gcongr
+      gcongr _ * ?_
       apply (norm_sum_le _ _).trans
-      gcongr
+      gcongr Finset.sum _ ?_
       apply (compAlongComposition_norm _ _ _).trans
-      gcongr
+      gcongr ?_ * _
       · exact prod_nonneg fun j _ => norm_nonneg _
       · apply hp
     _ =
@@ -549,7 +549,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         _ = I * a + I * C * (((r * S n) ^ 2 - (r * S n) ^ (n + 1)) / (1 - r * S n)) := by
           rw [geom_sum_Ico' _ In]; exact ne_of_lt (rSn.trans_lt (by norm_num))
         _ ≤ I * a + I * C * ((r * S n) ^ 2 / (1 / 2)) := by
-          gcongr
+          gcongr _ + _ * (?_ / ?_) -- we provide a pattern to speed up the call
           · simp only [sub_le_self_iff]
             positivity
           · linarith only [rSn]
