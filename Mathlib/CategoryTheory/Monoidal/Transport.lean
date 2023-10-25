@@ -125,14 +125,14 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
   leftUnitor_naturality {X Y : D} f := F.map_injective <| by
     have := leftUnitor_naturality (F.map f)
     simp only [Functor.map_comp, fData.tensorHom_eq, Functor.map_id, fData.leftUnitor_eq,
-      Iso.trans_assoc, Iso.trans_hom, tensorIso_hom, Iso.refl_hom, assoc, Iso.inv_hom_id_assoc,
-      id_tensor_comp_tensor_id_assoc, Iso.cancel_iso_hom_left]
+      Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, assoc,
+      Iso.hom_inv_id_assoc, id_tensor_comp_tensor_id_assoc, Iso.cancel_iso_inv_left]
     rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
   rightUnitor_naturality {X Y : D} f := F.map_injective <| by
     have := rightUnitor_naturality (F.map f)
     simp only [Functor.map_comp, fData.tensorHom_eq, Functor.map_id, fData.rightUnitor_eq,
-      Iso.trans_assoc, Iso.trans_hom, tensorIso_hom, Iso.refl_hom, assoc, Iso.inv_hom_id_assoc,
-      tensor_id_comp_id_tensor_assoc, Iso.cancel_iso_hom_left]
+      Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, assoc,
+      Iso.hom_inv_id_assoc, tensor_id_comp_id_tensor_assoc, Iso.cancel_iso_inv_left]
     rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
     have := associator_naturality (F.map f₁) (F.map f₂) (F.map f₃)
