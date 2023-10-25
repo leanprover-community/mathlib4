@@ -70,19 +70,19 @@ namespace Std.BitVec
 -/
 
 /-- Signed greater than for bitvectors. -/
-protected def sgt (x y : BitVec w) : Prop := BitVec.slt y x
+protected def sgt (x y : BitVec w) : Bool := BitVec.slt y x
 #align bitvec.sgt Std.BitVec.sgt
 
 /-- Signed greater than or equal to for bitvectors. -/
-protected def sge (x y : BitVec w) : Prop := BitVec.sle y x
+protected def sge (x y : BitVec w) : Bool := BitVec.sle y x
 #align bitvec.sge Std.BitVec.sge
 
 /-- Unsigned greater than for bitvectors. -/
-protected def ugt (x y : BitVec w) : Prop := BitVec.ult y x
+protected def ugt (x y : BitVec w) : Bool := BitVec.ult y x
 #align bitvec.ugt Std.BitVec.ugt
 
 /-- Signed greater than or equal to for bitvectors. -/
-protected def uge (x y : BitVec w) : Prop := BitVec.ule y x
+protected def uge (x y : BitVec w) : Bool := BitVec.ule y x
 #align bitvec.uge Std.BitVec.uge
 
 /--
@@ -98,7 +98,5 @@ def ofLEList (bs : List Bool) : BitVec bs.length :=
 -/
 def ofBEList (bs : List Bool) : BitVec bs.length :=
   (ofLEList bs.reverse).cast (List.length_reverse ..)
-
-
 
 end Std.BitVec
