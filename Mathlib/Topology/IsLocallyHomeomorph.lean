@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Topology.LocalHomeomorph
+import Mathlib.Topology.SeparatedMap
 
 #align_import topology.is_locally_homeomorph from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -162,6 +163,9 @@ theorem mk (h : ∀ x : X, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀ y
 #align is_locally_homeomorph.mk IsLocallyHomeomorph.mk
 
 variable {g f}
+
+lemma isLocallyInjective (hf : IsLocallyHomeomorph f) : IsLocallyInjective f :=
+  fun x ↦ by obtain ⟨f, hx, rfl⟩ := hf x; exact ⟨f.source, f.open_source, hx, f.injOn⟩
 
 theorem of_comp (hgf : IsLocallyHomeomorph (g ∘ f)) (hg : IsLocallyHomeomorph g)
     (cont : Continuous f) : IsLocallyHomeomorph f :=
