@@ -472,7 +472,7 @@ lemma isSeparable_pi {ι : Type*} [Fintype ι] {α : ∀ (_ : ι), Type*} {s : �
   choose c c_count hc using h
   refine ⟨{f | ∀ i, f i ∈ c i}, countable_pi c_count, ?_⟩
   simp_rw [← mem_univ_pi]
-  dsimp
+  dsimp only [setOf_mem_eq]
   rw [closure_pi_set]
   exact Set.pi_mono (fun i _ ↦ hc i)
 
