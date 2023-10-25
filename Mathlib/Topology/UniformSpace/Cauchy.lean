@@ -413,6 +413,24 @@ instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace 
     ⟨(x1, x2), by rw [nhds_prod_eq, le_prod]; constructor <;> assumption⟩
 #align complete_space.prod CompleteSpace.prod
 
+lemma CompleteSpace.fst_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty β] :
+    CompleteSpace α where
+  complete hf :=
+    let ⟨y⟩ := h
+    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| hf.prod <| cauchy_pure (a := y)
+    ⟨a, by simpa only [map_fst_prod, nhds_prod_eq] using map_mono (m := Prod.fst) hab⟩
+
+lemma CompleteSpace.snd_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty α] :
+    CompleteSpace β where
+  complete hf :=
+    let ⟨x⟩ := h
+    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| (cauchy_pure (a := x)).prod hf
+    ⟨b, by simpa only [map_snd_prod, nhds_prod_eq] using map_mono (m := Prod.snd) hab⟩
+
+lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty β] :
+    CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
+  ⟨fun _ ↦ ⟨.fst_of_prod (β := β), .snd_of_prod (α := α)⟩, fun ⟨_, _⟩ ↦ .prod⟩
+
 @[to_additive]
 instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
   complete hf :=
@@ -537,7 +555,7 @@ theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBoun
     let ⟨t, htf, hst⟩ := h V hV.1
     ⟨t, htf,
       closure_minimal hst <|
-        isClosed_biUnion htf fun _ _ => hV.2.preimage (continuous_id.prod_mk continuous_const)⟩
+        htf.isClosed_biUnion fun _ _ => hV.2.preimage (continuous_id.prod_mk continuous_const)⟩
 #align totally_bounded.closure TotallyBounded.closure
 
 /-- The image of a totally bounded set under a uniformly continuous map is totally bounded. -/
@@ -546,7 +564,8 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   have : { p : α × α | (f p.1, f p.2) ∈ t } ∈ 𝓤 α := hf ht
   let ⟨c, hfc, hct⟩ := hs _ this
   ⟨f '' c, hfc.image f, by
-    simp [image_subset_iff]
+    simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
+      preimage_iUnion, preimage_setOf_eq]
     simp [subset_def] at hct
     intro x hx; simp
     exact hct x hx⟩

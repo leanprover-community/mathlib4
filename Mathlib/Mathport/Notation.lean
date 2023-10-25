@@ -336,7 +336,7 @@ partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
     matchFoldl lit x y smatcher sinit s
 
 /-- Create a `Term` that represents a matcher for `foldl` notation.
-Reminder: `( lit ","* => foldl (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldl (x y => scopedTerm) init)` -/
 partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
@@ -346,7 +346,7 @@ partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote x) $(quote y) $smatcher $sinit))
 
 /-- Create a `Term` that represents a matcher for `foldr` notation.
-Reminder: `( lit ","* => foldr (x y => scopedTerm) init )` -/
+Reminder: `( lit ","* => foldr (x y => scopedTerm) init)` -/
 partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : HashSet Name) :
     OptionT TermElabM (List Name × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
@@ -408,7 +408,7 @@ for the notation.
 This command can be used in mathlib4 but it has an uncertain future and was created primarily
 for backward compatibility.
 -/
-elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
+elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
     "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
     ppSpace items:(notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
@@ -542,6 +542,7 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       if hasBindersItem then
         result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
       elabCommand <| ← `(command|
+        /-- Pretty printer defined by `notation3` command. -/
         def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|
           getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
       trace[notation3] "Defined delaborator {currNamespace ++ delabName}"
@@ -550,6 +551,12 @@ elab doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
       for key in delabKeys do
         elabCommand <| ← `(command| attribute [delab $(mkIdent key)] $(Lean.mkIdent delabName))
     else
-      logWarning s!"Could not generate matchers for a delaborator, so notation will not be pretty{
-        ""} printed. Consider either adjusting the expansions or use{
-        ""} `notation3 (prettyPrint := false)`."
+      logWarning s!"Was not able to generate a pretty printer for this notation.{
+        ""} If you do not expect it to be pretty printable, then you can use{
+        ""} `notation3 (prettyPrint := false)`.{
+        ""} If the notation expansion refers to section variables, be sure to do `local notation3`.{
+        ""} Otherwise, you might be able to adjust the notation expansion to make it matchable;{
+        ""} pretty printing relies on deriving an expression matcher from the expansion.{
+        ""} (Use `set_option trace.notation3 true` to get some debug information.)"
+
+initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»

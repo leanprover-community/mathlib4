@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Cases
 
 #align_import algebra.group.basic from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -252,7 +254,7 @@ theorem inv_injective : Function.Injective (Inv.inv : G → G) :=
 #align neg_injective neg_injective
 
 @[to_additive (attr := simp)]
-theorem inv_inj {a b : G} : a⁻¹ = b⁻¹ ↔ a = b :=
+theorem inv_inj : a⁻¹ = b⁻¹ ↔ a = b :=
   inv_injective.eq_iff
 #align inv_inj inv_inj
 #align neg_inj neg_inj
@@ -278,7 +280,7 @@ theorem leftInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
 #align left_inverse_neg leftInverse_neg
 
 @[to_additive]
-theorem rightInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
+theorem rightInverse_inv : RightInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
   inv_inv
 #align right_inverse_inv rightInverse_inv
 #align right_inverse_neg rightInverse_neg
@@ -352,18 +354,6 @@ section DivisionMonoid
 variable [DivisionMonoid α] {a b c : α}
 
 attribute [local simp] mul_assoc div_eq_mul_inv
-
-@[to_additive]
-theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
-  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
-#align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
-#align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
-
-@[to_additive]
-theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
-  (inv_eq_of_mul_eq_one_left h).symm
-#align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
-#align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
 
 @[to_additive]
 theorem eq_inv_of_mul_eq_one_right (h : a * b = 1) : b = a⁻¹ :=
@@ -920,8 +910,7 @@ theorem eq_mul_of_div_eq' (h : a / b = c) : a = b * c := by simp [h.symm]
 
 @[to_additive]
 theorem mul_eq_of_eq_div' (h : b = c / a) : a * b = c := by
-  simp [h]
-  rw [mul_comm c, mul_inv_cancel_left]
+  rw [h, div_eq_mul_inv, mul_comm c, mul_inv_cancel_left]
 #align mul_eq_of_eq_div' mul_eq_of_eq_div'
 #align add_eq_of_eq_sub' add_eq_of_eq_sub'
 

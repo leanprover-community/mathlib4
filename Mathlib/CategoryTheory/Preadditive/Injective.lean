@@ -248,7 +248,7 @@ def syzygies : C :=
 instance : Injective <| syzygies f := injective_under (cokernel f)
 
 /-- When `C` has enough injective,
-`injective.d f : Y ⟶ syzygies f` is the composition
+`Injective.d f : Y ⟶ syzygies f` is the composition
 `cokernel.π f ≫ ι (cokernel f)`.
 
 (When `C` is abelian, we have `exact f (injective.d f)`.)
@@ -348,6 +348,9 @@ end Adjunction
 namespace Equivalence
 
 variable {D : Type*} [Category D] (F : C ≌ D)
+
+theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
+  ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩
 
 /-- Given an equivalence of categories `F`, an injective presentation of `F(X)` induces an
 injective presentation of `X.` -/

@@ -106,14 +106,14 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       have : a + d • y ∈ ball a ε := by
         simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
       rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
-      rcases(mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
+      rcases (mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
       rw [← xz₁] at h₁
       rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
       have : a ∈ ball a ε := by
-        simp
+        simp only [mem_ball, dist_self]
         exact εpos
       rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
-      rcases(mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
+      rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
       rw [← xz₂] at h₂
       rw [mem_ball, dist_eq_norm, sub_zero] at hx₂
       let x := x₁ - x₂
@@ -223,7 +223,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   simp only [fsumeq] at L₁
   have L₂ : Tendsto (fun n => y - h^[n] y) atTop (𝓝 (y - 0)) := by
     refine' tendsto_const_nhds.sub _
-    rw [tendsto_iff_norm_tendsto_zero]
+    rw [tendsto_iff_norm_sub_tendsto_zero]
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
     rw [← zero_mul ‖y‖]

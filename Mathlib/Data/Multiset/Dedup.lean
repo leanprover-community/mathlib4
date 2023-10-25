@@ -91,9 +91,9 @@ theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m th
 #align multiset.count_dedup Multiset.count_dedup
 
 @[simp]
-theorem dedup_idempotent {m : Multiset α} : m.dedup.dedup = m.dedup :=
-  Quot.induction_on m fun _ => @congr_arg _ _ _ _ ofList List.dedup_idempotent
-#align multiset.dedup_idempotent Multiset.dedup_idempotent
+theorem dedup_idem {m : Multiset α} : m.dedup.dedup = m.dedup :=
+  Quot.induction_on m fun _ => @congr_arg _ _ _ _ ofList List.dedup_idem
+#align multiset.dedup_idempotent Multiset.dedup_idem
 
 @[simp]
 theorem dedup_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :

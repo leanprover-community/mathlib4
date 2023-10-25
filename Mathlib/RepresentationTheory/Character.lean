@@ -61,7 +61,7 @@ theorem char_tensor (V W : FdRep k G) : (V ⊗ W).character = V.character * W.ch
 -- Porting note: adding variant of `char_tensor` to make the simp-set confluent
 @[simp]
 theorem char_tensor' (V W : FdRep k G) :
-  character (Action.FunctorCategoryEquivalence.inverse.obj
+    character (Action.FunctorCategoryEquivalence.inverse.obj
     (Action.FunctorCategoryEquivalence.functor.obj V ⊗
      Action.FunctorCategoryEquivalence.functor.obj W)) = V.character * W.character := by
   simp [← char_tensor]

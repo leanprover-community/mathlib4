@@ -117,20 +117,20 @@ instance : Epi (Abelian.factorThruImage f) :=
   let h := hu.g
   -- By hypothesis, p factors through the kernel of g via some t.
   obtain ⟨t, ht⟩ := kernel.lift' g p hpg
-  have fh : f ≫ h = 0
-  calc
-    f ≫ h = (p ≫ i) ≫ h := (Abelian.image.fac f).symm ▸ rfl
-    _ = ((t ≫ kernel.ι g) ≫ i) ≫ h := (ht ▸ rfl)
-    _ = t ≫ u ≫ h := by simp only [Category.assoc]
-    _ = t ≫ 0 := (hu.w ▸ rfl)
-    _ = 0 := HasZeroMorphisms.comp_zero _ _
+  have fh : f ≫ h = 0 :=
+    calc
+      f ≫ h = (p ≫ i) ≫ h := (Abelian.image.fac f).symm ▸ rfl
+      _ = ((t ≫ kernel.ι g) ≫ i) ≫ h := (ht ▸ rfl)
+      _ = t ≫ u ≫ h := by simp only [Category.assoc]
+      _ = t ≫ 0 := (hu.w ▸ rfl)
+      _ = 0 := HasZeroMorphisms.comp_zero _ _
   -- h factors through the cokernel of f via some l.
   obtain ⟨l, hl⟩ := cokernel.desc' f h fh
-  have hih : i ≫ h = 0
-  calc
-    i ≫ h = i ≫ cokernel.π f ≫ l := hl ▸ rfl
-    _ = 0 ≫ l := by rw [← Category.assoc, kernel.condition]
-    _ = 0 := zero_comp
+  have hih : i ≫ h = 0 :=
+    calc
+      i ≫ h = i ≫ cokernel.π f ≫ l := hl ▸ rfl
+      _ = 0 ≫ l := by rw [← Category.assoc, kernel.condition]
+      _ = 0 := zero_comp
   -- i factors through u = ker h via some s.
   obtain ⟨s, hs⟩ := NormalMono.lift' u i hih
   have hs' : (s ≫ kernel.ι g) ≫ i = 𝟙 I ≫ i := by rw [Category.assoc, hs, Category.id_comp]
@@ -155,20 +155,20 @@ instance : Mono (Abelian.factorThruCoimage f) :=
     let h := hu.g
     -- By hypothesis, i factors through the cokernel of g via some t.
     obtain ⟨t, ht⟩ := cokernel.desc' g i hgi
-    have hf : h ≫ f = 0
-    calc
-      h ≫ f = h ≫ p ≫ i := (Abelian.coimage.fac f).symm ▸ rfl
-      _ = h ≫ p ≫ cokernel.π g ≫ t := (ht ▸ rfl)
-      _ = h ≫ u ≫ t := by simp only [Category.assoc]
-      _ = 0 ≫ t := by rw [← Category.assoc, hu.w]
-      _ = 0 := zero_comp
+    have hf : h ≫ f = 0 :=
+      calc
+        h ≫ f = h ≫ p ≫ i := (Abelian.coimage.fac f).symm ▸ rfl
+        _ = h ≫ p ≫ cokernel.π g ≫ t := (ht ▸ rfl)
+        _ = h ≫ u ≫ t := by simp only [Category.assoc]
+        _ = 0 ≫ t := by rw [← Category.assoc, hu.w]
+        _ = 0 := zero_comp
     -- h factors through the kernel of f via some l.
     obtain ⟨l, hl⟩ := kernel.lift' f h hf
-    have hhp : h ≫ p = 0
-    calc
-      h ≫ p = (l ≫ kernel.ι f) ≫ p := hl ▸ rfl
-      _ = l ≫ 0 := by rw [Category.assoc, cokernel.condition]
-      _ = 0 := comp_zero
+    have hhp : h ≫ p = 0 :=
+      calc
+        h ≫ p = (l ≫ kernel.ι f) ≫ p := hl ▸ rfl
+        _ = l ≫ 0 := by rw [Category.assoc, cokernel.condition]
+        _ = 0 := comp_zero
     -- p factors through u = coker h via some s.
     obtain ⟨s, hs⟩ := NormalEpi.desc' u p hhp
     have hs' : p ≫ cokernel.π g ≫ s = p ≫ 𝟙 I := by rw [← Category.assoc, hs, Category.comp_id]
@@ -304,8 +304,7 @@ theorem σ_comp {X Y : C} (f : X ⟶ Y) : σ ≫ f = Limits.prod.map f f ≫ σ 
   obtain ⟨g, hg⟩ :=
     CokernelCofork.IsColimit.desc' isColimitσ (Limits.prod.map f f ≫ σ) (by
       rw [prod.diag_map_assoc, diag_σ, comp_zero])
-  suffices hfg : f = g
-  · rw [← hg, Cofork.π_ofπ, hfg]
+  suffices hfg : f = g by rw [← hg, Cofork.π_ofπ, hfg]
   calc
     f = f ≫ prod.lift (𝟙 Y) 0 ≫ σ := by rw [lift_σ, Category.comp_id]
     _ = prod.lift (𝟙 X) 0 ≫ Limits.prod.map f f ≫ σ := by rw [lift_map_assoc]
@@ -451,7 +450,7 @@ def preadditive : Preadditive C where
       add_zero := add_zero
       neg := fun f => -f
       add_left_neg := neg_add_self
-      sub_eq_add_neg  := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
+      sub_eq_add_neg := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
       add_comm := add_comm }
   add_comp := add_comp
   comp_add := comp_add

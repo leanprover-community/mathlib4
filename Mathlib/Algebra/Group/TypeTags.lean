@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.Finite.Defs
 
@@ -256,39 +257,53 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
 
 instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
   { Additive.addZeroClass, Additive.addSemigroup with
-    zero := 0
-    add := (· + ·)
     nsmul := @Monoid.npow α h
     nsmul_zero := @Monoid.npow_zero α h
     nsmul_succ := @Monoid.npow_succ α h }
 
 instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    one := 1
-    mul := (· * ·)
     npow := @AddMonoid.nsmul α h
     npow_zero := @AddMonoid.nsmul_zero α h
     npow_succ := @AddMonoid.nsmul_succ α h }
 
+@[simp]
+theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
+  rfl
+#align of_mul_pow ofMul_pow
+
+@[simp]
+theorem toMul_nsmul [Monoid α] (n : ℕ) (a : Additive α) : toMul (n • a) = toMul a ^ n :=
+  rfl
+
+@[simp]
+theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
+  rfl
+#align of_add_nsmul ofAdd_nsmul
+
+@[simp]
+theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
+  rfl
+
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addLeftCancelSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addLeftCancelSemigroup with }
 
 instance Multiplicative.leftCancelMonoid [AddLeftCancelMonoid α] :
     LeftCancelMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.leftCancelSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.leftCancelSemigroup with }
 
 instance Additive.addRightCancelMonoid [RightCancelMonoid α] : AddRightCancelMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addRightCancelSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addRightCancelSemigroup with }
 
 instance Multiplicative.rightCancelMonoid [AddRightCancelMonoid α] :
     RightCancelMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.rightCancelSemigroup with }
 
 instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
-  { Additive.addMonoid, Additive.addCommSemigroup with zero := 0, add := (· + ·) }
+  { Additive.addMonoid, Additive.addCommSemigroup with }
 
 instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
-  { Multiplicative.monoid, Multiplicative.commSemigroup with one := 1, mul := (· * ·) }
+  { Multiplicative.monoid, Multiplicative.commSemigroup with }
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd (toMul x)⁻¹⟩
@@ -365,6 +380,24 @@ instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplic
     zpow_zero' := @SubNegMonoid.zsmul_zero' α _
     zpow_succ' := @SubNegMonoid.zsmul_succ' α _
     zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
+
+@[simp]
+theorem ofMul_zpow [DivInvMonoid α] (z : ℤ) (a : α) : ofMul (a ^ z) = z • ofMul a :=
+  rfl
+#align of_mul_zpow ofMul_zpow
+
+@[simp]
+theorem toMul_zsmul [DivInvMonoid α] (z : ℤ) (a : Additive α) : toMul (z • a) = toMul a ^ z :=
+  rfl
+
+@[simp]
+theorem ofAdd_zsmul [SubNegMonoid α] (z : ℤ) (a : α) : ofAdd (z • a) = ofAdd a ^ z :=
+  rfl
+#align of_add_zsmul ofAdd_zsmul
+
+@[simp]
+theorem toAdd_zpow [SubNegMonoid α] (a : Multiplicative α) (z : ℤ) : toAdd (a ^ z) = z • toAdd a :=
+  rfl
 
 instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=
   { Additive.subNegMonoid, Additive.involutiveNeg with

@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
 import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.SubsetProperties
-import Mathlib.Topology.Maps
 
 #align_import topology.compact_open from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -292,7 +289,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
 
 /-- A family `F` of functions in `C(α, β)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `α`. -/
-theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space β]
+theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace α] [T2Space β]
     {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(α, β)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
     ∀ (s : Set α) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by

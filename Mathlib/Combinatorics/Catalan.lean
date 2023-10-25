@@ -27,7 +27,7 @@ triangulations of convex polygons.
 
 ## Main results
 
-* `catalan_eq_centralBinom_div `: The explicit formula for the Catalan number using the central
+* `catalan_eq_centralBinom_div`: The explicit formula for the Catalan number using the central
   binomial coefficient, `catalan n = Nat.centralBinom n / (n + 1)`.
 
 * `treesOfNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
@@ -140,10 +140,12 @@ theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.cen
   (Nat.eq_mul_of_div_eq_right n.succ_dvd_centralBinom (catalan_eq_centralBinom_div n).symm).symm
 #align succ_mul_catalan_eq_central_binom succ_mul_catalan_eq_centralBinom
 
-theorem catalan_two : catalan 2 = 2 := by unfold catalan; rfl
+theorem catalan_two : catalan 2 = 2 := by
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_two catalan_two
 
-theorem catalan_three : catalan 3 = 5 := by unfold catalan; rfl
+theorem catalan_three : catalan 3 = 5 := by
+  norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_three catalan_three
 
 namespace Tree

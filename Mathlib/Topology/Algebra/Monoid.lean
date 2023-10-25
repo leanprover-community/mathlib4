@@ -26,7 +26,7 @@ open Classical Set Filter TopologicalSpace
 
 open Classical Topology BigOperators Pointwise
 
-variable {ι α X M N : Type*} [TopologicalSpace X]
+variable {ι α M N X : Type*} [TopologicalSpace X]
 
 @[to_additive (attr := continuity)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
@@ -391,7 +391,7 @@ theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M N
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  Inducing.continuousMul (⟨(↑), fun _ _ => rfl⟩ : MulHom S M) ⟨rfl⟩
+  Inducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
 #align subsemigroup.has_continuous_mul Subsemigroup.continuousMul
 #align add_subsemigroup.has_continuous_add AddSubsemigroup.continuousAdd
 
@@ -436,7 +436,7 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 -- Porting note: new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
-  (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
+    (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
 
 @[to_additive]
 theorem Submonoid.le_topologicalClosure (s : Submonoid M) : s ≤ s.topologicalClosure :=
@@ -570,7 +570,7 @@ instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A
 
 instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_nsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
 
 @[to_additive (attr := continuity)]

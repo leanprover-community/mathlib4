@@ -364,7 +364,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     intro j ji _
     exact (IH j ji (ji.trans hi)).ne'
   suffices sInf (univ \ A) ≠ N by
-    rcases(csInf_le (OrderBot.bddBelow (univ \ A)) N_mem).lt_or_eq with (H | H)
+    rcases (csInf_le (OrderBot.bddBelow (univ \ A)) N_mem).lt_or_eq with (H | H)
     · exact H
     · exact (this H).elim
   intro Inf_eq_N
@@ -708,8 +708,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
           N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2) := by
     intro t ht
     set B := ⋃ (p : α × ℝ) (_ : p ∈ t), closedBall p.1 p.2 with hB
-    have B_closed : IsClosed B :=
-      isClosed_biUnion (Finset.finite_toSet _) fun i _ => isClosed_ball
+    have B_closed : IsClosed B := isClosed_biUnion_finset fun i _ => isClosed_ball
     set s' := s \ B
     have : ∀ x ∈ s', ∃ r ∈ f x ∩ Ioo 0 1, Disjoint B (closedBall x r) := by
       intro x hx
@@ -737,13 +736,13 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     · simp only [Finset.coe_union, pairwiseDisjoint_union, ht.1, true_and_iff, Finset.coe_image]
       constructor
       · intro p hp q hq hpq
-        rcases(mem_image _ _ _).1 hp with ⟨p', p'v, rfl⟩
-        rcases(mem_image _ _ _).1 hq with ⟨q', q'v, rfl⟩
+        rcases (mem_image _ _ _).1 hp with ⟨p', p'v, rfl⟩
+        rcases (mem_image _ _ _).1 hq with ⟨q', q'v, rfl⟩
         refine' hv p'v q'v fun hp'q' => _
         rw [hp'q'] at hpq
         exact hpq rfl
       · intro p hp q hq hpq
-        rcases(mem_image _ _ _).1 hq with ⟨q', q'v, rfl⟩
+        rcases (mem_image _ _ _).1 hq with ⟨q', q'v, rfl⟩
         apply disjoint_of_subset_left _ (hr q' (vs' q'v)).2
         rw [hB, ← Finset.set_biUnion_coe]
         exact subset_biUnion_of_mem (u := fun x : α × ℝ => closedBall x.1 x.2) hp
@@ -869,7 +868,7 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SigmaFinite μ
   let t := Prod.fst '' v
   have : ∀ x ∈ t, ∃ r : ℝ, (x, r) ∈ v := by
     intro x hx
-    rcases(mem_image _ _ _).1 hx with ⟨⟨p, q⟩, hp, rfl⟩
+    rcases (mem_image _ _ _).1 hx with ⟨⟨p, q⟩, hp, rfl⟩
     exact ⟨q, hp⟩
   choose! r hr using this
   have im_t : (fun x => (x, r x)) '' t = v := by

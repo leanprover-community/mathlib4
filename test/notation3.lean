@@ -83,3 +83,23 @@ def myId (x : α) := x
 notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 /-- info: myId 3 : ℕ -/
 #guard_msgs in #check BAD 1; 2, 3 DAB
+
+section
+/--
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+-/
+#guard_msgs in local notation3 "#" n => Fin.mk n (by decide)
+end
+
+section
+local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
+
+example : Fin 5 := #1
+
+/--
+error: failed to reduce to 'true'
+  false
+-/
+#guard_msgs in example : Fin 5 := #6
+
+end

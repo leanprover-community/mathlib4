@@ -645,8 +645,8 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCanc
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S' →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S' M), by simp⟩
+def subtype : S' →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid_class.subtype SubmonoidClass.subtype
 #align add_submonoid_class.subtype AddSubmonoidClass.subtype
 
@@ -778,8 +778,8 @@ instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S M), by simp⟩
+def subtype : S →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid.subtype Submonoid.subtype
 #align add_submonoid.subtype AddSubmonoid.subtype
 
@@ -1371,6 +1371,13 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
   SetLike.ext_iff.trans <| by simp (config := { contextual := true }) [iff_def, S.one_mem]
 #align submonoid.eq_bot_iff_forall Submonoid.eq_bot_iff_forall
 #align add_submonoid.eq_bot_iff_forall AddSubmonoid.eq_bot_iff_forall
+
+@[to_additive]
+theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
+  rw [eq_bot_iff_forall]
+  intro y hy
+  change ((⟨y, hy⟩ : S) : M) = (1 : S)
+  rw [Subsingleton.elim (⟨y, hy⟩ : S) 1]
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
