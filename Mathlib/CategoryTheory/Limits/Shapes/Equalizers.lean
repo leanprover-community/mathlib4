@@ -851,6 +851,7 @@ def idFork (h : f = g) : Fork f g :=
 def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
   Fork.IsLimit.mk _ (fun s => Fork.ι s) (fun s => Category.comp_id _) fun s m h => by
     convert h
+    · rfl
     exact (Category.comp_id _).symm
 #align category_theory.limits.is_limit_id_fork CategoryTheory.Limits.isLimitIdFork
 
@@ -1040,6 +1041,7 @@ def idCofork (h : f = g) : Cofork f g :=
 def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
   Cofork.IsColimit.mk _ (fun s => Cofork.π s) (fun s => Category.id_comp _) fun s m h => by
     convert h
+    · rfl
     exact (Category.id_comp _).symm
 #align category_theory.limits.is_colimit_id_cofork CategoryTheory.Limits.isColimitIdCofork
 

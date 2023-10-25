@@ -448,6 +448,7 @@ theorem coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i 
     -- porting note: convert was abusing definitional equality
     have : _ < i := this
     convert this
+    · rfl -- Preorder.toLT = instLTNat; maybe `congr!` needs to keep track of instance arguments?
     simpa using h _ this (e.symm _).is_lt
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
 #align fin.coe_order_iso_apply Fin.coe_orderIso_apply
@@ -1464,6 +1465,7 @@ theorem range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0
 @[simp]
 theorem exists_succ_eq_iff {x : Fin (n + 1)} : (∃ y, Fin.succ y = x) ↔ x ≠ 0 := by
   convert @exists_succAbove_eq_iff n 0 x
+  rfl
 #align fin.exists_succ_eq_iff Fin.exists_succ_eq_iff
 
 /-- Given a fixed pivot `x : Fin (n + 1)`, `x.succAbove` is injective -/
