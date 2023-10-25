@@ -234,6 +234,10 @@ section InvolutiveInv
 
 variable [InvolutiveInv α] {f g : Filter α} {s : Set α}
 
+@[to_additive (attr := simp)]
+protected lemma comap_inv : comap Inv.inv f = f⁻¹ :=
+  .symm <| map_eq_comap_of_inverse (inv_comp_inv _) (inv_comp_inv _)
+
 @[to_additive]
 theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_preimage, inv_inv]
 #align filter.inv_mem_inv Filter.inv_mem_inv
