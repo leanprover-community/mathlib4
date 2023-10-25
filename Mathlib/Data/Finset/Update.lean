@@ -10,15 +10,15 @@ import Mathlib.Data.Finset.Basic
 
 This file defines `Function.updateFinset`, the operation that updates a function on a
 (finite) set of values.
+
+This is a very specific function used for `MeasureTheory.marginal`, and possibly not that useful
+for other purposes.
 -/
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
 
 namespace Function
 
 /-- `updateFinset x s y` is the vector `x` with the coordinates in `s` changed to the values of `y`.
-
-We should generalize `updateFinset` to `SetLike` instead of restricting to `Finset`.
-However, at the moment `Finset` is not `SetLike`, so we cannot do this yet.
 -/
 def updateFinset (x : ∀ i, π i) (s : Finset ι) (y : ∀ i : ↥s, π i) (i : ι) : π i :=
   if hi : i ∈ s then y ⟨i, hi⟩ else x i
