@@ -11,16 +11,33 @@ import Mathlib.Topology.Bornology.Constructions
 /-!
 ## Pseudo-metric spaces
 
-Definition and basic properties of pseudo-metric spaces.
+This file defines pseudo-metric spaces: these differ from metric spaces by not imposing the
+condition `dist x y = 0 → x = y`.
+Many definitions and theorems expected on (pseudo-)metric spaces are already introduced on uniform
+spaces and topological spaces. For example: open and closed sets, compactness, completeness,
+continuity and uniform continuity.
 
-Main definitions
-* pseudometric space, distance, extended distance and basic API
-* ball, closed ball, sphere
-noteworthy result: triangle ineq for polygons
-noteworthy: forall_of_forall_mem_Ball, forall_of_forall_mem_closedBall
+## Main definitions
 
-continue reviewing after line 700!
-TODO: insert proper docstring/flesh this out!
+* `Dist α`: Endows a space `α` with a function `dist a b`.
+* `PseudoMetricSpace α`: A space endowed with a distance function, which can
+  be zero even if the two elements are non-equal.
+* `Metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
+* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
+* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
+
+Additional useful definitions:
+
+* `nndist a b`: `dist` as a function to the non-negative reals.
+* `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
+* `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
+* `ProperSpace α`: A `PseudoMetricSpace` where all closed balls are compact.
+
+TODO (anyone): Add "Main results" section.
+
+## Tags
+
+pseudo_metric, dist
 -/
 
 open Set Filter TopologicalSpace Bornology

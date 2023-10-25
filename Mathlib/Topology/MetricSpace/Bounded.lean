@@ -9,7 +9,7 @@ import Mathlib.Topology.MetricSpace.Cauchy
 /-!
 ## Boundedness in (pseudo)-metric spaces
 
-This file contains on definition, and various results on boundedness in pseudo-metric spaces.
+This file contains one definition, and various results on boundedness in pseudo-metric spaces.
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
   Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 

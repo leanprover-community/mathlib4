@@ -10,41 +10,22 @@ import Mathlib.Topology.MetricSpace.PseudoMetric
 /-!
 # Metric spaces
 
-TODO: update this docstring for the split!!
+This file defines metric spaces and shows some of their basic properties.
 
-This file defines metric spaces. Many definitions and theorems expected
-on metric spaces are already introduced on uniform spaces and topological spaces.
-For example: open and closed sets, compactness, completeness, continuity and uniform continuity
-
-## Main definitions
-
-* `Dist α`: Endows a space `α` with a function `dist a b`.
-* `PseudoMetricSpace α`: A space endowed with a distance function, which can
-  be zero even if the two elements are non-equal.
-* `Metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
-* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
-* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
-
-Additional useful definitions:
-
-* `nndist a b`: `dist` as a function to the non-negative reals.
-* `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
-* `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
-* `ProperSpace α`: A `PseudoMetricSpace` where all closed balls are compact.
+Many definitions and theorems expected on metric spaces are already introduced on uniform spaces and
+topological spaces. This includes open and closed sets, compactness, completeness, continuity
+and uniform continuity.
 
 TODO (anyone): Add "Main results" section.
 
 ## Implementation notes
-
-Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
-theory of `PseudoMetricSpace`, where we don't require `dist x y = 0 → x = y` and we specialize
-to `MetricSpace` at the end.
+A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
+for `PseudoMetricSpace`s in `PseudoMetric.lean`.
 
 ## Tags
 
 metric, pseudo_metric, dist
 -/
--- TODO: go over copyright, author
 
 open Set Filter Bornology
 open scoped NNReal Uniformity
