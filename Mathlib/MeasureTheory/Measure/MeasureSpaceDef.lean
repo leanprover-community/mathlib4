@@ -138,10 +138,11 @@ theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :
 #align measure_theory.measure.ext MeasureTheory.Measure.ext
 
 theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by
-    rintro rfl s _hs
-    rfl, Measure.ext⟩
+  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 #align measure_theory.measure.ext_iff MeasureTheory.Measure.ext_iff
+
+theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
+  ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
 end Measure
 
@@ -189,7 +190,7 @@ theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
 #align measure_theory.nonempty_of_measure_ne_zero MeasureTheory.nonempty_of_measure_ne_zero
 
-theorem measure_mono (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
+@[gcongr] theorem measure_mono (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
   μ.mono h
 #align measure_theory.measure_mono MeasureTheory.measure_mono
 

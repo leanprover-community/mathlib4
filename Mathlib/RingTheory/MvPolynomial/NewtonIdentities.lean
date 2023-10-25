@@ -185,8 +185,7 @@ private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k 
       aesop
     · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion,
         add_tsub_cancel_of_le]
-    · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion,
-        implies_true]
+    · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion, implies_true]
   simp only [← hdisj, disj_equiv]
 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
@@ -250,14 +249,13 @@ theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     neg_one_pow_mul_eq_zero_iff.mpr rfl]
 
 theorem sum_antidiagonal_card_esymm_psum_eq_zero :
-    ∑ a in antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd =
-    0 := by
+    ∑ a in antidiagonal (Fintype.card σ), (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0 := by
   let k := Fintype.card σ
   suffices : (-1 : MvPolynomial σ R) ^ (k + 1) *
     ∑ a in antidiagonal k, (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd = 0
   · simpa using this
-  simp [← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k),
-    ← mul_esymm_eq_sum, mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
+  simp [← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k), ← mul_esymm_eq_sum,
+    mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
 
 /-- A version of Newton's identities which may be more useful in the case that we know the values of
 the elementary symmetric polynomials and would like to calculate the values of the power sums. -/

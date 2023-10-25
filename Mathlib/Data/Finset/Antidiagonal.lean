@@ -61,7 +61,7 @@ open Function
 
 /-- The class of additive monoids with an antidiagonal -/
 class HasAntidiagonal (μ : Type*) [AddMonoid μ] where
-  /-- The antidiagonal function -/
+  /-- The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that `i + j = n`. -/
   antidiagonal : μ → Finset (μ × μ)
   /-- A pair belongs to `antidiagonal n` iff the sum of its components is equal to `n` -/
   mem_antidiagonal {n} {a} : a ∈ antidiagonal n ↔ a.fst + a.snd = n
