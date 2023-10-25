@@ -399,7 +399,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
   exact h₁ x
 
 theorem inverse'_comp' {f : X →ₑ[φ] Y } {g : Y → X}
-  {k₂ : Function.RightInverse φ' φ}
+    {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
   f.comp' (inverse' f g k₂ h₁ h₂) (CompTriple.comp_inv k₂) = MulActionHom.id N := by
   rw [ext_iff]
