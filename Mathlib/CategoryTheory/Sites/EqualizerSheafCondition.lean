@@ -186,7 +186,8 @@ namespace Presieve
 
 variable [R.hasPullbacks]
 
-/-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
+/--
+The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[simp] def SecondObj : Type max v u :=
@@ -265,32 +266,49 @@ namespace Arrows
 open Presieve
 
 variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{w, max v u}]
-  [(ofArrows X π).hasPullbacks]
+    [(ofArrows X π).hasPullbacks]
 -- TODO: allow `I : Type w` 
 
+/--
+The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/00VM>.
+-/
 def FirstObj : Type max v u := ∏ (fun i ↦ P.obj (op (X i)))
 
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj P X ⟶ _) z₁ =
-      (Pi.π _ i : FirstObj P X ⟶ _) z₂) : z₁ = z₂ := by
+    (Pi.π _ i : FirstObj P X ⟶ _) z₂) : z₁ = z₂ := by
   apply Limits.Types.limit_ext
   rintro ⟨i⟩
   exact h i
 
+/--
+The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM.
+-/
 def SecondObj : Type max v u  :=
   ∏ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P X π) (h : ∀ ij, (Pi.π _ ij : SecondObj P X π ⟶ _) z₁ =
-      (Pi.π _ ij : SecondObj P X π ⟶ _) z₂) : z₁ = z₂ := by
+    (Pi.π _ ij : SecondObj P X π ⟶ _) z₂) : z₁ = z₂ := by
   apply Limits.Types.limit_ext
   rintro ⟨i⟩
   exact h i
 
+/--
+The left morphism of the fork diagram.
+-/
 def forkMap : P.obj (op B) ⟶ FirstObj P X := Pi.lift (fun i ↦ P.map (π i).op)
 
+/--
+The first of the two parallel morphisms of the fork diagram, induced by the first projection in
+each pullback.
+-/
 def firstMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
 
+/--
+The second of the two parallel morphisms of the fork diagram, induced by the second projection in
+each pullback.
+-/
 def secondMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
 
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
@@ -313,6 +331,10 @@ theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.prod
     apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
     simpa [firstMap, secondMap] using t
 
+/--
+`P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer.
+See <https://stacks.math.columbia.edu/tag/00VM>.
+-/
 theorem sheaf_condition : (ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
