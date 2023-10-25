@@ -91,10 +91,8 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (fun j �
 If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it
 preserves the product corresponding to the presieve of arrows.
 -/
-noncomputable
-def preservesProductOfIsSheafFor (hF' : (ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F) :
-    PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
-  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
+theorem preservesProductOfIsSheafFor : (ofArrows X (fun i ↦ Sigma.ι X i)).IsSheafFor F ↔
+    Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
   have h₁ : Pi.lift (fun j ↦ Pi.π (fun a ↦ (op (X a))) j) = 𝟙 _ := by ext; simp
   have h₂ : (fun j ↦ (opCoproductIsoProduct X).inv ≫ (Sigma.ι X j).op) =
     fun j ↦ Pi.π (fun a ↦ (op (X a))) j := by ext; exact opCoproductIsoProduct_inv_comp_ι _ _
@@ -108,10 +106,27 @@ def preservesProductOfIsSheafFor (hF' : (ofArrows X (fun i ↦ Sigma.ι X i)).Is
       Equalizer.Presieve.Arrows.forkMap F X (fun i ↦ Sigma.ι X i)
   · rw [Equalizer.Presieve.Arrows.forkMap, ← h₃, h₂, h₁]
     simp
-  rw [this]
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
-  rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
-  rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-  exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI X hd) b)
+  refine ⟨fun hF' ↦ ?_, fun hF' ↦ ?_⟩
+  · constructor
+    refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
+    rw [this]
+    refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
+    rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
+    rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
+    exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI X hd) b)
+  · rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
+    let _ := hF'.some
+    have hc : IsIso (piComparison F (fun x ↦ op (X x))) := inferInstance
+    rw [this, isIso_iff_bijective, Function.bijective_iff_existsUnique] at hc
+    intro b _
+    obtain ⟨t, ht₁, ht₂⟩ := hc b
+    refine ⟨F.map (opCoproductIsoProduct X).inv t, ht₁, fun y hy ↦ ?_⟩
+    specialize ht₂ (F.map (opCoproductIsoProduct X).hom y)
+    apply_fun (F.mapIso (opCoproductIsoProduct X)).hom using injective_of_mono _
+    simp only [Functor.mapIso_hom, FunctorToTypes.map_hom_map_inv_apply]
+    apply ht₂
+    simpa only [types_comp_apply, FunctorToTypes.map_inv_map_hom_apply]
+
+
 
 end CategoryTheory.Presieve
