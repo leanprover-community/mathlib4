@@ -50,7 +50,7 @@ open BigOperators
 
 open Finset
 
-open Finset.Nat.antidiagonal (fst_le snd_le)
+open Finset.antidiagonal (fst_le snd_le)
 
 /-- The recursive definition of the sequence of Catalan numbers:
 `catalan (n + 1) = ∑ i : Fin n.succ, catalan i * catalan (n - i)` -/
