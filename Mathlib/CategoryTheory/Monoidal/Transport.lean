@@ -102,7 +102,6 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
   id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
   triangle X Y := F.map_injective <| by cases fData; aesop_cat
   pentagon W X Y Z := F.map_injective <| by
-    have := MonoidalCategory.pentagon (F.obj W) (F.obj X) (F.obj Y) (F.obj Z)
     simp only [Functor.map_comp, fData.tensorHom_eq, fData.associator_eq, Iso.trans_assoc,
       Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, Functor.map_id, comp_tensor_id,
       associator_conjugation, tensor_id, assoc, id_tensor_comp, Iso.hom_inv_id_assoc,
