@@ -477,8 +477,8 @@ and differentiable on `(0,1)`, then for `M(x) := sup ((abs ∘ f) '' (re ⁻¹' 
 `∀ z ∈ [0,1]` the inequality `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds.
 -/
 theorem abs_le_interp_on_closedStrip (f : ℂ → ℂ) (hd : DiffContOnCl ℂ f (strip 0 1))
-   (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) (z : ℂ) (hz : z ∈ closedStrip 0 1) :
-   (abs (f z • invInterpStrip f z)) ≤ 1 := by
+    (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) (z : ℂ) (hz : z ∈ closedStrip 0 1) :
+    (abs (f z • invInterpStrip f z)) ≤ 1 := by
   apply le_of_tendsto (F_seq_to_F_abs f z) _
   rw [eventually_iff_exists_mem]
   use {n : ℕ | 1 ≤ n}
