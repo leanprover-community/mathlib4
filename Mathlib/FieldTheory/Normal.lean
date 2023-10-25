@@ -227,8 +227,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     rw [AdjoinRoot.adjoinRoot_eq_top, Subalgebra.restrictScalars_top, ←
       @Subalgebra.restrictScalars_top F C] at this
     exact top_le_iff.mpr (Subalgebra.restrictScalars_injective F this)
-/- Porting note: the `change` was `dsimp only [S]`. This is the step that requires increasing
-`maxHeartbeats`. Using `set S ... with hS` doesn't work. -/
+/- Porting note: the `change` was `dsimp only [S]`. Using `set S ... with hS` doesn't work. -/
   change Subalgebra.restrictScalars F (Algebra.adjoin C
     (((p.aroots E).map (algebraMap E D)).toFinset : Set D)) = _
   rw [← Finset.image_toFinset, Finset.coe_image]

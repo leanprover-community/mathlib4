@@ -41,6 +41,12 @@ theorem withDensity_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableS
   Measure.ofMeasurable_apply s hs
 #align measure_theory.with_density_apply MeasureTheory.withDensity_apply
 
+@[simp]
+lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
+  ext s hs
+  rw [withDensity_apply _ hs]
+  simp
+
 theorem withDensity_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) :
     μ.withDensity f = μ.withDensity g := by
   refine Measure.ext fun s hs => ?_
@@ -96,6 +102,12 @@ theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ �
   simp only [Pi.smul_apply, smul_eq_mul]
 #align measure_theory.with_density_smul' MeasureTheory.withDensity_smul'
 
+theorem withDensity_smul_measure (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
+    (r • μ).withDensity f = r • μ.withDensity f := by
+  ext s hs
+  rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
+    smul_eq_mul, set_lintegral_smul_measure]
+
 theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
     IsFiniteMeasure (μ.withDensity f) :=
   { measure_univ_lt_top := by
@@ -120,6 +132,11 @@ theorem withDensity_one : μ.withDensity 1 = μ := by
   ext1 s hs
   simp [withDensity_apply _ hs]
 #align measure_theory.with_density_one MeasureTheory.withDensity_one
+
+@[simp]
+theorem withDensity_const (c : ℝ≥0∞) : μ.withDensity (fun _ ↦ c) = c • μ := by
+  ext1 s hs
+  simp [withDensity_apply _ hs]
 
 theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     μ.withDensity (∑' n, f n) = sum fun n => μ.withDensity (f n) := by
@@ -245,8 +262,6 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
 #align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aemeasurable_withDensity_ennreal_iff
 
 open MeasureTheory.SimpleFunc
-
-variable {m0 : MeasurableSpace α}
 
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable
 function with respect to `(μ.withDensity f)` as an integral with respect to `μ`, called the base
@@ -453,5 +468,20 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
   nth_rw 1 [this]
   exact withDensity_absolutelyContinuous _ _
 #align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
+
+variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
+
+lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuous f) :
+    IsLocallyFiniteMeasure (μ.withDensity fun x ↦ f x) := by
+  refine ⟨fun x ↦ ?_⟩
+  rcases (μ.finiteAt_nhds x).exists_mem_basis ((nhds_basis_opens' x).restrict_subset
+    (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
+  refine ⟨U, hUx, ?_⟩
+  rw [withDensity_apply _ hUo.measurableSet]
+  exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, ball_image_iff.2 hUf⟩
+
+lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
+    IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
+  .withDensity_coe <| continuous_real_toNNReal.comp hf
 
 end MeasureTheory

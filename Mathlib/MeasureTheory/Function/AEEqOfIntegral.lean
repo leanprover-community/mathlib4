@@ -380,7 +380,7 @@ theorem ae_eq_zero_restrict_of_forall_set_integral_eq_zero {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}
     (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : f =ᵐ[μ.restrict t] 0 := by
-  rcases(hf_int_finite t ht hμt.lt_top).aestronglyMeasurable.isSeparable_ae_range with
+  rcases (hf_int_finite t ht hμt.lt_top).aestronglyMeasurable.isSeparable_ae_range with
     ⟨u, u_sep, hu⟩
   refine' ae_eq_zero_of_forall_dual_of_isSeparable ℝ u_sep (fun c => _) hu
   refine' ae_eq_zero_restrict_of_forall_set_integral_eq_zero_real _ _ ht hμt

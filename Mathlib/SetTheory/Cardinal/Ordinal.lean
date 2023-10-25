@@ -555,7 +555,7 @@ theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a 
 #align cardinal.mul_eq_max Cardinal.mul_eq_max
 
 @[simp]
-theorem mul_mk_eq_max {α β : Type _} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
+theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
   mul_eq_max (aleph0_le_mk α) (aleph0_le_mk β)
 #align cardinal.mul_mk_eq_max Cardinal.mul_mk_eq_max
 
@@ -735,12 +735,12 @@ theorem add_eq_max' {a b : Cardinal} (ha : ℵ₀ ≤ b) : a + b = max a b := by
 #align cardinal.add_eq_max' Cardinal.add_eq_max'
 
 @[simp]
-theorem add_mk_eq_max {α β : Type _} [Infinite α] : #α + #β = max #α #β :=
+theorem add_mk_eq_max {α β : Type u} [Infinite α] : #α + #β = max #α #β :=
   add_eq_max (aleph0_le_mk α)
 #align cardinal.add_mk_eq_max Cardinal.add_mk_eq_max
 
 @[simp]
-theorem add_mk_eq_max' {α β : Type _} [Infinite β] : #α + #β = max #α #β :=
+theorem add_mk_eq_max' {α β : Type u} [Infinite β] : #α + #β = max #α #β :=
   add_eq_max' (aleph0_le_mk β)
 #align cardinal.add_mk_eq_max' Cardinal.add_mk_eq_max'
 
@@ -1482,7 +1482,7 @@ open scoped Cardinal
 /--
 Bounding the cardinal of an ordinal-indexed union of sets.
 -/
-lemma mk_iUnion_Ordinal_le_of_le {β : Type _} {o : Ordinal} {c : Cardinal}
+lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) :
     #(⋃ j < o, A j) ≤ c := by
