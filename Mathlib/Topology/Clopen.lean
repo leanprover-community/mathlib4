@@ -34,7 +34,7 @@ protected theorem IsClopen.isOpen (hs : IsClopen s) : IsOpen s := hs.1
 protected theorem IsClopen.isClosed (hs : IsClopen s) : IsClosed s := hs.2
 #align is_clopen.is_closed IsClopen.isClosed
 
-theorem isClopen_iff_frontier_eq_empty {s : Set X} : IsClopen s ↔ frontier s = ∅ := by
+theorem isClopen_iff_frontier_eq_empty : IsClopen s ↔ frontier s = ∅ := by
   rw [IsClopen, ← closure_eq_iff_isClosed, ← interior_eq_iff_isOpen, frontier, diff_eq_empty]
   refine' ⟨fun h => (h.2.trans h.1.symm).subset, fun h => _⟩
   exact ⟨interior_subset.antisymm (subset_closure.trans h),
@@ -44,11 +44,11 @@ theorem isClopen_iff_frontier_eq_empty {s : Set X} : IsClopen s ↔ frontier s =
 alias ⟨IsClopen.frontier_eq, _⟩ := isClopen_iff_frontier_eq_empty
 #align is_clopen.frontier_eq IsClopen.frontier_eq
 
-theorem IsClopen.union {s t : Set X} (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∪ t) :=
+theorem IsClopen.union (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∪ t) :=
   ⟨hs.1.union ht.1, hs.2.union ht.2⟩
 #align is_clopen.union IsClopen.union
 
-theorem IsClopen.inter {s t : Set X} (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ t) :=
+theorem IsClopen.inter (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ t) :=
   ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
 #align is_clopen.inter IsClopen.inter
 
@@ -58,21 +58,20 @@ theorem IsClopen.inter {s t : Set X} (hs : IsClopen s) (ht : IsClopen t) : IsClo
 @[simp] theorem isClopen_univ : IsClopen (univ : Set X) := ⟨isOpen_univ, isClosed_univ⟩
 #align is_clopen_univ isClopen_univ
 
-theorem IsClopen.compl {s : Set X} (hs : IsClopen s) : IsClopen sᶜ :=
+theorem IsClopen.compl (hs : IsClopen s) : IsClopen sᶜ :=
   ⟨hs.2.isOpen_compl, hs.1.isClosed_compl⟩
 #align is_clopen.compl IsClopen.compl
 
 @[simp]
-theorem isClopen_compl_iff {s : Set X} : IsClopen sᶜ ↔ IsClopen s :=
+theorem isClopen_compl_iff : IsClopen sᶜ ↔ IsClopen s :=
   ⟨fun h => compl_compl s ▸ IsClopen.compl h, IsClopen.compl⟩
 #align is_clopen_compl_iff isClopen_compl_iff
 
-theorem IsClopen.diff {s t : Set X} (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s \ t) :=
+theorem IsClopen.diff (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s \ t) :=
   hs.inter ht.compl
 #align is_clopen.diff IsClopen.diff
 
-theorem IsClopen.prod {s : Set X} {t : Set Y} (hs : IsClopen s) (ht : IsClopen t) :
-    IsClopen (s ×ˢ t) :=
+theorem IsClopen.prod {t : Set Y} (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ×ˢ t) :=
   ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
 #align is_clopen.prod IsClopen.prod
 
@@ -129,7 +128,7 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
 #align is_clopen_inter_of_disjoint_cover_clopen isClopen_inter_of_disjoint_cover_clopen
 
 @[simp]
-theorem isClopen_discrete [DiscreteTopology X] (x : Set X) : IsClopen x :=
+theorem isClopen_discrete [DiscreteTopology X] (s : Set X) : IsClopen s :=
   ⟨isOpen_discrete _, isClosed_discrete _⟩
 #align is_clopen_discrete isClopen_discrete
 
