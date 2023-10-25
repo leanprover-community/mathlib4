@@ -377,7 +377,7 @@ def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' �
 #align mul_action_hom.inverse MulActionHom.inverse'
 
 lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
-  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
   inverse f g h₁ h₂ =  inverse' f g (congrFun rfl) h₁ h₂ := by
   rfl
 
