@@ -957,7 +957,7 @@ theorem id_comp (f : R →ₑ+*[φ] S) :
 
 @[simp]
 theorem comp'_id (f : R →ₑ+*[φ] S) :
-  f.comp' (MulSemiringActionHom.id M) (CompTriple.comp_id) = f :=
+    f.comp' (MulSemiringActionHom.id M) (CompTriple.comp_id) = f :=
   ext fun x => by rw [comp'_apply, id_apply]
 
 @[simp]
