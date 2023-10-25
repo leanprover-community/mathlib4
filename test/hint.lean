@@ -23,7 +23,7 @@ example : if 1 = 1 then 1 = 1 else False := by
 
 -- Check we don't provide any hints on `False`.
 example : False ∨ True := by
-  success_if_fail_with_msg "no hints available" left; hint
+  success_if_fail_with_msg "no suggestions available" left; hint
   right; trivial
 
 -- Check that tactics are sorted by the number of goals they leave.
@@ -32,7 +32,9 @@ example : 1 = 1 ∧ 2 = 2 := by
     let s₁ ← `(tactic| decide)
     let s₂ ← `(tactic| fconstructor)
     let l ← tryHint
-    guard <| l.indexOf (s₁, 0) < l.indexOf (s₂, 2)
+    let n₁ ← liftOption <| l.getIdx? (s₁, 0)
+    let n₂ ← liftOption <| l.getIdx? (s₂, 2)
+    guard <| n₁ < n₂
   decide
 
 example (h : False) : False := by

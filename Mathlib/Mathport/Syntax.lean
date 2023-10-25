@@ -48,6 +48,7 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardHypNums
+import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
@@ -161,8 +162,6 @@ open Lean Parser.Tactic
 /- S -/ syntax (name := revertDeps) "revert_deps" (ppSpace colGt ident)* : tactic
 /- S -/ syntax (name := revertAfter) "revert_after " ident : tactic
 /- S -/ syntax (name := revertTargetDeps) "revert_target_deps" : tactic
-
-/- S -/ syntax (name := hint) "hint" : tactic
 
 /- S -/ syntax (name := rcases?) "rcases?" casesTarget,* (" : " num)? : tactic
 /- S -/ syntax (name := rintro?) "rintro?" (" : " num)? : tactic
@@ -289,8 +288,6 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 /- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
 
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
-
-/- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
 
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
