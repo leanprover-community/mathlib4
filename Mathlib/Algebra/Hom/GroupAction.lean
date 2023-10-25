@@ -656,7 +656,7 @@ def comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (κ : CompTriple φ ψ χ)
     AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
 
 lemma comp_eq_comp' (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) :
-  g.comp f = g.comp' f (CompTriple.comp) := rfl
+    g.comp f = g.comp' f (CompTriple.comp) := rfl
 
 @[simp]
 theorem comp_apply (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B) (x : A) :
