@@ -19,10 +19,18 @@ set_option autoImplicit true
 
 open PFunctor
 
-/-- A polynomial functor which is used to declare `Stream' α`. -/
+/-- A polynomial functor which is equvalent to `Prod α`. This is used to declare `Stream' α`. -/
 def Stream'.shape (α : Type u) : PFunctor.{u} where
   A := α
   B := fun _ => PUnit
+
+/-- `Stream'.shape α β` is equivalent to `α × β`. -/
+@[inline]
+def Stream'.shape.abs {α : Type u} {β : Type v} : Stream'.shape α β ≃ α × β where
+  toFun := fun ⟨a, t⟩ => (a, t ⟨⟩)
+  invFun := fun (a, b) => ⟨a, fun _ => b⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := M (Stream'.shape α)
@@ -33,7 +41,7 @@ namespace Stream'
 /-- Prepend an element to a stream. -/
 @[inline]
 def cons (a : α) (s : Stream' α) : Stream' α :=
-  M.mk ⟨a, fun _ => s⟩
+  M.mk ((shape.abs (β := M (Stream'.shape α))).symm (a, s))
 #align stream.cons Stream'.cons
 
 @[inherit_doc]
@@ -41,12 +49,12 @@ infixr:67 " ::ₛ " => cons
 
 /-- Head of a stream: `Stream'.head (h ::ₛ t) = h`. -/
 @[inline]
-def head (s : Stream' α) : α := M.dest s |>.1
+def head (s : Stream' α) : α := shape.abs (M.dest s) |>.1
 #align stream.head Stream'.head
 
 /-- Tail of a stream: `Stream'.tail (h ::ₛ t) = t`. -/
 @[inline]
-def tail (s : Stream' α) : Stream' α := M.dest s |>.2 ⟨⟩
+def tail (s : Stream' α) : Stream' α := shape.abs (M.dest s) |>.2
 #align stream.tail Stream'.tail
 
 /-- Get the `n`-th element of a stream. -/
@@ -81,7 +89,7 @@ theorem mem_def {a : α} {s : Stream' α} : a ∈ s ↔ Any (Eq a) s :=
 
 @[inline]
 def corec' (f : α → β × α) : α → Stream' β :=
-  M.corec ((fun (b, a) => ⟨b, fun _ => a⟩) ∘ f)
+  M.corec (shape.abs.symm ∘ f)
 #align stream.corec' Stream'.corec'
 
 @[inline]

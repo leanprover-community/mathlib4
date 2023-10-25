@@ -472,27 +472,27 @@ theorem mk_inj {x y : F (M F)} (h : M.mk x = M.mk y) : x = y := by
 
 /-- destructor for M-types -/
 @[inline, elab_as_elim]
-protected def cCases {r : M F → Sort w} (f : ∀ x : F (M F), r (M.mk x))
+protected def cCases {r : M F → Sort w} (mk : ∀ x : F (M F), r (M.mk x))
     (x : M F) : r x :=
   suffices r (M.mk (dest x)) by
     rw [← mk_dest x]
     exact this
-  f _
+  mk _
 #align pfunctor.M.cases PFunctor.M.cCases
 
 /-- destructor for M-types -/
 @[inline, elab_as_elim]
 protected def cCasesOn {r : M F → Sort w} (x : M F)
-    (f : ∀ x : F (M F), r (M.mk x)) : r x :=
-  M.cCases f x
+    (mk : ∀ x : F (M F), r (M.mk x)) : r x :=
+  M.cCases mk x
 #align pfunctor.M.cases_on PFunctor.M.cCasesOn
 
 /-- destructor for M-types, similar to `cCasesOn` but also
 gives access directly to the root and subtrees on an M-type -/
 @[inline, elab_as_elim]
-protected def cCasesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk ⟨a, f⟩)) :
+protected def cCasesOn' {r : M F → Sort w} (x : M F) (mkMk : ∀ a f, r (M.mk ⟨a, f⟩)) :
     r x :=
-  M.cCasesOn x (fun ⟨a, g⟩ => f a g)
+  M.cCasesOn x (fun ⟨a, g⟩ => mkMk a g)
 #align pfunctor.M.cases_on' PFunctor.M.cCasesOn'
 
 theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
@@ -904,7 +904,7 @@ abbrev corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
   M.corec f x₀
 #align pfunctor.M.corec_on PFunctor.M.corecOn
 
-variable {P : PFunctor.{u}} {α : Type u}
+variable {P : PFunctor.{u}} {α : Type v}
 
 @[simp]
 theorem dest_corec (g : α → P α) (x : α) :

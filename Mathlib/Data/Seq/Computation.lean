@@ -24,10 +24,31 @@ open Function PFunctor
 
 universe u v w
 
-/-- A polynomial functor which is used to declare `Computation α`. -/
+/-- A polynomial functor which is equvalent to `Sum α`. This is used to declare `Computation α`. -/
 def Computation.shape (α : Type u) : PFunctor.{u} where
   A := Option α
   B o := bif o.isSome then PEmpty else PUnit
+
+/-- `Computation.shape α β` is equivalent to `α × β`. -/
+@[inline]
+def Computation.shape.abs {α : Type u} {β : Type v} : shape α β ≃ α ⊕ β where
+  toFun :=
+    fun
+    | ⟨some a, _⟩ => Sum.inl a
+    | ⟨none, t⟩ => Sum.inr (t ⟨⟩)
+  invFun :=
+    fun
+    | Sum.inl a => ⟨some a, PEmpty.elim⟩
+    | Sum.inr b => ⟨none, fun _ => b⟩
+  left_inv := by
+    rintro ⟨_ | _, _⟩ <;> dsimp only <;> congr; ext ⟨⟩
+  right_inv := by
+    rintro (_ | _) <;> rfl
+
+@[simp]
+theorem Computation.shape.abs_map {α : Type u} {β : Type v} {γ : Type w}
+    (f : β → γ) (x : shape α β) : shape.abs ((shape α).map f x) = Sum.map id f (shape.abs x) := by
+  rcases x with ⟨_ | _, _⟩ <;> dsimp [shape.abs]
 
 /-- `Computation α` is the type of unbounded computations returning `α`.
   An element of `Computation α` is a potentially infinite structure defined by this:
@@ -47,7 +68,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 -- constructors
 /-- `pure a` is the computation that immediately terminates with result `a`. -/
 def pure (a : α) : Computation α :=
-  M.mk ⟨some a, PEmpty.elim⟩
+  M.mk (shape.abs.symm (Sum.inl a))
 #align computation.return Computation.pure
 
 instance : CoeTC α (Computation α) :=
@@ -56,7 +77,7 @@ instance : CoeTC α (Computation α) :=
 /-- `think c` is the computation that delays for one "tick" and then performs
   computation `c`. -/
 def think (c : Computation α) : Computation α :=
-  M.mk ⟨none, fun _ => c⟩
+  M.mk ((shape.abs (β := M (shape α))).symm (Sum.inr c))
 #align computation.think Computation.think
 
 /-- `thinkN c n` is the computation that delays for `n` ticks and then performs
@@ -70,9 +91,7 @@ set_option linter.uppercaseLean3 false in
 /-- `dest c` is the destructor for `Computation α` as a coinductive type.
   It returns `inl a` if `c = pure a` and `inr c'` if `c = think c'`. -/
 def dest (c : Computation α) : α ⊕ Computation α :=
-  match M.dest c with
-  | ⟨some a, _⟩ => Sum.inl a
-  | ⟨none, t⟩ => Sum.inr (t ⟨⟩)
+  shape.abs (M.dest c)
 #align computation.destruct Computation.dest
 
 -- check for immediate result
@@ -99,7 +118,7 @@ def tail (c : Computation α) : Computation α :=
   `corec f b = think (corec f b')`. -/
 @[inline]
 def corec (f : β → α ⊕ β) : β → Computation α :=
-  M.corec ((Sum.elim (fun a => ⟨some a, PEmpty.elim⟩) (fun b => ⟨none, fun _ => b⟩)) ∘ f)
+  M.corec (shape.abs.symm ∘ f)
 #align computation.corec Computation.corec
 
 /-- `∅` is the computation that never returns, an infinite sequence of
@@ -130,24 +149,20 @@ unsafe def run (c : Computation α) : α :=
 
 @[simp]
 theorem dest_pure (a : α) : dest (pure a) = Sum.inl a := by
-  simp only [dest, pure, M.dest_mk]
+  simp only [dest, pure, M.dest_mk, Equiv.apply_symm_apply]
 #align computation.destruct_ret Computation.dest_pure
 
 @[simp]
 theorem dest_think (c : Computation α) : dest (think c) = Sum.inr c := by
-  simp only [dest, think, M.dest_mk]
+  simp only [dest, think, M.dest_mk, Equiv.apply_symm_apply]
 #align computation.destruct_think Computation.dest_think
 
 /-- Recursion principle for computations, compare with `List.casesOn`. -/
 @[eliminator, inline]
 def casesOn {C : Computation α → Sort v} (c : Computation α)
     (pure : (a : _) → C (pure a)) (think : (s : _) → C (think s)) : C c :=
-  M.cCasesOn c
-    (fun
-     | ⟨some a, t⟩ =>
-       have ht : t = PEmpty.elim := by ext ⟨⟩
-       ht ▸ pure a
-     | ⟨none, t⟩ => think (t ⟨⟩))
+  M.cCasesOn c fun x =>
+    shape.abs.symm_apply_apply x ▸ Sum.recOn (shape.abs x) pure think
 #align computation.rec_on Computation.casesOn
 
 theorem dest_eq_pure {c : Computation α} {a : α} (hc : dest c = Sum.inl a) : c = pure a := by
@@ -171,8 +186,7 @@ theorem dest_eq_think {c : Computation α} {s} (hc : dest c = Sum.inr s) : c = t
 @[simp]
 theorem corec_eq (f : β → α ⊕ β) (b : β) :
     dest (corec f b) = Sum.map id (corec f) (f b) := by
-  rw [dest, corec, M.dest_corec, comp_apply]
-  cases f b <;> simp
+  simp [dest, corec]
 #align computation.corec_eq Computation.corec_eq
 
 @[simp]

@@ -31,7 +31,7 @@ protected theorem eta (s : Stream' α) : head s ::ₛ tail s = s :=
 
 @[simp]
 theorem head_cons (a : α) (s : Stream' α) : head (a ::ₛ s) = a := by
-  rw [head, cons, M.dest_mk]
+  rw [head, cons, M.dest_mk, Equiv.apply_symm_apply]
 #align stream.head_cons Stream'.head_cons
 
 @[simp]
@@ -41,7 +41,7 @@ theorem get_zero_cons (a : α) (s : Stream' α) : get (a ::ₛ s) 0 = a :=
 
 @[simp]
 theorem tail_cons (a : α) (s : Stream' α) : tail (a ::ₛ s) = s := by
-  rw [tail, cons, M.dest_mk]
+  rw [tail, cons, M.dest_mk, Equiv.apply_symm_apply]
 #align stream.tail_cons Stream'.tail_cons
 
 @[simp]
@@ -79,8 +79,8 @@ theorem get_succ (n : Nat) (s : Stream' α) : get s (succ n) = get (tail s) n :=
 #align stream.nth_succ Stream'.get_succ
 
 @[simp]
-theorem get_succ_cons (n : Nat) (s : Stream' α) (x : α) : get (x ::ₛ s) n.succ = get s n := by
-  rw [get, tail_cons]
+theorem get_succ_cons (n : Nat) (s : Stream' α) (x : α) : get (x ::ₛ s) n.succ = get s n :=
+  rfl
 #align stream.nth_succ_cons Stream'.get_succ_cons
 
 @[simp] theorem drop_zero {s : Stream' α} : s.drop 0 = s := rfl
