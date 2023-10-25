@@ -732,17 +732,14 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
--- porting note: this takes some time, had to increase heartbeats
-set_option maxHeartbeats 500000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
     Field (Ring.DirectLimit G fun i j h => f' i j h) :=
-  { Ring.DirectLimit.commRing G fun i j h => f' i j h,
-    DirectLimit.nontrivial G fun i j h =>
-      f' i j h with
-    inv := inv G fun i j h => f' i j h
+  -- This used to include the parent CommRing and Nontrivial instances,
+  -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
+  { inv := inv G fun i j h => f' i j h
     mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
     inv_zero := dif_pos rfl }
 #align field.direct_limit.field Field.DirectLimit.field

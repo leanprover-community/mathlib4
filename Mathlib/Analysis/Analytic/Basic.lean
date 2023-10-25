@@ -70,7 +70,6 @@ notion, describing the polydisk of convergence. This notion is more specific, an
 build the general theory. We do not define it here.
 -/
 
-
 noncomputable section
 
 variable {𝕜 E F G : Type*}
@@ -111,7 +110,6 @@ theorem partialSum_continuous (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
 end FormalMultilinearSeries
 
 /-! ### The radius of a formal multilinear series -/
-
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -906,6 +904,10 @@ protected theorem AnalyticOn.continuousOn {s : Set E} (hf : AnalyticOn 𝕜 f s)
   fun x hx => (hf x hx).continuousAt.continuousWithinAt
 #align analytic_on.continuous_on AnalyticOn.continuousOn
 
+/-- Analytic everywhere implies continuous -/
+theorem AnalyticOn.continuous {f : E → F} (fa : AnalyticOn 𝕜 f univ) : Continuous f := by
+  rw [continuous_iff_continuousOn_univ]; exact fa.continuousOn
+
 /-- In a complete space, the sum of a converging power series `p` admits `p` as a power series.
 This is not totally obvious as we need to check the convergence of the series. -/
 protected theorem FormalMultilinearSeries.hasFPowerSeriesOnBall [CompleteSpace F]
@@ -1343,6 +1345,11 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     simp [Finset.piecewise]
   apply this
 #align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
+
+/-- Power series terms are analytic as we vary the origin -/
+theorem analyticAt_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) (rp : p.radius > 0) (n : ℕ) :
+    AnalyticAt 𝕜 (fun x ↦ p.changeOrigin x n) 0 :=
+  (FormalMultilinearSeries.hasFPowerSeriesOnBall_changeOrigin p n rp).analyticAt
 
 end FormalMultilinearSeries
 

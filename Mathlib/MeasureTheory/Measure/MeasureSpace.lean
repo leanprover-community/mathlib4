@@ -205,7 +205,7 @@ theorem tsum_meas_le_meas_iUnion_of_disjoint₀ {ι : Type*} [MeasurableSpace α
   rw [hS.tsum_eq]
   refine' tendsto_le_of_eventuallyLE hS tendsto_const_nhds (eventually_of_forall _)
   intro s
-  simp [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
+  simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   exact measure_mono (iUnion₂_subset_iUnion (fun i : ι => i ∈ s) fun i : ι => As i)
 
 /-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
@@ -3680,6 +3680,20 @@ def FiniteSpanningSetsIn.ofLE (h : ν ≤ μ) {C : Set (Set α)} (S : μ.FiniteS
 theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ) : SigmaFinite ν :=
   ⟨hs.out.map <| FiniteSpanningSetsIn.ofLE h⟩
 #align measure_theory.measure.sigma_finite_of_le MeasureTheory.Measure.sigmaFinite_of_le
+
+@[simp] lemma add_right_inj (μ ν₁ ν₂ : Measure α) [SigmaFinite μ] :
+    μ + ν₁ = μ + ν₂ ↔ ν₁ = ν₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+  rw [ext_iff_of_iUnion_eq_univ (iUnion_spanningSets μ)]
+  intro i
+  ext s hs
+  rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
+    measure_spanningSets_lt_top μ i).ne]
+  simp [Measure.ext_iff'] at h
+  simp [hs, h]
+
+@[simp] lemma add_left_inj (μ ν₁ ν₂ : Measure α) [SigmaFinite μ] :
+    ν₁ + μ = ν₂ + μ ↔ ν₁ = ν₂ := by rw [add_comm _ μ, add_comm _ μ, μ.add_right_inj]
 
 end Measure
 

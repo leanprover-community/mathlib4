@@ -169,7 +169,7 @@ theorem toΓSpecCApp_spec : toOpen _ (basicOpen r) ≫ X.toΓSpecCApp r = X.toTo
 @[simps app]
 def toΓSpecCBasicOpens :
     (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).1 ⟶
-      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪).1 where
+      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪).1 where
   app r := X.toΓSpecCApp r.unop
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
@@ -194,7 +194,7 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
 theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
-    ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪)
+    ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪)
     isBasis_basic_opens X.toΓSpecCBasicOpens r
   dsimp at this
   rw [←this]
