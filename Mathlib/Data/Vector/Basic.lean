@@ -577,7 +577,6 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} :
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
     dsimp [insertNth, removeNth, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
-    simp only [Fin.lt_iff_val_lt_val]
     split_ifs with hij
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
