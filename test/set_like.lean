@@ -6,15 +6,15 @@ import Mathlib.FieldTheory.Subfield
 set_option autoImplicit true
 
 section Delab
-variable [Monoid M] (S S' : Submonoid M)
+variable {M : Type u} [Monoid M] (S S' : Submonoid M)
 
-/-- info: ↥S → ↥S' : Type u_1 -/
+/-- info: ↥S → ↥S' : Type u -/
 #guard_msgs in #check S → S'
 
-/-- info: ↥S : Type u_1 -/
+/-- info: ↥S : Type u -/
 #guard_msgs in #check {x // x ∈ S}
 
-/-- info: { x // 1 * x ∈ S } : Type u_1 -/
+/-- info: { x // 1 * x ∈ S } : Type u -/
 #guard_msgs in #check {x // 1 * x ∈ S}
 
 end Delab
