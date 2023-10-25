@@ -198,7 +198,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The bundled commutative semiring giving the filtered colimit of a diagram. -/
 def colimit : CommSemiRingCat.{u} :=
-  CommSemiRingCat.of <| R  F
+  CommSemiRingCat.of <| R F
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.colimit CommSemiRingCat.FilteredColimits.colimit
 
