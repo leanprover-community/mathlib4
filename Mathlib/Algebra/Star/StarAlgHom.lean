@@ -976,7 +976,7 @@ def ofStarAlgHom (f : F) (g : G) (h₁ : ∀ x, g (f x) = x) (h₂ : ∀ x, f (g
   right_inv := h₂
   map_add' := map_add f
   map_mul' := map_mul f
-  map_smul' := map_smul f
+  map_smul' := map_smulₛₗ f
   map_star' := map_star f
 #align star_alg_equiv.of_star_alg_hom StarAlgEquiv.ofStarAlgHom
 
@@ -987,7 +987,7 @@ noncomputable def ofBijective (f : F) (hf : Function.Bijective f) : A ≃⋆ₐ[
       (hf : Function.Bijective (f : A → B)) with
     toFun := f
     map_star' := map_star f
-    map_smul' := map_smul f }
+    map_smul' := map_smulₛₗ f }
 #align star_alg_equiv.of_bijective StarAlgEquiv.ofBijective
 
 @[simp]
