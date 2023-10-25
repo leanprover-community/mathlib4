@@ -504,5 +504,4 @@ lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
   obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
   exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
 
-attribute [nolint simpNF] CategoryTheory.yonedaEquiv_yoneda_map
 end CategoryTheory
