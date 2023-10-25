@@ -567,7 +567,7 @@ theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
 instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
-  simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, mem_bot, mem_top]
+  simp (config := { dsimp := false }) only [mem_bot, Submodule.mk_eq_zero, mem_top]
 #align lie_subalgebra.subsingleton_of_bot LieSubalgebra.subsingleton_of_bot
 
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
