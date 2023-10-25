@@ -859,12 +859,7 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
   change inv.aux a φ n = _
   nth_rewrite 1 [inv.aux]
-  split_ifs
-  · rfl
-  · apply congr_arg₂ _ rfl
-    apply Finset.sum_congr
-    rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
-    intros; simp only [dite_eq_ite]; rfl
+  congr!
 #align mv_power_series.coeff_inv_aux MvPowerSeries.coeff_inv_aux
 
 /-- A multivariate formal power series is invertible if the constant coefficient is invertible.-/
