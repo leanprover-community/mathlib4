@@ -83,8 +83,8 @@ def FractionalOperation (D : Type*) (m k : ℕ) : Type _ :=
 
 /-- TODO description -/
 def FractionalOperation.tt {D : Type*} {m k n : ℕ}
-    (ω : FractionalOperation D m k) (x : (Fin m → (Fin n → D))) :
-    (Fin k → (Fin n → D)) :=
+    (ω : FractionalOperation D m k) (x : Fin m → Fin n → D) :
+    Fin k → Fin n → D :=
   Function.swap (fun (i : Fin n) => ω (Function.swap x i))
 
 /-- TODO description -/
