@@ -584,6 +584,8 @@ def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
 /-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
 def Set.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
 
+/-- Three functions between the three pairs of spaces $X_i, Y_i, Z_i$ that are compatible
+  induce a function $X_1 \times_{Y_1} Z_1 \to X_2 \times_{Y_2} Z_2$. -/
 def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {f₁ : X₁ → Y₁} {g₁ : Z₁ → Y₁} {f₂ : X₂ → Y₂} {g₂ : Z₂ → Y₂}
     (mapX : X₁ → X₂) (mapY : Y₁ → Y₂) (mapZ : Z₁ → Z₂)

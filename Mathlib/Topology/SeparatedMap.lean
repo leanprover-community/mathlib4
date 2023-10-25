@@ -43,7 +43,7 @@ theorem embedding_toPullbackDiag (f : X → Y) : Embedding (toPullbackDiag f) :=
     rw [toPullbackDiag, nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod]
     erw [Filter.comap_id, inf_idem]
 
-def Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
+lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     [TopologicalSpace X₁] [TopologicalSpace X₂] [TopologicalSpace Z₁] [TopologicalSpace Z₂]
     {f₁ : X₁ → Y₁} {g₁ : Z₁ → Y₁} {f₂ : X₂ → Y₂} {g₂ : Z₂ → Y₂}
     {mapX : X₁ → X₂} (contX : Continuous mapX) {mapY : Y₁ → Y₂}
@@ -53,6 +53,8 @@ def Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
   refine continuous_induced_rng.mpr (continuous_prod_mk.mpr ⟨?_, ?_⟩) <;>
   apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
 
+/-- A function from a topological space `X` to a type `Y` is a separated map if any two distinct
+  points in `X` with the same image in `Y` can be separated by open neighborhoods. -/
 def IsSeparatedMap (f : X → Y) : Prop := ∀ x₁ x₂, f x₁ = f x₂ →
     x₁ ≠ x₂ → ∃ s₁ s₂, IsOpen s₁ ∧ IsOpen s₂ ∧ x₁ ∈ s₁ ∧ x₂ ∈ s₂ ∧ Disjoint s₁ s₂
 
@@ -112,6 +114,8 @@ theorem IsSeparatedMap.comp_right {f : X → Y} (sep : IsSeparatedMap f) {g : A 
   rw [← inj.preimage_pullbackDiagonal]
   exact sep.preimage (cont.mapPullback cont)
 
+/-- A function from a topological space `X` is locally injective if every point of `X`
+  has a neighborhood on which `f` is injective. -/
 def IsLocallyInjective (f : X → Y) : Prop := ∀ x : X, ∃ U, IsOpen U ∧ x ∈ U ∧ U.InjOn f
 
 lemma Function.Injective.IsLocallyInjective {f : X → Y} (inj : f.Injective) :
