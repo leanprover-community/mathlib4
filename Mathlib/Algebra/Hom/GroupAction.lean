@@ -57,7 +57,7 @@ attribute [simp] CompTriple.comp_eq
 namespace CompTriple
 
 lemma comp_id {N P : Type _} {ψ : N → P} :
-  CompTriple (@id N) ψ ψ := {comp_eq := rfl}
+    CompTriple (@id N) ψ ψ := {comp_eq := rfl}
 
 lemma id_comp {M N : Type _} {φ : M → N} :
   CompTriple φ (@id N) φ := {comp_eq := rfl}
