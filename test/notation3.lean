@@ -121,26 +121,6 @@ notation3 "BAD " c "; " (x", "* => foldl (a b => b) c) " DAB" => myId x
 #guard_msgs in #check BAD 1; 2, 3 DAB
 
 section
-/--
-warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
--/
-#guard_msgs in local notation3 "#" n => Fin.mk n (by decide)
-end
-
-section
-local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
-
-example : Fin 5 := #1
-
-/--
-error: failed to reduce to 'true'
-  false
--/
-#guard_msgs in example : Fin 5 := #6
-
-end
-
-section
 variable (x : Nat)
 local notation3 "y" => x + 1
 /-- info: y : ℕ -/
@@ -172,10 +152,39 @@ has type
   ℕ : Type
 but is expected to have type
   String : Type
+---
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
+pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
+refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
+the notation expansion to make it matchable; pretty printing relies on deriving an expression
+matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
 -/
 #guard_msgs in
 notation3 "error" => idStr Nat.zero
 
+section
+/--
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
+pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
+refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
+the notation expansion to make it matchable; pretty printing relies on deriving an expression
+matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+-/
+#guard_msgs (warning, drop error) in local notation3 "#" n => Fin.mk n (by decide)
+end
+
+section
+local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
+
+example : Fin 5 := #1
+
+/--
+error: failed to reduce to 'true'
+  false
+-/
+#guard_msgs in example : Fin 5 := #6
+
+end
 
 inductive ExistsF {α : Sort u} (p : α → Prop) : Prop where
   | intro (w : α) (h : p w) : ExistsF p
@@ -247,7 +256,6 @@ notation3 "∑ " (...) ", "
 
 instance (n : Nat) : Fintype (Fin n) := .mk (.mk fun _ => False)
 instance {p : Prop} [Decidable p] : Fintype (PLift p) := .mk (.mk fun _ => False)
-
 section
 variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
 
