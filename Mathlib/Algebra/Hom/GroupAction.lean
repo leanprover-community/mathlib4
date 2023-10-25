@@ -63,7 +63,7 @@ lemma id_comp {M N : Type _} {φ : M → N} :
     CompTriple φ (@id N) φ := {comp_eq := rfl}
 
 lemma comp {M N P : Type _}
-  {φ : M → N} {ψ : N → P} :
+    {φ : M → N} {ψ : N → P} :
   CompTriple φ ψ  (ψ.comp φ) := {comp_eq := rfl}
 
 lemma comp_inv {M N : Type _} {φ : M → N} {ψ : N → M} (h : Function.RightInverse φ ψ):
