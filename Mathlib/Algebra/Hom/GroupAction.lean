@@ -390,7 +390,7 @@ theorem inverse'_inverse'
   ext fun _ => rfl
 
 theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
-  {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
+    {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
   (inverse' f g k₂ h₁ h₂).comp' f (CompTriple.comp_inv k₁) = MulActionHom.id M := by
   rw [ext_iff]
