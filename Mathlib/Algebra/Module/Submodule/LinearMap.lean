@@ -289,42 +289,6 @@ end
 
 end AddCommMonoid
 
-section Module
-
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-  [Module R M] [Module R M₂] [Module R M₃] [Module S M₂] [Module S M₃] [SMulCommClass R S M₂]
-  [SMulCommClass R S M₃] (f : M →ₗ[R] M₂)
-
-
-variable (S)
-
-section
-
-variable (R M)
-
-/-- The equivalence between R-linear maps from `R` to `M`, and points of `M` itself.
-This says that the forgetful functor from `R`-modules to types is representable, by `R`.
-
-This as an `S`-linear equivalence, under the assumption that `S` acts on `M` commuting with `R`.
-When `R` is commutative, we can take this to be the usual action with `S = R`.
-Otherwise, `S = ℕ` shows that the equivalence is additive.
-See note [bundled maps over different rings].
--/
-@[simps]
-def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃ₗ[S] M :=
-  { applyₗ' S (1 : R) with
-    toFun := fun f => f 1
-    invFun := smulRight (1 : R →ₗ[R] R)
-    left_inv := fun f => by
-      ext
-      simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
-    right_inv := fun x => by simp }
-#align linear_map.ring_lmap_equiv_self LinearMap.ringLmapEquivSelf
-
-end
-
-end Module
-
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
