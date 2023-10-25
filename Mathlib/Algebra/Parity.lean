@@ -71,7 +71,31 @@ theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a :
 instance [DecidablePred (@IsSquare α _)] : DecidablePred (@IsSquare (αᵐᵒᵖ) _) :=
   fun _ => decidable_of_iff _ isSquare_unop_iff
 
+@[simp]
+theorem even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.rfl
+
+@[simp]
+theorem isSquare_toMul_iff {a : Additive α} : IsSquare (Additive.toMul a) ↔ Even a := Iff.rfl
+
+instance [DecidablePred (@IsSquare α _)] : DecidablePred (@Even (Additive α) _) :=
+  fun _ => decidable_of_iff _ isSquare_toMul_iff
+
 end Mul
+
+section Add
+variable [Add α]
+
+@[simp]
+theorem isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even a := Iff.rfl
+
+@[simp]
+theorem even_toAdd_iff {a : Multiplicative α} :
+  Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
+
+instance [DecidablePred (@Even α _)] : DecidablePred (@IsSquare (Multiplicative α) _) :=
+  fun _ => decidable_of_iff _ even_toAdd_iff
+
+end Add
 
 @[to_additive (attr := simp)]
 theorem isSquare_one [MulOneClass α] : IsSquare (1 : α) :=
