@@ -1,5 +1,6 @@
 import Mathlib.Topology.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Analysis.Calculus.ContDiffDef
 
 set_option autoImplicit true
 section basic
@@ -31,11 +32,10 @@ example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuit
 
 -- Porting note: port the tests from mathlib3 once we have the necessary theory files
 
-/- Todo: restore this test
-example [TopologicalSpace X] [TopologicalSpace Y]
-  (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
-  (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) :=
-  by continuity -/
+example [TopologicalSpace X] [TopologicalSpace Y] (f₁ f₂ : X → Y) (hf₁ : Continuous f₁)
+    (hf₂ : Continuous f₂) (g : Y → ℝ) (hg : Continuous g) :
+    Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
+  continuity
 
 -- Examples taken from `Topology.ContinuousFunction.Basic`:
 
@@ -61,6 +61,9 @@ example (b : Y) : Continuous (@Prod.mk Y X b) := by continuity
 
 example (f : C(X × Y, Z)) (a : X) : Continuous (Function.curry f a) := --by continuity
   f.continuous.comp (continuous_const.prod_mk continuous_id)
+
+example {x : ℝ} {n : ℕ} : Continuous (fun t : ℝ => (x - t) ^ (n + 1)) := by
+  continuity
 
 end basic
 
