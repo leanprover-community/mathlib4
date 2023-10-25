@@ -71,13 +71,13 @@ theorem mem_nhdsSet_iff_exists : s ∈ 𝓝ˢ t ↔ ∃ U : Set α, IsOpen U ∧
   rw [← subset_interior_iff_mem_nhdsSet, subset_interior_iff]
 #align mem_nhds_set_iff_exists mem_nhdsSet_iff_exists
 
-/-- A proposition is true on a set neighborhood of `s` if it is true on a larger open set -/
+/-- A proposition is true on a set neighborhood of `s` iff it is true on a larger open set -/
 theorem eventually_nhdsSet_iff_exists {p : α → Prop} :
     (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∃ t, IsOpen t ∧ s ⊆ t ∧ ∀ x, x ∈ t → p x :=
   mem_nhdsSet_iff_exists
 
 /-- A proposition is true on a set neighborhood of `s`
-if it is eventually true near each point in the set. -/
+iff it is eventually true near each point in the set. -/
 theorem eventually_nhdsSet_iff_forall {p : α → Prop} :
     (∀ᶠ x in 𝓝ˢ s, p x) ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝 x, p y :=
   mem_nhdsSet_iff_forall
