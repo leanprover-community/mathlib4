@@ -137,11 +137,11 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
     have := associator_naturality (F.map f₁) (F.map f₂) (F.map f₃)
     simp [fData.associator_eq, fData.tensorHom_eq]
-    simp_rw [←assoc, ←tensor_comp, assoc, Iso.inv_hom_id, ←assoc]
+    simp_rw [←assoc, ←tensor_comp, assoc, Iso.hom_inv_id, ←assoc]
     congr 1
     conv_rhs => rw [←comp_id (F.map f₁), ←id_comp (F.map f₁)]
     simp only [tensor_comp]
-    simp only [tensor_id, comp_id, assoc, tensor_inv_hom_id_assoc, id_comp]
+    simp only [tensor_id, comp_id, assoc, tensor_hom_inv_id_assoc, id_comp]
     slice_rhs 2 3 => rw [←this]
     simp only [← assoc, Iso.inv_hom_id, comp_id]
     congr 2
