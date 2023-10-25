@@ -80,19 +80,11 @@ instance (μ : Type*) [AddMonoid μ] :
   ext n xy
   rw [ha, hb]
 
--- The goal of these two functions is to allow to rewrite antidiagonal/mem_antidiagonal
+-- The goal of this function is to allow to rewrite antidiagonal
 -- when the decidability instances obsucate Lean
--- Are they useful at all?
 lemma HasAntidiagonal.antidiagonal_rfl (μ : Type*) [AddMonoid μ]
     [H1 : HasAntidiagonal μ] [H2 : HasAntidiagonal μ] :
-    H1.antidiagonal = H2.antidiagonal := by
-  have : H1 = H2 := by
-    apply Subsingleton.elim
-  rw [this]
-
-lemma HasAntidiagonal.mem_antidiagonal' (μ : Type*) [AddMonoid μ]
-    [HasAntidiagonal μ] (n : μ) (p : μ × μ):
-    p ∈ antidiagonal n ↔ p.fst + p.snd = n := mem_antidiagonal
+    H1.antidiagonal = H2.antidiagonal := by congr!
 
 variable {μ : Type*}
   [CanonicallyOrderedAddCommMonoid μ]
