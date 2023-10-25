@@ -138,8 +138,8 @@ theorem cond_not {α} (b : Bool) (t e : α) : cond (!b) t e = cond b e t := by c
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
-theorem coe_bool_iff : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
-#align bool.coe_bool_iff Bool.coe_bool_iff
+theorem coe_iff_coe : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
+#align bool.coe_bool_iff Bool.coe_iff_coe
 
 theorem eq_true_of_ne_false : ∀ {a : Bool}, a ≠ false → a = true := by decide
 #align bool.eq_tt_of_ne_ff Bool.eq_true_of_ne_false

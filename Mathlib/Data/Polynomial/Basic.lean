@@ -1223,6 +1223,14 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
 
+theorem C_neg : C (-a) = -C a :=
+  RingHom.map_neg C a
+#align polynomial.C_neg Polynomial.C_neg
+
+theorem C_sub : C (a - b) = C a - C b :=
+  RingHom.map_sub C a b
+#align polynomial.C_sub Polynomial.C_sub
+
 end Ring
 
 instance commRing [CommRing R] : CommRing R[X] :=

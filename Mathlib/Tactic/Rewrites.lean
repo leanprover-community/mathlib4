@@ -12,6 +12,7 @@ import Mathlib.Tactic.Cache
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
+import Mathlib.Tactic.SolveByElim
 
 /-!
 # The `rewrites` tactic.
@@ -22,13 +23,23 @@ import Mathlib.Control.Basic
 
 Suggestions are printed as `rw [h]` or `rw [←h]`.
 
-## Future work
-
-We could try discharging side goals via `assumption` or `solve_by_elim`.
-
 -/
 
 set_option autoImplicit true
+
+namespace Lean.Meta
+
+/-- Extract the lemma, with arguments, that was used to produce a `RewriteResult`. -/
+-- This assumes that `r.eqProof` was constructed as:
+-- `mkAppN (mkConst ``Eq.ndrec [u1, u2]) #[α, a, motive, h₁, b, h₂]`
+-- and we want `h₂`.
+def RewriteResult.by? (r : RewriteResult) : Option Expr :=
+  if r.eqProof.isAppOfArity ``Eq.ndrec 6 then
+    r.eqProof.getArg! 5
+  else
+    none
+
+end Lean.Meta
 
 namespace Mathlib.Tactic.Rewrites
 
@@ -136,6 +147,9 @@ structure RewriteResult where
   weight : Nat
   /-- The result from the `rw` tactic. -/
   result : Meta.RewriteResult
+  /-- Pretty-printed result. -/
+  -- This is an `Option` so that it can be computed lazily.
+  ppResult? : Option String
   /-- Can the new goal in `result` be closed by `with_reducible rfl`? -/
   -- This is an `Option` so that it can be computed lazily.
   rfl? : Option Bool
@@ -157,6 +171,38 @@ def RewriteResult.computeRfl (r : RewriteResult) : MetaM RewriteResult := do
   catch _ =>
     pure { r with rfl? := some false }
 
+/-- Pretty print the result of the rewrite, and store it for later use. -/
+def RewriteResult.prepare_ppResult (r : RewriteResult) : MetaM RewriteResult := do
+  if let some _ := r.ppResult? then
+    return r
+  else
+    return { r with ppResult? := some ((← ppExpr r.result.eNew).pretty) }
+
+/--
+Pretty print the result of the rewrite.
+If this will be done more than once you should use `prepare_ppResult`
+-/
+def RewriteResult.ppResult (r : RewriteResult) : MetaM String :=
+  if let some pp := r.ppResult? then
+    return pp
+  else
+    return (← ppExpr r.result.eNew).pretty
+
+/-- Shortcut for calling `solveByElim`. -/
+def solveByElim (goals : List MVarId) (depth : Nat := 6) : MetaM PUnit := do
+  -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
+  -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
+  let cfg : SolveByElim.Config :=
+    { maxDepth := depth, exfalso := false, symm := true }
+  let [] ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
+    | failure
+
+/-- Should we try discharging side conditions? If so, using `assumption`, or `solve_by_elim`? -/
+inductive SideConditions
+| none
+| assumption
+| solveByElim
+
 /--
 Find lemmas which can rewrite the goal.
 
@@ -168,7 +214,7 @@ See also `rewrites` for a more convenient interface.
 -- so there is no opportunity for `← getMCtx` to record the context at the call site.
 def rewritesCore (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (ctx : MetavarContext) (goal : MVarId) (target : Expr) :
+    (ctx : MetavarContext) (goal : MVarId) (target : Expr) (side : SideConditions := .solveByElim) :
     MLList MetaM RewriteResult := MLList.squash fun _ => do
   -- Get all lemmas which could match some subexpression
   let candidates := (← lemmas.1.getSubexpressionMatches target)
@@ -206,24 +252,48 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
     let some result ← try? do goal.rewrite target expr symm
       | return none
-    return if result.mvarIds.isEmpty then
-      some ⟨expr, symm, weight, result, none, ← getMCtx⟩
+    if result.mvarIds.isEmpty then
+      return some ⟨expr, symm, weight, result, none, none, ← getMCtx⟩
     else
-      -- TODO Perhaps allow new goals? Try closing them with solveByElim?
-      -- A challenge is knowing what suggestions to print if we do so!
-      none
+      -- There are side conditions, which we try to discharge using local hypotheses.
+      match (← match side with
+        | .none => pure none
+        | .assumption => try? do _ ← result.mvarIds.mapM fun m => m.assumption
+        | .solveByElim => try? do solveByElim result.mvarIds) with
+      | none => return none
+      | some _ =>
+        -- If we succeed, we need to reconstruct the expression to report that we rewrote by.
+        let some expr := result.by? | return none
+        let expr ← instantiateMVars expr
+        let (expr, symm) := if expr.isAppOfArity ``Eq.symm 4 then
+            (expr.getArg! 3, true)
+          else
+            (expr, false)
+        return some ⟨expr, symm, weight, result, none, none, ← getMCtx⟩
+
+/--
+Find lemmas which can rewrite the goal, and deduplicate based on pretty-printed results.
+Note that this builds a `HashMap` containing the results, and so may consume significant memory.
+-/
+def rewritesDedup (hyps : Array (Expr × Bool × Nat))
+    (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
+    (mctx : MetavarContext)
+    (goal : MVarId) (target : Expr) (side : SideConditions := .solveByElim) :
+    MLList MetaM RewriteResult := MLList.squash fun _ => do
+  return rewritesCore hyps lemmas mctx goal target side
+    -- Don't report duplicate results.
+    -- (TODO: a config flag to disable this,
+    -- if distinct-but-pretty-print-the-same results are desirable?)
+    |>.mapM (fun r => r.prepare_ppResult)
+    |>.dedupBy (fun r => pure r.ppResult?)
 
 /-- Find lemmas which can rewrite the goal. -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
     (lemmas : DiscrTree (Name × Bool × Nat) s × DiscrTree (Name × Bool × Nat) s)
-    (goal : MVarId) (target : Expr) (stopAtRfl : Bool := false) (max : Nat := 20)
+    (goal : MVarId) (target : Expr)
+    (side : SideConditions := .solveByElim) (stopAtRfl : Bool := false) (max : Nat := 20)
     (leavePercentHeartbeats : Nat := 10) : MetaM (List RewriteResult) := do
-  let results ← rewritesCore hyps lemmas (← getMCtx) goal target
-    -- Don't report duplicate results.
-    -- (TODO: we later pretty print results; save them here?)
-    -- (TODO: a config flag to disable this,
-    -- if distinct-but-pretty-print-the-same results are desirable?)
-    |>.dedupBy (fun r => do pure <| (← ppExpr r.result.eNew).pretty)
+  let results ← rewritesDedup hyps lemmas (← getMCtx) goal target side
     -- Stop if we find a rewrite after which `with_reducible rfl` would succeed.
     |>.mapM RewriteResult.computeRfl -- TODO could simply not compute this if `stopAtRfl` is False
     |>.takeUpToFirst (fun r => stopAtRfl && r.rfl? = some true)
