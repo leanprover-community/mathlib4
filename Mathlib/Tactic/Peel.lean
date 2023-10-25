@@ -94,7 +94,7 @@ def peelQuantifier (goal : MVarId) (e : Expr) (n : Option Name := none) (n' : Op
     | (``Exists, #[_, .lam _ t₁ b₁ _]), (``Exists, #[_, .lam n₂ t₂ b₂ c]) =>
       unless ← isDefEq t₁ t₂ do
         return (none, [goal])
-      let all_imp ← mkFreshExprMVar <| ← withoutModifyingState <| withLocalDecl n₂ c t₂ fun x => do
+      let all_imp ← mkFreshExprMVar <| ← withLocalDecl n₂ c t₂ fun x => do
         mkForallFVars #[x] (← mkArrow (b₁.instantiate1 x) (b₂.instantiate1 x))
       goal.assign (← mkAppM ``Exists.imp #[all_imp, e])
       let (fvars, new_goal) ← all_imp.mvarId!.introN 2 [n.getD n₂, n']
