@@ -141,8 +141,8 @@ theorem isClopen_range_inl : IsClopen (range (Sum.inl : X → X ⊕ Y)) :=
 theorem isClopen_range_inr : IsClopen (range (Sum.inr : Y → X ⊕ Y)) :=
   ⟨isOpen_range_inr, isClosed_range_inr⟩
 
-theorem isClopen_range_sigmaMk {ι : Type*} {σ : ι → Type*} [∀ i, TopologicalSpace (σ i)] {i : ι} :
-    IsClopen (Set.range (@Sigma.mk ι σ i)) :=
+theorem isClopen_range_sigmaMk {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {i : ι} :
+    IsClopen (Set.range (@Sigma.mk ι X i)) :=
   ⟨openEmbedding_sigmaMk.open_range, closedEmbedding_sigmaMk.closed_range⟩
 #align clopen_range_sigma_mk isClopen_range_sigmaMk
 
