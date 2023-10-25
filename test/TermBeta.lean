@@ -30,3 +30,8 @@ set_option pp.unicode.fun true
 
 /-- info: true && false : Bool -/
 #guard_msgs in #check beta% (· && ·) true false
+
+abbrev reducibleId : Bool → Bool := fun x => x
+
+/-- info: reducibleId true : Bool -/
+#guard_msgs in #check reducibleId true
