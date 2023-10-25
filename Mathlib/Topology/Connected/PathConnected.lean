@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UnitInterval
 
 #align_import topology.path_connected from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"

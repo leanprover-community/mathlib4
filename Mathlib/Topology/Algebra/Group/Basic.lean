@@ -38,7 +38,7 @@ open Classical Set Filter TopologicalSpace Function Topology Pointwise MulOpposi
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {G : Type w} {H : Type x}
+variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
 section ContinuousMulGroup
 

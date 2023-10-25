@@ -218,7 +218,7 @@ theorem coe_of_s_get?_rat_eq :
   simp only [Stream'.Seq.get?]
   rw [← IntFractPair.coe_stream'_rat_eq v_eq_q]
   rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (_ | ⟨_, _⟩) <;>
-    simp [Stream'.map, Stream'.nth, succ_nth_stream_eq]
+    simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 #align generalized_continued_fraction.coe_of_s_nth_rat_eq GeneralizedContinuedFraction.coe_of_s_get?_rat_eq
 
 theorem coe_of_s_rat_eq : ((of q).s.map (Pair.map ((↑))) : Stream'.Seq <| Pair K) = (of v).s := by
