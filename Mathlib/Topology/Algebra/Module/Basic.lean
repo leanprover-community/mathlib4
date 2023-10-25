@@ -1532,14 +1532,15 @@ theorem projKerOfRightInverse_apply_idem [TopologicalAddGroup M] (f₁ : M →SL
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : LinearMap.ker f₁) :
     f₁.projKerOfRightInverse f₂ h x = x := by
   ext1
-  simp
+  simp only [coe_projKerOfRightInverse_apply, LinearMap.map_coe_ker, map_zero, sub_zero]
 #align continuous_linear_map.proj_ker_of_right_inverse_apply_idem ContinuousLinearMap.projKerOfRightInverse_apply_idem
 
 @[simp]
 theorem projKerOfRightInverse_comp_inv [TopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (y : M₂) :
     f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
-  Subtype.ext_iff_val.2 <| by simp [h y]
+  Subtype.ext_iff_val.2 <| by
+    simp only [coe_projKerOfRightInverse_apply, h y, sub_self, ZeroMemClass.coe_zero]
 #align continuous_linear_map.proj_ker_of_right_inverse_comp_inv ContinuousLinearMap.projKerOfRightInverse_comp_inv
 
 end
@@ -2478,7 +2479,9 @@ linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
     M ≃L[R] M₂ × ker f₁ :=
   equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod (ker f₁).subtypeL)
-    (fun x => by simp) fun ⟨x, y⟩ => by
+    (fun x => by simp only [ContinuousLinearMap.prod_apply, ContinuousLinearMap.coprod_apply,
+      Submodule.subtypeL_apply, ContinuousLinearMap.coe_projKerOfRightInverse_apply,
+      add_sub_cancel'_right]) fun ⟨x, y⟩ => by
       -- Porting note: `simp` timeouts.
       rw [ContinuousLinearMap.coprod_apply,
         Submodule.subtypeL_apply, _root_.map_add, ContinuousLinearMap.prod_apply, h x,
