@@ -428,7 +428,7 @@ theorem preVal_mul {x y : ModP K v O hv p} (hxy0 : x * y ≠ 0) :
   have hy0 : y ≠ 0 := mt (by rintro rfl; rw [mul_zero]) hxy0
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
-  rw [← RingHom.map_mul] at hxy0 ⊢
+  rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_mul, v.map_mul]
 #align mod_p.pre_val_mul ModP.preVal_mul
 
@@ -442,7 +442,7 @@ theorem preVal_add (x y : ModP K v O hv p) :
   · rw [hxy0, preVal_zero]; exact zero_le _
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
-  rw [← RingHom.map_add] at hxy0 ⊢
+  rw [← map_add (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hx0, preVal_mk hy0, preVal_mk hxy0, RingHom.map_add]; exact v.map_add _ _
 #align mod_p.pre_val_add ModP.preVal_add
 
@@ -479,8 +479,8 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective y
   have h1p : (0 : ℝ) < 1 / p := one_div_pos.2 (Nat.cast_pos.2 hp.1.pos)
-  rw [← RingHom.map_mul]; rw [← RingHom.map_pow] at hx hy
-  rw [← v_p_lt_val hv] at hx hy ⊢
+  erw [← RingHom.map_mul]; erw [← RingHom.map_pow] at hx hy
+  erw [← v_p_lt_val hv] at hx hy ⊢
   rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_nat_cast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
   rw [RingHom.map_mul, v.map_mul]; refine' lt_of_le_of_lt _ (mul_lt_mul₀ hx hy)
@@ -540,7 +540,7 @@ theorem valAux_eq {f : PreTilt K v O hv p} {n : ℕ} (hfn : coeff _ _ n f ≠ 0)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le (Nat.find_min' h hfn)
   induction' k with k ih
   · rfl
-  obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff _ _ (Nat.find h + k + 1) f)
+  obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective (coeff (ModP K v O hv p) p (Nat.find h + k + 1) f)
   have h1 : (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0 := hx.symm ▸ hfn
   have h2 : (Ideal.Quotient.mk _ (x ^ p) : ModP K v O hv p) ≠ 0 := by
     erw [RingHom.map_pow, hx, ← RingHom.map_pow, coeff_pow_p]
