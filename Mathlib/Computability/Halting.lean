@@ -226,7 +226,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
           obtain rfl | rfl := h <;> simp [ComputablePred, Set.mem_empty_iff_false] <;>
-            exact ⟨by infer_instance, Computable.const _⟩ }⟩
+            exact ⟨inferInstance, Computable.const _⟩ }⟩
 #align computable_pred.rice₂ ComputablePred.rice₂
 
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
