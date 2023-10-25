@@ -508,6 +508,7 @@ theorem pellZd_succ_succ (n) :
   have : (1 : ℤ√(d a1)) + ⟨a, 1⟩ * ⟨a, 1⟩ = ⟨a, 1⟩ * (2 * a) := by
     rw [Zsqrtd.coe_nat_val]
     change (⟨_, _⟩ : ℤ√(d a1)) = ⟨_, _⟩
+    dsimp
     rw [dz_val]
     dsimp [az]
     rw [Zsqrtd.ext]

@@ -890,8 +890,9 @@ scoped[ComplexOrder] attribute [instance] IsROrC.toStarOrderedRing
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
 def toStrictOrderedCommRing : StrictOrderedCommRing K where
+  __ := toDenselyNormedField (K := K)
+  __ := StarOrderedRing.toOrderedAddCommMonoid
   zero_le_one := by simp [@IsROrC.le_iff_re_im K]
-  add_le_add_left _ _ := add_le_add_left
   mul_pos z w hz hw := by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
