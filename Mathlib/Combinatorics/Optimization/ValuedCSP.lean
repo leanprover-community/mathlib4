@@ -89,7 +89,7 @@ For documentation purposes, here is a "less compact" version of the upcoming two
 def FractionalOperation.tt {D : Type} {m k n : ℕ}
     (ω : FractionalOperation D m k) (x : (Fin m → (Fin n → D))) :
     (Fin k → (Fin n → D)) :=
-  Matrix.transpose (fun (i : Fin n) => ω ((Matrix.transpose x) i))
+  swap (fun (i : Fin n) => ω (swap x i))
 
 def Function.AdmitsFractional {D C : Type} [OrderedAddCommMonoid C] {n m k : ℕ}
     (f : (Fin n → D) → C) (ω : FractionalOperation D m k) : Prop :=
