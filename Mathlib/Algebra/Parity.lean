@@ -63,6 +63,14 @@ theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
 #align is_square_op_iff isSquare_op_iff
 #align even_op_iff even_op_iff
 
+@[to_additive]
+theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a := by
+  rw [←isSquare_op_iff, op_unop]
+
+@[to_additive]
+instance [DecidablePred (@IsSquare α _)] : DecidablePred (@IsSquare (αᵐᵒᵖ) _) :=
+  fun _ => decidable_of_iff _ isSquare_unop_iff
+
 end Mul
 
 @[to_additive (attr := simp)]
