@@ -2539,7 +2539,8 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
   ext n
   simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
-    Finset.Nat.filter_fst_eq_antidiagonal, Finset.sum_const_zero, add_zero]
+    Finset.sum_const_zero, add_zero]
+  rw [Finset.filter_fst_eq_antidiagonal n (Part.get (order φ) h)]
   split_ifs with hn
   · simp [tsub_add_cancel_of_le hn]
   · simp only [Finset.sum_empty]
