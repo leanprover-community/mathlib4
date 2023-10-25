@@ -479,6 +479,7 @@ theorem IsAffineOpen.opens_map_fromSpec_basicOpen {X : Scheme} {U : Opens X}
   congr
   erw [← hU.SpecΓIdentity_hom_app_fromSpec]
   rw [Iso.inv_hom_id_app_assoc]
+  rfl
 #align algebraic_geometry.is_affine_open.opens_map_from_Spec_basic_open AlgebraicGeometry.IsAffineOpen.opens_map_fromSpec_basicOpen
 
 /-- The canonical map `Γ(𝒪ₓ, D(f)) ⟶ Γ(Spec 𝒪ₓ(U), D(Spec_Γ_identity.inv f))`
@@ -719,11 +720,10 @@ theorem IsAffineOpen.basicOpen_fromSpec_app {X : Scheme} {U : Opens X} (hU : IsA
   congr
   -- Porting note : change `rw` to `erw`
   erw [← comp_apply, ← comp_apply]
-  rw [Category.assoc, ← Functor.map_comp (self := (Scheme.Spec.obj <|
-    op (X.presheaf.obj <| op U)).presheaf), eqToHom_op,
-    eqToHom_op, eqToHom_trans, eqToHom_refl, CategoryTheory.Functor.map_id]
+  rw [Category.assoc, ← Functor.map_comp_assoc,
+    eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl, CategoryTheory.Functor.map_id]
   -- Porting note : change `rw` to `erw`
-  erw [Category.comp_id]
+  erw [← Category.assoc, Category.comp_id]
   rw [← Iso.app_inv, Iso.inv_hom_id]
   rfl
 #align algebraic_geometry.is_affine_open.basic_open_from_Spec_app AlgebraicGeometry.IsAffineOpen.basicOpen_fromSpec_app
@@ -731,7 +731,7 @@ theorem IsAffineOpen.basicOpen_fromSpec_app {X : Scheme} {U : Opens X} (hU : IsA
 theorem IsAffineOpen.fromSpec_map_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (f : X.presheaf.obj (op U)) :
     (Opens.map hU.fromSpec.val.base).obj (X.basicOpen f) = PrimeSpectrum.basicOpen f := by
-  simp only [IsAffineOpen.basicOpen_fromSpec_app, Scheme.preimage_basicOpen, eq_self_iff_true]
+  erw [Scheme.preimage_basicOpen, IsAffineOpen.basicOpen_fromSpec_app]
 #align algebraic_geometry.is_affine_open.from_Spec_map_basic_open AlgebraicGeometry.IsAffineOpen.fromSpec_map_basicOpen
 
 theorem IsAffineOpen.basicOpen_union_eq_self_iff {X : Scheme} {U : Opens X}
