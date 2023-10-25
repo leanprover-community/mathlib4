@@ -1087,11 +1087,11 @@ theorem algEquiv_symm_mk (x : R) (y : M) : (algEquiv M S).symm (mk' S x y) = mk 
 #align localization.alg_equiv_symm_mk Localization.algEquiv_symm_mk
 
 lemma coe_algEquiv :
-  (Localization.algEquiv M S : Localization M →+* S) =
+    (Localization.algEquiv M S : Localization M →+* S) =
     IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
 
 lemma coe_algEquiv_symm :
-  ((Localization.algEquiv M S).symm : S →+* Localization M) =
+    ((Localization.algEquiv M S).symm : S →+* Localization M) =
     IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
 
 end Localization
