@@ -57,7 +57,9 @@ still introduce a single name such as `with h_peel` for the new hypothesis.
 In addition, `peel` supports goals of the form `(∀ x, p x) ↔ ∀ x, q x`, or likewise for any
 other quantifier. In this case, there is no hypothesis or term to supply, but otherwise the syntax
 is the same. So for such goals, the syntax is `peel 1` or `peel with x`, and after which the
-resulting goal is `p x ↔ q x`.
+resulting goal is `p x ↔ q x`. The `congr!` tactic also applies to goals of this form, but `peel`
+supports them both because it is simple to do so, and for pedagogical purposes. Moreover, since
+`peel` *only* applies to quantifiers, its behavior is a bit more predictable.
 
 Finally, the user may supply a term `e` via `... using e` in order to close the goal
 immediately. In particular, `peel h using e` is equivalent to `peel h; exact e`. The `using` syntax
