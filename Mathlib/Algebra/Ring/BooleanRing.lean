@@ -589,19 +589,25 @@ def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (As
 
 open Bool
 
+instance : Zero Bool where zero := false
+
+instance : One Bool where one := true
+
+instance : Add Bool where add := xor
+
+instance : Neg Bool where neg := id
+
+instance : Sub Bool where sub := xor
+
+instance : Mul Bool where mul := and
+
 instance : BooleanRing Bool where
-  add := xor
   add_assoc := xor_assoc
-  zero := false
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  neg := id
-  sub := xor
   sub_eq_add_neg _ _ := rfl
   add_left_neg := Bool.xor_self
   add_comm := xor_comm
-  one := true
-  mul := and
   mul_assoc := and_assoc
   one_mul := Bool.true_and
   mul_one := Bool.and_true
@@ -610,5 +616,5 @@ instance : BooleanRing Bool where
   mul_self := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
-  nsmul := letI : Zero Bool := ⟨false⟩; letI : Add Bool := ⟨xor⟩; nsmulRec
-  zsmul := letI : Zero Bool := ⟨false⟩; letI : Add Bool := ⟨xor⟩; letI : Neg Bool := ⟨id⟩; zsmulRec
+  nsmul := nsmulRec
+  zsmul := zsmulRec

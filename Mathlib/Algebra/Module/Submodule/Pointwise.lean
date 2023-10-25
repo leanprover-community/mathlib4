@@ -152,15 +152,18 @@ end Neg
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M)
-    where
-  add := (· ⊔ ·)
-  add_assoc _ _ _ := sup_assoc
+instance pointwiseZero : Zero (Submodule R M) where
   zero := ⊥
+
+instance pointwiseAdd : Add (Submodule R M) where
+  add := (· ⊔ ·)
+
+instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M) where
+  add_assoc _ _ _ := sup_assoc
   zero_add _ := bot_sup_eq
   add_zero _ := sup_bot_eq
   add_comm _ _ := sup_comm
-  nsmul := letI : Zero (Submodule R M) := ⟨⊥⟩; letI : Add (Submodule R M) := ⟨Sup.sup⟩; nsmulRec
+  nsmul := nsmulRec
 #align submodule.pointwise_add_comm_monoid Submodule.pointwiseAddCommMonoid
 
 @[simp]
