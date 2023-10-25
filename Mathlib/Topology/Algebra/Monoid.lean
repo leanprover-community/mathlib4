@@ -573,7 +573,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
   ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity_norm)]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow
