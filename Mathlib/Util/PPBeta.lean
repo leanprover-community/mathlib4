@@ -40,6 +40,9 @@ Additional caveats:
 
 open Lean PrettyPrinter Delaborator
 
+/-- Get the state of the `pp.beta` option. -/
+def Lean.getPPBeta (o : Options) : Bool := o.get pp.beta.name false
+
 namespace Mathlib.Util.PPBeta
 
 /-- Beta reduce all expressions.

@@ -27,7 +27,4 @@ register_option pp.beta : Bool := {
   descr    := "(pretty printer) apply beta-reduction when pretty printing"
 }
 
-/-- Get the state of the `pp.beta` option. -/
-def getPPBeta (o : Options) : Bool := o.get pp.beta.name false
-
 end Lean
