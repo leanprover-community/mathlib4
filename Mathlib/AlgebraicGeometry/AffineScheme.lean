@@ -317,17 +317,6 @@ theorem fromSpec_base_preimage :
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 #align algebraic_geometry.is_affine_open.from_Spec_base_preimage AlgebraicGeometry.IsAffineOpen.fromSpec_base_preimage
 
-theorem _root_.AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
-    {X : Scheme} {U V : Opens X} (h : U = V) (W) :
-    (Scheme.Spec.map (X.presheaf.map (eqToHom h).op).op).val.c.app W =
-      eqToHom (by cases h; induction W using Opposite.rec'; dsimp; simp) := by
-  have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
-    rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
-  cases h
-  refine' (Scheme.congr_app this _).trans _
-  simp [eqToHom_map]
-#align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
-
 -- Doesn't build without the `IsAffine` instance but the linter complains
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :

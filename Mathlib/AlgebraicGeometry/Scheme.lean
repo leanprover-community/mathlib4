@@ -391,4 +391,14 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat}
   exact (Iso.hom_inv_id_apply (SpecΓIdentity.app R) f).symm
 #align algebraic_geometry.basic_open_eq_of_affine' AlgebraicGeometry.basicOpen_eq_of_affine'
 
+theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U = V) (W) :
+    (Scheme.Spec.map (X.presheaf.map (eqToHom h).op).op).val.c.app W =
+      eqToHom (by cases h; induction W using Opposite.rec'; dsimp; simp) := by
+  have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
+    rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
+  cases h
+  refine' (Scheme.congr_app this _).trans _
+  simp [eqToHom_map]
+#align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
+
 end AlgebraicGeometry
