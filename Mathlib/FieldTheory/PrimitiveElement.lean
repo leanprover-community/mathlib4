@@ -322,13 +322,33 @@ theorem finiteDimensional_of_finite_intermediateField
   have := (topEquiv (F := F) (E := E)).toLinearEquiv
   exact FiniteDimensional.of_surjective this.toLinearMap this.surjective
 
+-- TODO: move it to suitable file
+lemma _root_.IntermediateField.lift_adjoin (K : IntermediateField F E) (S : Set K) :
+    lift (L := E) (E := adjoin F S) = adjoin F (Subtype.val '' S) := by
+  simp only [lift, adjoin_map, coe_val]
+
+-- TODO: move it to suitable file
+lemma _root_.IntermediateField.lift_adjoin_simple (K : IntermediateField F E) (α : K) :
+    lift (L := E) (E := F⟮α⟯) = F⟮α.1⟯ := by
+  simp only [lift_adjoin, Set.image_singleton]
+
+-- TODO: move it to suitable file
+lemma _root_.IntermediateField.lift_bot (K : IntermediateField F E) :
+    lift (L := E) (E := (⊥ : IntermediateField F K)) = ⊥ := by
+  rw [← adjoin_empty, ← adjoin_empty, lift_adjoin, Set.image_empty]
+
+-- TODO: move it to suitable file
+lemma _root_.IntermediateField.lift_top (K : IntermediateField F E) :
+    lift (L := E) (E := (⊤ : IntermediateField F K)) = K := by
+  rw [← adjoin_univ, lift_adjoin, Set.image_univ, Subtype.range_coe_subtype]
+  exact le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
+
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
   haveI := finiteDimensional_of_finite_intermediateField F E
-  rcases finite_or_infinite F with (F_finite | F_inf)
+  rcases finite_or_infinite F with (_ | _)
   · obtain ⟨α, h⟩ := exists_primitive_element_of_finite_bot F K
-    use α
-    sorry
+    exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr_arg (lift (L := E)) h⟩
   · let P : IntermediateField F E → Prop := fun K ↦ ∃ α : E, F⟮α⟯ = K
     have base : P ⊥ := ⟨0, adjoin_zero⟩
     have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
