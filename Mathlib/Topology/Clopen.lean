@@ -16,7 +16,7 @@ open Set Filter Topology TopologicalSpace Classical
 
 universe u v
 
-variable {X : Type u} {Y : Type v} {ι : Type*} {π : ι → Type*}
+variable {X : Type u} {Y : Type v} {ι : Type*}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
@@ -150,8 +150,6 @@ protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap 
     IsClopen (f ⁻¹' s) ↔ IsClopen s :=
   and_congr hf.isOpen_preimage hf.isClosed_preimage
 #align quotient_map.is_clopen_preimage QuotientMap.isClopen_preimage
-
-variable {X : Type*} [TopologicalSpace X]
 
 theorem continuous_boolIndicator_iff_clopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by
