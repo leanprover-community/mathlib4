@@ -741,10 +741,10 @@ def Fintype.toLocallyFiniteOrder [Fintype α] [@DecidableRel α (· < ·)] [@Dec
   finsetIco a b := (Set.Ico a b).toFinset
   finsetIoc a b := (Set.Ioc a b).toFinset
   finsetIoo a b := (Set.Ioo a b).toFinset
-  finset_mem_Icc a b x := by simp only [Set.mem_toFinset, Set.mem_Icc]
-  finset_mem_Ico a b x := by simp only [Set.mem_toFinset, Set.mem_Ico]
-  finset_mem_Ioc a b x := by simp only [Set.mem_toFinset, Set.mem_Ioc]
-  finset_mem_Ioo a b x := by simp only [Set.mem_toFinset, Set.mem_Ioo]
+  finset_mem_Icc a b x := by simp (config := {dsimp := false}) only [Set.mem_toFinset, Set.mem_Icc]
+  finset_mem_Ico a b x := by simp (config := {dsimp := false}) only [Set.mem_toFinset, Set.mem_Ico]
+  finset_mem_Ioc a b x := by simp (config := {dsimp := false}) only [Set.mem_toFinset, Set.mem_Ioc]
+  finset_mem_Ioo a b x := by simp (config := {dsimp := false}) only [Set.mem_toFinset, Set.mem_Ioo]
 #align fintype.to_locally_finite_order Fintype.toLocallyFiniteOrder
 
 instance : Subsingleton (LocallyFiniteOrder α) :=
