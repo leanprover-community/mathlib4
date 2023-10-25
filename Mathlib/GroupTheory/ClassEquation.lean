@@ -58,7 +58,8 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
   congr 1
   swap
   · convert finsum_cond_eq_sum_of_cond_iff _ _
-    simp [Set.mem_toFinset]
+    simp (config := {dsimp := false}) only [ne_eq, mem_noncenter, Set.mem_toFinset, implies_true,
+      forall_const]
   calc
     Fintype.card (Subgroup.center G) = Fintype.card ((noncenter G)ᶜ : Set _) :=
       Fintype.card_congr ((mk_bijOn G).equiv _)
