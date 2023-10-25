@@ -83,7 +83,7 @@ theorem isLimitEquivSections_symm_apply {c : Cone F} (t : IsLimit c)
 
 end limit_characterization
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 /-! We now provide two distinct implementations in the category of types.
 
@@ -175,29 +175,6 @@ section UnivLE
 
 open UnivLE
 variable [UnivLE.{v, u}]
-
-/-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
-sections of `F`.
--/
-noncomputable def isLimitEquivSections {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c) :
-    c.pt ≃ F.sections :=
-  (IsLimit.conePointUniqueUpToIso t (UnivLE.limitConeIsLimit F)).toEquiv.trans
-    (equivShrink _).symm
-#align category_theory.limits.types.is_limit_equiv_sections CategoryTheory.Limits.Types.isLimitEquivSections
-
-@[simp]
-theorem isLimitEquivSections_apply {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c) (j : J)
-    (x : c.pt) : ((isLimitEquivSections t) x : ∀ j, F.obj j) j = c.π.app j x := by
-  simp [isLimitEquivSections, IsLimit.conePointUniqueUpToIso]
-#align category_theory.limits.types.is_limit_equiv_sections_apply CategoryTheory.Limits.Types.isLimitEquivSections_apply
-
-@[simp]
-theorem isLimitEquivSections_symm_apply {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c)
-    (x : F.sections) (j : J) :
-    c.π.app j ((isLimitEquivSections t).symm x) = (x : ∀ j, F.obj j) j := by
-  obtain ⟨x, rfl⟩ := (isLimitEquivSections t).surjective x
-  simp
-#align category_theory.limits.types.is_limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.isLimitEquivSections_symm_apply
 
 /--
 The category of types has all limits.
@@ -446,7 +423,7 @@ lemma equivQuotOfIsColimit_symm_apply
     [UnivLE.{v, u}] {F : J ⥤ Type u} {t : Cocone F} (ht : IsColimit t) (j : J) (x : F.obj j) :
     (equivQuotOfIsColimit ht).symm (Quot.mk _ ⟨j, x⟩) = t.ι.app j x := by
   dsimp [equivQuotOfIsColimit, IsColimit.coconePointUniqueUpToIso, colimitCoconeIsColimit]
-  simp only [Equiv.symm_apply_apply]
+  erw [Equiv.symm_apply_apply]
 
 @[simp]
 theorem colimitEquivQuot_symm_apply [UnivLE.{v, u}] (F : J ⥤ Type u) (j : J) (x : F.obj j) :

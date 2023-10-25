@@ -235,11 +235,11 @@ noncomputable instance colimitMulOneClass : MulOneClass (M F) :=
     colimitMul F with
     one_mul := fun x => by
       obtain ⟨⟨j, x⟩, rfl⟩ := M.surjective_mk _ x
-      rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
+      erw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         one_mul, F.map_id, id_apply]
     mul_one := fun x => by
       obtain ⟨⟨j, x⟩, rfl⟩ := M.surjective_mk _ x
-      rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
+      erw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         mul_one, F.map_id, id_apply] }
 
 @[to_additive]
@@ -324,7 +324,7 @@ noncomputable def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt where
       (IsFiltered.rightToMax i j)]
     simp only [Types.colimitCoconeIsColimit_desc_apply]
     dsimp
-    rw [MonoidHom.map_mul]
+    erw [MonoidHom.map_mul]
     congr 1 <;> apply t.w_apply
 #align Mon.filtered_colimits.colimit_desc MonCat.FilteredColimits.colimitDesc
 #align AddMon.filtered_colimits.colimit_desc AddMonCat.FilteredColimits.colimitDesc

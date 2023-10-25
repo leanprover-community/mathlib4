@@ -271,7 +271,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 @[to_additive (attr := simp)]
 lemma colimitCoconeIsColimit_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
     (colimitCoconeIsColimit F).desc s (colimit_mk F ⟨j, x⟩) = s.ι.app j x := by
-  rw [← ((colimitCoconeIsColimit F).fac s) j, comp_apply]
+  erw [← ((colimitCoconeIsColimit F).fac s) j, comp_apply]
   rfl
 
 @[to_additive]

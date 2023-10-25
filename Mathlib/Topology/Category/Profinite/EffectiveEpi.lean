@@ -26,6 +26,8 @@ The entire section `EffectiveEpiFamily` comprises exclusively a technical constr
 the main proof and does not contain any statements that would be useful in other contexts.
 -/
 
+universe u
+
 open CategoryTheory Limits
 
 namespace Profinite
@@ -226,7 +228,7 @@ For a finite family of profinite spaces `π a : X a → B` the following are equ
 * the map `∐ π a ⟶ B` is an epimorphism
 * `π` is jointly surjective
 -/
-theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Profinite}
+theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Profinite.{u}}
     (X : α → Profinite) (π : (a : α) → (X a ⟶ B)) :
     TFAE [
       EffectiveEpiFamily X π,
@@ -266,8 +268,9 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Profinite}
 
 lemma effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
-  rw [← epi_iff_surjective]
-  exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+  rw [← epi_iff_surjective, effectiveEpi_iff_epi]
+  intro _ _ _ g π
+  exact (effectiveEpiFamily_tfae g π).out 0 1
 
 end JointlySurjective
 
