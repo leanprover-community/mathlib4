@@ -59,14 +59,14 @@ noncomputable def supportedEquivMvPolynomial (s : Set σ) : supported R s ≃ₐ
 theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
     (supportedEquivMvPolynomial s).symm (C x) = algebraMap R (supported R s) x := by
   ext1
-  simp [supportedEquivMvPolynomial, MvPolynomial.algebraMap_eq]
+  simp (config := {dsimp := false}) [supportedEquivMvPolynomial, MvPolynomial.algebraMap_eq]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.supported_equiv_mv_polynomial_symm_C MvPolynomial.supportedEquivMvPolynomial_symm_C
 
 @[simp, nolint simpNF]  -- porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
     (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
-  by simp [supportedEquivMvPolynomial]
+  by simp (config := {dsimp := false}) [supportedEquivMvPolynomial]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.supported_equiv_mv_polynomial_symm_X MvPolynomial.supportedEquivMvPolynomial_symm_X
 
