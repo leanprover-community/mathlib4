@@ -154,7 +154,6 @@ notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => Mu
 abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActionHom (@id M) X Y
 -/
 
-
 @[inherit_doc]
 notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
@@ -172,7 +171,6 @@ class MulActionSemiHomClass (F : Type _) {M N : outParam (Type _)}
  not dangerous due to outParam -/
 
 export MulActionSemiHomClass (map_smulₛₗ)
-
 
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
