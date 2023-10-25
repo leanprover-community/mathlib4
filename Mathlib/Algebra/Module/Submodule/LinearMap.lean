@@ -120,26 +120,18 @@ end
 
 section
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
-variable {S : Type*}
-variable {K : Type*} {K₂ : Type*}
-variable {M : Type*} {M' : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*} {M₄ : Type*}
-variable {N : Type*} {N₂ : Type*}
+variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {ι : Type*}
-variable {V : Type*} {V₂ : Type*}
 
 namespace LinearMap
 
 section AddCommMonoid
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [Module R M] [Module R M₁] [Module R₂ M₂] [Module R₃ M₃] [Module R₄ M₄]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₃₄ : R₃ →+* R₄}
-variable {σ₁₃ : R →+* R₃} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R →+* R₄}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
-variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+variable [Semiring R] [Semiring R₂] [Semiring R₃]
+variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₁] [Module R₂ M₂] [Module R₃ M₃]
+variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
 
 #align linear_map.map_sum map_sumₓ
@@ -291,9 +283,9 @@ end AddCommMonoid
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂]
 
-variable [Module R M] [Module R M₂] [Module R M₃]
+variable [Module R M] [Module R M₂]
 
 variable (f g : M →ₗ[R] M₂)
 
