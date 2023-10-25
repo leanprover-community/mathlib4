@@ -875,6 +875,21 @@ theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn 
   exact hxy.trans hyz
 #align joined_in.trans JoinedIn.trans
 
+theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
+  refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
+  · simp only [const, continuous_def, piecewise_preimage]
+    intro U hU
+    by_cases hy' : y ∈ U
+    · simp [hy', h.mem_open hU hy']
+    · by_cases hx' : x ∈ U
+      · simpa [hx', hy'] using isOpen_univ.sdiff isClosed_singleton
+      · simp [hx', hy']
+  · simp only [Path.coe_mk_mk, piecewise]
+    split_ifs <;> assumption
+
+theorem Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y :=
+  h.specializes.joinedIn hx hy
+
 /-! ### Path component -/
 
 
@@ -975,13 +990,28 @@ theorem IsPathConnected.image {Y : Type*} [TopologicalSpace Y] (hF : IsPathConne
     (hf : Continuous f) : IsPathConnected (f '' F) := hF.image' hf.continuousOn
 #align is_path_connected.image IsPathConnected.image
 
+/-- If `f : X → Y` is a `Inducing`, `F(f)` is path-connected iff `F` is. -/
+nonrec theorem Inducing.isPathConnected_iff {Y : Type*} [TopologicalSpace Y]
+    {f : X → Y} (hf : Inducing f) :
+    IsPathConnected F ↔ IsPathConnected (f '' F) := by
+  refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩
+  simp? [isPathConnected_iff] at hF ⊢ says
+    simp only [isPathConnected_iff, nonempty_image_iff, mem_image, forall_exists_index,
+      and_imp, forall_apply_eq_imp_iff₂] at hF ⊢
+  refine ⟨hF.1, fun x hx y hy ↦ ?_⟩
+  rcases hF.2 x hx y hy with ⟨γ, hγ⟩
+  choose γ' hγ' hγγ' using hγ
+  have key₁ : Inseparable x (γ' 0) := by rw [← hf.inseparable_iff, hγγ' 0, γ.source]
+  have key₂ : Inseparable (γ' 1) y := by rw [← hf.inseparable_iff, hγγ' 1, γ.target]
+  refine key₁.joinedIn hx (hγ' 0) |>.trans ⟨⟨⟨γ', ?_⟩, rfl, rfl⟩, hγ'⟩ |>.trans
+    (key₂.joinedIn (hγ' 1) hy)
+  simpa [hf.continuous_iff] using γ.continuous.congr fun t ↦ (hγγ' t).symm
+
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is path-connected iff `s` is. -/
--- this is not in `Homeomorph.lean` to avoid import cycles
 @[simp]
 theorem Homeomorph.isPathConnected_image {s : Set X} (h : X ≃ₜ Y) :
     IsPathConnected (h '' s) ↔ IsPathConnected s :=
-  ⟨fun hs ↦ by simpa only [image_symm, preimage_image] using hs.image h.symm.continuous,
-   fun hs ↦ hs.image h.continuous⟩
+  h.inducing.isPathConnected_iff.symm
 
 /-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is path-connected iff `s` is. -/
 @[simp]
