@@ -5,6 +5,7 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.Topology.Category.TopCat.Opens
+import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
 
@@ -68,15 +69,35 @@ lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
   CategoryTheory.ConcreteCategory.funLike
 
-attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right le_sup_left le_sup_right
+/-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
+macro "sheaf_restrict" : attr =>
+  `(attr|aesop safe 50 apply (rule_sets [$(Lean.mkIdent `Restrict):ident]))
 
-macro (name := restrict_tac) "restrict_tac" : tactic =>
-`(tactic| solve_by_elim (config := { symm := false }) only [*, le_trans, le_of_eq]
-    using $(Lean.mkIdent `sheaf_restrict))
+attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
+  le_sup_left le_sup_right
 
-example {X : TopCat} {v w x y z : Opens X} (h₀ : v ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v ≤ y :=
+/-- `restrict_tac` solves relations among subsets (copied from `aesop cat`) -/
+macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
+`(tactic| first | assumption |
+  aesop $c* (options :=
+    { terminal := true, assumptionTransparency := .reducible })
+    (simp_options := { enabled := false })
+  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+
+/-- `restrict_tac?` passes along `Try this` from `aesop` -/
+macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
+`(tactic|
+  aesop? $c* (options :=
+    { terminal := true, assumptionTransparency := .reducible, maxRuleApplications := 300 })
+  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+
+attribute[aesop 10% (rule_sets [Restrict])] le_trans
+attribute[aesop safe destruct (rule_sets [Restrict])] Eq.trans_le
+attribute[aesop safe -50 (rule_sets [Restrict])] Aesop.BuiltinRules.assumption
+
+example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_ : v 1 = v 2)
+    (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y :=
   by restrict_tac
-
 
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,

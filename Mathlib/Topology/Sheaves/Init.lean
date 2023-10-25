@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Std.Tactic.LabelAttr
+import Aesop
 
 /-!
 # Rule sets related to topological (pre)sheaves
@@ -15,4 +15,4 @@ declaration into its own file.
 -/
 
 /- to prove subset relations -/
-register_label_attr sheaf_restrict
+declare_aesop_rule_sets [Restrict]
