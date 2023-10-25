@@ -16,9 +16,9 @@ We think this result generalises well by a change of variables.
 ## Main result
 
 - `abs_le_interp_on_closed_strip` :
-Hadamard three-line theorem on `[0,1]`: If `f` is a bounded function, continuous on `[0,1]` 
+Hadamard three-line theorem on `[0,1]`: If `f` is a bounded function, continuous on `[0,1]`
 and differentiable on `(0,1)`, then for `M(x) := sup ((abs ∘ f) '' (re ⁻¹' {x}))` we have that
-`∀ z ∈ [0,1]` the inequality `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds. This can be seen to be 
+`∀ z ∈ [0,1]` the inequality `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds. This can be seen to be
 equivalent to the statement that `log M(x)` is a convex function on `[0,1]`.
 
 ## Notation
@@ -471,8 +471,8 @@ lemma F_seq_to_F_abs (f : ℂ → ℂ) (z : ℂ) :
 
 -- We are now ready to combine of Hadamard_sequence with F_seq_to_F_abs:
 
-/--  
-Hadamard three-line theorem on `[0,1]`: If `f` is a bounded function, continuous on `[0,1]` 
+/--
+Hadamard three-line theorem on `[0,1]`: If `f` is a bounded function, continuous on `[0,1]`
 and differentiable on `(0,1)`, then for `M(x) := sup ((abs ∘ f) '' (re ⁻¹' {x}))` we have that
 `∀ z ∈ [0,1]` the inequality `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds.
 -/
