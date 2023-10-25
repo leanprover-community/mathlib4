@@ -8,7 +8,7 @@ import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 /-! # Possible cycle types of permutations
 
-* For `m : Multiset ℕ`, `Equiv.Perm.withCycleType_nonempty_iff m`
+* For `m : Multiset ℕ`, `Equiv.Perm.exists_with_cycleType_iff m`
   proves that there are permutations with cycleType `m` if and only if
   its sum is at most `Fintype.card α` and its members are at least 2.
 
@@ -18,14 +18,13 @@ variable (α : Type _) [DecidableEq α] [Fintype α]
 
 /-- There are permutations with cycleType `m` if and only if
   its sum is at most `Fintype.card α` and its members are at least 2. -/
-theorem Equiv.Perm.with_cycleType_nonempty_iff {m : Multiset ℕ} :
-    Set.Nonempty {g : Equiv.Perm α | g.cycleType = m} ↔
+theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
+    (∃ g : Equiv.Perm α, g.cycleType = m) ↔
       (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) := by
   constructor
   · -- empty case
     intro h
     obtain ⟨g, hg⟩ := h
-    simp only [Set.mem_setOf_eq] at hg
     constructor
     · rw [← hg, Equiv.Perm.sum_cycleType]
       exact (Equiv.Perm.support g).card_le_univ
@@ -38,7 +37,6 @@ theorem Equiv.Perm.with_cycleType_nonempty_iff {m : Multiset ℕ} :
       exact hc
     obtain ⟨p, hp_length, hp_nodup, hp_disj⟩ := List.exists_pw_disjoint_with_card hc'
     use List.prod (List.map (fun l => List.formPerm l) p)
-    simp only [Set.mem_setOf_eq]
     have hp2 : ∀ x ∈ p, 2 ≤ x.length := by
       intro x hx
       apply h2c x.length
