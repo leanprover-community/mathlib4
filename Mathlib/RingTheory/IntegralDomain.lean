@@ -272,7 +272,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
 
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
     norm_cast
-    simp [pow_orderOf_eq_one]
+    simp (config := {dsimp := false}) [pow_orderOf_eq_one]
 #align sum_hom_units_eq_zero sum_hom_units_eq_zero
 
 /-- In an integral domain, a sum indexed by a homomorphism from a finite group is zero,
