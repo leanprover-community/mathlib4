@@ -383,7 +383,7 @@ lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
 
 -- Useful/necessary ?
 theorem inverse'_inverse'
-  {f : X →ₑ[φ] Y} {g : Y → X}
+    {f : X →ₑ[φ] Y} {g : Y → X}
   {k₁ : Function.LeftInverse φ' φ} {k₂ : Function.RightInverse φ' φ}
   {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     inverse' (inverse' f g k₂ h₁ h₂) f k₁ h₂ h₁ = f :=
