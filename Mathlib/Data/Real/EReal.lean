@@ -68,6 +68,9 @@ instance : CompleteLinearOrder EReal :=
 instance : LinearOrderedAddCommMonoid EReal :=
   inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop ℝ)))
 
+instance : AddCommMonoidWithOne EReal :=
+  inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))
+
 instance : DenselyOrdered EReal :=
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
@@ -719,6 +722,15 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
   rw [← EReal.top_add_top]
   exact EReal.add_lt_add hx.lt_top hy.lt_top
 #align ereal.add_lt_top EReal.add_lt_top
+
+/-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
+the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
+instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
+  le_top := by simp
+  top_add' := by
+    rw [OrderDual.forall]
+    intro x
+    rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
 
 /-! ### Negation -/
 

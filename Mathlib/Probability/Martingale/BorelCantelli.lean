@@ -162,7 +162,6 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
   have heq : ∀ n, stoppedValue f (leastGE f i n) ω = f n ω := by
     intro n
     rw [leastGE]; unfold hitting; rw [stoppedValue]
-    simp only
     rw [if_neg]
     simp only [Set.mem_Icc, Set.mem_union, Set.mem_Ici]
     push_neg
@@ -191,7 +190,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert hω using 1 <;> simp_rw [eq_iff_iff]
+  convert hω using 1
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine' ⟨b + |f 0 ω|, fun y hy => _⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [sub_eq_add_neg]

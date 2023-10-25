@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 import Mathlib.Logic.Encodable.Lattice
-import Mathlib.MeasureTheory.MeasurableSpaceDef
+import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 #align_import measure_theory.pi_system from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -148,6 +148,21 @@ theorem isPiSystem_image_Ioi (s : Set α) : IsPiSystem (Ioi '' s) :=
 theorem isPiSystem_Ioi : IsPiSystem (range Ioi : Set (Set α)) :=
   @image_univ α _ Ioi ▸ isPiSystem_image_Ioi univ
 #align is_pi_system_Ioi isPiSystem_Ioi
+
+theorem isPiSystem_image_Iic (s : Set α) : IsPiSystem (Iic '' s) := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
+  exact ⟨a ⊓ b, inf_ind a b ha hb, Iic_inter_Iic.symm⟩
+
+theorem isPiSystem_Iic : IsPiSystem (range Iic : Set (Set α)) :=
+  @image_univ α _ Iic ▸ isPiSystem_image_Iic univ
+#align is_pi_system_Iic isPiSystem_Iic
+
+theorem isPiSystem_image_Ici (s : Set α) : IsPiSystem (Ici '' s) :=
+  @isPiSystem_image_Iic αᵒᵈ _ s
+
+theorem isPiSystem_Ici : IsPiSystem (range Ici : Set (Set α)) :=
+  @image_univ α _ Ici ▸ isPiSystem_image_Ici univ
+#align is_pi_system_Ici isPiSystem_Ici
 
 -- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
@@ -297,8 +312,6 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
           and_true_iff, true_and_iff] at h1 ⊢
       all_goals exact h1
     intro b h_b
-    -- Porting note: `simp only` required for a beta reduction
-    simp only []
     split_ifs with hbs hbt hbt
     · refine' h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono _ h_nonempty)
       exact Set.inter_subset_inter (Set.biInter_subset_of_mem hbs) (Set.biInter_subset_of_mem hbt)
@@ -587,7 +600,7 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
 theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
-  simp [diff_eq, compl_inter]
+  simp only [diff_eq, compl_inter, compl_compl]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
 #align measurable_space.dynkin_system.has_diff MeasurableSpace.DynkinSystem.has_diff
 

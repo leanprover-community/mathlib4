@@ -270,11 +270,13 @@ theorem comp_const (f : C(β, γ)) (b : β) : f.comp (const α b) = const α (f 
   ext fun _ => rfl
 #align continuous_map.comp_const ContinuousMap.comp_const
 
+@[simp]
 theorem cancel_right {f₁ f₂ : C(β, γ)} {g : C(α, β)} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
   ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, congr_arg (ContinuousMap.comp · g)⟩
 #align continuous_map.cancel_right ContinuousMap.cancel_right
 
+@[simp]
 theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
@@ -354,6 +356,10 @@ def eval (i : I) : C(∀ j, X j, X i) where
 @[simps!]
 def piMap (f : ∀ i, C(X i, Y i)) : C((i : I) → X i, (i : I) → Y i) :=
   .pi fun i ↦ (f i).comp (eval i)
+
+/-- "Precomposition" as a continuous map between dependent types. -/
+def precomp {ι : Type*} (φ : ι → I) : C((i : I) → X i, (i : ι) → X (φ i)) :=
+  ⟨_, Pi.continuous_precomp' φ⟩
 
 end Pi
 

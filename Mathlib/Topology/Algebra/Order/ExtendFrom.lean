@@ -12,6 +12,8 @@ import Mathlib.Topology.ExtendFrom
 # Lemmas about `extendFrom` in an order topology.
 -/
 
+set_option autoImplicit true
+
 
 open Filter Set TopologicalSpace
 

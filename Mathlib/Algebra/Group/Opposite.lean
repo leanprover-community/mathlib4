@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.Spread
 
 #align_import algebra.group.opposite from "leanprover-community/mathlib"@"0372d31fb681ef40a687506bc5870fd55ebc8bb9"
 
@@ -93,24 +95,28 @@ We also generate additive structures on `αᵃᵒᵖ` using `to_additive`
 
 
 @[to_additive]
-instance semigroup [Semigroup α] : Semigroup αᵐᵒᵖ :=
-  { MulOpposite.mul α with
-    mul_assoc := fun x y z => unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x) }
+instance isRightCancelMul [Mul α] [IsLeftCancelMul α] : IsRightCancelMul αᵐᵒᵖ where
+  mul_right_cancel _ _ _ h := unop_injective <| mul_left_cancel <| op_injective h
 
 @[to_additive]
-instance leftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ :=
-  { MulOpposite.semigroup α with
-    mul_left_cancel := fun _ _ _ H => unop_injective <| mul_right_cancel <| op_injective H }
+instance isLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ where
+  mul_left_cancel _ _ _ h := unop_injective <| mul_right_cancel <| op_injective h
 
 @[to_additive]
-instance rightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigroup αᵐᵒᵖ :=
-  { MulOpposite.semigroup α with
-    mul_right_cancel := fun _ _ _ H => unop_injective <| mul_left_cancel <| op_injective H }
+instance semigroup [Semigroup α] : Semigroup αᵐᵒᵖ where
+  mul_assoc x y z := unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x)
 
 @[to_additive]
-instance commSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ :=
-  { MulOpposite.semigroup α with
-    mul_comm := fun x y => unop_injective <| mul_comm (unop y) (unop x) }
+instance leftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ where
+  mul_left_cancel _ _ _ := mul_left_cancel
+
+@[to_additive]
+instance rightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigroup αᵐᵒᵖ where
+  mul_right_cancel _ _ _ := mul_right_cancel
+
+@[to_additive]
+instance commSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ where
+  mul_comm x y := unop_injective <| mul_comm (unop y) (unop x)
 
 @[to_additive]
 instance mulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ :=
@@ -569,6 +575,13 @@ def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐ
   MonoidHom.op.symm
 #align monoid_hom.unop MonoidHom.unop
 #align add_monoid_hom.unop AddMonoidHom.unop
+
+/-- A monoid is isomorphic to the opposite of its opposite. -/
+@[to_additive (attr := simps!)
+      "A additive monoid is isomorphic to the opposite of its opposite."]
+def MulEquiv.opOp (M : Type*) [Mul M] : M ≃* Mᵐᵒᵖᵐᵒᵖ where
+  __ := MulOpposite.opEquiv.trans MulOpposite.opEquiv
+  map_mul' _ _ := rfl
 
 /-- An additive homomorphism `M →+ N` can equivalently be viewed as an additive homomorphism
 `Mᵐᵒᵖ →+ Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/

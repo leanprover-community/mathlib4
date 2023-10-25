@@ -39,6 +39,8 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
+set_option autoImplicit true
+
 
 variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
@@ -380,7 +382,8 @@ def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r 
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun h => ⟨⟨_, h⟩, rfl⟩, fun ⟨⟨_, h⟩, rfl⟩ => h⟩⟩
 #align principal_seg.of_element PrincipalSeg.ofElement
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 #align principal_seg.of_element_apply PrincipalSeg.ofElement_apply
@@ -398,12 +401,17 @@ noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
       (funext fun _ ↦ propext f.down.symm))),
     map_rel_iff' := f.map_rel_iff }
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+attribute [nolint simpNF] PrincipalSeg.subrelIso_symm_apply
+
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
     f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem subrelIso_apply (f : r ≺i s) (a : α) :
     f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
@@ -565,3 +573,5 @@ theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (c
 #align rel_embedding.collapse_apply RelEmbedding.collapse_apply
 
 end RelEmbedding
+attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
+  PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply

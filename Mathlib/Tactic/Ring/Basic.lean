@@ -1,14 +1,12 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Aurélien Saue, Tim Baanen
+Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
-import Lean.Elab.Tactic.Basic
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
+import Mathlib.Data.Rat.Order
 
 /-!
 # `ring` tactic
@@ -76,6 +74,8 @@ This feature wasn't needed yet, so it's not implemented yet.
 
 ring, semiring, exponent, power
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic
 namespace Ring
@@ -254,7 +254,7 @@ variable {sα}
 
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd (va : ExBase sα a) (vb : ExProd sℕ b) :
-  ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
+    ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
@@ -803,7 +803,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
 theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
-  (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
+    (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
 
 /-- Exponentiates two polynomials `va, vb`.
 

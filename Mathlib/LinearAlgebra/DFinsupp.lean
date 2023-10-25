@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.LinearIndependent
 
 #align_import linear_algebra.dfinsupp from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -80,7 +81,8 @@ def lapply (i : ι) : (Π₀ i, M i) →ₗ[R] M i where
   map_smul' c f := smul_apply c f i
 #align dfinsupp.lapply DFinsupp.lapply
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem lmk_apply (s : Finset ι) (x) : (lmk s : _ →ₗ[R] Π₀ i, M i) x = mk s x :=
   rfl
 #align dfinsupp.lmk_apply DFinsupp.lmk_apply
@@ -220,7 +222,7 @@ theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x �
     {l : Π₀ i, β₁ i} :
     -- Porting note: Needed to add (M := ...) below
     (DFinsupp.lsum ℕ (M := β₂)) h (mapRange.linearMap f l)
-      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l  := by
+      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l := by
   simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 #align dfinsupp.sum_map_range_index.linear_map DFinsupp.sum_mapRange_index.linearMap
 
@@ -262,36 +264,22 @@ variable [DecidableEq ι] [∀ x : N, Decidable (x ≠ 0)]
 `(Π₀ i, M i) →ₗ[R] N` which sends `x : Π₀ i, M i` to the sum over `i` of `f i` applied to `x i`.
 This is the map coming from the universal property of `Π₀ i, M i` as the coproduct of the `M i`.
 See also `LinearMap.coprod` for the binary product version. -/
-noncomputable def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
-  (Finsupp.lsum ℕ fun _ : ι => LinearMap.id) ∘ₗ
-    (@finsuppLequivDFinsupp ι R N _ _ _ _ _).symm.toLinearMap ∘ₗ DFinsupp.mapRange.linearMap f
+def coprodMap (f : ∀ i : ι, M i →ₗ[R] N) : (Π₀ i, M i) →ₗ[R] N :=
+  (DFinsupp.lsum ℕ fun _ : ι => LinearMap.id) ∘ₗ DFinsupp.mapRange.linearMap f
 #align dfinsupp.coprod_map DFinsupp.coprodMap
 
 theorem coprodMap_apply (f : ∀ i : ι, M i →ₗ[R] N) (x : Π₀ i, M i) :
     coprodMap f x =
-      Finsupp.sum (mapRange (fun i => f i) (fun _ => LinearMap.map_zero _) x).toFinsupp fun _ =>
+      DFinsupp.sum (mapRange (fun i => f i) (fun _ => LinearMap.map_zero _) x) fun _ =>
         id :=
-  rfl
+  DFinsupp.sumAddHom_apply _ _
 #align dfinsupp.coprod_map_apply DFinsupp.coprodMap_apply
 
 theorem coprodMap_apply_single (f : ∀ i : ι, M i →ₗ[R] N) (i : ι) (x : M i) :
     coprodMap f (single i x) = f i x := by
-  simp [coprodMap_apply]
+  simp [coprodMap]
 
 end CoprodMap
-
-section Basis
-
-/-- The direct sum of free modules is free.
-
-Note that while this is stated for `DFinsupp` not `DirectSum`, the types are defeq. -/
-noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
-    Basis (Σi, η i) R (Π₀ i, M i) :=
-  .ofRepr
-    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
-#align dfinsupp.basis DFinsupp.basis
-
-end Basis
 
 end DFinsupp
 
@@ -490,7 +478,7 @@ are `CompleteLattice.Independent`.
 Note that this is not generally true for `[Semiring R]`, for instance when `A` is the
 `ℕ`-submodules of the positive and negative integers.
 
-See `counterexamples/direct_sum_is_internal.lean` for a proof of this fact. -/
+See `Counterexamples/DirectSumIsInternal.lean` for a proof of this fact. -/
 theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Independent p) :
     Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   -- simplify everything down to binders over equalities in `N`

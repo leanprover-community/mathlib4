@@ -204,8 +204,8 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
     SmoothMap.monoid with
     left_distrib := fun a b c => by ext; exact left_distrib _ _ _
     right_distrib := fun a b c => by ext; exact right_distrib _ _ _
-    zero_mul := fun a => by ext; exact MulZeroClass.zero_mul _
-    mul_zero := fun a => by ext; exact MulZeroClass.mul_zero _ }
+    zero_mul := fun a => by ext; exact zero_mul _
+    mul_zero := fun a => by ext; exact mul_zero _ }
 #align smooth_map.semiring SmoothMap.semiring
 
 instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R] :
@@ -262,17 +262,17 @@ end RingStructure
 section ModuleStructure
 
 /-!
-### Semiodule stucture
+### Semimodule stucture
 
 In this section we show that smooth functions valued in a vector space `M` over a normed
 field `𝕜` inherit a vector space structure.
 -/
 
 
-instance hasSmul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun r f => ⟨r • ⇑f, smooth_const.smul f.smooth⟩⟩
-#align smooth_map.has_smul SmoothMap.hasSmul
+#align smooth_map.has_smul SmoothMap.instSMul
 
 @[simp]
 theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
@@ -355,10 +355,10 @@ If `V` is a module over `𝕜`, then we show that the space of smooth functions 
 is naturally a vector space over the ring of smooth functions from `N` to `𝕜`. -/
 
 
-instance instSmul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul C^∞⟮I, N; 𝕜⟯ C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun f g => ⟨fun x => f x • g x, Smooth.smul f.2 g.2⟩⟩
-#align smooth_map.has_smul' SmoothMap.instSmul'
+#align smooth_map.has_smul' SmoothMap.instSMul'
 
 @[simp]
 theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^∞⟮I'', N'; 𝕜⟯)

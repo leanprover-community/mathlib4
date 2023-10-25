@@ -130,7 +130,7 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
     simp_rw [zpow_negSucc]
     refine' ⟨convex_Ioi _, _⟩
     rintro a (ha : 0 < a) b (hb : 0 < b) μ ν hμ hν h
-    field_simp [ha.ne', hb.ne']
+    field_simp
     rw [div_le_div_iff]
     · -- Porting note: added type ascription to LHS
       calc
@@ -168,7 +168,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
     calc
       log z - log y = log (z / y) := by rw [← log_div hz.ne' hy.ne']
       _ < z / y - 1 := (log_lt_sub_one_of_pos hyz' hyz'')
-      _ = y⁻¹ * (z - y) := by field_simp [hy.ne']
+      _ = y⁻¹ * (z - y) := by field_simp
   · have h : 0 < y - x := by linarith
     rw [lt_div_iff h]
     have hxy' : 0 < x / y := by positivity
@@ -177,7 +177,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       rw [div_eq_one_iff_eq hy.ne'] at h
       simp [h]
     calc
-      y⁻¹ * (y - x) = 1 - x / y := by field_simp [hy.ne']
+      y⁻¹ * (y - x) = 1 - x / y := by field_simp
       _ < -log (x / y) := by linarith [log_lt_sub_one_of_pos hxy' hxy'']
       _ = -(log x - log y) := by rw [log_div hx.ne' hy.ne']
       _ = log y - log x := by ring
@@ -204,16 +204,16 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     -- but now Lean doesn't guess we are talking about `1` fast enough.
     haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
     convert strictConcaveOn_log_Ioi.secant_strict_mono this hs2 hs1 hs4 hs3 _ using 1
-    · field_simp [log_one]
-    · field_simp [log_one]
+    · field_simp
+    · field_simp
     · nlinarith
   · rw [← div_lt_iff hp, ← div_lt_div_right hs']
     -- Porting note: previously we could write `zero_lt_one` inline,
     -- but now Lean doesn't guess we are talking about `1` fast enough.
     haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
     convert strictConcaveOn_log_Ioi.secant_strict_mono this hs1 hs2 hs3 hs4 _ using 1
-    · field_simp [log_one, hp.ne']
-    · field_simp [log_one]
+    · field_simp
+    · field_simp
     · nlinarith
 #align one_add_mul_self_lt_rpow_one_add one_add_mul_self_lt_rpow_one_add
 
@@ -251,10 +251,10 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
     convert this using 1
     · have H : (x / y) ^ p = x ^ p / y ^ p := div_rpow hx hy.le _
       ring_nf at H ⊢
-      field_simp [hy.ne', hy'.ne'] at H ⊢
+      field_simp at H ⊢
       linear_combination H
     · ring_nf at H1 ⊢
-      field_simp [hy.ne', hy'.ne']
+      field_simp
       linear_combination p * (-y + x) * H1
   · have hyz' : 0 < z - y := by linarith only [hyz]
     have hyz'' : 1 < z / y := by rwa [one_lt_div hy]
@@ -265,11 +265,11 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
     rw [lt_div_iff hyz', ← div_lt_div_right hy']
     convert this using 1
     · ring_nf at H1 ⊢
-      field_simp [hy.ne', hy'.ne'] at H1 ⊢
+      field_simp at H1 ⊢
       linear_combination p * (y - z) * y ^ p * H1
     · have H : (z / y) ^ p = z ^ p / y ^ p := div_rpow hz hy.le _
       ring_nf at H ⊢
-      field_simp [hy.ne', hy'.ne'] at H ⊢
+      field_simp at H ⊢
       linear_combination -H
 #align strict_convex_on_rpow strictConvexOn_rpow
 

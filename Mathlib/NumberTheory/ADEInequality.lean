@@ -198,7 +198,6 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
-  simp at H
   have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
     assumption_mod_cast
@@ -216,7 +215,6 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   have h6 : (0 : ℚ) < 6 := by norm_num
   contrapose! H
   rw [sumInv_pqr]
-  simp at H
   have hr: (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv _ h6]
     assumption_mod_cast

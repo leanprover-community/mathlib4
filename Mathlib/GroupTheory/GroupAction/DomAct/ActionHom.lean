@@ -18,6 +18,8 @@ Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib.Algebra.Hom.GroupAc
 `SMulCommClass` instances saying that left and right actions commute.
 -/
 
+set_option autoImplicit true
+
 namespace DomMulAct
 
 section MulActionHom

@@ -100,10 +100,10 @@ theorem quadraticCharFun_eq_pow_of_char_ne_two (hF : ringChar F ≠ 2) {a : F} (
 theorem quadraticCharFun_mul (a b : F) :
     quadraticCharFun F (a * b) = quadraticCharFun F a * quadraticCharFun F b := by
   by_cases ha : a = 0
-  · rw [ha, MulZeroClass.zero_mul, quadraticCharFun_zero, MulZeroClass.zero_mul]
+  · rw [ha, zero_mul, quadraticCharFun_zero, zero_mul]
   -- now `a ≠ 0`
   by_cases hb : b = 0
-  · rw [hb, MulZeroClass.mul_zero, quadraticCharFun_zero, MulZeroClass.mul_zero]
+  · rw [hb, mul_zero, quadraticCharFun_zero, mul_zero]
   -- now `a ≠ 0` and `b ≠ 0`
   have hab := mul_ne_zero ha hb
   by_cases hF : ringChar F = 2

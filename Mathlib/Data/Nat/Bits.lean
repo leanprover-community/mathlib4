@@ -5,6 +5,7 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.List.Basic
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.bits from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
@@ -17,7 +18,7 @@ which allows us to more easily work with operations which do depend
 on the number of leading zeros in the binary representation of `n`.
 For example, we can more easily work with `Nat.bits` and `Nat.size`.
 
-See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftl`/`shiftr`),
+See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
 

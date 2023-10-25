@@ -33,6 +33,8 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
+set_option autoImplicit true
+
 def Set (α : Type u) := α → Prop
 #align set Set
 

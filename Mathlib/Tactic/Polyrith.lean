@@ -55,6 +55,8 @@ remember to force recompilation of any files that call `polyrith`.
 
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Polyrith
 open Lean hiding Rat
 open Meta Ring Qq PrettyPrinter AtomM
@@ -284,8 +286,11 @@ def sageOutput (args : Array String) : IO SageResult := do
   let path := (← getMathlibDir) / "scripts" / "polyrith_sage.py"
   unless ← path.pathExists do
     throw <| IO.userError "could not find python script scripts/polyrith_sage.py"
-  let s ← IO.Process.run { cmd := "python3", args := #[path.toString] ++ args }
-  match Json.parse s >>= fromJson? with
+  let out ← IO.Process.output { cmd := "python3", args := #[path.toString] ++ args }
+  if out.exitCode != 0 then
+    throw <| IO.userError <|
+      s!"scripts/polyrith_sage.py exited with code {out.exitCode}:\n\n{out.stderr}"
+  match Json.parse out.stdout >>= fromJson? with
   | .ok v => return v
   | .error e => throw <| .userError e
 
@@ -330,8 +335,6 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     if hyps'.isEmpty then
       return ← byRing "polyrith did not find any relevant hypotheses"
     let vars := (← get).atoms.size
-    if vars = 0 then
-      return ← byRing "polyrith did not find find any variables"
     match ← sageOutput (createSageArgs traceOnly α vars hyps' tgt) with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace

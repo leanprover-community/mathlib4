@@ -87,6 +87,8 @@ noncomputable def IsUnit.subInvSMul {r : Rˣ} {s : R} {a : A} (h : IsUnit <| r �
   val_inv := by rw [mul_smul_comm, ← smul_mul_assoc, smul_sub, smul_inv_smul, h.mul_val_inv]
   inv_val := by rw [smul_mul_assoc, ← mul_smul_comm, smul_sub, smul_inv_smul, h.val_inv_mul]
 #align is_unit.sub_inv_smul IsUnit.subInvSMul
+#align is_unit.coe_sub_inv_smul IsUnit.val_subInvSMul
+#align is_unit.coe_inv_sub_inv_smul IsUnit.val_inv_subInvSMul
 
 end Defs
 
@@ -158,8 +160,8 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
   · simp only [resolvent]
     have h' : IsUnit (r • algebraMap R A (r⁻¹ • s) - a) := by
       simpa [Algebra.algebraMap_eq_smul_one, smul_assoc] using not_mem_iff.mp h
-    rw [← h'.subInvSMul_val, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
-      ←h'.subInvSMul.inv_eq_val_inv, h'.subInvSMul_inv]
+    rw [← h'.val_subInvSMul, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
+      h'.val_inv_subInvSMul]
     simp only [Algebra.algebraMap_eq_smul_one, smul_assoc, smul_inv_smul]
 #align spectrum.units_smul_resolvent spectrum.units_smul_resolvent
 

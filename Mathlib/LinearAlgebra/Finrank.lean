@@ -85,13 +85,16 @@ theorem finrank_lt_of_rank_lt {n : ℕ} (h : Module.rank K V < ↑n) : finrank K
   · exact nat_lt_aleph0 n
 #align finite_dimensional.finrank_lt_of_rank_lt FiniteDimensional.finrank_lt_of_rank_lt
 
-theorem rank_lt_of_finrank_lt {n : ℕ} (h : n < finrank K V) : ↑n < Module.rank K V := by
+theorem lt_rank_of_lt_finrank {n : ℕ} (h : n < finrank K V) : ↑n < Module.rank K V := by
   rwa [← Cardinal.toNat_lt_iff_lt_of_lt_aleph0, toNat_cast]
   · exact nat_lt_aleph0 n
   · contrapose! h
     rw [finrank, Cardinal.toNat_apply_of_aleph0_le h]
     exact n.zero_le
-#align finite_dimensional.rank_lt_of_finrank_lt FiniteDimensional.rank_lt_of_finrank_lt
+#align finite_dimensional.rank_lt_of_finrank_lt FiniteDimensional.lt_rank_of_lt_finrank
+
+theorem one_lt_rank_of_one_lt_finrank (h : 1 < finrank K V) : 1 < Module.rank K V := by
+  simpa using lt_rank_of_lt_finrank h
 
 theorem finrank_le_finrank_of_rank_le_rank
     (h : lift.{v'} (Module.rank K V) ≤ Cardinal.lift.{v} (Module.rank K V₂))
@@ -105,7 +108,7 @@ variable [Nontrivial K] [NoZeroSMulDivisors K V]
 
 /-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
 theorem nontrivial_of_finrank_pos (h : 0 < finrank K V) : Nontrivial V :=
-  rank_pos_iff_nontrivial.mp (rank_lt_of_finrank_lt h)
+  rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
 #align finite_dimensional.nontrivial_of_finrank_pos FiniteDimensional.nontrivial_of_finrank_pos
 
 /-- A finite dimensional space is nontrivial if it has `finrank` equal to the successor of a
@@ -369,6 +372,27 @@ theorem span_lt_top_of_card_lt_finrank {s : Set V} [Fintype s]
   lt_top_of_finrank_lt_finrank (lt_of_le_of_lt (finrank_span_le_card _) card_lt)
 #align span_lt_top_of_card_lt_finrank span_lt_top_of_card_lt_finrank
 
+/-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
+dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
+theorem exists_linearIndependent_snoc_of_lt_finrank {n : ℕ} {v : Fin n → V}
+    (hv : LinearIndependent K v) (h : n < finrank K V) :
+    ∃ (x : V), LinearIndependent K (Fin.snoc v x) :=
+  exists_linearIndependent_snoc_of_lt_rank hv (lt_rank_of_lt_finrank h)
+
+/-- Given a family of `n` linearly independent vectors in a finite-dimensional space of
+dimension `> n`, one may extend the family by another vector while retaining linear independence. -/
+theorem exists_linearIndependent_cons_of_lt_finrank {n : ℕ} {v : Fin n → V}
+    (hv : LinearIndependent K v) (h : n < finrank K V) :
+    ∃ (x : V), LinearIndependent K (Fin.cons x v) :=
+  exists_linearIndependent_cons_of_lt_rank hv (lt_rank_of_lt_finrank h)
+
+/-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
+vector linearly independent of the first one. -/
+theorem exists_linearIndependent_pair_of_one_lt_finrank
+    (h : 1 < finrank K V) {x : V} (hx : x ≠ 0) :
+    ∃ y, LinearIndependent K ![x, y] :=
+  exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
+
 end DivisionRing
 
 end Span
@@ -478,6 +502,9 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
 #align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] finsetBasisOfTopLeSpanOfCardEqFinrank_repr_apply
 
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]

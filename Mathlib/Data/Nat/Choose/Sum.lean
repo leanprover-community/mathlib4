@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
@@ -125,7 +126,7 @@ theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
 theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * choose (2 * n) n :=
   calc
-    4 ^ n = (1 + 1) ^ (2 * n) := by simp only [pow_mul, one_add_one_eq_two]; rfl
+    4 ^ n = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
     _ = ∑ m in range (2 * n + 1), choose (2 * n) m := by simp [add_pow]
     _ ≤ ∑ m in range (2 * n + 1), choose (2 * n) (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
@@ -158,9 +159,9 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     rw [mem_powerset] at hy
     exact card_le_of_subset hy
   · refine' sum_congr rfl fun y _ ↦ _
-    rw [← card_powersetLen, ← sum_const]
-    refine' sum_congr powersetLen_eq_filter.symm fun z hz ↦ _
-    rw [(mem_powersetLen.1 hz).2]
+    rw [← card_powersetCard, ← sum_const]
+    refine' sum_congr powersetCard_eq_filter.symm fun z hz ↦ _
+    rw [(mem_powersetCard.1 hz).2]
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
 theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :

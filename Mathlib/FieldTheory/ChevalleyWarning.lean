@@ -78,7 +78,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
         ∑ a : K, ∏ j : σ, (e a : σ → K) j ^ d j := (e.sum_comp _).symm
     _ = ∑ a : K, (∏ j, x₀ j ^ d j) * a ^ d i := (Fintype.sum_congr _ _ ?_)
     _ = (∏ j, x₀ j ^ d j) * ∑ a : K, a ^ d i := by rw [mul_sum]
-    _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, MulZeroClass.mul_zero]
+    _ = 0 := by rw [sum_pow_lt_card_sub_one K _ hi, mul_zero]
   intro a
   let e' : Sum { j // j = i } { j // j ≠ i } ≃ σ := Equiv.sumCompl _
   letI : Unique { j // j = i } :=

@@ -84,11 +84,15 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
 
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 
-instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B)
-    where coe f :=
-    { (f : A →ₙₐ[R] B) with
-      toFun := f
-      map_star' := map_star f }
+/-- Turn an element of a type `F` satisfying `NonUnitalStarAlgHomClass F R A B` into an actual
+`NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₙₐ[R] B`. -/
+@[coe]
+def toNonUnitalStarAlgHom [NonUnitalStarAlgHomClass F R A B] (f : F) : A →⋆ₙₐ[R] B :=
+  { (f : A →ₙₐ[R] B) with
+    map_star' := map_star f }
+
+instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
+  ⟨toNonUnitalStarAlgHom⟩
 
 end NonUnitalStarAlgHomClass
 
@@ -131,7 +135,7 @@ initialize_simps_projections NonUnitalStarAlgHom
 
 @[simp]
 protected theorem coe_coe {F : Type*} [NonUnitalStarAlgHomClass F R A B] (f : F) :
-  ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
+    ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
 #align non_unital_star_alg_hom.coe_coe NonUnitalStarAlgHom.coe_coe
 
 @[simp]
@@ -181,7 +185,7 @@ theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
 -- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
-  (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
+    (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
   ext
   rfl
 #align non_unital_star_alg_hom.mk_coe NonUnitalStarAlgHom.mk_coeₓ
@@ -339,11 +343,16 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
 
 variable [Semiring B] [Algebra R B] [Star B] [hF : StarAlgHomClass F R A B]
 
-instance : CoeTC F (A →⋆ₐ[R] B)
-    where coe f :=
-    { (f : A →ₐ[R] B) with
-      toFun := f
-      map_star' := map_star f }
+variable {F R A B} in
+/-- Turn an element of a type `F` satisfying `StarAlgHomClass F R A B` into an actual
+`StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
+@[coe]
+def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
+  { (f : A →ₐ[R] B) with
+    map_star' := map_star f }
+
+instance : CoeTC F (A →⋆ₐ[R] B) :=
+  ⟨toStarAlgHom⟩
 
 end StarAlgHomClass
 
@@ -503,7 +512,7 @@ end Unital
 
 /-! ### Operations on the product type
 
-Note that this is copied from [`Algebra/Hom/NonUnitalAlg`](NonUnitalAlg). -/
+Note that this is copied from [`Algebra.Hom.NonUnitalAlg`](../Hom/NonUnitalAlg). -/
 
 
 namespace NonUnitalStarAlgHom

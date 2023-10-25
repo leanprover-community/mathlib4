@@ -22,13 +22,13 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
--- Porting note: `deriving` contained
--- Inhabited, CanonicallyOrderedAddMonoid, DistribLattice, SemilatticeSup, OrderBot, Sub, OrderedSub
+-- Porting note: `deriving` contained Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
+-- SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddMonoid, DistribLattice,
+  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
 #align prime_multiset PrimeMultiset
 
@@ -213,7 +213,6 @@ theorem prod_ofPNatList (l : List ℕ+) (h) : (ofPNatList l h).prod = l.prod := 
 /-- The product map gives a homomorphism from the additive monoid
 of multisets to the multiplicative monoid ℕ+. -/
 theorem prod_zero : (0 : PrimeMultiset).prod = 1 := by
-  dsimp [Prod]
   exact Multiset.prod_zero
 #align prime_multiset.prod_zero PrimeMultiset.prod_zero
 
@@ -304,7 +303,7 @@ theorem factorMultiset_mul (n m : ℕ+) :
 #align pnat.factor_multiset_mul PNat.factorMultiset_mul
 
 theorem factorMultiset_pow (n : ℕ+) (m : ℕ) :
-    factorMultiset (Pow.pow n m ) = m • factorMultiset n := by
+    factorMultiset (Pow.pow n m) = m • factorMultiset n := by
   let u := factorMultiset n
   have : n = u.prod := (prod_factorMultiset n).symm
   rw [this, ← PrimeMultiset.prod_smul]

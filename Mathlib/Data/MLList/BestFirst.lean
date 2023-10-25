@@ -27,6 +27,8 @@ Options:
   otherwise if the graph is not a tree nodes may be visited multiple times.
 -/
 
+set_option autoImplicit true
+
 
 variable {α : Type u} [Monad m] [Alternative m] [Ord α]
 

@@ -9,6 +9,8 @@ import Std.Data.MLList.Basic
 # Reading from handles, files, and processes as lazy lists.
 -/
 
+set_option autoImplicit true
+
 open System IO.FS
 
 namespace MLList

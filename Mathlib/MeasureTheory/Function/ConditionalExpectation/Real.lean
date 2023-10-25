@@ -98,7 +98,7 @@ theorem integral_abs_condexp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
   by_cases hfint : Integrable f μ
   swap
   · simp only [condexp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      MulZeroClass.mul_zero]
+      mul_zero]
     exact integral_nonneg fun x => abs_nonneg _
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
   · rw [ENNReal.toReal_le_toReal] <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
@@ -123,7 +123,7 @@ theorem set_integral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : 
   by_cases hfint : Integrable f μ
   swap
   · simp only [condexp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      MulZeroClass.mul_zero]
+      mul_zero]
     exact integral_nonneg fun x => abs_nonneg _
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator]
@@ -235,7 +235,7 @@ theorem condexp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     ext1 x
     by_cases hx : x ∈ s
     · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul]; rfl
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, MulZeroClass.zero_mul]
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
   apply @SimpleFunc.induction _ _ m _ (fun f => _)
     (fun c s hs => ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ => ?_) f
   · -- Porting note: if not classical, `DecidablePred fun x ↦ x ∈ s` cannot be synthesised
@@ -319,9 +319,9 @@ theorem condexp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ m0) [IsFiniteMeas
 /-- Pull-out property of the conditional expectation. -/
 theorem condexp_stronglyMeasurable_mul {f g : α → ℝ} (hf : StronglyMeasurable[m] f)
     (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
-  by_cases hm : m ≤ m0; swap; · simp_rw [condexp_of_not_le hm]; rw [MulZeroClass.mul_zero]
+  by_cases hm : m ≤ m0; swap; · simp_rw [condexp_of_not_le hm]; rw [mul_zero]
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; rw [MulZeroClass.mul_zero]
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; rw [mul_zero]
   haveI : SigmaFinite (μ.trim hm) := hμm
   obtain ⟨sets, sets_prop, h_univ⟩ := hf.exists_spanning_measurableSet_norm_le hm μ
   simp_rw [forall_and] at sets_prop

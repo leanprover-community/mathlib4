@@ -194,7 +194,7 @@ theorem algebraicIndependent_subtype_range {ι} {f : ι → A} (hf : Injective f
   Iff.symm <| algebraicIndependent_equiv' (Equiv.ofInjective f hf) rfl
 #align algebraic_independent_subtype_range algebraicIndependent_subtype_range
 
-alias algebraicIndependent_subtype_range ↔ AlgebraicIndependent.of_subtype_range _
+alias ⟨AlgebraicIndependent.of_subtype_range, _⟩ := algebraicIndependent_subtype_range
 #align algebraic_independent.of_subtype_range AlgebraicIndependent.of_subtype_range
 
 theorem algebraicIndependent_image {ι} {s : Set ι} {f : ι → A} (hf : Set.InjOn f s) :
@@ -462,8 +462,7 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_some AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 
-set_option synthInstance.maxHeartbeats 1000000 in
-set_option maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 40000 in
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     (hx : AlgebraicIndependent R x) (a : A) :
     RingHom.comp

@@ -3,7 +3,7 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yury Kudryashov
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 
 #align_import algebra.group.ext from "leanprover-community/mathlib"@"e574b1a4e891376b0ef974b926da39e05da12a06"
 
@@ -119,7 +119,7 @@ theorem CancelCommMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelCommMonoid M⦄ (h
 
 @[to_additive (attr := ext)]
 theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄ (h_mul : m₁.mul = m₂.mul)
-  (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
+    (h_inv : m₁.inv = m₂.inv) : m₁ = m₂ := by
   have h_mon := Monoid.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=

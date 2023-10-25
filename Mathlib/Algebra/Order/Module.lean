@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.SMul
 
-#align_import algebra.order.module from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import algebra.order.module from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Ordered module
@@ -95,13 +95,13 @@ theorem smul_nonneg_of_nonpos_of_nonpos (hc : c ≤ 0) (ha : a ≤ 0) : 0 ≤ c 
   @smul_nonpos_of_nonpos_of_nonneg k Mᵒᵈ _ _ _ _ _ _ hc ha
 #align smul_nonneg_of_nonpos_of_nonpos smul_nonneg_of_nonpos_of_nonpos
 
-alias smul_pos_iff_of_neg ↔ _ smul_pos_of_neg_of_neg
+alias ⟨_, smul_pos_of_neg_of_neg⟩ := smul_pos_iff_of_neg
 #align smul_pos_of_neg_of_neg smul_pos_of_neg_of_neg
 
-alias smul_neg_iff_of_pos ↔ _ smul_neg_of_pos_of_neg
+alias ⟨_, smul_neg_of_pos_of_neg⟩ := smul_neg_iff_of_pos
 #align smul_neg_of_pos_of_neg smul_neg_of_pos_of_neg
 
-alias smul_neg_iff_of_neg ↔ _ smul_neg_of_neg_of_pos
+alias ⟨_, smul_neg_of_neg_of_pos⟩ := smul_neg_iff_of_neg
 #align smul_neg_of_neg_of_pos smul_neg_of_neg_of_pos
 
 theorem antitone_smul_left (hc : c ≤ 0) : Antitone (SMul.smul c : M → M) := fun _ _ h =>
@@ -216,6 +216,19 @@ theorem BddAbove.smul_of_nonpos (hc : c ≤ 0) (hs : BddAbove s) : BddBelow (c �
 #align bdd_above.smul_of_nonpos BddAbove.smul_of_nonpos
 
 end OrderedRing
+
+section LinearOrderedRing
+variable [LinearOrderedRing k] [LinearOrderedAddCommGroup M] [Module k M] [OrderedSMul k M] {a : k}
+
+theorem smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : M) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
+  (antitone_smul_left ha : Antitone (_ : M → M)).map_max
+#align smul_max_of_nonpos smul_max_of_nonpos
+
+theorem smul_min_of_nonpos (ha : a ≤ 0) (b₁ b₂ : M) : a • min b₁ b₂ = max (a • b₁) (a • b₂) :=
+  (antitone_smul_left ha : Antitone (_ : M → M)).map_min
+#align smul_min_of_nonpos smul_min_of_nonpos
+
+end LinearOrderedRing
 
 section LinearOrderedField
 

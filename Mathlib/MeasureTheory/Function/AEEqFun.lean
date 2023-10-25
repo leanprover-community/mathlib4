@@ -69,6 +69,8 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -388,8 +390,8 @@ theorem coeFn_comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁
 
 section
 
-variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [SecondCountableTopology β]
-  [MeasurableSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ] [SecondCountableTopology γ]
+variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β]
+  [MeasurableSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ] [SecondCountableTopologyEither β γ]
   [MeasurableSpace δ] [PseudoMetrizableSpace δ] [OpensMeasurableSpace δ] [SecondCountableTopology δ]
 
 /-- Given a measurable function `g : β → γ → δ`, and almost everywhere equal functions
@@ -466,8 +468,8 @@ theorem comp₂_toGerm (g : β → γ → δ) (hg : Continuous (uncurry g)) (f�
   induction_on₂ f₁ f₂ fun f₁ _ f₂ _ => by simp
 #align measure_theory.ae_eq_fun.comp₂_to_germ MeasureTheory.AEEqFun.comp₂_toGerm
 
-theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [SecondCountableTopology β]
-    [MeasurableSpace β] [BorelSpace β] [PseudoMetrizableSpace γ] [SecondCountableTopology γ]
+theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
+    [PseudoMetrizableSpace γ] [SecondCountableTopologyEither β γ]
     [MeasurableSpace γ] [BorelSpace γ] [PseudoMetrizableSpace δ] [SecondCountableTopology δ]
     [MeasurableSpace δ] [OpensMeasurableSpace δ] (g : β → γ → δ) (hg : Measurable (uncurry g))
     (f₁ : α →ₘ[μ] β) (f₂ : α →ₘ[μ] γ) :
@@ -864,8 +866,7 @@ instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →�
 #align measure_theory.ae_eq_fun.add_group MeasureTheory.AEEqFun.instAddGroup
 
 instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.addCommGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
-    (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
+  { add_comm := add_comm }
 #align measure_theory.ae_eq_fun.add_comm_group MeasureTheory.AEEqFun.instAddCommGroup
 
 @[to_additive existing]
@@ -875,7 +876,7 @@ instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :
 
 @[to_additive existing]
 instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.commGroup _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
+  { mul_comm := mul_comm }
 #align measure_theory.ae_eq_fun.comm_group MeasureTheory.AEEqFun.instCommGroup
 
 section Module

@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Init.CCLemmas
 import Mathlib.Logic.Pairwise
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Data.Pi.Algebra
@@ -245,7 +246,7 @@ namespace MulHom
 
 @[to_additive]
 theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
-  fun x => f x * g x := rfl
+    fun x => f x * g x := rfl
 #align mul_hom.coe_mul MulHom.coe_mul
 #align add_hom.coe_add AddHom.coe_add
 
@@ -523,12 +524,12 @@ theorem Pi.single_mul [∀ i, MulZeroClass <| f i] (i : I) (x y : f i) :
 
 theorem Pi.single_mul_left_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (a * x i) j = Pi.single i a j * x j :=
-  (Pi.apply_single (fun i => (· * x i)) (fun _ => MulZeroClass.zero_mul _) _ _ _).symm
+  (Pi.apply_single (fun i => (· * x i)) (fun _ => zero_mul _) _ _ _).symm
 #align pi.single_mul_left_apply Pi.single_mul_left_apply
 
 theorem Pi.single_mul_right_apply [∀ i, MulZeroClass <| f i] (a : f i) :
     Pi.single i (x i * a) j = x j * Pi.single i a j :=
-  (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => MulZeroClass.mul_zero _) _ _ _).symm
+  (Pi.apply_single (fun i => (· * ·) (x i)) (fun _ => mul_zero _) _ _ _).symm
 #align pi.single_mul_right_apply Pi.single_mul_right_apply
 
 theorem Pi.single_mul_left [∀ i, MulZeroClass <| f i] (a : f i) :

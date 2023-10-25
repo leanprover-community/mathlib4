@@ -53,13 +53,13 @@ noncomputable def isometryEquivSignWeightedSumSquares [DecidableEq ι] (w : ι �
     intro i _ hij
     rw [Pi.basisFun_apply, LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply,
       Function.update_noteq hij.symm, Pi.zero_apply, smul_eq_mul, smul_eq_mul,
-      MulZeroClass.mul_zero, MulZeroClass.mul_zero]
+      mul_zero, mul_zero]
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
   erw [hsum]
   simp only [Function.comp, smul_eq_mul]
   split_ifs with h
-  · simp only [h, zero_smul, MulZeroClass.zero_mul, Real.sign_zero]
+  · simp only [h, zero_smul, zero_mul, Real.sign_zero]
   have hwu : w j = u j := by simp only [dif_neg h, Units.val_mk0]
   simp only [Units.val_mk0]
   rw [hwu]
@@ -78,7 +78,7 @@ noncomputable def isometryEquivSignWeightedSumSquares [DecidableEq ι] (w : ι �
 /-- **Sylvester's law of inertia**: A nondegenerate real quadratic form is equivalent to a weighted
 sum of squares with the weights being ±1. -/
 theorem equivalent_one_neg_one_weighted_sum_squared {M : Type*} [AddCommGroup M] [Module ℝ M]
-    [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R₁ := ℝ) Q).Nondegenerate) :
+    [FiniteDimensional ℝ M] (Q : QuadraticForm ℝ M) (hQ : (associated (R := ℝ) Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank ℝ M) → ℝ,
       (∀ i, w i = -1 ∨ w i = 1) ∧ Equivalent Q (weightedSumSquares ℝ w) :=
   let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ

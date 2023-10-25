@@ -18,6 +18,8 @@ It can be nice to represent the choices via a lazy list,
 so the later choices don't need to be evaluated while we do depth first search on earlier choices.
 -/
 
+set_option autoImplicit true
+
 section
 variable [Monad m] [Alternative m]
 

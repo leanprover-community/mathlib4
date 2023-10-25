@@ -40,18 +40,18 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
     · rw [Multiset.mem_map]
       use j
       simp only [eq_self_iff_true, Finset.mem_univ_val, and_self_iff, sq_eq_sq]
-  -- The L2 norm of a row is a diagonal entry of U ⬝ Uᴴ
-  have diag_eq_norm_sum : (U ⬝ Uᴴ) i i = ∑ x : n, ‖U i x‖ ^ 2 := by
+  -- The L2 norm of a row is a diagonal entry of U * Uᴴ
+  have diag_eq_norm_sum : (U * Uᴴ) i i = ∑ x : n, ‖U i x‖ ^ 2 := by
     simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, IsROrC.mul_conj,
       IsROrC.normSq_eq_def', IsROrC.ofReal_pow]; norm_cast
-  -- The L2 norm of a row is a diagonal entry of U ⬝ Uᴴ, real part
-  have re_diag_eq_norm_sum : IsROrC.re ((U ⬝ Uᴴ) i i) = ∑ x : n, ‖U i x‖ ^ 2 := by
+  -- The L2 norm of a row is a diagonal entry of U * Uᴴ, real part
+  have re_diag_eq_norm_sum : IsROrC.re ((U * Uᴴ) i i) = ∑ x : n, ‖U i x‖ ^ 2 := by
     rw [IsROrC.ext_iff] at diag_eq_norm_sum
     rw [diag_eq_norm_sum.1]
     norm_cast
-  -- Since U is unitary, the diagonal entries of U ⬝ Uᴴ are all 1
-  have mul_eq_one : U ⬝ Uᴴ = 1 := unitary.mul_star_self_of_mem hU
-  have diag_eq_one : IsROrC.re ((U ⬝ Uᴴ) i i) = 1 := by
+  -- Since U is unitary, the diagonal entries of U * Uᴴ are all 1
+  have mul_eq_one : U * Uᴴ = 1 := unitary.mul_star_self_of_mem hU
+  have diag_eq_one : IsROrC.re ((U * Uᴴ) i i) = 1 := by
     simp only [mul_eq_one, eq_self_iff_true, Matrix.one_apply_eq, IsROrC.one_re]
   -- Putting it all together
   rw [← sq_le_one_iff (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]

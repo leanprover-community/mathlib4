@@ -28,7 +28,7 @@ theorem units_sq (u : ℤˣ) : u ^ 2 = 1 := by
   rw [Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one, isUnit_sq u.isUnit]
 #align int.units_sq Int.units_sq
 
-alias units_sq ← units_pow_two
+alias units_pow_two := units_sq
 #align int.units_pow_two Int.units_pow_two
 
 @[simp]
@@ -38,6 +38,9 @@ theorem units_mul_self (u : ℤˣ) : u * u = 1 := by rw [← sq, units_sq]
 @[simp]
 theorem units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := by rw [inv_eq_iff_mul_eq_one, units_mul_self]
 #align int.units_inv_eq_self Int.units_inv_eq_self
+
+theorem units_div_eq_mul (u₁ u₂ : ℤˣ) : u₁ / u₂ = u₁ * u₂ := by
+  rw [div_eq_mul_inv, units_inv_eq_self]
 
 -- `Units.val_mul` is a "wrong turn" for the simplifier, this undoes it and simplifies further
 @[simp]

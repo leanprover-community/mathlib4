@@ -130,8 +130,8 @@ instance Bifunctor.const : Bifunctor Const where bimap f _ := f
 instance LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
 #align is_lawful_bifunctor.const LawfulBifunctor.const
 
-instance Bifunctor.flip : Bifunctor (flip F)
-    where bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
+instance Bifunctor.flip : Bifunctor (flip F) where
+  bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
 #align bifunctor.flip Bifunctor.flip
 
 instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
@@ -159,8 +159,8 @@ section Bicompl
 
 variable (G : Type* → Type u₀) (H : Type* → Type u₁) [Functor G] [Functor H]
 
-instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H)
-    where bimap {_α α' _β β'} f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
+instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H) where
+  bimap {_α α' _β β'} f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
 #align function.bicompl.bifunctor Function.bicompl.bifunctor
 
 instance Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
@@ -174,8 +174,8 @@ section Bicompr
 
 variable (G : Type u₂ → Type*) [Functor G]
 
-instance Function.bicompr.bifunctor : Bifunctor (bicompr G F)
-    where bimap {_α α' _β β'} f f' x := (map (bimap f f') x : G (F α' β'))
+instance Function.bicompr.bifunctor : Bifunctor (bicompr G F) where
+  bimap {_α α' _β β'} f f' x := (map (bimap f f') x : G (F α' β'))
 #align function.bicompr.bifunctor Function.bicompr.bifunctor
 
 instance Function.bicompr.lawfulBifunctor [LawfulFunctor G] [LawfulBifunctor F] :

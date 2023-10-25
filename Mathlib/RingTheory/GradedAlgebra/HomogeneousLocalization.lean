@@ -347,7 +347,6 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
 @[simp]
 theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = n • Localization.mk _ _
   dsimp only
   rw [Localization.smul_mk]
@@ -408,7 +407,6 @@ theorem one_val : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
 theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.val + y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ + Localization.mk _ _
   dsimp only
   rw [Localization.add_mk]
@@ -419,7 +417,6 @@ theorem add_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 + y2).val = y1.va
 theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.val * y2.val := by
   induction y1 using Quotient.inductionOn
   induction y2 using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ * Localization.mk _ _
   dsimp only
   rw [Localization.mk_mul]
@@ -429,7 +426,6 @@ theorem mul_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 * y2).val = y1.va
 @[simp]
 theorem neg_val (y : HomogeneousLocalization 𝒜 x) : (-y).val = -y.val := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = -Localization.mk _ _
   dsimp only
   rw [Localization.neg_mk]
@@ -444,7 +440,6 @@ theorem sub_val (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.va
 @[simp]
 theorem pow_val (y : HomogeneousLocalization 𝒜 x) (n : ℕ) : (y ^ n).val = y.val ^ n := by
   induction y using Quotient.inductionOn
-  simp only [Quotient.liftOn₂'_mk, Quotient.liftOn'_mk]
   change Localization.mk _ _ = Localization.mk _ _ ^ n
   rw [Localization.mk_pow]
   dsimp only
@@ -525,7 +520,6 @@ theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
   have := Quotient.out_eq' f
   apply_fun HomogeneousLocalization.val at this
   rw [← this]
-  simp only [Quotient.liftOn'_mk'']
   rfl
 #align homogeneous_localization.eq_num_div_denom HomogeneousLocalization.eq_num_div_den
 

@@ -736,7 +736,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
   rw [← Subtype.coe_eq_of_eq_mk ha]
-  repeat' rw [oreDiv_mul_oreDiv]; simp only [add_mul, add_oreDiv]
+  repeat rw [oreDiv_mul_oreDiv]
+  simp only [add_mul, add_oreDiv]
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
 instance instSemiringOreLocalization : Semiring R[S⁻¹] :=

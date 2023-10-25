@@ -100,8 +100,8 @@ theorem equitableOn_iff_le_le_add_one :
     exact ⟨le_rfl, Nat.le_succ _⟩
   push_neg at h
   obtain ⟨x, hx₁, hx₂⟩ := h
-  suffices h : b = (∑ i in s, f i) / s.card
-  · simp_rw [← h]
+  suffices h : b = (∑ i in s, f i) / s.card by
+    simp_rw [← h]
     apply hb
   symm
   refine'

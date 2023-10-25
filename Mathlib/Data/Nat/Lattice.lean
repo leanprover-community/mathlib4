@@ -132,7 +132,15 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
         not_false_iff, exists_const]
       apply bot_unique (Nat.find_min' _ _)
-      trivial }
+      trivial
+    csSup_of_not_bddAbove := by
+      intro s hs
+      simp only [mem_univ, forall_true_left, sSup,
+        mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
+      rw [dif_neg]
+      · exact le_antisymm (zero_le _) (find_le trivial)
+      · exact hs
+    csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
   let ⟨k, hk⟩ := h₂
@@ -191,6 +199,18 @@ theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = u 0 ⊓ 
   @iSup_lt_succ' αᵒᵈ _ _ _
 #align nat.infi_lt_succ' Nat.iInf_lt_succ'
 
+theorem iSup_le_succ (u : ℕ → α) (n : ℕ) : ⨆ k ≤ n + 1, u k = (⨆ k ≤ n, u k) ⊔ u (n + 1) := by
+  simp_rw [← Nat.lt_succ_iff, iSup_lt_succ]
+
+theorem iSup_le_succ' (u : ℕ → α) (n : ℕ) : ⨆ k ≤ n + 1, u k = u 0 ⊔ ⨆ k ≤ n, u (k + 1) := by
+  simp_rw [← Nat.lt_succ_iff, iSup_lt_succ']
+
+theorem iInf_le_succ (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = (⨅ k ≤ n, u k) ⊓ u (n + 1) :=
+  @iSup_le_succ αᵒᵈ _ _ _
+
+theorem iInf_le_succ' (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = u 0 ⊓ ⨅ k ≤ n, u (k + 1) :=
+  @iSup_le_succ' αᵒᵈ _ _ _
+
 end
 
 end Nat
@@ -214,5 +234,17 @@ theorem biInter_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = (�
 theorem biInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = u 0 ∩ ⋂ k < n, u (k + 1) :=
   Nat.iInf_lt_succ' u n
 #align set.bInter_lt_succ' Set.biInter_lt_succ'
+
+theorem biUnion_le_succ (u : ℕ → Set α) (n : ℕ) : ⋃ k ≤ n + 1, u k = (⋃ k ≤ n, u k) ∪ u (n + 1) :=
+  Nat.iSup_le_succ u n
+
+theorem biUnion_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋃ k ≤ n + 1, u k = u 0 ∪ ⋃ k ≤ n, u (k + 1) :=
+  Nat.iSup_le_succ' u n
+
+theorem biInter_le_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = (⋂ k ≤ n, u k) ∩ u (n + 1) :=
+  Nat.iInf_le_succ u n
+
+theorem biInter_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = u 0 ∩ ⋂ k ≤ n, u (k + 1) :=
+  Nat.iInf_le_succ' u n
 
 end Set

@@ -32,6 +32,8 @@ This closely follows the implementation of the `@[reassoc]` attribute, due to Si
 reimplemented by Scott Morrison in Lean 4.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
@@ -41,7 +43,7 @@ open CategoryTheory
 section theorems
 
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
-  (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
+    (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
 attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
