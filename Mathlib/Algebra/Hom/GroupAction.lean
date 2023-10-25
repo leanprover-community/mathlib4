@@ -70,7 +70,7 @@ lemma comp_inv {M N : Type _} {φ : M → N} {ψ : N → M} (h : Function.RightI
   CompTriple φ ψ id := {comp_eq := h.id }
 
 lemma apply {M N P : Type _}
-  {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :
+    {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :
   ψ (φ x) = χ x := by
   rw [← h.comp_eq, Function.comp_apply]
 
