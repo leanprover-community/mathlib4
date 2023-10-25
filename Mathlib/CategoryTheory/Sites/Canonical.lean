@@ -142,7 +142,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
       ext Z g
       constructor
       · rintro ⟨W, k, l, hl, _, comm⟩
-        rw [pullback_apply, ← comm]
+        simp_rw [pullback_apply, ← comm]
         simp [hl]
       · intro a
         refine' ⟨Z, 𝟙 Z, _, a, _⟩

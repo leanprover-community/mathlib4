@@ -167,7 +167,7 @@ def ofGrothendieck (J : GrothendieckTopology C) : Coverage C where
   pullback := by
     intro X Y f S (hS : Sieve.generate S ∈ J X)
     refine ⟨(Sieve.generate S).pullback f, ?_, fun Z g h => h⟩
-    dsimp
+    dsimp only [Set.mem_setOf_eq]
     rw [Sieve.generate_sieve]
     exact J.pullback_stable _ hS
 

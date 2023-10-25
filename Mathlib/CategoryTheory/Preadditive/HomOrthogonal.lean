@@ -77,15 +77,9 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) where
   toFun z i j k :=
-    eqToHom
-        (by
-          rcases k with ⟨k, ⟨⟩⟩
-          simp) ≫
-      biproduct.components z k j ≫
-        eqToHom
-          (by
-            rcases j with ⟨j, ⟨⟩⟩
-            simp)
+    eqToHom (by rcases k with ⟨k, ⟨⟩⟩; simp) ≫
+    biproduct.components z k j ≫
+    eqToHom (by rcases j with ⟨j, ⟨⟩⟩; simp)
   invFun z :=
     biproduct.matrix fun j k =>
       if h : f j = g k then z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩ ≫ eqToHom (by simp [h]) else 0
@@ -99,7 +93,7 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
       apply o.eq_zero h
   right_inv z := by
     ext i ⟨j, w⟩ ⟨k, ⟨⟩⟩
-    simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
+    simp? says simp only [biproduct.matrix_components, of_apply, eqToHom_refl, Category.id_comp]
     split_ifs with h
     · simp
     · exfalso
@@ -122,6 +116,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
     map_add' := fun w z => by
       ext
       dsimp [biproduct.components]
+      rw [add_apply] -- todo: for some reason `simp` doesn't apply this.
       simp }
 #align category_theory.hom_orthogonal.matrix_decomposition_add_equiv CategoryTheory.HomOrthogonal.matrixDecompositionAddEquiv
 
@@ -179,6 +174,7 @@ noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : 
     map_smul' := fun w z => by
       ext
       dsimp [biproduct.components]
+      rw [smul_apply] -- todo: for some reason `simp` doesn't apply this.
       simp }
 #align category_theory.hom_orthogonal.matrix_decomposition_linear_equiv CategoryTheory.HomOrthogonal.matrixDecompositionLinearEquiv
 
@@ -208,10 +204,10 @@ theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Fintype α] [Fintype 
     Matrix.square_of_invertible (o.matrixDecomposition i.inv c) (o.matrixDecomposition i.hom c)
       (by
         rw [← o.matrixDecomposition_comp]
-        simp)
+        simp [-matrixDecomposition_apply])
       (by
         rw [← o.matrixDecomposition_comp]
-        simp)
+        simp [-matrixDecomposition_apply])
 #align category_theory.hom_orthogonal.equiv_of_iso CategoryTheory.HomOrthogonal.equiv_of_iso
 
 end
