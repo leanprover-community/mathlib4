@@ -32,16 +32,15 @@ in another file. However, the lemmas about it are stated here.
 
 
 /-- A linearly ordered commutative group with a zero element. -/
-class LinearOrderedCommGroupWithZero (α : Type*) extends CommGroupWithZero α,
-    LinearOrderedCommMonoidWithZero α
+class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
+  CommGroupWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
 
-attribute [instance 50] LinearOrderedCommGroupWithZero.toCommGroupWithZero
 attribute [instance 100] LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero
-attribute [instance 0] LinearOrderedCommGroupWithZero.toPartialOrder
-attribute [instance 0] LinearOrderedCommGroupWithZero.toMin
-attribute [instance 0] LinearOrderedCommGroupWithZero.toMax
-attribute [instance 0] LinearOrderedCommGroupWithZero.toOrd
+attribute [instance 50] LinearOrderedCommGroupWithZero.toCommGroupWithZero
+attribute [instance 0] LinearOrderedCommGroupWithZero.toInv
+attribute [instance 0] LinearOrderedCommGroupWithZero.toDiv
+attribute [instance 0] LinearOrderedCommGroupWithZero.toNontrivial
 
 variable {α : Type*}
 

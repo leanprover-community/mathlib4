@@ -128,7 +128,7 @@ theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·)
 
 /-- An `OrderedSemiring` is a semiring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
-class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α where
+class OrderedSemiring (α : Type u) extends OrderedAddCommMonoid α, Semiring α where
   /-- `0 ≤ 1` in any ordered semiring. -/
   protected zero_le_one : (0 : α) ≤ 1
   /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
@@ -139,47 +139,48 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
   protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
 #align ordered_semiring OrderedSemiring
 
-attribute [instance 50] OrderedSemiring.toSemiring
 attribute [instance 100] OrderedSemiring.toOrderedAddCommMonoid
-attribute [instance 0] OrderedSemiring.toPartialOrder
+attribute [instance 50] OrderedSemiring.toSemiring
+attribute [instance 0] OrderedSemiring.toMul
 
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
-class OrderedCommSemiring (α : Type u) extends CommSemiring α, OrderedSemiring α where
+class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
   mul_le_mul_of_nonneg_right a b c ha hc :=
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
 
-attribute [instance 50] OrderedCommSemiring.toCommSemiring
 attribute [instance 100] OrderedCommSemiring.toOrderedSemiring
-attribute [instance 0] OrderedCommSemiring.toPartialOrder
+attribute [instance 50] OrderedCommSemiring.toCommSemiring
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
-class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
+class OrderedRing (α : Type u) extends OrderedAddCommGroup α, Ring α where
   /-- `0 ≤ 1` in any ordered ring. -/
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of non-negative elements is non-negative. -/
   protected mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
 #align ordered_ring OrderedRing
 
-attribute [instance 50] OrderedRing.toRing
 attribute [instance 100] OrderedRing.toOrderedAddCommGroup
-attribute [instance 0] OrderedRing.toPartialOrder
+attribute [instance 50] OrderedRing.toRing
+attribute [instance 0] OrderedRing.toMul
+attribute [instance 0] OrderedRing.toOne
+attribute [instance 0] OrderedRing.toNatCast
+attribute [instance 0] OrderedRing.toIntCast
 
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
-class OrderedCommRing (α : Type u) extends CommRing α, OrderedRing α
+class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
 #align ordered_comm_ring OrderedCommRing
 
-attribute [instance 50] OrderedCommRing.toCommRing
 attribute [instance 100] OrderedCommRing.toOrderedRing
-attribute [instance 0] OrderedCommRing.toPartialOrder
+attribute [instance 50] OrderedCommRing.toCommRing
 
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α,
+class StrictOrderedSemiring (α : Type u) extends OrderedCancelAddCommMonoid α, Semiring α,
     Nontrivial α where
   /-- In a strict ordered semiring, `0 ≤ 1`. -/
   protected zero_le_one : (0 : α) ≤ 1
@@ -189,45 +190,43 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 #align strict_ordered_semiring StrictOrderedSemiring
 
-attribute [instance 50] StrictOrderedSemiring.toSemiring
 attribute [instance 100] StrictOrderedSemiring.toOrderedCancelAddCommMonoid
+attribute [instance 50] StrictOrderedSemiring.toSemiring
 attribute [instance 50] StrictOrderedSemiring.toNontrivial
-attribute [instance 0] StrictOrderedSemiring.toPartialOrder
+attribute [instance 0] StrictOrderedSemiring.toNatCast
 
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommSemiring (α : Type u) extends CommSemiring α, StrictOrderedSemiring α
+class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
 #align strict_ordered_comm_semiring StrictOrderedCommSemiring
 
-attribute [instance 50] StrictOrderedCommSemiring.toCommSemiring
 attribute [instance 100] StrictOrderedCommSemiring.toStrictOrderedSemiring
-attribute [instance 0] StrictOrderedCommSemiring.toPartialOrder
-attribute [instance 0] StrictOrderedCommSemiring.toNontrivial
+attribute [instance 50] StrictOrderedCommSemiring.toCommSemiring
 
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
+class StrictOrderedRing (α : Type u) extends OrderedAddCommGroup α, Ring α, Nontrivial α where
   /-- In a strict ordered ring, `0 ≤ 1`. -/
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of two positive elements is positive. -/
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 #align strict_ordered_ring StrictOrderedRing
 
-attribute [instance 50] StrictOrderedRing.toRing
 attribute [instance 100] StrictOrderedRing.toOrderedAddCommGroup
+attribute [instance 50] StrictOrderedRing.toRing
 attribute [instance 50] StrictOrderedRing.toNontrivial
-attribute [instance 0] StrictOrderedRing.toPartialOrder
-attribute [instance 0] StrictOrderedRing.toNontrivial
+attribute [instance 0] StrictOrderedRing.toMul
+attribute [instance 0] StrictOrderedRing.toOne
+attribute [instance 0] StrictOrderedRing.toNatCast
+attribute [instance 0] StrictOrderedRing.toIntCast
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
-class StrictOrderedCommRing (α : Type u) extends CommRing α, StrictOrderedRing α
+class StrictOrderedCommRing (α : Type u) extends StrictOrderedRing α, CommRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
 
-attribute [instance 50] StrictOrderedCommRing.toCommRing
 attribute [instance 100] StrictOrderedCommRing.toStrictOrderedRing
-attribute [instance 0] StrictOrderedCommRing.toPartialOrder
-attribute [instance 0] StrictOrderedCommRing.toNontrivial
+attribute [instance 50] StrictOrderedCommRing.toCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
