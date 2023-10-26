@@ -83,14 +83,16 @@ lemma LocalHomeomorph.isBLA {e : LocalHomeomorph M H} : IsOpen (e.invFun '' e.ta
   rw [e.image_symm_target_eq_source]
   exact e.open_source
 
+-- is this worth being a separate lemma in mathlib?
+lemma LocalHomeomorph.asdf {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
+  e.source ∈ 𝓝 x := by sorry
+
 lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
   let y := h.toFun x
   -- Initial observations about my data.
   have hyx : h.invFun y = x := h.left_inv' hx
   have hysource : y ∈ h.target := h.toLocalEquiv.mapsTo hx
-  have hopen : IsOpen (h.invFun '' h.target) := by rw [h.image_symm_target_eq_source]; exact h.open_source
-  have hx2 : x ∈ h.invFun '' h.target := by simp_rw [h.image_symm_target_eq_source]; exact hx
 
   set A := mfderiv I J h.toFun x
   let A' := mfderiv J I h.invFun y
@@ -101,10 +103,11 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h.contMDiffAt hx).mdifferentiableAt hr
   have inv1 := calc A'.comp A
     _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
-    _ = mfderivWithin I I (h.invFun ∘ h.toFun) (h.invFun '' h.target) x := (mfderivWithin_of_open I I hopen hx2).symm
-    _ = mfderivWithin I I id (h.invFun '' h.target) x :=
-      mfderivWithin_congr (hopen.uniqueMDiffWithinAt hx2) (h.image_symm_target_eq_source ▸ h.left_inv') hyx
-    _ = mfderiv I I id x := mfderivWithin_of_open I I hopen hx2
+    _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
+      (mfderivWithin_of_open I I h.open_source hx).symm
+    _ = mfderivWithin I I id h.source x :=
+      mfderivWithin_congr (h.open_source.uniqueMDiffWithinAt hx) h.left_inv' hyx
+    _ = mfderiv I I id x := mfderivWithin_of_open I I h.open_source hx
     _ = ContinuousLinearMap.id ℝ (TangentSpace I x) := mfderiv_id I
   have inv2 := calc A.comp A'
     _ = mfderiv J J (h.toFun ∘ h.invFun) y := by
@@ -113,7 +116,8 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
           -- ... but also the points x and y under the map.
           have : (LocalEquiv.invFun h.toLocalEquiv y) = x := hyx -- just hyx is not enough
           exact (this ▸ (mfderiv_comp y hfat hgat)).symm
-    _ = mfderivWithin J J (h.toFun ∘ h.invFun) h.target y := (mfderivWithin_of_open J J h.open_target hysource).symm
+    _ = mfderivWithin J J (h.toFun ∘ h.invFun) h.target y :=
+      (mfderivWithin_of_open J J h.open_target hysource).symm
     _ = mfderivWithin J J id h.target y :=
           mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hysource) h.right_inv' (h.right_inv' hysource)
     _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hysource
