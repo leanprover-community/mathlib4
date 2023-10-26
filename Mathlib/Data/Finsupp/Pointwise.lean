@@ -105,7 +105,7 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
-  Function.Injective.module _ coeFnAddHom FunLike.coe_injective coe_pointwise_smul
+  Function.Injective.module _ coeFnAddHom FunLike.coe_injective (fun _ _ ↦ rfl)
 #align finsupp.pointwise_module Finsupp.pointwiseModule
 
 end Finsupp
