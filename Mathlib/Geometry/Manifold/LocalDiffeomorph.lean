@@ -59,22 +59,102 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 variable (I I' J M M' N n)
 
-/-- A **local diffeomorphism `f : M → N` at `x ∈ M`** is a `C^n` map `f` such that there are
-neighbourhoods `s` and `t` of `x` and `f x`, respectively, for which `f` defines a diffeomorphism
-from `s` to `t`. -/
--- In Lean `s` and `t` are `source` and `target`, respectively.
-structure LocalDiffeomorphAt (x : M) extends LocalHomeomorph M N where
-  hx : x ∈ source
+/-- A "diffeomorphism on" `s` is a function `f : M → N` such that `f` restricts to a diffeomorphism
+`s → t` between open subsets of `M` and `N`, respectively. -/
+-- In Lean, `s` and `t` are `source` and `target`, respectively.
+structure DiffeomorphOn extends LocalHomeomorph M N where
   contMDiffOn_toFun : ContMDiffOn I J n toFun source
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
-namespace LocalDiffeomorphAt
-/-- Identity map as a local diffeomorphism at any point. -/
-protected def refl (x : M) : LocalDiffeomorphAt I I M M n x where
-  toLocalHomeomorph := LocalHomeomorph.refl M
-  hx := by exact trivial
+namespace DiffeomorphOn
+-- Simple properties, mostly convenience access to the different proofs.
+-- TODO: go over Diffeomorph and complete this list. Including a Coe instance, ext lemma etc.
+@[continuity]
+protected theorem continuousOn (h : DiffeomorphOn I J M N n) : ContinuousOn h.toFun h.source :=
+  h.contMDiffOn_toFun.continuousOn
+
+@[continuity]
+protected theorem continuousOn_symm (h : DiffeomorphOn I J M N n) :
+    ContinuousOn h.invFun h.target :=
+  h.contMDiffOn_invFun.continuousOn
+
+protected theorem contMDiffOn (h : DiffeomorphOn I J M N n) : ContMDiffOn I J n h.toFun h.source :=
+  h.contMDiffOn_toFun
+
+protected theorem contMDiffOn_symm (h : DiffeomorphOn I J M N n) :
+    ContMDiffOn J I n h.invFun h.target :=
+  h.contMDiffOn_invFun
+
+protected theorem contMDiffAt (h : DiffeomorphOn I J M N n) {x : M} (hx : x ∈ h.source) :
+    ContMDiffAt I J n h.toFun x :=
+  h.contMDiffOn_toFun.contMDiffAt (h.open_source.mem_nhds hx)
+
+protected theorem contMDiffAt_symm (h : DiffeomorphOn I J M N n) {x : N} (hx : x ∈ h.target) :
+    ContMDiffAt J I n h.invFun x :=
+  h.contMDiffOn_invFun.contMDiffAt (h.open_target.mem_nhds hx)
+
+protected theorem contMDiffWithinAt (h : DiffeomorphOn I J M N n)
+    {s : Set M} {x : M} (hx : x ∈ h.source) : ContMDiffWithinAt I J n h.toFun s x :=
+  (h.contMDiffAt hx).contMDiffWithinAt
+
+protected theorem contMDiffWithinAt_symm (h : DiffeomorphOn I J M N n)
+    {s : Set N} {x : N} (hx : x ∈ h.target) : ContMDiffWithinAt J I n h.invFun s x :=
+  (h.contMDiffAt_symm hx).contMDiffWithinAt
+
+protected theorem mdifferentiableOn (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
+    MDifferentiableOn I J h.toFun h.source :=
+  (h.contMDiffOn).mdifferentiableOn hn
+
+protected theorem mdifferentiableOn_symm (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
+    MDifferentiableOn J I h.invFun h.target :=
+  (h.contMDiffOn_symm).mdifferentiableOn hn
+
+protected def refl : DiffeomorphOn I I M M n where
   contMDiffOn_toFun := contMDiff_id.contMDiffOn
   contMDiffOn_invFun := contMDiff_id.contMDiffOn
+  toLocalHomeomorph := LocalHomeomorph.refl M
+
+@[simp]
+theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
+  rfl
+
+/-- Composition of two local diffeomorphisms, restricted to the maximal domain where
+this is defined. -/
+protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n) :
+    DiffeomorphOn I J M N n where
+  toLocalHomeomorph := h₁.toLocalHomeomorph.trans h₂.toLocalHomeomorph
+  contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h plus restricting
+  contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h + restricting
+
+/-- Inverse of a diffeomorphism on a set. -/
+@[pp_dot]
+protected def symm (h : DiffeomorphOn I I' M M' n) : DiffeomorphOn I' I M' M n where
+  contMDiffOn_toFun := h.contMDiffOn_invFun
+  contMDiffOn_invFun := h.contMDiffOn_toFun
+  toLocalHomeomorph := h.toLocalHomeomorph.symm
+
+@[simp]
+theorem symm_toLocalHomeomorph (h : DiffeomorphOn I J M N n) :
+    (h.symm).toLocalHomeomorph = h.toLocalHomeomorph.symm :=
+  rfl
+
+-- TODO: add more API for refl, trans and symm
+end DiffeomorphOn
+
+/-- A **local diffeomorphism `f : M → N` at `x ∈ M`** is a `C^n` map `f` such that there are
+neighbourhoods `s` and `t` of `x` and `f x`, respectively, for which `f` defines a diffeomorphism
+from `s` to `t`. -/
+-- This means `f` is a DiffeomorphOn `s`, where `x : s`
+structure LocalDiffeomorphAt (x : M) extends DiffeomorphOn I J M N n where
+  hx : x ∈ source
+
+namespace LocalDiffeomorphAt
+-- TODO: add coe instance, ext lemmas, etc.
+
+/-- Identity map as a local diffeomorphism at any point. -/
+protected def refl (x : M) : LocalDiffeomorphAt I I M M n x where
+  toDiffeomorphOn := DiffeomorphOn.refl I M n
+  hx := by exact trivial
 
 @[simp]
 theorem refl_toEquiv (x : M) : (LocalDiffeomorphAt.refl I M n x).toEquiv = Equiv.refl _ :=
@@ -84,32 +164,21 @@ theorem refl_toEquiv (x : M) : (LocalDiffeomorphAt.refl I M n x).toEquiv = Equiv
 @[pp_dot]
 protected def symm (x : M) (h : LocalDiffeomorphAt I I' M M' n x) :
     LocalDiffeomorphAt I' I M' M n (h.toFun x) where
-  toLocalHomeomorph := h.toLocalHomeomorph.symm
+  toDiffeomorphOn := h.toDiffeomorphOn.symm
   hx := h.map_source' h.hx
-  contMDiffOn_toFun := h.contMDiffOn_invFun
-  contMDiffOn_invFun := h.contMDiffOn_toFun
 
-/-- Composing two local diffeomorphisms at `x` if the target of the first coincides with the source
-of the second, and the base points also do. -/
---@[simps]
-protected def trans' (x : M) (h : LocalDiffeomorphAt I I' M M' n x)
-    (h' : LocalDiffeomorphAt I' J M' N n (h.toFun x)) (hyp : h.target = h'.source) : LocalDiffeomorphAt I J M N n x where
-  toLocalHomeomorph := h.toLocalHomeomorph.trans' h'.toLocalHomeomorph hyp
-  hx := h.hx
-  contMDiffOn_toFun := sorry -- h.contMDiffOn_toFun.comp h'.contMDiffOn_toFun plus details
-  contMDiffOn_invFun := sorry --h'.contMDiffOn_invFun.comp h.contMDiffOn_invFun plus details
-
-/-- Composing two local diffeomorphisms at `x`, by restricting to the maximal domain where their
-composition is well defined. -/
--- XXX: do I need trans' also, or is just trans fine??
+/-- Composing two local diffeomorphisms `h` and `h'` at `x` resp. `h x`,
+by restricting to the maximal domain where their composition is well defined. -/
 protected def trans (x : M) (h : LocalDiffeomorphAt I I' M M' n x)
     (h' : LocalDiffeomorphAt I' J M' N n (h.toFun x)) : LocalDiffeomorphAt I J M N n x where
   toLocalHomeomorph := h.toLocalHomeomorph.trans h'.toLocalHomeomorph
   hx := ⟨h.hx, h'.hx⟩
-  contMDiffOn_toFun := sorry
-  contMDiffOn_invFun := sorry
-end LocalDiffeomorphAt
+  -- FIXME: can I reuse toDiffeomorphOn.trans?
+  contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h plus restricting
+  contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h + restricting
 
+-- TODO: show basic properties of these constructions!
+end LocalDiffeomorphAt
 
 /-- A **local diffeomorphism `f : M → N`** is a `C^n` map `f` such that each `x : M` has
 neighbourhoods `s` and `t` of `x` and `f x`, respectively, so `f` defines a diffeomorphism
@@ -117,8 +186,8 @@ from `s` to `t`.
 
 We make these choices, for each `x` part of the data defining a local diffeomorphism. -/
 structure LocalDiffeomorph extends LocalHomeomorph M N where
-  source := univ -- for clarity, can I elide these??
-  target := univ
+  --source := univ -- for clarity, can I elide these??
+  --target := univ
   -- Choices of neighbourhoods for each point.
   sources : Set (Opens M)
   targets : Set (Opens N)
@@ -128,6 +197,8 @@ structure LocalDiffeomorph extends LocalHomeomorph M N where
   contMDiffOn_invFun : ∀ x : M, ContMDiffOn J I n invFun (targetAt x)
 
 namespace LocalDiffeomorphism
+-- TODO: add coe instance, ext lemmas, etc.
+
 /-- Identity map as a local diffeomorphism. -/
 protected def refl : LocalDiffeomorph I I M M n where
   toLocalHomeomorph := LocalHomeomorph.refl M
@@ -145,7 +216,7 @@ protected def refl : LocalDiffeomorph I I M M n where
   contMDiffOn_invFun := fun _ ↦ contMDiff_id.contMDiffOn
 
 -- @[simp]
--- theorem refl_toEquiv : (LocalDiffeomorph.refl I M n).toEquiv = Equiv.refl _ :=
+-- theorem refl_toEquiv : (LocalDiffeomorph.refl I M n).toLocalEquiv = LocalEquiv.refl _ :=
 --   rfl
 
 /- Inverse of a local diffeomorphism. -/
@@ -199,17 +270,10 @@ protected def trans (h : LocalDiffeomorph I I' M M' n)
   targets := sorry
   contMDiffOn_toFun := sorry
   contMDiffOn_invFun := sorry
+
+-- TODO: add simple lemmas relating refl, symm and trans!
 end LocalDiffeomorphism
 
 -- A local diffeomorphism is a local diffeomorphism at each point.
 -- If f is a local diffeomorphism at each point, it's a local diffeomorphism.
 -- The identity function is a local diffeo.
-
-
-
-/-- A `C^n` diffeomorphism between open subsets of `M` and `N`.
-This is the `C^n` analogue of `LocalHomeomorph`; we don't call it so as `LocalDiffeomorph` means
-something else. -/
-structure DiffeomorphOn extends LocalHomeomorph M N where
-  contMDiffOn_toFun : ContMDiffOn I J n toFun source
-  contMDiffOn_invFun : ContMDiffOn J I n invFun target

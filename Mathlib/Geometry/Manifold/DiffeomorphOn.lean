@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.LocalDiffeomorph
 
 /-!
 # "Local" diffeomorphisms
@@ -41,14 +39,6 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 variable (I I' J M M' N n)
 
-/-- Like `Diffeomorph`, but on an open set only.
-  Maps `M → M` which are `n`-times continuous differentiable diffeomorphisms with respect
-  to `I` and `I'` between two open subsets of `M` resp. `M'`.
-  Not called `LocalDiffeomorph` this name is used in mathematics for something else...  -/
-structure DiffeomorphOn extends LocalHomeomorph M N where
-  contMDiffOn_toFun : ContMDiffOn I J n toFun source
-  contMDiffOn_invFun : ContMDiffOn J I n invFun target
-
 /-- A diffeomorphism is a local diffeomorphism on the entire space. -/
 def Diffeomorph.toDiffeomorphOn (h : Diffeomorph I J M N n) : DiffeomorphOn I J M N n :=
   {
@@ -57,74 +47,14 @@ def Diffeomorph.toDiffeomorphOn (h : Diffeomorph I J M N n) : DiffeomorphOn I J 
     toLocalHomeomorph := h.toHomeomorph.toLocalHomeomorph
   }
 
--- TODO: add a coe instance instance? injectivity, ext lemma, etc.
-
+-- aux statements for DiffeomorphOn, which might be useful simple lemmas there
 namespace DiffeomorphOn
 -- simple properties: TODO compare with Diffeomorph and fill out API!
--- XXX: Diffeomorph is missing theorems for inverse? or further below??
-@[continuity]
-protected theorem continuousOn (h : DiffeomorphOn I J M N n) : ContinuousOn h.toFun h.source :=
-  h.contMDiffOn_toFun.continuousOn
-
-@[continuity]
-protected theorem continuousOn_symm (h : DiffeomorphOn I J M N n) :
-    ContinuousOn h.invFun h.target :=
-  h.contMDiffOn_invFun.continuousOn
-
-protected theorem contMDiffOn (h : DiffeomorphOn I J M N n) : ContMDiffOn I J n h.toFun h.source :=
-  h.contMDiffOn_toFun
-
-protected theorem contMDiffOn_symm (h : DiffeomorphOn I J M N n) :
-    ContMDiffOn J I n h.invFun h.target :=
-  h.contMDiffOn_invFun
-
-protected theorem contMDiffAt (h : DiffeomorphOn I J M N n) {x : M} (hx : x ∈ h.source) :
-    ContMDiffAt I J n h.toFun x :=
-  h.contMDiffOn_toFun.contMDiffAt (h.open_source.mem_nhds hx)
-
-protected theorem contMDiffAt_symm (h : DiffeomorphOn I J M N n) {x : N} (hx : x ∈ h.target) :
-    ContMDiffAt J I n h.invFun x :=
-  h.contMDiffOn_invFun.contMDiffAt (h.open_target.mem_nhds hx)
-
-protected theorem contMDiffWithinAt (h : DiffeomorphOn I J M N n)
-    {s : Set M} {x : M} (hx : x ∈ h.source) : ContMDiffWithinAt I J n h.toFun s x :=
-  (h.contMDiffAt hx).contMDiffWithinAt
-
-protected theorem contMDiffWithinAt_symm (h : DiffeomorphOn I J M N n)
-    {s : Set N} {x : N} (hx : x ∈ h.target) : ContMDiffWithinAt J I n h.invFun s x :=
-  (h.contMDiffAt_symm hx).contMDiffWithinAt
-
-protected theorem mdifferentiableOn (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
-    MDifferentiableOn I J h.toFun h.source :=
-  (h.contMDiffOn).mdifferentiableOn hn
-
-protected theorem mdifferentiableOn_symm (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
-    MDifferentiableOn J I h.invFun h.target :=
-  (h.contMDiffOn_symm).mdifferentiableOn hn
-
-/-- Identity map as a diffeomorphism. -/
-protected def refl : DiffeomorphOn I I M M n where
-  contMDiffOn_toFun := contMDiff_id.contMDiffOn
-  contMDiffOn_invFun := contMDiff_id.contMDiffOn
-  toLocalHomeomorph := LocalHomeomorph.refl M
-
-@[simp]
-theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
-  rfl
+-- XXX: is `Diffeomorph` missing the simple theorems for inverse, or are the further below?
 
 -- @[simp]
 -- theorem coe_refl : ⇑(DiffeomorphOn.refl I M n) = id :=
 --   rfl
-
--- skipped so far; this is more subtle than I like
--- (compare LocalHomeomorph, which has trans' and trans)
-/- /-- Composition of two local diffeomorphisms. -/
-protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n)
-    (_h : h₁.target ⊆ h₂.source) : DiffeomorphOn I J M N n where
-  contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h
-  contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h
-  toLocalHomeomorph := h₁.toLocalHomeomorph.trans h₂.toLocalHomeomorph
--/
 
 -- TODO: these statements don't compile yet
 /-
@@ -141,13 +71,6 @@ theorem refl_trans (h : M ≃ₘ^n⟮I, I'⟯ M') : (Diffeomorph.refl I M n).tra
 theorem coe_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) : ⇑(h₁.trans h₂) = h₂ ∘ h₁ :=
   rfl
 -/
-
-/-- Inverse of a diffeomorphism. -/
-@[pp_dot]
-protected def symm (h : DiffeomorphOn I I' M M' n) : DiffeomorphOn I' I M' M n where
-  contMDiffOn_toFun := h.contMDiffOn_invFun
-  contMDiffOn_invFun := h.contMDiffOn_toFun
-  toLocalHomeomorph := h.toLocalHomeomorph.symm
 
 /- TODO: fix these statements, then the proofs will be easy
 @[simp]
@@ -180,13 +103,7 @@ theorem symm_trans' (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' 
   rfl
 -/
 
-@[simp]
-theorem symm_toLocalHomeomorph (h : DiffeomorphOn I J M N n) :
-    (h.symm).toLocalHomeomorph = h.toLocalHomeomorph.symm :=
-  rfl
-
-#exit
--- TODO: audit these, and adapt to DiffeomorphOn as fit
+-- TODO: audit these, and adapt the ones which fit to DiffeomorphOn
 @[simp, mfld_simps]
 theorem toEquiv_coe_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toEquiv.symm = h.symm :=
   rfl
@@ -229,5 +146,4 @@ theorem coe_toHomeomorph (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toHomeomorph = h :=
 @[simp]
 theorem coe_toHomeomorph_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toHomeomorph.symm = h.symm :=
   rfl
-
 end DiffeomorphOn
