@@ -5,15 +5,15 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs
 
-lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt8.val_eq_coe {a : Nat} : (ofNat a).val = a := rfl
 
-lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt16.val_eq_coe {a : Nat} : (ofNat a).val = a := rfl
 
-lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt32.val_eq_coe {a : Nat} : (ofNat a).val = a := rfl
 
-lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt64.val_eq_coe {a : Nat} : (ofNat a).val = a := rfl
 
-lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma USize.val_eq_coe {a : Nat} : (ofNat a).val = a := rfl
 
 instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
 
@@ -119,9 +119,16 @@ def isAlphanum (c : UInt8) : Bool :=
   c.isAlpha || c.isDigit
 
 theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
-  rw [UInt32.val_eq_of_lt]
-  exact Or.inl $ Nat.lt_trans h $ by decide
-  exact Nat.lt_trans h $ by decide
+  rw [UInt32.val_eq_coe]
+  apply Or.inl
+  apply Nat.lt_trans
+  · dsimp
+    rw [Nat.mod_eq n UInt32.size]
+    · rw [if_neg]
+      · exact h
+      · simp only [true_and, not_le]
+        exact Nat.lt_trans h (by decide)
+  · decide
 
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩

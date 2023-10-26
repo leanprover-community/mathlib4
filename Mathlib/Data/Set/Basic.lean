@@ -2201,19 +2201,15 @@ theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
 
 /-! ### Sets defined as an if-then-else -/
 
---Porting note: New theorem to prove `mem_dite` lemmas.
--- `simp [h]` where `h : p` does not simplify `∀ (h : p), x ∈ s h` any more.
--- https://github.com/leanprover/lean4/issues/1926
 theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set α) (x : α) :
     (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h := by
   split_ifs with hp
   · exact ⟨fun hx => ⟨fun _ => hx, fun hnp => (hnp hp).elim⟩, fun hx => hx.1 hp⟩
   · exact ⟨fun hx => ⟨fun h => (hp h).elim, fun _ => hx⟩, fun hx => hx.2 hp⟩
 
---Porting note: Old proof was `split_ifs; simp [h]`
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
-  simp [mem_dite]
+  split_ifs <;> simp_all
 #align set.mem_dite_univ_right Set.mem_dite_univ_right
 
 @[simp]
@@ -2224,7 +2220,7 @@ theorem mem_ite_univ_right (p : Prop) [Decidable p] (t : Set α) (x : α) :
 
 theorem mem_dite_univ_left (p : Prop) [Decidable p] (t : ¬p → Set α) (x : α) :
     (x ∈ if h : p then univ else t h) ↔ ∀ h : ¬p, x ∈ t h := by
-  simp [mem_dite]
+  split_ifs <;> simp_all
 #align set.mem_dite_univ_left Set.mem_dite_univ_left
 
 @[simp]
