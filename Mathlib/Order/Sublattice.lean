@@ -42,6 +42,9 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
+/-- Turn a set closed supremum and infimum into a sublattice. -/
+def ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
+
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
 @[simp] lemma supClosed (L : Sublattice α) : SupClosed (L : Set α) := L.supClosed'
@@ -52,6 +55,7 @@ lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 @[simp] lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := Iff.rfl
 @[simp] lemma mem_mk (h_sup h_inf) : a ∈ mk s h_sup h_inf ↔ a ∈ s := Iff.rfl
 @[simp, norm_cast] lemma coe_mk (h_sup h_inf) : mk s h_sup h_inf = s := rfl
+@[simp, norm_cast] lemma coe_ofIsSublattice (hs) : ofIsSublattice s hs = s := rfl
 @[simp] lemma mk_le_mk (hs_sup hs_inf ht_sup ht_inf) :
     mk s hs_sup hs_inf ≤ mk t ht_sup ht_inf ↔ s ⊆ t := Iff.rfl
 @[simp] lemma mk_lt_mk (hs_sup hs_inf ht_sup ht_inf) :
