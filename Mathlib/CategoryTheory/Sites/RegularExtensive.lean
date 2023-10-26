@@ -446,7 +446,7 @@ variable (hd : ∀ {α : Type} [Fintype α] (Z : α → C) i j, i ≠ j →
 
 open Opposite
 
-theorem isSheaf_iff_preservesFiniteProduct (F : Cᵒᵖ ⥤ Type max u v) :
+theorem isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type max u v) :
     Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
     Nonempty (PreservesFiniteProducts F) := by
   refine ⟨fun hF ↦ ?_, fun hF ↦ ?_⟩
