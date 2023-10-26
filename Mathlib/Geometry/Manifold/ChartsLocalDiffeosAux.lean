@@ -52,39 +52,18 @@ theorem image_congr'' {α β : Type*} {f : α → β} {g : β → α} {s : Set �
 lemma DiffeomorphOn.differential_isContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) :
     ContinuousLinearEquiv (RingHom.id ℝ) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
+  let y := h.toFun x
+  have hy : y ∈ h.target := h.toLocalEquiv.mapsTo hx
   let A := mfderiv I J h.toFun x
   let B := mfderiv J I h.invFun (h.toFun x)
 
-  have inv1 : B.comp A = ContinuousLinearMap.id ℝ (TangentSpace I x) := sorry
-  have inv2 : A.comp B = ContinuousLinearMap.id ℝ (TangentSpace J (h.toFun x)) := sorry
-
-  have h1 : Function.LeftInverse B A := by sorry -- TODO: should be obvious from inv1
-  have h2 : Function.RightInverse B A := sorry
-
-  exact {
-    toFun := A
-    invFun := B
-    left_inv := h1
-    right_inv := h2
-    continuous_toFun := A.cont
-    continuous_invFun := B.cont
-    map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add A x_1 y
-    map_smul' := by intros; simp
-  }
-
-lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
-    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
-  -- Notation to simplify my problem.
-  let y := h.toFun x
-  have hy : y ∈ h.target := h.toLocalEquiv.mapsTo hx
-  set A := mfderiv I J h.toFun x
-  let A' := mfderiv J I h.invFun y
   have hr : 1 ≤ (r : ℕ∞) := Nat.one_le_cast.mpr (Nat.one_le_of_lt hr)
+  -- FUTURE: can the `differentiability` tactic show this?
   have hgat : MDifferentiableAt J I h.invFun y :=
     (h.contMDiffAt_symm (h.toLocalEquiv.mapsTo hx)).mdifferentiableAt hr
   have hfat : MDifferentiableAt I J h.toFun x :=
     (h.contMDiffAt hx).mdifferentiableAt hr
-  have inv1 := calc A'.comp A
+  have inv1 : B.comp A = ContinuousLinearMap.id ℝ (TangentSpace I x) := calc B.comp A
     _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
     _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
       (mfderivWithin_of_open I I h.open_source hx).symm
@@ -92,7 +71,7 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
       mfderivWithin_congr (h.open_source.uniqueMDiffWithinAt hx) h.left_inv' (h.left_inv' hx)
     _ = mfderiv I I id x := mfderivWithin_of_open I I h.open_source hx
     _ = ContinuousLinearMap.id ℝ (TangentSpace I x) := mfderiv_id I
-  have inv2 := calc A.comp A'
+  have inv2 : A.comp B = ContinuousLinearMap.id ℝ (TangentSpace J (h.toFun x)) := calc A.comp B
     _ = mfderiv J J (h.toFun ∘ h.invFun) y := by
           -- Use the chain rule: rewrite the base point (I ∘ e ∘ e.invFun ∘ I.invFun) x = x, ...
           rw [← (h.left_inv' hx)] at hfat
@@ -107,6 +86,22 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hy
     _ = ContinuousLinearMap.id ℝ (TangentSpace J y) := mfderiv_id J
 
+  have h1 : Function.LeftInverse B A := sorry -- TODO: should be obvious from inv1
+  have h2 : Function.RightInverse B A := sorry -- same here
+  exact {
+    toFun := A
+    invFun := B
+    left_inv := h1
+    right_inv := h2
+    continuous_toFun := A.cont
+    continuous_invFun := B.cont
+    map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add A x_1 y
+    map_smul' := by intros; simp
+  }
+
+lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
+    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
+  -- deduce from ContinuousLinearEquiv above!
   sorry
 
 -- auxiliary results, not needed for my proof, but perhaps still useful
