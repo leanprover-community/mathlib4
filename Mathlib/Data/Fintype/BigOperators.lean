@@ -296,7 +296,7 @@ theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
 #align fintype.prod_sum_type Fintype.prod_sum_type
 #align fintype.sum_sum_type Fintype.sum_sum_type
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem Fintype.prod_sum_type_right (f : Sum α₁ α₂ → M) :
     ∏ x, f x = (∏ a₂, f (Sum.inr a₂)) * ∏ a₁, f (Sum.inl a₁) := by
   rw [mul_comm]
