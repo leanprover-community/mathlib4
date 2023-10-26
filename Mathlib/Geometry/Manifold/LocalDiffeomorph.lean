@@ -216,6 +216,7 @@ theorem toEquiv_injective : Injective (LocalDiffeomorph.toEquiv : LocalDiffeomor
 --   }
 
 -- TODO: prove this; shouldn't be too hard
+variable {I J M N n} in
 protected theorem toHomeomorph (h : LocalDiffeomorph I J M N n) : Homeomorph M N := sorry
 
 /-- Identity map as a local diffeomorphism. -/
@@ -301,7 +302,7 @@ lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x 
         intro x
         apply (h.contMDiffOn_toFun x).contMDiffAt
         apply (((h.sourceAt x).1.2).mem_nhds_iff).mpr (h.mem_sources x)
-      set badboy := (↑(Homeomorph.toLocalHomeomorph (LocalDiffeomorph.toHomeomorph I J M N n h)).toLocalEquiv)
+      set badboy := h.toHomeomorph.toLocalHomeomorph.toLocalEquiv
       have aux : badboy = h.toFun := sorry -- TODO: add as a lemma later!
       rw [aux, Homeomorph.toLocalHomeomorph_source, contMDiffOn_univ] -- TODO: why last two lemmas?
       exact this
@@ -316,7 +317,7 @@ lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x 
         -- TODO: extract as a lemma for later!
         have aux2 : h.toFun (h.invFun y) = y := h.toLocalEquiv.right_inv' (mem_univ y)
         exact aux2 ▸ (this x)
-      set badboy := ((h.toHomeomorph I J M N n).toLocalHomeomorph).toLocalEquiv.invFun
+      set badboy := (h.toHomeomorph.toLocalHomeomorph).toLocalEquiv.invFun
       have aux : badboy = h.invFun := sorry -- TODO: add as a lemma later!
       rw [aux]
       apply ContMDiff.contMDiffOn this
@@ -344,14 +345,16 @@ lemma hasFDerivWithinAt_of_open {s : Set E} {x : E} (h : IsOpen s) (hx : x ∈ s
 
 -- I have not compared FDeriv.Basic to MFDeriv and added all analogous lemmas.
 -- analogous to `fderivWithin_of_mem_nhds`
+variable {M N} in
 theorem mfderivWithin_of_mem_nhds {f : M → N} {s : Set M} {x : M} (h : s ∈ 𝓝 x) :
     mfderivWithin I J f s x = mfderiv I J f x := by
   rw [← mfderivWithin_univ, ← univ_inter s, mfderivWithin_inter h]
 
 -- similar to `fderivWith_of_open`
+variable {M N} in
 lemma mfderivWithin_of_open {s : Set M} {x : M} (hs : IsOpen s) (hx : x ∈ s) {f : M → N} :
     mfderivWithin I J f s x = mfderiv I J f x := by
-  apply mfderivWithin_of_mem_nhds I J _ _ (hs.mem_nhds hx)
+  apply mfderivWithin_of_mem_nhds I J (hs.mem_nhds hx)
 
 -- analogous to `mfderivWithin_eq_mfderiv`
 theorem mfderivWithin_eq_mfderiv {s : Set M} {x : M} {f : M → N}
@@ -381,10 +384,10 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv {r : �
   have inv1 : B.comp A = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := calc B.comp A
     _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
     _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
-      (mfderivWithin_of_open I I _ _ h.open_source h.hx).symm
+      (mfderivWithin_of_open I I h.open_source h.hx).symm
     _ = mfderivWithin I I id h.source x :=
       mfderivWithin_congr (h.open_source.uniqueMDiffWithinAt h.hx) h.left_inv' (h.left_inv' h.hx)
-    _ = mfderiv I I id x := mfderivWithin_of_open I I _ _ h.open_source h.hx
+    _ = mfderiv I I id x := mfderivWithin_of_open I I h.open_source h.hx
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := mfderiv_id I
   have inv2 : A.comp B = ContinuousLinearMap.id 𝕜 (TangentSpace J (h.toFun x)) := calc A.comp B
     _ = mfderiv J J (h.toFun ∘ h.invFun) y := by
@@ -396,10 +399,10 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv {r : �
           -- have : (LocalEquiv.invFun h.toLocalEquiv y) = x := (h.left_inv' hx)
           -- exact (this ▸ (mfderiv_comp y hfat hgat)).symm
     _ = mfderivWithin J J (h.toFun ∘ h.invFun) h.target y :=
-      (mfderivWithin_of_open J J _ _ h.open_target hy).symm
+      (mfderivWithin_of_open J J h.open_target hy).symm
     _ = mfderivWithin J J id h.target y :=
       mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hy) h.right_inv' (h.right_inv' hy)
-    _ = mfderiv J J id y := mfderivWithin_of_open J J _ _ h.open_target hy
+    _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hy
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace J y) := mfderiv_id J
 
   have h1 : Function.LeftInverse B A := sorry -- TODO: should be obvious from inv1
@@ -449,12 +452,27 @@ lemma DiffeomorphOn.differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
   sorry --exact _s hr
 
 /-- A diffeomorphism is a local diffeomorphism. -/
-def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorph I J M N n :=
-  -- FIXME: for DiffeomorphOn, the proof is really simple. simplify LocalDiffeomorph, somehow!
-  sorry
-  -- { contMDiffOn_toFun := h.contMDiff.contMDiffOn
-  --   contMDiffOn_invFun := h.contMDiff_invFun.contMDiffOn
-  --   toLocalHomeomorph := h.toHomeomorph.toLocalHomeomorph }
+-- TODO: deduplicate this with with LocalDiffeomorph.refl
+def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorph I J M N n := by
+  exact {
+    toEquiv := h.toEquiv
+    sources := singleton ⟨univ, isOpen_univ⟩
+    targets := singleton ⟨univ, isOpen_univ⟩
+    sourceAt := by intro; apply Subtype.mk; apply Eq.refl
+    targetAt := by intro; apply Subtype.mk; apply Eq.refl
+    mem_sources := fun _ ↦ (by exact trivial)
+    mem_targets := fun _ ↦ (by exact trivial)
+    contMDiffOn_toFun := by
+      intro
+      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
+      rw [contMDiffOn_univ]
+      exact h.contMDiff_toFun
+    contMDiffOn_invFun := by
+      intro
+      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
+      rw [contMDiffOn_univ]
+      exact h.contMDiff_invFun
+  }
 
 /-- A diffeomorphism is a local diffeomorphism at each point. -/
 noncomputable def Diffeomorph.toLocalDiffeomorphAt (h : Diffeomorph I J M N n) (x : M) :
