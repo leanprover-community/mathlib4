@@ -115,7 +115,7 @@ lemma invInterpStrip_eq_of_zero (f : ℂ → ℂ ) (h : (sSupAbsIm f 0) = 0 ∨ 
   if_pos h
 
 -- Differentiable continuous function invInterpStrip
-lemma invInterpStrip_diff_cont (f : ℂ → ℂ) : DiffContOnCl ℂ (invInterpStrip f) (strip 0 1) := by
+lemma diffContOnCl_invInterpStrip (f : ℂ → ℂ) : DiffContOnCl ℂ (invInterpStrip f) (strip 0 1) := by
   by_cases (sSupAbsIm f 0) = 0 ∨ (sSupAbsIm f 1) = 0
   -- Case everywhere 0
   -- Starting with Lemma to handle rewriting of invInterpStrip as a function.
@@ -148,9 +148,9 @@ lemma invInterpStrip_diff_cont (f : ℂ → ℂ) : DiffContOnCl ℂ (invInterpSt
 
 
 
-lemma F'_diff_cont (f : ℂ → ℂ) (n : ℕ) (hd : DiffContOnCl ℂ f (strip 0 1)) :
+lemma diffContOnCl_F' (f : ℂ → ℂ) (n : ℕ) (hd : DiffContOnCl ℂ f (strip 0 1)) :
     DiffContOnCl ℂ (F' n f) (strip 0 1) := by
-  refine DiffContOnCl.smul (DiffContOnCl.smul hd (invInterpStrip_diff_cont f) )
+  refine DiffContOnCl.smul (DiffContOnCl.smul hd (diffContOnCl_invInterpStrip f) )
     <| Differentiable.diffContOnCl <| Differentiable.cexp <| Differentiable.mul ?_
       (differentiable_const _)
   rw [differentiable_sub_const_iff]
@@ -159,7 +159,7 @@ lemma F'_diff_cont (f : ℂ → ℂ) (n : ℕ) (hd : DiffContOnCl ℂ f (strip 0
 
 
 -- The function `f` is bounded by `sSupAbsIm`
-lemma f_le_Sup (f : ℂ → ℂ) (z : ℂ) (hD : z ∈ (closedStrip 0 1))
+lemma abs_le_sSupAbsIm (f : ℂ → ℂ) (z : ℂ) (hD : z ∈ (closedStrip 0 1))
     (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) : abs (f z) ≤ sSupAbsIm f (z.re) := by
   refine le_csSup ?_ ?_
   · apply BddAbove.mono (image_subset (abs ∘ f) _) hB
@@ -238,6 +238,7 @@ lemma expterm_eventually_le_one (C : ℝ) (n : ℕ) (hn : 1 ≤ n) : ∀ᶠ (z :
     rw [cpow_nat_cast, sq, mul_re]
     simp only [re_add_im, one_re, Nat.cast_ofNat, Real.rpow_two, mul_eq_mul_left_iff,
     Real.exp_eq_exp, mul_eq_mul_right_iff, sub_left_inj, inv_eq_zero, Nat.cast_eq_zero, sq]
+
   rw [hz_re_im]
   nth_rewrite 2 [← mul_zero C]
   apply Tendsto.const_mul C _
@@ -338,14 +339,14 @@ lemma F_edge_le_one (f : ℂ → ℂ) (hB : BddAbove ((abs ∘ f) '' (closedStri
       · simp only [hz0, mul_one, zero_sub, Real.rpow_zero, neg_zero,
         Real.rpow_neg_one, mul_inv_le_iff hpos]
         rw [← hz0]
-        apply f_le_Sup f z _ hB
+        apply abs_le_sSupAbsIm f z _ hB
         simp only [closedStrip, mem_preimage, zero_le_one, left_mem_Icc, hz0]
       -- `z.re = 1`
       · rw [mem_singleton_iff] at hz1
         simp only [hz1, one_mul, Real.rpow_zero, sub_self, Real.rpow_neg_one,
         mul_inv_le_iff h1pos, mul_one]
         rw [← hz1]
-        apply f_le_Sup f z _ hB
+        apply abs_le_sSupAbsIm f z _ hB
         simp only [closedStrip, mem_preimage, zero_le_one, hz1, right_mem_Icc]
 
     -- Handling cases where `sSupAbsIm f 0 = 0` or `sSupAbsIm f 1 = 0.`
@@ -414,7 +415,7 @@ lemma abs_le_interp_on_closed_strip_sequence (f : ℂ → ℂ) (z : ℂ)
     have hd_subset : DiffContOnCl ℂ (F' n f) (bddStrip 0 1 (T)) := by
       apply DiffContOnCl.mono _ _
       · use strip 0 1
-      · exact F'_diff_cont _ _ hd
+      · exact diffContOnCl_F' _ _ hd
       · exact inter_subset_left _ _
 
     apply norm_le_of_forall_mem_frontier_norm_le bdd_strip_is_bounded hd_subset _ _
@@ -447,8 +448,8 @@ lemma abs_le_interp_on_closed_strip_sequence (f : ℂ → ℂ) (z : ℂ)
   -- Now : `T < |z.im|`.
   · simp only [not_le] at h; apply h_h; exact h_w_pos z hz (le_of_lt h)
 
---Proof that `F_seq Tendsto F`
-lemma F_seq_to_F (f : ℂ → ℂ) (z : ℂ) : Tendsto (fun n : ℕ ↦ F' n f z ) atTop (nhds (F f z)) :=
+--Proof that `F' Tendsto F` 
+lemma tendsto_F'_atTop_F (f : ℂ → ℂ) (z : ℂ) : Tendsto (fun n : ℕ ↦ F' n f z ) atTop (nhds (F f z)) :=
   have mul_const : Tendsto (fun n : ℕ ↦ (z^2-1) * (n : ℝ)⁻¹) atTop (nhds 0) := by
     simpa only [mul_zero]
       using tendsto_const_nhds.mul (tendsto_algebraMap_inverse_atTop_nhds_0_nat ℂ)
@@ -460,13 +461,13 @@ lemma F_seq_to_F (f : ℂ → ℂ) (z : ℂ) : Tendsto (fun n : ℕ ↦ F' n f z
   by simpa only [mul_one]
     using tendsto_const_nhds.mul comp_exp
 
--- Proof that `|F_seq| Tendsto |F|`
-lemma F_seq_to_F_abs (f : ℂ → ℂ) (z : ℂ) :
+-- Proof that `abs F'` Tendsto `abs F`
+lemma tendsto_F'_atTop_F_abs (f : ℂ → ℂ) (z : ℂ) :
     Tendsto (fun n : ℕ ↦ (abs ∘ (F' n f)) z ) atTop (nhds ((abs ∘ (F f)) z)) :=
-  (Continuous.tendsto continuous_abs (F f z)).comp (F_seq_to_F f z)
+  (Continuous.tendsto continuous_abs (F f z)).comp (tendsto_F'_atTop_F f z)
 
 
--- We are now ready to combine of `Hadamard_sequence` with `F_seq_to_F_abs`:
+-- We are now ready to combine of `Hadamard_sequence` with `tendsto_F'_atTop_F_abs`:
 
 /--
 **Hadamard three-line theorem** on `[0,1]`: If `f` is a bounded function, continuous on `[0,1]`
@@ -476,7 +477,7 @@ and differentiable on `(0,1)`, then for `M(x) := sup ((abs ∘ f) '' (re ⁻¹' 
 theorem abs_le_interp_on_closedStrip (f : ℂ → ℂ) (hd : DiffContOnCl ℂ f (strip 0 1))
     (hB : BddAbove ((abs ∘ f) '' (closedStrip 0 1))) (z : ℂ) (hz : z ∈ closedStrip 0 1) :
     (abs (f z • invInterpStrip f z)) ≤ 1 := by
-  apply le_of_tendsto (F_seq_to_F_abs f z) _
+  apply le_of_tendsto (tendsto_F'_atTop_F_abs f z) _
   rw [eventually_iff_exists_mem]
   use {n : ℕ | 1 ≤ n}
   exact ⟨mem_atTop _ , abs_le_interp_on_closed_strip_sequence f z hd hB hz⟩
