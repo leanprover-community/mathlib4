@@ -772,41 +772,35 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-variable {B :  M →ₗ[R] M →ₗ[R] R}
+variable {B :  M →ₗ[R] M →ₗ[R] N}
 
 @[simp]
-theorem toQuadraticForm_neg (B : M →ₗ[R] M →ₗ[R] R) : (-B).toQuadraticForm = -B.toQuadraticForm :=
+theorem toQuadraticForm_neg (B : M →ₗ[R] M →ₗ[R] N) : (-B).toQuadraticForm = -B.toQuadraticForm :=
   rfl
 #align bilin_form.to_quadratic_form_neg LinearMap.toQuadraticForm_neg
 
 @[simp]
-theorem toQuadraticForm_sub (B₁ B₂ : M →ₗ[R] M →ₗ[R] R) :
+theorem toQuadraticForm_sub (B₁ B₂ : M →ₗ[R] M →ₗ[R] N) :
     (B₁ - B₂).toQuadraticForm = B₁.toQuadraticForm - B₂.toQuadraticForm :=
   rfl
 #align bilin_form.to_quadratic_form_sub LinearMap.toQuadraticForm_sub
 
-#check LinearMap
-
 theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y + B y x := by
-  simp only [toQuadraticForm_apply, add_assoc, add_sub_cancel']
-  rw [polar]
-  rw [add_left_inj]
-  --rw [add_apply]
-  --, add_right, polar, add_left_inj,
-  --  add_neg_cancel_left, add_left, sub_eq_add_neg _ (B y y), add_comm (B y x) _]
-#align bilin_form.polar_to_quadratic_form BilinForm.polar_toQuadraticForm
+  simp only [polar._eq_1, toQuadraticForm_apply, map_add, add_apply, add_assoc, add_comm (B y x) _,
+    add_sub_cancel', sub_eq_add_neg _ (B y y), add_neg_cancel_left]
+#align bilin_form.polar_to_quadratic_form LinearMap.polar_toQuadraticForm
 
-theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip' B :=
-  BilinForm.ext polar_toQuadraticForm
+theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip B :=
+  LinearMap.ext₂ polar_toQuadraticForm
 
-@[simp] theorem _root_.QuadraticForm.toQuadraticForm_polarBilin (Q : QuadraticForm R M) :
+@[simp] theorem _root_.QuadraticForm.toQuadraticForm_polarBilin (Q : QuadraticForm R M N) :
     toQuadraticForm (polarBilin Q) = 2 • Q :=
   QuadraticForm.ext <| fun x => (polar_self _ x).trans <| by simp
 
 theorem  _root_.QuadraticForm.polarBilin_injective (h : IsUnit (2 : R)) :
-    Function.Injective (polarBilin : QuadraticForm R M → _) :=
+    Function.Injective (polarBilin : QuadraticForm R M N → _) :=
   fun Q₁ Q₂ h₁₂ => QuadraticForm.ext fun x => h.mul_left_cancel <| by
     simpa using FunLike.congr_fun (congr_arg toQuadraticForm h₁₂) x
 
