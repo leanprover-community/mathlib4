@@ -232,12 +232,14 @@ end invertibleTwo
     dist p (Equiv.pointReflection p q) = dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_left _ _)
 
-@[simp] theorem dist_pointReflection_right (p q : P) :
+-- @[simp] -- LHS doesn't simplify after #7905
+theorem dist_pointReflection_right (p q : P) :
     dist (Equiv.pointReflection p q) q = ‖(2 : 𝕜)‖ * dist p q := by
   simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_right (G := V),
     nsmul_eq_smul_cast 𝕜, norm_smul]
 
-@[simp] theorem dist_right_pointReflection (p q : P) :
+-- @[simp] -- LHS doesn't simplify after #7905
+theorem dist_right_pointReflection (p q : P) :
     dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_right _ _)
 
