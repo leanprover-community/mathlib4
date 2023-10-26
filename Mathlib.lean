@@ -2198,6 +2198,7 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.Elab.Tactic.Basic
+import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
@@ -2215,6 +2216,7 @@ import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
+import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Lean.SMap
 import Mathlib.Lean.System.IO
 import Mathlib.Lean.Thunk
