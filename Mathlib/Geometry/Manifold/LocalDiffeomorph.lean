@@ -196,7 +196,7 @@ structure LocalDiffeomorph extends LocalHomeomorph M N where
   contMDiffOn_toFun : ∀ x : M, ContMDiffOn I J n toFun (sourceAt x)
   contMDiffOn_invFun : ∀ x : M, ContMDiffOn J I n invFun (targetAt x)
 
-namespace LocalDiffeomorphism
+namespace LocalDiffeomorph
 -- TODO: add coe instance, ext lemmas, etc.
 
 /-- Identity map as a local diffeomorphism. -/
@@ -272,8 +272,30 @@ protected def trans (h : LocalDiffeomorph I I' M M' n)
   contMDiffOn_invFun := sorry
 
 -- TODO: add simple lemmas relating refl, symm and trans!
-end LocalDiffeomorphism
+end LocalDiffeomorph
 
--- A local diffeomorphism is a local diffeomorphism at each point.
--- If f is a local diffeomorphism at each point, it's a local diffeomorphism.
--- The identity function is a local diffeo.
+-- A DiffeomorphOn is a local diffeo at each point of its source.
+
+-- A local diffeomorph is a local diffeomorphism at each point.
+
+-- what would this mean: if f : M → N f is a local diffeomorphism at each point,
+-- it's a local diffeomorphism.
+
+-- if f is a local diffeo at x, the differential df_x is a linear iso.
+
+-- conversely, if f is smooth and df_x is a linear iso, then f is a local diffeo at x
+-- uses the inverse function theorem, might be a tad harder to show. punt on first first.
+
+-- if f is a DiffeoOn, the differential df_x is a linear iso for each x ∈ source.
+-- not sure if this should be outward-facing; in any case, should be a simple corollary.
+
+-- if f is a local diffeo, the differential is a linear iso at each point.
+
+-- if f is smooth and each differential df_x is a linear iso, f is a local diffeo
+
+-- a bijective local diffeo is a diffeo: hard to formalise?!
+-- a diffeo is a local diffeo
+-- a diffeo is bijective (easy)
+-- corollary: a diffeo is a bijective local diffeo (exact with two things)
+
+-- can I say that **the tangent map is a bundle isomorphism?**

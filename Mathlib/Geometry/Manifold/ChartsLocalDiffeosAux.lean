@@ -25,6 +25,16 @@ variable
   (J : ModelWithCorners ℝ F G) {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [SmoothManifoldWithCorners J N]
 
+-- proper statements belonging here: the remainder should eventually move to LocalDiffeomorph
+-- on any topological manifold (any charted space??!!), charts are structomorphisms
+
+-- if M is a C^m manifold, charts are C^m. (are they even smooth? do we require M to be C^m? we do, though, because of transition maps)
+
+-- if M is a C^m manifold, charts are DiffeomorphOn (easy)
+-- cor: differentials of charts are linear isos
+-- cor: differentials of charts are bijective
+
+
 -- similar to `fderivWithin_of_open`; seems missing
 lemma hasFDerivWithinAt_of_open {s : Set E} {x : E} (h : IsOpen s) (hx : x ∈ s) {f : E → F}
     {f' : E →L[ℝ] F} : HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
