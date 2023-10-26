@@ -17,20 +17,15 @@ attribute [aesop (rule_sets [Continuous]) unfold norm] Function.comp
 /--
 The `continuity` attribute used to tag continuity statements for the `continuity` tactic. -/
 macro "continuity" : attr =>
-  `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Continuous):ident]))
-
-/--
-The `continuity_norm` attribute used to tag continuity statements for the `continuity` tactic.
-
-This version uses the normalization ruleset. -/
-macro "continuity_norm" : attr =>
-  `(attr|aesop norm apply (rule_sets [$(Lean.mkIdent `Continuous):ident]))
+  `(attr|aesop safe (apply (transparency! := reducible))
+    (rule_sets [$(Lean.mkIdent `Continuous):ident]))
 
 /--
 The tactic `continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the
 `continuity` user attribute. -/
 macro "continuity" : tactic =>
-  `(tactic| aesop (options := { terminal := true }) (rule_sets [$(Lean.mkIdent `Continuous):ident]))
+  `(tactic| aesop (options := { terminal := true }) (rule_sets [$(Lean.mkIdent `Continuous):ident])
+    (simp_options := { enabled := false }))
 
 /--
 The tactic `continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the
