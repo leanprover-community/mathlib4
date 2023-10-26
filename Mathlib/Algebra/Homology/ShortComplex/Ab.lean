@@ -16,7 +16,7 @@ to the quotient of `AddMonoidHom.ker S.g` by the image of the morphism
 
 The definitions are made in the `ShortComplex` namespace so as to enable dot notation.
 The names contain the prefix `ab` in order to allow similar constructions for
-other categories like `ModuleCat`,
+other categories like `ModuleCat`.
 
 ## Main definitions
 - `ShortComplex.abHomologyIso` identifies the homology of a short complex of abelian
