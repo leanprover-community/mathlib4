@@ -546,12 +546,10 @@ def _root_.Mathlib.Meta.Positivity.evalGamma :
     Mathlib.Meta.Positivity.PositivityExt where eval {_ _α} zα pα (e : Q(ℝ)) := do
   let ~q(Gamma $a) := e | throwError "failed to match on Gamma application"
   match ← Mathlib.Meta.Positivity.core zα pα a with
-  | .positive pa =>
-    have pa' : Q(0 < $a) := pa
-    pure (.positive (q(Gamma_pos_of_pos $pa') : Q(0 < $e)))
-  | .nonnegative pa =>
-    have pa' : Q(0 ≤ $a) := pa
-    pure (.nonnegative (q(Gamma_nonneg_of_nonneg $pa') : Q(0 ≤ $e)))
+  | .positive (pa : Q(0 < $a)) =>
+    pure (.positive (q(Gamma_pos_of_pos $pa) : Q(0 < $e)))
+  | .nonnegative (pa : Q(0 ≤ $a)) =>
+    pure (.nonnegative (q(Gamma_nonneg_of_nonneg $pa) : Q(0 ≤ $e)))
   | _ => pure .none
 
 /-- The Gamma function does not vanish on `ℝ` (except at non-positive integers, where the function
