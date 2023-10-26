@@ -11,8 +11,8 @@ import Mathlib.Algebra.TrivSqZeroExt
 # Dual numbers
 
 The dual numbers over `R` are of the form `a + bε`, where `a` and `b` are typically elements of a
-commutative ring `R`, and `ε` is a symbol satisfying `ε^2 = 0`. They are a special case of
-`TrivSqZeroExt R M` with `M = R`.
+commutative ring `R`, and `ε` is a symbol satisfying `ε^2 = 0` that commutes with every other
+element. They are a special case of `TrivSqZeroExt R M` with `M = R`.
 
 ## Notation
 
