@@ -58,14 +58,13 @@ theorem isSquare_mul_self (m : α) : IsSquare (m * m) :=
 #align even_add_self even_add_self
 
 @[to_additive]
-theorem isSquare_op_iff (a : α) : IsSquare (op a) ↔ IsSquare a :=
-  ⟨fun ⟨c, hc⟩ => ⟨unop c, by rw [← unop_mul, ← hc, unop_op]⟩, fun ⟨c, hc⟩ => by simp [hc]⟩
+theorem isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
+  ⟨fun ⟨c, hc⟩ => ⟨unop c, congr_arg unop hc⟩, fun ⟨c, hc⟩ => ⟨op c, congr_arg op hc⟩⟩
 #align is_square_op_iff isSquare_op_iff
 #align even_op_iff even_op_iff
 
 @[to_additive]
-theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a := by
-  rw [←isSquare_op_iff, op_unop]
+theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a := isSquare_op_iff.symm
 
 @[to_additive]
 instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : αᵐᵒᵖ → Prop) :=
@@ -197,7 +196,7 @@ theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
     exact h.map (MulEquiv.inv' α)
-  · exact ((isSquare_op_iff a).mpr h).map (MulEquiv.inv' α).symm
+  · exact (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 #align is_square_inv isSquare_inv
 #align even_neg even_neg
 
