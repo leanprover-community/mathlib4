@@ -9,8 +9,33 @@ import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
 
 /-!
-# Uniqueness of Haar measure, again
+# Uniqueness of Haar measure in locally compact groups
 
+In a locally compact group, we prove that two left-invariant measures which are finite on compact
+sets give the same value to the integral of continuous compactly supported functions, in
+`integral_mulLeftInvariant_unique_of_hasCompactSupport`. From this, we deduce various uniqueness
+statements for left invariant measures (up to scalar multiplication):
+* `measure_mulLeftInvariant_unique_of_ne_top`: two left-invariant measures which are inner regular
+  for finite measure sets with respect to compact sets give the same measure to compact sets.
+* `mulLeftInvariant_unique_of_innerRegular`: two left invariant measure which are
+  inner regular coincide.
+* `mulLeftInvariant_unique_of_regular`: two left invariant measure which are
+  regular coincide.
+* `mulLeftInvariant_unique_of_isProbabilityMeasure`: two left-invariant probability measures which
+  are inner regular for finite measure sets with respect to compact sets coincide.
+
+In general, uniqueness statements for Haar measures in the literature make some assumption of
+regularity, either regularity or inner regularity. We have tried to minimize the assumptions in the
+theorems above (notably in `integral_mulLeftInvariant_unique_of_hasCompactSupport`, which doesn't
+make any regularity assumption), and cover the different results that exist in the literature.
+
+The main result is `integral_mulLeftInvariant_unique_of_hasCompactSupport`, and the other ones
+follow readily from this one by using continuous compactly supported functions to approximate
+characteristic functions of set.
+
+To prove `integral_mulLeftInvariant_unique_of_hasCompactSupport`, we use a change of variables
+to express integrals with respect to a left-invariant measure as integrals with respect to a given
+right-invariant measure (with a suitable density function). The uniqueness readily follows.
 -/
 
 open MeasureTheory Filter Set TopologicalSpace
@@ -400,7 +425,7 @@ lemma measure_mulLeftInvariant_unique_of_ne_top
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite
 on compacts and inner regular, they coincide up to a multiplicative constant. -/
 @[to_additive]
-lemma measure_mulLeftInvariant_unique_of_innerRegular
+lemma mulLeftInvariant_unique_of_innerRegular
     (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
     [InnerRegular μ] [InnerRegular μ'] :
@@ -415,7 +440,7 @@ lemma measure_mulLeftInvariant_unique_of_innerRegular
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite
 on compacts and inner regular, they coincide up to a multiplicative constant. -/
 @[to_additive]
-lemma measure_mulLeftInvariant_unique_of_regular
+lemma mulLeftInvariant_unique_of_regular
     (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
     [Regular μ] [Regular μ'] :
@@ -435,17 +460,15 @@ lemma measure_mulLeftInvariant_unique_of_regular
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant probability measures which
 are inner regular for finite measure sets with respect to compact sets, they coincide. -/
 @[to_additive]
-lemma measure_mulLeftInvariant_unique_of_isProbabilityMeasure
+lemma mulLeftInvariant_unique_of_isProbabilityMeasure
     (μ μ' : Measure G) [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] : μ' = μ := by
   have : InnerRegular μ := InnerRegularCompactLTTop.innerRegular_of_finiteMeasure
   have : InnerRegular μ' := InnerRegularCompactLTTop.innerRegular_of_finiteMeasure
-  have : IsOpenPosMeasure μ := by
-    apply isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
-
-
-  rcases measure_mulLeftInvariant_unique_of_innerRegular μ μ' with ⟨c, hc⟩
+  have : IsOpenPosMeasure μ :=
+    isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular (IsProbabilityMeasure.ne_zero μ)
+  rcases mulLeftInvariant_unique_of_innerRegular μ μ' with ⟨c, hc⟩
   have : ((c : ℝ≥0∞) • μ) univ = μ' univ := by rw [hc]; rfl
   simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, measure_univ, smul_eq_mul,
     mul_one, ENNReal.coe_eq_one] at this
