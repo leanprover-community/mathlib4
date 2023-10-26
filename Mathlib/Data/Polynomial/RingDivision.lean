@@ -86,14 +86,14 @@ theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q +
   · simp_rw [modByMonic_eq_of_not_monic _ hq]
 #align polynomial.add_mod_by_monic Polynomial.add_modByMonic
 
-theorem neg_modByMonic (p mod : (ZMod q)[X]) : (-p) %ₘ mod = - (p %ₘ mod) := by
-    have H : -p = (-1 : ZMod q) • p := by norm_num
-    have H' : - (p %ₘ mod) = (-1 : ZMod q) • (p %ₘ mod) := by norm_num
+theorem neg_modByMonic (p mod : R[X]) : (-p) %ₘ mod = - (p %ₘ mod) := by
+    have H : -p = (-1 : R) • p := by norm_num
+    have H' : - (p %ₘ mod) = (-1 : R) • (p %ₘ mod) := by norm_num
     rw[H, H']
-    apply smul_modByMonic (R := (ZMod q)) (c := -1) (p := p) (q := mod)
+    apply smul_modByMonic (R := R) (c := -1) (p := p) (q := mod)
 
 @[simp]
-theorem sub_modByMonic (a b mod : (ZMod q)[X]) : (a - b) %ₘ mod = a %ₘ mod - b %ₘ mod := by
+theorem sub_modByMonic (a b mod : R[X]) : (a - b) %ₘ mod = a %ₘ mod - b %ₘ mod := by
   ring_nf
   repeat rw[sub_eq_add_neg]
   simp[Polynomial.add_modByMonic]
