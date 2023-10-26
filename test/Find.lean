@@ -367,3 +367,22 @@ but is expected to have type
 -/
 #guard_msgs in
 #find Nat.add 0 my_true
+
+
+-- A pattern with a coercion
+
+inductive A where | A1 : A | A2 : A
+inductive B where | mk : B
+def B.ofA : A → B | A.A1 => B.mk | A.A2 => B.mk
+instance : Coe A B where coe := B.ofA
+
+def findThisLemma : A.A1 = B.mk := rfl
+def doNotFindThisLemma : ∀ a, a = B.mk := fun _a => rfl
+
+/--
+info: Found 1 definitions mentioning A.A1, B.ofA, B.mk and Eq.
+Of these, 1 match your patterns.
+• findThisLemma
+-/
+#guard_msgs in
+#find A.A1 = B.mk

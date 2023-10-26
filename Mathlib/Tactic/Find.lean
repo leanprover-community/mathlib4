@@ -245,7 +245,9 @@ when a type class constraint has no instances.  -/
 def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
   withTheReader Term.Context ({ ·  with ignoreTCFailures := true, errToSorry := false }) do
     let t ← Term.elabTerm t expectedType?
-    Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
+    -- So far all tests work without the following line. Lets expand the test
+    -- suite once someone complains
+    -- Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
     return t
 
 /-!
@@ -402,11 +404,11 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
             else
               throwErrorAt i m!"unknown identifier '{n}'"
           | `(find_filter| _) => do
-              throwErrorAt arg ("Cannot search for _. " ++
-                "Did you forget to put a term pattern in parentheses?")
+            throwErrorAt arg ("Cannot search for _. " ++
+              "Did you forget to put a term pattern in parentheses?")
           | `(find_filter| $s:term) => do
-              let e ← elabTerm' s none
-              terms := terms.push (false, e)
+            let e ← elabTerm' s none
+            terms := terms.push (false, e)
           | _ => throwErrorAt args "unexpected argument to #find"
         | _ => throwErrorAt args "unexpected argument to #find"
     catch e => do
