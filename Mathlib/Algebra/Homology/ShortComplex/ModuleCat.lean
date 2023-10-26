@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -11,21 +12,6 @@ namespace CategoryTheory
 
 open Limits
 
-@[simps!]
-def AddCommGroupCat.cokernelCocone {M N : AddCommGroupCat.{u}} (f : M ⟶ N) :
-    CokernelCofork f :=
-  @CokernelCofork.ofπ _ _ _ _ _ f (AddCommGroupCat.of (N ⧸ AddMonoidHom.range f))
-    (QuotientAddGroup.mk' (AddMonoidHom.range f)) (by
-    ext x
-    simp only [AddCommGroupCat.coe_comp, Function.comp_apply, AddCommGroupCat.zero_apply]
-    erw [QuotientAddGroup.eq_zero_iff]
-    simp only [AddMonoidHom.mem_range, exists_apply_eq_apply])
-
-noncomputable def AddCommGroupCat.cokernelIsCokernel {M N : AddCommGroupCat.{u}} (f : M ⟶ N) :
-    IsColimit (cokernelCocone f) :=
-  IsColimit.ofIsoColimit (Limits.cokernelIsCokernel f)
-    (Iso.symm (Cofork.ext (AddCommGroupCat.cokernelIsoQuotient f).symm (by aesop_cat)))
-
 noncomputable instance {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     PreservesColimit (parallelPair f 0) (forget₂ (ModuleCat.{v} R) Ab) :=
   preservesColimitOfPreservesColimitCocone (ModuleCat.cokernelIsColimit f) (by
@@ -34,7 +20,7 @@ noncomputable instance {M N : ModuleCat.{v} R} (f : M ⟶ N) :
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
     refine' IsColimit.precomposeHomEquiv e _ _
     refine' IsColimit.ofIsoColimit
-      (AddCommGroupCat.cokernelIsCokernel ((forget₂ (ModuleCat.{v} R) Ab).map f)) _
+      (AddCommGroupCat.cokernelIsColimit ((forget₂ (ModuleCat.{v} R) Ab).map f)) _
     refine' Cofork.ext (Iso.refl _) (by aesop_cat))
 
 namespace ShortComplex
@@ -100,6 +86,46 @@ lemma Exact.moduleCat_mk_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (hfg : LinearMap.range f = LinearMap.ker g) :
     (moduleCat_mk_of_ker_le_range f g (by rw [hfg])).Exact := by
   simpa only [moduleCat_exact_iff_range_eq_ker] using hfg
+
+variable (S)
+
+def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g where
+  toFun x := ⟨S.f x, by
+    rw [LinearMap.mem_ker]
+    erw [← comp_apply, S.zero]
+    rfl⟩
+  map_add' x y := by aesop
+  map_smul' a x := by aesop
+
+@[simps]
+def moduleCatLeftHomologyData : S.LeftHomologyData where
+  K := ModuleCat.of R (LinearMap.ker S.g)
+  H := ModuleCat.of R (LinearMap.ker S.g ⧸ LinearMap.range S.moduleCatToCycles)
+  i := (LinearMap.ker S.g).subtype
+  π := (LinearMap.range S.moduleCatToCycles).mkQ
+  wi := by
+    ext ⟨_, hx⟩
+    exact hx
+  hi := ModuleCat.kernelIsLimit _
+  wπ := by
+    ext (x : S.X₁)
+    dsimp
+    erw [Submodule.Quotient.mk_eq_zero]
+    rw [LinearMap.mem_range]
+    apply exists_apply_eq_apply
+  hπ := ModuleCat.cokernelIsColimit (ModuleCat.ofHom S.moduleCatToCycles)
+
+@[simp]
+lemma moduleCatLeftHomologyData_f' :
+    S.moduleCatLeftHomologyData.f' = S.moduleCatToCycles := rfl
+
+noncomputable def moduleCatCyclesIso : S.cycles ≅ ModuleCat.of R (LinearMap.ker S.g) :=
+  S.moduleCatLeftHomologyData.cyclesIso
+
+noncomputable def moduleCatHomologyIso :
+    S.homology ≅
+      ModuleCat.of R ((LinearMap.ker S.g) ⧸ LinearMap.range S.moduleCatToCycles) :=
+  S.moduleCatLeftHomologyData.homologyIso
 
 end ShortComplex
 

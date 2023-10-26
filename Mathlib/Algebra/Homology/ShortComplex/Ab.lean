@@ -3,9 +3,24 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 
-open CategoryTheory Category
-
 universe u
+
+open CategoryTheory Category Limits
+
+/-@[simps!]
+def AddCommGroupCat.cokernelCocone' {M N : AddCommGroupCat.{u}} (f : M ⟶ N) :
+    CokernelCofork f :=
+  @CokernelCofork.ofπ _ _ _ _ _ f (AddCommGroupCat.of (N ⧸ AddMonoidHom.range f))
+    (QuotientAddGroup.mk' (AddMonoidHom.range f)) (by
+    ext x
+    simp only [AddCommGroupCat.coe_comp, Function.comp_apply, AddCommGroupCat.zero_apply]
+    erw [QuotientAddGroup.eq_zero_iff]
+    simp only [AddMonoidHom.mem_range, exists_apply_eq_apply])
+
+noncomputable def AddCommGroupCat.cokernelIsCokernel' {M N : AddCommGroupCat.{u}} (f : M ⟶ N) :
+    IsColimit (cokernelCocone f) :=
+  IsColimit.ofIsoColimit (Limits.cokernelIsCokernel f)
+    (Iso.symm (Cofork.ext (AddCommGroupCat.cokernelIsoQuotient f).symm (by aesop_cat)))-/
 
 @[ext]
 lemma AddCommGroupCat.hom_ext_from_uliftℤ
@@ -101,6 +116,39 @@ lemma ab_exact_iff_range_eq_ker :
     rfl
   · intro h
     rw [h]
+
+def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g :=
+    AddMonoidHom.mk' (fun x => ⟨S.f x, by
+      rw [AddMonoidHom.mem_ker]
+      erw [← comp_apply, S.zero]
+      rfl⟩) (by aesop)
+
+@[simps]
+def abLeftHomologyData : S.LeftHomologyData where
+  K := AddCommGroupCat.of (AddMonoidHom.ker S.g)
+  H := AddCommGroupCat.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles)
+  i := (AddMonoidHom.ker S.g).subtype
+  π := QuotientAddGroup.mk' _
+  wi := by
+    ext ⟨_, hx⟩
+    exact hx
+  hi := AddCommGroupCat.kernelIsLimit _
+  wπ := by
+    ext (x : S.X₁)
+    erw [QuotientAddGroup.eq_zero_iff]
+    rw [AddMonoidHom.mem_range]
+    apply exists_apply_eq_apply
+  hπ := AddCommGroupCat.cokernelIsColimit (AddCommGroupCat.ofHom S.abToCycles)
+
+@[simp]
+lemma abLeftHomologyData_f' : S.abLeftHomologyData.f' = S.abToCycles := rfl
+
+noncomputable def abCyclesIso : S.cycles ≅ AddCommGroupCat.of (AddMonoidHom.ker S.g) :=
+  S.abLeftHomologyData.cyclesIso
+
+noncomputable def abHomologyIso : S.homology ≅
+    AddCommGroupCat.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles) :=
+  S.abLeftHomologyData.homologyIso
 
 end ShortComplex
 
