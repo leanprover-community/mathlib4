@@ -90,7 +90,7 @@ theorem isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even
 
 @[simp]
 theorem even_toAdd_iff {a : Multiplicative α} :
-  Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
+    Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
 
 instance [DecidablePred (@Even α _)] : DecidablePred (@IsSquare (Multiplicative α) _) :=
   fun _ => decidable_of_iff _ even_toAdd_iff
