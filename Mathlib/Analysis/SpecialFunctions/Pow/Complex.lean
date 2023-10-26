@@ -112,53 +112,40 @@ theorem cpow_sub {x : ℂ} (y z : ℂ) (hx : x ≠ 0) : x ^ (y - z) = x ^ y / x 
 theorem cpow_neg_one (x : ℂ) : x ^ (-1 : ℂ) = x⁻¹ := by simpa using cpow_neg x 1
 #align complex.cpow_neg_one Complex.cpow_neg_one
 
+lemma cpow_int_mul (x : ℂ) (n : ℤ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · rcases eq_or_ne n 0 with rfl | hn
+    · simp
+    · rcases eq_or_ne y 0 with rfl | hy <;> simp [*, zero_zpow]
+  · rw [cpow_def_of_ne_zero hx, cpow_def_of_ne_zero hx, mul_left_comm, exp_int_mul]
+
+lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [mul_comm, cpow_int_mul]
+
+lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := by
+  exact_mod_cast cpow_int_mul x n y
+
+lemma cpow_mul_nat (x y : ℂ) (n : ℕ) : x ^ (y * n) = (x ^ y) ^ n := by
+  rw [mul_comm, cpow_nat_mul]
+
 @[simp, norm_cast]
-theorem cpow_nat_cast (x : ℂ) : ∀ n : ℕ, x ^ (n : ℂ) = x ^ n
-  | 0 => by simp
-  | n + 1 =>
-    if hx : x = 0 then by
-      simp only [hx, pow_succ, Complex.zero_cpow (Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)),
-        zero_mul]
-    else by simp [cpow_add, hx, pow_add, cpow_nat_cast x n]
+theorem cpow_nat_cast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
 #align complex.cpow_nat_cast Complex.cpow_nat_cast
 
 @[simp]
-theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := by
-  rw [← cpow_nat_cast]
-  simp only [Nat.cast_ofNat]
+lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (OfNat.ofNat n : ℂ) = x ^ (OfNat.ofNat n : ℕ) :=
+  cpow_nat_cast x n
+
+theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := cpow_ofNat x 2
 #align complex.cpow_two Complex.cpow_two
 
-open Int in
 @[simp, norm_cast]
-theorem cpow_int_cast (x : ℂ) : ∀ n : ℤ, x ^ (n : ℂ) = x ^ n
-  | (n : ℕ) => by simp
-  | -[n+1] => by
-    rw [zpow_negSucc]
-    simp only [Int.negSucc_coe, Int.cast_neg, Complex.cpow_neg, inv_eq_one_div, Int.cast_ofNat,
-      cpow_nat_cast]
+theorem cpow_int_cast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
 #align complex.cpow_int_cast Complex.cpow_int_cast
 
 theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
-  suffices im (log x * (n⁻¹ : ℂ)) ∈ Ioc (-π) π by
-    rw [← cpow_nat_cast, ← cpow_mul _ this.1 this.2, inv_mul_cancel, cpow_one]
-    exact_mod_cast hn
-  rw [mul_comm, ← ofReal_nat_cast, ← ofReal_inv, ofReal_mul_im, ← div_eq_inv_mul]
-  rw [← pos_iff_ne_zero] at hn
-  have hn' : 0 < (n : ℝ) := by assumption_mod_cast
-  have hn1 : 1 ≤ (n : ℝ) := by exact_mod_cast Nat.succ_le_iff.2 hn
-  constructor
-  · rw [lt_div_iff hn']
-    calc
-      -π * n ≤ -π * 1 := mul_le_mul_of_nonpos_left hn1 (neg_nonpos.2 Real.pi_pos.le)
-      _ = -π := (mul_one _)
-      _ < im (log x) := neg_pi_lt_log_im _
-
-  · rw [div_le_iff hn']
-    calc
-      im (log x) ≤ π := log_im_le_pi _
-      _ = π * 1 := (mul_one π).symm
-      _ ≤ π * n := mul_le_mul_of_nonneg_left hn1 Real.pi_pos.le
-
+  rw [← cpow_nat_mul, mul_inv_cancel, cpow_one]
+  assumption_mod_cast
 #align complex.cpow_nat_inv_pow Complex.cpow_nat_inv_pow
 
 theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
