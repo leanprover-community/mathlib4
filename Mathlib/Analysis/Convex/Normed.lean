@@ -133,8 +133,8 @@ instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnec
     (convex_ball x r).isPathConnected <| by simp [r_pos]
 #align normed_space.loc_path_connected NormedSpace.instLocPathConnectedSpace
 
-lemma Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
-  dist x y + dist y z = dist x z := by
+theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
+    dist x y + dist y z = dist x z := by
   obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h
   simp [abs_of_nonneg, ha₀, ha₁, sub_mul]
 
