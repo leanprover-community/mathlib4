@@ -333,15 +333,107 @@ lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x 
 -- xxx: what would this mean in Lean?
 -- if f : M → N f is a local diffeomorphism at each point, it's a local diffeomorphism.
 
--- If `f` is a local diffeomorphism at `x`, the differential `df_x` is a linear isomorphism.
+-- FIXME: should be able to write h.symm, h instead of h.invFun and h.toFun!
+section Differentials
+variable {M' N'}
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
+
+-- similar to `fderivWithin_of_open`; seems missing
+lemma hasFDerivWithinAt_of_open {s : Set E} {x : E} (h : IsOpen s) (hx : x ∈ s) {f : E → F}
+    {f' : E →L[𝕜] F} : HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
+  simp only [HasFDerivAt, HasFDerivWithinAt]
+  rw [IsOpen.nhdsWithin_eq h hx]
+
+-- I have not compared FDeriv.Basic to MFDeriv and added all analogous lemmas.
+-- analogous to `fderivWithin_of_mem_nhds`
+theorem mfderivWithin_of_mem_nhds {f : M → N} {s : Set M} {x : M} (h : s ∈ 𝓝 x) :
+    mfderivWithin I J f s x = mfderiv I J f x := by
+  rw [← mfderivWithin_univ, ← univ_inter s, mfderivWithin_inter h]
+
+-- similar to `fderivWith_of_open`
+lemma mfderivWithin_of_open {s : Set M} {x : M} (hs : IsOpen s) (hx : x ∈ s) {f : M → N} :
+    mfderivWithin I J f s x = mfderiv I J f x := by
+  apply mfderivWithin_of_mem_nhds I J _ _ (hs.mem_nhds hx)
+
+-- analogous to `mfderivWithin_eq_mfderiv`
+theorem mfderivWithin_eq_mfderiv {s : Set M} {x : M} {f : M → N}
+    (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I J f x) :
+    mfderivWithin I J f s x = mfderiv I J f x := by
+  rw [← mfderivWithin_univ]
+  exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
+
+/-- If `f` is a local diffeomorphism at `x`,
+  the differential of `f` at `x` is a linear isomorphism. -/
+noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r)
+    {x : M} (h : LocalDiffeomorphAt I J M N r x) (hx : x ∈ h.source) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
+  let y := h.toFun x
+  have hy : y ∈ h.target := h.toLocalEquiv.mapsTo hx
+  let A := mfderiv I J h.toFun x
+  let B := mfderiv J I h.invFun (h.toFun x)
+
+  have hr : 1 ≤ (r : ℕ∞) := Nat.one_le_cast.mpr (Nat.one_le_of_lt hr)
+  -- FUTURE: can the `differentiability` tactic show this?
+  have hgat : MDifferentiableAt J I h.invFun y :=
+    (h.contMDiffAt_symm (h.toLocalEquiv.mapsTo hx)).mdifferentiableAt hr
+  have hfat : MDifferentiableAt I J h.toFun x :=
+    (h.contMDiffAt hx).mdifferentiableAt hr
+  have inv1 : B.comp A = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := calc B.comp A
+    _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
+    _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
+      (mfderivWithin_of_open I I _ _ h.open_source hx).symm
+    _ = mfderivWithin I I id h.source x :=
+      mfderivWithin_congr (h.open_source.uniqueMDiffWithinAt hx) h.left_inv' (h.left_inv' hx)
+    _ = mfderiv I I id x := mfderivWithin_of_open I I _ _ h.open_source hx
+    _ = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := mfderiv_id I
+  have inv2 : A.comp B = ContinuousLinearMap.id 𝕜 (TangentSpace J (h.toFun x)) := calc A.comp B
+    _ = mfderiv J J (h.toFun ∘ h.invFun) y := by
+          -- Use the chain rule: rewrite the base point (I ∘ e ∘ e.invFun ∘ I.invFun) x = x, ...
+          let sdf := h.left_inv' hx
+          sorry -- fails, don't care for now -- rw [← sdf] at hfat
+          -- ... but also the points x and y under the map.
+          -- for some reason, cannot plug this in directly
+          -- have : (LocalEquiv.invFun h.toLocalEquiv y) = x := (h.left_inv' hx)
+          -- exact (this ▸ (mfderiv_comp y hfat hgat)).symm
+    _ = mfderivWithin J J (h.toFun ∘ h.invFun) h.target y :=
+      (mfderivWithin_of_open J J _ _ h.open_target hy).symm
+    _ = mfderivWithin J J id h.target y :=
+      mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hy) h.right_inv' (h.right_inv' hy)
+    _ = mfderiv J J id y := mfderivWithin_of_open J J _ _ h.open_target hy
+    _ = ContinuousLinearMap.id 𝕜 (TangentSpace J y) := mfderiv_id J
+
+  have h1 : Function.LeftInverse B A := sorry -- TODO: should be obvious from inv1
+  have h2 : Function.RightInverse B A := sorry -- same here
+  exact {
+    toFun := A
+    invFun := B
+    left_inv := h1
+    right_inv := h2
+    continuous_toFun := A.cont
+    continuous_invFun := B.cont
+    map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add A x_1 y
+    map_smul' := by intros; simp
+  }
+
+/-- If `f` is a diffeomorphism on `s`, its differential is a linear isomorphism at each `x ∈ s`. -/
+-- not sure if this result should be generally available; in any case, it's a simple corollary
+noncomputable def DiffeomorphOn.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
+    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
+  let myr := h.toLocalDiffeomorphAt x hx -- x is duplicate!
+  have : myr.source = h.source := sorry -- should be obvious!
+  exact myr.differential_toContinuousLinearEquiv hr (this ▸ hx)
+
+/-- If `f` is a local diffeomorphism, the differential is a linear isomorphism at each point. -/
+noncomputable def LocalDiffeomorph.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
+    (h : LocalDiffeomorph I J M N r):
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
+
+  sorry
+end Differentials
 
 -- conversely, if f is smooth and df_x is a linear iso, then f is a local diffeo at x
 -- uses the inverse function theorem, might be a tad harder to show. punt on first first.
-
--- if f is a DiffeoOn, the differential df_x is a linear iso for each x ∈ source.
--- not sure if this should be outward-facing; in any case, should be a simple corollary.
-
--- if f is a local diffeo, the differential is a linear iso at each point.
 
 -- if f is smooth and each differential df_x is a linear iso, f is a local diffeo
 
