@@ -90,10 +90,7 @@ lemma Exact.moduleCat_mk_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
 variable (S)
 
 def moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g where
-  toFun x := ⟨S.f x, by
-    rw [LinearMap.mem_ker]
-    erw [← comp_apply, S.zero]
-    rfl⟩
+  toFun x := ⟨S.f x, S.moduleCat_zero_apply x⟩
   map_add' x y := by aesop
   map_smul' a x := by aesop
 
@@ -118,6 +115,12 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
 @[simp]
 lemma moduleCatLeftHomologyData_f' :
     S.moduleCatLeftHomologyData.f' = S.moduleCatToCycles := rfl
+
+lemma exact_iff_surjective_moduleCatToCycles :
+    S.Exact ↔ Function.Surjective S.moduleCatToCycles := by
+  rw [S.moduleCatLeftHomologyData.exact_iff_epi_f', moduleCatLeftHomologyData_f',
+    ModuleCat.epi_iff_surjective]
+  rfl
 
 noncomputable def moduleCatCyclesIso : S.cycles ≅ ModuleCat.of R (LinearMap.ker S.g) :=
   S.moduleCatLeftHomologyData.cyclesIso
