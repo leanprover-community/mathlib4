@@ -59,6 +59,10 @@ theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
     Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
+theorem prod_Ico_factorial_add_one : ∀ n : ℕ, ∏ x in Ico 0 n, (x + 1) ! = sf n :=
+  fun n => (prod_Icc_factorial n) ▸ Finset.prod_Ico_add' _ _ _ _
+
+@[simp]
 theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n
   | 0 => rfl
   | n + 1 => by
@@ -78,19 +82,29 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
       simp [Fin.prod_univ_eq_prod_range (fun i ↦ (↑i + 1)) (n + 1)]
     · rw [Matrix.det_vandermonde] at hn
       simp [hn]
+open Finset
 
--- TODO: find good place and prove additive/multiplicative version in generality
-theorem prod_even_odd (n : ℕ) (f : ℕ → ℕ) :
-    ∏ x in Icc 1 (2 * n), f x =  ∏ x in Icc 1 (n), (f (2 * x)) * (f (2 * x - 1)) := by
-  induction' n with n hn
-  · rfl
-  · have h : 2 * succ n = succ (succ (2 * n)) := by rfl
-    rw [h, ← Ico_succ_right, prod_Ico_succ_top <| le_add_left 1 (2 * n + 1),
-        prod_Ico_succ_top <| le_add_left 1 (2 * n)]
-    simp only [← Ico_succ_right, h] at hn
-    rw [hn, ← Ico_succ_right, prod_Ico_succ_top <| le_add_left 1 n, succ_eq_add_one, mul_add,
-        mul_one, mul_comm (f (2 * n + 2)), mul_assoc]
-    rfl
+theorem prod_even_oddFin (n : ℕ) (f : ℕ → ℕ) :
+    ∏ x : Fin (n * 2), f x =  ∏ x : Fin n, (f (2 * x)) * (f (1 + 2 * x)) := by
+  rw [(Equiv.prod_comp' finProdFinEquiv (fun i ↦ f ↑(finProdFinEquiv i)) (fun i ↦ f ↑i)
+          (congrFun rfl)).symm, Fintype.prod_prod_type]
+  simp only [finProdFinEquiv_apply_val]
+  congr
+  ext x
+  rw [Fin.prod_univ_eq_prod_range (fun x_1 => f (↑x_1 + 2 * ↑x)) 2, Finset.prod_range_succ]
+  simp
+
+theorem prod_even_odd_range (n : ℕ) (f : ℕ → ℕ) :
+    ∏ x in range (n * 2), f x =  ∏ x in range n, (f (2 * x)) * (f (1 + 2 * x)) := by
+  convert prod_even_oddFin n f
+  · exact (Fin.prod_univ_eq_prod_range f (n * 2)).symm
+  · exact (Fin.prod_univ_eq_prod_range _ n).symm
+
+theorem prod_even_oddIco (n : ℕ) (f : ℕ → ℕ) :
+    ∏ x in Ico 0 (n * 2), f x =  ∏ x in Ico 0 n, (f (2 * x)) * (f (1 + 2 * x)) := by
+  convert prod_even_oddFin n f
+  · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range f (n * 2))]
+  · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range _ n)]
 
 theorem superFactorial_eq_square_times_factorial (k : ℕ) :
     ∃ n, IsSquare n ∧ sf (4 * k) = n * (2 * k) ! := by
@@ -98,45 +112,60 @@ theorem superFactorial_eq_square_times_factorial (k : ℕ) :
   · exact ⟨1, ⟨isSquare_one, h ▸ rfl⟩⟩
   have hk := Nat.sub_add_cancel <| succ_mul_pos 1 <| Nat.pos_of_ne_zero h
   have h_succ : succ (2 * k - 1) = 2 * k := by linarith
-  use (∏ x in Icc 1 (2 * k - 1), x !) * (∏ x in Icc (2*k + 1) (4 * k), x !)
-  have h : sf (4 * k) =
-      ((∏ x in Icc 1 (2 * k - 1), x !) * (∏ x in Icc (2*k + 1) (4 * k), x !)) * (2 * k) ! := by
-    rw [mul_assoc, mul_comm _ (2 * k) !, prod_Icc_factorial, ← mul_assoc, mul_comm _ (2* k)!]
-    have := superFactorial_succ (2*k - 1)
+  use (∏ x in Ico 0 (2 * k - 1), (x + 1) !) * (∏ x in Ico (2 * k) (4 * k), (x + 1) !)
+  have h : sf (4 * k) = (∏ x in Ico 0 (2 * k - 1), (x + 1) !) *
+       (∏ x in Ico (2 * k) (4 * k), (x + 1) !) * (2 * k) ! := by
+    rw [mul_assoc, mul_comm _ (2 * k) !, prod_Ico_factorial_add_one,
+        ← mul_assoc, mul_comm _ (2 * k)!]
+    have := superFactorial_succ (2 * k - 1)
     simp only [hk] at this
-    rw [← this, ← prod_Icc_factorial, ← prod_Icc_factorial, h_succ]
-    have : ∏ i in Ico 1 (4 * k + 1), (fun x ↦ x !) i = ∏ x in Icc 1 (4 * k), x ! := by
-      rfl
-    rw [← this, ← Finset.prod_Ico_consecutive _ (le_add_left 1 (2 * k)) (by linarith)]
-    rfl
+    norm_num at this
+    rw [← this]
+    rw [← prod_Ico_factorial_add_one, ← prod_Ico_factorial_add_one, h_succ]
+    exact (Finset.prod_Ico_consecutive (fun x => (x + 1) !) (zero_le (2 * k)) (by linarith)).symm
   constructor
   · have h' : sf (4 * k) =
-       (2 ^ k * ∏ x in Icc 1 (2 * k), (2 * x - 1)!) ^ 2 * (2 * k)! :=
+       (2 ^ k * ∏ x in Ico 0 (2 * k), (2 * x + 1)!) ^ 2 * (2 * k)! := by
       calc
-        sf (4 * k) = ∏ x in Icc 1 (2 * (2 * k)), x ! := by
-          rw [←prod_Icc_factorial, ← mul_assoc]
-        _ = ∏ x in Icc 1 (2 * k), ((2 * x) !) * ((2 * x - 1)!) := prod_even_odd _ _
-        _ = ∏ x in Icc 1 (2 * k), (2 * x) * (2 * x - 1)! ^ 2 := by
+        sf (4 * k) = ∏ x in Ico 0 (2 * (2 * k)), (x + 1) ! := by
+          rw [←prod_Ico_factorial_add_one, ← mul_assoc]
+        _ = ∏ x in Ico 0 (2 * k), ((2 * x + 1) !) * (((1 + 2 * x) + 1) !) := by
+          rw [mul_comm]
+          have prod_even_oddFin : ∀ (n : ℕ), ∀  (f : ℕ → ℕ),
+              ∏ x : Fin (n * 2), f x =  ∏ x : Fin n, (f (2 * x)) * (f (1 + 2 * x)) := by
+            intros n f
+            rw [(Equiv.prod_comp' finProdFinEquiv (fun i ↦ f ↑(finProdFinEquiv i)) (fun i ↦ f ↑i)
+                    (congrFun rfl)).symm, Fintype.prod_prod_type]
+            simp only [finProdFinEquiv_apply_val]
+            congr
+            ext x
+            rw [Fin.prod_univ_eq_prod_range (fun x_1 => f (↑x_1 + 2 * ↑x)) 2,
+                Finset.prod_range_succ]
+            simp
+          have prod_even_oddIco : ∀ (n : ℕ), ∀ (f : ℕ → ℕ),
+              ∏ x in Ico 0 (n * 2), f x =  ∏ x in Ico 0 n, (f (2 * x)) * (f (1 + 2 * x)) := by
+            intros n f
+            convert prod_even_oddFin n f
+            · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range f (n * 2))]
+            · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range _ n)]
+          exact prod_even_oddIco (2 * k) (fun x => (x + 1) !)
+        _ = ∏ x in Ico 0 (2 * k), (2 * (x + 1)) * (2 * x + 1)! ^ 2 := by
           simp only [pow_two, ← mul_assoc]
           apply Finset.prod_congr rfl
-          intro x hx
-          simp only [mem_Icc] at hx
-          have : 0 < 2 * x := by linarith
-          rw [← succ_pred_eq_of_pos this]
+          intro x _
+          rw [add_rotate 1 (2 * x) 1, mul_comm]
           rfl
         _ = (2 ^ k) ^ 2 *
-            (∏ x in Icc 1 (2 * k), x) * (∏ x in Icc 1 (2 * k), (2 * x - 1)!) ^ 2 := by
+            (∏ x in Ico 0 (2 * k), (x + 1)) * (∏ x in Ico 0 (2 * k), (2 * x + 1)!) ^ 2 := by
           rw [prod_mul_distrib, prod_pow, prod_mul_distrib, pow_eq_prod_const 2]
-          simp only [prod_const, card_Icc, add_tsub_cancel_right, card_range]
-          rw [mul_comm 2 k, pow_mul]
-        _ = (2 ^ k * ∏ x in Icc 1 (2 * k), ((2 * x - 1)!))^2 * (2 * k) ! := by
-          rw [mul_assoc, mul_comm (∏ x in Icc 1 (2 * k), x), ← mul_assoc, mul_pow,
-              ← prod_Ico_id_eq_factorial (2*k)]
-          rfl
-    use 2 ^ k * ∏ x in Icc 1 (2 * k), (2 * x - 1)!
+          simp only [prod_const, card_Ico, tsub_zero, card_range]
+          rw [← pow_mul 2 k, mul_comm 2 k]
+        _ = (2 ^ k * ∏ x in Ico 0 (2 * k), (2 * x + 1)!) ^ 2 * (2 * k)! := by
+          rw [mul_assoc, mul_comm (∏ x in Ico 0 (2 * k), (x + 1)), ← mul_assoc, mul_pow]
+          simp only [Ico_zero_eq_range, prod_range_add_one_eq_factorial]
+    use 2 ^ k * ∏ x in Ico 0 (2 * k), (2 * x + 1)!
     rw [← pow_two]
-    rw [h'] at h
-    exact (mul_right_cancel₀ (factorial_ne_zero (2 * k)) h).symm
+    exact (mul_right_cancel₀ (factorial_ne_zero (2 * k)) (h' ▸ h)).symm
   · exact h
 
 end SuperFactorial
