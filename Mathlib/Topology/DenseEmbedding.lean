@@ -201,8 +201,7 @@ theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : DenseInd
   have V₁_in : V₁ ∈ 𝓝 b := by
     filter_upwards [hf]
     rintro x ⟨c, hc⟩
-    unfold_let φ
-    rwa [di.extend_eq_of_tendsto hc]
+    rwa [← di.extend_eq_of_tendsto hc] at hc
   obtain ⟨V₂, V₂_in, V₂_op, hV₂⟩ : ∃ V₂ ∈ 𝓝 b, IsOpen V₂ ∧ ∀ x ∈ i ⁻¹' V₂, f x ∈ V' := by
     simpa [and_assoc] using
       ((nhds_basis_opens' b).comap i).tendsto_left_iff.mp (mem_of_mem_nhds V₁_in : b ∈ V₁) V' V'_in
