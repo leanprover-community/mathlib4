@@ -800,10 +800,18 @@ theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip B
     toQuadraticForm (polarBilin Q) = 2 • Q :=
   QuadraticForm.ext <| fun x => (polar_self _ x).trans <| by simp
 
-theorem  _root_.QuadraticForm.polarBilin_injective (h : IsUnit (2 : R)) :
+theorem  _root_.QuadraticForm.polarBilin_injective (h : Invertible (2 : R)) :
     Function.Injective (polarBilin : QuadraticForm R M N → _) :=
-  fun Q₁ Q₂ h₁₂ => QuadraticForm.ext fun x => h.mul_left_cancel <| by
+  fun Q₁ Q₂ h₁₂ => QuadraticForm.ext fun x => by
+  have e1 : 2 • Q₁ x = 2 • Q₂ x := by
     simpa using FunLike.congr_fun (congr_arg toQuadraticForm h₁₂) x
+  calc
+    Q₁ x = (⅟(2 : R) * 2) • Q₁ x := by rw [invOf_mul_self', one_smul]
+    _ = ⅟(2 : R) • ((2 : R) • Q₁ x) := by rw [mul_smul]
+    _ = ⅟(2 : R) • (2 • Q₁ x) := by rw [two_smul, ← two_smul ℕ]
+    _ = ⅟(2 : R) • (2 • Q₂ x) := by rw [e1]
+    _ = ⅟(2 : R) • ((2 : R) • Q₂ x) := by rw [two_smul ℕ, two_smul]
+    _ = Q₂ x := by rw [← mul_smul, invOf_mul_self', one_smul]
 
 variable {N : Type v}
 variable [CommRing S] [Algebra S R] [Module S M] [IsScalarTower S R M]
