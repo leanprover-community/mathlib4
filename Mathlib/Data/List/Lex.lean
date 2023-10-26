@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelClasses
+import Mathlib.Data.List.Basic
 
 #align_import data.list.lex from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
@@ -210,5 +211,15 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @nil a as => apply lt.nil
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
+
+theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : lt l' l) (hl' : l' ≠ []) :
+    l'.head! ≤ l.head! := by
+  rw [lt_iff_lex_lt l' l] at h
+  by_cases hl : l = []
+  · simp only [hl, List.Lex.not_nil_right] at h
+  · by_contra hh
+    have := List.Lex.rel (r := (·<·)) (l₁ := l.tail) (l₂ := l'.tail) (not_le.mp hh)
+    rw [List.cons_head!_tail hl', List.cons_head!_tail hl] at this
+    exact asymm h this
 
 end List

@@ -124,6 +124,14 @@ example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt
   guard_target = r.lt a b ∧ ¬ s.lt a b
   exact test_sorry
 
+-- check that `push_neg` does not expand `let` definitions
+example (h : p ∧ q) : ¬¬(p ∧ q) := by
+  let r := p ∧ q
+  change ¬¬r
+  push_neg
+  guard_target =ₛ r
+  exact h
+
 section use_distrib
 set_option push_neg.use_distrib true
 

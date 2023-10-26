@@ -757,6 +757,19 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
+    coeff (no_index (OfNat.ofNat a : R[X])) 0 = OfNat.ofNat a :=
+  coeff_monomial
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
+    coeff (no_index (OfNat.ofNat a : R[X])) (n + 1) = 0 := by
+  rw [← Nat.cast_eq_ofNat]
+  simp
+
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by
@@ -813,7 +826,7 @@ theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
   -- Porting note: Was `simp [coeff, FunLike.ext_iff]`
-  simp [coeff]
+  simp only [ofFinsupp.injEq, coeff._eq_1]
   exact FunLike.ext_iff (F := ℕ →₀ R)
 #align polynomial.ext_iff Polynomial.ext_iff
 
@@ -1209,6 +1222,14 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 
 theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
+
+theorem C_neg : C (-a) = -C a :=
+  RingHom.map_neg C a
+#align polynomial.C_neg Polynomial.C_neg
+
+theorem C_sub : C (a - b) = C a - C b :=
+  RingHom.map_sub C a b
+#align polynomial.C_sub Polynomial.C_sub
 
 end Ring
 

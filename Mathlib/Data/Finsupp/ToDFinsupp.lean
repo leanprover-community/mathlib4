@@ -255,7 +255,7 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDFinsupp
 
--- porting note: `simps` generated as ` ↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
+-- porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :

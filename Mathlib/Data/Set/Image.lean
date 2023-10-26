@@ -150,6 +150,16 @@ theorem preimage_const (b : β) (s : Set β) [Decidable (b ∈ s)] :
   exacts [preimage_const_of_mem hb, preimage_const_of_not_mem hb]
 #align set.preimage_const Set.preimage_const
 
+/-- If preimage of each singleton under `f : α → β` is either empty or the whole type,
+then `f` is a constant. -/
+lemma exists_eq_const_of_preimage_singleton [Nonempty β] {f : α → β}
+    (hf : ∀ b : β, f ⁻¹' {b} = ∅ ∨ f ⁻¹' {b} = univ) : ∃ b, f = const α b := by
+  rcases em (∃ b, f ⁻¹' {b} = univ) with ⟨b, hb⟩ | hf'
+  · exact ⟨b, funext fun x ↦ eq_univ_iff_forall.1 hb x⟩
+  · have : ∀ x b, f x ≠ b := fun x b ↦
+      eq_empty_iff_forall_not_mem.1 ((hf b).resolve_right fun h ↦ hf' ⟨b, h⟩) x
+    exact ⟨Classical.arbitrary β, funext fun x ↦ absurd rfl (this x _)⟩
+
 theorem preimage_comp {s : Set γ} : g ∘ f ⁻¹' s = f ⁻¹' (g ⁻¹' s) :=
   rfl
 #align set.preimage_comp Set.preimage_comp
@@ -1098,7 +1108,7 @@ theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
 theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :
     (range fun x => if p x then f x else g x) ⊆ range f ∪ range g := by
   rw [range_subset_iff]; intro x; by_cases h : p x
-  simp [if_pos h, mem_union, mem_range_self]
+  simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
   simp [if_neg h, mem_union, mem_range_self]
 #align set.range_ite_subset Set.range_ite_subset
 

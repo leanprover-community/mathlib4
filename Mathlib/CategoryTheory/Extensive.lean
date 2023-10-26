@@ -277,7 +277,7 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
       intro A f
       suffices IsColimit (BinaryCofan.mk (𝟙 A) (𝟙 A)) by
         obtain ⟨l, h₁, h₂⟩ := Limits.BinaryCofan.IsColimit.desc' this (f ≫ initial.to A) (𝟙 A)
-        rcases(Category.id_comp _).symm.trans h₂ with rfl
+        rcases (Category.id_comp _).symm.trans h₂ with rfl
         exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
       refine' (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
         (mapPair_equifibered _) _).some
