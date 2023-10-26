@@ -438,6 +438,27 @@ lemma FinitaryExtensive.hasPullbacks_of_is_coproduct [FinitaryExtensive C] {ι :
   have : IsPullback (𝟙 _) (g ≫ e'.hom) g e'.inv := IsPullback.of_horiz_isIso ⟨by simp⟩
   exact ⟨⟨⟨_, ((IsPullback.of_hasPullback (g ≫ e'.hom) coprod.inl).paste_horiz this).isLimit⟩⟩⟩
 
+lemma FinitaryExtensive.mono_ι [FinitaryExtensive C] {ι : Type*} [Finite ι] {F : Discrete ι ⥤ C}
+    {c : Cocone F} (hc : IsColimit c) (i : Discrete ι) :
+    Mono (c.ι.app i) :=
+  mono_of_cofan_isVanKampen (isVanKampen_finiteCoproducts hc) _
+
+instance [FinitaryExtensive C] {ι : Type*} [Finite ι] (X : ι → C) (i : ι) :
+    Mono (Sigma.ι X i) :=
+  FinitaryExtensive.mono_ι (coproductIsCoproduct _) ⟨i⟩
+
+lemma FinitaryExtensive.isPullback_initial_to [FinitaryExtensive C]
+    {ι : Type*} [Finite ι] {F : Discrete ι ⥤ C}
+    {c : Cocone F} (hc : IsColimit c) (i j : Discrete ι) (e : i ≠ j) :
+    IsPullback (initial.to _) (initial.to _) (c.ι.app i) (c.ι.app j) :=
+  isPullback_initial_to_of_cofan_isVanKampen (isVanKampen_finiteCoproducts hc) i j e
+
+lemma FinitaryExtensive.isPullback_initial_to_sigma_ι [FinitaryExtensive C] {ι : Type*} [Finite ι]
+    (X : ι → C) (i j : ι) (e : i ≠ j) :
+    IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j) :=
+  FinitaryExtensive.isPullback_initial_to (coproductIsCoproduct _) ⟨i⟩ ⟨j⟩
+    (ne_of_apply_ne Discrete.as e)
+
 instance FinitaryExtensive.hasPullbacks_of_inclusions [FinitaryExtensive C] {X Z : C} {α : Type*}
     (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
     [hi : IsIso (Sigma.desc i)] (a : α) : HasPullback f (i a) := by
@@ -461,27 +482,6 @@ lemma FinitaryExtensive.sigma_desc_iso [FinitaryExtensive C] {α : Type} [Finite
   · ext
     simp [pullback.condition]
   · exact fun j ↦ IsPullback.of_hasPullback f (π j.as)
-
-lemma FinitaryExtensive.mono_ι [FinitaryExtensive C] {ι : Type*} [Finite ι] {F : Discrete ι ⥤ C}
-    {c : Cocone F} (hc : IsColimit c) (i : Discrete ι) :
-    Mono (c.ι.app i) :=
-  mono_of_cofan_isVanKampen (isVanKampen_finiteCoproducts hc) _
-
-instance [FinitaryExtensive C] {ι : Type*} [Finite ι] (X : ι → C) (i : ι) :
-    Mono (Sigma.ι X i) :=
-  FinitaryExtensive.mono_ι (coproductIsCoproduct _) ⟨i⟩
-
-lemma FinitaryExtensive.isPullback_initial_to [FinitaryExtensive C]
-    {ι : Type*} [Finite ι] {F : Discrete ι ⥤ C}
-    {c : Cocone F} (hc : IsColimit c) (i j : Discrete ι) (e : i ≠ j) :
-    IsPullback (initial.to _) (initial.to _) (c.ι.app i) (c.ι.app j) :=
-  isPullback_initial_to_of_cofan_isVanKampen (isVanKampen_finiteCoproducts hc) i j e
-
-lemma FinitaryExtensive.isPullback_initial_to_sigma_ι [FinitaryExtensive C] {ι : Type*} [Finite ι]
-    (X : ι → C) (i j : ι) (e : i ≠ j) :
-    IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j) :=
-  FinitaryExtensive.isPullback_initial_to (coproductIsCoproduct _) ⟨i⟩ ⟨j⟩
-    (ne_of_apply_ne Discrete.as e)
 
 end FiniteCoproducts
 
