@@ -764,7 +764,8 @@ theorem toQuadraticForm_sum {ι : Type*} (s : Finset ι) (B : ι → (M →ₗ[R
 variable (B : (M →ₗ[R] M →ₗ[R] N))
 
 @[simp]
-theorem toQuadraticForm_eq_zero {B : (M →ₗ[R] M →ₗ[R] R)} : B.toQuadraticForm = 0 ↔ B.toBilin.IsAlt :=
+theorem toQuadraticForm_eq_zero {B : (M →ₗ[R] M →ₗ[R] R)} :
+    B.toQuadraticForm = 0 ↔ B.toBilin.IsAlt :=
   QuadraticForm.ext_iff
 #align bilin_form.to_quadratic_form_eq_zero LinearMap.toQuadraticForm_eq_zero
 
