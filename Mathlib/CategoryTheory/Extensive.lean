@@ -28,11 +28,13 @@ import Mathlib.CategoryTheory.Limits.VanKampen
 - `CategoryTheory.BinaryCofan.isPullback_initial_to_of_isVanKampen`: In extensive categories,
   sums are disjoint, i.e. the pullback of `X ⟶ X ⨿ Y` and `Y ⟶ X ⨿ Y` is the initial object.
 - `CategoryTheory.types.finitaryExtensive`: The category of types is extensive.
-
+- `CategoryTheory.FinitaryExtensive_TopCat`:
+  The category `Top` is extensive.
+- `CategoryTheory.FinitaryExtensive_functor`: The category `C ⥤ D` is extensive if `D`
+  has all pullbacks and is extensive
 ## TODO
 
 Show that the following are finitary extensive:
-- the categories of sheaves over a site
 - `Scheme`
 - `AffineScheme` (`CommRingᵒᵖ`)
 
@@ -47,9 +49,10 @@ open CategoryTheory.Limits
 
 namespace CategoryTheory
 
-universe v' u' v u
+universe v' u' v u v'' u''
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
+variable {D : Type u''} [Category.{v''} D]
 
 section Extensive
 
@@ -275,7 +278,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
 set_option linter.uppercaseLean3 false in
 #align category_theory.finitary_extensive_Top_aux CategoryTheory.finitaryExtensiveTopCatAux
 
-instance : FinitaryExtensive TopCat.{u} := by
+instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
   rw [finitaryExtensive_iff_of_isTerminal TopCat.{u} _ TopCat.isTerminalPUnit _
       (TopCat.binaryCofanIsColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => TopCat.binaryCofanIsColimit X Y) _
@@ -323,11 +326,23 @@ end TopCat
 
 section Functor
 
-universe v'' u''
+theorem finitaryExtensive_of_reflective [HasFiniteCoproducts D] [HasPullbacks D]
+    [FinitaryExtensive C] [HasPullbacks C]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    [PreservesLimitsOfShape WalkingCospan Gl] :
+    FinitaryExtensive D := by
+  have : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
+  constructor
+  intros X Y c hc
+  apply (IsVanKampenColimit.precompose_isIso_iff
+    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp
+  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit $ pair X Y ⋙ _)).map_reflective
+    adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
+  · exact isColimitOfPreserves Gl (colimit.isColimit _)
+  · exact (IsColimit.precomposeHomEquiv _ _).symm hc
 
-variable {D : Type u''} [Category.{v''} D]
-
-instance [HasPullbacks C] [FinitaryExtensive C] : FinitaryExtensive (D ⥤ C) :=
+instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
+    FinitaryExtensive (D ⥤ C) :=
   haveI : HasFiniteCoproducts (D ⥤ C) := ⟨fun _ => Limits.functorCategoryHasColimitsOfShape⟩
   ⟨fun c hc => isVanKampenColimit_of_evaluation _ c fun _ =>
     FinitaryExtensive.vanKampen _ <| PreservesColimit.preserves hc⟩
