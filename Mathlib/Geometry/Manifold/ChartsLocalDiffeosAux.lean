@@ -55,6 +55,7 @@ theorem image_congr'' {α β : Type*} {f : α → β} {g : β → α} {s : Set �
     (h : ∀ x : α, x ∈ s → (g ∘ f) x = x) : g ∘ f '' s = s := by
   rw [image_congr h, image_id']
 
+-- xxx: all the toFun and invFun should not be needed. want to write h.symm instead!
 /-- The differential of a  local diffeomorphism is a linear isomorphism
   at each point in its source. -/
 noncomputable def DiffeomorphOn.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
