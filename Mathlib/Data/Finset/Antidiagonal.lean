@@ -11,14 +11,13 @@ import Mathlib.Algebra.Order.Sub.Defs
 
 /-! # Antidiagonal with values in general types
 
-Let `A` be an `AddCommMonoid`.
-We define a type class `Finset.HasAntidiagonal` which contains a function
+We define a type class `Finset.HasAntidiagonal A` which contains a function
 `antidiagonal : A → Finset (A × A)` such that `antidiagonal n`
 is the Finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 
 When `A` is a canonically ordered add monoid with locally finite order
-(for example, taking `A` to be `ℕ`, more generally or `σ →₀ ℕ`), this typeclass can be instantiated
-with `Finset.antidiagonalOfLocallyFinite`.
+(for example, taking `A` to be `ℕ`, more generally or `σ →₀ ℕ`),
+this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
 This definition applies more generally to `ι →₀ A`
 under the additional assumption `OrderedSub A` that make it a canonically ordered add monoid.
 In fact, we just need an `AddMonoid` with a compatible order,
