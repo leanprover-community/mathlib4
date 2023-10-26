@@ -45,6 +45,48 @@ variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)
 #guard_msgs in
 #check ∀ x, x ∈ s → P x
 
+/-- info: ∀ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∀ x ∉ s,P x
+
+/-- info: ∀ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∀ x, x ∉ s → P x
+
+variable (Q : Set ℕ → Prop)
+
+/-- info: ∀ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊆ s, Q t
+
+/-- info: ∀ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊆ s → Q t
+
+/-- info: ∀ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊂ s, Q t
+
+/-- info: ∀ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊂ s → Q t
+
+/-- info: ∀ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊇ s, Q t
+
+/-- info: ∀ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊇ s → Q t
+
+/-- info: ∀ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t ⊃ s, Q t
+
+/-- info: ∀ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∀ t, t ⊃ s → Q t
+
 /-- info: (x : ℕ) → α x : Type -/
 #guard_msgs in
 #check (x : Nat) → α x
@@ -102,6 +144,50 @@ section existential
 /-- info: ∃ i < 3, i = i : Prop -/
 #guard_msgs in
 #check ∃ (i : Nat), i < 3 ∧ i = i
+
+variable (s : Set ℕ) (P : ℕ → Prop) (Q : Set ℕ → Prop)
+
+/-- info: ∃ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∃ x ∉ s, P x
+
+/-- info: ∃ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∃ x, x ∉ s ∧ P x
+
+variable (Q : Set ℕ → Prop)
+
+/-- info: ∃ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊆ s, Q t
+
+/-- info: ∃ t ⊆ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊆ s ∧ Q t
+
+/-- info: ∃ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊂ s, Q t
+
+/-- info: ∃ t ⊂ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊂ s ∧ Q t
+
+/-- info: ∃ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊇ s, Q t
+
+/-- info: ∃ t ⊇ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊇ s ∧ Q t
+
+/-- info: ∃ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t ⊃ s, Q t
+
+/-- info: ∃ t ⊃ s, Q t : Prop -/
+#guard_msgs in
+#check ∃ t, t ⊃ s ∧ Q t
 
 end existential
 

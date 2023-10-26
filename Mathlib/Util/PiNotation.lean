@@ -60,6 +60,16 @@ def delabPi : Delab := whenPPOption Lean.getPPNotation do
     if x == y then `(∀ $x:ident ≤ $z, $body) else pure stx
   | `(Π ($i:ident : $_), $j:ident ∈ $s → $body) =>
     if i == j then `(Π $i:ident ∈ $s, $body) else pure stx
+  | `(∀ ($i:ident : $_), $j:ident ∉ $s → $body) =>
+    if i == j then `(∀ $i:ident ∉ $s, $body) else pure stx
+  | `(∀ ($i:ident : $_), $j:ident ⊆ $s → $body) =>
+    if i == j then `(∀ $i:ident ⊆ $s, $body) else pure stx
+  | `(∀ ($i:ident : $_), $j:ident ⊂ $s → $body) =>
+    if i == j then `(∀ $i:ident ⊂ $s, $body) else pure stx
+  | `(∀ ($i:ident : $_), $j:ident ⊇ $s → $body) =>
+    if i == j then `(∀ $i:ident ⊇ $s, $body) else pure stx
+  | `(∀ ($i:ident : $_), $j:ident ⊃ $s → $body) =>
+    if i == j then `(∀ $i:ident ⊃ $s, $body) else pure stx
   | _ => pure stx
 
 /-- Override the Lean 4 pi notation delaborator with one that uses `Π` and prints
@@ -122,9 +132,34 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
     | `(∃ $x:ident, $y:ident ≤ $z ∧ $body)
     | `(∃ ($x:ident : $_), $y:ident ≤ $z ∧ $body) =>
       if x == y then `(∃ $x:ident ≤ $z, $body) else pure stx
+    | `(∃ $x:ident, $y:ident ∉ $z ∧ $body)
+    | `(∃ ($x:ident : $_), $y:ident ∉ $z ∧ $body) => do
+      if x == y then `(∃ $x:ident ∉ $z, $body) else pure stx
+    | `(∃ $x:ident, $y:ident ⊆ $z ∧ $body)
+    | `(∃ ($x:ident : $_), $y:ident ⊆ $z ∧ $body) =>
+      if x == y then `(∃ $x:ident ⊆ $z, $body) else pure stx
+    | `(∃ $x:ident, $y:ident ⊂ $z ∧ $body)
+    | `(∃ ($x:ident : $_), $y:ident ⊂ $z ∧ $body) =>
+      if x == y then `(∃ $x:ident ⊂ $z, $body) else pure stx
+    | `(∃ $x:ident, $y:ident ⊇ $z ∧ $body)
+    | `(∃ ($x:ident : $_), $y:ident ⊇ $z ∧ $body) =>
+      if x == y then `(∃ $x:ident ⊇ $z, $body) else pure stx
+    | `(∃ $x:ident, $y:ident ⊃ $z ∧ $body)
+    | `(∃ ($x:ident : $_), $y:ident ⊃ $z ∧ $body) =>
+      if x == y then `(∃ $x:ident ⊃ $z, $body) else pure stx
     | _ => pure stx
   -- Merging
   match stx with
   | `(∃ $group:bracketedExplicitBinders, ∃ $groups*, $body) => `(∃ $group $groups*, $body)
   | _ => pure stx
 end existential
+
+open Lean Lean.PrettyPrinter.Delaborator
+
+/-- Delaborator for `∉`. -/
+@[delab app.Not] def delab_not_in := whenPPOption Lean.getPPNotation do
+  let #[f] := (← SubExpr.getExpr).getAppArgs | failure
+  unless f.getAppFn matches .const `Membership.mem _ do failure
+  let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab
+  let stx₂ ← SubExpr.withAppArg <| SubExpr.withNaryArg 4 delab
+  return ← `($stx₁ ∉ $stx₂)
