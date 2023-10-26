@@ -28,9 +28,9 @@ import Mathlib.CategoryTheory.Limits.VanKampen
 - `CategoryTheory.BinaryCofan.isPullback_initial_to_of_isVanKampen`: In extensive categories,
   sums are disjoint, i.e. the pullback of `X ⟶ X ⨿ Y` and `Y ⟶ X ⨿ Y` is the initial object.
 - `CategoryTheory.types.finitaryExtensive`: The category of types is extensive.
-- `CategoryTheory.instFinitaryExtensiveTopCatInstTopCatLargeCategory`:
+- `CategoryTheory.FinitaryExtensive_TopCat`:
   The category `Top` is extensive.
-- `CategoryTheory.instFinitaryExtensiveFunctorCategory`: The category `C ⥤ D` is extensive if `C`
+- `CategoryTheory.FinitaryExtensive_functor`: The category `C ⥤ D` is extensive if `D`
   has all pullbacks and is extensive
 ## TODO
 
@@ -278,7 +278,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
 set_option linter.uppercaseLean3 false in
 #align category_theory.finitary_extensive_Top_aux CategoryTheory.finitaryExtensiveTopCatAux
 
-instance : FinitaryExtensive TopCat.{u} := by
+instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
   rw [finitaryExtensive_iff_of_isTerminal TopCat.{u} _ TopCat.isTerminalPUnit _
       (TopCat.binaryCofanIsColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => TopCat.binaryCofanIsColimit X Y) _
@@ -515,7 +515,8 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
       ((this x).mpr fun j => (H j).map ((evaluation C D).obj x)).some⟩
 #align category_theory.is_van_kampen_colimit_of_evaluation CategoryTheory.isVanKampenColimit_of_evaluation
 
-instance [HasPullbacks C] [FinitaryExtensive C] : FinitaryExtensive (D ⥤ C) :=
+instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
+    FinitaryExtensive (D ⥤ C) :=
   haveI : HasFiniteCoproducts (D ⥤ C) := ⟨fun _ => Limits.functorCategoryHasColimitsOfShape⟩
   ⟨fun c hc => isVanKampenColimit_of_evaluation _ c fun _ =>
     FinitaryExtensive.vanKampen _ <| PreservesColimit.preserves hc⟩
