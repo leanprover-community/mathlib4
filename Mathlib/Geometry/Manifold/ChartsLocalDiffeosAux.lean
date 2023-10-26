@@ -43,6 +43,11 @@ theorem mfderivWithin_eq_mfderiv {s : Set M} {x : M} {f : M → N}
   rw [← mfderivWithin_univ]
   exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
 
+-- TODO: PRed to Data.Set.Image, drop once that is merged
+/-- Variant of `image_congr`, for one function being the identity. -/
+theorem image_congr'' {α β : Type*} {f : α → β} {g : β → α} {s : Set α}
+    (h : ∀ x : α, x ∈ s → (g ∘ f) x = x) : g ∘ f '' s = s := by
+  rw [image_congr h, image_id']
 
 lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
@@ -60,7 +65,7 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
   have : f '' s = t := subset_antisymm (mapsTo'.mp hst) (fun y hy ↦ ⟨g y, h.map_target hy, h.right_inv' hy⟩)
   have : g '' t = s := by
     rw [← this, ← image_comp]
-    sorry --exact Set.image_congr'' (fun x hx ↦ h.left_inv' hx)
+    exact image_congr'' (fun x hx ↦ h.left_inv' hx)
   have hopen : IsOpen (g '' t) := by rw [this]; exact h.open_source
   have hx2 : x ∈ g '' t := by simp_rw [this]; exact hx
 
@@ -74,7 +79,7 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     _ = mfderiv I I (g ∘ f) x := (mfderiv_comp x hgat hfat).symm
     _ = mfderivWithin I I (g ∘ f) (g '' t) x := (mfderivWithin_of_open I I hopen hx2).symm
     _ = mfderivWithin I I id (g '' t) x :=
-      sorry --mfderivWithin_congr (hopen.uniqueMDiffWithinAt hx2) (this ▸ h.left_inv') (h.left_inv' x (this ▸ hx2))
+      mfderivWithin_congr (hopen.uniqueMDiffWithinAt hx2) (this ▸ h.left_inv') hyx
     _ = mfderiv I I id x := mfderivWithin_of_open I I hopen hx2
     _ = ContinuousLinearMap.id ℝ (TangentSpace I x) := mfderiv_id I
   have inv2 := calc A.comp A'
@@ -82,10 +87,11 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
           -- Use the chain rule: rewrite the base point (I ∘ e ∘ e.invFun ∘ I.invFun) x = x, ...
           rw [← (h.left_inv' hx)] at hfat
           -- ... but also the points x and y under the map.
-          sorry --exact (hyx ▸ (mfderiv_comp (f x) hfat hgat)).symm
+          have : (LocalEquiv.invFun h.toLocalEquiv y) = x := hyx -- just hyx is not enough
+          exact (this ▸ (mfderiv_comp (f x) hfat hgat)).symm
     _ = mfderivWithin J J (f ∘ g) t y := (mfderivWithin_of_open J J h.open_target hysource).symm
     _ = mfderivWithin J J id t y :=
-          sorry --mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hysource) h.right_inv' (h.right_inv' y hysource)
+          mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hysource) h.right_inv' (h.right_inv' hysource)
     _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hysource
     _ = ContinuousLinearMap.id ℝ (TangentSpace J (f x)) := mfderiv_id J
 
