@@ -334,32 +334,12 @@ theorem finitaryExtensive_of_reflective [HasFiniteCoproducts D] [HasPullbacks D]
   have : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
   constructor
   intros X Y c hc
-  apply IsVanKampenColimit.of_precompose_iso _
-    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom
+  apply (IsVanKampenColimit.precompose_isIso_iff
+    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp
   refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit $ pair X Y ⋙ _)).map_reflective
     adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl (colimit.isColimit _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm hc
-
-theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J D] (F : J ⥤ C ⥤ D)
-    (c : Cocone F) (hc : ∀ x : C, IsVanKampenColimit (((evaluation C D).obj x).mapCocone c)) :
-    IsVanKampenColimit c := by
-  intro F' c' α f e hα
-  have := fun x => hc x (((evaluation C D).obj x).mapCocone c') (whiskerRight α _)
-      (((evaluation C D).obj x).map f)
-      (by
-        ext y
-        dsimp
-        exact NatTrans.congr_app (NatTrans.congr_app e y) x)
-      (hα.whiskerRight _)
-  constructor
-  · rintro ⟨hc'⟩ j
-    refine' ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ _⟩⟩
-    refine' fun x => (isLimitMapConePullbackConeEquiv _ _).symm _
-    exact ((this x).mp ⟨PreservesColimit.preserves hc'⟩ _).isLimit
-  · exact fun H => ⟨evaluationJointlyReflectsColimits _ fun x =>
-      ((this x).mpr fun j => (H j).map ((evaluation C D).obj x)).some⟩
-#align category_theory.is_van_kampen_colimit_of_evaluation CategoryTheory.isVanKampenColimit_of_evaluation
 
 instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
     FinitaryExtensive (D ⥤ C) :=
