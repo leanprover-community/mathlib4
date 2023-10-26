@@ -40,7 +40,7 @@ Given `[EstimatorData a ε]`
 
 The value `a` in `α` that we are estimating is hidden inside a `Thunk` to avoid evaluation.
  -/
-class EstimatorData (a : Thunk α) (ε : Type _) where
+class EstimatorData (a : Thunk α) (ε : Type*) where
   /-- The value of the bound for `a` representation by a term of `ε`. -/
   bound : ε → α
   /-- Generate an improved lower bound. -/
@@ -52,7 +52,7 @@ Given `[Estimator a ε]`
 * `improve a e` returns none iff `bound a e = a.get`,
   and otherwise it returns a strictly better bound.
 -/
-class Estimator [Preorder α] (a : Thunk α) (ε : Type _) extends EstimatorData a ε where
+class Estimator [Preorder α] (a : Thunk α) (ε : Type*) extends EstimatorData a ε where
   /-- The calculated bounds are always lower bounds. -/
   bound_le e : bound e ≤ a.get
   /-- Calling `improve` either gives a strictly better bound,
@@ -145,13 +145,13 @@ simply by repeatedly running `improve` until the first factor "improves".
 The hypothesis that `>` is well-founded on `{ q // q ≤ (a, b) }` ensures this terminates.
 -/
 structure Estimator.fst [Preorder α] [Preorder β]
-    (p : Thunk (α × β)) (ε : Type _) [Estimator p ε] where
+    (p : Thunk (α × β)) (ε : Type*) [Estimator p ε] where
   /-- The wrapped bound for a value in `α × β`,
   which we will use as a bound for the first component. -/
   inner : ε
 
 instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a : Thunk α} {b : Thunk β}
-    (ε : Type _) [Estimator (a.prod b) ε] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }] :
+    (ε : Type*) [Estimator (a.prod b) ε] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }] :
     EstimatorData a (Estimator.fst (a.prod b) ε) where
   bound e := (bound (a.prod b) e.inner).1
   improve e :=
@@ -164,7 +164,7 @@ instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a 
 -- the instance arguments by hand anyway.
 def Estimator.fstInst [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β]
     [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
-    (a : Thunk α) (b : Thunk β) {ε : Type _} (i : Estimator (a.prod b) ε) :
+    (a : Thunk α) (b : Thunk β) {ε : Type*} (i : Estimator (a.prod b) ε) :
     Estimator a (Estimator.fst (a.prod b) ε) where
   bound_le e := (Estimator.bound_le e.inner : bound (a.prod b) e.inner ≤ (a.get, b.get)).1
   improve_spec e := by
