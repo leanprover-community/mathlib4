@@ -2432,12 +2432,8 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 #align submodule.order_iso_map_comap_symm_apply' Submodule.orderIsoMapComap_symm_apply'
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
-    comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  rw [SetLike.le_def]
-  intro m h
-  change f₁ m + f₂ m ∈ q
-  change f₁ m ∈ q ∧ f₂ m ∈ q at h
-  apply q.add_mem h.1 h.2
+    comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q :=
+  fun m (h : f₁ m ∈ q ∧ f₂ m ∈ q) => q.add_mem h.1 h.2
 #align submodule.inf_comap_le_comap_add Submodule.inf_comap_le_comap_add
 
 end Submodule
@@ -2445,42 +2441,22 @@ end Submodule
 namespace Submodule
 
 variable [CommSemiring R] [CommSemiring R₂]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-
-variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
-
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
-variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
-
-theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
-  rw [SetLike.le_def]
-  intro m h
-  change c • fₗ m ∈ qₗ
-  change fₗ m ∈ qₗ at h
-  apply qₗ.smul_mem _ h
+theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q :=
+  fun m (h : f m ∈ q) => q.smul_mem _ h
 #align submodule.comap_le_comap_smul Submodule.comap_le_comap_smul
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
-def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
-  carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
-  zero_mem' := by
-    change pₗ ≤ comap (0 : N →ₗ[R] N₂) qₗ
-    rw [comap_zero]
-    refine' le_top
-  add_mem' {f₁ f₂} h₁ h₂ := by
-    apply le_trans _ (inf_comap_le_comap_add qₗ f₁ f₂)
-    rw [le_inf_iff]
-    exact ⟨h₁, h₂⟩
-  smul_mem' c fₗ h := by
-    dsimp at h
-    exact le_trans h (comap_le_comap_smul qₗ fₗ c)
+def compatibleMaps : Submodule R₂ (M →ₛₗ[τ₁₂] M₂) where
+  carrier := { f | p ≤ comap f q }
+  zero_mem' := le_top.trans_eq (comap_zero _).symm
+  add_mem' {f₁ f₂} (h₁ h₂ : p ≤ _) := (le_inf h₁ h₂).trans (inf_comap_le_comap_add q f₁ f₂)
+  smul_mem' c f (h : p ≤ _) := h.trans (comap_le_comap_smul q f c)
 #align submodule.compatible_maps Submodule.compatibleMaps
 
 end Submodule
