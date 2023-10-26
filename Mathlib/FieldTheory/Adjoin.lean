@@ -48,6 +48,23 @@ def adjoin : IntermediateField F E :=
     algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
 #align intermediate_field.adjoin IntermediateField.adjoin
 
+variable {S}
+
+theorem mem_adjoin_iff (x : E) :
+    x ∈ adjoin F S ↔ (∃ r s : MvPolynomial S F,
+      x = MvPolynomial.aeval Subtype.val r / MvPolynomial.aeval Subtype.val s) := by
+  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
+    Algebra.adjoin_eq_range, AlgHom.mem_range, exists_exists_eq_and]
+  tauto
+
+theorem mem_adjoin_simple_iff {α : E} (x : E) :
+    x ∈ adjoin F {α} ↔ (∃ r s : Polynomial F, x = aeval α r / aeval α s) := by
+  simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+    Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
+    Algebra.adjoin_singleton_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
+  tauto
+
 end AdjoinDef
 
 section Lattice
@@ -417,6 +434,26 @@ theorem adjoin_map {E' : Type*} [Field E'] [Algebra F E'] (f : E →ₐ[F] E') :
     f.comp_algebraMap]
   rfl
 #align intermediate_field.adjoin_map IntermediateField.adjoin_map
+
+theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
+    lift (L := E) (E := adjoin F S) = adjoin F (Subtype.val '' S) := by
+  simp only [lift, adjoin_map, coe_val]
+
+@[simp]
+theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
+    lift (L := E) (E := adjoin F {α}) = adjoin F {α.1} := by
+  simp only [lift_adjoin, Set.image_singleton]
+
+@[simp]
+theorem lift_bot (K : IntermediateField F E) :
+    lift (L := E) (E := (⊥ : IntermediateField F K)) = ⊥ := by
+  rw [← adjoin_empty, ← adjoin_empty, lift_adjoin, Set.image_empty]
+
+@[simp]
+theorem lift_top (K : IntermediateField F E) :
+    lift (L := E) (E := (⊤ : IntermediateField F K)) = K := by
+  rw [← adjoin_univ, lift_adjoin, Set.image_univ, Subtype.range_coe_subtype]
+  exact le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
 
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
   Algebra.adjoin_le (subset_adjoin _ _)
@@ -877,6 +914,54 @@ theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
   rfl
 #align intermediate_field.adjoin.finrank IntermediateField.adjoin.finrank
 
+/-- If `K / E / F` is a field extension tower, `S ⊂ K` is such that `F(S) = K`,
+then `E(S) = K`. -/
+theorem adjoin_eq_top_of_adjoin_eq_top [Algebra E K] [IsScalarTower F E K]
+    {S : Set K} (hprim : adjoin F S = ⊤) : adjoin E S = ⊤ := by
+  apply restrictScalars_injective (K := F) (L' := E) (L := K)
+  rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
+    coe_restrictScalars, ← adjoin_le_iff]
+
+/-- If `E / F` is a finite extension such that `E = F(α)`, then for any intermediate field `K`,
+it is generated over `F` by the coefficients of the minimal polynomial of `α` over `K`. -/
+theorem eq_adjoin_minpoly_coeff_of_exists_primitive_element
+    [FiniteDimensional F E] (hprim : adjoin F {α} = ⊤) (K : IntermediateField F E) :
+    K = adjoin F ((minpoly K α).map (algebraMap K E)).frange := by
+  set g := (minpoly K α).map (algebraMap K E)
+  set K' : IntermediateField F E := adjoin F g.frange
+  have hsub : K' ≤ K := by
+    rw [adjoin_le_iff]
+    intro x
+    rw [Finset.mem_coe, mem_frange_iff]
+    rintro ⟨n, _, rfl⟩
+    rw [coeff_map]
+    apply Subtype.mem
+  have g_lifts : g ∈ lifts (algebraMap K' E) := by
+    refine g.lifts_iff_coeff_lifts.mpr fun n ↦ ?_
+    erw [Subtype.range_val]
+    by_cases hn : n ∈ g.support
+    · have h2 : ({coeff g n} : Set E) ⊆ g.frange := by
+        rw [Set.singleton_subset_iff, Finset.mem_coe, mem_frange_iff]
+        exact ⟨n, hn, rfl⟩
+      exact adjoin.mono F _ _ h2 <| mem_adjoin_simple_self F (coeff g n)
+    · rw [not_mem_support_iff.1 hn]
+      exact zero_mem K'
+  obtain ⟨p, hp⟩ := g.lifts_and_natDegree_eq_and_monic
+    g_lifts ((minpoly.monic <| isIntegral_of_finite K α).map _)
+  have dvd_p : minpoly K' α ∣ p
+  · apply minpoly.dvd
+    rw [aeval_def, eval₂_eq_eval_map, hp.1, ← eval₂_eq_eval_map, ← aeval_def]
+    exact minpoly.aeval K α
+  have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α)
+  · intro K
+    have := adjoin.finrank (isIntegral_of_finite K α)
+    erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
+    exact this
+  refine (eq_of_le_of_finrank_le' hsub ?_).symm
+  simp_rw [finrank_eq]
+  convert natDegree_le_of_dvd dvd_p hp.2.2.ne_zero using 1
+  rw [hp.2.1, natDegree_map]
+
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
   le_of_eq_of_le (IntermediateField.adjoin.finrank (isIntegral_of_finite _ _)).symm
@@ -1225,6 +1310,18 @@ instance finiteDimensional_iSup_of_finite {ι : Type*} {t : ι → IntermediateF
     rw [iSup_insert]
     exact IntermediateField.finiteDimensional_sup _ _
 #align intermediate_field.finite_dimensional_supr_of_finite IntermediateField.finiteDimensional_iSup_of_finite
+
+theorem finiteDimensional_adjoin_of_finite_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic K L) (S : Set L) [Finite S] :
+    FiniteDimensional K (adjoin K S) := by
+  let t : S → IntermediateField K L := fun x ↦ K⟮x.1⟯
+  have h : ∀ x : S, FiniteDimensional K (t x) := fun x ↦
+    adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg x.1)
+  have hfin := finiteDimensional_iSup_of_finite (t := t)
+  have := (gc (F := K) (E := L)).l_iSup (f := fun (x : S) ↦ {x.1})
+  simp only [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype,
+    Set.setOf_mem_eq] at this
+  rwa [← this] at hfin
 
 instance finiteDimensional_iSup_of_finset {ι : Type*} {f : ι → IntermediateField K L}
     /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (f i)` because this caused an
