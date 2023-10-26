@@ -56,6 +56,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 /-! ### "mul" and "add" -/
+
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
   ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
