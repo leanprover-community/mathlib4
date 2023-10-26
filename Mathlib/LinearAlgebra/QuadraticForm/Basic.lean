@@ -145,6 +145,9 @@ structure QuadraticForm (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] 
   exists_companion' : ∃ B : M →ₗ[R] M →ₗ[R] N, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
 #align quadratic_form QuadraticForm
 
+structure QuadraticForm' (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M]
+    [Module R M] extends QuadraticForm R M R
+
 namespace QuadraticForm
 
 section FunLike
@@ -758,10 +761,12 @@ theorem toQuadraticForm_sum {ι : Type*} (s : Finset ι) (B : ι → (M →ₗ[R
   map_sum (toQuadraticFormAddMonoidHom R M) B s
 #align bilin_form.to_quadratic_form_sum LinearMap.toQuadraticForm_sum
 
+variable (B : (M →ₗ[R] M →ₗ[R] N))
+
 @[simp]
-theorem toQuadraticForm_eq_zero {B : (M →ₗ[R] M →ₗ[R] N)} : B.toQuadraticForm = 0 ↔ B.IsAlt :=
+theorem toQuadraticForm_eq_zero {B : (M →ₗ[R] M →ₗ[R] R)} : B.toQuadraticForm = 0 ↔ B.toBilin.IsAlt :=
   QuadraticForm.ext_iff
-#align bilin_form.to_quadratic_form_eq_zero BilinForm.toQuadraticForm_eq_zero
+#align bilin_form.to_quadratic_form_eq_zero LinearMap.toQuadraticForm_eq_zero
 
 end Semiring
 
@@ -769,22 +774,28 @@ section Ring
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-variable {B : BilinForm R M}
+variable {B :  M →ₗ[R] M →ₗ[R] R}
 
 @[simp]
-theorem toQuadraticForm_neg (B : BilinForm R M) : (-B).toQuadraticForm = -B.toQuadraticForm :=
+theorem toQuadraticForm_neg (B : M →ₗ[R] M →ₗ[R] R) : (-B).toQuadraticForm = -B.toQuadraticForm :=
   rfl
-#align bilin_form.to_quadratic_form_neg BilinForm.toQuadraticForm_neg
+#align bilin_form.to_quadratic_form_neg LinearMap.toQuadraticForm_neg
 
 @[simp]
-theorem toQuadraticForm_sub (B₁ B₂ : BilinForm R M) :
+theorem toQuadraticForm_sub (B₁ B₂ : M →ₗ[R] M →ₗ[R] R) :
     (B₁ - B₂).toQuadraticForm = B₁.toQuadraticForm - B₂.toQuadraticForm :=
   rfl
-#align bilin_form.to_quadratic_form_sub BilinForm.toQuadraticForm_sub
+#align bilin_form.to_quadratic_form_sub LinearMap.toQuadraticForm_sub
+
+#check LinearMap
 
 theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y + B y x := by
-  simp only [toQuadraticForm_apply, add_assoc, add_sub_cancel', add_right, polar, add_left_inj,
-    add_neg_cancel_left, add_left, sub_eq_add_neg _ (B y y), add_comm (B y x) _]
+  simp only [toQuadraticForm_apply, add_assoc, add_sub_cancel']
+  rw [polar]
+  rw [add_left_inj]
+  --rw [add_apply]
+  --, add_right, polar, add_left_inj,
+  --  add_neg_cancel_left, add_left, sub_eq_add_neg _ (B y y), add_comm (B y x) _]
 #align bilin_form.polar_to_quadratic_form BilinForm.polar_toQuadraticForm
 
 theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + flip' B :=
