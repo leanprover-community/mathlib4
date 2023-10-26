@@ -69,7 +69,7 @@ Of these, 2 have a name containing "eq".
 #find my_true, "eq"
 
 /--
-info: Found 2 definitions mentioning my_true and Eq.
+info: Found 2 definitions mentioning Bool, my_true and Eq.
 Of these, 2 match your patterns.
 • my_true_eq_True
 • my_true_eq_true
@@ -78,7 +78,7 @@ Of these, 2 match your patterns.
 #find my_true = _
 
 /--
-info: Found 2 definitions mentioning my_true and Eq.
+info: Found 2 definitions mentioning Bool, my_true and Eq.
 Of these, 0 match your patterns.
 -/
 #guard_msgs in
@@ -115,7 +115,7 @@ theorem non_linear_pattern_test2 {n m : Nat} :
   sorry
 
 /--
-info: Found 2 definitions mentioning List.replicate and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate, List and HAppend.hAppend.
 Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
@@ -123,7 +123,7 @@ Of these, 1 match your patterns.
 #find List.replicate ?n _ ++ List.replicate ?n _
 
 /--
-info: Found 2 definitions mentioning List.replicate and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate, List and HAppend.hAppend.
 Of these, 2 match your patterns.
 • non_linear_pattern_test2
 • non_linear_pattern_test1
@@ -132,7 +132,7 @@ Of these, 2 match your patterns.
 #find List.replicate ?n _ ++ List.replicate ?m _
 
 /--
-info: Found 2 definitions mentioning List.replicate, Eq and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate, List, Eq and HAppend.hAppend.
 Of these, 1 match your patterns.
 • non_linear_pattern_test1
 -/
@@ -140,7 +140,7 @@ Of these, 1 match your patterns.
 #find |- _ = List.replicate ?n _ ++ List.replicate ?m _
 
 /--
-info: Found 2 definitions mentioning List.replicate, Eq and HAppend.hAppend.
+info: Found 2 definitions mentioning List.replicate, List, Eq and HAppend.hAppend.
 Of these, 1 match your patterns.
 • non_linear_pattern_test2
 -/
@@ -380,9 +380,29 @@ def findThisLemma : A.A1 = B.mk := rfl
 def doNotFindThisLemma : ∀ a, a = B.mk := fun _a => rfl
 
 /--
-info: Found 1 definitions mentioning A.A1, B.ofA, B.mk and Eq.
+info: Found 1 definitions mentioning B, A.A1, B.ofA, B.mk and Eq.
 Of these, 1 match your patterns.
 • findThisLemma
 -/
 #guard_msgs in
 #find A.A1 = B.mk
+
+
+/--
+info: Found 1 definitions mentioning B, A.A1, B.ofA, B.mk and Eq.
+Of these, 1 match your patterns.
+• findThisLemma
+-/
+#guard_msgs in
+#find Eq B.mk A.A1
+
+
+set_option pp.raw true
+
+/--
+info: Found 1 definitions mentioning B, A.A1, B.ofA, B.mk and Eq.
+Of these, 1 match your patterns.
+• findThisLemma
+-/
+#guard_msgs in
+#find ↑A.A1 = B.mk

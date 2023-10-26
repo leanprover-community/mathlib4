@@ -248,7 +248,7 @@ def elabTerm' (t : Term) (expectedType? : Option Expr) : TermElabM Expr := do
     -- So far all tests work without the following line. Lets expand the test
     -- suite once someone complains
     -- Term.synthesizeSyntheticMVars (mayPostpone := true) (ignoreStuckTC := true)
-    return t
+    instantiateMVars t
 
 /-!
 ## Generating suggestions for unresolvable names
