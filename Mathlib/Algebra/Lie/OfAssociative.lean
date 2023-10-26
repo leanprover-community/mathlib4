@@ -293,7 +293,7 @@ theorem toEndomorphism_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M))
 @[simp]
 theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_subtype_mem x) :
     (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
-  ext; simp [LinearMap.restrict_apply]
+  ext; simp (config := {dsimp := false}) [LinearMap.restrict_apply]
 #align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
 
 end LieSubmodule
