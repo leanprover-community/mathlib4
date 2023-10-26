@@ -298,13 +298,13 @@ theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
 
 @[to_additive (attr := simp) Fintype.sum_prod_type ]
 theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
-    ∏ x : α₁ × α₂, f x = ∏ x : α₁, ∏ y : α₂, f (x, y) :=
+    ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
   Finset.prod_product
 
 /-- An uncurried version of `Finset.prod_prod_type`. -/
-@[to_additive (attr := simp) Fintype.sum_prod_type' "An uncurried version of `Finset.sum_prod_type`"]
+@[to_additive Fintype.sum_prod_type' "An uncurried version of `Finset.sum_prod_type`"]
 theorem Fintype.prod_prod_type' [CommMonoid γ] {f : α₁ → α₂ → γ} :
-    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x : α₁, ∏ y : α₂, f x y :=
+    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x, ∏ y, f x y :=
   Finset.prod_product'
 
 @[to_additive Fintype.sum_prod_type_right]
@@ -315,7 +315,7 @@ theorem Fintype.prod_prod_type_right [CommMonoid γ] {f : α₁ × α₂ → γ}
 /-- An uncurried version of `Finset.prod_prod_type_right`. -/
 @[to_additive Fintype.sum_prod_type_right' "An uncurried version of `Finset.sum_prod_type_right`"]
 theorem Fintype.prod_prod_type_right' [CommMonoid γ] {f : α₁ → α₂ → γ} :
-    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y : α₂, ∏ x : α₁, f x y :=
+    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
   Finset.prod_product_right'
 
 end
