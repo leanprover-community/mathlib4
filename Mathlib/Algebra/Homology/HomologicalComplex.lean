@@ -803,10 +803,25 @@ theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 0 = d₀ := by
 #align chain_complex.mk_d_1_0 ChainComplex.mk_d_1_0
 
 @[simp]
-theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
+theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
   rw [if_pos rfl, Category.id_comp]
-#align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_0
+#align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_1
+
+@[simp]
+lemma mk_d (n : ℕ) : (mk X₀ X₁ X₂ d₀ d₁ s succ).d (n+3) (n+2) =
+    (succ (MkStruct.flat (mkAux X₀ X₁ X₂ d₀ d₁ s succ n))).snd.fst := by
+  dsimp only [mk, of]
+  rw [dif_pos (by rfl), eqToHom_refl, id_comp]
+  rfl
+
+lemma mk_d' (n i j : ℕ) (hij : j + 1 = i) (hn : j = n + 2) :
+    (mk X₀ X₁ X₂ d₀ d₁ s succ).d i j =
+      eqToHom (by substs hn hij; rfl) ≫
+        (succ (MkStruct.flat (mkAux X₀ X₁ X₂ d₀ d₁ s succ n))).snd.fst ≫
+        eqToHom (by subst hn; rfl) := by
+  subst hij hn
+  simp only [eqToHom_refl, comp_id, id_comp, mk_d]
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
