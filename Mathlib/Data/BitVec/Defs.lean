@@ -66,6 +66,8 @@ namespace Std.BitVec
 ## Constants
 -/
 
+/-- The bitvector representing `1`.
+    That is, the bitvector with least-significant bit `1` and all other bits `0` -/
 @[simp] abbrev one (w : ℕ) : BitVec w := 1
 #align bitvec.one Std.BitVec.one
 
