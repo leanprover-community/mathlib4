@@ -626,7 +626,7 @@ where
         -- but it is somehow(!?) caught, and the mvarId is lost as a consequence.
         -- throwTacticEx `congr! mvarId m!"internal error in postCongr!, {e.toMessageData}"
         trace[congr!] "internal error in postCongr!, {e.toMessageData}"
-        pure (some mvarId)
+        throw e
       match mvarId? with
       | some mvarId =>
         trace[congr!] "Recording {mvarId}."
