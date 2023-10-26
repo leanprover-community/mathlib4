@@ -221,31 +221,31 @@ section Commute
 variable [Fintype n]
 
 theorem comm_stdBasisMatrix {i j k : n} {M : Matrix n n α}
-    (hM : stdBasisMatrix i j 1 * M = M * stdBasisMatrix i j 1) (hkj : k ≠ j) : M j k = 0 := by
+    (hM : Commute (stdBasisMatrix i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
   have := Matrix.ext_iff.mpr hM i k
   aesop
 
 theorem comm_stdBasisMatrix' {i j k : n} {M : Matrix n n α}
-    (hM : stdBasisMatrix i j 1 * M = M * stdBasisMatrix i j 1) (hki : k ≠ i) : M k i = 0 := by
+    (hM : Commute (stdBasisMatrix i j 1) M) (hki : k ≠ i) : M k i = 0 := by
   have := Matrix.ext_iff.mpr hM k j
   aesop
 
 theorem comm_stdBasisMatrix'' {i j : n} {M : Matrix n n α}
-    (hM : stdBasisMatrix i j 1 * M = M * stdBasisMatrix i j 1) : M i i = M j j := by
+    (hM : Commute (stdBasisMatrix i j 1) M) : M i i = M j j := by
   have := Matrix.ext_iff.mpr hM i j
   aesop
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
 theorem comm_all_stdBasisMatrix_nondiag [Inhabited n] {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → stdBasisMatrix i j 1 * M = M * stdBasisMatrix i j 1) :
+    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) :
     M = M default default • (1 : Matrix n n α) := by
-  rw [← Matrix.ext_iff]
+  rewrite [← ext_iff]
   intro j k
   by_cases h : j = k
   · by_cases hij : default = j
     · simp [hij, h]
     · push_neg at hij
-      rw [h] at hij
+      rewrite [h] at hij
       simp [comm_stdBasisMatrix'' <| hM k default hij.symm, h]
   · push_neg at h
     by_cases hij : default = j
