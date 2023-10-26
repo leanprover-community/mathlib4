@@ -295,14 +295,45 @@ protected def trans (h : LocalDiffeomorph I I' M M' n)
 -- TODO: add simple lemmas relating refl, symm and trans!
 end LocalDiffeomorph
 
--- A DiffeomorphOn is a local diffeo at each point of its source.
+-- /-- A local diffeomorph is a diffeomorphism on some open set. -/
 
--- A local diffeomorph is a local diffeomorphism at each point.
+-- xxx: reorder position of n?
 
--- what would this mean: if f : M → N f is a local diffeomorphism at each point,
--- it's a local diffeomorphism.
+/-- A diffeomorphism on an open set is a local diffeomorph at each point of its source. -/
+lemma DiffeomorphOn.toLocalDiffeomorphAt (h : DiffeomorphOn I J M N n) (x : M) (hx : x ∈ h.source) :
+    LocalDiffeomorphAt I J M N n x :=
+  { toDiffeomorphOn := h, hx := hx }
 
--- if f is a local diffeo at x, the differential df_x is a linear iso.
+/-- A local diffeomorphism is a local diffeomorphism at each point. -/
+lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x : M}
+    (hx : x ∈ h.source) : LocalDiffeomorphAt I J M N n x := by
+  exact {
+    toLocalHomeomorph := h.toLocalHomeomorph
+    hx := hx
+    contMDiffOn_toFun := by
+      have : ∀ x : M, ContMDiffAt I J n h.toFun x := by
+        intro x
+        apply (h.contMDiffOn_toFun x).contMDiffAt
+        apply (((h.sourceAt x).1.2).mem_nhds_iff).mpr (h.mem_sources x)
+      exact ContMDiff.contMDiffOn this
+    contMDiffOn_invFun := by
+      have : ∀ x : M, ContMDiffAt J I n h.invFun (h.toFun x) := by
+        intro x
+        apply (h.contMDiffOn_invFun x).contMDiffAt
+        apply (((h.targetAt x).1.2).mem_nhds_iff).mpr (h.mem_targets x)
+      have : ∀ y : N, ContMDiffAt J I n h.invFun y := by -- this should be almost obvious!
+        intro y
+        let x := h.invFun y
+        have aux : h.target = univ := sorry -- part of h' spec
+        have aux2 : h.toFun (h.invFun y) = y := h.toLocalEquiv.right_inv' (aux ▸ mem_univ y)
+        exact aux2 ▸ (this x)
+      apply ContMDiff.contMDiffOn this
+  }
+
+-- xxx: what would this mean in Lean?
+-- if f : M → N f is a local diffeomorphism at each point, it's a local diffeomorphism.
+
+-- If `f` is a local diffeomorphism at `x`, the differential `df_x` is a linear isomorphism.
 
 -- conversely, if f is smooth and df_x is a linear iso, then f is a local diffeo at x
 -- uses the inverse function theorem, might be a tad harder to show. punt on first first.
