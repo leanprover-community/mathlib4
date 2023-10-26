@@ -126,9 +126,9 @@ injective coercion to functions from `α` to `β`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 
-Lean will try to synthesize non-dependent `FunLike` typeclasses first by default. Use the command
-`attribute [local instance high] FunLike.hasCoeToFun` if you want dependent `FunLike` typeclasses
-to be synthesized.
+Lean will try to synthesize non-dependent `FunLike` instances first by default. Use the command
+`attribute [local instance high] FunLike.hasCoeToFun` for better performance when you are using lots
+of dependent `FunLike` instances.
 -/
 @[notation_class * toFun Simps.findCoercionArgs]
 class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
@@ -215,7 +215,9 @@ variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
 
-instance (priority := 110) ndHasCoeToFun : CoeFun F fun _ ↦ α → β where coe := FunLike.coe
+/-- A version of `FunLike.hasCoeToFun` for non-dependent functions, which gives a performance boost,
+and avoids unwanted missing beta-reduction. -/
+instance (priority := 110) hasCoeToFunNonDependent : CoeFun F fun _ ↦ α → β where coe := FunLike.coe
 
 protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
   congr (congr_arg _ h₁) h₂
