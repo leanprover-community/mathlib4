@@ -68,9 +68,16 @@ abbrev HasHomology (i : ι) := (K.sc i).HasHomology
 
 variable (i : ι) [K.HasHomology i] [L.HasHomology i] [M.HasHomology i]
 
+/-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
+
+/-- The cycles in degree `i` of a homological complex. -/
 noncomputable def cycles := (K.sc i).cycles
-noncomputable def homologyπ : K.cycles i ⟶ K.homology i := (K.sc i).homologyπ
+
+/-- The inclusion of the cycles of a homological complex. -/
 noncomputable def iCycles : K.cycles i ⟶ K.X i := (K.sc i).iCycles
+
+/-- The homology class map from cycles to the homology of a homological complex. -/
+noncomputable def homologyπ : K.cycles i ⟶ K.homology i := (K.sc i).homologyπ
 
 end HomologicalComplex
