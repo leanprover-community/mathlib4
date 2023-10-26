@@ -3,7 +3,7 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 #align_import linear_algebra.eigenspace.is_alg_closed from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
@@ -49,8 +49,9 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
 /-- The generalized eigenvectors span the entire vector space (Lemma 8.21 of [axler2015]). -/
-theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤ := by
+theorem isTriangularizable_of_isAlgClosed [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    f.IsTriangularizable := by
+  rw [IsTriangularizable]
   -- We prove the claim by strong induction on the dimension of the vector space.
   induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
   cases' n with n
@@ -109,7 +110,7 @@ theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V
     show ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤
     · rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
       apply sup_le hER hES
-#align module.End.supr_generalized_eigenspace_eq_top Module.End.iSup_generalizedEigenspace_eq_top
+#align module.End.supr_generalized_eigenspace_eq_top Module.End.isTriangularizable_of_isAlgClosed
 
 end End
 

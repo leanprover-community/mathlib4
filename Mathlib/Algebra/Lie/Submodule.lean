@@ -824,7 +824,7 @@ theorem comap_inf {N₂' : LieSubmodule R L M'} :
   rfl
 
 @[simp]
-theorem map_iSup {ι : Type*} (N : ι → LieSubmodule R L M) :
+theorem map_iSup {ι : Sort*} (N : ι → LieSubmodule R L M) :
     (⨆ i, N i).map f = ⨆ i, (N i).map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
 

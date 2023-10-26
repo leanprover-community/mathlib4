@@ -7,7 +7,7 @@ import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Lie.Engel
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.IsAlgClosed
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Artinian
 
@@ -44,7 +44,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 -/
 
-variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra.IsNilpotent R L]
+variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra.IsNilpotent R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
@@ -176,6 +176,10 @@ def weightSpace (χ : L → R) : LieSubmodule R L M :=
 theorem mem_weightSpace (χ : L → R) (m : M) :
     m ∈ weightSpace M χ ↔ ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • ↑1) ^ k) m = 0 := by
   simp [weightSpace, mem_weightSpaceOf]
+
+lemma weightSpace_le_weightSpaceOf (x : L) (χ : L → R) :
+    weightSpace M χ ≤ weightSpaceOf M (χ x) x := by
+  rw [weightSpace]; exact iInf_le _ x
 
 /-- See also the more useful form `LieModule.zero_weightSpace_eq_top_of_nilpotent`. -/
 @[simp]
@@ -504,5 +508,85 @@ lemma isCompl_weightSpace_zero_posFittingComp :
   exact hN _ (LieSubmodule.map_incl_lt_iff_lt_top.mpr hN')
 
 end fitting_decomposition
+
+/-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
+any `x : L` is triangularizable. -/
+class IsTriangularizable : Prop :=
+  iSup_eq_top : ∀ x, (toEndomorphism R L M x).IsTriangularizable
+
+lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
+    ⨆ (φ : R), weightSpaceOf M φ x = ⊤ := by
+  rw [← LieSubmodule.coe_toSubmodule_eq_iff]
+  simpa only [Submodule.eta, LieSubmodule.iSup_coe_toSubmodule, LieSubmodule.top_coeSubmodule]
+    using IsTriangularizable.iSup_eq_top x
+
+section field
+
+open FiniteDimensional
+
+variable (K)
+variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.IsNilpotent K L]
+  [FiniteDimensional K M]
+
+instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
+  ⟨fun _x ↦ Module.End.isTriangularizable_of_isAlgClosed _⟩
+
+instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
+  constructor
+  intro y
+  rw [← N.toEndomorphism_restrict_eq_toEndomorphism y]
+  exact Module.End.IsTriangularizable.isTriangularizable_restrict _
+    (IsTriangularizable.iSup_eq_top y)
+
+lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
+    ⨆ (χ : L → K), weightSpace M χ = ⊤ := by
+  -- TODO tidy up this ugly proof
+  rename_i _i1 _i2 _i3 _i4 _i5 _i6 _i7 _i8 _i9 _i10 _i11 _i12 _i13 _i14 _i15
+  clear _i4 _i8 _i3 _i6 _i1 R
+  induction' h_dim : finrank K M using Nat.strong_induction_on with n ih generalizing M
+  rcases forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), weightSpaceOf M φ x = ⊤) with h' | h'
+  · choose χ hχ using h'
+    replace hχ : weightSpace M χ = ⊤ := by simpa only [weightSpace, hχ] using iInf_top
+    exact eq_top_iff.mpr <| hχ ▸ le_iSup (weightSpace M) χ
+  · obtain ⟨y, hy⟩ := h'
+    replace ih : ∀ (φ : K), ⨆ (χ : L → K), weightSpace (weightSpaceOf M φ y) χ = ⊤ := by
+      intro φ
+      replace hy : finrank K (weightSpaceOf M φ y) < n := by
+        replace hy : weightSpaceOf M φ y < ⊤ := by rw [not_exists] at hy; exact Ne.lt_top (hy φ)
+        exact h_dim ▸ Submodule.finrank_lt hy
+      exact ih _ hy (weightSpaceOf M φ y) rfl
+    replace ih : ∀ φ, ⨆ (χ : L → K) (_ : χ y = φ), weightSpace (weightSpaceOf M φ y) χ = ⊤ := by
+      intro φ
+      specialize ih φ
+      suffices ∀ χ : L → K, χ y ≠ φ → weightSpace (weightSpaceOf M φ y) χ = ⊥ by
+        rw [iSup_split (fun χ ↦ weightSpace (weightSpaceOf M φ y) χ) (fun χ ↦ χ y = φ),
+          biSup_congr this] at ih
+        simpa using ih
+      intro χ hχ
+      have : Function.Injective (weightSpaceOf M φ y).incl := Subtype.coe_injective
+      rw [eq_bot_iff, ← LieSubmodule.ker_incl (weightSpaceOf M φ y), LieModuleHom.ker,
+        ← LieSubmodule.map_le_iff_le_comap, map_weightSpace_eq_of_injective this,
+        LieSubmodule.range_incl]
+      apply le_trans <|
+        inf_le_inf_right (weightSpace_le_weightSpaceOf M y χ) (a := weightSpaceOf M φ y)
+      rw [le_bot_iff, ← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.inf_coe_toSubmodule,
+        LieSubmodule.bot_coeSubmodule, ← disjoint_iff]
+      exact Module.End.disjoint_iSup_generalizedEigenspace (toEndomorphism K L M y) hχ
+    replace ih : ∀ φ, ⨆ (χ : L → K) (_ : χ y = φ), weightSpace M χ = weightSpaceOf M φ y := by
+      intro φ
+      have foo : ∀ (χ : L → K) (_ : χ y = φ), weightSpace M χ =
+          (weightSpace (weightSpaceOf M φ y) χ).map (weightSpaceOf M φ y).incl := by
+        intro χ hφχ
+        have : Function.Injective (weightSpaceOf M φ y).incl := Subtype.coe_injective
+        rw [map_weightSpace_eq_of_injective this, LieSubmodule.range_incl, left_eq_inf, ← hφχ]
+        exact weightSpace_le_weightSpaceOf M y χ
+      simp_rw [biSup_congr foo, ← LieSubmodule.map_iSup, ih, LieModuleHom.map_top,
+        LieSubmodule.range_incl]
+    have h : ⨆ (φ : K), weightSpaceOf M φ y = ⊤ := by
+      rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule]
+      exact IsTriangularizable.iSup_eq_top y
+    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using h
+
+end field
 
 end LieModule

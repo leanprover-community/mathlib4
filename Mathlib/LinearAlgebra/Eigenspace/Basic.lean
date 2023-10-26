@@ -53,7 +53,7 @@ namespace Module
 
 namespace End
 
-open FiniteDimensional
+open FiniteDimensional Set
 
 variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M] [Field K]
   [AddCommGroup V] [Module K V]
@@ -386,6 +386,49 @@ theorem generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le [FiniteDime
   ker_pow_eq_ker_pow_finrank_of_le hk
 #align module.End.generalized_eigenspace_eq_generalized_eigenspace_finrank_of_le Module.End.generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le
 
+lemma mapsTo_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k : ℕ) :
+    MapsTo g (f.generalizedEigenspace μ k) (f.generalizedEigenspace μ k) := by
+  replace h : Commute ((f - μ • (1 : End R M)) ^ k) g :=
+    (h.sub_left <| Algebra.commute_algebraMap_left μ g).pow_left k
+  intro x hx
+  simp only [SetLike.mem_coe, mem_generalizedEigenspace] at hx ⊢
+  rw [← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, h.eq, LinearMap.mul_eq_comp,
+    LinearMap.comp_apply, hx, map_zero]
+
+lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R]
+    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ) :
+    Disjoint (f.generalizedEigenspace μ₁ k) (f.generalizedEigenspace μ₂ l) := by
+  rw [disjoint_iff]
+  set p := f.generalizedEigenspace μ₁ k ⊓ f.generalizedEigenspace μ₂ l
+  by_contra hp
+  replace hp : Nontrivial p := Submodule.nontrivial_iff_ne_bot.mpr hp
+  have hc₁ : Commute f (f - algebraMap R (End R M) μ₁) :=
+    Commute.sub_right rfl (Algebra.commute_algebraMap_right μ₁ f)
+  have hc₂ : Commute f (f - algebraMap R (End R M) μ₂) :=
+    Commute.sub_right rfl (Algebra.commute_algebraMap_right μ₂ f)
+  let f₁ : End R p := LinearMap.restrict (f - algebraMap R (End R M) μ₁) (MapsTo.inter_inter
+    (mapsTo_generalizedEigenspace_of_comm hc₁ μ₁ k) (mapsTo_generalizedEigenspace_of_comm hc₁ μ₂ l))
+  let f₂ : End R p := LinearMap.restrict (f - algebraMap R (End R M) μ₂) (MapsTo.inter_inter
+    (mapsTo_generalizedEigenspace_of_comm hc₂ μ₁ k) (mapsTo_generalizedEigenspace_of_comm hc₂ μ₂ l))
+  have hn₁ : IsNilpotent f₁ := by
+    use k; ext ⟨x, hx⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx.1
+  have hn₂ : IsNilpotent f₂ := by
+    use l; ext ⟨x, hx⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx.2
+  have : IsNilpotent (f₂ - f₁) := by
+    apply Commute.isNilpotent_sub _ hn₂ hn₁
+    ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [sub_smul]
+  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective _ _),
+    isNilpotent_iff_eq_zero, sub_eq_zero] at this
+  contradiction
+
+lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R]
+    (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) :
+    Disjoint (⨆ k, f.generalizedEigenspace μ₁ k) (⨆ k, f.generalizedEigenspace μ₂ k) := by
+  simp_rw [(f.generalizedEigenspace μ₁).mono.directed_le.disjoint_iSup_left,
+    (f.generalizedEigenspace μ₂).mono.directed_le.disjoint_iSup_right]
+  exact disjoint_generalizedEigenspace f hμ
+
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
 theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ : R)
@@ -399,6 +442,12 @@ theorem generalizedEigenspace_restrict (f : End R M) (p : Submodule R M) (k : �
   · erw [pow_succ', pow_succ', LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
 #align module.End.generalized_eigenspace_restrict Module.End.generalizedEigenspace_restrict
+
+lemma _root_.Submodule.inf_generalizedEigenspace (f : End R M) (p : Submodule R M) {k : ℕ} {μ : R}
+    (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
+    p ⊓ f.generalizedEigenspace μ k =
+      (generalizedEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
+  rw [f.generalizedEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
 
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/

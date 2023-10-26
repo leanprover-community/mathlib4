@@ -78,6 +78,11 @@ theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
 
+lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
+    [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
+    IsNilpotent (f r) ↔ IsNilpotent r :=
+  ⟨fun ⟨k, hk⟩ ↦ ⟨k, (map_eq_zero_iff f hf).mp <| by rwa [map_pow]⟩, fun h ↦ h.map f⟩
+
 theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
   refine' ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, _, _⟩, rfl⟩
