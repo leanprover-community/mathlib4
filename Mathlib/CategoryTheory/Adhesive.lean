@@ -282,7 +282,7 @@ instance adhesive_functor [Adhesive C] [HasPullbacks C] [HasPushouts C] :
   rw [IsPushout.isVanKampen_iff]
   apply isVanKampenColimit_of_evaluation
   intro x
-  refine IsVanKampenColimit.of_precompose_iso _ (diagramIsoSpan _).inv ?_
+  refine (IsVanKampenColimit.precompose_isIso_iff (diagramIsoSpan _).inv).mp ?_
   refine IsVanKampenColimit.of_iso ?_ (PushoutCocone.isoMk _).symm
   refine (IsPushout.isVanKampen_iff (H.map ((evaluation _ _).obj x))).mp ?_
   apply Adhesive.van_kampen
@@ -298,8 +298,8 @@ theorem adhesive_of_preserves_and_reflects (F : C ⥤ D) [Adhesive D]
   apply Adhesive.mk (hasPullback_of_mono_left := H₁) (hasPushout_of_mono_left := H₂)
   intros W X Y Z f g h i hf H
   rw [IsPushout.isVanKampen_iff]
-  refine IsVanKampenColimit.of_map F ?_
-  refine IsVanKampenColimit.of_precompose_iso _ (diagramIsoSpan _).inv ?_
+  refine IsVanKampenColimit.of_mapCocone F ?_
+  refine (IsVanKampenColimit.precompose_isIso_iff (diagramIsoSpan _).inv).mp ?_
   refine IsVanKampenColimit.of_iso ?_ (PushoutCocone.isoMk _).symm
   refine (IsPushout.isVanKampen_iff (H.map F)).mp ?_
   apply Adhesive.van_kampen
@@ -327,9 +327,9 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
   intro W X Y Z f g h i _ H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))
   rw [IsPushout.isVanKampen_iff] at this ⊢
-  refine IsVanKampenColimit.of_precompose_iso _
-    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom ?_
-  refine ((this.precompose_iso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
+  refine (IsVanKampenColimit.precompose_isIso_iff
+    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
+  refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
     (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm $ pushoutIsPushout _ _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm H.isColimit
