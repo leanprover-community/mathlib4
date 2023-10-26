@@ -55,15 +55,19 @@ namespace Std.BitVec
 #align bitvec.of_fin Std.BitVec.ofFin
 #align bitvec.to_fin Std.BitVec.toFin
 #align bitvec.to_int Std.BitVec.toInt
-
-#noalign bitvec.one
-#noalign bitvec.adc
-#noalign bitvec.sbb
 #align bitvec.uborrow Std.BitVec.ult
 #align bitvec.sborrow Std.BitVec.slt
+
 #noalign bitvec.bits_to_nat
 
 
+
+/-!
+## Constants
+-/
+
+@[simp] abbrev one (w : ℕ) : BitVec w := 1
+#align bitvec.one Std.BitVec.one
 
 /-!
 ## Bitwise operations
@@ -98,5 +102,22 @@ def ofLEList (bs : List Bool) : BitVec bs.length :=
 -/
 def ofBEList (bs : List Bool) : BitVec bs.length :=
   (ofLEList bs.reverse).cast (List.length_reverse ..)
+
+
+/-!
+## Arithmetic
+-/
+
+/-- Add with carry (no overflow) -/
+def adc {n} (x y : BitVec n) (c : Bool) : BitVec (n+1) :=
+  ofFin (x.toNat + y.toNat + c.toNat)
+#align bitvec.adc Std.BitVec.adc
+
+/-- Subtract with borrow -/
+def sbb {n} (x y : BitVec n) (b : Bool) : Bool × BitVec n :=
+  let y := y + ofFin b.toNat
+  (x < y, x - y)
+#align bitvec.sbb Std.BitVec.sbb
+
 
 end Std.BitVec
