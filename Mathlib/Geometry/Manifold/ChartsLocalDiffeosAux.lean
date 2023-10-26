@@ -49,6 +49,30 @@ theorem image_congr'' {α β : Type*} {f : α → β} {g : β → α} {s : Set �
     (h : ∀ x : α, x ∈ s → (g ∘ f) x = x) : g ∘ f '' s = s := by
   rw [image_congr h, image_id']
 
+lemma DiffeomorphOn.differential_isContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
+    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) :
+    ContinuousLinearEquiv (RingHom.id ℝ) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
+  let A := mfderiv I J h.toFun x
+  let B := mfderiv J I h.invFun (h.toFun x)
+
+  have inv1 : B.comp A = ContinuousLinearMap.id ℝ (TangentSpace I x) := sorry
+  have inv2 : A.comp B = ContinuousLinearMap.id ℝ (TangentSpace J (h.toFun x)) := sorry
+
+  have h1 : Function.LeftInverse B A := by sorry -- TODO: should be obvious from inv1
+  have h2 : Function.RightInverse B A := sorry
+
+  exact {
+    toFun := A
+    invFun := B
+    left_inv := h1
+    right_inv := h2
+    continuous_toFun := A.cont
+    continuous_invFun := B.cont
+    map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add A x_1 y
+    map_smul' := by intros; simp
+  }
+
+#exit
 lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
   let f := h.toFun
