@@ -618,9 +618,20 @@ def Lean.MVarId.congrN! (mvarId : MVarId)
 where
   post (mvarId : MVarId) : CongrMetaM Unit := do
     for mvarId in ← mvarId.introsClean do
-      if let some mvarId ← mvarId.postCongr! config then
+      trace[congr!] "Attempting postCongr! {mvarId}"
+      let mvarId? ← try
+        mvarId.postCongr! config
+      catch e =>
+        -- I would prefer to just rethrow this error,
+        -- but it is somehow(!?) caught, and the mvarId is lost as a consequence.
+        -- throwTacticEx `congr! mvarId m!"internal error in postCongr!, {e.toMessageData}"
+        trace[congr!] "internal error in postCongr!, {e.toMessageData}"
+        pure (some mvarId)
+      match mvarId? with
+      | some mvarId =>
+        trace[congr!] "Recording {mvarId}."
         modify (fun s => {s with goals := s.goals.push mvarId})
-      else
+      | none =>
         trace[congr!] "Dispatched goal by post-processing step."
   go (depth : Nat) (n : Nat) (mvarId : MVarId) : CongrMetaM Unit := do
     for mvarId in ← mvarId.introsClean do
