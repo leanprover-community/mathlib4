@@ -20,6 +20,8 @@ number field, discriminant
 -- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
 -- this file
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+
 namespace NumberField
 
 open Classical NumberField Matrix
@@ -43,9 +45,6 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
 
 open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal
-
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =

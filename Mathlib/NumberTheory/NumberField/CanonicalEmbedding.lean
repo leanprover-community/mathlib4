@@ -43,6 +43,8 @@ nonzero algebraic integer `a` in `K` such that `w a < f w` for all infinite plac
 number field, infinite places
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+
 variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
@@ -339,9 +341,6 @@ def matrix_to_stdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
-
 theorem det_matrix_to_stdBasis :
     (matrix_to_stdBasis K).det = (2⁻¹ * I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} :=
   calc
@@ -539,7 +538,7 @@ variable [NumberField K]
 `NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis` for the computation of
 `volume (fundamentalDomain (latticeBasis K))`. -/
 noncomputable def minkowskiBound : ℝ≥0∞ :=
-  volume (fundamentalDomain (latticeBasis K)) * 2 ^ (finrank ℝ (E K))
+  volume (fundamentalDomain (latticeBasis K)) * (2:ℝ≥0∞) ^ (finrank ℝ (E K))
 
 theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
   refine mul_lt_top ?_ ?_
