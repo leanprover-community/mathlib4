@@ -337,8 +337,7 @@ theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsA
   have hinj : Function.Injective g := fun K K' heq ↦ by
     rw [Subtype.mk.injEq] at heq
     apply_fun fun f : E[X] ↦ adjoin F (f.frange : Set E) at heq
-    rwa [← eq_adjoin_minpoly_coeff_of_exists_primitive_element F hprim K,
-      ← eq_adjoin_minpoly_coeff_of_exists_primitive_element F hprim K'] at heq
+    simpa only [adjoin_minpoly_coeff_of_exists_primitive_element F hprim] using heq
   -- Therefore there are only finitely many intermediate fields
   exact Finite.of_injective g hinj
 

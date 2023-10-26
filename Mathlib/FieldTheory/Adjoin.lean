@@ -922,11 +922,11 @@ theorem adjoin_eq_top_of_adjoin_eq_top [Algebra E K] [IsScalarTower F E K]
   rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
     coe_restrictScalars, ← adjoin_le_iff]
 
-/-- If `E / F` is a finite extension such that `E = F(α)`, then for any intermediate field `K`,
-it is generated over `F` by the coefficients of the minimal polynomial of `α` over `K`. -/
-theorem eq_adjoin_minpoly_coeff_of_exists_primitive_element
+/-- If `E / F` is a finite extension such that `E = F(α)`, then for any intermediate field `K`, the
+`F` adjoin the coefficients of `minpoly K α` is equal to `K` itself. -/
+theorem adjoin_minpoly_coeff_of_exists_primitive_element
     [FiniteDimensional F E] (hprim : adjoin F {α} = ⊤) (K : IntermediateField F E) :
-    K = adjoin F ((minpoly K α).map (algebraMap K E)).frange := by
+    adjoin F ((minpoly K α).map (algebraMap K E)).frange = K := by
   set g := (minpoly K α).map (algebraMap K E)
   set K' : IntermediateField F E := adjoin F g.frange
   have hsub : K' ≤ K := by
@@ -957,7 +957,7 @@ theorem eq_adjoin_minpoly_coeff_of_exists_primitive_element
     have := adjoin.finrank (isIntegral_of_finite K α)
     erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
     exact this
-  refine (eq_of_le_of_finrank_le' hsub ?_).symm
+  refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
   convert natDegree_le_of_dvd dvd_p hp.2.2.ne_zero using 1
   rw [hp.2.1, natDegree_map]
@@ -1311,6 +1311,8 @@ instance finiteDimensional_iSup_of_finite {ι : Type*} {t : ι → IntermediateF
     exact IntermediateField.finiteDimensional_sup _ _
 #align intermediate_field.finite_dimensional_supr_of_finite IntermediateField.finiteDimensional_iSup_of_finite
 
+/-- If `L / K` is an algebraic extension, then for any finite subset `S` of `L`, `K(S) / K` is a
+finite extension. A direct corollary of `finiteDimensional_iSup_of_finite`. -/
 theorem finiteDimensional_adjoin_of_finite_of_isAlgebraic
     (halg : Algebra.IsAlgebraic K L) (S : Set L) [Finite S] :
     FiniteDimensional K (adjoin K S) := by
