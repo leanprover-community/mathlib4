@@ -59,8 +59,8 @@ namespace Std.BitVec
 #noalign bitvec.one
 #noalign bitvec.adc
 #noalign bitvec.sbb
-#noalign bitvec.uborrow
-#noalign bitvec.sborrow
+#align bitvec.uborrow Std.BitVec.ult
+#align bitvec.sborrow Std.BitVec.slt
 #noalign bitvec.bits_to_nat
 
 
