@@ -174,7 +174,7 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   whiskerRight f X := (f.unop ▷ X.unop).op
   tensorHom f g := (f.unop ⊗ g.unop).op
   tensorHom_def f g := Quiver.Hom.unop_inj (tensorHom_def' _ _)
-  tensorUnit' := op (𝟙_ C)
+  tensorUnit := op (𝟙_ C)
   associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
   leftUnitor X := (λ_ (unop X)).symm.op
   rightUnitor X := (ρ_ (unop X)).symm.op
@@ -199,7 +199,7 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   whiskerRight f X := (X.unmop ◁ f.unmop).mop
   tensorHom f g := (g.unmop ⊗ f.unmop).mop
   tensorHom_def f g := unmop_inj (tensorHom_def' _ _)
-  tensorUnit' := mop (𝟙_ C)
+  tensorUnit := mop (𝟙_ C)
   associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   leftUnitor X := (ρ_ (unmop X)).mop
   rightUnitor X := (λ_ (unmop X)).mop
