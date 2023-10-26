@@ -296,7 +296,7 @@ theorem mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
  /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) :
     s.Nodup := by
-  refine ((List.pairwise_join (R := ?_) (L := ranges l)).mp ?_).1 s hs
+  refine (List.pairwise_join.mp ?_).1 s hs
   rw [ranges_join]
   exact nodup_range (sum l)
 
