@@ -21,7 +21,7 @@ and differentiable on `(0,1)`, then for `M(x) := sup ((abs ∘ f) '' (re ⁻¹' 
 `∀ z ∈ [0,1]` the inequality `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds. This can be seen to be
 equivalent to the statement that `log M(x)` is a convex function on `[0,1]`.
 
-## Notation
+## Main definitions
 
 - `Complex.HadamardThreeLines.strip` : The vertical strip defined by : re ⁻¹' Ioo a b
 
