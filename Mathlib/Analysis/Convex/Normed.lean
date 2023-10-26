@@ -139,9 +139,8 @@ lemma Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
   simp [abs_of_nonneg, ha₀, ha₁, sub_mul]
 
 theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
-    dist x y + dist y z = dist x z := by
-  rw [← affineSegment_eq_segment] at h
-  exact Wbtw.dist_add_dist h
+    dist x y + dist y z = dist x z :=
+  (mem_segment_iff_wbtw.1 h).dist_add_dist
 #align dist_add_dist_of_mem_segment dist_add_dist_of_mem_segment
 
 /-- The set of vectors in the same ray as `x` is connected. -/
