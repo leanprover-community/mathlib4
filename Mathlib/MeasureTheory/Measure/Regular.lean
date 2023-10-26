@@ -610,6 +610,10 @@ lemma innerRegularWRT_isClosed_isOpen [ClosableCompactSubsetOpenSpace α] [Opens
   exact ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
     hK.trans_le (measure_mono subset_closure)⟩
 
+theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
+  simp_rw [Ne.def, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
+    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
+
 end InnerRegular
 
 namespace InnerRegularCompactLTTop

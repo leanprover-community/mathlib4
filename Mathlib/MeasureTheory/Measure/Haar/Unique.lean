@@ -3,7 +3,7 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Basic
+--import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
@@ -355,7 +355,7 @@ up to a multiplicative constant. -/
 lemma measure_mulLeftInvariant_unique_of_ne_top
     (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
-    [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']:
+    [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ'] :
     ∃ (c : ℝ≥0), ∀ (s : Set G), μ s < ∞ → μ' s < ∞ → μ' s = (c • μ) s := by
   /- We know that the measures integrate in the same way continuous compactly supported functions,
   up to a constant `c`. We will use this constant `c`. -/
@@ -367,12 +367,7 @@ lemma measure_mulLeftInvariant_unique_of_ne_top
     intro k hk
     rw [hk.measure_eq_biInf_integral_hasCompactSupport μ',
         hk.measure_eq_biInf_integral_hasCompactSupport (c • μ)]
-    congr with f
-    congr with f_cont
-    congr with f_comp
-    congr with _fk
-    congr with _f_nonneg
-    congr 1
+    congr! 7 with f f_cont f_comp _fk _f_nonneg
     exact hc f f_cont f_comp
   /- By regularity, every measurable set of finite measure may be approximated by compactsets.
   Therefore, the measures coincide on measurable sets of finite measure. -/
@@ -381,9 +376,7 @@ lemma measure_mulLeftInvariant_unique_of_ne_top
     have : (c • μ) s ≠ ∞ := by simp [ENNReal.mul_eq_top, hs.ne]
     rw [s_meas.measure_eq_iSup_isCompact_of_ne_top h's.ne,
         s_meas.measure_eq_iSup_isCompact_of_ne_top this]
-    congr with K
-    congr with _Ks
-    congr with K_comp
+    congr! 4 with K _Ks K_comp
     exact A K K_comp
   /- Finally, replace an arbitrary finite measure set with a measurable version, and use the
   version for measurable sets. -/
@@ -403,3 +396,57 @@ lemma measure_mulLeftInvariant_unique_of_ne_top
   · exact (measurableSet_toMeasurable _ _).inter (measurableSet_toMeasurable _ _)
   · exact mu_t.le.trans_lt hs
   · exact mu'_t.le.trans_lt h's
+
+/-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite
+on compacts and inner regular, they coincide up to a multiplicative constant. -/
+@[to_additive]
+lemma measure_mulLeftInvariant_unique_of_innerRegular
+    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
+    [InnerRegular μ] [InnerRegular μ'] :
+    ∃ (c : ℝ≥0), μ' = c • μ := by
+  rcases measure_mulLeftInvariant_unique_of_ne_top μ μ' with ⟨c, hc⟩
+  refine ⟨c, ?_⟩
+  ext s hs
+  rw [hs.measure_eq_iSup_isCompact, hs.measure_eq_iSup_isCompact]
+  congr! 4 with K _Ks K_comp
+  exact hc K K_comp.measure_lt_top K_comp.measure_lt_top
+
+/-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite
+on compacts and inner regular, they coincide up to a multiplicative constant. -/
+@[to_additive]
+lemma measure_mulLeftInvariant_unique_of_regular
+    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
+    [Regular μ] [Regular μ'] :
+    ∃ (c : ℝ≥0), μ' = c • μ := by
+  rcases measure_mulLeftInvariant_unique_of_ne_top μ μ' with ⟨c, hc⟩
+  refine ⟨c, ?_⟩
+  have A : ∀ U, IsOpen U → μ' U = (c • μ) U := by
+    intro U hU
+    rw [hU.measure_eq_iSup_isCompact, hU.measure_eq_iSup_isCompact]
+    congr! 4 with K _KU K_comp
+    exact hc K K_comp.measure_lt_top K_comp.measure_lt_top
+  ext s _hs
+  rw [s.measure_eq_iInf_isOpen, s.measure_eq_iInf_isOpen]
+  congr! 4 with U _sU U_open
+  exact A U U_open
+
+/-- **Uniqueness of left-invariant measures**: Given two left-invariant probability measures which
+are inner regular for finite measure sets with respect to compact sets, they coincide. -/
+@[to_additive]
+lemma measure_mulLeftInvariant_unique_of_isProbabilityMeasure
+    (μ μ' : Measure G) [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
+    [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] : μ' = μ := by
+  have : InnerRegular μ := InnerRegularCompactLTTop.innerRegular_of_finiteMeasure
+  have : InnerRegular μ' := InnerRegularCompactLTTop.innerRegular_of_finiteMeasure
+  have : IsOpenPosMeasure μ := by
+    apply isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
+
+
+  rcases measure_mulLeftInvariant_unique_of_innerRegular μ μ' with ⟨c, hc⟩
+  have : ((c : ℝ≥0∞) • μ) univ = μ' univ := by rw [hc]; rfl
+  simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, measure_univ, smul_eq_mul,
+    mul_one, ENNReal.coe_eq_one] at this
+  simp [hc, this]
