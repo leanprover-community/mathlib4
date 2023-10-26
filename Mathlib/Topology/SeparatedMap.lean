@@ -129,7 +129,7 @@ lemma isLocallyInjective_iff_nhds {f : X → Y} :
     exact ⟨interior U, isOpen_interior, mem_interior_iff_mem_nhds.mpr hn, hi.mono interior_subset⟩
 
 theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
-    IsLocallyInjective f ↔ IsOpen f.pullbackDiagonal f := by
+    IsLocallyInjective f ↔ IsOpen f.pullbackDiagonal := by
   simp_rw [isLocallyInjective_iff_nhds, isOpen_iff_mem_nhds,
     Subtype.forall, Prod.forall, nhds_induced, nhds_prod_eq, Filter.mem_comap]
   refine ⟨?_, fun h x ↦ ?_⟩
