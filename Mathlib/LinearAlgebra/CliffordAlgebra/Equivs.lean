@@ -622,7 +622,7 @@ theorem ofDualQuaternion_smul_eps (q : ℍ[R]) :
 theorem toDualQuaternion_comp_ofDualQuaternion :
     (toDualQuaternion (R := R)).comp (ofDualQuaternion (R := R)) = AlgHom.id R ℍ[R][ε] := by
   ext : 1
-  . apply QuaternionAlgebra.lift.symm.injective
+  · apply QuaternionAlgebra.lift.symm.injective
     simp
     ext : 1
       <;> dsimp
@@ -648,11 +648,16 @@ theorem toDualQuaternion_comp_ofDualQuaternion :
     simp [CliffordAlgebraQuaternion.quaternionBasis, QuaternionAlgebra.Basis.lift]
     erw [@QuadraticForm.Isometry.inl_apply R (R × R) R,
       @QuadraticForm.Isometry.inl_apply R (R × R) R]
+    rw [toDualQuaternion.map_smul, toDualQuaternion.map_smul, toDualQuaternion.map_smul,
+      toDualQuaternion_ι, toDualQuaternion_ι, map_mul, toDualQuaternion_ι,  toDualQuaternion_ι,
+      mkDualQuaternion_inl, mkDualQuaternion_inl, TrivSqZeroExt.inl_mul_inl,
+      ←TrivSqZeroExt.inl_smul, ←TrivSqZeroExt.inl_smul, ←TrivSqZeroExt.inl_smul,
+      TrivSqZeroExt.algebraMap_eq_inl',
+      ←TrivSqZeroExt.inl_add, ←TrivSqZeroExt.inl_add, ←TrivSqZeroExt.inl_add,
+      DualNumber.inl_mul_eps]
     save
-    -- rw [toDualQuaternion.map_smul, toDualQuaternion ι]
-    -- rw [CliffordAlgebraQuaternion.quaternionBasis_lift_mkQuaternion, map_apply_ι]
-    sorry
-
+    congr
+    ext <;> simp
 
 theorem ofDualQuaternion_comp_toDualQuaternion :
     ofDualQuaternion.comp toDualQuaternion = AlgHom.id R (CliffordAlgebra (Q R)) := by
@@ -676,8 +681,9 @@ theorem ofDualQuaternion_comp_toDualQuaternion :
     change -(i R * j R * eps R) = e R
     rw [eps, ←mul_assoc, i_mul_j_mul_k, neg_mul, neg_neg, one_mul]
 
-/-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
-the dual numbers. -/
+/-- The clifford algebra over a 3-dimensional vector space whose basis elements correspond to
+$i$, $j$ and $-kε$ with a suitable quadratic form is isomorphic to the dual quaternions. -/
+@[simps!]
 protected def equiv : CliffordAlgebra (Q R) ≃ₐ[R] ℍ[R][ε] :=
   AlgEquiv.ofAlgHom
     toDualQuaternion
