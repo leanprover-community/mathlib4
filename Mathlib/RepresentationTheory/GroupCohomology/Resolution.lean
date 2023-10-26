@@ -681,7 +681,7 @@ theorem quasiIso'OfForget₂εToSingle₀ :
   rw [← εToSingle₀_comp_eq k G] at h
   haveI := h
   exact quasiIso'_of_comp_right _ ((ChainComplex.single₀MapHomologicalComplex _).hom.app _)
-#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIsoOfForget₂εToSingle₀
+#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso'OfForget₂εToSingle₀
 
 instance : QuasiIso' (εToSingle₀ k G) :=
   (forget₂ _ (ModuleCat.{u} k)).quasiIso_of_map_quasiIso _ (quasiIsoOfForget₂εToSingle₀ k G)
