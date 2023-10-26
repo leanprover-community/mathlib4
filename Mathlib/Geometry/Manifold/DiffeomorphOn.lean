@@ -1,4 +1,5 @@
 import Mathlib.Geometry.Manifold.ContMDiffMap
+import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.MFDeriv
 
 /-!
@@ -39,7 +40,15 @@ structure DiffeomorphOn extends LocalHomeomorph M N where
   contMDiffOn_toFun : ContMDiffOn I J n toFun source
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
--- TODO: add a LocalEquiv instance! Coe instance also?
+/-- A diffeomorphism is a local diffeomorphism. -/
+theorem Diffeomorph.toDiffeomorphOn (h : Diffeomorph I J M N n) : DiffeomorphOn I J M N n :=
+  {
+    contMDiffOn_toFun := h.contMDiff.contMDiffOn
+    contMDiffOn_invFun := h.contMDiff_invFun.contMDiffOn
+    toLocalHomeomorph := h.toHomeomorph.toLocalHomeomorph
+  }
+
+-- TODO: add a coe instance instance? injectivity, ext lemma, etc.
 
 namespace DiffeomorphOn
 -- simple properties: TODO compare with Diffeomorph and fill out API!
@@ -81,9 +90,6 @@ protected theorem mdifferentiableOn (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n
 protected theorem mdifferentiableOn_symm (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
     MDifferentiableOn J I h.invFun h.target :=
   (h.contMDiffOn_symm).mdifferentiableOn hn
-
--- TODO: coe instance -- as a local homeomorph?
--- TODO: equiv, injectivity, ext lemma, etc.
 
 /-- Identity map as a diffeomorphism. -/
 protected def refl : DiffeomorphOn I I M M n where

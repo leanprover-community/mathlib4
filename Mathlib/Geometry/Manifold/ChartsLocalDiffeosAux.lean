@@ -49,7 +49,9 @@ theorem image_congr'' {α β : Type*} {f : α → β} {g : β → α} {s : Set �
     (h : ∀ x : α, x ∈ s → (g ∘ f) x = x) : g ∘ f '' s = s := by
   rw [image_congr h, image_id']
 
-lemma DiffeomorphOn.differential_isContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
+/-- The differential of a  local diffeomorphism is a linear isomorphism
+  at each point in its source. -/
+lemma DiffeomorphOn.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) :
     ContinuousLinearEquiv (RingHom.id ℝ) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
   let y := h.toFun x
@@ -99,10 +101,30 @@ lemma DiffeomorphOn.differential_isContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r
     map_smul' := by intros; simp
   }
 
-lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
+-- add to Init.Function
+lemma bijective_iff_inverses {X Y : Type*} {f : X → Y} {g : Y → X}
+    (h1 : LeftInverse g f) (h2 : LeftInverse f g) : Bijective f :=
+  ⟨h1.injective, h2.surjective⟩
+
+/-- A local diffeomorphism has bijective differential at each point. -/
+lemma DiffeomorphOn.differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
-  -- deduce from ContinuousLinearEquiv above!
-  sorry
+  let aux := h.differential_toContinuousLinearEquiv hr hx
+  have h : aux.toFun = mfderiv I J h.toFun x := sorry -- should be obvious!
+  rw [← h]
+  exact bijective_iff_inverses aux.left_inv aux.right_inv
+
+/-- A diffeomorphism has bijective differential at each point. -/
+lemma Diffeomorph.differential_bijective {r : ℕ} (hr : 1 ≤ r) (f : Diffeomorph I J M N r) {x : M} :
+    Bijective (mfderiv I J f.toFun x) := by
+  -- FIXME: `(f.toDiffeomorphOn).differential_bijective hr (by exact trivial)` or so should suffice.
+  -- These are trivial.
+  have : f.toLocalEquiv.source = univ := rfl
+  have t : x ∈ f.toLocalEquiv.source := by exact trivial
+  -- However, I need to hese statements, and to rewrite by them.
+  have : x ∈ (toDiffeomorphOn I J M N (↑r) f).toLocalHomeomorph.toLocalEquiv.source := sorry
+  have h : (toDiffeomorphOn I J M N (↑r) f).toLocalHomeomorph.toLocalEquiv = f.toLocalEquiv := sorry
+  apply h ▸ (f.toDiffeomorphOn).differential_bijective hr this
 
 -- auxiliary results, not needed for my proof, but perhaps still useful
 section aux
