@@ -72,19 +72,25 @@ lemma DiffeomorphOn.differential_isContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r
     map_smul' := by intros; simp
   }
 
+-- TODO: I feel this should be in mathlib already, but exact? cannot find it...
+lemma LocalHomeomorph.image_symm_target_eq_source {e : LocalHomeomorph M H} :
+  e.invFun '' e.target = e.source := by
+  rw [← e.toLocalEquiv.image_source_eq_target, ← image_comp]
+  exact image_congr'' (fun x hx ↦ e.left_inv' hx)
+
+-- is this worth being a separate lemma?
+lemma LocalHomeomorph.isBLA {e : LocalHomeomorph M H} : IsOpen (e.invFun '' e.target) := by
+  rw [e.image_symm_target_eq_source]
+  exact e.open_source
+
 lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
   let y := h.toFun x
   -- Initial observations about my data.
   have hyx : h.invFun y = x := h.left_inv' hx
   have hysource : y ∈ h.target := h.toLocalEquiv.mapsTo hx
-  -- XXX: this feels cumbersome! is this in mathlib?
-  have : h.toFun '' h.source = h.target := subset_antisymm (mapsTo'.mp h.toLocalEquiv.mapsTo) (fun y hy ↦ ⟨h.invFun y, h.map_target hy, h.right_inv' hy⟩)
-  have : h.invFun '' h.target = h.source := by -- XXX: is this in mathlib?
-    rw [← this, ← image_comp]
-    exact image_congr'' (fun x hx ↦ h.left_inv' hx)
-  have hopen : IsOpen (h.invFun '' h.target) := by rw [this]; exact h.open_source
-  have hx2 : x ∈ h.invFun '' h.target := by simp_rw [this]; exact hx
+  have hopen : IsOpen (h.invFun '' h.target) := by rw [h.image_symm_target_eq_source]; exact h.open_source
+  have hx2 : x ∈ h.invFun '' h.target := by simp_rw [h.image_symm_target_eq_source]; exact hx
 
   set A := mfderiv I J h.toFun x
   let A' := mfderiv J I h.invFun y
@@ -97,7 +103,7 @@ lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
     _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
     _ = mfderivWithin I I (h.invFun ∘ h.toFun) (h.invFun '' h.target) x := (mfderivWithin_of_open I I hopen hx2).symm
     _ = mfderivWithin I I id (h.invFun '' h.target) x :=
-      mfderivWithin_congr (hopen.uniqueMDiffWithinAt hx2) (this ▸ h.left_inv') hyx
+      mfderivWithin_congr (hopen.uniqueMDiffWithinAt hx2) (h.image_symm_target_eq_source ▸ h.left_inv') hyx
     _ = mfderiv I I id x := mfderivWithin_of_open I I hopen hx2
     _ = ContinuousLinearMap.id ℝ (TangentSpace I x) := mfderiv_id I
   have inv2 := calc A.comp A'
