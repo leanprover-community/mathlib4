@@ -334,15 +334,17 @@ end NeZero
 /-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
     whose ordering is a linear order. -/
 class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
-  extends CanonicallyOrderedAddCommMonoid α, LinearOrder α
+  extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
-class CanonicallyLinearOrderedCommMonoid (α : Type*) extends CanonicallyOrderedCommMonoid α,
-  LinearOrder α
+class CanonicallyLinearOrderedCommMonoid (α : Type*)
+  extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
+
+attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 
 section CanonicallyLinearOrderedCommMonoid
 

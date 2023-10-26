@@ -205,7 +205,7 @@ class HasForget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory
 #align category_theory.has_forget₂ CategoryTheory.HasForget₂
 
 /-- The forgetful functor `C ⥤ D` between concrete categories for which we have an instance
-`HasForget₂ C `. -/
+`HasForget₂ C`. -/
 @[reducible]
 def forget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : C ⥤ D :=

@@ -81,9 +81,9 @@ universe u v w x
 
 namespace Set
 
-variable {α : Type _} {s t : Set α}
+variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet {α : Type _} : BooleanAlgebra (Set α) :=
+instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -568,6 +568,8 @@ theorem setOf_false : { _a : α | False } = ∅ :=
   rfl
 #align set.set_of_false Set.setOf_false
 
+@[simp] theorem setOf_bot : { _x : α | ⊥ } = ∅ := rfl
+
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   fun.
@@ -667,6 +669,8 @@ Mathematically it is the same as `α` but it has a different type.
 theorem setOf_true : { _x : α | True } = univ :=
   rfl
 #align set.set_of_true Set.setOf_true
+
+@[simp] theorem setOf_top : { _x : α | ⊤ } = univ := rfl
 
 @[simp, mfld_simps]
 theorem mem_univ (x : α) : x ∈ @univ α :=
@@ -806,12 +810,12 @@ theorem union_right_comm (s₁ s₂ s₃ : Set α) : s₁ ∪ s₂ ∪ s₃ = s�
 @[simp]
 theorem union_eq_left {s t : Set α} : s ∪ t = s ↔ t ⊆ s :=
   sup_eq_left
-#align set.union_eq_left Set.union_eq_left
+#align set.union_eq_left_iff_subset Set.union_eq_left
 
 @[simp]
 theorem union_eq_right {s t : Set α} : s ∪ t = t ↔ s ⊆ t :=
   sup_eq_right
-#align set.union_eq_right Set.union_eq_right
+#align set.union_eq_right_iff_subset Set.union_eq_right
 
 theorem union_eq_self_of_subset_left {s t : Set α} (h : s ⊆ t) : s ∪ t = t :=
   union_eq_right.mpr h
@@ -1172,7 +1176,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
 #align set.insert_subset_insert Set.insert_subset_insert
 
-theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
+@[simp] theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
   refine' ⟨fun h x hx => _, insert_subset_insert⟩
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts [(ha hx).elim, hxt]

@@ -393,7 +393,10 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     refine TensorProduct.induction_on x ?_ ?_ ?_
     · simp only [smul_zero, map_zero]
     · intro x y
-      simp [smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra, h.1.equiv_tmul]
+      simp only [smul_tmul', smul_eq_mul, TensorProduct.comm_tmul, smul_def,
+        TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.tmul_mul_tmul,
+        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, _root_.map_mul,
+        IsScalarTower.coe_toAlgHom']
       ring
     · intro x y hx hy
       rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]

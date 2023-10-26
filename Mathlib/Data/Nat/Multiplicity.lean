@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Digits
 import Mathlib.RingTheory.Multiplicity
 
 #align_import data.nat.multiplicity from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
@@ -23,9 +24,9 @@ coefficients.
 ## Multiplicity calculations
 
 * `Nat.Prime.multiplicity_factorial`: Legendre's Theorem. The multiplicity of `p` in `n!` is
-  `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`. See `padicValNat_factorial` for this
-  result stated in the language of `p`-adic valuations and
-  `sub_one_mul_padicValNat_factorial_eq_sub_sum_digits` for a related result.
+  `n / p + ... + n / p ^ b` for any `b` such that `n / p ^ (b + 1) = 0`. See `padicValNat_factorial`
+  for this result stated in the language of `p`-adic valuations and
+  `sub_one_mul_padicValNat_factorial` for a related result.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
 * `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
@@ -121,6 +122,16 @@ theorem multiplicity_factorial {p : ℕ} (hp : p.Prime) :
       _ = (∑ i in Ico 1 b, (n + 1) / p ^ i : ℕ) :=
         congr_arg _ <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
 #align nat.prime.multiplicity_factorial Nat.Prime.multiplicity_factorial
+
+/-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
+the sum of base `p` digits of `n`. -/
+ theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
+     (p - 1) * (multiplicity p n !).get (finite_nat_iff.mpr ⟨hp.ne_one, factorial_pos n⟩) =
+     n - (p.digits n).sum := by
+  simp only [multiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+      ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
+      ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
+  rfl
 
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/

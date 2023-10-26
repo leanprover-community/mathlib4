@@ -67,6 +67,22 @@ def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* Z
 
 end Int
 
+noncomputable section ChineseRemainder
+open BigOperators Ideal
+
+/-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
+`Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
+def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
+    (coprime : ∀ i j, i ≠ j → Nat.Coprime (a i) (a j)) : ZMod (∏ i, a i) ≃+* ∀ i, ZMod (a i) :=
+  have : ∀ (i j : ι), i ≠ j → IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
+    fun i j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime i j h).cast (R := ℤ))
+  Int.quotientSpanNatEquivZMod _ |>.symm.trans <|
+  quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|
+  quotientInfRingEquivPiQuotient _ this |>.trans <|
+  RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
+
+end ChineseRemainder
+
 namespace AddAction
 
 open AddSubgroup AddMonoidHom AddEquiv Function
