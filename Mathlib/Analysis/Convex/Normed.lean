@@ -133,7 +133,6 @@ instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnec
     (convex_ball x r).isPathConnected <| by simp [r_pos]
 #align normed_space.loc_path_connected NormedSpace.instLocPathConnectedSpace
 
-variable (E) in
 lemma Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
   dist x y + dist y z = dist x z := by
   obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h
@@ -142,7 +141,7 @@ lemma Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
 theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
     dist x y + dist y z = dist x z := by
   rw [← affineSegment_eq_segment] at h
-  exact Wbtw.dist_add_dist E h
+  exact Wbtw.dist_add_dist h
 #align dist_add_dist_of_mem_segment dist_add_dist_of_mem_segment
 
 /-- The set of vectors in the same ray as `x` is connected. -/
