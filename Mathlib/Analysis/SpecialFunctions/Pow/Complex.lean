@@ -133,7 +133,7 @@ theorem cpow_nat_cast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa us
 
 @[simp]
 lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
-    x ^ (OfNat.ofNat n : ℂ) = x ^ (OfNat.ofNat n : ℕ) :=
+    x ^ (no_index (OfNat.ofNat n) : ℂ) = x ^ (OfNat.ofNat n : ℕ) :=
   cpow_nat_cast x n
 
 theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := cpow_ofNat x 2
