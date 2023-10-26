@@ -410,7 +410,7 @@ nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
 
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
-  simp [denom, coe']
+  simp (config := {dsimp := false}) [denom, coe']
 #align upper_half_plane.denom_apply UpperHalfPlane.denom_apply
 
 end SLModularAction
