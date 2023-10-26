@@ -34,7 +34,7 @@ The proof in [Halmos] seems to contain an omission in §60 Th. A, see
 
 Note that this theory only applies in measurable groups, i.e., when multiplication and inversion
 are measurable. This is not the case in general in locally compact groups, or even in compact
-groups, when the topology is second-countable. For arguments along the same line, but using
+groups, when the topology is not second-countable. For arguments along the same line, but using
 continuous functions instead of measurable sets and working in the general locally compact
 setting, see the file `Unique.lean`.
 -/

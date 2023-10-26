@@ -609,10 +609,6 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular [InnerRegular μ] (
   let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr h₀
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
-
-#exit
-
-
 @[to_additive]
 theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) :
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
