@@ -1,8 +1,9 @@
 import Mathlib.CategoryTheory.Functor.InvIsos
 import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.Condensed.Basic
-import Mathlib.Condensed.RegularExtensive
+-- import Mathlib.Condensed.RegularExtensive
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 
@@ -15,6 +16,30 @@ universe v v₁ u u₁ w
   can be PR-ed.
 - TODO: Do we want to state an equivalent `EqualizerCondition` with the explicit pullbacks?
 -/
+
+section ExtensiveSheaves
+
+open CategoryTheory Limits Opposite Functor Presieve
+
+variable {C : Type u} [Category.{v} C]
+
+instance [HasPullbacksOfInclusions C] {α : Type w} [Fintype α] (Y : α → C)
+    [HasCoproduct Y] (i j : α) : HasPullback (Sigma.ι Y i) (Sigma.ι Y j) := by
+  have : Sigma.desc (fun i ↦ Sigma.ι Y i) = 𝟙 _ := by ext; simp
+  have _ : IsIso (Sigma.desc (fun i ↦ Sigma.ι Y i)) := by rw [this]; infer_instance
+  exact HasPullbacksOfInclusions.has_pullback _ _ j
+
+open Opposite
+
+-- This is in #7949
+theorem isSheaf_iff_preservesFiniteProducts [Extensive C]
+    (hd : ∀ {α : Type} [Fintype α] (Z : α → C) i j, i ≠ j →
+      IsInitial (pullback (Sigma.ι Z i) (Sigma.ι Z j)))
+    [∀ {α : Type} [Fintype α] (Z : α → C) i, Mono (Sigma.ι Z i)] (F : Cᵒᵖ ⥤ Type max u v) :
+    Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
+    Nonempty (PreservesFiniteProducts F) := sorry
+
+end ExtensiveSheaves
 
 section CompHausExplicitSheaves
 
@@ -107,17 +132,17 @@ instance : Preregular CompHaus where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-lemma isSheafFor_of_preservesFiniteProducts_and_equalizerCondition {B : CompHaus} {S : Presieve B}
-    (hS : S ∈ ((extensiveCoverage CompHaus) ⊔ (regularCoverage CompHaus)).covering B)
-    {F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F]
-    (hFecs : EqualizerCondition F) :
-    S.IsSheafFor F := by
-  cases' hS with hSIso hSSingle
-  · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
-    haveI : S.extensive := ⟨hSIso⟩
-    exact isSheafFor_extensive_of_preservesFiniteProducts S F
-  · haveI : S.regular := ⟨hSSingle⟩
-    exact hFecs.isSheafFor
+theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
+    (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) :
+    IsSheaf (coherentTopology CompHaus) F ↔
+    EqualizerCondition F ∧ Nonempty (PreservesFiniteProducts F) := by
+  have : IsSheaf (coherentTopology CompHaus) F ↔
+      IsSheaf (regularCoverage CompHaus).toGrothendieck F ∧
+      IsSheaf (extensiveCoverage CompHaus).toGrothendieck F := sorry
+  rw [this]
+  apply and_congr
+  · exact isSheaf_iff_equalizerCondition F
+  · exact @isSheaf_iff_preservesFiniteProducts _ _ _ sorry sorry F
 
 instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
     PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
@@ -128,10 +153,13 @@ theorem final (A : Type (u+2)) [Category.{u+1} A] {F : CompHaus.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F]
     (hF' : ∀ (E : A), EqualizerCondition (F ⋙ coyoneda.obj (op E))) :
     Presheaf.IsSheaf (coherentTopology CompHaus) F := by
-  rw [← extensive_regular_generate_coherent]
   refine' fun E => (Presieve.isSheaf_coverage _ _).2 _
   intro B S hS
-  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS (hF' E)
+  apply Presieve.IsSheaf.isSheafFor (coherentTopology CompHaus)
+  · rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
+    exact ⟨hF' _, ⟨inferInstance⟩⟩
+  · sorry -- should be easy, maybe need to add API?
+-- TODO: converse?
 
 theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
     [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] {F : CompHaus.{u}ᵒᵖ ⥤ A}
@@ -141,7 +169,11 @@ theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
     isSheaf_iff_isSheaf_of_type, ← extensive_regular_generate_coherent,
     Presieve.isSheaf_coverage]
   intro B S' hS
-  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS hF'
+  apply Presieve.IsSheaf.isSheafFor (coherentTopology CompHaus)
+  · rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
+    exact ⟨hF', ⟨inferInstance⟩⟩
+  · sorry -- should be easy, maybe need to add API?
+-- TODO: converse?
 
 end CompHaus
 
@@ -238,37 +270,80 @@ instance : Preregular Profinite where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-lemma isSheafFor_of_preservesFiniteProducts_and_equalizerCondition {B : Profinite} {S : Presieve B}
-    (hS : S ∈ ((extensiveCoverage Profinite) ⊔ (regularCoverage Profinite)).covering B)
-    {F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F]
-    (hFecs : EqualizerCondition F) :
-    S.IsSheafFor F := by
-  cases' hS with hSIso hSSingle
-  · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
-    haveI : S.extensive := ⟨hSIso⟩
-    exact isSheafFor_extensive_of_preservesFiniteProducts S F
-  · haveI : S.regular := ⟨hSSingle⟩
-    exact hFecs.isSheafFor
+theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
+    (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) :
+    IsSheaf (coherentTopology Profinite) F ↔
+    EqualizerCondition F ∧ Nonempty (PreservesFiniteProducts F) := by
+  have : IsSheaf (coherentTopology Profinite) F ↔
+      IsSheaf (regularCoverage Profinite).toGrothendieck F ∧
+      IsSheaf (extensiveCoverage Profinite).toGrothendieck F := sorry
+  rw [this]
+  apply and_congr
+  · exact isSheaf_iff_equalizerCondition F
+  · exact @isSheaf_iff_preservesFiniteProducts _ _ _ sorry sorry F
+
+instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
+    PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
+  ⟨fun J _ ↦ @compPreservesLimitsOfShape _ _ _ _ _ _ _ _ F (coyoneda.obj (op E))
+    (PreservesFiniteProducts.preserves J) ((preservesLimitsOfSizeShrink _).preservesLimitsOfShape)⟩
 
 theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Profinite.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts F]
     (hF' : ∀ (E : A), EqualizerCondition (F ⋙ coyoneda.obj (op E))) :
-  Presheaf.IsSheaf (coherentTopology Profinite) F := by
-  rw [← extensive_regular_generate_coherent]
+    Presheaf.IsSheaf (coherentTopology Profinite) F := by
   refine' fun E => (Presieve.isSheaf_coverage _ _).2 _
   intro B S hS
-  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS (hF' E)
+  apply Presieve.IsSheaf.isSheafFor (coherentTopology Profinite)
+  · rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
+    exact ⟨hF' _, ⟨inferInstance⟩⟩
+  · sorry -- should be easy, maybe need to add API?
+-- TODO: converse?
 
 theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G]
-    {F : Profinite.{u}ᵒᵖ ⥤ A}
+    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] {F : Profinite.{u}ᵒᵖ ⥤ A}
     [PreservesFiniteProducts (F ⋙ G)] (hF' : EqualizerCondition (F ⋙ G)) :
     Presheaf.IsSheaf (coherentTopology Profinite) F := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
     isSheaf_iff_isSheaf_of_type, ← extensive_regular_generate_coherent,
     Presieve.isSheaf_coverage]
   intro B S' hS
-  exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS hF'
+  apply Presieve.IsSheaf.isSheafFor (coherentTopology Profinite)
+  · rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
+    exact ⟨hF', ⟨inferInstance⟩⟩
+  · sorry -- should be easy, maybe need to add API?
+-- TODO: converse?
+
+-- lemma isSheafFor_of_preservesFiniteProducts_and_equalizerCondition {B : Profinite} {S : Presieve B}
+--     (hS : S ∈ ((extensiveCoverage Profinite) ⊔ (regularCoverage Profinite)).covering B)
+--     {F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F]
+--     (hFecs : EqualizerCondition F) :
+--     S.IsSheafFor F := by
+--   cases' hS with hSIso hSSingle
+--   · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
+--     haveI : S.extensive := ⟨hSIso⟩
+--     exact isSheafFor_extensive_of_preservesFiniteProducts S F
+--   · haveI : S.regular := ⟨hSSingle⟩
+--     exact hFecs.isSheafFor
+
+-- theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Profinite.{u}ᵒᵖ ⥤ A}
+--     [PreservesFiniteProducts F]
+--     (hF' : ∀ (E : A), EqualizerCondition (F ⋙ coyoneda.obj (op E))) :
+--   Presheaf.IsSheaf (coherentTopology Profinite) F := by
+--   rw [← extensive_regular_generate_coherent]
+--   refine' fun E => (Presieve.isSheaf_coverage _ _).2 _
+--   intro B S hS
+--   exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS (hF' E)
+
+-- theorem final' (A : Type (u+2)) [Category.{u+1} A] {G : A ⥤ Type (u+1)}
+--     [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G]
+--     {F : Profinite.{u}ᵒᵖ ⥤ A}
+--     [PreservesFiniteProducts (F ⋙ G)] (hF' : EqualizerCondition (F ⋙ G)) :
+--     Presheaf.IsSheaf (coherentTopology Profinite) F := by
+--   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
+--     isSheaf_iff_isSheaf_of_type, ← extensive_regular_generate_coherent,
+--     Presieve.isSheaf_coverage]
+--   intro B S' hS
+--   exact isSheafFor_of_preservesFiniteProducts_and_equalizerCondition hS hF'
 
 end Profinite
 
@@ -390,21 +465,37 @@ instance : Preregular Stonean where
 lemma isSheafForRegularSieve {X : Stonean} (S : Presieve X) [S.regular]
     (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) : IsSheafFor F S := isSheafFor_regular_of_projective S F
 
-lemma isSheafFor_of_extensiveRegular {X : Stonean} {S : Presieve X}
-  (hS : S ∈ ((extensiveCoverage Stonean) ⊔ (regularCoverage Stonean)).covering X)
-  {F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F] : S.IsSheafFor F := by
-  cases' hS with hSIso hSSingle
-  · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
-    haveI : S.extensive := ⟨hSIso⟩
-    exact isSheafFor_extensive_of_preservesFiniteProducts S F
-  · simp only [regularCoverage, Set.mem_setOf_eq] at hSSingle
-    haveI : S.regular := ⟨hSSingle⟩
-    exact isSheafForRegularSieve S F
+theorem isSheaf_iff_preservesFiniteProducts
+    (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) :
+    IsSheaf (coherentTopology Stonean) F ↔ Nonempty (PreservesFiniteProducts F) := by
+  have : IsSheaf (coherentTopology Stonean) F ↔
+      IsSheaf (regularCoverage Stonean).toGrothendieck F ∧
+      IsSheaf (extensiveCoverage Stonean).toGrothendieck F := sorry
+  rw [this]
+  rw [and_iff_right ?_]
+  · exact @_root_.isSheaf_iff_preservesFiniteProducts _ _ _ sorry sorry F
+  · rw [Presieve.isSheaf_coverage]
+    intro X R ⟨Y, hR⟩
+    have _ : R.regular := ⟨Y, hR⟩
+    exact isSheafForRegularSieve R F
 
-theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Stonean.{u}ᵒᵖ ⥤ A}
-    [PreservesFiniteProducts F] : Presheaf.IsSheaf (coherentTopology Stonean) F := by
-  rw [← extensive_regular_generate_coherent]
-  exact fun E => (Presieve.isSheaf_coverage _ _).2 <| fun S hS => isSheafFor_of_extensiveRegular hS
+-- lemma isSheafFor_of_extensiveRegular {X : Stonean} {S : Presieve X}
+--   (hS : S ∈ ((extensiveCoverage Stonean) ⊔ (regularCoverage Stonean)).covering X)
+--   {F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)} [PreservesFiniteProducts F] : S.IsSheafFor F := by
+--   cases' hS with hSIso hSSingle
+--   · simp only [extensiveCoverage, Set.mem_setOf_eq] at hSIso
+--     haveI : S.extensive := ⟨hSIso⟩
+--     exact isSheafFor_extensive_of_preservesFiniteProducts S F
+--   · simp only [regularCoverage, Set.mem_setOf_eq] at hSSingle
+--     haveI : S.regular := ⟨hSSingle⟩
+--     exact isSheafForRegularSieve S F
+
+-- theorem final (A : Type (u+2)) [Category.{u+1} A] {F : Stonean.{u}ᵒᵖ ⥤ A}
+--     [PreservesFiniteProducts F] : Presheaf.IsSheaf (coherentTopology Stonean) F := by
+--   rw [← extensive_regular_generate_coherent]
+--   exact fun E => (Presieve.isSheaf_coverage _ _).2 <| fun S hS => isSheafFor_of_extensiveRegular hS
+
+--TODO: figure out more general target categories.
 
 end Stonean
 
