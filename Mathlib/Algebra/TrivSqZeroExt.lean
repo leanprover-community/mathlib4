@@ -796,6 +796,7 @@ theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R']
   AlgHom.toLinearMap_injective <|
     linearMap_ext (fun _r => (f.commutes _).trans (g.commutes _).symm) h
 #align triv_sq_zero_ext.alg_hom_ext TrivSqZeroExt.algHom_ext
+
 @[ext]
 theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A⦄
     (hinl : f.comp (inlAlgHom S R M) = g.comp (inlAlgHom S R M))
