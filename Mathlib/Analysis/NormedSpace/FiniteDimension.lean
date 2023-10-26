@@ -518,6 +518,16 @@ lemma properSpace_of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
   rcases L.exists with ⟨n, hn⟩
   exact (M n x).of_isClosed_subset isClosed_ball (closedBall_subset_closedBall hn)
 
+variable (E)
+lemma properSpace_of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
+    ProperSpace 𝕜 := by
+  have : LocallyCompactSpace 𝕜 := by
+    obtain ⟨v, hv⟩ : ∃ v : E, v ≠ 0 := exists_ne 0
+    let L : 𝕜 → E := fun t ↦ t • v
+    have : ClosedEmbedding L := closedEmbedding_smul_left hv
+    apply ClosedEmbedding.locallyCompactSpace this
+  exact properSpace_of_locallyCompactSpace 𝕜
+
 end Riesz
 
 open ContinuousLinearMap
@@ -569,21 +579,22 @@ theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional
 
 end CompleteField
 
-section ProperField
+section LocallyCompactField
 
 variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [ProperSpace 𝕜]
+  [NormedSpace 𝕜 E] [LocallyCompactSpace 𝕜]
 
-/-- Any finite-dimensional vector space over a proper field is proper.
+/-- Any finite-dimensional vector space over a locally compact field is proper.
 We do not register this as an instance to avoid an instance loop when trying to prove the
 properness of `𝕜`, and the search for `𝕜` as an unknown metavariable. Declare the instance
 explicitly when needed. -/
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
+  have : ProperSpace 𝕜 := properSpace_of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
   exact e.symm.antilipschitz.properSpace e.symm.continuous e.symm.surjective
 #align finite_dimensional.proper FiniteDimensional.proper
 
-end ProperField
+end LocallyCompactField
 
 /- Over the real numbers, we can register the previous statement as an instance as it will not
 cause problems in instance resolution since the properness of `ℝ` is already known. -/
@@ -591,6 +602,16 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] : ProperSpace E :=
   FiniteDimensional.proper ℝ E
 #align finite_dimensional.proper_real FiniteDimensional.proper_real
+
+/-- A submodule of a locally compact space over a complete field is also locally compact (and even
+proper). -/
+instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
+    ProperSpace S := by
+  nontriviality E
+  have : ProperSpace 𝕜 := properSpace_of_locallyCompact_module 𝕜 E
+  have : FiniteDimensional 𝕜 E := finiteDimensional_of_locallyCompactSpace 𝕜
+  exact FiniteDimensional.proper 𝕜 S
 
 /-- If `E` is a finite dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
 `x` that is not equal to the whole space, then there exists a point `y ∈ frontier s` at distance

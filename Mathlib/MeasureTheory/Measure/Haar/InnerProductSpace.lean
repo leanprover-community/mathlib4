@@ -20,6 +20,7 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
@@ -108,37 +109,27 @@ namespace EuclideanSpace
 
 open BigOperators ENNReal
 
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
-
-theorem unit_ball_equiv (ι : Type*) [Fintype ι] :
-    (equiv ι ℝ) '' Metric.ball (0 : EuclideanSpace ℝ ι) 1 = {x : ι → ℝ | ∑ i, x i ^ 2 < 1} := by
-  ext; simp_rw [PiLp.continuousLinearEquiv_apply, mem_image_equiv, mem_ball_zero_iff, norm_eq,
-    WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, Real.sqrt_lt' (by norm_num : (0 : ℝ) < 1),
-    one_pow, mem_setOf_eq]
-
 @[simp]
 theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
     volume (Metric.ball x r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
-  obtain hr | hr := lt_or_le r 0
-  · rw [Metric.ball_eq_empty.mpr (le_of_lt hr), measure_empty, ← zero_eq_ofReal.mpr
-      (le_of_lt hr), zero_pow zero_lt_two, mul_zero]
+  obtain hr | hr := le_total r 0
+  · rw [Metric.ball_eq_empty.mpr hr, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow zero_lt_two,
+      mul_zero]
   · suffices volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 2)) 1) = NNReal.pi by
       rw [Measure.addHaar_ball _ _ hr, finrank_euclideanSpace_fin, ofReal_pow hr, this, mul_comm]
     calc
-      _ = volume ({x : (Fin 2) → ℝ | ∑ i, x i ^ 2 < 1}) := by
-        rw [← unit_ball_equiv, PiLp.continuousLinearEquiv_apply, ← coe_measurableEquiv,
-          MeasurableEquiv.image_eq_preimage,
-          ← ((volume_preserving_measurableEquiv (Fin 2)).symm).measure_preimage measurableSet_ball]
-      _ = volume ({p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < 1}) := by
-        rw [← ((volume_preserving_finTwoArrow ℝ).symm).measure_preimage
-          (by rw [← unit_ball_equiv, PiLp.continuousLinearEquiv_apply, ← coe_measurableEquiv]
-              exact (MeasurableEquiv.measurableSet_image _).mpr measurableSet_ball)]
+      _ = volume {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < 1} := by
+        have : MeasurePreserving (_ : ℝ × ℝ ≃ᵐ EuclideanSpace ℝ (Fin 2)) :=
+          MeasurePreserving.trans
+            (volume_preserving_finTwoArrow ℝ).symm (volume_preserving_measurableEquiv (Fin 2)).symm
+        rw [←this.measure_preimage_emb (MeasurableEquiv.measurableEmbedding _),
+          ball_zero_eq _ zero_le_one, preimage_setOf_eq]
         simp only [MeasurableEquiv.finTwoArrow_symm_apply, Fin.sum_univ_two, preimage_setOf_eq,
-          Fin.cons_zero, Fin.cons_one]
-      _ = volume ({p : ℝ × ℝ | (- 1 < p.1 ∧ p.1 ≤ 1) ∧ p.1 ^ 2 + p.2 ^ 2 < 1}) := by
+          Fin.cons_zero, Fin.cons_one, one_pow, Function.comp_apply, coe_measurableEquiv_symm,
+          MeasurableEquiv.trans_apply, WithLp.equiv_symm_pi_apply]
+      _ = volume {p : ℝ × ℝ | (- 1 < p.1 ∧ p.1 ≤ 1) ∧ p.1 ^ 2 + p.2 ^ 2 < 1} := by
         congr
-        refine Set.ext (fun _ => iff_and_self.mpr (fun h => And.imp_right (fun h => le_of_lt h) ?_))
+        refine Set.ext fun _ => iff_and_self.mpr fun h => And.imp_right le_of_lt ?_
         rw [← abs_lt, ← sq_lt_one_iff_abs_lt_one]
         exact lt_of_add_lt_of_nonneg_left h (sq_nonneg _)
       _ = volume (regionBetween (fun x => - Real.sqrt (1 - x ^ 2)) (fun x => Real.sqrt (1 - x ^ 2))

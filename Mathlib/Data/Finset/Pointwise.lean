@@ -623,7 +623,7 @@ theorem singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
 #align finset.singleton_div Finset.singleton_div
 #align finset.singleton_sub Finset.singleton_sub
 
--- @[to_additive (attr := simp )] -- Porting note: simp can prove this & the additive version
+-- @[to_additive (attr := simp)] -- Porting note: simp can prove this & the additive version
 @[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
