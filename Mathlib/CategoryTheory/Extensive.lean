@@ -375,12 +375,9 @@ end Functor
 section FiniteCoproducts
 
 theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C] {n : ℕ}
-  {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
+    {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
-  have : F = Discrete.functor f
-  · refine Functor.hext (fun i ↦ rfl) ?_
-    rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩
-    simp
+  have : F = Discrete.functor f := Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
   clear_value f
   subst this
   induction' n with n IH
@@ -407,10 +404,8 @@ lemma FinitaryExtensive.hasPullbacks_of_is_coproduct [FinitaryExtensive C] {ι :
     (g : X ⟶ _) : HasPullback g (c.ι.app i) := by
   classical
   let f : ι → C := F.obj ∘ Discrete.mk
-  have : F = Discrete.functor f
-  · refine Functor.hext (fun i ↦ rfl) ?_
-    rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩
-    simp
+  have : F = Discrete.functor f :=
+    Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
   clear_value f
   subst this
   change Cofan f at c
