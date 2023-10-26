@@ -422,7 +422,7 @@ instance commMonoid : CommMonoid (A →*[n] β) where
 @[to_additive
       "If `β` is an additive commutative group, then `A →*[n] β` is an additive commutative
       group too."]
-instance commGroup {β} [CommGroup β]: CommGroup (A →*[n] β) :=
+instance commGroup {β} [CommGroup β] : CommGroup (A →*[n] β) :=
   { FreimanHom.commMonoid with
     div_eq_mul_inv := by
       intros
