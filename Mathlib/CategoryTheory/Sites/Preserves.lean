@@ -102,7 +102,7 @@ theorem piComparison_fac' {Z : C} (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.de
   have : IsIso (Pi.lift (fun i ↦ (π i).op)) := by
     rw [← desc_op_comp_opCoproductIsoProduct_hom]
     infer_instance
-  simp_rw [Equalizer.Presieve.Arrows.forkMap, h₂, desc_op_comp_opCoproductIsoProduct_hom, h₁]-- , h₂, h₁]
+  simp_rw [Equalizer.Presieve.Arrows.forkMap, h₂, desc_op_comp_opCoproductIsoProduct_hom, h₁]
   simp only [← Category.assoc, ← Functor.map_comp, IsIso.inv_hom_id, Functor.map_id,
     Category.id_comp]
 
