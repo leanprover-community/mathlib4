@@ -24,7 +24,11 @@ of `x` and `f x`, respectively such that `f` restricts to a diffeomorphism from 
 This definition is an implementation detail, and not meant for use outside of this file.
 
 ## Main results
-to be inserted!
+* more, to be inserted!
+* `LocalDiffeomorphAt.differential_toContinuousLinearEquiv`: if `f` is a local diffeomorphism at `x`,
+the differential `mfderiv I J n f x` is a continuous linear isomorphism.
+* `LocalDiffeomorphAt.of_DifferentialIsoAt`: conversely, if `f` is `C^n` at `x` and
+`mfderiv I J n f x` is a linear isomorphism, `f` is a local diffeomorphism at x.
 
 ## Design decisions
 For all definitions, we use the junk value pattern: a local diffeomorphism at `x` is still given
@@ -363,7 +367,7 @@ theorem mfderivWithin_eq_mfderiv {s : Set M} {x : M} {f : M → N}
   rw [← mfderivWithin_univ]
   exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
 
-variable {I J M M' N N' n}
+variable {I J M M' N n}
 
 /-- If `f` is a local diffeomorphism at `x`,
   the differential of `f` at `x` is a linear isomorphism. -/
@@ -488,10 +492,46 @@ lemma Diffeomorph.differential_bijective {r : ℕ} (hr : 1 ≤ r) (f : Diffeomor
   rw [← this]
   exact aux
 
+/-- If `f : M → N` is smooth at `x` and `mfderiv I J f x` is a linear isomorphism,
+  then `f` is a local diffeomorphism at `x`. -/
+lemma LocalDiffeomorphAt.of_DifferentialIsomorphismAt {r : ℕ} (hr : 1 ≤ r) {x : M} {f : M → N}
+    {f' : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf' : HasMFDerivAt I J f x f')
+    {g' : TangentSpace J (f x) →L[𝕜] TangentSpace I x}
+    (hinv₁ : f' ∘ g' = id) (hinv₂ : g' ∘ f' = id)
+    (hf : ContMDiffAt I J r f x) : LocalDiffeomorphAt I J M N r x := by
+  -- FIXME: can I prove this using rw instead of calc?
+  have aux1 : LeftInverse g' f' := by
+    intro x
+    calc g' (f' x)
+      _ = (g' ∘ f') x := by rw [comp_apply] -- or rfl
+      _ = id x := by rw [← hinv₂]
+      _ = x := by rw [id_eq] -- or rfl
+  have aux2 : RightInverse g' f' := by
+    intro y
+    calc f' (g' y)
+      _ = (f' ∘ g') y := by rw [comp_apply]
+      _ = id y := by rw [← hinv₁]
+      _ = y := by rw [id_eq]
+  have hr : 1 ≤ (r : ℕ∞) := Nat.one_le_cast.mpr (Nat.one_le_of_lt hr)
+  have : f' = mfderiv I J f x := hasMFDerivAt_unique hf' (hf.mdifferentiableAt hr).hasMFDerivAt
+  rw [this] at *
+  have : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+    {
+      toFun := f'
+      invFun := g'
+      continuous_toFun := f'.cont
+      continuous_invFun := g'.cont
+      map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add f' x_1 y
+      map_smul' := by intros; simp
+      left_inv := aux1
+      right_inv := aux2
+    }
+  -- Now, the argument would apply the inverse function theorem, which mathlib only has for
+  -- normed space. Let's wait for that to happen first.
+  sorry
 end Differentials
 
--- conversely, if f is smooth and df_x is a linear iso, then f is a local diffeo at x
--- uses the inverse function theorem, might be a tad harder to show. punt on first first.
+
 
 -- if f is smooth and each differential df_x is a linear iso, f is a local diffeo
 
