@@ -238,7 +238,6 @@ lemma expterm_eventually_le_one (C : ℝ) (n : ℕ) (hn : 1 ≤ n) : ∀ᶠ (z :
     rw [cpow_nat_cast, sq, mul_re]
     simp only [re_add_im, one_re, Nat.cast_ofNat, Real.rpow_two, mul_eq_mul_left_iff,
     Real.exp_eq_exp, mul_eq_mul_right_iff, sub_left_inj, inv_eq_zero, Nat.cast_eq_zero, sq]
-  
   rw [hz_re_im]
   nth_rewrite 2 [← mul_zero C]
   apply Tendsto.const_mul C _
