@@ -189,7 +189,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
         Int.coe_castRingHom, map_apply]
       exact ha
     refine' ⟨(⟨(⟨A, hA⟩ : Gamma0 N), HA⟩ : (Gamma1' N : Subgroup (Gamma0 N))), _⟩
-    simp
+    simp (config := {dsimp := false})
 #align Gamma1_mem Gamma1_mem
 
 theorem Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
