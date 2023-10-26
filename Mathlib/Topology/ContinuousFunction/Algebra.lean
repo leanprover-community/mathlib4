@@ -55,7 +55,7 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
--- ### "mul" and "add"
+/-! ### "mul" and "add" -/
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
   ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
@@ -81,7 +81,8 @@ theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, 
 #align continuous_map.mul_comp ContinuousMap.mul_comp
 #align continuous_map.add_comp ContinuousMap.add_comp
 
--- ### "one"
+/-! ### "one" -/
+
 @[to_additive]
 instance [One β] : One C(α, β) :=
   ⟨const α 1⟩
@@ -169,7 +170,8 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
 -- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
 attribute [simp] pow_comp
 
--- ### "inv" and "neg"
+/-! ### "inv" and "neg" -/
+
 @[to_additive]
 instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
@@ -192,7 +194,8 @@ theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)
 #align continuous_map.inv_comp ContinuousMap.inv_comp
 #align continuous_map.neg_comp ContinuousMap.neg_comp
 
--- ### "div" and "sub"
+/-! ### "div" and "sub"-/
+
 @[to_additive]
 instance [Div β] [ContinuousDiv β] : Div C(α, β) where
   div f g := ⟨f / g, f.continuous.div' g.continuous⟩
