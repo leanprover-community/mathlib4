@@ -500,6 +500,62 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       BinaryCofan.ι_app_right, BinaryCofan.mk_inr, colimit.ι_desc,
       Discrete.natTrans_app] using t₁'.paste_horiz (t₂' ⟨WalkingPair.right⟩)
 
+theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → C}
+    {c : Cofan X} (hc : IsVanKampenColimit c) (i j : ι) [DecidableEq ι] :
+    IsPullback (P := (if j = i then X i else ⊥_ C))
+      (if h : j = i then eqToHom (if_pos h) else eqToHom (if_neg h) ≫ initial.to (X i))
+      (if h : j = i then eqToHom ((if_pos h).trans (congr_arg X h.symm))
+        else eqToHom (if_neg h) ≫ initial.to (X j))
+      (Cofan.inj c i) (Cofan.inj c j) := by
+  refine (hc (Cofan.mk (X i) (f := fun k ↦ if k = i then X i else ⊥_ C)
+    (fun k ↦ if h : k = i then (eqToHom $ if_pos h) else (eqToHom $ if_neg h) ≫ initial.to _))
+    (Discrete.natTrans (fun k ↦ if h : k.1 = i then (eqToHom $ (if_pos h).trans
+      (congr_arg X h.symm)) else (eqToHom $ if_neg h) ≫ initial.to _))
+    (c.inj i) ?_ (NatTrans.equifibered_of_discrete _)).mp ⟨?_⟩ ⟨j⟩
+  · ext ⟨k⟩
+    simp only [Discrete.functor_obj, Functor.const_obj_obj, NatTrans.comp_app,
+      Discrete.natTrans_app, Cofan.mk_pt, Cofan.mk_ι_app, Functor.const_map_app]
+    split
+    · subst ‹k = i›; rfl
+    · simp
+  · refine mkCofanColimit _ (fun t ↦ (eqToHom (if_pos rfl).symm) ≫ t.inj i) ?_ ?_
+    · intro t j
+      simp only [Cofan.mk_pt, cofan_mk_inj]
+      split
+      · subst ‹j = i›; simp
+      · rw [Category.assoc, ← IsIso.eq_inv_comp]
+        exact initialIsInitial.hom_ext _ _
+    · intro t m hm
+      simp [← hm i]
+
+theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι ⥤ C}
+    {c : Cocone F} (hc : IsVanKampenColimit c) (i j : Discrete ι) (hi : i ≠ j) :
+    IsPullback (initial.to _) (initial.to _) (c.ι.app i) (c.ι.app j) := by
+  classical
+  let f : ι → C := F.obj ∘ Discrete.mk
+  have : F = Discrete.functor f :=
+    Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+  clear_value f
+  subst this
+  convert isPullback_of_cofan_isVanKampen hc i.as j.as
+  exact (if_neg (mt (Discrete.ext _ _) hi.symm)).symm
+
+theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι ⥤ C}
+    {c : Cocone F} (hc : IsVanKampenColimit c) (i : Discrete ι) : Mono (c.ι.app i) := by
+  classical
+  let f : ι → C := F.obj ∘ Discrete.mk
+  have : F = Discrete.functor f :=
+    Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+  clear_value f
+  subst this
+  refine' PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit _)
+  nth_rw 1 [← Category.id_comp (c.ι.app i)]
+  convert IsPullback.paste_vert _ (isPullback_of_cofan_isVanKampen hc i.as i.as)
+  swap
+  · exact (eqToHom (if_pos rfl).symm)
+  · simp
+  · exact IsPullback.of_vert_isIso ⟨by simp⟩
+
 end FiniteCoproducts
 
 end CategoryTheory
