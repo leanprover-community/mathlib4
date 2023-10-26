@@ -99,11 +99,9 @@ theorem piComparison_fac' {Z : C} (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.de
   have h₂ : (opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op =
       inv ((Sigma.desc π).op ≫ (opCoproductIsoProduct X).hom) := by
     simp only [op_inv, IsIso.inv_comp, IsIso.Iso.inv_hom]
-  have : IsIso (Pi.lift (fun i ↦ (π i).op)) := by
-    rw [← desc_op_comp_opCoproductIsoProduct_hom]
-    infer_instance
-  simp_rw [Equalizer.Presieve.Arrows.forkMap, h₂, desc_op_comp_opCoproductIsoProduct_hom, h₁]
-  simp only [← Category.assoc, ← Functor.map_comp, IsIso.inv_hom_id, Functor.map_id,
+  simp only [Equalizer.Presieve.Arrows.forkMap, h₂, h₁,  ← desc_op_comp_opCoproductIsoProduct_hom,
+    ← Category.assoc, ← Functor.map_comp, IsIso.inv_comp, IsIso.Iso.inv_hom,
+    Category.assoc, IsIso.inv_hom_id, Category.comp_id, Iso.inv_hom_id, Functor.map_id,
     Category.id_comp]
 
 theorem piComparison_fac : piComparison F (fun x ↦ op (X x)) =
