@@ -186,8 +186,7 @@ from `s` to `t`.
 
 We make these choices, for each `x` part of the data defining a local diffeomorphism. -/
 structure LocalDiffeomorph extends LocalHomeomorph M N where
-  --source := univ -- for clarity, can I elide these??
-  --target := univ
+  -- TODO: add that source and target are `univ`, so we have left_inv and right_inv!
   -- Choices of neighbourhoods for each point.
   sources : Set (Opens M)
   targets : Set (Opens N)
@@ -234,11 +233,15 @@ protected def symm (h : LocalDiffeomorph I J M N n) :
   targetAt := fun y ↦ (h.sourceAt (h.invFun y))
   mem_sources := by
     intro y
+    have : y = h.toFun (h.invFun y) := by
+      refine (LocalEquiv.right_inv' h.toLocalEquiv ?_).symm
+      have : h.target = univ := sorry -- should be h.target_univ... up to Lean shenanigans
+      rw [this]
+      exact trivial
     let r := h.mem_targets (h.invFun y)
-    have : h.toLocalEquiv (LocalEquiv.invFun h.toLocalEquiv y) = y := sorry -- left_inv!
-    rw [this] at r
+    rw [← this] at r
     exact r
-  mem_targets := sorry -- should be similar
+  mem_targets := sorry -- similar
   contMDiffOn_toFun := fun y ↦ h.contMDiffOn_invFun (h.invFun y)
   contMDiffOn_invFun := fun y ↦ h.contMDiffOn_toFun (h.invFun y)
 
@@ -249,7 +252,11 @@ the first at `x` coincides with the source of the second at `h x`. -/
 protected def trans' (h : LocalDiffeomorph I I' M M' n)
     (h' : LocalDiffeomorph I' J M' N n) (hyp : ∀ x : M, (h.targetAt x).1 = (h'.sourceAt (h.toFun x)).1) : LocalDiffeomorph I J M N n where
   -- both source and target are univ, so the last is obvious. just cannot convince Lean yet
-  toLocalHomeomorph := h.toLocalHomeomorph.trans' h'.toLocalHomeomorph sorry
+  toLocalHomeomorph := by
+    have a : h'.source = univ := sorry
+    have b : h.target = univ := sorry
+    have : h.target = h'.source := by rw [a, b]
+    exact h.toLocalHomeomorph.trans' h'.toLocalHomeomorph this
   -- sources := h.sources
   -- targets := h'.targets
   -- This is h.sourceAt x ∩ h ⁻¹' (h'.sourceAt (h x)), in this case it's just h.sourceAt.
