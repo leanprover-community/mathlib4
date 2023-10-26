@@ -68,7 +68,7 @@ theorem isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a :
   rw [←isSquare_op_iff, op_unop]
 
 @[to_additive]
-instance [DecidablePred (@IsSquare α _)] : DecidablePred (@IsSquare (αᵐᵒᵖ) _) :=
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : αᵐᵒᵖ → Prop) :=
   fun _ => decidable_of_iff _ isSquare_unop_iff
 
 @[simp]
@@ -77,7 +77,7 @@ theorem even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.
 @[simp]
 theorem isSquare_toMul_iff {a : Additive α} : IsSquare (Additive.toMul a) ↔ Even a := Iff.rfl
 
-instance [DecidablePred (@IsSquare α _)] : DecidablePred (@Even (Additive α) _) :=
+instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (Even : Additive α → Prop) :=
   fun _ => decidable_of_iff _ isSquare_toMul_iff
 
 end Mul
@@ -92,7 +92,7 @@ theorem isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even
 theorem even_toAdd_iff {a : Multiplicative α} :
     Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
 
-instance [DecidablePred (@Even α _)] : DecidablePred (@IsSquare (Multiplicative α) _) :=
+instance [DecidablePred (Even : α → Prop)] : DecidablePred (IsSquare : Multiplicative α → Prop) :=
   fun _ => decidable_of_iff _ even_toAdd_iff
 
 end Add
