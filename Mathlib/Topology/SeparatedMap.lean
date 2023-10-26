@@ -77,7 +77,7 @@ lemma isSeparatedMap_iff_nhds {f : X → Y} : IsSeparatedMap f ↔
 
 open Set Filter in
 theorem isSeparatedMap_iff_isClosed_diagonal {f : X → Y} :
-    IsSeparatedMap f ↔ IsClosed (pullbackDiagonal f) := by
+    IsSeparatedMap f ↔ IsClosed f.pullbackDiagonal := by
   simp_rw [isSeparatedMap_iff_nhds, ← isOpen_compl_iff, isOpen_iff_mem_nhds,
     Subtype.forall, Prod.forall, nhds_induced, nhds_prod_eq]
   refine forall₄_congr fun x₁ x₂ _ _ ↦ ⟨fun h ↦ ?_, fun ⟨t, ht, t_sub⟩ ↦ ?_⟩
@@ -129,7 +129,7 @@ lemma isLocallyInjective_iff_nhds {f : X → Y} :
     exact ⟨interior U, isOpen_interior, mem_interior_iff_mem_nhds.mpr hn, hi.mono interior_subset⟩
 
 theorem isLocallyInjective_iff_isOpen_diagonal {f : X → Y} :
-    IsLocallyInjective f ↔ IsOpen (Set.pullbackDiagonal f) := by
+    IsLocallyInjective f ↔ IsOpen f.pullbackDiagonal f := by
   simp_rw [isLocallyInjective_iff_nhds, isOpen_iff_mem_nhds,
     Subtype.forall, Prod.forall, nhds_induced, nhds_prod_eq, Filter.mem_comap]
   refine ⟨?_, fun h x ↦ ?_⟩

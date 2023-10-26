@@ -576,13 +576,13 @@ def Function.Pullback.snd {f : X → Y} {g : Z → Y} (p : f.Pullback g) : Z := 
 
 open Function.Pullback in
 lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
-    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext <| fun p ↦ p.2
+    f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
 def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
 
 /-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
-def Set.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
+def Function.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
 
 /-- Three functions between the three pairs of spaces $X_i, Y_i, Z_i$ that are compatible
   induce a function $X_1 \times_{Y_1} Z_1 \to X_2 \times_{Y_2} Z_2$. -/
