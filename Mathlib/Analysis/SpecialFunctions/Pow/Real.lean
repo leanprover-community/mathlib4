@@ -255,6 +255,22 @@ theorem ofReal_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
     arg_ofReal_of_nonneg (neg_nonneg.2 hx), ofReal_zero, zero_mul, add_zero]
 #align complex.of_real_cpow_of_nonpos Complex.ofReal_cpow_of_nonpos
 
+lemma cpow_ofReal (x : ℂ) (y : ℝ) :
+    x ^ y = ↑((abs x) ^ y) * (Real.cos (arg x * y) + Real.sin (arg x * y) * I) := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp [ofReal_cpow le_rfl]
+  · rw [cpow_def_of_ne_zero hx, exp_eq_exp_re_mul_sin_add_cos, mul_comm (log x)]
+    norm_cast
+    rw [ofReal_mul_re, ofReal_mul_im, log_re, log_im, mul_comm y, mul_comm y, Real.exp_mul,
+      Real.exp_log]
+    rwa [abs.pos_iff]
+
+lemma cpow_ofReal_re (x : ℂ) (y : ℝ) : (x ^ y).re = (abs x) ^ y * Real.cos (arg x * y) := by
+  rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.cos]
+
+lemma cpow_ofReal_im (x : ℂ) (y : ℝ) : (x ^ y).im = (abs x) ^ y * Real.sin (arg x * y) := by
+  rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.sin]
+
 theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
     abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) := by
   rw [cpow_def_of_ne_zero hz, abs_exp, mul_re, log_re, log_im, Real.exp_sub,
@@ -279,8 +295,7 @@ theorem abs_cpow_le (z w : ℂ) : abs (z ^ w) ≤ abs z ^ w.re / Real.exp (arg z
 
 @[simp]
 theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x ^ y := by
-  rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip] <;>
-    simp [*, abs_cpow_of_ne_zero]
+  rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.rpow_nonneg_of_nonneg]
 #align complex.abs_cpow_real Complex.abs_cpow_real
 
 @[simp]
@@ -767,6 +782,20 @@ theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α
 #align real.exists_rat_pow_btwn Real.exists_rat_pow_btwn
 
 end Real
+
+namespace Complex
+
+lemma cpow_inv_two_re (x : ℂ) : (x ^ (2⁻¹ : ℂ)).re = sqrt ((abs x + x.re) / 2) := by
+  rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_re, ← div_eq_mul_inv, ← one_div,
+    ← Real.sqrt_eq_rpow, cos_half, ← sqrt_mul, ← mul_div_assoc, mul_add, mul_one, abs_mul_cos_arg]
+  exacts [abs.nonneg _, (neg_pi_lt_arg _).le, arg_le_pi _]
+
+lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((abs x - x.re) / 2) := by
+  rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
+    ← Real.sqrt_eq_rpow, _root_.abs_mul, _root_.abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
+    ← sqrt_mul (abs.nonneg _), ← mul_div_assoc, mul_sub, mul_one, abs_mul_cos_arg]
+
+end Complex
 
 section Tactics
 
