@@ -50,6 +50,14 @@ protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sort
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
   h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
+protected theorem Sorted.ge_of_gt [Preorder α] {l : List α} (h : l.Sorted (· > ·)) :
+    l.Sorted (· ≥ ·) :=
+  h.imp le_of_lt
+
+protected theorem Sorted.gt_of_ge [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≥ ·))
+    (h₂ : l.Nodup) : l.Sorted (· > ·) :=
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) <| by simp_rw [ne_comm]; exact h₂
+
 @[simp]
 theorem sorted_nil : Sorted r [] :=
   Pairwise.nil
