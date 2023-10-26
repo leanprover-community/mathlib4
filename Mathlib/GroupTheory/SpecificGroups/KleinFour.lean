@@ -110,9 +110,6 @@ theorem nat_card : Nat.card (KleinFourGroup) = 4 := by
 @[simp] theorem c_order_two : c ^ 2 = 1 :=
   rfl
 
-@[simp] theorem orderOf_one : orderOf 1 = 1 := by
-  simp only [orderOf_eq_one_iff]
-
 @[simp] theorem orderOf_a : orderOf a = 2 := by
   apply orderOf_eq_prime
   · exact a_order_two
@@ -148,7 +145,7 @@ theorem notIsCyclic : ¬ IsCyclic (KleinFourGroup) := by
   contradiction
 
 /-- Klein four-group is isomorphic to the Dihedral group of order 4. -/
-theorem KleinFourGroup_eq_DihedralGroup2 : KleinFourGroup ≃* DihedralGroup 2 where
+def KleinFourGroup_eq_DihedralGroup2 : KleinFourGroup ≃* DihedralGroup 2 where
   toFun k := match k with
     | e => (1 : DihedralGroup 2)
     | a => (sr 1 : DihedralGroup 2)
@@ -165,7 +162,7 @@ theorem KleinFourGroup_eq_DihedralGroup2 : KleinFourGroup ≃* DihedralGroup 2 w
 
 /-- Klein four-group is equivalent to direct product of two cyclic groups of
 order two. -/
-theorem KleinFourGroup_eq_ProdZMod2 : KleinFourGroup ≃ (ZMod 2) × (ZMod 2) where
+def KleinFourGroup_eq_ProdZMod2 : KleinFourGroup ≃ (ZMod 2) × (ZMod 2) where
   toFun k := match k with
     | e => (0, 0)
     | a => (0, 1)
