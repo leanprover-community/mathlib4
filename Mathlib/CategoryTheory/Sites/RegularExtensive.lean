@@ -426,12 +426,16 @@ instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
   (PreservesFiniteProducts.preserves α).preservesLimit
 
-theorem isSheafFor_extensive_of_preservesFiniteProducts' {X : C} (S : Presieve X) [S.extensive]
+theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
     (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] :
     Presieve.IsSheafFor F S := by
   obtain ⟨_, _, Z, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
   subst hS
   exact Presieve.isSheafFor_of_preservesProduct F (X := Z) π
+
+theorem isSheaf_iff_preservesFiniteProduct (F : Cᵒᵖ ⥤ Type max u v) :
+    Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
+    Nonempty (PreservesFiniteProducts F) := by sorry
 
 end ExtensiveSheaves
 
