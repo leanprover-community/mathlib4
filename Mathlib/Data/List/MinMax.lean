@@ -449,6 +449,11 @@ theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
   le_maximum_of_length_pos_iff (α := αᵒᵈ) h
 
+theorem minimum_of_length_pos_mem (h : 0 < l.length) (hm : m = minimum_of_length_pos h) :
+    m ∈ l := by
+  apply minimum_mem
+  simp only [coe_minimum_of_length_pos, hm]
+
 theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
     a ≤ l.maximum_of_length_pos w := by
   simp only [le_maximum_of_length_pos_iff]
