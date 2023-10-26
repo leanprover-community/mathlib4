@@ -42,8 +42,8 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
-/-- Turn a set closed supremum and infimum into a sublattice. -/
-def ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
+/-- Turn a set closed under supremum and infimum into a sublattice. -/
+abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
 
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
@@ -55,7 +55,6 @@ lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 @[simp] lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := Iff.rfl
 @[simp] lemma mem_mk (h_sup h_inf) : a ∈ mk s h_sup h_inf ↔ a ∈ s := Iff.rfl
 @[simp, norm_cast] lemma coe_mk (h_sup h_inf) : mk s h_sup h_inf = s := rfl
-@[simp, norm_cast] lemma coe_ofIsSublattice (hs) : ofIsSublattice s hs = s := rfl
 @[simp] lemma mk_le_mk (hs_sup hs_inf ht_sup ht_inf) :
     mk s hs_sup hs_inf ≤ mk t ht_sup ht_inf ↔ s ⊆ t := Iff.rfl
 @[simp] lemma mk_lt_mk (hs_sup hs_inf ht_sup ht_inf) :
@@ -178,17 +177,17 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
   rw [←SetLike.mem_coe]; simp
 
 /-- Sublattices of a lattice form a complete lattice. -/
-instance instCompleteLattice : CompleteLattice (Sublattice α) :=
-  { completeLatticeOfInf (Sublattice α)
-      fun _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
-    bot := ⊥
-    bot_le := fun _S _a ↦ False.elim
-    top := ⊤
-    le_top := fun _S a _ha ↦ mem_top a
-    inf := (· ⊓ ·)
-    le_inf := fun _L _M _N hM hN _a ha ↦ ⟨hM ha, hN ha⟩
-    inf_le_left := fun _L _M _a ↦ And.left
-    inf_le_right := fun _L _M _a ↦ And.right }
+instance instCompleteLattice : CompleteLattice (Sublattice α) where
+  bot := ⊥
+  bot_le := fun _S _a ↦ False.elim
+  top := ⊤
+  le_top := fun _S a _ha ↦ mem_top a
+  inf := (· ⊓ ·)
+  le_inf := fun _L _M _N hM hN _a ha ↦ ⟨hM ha, hN ha⟩
+  inf_le_left := fun _L _M _a ↦ And.left
+  inf_le_right := fun _L _M _a ↦ And.right
+  __ := completeLatticeOfInf (Sublattice α)
+      fun _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf
 
 lemma subsingleton_iff : Subsingleton (Sublattice α) ↔ IsEmpty α :=
   ⟨fun _ ↦ univ_eq_empty_iff.1 $ coe_inj.2 $ Subsingleton.elim ⊤ ⊥,
