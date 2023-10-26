@@ -205,9 +205,21 @@ end Dependent
 
 section NonDependent
 
-/-! ### `FunLike F α (λ _, β)` where `β` does not depend on `a : α` -/
+/-- The class `NDFunLike F α β` expresses that terms of type `F` have an
+injective coercion to functions from `α` to `β`.
 
-variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
+This typeclass is used in the definition of the homomorphism typeclasses,
+such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
+-/
+abbrev NDFunLike (F : Sort*) (α : outParam <| Sort*) (β : outParam <| Sort*) :=
+  FunLike F α fun _ ↦ β
+
+instance (priority := 110) hasCoeToFun {F α β} [NDFunLike F α β] : CoeFun F fun _ ↦ α → β where
+  coe := FunLike.coe
+
+/-! ### `NDFunLike F α β` where `β` does not depend on `a : α` -/
+
+variable {F α β : Sort*} [i : NDFunLike F α β]
 
 namespace FunLike
 
@@ -220,17 +232,5 @@ protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
 #align fun_like.congr_arg FunLike.congr_arg
 
 end FunLike
-
-/-- The class `NDFunLike F α β` expresses that terms of type `F` have an
-injective coercion to functions from `α` to `β`.
-
-This typeclass is used in the definition of the homomorphism typeclasses,
-such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
--/
-class NDFunLike (F : Sort*) (α : outParam <| Sort*) (β : outParam <| Sort*) extends
-  FunLike F α fun _ ↦ β
-
-instance (priority := 110) hasCoeToFun {F α β} [NDFunLike F α β] : CoeFun F fun _ ↦ α → β where
-  coe := NDFunLike.toFunLike.coe
 
 end NonDependent
