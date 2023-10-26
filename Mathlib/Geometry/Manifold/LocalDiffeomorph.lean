@@ -59,6 +59,8 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 variable (I I' J M M' N n)
 
+-- FIXME, everywhere: move n to a different position, to match Diffeomorph?
+
 /-- A "diffeomorphism on" `s` is a function `f : M → N` such that `f` restricts to a diffeomorphism
 `s → t` between open subsets of `M` and `N`, respectively. -/
 -- In Lean, `s` and `t` are `source` and `target`, respectively.
@@ -185,8 +187,7 @@ neighbourhoods `s` and `t` of `x` and `f x`, respectively, so `f` defines a diff
 from `s` to `t`.
 
 We make these choices, for each `x` part of the data defining a local diffeomorphism. -/
-structure LocalDiffeomorph extends LocalHomeomorph M N where
-  -- TODO: add that source and target are `univ`, so we have left_inv and right_inv!
+structure LocalDiffeomorph extends Equiv M N where
   -- Choices of neighbourhoods for each point.
   sources : Set (Opens M)
   targets : Set (Opens N)
@@ -198,81 +199,68 @@ structure LocalDiffeomorph extends LocalHomeomorph M N where
   contMDiffOn_invFun : ∀ x : M, ContMDiffOn J I n invFun (targetAt x)
 
 namespace LocalDiffeomorph
+theorem toEquiv_injective : Injective (LocalDiffeomorph.toEquiv : LocalDiffeomorph I J M N n → M ≃ N) := sorry
+-- | ⟨_, _, _, _, _, _, _, _, _⟩, ⟨_, _, _, _, _, _, _, _, _⟩, rfl => rfl
+
+-- instance : EquivLike (LocalDiffeomorph I I' M M' M n) M M' where
+--   coe Φ := Φ.toEquiv
+--   inv Φ := Φ.toEquiv.symm
+--   left_inv Φ := Φ.left_inv
+--   right_inv Φ := Φ.right_inv
+--   coe_injective' _ _ h _ := toEquiv_injective <| FunLike.ext' h
+
 -- TODO: add coe instance, ext lemmas, etc.
+-- def LocalDiffeomorph.toEquiv (h : LocalDiffeomorph I J M N n) := by
+--   exact {
+--     toEquiv := h.toEquiv
+--   }
+
+-- TODO: prove this; shouldn't be too hard
+protected theorem toHomeomorph (h : LocalDiffeomorph I J M N n) : Homeomorph M N := sorry
 
 /-- Identity map as a local diffeomorphism. -/
 protected def refl : LocalDiffeomorph I I M M n where
-  toLocalHomeomorph := LocalHomeomorph.refl M
+  toEquiv := Equiv.refl M
   -- At every point, we choose the set `univ`.
   sources := singleton ⟨univ, isOpen_univ⟩
   targets := singleton ⟨univ, isOpen_univ⟩
-  mem_sources := fun x ↦ sorry -- should be : (by exact trivial)
+  mem_sources := fun x ↦ sorry -- should be: (by exact trivial)
   mem_targets := fun x ↦ sorry -- should be: (by exact trivial)
-  sourceAt := sorry -- obvious
-    -- intro x --fun _ ↦ ⟨univ, isOpen_univ⟩
-    -- set s : Opens M := ⟨univ, isOpen_univ⟩
-    -- exact mem_singleton_iff.mpr (Eq.subset rfl)--aesop?--rw [← mem_singleton_iff]--apply codRestrict (fun a ↦ s) {s} _ x
-    -- --rw [← s]--let sdf := mem_singleton_iff.mp trivial
-    -- --rw [mem_singleton_iff]--aesop?--let sdf := ⟨univ, isOpen_univ⟩
-  targetAt := sorry
+  sourceAt := by -- xxx: presumably, can golf this
+    intro; apply Subtype.mk; apply Eq.refl
+  targetAt := by
+    intro; apply Subtype.mk; apply Eq.refl
   contMDiffOn_toFun := fun _ ↦ contMDiff_id.contMDiffOn
   contMDiffOn_invFun := fun _ ↦ contMDiff_id.contMDiffOn
 
--- @[simp]
--- theorem refl_toEquiv : (LocalDiffeomorph.refl I M n).toLocalEquiv = LocalEquiv.refl _ :=
---   rfl
+@[simp]
+theorem refl_toEquiv : (LocalDiffeomorph.refl I M n).toLocalEquiv = LocalEquiv.refl _ :=
+  rfl
 
 /- Inverse of a local diffeomorphism. -/
 @[pp_dot]
 protected def symm (h : LocalDiffeomorph I J M N n) :
     LocalDiffeomorph J I N M n where
-  toLocalHomeomorph := h.toLocalHomeomorph.symm
+  toEquiv := h.toEquiv.symm
   sources := h.targets
   targets := h.sources
   sourceAt := fun y ↦ (h.targetAt (h.invFun y))
   targetAt := fun y ↦ (h.sourceAt (h.invFun y))
   mem_sources := by
     intro y
-    have : y = h.toFun (h.invFun y) := by
-      refine (LocalEquiv.right_inv' h.toLocalEquiv ?_).symm
-      have : h.target = univ := sorry -- should be h.target_univ... up to Lean shenanigans
-      rw [this]
-      exact trivial
+    have : h.toFun (h.invFun y) = y := by apply h.right_inv
     let r := h.mem_targets (h.invFun y)
     rw [← this] at r
-    exact r
+    sorry -- apply r
   mem_targets := sorry -- similar
   contMDiffOn_toFun := fun y ↦ h.contMDiffOn_invFun (h.invFun y)
   contMDiffOn_invFun := fun y ↦ h.contMDiffOn_toFun (h.invFun y)
 
-/-- Composing two local diffeomorphisms at `x` resp. `h x` if for each `x ∈ M`, the target of
-the first at `x` coincides with the source of the second at `h x`. -/
--- I'm not sure if this is actually useful, or not.
--- --@[simps]
-protected def trans' (h : LocalDiffeomorph I I' M M' n)
-    (h' : LocalDiffeomorph I' J M' N n) (hyp : ∀ x : M, (h.targetAt x).1 = (h'.sourceAt (h.toFun x)).1) : LocalDiffeomorph I J M N n where
-  -- both source and target are univ, so the last is obvious. just cannot convince Lean yet
-  toLocalHomeomorph := by
-    have a : h'.source = univ := sorry
-    have b : h.target = univ := sorry
-    have : h.target = h'.source := by rw [a, b]
-    exact h.toLocalHomeomorph.trans' h'.toLocalHomeomorph this
-  -- sources := h.sources
-  -- targets := h'.targets
-  -- This is h.sourceAt x ∩ h ⁻¹' (h'.sourceAt (h x)), in this case it's just h.sourceAt.
-  sourceAt := h.sourceAt
-  -- Since source and target agree, this is just targetAt.
-  targetAt := fun x ↦ h'.targetAt (h.toFun x)
-  mem_sources := h.mem_sources
-  mem_targets := fun x ↦ h'.mem_targets (h.toFun x)
-  contMDiffOn_toFun := sorry -- h.contMDiffOn_toFun.comp h'.contMDiffOn_toFun plus details
-  contMDiffOn_invFun := sorry --h'.contMDiffOn_invFun.comp h.contMDiffOn_invFun plus details
-
-/-- Composing two local diffeomorphisms at `x`, by restricting to the maximal domain where their
-composition is well defined. -/
+/-- Composing two local diffeomorphisms, by restricting the source and target sets
+to the maximal domain where their composition is well defined. -/
 protected def trans (h : LocalDiffeomorph I I' M M' n)
     (h' : LocalDiffeomorph I' J M' N n) : LocalDiffeomorph I J M N n where
-  toLocalHomeomorph := h.toLocalHomeomorph.trans h'.toLocalHomeomorph
+  toEquiv := h.toEquiv.trans h'.toEquiv
   -- Source is h.sourceAt x ∩ h ⁻¹' (h'.sourceAt (h x)),
   sourceAt := by
     intro x
@@ -296,8 +284,7 @@ protected def trans (h : LocalDiffeomorph I I' M M' n)
 end LocalDiffeomorph
 
 -- /-- A local diffeomorph is a diffeomorphism on some open set. -/
-
--- xxx: reorder position of n?
+-- FIXME: do I want to add this definition? probably yes?!
 
 /-- A diffeomorphism on an open set is a local diffeomorph at each point of its source. -/
 lemma DiffeomorphOn.toLocalDiffeomorphAt (h : DiffeomorphOn I J M N n) {x : M} (hx : x ∈ h.source) :
@@ -305,17 +292,19 @@ lemma DiffeomorphOn.toLocalDiffeomorphAt (h : DiffeomorphOn I J M N n) {x : M} (
   { toDiffeomorphOn := h, hx := hx }
 
 /-- A local diffeomorphism is a local diffeomorphism at each point. -/
-lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x : M}
-    (hx : x ∈ h.source) : LocalDiffeomorphAt I J M N n x := by
+lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x : M}: LocalDiffeomorphAt I J M N n x := by
   exact {
-    toLocalHomeomorph := h.toLocalHomeomorph
-    hx := hx
+    toLocalHomeomorph := (h.toHomeomorph).toLocalHomeomorph
+    hx := trivial
     contMDiffOn_toFun := by
       have : ∀ x : M, ContMDiffAt I J n h.toFun x := by
         intro x
         apply (h.contMDiffOn_toFun x).contMDiffAt
         apply (((h.sourceAt x).1.2).mem_nhds_iff).mpr (h.mem_sources x)
-      exact ContMDiff.contMDiffOn this
+      set badboy := (↑(Homeomorph.toLocalHomeomorph (LocalDiffeomorph.toHomeomorph I J M N n h)).toLocalEquiv)
+      have aux : badboy = h.toFun := sorry -- TODO: add as a lemma later!
+      rw [aux, Homeomorph.toLocalHomeomorph_source, contMDiffOn_univ] -- TODO: why last two lemmas?
+      exact this
     contMDiffOn_invFun := by
       have : ∀ x : M, ContMDiffAt J I n h.invFun (h.toFun x) := by
         intro x
@@ -324,21 +313,17 @@ lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x 
       have : ∀ y : N, ContMDiffAt J I n h.invFun y := by -- this should be almost obvious!
         intro y
         let x := h.invFun y
-        have aux : h.target = univ := sorry -- part of h' spec
-        have aux2 : h.toFun (h.invFun y) = y := h.toLocalEquiv.right_inv' (aux ▸ mem_univ y)
+        -- TODO: extract as a lemma for later!
+        have aux2 : h.toFun (h.invFun y) = y := h.toLocalEquiv.right_inv' (mem_univ y)
         exact aux2 ▸ (this x)
+      set badboy := ((h.toHomeomorph I J M N n).toLocalHomeomorph).toLocalEquiv.invFun
+      have aux : badboy = h.invFun := sorry -- TODO: add as a lemma later!
+      rw [aux]
       apply ContMDiff.contMDiffOn this
   }
 
 variable {I J M N r} in
 lemma should_be_obvious (h : DiffeomorphOn I J M N r) {x : M} (hx : x ∈ h.source) :
-    h.source = (h.toLocalDiffeomorphAt hx).toLocalHomeomorph.source := by
-  set r := h.toLocalDiffeomorphAt hx
-  have : r.toLocalHomeomorph = h.toLocalHomeomorph := sorry -- TODO: make this true!!
-  rw [this]
-
-variable {I J M N r} in
-lemma should_be_obvious' (h : LocalDiffeomorph I J M N r) {x : M} (hx : x ∈ h.source) :
     h.source = (h.toLocalDiffeomorphAt hx).toLocalHomeomorph.source := by
   set r := h.toLocalDiffeomorphAt hx
   have : r.toLocalHomeomorph = h.toLocalHomeomorph := sorry -- TODO: make this true!!
@@ -440,10 +425,8 @@ noncomputable def DiffeomorphOn.differential_toContinuousLinearEquiv {r : ℕ} (
 /-- If `f` is a local diffeomorphism, the differential is a linear isomorphism at each point. -/
 noncomputable def LocalDiffeomorph.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : LocalDiffeomorph I J M N r):
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
-  have hx : x ∈ h.source := sorry -- obvious from h.source=univ
-  have obv : (h.toLocalDiffeomorphAt hx).source = h.source := (should_be_obvious' h hx).symm
-  exact (h.toLocalDiffeomorphAt hx).differential_toContinuousLinearEquiv hr
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) :=
+  (h.toLocalDiffeomorphAt).differential_toContinuousLinearEquiv hr
 
 -- TODO: move this to Init.Function
 lemma bijective_iff_inverses {X Y : Type*} {f : X → Y} {g : Y → X}
@@ -474,19 +457,18 @@ def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorp
   --   toLocalHomeomorph := h.toHomeomorph.toLocalHomeomorph }
 
 /-- A diffeomorphism is a local diffeomorphism at each point. -/
-noncomputable def Diffeomorph.toLocalDiffeomorphAt (h : Diffeomorph I J M N n) (x : M) : LocalDiffeomorphAt I J M N n x := by
-  let r := h.toLocalDiffeomorph
-  have : x ∈ r.source := sorry -- obvious from r.source = univ
-  exact r.toLocalDiffeomorphAt this
+noncomputable def Diffeomorph.toLocalDiffeomorphAt (h : Diffeomorph I J M N n) (x : M) :
+    LocalDiffeomorphAt I J M N n x :=
+  (h.toLocalDiffeomorph).toLocalDiffeomorphAt
 
 /-- A diffeomorphism has bijective differential at each point. -/
 lemma Diffeomorph.differential_bijective {r : ℕ} (hr : 1 ≤ r) (f : Diffeomorph I J M N r) {x : M} :
     Bijective (mfderiv I J f.toFun x) := by
-  let sdf := (f.toLocalDiffeomorphAt x).differential_bijective hr
+  let aux := (f.toLocalDiffeomorphAt x).differential_bijective hr
   -- TODO: why is this rewrite necessary?
-  have : (toLocalDiffeomorphAt f x).toDiffeomorphOn.toLocalHomeomorph.toLocalEquiv = f.toFun := sorry
+  have : (f.toLocalDiffeomorphAt x).toDiffeomorphOn.toLocalHomeomorph.toLocalEquiv = f.toFun := sorry
   rw [← this]
-  exact sdf
+  exact aux
 
 end Differentials
 
