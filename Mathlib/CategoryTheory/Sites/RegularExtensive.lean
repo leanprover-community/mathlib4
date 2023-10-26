@@ -457,12 +457,8 @@ theorem isSheaf_iff_preservesFiniteProduct (F : Cᵒᵖ ⥤ Type max u v) :
     intro K
     rw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
-    have _ : (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)).hasPullbacks := by
-      constructor
-      intro _ _ _ hf _ hg
-      cases' hf with i
-      cases' hg with j
-      infer_instance
+    have _ : (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)).hasPullbacks :=
+      ⟨fun hf _ hg ↦ by cases hf; cases hg; infer_instance⟩
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
         Presieve.preservesProductOfIsSheafFor initialIsInitial F ?_ Z (hd Z)
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
