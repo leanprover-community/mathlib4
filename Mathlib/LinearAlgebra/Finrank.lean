@@ -503,6 +503,9 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
     (_root_.trans (Fintype.card_coe _) card_eq)
 #align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] finsetBasisOfTopLeSpanOfCardEqFinrank_repr_apply
+
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
 noncomputable def setBasisOfTopLeSpanOfCardEqFinrank {s : Set V} [Fintype s]

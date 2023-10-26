@@ -1146,10 +1146,10 @@ theorem hasFTaylorSeriesUpToOn_pi :
     exact (h i).zero_eq x hx
   · intro m hm x hx
     have := hasFDerivWithinAt_pi.2 fun i => (h i).fderivWithin m hm x hx
-    convert(L m).hasFDerivAt.comp_hasFDerivWithinAt x this
+    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x this
   · intro m hm
     have := continuousOn_pi.2 fun i => (h i).cont m hm
-    convert(L m).continuous.comp_continuousOn this
+    convert (L m).continuous.comp_continuousOn this
 #align has_ftaylor_series_up_to_on_pi hasFTaylorSeriesUpToOn_pi
 
 @[simp]

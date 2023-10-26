@@ -538,6 +538,9 @@ theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
 theorem sphere_subset_closedBall : sphere x ε ⊆ closedBall x ε := fun _ => le_of_eq
 #align metric.sphere_subset_closed_ball Metric.sphere_subset_closedBall
 
+lemma sphere_subset_ball {r R : ℝ} (h : r < R) : sphere x r ⊆ ball x R := fun _x hx ↦
+  (mem_sphere.1 hx).trans_lt h
+
 theorem closedBall_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (closedBall x δ) (ball y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
     (h.trans <| dist_triangle_left _ _ _).not_lt <| add_lt_add_of_le_of_lt ha1 ha2
@@ -2825,7 +2828,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
   refine' ⟨x, mem_iInter.2 fun n => _⟩
   apply (hs n).mem_of_tendsto xlim
-  filter_upwards [Ici_mem_atTop n]with p hp
+  filter_upwards [Ici_mem_atTop n] with p hp
   exact I n p hp
 #align is_complete.nonempty_Inter_of_nonempty_bInter IsComplete.nonempty_iInter_of_nonempty_biInter
 

@@ -29,6 +29,7 @@ We do not define `Option.map₃` as its only purpose so far would be to prove pr
 
 set_option autoImplicit true
 
+universe u
 
 open Function
 
@@ -44,7 +45,7 @@ def map₂ (f : α → β → γ) (a : Option α) (b : Option β) : Option γ :=
 
 /-- `Option.map₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem map₂_def {α β γ : Type _} (f : α → β → γ) (a : Option α) (b : Option β) :
+theorem map₂_def {α β γ : Type u} (f : α → β → γ) (a : Option α) (b : Option β) :
     map₂ f a b = f <$> a <*> b :=
   by cases a <;> rfl
 #align option.map₂_def Option.map₂_def

@@ -186,7 +186,7 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
   · rw [pow_eq_zero_of_le hj hm, mul_zero]
 #align commute.is_nilpotent_add Commute.isNilpotent_add
 
-protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
+protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
     IsNilpotent (∑ i in s, f i) := by
   classical
@@ -244,7 +244,7 @@ section CommSemiring
 
 variable [CommSemiring R] {x y : R}
 
-lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
+lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
     IsNilpotent (∑ i in s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
