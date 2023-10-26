@@ -448,7 +448,7 @@ lemma abs_le_interp_on_closed_strip_sequence (f : ℂ → ℂ) (z : ℂ)
   -- Now : `T < |z.im|`.
   · simp only [not_le] at h; apply h_h; exact h_w_pos z hz (le_of_lt h)
 
---Proof that `F' Tendsto F` 
+--Proof that `F' Tendsto F`
 lemma tendsto_F'_atTop_F (f : ℂ → ℂ) (z : ℂ) : Tendsto (fun n : ℕ ↦ F' n f z ) atTop (nhds (F f z)) :=
   have mul_const : Tendsto (fun n : ℕ ↦ (z^2-1) * (n : ℝ)⁻¹) atTop (nhds 0) := by
     simpa only [mul_zero]
