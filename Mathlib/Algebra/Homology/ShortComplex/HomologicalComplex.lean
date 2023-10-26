@@ -64,6 +64,8 @@ noncomputable abbrev sc (i : ι) := (shortComplexFunctor C c i).obj K
 noncomputable abbrev isoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     K.sc j ≅ K.sc' i j k := (natIsoSc' C c i j k hi hk).app K
 
+/-- A homological complex `K` has homology in degree `i` if the associated
+short complex `K.sc i` has. -/
 abbrev HasHomology (i : ι) := (K.sc i).HasHomology
 
 variable (i : ι) [K.HasHomology i] [L.HasHomology i] [M.HasHomology i]
