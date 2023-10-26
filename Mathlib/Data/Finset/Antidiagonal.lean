@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta
+Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
 -/
 
 import Mathlib.Data.Finset.Basic
@@ -13,23 +13,23 @@ import Mathlib.Algebra.Order.Sub.Defs
 
 We define a type class `Finset.HasAntidiagonal A` which contains a function
 `antidiagonal : A → Finset (A × A)` such that `antidiagonal n`
-is the Finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
+is the finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 
 When `A` is a canonically ordered add monoid with locally finite order
-(for example, taking `A` to be `ℕ`, more generally or `σ →₀ ℕ`),
 this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
-This definition applies more generally to `ι →₀ A`
-under the additional assumption `OrderedSub A` that make it a canonically ordered add monoid.
-In fact, we just need an `AddMonoid` with a compatible order,
+This applies in particular when `A` is `ℕ`, more generally or `σ →₀ ℕ`,
+or even `ι →₀ A`  under the additional assumption `OrderedSub A`
+that make it a canonically ordered add monoid.
+(In fact, we would just need an `AddMonoid` with a compatible order,
 finite `Iic`, such that if `a + b = n`, then `a, b ≤ n`,
-and any finiteness condition would be OK.
+and any finiteness condition would be OK.)
 
-For computational reasons it is better to manually provide instances for `σ →₀ ℕ`,
-to avoid quadratic runtime performance.
+For computational reasons it is better to manually provide instances for `ℕ`
+and `σ →₀ ℕ`, to avoid quadratic runtime performance.
 These instances are provided as `Finset.Nat.instHasAntidiagonal` and `Finsupp.instHasAntidiagonal`.
-This is why `Finset.antidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`..
+This is why `Finset.antidiagonalOfLocallyFinite` is an `abbrev` and not an `instance`.
 
-This definition does not exactly match with that of `Multiset.antidiagonal` which is
+This definition does not exactly match with that of `Multiset.antidiagonal`
 defined in `Mathlib.Data.Multiset.Antidiagonal`, because of the multiplicities.
 Indeed, by counting multiplicities, `Multiset α` is equivalent to `α →₀ ℕ`,
 but `Finset.antidiagonal` and `Multiset.antidiagonal` will return different objects.
