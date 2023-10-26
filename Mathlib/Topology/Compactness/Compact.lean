@@ -831,6 +831,11 @@ theorem isClosedMap_snd_of_compactSpace {X : Type*} [TopologicalSpace X] [Compac
   exact hs ⟨hU trivial, hzV⟩ hzs
 #align is_closed_proj_of_is_compact isClosedMap_snd_of_compactSpace
 
+/-- If `Y` is a compact topological space, then `Prod.fst : X × Y → X` is a closed map. -/
+theorem isClosedMap_fst_of_compactSpace {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [CompactSpace Y] : IsClosedMap (Prod.fst : X × Y → X) :=
+  isClosedMap_snd_of_compactSpace.comp isClosedMap_swap
+
 theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonempty ι]
     {V : ι → Set α} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set α}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
