@@ -163,6 +163,11 @@ def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ where
   j_mul_i := by rw [← F.map_mul, q.j_mul_i, F.map_neg]
 #align quaternion_algebra.basis.comp_hom QuaternionAlgebra.Basis.compHom
 
+@[simp]
+theorem liftHom_compHom (F : A →ₐ[R] B) : (q.compHom F).liftHom = F.comp q.liftHom := by
+  ext q
+  simp [liftHom, compHom, lift]
+
 end Basis
 
 /-- A quaternionic basis on `A` is equivalent to a map from the quaternion algebra to `A`. -/
