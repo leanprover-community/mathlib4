@@ -311,7 +311,7 @@ theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
 /-- An uncurried version of `Finset.prod_prod_type`. -/
 @[to_additive Fintype.sum_prod_type' "An uncurried version of `Finset.sum_prod_type`"]
 theorem Fintype.prod_prod_type' [CommMonoid γ] {f : α₁ → α₂ → γ} :
-    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x : α₁, ∏ y : α₂, f x y := 
+    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x : α₁, ∏ y : α₂, f x y :=
   prod_prod_type
 
 @[to_additive Fintype.sum_prod_type_right]
