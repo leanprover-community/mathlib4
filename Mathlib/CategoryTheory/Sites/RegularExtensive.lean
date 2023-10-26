@@ -82,6 +82,12 @@ instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type w} (f : X ⟶ Z) {Y :
     (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
     HasPullback f (i a) := HasPullbacksOfInclusions.has_pullback f i a
 
+instance [HasPullbacksOfInclusions C] {α : Type w} [Fintype α] (Y : α → C)
+    [HasCoproduct Y] (i j : α) : HasPullback (Sigma.ι Y i) (Sigma.ι Y j) := by
+  have : Sigma.desc (fun i ↦ Sigma.ι Y i) = 𝟙 _ := by ext; simp
+  have _ : IsIso (Sigma.desc (fun i ↦ Sigma.ι Y i)) := by rw [this]; infer_instance
+  exact HasPullbacksOfInclusions.has_pullback _ _ j
+
 /--
 If `C` has pullbacks then it has the pullbacks relevant to `HasPullbacksOfInclusions`.
 -/
@@ -433,9 +439,49 @@ theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X)
   subst hS
   exact Presieve.isSheafFor_of_preservesProduct F (X := Z) π
 
+variable (hd : ∀ {α : Type} [Fintype α] (Z : α → C) i j, i ≠ j →
+    IsInitial (pullback (Sigma.ι Z i) (Sigma.ι Z j)))
+    [∀ {α : Type} [Fintype α] (Z : α → C) i, Mono (Sigma.ι Z i)]
+-- TODO: add these statements to `CoproductsDisjoint` API
+
+open Opposite
+
 theorem isSheaf_iff_preservesFiniteProduct (F : Cᵒᵖ ⥤ Type max u v) :
     Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
-    Nonempty (PreservesFiniteProducts F) := by sorry
+    Nonempty (PreservesFiniteProducts F) := by
+  refine ⟨fun hF ↦ ?_, fun hF ↦ ?_⟩
+  · constructor
+    constructor
+    intro α _
+    constructor
+    intro K
+    rw [Presieve.isSheaf_coverage] at hF
+    let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
+    have _ : (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)).hasPullbacks := by
+      constructor
+      intro _ _ _ hf _ hg
+      cases' hf with i
+      cases' hg with j
+      infer_instance
+    let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
+        Presieve.preservesProductOfIsSheafFor initialIsInitial F ?_ Z (hd Z)
+        (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
+    let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
+    · exact preservesLimitOfIsoDiagram F i.symm
+    · apply hF
+      refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,?_, ?_⟩⟩
+      · ext b
+        cases b
+      · simp only [eq_iff_true_of_subsingleton]
+    · refine ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ?_⟩
+      suffices Sigma.desc (fun i ↦ Sigma.ι Z i) = 𝟙 _ by rw [this]; infer_instance
+      ext
+      simp
+  · let _ := hF.some
+    rw [Presieve.isSheaf_coverage]
+    intro _ R ⟨Y, hR⟩
+    have _ : R.extensive := ⟨Y, hR⟩
+    exact isSheafFor_extensive_of_preservesFiniteProducts R F
 
 end ExtensiveSheaves
 
