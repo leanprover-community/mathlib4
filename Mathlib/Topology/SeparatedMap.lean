@@ -21,9 +21,9 @@ A constant function is locally injective if and only if `X` is discrete.
 Given `f : X → Y` we can form the pullback $X \times_Y X$; the diagonal map
 $\Delta: X \to X \times_Y X$ is always an embedding. It is a closed embedding
 iff `f` is a separated map, iff the equal locus of any two continuous maps
-equalized by `f` is closed. It is an open embedding iff `f` is locally injective,
+coequalized by `f` is closed. It is an open embedding iff `f` is locally injective,
 iff any such equal locus is open. Therefore, if `f` is a locally injective separated map,
-the equal locus of two continuous maps equalized by `f` is clopen, so if the two maps
+the equal locus of two continuous maps coequalized by `f` is clopen, so if the two maps
 agree on a point, then they agree on the whole connected component.
 
 The analogue of separated maps and locally injective maps in algebraic geometry are

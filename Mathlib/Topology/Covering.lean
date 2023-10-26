@@ -177,7 +177,7 @@ protected theorem quotientMap (hf' : Function.Surjective f) : QuotientMap f :=
 protected theorem isSeparatedMap : IsSeparatedMap f :=
   fun e₁ e₂ he hne ↦ by
     obtain ⟨_, t, he₁⟩ := hf (f e₁)
-    have he₂ := he₁; simp_rw [he] at he₂; rw [← Set.mem_preimage, ← t.source_eq] at he₁ he₂
+    have he₂ := he₁; simp_rw [he] at he₂; rw [← t.mem_source] at he₁ he₂
     refine ⟨t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₁).2}, t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₂).2},
       ?_, ?_, ⟨he₁, rfl⟩, ⟨he₂, rfl⟩, Set.disjoint_left.mpr fun x h₁ h₂ ↦ hne (t.injOn he₁ he₂ ?_)⟩
     iterate 2
