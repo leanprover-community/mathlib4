@@ -64,4 +64,13 @@ noncomputable abbrev sc (i : ι) := (shortComplexFunctor C c i).obj K
 noncomputable abbrev isoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     K.sc j ≅ K.sc' i j k := (natIsoSc' C c i j k hi hk).app K
 
+abbrev HasHomology (i : ι) := (K.sc i).HasHomology
+
+variable (i : ι) [K.HasHomology i] [L.HasHomology i] [M.HasHomology i]
+
+noncomputable def homology := (K.sc i).homology
+noncomputable def cycles := (K.sc i).cycles
+noncomputable def homologyπ : K.cycles i ⟶ K.homology i := (K.sc i).homologyπ
+noncomputable def iCycles : K.cycles i ⟶ K.X i := (K.sc i).iCycles
+
 end HomologicalComplex

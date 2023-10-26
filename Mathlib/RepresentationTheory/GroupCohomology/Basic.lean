@@ -218,7 +218,7 @@ open groupCohomology
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
-  (inhomogeneousCochains A).homology n
+  (inhomogeneousCochains A).homology' n
 #align group_cohomology groupCohomology
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
@@ -226,6 +226,6 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   homologyObjIsoOfHomotopyEquiv (HomotopyEquiv.ofIso (inhomogeneousCochainsIso _)) _ ≪≫
-    HomologicalComplex.homologyUnop _ _ ≪≫ (extIso k G A n).symm
+    HomologicalComplex.homology'Unop _ _ ≪≫ (extIso k G A n).symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt
