@@ -659,7 +659,7 @@ theorem finrank_eq_zero_of_rank_eq_zero [FiniteDimensional K V] (h : Module.rank
 variable (K V)
 
 instance finiteDimensional_bot : FiniteDimensional K (⊥ : Submodule K V) :=
-  finiteDimensional_of_rank_eq_zero <| by simp
+  finiteDimensional_of_rank_eq_zero <| by simp only [rank_bot]
 #align finite_dimensional_bot finiteDimensional_bot
 
 variable {K V}
