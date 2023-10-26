@@ -327,6 +327,57 @@ lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x 
       apply ContMDiff.contMDiffOn this
   }
 
+/-- A diffeomorphism is a local diffeomorphism. -/
+-- TODO: deduplicate this with with LocalDiffeomorph.refl
+def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorph I J M N n := by
+  exact {
+    toEquiv := h.toEquiv
+    sources := singleton ⟨univ, isOpen_univ⟩
+    targets := singleton ⟨univ, isOpen_univ⟩
+    sourceAt := by intro; apply Subtype.mk; apply Eq.refl
+    targetAt := by intro; apply Subtype.mk; apply Eq.refl
+    mem_sources := fun _ ↦ (by exact trivial)
+    mem_targets := fun _ ↦ (by exact trivial)
+    contMDiffOn_toFun := by
+      intro
+      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
+      rw [contMDiffOn_univ]
+      exact h.contMDiff_toFun
+    contMDiffOn_invFun := by
+      intro
+      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
+      rw [contMDiffOn_univ]
+      exact h.contMDiff_invFun
+  }
+
+/-- A diffeomorphism is a local diffeomorphism at each point. -/
+noncomputable def Diffeomorph.toLocalDiffeomorphAt (h : Diffeomorph I J M N n) (x : M) :
+    LocalDiffeomorphAt I J M N n x :=
+  (h.toLocalDiffeomorph).toLocalDiffeomorphAt
+
+/-- A bijective local diffeomorphism is a diffeomorphism. -)
+-- We formalise bijectivity by asking that f and g be left and right inverses globally.
+-- (This implies bijectivity.) TODO: tweak def of LocalDiffeo to not make this automatic! -/
+lemma Diffeomorph.of_localDiffeomorph (h : LocalDiffeomorph I J M N n) :
+  -- (hleft_inv : LeftInverse h.invFun h.toFun) (hright_inv : RightInverse h.invFun h.toFun) :
+    Diffeomorph I J M N n := by exact {
+      toFun := h.toFun
+      invFun := h.invFun
+      left_inv := h.left_inv' -- TODO: should be hleft_inv instead!
+      right_inv := h.right_inv' -- TODO: should be hright_inv instead!
+      contMDiff_toFun := by
+        show ∀ x : M, ContMDiffAt I J n h.toFun x
+        intro x
+        set s := (LocalDiffeomorph.sourceAt h x).1
+        exact (h.contMDiffOn_toFun x).contMDiffAt (((s.2).mem_nhds_iff).mpr (h.mem_sources x))
+      contMDiff_invFun := by
+        show ∀ y : N, ContMDiffAt J I n h.invFun y
+        intro y
+        let x := h.invFun y -- pre-image of y: this uses surjectivity!
+        let ser := ((h.targetAt x).1.2.mem_nhds_iff).mpr (h.mem_targets x)
+        exact (h.contMDiffOn_invFun x).contMDiffAt (x := y) ((h.right_inv' y) ▸ ser)
+    }
+
 variable {I J M N n} in
 lemma should_be_obvious (h : DiffeomorphOn I J M N n) {x : M} (hx : x ∈ h.source) :
     h.source = (h.toLocalDiffeomorphAt hx).toLocalHomeomorph.source := by
@@ -454,34 +505,6 @@ lemma DiffeomorphOn.differential_bijective (hn : 1 ≤ n) {x : M}
   -- TODO: why does this not match? tweak my setup to make sure it does!
   sorry --exact _s hn
 
-/-- A diffeomorphism is a local diffeomorphism. -/
--- TODO: deduplicate this with with LocalDiffeomorph.refl
-def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorph I J M N n := by
-  exact {
-    toEquiv := h.toEquiv
-    sources := singleton ⟨univ, isOpen_univ⟩
-    targets := singleton ⟨univ, isOpen_univ⟩
-    sourceAt := by intro; apply Subtype.mk; apply Eq.refl
-    targetAt := by intro; apply Subtype.mk; apply Eq.refl
-    mem_sources := fun _ ↦ (by exact trivial)
-    mem_targets := fun _ ↦ (by exact trivial)
-    contMDiffOn_toFun := by
-      intro
-      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
-      rw [contMDiffOn_univ]
-      exact h.contMDiff_toFun
-    contMDiffOn_invFun := by
-      intro
-      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
-      rw [contMDiffOn_univ]
-      exact h.contMDiff_invFun
-  }
-
-/-- A diffeomorphism is a local diffeomorphism at each point. -/
-noncomputable def Diffeomorph.toLocalDiffeomorphAt (h : Diffeomorph I J M N n) (x : M) :
-    LocalDiffeomorphAt I J M N n x :=
-  (h.toLocalDiffeomorph).toLocalDiffeomorphAt
-
 /-- A diffeomorphism has bijective differential at each point. -/
 lemma Diffeomorph.differential_bijective (hn : 1 ≤ n) (f : Diffeomorph I J M N n) {x : M} :
     Bijective (mfderiv I J f.toFun x) := by
@@ -558,13 +581,4 @@ lemma LocalDiffeomorph.of_differentialInvertible (hn : 1 ≤ n) {x : M}
 
 end Differentials
 
-
-
--- if f is smooth and each differential df_x is a linear iso, f is a local diffeo
-
--- a bijective local diffeo is a diffeo: hard to formalise?!
--- a diffeo is a local diffeo
--- a diffeo is bijective (easy)
--- corollary: a diffeo is a bijective local diffeo (exact with two things)
-
--- can I say that **the tangent map is a bundle isomorphism?**
+-- can I say that **the tangent map of a local diffeo is a bundle isomorphism?**
