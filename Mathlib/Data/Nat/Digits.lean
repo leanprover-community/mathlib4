@@ -115,11 +115,15 @@ theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 #align nat.digits_one_succ Nat.digits_one_succ
 
-@[simp]
 theorem digits_add_two_add_one (b n : ℕ) :
     digits (b + 2) (n + 1) = ((n + 1) % (b + 2)) :: digits (b + 2) ((n + 1) / (b + 2)) := by
   simp [digits, digitsAux_def]
 #align nat.digits_add_two_add_one Nat.digits_add_two_add_one
+
+@[simp]
+lemma digits_of_two_le_of_pos {b : ℕ} (hb : 2 ≤ b) (hn : 0 < n) :
+    Nat.digits b n = n % b :: Nat.digits b (n / b) := by
+  rw [Nat.eq_add_of_sub_eq hb rfl, Nat.eq_add_of_sub_eq hn rfl, Nat.digits_add_two_add_one]
 
 theorem digits_def' :
     ∀ {b : ℕ} (_ : 1 < b) {n : ℕ} (_ : 0 < n), digits b n = (n % b) :: digits b (n / b)
@@ -168,10 +172,10 @@ theorem ofDigits_eq_foldr {α : Type*} [Semiring α] (b : α) (L : List ℕ) :
 #align nat.of_digits_eq_foldr Nat.ofDigits_eq_foldr
 
 theorem ofDigits_eq_sum_map_with_index_aux (b : ℕ) (l : List ℕ) :
-    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ i) ∘ succ) l).sum =
+    ((List.range l.length).zipWith ((fun i a : ℕ => a * b ^ (i + 1))) l).sum =
       b * ((List.range l.length).zipWith (fun i a => a * b ^ i) l).sum := by
   suffices
-    (List.range l.length).zipWith ((fun i a : ℕ => a * b ^ i) ∘ succ) l =
+    (List.range l.length).zipWith (fun i a : ℕ => a * b ^ (i + 1)) l =
       (List.range l.length).zipWith (fun i a => b * (a * b ^ i)) l
     by simp [this]
   congr; ext; simp [pow_succ]; ring
@@ -510,7 +514,7 @@ lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
   induction' digits with hd tl
   · simp [ofDigits]
   · refine' Eq.trans (add_mul_div_left hd _ hpos) _
-    rw [Nat.div_eq_zero <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rw [Nat.div_eq_of_lt <| w₁ _ <| List.mem_cons_self _ _, zero_add]
     rfl
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
@@ -594,7 +598,7 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
   · rw [digits_def' one_lt_two]
     · simpa [Nat.bit, Nat.bit0_val n]
     · simpa [pos_iff_ne_zero, bit_eq_zero_iff]
-  · simpa [Nat.bit, Nat.bit1_val n, add_comm, digits_add 2 one_lt_two 1 n]
+  · simpa [Nat.bit, Nat.bit1_val n, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 #align nat.digits_two_eq_bits Nat.digits_two_eq_bits
 
 /-! ### Modular Arithmetic -/

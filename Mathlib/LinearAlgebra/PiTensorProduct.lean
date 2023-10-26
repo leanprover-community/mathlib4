@@ -311,9 +311,8 @@ variable {R}
 
 unsuppress_compilation in
 /-- pure tensor in tensor product over some index type -/
--- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
--- was just `tprod R f`.
-notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => r
+-- TODO(kmill) The generated delaborator never applies; figure out why this doesn't pretty print.
+notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
@@ -367,10 +366,19 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : ∀ i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
-  rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
-  dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
-  show _ • _ = _
-  rw [one_smul]
+  -- The end of this proof was very different before leanprover/lean4#2644:
+  -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
+  -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
+  -- show _ • _ = _
+  -- rw [one_smul]
+  erw [AddCon.lift_coe]
+  erw [FreeAddMonoid.of]
+  dsimp [FreeAddMonoid.ofList]
+  rw [← one_smul R (φ f)]
+  erw [Equiv.refl_apply]
+  convert one_smul R (φ f)
+  simp
+
 #align pi_tensor_product.lift_aux_tprod PiTensorProduct.liftAux_tprod
 
 theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : ∀ i, s i) :

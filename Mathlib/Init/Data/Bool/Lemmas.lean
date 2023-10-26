@@ -161,16 +161,16 @@ theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
   | true => exact decide_true (h.2 <| of_decide_true h')
 #align to_bool_congr Bool.decide_congr
 
-theorem or_coe_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
-#align bor_coe_iff Bool.or_coe_iff
+theorem coe_or_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
+#align bor_coe_iff Bool.coe_or_iff
 
-theorem and_coe_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
-#align band_coe_iff Bool.and_coe_iff
+theorem coe_and_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
+#align band_coe_iff Bool.coe_and_iff
 
 @[simp]
-theorem xor_coe_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
+theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> exact by decide
-#align bxor_coe_iff Bool.xor_coe_iff
+#align bxor_coe_iff Bool.coe_xor_iff
 
 @[simp]
 theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :

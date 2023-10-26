@@ -167,6 +167,10 @@ theorem mem_stabilizer_submonoid_iff {a : α} {m : M} : m ∈ Stabilizer.submono
 #align add_action.mem_stabilizer_add_submonoid_iff AddAction.mem_stabilizer_addSubmonoid_iff
 
 @[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ Stabilizer.submonoid M a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
+
+@[to_additive]
 theorem orbit_eq_univ [IsPretransitive M α] (a : α) : orbit M a = Set.univ :=
   (surjective_smul M a).range_eq
 #align mul_action.orbit_eq_univ MulAction.orbit_eq_univ
@@ -212,6 +216,10 @@ theorem mem_stabilizer_iff {g : G} {a : α} : g ∈ stabilizer G a ↔ g • a =
   Iff.rfl
 #align mul_action.mem_stabilizer_iff MulAction.mem_stabilizer_iff
 #align add_action.mem_stabilizer_iff AddAction.mem_stabilizer_iff
+
+@[to_additive]
+instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
+  fun _ => inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
 theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=

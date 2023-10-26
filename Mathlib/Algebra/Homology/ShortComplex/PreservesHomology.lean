@@ -16,8 +16,10 @@ say that `F` preserves homology when `F` preserves both kernels and cokernels.
 This typeclass is named `[F.PreservesHomology]`, and is automatically
 satisfied when `F` preserves both finite limits and finite colimits.
 
-TODO: If `S : ShortComplex C` and `[F.PreservesHomology]`, then there is an
-isomorphism `S.mapHomologyIso F : (S.map F).homology ≅ F.obj S.homology`.
+If `S : ShortComplex C` and `[F.PreservesHomology]`, then there is an
+isomorphism `S.mapHomologyIso F : (S.map F).homology ≅ F.obj S.homology`, which
+is part of the natural isomorphism `homologyFunctorIso F` between the functors
+`F.mapShortComplex ⋙ homologyFunctor D` and `homologyFunctor C ⋙ F`.
 
 -/
 
@@ -340,6 +342,383 @@ instance hasHomology_of_preserves' [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
     (F.mapShortComplex.obj S).HasHomology :=
   by dsimp; infer_instance
+
+section
+
+variable
+  (hl : S.LeftHomologyData) (hr : S.RightHomologyData)
+  {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+  (hl₁ : S₁.LeftHomologyData) (hr₁ : S₁.RightHomologyData)
+  (hl₂ : S₂.LeftHomologyData) (hr₂ : S₂.RightHomologyData)
+  (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData)
+  (F : C ⥤ D) [F.PreservesZeroMorphisms]
+
+namespace LeftHomologyData
+
+variable [hl₁.IsPreservedBy F] [hl₂.IsPreservedBy F]
+
+lemma map_cyclesMap' : F.map (ShortComplex.cyclesMap' φ hl₁ hl₂) =
+    ShortComplex.cyclesMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
+  have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
+  rw [γ.cyclesMap'_eq, (γ.map F).cyclesMap'_eq,  ShortComplex.LeftHomologyMapData.map_φK]
+
+lemma map_leftHomologyMap' : F.map (ShortComplex.leftHomologyMap' φ hl₁ hl₂) =
+    ShortComplex.leftHomologyMap' (F.mapShortComplex.map φ) (hl₁.map F) (hl₂.map F) := by
+  have γ : ShortComplex.LeftHomologyMapData φ hl₁ hl₂ := default
+  rw [γ.leftHomologyMap'_eq, (γ.map F).leftHomologyMap'_eq,
+    ShortComplex.LeftHomologyMapData.map_φH]
+
+end LeftHomologyData
+
+namespace RightHomologyData
+
+variable [hr₁.IsPreservedBy F] [hr₂.IsPreservedBy F]
+
+lemma map_opcyclesMap' : F.map (ShortComplex.opcyclesMap' φ hr₁ hr₂) =
+    ShortComplex.opcyclesMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
+  have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
+  rw [γ.opcyclesMap'_eq, (γ.map F).opcyclesMap'_eq,  ShortComplex.RightHomologyMapData.map_φQ]
+
+lemma map_rightHomologyMap' : F.map (ShortComplex.rightHomologyMap' φ hr₁ hr₂) =
+    ShortComplex.rightHomologyMap' (F.mapShortComplex.map φ) (hr₁.map F) (hr₂.map F) := by
+  have γ : ShortComplex.RightHomologyMapData φ hr₁ hr₂ := default
+  rw [γ.rightHomologyMap'_eq, (γ.map F).rightHomologyMap'_eq,
+    ShortComplex.RightHomologyMapData.map_φH]
+
+end RightHomologyData
+
+lemma HomologyData.map_homologyMap'
+    [h₁.left.IsPreservedBy F] [h₁.right.IsPreservedBy F]
+    [h₂.left.IsPreservedBy F] [h₂.right.IsPreservedBy F] :
+    F.map (ShortComplex.homologyMap' φ h₁ h₂) =
+      ShortComplex.homologyMap' (F.mapShortComplex.map φ) (h₁.map F) (h₂.map F) :=
+  LeftHomologyData.map_leftHomologyMap' _ _ _ _
+
+/-- When a functor `F` preserves the left homology of a short complex `S`, this is the
+canonical isomorphism `(S.map F).cycles ≅ F.obj S.cycles`. -/
+noncomputable def mapCyclesIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
+    (S.map F).cycles ≅ F.obj S.cycles :=
+  (S.leftHomologyData.map F).cyclesIso
+
+/-- When a functor `F` preserves the left homology of a short complex `S`, this is the
+canonical isomorphism `(S.map F).leftHomology ≅ F.obj S.leftHomology`. -/
+noncomputable def mapLeftHomologyIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
+    (S.map F).leftHomology ≅ F.obj S.leftHomology :=
+  (S.leftHomologyData.map F).leftHomologyIso
+
+/-- When a functor `F` preserves the right homology of a short complex `S`, this is the
+canonical isomorphism `(S.map F).opcycles ≅ F.obj S.opcycles`. -/
+noncomputable def mapOpcyclesIso [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
+    (S.map F).opcycles ≅ F.obj S.opcycles :=
+  (S.rightHomologyData.map F).opcyclesIso
+
+/-- When a functor `F` preserves the right homology of a short complex `S`, this is the
+canonical isomorphism `(S.map F).rightHomology ≅ F.obj S.rightHomology`. -/
+noncomputable def mapRightHomologyIso [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
+    (S.map F).rightHomology ≅ F.obj S.rightHomology :=
+  (S.rightHomologyData.map F).rightHomologyIso
+
+/-- When a functor `F` preserves the left homology of a short complex `S`, this is the
+canonical isomorphism `(S.map F).homology ≅ F.obj S.homology`. -/
+noncomputable def mapHomologyIso [S.HasHomology] [(S.map F).HasHomology]
+    [F.PreservesLeftHomologyOf S] :
+    (S.map F).homology ≅ F.obj S.homology :=
+  (S.homologyData.left.map F).homologyIso
+
+/-- When a functor `F` preserves the right homology of a short complex `S`, this is the
+canonical isomorphism `(S.map F).homology ≅ F.obj S.homology`. -/
+noncomputable def mapHomologyIso' [S.HasHomology] [(S.map F).HasHomology]
+    [F.PreservesRightHomologyOf S] :
+    (S.map F).homology ≅ F.obj S.homology :=
+  (S.homologyData.right.map F).homologyIso ≪≫ F.mapIso S.homologyData.right.homologyIso.symm
+
+variable {S}
+
+lemma LeftHomologyData.mapCyclesIso_eq [S.HasLeftHomology]
+    [F.PreservesLeftHomologyOf S] :
+    S.mapCyclesIso F = (hl.map F).cyclesIso ≪≫ F.mapIso hl.cyclesIso.symm := by
+  ext
+  dsimp [mapCyclesIso, cyclesIso]
+  simp only [map_cyclesMap', ← cyclesMap'_comp, Functor.map_id, comp_id,
+    Functor.mapShortComplex_obj]
+
+lemma LeftHomologyData.mapLeftHomologyIso_eq [S.HasLeftHomology]
+    [F.PreservesLeftHomologyOf S] :
+    S.mapLeftHomologyIso F = (hl.map F).leftHomologyIso ≪≫ F.mapIso hl.leftHomologyIso.symm := by
+  ext
+  dsimp [mapLeftHomologyIso, leftHomologyIso]
+  simp only [map_leftHomologyMap', ← leftHomologyMap'_comp, Functor.map_id, comp_id,
+    Functor.mapShortComplex_obj]
+
+lemma RightHomologyData.mapOpcyclesIso_eq [S.HasRightHomology]
+    [F.PreservesRightHomologyOf S] :
+    S.mapOpcyclesIso F = (hr.map F).opcyclesIso ≪≫ F.mapIso hr.opcyclesIso.symm := by
+  ext
+  dsimp [mapOpcyclesIso, opcyclesIso]
+  simp only [map_opcyclesMap', ← opcyclesMap'_comp, Functor.map_id, comp_id,
+    Functor.mapShortComplex_obj]
+
+lemma RightHomologyData.mapRightHomologyIso_eq [S.HasRightHomology]
+    [F.PreservesRightHomologyOf S] :
+    S.mapRightHomologyIso F = (hr.map F).rightHomologyIso ≪≫
+      F.mapIso hr.rightHomologyIso.symm := by
+  ext
+  dsimp [mapRightHomologyIso, rightHomologyIso]
+  simp only [map_rightHomologyMap', ← rightHomologyMap'_comp, Functor.map_id, comp_id,
+    Functor.mapShortComplex_obj]
+
+lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
+    [(S.map F).HasHomology] [F.PreservesLeftHomologyOf S] :
+    S.mapHomologyIso F = (hl.map F).homologyIso ≪≫ F.mapIso hl.homologyIso.symm := by
+  ext
+  dsimp only [mapHomologyIso, homologyIso, ShortComplex.leftHomologyIso,
+    leftHomologyMapIso', leftHomologyIso, Functor.mapIso,
+    Iso.symm, Iso.trans, Iso.refl]
+  simp only [F.map_comp, map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id,
+    Functor.map_id, Functor.mapShortComplex_obj]
+
+lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
+    [(S.map F).HasHomology] [F.PreservesRightHomologyOf S] :
+    S.mapHomologyIso' F = (hr.map F).homologyIso ≪≫ F.mapIso hr.homologyIso.symm := by
+  ext
+  dsimp only [Iso.trans, Iso.symm, Iso.refl, Functor.mapIso, mapHomologyIso', homologyIso,
+    rightHomologyIso, rightHomologyMapIso', ShortComplex.rightHomologyIso]
+  simp only [assoc, F.map_comp, map_rightHomologyMap', ← rightHomologyMap'_comp_assoc]
+
+@[reassoc]
+lemma mapCyclesIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
+    cyclesMap (F.mapShortComplex.map φ) ≫ (S₂.mapCyclesIso F).hom =
+      (S₁.mapCyclesIso F).hom ≫ F.map (cyclesMap φ) := by
+  dsimp only [cyclesMap, mapCyclesIso, LeftHomologyData.cyclesIso, cyclesMapIso', Iso.refl]
+  simp only [LeftHomologyData.map_cyclesMap', Functor.mapShortComplex_obj, ← cyclesMap'_comp,
+    comp_id, id_comp]
+
+@[reassoc]
+lemma mapCyclesIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
+    F.map (cyclesMap φ) ≫ (S₂.mapCyclesIso F).inv =
+      (S₁.mapCyclesIso F).inv ≫ cyclesMap (F.mapShortComplex.map φ) := by
+  rw [← cancel_epi (S₁.mapCyclesIso F).hom, ← mapCyclesIso_hom_naturality_assoc,
+    Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
+
+@[reassoc]
+lemma mapLeftHomologyIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
+    leftHomologyMap (F.mapShortComplex.map φ) ≫ (S₂.mapLeftHomologyIso F).hom =
+      (S₁.mapLeftHomologyIso F).hom ≫ F.map (leftHomologyMap φ) := by
+  dsimp only [leftHomologyMap, mapLeftHomologyIso, LeftHomologyData.leftHomologyIso,
+    leftHomologyMapIso', Iso.refl]
+  simp only [LeftHomologyData.map_leftHomologyMap', Functor.mapShortComplex_obj,
+    ← leftHomologyMap'_comp, comp_id, id_comp]
+
+@[reassoc]
+lemma mapLeftHomologyIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
+    F.map (leftHomologyMap φ) ≫ (S₂.mapLeftHomologyIso F).inv =
+      (S₁.mapLeftHomologyIso F).inv ≫ leftHomologyMap (F.mapShortComplex.map φ) := by
+  rw [← cancel_epi (S₁.mapLeftHomologyIso F).hom, ← mapLeftHomologyIso_hom_naturality_assoc,
+    Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
+
+@[reassoc]
+lemma mapOpcyclesIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
+    opcyclesMap (F.mapShortComplex.map φ) ≫ (S₂.mapOpcyclesIso F).hom =
+      (S₁.mapOpcyclesIso F).hom ≫ F.map (opcyclesMap φ) := by
+  dsimp only [opcyclesMap, mapOpcyclesIso, RightHomologyData.opcyclesIso,
+    opcyclesMapIso', Iso.refl]
+  simp only [RightHomologyData.map_opcyclesMap', Functor.mapShortComplex_obj, ← opcyclesMap'_comp,
+    comp_id, id_comp]
+
+@[reassoc]
+lemma mapOpcyclesIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
+    F.map (opcyclesMap φ) ≫ (S₂.mapOpcyclesIso F).inv =
+      (S₁.mapOpcyclesIso F).inv ≫ opcyclesMap (F.mapShortComplex.map φ) := by
+  rw [← cancel_epi (S₁.mapOpcyclesIso F).hom, ← mapOpcyclesIso_hom_naturality_assoc,
+    Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
+
+@[reassoc]
+lemma mapRightHomologyIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
+    rightHomologyMap (F.mapShortComplex.map φ) ≫ (S₂.mapRightHomologyIso F).hom =
+      (S₁.mapRightHomologyIso F).hom ≫ F.map (rightHomologyMap φ) := by
+  dsimp only [rightHomologyMap, mapRightHomologyIso, RightHomologyData.rightHomologyIso,
+    rightHomologyMapIso', Iso.refl]
+  simp only [RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
+    ← rightHomologyMap'_comp, comp_id, id_comp]
+
+@[reassoc]
+lemma mapRightHomologyIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
+    F.map (rightHomologyMap φ) ≫ (S₂.mapRightHomologyIso F).inv =
+      (S₁.mapRightHomologyIso F).inv ≫ rightHomologyMap (F.mapShortComplex.map φ) := by
+  rw [← cancel_epi (S₁.mapRightHomologyIso F).hom, ← mapRightHomologyIso_hom_naturality_assoc,
+    Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
+
+@[reassoc]
+lemma mapHomologyIso_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
+    [(S₁.map F).HasHomology] [(S₂.map F).HasHomology]
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
+    @homologyMap _ _ _ (S₁.map F) (S₂.map F) (F.mapShortComplex.map φ) _ _ ≫
+      (S₂.mapHomologyIso F).hom = (S₁.mapHomologyIso F).hom ≫ F.map (homologyMap φ) := by
+  dsimp only [homologyMap, homologyMap', mapHomologyIso, LeftHomologyData.homologyIso,
+    LeftHomologyData.leftHomologyIso, leftHomologyMapIso', leftHomologyIso,
+    Iso.symm, Iso.trans, Iso.refl]
+  simp only [LeftHomologyData.map_leftHomologyMap', ← leftHomologyMap'_comp, comp_id, id_comp]
+
+@[reassoc]
+lemma mapHomologyIso_inv_naturality [S₁.HasHomology] [S₂.HasHomology]
+    [(S₁.map F).HasHomology] [(S₂.map F).HasHomology]
+    [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂] :
+    F.map (homologyMap φ) ≫ (S₂.mapHomologyIso F).inv =
+      (S₁.mapHomologyIso F).inv ≫
+      @homologyMap _ _ _ (S₁.map F) (S₂.map F) (F.mapShortComplex.map φ) _ _ := by
+  rw [← cancel_epi (S₁.mapHomologyIso F).hom, ← mapHomologyIso_hom_naturality_assoc,
+    Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
+
+@[reassoc]
+lemma mapHomologyIso'_hom_naturality [S₁.HasHomology] [S₂.HasHomology]
+    [(S₁.map F).HasHomology] [(S₂.map F).HasHomology]
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
+    @homologyMap _ _ _ (S₁.map F) (S₂.map F) (F.mapShortComplex.map φ) _ _ ≫
+      (S₂.mapHomologyIso' F).hom = (S₁.mapHomologyIso' F).hom ≫ F.map (homologyMap φ) := by
+  dsimp only [Iso.trans, Iso.symm, Functor.mapIso, mapHomologyIso']
+  simp only [← RightHomologyData.rightHomologyIso_hom_naturality_assoc _
+    ((homologyData S₁).right.map F) ((homologyData S₂).right.map F), assoc,
+    ← RightHomologyData.map_rightHomologyMap', ← F.map_comp,
+    RightHomologyData.rightHomologyIso_inv_naturality _
+      (homologyData S₁).right (homologyData S₂).right]
+
+@[reassoc]
+lemma mapHomologyIso'_inv_naturality [S₁.HasHomology] [S₂.HasHomology]
+    [(S₁.map F).HasHomology] [(S₂.map F).HasHomology]
+    [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂] :
+    F.map (homologyMap φ) ≫ (S₂.mapHomologyIso' F).inv = (S₁.mapHomologyIso' F).inv ≫
+      @homologyMap _ _ _ (S₁.map F) (S₂.map F) (F.mapShortComplex.map φ) _ _ := by
+  rw [← cancel_epi (S₁.mapHomologyIso' F).hom, ← mapHomologyIso'_hom_naturality_assoc,
+    Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
+
+variable (S)
+
+lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomologyOf S]
+    [F.PreservesRightHomologyOf S] :
+    S.mapHomologyIso' F = S.mapHomologyIso F := by
+  ext
+  rw [S.homologyData.left.mapHomologyIso_eq F, S.homologyData.right.mapHomologyIso'_eq F]
+  dsimp only [Iso.trans, Iso.symm, Iso.refl, Functor.mapIso, RightHomologyData.homologyIso,
+    rightHomologyIso, RightHomologyData.rightHomologyIso, LeftHomologyData.homologyIso,
+    leftHomologyIso, LeftHomologyData.leftHomologyIso]
+  simp only [RightHomologyData.map_H, rightHomologyMapIso'_inv, rightHomologyMapIso'_hom, assoc,
+    Functor.map_comp, RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
+    Functor.map_id, LeftHomologyData.map_H, leftHomologyMapIso'_inv, leftHomologyMapIso'_hom,
+    LeftHomologyData.map_leftHomologyMap', ← rightHomologyMap'_comp_assoc, ← leftHomologyMap'_comp,
+    ← leftHomologyMap'_comp_assoc, id_comp]
+  have γ : HomologyMapData (𝟙 (S.map F)) (map S F).homologyData (S.homologyData.map F) := default
+  have eq := γ.comm
+  rw [← γ.left.leftHomologyMap'_eq, ← γ.right.rightHomologyMap'_eq] at eq
+  dsimp at eq
+  simp only [← reassoc_of% eq, ← F.map_comp, Iso.hom_inv_id, F.map_id, comp_id]
+
+end
+
+section
+
+variable {S}
+  {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
+  [F.PreservesLeftHomologyOf S] [G.PreservesLeftHomologyOf S]
+  [F.PreservesRightHomologyOf S] [G.PreservesRightHomologyOf S]
+
+/-- Given a natural transformation `τ : F ⟶ G` between functors `C ⥤ D` which preserve
+the left homology of a short complex `S`, and a left homology data for `S`,
+this is the left homology map data for the morphism `S.mapNatTrans τ`
+obtained by evaluating `τ`. -/
+@[simps]
+def LeftHomologyMapData.natTransApp (h : LeftHomologyData S) (τ : F ⟶ G) :
+    LeftHomologyMapData (S.mapNatTrans τ) (h.map F) (h.map G) where
+  φK := τ.app h.K
+  φH := τ.app h.H
+
+/-- Given a natural transformation `τ : F ⟶ G` between functors `C ⥤ D` which preserve
+the right homology of a short complex `S`, and a right homology data for `S`,
+this is the right homology map data for the morphism `S.mapNatTrans τ`
+obtained by evaluating `τ`. -/
+@[simps]
+def RightHomologyMapData.natTransApp (h : RightHomologyData S) (τ : F ⟶ G) :
+    RightHomologyMapData (S.mapNatTrans τ) (h.map F) (h.map G) where
+  φQ := τ.app h.Q
+  φH := τ.app h.H
+
+/-- Given a natural transformation `τ : F ⟶ G` between functors `C ⥤ D` which preserve
+the homology of a short complex `S`, and a homology data for `S`,
+this is the homology map data for the morphism `S.mapNatTrans τ`
+obtained by evaluating `τ`. -/
+@[simps]
+def HomologyMapData.natTransApp (h : HomologyData S) (τ : F ⟶ G) :
+    HomologyMapData (S.mapNatTrans τ) (h.map F) (h.map G) where
+  left := LeftHomologyMapData.natTransApp h.left τ
+  right := RightHomologyMapData.natTransApp h.right τ
+
+variable (S)
+
+lemma homologyMap_mapNatTrans [S.HasHomology] (τ : F ⟶ G) :
+    homologyMap (S.mapNatTrans τ) =
+      (S.mapHomologyIso F).hom ≫ τ.app S.homology ≫ (S.mapHomologyIso G).inv :=
+  (LeftHomologyMapData.natTransApp S.homologyData.left τ).homologyMap_eq
+
+end
+
+section
+
+variable [HasKernels C] [HasCokernels C] [HasKernels D] [HasCokernels D]
+
+/-- The natural isomorphism
+`F.mapShortComplex ⋙ cyclesFunctor D ≅ cyclesFunctor C ⋙ F`
+for a functor `F : C ⥤ D` which preserves homology. --/
+noncomputable def cyclesFunctorIso [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.cyclesFunctor D ≅
+      ShortComplex.cyclesFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapCyclesIso F)
+    (fun f => ShortComplex.mapCyclesIso_hom_naturality f F)
+
+/-- The natural isomorphism
+`F.mapShortComplex ⋙ leftHomologyFunctor D ≅ leftHomologyFunctor C ⋙ F`
+for a functor `F : C ⥤ D` which preserves homology. --/
+noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.leftHomologyFunctor D ≅
+      ShortComplex.leftHomologyFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapLeftHomologyIso F)
+    (fun f => ShortComplex.mapLeftHomologyIso_hom_naturality f F)
+
+/-- The natural isomorphism
+`F.mapShortComplex ⋙ opcyclesFunctor D ≅ opcyclesFunctor C ⋙ F`
+for a functor `F : C ⥤ D` which preserves homology. --/
+noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.opcyclesFunctor D ≅
+      ShortComplex.opcyclesFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapOpcyclesIso F)
+    (fun f => ShortComplex.mapOpcyclesIso_hom_naturality f F)
+
+/-- The natural isomorphism
+`F.mapShortComplex ⋙ rightHomologyFunctor D ≅ rightHomologyFunctor C ⋙ F`
+for a functor `F : C ⥤ D` which preserves homology. --/
+noncomputable def rightHomologyFunctorIso [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅
+      ShortComplex.rightHomologyFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapRightHomologyIso F)
+    (fun f => ShortComplex.mapRightHomologyIso_hom_naturality f F)
+
+end
+
+/-- The natural isomorphism
+`F.mapShortComplex ⋙ homologyFunctor D ≅ homologyFunctor C ⋙ F`
+for a functor `F : C ⥤ D` which preserves homology. --/
+noncomputable def homologyFunctorIso
+    [CategoryWithHomology C] [CategoryWithHomology D] [F.PreservesHomology] :
+    F.mapShortComplex ⋙ ShortComplex.homologyFunctor D ≅
+      ShortComplex.homologyFunctor C ⋙ F :=
+  NatIso.ofComponents (fun S => S.mapHomologyIso F)
+    (fun f => ShortComplex.mapHomologyIso_hom_naturality f F)
 
 end ShortComplex
 
