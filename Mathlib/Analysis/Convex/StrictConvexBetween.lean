@@ -21,16 +21,6 @@ open scoped Convex
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
-section to_move
-variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
-  [NormedAddTorsor V P]
-
--- TODO: Is there a better place for this lemma?
-lemma Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) : dist x y + dist y z = dist x z := by
-  obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h; simp [abs_of_nonneg, ha₀, ha₁, sub_mul]
-
-end to_move
-
 variable [StrictConvexSpace ℝ V]
 
 section PseudoMetricSpace
