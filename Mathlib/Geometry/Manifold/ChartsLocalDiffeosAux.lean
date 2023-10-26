@@ -72,6 +72,45 @@ lemma DiffeomorphOn.differential_isContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r
     map_smul' := by intros; simp
   }
 
+lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
+    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
+  -- Notation to simplify my problem.
+  let y := h.toFun x
+  have hy : y ∈ h.target := h.toLocalEquiv.mapsTo hx
+  set A := mfderiv I J h.toFun x
+  let A' := mfderiv J I h.invFun y
+  have hr : 1 ≤ (r : ℕ∞) := Nat.one_le_cast.mpr (Nat.one_le_of_lt hr)
+  have hgat : MDifferentiableAt J I h.invFun y :=
+    (h.contMDiffAt_symm (h.toLocalEquiv.mapsTo hx)).mdifferentiableAt hr
+  have hfat : MDifferentiableAt I J h.toFun x :=
+    (h.contMDiffAt hx).mdifferentiableAt hr
+  have inv1 := calc A'.comp A
+    _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
+    _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
+      (mfderivWithin_of_open I I h.open_source hx).symm
+    _ = mfderivWithin I I id h.source x :=
+      mfderivWithin_congr (h.open_source.uniqueMDiffWithinAt hx) h.left_inv' (h.left_inv' hx)
+    _ = mfderiv I I id x := mfderivWithin_of_open I I h.open_source hx
+    _ = ContinuousLinearMap.id ℝ (TangentSpace I x) := mfderiv_id I
+  have inv2 := calc A.comp A'
+    _ = mfderiv J J (h.toFun ∘ h.invFun) y := by
+          -- Use the chain rule: rewrite the base point (I ∘ e ∘ e.invFun ∘ I.invFun) x = x, ...
+          rw [← (h.left_inv' hx)] at hfat
+          -- ... but also the points x and y under the map.
+          -- for some reason, cannot plug this in directly
+          have : (LocalEquiv.invFun h.toLocalEquiv y) = x := (h.left_inv' hx)
+          exact (this ▸ (mfderiv_comp y hfat hgat)).symm
+    _ = mfderivWithin J J (h.toFun ∘ h.invFun) h.target y :=
+      (mfderivWithin_of_open J J h.open_target hy).symm
+    _ = mfderivWithin J J id h.target y :=
+      mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hy) h.right_inv' (h.right_inv' hy)
+    _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hy
+    _ = ContinuousLinearMap.id ℝ (TangentSpace J y) := mfderiv_id J
+
+  sorry
+
+-- auxiliary results, not needed for my proof, but perhaps still useful
+section aux
 -- TODO: I feel this should be in mathlib already, but exact? cannot find it...
 lemma LocalHomeomorph.image_symm_target_eq_source {e : LocalHomeomorph M H} :
   e.invFun '' e.target = e.source := by
@@ -86,42 +125,4 @@ lemma LocalHomeomorph.isBLA {e : LocalHomeomorph M H} : IsOpen (e.invFun '' e.ta
 -- is this worth being a separate lemma in mathlib?
 lemma LocalHomeomorph.asdf {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
   e.source ∈ 𝓝 x := by sorry
-
-lemma diffeoOn_differential_bijective {r : ℕ} (hr : 1 ≤ r) {x : M}
-    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
-  let y := h.toFun x
-  -- Initial observations about my data.
-  have hyx : h.invFun y = x := h.left_inv' hx
-  have hysource : y ∈ h.target := h.toLocalEquiv.mapsTo hx
-
-  set A := mfderiv I J h.toFun x
-  let A' := mfderiv J I h.invFun y
-  have hr : 1 ≤ (r : ℕ∞) := Nat.one_le_cast.mpr (Nat.one_le_of_lt hr)
-  have hgat : MDifferentiableAt J I h.invFun y :=
-    (h.contMDiffAt_symm (h.toLocalEquiv.mapsTo hx)).mdifferentiableAt hr
-  have hfat : MDifferentiableAt I J h.toFun x :=
-    (h.contMDiffAt hx).mdifferentiableAt hr
-  have inv1 := calc A'.comp A
-    _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
-    _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
-      (mfderivWithin_of_open I I h.open_source hx).symm
-    _ = mfderivWithin I I id h.source x :=
-      mfderivWithin_congr (h.open_source.uniqueMDiffWithinAt hx) h.left_inv' hyx
-    _ = mfderiv I I id x := mfderivWithin_of_open I I h.open_source hx
-    _ = ContinuousLinearMap.id ℝ (TangentSpace I x) := mfderiv_id I
-  have inv2 := calc A.comp A'
-    _ = mfderiv J J (h.toFun ∘ h.invFun) y := by
-          -- Use the chain rule: rewrite the base point (I ∘ e ∘ e.invFun ∘ I.invFun) x = x, ...
-          rw [← (h.left_inv' hx)] at hfat
-          -- ... but also the points x and y under the map.
-          have : (LocalEquiv.invFun h.toLocalEquiv y) = x := hyx -- just hyx is not enough
-          exact (this ▸ (mfderiv_comp y hfat hgat)).symm
-    _ = mfderivWithin J J (h.toFun ∘ h.invFun) h.target y :=
-      (mfderivWithin_of_open J J h.open_target hysource).symm
-    _ = mfderivWithin J J id h.target y :=
-          mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hysource) h.right_inv' (h.right_inv' hysource)
-    _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hysource
-    _ = ContinuousLinearMap.id ℝ (TangentSpace J y) := mfderiv_id J
-
-
-  sorry
+end aux
