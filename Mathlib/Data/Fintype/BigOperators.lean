@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Option
@@ -295,8 +296,11 @@ theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
 #align fintype.prod_sum_type Fintype.prod_sum_type
 #align fintype.sum_sum_type Fintype.sum_sum_type
 
--- TODO: make sure this is inferred automatically from [Fintype α₁] and [Fintype α₂]
-variable [Fintype (α₁ × α₂)]
+@[to_additive (attr := simp)]
+theorem Fintype.prod_sum_type_right (f : Sum α₁ α₂ → M) :
+    ∏ x, f x = (∏ a₂, f (Sum.inr a₂)) * ∏ a₁, f (Sum.inl a₁) := by
+  rw [mul_comm]
+  exact prod_sum_type _
 
 @[to_additive Fintype.sum_prod_type]
 theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
@@ -307,21 +311,19 @@ theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
 /-- An uncurried version of `Finset.prod_prod_type`. -/
 @[to_additive Fintype.sum_prod_type' "An uncurried version of `Finset.sum_prod_type`"]
 theorem Fintype.prod_prod_type' [CommMonoid γ] {f : α₁ → α₂ → γ} :
-    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x : α₁, ∏ y : α₂, f x y :=
-  prod_finset_product univ univ (fun _ ↦ univ) <|
-      fun p => ⟨fun _ => ⟨mem_univ p.1, mem_univ p.2⟩, fun _ => mem_univ p⟩
+    ∏ x : α₁ × α₂, f x.1 x.2 = ∏ x : α₁, ∏ y : α₂, f x y := 
+  prod_prod_type
 
 @[to_additive Fintype.sum_prod_type_right]
 theorem Fintype.prod_prod_type_right [CommMonoid γ] {f : α₁ × α₂ → γ} :
-    ∏ x : α₁ × α₂, f x = ∏ y : α₂, ∏ x : α₁, f (x, y) :=
-  prod_finset_product_right univ univ (fun _ ↦ univ) <|
-      fun p => ⟨fun _ => ⟨mem_univ p.2, mem_univ p.1⟩, fun _ => mem_univ p⟩
+    ∏ x : α₁ × α₂, f x = ∏ y : α₂, ∏ x : α₁, f (x, y) := by
+  rw [prod_comm]
+  exact prod_prod_type
 
 /-- An uncurried version of `Finset.prod_prod_type_right`. -/
 @[to_additive Fintype.sum_prod_type_right' "An uncurried version of `Finset.sum_prod_type_right`"]
 theorem Fintype.prod_prod_type_right' [CommMonoid γ] {f : α₁ → α₂ → γ} :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y : α₂, ∏ x : α₁, f x y :=
-  prod_finset_product_right univ univ (fun _ ↦ univ) <|
-      fun p => ⟨fun _ => ⟨mem_univ p.2, mem_univ p.1⟩, fun _ => mem_univ p⟩
+  prod_prod_type_right
 
 end
