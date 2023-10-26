@@ -821,15 +821,9 @@ theorem _root_.QuadraticForm.polarBilin_comp (Q : QuadraticForm R N' N) (f : M �
     polarBilin (Q.comp f) = LinearMap.compl₁₂ (polarBilin Q) f f :=
   LinearMap.ext₂ <| fun x y => by simp [polar]
 
-theorem _root_.LinearMap.compQuadraticForm_polar (f : N →ₗ[R] N') (Q : QuadraticForm R M N) (x y : M) :
-    polar (f.compQuadraticForm Q) x y = f (polar Q x y) := by
+theorem _root_.LinearMap.compQuadraticForm_polar (f : N →ₗ[R] N')
+    (Q : QuadraticForm R M N) (x y : M) : polar (f.compQuadraticForm Q) x y = f (polar Q x y) := by
   simp [polar]
-
-variable (f : N →ₗ[R] N') (Q : QuadraticForm R M N)
-
-#check (f.compQuadraticForm Q).polarBilin
-
-#check Q.polarBilin.compr₂ f
 
 theorem _root_.LinearMap.compQuadraticForm_polarBilin (f : N →ₗ[R] N') (Q : QuadraticForm R M N) :
     (f.compQuadraticForm Q).polarBilin = Q.polarBilin.compr₂ f := by
@@ -851,7 +845,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N
 
 variable (S) [CommSemiring S] [Algebra S R]
 
-variable [Invertible (2 : R)] {B₁ : BilinForm R M}
+variable [Invertible (2 : R)] {B₁ : M →ₗ[R] M →ₗ[R] R}
 
 /-- `associatedHom` is the map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form.  As provided here, this has the structure of an `S`-linear map
@@ -904,19 +898,19 @@ theorem associated_toQuadraticForm (B : M →ₗ[R] M →ₗ[R] N) (x y : M) :
 #align quadratic_form.associated_to_quadratic_form QuadraticForm.associated_toQuadraticForm
 
 theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom B₁.toQuadraticForm = B₁ :=
-  BilinForm.ext fun x y => by
+  LinearMap.ext₂ fun x y => by
     rw [associated_toQuadraticForm, h.eq x y, ← two_mul, ← mul_assoc, invOf_mul_self,
       one_mul]
 #align quadratic_form.associated_left_inverse QuadraticForm.associated_left_inverse
 
 -- porting note: moved from below to golf the next theorem
-theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
+theorem associated_eq_self_apply (x : M) : associatedHom Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three,
-    add_mul, add_mul, one_mul, add_sub_cancel, add_sub_cancel, invOf_mul_self_assoc]
+    add_smul, add_smul, one_smul, add_sub_cancel, add_sub_cancel, invOf_mul_self_assoc]
 #align quadratic_form.associated_eq_self_apply QuadraticForm.associated_eq_self_apply
 
-theorem toQuadraticForm_associated : (associatedHom S Q).toQuadraticForm = Q :=
-  QuadraticForm.ext <| associated_eq_self_apply S Q
+theorem toQuadraticForm_associated : (associatedHom Q).toQuadraticForm = Q :=
+  QuadraticForm.ext <| associated_eq_self_apply Q
 #align quadratic_form.to_quadratic_form_associated QuadraticForm.toQuadraticForm_associated
 
 -- note: usually `rightInverse` lemmas are named the other way around, but this is consistent
