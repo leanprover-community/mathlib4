@@ -1,5 +1,5 @@
 import Std.Tactic.GuardMsgs
-import Mathlib.Util.PiNotation
+import Mathlib.Util.Delaborators
 import Mathlib.Data.Set.Lattice
 
 section PiNotation
