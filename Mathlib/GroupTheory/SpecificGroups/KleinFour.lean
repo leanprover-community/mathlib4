@@ -5,7 +5,6 @@ Authors: Newell Jensen
 -/
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
-import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-!
 # Klein Four Group
