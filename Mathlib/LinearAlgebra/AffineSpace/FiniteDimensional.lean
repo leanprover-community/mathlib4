@@ -365,7 +365,7 @@ variable (k P)
 /-- The empty set is collinear. -/
 theorem collinear_empty : Collinear k (∅ : Set P) := by
   rw [collinear_iff_rank_le_one, vectorSpan_empty]
-  simp
+  simp only [rank_bot, zero_le]
 #align collinear_empty collinear_empty
 
 variable {P}
@@ -373,7 +373,7 @@ variable {P}
 /-- A single point is collinear. -/
 theorem collinear_singleton (p : P) : Collinear k ({p} : Set P) := by
   rw [collinear_iff_rank_le_one, vectorSpan_singleton]
-  simp
+  simp only [rank_bot, zero_le]
 #align collinear_singleton collinear_singleton
 
 variable {k}
