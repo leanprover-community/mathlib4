@@ -12,10 +12,10 @@
   {"git":
    {"url": "https://github.com/leanprover-community/aesop",
     "subDir?": null,
-    "rev": "9dc4a1097a690216eaa7cf2d2290efd447e60d7a",
+    "rev": "f32be12d306ffd370f3fe1671e6712fb9c6d3b52",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "master",
+    "inputRev?": "lean-pr-testing-2734",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover/lean4-cli",
@@ -36,9 +36,9 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "e3d90c3be330d8bcc99336e7ee6dbf6d3f00a866",
+    "rev": "a71799358e0615fe377875bd573692507c20570f",
     "opts": {},
     "name": "std",
-    "inputRev?": "nightly-testing",
+    "inputRev?": "lean-pr-testing-2734",
     "inherited": false}}],
  "name": "mathlib"}
