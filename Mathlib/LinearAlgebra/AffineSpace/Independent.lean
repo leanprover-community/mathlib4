@@ -201,12 +201,12 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
         exact ha (s1 ∪ s2) (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) hws heq i hi
       · rw [← Finset.mem_coe, Finset.coe_union] at hi
         have h₁ : Set.indicator (↑s1) w1 i = 0 := by
-          simp only [Set.indicator, Finset.mem_coe, ite_eq_right_iff]
+          simp only [Set.indicator, @ite_eq_right_iff _ _ (_)]
           intro h
           by_contra
           exact (mt (@Set.mem_union_left _ i ↑s1 ↑s2) hi) h
         have h₂ : Set.indicator (↑s2) w2 i = 0 := by
-          simp only [Set.indicator, Finset.mem_coe, ite_eq_right_iff]
+          simp only [Set.indicator, @ite_eq_right_iff _ _ (_)]
           intro h
           by_contra
           exact (mt (@Set.mem_union_right _ i ↑s2 ↑s1) hi) h
