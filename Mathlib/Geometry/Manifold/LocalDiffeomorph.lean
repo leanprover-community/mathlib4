@@ -192,7 +192,9 @@ structure LocalDiffeomorph extends LocalHomeomorph M N where
   sources : Set (Opens M)
   targets : Set (Opens N)
   sourceAt : M → sources
+  mem_sources : ∀ x : M, x ∈ (sourceAt x).1
   targetAt : M → targets
+  mem_targets : ∀ x : M, (toFun x) ∈ (targetAt x).1
   contMDiffOn_toFun : ∀ x : M, ContMDiffOn I J n toFun (sourceAt x)
   contMDiffOn_invFun : ∀ x : M, ContMDiffOn J I n invFun (targetAt x)
 
@@ -205,6 +207,8 @@ protected def refl : LocalDiffeomorph I I M M n where
   -- At every point, we choose the set `univ`.
   sources := singleton ⟨univ, isOpen_univ⟩
   targets := singleton ⟨univ, isOpen_univ⟩
+  mem_sources := fun x ↦ sorry -- should be : (by exact trivial)
+  mem_targets := fun x ↦ sorry -- should be: (by exact trivial)
   sourceAt := sorry -- obvious
     -- intro x --fun _ ↦ ⟨univ, isOpen_univ⟩
     -- set s : Opens M := ⟨univ, isOpen_univ⟩
@@ -221,14 +225,20 @@ protected def refl : LocalDiffeomorph I I M M n where
 
 /- Inverse of a local diffeomorphism. -/
 @[pp_dot]
-protected def symm (h : LocalDiffeomorph I I' M M' n) :
-    LocalDiffeomorph I' I M' M n where
+protected def symm (h : LocalDiffeomorph I J M N n) :
+    LocalDiffeomorph J I N M n where
   toLocalHomeomorph := h.toLocalHomeomorph.symm
-  -- XXX: why are all of these not required?
-  -- sources := h.targets
-  -- targets := h.sources
-  -- sourceAt := fun y ↦ (h.targetAt (h.invFun y))
-  -- targetAt := fun y ↦ (h.sourceAt (h.invFun y))
+  sources := h.targets
+  targets := h.sources
+  sourceAt := fun y ↦ (h.targetAt (h.invFun y))
+  targetAt := fun y ↦ (h.sourceAt (h.invFun y))
+  mem_sources := by
+    intro y
+    let r := h.mem_targets (h.invFun y)
+    have : h.toLocalEquiv (LocalEquiv.invFun h.toLocalEquiv y) = y := sorry -- left_inv!
+    rw [this] at r
+    exact r
+  mem_targets := sorry -- should be similar
   contMDiffOn_toFun := fun y ↦ h.contMDiffOn_invFun (h.invFun y)
   contMDiffOn_invFun := fun y ↦ h.contMDiffOn_toFun (h.invFun y)
 
@@ -246,6 +256,8 @@ protected def trans' (h : LocalDiffeomorph I I' M M' n)
   sourceAt := h.sourceAt
   -- Since source and target agree, this is just targetAt.
   targetAt := fun x ↦ h'.targetAt (h.toFun x)
+  mem_sources := h.mem_sources
+  mem_targets := fun x ↦ h'.mem_targets (h.toFun x)
   contMDiffOn_toFun := sorry -- h.contMDiffOn_toFun.comp h'.contMDiffOn_toFun plus details
   contMDiffOn_invFun := sorry --h'.contMDiffOn_invFun.comp h.contMDiffOn_invFun plus details
 
@@ -267,7 +279,9 @@ protected def trans (h : LocalDiffeomorph I I' M M' n)
     have : IsOpen t := sorry
     sorry -- ⟨t, this⟩, plus some fuzz
   sources := sorry
+  mem_sources := sorry
   targets := sorry
+  mem_targets := sorry
   contMDiffOn_toFun := sorry
   contMDiffOn_invFun := sorry
 
