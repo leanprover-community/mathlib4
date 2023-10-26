@@ -484,6 +484,32 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → α} : (ofFn f).prod = ∏ i, f i := b
 #align list.prod_of_fn List.prod_ofFn
 #align list.sum_of_fn List.sum_ofFn
 
+@[to_additive]
+theorem prod_finProd {n : ℕ} {m : ℕ} {f : ℕ × ℕ → α} :
+    ∏ x : Fin n × Fin m, f (x.1, x.2) = ∏ x : Fin n, ∏ y : Fin m, f (x, y) :=
+  prod_finset_product univ univ (fun _ ↦ univ) <|
+      fun p => ⟨fun _ => ⟨mem_univ p.1, mem_univ p.2⟩, fun _ => mem_univ p⟩
+
+/-- An uncurried version of `Finset.prod_finProd`. -/
+@[to_additive "An uncurried version of `Finset.sum_finProd'`"]
+theorem prod_finProd' {n : ℕ} {m : ℕ} {f : ℕ → ℕ → α} :
+    ∏ x : Fin n × Fin m, f x.1 x.2 = ∏ x : Fin n, ∏ y : Fin m, f x y :=
+  prod_finset_product univ univ (fun _ ↦ univ) <|
+      fun p => ⟨fun _ => ⟨mem_univ p.1, mem_univ p.2⟩, fun _ => mem_univ p⟩
+
+@[to_additive]
+theorem prod_finProd_right {n : ℕ} {m : ℕ} {f : ℕ × ℕ → α} :
+    ∏ x : Fin n × Fin m, f (x.1, x.2) = ∏ y : Fin m, ∏ x : Fin n, f (x, y) :=
+  prod_finset_product_right univ univ (fun _ ↦ univ) <|
+      fun p => ⟨fun _ => ⟨mem_univ p.2, mem_univ p.1⟩, fun _ => mem_univ p⟩
+
+/-- An uncurried version of `Finset.prod_finProd_right`. -/
+@[to_additive "An uncurried version of `Finset.sum_finProd_right`"]
+theorem prod_finProd_right' {n : ℕ} {m : ℕ} {f : ℕ → ℕ → α} :
+    ∏ x : Fin n × Fin m, f x.1 x.2 = ∏ y : Fin m, ∏ x : Fin n, f x y :=
+  prod_finset_product_right univ univ (fun _ ↦ univ) <|
+      fun p => ⟨fun _ => ⟨mem_univ p.2, mem_univ p.1⟩, fun _ => mem_univ p⟩
+
 end CommMonoid
 
 -- Porting note: Statement had deprecated `L.nthLe i i.is_lt` instead of `L.get i`.
