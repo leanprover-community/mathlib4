@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2023 Michael Rothgang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Rothgang
+-/
+
 import Mathlib.Geometry.Manifold.DiffeomorphOn
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
@@ -20,8 +26,8 @@ variable
   [SmoothManifoldWithCorners J N]
 
 -- similar to `fderivWithin_of_open`; seems missing
-lemma hasFDerivWithinAt_of_open {s : Set E} {x : E} (h : IsOpen s) (hx : x ∈ s) {f : E → F} {f' : E →L[ℝ] F}:
-    HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
+lemma hasFDerivWithinAt_of_open {s : Set E} {x : E} (h : IsOpen s) (hx : x ∈ s) {f : E → F}
+    {f' : E →L[ℝ] F} : HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
   simp only [HasFDerivAt, HasFDerivWithinAt]
   rw [IsOpen.nhdsWithin_eq h hx]
 
@@ -51,7 +57,7 @@ theorem image_congr'' {α β : Type*} {f : α → β} {g : β → α} {s : Set �
 
 /-- The differential of a  local diffeomorphism is a linear isomorphism
   at each point in its source. -/
-lemma DiffeomorphOn.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
+noncomputable def DiffeomorphOn.differential_toContinuousLinearEquiv {r : ℕ} (hr : 1 ≤ r) {x : M}
     (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) :
     ContinuousLinearEquiv (RingHom.id ℝ) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
   let y := h.toFun x
@@ -130,7 +136,7 @@ lemma Diffeomorph.differential_bijective {r : ℕ} (hr : 1 ≤ r) (f : Diffeomor
 section aux
 -- TODO: I feel this should be in mathlib already, but exact? cannot find it...
 lemma LocalHomeomorph.image_symm_target_eq_source {e : LocalHomeomorph M H} :
-  e.invFun '' e.target = e.source := by
+    e.invFun '' e.target = e.source := by
   rw [← e.toLocalEquiv.image_source_eq_target, ← image_comp]
   exact image_congr'' (fun x hx ↦ e.left_inv' hx)
 
@@ -141,5 +147,5 @@ lemma LocalHomeomorph.isBLA {e : LocalHomeomorph M H} : IsOpen (e.invFun '' e.ta
 
 -- is this worth being a separate lemma in mathlib?
 lemma LocalHomeomorph.asdf {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
-  e.source ∈ 𝓝 x := by sorry
+    e.source ∈ 𝓝 x := by sorry
 end aux

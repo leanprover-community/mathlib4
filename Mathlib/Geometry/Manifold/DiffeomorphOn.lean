@@ -1,10 +1,16 @@
+/-
+Copyright (c) 2023 Michael Rothgang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Rothgang
+-/
+
 import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.MFDeriv
 
 /-!
 # "Local" diffeomorphisms
-This file implements "local" diffeomorphisms: C^n maps between open subsets of two manifolds.
+This file implements "local" diffeomorphisms: `C^n` maps between open subsets of two manifolds.
 
 Junk value pattern, extended to the whole manifold.
 
@@ -12,7 +18,10 @@ Model case: charts of a smooth manifold.
 
 Naming is hard: "LocalDiffeomorph" would parallel `LocalHomeomorph` (which is the continuous
 analogue of this notion); however, in mathematics, "local diffeomorphisms" are already a fixed term
-and something different (a C^n map, so every point has a neighbourhood on which `f` is a diffeomorphism).
+and something different (a `C^n` map `f: M → N` such that every point `p ∈ M` has a neighbourhood
+on which `f` is a diffeomorphism).
+
+TODO: define the real local diffeomorphisms; show more relations to diffeomorphisms
 -/
 
 open Function Manifold Set SmoothManifoldWithCorners TopologicalSpace Topology
@@ -33,15 +42,15 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 variable (I I' J M M' N n)
 
 /-- Like `Diffeomorph`, but on an open set only.
-  Maps `M → M` which are `n`-times continuous differentiable diffeomorphisms with respect to `I` and `I'`
-  between two open subsets of `M` resp. `M'`.
-  Not called LocalDiffeomorph as that's something else...  -/
+  Maps `M → M` which are `n`-times continuous differentiable diffeomorphisms with respect
+  to `I` and `I'` between two open subsets of `M` resp. `M'`.
+  Not called `LocalDiffeomorph` this name is used in mathematics for something else...  -/
 structure DiffeomorphOn extends LocalHomeomorph M N where
   contMDiffOn_toFun : ContMDiffOn I J n toFun source
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
-/-- A diffeomorphism is a local diffeomorphism. -/
-theorem Diffeomorph.toDiffeomorphOn (h : Diffeomorph I J M N n) : DiffeomorphOn I J M N n :=
+/-- A diffeomorphism is a local diffeomorphism on the entire space. -/
+def Diffeomorph.toDiffeomorphOn (h : Diffeomorph I J M N n) : DiffeomorphOn I J M N n :=
   {
     contMDiffOn_toFun := h.contMDiff.contMDiffOn
     contMDiffOn_invFun := h.contMDiff_invFun.contMDiffOn
@@ -58,13 +67,15 @@ protected theorem continuousOn (h : DiffeomorphOn I J M N n) : ContinuousOn h.to
   h.contMDiffOn_toFun.continuousOn
 
 @[continuity]
-protected theorem continuousOn_symm (h : DiffeomorphOn I J M N n) : ContinuousOn h.invFun h.target :=
+protected theorem continuousOn_symm (h : DiffeomorphOn I J M N n) :
+    ContinuousOn h.invFun h.target :=
   h.contMDiffOn_invFun.continuousOn
 
 protected theorem contMDiffOn (h : DiffeomorphOn I J M N n) : ContMDiffOn I J n h.toFun h.source :=
   h.contMDiffOn_toFun
 
-protected theorem contMDiffOn_symm (h : DiffeomorphOn I J M N n) : ContMDiffOn J I n h.invFun h.target :=
+protected theorem contMDiffOn_symm (h : DiffeomorphOn I J M N n) :
+    ContMDiffOn J I n h.invFun h.target :=
   h.contMDiffOn_invFun
 
 protected theorem contMDiffAt (h : DiffeomorphOn I J M N n) {x : M} (hx : x ∈ h.source) :
@@ -76,11 +87,11 @@ protected theorem contMDiffAt_symm (h : DiffeomorphOn I J M N n) {x : N} (hx : x
   h.contMDiffOn_invFun.contMDiffAt (h.open_target.mem_nhds hx)
 
 protected theorem contMDiffWithinAt (h : DiffeomorphOn I J M N n)
-      {s : Set M} {x : M} (hx : x ∈ h.source) : ContMDiffWithinAt I J n h.toFun s x :=
+    {s : Set M} {x : M} (hx : x ∈ h.source) : ContMDiffWithinAt I J n h.toFun s x :=
   (h.contMDiffAt hx).contMDiffWithinAt
 
 protected theorem contMDiffWithinAt_symm (h : DiffeomorphOn I J M N n)
-      {s : Set N} {x : N} (hx : x ∈ h.target) : ContMDiffWithinAt J I n h.invFun s x :=
+    {s : Set N} {x : N} (hx : x ∈ h.target) : ContMDiffWithinAt J I n h.invFun s x :=
   (h.contMDiffAt_symm hx).contMDiffWithinAt
 
 protected theorem mdifferentiableOn (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
@@ -105,13 +116,15 @@ theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
 -- theorem coe_refl : ⇑(DiffeomorphOn.refl I M n) = id :=
 --   rfl
 
-/-- Composition of two diffeomorphisms. -/
--- skipped so far; this is more subtle than I like (compare LocalHomeomorph, which has trans' and trans)
+-- skipped so far; this is more subtle than I like
+-- (compare LocalHomeomorph, which has trans' and trans)
+/- /-- Composition of two local diffeomorphisms. -/
 protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n)
-    (h : h₁.target ⊆ h₂.source) : DiffeomorphOn I J M N n where
+    (_h : h₁.target ⊆ h₂.source) : DiffeomorphOn I J M N n where
   contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h
   contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h
   toLocalHomeomorph := h₁.toLocalHomeomorph.trans h₂.toLocalHomeomorph
+-/
 
 -- TODO: these statements don't compile yet
 /-
@@ -138,7 +151,8 @@ protected def symm (h : DiffeomorphOn I I' M M' n) : DiffeomorphOn I' I M' M n w
 
 /- TODO: fix these statements, then the proofs will be easy
 @[simp]
-theorem apply_symm_apply (h : DiffeomorphOn I I' M M' n) {x : N} (hx : x ∈ h.target) : h.toFun (h.symm.toFun x) = x :=
+theorem apply_symm_apply (h : DiffeomorphOn I I' M M' n) {x : N} (hx : x ∈ h.target) :
+    h.toFun (h.symm.toFun x) = x :=
   h.toLocalHomeomorph.apply_symm_apply hx
 
 @[simp]
@@ -172,7 +186,7 @@ theorem symm_toLocalHomeomorph (h : DiffeomorphOn I J M N n) :
   rfl
 
 #exit
--- TODO: audit these, and adapt to DiffeoMorphOn as fit
+-- TODO: audit these, and adapt to DiffeomorphOn as fit
 @[simp, mfld_simps]
 theorem toEquiv_coe_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toEquiv.symm = h.symm :=
   rfl
@@ -215,6 +229,5 @@ theorem coe_toHomeomorph (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toHomeomorph = h :=
 @[simp]
 theorem coe_toHomeomorph_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toHomeomorph.symm = h.symm :=
   rfl
-
 
 end DiffeomorphOn
