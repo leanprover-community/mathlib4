@@ -105,7 +105,8 @@ theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
 #align continuous_map.one_comp ContinuousMap.one_comp
 #align continuous_map.zero_comp ContinuousMap.zero_comp
 
--- ### "nat_cast"
+/-! ### "nat_cast" -/
+
 instance [NatCast β] : NatCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
@@ -119,7 +120,8 @@ theorem nat_cast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :
   rfl
 #align continuous_map.nat_cast_apply ContinuousMap.nat_cast_apply
 
--- ### "int_cast"
+/-! ### "int_cast"-/
+
 instance [IntCast β] : IntCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
@@ -133,7 +135,8 @@ theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :
   rfl
 #align continuous_map.int_cast_apply ContinuousMap.int_cast_apply
 
--- ### "nsmul" and "pow"
+/-! ### "nsmul" and "pow" -/
+
 instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
   ⟨fun n f => ⟨n • ⇑f, f.continuous.nsmul n⟩⟩
 #align continuous_map.has_nsmul ContinuousMap.instNSMul
@@ -219,7 +222,8 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 #align continuous_map.div_comp ContinuousMap.div_comp
 #align continuous_map.sub_comp ContinuousMap.sub_comp
 
--- ### "zpow" and "zsmul"
+/-! ### "zpow" and "zsmul"-/
+
 instance instZSMul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β) where
   smul z f := ⟨z • ⇑f, f.continuous.zsmul z⟩
 #align continuous_map.has_zsmul ContinuousMap.instZSMul
