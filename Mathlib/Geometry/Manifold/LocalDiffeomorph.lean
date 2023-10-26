@@ -327,8 +327,8 @@ lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x 
       apply ContMDiff.contMDiffOn this
   }
 
-variable {I J M N r} in
-lemma should_be_obvious (h : DiffeomorphOn I J M N r) {x : M} (hx : x ∈ h.source) :
+variable {I J M N n} in
+lemma should_be_obvious (h : DiffeomorphOn I J M N n) {x : M} (hx : x ∈ h.source) :
     h.source = (h.toLocalDiffeomorphAt hx).toLocalHomeomorph.source := by
   set r := h.toLocalDiffeomorphAt hx
   have : r.toLocalHomeomorph = h.toLocalHomeomorph := sorry -- TODO: make this true!!
@@ -371,8 +371,8 @@ variable {I J M M' N n}
 
 /-- If `f` is a local diffeomorphism at `x`,
   the differential of `f` at `x` is a linear isomorphism. -/
-noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv {r : ℕ∞} (hr : 1 ≤ r)
-    {x : M} (h : LocalDiffeomorphAt I J M N r x) :
+noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv (hn : 1 ≤ n)
+    {x : M} (h : LocalDiffeomorphAt I J M N n x) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) := by
   let y := h.toFun x
   have hy : y ∈ h.target := h.toLocalEquiv.mapsTo h.hx
@@ -381,9 +381,9 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv {r : �
 
   -- FUTURE: can the `differentiability` tactic show this?
   have hgat : MDifferentiableAt J I h.invFun y :=
-    (h.contMDiffAt_symm (h.toLocalEquiv.mapsTo h.hx)).mdifferentiableAt hr
+    (h.contMDiffAt_symm (h.toLocalEquiv.mapsTo h.hx)).mdifferentiableAt hn
   have hfat : MDifferentiableAt I J h.toFun x :=
-    (h.contMDiffAt h.hx).mdifferentiableAt hr
+    (h.contMDiffAt h.hx).mdifferentiableAt hn
   have inv1 : B.comp A = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := calc B.comp A
     _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
     _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
@@ -423,16 +423,16 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv {r : �
 
 /-- If `f` is a diffeomorphism on `s`, its differential is a linear isomorphism at each `x ∈ s`. -/
 -- not sure if this result should be generally available; in any case, it's a simple corollary
-noncomputable def DiffeomorphOn.differential_toContinuousLinearEquiv {r : ℕ∞} (hr : 1 ≤ r) {x : M}
-    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) :
+noncomputable def DiffeomorphOn.differential_toContinuousLinearEquiv (hn : 1 ≤ n) {x : M}
+    (h : DiffeomorphOn I J M N n) (hx : x ∈ h.source) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) :=
-  (h.toLocalDiffeomorphAt hx).differential_toContinuousLinearEquiv hr
+  (h.toLocalDiffeomorphAt hx).differential_toContinuousLinearEquiv hn
 
 /-- If `f` is a local diffeomorphism, the differential is a linear isomorphism at each point. -/
-noncomputable def LocalDiffeomorph.differential_toContinuousLinearEquiv {r : ℕ∞} (hr : 1 ≤ r) {x : M}
-    (h : LocalDiffeomorph I J M N r):
+noncomputable def LocalDiffeomorph.differential_toContinuousLinearEquiv (hn : 1 ≤ n) {x : M}
+    (h : LocalDiffeomorph I J M N n):
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) :=
-  (h.toLocalDiffeomorphAt).differential_toContinuousLinearEquiv hr
+  (h.toLocalDiffeomorphAt).differential_toContinuousLinearEquiv hn
 
 -- TODO: move this to Init.Function
 lemma bijective_iff_inverses {X Y : Type*} {f : X → Y} {g : Y → X}
@@ -440,19 +440,19 @@ lemma bijective_iff_inverses {X Y : Type*} {f : X → Y} {g : Y → X}
   ⟨h1.injective, h2.surjective⟩
 
 /-- A local diffeomorphism at `x` has bijective differential at `x`. -/
-lemma LocalDiffeomorphAt.differential_bijective {r : ℕ∞} (hr : 1 ≤ r) {x : M}
-    (h : LocalDiffeomorphAt I J M N r x) : Bijective (mfderiv I J h.toFun x) := by
-  let aux := h.differential_toContinuousLinearEquiv hr
+lemma LocalDiffeomorphAt.differential_bijective (hn : 1 ≤ n) {x : M}
+    (h : LocalDiffeomorphAt I J M N n x) : Bijective (mfderiv I J h.toFun x) := by
+  let aux := h.differential_toContinuousLinearEquiv hn
   have h : aux.toFun = mfderiv I J h.toFun x := sorry -- TODO: should be obvious!
   rw [← h]
   exact bijective_iff_inverses aux.left_inv aux.right_inv
 
 /-- A local diffeomorphism has bijective differential at each point in its source. -/
-lemma DiffeomorphOn.differential_bijective {r : ℕ∞} (hr : 1 ≤ r) {x : M}
-    (h : DiffeomorphOn I J M N r) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
+lemma DiffeomorphOn.differential_bijective (hn : 1 ≤ n) {x : M}
+    (h : DiffeomorphOn I J M N n) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
   let _s := (h.toLocalDiffeomorphAt hx).differential_bijective
   -- TODO: why does this not match? tweak my setup to make sure it does!
-  sorry --exact _s hr
+  sorry --exact _s hn
 
 /-- A diffeomorphism is a local diffeomorphism. -/
 -- TODO: deduplicate this with with LocalDiffeomorph.refl
@@ -483,9 +483,9 @@ noncomputable def Diffeomorph.toLocalDiffeomorphAt (h : Diffeomorph I J M N n) (
   (h.toLocalDiffeomorph).toLocalDiffeomorphAt
 
 /-- A diffeomorphism has bijective differential at each point. -/
-lemma Diffeomorph.differential_bijective {r : ℕ∞} (hr : 1 ≤ r) (f : Diffeomorph I J M N r) {x : M} :
+lemma Diffeomorph.differential_bijective (hn : 1 ≤ n) (f : Diffeomorph I J M N n) {x : M} :
     Bijective (mfderiv I J f.toFun x) := by
-  let aux := (f.toLocalDiffeomorphAt x).differential_bijective hr
+  let aux := (f.toLocalDiffeomorphAt x).differential_bijective hn
   -- TODO: why is this rewrite necessary?
   have : (f.toLocalDiffeomorphAt x).toDiffeomorphOn.toLocalHomeomorph.toLocalEquiv = f.toFun := sorry
   rw [← this]
@@ -493,11 +493,11 @@ lemma Diffeomorph.differential_bijective {r : ℕ∞} (hr : 1 ≤ r) (f : Diffeo
 
 /-- If `f : M → N` is smooth at `x` and `mfderiv I J f x` is a linear isomorphism,
   then `f` is a local diffeomorphism at `x`. -/
-lemma LocalDiffeomorphAt.of_DifferentialIsomorphismAt {r : ℕ∞} (hr : 1 ≤ r) {x : M} {f : M → N}
+lemma LocalDiffeomorphAt.of_DifferentialIsomorphismAt (hn : 1 ≤ n) {x : M} {f : M → N}
     {f' : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf' : HasMFDerivAt I J f x f')
     {g' : TangentSpace J (f x) →L[𝕜] TangentSpace I x}
     (hinv₁ : f' ∘ g' = id) (hinv₂ : g' ∘ f' = id)
-    (hf : ContMDiffAt I J r f x) : LocalDiffeomorphAt I J M N r x := by
+    (hf : ContMDiffAt I J n f x) : LocalDiffeomorphAt I J M N n x := by
   -- FIXME: can I prove this using rw instead of calc?
   have aux1 : LeftInverse g' f' := by
     intro x
@@ -511,7 +511,7 @@ lemma LocalDiffeomorphAt.of_DifferentialIsomorphismAt {r : ℕ∞} (hr : 1 ≤ r
       _ = (f' ∘ g') y := by rw [comp_apply]
       _ = id y := by rw [← hinv₁]
       _ = y := by rw [id_eq]
-  have : f' = mfderiv I J f x := hasMFDerivAt_unique hf' (hf.mdifferentiableAt hr).hasMFDerivAt
+  have : f' = mfderiv I J f x := hasMFDerivAt_unique hf' (hf.mdifferentiableAt hn).hasMFDerivAt
   rw [this] at *
   have : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
     {
@@ -533,11 +533,11 @@ lemma LocalDiffeomorphAt.of_DifferentialIsomorphismAt {r : ℕ∞} (hr : 1 ≤ r
 -- formalise: pick an inverse of each differential, yielding a map on the tangent bundles
 -- we don't assume anything about the map, not even continuity :-)
 -- TODO: impose that each map g_x is continuous and linear, we *do* need that
-lemma LocalDiffeomorph.of_differentialInvertible {r : ℕ∞} (hr : 1 ≤ r) {x : M}
-    {f : M → N} (hf : ContMDiff I J r f) {g' : TangentBundle J N → TangentBundle I M}
+lemma LocalDiffeomorph.of_differentialInvertible (hn : 1 ≤ n) {x : M}
+    {f : M → N} (hf : ContMDiff I J n f) {g' : TangentBundle J N → TangentBundle I M}
     (hg : ∀ x : M, Continuous (fun v ↦ (g' ⟨f x, v⟩).2))
     (hinv₁ : (tangentMap I J f) ∘ g' = id) (hinv₂ : g' ∘ (tangentMap I J f) = id) :
-    LocalDiffeomorph I J M N r := by
+    LocalDiffeomorph I J M N n := by
 
   let df := tangentMap I J f
   let dfx := fun v ↦ (df ⟨x, v⟩).2 -- differential of f at x
@@ -550,9 +550,9 @@ lemma LocalDiffeomorph.of_differentialInvertible {r : ℕ∞} (hr : 1 ≤ r) {x 
   have inv2 : g'y ∘ dfx = id := sorry -- follows from hinv₂, somehow
   have inv2 : g'y ∘ (mfderiv I J f x) = id := by rw [← defeq1]; exact inv2
 
-  let hfx := ((hf x).mdifferentiableAt hr).hasMFDerivAt
-  -- have : LocalDiffeomorphAt I J M N r x :=
-  --   LocalDiffeomorphAt.of_DifferentialIsomorphismAt (g' := g'y) hr hfx inv1 inv2 (hf x)
+  let hfx := ((hf x).mdifferentiableAt hn).hasMFDerivAt
+  -- have : LocalDiffeomorphAt I J M N n x :=
+  --   LocalDiffeomorphAt.of_DifferentialIsomorphismAt (g' := g'y) hn hfx inv1 inv2 (hf x)
   -- now, run the above argument for all x together
   sorry
 
