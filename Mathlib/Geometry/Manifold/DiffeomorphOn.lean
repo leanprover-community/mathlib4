@@ -66,39 +66,30 @@ protected theorem contMDiffAt_symm (h : DiffeomorphOn I J M N n) {x : N} (hx : x
     ContMDiffAt J I n h.invFun x :=
   h.contMDiffOn_invFun.contMDiffAt (h.open_target.mem_nhds hx)
 
--- TODO: also symmetrise!
 protected theorem contMDiffWithinAt (h : DiffeomorphOn I J M N n)
       {s : Set M} {x : M} (hx : x ∈ h.source) : ContMDiffWithinAt I J n h.toFun s x :=
   (h.contMDiffAt hx).contMDiffWithinAt
+
+protected theorem contMDiffWithinAt_symm (h : DiffeomorphOn I J M N n)
+      {s : Set N} {x : N} (hx : x ∈ h.target) : ContMDiffWithinAt J I n h.invFun s x :=
+  (h.contMDiffAt_symm hx).contMDiffWithinAt
 
 protected theorem mdifferentiableOn (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
     MDifferentiableOn I J h.toFun h.source :=
   (h.contMDiffOn).mdifferentiableOn hn
 
--- TODO: coe, equiv, injectivity, whatever
+protected theorem mdifferentiableOn_symm (h :  DiffeomorphOn I J M N n) (hn : 1 ≤ n) :
+    MDifferentiableOn J I h.invFun h.target :=
+  (h.contMDiffOn_symm).mdifferentiableOn hn
 
-#exit
+-- TODO: coe instance -- as a local homeomorph?
+-- TODO: equiv, injectivity, ext lemma, etc.
+
 /-- Identity map as a diffeomorphism. -/
 protected def refl : DiffeomorphOn I I M M n where
-  -- TODO: all but the last fields should somehow be implied... how to do this?
-  toFun := id
-  invFun := id
-  source := univ
-  target := univ
-  map_source' := sorry
-  map_target' := sorry
-  left_inv' := sorry
-  right_inv' := sorry
-  open_source := isOpen_univ
-  open_target := isOpen_univ
-  continuous_toFun := sorry
-  continuous_invFun := sorry
-  -- TODO: fill in the details here
-  contMDiffOn_toFun := by
-    --rw?
-    sorry --rw [contMDiffOn_univ]
-    --exact contMDiff_id
-  contMDiffOn_invFun := sorry --contMDiff_id
+  contMDiffOn_toFun := contMDiff_id.contMDiffOn
+  contMDiffOn_invFun := contMDiff_id.contMDiffOn
+  toLocalHomeomorph := LocalHomeomorph.refl M
 
 @[simp]
 theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
@@ -109,27 +100,15 @@ theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
 --   rfl
 
 /-- Composition of two diffeomorphisms. -/
+-- skipped so far; this is more subtle than I like (compare LocalHomeomorph, which has trans' and trans)
 protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n)
     (h : h₁.target ⊆ h₂.source) : DiffeomorphOn I J M N n where
-  toFun := h₂.toFun ∘ h₁.toFun
-  invFun := h₁.invFun ∘ h₂.invFun
-  source := h₁.source
-  target := h₂.target
-  map_source' := sorry
-  map_target' := sorry
-  left_inv' := sorry
-  right_inv' := sorry
-  open_source := h₁.open_source
-  open_target := h₂.open_target
-  continuous_toFun := sorry
-  continuous_invFun := sorry
-  -- TODO: allow these fields to be omitted!
-  contMDiffOn_toFun := sorry --(h₂.contMDiffOn).comp h₁.contMDiffOn
-  contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun
-  --toEquiv := h₁.toEquiv.trans h₂.toEquiv
+  contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h
+  contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h
+  toLocalHomeomorph := h₁.toLocalHomeomorph.trans h₂.toLocalHomeomorph
 
-#exit
--- TODO: this statement doesn't compile yet
+-- TODO: these statements don't compile yet
+/-
 @[simp]
 theorem trans_refl (h : DiffeomorphOn I I' M M' n) : h.trans (Diffeomorph.refl I' M' n) = h :=
   ext fun _ => rfl
@@ -142,42 +121,52 @@ theorem refl_trans (h : M ≃ₘ^n⟮I, I'⟯ M') : (Diffeomorph.refl I M n).tra
 @[simp]
 theorem coe_trans (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) : ⇑(h₁.trans h₂) = h₂ ∘ h₁ :=
   rfl
+-/
 
 /-- Inverse of a diffeomorphism. -/
 @[pp_dot]
 protected def symm (h : DiffeomorphOn I I' M M' n) : DiffeomorphOn I' I M' M n where
-  contMDiffOn_toFun := h.contMDiff_invFun
-  contMDiffOn_invFun := h.contMDiff_toFun
+  contMDiffOn_toFun := h.contMDiffOn_invFun
+  contMDiffOn_invFun := h.contMDiffOn_toFun
+  toLocalHomeomorph := h.toLocalHomeomorph.symm
+
+/- TODO: fix these statements, then the proofs will be easy
+@[simp]
+theorem apply_symm_apply (h : DiffeomorphOn I I' M M' n) {x : N} (hx : x ∈ h.target) : h.toFun (h.symm.toFun x) = x :=
+  h.toLocalHomeomorph.apply_symm_apply hx
 
 @[simp]
-theorem apply_symm_apply (h : M ≃ₘ^n⟮I, J⟯ N) (x : N) : h (h.symm x) = x :=
-  h.toEquiv.apply_symm_apply x
-
-@[simp]
-theorem symm_apply_apply (h : M ≃ₘ^n⟮I, J⟯ N) (x : M) : h.symm (h x) = x :=
+theorem symm_apply_apply (h : DiffeomorphOn I I' M M' n) (x : M) : h.symm (h x) = x :=
   h.toEquiv.symm_apply_apply x
 
+
+-- TODO: fix these proofs, once the right ext lemma has been added!
 @[simp]
-theorem symm_refl : (Diffeomorph.refl I M n).symm = Diffeomorph.refl I M n :=
-  ext fun _ => rfl
+theorem symm_refl : (DiffeomorphOn.refl I M n).symm = DiffeomorphOn.refl I M n := by
+  sorry -- ext fun _ => rfl
+
+-- TODO: statements don't compile yet...
+@[simp]
+theorem self_trans_symm (h : DiffeomorphOn I J M N n) : h.trans h.symm = DiffeomorphOn.refl I M n :=
+  sorry -- ext h.symm_apply_apply
 
 @[simp]
-theorem self_trans_symm (h : M ≃ₘ^n⟮I, J⟯ N) : h.trans h.symm = Diffeomorph.refl I M n :=
-  ext h.symm_apply_apply
+theorem symm_trans_self (h : DiffeomorphOn I J M N n) : h.symm.trans h = DiffeomorphOn.refl J N n :=
+  sorry -- ext h.apply_symm_apply
 
 @[simp]
-theorem symm_trans_self (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.trans h = Diffeomorph.refl J N n :=
-  ext h.apply_symm_apply
-
-@[simp]
-theorem symm_trans' (h₁ : M ≃ₘ^n⟮I, I'⟯ M') (h₂ : M' ≃ₘ^n⟮I', J⟯ N) :
+theorem symm_trans' (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n) :
     (h₁.trans h₂).symm = h₂.symm.trans h₁.symm :=
   rfl
+-/
 
 @[simp]
-theorem symm_toEquiv (h : M ≃ₘ^n⟮I, J⟯ N) : h.symm.toEquiv = h.toEquiv.symm :=
+theorem symm_toLocalHomeomorph (h : DiffeomorphOn I J M N n) :
+    (h.symm).toLocalHomeomorph = h.toLocalHomeomorph.symm :=
   rfl
 
+#exit
+-- TODO: audit these, and adapt to DiffeoMorphOn as fit
 @[simp, mfld_simps]
 theorem toEquiv_coe_symm (h : M ≃ₘ^n⟮I, J⟯ N) : ⇑h.toEquiv.symm = h.symm :=
   rfl
