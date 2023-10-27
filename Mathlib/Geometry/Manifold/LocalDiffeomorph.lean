@@ -158,6 +158,8 @@ protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' 
   contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h plus restricting
   contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h + restricting
 
+-- FIXME: continuity and smoothness for trans also??
+
 -- TODO: add more API for refl, trans and symm
 end DiffeomorphOn
 
@@ -169,10 +171,9 @@ structure LocalDiffeomorphAt (x : M) extends DiffeomorphOn I J M N n where
   hx : x ∈ source
 
 namespace LocalDiffeomorphAt
-/-! Continuity and smoothness at `x`. -/
+/-! Continuity and smoothness lemmas. -/
 section ContSmooth
 variable {x : M} (h : LocalDiffeomorphAt I J M N n x)
--- simple lemmas: continuity and smoothness
 @[continuity]
 protected theorem continuousOn : ContinuousOn h.toFun h.source :=
   h.contMDiffOn_toFun.continuousOn
@@ -238,11 +239,9 @@ protected def symm (x : M) (h : LocalDiffeomorphAt I I' M M' n x) :
 by restricting to the maximal domain where their composition is well defined. -/
 protected def trans (x : M) (h : LocalDiffeomorphAt I I' M M' n x)
     (h' : LocalDiffeomorphAt I' J M' N n (h.toFun x)) : LocalDiffeomorphAt I J M N n x where
-  toLocalHomeomorph := h.toLocalHomeomorph.trans h'.toLocalHomeomorph
-  hx := ⟨h.hx, h'.hx⟩
-  -- FIXME: can I reuse toDiffeomorphOn.trans?
-  contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h plus restricting
-  contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h + restricting
+  -- TODO: make this work!
+  hx := sorry -- ⟨h.hx, h'.hx⟩
+  toDiffeomorphOn := sorry -- h.toDiffeomorphOn.trans h'.toDiffeomorphOn
 
 -- TODO: show basic properties of these constructions!
 end LocalDiffeomorphAt
