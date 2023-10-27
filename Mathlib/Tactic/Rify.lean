@@ -71,9 +71,9 @@ macro_rules
     simp (config := {decide := false}) only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
       $[at $location]?)
 
-@[rify_simps] lemma int_cast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
-@[rify_simps] lemma int_cast_le (a b : ℚ) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
-@[rify_simps] lemma int_cast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
-@[rify_simps] lemma int_cast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
+@[rify_simps] lemma rat_cast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
+@[rify_simps] lemma rat_cast_le (a b : ℚ) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
+@[rify_simps] lemma rat_cast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
+@[rify_simps] lemma rat_cast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
 @[rify_simps] lemma ofNat_rat_real (a : ℕ) [a.AtLeastTwo] :
     no_index ((OfNat.ofNat a : ℚ) : ℝ) = (OfNat.ofNat a : ℝ) := rfl
