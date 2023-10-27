@@ -76,7 +76,7 @@ def setMCore (e : Expr) (stx : TSyntax `term) (loc : Location) : TacticM Unit :=
       mvarIdOld.setUserName <| (← mkFreshUserName (← mvarIdOld.getDecl).userName)
       mvarIdNew.setUserName <| (← mkFreshUserName (← mvarIdNew.getDecl).userName)
   else
-    throwError f!"setm: pattern is not definitionally equal to the goal."
+    throwError "setm: {stx} is not definitionally equal to the goal."
 
 /--
 The `setm` tactic ("`set` with matching") matches a pattern containing named holes the type of a
