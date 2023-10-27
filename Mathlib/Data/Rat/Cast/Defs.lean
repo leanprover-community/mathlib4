@@ -47,6 +47,9 @@ theorem cast_coe_nat (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_ofNat, cast_coe_int, Int.cast_ofNat]
 #align rat.cast_coe_nat Rat.cast_coe_nat
 
+@[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index OfNat.ofNat n : ℚ) : α) = (OfNat.ofNat n : α) := by
+  simp [cast_def]
 
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℚ) : α) = 0 :=
