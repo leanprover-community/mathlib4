@@ -85,8 +85,8 @@ section
 
 open UniformSpace Filter Set Uniformity Topology UniformConvergence
 
-variable {ι κ X Y Z α β γ 𝓕 : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  [UniformSpace α] [UniformSpace β] [UniformSpace γ]
+variable {ι κ X Y Z α β γ 𝓕 : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+  [tZ : TopologicalSpace Z] [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
 *equicontinuous at `x₀ : X`* if, for all entourage `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
@@ -497,6 +497,12 @@ theorem equicontinuousAt_iff_continuousAt {F : ι → X → α} {x₀ : X} :
   rfl
 #align equicontinuous_at_iff_continuous_at equicontinuousAt_iff_continuousAt
 
+theorem equicontinuousWithinAt_iff_continuousWithinAt {F : ι → X → α} {S : Set X} {x₀ : X} :
+    EquicontinuousWithinAt F S x₀ ↔
+    ContinuousWithinAt (ofFun ∘ Function.swap F : X → ι →ᵤ α) S x₀ := by
+  rw [ContinuousWithinAt, (UniformFun.hasBasis_nhds ι α _).tendsto_right_iff]
+  rfl
+
 /-- A family `𝓕 : ι → X → α` is equicontinuous iff the function `swap 𝓕 : X → ι → α` is
 continuous *when `ι → α` is equipped with the topology of uniform convergence*. This is
 very useful for developping the equicontinuity API, but it should not be used directly for other
@@ -505,6 +511,10 @@ theorem equicontinuous_iff_continuous {F : ι → X → α} :
     Equicontinuous F ↔ Continuous (ofFun ∘ Function.swap F : X → ι →ᵤ α) := by
   simp_rw [Equicontinuous, continuous_iff_continuousAt, equicontinuousAt_iff_continuousAt]
 #align equicontinuous_iff_continuous equicontinuous_iff_continuous
+
+theorem equicontinuousOn_iff_continuousOn {F : ι → X → α} {S : Set X} :
+    EquicontinuousOn F S ↔ ContinuousOn (ofFun ∘ Function.swap F : X → ι →ᵤ α) S := by
+  simp_rw [EquicontinuousOn, ContinuousOn, equicontinuousWithinAt_iff_continuousWithinAt]
 
 /-- A family `𝓕 : ι → β → α` is uniformly equicontinuous iff the function `swap 𝓕 : β → ι → α` is
 uniformly continuous *when `ι → α` is equipped with the uniform structure of uniform convergence*.
@@ -516,22 +526,44 @@ theorem uniformEquicontinuous_iff_uniformContinuous {F : ι → β → α} :
   rfl
 #align uniform_equicontinuous_iff_uniform_continuous uniformEquicontinuous_iff_uniformContinuous
 
-theorem equicontinuousAt_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
-    {x₀ : X} :
-    @EquicontinuousAt _ _ _ _ (⨅ k, u k) F x₀ ↔ ∀ k, @EquicontinuousAt _ _ _ _ (u k) F x₀ := by
-  simp only [@equicontinuousAt_iff_continuousAt _ _ _ _ _, topologicalSpace]
-  unfold ContinuousAt
+theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {S : Set β} :
+    UniformEquicontinuousOn F S ↔ UniformContinuousOn (ofFun ∘ Function.swap F : β → ι →ᵤ α) S := by
+  rw [UniformContinuousOn, (UniformFun.hasBasis_uniformity ι α).tendsto_right_iff]
+  rfl
+
+theorem equicontinuousWithinAt_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
+    {S : Set X} {x₀ : X} : EquicontinuousWithinAt (uα :=  ⨅ k, u k) F S x₀ ↔
+      ∀ k, EquicontinuousWithinAt (uα :=  u k) F S x₀ := by
+  simp only [equicontinuousWithinAt_iff_continuousWithinAt (uα := _), topologicalSpace]
+  unfold ContinuousWithinAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
 
+theorem equicontinuousAt_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
+    {x₀ : X} :
+    EquicontinuousAt (uα := ⨅ k, u k) F x₀ ↔ ∀ k, EquicontinuousAt (uα := u k) F x₀ := by
+  simp only [← equicontinuousWithinAt_univ (uα := _), equicontinuousWithinAt_iInf_rng]
+
 theorem equicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'} :
-    @Equicontinuous _ _ _ _ (⨅ k, u k) F ↔ ∀ k, @Equicontinuous _ _ _ _ (u k) F := by
-  simp_rw [@equicontinuous_iff_continuous _ _ _ _ _, UniformFun.topologicalSpace]
+    Equicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, Equicontinuous (uα := u k) F := by
+  simp_rw [equicontinuous_iff_continuous (uα := _), UniformFun.topologicalSpace]
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, continuous_iInf_rng]
 
+theorem equicontinuousOn_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → X → α'}
+    {S : Set X} :
+    EquicontinuousOn (uα := ⨅ k, u k) F S ↔ ∀ k, EquicontinuousOn (uα := u k) F S := by
+  simp_rw [EquicontinuousOn, equicontinuousWithinAt_iInf_rng, @forall_swap _ κ]
+
 theorem uniformEquicontinuous_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → β → α'} :
-    @UniformEquicontinuous _ _ _ (⨅ k, u k) _ F ↔ ∀ k, @UniformEquicontinuous _ _ _ (u k) _ F := by
-  simp_rw [@uniformEquicontinuous_iff_uniformContinuous _ _ _ _]
+    UniformEquicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, UniformEquicontinuous (uα := u k) F := by
+  simp_rw [uniformEquicontinuous_iff_uniformContinuous (uα := _)]
   rw [UniformFun.iInf_eq, uniformContinuous_iInf_rng]
+
+theorem uniformEquicontinuousOn_iInf_rng {α' : Type*} {u : κ → UniformSpace α'} {F : ι → β → α'}
+    {S : Set β} : UniformEquicontinuousOn (uα := ⨅ k, u k) F S ↔
+      ∀ k, UniformEquicontinuousOn (uα := u k) F S := by
+  simp_rw [uniformEquicontinuousOn_iff_uniformContinuousOn (uα := _)]
+  unfold UniformContinuousOn
+  rw [UniformFun.iInf_eq, iInf_uniformity, tendsto_iInf]
 
 theorem equicontinuousAt_iInf_dom {X' : Type*} {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {x₀ : X'} {k : κ} (hk : @EquicontinuousAt _ _ _ (t k) _ F x₀) :
@@ -730,7 +762,7 @@ family `𝓕` is uniformly equicontinuous, then the limit is uniformly continuou
 theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι} [l.NeBot]
     {F : ι → β → α} {f : β → α} (h₁ : Tendsto F l (𝓝 f)) (h₂ : UniformEquicontinuous F) :
     UniformContinuous f :=
-  (uniformEquicontinuous_at_iff_range.mp h₂).closure.uniformContinuous
+  (uniformEquicontinuous_iff_range.mp h₂).closure.uniformContinuous
     ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
 #align filter.tendsto.uniform_continuous_of_uniform_equicontinuous Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous
 
