@@ -564,7 +564,8 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   have : { p : α × α | (f p.1, f p.2) ∈ t } ∈ 𝓤 α := hf ht
   let ⟨c, hfc, hct⟩ := hs _ this
   ⟨f '' c, hfc.image f, by
-    simp [image_subset_iff]
+    simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
+      preimage_iUnion, preimage_setOf_eq]
     simp [subset_def] at hct
     intro x hx; simp
     exact hct x hx⟩
@@ -591,22 +592,17 @@ theorem totallyBounded_iff_filter {s : Set α} :
   · intro H d hd
     contrapose! H with hd_cover
     set f := ⨅ t : Finset α, 𝓟 (s \ ⋃ y ∈ t, { x | (x, y) ∈ d })
-    have : Filter.NeBot f := by
-      refine' iInf_neBot_of_directed' (directed_of_sup _) _
-      · intro t₁ t₂ h
-        exact principal_mono.2 (diff_subset_diff_right <| biUnion_subset_biUnion_left h)
-      · intro t
-        simpa [nonempty_diff] using hd_cover t t.finite_toSet
+    have hb : HasAntitoneBasis f fun t : Finset α ↦ s \ ⋃ y ∈ t, { x | (x, y) ∈ d } :=
+      .iInf_principal fun _ _ ↦ diff_subset_diff_right ∘ biUnion_subset_biUnion_left
+    have : Filter.NeBot f := hb.1.neBot_iff.2 fun _ ↦
+      nonempty_diff.2 <| hd_cover _ (Finset.finite_toSet _)
     have : f ≤ 𝓟 s := iInf_le_of_le ∅ (by simp)
     refine' ⟨f, ‹_›, ‹_›, fun c hcf hc => _⟩
     rcases mem_prod_same_iff.1 (hc.2 hd) with ⟨m, hm, hmd⟩
     rcases hc.1.nonempty_of_mem hm with ⟨y, hym⟩
-    set ys := ⋃ y' ∈ ({y} : Finset α), { x | (x, y') ∈ d }
-    have : c ≤ 𝓟 (s \ ys) := hcf.trans (iInf_le_of_le {y} le_rfl)
-    refine' hc.1.ne (empty_mem_iff_bot.mp _)
-    filter_upwards [le_principal_iff.1 this, hm]
-    refine' fun x hx hxm => hx.2 _
-    simpa using hmd (mk_mem_prod hxm hym)
+    have : s \ {x | (x, y) ∈ d} ∈ c := by simpa using hcf (hb.mem {y})
+    rcases hc.1.nonempty_of_mem (inter_mem hm this) with ⟨z, hzm, -, hyz⟩
+    exact hyz (hmd ⟨hzm, hym⟩)
 #align totally_bounded_iff_filter totallyBounded_iff_filter
 
 theorem totallyBounded_iff_ultrafilter {s : Set α} :

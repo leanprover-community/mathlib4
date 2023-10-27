@@ -370,7 +370,7 @@ introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the i
 theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
   classical
-  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, Nat.le_find_iff]
+  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   cases' n with n;

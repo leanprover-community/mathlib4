@@ -55,6 +55,8 @@ namespace WithLp
 back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
+instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
+
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/

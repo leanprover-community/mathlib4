@@ -633,6 +633,7 @@ theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
     (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) :=
   rfl
 
+@[aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans <| NonUnitalAlgebra.subset_adjoin R
 

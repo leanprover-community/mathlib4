@@ -389,7 +389,7 @@ variable {F G}
 /-- The differential on the complex of morphisms between cochain complexes. -/
 def δ (z : Cochain F G n) : Cochain F G m :=
   Cochain.mk (fun p q hpq => z.v p (p + n) rfl ≫ G.d (p + n) q +
-    (n + 1).negOnePow • F.d p (p + m - n) ≫ z.v (p + m - n) q (by rw [hpq, sub_add_cancel]))
+    m.negOnePow • F.d p (p + m - n) ≫ z.v (p + m - n) q (by rw [hpq, sub_add_cancel]))
 
 /-! Similarly as for the composition of cochains, if `z : Cochain F G n`,
 we usually need to carefully select intermediate indices with
@@ -400,7 +400,7 @@ it shall be zero). The basic equational lemma is `δ_v` below. -/
 lemma δ_v (hnm : n + 1 = m) (z : Cochain F G n) (p q : ℤ) (hpq : p + m = q) (q₁ q₂ : ℤ)
     (hq₁ : q₁ = q - 1) (hq₂ : p + 1 = q₂) : (δ n m z).v p q hpq =
     z.v p q₁ (by rw [hq₁, ← hpq, ← hnm, ← add_assoc, add_sub_cancel]) ≫ G.d q₁ q
-      + (n + 1).negOnePow • F.d p q₂ ≫ z.v q₂ q
+      + m.negOnePow • F.d p q₂ ≫ z.v q₂ q
           (by rw [← hq₂, add_assoc, add_comm 1, hnm, hpq]) := by
   obtain rfl : q₁ = p + n := by linarith
   obtain rfl : q₂ = p + m - n := by linarith
@@ -452,10 +452,10 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
     δ_v n₀ n₁ h₀₁ z p (q-1) (by linarith) (q-2) _ (by linarith) rfl,
     δ_v n₀ n₁ h₀₁ z (p+1) q (by linarith) _ (p+2) rfl (by linarith),
-    ← h₀₁, Int.negOnePow_succ, neg_smul, add_comp, assoc,
-    HomologicalComplex.d_comp_d, comp_zero, neg_comp, zero_add, neg_neg, comp_add,
-    comp_neg, comp_zsmul, HomologicalComplex.d_comp_d_assoc, zero_comp, zsmul_zero,
-    neg_zero, add_zero, zsmul_comp, add_left_neg]
+    ← h₁₂, Int.negOnePow_succ, sub_add_cancel, add_comp, assoc,
+    HomologicalComplex.d_comp_d, comp_zero, zsmul_comp, zero_add, comp_add,
+    comp_zsmul, HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero,
+    add_zero, neg_smul, add_right_neg]
 
 lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂ + 1 = m₁₂) (h₁ : n₁ + 1 = m₁) (h₂ : n₂ + 1 = m₂) :
@@ -664,6 +664,107 @@ def diff : Cocycle K K 1 :=
       HomologicalComplex.d_comp_d, smul_zero, add_zero])
 
 end Cocycle
+
+namespace Cochain
+
+variable {F G}
+
+/-- Given two morphisms of complexes `φ₁ φ₂ : F ⟶ G`, the datum of an homotopy between `φ₁` and
+`φ₂` is equivalent to the datum of a `1`-cochain `z` such that `δ (-1) 0 z` is the difference
+of the zero cochains associated to `φ₂` and `φ₁`. -/
+@[simps]
+def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
+    Homotopy φ₁ φ₂ ≃
+      { z : Cochain F G (-1) // Cochain.ofHom φ₁ = δ (-1) 0 z + Cochain.ofHom φ₂ } where
+  toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomotopy, sub_add_cancel]⟩
+  invFun z :=
+    { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
+      zero := fun i j (hij : j + 1 ≠ i) => dif_neg (fun _ => hij (by linarith))
+      comm := fun p => by
+        have eq := Cochain.congr_v z.2 p p (add_zero p)
+        have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
+        have h₂ : (ComplexShape.up ℤ).Rel p (p + 1) := by simp
+        simp only [δ_neg_one_cochain, Cochain.ofHom_v, ComplexShape.up_Rel, Cochain.add_v,
+          Homotopy.nullHomotopicMap'_f h₁ h₂] at eq
+        rw [dNext_eq _ h₂, prevD_eq _ h₁, eq, dif_pos, dif_pos] }
+  left_inv := fun ho => by
+    ext i j
+    dsimp
+    split_ifs with h
+    · rfl
+    · rw [ho.zero i j (fun h' => h (by dsimp at h'; linarith))]
+  right_inv := fun z => by
+    ext p q hpq
+    dsimp [Cochain.ofHomotopy]
+    rw [dif_pos hpq]
+
+@[simp]
+lemma equivHomotopy_apply_of_eq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
+    (equivHomotopy _ _ (Homotopy.ofEq h)).1 = 0 := rfl
+
+lemma ofHom_injective {f₁ f₂ : F ⟶ G} (h : ofHom f₁ = ofHom f₂) : f₁ = f₂ :=
+  (Cocycle.equivHom F G).injective (by ext1; exact h)
+
+end Cochain
+
+section
+
+variable {n} {D : Type _} [Category D] [Preadditive D] (z z' : Cochain K L n) (f : K ⟶ L)
+  (Φ : C ⥤ D) [Φ.Additive]
+
+namespace Cochain
+
+/-- If `Φ : C ⥤ D` is an additive functor, a cochain `z : Cochain K L n` between
+cochain complexes in `C` can be mapped to a cochain between the cochain complexes
+in `D` obtained by applying the functor
+`Φ.mapHomologicalComplex _ : CochainComplex C ℤ ⥤ CochainComplex D ℤ`. -/
+def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComplex _).obj L) n :=
+  Cochain.mk (fun p q hpq => Φ.map (z.v p q hpq))
+
+@[simp]
+lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl
+
+@[simp]
+lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
+
+@[simp]
+lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
+
+@[simp]
+lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
+
+variable (K L n)
+
+@[simp]
+lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
+
+@[simp]
+lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
+    (Φ : C ⥤ D) [Φ.Additive] :
+    (Cochain.comp z₁ z₂ h).map Φ = Cochain.comp (z₁.map Φ) (z₂.map Φ) h := by
+  ext p q hpq
+  dsimp
+  simp only [map_v, comp_v _ _ h p _ q rfl (by linarith), Φ.map_comp]
+
+@[simp]
+lemma map_ofHom :
+    (Cochain.ofHom f).map Φ = Cochain.ofHom ((Φ.mapHomologicalComplex _).map f) := by aesop_cat
+
+end Cochain
+
+variable (n)
+
+@[simp]
+lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
+  by_cases hnm : n + 1 = m
+  · ext p q hpq
+    dsimp
+    simp only [δ_v n m hnm _ p q hpq (q-1) (p+1) rfl rfl,
+      Functor.map_add, Functor.map_comp, Functor.map_zsmul,
+      Cochain.map_v, Functor.mapHomologicalComplex_obj_d]
+  · simp only [δ_shape _ _ hnm, Cochain.map_zero]
+
+end
 
 end HomComplex
 
