@@ -201,8 +201,10 @@ structure LocalDiffeomorph where
   targetAt : M → targets
   mem_sources : ∀ x : M, x ∈ (sourceAt x).1
   mem_targets : ∀ x : M, (toFun x) ∈ (targetAt x).1
+  map_sources : ∀ x x' : M, x' ∈ (sourceAt x).1 → toFun x' ∈ (targetAt x).1
+  map_targets : ∀ x : M, ∀ y : N, y ∈ (targetAt x).1 → invFun y ∈ (sourceAt x).1
   /- `invFun` is a local left inverse of `toFun`, on each `sourceAt x`. -/
-  left_inv : ∀ x : M, x ∈ (sourceAt x).1 → invFun (toFun x) = x
+  left_inv : ∀ x x' : M, x' ∈ (sourceAt x).1 → invFun (toFun x') = x'
   /- `invFun` is a local right inverse of `toFun`, on each `targetAt x`. -/
   right_inv : ∀ x : M, ∀ y : N, y ∈ (targetAt x).1 → toFun (invFun y) = y
   contMDiffOn_toFun : ∀ x : M, ContMDiffOn I J n toFun (sourceAt x)
@@ -211,20 +213,18 @@ structure LocalDiffeomorph where
 namespace LocalDiffeomorph
 -- TODO: add coe instance, ext lemmas, etc.
 
--- TODO fixup: this is also false in general: h need not be bijective!!!
-variable {I J M N n} in
-protected theorem toHomeomorph (h : LocalDiffeomorph I J M N n) : Homeomorph M N := sorry
-
 /-- Identity map as a local diffeomorphism. -/
 protected def refl : LocalDiffeomorph I I M M n where
-  toFun := id--Equiv.refl M
-  left_inv := fun _ _ => rfl
+  toFun := id
+  left_inv := fun _ _ _ => rfl
   right_inv := fun _ _ _ => rfl
   -- At every point, we choose the set `univ`.
   sources := singleton ⟨univ, isOpen_univ⟩
   targets := singleton ⟨univ, isOpen_univ⟩
   mem_sources := fun x ↦ sorry -- should be: (by exact trivial)
   mem_targets := fun x ↦ sorry -- should be: (by exact trivial)
+  map_sources := by intros; trivial
+  map_targets := by intros; trivial
   sourceAt := by -- xxx: presumably, can golf this
     intro; apply Subtype.mk; apply Eq.refl
   targetAt := by
@@ -243,6 +243,8 @@ protected def symm (h : LocalDiffeomorph I J M N n) :
   right_inv := sorry -- fun ... h.left_inv todofixup
   sources := h.targets
   targets := h.sources
+  map_sources := sorry -- TODO!
+  map_targets := sorry -- TODO!
   sourceAt := fun y ↦ (h.targetAt (h.invFun y))
   targetAt := fun y ↦ (h.sourceAt (h.invFun y))
   mem_sources := by
@@ -297,17 +299,28 @@ lemma DiffeomorphOn.toLocalDiffeomorphAt (h : DiffeomorphOn I J M N n) {x : M} (
 /-- A local diffeomorphism is a local diffeomorphism at each point. -/
 lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x : M}: LocalDiffeomorphAt I J M N n x := by
   exact {
-    toLocalHomeomorph := (h.toHomeomorph).toLocalHomeomorph
-    hx := trivial
+    toFun := h.toFun
+    invFun := h.invFun
+    source := h.sourceAt x
+    target := h.targetAt x
+    map_source' := h.map_sources x
+    map_target' := h.map_targets x
+    left_inv' := sorry
+    right_inv' := sorry
+    open_source := sorry
+    open_target := sorry
+    continuous_toFun := sorry
+    continuous_invFun := sorry
+    hx := h.mem_sources x
     contMDiffOn_toFun := by
       have : ∀ x : M, ContMDiffAt I J n h.toFun x := by
         intro x
         apply (h.contMDiffOn_toFun x).contMDiffAt
         apply (((h.sourceAt x).1.2).mem_nhds_iff).mpr (h.mem_sources x)
-      set badboy := h.toHomeomorph.toLocalHomeomorph.toLocalEquiv
-      have aux : badboy = h.toFun := sorry -- TODO: add as a lemma later!
-      rw [aux, Homeomorph.toLocalHomeomorph_source, contMDiffOn_univ] -- TODO: why last two lemmas?
-      exact this
+      --set badboy := h.toHomeomorph.toLocalHomeomorph.toLocalEquiv
+      --have aux : badboy = h.toFun := sorry -- TODO: add as a lemma later!
+      --rw [contMDiffOn_univ]--rw [aux, Homeomorph.toLocalHomeomorph_source, contMDiffOn_univ] -- TODO: why last two lemmas?
+      sorry--exact this TODO fixup
     contMDiffOn_invFun := by
       have : ∀ x : M, ContMDiffAt J I n h.invFun (h.toFun x) := by
         intro x
@@ -318,17 +331,15 @@ lemma LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) {x 
         let x := h.invFun y
         -- TODO: extract as a lemma for later!
         have aux2 : h.toFun (h.invFun y) = y := by
-          let r := h.toHomeomorph.right_inv y
-          -- two more lemmas for later! using the primed version runs into `this`
-          have : (LocalDiffeomorph.toHomeomorph h).toEquiv = h.toFun := sorry
-          have bad : Equiv.toFun (LocalDiffeomorph.toHomeomorph h).toEquiv = h.toFun := sorry
-          have nationwide : Equiv.invFun (LocalDiffeomorph.toHomeomorph h).toEquiv = h.invFun := sorry
-          rw [bad, nationwide] at r
-          exact r
+          sorry -- TODO: fixup
+          -- let r := h.toHomeomorph.right_inv y
+          -- -- two more lemmas for later! using the primed version runs into `this`
+          -- have : (LocalDiffeomorph.toHomeomorph h).toEquiv = h.toFun := sorry
+          -- have bad : Equiv.toFun (LocalDiffeomorph.toHomeomorph h).toEquiv = h.toFun := sorry
+          -- have nationwide : Equiv.invFun (LocalDiffeomorph.toHomeomorph h).toEquiv = h.invFun := sorry
+          -- rw [bad, nationwide] at r
+          -- exact r
         exact aux2 ▸ (this x)
-      set badboy := (h.toHomeomorph.toLocalHomeomorph).toLocalEquiv.invFun
-      have aux : badboy = h.invFun := sorry -- TODO: add as a lemma later!
-      rw [aux]
       apply ContMDiff.contMDiffOn this
   }
 
@@ -342,6 +353,8 @@ def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorp
     right_inv := by intros; simp
     sources := singleton ⟨univ, isOpen_univ⟩
     targets := singleton ⟨univ, isOpen_univ⟩
+    map_sources := by intros; trivial
+    map_targets := by intros; trivial
     sourceAt := by intro; apply Subtype.mk; apply Eq.refl
     targetAt := by intro; apply Subtype.mk; apply Eq.refl
     mem_sources := fun _ ↦ (by exact trivial)
