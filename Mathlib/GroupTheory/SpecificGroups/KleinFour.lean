@@ -50,10 +50,16 @@ namespace KleinFourGroup
 
 open DihedralGroup Equiv
 
-/-- Elements of the KleinFourGroup.-/
+/-- Element `e` of Klein four-group. -/
 def e := (1 : KleinFourGroup)
+
+/-- Element `a` of Klein four-group. -/
 def a := Multiplicative.ofAdd ((0, 1) : KleinFourGroup)
+
+/-- Element `b` of Klein four-group. -/
 def b := Multiplicative.ofAdd ((1, 0) : KleinFourGroup)
+
+/-- Element `c` of Klein four-group. -/
 def c := Multiplicative.ofAdd ((1, 1) : KleinFourGroup)
 
 /-- `(0, 0)` is the identity element. -/
