@@ -286,7 +286,7 @@ theorem rel_head!_of_mem {i : I} {l : Products I} (hi : i ∈ l.val) : i ≤ l.v
 
 theorem head!_le_of_lt {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! :=
-  List.head!_le_of_lt l.val q.val ((List.lt_iff_lex_lt q.val l.val).mpr h) hq
+  List.head!_le_of_lt l.val q.val h hq
 
 end Products
 
@@ -538,54 +538,6 @@ theorem factors_prod_eq_basis (x : C.proj (· ∈ J)) :
   split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h;
     exact factors_prod_eq_basis_of_ne _ _ h]
 
--- #7895
-theorem Finset.sort_chain'_gt {α : Type*} [LinearOrder α] [DecidableRel (α := α) (·≥·)]
-    (s : Finset α) : (s.sort (·≥·)).Chain' (·>·) := by
-  rw [List.chain'_iff_pairwise]
-  have hr : (·>· : α → α → Prop) = (fun a b ↦ a ≥ b ∧ a ≠ b)
-  · ext a b
-    rw [gt_iff_lt, lt_iff_le_and_ne]
-    exact Iff.and Iff.rfl ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
-  rw [hr, List.pairwise_and_iff]
-  refine ⟨List.chain'_iff_pairwise.mp ?_, Finset.sort_nodup _ _⟩
-  rw [List.chain'_iff_pairwise]
-  exact Finset.sort_sorted _ _
-
--- #7896
-theorem _root_.List.Chain'.cons_of_le {a : I} {as m : List I}
-    (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
-    List.Chain' (· > ·) (a :: m) := by
-  cases m with
-  | nil => simp only [List.chain'_singleton]
-  | cons b bs =>
-    apply hm.cons
-    cases as with
-    | nil =>
-      simp only [le_iff_lt_or_eq, or_false] at hmas
-      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
-    | cons a' as =>
-      rw [List.chain'_cons] at ha
-      refine gt_of_gt_of_ge ha.1 ?_
-      rw [le_iff_lt_or_eq] at hmas
-      cases' hmas with hmas hmas
-      · by_contra' hh
-        rw [← not_le] at hmas
-        apply hmas
-        apply le_of_lt
-        exact (List.lt_iff_lex_lt _ _).mp (List.lt.head _ _ hh)
-      · simp only [List.cons.injEq] at hmas
-        rw [ge_iff_le, le_iff_lt_or_eq]
-        exact Or.inr hmas.1
-
--- #7897
-theorem _root_.List.le_cons (a : I) {as m : List I} (hmas : m ≤ as) : a :: m ≤ a :: as := by
-  rw [le_iff_lt_or_eq] at hmas ⊢
-  refine hmas.imp ?_ (congr_arg _)
-  intro hmas
-  have haa : ¬(a < a) := gt_irrefl a
-  exact (List.lt_iff_lex_lt _ _).mp
-    (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr hmas))
-
 theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
     (ha : List.Chain' (· > ·) (a :: as)) {c : Products I →₀ ℤ}
     (hc : (c.support : Set (Products I)) ⊆ {m | m.val ≤ as}) :
@@ -601,7 +553,7 @@ theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
   have hmas : m.val ≤ as
   · apply hc
     simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm
-  refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.le_cons a hmas, ?_⟩⟩
+  refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.cons_le_cons a hmas, ?_⟩⟩
   simp only [Products.eval, List.map, List.prod_cons]
 
 theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.proj (· ∈ J)))) := by
@@ -615,7 +567,7 @@ theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (C.pr
   suffices : l.Chain' (·>·) → (l.map (fun i ↦ if x.val i = true then e (C.proj (· ∈ J)) i
       else (1 - (e (C.proj (· ∈ J)) i)))).prod ∈
       Submodule.span ℤ ((Products.eval (C.proj (· ∈ J))) '' {m | m.val ≤ l})
-  · exact Submodule.span_mono (Set.image_subset_range _ _) (this (Finset.sort_chain'_gt _))
+  · exact Submodule.span_mono (Set.image_subset_range _ _) (this (Finset.sort_sorted_gt _).chain')
   induction l with
   | nil =>
     intro _
@@ -850,32 +802,6 @@ end Maps
 section ProductsFactorisation
 
 namespace Products
-
--- #7899
-theorem _root_.List.Sorted.lt_iff_head!_lt {l : List I} (o : Ordinal) (hl : l.Sorted (· > ·)) :
-    (l ≠ [] → Ordinal.typein (· < ·) l.head! < o) ↔ ∀ i ∈ l, Ordinal.typein (· < ·) i < o := by
-  refine ⟨fun h _ ha ↦ lt_of_le_of_lt ?_ (h (List.ne_nil_of_mem ha)),
-    fun h hn ↦ h l.head! (List.head!_mem_self hn)⟩
-  simp only [Ordinal.typein_le_typein, not_lt]
-  exact hl.le_head! ha
-
--- #7899
-theorem _root_.List.Sorted.lt_ord_of_lt {l m : List I} {o : Ordinal} (hl : l.Sorted (· > ·))
-    (hm : m.Sorted (· > ·)) (hmltl : m < l) (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) :
-    ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
-  rw [← List.Sorted.lt_iff_head!_lt o hl] at hlt
-  rw [← List.Sorted.lt_iff_head!_lt o hm]
-  intro hm
-  replace hmltl : List.Lex (· < ·) m l := hmltl
-  by_cases hl : l = []
-  · rw [hl] at hmltl
-    simp only [List.Lex.not_nil_right] at hmltl
-  · suffices hml : m.head! ≤ l.head! by refine lt_of_le_of_lt ?_ (hlt hl); simpa
-    rw [← List.cons_head!_tail hl] at hmltl
-    rw [← List.cons_head!_tail hm] at hmltl
-    by_contra hn
-    simp only [not_le] at hn
-    exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hn) hmltl
 
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
@@ -1576,7 +1502,7 @@ theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
   intro h hho C hC hsC
   rw [linearIndependent_iff_union_smaller C ho hsC]
   exact linearIndependent_iUnion_of_directed
-    (directed_of_sup fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
+    (Monotone.directed_le fun _ _ h ↦ GoodProducts.smaller_mono C h) fun ⟨o', ho'⟩ ↦
     (linearIndependent_iff_smaller _ _).mp (h o' ho' (le_of_lt (lt_of_lt_of_le ho' hho))
     (C.proj (ord I · < o')) (isClosed_proj _ _ hC) (contained_proj _ _))
 
