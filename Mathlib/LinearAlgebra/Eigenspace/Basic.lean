@@ -395,6 +395,14 @@ lemma mapsTo_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ
   rw [← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, h.eq, LinearMap.mul_eq_comp,
     LinearMap.comp_apply, hx, map_zero]
 
+lemma mapsTo_iSup_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
+    MapsTo g ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) := by
+  intro x hx
+  simp only [Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe] at hx
+  obtain ⟨k, hk : x ∈ f.generalizedEigenspace μ k⟩ := hx
+  simp only [Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe]
+  exact ⟨k, f.mapsTo_generalizedEigenspace_of_comm h μ k hk⟩
+
 lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ) :
     Disjoint (f.generalizedEigenspace μ₁ k) (f.generalizedEigenspace μ₂ l) := by

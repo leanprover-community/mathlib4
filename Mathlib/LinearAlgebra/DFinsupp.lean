@@ -362,7 +362,7 @@ lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
   rw [mem_iSup_iff_exists_dfinsupp']
   constructor
   · rintro ⟨f, rfl⟩
-    exact ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, fun i ↦ by simp, rfl⟩
+    exact ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, by simp, rfl⟩
   · rintro ⟨f, hf, rfl⟩
     refine ⟨DFinsupp.mk f.support <| fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
     · ext; simp

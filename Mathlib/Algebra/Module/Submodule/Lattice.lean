@@ -130,7 +130,6 @@ def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
   right_inv _ := rfl
 #align submodule.bot_equiv_punit Submodule.botEquivPUnit
 
-@[simp]
 theorem subsingleton_iff_eq_bot : Subsingleton p ↔ p = ⊥ := by
   rw [subsingleton_iff, Submodule.eq_bot_iff]
   refine ⟨fun h x hx ↦ by simpa using h ⟨x, hx⟩ ⟨0, p.zero_mem⟩,
