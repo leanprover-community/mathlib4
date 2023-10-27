@@ -218,7 +218,6 @@ theorem max_sub_min_eq_abs (a b : α) : max a b - min a b = |b - a| := by
   exact max_sub_min_eq_abs' _ _
 #align max_sub_min_eq_abs max_sub_min_eq_abs
 
-
 end AddGroup
 
 end CovariantAddLe
