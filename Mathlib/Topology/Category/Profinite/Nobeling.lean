@@ -184,18 +184,6 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     · ext i
       exact dif_pos i.prop
 
-variable (K)
-
-lemma iso_naturality (h : ∀ i, J i → K i) :
-    iso_map C J ∘ ProjRestricts C h = IndexFunctor.map C h ∘ iso_map C K := by
-  ext _ ⟨i, hi⟩
-  exact if_pos hi
-
-lemma cones_naturality :
-    iso_map C J ∘ ProjRestrict C J = IndexFunctor.π_app C J := by
-  ext _ i
-  exact dif_pos i.prop
-
 open CategoryTheory Limits Opposite
 
 variable {C} (hC : IsCompact C)
@@ -209,15 +197,6 @@ def spanFunctor :
   map h := ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
   map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
-
-/-- The natural isomorphism `spanFunctor ≅ Profinite.indexFunctor`. -/
-noncomputable
-def spanIsoIndex : spanFunctor hC ≅ indexFunctor hC := NatIso.ofComponents
-  (fun J ↦ (Profinite.isoOfBijective (iso_map C (· ∈ unop J)) (iso_map_bijective C (· ∈ unop J))))
-  (by
-    intro ⟨J⟩ ⟨K⟩ ⟨⟨⟨f⟩⟩⟩
-    ext x
-    exact congr_fun (iso_naturality C (· ∈ K) (· ∈ J) f) x)
 
 /-- The limit cone on `spanFunctor` -/
 noncomputable
@@ -233,20 +212,23 @@ def spanCone : Cone (spanFunctor hC) where
       rw [← projRestricts_comp_projRestrict C (leOfHom h.unop)]
       rfl }
 
-/-- The isomorphism of cones `spanCone ≅ Profinite.indexCone` -/
-noncomputable
-def spanConeIsoIndex :
-    (Cones.postcompose (spanIsoIndex hC).hom).obj (spanCone hC) ≅ indexCone hC :=
-  Cones.ext (Iso.refl _) (by
-    intro ⟨J⟩
-    ext x
-    exact congr_fun (cones_naturality C (· ∈ J)) x)
-
 /-- `spanCone` is a limit cone. -/
 noncomputable
-def spanCone_isLimit : CategoryTheory.Limits.IsLimit (spanCone hC) :=
-  (IsLimit.postcomposeHomEquiv (spanIsoIndex hC) (spanCone hC))
-    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (spanConeIsoIndex _).symm)
+def spanCone_isLimit : CategoryTheory.Limits.IsLimit (spanCone hC) := by
+  refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
+    (fun J ↦ (Profinite.isoOfBijective _ (iso_map_bijective C (· ∈ unop J)))) ?_) (spanCone hC))
+    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) ?_))
+  · intro ⟨J⟩ ⟨K⟩ ⟨⟨⟨f⟩⟩⟩
+    ext x
+    have : iso_map C (· ∈ K) ∘ ProjRestricts C f = IndexFunctor.map C f ∘ iso_map C (· ∈ J) := by
+      ext _ i; exact dif_pos i.prop
+    exact congr_fun this x
+  · intro ⟨J⟩
+    ext x
+    have : iso_map C (· ∈ J) ∘ ProjRestrict C (· ∈ J) = IndexFunctor.π_app C (· ∈ J) := by
+      ext _ i; exact dif_pos i.prop
+    erw [← this]
+    rfl
 
 end Projections
 
