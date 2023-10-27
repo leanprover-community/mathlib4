@@ -130,7 +130,8 @@ def subGroup_in_set (U : Set G) (one_mem : 1 ∈ U) : Subgroup G :=
     inv_mem' := by aesop
   }
 
-lemma subGroup_in_set_in_U (U : Set G) (one_mem : 1 ∈ U) : (subGroup_in_set U one_mem : Set G) ⊆ U := by
+lemma subGroup_in_set_in_U (U : Set G) (one_mem : 1 ∈ U) :
+    (subGroup_in_set U one_mem : Set G) ⊆ U := by
   intro h ⟨h_in_V, _⟩
   rw [←one_mul h]
   exact h_in_V (Set.mem_image_of_mem (· * h) one_mem)
@@ -148,7 +149,8 @@ lemma subGroup_in_set_open_of_compact (U : Set G) (one_mem : 1 ∈ U) (U_open : 
     (u : G) ∈ U_u ∧ v ∈ V_u ∧ IsOpen U_u ∧ IsOpen V_u ∧ (U_u ×ˢ V_u) ⊆ m⁻¹' U
   have hU (u : U) : ∃ s, r u s := by
     have ⟨(U_u : Set G), (V_u : Set G), U_u_open, V_u_closed, u_in_U_u, v_in_V_u, hm⟩ :
-        ∃ U_u V_u, IsOpen U_u ∧ IsOpen V_u ∧ (u : G) ∈ U_u ∧ v ∈ V_u ∧ (U_u ×ˢ V_u) ⊆ m⁻¹' U := by
+        ∃ U_u V_u, IsOpen U_u ∧ IsOpen V_u ∧ (u : G) ∈ U_u
+        ∧ v ∈ V_u ∧ (U_u ×ˢ V_u) ⊆ m⁻¹' U := by
       apply isOpen_prod_iff.mp
       . exact IsOpen.preimage continuous_mul U_open
       . apply hv; simp
