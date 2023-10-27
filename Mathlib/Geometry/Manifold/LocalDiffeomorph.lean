@@ -428,35 +428,8 @@ def LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) (x : 
     continuous_toFun := sorry
     continuous_invFun := sorry
     hx := h.mem_sources x
-    contMDiffOn_toFun := by
-      have : ∀ x : M, ContMDiffAt I J n h.toFun x := by
-        intro x
-        apply (h.contMDiffOn_toFun x).contMDiffAt
-        apply (((h.sourceAt x).1.2).mem_nhds_iff).mpr (h.mem_sources x)
-      --set badboy := h.toHomeomorph.toLocalHomeomorph.toLocalEquiv
-      --have aux : badboy = h.toFun := sorry -- TODO: add as a lemma later!
-      --rw [contMDiffOn_univ]--rw [aux, Homeomorph.toLocalHomeomorph_source, contMDiffOn_univ] -- TODO: why last two lemmas?
-      sorry--exact this TODO fixup
-    contMDiffOn_invFun := by
-      have : ∀ x : M, ContMDiffAt J I n h.invFun (h.toFun x) := by
-        intro x
-        apply (h.contMDiffOn_invFun x).contMDiffAt
-        apply (((h.targetAt x).1.2).mem_nhds_iff).mpr (h.mem_targets x)
-      have : ∀ y : N, ContMDiffAt J I n h.invFun y := by -- this should be almost obvious!
-        intro y
-        let x := h.invFun y
-        -- TODO: extract as a lemma for later!
-        have aux2 : h.toFun (h.invFun y) = y := by
-          sorry -- TODO: fixup
-          -- let r := h.toHomeomorph.right_inv y
-          -- -- two more lemmas for later! using the primed version runs into `this`
-          -- have : (LocalDiffeomorph.toHomeomorph h).toEquiv = h.toFun := sorry
-          -- have bad : Equiv.toFun (LocalDiffeomorph.toHomeomorph h).toEquiv = h.toFun := sorry
-          -- have nationwide : Equiv.invFun (LocalDiffeomorph.toHomeomorph h).toEquiv = h.invFun := sorry
-          -- rw [bad, nationwide] at r
-          -- exact r
-        exact aux2 ▸ (this x)
-      apply ContMDiff.contMDiffOn this
+    contMDiffOn_toFun := h.contMDiffOn (s := h.sourceAt x) -- TODOnow: what's before s?
+    contMDiffOn_invFun := h.contMDiffOn_symm (t := h.targetAt x)
   }
 
 -- /-- For each `x : M`, a local diffeomorph is a diffeomorphism on some open set containing `x`. -/
