@@ -27,15 +27,28 @@ variable
   (J : ModelWithCorners ℝ F G) {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [SmoothManifoldWithCorners J N]
 
--- proper statements belonging here: the remainder should eventually move to LocalDiffeomorph
--- on any topological manifold (any charted space??!!), charts are structomorphisms
+-- On any topological manifold (charted space on a normed space),
+-- charts and inverse charts are structomorphisms.
+-- /-- Charts are structomorphisms. -/
+-- lemma LocalHomeomorphism.toStructomorph {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
+--     {G : StructureGroupoid H} : Structomorph G M H :=
+--   {
+--     toFun := sorry
+--     invFun := sorry
+--     left_inv := sorry
+--     right_inv := sorry
+--     mem_groupoid := sorry
+--   }
+-- Generalise this to all extended charts, if I is boundaryless.
 
--- if M is a C^m manifold, charts are C^m. (are they even smooth? do we require M to be C^m?
--- we do, though, because of transition maps)
+-- On a C^n manifolds, all charts and inverse charts are C^m.
 
--- if M is a C^m manifold, charts are DiffeomorphOn (easy)
--- cor: differentials of charts are linear isos
--- cor: differentials of charts are bijective
+-- If M is a C^m manifold, charts are DiffeomorphOn (easy).
+-- In particular: each chart and inverse chart is a local diffeomorphism at each point of its source.
+
+-- Corollary. differentials of (inverse) charts are linear isomorphisms.
+
+-- Cor: differentials of charts are bijective.
 
 -- auxiliary results, not needed for my proof, but perhaps still useful
 section aux
