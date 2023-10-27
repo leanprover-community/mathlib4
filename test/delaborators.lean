@@ -189,6 +189,14 @@ variable (Q : Set ℕ → Prop)
 #guard_msgs in
 #check ∃ t, t ⊃ s ∧ Q t
 
+/-- info: ∃ n k, n = k : Prop -/
+#guard_msgs in
+#check ∃ n k, n = k
+
+/-- info: ∃ n k, n = k : Prop -/
+#guard_msgs in
+#check ∃ n, ∃ k, n = k
+
 end existential
 
 section prod
