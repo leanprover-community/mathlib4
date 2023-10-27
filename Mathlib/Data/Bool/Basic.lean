@@ -223,20 +223,20 @@ theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by
   cases a <;> decide
 #align bool.eq_ff_of_bnot_eq_tt Bool.eq_false_of_not_eq_true'
 
-@[simp]
-theorem and_not_self : ∀ x, (x && !x) = false := by decide
+-- TODO: undo the rename in leanprover/std4#183?
+alias and_not_self := and_not_self_right
 #align bool.band_bnot_self Bool.and_not_self
 
-@[simp]
-theorem not_and_self : ∀ x, (!x && x) = false := by decide
+-- TODO: undo the rename in leanprover/std4#183?
+alias not_and_self := and_not_self_left
 #align bool.bnot_band_self Bool.not_and_self
 
-@[simp]
-theorem or_not_self : ∀ x, (x || !x) = true := by decide
+-- TODO: undo the rename in leanprover/std4#183?
+alias or_not_self := or_not_self_right
 #align bool.bor_bnot_self Bool.or_not_self
 
-@[simp]
-theorem not_or_self : ∀ x, (!x || x) = true := by decide
+-- TODO: undo the rename in leanprover/std4#183?
+alias not_or_self := or_not_self_left
 #align bool.bnot_bor_self Bool.not_or_self
 
 theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
