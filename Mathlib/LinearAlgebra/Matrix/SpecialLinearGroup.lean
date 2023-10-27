@@ -249,7 +249,7 @@ theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) :
   replace hA (t : TransvectionStruct n R) := hA ⟨t.toMatrix, by simp⟩
   conv at hA =>
     intro t
-    rw [Subtype.ext_iff]
+    rewrite [Subtype.ext_iff]
   exact TransvectionStruct.comm_all_TransvectionStruct hA
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
@@ -263,13 +263,11 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
     have hA2 := center_scalar ⟨A, hA⟩
     refine (and_iff_left hA2).mpr ?_
     have hA1 : det A.val = (1 : R) := det_coe A
-    rw [hA2, det_smul_of_tower] at hA1
+    rewrite [hA2, det_smul_of_tower] at hA1
     revert hA1
     simp
   · intro ⟨_, hA⟩ _
-    rw [ext_iff]
-    simp only [coe_mul]
-    rw [hA]
+    rewrite [ext_iff, coe_mul, coe_mul, hA]
     simp
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
@@ -280,8 +278,8 @@ def center_iso_RootsOfUnity :
   toFun A := rootsOfUnity.mkOfPowEq (A.val default default) <| by
     simp [mem_center_iff.mp A.property |>.1]
   invFun a := ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
-      intro _
-      aesop⟩
+    intro _
+    aesop⟩
   left_inv A := by
     refine SetCoe.ext <| SetCoe.ext ?_
     conv_rhs => rw [center_scalar A]
@@ -293,7 +291,7 @@ def center_iso_RootsOfUnity :
     have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
     conv_lhs =>
       arg 1
-      rw [hAB, center_scalar]
+      rewrite [hAB, center_scalar]
     refine SetCoe.ext <| Units.eq_iff.mp ?_
     have := mul_comm (B.val default default) (A.val default default)
     simp [this]
