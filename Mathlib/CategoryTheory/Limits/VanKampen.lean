@@ -133,6 +133,18 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
 
 section Functor
 
+theorem IsUniversalColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (hc : IsUniversalColimit c)
+    (e : c ≅ c') : IsUniversalColimit c' := by
+  intro F' c'' α f h hα H
+  have : c'.ι ≫ (Functor.const J).map e.inv.hom = c.ι := by
+    ext j
+    exact e.inv.2 j
+  apply hc c'' α (f ≫ e.inv.1) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα
+  intro j
+  rw [← Category.comp_id (α.app j)]
+  have : IsIso e.inv.hom := Functor.map_isIso (Cocones.forget _) e.inv
+  exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨by simp⟩)
+
 theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
     (e : c ≅ c') : IsVanKampenColimit c' := by
   intro F' c'' α f h hα
@@ -162,6 +174,18 @@ theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIs
   rw [← IsPullback.paste_vert_iff this _, Category.comp_id]
   exact (congr_app e j).symm
 
+theorem IsUniversalColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
+    {c : Cocone G} (hc : IsUniversalColimit c) :
+    IsUniversalColimit ((Cocones.precompose α).obj c) := by
+  intros F' c' α' f e hα H
+  apply (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
+    (hα.comp (NatTrans.equifibered_of_isIso _)))
+  intro j
+  simp only [Functor.const_obj_obj, NatTrans.comp_app,
+    Cocones.precompose_obj_pt, Cocones.precompose_obj_ι]
+  rw [← Category.comp_id f]
+  exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨Category.comp_id _⟩)
+
 theorem IsVanKampenColimit.precompose_isIso_iff {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} : IsVanKampenColimit ((Cocones.precompose α).obj c) ↔ IsVanKampenColimit c :=
   ⟨fun hc ↦ IsVanKampenColimit.of_iso (IsVanKampenColimit.precompose_isIso (inv α) hc)
@@ -188,6 +212,28 @@ theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone
     apply (IsVanKampenColimit.precompose_isIso_iff e.inv).mp
     refine hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) ?_)
     simp [Functor.asEquivalence]⟩
+
+theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
+    {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
+    IsUniversalColimit (c.whisker e.functor) := by
+  intro F' c' α f e' hα H
+  convert hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
+    ((hα.whiskerLeft _).comp (NatTrans.equifibered_of_isIso _)) ?_ using 1
+  · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
+  · convert congr_arg (whiskerLeft e.inverse) e'
+    ext
+    simp
+  · intro k
+    rw [← Category.comp_id f]
+    refine (H (e.inverse.obj k)).paste_vert ?_
+    have : IsIso (𝟙 (Cocone.whisker e.functor c).pt) := inferInstance
+    exact IsPullback.of_vert_isIso ⟨by simp⟩
+
+theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category K] (e : J ≌ K)
+    {F : K ⥤ C} {c : Cocone F} :
+    IsUniversalColimit (c.whisker e.functor) ↔ IsUniversalColimit c :=
+  ⟨fun hc ↦ ((hc.whiskerEquivalence e.symm).precompose_isIso (e.invFunIdAssoc F).inv).of_iso
+      (Cocones.ext (Iso.refl _) (by simp)), IsUniversalColimit.whiskerEquivalence e⟩
 
 theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :

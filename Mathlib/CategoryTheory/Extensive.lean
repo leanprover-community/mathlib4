@@ -61,6 +61,16 @@ section Extensive
 
 variable {X Y : C}
 
+/-- A category is (finitary) pre-extensive if it has finite coproducts,
+and binary coproducts are van Kampen. -/
+class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
+  [hasFiniteCoproducts : HasFiniteCoproducts C]
+  [hasPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
+  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
+
+attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts FinitaryPreExtensive.hasPullbackInl
+
 /-- A category is (finitary) extensive if it has finite coproducts,
 and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
@@ -85,11 +95,15 @@ theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingP
   exact FinitaryExtensive.van_kampen' c hc
 #align category_theory.finitary_extensive.van_kampen CategoryTheory.FinitaryExtensive.vanKampen
 
-instance FinitaryExtensive.hasPullbackInl' [FinitaryExtensive C] {X Y Z : C} (f : Z ⟶ X ⨿ Y) :
+namespace FinitaryPreExtensive
+
+variable [FinitaryPreExtensive C] {X Y Z : C} (f : Z ⟶ X ⨿ Y)
+
+instance hasPullbackInl' :
     HasPullback f coprod.inl :=
   hasPullback_symmetry _ _
 
-instance FinitaryExtensive.hasPullbackInr' [FinitaryExtensive C] {X Y Z : C} (f : Z ⟶ X ⨿ Y) :
+instance hasPullbackInr' :
     HasPullback f coprod.inr := by
   have : IsPullback (𝟙 _) (f ≫ (coprod.braiding X Y).hom) f (coprod.braiding Y X).hom :=
     IsPullback.of_horiz_isIso ⟨by simp⟩
@@ -98,9 +112,15 @@ instance FinitaryExtensive.hasPullbackInr' [FinitaryExtensive C] {X Y Z : C} (f 
     BinaryCofan.ι_app_left, BinaryCofan.mk_inl] at this
   exact ⟨⟨⟨_, this.isLimit⟩⟩⟩
 
-instance FinitaryExtensive.hasPullbackInr [FinitaryExtensive C] {X Y Z : C} (f : Z ⟶ X ⨿ Y) :
+instance hasPullbackInr :
     HasPullback coprod.inr f :=
   hasPullback_symmetry _ _
+
+end FinitaryPreExtensive
+
+instance (priority := 100) FinitaryExtensive.toFinitaryPreExtensive [FinitaryExtensive C] :
+    FinitaryPreExtensive C :=
+  ⟨fun c hc ↦ (FinitaryExtensive.van_kampen' c hc).isUniversal⟩
 
 theorem FinitaryExtensive.mono_inr_of_isColimit [FinitaryExtensive C] {c : BinaryCofan X Y}
     (hc : IsColimit c) : Mono c.inr :=
@@ -124,13 +144,13 @@ theorem FinitaryExtensive.isPullback_initial_to_binaryCofan [FinitaryExtensive C
   BinaryCofan.isPullback_initial_to_of_isVanKampen (FinitaryExtensive.vanKampen c hc)
 #align category_theory.finitary_extensive.is_pullback_initial_to_binary_cofan CategoryTheory.FinitaryExtensive.isPullback_initial_to_binaryCofan
 
-instance (priority := 100) hasStrictInitialObjects_of_finitaryExtensive [FinitaryExtensive C] :
+instance (priority := 100) hasStrictInitialObjects_of_finitaryPreExtensive [FinitaryPreExtensive C] :
     HasStrictInitialObjects C :=
-  hasStrictInitial_of_isUniversal (FinitaryExtensive.vanKampen _
+  hasStrictInitial_of_isUniversal (FinitaryPreExtensive.universal' _
     ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
-      infer_instance)).some).isUniversal
-#align category_theory.has_strict_initial_objects_of_finitary_extensive CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive
+      infer_instance)).some)
+#align category_theory.has_strict_initial_objects_of_finitary_extensive CategoryTheory.hasStrictInitialObjects_of_finitaryPreExtensive
 
 theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFiniteCoproducts C]
     [hasPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
@@ -389,6 +409,32 @@ end Functor
 
 section FiniteCoproducts
 
+theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtensive C] {n : ℕ}
+    {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
+  let f : Fin n → C := F.obj ∘ Discrete.mk
+  have : F = Discrete.functor f :=
+    Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+  clear_value f
+  subst this
+  induction' n with n IH
+  · exact (isVanKampenColimit_of_isEmpty _ hc).isUniversal
+  · apply IsUniversalColimit.of_iso _
+      ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
+    apply @isUniversalColimit_extendCofan _ _ _ _ _ _ _ _ ?_
+    · apply IH
+      exact coproductIsCoproduct _
+    · apply FinitaryPreExtensive.universal'
+      exact coprodIsCoprod _ _
+    · dsimp
+      infer_instance
+
+theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive C] {ι : Type*}
+    [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+  apply (IsUniversalColimit.whiskerEquivalence_iff (Discrete.equivalence e).symm).mp
+  apply FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin
+  exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
+
 theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
@@ -415,7 +461,7 @@ theorem FinitaryExtensive.isVanKampen_finiteCoproducts [FinitaryExtensive C] {ι
   apply FinitaryExtensive.isVanKampen_finiteCoproducts_Fin
   exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
 
-lemma FinitaryExtensive.hasPullbacks_of_is_coproduct [FinitaryExtensive C] {ι : Type*}
+lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C] {ι : Type*}
     [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) (i : Discrete ι) {X : C}
     (g : X ⟶ _) : HasPullback g (c.ι.app i) := by
   classical
@@ -470,13 +516,13 @@ lemma FinitaryExtensive.isPullback_initial_to_sigma_ι [FinitaryExtensive C] {ι
   FinitaryExtensive.isPullback_initial_to (coproductIsCoproduct _) ⟨i⟩ ⟨j⟩
     (ne_of_apply_ne Discrete.as e)
 
-instance FinitaryExtensive.hasPullbacks_of_inclusions [FinitaryExtensive C] {X Z : C} {α : Type*}
-    (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
+instance FinitaryPreExtensive.hasPullbacks_of_inclusions [FinitaryPreExtensive C] {X Z : C}
+    {α : Type*} (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
     [hi : IsIso (Sigma.desc i)] (a : α) : HasPullback f (i a) := by
-  apply FinitaryExtensive.hasPullbacks_of_is_coproduct (c := Cofan.mk Z i)
+  apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct (c := Cofan.mk Z i)
   exact @IsColimit.ofPointIso (t := Cofan.mk Z i) (P := _) hi
 
-lemma FinitaryExtensive.sigma_desc_iso [FinitaryExtensive C] {α : Type} [Finite α] {X : C}
+lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [Finite α] {X : C}
     {Z : α → C} (π : (a : α) → Z a ⟶ X) {Y : C} (f : Y ⟶ X) (hπ : IsIso (Sigma.desc π)) :
     IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _)) := by
   suffices IsColimit (Cofan.mk _ ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _)) by
@@ -486,10 +532,10 @@ lemma FinitaryExtensive.sigma_desc_iso [FinitaryExtensive C] {α : Type} [Finite
   · refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) ?_
     convert hπ
     simp [coproductIsCoproduct]
-  refine ((FinitaryExtensive.isVanKampen_finiteCoproducts this
+  refine (FinitaryPreExtensive.isUniversal_finiteCoproducts this
     (Cofan.mk _ ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
     (Discrete.natTrans <| fun i ↦ pullback.snd) f ?_
-    (NatTrans.equifibered_of_discrete _)).mpr ?_).some
+    (NatTrans.equifibered_of_discrete _) ?_).some
   · ext
     simp [pullback.condition]
   · exact fun j ↦ IsPullback.of_hasPullback f (π j.as)
