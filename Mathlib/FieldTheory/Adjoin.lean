@@ -277,10 +277,10 @@ theorem map_bot {K : Type*} [Field K] [Algebra F K] (f : E →ₐ[F] K) :
     IntermediateField.map f ⊥ = ⊥ :=
   toSubalgebra_injective <| Algebra.map_bot _
 
-theorem _root_.AlgHom.fieldRange_eq_map {K : Type*} [Field K] [Algebra F K] (f : E →ₐ[F] K) :
+theorem AlgHom.fieldRange_eq_map {K : Type*} [Field K] [Algebra F K] (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
   SetLike.ext' Set.image_univ.symm
-#align alg_hom.field_range_eq_map AlgHom.fieldRange_eq_map
+#align alg_hom.field_range_eq_map IntermediateField.AlgHom.fieldRange_eq_map
 
 theorem AlgHom.map_fieldRange {K L : Type*} [Field K] [Field L] [Algebra F K] [Algebra F L]
     (f : E →ₐ[F] K) (g : K →ₐ[F] L) : f.fieldRange.map g = (g.comp f).fieldRange :=
