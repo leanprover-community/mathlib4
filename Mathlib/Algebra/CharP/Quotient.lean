@@ -49,7 +49,7 @@ theorem quotient_iff {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R
   rw [CharP.cast_eq_zero_iff R n, ←CharP.cast_eq_zero_iff (R ⧸ I) n _]
   exact (Submodule.Quotient.mk_eq_zero I).mpr hx
 
-/-- `char_p.quotient'` as an `iff`. -/
+/-- `CharP.quotient_iff`, but stated in terms of inclusions of ideals. -/
 theorem quotient_iff_le_ker_natCast {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
     CharP (R ⧸ I) n ↔ I.comap (Nat.castRingHom R) ≤ RingHom.ker (Nat.castRingHom R) := by
   rw [CharP.quotient_iff, RingHom.ker_eq_comap_bot]; rfl
