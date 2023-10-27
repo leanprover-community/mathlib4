@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Algebra.Group.Basic
@@ -6,6 +11,14 @@ import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Index
 import Mathlib.Data.Setoid.Partition
+
+/-!
+# Results on profinite groups
+
+Currently only shows that the open normal subgroups of a profinite group form a neighbourhood
+basis of the identity.
+
+-/
 
 universe u
 
@@ -62,7 +75,8 @@ lemma conjActionOrbitSubgroup_def (H : Subgroup G) :
   ext
   simp [Subgroup.pointwise_smul_def, MulAction.mem_orbit_iff, Subgroup.mem_iInf]
 
-lemma stabilizer_eq_normalizer (H : Subgroup G) : MulAction.stabilizer (ConjAct G) H = H.normalizer := by
+lemma stabilizer_eq_normalizer (H : Subgroup G) :
+    MulAction.stabilizer (ConjAct G) H = H.normalizer := by
   ext
   erw [MulAction.mem_stabilizer_iff, ←eq_inv_smul_iff, Subgroup.mem_normalizer_iff, SetLike.ext_iff]
   simp only [Subgroup.mem_inv_pointwise_smul_iff]
@@ -72,14 +86,15 @@ lemma subgroup_stabilizes_itself (H : Subgroup G) : H ≤ MulAction.stabilizer (
   rw [stabilizer_eq_normalizer]
   exact Subgroup.le_normalizer
 
-lemma QuotientGroup.finite_of_le {H K : Subgroup G} (le : H ≤ K) (fh : Finite (G ⧸ H)) : Finite (G ⧸ K) := by
+lemma QuotientGroup.finite_of_le {H K : Subgroup G} (le : H ≤ K) (fh : Finite (G ⧸ H)) :
+    Finite (G ⧸ K) := by
   apply Nat.finite_of_card_ne_zero
   intro (n_0 : K.index = 0)
   have := Subgroup.index_dvd_of_le le
   simp_all only [zero_dvd_iff, Subgroup.index_ne_zero_of_finite]
 
-lemma Subgroup.finiteConjugationOrbit_of_finiteIndex (H : Subgroup G) (hf : H.index ≠ 0)
-    : Finite (MulAction.orbit (ConjAct G) H) := by
+lemma Subgroup.finiteConjugationOrbit_of_finiteIndex (H : Subgroup G) (hf : H.index ≠ 0) :
+    Finite (MulAction.orbit (ConjAct G) H) := by
   rw [Equiv.finite_iff <| MulAction.orbitEquivQuotientStabilizer (ConjAct G) H]
   exact QuotientGroup.finite_of_le (subgroup_stabilizes_itself H) (Nat.finite_of_card_ne_zero hf)
 
@@ -146,15 +161,15 @@ lemma subGroup_in_set_open_of_compact (U : Set G) (one_mem : 1 ∈ U) (U_open : 
         ∃ U_u V_u, IsOpen U_u ∧ IsOpen V_u ∧ (u : G) ∈ U_u
         ∧ v ∈ V_u ∧ (U_u ×ˢ V_u) ⊆ m⁻¹' U := by
       apply isOpen_prod_iff.mp
-      . exact IsOpen.preimage continuous_mul U_open
-      . apply hv; simp
+      · exact IsOpen.preimage continuous_mul U_open
+      · apply hv; simp
     exists (U_u, V_u)
   obtain ⟨f, hf⟩ := Classical.axiomOfChoice hU
   let cov (u : U) : Set G := (f u).1
   obtain ⟨t, ht⟩ := by
     apply IsCompact.elim_finite_subcover U_compact cov
-    . aesop
-    . intro u u_in_U
+    · aesop
+    · intro u u_in_U
       simp only [Set.mem_iUnion]
       exists ⟨u, u_in_U⟩
       simp_all only [Subtype.forall]
@@ -187,27 +202,27 @@ lemma clopenContainsOpenSubgroup (U : Set G) (U_clopen : IsClopen U) (one_mem : 
   exact subGroup_in_set_open_of_compact U one_mem U_clopen.left (IsClosed.isCompact U_clopen.right)
   exact subGroup_in_set_in_U U one_mem
 
-lemma openSubgroupFiniteConjActOrbit (U : Subgroup G) (u_open : IsOpen (U : Set G))
-    : (MulAction.orbit (ConjAct G) U).Finite := by
+lemma openSubgroupFiniteConjActOrbit (U : Subgroup G) (u_open : IsOpen (U : Set G)) :
+    (MulAction.orbit (ConjAct G) U).Finite := by
   have : Finite (MulAction.orbit (ConjAct G) U) := by
     apply Subgroup.finiteConjugationOrbit_of_finiteIndex
     have : Finite (G ⧸ U) := Subgroup.finiteQuotient U u_open
     exact Subgroup.index_ne_zero_of_finite
   exact Set.toFinite _
 
-lemma openSubgroupContainsNormal (U : Subgroup G) (u_open : IsOpen (U : Set G)) 
-    : ∃ N : Subgroup G, IsOpen (N : Set G) ∧ N.Normal ∧ N ≤ U := by
+lemma openSubgroupContainsNormal (U : Subgroup G) (u_open : IsOpen (U : Set G)) :
+    ∃ N : Subgroup G, IsOpen (N : Set G) ∧ N.Normal ∧ N ≤ U := by
   exists ⨅ (g : ConjAct G), g • U
   constructor
-  . simp only [conjActionOrbitSubgroup_def, Subgroup.coe_iInf]
+  · simp only [conjActionOrbitSubgroup_def, Subgroup.coe_iInf]
     apply Set.Finite.isOpen_biInter
     exact openSubgroupFiniteConjActOrbit U u_open
     intro H ⟨g, (hH : g • U = H)⟩
     rw [←hH]
     exact conjOpen_ofOpen U u_open g
-  . constructor
-    . exact intersectionOfConjugatesIsNormal U
-    . have := iInf_le (fun g : ConjAct G => g • U) (1 : ConjAct G)
+  · constructor
+    · exact intersectionOfConjugatesIsNormal U
+    · have := iInf_le (fun g : ConjAct G => g • U) (1 : ConjAct G)
       simp only [one_smul] at this
       assumption
 
@@ -233,13 +248,13 @@ theorem profiniteOpenNormalNhdsBasis : Filter.HasBasis (nhds (1 : G))
   simp only [Filter.hasBasis_iff, mem_nhds_iff]
   intro U
   constructor
-  . intro ⟨t, t_in_U, t_open, one_in_t⟩
+  · intro ⟨t, t_in_U, t_open, one_in_t⟩
     obtain ⟨V, V_open, V_normal, V_in_t⟩ := openNhdOneContainsNormal t t_open one_in_t
     have : (V : Set G) ⊆ U
     trans
     repeat assumption
     exists V
-  . intro ⟨s, ⟨s_open, _⟩, s_in_U⟩
+  · intro ⟨s, ⟨s_open, _⟩, s_in_U⟩
     exists s
     repeat (constructor; assumption)
     exact Subgroup.one_mem s
