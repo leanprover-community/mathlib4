@@ -7,18 +7,22 @@ import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Index
 import Mathlib.Data.Setoid.Partition
 
+universe u
+
+variable {G : Type u} [Group G]
+
 section CompactQuotient
 
 open Function Set
 
-lemma QuotientGroup.preimage_mk_singleton_mk {G : Type*} [Group G] (H : Subgroup G) (g : G) :
+lemma QuotientGroup.preimage_mk_singleton_mk (H : Subgroup G) (g : G) :
     mk (s := H) ⁻¹' {mk g} = (g * ·) '' H := by
   ext g'
   simp only [mem_preimage, mem_singleton_iff, QuotientGroup.eq, image_mul_left, SetLike.mem_coe]
   rw [← H.inv_mem_iff]
   simp
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] (U : Subgroup G)
+variable [TopologicalSpace G] [TopologicalGroup G] (U : Subgroup G)
 
 lemma Subgroup.discreteTopology  (U_open : IsOpen (U : Set G)) : DiscreteTopology (G ⧸ U) := by
   apply singletons_open_iff_discrete.mp
@@ -26,7 +30,7 @@ lemma Subgroup.discreteTopology  (U_open : IsOpen (U : Set G)) : DiscreteTopolog
   erw [isOpen_mk, QuotientGroup.preimage_mk_singleton_mk]
   exact Homeomorph.mulLeft g |>.isOpen_image|>.mpr U_open
 
-lemma Subgroup.finite_quotient [CompactSpace G] (U_open : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
+lemma Subgroup.finiteQuotient [CompactSpace G] (U_open : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
   have : CompactSpace (G ⧸ U) := Quotient.compactSpace
   have : DiscreteTopology (G ⧸ U) := U.discreteTopology U_open
   finite_of_compact_of_discrete
@@ -34,10 +38,6 @@ lemma Subgroup.finite_quotient [CompactSpace G] (U_open : IsOpen (U : Set G)) : 
 end CompactQuotient
 
 section ConjAction
-
-universe u
-
-variable {G : Type u} [Group G]
 
 open ConjAct
 
@@ -87,9 +87,7 @@ end ConjAction
 
 section ContConjAction
 
-universe u
-
-variable {G : Type u} [Group G] [TopologicalSpace G] [TopologicalGroup G]
+variable [TopologicalSpace G] [TopologicalGroup G]
 
 open ConjAct
 
@@ -102,10 +100,6 @@ lemma conjOpen_ofOpen (U : Subgroup G) (U_open : IsOpen (U : Set G)) (g : ConjAc
 end ContConjAction
 
 section TopGroups
-
-universe u
-
-variable {G : Type u} [Group G]
 
 def subGroup_in_set (U : Set G) (one_mem : 1 ∈ U) : Subgroup G :=
   let V := { v | (· * v) '' U ⊆ U }
@@ -184,9 +178,7 @@ end TopGroups
 
 section CompactGroups
 
-universe u
-
-variable {G : Type u} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
+variable [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
 
 lemma clopenContainsOpenSubgroup (U : Set G) (U_clopen : IsClopen U) (one_mem : 1 ∈ U) :
     ∃ H : Subgroup G, IsOpen (H : Set G) ∧ (H : Set G) ⊆ U := by
@@ -199,7 +191,7 @@ lemma openSubgroupFiniteConjActOrbit (U : Subgroup G) (u_open : IsOpen (U : Set 
     : (MulAction.orbit (ConjAct G) U).Finite := by
   have : Finite (MulAction.orbit (ConjAct G) U) := by
     apply Subgroup.finiteConjugationOrbit_of_finiteIndex
-    have : Finite (G ⧸ U) := Subgroup.finite_quotient U u_open
+    have : Finite (G ⧸ U) := Subgroup.finiteQuotient U u_open
     exact Subgroup.index_ne_zero_of_finite
   exact Set.toFinite _
 
@@ -223,10 +215,8 @@ end CompactGroups
 
 section Profinite
 
-universe u
-
-variable {G : Type u} [Group G] [TopologicalSpace G] [TopologicalGroup G]
-  [CompactSpace G] [T2Space G] [TotallyDisconnectedSpace G]
+variable [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
+  [T2Space G] [TotallyDisconnectedSpace G]
 
 lemma openNhdOneContainsNormal (U : Set G) (U_open : IsOpen U) (one_mem : 1 ∈ U) :
     ∃ V : Subgroup G, IsOpen (V : Set G) ∧ V.Normal ∧ (V : Set G) ⊆ U := by
