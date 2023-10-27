@@ -5,6 +5,20 @@ import Mathlib.FieldTheory.Subfield
 
 set_option autoImplicit true
 
+section Delab
+variable {M : Type u} [Monoid M] (S S' : Submonoid M)
+
+/-- info: ↥S → ↥S' : Type u -/
+#guard_msgs in #check S → S'
+
+/-- info: ↥S : Type u -/
+#guard_msgs in #check {x // x ∈ S}
+
+/-- info: { x // 1 * x ∈ S } : Type u -/
+#guard_msgs in #check {x // 1 * x ∈ S}
+
+end Delab
+
 example [Ring R] (S : Subring R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - 2 • y + z ^ m ∈ S := by
   aesop
