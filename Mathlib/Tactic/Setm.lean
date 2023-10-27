@@ -24,9 +24,9 @@ initialize registerTraceClass `Tactic.setm
 
 /-- This is the core to the `setm` tactic. It takes an expression `e` and pattern `stx` containing
 named holes whose form should match `e`. For each named hole in `stx`, we create a `let` declaration
-of the same name whose value is filled by the corresponding subexpression of `e`. We then return
-the expression `e` with its subexpressions replaced by these named variables. -/
-def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext do
+of the same name whose value is filled by the corresponding subexpression of `e`. We then rewrite
+at the `loc`ations given using the new declarations. -/
+def setMCore (e : Expr) (stx : TSyntax `term) (loc : Location) : TacticM Unit := withMainContext do
   let (origPattern, mvarIds) ← elabTermWithHoles stx none (←getMainTag) (allowNaturalHoles := true)
   /- Named holes are by default syntheticOpaque and not assignable, so we change that -/
   mvarIds.forM fun mvarId => mvarId.setKind .natural
@@ -50,15 +50,15 @@ def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext 
     mvarIdsPairs.forM fun (mvarIdOld, mvarExprNew) => do
       let mvarIdNew := mvarExprNew.mvarId!
       match (mdecls.find! mvarIdNew).userName with
-      | Name.anonymous => return ()
+      | Name.anonymous => mvarIdOld.assign mvarExprNew
       | name =>
         let a := mkIdent name
-       let ha := mkIdent <| name.appendBefore "h"
+        let ha := mkIdent <| name.appendBefore "h"
         let goal ← getMainGoal
         match (←getExprMVarAssignment? mvarIdNew) with
         | .some mvarAss =>
           /-
-          Here mvarIdNew is assigned to mvarAss, and mvarIdOld <-> mvarIdNew, so I
+          Here mvarIdNew is assigned to mvarAss, and mvarIdOld <-> mvarIdNew, so we
             (1) let $a := mvarAss -- Here fvarId stores $a (?)
             (2) have $ha : $a = mvarAss := rfl
             (3) assign $a to mvarIdOld
@@ -68,28 +68,15 @@ def setMCore (e : Expr) (stx : TSyntax `term) : TacticM Expr := withMainContext 
           replaceMainGoal [goal]
           evalTactic (←`(tactic| have $ha : $a = $(←Term.exprToSyntax mvarAss) := rfl))
           mvarIdOld.assign (.fvar fvarId)
-        | none => throwError "File a bug report!"
+          withLocation loc
+            (discard <| tryTactic <| rewriteLocalDecl ha true ·)
+            (discard <| tryTactic <| rewriteTarget ha true)
+            (discard <| return ·)
+        | none => throwError "setm: mvar not assigned. File a bug report!"
       mvarIdOld.setUserName <| (← mkFreshUserName (← mvarIdOld.getDecl).userName)
       mvarIdNew.setUserName <| (← mkFreshUserName (← mvarIdNew.getDecl).userName)
   else
     throwError f!"setm: pattern is not definitionally equal to the goal."
-
-  /- At the end, return the `origPattern` -/
-  return origPattern
-
-/-- Apply `setMCore` to the type of the provided `fvar` and the pattern `stx`. Then replace the type
-of `fvar` to be the definitionally equal expression returned by `setMCore`. -/
-def setMLocalDecl (stx : TSyntax `term) (fvar : FVarId) : TacticM Unit := withMainContext do
-  let pattern ← setMCore (← fvar.getType) stx
-  let goal ← (← getMainGoal).changeLocalDecl fvar pattern false
-  replaceMainGoal [goal]
-
-/-- Apply `setMCore` to the type of the main goal and the pattern `stx`. Then replace the goal
-with the definitionally equal expression returned by `setMCore`. -/
-def setMTarget (stx : TSyntax `term) : TacticM Unit := withMainContext do
-  let pattern ← setMCore (← getMainTarget) stx
-  let goal ← (← getMainGoal).change pattern false
-  replaceMainGoal [goal]
 
 /--
 The `setm` tactic ("`set` with matching") matches a pattern containing named holes the type of a
@@ -104,9 +91,11 @@ context and change the goal to `a ^ 2 + b * a + 3 = 28`.
 Likewise if the local context contains `h : (x + 5) ^ 2 + (2 * y + x) * (x + 5) + 3 = 28`
 (with `x y : ℕ`), then `setm ?a ^ 2 + ?b * ?a + 3 = 28 at h` would introduce `a : ℕ := x + 5` and
 `b : ℕ := 2 * y + 5` into the context and changes the type to `h : a ^ 2 + b * a + 3 = 28`. -/
-elab (name := setM) "setm" ppSpace colGt stx:term loc:(location)? : tactic =>
+syntax (name := setM) "setm" term (" using " term)? (location)? : tactic
+elab_rules : tactic
+| `(tactic| setm $stx $[using $usingArg]? $[$loc]?) => do
+  let target ← match (← usingArg.mapM (elabTerm · none)) with
+  | some target => inferType target
+  | none => getMainTarget
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  withLocation loc
-    (setMLocalDecl stx)
-    (setMTarget stx)
-    (fun _ ↦ logInfo "setm can only be applied at a single hypothesis or the target")
+  setMCore target stx loc
