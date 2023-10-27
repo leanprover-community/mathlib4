@@ -296,7 +296,7 @@ theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
 #align fintype.prod_sum_type Fintype.prod_sum_type
 #align fintype.sum_sum_type Fintype.sum_sum_type
 
-@[to_additive (attr := simp) Fintype.sum_prod_type ]
+@[to_additive (attr := simp) Fintype.sum_prod_type]
 theorem Fintype.prod_prod_type [CommMonoid γ] {f : α₁ × α₂ → γ} :
     ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
   Finset.prod_product
