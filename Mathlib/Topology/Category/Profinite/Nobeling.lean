@@ -46,6 +46,8 @@ namespace NobelingProof
 
 variable {I : Type u} [Inhabited I] [LinearOrder I] [IsWellOrder I (·<·)] (C : Set (I → Bool))
 
+open Profinite ContinuousMap CategoryTheory Limits Opposite Submodule
+
 section Projections
 
 variable (J K L : I → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
@@ -143,8 +145,6 @@ theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
 
 variable (J)
 
-open Profinite ContinuousMap
-
 /-- The objectwise map in the isomorphism `spanFunctor ≅ Profinite.indexFunctor`. -/
 def iso_map : C(π C J, (IndexFunctor.obj C J)) :=
   ⟨fun x ↦ ⟨fun i ↦ x.val i.val, by
@@ -169,8 +169,6 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
       exact ⟨y, hy, rfl⟩
     · ext i
       exact dif_pos i.prop
-
-open CategoryTheory Limits Opposite
 
 variable {C} (hC : IsCompact C)
 
@@ -292,8 +290,6 @@ theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C
   exact linearIndependent_equiv (equiv_range C)
 
 end GoodProducts
-
-open Submodule
 
 namespace Products
 
