@@ -30,7 +30,8 @@ variable
 -- proper statements belonging here: the remainder should eventually move to LocalDiffeomorph
 -- on any topological manifold (any charted space??!!), charts are structomorphisms
 
--- if M is a C^m manifold, charts are C^m. (are they even smooth? do we require M to be C^m? we do, though, because of transition maps)
+-- if M is a C^m manifold, charts are C^m. (are they even smooth? do we require M to be C^m?
+-- we do, though, because of transition maps)
 
 -- if M is a C^m manifold, charts are DiffeomorphOn (easy)
 -- cor: differentials of charts are linear isos

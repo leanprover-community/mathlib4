@@ -13,8 +13,8 @@ import Mathlib.Geometry.Manifold.MFDeriv
 
 In this file, we define `C^n` local diffeomorphisms between manifolds.
 
-A `C^n` map `f : M → N` is a **local diffeomorphism at `x`** iff there are neighbourhoods `s` and `t`
-of `x` and `f x`, respectively such that `f` restricts to a diffeomorphism from `s` and `t`.
+A `C^n` map `f : M → N` is a **local diffeomorphism at `x`** iff there are neighbourhoods `s`
+and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphism from `s` and `t`.
 `f` is called a **local diffeomorphism** iff it is a local diffeomorphism at every `x ∈ M`.
 
 ## Main definitions
@@ -27,8 +27,8 @@ This definition is an implementation detail, and not meant for use outside of th
 * Each of `Diffeomorph`, `LocalDiffeomorph`, `DiffeomorphOn` and `LocalDiffeomorphAt`
 implies the next condition.
 * `Diffeomorph.of_localDiffeomorph`: a bijective local diffeomorphisms is a diffeomorphism.
-* `LocalDiffeomorphAt.differential_toContinuousLinearEquiv`: if `f` is a local diffeomorphism at `x`,
-the differential `mfderiv I J n f x` is a continuous linear isomorphism.
+* `LocalDiffeomorphAt.differential_toContinuousLinearEquiv`: if `f` is a local diffeomorphism
+at `x`, the differential `mfderiv I J n f x` is a continuous linear isomorphism.
 * `LocalDiffeomorphAt.of_DifferentialIsoAt`: conversely, if `f` is `C^n` at `x` and
 `mfderiv I J n f x` is a linear isomorphism, `f` is a local diffeomorphism at `x`.
 * `LocalDiffeomorph.differential_toContinuousLinearEquiv`: if `f` is a local diffeomorphism,
@@ -159,8 +159,7 @@ protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' 
   contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h plus restricting
   contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h + restricting
 
--- FIXME: continuity and smoothness for trans also??
-
+-- FIXME: show continuity and smoothness for trans also??
 -- TODO: add more API for refl, trans and symm
 end DiffeomorphOn
 
