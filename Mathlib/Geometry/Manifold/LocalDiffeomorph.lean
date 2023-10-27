@@ -104,7 +104,7 @@ protected theorem continuousOn : ContinuousOn h.toFun h.source :=
 
 @[continuity]
 theorem continuousOn_symm : ContinuousOn h.invFun h.target :=
-  h.toLocalHomeomorph.continuousOn_symm
+  (h.symm).continuousOn
 
 /-- A diffeomorphism on a set is continuous at any point of its source. -/
 protected theorem continuousAt {x : M} (hx : x ∈ h.source) : ContinuousAt h.toFun x :=
@@ -120,19 +120,19 @@ protected theorem contMDiffOn : ContMDiffOn I J n h.toFun h.source :=
 theorem contMDiffOn_symm : ContMDiffOn J I n h.invFun h.target :=
   h.contMDiffOn_invFun
 
-theorem contMDiffAt {x : M} (hx : x ∈ h.source) : ContMDiffAt I J n h.toFun x :=
+protected theorem contMDiffAt {x : M} (hx : x ∈ h.source) : ContMDiffAt I J n h.toFun x :=
   h.contMDiffOn_toFun.contMDiffAt (h.open_source.mem_nhds hx)
 
-protected theorem contMDiffAt_symm {x : N} (hx : x ∈ h.target) : ContMDiffAt J I n h.invFun x :=
+theorem contMDiffAt_symm {x : N} (hx : x ∈ h.target) : ContMDiffAt J I n h.invFun x :=
   (h.symm).contMDiffAt hx
 
-protected theorem contMDiffWithinAt {s : Set M} {x : M} (hx : x ∈ h.source) :
+protected theorem contMDiffWithinAt (s : Set M) {x : M} (hx : x ∈ h.source) :
     ContMDiffWithinAt I J n h.toFun s x :=
   (h.contMDiffAt hx).contMDiffWithinAt
 
-theorem contMDiffWithinAt_symm {s : Set N} {x : N} (hx : x ∈ h.target) :
-    ContMDiffWithinAt J I n h.invFun s x :=
-  (h.symm).contMDiffWithinAt hx
+theorem contMDiffWithinAt_symm (t : Set N) {x : N} (hx : x ∈ h.target) :
+    ContMDiffWithinAt J I n h.invFun t x :=
+  (h.symm).contMDiffWithinAt t hx
 
 protected theorem mdifferentiableOn (hn : 1 ≤ n) : MDifferentiableOn I J h.toFun h.source :=
   (h.contMDiffOn).mdifferentiableOn hn
@@ -204,11 +204,11 @@ protected theorem contMDiffAt_symm {x : N} (hx : x ∈ h.target) : ContMDiffAt J
 
 protected theorem contMDiffWithinAt {s : Set M} (hx : x ∈ h.source) :
     ContMDiffWithinAt I J n h.toFun s x :=
-  h.toDiffeomorphOn.contMDiffWithinAt hx
+  h.toDiffeomorphOn.contMDiffWithinAt s hx
 
 theorem contMDiffWithinAt_symm {s : Set N} {x : N} (hx : x ∈ h.target) :
     ContMDiffWithinAt J I n h.invFun s x :=
-  (h.symm).contMDiffWithinAt hx
+  (h.symm).contMDiffWithinAt s hx
 
 protected theorem mdifferentiableOn (hn : 1 ≤ n) : MDifferentiableOn I J h.toFun h.source :=
   (h.contMDiffOn).mdifferentiableOn hn
@@ -222,7 +222,7 @@ end ContSmooth
 /-- Identity map as a local diffeomorphism at any point. -/
 protected def refl (x : M) : LocalDiffeomorphAt I I M M n x where
   toDiffeomorphOn := DiffeomorphOn.refl I M n
-  hx := by exact trivial
+  hx := trivial
 
 @[simp]
 theorem refl_toEquiv (x : M) : (LocalDiffeomorphAt.refl I M n x).toEquiv = Equiv.refl _ :=
@@ -318,40 +318,41 @@ theorem continuous_symm : Continuous h.invFun :=
   (h.symm).continuous
 
 /-- A local diffeomorphism is continuous every point. -/
-protected theorem continuousAt {x : M} : ContinuousAt h.toFun x :=
+protected theorem continuousAt (x : M) : ContinuousAt h.toFun x :=
   (h.continuous).continuousAt
 
 /-- The inverse of a local diffeomorphism is continuous every point. -/
-theorem continuousAt_symm {y : N} : ContinuousAt h.invFun y :=
-  (h.symm).continuousAt
+theorem continuousAt_symm (y : N) : ContinuousAt h.invFun y :=
+  (h.symm).continuousAt y
 
 protected theorem contMDiff_symm : ContMDiff J I n h.invFun :=
   (h.symm).contMDiff
 
-protected theorem contMDiffOn {s : Set M} : ContMDiffOn I J n h.toFun s :=
+protected theorem contMDiffOn (s : Set M) : ContMDiffOn I J n h.toFun s :=
   (h.contMDiff).contMDiffOn
 
-theorem contMDiffOn_symm {t : Set N} : ContMDiffOn J I n h.invFun t :=
-  (h.symm).contMDiffOn
+theorem contMDiffOn_symm (t : Set N) : ContMDiffOn J I n h.invFun t :=
+  (h.symm).contMDiffOn t
 
-theorem contMDiffAt {x : M} : ContMDiffAt I J n h.toFun x :=
+theorem contMDiffAt (x : M) : ContMDiffAt I J n h.toFun x :=
   (h.contMDiff).contMDiffAt
 
-protected theorem contMDiffAt_symm {x : N} : ContMDiffAt J I n h.invFun x :=
-  (h.symm).contMDiffAt
+protected theorem contMDiffAt_symm (x : N) : ContMDiffAt J I n h.invFun x :=
+  (h.symm).contMDiffAt x
 
 protected theorem contMDiffWithinAt {s : Set M} {x : M} (hx : x ∈ s) :
     ContMDiffWithinAt I J n h.toFun s x :=
-  h.contMDiffOn x hx
+  (h.contMDiffOn s) x hx
 
-theorem contMDiffWithinAt_symm {t : Set N} {y : N} (hy : y ∈ t) : ContMDiffWithinAt J I n h.invFun t y :=
+theorem contMDiffWithinAt_symm {t : Set N} {y : N} (hy : y ∈ t) :
+    ContMDiffWithinAt J I n h.invFun t y :=
   (h.symm).contMDiffWithinAt hy
 
-protected theorem mdifferentiableOn {s : Set M} (hn : 1 ≤ n) : MDifferentiableOn I J h.toFun s :=
-  (h.contMDiffOn).mdifferentiableOn hn
+protected theorem mdifferentiableOn (s : Set M) (hn : 1 ≤ n) : MDifferentiableOn I J h.toFun s :=
+  (h.contMDiffOn s).mdifferentiableOn hn
 
 theorem mdifferentiableOn_symm {t : Set N} (hn : 1 ≤ n) : MDifferentiableOn J I h.invFun t :=
-  (h.symm).mdifferentiableOn hn
+  (h.symm).mdifferentiableOn t hn
 end ContSmooth
 
 -- TODO: add coe instance, ext lemmas, etc.
@@ -413,8 +414,8 @@ def DiffeomorphOn.toLocalDiffeomorphAt (h : DiffeomorphOn I J M N n) {x : M} (hx
 
 /-- A local diffeomorphism is a local diffeomorphism at each point. -/
 def LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) (x : M) :
-    LocalDiffeomorphAt I J M N n x := by
-  exact {
+    LocalDiffeomorphAt I J M N n x :=
+  {
     toFun := h.toFun
     invFun := h.invFun
     source := h.sourceAt x
@@ -428,15 +429,15 @@ def LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) (x : 
     continuous_toFun := sorry
     continuous_invFun := sorry
     hx := h.mem_sources x
-    contMDiffOn_toFun := h.contMDiffOn (s := h.sourceAt x) -- TODOnow: what's before s?
-    contMDiffOn_invFun := h.contMDiffOn_symm (t := h.targetAt x)
+    contMDiffOn_toFun := h.contMDiffOn (h.sourceAt x)
+    contMDiffOn_invFun := h.contMDiffOn_symm (h.targetAt x)
   }
 
 -- /-- For each `x : M`, a local diffeomorph is a diffeomorphism on some open set containing `x`. -/
 -- FIXME: do I want to expose this to the outside?
 private def LocalDiffeomorph.toDiffeomorphOn (h : LocalDiffeomorph I J M N n) (x : M) :
     DiffeomorphOn I J M N n :=
-  -- We re-use `toLocalDiffeomorphAt` to avoid deduplication.
+  -- We re-use `toLocalDiffeomorphAt` to avoid duplication.
   (h.toLocalDiffeomorphAt x).toDiffeomorphOn
 
 /-- A local diffeomorphism is a local homeomorphism. -/
@@ -446,8 +447,8 @@ noncomputable def LocalDiffeomorph.toLocalHomeomorph (h : LocalDiffeomorph I J M
 
 /-- A diffeomorphism is a local diffeomorphism. -/
 -- FIXME: can I deduplicate this proof with with `LocalDiffeomorph.refl`?
-def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorph I J M N n := by
-  exact {
+def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorph I J M N n :=
+  {
     toFun := h.toFun
     invFun := h.invFun
     left_inv := by intros; simp
