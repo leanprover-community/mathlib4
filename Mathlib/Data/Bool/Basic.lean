@@ -279,10 +279,6 @@ instance linearOrder : LinearOrder Bool where
   min_def := by decide
 #align bool.linear_order Bool.linearOrder
 
-@[simp] theorem max_eq_or' : max = or := rfl
-
-@[simp] theorem min_eq_and' : min = and := rfl
-
 #align bool.ff_le Bool.false_le
 
 #align bool.le_tt Bool.le_true
