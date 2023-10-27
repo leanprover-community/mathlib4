@@ -220,19 +220,19 @@ section Commute
 
 variable [Fintype n]
 
-theorem comm_stdBasisMatrix {i j k : n} {M : Matrix n n α}
+theorem row_eq_zero_of_commute_stdBasisMatrix {i j k : n} {M : Matrix n n α}
     (hM : Commute (stdBasisMatrix i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
-  have := Matrix.ext_iff.mpr hM i k
+  have := ext_iff.mpr hM i k
   aesop
 
-theorem comm_stdBasisMatrix' {i j k : n} {M : Matrix n n α}
+theorem col_eq_zero_of_commute_stdBasisMatrix {i j k : n} {M : Matrix n n α}
     (hM : Commute (stdBasisMatrix i j 1) M) (hki : k ≠ i) : M k i = 0 := by
-  have := Matrix.ext_iff.mpr hM k j
+  have := ext_iff.mpr hM k j
   aesop
 
-theorem comm_stdBasisMatrix'' {i j : n} {M : Matrix n n α}
+theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
     (hM : Commute (stdBasisMatrix i j 1) M) : M i i = M j j := by
-  have := Matrix.ext_iff.mpr hM i j
+  have := ext_iff.mpr hM i j
   aesop
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
@@ -246,11 +246,11 @@ theorem comm_all_stdBasisMatrix_nondiag [Inhabited n] {M : Matrix n n α}
     · simp [hij, h]
     · push_neg at hij
       rewrite [h] at hij
-      simp [comm_stdBasisMatrix'' <| hM k default hij.symm, h]
+      simp [diag_eq_of_commute_stdBasisMatrix <| hM k default hij.symm, h]
   · push_neg at h
     by_cases hij : default = j
-    · simp [hij, comm_stdBasisMatrix' (hM k j h.symm) h, h]
-    · simp [comm_stdBasisMatrix (hM default j hij) h.symm, h]
+    · simp [hij, col_eq_zero_of_commute_stdBasisMatrix (hM k j h.symm) h, h]
+    · simp [row_eq_zero_of_commute_stdBasisMatrix (hM default j hij) h.symm, h]
 
 end Commute
 
