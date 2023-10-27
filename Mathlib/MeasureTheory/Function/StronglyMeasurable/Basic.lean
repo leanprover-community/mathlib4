@@ -721,7 +721,7 @@ theorem _root_.Continuous.stronglyMeasurable_of_hasCompactMulSupport
 product sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the
 product of the Borel sigma algebras might not contain all open sets, but still it contains enough
 of them to approximate compactly supported continuous functions. -/
-lemma HasCompactSupport.stronglyMeasurable_of_prod {X Y : Type*} [Zero α]
+lemma _root_.HasCompactSupport.stronglyMeasurable_of_prod {X Y : Type*} [Zero α]
     [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace X] [MeasurableSpace Y]
     [OpensMeasurableSpace X] [OpensMeasurableSpace Y] [TopologicalSpace α] [PseudoMetrizableSpace α]
     {f : X × Y → α} (hf : Continuous f) (h'f : HasCompactSupport f) :
