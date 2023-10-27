@@ -112,7 +112,7 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
-`f : A →ₐ[R] B` and a choice of element `e : A` which squares to `0` and commutes with the range of
+`f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
 `f`.
 
 This isomorphism is named to match the very similar `Complex.lift`. -/
@@ -140,8 +140,7 @@ def lift :
     right_inv := fun fg => Subtype.ext <| Prod.ext rfl (by
       ext
       dsimp
-      rw [← fg.prop.2.1, smul_eq_mul, mul_one])
-  }
+      rw [← fg.prop.2.1, smul_eq_mul, mul_one]) }
 #align dual_number.lift DualNumber.lift
 
 @[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
