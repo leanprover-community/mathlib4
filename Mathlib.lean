@@ -241,6 +241,7 @@ import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.ModuleCat
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.Algebra.Homology.ShortComplex.Exact
@@ -2868,6 +2869,7 @@ import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.FdRep
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
