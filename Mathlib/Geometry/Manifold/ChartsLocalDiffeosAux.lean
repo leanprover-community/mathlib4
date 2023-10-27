@@ -162,13 +162,14 @@ lemma extendedChart_symm_smooth {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
   apply ContMDiffOn.contDiffOn
   -- We want to show smoothness of this function: locally, that's just the identity.
   set f := e.extend I ∘ (e.extend I).symm ∘ (LocalEquiv.symm (LocalHomeomorph.extend e' 𝓘(ℝ, E)))
-  have cong : ∀ x ∈ e.extend I '' e.source, f x = x := fun x hx ↦ e.extend_right_inv I hx
-  have h : (LocalHomeomorph.extend e' 𝓘(ℝ, E)) '' e'.source = e.extend I '' e.source := by simp
-  have : ((LocalHomeomorph.extend e' 𝓘(ℝ, E)) '' (e.extend I '' e.source)) = e.extend I '' e.source := by
-    have : e'.source = e.extend I '' e.source := by rw [@LocalHomeomorph.ofSet_source]
-    exact this ▸ h
-  rw [LocalHomeomorph.ofSet_source, this]
-  exact fun x hx ↦ ContMDiffWithinAt.congr smoothWithinAt_id cong (cong x (h ▸ hx))
+  simp? says simp only [LocalHomeomorph.extend, LocalEquiv.coe_trans,
+    ModelWithCorners.toLocalEquiv_coe, LocalHomeomorph.toFun_eq_coe, LocalEquiv.coe_trans_symm,
+    LocalHomeomorph.coe_coe_symm, ModelWithCorners.toLocalEquiv_coe_symm, comp_apply,
+    LocalHomeomorph.ofSet_toLocalEquiv, modelWithCornersSelf_localEquiv, LocalEquiv.trans_refl,
+    LocalEquiv.ofSet_symm, LocalEquiv.ofSet_coe, comp.right_id, id_eq, image_id',
+    LocalEquiv.ofSet_source]
+  intro x hx
+  exact smoothWithinAt_id.congr (fun _ hx ↦ e.extend_right_inv I hx) (e.extend_right_inv I hx)
 
 -- If M is a C^m manifold, charts are DiffeomorphOn (easy).
 -- In particular: each chart and inverse chart is a local diffeomorphism at each point of its source.
