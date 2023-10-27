@@ -11,8 +11,6 @@ import Std.Util.Pickle
 import Mathlib.Tactic.Cache
 import Mathlib.Lean.Data.NameRel
 import Mathlib.Lean.Data.RBTree
-import Mathlib.Control.Monad.Writer
-import Mathlib.Init.Data.List.Instances
 
 /-!
 # The `#find` command and tactic.
