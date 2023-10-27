@@ -606,6 +606,7 @@ This follows from the inverse function theorem. -/
 section Differentials
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
 
+-- TODO: move these three results to better places!
 -- similar to `fderivWithin_of_open`; seems missing
 lemma hasFDerivWithinAt_of_open {s : Set E} {x : E} (h : IsOpen s) (hx : x ∈ s) {f : E → F}
     {f' : E →L[𝕜] F} : HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
@@ -634,6 +635,7 @@ theorem mfderivWithin_eq_mfderiv {s : Set M} {x : M} {f : M → N}
 
 variable {I J M M' N n}
 
+-- FIXME: move these two results to better places!
 lemma comp_to_left_inverse {x : M} {y : N} {f' : TangentSpace I x →L[𝕜] TangentSpace J y}
     {g' : TangentSpace J y →L[𝕜] TangentSpace I x} (hinv : g' ∘ f' = id) : LeftInverse g' f' := by
   intro x
@@ -761,9 +763,12 @@ def LocalDiffeomorphAt.of_DifferentialIsomorphismAt (hn : 1 ≤ n) {x : M} {f : 
   -- Let's wait for the general version before completing this.
   sorry
 
--- xxx: what would this mean in Lean? in my setting, it's essentially true by definition
--- if f : M → N is a local diffeomorphism at each point, it's a local diffeomorphism.
--- TODO: can I state this as an "iff" somehow? or is the Lean way to just provide both implications?
+-- TODO: what would these two statements mean in Lean? How could I formalise them?
+-- In my setting, they are mostly true by definition.
+
+-- If `f : M → N` is a local diffeomorphism at each `x ∈ s`, it's a local diffeomorphism on `s`.
+-- If `f : M → N` is a local diffeomorphism at each point, it's a local diffeomorphism.
+-- also: can I state both this as an iff statement?
 
 /-- If `f : M → N` is `C^n` and each differential `mfderiv I J f x` is a linear isomorphism,
   `f` is a local diffeomorphism. -/
