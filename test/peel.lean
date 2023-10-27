@@ -7,17 +7,20 @@ open Filter Topology
 
 example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
   peel 1 h₁
+  rename_i y
   guard_target =ₐ q y
   exact h₂ _ this
 
 example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
     ∀ u v, q u v := by
   peel 2 h₁
+  rename_i u v
   guard_target =ₐ q u v
   exact h₂ _ _ this
 
 example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
   peel h₁
+  rename_i y
   guard_target =ₐ q y
   exact h₂ _ this
 
@@ -27,12 +30,13 @@ example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : �
 example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
     ∀ u v, q u v := by
   peel h₁
-  peel this
+  rename_i u v
   guard_target =ₐ q u v
   exact h₂ _ _ this
 
 example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
   peel h₁ with foo
+  rename_i y
   guard_target =ₐ q y
   exact h₂ _ foo
 
@@ -49,6 +53,7 @@ example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p 
 
 example (p q : Nat → Prop) (h : ∀ y, p y) (h₁ : ∀ z, p z → q z) : ∀ x, q x := by
   peel h
+  rename_i x
   guard_target =ₐ q x
   exact h₁ _ <| by assumption
 
@@ -66,9 +71,9 @@ example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
 example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
   peel h
-  peel 2 this
-  peel this
-  peel this
+  fail_if_success peel 2 this
+  peel 0 this
+  fail_if_success peel this
   linarith
 
 example (p q : ℝ → ℝ → Prop) (h : ∀ ε > 0, ∃ δ > 0, p ε δ)
@@ -109,12 +114,21 @@ example : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) < ε) ↔
   · intro ε hε
     peel 3 h (ε / 2) (half_pos hε) using this.trans_lt (half_lt_self hε)
 
+def toInf (f : ℕ → ℕ) : Prop := ∀ m, ∃ n, ∀ n' ≥ n, m ≤ f n'
+
+example (f : ℕ → ℕ) (h : toInf f) : toInf (fun n => 2 * f n) := by
+  peel h with this m n n' h
+  dsimp
+  linarith
+
 /-! ## Use with `↔` goals -/
 
 example (x y : ℚ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
   intro ε hε
   peel 3 (h ε hε)
+  rename_i _ n _
+  guard_hyp this : x + ↑n = y + ε
   guard_target =ₐ x - ε = y - n
   linarith
 
@@ -161,43 +175,60 @@ example {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
 /-! ## Error messages -/
 
 /--
-error: could not match x = y and x = y as quantified expressions
+error: Tactic 'peel' could not match quantifiers in
+  x = y
+and
+  x = y
 -/
-#guard_msgs in
-example (x y : ℝ) (h : x = y) : x = y := by
+#guard_msgs in example (x y : ℝ) (h : x = y) : x = y := by
   peel h
 
 /--
-error: could not match ∃ y, ∀ (x : ℕ), x ≠ y and ∀ (x : ℕ), ∃ y, x ≠ y as quantified expressions
+error: Tactic 'peel' could not match quantifiers in
+  ∃ y, ∀ (x : ℕ), x ≠ y
+and
+  ∀ (x : ℕ), ∃ y, x ≠ y
 -/
 #guard_msgs in
 example (h : ∃ y : ℕ, ∀ x, x ≠ y) : ∀ x : ℕ, ∃ y, x ≠ y := by
   peel h
 
 /--
-error: matched ∀, but ℕ and ℤ are not definitionally equal
+error: Tactic 'peel' could not match quantifiers in
+  ∀ (n : ℕ), 0 ≤ n
+and
+  ∀ (n : ℤ), 0 ≤ n
 -/
 #guard_msgs in
 example (h : ∀ n : ℕ, 0 ≤ n) : ∀ n : ℤ, 0 ≤ n := by
   peel h
 
 /--
-error: matched ∃, but ℕ and ℤ are not definitionally equal
+error: Tactic 'peel' could not match quantifiers in
+  ∃ n, 0 ≤ n
+and
+  ∃ n, 0 ≤ n
 -/
 #guard_msgs in
 example (h : ∃ n : ℕ, 0 ≤ n) : ∃ n : ℤ, 0 ≤ n := by
-  peel h
+  peel 1 h
 
 /--
-error: matched ∃ᶠ, but atTop and atBot are not definitionally equal
+error: Tactic 'peel' could not match quantifiers in
+  ∃ᶠ (n : ℕ) in atTop, 0 ≤ n
+and
+  ∃ᶠ (n : ℕ) in atBot, 0 ≤ n
 -/
 #guard_msgs in
 example (h : ∃ᶠ n : ℕ in atTop, 0 ≤ n) : ∃ᶠ n : ℕ in atBot, 0 ≤ n := by
-  peel h
+  peel 1 h
 
 /--
-error: matched ∀ᶠ, but atTop and atBot are not definitionally equal
+error: Tactic 'peel' could not match quantifiers in
+  ∀ᶠ (n : ℕ) in atTop, 0 ≤ n
+and
+  ∀ᶠ (n : ℕ) in atBot, 0 ≤ n
 -/
 #guard_msgs in
 example (h : ∀ᶠ n : ℕ in atTop, 0 ≤ n) : ∀ᶠ n : ℕ in atBot, 0 ≤ n := by
-  peel h
+  peel 1 h
