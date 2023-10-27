@@ -23,14 +23,14 @@ macro "differentiability" : attr =>
   `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Differentiable):ident]))
 
 /--
-The tactic `differentiability` solves goals of the form `Differentiable f` by applying lemmas tagged
+The tactic `differentiability` solves goals of the form `Differentiable _ f` by applying lemmas tagged
 with the `differentiability` user attribute. -/
 macro "differentiability" : tactic =>
   `(tactic| aesop (options := { terminal := true })
   (rule_sets [$(Lean.mkIdent `Differentiable):ident]))
 
 /--
-The tactic `differentiability` solves goals of the form `Differentiable f` by applying lemmas tagged
+The tactic `differentiability` solves goals of the form `Differentiable _ f` by applying lemmas tagged
 with the `differentiability` user attribute. -/
 macro "differentiability?" : tactic =>
   `(tactic| aesop? (options := { terminal := true })
