@@ -247,6 +247,9 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_presheaf_in_CommRing AlgebraicGeometry.structurePresheafInCommRing
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
+
 /-- Some glue, verifying that that structure presheaf valued in `CommRingCat` agrees
 with the `Type` valued structure presheaf.
 -/
@@ -590,8 +593,9 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       (RingHom.comp (stalkToFiberRingHom R x) (localizationToStalk R x))
       (RingHom.id (Localization.AtPrime _)) <| by
         ext f
-        rw [RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
-          stalkToFiberRingHom_toStalk, RingHom.comp_apply, RingHom.id_apply]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        rw [RingHom.comp_apply, RingHom.comp_apply]; erw [localizationToStalk_of,
+          stalkToFiberRingHom_toStalk]; rw [RingHom.comp_apply, RingHom.id_apply]
 #align algebraic_geometry.structure_sheaf.stalk_iso AlgebraicGeometry.StructureSheaf.stalkIso
 
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
@@ -624,7 +628,8 @@ theorem toBasicOpen_mk' (s f : R) (g : Submonoid.powers s) :
     toBasicOpen R s (IsLocalization.mk' (Localization.Away s) f g) =
       const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_subset hx g.2 :=
   (IsLocalization.lift_mk'_spec _ _ _ _).2 <| by
-    rw [toOpen_eq_const, toOpen_eq_const, const_mul_cancel']
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [toOpen_eq_const, toOpen_eq_const]; rw [const_mul_cancel']
 #align algebraic_geometry.structure_sheaf.to_basic_open_mk' AlgebraicGeometry.StructureSheaf.toBasicOpen_mk'
 
 @[simp]
@@ -1007,6 +1012,9 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)
 #align algebraic_geometry.structure_sheaf.global_sections_iso AlgebraicGeometry.StructureSheaf.globalSectionsIso
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom_apply_coe
 
 @[simp]
 theorem globalSectionsIso_hom (R : CommRingCat) : (globalSectionsIso R).hom = toOpen R ⊤ :=
