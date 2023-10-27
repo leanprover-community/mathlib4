@@ -47,8 +47,7 @@ namespace Bool
 theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
 #align cond_a_a Bool.cond_self
 
-@[simp]
-theorem xor_self (b : Bool) : xor b b = false := by cases b <;> simp
+attribute [simp] xor_self
 #align bxor_self Bool.xor_self
 
 @[simp]
