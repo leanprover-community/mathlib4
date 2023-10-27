@@ -890,7 +890,6 @@ instance smul_nnreal [Regular μ] (c : ℝ≥0) : Regular (c • μ) := Regular.
 /-- The restriction of a regular measure to a set of finite measure is regular. -/
 theorem restrict_of_measure_ne_top [ClosableCompactSubsetOpenSpace α] [BorelSpace α] [Regular μ]
     {A : Set α} (h'A : μ A ≠ ∞) : Regular (μ.restrict A) := by
-  have : Fact (μ A < ∞) := ⟨h'A.lt_top⟩
   have : WeaklyRegular (μ.restrict A) := WeaklyRegular.restrict_of_measure_ne_top h'A
   constructor
   intro V hV r hr
