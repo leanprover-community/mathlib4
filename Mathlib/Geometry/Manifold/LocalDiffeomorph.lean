@@ -531,6 +531,19 @@ theorem mfderivWithin_eq_mfderiv {s : Set M} {x : M} {f : M → N}
 
 variable {I J M M' N n}
 
+lemma comp_to_left_inverse {x : M} {y : N} {f' : TangentSpace I x →L[𝕜] TangentSpace J y}
+    {g' : TangentSpace J y →L[𝕜] TangentSpace I x} (hinv : g' ∘ f' = id) : LeftInverse g' f' := by
+  intro x
+  -- TODO: is there a proof using just rw?
+  calc g' (f' x)
+      _ = (g' ∘ f') x := by rw [comp_apply] -- or rfl
+      _ = id x := by rw [← hinv]
+      _ = x := by rw [id_eq] -- or rfl
+
+lemma comp_to_right_inverse {x : M} {y : N} {f' : TangentSpace I x →L[𝕜] TangentSpace J y}
+    {g' : TangentSpace J y →L[𝕜] TangentSpace I x} (hinv : f' ∘ g' = id) : RightInverse g' f' :=
+  comp_to_left_inverse hinv
+
 /-- If `f` is a local diffeomorphism at `x`,
   the differential of `f` at `x` is a linear isomorphism. -/
 noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv (hn : 1 ≤ n)
@@ -570,9 +583,18 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv (hn : 
     _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hy
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace J y) := mfderiv_id J
 
-  -- FIXME: I've proven the same thing further below, TODO extract into a common lemma
-  have h1 : Function.LeftInverse B A := sorry -- TODO: should be obvious from inv1
-  have h2 : Function.RightInverse B A := sorry -- same here
+  have h1 : Function.LeftInverse B A := by
+    apply comp_to_left_inverse
+    calc B ∘ A
+      _ = ↑(B.comp A) := by rw [ContinuousLinearMap.coe_comp']
+      _ = ↑(ContinuousLinearMap.id 𝕜 (TangentSpace I x)) := congrArg FunLike.coe inv1
+      _ = id := by rw [ContinuousLinearMap.coe_id']
+  have h2 : Function.RightInverse B A := by
+    apply comp_to_right_inverse
+    calc A ∘ B
+      _ = ↑(A.comp B) := by rw [ContinuousLinearMap.coe_comp']; rfl
+      _ = ↑(ContinuousLinearMap.id 𝕜 (TangentSpace J (h.toFun x))) := congrArg FunLike.coe inv2
+      _ = id := by rw [ContinuousLinearMap.coe_id']
   exact {
     toFun := A
     invFun := B
@@ -622,22 +644,8 @@ lemma Diffeomorph.differential_bijective (hn : 1 ≤ n) (f : Diffeomorph I J M N
   then `f` is a local diffeomorphism at `x`. -/
 def LocalDiffeomorphAt.of_DifferentialIsomorphismAt (hn : 1 ≤ n) {x : M} {f : M → N}
     {f' : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf' : HasMFDerivAt I J f x f')
-    {g' : TangentSpace J (f x) →L[𝕜] TangentSpace I x}
-    (hinv₁ : f' ∘ g' = id) (hinv₂ : g' ∘ f' = id)
+    {g' : TangentSpace J (f x) →L[𝕜] TangentSpace I x} (hinv₁ : g' ∘ f' = id) (hinv₂ : f' ∘ g' = id)
     (hf : ContMDiffAt I J n f x) : LocalDiffeomorphAt I J M N n x := by
-  -- FIXME: can I prove this using rw instead of calc?
-  have aux1 : LeftInverse g' f' := by
-    intro x
-    calc g' (f' x)
-      _ = (g' ∘ f') x := by rw [comp_apply] -- or rfl
-      _ = id x := by rw [← hinv₂]
-      _ = x := by rw [id_eq] -- or rfl
-  have aux2 : RightInverse g' f' := by
-    intro y
-    calc f' (g' y)
-      _ = (f' ∘ g') y := by rw [comp_apply]
-      _ = id y := by rw [← hinv₁]
-      _ = y := by rw [id_eq]
   --have : f' = mfderiv I J f x := hasMFDerivAt_unique hf' (hf.mdifferentiableAt hn).hasMFDerivAt
   --rw [this] at *
   have : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
@@ -648,8 +656,8 @@ def LocalDiffeomorphAt.of_DifferentialIsomorphismAt (hn : 1 ≤ n) {x : M} {f : 
       continuous_invFun := g'.cont
       map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add f' x_1 y
       map_smul' := by intros; simp
-      left_inv := aux1
-      right_inv := aux2
+      left_inv := comp_to_left_inverse hinv₁
+      right_inv := comp_to_right_inverse hinv₂
     }
   -- Now, I'd apply the inverse function theorem, which mathlib only has for normed space.
   -- Let's wait for the general version before completing this.
