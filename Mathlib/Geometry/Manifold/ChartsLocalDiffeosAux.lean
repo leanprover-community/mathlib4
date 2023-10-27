@@ -45,12 +45,131 @@ lemma LocalHomeomorphism.symm_toStructomorph {e : LocalHomeomorph M H} (he : e �
     {G : StructureGroupoid H} : Structomorph G M H := sorry
 
 -- Generalise this to all extended charts, if I is boundaryless.
-
--- On a C^n manifolds, all charts and inverse charts are C^m.
--- TODO: generalise this to structomorphisms, once the above gap has been filled
 end Future
 
+section PresentHelpers
+-- belongs in `SmoothManifoldWithCorners.lean`
+/-- An identity local homeomorphism belongs to the maximal atlas on `E`. -/
+lemma ofSet_in_maximal_atlas {s : Set E} (hs : IsOpen s) :
+    LocalHomeomorph.ofSet s hs ∈ maximalAtlas 𝓘(ℝ, E) E := by
+  set e := LocalHomeomorph.ofSet s hs
+  set gr := (contDiffGroupoid ∞ I)
+  rw [maximalAtlas, mem_maximalAtlas_iff]
+  intro e' he'
+  rw [he']
+  simp only [comp_apply, LocalHomeomorph.ofSet_symm, LocalHomeomorph.trans_refl,
+    LocalHomeomorph.refl_symm, LocalHomeomorph.refl_trans, and_self]
+  apply ofSet_mem_contDiffGroupoid
+
+lemma LocalHomeomorph.mapsTo_extend_symm {e : LocalHomeomorph M H} :
+    MapsTo (e.extend I).symm (e.extend I '' e.source) e.source := by
+  rintro x ⟨s, hs, rfl⟩
+  have : (e.extend I).symm (e.extend I s) = s := e.extend_left_inv _ hs
+  rw [this]
+  exact hs
+
+-- xxx: I could inline this
+lemma ModelWithCorners.right_inv'' [I.Boundaryless] (x : E) : (I ∘ I.invFun) x = x := by
+  have : x ∈ range I := by rw [I.range_eq_univ]; exact trivial
+  exact I.right_inv this
+
+-- XXX: can this proof by golfed?
+lemma LocalHomeomorph.extend_right_inv [I.Boundaryless] {e : LocalHomeomorph M H}
+    {x : E} (hx: x ∈ (e.extend I) '' e.source) : ((e.extend I) ∘ (e.extend I).symm) x = x := by
+  have : I.invFun x ∈ e.target := by aesop
+  have aux : ∀ y : H, y ∈ e.target → (e ∘ e.invFun) y = y := by intros; aesop
+  calc ((e.extend I) ∘ (e.extend I).symm) x
+    _ = I ((e ∘ e.invFun) (I.invFun x)) := rfl
+    _ = I (I.invFun x) := by simp_rw [aux (I.invFun x) this]
+    _ = x := I.right_inv'' x
+
+-- all of these are on the "manifolds are locally path-connected" branch
+
+-- these two lemmas should go into LocalHomeomorph.lean
+lemma LocalHomeomorph.isOpenMapOn_source {e : LocalHomeomorph M H} {s : Set M}
+    (hopen : IsOpen s) (hs : s ⊆ e.source) : IsOpen (e '' s) := by
+  rw [(image_eq_target_inter_inv_preimage (e := e) hs)]
+  exact e.continuous_invFun.preimage_open_of_open e.open_target hopen
+
+lemma LocalHomeomorph.symm_isOpenMapOn_target {e : LocalHomeomorph M H} {t : Set H}
+    (hopen : IsOpen t) (ht : t ⊆ e.target) : IsOpen (e.invFun '' t) := by
+  have r : e.invFun '' t = e.source ∩ ↑e ⁻¹' t := symm_image_eq_source_inter_preimage (e := e) ht
+  exact r ▸ e.continuous_toFun.preimage_open_of_open e.open_source hopen
+
+-- all these results should go into SmoothManifoldWithCorners.lean
+/-- If `I` is boundaryless, it is an open embedding. -/
+theorem ModelWithCorners.toOpenEmbedding [I.Boundaryless] : OpenEmbedding I :=
+  I.toHomeomorph.openEmbedding
+
+/-- If `I` is boundaryless, `I.symm` is an open embedding. -/
+theorem ModelWithCorners.toOpenEmbedding_symm [I.Boundaryless] : OpenEmbedding I.symm :=
+  I.toHomeomorph.symm.openEmbedding
+
+/-- If I has no boundary, `e.extend I` is an open map on its source. -/
+lemma LocalHomeomorph.extend_isOpenMapOn_source [I.Boundaryless] {e : LocalHomeomorph M H}
+    {s : Set M} (hopen : IsOpen s) (hs : s ⊆ e.source) : IsOpen ((e.extend I) '' s) := by
+  simp only [extend_coe, image_comp I e]
+  -- As I has no boundary, it is a homeomorphism, hence an open embedding.
+  apply (I.toOpenEmbedding.open_iff_image_open).mp (e.isOpenMapOn_source hopen hs)
+
+/-- If I has no boundary, `(e.extend I).symm` is an open map on its source. -/
+lemma LocalHomeomorph.extend_symm_isOpenMapOn_target [I.Boundaryless] {e : LocalHomeomorph M H}
+    {t : Set E} (hopen : IsOpen t) (ht : t ⊆ (e.extend I).target) : IsOpen ((e.extend I).symm '' t) := by
+  have h : IsOpen (I.invFun '' t) := I.toOpenEmbedding_symm.open_iff_image_open.mp hopen
+  have : (e.extend I).target = I.symm ⁻¹' e.target := by
+    let r := e.extend_target I
+    rw [I.range_eq_univ, inter_univ] at r
+    exact r
+  have : I.symm '' t ⊆ e.target := calc I.symm '' t
+    _ ⊆ I.symm '' ((e.extend I).target) := image_subset _ ht
+    _ = I.symm '' (I.symm ⁻¹' e.target) := by rw [this]
+    _ ⊆ e.target := image_preimage_subset I.symm e.target
+  rw [extend_coe_symm, image_comp]
+  exact e.symm_isOpenMapOn_target h this
+
+end PresentHelpers
+
 section Present
+-- On C^n manifolds without boundary, all charts and inverse charts are C^m.
+-- TODO: generalise this to structomorphisms, once the above gap has been filled
+-- FUTURE: add version of `e` and `e.symm`: that's basically `contMDiffOn_of_mem_maximalAtlas`
+
+/-- An extended chart $e.extend I : M → E$ on a smooth manifold is smooth on `e.source`. -/
+lemma extendedChart_smooth {e : LocalHomeomorph M H} (he : e ∈ atlas H M) [I.Boundaryless] :
+    ContMDiffOn I 𝓘(ℝ, E) ∞ (e.extend I) e.source := by
+  let e' : LocalHomeomorph E E := LocalHomeomorph.refl E
+  have h₁ : e ∈ maximalAtlas I M := subset_maximalAtlas _ he
+  have h₂ : e' ∈ maximalAtlas 𝓘(ℝ, E) E := subset_maximalAtlas _ (by rfl)
+  -- Looking closely, we want to show smoothness of f.
+  set f := e.extend I ∘ (e.extend I).symm
+  -- Since f=id on e.extend I '' e.source, we're done.
+  have h : ∀ x ∈ (e.extend I) '' e.source, f x = x := fun _ hx ↦ e.extend_right_inv I hx
+  apply (contMDiffOn_iff_of_mem_maximalAtlas' h₁ h₂ (Eq.subset rfl) (mapsTo_univ _ _)).mpr
+  exact ContMDiffOn.contDiffOn (fun x hx ↦ ContMDiffWithinAt.congr smoothWithinAt_id h (h x hx))
+
+/-- The inverse of an extended chart `e.extend I : M → E` on a smooth manifold without boundary
+  is smooth on its source. -/
+-- TODO: deduce this from a more general result about these being `Structomorph`
+-- FIXME: does this hold for manifolds with boundary?
+lemma extendedChart_symm_smooth {e : LocalHomeomorph M H} (he : e ∈ atlas H M) [I.Boundaryless] :
+    ContMDiffOn 𝓘(ℝ, E) I ∞ (e.extend I).symm (e.extend I '' e.source) := by
+  have : IsOpen ((e.extend I) '' e.source) := e.extend_isOpenMapOn_source I e.open_source (Eq.subset rfl)
+  let e' : LocalHomeomorph E E := LocalHomeomorph.ofSet (e.extend I '' e.source) this
+  have h1 : e ∈ maximalAtlas I M := subset_maximalAtlas _ he
+  have h2 : e' ∈ maximalAtlas 𝓘(ℝ, E) E := ofSet_in_maximal_atlas I this
+  apply (contMDiffOn_iff_of_mem_maximalAtlas' h2 h1 (Eq.subset rfl) (e.mapsTo_extend_symm I)).mpr
+
+  apply ContMDiffOn.contDiffOn
+  -- We want to show smoothness of this function: locally, that's just the identity.
+  set f := e.extend I ∘ (e.extend I).symm ∘ (LocalEquiv.symm (LocalHomeomorph.extend e' 𝓘(ℝ, E)))
+  have cong : ∀ x ∈ e.extend I '' e.source, f x = x := fun x hx ↦ e.extend_right_inv I hx
+  have h : (LocalHomeomorph.extend e' 𝓘(ℝ, E)) '' e'.source = e.extend I '' e.source := by simp
+  have : ((LocalHomeomorph.extend e' 𝓘(ℝ, E)) '' (e.extend I '' e.source)) = e.extend I '' e.source := by
+    have : e'.source = e.extend I '' e.source := by rw [@LocalHomeomorph.ofSet_source]
+    exact this ▸ h
+  rw [LocalHomeomorph.ofSet_source, this]
+  exact fun x hx ↦ ContMDiffWithinAt.congr smoothWithinAt_id cong (cong x (h ▸ hx))
+
 -- If M is a C^m manifold, charts are DiffeomorphOn (easy).
 -- In particular: each chart and inverse chart is a local diffeomorphism at each point of its source.
 
