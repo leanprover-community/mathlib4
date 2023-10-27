@@ -221,7 +221,7 @@ elab s:"#assert_match " name_s:ident concl:(turnstyle)? query:term : command => 
 
 end ListMapTest
 
-section DefaltingTest
+section DefaultingTest
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
@@ -231,6 +231,7 @@ lemma test_with_zero {α} [Zero α] [HMul α α α] [LE α] {a : α}: 0 ≤ a * 
 
 #assert_match test_with_zero |- 0 ≤ ?a * ?a
 
+end DefaultingTest
 
 
 /-- error: Name pattern is too general -/
