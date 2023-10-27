@@ -25,30 +25,39 @@ variable
   -- Let `N` be a smooth manifold over the pair `(F, G)`.
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type*} [TopologicalSpace G]
   (J : ModelWithCorners ℝ F G) {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  [SmoothManifoldWithCorners J N]
+  [SmoothManifoldWithCorners J N] {n : ℕ∞}
 
+section Future
 -- On any topological manifold (charted space on a normed space),
 -- charts and inverse charts are structomorphisms.
--- /-- Charts are structomorphisms. -/
--- lemma LocalHomeomorphism.toStructomorph {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
---     {G : StructureGroupoid H} : Structomorph G M H :=
---   {
---     toFun := sorry
---     invFun := sorry
---     left_inv := sorry
---     right_inv := sorry
---     mem_groupoid := sorry
---   }
+-- ACTUALLY, that is not quite true! Charts are only local homeomorphisms,
+-- hence they should be structomorphisms on e.source resp. e.target.
+-- Mathlib doesn't fully have that "open subsets of manifolds are manifolds" yet
+-- (the ChartedSpace instance is missing).
+
+/-- Charts are structomorphisms. -/
+lemma LocalHomeomorphism.toStructomorph {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
+    {G : StructureGroupoid H} : Structomorph G M H := sorry
+
+/-- Each chart inverse is a structomorphism. -/
+-- do the same with symm... probably cannot reflect this in the types...
+lemma LocalHomeomorphism.symm_toStructomorph {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
+    {G : StructureGroupoid H} : Structomorph G M H := sorry
+
 -- Generalise this to all extended charts, if I is boundaryless.
 
 -- On a C^n manifolds, all charts and inverse charts are C^m.
+-- TODO: generalise this to structomorphisms, once the above gap has been filled
+end Future
 
+section Present
 -- If M is a C^m manifold, charts are DiffeomorphOn (easy).
 -- In particular: each chart and inverse chart is a local diffeomorphism at each point of its source.
 
 -- Corollary. differentials of (inverse) charts are linear isomorphisms.
 
 -- Cor: differentials of charts are bijective.
+end Present
 
 -- auxiliary results, not needed for my proof, but perhaps still useful
 section aux
