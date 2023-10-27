@@ -105,18 +105,11 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
   map_smul' := smul_modByMonic
 #align polynomial.mod_by_monic_hom Polynomial.modByMonicHom
 
-theorem neg_modByMonic (p mod : R[X]) : (-p) %ₘ mod = - (p %ₘ mod) := by
-    have H : -p = (-1 : R) • p := by norm_num
-    have H' : - (p %ₘ mod) = (-1 : R) • (p %ₘ mod) := by norm_num
-    rw[H, H']
-    apply smul_modByMonic (R := R) (c := -1) (p := p) (q := mod)
+theorem neg_modByMonic (p mod : R[X]) : (-p) %ₘ mod = - (p %ₘ mod) :=
+  (modByMonicHom mod).map_neg p
 
-@[simp]
-theorem sub_modByMonic (a b mod : R[X]) : (a - b) %ₘ mod = a %ₘ mod - b %ₘ mod := by
-  ring_nf
-  repeat rw[sub_eq_add_neg]
-  simp[Polynomial.add_modByMonic]
-  rw[neg_modByMonic]
+theorem sub_modByMonic (a b mod : R[X]) : (a - b) %ₘ mod = a %ₘ mod - b %ₘ mod :=
+  (modByMonicHom mod).map_sub a b
 
 end
 
