@@ -115,32 +115,28 @@ variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [A
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
 `f`.
 
-This isomorphism is named to match the very similar `Complex.lift`. -/
-@[simps! apply_apply]
+This isomorphism is named to match the similar `Complex.lift`.
+Note that when `f : R →ₐ[R] B := Algebra.ofId R B`, the commutativity assumption is automatic, and
+we are free to choose any element `e : B`. -/
+-- @[simps! apply_apply]
 def lift :
     {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)} ≃ (A[ε] →ₐ[R] B) := by
   refine Equiv.trans ?_ TrivSqZeroExt.liftEquiv
   exact {
-    toFun := fun fe => ⟨
-      (fe.val.1, MulOpposite.op fe.val.2 • fe.val.1.toLinearMap),
-      fun x y => by
-        dsimp
-        rw [(fe.prop.2 _).mul_mul_mul_comm, fe.prop.1, mul_zero],
-      fun r x => by
-        dsimp
-        rw [map_mul, mul_assoc],
-      fun r x => by
-        dsimp
-        rw [map_mul, (fe.prop.2 _).right_comm]⟩
-    invFun := fun fg => ⟨
-      (fg.val.1, fg.val.2 1),
-      fg.prop.1 _ _,
-      fun a => (fg.prop.2.2 _ _).symm.trans (Eq.trans (by simp) (fg.prop.2.1 _ _))⟩
-    left_inv := fun fe => Subtype.ext <| Prod.ext rfl (by simp)
-    right_inv := fun fg => Subtype.ext <| Prod.ext rfl (by
-      ext
-      dsimp
-      rw [← fg.prop.2.1, smul_eq_mul, mul_one]) }
+    toFun := fun ⟨(f, e), he, hc⟩ => ⟨
+      (f, MulOpposite.op e • f.toLinearMap),
+      fun x y => show (f x * e) * (f y * e) = 0 by rw [(hc _).mul_mul_mul_comm, he, mul_zero],
+      fun r x => show f (r * x) * e = f r * (f x * e) by rw [map_mul, mul_assoc],
+      fun r x => show f (x * r) * e = (f x * e) * f r by rw [map_mul, (hc _).right_comm]⟩
+    invFun := fun ⟨(f, g), hg, hfg, hgf⟩ => ⟨
+      (f, g 1),
+      hg _ _,
+      fun a => show g 1 * f a = f a * g 1 by
+        rw [←hfg, ←hgf, smul_eq_mul, op_smul_eq_mul, mul_one, one_mul]⟩
+    left_inv := fun ⟨(f, e), he, hc⟩ => Subtype.ext <| Prod.ext rfl <|
+      show f 1 * e = e by rw [map_one, one_mul]
+    right_inv := fun ⟨(f, g), hg, hfg, hgf⟩ => Subtype.ext <| Prod.ext rfl <| LinearMap.ext fun x =>
+      show f x * g 1 = g x by rw [← hfg, smul_eq_mul, mul_one] }
 #align dual_number.lift DualNumber.lift
 
 @[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
