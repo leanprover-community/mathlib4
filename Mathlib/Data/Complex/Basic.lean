@@ -995,10 +995,7 @@ nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
   (Complex.abs_ofReal _).trans (abs_of_nonneg h)
 #align complex.abs_of_nonneg Complex.abs_of_nonneg
 
-theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
-  calc
-    Complex.abs n = Complex.abs (n : ℝ) := by rw [ofReal_nat_cast]
-    _ = _ := Complex.abs_of_nonneg (Nat.cast_nonneg n)
+theorem abs_of_nat (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 #align complex.abs_of_nat Complex.abs_of_nat
 
 @[simp]
@@ -1028,11 +1025,7 @@ theorem abs_I : Complex.abs I = 1 := by simp [Complex.abs]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_I Complex.abs_I
 
-@[simp]
-theorem abs_two : Complex.abs 2 = 2 :=
-  calc
-    Complex.abs 2 = Complex.abs (2 : ℝ) := rfl
-    _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
+theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 #align complex.abs_two Complex.abs_two
 
 @[simp]
