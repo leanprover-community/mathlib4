@@ -493,13 +493,6 @@ def Diffeomorph.of_localDiffeomorph (h : LocalDiffeomorph I J M N n)
   }
 end EasyImplications
 
-variable {I J M N n} in
-lemma should_be_obvious (h : DiffeomorphOn I J M N n) {x : M} (hx : x ∈ h.source) :
-    h.source = (h.toLocalDiffeomorphAt hx).toLocalHomeomorph.source := by
-  set r := h.toLocalDiffeomorphAt hx
-  have : r.toLocalHomeomorph = h.toLocalHomeomorph := sorry -- TODO: make this true!!
-  rw [this]
-
 -- FIXME: should be able to write h.symm, h instead of h.invFun and h.toFun!
 -- add enough basic API to make this possible
 
