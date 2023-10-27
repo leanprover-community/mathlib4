@@ -150,6 +150,7 @@ protected def refl : DiffeomorphOn I I M M n where
 theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
   rfl
 
+variable {I I' J M M' N n} in
 /-- Composition of two local diffeomorphisms, restricted to the maximal domain where
 this is defined. -/
 protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n) :
@@ -239,9 +240,8 @@ protected def symm (x : M) (h : LocalDiffeomorphAt I I' M M' n x) :
 by restricting to the maximal domain where their composition is well defined. -/
 protected def trans (x : M) (h : LocalDiffeomorphAt I I' M M' n x)
     (h' : LocalDiffeomorphAt I' J M' N n (h.toFun x)) : LocalDiffeomorphAt I J M N n x where
-  -- TODO: make this work!
-  hx := sorry -- ⟨h.hx, h'.hx⟩
-  toDiffeomorphOn := sorry -- h.toDiffeomorphOn.trans h'.toDiffeomorphOn
+  toDiffeomorphOn := h.toDiffeomorphOn.trans h'.toDiffeomorphOn
+  hx := ⟨h.hx, h'.hx⟩
 
 -- TODO: show basic properties of these constructions!
 end LocalDiffeomorphAt
@@ -384,8 +384,8 @@ protected def refl : LocalDiffeomorph I I M M n where
   -- At every point, we choose the set `univ`.
   sources := singleton ⟨univ, isOpen_univ⟩
   targets := singleton ⟨univ, isOpen_univ⟩
-  mem_sources := fun x ↦ sorry -- should be: (by exact trivial)
-  mem_targets := fun x ↦ sorry -- should be: (by exact trivial)
+  mem_sources := by exact fun _ ↦ trivial
+  mem_targets := by exact fun _ ↦ trivial
   map_sources := by intros; trivial
   map_targets := by intros; trivial
   -- XXX: can I golf these lines?
@@ -606,25 +606,17 @@ lemma bijective_of_inverses {X Y : Type*} {f : X → Y} {g : Y → X}
 lemma LocalDiffeomorphAt.differential_bijective (hn : 1 ≤ n) {x : M}
     (h : LocalDiffeomorphAt I J M N n x) : Bijective (mfderiv I J h.toFun x) := by
   let aux := h.differential_toContinuousLinearEquiv hn
-  have h : aux.toFun = mfderiv I J h.toFun x := sorry -- TODO: should be obvious!
-  rw [← h]
   exact bijective_of_inverses aux.left_inv aux.right_inv
 
 /-- A local diffeomorphism has bijective differential at each point in its source. -/
 lemma DiffeomorphOn.differential_bijective (hn : 1 ≤ n) {x : M}
-    (h : DiffeomorphOn I J M N n) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) := by
-  let _s := (h.toLocalDiffeomorphAt hx).differential_bijective
-  -- TODO: why does this not match? tweak my setup to make sure it does!
-  sorry --exact _s hn
+    (h : DiffeomorphOn I J M N n) (hx : x ∈ h.source) : Bijective (mfderiv I J h.toFun x) :=
+  (h.toLocalDiffeomorphAt hx).differential_bijective hn
 
 /-- A diffeomorphism has bijective differential at each point. -/
 lemma Diffeomorph.differential_bijective (hn : 1 ≤ n) (f : Diffeomorph I J M N n) {x : M} :
-    Bijective (mfderiv I J f.toFun x) := by
-  let aux := (f.toLocalDiffeomorphAt x).differential_bijective hn
-  -- TODO: why is this rewrite necessary?
-  have : (f.toLocalDiffeomorphAt x).toDiffeomorphOn.toLocalHomeomorph.toLocalEquiv = f.toFun := sorry
-  rw [← this]
-  exact aux
+    Bijective (mfderiv I J f.toFun x) :=
+  (f.toLocalDiffeomorphAt x).differential_bijective hn
 
 /-- If `f : M → N` is smooth at `x` and `mfderiv I J f x` is a linear isomorphism,
   then `f` is a local diffeomorphism at `x`. -/
