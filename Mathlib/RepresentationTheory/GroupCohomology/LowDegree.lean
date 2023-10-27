@@ -31,7 +31,7 @@ for `n = 0, 1, 2`.
 1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
 * `groupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
 2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
-* `groupCohomology.H1LinearEquivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when  the
+* `groupCohomology.H1LequivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when  the
 representation on `A` is trivial.
 
 ## TODO
@@ -58,22 +58,22 @@ section Cochains
 
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def zeroCochainsLinearEquiv : (inhomogeneousCochains A).X 0 ≃ₗ[k] A :=
+def zeroCochainsLequiv : (inhomogeneousCochains A).X 0 ≃ₗ[k] A :=
   LinearEquiv.funUnique (Fin 0 → G) k A
 
 /-- The 1st object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G, A)` as a `k`-module. -/
-def oneCochainsLinearEquiv : (inhomogeneousCochains A).X 1 ≃ₗ[k] G → A :=
+def oneCochainsLequiv : (inhomogeneousCochains A).X 1 ≃ₗ[k] G → A :=
   LinearEquiv.funCongrLeft k A (Equiv.funUnique (Fin 1) G).symm
 
 /-- The 2nd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G², A)` as a `k`-module. -/
-def twoCochainsLinearEquiv : (inhomogeneousCochains A).X 2 ≃ₗ[k] G × G → A :=
+def twoCochainsLequiv : (inhomogeneousCochains A).X 2 ≃ₗ[k] G × G → A :=
   LinearEquiv.funCongrLeft k A <| (piFinTwoEquiv fun _ => G).symm
 
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G³, A)` as a `k`-module. -/
-def threeCochainsLinearEquiv : (inhomogeneousCochains A).X 3 ≃ₗ[k] G × G × G → A :=
+def threeCochainsLequiv : (inhomogeneousCochains A).X 3 ≃ₗ[k] G × G × G → A :=
   LinearEquiv.funCongrLeft k A <| ((Equiv.piFinSucc 2 G).trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G))).symm
 
@@ -127,10 +127,10 @@ square commutes:
   v                    v
   A ---- dZero ---> Fun(G, A)
 ```
-where the vertical arrows are `zeroCochainsLinearEquiv` and `oneCochainsLinearEquiv` respectively.
+where the vertical arrows are `zeroCochainsLequiv` and `oneCochainsLequiv` respectively.
 -/
-theorem dZero_comp_eq : dZero A ∘ₗ (zeroCochainsLinearEquiv A) =
-    oneCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 0 1 := by
+theorem dZero_comp_eq : dZero A ∘ₗ (zeroCochainsLequiv A) =
+    oneCochainsLequiv A ∘ₗ (inhomogeneousCochains A).d 0 1 := by
   ext x y
   show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
   simp_rw [Fin.coe_fin_one, zero_add, pow_one, neg_smul, one_smul,
@@ -148,10 +148,10 @@ square commutes:
     v                      v
   Fun(G, A) -dOne-> Fun(G × G, A)
 ```
-where the vertical arrows are `oneCochainsLinearEquiv` and `twoCochainsLinearEquiv` respectively.
+where the vertical arrows are `oneCochainsLequiv` and `twoCochainsLequiv` respectively.
 -/
-theorem dOne_comp_eq : dOne A ∘ₗ oneCochainsLinearEquiv A =
-    twoCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 1 2 := by
+theorem dOne_comp_eq : dOne A ∘ₗ oneCochainsLequiv A =
+    twoCochainsLequiv A ∘ₗ (inhomogeneousCochains A).d 1 2 := by
   ext x y
   show A.ρ y.1 (x _) - x _ + x _ =  _ + _
   rw [Fin.sum_univ_two]
@@ -170,11 +170,10 @@ square commutes:
         v                         v
   Fun(G × G, A) --dTwo--> Fun(G × G × G, A)
 ```
-where the vertical arrows are `twoCochainsLinearEquiv` and `threeCochainsLinearEquiv` respectively.
+where the vertical arrows are `twoCochainsLequiv` and `threeCochainsLequiv` respectively.
 -/
 theorem dTwo_comp_eq :
-    dTwo A ∘ₗ twoCochainsLinearEquiv A =
-      threeCochainsLinearEquiv A ∘ₗ (inhomogeneousCochains A).d 2 3 := by
+    dTwo A ∘ₗ twoCochainsLequiv A = threeCochainsLequiv A ∘ₗ (inhomogeneousCochains A).d 2 3 := by
   ext x y
   show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
@@ -246,7 +245,7 @@ variable (A)
 
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
-@[simps] def oneCocyclesLinearEquivOfIsTrivial [hA : A.isTrivial] :
+@[simps] def oneCocyclesLequivOfIsTrivial [hA : A.isTrivial] :
     oneCocycles A ≃ₗ[k] Additive G →+ A where
   toFun f :=
     { toFun := f.1 ∘ Additive.toMul
@@ -372,21 +371,21 @@ section H1
 
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
-def H1LinearEquivOfIsTrivial [A.isTrivial] :
+def H1LequivOfIsTrivial [A.isTrivial] :
     H1 A ≃ₗ[k] Additive G →+ A :=
 (Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
-  (oneCocyclesLinearEquivOfIsTrivial A)
+  (oneCocyclesLequivOfIsTrivial A)
 
-theorem H1LinearEquivOfIsTrivial_comp_H1_π [A.isTrivial] :
-    (H1LinearEquivOfIsTrivial A).comp (H1_π A) = oneCocyclesLinearEquivOfIsTrivial A := by
+theorem H1LequivOfIsTrivial_comp_H1_π [A.isTrivial] :
+    (H1LequivOfIsTrivial A).comp (H1_π A) = oneCocyclesLequivOfIsTrivial A := by
   ext; rfl
 
-@[simp] theorem H1LinearEquivOfIsTrivial_H1_π_apply_apply
+@[simp] theorem H1LequivOfIsTrivial_H1_π_apply_apply
     [A.isTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1LinearEquivOfIsTrivial A (H1_π A f) x = f.1 (Additive.toMul x) := rfl
+    H1LequivOfIsTrivial A (H1_π A f) x = f.1 (Additive.toMul x) := rfl
 
-@[simp] theorem H1LinearEquivOfIsTrivial_symm_apply [A.isTrivial] (f : Additive G →+ A) :
-    (H1LinearEquivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLinearEquivOfIsTrivial A).symm f) :=
+@[simp] theorem H1LequivOfIsTrivial_symm_apply [A.isTrivial] (f : Additive G →+ A) :
+    (H1LequivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
   rfl
 
 end H1
