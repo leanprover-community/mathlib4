@@ -917,7 +917,7 @@ theorem toQuadraticForm_associated : (associatedHom S Q).toQuadraticForm = Q :=
 -- with historical naming in this file.
 theorem associated_rightInverse :
     Function.RightInverse (associatedHom S) (LinearMap.toQuadraticForm : _ → QuadraticForm R M R) :=
-  fun Q => toQuadraticForm_associated Q
+  fun Q => toQuadraticForm_associated S Q
 #align quadratic_form.associated_right_inverse QuadraticForm.associated_rightInverse
 
 /-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
@@ -928,7 +928,8 @@ abbrev associated' : QuadraticForm R M R →ₗ[ℤ] M →ₗ[R] M →ₗ[R] R :
 
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
 instance canLift :
-    CanLift (M →ₗ[R] M →ₗ[R] R) (QuadraticForm R M R) (associatedHom ℕ) toBilin where
+    CanLift (M →ₗ[R] M →ₗ[R] R) (QuadraticForm R M R) (associatedHom ℕ)
+    (fun L => L.toBilin.IsSymm) where
   prf B hB := ⟨B.toQuadraticForm, associated_left_inverse _ hB⟩
 #align quadratic_form.can_lift QuadraticForm.canLift
 
