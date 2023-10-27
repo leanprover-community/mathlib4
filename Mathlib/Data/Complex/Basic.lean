@@ -639,6 +639,11 @@ theorem normSq_one : normSq 1 = 1 :=
 #align complex.norm_sq_one Complex.normSq_one
 
 @[simp]
+theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
+    normSq (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n * OfNat.ofNat n := by
+  simp [normSq]
+
+@[simp]
 theorem normSq_I : normSq I = 1 := by simp [normSq]
 set_option linter.uppercaseLean3 false in
 #align complex.norm_sq_I Complex.normSq_I
@@ -995,6 +1000,10 @@ theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
     Complex.abs n = Complex.abs (n : ℝ) := by rw [ofReal_nat_cast]
     _ = _ := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 #align complex.abs_of_nat Complex.abs_of_nat
+
+@[simp]
+theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : Complex.abs (no_index (OfNat.ofNat n : ℂ)) = n :=
+  abs_of_nat n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
