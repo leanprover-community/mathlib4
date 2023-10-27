@@ -3,7 +3,6 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
---import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
@@ -338,16 +337,6 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
   rw [← A, mul_assoc, mul_comm] at B
   simp only [B, integral_smul_nnreal_measure]
   rfl
-
-instance instIsFiniteMeasureOnCompactsRestrict {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
-    {μ : Measure X} [IsFiniteMeasureOnCompacts μ] {s : Set X} :
-    IsFiniteMeasureOnCompacts (μ.restrict s) :=
-  ⟨fun k hk ↦ (Measure.le_iff'.1 restrict_le_self k).trans_lt hk.measure_lt_top⟩
-
-instance instIsFiniteMeasureOnCompactsSmul {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
-    {μ : Measure X} [IsFiniteMeasureOnCompacts μ] (c : ℝ≥0) :
-    IsFiniteMeasureOnCompacts (c • μ) :=
-  ⟨fun _k hk ↦ ENNReal.mul_lt_top ENNReal.coe_ne_top (hk.measure_lt_top).ne⟩
 
 lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]

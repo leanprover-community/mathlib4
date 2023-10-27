@@ -3885,6 +3885,14 @@ protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Mea
   ⟨fun _K hK => ENNReal.mul_lt_top hc hK.measure_lt_top.ne⟩
 #align measure_theory.is_finite_measure_on_compacts.smul MeasureTheory.IsFiniteMeasureOnCompacts.smul
 
+instance IsFiniteMeasureOnCompacts.smul_nnrel [TopologicalSpace α] (μ : Measure α)
+    [IsFiniteMeasureOnCompacts μ] (c : ℝ≥0) : IsFiniteMeasureOnCompacts (c • μ) :=
+  IsFiniteMeasureOnCompacts.smul μ coe_ne_top
+
+instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measure α}
+    [IsFiniteMeasureOnCompacts μ] {s : Set α} : IsFiniteMeasureOnCompacts (μ.restrict s) :=
+  ⟨fun k hk ↦ (Measure.le_iff'.1 restrict_le_self k).trans_lt hk.measure_lt_top⟩
+
 /-- Note this cannot be an instance because it would form a typeclass loop with
 `isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure`. -/
 theorem CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
