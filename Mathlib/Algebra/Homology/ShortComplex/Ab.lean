@@ -11,7 +11,7 @@ import Mathlib.Algebra.Category.GroupCat.EpiMono
 # Homology and exactness of short complexes of abelian groups
 
 In this file, the homology of a short complex `S` of abelian groups is identified
-to the quotient of `AddMonoidHom.ker S.g` by the image of the morphism
+with the quotient of `AddMonoidHom.ker S.g` by the image of the morphism
 `S.abToCycles : S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`.
 
 The definitions are made in the `ShortComplex` namespace so as to enable dot notation.
