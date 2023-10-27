@@ -24,6 +24,9 @@ In this file we prove Fubini's theorem.
   Tonelli's theorem (see `MeasureTheory.lintegral_prod`). The lemma
   `MeasureTheory.Integrable.integral_prod_right` states that the inner integral of the right-hand
   side is integrable.
+* `MeasureTheory.integral_integral_swap_of_hasCompactSupport`: a version of Fubini theorem for
+  continuous functions with compact support, which does not assume that the measures are σ-finite
+  contrary to all the usual versions of Fubini.
 
 ## Tags
 
@@ -542,7 +545,7 @@ theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = (ν univ)
 
 section
 
-variable {X Y α : Type*} [Zero α]
+variable {X Y : Type*}
     [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace X] [MeasurableSpace Y]
     [OpensMeasurableSpace X] [OpensMeasurableSpace Y]
 
@@ -550,7 +553,6 @@ variable {X Y α : Type*} [Zero α]
 the order of integration with respect to locally finite measures. One does not assume that the
 measures are σ-finite, contrary to the usual Fubini theorem. -/
 lemma integral_integral_swap_of_hasCompactSupport
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : X → Y → E} (hf : Continuous f.uncurry) (h'f : HasCompactSupport f.uncurry)
     {μ : Measure X} {ν : Measure Y} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν] :
     ∫ x, (∫ y, f x y ∂ν) ∂μ = ∫ y, (∫ x, f x y ∂μ) ∂ν := by

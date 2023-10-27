@@ -38,66 +38,8 @@ to express integrals with respect to a left-invariant measure as integrals with 
 right-invariant measure (with a suitable density function). The uniqueness readily follows.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace
+open MeasureTheory Filter Set TopologicalSpace Function MeasureTheory Measure
 open scoped Uniformity Topology ENNReal Pointwise NNReal
-
-section
-
-variable {X Y α : Type*} [Zero α]
-    [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace X] [MeasurableSpace Y]
-    [OpensMeasurableSpace X] [OpensMeasurableSpace Y]
-
-/-- A version of *Fubini theorem* for continuous functions with compact support: one may swap
-the order of integration with respect to locally finite measures. One does not assume that the
-measures are σ-finite, contrary to the usual Fubini theorem. -/
-lemma integral_integral_swap_of_hasCompactSupport
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {f : X → Y → E} (hf : Continuous f.uncurry) (h'f : HasCompactSupport f.uncurry)
-    {μ : Measure X} {ν : Measure Y} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν] :
-    ∫ x, (∫ y, f x y ∂ν) ∂μ = ∫ y, (∫ x, f x y ∂μ) ∂ν := by
-  let U := Prod.fst '' (tsupport f.uncurry)
-  have : Fact (μ U < ∞) := ⟨(IsCompact.image h'f continuous_fst).measure_lt_top⟩
-  let V := Prod.snd '' (tsupport f.uncurry)
-  have : Fact (ν V < ∞) := ⟨(IsCompact.image h'f continuous_snd).measure_lt_top⟩
-  calc
-  ∫ x, (∫ y, f x y ∂ν) ∂μ = ∫ x, (∫ y in V, f x y ∂ν) ∂μ := by
-    congr 1 with x
-    apply (set_integral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)).symm
-    contrapose! hy
-    have : (x, y) ∈ Function.support f.uncurry := hy
-    exact mem_image_of_mem _ (subset_tsupport _ this)
-  _ = ∫ x in U, (∫ y in V, f x y ∂ν) ∂μ := by
-    apply (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
-    have : ∀ y, f x y = 0 := by
-      intro y
-      contrapose! hx
-      have : (x, y) ∈ Function.support f.uncurry := hx
-      exact mem_image_of_mem _ (subset_tsupport _ this)
-    simp [this]
-  _ = ∫ y in V, (∫ x in U, f x y ∂μ) ∂ν := by
-    apply integral_integral_swap
-    apply (integrableOn_iff_integrable_of_support_subset (subset_tsupport f.uncurry)).mp
-    refine ⟨(h'f.stronglyMeasurable_of_prod hf).aestronglyMeasurable, ?_⟩
-    obtain ⟨C, hC⟩ : ∃ C, ∀ p, ‖f.uncurry p‖ ≤ C := hf.bounded_above_of_compact_support h'f
-    exact hasFiniteIntegral_of_bounded (C := C) (eventually_of_forall hC)
-  _ = ∫ y, (∫ x in U, f x y ∂μ) ∂ν := by
-    apply set_integral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)
-    have : ∀ x, f x y = 0 := by
-      intro x
-      contrapose! hy
-      have : (x, y) ∈ Function.support f.uncurry := hy
-      exact mem_image_of_mem _ (subset_tsupport _ this)
-    simp [this]
-  _ = ∫ y, (∫ x, f x y ∂μ) ∂ν := by
-    congr 1 with y
-    apply set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)
-    contrapose! hx
-    have : (x, y) ∈ Function.support f.uncurry := hx
-    exact mem_image_of_mem _ (subset_tsupport _ this)
-
-end
-
-open Function MeasureTheory Measure
 
 variable {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G]
