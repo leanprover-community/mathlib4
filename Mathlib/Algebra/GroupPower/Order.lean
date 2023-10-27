@@ -20,7 +20,7 @@ Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import fil
 depend on this file.
 -/
 
-variable {β A G M R : Type*}
+variable {M R : Type*}
 
 namespace CanonicallyOrderedCommSemiring
 

@@ -8,19 +8,16 @@ import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 
-#align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
-
 /-!
-# Lemmas about the interaction of power operations with order
+# Lemmas about the interaction of power operations with order in terms of CovariantClass
 
-Note that some lemmas are in `Algebra/GroupPower/Lemmas.lean` as they import files which
-depend on this file.
+More lemmas with bundled algebra+order typeclasses are in `Algebra/GroupPower/Order.lean`
+and `Algebra/GroupPower/Lemmas.lean`.
 -/
-
 
 open Function
 
-variable {β A G M R : Type*}
+variable {β G M : Type*}
 
 section Monoid
 
