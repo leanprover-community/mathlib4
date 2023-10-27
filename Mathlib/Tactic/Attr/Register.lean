@@ -40,6 +40,10 @@ register_simp_attr parity_simps
 /-- "Simp attribute for lemmas about `IsROrC`" -/
 register_simp_attr isROrC_simps
 
+/-- The simpset `rify_simps` is used by the tactic `rify` to moved expression from `ℕ` or `ℤ`, or
+`ℚ` to `ℝ`. -/
+register_simp_attr rify_simps
+
 /-- The simpset `qify_simps` is used by the tactic `qify` to moved expression from `ℕ` or `ℤ` to `ℚ`
 which gives a well-behaved division. -/
 register_simp_attr qify_simps
