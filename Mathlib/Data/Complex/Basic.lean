@@ -999,7 +999,8 @@ theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.
 #align complex.abs_of_nat Complex.abs_natCast
 
 @[simp]
-theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
+    Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
   abs_natCast n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
