@@ -147,7 +147,8 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
   uniq s m _ := by
     apply StructuredArrow.ext
     dsimp
-    rw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
     apply StructuredArrow.w m
 #align category_theory.mk_initial_of_left_adjoint CategoryTheory.mkInitialOfLeftAdjoint
 

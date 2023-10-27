@@ -388,8 +388,12 @@ instance (priority := 100) [DistribLattice α] : IsModularLattice α :=
 
 end DistribLattice
 
-theorem Disjoint.disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
-    [IsModularLattice α] {a b c : α} (h : Disjoint a b) (hsup : Disjoint (a ⊔ b) c) :
+namespace Disjoint
+
+variable {a b c : α}
+
+theorem disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot α]
+    [IsModularLattice α] (h : Disjoint a b) (hsup : Disjoint (a ⊔ b) c) :
     Disjoint a (b ⊔ c) := by
   rw [disjoint_iff_inf_le, ← h.eq_bot, sup_comm]
   apply le_inf inf_le_left
@@ -397,13 +401,25 @@ theorem Disjoint.disjoint_sup_right_of_disjoint_sup_left [Lattice α] [OrderBot 
   rw [sup_comm, IsModularLattice.sup_inf_sup_assoc, hsup.eq_bot, bot_sup_eq]
 #align disjoint.disjoint_sup_right_of_disjoint_sup_left Disjoint.disjoint_sup_right_of_disjoint_sup_left
 
-theorem Disjoint.disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
-    [IsModularLattice α] {a b c : α} (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) :
+theorem disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
+    [IsModularLattice α] (h : Disjoint b c) (hsup : Disjoint a (b ⊔ c)) :
     Disjoint (a ⊔ b) c := by
   rw [disjoint_comm, sup_comm]
   apply Disjoint.disjoint_sup_right_of_disjoint_sup_left h.symm
   rwa [sup_comm, disjoint_comm] at hsup
 #align disjoint.disjoint_sup_left_of_disjoint_sup_right Disjoint.disjoint_sup_left_of_disjoint_sup_right
+
+theorem isCompl_sup_right_of_isCompl_sup_left [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    (h : Disjoint a b) (hcomp : IsCompl (a ⊔ b) c) :
+    IsCompl a (b ⊔ c) :=
+  ⟨h.disjoint_sup_right_of_disjoint_sup_left hcomp.disjoint, codisjoint_assoc.mp hcomp.codisjoint⟩
+
+theorem isCompl_sup_left_of_isCompl_sup_right [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    (h : Disjoint b c) (hcomp : IsCompl a (b ⊔ c)) :
+    IsCompl (a ⊔ b) c :=
+  ⟨h.disjoint_sup_left_of_disjoint_sup_right hcomp.disjoint, codisjoint_assoc.mpr hcomp.codisjoint⟩
+
+end Disjoint
 
 namespace IsModularLattice
 
