@@ -144,7 +144,7 @@ def lift :
 #align dual_number.lift DualNumber.lift
 
 theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
-  lift fe a = fe.val.1 a.fst + fe.val.1 a.snd * fe.val.2 := rfl
+    lift fe a = fe.val.1 a.fst + fe.val.1 a.snd * fe.val.2 := rfl
 
 @[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
     (lift.symm F).val = (F.comp (inlAlgHom _ _ _), F ε) := rfl
