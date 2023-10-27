@@ -219,13 +219,10 @@ noncomputable def classesEquivQuotient (r : Setoid α) : Quotient r ≃ Setoid.c
     intro ⟨c, a, hc⟩
     exact ⟨a, Subtype.ext hc.symm⟩
 
+@[simp]
 lemma classesEquivQuotient_mk_eq (r : Setoid α) (a : α) :
-    classesEquivQuotient r (Quotient.mk r a) = ⟨{ x | r.Rel x a }, Setoid.mem_classes r a⟩ :=
-  rfl
-
-lemma classesEquivQuotient_mk_coe_eq (r : Setoid α) (a : α) :
     (classesEquivQuotient r (Quotient.mk r a) : Set α) = { x | r.Rel x a } :=
-  Subtype.ext_iff_val.mp (classesEquivQuotient_mk_eq r a)
+  (@Subtype.ext_iff_val _ _ _ ⟨{ x | r.Rel x a }, Setoid.mem_classes r a⟩).mp rfl
 
 section Partition
 
