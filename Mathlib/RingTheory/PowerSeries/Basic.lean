@@ -769,6 +769,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     rintro ⟨i, j⟩ hij
     rw [coeff_X_pow, if_neg, zero_mul]
     contrapose! h
+    dsimp at h
     subst i
     rw [Finsupp.mem_antidiagonal] at hij
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
