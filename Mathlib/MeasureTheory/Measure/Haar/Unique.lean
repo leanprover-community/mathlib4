@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
+import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -45,85 +46,6 @@ section
 variable {X Y α : Type*} [Zero α]
     [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace X] [MeasurableSpace Y]
     [OpensMeasurableSpace X] [OpensMeasurableSpace Y]
-
-/-- A continuous function with compact support on a product space can be uniformly approximated by
-simple functions. The subtlety is that we do not assume that the spaces are separable, so the
-product of the Borel sigma algebras might not contain all open sets, but still it contains enough
-of them to approximate compactly supported continuous functions. -/
-lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
-    {f : X × Y → α} (hf : Continuous f) (h'f : HasCompactSupport f)
-    {ε : ℝ} (hε : 0 < ε) :
-    ∃ (g : SimpleFunc (X × Y) α), ∀ x, dist (f x) (g x) < ε := by
-  have M : ∀ (K : Set (X × Y)), IsCompact K →
-      ∃ (g : SimpleFunc (X × Y) α), ∃ (s : Set (X × Y)), MeasurableSet s ∧ K ⊆ s ∧
-      ∀ x ∈ s, dist (f x) (g x) < ε := by
-    intro K hK
-    apply IsCompact.induction_on
-      (p := fun t ↦ ∃ (g : SimpleFunc (X × Y) α), ∃ (s : Set (X × Y)), MeasurableSet s ∧ t ⊆ s ∧
-        ∀ x ∈ s, dist (f x) (g x) < ε) hK
-    · exact ⟨0, ∅, by simp⟩
-    · intro t t' htt' ⟨g, s, s_meas, ts, hg⟩
-      exact ⟨g, s, s_meas, htt'.trans ts, hg⟩
-    · intro t t' ⟨g, s, s_meas, ts, hg⟩ ⟨g', s', s'_meas, t's', hg'⟩
-      refine ⟨g.piecewise s s_meas g', s ∪ s', s_meas.union s'_meas,
-        union_subset_union ts t's', fun p hp ↦ ?_⟩
-      by_cases H : p ∈ s
-      · simpa [H, SimpleFunc.piecewise_apply] using hg p H
-      · simp only [SimpleFunc.piecewise_apply, H, ite_false]
-        apply hg'
-        simpa [H] using (mem_union _ _ _).1 hp
-    · rintro ⟨x, y⟩ -
-      obtain ⟨u, v, hu, xu, hv, yv, huv⟩ : ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ y ∈ v ∧
-        u ×ˢ v ⊆ {z | dist (f z) (f (x, y)) < ε} :=
-          mem_nhds_prod_iff'.1 <| Metric.continuousAt_iff'.1 hf.continuousAt ε hε
-      refine ⟨u ×ˢ v, nhdsWithin_le_nhds <| (hu.prod hv).mem_nhds (mk_mem_prod xu yv), ?_⟩
-      exact ⟨SimpleFunc.const _ (f (x, y)), u ×ˢ v, hu.measurableSet.prod hv.measurableSet,
-        Subset.rfl, fun z hz ↦ huv hz⟩
-  obtain ⟨g, s, s_meas, fs, hg⟩ : ∃ g s, MeasurableSet s ∧ tsupport f ⊆ s ∧
-    ∀ (x : X × Y), x ∈ s → dist (f x) (g x) < ε := M _ h'f
-  refine ⟨g.piecewise s s_meas 0, fun p ↦ ?_⟩
-  by_cases H : p ∈ s
-  · simpa [H, SimpleFunc.piecewise_apply] using hg p H
-  · have : f p = 0 := by
-      contrapose! H
-      rw [← Function.mem_support] at H
-      exact fs (subset_tsupport _ H)
-    simp [SimpleFunc.piecewise_apply, H, ite_false, this, hε]
-
-/-- A continuous function with compact support on a product space is measurable for the product
-sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the
-product of the Borel sigma algebras might not contain all open sets, but still it contains enough
-of them to approximate compactly supported continuous functions. -/
-lemma HasCompactSupport.measurable_of_prod
-    [TopologicalSpace α] [PseudoMetrizableSpace α] [MeasurableSpace α] [BorelSpace α]
-    {f : X × Y → α} (hf : Continuous f) (h'f : HasCompactSupport f) :
-    Measurable f := by
-  letI : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
-  obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
-    exists_seq_strictAnti_tendsto (0 : ℝ)
-  have : ∀ n, ∃ (g : SimpleFunc (X × Y) α), ∀ x, dist (f x) (g x) < u n :=
-    fun n ↦ h'f.exists_simpleFunc_approx_of_prod hf (u_pos n)
-  choose g hg using this
-  have A : ∀ x, Tendsto (fun n ↦ g n x) atTop (𝓝 (f x)) := by
-    intro x
-    rw [tendsto_iff_dist_tendsto_zero]
-    apply squeeze_zero (fun n ↦ dist_nonneg) (fun n ↦ ?_) u_lim
-    rw [dist_comm]
-    exact (hg n x).le
-  apply measurable_of_tendsto_metrizable (fun n ↦ (g n).measurable) (tendsto_pi_nhds.2 A)
-
-/-- A continuous function with compact support on a product space is measurable for the product
-sigma-algebra. The subtlety is that we do not assume that the spaces are separable, so the
-product of the Borel sigma algebras might not contain all open sets, but still it contains enough
-of them to approximate compactly supported continuous functions. -/
-lemma HasCompactSupport.stronglyMeasurable_of_prod
-    [TopologicalSpace α] [PseudoMetrizableSpace α]
-    {f : X × Y → α} (hf : Continuous f) (h'f : HasCompactSupport f) :
-    StronglyMeasurable f := by
-  borelize α
-  apply stronglyMeasurable_iff_measurable_separable.2 ⟨h'f.measurable_of_prod hf, ?_⟩
-  letI : PseudoMetricSpace α := pseudoMetrizableSpacePseudoMetric α
-  exact IsCompact.isSeparable (s := range f) (h'f.isCompact_range hf)
 
 /-- A version of *Fubini theorem* for continuous functions with compact support: one may swap
 the order of integration with respect to locally finite measures. One does not assume that the

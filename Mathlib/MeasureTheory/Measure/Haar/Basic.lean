@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Measure.Haar.UniqueMeasurable
-import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Algebra.Group.Compact
 
