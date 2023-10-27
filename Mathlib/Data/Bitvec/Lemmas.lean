@@ -101,4 +101,52 @@ instance : CommRing (BitVec w) where
   mul_one         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
   add_left_neg    := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
 
+
+/-!
+## Extensionality
+-/
+
+/-- The empty bitvector -/
+def nil : BitVec 0 := 0
+
+/-- Add a new most signicifant bit to a bitvector -/
+def consMsb {w} (newMsb : Bool) (x : BitVec w) : BitVec (w+1) :=
+  let x : Fin (2^(w+1)) := x.toFin.castLE (by simp[Nat.pow_succ])
+  ofFin <|
+    bif newMsb then
+      x + ⟨2^w, by simp[Nat.pow_succ]⟩
+    else
+      x
+
+/-- Every bitvector of length `0` is equal to the empty bitvector `nil` -/
+lemma nil_eq {x : BitVec 0} : x = nil := by
+  cases' x with x
+  cases x using Fin.succRec
+  case zero     => rfl
+  case succ x _ => exact x.elim0
+
+def dropMsb {w} (x : BitVec (w+1)) : BitVec w :=
+  ofFin <| Fin.ofNat' x.toNat (by simp)
+
+#print consMsb
+
+lemma consMsb_msb_dropMsb (x : BitVec (w+1)) :
+    consMsb x.msb x.dropMsb = x := by
+  rcases x with ⟨⟨x, h⟩⟩
+  simp [consMsb, Fin.castLE, dropMsb, Fin.ofNat', BitVec.toNat, cond, BitVec.msb, getMsb, getLsb]
+  split
+  · simp[Fin.add]
+  · simp
+
+
+/-- Two bitvectors are equal if they agree on each bit -/
+@[ext]
+lemma extLsb {w} {x y : BitVec w} (h : ∀ i, x.getLsb i = y.getLsb i) : x = y := by
+  induction w
+  · simp [nil_eq]
+  · simp
+
+/-- Two bitvectors are equal if they agree on each bit -/
+lemma extMsb {w} {x y : BitVec w} (h : ∀ i, x.getMsb i = y.getMsb i) : x = y := by
+  sorry
 end Std.BitVec
