@@ -67,6 +67,15 @@ theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
   rfl
 #align representation.trivial_def Representation.trivial_def
 
+variable {k}
+
+/-- A predicate for representations that fix every element. -/
+class isTrivial (ρ : Representation k G V) : Prop :=
+(out : ∀ g x, ρ g x = x)
+
+instance : isTrivial (trivial k (G := G) (V := V)) :=
+⟨fun _ _ => rfl⟩
+
 end trivial
 
 section MonoidAlgebra

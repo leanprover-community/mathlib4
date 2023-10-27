@@ -18,6 +18,8 @@ the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n
 unnecessarily unwieldy in low degree. Moreover, cohomology of a complex is defined as an abstract
 cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
 
+We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
+
 Later this file will contain an identification between the definition in
 `RepresentationTheory.GroupCohomology.Basic`, `groupCohomology A n`, and the `Hn A` in this file,
 for `n = 0, 1, 2`.
@@ -29,12 +31,13 @@ for `n = 0, 1, 2`.
 1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
 * `groupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
 2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
+* `groupCohomology.H1LinearEquivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when  the
+representation on `A` is trivial.
 
 ## TODO
 
 * Identify `Hn A` as defined in this file with `groupCohomology A n` for `n = 0, 1, 2`.
-* Properties of `H1`, like the isomorphism `H1(G, A) ≃ Hom(G, A)` when the representation
-is trivial
+* Hilbert's theorem 90
 * The relationship between `H2` and group extensions
 * The inflation-restriction exact sequence
 * Nonabelian group cohomology
@@ -210,49 +213,83 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A)
 variable {A}
 
 theorem mem_oneCocycles_def (f : G → A) :
-    f ∈ oneCocycles A ↔ ∀ g : G × G, A.ρ g.1 (f g.2) - f (g.1 * g.2) + f g.1 = 0 :=
-  LinearMap.mem_ker.trans Function.funext_iff
+    f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
+  LinearMap.mem_ker.trans $ by
+    rw [Function.funext_iff]
+    simp only [dOne_apply, Pi.zero_apply, Prod.forall]
 
 theorem mem_oneCocycles_iff (f : G → A) :
-    f ∈ oneCocycles A ↔ ∀ g : G × G, f (g.1 * g.2) = A.ρ g.1 (f g.2) + f g.1 := by
+    f ∈ oneCocycles A ↔ ∀ g h : G, f (g * h) = A.ρ g (f h) + f g := by
   simp_rw [mem_oneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
-theorem oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
-  have := (mem_oneCocycles_def f.1).1 f.2 (1, 1)
+@[simp] theorem oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
+  have := (mem_oneCocycles_def f.1).1 f.2 1 1
   simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
 
-theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
+@[simp] theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
     A.ρ g (f.1 g⁻¹) = - f.1 g := by
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_self g,
-    (mem_oneCocycles_iff f.1).1 f.2 (g, g⁻¹)]
+    (mem_oneCocycles_iff f.1).1 f.2 g g⁻¹]
+
+theorem oneCocycles_map_mul_of_isTrivial [hA : A.isTrivial] (f : oneCocycles A) (g h : G) :
+    f.1 (g * h) = f.1 g + f.1 h := by
+  rw [(mem_oneCocycles_iff f.1).1 f.2, hA.out g (f.1 h), add_comm]
+
+theorem mem_oneCocycles_of_addMonoidHom [hA : A.isTrivial] (f : Additive G →+ A) :
+  f ∘ Additive.ofMul ∈ oneCocycles A :=
+(mem_oneCocycles_iff _).2 fun g h => by
+  simp only [Function.comp_apply, ofMul_mul, map_add,
+    oneCocycles_map_mul_of_isTrivial, hA.out g (f (Additive.ofMul h)),
+    add_comm (f (Additive.ofMul g))]
+
+variable (A)
+
+/-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
+group homs `G → A`. -/
+@[simps] def oneCocyclesLinearEquivOfIsTrivial [hA : A.isTrivial] :
+    oneCocycles A ≃ₗ[k] Additive G →+ A where
+  toFun f :=
+    { toFun := f.1 ∘ Additive.toMul
+      map_zero' := oneCocycles_map_one f
+      map_add' := oneCocycles_map_mul_of_isTrivial f }
+  map_add' x y := rfl
+  map_smul' r x := rfl
+  invFun f :=
+    { val := f
+      property := mem_oneCocycles_of_addMonoidHom f }
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
+
+variable {A}
 
 theorem mem_twoCocycles_def (f : G × G → A) :
-    f ∈ twoCocycles A ↔ ∀ g : G × G × G,
-      A.ρ g.1 (f (g.2.1, g.2.2)) - f (g.1 * g.2.1, g.2.2) +
-        f (g.1, g.2.1 * g.2.2) - f (g.1, g.2.1) = 0 :=
-  LinearMap.mem_ker.trans Function.funext_iff
+    f ∈ twoCocycles A ↔ ∀ g h j : G,
+      A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
+  LinearMap.mem_ker.trans $ by
+    rw [Function.funext_iff]
+    simp only [dTwo_apply, Prod.mk.eta, Pi.zero_apply, Prod.forall]
 
 theorem mem_twoCocycles_iff (f : G × G → A) :
-    f ∈ twoCocycles A ↔ ∀ g : G × G × G,
-      f (g.1 * g.2.1, g.2.2) + f (g.1, g.2.1) =
-        A.ρ g.1 (f (g.2.1, g.2.2)) + f (g.1, g.2.1 * g.2.2) := by
+    f ∈ twoCocycles A ↔ ∀ g h j : G,
+      f (g * h, j) + f (g, h) =
+        A.ρ g (f (h, j)) + f (g, h * j) := by
   simp_rw [mem_twoCocycles_def, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
-    add_comm (f (Prod.fst _, _))]
+    add_comm (f (_ * _, _))]
 
 theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
     f.1 (1, g) = f.1 (1, 1) := by
-  have := ((mem_twoCocycles_iff f.1).1 f.2 (1, (1, g))).symm
+  have := ((mem_twoCocycles_iff f.1).1 f.2 1 1 g).symm
   simpa only [map_one, LinearMap.one_apply, one_mul, add_right_inj, this]
 
 theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
     f.1 (g, 1) = A.ρ g (f.1 (1, 1)) := by
-  have := (mem_twoCocycles_iff f.1).1 f.2 (g, (1, 1))
+  have := (mem_twoCocycles_iff f.1).1 f.2 g 1 1
   simpa only [mul_one, add_left_inj, this]
 
 lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
     A.ρ g (f.1 (g⁻¹, g)) - f.1 (g, g⁻¹)
       = f.1 (1, 1) - f.1 (g, 1) := by
-  have := (mem_twoCocycles_iff f.1).1 f.2 (g, g⁻¹, g)
+  have := (mem_twoCocycles_iff f.1).1 f.2 g g⁻¹ g
   simp only [mul_right_inv, mul_left_inv, twoCocycles_map_one_fst _ g]
     at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
@@ -285,6 +322,15 @@ theorem mem_oneCoboundaries_of_mem_range (f : G → A) (h : f ∈ LinearMap.rang
 theorem mem_range_of_mem_oneCoboundaries (f : oneCocycles A) (h : f ∈ oneCoboundaries A) :
     f.1 ∈ LinearMap.range (dZero A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
+
+theorem oneCoboundaries_of_isTrivial_eq_bot (A : Rep k G) [hA : A.isTrivial] :
+    oneCoboundaries A = ⊥ := by
+  rw [eq_bot_iff]
+  rintro _ ⟨y, rfl⟩
+  simp only [Submodule.mem_bot]
+  ext g
+  show A.ρ g y - y = 0
+  rw [hA.out g y, sub_self]
 
 theorem mem_twoCoboundaries_of_dOne_apply (x : G → A) :
     ⟨dOne A x, LinearMap.ext_iff.1 (dTwo_comp_dOne A) x⟩ ∈ twoCoboundaries A :=
@@ -322,4 +368,26 @@ abbrev H2 := twoCocycles A ⧸ twoCoboundaries A
 def H2_π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
 
 end Cohomology
+section H1
+
+/-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
+group homs `G → A`. -/
+def H1LinearEquivOfIsTrivial [A.isTrivial] :
+  H1 A ≃ₗ[k] Additive G →+ A :=
+(Submodule.quotEquivOfEqBot _ (oneCoboundaries_of_isTrivial_eq_bot A)).trans
+  (oneCocyclesLinearEquivOfIsTrivial A)
+
+theorem H1LinearEquivOfIsTrivial_comp_H1_π [A.isTrivial] :
+    (H1LinearEquivOfIsTrivial A).comp (H1_π A) = oneCocyclesLinearEquivOfIsTrivial A := by
+  ext; rfl
+
+@[simp] theorem H1LinearEquivOfIsTrivial_comp_H1_π_apply_apply
+    [A.isTrivial] (f : oneCocycles A) (x : Additive G) :
+    H1LinearEquivOfIsTrivial A (H1_π A f) x = f.1 (Additive.toMul x) := rfl
+
+@[simp] theorem H1LinearEquivOfIsTrivial_symm_apply [A.isTrivial] (f : Additive G →+ A) :
+    (H1LinearEquivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLinearEquivOfIsTrivial A).symm f) :=
+  rfl
+
+end H1
 end groupCohomology
