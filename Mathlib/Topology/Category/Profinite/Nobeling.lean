@@ -4,15 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Category.ModuleCat.Free
-import Mathlib.Algebra.Homology.ShortExact.Abelian
-import Mathlib.Data.List.MinMax
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
-import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.LocallyConstant.Algebra
-import Mathlib.Topology.Separation
 
 /-!
 
