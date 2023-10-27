@@ -45,6 +45,17 @@ example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : �
   guard_target =ₐ q w
   exact h₂ w foo
 
+example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
+  peel h₁ with foo _
+  rename_i w
+  guard_target =ₐ q w
+  exact h₂ w foo
+
+example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
+  peel h₁ with _ w
+  guard_target =ₐ q w
+  exact h₂ w this
+
 example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
     ∀ u v, q u v := by
   peel h₁ with h_peel s t

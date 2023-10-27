@@ -27,11 +27,14 @@ open Lean Expr Meta Elab Tactic
 /--
 Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
 
-- `peel e` peels all quantifiers (at reducible transparency)
-- `peel e with h` is `peel e` but names the peeled hypothesis `h`
-- `peel n e` peels `n` quantifiers (at default transparency)
+- `peel e` peels all quantifiers (at reducible transparency),
+  using `this` for the name of the peeled hypothesis.
+- `peel e with h` is `peel e` but names the peeled hypothesis `h`.
+  If `h` is `_` then uses `this` for the name of the peeled hypothesis.
+- `peel n e` peels `n` quantifiers (at default transparency).
 - `peel n e with h x y z ...` peels `n` quantifiers, names the peeled hypothesis `h`,
-  and uses `x`, `y`, `z`, and so on to name the introduced variables.
+  and uses `x`, `y`, `z`, and so on to name the introduced variables; these names may be `_`.
+  If `h` is `_` then uses `this` for the name of the peeled hypothesis.
   The length of the list of variables does not need to equal `n`.
 - `peel e with h x₁ ... xₙ` is `peel n e with h x₁ ... xₙ`.
 
@@ -80,7 +83,9 @@ may be paired with any of the other features of `peel`.
 This tactic works by repeatedly applying lemmas such as `forall_imp`, `Exists.imp`,
 `Filter.Eventually.mp`, `Filter.Frequently.mp`, and `Filter.eventually_of_forall`.
 -/
-syntax (name := peel) "peel" (num)? (ppSpace colGt term)? (withArgs)? (usingArg)? : tactic
+syntax (name := peel)
+  "peel" (num)? (ppSpace colGt term)?
+  (" with" (ppSpace colGt (ident <|> hole))+)? (usingArg)? : tactic
 
 private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
 
@@ -219,14 +224,10 @@ def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
       peelArgsIff hs
 
 elab_rules : tactic
-  | `(tactic| peel $[$num?:num]? $e:term $[$args?:withArgs]?) => withMainContext do
+  | `(tactic| peel $[$num?:num]? $e:term $[with $n? $l?*]?) => withMainContext do
     let e ← elabTerm e none
-    let args? ← args?.mapM fun args => return ((← getWithArgs args).map Syntax.getId).toList
-    let args := args?.getD []
-    -- Names to use for introduced variables
-    let l := args.tail
-    -- Name to use for peeled hypothesis
-    let n? := args.head?
+    let n? := n?.bind fun n => if n.raw.isIdent then pure n.raw.getId else none
+    let l := (l?.getD #[]).map getNameOfIdent' |>.toList
     -- If num is not present and if there are any provided variable names,
     -- use the number of variable names.
     let num? := num?.map (·.getNat) <|> if l.isEmpty then none else l.length
@@ -237,9 +238,9 @@ elab_rules : tactic
         throwPeelError (← inferType e) (← getMainTarget)
   | `(tactic| peel $n:num) =>
     peelArgsIff <| .replicate n.getNat `_
-  | `(tactic| peel $h:withArgs) => withMainContext do
-    peelArgsIff ((← getWithArgs h).map Syntax.getId).toList
+  | `(tactic| peel with $args*) => withMainContext do
+    peelArgsIff (args.map getNameOfIdent').toList
 
 macro_rules
-  | `(tactic| peel $[$n:num]? $[$e:term]? $[$h:withArgs]? using $u:term) =>
-    `(tactic| peel $[$n:num]? $[$e:term]? $[$h:withArgs]?; exact $u)
+  | `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]? using $u:term) =>
+    `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]?; exact $u)
