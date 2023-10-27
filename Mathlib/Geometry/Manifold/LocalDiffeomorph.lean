@@ -607,19 +607,23 @@ section Differentials
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
 variable {I J M M' N n}
 
--- FIXME: move these two results to better places!
-lemma comp_to_left_inverse {x : M} {y : N} {f' : TangentSpace I x →L[𝕜] TangentSpace J y}
-    {g' : TangentSpace J y →L[𝕜] TangentSpace I x} (hinv : g' ∘ f' = id) : LeftInverse g' f' := by
-  intro x
-  -- TODO: is there a proof using just rw?
-  calc g' (f' x)
-      _ = (g' ∘ f') x := by rw [comp_apply] -- or rfl
-      _ = id x := by rw [← hinv]
-      _ = x := by rw [id_eq] -- or rfl
+section simpler -- FIXME: move to Algebra.Module.Basic
+variable {R : Type*} [Ring R]
+variable {E'' : Type*} [TopologicalSpace E''] [AddCommMonoid E''] [Module R E'']
+variable {F'' : Type*} [TopologicalSpace F''] [AddCommMonoid F''] [Module R F'']
 
-lemma comp_to_right_inverse {x : M} {y : N} {f' : TangentSpace I x →L[𝕜] TangentSpace J y}
-    {g' : TangentSpace J y →L[𝕜] TangentSpace I x} (hinv : f' ∘ g' = id) : RightInverse g' f' :=
-  comp_to_left_inverse hinv
+lemma LeftInverse.of_composition {f' : E'' →L[R] F''} {g' : F'' →L[R] E''}
+    (hinv : g'.comp f' = ContinuousLinearMap.id R E'') : LeftInverse g' f' := by
+  have : g' ∘ f' = id := calc g' ∘ f'
+      _ = ↑(g'.comp f') := by rw [ContinuousLinearMap.coe_comp']
+      _ = ↑( ContinuousLinearMap.id R E'') := by rw [hinv]
+      _ = id := by rw [ContinuousLinearMap.coe_id']
+  exact congrFun this
+
+lemma RightInverse.of_composition {f' : E'' →L[R] F''} {g' : F'' →L[R] E''}
+    (hinv : f'.comp g' = ContinuousLinearMap.id R F'') : RightInverse g' f' :=
+  LeftInverse.of_composition hinv
+end simpler
 
 /-- If `f` is a local diffeomorphism at `x`,
   the differential of `f` at `x` is a linear isomorphism. -/
@@ -660,23 +664,11 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv (hn : 
     _ = mfderiv J J id y := mfderivWithin_of_open h.open_target hy
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace J y) := mfderiv_id J
 
-  have h1 : Function.LeftInverse B A := by
-    apply comp_to_left_inverse
-    calc B ∘ A
-      _ = ↑(B.comp A) := by rw [ContinuousLinearMap.coe_comp']
-      _ = ↑(ContinuousLinearMap.id 𝕜 (TangentSpace I x)) := congrArg FunLike.coe inv1
-      _ = id := by rw [ContinuousLinearMap.coe_id']
-  have h2 : Function.RightInverse B A := by
-    apply comp_to_right_inverse
-    calc A ∘ B
-      _ = ↑(A.comp B) := by rw [ContinuousLinearMap.coe_comp']; rfl
-      _ = ↑(ContinuousLinearMap.id 𝕜 (TangentSpace J (h.toFun x))) := congrArg FunLike.coe inv2
-      _ = id := by rw [ContinuousLinearMap.coe_id']
   exact {
     toFun := A
     invFun := B
-    left_inv := h1
-    right_inv := h2
+    left_inv := LeftInverse.of_composition inv1
+    right_inv := RightInverse.of_composition inv2
     continuous_toFun := A.cont
     continuous_invFun := B.cont
     map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add A x_1 y
@@ -714,6 +706,7 @@ lemma Diffeomorph.differential_bijective (hn : 1 ≤ n) (f : Diffeomorph I J M N
 
 /-- If `f : M → N` is smooth at `x` and `mfderiv I J f x` is a linear isomorphism,
   then `f` is a local diffeomorphism at `x`. -/
+-- XXX: which is more convenient for applications: hinv₁₂ stated with ∘ or with comp?
 def LocalDiffeomorphAt.of_DifferentialIsomorphismAt (hn : 1 ≤ n) {x : M} {f : M → N}
     {f' : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf' : HasMFDerivAt I J f x f')
     {g' : TangentSpace J (f x) →L[𝕜] TangentSpace I x} (hinv₁ : g' ∘ f' = id) (hinv₂ : f' ∘ g' = id)
@@ -728,8 +721,8 @@ def LocalDiffeomorphAt.of_DifferentialIsomorphismAt (hn : 1 ≤ n) {x : M} {f : 
       continuous_invFun := g'.cont
       map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add f' x_1 y
       map_smul' := by intros; simp
-      left_inv := comp_to_left_inverse hinv₁
-      right_inv := comp_to_right_inverse hinv₂
+      left_inv := congrFun hinv₁
+      right_inv := congrFun hinv₂
     }
   -- Now, I'd apply the inverse function theorem, which mathlib only has for normed space.
   -- Let's wait for the general version before completing this.
