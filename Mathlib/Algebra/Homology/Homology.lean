@@ -21,7 +21,7 @@ as `cyclesMap' f i` and `boundariesMap f i`.
 As a consequence we construct `homologyFunctor' i : HomologicalComplex V c ⥤ V`,
 computing the `i`-th homology.
 
-Note: Some definitions in this file have the suffix `'` so as to allow the development
+Note: Some definitions (specifically, names containing components `homology`, `cycles`, and `quasiIso`) in this file have the suffix `'` so as to allow the development
 of the new homology API of homological complex (starting from
 `Algebra.Homology.ShortComplex.HomologicalComplex`). It is planned that these definitions
 shall be removed and removed by the new API.
