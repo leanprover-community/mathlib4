@@ -106,8 +106,8 @@ variable [TopologicalSpace G] [TopologicalGroup G]
 
 open ConjAct
 
-lemma conjOpen_ofOpen (U : Subgroup G) (U_open : IsOpen (U : Set G)) (g : ConjAct G)
-    : IsOpen (g • U : Set G) := by
+lemma conjOpen_ofOpen (U : Subgroup G) (U_open : IsOpen (U : Set G)) (g : ConjAct G) :
+    IsOpen (g • U : Set G) := by
   apply (Homeomorph.isOpen_image
     (Homeomorph.trans (Homeomorph.mulLeft (ofConjAct g)) (Homeomorph.mulRight (ofConjAct g)⁻¹))).mpr
   assumption
