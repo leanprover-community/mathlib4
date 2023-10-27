@@ -897,16 +897,17 @@ theorem associated_toQuadraticForm (B : M →ₗ[R] M →ₗ[R] N) (x y : M) :
   rw [add_comm, smul_add]
 #align quadratic_form.associated_to_quadratic_form QuadraticForm.associated_toQuadraticForm
 
-theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom B₁.toQuadraticForm = B₁ :=
+theorem associated_left_inverse (h : B₁.toBilin.IsSymm) : associatedHom B₁.toQuadraticForm = B₁ :=
   LinearMap.ext₂ fun x y => by
-    rw [associated_toQuadraticForm, h.eq x y, ← two_mul, ← mul_assoc, invOf_mul_self,
-      one_mul]
+    rw [associated_toQuadraticForm, ← LinearMap.toBilin_apply, h.eq x y, LinearMap.toBilin_apply,
+      ← two_mul, ← smul_mul_assoc, smul_eq_mul, invOf_mul_self, one_mul]
 #align quadratic_form.associated_left_inverse QuadraticForm.associated_left_inverse
 
 -- porting note: moved from below to golf the next theorem
 theorem associated_eq_self_apply (x : M) : associatedHom Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three,
-    add_smul, add_smul, one_smul, add_sub_cancel, add_sub_cancel, invOf_mul_self_assoc]
+    add_smul, add_smul, one_smul, add_sub_cancel, add_sub_cancel, two_smul, ←two_smul R,
+    ← smul_assoc, smul_eq_mul, invOf_mul_self', one_smul]
 #align quadratic_form.associated_eq_self_apply QuadraticForm.associated_eq_self_apply
 
 theorem toQuadraticForm_associated : (associatedHom Q).toQuadraticForm = Q :=
@@ -916,13 +917,13 @@ theorem toQuadraticForm_associated : (associatedHom Q).toQuadraticForm = Q :=
 -- note: usually `rightInverse` lemmas are named the other way around, but this is consistent
 -- with historical naming in this file.
 theorem associated_rightInverse :
-    Function.RightInverse (associatedHom S) (BilinForm.toQuadraticForm : _ → QuadraticForm R M) :=
-  fun Q => toQuadraticForm_associated S Q
+    Function.RightInverse (associatedHom) (LinearMap.toQuadraticForm : _ → QuadraticForm R M N) :=
+  fun Q => toQuadraticForm_associated Q
 #align quadratic_form.associated_right_inverse QuadraticForm.associated_rightInverse
 
 /-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form. -/
-abbrev associated' : QuadraticForm R M →ₗ[ℤ] BilinForm R M :=
+abbrev associated' : QuadraticForm R M N →ₗ[ℤ] BilinForm R M :=
   associatedHom ℤ
 #align quadratic_form.associated' QuadraticForm.associated'
 
