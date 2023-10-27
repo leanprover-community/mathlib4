@@ -79,8 +79,21 @@ structure DiffeomorphOn extends LocalHomeomorph M N where
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
 namespace DiffeomorphOn
--- Simple properties, mostly convenience access to the different proofs.
--- TODO: go over Diffeomorph and complete this list. Including a Coe instance, ext lemma etc.
+-- Basic API for `DiffeomorphOn`: coe and ext lemmas; continuity and smoothness results,
+-- refl, symm and trans with simple relations between them.
+-- TODO: the first and last ones are cargo-culted. double-check they make sense!
+
+/-- Coercion of a `DiffeomorphOn` to function. Note that a `DiffeomorphOn` is not `FunLike`
+(like `LocalHomeomorph`), as `toFun` doesn't determine `invFun` outside of `target`. -/
+instance : CoeFun (DiffeomorphOn I J M N n) fun _ => M → N :=
+  ⟨fun e => e.toFun'⟩
+
+-- mk_coe and mk_coe_symm could go here
+
+variable {I J M N n} in
+-- TODO: prove this; somehow adapting the LocalHomeomorph proof always failed...
+lemma toLocalHomeomorph_injective : Injective
+    (toLocalHomeomorph : DiffeomorphOn I J M N n → LocalHomeomorph M N) := sorry
 
 /-- Inverse of a diffeomorphism on a set. -/
 @[pp_dot]
@@ -89,12 +102,51 @@ protected def symm (h : DiffeomorphOn I I' M M' n) : DiffeomorphOn I' I M' M n w
   contMDiffOn_invFun := h.contMDiffOn_toFun
   toLocalHomeomorph := h.toLocalHomeomorph.symm
 
-@[simp]
-theorem symm_toLocalHomeomorph (h : DiffeomorphOn I J M N n) :
-    (h.symm).toLocalHomeomorph = h.toLocalHomeomorph.symm :=
+/- Register a few simp lemmas to make sure that `simp` puts the application of a local
+homeomorphism in its normal form, i.e., in terms of its coercion to a function. -/
+@[simp, mfld_simps]
+theorem toFun_eq_coe (h : DiffeomorphOn I J M N n) : h.toFun = h :=
   rfl
 
-/-! Continuity and smoothness results. -/
+@[simp, mfld_simps]
+theorem invFun_eq_coe (h : DiffeomorphOn I J M N n) : h.invFun = h.symm :=
+  rfl
+
+@[simp, mfld_simps]
+theorem coe_coe (h : DiffeomorphOn I J M N n) : (h.toLocalEquiv : M → N) = h :=
+  rfl
+
+@[simp, mfld_simps]
+theorem coe_coe_symm (h : DiffeomorphOn I J M N n) : (h.toLocalEquiv.symm : N → M) = h.symm :=
+  rfl
+
+-- many results from `LocalHomeomorph` not duplicated here, including
+--   eq_symm_apply, mapsTo, symm_mapsTo, leftInvOn, rightInvOn, invOn, bijOn, injOn, surjOn
+--   replaceEquiv, replaceEquiv_eq_self
+--   eventually_{xxx}_inverse, eventualy_{}
+--   lemmas about images and preimages in source and target
+-- all of these follow immediately by coercing e to a `LocalHomeomorph`
+
+variable {I J M N n} in
+/-- Two local diffeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
+It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on
+the target. This would only be true for a weaker notion of equality, arguably the right one,
+called `eq_on_source`. -/
+@[ext]
+protected theorem ext (e e' : DiffeomorphOn I J M N n) (h : ∀ x, e x = e' x)
+    (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
+  toLocalHomeomorph_injective (LocalHomeomorph.ext _ _ h hinv hs)
+
+variable {I J M N n} in
+protected theorem ext_iff {e e' : DiffeomorphOn I J M N n} :
+    e = e' ↔ (∀ x, e x = e' x) ∧ (∀ x, e.symm x = e'.symm x) ∧ e.source = e'.source :=
+  ⟨by
+    rintro rfl
+    exact ⟨fun x => rfl, fun x => rfl, rfl⟩, fun h => e.ext e' h.1 h.2.1 h.2.2⟩
+
+@[simp, mfld_simps] theorem symm_symm (h : DiffeomorphOn I J M N n) : (h.symm).symm = h := rfl
+
+/-! Continuity and smoothness results, mostly for convenient access. -/
 section ContSmooth
 variable (h : DiffeomorphOn I J M N n)
 
@@ -150,6 +202,10 @@ protected def refl : DiffeomorphOn I I M M n where
 theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
   rfl
 
+@[simp]
+theorem coe_refl : ⇑(DiffeomorphOn.refl I M n) = id :=
+  rfl
+
 variable {I I' J M M' N n} in
 /-- Composition of two local diffeomorphisms, restricted to the maximal domain where
 this is defined. -/
@@ -159,8 +215,56 @@ protected def trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' 
   contMDiffOn_toFun := sorry -- (h₂.contMDiffOn).comp h₁.contMDiffOn h plus restricting
   contMDiffOn_invFun := sorry --h₁.contMDiffOn_invFun.comp h₂.contMDiffOn_invFun h + restricting
 
--- FIXME: show continuity and smoothness for trans also??
--- TODO: add more API for refl, trans and symm
+-- FIXME: show continuity and smoothness for trans also? or is that implied by comp results?
+
+variable (h : DiffeomorphOn I I' M M' n)
+
+@[simp]
+theorem trans_refl : h.trans (DiffeomorphOn.refl I' M' n) = h := by
+  refine DiffeomorphOn.ext _ _ (fun _ ↦ rfl) (fun _ ↦ rfl) ?_
+  sorry -- TODO: need more simp lemmas around the source, later...
+
+@[simp]
+theorem refl_trans : (DiffeomorphOn.refl I M n).trans h = h := by
+  refine DiffeomorphOn.ext _ _ (fun _ ↦ rfl) (fun _ ↦ rfl) ?_
+  sorry -- similarly here
+
+@[simp]
+theorem coe_trans (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n) :
+    ⇑(h₁.trans h₂) = h₂ ∘ h₁ :=
+  rfl
+
+@[simp]
+theorem symm_refl : (DiffeomorphOn.refl I M n).symm = DiffeomorphOn.refl I M n :=
+  -- TODO: add simp lemmas on the source
+  DiffeomorphOn.ext _ _ (fun _ => rfl) sorry sorry
+
+@[simp]
+theorem symm_trans' (h₁ : DiffeomorphOn I I' M M' n) (h₂ : DiffeomorphOn I' J M' N n) :
+    (h₁.trans h₂).symm = (h₂.symm).trans h₁.symm :=
+  rfl
+
+@[simp]
+theorem symm_toEquiv : (h.symm).toEquiv = h.toEquiv.symm :=
+  rfl
+
+-- TODO: this doesn't compile
+-- @[simp, mfld_simps]
+-- theorem toEquiv_coe_symm : ⇑h.toEquiv.symm = h.symm :=
+--   rfl
+
+@[simp]
+theorem symm_toLocalHomeomorph : (h.symm).toLocalHomeomorph = h.toLocalHomeomorph.symm :=
+  rfl
+
+@[simp]
+theorem coe_toLocalHomeomorph : ⇑h.toLocalHomeomorph = h :=
+  rfl
+
+@[simp]
+theorem coe_toLocalHomeomorph_symm : ⇑h.toLocalHomeomorph.symm = h.symm :=
+  rfl
+
 end DiffeomorphOn
 
 /-- A **local diffeomorphism `f : M → N` at `x ∈ M`** is a `C^n` map `f` such that there are
