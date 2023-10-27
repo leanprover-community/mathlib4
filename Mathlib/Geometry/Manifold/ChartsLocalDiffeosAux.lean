@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
@@ -133,10 +133,10 @@ section Present
 -- On C^n manifolds without boundary, all charts and inverse charts are C^m.
 -- TODO: generalise this to structomorphisms, once the above gap has been filled
 -- FUTURE: add version of `e` and `e.symm`: that's basically `contMDiffOn_of_mem_maximalAtlas`
+variable {e : LocalHomeomorph M H} (he : e ∈ atlas H M) [I.Boundaryless]
 
 /-- An extended chart $e.extend I : M → E$ on a smooth manifold is smooth on `e.source`. -/
-lemma extendedChart_smooth {e : LocalHomeomorph M H} (he : e ∈ atlas H M) [I.Boundaryless] :
-    ContMDiffOn I 𝓘(ℝ, E) ∞ (e.extend I) e.source := by
+lemma extendedChart_smooth : ContMDiffOn I 𝓘(ℝ, E) ∞ (e.extend I) e.source := by
   let e' : LocalHomeomorph E E := LocalHomeomorph.refl E
   have h₁ : e ∈ maximalAtlas I M := subset_maximalAtlas _ he
   have h₂ : e' ∈ maximalAtlas 𝓘(ℝ, E) E := subset_maximalAtlas _ (by rfl)
@@ -151,7 +151,7 @@ lemma extendedChart_smooth {e : LocalHomeomorph M H} (he : e ∈ atlas H M) [I.B
   is smooth on its source. -/
 -- TODO: deduce this from a more general result about these being `Structomorph`
 -- FIXME: does this hold for manifolds with boundary?
-lemma extendedChart_symm_smooth {e : LocalHomeomorph M H} (he : e ∈ atlas H M) [I.Boundaryless] :
+lemma extendedChart_symm_smooth :
     ContMDiffOn 𝓘(ℝ, E) I ∞ (e.extend I).symm (e.extend I '' e.source) := by
   have : IsOpen ((e.extend I) '' e.source) := e.extend_isOpenMapOn_source I e.open_source (Eq.subset rfl)
   let e' : LocalHomeomorph E E := LocalHomeomorph.ofSet (e.extend I '' e.source) this
@@ -171,7 +171,36 @@ lemma extendedChart_symm_smooth {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
   intro x hx
   exact smoothWithinAt_id.congr (fun _ hx ↦ e.extend_right_inv I hx) (e.extend_right_inv I hx)
 
--- If M is a C^m manifold, charts are DiffeomorphOn (easy).
+/-- If `M` is a `C^m` manifold, extended charts are smooth local diffeomorphisms. -/
+lemma extendedChart_toDiffeomorphOn : DiffeomorphOn I 𝓘(ℝ, E) M E ∞ :=
+  {
+    toLocalEquiv := (e.extend I)
+    open_source := by rw [e.extend_source]; apply e.open_source
+    open_target := by
+      -- make a small lemma: e.extend_open_target or so. or an alternative proof of open_on_target
+      rw [e.extend_target, I.range_eq_univ, inter_univ]
+      exact I.continuous_symm.isOpen_preimage e.target e.open_target
+      -- XXX: compare with old proof, which used
+      --exact e.extend_isOpenMapOn_source I e.open_source (Eq.subset rfl)
+    continuous_toFun := e.continuousOn_extend I
+    continuous_invFun := e.continuousOn_extend_symm I
+    contMDiffOn_toFun := by
+      show ContMDiffOn I 𝓘(ℝ, E) ∞ (e.extend I) (e.extend I).source
+      exact (e.extend_source I) ▸ (extendedChart_smooth I he)
+    contMDiffOn_invFun := by
+      show ContMDiffOn 𝓘(ℝ, E) I ∞ (e.extend I).symm (e.extend I).target
+      have : (LocalHomeomorph.extend e I).target = (LocalHomeomorph.extend e I) '' e.source := by
+        rw [e.extend_target, I.range_eq_univ, inter_univ]
+        --rw [← @LocalHomeomorph.symm_image_target_eq_source]
+        -- use a calc block and right inverse of I, or so
+        rw [← e.image_source_eq_target]
+        sorry
+      exact this ▸ extendedChart_symm_smooth I he
+  }
+
+-- for inverse chart: argue that equals symm and reduce it to this :-)
+-- more precisely: proofs will need the same data as symm; can only show equality later
+
 -- In particular: each chart and inverse chart is a local diffeomorphism at each point of its source.
 
 -- Corollary. differentials of (inverse) charts are linear isomorphisms.
