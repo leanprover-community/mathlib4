@@ -20,7 +20,7 @@
   {"git":
    {"url": "https://github.com/leanprover-community/aesop",
     "subDir?": null,
-    "rev": "d859b2465200f9067091ac88faf9786eaa02472b",
+    "rev": "5e016236e9e699691aaa9872fa380df12cd7f677",
     "opts": {},
     "name": "aesop",
     "inputRev?": "master",
