@@ -293,6 +293,8 @@ theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C
 
 end GoodProducts
 
+open Submodule
+
 namespace Products
 
 theorem eval_eq (l : Products I) (x : C) :
@@ -322,20 +324,14 @@ theorem evalFacProp {l : Products I} (J : I → Prop)
   apply forall_congr; intro hi
   simp [h i hi, Proj]
 
-theorem evalFacPropsAux {l : Products I} (J K : I → Prop) (hJK : ∀ i, J i → K i)
-    [∀ j, Decidable (J j)] [∀ j, Decidable (K j)] :
-    l.eval (π C J) ∘ Homeomorph.setCongr (proj_eq_of_subset C J K hJK) =
-    l.eval (π (π C K) J) := by
-  ext _
-  simp only [Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe, Function.comp_apply,
-    Equiv.setCongr_apply, Products.eval_eq]
-
 theorem evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]
     (hJK : ∀ i, J i → K i) :
     l.eval (π C J) ∘ ProjRestricts C hJK = l.eval (π C K) := by
-  dsimp only [ProjRestricts]
-  rw [← Function.comp.assoc, evalFacPropsAux C J K hJK, ← evalFacProp (π C K) J h]
+  have : l.eval (π C J) ∘ Homeomorph.setCongr (proj_eq_of_subset C J K hJK) =
+      l.eval (π (π C K) J) := by
+    ext; simp [Homeomorph.setCongr, Products.eval_eq]
+  rw [ProjRestricts, ← Function.comp.assoc, this, ← evalFacProp (π C K) J h]
 
 theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
     (h : l.isGood (π C J)) : ∀ a, a ∈ l.val → J a := by
@@ -362,31 +358,43 @@ instance : IsWellFounded (Products I) (·<·) := by
   infer_instance
 
 theorem eval_mem_span_goodProducts (l : Products I) :
-    l.eval C ∈ Submodule.span ℤ (Set.range (GoodProducts.eval C)) := by
-  let L : Products I → Prop := fun m ↦ m.eval C ∈ Submodule.span ℤ (Set.range (GoodProducts.eval C))
+    l.eval C ∈ span ℤ (Set.range (GoodProducts.eval C)) := by
+  let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
   suffices L l by assumption
   apply IsWellFounded.induction (·<· : Products I → Products I → Prop)
   intro l h
   dsimp
   by_cases hl : l.isGood C
-  · apply Submodule.subset_span
+  · apply subset_span
     exact ⟨⟨l, hl⟩, rfl⟩
   · simp only [Products.isGood, not_not] at hl
-    suffices : Products.eval C '' {m | m < l} ⊆ Submodule.span ℤ (Set.range (GoodProducts.eval C))
-    · rw [← Submodule.span_le] at this
+    suffices : Products.eval C '' {m | m < l} ⊆ span ℤ (Set.range (GoodProducts.eval C))
+    · rw [← span_le] at this
       exact this hl
     rintro a ⟨m, hm, rfl⟩
     exact h m hm
 
 end Products
 
-theorem GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
-    ⊤ ≤ Submodule.span ℤ (Set.range (Products.eval C)) := by
-  refine ⟨fun h ↦ le_trans h (Submodule.span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ ?_⟩
-  refine le_trans h ?_
-  rw [Submodule.span_le]
+theorem GoodProducts.span_iff_products : ⊤ ≤ span ℤ (Set.range (eval C)) ↔
+    ⊤ ≤ span ℤ (Set.range (Products.eval C)) := by
+  refine ⟨fun h ↦ le_trans h (span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ le_trans h ?_⟩
+  rw [span_le]
   rintro f ⟨l, rfl⟩
-  exact Products.eval_mem_span_goodProducts C l
+  let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
+  suffices L l by assumption
+  apply IsWellFounded.induction (·<· : Products I → Products I → Prop)
+  intro l h
+  dsimp
+  by_cases hl : l.isGood C
+  · apply subset_span
+    exact ⟨⟨l, hl⟩, rfl⟩
+  · simp only [Products.isGood, not_not] at hl
+    suffices : Products.eval C '' {m | m < l} ⊆ span ℤ (Set.range (GoodProducts.eval C))
+    · rw [← span_le] at this
+      exact this hl
+    rintro a ⟨m, hm, rfl⟩
+    exact h m hm
 
 end Products
 
