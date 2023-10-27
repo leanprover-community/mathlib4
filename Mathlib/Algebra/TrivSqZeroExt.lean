@@ -504,6 +504,16 @@ theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
     show (0 : R) • (0 : M) + op r • m = op r • m by rw [smul_zero, zero_add]
 #align triv_sq_zero_ext.inr_mul_inl TrivSqZeroExt.inr_mul_inl
 
+theorem inl_mul_eq_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    (r : R) (x : tsze R M) :
+    inl r * x = r • x :=
+  ext rfl (by dsimp; rw [smul_zero, add_zero])
+
+theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    (x : tsze R M) (r : R) :
+    x * inl r = op r • x :=
+  ext rfl (by dsimp; rw [smul_zero, zero_add])
+
 instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     MulOneClass (tsze R M) :=
   { TrivSqZeroExt.one, TrivSqZeroExt.mul with
