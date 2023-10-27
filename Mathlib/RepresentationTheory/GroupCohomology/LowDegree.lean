@@ -236,7 +236,7 @@ theorem oneCocycles_map_mul_of_isTrivial [hA : A.isTrivial] (f : oneCocycles A) 
   rw [(mem_oneCocycles_iff f.1).1 f.2, hA.out g (f.1 h), add_comm]
 
 theorem mem_oneCocycles_of_addMonoidHom [hA : A.isTrivial] (f : Additive G →+ A) :
-  f ∘ Additive.ofMul ∈ oneCocycles A :=
+    f ∘ Additive.ofMul ∈ oneCocycles A :=
 (mem_oneCocycles_iff _).2 fun g h => by
   simp only [Function.comp_apply, ofMul_mul, map_add,
     oneCocycles_map_mul_of_isTrivial, hA.out g (f (Additive.ofMul h)),
@@ -323,7 +323,7 @@ theorem mem_range_of_mem_oneCoboundaries (f : oneCocycles A) (h : f ∈ oneCobou
     f.1 ∈ LinearMap.range (dZero A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
-theorem oneCoboundaries_of_isTrivial_eq_bot (A : Rep k G) [hA : A.isTrivial] :
+theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [hA : A.isTrivial] :
     oneCoboundaries A = ⊥ := by
   rw [eq_bot_iff]
   rintro _ ⟨y, rfl⟩
@@ -370,18 +370,18 @@ def H2_π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
 end Cohomology
 section H1
 
-/-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
+/-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 def H1LinearEquivOfIsTrivial [A.isTrivial] :
-  H1 A ≃ₗ[k] Additive G →+ A :=
-(Submodule.quotEquivOfEqBot _ (oneCoboundaries_of_isTrivial_eq_bot A)).trans
+    H1 A ≃ₗ[k] Additive G →+ A :=
+(Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
   (oneCocyclesLinearEquivOfIsTrivial A)
 
 theorem H1LinearEquivOfIsTrivial_comp_H1_π [A.isTrivial] :
     (H1LinearEquivOfIsTrivial A).comp (H1_π A) = oneCocyclesLinearEquivOfIsTrivial A := by
   ext; rfl
 
-@[simp] theorem H1LinearEquivOfIsTrivial_comp_H1_π_apply_apply
+@[simp] theorem H1LinearEquivOfIsTrivial_H1_π_apply_apply
     [A.isTrivial] (f : oneCocycles A) (x : Additive G) :
     H1LinearEquivOfIsTrivial A (H1_π A f) x = f.1 (Additive.toMul x) := rfl
 
