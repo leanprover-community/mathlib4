@@ -5,10 +5,9 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.WithZero
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
