@@ -280,7 +280,7 @@ theorem leftInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
 #align left_inverse_neg leftInverse_neg
 
 @[to_additive]
-theorem rightInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
+theorem rightInverse_inv : RightInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
   inv_inv
 #align right_inverse_inv rightInverse_inv
 #align right_inverse_neg rightInverse_neg
