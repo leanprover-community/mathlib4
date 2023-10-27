@@ -355,6 +355,25 @@ theorem mdifferentiableOn_symm {t : Set N} (hn : 1 ≤ n) : MDifferentiableOn J 
   (h.symm).mdifferentiableOn t hn
 end ContSmooth
 
+variable {I J M N n} in
+/-- A local diffeomorphism is a local homeomorphism, around each `x : M`. -/
+noncomputable def LocalDiffeomorph.toLocalHomeomorphAt (h : LocalDiffeomorph I J M N n) (x : M) :
+    LocalHomeomorph M N :=
+  {
+    toFun := h.toFun
+    invFun := h.invFun
+    source := h.sourceAt x
+    target := h.targetAt x
+    open_source := (h.sourceAt x).1.2
+    open_target := (h.targetAt x).1.2
+    map_source' := h.map_sources x
+    map_target' := h.map_targets x
+    left_inv' := h.left_inv x
+    right_inv' := h.right_inv x
+    continuous_toFun := (h.continuous).continuousOn
+    continuous_invFun := (h.continuous_symm).continuousOn
+  }
+
 -- TODO: add coe instance, ext lemmas, etc.
 
 /-- Identity map as a local diffeomorphism. -/
@@ -369,10 +388,9 @@ protected def refl : LocalDiffeomorph I I M M n where
   mem_targets := fun x ↦ sorry -- should be: (by exact trivial)
   map_sources := by intros; trivial
   map_targets := by intros; trivial
-  sourceAt := by -- xxx: presumably, can golf this
-    intro; apply Subtype.mk; apply Eq.refl
-  targetAt := by
-    intro; apply Subtype.mk; apply Eq.refl
+  -- XXX: can I golf these lines?
+  sourceAt := by intro; apply Subtype.mk; apply Eq.refl
+  targetAt := by intro; apply Subtype.mk; apply Eq.refl
   contMDiffOn_toFun := fun _ ↦ contMDiff_id.contMDiffOn
   contMDiffOn_invFun := fun _ ↦ contMDiff_id.contMDiffOn
 
@@ -413,37 +431,21 @@ def DiffeomorphOn.toLocalDiffeomorphAt (h : DiffeomorphOn I J M N n) {x : M} (hx
   { toDiffeomorphOn := h, hx := hx }
 
 /-- A local diffeomorphism is a local diffeomorphism at each point. -/
-def LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) (x : M) :
+noncomputable def LocalDiffeomorph.toLocalDiffeomorphAt (h : LocalDiffeomorph I J M N n) (x : M) :
     LocalDiffeomorphAt I J M N n x :=
   {
-    toFun := h.toFun
-    invFun := h.invFun
-    source := h.sourceAt x
-    target := h.targetAt x
-    map_source' := h.map_sources x
-    map_target' := h.map_targets x
-    left_inv' := sorry
-    right_inv' := sorry
-    open_source := sorry
-    open_target := sorry
-    continuous_toFun := sorry
-    continuous_invFun := sorry
+    -- FIXME: why can't I use dot notation?
+    toLocalHomeomorph := LocalDiffeomorph.toLocalHomeomorphAt h x
     hx := h.mem_sources x
     contMDiffOn_toFun := h.contMDiffOn (h.sourceAt x)
     contMDiffOn_invFun := h.contMDiffOn_symm (h.targetAt x)
   }
 
 -- /-- For each `x : M`, a local diffeomorph is a diffeomorphism on some open set containing `x`. -/
--- FIXME: do I want to expose this to the outside?
-private def LocalDiffeomorph.toDiffeomorphOn (h : LocalDiffeomorph I J M N n) (x : M) :
-    DiffeomorphOn I J M N n :=
-  -- We re-use `toLocalDiffeomorphAt` to avoid duplication.
+-- FIXME: do I want to expose this outside of this file?
+private noncomputable def LocalDiffeomorph.toDiffeomorphOn (h : LocalDiffeomorph I J M N n)
+    (x : M) : DiffeomorphOn I J M N n :=
   (h.toLocalDiffeomorphAt x).toDiffeomorphOn
-
-/-- A local diffeomorphism is a local homeomorphism. -/
-noncomputable def LocalDiffeomorph.toLocalHomeomorph (h : LocalDiffeomorph I J M N n) (x : M) :
-    LocalHomeomorph M N :=
-  (h.toLocalDiffeomorphAt x).toLocalHomeomorph
 
 /-- A diffeomorphism is a local diffeomorphism. -/
 -- FIXME: can I deduplicate this proof with with `LocalDiffeomorph.refl`?
@@ -463,13 +465,11 @@ def Diffeomorph.toLocalDiffeomorph (h : Diffeomorph I J M N n) : LocalDiffeomorp
     mem_targets := fun _ ↦ (by exact trivial)
     contMDiffOn_toFun := by
       intro
-      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
-      rw [contMDiffOn_univ]
+      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top, contMDiffOn_univ]
       exact h.contMDiff_toFun
     contMDiffOn_invFun := by
       intro
-      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top]
-      rw [contMDiffOn_univ]
+      simp only [Equiv.toFun_as_coe, coe_toEquiv, Opens.mk_univ, Opens.coe_top, contMDiffOn_univ]
       exact h.contMDiff_invFun
   }
 
