@@ -198,14 +198,30 @@ lemma extendedChart_toDiffeomorphOn : DiffeomorphOn I 𝓘(ℝ, E) M E ∞ :=
       exact this ▸ extendedChart_symm_smooth I he
   }
 
--- for inverse chart: argue that equals symm and reduce it to this :-)
--- more precisely: proofs will need the same data as symm; can only show equality later
+/-- If `M` is a `C^m` manifold, inverses of extended charts are smooth local diffeomorphisms. -/
+-- By construction, `symm` of the previous local diffeo uses the inverse extended chart
+-- `(e.extend I).symm`; so this is fine.
+lemma extendedChart_symm_toDiffeomorphOn : DiffeomorphOn 𝓘(ℝ, E) I E M ∞ :=
+  (extendedChart_toDiffeomorphOn I he).symm
+
+-- Sanity check: we didn't silently change the map.
+-- XXX: we're missing basic API to show this, the example below also fails.
+example : (extendedChart_symm_toDiffeomorphOn I he).toFun = (e.extend I).invFun := by
+  simp; sorry
+
+-- FIXME: these should be most of the necessary API?
+lemma asdf (h : DiffeomorphOn I J M N n) : (h.symm).toLocalHomeomorph = h.toLocalHomeomorph.symm := rfl
+lemma asdf2 (h : DiffeomorphOn I J M N n) : (h.symm).toFun = h.invFun := rfl
+
+-- also missing basic API; with or without the ext
+example : (extendedChart_toDiffeomorphOn I he).toFun = (e.extend I).toFun := by
+  simp; sorry
 
 -- In particular: each chart and inverse chart is a local diffeomorphism at each point of its source.
 
 -- Corollary. differentials of (inverse) charts are linear isomorphisms.
 
--- Cor: differentials of charts are bijective.
+-- Corollary: differentials of charts are bijective.
 end Present
 
 -- auxiliary results, not needed for my proof, but perhaps still useful

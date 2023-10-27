@@ -98,9 +98,9 @@ lemma toLocalHomeomorph_injective : Injective
 /-- Inverse of a diffeomorphism on a set. -/
 @[pp_dot]
 protected def symm (h : DiffeomorphOn I I' M M' n) : DiffeomorphOn I' I M' M n where
+  toLocalHomeomorph := h.toLocalHomeomorph.symm
   contMDiffOn_toFun := h.contMDiffOn_invFun
   contMDiffOn_invFun := h.contMDiffOn_toFun
-  toLocalHomeomorph := h.toLocalHomeomorph.symm
 
 /- Register a few simp lemmas to make sure that `simp` puts the application of a local
 homeomorphism in its normal form, i.e., in terms of its coercion to a function. -/
@@ -194,9 +194,9 @@ theorem mdifferentiableOn_symm (hn : 1 ≤ n) : MDifferentiableOn J I h.invFun h
 end ContSmooth
 
 protected def refl : DiffeomorphOn I I M M n where
+  toLocalHomeomorph := LocalHomeomorph.refl M
   contMDiffOn_toFun := contMDiff_id.contMDiffOn
   contMDiffOn_invFun := contMDiff_id.contMDiffOn
-  toLocalHomeomorph := LocalHomeomorph.refl M
 
 @[simp]
 theorem refl_toEquiv : (DiffeomorphOn.refl I M n).toEquiv = Equiv.refl _ :=
