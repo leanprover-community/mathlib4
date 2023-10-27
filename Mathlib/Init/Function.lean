@@ -191,6 +191,10 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
       _ = y := hx
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 
+lemma bijective_of_inverses {f : α → β} {g : β → α}
+    (h1 : LeftInverse g f) (h2 : RightInverse g f) : Bijective f :=
+  ⟨h1.injective, h2.surjective⟩
+
 theorem injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
 #align function.injective_id Function.injective_id
 

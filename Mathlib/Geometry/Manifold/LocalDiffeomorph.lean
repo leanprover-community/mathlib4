@@ -619,11 +619,6 @@ noncomputable def LocalDiffeomorph.differential_toContinuousLinearEquiv (hn : 1 
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (h.toFun x)) :=
   (h.toLocalDiffeomorphAt x).differential_toContinuousLinearEquiv hn
 
--- TODO: move this to Init.Function
-lemma bijective_of_inverses {X Y : Type*} {f : X → Y} {g : Y → X}
-    (h1 : LeftInverse g f) (h2 : LeftInverse f g) : Bijective f :=
-  ⟨h1.injective, h2.surjective⟩
-
 /-- A local diffeomorphism at `x` has bijective differential at `x`. -/
 lemma LocalDiffeomorphAt.differential_bijective (hn : 1 ≤ n) {x : M}
     (h : LocalDiffeomorphAt I J M N n x) : Bijective (mfderiv I J h.toFun x) := by
