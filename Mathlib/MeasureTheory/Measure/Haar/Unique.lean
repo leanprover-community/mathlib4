@@ -333,12 +333,23 @@ lemma mulLeftInvariant_unique_of_isProbabilityMeasure
     mul_one, ENNReal.coe_eq_one] at this
   simp [hc, this]
 
+theorem isHaarMeasure_eq_smul_isHaarMeasure (μ ν : Measure G)
+    [IsHaarMeasure μ] [IsHaarMeasure ν] : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ μ = c • ν := by
+
+
 end
 
+namespace Measure
 section SecondCountable
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] [T2Space G] [SecondCountableTopology G]
+
+/-lemma foo (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ] : Regular μ := by
+  exact?
+
+
+#exit-/
 
 /-- The Haar measure is unique up to scaling. More precisely: every σ-finite left invariant measure
   is a scalar multiple of the Haar measure.
@@ -475,8 +486,6 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
 
 end SecondCountable
 
-end Group
-
 section CommGroup
 
 variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G] [T2Space G]
@@ -541,5 +550,7 @@ theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn
 #align measure_theory.measure.measure_preserving.zsmul MeasureTheory.Measure.MeasurePreserving.zsmul
 
 end CommGroup
+
+end Measure
 
 end MeasureTheory
