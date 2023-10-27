@@ -436,8 +436,8 @@ theorem adjoin_map {E' : Type*} [Field E'] [Algebra F E'] (f : E →ₐ[F] E') :
 #align intermediate_field.adjoin_map IntermediateField.adjoin_map
 
 theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
-    lift (L := E) (E := adjoin F S) = adjoin F (Subtype.val '' S) := by
-  simp only [lift, adjoin_map, coe_val]
+    lift (L := E) (E := adjoin F S) = adjoin F (Subtype.val '' S) :=
+  adjoin_map _ _
 
 @[simp]
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
