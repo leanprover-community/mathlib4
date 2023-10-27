@@ -605,34 +605,6 @@ diffeomorphism (resp. a local diffeomorphism at `x`).
 This follows from the inverse function theorem. -/
 section Differentials
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-
--- TODO: move these three results to better places!
--- similar to `fderivWithin_of_open`; seems missing
-lemma hasFDerivWithinAt_of_open {s : Set E} {x : E} (h : IsOpen s) (hx : x ∈ s) {f : E → F}
-    {f' : E →L[𝕜] F} : HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
-  simp only [HasFDerivAt, HasFDerivWithinAt]
-  rw [IsOpen.nhdsWithin_eq h hx]
-
--- I have not compared FDeriv.Basic to MFDeriv and added all analogous lemmas.
--- analogous to `fderivWithin_of_mem_nhds`
-variable {M N} in
-theorem mfderivWithin_of_mem_nhds {f : M → N} {s : Set M} {x : M} (h : s ∈ 𝓝 x) :
-    mfderivWithin I J f s x = mfderiv I J f x := by
-  rw [← mfderivWithin_univ, ← univ_inter s, mfderivWithin_inter h]
-
--- similar to `fderivWith_of_open`
-variable {M N} in
-lemma mfderivWithin_of_open {s : Set M} {x : M} (hs : IsOpen s) (hx : x ∈ s) {f : M → N} :
-    mfderivWithin I J f s x = mfderiv I J f x := by
-  apply mfderivWithin_of_mem_nhds I J (hs.mem_nhds hx)
-
--- analogous to `mfderivWithin_eq_mfderiv`
-theorem mfderivWithin_eq_mfderiv {s : Set M} {x : M} {f : M → N}
-    (hs : UniqueMDiffWithinAt I s x) (h : MDifferentiableAt I J f x) :
-    mfderivWithin I J f s x = mfderiv I J f x := by
-  rw [← mfderivWithin_univ]
-  exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
-
 variable {I J M M' N n}
 
 -- FIXME: move these two results to better places!
@@ -667,10 +639,10 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv (hn : 
   have inv1 : B.comp A = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := calc B.comp A
     _ = mfderiv I I (h.invFun ∘ h.toFun) x := (mfderiv_comp x hgat hfat).symm
     _ = mfderivWithin I I (h.invFun ∘ h.toFun) h.source x :=
-      (mfderivWithin_of_open I I h.open_source h.hx).symm
+      (mfderivWithin_of_open h.open_source h.hx).symm
     _ = mfderivWithin I I id h.source x :=
       mfderivWithin_congr (h.open_source.uniqueMDiffWithinAt h.hx) h.left_inv' (h.left_inv' h.hx)
-    _ = mfderiv I I id x := mfderivWithin_of_open I I h.open_source h.hx
+    _ = mfderiv I I id x := mfderivWithin_of_open h.open_source h.hx
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := mfderiv_id I
   have inv2 : A.comp B = ContinuousLinearMap.id 𝕜 (TangentSpace J (h.toFun x)) := calc A.comp B
     _ = mfderiv J J (h.toFun ∘ h.invFun) y := by
@@ -682,10 +654,10 @@ noncomputable def LocalDiffeomorphAt.differential_toContinuousLinearEquiv (hn : 
           -- have : (LocalEquiv.invFun h.toLocalEquiv y) = x := (h.left_inv' hx)
           -- exact (this ▸ (mfderiv_comp y hfat hgat)).symm
     _ = mfderivWithin J J (h.toFun ∘ h.invFun) h.target y :=
-      (mfderivWithin_of_open J J h.open_target hy).symm
+      (mfderivWithin_of_open h.open_target hy).symm
     _ = mfderivWithin J J id h.target y :=
       mfderivWithin_congr (h.open_target.uniqueMDiffWithinAt hy) h.right_inv' (h.right_inv' hy)
-    _ = mfderiv J J id y := mfderivWithin_of_open J J h.open_target hy
+    _ = mfderiv J J id y := mfderivWithin_of_open h.open_target hy
     _ = ContinuousLinearMap.id 𝕜 (TangentSpace J y) := mfderiv_id J
 
   have h1 : Function.LeftInverse B A := by
