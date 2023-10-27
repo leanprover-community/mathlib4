@@ -118,7 +118,7 @@ variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [A
 This isomorphism is named to match the similar `Complex.lift`.
 Note that when `f : R →ₐ[R] B := Algebra.ofId R B`, the commutativity assumption is automatic, and
 we are free to choose any element `e : B`. -/
--- @[simps! apply_apply]
+@[simps! apply_apply]
 def lift :
     {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)} ≃ (A[ε] →ₐ[R] B) := by
   refine Equiv.trans ?_ TrivSqZeroExt.liftEquiv
