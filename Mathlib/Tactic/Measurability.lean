@@ -15,7 +15,6 @@ We define the `measurability` tactic using `aesop`. -/
 open Lean.Parser.Tactic (config)
 
 attribute [aesop (rule_sets [Measurable]) unfold norm] Function.comp
-attribute [aesop (rule_sets [Measurable]) unfold norm] npowRec
 
 /--
 The `measurability` attribute used to tag continuity statements for the `measurability` tactic. -/
