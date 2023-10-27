@@ -9,9 +9,9 @@ import Mathlib.Tactic.Basic
 /-!
 # The `peel` tactic
 
-`peel h with idents*` tries to apply `forall_imp` (or `Exists.imp`, or `Filter.Eventually.mp`,
+`peel h with h' idents*` tries to apply `forall_imp` (or `Exists.imp`, or `Filter.Eventually.mp`,
 `Filter.Frequently.mp` and `Filter.eventually_of_forall`) with the argument `h` and uses `idents*`
-to introduce variables with the supplied names.
+to introduce variables with the supplied names, giving the "peeled" argument the name `h'`.
 
 Alternatively, one can provide a numeric argument as in `peel 4 h` which will peel 4 quantifiers off
 the expressions automatically name the introduced variables.
@@ -26,6 +26,18 @@ open Lean Expr Meta Elab Tactic
 
 /--
 Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
+
+- `peel e` peels all quantifiers (at reducible transparency)
+- `peel e with h` is `peel e` but names the peeled hypothesis `h`
+- `peel n e` peels `n` quantifiers (at default transparency)
+- `peel n e with h x y z ...` peels `n` quantifiers, names the peeled hypothesis `h`,
+  and uses `x`, `y`, `z`, and so on to name the introduced variables.
+  The length of the list of variables does not need to equal `n`.
+- `peel e with h x₁ ... xₙ` is `peel n e with h x₁ ... xₙ`.
+
+There are also variants that apply to an iff in the goal:
+- `peel n` peels `n` quantifiers in an iff.
+- `peel with x₁ ... xₙ` peels `n` quantifiers in an iff and names them.
 
 Given `p q : ℕ → Prop`, `h : ∀ x, p x`, and a goal `⊢ : ∀ x, q x`, the tactic `peel h with h' x`
 will introduce `x : ℕ`, `h' : p x` into the context and the new goal will be `⊢ q x`. This works
@@ -52,8 +64,7 @@ Note that in this example, `h` and the goal are logically equivalent statements,
 *cannot* be immediately applied to show that the goal implies `h`.
 
 `peel` can take an optional numeric argument prior to the supplied hypothesis; in which case it will
-autoname the introduced variables, but they may be inaccessible. However, in this case the user must
-still introduce a single name such as `with h_peel` for the new hypothesis.
+autoname the introduced variables, but they will be inaccessible.
 
 In addition, `peel` supports goals of the form `(∀ x, p x) ↔ ∀ x, q x`, or likewise for any
 other quantifier. In this case, there is no hypothesis or term to supply, but otherwise the syntax
@@ -66,9 +77,8 @@ Finally, the user may supply a term `e` via `... using e` in order to close the 
 immediately. In particular, `peel h using e` is equivalent to `peel h; exact e`. The `using` syntax
 may be paired with any of the other features of `peel`.
 
-This tactic works by repeatedly applying `forall_imp`, `Exists.imp`, `Filter.Eventually.mp`,
-`Filter.Frequently.mp`, and `Filter.eventually_of_forall` and introducing the variables as these
-are applied.
+This tactic works by repeatedly applying lemmas such as `forall_imp`, `Exists.imp`,
+`Filter.Eventually.mp`, `Filter.Frequently.mp`, and `Filter.eventually_of_forall`.
 -/
 syntax (name := peel) "peel" (num)? (ppSpace colGt term)? (withArgs)? (usingArg)? : tactic
 
@@ -105,10 +115,7 @@ def throwPeelError {α : Type} (ty target : Expr) : MetaM α :=
 /-- If `f` is a lambda then use its binding name to generate a new hygienic name,
 and otherwise choose a new hygienic name. -/
 def mkFreshBinderName (f : Expr) : MetaM Name :=
-  if let .lam n .. := f then
-    mkFreshUserName n
-  else
-    mkFreshUserName `a
+  mkFreshUserName (if let .lam n .. := f then n else `a)
 
 /-- Applies a "peel theorem" with two main arguments, where the first is the new goal
 and the second can be filled in using `e`. Then it intros two variables with the
@@ -130,9 +137,8 @@ def applyPeelThm (thm : Name) (goal : MVarId)
 It tries to match `e` and `goal` as quantified statements (using `∀` and the quantifiers in
 the `quantifiers` list), then applies "peel theorems" using `applyPeelThm`.
 
-We treat `∧` as a quantifier for sake of dealing with
-quantified statements like `∃ δ > (0 : ℝ), q δ`,
-which is notation for `∃ δ, δ > (0 : ℝ) ∧ q δ`. -/
+We treat `∧` as a quantifier for sake of dealing with quantified statements
+like `∃ δ > (0 : ℝ), q δ`, which is notation for `∃ δ, δ > (0 : ℝ) ∧ q δ`. -/
 def peelCore (goal : MVarId) (e : Expr) (n? : Option Name) (n' : Name) (unfold : Bool) :
     MetaM (FVarId × List MVarId) := goal.withContext do
   let ty ← whnfQuantifier (← inferType e) unfold
@@ -213,21 +219,22 @@ def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
       peelArgsIff hs
 
 elab_rules : tactic
-  | `(tactic| peel $n:num $e:term) => withMainContext do
-    peelArgs (← elabTerm e none) n.getNat [] none
-  | `(tactic| peel $e:term) => withMainContext do
+  | `(tactic| peel $[$num?:num]? $e:term $[$args?:withArgs]?) => withMainContext do
     let e ← elabTerm e none
-    unless ← peelUnbounded e none do
-      throwPeelError (← inferType e) (← getMainTarget)
-  | `(tactic| peel $e:term $h:withArgs) => withMainContext do
-    let hs := ((← getWithArgs h).map Syntax.getId).toList
-    let e ← elabTerm e none
-    let l := hs.tail
-    if l.isEmpty then
-      unless ← peelUnbounded e hs.head? do
-        throwPeelError (← inferType e) (← getMainTarget)
+    let args? ← args?.mapM fun args => return ((← getWithArgs args).map Syntax.getId).toList
+    let args := args?.getD []
+    -- Names to use for introduced variables
+    let l := args.tail
+    -- Name to use for peeled hypothesis
+    let n? := args.head?
+    -- If num is not present and if there are any provided variable names,
+    -- use the number of variable names.
+    let num? := num?.map (·.getNat) <|> if l.isEmpty then none else l.length
+    if let some num := num? then
+      peelArgs e num l n?
     else
-      peelArgs e l.length l hs.head?
+      unless ← peelUnbounded e n? do
+        throwPeelError (← inferType e) (← getMainTarget)
   | `(tactic| peel $n:num) =>
     peelArgsIff <| .replicate n.getNat `_
   | `(tactic| peel $h:withArgs) => withMainContext do
