@@ -84,10 +84,8 @@ theorem continuous_projRestrict : Continuous (ProjRestrict C J) :=
   Continuous.restrict _ (continuous_proj _)
 
 theorem surjective_projRestrict :
-    Function.Surjective (ProjRestrict C J) := by
-  intro x
-  obtain ⟨y, hy⟩ := x.prop
-  refine ⟨⟨y, hy.1⟩, Subtype.ext hy.2⟩
+    Function.Surjective (ProjRestrict C J) :=
+  fun ⟨_, ⟨y, hy⟩⟩ ↦ ⟨⟨y, hy.1⟩, Subtype.ext hy.2⟩
 
 theorem proj_eq_self {x : I → Bool} (h : ∀ i, x i ≠ false → J i) : Proj J x = x := by
   ext i
@@ -98,18 +96,12 @@ theorem proj_eq_self {x : I → Bool} (h : ∀ i, x i ≠ false → J i) : Proj 
 theorem proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ false → J i) : π C J = C := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨y, hy, rfl⟩ := h
-    rwa [proj_eq_self]
-    exact (hh · y hy)
-  · refine ⟨x, h, ?_⟩
-    rw [proj_eq_self]
-    exact (hh · x h)
+  · obtain ⟨y, hy, rfl⟩ := h; rwa [proj_eq_self]; exact (hh · y hy)
+  · refine ⟨x, h, ?_⟩; rw [proj_eq_self]; exact (hh · x h)
 
 theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
     (Proj J : (I → Bool) → (I → Bool)) := by
-  ext x i
-  dsimp [Proj]
-  split_ifs with hh hh' <;> aesop
+  ext x i; dsimp [Proj]; aesop
 
 theorem proj_eq_of_subset (h : ∀ i, J i → K i) : π (π C K) J = π C J := by
   ext x
@@ -147,13 +139,13 @@ theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe]
-  split_ifs with h hh <;> aesop
+  aesop
 
 theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
-  split_ifs with hh hh' <;> aesop
+  aesop
 
 variable (J)
 
@@ -195,7 +187,7 @@ def spanFunctor :
   obj J := @Profinite.of (π C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (continuous_proj _)) _ _
   map h := ⟨(ProjRestricts C (leOfHom h.unop)), continuous_projRestricts _ _⟩
-  map_id J := by dsimp; simp_rw [projRestricts_eq_id C (· ∈ (unop J))]; rfl
+  map_id J := by simp only [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
 /-- The limit cone on `spanFunctor` -/
@@ -206,10 +198,9 @@ def spanCone : Cone (spanFunctor hC) where
   { app := fun J ↦ ⟨ProjRestrict C (· ∈ unop J), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj, Homeomorph.setCongr,
-        Homeomorph.homeomorph_mk_coe, Functor.const_obj_map, Category.id_comp]
-      congr
-      rw [← projRestricts_comp_projRestrict C (leOfHom h.unop)]
+      simp only [Functor.const_obj_obj, Homeomorph.setCongr, Homeomorph.homeomorph_mk_coe,
+        Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
+        (leOfHom h.unop)]
       rfl }
 
 /-- `spanCone` is a limit cone. -/
@@ -369,13 +360,11 @@ theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j
     exact h' h.1
 
 instance : IsWellFounded (Products I) (·<·) := by
-  have : (fun (l m : Products I) ↦ l < m) = (fun l m ↦ List.Lex (·<·) l.val m.val)
-  · ext l m
-    exact Products.lt_iff_lex_lt l m
+  have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
+    ext; exact lt_iff_lex_lt _ _
   rw [this]
   dsimp [Products]
-  have hflip : (·>· : I → I → Prop) = flip (·<· : I → I → Prop) := rfl
-  rw [hflip]
+  rw [(by rfl : (·>· : I → _) = flip (·<·))]
   infer_instance
 
 theorem eval_mem_span_goodProducts (l : Products I) :
