@@ -2,6 +2,7 @@ import Mathlib.Tactic.Find
 import Std.Tactic.GuardMsgs
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.RunCmd
+import Mathlib.Init.ZeroOne
 
 -- We want the following tests to be self-contained.
 -- Therefore we erase all knowledge about imported definitios from find:
@@ -218,6 +219,7 @@ elab s:"#assert_match " name_s:ident concl:(turnstyle)? query:term : command => 
 #assert_match List.map (?a -> ?b) -> List ?a -> List ?b
 #assert_match List.map List ?a → (?a -> ?b) -> List ?b
 #assert_match List.map |- (?a -> ?b) -> List ?a -> List ?b
+#assert_match List.get |- List ?a -> ?a
 
 end ListMapTest
 
@@ -225,7 +227,7 @@ section DefaultingTest
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in
-lemma test_with_zero {α} [Zero α] [HMul α α α] [LE α] {a : α}: 0 ≤ a * a := sorry
+theorem test_with_zero {α} [Zero α] [HMul α α α] [LE α] {a : α}: 0 ≤ a * a := sorry
 
 -- Tests the defaulting does not kick in below
 

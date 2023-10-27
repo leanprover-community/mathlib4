@@ -87,6 +87,13 @@ def exprSize (e : Expr ) : Nat := go e 0
 ## Matching term patterns against conclusions or any subexpression
 -/
 
+/-- Comparing `HeadIndex` for whether the terms could be equal; for `HeadIndex.mvar` we have no
+information. -/
+def canMatch : HeadIndex → HeadIndex → Bool
+  | .mvar _, _ => true
+  | _, .mvar _ => true
+  | hi₁, hi₂ => hi₁ == hi₂
+
 /-- A predicate on `ConstantInfo` -/
 def ConstMatcher := ConstantInfo → MetaM Bool
 
@@ -104,7 +111,7 @@ private partial def matchHyps : List Expr → List Expr → List Expr → MetaM 
 /-- Like defEq, but the pattern is a function type, matches parameters up to reordering -/
 def matchUpToHyps (pat: AbstractMVarsResult) (head : HeadIndex) (e : Expr) : MetaM Bool := do
   forallTelescopeReducing e fun e_params e_concl ↦ do
-    if head == e_concl.toHeadIndex then
+    if canMatch head e_concl.toHeadIndex then
       let (_, _, pat_e) ← openAbstractMVarsResult pat
       let (pat_params, _, pat_concl) ← forallMetaTelescopeReducing pat_e
       isDefEq e_concl pat_concl <&&> matchHyps pat_params.toList [] e_params.toList
