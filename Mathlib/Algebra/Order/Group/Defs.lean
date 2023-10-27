@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Order.Hom.Basic
@@ -1104,6 +1105,26 @@ class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOr
 section LinearOrderedCommGroup
 
 variable [LinearOrderedCommGroup α] {a b c : α}
+
+@[to_additive, simp]
+theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by
+  rw [inv_le_iff_one_le_mul, ← pow_two, one_le_pow_iff]; rintro ⟨⟩
+#align neg_le_self_iff neg_le_self_iff
+
+@[to_additive, simp]
+theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by
+  rw [inv_lt_iff_one_lt_mul, ← pow_two, one_lt_pow_iff]; rintro ⟨⟩
+#align neg_lt_self_iff neg_lt_self_iff
+
+@[to_additive, simp]
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by
+  rw [le_inv_iff_mul_le_one_left, ← pow_two, pow_le_one_iff]; rintro ⟨⟩
+#align le_neg_self_iff le_neg_self_iff
+
+@[to_additive, simp]
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by
+  rw [lt_inv_iff_mul_lt_one, ← pow_two, pow_lt_one_iff]; rintro ⟨⟩
+#align lt_neg_self_iff lt_neg_self_iff
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
