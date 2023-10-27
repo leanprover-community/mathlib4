@@ -217,7 +217,6 @@ theorem mem_oneCocycles_iff (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g : G × G, f (g.1 * g.2) = A.ρ g.1 (f g.2) + f g.1 := by
   simp_rw [mem_oneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
--- not sure whether preferable to the arguments `(f : G → A) (hf : f ∈ oneCocycles A)`
 theorem oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
   have := (mem_oneCocycles_def f.1).1 f.2 (1, 1)
   simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
@@ -245,13 +244,11 @@ theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
   have := ((mem_twoCocycles_iff f.1).1 f.2 (1, (1, g))).symm
   simpa only [map_one, LinearMap.one_apply, one_mul, add_right_inj, this]
 
--- should maybe be the other way around, with a different name?
 theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
     f.1 (g, 1) = A.ρ g (f.1 (1, 1)) := by
   have := (mem_twoCocycles_iff f.1).1 f.2 (g, (1, 1))
   simpa only [mul_one, add_left_inj, this]
 
--- no idea for naming
 lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
     A.ρ g (f.1 (g⁻¹, g)) - f.1 (g, g⁻¹)
       = f.1 (1, 1) - f.1 (g, 1) := by
