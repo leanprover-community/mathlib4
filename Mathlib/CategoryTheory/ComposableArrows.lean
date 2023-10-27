@@ -1,4 +1,4 @@
-import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.Nerve
 
 namespace CategoryTheory
 
@@ -11,7 +11,6 @@ abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 namespace ComposableArrows
 
 variable {C} {n : ℕ}
-
 variable (F : ComposableArrows C n)
 
 @[simp]
@@ -277,7 +276,10 @@ def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   map {i j} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
 
 @[simps!]
-def δ₀ (F : ComposableArrows C (n + 1)) : ComposableArrows C n := Fin.succFunctor _ ⋙ F
+def δ₀Functor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
+  (whiskeringLeft _ _ _).obj (Fin.succFunctor _)
+
+abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
 
 section
 
@@ -286,7 +288,6 @@ variable {F G : ComposableArrows C (n + 1)}
   (β : F.δ₀ ⟶ G.δ₀)
   (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1)
 
-@[simps]
 def homMk : F ⟶ G where
   app i := match i with
     | ⟨0, _⟩ => α
@@ -318,11 +319,56 @@ def homMk : F ⟶ G where
                 have h : (⟨i, by linarith⟩ : Fin (n+1)) ≤ ⟨j, by linarith⟩ := by simpa using hij'
                 exact β.naturality (homOfLE h)
 
+@[simp]
+lemma homMk_app_zero : (homMk α β w).app 0 = α := rfl
+
+@[simp]
+lemma homMk_app_succ (i : ℕ) (hi : i + 1 < n + 1 + 1) :
+    (homMk α β w).app ⟨i + 1, hi⟩ = app' β i := rfl
+
 example {X₀ X₁ X₂ X₃ : C}
     (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : mk₂ f (g ≫ h) ⟶ mk₂ (f ≫ g) h :=
   homMk (𝟙 _) (homMk₁ g (𝟙 _) (by aesop_cat)) (by aesop_cat)
 
 end
+
+lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
+    (h₀ : app' f 0 = app' g 0) (h₁ : δ₀Functor.map f = δ₀Functor.map g) : f = g := by
+  ext ⟨i, hi⟩
+  obtain _ | i := i
+  · exact h₀
+  · rw [Nat.succ_eq_add_one] at hi
+    exact congr_app h₁ ⟨i, by linarith⟩
+
+section
+
+@[simps]
+def isoMk {F G : ComposableArrows C (n + 1)} (α : F.obj' 0 ≅ G.obj' 0)
+    (β : F.δ₀ ≅ G.δ₀) (w : F.map' 0 1 ≫ app' β.hom 0 = α.hom ≫ G.map' 0 1) : F ≅ G where
+  hom := homMk α.hom β.hom w
+  inv := homMk α.inv β.inv (by
+    rw [← cancel_epi α.hom, ← reassoc_of% w, α.hom_inv_id_assoc, β.hom_inv_id_app]
+    dsimp
+    rw [comp_id])
+  hom_inv_id := by
+    apply hom_ext_succ
+    · simp
+    · ext ⟨i, hi⟩
+      simp
+  inv_hom_id := by
+    apply hom_ext_succ
+    · simp
+    · ext ⟨i, hi⟩
+      simp
+
+end
+
+lemma _root_.CategoryTheory.Functor.ext_of_iso {C D : Type*} [Category C] [Category D]
+    {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
+    (happ : ∀ X, e.hom.app X = eqToHom (hobj X)) : F = G :=
+  Functor.ext hobj (fun X Y f => by
+    rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, assoc, assoc,
+      eqToHom_trans, eqToHom_refl, comp_id])
 
 end ComposableArrows
 
