@@ -195,21 +195,22 @@ partial def peelUnbounded (e : Expr) (n? : Option Name) (unfold : Bool := false)
   else
     return false
 
-private lemma Filter.frequently_congr {α : Type*} {f : Filter α} {p : α → Prop} {q : α → Prop}
-    (h : ∀ᶠ (x : α) in f, p x ↔ q x) : (∃ᶠ (x : α) in f, p x) ↔ ∃ᶠ (x : α) in f, q x := by
-  constructor
-  all_goals refine (Filter.Frequently.mp · (h.mono fun _ => ?_))
-  exacts [Iff.mp, Iff.mpr]
+private theorem eventually_congr {α : Type*} {p q : α → Prop} {f : Filter α}
+    (hq : ∀ (x : α), p x ↔ q x) : (∀ᶠ (x : α) in f, p x) ↔ ∀ᶠ (x : α) in f, q x := by
+  congr! 2; exact hq _
+
+private theorem frequently_congr {α : Type*} {p q : α → Prop} {f : Filter α}
+    (hq : ∀ (x : α), p x ↔ q x) : (∃ᶠ (x : α) in f, p x) ↔ ∃ᶠ (x : α) in f, q x := by
+  congr! 2; exact hq _
 
 /-- Peel off a single quantifier from an `↔`. -/
 def peelIffAux : TacticM Unit := do
   evalTactic (← `(tactic| focus
     first | apply forall_congr'
           | apply exists_congr
-          | apply Filter.eventually_congr
-          | apply Filter.frequently_congr
-          | fail "failed to apply a quantifier congruence lemma."
-    try apply Filter.eventually_of_forall))
+          | apply eventually_congr
+          | apply frequently_congr
+          | fail "failed to apply a quantifier congruence lemma."))
 
 /-- Peel off quantifiers from an `↔` and assign the names given in `l` to the introduced
 variables. -/
@@ -236,10 +237,8 @@ elab_rules : tactic
     else
       unless ← peelUnbounded e n? do
         throwPeelError (← inferType e) (← getMainTarget)
-  | `(tactic| peel $n:num) =>
-    peelArgsIff <| .replicate n.getNat `_
-  | `(tactic| peel with $args*) => withMainContext do
-    peelArgsIff (args.map getNameOfIdent').toList
+  | `(tactic| peel $n:num) => peelArgsIff <| .replicate n.getNat `_
+  | `(tactic| peel with $args*) => peelArgsIff (args.map getNameOfIdent').toList
 
 macro_rules
   | `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]? using $u:term) =>
