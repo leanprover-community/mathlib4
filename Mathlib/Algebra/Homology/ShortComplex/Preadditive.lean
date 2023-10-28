@@ -269,7 +269,7 @@ lemma opcyclesMap_add : opcyclesMap (φ + φ') = opcyclesMap φ + opcyclesMap φ
 @[simp]
 lemma rightHomologyMap_sub :
     rightHomologyMap (φ - φ') = rightHomologyMap φ - rightHomologyMap φ' :=
-  rightHomologyMap'_sub  _ _
+  rightHomologyMap'_sub _ _
 
 @[simp]
 lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ' :=

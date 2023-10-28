@@ -263,7 +263,7 @@ theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h :
     refine (le_trans ?_ hyp).trans ?_
     · rw [← hw]
       exact tool _ (abs_nonneg _)
-    · refine (sum_le_card_nsmul univ _  _
+    · refine (sum_le_card_nsmul univ _ _
         (fun w _ => logEmbedding_component_le hr h w)).trans ?_
       rw [nsmul_eq_mul]
       refine mul_le_mul ?_ le_rfl hr (Fintype.card (InfinitePlace K)).cast_nonneg
@@ -402,7 +402,7 @@ theorem seq_norm_le (n : ℕ) :
 /-- Construct a unit associated to the place `w₁`. The family, for `w₁ ≠ w₀`, formed by the
 image by the `logEmbedding` of these units is `ℝ`-linearly independent, see
 `unitLattice_span_eq_top`. -/
-theorem exists_unit (w₁ : InfinitePlace K ) :
+theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
   obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
     simp_rw [mul_comm]
