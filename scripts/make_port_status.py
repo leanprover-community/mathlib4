@@ -146,7 +146,7 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode(errors='replace'))
+        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode(encoding='utf8', errors='replace'))
         prs_of_import.setdefault(import_, []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
