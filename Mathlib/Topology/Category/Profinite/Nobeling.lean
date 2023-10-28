@@ -229,7 +229,7 @@ is `[i₁, i₂, ...]` with `i₁ > i₂ > ...`. We order `Products I` lexicogra
 so `[] < [i₁, ...]`, and `[i₁, i₂, ...] < [j₁, j₂, ...]` if either `i₁ < j₁`,
 or `i₁ = j₁` and `[i₂, ...] < [j₂, ...]`.
 
- Terms `[i₁, i₂, ..., iᵣ]` of this type will be used to represent products of
+Terms `[i₁, i₂, ..., iᵣ]` of this type will be used to represent products of
 the form `e C i₁ ··· e C iᵣ : C → ℤ` `. -/
 def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
 
