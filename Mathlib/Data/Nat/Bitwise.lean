@@ -364,11 +364,12 @@ theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
 /-- Generic method to create a natural number by appending bits tail-recursively.
 It takes a boolean function `f` on each bit the number of bits `i`.  It is
 almost always specialized  `i = w`; the length of the binary representation.
-Note that `ofBits.go f z i = 2 ^ i * z + ofBits f i` which we prove next.
 This is an alternative to using `List`. It will be used for bitadd, bitneg, bitmul etc.-/
 def ofBits (f : Nat → Bool) : Nat → Nat :=
   go 0
   where
+    /-- A helper method where `z` the starting point.
+    Note that `ofBits.go f z i = 2 ^ i * z + ofBits f i` which we prove next. -/
     go (z : Nat) : Nat → Nat
     | 0 => z
     | i + 1 => go (z.bit (f i)) i
