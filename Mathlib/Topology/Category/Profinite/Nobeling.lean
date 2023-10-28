@@ -174,7 +174,7 @@ variable {C} (hC : IsCompact C)
 
 /-- The functor from the poset of finsets of `I` to  `Profinite`, indexing the limit. -/
 noncomputable
-def spanFunctor :
+def spanFunctor [∀ (J : Finset I) (i : I), Decidable (i ∈ J)] :
     (Finset I)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (π C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (continuous_proj _)) _ _
@@ -184,7 +184,7 @@ def spanFunctor :
 
 /-- The limit cone on `spanFunctor` -/
 noncomputable
-def spanCone : Cone (spanFunctor hC) where
+def spanCone [∀ (J : Finset I) (i : I), Decidable (i ∈ J)] : Cone (spanFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π :=
   { app := fun J ↦ ⟨ProjRestrict C (· ∈ unop J), continuous_projRestrict _ _⟩
@@ -197,7 +197,8 @@ def spanCone : Cone (spanFunctor hC) where
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
-def spanCone_isLimit : CategoryTheory.Limits.IsLimit (spanCone hC) := by
+def spanCone_isLimit [∀ (J : Finset I) (i : I), Decidable (i ∈ J)] [DecidableEq I] :
+    CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
     (fun J ↦ (Profinite.isoOfBijective _ (iso_map_bijective C (· ∈ unop J)))) ?_) (spanCone hC))
     (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) ?_))
