@@ -177,7 +177,7 @@ proofs or statements do not apply directly.
 -/
 
 
-open Set Filter ENNReal Topology NNReal BigOperators
+open Set Filter ENNReal Topology NNReal BigOperators TopologicalSpace
 
 namespace MeasureTheory
 
@@ -528,6 +528,17 @@ theorem of_pseudoEMetricSpace {X : Type*} [PseudoEMetricSpace X] [MeasurableSpac
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨F n, subset_iUnion _ _, F_closed n, hn⟩
 #align measure_theory.measure.inner_regular.of_pseudo_emetric_space MeasureTheory.Measure.InnerRegularWRT.of_pseudoEMetricSpace
+
+/-- In a second countable locally compact space, an open set can be approximated from inside by
+compact sets. -/
+theorem of_secondCountableTopology
+    [SecondCountableTopology α] [LocallyCompactSpace α] [BorelSpace α] :
+    InnerRegularWRT μ IsCompact IsOpen := by
+  intro U hU r hr
+  rcases hU.exists_iUnion_isCompact with ⟨F, F_comp, -, rfl, F_mono⟩
+  rw [measure_iUnion_eq_iSup F_mono.directed_le] at hr
+  rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
+  exact ⟨F n, subset_iUnion _ _, F_comp n, hn⟩
 
 /-- In a `σ`-compact space, any closed set can be approximated by a compact subset. -/
 theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X]

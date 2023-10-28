@@ -760,28 +760,36 @@ instance (priority := 100) IsMulLeftInvariant.isMulRightInvariant {μ : Measure 
 
 end CommSemigroup
 
-section PreHaar
+section Haar
 
 namespace Measure
 
-/-- A measure on an additive group is an additive pre-Haar measure if it is left-invariant, and
-gives finite mass to compact sets and positive mass to open sets. This definition is not restrictive
-enough to guarantee a good behavior on general locally compact groups: one should also require a
-form of regularity of the measure. -/
-class IsPreAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
+/-- A measure on an additive group is an additive Haar measure if it is left-invariant, and
+gives finite mass to compact sets and positive mass to open sets.
+
+Textbooks generally require an additional regularity assumption to ensure nice behavior on
+arbitrary locally compact groups. Use `[IsAddHaarMeasure μ] [Regular μ]` or
+`[IsAddHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
+sense is automatically regular and inner regular on second countable locally compact groups, see
+`...`. -/
+class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ :
   Prop
-#align measure_theory.measure.is_add_haar_measure MeasureTheory.Measure.IsPreAddHaarMeasure
+#align measure_theory.measure.is_add_haar_measure MeasureTheory.Measure.IsAddHaarMeasure
 
-/-- A measure on a group is a pre-Haar measure if it is left-invariant, and gives finite mass to
-compact sets and positive mass to open sets. This definition is not restrictive
-enough to guarantee a good behavior on general locally compact groups: one should also require a
-form of regularity of the measure.-/
+/-- A measure on a group is a Haar measure if it is left-invariant, and gives finite mass to
+compact sets and positive mass to open sets.
+
+Textbooks generally require an additional regularity assumption to ensure nice behavior on
+arbitrary locally compact groups. Use `[IsHaarMeasure μ] [Regular μ]` or
+`[IsHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
+sense is automatically regular and inner regular on second countable locally compact groups, see
+`...`.-/
 @[to_additive existing]
-class IsPreHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
+class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
   Prop
-#align measure_theory.measure.is_haar_measure MeasureTheory.Measure.IsPreHaarMeasure
+#align measure_theory.measure.is_haar_measure MeasureTheory.Measure.IsHaarMeasure
 
 /-- Record that a Haar measure on a locally compact space is locally finite. This is needed as the
 fact that a measure which is finite on compacts is locally finite is not registered as an instance,
@@ -796,346 +804,26 @@ instance, to avoid an instance loop.
 See Note [lower instance priority]"]
 instance (priority := 100) isLocallyFiniteMeasure_of_isHaarMeasure {G : Type*} [Group G]
     [MeasurableSpace G] [TopologicalSpace G] [WeaklyLocallyCompactSpace G] (μ : Measure G)
-    [IsPreHaarMeasure μ] : IsLocallyFiniteMeasure μ :=
+    [IsHaarMeasure μ] : IsLocallyFiniteMeasure μ :=
   isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
 #align measure_theory.measure.is_locally_finite_measure_of_is_haar_measure MeasureTheory.Measure.isLocallyFiniteMeasure_of_isHaarMeasure
 #align measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure MeasureTheory.Measure.isLocallyFiniteMeasure_of_isAddHaarMeasure
 
-section
-
-variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsPreHaarMeasure μ]
-
-@[to_additive (attr := simp)]
-theorem preHaar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
-  convert measure_preimage_mul μ g⁻¹ _
-  simp only [mul_one, preimage_mul_left_singleton, inv_inv]
-#align measure_theory.measure.haar_singleton MeasureTheory.Measure.preHaar_singleton
-#align measure_theory.measure.add_haar_singleton MeasureTheory.Measure.preAddHaar_singleton
-
-@[to_additive IsPreAddHaarMeasure.smul]
-theorem IsPreHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) : IsPreHaarMeasure (c • μ) :=
-  { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop hK.measure_lt_top.ne
-    toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
-#align measure_theory.measure.is_haar_measure.smul MeasureTheory.Measure.IsPreHaarMeasure.smul
-#align measure_theory.measure.is_add_haar_measure.smul MeasureTheory.Measure.IsPreAddHaarMeasure.smul
-
-/-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
-it is a Haar measure. -/
-@[to_additive
-"If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
-it is an additive Haar measure."]
-theorem isPreHaarMeasure_of_isCompact_nonempty_interior [TopologicalGroup G] [BorelSpace G]
-    (μ : Measure G) [IsMulLeftInvariant μ] (K : Set G) (hK : IsCompact K)
-    (h'K : (interior K).Nonempty) (h : μ K ≠ 0) (h' : μ K ≠ ∞) : IsPreHaarMeasure μ :=
-  { lt_top_of_isCompact := fun _L hL =>
-      measure_lt_top_of_isCompact_of_isMulLeftInvariant' h'K h' hL
-    toIsOpenPosMeasure := isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h }
-#align measure_theory.measure.is_haar_measure_of_is_compact_nonempty_interior MeasureTheory.Measure.isPreHaarMeasure_of_isCompact_nonempty_interior
-#align measure_theory.measure.is_add_haar_measure_of_is_compact_nonempty_interior MeasureTheory.Measure.isPreAddHaarMeasure_of_isCompact_nonempty_interior
-
-/-- The image of a Haar measure under a continuous surjective proper group homomorphism is again
-a Haar measure. See also `MulEquiv.isHaarMeasure_map`. -/
-@[to_additive
-"The image of an additive Haar measure under a continuous surjective proper additive group
-homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`."]
-theorem isPreHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
-    [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H] [TopologicalGroup H]
-    (f : G →* H) (hf : Continuous f) (h_surj : Surjective f)
-    (h_prop : Tendsto f (cocompact G) (cocompact H)) : IsPreHaarMeasure (Measure.map f μ) :=
-  { toIsMulLeftInvariant := isMulLeftInvariant_map f.toMulHom hf.measurable h_surj
-    lt_top_of_isCompact := by
-      intro K hK
-      rw [map_apply hf.measurable hK.measurableSet]
-      exact IsCompact.measure_lt_top ((⟨⟨f, hf⟩, h_prop⟩ : CocompactMap G H).isCompact_preimage hK)
-    toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
-#align measure_theory.measure.is_haar_measure_map MeasureTheory.Measure.isPreHaarMeasure_map
-#align measure_theory.measure.is_add_haar_measure_map MeasureTheory.Measure.isPreAddHaarMeasure_map
-
-/-- The image of a Haar measure under map of a left action is again a Haar measure. -/
-@[to_additive
-   "The image of a Haar measure under map of a left additive action is again a Haar measure"]
-instance isPreHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
-    [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
-    [ContinuousConstSMul α G] (a : α) : IsPreHaarMeasure (Measure.map (a • · : G → G) μ) where
-  toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
-  lt_top_of_isCompact K hK := by
-    rw [map_apply (measurable_const_smul _) hK.measurableSet]
-    exact IsCompact.measure_lt_top <| (Homeomorph.isCompact_preimage (Homeomorph.smul a)).2 hK
-  toIsOpenPosMeasure :=
-    (continuous_const_smul a).isOpenPosMeasure_map (MulAction.surjective a)
-
-/-- The image of a Haar measure under right multiplication is again a Haar measure. -/
-@[to_additive isPreHaarMeasure_map_add_right
-  "The image of a Haar measure under right addition is again a Haar measure."]
-instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
-    IsPreHaarMeasure (Measure.map (· * g) μ) :=
-  isPreHaarMeasure_map_smul μ (MulOpposite.op g)
-
-/-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
-@[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
-nonrec theorem _root_.MulEquiv.isPreHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
-    [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H]
-    [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
-    IsPreHaarMeasure (Measure.map e μ) :=
-  isPreHaarMeasure_map μ (e : G →* H) he e.surjective
-    ({ e with } : G ≃ₜ H).toCocompactMap.cocompact_tendsto'
-#align mul_equiv.is_haar_measure_map MulEquiv.isPreHaarMeasure_map
-#align add_equiv.is_add_haar_measure_map AddEquiv.isPreAddHaarMeasure_map
-
-/-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
-theorem _root_.ContinuousLinearEquiv.isPreAddHaarMeasure_map
-    {E F R S : Type*} [Semiring R] [Semiring S]
-    [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]
-    [TopologicalSpace E] [TopologicalAddGroup E] [TopologicalSpace F] [T2Space F]
-    [TopologicalAddGroup F]
-    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [MeasurableSpace E] [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
-    (L : E ≃SL[σ] F) (μ : Measure E) [IsPreAddHaarMeasure μ] :
-    IsPreAddHaarMeasure (μ.map L) :=
-  AddEquiv.isPreAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
-
-/-- A pre-Haar measure on a σ-compact space is σ-finite.
-
-See Note [lower instance priority] -/
-@[to_additive
-"A pre-Haar measure on a σ-compact space is σ-finite.
-
-See Note [lower instance priority]"]
-instance (priority := 100) IsPreHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
-  ⟨⟨{   set := compactCovering G
-        set_mem := fun _ => mem_univ _
-        finite := fun n => IsCompact.measure_lt_top <| isCompact_compactCovering G n
-        spanning := iUnion_compactCovering G }⟩⟩
-#align measure_theory.measure.is_haar_measure.sigma_finite MeasureTheory.Measure.IsPreHaarMeasure.sigmaFinite
-#align measure_theory.measure.is_add_haar_measure.sigma_finite MeasureTheory.Measure.IsPreAddHaarMeasure.sigmaFinite
-
-@[to_additive]
-instance prod.instIsPreHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
-    {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
-    (ν : Measure H) [IsPreHaarMeasure μ] [IsPreHaarMeasure ν] [SigmaFinite μ] [SigmaFinite ν]
-    [MeasurableMul G] [MeasurableMul H] : IsPreHaarMeasure (μ.prod ν) where
-#align measure_theory.measure.prod.is_haar_measure MeasureTheory.Measure.prod.instIsPreHaarMeasure
-#align measure_theory.measure.prod.is_add_haar_measure MeasureTheory.Measure.prod.instIsPreAddHaarMeasure
-
-/-- If the neutral element of a group is not isolated, then a pre-Haar measure on this group has
-no atoms.
-
-The additive version of this instance applies in particular to show that an additive pre-Haar
-measure on a nontrivial finite-dimensional real vector space has no atom. -/
-@[to_additive
-"If the zero element of an additive group is not isolated, then an additive pre-Haar measure on this
-group has no atoms.
-
-This applies in particular to show that an additive pre-Haar measure on a nontrivial
-finite-dimensional real vector space has no atom."]
-instance (priority := 100) IsPreHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpace G] [T1Space G]
-    [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsPreHaarMeasure] :
-    NoAtoms μ := by
-  cases eq_or_ne (μ 1) 0 with
-  | inl h => constructor; simpa
-  | inr h =>
-    obtain ⟨K, K_compact, K_nhds⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ 𝓝 1 := exists_compact_mem_nhds 1
-    have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds
-    exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (preHaar_singleton _ _).ge⟩)
-      K_compact.measure_lt_top.ne
-#align measure_theory.measure.is_haar_measure.has_no_atoms MeasureTheory.Measure.IsPreHaarMeasure.noAtoms
-#align measure_theory.measure.is_add_haar_measure.has_no_atoms MeasureTheory.Measure.IsPreAddHaarMeasure.noAtoms
-
-open TopologicalSpace
-
-/-- In a second-countable locally compact topological space, any open set is an increasing union
-of a sequence of compact sets. -/
-theorem _root_.IsOpen.exists_iUnion_isCompact
-    {α : Type*} [TopologicalSpace α] [SecondCountableTopology α] [LocallyCompactSpace α]
-    {U : Set α} (hU : IsOpen U) :
-    ∃ F : ℕ → Set α, (∀ n, IsCompact (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
-  rcases Set.eq_empty_or_nonempty U with rfl|h'U
-  · exact ⟨fun _n ↦ ∅, by simp [monotone_const]⟩
-  have : ∀ x ∈ U, ∃ K : Set α, IsCompact K ∧ x ∈ interior K ∧ K ⊆ U :=
-    fun x hx ↦ exists_compact_subset hU hx
-  choose! s s_comp s_mem sU using this
-  obtain ⟨T, T_count, hT⟩ : ∃ T : Set U, T.Countable ∧ ⋃ i ∈ T, interior (s i) = U := by
-    rcases isOpen_iUnion_countable (fun (i : U) ↦ interior (s i)) (fun (i : U) ↦ isOpen_interior)
-      with ⟨T , T_count, hT⟩
-    refine ⟨T, T_count, ?_⟩
-    rw [hT]
-    apply Subset.antisymm
-    · simp only [iUnion_coe_set, iUnion_subset_iff]
-      exact fun x hx ↦ interior_subset.trans (sU x hx)
-    · intro x hx
-      simp only [iUnion_coe_set, mem_iUnion, exists_prop]
-      exact ⟨x, hx, s_mem x hx⟩
-  have : T.Nonempty := by
-    contrapose! h'U
-    push_neg
-    simp only [not_nonempty_iff_eq_empty] at h'U ⊢
-    simpa [h'U] using hT.symm
-  obtain ⟨B, hB⟩ : ∃ B : ℕ → T, Surjective B := Countable.exists_surjective this T_count
-  refine ⟨fun n ↦ ⋃ i ∈ Iic n, s (B i), ?_, ?_, ?_, ?_⟩
-  · intro n
-    exact (finite_Iic n).isCompact_biUnion (fun i _hi ↦ s_comp _ (B i).1.2)
-  · intro n
-    simp only [mem_Iio, iUnion_subset_iff]
-    intro i _hi
-    exact sU _ (B i).1.2
-  · apply Subset.antisymm
-    · simp only [mem_Iio, iUnion_subset_iff]
-      intro n i _hi
-      apply sU _ (B i).1.2
-    · intro x hx
-      obtain ⟨i, iT, hix⟩ : ∃ i ∈ T, x ∈ interior (s i) := by
-        simp_rw [← hT] at hx
-        simpa using hx
-      rcases hB ⟨i, iT⟩ with ⟨n, hn⟩
-      simp only [mem_Iic, mem_iUnion, exists_prop]
-      refine ⟨n, n, le_rfl, ?_⟩
-      convert interior_subset hix
-      simp [hn]
-  · intro n m hnm
-    exact biUnion_subset_biUnion_left (Iic_subset_Iic.mpr hnm)
-
-
-
-#lint
-
-
-
-
-
-
-
-
-
-#exit
-
-  obtain ⟨a, a_pos, a_lt_one⟩ : ∃ a : ℝ≥0∞, 0 < a ∧ a < 1 := exists_between zero_lt_one
-  let F := fun n : ℕ => (fun x => infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
-  have F_subset : ∀ n, F n ⊆ U := fun n x hx ↦ by
-    by_contra h
-    have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
-    exact this (infEdist_zero_of_mem h)
-  refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
-  show ⋃ n, F n = U
-  · refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
-    have : ¬x ∈ Uᶜ := by simpa using hx
-    rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
-    have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
-    have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
-      ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 a_lt_one
-    rcases ((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
-    simp only [mem_iUnion, mem_Ici, mem_preimage]
-    exact ⟨n, hn.le⟩
-  show Monotone F
-  · intro m n hmn x hx
-    simp only [mem_Ici, mem_preimage] at hx ⊢
-    apply le_trans (pow_le_pow_of_le_one' a_lt_one.le hmn) hx
-
-
-lemma glou {α : Type*} [TopologicalSpace α] [T2Space α] [SecondCountableTopology α]
-    [LocallyCompactSpace α] [MeasurableSpace α] [BorelSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
-    Regular μ := by
-  have : ∀ U, IsOpen U → ∃ F : ℕ →
-  have : WeaklyRegular μ := by
-    apply InnerRegularWRT.weaklyRegular_of_finite
-    intro U hU r hr
-
-  have : InnerRegularCompactLTTop μ := by
-    exact?
-
-  apply InnerRegularCompactLTTop.regular_of_finiteMeasure
-
-#exit
-
-/-- **Steinhaus Theorem** In any locally compact group `G` with a haar measure `μ`, for any
-  measurable set `E` of positive measure, the set `E / E` is a neighbourhood of `1`. -/
-@[to_additive
-"**Steinhaus Theorem** In any locally compact group `G` with a haar measure `μ`, for any measurable
-set `E` of positive measure, the set `E - E` is a neighbourhood of `0`."]
-theorem div_mem_nhds_one_of_haar_pos
-    (μ : Measure G) [IsPreHaarMeasure μ] [LocallyCompactSpace G]
-    (E : Set G) (hE : MeasurableSet E) (hEpos : 0 < μ E) (hEfin : μ E < ∞) : E / E ∈ 𝓝 (1 : G) := by
-  /- For any regular measure `μ` and set `E` of positive measure, we can find a compact set `K` of
-       positive measure inside `E`. Further, for any outer regular measure `μ` there exists an open
-       set `U` containing `K` with measure arbitrarily close to `K` (here `μ U < 2 * μ K` suffices).
-       Then, we can pick an open neighborhood of `1`, say `V` such that such that `V * K` is
-       contained in `U`. Now note that for any `v` in `V`, the sets `K` and `{v} * K` can not be
-       disjoint because they are both of measure `μ K` (since `μ` is left regular) and also
-       contained in `U`, yet we have that `μ U < 2 * μ K`. This show that `K / K` contains the
-       neighborhood `V` of `1`, and therefore that it is itself such a neighborhood. -/
-  have : IsFiniteMeasure (μ.restrict E) := sorry
-  have : SecondCountableTopology G := sorry
-  have : Regular (μ.restrict E) := by
-    exact?
-
-
-  obtain ⟨K, hKL, hK, hKpos⟩ : ∃ (K : Set G), K ⊆ L ∧ IsCompact K ∧ 0 < μ K :=
-    MeasurableSet.exists_lt_isCompact_of_ne_top hL (ne_of_lt hLtop) hLpos
-  have hKtop : μ K ≠ ∞ := by
-    apply ne_top_of_le_ne_top (ne_of_lt hLtop)
-    apply measure_mono hKL
-  obtain ⟨U, hUK, hU, hμUK⟩ : ∃ (U : Set G), U ⊇ K ∧ IsOpen U ∧ μ U < μ K + μ K :=
-    Set.exists_isOpen_lt_add K hKtop hKpos.ne'
-  obtain ⟨V, hV1, hVKU⟩ : ∃ V ∈ 𝓝 (1 : G), V * K ⊆ U :=
-    compact_open_separated_mul_left hK hU hUK
-  have hv : ∀ v : G, v ∈ V → ¬Disjoint ({v} * K) K := by
-    intro v hv hKv
-    have hKvsub : {v} * K ∪ K ⊆ U := by
-      apply Set.union_subset _ hUK
-      apply _root_.subset_trans _ hVKU
-      apply Set.mul_subset_mul _ (Set.Subset.refl K)
-      simp only [Set.singleton_subset_iff, hv]
-    replace hKvsub := @measure_mono _ _ μ _ _ hKvsub
-    have hcontr := lt_of_le_of_lt hKvsub hμUK
-    rw [measure_union hKv (IsCompact.measurableSet hK)] at hcontr
-    have hKtranslate : μ ({v} * K) = μ K := by
-      simp only [singleton_mul, image_mul_left, measure_preimage_mul]
-    rw [hKtranslate, lt_self_iff_false] at hcontr
-    assumption
-  suffices V ⊆ E / E from Filter.mem_of_superset hV1 this
-  intro v hvV
-  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ {v} * K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
-  refine' ⟨x, v⁻¹ * x, hLE (hKL hxvK), _, _⟩
-  · apply hKL.trans hLE
-    simpa only [singleton_mul, image_mul_left, mem_preimage] using hxK
-  · simp only [div_eq_iff_eq_mul, ← mul_assoc, mul_right_inv, one_mul]
-#align measure_theory.measure.div_mem_nhds_one_of_haar_pos MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
-#align measure_theory.measure.sub_mem_nhds_zero_of_add_haar_pos MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
-
-
-end
-
-end Measure
-
-end PreHaar
-
-section Haar
-
-namespace Measure
-
-/-- A measure on an additive group is an additive pre-Haar measure if it is left-invariant, and
-gives finite mass to compact sets and positive mass to open sets. This definition is not restrictive
-enough to guarantee a good behavior on general locally compact groups: one should also require a
-form of regularity of the measure. -/
-class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsPreAddHaarMeasure μ, Regular μ : Prop
-
-/-- A measure on a group is a pre-Haar measure if it is left-invariant, and gives finite mass to
-compact sets and positive mass to open sets. This definition is not restrictive
-enough to guarantee a good behavior on general locally compact groups: one should also require a
-form of regularity of the measure.-/
-@[to_additive existing]
-class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
-  (μ : Measure G) extends IsPreHaarMeasure μ, Regular μ : Prop
-
-section
-
 variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
+@[to_additive (attr := simp)]
+theorem Haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
+  convert measure_preimage_mul μ g⁻¹ _
+  simp only [mul_one, preimage_mul_left_singleton, inv_inv]
+#align measure_theory.measure.haar_singleton MeasureTheory.Measure.Haar_singleton
+#align measure_theory.measure.add_haar_singleton MeasureTheory.Measure.AddHaar_singleton
+
 @[to_additive IsAddHaarMeasure.smul]
-theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) : IsHaarMeasure (c • μ) := by
-  have : IsPreHaarMeasure (c • μ) := IsPreHaarMeasure.smul μ cpos ctop
-  have : Regular (c • μ) := Regular.smul ctop
-  constructor
+theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) : IsHaarMeasure (c • μ) :=
+  { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop hK.measure_lt_top.ne
+    toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
+#align measure_theory.measure.is_haar_measure.smul MeasureTheory.Measure.IsHaarMeasure.smul
+#align measure_theory.measure.is_add_haar_measure.smul MeasureTheory.Measure.IsAddHaarMeasure.smul
 
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then
 it is a Haar measure. -/
@@ -1144,7 +832,7 @@ it is a Haar measure. -/
 it is an additive Haar measure."]
 theorem isHaarMeasure_of_isCompact_nonempty_interior [TopologicalGroup G] [BorelSpace G]
     (μ : Measure G) [IsMulLeftInvariant μ] (K : Set G) (hK : IsCompact K)
-    (h'K : (interior K).Nonempty) (h : μ K ≠ 0) (h' : μ K ≠ ∞) : IsPreHaarMeasure μ :=
+    (h'K : (interior K).Nonempty) (h : μ K ≠ 0) (h' : μ K ≠ ∞) : IsHaarMeasure μ :=
   { lt_top_of_isCompact := fun _L hL =>
       measure_lt_top_of_isCompact_of_isMulLeftInvariant' h'K h' hL
     toIsOpenPosMeasure := isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h }
@@ -1159,7 +847,7 @@ homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeas
 theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H] [TopologicalGroup H]
     (f : G →* H) (hf : Continuous f) (h_surj : Surjective f)
-    (h_prop : Tendsto f (cocompact G) (cocompact H)) : IsPreHaarMeasure (Measure.map f μ) :=
+    (h_prop : Tendsto f (cocompact G) (cocompact H)) : IsHaarMeasure (Measure.map f μ) :=
   { toIsMulLeftInvariant := isMulLeftInvariant_map f.toMulHom hf.measurable h_surj
     lt_top_of_isCompact := by
       intro K hK
@@ -1174,7 +862,7 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
    "The image of a Haar measure under map of a left additive action is again a Haar measure"]
 instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
     [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
-    [ContinuousConstSMul α G] (a : α) : IsPreHaarMeasure (Measure.map (a • · : G → G) μ) where
+    [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
   lt_top_of_isCompact K hK := by
     rw [map_apply (measurable_const_smul _) hK.measurableSet]
@@ -1186,7 +874,7 @@ instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Spac
 @[to_additive isHaarMeasure_map_add_right
   "The image of a Haar measure under right addition is again a Haar measure."]
 instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
-    IsPreHaarMeasure (Measure.map (· * g) μ) :=
+    IsHaarMeasure (Measure.map (· * g) μ) :=
   isHaarMeasure_map_smul μ (MulOpposite.op g)
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
@@ -1194,7 +882,7 @@ instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Spac
 nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
     [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H]
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
-    IsPreHaarMeasure (Measure.map e μ) :=
+    IsHaarMeasure (Measure.map e μ) :=
   isHaarMeasure_map μ (e : G →* H) he e.surjective
     ({ e with } : G ≃ₜ H).toCocompactMap.cocompact_tendsto'
 #align mul_equiv.is_haar_measure_map MulEquiv.isHaarMeasure_map
@@ -1208,59 +896,59 @@ theorem _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     [TopologicalAddGroup F]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [MeasurableSpace E] [BorelSpace E] [MeasurableSpace F] [BorelSpace F]
-    (L : E ≃SL[σ] F) (μ : Measure E) [IsPreAddHaarMeasure μ] :
-    IsPreAddHaarMeasure (μ.map L) :=
+    (L : E ≃SL[σ] F) (μ : Measure E) [IsAddHaarMeasure μ] :
+    IsAddHaarMeasure (μ.map L) :=
   AddEquiv.isAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
 
-/-- A pre-Haar measure on a σ-compact space is σ-finite.
+/-- A Haar measure on a σ-compact space is σ-finite.
 
 See Note [lower instance priority] -/
 @[to_additive
-"A pre-Haar measure on a σ-compact space is σ-finite.
+"A Haar measure on a σ-compact space is σ-finite.
 
 See Note [lower instance priority]"]
-instance (priority := 100) IsPreHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
+instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
         set_mem := fun _ => mem_univ _
         finite := fun n => IsCompact.measure_lt_top <| isCompact_compactCovering G n
         spanning := iUnion_compactCovering G }⟩⟩
-#align measure_theory.measure.is_haar_measure.sigma_finite MeasureTheory.Measure.IsPreHaarMeasure.sigmaFinite
-#align measure_theory.measure.is_add_haar_measure.sigma_finite MeasureTheory.Measure.IsPreAddHaarMeasure.sigmaFinite
+#align measure_theory.measure.is_haar_measure.sigma_finite MeasureTheory.Measure.IsHaarMeasure.sigmaFinite
+#align measure_theory.measure.is_add_haar_measure.sigma_finite MeasureTheory.Measure.IsAddHaarMeasure.sigmaFinite
 
 @[to_additive]
-instance prod.instIsPreHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
+instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
     {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
-    (ν : Measure H) [IsPreHaarMeasure μ] [IsPreHaarMeasure ν] [SigmaFinite μ] [SigmaFinite ν]
-    [MeasurableMul G] [MeasurableMul H] : IsPreHaarMeasure (μ.prod ν) where
-#align measure_theory.measure.prod.is_haar_measure MeasureTheory.Measure.prod.instIsPreHaarMeasure
-#align measure_theory.measure.prod.is_add_haar_measure MeasureTheory.Measure.prod.instIsPreAddHaarMeasure
+    (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SigmaFinite μ] [SigmaFinite ν]
+    [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where
+#align measure_theory.measure.prod.is_haar_measure MeasureTheory.Measure.prod.instIsHaarMeasure
+#align measure_theory.measure.prod.is_add_haar_measure MeasureTheory.Measure.prod.instIsAddHaarMeasure
 
-/-- If the neutral element of a group is not isolated, then a pre-Haar measure on this group has
+/-- If the neutral element of a group is not isolated, then a Haar measure on this group has
 no atoms.
 
-The additive version of this instance applies in particular to show that an additive pre-Haar
+The additive version of this instance applies in particular to show that an additive Haar
 measure on a nontrivial finite-dimensional real vector space has no atom. -/
 @[to_additive
-"If the zero element of an additive group is not isolated, then an additive pre-Haar measure on this
+"If the zero element of an additive group is not isolated, then an additive Haar measure on this
 group has no atoms.
 
-This applies in particular to show that an additive pre-Haar measure on a nontrivial
+This applies in particular to show that an additive Haar measure on a nontrivial
 finite-dimensional real vector space has no atom."]
-instance (priority := 100) IsPreHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpace G] [T1Space G]
-    [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsPreHaarMeasure] :
+instance (priority := 100) IsHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpace G] [T1Space G]
+    [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
     NoAtoms μ := by
   cases eq_or_ne (μ 1) 0 with
   | inl h => constructor; simpa
   | inr h =>
     obtain ⟨K, K_compact, K_nhds⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ 𝓝 1 := exists_compact_mem_nhds 1
     have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds
-    exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
+    exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (Haar_singleton _ _).ge⟩)
       K_compact.measure_lt_top.ne
-#align measure_theory.measure.is_haar_measure.has_no_atoms MeasureTheory.Measure.IsPreHaarMeasure.noAtoms
-#align measure_theory.measure.is_add_haar_measure.has_no_atoms MeasureTheory.Measure.IsPreAddHaarMeasure.noAtoms
-
-end
+#align measure_theory.measure.is_haar_measure.has_no_atoms MeasureTheory.Measure.IsHaarMeasure.noAtoms
+#align measure_theory.measure.is_add_haar_measure.has_no_atoms MeasureTheory.Measure.IsAddHaarMeasure.noAtoms
 
 end Measure
+
+end Haar
 
 end MeasureTheory
