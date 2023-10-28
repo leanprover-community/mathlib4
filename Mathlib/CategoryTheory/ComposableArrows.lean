@@ -16,12 +16,17 @@ of `n` composable arrows in `C`.
 TODO (@joelriou):
 * define various constructors for objects, morphisms, isomorphisms in `ComposableArrows C n`
 * extensionality lemmas for morphisms
-* extensionality lemmas for objects (useful for getting equilities of simplices in `nerve C`)
+* extensionality lemmas for objects (useful for getting equalities of simplices in `nerve C`)
 * construction of `precomp F f : ComposableArrows C (n + 1)` when `F : ComposableArrows C n`
 and `f : X ⟶ F.left` with good definitional properties.
 * constructors like `mk₃ f g h : ComposableArrows C 3` which would take as inputs a certain
 number of composable morphisms
 * redefine `Arrow C` as `ComposableArrow C 1`?
+* construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
+the precomposition with which shall induce funtors
+`ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations
+(specifically faces) with good definitional properties (this might be necessary for
+up to `n = 7` in order to formalize spectral sequences following Verdier)
 
 -/
 
@@ -107,11 +112,6 @@ def map : ∀ (i j : Fin 2) (_ : i ≤ j), obj X₀ X₁ i ⟶ obj X₀ X₁ j
 lemma map_id (i : Fin 2) : map f i i (by simp) = 𝟙 _ :=
   match i with
     | 0 => rfl
-    | 1 => rfl
-
-lemma _root_.Fin.eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
-  match i with
-    | 0 => by simp at hi
     | 1 => rfl
 
 lemma map_comp {i j k : Fin 2} (hij : i ≤ j) (hjk : j ≤ k) :
