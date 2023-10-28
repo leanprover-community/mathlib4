@@ -45,6 +45,17 @@ theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
   cast_nonneg' n
 #align nat.cast_nonneg Nat.cast_nonneg
 
+-- See also `Nat.ofNat_nonneg`, specialised for an `OrderedSemiring`.
+-- See note [no_index around OfNat.ofNat]
+@[simp low]
+theorem ofNat_nonneg' (n : ℕ) [n.AtLeastTwo] : 0 ≤ (no_index (OfNat.ofNat n : α)) := cast_nonneg' n
+
+-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use.
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] : 0 ≤ (no_index (OfNat.ofNat n : α)) :=
+  ofNat_nonneg' n
+
 @[simp, norm_cast]
 theorem cast_min {α} [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
   (@mono_cast α _).map_min
@@ -73,6 +84,19 @@ theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cas
 @[simp]
 theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
 #align nat.cast_pos Nat.cast_pos
+
+variable [n.AtLeastTwo]
+
+-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`.
+-- See note [no_index around OfNat.ofNat]
+@[simp low]
+theorem ofNat_pos' : 0 < (no_index (OfNat.ofNat n : α)) := cast_pos'.mpr Nat.AtLeastTwo.pos
+
+-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use.
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_pos {α} [OrderedSemiring α] [Nontrivial α] (n : ℕ) [n.AtLeastTwo] : 0 < (no_index (OfNat.ofNat n : α)) :=
+  ofNat_pos'
 
 end Nontrivial
 
@@ -115,6 +139,42 @@ theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
 @[simp, norm_cast]
 theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
 #align nat.cast_le_one Nat.cast_le_one
+
+variable [m.AtLeastTwo] [n.AtLeastTwo]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_le :
+    (no_index (OfNat.ofNat m : α)) ≤ (no_index (OfNat.ofNat n)) ↔
+      (OfNat.ofNat m : ℕ) ≤ (OfNat.ofNat n) :=
+  cast_le
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_lt :
+    (no_index (OfNat.ofNat m : α)) < (no_index (OfNat.ofNat n)) ↔
+      (OfNat.ofNat m : ℕ) < (OfNat.ofNat n) :=
+  cast_lt
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem one_lt_ofNat : 1 < (no_index (OfNat.ofNat n : α)) :=
+  one_lt_cast.mpr AtLeastTwo.one_lt
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem one_le_ofNat : 1 ≤ (no_index (OfNat.ofNat n : α)) :=
+  one_le_cast.mpr AtLeastTwo.one_le
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem not_ofNat_le_one : ¬(no_index (OfNat.ofNat n : α)) ≤ 1 :=
+  (cast_le_one.not.trans not_le).mpr AtLeastTwo.one_lt
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem not_ofNat_lt_one : ¬(no_index (OfNat.ofNat n : α)) < 1 :=
+  mt le_of_lt not_ofNat_le_one
 
 end OrderedSemiring
 
