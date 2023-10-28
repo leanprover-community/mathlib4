@@ -1742,6 +1742,16 @@ theorem exists_compact_closed_between [LocallyCompactSpace α] [ClosableCompactS
   · apply M_comp.closure_subset_of_isOpen hU
     exact ML.trans (interior_subset.trans LU)
 
+/-- In a second-countable locally compact topological space with the
+`ClosableCompactSubsetOpenSpace` property, any open set is an increasing union
+of a sequence of compact closed sets. -/
+theorem IsOpen.exists_iUnion_isCompact_isClosed
+    {α : Type*} [TopologicalSpace α] [SecondCountableTopology α] [LocallyCompactSpace α]
+    [ClosableCompactSubsetOpenSpace α] {U : Set α} (hU : IsOpen U) :
+    ∃ F : ℕ → Set α, (∀ n, IsCompact (F n)) ∧ (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U)
+      ∧ ⋃ n, F n = U ∧ Monotone F := by
+  sorry
+
 end ClosableCompactSubsetOpenSpace
 
 section T3

@@ -713,31 +713,31 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
 #align measure_theory.measure_univ_of_is_add_left_invariant MeasureTheory.measure_univ_of_isAddLeftInvariant
 
 @[to_additive]
-lemma _root_.MeasurableSet.smul_set_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
-    s • (closure {1} : Set G) = s := by
+lemma _root_.MeasurableSet.mul_set_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
+    s * (closure {1} : Set G) = s := by
   apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) ?_ ?_ ?_ hs
   · intro U hU
-    exact hU.smul_set_closure_one_eq
+    exact hU.mul_set_closure_one_eq
   · rintro t - ht
-    exact compl_smul_set_closure_one_eq_iff.2 ht
+    exact compl_mul_set_closure_one_eq_iff.2 ht
   · rintro f - - h''f
     simp only [iUnion_smul, h''f]
 
 @[to_additive (attr := simp)]
-lemma measure_smul_set_closure_one (s : Set G) (μ : Measure G) :
-    μ (s • (closure {1} : Set G)) = μ s := by
-  apply le_antisymm ?_ (measure_mono (subset_smul_set_closure_one s))
+lemma measure_mul_set_closure_one (s : Set G) (μ : Measure G) :
+    μ (s * (closure {1} : Set G)) = μ s := by
+  apply le_antisymm ?_ (measure_mono (subset_mul_set_closure_one s))
   conv_rhs => rw [measure_eq_iInf]
   simp only [le_iInf_iff]
   intro t kt t_meas
   apply measure_mono
-  rw [← t_meas.smul_set_closure_one_eq]
+  rw [← t_meas.mul_set_closure_one_eq]
   exact smul_subset_smul_right kt
 
 @[to_additive]
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
     μ (closure k) = μ k := by
-  rw [← hk.smul_set_closure_one_eq_closure, measure_smul_set_closure_one]
+  rw [← hk.mul_set_closure_one_eq_closure, measure_mul_set_closure_one]
 
 end TopologicalGroup
 
@@ -943,10 +943,102 @@ instance (priority := 100) IsPreHaarMeasure.noAtoms [TopologicalGroup G] [BorelS
 
 open TopologicalSpace
 
+/-- In a second-countable locally compact topological space, any open set is an increasing union
+of a sequence of compact sets. -/
+theorem _root_.IsOpen.exists_iUnion_isCompact
+    {α : Type*} [TopologicalSpace α] [SecondCountableTopology α] [LocallyCompactSpace α]
+    {U : Set α} (hU : IsOpen U) :
+    ∃ F : ℕ → Set α, (∀ n, IsCompact (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
+  rcases Set.eq_empty_or_nonempty U with rfl|h'U
+  · exact ⟨fun _n ↦ ∅, by simp [monotone_const]⟩
+  have : ∀ x ∈ U, ∃ K : Set α, IsCompact K ∧ x ∈ interior K ∧ K ⊆ U :=
+    fun x hx ↦ exists_compact_subset hU hx
+  choose! s s_comp s_mem sU using this
+  obtain ⟨T, T_count, hT⟩ : ∃ T : Set U, T.Countable ∧ ⋃ i ∈ T, interior (s i) = U := by
+    rcases isOpen_iUnion_countable (fun (i : U) ↦ interior (s i)) (fun (i : U) ↦ isOpen_interior)
+      with ⟨T , T_count, hT⟩
+    refine ⟨T, T_count, ?_⟩
+    rw [hT]
+    apply Subset.antisymm
+    · simp only [iUnion_coe_set, iUnion_subset_iff]
+      exact fun x hx ↦ interior_subset.trans (sU x hx)
+    · intro x hx
+      simp only [iUnion_coe_set, mem_iUnion, exists_prop]
+      exact ⟨x, hx, s_mem x hx⟩
+  have : T.Nonempty := by
+    contrapose! h'U
+    push_neg
+    simp only [not_nonempty_iff_eq_empty] at h'U ⊢
+    simpa [h'U] using hT.symm
+  obtain ⟨B, hB⟩ : ∃ B : ℕ → T, Surjective B := Countable.exists_surjective this T_count
+  refine ⟨fun n ↦ ⋃ i ∈ Iic n, s (B i), ?_, ?_, ?_, ?_⟩
+  · intro n
+    exact (finite_Iic n).isCompact_biUnion (fun i _hi ↦ s_comp _ (B i).1.2)
+  · intro n
+    simp only [mem_Iio, iUnion_subset_iff]
+    intro i _hi
+    exact sU _ (B i).1.2
+  · apply Subset.antisymm
+    · simp only [mem_Iio, iUnion_subset_iff]
+      intro n i _hi
+      apply sU _ (B i).1.2
+    · intro x hx
+      obtain ⟨i, iT, hix⟩ : ∃ i ∈ T, x ∈ interior (s i) := by
+        simp_rw [← hT] at hx
+        simpa using hx
+      rcases hB ⟨i, iT⟩ with ⟨n, hn⟩
+      simp only [mem_Iic, mem_iUnion, exists_prop]
+      refine ⟨n, n, le_rfl, ?_⟩
+      convert interior_subset hix
+      simp [hn]
+  · intro n m hnm
+    exact biUnion_subset_biUnion_left (Iic_subset_Iic.mpr hnm)
+
+
+
+#lint
+
+
+
+
+
+
+
+
+
+#exit
+
+  obtain ⟨a, a_pos, a_lt_one⟩ : ∃ a : ℝ≥0∞, 0 < a ∧ a < 1 := exists_between zero_lt_one
+  let F := fun n : ℕ => (fun x => infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
+  have F_subset : ∀ n, F n ⊆ U := fun n x hx ↦ by
+    by_contra h
+    have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
+    exact this (infEdist_zero_of_mem h)
+  refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
+  show ⋃ n, F n = U
+  · refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
+    have : ¬x ∈ Uᶜ := by simpa using hx
+    rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
+    have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
+    have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
+      ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 a_lt_one
+    rcases ((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
+    simp only [mem_iUnion, mem_Ici, mem_preimage]
+    exact ⟨n, hn.le⟩
+  show Monotone F
+  · intro m n hmn x hx
+    simp only [mem_Ici, mem_preimage] at hx ⊢
+    apply le_trans (pow_le_pow_of_le_one' a_lt_one.le hmn) hx
+
+
 lemma glou {α : Type*} [TopologicalSpace α] [T2Space α] [SecondCountableTopology α]
     [LocallyCompactSpace α] [MeasurableSpace α] [BorelSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     Regular μ := by
-  have : WeaklyRegular μ := by infer_instance
+  have : ∀ U, IsOpen U → ∃ F : ℕ →
+  have : WeaklyRegular μ := by
+    apply InnerRegularWRT.weaklyRegular_of_finite
+    intro U hU r hr
+
   have : InnerRegularCompactLTTop μ := by
     exact?
 
