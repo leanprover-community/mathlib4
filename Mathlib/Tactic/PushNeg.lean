@@ -9,6 +9,7 @@ import Mathlib.Lean.Expr
 import Mathlib.Logic.Basic
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
+import Mathlib.Init.Set
 
 set_option autoImplicit true
 
@@ -34,6 +35,12 @@ theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
 theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
+
+variable {γ : Type v}
+theorem not_nonempty_iff (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
+  have A : ∀ (x : γ), ¬(x ∈ (∅ : Set γ)) := fun x ↦ id
+  simp only [Set.Nonempty, not_exists, eq_iff_iff]
+  exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
@@ -79,6 +86,9 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | (``LT.lt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_lt_eq
   | (``GE.ge, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_ge_eq
   | (``GT.gt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_gt_eq
+  | (``Set.Nonempty, #[_ty, e]) =>
+      return mkSimpStep (← mkAppM ``Eq #[e, ← mkAppOptM ``EmptyCollection.emptyCollection
+          #[← mkAppM ``Set #[_ty], none]]) (← mkAppM ``not_nonempty_iff #[e])
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
                         (← mkAppM ``not_exists_eq #[.lam n typ bo bi])

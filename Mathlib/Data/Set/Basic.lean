@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.ByContra
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -431,14 +430,6 @@ theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
 #align set.not_not_mem Set.not_not_mem
 
 /-! ### Non-empty sets -/
-
-
-/-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
-in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
-to the dot notation. -/
-protected def Nonempty (s : Set α) : Prop :=
-  ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
 
 -- Porting note: we seem to need parentheses at `(↥s)`,
 -- even if we increase the right precedence of `↥` in `Mathlib.Tactic.Coe`.
@@ -2511,11 +2502,14 @@ theorem nontrivial_of_exists_ne {x} (hx : x ∈ s) (h : ∃ y ∈ s, y ≠ x) : 
 #align set.nontrivial_of_exists_ne Set.nontrivial_of_exists_ne
 
 theorem Nontrivial.exists_ne (hs : s.Nontrivial) (z) : ∃ x ∈ s, x ≠ z := by
-  by_contra' H
+  by_contra H
+  simp at H
   rcases hs with ⟨x, hx, y, hy, hxy⟩
   rw [H x hx, H y hy] at hxy
   exact hxy rfl
 #align set.nontrivial.exists_ne Set.Nontrivial.exists_ne
+
+#exit
 
 theorem nontrivial_iff_exists_ne {x} (hx : x ∈ s) : s.Nontrivial ↔ ∃ y ∈ s, y ≠ x :=
   ⟨fun H => H.exists_ne _, nontrivial_of_exists_ne hx⟩
