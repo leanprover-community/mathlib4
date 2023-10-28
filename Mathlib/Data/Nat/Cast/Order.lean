@@ -25,7 +25,7 @@ section OrderedSemiring
 we use a generic collection of instances so that it applies in other settings (e.g., in a
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
-variable [AddCommMonoidWithOne α] [PartialOrder α]
+variable [AddMonoidWithOne α] [PartialOrder α]
 variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
 
 @[mono]
@@ -59,8 +59,10 @@ section Nontrivial
 
 variable [NeZero (1 : α)]
 
-theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
-  zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg'
+theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
+  apply zero_lt_one.trans_le
+  convert (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
+  <;> simp
 #align nat.cast_add_one_pos Nat.cast_add_one_pos
 
 -- See also `Nat.cast_pos`, a specialisation of this to an `OrderedSemiring`.

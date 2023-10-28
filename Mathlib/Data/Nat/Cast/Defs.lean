@@ -47,6 +47,17 @@ class Nat.AtLeastTwo (n : ℕ) : Prop where
 instance instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ $ Nat.succ_le_succ $ Nat.zero_le _
 
+namespace Nat.AtLeastTwo
+
+variable {n : ℕ} [n.AtLeastTwo]
+
+theorem one_lt : 1 < n := prop
+theorem one_le : 1 ≤ n := Nat.le_of_lt one_lt
+theorem pos : 0 < n := one_le
+theorem nonneg : 0 ≤ n := Nat.le_of_lt pos
+
+end Nat.AtLeastTwo
+
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
