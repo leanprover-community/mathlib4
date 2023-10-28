@@ -62,15 +62,15 @@ variable (W : MorphismProperty C) {X Y : C}
 
 /-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
 @[simps]
-def mkOfHom (f : X ⟶ Y) [W.ContainsIdentities] :
+def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
   W.LeftFraction X Y := mk f (𝟙 Y) (W.id_mem Y)
+
+variable {W}
 
 /-- The right fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
 @[simps]
-def mkOfInv (s : Y ⟶ X) (hs : W s) :
+def ofInv (s : Y ⟶ X) (hs : W s) :
   W.LeftFraction X Y := mk (𝟙 X) s hs
-
-variable {W}
 
 /-- If `φ : W.LeftFraction X Y` and `L` is a functor which inverts `W`, this is the
 induced morphism `L.obj X ⟶ L.obj Y`  -/
@@ -81,19 +81,19 @@ noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInverted
 
 variable (W)
 
-lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
-    (mkOfHom W f).map L hL = L.map f := by
+lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
+    (ofHom W f).map L hL = L.map f := by
   simp [map]
 
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
-lemma map_mkOfInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
-    (mkOfInv W s hs).map L hL ≫ L.map s = 𝟙 _ := by
+lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
   have := hL _ hs
   simp [map]
 
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
-lemma map_hom_mkOfInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
-    L.map s ≫ (mkOfInv W s hs).map L hL = 𝟙 _ := by
+lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
   have := hL _ hs
   simp [map]
 
@@ -114,14 +114,14 @@ variable (W : MorphismProperty C)
 variable {X Y : C}
 
 @[simps]
-def mkOfHom (f : X ⟶ Y) [W.ContainsIdentities] :
+def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
   W.RightFraction X Y := mk (𝟙 X) (W.id_mem X) f
 
-@[simps]
-def mkOfInv (s : Y ⟶ X) (hs : W s) :
-  W.RightFraction X Y := mk s hs (𝟙 Y)
-
 variable {W}
+
+@[simps]
+def ofInv (s : Y ⟶ X) (hs : W s) :
+  W.RightFraction X Y := mk s hs (𝟙 Y)
 
 noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.obj X ⟶ L.obj Y :=
@@ -130,19 +130,19 @@ noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInverte
 
 variable (W)
 
-lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
-    (mkOfHom W f).map L hL = L.map f := by
+lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
+    (ofHom W f).map L hL = L.map f := by
   simp [map]
 
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
-lemma map_mkOfInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
-    (mkOfInv W s hs).map L hL ≫ L.map s = 𝟙 _ := by
+lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
   have := hL _ hs
   simp [map]
 
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
-lemma map_hom_mkOfInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
-    L.map s ≫ (mkOfInv W s hs).map L hL = 𝟙 _ := by
+lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
   have := hL _ hs
   simp [map]
 
@@ -229,6 +229,7 @@ instance {X Y : C} : IsEquiv (W.LeftFraction X Y) LeftFractionRel where
 
 namespace LeftFraction
 
+@[simp]
 def comp₀ {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') :
     W.LeftFraction X Z :=
@@ -246,12 +247,9 @@ lemma comp₀_rel {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction
   obtain ⟨Y, t, ht, fac'⟩ := HasLeftCalculusOfFractions'.ext _ _ _ z₁.hs eq
   simp only [assoc] at fac'
   refine' ⟨Y, z₄.f ≫ t, z₄.s ≫ t, _, _, _⟩
-  · dsimp [comp₀]
-    simp only [assoc, reassoc_of% fac]
-  · dsimp [comp₀]
-    simp only [assoc, fac']
-  · dsimp [comp₀]
-    simp only [assoc, ← reassoc_of% fac]
+  · simp only [comp₀, assoc, reassoc_of% fac]
+  · simp only [comp₀, assoc, fac']
+  · simp only [comp₀, assoc, ← reassoc_of% fac]
     exact W.comp_mem _ _ z₂.hs
       (W.comp_mem _ _ z₃'.hs
         (W.comp_mem _ _ z₄.hs ht))
@@ -263,15 +261,146 @@ def Localization.Hom (X Y : C) :=
 
 variable {W}
 
+def Localization.Hom.mk {X Y : C} (z : W.LeftFraction X Y) : Localization.Hom W X Y :=
+  Quot.mk _ z
+
+lemma Localization.Hom.mk_surjective {X Y : C} (f : Localization.Hom W X Y) :
+    ∃ (z : W.LeftFraction X Y), f = mk z := by
+  obtain ⟨z⟩ := f
+  exact ⟨z, rfl⟩
+
 noncomputable def comp {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) :
     Localization.Hom W X Z :=
-  Quot.mk _ (z₁.comp₀ z₂ (RightFraction.mk z₁.s z₁.hs z₂.f).leftFraction)
+  Localization.Hom.mk (z₁.comp₀ z₂ (RightFraction.mk z₁.s z₁.hs z₂.f).leftFraction)
 
 lemma comp_eq {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
-    z₁.comp z₂ = Quot.mk _ (z₁.comp₀ z₂ z₃) :=
+    z₁.comp z₂ = Localization.Hom.mk (z₁.comp₀ z₂ z₃) :=
   Quot.sound (LeftFraction.comp₀_rel _ _ _ _
     (RightFraction.leftFraction_fac (RightFraction.mk z₁.s z₁.hs z₂.f)) h₃)
+
+namespace Localization
+
+/-noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : Hom W X Z := by
+  refine' Quot.lift₂ (fun a b => a.comp b) _ _ z₁ z₂
+  · rintro a b₁ b₂ ⟨U, t₁, t₂, hst, hft, ht⟩
+    dsimp
+    sorry
+  · sorry
+
+lemma Hom.comp_eq {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) :
+    Hom.comp (mk z₁) (mk z₂) = z₁.comp z₂ := rfl-/
+
+end Localization
+
+/-@[nolint unusedArguments]
+def Localization (_ : MorphismProperty C) := C-/
+
+namespace Localization
+
+/-noncomputable instance : Category (Localization W) where
+  Hom X Y := Localization.Hom W X Y
+  id X := Localization.Hom.mk (ofHom W (𝟙 _))
+  comp f g := f.comp g
+  comp_id := by
+    rintro (X Y : C) f
+    obtain ⟨z, rfl⟩ := Hom.mk_surjective f
+    change (Hom.mk z).comp (Hom.mk (ofHom W (𝟙 Y))) = Hom.mk z
+    rw [Hom.comp_eq, comp_eq z (ofHom W (𝟙 Y)) (ofInv z.s z.hs) (by simp)]
+    dsimp [comp₀]
+    simp only [comp_id, id_comp]
+  id_comp := by
+    rintro (X Y : C) f
+    obtain ⟨z, rfl⟩ := Hom.mk_surjective f
+    change (Hom.mk (ofHom W (𝟙 X))).comp (Hom.mk z) = Hom.mk z
+    rw [Hom.comp_eq, comp_eq (ofHom W (𝟙 X)) z (ofHom W z.f) (by simp)]
+    dsimp
+    simp only [comp₀, id_comp, comp_id]
+  assoc := by
+    rintro (X₁ X₂ X₃ X₄ : C) f₁ f₂ f₃
+    obtain ⟨z₁, rfl⟩ := Hom.mk_surjective f₁
+    obtain ⟨z₂, rfl⟩ := Hom.mk_surjective f₂
+    obtain ⟨z₃, rfl⟩ := Hom.mk_surjective f₃
+    change ((Hom.mk z₁).comp (Hom.mk z₂)).comp (Hom.mk z₃) =
+      (Hom.mk z₁).comp ((Hom.mk z₂).comp (Hom.mk z₃))
+    rw [Hom.comp_eq z₁ z₂, Hom.comp_eq z₂ z₃]
+    obtain ⟨z₁₂, fac₁₂⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk z₁.s z₁.hs z₂.f)
+    obtain ⟨z₂₃, fac₂₃⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk z₂.s z₂.hs z₃.f)
+    obtain ⟨z', fac⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk z₁₂.s z₁₂.hs z₂₃.f)
+    dsimp at fac₁₂ fac₂₃ fac
+    rw [comp_eq z₁ z₂ z₁₂ fac₁₂, comp_eq z₂ z₃ z₂₃ fac₂₃, comp₀, comp₀,
+      Hom.comp_eq, Hom.comp_eq,
+      comp_eq _ z₃ (mk z'.f (z₂₃.s ≫ z'.s) (W.comp_mem _ _ z₂₃.hs z'.hs))
+        (by dsimp; rw [assoc, reassoc_of% fac₂₃, fac]),
+      comp_eq z₁ _ (mk (z₁₂.f ≫ z'.f) z'.s z'.hs)
+        (by dsimp; rw [assoc, ← reassoc_of% fac₁₂, fac])]
+    simp
+
+variable (W)
+
+@[simps obj]
+def Q : C ⥤ Localization W where
+  obj X := X
+  map f := Hom.mk (ofHom W f)
+  map_id _ := rfl
+  map_comp {X Y Z} f g := by
+    dsimp
+    change _ = Hom.comp _ _
+    rw [Hom.comp_eq, comp_eq (ofHom W f) (ofHom W g) (ofHom W g) (by simp)]
+    simp [ofHom]
+
+variable {W}
+
+def homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
+
+variable (W)
+
+lemma Q_map {X Y : C} (f : X ⟶ Y) :
+    (Q W).map f = homMk (ofHom W f) := rfl
+
+variable {W}
+
+lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+    (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
+    homMk z₁ ≫ homMk z₂ = homMk (z₁.comp₀ z₂ z₃) := by
+  change Hom.comp _ _ = _
+  erw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
+  rfl
+
+lemma homMk_eq_of_leftFractionRel
+    {X Y : C} (z₁ z₂ : W.LeftFraction X Y) (h : LeftFractionRel z₁ z₂) :
+    homMk z₁ = homMk z₂ :=
+  Quot.sound h
+
+def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X := homMk (ofInv s hs)
+
+lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
+    (Q W).map f ≫ Qinv s hs = homMk (mk f s hs) := by
+  dsimp only [Q_map, Qinv]
+  rw [homMk_comp_homMk (ofHom W f) (ofInv s hs) (ofHom W (𝟙 _)) (by simp)]
+  simp
+
+@[simps]
+def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
+  hom := (Q W).map s
+  inv := Qinv s hs
+  hom_inv_id := by
+    rw [Q_map_comp_Qinv]
+    apply homMk_eq_of_leftFractionRel
+    exact ⟨_, 𝟙 Y, s, by simp, by simp, by simpa using hs⟩
+  inv_hom_id := by
+    dsimp only [Qinv, Q_map]
+    rw [homMk_comp_homMk (ofInv s hs) (ofHom W s) (ofHom W (𝟙 Y)) (by simp)]
+    apply homMk_eq_of_leftFractionRel
+    exact ⟨_, 𝟙 Y, 𝟙 Y, by simp, by simp, by simpa using W.id_mem Y⟩
+
+instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
+  (inferInstance : IsIso (Qiso s hs).inv)-/
+
+end Localization
 
 end LeftFraction
 
