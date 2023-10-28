@@ -21,9 +21,9 @@ This file proves Nöbeling's theorem.
 ## Proof idea
 
 We follow the proof of theorem 5.4 in [scholze2019condensed], in which the idea is to embed `S` in
-a product of `I` copies of `Bool`, choosing a well-ordering on `I` and using ordinal induction over
-that well-order. Here we can let `I` be the set of clopen subsets of `S` since `S` is totally
-separated.
+a product of `I` copies of `Bool` for some sufficiently large `I`, and then to choose a
+well-ordering on `I` and use ordinal induction over that well-order. Here we can let `I` be
+the set of clopen subsets of `S` since `S` is totally separated.
 
 For `i : I`, let `e S i : LocallyConstant (S : Set (I → Bool)) ℤ` denote the map
 `fun f ↦ (if f.val i then 1 else 0)`.
@@ -37,7 +37,7 @@ spans can be proved directly.
 ## References
 
 - [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
-
+- [scholze2019condensed], Theorem 5.4.
 -/
 
 universe u
@@ -91,9 +91,9 @@ theorem proj_eq_self {x : I → Bool} (h : ∀ i, x i ≠ false → J i) : Proj 
 
 theorem proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ false → J i) : π C J = C := by
   ext x
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨y, hy, rfl⟩ := h; rwa [proj_eq_self]; exact (hh · y hy)
-  · refine ⟨x, h, ?_⟩; rw [proj_eq_self]; exact (hh · x h)
+  refine ⟨fun ⟨y, hy, h⟩ ↦ ?_, fun h ↦ ⟨x, h, ?_⟩⟩
+  · rwa [← h, proj_eq_self]; exact (hh · y hy)
+  · rw [proj_eq_self]; exact (hh · x h)
 
 theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
     (Proj J : (I → Bool) → (I → Bool)) := by
@@ -102,14 +102,13 @@ theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
 theorem proj_eq_of_subset (h : ∀ i, J i → K i) : π (π C K) J = π C J := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨y, hy, rfl⟩ := h
-    obtain ⟨z, hz, rfl⟩ := hy
-    suffices Proj J z = (Proj J ∘ Proj K) z by exact ⟨z, ⟨hz, this⟩⟩
+obtain ⟨y, ⟨z, hz, rfl⟩, rfl⟩ := h
+    refine ⟨z, hz, (?_ : _ = (Proj J ∘ Proj K) z)⟩ 
     rw [proj_comp_of_subset J K h]
   · obtain ⟨y, hy, rfl⟩ := h
     dsimp [π]
     rw [← Set.image_comp]
-    refine ⟨y, ⟨hy, ?_⟩⟩
+    refine ⟨y, hy, ?_⟩
     rw [proj_comp_of_subset J K h]
 
 variable {J K L}
@@ -172,7 +171,9 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
 
 variable {C} (hC : IsCompact C)
 
-/-- The functor from the poset of finsets of `I` to  `Profinite`, indexing the limit. -/
+/-- For a given compact subset `C` of `I → Bool`, `spanFunctor` is the functor from
+the poset of finsets of `I` to `Profinite`, sending a finite subset set `J` to the
+image of `C` in `J → Bool`. -/
 noncomputable
 def spanFunctor [∀ (J : Finset I) (i : I), Decidable (i ∈ J)] :
     (Finset I)ᵒᵖ ⥤ Profinite.{u} where
@@ -182,7 +183,7 @@ def spanFunctor [∀ (J : Finset I) (i : I), Decidable (i ∈ J)] :
   map_id J := by simp only [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by dsimp; congr; dsimp; rw [projRestricts_eq_comp]
 
-/-- The limit cone on `spanFunctor` -/
+/-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
 def spanCone [∀ (J : Finset I) (i : I), Decidable (i ∈ J)] : Cone (spanFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
@@ -218,8 +219,8 @@ end Projections
 
 section Products
 
-/-- The locally constant map from `C` to `ℤ` whose `i`-th projection is given by 1 if
-    `f.val i = true`, and 0 otherwise.  -/
+/-- `e C i` is the locally constant map from `C : Set (I → Bool)` to `ℤ` sending `f`
+to 1 if `f.val i = true`, and 0 otherwise.  -/
 def e (i : I) : LocallyConstant C ℤ where
   toFun := fun f ↦ (if f.val i then 1 else 0)
   isLocallyConstant := by
@@ -227,12 +228,17 @@ def e (i : I) : LocallyConstant C ℤ where
     exact (continuous_of_discreteTopology (f := fun (a : Bool) ↦ (if a then (1 : ℤ) else 0))).comp
       ((continuous_apply i).comp continuous_subtype_val)
 
-/-- Formal products of the form `e C i₁ ··· e C iᵣ` with `i₁ > ··· > iᵣ`. -/
+/-- `Products I` is the type of lists of decreasing elements of `I`, so a typical element
+is `[i₁, i₂, ...]` with `i₁ > i₂ > ...`. We order `Products I` lexicographically, 
+so `[] < [i₁, ...]`, and `[i₁, i₂, ...] < [j₁, j₂, ...]` if either `i₁ < j₁`, 
+or `i₁ = j₁` and `[i₂, ...] < [j₂, ...]`.
+
+ Terms `[i₁, i₂, ..., iᵣ]` of this type will be used to represent products of 
+the form `e C i₁ ··· e C iᵣ : C → ℤ` `. -/
 def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
 
 namespace Products
 
-noncomputable
 instance : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.Chain' (·>·)})
 
@@ -240,10 +246,11 @@ instance : LinearOrder (Products I) :=
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
-/-- The evaluation of of a formal product. -/
+/-- The evaluation `e C i₁ ··· e C iᵣ : C → ℤ`  of a formal product `[i₁, i₂, ..., iᵣ]`. -/
 def eval (l : Products I) := (l.1.map (e C)).prod
 
-/-- The predicate on products defining the basis. -/
+/-- The predicate on products which we prove picks out a basis of `LocallyConstant C ℤ`.
+We call such a product "good". -/```
 def isGood (l : Products I) : Prop :=
   l.eval C ∉ Submodule.span ℤ ((Products.eval C) '' {m | m < l})
 
@@ -256,7 +263,7 @@ theorem head!_le_of_lt {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
 
 end Products
 
-/-- The type of good products. -/
+/-- The set of good products. -/
 def GoodProducts := {l : Products I | l.isGood C}
 
 namespace GoodProducts
@@ -270,7 +277,7 @@ theorem injective : Function.Injective (eval C) := by
   dsimp [eval] at h
   rcases lt_trichotomy a b with (h'|rfl|h')
   · exfalso; apply hb; rw [← h]
-    exact Submodule.subset_span ⟨a, ⟨h',rfl⟩⟩
+    exact Submodule.subset_span ⟨a, h', rfl⟩
   · rfl
   · exfalso; apply ha; rw [h]
     exact Submodule.subset_span ⟨b, ⟨h',rfl⟩⟩
@@ -283,7 +290,7 @@ noncomputable
 def equiv_range : GoodProducts C ≃ range C :=
   Equiv.ofInjective (eval C) (injective C)
 
-theorem equiv_toFun_eq_eval : (equiv_range C).toFun = Set.rangeFactorization (eval C) := by rfl
+theorem equiv_toFun_eq_eval : (equiv_range C).toFun = Set.rangeFactorization (eval C) := rfl
 
 theorem linearIndependent_iff_range : LinearIndependent ℤ (GoodProducts.eval C) ↔
     LinearIndependent ℤ (fun (p : range C) ↦ p.1) := by
@@ -353,7 +360,8 @@ instance : IsWellFounded (Products I) (·<·) := by
   dsimp [Products]
   rw [(by rfl : (·>· : I → _) = flip (·<·))]
   infer_instance
-
+/-- An arbitrary product `e C i₁ * e C i₂ * ... * e C iᵣ` is in the ℤ-span of
+the good products. -/
 theorem eval_mem_span_goodProducts (l : Products I) :
     l.eval C ∈ span ℤ (Set.range (GoodProducts.eval C)) := by
   let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
@@ -372,7 +380,7 @@ theorem eval_mem_span_goodProducts (l : Products I) :
     exact h m hm
 
 end Products
-
+/-- The good products span `LocallyConstant C ℤ` if and only all the products do. -/
 theorem GoodProducts.span_iff_products : ⊤ ≤ span ℤ (Set.range (eval C)) ↔
     ⊤ ≤ span ℤ (Set.range (Products.eval C)) := by
   refine ⟨fun h ↦ le_trans h (span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ le_trans h ?_⟩
