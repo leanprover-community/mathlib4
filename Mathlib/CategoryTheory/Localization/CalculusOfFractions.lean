@@ -32,6 +32,8 @@ of fractions.
 
 namespace CategoryTheory
 
+open Category
+
 namespace Functor
 
 lemma congr_map_conjugate {C D : Type _} [Category C] [Category D] {F₁ F₂ : C ⥤ D}
@@ -165,7 +167,7 @@ lemma LeftFraction.rightFraction_fac [W.HasRightCalculusOfFractions'] {X Y : C}
   (HasRightCalculusOfFractions'.exists_rightFraction φ).choose_spec
 
 
-def LeftFractionRel ⦃X Y : C⦄ (z₁ z₂ : W.LeftFraction X Y) : Prop :=
+def LeftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y) : Prop :=
   ∃ (Z : C)  (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
     (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂), W (z₁.s ≫ t₁)
 
@@ -180,8 +182,8 @@ lemma symm {X Y : C} {z₁ z₂ : W.LeftFraction X Y} (h : LeftFractionRel z₁ 
   exact ⟨Z, t₂, t₁, hst.symm, hft.symm, by simpa only [← hst] using ht⟩
 
 lemma trans {X Y : C} {z₁ z₂ z₃ : W.LeftFraction X Y}
-    (h₁₂ : LeftFractionRel z₁ z₂) (h₂₃ : LeftFractionRel z₂ z₃)
-    [HasLeftCalculusOfFractions' W] :
+    [HasLeftCalculusOfFractions' W]
+    (h₁₂ : LeftFractionRel z₁ z₂) (h₂₃ : LeftFractionRel z₂ z₃) :
     LeftFractionRel z₁ z₃ := by
   obtain ⟨Z₄, t₁, t₂, hst, hft, ht⟩ := h₁₂
   obtain ⟨Z₅, u₂, u₃, hsu, hfu, hu⟩ := h₂₃
@@ -199,6 +201,66 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : W.LeftFraction X Y}
     exact W.comp_mem _ _ hu (W.comp_mem _ _ hv₅ hw)
 
 end LeftFractionRel
+
+
+section
+
+variable [W.HasLeftCalculusOfFractions']
+
+instance {X Y : C} : IsEquiv (W.LeftFraction X Y) LeftFractionRel where
+  refl := LeftFractionRel.refl
+  symm := fun _ _ => LeftFractionRel.symm
+  trans := fun _ _ _ => LeftFractionRel.trans
+
+namespace LeftFraction
+
+def comp₀ {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+    (z₃ : W.LeftFraction z₁.Y' z₂.Y') :
+    W.LeftFraction X Z :=
+  mk (z₁.f ≫ z₃.f) (z₂.s ≫ z₃.s) (W.comp_mem _ _ z₂.hs z₃.hs)
+
+lemma comp₀_rel {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+    (z₃ z₃' : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f)
+    (h₃' : z₂.f ≫ z₃'.s = z₁.s ≫ z₃'.f) :
+    LeftFractionRel (z₁.comp₀ z₂ z₃) (z₁.comp₀ z₂ z₃') := by
+  obtain ⟨z₄, fac⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+    (RightFraction.mk z₃.s z₃.hs z₃'.s)
+  dsimp at fac
+  have eq : z₁.s ≫ z₃.f ≫ z₄.f = z₁.s ≫ z₃'.f ≫ z₄.s := by
+    rw [← reassoc_of% h₃, ← reassoc_of% h₃', fac]
+  obtain ⟨Y, t, ht, fac'⟩ := HasLeftCalculusOfFractions'.ext _ _ _ z₁.hs eq
+  simp only [assoc] at fac'
+  refine' ⟨Y, z₄.f ≫ t, z₄.s ≫ t, _, _, _⟩
+  · dsimp [comp₀]
+    simp only [assoc, reassoc_of% fac]
+  · dsimp [comp₀]
+    simp only [assoc, fac']
+  · dsimp [comp₀]
+    simp only [assoc, ← reassoc_of% fac]
+    exact W.comp_mem _ _ z₂.hs
+      (W.comp_mem _ _ z₃'.hs
+        (W.comp_mem _ _ z₄.hs ht))
+
+variable (W)
+
+def Localization.Hom (X Y : C) :=
+  Quot (LeftFractionRel : W.LeftFraction X Y → W.LeftFraction X Y → Prop)
+
+variable {W}
+
+noncomputable def comp {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) :
+    Localization.Hom W X Z :=
+  Quot.mk _ (z₁.comp₀ z₂ (RightFraction.mk z₁.s z₁.hs z₂.f).leftFraction)
+
+lemma comp_eq {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+    (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f) :
+    z₁.comp z₂ = Quot.mk _ (z₁.comp₀ z₂ z₃) :=
+  Quot.sound (LeftFraction.comp₀_rel _ _ _ _
+    (RightFraction.leftFraction_fac (RightFraction.mk z₁.s z₁.hs z₂.f)) h₃)
+
+end LeftFraction
+
+end
 
 structure HasLeftCalculusOfFractions.ToSq {X' X Y : C} (s : X ⟶ X') (hs : W s) (u : X ⟶ Y) where
   obj : C
