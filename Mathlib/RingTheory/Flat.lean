@@ -31,7 +31,7 @@ This result is not yet formalised.
 ## Main theorems
 
 * `Module.Flat.of_retract`: retracts of flat modules are flat
-* `Module.Flat.of_iso`: modules isomorphic to a flat modules are flat
+* `Module.Flat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
@@ -93,7 +93,6 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
 
-/-- A reformulation of the flat property. -/
 lemma iff_rTensor_injective :
     Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
   have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
@@ -131,8 +130,8 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
   rw [← LinearMap.comp_apply, ← lTensor_comp, h]
   simp
 
-/-- A `R`-module isomorphic to a flat `R`-module is flat. -/
-lemma of_iso [f : Flat R M] (e : N ≃ₗ[R] M) : Flat R N := by
+/-- A `R`-module linearly equivalent to a flat `R`-module is flat. -/
+lemma of_linearEquiv [f : Flat R M] (e : N ≃ₗ[R] M) : Flat R N := by
   have h : e.symm.toLinearMap.comp e.toLinearMap = LinearMap.id := by simp
   exact of_retract _ _ _ e.toLinearMap e.symm.toLinearMap h
 
@@ -188,15 +187,15 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
   let _ := Classical.decEq ι
-  of_iso R _ _ (finsuppLEquivDirectSum R R ι)
+  of_linearEquiv R _ _ (finsuppLEquivDirectSum R R ι)
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
 
-instance of_free [Free R M] : Flat R M := of_iso R _ _ (Free.repr R M)
+instance of_free [Free R M] : Flat R M := of_linearEquiv R _ _ (Free.repr R M)
 
 /-- A projective module with a discrete type of generator is flat -/
-lemma of_projective_surj (ι : Type w) [Projective R M] (p : (ι →₀ R) →ₗ[R] M) (hp : Surjective p) :
-    Flat R M := by
+lemma of_projective_surjective (ι : Type w) [Projective R M] (p : (ι →₀ R) →ₗ[R] M)
+    (hp : Surjective p) : Flat R M := by
   have h := Module.projective_lifting_property p (LinearMap.id) hp
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he
