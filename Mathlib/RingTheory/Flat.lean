@@ -94,7 +94,7 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
 variable (M : Type v) [AddCommGroup M] [Module R M]
 
 /-- A reformulation of the flat property. -/
-lemma iff_rTensor_injective:
+lemma iff_rTensor_injective :
     Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
   have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
     (TensorProduct.lift ((lsmul R M).comp I.subtype))
