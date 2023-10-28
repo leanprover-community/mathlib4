@@ -362,36 +362,40 @@ theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
   cases' b <;> simp
 
 /-- Generic method to create a natural number by appending bits tail-recursively.
-It takes a boolean function `f` on each bit and `z` the starting point and the number of bits `i`.
-It is almost always specialized with `z = 0` and `i = w`; the length of the binary representation.
-Note that `ofBits f z i = 2 ^ i * z + ofBits f 0 i` which we prove next.
+It takes a boolean function `f` on each bit the number of bits `i`.  It is
+almost always specialized  `i = w`; the length of the binary representation.
+Note that `ofBits.go f z i = 2 ^ i * z + ofBits f i` which we prove next.
 This is an alternative to using `List`. It will be used for bitadd, bitneg, bitmul etc.-/
-def ofBits (f : Nat → Bool) (z : Nat) : Nat → Nat
-  | 0 => z
-  | i + 1 => ofBits f (z.bit (f i)) i
+def ofBits (f : Nat → Bool) : Nat → Nat :=
+  go 0
+  where
+    go (z : Nat) : Nat → Nat
+    | 0 => z
+    | i + 1 => go (z.bit (f i)) i
 
-theorem ofBits_eq_pow_mul_add {f z i} : ofBits f z i = 2 ^ i * z + ofBits f 0 i := by
+theorem ofBits_eq_pow_mul_add {f z i} : ofBits.go f z i = 2 ^ i * z + ofBits f i := by
   induction' i with i ih generalizing z
-  · simp [ofBits, bit_val]
-  · simp only [ofBits, @ih (bit (f i) 0), @ih (bit (f i) z)]
+  · simp [ofBits, ofBits.go, bit_val]
+  · simp only [ofBits, ofBits.go, @ih (bit (f i) 0), @ih (bit (f i) z)]
     rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
     simp [bit_val, add_assoc]
 
-theorem ofBits_lt {f i} : ofBits f 0 i < 2 ^ i := by
+theorem ofBits_lt {f i} : ofBits f i < 2 ^ i := by
   induction' i with i ih
-  · simp [ofBits, bit_val, lt_succ, Bool.toNat_le_one]
-  · simp only [ofBits]
+  · simp [ofBits, ofBits.go, bit_val, lt_succ, Bool.toNat_le_one]
+  · simp only [ofBits, ofBits.go]
     rw [ofBits_eq_pow_mul_add]
-    cases' (f i) <;> simp [two_pow_succ, ih]; linarith
+    rw [ofBits] at ih
+    cases' (f i) <;> simp [two_pow_succ, ih, ofBits]; linarith
 
 /-- The `ith` bit of `ofBits` is the function at `i`.
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
-theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f 0 j).testBit i = f i := by
+theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f j).testBit i = f i := by
   induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
-  · simp only [ofBits, bit_zero, lt_one_iff.1 h1]; cases (f 0) <;> rfl
+  · simp only [ofBits, ofBits.go, bit_zero, lt_one_iff.1 h1]; cases (f 0) <;> rfl
   · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
-    · rw [← ih h1, ofBits, ofBits_eq_pow_mul_add, testBit_two_pow_mul_add h1]
-    · rw [h1, ofBits, ofBits_eq_pow_mul_add, bit_zero, testBit_two_pow_mul_toNat_add (ofBits_lt)]
+    · rw [← ih h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, ofBits, testBit_two_pow_mul_add h1]
+    · rw [h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, bit_zero, testBit_two_pow_mul_toNat_add (ofBits_lt)]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
