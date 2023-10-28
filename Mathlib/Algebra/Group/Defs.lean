@@ -56,6 +56,9 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
 /--
 The notation typeclass for heterogeneous scalar multiplication.
 This enables the notation `a • b : γ` where `a : α`, `b : β`.
+
+It is assumed to represent an action on the left in some sense.
+When elaborating `a • b`, coercions get propagated to `b` and not to `a`.
 -/
 class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a • b` computes the product of `a` and `b`.
@@ -85,6 +88,8 @@ class SMul (M : Type u) (α : Type v) where
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
+
+macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
 attribute [to_additive (reorder := 1 2) SMul] Pow
