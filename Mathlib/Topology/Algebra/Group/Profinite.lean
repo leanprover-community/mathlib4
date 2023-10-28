@@ -116,7 +116,9 @@ end ContConjAction
 
 section TopGroups
 
-def subGroup_in_set (U : Set G) (one_mem : 1 ∈ U) : Subgroup G :=
+/-- Constructs a specific subgroup in any subset of a group containing the identity element.
+Is used to show that any clopen set in a compact topological group contains an open subgroup.-/
+def subGroup_in_set (U : Set G) (_ : 1 ∈ U) : Subgroup G :=
   let V := { v | (· * v) '' U ⊆ U }
   let H := { h ∈ V | h⁻¹ ∈ V }
   have : 1 ∈ V := by simp [Eq.subset rfl]
