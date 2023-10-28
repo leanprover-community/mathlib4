@@ -79,10 +79,6 @@ def ProjRestrict : C → π C J :=
 theorem continuous_projRestrict : Continuous (ProjRestrict C J) :=
   Continuous.restrict _ (continuous_proj _)
 
-theorem surjective_projRestrict :
-    Function.Surjective (ProjRestrict C J) :=
-  fun ⟨_, ⟨y, hy⟩⟩ ↦ ⟨⟨y, hy.1⟩, Subtype.ext hy.2⟩
-
 theorem proj_eq_self {x : I → Bool} (h : ∀ i, x i ≠ false → J i) : Proj J x = x := by
   ext i
   simp only [Proj, ite_eq_left_iff]
@@ -123,7 +119,7 @@ theorem continuous_projRestricts (h : ∀ i, J i → K i) : Continuous (ProjRest
   Continuous.comp (Homeomorph.continuous _) (continuous_projRestrict _ _)
 
 theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective (ProjRestricts C h) :=
-  (Homeomorph.surjective _).comp (surjective_projRestrict _ _)
+  (Homeomorph.surjective _).comp (Set.surjective_mapsTo_image_restrict _ _)
 
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
@@ -246,6 +242,14 @@ instance : LinearOrder (Products I) :=
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
+instance : IsWellFounded (Products I) (·<·) := by
+  have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
+    ext; exact lt_iff_lex_lt _ _
+  rw [this]
+  dsimp [Products]
+  rw [(by rfl : (·>· : I → _) = flip (·<·))]
+  infer_instance
+
 /-- The evaluation `e C i₁ ··· e C iᵣ : C → ℤ`  of a formal product `[i₁, i₂, ..., iᵣ]`. -/
 def eval (l : Products I) := (l.1.map (e C)).prod
 
@@ -353,13 +357,6 @@ theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j
     simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at h
     exact h' h.1
 
-instance : IsWellFounded (Products I) (·<·) := by
-  have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
-    ext; exact lt_iff_lex_lt _ _
-  rw [this]
-  dsimp [Products]
-  rw [(by rfl : (·>· : I → _) = flip (·<·))]
-  infer_instance
 /-- An arbitrary product `e C i₁ * e C i₂ * ... * e C iᵣ` is in the ℤ-span of
 the good products. -/
 theorem eval_mem_span_goodProducts (l : Products I) :
@@ -756,7 +753,8 @@ theorem coe_πs (o : Ordinal) (f : LocallyConstant (π C (ord I · < o)) ℤ) :
   simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap]
 
 theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
-  LocallyConstant.comap_injective _ (continuous_projRestrict _ _) (surjective_projRestrict _ _)
+  LocallyConstant.comap_injective _ (continuous_projRestrict _ _)
+  (Set.surjective_mapsTo_image_restrict _ _)
 
 /-- The `ℤ`-linear map induced by precomposition of the projection
     `π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
