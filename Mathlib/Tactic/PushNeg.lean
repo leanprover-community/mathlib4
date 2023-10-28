@@ -37,7 +37,7 @@ theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
 variable {γ : Type v}
-theorem not_nonempty_iff (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
+theorem not_nonempty_eq (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
   have A : ∀ (x : γ), ¬(x ∈ (∅ : Set γ)) := fun x ↦ id
   simp only [Set.Nonempty, not_exists, eq_iff_iff]
   exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
@@ -88,7 +88,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | (``GT.gt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_gt_eq
   | (``Set.Nonempty, #[_ty, e]) =>
       return mkSimpStep (← mkAppM ``Eq #[e, ← mkAppOptM ``EmptyCollection.emptyCollection
-          #[← mkAppM ``Set #[_ty], none]]) (← mkAppM ``not_nonempty_iff #[e])
+          #[← mkAppM ``Set #[_ty], none]]) (← mkAppM ``not_nonempty_eq #[e])
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
                         (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
