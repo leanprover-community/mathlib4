@@ -97,6 +97,14 @@ private theorem frequently_imp {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x → q x) (hp : ∃ᶠ (x : α) in f, p x) : ∃ᶠ (x : α) in f, q x :=
   Filter.Frequently.mp hp (Filter.eventually_of_forall hq)
 
+private theorem eventually_congr {α : Type*} {p q : α → Prop} {f : Filter α}
+    (hq : ∀ (x : α), p x ↔ q x) : (∀ᶠ (x : α) in f, p x) ↔ ∀ᶠ (x : α) in f, q x := by
+  congr! 2; exact hq _
+
+private theorem frequently_congr {α : Type*} {p q : α → Prop} {f : Filter α}
+    (hq : ∀ (x : α), p x ↔ q x) : (∃ᶠ (x : α) in f, p x) ↔ ∃ᶠ (x : α) in f, q x := by
+  congr! 2; exact hq _
+
 /-- The list of constants that are regarded as being quantifiers. -/
 def quantifiers : List Name :=
   [``Exists, ``And, ``Filter.Eventually, ``Filter.Frequently]
@@ -194,14 +202,6 @@ partial def peelUnbounded (e : Expr) (n? : Option Name) (unfold : Bool := false)
     return true
   else
     return false
-
-private theorem eventually_congr {α : Type*} {p q : α → Prop} {f : Filter α}
-    (hq : ∀ (x : α), p x ↔ q x) : (∀ᶠ (x : α) in f, p x) ↔ ∀ᶠ (x : α) in f, q x := by
-  congr! 2; exact hq _
-
-private theorem frequently_congr {α : Type*} {p q : α → Prop} {f : Filter α}
-    (hq : ∀ (x : α), p x ↔ q x) : (∃ᶠ (x : α) in f, p x) ↔ ∃ᶠ (x : α) in f, q x := by
-  congr! 2; exact hq _
 
 /-- Peel off a single quantifier from an `↔`. -/
 def peelIffAux : TacticM Unit := do
