@@ -395,7 +395,8 @@ theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f j).testBit i = f i := by
   · simp only [ofBits, ofBits.go, bit_zero, lt_one_iff.1 h1]; cases (f 0) <;> rfl
   · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
     · rw [← ih h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, ofBits, testBit_two_pow_mul_add h1]
-    · rw [h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, bit_zero, testBit_two_pow_mul_toNat_add (ofBits_lt)]
+    · rw [h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, bit_zero,
+        testBit_two_pow_mul_toNat_add (ofBits_lt)]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
