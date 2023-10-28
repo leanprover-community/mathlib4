@@ -176,6 +176,14 @@ theorem noncommProd_add (s t : Multiset α) (comm) :
 #align multiset.noncomm_sum_add Multiset.noncommSum_add
 
 @[to_additive]
+lemma noncommProd_induction (s : Multiset α) (comm)
+    (p : α → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p x) :
+    p (s.noncommProd comm) := by
+  induction' s using Quotient.inductionOn with l
+  simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at base ⊢
+  exact l.prod_induction p hom unit base
+
+@[to_additive]
 protected theorem noncommProd_map_aux [MonoidHomClass F α β] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
   simp only [Multiset.mem_map]
@@ -224,6 +232,7 @@ namespace Finset
 
 variable [Monoid β] [Monoid γ]
 
+-- TODO Consider using `comm :  Pairwise (Commute on f ∘ ((↑) : s → α))` instead below.
 
 /-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]
@@ -244,6 +253,14 @@ def noncommProd (s : Finset α) (f : α → β)
   (s.1.map f).noncommProd <| noncommProd_lemma s f comm
 #align finset.noncomm_prod Finset.noncommProd
 #align finset.noncomm_sum Finset.noncommSum
+
+@[to_additive]
+lemma noncommProd_induction (s : Finset α) (f : α → β) (comm)
+    (p : β → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p (f x)) :
+    p (s.noncommProd f comm) := by
+  refine Multiset.noncommProd_induction _ _ _ hom unit fun b hb ↦ ?_
+  obtain (⟨a, ha : a ∈ s, rfl : f a = b⟩) := by simpa using hb
+  exact base a ha
 
 @[to_additive (attr := congr)]
 theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁ = s₂)

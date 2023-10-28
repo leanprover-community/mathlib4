@@ -37,15 +37,6 @@ namespace Submodule
 
 open FiniteDimensional
 
--- TODO is this really the best statement?
-theorem foo {α β : Type*} {f : α → β} {s p : Set α} {t q : Set β} {x : α}
-    (h₁ : MapsTo f s t)
-    (h₂ : InjOn f s)
-    (h₃ : SurjOn f (p ∩ s) (q ∩ t))
-    (hx : x ∈ s) (hx' : f x ∈ q) : x ∈ p := by
-  obtain ⟨y, ⟨hy₀ : y ∈ p, hy₁ : y ∈ s⟩, hy₂ : f y = f x⟩ := h₃ ⟨hx', h₁ hx⟩
-  rwa [← h₂ hy₁ hx hy₂]
-
 theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p, f x ∈ p) :
     p ⊓ ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⨆ μ, ⨆ k, p ⊓ f.generalizedEigenspace μ k := by
   simp_rw [← (f.generalizedEigenspace _).mono.directed_le.inf_iSup_eq]
@@ -63,10 +54,17 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
     ((Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).sub_left
       (Algebra.commute_algebraMap_left _ _)).pow_pow _ _
   let g : Module.End K M := (m.support \ {μ}).noncommProd _ fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂
-  have hfg : Commute f g := by sorry
+  have hfg : Commute f g := Finset.noncommProd_commute _ _ _ _ fun μ' hμ' ↦
+    (Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).pow_right _
   have hg₀ : g (m.sum fun _μ mμ ↦ mμ) = g (m μ) := by
     sorry
-  have hg₁ : MapsTo g p p := by sorry
+  have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K M ↦ MapsTo g' p p)
+      (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' hμ' ↦ by
+    suffices MapsTo (f - algebraMap K (End K M) μ') p p by
+      simp only [LinearMap.coe_pow]; exact this.iterate (finrank K M)
+    intro x hx
+    rw [LinearMap.sub_apply, algebraMap_end_apply]
+    exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
   have hg₂ : MapsTo g ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) :=
     f.mapsTo_iSup_generalizedEigenspace_of_comm hfg μ
   have hg₃ : InjOn g ↑(⨆ k, f.generalizedEigenspace μ k) := by
@@ -77,7 +75,10 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
       ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) := by
     -- Looks like this is only place we'll need finite-dimensionality (we'll get it from `InjOn`).
     sorry
-  exact foo hg₂ hg₃ hg₄ (hm₂ μ) (hg₀ ▸ hg₁ hm₀)
+  specialize hm₂ μ
+  obtain ⟨y, ⟨hy₀ : y ∈ p, hy₁ : y ∈ ⨆ k, f.generalizedEigenspace μ k⟩, hy₂ : g y = g (m μ)⟩ :=
+    hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩
+  rwa [← hg₃ hy₁ hm₂ hy₂]
 
 theorem eq_iSup_inf_generalizedEigenspace [FiniteDimensional K M]
     (h : ∀ x ∈ p, f x ∈ p) (h' : f.IsTriangularizable) :

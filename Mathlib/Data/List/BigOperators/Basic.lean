@@ -46,6 +46,15 @@ theorem prod_cons : (a :: l).prod = a * l.prod :=
 #align list.prod_cons List.prod_cons
 #align list.sum_cons List.sum_cons
 
+@[to_additive]
+lemma prod_induction
+    (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
+    p l.prod := by
+  induction' l with a l ih; simpa
+  rw [List.prod_cons]
+  simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
+  exact hom _ _ (base.1) (ih base.2)
+
 @[to_additive (attr := simp)]
 theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
   calc
