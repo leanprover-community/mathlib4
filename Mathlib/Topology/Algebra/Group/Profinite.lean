@@ -153,40 +153,31 @@ lemma subGroup_in_set_open_of_compact (U : Set G) (one_mem : 1 ∈ U) (U_open : 
   suffices IsOpen V by exact IsOpen.inter this (IsOpen.inv this)
   apply isOpen_iff_forall_mem_open.mpr
   intro v hv
-  let m : G × G → G := fun ⟨g₁, g₂⟩ => g₁ * g₂
-  let r (u : U) : Set G × Set G → Prop := fun ⟨U_u, V_u⟩ ↦
-    (u : G) ∈ U_u ∧ v ∈ V_u ∧ IsOpen U_u ∧ IsOpen V_u ∧ (U_u ×ˢ V_u) ⊆ m⁻¹' U
-  have hU (u : U) : ∃ s, r u s := by
-    have ⟨(U_u : Set G), (V_u : Set G), U_u_open, V_u_closed, u_in_U_u, v_in_V_u, hm⟩ :
-        ∃ U_u V_u, IsOpen U_u ∧ IsOpen V_u ∧ (u : G) ∈ U_u
-        ∧ v ∈ V_u ∧ (U_u ×ˢ V_u) ⊆ m⁻¹' U := by
-      apply isOpen_prod_iff.mp
-      · exact IsOpen.preimage continuous_mul U_open
-      · apply hv; simp
-    exists (U_u, V_u)
-  obtain ⟨f, hf⟩ := Classical.axiomOfChoice hU
-  let cov (u : U) : Set G := (f u).1
+  have hh (u : U) : ∃ Uu Vu, IsOpen Uu ∧ IsOpen Vu ∧ (u : G) ∈ Uu ∧
+      v ∈ Vu ∧ (Uu ×ˢ Vu) ⊆ (fun ⟨g₁, g₂⟩ ↦ g₁ * g₂)⁻¹' U := by
+    apply isOpen_prod_iff.mp
+    · exact IsOpen.preimage continuous_mul U_open
+    · apply hv; simp
+  choose Uu Vu hUuopen hVuopen hUu hVu hmUVu using hh
   obtain ⟨t, ht⟩ := by
-    apply IsCompact.elim_finite_subcover U_compact cov
+    apply IsCompact.elim_finite_subcover U_compact Uu
     · aesop
     · intro u u_in_U
       simp only [Set.mem_iUnion]
       exists ⟨u, u_in_U⟩
       simp_all only [Subtype.forall]
-  let V' := ⋂ u ∈ t, (f u).2
+  let V' := ⋂ u ∈ t, Vu u
   have : IsOpen V' := by
     apply isOpen_biInter_finset
     intro u _
-    have ⟨_, _, _, V_u_open, _⟩ := hf u
-    assumption
+    exact hVuopen u
   have : v ∈ V' := by simp_all only [Set.mem_iInter, implies_true]
   have : V' ⊆ V := by
     intro v' v'_in_V' _ ⟨u, u_in_U, hu⟩
-    have : u ∈ ⋃ i ∈ t, cov i := ht u_in_U
+    have : u ∈ ⋃ i ∈ t, Uu i := ht u_in_U
     simp only [Set.mem_iUnion, Set.mem_iInter, ←hu] at *
-    obtain ⟨i, (i_in_t : i ∈ t), (u_in_i : u ∈ (f i).1)⟩ := bex_def.mp this
-    let ⟨_, _, _, _, hm⟩ := hf i
-    exact hm (Set.mk_mem_prod u_in_i (v'_in_V' i i_in_t))
+    obtain ⟨i, (i_in_t : i ∈ t), (u_in_i : u ∈ Uu i)⟩ := bex_def.mp this
+    exact (hmUVu i) (Set.mk_mem_prod u_in_i (v'_in_V' i i_in_t))
   exists V'
 
 end TopGroups
