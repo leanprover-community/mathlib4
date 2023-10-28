@@ -70,6 +70,7 @@ structure Equiv (α : Sort*) (β : Sort _) where
   protected right_inv : RightInverse invFun toFun
 #align equiv Equiv
 
+@[inherit_doc]
 infixl:25 " ≃ " => Equiv
 
 /-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
