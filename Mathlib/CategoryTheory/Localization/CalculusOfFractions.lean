@@ -48,6 +48,8 @@ namespace MorphismProperty
 
 variable {C D : Type _} [Category C] [Category D]
 
+/-- A left fraction from `X : C` to `Y : C` for `W : MorphismProperty C` consists of the
+datum of an object `Y' : C` and maps `f : X ⟶ Y'` and `s : Y ⟶ Y'` such that `W s`. -/
 structure LeftFraction (W : MorphismProperty C) (X Y : C) where
   {Y' : C}
   f : X ⟶ Y'
@@ -56,40 +58,49 @@ structure LeftFraction (W : MorphismProperty C) (X Y : C) where
 
 namespace LeftFraction
 
-variable (W : MorphismProperty C)
+variable (W : MorphismProperty C) {X Y : C}
 
-variable {X Y : C}
-
+/-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
 @[simps]
 def mkOfHom (f : X ⟶ Y) [W.ContainsIdentities] :
   W.LeftFraction X Y := mk f (𝟙 Y) (W.id_mem Y)
 
+/-- The right fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
 @[simps]
 def mkOfInv (s : Y ⟶ X) (hs : W s) :
   W.LeftFraction X Y := mk (𝟙 X) s hs
 
 variable {W}
 
-noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+/-- If `φ : W.LeftFraction X Y` and `L` is a functor which inverts `W`, this is the
+induced morphism `L.obj X ⟶ L.obj Y`  -/
+noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.obj X ⟶ L.obj Y :=
-  L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv
-
-lemma map_eq (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
-    φ.map L = L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
+  have := hL _ φ.hs
+  L.map φ.f ≫ inv (L.map φ.s)
 
 variable (W)
 
-lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) [L.IsLocalization W] [W.ContainsIdentities] :
-    (mkOfHom W f).map L = L.map f := by
-  simp [map_eq]
+lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
+    (mkOfHom W f).map L hL = L.map f := by
+  simp [map]
 
-@[simp]
-lemma map_mkOfInv (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) [L.IsLocalization W] :
-    (mkOfInv W s hs).map L = (Localization.isoOfHom L W s hs).inv := by
-  simp [map_eq]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+lemma map_mkOfInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    (mkOfInv W s hs).map L hL ≫ L.map s = 𝟙 _ := by
+  have := hL _ hs
+  simp [map]
+
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+lemma map_hom_mkOfInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    L.map s ≫ (mkOfInv W s hs).map L hL = 𝟙 _ := by
+  have := hL _ hs
+  simp [map]
 
 end LeftFraction
 
+/-- A right fraction from `X : C` to `Y : C` for `W : MorphismProperty C` consists of the
+datum of an object `X' : C` and maps `s : X' ⟶ Y` and `f : X' ⟶ Y'` such that `W s`. -/
 structure RightFraction (W : MorphismProperty C) (X Y : C) where
   {X' : C}
   s : X' ⟶ X
@@ -112,23 +123,28 @@ def mkOfInv (s : Y ⟶ X) (hs : W s) :
 
 variable {W}
 
-noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.obj X ⟶ L.obj Y :=
-  (Localization.isoOfHom L W φ.s φ.hs).inv ≫ L.map φ.f
-
-lemma map_eq (φ : W.RightFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
-    φ.map L = (Localization.isoOfHom L W φ.s φ.hs).inv ≫ L.map φ.f := rfl
+  have := hL _ φ.hs
+  inv (L.map φ.s) ≫ L.map φ.f
 
 variable (W)
 
-lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) [L.IsLocalization W] [W.ContainsIdentities] :
-    (mkOfHom W f).map L = L.map f := by
-  simp [map_eq, Localization.isoOfHom_id_inv L W X]
+lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
+    (mkOfHom W f).map L hL = L.map f := by
+  simp [map]
 
-@[simp]
-lemma map_mkOfInv (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) [L.IsLocalization W] :
-    (mkOfInv W s hs).map L = (Localization.isoOfHom L W s hs).inv := by
-  simp [map_eq]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+lemma map_mkOfInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    (mkOfInv W s hs).map L hL ≫ L.map s = 𝟙 _ := by
+  have := hL _ hs
+  simp [map]
+
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+lemma map_hom_mkOfInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    L.map s ≫ (mkOfInv W s hs).map L hL = 𝟙 _ := by
+  have := hL _ hs
+  simp [map]
 
 end RightFraction
 
@@ -201,7 +217,6 @@ lemma trans {X Y : C} {z₁ z₂ z₃ : W.LeftFraction X Y}
     exact W.comp_mem _ _ hu (W.comp_mem _ _ hv₅ hw)
 
 end LeftFractionRel
-
 
 section
 
