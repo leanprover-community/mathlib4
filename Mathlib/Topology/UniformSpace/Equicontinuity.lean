@@ -790,20 +790,17 @@ theorem UniformInducing.uniformEquicontinuousOn_iff {F : ι → β → α} {S : 
   simp only [uniformEquicontinuousOn_iff_uniformContinuousOn, this.uniformContinuousOn_iff]
   rfl
 
-/-- A version of `EquicontinuousWithinAt.closure` applicable to subsets of types which embed
-continuously into `X → α` with the product topology. It turns out we don't need any condition on
-the embedding other than continuity, but in practice this will mostly be applied to `FunLike` types
-where the coercion is injective. -/
 theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Set X} {x₀ : X}
-    (hA : EquicontinuousWithinAt (u ∘ (↑) : A → X → α) S x₀) (hu : Continuous u) :
+    (hA : EquicontinuousWithinAt (u ∘ (↑) : A → X → α) S x₀) (hu₁ : Continuous (S.restrict ∘ u))
+    (hu₂ : Continuous (eval x₀ ∘ u)) :
     EquicontinuousWithinAt (u ∘ (↑) : closure A → X → α) S x₀ := by
   intro U hU
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
-  filter_upwards [hA V hV] with x hx
+  filter_upwards [hA V hV, eventually_mem_nhdsWithin] with x hx hxS
   rw [SetCoe.forall] at *
   change A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V at hx
-  refine' (closure_minimal hx <| hVclosed.preimage <| _).trans (preimage_mono hVU)
-  exact Continuous.prod_mk ((continuous_apply x₀).comp hu) ((continuous_apply x).comp hu)
+  refine (closure_minimal hx <| hVclosed.preimage <| hu₂.prod_mk ?_).trans (preimage_mono hVU)
+  exact (continuous_apply ⟨x, hxS⟩).comp hu₁
 
 /-- A version of `EquicontinuousAt.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any condition on the embedding
@@ -813,19 +810,8 @@ theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :
     EquicontinuousAt (u ∘ (↑) : closure A → X → α) x₀ := by
   rw [← equicontinuousWithinAt_univ] at hA ⊢
-  exact hA.closure' hu
+  exact hA.closure' (Pi.continuous_restrict _ |>.comp hu) (continuous_apply x₀ |>.comp hu)
 #align equicontinuous_at.closure' EquicontinuousAt.closure'
-
-/-- A version of `EquicontinuousWithinAt.closure_rel` applicable to subsets of types which embed
-continuously into `S → α` with the product topology. It turns out we don't need any condition on
-the embedding other than continuity, but in practice this will mostly be applied to
-`FunLike` types where the coercion is injective. -/
-theorem EquicontinuousWithinAt.closure_rel' {A : Set Y} {u : Y → X → α} {S : Set X} {x₀ : X}
-    (hx₀ : x₀ ∈ S) (hA : EquicontinuousWithinAt (u ∘ (↑) : A → X → α) S x₀)
-    (hu : Continuous (S.restrict ∘ u)) :
-    EquicontinuousWithinAt (u ∘ (↑) : closure A → X → α) S x₀ := by
-  rw [← equicontinuousAt_restrict_iff _ ⟨x₀, hx₀⟩] at hA ⊢
-  exact hA.closure' hu
 
 /-- If a set of functions is equicontinuous at some `x₀`, its closure for the product topology is
 also equicontinuous at `x₀`. -/
@@ -834,26 +820,20 @@ protected theorem EquicontinuousAt.closure {A : Set (X → α)} {x₀ : X} (hA :
   EquicontinuousAt.closure' (u := id) hA continuous_id
 #align equicontinuous_at.closure EquicontinuousAt.closure
 
-/-- If a set of functions is equicontinuous at some `x₀` within a subset `S`, its closure for the
-product topology (i.e the topology of pointwise convergence **on the whole `X`**) is also
-equicontinuous at `x₀` within `S`. See also `EquicontinuousWithinAt.closure_rel` for a version
-that only assumes convergence pointwise **on `S`**. -/
 protected theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X} {x₀ : X}
     (hA : A.EquicontinuousWithinAt S x₀) :
     (closure A).EquicontinuousWithinAt S x₀ :=
-  EquicontinuousWithinAt.closure' (u := id) hA continuous_id
+  EquicontinuousWithinAt.closure' (u := id) hA (Pi.continuous_restrict _) (continuous_apply _)
 
-/-- If a set of functions is equicontinuous at some `x₀ ∈ S` within `S`, its closure for the
-topology of pointwise convergence **on the subset `S`** is also equicontinuous at `x₀` within `S`.
-
-Note: since there is a non-standard topology in this statement, it may be easier to use
-`EquicontinuousWithinAt.closure_rel'` or
-`Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt_rel` instead. -/
-theorem EquicontinuousWithinAt.closure_rel {A : Set (X → α)} {S : Set X} {x₀ : X}
-    (hx₀ : x₀ ∈ S) (hA : A.EquicontinuousWithinAt S x₀) :
-    (@closure _ (.induced S.restrict inferInstance) A).EquicontinuousWithinAt S x₀ :=
-  EquicontinuousWithinAt.closure_rel' (tY := .induced S.restrict inferInstance)
-    (u := id) hx₀ hA continuous_induced_dom
+--theorem EquicontinuousWithinAt.closure {A : Set (X → α)} {S : Set X} {x₀ : X}
+--    (hA : A.EquicontinuousWithinAt S x₀) :
+--    (@closure _
+--      (.induced S.restrict inferInstance ⊓ .induced (eval x₀) inferInstance)
+--      A).EquicontinuousWithinAt S x₀ :=
+--  EquicontinuousWithinAt.closure'
+--    (tY := .induced (S.restrict ∘ id) Pi.topologicalSpace ⊓ .induced (eval x₀ ∘ id) toTopologicalSpace)
+--      (u := id) hA (by convert continuous_inf_dom_left continuous_induced_dom)
+--      (by convert continuous_inf_dom_right continuous_induced_dom)
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is equicontinuous at some `x₀ : X`, then the limit is continuous at `x₀`. -/
@@ -864,27 +844,21 @@ theorem Filter.Tendsto.continuousAt_of_equicontinuousAt {l : Filter ι} [l.NeBot
     ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
 #align filter.tendsto.continuous_at_of_equicontinuous_at Filter.Tendsto.continuousAt_of_equicontinuousAt
 
-/-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* ***on all of `X`*** along some nontrivial
-filter, and if the family `𝓕` is equicontinuous at some `x₀ : X`, then the limit is continuous
-at `x₀` within `S`. See also `Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt_rel` for
-a version that only assumes pointwise convergence **on `S`**. -/
+-- Lots of issues...
 theorem Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt {l : Filter ι} [l.NeBot]
-    {F : ι → X → α} {f : X → α} {S : Set X} {x₀ : X} (h₁ : Tendsto F l (𝓝 f))
-    (h₂ : EquicontinuousWithinAt F S x₀) :
-    ContinuousWithinAt f S x₀ :=
-  (equicontinuousWithinAt_iff_range.mp h₂).closure.continuousWithinAt
-    ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
-
-/-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* ***on a subset `S`*** along some nontrivial
-filter, and if the family `𝓕` is equicontinuous at some `x₀ ∈ S`, then the limit is continuous
-at `x₀` within `S`. -/
-theorem Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt_rel {l : Filter ι} [l.NeBot]
     {F : ι → X → α} {f : X → α} {S : Set X} {x₀ : X} (h₁ : ∀ x ∈ S, Tendsto (F · x) l (𝓝 (f x)))
-    (h₂ : EquicontinuousWithinAt F S x₀) (hx₀ : x₀ ∈ S) :
+    (h₂ : Tendsto (F · x₀) l (𝓝 (f x₀))) (h₃ : EquicontinuousWithinAt F S x₀) :
     ContinuousWithinAt f S x₀ := by
-  refine (equicontinuousWithinAt_iff_range.mp h₂).closure_rel hx₀ |>.continuousWithinAt
+  have := EquicontinuousWithinAt.closure' (u := id)
+    (tY := .induced (S.restrict ∘ id) Pi.topologicalSpace ⊓ .induced (eval x₀ ∘ id) inferInstance)
+    (equicontinuousWithinAt_iff_range.mp h₃)
+    (by convert continuous_inf_dom_left continuous_induced_dom)
+    (by convert continuous_inf_dom_right continuous_induced_dom)
+  refine this.continuousWithinAt
     ⟨f, @mem_closure_of_tendsto _ _ (_) _ l _ _ _ ?_ <| eventually_of_forall mem_range_self⟩
-  simpa [nhds_induced, tendsto_pi_nhds] using h₁
+  rw [nhds_inf (t₁ := .induced S.restrict Pi.topologicalSpace)
+        (t₂ := .induced (eval x₀) inferInstance)]
+  simpa [nhds_induced, tendsto_inf, tendsto_pi_nhds] using ⟨h₁, h₂⟩
 
 /-- A version of `Equicontinuous.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any condition on the embedding
@@ -895,21 +869,10 @@ theorem Equicontinuous.closure' {A : Set Y} {u : Y → X → α}
     Equicontinuous (u ∘ (↑) : closure A → X → α) := fun x ↦ (hA x).closure' hu
 #align equicontinuous.closure' Equicontinuous.closure'
 
-/-- A version of `EquicontinuousOn.closure` applicable to subsets of types which embed continuously
-into `X → α` with the product topology. It turns out we don't need any condition on the embedding
-other than continuity, but in practice this will mostly be applied to `FunLike` types where
-the coercion is injective. -/
 theorem EquicontinuousOn.closure' {A : Set Y} {u : Y → X → α} {S : Set X}
-    (hA : EquicontinuousOn (u ∘ (↑) : A → X → α) S) (hu : Continuous u) :
-    EquicontinuousOn (u ∘ (↑) : closure A → X → α) S := fun x hx ↦ (hA x hx).closure' hu
-
-/-- A version of `EquicontinuousOn.closure_rel` applicable to subsets of types which embed
-continuously into `S → α` with the product topology. It turns out we don't need any condition on
-the embedding other than continuity, but in practice this will mostly be applied to `FunLike` types
-where the coercion is injective. -/
-theorem EquicontinuousOn.closure_rel' {A : Set Y} {u : Y → X → α} {S : Set X}
     (hA : EquicontinuousOn (u ∘ (↑) : A → X → α) S) (hu : Continuous (S.restrict ∘ u)) :
-    EquicontinuousOn (u ∘ (↑) : closure A → X → α) S := fun x hx ↦ (hA x hx).closure_rel' hx hu
+    EquicontinuousOn (u ∘ (↑) : closure A → X → α) S :=
+  fun x hx ↦ (hA x hx).closure' hu <| by exact continuous_apply ⟨x, hx⟩ |>.comp hu
 
 /-- If a set of functions is equicontinuous, its closure for the product topology is also
 equicontinuous. -/
@@ -923,10 +886,6 @@ of pointwise convergence **on the whole `X`**) is also equicontinuous. See also
 protected theorem EquicontinuousOn.closure {A : Set <| X → α} {S : Set X} (hA : A.EquicontinuousOn S) :
     (closure A).EquicontinuousOn S := fun x hx ↦ (hA x hx).closure
 
-theorem EquicontinuousOn.closure_rel {A : Set <| X → α} {S : Set X} (hA : A.EquicontinuousOn S) :
-    (@closure _ (.induced S.restrict inferInstance) A).EquicontinuousOn S :=
-  fun x hx ↦ (hA x hx).closure_rel hx
-
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is equicontinuous, then the limit is continuous. -/
 theorem Filter.Tendsto.continuous_of_equicontinuous {l : Filter ι} [l.NeBot] {F : ι → X → α}
@@ -935,30 +894,26 @@ theorem Filter.Tendsto.continuous_of_equicontinuous {l : Filter ι} [l.NeBot] {F
 #align filter.tendsto.continuous_of_equicontinuous_at Filter.Tendsto.continuous_of_equicontinuous
 
 theorem Filter.Tendsto.continuousOn_of_equicontinuousOn {l : Filter ι} [l.NeBot] {F : ι → X → α}
-    {f : X → α} {S : Set X} (h₁ : Tendsto F l (𝓝 f)) (h₂ : EquicontinuousOn F S) :
-    ContinuousOn f S :=
-  fun x hx ↦ h₁.continuousWithinAt_of_equicontinuousWithinAt (h₂ x hx)
-
-theorem Filter.Tendsto.continuousOn_of_equicontinuousOn_rel {l : Filter ι} [l.NeBot] {F : ι → X → α}
     {f : X → α} {S : Set X} (h₁ : ∀ x ∈ S, Tendsto (F · x) l (𝓝 (f x)))
     (h₂ : EquicontinuousOn F S) : ContinuousOn f S :=
-  fun x hx ↦ continuousWithinAt_of_equicontinuousWithinAt_rel h₁ (h₂ x hx) hx
+  fun x hx ↦ Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt h₁ (h₁ x hx) (h₂ x hx)
 
 /-- A version of `UniformEquicontinuousOn.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
 on the embedding than continuity, but in practice this will mostly be applied to `FunLike` types
 where the coercion is injective. -/
 theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : Set β}
-    (hA : UniformEquicontinuousOn (u ∘ (↑) : A → β → α) S) (hu : Continuous u) :
+    (hA : UniformEquicontinuousOn (u ∘ (↑) : A → β → α) S) (hu : Continuous (S.restrict ∘ u)) :
     UniformEquicontinuousOn (u ∘ (↑) : closure A → β → α) S := by
   intro U hU
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
-  filter_upwards [hA V hV]
-  rintro ⟨x, y⟩ hxy
+  filter_upwards [hA V hV, mem_inf_of_right (mem_principal_self _)]
+  rintro ⟨x, y⟩ hxy ⟨hxS, hyS⟩
   rw [SetCoe.forall] at *
   change A ⊆ (fun f => (u f x, u f y)) ⁻¹' V at hxy
-  refine' (closure_minimal hxy <| hVclosed.preimage <| _).trans (preimage_mono hVU)
-  exact Continuous.prod_mk ((continuous_apply x).comp hu) ((continuous_apply y).comp hu)
+  refine (closure_minimal hxy <| hVclosed.preimage <| .prod_mk ?_ ?_).trans (preimage_mono hVU)
+  · exact (continuous_apply ⟨x, hxS⟩).comp hu
+  · exact (continuous_apply ⟨y, hyS⟩).comp hu
 
 /-- A version of `UniformEquicontinuous.closure` applicable to subsets of types which embed
 continuously into `β → α` with the product topology. It turns out we don't need any other condition
@@ -968,14 +923,8 @@ theorem UniformEquicontinuous.closure' {A : Set Y} {u : Y → β → α}
     (hA : UniformEquicontinuous (u ∘ (↑) : A → β → α)) (hu : Continuous u) :
     UniformEquicontinuous (u ∘ (↑) : closure A → β → α) := by
   rw [← uniformEquicontinuousOn_univ] at hA ⊢
-  exact hA.closure' hu
+  exact hA.closure' (Pi.continuous_restrict _ |>.comp hu)
 #align uniform_equicontinuous.closure' UniformEquicontinuous.closure'
-
-theorem UniformEquicontinuousOn.closure_rel' {A : Set Y} {u : Y → β → α} {S : Set β}
-    (hA : UniformEquicontinuousOn (u ∘ (↑) : A → β → α) S) (hu : Continuous (S.restrict ∘ u)) :
-    UniformEquicontinuousOn (u ∘ (↑) : closure A → β → α) S := by
-  rw [← uniformEquicontinuous_restrict_iff _] at hA ⊢
-  exact hA.closure' hu
 
 /-- If a set of functions is uniformly equicontinuous, its closure for the product topology is also
 uniformly equicontinuous. -/
@@ -986,13 +935,13 @@ protected theorem UniformEquicontinuous.closure {A : Set <| β → α} (hA : A.U
 
 protected theorem UniformEquicontinuousOn.closure {A : Set <| β → α} {S : Set β}
     (hA : A.UniformEquicontinuousOn S) : (closure A).UniformEquicontinuousOn S :=
-  UniformEquicontinuousOn.closure' (u := id) hA continuous_id
+  UniformEquicontinuousOn.closure' (u := id) hA (Pi.continuous_restrict _)
 
-theorem UniformEquicontinuousOn.closure_rel {A : Set <| β → α} {S : Set β}
-    (hA : A.UniformEquicontinuousOn S) :
-    (@closure _ (.induced S.restrict inferInstance) A).UniformEquicontinuousOn S :=
-  UniformEquicontinuousOn.closure_rel' (tY := .induced S.restrict inferInstance) (u := id)
-    hA continuous_induced_dom
+--theorem UniformEquicontinuousOn.closure_rel {A : Set <| β → α} {S : Set β}
+--    (hA : A.UniformEquicontinuousOn S) :
+--    (@closure _ (.induced S.restrict inferInstance) A).UniformEquicontinuousOn S :=
+--  UniformEquicontinuousOn.closure_rel' (tY := .induced S.restrict inferInstance) (u := id)
+--    hA continuous_induced_dom
 
 /-- If `𝓕 : ι → β → α` tends to `f : β → α` *pointwise* along some nontrivial filter, and if the
 family `𝓕` is uniformly equicontinuous, then the limit is uniformly continuous. -/
@@ -1004,17 +953,14 @@ theorem Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous {l : Filter ι
 #align filter.tendsto.uniform_continuous_of_uniform_equicontinuous Filter.Tendsto.uniformContinuous_of_uniformEquicontinuous
 
 theorem Filter.Tendsto.uniformContinuousOn_of_uniformEquicontinuousOn {l : Filter ι} [l.NeBot]
-    {F : ι → β → α} {f : β → α} {S : Set β} (h₁ : Tendsto F l (𝓝 f))
-    (h₂ : UniformEquicontinuousOn F S) :
-    UniformContinuousOn f S :=
-  (uniformEquicontinuousOn_iff_range.mp h₂).closure.uniformContinuousOn
-    ⟨f, mem_closure_of_tendsto h₁ <| eventually_of_forall mem_range_self⟩
-
-theorem Filter.Tendsto.uniformContinuousOn_of_uniformEquicontinuousOn_rel {l : Filter ι} [l.NeBot]
     {F : ι → β → α} {f : β → α} {S : Set β} (h₁ : ∀ x ∈ S, Tendsto (F · x) l (𝓝 (f x)))
     (h₂ : UniformEquicontinuousOn F S) :
     UniformContinuousOn f S := by
-  refine (uniformEquicontinuousOn_iff_range.mp h₂).closure_rel.uniformContinuousOn
+  have := UniformEquicontinuousOn.closure' (u := id)
+    (tY := .induced (S.restrict ∘ id) Pi.topologicalSpace)
+    (uniformEquicontinuousOn_iff_range.mp h₂)
+    continuous_induced_dom
+  refine this.uniformContinuousOn
     ⟨f, @mem_closure_of_tendsto _ _ (_) _ l _ _ _ ?_ <| eventually_of_forall mem_range_self⟩
   simpa [nhds_induced, tendsto_pi_nhds] using h₁
 
