@@ -1317,7 +1317,6 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   unfold IsPreconnected
   by_contra'
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
-  rw [not_nonempty_iff_eq_empty] at H
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_clopen _ _).mpr ⟨_, _⟩
