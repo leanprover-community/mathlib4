@@ -40,8 +40,6 @@ namespace Real
 
 namespace Wallis
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 /-- The product of the first `k` terms in Wallis' formula for `π`. -/

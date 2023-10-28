@@ -36,8 +36,6 @@ This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`
 
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
 
 noncomputable section

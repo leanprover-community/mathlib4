@@ -20,9 +20,6 @@ is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x
 generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Real Topology BigOperators
 
 open Real Set Filter intervalIntegral MeasureTheory.MeasureSpace

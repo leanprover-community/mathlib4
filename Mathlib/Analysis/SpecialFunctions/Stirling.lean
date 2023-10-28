@@ -36,8 +36,6 @@ open scoped Topology Real BigOperators Nat
 
 open Finset Filter Nat Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace Stirling
 
 /-!

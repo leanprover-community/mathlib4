@@ -76,9 +76,6 @@ make no sense. However, the measure is not globally zero if the space is big eno
 * [Herbert Federer, Geometric Measure Theory, Chapter 2.9][Federer1996]
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open scoped Filter ENNReal MeasureTheory NNReal Topology

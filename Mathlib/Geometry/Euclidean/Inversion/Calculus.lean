@@ -22,8 +22,6 @@ space in this file.
 inversion, derivative
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology RealInnerProductSpace
 

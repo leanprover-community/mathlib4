@@ -24,9 +24,6 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 noncomputable section
