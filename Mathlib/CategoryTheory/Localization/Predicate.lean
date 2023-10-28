@@ -184,6 +184,12 @@ lemma isoOfHom_inv_hom_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
     (isoOfHom L W f hf).inv ≫ L.map f = 𝟙 _ :=
   (isoOfHom L W f hf).inv_hom_id
 
+@[simp]
+lemma isoOfHom_id_inv (X : C) (hX : W (𝟙 X)) :
+    (isoOfHom L W (𝟙 X) hX).inv = 𝟙 _ := by
+  rw [← cancel_mono (isoOfHom L W (𝟙 X) hX).hom, Iso.inv_hom_id, id_comp,
+    isoOfHom_hom, Functor.map_id]
+
 instance : IsEquivalence (Localization.Construction.lift L (inverts L W)) :=
   (inferInstance : L.IsLocalization W).nonempty_isEquivalence.some
 

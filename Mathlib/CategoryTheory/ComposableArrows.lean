@@ -26,7 +26,7 @@ abbrev obj' (i : ℕ) (hi : i ≤ n := by linarith) : C := F.obj ⟨i, by linari
 
 @[simp]
 abbrev map' (i j : ℕ) (hij : i ≤ j := by linarith) (hjn : j ≤ n := by linarith) :
-  F.obj ⟨i, by linarith⟩ ⟶ F.obj ⟨j, by linarith⟩ := F.map (homOfLE (by
+  F.obj' i ⟶ F.obj' j := F.map (homOfLE (by
     simp only [Fin.mk_le_mk]
     linarith))
 

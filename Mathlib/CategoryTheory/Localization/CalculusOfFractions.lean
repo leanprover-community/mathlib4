@@ -1,4 +1,34 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Localization.Opposite
+
+/-!
+# Calculus of fractions
+
+Following the definitions by [Gabriel and Zisman][gabriel-zisman-1967],
+given a morphism property `W : MorphismProperty C` on a category `C`,
+we introduce the class `W.HasLeftCalculusOfFractions`. The main
+result is that if `L : C ⥤ D` is a localization functor for `W`,
+then for any morphism `L.obj X ⟶ L.obj Y` in `D`, there exists an auxiliary
+object `Y' : C` and morphisms `g : X ⟶ Y'` and `s : Y ⟶ Y'`, with `W s`, such
+that the given morphism is a sort of fraction `g / s`, or more precisely of
+the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`. This is stated
+as `MorphismProperty.HasLeftCalculusOfFractions.fac`. Similarly as for
+the localization of rings, we have lemmas which give necessary and sufficient
+conditions for the equality of two fractions.
+
+In order to obtain these results, we construct a candidate for the
+localized category in which the morphisms are defined as equivalence classes
+of fractions.
+
+## References
+
+* [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
+
+-/
 
 namespace CategoryTheory
 
@@ -14,7 +44,161 @@ end Functor
 
 namespace MorphismProperty
 
-variable {C D : Type _} [Category C] [Category D] (L : C ⥤ D) {W : MorphismProperty C}
+variable {C D : Type _} [Category C] [Category D]
+
+structure LeftFraction (W : MorphismProperty C) (X Y : C) where
+  {Y' : C}
+  f : X ⟶ Y'
+  s : Y ⟶ Y'
+  hs : W s
+
+namespace LeftFraction
+
+variable (W : MorphismProperty C)
+
+variable {X Y : C}
+
+@[simps]
+def mkOfHom (f : X ⟶ Y) [W.ContainsIdentities] :
+  W.LeftFraction X Y := mk f (𝟙 Y) (W.id_mem Y)
+
+@[simps]
+def mkOfInv (s : Y ⟶ X) (hs : W s) :
+  W.LeftFraction X Y := mk (𝟙 X) s hs
+
+variable {W}
+
+noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+    L.obj X ⟶ L.obj Y :=
+  L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv
+
+lemma map_eq (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+    φ.map L = L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
+
+variable (W)
+
+lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) [L.IsLocalization W] [W.ContainsIdentities] :
+    (mkOfHom W f).map L = L.map f := by
+  simp [map_eq]
+
+@[simp]
+lemma map_mkOfInv (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) [L.IsLocalization W] :
+    (mkOfInv W s hs).map L = (Localization.isoOfHom L W s hs).inv := by
+  simp [map_eq]
+
+end LeftFraction
+
+structure RightFraction (W : MorphismProperty C) (X Y : C) where
+  {X' : C}
+  s : X' ⟶ X
+  hs : W s
+  f : X' ⟶ Y
+
+namespace RightFraction
+
+variable (W : MorphismProperty C)
+
+variable {X Y : C}
+
+@[simps]
+def mkOfHom (f : X ⟶ Y) [W.ContainsIdentities] :
+  W.RightFraction X Y := mk (𝟙 X) (W.id_mem X) f
+
+@[simps]
+def mkOfInv (s : Y ⟶ X) (hs : W s) :
+  W.RightFraction X Y := mk s hs (𝟙 Y)
+
+variable {W}
+
+noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+    L.obj X ⟶ L.obj Y :=
+  (Localization.isoOfHom L W φ.s φ.hs).inv ≫ L.map φ.f
+
+lemma map_eq (φ : W.RightFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+    φ.map L = (Localization.isoOfHom L W φ.s φ.hs).inv ≫ L.map φ.f := rfl
+
+variable (W)
+
+lemma map_mkOfHom (f : X ⟶ Y) (L : C ⥤ D) [L.IsLocalization W] [W.ContainsIdentities] :
+    (mkOfHom W f).map L = L.map f := by
+  simp [map_eq, Localization.isoOfHom_id_inv L W X]
+
+@[simp]
+lemma map_mkOfInv (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) [L.IsLocalization W] :
+    (mkOfInv W s hs).map L = (Localization.isoOfHom L W s hs).inv := by
+  simp [map_eq]
+
+end RightFraction
+
+variable (L : C ⥤ D) (W : MorphismProperty C)
+
+class HasLeftCalculusOfFractions' extends W.IsMultiplicative : Prop where
+  exists_leftFraction ⦃X Y : C⦄ (φ : W.RightFraction X Y) :
+    ∃ (ψ : W.LeftFraction X Y), φ.f ≫ ψ.s = φ.s ≫ ψ.f
+  ext : ∀ ⦃X' X Y : C⦄ (f₁ f₂ : X ⟶ Y) (s : X' ⟶ X) (_ : W s)
+    (_ : s ≫ f₁ = s ≫ f₂), ∃ (Y' : C) (t : Y ⟶ Y') (_ : W t), f₁ ≫ t = f₂ ≫ t
+
+class HasRightCalculusOfFractions' extends W.IsMultiplicative : Prop :=
+  exists_rightFraction ⦃X Y : C⦄ (φ : W.LeftFraction X Y) :
+    ∃ (ψ : W.RightFraction X Y), ψ.s ≫ φ.f = ψ.f ≫ φ.s
+  ext : ∀ ⦃X Y Y' : C⦄ (f₁ f₂ : X ⟶ Y) (s : Y ⟶ Y') (_ : W s)
+    (_ : f₁ ≫ s = f₂ ≫ s), ∃ (X' : C) (t : X' ⟶ X) (_ : W t), t ≫ f₁ = t ≫ f₂
+
+variable {W}
+
+noncomputable def RightFraction.leftFraction [W.HasLeftCalculusOfFractions'] {X Y : C}
+    (φ : W.RightFraction X Y) : W.LeftFraction X Y :=
+  (HasLeftCalculusOfFractions'.exists_leftFraction φ).choose
+
+@[reassoc]
+lemma RightFraction.leftFraction_fac [W.HasLeftCalculusOfFractions'] {X Y : C}
+    (φ : W.RightFraction X Y) : φ.f ≫ φ.leftFraction.s = φ.s ≫ φ.leftFraction.f :=
+  (HasLeftCalculusOfFractions'.exists_leftFraction φ).choose_spec
+
+noncomputable def LeftFraction.rightFraction [W.HasRightCalculusOfFractions'] {X Y : C}
+    (φ : W.LeftFraction X Y) : W.RightFraction X Y :=
+  (HasRightCalculusOfFractions'.exists_rightFraction φ).choose
+
+@[reassoc]
+lemma LeftFraction.rightFraction_fac [W.HasRightCalculusOfFractions'] {X Y : C}
+    (φ : W.LeftFraction X Y) : φ.rightFraction.s ≫ φ.f = φ.rightFraction.f ≫ φ.s :=
+  (HasRightCalculusOfFractions'.exists_rightFraction φ).choose_spec
+
+
+def LeftFractionRel ⦃X Y : C⦄ (z₁ z₂ : W.LeftFraction X Y) : Prop :=
+  ∃ (Z : C)  (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
+    (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂), W (z₁.s ≫ t₁)
+
+namespace LeftFractionRel
+
+lemma refl {X Y : C} (z : W.LeftFraction X Y) : LeftFractionRel z z :=
+  ⟨z.Y', 𝟙 _, 𝟙 _, rfl, rfl, by simpa only [Category.comp_id] using z.hs⟩
+
+lemma symm {X Y : C} {z₁ z₂ : W.LeftFraction X Y} (h : LeftFractionRel z₁ z₂) :
+    LeftFractionRel z₂ z₁ := by
+  obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
+  exact ⟨Z, t₂, t₁, hst.symm, hft.symm, by simpa only [← hst] using ht⟩
+
+lemma trans {X Y : C} {z₁ z₂ z₃ : W.LeftFraction X Y}
+    (h₁₂ : LeftFractionRel z₁ z₂) (h₂₃ : LeftFractionRel z₂ z₃)
+    [HasLeftCalculusOfFractions' W] :
+    LeftFractionRel z₁ z₃ := by
+  obtain ⟨Z₄, t₁, t₂, hst, hft, ht⟩ := h₁₂
+  obtain ⟨Z₅, u₂, u₃, hsu, hfu, hu⟩ := h₂₃
+  obtain ⟨⟨v₄, v₅, hv₅⟩, fac⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+    (RightFraction.mk (z₁.s ≫ t₁) ht (z₃.s ≫ u₃))
+  simp only [Category.assoc] at fac
+  have eq : z₂.s ≫ u₂ ≫ v₅  = z₂.s ≫ t₂ ≫ v₄ := by
+    simpa only [← reassoc_of% hsu, reassoc_of% hst] using fac
+  obtain ⟨Z₇, w, hw, fac'⟩ := HasLeftCalculusOfFractions'.ext _ _ _ z₂.hs eq
+  simp only [Category.assoc] at fac'
+  refine' ⟨Z₇, t₁ ≫ v₄ ≫ w, u₃ ≫ v₅ ≫ w, _, _, _⟩
+  · rw [reassoc_of% fac]
+  · rw [reassoc_of% hft, ← fac', reassoc_of% hfu]
+  · rw [← reassoc_of% fac, ← reassoc_of% hsu, ← Category.assoc]
+    exact W.comp_mem _ _ hu (W.comp_mem _ _ hv₅ hw)
+
+end LeftFractionRel
 
 structure HasLeftCalculusOfFractions.ToSq {X' X Y : C} (s : X ⟶ X') (hs : W s) (u : X ⟶ Y) where
   obj : C
@@ -36,21 +220,16 @@ attribute [reassoc] HasLeftCalculusOfFractions.ToSq.fac
 variable (W)
 
 class HasLeftCalculusOfFractions extends W.IsMultiplicative : Prop :=
-  --multiplicative : W.IsMultiplicative := by infer_instance
   nonempty_toSq : ∀ ⦃X' X Y : C⦄ (s : X ⟶ X') (hs : W s) (u : X ⟶ Y),
     Nonempty (HasLeftCalculusOfFractions.ToSq s hs u)
   ext : ∀ ⦃X' X Y : C⦄ (f₁ f₂ : X ⟶ Y) (s : X' ⟶ X) (_ : W s)
     (_ : s ≫ f₁ = s ≫ f₂), ∃ (Y' : C) (t : Y ⟶ Y') (_ : W t), f₁ ≫ t = f₂ ≫ t
 
 class HasRightCalculusOfFractions extends W.IsMultiplicative : Prop :=
-  --multiplicative : W.IsMultiplicative := by infer_instance
   nonempty_toSq : ∀ ⦃X Y Y' : C⦄ (s : Y' ⟶ Y) (hs : W s) (u : X ⟶ Y),
     Nonempty (HasRightCalculusOfFractions.ToSq s hs u)
   ext : ∀ ⦃X Y Y' : C⦄ (f₁ f₂ : X ⟶ Y) (s : Y ⟶ Y') (_ : W s)
     (_ : f₁ ≫ s = f₂ ≫ s), ∃ (X' : C) (t : X' ⟶ X) (_ : W t), t ≫ f₁ = t ≫ f₂
-
---attribute [instance] HasLeftCalculusOfFractions.multiplicative
---  HasRightCalculusOfFractions.multiplicative
 
 variable {W}
 
