@@ -96,7 +96,7 @@ protected def uge (x y : BitVec w) : Bool := BitVec.ule y x
   That is, we take the head of the list to be the least significant bit
 -/
 def ofLEList (bs : List Bool) : BitVec bs.length :=
-  ⟨Nat.ofBits (λ i => bs[i]!) 0 bs.length, @Nat.ofBits_lt _ (bs.length)⟩
+  ⟨Nat.ofBits (λ i => bs[i]!) bs.length, @Nat.ofBits_lt _ (bs.length)⟩
 
 /--
   Convert a list of booleans to a bitvector, using big-endian bit order.
