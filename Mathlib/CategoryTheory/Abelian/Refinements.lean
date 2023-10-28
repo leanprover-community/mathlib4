@@ -34,9 +34,13 @@ we get that an epimorphism is a morphism that is "surjective up to refinements".
 (This result is similar to the fact that a morphism of sheaves on
 a topological space or a site is epi iff sections can be lifted
 locally. Then, arguing "up to refinements" is very similar to
-arguing locally for a Grothendieck topology. It is even likely that
-it is a particular case (consider the canonical topology on
-the abelian category `C`).
+arguing locally for a Grothendieck topology (TODO: show that it
+corresponds to arguing for the canonical topology on the abelian
+category `C` by showing that a morphism in `C` is an epi iff
+the corresponding morphisms of sheaves for the canonical
+topology is an epi, and that the criteria
+`epi_iff_surjective_up_to_refinements` could be deduced from
+this equivalence.)
 
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
@@ -53,12 +57,12 @@ Currently, mathlib contains a weaker notion of pseudo-elements
 `CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
 using this notion, but there is the issue that for this notion
 of pseudo-elements a morphism `X ⟶ Y` in `C` is not determined by
-its action on pseudo-elements. On the contrary, the approach consisting
-of working up to refinements does not require the introduction of
-other types: we only need to work with morphisms `A ⟶ X` in `C` which
-we may consider as being "sort of elements of `X`". One may carry
-diagram-chasing by tracking these morphisms and sometimes introducing
-an auxiliary epimorphism `A' ⟶ A`.
+its action on pseudo-elements (see also `Counterexamples/Pseudoelement`).
+On the contrary, the approach consisting of working up to refinements
+does not require the introduction of other types: we only need to work
+with morphisms `A ⟶ X` in `C` which we may consider as being
+"sort of elements of `X`". One may carry diagram-chasing by tracking
+these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 ## References
 * George Bergman, A note on abelian categories – translating element-chasing proofs,
