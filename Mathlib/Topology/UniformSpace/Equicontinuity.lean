@@ -205,7 +205,8 @@ lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
 
 lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
     UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
-  sorry
+  rw [UniformEquicontinuous, UniformEquicontinuousOn]
+  conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prod_map, ← map_comap]
 
 /-!
 ### Empty index type
@@ -323,15 +324,15 @@ theorem equicontinuousAt_iff_pair {F : ι → X → α} {x₀ : X} :
 
 /-- Uniform equicontinuity implies equicontinuity. -/
 theorem UniformEquicontinuous.equicontinuous {F : ι → β → α} (h : UniformEquicontinuous F) :
-    Equicontinuous F := fun x₀ U hU =>
-  mem_of_superset (ball_mem_nhds x₀ (h U hU)) fun _ hx i => hx i
+    Equicontinuous F := fun x₀ U hU ↦
+  mem_of_superset (ball_mem_nhds x₀ (h U hU)) fun _ hx i ↦ hx i
 #align uniform_equicontinuous.equicontinuous UniformEquicontinuous.equicontinuous
 
 /-- Uniform equicontinuity implies equicontinuity. -/
 theorem UniformEquicontinuousOn.equicontinuousOn {F : ι → β → α} {S : Set β}
     (h : UniformEquicontinuousOn F S) :
-    EquicontinuousOn F S := fun x₀ hx₀ U hU =>
-  sorry
+    EquicontinuousOn F S := fun _ hx₀ U hU ↦
+  mem_of_superset (ball_mem_nhdsWithin hx₀ (h U hU)) fun _ hx i ↦ hx i
 
 /-- Each function of a family equicontinuous at `x₀` is continuous at `x₀`. -/
 theorem EquicontinuousAt.continuousAt {F : ι → X → α} {x₀ : X} (h : EquicontinuousAt F x₀) (i : ι) :
@@ -596,9 +597,12 @@ theorem uniformEquicontinuous_iInf_dom {β' : Type*} {u : κ → UniformSpace β
   exact uniformContinuous_iInf_dom hk
 
 theorem uniformEquicontinuousOn_iInf_dom {β' : Type*} {u : κ → UniformSpace β'} {F : ι → β' → α}
-    {S : Set β'} {k : κ} (hk : UniformEquicontinuous (uβ := u k) F) :
+    {S : Set β'} {k : κ} (hk : UniformEquicontinuousOn (uβ := u k) F S) :
     UniformEquicontinuousOn (uβ := ⨅ k, u k) F S := by
-  sorry
+  simp_rw [uniformEquicontinuousOn_iff_uniformContinuousOn (uβ := _)] at hk ⊢
+  unfold UniformContinuousOn
+  rw [iInf_uniformity]
+  exact hk.mono_left <| inf_le_inf_right _ <| iInf_le _ k
 
 -- Porting note: changed from `∃ k (_ : p k), _` to `∃ k, p k ∧ _` since Lean 4 generates the
 -- second one when parsing expressions like `∃ δ > 0, _`.
