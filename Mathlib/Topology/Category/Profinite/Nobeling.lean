@@ -102,8 +102,8 @@ theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
 theorem proj_eq_of_subset (h : ∀ i, J i → K i) : π (π C K) J = π C J := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-obtain ⟨y, ⟨z, hz, rfl⟩, rfl⟩ := h
-    refine ⟨z, hz, (?_ : _ = (Proj J ∘ Proj K) z)⟩ 
+  · obtain ⟨y, ⟨z, hz, rfl⟩, rfl⟩ := h
+    refine ⟨z, hz, (?_ : _ = (Proj J ∘ Proj K) z)⟩
     rw [proj_comp_of_subset J K h]
   · obtain ⟨y, hy, rfl⟩ := h
     dsimp [π]
@@ -229,11 +229,11 @@ def e (i : I) : LocallyConstant C ℤ where
       ((continuous_apply i).comp continuous_subtype_val)
 
 /-- `Products I` is the type of lists of decreasing elements of `I`, so a typical element
-is `[i₁, i₂, ...]` with `i₁ > i₂ > ...`. We order `Products I` lexicographically, 
-so `[] < [i₁, ...]`, and `[i₁, i₂, ...] < [j₁, j₂, ...]` if either `i₁ < j₁`, 
+is `[i₁, i₂, ...]` with `i₁ > i₂ > ...`. We order `Products I` lexicographically,
+so `[] < [i₁, ...]`, and `[i₁, i₂, ...] < [j₁, j₂, ...]` if either `i₁ < j₁`,
 or `i₁ = j₁` and `[i₂, ...] < [j₂, ...]`.
 
- Terms `[i₁, i₂, ..., iᵣ]` of this type will be used to represent products of 
+ Terms `[i₁, i₂, ..., iᵣ]` of this type will be used to represent products of
 the form `e C i₁ ··· e C iᵣ : C → ℤ` `. -/
 def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
 
@@ -250,7 +250,7 @@ theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.va
 def eval (l : Products I) := (l.1.map (e C)).prod
 
 /-- The predicate on products which we prove picks out a basis of `LocallyConstant C ℤ`.
-We call such a product "good". -/```
+We call such a product "good". -/
 def isGood (l : Products I) : Prop :=
   l.eval C ∉ Submodule.span ℤ ((Products.eval C) '' {m | m < l})
 
