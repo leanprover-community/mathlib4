@@ -231,8 +231,8 @@ variable [SemilatticeSup B] [OrderBot B]
 
 /-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
-For an element `f : R[A]`, the `R[A]`, the element `supDegree f : B` is the
-supremum of all the elements in the support of `f`, or `⊥` if `f` is zero.
+For an element `f : R[A]`, the element `supDegree f : B` is the supremum of all the elements in the
+support of `f`, or `⊥` if `f` is zero.
 Often, the Type `B` is `WithBot A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the maximum of the exponents.
@@ -519,8 +519,8 @@ variable [AddZeroClass A] [SemilatticeInf T] [Add T] [OrderTop T]
 
 /-- Let `R` be a semiring, let `A, B` be two `AddZeroClass`es, let `T` be an `OrderTop`,
 and let `D : A → T` be a "degree" function.
-For an element `f : R[A]`, the `R[A]`, the element `infDegree f : T` is the
-infimum of all the elements in the support of `f`, or `⊤` if `f` is zero.
+For an element `f : R[A]`, the element `infDegree f : T` is the infimum of all the elements in the
+support of `f`, or `⊤` if `f` is zero.
 Often, the Type `T` is `WithTop A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the minimum of the exponents. -/

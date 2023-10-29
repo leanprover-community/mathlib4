@@ -916,23 +916,27 @@ theorem ae_differentiableAt {f : ℝ → V} (h : LocallyBoundedVariationOn f uni
 end LocallyBoundedVariationOn
 
 /-- A real function into a finite dimensional real vector space which is Lipschitz on a set
-is differentiable almost everywhere in this set . -/
-theorem LipschitzOnWith.ae_differentiableWithinAt_of_mem {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
+is differentiable almost everywhere in this set. For the general Rademacher theorem assuming
+that the source space is finite dimensional, see `LipschitzOnWith.ae_differentiableWithinAt_of_mem`.
+-/
+theorem LipschitzOnWith.ae_differentiableWithinAt_of_mem_real {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
     (h : LipschitzOnWith C f s) : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ f s x :=
   h.locallyBoundedVariationOn.ae_differentiableWithinAt_of_mem
-#align lipschitz_on_with.ae_differentiable_within_at_of_mem LipschitzOnWith.ae_differentiableWithinAt_of_mem
+#align lipschitz_on_with.ae_differentiable_within_at_of_mem LipschitzOnWith.ae_differentiableWithinAt_of_mem_real
 
 /-- A real function into a finite dimensional real vector space which is Lipschitz on a set
-is differentiable almost everywhere in this set. -/
-theorem LipschitzOnWith.ae_differentiableWithinAt {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
+is differentiable almost everywhere in this set. For the general Rademacher theorem assuming
+that the source space is finite dimensional, see `LipschitzOnWith.ae_differentiableWithinAt`. -/
+theorem LipschitzOnWith.ae_differentiableWithinAt_real {C : ℝ≥0} {f : ℝ → V} {s : Set ℝ}
     (h : LipschitzOnWith C f s) (hs : MeasurableSet s) :
     ∀ᵐ x ∂volume.restrict s, DifferentiableWithinAt ℝ f s x :=
   h.locallyBoundedVariationOn.ae_differentiableWithinAt hs
-#align lipschitz_on_with.ae_differentiable_within_at LipschitzOnWith.ae_differentiableWithinAt
+#align lipschitz_on_with.ae_differentiable_within_at LipschitzOnWith.ae_differentiableWithinAt_real
 
 /-- A real Lipschitz function into a finite dimensional real vector space is differentiable
-almost everywhere. -/
-theorem LipschitzWith.ae_differentiableAt {C : ℝ≥0} {f : ℝ → V} (h : LipschitzWith C f) :
+almost everywhere. For the general Rademacher theorem assuming
+that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`.-/
+theorem LipschitzWith.ae_differentiableAt_real {C : ℝ≥0} {f : ℝ → V} (h : LipschitzWith C f) :
     ∀ᵐ x, DifferentiableAt ℝ f x :=
   (h.locallyBoundedVariationOn univ).ae_differentiableAt
-#align lipschitz_with.ae_differentiable_at LipschitzWith.ae_differentiableAt
+#align lipschitz_with.ae_differentiable_at LipschitzWith.ae_differentiableAt_real

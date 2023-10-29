@@ -121,10 +121,10 @@ section LiftP'
 variable (F)
 
 theorem exists_iff_exists_of_mono {P : F α → Prop} {q : F β → Prop}
-                                  (f : α ⟹ β) (g : β ⟹ α)
-                                  (h₀ : f ⊚ g = TypeVec.id)
-                                  (h₁ : ∀ u : F α, P u ↔ q (f <$$> u)) :
-      (∃ u : F α, P u) ↔ ∃ u : F β, q u := by
+    (f : α ⟹ β) (g : β ⟹ α)
+    (h₀ : f ⊚ g = TypeVec.id)
+    (h₁ : ∀ u : F α, P u ↔ q (f <$$> u)) :
+    (∃ u : F α, P u) ↔ ∃ u : F β, q u := by
   constructor <;> rintro ⟨u, h₂⟩
   · refine ⟨f <$$> u, ?_⟩
     apply (h₁ u).mp h₂

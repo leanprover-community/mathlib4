@@ -73,7 +73,7 @@ Any lemma doing "ring equation rewriting" with polynomial functions should be ta
 ```lean
 @[ghost_simps]
 lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
-  bind₁ (frobenius_poly p) (wittPolynomial p ℤ n) = (wittPolynomial p ℤ (n+1))
+    bind₁ (frobenius_poly p) (wittPolynomial p ℤ n) = (wittPolynomial p ℤ (n+1))
 ```
 
 Proofs of identities between polynomial functions will often follow the pattern

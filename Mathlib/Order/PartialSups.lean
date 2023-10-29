@@ -13,7 +13,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Finset
 # The monotone sequence of partial supremums of a sequence
 
 We define `partialSups : (ℕ → α) → ℕ →o α` inductively. For `f : ℕ → α`, `partialSups f` is
-the sequence `f 0 `, `f 0 ⊔ f 1`, `f 0 ⊔ f 1 ⊔ f 2`, ... The point of this definition is that
+the sequence `f 0`, `f 0 ⊔ f 1`, `f 0 ⊔ f 1 ⊔ f 2`, ... The point of this definition is that
 * it doesn't need a `⨆`, as opposed to `⨆ (i ≤ n), f i` (which also means the wrong thing on
   `ConditionallyCompleteLattice`s).
 * it doesn't need a `⊥`, as opposed to `(Finset.range (n + 1)).sup f`.
@@ -102,6 +102,9 @@ theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α)
   · exact h 0
   · exact sup_le_sup ih (h _)
 #align partial_sups_mono partialSups_mono
+
+theorem partialSups_apply_mono (f : ℕ → α) : Monotone (partialSups f) :=
+  fun n _ hnm => partialSups_le f n _ (fun _ hm'n => le_partialSups_of_le _ (hm'n.trans hnm))
 
 /-- `partialSups` forms a Galois insertion with the coercion from monotone functions to functions.
 -/

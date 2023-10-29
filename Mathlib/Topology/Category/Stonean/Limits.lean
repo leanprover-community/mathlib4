@@ -61,7 +61,7 @@ def finiteCoproduct.desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) :
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : Stonean.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
-  finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
+    finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
 lemma finiteCoproduct.hom_ext {B : Stonean.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
@@ -222,7 +222,8 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
   obtain ⟨y, hy⟩ := h
   simp only [fst, snd, comp_apply]
   change f x = _
-  rw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← hy, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace (pullback f hi)) _ _ _]
   congr
   apply_fun (Homeomorph.ofEmbedding i hi.toEmbedding)
   simpa only [Homeomorph.ofEmbedding, Homeomorph.homeomorph_mk_coe, Equiv.ofInjective_apply,
@@ -231,7 +232,7 @@ lemma pullback.condition {X Y Z : Stonean.{u}} (f : X ⟶ Z) {i : Y ⟶ Z}
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {W : Stonean} (a : W ⟶ X) (b : W ⟶ Y) (w : a ≫ f = b ≫ i) :
-  pullback.lift f hi a b w ≫ pullback.fst f hi = a := rfl
+    pullback.lift f hi a b w ≫ pullback.fst f hi = a := rfl
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_snd {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbedding i)

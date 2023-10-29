@@ -3,12 +3,10 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Bornology.Hom
-import Mathlib.Tactic.GCongr
+import Mathlib.Topology.MetricSpace.Basic
 
 #align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -19,10 +17,12 @@ A map `f : α → β` between two (extended) metric spaces is called *Lipschitz 
 with constant `K ≥ 0` if for all `x, y` we have `edist (f x) (f y) ≤ K * edist x y`.
 For a metric space, the latter inequality is equivalent to `dist (f x) (f y) ≤ K * dist x y`.
 There is also a version asserting this inequality only for `x` and `y` in some set `s`.
+Finally, `f : α → β` is called *locally Lipschitz continuous* if each `x : α` has a neighbourhood
+on which `f` is Lipschitz continuous (with some constant).
 
 In this file we provide various ways to prove that various combinations of Lipschitz continuous
 functions are Lipschitz continuous. We also prove that Lipschitz continuous functions are
-uniformly continuous.
+uniformly continuous, and that locally Lipschitz functions are continuous.
 
 ## Main definitions and lemmas
 
@@ -31,6 +31,8 @@ uniformly continuous.
 * `LipschitzWith.uniformContinuous`: a Lipschitz function is uniformly continuous
 * `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set `s` is uniformly
   continuous on `s`.
+* `LocallyLipschitz f`: states that `f` is locally Lipschitz
+* `LocallyLipschitz.continuous`: a locally Lipschitz function is continuous.
 
 
 ## Implementation notes
@@ -42,14 +44,13 @@ argument, and return `LipschitzWith (Real.toNNReal K) f`.
 
 set_option autoImplicit true
 
-
 universe u v w x
 
-open Filter Function Set Topology NNReal ENNReal
+open Filter Function Set Topology NNReal ENNReal Bornology
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
-/-- A function `f` is Lipschitz continuous with constant `K ≥ 0` if for all `x, y`
+/-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y`
 we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist (f x) (f y) ≤ K * edist x y
@@ -65,12 +66,17 @@ alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitz
 #align lipschitz_with.dist_le_mul LipschitzWith.dist_le_mul
 #align lipschitz_with.of_dist_le_mul LipschitzWith.of_dist_le_mul
 
-/-- A function `f` is Lipschitz continuous with constant `K ≥ 0` on `s` if for all `x, y` in `s`
-we have `dist (f x) (f y) ≤ K * dist x y`. -/
+/-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` **on `s`** if
+for all `x, y` in `s` we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzOnWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β)
     (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
 #align lipschitz_on_with LipschitzOnWith
+
+/-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
+has a neighourhood on which `f` is Lipschitz. -/
+def LocallyLipschitz [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : Prop :=
+  ∀ x : α, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
 
 /-- Every function is Lipschitz on the empty set (with any Lipschitz constant). -/
 @[simp]
@@ -212,6 +218,7 @@ protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.id LipschitzWith.id
 
+/-- The inclusion of a subset is 1-Lipschitz. -/
 protected theorem subtype_val (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.subtype_val LipschitzWith.subtype_val
@@ -254,6 +261,7 @@ protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 #align lipschitz_with.prod_snd LipschitzWith.prod_snd
 
+/-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
 protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
@@ -279,6 +287,7 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
       (le_trans (hβ _ _ _) <| ENNReal.mul_left_mono <| le_max_right _ _)
 #align lipschitz_with.uncurry LipschitzWith.uncurry
 
+/-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by rw [pow_succ']; exact (LipschitzWith.iterate hf n).comp hf
@@ -290,10 +299,10 @@ theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f)
   simpa only [ENNReal.coe_pow] using (hf.iterate n) x (f x)
 #align lipschitz_with.edist_iterate_succ_le_geometric LipschitzWith.edist_iterate_succ_le_geometric
 
-protected theorem mul {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf f)
+protected theorem mul_end {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f * g : Function.End α) :=
   hf.comp hg
-#align lipschitz_with.mul LipschitzWith.mul
+#align lipschitz_with.mul LipschitzWith.mul_end
 
 /-- The product of a list of Lipschitz continuous endomorphisms is a Lipschitz continuous
 endomorphism. -/
@@ -302,16 +311,16 @@ protected theorem list_prod (f : ι → Function.End α) (K : ι → ℝ≥0)
   | [] => by simpa using LipschitzWith.id
   | i::l => by
     simp only [List.map_cons, List.prod_cons]
-    exact (h i).mul (LipschitzWith.list_prod f K h l)
+    exact (h i).mul_end (LipschitzWith.list_prod f K h l)
 #align lipschitz_with.list_prod LipschitzWith.list_prod
 
-protected theorem pow {f : Function.End α} {K} (h : LipschitzWith K f) :
+protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
     ∀ n : ℕ, LipschitzWith (K ^ n) (f ^ n : Function.End α)
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact h.mul (LipschitzWith.pow h n)
-#align lipschitz_with.pow LipschitzWith.pow
+    exact h.mul_end (LipschitzWith.pow_end h n)
+#align lipschitz_with.pow LipschitzWith.pow_end
 
 end EMetric
 
@@ -399,14 +408,13 @@ theorem comap_cobounded_le (hf : LipschitzWith K f) :
   (hf.toLocallyBoundedMap f).2
 #align lipschitz_with.comap_cobounded_le LipschitzWith.comap_cobounded_le
 
-theorem bounded_image (hf : LipschitzWith K f) {s : Set α} (hs : Metric.Bounded s) :
-    Metric.Bounded (f '' s) :=
-  Metric.bounded_iff_ediam_ne_top.2 <|
-    ne_top_of_le_ne_top (ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top)
-      (hf.ediam_image_le s)
-#align lipschitz_with.bounded_image LipschitzWith.bounded_image
+/-- The image of a bounded set under a Lipschitz map is bounded. -/
+theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s) :
+    IsBounded (f '' s) :=
+  hs.image (toLocallyBoundedMap f hf)
+#align lipschitz_with.bounded_image LipschitzWith.isBounded_image
 
-theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : Metric.Bounded s) :
+theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : IsBounded s) :
     Metric.diam (f '' s) ≤ K * Metric.diam s :=
   Metric.diam_le_of_forall_dist_le (mul_nonneg K.coe_nonneg Metric.diam_nonneg) <|
     ball_image_iff.2 fun _x hx =>
@@ -486,22 +494,10 @@ namespace Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s : Set α} {t : Set β}
 
-theorem Bounded.left_of_prod (h : Bounded (s ×ˢ t)) (ht : t.Nonempty) : Bounded s := by
-  simpa only [fst_image_prod s ht] using (@LipschitzWith.prod_fst α β _ _).bounded_image h
-#align metric.bounded.left_of_prod Metric.Bounded.left_of_prod
-
-theorem Bounded.right_of_prod (h : Bounded (s ×ˢ t)) (hs : s.Nonempty) : Bounded t := by
-  simpa only [snd_image_prod hs t] using (@LipschitzWith.prod_snd α β _ _).bounded_image h
-#align metric.bounded.right_of_prod Metric.Bounded.right_of_prod
-
-theorem bounded_prod_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
-    Bounded (s ×ˢ t) ↔ Bounded s ∧ Bounded t :=
-  ⟨fun h => ⟨h.left_of_prod ht, h.right_of_prod hs⟩, fun h => h.1.prod h.2⟩
-#align metric.bounded_prod_of_nonempty Metric.bounded_prod_of_nonempty
-
-theorem bounded_prod : Bounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ Bounded s ∧ Bounded t := by
-  simp only [bounded_iff_isBounded, Bornology.isBounded_prod]
-#align metric.bounded_prod Metric.bounded_prod
+#align metric.bounded.left_of_prod Bornology.IsBounded.fst_of_prod
+#align metric.bounded.right_of_prod Bornology.IsBounded.snd_of_prod
+#align metric.bounded_prod_of_nonempty Bornology.isBounded_prod_of_nonempty
+#align metric.bounded_prod Bornology.isBounded_prod
 
 end Metric
 
@@ -536,6 +532,13 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.to_restrict_mapsTo hmaps)
 #align lipschitz_on_with.comp LipschitzOnWith.comp
+
+/-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
+protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
+    (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by
+  intro _ hx _ hy
+  rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
+  exact max_le_max (hf hx hy) (hg hx hy)
 
 end EMetric
 
@@ -591,6 +594,96 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
 end Metric
 
 end LipschitzOnWith
+
+namespace LocallyLipschitz
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
+
+/-- A Lipschitz function is locally Lipschitz. -/
+protected lemma _root_.LipschitzWith.locallyLipschitz {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LocallyLipschitz f :=
+  fun _ ↦ ⟨K, univ, Filter.univ_mem, lipschitzOn_univ.mpr hf⟩
+
+/-- The identity function is locally Lipschitz. -/
+protected lemma id : LocallyLipschitz (@id α) := LipschitzWith.id.locallyLipschitz
+
+/-- Constant functions are locally Lipschitz. -/
+protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
+  (LipschitzWith.const b).locallyLipschitz
+
+/-- A locally Lipschitz function is continuous. (The converse is false: for example,
+$x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
+protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
+  apply continuous_iff_continuousAt.mpr
+  intro x
+  rcases (hf x) with ⟨K, t, ht, hK⟩
+  exact (hK.continuousOn).continuousAt ht
+
+/-- The composition of locally Lipschitz functions is locally Lipschitz. --/
+protected lemma comp  {f : β → γ} {g : α → β}
+    (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
+  intro x
+  -- g is Lipschitz on t ∋ x, f is Lipschitz on u ∋ g(x)
+  rcases hg x with ⟨Kg, t, ht, hgL⟩
+  rcases hf (g x) with ⟨Kf, u, hu, hfL⟩
+  refine ⟨Kf * Kg, t ∩ g⁻¹' u, inter_mem ht (hg.continuous.continuousAt hu), ?_⟩
+  exact hfL.comp (hgL.mono (inter_subset_left _ _))
+    ((mapsTo_preimage g u).mono_left (inter_subset_right _ _))
+
+/-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
+protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
+    LocallyLipschitz fun x => (f x, g x) := by
+  intro x
+  rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
+  rcases hg x with ⟨Kg, t₂, h₂t, hgL⟩
+  refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, ?_⟩
+  exact (hfL.mono (inter_subset_left t₁ t₂)).prod (hgL.mono (inter_subset_right t₁ t₂))
+
+protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
+  (LipschitzWith.prod_mk_left a).locallyLipschitz
+
+protected theorem prod_mk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
+  (LipschitzWith.prod_mk_right b).locallyLipschitz
+
+protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
+  | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
+  | n + 1 => by rw [iterate_add, iterate_one]; exact (hf.iterate n).comp hf
+
+protected theorem mul_end {f g : Function.End α} (hf : LocallyLipschitz f)
+    (hg : LocallyLipschitz g) : LocallyLipschitz (f * g : Function.End α) := hf.comp hg
+
+protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
+    ∀ n : ℕ, LocallyLipschitz (f ^ n : Function.End α)
+  | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
+  | n + 1 => by
+    rw [pow_succ]
+    exact h.mul_end (h.pow_end n)
+
+section Real
+variable {f g : α → ℝ}
+/-- The minimum of locally Lipschitz functions is locally Lipschitz. -/
+protected lemma min (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
+    LocallyLipschitz (fun x => min (f x) (g x)) :=
+  lipschitzWith_min.locallyLipschitz.comp (hf.prod hg)
+
+/-- The maximum of locally Lipschitz functions is locally Lipschitz. -/
+protected lemma max (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
+    LocallyLipschitz (fun x => max (f x) (g x)) :=
+  lipschitzWith_max.locallyLipschitz.comp (hf.prod hg)
+
+theorem max_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max (f x) a :=
+  hf.max (LocallyLipschitz.const a)
+
+theorem const_max (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max a (f x) := by
+  simpa [max_comm] using (hf.max_const a)
+
+theorem min_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => min (f x) a :=
+  hf.min (LocallyLipschitz.const a)
+
+theorem const_min (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => min a (f x) := by
+  simpa [min_comm] using (hf.min_const a)
+
+end Real
+end LocallyLipschitz
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
 `{a} × t`, `a ∈ s`, and is Lipschitz continuous on each “horizontal fiber” `s × {b}`, `b ∈ t`

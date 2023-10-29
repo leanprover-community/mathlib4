@@ -102,7 +102,7 @@ theorem lift_mk (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a
 #align quot.lift_mk Quot.lift_mk
 
 theorem liftOn_mk (a : α) (f : α → γ) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) :
-  Quot.liftOn (Quot.mk r a) f h = f a :=
+    Quot.liftOn (Quot.mk r a) f h = f a :=
   rfl
 #align quot.lift_on_mk Quot.liftOn_mk
 
@@ -839,7 +839,7 @@ instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
 end Quotient
 
 @[simp]
-lemma Equivalence.quot_mk_eq_iff {α : Type _} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
+lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equivalence r) (x y : α) :
     Quot.mk r x = Quot.mk r y ↔ r x y := by
   constructor
   · rw [Quot.eq]

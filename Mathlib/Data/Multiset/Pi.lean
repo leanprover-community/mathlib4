@@ -124,7 +124,7 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
       intro a s ih hs ht
       have has : a ∉ s := by simp at hs; exact hs.1
       have hs : Nodup s := by simp at hs; exact hs.2
-      simp
+      simp only [pi_cons, nodup_bind]
       refine'
         ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),
           _⟩

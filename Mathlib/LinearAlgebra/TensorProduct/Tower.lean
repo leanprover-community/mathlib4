@@ -45,6 +45,8 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
+suppress_compilation
+
 namespace TensorProduct
 
 namespace AlgebraTensorModule
@@ -214,7 +216,7 @@ theorem map_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) (g₂ : Q →ₗ
 protected theorem map_one : map (1 : M →ₗ[A] M) (1 : N →ₗ[R] N) = 1 := map_id
 
 protected theorem map_mul (f₁ f₂ : M →ₗ[A] M) (g₁ g₂ : N →ₗ[R] N) :
-  map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ := map_comp _ _ _ _
+    map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ := map_comp _ _ _ _
 
 theorem map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
@@ -302,6 +304,9 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
     (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
+
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
 
 variable {R M}
 
@@ -418,7 +423,7 @@ section tensorTensorTensorComm
 
 /-- Heterobasic version of `tensorTensorTensorComm`. -/
 def tensorTensorTensorComm :
-  (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
+    (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
 (assoc R A A (M ⊗[R] N) P Q).symm
   ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
   ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q

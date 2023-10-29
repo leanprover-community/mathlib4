@@ -20,6 +20,7 @@ In order for the definition of the average element to make sense, we need to ass
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
 
+suppress_compilation
 
 open scoped BigOperators
 

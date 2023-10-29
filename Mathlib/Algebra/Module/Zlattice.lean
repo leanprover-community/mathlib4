@@ -44,7 +44,7 @@ noncomputable section
 
 namespace Zspan
 
-open MeasureTheory MeasurableSet Submodule
+open MeasureTheory MeasurableSet Submodule Bornology
 
 variable {E ι : Type*}
 
@@ -235,16 +235,13 @@ end Unique
 
 end Fintype
 
-theorem fundamentalDomain_bounded [Finite ι] [HasSolidNorm K] :
-    Metric.Bounded (fundamentalDomain b) := by
+theorem fundamentalDomain_isBounded [Finite ι] [HasSolidNorm K] :
+    IsBounded (fundamentalDomain b) := by
   cases nonempty_fintype ι
-  use 2 * ∑ j, ‖b j‖
-  intro x hx y hy
-  refine le_trans (dist_le_norm_add_norm x y) ?_
-  rw [← fract_eq_self.mpr hx, ← fract_eq_self.mpr hy]
-  refine (add_le_add (norm_fract_le b x) (norm_fract_le b y)).trans ?_
-  rw [← two_mul]
-#align zspan.fundamental_domain_bounded Zspan.fundamentalDomain_bounded
+  refine isBounded_iff_forall_norm_le.2 ⟨∑ j, ‖b j‖, fun x hx ↦ ?_⟩
+  rw [← fract_eq_self.mpr hx]
+  apply norm_fract_le
+#align zspan.fundamental_domain_bounded Zspan.fundamentalDomain_isBounded
 
 theorem vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x : E) :
     y +ᵥ x ∈ fundamentalDomain b ↔ y = -floor b x := by
@@ -372,7 +369,7 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
       (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective) _)
     have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
-      Metric.Finite_bounded_inter_isClosed (Zspan.fundamentalDomain_bounded b) inferInstance
+      Metric.finite_isBounded_inter_isClosed (Zspan.fundamentalDomain_isBounded b) inferInstance
     refine Set.Finite.subset this ?_
     rintro _ ⟨_, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
     rw [Function.comp_apply, mkQ_apply, Zspan.quotientEquiv_apply_mk, Zspan.fractRestrict_apply]
@@ -468,7 +465,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
         · exact zsmul_mem (subset_span (Set.diff_subset _ _ hv)) _
         · exact span_mono (by simp [ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=
-      Metric.Finite_bounded_inter_isClosed Metric.bounded_closedBall inferInstance
+      Metric.finite_isBounded_inter_isClosed Metric.isBounded_closedBall inferInstance
     obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by

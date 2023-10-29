@@ -20,8 +20,6 @@ bool, boolean, Bool, De Morgan
 
 -/
 
-set_option autoImplicit true
-
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
@@ -83,11 +81,11 @@ theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) 
   cases a <;> cases b <;> simp
 
 -- Porting note: new theorem
-theorem beq_eq_decide_eq [DecidableEq α]
+theorem beq_eq_decide_eq {α} [DecidableEq α]
     (a b : α) : (a == b) = decide (a = b) := rfl
 
 -- Porting note: new theorem
-theorem beq_comm [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
+theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
   eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
 
 @[simp]
@@ -135,11 +133,11 @@ theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
 theorem cond_not {α} (b : Bool) (t e : α) : cond (!b) t e = cond b e t := by cases b <;> rfl
 #align bool.cond_bnot Bool.cond_not
 
-theorem not_ne_id : not ≠ id := fun h ↦ ff_ne_tt <| congrFun h true
+theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
-theorem coe_bool_iff : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
-#align bool.coe_bool_iff Bool.coe_bool_iff
+theorem coe_iff_coe : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
+#align bool.coe_bool_iff Bool.coe_iff_coe
 
 theorem eq_true_of_ne_false : ∀ {a : Bool}, a ≠ false → a = true := by decide
 #align bool.eq_tt_of_ne_ff Bool.eq_true_of_ne_false
@@ -259,6 +257,8 @@ theorem or_not_self : ∀ x, (x || !x) = true := by decide
 theorem not_or_self : ∀ x, (!x || x) = true := by decide
 #align bool.bnot_bor_self Bool.not_or_self
 
+theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
+
 theorem xor_comm : ∀ a b, xor a b = xor b a := by decide
 #align bool.bxor_comm Bool.xor_comm
 
@@ -329,6 +329,10 @@ instance linearOrder : LinearOrder Bool where
   min := and
   min_def := λ a b => by cases a <;> cases b <;> decide
 #align bool.linear_order Bool.linearOrder
+
+@[simp] theorem max_eq_or : max = or := rfl
+
+@[simp] theorem min_eq_and : min = and := rfl
 
 @[simp]
 theorem false_le {x : Bool} : false ≤ x :=
@@ -401,7 +405,7 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 
 @[simp]
 theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
-  ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
+  ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
     exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 #align bool.injective_iff Bool.injective_iff

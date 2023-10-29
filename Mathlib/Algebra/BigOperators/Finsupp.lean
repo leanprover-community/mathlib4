@@ -212,6 +212,16 @@ theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.s
 #align finsupp.prod_congr Finsupp.prod_congr
 #align finsupp.sum_congr Finsupp.sum_congr
 
+@[to_additive]
+theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
+    (h₀ : ∀ b, f b ≠ 0 → b ≠ a → g b (f b) = 1) (h₁ : f a = 0 → g a 0 = 1) :
+    f.prod g = g a (f a) := by
+  refine Finset.prod_eq_single a (fun b hb₁ hb₂ => ?_) (fun h => ?_)
+  · exact h₀ b (mem_support_iff.mp hb₁) hb₂
+  · simp only [not_mem_support_iff] at h
+    rw [h]
+    refine h₁ h
+
 end SumProd
 
 end Finsupp
@@ -464,22 +474,37 @@ theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
   FunLike.congr_fun liftAddHom_singleAddHom f
 #align finsupp.sum_single Finsupp.sum_single
 
+/-- The `Finsupp` version of `Finset.univ_sum_single` -/
 @[simp]
-theorem sum_univ_single [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
-    (∑ j : α, (single i m) j) = m := by
--- Porting note: rewrite due to leaky classical in lean3
-  classical rw [single, coe_mk, Finset.sum_pi_single']
-  simp
-#align finsupp.sum_univ_single Finsupp.sum_univ_single
+theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
+    ∑ a : α, single a (f a) = f := by
+  classical
+  refine FunLike.coe_injective ?_
+  simp_rw [coe_finset_sum, single_eq_pi_single, Finset.univ_sum_single]
 
 @[simp]
-theorem sum_univ_single' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
-    (∑ j : α, (single j m) i) = m := by
--- Porting note: rewrite due to leaky classical in lean3
+theorem univ_sum_single_apply [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
+    ∑ j : α, single i m j = m := by
+  -- Porting note: rewrite due to leaky classical in lean3
+  classical rw [single, coe_mk, Finset.sum_pi_single']
+  simp
+#align finsupp.sum_univ_single Finsupp.univ_sum_single_apply
+
+@[simp]
+theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
+    ∑ j : α, single j m i = m := by
+  -- Porting note: rewrite due to leaky classical in lean3
   simp_rw [single, coe_mk]
   classical rw [Finset.sum_pi_single]
   simp
-#align finsupp.sum_univ_single' Finsupp.sum_univ_single'
+#align finsupp.sum_univ_single' Finsupp.univ_sum_single_apply'
+
+
+theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
+    equivFunOnFinite.symm f = ∑ a, Finsupp.single a (f a) := by
+  rw [←univ_sum_single (equivFunOnFinite.symm f)]
+  ext
+  simp
 
 -- Porting note: simp can prove this
 -- @[simp]
