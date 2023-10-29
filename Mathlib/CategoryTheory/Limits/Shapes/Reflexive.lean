@@ -294,7 +294,7 @@ instance forgetReflexion_final : Functor.Final forgetReflexion := by
     StructuredArrow.mk (Y := WalkingParallelPair.one) (id zero)
   intro x
   have h : Inhabited (StructuredArrow x forgetReflexion)
-  . constructor
+  · constructor
     cases x with
     | one => exact e₀
     | zero => exact e₁
@@ -303,12 +303,12 @@ instance forgetReflexion_final : Functor.Final forgetReflexion := by
               intro p h₁ h₂ t
               rcases t with ⟨l, y, f⟩
               cases y <;> cases f
-              . set r : StructuredArrow zero forgetReflexion :=
+              · set r : StructuredArrow zero forgetReflexion :=
                   StructuredArrow.mk (Y := WalkingParallelPair.zero) reflexion
                 change r ∈ p
                 suffices f : r ⟶  e₁ by exact (h₂ f).mpr h₁
                 exact StructuredArrow.homMk (WalkingParallelPairHom.left)
-              . exact h₁
+              · exact h₁
     | one => apply IsConnected.of_induct (j₀ := e₀)
              intro p h₁ h₂ t
              rcases t with ⟨l, y, f⟩
@@ -317,21 +317,21 @@ instance forgetReflexion_final : Functor.Final forgetReflexion := by
              set rᵣ : StructuredArrow one forgetReflexion :=
                 StructuredArrow.mk (Y := WalkingParallelPair.one) right
              have hrₗ : rₗ ∈ p
-             . suffices f : e₀ ⟶  rₗ by exact (h₂ f).mp h₁
+             · suffices f : e₀ ⟶  rₗ by exact (h₂ f).mp h₁
                exact StructuredArrow.homMk WalkingParallelPairHom.left
              have hrᵣ : rᵣ ∈ p
-             . suffices f : e₀ ⟶  rᵣ by exact (h₂ f).mp h₁
+             · suffices f : e₀ ⟶  rᵣ by exact (h₂ f).mp h₁
                exact StructuredArrow.homMk WalkingParallelPairHom.right
              cases y <;> cases f
              rotate_right 3
-             . exact h₁
-             . exact hrₗ
-             . exact hrᵣ
-             . set v : StructuredArrow one forgetReflexion :=
+             · exact h₁
+             · exact hrₗ
+             · exact hrᵣ
+             · set v : StructuredArrow one forgetReflexion :=
                 StructuredArrow.mk (Y := WalkingParallelPair.zero) left_reflexion
                suffices f : v ⟶  rₗ by exact (h₂ f).mpr hrₗ
                exact StructuredArrow.homMk (WalkingParallelPairHom.left)
-             . set v : StructuredArrow one forgetReflexion :=
+             · set v : StructuredArrow one forgetReflexion :=
                 StructuredArrow.mk (Y := WalkingParallelPair.zero) right_reflexion
                suffices f : v ⟶  rᵣ by exact (h₂ f).mpr hrᵣ
                exact StructuredArrow.homMk (WalkingParallelPairHom.right)
@@ -341,7 +341,7 @@ variable {A B : C}
 /-- Bundle the data of a parallel pair along with a common section as a functor out of the walking
 reflexive pair -/
 def reflexivePair (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B) :
-  (WalkingReflexivePair ⥤ C) where
+    (WalkingReflexivePair ⥤ C) where
   obj x :=
     match x with
     | zero => B
@@ -403,19 +403,19 @@ theorem reflexivePair_reflexion_comp_right (F : WalkingReflexivePair ⥤ C) :
 
 @[simp]
 theorem reflexivePair_left_comp_reflexion (F : WalkingReflexivePair ⥤ C) :
-  F.map left_reflexion = F.map left ≫ F.map reflexion := F.map_comp left reflexion
+    F.map left_reflexion = F.map left ≫ F.map reflexion := F.map_comp left reflexion
 
 @[simp]
 theorem reflexivePair_right_comp_reflexion (F : WalkingReflexivePair ⥤ C) :
-  F.map right_reflexion = F.map right ≫ F.map reflexion := F.map_comp right reflexion
+    F.map right_reflexion = F.map right ≫ F.map reflexion := F.map_comp right reflexion
 
 /-- Any functor out of `WalkingReflexivePair` is isomorphic to the reflexive pair built out of the
 images of its morphisms -/
 def diagramIsoReflexivePair (F : WalkingReflexivePair ⥤ C) :
     F ≅ reflexivePair (F.map left) (F.map right) (F.map reflexion)
     ((F.map_id zero).symm.trans (F.map_comp reflexion left)).symm
-    ((F.map_id zero).symm.trans (F.map_comp reflexion right)).symm
-    := NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) <| by
+    ((F.map_id zero).symm.trans (F.map_comp reflexion right)).symm :=
+  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) <| by
       rintro _ _ f; cases f <;> try {dsimp; simp; try rfl}
 
 variable {F : WalkingReflexivePair ⥤ C}
@@ -461,7 +461,7 @@ noncomputable def forgetReflexionEquiv : Cocone F ≌ Cofork (F.map left) (F.map
 instance reflexivePair_hasColimit_of_hasCoequalizer
     [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F := by
   suffices _ : HasColimit (forgetReflexion ⋙ F)
-  . apply Functor.Final.hasColimit_of_comp forgetReflexion
+  · apply Functor.Final.hasColimit_of_comp forgetReflexion
   exact @Limits.hasColimitOfIso _ _ _ _ _ _ h (diagramIsoParallelPair _)
 
 /-- The colimit of a functor out of the walking reflexive pair is the same as the colimit of the
@@ -485,7 +485,7 @@ variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g]
 instance ofIsReflexivePairHasColimit_of_hasCoequalizer [HasCoequalizer f g] :
     HasColimit (ofIsReflexivePair f g) := by
   suffices _ : HasColimit (forgetReflexion ⋙ (ofIsReflexivePair f g))
-  . apply Functor.Final.hasColimit_of_comp forgetReflexion
+  · apply Functor.Final.hasColimit_of_comp forgetReflexion
   exact Limits.hasColimitOfIso (forgetReflexionOfIsReflexivePairIso f g)
 
 /-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
@@ -510,14 +510,14 @@ walking reflexive pair. -/
 theorem hasReflexiveCoequalizers_iff :
     (HasColimitsOfShape WalkingReflexivePair C) ↔ (HasReflexiveCoequalizers C) := by
   constructor
-  . intro h
+  · intro h
     constructor
     intro _ _ f g h₁
     set F := @ofIsReflexivePair _ _ _ _ _ _ h₁
     exact @Limits.hasColimitOfIso _ _ _ _ _ _
       (Functor.Final.comp_hasColimit _)
       (diagramIsoParallelPair (forgetReflexion ⋙ F)).symm
-  . intro h
+  · intro h
     exact ⟨by infer_instance⟩
 
 end Limits
