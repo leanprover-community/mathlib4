@@ -265,7 +265,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     rw [C_leadingCoeff_mul_prod_multiset_X_sub_C this, Polynomial.map_mul, Polynomial.map_pow,
       Polynomial.map_pow, map_X]
   specialize h r this; clear this
-  rw [le_div_iff (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_of_nat, ← map_mul,
+  rw [le_div_iff (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_natCast, ← map_mul,
     mul_comm, mul_sub, ← nsmul_eq_mul, ← nsmul_eq_mul, smul_smul, mul_comm,
     Nat.mul_factorial_pred q0, ← h]
   rw [nsmul_eq_mul, ← Int.cast_ofNat, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
@@ -1092,7 +1092,7 @@ theorem linear_independent_exp_exists_prime_nat' (n : ℕ) (c : ℕ) :
   · rw [zero_pow prime_p.pos]
     exact Nat.factorial_pos _
   have m1 : 1 ≤ m := one_le_two.trans m2
-  have one_le_m_sub_one : 1 ≤ m - 1 := by rwa [Nat.le_sub_iff_right m1]
+  have one_le_m_sub_one : 1 ≤ m - 1 := by rwa [Nat.le_sub_iff_add_le m1]
   have : m - 1 - 1 < p - 1 := by
     rw [tsub_lt_tsub_iff_right one_le_m_sub_one]
     exact tsub_le_self.trans_lt hmp
