@@ -910,7 +910,7 @@ theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
 #align quadratic_form.associated_eq_self_apply QuadraticForm.associated_eq_self_apply
 
 theorem toQuadraticForm_associated : (associatedHom S Q).toQuadraticForm = Q :=
-  QuadraticForm.ext <| associated_eq_self_apply Q
+  QuadraticForm.ext <| associated_eq_self_apply S Q
 #align quadratic_form.to_quadratic_form_associated QuadraticForm.toQuadraticForm_associated
 
 -- note: usually `rightInverse` lemmas are named the other way around, but this is consistent
@@ -957,30 +957,29 @@ variable [Invertible (2 : R)]
 -- the more general `associatedHom` and place it in the previous section.
 /-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
-abbrev associated : QuadraticForm R M →ₗ[R] BilinForm R M :=
+abbrev associated : QuadraticForm R M R →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   associatedHom R
 #align quadratic_form.associated QuadraticForm.associated
 
 variable (S) in
 theorem coe_associatedHom :
-    ⇑(associatedHom S : QuadraticForm R M →ₗ[S] BilinForm R M) = associated :=
+    ⇑(associatedHom S : QuadraticForm R M R →ₗ[S] M →ₗ[R] M →ₗ[R] R) = associated :=
   rfl
 
 @[simp]
 theorem associated_linMulLin (f g : M →ₗ[R] R) :
     associated (R := R) (linMulLin f g) =
-      ⅟ (2 : R) • (BilinForm.linMulLin f g + BilinForm.linMulLin g f) := by
+      ⅟ (2 : R) • BilinForm.toLinHom _ (BilinForm.linMulLin f g + BilinForm.linMulLin g f) := by
   ext
-  simp only [smul_add, Algebra.id.smul_eq_mul, BilinForm.linMulLin_apply,
-    QuadraticForm.linMulLin_apply, BilinForm.smul_apply, associated_apply, BilinForm.add_apply,
-    LinearMap.map_add]
-  ring
+  simp only [associated_apply, linMulLin_apply, map_add, smul_eq_mul, smul_add, LinearMap.add_apply,
+    LinearMap.smul_apply, toLin'_apply, BilinForm.linMulLin_apply]
+  ring_nf
 #align quadratic_form.associated_lin_mul_lin QuadraticForm.associated_linMulLin
 
 @[simp]
-lemma associated_sq : associated (R := R) sq = LinearMap.toBilin (LinearMap.mul R R) :=
+lemma associated_sq : associated (R := R) sq = LinearMap.mul R R :=
   (associated_linMulLin (LinearMap.id) (LinearMap.id)).trans <|
-    by simp only [smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
+    by simp only [map_add, smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
 
 end Associated
 
@@ -988,19 +987,19 @@ section Anisotropic
 
 section Semiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
 /-- An anisotropic quadratic form is zero only on zero vectors. -/
-def Anisotropic (Q : QuadraticForm R M) : Prop :=
+def Anisotropic (Q : QuadraticForm R M N) : Prop :=
   ∀ x, Q x = 0 → x = 0
 #align quadratic_form.anisotropic QuadraticForm.Anisotropic
 
-theorem not_anisotropic_iff_exists (Q : QuadraticForm R M) :
+theorem not_anisotropic_iff_exists (Q : QuadraticForm R M N) :
     ¬Anisotropic Q ↔ ∃ x, x ≠ 0 ∧ Q x = 0 := by
   simp only [Anisotropic, not_forall, exists_prop, and_comm]
 #align quadratic_form.not_anisotropic_iff_exists QuadraticForm.not_anisotropic_iff_exists
 
-theorem Anisotropic.eq_zero_iff {Q : QuadraticForm R M} (h : Anisotropic Q) {x : M} :
+theorem Anisotropic.eq_zero_iff {Q : QuadraticForm R M N} (h : Anisotropic Q) {x : M} :
     Q x = 0 ↔ x = 0 :=
   ⟨h x, fun h => h.symm ▸ map_zero Q⟩
 #align quadratic_form.anisotropic.eq_zero_iff QuadraticForm.Anisotropic.eq_zero_iff
@@ -1012,12 +1011,19 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
-theorem nondegenerate_of_anisotropic [Invertible (2 : R)] (Q : QuadraticForm R M)
+theorem nondegenerate_of_anisotropic [Invertible (2 : R)] (Q : QuadraticForm R M R)
     (hB : Q.Anisotropic) :
     -- Porting note: added implicit argument
-    (QuadraticForm.associated' (R := R) Q).Nondegenerate := fun x hx ↦ hB _ <| by
-  rw [← hx x]
-  exact (associated_eq_self_apply _ _ x).symm
+    (QuadraticForm.associated' (R := R) Q).Nondegenerate := by
+      constructor
+      · intro x hx
+        apply hB
+        rw [← hx x]
+        exact (associated_eq_self_apply _ _ x).symm
+      · intro x hx
+        apply hB
+        rw [← hx x]
+        exact (associated_eq_self_apply _ _ x).symm
 #align quadratic_form.nondegenerate_of_anisotropic QuadraticForm.nondegenerate_of_anisotropic
 
 end Ring
@@ -1028,40 +1034,40 @@ section PosDef
 
 variable {R₂ : Type u} [OrderedCommRing R₂] [AddCommMonoid M] [Module R₂ M]
 
-variable {Q₂ : QuadraticForm R₂ M}
+variable {Q₂ : QuadraticForm R₂ M R₂}
 
 /-- A positive definite quadratic form is positive on nonzero vectors. -/
-def PosDef (Q₂ : QuadraticForm R₂ M) : Prop :=
+def PosDef (Q₂ : QuadraticForm R₂ M R₂) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 #align quadratic_form.pos_def QuadraticForm.PosDef
 
-theorem PosDef.smul {R} [LinearOrderedCommRing R] [Module R M] {Q : QuadraticForm R M}
+theorem PosDef.smul {R} [LinearOrderedCommRing R] [Module R M] {Q : QuadraticForm R M R}
     (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) := fun x hx => mul_pos a_pos (h x hx)
 #align quadratic_form.pos_def.smul QuadraticForm.PosDef.smul
 
 variable {n : Type*}
 
-theorem PosDef.nonneg {Q : QuadraticForm R₂ M} (hQ : PosDef Q) (x : M) : 0 ≤ Q x :=
+theorem PosDef.nonneg {Q : QuadraticForm R₂ M R₂} (hQ : PosDef Q) (x : M) : 0 ≤ Q x :=
   (eq_or_ne x 0).elim (fun h => h.symm ▸ (map_zero Q).symm.le) fun h => (hQ _ h).le
 #align quadratic_form.pos_def.nonneg QuadraticForm.PosDef.nonneg
 
-theorem PosDef.anisotropic {Q : QuadraticForm R₂ M} (hQ : Q.PosDef) : Q.Anisotropic := fun x hQx =>
-  by_contradiction fun hx =>
+theorem PosDef.anisotropic {Q : QuadraticForm R₂ M R₂} (hQ : Q.PosDef) : Q.Anisotropic :=
+  fun x hQx => by_contradiction fun hx =>
     lt_irrefl (0 : R₂) <| by
       have := hQ _ hx
       rw [hQx] at this
       exact this
 #align quadratic_form.pos_def.anisotropic QuadraticForm.PosDef.anisotropic
 
-theorem posDef_of_nonneg {Q : QuadraticForm R₂ M} (h : ∀ x, 0 ≤ Q x) (h0 : Q.Anisotropic) :
+theorem posDef_of_nonneg {Q : QuadraticForm R₂ M R₂} (h : ∀ x, 0 ≤ Q x) (h0 : Q.Anisotropic) :
     PosDef Q := fun x hx => lt_of_le_of_ne (h x) (Ne.symm fun hQx => hx <| h0 _ hQx)
 #align quadratic_form.pos_def_of_nonneg QuadraticForm.posDef_of_nonneg
 
-theorem posDef_iff_nonneg {Q : QuadraticForm R₂ M} : PosDef Q ↔ (∀ x, 0 ≤ Q x) ∧ Q.Anisotropic :=
+theorem posDef_iff_nonneg {Q : QuadraticForm R₂ M R₂} : PosDef Q ↔ (∀ x, 0 ≤ Q x) ∧ Q.Anisotropic :=
   ⟨fun h => ⟨h.nonneg, h.anisotropic⟩, fun ⟨n, a⟩ => posDef_of_nonneg n a⟩
 #align quadratic_form.pos_def_iff_nonneg QuadraticForm.posDef_iff_nonneg
 
-theorem PosDef.add (Q Q' : QuadraticForm R₂ M) (hQ : PosDef Q) (hQ' : PosDef Q') :
+theorem PosDef.add (Q Q' : QuadraticForm R₂ M R₂) (hQ : PosDef Q) (hQ' : PosDef Q') :
     PosDef (Q + Q') := fun x hx => add_pos (hQ x hx) (hQ' x hx)
 #align quadratic_form.pos_def.add QuadraticForm.PosDef.add
 
