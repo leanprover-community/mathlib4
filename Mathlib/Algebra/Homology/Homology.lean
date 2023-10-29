@@ -301,15 +301,15 @@ def homology'Functor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V wh
   -- It would be nice if we could just write
   -- `cokernel (boundariesToCyclesNatTrans V c i)`
   -- here, but universe implementation details get in the way...
-  obj C := C.homology i
-  map {C₁ C₂} f := homology.map _ _ (f.sqTo i) (f.sqFrom i) rfl
-#align homology_functor homologyFunctor
+  obj C := C.homology' i
+  map {C₁ C₂} f := homology'.map _ _ (f.sqTo i) (f.sqFrom i) rfl
+#align homology_functor homology'Functor
 
 /-- The homology functor from `ι`-indexed complexes to `ι`-graded objects in `V`. -/
 @[simps]
-def gradedHomologyFunctor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
-  obj C i := C.homology i
-  map {C C'} f i := (homologyFunctor V c i).map f
-#align graded_homology_functor gradedHomologyFunctor
+def gradedHomology'Functor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
+  obj C i := C.homology' i
+  map {C C'} f i := (homology'Functor V c i).map f
+#align graded_homology_functor gradedHomology'Functor
 
 end
