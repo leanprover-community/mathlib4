@@ -623,13 +623,13 @@ theorem toWithTop_natCast (n : ℕ) {_ : Decidable (n : PartENat).Dom} : toWithT
 #align part_enat.to_with_top_coe PartENat.toWithTop_natCast
 
 @[simp]
-theorem toWithTop_natCast' (n : ℕ) {h : Decidable (n : PartENat).Dom} :
+theorem toWithTop_natCast' (n : ℕ) {_ : Decidable (n : PartENat).Dom} :
     toWithTop (n : PartENat) = n := by
   rw [toWithTop_natCast n]
 #align part_enat.to_with_top_coe' PartENat.toWithTop_natCast'
 
 @[simp]
-theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {h : Decidable (OfNat.ofNat n : PartENat).Dom} :
+theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n : PartENat).Dom} :
     toWithTop (no_index (OfNat.ofNat n : PartENat)) = OfNat.ofNat n := toWithTop_natCast' n
 
 -- Porting note: statement changed. Mathlib 3 statement was
