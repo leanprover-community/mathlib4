@@ -50,9 +50,6 @@ namespace KleinFourGroup
 
 open DihedralGroup Equiv
 
-/-- Element `e` of Klein four-group. -/
-def e : KleinFourGroup := 1
-
 /-- Element `a` of Klein four-group. -/
 def a : KleinFourGroup := Multiplicative.ofAdd (0, 1)
 
