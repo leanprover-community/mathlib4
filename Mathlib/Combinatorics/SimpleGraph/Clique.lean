@@ -71,10 +71,10 @@ instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.Is
 
 variable {G H} {a b : α}
 
-@[simp] lemma isClique_empty : G.IsClique ∅ := Set.pairwise_empty _
+lemma isClique_empty : G.IsClique ∅ := by simp
 #align simple_graph.is_clique_empty SimpleGraph.isClique_empty
 
-@[simp] lemma isClique_singleton (a : α) : G.IsClique {a} := Set.pairwise_singleton _ _
+lemma isClique_singleton (a : α) : G.IsClique {a} := by simp
 #align simple_graph.is_clique_singleton SimpleGraph.isClique_singleton
 
 lemma isClique_pair : G.IsClique {a, b} ↔ a ≠ b → G.Adj a b := Set.pairwise_pair_of_symmetric G.symm
