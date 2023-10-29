@@ -257,7 +257,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
   have A : Summable fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0 := by
     apply summable_of_nonneg_of_le _ _ summable_geometric_two <;>
       · intro i
-        by_cases hi : n ≤ i <;> simp [hi]; apply pow_nonneg; exact zero_le_two
+        by_cases hi : n ≤ i <;> simp [hi]
   have B : ((Finset.range n).sum fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0) = 0 :=
     Finset.sum_eq_zero fun i hi =>
       ite_eq_right_iff.2 fun h => (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
