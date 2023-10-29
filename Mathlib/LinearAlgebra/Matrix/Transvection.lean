@@ -238,7 +238,7 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
 
 /-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix).-/
 theorem comm_all_TransvectionStruct {M : Matrix n n R}
-    (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
+    (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) (i : n) :
     M = M i i • (1 : Matrix n n R) := by
   refine StdBasisMatrix.comm_all_stdBasisMatrix_nondiag ?_ i
   intro i j hij
