@@ -265,7 +265,7 @@ lemma cpow_ofReal (x : ℂ) (y : ℝ) :
       Real.exp_log]
     rwa [abs.pos_iff]
 
-lemma cpow_ofReal_re (x : ℂ) (y : ℝ) : (x ^ y).re = (abs x) ^ y * Real.cos (arg x * y) := by
+lemma cpow_ofReal_re (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).re = (abs x) ^ y * Real.cos (arg x * y) := by
   rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.cos]
 
 lemma cpow_ofReal_im (x : ℂ) (y : ℝ) : (x ^ y).im = (abs x) ^ y * Real.sin (arg x * y) := by
