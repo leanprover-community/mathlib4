@@ -427,6 +427,7 @@ instance to_isReflexivePair :
     IsReflexivePair (F.map left) (F.map right) :=
   ⟨F.map reflexion, reflexivePair_reflexion_comp_left F, reflexivePair_reflexion_comp_right F⟩
 
+/-- A `ReflexiveCofork` is a cocone over a `WalkingReflexivePair`-shaped diagram. -/
 abbrev ReflexiveCofork (F : WalkingReflexivePair ⥤ C) := Cocone F
 
 namespace ReflexiveCofork
@@ -440,6 +441,7 @@ lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ 
 @[simp]
 lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 
+/-- The underlying `Cofork` of a `ReflexiveCofork`. -/
 def toCofork (G : ReflexiveCofork F) : (Cofork (F.map left) (F.map right)) :=
  (Cocones.precompose (diagramIsoParallelPair (_ ⋙  F)).symm.hom).obj <| G.whisker forgetReflexion
 
