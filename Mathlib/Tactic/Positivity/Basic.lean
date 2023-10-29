@@ -10,7 +10,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
 import Qq
 
 /-!
@@ -368,6 +368,48 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let oα ← synthInstanceQ q(OrderedSemiring $α)
+        orElse (← catchNone (ofNonneg q(le_of_lt $pa) oα)) (ofNonzero q(ne_of_gt $pa) oα)
+    | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
+    | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
+    | .none => pure .none
+
+set_option linter.deprecated false in
+/-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity (_ : α) ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
+def evalZpow : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
+  let result ← catchNone do
+    let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
+    let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
+    guard (n % 2 = 0)
+    have m : Q(ℕ) := mkRawNatLit (n / 2)
+    haveI' : $b =Q bit0 $m := ⟨⟩
+    let _a ← synthInstanceQ q(LinearOrderedField $α)
+    haveI' : $e =Q $a ^ $b := ⟨⟩
+    assumeInstancesCommute
+    pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
+  orElse result do
+    let ra ← core zα pα a
+    let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(LinearOrderedSemifield $α)) : MetaM (Strictness zα pα e) := do
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      assumeInstancesCommute
+      pure (by exact .nonnegative (q(zpow_nonneg $pa $b)))
+    let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα pα e) := do
+      haveI' : $e =Q $a ^ $b := ⟨⟩
+      let _a ← synthInstanceQ q(GroupWithZero $α)
+      assumeInstancesCommute
+      pure (.nonzero (by exact q(zpow_ne_zero $b $pa)))
+    match ra with
+    | .positive pa =>
+      try
+        let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+        haveI' : $e =Q $a ^ $b := ⟨⟩
+        assumeInstancesCommute
+        pure (by exact .positive (q(zpow_pos_of_pos $pa $b)))
+      catch e : Exception =>
+        trace[Tactic.positivity.failure] "{e.toMessageData}"
+        let oα ← synthInstanceQ q(LinearOrderedSemiring $α)
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) oα)) (ofNonzero q(ne_of_gt $pa) oα)
     | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
