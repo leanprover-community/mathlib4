@@ -256,7 +256,7 @@ theorem ofReal_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
 #align complex.of_real_cpow_of_nonpos Complex.ofReal_cpow_of_nonpos
 
 lemma cpow_ofReal (x : ℂ) (y : ℝ) :
-    x ^ y = ↑((abs x) ^ y) * (Real.cos (arg x * y) + Real.sin (arg x * y) * I) := by
+    x ^ (y : ℂ) = ↑(abs x ^ y) * (Real.cos (arg x * y) + Real.sin (arg x * y) * I) := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp [ofReal_cpow le_rfl]
   · rw [cpow_def_of_ne_zero hx, exp_eq_exp_re_mul_sin_add_cos, mul_comm (log x)]
