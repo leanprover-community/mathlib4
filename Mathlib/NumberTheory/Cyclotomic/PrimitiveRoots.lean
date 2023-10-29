@@ -412,8 +412,8 @@ then the norm of `ζ - 1` is `p`. -/
 theorem sub_one_norm_prime [hpri : Fact (p : ℕ).Prime] [hcyc : IsCyclotomicExtension {p} K L]
     (hζ : IsPrimitiveRoot ζ p) (hirr : Irreducible (cyclotomic p K)) (h : p ≠ 2) :
     norm K (ζ - 1) = p := by
-  replace hirr : Irreducible (cyclotomic (↑(p ^ (0 + 1)) : ℕ) K) := by simp [hirr]
-  replace hζ : IsPrimitiveRoot ζ (↑(p ^ (0 + 1)) : ℕ) := by simp [hζ]
+  replace hirr : Irreducible (cyclotomic (p ^ (0 + 1) : ℕ) K) := by simp [hirr]
+  replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1) : ℕ) := by simp [hζ]
   haveI : IsCyclotomicExtension {p ^ (0 + 1)} K L := by simp [hcyc]
   simpa using sub_one_norm_prime_ne_two hζ hirr h
 #align is_primitive_root.sub_one_norm_prime IsPrimitiveRoot.sub_one_norm_prime
@@ -451,7 +451,7 @@ theorem sub_one_norm_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 �
 -- Porting note: `simpa using hirr` was `simp [hirr]`_
   replace hirr : Irreducible (cyclotomic ((2 : ℕ+) ^ k : ℕ+) K) := by simpa using hirr
 -- Porting note: `simpa using hζ` was `simp [hζ]`_
-  replace hζ : IsPrimitiveRoot ζ ((2 : ℕ+) ^ k) := by simpa using hζ
+  replace hζ : IsPrimitiveRoot ζ (2 ^ k : ℕ+) := by simpa using hζ
   obtain ⟨k₁, hk₁⟩ := exists_eq_succ_of_ne_zero (lt_of_lt_of_le zero_lt_two hk).ne.symm
 -- Porting note: the proof is slightly different because of coercions.
   simpa [hk₁, show ((2 : ℕ+) : ℕ) = 2 from rfl] using sub_one_norm_eq_eval_cyclotomic hζ this hirr

@@ -89,7 +89,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
   replace H := Subalgebra.smul_mem _ H u.inv
 -- Porting note: the proof is slightly different because of coercions.
   rw [← smul_assoc, ← smul_mul_assoc, Units.inv_eq_val_inv, zsmul_eq_mul, ← Int.cast_mul,
-    Units.inv_mul, Int.cast_one, one_mul, PNat.pow_coe, Nat.cast_pow, smul_def, map_pow] at H
+    Units.inv_mul, Int.cast_one, one_mul, smul_def, map_pow] at H
   cases k
   · haveI : IsCyclotomicExtension {1} ℚ K := by simpa using hcycl
     have : x ∈ (⊥ : Subalgebra ℚ K) := by

@@ -432,7 +432,7 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
           simp [edist]
         · refine ENNReal.rpow_le_rpow ?_ (le_of_lt pos)
           simp [edist]
-      _ = (2 : ℝ≥0) ^ (1 / p.toReal) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
+      _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
           ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
@@ -630,7 +630,8 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   ext
   norm_cast
 
-theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ = sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
+theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
+    ‖x‖ = Real.sqrt (‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
   rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
   norm_cast
 

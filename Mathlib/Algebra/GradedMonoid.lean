@@ -320,8 +320,8 @@ section Monoid
 
 variable [AddMonoid ι] [GMonoid A]
 
-instance : Pow (A 0) ℕ where
-  pow x n := @Eq.rec ι (n • (0:ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
+instance : NatPow (A 0) where
+  natPow x n := @Eq.rec ι (n • (0:ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
 
 variable {A}
 

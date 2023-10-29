@@ -364,7 +364,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
         simp only [hij, mem_sigma, mem_range, and_self_iff]
       · rintro ⟨i, j⟩ hij; rfl
       · rintro ⟨i, j⟩ hij; rfl
-    _ ≤ ∑ k in range K, ↑2 / (k + ↑1) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
+    _ ≤ ∑ k in range K, 2 / (k + 1 : ℝ) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       apply sum_le_sum fun k _ => ?_
       refine' mul_le_mul_of_nonneg_right (sum_Ioo_inv_sq_le _ _) _
       refine' intervalIntegral.integral_nonneg_of_forall _ fun u => sq_nonneg _

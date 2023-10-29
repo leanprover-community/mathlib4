@@ -440,7 +440,7 @@ theorem coe_rpow_of_nonneg (x : ℝ≥0) {y : ℝ} (h : 0 ≤ y) : (x : ℝ≥0�
 #align ennreal.coe_rpow_of_nonneg ENNReal.coe_rpow_of_nonneg
 
 theorem coe_rpow_def (x : ℝ≥0) (y : ℝ) :
-    (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then ⊤ else (x ^ y : ℝ≥0∞) :=
+    (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then ⊤ else ↑(x ^ y) :=
   rfl
 #align ennreal.coe_rpow_def ENNReal.coe_rpow_def
 
