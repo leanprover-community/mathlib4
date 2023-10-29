@@ -243,10 +243,7 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
 #align part_enat.decidable_le PartENat.decidableLe
 
 #noalign part_enat.coe_hom
-
-@[simp]
-theorem coe_coeHom : Nat.castAddMonoidHom PartENat = some := rfl
-#align part_enat.coe_coe_hom PartENat.coe_coeHom
+#noalign part_enat.coe_coe_hom
 
 instance partialOrder : PartialOrder PartENat where
   le := (· ≤ ·)
@@ -394,14 +391,6 @@ theorem one_ne_top : (1 : PartENat) ≠ ⊤ :=
 @[simp]
 theorem ofNat_ne_top (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat)) ≠ ⊤ :=
   natCast_ne_top x
-
-@[simp]
-theorem bot_lt_top : (⊥ : PartENat) < ⊤ :=
-  zero_lt_top
-
-@[simp]
-theorem bot_ne_top : (⊥ : PartENat) ≠ ⊤ :=
-  zero_ne_top
 
 theorem not_isMax_natCast (x : ℕ) : ¬IsMax (x : PartENat) :=
   not_isMax_of_lt (natCast_lt_top x)
