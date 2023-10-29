@@ -236,21 +236,20 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
   aesop
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
-theorem comm_all_stdBasisMatrix_nondiag [Inhabited n] {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) :
-    M = M default default • (1 : Matrix n n α) := by
+theorem comm_all_stdBasisMatrix_nondiag {M : Matrix n n α}
+    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) (i : n) : M = M i i • (1 : Matrix n n α) := by
   rewrite [← ext_iff]
   intro j k
   by_cases h : j = k
-  · by_cases hij : default = j
+  · by_cases hij : i = j
     · simp [hij, h]
     · push_neg at hij
       rewrite [h] at hij
-      simp [diag_eq_of_commute_stdBasisMatrix <| hM k default hij.symm, h]
+      simp [diag_eq_of_commute_stdBasisMatrix <| hM k i hij.symm, h]
   · push_neg at h
-    by_cases hij : default = j
+    by_cases hij : i = j
     · simp [hij, col_eq_zero_of_commute_stdBasisMatrix (hM k j h.symm) h, h]
-    · simp [row_eq_zero_of_commute_stdBasisMatrix (hM default j hij) h.symm, h]
+    · simp [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) h.symm, h]
 
 end Commute
 
