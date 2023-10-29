@@ -241,60 +241,87 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 
 section center
 
-variable [Inhabited n]
-
-theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) :
-    A = A.val default default • (1 : Matrix n n R) := by
+theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) (i : n) :
+    A = A.val i i • (1 : Matrix n n R) := by
   have hA := Subgroup.mem_center_iff.mp A.property
   replace hA (t : TransvectionStruct n R) := hA ⟨t.toMatrix, by simp⟩
   conv at hA =>
     intro t
     rewrite [Subtype.ext_iff]
-  exact TransvectionStruct.comm_all_TransvectionStruct hA
+  exact TransvectionStruct.comm_all_TransvectionStruct hA i
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ Subgroup.center (SpecialLinearGroup n R) ↔
-    A.val default default ^ (Fintype.card n) = 1 ∧
-    A = A.val default default • (1 : Matrix n n R) := by
+    ∀ i, A.val i i ^ (Fintype.card n) = 1 ∧
+    A = A.val i i • (1 : Matrix n n R) := by
   constructor
-  · intro hA
-    have hA2 := center_scalar ⟨A, hA⟩
+  · intro hA i
+    have hA2 := center_scalar ⟨A, hA⟩ i
     refine (and_iff_left hA2).mpr ?_
     have hA1 : det A.val = (1 : R) := det_coe A
     rewrite [hA2, det_smul_of_tower] at hA1
     revert hA1
     simp
-  · intro ⟨_, hA⟩ _
-    rewrite [ext_iff, coe_mul, coe_mul, hA]
-    simp
+  · wlog hn : IsEmpty n
+    · haveI : Nonempty n := not_isEmpty_iff.mp hn
+      let i : n := Classical.arbitrary n
+      intro h B
+      obtain ⟨_, hA⟩ := h i
+      rewrite [ext_iff, coe_mul, coe_mul, hA]
+      simp
+    · have hA : A = 1 := by rw [@ext_iff, @IsEmpty.forall_iff n, ← Bool.coe_true]
+      intro _
+      rw [hA]
+      exact Subgroup.one_mem _
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
-def center_iso_RootsOfUnity :
-    Subgroup.center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R
-    where
-  toFun A := rootsOfUnity.mkOfPowEq (A.val default default) <| by
-    simp [mem_center_iff.mp A.property |>.1]
-  invFun a := ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
-    intro _
-    aesop⟩
-  left_inv A := by
-    refine SetCoe.ext <| SetCoe.ext ?_
-    conv_rhs => rw [center_scalar A]
-  right_inv _ := by
-    refine SetCoe.ext <| Units.eq_iff.mp ?_
-    simp [instHSMul, SMul.smul]
-  map_mul' A B := by
-    simp only
-    have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
-    conv_lhs =>
-      arg 1
-      rewrite [hAB, center_scalar]
-    refine SetCoe.ext <| Units.eq_iff.mp ?_
-    have := mul_comm (B.val default default) (A.val default default)
-    simp [this]
+noncomputable def center_iso_RootsOfUnity :
+    Subgroup.center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R := by
+  by_cases hn : IsEmpty n
+  · have h (A : Subgroup.center (SpecialLinearGroup n R)) : A.val = 1 := by
+      rw [@ext_iff, @IsEmpty.forall_iff n, ← Bool.coe_true]
+    replace hn' : Nat.toPNat' 0 = 1 := rfl
+    rw [Fintype.card_eq_zero, hn']
+    exact {
+      toFun := fun _ => 1
+      invFun := fun _ => 1
+      left_inv := by
+        intro A
+        exact SetCoe.ext (h A).symm
+      right_inv := by
+        intro x
+        refine SetCoe.ext ?_
+        have := mem_rootsOfUnity 1 x.val |>.mp x.property
+        simpa using this.symm
+      map_mul' := by simp
+    }
+  · haveI : Nonempty n := not_isEmpty_iff.mp hn
+    have i := Classical.arbitrary n
+    exact {
+      toFun := fun A => rootsOfUnity.mkOfPowEq (A.val i i) <| by
+        simp [mem_center_iff.mp A.property i |>.1]
+      invFun := fun a => ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
+        intro _
+        aesop⟩
+      left_inv := by
+        intro A
+        refine SetCoe.ext <| SetCoe.ext ?_
+        conv_rhs => rw [center_scalar A i]
+      right_inv := fun a => by
+        refine SetCoe.ext <| Units.eq_iff.mp ?_
+        simp [instHSMul, SMul.smul]
+      map_mul' := fun A B => by
+        simp only
+        have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
+        conv_lhs =>
+          arg 1
+          rewrite [hAB, center_scalar _ i]
+        refine SetCoe.ext <| Units.eq_iff.mp ?_
+        simp [mul_comm (B.val i i) (A.val i i)]
+    }
 
 end center
 
