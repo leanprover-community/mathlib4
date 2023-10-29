@@ -171,11 +171,11 @@ lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
     supDegree toLex (esymm (Fin m) R (i + 1)) =
       toLex (Finsupp.indicator (Iic ⟨i, him⟩) fun _ _ ↦ 1) ∧
     Monic toLex (esymm (Fin m) R (i + 1)) := by
-  have := supDegree_leadingCoeff_sum_eq (D := toLex) (s := univ.powersetLen (i + 1))
+  have := supDegree_leadingCoeff_sum_eq (D := toLex) (s := univ.powersetCard (i + 1))
     (i := Iic (⟨i, him⟩ : Fin m)) ?_ (f := fun s ↦ monomial (∑ j in s, fun₀ | j => 1) (1 : R)) ?_
   · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single, ← single_eq_monomial,
          supDegree_single_ne_zero _ one_ne_zero, leadingCoeff_single toLex.injective] at this
-  · exact mem_powersetLen.2 ⟨subset_univ _, Fin.card_Iic _⟩
+  · exact mem_powersetCard.2 ⟨subset_univ _, Fin.card_Iic _⟩
   intro t ht hne
   simp_rw [← single_eq_monomial, supDegree_single_ne_zero _ one_ne_zero,
            ← Finsupp.indicator_eq_sum_single]
@@ -188,7 +188,7 @@ lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
       rw [dif_pos hki, dif_pos]
       exact not_not.1 (fun h ↦ lt_irrefl k <| ((lt_min'_iff _ _).1 hk) _ <| mem_sdiff.2 ⟨hki, h⟩)
     · rw [dif_neg hkm.2, dif_pos hkm.1]; exact Nat.zero_lt_one
-  · rw [(mem_powersetLen.1 ht).2, Fin.card_Iic]
+  · rw [(mem_powersetCard.1 ht).2, Fin.card_Iic]
 
 lemma supDegree_esymm [Nontrivial R] (him : i < m) :
     ofLex (supDegree toLex <| esymm (Fin m) R (i + 1)) = accumulate n m (Finsupp.single i 1) := by
