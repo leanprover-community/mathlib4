@@ -1596,7 +1596,8 @@ theorem card_lt_nat {o} {n : ℕ} : card o < n ↔ o < n :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem card_lt_ofNat {o} {n : ℕ} [n.AtLeastTwo] : card o < (no_index (OfNat.ofNat n)) ↔ o < OfNat.ofNat n :=
+theorem card_lt_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
+    card o < (no_index (OfNat.ofNat n)) ↔ o < OfNat.ofNat n :=
   card_lt_nat
 
 @[simp]

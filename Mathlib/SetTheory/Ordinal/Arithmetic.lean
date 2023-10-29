@@ -2308,7 +2308,8 @@ theorem one_add_nat_cast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] : 1 + (no_index (OfNat.ofNat m : Ordinal)) = Order.succ (OfNat.ofNat m : Ordinal) :=
+theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
+    1 + (no_index (OfNat.ofNat m : Ordinal)) = Order.succ (OfNat.ofNat m : Ordinal) :=
   one_add_nat_cast m
 
 @[simp, norm_cast]
