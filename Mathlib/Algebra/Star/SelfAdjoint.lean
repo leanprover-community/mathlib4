@@ -116,6 +116,7 @@ variable [AddMonoid R] [StarAddMonoid R]
 
 variable (R)
 
+@[simp]
 theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) :=
   star_zero R
 #align is_self_adjoint_zero isSelfAdjoint_zero
@@ -186,6 +187,7 @@ variable [MulOneClass R] [StarMul R]
 
 variable (R)
 
+@[simp]
 theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
   star_one R
 #align is_self_adjoint_one isSelfAdjoint_one
@@ -216,6 +218,12 @@ theorem bit1 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit1 x) := by
 theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 #align is_self_adjoint_nat_cast isSelfAdjoint_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem _root_.isSelfAdjoint_ofNat (n : ℕ) [n.AtLeastTwo] :
+    IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
+  _root_.isSelfAdjoint_natCast n
 
 end Semiring
 
