@@ -308,7 +308,7 @@ end Isos
 
 /-- The forgetful from `Stonean` to `TopCat` creates pullbacks along open embeddings -/
 noncomputable
-def Stonean.createsPullbackOfOpenEmbedding :
+def createsPullbackOfOpenEmbedding :
     CreatesLimit (cospan f i) (Stonean.toCompHaus ⋙ compHausToTop) :=
 createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
   refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)

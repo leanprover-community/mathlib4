@@ -61,11 +61,15 @@ section Extensive
 
 variable {X Y : C}
 
+/-- A category has pullback of inclusions if it has all pullbacks along coproduct injections. -/
 class HasPullbackOfInclusions (C : Type u) [Category.{v} C] [HasBinaryCoproducts C] : Prop where
   [hasPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
 
 attribute [instance] HasPullbackOfInclusions.hasPullbackInl
 
+/--
+A functor preserves pullback of inclusions if it preserves all pullbacks along coproduct injections.
+-/
 class PreservesPullbackOfInclusions {C : Type*} [Category C] {D : Type*} [Category D]
     (F : C ⥤ D) [HasBinaryCoproducts C] where
   [preservesPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), PreservesLimit (cospan coprod.inl f) F]
