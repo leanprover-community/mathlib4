@@ -620,14 +620,6 @@ theorem card_zero : card 0 = 0 := mk_eq_zero _
 #align ordinal.card_zero Ordinal.card_zero
 
 @[simp]
-theorem card_eq_zero {o} : card o = 0 ↔ o = 0 :=
-  ⟨inductionOn o fun α r _ h => by
-      haveI := Cardinal.mk_eq_zero_iff.1 h
-      apply type_eq_zero_of_empty,
-    fun e => by simp only [e, card_zero]⟩
-#align ordinal.card_eq_zero Ordinal.card_eq_zero
-
-@[simp]
 theorem card_one : card 1 = 1 := mk_eq_one _
 #align ordinal.card_one Ordinal.card_one
 
@@ -1086,6 +1078,7 @@ theorem succ_ne_zero (o : Ordinal) : succ o ≠ 0 :=
   ne_of_gt <| succ_pos o
 #align ordinal.succ_ne_zero Ordinal.succ_ne_zero
 
+@[simp]
 theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 := by
   simpa using @lt_succ_bot_iff _ _ _ a _ _
 #align ordinal.lt_one_iff_zero Ordinal.lt_one_iff_zero
@@ -1566,6 +1559,10 @@ theorem nat_le_card {o} {n : ℕ} : (n : Cardinal) ≤ card o ↔ (n : Ordinal) 
   rw [← Cardinal.ord_le, Cardinal.ord_nat]
 #align ordinal.nat_le_card Ordinal.nat_le_card
 
+@[simp]
+theorem one_le_card {o} : 1 ≤ card o ↔ 1 ≤ o := by
+  simpa using nat_le_card (n := 1)
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
@@ -1577,6 +1574,14 @@ theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < 
   rw [← succ_le_iff, ← succ_le_iff, ← nat_succ, nat_le_card]
   rfl
 #align ordinal.nat_lt_card Ordinal.nat_lt_card
+
+@[simp]
+theorem zero_lt_card {o} : 0 < card o ↔ 0 < o := by
+  simpa using nat_lt_card (n := 0)
+
+@[simp]
+theorem one_lt_card {o} : 1 < card o ↔ 1 < o := by
+  simpa using nat_lt_card (n := 1)
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -1599,6 +1604,10 @@ theorem card_le_nat {o} {n : ℕ} : card o ≤ n ↔ o ≤ n :=
   le_iff_le_iff_lt_iff_lt.2 nat_lt_card
 #align ordinal.card_le_nat Ordinal.card_le_nat
 
+@[simp]
+theorem card_le_one {o} : card o ≤ 1 ↔ o ≤ 1 := by
+  simpa using card_le_nat (n := 1)
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
@@ -1609,6 +1618,15 @@ theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
 theorem card_eq_nat {o} {n : ℕ} : card o = n ↔ o = n := by
   simp only [le_antisymm_iff, card_le_nat, nat_le_card]
 #align ordinal.card_eq_nat Ordinal.card_eq_nat
+
+@[simp]
+theorem card_eq_zero {o} : card o = 0 ↔ o = 0 := by
+  simpa using card_eq_nat (n := 0)
+#align ordinal.card_eq_zero Ordinal.card_eq_zero
+
+@[simp]
+theorem card_eq_one {o} : card o = 1 ↔ o = 1 := by
+  simpa using card_eq_nat (n := 1)
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]

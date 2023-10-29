@@ -1480,6 +1480,10 @@ theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
   rw [one_le_iff_pos, pos_iff_ne_zero]
 #align cardinal.one_le_iff_ne_zero Cardinal.one_le_iff_ne_zero
 
+@[simp]
+theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
+  simpa using lt_succ_bot_iff (a := c)
+
 theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
   succ_le_iff.1
     (by
