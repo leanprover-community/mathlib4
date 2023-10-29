@@ -604,6 +604,15 @@ theorem toWithTop_zero' {h : Decidable (0 : PartENat).Dom} : toWithTop 0 = 0 := 
   convert toWithTop_zero
 #align part_enat.to_with_top_zero' PartENat.toWithTop_zero'
 
+theorem toWithTop_one :
+    have : Decidable (1 : PartENat).Dom := someDecidable 1
+    toWithTop 1 = 1 :=
+  rfl
+
+@[simp]
+theorem toWithTop_one' {h : Decidable (1 : PartENat).Dom} : toWithTop 1 = 1 := by
+  convert toWithTop_one
+
 theorem toWithTop_some (n : ℕ) : toWithTop (some n) = n :=
   rfl
 #align part_enat.to_with_top_some PartENat.toWithTop_some
@@ -618,6 +627,10 @@ theorem toWithTop_natCast' (n : ℕ) {h : Decidable (n : PartENat).Dom} :
     toWithTop (n : PartENat) = n := by
   rw [toWithTop_natCast n]
 #align part_enat.to_with_top_coe' PartENat.toWithTop_natCast'
+
+@[simp]
+theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {h : Decidable (OfNat.ofNat n : PartENat).Dom} :
+    toWithTop (no_index (OfNat.ofNat n : PartENat)) = OfNat.ofNat n := toWithTop_natCast' n
 
 -- Porting note: statement changed. Mathlib 3 statement was
 -- ```
@@ -736,6 +749,15 @@ theorem withTopEquiv_zero : withTopEquiv 0 = 0 := by
 #align part_enat.with_top_equiv_zero PartENat.withTopEquiv_zero
 
 @[simp]
+theorem withTopEquiv_one : withTopEquiv 1 = 1 := by
+  simpa only [Nat.cast_one] using withTopEquiv_natCast 1
+
+@[simp]
+theorem withTopEquiv_ofNat (n : Nat) [n.AtLeastTwo] :
+    withTopEquiv (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  withTopEquiv_natCast n
+
+@[simp]
 theorem withTopEquiv_le {x y : PartENat} : withTopEquiv x ≤ withTopEquiv y ↔ x ≤ y :=
   toWithTop_le
 #align part_enat.with_top_equiv_le PartENat.withTopEquiv_le
@@ -764,6 +786,15 @@ theorem withTopEquiv_symm_coe (n : Nat) : withTopEquiv.symm n = n :=
 theorem withTopEquiv_symm_zero : withTopEquiv.symm 0 = 0 :=
   rfl
 #align part_enat.with_top_equiv_symm_zero PartENat.withTopEquiv_symm_zero
+
+@[simp]
+theorem withTopEquiv_symm_one : withTopEquiv.symm 1 = 1 :=
+  rfl
+
+@[simp]
+theorem withTopEquiv_symm_ofNat (n : Nat) [n.AtLeastTwo] :
+    withTopEquiv.symm (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  rfl
 
 @[simp]
 theorem withTopEquiv_symm_le {x y : ℕ∞} : withTopEquiv.symm x ≤ withTopEquiv.symm y ↔ x ≤ y := by
