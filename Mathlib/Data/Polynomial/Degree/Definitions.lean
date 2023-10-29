@@ -1344,6 +1344,13 @@ section Ring
 
 variable [Ring R] {p q : R[X]}
 
+theorem degree_sub_C (hp : 0 < degree p) : degree (p - C a) = degree p := by
+  rw [sub_eq_add_neg, ← C_neg, degree_add_C hp]
+
+@[simp]
+theorem natDegree_sub_C {a : R} : natDegree (p - C a) = natDegree p := by
+  rw [sub_eq_add_neg, ← C_neg, natDegree_add_C]
+
 theorem degree_sub_le (p q : R[X]) : degree (p - q) ≤ max (degree p) (degree q) := by
   simpa only [degree_neg q] using degree_add_le p (-q)
 #align polynomial.degree_sub_le Polynomial.degree_sub_le
@@ -1546,9 +1553,8 @@ theorem degree_X_sub_C (a : R) : degree (X - C a) = 1 := by
   rw [sub_eq_add_neg, ← map_neg C a, degree_X_add_C]
 #align polynomial.degree_X_sub_C Polynomial.degree_X_sub_C
 
-@[simp]
-theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 :=
-  natDegree_eq_of_degree_eq_some <| degree_X_sub_C x
+theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 := by
+  rw [natDegree_sub_C, natDegree_X]
 #align polynomial.nat_degree_X_sub_C Polynomial.natDegree_X_sub_C
 
 @[simp]

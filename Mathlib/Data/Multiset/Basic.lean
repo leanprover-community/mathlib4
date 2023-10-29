@@ -302,7 +302,8 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
     · have : a ∈ b ::ₘ bs := eq ▸ mem_cons_self _ _
       have : a ∈ bs := by simpa [h]
       rcases exists_cons_of_mem this with ⟨cs, hcs⟩
-      simp [h, hcs]
+      simp only [h, hcs, false_and, ne_eq, not_false_eq_true, cons_inj_right, exists_eq_right',
+        true_and, false_or]
       have : a ::ₘ as = b ::ₘ a ::ₘ cs := by simp [eq, hcs]
       have : a ::ₘ as = a ::ₘ b ::ₘ cs := by rwa [cons_swap]
       simpa using this
