@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Polynomial.Splits
-import Mathlib.RingTheory.Adjoin.PowerBasis
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.AdjoinRoot
 
 #align_import ring_theory.adjoin.field from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
