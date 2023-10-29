@@ -1356,37 +1356,37 @@ theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
   nat_lt_lift_iff
 
 -- TODO: remove if CI says these can all be proved by simp
-theorem zero_lt_lift_iff {a : Cardinal.{u}} :
-    (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
-  simp
+-- theorem zero_lt_lift_iff {a : Cardinal.{u}} :
+--     (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
+--   simp
 
-theorem one_lt_lift_iff {a : Cardinal.{u}} :
-    (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
-  simp
+-- theorem one_lt_lift_iff {a : Cardinal.{u}} :
+--     (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
+--   simp
 
-theorem one_le_lift_iff {a : Cardinal.{u}} :
-    (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
-  simp
+-- theorem one_le_lift_iff {a : Cardinal.{u}} :
+--     (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
+--   simp
 
-theorem zero_eq_lift_iff {a : Cardinal.{u}} :
-    (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
-  simp
+-- theorem zero_eq_lift_iff {a : Cardinal.{u}} :
+--     (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
+--   simp
 
-theorem one_eq_lift_iff {a : Cardinal.{u}} :
-    (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
-  simp
+-- theorem one_eq_lift_iff {a : Cardinal.{u}} :
+--     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
+--   simp
 
-theorem lift_eq_zero_iff {a : Cardinal.{u}} :
-    lift.{v} a = 0 ↔ a = 0 := by
-  simp
+-- theorem lift_eq_zero_iff {a : Cardinal.{u}} :
+--     lift.{v} a = 0 ↔ a = 0 := by
+--   simp
 
-theorem lift_eq_one_iff {a : Cardinal.{u}} :
-    lift.{v} a = 1 ↔ a = 1 := by
-  simp
+-- theorem lift_eq_one_iff {a : Cardinal.{u}} :
+--     lift.{v} a = 1 ↔ a = 1 := by
+--   simp
 
-theorem lift_le_one_iff {a : Cardinal.{u}} :
-    lift.{v} a ≤ 1 ↔ a ≤ 1 := by
-  simp
+-- theorem lift_le_one_iff {a : Cardinal.{u}} :
+--     lift.{v} a ≤ 1 ↔ a ≤ 1 := by
+--   simp
 
 theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 #align cardinal.lift_mk_fin Cardinal.lift_mk_fin
