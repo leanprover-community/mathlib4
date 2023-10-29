@@ -163,18 +163,18 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   let L := (p * minpoly F x).SplittingField
   have hL := splits_of_splits_mul' _ ?_ (SplittingField.splits (p * minpoly F x))
   · let j : E →ₐ[F] L := IsSplittingField.lift E p hL.1
-    refine ⟨hx, splits_of_comp _ j.toRingHom ?_ fun a ha ↦ ?_⟩
-    · erw [j.comp_algebraMap]; exact hL.2
-    erw [j.comp_algebraMap, mem_roots ((minpoly.monic hx).map _).ne_zero, IsRoot, eval_map] at ha
+    refine ⟨hx, splits_of_comp _ (j : E →+* L) ?_ fun a ha ↦ ?_⟩
+    · rw [j.comp_algebraMap]; exact hL.2
+    rw [j.comp_algebraMap, mem_roots ((minpoly.monic hx).map _).ne_zero, IsRoot, eval_map] at ha
     let FxL : F⟮x⟯ →ₐ[F] L := (adjoin.powerBasis hx).lift a ?_
     · letI : Algebra F⟮x⟯ L := FxL.toRingHom.toAlgebra
       let j' : E →ₐ[F⟮x⟯] L := IsSplittingField.lift E (p.map (algebraMap F F⟮x⟯)) ?_
-      change a ∈ j.range
-      rw [← IsSplittingField.adjoin_rootSet_eq_range E p j,
+      · change a ∈ j.range
+        rw [← IsSplittingField.adjoin_rootSet_eq_range E p j,
             IsSplittingField.adjoin_rootSet_eq_range E p (j'.restrictScalars F)]
-      use x
-      erw [j'.coe_toRingHom, ← (adjoin.powerBasis hx).lift_gen a]
-      · exact j'.commutes ⟨x, _⟩
+        use x
+        erw [j'.coe_toRingHom, ← (adjoin.powerBasis hx).lift_gen a]
+        exact j'.commutes ⟨x, _⟩
       · rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact hL.1
     · rw [adjoin.powerBasis_gen, minpoly_gen]; exact ha
   · rw [Polynomial.map_ne_zero_iff (algebraMap F L).injective, mul_ne_zero_iff]
