@@ -120,8 +120,9 @@ theorem CharP.cast_eq_zero [AddMonoidWithOne R] (p : ℕ) [CharP R p] : (p : R) 
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem CharP.cast_eq_zero [AddMonoidWithOne R] (p : ℕ) [CharP R p] : (p : R) = 0 :=
-  (CharP.cast_eq_zero_iff R p p).2 (dvd_refl p)
+theorem CharP.ofNat_eq_zero [AddMonoidWithOne R] (p : ℕ) [p.AtLeastTwo] [CharP R p] :
+    (no_index (OfNat.ofNat p : R)) = 0 :=
+  cast_eq_zero R p
 
 @[simp]
 theorem CharP.cast_card_eq_zero [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
