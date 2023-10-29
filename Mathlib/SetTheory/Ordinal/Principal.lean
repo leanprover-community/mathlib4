@@ -381,8 +381,7 @@ theorem principal_mul_iff_le_two_or_omega_opow_opow {o : Ordinal} :
     rcases principal_add_iff_zero_or_omega_opow.1
         (principal_add_of_principal_mul_opow one_lt_omega ho) with
       (rfl | ⟨b, rfl⟩)
-    · left
-      simpa using one_le_two
+    · simp
     exact Or.inr ⟨b, rfl⟩
   · rintro (ho₂ | ⟨a, rfl⟩)
     · exact principal_mul_of_le_two ho₂
