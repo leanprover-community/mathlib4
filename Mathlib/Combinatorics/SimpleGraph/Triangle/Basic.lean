@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Tactic.GCongr
 
-#align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"cd7f0626a0b04be1dda223a26123313514a55fb4"
+#align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Triangles in graphs
@@ -42,8 +42,9 @@ def FarFromTriangleFree (G : SimpleGraph α) (ε : 𝕜) : Prop :=
   (G.DeleteFar fun H => H.CliqueFree 3) <| ε * (card α ^ 2 : ℕ)
 #align simple_graph.far_from_triangle_free SimpleGraph.FarFromTriangleFree
 
-theorem farFromTriangleFree_iff : G.FarFromTriangleFree ε ↔ ∀ ⦃H⦄, H ≤ G → H.CliqueFree 3 →
-    ε * (card α ^ 2 : ℕ) ≤ G.edgeFinset.card - H.edgeFinset.card := deleteFar_iff
+theorem farFromTriangleFree_iff :
+    G.FarFromTriangleFree ε ↔ ∀ ⦃H : SimpleGraph _⦄ [DecidableRel H.Adj], H ≤ G → H.CliqueFree 3 →
+      ε * (card α ^ 2 : ℕ) ≤ G.edgeFinset.card - H.edgeFinset.card := deleteFar_iff
 #align simple_graph.far_from_triangle_free_iff SimpleGraph.farFromTriangleFree_iff
 
 alias ⟨farFromTriangleFree.le_card_sub_card, _⟩ := farFromTriangleFree_iff

@@ -11,7 +11,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
 
-#align_import logic.relation from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
+#align_import logic.relation from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Relation closures
@@ -47,7 +47,7 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ : Type*}
+variable {α β γ δ ε κ : Type*}
 
 section NeImp
 
@@ -214,6 +214,30 @@ related by `r`.
 protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ → δ → Prop := fun c d ↦
   ∃ a b, r a b ∧ f a = c ∧ g b = d
 #align relation.map Relation.Map
+
+section Map
+variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
+
+lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b = d := Iff.rfl
+#align relation.map_apply Relation.map_apply
+
+@[simp]
+lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by simp [Relation.Map]
+#align relation.map_id_id Relation.map_id_id
+
+@[simp]
+lemma map_map (r : α → β → Prop) (f₁ : α → γ) (g₁ : β → δ) (f₂ : γ → ε) (g₂ : δ → κ) :
+    Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
+  ext a b
+  simp only [map_apply, Function.comp_apply, ← exists_and_right, @exists₂_comm γ]
+  refine' exists₂_congr fun a b => _
+  simp [and_assoc]
+#align relation.map_map Relation.map_map
+
+instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
+  ‹Decidable _›
+
+end Map
 
 variable {r : α → α → Prop} {a b c d : α}
 
