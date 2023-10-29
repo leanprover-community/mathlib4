@@ -271,19 +271,19 @@ variable {C : Type u} [Category.{v} C]
 
 @[simp]
 lemma whisker_forgetReflexion_zero (F : WalkingReflexivePair ⥤ C) :
-    (forgetReflexion ⋙  F).obj WalkingParallelPair.one = F.obj zero := rfl
+    F.obj (forgetReflexion.obj WalkingParallelPair.one) = F.obj zero := rfl
 
 @[simp]
 lemma whisker_forgetReflexion_one (F : WalkingReflexivePair ⥤ C) :
-    (forgetReflexion ⋙  F).obj WalkingParallelPair.zero = F.obj one := rfl
+    F.obj (forgetReflexion.obj WalkingParallelPair.zero) = F.obj one := rfl
 
 @[simp]
 lemma whisker_forgetReflexion_left (F : WalkingReflexivePair ⥤ C) :
-    (forgetReflexion ⋙  F).map WalkingParallelPairHom.left = F.map left := rfl
+    F.map (forgetReflexion.map WalkingParallelPairHom.left) = F.map left := rfl
 
 @[simp]
 lemma whisker_forgetReflexion_right (F : WalkingReflexivePair ⥤ C) :
-    (forgetReflexion ⋙  F).map WalkingParallelPairHom.right = F.map right := rfl
+    F.map (forgetReflexion.map WalkingParallelPairHom.right) = F.map right := rfl
 
 /-- The forgetful functor is a final functor -/
 instance forgetReflexion_final : Functor.Final forgetReflexion := by
@@ -378,6 +378,8 @@ noncomputable def ofIsReflexivePair (f g : A ⟶ B) [IsReflexivePair f g] :
     rintro _ _ _ ⟨⟩ g <;> cases g <;> try {rfl} <;>
     try {dsimp; simp [↑ section_comp_left, ↑ section_comp_right]; rfl} <;> try {simp}
 
+/-- The natural isomorphism between the diagram obtained by forgetting the reflexion of
+`ofIsReflexivePair f g` and the original parallel pair. -/
 noncomputable def forgetReflexionOfIsReflexivePairIso (f g : A ⟶ B) [IsReflexivePair f g] :
     (forgetReflexion ⋙  (ofIsReflexivePair f g)) ≅ parallelPair f g := diagramIsoParallelPair _
 
@@ -429,9 +431,10 @@ abbrev ReflexiveCofork (F : WalkingReflexivePair ⥤ C) := Cocone F
 
 namespace ReflexiveCofork
 
+/-- The tail morphism of a reflexive cofork. -/
 def π (G : ReflexiveCofork F) := G.ι.app zero
 
-def condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
+lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
   erw [Cocone.w G left, Cocone.w G right]
 
 @[simp]
@@ -475,6 +478,7 @@ noncomputable def forgetReflexionColimitEquiv [HasCoequalizer (F.map left) (F.ma
 lemma forgetReflexionEquiv_obj (G : ReflexiveCofork F) :
     forgetReflexionEquiv.functor.obj G = G.toCofork := rfl
 
+/-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 noncomputable def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
     IsColimit (G.toCofork) ≃ IsColimit G :=
   (IsColimit.precomposeHomEquiv (diagramIsoParallelPair _).symm (G.whisker _)).trans
