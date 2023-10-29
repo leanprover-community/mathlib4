@@ -3,6 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Tactic.GCongr.Var
 import Mathlib.Analysis.Analytic.Composition
 
 #align_import analysis.analytic.inverse from "leanprover-community/mathlib"@"284fdd2962e67d2932fa3a79ce19fcf92d38e228"
@@ -472,13 +473,13 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
               (I *
                 ∑ c in ({c | 1 < Composition.length c}.toFinset : Finset (Composition k)),
                   C * r ^ c.length * ∏ j, ‖p.rightInv i (c.blocksFun j)‖) := by
-      gcongr with j
+      gcongr_var with j
       apply (ContinuousLinearMap.norm_compContinuousMultilinearMap_le _ _).trans
-      gcongr
+      gcongr_var
       apply (norm_sum_le _ _).trans
-      gcongr
+      gcongr_var
       apply (compAlongComposition_norm _ _ _).trans
-      gcongr
+      gcongr_var
       · exact prod_nonneg fun j _ => norm_nonneg _
       · apply hp
     _ =
@@ -493,7 +494,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
       ring
     _ ≤ I * a + I * C *
         ∑ k in Ico 2 (n + 1), (r * ∑ j in Ico 1 n, a ^ j * ‖p.rightInv i j‖) ^ k := by
-      gcongr _ + _ * _ * ?_
+      gcongr_var _ + _ * _ * ?_
       simp_rw [mul_pow]
       apply
         radius_right_inv_pos_of_radius_pos_aux1 n (fun k => ‖p.rightInv i k‖)
@@ -541,7 +542,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         sum_nonneg fun x _ => mul_nonneg (pow_nonneg apos.le _) (norm_nonneg _)
       have rSn : r * S n ≤ 1 / 2 :=
         calc
-          r * S n ≤ r * ((I + 1) * a) := by gcongr
+          r * S n ≤ r * ((I + 1) * a) := by rel [hn]
           _ ≤ 1 / 2 := by rwa [← mul_assoc]
       calc
         S (n + 1) ≤ I * a + I * C * ∑ k in Ico 2 (n + 1), (r * S n) ^ k :=
@@ -549,14 +550,14 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         _ = I * a + I * C * (((r * S n) ^ 2 - (r * S n) ^ (n + 1)) / (1 - r * S n)) := by
           rw [geom_sum_Ico' _ In]; exact ne_of_lt (rSn.trans_lt (by norm_num))
         _ ≤ I * a + I * C * ((r * S n) ^ 2 / (1 / 2)) := by
-          gcongr
+          gcongr_var
           · simp only [sub_le_self_iff]
             positivity
           · linarith only [rSn]
         _ = I * a + 2 * I * C * (r * S n) ^ 2 := by ring
-        _ ≤ I * a + 2 * I * C * (r * ((I + 1) * a)) ^ 2 := by gcongr
+        _ ≤ I * a + 2 * I * C * (r * ((I + 1) * a)) ^ 2 := by rel [hn]
         _ = (I + 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) * a := by ring
-        _ ≤ (I + 1) * a := by gcongr
+        _ ≤ (I + 1) * a := by rel [ha1]
   -- conclude that all coefficients satisfy `aⁿ Qₙ ≤ (I + 1) a`.
   let a' : NNReal := ⟨a, apos.le⟩
   suffices H : (a' : ENNReal) ≤ (p.rightInv i).radius
