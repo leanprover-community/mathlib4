@@ -962,8 +962,6 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
 
 end
 
-#check Nat.one_le_cast
-
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
   cases' e₁ : split o₁ with a m
   cases' nf_repr_split e₁ with N₁ r₁
