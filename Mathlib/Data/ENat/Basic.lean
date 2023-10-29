@@ -120,7 +120,6 @@ theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 #align enat.to_nat_top ENat.toNat_top
 
-
 --Porting note: new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]

@@ -97,7 +97,9 @@ theorem AddMonoid.End.natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) :
 theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
   rfl
 
--- Note: one_apply omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.coe_one`
+-- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.coe_one`
+theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
+  rfl
 
 @[simp]
 theorem AddMonoid.End.ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :

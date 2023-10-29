@@ -34,23 +34,23 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
--- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`.
+/-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
 theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
   @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
 
--- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use.
+/-- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
   cast_nonneg' n
 #align nat.cast_nonneg Nat.cast_nonneg
 
--- See also `Nat.ofNat_nonneg`, specialised for an `OrderedSemiring`.
+/-- See also `Nat.ofNat_nonneg`, specialised for an `OrderedSemiring`. -/
 -- See note [no_index around OfNat.ofNat]
 @[simp low]
 theorem ofNat_nonneg' (n : ℕ) [n.AtLeastTwo] : 0 ≤ (no_index (OfNat.ofNat n : α)) := cast_nonneg' n
 
--- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use.
+/-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use. -/
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] :
@@ -77,22 +77,22 @@ theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
   <;> simp
 #align nat.cast_add_one_pos Nat.cast_add_one_pos
 
--- See also `Nat.cast_pos`, a specialisation of this to an `OrderedSemiring`.
+/-- See also `Nat.cast_pos`, specialised for an `OrderedSemiring`. -/
 @[simp low]
 theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
 
--- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use.
+/-- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
 #align nat.cast_pos Nat.cast_pos
 
--- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`.
+/-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
 -- See note [no_index around OfNat.ofNat]
 @[simp low]
 theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (no_index (OfNat.ofNat n : α)) :=
   cast_pos'.mpr Nat.AtLeastTwo.pos
 
--- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use.
+/-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} [n.AtLeastTwo] :
