@@ -1414,6 +1414,11 @@ theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : Analyti
     ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
 h.eventually_analyticAt.exists_mem
 
+/-- If we're analytic at a point, we're analytic in a nonempty ball -/
+theorem AnalyticAt.exists_ball_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+    ∃ r : ℝ, 0 < r ∧ AnalyticOn 𝕜 f (Metric.ball x r) :=
+  Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
+
 end
 
 section
