@@ -138,8 +138,7 @@ instance : BoundedGENhdsClass (α × β) := by
   exact ⟨(a, b), ha.prod_mk hb⟩
 
 instance [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
-    [∀ i, BoundedGENhdsClass (π i)] : BoundedGENhdsClass (∀ i, π i) :=
-  by
+    [∀ i, BoundedGENhdsClass (π i)] : BoundedGENhdsClass (∀ i, π i) := by
   refine' ⟨fun x ↦ _⟩
   rw [nhds_pi]
   choose f hf using fun i ↦ isBounded_ge_nhds (x i)
