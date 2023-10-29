@@ -162,7 +162,7 @@ def sumPolynomial (p : R[X]) : symmetricSubalgebra σ R :=
     rw [← Equiv.sum_comp e (fun i ↦ Polynomial.aeval (X i) p)]⟩
 
 lemma coe_sumPolynomial (p : R[X]) :
-  (sumPolynomial σ p : MvPolynomial σ R) = ∑ i, Polynomial.aeval (X i) p := rfl
+    (sumPolynomial σ p : MvPolynomial σ R) = ∑ i, Polynomial.aeval (X i) p := rfl
 
 variable {σ}
 
