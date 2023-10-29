@@ -611,6 +611,10 @@ theorem lift_one : lift 1 = 1 := mk_eq_one _
 #align cardinal.lift_one Cardinal.lift_one
 
 @[simp]
+theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
+  lift_injective.eq_iff' lift_one
+
+@[simp]
 theorem lift_add (a b : Cardinal.{u}) : lift.{v} (a + b) = lift.{v} a + lift.{v} b :=
   inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.sumCongr Equiv.ulift Equiv.ulift).symm
@@ -1311,6 +1315,17 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
 #align cardinal.nat_eq_lift_iff Cardinal.nat_eq_lift_iff
 
 @[simp]
+theorem zero_eq_lift_iff {a : Cardinal.{u}} :
+    (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
+  simpa using nat_eq_lift_iff (n := 0)
+
+@[simp]
+theorem one_eq_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
+  simpa using nat_eq_lift_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : Cardinal)) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
   nat_eq_lift_iff
@@ -1320,6 +1335,12 @@ theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a �
   rw [← lift_natCast.{v,u}, lift_le]
 #align cardinal.lift_le_nat_iff Cardinal.lift_le_nat_iff
 
+@[simp]
+theorem lift_le_one_iff {a : Cardinal.{u}} :
+    lift.{v} a ≤ 1 ↔ a ≤ 1 := by
+  simpa using lift_le_nat_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     lift.{v} a ≤ (no_index (OfNat.ofNat n)) ↔ a ≤ OfNat.ofNat n :=
@@ -1331,6 +1352,12 @@ theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n �
 #align cardinal.nat_le_lift_iff Cardinal.nat_le_lift_iff
 
 @[simp]
+theorem one_le_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
+  simpa using nat_le_lift_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
 theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : Cardinal)) ≤ lift.{v} a ↔ (OfNat.ofNat n : Cardinal) ≤ a :=
   nat_le_lift_iff
@@ -1340,6 +1367,7 @@ theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n 
   rw [← lift_natCast.{v,u}, lift_lt]
 #align cardinal.lift_lt_nat_iff Cardinal.lift_lt_nat_iff
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     lift.{v} a < (no_index (OfNat.ofNat n)) ↔ a < OfNat.ofNat n :=
@@ -1350,43 +1378,22 @@ theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a 
   rw [← lift_natCast.{v,u}, lift_lt]
 #align cardinal.nat_lt_lift_iff Cardinal.nat_lt_lift_iff
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem zero_lt_lift_iff {a : Cardinal.{u}} :
+    (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
+  simpa using nat_lt_lift_iff (n := 0)
+
+@[simp]
+theorem one_lt_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
+  simpa using nat_lt_lift_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : Cardinal)) < lift.{v} a ↔ (OfNat.ofNat n : Cardinal) < a :=
   nat_lt_lift_iff
-
--- TODO: remove if CI says these can all be proved by simp
--- theorem zero_lt_lift_iff {a : Cardinal.{u}} :
---     (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
---   simp
-
--- theorem one_lt_lift_iff {a : Cardinal.{u}} :
---     (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
---   simp
-
--- theorem one_le_lift_iff {a : Cardinal.{u}} :
---     (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
---   simp
-
--- theorem zero_eq_lift_iff {a : Cardinal.{u}} :
---     (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
---   simp
-
--- theorem one_eq_lift_iff {a : Cardinal.{u}} :
---     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
---   simp
-
--- theorem lift_eq_zero_iff {a : Cardinal.{u}} :
---     lift.{v} a = 0 ↔ a = 0 := by
---   simp
-
--- theorem lift_eq_one_iff {a : Cardinal.{u}} :
---     lift.{v} a = 1 ↔ a = 1 := by
---   simp
-
--- theorem lift_le_one_iff {a : Cardinal.{u}} :
---     lift.{v} a ≤ 1 ↔ a ≤ 1 := by
---   simp
 
 theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 #align cardinal.lift_mk_fin Cardinal.lift_mk_fin
