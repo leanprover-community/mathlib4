@@ -237,7 +237,8 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
 theorem comm_all_stdBasisMatrix_nondiag {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) (i : n) : M = M i i • (1 : Matrix n n α) := by
+    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) (i : n) :
+    M = M i i • (1 : Matrix n n α) := by
   rewrite [← ext_iff]
   intro j k
   by_cases h : j = k
