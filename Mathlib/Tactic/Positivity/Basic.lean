@@ -391,7 +391,8 @@ def evalZpow : PositivityExt where eval {u α} zα pα e := do
     pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
   orElse result do
     let ra ← core zα pα a
-    let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(LinearOrderedSemifield $α)) : MetaM (Strictness zα pα e) := do
+    let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(LinearOrderedSemifield $α)) :
+        MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (by exact .nonnegative (q(zpow_nonneg $pa $b)))
