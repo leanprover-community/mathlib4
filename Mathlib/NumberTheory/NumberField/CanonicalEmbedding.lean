@@ -206,10 +206,10 @@ noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (E K) :=
     exact fun _ _ => ⟨rfl, rfl⟩ }
 
 theorem commMap_apply_of_isReal (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsReal w) :
-  (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
+    (commMap K x).1 ⟨w, hw⟩ = (x w.embedding).re := rfl
 
 theorem commMap_apply_of_isComplex (x : (K →+* ℂ) → ℂ) {w : InfinitePlace K} (hw : IsComplex w) :
-  (commMap K x).2 ⟨w, hw⟩ = x w.embedding := rfl
+    (commMap K x).2 ⟨w, hw⟩ = x w.embedding := rfl
 
 @[simp]
 theorem commMap_canonical_eq_mixed (x : K) :
@@ -221,7 +221,7 @@ theorem commMap_canonical_eq_mixed (x : K) :
 /-- This is a technical result to ensure that the image of the `ℂ`-basis of `ℂ^n` defined in
 `canonicalEmbedding.latticeBasis` is a `ℝ`-basis of `ℝ^r₁ × ℂ^r₂`,
 see `mixedEmbedding.latticeBasis`. -/
-theorem disjoint_span_commMap_ker [NumberField K]:
+theorem disjoint_span_commMap_ker [NumberField K] :
     Disjoint (Submodule.span ℝ (Set.range (canonicalEmbedding.latticeBasis K)))
       (LinearMap.ker (commMap K)) := by
   refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero => ?_)
@@ -329,7 +329,7 @@ noncomputable abbrev convexBodyLtFactor : ℝ≥0∞ :=
   (2 : ℝ≥0∞) ^ card {w : InfinitePlace K // IsReal w} *
     volume (ball (0 : ℂ) 1) ^ card {w : InfinitePlace K // IsComplex w}
 
-theorem convexBodyLtFactor_lt_pos : 0 < (convexBodyLtFactor K) := by
+theorem convexBodyLtFactor_pos : 0 < (convexBodyLtFactor K) := by
   refine mul_pos (NeZero.ne _) ?_
   exact ENNReal.pow_ne_zero (ne_of_gt (measure_ball_pos _ _ (by norm_num))) _
 

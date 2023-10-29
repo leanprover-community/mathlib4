@@ -105,6 +105,12 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
   map_smul' := smul_modByMonic
 #align polynomial.mod_by_monic_hom Polynomial.modByMonicHom
 
+theorem neg_modByMonic (p mod : R[X]) : (-p) %ₘ mod = - (p %ₘ mod) :=
+  (modByMonicHom mod).map_neg p
+
+theorem sub_modByMonic (a b mod : R[X]) : (a - b) %ₘ mod = a %ₘ mod - b %ₘ mod :=
+  (modByMonicHom mod).map_sub a b
+
 end
 
 section
@@ -370,7 +376,7 @@ introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the i
 theorem le_rootMultiplicity_iff {p : R[X]} (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
   classical
-  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, Nat.le_find_iff]
+  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   cases' n with n;

@@ -271,16 +271,15 @@ theorem abs_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
 #align complex.abs_cpow_of_imp Complex.abs_cpow_of_imp
 
 theorem abs_cpow_le (z w : ℂ) : abs (z ^ w) ≤ abs z ^ w.re / Real.exp (arg z * im w) := by
-  rcases ne_or_eq z 0 with (hz | rfl) <;> [exact (abs_cpow_of_ne_zero hz w).le; rw [map_zero]]
-  rcases eq_or_ne w 0 with (rfl | hw); · simp
-  rw [zero_cpow hw, map_zero]
-  exact div_nonneg (Real.rpow_nonneg_of_nonneg le_rfl _) (Real.exp_pos _).le
+  by_cases h : z = 0 → w.re = 0 → w = 0
+  · exact (abs_cpow_of_imp h).le
+  · push_neg at h
+    simp [h]
 #align complex.abs_cpow_le Complex.abs_cpow_le
 
 @[simp]
 theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x ^ y := by
-  rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip] <;>
-    simp [*, abs_cpow_of_ne_zero]
+  rw [abs_cpow_of_imp] <;> simp
 #align complex.abs_cpow_real Complex.abs_cpow_real
 
 @[simp]
@@ -295,10 +294,7 @@ theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y
 
 theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
     abs (x ^ y) = x ^ re y := by
-  rcases hx.eq_or_lt with (rfl | hlt)
-  · rw [ofReal_zero, zero_cpow, map_zero, Real.zero_rpow hy]
-    exact ne_of_apply_ne re hy
-  · exact abs_cpow_eq_rpow_re_of_pos hlt y
+  rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, _root_.abs_of_nonneg]
 #align complex.abs_cpow_eq_rpow_re_of_nonneg Complex.abs_cpow_eq_rpow_re_of_nonneg
 
 end Complex

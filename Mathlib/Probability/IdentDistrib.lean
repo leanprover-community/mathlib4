@@ -120,6 +120,15 @@ protected theorem of_ae_eq {g : α → γ} (hf : AEMeasurable f μ) (heq : f =�
     map_eq := Measure.map_congr heq }
 #align probability_theory.ident_distrib.of_ae_eq ProbabilityTheory.IdentDistrib.of_ae_eq
 
+lemma _root_.MeasureTheory.AEMeasurable.identDistrib_mk
+    (hf : AEMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
+  IdentDistrib.of_ae_eq hf hf.ae_eq_mk
+
+lemma _root_.MeasureTheory.AEStronglyMeasurable.identDistrib_mk
+    [TopologicalSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ]
+    (hf : AEStronglyMeasurable f μ) : IdentDistrib f (hf.mk f) μ μ :=
+  IdentDistrib.of_ae_eq hf.aemeasurable hf.ae_eq_mk
+
 theorem measure_mem_eq (h : IdentDistrib f g μ ν) {s : Set γ} (hs : MeasurableSet s) :
     μ (f ⁻¹' s) = ν (g ⁻¹' s) := by
   rw [← Measure.map_apply_of_aemeasurable h.aemeasurable_fst hs, ←
@@ -153,7 +162,7 @@ theorem aestronglyMeasurable_fst [TopologicalSpace γ] [MetrizableSpace γ] [Ope
 theorem aestronglyMeasurable_snd [TopologicalSpace γ] [MetrizableSpace γ] [BorelSpace γ]
     (h : IdentDistrib f g μ ν) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable g ν := by
   refine' aestronglyMeasurable_iff_aemeasurable_separable.2 ⟨h.aemeasurable_snd, _⟩
-  rcases(aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
+  rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
   refine' ⟨closure t, t_sep.closure, _⟩
   apply h.ae_mem_snd isClosed_closure.measurableSet
   filter_upwards [ht] with x hx using subset_closure hx
@@ -183,7 +192,7 @@ theorem integral_eq [NormedAddCommGroup γ] [NormedSpace ℝ γ] [BorelSpace γ]
   by_cases hf : AEStronglyMeasurable f μ
   · have A : AEStronglyMeasurable id (Measure.map f μ) := by
       rw [aestronglyMeasurable_iff_aemeasurable_separable]
-      rcases(aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
+      rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 hf).2 with ⟨t, t_sep, ht⟩
       refine' ⟨aemeasurable_id, ⟨closure t, t_sep.closure, _⟩⟩
       rw [ae_map_iff h.aemeasurable_fst]
       · filter_upwards [ht] with x hx using subset_closure hx
@@ -306,7 +315,7 @@ section UniformIntegrable
 open TopologicalSpace
 
 variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
-  [SecondCountableTopology E] {μ : Measure α} [IsFiniteMeasure μ]
+  {μ : Measure α} [IsFiniteMeasure μ]
 
 /-- This lemma is superseded by `Memℒp.uniformIntegrable_of_identDistrib` which only requires
 `AEStronglyMeasurable`. -/
@@ -318,17 +327,21 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → �
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.snorm_indicator_norm_ge_pos_le μ (hfmeas _) hε
   refine' ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq _) hC₂⟩
-  have : {x : α | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊}.indicator (f i) =
-      (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then x else 0) ∘ f i := by
+  have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
+    ext x
+    simp_rw [← norm_toNNReal]
+    exact Real.le_toNNReal_iff_coe_le (norm_nonneg _)
+  rw [this, ← snorm_norm, ← snorm_norm (Set.indicator _ _)]
+  simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
+  let F : E → ℝ := (fun x : E => if (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖x‖₊ then ‖x‖ else 0)
+  have F_meas : Measurable F := by
+    apply measurable_norm.indicator (measurableSet_le measurable_const measurable_nnnorm)
+  have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
+    intro k
     ext x
     simp only [Set.indicator, Set.mem_setOf_eq]; norm_cast
-  simp_rw [coe_nnnorm, this]
-  rw [← snorm_map_measure _ (hf i).aemeasurable_fst, (hf i).map_eq,
-    snorm_map_measure _ (hf j).aemeasurable_fst]
-  · rfl
-  all_goals
-    exact_mod_cast aestronglyMeasurable_id.indicator
-      (measurableSet_le measurable_const measurable_nnnorm)
+  rw [this, this, ← snorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
+    (hf i).map_eq, snorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 #align probability_theory.mem_ℒp.uniform_integrable_of_ident_distrib_aux ProbabilityTheory.Memℒp.uniformIntegrable_of_identDistrib_aux
 
 /-- A sequence of identically distributed Lᵖ functions is p-uniformly integrable. -/

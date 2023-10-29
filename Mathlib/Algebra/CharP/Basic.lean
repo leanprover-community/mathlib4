@@ -110,7 +110,7 @@ class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
 -- porting note: the field of the structure had implicit arguments where they were
 -- explicit in Lean 3
 theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (x : ℕ) :
-  (x : R) = 0 ↔ p ∣ x :=
+    (x : R) = 0 ↔ p ∣ x :=
 CharP.cast_eq_zero_iff' (R := R) (p := p) x
 
 @[simp]

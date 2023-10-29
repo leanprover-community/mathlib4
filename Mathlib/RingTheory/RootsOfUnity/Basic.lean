@@ -592,6 +592,14 @@ theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 
 
 end DivisionCommMonoid
 
+section CommRing
+
+variable [CommRing R]  {n : ℕ} (hn : 1 < n) {ζ : R} (hζ : IsPrimitiveRoot ζ n)
+
+theorem sub_one_ne_zero : ζ - 1 ≠ 0 := sub_ne_zero.mpr <| hζ.ne_one hn
+
+end CommRing
+
 section IsDomain
 
 variable {ζ : R}

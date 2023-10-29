@@ -227,8 +227,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     rw [AdjoinRoot.adjoinRoot_eq_top, Subalgebra.restrictScalars_top, ←
       @Subalgebra.restrictScalars_top F C] at this
     exact top_le_iff.mpr (Subalgebra.restrictScalars_injective F this)
-/- Porting note: the `change` was `dsimp only [S]`. This is the step that requires increasing
-`maxHeartbeats`. Using `set S ... with hS` doesn't work. -/
+/- Porting note: the `change` was `dsimp only [S]`. Using `set S ... with hS` doesn't work. -/
   change Subalgebra.restrictScalars F (Algebra.adjoin C
     (((p.aroots E).map (algebraMap E D)).toFinset : Set D)) = _
   rw [← Finset.image_toFinset, Finset.coe_image]
@@ -266,7 +265,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
 instance normal_sup
     (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
     Normal F (E ⊔ E' : IntermediateField F K) :=
-  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by intro i; cases i <;> infer_instance)
+  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
 
 -- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
 variable {F K} {L : Type*} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
@@ -344,9 +343,9 @@ theorem AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [N
 -- Porting note: this was `IsScalarTower F E E := by infer_instance`.
   letI : Algebra E E := Algebra.id E
   let g := f.restrictNormal' E
-  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E), ←
-    IntermediateField.AlgHom.map_fieldRange, IntermediateField.AlgEquiv.fieldRange_eq_top g,
-      ← IntermediateField.AlgHom.fieldRange_eq_map, IntermediateField.fieldRange_val]
+  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E),
+    ← AlgHom.map_fieldRange, AlgEquiv.fieldRange_eq_top g, ← AlgHom.fieldRange_eq_map,
+    IntermediateField.fieldRange_val]
 #align alg_hom.field_range_of_normal AlgHom.fieldRange_of_normal
 
 /-- Restrict algebra isomorphism to a normal subfield -/

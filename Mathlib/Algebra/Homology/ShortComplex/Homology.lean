@@ -100,7 +100,7 @@ def homologyMapData : HomologyMapData φ h₁ h₂ := default
 variable {φ h₁ h₂}
 
 lemma congr_left_φH {γ₁ γ₂ : HomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) :
-  γ₁.left.φH = γ₂.left.φH := by rw [eq]
+    γ₁.left.φH = γ₂.left.φH := by rw [eq]
 
 end HomologyMapData
 

@@ -97,7 +97,7 @@ theorem smul_diff' (h : H) :
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
-  (h : H) : h • α = α → h = 1 :=
+    (h : H) : h • α = α → h = 1 :=
   Quotient.inductionOn' α fun α hα =>
     (powCoprime hH).injective <|
       calc

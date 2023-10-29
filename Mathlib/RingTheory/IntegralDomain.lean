@@ -52,7 +52,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     ‹CancelMonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp [Inv.inv, dif_neg ha]
+      simp only [Inv.inv, dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp [Inv.inv, dif_pos rfl] }
 #align fintype.group_with_zero_of_cancel Fintype.groupWithZeroOfCancel
@@ -120,7 +120,7 @@ variable [CommRing R] [IsDomain R] [Group G]
 -- porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
 -- so we have to use `Finset.filter` instead
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
-  {n : ℕ} (hn : 0 < n) (g₀ : G) :
+    {n : ℕ} (hn : 0 < n) (g₀ : G) :
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le

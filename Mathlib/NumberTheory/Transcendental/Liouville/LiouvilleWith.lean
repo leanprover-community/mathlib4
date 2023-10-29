@@ -310,7 +310,7 @@ theorem nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
 
 theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
   rintro rfl; rename' m => M
-  rcases((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
+  rcases ((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
     ⟨n : ℕ, hn : 0 < n, m : ℤ, hne : (M : ℝ) ≠ m / n, hlt : |(M - m / n : ℝ)| < n ^ (-1 : ℝ)⟩
   refine hlt.not_le ?_
   have hn' : (0 : ℝ) < n := by simpa
@@ -357,7 +357,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     exact fun m hm a => hm a
   have : ∀ᶠ m : ℕ in atTop, ∀ b < N, 1 < b → ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| :=
     (finite_lt_nat N).eventually_all.2 fun b _hb => eventually_imp_distrib_left.2 (this b)
-  rcases(this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
+  rcases (this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
   cases' le_or_lt N b with h h

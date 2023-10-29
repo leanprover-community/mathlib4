@@ -83,7 +83,7 @@ protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / 
 
 theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
     Summable fun i : ℕ => 1 / m ^ (i + (k + 1))! := by
-  convert(summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
+  convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 #align liouville_number.remainder_summable LiouvilleNumber.remainder_summable
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
