@@ -11,6 +11,7 @@ namespace Mathlib.Tactic.GCongr
 open Lean Meta Elab Tactic
 
 
+/-- fake docstring -/
 elab "gcongr_var" template:(colGt term)?
     withArg:((" with " (colGt binderIdent)+)?) : tactic => do
   let g ← getMainGoal
