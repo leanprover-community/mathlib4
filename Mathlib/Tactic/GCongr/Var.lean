@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Tactic.GCongr
 
+/-! # Fake module docstring -/
 
 namespace Mathlib.Tactic.GCongr
 open Lean Meta Elab Tactic
