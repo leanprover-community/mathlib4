@@ -21,12 +21,6 @@ irreducible factors over `L` have degree `1`.
   field and a polynomial `f` saying that `f.map i` is zero or all of its irreducible factors over
   `L` have degree `1`.
 
-## Main statements
-
-* `lift_of_splits`: If `K` and `L` are field extensions of a field `F` and for some finite subset
-  `S` of `K`, the minimal polynomial of every `x ∈ K` splits as a polynomial with coefficients in
-  `L`, then `Algebra.adjoin F S` embeds into `L`.
-
 -/
 
 

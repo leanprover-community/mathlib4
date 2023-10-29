@@ -79,7 +79,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
 #align polynomial.is_splitting_field.map Polynomial.IsSplittingField.map
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
-    Polynomial.Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
+    Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
   ⟨fun h => by -- Porting note: replaced term-mode proof
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
@@ -112,7 +112,7 @@ end ScalarTower
 
 /-- Splitting field of `f` embeds into any field that splits `f`. -/
 def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
-    (hf : Polynomial.Splits (algebraMap K F) f) : L →ₐ[K] F :=
+    (hf : Splits (algebraMap K F) f) : L →ₐ[K] F :=
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
       (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
