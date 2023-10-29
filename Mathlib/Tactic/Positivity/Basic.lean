@@ -410,7 +410,7 @@ def evalZpow : PositivityExt where eval {u α} zα pα e := do
         pure (by exact .positive (q(zpow_pos_of_pos $pa $b)))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
-        let oα ← synthInstanceQ q(LinearOrderedSemiring $α)
+        let oα ← synthInstanceQ q(LinearOrderedSemifield $α)
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) oα)) (ofNonzero q(ne_of_gt $pa) oα)
     | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
