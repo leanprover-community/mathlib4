@@ -2329,7 +2329,7 @@ theorem nat_cast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := by
 #align ordinal.nat_cast_inj Ordinal.nat_cast_inj
 
 instance charZero : CharZero Ordinal where
-  natCast_injective .. := nat_cast_inj.mp
+  cast_injective _ _ := nat_cast_inj.mp
 
 /-- Alias of `Nat.cast_lt`, specialized to `Ordinal` --/
 theorem nat_cast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
@@ -2343,8 +2343,8 @@ theorem nat_cast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_
 theorem nat_cast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
 #align ordinal.nat_cast_ne_zero Ordinal.nat_cast_ne_zero
 
-/-- Alias of `Nat.cast_pos`, specialized to `Ordinal` --/
-theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos
+/-- Alias of `Nat.cast_pos'`, specialized to `Ordinal` --/
+theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 #align ordinal.nat_cast_pos Ordinal.nat_cast_pos
 
 @[simp, norm_cast]
@@ -2383,7 +2383,8 @@ theorem lift_nat_cast : ∀ n : ℕ, lift.{u, v} n = n
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem (n : ℕ) [n.AtLeastTwo] : lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+    lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   lift_nat_cast n
 
 end Ordinal
