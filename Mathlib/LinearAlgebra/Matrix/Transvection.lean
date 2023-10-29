@@ -237,14 +237,12 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
 #align matrix.transvection_struct.prod_mul_reverse_inv_prod Matrix.TransvectionStruct.prod_mul_reverse_inv_prod
 
 /-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix).-/
-theorem comm_all_TransvectionStruct [Inhabited n] {M : Matrix n n R}
-    (hM : ∀ t : TransvectionStruct n R, t.toMatrix * M = M * t.toMatrix) :
-    M = M default default • (1 : Matrix n n R) := by
-  refine StdBasisMatrix.comm_all_stdBasisMatrix_nondiag ?_
+theorem comm_all_TransvectionStruct {M : Matrix n n R}
+    (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
+    M = M i i • (1 : Matrix n n R) := by
+  refine StdBasisMatrix.comm_all_stdBasisMatrix_nondiag ?_ i
   intro i j hij
-  have := hM ⟨i, j, hij, 1⟩
-  simp [toMatrix_mk, transvection, add_mul, mul_add] at this
-  exact this
+  simpa [transvection, mul_add, add_mul] using (hM ⟨i, j, hij, 1⟩).eq
 
 end
 
