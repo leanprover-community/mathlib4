@@ -13,7 +13,7 @@ import Mathlib.Tactic.FieldSimp
 open Lean Meta Elab Tactic Parser Tactic
 
 /-!
-# `unify_denoms` tactic
+# `unify_denoms` and `unify_denoms!` tactics
 
 Tactics to clear denominators in algebraic expressions, extends `field_simp`  using
 rules that require denominators to be nonzero. The corresponding hypotheses are
@@ -25,6 +25,13 @@ necessary hypothesis about denominators being nonzero as new goals.
 The `unify_denoms!` tactic extends `unify_denoms` to work also on
 (in)equalities.
 --/
+
+/--
+`unify_denoms` reduces expressions with nested fractions to a single fraction.
+
+It adds the hypothesis that the corresponding denominators are nonzero
+as new goals.
+-/
 syntax (name := unify_denoms) "unify_denoms" (location)? : tactic
 
 
@@ -42,6 +49,13 @@ macro_rules
     | (rw [mul_div_mul_right] $[at $location]?)
     | (rw [mul_div_mul_left]  $[at $location]?) )))
 
+/--
+`unify_denoms!` works as `unify_denoms`, but also tries to cancel denominators
+in both sides of an (in)equality.
+
+For transforming inequalities between two fractions,
+it uses the hypothesis the denominators are positive, and adds it as new goals.
+-/
 syntax (name := unify_denoms!) "unify_denoms!" (location)?: tactic
 
 macro_rules
