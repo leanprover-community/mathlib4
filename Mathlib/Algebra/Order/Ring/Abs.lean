@@ -25,7 +25,6 @@ theorem abs_one : |(1 : α)| = 1 :=
   abs_of_pos zero_lt_one
 #align abs_one abs_one
 
-@[simp]
 theorem abs_two : |(2 : α)| = 2 :=
   abs_of_pos zero_lt_two
 #align abs_two abs_two
