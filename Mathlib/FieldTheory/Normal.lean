@@ -5,9 +5,7 @@ Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.SplittingField.Construction
---import Mathlib.FieldTheory.Tower
 import Mathlib.GroupTheory.Solvable
---import Mathlib.RingTheory.PowerBasis
 
 #align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 
