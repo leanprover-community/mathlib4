@@ -2583,12 +2583,12 @@ theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
   Acc.rank_lt_of_rel _ h
 #align well_founded.rank_lt_of_rel WellFounded.rank_lt_of_rel
 
-theorem rank_strictMono [Preorder α] [WellFoundedLT α] : StrictMono (rank <| @wellFounded_lt α _) :=
-   fun _ _ => rank_lt_of_rel _
+theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
+    StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
 #align well_founded.rank_strict_mono WellFounded.rank_strictMono
 
-theorem rank_strictAnti [Preorder α] [WellFoundedGT α] : StrictAnti (rank <| @wellFounded_gt α _) :=
-  fun _ _ => rank_lt_of_rel <| @IsWellFounded_gt α _
+theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
+    StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
 #align well_founded.rank_strict_anti WellFounded.rank_strictAnti
 
 end WellFounded
