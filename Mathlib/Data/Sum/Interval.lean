@@ -171,21 +171,20 @@ lemma mem_sumLexLift :
 lemma inl_mem_sumLexLift {c₁ : γ₁} :
     inl c₁ ∈ sumLexLift f₁ f₂ g₁ g₂ a b ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f₁ a₁ b₁) ∨
-        ∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ c₁ ∈ g₁ a₁ b₂ :=
-  by simp [mem_sumLexLift]
+        ∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ c₁ ∈ g₁ a₁ b₂ := by
+  simp [mem_sumLexLift]
 #align finset.inl_mem_sum_lex_lift Finset.inl_mem_sumLexLift
 
 lemma inr_mem_sumLexLift {c₂ : γ₂} :
     inr c₂ ∈ sumLexLift f₁ f₂ g₁ g₂ a b ↔
       (∃ a₁ b₂, a = inl a₁ ∧ b = inr b₂ ∧ c₂ ∈ g₂ a₁ b₂) ∨
-        ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ f₂ a₂ b₂ :=
-  by simp [mem_sumLexLift]
+        ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ f₂ a₂ b₂ := by
+  simp [mem_sumLexLift]
 #align finset.inr_mem_sum_lex_lift Finset.inr_mem_sumLexLift
 
 lemma sumLexLift_mono (hf₁ : ∀ a b, f₁ a b ⊆ f₁' a b) (hf₂ : ∀ a b, f₂ a b ⊆ f₂' a b)
     (hg₁ : ∀ a b, g₁ a b ⊆ g₁' a b) (hg₂ : ∀ a b, g₂ a b ⊆ g₂' a b) (a : Sum α₁ α₂)
-    (b : Sum β₁ β₂) : sumLexLift f₁ f₂ g₁ g₂ a b ⊆ sumLexLift f₁' f₂' g₁' g₂' a b :=
-  by
+    (b : Sum β₁ β₂) : sumLexLift f₁ f₂ g₁ g₂ a b ⊆ sumLexLift f₁' f₂' g₁' g₂' a b := by
   cases a <;> cases b
   exacts [map_subset_map.2 (hf₁ _ _), disjSum_mono (hg₁ _ _) (hg₂ _ _), Subset.rfl,
     map_subset_map.2 (hf₂ _ _)]
@@ -333,10 +332,10 @@ local elab "simp_lex" : tactic => do
     rintro (a | a) (b | b) (c | c) <;> simp only
       [sumLexLift_inl_inl, sumLexLift_inl_inr, sumLexLift_inr_inl, sumLexLift_inr_inr,
         inl_le_inl_iff, inl_le_inr, not_inr_le_inl, inr_le_inr_iff, inl_lt_inl_iff, inl_lt_inr,
-        not_inr_lt_inl, inr_lt_inr_iff, mem_Icc, mem_Ico, mem_Ioc, mem_Ioo, mem_Ici, mem_Ioi, mem_Iic,
-        mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and, map_empty,
-        not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex, mem_map,
-        Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
+        not_inr_lt_inl, inr_lt_inr_iff, mem_Icc, mem_Ico, mem_Ioc, mem_Ioo, mem_Ici, mem_Ioi,
+        mem_Iic, mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and,
+        map_empty, not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex,
+        mem_map, Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
         -- porting note: added
         inl.injEq, inr.injEq]
   )
