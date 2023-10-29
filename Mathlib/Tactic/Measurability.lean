@@ -15,6 +15,9 @@ We define the `measurability` tactic using `aesop`. -/
 open Lean.Parser.Tactic (config)
 
 attribute [aesop (rule_sets [Measurable]) unfold norm] Function.comp
+-- FIXME: `npowRec` is an internal implementation detail,
+-- and `aesop` certainly should not know about it.
+-- If anyone is working on the `measurability` tactic, please try to fix this!
 attribute [aesop (rule_sets [Measurable]) norm] npowRec
 
 /--
