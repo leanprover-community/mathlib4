@@ -962,6 +962,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
 
 end
 
+#check Nat.one_le_cast
+
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
   cases' e₁ : split o₁ with a m
   cases' nf_repr_split e₁ with N₁ r₁
@@ -980,9 +982,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       rw [opow_add, opow_mul, opow_omega, add_one_eq_succ]
       congr
       conv_lhs =>
-        simp [HPow.hPow]
+        dsimp [HPow.hPow]
         simp [Pow.pow, opow, Ordinal.succ_ne_zero]
-      · simpa using nat_cast_lt.{0}.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
+      · simpa [Nat.one_le_iff_ne_zero]
       · rw [←Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
   · haveI := N₁.fst
