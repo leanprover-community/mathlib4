@@ -213,7 +213,7 @@ theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem mk_coe_nat (n : ℕ) : (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) = n :=
+theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
   rfl
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 

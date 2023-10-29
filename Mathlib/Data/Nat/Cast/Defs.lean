@@ -54,7 +54,6 @@ variable {n : ℕ} [n.AtLeastTwo]
 theorem one_lt : 1 < n := prop
 theorem one_le : 1 ≤ n := Nat.le_of_lt one_lt
 theorem pos : 0 < n := one_le
-theorem nonneg : 0 ≤ n := Nat.le_of_lt pos
 
 end Nat.AtLeastTwo
 
