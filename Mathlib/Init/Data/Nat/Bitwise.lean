@@ -25,7 +25,7 @@ universe u
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
-local notation "bxor" => _root_.xor
+local notation "bxor" => Bool.xor
 
 namespace Nat
 set_option linter.deprecated false
@@ -271,7 +271,7 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
   simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
-    Bool.not_true, Bool.and_false, Bool.xor_false_right]
+    Bool.not_true, Bool.and_false, Bool.xor_false]
   cases b <;> cases bodd n <;> rfl
 #align nat.bodd_bit Nat.bodd_bit
 
