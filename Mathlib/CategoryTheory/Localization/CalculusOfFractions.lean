@@ -281,24 +281,104 @@ lemma comp_eq {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z
 
 namespace Localization
 
-/-noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : Hom W X Z := by
+noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : Hom W X Z := by
   refine' Quot.lift₂ (fun a b => a.comp b) _ _ z₁ z₂
   · rintro a b₁ b₂ ⟨U, t₁, t₂, hst, hft, ht⟩
-    dsimp
-    sorry
-  · sorry
+    obtain ⟨z₁, fac₁⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk a.s a.hs b₁.f)
+    obtain ⟨z₂, fac₂⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk a.s a.hs b₂.f)
+    obtain ⟨w₁, fac₁'⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk z₁.s z₁.hs t₁)
+    obtain ⟨w₂, fac₂'⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk z₂.s z₂.hs t₂)
+    obtain ⟨u, fac₃⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk w₁.s w₁.hs w₂.s)
+    dsimp at fac₁ fac₂ fac₁' fac₂' fac₃ ⊢
+    have eq : a.s ≫ z₁.f ≫ w₁.f ≫ u.f = a.s ≫ z₂.f ≫ w₂.f ≫ u.s := by
+      rw [← reassoc_of% fac₁, ← reassoc_of% fac₂, ← reassoc_of% fac₁', ← reassoc_of% fac₂',
+        reassoc_of% hft, fac₃]
+    obtain ⟨Z, p, hp, fac₄⟩ := HasLeftCalculusOfFractions'.ext _ _ _ a.hs eq
+    simp only [assoc] at fac₄
+    rw [comp_eq _ _ z₁ fac₁, comp_eq _ _ z₂ fac₂]
+    apply Quot.sound
+    refine' ⟨Z, w₁.f ≫ u.f ≫ p, w₂.f ≫ u.s ≫ p, _, _, _⟩
+    · dsimp
+      simp only [assoc, ← reassoc_of% fac₁', ← reassoc_of% fac₂',
+        reassoc_of% hst, reassoc_of% fac₃]
+    · dsimp
+      simp only [assoc, fac₄]
+    · dsimp
+      simp only [assoc]
+      rw [← reassoc_of% fac₁', ← reassoc_of% fac₃, ← assoc]
+      exact W.comp_mem _ _ ht (W.comp_mem _ _ w₂.hs (W.comp_mem _ _ u.hs hp))
+  · rintro a₁ a₂ b ⟨U, t₁, t₂, hst, hft, ht⟩
+    obtain ⟨z₁, fac₁⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk a₁.s a₁.hs b.f)
+    obtain ⟨z₂, fac₂⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk a₂.s a₂.hs b.f)
+    obtain ⟨w₁, fac₁'⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk (a₁.s ≫ t₁) ht (b.f ≫ z₁.s))
+    obtain ⟨w₂, fac₂'⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk (a₂.s ≫ t₂) (show W _ by rw [← hst]; exact ht) (b.f ≫ z₂.s))
+    let p₁ : W.LeftFraction X Z := LeftFraction.mk (a₁.f ≫ t₁ ≫ w₁.f) (b.s ≫ z₁.s ≫ w₁.s)
+      (W.comp_mem _ _ b.hs (W.comp_mem _ _ z₁.hs w₁.hs))
+    let p₂ : W.LeftFraction X Z := LeftFraction.mk (a₂.f ≫ t₂ ≫ w₂.f) (b.s ≫ z₂.s ≫ w₂.s)
+      (W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs w₂.hs))
+    dsimp at fac₁ fac₂ fac₁' fac₂' ⊢
+    simp only [assoc] at fac₁' fac₂'
+    rw [comp_eq _ _ z₁ fac₁, comp_eq _ _ z₂ fac₂]
+    apply Quot.sound
+    refine' LeftFractionRel.trans _ ((_ : LeftFractionRel p₁ p₂).trans _)
+    · have eq : a₁.s ≫ z₁.f ≫ w₁.s = a₁.s ≫ t₁ ≫ w₁.f := by rw [← fac₁', reassoc_of% fac₁]
+      obtain ⟨Z, u, hu, fac₃⟩ := HasLeftCalculusOfFractions'.ext _ _ _ a₁.hs eq
+      simp only [assoc] at fac₃
+      refine' ⟨Z, w₁.s ≫ u, u, _, _, _⟩
+      · dsimp
+        simp only [assoc]
+      · dsimp
+        simp only [assoc, fac₃]
+      · dsimp
+        simp only [assoc]
+        exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₁.hs (W.comp_mem _ _ w₁.hs hu))
+    · obtain ⟨q, fac₃⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+        (RightFraction.mk (z₁.s ≫ w₁.s) (W.comp_mem _ _ z₁.hs w₁.hs) (z₂.s ≫ w₂.s))
+      dsimp at fac₃
+      simp only [assoc] at fac₃
+      have eq : a₁.s ≫ t₁ ≫ w₁.f ≫ q.f = a₁.s ≫ t₁ ≫ w₂.f ≫ q.s := by
+        rw [← reassoc_of% fac₁', ← fac₃, reassoc_of% hst, reassoc_of% fac₂']
+      obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions'.ext _ _ _ a₁.hs eq
+      simp only [assoc] at fac₄
+      refine' ⟨Z, q.f ≫ u, q.s ≫ u, _, _, _⟩
+      · simp only [assoc, reassoc_of% fac₃]
+      · rw [assoc, assoc, assoc, assoc, fac₄, reassoc_of% hft]
+      · simp only [assoc, ← reassoc_of% fac₃]
+        exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs
+          (W.comp_mem _ _ w₂.hs (W.comp_mem _ _ q.hs hu)))
+    · have eq : a₂.s ≫ z₂.f ≫ w₂.s = a₂.s ≫ t₂ ≫ w₂.f := by
+        rw [← fac₂', reassoc_of% fac₂]
+      obtain ⟨Z, u, hu, fac₄⟩ := HasLeftCalculusOfFractions'.ext _ _ _ a₂.hs eq
+      simp only [assoc] at fac₄
+      refine' ⟨Z, u, w₂.s ≫ u, _, _, _⟩
+      · dsimp
+        simp only [assoc]
+      · dsimp
+        simp only [assoc, fac₄]
+      · dsimp
+        simp only [assoc]
+        exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs (W.comp_mem _ _ w₂.hs hu))
 
 lemma Hom.comp_eq {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) :
-    Hom.comp (mk z₁) (mk z₂) = z₁.comp z₂ := rfl-/
+    Hom.comp (mk z₁) (mk z₂) = z₁.comp z₂ := rfl
 
 end Localization
 
-/-@[nolint unusedArguments]
-def Localization (_ : MorphismProperty C) := C-/
+@[nolint unusedArguments]
+def Localization (_ : MorphismProperty C) := C
 
 namespace Localization
 
-/-noncomputable instance : Category (Localization W) where
+noncomputable instance : Category (Localization W) where
   Hom X Y := Localization.Hom W X Y
   id X := Localization.Hom.mk (ofHom W (𝟙 _))
   comp f g := f.comp g
@@ -398,7 +478,7 @@ def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
     exact ⟨_, 𝟙 Y, 𝟙 Y, by simp, by simp, by simpa using W.id_mem Y⟩
 
 instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
-  (inferInstance : IsIso (Qiso s hs).inv)-/
+  (inferInstance : IsIso (Qiso s hs).inv)
 
 end Localization
 
