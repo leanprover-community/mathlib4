@@ -64,6 +64,7 @@ and only at the "final step", when we need to provide an "explicit" primitive ro
 
 
 open Polynomial Algebra Finset FiniteDimensional IsCyclotomicExtension Nat PNat Set
+open scoped IntermediateField
 
 universe u v w z
 

@@ -512,7 +512,7 @@ set_option linter.uppercaseLean3 false in
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem associator_hom_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
-  dsimp [Monoidal.induced_associator]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.associator_hom_hom Action.associator_hom_hom
@@ -520,35 +520,35 @@ set_option linter.uppercaseLean3 false in
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem associator_inv_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
-  dsimp [Monoidal.induced_associator]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.associator_inv_hom Action.associator_inv_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
-  dsimp [Monoidal.induced_leftUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_hom_hom Action.leftUnitor_hom_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
-  dsimp [Monoidal.induced_leftUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_inv_hom Action.leftUnitor_inv_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
-  dsimp [Monoidal.induced_rightUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_hom_hom Action.rightUnitor_hom_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
-  dsimp [Monoidal.induced_rightUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_inv_hom Action.rightUnitor_inv_hom

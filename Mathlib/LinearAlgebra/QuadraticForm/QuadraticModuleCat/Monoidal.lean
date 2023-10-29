@@ -28,6 +28,7 @@ This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Monoidal.lean
 suppress_compilation
 
 open CategoryTheory
+open scoped MonoidalCategory
 
 universe v u
 
@@ -51,49 +52,48 @@ noncomputable abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩
 
-/-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`. -/
-noncomputable abbrev associator (X Y Z : QuadraticModuleCat.{u} R) :
-    tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
-  ofIso (tensorAssoc X.form Y.form Z.form)
-
 open MonoidalCategory
-
-theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).hom =
-      (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
-
-theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
-    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (associator X Y Z).inv =
-      (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
 end instMonoidalCategory
 
 open instMonoidalCategory
 
+
+instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
+  tensorObj := instMonoidalCategory.tensorObj
+  whiskerLeft X _ _ f := tensorHom (𝟙 X) f
+  whiskerRight {X₁ X₂} (f : X₁ ⟶ X₂) Y := tensorHom f (𝟙 Y)
+  tensorHom := tensorHom
+  tensorUnit := of (sq (R := R))
+  associator X Y Z := ofIso (tensorAssoc X.form Y.form Z.form)
+  leftUnitor X := ofIso (tensorLId X.form)
+  rightUnitor X := ofIso (tensorRId X.form)
+
+theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
+    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).hom =
+      (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
+
+theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
+    (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
+      (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
+
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    { tensorObj := instMonoidalCategory.tensorObj
-      μIsoSymm := fun X Y => Iso.refl _
-      whiskerLeft := fun X _ _ f => tensorHom (𝟙 _) f
-      whiskerRight := @fun X₁ X₂ (f : X₁ ⟶ X₂) Y => tensorHom f (𝟙 _)
-      tensorHom := tensorHom
-      tensorUnit' := of (sq (R := R))
-      εIsoSymm := Iso.refl _
-      associator := associator
+    { μIso := fun X Y => Iso.refl _
+      εIso := Iso.refl _
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
-        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.comp_id]
-        rfl
-      leftUnitor := fun X => ofIso (tensorLId X.form)
-      rightUnitor := fun X => ofIso (tensorRId X.form) }
+        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
+        rfl }
 
 variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
-def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) :=
-  Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
+def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) := by
+  unfold instMonoidalCategory
+  exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
 
 instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
   forget₂_faithful _ _

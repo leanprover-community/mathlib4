@@ -683,7 +683,7 @@ theorem prod_product_right {s : Finset γ} {t : Finset α} {f : γ × α → β}
 #align finset.sum_product_right Finset.sum_product_right
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
-@[to_additive "An uncurried version of `Finset.prod_product_right`"]
+@[to_additive "An uncurried version of `Finset.sum_product_right`"]
 theorem prod_product_right' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
     ∏ x in s ×ˢ t, f x.1 x.2 = ∏ y in t, ∏ x in s, f x y :=
   prod_product_right
