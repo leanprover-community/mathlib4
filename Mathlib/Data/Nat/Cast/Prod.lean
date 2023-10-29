@@ -31,7 +31,7 @@ theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> sim
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem fst_ofNat [n.AtLeastTwo] :
+theorem fst_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : α × β)).1 = (OfNat.ofNat n : α) :=
   rfl
 
@@ -41,7 +41,7 @@ theorem snd_natCast (n : ℕ) : (n : α × β).snd = n := by induction n <;> sim
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem snd_ofNat [n.AtLeastTwo] :
+theorem snd_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : α × β)).2 = (OfNat.ofNat n : β) :=
   rfl
 

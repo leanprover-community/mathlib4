@@ -91,7 +91,9 @@ theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((no_index (OfNat.ofNat n : ℝ)) : ℝ*) = OfNat.ofNat n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n : ℝ)) : ℝ*) = OfNat.ofNat n :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=

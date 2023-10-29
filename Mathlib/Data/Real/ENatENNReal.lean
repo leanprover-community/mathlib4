@@ -58,7 +58,8 @@ theorem toENNReal_coe (n : ℕ) : ((n : ℕ∞) : ℝ≥0∞) = n :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((no_index (OfNat.ofNat n : ℕ∞)) : ℝ≥0∞) = OfNat.ofNat n :=
+theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n : ℕ∞)) : ℝ≥0∞) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]

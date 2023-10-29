@@ -1258,7 +1258,8 @@ theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ceil_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : ⌈a + (no_index (OfNat.ofNat n))⌉ = ⌈a⌉ + OfNat.ofNat n :=
+theorem ceil_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+    ⌈a + (no_index (OfNat.ofNat n))⌉ = ⌈a⌉ + OfNat.ofNat n :=
   ceil_add_nat a n
 
 @[simp]
@@ -1279,7 +1280,8 @@ theorem ceil_sub_one (a : α) : ⌈a - 1⌉ = ⌈a⌉ - 1 := by
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ceil_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : ⌈a - (no_index (OfNat.ofNat n))⌉ = ⌈a⌉ - OfNat.ofNat n :=
+theorem ceil_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+    ⌈a - (no_index (OfNat.ofNat n))⌉ = ⌈a⌉ - OfNat.ofNat n :=
   ceil_sub_nat a n
 
 theorem ceil_lt_add_one (a : α) : (⌈a⌉ : α) < a + 1 := by
