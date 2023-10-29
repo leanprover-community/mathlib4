@@ -14,6 +14,10 @@ The approach is copied from how the tactic `continuity` is implemented.
 -/
 
 attribute [aesop (rule_sets [Differentiable]) unfold norm] Function.comp
+
+-- Issue: Large natural powers lead to timeouts.
+-- This is due to copied over (from `continuity`) settings of tactic.
+-- I'm not sure why those options are used.
 attribute [aesop (rule_sets [Differentiable]) unfold norm] npowRec
 
 /--
@@ -23,8 +27,8 @@ macro "differentiability" : attr =>
   `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Differentiable):ident]))
 
 /--
-The tactic `differentiability` solves goals of the form `Differentiable _ f` by applying lemmas tagged
-with the `differentiability` user attribute. -/
+The tactic `differentiability` solves goals of the form `Differentiable _ f` by applying lemmas
+tagged with the `differentiability` user attribute. -/
 macro "differentiability" : tactic =>
   `(tactic| aesop (options := { terminal := true })
   (rule_sets [$(Lean.mkIdent `Differentiable):ident]))
