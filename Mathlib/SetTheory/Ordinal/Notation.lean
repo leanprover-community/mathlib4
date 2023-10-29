@@ -982,7 +982,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       conv_lhs =>
         simp [HPow.hPow]
         simp [Pow.pow, opow, Ordinal.succ_ne_zero]
-      · simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
+      · simpa using nat_cast_lt.{0}.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
       · rw [←Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
   · haveI := N₁.fst
@@ -995,10 +995,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     cases' nf_repr_split' e₂ with _ r₂
     simp only [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂, opowAux2, repr]
     cases' k with k
-    · simp? [r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc] says
-        simp only [repr, repr_mul, repr_scale, opow_zero, Nat.succPNat_coe,
-          Nat.cast_one, mul_one, add_zero, opow_one, opow_mul, PNat.one_coe, add_assoc, r₂,
-          Nat.zero_eq, Nat.cast_zero, repr_opow_aux₁ a00 al aa]
+    · simp [r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
     · simp? [r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr]
         says simp only [mulNat_eq_mul, repr_add, repr_scale, repr_mul, repr_ofNat, opow_add,
         opow_mul, mul_assoc, add_assoc, r₂, Nat.cast_succ, add_one_eq_succ, opow_succ]
