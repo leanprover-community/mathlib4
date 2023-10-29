@@ -227,7 +227,7 @@ theorem exists_goodδ :
       simp only [range_subset_iff, Finset.mem_coe] at hfs
       refine' ⟨f, fun i => hs _ (hfs i), fun i j hij => h's _ (hfs i) _ (hfs j) (f_inj.ne hij)⟩
     · exact
-        ⟨fun _ => 0, fun i => by simp; norm_num, fun i j _ => by
+        ⟨fun _ => 0, by simp, fun i j _ => by
           simpa only [norm_zero, sub_nonpos, sub_self]⟩
   -- For `δ > 0`, `F δ` is a function from `fin N` to the ball of radius `2` for which two points
   -- in the image are separated by `1 - δ`.
@@ -505,7 +505,7 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     intro i
     simp only
     split_ifs with h; · exact h
-    by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]; norm_num
+    by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]
   refine' ⟨c', fun n => norm_c'_le n, fun i j inej => _⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
