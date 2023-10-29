@@ -174,6 +174,7 @@ section Additive
 variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
 
 /-- `TrivSqZeroExt R M` has the same additive structure as a product -/
+@[simps]
 def equivProd : tsze R M ≃ R × M where
   toFun t := (t.1, t.2)
   invFun p := ⟨p.1, p.2⟩
@@ -245,9 +246,10 @@ instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [M
 
 variable (S R M) in
 /-- `TrivSqZeroExt.equivProd` as a linear equivalence. -/
-@[simps!]
+@[simps! apply symm_apply]
 def linearEquivProd [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     tsze R M ≃ₗ[S] R × M := equivProd.linearEquiv S
+
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
   rfl

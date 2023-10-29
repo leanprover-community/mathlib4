@@ -39,36 +39,44 @@ variable [TopologicalSpace R] [TopologicalSpace M]
 instance : TopologicalSpace (tsze R M) :=
   TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
 
-instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
-  Prod.t2Space
+def homeomorphProd : tsze R M ≃ₜ R × M where
+  toEquiv := equivProd
+  continuous_toFun := sorry
+  continuous_invFun := sorry
 
-theorem nhds_def (x : tsze R M) : nhds x = (nhds x.fst).prod (nhds x.snd) := by
+instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
+  homeomorphProd.symm.t2Space
+
+theorem nhds_def (x : tsze R M) : nhds x = ((nhds x.fst).prod (nhds x.snd)).comap homeomorphProd := by
   cases x
-  exact nhds_prod_eq
+  -- exact nhds_prod_eq
+  sorry
 #align triv_sq_zero_ext.nhds_def TrivSqZeroExt.nhds_def
 
-theorem nhds_inl [Zero M] (x : R) : nhds (inl x : tsze R M) = (nhds x).prod (nhds 0) :=
+theorem nhds_inl [Zero M] (x : R) :
+    nhds (inl x : tsze R M) = ((nhds x).prod (nhds 0)).comap homeomorphProd :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inl TrivSqZeroExt.nhds_inl
 
-theorem nhds_inr [Zero R] (m : M) : nhds (inr m : tsze R M) = (nhds 0).prod (nhds m) :=
+theorem nhds_inr [Zero R] (m : M) :
+    nhds (inr m : tsze R M) = ((nhds 0).prod (nhds m)).comap homeomorphProd :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inr TrivSqZeroExt.nhds_inr
 
 nonrec theorem continuous_fst : Continuous (fst : tsze R M → R) :=
-  continuous_fst
+  sorry -- continuous_fst
 #align triv_sq_zero_ext.continuous_fst TrivSqZeroExt.continuous_fst
 
 nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
-  continuous_snd
+  sorry -- continuous_snd
 #align triv_sq_zero_ext.continuous_snd TrivSqZeroExt.continuous_snd
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
-  continuous_id.prod_mk continuous_const
+  sorry -- (continuous_id.prod_mk continuous_const)
 #align triv_sq_zero_ext.continuous_inl TrivSqZeroExt.continuous_inl
 
 theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
-  continuous_const.prod_mk continuous_id
+  sorry -- continuous_const.prod_mk continuous_id
 #align triv_sq_zero_ext.continuous_inr TrivSqZeroExt.continuous_inr
 
 theorem embedding_inl [Zero M] : Embedding (inl : R → tsze R M) :=
@@ -81,30 +89,36 @@ theorem embedding_inr [Zero R] : Embedding (inr : M → tsze R M) :=
 
 variable (R M)
 
+@[simps! apply symm_apply]
+def continuousLinearEquivProd [CommSemiring R] [AddCommMonoid M] [Module R M] :
+    tsze R M ≃L[R] R × M where
+  toFun := equivProd
+  invFun := equivProd.symm
+  __ := linearEquivProd R R M
+  __ := homeomorphProd
+
 /-- `TrivSqZeroExt.fst` as a continuous linear map. -/
-@[simps]
+@[simps! apply]
 def fstClm [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] R :=
-  { ContinuousLinearMap.fst R R M with toFun := fst }
+  ContinuousLinearMap.fst R R M ∘L continuousLinearEquivProd R M
 #align triv_sq_zero_ext.fst_clm TrivSqZeroExt.fstClm
 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
-@[simps]
+@[simps! apply]
 def sndClm [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
-  { ContinuousLinearMap.snd R R M with
-    toFun := snd
-    cont := continuous_snd }
+  ContinuousLinearMap.snd R R M ∘L continuousLinearEquivProd R M
 #align triv_sq_zero_ext.snd_clm TrivSqZeroExt.sndClm
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
-@[simps]
+@[simps! apply]
 def inlClm [CommSemiring R] [AddCommMonoid M] [Module R M] : R →L[R] tsze R M :=
-  { ContinuousLinearMap.inl R R M with toFun := inl }
+  (continuousLinearEquivProd R M).symm ∘L ContinuousLinearMap.inl R R M
 #align triv_sq_zero_ext.inl_clm TrivSqZeroExt.inlClm
 
 /-- `TrivSqZeroExt.inr` as a continuous linear map. -/
-@[simps]
+@[simps! apply]
 def inrClm [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M :=
-  { ContinuousLinearMap.inr R R M with toFun := inr }
+  (continuousLinearEquivProd R M).symm ∘L ContinuousLinearMap.inr R R M
 #align triv_sq_zero_ext.inr_clm TrivSqZeroExt.inrClm
 
 variable {R M}
