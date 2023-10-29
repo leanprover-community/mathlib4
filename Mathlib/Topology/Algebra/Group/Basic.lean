@@ -1467,40 +1467,40 @@ theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set 
   rfl
 
 @[to_additive]
-lemma subset_smul_set_closure_one (s : Set G) : s ⊆ s • (closure {1} : Set G) := by
-  have : s ⊆ s • ({1} : Set G) := by simpa using Subset.rfl
+lemma subset_mul_closure_one (s : Set G) : s ⊆ s * (closure {1} : Set G) := by
+  have : s ⊆ s * ({1} : Set G) := by simpa using Subset.rfl
   exact this.trans (smul_subset_smul_left subset_closure)
 
 @[to_additive]
-lemma IsCompact.smul_set_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
-    K • (closure {1} : Set G) = closure K := by
+lemma IsCompact.mul_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
+    K * (closure {1} : Set G) = closure K := by
   apply Subset.antisymm ?_ ?_
   · calc
-    K • (closure {1} : Set G) ⊆ closure K • (closure {1} : Set G) :=
+    K * (closure {1} : Set G) ⊆ closure K * (closure {1} : Set G) :=
       smul_subset_smul_right subset_closure
-    _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
+    _ ⊆ closure (K * ({1} : Set G)) := smul_set_closure_subset _ _
     _ = closure K := by simp
-  · have : IsClosed (K • (closure {1} : Set G)) :=
+  · have : IsClosed (K * (closure {1} : Set G)) :=
       IsClosed.smul_left_of_isCompact isClosed_closure hK
     rw [IsClosed.closure_subset_iff this]
-    exact subset_smul_set_closure_one K
+    exact subset_mul_closure_one K
 
 @[to_additive]
-lemma IsClosed.smul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
-    F • (closure {1} : Set G) = F := by
-  refine Subset.antisymm ?_ (subset_smul_set_closure_one F)
+lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
+    F * (closure {1} : Set G) = F := by
+  refine Subset.antisymm ?_ (subset_mul_closure_one F)
   calc
-  F • (closure {1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
-  _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
+  F * (closure {1} : Set G) = closure F * closure ({1} : Set G) := by rw [hF.closure_eq]
+  _ ⊆ closure (F * ({1} : Set G)) := smul_set_closure_subset _ _
   _ = F := by simp [hF.closure_eq]
 
 @[to_additive]
-lemma compl_smul_set_closure_one_eq {t : Set G} (ht : t • (closure {1} : Set G) = t) :
-    tᶜ • (closure {1} : Set G) = tᶜ := by
-  refine Subset.antisymm ?_ (subset_smul_set_closure_one tᶜ)
+lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :
+    tᶜ * (closure {1} : Set G) = tᶜ := by
+  refine Subset.antisymm ?_ (subset_mul_closure_one tᶜ)
   rintro - ⟨x, g, hx, hg, rfl⟩
   by_contra H
-  have : x ∈ t • (closure {1} : Set G) := by
+  have : x ∈ t * (closure {1} : Set G) := by
     rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
     simp only [smul_eq_mul, mem_compl_iff, not_not] at H
     exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
@@ -1508,14 +1508,14 @@ lemma compl_smul_set_closure_one_eq {t : Set G} (ht : t • (closure {1} : Set G
   exact hx this
 
 @[to_additive]
-lemma compl_smul_set_closure_one_eq_iff {t : Set G} :
-    tᶜ • (closure {1} : Set G) = tᶜ ↔ t • (closure {1} : Set G) = t :=
-  ⟨fun h ↦ by simpa using compl_smul_set_closure_one_eq h, fun h ↦ compl_smul_set_closure_one_eq h⟩
+lemma compl_mul_closure_one_eq_iff {t : Set G} :
+    tᶜ * (closure {1} : Set G) = tᶜ ↔ t * (closure {1} : Set G) = t :=
+  ⟨fun h ↦ by simpa using compl_mul_closure_one_eq h, fun h ↦ compl_mul_closure_one_eq h⟩
 
 @[to_additive]
-lemma IsOpen.smul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
-    U • (closure {1} : Set G) = U :=
-  compl_smul_set_closure_one_eq_iff.1 (hU.isClosed_compl.smul_set_closure_one_eq)
+lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
+    U * (closure {1} : Set G) = U :=
+  compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
 
 end TopologicalGroup
 
