@@ -12,7 +12,7 @@ TODO
 
 open Polynomial
 
-open scoped Polynomial BigOperators
+open scoped Polynomial BigOperators IntermediateField
 
 
 section HEq
