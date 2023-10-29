@@ -189,7 +189,8 @@ theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
 
 -- See note [no_index around OfNat.ofNat]
 @[to_additive (attr := simp)]
-theorem op_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] : op (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+theorem op_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    op (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -206,7 +207,8 @@ theorem unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
 
 -- See note [no_index around OfNat.ofNat]
 @[to_additive (attr := simp)]
-theorem unop_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] : unop (no_index (OfNat.ofNat n : αᵐᵒᵖ)) = OfNat.ofNat n :=
+theorem unop_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    unop (no_index (OfNat.ofNat n : αᵐᵒᵖ)) = OfNat.ofNat n :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
