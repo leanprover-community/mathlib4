@@ -397,7 +397,8 @@ end BohrMollerup
 -- (section)
 section StrictMono
 
-theorem Gamma_two : Gamma 2 = 1 := by simpa [one_add_one_eq_two] using Gamma_nat_eq_factorial 1
+theorem Gamma_two : Gamma 2 = 1 := by
+  simpa [one_add_one_eq_two, Nat.factorial] using Gamma_nat_eq_factorial 1
 #align real.Gamma_two Real.Gamma_two
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
@@ -428,7 +429,7 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
     convexOn_Gamma.strict_mono_of_lt (by norm_num : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
-  rw [inter_eq_right_iff_subset]
+  rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
 #align real.Gamma_strict_mono_on_Ici Real.Gamma_strictMonoOn_Ici
 

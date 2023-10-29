@@ -113,8 +113,8 @@ def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=
 #align circle.of_conj_div_self circle.ofConjDivSelf
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
-def expMapCircle : C(ℝ, circle)
-    where toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
+def expMapCircle : C(ℝ, circle) where
+  toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
 #align exp_map_circle expMapCircle
 
 @[simp]

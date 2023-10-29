@@ -422,11 +422,13 @@ theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α �
 
 theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl : l.Nodup)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  classical
-    refine' pairwise_of_reflexive_on_dupl_of_forall_ne _ h
-    intro x hx
-    rw [nodup_iff_count_le_one] at hl
-    exact absurd (hl x) hx.not_le
+  apply pairwise_iff_forall_sublist.mpr
+  intro a b hab
+  if heq : a = b then
+    cases heq; have := nodup_iff_sublist.mp hl _ hab; contradiction
+  else
+    apply h <;> try (apply hab.subset; simp)
+    exact heq
 #align list.nodup.pairwise_of_forall_ne List.Nodup.pairwise_of_forall_ne
 
 theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (hl : l.Nodup)
@@ -435,8 +437,8 @@ theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (h
 #align list.nodup.pairwise_of_set_pairwise List.Nodup.pairwise_of_set_pairwise
 
 @[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
-    : { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
+theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
+    { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
   induction' l with a l ih
   · simp
   rw [List.nodup_cons] at hl

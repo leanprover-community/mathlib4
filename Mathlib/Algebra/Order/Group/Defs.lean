@@ -890,7 +890,7 @@ alias ⟨lt_of_sub_pos, sub_pos_of_lt⟩ := sub_pos
 #align lt_of_sub_pos lt_of_sub_pos
 #align sub_pos_of_lt sub_pos_of_lt
 
-@[to_additive (attr := simp) sub_neg]
+@[to_additive (attr := simp) sub_neg "For `a - -b = a + b`, see `sub_neg_eq_add`."]
 theorem div_lt_one' : a / b < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_lt_one' div_lt_one'
@@ -1332,3 +1332,8 @@ theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)�
 #align strict_anti_on.neg StrictAntiOn.neg
 
 end
+
+/-
+`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+-/
+assert_not_exists NeZero

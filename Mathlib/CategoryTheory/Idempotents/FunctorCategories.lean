@@ -106,8 +106,8 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
 
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
-def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q
-    where app j := ⟨f.f.app j, congr_app f.comm j⟩
+def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q where
+  app j := ⟨f.f.app j, congr_app f.comm j⟩
 #align category_theory.idempotents.karoubi_functor_category_embedding.map CategoryTheory.Idempotents.KaroubiFunctorCategoryEmbedding.map
 
 end KaroubiFunctorCategoryEmbedding

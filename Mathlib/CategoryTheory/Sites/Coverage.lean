@@ -285,6 +285,25 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     intro X S hS
     apply saturate.of _ _ hS
 
+instance : SemilatticeSup (Coverage C) where
+  sup x y :=
+  { covering := fun B ↦ x.covering B ∪ y.covering B
+    pullback := by
+      rintro X Y f S (hx | hy)
+      · obtain ⟨T, hT⟩ := x.pullback f S hx
+        exact ⟨T, Or.inl hT.1, hT.2⟩
+      · obtain ⟨T, hT⟩ := y.pullback f S hy
+        exact ⟨T, Or.inr hT.1, hT.2⟩ }
+  toPartialOrder := inferInstance
+  le_sup_left _ _ _ := Set.subset_union_left _ _
+  le_sup_right _ _ _ := Set.subset_union_right _ _
+  sup_le _ _ _ hx hy X := Set.union_subset_iff.mpr ⟨hx X, hy X⟩
+
+@[simp]
+lemma sup_covering (x y : Coverage C) (B : C) :
+    (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
+  rfl
+
 end Coverage
 
 open Coverage

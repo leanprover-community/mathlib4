@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
 import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Intervals
@@ -158,9 +159,9 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     rw [mem_powerset] at hy
     exact card_le_of_subset hy
   · refine' sum_congr rfl fun y _ ↦ _
-    rw [← card_powersetLen, ← sum_const]
-    refine' sum_congr powersetLen_eq_filter.symm fun z hz ↦ _
-    rw [(mem_powersetLen.1 hz).2]
+    rw [← card_powersetCard, ← sum_const]
+    refine' sum_congr powersetCard_eq_filter.symm fun z hz ↦ _
+    rw [(mem_powersetCard.1 hz).2]
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 
 theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :

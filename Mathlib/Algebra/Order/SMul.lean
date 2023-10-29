@@ -11,7 +11,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
 
-#align_import algebra.order.smul from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import algebra.order.smul from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Ordered scalar product
@@ -57,19 +57,19 @@ variable {ι 𝕜 R M N : Type*}
 
 namespace OrderDual
 
-instance instSMulWithZeroOrderDual [Zero R] [AddZeroClass M] [SMulWithZero R M] :
+instance OrderDual.instSMulWithZero [Zero R] [AddZeroClass M] [SMulWithZero R M] :
     SMulWithZero R Mᵒᵈ :=
-  { instSMulOrderDual with
+  { OrderDual.instSMul with
     zero_smul := fun m => OrderDual.rec (zero_smul _) m
     smul_zero := fun r => OrderDual.rec (@smul_zero R M _ _) r }
 
-instance instMulActionOrderDual [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
-  { instSMulOrderDual with
+instance OrderDual.instMulAction [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
+  { OrderDual.instSMul with
     one_smul := fun m => OrderDual.rec (one_smul _) m
     mul_smul := fun r => OrderDual.rec (@mul_smul R M _ _) r }
 
 instance [MonoidWithZero R] [AddMonoid M] [MulActionWithZero R M] : MulActionWithZero R Mᵒᵈ :=
-  { instMulActionOrderDual, instSMulWithZeroOrderDual with }
+  { OrderDual.instMulAction, OrderDual.instSMulWithZero with }
 
 instance [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M] : DistribMulAction R Mᵒᵈ where
   smul_add _ a := OrderDual.rec (fun _ b => OrderDual.rec (smul_add _ _) b) a
@@ -186,11 +186,24 @@ instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul
 
+section LinearOrderedSemiring
+variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
+  [OrderedSMul R M] {a : R}
+
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
-instance LinearOrderedSemiring.toOrderedSMul {R : Type*} [LinearOrderedSemiring R] :
-    OrderedSMul R R :=
+instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
 #align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSMul
+
+theorem smul_max (ha : 0 ≤ a) (b₁ b₂ : M) : a • max b₁ b₂ = max (a • b₁) (a • b₂) :=
+  (monotone_smul_left ha : Monotone (_ : M → M)).map_max
+#align smul_max smul_max
+
+theorem smul_min (ha : 0 ≤ a) (b₁ b₂ : M) : a • min b₁ b₂ = min (a • b₁) (a • b₂) :=
+  (monotone_smul_left ha : Monotone (_ : M → M)).map_min
+#align smul_min smul_min
+
+end LinearOrderedSemiring
 
 section LinearOrderedSemifield
 

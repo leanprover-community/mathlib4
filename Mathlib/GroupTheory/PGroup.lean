@@ -95,14 +95,14 @@ theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
 #align is_p_group.of_equiv IsPGroup.of_equiv
 
-theorem orderOf_coprime {n : ℕ} (hn : p.coprime n) (g : G) : (orderOf g).coprime n :=
+theorem orderOf_coprime {n : ℕ} (hn : p.Coprime n) (g : G) : (orderOf g).Coprime n :=
   let ⟨k, hk⟩ := hG g
   (hn.pow_left k).coprime_dvd_left (orderOf_dvd_of_pow_eq_one hk)
 #align is_p_group.order_of_coprime IsPGroup.orderOf_coprime
 
 /-- If `gcd(p,n) = 1`, then the `n`th power map is a bijection. -/
-noncomputable def powEquiv {n : ℕ} (hn : p.coprime n) : G ≃ G :=
-  let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).coprime n := fun g =>
+noncomputable def powEquiv {n : ℕ} (hn : p.Coprime n) : G ≃ G :=
+  let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g =>
     order_eq_card_zpowers' g ▸ hG.orderOf_coprime hn g
   { toFun := (· ^ n)
     invFun := fun g => (powCoprime (h g)).symm ⟨g, Subgroup.mem_zpowers g⟩
@@ -115,12 +115,12 @@ noncomputable def powEquiv {n : ℕ} (hn : p.coprime n) : G ≃ G :=
 #align is_p_group.pow_equiv IsPGroup.powEquiv
 
 @[simp]
-theorem powEquiv_apply {n : ℕ} (hn : p.coprime n) (g : G) : hG.powEquiv hn g = g ^ n :=
+theorem powEquiv_apply {n : ℕ} (hn : p.Coprime n) (g : G) : hG.powEquiv hn g = g ^ n :=
   rfl
 #align is_p_group.pow_equiv_apply IsPGroup.powEquiv_apply
 
 @[simp]
-theorem powEquiv_symm_apply {n : ℕ} (hn : p.coprime n) (g : G) :
+theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
     (hG.powEquiv hn).symm g = g ^ (orderOf g).gcdB n := by rw [order_eq_card_zpowers']; rfl
 #align is_p_group.pow_equiv_symm_apply IsPGroup.powEquiv_symm_apply
 
@@ -341,7 +341,7 @@ theorem to_sup_of_normal_left' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPG
 theorem coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime]
     [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂) (H₁ : Subgroup G) (H₂ : Subgroup G₂) [Fintype H₁]
     [Fintype H₂] (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) :
-    Nat.coprime (Fintype.card H₁) (Fintype.card H₂) := by
+    Nat.Coprime (Fintype.card H₁) (Fintype.card H₂) := by
   obtain ⟨n₁, heq₁⟩ := iff_card.mp hH₁; rw [heq₁]; clear heq₁
   obtain ⟨n₂, heq₂⟩ := iff_card.mp hH₂; rw [heq₂]; clear heq₂
   exact Nat.coprime_pow_primes _ _ hp₁.elim hp₂.elim hne
@@ -409,4 +409,3 @@ theorem commutative_of_card_eq_prime_sq (hG : card G = p ^ 2) : ∀ a b : G, a *
 end P2comm
 
 end IsPGroup
-

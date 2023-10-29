@@ -147,8 +147,7 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
     (antidiagonal n).filter (fun a ↦ a.snd ≤ k) = (antidiagonal k).map
       (Embedding.prodMap ⟨_, add_left_injective (n - k)⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
-  suffices : i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i
-  · simpa
+  suffices i + j = n ∧ j ≤ k ↔ ∃ a, a + j = k ∧ a + (n - k) = i by simpa
   refine' ⟨fun hi ↦ ⟨k - j, tsub_add_cancel_of_le hi.2, _⟩, _⟩
   · rw [add_comm, tsub_add_eq_add_tsub h, ← hi.1, add_assoc, Nat.add_sub_of_le hi.2,
       add_tsub_cancel_right]
@@ -173,8 +172,7 @@ theorem filter_snd_eq_antidiagonal (n m : ℕ) :
     (antidiagonal n).filter (fun a ↦ k ≤ a.fst) = (antidiagonal (n - k)).map
       (Embedding.prodMap ⟨_, add_left_injective k⟩ (Embedding.refl ℕ)) := by
   ext ⟨i, j⟩
-  suffices : i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i
-  · simpa
+  suffices i + j = n ∧ k ≤ i ↔ ∃ a, a + j = n - k ∧ a + k = i by simpa
   refine' ⟨fun hi ↦ ⟨i - k, _, tsub_add_cancel_of_le hi.2⟩, _⟩
   · rw [← Nat.sub_add_comm hi.2, hi.1]
   · rintro ⟨l, hl, rfl⟩

@@ -929,7 +929,7 @@ theorem _root_.Homeomorph.transLocalHomeomorph_eq_trans (e : α ≃ₜ β) :
   toLocalEquiv_injective <| Equiv.transLocalEquiv_eq_trans _ _
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transLocalHomeomorph_eq_trans
 
-/-- `eq_on_source e e'` means that `e` and `e'` have the same source, and coincide there. They
+/-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
 should really be considered the same local equiv. -/
 def EqOnSource (e e' : LocalHomeomorph α β) : Prop :=
   e.source = e'.source ∧ EqOn e e' e.source
@@ -940,7 +940,7 @@ theorem eqOnSource_iff (e e' : LocalHomeomorph α β) :
   Iff.rfl
 #align local_homeomorph.eq_on_source_iff LocalHomeomorph.eqOnSource_iff
 
-/-- `eq_on_source` is an equivalence relation -/
+/-- `EqOnSource` is an equivalence relation -/
 instance eqOnSourceSetoid : Setoid (LocalHomeomorph α β) :=
   { LocalEquiv.eqOnSourceSetoid.comap toLocalEquiv with r := EqOnSource }
 
@@ -1266,18 +1266,18 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set α)) (h' 
     simpa only [continuous_iff_continuousOn_univ, h'] using e.continuousOn_symm
 #align local_homeomorph.to_homeomorph_of_source_eq_univ_target_eq_univ LocalHomeomorph.toHomeomorphOfSourceEqUnivTargetEqUniv
 
+theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
+  refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
+    continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
+  rw [Set.restrict_eq, Set.image_comp]
+  exact e.image_open_of_open (e.open_source.isOpenMap_subtype_val V hV) fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
+
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
 converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/
-theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e := by
-  apply openEmbedding_of_continuous_injective_open
-  · apply continuous_iff_continuousOn_univ.mpr
-    rw [← h]
-    exact e.continuousOn
-  · apply Set.injective_iff_injOn_univ.mpr
-    rw [← h]
-    exact e.injOn
-  · intro U hU
-    simpa only [h, subset_univ, mfld_simps] using e.image_open_of_open hU
+theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
+  e.openEmbedding_restrict.comp
+    ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ α).symm.openEmbedding
+
 #align local_homeomorph.to_open_embedding LocalHomeomorph.to_openEmbedding
 
 end LocalHomeomorph

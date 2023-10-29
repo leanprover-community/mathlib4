@@ -285,8 +285,8 @@ variable (A)
 /-- The inclusion map of the Moore complex in the alternating face map complex,
 as a natural transformation -/
 @[simps]
-def inclusionOfMooreComplex : normalizedMooreComplex A ⟶ alternatingFaceMapComplex A
-    where app := inclusionOfMooreComplexMap
+def inclusionOfMooreComplex : normalizedMooreComplex A ⟶ alternatingFaceMapComplex A where
+  app := inclusionOfMooreComplexMap
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.inclusion_of_Moore_complex AlgebraicTopology.inclusionOfMooreComplex
 

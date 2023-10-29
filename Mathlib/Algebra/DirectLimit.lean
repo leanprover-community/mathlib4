@@ -203,7 +203,7 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
       f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
   unfold DFinsupp.sum
-  simp only [LinearMap.map_sum]
+  simp only [map_sum]
   refine' Finset.sum_congr rfl fun k hk => _
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
     totalize_of_le (hx k hk), totalize_of_le (le_trans (hx k hk) hij), DirectedSystem.map_map]
@@ -593,7 +593,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
     rcases exists_finset_support x with ⟨s, hxs⟩
-    rcases(s.image Sigma.fst).exists_le with ⟨i, hi⟩
+    rcases (s.image Sigma.fst).exists_le with ⟨i, hi⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ ↑s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
@@ -732,17 +732,14 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
--- porting note: this takes some time, had to increase heartbeats
-set_option maxHeartbeats 1000000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
     Field (Ring.DirectLimit G fun i j h => f' i j h) :=
-  { Ring.DirectLimit.commRing G fun i j h => f' i j h,
-    DirectLimit.nontrivial G fun i j h =>
-      f' i j h with
-    inv := inv G fun i j h => f' i j h
+  -- This used to include the parent CommRing and Nontrivial instances,
+  -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
+  { inv := inv G fun i j h => f' i j h
     mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
     inv_zero := dif_pos rfl }
 #align field.direct_limit.field Field.DirectLimit.field

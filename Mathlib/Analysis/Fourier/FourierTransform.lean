@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 #align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
@@ -167,7 +167,6 @@ theorem fourierIntegral_continuous [TopologicalSpace.FirstCountableTopology W] (
   apply continuous_of_dominated
   · exact fun w => ((fourier_integral_convergent_iff he hL w).mp hf).1
   · refine' fun w => ae_of_all _ fun v => _
-    · exact fun v => ‖f v‖
     · rw [norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
   · exact hf.norm
   · rw [continuous_induced_rng] at he

@@ -352,10 +352,12 @@ theorem id_comp (f : HeytingHom α β) : (HeytingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align heyting_hom.id_comp HeytingHom.id_comp
 
+@[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align heyting_hom.cancel_right HeytingHom.cancel_right
 
+@[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => HeytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align heyting_hom.cancel_left HeytingHom.cancel_left
@@ -477,10 +479,12 @@ theorem id_comp (f : CoheytingHom α β) : (CoheytingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align coheyting_hom.id_comp CoheytingHom.id_comp
 
+@[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align coheyting_hom.cancel_right CoheytingHom.cancel_right
 
+@[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => CoheytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align coheyting_hom.cancel_left CoheytingHom.cancel_left
@@ -599,10 +603,12 @@ theorem id_comp (f : BiheytingHom α β) : (BiheytingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align biheyting_hom.id_comp BiheytingHom.id_comp
 
+@[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align biheyting_hom.cancel_right BiheytingHom.cancel_right
 
+@[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => BiheytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align biheyting_hom.cancel_left BiheytingHom.cancel_left

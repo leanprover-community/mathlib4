@@ -346,7 +346,7 @@ In this section we construct a charted space structure on the unit sphere in a f
 real inner product space `E`; that is, we show that it is locally homeomorphic to the Euclidean
 space of dimension one less than `E`.
 
-The restriction to finite dimension is for convenience.  The most natural `charted_space`
+The restriction to finite dimension is for convenience.  The most natural `ChartedSpace`
 structure for the sphere uses the stereographic projection from the antipodes of a point as the
 canonical chart at this point.  However, the codomain of the stereographic projection constructed
 in the previous section is `(ℝ ∙ v)ᗮ`, the orthogonal complement of the vector `v` in `E` which is
@@ -467,8 +467,8 @@ variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
-/-- If a `cont_mdiff` function `f : M → E`, where `M` is some manifold, takes values in the
-sphere, then it restricts to a `cont_mdiff` function from `M` to the sphere. -/
+/-- If a `ContMDiff` function `f : M → E`, where `M` is some manifold, takes values in the
+sphere, then it restricts to a `ContMDiff` function from `M` to the sphere. -/
 theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m : ℕ∞} {f : M → E}
     (hf : ContMDiff I 𝓘(ℝ, E) m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
     ContMDiff I (𝓡 n) m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
@@ -541,7 +541,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
       (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
-  -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`
+  -- we must show `Submodule.span ℝ {v} = Submodule.span ℝ {-v}`
   apply Submodule.span_eq_span
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [← Submodule.neg_mem_iff]

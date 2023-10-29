@@ -203,15 +203,15 @@ instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D
 #align category_theory.functor.preserves_monomorphisms_of_is_right_adjoint CategoryTheory.Functor.preservesMonomorphisms_of_isRightAdjoint
 
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
-    ReflectsMonomorphisms F
-    where reflects {X} {Y} f hf :=
+    ReflectsMonomorphisms F where
+  reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 #align category_theory.functor.reflects_monomorphisms_of_faithful CategoryTheory.Functor.reflectsMonomorphisms_of_faithful
 
 instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
-    ReflectsEpimorphisms F
-    where reflects {X} {Y} f hf :=
+    ReflectsEpimorphisms F where
+  reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 #align category_theory.functor.reflects_epimorphisms_of_faithful CategoryTheory.Functor.reflectsEpimorphisms_of_faithful

@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.NAry
+import Mathlib.Order.Directed
 
-#align_import order.bounds.basic from "leanprover-community/mathlib"@"3310acfa9787aa171db6d4cba3945f6f275fe9f2"
+#align_import order.bounds.basic from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
 /-!
 # Upper / lower bounds
@@ -408,31 +409,32 @@ theorem BddBelow.inter_of_right (h : BddBelow t) : BddBelow (s ∩ t) :=
   h.mono <| inter_subset_right s t
 #align bdd_below.inter_of_right BddBelow.inter_of_right
 
-/-- If `s` and `t` are bounded above sets in a `SemilatticeSup`, then so is `s ∪ t`. -/
-theorem BddAbove.union [SemilatticeSup γ] {s t : Set γ} :
+/-- In a directed order, the union of bounded above sets is bounded above. -/
+theorem BddAbove.union [IsDirected α (· ≤ ·)] {s t : Set α} :
     BddAbove s → BddAbove t → BddAbove (s ∪ t) := by
-  rintro ⟨bs, hs⟩ ⟨bt, ht⟩
-  use bs ⊔ bt
-  rw [upperBounds_union]
-  exact ⟨upperBounds_mono_mem le_sup_left hs, upperBounds_mono_mem le_sup_right ht⟩
+  rintro ⟨a, ha⟩ ⟨b, hb⟩
+  obtain ⟨c, hca, hcb⟩ := exists_ge_ge a b
+  rw [BddAbove, upperBounds_union]
+  exact ⟨c, upperBounds_mono_mem hca ha, upperBounds_mono_mem hcb hb⟩
 #align bdd_above.union BddAbove.union
 
-/-- The union of two sets is bounded above if and only if each of the sets is. -/
-theorem bddAbove_union [SemilatticeSup γ] {s t : Set γ} :
+/-- In a directed order, the union of two sets is bounded above if and only if both sets are. -/
+theorem bddAbove_union [IsDirected α (· ≤ ·)] {s t : Set α} :
     BddAbove (s ∪ t) ↔ BddAbove s ∧ BddAbove t :=
   ⟨fun h => ⟨h.mono <| subset_union_left s t, h.mono <| subset_union_right s t⟩, fun h =>
     h.1.union h.2⟩
 #align bdd_above_union bddAbove_union
 
-theorem BddBelow.union [SemilatticeInf γ] {s t : Set γ} :
+/-- In a codirected order, the union of bounded below sets is bounded below. -/
+theorem BddBelow.union [IsDirected α (· ≥ ·)] {s t : Set α} :
     BddBelow s → BddBelow t → BddBelow (s ∪ t) :=
-  @BddAbove.union γᵒᵈ _ s t
+  @BddAbove.union αᵒᵈ _ _ _ _
 #align bdd_below.union BddBelow.union
 
-/-- The union of two sets is bounded above if and only if each of the sets is.-/
-theorem bddBelow_union [SemilatticeInf γ] {s t : Set γ} :
+/-- In a codirected order, the union of two sets is bounded below if and only if both sets are. -/
+theorem bddBelow_union [IsDirected α (· ≥ ·)] {s t : Set α} :
     BddBelow (s ∪ t) ↔ BddBelow s ∧ BddBelow t :=
-  @bddAbove_union γᵒᵈ _ s t
+  @bddAbove_union αᵒᵈ _ _ _ _
 #align bdd_below_union bddBelow_union
 
 /-- If `a` is the least upper bound of `s` and `b` is the least upper bound of `t`,
@@ -919,26 +921,26 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 
 /-- Adding a point to a set preserves its boundedness above. -/
 @[simp]
-theorem bddAbove_insert [SemilatticeSup γ] (a : γ) {s : Set γ} :
+theorem bddAbove_insert [IsDirected α (· ≤ ·)] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
   simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
 #align bdd_above_insert bddAbove_insert
 
-protected theorem BddAbove.insert [SemilatticeSup γ] (a : γ) {s : Set γ} (hs : BddAbove s) :
-    BddAbove (insert a s) :=
-  (bddAbove_insert a).2 hs
+protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : α) :
+    BddAbove s → BddAbove (insert a s) :=
+  bddAbove_insert.2
 #align bdd_above.insert BddAbove.insert
 
 /-- Adding a point to a set preserves its boundedness below.-/
 @[simp]
-theorem bddBelow_insert [SemilatticeInf γ] (a : γ) {s : Set γ} :
+theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
   simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
 #align bdd_below_insert bddBelow_insert
 
-protected theorem BddBelow.insert [SemilatticeInf γ] (a : γ) {s : Set γ} (hs : BddBelow s) :
-    BddBelow (insert a s) :=
-  (bddBelow_insert a).2 hs
+protected theorem BddBelow.insert [IsDirected α (· ≥ ·)] {s : Set α} (a : α) :
+    BddBelow s → BddBelow (insert a s) :=
+  bddBelow_insert.2
 #align bdd_below.insert BddBelow.insert
 
 protected theorem IsLUB.insert [SemilatticeSup γ] (a) {b} {s : Set γ} (hs : IsLUB s b) :
@@ -1634,3 +1636,34 @@ theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 #align is_glb_prod isGLB_prod
+
+section ScottContinuous
+variable [Preorder α] [Preorder β] {f : α → β} {a : α}
+
+/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
+sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
+Scott topology.
+
+The dual notion
+
+```lean
+∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
+```
+
+does not appear to play a significant role in the literature, so is omitted here.
+-/
+def ScottContinuous (f : α → β) : Prop :=
+  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
+#align scott_continuous ScottContinuous
+
+protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
+  refine' fun a b hab =>
+    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
+      (mem_image_of_mem _ <| mem_insert _ _)
+  rw [IsLUB, upperBounds_insert, upperBounds_singleton,
+    inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
+  exact isLeast_Ici
+#align scott_continuous.monotone ScottContinuous.monotone
+
+
+end ScottContinuous

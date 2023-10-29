@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Algebra.GroupWithZero.Bitwise
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -431,9 +432,6 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
   { Complex.addGroupWithOne with
-    zero := (0 : ℂ)
-    add := (· + ·)
-    one := 1
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp [add_comm]
@@ -639,6 +637,11 @@ by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
 #align complex.norm_sq_one Complex.normSq_one
+
+@[simp]
+theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
+    normSq (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n * OfNat.ofNat n := by
+  simp [normSq]
 
 @[simp]
 theorem normSq_I : normSq I = 1 := by simp [normSq]
@@ -916,14 +919,14 @@ example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul 
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := by rfl
+  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := rfl
   simp only [add_conj, ofReal_mul, ofReal_one, ofReal_bit0, this,
     mul_div_cancel_left (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj
 
 /-- A complex number `z` minus its conjugate `conj z` is `2i` times its imaginary part. -/
 theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
-  have : (↑2 : ℝ ) * I = 2 * I := by rfl
+  have : (↑2 : ℝ ) * I = 2 * I := rfl
   simp only [sub_conj, ofReal_mul, ofReal_one, ofReal_bit0, mul_right_comm, this,
     mul_div_cancel_left _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
@@ -992,11 +995,13 @@ nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
   (Complex.abs_ofReal _).trans (abs_of_nonneg h)
 #align complex.abs_of_nonneg Complex.abs_of_nonneg
 
-theorem abs_of_nat (n : ℕ) : Complex.abs n = n :=
-  calc
-    Complex.abs n = Complex.abs (n : ℝ) := by rw [ofReal_nat_cast]
-    _ = _ := Complex.abs_of_nonneg (Nat.cast_nonneg n)
-#align complex.abs_of_nat Complex.abs_of_nat
+theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
+#align complex.abs_of_nat Complex.abs_natCast
+
+@[simp]
+theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
+    Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+  abs_natCast n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
@@ -1021,11 +1026,7 @@ theorem abs_I : Complex.abs I = 1 := by simp [Complex.abs]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_I Complex.abs_I
 
-@[simp]
-theorem abs_two : Complex.abs 2 = 2 :=
-  calc
-    Complex.abs 2 = Complex.abs (2 : ℝ) := by rfl
-    _ = (2 : ℝ) := Complex.abs_of_nonneg (by norm_num)
+theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 #align complex.abs_two Complex.abs_two
 
 @[simp]
@@ -1040,7 +1041,7 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 #align complex.abs_conj Complex.abs_conj
 
-@[simp]
+-- Porting note: @[simp] can prove it now
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
@@ -1176,7 +1177,7 @@ noncomputable def cauSeqIm (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=
 #align complex.cau_seq_im Complex.cauSeqIm
 
 theorem isCauSeq_abs {f : ℕ → ℂ} (hf : IsCauSeq Complex.abs f) :
-  IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
+    IsCauSeq abs' (Complex.abs ∘ f) := fun ε ε0 =>
   let ⟨i, hi⟩ := hf ε ε0
   ⟨i, fun j hj => lt_of_le_of_lt
     (Complex.abs.abs_abv_sub_le_abv_sub _ _) (hi j hj)⟩
@@ -1188,7 +1189,7 @@ noncomputable def limAux (f : CauSeq ℂ Complex.abs) : ℂ :=
 #align complex.lim_aux Complex.limAux
 
 theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
-  f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
+    f ≈ CauSeq.const Complex.abs (limAux f) := fun ε ε0 =>
   (exists_forall_ge_and
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
@@ -1224,7 +1225,7 @@ theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := b
 #align complex.lim_im Complex.lim_im
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
-  IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
+    IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
     rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩

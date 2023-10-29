@@ -58,6 +58,10 @@ instance subsemiringClass : SubsemiringClass (StarSubalgebra R A) A where
   one_mem {s} := s.one_mem'
   zero_mem {s} := s.zero_mem'
 
+instance smulMemClass : SMulMemClass (StarSubalgebra R A) R A where
+  smul_mem {s} r a (ha : a ∈ s.toSubalgebra) :=
+    (SMulMemClass.smul_mem r ha : r • a ∈ s.toSubalgebra)
+
 instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Algebra R A]
     [StarModule R A] : SubringClass (StarSubalgebra R A) A where
   neg_mem {s a} ha := show -a ∈ s.toSubalgebra from neg_mem ha
@@ -441,6 +445,7 @@ theorem adjoin_toSubalgebra (s : Set A) :
   rfl
 #align star_subalgebra.adjoin_to_subalgebra StarSubalgebra.adjoin_toSubalgebra
 
+@[aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarSubalgebra.subset_adjoin

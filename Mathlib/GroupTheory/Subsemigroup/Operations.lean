@@ -568,8 +568,8 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive "The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`."]
-def subtype : S' →ₙ* M :=
-  ⟨Subtype.val, fun _ _ => rfl⟩
+def subtype : S' →ₙ* M where
+  toFun := Subtype.val; map_mul' := fun _ _ => rfl
 #align mul_mem_class.subtype MulMemClass.subtype
 #align add_mem_class.subtype AddMemClass.subtype
 

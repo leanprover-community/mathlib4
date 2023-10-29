@@ -148,8 +148,8 @@ theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
 
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]
-def pureOneHom : OneHom α (Filter α) :=
-  ⟨pure, pure_one⟩
+def pureOneHom : OneHom α (Filter α) where
+  toFun := pure; map_one' := pure_one
 #align filter.pure_one_hom Filter.pureOneHom
 #align filter.pure_zero_hom Filter.pureZeroHom
 
@@ -390,8 +390,8 @@ protected theorem map_mul [MulHomClass F α β] (m : F) : (f₁ * f₂).map m = 
 
 /-- `pure` operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-def pureMulHom : α →ₙ* Filter α :=
-  ⟨pure, fun _ _ => pure_mul_pure.symm⟩
+def pureMulHom : α →ₙ* Filter α where
+  toFun := pure; map_mul' _ _ := pure_mul_pure.symm
 #align filter.pure_mul_hom Filter.pureMulHom
 #align filter.pure_add_hom Filter.pureAddHom
 
