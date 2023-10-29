@@ -195,6 +195,12 @@ theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
   abs_of_nonneg (cast_nonneg a)
 #align nat.abs_cast Nat.abs_cast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem abs_ofNat [LinearOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
+    |(no_index (OfNat.ofNat n : α))| = OfNat.ofNat n :=
+  abs_natCast n
+
 end Nat
 
 instance [AddMonoidWithOne α] [CharZero α] : Nontrivial α where exists_pair_ne :=
