@@ -20,8 +20,6 @@ bool, boolean, Bool, De Morgan
 
 -/
 
-set_option autoImplicit true
-
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
@@ -83,11 +81,11 @@ theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) 
   cases a <;> cases b <;> simp
 
 -- Porting note: new theorem
-theorem beq_eq_decide_eq [DecidableEq α]
+theorem beq_eq_decide_eq {α} [DecidableEq α]
     (a b : α) : (a == b) = decide (a = b) := rfl
 
 -- Porting note: new theorem
-theorem beq_comm [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
+theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
   eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
 
 @[simp]
@@ -331,6 +329,10 @@ instance linearOrder : LinearOrder Bool where
   min := and
   min_def := λ a b => by cases a <;> cases b <;> decide
 #align bool.linear_order Bool.linearOrder
+
+@[simp] theorem max_eq_or : max = or := rfl
+
+@[simp] theorem min_eq_and : min = and := rfl
 
 @[simp]
 theorem false_le {x : Bool} : false ≤ x :=
