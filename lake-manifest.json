@@ -34,11 +34,11 @@
     "inputRev?": "v0.0.21",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/fgdorais/std4",
+   {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "8c4014c29681a06af9cec3031c0d3171b1e4d7f9",
+    "rev": "0da0e81a141cd26364f8799fb31ae7866ec43fb7",
     "opts": {},
     "name": "std",
-    "inputRev?": "bool-extra",
+    "inputRev?": "main",
     "inherited": false}}],
  "name": "mathlib"}
