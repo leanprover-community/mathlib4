@@ -44,53 +44,30 @@ non-cyclic abelian group
 -/
 
 /-- Klein four-group. -/
-abbrev KleinFourGroup := Multiplicative ((ZMod 2) × (ZMod 2))
+abbrev KleinFourGroup := Multiplicative (ZMod 2 × ZMod 2)
 
 namespace KleinFourGroup
 
 open DihedralGroup Equiv
 
 /-- Element `e` of Klein four-group. -/
-def e := (1 : KleinFourGroup)
+def e : KleinFourGroup := 1
 
 /-- Element `a` of Klein four-group. -/
-def a := Multiplicative.ofAdd ((0, 1) : KleinFourGroup)
+def a : KleinFourGroup := Multiplicative.ofAdd (0, 1)
 
 /-- Element `b` of Klein four-group. -/
-def b := Multiplicative.ofAdd ((1, 0) : KleinFourGroup)
+def b : KleinFourGroup := Multiplicative.ofAdd (1, 0)
 
 /-- Element `c` of Klein four-group. -/
-def c := Multiplicative.ofAdd ((1, 1) : KleinFourGroup)
-
-/-- `(0, 0)` is the identity element. -/
-private def one : KleinFourGroup :=
-  e
-
-instance : Inhabited (KleinFourGroup) :=
-  ⟨one⟩
-
-@[simp]
-theorem one_def : ((0, 0) : KleinFourGroup) = (1 : KleinFourGroup) :=
-  rfl
-
-/-- `KleinFourGroup` is a group. -/
-instance : Group (KleinFourGroup) :=
-  Multiplicative.group
-
-/-- Klein four-group is an abelian group. -/
-instance commGroup : CommGroup (KleinFourGroup) :=
-  inferInstance
-
-/-- Klein four-group is a finite group. -/
-instance fintype : Fintype (KleinFourGroup) :=
-  inferInstance
+def c : KleinFourGroup := Multiplicative.ofAdd (1, 1)
 
 /-- Klein four-group is a group of order 4. -/
-theorem card : Fintype.card (KleinFourGroup) = 4 :=
+theorem card : Fintype.card KleinFourGroup = 4 :=
   rfl
 
 /-- Klein four-group is a group of order 4. -/
-theorem nat_card : Nat.card (KleinFourGroup) = 4 := by
+theorem nat_card : Nat.card KleinFourGroup = 4 := by
   simp only [Nat.card_eq_fintype_card]
 
 @[simp] theorem a_order_two : a ^ 2 = 1 :=
@@ -106,25 +83,25 @@ theorem nat_card : Nat.card (KleinFourGroup) = 4 := by
   apply orderOf_eq_prime
   · exact a_order_two
   · intro ha
-    rw [a, ← one_def] at ha
-    simp only [one_def, ofAdd_eq_one] at ha
+    rw [a] at ha
+    simp only [ofAdd_eq_one] at ha
 
 @[simp] theorem orderOf_b : orderOf b = 2 := by
   apply orderOf_eq_prime
   · exact b_order_two
   · intro hb
-    rw [b, ← one_def] at hb
-    simp only [one_def, ofAdd_eq_one] at hb
+    rw [b] at hb
+    simp only [ofAdd_eq_one] at hb
 
 @[simp] theorem orderOf_c : orderOf c = 2 := by
   apply orderOf_eq_prime
   · exact c_order_two
   · intro hc
-    rw [c, ← one_def] at hc
-    simp only [one_def, ofAdd_eq_one] at hc
+    rw [c] at hc
+    simp only [ofAdd_eq_one] at hc
 
-theorem exponent : Monoid.exponent (KleinFourGroup) = 2 := by
-  have : Monoid.exponent (KleinFourGroup) = lcm 2 2 := by
+theorem exponent : Monoid.exponent KleinFourGroup = 2 := by
+  have : Monoid.exponent KleinFourGroup = lcm 2 2 := by
     apply Nat.dvd_antisymm
     · apply Monoid.exponent_dvd_of_forall_pow_eq_one
       simp only [lcm_same, normalize_apply, normUnit_eq_one, Units.val_one, mul_one]
@@ -139,7 +116,7 @@ theorem exponent : Monoid.exponent (KleinFourGroup) = 2 := by
   assumption
 
 /-- Klein four-group is a non-cyclic group. -/
-theorem notIsCyclic : ¬ IsCyclic (KleinFourGroup) := by
+theorem notIsCyclic : ¬ IsCyclic KleinFourGroup := by
   intro h
   have h₁ := IsCyclic.iff_exponent_eq_card.mp h
   rw [exponent,card] at h₁
