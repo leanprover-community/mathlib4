@@ -79,6 +79,13 @@ noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInverted
   have := hL _ φ.hs
   L.map φ.f ≫ inv (L.map φ.s)
 
+
+@[reassoc (attr := simp)]
+lemma map_comp_map_s (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
+    φ.map L hL ≫ L.map φ.s = L.map φ.f := by
+  have := hL _ φ.hs
+  simp [map]
+
 variable (W)
 
 lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
@@ -130,6 +137,7 @@ noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInverte
 
 variable (W)
 
+@[simp]
 lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsIdentities] :
     (ofHom W f).map L hL = L.map f := by
   simp [map]
@@ -221,11 +229,15 @@ end LeftFractionRel
 section
 
 variable [W.HasLeftCalculusOfFractions']
+variable (W)
 
-instance {X Y : C} : IsEquiv (W.LeftFraction X Y) LeftFractionRel where
+instance equivalenceLeftFractionRel (X Y : C) :
+    @_root_.Equivalence (W.LeftFraction X Y) LeftFractionRel where
   refl := LeftFractionRel.refl
-  symm := fun _ _ => LeftFractionRel.symm
-  trans := fun _ _ _ => LeftFractionRel.trans
+  symm := LeftFractionRel.symm
+  trans := LeftFractionRel.trans
+
+variable {W}
 
 namespace LeftFraction
 
@@ -434,7 +446,9 @@ def Q : C ⥤ Localization W where
 
 variable {W}
 
-def homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
+abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
+
+lemma homMk_eq_hom_mk {X Y : C} (f : W.LeftFraction X Y) : homMk f = Hom.mk f := rfl
 
 variable (W)
 
@@ -448,12 +462,15 @@ lemma homMk_comp_homMk {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFra
     homMk z₁ ≫ homMk z₂ = homMk (z₁.comp₀ z₂ z₃) := by
   change Hom.comp _ _ = _
   erw [Hom.comp_eq, comp_eq z₁ z₂ z₃ h₃]
-  rfl
 
 lemma homMk_eq_of_leftFractionRel
     {X Y : C} (z₁ z₂ : W.LeftFraction X Y) (h : LeftFractionRel z₁ z₂) :
     homMk z₁ = homMk z₂ :=
   Quot.sound h
+
+lemma homMk_eq_iff_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y) :
+    homMk z₁ = homMk z₂ ↔ LeftFractionRel z₁ z₂ :=
+  @Equivalence.quot_mk_eq_iff _ _ (equivalenceLeftFractionRel W X Y) _ _
 
 def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X := homMk (ofInv s hs)
 
@@ -477,10 +494,201 @@ def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
     apply homMk_eq_of_leftFractionRel
     exact ⟨_, 𝟙 Y, 𝟙 Y, by simp, by simp, by simpa using W.id_mem Y⟩
 
+@[reassoc (attr := simp)]
+lemma Qiso_hom_inv_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
+    (Q W).map s ≫ Qinv s hs = 𝟙 _ := (Qiso s hs).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma Qiso_inv_hom_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
+    Qinv s hs  ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
+
 instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
   (inferInstance : IsIso (Qiso s hs).inv)
 
+section
+
+variable {E : Type*} [Category E]
+
+noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+    F.obj X ⟶ F.obj Y :=
+  Quot.lift (fun f => f.map F hF) (by
+    intro a₁ a₂ ⟨Z, t₁, t₂, hst, hft, h⟩
+    dsimp
+    have := hF _ h
+    rw [← cancel_mono (F.map (a₁.s ≫ t₁)), F.map_comp, map_comp_map_s_assoc,
+      ← F.map_comp, ← F.map_comp, hst, hft, F.map_comp,
+      F.map_comp, map_comp_map_s_assoc]) f
+
+@[simp]
+lemma Hom.map_mk {X Y : C} (f : LeftFraction W X Y)
+    (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+  Hom.map (Hom.mk f) F hF = f.map F hF := rfl
+
+
+namespace StrictUniversalPropertyFixedTarget
+
+variable (W)
+
+lemma inverts : W.IsInvertedBy (Q W) := fun _ _ s hs =>
+  (inferInstance : IsIso (Qiso s hs).hom)
+
+variable {W}
+
+noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+    Localization W ⥤ E where
+  obj X := F.obj X
+  map {X Y : C} f := f.map F hF
+  map_id := by
+    intro (X : C)
+    dsimp
+    change (Hom.mk (ofHom W (𝟙 X))).map F hF = _
+    rw [Hom.map_mk, map_ofHom, F.map_id]
+  map_comp := by
+    rintro (X Y Z : C) f g
+    obtain ⟨f, rfl⟩ := Hom.mk_surjective f
+    obtain ⟨g, rfl⟩ := Hom.mk_surjective g
+    dsimp
+    obtain ⟨z, fac⟩ := HasLeftCalculusOfFractions'.exists_leftFraction
+      (RightFraction.mk f.s f.hs g.f)
+    rw [homMk_comp_homMk f g z fac, Hom.map_mk]
+    dsimp at fac ⊢
+    have := hF _ g.hs
+    have := hF _ z.hs
+    rw [← cancel_mono (F.map g.s), assoc, map_comp_map_s,
+      ← cancel_mono (F.map z.s), assoc, assoc, ← F.map_comp,
+      ← F.map_comp, map_comp_map_s, fac]
+    dsimp
+    rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
+
+lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
+  Functor.ext (fun X => rfl) (fun X Y f => by
+    dsimp [lift]
+    rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
+
+lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ := by
+  let hobj : ∀ (X : C), F₁.obj X = F₂.obj X := fun X => Functor.congr_obj h X
+  refine' Functor.ext hobj _
+  rintro (X Y : C) f
+  obtain ⟨f, rfl⟩ := Hom.mk_surjective f
+  rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
+    ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
+  erw [Functor.congr_map_conjugate h f.f]
+  rw [assoc, assoc]
+  congr 2
+  have := inverts W _ f.hs
+  rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
+    Qiso_hom_inv_id, Functor.map_id, id_comp]
+  erw [Functor.congr_map_conjugate h.symm f.s]
+  dsimp
+  rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
+    Qiso_hom_inv_id]
+  dsimp
+  rw [F₁.map_id, comp_id]
+
+end StrictUniversalPropertyFixedTarget
+
+variable (W)
+
+open StrictUniversalPropertyFixedTarget in
+noncomputable def strictUniversalPropertyFixedTarget (E : Type*) [Category E] :
+    Localization.StrictUniversalPropertyFixedTarget (Q W) W E where
+  inverts := inverts W
+  lift := lift
+  fac := fac
+  uniq := uniq
+
+instance : (Q W).IsLocalization W :=
+  Functor.IsLocalization.mk' _ _
+    (strictUniversalPropertyFixedTarget W _)
+    (strictUniversalPropertyFixedTarget W _)
+
+end
+
+lemma homMk_eq {X Y : C} (f : LeftFraction W X Y) :
+    homMk f = f.map (Q W) (Localization.inverts _ W) := by
+  have := Localization.inverts (Q W) W f.s f.hs
+  erw [← Q_map_comp_Qinv f.f f.s f.hs]
+  rw [← cancel_mono ((Q W).map f.s),
+    assoc, Qiso_inv_hom_id, comp_id, map_comp_map_s]
+
+
 end Localization
+
+section
+
+lemma map_eq {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+    φ.map L (Localization.inverts L W) =
+      L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
+
+lemma map_compatibility {X Y : C}
+    (φ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W] :
+    (Localization.uniq L₁ L₂ W).functor.map (φ.map L₁ (Localization.inverts L₁ W)) =
+      (Localization.compUniqFunctor L₁ L₂ W).hom.app X ≫
+        φ.map L₂ (Localization.inverts L₂ W) ≫
+        (Localization.compUniqFunctor L₁ L₂ W).inv.app Y := by
+  let e := Localization.compUniqFunctor L₁ L₂ W
+  have := Localization.inverts L₂ W φ.s φ.hs
+  rw [← cancel_mono (e.hom.app Y), assoc, assoc, e.inv_hom_id_app, comp_id,
+    ← cancel_mono (L₂.map φ.s), assoc, assoc, map_comp_map_s, ← e.hom.naturality]
+  dsimp
+  rw [← Functor.map_comp_assoc, map_comp_map_s]
+  exact e.hom.naturality φ.f
+
+lemma map_eq_of_map_eq {X Y : C}
+    (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W]
+    (h : φ₁.map L₁ (Localization.inverts L₁ W) = φ₂.map L₁ (Localization.inverts L₁ W)) :
+    φ₁.map L₂ (Localization.inverts L₂ W) = φ₂.map L₂ (Localization.inverts L₂ W) := by
+  apply (Localization.uniq L₂ L₁ W).functor.map_injective
+  rw [map_compatibility φ₁ L₂ L₁, map_compatibility φ₂ L₂ L₁, h]
+
+variable [L.IsLocalization W]
+variable (W)
+
+lemma fac {X Y : C} (f : L.obj X ⟶ L.obj Y) :
+    ∃ (φ : W.LeftFraction X Y), f = φ.map L (Localization.inverts L W) := by
+  let E := CategoryTheory.Localization.uniq (Localization.Q W) L W
+  let e : _ ⋙ E.functor ≅ L := Localization.compUniqFunctor _ _ _
+  obtain ⟨f', rfl⟩ : ∃ (f' : E.functor.obj X ⟶ E.functor.obj Y),
+      f = e.inv.app _ ≫ f' ≫ e.hom.app _ := ⟨e.hom.app _ ≫ f ≫ e.inv.app _, by simp⟩
+  obtain ⟨g, rfl⟩ := E.functor.map_surjective f'
+  obtain ⟨g, rfl⟩ := Localization.Hom.mk_surjective g
+  refine' ⟨g, _⟩
+  rw [← Localization.homMk_eq_hom_mk, Localization.homMk_eq g,
+    g.map_compatibility (Localization.Q W) L,
+    assoc, assoc, Iso.inv_hom_id_app, comp_id, Iso.inv_hom_id_app_assoc]
+
+variable {W}
+
+lemma map_eq_iff {X Y : C} (φ₁ φ₂ : W.LeftFraction X Y) :
+    φ₁.map L (Localization.inverts L W) = φ₂.map L (Localization.inverts L W) ↔
+      LeftFractionRel φ₁ φ₂ := by
+  rw [← Localization.homMk_eq_iff_leftFractionRel φ₁ φ₂, Localization.homMk_eq,
+    Localization.homMk_eq]
+  constructor
+  all_goals
+    apply map_eq_of_map_eq
+
+variable (W)
+
+lemma map_eq_iff' {X Y : C} (f₁ f₂ : X ⟶ Y) :
+    L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (_ : W s), f₁ ≫ s = f₂ ≫ s := by
+  constructor
+  · intro h
+    have eq := map_eq_iff L (ofHom W f₁) (ofHom W f₂)
+    simp only [map_ofHom] at eq
+    rw [eq] at h
+    obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
+    dsimp at t₁ t₂ hst hft ht
+    simp only [id_comp] at hst ht
+    obtain rfl := hst
+    exact ⟨Z, t₁, ht, hft⟩
+  · rintro ⟨Z, s, hs, fac⟩
+    have := Localization.inverts L W s hs
+    simp only [← cancel_mono (L.map s), ← L.map_comp, fac]
+
+end
 
 end LeftFraction
 
