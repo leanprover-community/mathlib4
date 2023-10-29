@@ -382,6 +382,7 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
   ⟨h⟩
 #align principal_seg.ordinal_type_lt PrincipalSeg.ordinal_type_lt
 
+@[simp]
 protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 #align ordinal.zero_le Ordinal.zero_le
@@ -912,6 +913,12 @@ theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 #align ordinal.card_nat Ordinal.card_nat
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
+    card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  card_nat n
+
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
   elim := fun c a b h => by
@@ -1429,6 +1436,11 @@ theorem ord_nat (n : ℕ) : ord n = n :=
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
 #align cardinal.ord_one Cardinal.ord_one
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  ord_nat n
+
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
   refine' le_antisymm (le_of_forall_lt fun a ha => _) _
@@ -1554,26 +1566,55 @@ theorem nat_le_card {o} {n : ℕ} : (n : Cardinal) ≤ card o ↔ (n : Ordinal) 
   rw [← Cardinal.ord_le, Cardinal.ord_nat]
 #align ordinal.nat_le_card Ordinal.nat_le_card
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : Cardinal)) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
+  nat_le_card
+
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by
   rw [← succ_le_iff, ← succ_le_iff, ← nat_succ, nat_le_card]
   rfl
 #align ordinal.nat_lt_card Ordinal.nat_lt_card
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_lt_card {o} {n : ℕ} [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : Cardinal)) < card o ↔ (OfNat.ofNat n : Ordinal) < o :=
+  nat_lt_card
+
 @[simp]
 theorem card_lt_nat {o} {n : ℕ} : card o < n ↔ o < n :=
   lt_iff_lt_of_le_iff_le nat_le_card
 #align ordinal.card_lt_nat Ordinal.card_lt_nat
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem card_lt_ofNat {o} {n : ℕ} [n.AtLeastTwo] : card o < (no_index (OfNat.ofNat n)) ↔ o < OfNat.ofNat n :=
+  card_lt_nat
 
 @[simp]
 theorem card_le_nat {o} {n : ℕ} : card o ≤ n ↔ o ≤ n :=
   le_iff_le_iff_lt_iff_lt.2 nat_lt_card
 #align ordinal.card_le_nat Ordinal.card_le_nat
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
+    card o ≤ (no_index (OfNat.ofNat n)) ↔ o ≤ OfNat.ofNat n :=
+  card_le_nat
+
 @[simp]
 theorem card_eq_nat {o} {n : ℕ} : card o = n ↔ o = n := by
   simp only [le_antisymm_iff, card_le_nat, nat_le_card]
 #align ordinal.card_eq_nat Ordinal.card_eq_nat
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
+    card o = (no_index (OfNat.ofNat n)) ↔ o = OfNat.ofNat n :=
+  card_eq_nat
 
 @[simp]
 theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] : type r = Fintype.card α :=
