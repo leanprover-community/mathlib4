@@ -1919,6 +1919,11 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+*
     congr
     rw [coeff_trunc, if_pos h]
 
+lemma aeval_trunc_eq_sum_range {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    (s : S) (n) (f : R⟦X⟧) : aeval s (trunc n f) = ∑ i in range n, (coeff R i f) • s ^ i := by
+  simp_rw [aeval_def, Algebra.smul_def]
+  apply eval₂_trunc_eq_sum_range
+
 @[simp] theorem trunc_X (n) : trunc (n + 2) X = (Polynomial.X : R[X]) := by
   ext d
   rw [coeff_trunc, coeff_X]
