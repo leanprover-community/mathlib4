@@ -988,12 +988,10 @@ instance isWellOrder : IsWellOrder Ordinal (· < ·) where
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   IsWellOrder.conditionallyCompleteLinearOrderBot _
 
-@[simp]
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   max_bot_left
 #align ordinal.max_zero_left Ordinal.max_zero_left
 
-@[simp]
 theorem max_zero_right : ∀ a : Ordinal, max a 0 = a :=
   max_bot_right
 #align ordinal.max_zero_right Ordinal.max_zero_right
