@@ -91,10 +91,6 @@ theorem rel_iff {x y z w : α} : (x, y) ≈ (z, w) ↔ x = z ∧ y = w ∨ x = w
   show Rel _ _ _ ↔ _ by aesop (rule_sets [Sym2])
 #align sym2.rel_iff Sym2.rel_iff
 
-theorem rel_iff' {x y : α × α} : x ≈ y ↔ x = y ∨ x = y.swap := by
-  rw [rel_iff]
-  aesop
-
 end Sym2
 
 /-- `Sym2 α` is the symmetric square of `α`, which, in other words, is the
@@ -643,12 +639,13 @@ section Decidable
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
 instance instDecidableRel [DecidableEq α] : DecidableRel (Rel α) :=
-  fun _ _ => decidable_of_iff' _ rel_iff'
+  fun _ _ => decidable_of_iff' _ rel_iff
 
 instance instDecidableRel' [DecidableEq α] : DecidableRel (HasEquiv.Equiv (α := α × α)) :=
   instDecidableRel
 
-instance [DecidableEq α] : DecidableEq (Sym2 α) := inferInstance
+-- the `Equiv` version above is needed for this
+example [DecidableEq α] : DecidableEq (Sym2 α) := inferInstance
 
 /-! ### The other element of an element of the symmetric square -/
 
