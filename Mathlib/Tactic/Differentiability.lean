@@ -18,7 +18,7 @@ attribute [aesop (rule_sets [Differentiable]) unfold norm] Function.comp
 -- Issue: Large natural powers lead to timeouts.
 -- This is due to copied over (from `continuity`) settings of tactic.
 -- I'm not sure why those options are used.
-attribute [aesop (rule_sets [Differentiable]) unfold norm] npowRec
+-- attribute [aesop (rule_sets [Differentiable]) unfold norm] npowRec
 
 /--
 The `differentiability` attribute used to tag differentiability statements for the
