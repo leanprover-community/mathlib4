@@ -434,6 +434,10 @@ theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (j.comp i) f)
     map_C, map_X, lift_eq, Multiset.pmap_eq_map]
   rfl
 
+theorem splits_id_of_splits {f : K[X]} (h : Splits i f)
+    (roots_mem_range : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits (RingHom.id K) f :=
+  splits_of_comp (RingHom.id K) i h roots_mem_range
+
 theorem splits_comp_of_splits (j : L →+* F) {f : K[X]} (h : Splits i f) : Splits (j.comp i) f := by
   -- Porting note: was
   -- change i with (RingHom.id _).comp i at h
