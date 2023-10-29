@@ -145,6 +145,10 @@ theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingFie
       adjoin_rootSet_eq_range (splits F p), adjoin_rootSet F p]
 #align polynomial.is_splitting_field.of_alg_equiv Polynomial.IsSplittingField.of_algEquiv
 
+def adjoin_rootSet_eq_range [Algebra K F] (f : K[X]) [IsSplittingField K L f] (i : L →ₐ[K] F) :
+    Algebra.adjoin K (rootSet f F) = i.range :=
+  (Polynomial.adjoin_rootSet_eq_range (splits L f) i).mpr (adjoin_rootSet L f)
+
 end IsSplittingField
 
 end Polynomial
@@ -157,15 +161,8 @@ variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
 
 theorem splits_of_splits {F : IntermediateField K L} (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
-  simp_rw [rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
-  rw [splits_iff_exists_multiset]
-  refine' ⟨Multiset.pmap Subtype.mk _ hF, map_injective _ (algebraMap F L).injective _⟩
-  conv_lhs =>
-    rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq, eq_prod_roots_of_splits h, ←
-      Multiset.pmap_eq_map _ _ _ hF]
-  simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
-    map_C, map_X]
-  rfl
+  simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
+  exact splits_of_comp _ F.val.toRingHom h hF
 #align intermediate_field.splits_of_splits IntermediateField.splits_of_splits
 
 end IntermediateField

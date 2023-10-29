@@ -430,6 +430,16 @@ theorem splits_iff_exists_multiset {f : K[X]} :
     splits_of_exists_multiset i hs⟩
 #align polynomial.splits_iff_exists_multiset Polynomial.splits_iff_exists_multiset
 
+theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (j.comp i) f)
+    (roots_mem_range : ∀ a ∈ (f.map (j.comp i)).roots, a ∈ j.range) : Splits i f := by
+  choose lift lift_eq using roots_mem_range
+  rw [splits_iff_exists_multiset]
+  refine ⟨(f.map (j.comp i)).roots.pmap lift fun _ ↦ id, map_injective _ j.injective ?_⟩
+  conv_lhs => rw [Polynomial.map_map, eq_prod_roots_of_splits h]
+  simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
+    map_C, map_X, lift_eq, Multiset.pmap_eq_map]
+  rfl
+
 theorem splits_comp_of_splits (j : L →+* F) {f : K[X]} (h : Splits i f) : Splits (j.comp i) f := by
   -- Porting note: was
   -- change i with (RingHom.id _).comp i at h
