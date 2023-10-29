@@ -48,16 +48,27 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
   suffices ∀ μ, (m μ : M) ∈ p by
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
+  by_cases hμ : μ ∈ m.support; swap; simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
   have h_comm : ∀ (μ₁ μ₂ : K),
     Commute ((f - algebraMap K (End K M) μ₁) ^ finrank K M)
             ((f - algebraMap K (End K M) μ₂) ^ finrank K M) := fun μ₁ μ₂ ↦
     ((Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).sub_left
       (Algebra.commute_algebraMap_left _ _)).pow_pow _ _
-  let g : Module.End K M := (m.support \ {μ}).noncommProd _ fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂
+  let g : Module.End K M := (m.support.erase μ).noncommProd _ fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂
   have hfg : Commute f g := Finset.noncommProd_commute _ _ _ _ fun μ' hμ' ↦
     (Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).pow_right _
   have hg₀ : g (m.sum fun _μ mμ ↦ mμ) = g (m μ) := by
-    sorry
+    suffices ∀ μ' ∈ m.support, g (m μ') = if μ' = μ then g (m μ) else 0 by
+      rw [map_finsupp_sum, Finsupp.sum_congr (g2 := fun μ' m' ↦ if μ' = μ then g (m μ) else 0) this,
+        Finsupp.sum_ite_eq', if_pos hμ]
+    rintro μ' hμ'
+    split_ifs with hμμ'; rw [hμμ']
+    replace hm₂ : ((f - algebraMap K (End K M) μ') ^ finrank K M) (m μ') = 0 := by
+      obtain ⟨k, hk⟩ := (mem_iSup_of_chain _ _).mp (hm₂ μ')
+      exact Module.End.generalizedEigenspace_le_generalizedEigenspace_finrank _ _ k hk
+    have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
+      (fun μ ↦ (f - algebraMap K (End K M) μ) ^ finrank K M) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
+    rw [← this, LinearMap.mul_apply, hm₂, _root_.map_zero]
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K M ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' hμ' ↦ by
     suffices MapsTo (f - algebraMap K (End K M) μ') p p by

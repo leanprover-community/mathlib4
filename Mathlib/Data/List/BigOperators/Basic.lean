@@ -554,13 +554,20 @@ theorem sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → 
   exact (hadd _ _).trans (max_le_max le_rfl IH)
 #align list.sum_le_foldr_max List.sum_le_foldr_max
 
+@[to_additive]
+theorem prod_erase_of_comm [DecidableEq M] [Monoid M] {a} {l : List M} (ha : a ∈ l)
+    (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
+    a * (l.erase a).prod = l.prod := by
+  induction' l with b l ih; simp at ha
+  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha; simp
+  rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
+    comm a ha b (l.mem_cons_self b), mul_assoc,
+    ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
+
 @[to_additive (attr := simp)]
-theorem prod_erase [DecidableEq M] [CommMonoid M] {a} :
-    ∀ {l : List M}, a ∈ l → a * (l.erase a).prod = l.prod
-  | b :: l, h => by
-    obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
-    · simp only [List.erase, if_pos, prod_cons, beq_self_eq_true]
-    · simp only [List.erase, beq_false_of_ne ne.symm, prod_cons, prod_erase h, mul_left_comm a b]
+theorem prod_erase [DecidableEq M] [CommMonoid M] {a} {l : List M} (ha : a ∈ l) :
+    a * (l.erase a).prod = l.prod :=
+  prod_erase_of_comm ha fun x _ y _ ↦ mul_comm x y
 #align list.prod_erase List.prod_erase
 #align list.sum_erase List.sum_erase
 
