@@ -652,7 +652,7 @@ noncomputable def compRinghom (g : R⟦X⟧) : hasCompRing g →+* R⟦X⟧ wher
 lemma compRinghom_def {g : R⟦X⟧} (f : hasCompRing g) : compRinghom g f = f ∘ᶠ g := rfl
 
 lemma comp_eq_compRinghom {f g : R⟦X⟧} (hfg : f.hasComp g) :
-  f ∘ᶠ g = compRinghom g ⟨f,hfg⟩ := rfl
+    f ∘ᶠ g = compRinghom g ⟨f,hfg⟩ := rfl
 
 theorem sum_comp {A} {S : Finset A} {f : A → R⟦X⟧} {g : R⟦X⟧}
     (h : ∀ s : A, s ∈ S → (f s).hasComp g) :

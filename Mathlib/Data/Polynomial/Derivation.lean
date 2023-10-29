@@ -138,7 +138,7 @@ Here `M` is regarded as an `R[X]`-module, with the action of `f` defined
 by `f • m = f(a) • m`.
 -/
 def comp_eval₂ : Derivation R R[X] <| eval₂PullbackModule M a where
-    toFun            := d ∘ (eval₂RingHom (algebraMap R A) a)
+  toFun            := d ∘ (eval₂RingHom (algebraMap R A) a)
     map_add'         := by simp
     map_smul' _ _    := by dsimp; rw [eval₂_smul', d.map_smul]
     leibniz' _ _     := by
