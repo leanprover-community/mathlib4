@@ -316,16 +316,16 @@ createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
   refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
   exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
 
-instance : HasPullbackOfInclusions Stonean := by
-  apply (config := { allowSynthFailures := true }) HasPullbackOfInclusions.mk
+instance : HasPullbacksOfInclusions Stonean := by
+  apply (config := { allowSynthFailures := true }) HasPullbacksOfInclusions.mk
   intro X Y Z f
   apply (config := { allowSynthFailures := true }) hasPullback_symmetry
   apply Stonean.HasPullbackOpenEmbedding
   apply Stonean.Sigma.openEmbedding_ι
 
 noncomputable
-instance : PreservesPullbackOfInclusions Stonean.toCompHaus := by
-  apply (config := { allowSynthFailures := true }) PreservesPullbackOfInclusions.mk
+instance : PreservesPullbacksOfInclusions Stonean.toCompHaus := by
+  apply (config := { allowSynthFailures := true }) PreservesPullbacksOfInclusions.mk
   intros X Y Z f
   apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
   have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
