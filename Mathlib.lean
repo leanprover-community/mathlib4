@@ -2767,6 +2767,7 @@ import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Hom.Order
+import Mathlib.Order.Hom.Separator
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.Ideal
 import Mathlib.Order.InitialSeg
