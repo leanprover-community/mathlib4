@@ -238,7 +238,7 @@ theorem Filter.Tendsto.liminf_eq {f : Filter β} {u : β → α} {a : α} [NeBot
 #align filter.tendsto.liminf_eq Filter.Tendsto.liminf_eq
 
 /-- If the liminf and the limsup of a function coincide, then the limit of the function
-exists and has the same value -/
+exists and has the same value. -/
 theorem tendsto_of_liminf_eq_limsup {f : Filter β} {u : β → α} {a : α} (hinf : liminf u f = a)
     (hsup : limsup u f = a) (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) : Tendsto u f (𝓝 a) :=
