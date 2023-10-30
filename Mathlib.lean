@@ -3217,7 +3217,6 @@ import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
@@ -3586,13 +3585,13 @@ import Mathlib.Util.AssertNoSorry
 import Mathlib.Util.AtomM
 import Mathlib.Util.CompileInductive
 import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.Export
 import Mathlib.Util.Imports
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
-import Mathlib.Util.PiNotation
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
