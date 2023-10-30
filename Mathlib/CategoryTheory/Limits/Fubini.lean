@@ -83,7 +83,7 @@ def DiagramOfCones.conePoints (D : DiagramOfCones F) : J ⥤ C where
   map_comp f g := D.comp f g
 #align category_theory.limits.diagram_of_cones.cone_points CategoryTheory.Limits.DiagramOfCones.conePoints
 
-/-- Extract the functor `J ⥤ C` consisting of the cone points and the maps between them,
+/-- Extract the functor `J ⥤ C` consisting of the cocone points and the maps between them,
 from a `DiagramOfCocones`.
 -/
 @[simps]
