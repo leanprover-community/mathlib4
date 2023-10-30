@@ -131,7 +131,7 @@ structure Shape : Type where
 while proving the iff theorem, and a proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-    MetaM (Shape × Expr)  :=
+    MetaM (Shape × Expr) :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
      pure $ ty.replaceFVars fvars params.toArray
