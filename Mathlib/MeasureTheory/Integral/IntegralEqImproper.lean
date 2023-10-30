@@ -666,7 +666,7 @@ variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
 integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differentiability
-on `(a, +∞)` and continuity on `[a, +∞)`.-/
+on `(a, +∞)` and continuity at `a⁺`.-/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a))
     (hf : Tendsto f atTop (𝓝 m)) : ∫ x in Ioi a, f' x = m - f a := by
@@ -699,9 +699,19 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDer
   exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_tendsto' MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto'
 
+/-- A special case of `integral_Ioi_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
+compact support. -/
+theorem HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f) (h2f : HasCompactSupport f)
+    (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
+  have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
+  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
+  exact h2f.filter_mono atTop_le_cocompact |>.tendsto
+
 /-- When a function has a limit at infinity, and its derivative is nonnegative, then the derivative
 is automatically integrable on `(a, +∞)`. Version assuming differentiability
-on `(a, +∞)` and continuity on `[a, +∞)`. -/
+on `(a, +∞)` and continuity at `a⁺`. -/
 theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
     (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
@@ -732,6 +742,81 @@ theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a
       exact g'pos _ hy.1
 #align measure_theory.integrable_on_Ioi_deriv_of_nonneg MeasureTheory.integrableOn_Ioi_deriv_of_nonneg
 
+/-- When a function has a limit at infinity, and its derivative is nonnegative, then the derivative
+is automatically integrable on `(a, +∞)`. Version assuming differentiability
+on `[a, +∞)`. -/
+theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
+    (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
+  refine integrableOn_Ioi_deriv_of_nonneg ?_ (fun x hx => hderiv x hx.out.le) g'pos hg
+  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+#align measure_theory.integrable_on_Ioi_deriv_of_nonneg' MeasureTheory.integrableOn_Ioi_deriv_of_nonneg'
+
+/-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
+integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
+`integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
+continuity at `a⁺`. -/
+theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a)
+    (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
+    (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
+  integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
+    (integrableOn_Ioi_deriv_of_nonneg hcont hderiv g'pos hg) hg
+#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonneg MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg
+
+/-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
+integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
+`integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
+theorem integral_Ioi_of_hasDerivAt_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
+    (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
+  integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonneg' hderiv g'pos hg)
+    hg
+#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonneg' MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg'
+
+/-- When a function has a limit at infinity, and its derivative is nonpositive, then the derivative
+is automatically integrable on `(a, +∞)`. Version assuming differentiability
+on `(a, +∞)` and continuity at `a⁺`. -/
+theorem integrableOn_Ioi_deriv_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a)
+    (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
+    (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
+  apply integrable_neg_iff.1
+  exact integrableOn_Ioi_deriv_of_nonneg hcont.neg (fun x hx => (hderiv x hx).neg)
+    (fun x hx => neg_nonneg_of_nonpos (g'neg x hx)) hg.neg
+#align measure_theory.integrable_on_Ioi_deriv_of_nonpos MeasureTheory.integrableOn_Ioi_deriv_of_nonpos
+
+/-- When a function has a limit at infinity, and its derivative is nonpositive, then the derivative
+is automatically integrable on `(a, +∞)`. Version assuming differentiability
+on `[a, +∞)`. -/
+theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
+    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
+  refine integrableOn_Ioi_deriv_of_nonpos ?_ (fun x hx ↦ hderiv x hx.out.le) g'neg hg
+  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+#align measure_theory.integrable_on_Ioi_deriv_of_nonpos' MeasureTheory.integrableOn_Ioi_deriv_of_nonpos'
+
+/-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
+integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
+`integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
+continuity at `a⁺`. -/
+theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a)
+    (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
+    (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
+  integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
+    (integrableOn_Ioi_deriv_of_nonpos hcont hderiv g'neg hg) hg
+#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonpos MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonpos
+
+/-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
+integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
+`integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
+theorem integral_Ioi_of_hasDerivAt_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
+    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
+  integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonpos' hderiv g'neg hg)
+    hg
+#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonpos' MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonpos'
+
+end IoiFTC
+
+section IicFTC
+
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [CompleteSpace E]
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
 integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
@@ -753,15 +838,16 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
   rw [intervalIntegrable_iff_integrable_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
 
-/-- A special case of `integral_Ioi_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
-compact support. -/
-theorem HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f) (h2f : HasCompactSupport f)
-    (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
-  have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
-  rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
-  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
-  rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
-  exact h2f.filter_mono atTop_le_cocompact |>.tendsto
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
+integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+on `(-∞, a]`. -/
+theorem integral_Iic_of_hasDerivAt_of_tendsto'
+    (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
+    (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
+  refine integral_Iic_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
+    f'int hf
+  exact (hderiv a right_mem_Iic).continuousAt.continuousWithinAt
 
 /-- A special case of `integral_Iic_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
@@ -773,76 +859,7 @@ theorem HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f) (h2f : H
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
   exact h2f.filter_mono atBot_le_cocompact |>.tendsto
 
-/-- When a function has a limit at infinity, and its derivative is nonnegative, then the derivative
-is automatically integrable on `(a, +∞)`. Version assuming differentiability
-on `[a, +∞)`. -/
-theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
-    (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  refine integrableOn_Ioi_deriv_of_nonneg ?_ (fun x hx => hderiv x hx.out.le) g'pos hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
-#align measure_theory.integrable_on_Ioi_deriv_of_nonneg' MeasureTheory.integrableOn_Ioi_deriv_of_nonneg'
-
-/-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
-integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
-continuity on `[a, +∞)`. -/
-theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a)
-    (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
-    (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
-  integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
-    (integrableOn_Ioi_deriv_of_nonneg hcont hderiv g'pos hg) hg
-#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonneg MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg
-
-/-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
-integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
-theorem integral_Ioi_of_hasDerivAt_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
-    (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
-  integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonneg' hderiv g'pos hg)
-    hg
-#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonneg' MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg'
-
-/-- When a function has a limit at infinity, and its derivative is nonpositive, then the derivative
-is automatically integrable on `(a, +∞)`. Version assuming differentiability
-on `(a, +∞)` and continuity on `[a, +∞)`. -/
-theorem integrableOn_Ioi_deriv_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a)
-    (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
-    (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  apply integrable_neg_iff.1
-  exact integrableOn_Ioi_deriv_of_nonneg hcont.neg (fun x hx => (hderiv x hx).neg)
-    (fun x hx => neg_nonneg_of_nonpos (g'neg x hx)) hg.neg
-#align measure_theory.integrable_on_Ioi_deriv_of_nonpos MeasureTheory.integrableOn_Ioi_deriv_of_nonpos
-
-/-- When a function has a limit at infinity, and its derivative is nonpositive, then the derivative
-is automatically integrable on `(a, +∞)`. Version assuming differentiability
-on `[a, +∞)`. -/
-theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
-    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
-  refine integrableOn_Ioi_deriv_of_nonpos ?_ (fun x hx ↦ hderiv x hx.out.le) g'neg hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
-#align measure_theory.integrable_on_Ioi_deriv_of_nonpos' MeasureTheory.integrableOn_Ioi_deriv_of_nonpos'
-
-/-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
-integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
-continuity on `[a, +∞)`. -/
-theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a)
-    (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
-    (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
-  integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
-    (integrableOn_Ioi_deriv_of_nonpos hcont hderiv g'neg hg) hg
-#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonpos MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonpos
-
-/-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
-integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
-theorem integral_Ioi_of_hasDerivAt_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
-    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
-  integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonpos' hderiv g'neg hg)
-    hg
-#align measure_theory.integral_Ioi_of_has_deriv_at_of_nonpos' MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonpos'
-
-end IoiFTC
+end IicFTC
 
 section IoiChangeVariables
 
