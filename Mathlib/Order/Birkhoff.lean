@@ -58,7 +58,7 @@ variable [SemilatticeInf α] {s : UpperSet α} {a : α}
 
 variable [Finite α]
 
-@[simp] protected lemma infIrred : InfIrred s ↔ ∃ a, Ici a = s := by
+@[simp] lemma infIrred_iff_of_finite : InfIrred s ↔ ∃ a, Ici a = s := by
   refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_minimal_wrt id _ (coe_nonempty.2 hs.ne_top)
     exact ⟨a, (hs.2 $ erase_inf_Ici ha $ by simpa [eq_comm] using has).resolve_left
@@ -80,7 +80,7 @@ variable [SemilatticeSup α] {s : LowerSet α} {a : α}
 
 variable [Finite α]
 
-@[simp] protected lemma supIrred : SupIrred s ↔ ∃ a, Iic a = s := by
+@[simp] lemma supIrred_iff_of_finite : SupIrred s ↔ ∃ a, Iic a = s := by
   refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 $ erase_sup_Iic ha $ by simpa [eq_comm] using has).resolve_left
@@ -119,10 +119,13 @@ noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrr
           exact le_sup (Set.mem_toFinset.2 ha) }
     (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
 
+-- We remove this instance locally to let `Set.toFinset_Iic` fire. When the instance is present,
+-- `simp` refuses to use that lemma because TC inference synthesizes `Set.fintypeIic`, which is not
+-- defeq to the instance it finds in the term.
 attribute [-instance] Set.fintypeIic
 
 /-- Any nonempty finite distributive lattice is isomorphic to its lattice of sup-irreducible lower
-sets. -/
+sets. This is the other unitor of Birkhoff's representation theorem. -/
 noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
   Equiv.toOrderIso
     { toFun := fun a ↦ ⟨LowerSet.Iic a, LowerSet.supIrred_Iic _⟩
@@ -134,7 +137,7 @@ noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrr
         classical
         have : LocallyFiniteOrder α := Fintype.toLocallyFiniteOrder
         rintro ⟨s, hs⟩
-        obtain ⟨a, rfl⟩ := LowerSet.supIrred.1 hs
+        obtain ⟨a, rfl⟩ := LowerSet.supIrred_iff_of_finite.1 hs
         simp }
     (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono $ Set.toFinset_mono hst
 
@@ -149,7 +152,7 @@ variable [Fintype α] [@DecidablePred α SupIrred]
 powerset lattice. -/
 noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
   by_cases IsEmpty α
-  · exact ⟨⟨isEmptyElim, isEmptyElim⟩, isEmptyElim ‹α›, isEmptyElim ‹α›⟩
+  · exact OrderEmbedding.ofIsEmpty
   rw [not_isEmpty_iff] at h
   have := Fintype.toOrderBot α
   exact OrderIso.lowerSetSupIrred.toOrderEmbedding.trans ⟨⟨_, SetLike.coe_injective⟩, Iff.rfl⟩
@@ -163,6 +166,8 @@ variable {α}
 
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset α a = birkhoffSet α a := by
   classical
+  -- TODO: This should be a single `simp` call but `simp` refuses to use
+  -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
   simp [birkhoffFinset]
   rw [OrderIso.coe_toOrderEmbedding, Fintype.coe_finsetOrderIsoSet_symm]
   simp
