@@ -148,6 +148,8 @@ There are a few design decisions worth discussing.
   Proc. Amer. Math. Soc. 144 (2016), 459-471]
 -/
 
+set_option autoImplicit true
+
 open Set
 
 /-- A predicate `P` on sets satisfies the exchange property if, for all `X` and `Y` satisfying `P`
@@ -841,10 +843,10 @@ theorem Indep.basis_of_forall_insert (hI : M.Indep I) (hIX : I ⊆ X)
 
 theorem Indep.basis_insert_iff (hI : M.Indep I) :
     M.Basis I (insert e I) ↔ M.Dep (insert e I) ∨ e ∈ I := by
-  simp_rw [insert_subset_iff, and_iff_left hI.subset_ground, or_iff_not_imp_right,
-    hI.basis_iff_forall_insert_dep (subset_insert _ _), dep_iff, insert_subset_iff,
+  simp_rw [hI.basis_iff_forall_insert_dep (subset_insert _ _), dep_iff, insert_subset_iff,
     and_iff_left hI.subset_ground, mem_diff, mem_insert_iff, or_and_right, and_not_self,
     or_false, and_imp, forall_eq]
+  tauto
 
 theorem Basis.iUnion_basis_iUnion {ι : Type _} (X I : ι → Set α) (hI : ∀ i, M.Basis (I i) (X i))
     (h_ind : M.Indep (⋃ i, I i)) : M.Basis (⋃ i, I i) (⋃ i, X i) := by
