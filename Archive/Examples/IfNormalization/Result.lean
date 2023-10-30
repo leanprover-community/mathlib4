@@ -7,6 +7,12 @@ import Archive.Examples.IfNormalization.Statement
 import Mathlib.Data.List.AList
 import Mathlib.Tactic.Recall
 
+/-!
+# A solution to the if normalization challenge in Lean.
+
+See `Statement.lean` for background.
+-/
+
 set_option autoImplicit true
 
 macro "◾" : tactic => `(tactic| aesop)
@@ -63,10 +69,10 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     match h : l.lookup v with
     | none => ⟨var v, ◾⟩
     | some b => ⟨lit b, ◾⟩
-  | .ite (lit true) t e =>   have := normalize l t; ◾
-  | .ite (lit false) t e =>  have := normalize l e; ◾
-  | .ite (.ite a b c) d e => have := normalize l (.ite a (.ite b d e) (.ite c d e)); ◾
-  | .ite (var v) t e =>
+  | .ite (lit true)   t e => have := normalize l t; ◾
+  | .ite (lit false)  t e => have := normalize l e; ◾
+  | .ite (.ite a b c) t e => have := normalize l (.ite a (.ite b t e) (.ite c t e)); ◾
+  | .ite (var v)      t e =>
     match h : l.lookup v with
     | none =>
       have ⟨t', ht₁, ht₂, ht₃⟩ := normalize (l.insert v true) t
