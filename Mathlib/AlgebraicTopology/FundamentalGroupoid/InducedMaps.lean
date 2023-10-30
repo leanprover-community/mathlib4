@@ -69,7 +69,7 @@ def uhpath01 : @fromTop (TopCat.of <| ULift.{u} I) (ULift.up (0 : I)) ⟶ fromTo
 
 end unitInterval
 
-namespace ContinuousMap.Homotopy
+namespace Function.Homotopy
 
 open unitInterval (uhpath01)
 
@@ -80,12 +80,12 @@ section Casts
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
 abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
   eqToHom hx
-#align continuous_map.homotopy.hcast ContinuousMap.Homotopy.hcast
+#align continuous_map.homotopy.hcast Function.Homotopy.hcast
 
 @[simp]
 theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) : hcast hx₀ = eqToHom hx₀ :=
   rfl
-#align continuous_map.homotopy.hcast_def ContinuousMap.Homotopy.hcast_def
+#align continuous_map.homotopy.hcast_def Function.Homotopy.hcast_def
 
 variable {X₁ X₂ Y : TopCat.{u}} {f : C(X₁, Y)} {g : C(X₂, Y)} {x₀ x₁ : X₁} {x₂ x₃ : X₂}
   {p : Path x₀ x₁} {q : Path x₂ x₃} (hfg : ∀ t, f (p t) = g (q t))
@@ -94,7 +94,7 @@ variable {X₁ X₂ Y : TopCat.{u}} {f : C(X₁, Y)} {g : C(X₂, Y)} {x₀ x₁
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
 theorem heq_path_of_eq_image : HEq ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) := by
   simp only [map_eq, ← Path.Homotopic.map_lift]; apply Path.Homotopic.hpath_hext; exact hfg
-#align continuous_map.homotopy.heq_path_of_eq_image ContinuousMap.Homotopy.heq_path_of_eq_image
+#align continuous_map.homotopy.heq_path_of_eq_image Function.Homotopy.heq_path_of_eq_image
 
 private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 
@@ -105,12 +105,12 @@ theorem eq_path_of_eq_image :
   rw [Functor.conj_eqToHom_iff_heq
     ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) (start_path hfg) (end_path hfg)]
   exact heq_path_of_eq_image hfg
-#align continuous_map.homotopy.eq_path_of_eq_image ContinuousMap.Homotopy.eq_path_of_eq_image
+#align continuous_map.homotopy.eq_path_of_eq_image Function.Homotopy.eq_path_of_eq_image
 
 end Casts
 
 -- We let `X` and `Y` be spaces, and `f` and `g` be homotopic maps between them
-variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g) {x₀ x₁ : X}
+variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : Homotopy f g) {x₀ x₁ : X}
   (p : fromTop x₀ ⟶ fromTop x₁)
 
 /-!
@@ -140,13 +140,13 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),
     H.continuous.comp ((continuous_induced_dom.comp continuous_fst).prod_mk continuous_snd)⟩
-#align continuous_map.homotopy.ulift_map ContinuousMap.Homotopy.uliftMap
+#align continuous_map.homotopy.ulift_map Function.Homotopy.uliftMap
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
 @[simp, nolint simpNF]
 theorem ulift_apply (i : ULift.{u} I) (x : X) : H.uliftMap (i, x) = H (i.down, x) :=
   rfl
-#align continuous_map.homotopy.ulift_apply ContinuousMap.Homotopy.ulift_apply
+#align continuous_map.homotopy.ulift_apply Function.Homotopy.ulift_apply
 
 /-- An abbreviation for `prodToProdTop`, with some types already in place to help the
  typechecker. In particular, the first path should be on the ulifted unit interval. -/
@@ -154,17 +154,17 @@ abbrev prodToProdTopI {a₁ a₂ : TopCat.of (ULift I)} {b₁ b₂ : X} (p₁ : 
     (p₂ : fromTop b₁ ⟶ fromTop b₂) :=
   (prodToProdTop (TopCat.of <| ULift I) X).map (X := (a₁, b₁)) (Y := (a₂, b₂)) (p₁, p₂)
 set_option linter.uppercaseLean3 false in
-#align continuous_map.homotopy.prod_to_prod_Top_I ContinuousMap.Homotopy.prodToProdTopI
+#align continuous_map.homotopy.prod_to_prod_Top_I Function.Homotopy.prodToProdTopI
 
 /-- The diagonal path `d` of a homotopy `H` on a path `p` -/
 def diagonalPath : fromTop (H (0, x₀)) ⟶ fromTop (H (1, x₁)) :=
   (πₘ H.uliftMap).map (prodToProdTopI uhpath01 p)
-#align continuous_map.homotopy.diagonal_path ContinuousMap.Homotopy.diagonalPath
+#align continuous_map.homotopy.diagonal_path Function.Homotopy.diagonalPath
 
 /-- The diagonal path, but starting from `f x₀` and going to `g x₁` -/
 def diagonalPath' : fromTop (f x₀) ⟶ fromTop (g x₁) :=
   hcast (H.apply_zero x₀).symm ≫ H.diagonalPath p ≫ hcast (H.apply_one x₁)
-#align continuous_map.homotopy.diagonal_path' ContinuousMap.Homotopy.diagonalPath'
+#align continuous_map.homotopy.diagonal_path' Function.Homotopy.diagonalPath'
 
 /-- Proof that `f(p) = H(0 ⟶ 0, p)`, with the appropriate casts -/
 theorem apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
@@ -174,7 +174,7 @@ theorem apply_zero_path : (πₘ f).map p = hcast (H.apply_zero x₀).symm ≫
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
-#align continuous_map.homotopy.apply_zero_path ContinuousMap.Homotopy.apply_zero_path
+#align continuous_map.homotopy.apply_zero_path Function.Homotopy.apply_zero_path
 
 /-- Proof that `g(p) = H(1 ⟶ 1, p)`, with the appropriate casts -/
 theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
@@ -184,7 +184,7 @@ theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
     apply @eq_path_of_eq_image _ _ _ _ H.uliftMap _ _ _ _ _ ((Path.refl (ULift.up _)).prod p')
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [Path.prod_coe]; simp_rw [ulift_apply]; simp
-#align continuous_map.homotopy.apply_one_path ContinuousMap.Homotopy.apply_one_path
+#align continuous_map.homotopy.apply_one_path Function.Homotopy.apply_one_path
 
 /-- Proof that `H.evalAt x = H(0 ⟶ 1, x ⟶ x)`, with the appropriate casts -/
 theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
@@ -194,7 +194,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
   simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
     Path.Homotopic.map_lift]
   apply Path.Homotopic.hpath_hext; intro; rfl
-#align continuous_map.homotopy.eval_at_eq ContinuousMap.Homotopy.evalAt_eq
+#align continuous_map.homotopy.eval_at_eq Function.Homotopy.evalAt_eq
 
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
 theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
@@ -207,9 +207,9 @@ theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath'
     slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
     slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
-#align continuous_map.homotopy.eq_diag_path ContinuousMap.Homotopy.eq_diag_path
+#align continuous_map.homotopy.eq_diag_path Function.Homotopy.eq_diag_path
 
-end ContinuousMap.Homotopy
+end Function.Homotopy
 
 namespace FundamentalGroupoidFunctor
 
@@ -219,7 +219,7 @@ open scoped FundamentalGroupoid
 
 attribute [local instance] Path.Homotopic.setoid
 
-variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
+variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : Function.Homotopy f g)
 
 /-- Given a homotopy H : f ∼ g, we have an associated natural isomorphism between the induced
 functors `f` and `g` -/

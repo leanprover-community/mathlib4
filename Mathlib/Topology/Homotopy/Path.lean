@@ -362,7 +362,7 @@ theorem Function.homotopic_const_iff [Nonempty Y] :
   refine ⟨fun ⟨H⟩ ↦ ⟨⟨(H.toContinuousMap.comp .prodSwap).curry default, ?_, ?_⟩⟩,
     fun ⟨p⟩ ↦ ⟨p.toHomotopyConst⟩⟩ <;> simp
 
-namespace ContinuousMap.Homotopy
+namespace Function.Homotopy
 
 /-- Given a homotopy `H : f ∼ g`, get the path traced by the point `x` as it moves from
 `f x` to `g x`.
@@ -372,6 +372,6 @@ def evalAt {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f 
   toFun t := H (t, x)
   source' := H.apply_zero x
   target' := H.apply_one x
-#align continuous_map.homotopy.eval_at ContinuousMap.Homotopy.evalAt
+#align continuous_map.homotopy.eval_at Function.Homotopy.evalAt
 
-end ContinuousMap.Homotopy
+end Function.Homotopy
