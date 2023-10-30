@@ -10,6 +10,9 @@ import Mathlib.Data.List.AList
 # A variant of Chris Hughes' solution for the if normalization challenge.
 
 In this variant we eschew the use of `aesop`, and instead write out the proofs.
+
+(In order to avoid duplicated names with `Result.lean`,
+we put primes on the declarations in the file.)
 -/
 
 set_option autoImplicit true
@@ -19,19 +22,19 @@ namespace IfExpr
 attribute [local simp] eval normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint max_add_add_right max_mul_mul_left Nat.lt_add_one_iff le_add_of_le_right
 
-theorem eval_ite_ite :
+theorem eval_ite_ite' :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all
 
 /-- Custom size function for if-expressions, used for proving termination. -/
-@[simp] def normSize : IfExpr → ℕ
+@[simp] def normSize' : IfExpr → ℕ
   | lit _ => 0
   | var _ => 1
-  | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
+  | .ite i t e => 2 * normSize' i + max (normSize' t) (normSize' e) + 1
 
 /-- Normalizes the expression at the same time as assigning all variables in
 `l` to the literal booleans given by `l` -/
-def normalize (l : AList (fun _ : ℕ => Bool)) :
+def normalize' (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
         (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) (fun b => b)))
         ∧ e'.normalized
@@ -42,19 +45,19 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     | none => ⟨var v, by simp_all⟩
     | some b => ⟨lit b, by simp_all⟩
   | .ite (lit true) t e =>
-    have ⟨t', ht'⟩ := normalize l t
+    have ⟨t', ht'⟩ := normalize' l t
     ⟨t', by simp_all⟩
   | .ite (lit false) t e =>
-    have ⟨e', he'⟩ := normalize l e
+    have ⟨e', he'⟩ := normalize' l e
     ⟨e', by simp_all⟩
   | .ite (.ite a b c) d e =>
-    have ⟨t', ht₁, ht₂⟩ := normalize l (.ite a (.ite b d e) (.ite c d e))
-    ⟨t', fun f => by rw [ht₁, eval_ite_ite], ht₂⟩
+    have ⟨t', ht₁, ht₂⟩ := normalize' l (.ite a (.ite b d e) (.ite c d e))
+    ⟨t', fun f => by rw [ht₁, eval_ite_ite'], ht₂⟩
   | .ite (var v) t e =>
     match h : l.lookup v with
     | none =>
-      have ⟨t', ht₁, ht₂, ht₃⟩ := normalize (l.insert v true) t
-      have ⟨e', he₁, he₂, he₃⟩ := normalize (l.insert v false) e
+      have ⟨t', ht₁, ht₂, ht₃⟩ := normalize' (l.insert v true) t
+      have ⟨e', he₁, he₂, he₃⟩ := normalize' (l.insert v false) e
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · simp only [eval, apply_ite, ite_eq_iff']
@@ -113,10 +116,10 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
                 Bool.not_eq_true, List.mem_cons, List.mem_append, false_or]
               cases b <;> simp_all⟩
     | some b =>
-      have ⟨e', he'⟩ := normalize l (.ite (lit b) t e)
+      have ⟨e', he'⟩ := normalize' l (.ite (lit b) t e)
       ⟨e', by simp_all⟩
-  termination_by normalize e => e.normSize
+  termination_by normalize' e => e.normSize'
 
 example : IfNormalization :=
-  ⟨fun e => (normalize ∅ e).1,
-   fun e => ⟨(normalize ∅ e).2.2.1, by simp [(normalize ∅ e).2.1]⟩⟩
+  ⟨fun e => (normalize' ∅ e).1,
+   fun e => ⟨(normalize' ∅ e).2.2.1, by simp [(normalize' ∅ e).2.1]⟩⟩
