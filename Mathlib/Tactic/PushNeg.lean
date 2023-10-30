@@ -36,7 +36,6 @@ theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
 theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
 theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 
-variable {γ : Type v}
 theorem not_nonempty_eq (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
   have A : ∀ (x : γ), ¬(x ∈ (∅ : Set γ)) := fun x ↦ id
   simp only [Set.Nonempty, not_exists, eq_iff_iff]
