@@ -567,11 +567,9 @@ set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_set.Indep_comap_mem ProbabilityTheory.iIndepSet.iIndep_comap_mem
 
 theorem iIndepSets_singleton_iff {s : ι → Set Ω} :
-    iIndepSets (fun i ↦ {s i}) μ ↔ ∀ t, μ (⋂ i ∈ t, s i) = ∏ i in t, μ (s i) :=
-  (iIndepSets_iff _ _).trans $ forall_congr' fun t ↦ ⟨fun h ↦ h fun _ _ ↦ mem_singleton _,
-    fun h f hf ↦ by
-      refine' Eq.trans _ (h.trans $ Finset.prod_congr rfl fun i hi ↦ congr_arg _ $ (hf i hi).symm)
-      rw [iInter₂_congr hf]⟩
+    iIndepSets (fun i ↦ {s i}) μ ↔ ∀ t, μ (⋂ i ∈ t, s i) = ∏ i in t, μ (s i) := by
+  simp_rw [iIndepSets, kernel.iIndepSets_singleton_iff, ae_dirac_eq, Filter.eventually_pure,
+    kernel.const_apply]
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_sets_singleton_iff ProbabilityTheory.iIndepSets_singleton_iff
 

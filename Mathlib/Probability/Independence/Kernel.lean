@@ -228,6 +228,15 @@ theorem IndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
   rcases h with ⟨n, hn, h⟩
   exact h t1 t2 (Set.biInter_subset_of_mem hn ht1) ht2
 
+theorem iIndepSets_singleton_iff {s : ι → Set Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} :
+    iIndepSets (fun i ↦ {s i}) κ μ ↔
+      ∀ S : Finset ι, ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, s i) = ∏ i in S, κ a (s i) := by
+  refine ⟨fun h S ↦ h S (fun i _ ↦ rfl), fun h S f hf ↦ ?_⟩
+  filter_upwards [h S] with a ha
+  have : ∀ i ∈ S, κ a (f i) = κ a (s i) := fun i hi ↦ by rw [hf i hi]
+  rwa [Finset.prod_congr rfl this, Set.iInter₂_congr hf]
+
 theorem indepSets_singleton_iff {s t : Set Ω} {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} :
     IndepSets {s} {t} κ μ ↔ ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t :=
