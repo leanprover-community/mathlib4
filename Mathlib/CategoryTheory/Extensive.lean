@@ -470,8 +470,6 @@ theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExten
     rcases i with ⟨_|_⟩ <;> dsimp <;> infer_instance
   refine (FinitaryExtensive.vanKampen _
     (isColimitOfPreserves F (coprodIsCoprod X Y))).of_mapCocone F
-
-  -- ⟨fun c hc => (FinitaryExtensive.vanKampen _ (isColimitOfPreserves F hc)).of_mapCocone F⟩
 #align category_theory.finitary_extensive_of_preserves_and_reflects CategoryTheory.finitaryExtensive_of_preserves_and_reflects
 
 theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [FinitaryExtensive D]
