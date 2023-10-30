@@ -363,11 +363,11 @@ theorem hasComp_iff [IsDomain R] {f g : R⟦X⟧} :
 /-
 ## Some lemmas allowing us to calculate compositions.
 -/
-lemma coeff_comp {f g n} (h : f.hasComp g (R := R)) :
+lemma coeff_comp {f g n} (h : f.hasComp g) :
     coeff R n (f ∘ᶠ g) = ∑ᶠ d : ℕ, coeff R d f * coeff R n (g ^ d) := by
   rw [comp, if_pos h, coeff_mk]
 
-lemma comp_eq_zero {f g} (h : ¬f.hasComp g (R := R)) : f ∘ᶠ g  = 0 := by
+lemma comp_eq_zero {f g : R⟦X⟧} (h : ¬f.hasComp g) : f ∘ᶠ g  = 0 := by
   rw [comp, if_neg h]
 
 lemma coeff_comp_eq_coeff_aeval_trunc {f g n} (h : f.hasComp g) :
@@ -399,7 +399,7 @@ private lemma coeff_comp_eq_coeff_aeval_of_le {f g d n} {h : f.hasComp g (R := R
   apply (h d).choose_spec
   exact hn
 
-private lemma coeff_comp_eq_coeff_aeval_of {f g n N} (h : f.hasComp g (R := R))
+private lemma coeff_comp_eq_coeff_aeval_of {f g : R⟦X⟧} {n N} (h : f.hasComp g)
     (hN : ∀ m, N ≤ m → coeff R m f * coeff R n (g^m) = 0) :
     coeff R n (f ∘ᶠ g) = coeff R n (aeval g (trunc N f)) := by
   by_cases h' : N ≤ (h n).choose
@@ -595,7 +595,6 @@ private lemma coeff_mul_comp_stable {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : 
   rw [←Polynomial.coe_mul]
   exact coe_hasComp
 
-
 theorem mul_comp {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : g.hasComp h) :
     (f * g) ∘ᶠ h = f ∘ᶠ h * g ∘ᶠ h := by
   ext d
@@ -615,7 +614,6 @@ theorem mul_comp {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : g.hasComp h) :
   apply le_max_right
   apply le_of_max_le_left
   apply le_max_right
-
 
 theorem add_comp {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : g.hasComp h) :
     (f + g) ∘ᶠ h = f ∘ᶠ h + g ∘ᶠ h := by
@@ -643,11 +641,11 @@ theorem add_comp {f g h : R⟦X⟧} (hf : f.hasComp h) (hg : g.hasComp h) :
 The map `f ↦ f ∘ᶠ g` as a ring homomorphism.
 -/
 noncomputable def compRinghom (g : R⟦X⟧) : hasCompRing g →+* R⟦X⟧ where
-  toFun := λ f ↦ f ∘ᶠ g
-  map_zero' := zero_comp
-  map_one'  := one_comp
-  map_add'  := λ f₁ f₂ ↦ add_comp f₁.prop f₂.prop
-  map_mul'  := λ f₁ f₂ ↦ mul_comp f₁.prop f₂.prop
+  toFun f        := f ∘ᶠ g
+  map_zero'      := zero_comp
+  map_one'       := one_comp
+  map_add' f₁ f₂ := add_comp f₁.prop f₂.prop
+  map_mul' f₁ f₂ := mul_comp f₁.prop f₂.prop
 
 lemma compRinghom_def {g : R⟦X⟧} (f : hasCompRing g) : compRinghom g f = f ∘ᶠ g := rfl
 
