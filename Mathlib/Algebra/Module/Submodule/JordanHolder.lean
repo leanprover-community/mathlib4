@@ -266,9 +266,11 @@ lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
   · simp only [Fin.mk_zero]
     rw [show s 0 = _ from s0, eq_comm, eq_bot_iff]
     rintro - ⟨y, hy, rfl⟩
-    simpa [SetLike.mem_coe, show (s.interList N).get (Fin.cast (s.interList_length N).symm 0) =
+    rw [SetLike.mem_coe, show (s.interList N).get (Fin.cast (s.interList_length N).symm 0) =
       Submodule.comap N.subtype (N ⊓ s.head) from s.interList_head_eq N, s0, inf_bot_eq,
-      Submodule.comap_bot, LinearMap.mem_ker] using hy
+      Submodule.comap_bot, LinearMap.mem_ker] at hy
+
+    exact hy
 
   change i + 1 < _ at hi
   have ih' := ih ((lt_add_one _).trans hi) -- s i = N ⊓ s i
