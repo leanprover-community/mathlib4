@@ -5,6 +5,7 @@ Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+import Mathlib.Probability.Independence.Basic
 
 #align_import probability.density from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -135,6 +136,17 @@ theorem lintegral_eq_measure_univ {X : Ω → E} [HasPDF X ℙ μ] :
   rw [← set_lintegral_univ, ← map_eq_set_lintegral_pdf X ℙ μ MeasurableSet.univ,
     Measure.map_apply (HasPDF.measurable X ℙ μ) MeasurableSet.univ, Set.preimage_univ]
 #align measure_theory.pdf.lintegral_eq_measure_univ MeasureTheory.pdf.lintegral_eq_measure_univ
+
+theorem unique [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] (f : E → ℝ≥0∞)
+    (hmf : AEMeasurable f μ) : ℙ.map X = μ.withDensity f ↔ pdf X ℙ μ =ᵐ[μ] f := by
+  rw [map_eq_withDensity_pdf X ℙ μ]
+  apply AEMeasurable.withDensity_eq_iff (measurable_pdf X ℙ μ).aemeasurable hmf
+  rw [lintegral_eq_measure_univ]
+  exact (measure_lt_top _ _).ne
+
+theorem unique' [SigmaFinite μ] {X : Ω → E} [HasPDF X ℙ μ] (f : E → ℝ≥0∞) (hmf : Measurable f) :
+    ℙ.map X = μ.withDensity f ↔ pdf X ℙ μ =ᵐ[μ] f :=
+  map_eq_withDensity_pdf X ℙ μ ▸ withDensity_eq_iff_of_sigmaFinite (measurable_pdf X ℙ μ) hmf
 
 nonrec theorem ae_lt_top [IsFiniteMeasure ℙ] {μ : Measure E} {X : Ω → E} :
     ∀ᵐ x ∂μ, pdf X ℙ μ x < ∞ := by
@@ -410,6 +422,45 @@ theorem integral_eq (hnt : volume s ≠ ∞) (huX : IsUniform X s ℙ) :
 end IsUniform
 
 end
+
+section TwoVariables
+
+open ProbabilityTheory
+
+variable {Ω E F : Type*} [MeasurableSpace Ω] [MeasurableSpace E] [MeasurableSpace F]
+variable {X : Ω → E} {Y : Ω → F} {ℙ : Measure Ω} {μ : Measure E} {ν : Measure F}
+variable [HasPDF (fun ω ↦ (X ω, Y ω)) ℙ (μ.prod ν)]
+
+/-- Random variables are independent iff their joint density is a product of marginal densities. -/
+theorem indepFun_iff_pdf_prod_mk_eq_pdf_mul_pdf
+    [IsFiniteMeasure ℙ] [SigmaFinite μ] [SigmaFinite ν] [HasPDF (fun ω ↦ (X ω, Y ω)) ℙ (μ.prod ν)] :
+    IndepFun X Y ℙ ↔
+      pdf (fun ω ↦ (X ω, Y ω)) ℙ (μ.prod ν) =ᵐ[μ.prod ν] fun z ↦ pdf X ℙ μ z.1 * pdf Y ℙ ν z.2 := by
+  haveI : HasPDF X ℙ μ := quasiMeasurePreserving_hasPDF' (μ := μ.prod ν) (X := fun ω ↦ (X ω, Y ω))
+    quasiMeasurePreserving_fst
+  haveI : HasPDF Y ℙ ν := quasiMeasurePreserving_hasPDF' (μ := μ.prod ν) (X := fun ω ↦ (X ω, Y ω))
+    quasiMeasurePreserving_snd
+  rw [indepFun_iff_measure_inter_preimage_eq_mul, ← unique']
+  have h₀ {s : Set E} {t : Set F} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+      (ℙ.map X) s * (ℙ.map Y) t =
+        ((μ.prod ν).withDensity fun z ↦ pdf X ℙ μ z.1 * pdf Y ℙ ν z.2) (s ×ˢ t)
+      ∧ ℙ (X ⁻¹' s) * ℙ (Y ⁻¹' t) = (ℙ.map X) s * (ℙ.map Y) t
+      ∧ ℙ (X ⁻¹' s ∩ Y ⁻¹' t) = ℙ.map (fun ω ↦ (X ω, Y ω)) (s ×ˢ t) :=
+    have hst : MeasurableSet (s ×ˢ t) := .prod hs ht
+    ⟨by rw [withDensity_apply _ hst, ← prod_restrict,
+        lintegral_prod_mul (measurable_pdf _ _ _).aemeasurable (measurable_pdf _ _ _).aemeasurable,
+        map_eq_set_lintegral_pdf X ℙ μ hs, map_eq_set_lintegral_pdf Y ℙ ν ht],
+      by rw [map_apply (HasPDF.measurable X ℙ μ) hs, map_apply (HasPDF.measurable Y ℙ ν) ht],
+      by rw [map_apply (HasPDF.measurable _ ℙ (μ.prod ν)) hst]; rfl⟩
+  · exact ⟨fun h ↦ by
+      trans (ℙ.map X).prod (ℙ.map Y)
+      · exact (prod_eq fun s t hs ht ↦ by rw [← (h₀ hs ht).2.1, ← (h₀ hs ht).2.2, h s t hs ht]).symm
+      · exact prod_eq fun s t hs ht ↦ (h₀ hs ht).1.symm,
+    fun h s t hs ht ↦ by rw [(h₀ hs ht).2.1, (h₀ hs ht).1, (h₀ hs ht).2.2, h]⟩
+  · exact ((measurable_pdf X ℙ μ).comp measurable_fst).mul
+      ((measurable_pdf Y ℙ ν).comp measurable_snd)
+
+end TwoVariables
 
 end pdf
 

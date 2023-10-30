@@ -629,4 +629,25 @@ theorem AEMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} 
 
 end Lintegral
 
+section WithDensity
+
+variable {m : MeasurableSpace α} {μ : Measure α}
+
+theorem withDensity_eq_iff_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞} (hf : Measurable f)
+    (hg : Measurable g) : μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
+  ⟨fun hfg ↦ by
+    refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite hf hg fun s hs _ ↦ _
+    rw [← withDensity_apply f hs, ← withDensity_apply g hs, ← hfg], withDensity_congr_ae⟩
+
+theorem AEMeasurable.withDensity_eq_iff {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) (hfi : (∫⁻ x, f x ∂μ) ≠ ∞) :
+    μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
+  ⟨fun hfg ↦ by
+    refine' AEMeasurable.ae_eq_of_forall_set_lintegral_eq hf hg hfi _ fun s hs _ ↦ _
+    · rwa [← set_lintegral_univ, ← withDensity_apply g MeasurableSet.univ, ← hfg,
+        withDensity_apply f MeasurableSet.univ, set_lintegral_univ]
+    · rw [← withDensity_apply f hs, ← withDensity_apply g hs, ← hfg], withDensity_congr_ae⟩
+
+end WithDensity
+
 end MeasureTheory
