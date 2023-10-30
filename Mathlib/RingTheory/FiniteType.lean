@@ -728,12 +728,14 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
     Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
       (finite_def.mp inferInstance) this
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  intro (m : AEval' f) hm
+  intro m hm
+  let m' := Module.AEval.of R M f m
+  have hm' : m'=m := rfl
   rw [Ideal.mem_span_singleton'] at hFa
   obtain ⟨G, hG⟩ := hFa
-  suffices (F - 1) • m = 0 by
+  suffices (F - 1) • m' = 0 by
     have Fmzero := hFb m (by simp)
-    rwa [← sub_add_cancel F 1, add_smul, one_smul, this, zero_add] at Fmzero
+    rwa [← sub_add_cancel F 1, add_smul, one_smul, ←hm', this, zero_add] at Fmzero
   rw [← hG, mul_smul, AEval'.X_smul, hm, smul_zero]
 #align module.finite.injective_of_surjective_endomorphism Module.Finite.injective_of_surjective_endomorphism
 

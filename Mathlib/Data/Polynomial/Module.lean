@@ -35,34 +35,42 @@ where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
 def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 
+instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
+    [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
+    AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
+
 variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMonoid M] [Module A M]
   [Module R M] [IsScalarTower R A M]
 
 namespace AEval
 
-instance : AddCommMonoid <| AEval R M a                 := inferInstanceAs (AddCommMonoid M)
-instance : Module R <| AEval R M a                      := inferInstanceAs (Module R M)
-instance : Module A <| AEval R M a                      := inferInstanceAs (Module A M)
-instance : IsScalarTower R A <| AEval R M a             := inferInstanceAs (IsScalarTower R A M)
-instance [AddCommGroup M] : AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
-instance [Finite R M] : Finite R <| AEval R M a         := inferInstanceAs (Finite R M)
-instance : Module R[X] <| AEval R M a                   := compHom M (aeval a).toRingHom
-
-lemma smul_def (f : R[X]) (m : AEval R M a) : f • m = aeval a f • m := rfl
-
-lemma X_smul (m : AEval R M a) : (X : R[X]) • m = a • m := by simp [smul_def]
-
-instance : IsScalarTower R R[X] <| AEval R M a          := ⟨by simp [smul_def]⟩
-instance [Finite R M] : Finite R[X] <| AEval R M a      := Finite.of_restrictScalars_finite R _ _
+instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
+instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
+instance instFiniteOrig [Finite R M] : Finite R <| AEval R M a := inferInstanceAs (Finite R M)
+instance instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
 
 variable (R M)
-
 /--
 The canonical linear equivalence between `M` and `Module.AEval R M a` as an `A`-module,
 where `a : A`.
 -/
-def of : M ≃ₗ[A] AEval R M a :=
+def of : M ≃ₗ[R] AEval R M a :=
   LinearEquiv.refl _ _
+
+variable {R M}
+
+lemma smul_def (f : R[X]) (m : M) : f • (of R M a m) = aeval a f • m := by
+  rfl
+
+lemma X_smul (m : M) : (X : R[X]) • (of R M a m) = a • m := by simp [smul_def]
+
+instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
+  smul_assoc r f m := by
+    change aeval a (r • f) • (of R M a).invFun m = r • (aeval a f) • (of R M a).invFun m
+    simp
+
+instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
+  Finite.of_restrictScalars_finite R _ _
 
 end AEval
 
@@ -78,7 +86,8 @@ I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
 -/
 abbrev AEval' := AEval R M φ
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
-lemma AEval'.X_smul (m : AEval' φ) : (X : R[X]) • m = φ m := by rw [AEval.X_smul]; rfl
+lemma AEval'.X_smul (m : M) : (X : R[X]) • (AEval.of R M φ m) = φ m := by
+  rw [AEval.X_smul]; rfl
 instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
 
 end Module
@@ -171,7 +180,7 @@ noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
 
 lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by
-  rw [Module.AEval.smul_def, LinearMap.smul_def]
+  rfl
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) :=
