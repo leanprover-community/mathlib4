@@ -24,3 +24,5 @@ def CompHaus.toCondensed : CompHaus.{u} ⥤ CondensedSet.{u} := toCondensed_aux 
 def Profinite.toCondensed : Profinite.{u} ⥤ CondensedSet.{u} := sorry
 
 def Stonean.toCondensed : Stonean.{u} ⥤ CondensedSet.{u} := sorry
+
+def Condensed.forget : CondensedAb.{u} ⥤ CondensedSet.{u} := by sorry
