@@ -1095,9 +1095,19 @@ variable {n : Type w} [Fintype n] [DecidableEq n]
 
 variable [CommRing R] [AddCommMonoid M] [Module R M]
 
+variable (M : Matrix n n R)
+
+#check Matrix.toBilin' M
+
+-- This is the function x -> Mx
+-- We want (x,y) -> x^T M y
+#check Matrix.toLin'.toFun M
+
+#check ( Matrix.toLin'.toFun M : ((n → R) →ₗ[R] (n → R) →ₗ[R] R))
+
 /-- `M.toQuadraticForm'` is the map `fun x ↦ col x * M * row x` as a quadratic form. -/
-def Matrix.toQuadraticForm' (M : Matrix n n R) : QuadraticForm R (n → R) :=
-  M.toBilin'.toQuadraticForm
+def Matrix.toQuadraticForm' (M : Matrix n n R) : QuadraticForm R (n → R) R :=
+  (Matrix.toLin'.toFun M).toQuadraticForm
 #align matrix.to_quadratic_form' Matrix.toQuadraticForm'
 
 variable [Invertible (2 : R)]
