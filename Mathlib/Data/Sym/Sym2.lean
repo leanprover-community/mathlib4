@@ -60,7 +60,7 @@ namespace Sym2
 
 /-- This is the relation capturing the notion of pairs equivalent up to permutations.
 -/
-@[aesop (rule_sets [Sym2]) [safe [constructors, cases], norm unfold]]
+@[aesop (rule_sets [Sym2]) [safe [constructors, cases], norm]]
 inductive Rel (α : Type u) : α × α → α × α → Prop
   | refl (x y : α) : Rel _ (x, y) (x, y)
   | swap (x y : α) : Rel _ (x, y) (y, x)
