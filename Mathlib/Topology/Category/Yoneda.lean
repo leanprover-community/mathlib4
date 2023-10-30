@@ -19,3 +19,14 @@ def coyoneda : Cᵒᵖ ⥤ Type (max w w') where
   map f g := ContinuousMap.comp g (F.map f.unop)
 
 end ContinuousMap
+
+variable [Preregular C] (X : Type v) [TopologicalSpace X] (G : C ⥤ TopCat.{u})
+    (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], QuotientMap (F.map π))
+
+open ContinuousMap
+
+theorem EqualizerConditionCoyoneda : EqualizerCondition (coyoneda G X) := by
+  intro Z B π _ _
+  refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
+  · sorry
+  · sorry
