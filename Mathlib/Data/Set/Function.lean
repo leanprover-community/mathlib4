@@ -208,6 +208,8 @@ theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 #align set.eq_on_refl Set.eqOn_refl
 
+lemma eqOn_image : EqOn g₁ g₂ (f '' s) ↔ EqOn (g₁ ∘ f) (g₂ ∘ f) s := ball_image_iff
+
 -- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
 -- the `trans` tactic could not use it.
 -- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
