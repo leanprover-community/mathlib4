@@ -105,8 +105,8 @@ abbrev AEval'.of : M ≃ₗ[R] AEval' φ := AEval.of R M φ
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
 lemma AEval'.X_smul_of (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (φ m) :=
   AEval.X_smul_of _ _
-lemma AEval'.of_symm_X_smul (m : AEval' φ) : (AEval'.of φ).symm ((X : R[X]) • m) = φ ((AEval'.of φ).symm m) :=
-  AEval.of_symm_X_smul _ _
+lemma AEval'.of_symm_X_smul (m : AEval' φ) :
+    (AEval'.of φ).symm ((X : R[X]) • m) = φ ((AEval'.of φ).symm m) := AEval.of_symm_X_smul _ _
 instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
 
 end Module
