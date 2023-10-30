@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Functor.Currying
 #align_import category_theory.limits.fubini from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
 /-!
-# A Fubini theorem for categorical limits
+# A Fubini theorem for categorical (co)limits
 
 We prove that $lim_{J × K} G = lim_J (lim_K G(j, -))$ for a functor `G : J × K ⥤ C`,
 when all the appropriate limits exist.
@@ -31,6 +31,8 @@ and give simp lemmas characterising it.
 For convenience, we also provide
 `limitIsoLimitCurryCompLim G : limit G ≅ limit ((curry.obj G) ⋙ lim)`
 in terms of the uncurried functor.
+
+All statements have their counterpart for colimits.
 -/
 
 
