@@ -440,7 +440,23 @@ theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
   ⟨χ.liftNormal E, χ.restrict_liftNormal E⟩
 #align alg_equiv.restrict_normal_hom_surjective AlgEquiv.restrictNormalHom_surjective
 
-variable (F) (K₁)
+open AdjoinRoot in
+theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
+    minpoly F x = minpoly F y ↔ x ∈ MulAction.orbit (E ≃ₐ[F] E) y := by
+  refine ⟨fun he ↦ ?_, fun ⟨f, he⟩ ↦ he ▸ minpoly.algEquiv_eq f y⟩
+  let Fx := AdjoinRoot (minpoly F x)
+  have hx : aeval x (minpoly F x) = 0 := minpoly.aeval F x
+  have hy : aeval y (minpoly F x) = 0 := he ▸ minpoly.aeval F y
+  let Ax : Algebra Fx E := (lift (algebraMap F E) x hx).toAlgebra
+  have Tx : IsScalarTower F Fx E := IsScalarTower.of_ring_hom (liftHom _ x hx)
+  let Ay : Algebra Fx E := (lift (algebraMap F E) y hy).toAlgebra
+  have Ty : IsScalarTower F Fx E := IsScalarTower.of_ring_hom (liftHom _ y hy)
+  haveI : Fact (Irreducible <| minpoly F x) := ⟨minpoly.irreducible <| h.isIntegral x⟩
+  let f : E ≃ₐ[F] E := @AlgEquiv.liftNormal F Fx Fx _ _ _ _ _ AlgEquiv.refl E _ _ Ay Ax Ty Tx _
+  refine ⟨f, (congr_arg f (lift_root hy).symm).trans <| Eq.trans ?_ (lift_root hx)⟩
+  exact @AlgEquiv.liftNormal_commutes F Fx Fx _ _ _ _ _ _ E _ _ Ay Ax Ty Tx _ (root _)
+
+variable (F K₁)
 
 theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃ₐ[F] K₁)]
     [h2 : IsSolvable (E ≃ₐ[K₁] E)] : IsSolvable (E ≃ₐ[F] E) := by
