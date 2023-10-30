@@ -110,7 +110,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
     refine set_integral_congr measurableSet_Ioi (fun _ hx => ?_)
     rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
-  obtain hf | hf := em (IntegrableOn (fun x => f |x|) (Ioi 0))
+  by_cases hf : IntegrableOn (fun x => f |x|) (Ioi 0)
   · have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
       rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
       let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
