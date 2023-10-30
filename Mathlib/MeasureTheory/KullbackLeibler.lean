@@ -92,6 +92,12 @@ lemma exp_LLR (μ ν : Measure α) [SigmaFinite μ] :
   rw [ENNReal.toReal_pos_iff]
   exact ⟨lt_of_le_of_ne (zero_le _) (Ne.symm h_zero), hx⟩
 
+lemma exp_LLR_of_ac (μ ν : Measure α) [SigmaFinite μ] [Measure.HaveLebesgueDecomposition μ ν]
+    (hμν : μ ≪ ν) :
+    (fun x ↦ exp (LLR μ ν x)) =ᵐ[μ] fun x ↦ (μ.rnDeriv ν x).toReal := by
+  filter_upwards [hμν.ae_le (exp_LLR μ ν), Measure.rnDeriv_pos hμν] with x hx_eq hx_pos
+  rw [hx_eq, if_neg hx_pos.ne']
+
 @[measurability]
 lemma measurable_LLR (μ ν : Measure α) : Measurable (LLR μ ν) :=
   (measurable_toReal_rnDeriv μ ν).log
@@ -291,7 +297,8 @@ lemma todo_aux {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeas
   _ = ∫ x, f x ∂μ - logIntegralExp ν f := by abel
 
 -- TODO name
-lemma some_le {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+lemma integral_sub_logIntegralExp_le {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ)
     (f : α → ℝ) (hfμ : Integrable f μ) (hf : Integrable (fun x ↦ exp (f x)) ν) :
     ∫ x, f x ∂μ - logIntegralExp ν f ≤ ∫ x, LLR μ ν x ∂μ := by
@@ -312,7 +319,7 @@ lemma todo' {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure
   · simp only [hfμ, ciSup_unique]
     by_cases hf : Integrable (fun x ↦ exp (f x)) ν
     · simp only [hf, ciSup_unique]
-      exact some_le hμν h_int f hfμ hf
+      exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
     · simp [hf, ciSup_empty]
       exact integral_LLR_nonneg hμν h_int
   · simp only [hfμ, ciSup_empty]
@@ -331,7 +338,7 @@ lemma aux_bddAbove {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbability
   · simp only [hfμ, ciSup_unique]
     by_cases hf : Integrable (fun x ↦ exp (f x)) ν
     · simp only [hf, ciSup_unique]
-      exact some_le hμν h_int f hfμ hf
+      exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
     · simp only [hf, ciSup_empty]
       exact integral_LLR_nonneg hμν h_int
   · simp only [hfμ, ciSup_empty]
@@ -380,97 +387,199 @@ lemma Integrable.piecewise {α E : Type*} {mα : MeasurableSpace α} {μ : Measu
     rw [set_lintegral_congr_fun hs.compl h]
     exact hg.2
 
+noncomputable
+def LLRAddConst (μ ν : Measure α) (u : ℝ) (x : α) : ℝ := log ((μ.rnDeriv ν x).toReal + u)
+
+@[simp]
+lemma llrAddConst_zero (μ ν : Measure α) : LLRAddConst μ ν 0 = LLR μ ν := by
+  ext x
+  rw [LLRAddConst, LLR, add_zero]
+
+lemma stronglyMeasurable_llrAddConst {μ ν : Measure α} {u : ℝ} :
+    StronglyMeasurable (LLRAddConst μ ν u) :=
+  ((measurable_toReal_rnDeriv _ _).add measurable_const).log.stronglyMeasurable
+
+lemma log_le_llrAddConst {μ ν : Measure α} {u : ℝ} {x : α} (hu : 0 < u) :
+    log u ≤ LLRAddConst μ ν u x := by
+  rw [LLRAddConst, Real.log_le_log hu]
+  · simp
+  · positivity
+
+lemma llrAddConst_le_log_max {μ ν : Measure α} {u : ℝ} {x : α} (hu : 0 < u) :
+    LLRAddConst μ ν u x ≤ log (max (μ.rnDeriv ν x).toReal u) + log 2 := by
+  rw [← log_mul _ two_ne_zero]
+  swap; · refine ne_of_gt ?_; positivity
+  rw [LLRAddConst, Real.log_le_log]
+  · rw [mul_two]
+    exact add_le_add (le_max_left _ _) (le_max_right _ _)
+  · positivity
+  · positivity
+
+lemma abs_llrAddConst_le {μ ν : Measure α} {u : ℝ} {x : α} (hu : 0 < u) :
+    |LLRAddConst μ ν u x| ≤ |log (μ.rnDeriv ν x).toReal| + |log u| + log 2 := by
+  cases' le_or_lt 0 (LLRAddConst μ ν u x) with h h
+  · rw [abs_of_nonneg h]
+    refine (llrAddConst_le_log_max hu).trans (add_le_add ?_ le_rfl)
+    cases le_or_lt (μ.rnDeriv ν x).toReal u with
+    | inl h' =>
+      rw [max_eq_right h', add_comm]
+      exact le_add_of_le_of_nonneg (le_abs_self _) (abs_nonneg _)
+    | inr h' =>
+      rw [max_eq_left h'.le]
+      exact le_add_of_le_of_nonneg (le_abs_self _) (abs_nonneg _)
+  · rw [abs_of_nonpos h.le]
+    calc - LLRAddConst μ ν u x
+      ≤ - log u := neg_le_neg (log_le_llrAddConst hu)
+    _ ≤ |log u| := neg_le_abs_self _
+    _ ≤ |log u| + |log (ENNReal.toReal (Measure.rnDeriv μ ν x))| + log 2 := by
+          rw [add_assoc]
+          exact le_add_of_le_of_nonneg le_rfl (by positivity)
+    _ = |log (ENNReal.toReal (Measure.rnDeriv μ ν x))| + |log u| + log 2 := by abel
+
+lemma integrable_llrAddConst {μ ν : Measure α} [IsFiniteMeasure μ] {u : ℝ} (hu : 0 ≤ u)
+    (h_int : Integrable (LLR μ ν) μ) :
+    Integrable (LLRAddConst μ ν u) μ := by
+  cases' eq_or_lt_of_le hu with hu hu
+  · simp [hu.symm, h_int]
+  have h_le : ∀ x, ‖LLRAddConst μ ν u x‖ ≤ ‖|log (μ.rnDeriv ν x).toReal| + |log u| + log 2‖ := by
+    simp only [norm_eq_abs]
+    intro x
+    have h : 0 ≤ |log (ENNReal.toReal (Measure.rnDeriv μ ν x))| + |log u| + log 2 := by positivity
+    rw [abs_of_nonneg h]
+    exact abs_llrAddConst_le hu
+  refine Integrable.mono ?_ stronglyMeasurable_llrAddConst.aestronglyMeasurable (ae_of_all _ h_le)
+  exact (h_int.abs.add (integrable_const _)).add (integrable_const _)
+
+lemma exp_llrAddConst {μ ν : Measure α} {u : ℝ} (hu : 0 < u) (x : α) :
+    exp (LLRAddConst μ ν u x) = (μ.rnDeriv ν x).toReal + u := by
+  rw [LLRAddConst, exp_log]
+  positivity
+
+lemma integrable_exp_llrAddConst {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν] {u : ℝ}
+    (hu : 0 < u) :
+    Integrable (fun x ↦ exp (LLRAddConst μ ν u x)) ν := by
+  simp_rw [exp_llrAddConst hu]
+  exact Measure.integrable_toReal_rnDeriv.add (integrable_const _)
+
+lemma logIntegralExp_llrAddConst {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) {u : ℝ} (hu : 0 < u) :
+    logIntegralExp ν (LLRAddConst μ ν u) = log (1 + u) := by
+  simp_rw [logIntegralExp, exp_llrAddConst hu]
+  rw [integral_add Measure.integrable_toReal_rnDeriv (integrable_const _), integral_const]
+  simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
+  congr
+  rw [Measure.integral_toReal_rnDeriv hμν]
+  simp only [measure_univ, ENNReal.one_toReal]
+
+lemma integral_llr_le_integral_llrAddConst {μ ν : Measure α} [IsFiniteMeasure μ]
+    [Measure.HaveLebesgueDecomposition μ ν] {u : ℝ}
+    (hu : 0 ≤ u) (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
+    ∫ x, LLR μ ν x ∂μ ≤ ∫ x, LLRAddConst μ ν u x ∂μ := by
+  refine integral_mono_ae h_int (integrable_llrAddConst hu h_int) ?_
+  filter_upwards [Measure.rnDeriv_pos hμν, hμν.ae_le (Measure.rnDeriv_lt_top μ ν)]
+    with x hx_pos hx_lt_top
+  rw [LLR, LLRAddConst, Real.log_le_log]
+  · exact le_add_of_le_of_nonneg le_rfl hu
+  · exact ENNReal.toReal_pos hx_pos.ne' hx_lt_top.ne
+  · exact add_pos_of_pos_of_nonneg (ENNReal.toReal_pos hx_pos.ne' hx_lt_top.ne) hu
+
+lemma integral_llr_le_ciInf_integral_llrAddConst {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
+    ∫ x, LLR μ ν x ∂μ ≤ ⨅ u : {v // (0 : ℝ) < v}, ∫ x, LLRAddConst μ ν u x ∂μ :=
+  le_ciInf (fun u ↦ integral_llr_le_integral_llrAddConst u.2.le hμν h_int)
+
+section Right -- todo: move to that section of Algebra/Bounds.lean
+
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
+  [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
+
+@[to_additive]
+theorem ciInf_mul (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
+  (OrderIso.mulRight a).map_ciInf hf
+
+@[to_additive]
+theorem ciInf_div (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
+  simp only [div_eq_mul_inv, ciInf_mul hf]
+
+end Right
+
+section Left
+
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
+  [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
+
+@[to_additive]
+theorem mul_ciInf (hf : BddBelow (Set.range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a * f i :=
+  (OrderIso.mulLeft a).map_ciInf hf
+
+end Left
+
+lemma integral_llrAddConst_le_ciSup_add {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) {u : ℝ} (hu : 0 < u) :
+    ∫ x, LLRAddConst μ ν u x ∂μ ≤ (⨆ u' : {v // (0 : ℝ) < v},
+      ∫ x, LLRAddConst μ ν u' x ∂μ - logIntegralExp ν (LLRAddConst μ ν u')) + log (1 + u) := by
+    calc ∫ x, LLRAddConst μ ν u x ∂μ
+      = ∫ x, LLRAddConst μ ν u x ∂μ - logIntegralExp ν (LLRAddConst μ ν u)
+        + logIntegralExp ν (LLRAddConst μ ν u) := by abel
+    _ ≤ (⨆ u : {v // (0 : ℝ) < v},
+          ∫ x, LLRAddConst μ ν u x ∂μ - logIntegralExp ν (LLRAddConst μ ν u))
+        + logIntegralExp ν (LLRAddConst μ ν u) := by
+          refine add_le_add ?_ le_rfl
+          refine le_ciSup_of_le ?_ ⟨u, hu⟩ le_rfl
+          refine ⟨∫ x, LLR μ ν x ∂μ, fun y ⟨u, huy⟩ ↦ ?_⟩
+          rw [← huy]
+          exact integral_sub_logIntegralExp_le hμν h_int (LLRAddConst μ ν _)
+            (integrable_llrAddConst u.2.le h_int) (integrable_exp_llrAddConst u.2)
+    _ = (⨆ u : {v // (0 : ℝ) < v},
+          ∫ x, LLRAddConst μ ν u x ∂μ - logIntegralExp ν (LLRAddConst μ ν u))
+        + log (1 + u) := by rw [logIntegralExp_llrAddConst hμν hu]
+
+lemma integral_llr_le_ciSup_integral_llrAddConst_sub {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
+    ∫ x, LLR μ ν x ∂μ ≤ ⨆ u : {v // (0 : ℝ) < v},
+      ∫ x, LLRAddConst μ ν u x ∂μ - logIntegralExp ν (LLRAddConst μ ν u) := by
+    have h_bdd : BddBelow (Set.range fun u : {v // (0 : ℝ) < v} ↦ log (1 + u)) := by
+      refine ⟨0, fun y ⟨u, huy⟩ ↦ ?_⟩
+      rw [← huy]
+      refine log_nonneg ?_
+      simp [u.2.le]
+    calc ∫ x, LLR μ ν x ∂μ
+      ≤ ⨅ u : {v // (0 : ℝ) < v}, ∫ x, LLRAddConst μ ν u x ∂μ :=
+          integral_llr_le_ciInf_integral_llrAddConst hμν h_int
+    _ ≤ ⨅ u : {v // (0 : ℝ) < v}, (⨆ u' : {v // (0 : ℝ) < v},
+        ∫ x, LLRAddConst μ ν u' x ∂μ - logIntegralExp ν (LLRAddConst μ ν u')) + log (1 + u) := by
+          refine ciInf_mono ?_ ?_
+          · refine ⟨∫ x, LLR μ ν x ∂μ, fun y ⟨u, huy⟩ ↦ ?_⟩
+            rw [← huy]
+            exact integral_llr_le_integral_llrAddConst u.2.le hμν h_int
+          · exact fun u ↦ integral_llrAddConst_le_ciSup_add hμν h_int u.2
+    _ = (⨆ u' : {v // (0 : ℝ) < v},
+          ∫ x, LLRAddConst μ ν u' x ∂μ - logIntegralExp ν (LLRAddConst μ ν u'))
+        + ⨅ u : {v // (0 : ℝ) < v}, log (1 + u) := by
+          rw [← add_ciInf h_bdd]
+    _ = ⨆ u : {v // (0 : ℝ) < v},
+        ∫ x, LLRAddConst μ ν u x ∂μ - logIntegralExp ν (LLRAddConst μ ν u) := by
+          suffices ⨅ (u : {v // (0 : ℝ) < v}), log (1 + u) = 0 by
+            rw [this, add_zero]
+          apply le_antisymm
+          · refine le_of_forall_pos_le_add (fun ε hε ↦ ?_)
+            exact ciInf_le_of_le h_bdd ⟨exp ε - 1, by simp [hε]⟩ (by simp)
+          · refine le_ciInf (fun u ↦ log_nonneg ?_)
+            simp [u.2.le]
+
 lemma todo {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ ν x ∂μ
       ≤ ⨆ (f : α → ℝ) (_ : Integrable f μ) (_ : Integrable (fun x ↦ exp (f x)) ν),
         ∫ x, f x ∂μ - logIntegralExp ν f := by
   classical
-  let LLRu : ℝ → α → ℝ := fun u x ↦ log ((μ.rnDeriv ν x).toReal + u)
-  have hmeas : ∀ u, StronglyMeasurable (LLRu u) :=
-    fun u ↦ ((measurable_toReal_rnDeriv _ _).add measurable_const).log.stronglyMeasurable
-  have hu_int : ∀ u, Integrable (LLRu u) μ := by
-    intro u
-    let s := {x | (μ.rnDeriv ν x).toReal ≤ u}
-    have hs : MeasurableSet s := measurable_toReal_rnDeriv μ ν measurableSet_Iic
-    suffices IntegrableOn (LLRu u) s μ ∧ IntegrableOn (LLRu u) sᶜ μ by
-      simpa using Integrable.piecewise hs this.1 this.2
-    constructor
-    · have hs_le : ∀ x ∈ s, ‖LLRu u x‖ ≤ ‖max (log u) (log (2*u))‖ := by
-        sorry
-      have hs_le' : ∀ᵐ x ∂(μ.restrict s), ‖LLRu u x‖ ≤ ‖max (log u) (log (2*u))‖ := by
-        refine ae_of_all _ (fun x ↦ ?_)
-        sorry
-      exact Integrable.mono (integrable_const _) (hmeas u).aestronglyMeasurable hs_le'
-    · have hs_le : ∀ x ∈ sᶜ, ‖LLRu u x‖ ≤ max ‖log u‖ ‖log (2*(μ.rnDeriv ν x).toReal)‖ := by
-        sorry
-      have hs_le' : ∀ᵐ x ∂(μ.restrict sᶜ),
-          ‖LLRu u x‖ ≤ ‖max (log u) (log (2*(μ.rnDeriv ν x).toReal))‖ := by
-        sorry
-      refine Integrable.mono ?_ (hmeas u).aestronglyMeasurable hs_le'
-      refine (integrable_const _).sup ?_
-      sorry
-  have h_exp_log : ∀ (u) (hu : 0 < u) (x),
-      exp (log ((μ.rnDeriv ν x).toReal + u)) = (μ.rnDeriv ν x).toReal + u := by
-    intro u hu x
-    rw [exp_log]
-    positivity
-  have hu_exp_int : ∀ u, 0 < u → Integrable (fun x ↦ exp (LLRu u x)) ν := by
-    intro u hu
-    simp_rw [h_exp_log u hu]
-    exact Measure.integrable_toReal_rnDeriv.add (integrable_const _)
-  have hu_le : ∫ x, LLR μ ν x ∂μ ≤ ⨅ (u : {v // (0 : ℝ) < v}), ∫ x, LLRu u x ∂μ := by
-    refine le_ciInf (fun u ↦ ?_)
-    suffices LLR μ ν ≤ᵐ[μ] LLRu u by exact integral_mono_ae h_int (hu_int _) this
-    filter_upwards [Measure.rnDeriv_pos hμν, hμν.ae_le (Measure.rnDeriv_lt_top μ ν)]
-      with a ha_pos ha_lt_top
-    simp only [LLR]
-    rw [← exp_le_exp, exp_log, exp_log]
-    · rw [le_add_iff_nonneg_right]
-      exact u.2.le
-    · have hu_pos := u.2
-      positivity
-    · rw [ENNReal.toReal_pos_iff]
-      simp [ha_pos, ha_lt_top]
-  refine hu_le.trans ?_
-  suffices ∀ u, 0 < u → ∫ x, LLRu u x ∂μ
-      ≤ (⨆ (f : α → ℝ) (_ : Integrable f μ) (_ : Integrable (fun x ↦ exp (f x)) ν),
-        ∫ x, f x ∂μ - logIntegralExp ν f + log (1 + u)) by
-    sorry
-  intro u hu
-  suffices ∫ x, LLRu u x ∂μ = ∫ x, LLRu u x ∂μ - logIntegralExp ν (LLRu u) + log (1 + u) by
-    rw [this]
-    refine le_ciSup_of_le ?_ (LLRu u) ?_
-    · refine ⟨∫ x, LLR μ ν x ∂μ + log (1 + u), ?_⟩
-      rw [mem_upperBounds]
-      intro x
-      simp only [Set.mem_range, ge_iff_le, le_max_iff, forall_exists_index]
-      rintro f rfl
-      by_cases hfμ : Integrable f μ
-      · simp only [hfμ, ciSup_unique]
-        by_cases hf : Integrable (fun x ↦ exp (f x)) ν
-        · simp only [hf, ciSup_unique]
-          refine add_le_add ?_ le_rfl
-          exact some_le hμν h_int f hfμ hf
-        · simp only [hf, ciSup_empty]
-          refine add_nonneg (integral_LLR_nonneg hμν h_int) ?_
-          refine log_nonneg ?_
-          simp only [le_add_iff_nonneg_right, hu.le]
-      · simp only [hfμ, ciSup_empty]
-        refine add_nonneg (integral_LLR_nonneg hμν h_int) ?_
-        refine log_nonneg ?_
-        simp only [le_add_iff_nonneg_right, hu.le]
-    · simp only [hu_int u, hu_exp_int u hu, ciSup_unique]
-      exact le_rfl
-  suffices logIntegralExp ν (LLRu u) = log (1 + u) by
-    rw [this]
-    abel
-  simp_rw [logIntegralExp, h_exp_log u hu]
-  rw [integral_add Measure.integrable_toReal_rnDeriv (integrable_const _), integral_const]
-  simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
-  congr
-  rw [Measure.integral_toReal_rnDeriv hμν]
-  simp only [measure_univ, ENNReal.one_toReal]
+  refine (integral_llr_le_ciSup_integral_llrAddConst_sub hμν h_int).trans ?_
+  refine ciSup_le (fun u ↦ ?_)
+  refine le_ciSup_of_le (aux_bddAbove hμν h_int) (LLRAddConst μ ν u) ?_
+  simp [integrable_llrAddConst u.2.le h_int, integrable_exp_llrAddConst u.2]
 
 -- todo: differs from the usual statement due to the `Integrable f μ` assumption
 theorem DV' {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
