@@ -51,9 +51,13 @@ variable {C D : Type _} [Category C] [Category D]
 /-- A left fraction from `X : C` to `Y : C` for `W : MorphismProperty C` consists of the
 datum of an object `Y' : C` and maps `f : X ⟶ Y'` and `s : Y ⟶ Y'` such that `W s`. -/
 structure LeftFraction (W : MorphismProperty C) (X Y : C) where
+  /-- the auxiliary object of a fraction -/
   {Y' : C}
+  /-- the numerator of a left fraction -/
   f : X ⟶ Y'
+  /-- the denominator of a left fraction -/
   s : Y ⟶ Y'
+  /-- the condition that the denominator belongs to the given morphism property -/
   hs : W s
 
 namespace LeftFraction
@@ -79,7 +83,7 @@ noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInverted
   have := hL _ φ.hs
   L.map φ.f ≫ inv (L.map φ.s)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma map_comp_map_s (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     φ.map L hL ≫ L.map φ.s = L.map φ.f := by
   have := hL _ φ.hs
