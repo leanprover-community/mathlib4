@@ -188,8 +188,8 @@ theorem withDensity_eq_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h 
 
 @[simp]
 theorem withDensity_eq_zero_iff {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
-   μ.withDensity f = 0 ↔ f =ᵐ[μ] 0 :=
-⟨withDensity_eq_zero hf, fun h => withDensity_zero (μ := μ) ▸ withDensity_congr_ae h⟩
+    μ.withDensity f = 0 ↔ f =ᵐ[μ] 0 :=
+  ⟨withDensity_eq_zero hf, fun h => withDensity_zero (μ := μ) ▸ withDensity_congr_ae h⟩
 
 theorem withDensity_apply_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hf : Measurable f) :
     μ.withDensity f s = 0 ↔ μ ({ x | f x ≠ 0 } ∩ s) = 0 := by
