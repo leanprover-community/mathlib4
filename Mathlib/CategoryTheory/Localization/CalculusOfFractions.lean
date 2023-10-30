@@ -66,10 +66,10 @@ noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInverted
   have := hL _ φ.hs
   L.map φ.f ≫ inv (L.map φ.s)
 
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+@[reassoc (attr := simp)]
 lemma map_comp_map_s (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     φ.map L hL ≫ L.map φ.s = L.map φ.f := by
-  have := hL _ φ.hs
+  letI := hL _ φ.hs
   simp [map]
 
 variable (W)
@@ -78,16 +78,16 @@ lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsI
     (ofHom W f).map L hL = L.map f := by
   simp [map]
 
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+@[reassoc (attr := simp)]
 lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
-  have := hL _ hs
+  letI := hL _ hs
   simp [map]
 
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+@[reassoc (attr := simp)]
 lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
-  have := hL _ hs
+  letI := hL _ hs
   simp [map]
 
 variable {W}
@@ -135,10 +135,10 @@ noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInverte
   have := hL _ φ.hs
   inv (L.map φ.s) ≫ L.map φ.f
 
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+@[reassoc (attr := simp)]
 lemma map_s_comp_map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map φ.s ≫ φ.map L hL = L.map φ.f := by
-  have := hL _ φ.hs
+  letI := hL _ φ.hs
   simp [map]
 
 variable (W)
@@ -148,16 +148,16 @@ lemma map_ofHom (f : X ⟶ Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) [W.ContainsI
     (ofHom W f).map L hL = L.map f := by
   simp [map]
 
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+@[reassoc (attr := simp)]
 lemma map_ofInv_hom_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     (ofInv s hs).map L hL ≫ L.map s = 𝟙 _ := by
-  have := hL _ hs
+  letI := hL _ hs
   simp [map]
 
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+@[reassoc (attr := simp)]
 lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map s ≫ (ofInv s hs).map L hL = 𝟙 _ := by
-  have := hL _ hs
+  letI := hL _ hs
   simp [map]
 
 variable {W}
