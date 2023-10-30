@@ -182,7 +182,7 @@ lemma iIndep.meas_biInter (hμ : iIndep m μ) (hs : ∀ i, i ∈ S → Measurabl
 lemma iIndep.meas_iInter [Fintype ι] (hμ : iIndep m μ) (hs : ∀ i, MeasurableSet[m i] (s i)) :
     μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [←hμ.meas_biInter fun _ _ ↦ hs _]
 
-lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
+lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
   simp only [Indep, IndepSets, kernel.Indep]
 
