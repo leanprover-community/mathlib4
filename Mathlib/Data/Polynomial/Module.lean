@@ -92,8 +92,7 @@ $f • m = f(a) • m$.
 
 More precisely, `Module.AEval' φ` has elements `Module.AEval'.of φ m` for `m : M`,
 and the action of `f` is `f • (of φ m) = of φ ((aeval φ f) • m)`.
--/
-/-
+
 `Module.AEval'` is defined as a special case of `Module.AEval` in which the `R`-algebra is
 `M →ₗ[R] M`. Lemmas involving `Module.AEval` may be applied to `Module.AEval'`.
 -/
