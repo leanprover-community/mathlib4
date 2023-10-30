@@ -359,17 +359,17 @@ theorem grundyValue_eq_mex_right :
 xor. -/
 @[simp]
 theorem grundyValue_nim_add_nim (n m : ℕ) :
-    grundyValue (nim.{u} n + nim.{u} m) = Nat.xor n m := by
+    grundyValue (nim.{u} n + nim.{u} m) = n ^^^ m := by
   -- We do strong induction on both variables.
   induction' n using Nat.strong_induction_on with n hn generalizing m
   induction' m using Nat.strong_induction_on with m hm
   rw [grundyValue_eq_mex_left]
   refine (Ordinal.mex_le_of_ne.{u, u} fun i => ?_).antisymm
     (Ordinal.le_mex_of_forall fun ou hu => ?_)
-  -- The Grundy value `Nat.xor n m` can't be reached by left moves.
+  -- The Grundy value `n ^^^ m` can't be reached by left moves.
   · apply leftMoves_add_cases i <;>
-      · -- A left move leaves us with a Grundy value of `Nat.xor k m` for `k < n`, or
-        -- `Nat.xor n k` for `k < m`.
+      · -- A left move leaves us with a Grundy value of `k ^^^ m` for `k < n`, or
+        -- `n ^^^ k` for `k < m`.
         refine' fun a => leftMovesNimRecOn a fun ok hk => _
         obtain ⟨k, rfl⟩ := Ordinal.lt_omega.1 (hk.trans (Ordinal.nat_lt_omega _))
         simp only [add_moveLeft_inl, add_moveLeft_inr, moveLeft_nim', Equiv.symm_apply_apply]
@@ -384,26 +384,26 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
         | rwa [Nat.xor_left_inj] at h
         | rwa [Nat.xor_right_inj] at h
   -- Every other smaller Grundy value can be reached by left moves.
-  · -- If `u < Nat.xor m n`, then either `Nat.xor u n < m` or `Nat.xor u m < n`.
+  · -- If `u < m ^^^ n`, then either `u ^^^ n < m` or `u ^^^ m < n`.
     obtain ⟨u, rfl⟩ := Ordinal.lt_omega.1 (hu.trans (Ordinal.nat_lt_omega _))
     replace hu := Ordinal.nat_cast_lt.1 hu
     cases' Nat.lt_xor_cases hu with h h
-    -- In the first case, reducing the `m` pile to `Nat.xor u n` gives the desired Grundy value.
+    -- In the first case, reducing the `m` pile to `u ^^^ n` gives the desired Grundy value.
     · refine' ⟨toLeftMovesAdd (Sum.inl <| toLeftMovesNim ⟨_, Ordinal.nat_cast_lt.2 h⟩), _⟩
       simp [Nat.lxor_cancel_right, hn _ h]
-    -- In the second case, reducing the `n` pile to `Nat.xor u m` gives the desired Grundy value.
+    -- In the second case, reducing the `n` pile to `u ^^^ m` gives the desired Grundy value.
     · refine' ⟨toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, Ordinal.nat_cast_lt.2 h⟩), _⟩
-      have : n.xor (u.xor n) = u; rw [Nat.xor_comm u, Nat.xor_cancel_left]
+      have : n ^^^ (u ^^^ n) = u; rw [Nat.xor_comm u, Nat.xor_cancel_left]
       simpa [hm _ h] using this
 #align pgame.grundy_value_nim_add_nim SetTheory.PGame.grundyValue_nim_add_nim
 
-theorem nim_add_nim_equiv {n m : ℕ} : nim n + nim m ≈ nim (Nat.xor n m) := by
+theorem nim_add_nim_equiv {n m : ℕ} : nim n + nim m ≈ nim (n ^^^ m) := by
   rw [← grundyValue_eq_iff_equiv_nim, grundyValue_nim_add_nim]
 #align pgame.nim_add_nim_equiv SetTheory.PGame.nim_add_nim_equiv
 
 theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ} (hG : grundyValue G = n)
-    (hH : grundyValue H = m) : grundyValue (G + H) = Nat.xor n m := by
-  rw [← nim_grundyValue (Nat.xor n m), grundyValue_eq_iff_equiv]
+    (hH : grundyValue H = m) : grundyValue (G + H) = n ^^^ m := by
+  rw [← nim_grundyValue (n ^^^ m), grundyValue_eq_iff_equiv]
   refine' Equiv.trans _ nim_add_nim_equiv
   convert add_congr (equiv_nim_grundyValue G) (equiv_nim_grundyValue H) <;> simp only [hG, hH]
 #align pgame.grundy_value_add SetTheory.PGame.grundyValue_add

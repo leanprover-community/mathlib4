@@ -135,7 +135,8 @@ theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by
   induction' ts with a ts ih; · rfl
-  simp [permutations'Aux, permutationsAux2_snd_cons, ih]
+  simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
+    cons.injEq, true_and]
   simp (config := { singlePass := true }) only [← permutationsAux2_append]
   simp [map_permutationsAux2]
 #align list.permutations'_aux_eq_permutations_aux2 List.permutations'Aux_eq_permutationsAux2
