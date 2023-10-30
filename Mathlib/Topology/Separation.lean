@@ -1012,6 +1012,42 @@ theorem tendsto_nhds_unique_of_frequently_eq [T2Space α] {f g : β → α} {l :
   not_not.1 fun hne => this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
 #align tendsto_nhds_unique_of_frequently_eq tendsto_nhds_unique_of_frequently_eq
 
+/-- If a function `f` is
+
+- injective on a compact set `s`;
+- continuous at every point of this set;
+- injective on a neighborhood of each point of this set,
+
+then it is injective on a neighborhood of this set. -/
+theorem Set.InjOn.exists_mem_nhdsSet {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [T2Space Y] {f : X → Y} {s : Set X} (inj : InjOn f s) (sc : IsCompact s)
+    (fc : ∀ x ∈ s, ContinuousAt f x) (loc : ∀ x ∈ s, ∃ u ∈ 𝓝 x, InjOn f u) :
+    ∃ t ∈ 𝓝ˢ s, InjOn f t := by
+  have : ∀ x ∈ s ×ˢ s, ∀ᶠ y in 𝓝 x, f y.1 = f y.2 → y.1 = y.2 := fun (x, y) ⟨hx, hy⟩ ↦ by
+    rcases eq_or_ne x y with rfl | hne
+    · rcases loc x hx with ⟨u, hu, hf⟩
+      exact Filter.mem_of_superset (prod_mem_nhds hu hu) <| forall_prod_set.2 hf
+    · suffices ∀ᶠ z in 𝓝 (x, y), f z.1 ≠ f z.2 from this.mono fun _ hne h ↦ absurd h hne
+      refine (fc x hx).prod_map' (fc y hy) <| isClosed_diagonal.isOpen_compl.mem_nhds ?_
+      exact inj.ne hx hy hne
+  rw [← eventually_nhdsSet_iff_forall, sc.nhdsSet_prod_eq sc] at this
+  exact eventually_prod_self_iff.1 this
+
+/-- If a function `f` is
+
+- injective on a compact set `s`;
+- continuous at every point of this set;
+- injective on a neighborhood of each point of this set,
+
+then it is injective on an open neighborhood of this set. -/
+theorem Set.InjOn.exists_isOpen_superset {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [T2Space Y] {f : X → Y} {s : Set X} (inj : InjOn f s) (sc : IsCompact s)
+    (fc : ∀ x ∈ s, ContinuousAt f x) (loc : ∀ x ∈ s, ∃ u ∈ 𝓝 x, InjOn f u) :
+    ∃ t, IsOpen t ∧ s ⊆ t ∧ InjOn f t :=
+  let ⟨_t, hst, ht⟩ := inj.exists_mem_nhdsSet sc fc loc
+  let ⟨u, huo, hsu, hut⟩ := mem_nhdsSet_iff_exists.1 hst
+  ⟨u, huo, hsu, ht.mono hut⟩
+
 /-- A T₂.₅ space, also known as a Urysohn space, is a topological space
   where for every pair `x ≠ y`, there are two open sets, with the intersection of closures
   empty, one containing `x` and the other `y` . -/
