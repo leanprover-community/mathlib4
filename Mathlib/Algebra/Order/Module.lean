@@ -73,7 +73,7 @@ theorem lt_of_smul_lt_smul_of_nonpos (h : c • a < c • b) (hc : c ≤ 0) : b 
 lemma smul_le_smul_of_nonneg_right (h : c ≤ d) (hb : 0 ≤ b) : c • b ≤ d • b := by
   rw [←sub_nonneg, ←sub_smul]; exact smul_nonneg (sub_nonneg.2 h) hb
 
-lemma smul_le_smul (hab : a ≤ b) (hcd : c ≤ d) (ha : 0 ≤ a) (hd : 0 ≤ d) : c • a ≤ d • b :=
+lemma smul_le_smul (hcd : c ≤ d) (hab : a ≤ b) (ha : 0 ≤ a) (hd : 0 ≤ d) : c • a ≤ d • b :=
   (smul_le_smul_of_nonneg_right hcd ha).trans $ smul_le_smul_of_nonneg_left hab hd
 
 theorem smul_lt_smul_iff_of_neg (hc : c < 0) : c • a < c • b ↔ b < a := by

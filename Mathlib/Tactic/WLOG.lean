@@ -127,7 +127,6 @@ By default, the entire context is reverted. -/
 syntax (name := wlog) "wlog " binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
-open private Lean.Elab.Term.expandBinderIdent from Lean.Elab.Binders in
 elab_rules : tactic
 | `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
   withMainContext do
