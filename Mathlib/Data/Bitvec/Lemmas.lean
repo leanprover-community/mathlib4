@@ -80,7 +80,7 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
 #align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
 
 theorem eq_foldr_reverse (v : Nat) :
-  v = v.bits.reverse.foldr bit 0 := by
+    v = v.bits.reverse.foldr bit 0 := by
   simp
   induction v
   simp
