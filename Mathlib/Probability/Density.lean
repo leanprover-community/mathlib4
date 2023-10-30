@@ -441,8 +441,9 @@ theorem indepFun_iff_pdf_prod_eq_pdf_mul_pdf
     quasiMeasurePreserving_fst
   haveI : HasPDF Y ℙ ν := quasiMeasurePreserving_hasPDF' (μ := μ.prod ν) (X := fun ω ↦ (X ω, Y ω))
     quasiMeasurePreserving_snd
-  have h₀ : (ℙ.map X).prod (ℙ.map Y) = (μ.prod ν).withDensity fun z ↦ pdf X ℙ μ z.1 * pdf Y ℙ ν z.2
-    := prod_eq fun s t hs ht ↦ by rw [withDensity_apply _ (hs.prod ht), ← prod_restrict,
+  have h₀ : (ℙ.map X).prod (ℙ.map Y) =
+      (μ.prod ν).withDensity fun z ↦ pdf X ℙ μ z.1 * pdf Y ℙ ν z.2 :=
+    prod_eq fun s t hs ht ↦ by rw [withDensity_apply _ (hs.prod ht), ← prod_restrict,
       lintegral_prod_mul (measurable_pdf X ℙ μ).aemeasurable (measurable_pdf Y ℙ ν).aemeasurable,
       map_eq_set_lintegral_pdf X ℙ μ hs, map_eq_set_lintegral_pdf Y ℙ ν ht]
   rw [indepFun_iff_map_prod_eq_prod_map_map (HasPDF.measurable X ℙ μ) (HasPDF.measurable Y ℙ ν),
