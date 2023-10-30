@@ -52,7 +52,7 @@ open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open Filter MeasureTheory Topology
 
-variable {α : Type _} [MetricSpace α]
+variable {α : Type*} [MetricSpace α]
 
 /-- On a metric space `X` with a measure `μ`, consider for each `x : X` a family of measurable sets
 with nonempty interiors, called `setsAt x`. This family is a Vitali family if it satisfies the
@@ -258,18 +258,18 @@ theorem eventually_filterAt_subset_closedBall (x : α) {ε : ℝ} (hε : 0 < ε)
   exact ⟨ε, hε, fun a _ ha' => ha'⟩
 #align vitali_family.eventually_filter_at_subset_closed_ball VitaliFamily.eventually_filterAt_subset_closedBall
 
-theorem tendsto_filterAt_iff {ι : Type _} {l : Filter ι} {f : ι → Set α} {x : α} :
+theorem tendsto_filterAt_iff {ι : Type*} {l : Filter ι} {f : ι → Set α} {x : α} :
     Tendsto f l (v.filterAt x) ↔
       (∀ᶠ i in l, f i ∈ v.setsAt x) ∧ ∀ ε > (0 : ℝ), ∀ᶠ i in l, f i ⊆ closedBall x ε := by
   refine' ⟨fun H => ⟨H.eventually <| v.eventually_filterAt_mem_sets x,
     fun ε hε => H.eventually <| v.eventually_filterAt_subset_closedBall x hε⟩,
     fun H s hs => (_ : ∀ᶠ i in l, f i ∈ s)⟩
   obtain ⟨ε, εpos, hε⟩ := v.mem_filterAt_iff.mp hs
-  filter_upwards [H.1, H.2 ε εpos]with i hi hiε using hε _ hi hiε
+  filter_upwards [H.1, H.2 ε εpos] with i hi hiε using hε _ hi hiε
 #align vitali_family.tendsto_filter_at_iff VitaliFamily.tendsto_filterAt_iff
 
 theorem eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, MeasurableSet a := by
-  filter_upwards [v.eventually_filterAt_mem_sets x]with _ ha using v.MeasurableSet' _ _ ha
+  filter_upwards [v.eventually_filterAt_mem_sets x] with _ ha using v.MeasurableSet' _ _ ha
 #align vitali_family.eventually_filter_at_measurable_set VitaliFamily.eventually_filterAt_measurableSet
 
 theorem frequently_filterAt_iff {x : α} {P : Set α → Prop} :

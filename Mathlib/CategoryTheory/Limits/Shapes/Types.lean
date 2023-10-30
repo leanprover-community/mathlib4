@@ -64,8 +64,8 @@ theorem pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : 
 with specialized universes. -/
 theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
-    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
-  by simp
+    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x := by
+  simp
 #align category_theory.limits.types.pi_lift_π_apply' CategoryTheory.Limits.Types.pi_lift_π_apply'
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
@@ -79,8 +79,8 @@ theorem pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
-   by simp
+    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) := by
+  simp
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
 
 /-- The category of types has `PUnit` as a terminal object. -/
@@ -106,6 +106,30 @@ noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
 noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 #align category_theory.limits.types.is_terminal_punit CategoryTheory.Limits.Types.isTerminalPunit
+
+-- porting note: the following three instances have been added to ease
+-- the automation in a definition in `AlgebraicTopology.SimplicialSet`
+noncomputable instance : Inhabited (⊤_ (Type u)) :=
+  ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
+
+instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
+  congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
+    (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
+
+noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
+
+/-- A type is terminal if and only if it contains exactly one element. -/
+noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
+  equivOfSubsingletonOfSubsingleton
+    (fun h => ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
+    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.equivOfUnique _ _)))
+
+/-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
+noncomputable def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
+  calc
+    IsTerminal X ≃ Unique X := isTerminalEquivUnique _
+    _ ≃ (X ≃ PUnit.{u + 1}) := uniqueEquivEquivUnique _ _
+    _ ≃ (X ≅ PUnit) := equivEquivIso
 
 /-- The category of types has `PEmpty` as an initial object. -/
 def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
@@ -402,7 +426,7 @@ theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}]
 -- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
 @[simp]
 theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
-   (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
+    (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
   congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]
@@ -473,8 +497,8 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
   refine' ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, _⟩
   intro x' hx'
-  suffices : (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1
-  rw [← this]
+  suffices (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1 by
+    rw [← this]
   apply Fork.IsLimit.hom_ext t
   funext ⟨⟩
   apply hx'.trans (congr_fun (Fork.IsLimit.lift' t _ hy').2 ⟨⟩).symm

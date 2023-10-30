@@ -2,6 +2,7 @@ import Mathlib.Tactic.ExtractGoal
 import Mathlib.Data.Nat.Basic
 
 set_option pp.unicode.fun true
+set_option autoImplicit true
 
 -- the example in the documentation for the tactic.
 /-- info: theorem extracted_1 (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := sorry -/

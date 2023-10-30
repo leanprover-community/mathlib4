@@ -27,7 +27,7 @@ open BigOperators
 
 namespace Function
 
-variable {α β A B M N P R S G M₀ G₀ : Type _} {ι : Sort _}
+variable {α β A B M N P R S G M₀ G₀ : Type*} {ι : Sort*}
 
 section One
 
@@ -238,7 +238,7 @@ theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
 @[to_additive support_prod_mk']
 theorem mulSupport_prod_mk' (f : α → M × N) :
     mulSupport f = (mulSupport fun x => (f x).1) ∪ mulSupport fun x => (f x).2 := by
-  simp only [← mulSupport_prod_mk, Prod.mk.eta]
+  simp only [← mulSupport_prod_mk]
 #align function.mul_support_prod_mk' Function.mulSupport_prod_mk'
 #align function.support_prod_mk' Function.support_prod_mk'
 
@@ -448,7 +448,7 @@ namespace Set
 
 open Function
 
-variable {α β M : Type _} [One M] {f : α → M}
+variable {α β M : Type*} [One M] {f : α → M}
 
 @[to_additive]
 theorem image_inter_mulSupport_eq {s : Set β} {g : β → α} :
@@ -461,7 +461,7 @@ end Set
 
 namespace Pi
 
-variable {A : Type _} {B : Type _} [DecidableEq A] [One B] {a : A} {b : B}
+variable {A : Type*} {B : Type*} [DecidableEq A] [One B] {a : A} {b : B}
 
 open Function
 

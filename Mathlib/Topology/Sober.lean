@@ -26,7 +26,7 @@ stated via `[QuasiSober α] [T0Space α]`.
 
 open Set
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 section genericPoint
 
@@ -117,7 +117,7 @@ section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
 @[mk_iff quasiSober_iff]
-class QuasiSober (α : Type _) [TopologicalSpace α] : Prop where
+class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 #align quasi_sober QuasiSober
 

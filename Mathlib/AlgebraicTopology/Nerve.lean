@@ -33,7 +33,7 @@ def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   map f x := SimplexCategory.toCat.map f.unop ⋙ x
 #align category_theory.nerve CategoryTheory.nerve
 
-instance {C : Type _} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
+instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
   (inferInstance : Category (SimplexCategory.toCat.obj Δ.unop ⥤ C))
 
 /-- The nerve of a category, as a functor `Cat ⥤ SSet` -/

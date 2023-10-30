@@ -31,7 +31,7 @@ def ENat : Type :=
 deriving Zero,
   -- AddCommMonoidWithOne,
   CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
+  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
@@ -118,19 +118,19 @@ theorem toNat_top : toNat ⊤ = 0 :=
 --Porting note: new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
-def recTopCoe {C : ℕ∞ → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
-| none => h₁
-| Option.some a => h₂ a
+def recTopCoe {C : ℕ∞ → Sort*} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
+  | none => h₁
+  | Option.some a => h₂ a
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_top {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) :
+theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
     @recTopCoe C d f ⊤ = d :=
   rfl
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort _} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
+theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
     @recTopCoe C d f ↑x = f x :=
   rfl
 
@@ -158,7 +158,7 @@ theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
   ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
-alias coe_toNat_eq_self ↔ _ coe_toNat
+alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 #align enat.coe_to_nat ENat.coe_toNat
 
 theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=

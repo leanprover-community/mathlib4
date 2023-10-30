@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
-import Mathlib.Logic.Nonempty
 import Mathlib.Lean.Meta.DiscrTree
 
 /-!
@@ -41,6 +40,8 @@ while for constants defined in the same file
 This kind of cache can be used e.g.
 to populate discrimination trees.
 -/
+
+set_option autoImplicit true
 
 open Lean Meta
 
@@ -179,12 +180,3 @@ def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α
   -- `DiscrTree.getMatch` returns results in batches, with more specific lemmas coming later.
   -- Hence we reverse this list, so we try out more specific lemmas earlier.
   return (← locals.getMatch e).reverse ++ (← imports.getMatch e).reverse
-
-/--
-A structure that holds the cached discrimination tree,
-and possibly a pointer to a memory region, if we unpickled the tree from disk.
--/
-structure CachedData (α : Type) where
-  pointer? : Option CompactedRegion
-  cache : DiscrTreeCache α
-deriving Nonempty

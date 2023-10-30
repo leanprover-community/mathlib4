@@ -23,7 +23,7 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 -/
 
 
-variable {M : Type _} {S T : Set M}
+variable {M : Type*} {S T : Set M}
 
 namespace Set
 

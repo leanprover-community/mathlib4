@@ -16,7 +16,7 @@ preorder is an infinite type.
 -/
 
 
-variable {α : Type _} [Preorder α]
+variable {α : Type*} [Preorder α]
 
 /-- A nonempty preorder with no maximal element is infinite. This is not an instance to avoid
 a cycle with `Infinite α → Nontrivial α → Nonempty α`. -/

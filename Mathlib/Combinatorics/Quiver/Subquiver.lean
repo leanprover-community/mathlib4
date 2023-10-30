@@ -78,7 +78,7 @@ def wideSubquiverEquivSetTotal {V} [Quiver V] :
 #align quiver.wide_subquiver_equiv_set_total Quiver.wideSubquiverEquivSetTotal
 
 /-- An `L`-labelling of a quiver assigns to every arrow an element of `L`. -/
-def Labelling (V : Type u) [Quiver V] (L : Sort _) :=
+def Labelling (V : Type u) [Quiver V] (L : Sort*) :=
   ∀ ⦃a b : V⦄, (a ⟶ b) → L
 #align quiver.labelling Quiver.Labelling
 

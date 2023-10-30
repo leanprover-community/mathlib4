@@ -35,7 +35,7 @@ open Classical BigOperators Topology NNReal
 
 open Finset Filter Metric
 
-variable {ι α E F : Type _} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable {ι α E F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i in s, f i) ↔

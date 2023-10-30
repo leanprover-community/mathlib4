@@ -21,7 +21,7 @@ See also `AddMonoidHom.mulLeft`, `AddMonoidHom.mulRight`, `AddMonoid.End.mulLeft
 
 namespace AddAut
 
-variable {R : Type _} [Semiring R]
+variable {R : Type*} [Semiring R]
 
 /-- Left multiplication by a unit of a semiring as an additive automorphism. -/
 @[simps! (config := { simpRhs := true })]

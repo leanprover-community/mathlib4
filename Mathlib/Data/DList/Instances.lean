@@ -21,7 +21,7 @@ open Function Equiv
 
 namespace Std
 
-variable (α : Type _)
+variable (α : Type*)
 
 /-- The natural equivalence between lists and difference lists, using
 `DList.ofList` and `DList.toList`. -/

@@ -23,7 +23,7 @@ and the actions
 
 which matches the action of `Set.mulActionSet`.
 
-These are all available in the `pointwise` locale.
+These are all available in the `Pointwise` locale.
 
 Additionally, it provides various degrees of monoid structure:
 * `AddSubmonoid.one`
@@ -45,7 +45,7 @@ on `Set`s.
 
 open Set Pointwise
 
-variable {α : Type _} {G : Type _} {M : Type _} {R : Type _} {A : Type _}
+variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
 
 variable [Monoid M] [AddMonoid A]
 
@@ -87,16 +87,16 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
 #align add_submonoid.closure_add_le AddSubmonoid.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
+theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
-#align submonoid.sup_eq_closure Submonoid.sup_eq_closure
-#align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure
+#align submonoid.sup_eq_closure Submonoid.sup_eq_closure_mul
+#align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure_add
 
 @[to_additive]
-theorem pow_smul_mem_closure_smul {N : Type _} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
+theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   refine' @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx _ _ _
   · intro x hx
@@ -197,13 +197,13 @@ theorem inv_top : (⊤ : Submonoid G)⁻¹ = ⊤ :=
 #align add_submonoid.neg_top AddSubmonoid.neg_top
 
 @[to_additive (attr := simp)]
-theorem inv_iInf {ι : Sort _} (S : ι → Submonoid G) : (⨅ i, S i)⁻¹ = ⨅ i, (S i)⁻¹ :=
+theorem inv_iInf {ι : Sort*} (S : ι → Submonoid G) : (⨅ i, S i)⁻¹ = ⨅ i, (S i)⁻¹ :=
   (invOrderIso : Submonoid G ≃o Submonoid G).map_iInf _
 #align submonoid.inv_infi Submonoid.inv_iInf
 #align add_submonoid.neg_infi AddSubmonoid.neg_iInf
 
 @[to_additive (attr := simp)]
-theorem inv_iSup {ι : Sort _} (S : ι → Submonoid G) : (⨆ i, S i)⁻¹ = ⨆ i, (S i)⁻¹ :=
+theorem inv_iSup {ι : Sort*} (S : ι → Submonoid G) : (⨆ i, S i)⁻¹ = ⨆ i, (S i)⁻¹ :=
   (invOrderIso : Submonoid G ≃o Submonoid G).map_iSup _
 #align submonoid.inv_supr Submonoid.inv_iSup
 #align add_submonoid.neg_supr AddSubmonoid.neg_iSup
@@ -338,7 +338,7 @@ theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} : S
 end GroupWithZero
 
 @[to_additive]
-theorem mem_closure_inv {G : Type _} [Group G] (S : Set G) (x : G) :
+theorem mem_closure_inv {G : Type*} [Group G] (S : Set G) (x : G) :
     x ∈ Submonoid.closure S⁻¹ ↔ x⁻¹ ∈ Submonoid.closure S := by rw [closure_inv, mem_inv]
 #align submonoid.mem_closure_inv Submonoid.mem_closure_inv
 #align add_submonoid.mem_closure_neg AddSubmonoid.mem_closure_neg
@@ -609,7 +609,6 @@ variable [NonUnitalNonAssocRing R]
 This is available as an instance in the `Pointwise` locale. -/
 protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) :=
   { AddSubmonoid.involutiveNeg with
-    neg := Neg.neg
     neg_mul := fun x y => by
       refine'
           le_antisymm (mul_le.2 fun m hm n hn => _)
@@ -671,9 +670,7 @@ variable [Semiring R]
 
 /-- Monoid structure on additive submonoids of a semiring. -/
 protected def monoid : Monoid (AddSubmonoid R) :=
-  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with
-    one := 1
-    mul := (· * ·) }
+  { AddSubmonoid.semigroup, AddSubmonoid.mulOneClass with }
 scoped[Pointwise] attribute [instance] AddSubmonoid.monoid
 
 theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)

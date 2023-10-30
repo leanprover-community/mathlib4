@@ -24,7 +24,7 @@ open Function Multiset Sum
 
 namespace Finset
 
-variable {α β : Type _} (s : Finset α) (t : Finset β)
+variable {α β : Type*} (s : Finset α) (t : Finset β)
 
 /-- Disjoint sum of finsets. -/
 def disjSum : Finset (Sum α β) :=

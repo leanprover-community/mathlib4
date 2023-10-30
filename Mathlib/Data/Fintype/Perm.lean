@@ -23,7 +23,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Finset Function List Equiv Equiv.Perm
 

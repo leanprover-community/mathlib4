@@ -26,7 +26,7 @@ open OrderDual (toDual ofDual)
 nonnegative norm `norm : R → 𝕜`, where `𝕜` is a linear ordered field, and the open balls
 `{ x | norm x < ε }`, `ε > 0`, form a basis of neighborhoods of zero, then `R` is a topological
 ring. -/
-theorem TopologicalRing.of_norm {R 𝕜 : Type _} [NonUnitalNonAssocRing R] [LinearOrderedField 𝕜]
+theorem TopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [LinearOrderedField 𝕜]
     [TopologicalSpace R] [TopologicalAddGroup R] (norm : R → 𝕜)
     (norm_nonneg : ∀ x, 0 ≤ norm x) (norm_mul_le : ∀ x y, norm (x * y) ≤ norm x * norm y)
     (nhds_basis : (𝓝 (0 : R)).HasBasis ((0 : 𝕜) < ·) (fun ε ↦ { x | norm x < ε })) :
@@ -48,7 +48,7 @@ theorem TopologicalRing.of_norm {R 𝕜 : Type _} [NonUnitalNonAssocRing R] [Lin
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
       (norm_mul_le x y).trans_eq (mul_comm _ _)
 
-variable {𝕜 α : Type _} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable {𝕜 α : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {l : Filter α} {f g : α → 𝕜}
 
 -- see Note [lower instance priority]
@@ -122,7 +122,7 @@ theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 
   refine' (atTop_basis' 1).tendsto_right_iff.2 fun b hb => _
   have hb' : 0 < b := by positivity
   filter_upwards [Ioc_mem_nhdsWithin_Ioi
-      ⟨le_rfl, inv_pos.2 hb'⟩]with x hx using(le_inv hx.1 hb').1 hx.2
+      ⟨le_rfl, inv_pos.2 hb'⟩] with x hx using(le_inv hx.1 hb').1 hx.2
 #align tendsto_inv_zero_at_top tendsto_inv_zero_atTop
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/

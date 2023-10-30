@@ -28,7 +28,7 @@ open Equiv Finset
 
 namespace Equiv.Perm
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Disjoint
 
@@ -135,7 +135,7 @@ theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disj
 #align equiv.perm.disjoint_prod_perm Equiv.Perm.disjoint_prod_perm
 
 theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ l)
-     (h2 : l.Pairwise Disjoint) : l.Nodup := by
+    (h2 : l.Pairwise Disjoint) : l.Nodup := by
   refine' List.Pairwise.imp_of_mem _ h2
   intro τ σ h_mem _ h_disjoint _
   subst τ
@@ -536,7 +536,7 @@ theorem support_le_prod_of_mem {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwi
 
 section ExtendDomain
 
-variable {β : Type _} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
+variable {β : Type*} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
 
 @[simp]
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :

@@ -132,7 +132,7 @@ end TopCat.Presheaf
 
 namespace TopCat.Opens
 
-variable {X : TopCat} {ι : Type _}
+variable {X : TopCat} {ι : Type*}
 
 theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
     CoverDense (Opens.grothendieckTopology X) B ↔ Opens.IsBasis (Set.range B.obj) := by
@@ -181,6 +181,31 @@ theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.I
   pullback_isSheaf_of_coverPreserving h.compatiblePreserving h.isOpenMap.coverPreserving ⟨_, hF⟩
 #align Top.presheaf.is_sheaf_of_open_embedding TopCat.Presheaf.isSheaf_of_openEmbedding
 
+variable (f)
+
+instance : RepresentablyFlat (Opens.map f) := by
+  constructor
+  intro U
+  refine @IsCofiltered.mk _ _ ?_ ?_
+  · constructor
+    · intro V W
+      exact ⟨⟨⟨PUnit.unit⟩, V.right ⊓ W.right, homOfLE $ le_inf V.hom.le W.hom.le⟩,
+        StructuredArrow.homMk (homOfLE inf_le_left),
+        StructuredArrow.homMk (homOfLE inf_le_right), trivial⟩
+    · exact fun _ _ _ _ ↦ ⟨_, 𝟙 _, by aesop⟩
+  · exact ⟨StructuredArrow.mk $ show U ⟶ (Opens.map f).obj ⊤ from homOfLE le_top⟩
+
+theorem compatiblePreserving_opens_map :
+    CompatiblePreserving (Opens.grothendieckTopology X) (Opens.map f) :=
+compatiblePreservingOfFlat _ _
+
+theorem coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology Y)
+    (Opens.grothendieckTopology X) (Opens.map f) := by
+  constructor
+  intro U S hS x hx
+  obtain ⟨V, i, hi, hxV⟩ := hS (f x) hx
+  exact ⟨_, (Opens.map f).map i, ⟨_, _, 𝟙 _, hi, Subsingleton.elim _ _⟩, hxV⟩
+
 end OpenEmbedding
 
 namespace TopCat.Sheaf
@@ -189,7 +214,7 @@ open TopCat Opposite
 
 variable {C : Type u} [Category.{v} C]
 
-variable {X : TopCat.{w}} {ι : Type _} {B : ι → Opens X}
+variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 
 variable (F : X.Presheaf C) (F' : Sheaf C X) (h : Opens.IsBasis (Set.range B))
 

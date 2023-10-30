@@ -26,7 +26,7 @@ open BigOperators Matrix
 
 namespace Matrix
 
-variable {ι m n p : Type _} {α R S : Type _}
+variable {ι m n p : Type*} {α R S : Type*}
 
 variable [Fintype m] [Fintype n] [Fintype p]
 
@@ -42,6 +42,10 @@ def trace (A : Matrix n n R) : R :=
   ∑ i, diag A i
 #align matrix.trace Matrix.trace
 
+lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
+    trace (diagonal d) = ∑ i, d i := by
+  simp only [trace, diag_apply, diagonal_apply_eq]
+
 variable (n R)
 
 @[simp]
@@ -50,6 +54,9 @@ theorem trace_zero : trace (0 : Matrix n n R) = 0 :=
 #align matrix.trace_zero Matrix.trace_zero
 
 variable {n R}
+
+@[simp]
+lemma trace_eq_zero_of_isEmpty [IsEmpty n] (A : Matrix n n R) : trace A = 0 := by simp [trace]
 
 @[simp]
 theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
@@ -108,6 +115,10 @@ theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
 
+theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
+    f (trace A)  = trace (f.mapMatrix A) :=
+  map_sum f (fun i => diag A i) Finset.univ
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -141,27 +152,27 @@ section Mul
 
 @[simp]
 theorem trace_transpose_mul [AddCommMonoid R] [Mul R] (A : Matrix m n R) (B : Matrix n m R) :
-    trace (Aᵀ ⬝ Bᵀ) = trace (A ⬝ B) :=
+    trace (Aᵀ * Bᵀ) = trace (A * B) :=
   Finset.sum_comm
 #align matrix.trace_transpose_mul Matrix.trace_transpose_mul
 
 theorem trace_mul_comm [AddCommMonoid R] [CommSemigroup R] (A : Matrix m n R) (B : Matrix n m R) :
-    trace (A ⬝ B) = trace (B ⬝ A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
+    trace (A * B) = trace (B * A) := by rw [← trace_transpose, ← trace_transpose_mul, transpose_mul]
 #align matrix.trace_mul_comm Matrix.trace_mul_comm
 
 theorem trace_mul_cycle [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
-    (C : Matrix p m R) : trace (A ⬝ B ⬝ C) = trace (C ⬝ A ⬝ B) := by
+    (C : Matrix p m R) : trace (A * B * C) = trace (C * A * B) := by
   rw [trace_mul_comm, Matrix.mul_assoc]
 #align matrix.trace_mul_cycle Matrix.trace_mul_cycle
 
 theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matrix n p R)
-    (C : Matrix p m R) : trace (A ⬝ (B ⬝ C)) = trace (C ⬝ (A ⬝ B)) := by
+    (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 #align matrix.trace_mul_cycle' Matrix.trace_mul_cycle'
 
 @[simp]
 theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
-    trace (col a ⬝ row b) = dotProduct a b := by
+    trace (col a * row b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
 #align matrix.trace_col_mul_row Matrix.trace_col_mul_row
@@ -179,7 +190,6 @@ with `Matrix.det_fin_two` etc.
 -/
 
 
-@[simp]
 theorem trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
   rfl
 #align matrix.trace_fin_zero Matrix.trace_fin_zero

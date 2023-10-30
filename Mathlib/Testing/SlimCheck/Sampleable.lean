@@ -85,6 +85,8 @@ random testing
 
 -/
 
+set_option autoImplicit true
+
 namespace SlimCheck
 
 open Random Gen
@@ -194,9 +196,8 @@ instance Nat.sampleableExt : SampleableExt Nat :=
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize)) (by
-    simp [Fin.ofNat, LE.le]
-    exact Nat.zero_le _
-  ))
+    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
+    exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=
   mkSelfContained (do

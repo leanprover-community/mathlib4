@@ -25,7 +25,7 @@ open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable (C : Type _) [Category C] [HasZeroMorphisms C] {ι : Type _} (c : ComplexShape ι)
+variable (C : Type*) [Category C] [HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι)
 
 /-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
@@ -63,5 +63,23 @@ noncomputable abbrev sc (i : ι) := (shortComplexFunctor C c i).obj K
 /-- The canonical isomorphism `K.sc j ≅ K.sc' i j k` when `c.prev j = i` and `c.next j = k`. -/
 noncomputable abbrev isoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     K.sc j ≅ K.sc' i j k := (natIsoSc' C c i j k hi hk).app K
+
+/-- A homological complex `K` has homology in degree `i` if the associated
+short complex `K.sc i` has. -/
+abbrev HasHomology (i : ι) := (K.sc i).HasHomology
+
+variable (i : ι) [K.HasHomology i] [L.HasHomology i] [M.HasHomology i]
+
+/-- The homology in degree `i` of a homological complex. -/
+noncomputable def homology := (K.sc i).homology
+
+/-- The cycles in degree `i` of a homological complex. -/
+noncomputable def cycles := (K.sc i).cycles
+
+/-- The inclusion of the cycles of a homological complex. -/
+noncomputable def iCycles : K.cycles i ⟶ K.X i := (K.sc i).iCycles
+
+/-- The homology class map from cycles to the homology of a homological complex. -/
+noncomputable def homologyπ : K.cycles i ⟶ K.homology i := (K.sc i).homologyπ
 
 end HomologicalComplex

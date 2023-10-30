@@ -42,7 +42,7 @@ open ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
 open scoped Pointwise
 
-variable {E L : Type _} [MeasurableSpace E] {μ : Measure E} {F s : Set E}
+variable {E L : Type*} [MeasurableSpace E] {μ : Measure E} {F s : Set E}
 
 /-- **Blichfeldt's Theorem**. If the volume of the set `s` is larger than the covolume of the
 countable subgroup `L` of `E`, then there exist two distinct points `x, y ∈ L` such that `(x + s)`

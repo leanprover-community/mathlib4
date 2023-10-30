@@ -3,11 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.CharZero.Defs
 
 #align_import algebra.order.monoid.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -351,6 +352,10 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithTop α) 
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one]
   }
 
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
+  { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
+      (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
+
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
@@ -378,8 +383,8 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
-    CanonicallyOrderedAddMonoid (WithTop α) :=
+instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+    CanonicallyOrderedAddCommMonoid (WithTop α) :=
   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
     le_self_add := fun a b =>
       match a, b with
@@ -388,8 +393,9 @@ instance canonicallyOrderedAddMonoid [CanonicallyOrderedAddMonoid α] :
       | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
       | ⊤, (b : α) => le_rfl }
 
-instance [CanonicallyLinearOrderedAddMonoid α] : CanonicallyLinearOrderedAddMonoid (WithTop α) :=
-  { WithTop.canonicallyOrderedAddMonoid, WithTop.linearOrder with }
+instance [CanonicallyLinearOrderedAddCommMonoid α] :
+    CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
+  { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
 @[simp, norm_cast]
 theorem coe_nat [AddMonoidWithOne α] (n : ℕ) : ((n : α) : WithTop α) = n :=
@@ -436,7 +442,7 @@ theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a �
 /-- A version of `WithTop.map` for `OneHom`s. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
   "A version of `WithTop.map` for `ZeroHom`s"]
-protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
+protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
@@ -446,7 +452,7 @@ protected def _root_.OneHom.withTopMap {M N : Type _} [One M] [One N] (f : OneHo
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddHom.withTopMap {M N : Type _} [Add M] [Add N] (f : AddHom M N) :
+protected def _root_.AddHom.withTopMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_add' := WithTop.map_add f
@@ -455,7 +461,7 @@ protected def _root_.AddHom.withTopMap {M N : Type _} [Add M] [Add N] (f : AddHo
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddMonoidHom.withTopMap {M N : Type _} [AddZeroClass M] [AddZeroClass N]
+protected def _root_.AddMonoidHom.withTopMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithTop M →+ WithTop N :=
   { ZeroHom.withTopMap f.toZeroHom, AddHom.withTopMap f.toAddHom with toFun := WithTop.map f }
 #align add_monoid_hom.with_top_map AddMonoidHom.withTopMap
@@ -489,6 +495,9 @@ instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithBot α) :=
   WithTop.addMonoidWithOne
+
+instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
+  WithTop.charZero
 
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
   WithTop.addCommMonoidWithOne
@@ -653,7 +662,7 @@ protected theorem map_add {F} [Add β] [AddHomClass F α β] (f : F) (a b : With
 /-- A version of `WithBot.map` for `OneHom`s. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
   "A version of `WithBot.map` for `ZeroHom`s"]
-protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHom M N) :
+protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
@@ -664,7 +673,7 @@ protected def _root_.OneHom.withBotMap {M N : Type _} [One M] [One N] (f : OneHo
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHom M N) :
+protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_add' := WithBot.map_add f
@@ -673,7 +682,7 @@ protected def _root_.AddHom.withBotMap {M N : Type _} [Add M] [Add N] (f : AddHo
 
 /-- A version of `WithBot.map` for `AddMonoidHom`s. -/
 @[simps (config := { fullyApplied := false })]
-protected def _root_.AddMonoidHom.withBotMap {M N : Type _} [AddZeroClass M] [AddZeroClass N]
+protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
 #align add_monoid_hom.with_bot_map AddMonoidHom.withBotMap

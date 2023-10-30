@@ -94,12 +94,12 @@ theorem Separable.of_dvd {f g : R[X]} (hf : f.Separable) (hfg : g ∣ f) : g.Sep
   exact Separable.of_mul_left hf
 #align polynomial.separable.of_dvd Polynomial.Separable.of_dvd
 
-theorem separable_gcd_left {F : Type _} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
+theorem separable_gcd_left {F : Type*} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hf (EuclideanDomain.gcd_dvd_left f g)
 #align polynomial.separable_gcd_left Polynomial.separable_gcd_left
 
-theorem separable_gcd_right {F : Type _} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
+theorem separable_gcd_right {F : Type*} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hg (EuclideanDomain.gcd_dvd_right f g)
 #align polynomial.separable_gcd_right Polynomial.separable_gcd_right
@@ -345,7 +345,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
     have hg1 : g.natDegree * p = N.succ := by rwa [← natDegree_expand, hgf]
     have hg2 : g.natDegree ≠ 0 := by
       intro this
-      rw [this, MulZeroClass.zero_mul] at hg1
+      rw [this, zero_mul] at hg1
       cases hg1
     have hg3 : g.natDegree < N.succ := by
       rw [← mul_one g.natDegree, ← hg1]
@@ -361,7 +361,7 @@ theorem isUnit_or_eq_zero_of_separable_expand {f : F[X]} (n : ℕ) (hp : 0 < p)
   rintro hn : n ≠ 0
   have hf2 : derivative (expand F (p ^ n) f) = 0 := by
     rw [derivative_expand, Nat.cast_pow, CharP.cast_eq_zero, zero_pow hn.bot_lt,
-      MulZeroClass.zero_mul, MulZeroClass.mul_zero]
+      zero_mul, mul_zero]
   rw [separable_def, hf2, isCoprime_zero_right, isUnit_iff] at hf
   rcases hf with ⟨r, hr, hrf⟩
   rw [eq_comm, expand_eq_C (pow_pos hp _)] at hrf
@@ -395,7 +395,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
 
 end CharP
 
-/-- If `n ≠ 0` in `F`, then ` X ^ n - a` is separable for any `a ≠ 0`. -/
+/-- If `n ≠ 0` in `F`, then `X ^ n - a` is separable for any `a ≠ 0`. -/
 theorem separable_X_pow_sub_C {n : ℕ} (a : F) (hn : (n : F) ≠ 0) (ha : a ≠ 0) :
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C_unit (Units.mk0 a ha) (IsUnit.mk0 (n : F) hn)
@@ -410,7 +410,7 @@ theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
-  rw [hn', C_0, MulZeroClass.zero_mul, isCoprime_zero_right] at h
+  rw [hn', C_0, zero_mul, isCoprime_zero_right] at h
   exact not_isUnit_X_pow_sub_one F n h
 set_option linter.uppercaseLean3 false in
 #align polynomial.X_pow_sub_one_separable_iff Polynomial.X_pow_sub_one_separable_iff
@@ -479,7 +479,7 @@ open Polynomial
 
 section CommRing
 
-variable (F K : Type _) [CommRing F] [Ring K] [Algebra F K]
+variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 -- TODO: refactor to allow transcendental extensions?
 -- See: https://en.wikipedia.org/wiki/Separable_extension#Separability_of_transcendental_extensions
@@ -497,7 +497,7 @@ class IsSeparable : Prop where
   separable' (x : K) : (minpoly F x).Separable
 #align is_separable IsSeparable
 
-variable (F : Type _) {K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable (F : Type*) {K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem IsSeparable.isIntegral [IsSeparable F K] : ∀ x : K, IsIntegral F x :=
   IsSeparable.isIntegral'
@@ -507,7 +507,7 @@ theorem IsSeparable.separable [IsSeparable F K] : ∀ x : K, (minpoly F x).Separ
   IsSeparable.separable'
 #align is_separable.separable IsSeparable.separable
 
-variable {F K : Type _} [CommRing F] [Ring K] [Algebra F K]
+variable {F K : Type*} [CommRing F] [Ring K] [Algebra F K]
 
 theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
   ⟨fun _ x => ⟨IsSeparable.isIntegral F x, IsSeparable.separable F x⟩, fun h =>
@@ -516,7 +516,7 @@ theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (min
 
 end CommRing
 
-instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
+instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
   ⟨fun x => isIntegral_algebraMap,
    fun x => by
     rw [minpoly.eq_X_sub_C']
@@ -525,7 +525,7 @@ instance isSeparable_self (F : Type _) [Field F] : IsSeparable F F :=
 
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field K] [Algebra F K]
+instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
   have : ∀ x : K, IsIntegral F x := fun _x => Algebra.isIntegral_of_finite _ _ _
   ⟨this, fun x => (minpoly.irreducible (this x)).separable⟩
@@ -533,7 +533,7 @@ instance (priority := 100) IsSeparable.of_finite (F K : Type _) [Field F] [Field
 
 section IsSeparableTower
 
-variable (F K E : Type _) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
+variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
@@ -555,7 +555,7 @@ theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable
 
 variable {E}
 
-theorem IsSeparable.of_algHom (E' : Type _) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
+theorem IsSeparable.of_algHom (E' : Type*) [Field E'] [Algebra F E'] (f : E →ₐ[F] E')
     [IsSeparable F E'] : IsSeparable F E := by
   letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
   haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
@@ -566,18 +566,17 @@ end IsSeparableTower
 
 section CardAlgHom
 
-variable {R S T : Type _} [CommRing S]
+variable {R S T : Type*} [CommRing S]
 
-variable {K L F : Type _} [Field K] [Field L] [Field F]
+variable {K L F : Type*} [Field K] [Field L] [Field F]
 
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
-  let s := ((minpoly K pb.gen).map (algebraMap K L)).roots.toFinset
   let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
-  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype s (fun x => Multiset.mem_toFinset),
+  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
     ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
 #align alg_hom.card_of_power_basis AlgHom.card_of_powerBasis

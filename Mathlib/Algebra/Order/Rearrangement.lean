@@ -47,7 +47,7 @@ open Equiv Equiv.Perm Finset Function OrderDual
 
 open BigOperators
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 /-! ### Scalar multiplication versions -/
 

@@ -18,7 +18,7 @@ subgroup, subgroups
 
 namespace Subgroup
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 /-- A subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `g^n ∈ H`
 we have `n = 0` or `g ∈ H`. -/
@@ -60,7 +60,7 @@ end Subgroup
 
 namespace AddSubgroup
 
-theorem ker_saturated {A₁ A₂ : Type _} [AddCommGroup A₁] [AddCommGroup A₂] [NoZeroSMulDivisors ℕ A₂]
+theorem ker_saturated {A₁ A₂ : Type*} [AddCommGroup A₁] [AddCommGroup A₂] [NoZeroSMulDivisors ℕ A₂]
     (f : A₁ →+ A₂) : f.ker.Saturated := by
   intro n g hg
   simpa only [f.mem_ker, nsmul_eq_smul, f.map_nsmul, smul_eq_zero] using hg

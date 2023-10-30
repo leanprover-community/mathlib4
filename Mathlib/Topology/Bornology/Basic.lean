@@ -41,12 +41,12 @@ it is intended for regular use as a filter on `α`.
 
 open Set Filter
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded`-/
-class Bornology (α : Type _) where
+class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
   should always prefer `Bornology.cobounded` because it makes the `α` argument explciit. -/
   cobounded' : Filter α
@@ -61,12 +61,12 @@ fields explicit, we have to define these separately, prove the `ext` lemmas manu
 initialize new `simps` projections. -/
 
 /-- The filter of cobounded sets in a bornology. -/
-def Bornology.cobounded (α : Type _) [Bornology α] : Filter α := Bornology.cobounded'
+def Bornology.cobounded (α : Type*) [Bornology α] : Filter α := Bornology.cobounded'
 #align bornology.cobounded Bornology.cobounded
 
-alias Bornology.cobounded ← Bornology.Simps.cobounded
+alias Bornology.Simps.cobounded := Bornology.cobounded
 
-lemma Bornology.le_cofinite (α : Type _) [Bornology α] : cobounded α ≤ cofinite :=
+lemma Bornology.le_cofinite (α : Type*) [Bornology α] : cobounded α ≤ cofinite :=
 Bornology.le_cofinite'
 #align bornology.le_cofinite Bornology.le_cofinite
 
@@ -89,7 +89,7 @@ lemma Bornology.ext_iff (t t' : Bornology α) :
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps]
-def Bornology.ofBounded {α : Type _} (B : Set (Set α))
+def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
     (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
@@ -112,7 +112,7 @@ def Bornology.ofBounded {α : Type _} (B : Set (Set α))
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
 @[simps!]
-def Bornology.ofBounded' {α : Type _} (B : Set (Set α))
+def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ (_ : s₁ ∈ B) s₂, s₂ ⊆ s₁ → s₂ ∈ B)
     (union_mem : ∀ s₁ (_ : s₁ ∈ B) s₂ (_ : s₂ ∈ B), s₁ ∪ s₂ ∈ B)
@@ -159,11 +159,11 @@ theorem isCobounded_compl_iff : IsCobounded sᶜ ↔ IsBounded s :=
   Iff.rfl
 #align bornology.is_cobounded_compl_iff Bornology.isCobounded_compl_iff
 
-alias isBounded_compl_iff ↔ IsBounded.of_compl IsCobounded.compl
+alias ⟨IsBounded.of_compl, IsCobounded.compl⟩ := isBounded_compl_iff
 #align bornology.is_bounded.of_compl Bornology.IsBounded.of_compl
 #align bornology.is_cobounded.compl Bornology.IsCobounded.compl
 
-alias isCobounded_compl_iff ↔ IsCobounded.of_compl IsBounded.compl
+alias ⟨IsCobounded.of_compl, IsBounded.compl⟩ := isCobounded_compl_iff
 #align bornology.is_cobounded.of_compl Bornology.IsCobounded.of_compl
 #align bornology.is_bounded.compl Bornology.IsBounded.compl
 
@@ -178,6 +178,11 @@ theorem isBounded_singleton : IsBounded ({x} : Set α) := by
   rw [isBounded_def]
   exact le_cofinite _ (finite_singleton x).compl_mem_cofinite
 #align bornology.is_bounded_singleton Bornology.isBounded_singleton
+
+theorem isBounded_iff_forall_mem : IsBounded s ↔ ∀ x ∈ s, IsBounded s :=
+  ⟨fun h _ _ ↦ h, fun h ↦ by
+    rcases s.eq_empty_or_nonempty with rfl | ⟨x, hx⟩
+    exacts [isBounded_empty, h x hx]⟩
 
 @[simp]
 theorem isCobounded_univ : IsCobounded (univ : Set α) :=
@@ -215,6 +220,13 @@ theorem sUnion_bounded_univ : ⋃₀ { s : Set α | IsBounded s } = univ :=
   sUnion_eq_univ_iff.2 fun a => ⟨{a}, isBounded_singleton, mem_singleton a⟩
 #align bornology.sUnion_bounded_univ Bornology.sUnion_bounded_univ
 
+theorem IsBounded.insert (h : IsBounded s) (x : α) : IsBounded (insert x s) :=
+  isBounded_singleton.union h
+
+@[simp]
+theorem isBounded_insert : IsBounded (insert x s) ↔ IsBounded s :=
+  ⟨fun h ↦ h.subset (subset_insert _ _), (.insert · x)⟩
+
 theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
     (cobounded β).comap f ≤ cobounded α ↔ ∀ ⦃s⦄, IsBounded s → IsBounded (f '' s) := by
   refine'
@@ -228,16 +240,13 @@ theorem comap_cobounded_le_iff [Bornology β] {f : α → β} :
 end
 
 theorem ext_iff' {t t' : Bornology α} :
-    t = t' ↔ ∀ s, (@cobounded α t).sets s ↔ (@cobounded α t').sets s :=
+    t = t' ↔ ∀ s, s ∈ @cobounded α t ↔ s ∈ @cobounded α t' :=
   (Bornology.ext_iff _ _).trans Filter.ext_iff
 #align bornology.ext_iff' Bornology.ext_iff'
 
 theorem ext_iff_isBounded {t t' : Bornology α} :
     t = t' ↔ ∀ s, @IsBounded α t s ↔ @IsBounded α t' s :=
-  ⟨fun h s => h ▸ Iff.rfl, fun h => by
-    ext s
-    simpa [@isBounded_def _ t, isBounded_def, compl_compl] using h sᶜ⟩
--- porting note: Lean 3 could do this without `@isBounded_def _ t`
+  ext_iff'.trans compl_surjective.forall
 #align bornology.ext_iff_is_bounded Bornology.ext_iff_isBounded
 
 variable {s : Set α}
@@ -301,6 +310,11 @@ end Bornology
 
 open Bornology
 
+theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : ι → Prop}
+    {s : ι → Set α} {l : Filter α} (h : l.HasBasis p s) :
+    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ IsBounded (s i) :=
+  h.disjoint_iff_left
+
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 #align set.finite.is_bounded Set.Finite.isBounded
@@ -310,17 +324,21 @@ instance : Bornology PUnit :=
 
 /-- The cofinite filter as a bornology -/
 @[reducible]
-def Bornology.cofinite : Bornology α
-    where
+def Bornology.cofinite : Bornology α where
   cobounded' := Filter.cofinite
   le_cofinite' := le_rfl
 #align bornology.cofinite Bornology.cofinite
 
 /-- A space with a `Bornology` is a **bounded space** if `Set.univ : Set α` is bounded. -/
-class BoundedSpace (α : Type _) [Bornology α] : Prop where
+class BoundedSpace (α : Type*) [Bornology α] : Prop where
   /-- The `Set.univ` is bounded. -/
   bounded_univ : Bornology.IsBounded (univ : Set α)
 #align bounded_space BoundedSpace
+
+/-- A finite space is bounded. -/
+instance (priority := 100) BoundedSpace.of_finite {α : Type*} [Bornology α] [Finite α] :
+    BoundedSpace α where
+  bounded_univ := (toFinite _).isBounded
 
 namespace Bornology
 

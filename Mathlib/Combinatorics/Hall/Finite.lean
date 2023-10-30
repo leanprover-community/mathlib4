@@ -210,7 +210,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]
-    split_ifs with h <;> simp
+    split_ifs with h
     · exact hsf' ⟨x, h⟩
     · exact sdiff_subset _ _ (hsf'' ⟨x, h⟩)
 set_option linter.uppercaseLean3 false in
@@ -253,7 +253,7 @@ if every union of `k` of the sets has at least `k` elements.
 See `Finset.all_card_le_biUnion_card_iff_exists_injective` for a version
 where the `Finite ι` constraint is removed.
 -/
-theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type _} [Finite ι]
+theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Finite ι]
     [DecidableEq α] (t : ι → Finset α) :
     (∀ s : Finset ι, s.card ≤ (s.biUnion t).card) ↔
       ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by

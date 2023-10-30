@@ -152,7 +152,7 @@ scoped infixr:65 " △ " => Tree.node ()
 compile_inductive% Tree
 
 @[elab_as_elim]
-def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)
+def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
     -- Porting note: Old proof was `t.recOn base fun u => u.recOn ind` but
     -- structure eta makes it unnecessary (https://github.com/leanprover/lean4/issues/777).

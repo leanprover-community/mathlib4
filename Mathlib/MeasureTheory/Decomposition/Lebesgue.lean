@@ -67,7 +67,7 @@ open scoped Classical MeasureTheory NNReal ENNReal
 
 open Set
 
-variable {α β : Type _} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
+variable {α β : Type*} {m : MeasurableSpace α} {μ ν : MeasureTheory.Measure α}
 
 namespace MeasureTheory
 
@@ -119,6 +119,25 @@ instance haveLebesgueDecomposition_smul (μ ν : Measure α) [HaveLebesgueDecomp
       rw [withDensity_smul _ hmeas, ← smul_add, ← hadd]
       rfl
 #align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecomposition_smul
+
+instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+    (r : ℝ≥0) :
+    μ.HaveLebesgueDecomposition (r • ν) where
+  lebesgue_decomposition := by
+    obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
+    by_cases hr : r = 0
+    · exact ⟨⟨μ, 0⟩, measurable_const, by simp [hr], by simp⟩
+    refine ⟨⟨μ.singularPart ν, r⁻¹ • μ.rnDeriv ν⟩, ?_, ?_, ?_⟩
+    · change Measurable (r⁻¹ • μ.rnDeriv ν)
+      exact hmeas.const_smul _
+    · refine MutuallySingular.mono_ac hsing AbsolutelyContinuous.rfl ?_
+      exact absolutelyContinuous_of_le_smul le_rfl
+    · have : r⁻¹ • rnDeriv μ ν = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv μ ν := by simp [ENNReal.smul_def]
+      rw [this, withDensity_smul _ hmeas, ENNReal.smul_def r, withDensity_smul_measure,
+        ← smul_assoc, smul_eq_mul, ENNReal.coe_inv hr, ENNReal.inv_mul_cancel, one_smul]
+      · exact hadd
+      · simp [hr]
+      · exact ENNReal.coe_ne_top
 
 @[measurability]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
@@ -282,6 +301,23 @@ theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
     exact @Measure.haveLebesgueDecomposition_smul _ _ _ _ hl' _
 #align measure_theory.measure.singular_part_smul MeasureTheory.Measure.singularPart_smul
 
+theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0) :
+    μ.singularPart (r • ν) = μ.singularPart ν := by
+  by_cases hl : HaveLebesgueDecomposition μ ν
+  · refine (eq_singularPart ((measurable_rnDeriv μ ν).const_smul r⁻¹) ?_ ?_).symm
+    · refine (mutuallySingular_singularPart μ ν).mono_ac AbsolutelyContinuous.rfl ?_
+      exact absolutelyContinuous_of_le_smul le_rfl
+    · rw [ENNReal.smul_def r, withDensity_smul_measure, ← withDensity_smul]
+      swap; · exact (measurable_rnDeriv _ _).const_smul _
+      convert haveLebesgueDecomposition_add μ ν
+      ext x
+      simp only [Pi.smul_apply, ne_eq]
+      rw [← ENNReal.smul_def, ← smul_assoc, smul_eq_mul, mul_inv_cancel hr, one_smul]
+  · rw [singularPart, singularPart, dif_neg hl, dif_neg]
+    refine fun hl' => hl ?_
+    rw [← inv_smul_smul₀ hr ν]
+    infer_instance
+
 theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecomposition μ₁ ν]
     [HaveLebesgueDecomposition μ₂ ν] :
     (μ₁ + μ₂).singularPart ν = μ₁.singularPart ν + μ₂.singularPart ν := by
@@ -442,7 +478,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push_neg at h
   have := h _ hAmeas hμ
-  simp_rw [hA₁, compl_iInter, compl_compl] at this
+  simp_rw [compl_iInter, compl_compl] at this
   -- as `Aᶜ = ⋃ n, f n`, `ν Aᶜ > 0` implies there exists some `n` such that `ν (f n) > 0`
   obtain ⟨n, hn⟩ := exists_measure_pos_of_not_measure_iUnion_null this
   -- thus, choosing `f n` as the set `E` suffices
@@ -519,16 +555,16 @@ section SuprLemmas
 
 --TODO: these statements should be moved elsewhere
 
-theorem iSup_monotone {α : Type _} (f : ℕ → α → ℝ≥0∞) :
+theorem iSup_monotone {α : Type*} (f : ℕ → α → ℝ≥0∞) :
     Monotone fun n x => ⨆ (k) (_ : k ≤ n), f k x := fun _ _ hnm _ =>
   biSup_mono fun _ => ge_trans hnm
 #align measure_theory.measure.lebesgue_decomposition.supr_monotone MeasureTheory.Measure.LebesgueDecomposition.iSup_monotone
 
-theorem iSup_monotone' {α : Type _} (f : ℕ → α → ℝ≥0∞) (x : α) :
+theorem iSup_monotone' {α : Type*} (f : ℕ → α → ℝ≥0∞) (x : α) :
     Monotone fun n => ⨆ (k) (_ : k ≤ n), f k x := fun _ _ hnm => iSup_monotone f hnm x
 #align measure_theory.measure.lebesgue_decomposition.supr_monotone' MeasureTheory.Measure.LebesgueDecomposition.iSup_monotone'
 
-theorem iSup_le_le {α : Type _} (f : ℕ → α → ℝ≥0∞) (n k : ℕ) (hk : k ≤ n) :
+theorem iSup_le_le {α : Type*} (f : ℕ → α → ℝ≥0∞) (n k : ℕ) (hk : k ≤ n) :
     f k ≤ fun x => ⨆ (k) (_ : k ≤ n), f k x :=
   fun x => le_iSup₂ (f := fun k (_ : k ≤ n) => f k x) k hk
 #align measure_theory.measure.lebesgue_decomposition.supr_le_le MeasureTheory.Measure.LebesgueDecomposition.iSup_le_le

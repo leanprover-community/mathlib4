@@ -19,7 +19,7 @@ namespace Finset
 
 open Multiset Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### sort -/
 
@@ -88,6 +88,9 @@ variable [LinearOrder α]
 theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·) s) :=
   (sort_sorted _ _).lt_of_le (sort_nodup _ _)
 #align finset.sort_sorted_lt Finset.sort_sorted_lt
+
+theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·) s) :=
+  (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
     (s.sort (· ≤ ·)).nthLe 0 h = s.min' H := by
@@ -253,7 +256,20 @@ theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
 
 end SortLinearOrder
 
-unsafe instance [Repr α] : Repr (Finset α) :=
-  ⟨fun s _ => repr s.1⟩
+unsafe instance [Repr α] : Repr (Finset α) where
+  reprPrec s _ :=
+    -- multiset uses `0` not `∅` for empty sets
+    if s.card = 0 then "∅" else repr s.1
 
 end Finset
+
+namespace Fin
+
+theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
+  List.eq_of_perm_of_sorted
+    (List.perm_of_nodup_nodup_toFinset_eq
+      (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp))
+    (Finset.univ.sort_sorted LE.le)
+    (List.pairwise_le_finRange n)
+
+end Fin

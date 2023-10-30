@@ -31,7 +31,7 @@ open Filter
 
 namespace Filter
 
-variable {α α' β β' γ γ' δ δ' ε ε' : Type _} {m : α → β → γ} {f f₁ f₂ : Filter α}
+variable {α α' β β' γ γ' δ δ' ε ε' : Type*} {m : α → β → γ} {f f₁ f₂ : Filter α}
   {g g₁ g₂ : Filter β} {h h₁ h₂ : Filter γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
   {v : Set δ} {a : α} {b : β} {c : γ}
 
@@ -52,7 +52,7 @@ def map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) : Filter γ
         (image2_subset (inter_subset_right _ _) <| inter_subset_right _ _).trans ht⟩
 #align filter.map₂ Filter.map₂
 
-@[simp]
+@[simp 900]
 theorem mem_map₂_iff : u ∈ map₂ m f g ↔ ∃ s t, s ∈ f ∧ t ∈ g ∧ image2 m s t ⊆ u :=
   Iff.rfl
 #align filter.mem_map₂_iff Filter.mem_map₂_iff

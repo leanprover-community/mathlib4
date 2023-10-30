@@ -26,7 +26,7 @@ Generalize all this file to affine spaces.
 -/
 
 
-variable {𝕜 E F β : Type _}
+variable {𝕜 E F β : Type*}
 
 open LinearMap Set
 
@@ -82,7 +82,7 @@ theorem convex_iff_pointwise_add_subset :
     fun h x hx y hy a b ha hb hab => (h ha hb hab) (Set.add_mem_add ⟨_, hx, rfl⟩ ⟨_, hy, rfl⟩)
 #align convex_iff_pointwise_add_subset convex_iff_pointwise_add_subset
 
-alias convex_iff_pointwise_add_subset ↔ Convex.set_combo_subset _
+alias ⟨Convex.set_combo_subset, _⟩ := convex_iff_pointwise_add_subset
 #align convex.set_combo_subset Convex.set_combo_subset
 
 theorem convex_empty : Convex 𝕜 (∅ : Set E) := fun _ => False.elim
@@ -99,12 +99,12 @@ theorem convex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Convex 𝕜 s) : Conve
   starConvex_sInter fun _ hs => h _ hs <| hx _ hs
 #align convex_sInter convex_sInter
 
-theorem convex_iInter {ι : Sort _} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s i)) :
+theorem convex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s i)) :
     Convex 𝕜 (⋂ i, s i) :=
   sInter_range s ▸ convex_sInter <| forall_range_iff.2 h
 #align convex_Inter convex_iInter
 
-theorem convex_iInter₂ {ι : Sort _} {κ : ι → Sort _} {s : ∀ i, κ i → Set E}
+theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set E}
     (h : ∀ i j, Convex 𝕜 (s i j)) : Convex 𝕜 (⋂ (i) (j), s i j) :=
   convex_iInter fun i => convex_iInter <| h i
 #align convex_Inter₂ convex_iInter₂
@@ -113,12 +113,12 @@ theorem Convex.prod {s : Set E} {t : Set F} (hs : Convex 𝕜 s) (ht : Convex �
     Convex 𝕜 (s ×ˢ t) := fun _ hx => (hs hx.1).prod (ht hx.2)
 #align convex.prod Convex.prod
 
-theorem convex_pi {ι : Type _} {E : ι → Type _} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
+theorem convex_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommMonoid (E i)] [∀ i, SMul 𝕜 (E i)]
     {s : Set ι} {t : ∀ i, Set (E i)} (ht : ∀ ⦃i⦄, i ∈ s → Convex 𝕜 (t i)) : Convex 𝕜 (s.pi t) :=
   fun _ hx => starConvex_pi fun _ hi => ht hi <| hx _ hi
 #align convex_pi convex_pi
 
-theorem Directed.convex_iUnion {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
+theorem Directed.convex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hc : ∀ ⦃i : ι⦄, Convex 𝕜 (s i)) : Convex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy a b ha hb hab
   rw [mem_iUnion] at hx hy ⊢
@@ -618,7 +618,7 @@ theorem convex_iff_ordConnected [LinearOrderedField 𝕜] {s : Set 𝕜} : Conve
   by simp_rw [convex_iff_segment_subset, segment_eq_uIcc, ordConnected_iff_uIcc_subset]
 #align convex_iff_ord_connected convex_iff_ordConnected
 
-alias convex_iff_ordConnected ↔ Convex.ordConnected _
+alias ⟨Convex.ordConnected, _⟩ := convex_iff_ordConnected
 #align convex.ord_connected Convex.ordConnected
 
 end
@@ -646,7 +646,7 @@ end Submodule
 
 section Simplex
 
-variable (𝕜) (ι : Type _) [OrderedSemiring 𝕜] [Fintype ι]
+variable (𝕜) (ι : Type*) [OrderedSemiring 𝕜] [Fintype ι]
 
 /-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
 coordinates with total sum `1`. This is the free object in the category of convex spaces. -/

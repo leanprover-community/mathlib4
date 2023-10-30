@@ -11,8 +11,8 @@ import Mathlib.SetTheory.Ordinal.NaturalOps
 /-!
 # Ordinals as games
 
-We define the canonical map `Ordinal → PGame`, where every ordinal is mapped to the game whose left
-set consists of all previous ordinals.
+We define the canonical map `Ordinal → SetTheory.PGame`, where every ordinal is mapped to the
+game whose left set consists of all previous ordinals.
 
 The map to surreals is defined in `Ordinal.toSurreal`.
 
@@ -25,7 +25,7 @@ The map to surreals is defined in `Ordinal.toSurreal`.
 
 universe u
 
-open PGame
+open SetTheory PGame
 
 open scoped NaturalOps PGame
 

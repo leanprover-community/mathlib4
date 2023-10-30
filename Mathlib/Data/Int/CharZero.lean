@@ -13,7 +13,7 @@ import Mathlib.Data.Int.Cast.Field
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Nat
 
@@ -53,16 +53,22 @@ theorem cast_ne_one [AddGroupWithOne α] [CharZero α] {n : ℤ} : (n : α) ≠ 
 #align int.cast_ne_one Int.cast_ne_one
 
 @[simp, norm_cast]
-theorem cast_div_charZero {k : Type _} [DivisionRing k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
+theorem cast_div_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℤ} (n_dvd : n ∣ m) :
     ((m / n : ℤ) : k) = m / n := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp [Int.ediv_zero]
   · exact cast_div n_dvd (cast_ne_zero.mpr hn)
 #align int.cast_div_char_zero Int.cast_div_charZero
 
+-- Necessary for confluence with `ofNat_ediv` and `cast_div_charZero`.
+@[simp, norm_cast]
+theorem cast_div_ofNat_charZero {k : Type*} [DivisionRing k] [CharZero k] {m n : ℕ}
+    (n_dvd : n ∣ m) : (((m : ℤ) / (n : ℤ) : ℤ) : k) = m / n := by
+  rw [cast_div_charZero (Int.ofNat_dvd.mpr n_dvd), cast_ofNat, cast_ofNat]
+
 end Int
 
-theorem RingHom.injective_int {α : Type _} [NonAssocRing α] (f : ℤ →+* α) [CharZero α] :
+theorem RingHom.injective_int {α : Type*} [NonAssocRing α] (f : ℤ →+* α) [CharZero α] :
     Function.Injective f :=
   Subsingleton.elim (Int.castRingHom _) f ▸ Int.cast_injective
 #align ring_hom.injective_int RingHom.injective_int

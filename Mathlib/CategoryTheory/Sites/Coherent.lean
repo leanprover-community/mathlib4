@@ -27,11 +27,13 @@ coherent Grothendieck topology in terms of finite effective epimorphic families.
 
 -/
 
+set_option autoImplicit true
+
 namespace CategoryTheory
 
 open Limits
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 /--
 The condition `Precoherent C` is essentially the minimal condition required to define the
@@ -86,7 +88,7 @@ lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
 
 namespace coherentTopology
 
-variable {C : Type _} [Category C] [Precoherent C]
+variable {C : Type*} [Category C] [Precoherent C]
 
 variable {X : C}
 /--
@@ -132,7 +134,7 @@ theorem isSubcanonical : Sheaf.Subcanonical (coherentTopology C) :=
 
 end coherentTopology
 
-variable {C : Type _} [Category C] [Precoherent C]
+variable {C : Type*} [Category C] [Precoherent C]
 
 variable {X : C}
 
@@ -181,7 +183,7 @@ A sieve belongs to the coherent topology if and only if it contains a finite
 `EffectiveEpiFamily`.
 -/
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
-(S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
+    (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
