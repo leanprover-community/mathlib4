@@ -39,8 +39,9 @@ theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length 
   | [] => rfl
   | a :: l => by
     rw [length_cons, Nat.factorial_succ]
-    simp only [permsOfList, length_append, length_permsOfList, length_bind, comp,
-     length_map, map_const', sum_replicate, smul_eq_mul, succ_mul]
+    simp (config := { unfoldPartialApp := true }) only [permsOfList, length_append,
+      length_permsOfList, length_bind, comp, length_map, map_const', sum_replicate, smul_eq_mul,
+      succ_mul]
     ring
 #align length_perms_of_list length_permsOfList
 

@@ -31,7 +31,7 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
   apply map_injective_iff.mpr Fin.val_injective
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
     map_map]
-  simp only [Function.comp, Fin.val_succ]
+  simp (config := { unfoldPartialApp := true }) only [Function.comp, Fin.val_succ]
 #align list.fin_range_succ_eq_map List.finRange_succ_eq_map
 
 -- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range

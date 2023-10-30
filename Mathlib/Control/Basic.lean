@@ -60,7 +60,8 @@ theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
   simp only [← pure_seq]
-  simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
+  simp (config := { unfoldPartialApp := true }) only [seq_assoc, Function.comp, seq_pure,
+    ← comp_map]
   simp [pure_seq]
 #align seq_map_assoc seq_map_assoc
 
@@ -87,26 +88,29 @@ theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
-  show bind (f <$> x) g = bind x (g ∘ f)
-  by rw [← bind_pure_comp, bind_assoc]; simp [pure_bind, (· ∘ ·)]
+  show bind (f <$> x) g = bind x (g ∘ f) by
+    rw [← bind_pure_comp, bind_assoc]
+    simp (config := { unfoldPartialApp := true }) [pure_bind, (· ∘ ·)]
 #align seq_bind_eq seq_bind_eq
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
 -- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]
-theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pure fish_pure
 
 @[functor_norm]
-theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pipe fish_pipe
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp only [(· >=> ·), functor_norm]
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
@@ -254,5 +258,6 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
+      simp (config := { unfoldPartialApp := true }) [seq_map_assoc, map_seq, seq_assoc, seq_pure,
+        map_map, (· ∘ ·)]
 #align is_comm_applicative.commutative_map CommApplicative.commutative_map
