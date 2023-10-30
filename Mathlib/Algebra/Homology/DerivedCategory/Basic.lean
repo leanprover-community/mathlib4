@@ -475,25 +475,23 @@ end
 lemma right_fac (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (X' : CochainComplex C ℤ) (s : X' ⟶ X) (hs : IsIso (Q.map s)) (g : X' ⟶ Y),
       f = inv (Q.map s) ≫ Q.map g := by
-  dsimp only [Q, Functor.comp] at f
-  obtain ⟨X', g', s', hs', fac⟩ :=
-    MorphismProperty.HasRightCalculusOfFractions.fac Qh (HomotopyCategory.qis C _) f
-  rw [← isIso_Qh_map_iff] at hs'
+  have ⟨φ, hφ⟩ := MorphismProperty.RightFraction.fac Qh (HomotopyCategory.qis C _) f
+  obtain ⟨X', s, hs, g, rfl⟩ := φ.cases
   obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
-  obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g'
-  obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s'
-  exact ⟨X', s, hs', g, fac⟩
+  obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s
+  obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g
+  rw [← isIso_Qh_map_iff] at hs
+  exact ⟨X', s, hs, g, hφ⟩
 
 lemma left_fac (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (Y' : CochainComplex C ℤ) (g : X ⟶ Y') (s : Y ⟶ Y') (hs : IsIso (Q.map s)),
       f = Q.map g ≫ inv (Q.map s) := by
-  dsimp only [Q, Functor.comp] at f
-  obtain ⟨X', g', s', hs', fac⟩ :=
-    MorphismProperty.HasLeftCalculusOfFractions.fac Qh (HomotopyCategory.qis C _) f
-  rw [← isIso_Qh_map_iff] at hs'
+  have ⟨φ, hφ⟩ := MorphismProperty.LeftFraction.fac Qh (HomotopyCategory.qis C _) f
+  obtain ⟨X', g, s, hs, rfl⟩ := φ.cases
   obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
-  obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g'
-  obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s'
-  exact ⟨X', g, s, hs', fac⟩
+  obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s
+  obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective g
+  rw [← isIso_Qh_map_iff] at hs
+  exact ⟨X', g, s, hs, hφ⟩
 
 end DerivedCategory

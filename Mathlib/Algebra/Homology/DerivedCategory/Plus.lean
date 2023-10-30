@@ -140,12 +140,13 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
   obtain ⟨⟨K, hK⟩, rfl⟩ := locQ_obj_surjective K
   obtain ⟨⟨L, hL⟩, rfl⟩ := locQ_obj_surjective L
   intro φ
-  let ψ : DerivedCategory.Qh.obj K ⟶ DerivedCategory.Qh.obj L :=
-    (QhObjIso K hK).inv ≫ DerivedCategory.Plus.ι.map φ ≫ (QhObjIso L hL).hom
-  have hψ : DerivedCategory.Plus.ι.map φ =
-    (QhObjIso K hK).hom ≫ ψ ≫ (QhObjIso L hL).inv := by simp
-  obtain ⟨K', g, s, hs, eq⟩ :=
-    MorphismProperty.HasLeftCalculusOfFractions.fac DerivedCategory.Qh (HomotopyCategory.qis C _) ψ
+  obtain ⟨ψ, hψ⟩ : ∃ (ψ : DerivedCategory.Qh.obj K ⟶ DerivedCategory.Qh.obj L),
+    ψ = (QhObjIso K hK).inv ≫ DerivedCategory.Plus.ι.map φ ≫ (QhObjIso L hL).hom := ⟨_, rfl⟩
+  have hψ' : DerivedCategory.Plus.ι.map φ =
+    (QhObjIso K hK).hom ≫ ψ ≫ (QhObjIso L hL).inv := by simp [hψ]
+  obtain ⟨γ, hγ⟩ :=  MorphismProperty.LeftFraction.fac DerivedCategory.Qh (HomotopyCategory.qis C _) ψ
+  obtain ⟨K', g, s, hs, rfl⟩ := γ.cases
+  dsimp only [MorphismProperty.LeftFraction.map] at hγ
   rw [← isIso_Qh_map_iff] at hs
   obtain ⟨K'', hK'', f, _⟩ := right_localizing s hL hs
   let α' : K ⟶ K'' := g ≫ f
@@ -160,13 +161,14 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
   refine' ⟨LocQ.map α ≫ e.inv, _⟩
   erw [← cancel_mono ((π C).mapIso e).hom, ← Functor.map_comp, assoc, e.inv_hom_id, comp_id]
   apply DerivedCategory.Plus.ι.map_injective
-  rw [Functor.map_comp, hψ, eq]
+  rw [Functor.map_comp, hψ', hγ]
+  dsimp only
   dsimp
   simp only [assoc]
   rw [ι_π_LocQ_map_eq (g ≫ f) hK hK'', Functor.map_comp, assoc]
   congr 2
   rw [ι_π_LocQ_map_eq (s ≫ f) hL hK'', Iso.inv_hom_id_assoc,
-    Functor.map_comp, assoc, Localization.isoOfHom_inv_hom_id_assoc])
+    Functor.map_comp, assoc, IsIso.inv_hom_id_assoc])
 
 instance : (π C ⋙ Plus.ι).Additive := by
   have : Localization.Lifting LocQ (Subcategory.W (HomotopyCategory.Plus.subcategoryAcyclic C))
@@ -183,21 +185,21 @@ instance : Faithful (π C ⋙ Plus.ι) := by
     refine' ⟨fun {K L} f₁ f₂ h => _⟩
     obtain ⟨f, rfl⟩ : ∃ f, f₁ = f + f₂ := ⟨f₁-f₂, by simp⟩
     simp only [add_left_eq_self, Functor.map_add] at h ⊢
-    obtain ⟨K', g, s, hs, eq⟩ := MorphismProperty.HasLeftCalculusOfFractions.fac LocQ
+    obtain ⟨φ, hφ⟩ := MorphismProperty.LeftFraction.fac LocQ
       (HomotopyCategory.Plus.subcategoryAcyclic C).W f
-    have := this g (by
-      have : LocQ.map g = f ≫ (Localization.isoOfHom LocQ (Subcategory.W (HomotopyCategory.Plus.subcategoryAcyclic C)) s hs).hom := by
-        simp [eq]
+    have := this φ.f (by
+      have : LocQ.map φ.f = f ≫ (Localization.isoOfHom LocQ (Subcategory.W (HomotopyCategory.Plus.subcategoryAcyclic C)) φ.s φ.hs).hom := by
+        simp [hφ]
       dsimp at h ⊢
       rw [this]
       simp [h])
-    rw [eq, this, zero_comp]
+    rw [hφ, MorphismProperty.LeftFraction.map_eq, this, zero_comp]
   intro K L φ hφ
   dsimp at hφ
   rw [ι_π_LocQ_map_eq φ K.2 L.2, ← cancel_mono (QhObjIso L.1 L.2).hom,
     ← cancel_epi (QhObjIso K.1 K.2).inv, assoc, assoc, zero_comp, comp_zero,
     Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc, ← DerivedCategory.Qh.map_zero,
-    MorphismProperty.HasLeftCalculusOfFractions.map_eq_iff DerivedCategory.Qh
+    MorphismProperty.LeftFraction.map_eq_iff' DerivedCategory.Qh
     (HomotopyCategory.subcategoryAcyclic C).W] at hφ
   simp only [zero_comp] at hφ
   obtain ⟨L', s, hs, eq⟩ := hφ
@@ -205,7 +207,7 @@ instance : Faithful (π C ⋙ Plus.ι) := by
     rw [isIso_Qh_map_iff, HomotopyCategory.qis_eq_subcategoryAcyclic_W]
     exact hs
   obtain ⟨L'', hL'', t, ht⟩ := right_localizing s L.2 inferInstance
-  rw [← LocQ.map_zero, MorphismProperty.HasLeftCalculusOfFractions.map_eq_iff LocQ
+  rw [← LocQ.map_zero, MorphismProperty.LeftFraction.map_eq_iff' LocQ
       (HomotopyCategory.Plus.subcategoryAcyclic C).W]
   refine' ⟨⟨L'', hL''⟩, (s ≫ t : L.1 ⟶ L''), _, _⟩
   · rw [← HomotopyCategory.Plus.qis_eq_subcategoryAcyclic_W]

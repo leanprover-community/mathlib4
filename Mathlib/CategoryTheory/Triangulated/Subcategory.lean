@@ -243,12 +243,13 @@ lemma respectsIsoW : S.W.RespectsIso where
 
 
 instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
-  nonempty_toSq := by
-    rintro X' X Y s ⟨Z, f, g, H, mem⟩ u
-    obtain ⟨Y', s', f', mem'⟩ := distinguished_cocone_triangle₂ (g ≫ u⟦1⟧')
+  exists_leftFraction := by
+    rintro X Y φ
+    obtain ⟨Z, f, g, H, mem⟩ := φ.hs
+    obtain ⟨Y', s', f', mem'⟩ := distinguished_cocone_triangle₂ (g ≫ φ.f⟦1⟧')
     obtain ⟨b, ⟨hb₁, _⟩⟩ :=
-      complete_distinguished_triangle_morphism₂ _ _ H mem' u (𝟙 Z) (by simp)
-    exact ⟨⟨Y', b, s', ⟨Z, f', g ≫ u⟦1⟧', mem', mem⟩, hb₁.symm⟩⟩
+      complete_distinguished_triangle_morphism₂ _ _ H mem' φ.f (𝟙 Z) (by simp)
+    exact ⟨MorphismProperty.LeftFraction.mk b s' ⟨_, _, _, mem', mem⟩, hb₁.symm⟩
   ext := by
     rintro X' X Y f₁ f₂ s ⟨Z, g, h, H, mem⟩ hf₁
     have hf₂ : s ≫ (f₁ - f₂) = 0 := by rw [comp_sub, hf₁, sub_self]
@@ -261,11 +262,13 @@ instance [IsTriangulated C] : S.W.HasLeftCalculusOfFractions where
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
 instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
-  nonempty_toSq := by
-    rintro X Y Y' s ⟨Z, f, g, H, mem⟩ u
-    obtain ⟨X', f', h', mem'⟩ := distinguished_cocone_triangle₁ (u ≫ f)
-    obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ _ mem' H u (𝟙 Z) (by simp)
-    exact ⟨⟨X', a, f', ⟨Z, u ≫ f, h', mem', mem⟩, ha₁⟩⟩
+  exists_rightFraction := by
+    rintro X Y φ
+    obtain ⟨Z, f, g, H, mem⟩ := φ.hs
+    obtain ⟨X', f', h', mem'⟩ := distinguished_cocone_triangle₁ (φ.f ≫ f)
+    obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ _
+      mem' H φ.f (𝟙 Z) (by simp)
+    exact ⟨MorphismProperty.RightFraction.mk f' ⟨_, _, _, mem', mem⟩ a, ha₁⟩
   ext := by
     rintro Y Z Z' f₁ f₂ s hs hf₁
     have hf₂ : (f₁ - f₂) ≫ s = 0 := by rw [sub_comp, hf₁, sub_self]

@@ -56,15 +56,17 @@ lemma map_bijective_of_rightOrthogonal (X Y : C) (hY : Y ∈ S.rightOrthogonal.s
     Function.Bijective (L.map : (X ⟶ Y) → _) := by
   constructor
   · intros f₁ f₂ hf
-    rw [MorphismProperty.HasRightCalculusOfFractions.map_eq_iff L S.W] at hf
+    rw [MorphismProperty.RightFraction.map_eq_iff' L S.W] at hf
     obtain ⟨Z, s, hs, eq⟩ := hf
     exact (S.rightOrthogonal_precomp_W_bijective _ hY s hs).1 eq
   · intro g
-    obtain ⟨Z, f, s, hs, eq⟩ := MorphismProperty.HasRightCalculusOfFractions.fac L S.W g
-    obtain ⟨h, H⟩ := (S.rightOrthogonal_precomp_W_bijective _ hY s hs).2 f
+    obtain ⟨φ, hφ⟩ := MorphismProperty.RightFraction.fac L S.W g
+    obtain ⟨h, H⟩ := (S.rightOrthogonal_precomp_W_bijective _ hY φ.s φ.hs).2 φ.f
     dsimp at H
     refine' ⟨h, _⟩
-    simp only [eq, ← H, Functor.map_comp, Localization.isoOfHom_inv_hom_id_assoc]
+    have := Localization.inverts L S.W φ.s φ.hs
+    rw [hφ, ← cancel_epi (L.map φ.s), MorphismProperty.RightFraction.map_s_comp_map, ← H,
+      Functor.map_comp]
 
 end
 
