@@ -183,6 +183,22 @@ example {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G]
   observe : a = b⁻¹⁻¹
   simp [this]
 
+/-! ## Unfolding definitions -/
+
+example {α β γ : Type*} {f : α → β} {g : β → γ} (h : Function.Injective (g ∘ f)) :
+    Function.Injective f := by
+  peel 2 h with _ x y
+  intro hf
+  apply this
+  congrm(g $hf)
+
+example {α β γ : Type*} {f : α → β} {g : β → γ} (h : Function.Surjective (g ∘ f)) :
+    Function.Surjective g := by
+  peel 1 h with _ y
+  fail_if_success peel this
+  obtain ⟨x, rfl⟩ := this
+  exact ⟨f x, rfl⟩
+
 /-! ## Error messages -/
 
 /--
