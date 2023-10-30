@@ -37,8 +37,8 @@ Given `M : Matroid α` ...
     but isn't independent.
 * For `I : Set α` and `X : Set α`, `M.Basis I X` means that `I` is a maximal independent
     subset of `X`.
-* `Finite M` means that `M` has finite ground set.
-* `Nonempty M` means that the ground set of `M` is nonempty.
+* `M.Finite` means that `M` has finite ground set.
+* `M.Nonempty` means that the ground set of `M` is nonempty.
 * `FiniteRk M` means that the bases of `M` are finite.
 * `InfiniteRk M` means that the bases of `M` are infinite.
 * `RkPos M` means that the bases of `M` are nonempty.
@@ -79,7 +79,7 @@ There are a few design decisions worth discussing.
   (for instance, it is harder to prove that something is a matroid in the first place,
   and one must deal with `ℕ∞` rather than `ℕ`).
   For serious work on finite matroids, we provide the typeclasses
-  `[Finite M]` and `[FiniteRk M]` and associated API.
+  `[M.Finite]` and `[FiniteRk M]` and associated API.
 
 ### Cardinality
   Just as with bases of a vector space,
@@ -172,7 +172,7 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
   (Base : Set α → Prop)
   /-- There is at least one `Base` -/
   (exists_base' : ∃ B, Base B)
-  /-- For any bases `B,B'` and `e ∈ B \ B'`, there is some `f ∈ B' \ B` for which `B-e+f`
+  /-- For any bases `B`, `B'` and `e ∈ B \ B'`, there is some `f ∈ B' \ B` for which `B-e+f`
     is a base -/
   (base_exchange' : Matroid.ExchangeProperty Base)
   /-- Every subset `I` of a set `X` for which `I` is contained in a base is contained in a maximal
@@ -188,25 +188,25 @@ variable {α : Type _} {M : Matroid α}
 attribute [pp_dot] Base E
 
 /-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
-class Finite (M : Matroid α) : Prop where
+protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/
   (ground_finite : M.E.Finite)
 
 /-- Typeclass for a matroid having nonempty ground set. Just a wrapper for `M.E.Nonempty`-/
-class Nonempty (M : Matroid α) : Prop where
+protected class Nonempty (M : Matroid α) : Prop where
   /-- The ground set is nonempty -/
   (ground_nonempty : M.E.Nonempty)
 
-theorem ground_nonempty (M : Matroid α) [Nonempty M] : M.E.Nonempty :=
+theorem ground_nonempty (M : Matroid α) [M.Nonempty] : M.E.Nonempty :=
   Nonempty.ground_nonempty
 
-theorem ground_finite (M : Matroid α) [Finite M] : M.E.Finite :=
-  ‹M.Finite›.ground_finite
+theorem ground_finite (M : Matroid α) [M.Finite] : M.E.Finite :=
+  Finite.ground_finite
 
-theorem set_finite (M : Matroid α) [Finite M] (X : Set α) (hX : X ⊆ M.E := by aesop) : X.Finite :=
+theorem set_finite (M : Matroid α) [M.Finite] (X : Set α) (hX : X ⊆ M.E := by aesop) : X.Finite :=
   M.ground_finite.subset hX
 
-instance finite_of_finite [@_root_.Finite α] {M : Matroid α} : Finite M :=
+instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
   ⟨Set.toFinite _⟩
 
 /-- A `FiniteRk` matroid is one whose bases are finite -/
@@ -214,7 +214,7 @@ class FiniteRk (M : Matroid α) : Prop where
   /-- There is a finite base -/
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
 
-instance finiteRk_of_finite (M : Matroid α) [Finite M] : FiniteRk M :=
+instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
   ⟨ M.exists_base'.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground' _ hB)⟩) ⟩
 
 /-- An `InfiniteRk` matroid is one whose bases are infinite. -/
@@ -261,12 +261,13 @@ theorem encard_diff_le_aux (exch : ExchangeProperty Base) (hB₁ : Base B₁) (h
   exact add_le_add_right hencard 1
 termination_by _ => (B₂ \ B₁).encard
 
-/-- For any two sets `B₁,B₂` in a family with the exchange property, the differences `B₁ \ B₂` and
-  `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
+/-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
+and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
 theorem encard_diff_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
-(encard_diff_le_aux exch hB₁ hB₂).antisymm (encard_diff_le_aux exch hB₂ hB₁)
+  (encard_diff_le_aux exch hB₁ hB₂).antisymm (encard_diff_le_aux exch hB₂ hB₁)
 
-/-- Any two sets `B₁,B₂` in a family with the exchange property have the same `ℕ∞`-cardinality. -/
+/-- Any two sets `B₁`, `B₂` in a family with the exchange property have the same
+`ℕ∞`-cardinality. -/
 theorem encard_base_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : B₁.encard = B₂.encard := by
 rw [←encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
      encard_diff_add_encard_inter]
@@ -858,7 +859,7 @@ theorem Basis.iUnion_basis_iUnion {ι : Type _} (X I : ι → Set α) (hI : ∀ 
   rw [insert_subset_iff, iUnion_subset_iff, and_iff_left (fun i ↦ (hI i).indep.subset_ground)]
   exact (hI i).subset_ground hes
 
-theorem Basis.basis_iUnion {ι : Type _} [_root_.Nonempty ι] (X : ι → Set α)
+theorem Basis.basis_iUnion {ι : Type _} [Nonempty ι] (X : ι → Set α)
     (hI : ∀ i, M.Basis I (X i)) : M.Basis I (⋃ i, X i) := by
   convert Basis.iUnion_basis_iUnion X (fun _ ↦ I) (fun i ↦ hI i) _ <;> rw [iUnion_const]
   exact (hI (Classical.arbitrary ι)).indep
