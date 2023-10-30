@@ -44,10 +44,12 @@ open unitInterval
 
 namespace Path
 
+open Function
+
 /-- The type of homotopies between two paths.
 -/
 abbrev Homotopy (p₀ p₁ : Path x₀ x₁) :=
-  ContinuousMap.HomotopyRel p₀.toContinuousMap p₁.toContinuousMap {0, 1}
+  HomotopyRel p₀ p₁ {0, 1}
 #align path.homotopy Path.Homotopy
 
 namespace Homotopy
@@ -56,19 +58,19 @@ section
 
 variable {p₀ p₁ : Path x₀ x₁}
 
-theorem coeFn_injective : @Function.Injective (Homotopy p₀ p₁) (I × I → X) (⇑) :=
+theorem coeFn_injective : @Injective (Homotopy p₀ p₁) (I × I → X) (⇑) :=
   FunLike.coe_injective
 #align path.homotopy.coe_fn_injective Path.Homotopy.coeFn_injective
 
 @[simp]
 theorem source (F : Homotopy p₀ p₁) (t : I) : F (t, 0) = x₀ :=
-  calc F (t, 0) = p₀ 0 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inl rfl)
+  calc F (t, 0) = p₀ 0 := HomotopyRel.eq_fst _ _ (.inl rfl)
   _ = x₀ := p₀.source
 #align path.homotopy.source Path.Homotopy.source
 
 @[simp]
 theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
-  calc F (t, 1) = p₀ 1 := ContinuousMap.HomotopyRel.eq_fst _ _ (.inr rfl)
+  calc F (t, 1) = p₀ 1 := HomotopyRel.eq_fst _ _ (.inr rfl)
   _ = x₁ := p₀.target
 #align path.homotopy.target Path.Homotopy.target
 
@@ -102,19 +104,19 @@ variable {p₀ p₁ p₂ : Path x₀ x₁}
 -/
 @[simps!]
 def refl (p : Path x₀ x₁) : Homotopy p p :=
-  ContinuousMap.HomotopyRel.refl p.toContinuousMap {0, 1}
+  HomotopyRel.refl p.toContinuousMap {0, 1}
 #align path.homotopy.refl Path.Homotopy.refl
 
 /-- Given a `Homotopy p₀ p₁`, we can define a `Homotopy p₁ p₀` by reversing the homotopy.
 -/
 @[simps!]
 def symm (F : Homotopy p₀ p₁) : Homotopy p₁ p₀ :=
-  ContinuousMap.HomotopyRel.symm F
+  HomotopyRel.symm F
 #align path.homotopy.symm Path.Homotopy.symm
 
 @[simp]
 theorem symm_symm (F : Homotopy p₀ p₁) : F.symm.symm = F :=
-  ContinuousMap.HomotopyRel.symm_symm F
+  HomotopyRel.symm_symm F
 #align path.homotopy.symm_symm Path.Homotopy.symm_symm
 
 /--
@@ -122,7 +124,7 @@ Given `Homotopy p₀ p₁` and `Homotopy p₁ p₂`, we can define a `Homotopy p
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
 def trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) : Homotopy p₀ p₂ :=
-  ContinuousMap.HomotopyRel.trans F G
+  HomotopyRel.trans F G
 #align path.homotopy.trans Path.Homotopy.trans
 
 theorem trans_apply (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) (x : I × I) :
@@ -131,19 +133,19 @@ theorem trans_apply (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) (x : I × 
         F (⟨2 * x.1, (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨x.1.2.1, h⟩⟩, x.2)
       else
         G (⟨2 * x.1 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.1.2.2⟩⟩, x.2) :=
-  ContinuousMap.HomotopyRel.trans_apply _ _ _
+  HomotopyRel.trans_apply _ _ _
 #align path.homotopy.trans_apply Path.Homotopy.trans_apply
 
 theorem symm_trans (F : Homotopy p₀ p₁) (G : Homotopy p₁ p₂) :
     (F.trans G).symm = G.symm.trans F.symm :=
-  ContinuousMap.HomotopyRel.symm_trans _ _
+  HomotopyRel.symm_trans _ _
 #align path.homotopy.symm_trans Path.Homotopy.symm_trans
 
 /-- Casting a `Homotopy p₀ p₁` to a `Homotopy q₀ q₁` where `p₀ = q₀` and `p₁ = q₁`. -/
 @[simps!]
 def cast {p₀ p₁ q₀ q₁ : Path x₀ x₁} (F : Homotopy p₀ p₁) (h₀ : p₀ = q₀) (h₁ : p₁ = q₁) :
     Homotopy q₀ q₁ :=
-  ContinuousMap.HomotopyRel.cast F (congr_arg _ h₀) (congr_arg _ h₁)
+  HomotopyRel.cast F (congr_arg _ h₀) (congr_arg _ h₁)
 #align path.homotopy.cast Path.Homotopy.cast
 
 end
@@ -344,7 +346,7 @@ end Homotopic
 `fun _ ↦ x₁`. -/
 @[simps!]
 def toHomotopyConst (p : Path x₀ x₁) :
-    (ContinuousMap.const Y x₀).Homotopy (ContinuousMap.const Y x₁) where
+    (const Y x₀).Homotopy (const Y x₁) where
   toContinuousMap := p.toContinuousMap.comp ContinuousMap.fst
   map_zero_left _ := p.source
   map_one_left _ := p.target
@@ -354,8 +356,8 @@ end Path
 /-- Two constant continuous maps with nonempty domain are homotopic if and only if their values are
 joined by a path in the codomain. -/
 @[simp]
-theorem ContinuousMap.homotopic_const_iff [Nonempty Y] :
-    (ContinuousMap.const Y x₀).Homotopic (ContinuousMap.const Y x₁) ↔ Joined x₀ x₁ := by
+theorem Function.homotopic_const_iff [Nonempty Y] :
+    (const Y x₀).Homotopic (const Y x₁) ↔ Joined x₀ x₁ := by
   inhabit Y
   refine ⟨fun ⟨H⟩ ↦ ⟨⟨(H.toContinuousMap.comp .prodSwap).curry default, ?_, ?_⟩⟩,
     fun ⟨p⟩ ↦ ⟨p.toHomotopyConst⟩⟩ <;> simp
@@ -365,8 +367,8 @@ namespace ContinuousMap.Homotopy
 /-- Given a homotopy `H : f ∼ g`, get the path traced by the point `x` as it moves from
 `f x` to `g x`.
 -/
-def evalAt {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
-    (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
+def evalAt {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : X → Y}
+    (H : f.Homotopy g) (x : X) : Path (f x) (g x) where
   toFun t := H (t, x)
   source' := H.apply_zero x
   target' := H.apply_one x
