@@ -2101,6 +2101,18 @@ instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
 #align ennreal.has_measurable_inv ENNReal.instMeasurableInv
 
+instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
+  measurable_const_smul := by
+    intro c
+    have : ∀ x : ℝ≥0∞, c • x = (c : ℝ≥0∞) • x := fun x ↦ rfl
+    simp_rw [this]
+    exact MeasurableSMul.measurable_const_smul _
+  measurable_smul_const := fun x ↦ by
+    apply Measurable.mul_const
+    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe, ENNReal.coe_ofNNRealHom, ZeroHom.coe_mk, RingHom.id_apply]
+    exact measurable_coe_nnreal_ennreal
+
 end ENNReal
 
 @[measurability]
