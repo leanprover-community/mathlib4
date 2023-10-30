@@ -144,7 +144,7 @@ end Definitions
 
 section Definition_lemmas
 variable {π : ι → Set (Set Ω)} {m : ι → MeasurableSpace Ω} {_ : MeasurableSpace Ω} {μ : Measure Ω}
-  {S : Finset ι}{s : ι → Set Ω}
+  {S : Finset ι} {s : ι → Set Ω}
 
 lemma iIndepSets_iff [MeasurableSpace Ω] (π : ι → Set (Set Ω)) (μ : Measure Ω) :
     iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
@@ -246,8 +246,10 @@ lemma IndepFun_iff {β γ} [MeasurableSpace Ω] [mβ : MeasurableSpace β] [mγ 
   rw [IndepFun_iff_Indep, Indep_iff]
 
 lemma IndepFun.meas_inter [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ] {f : Ω → β} {g : Ω → γ}
-  (hfg : IndepFun f g μ) {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s)
-  (ht : MeasurableSet[mγ.comap g] t) : μ (s ∩ t) = μ s * μ t := (IndepFun_iff _ _ _).1 hfg _ _ hs ht
+    (hfg : IndepFun f g μ) {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s)
+    (ht : MeasurableSet[mγ.comap g] t) :
+    μ (s ∩ t) = μ s * μ t :=
+  (IndepFun_iff _ _ _).1 hfg _ _ hs ht
 
 end Definition_lemmas
 
