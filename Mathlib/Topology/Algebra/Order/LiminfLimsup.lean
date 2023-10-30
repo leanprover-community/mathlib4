@@ -20,7 +20,7 @@ import Mathlib.Topology.Order.Basic
 ## Main declarations
 
 * `BoundedLENhdsClass`: Typeclass stating that neighborhoods are eventually bounded above.
-* `bounded_ge_nhds_class`: Typeclass stating that neighborhoods are eventually bounded below.
+* `BoundedGENhdsClass`: Typeclass stating that neighborhoods are eventually bounded below.
 
 ## Implementation notes
 
