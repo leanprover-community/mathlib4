@@ -3,7 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Metrizable
+import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Data.Nat.Lattice
 
 #align_import topology.metric_space.metrizable_uniformity from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
@@ -140,7 +141,8 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
       intro hLm
       rw [mem_setOf_eq, take_all_of_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
-          sum_eq_zero_iff, ← all₂_iff_forall, all₂_zipWith, ← chain_append_singleton_iff_forall₂]
+          sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
+          ← chain_append_singleton_iff_forall₂]
           at hm <;>
         [skip; simp]
       exact hd₀ (hm.rel (mem_append.2 <| Or.inr <| mem_singleton_self _))

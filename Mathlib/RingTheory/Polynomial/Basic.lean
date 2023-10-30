@@ -547,7 +547,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
   · intro hf
     rw [← sum_monomial_eq f]
     refine' (I.map C : Ideal R[X]).sum_mem fun n _ => _
-    simp [← C_mul_X_pow_eq_monomial]
+    simp only [← C_mul_X_pow_eq_monomial, ne_eq]
     rw [mul_comm]
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 set_option linter.uppercaseLean3 false in

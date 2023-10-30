@@ -163,7 +163,8 @@ theorem revzip_powersetAux_perm_aux' {l : List α} :
 theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
     revzip (powersetAux l₁) ~ revzip (powersetAux l₂) := by
   haveI := Classical.decEq α
-  simp [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
+  simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p,
+    ge_iff_le]
   exact (powersetAux_perm p).map _
 #align multiset.revzip_powerset_aux_perm Multiset.revzip_powersetAux_perm
 
@@ -184,7 +185,8 @@ theorem powersetCardAux_eq_map_coe {n} {l : List α} :
 @[simp]
 theorem mem_powersetCardAux {n} {l : List α} {s} : s ∈ powersetCardAux n l ↔ s ≤ ↑l ∧ card s = n :=
   Quotient.inductionOn s <| by
-    simp [powersetCardAux_eq_map_coe, Subperm]
+    simp only [quot_mk_to_coe, powersetCardAux_eq_map_coe, List.mem_map, mem_sublistsLen,
+      coe_eq_coe, coe_le, Subperm, exists_prop, coe_card]
     exact fun l₁ =>
       ⟨fun ⟨l₂, ⟨s, e⟩, p⟩ => ⟨⟨_, p, s⟩, p.symm.length_eq.trans e⟩,
        fun ⟨⟨l₂, p, s⟩, e⟩ => ⟨_, ⟨s, p.length_eq.trans e⟩, p⟩⟩

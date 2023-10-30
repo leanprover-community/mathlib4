@@ -386,18 +386,3 @@ attribute [simp] fpowerSeries
 end ContinuousLinearMap
 
 end Linear
-
-section Geometric
-
-variable (𝕜) [NontriviallyNormedField 𝕜]
-  (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [NormOneClass A]
-
-/-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`.-/
-def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
-  fun n ↦ ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A
-
-lemma formalMultilinearSeries_geometric_apply_norm (n : ℕ) :
-    ‖formalMultilinearSeries_geometric 𝕜 A n‖ = 1 := by
-  apply @ContinuousMultilinearMap.norm_mkPiAlgebraFin _ _ (fun _ ↦ A)
-
-end Geometric
