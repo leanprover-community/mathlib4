@@ -150,12 +150,12 @@ open IntermediateField
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · have := hFEp.adjoin_rootSet
-    simp only [rootSet_zero, Algebra.adjoin_empty] at this
+    rw [rootSet_zero, Algebra.adjoin_empty] at this
     exact Normal.of_algEquiv
       (AlgEquiv.ofBijective (Algebra.ofId F E) (Algebra.bijective_algebraMap_iff.2 this.symm))
   refine normal_iff.mpr fun x ↦ ?_
-  have hFE : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
-  have hx : IsIntegral F x := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x
+  haveI : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
+  have hx := isIntegral_of_finite F x
   let L := (p * minpoly F x).SplittingField
   have hL := splits_of_splits_mul' _ ?_ (SplittingField.splits (p * minpoly F x))
   · let j : E →ₐ[F] L := IsSplittingField.lift E p hL.1
