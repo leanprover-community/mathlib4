@@ -1027,25 +1027,20 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
   blocks_sum := by simp only [Composition.blocksFun, get_map, Composition.gather]
 #align composition.sigma_composition_aux Composition.sigmaCompositionAux
 
--- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
-set_option linter.deprecated false in
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) :
     Composition.length (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩) =
       Composition.blocksFun b i :=
-  show List.length (nthLe (splitWrtComposition a.blocks b) i _) = blocksFun b i by
-    rw [nthLe_map_rev List.length, nthLe_of_eq (map_length_splitWrtComposition _ _)]; rfl
+  show List.length ((splitWrtComposition a.blocks b).get ⟨i, _⟩) = blocksFun b i by
+    rw [get_map_rev List.length, get_of_eq (map_length_splitWrtComposition _ _)]; rfl
 #align composition.length_sigma_composition_aux Composition.length_sigmaCompositionAux
 
--- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
-set_option linter.deprecated false in
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
     blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
         ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
       blocksFun a (embedding b i j) :=
-  show get (nthLe _ _ _) ⟨_, _⟩  = nthLe a.blocks _ _ by
-    simp_rw [nthLe]
+  show get (get _ ⟨_, _⟩) ⟨_, _⟩  = a.blocks.get ⟨_, _⟩ by
     rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
 #align composition.blocks_fun_sigma_composition_aux Composition.blocksFun_sigmaCompositionAux
 
