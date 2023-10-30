@@ -730,7 +730,7 @@ theorem get_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
   get_splitWrtCompositionAux _ _ _
 #align list.nth_le_split_wrt_composition List.get_splitWrtComposition'
 
--- porting note: restatement of `nthLe_splitWrtComposition`
+-- porting note: restatement of `get_splitWrtComposition`
 theorem get_splitWrtComposition (l : List α) (c : Composition n)
     (i : Fin (l.splitWrtComposition c).length) :
     get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=

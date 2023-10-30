@@ -596,7 +596,6 @@ theorem compChangeOfVariables_length (m M N : ℕ) {i : Σ n, Fin n → ℕ}
   simp only [Composition.length, map_ofFn, length_ofFn]
 #align formal_multilinear_series.comp_change_of_variables_length FormalMultilinearSeries.compChangeOfVariables_length
 
-set_option linter.deprecated false in
 theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
     (hi : i ∈ compPartialSumSource m M N) (j : Fin i.1) :
     (compChangeOfVariables m M N i hi).2.blocksFun
@@ -604,7 +603,8 @@ theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
-  simp only [map_ofFn, List.nthLe_ofFn, Function.comp_apply]
+  simp only [map_ofFn, List.get_ofFn, Function.comp_apply]
+  rfl
 #align formal_multilinear_series.comp_change_of_variables_blocks_fun FormalMultilinearSeries.compChangeOfVariables_blocksFun
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
@@ -1053,8 +1053,9 @@ theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.len
     blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
         ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
       blocksFun a (embedding b i j) :=
-  show nthLe (nthLe _ _ _) _ _ = nthLe a.blocks _ _ by
-    rw [nthLe_of_eq (nthLe_splitWrtComposition _ _ _), nthLe_drop', nthLe_take']; rfl
+  show get (nthLe _ _ _) ⟨_, _⟩  = nthLe a.blocks _ _ by
+    simp_rw [nthLe]
+    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
 #align composition.blocks_fun_sigma_composition_aux Composition.blocksFun_sigmaCompositionAux
 
 set_option linter.deprecated false in
@@ -1088,7 +1089,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
           take (sum (take i b.blocks)) (take (sum (take (i + 1) b.blocks)) a.blocks) := by
         rw [take_take, min_eq_left]
         apply monotone_sum_take _ (Nat.le_succ _)
-      rw [this, nthLe_map', nthLe_splitWrtComposition, ←
+      rw [this, nthLe_map', nthLe, get_splitWrtComposition, ←
         take_append_drop (sum (take i b.blocks)) (take (sum (take (Nat.succ i) b.blocks)) a.blocks),
         sum_append]
       congr
@@ -1104,8 +1105,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    simp_rw [← nthLe_eq]
-    rw [nthLe_of_eq (nthLe_splitWrtComposition _ _ _), nthLe_drop', nthLe_take _ _ C]
+    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take _ _ C]
 #align composition.size_up_to_size_up_to_add Composition.sizeUpTo_sizeUpTo_add
 
 /-- Natural equivalence between `(Σ (a : composition n), composition a.length)` and
