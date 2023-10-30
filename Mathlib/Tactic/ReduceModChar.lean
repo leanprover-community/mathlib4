@@ -251,17 +251,14 @@ characteristic, for improved performance compared to trying to synthesise a `Cha
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
 
 elab_rules : tactic
-| `(tactic|reduce_mod_char) => unsafe do
-  reduceModCharTarget
-| `(tactic| reduce_mod_char $loc) => unsafe do
-  withMainContext do
-    match expandOptLocation loc with
-    | Location.targets hyps target =>
-      if target then reduceModCharTarget
-      (← getFVarIds hyps).forM reduceModCharHyp
-    | Location.wildcard =>
-      reduceModCharTarget
-      (← (← getMainGoal).getNondepPropHyps).forM reduceModCharHyp
+| `(tactic| reduce_mod_char $[$loc]?) => unsafe do
+  match expandOptLocation (Lean.mkOptionalNode loc) with
+  | Location.targets hyps target => do
+    (← getFVarIds hyps).forM reduceModCharHyp
+    if target then reduceModCharTarget
+  | Location.wildcard => do
+    (← (← getMainGoal).getNondepPropHyps).forM reduceModCharHyp
+    reduceModCharTarget
 
 end ReduceModChar
 
