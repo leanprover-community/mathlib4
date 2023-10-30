@@ -101,7 +101,7 @@ abbrev AEval' := AEval R M φ
 The canonical linear equivalence between `M` and `Module.AEval' φ` as an `R`-module,
 where `φ : M →ₗ[R] M`.
 -/
-abbrev AEval'.of := AEval.of R M φ
+abbrev AEval'.of : M ≃ₗ[R] AEval' φ := AEval.of R M φ
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
 lemma AEval'.X_smul_of (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (φ m) :=
   AEval.X_smul_of _ _
