@@ -104,8 +104,8 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
     · simp [bits_bit h, ih]
 
 theorem toNat_eq_foldr_reverse {n : ℕ} (v : BitVec n) :
-    v.toNat = v.toList.foldr bit 0 := by
-  rw [←eq_foldr_reverse]
+    v.toNat = v.toNat.bits.foldr bit 0 :=
+  (foldr_bit_bits ..).symm
 #align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
