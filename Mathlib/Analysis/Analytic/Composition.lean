@@ -1033,7 +1033,7 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
       (by
         rw [← a.blocks.join_splitWrtComposition b]
         exact mem_join_of_mem (List.get_mem _ _ _) hi)
-  blocks_sum := by simp only [Composition.blocksFun, nthLe_map', Composition.gather]; rfl
+  blocks_sum := by simp only [Composition.blocksFun, get_map, Composition.gather]
 #align composition.sigma_composition_aux Composition.sigmaCompositionAux
 
 -- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
