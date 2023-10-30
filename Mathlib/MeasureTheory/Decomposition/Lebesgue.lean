@@ -314,7 +314,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
       simp only [Pi.smul_apply, ne_eq]
       rw [← ENNReal.smul_def, ← smul_assoc, smul_eq_mul, mul_inv_cancel hr, one_smul]
   · rw [singularPart, singularPart, dif_neg hl, dif_neg]
-    refine' fun hl' => hl _
+    refine fun hl' => hl ?_
     rw [← inv_smul_smul₀ hr ν]
     infer_instance
 
