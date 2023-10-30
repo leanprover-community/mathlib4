@@ -31,10 +31,6 @@ and give simp lemmas characterising it.
 For convenience, we also provide
 `limitIsoLimitCurryCompLim G : limit G ≅ limit ((curry.obj G) ⋙ lim)`
 in terms of the uncurried functor.
-
-## Future work
-
-The dual statement.
 -/
 
 
