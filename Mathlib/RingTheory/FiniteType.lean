@@ -722,7 +722,7 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
   have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤
   · intro a _
     obtain ⟨(y : AEval' f), rfl⟩ := f_surj a
-    rw [←AEval'.X_smul]
+    rw [←AEval'.X_smul₂]
     exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
   obtain ⟨F, hFa, hFb⟩ :=
     Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
@@ -736,7 +736,7 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
   suffices (F - 1) • m' = 0 by
     have Fmzero := hFb m (by simp)
     rwa [← sub_add_cancel F 1, add_smul, one_smul, ←hm', this, zero_add] at Fmzero
-  rw [← hG, mul_smul, AEval'.X_smul, hm, smul_zero]
+  rw [← hG, mul_smul, AEval'.X_smul₁, hm, map_zero, smul_zero]
 #align module.finite.injective_of_surjective_endomorphism Module.Finite.injective_of_surjective_endomorphism
 
 end Vasconcelos

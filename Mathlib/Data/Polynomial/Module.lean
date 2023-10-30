@@ -28,8 +28,11 @@ open Polynomial BigOperators
 namespace Module
 /--
 Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
-Then `Module.AEval R M a` is the `R[X]`-module with carrier `M`,
-where the action of `f : R[X]` is `f • m = (aeval a f) • m`.
+Loosely speaking, `Module.AEval R M a` is the `R[X]`-module with element `m : M`,
+where the action of a polynomial $f$ is given by $f • m = f(a) • m$.
+
+More precisely, `Module.AEval R M a` has elements `Module.AEval.of R M a m` for `m : M`,
+and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 -/
 @[nolint unusedArguments]
 def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
@@ -59,15 +62,22 @@ def of : M ≃ₗ[R] AEval R M a :=
 
 variable {R M}
 
-lemma smul_def (f : R[X]) (m : M) : f • (of R M a m) = aeval a f • m := by
-  rfl
+lemma smul_def₁ (f : R[X]) (m : M) : f • (of R M a m) = of R M a (aeval a f • m) := by rfl
 
-lemma X_smul (m : M) : (X : R[X]) • (of R M a m) = a • m := by simp [smul_def]
+lemma smul_def₂ (f : R[X]) (m : AEval R M a) :
+  (of R M a).symm (f • m) = (aeval a f • (of R M a).symm m) := by rfl
+
+lemma X_smul₁ (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
+  rw [smul_def₁, aeval_X]
+
+lemma X_smul₂ (m : AEval R M a) : (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
+  rw [smul_def₂, aeval_X]
 
 instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
   smul_assoc r f m := by
-    change aeval a (r • f) • (of R M a).invFun m = r • (aeval a f) • (of R M a).invFun m
-    simp
+    apply (of R M a).symm.injective
+    rw [smul_def₂, map_smul, smul_assoc]
+    rfl
 
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
@@ -76,18 +86,22 @@ end AEval
 
 variable (φ : M →ₗ[R] M)
 /--
-Given and `R`-module `M` and a linear map `φ : M →ₗ[R] M`, `Module.AEval' φ` is the
-`R[X]`-module with elements `⟨m⟩` for `m : M` in which the action of `X` is given by `φ`.
-I.e. `X • ⟨m⟩ = ⟨↑φ m⟩`.
+Given and `R`-module `M` and a linear map `φ : M →ₗ[R] M`, `Module.AEval' φ` is loosely speaking
+the `R[X]`-module with elements `m : M`, where the action of a polynomial $f$ is given by
+$f • m = f(a) • m$.
+
+More precisely, `Module.AEval' φ` has elements `Module.AEval'.of φ m` for `m : M`,
+and the action of `f` is `f • (of φ m) = of φ ((aeval φ f) • m)`.
 -/
 /-
 `Module.AEval'` is defined as a special case of `Module.AEval` in which the `R`-algebra is
 `M →ₗ[R] M`. Lemmas involving `Module.AEval` may be applied to `Module.AEval'`.
 -/
 abbrev AEval' := AEval R M φ
+abbrev AEval'.of := AEval.of R M φ
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
-lemma AEval'.X_smul (m : M) : (X : R[X]) • (AEval.of R M φ m) = φ m := by
-  rw [AEval.X_smul]; rfl
+lemma AEval'.X_smul₁ (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (φ m) := AEval.X_smul₁ _ _
+lemma AEval'.X_smul₂ (m : AEval' φ) : (AEval'.of φ).symm ((X : R[X]) • m) = φ m := AEval.X_smul₂ _ _
 instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
 
 end Module
