@@ -27,16 +27,6 @@ namespace CategoryTheory
 
 open Category
 
-namespace Functor
-
-lemma congr_map_conjugate {C D : Type _} [Category C] [Category D] {F₁ F₂ : C ⥤ D}
-    (h : F₁ = F₂) {X Y : C} (f : X ⟶ Y) :
-    F₁.map f = eqToHom (by congr) ≫ F₂.map f ≫ eqToHom (by symm; congr) := by
-  subst h
-  simp
-
-end Functor
-
 namespace MorphismProperty
 
 variable {C D : Type _} [Category C] [Category D]
