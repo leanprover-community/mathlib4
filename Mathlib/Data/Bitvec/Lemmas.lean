@@ -93,8 +93,6 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   rw [bits, binaryRec_of_ne_zero (h:=h)]
   simp
 
-#eval (Nat.bits 8).reverse.foldr bit 0 -- gives `1`
-
 @[simp] lemma foldr_bit_bits (v : Nat) :
     v.bits.foldr bit 0 = v := by
   induction' v using Nat.binaryRec with b v ih
