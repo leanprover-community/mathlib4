@@ -141,6 +141,12 @@ theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g
   λ h => h.comp hg.injective⟩
 #align function.injective.of_comp_iff' Function.Injective.of_comp_iff'
 
+theorem Injective.of_comp_right {g : γ → α} (I : Injective (f ∘ g)) (hg : Surjective g) :
+    Injective f := fun x y h ↦ by
+  obtain ⟨x, rfl⟩ := hg x
+  obtain ⟨y, rfl⟩ := hg y
+  exact congr_arg g (I h)
+
 /-- Composition by an injective function on the left is itself injective. -/
 theorem Injective.comp_left {g : β → γ} (hg : Function.Injective g) :
     Function.Injective ((· ∘ ·) g : (α → β) → α → γ) :=
@@ -185,8 +191,8 @@ theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
     hf.surjective.comp⟩
 #align function.surjective.of_comp_iff' Function.Surjective.of_comp_iff'
 
-theorem Surjective.of_comp_left {g : β → γ} (S : Surjective (g ∘ f)) (hg : Injective g) :
-    Surjective f := fun b ↦ let ⟨a, ha⟩ := S (g b); ⟨a, hg ha⟩
+theorem Surjective.of_comp_left {g : γ → α} (S : Surjective (f ∘ g)) (hf : Injective f) :
+    Surjective g := fun a ↦ let ⟨c, hc⟩ := S (f a); ⟨c, hf hc⟩
 
 instance decidableEqPfun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
     DecidableEq (∀ hp, α hp)
