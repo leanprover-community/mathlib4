@@ -578,22 +578,21 @@ variable [IsProbabilityMeasure μ]
 
 theorem iIndepSet_iff_iIndepSets_singleton {f : ι → Set Ω} (hf : ∀ i, MeasurableSet (f i)) :
     iIndepSet f μ ↔ iIndepSets (fun i ↦ {f i}) μ :=
-  ⟨iIndep.iIndepSets fun _ ↦ rfl,
-    iIndepSets.iIndep _ (fun i ↦ generateFrom_le <| by rintro t (rfl : t = _); exact hf _) _
-      (fun _ ↦ IsPiSystem.singleton _) fun _ ↦ rfl⟩
+  kernel.iIndepSet_iff_iIndepSets_singleton hf
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_set_iff_Indep_sets_singleton ProbabilityTheory.iIndepSet_iff_iIndepSets_singleton
 
 theorem iIndepSet_iff_meas_biInter {f : ι → Set Ω} (hf : ∀ i, MeasurableSet (f i)) :
-    iIndepSet f μ ↔ ∀ s, μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) :=
-  (iIndepSet_iff_iIndepSets_singleton hf).trans iIndepSets_singleton_iff
+    iIndepSet f μ ↔ ∀ s, μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
+  simp_rw [iIndepSet, kernel.iIndepSet_iff_meas_biInter hf, ae_dirac_eq, Filter.eventually_pure,
+    kernel.const_apply]
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_set_iff_measure_Inter_eq_prod ProbabilityTheory.iIndepSet_iff_meas_biInter
 
 theorem iIndepSets.iIndepSet_of_mem {π : ι → Set (Set Ω)} {f : ι → Set Ω}
     (hfπ : ∀ i, f i ∈ π i) (hf : ∀ i, MeasurableSet (f i))
     (hπ : iIndepSets π μ) : iIndepSet f μ :=
-  (iIndepSet_iff_meas_biInter hf).2 fun _t ↦ hπ.meas_biInter _ fun _i _ ↦ hfπ _
+  kernel.iIndepSets.iIndepSet_of_mem hfπ hf hπ
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_sets.Indep_set_of_mem ProbabilityTheory.iIndepSets.iIndepSet_of_mem
 
