@@ -15,6 +15,73 @@ to the file `Mathlib.MeasureTheory.Measure.Portmanteau`.
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
 
+noncomputable def ENNReal.truncateToReal (t x : ℝ≥0∞) : ℝ :=
+  (min t x).toReal
+
+lemma ENNReal.truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le : x ≤ t) :
+    ENNReal.truncateToReal t x = x.toReal := by
+  have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
+  have obs : min t x ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
+
+lemma ENNReal.truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
+    ENNReal.truncateToReal t x ≤ t.toReal := by
+  rw [ENNReal.truncateToReal]
+  apply (toReal_le_toReal _ t_ne_top).mpr (min_le_left t x)
+  simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+
+lemma ENNReal.truncateToReal_nonneg {t x : ℝ≥0∞} :
+    0 ≤ ENNReal.truncateToReal t x := toReal_nonneg
+
+lemma ENNReal.monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) :
+    Monotone (ENNReal.truncateToReal t) := by
+  intro x y x_le_y
+  have obs_x : min t x ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  have obs_y : min t y ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  exact (ENNReal.toReal_le_toReal obs_x obs_y).mpr (min_le_min_left t x_le_y)
+
+-- Q: Missing?
+lemma ENNReal.continuousOn_toReal :
+    ContinuousOn (fun (x : ℝ≥0∞) ↦ x.toReal) { x | x ≠ ∞ } := by
+  change ContinuousOn (((↑) : ℝ≥0 → ℝ) ∘ (fun (x : ℝ≥0∞) ↦ x.toNNReal)) { x | x ≠ ∞ }
+  apply NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
+
+lemma ENNReal.continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) :
+    Continuous (ENNReal.truncateToReal t) := by
+  apply ENNReal.continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
+  simp [t_ne_top]
+
+lemma bar {ι : Type*} {F : Filter ι} [NeBot F]  {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) {xs : ι → ℝ≥0∞}
+  (le_b : ∀ i, xs i ≤ b) :
+    F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
+  have liminf_le : F.liminf xs ≤ b := by
+    apply liminf_le_of_le
+    · use 0
+      simp only [ge_iff_le, zero_le, eventually_map, eventually_true]
+    · intro y h
+      obtain ⟨i, hi⟩ := h.exists
+      exact hi.trans (le_b i)
+  have key : ∀ i, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+    intro i
+    rw [ENNReal.truncateToReal_eq_toReal b_ne_top (le_b i)]
+  have key' : (F.liminf xs).toReal = ENNReal.truncateToReal b (F.liminf xs) := by
+    rw [ENNReal.truncateToReal_eq_toReal b_ne_top liminf_le]
+  simp_rw [key, key']
+  have := @Monotone.map_liminf_of_continuousAt ι ℝ≥0∞ ℝ F _ _ _ _ _ _ _ _
+          (ENNReal.monotone_truncateToReal b_ne_top) xs
+          (ENNReal.continuous_truncateToReal b_ne_top).continuousAt ?_ ?_
+  · rw [this]
+    rfl
+  · use b
+    simp only [eventually_map]
+    exact eventually_of_forall le_b
+  · use 0
+    apply eventually_of_forall
+    intro y
+    simp only [ge_iff_le, zero_le]
 
 section yet_another_map_liminf_lemma
 
