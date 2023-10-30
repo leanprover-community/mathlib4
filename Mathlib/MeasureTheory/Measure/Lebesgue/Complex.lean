@@ -95,15 +95,12 @@ protected theorem polarCoord_apply (a : ℂ) :
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
   rfl
 
-@[simp]
 theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdAddHom.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
-@[simp]
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
-@[simp]
 theorem equivRealProdClm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdClm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
@@ -113,7 +110,7 @@ protected theorem polarCoord_source :
 @[simp]
 protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
-  simp [Complex.polarCoord, mul_add, mul_assoc]
+  simp [Complex.polarCoord, equivRealProdClm_symm_apply, mul_add, mul_assoc]
 
 theorem polardCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
