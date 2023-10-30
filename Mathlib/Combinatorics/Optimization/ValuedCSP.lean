@@ -21,7 +21,7 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 * `ValuedCsp.Term.evalSolution`: An evaluation of the VCSP term for given solution.
 * `ValuedCsp.Instance`: An instance of a VCSP problem over given template.
 * `ValuedCsp.Instance.evalSolution`: An evaluation of the VCSP instance for given solution.
-* `ValuedCsp.Instance.OptimumSolution`: Is given solution a minimum of the VCSP instance?
+* `ValuedCsp.Instance.IsOptimumSolution`: Is given solution a minimum of the VCSP instance?
 
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
@@ -68,96 +68,64 @@ def ValuedCsp.Instance.IsOptimumSolution {Γ : ValuedCsp D C} {ι : Type*}
     (I : Γ.Instance ι) (x : ι → D) : Prop :=
   ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
 
-/-- TODO description -/
+/-- Function `f` has Max-Cut property at labels `a` and `b` if and only if `argmin f` is exactly
+`{ ![a, b] , ![b, a] }` -/
 def Function.HasMaxCutPropertyAt (f : (Fin 2 → D) → C) (a b : D) : Prop :=
-  f ![a, b] = f ![b, a] ∧  -- `argmin f` is exactly `{ ![a, b] , ![b, a] }`
+  f ![a, b] = f ![b, a] ∧
     ∀ x y : D, f ![a, b] ≤ f ![x, y] ∧ (f ![a, b] = f ![x, y] → a = x ∧ b = y ∨ a = y ∧ b = x)
 
-/-- TODO description -/
+/-- Function `f` has Max-Cut property at some two non-identical labels. -/
 def Function.HasMaxCutProperty (f : (Fin 2 → D) → C) : Prop :=
   ∃ a b : D, a ≠ b ∧ f.HasMaxCutPropertyAt a b
 
 /-- TODO description -/
-def FractionalOperation (D : Type*) (m k : ℕ) : Type _ :=
-  (Fin m → D) → (Fin k → D)
+def FractionalOperation (D : Type*) (m : ℕ) : Type _ :=
+  List (((Fin m → D) → D) × ℕ)
 
 /-- TODO description -/
-def FractionalOperation.tt {D : Type*} {m k n : ℕ}
-    (ω : FractionalOperation D m k) (x : (Fin m → (Fin n → D))) :
-    (Fin k → (Fin n → D)) :=
-  Function.swap (fun (i : Fin n) => ω (Function.swap x i))
+def FractionalOperation.IsValid {m : ℕ} (ω : FractionalOperation D m) : Prop :=
+  ω ≠ [] ∧ ω.Forall (·.snd ≠ 0)
 
 /-- TODO description -/
-def Function.AdmitsFractional {n m k : ℕ}
-    (f : (Fin n → D) → C) (ω : FractionalOperation D m k) : Prop :=
+def function_weigth_tt_aux {m n : ℕ} (g : ((Fin m → D) → D) × ℕ) (x' : (Fin n → (Fin m → D))) :
+    (Fin n → D) × ℕ :=
+  ⟨fun i => g.fst (x' i), g.snd⟩
+
+/-- TODO description -/
+def FractionalOperation.tt {m n : ℕ} (ω : FractionalOperation D m) (x : (Fin m → (Fin n → D))) :
+    List ((Fin n → D) × ℕ) :=
+  ω.map (fun g => function_weigth_tt_aux g (Function.swap x))
+
+/-- TODO description -/
+def Function.AdmitsFractional {n m : ℕ} (f : (Fin n → D) → C) (ω : FractionalOperation D m) :
+    Prop :=
   ∀ x : (Fin m → (Fin n → D)),
-    m • ((List.finRange k).map (fun i => f (ω.tt x i))).sum ≤
-    k • ((List.finRange m).map (fun i => f (     x i))).sum
+    m • ((ω.tt x).map (fun r => r.snd • f r.fst)).sum ≤
+    (ω.map Prod.snd).sum • ((List.finRange m).map (fun i => f (x i))).sum
 
 /-- TODO description -/
-def FractionalOperation.IsFractionalPolymorphismFor {m k : ℕ}
-    (ω : FractionalOperation D m k) (Γ : ValuedCsp D C) : Prop :=
+def FractionalOperation.IsFractionalPolymorphismFor {m : ℕ}
+    (ω : FractionalOperation D m) (Γ : ValuedCsp D C) : Prop :=
   ∀ f ∈ Γ, f.snd.AdmitsFractional ω
 
 /-- TODO description -/
-def FractionalOperation.IsSymmetric {m k : ℕ}
-    (ω : FractionalOperation D m k) : Prop :=
-  ∀ x y : (Fin m → D), List.ofFn x ~ List.ofFn y → ω x = ω y
+def FractionalOperation.IsSymmetric {m : ℕ} (ω : FractionalOperation D m) : Prop :=
+  ∀ x y : (Fin m → D), List.ofFn x ~ List.ofFn y → ω.Forall (fun g => g.fst x = g.fst y)
 
 /-- TODO description -/
-def FractionalOperation.IsSymmetricFractionalPolymorphismFor {m k : ℕ}
-    (ω : FractionalOperation D m k) (Γ : ValuedCsp D C) : Prop :=
+def FractionalOperation.IsSymmetricFractionalPolymorphismFor {m : ℕ}
+    (ω : FractionalOperation D m) (Γ : ValuedCsp D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
 
-lemma apply222tt (ω : FractionalOperation D 2 2) (a b c d : D) :
-    ω.tt ![ ![a, b] , ![c, d] ] =
-    ![ ![ ω ![a, c] 0 , ω ![b, d] 0 ] , ![ ω ![a, c] 1 , ω ![b, d] 1 ] ] := by
-  ext i j
-  match j with
-  | 0 =>
-    have h0 : ∀ k : Fin 2, ![ ![a, b] , ![c, d] ] k 0 = ![ a , c ] k
-    · intro k
-      match k with
-      | 0 => rfl
-      | 1 => rfl
-    match i with
-    | 0 => simp [FractionalOperation.tt, Function.swap, h0]
-    | 1 => simp [FractionalOperation.tt, Function.swap, h0]
-  | 1 =>
-    have h1 : ∀ k : Fin 2, ![ ![a, b] , ![c, d] ] k 1 = ![ b , d ] k
-    · intro k
-      match k with
-      | 0 => rfl
-      | 1 => rfl
-    match i with
-    | 0 => simp [FractionalOperation.tt, Function.swap, h1]
-    | 1 => simp [FractionalOperation.tt, Function.swap, h1]
-
-private lemma two_nsmul_le_two_nsmul {C : Type*} {x y : C}
-    [LinearOrderedAddCommMonoid C] [CovariantClass C C (· + ·) (· < ·)]
-    (hyp : 2 • x ≤ 2 • y) : x ≤ y :=
-  le_of_nsmul_le_nsmul (by decide) hyp
-
-private lemma todo_name [IsLeftCancelAdd C] {x x' y y' : C}
-    (hxy : x + y ≤ x' + y') (hx : x > x') (hy : y > y') : False := by
-  have impossible : x + y < x + y
-  · apply hxy.trans_lt
-    apply (OrderedAddCommMonoid.add_le_add_left y' y (le_of_lt hy) x').trans_lt
-    rw [add_comm x', add_comm x]
-    apply lt_of_le_of_ne
-    · exact add_le_add (le_of_eq rfl) (le_of_lt hx)
-    rw [add_ne_add_right]
-    exact ne_of_lt hx
-  exact LT.lt.false impossible
+attribute [pp_dot] Nat.succ List.length List.get List.sum
 
 lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
     [LinearOrderedAddCommMonoid C] [IsLeftCancelAdd C]
-    {f : (Fin 2 → D) → C} {ω : FractionalOperation D 2 2}
-    (mcf : f.HasMaxCutProperty) (symmega : ω.IsSymmetric) :
+    {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)
+    {ω : FractionalOperation D 2} (valid : ω.IsValid) (symmega : ω.IsSymmetric) :
     ¬ f.AdmitsFractional ω := by
-  intro contr
   rcases mcf with ⟨a, b, hab, mcfab⟩
-  have cclass : CovariantClass C C (· + ·) (· < ·)
+  have cclass : CovariantClass C C (· + ·) (· < ·) -- TODO see whether necessary
   · constructor
     intro x y z hyz
     show x + y < x + z
@@ -169,45 +137,32 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
       apply add_left_cancel
       exact contr
     exact Ne.lt_of_le hne hle
-  have tt_le := two_nsmul_le_two_nsmul (contr ![ ![a, b] , ![b, a] ])
-  clear contr
-  simp only [FractionalOperation.tt, Function.swap] at tt_le
-  /-rw [
-    show
-      List.map (f ∘ ![ ![a, b] , ![b, a] ]) (List.finRange 2) =
-      [ f ![a, b] , f ![b, a] ] by
-      rfl,
-    show
-      List.sum [ f ![a, b] , f ![b, a] ] =
-      f ![a, b] + f ![b, a] by
-      simp,
-    apply222tt,
-    show ω ![b, a] = ω ![a, b] by
-      apply symmega
-      apply List.Perm.swap,
-    show
-      List.map (f ∘ ![![ω ![a, b] 0, ω ![a, b] 0], ![ω ![a, b] 1, ω ![a, b] 1]]) (List.finRange 2) =
-      [ f ![ ω ![a, b] 0 , ω ![a, b] 0 ] , f ![ ω ![a, b] 1 , ω ![a, b] 1 ] ] by
-      rfl,
-    show
-      List.sum [ f ![ ω ![a, b] 0 , ω ![a, b] 0 ] , f ![ ω ![a, b] 1 , ω ![a, b] 1 ] ] =
-      f ![ ω ![a, b] 0, ω ![a, b] 0 ] + f ![ ω ![a, b] 1, ω ![a, b] 1 ] by
-      simp
-  ] at tt_le
-  have wrong0 : f ![ω ![a, b] 0, ω ![a, b] 0] > f ![a, b]
-  · obtain ⟨fle, fne⟩ := mcfab.right (ω ![a, b] 0) (ω ![a, b] 0)
-    refine Ne.lt_of_le ?_neq0 fle
-    intro equ
-    rcases fne equ with ⟨ha0, hb0⟩ | ⟨ha0, hb0⟩ <;>
-    · rw [← hb0] at ha0
-      exact hab ha0
-  have wrong1 : f ![ω ![a, b] 1, ω ![a, b] 1] > f ![b, a]
-  · obtain ⟨fle, fne⟩ := mcfab.right (ω ![a, b] 1) (ω ![a, b] 1)
-    rw [← mcfab.left]
-    refine Ne.lt_of_le ?_neq1 fle
-    intro equ
-    rcases fne equ with ⟨ha0, hb0⟩ | ⟨ha0, hb0⟩ <;>
-    · rw [← hb0] at ha0
-      exact hab ha0
-  exact todo_name tt_le wrong0 wrong1-/
-  sorry -- TODO fix
+  intro contr
+  specialize contr ![![a, b], ![b, a]]
+  -- on each row `r` we have `f r.fst > f a b = f b a`
+  have triv : (List.finRange 2).map (fun i => f (![![a, b], ![b, a]] i)) = [f ![a, b], f ![b, a]]
+  · rfl
+  have hfba : f ![b, a] = f ![a, b]
+  · symm
+    apply mcfab.left
+  have sum_same : List.sum [f ![a, b], f ![a, b]] = 2 • f ![a, b]
+  · convert_to 1 • f ![a, b] + 1 • f ![a, b] = (1 + 1) • f ![a, b]
+    · simp
+    symm
+    apply add_nsmul
+  rw [triv, hfba, sum_same] at contr
+  have sharp :
+    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f ![a, b])).sum <
+    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f r.fst)).sum
+  · sorry -- TODO utilize `symmega` with `valid` and `mcfab.right` with `hab` here
+  have hlt := lt_of_lt_of_le sharp contr
+  simp only [FractionalOperation.tt, function_weigth_tt_aux, List.map_map] at hlt
+  have impos : 2 • (ω.map (fun r => r.snd • f ![a, b])).sum < (ω.map Prod.snd).sum • 2 • f ![a, b]
+  · exact hlt
+  have rhs_swap : (ω.map Prod.snd).sum • 2 • f ![a, b] = 2 • (ω.map Prod.snd).sum • f ![a, b]
+  · apply nsmul_left_comm
+  rw [rhs_swap] at impos
+  have key : (ω.map (fun r => r.snd • f ![a, b])).sum = (ω.map Prod.snd).sum • f ![a, b]
+  · sorry -- TODO some transitivity
+  rw [key] at impos
+  apply false_of_ne (ne_of_lt impos)
