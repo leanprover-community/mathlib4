@@ -308,7 +308,7 @@ end Isos
 
 /-- The forgetful from `Stonean` to `TopCat` creates pullbacks along open embeddings -/
 noncomputable
-def createsPullbackOfOpenEmbedding :
+def createsPullbacksOfOpenEmbedding :
     CreatesLimit (cospan f i) (Stonean.toCompHaus ⋙ compHausToTop) :=
 createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
   refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
@@ -329,7 +329,7 @@ instance : PreservesPullbacksOfInclusions Stonean.toCompHaus := by
   intros X Y Z f
   apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
   have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
-  have := Stonean.createsPullbackOfOpenEmbedding f this
+  have := Stonean.createsPullbacksOfOpenEmbedding f this
   apply preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
 
 instance : FinitaryExtensive Stonean :=
