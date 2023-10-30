@@ -87,8 +87,9 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | (``GE.ge, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_ge_eq
   | (``GT.gt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_gt_eq
   | (``Set.Nonempty, #[_ty, e]) =>
-      return mkSimpStep (← mkAppM ``Eq #[e, ← mkAppOptM ``EmptyCollection.emptyCollection
-          #[← mkAppM ``Set #[_ty], none]]) (← mkAppM ``not_nonempty_eq #[e])
+      let thm ← mkAppM ``not_nonempty_eq #[e]
+      let some (_, _, rhs) := (← inferType thm).eq? | return none
+      return mkSimpStep rhs thm
   | (``Exists, #[_, .lam n typ bo bi]) =>
       return mkSimpStep (.forallE n typ (mkNot bo) bi)
                         (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
