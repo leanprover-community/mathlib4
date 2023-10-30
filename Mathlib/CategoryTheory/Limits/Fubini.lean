@@ -587,8 +587,8 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι _ k ≫  colimit.ι (curry.obj G⋙ colim) j ≫
       (colimitCurrySwapCompColimIsoColimitCurryCompColim G).inv =
         (colimit.ι _ j ≫
-          colimit.ι (curry.obj _ ⋙ colim) k : _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G)⋙ colim))
-            := by
+          colimit.ι (curry.obj _ ⋙ colim) k :
+            _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G)⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
   slice_lhs 1 3 => simp only []
   simp only [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π,
