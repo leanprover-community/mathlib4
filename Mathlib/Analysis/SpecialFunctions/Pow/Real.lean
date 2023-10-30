@@ -271,15 +271,16 @@ theorem abs_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
 #align complex.abs_cpow_of_imp Complex.abs_cpow_of_imp
 
 theorem abs_cpow_le (z w : ℂ) : abs (z ^ w) ≤ abs z ^ w.re / Real.exp (arg z * im w) := by
-  by_cases h : z = 0 → w.re = 0 → w = 0
-  · exact (abs_cpow_of_imp h).le
-  · push_neg at h
-    simp [h]
+  rcases ne_or_eq z 0 with (hz | rfl) <;> [exact (abs_cpow_of_ne_zero hz w).le; rw [map_zero]]
+  rcases eq_or_ne w 0 with (rfl | hw); · simp
+  rw [zero_cpow hw, map_zero]
+  exact div_nonneg (Real.rpow_nonneg_of_nonneg le_rfl _) (Real.exp_pos _).le
 #align complex.abs_cpow_le Complex.abs_cpow_le
 
 @[simp]
 theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x ^ y := by
-  rw [abs_cpow_of_imp] <;> simp
+  rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip] <;>
+    simp [*, abs_cpow_of_ne_zero]
 #align complex.abs_cpow_real Complex.abs_cpow_real
 
 @[simp]
@@ -294,7 +295,10 @@ theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y
 
 theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
     abs (x ^ y) = x ^ re y := by
-  rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, _root_.abs_of_nonneg]
+  rcases hx.eq_or_lt with (rfl | hlt)
+  · rw [ofReal_zero, zero_cpow, map_zero, Real.zero_rpow hy]
+    exact ne_of_apply_ne re hy
+  · exact abs_cpow_eq_rpow_re_of_pos hlt y
 #align complex.abs_cpow_eq_rpow_re_of_nonneg Complex.abs_cpow_eq_rpow_re_of_nonneg
 
 end Complex
@@ -601,6 +605,10 @@ theorem rpow_lt_one_iff (hx : 0 ≤ x) :
   · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, zero_lt_one]
   · simp [rpow_lt_one_iff_of_pos hx, hx.ne.symm]
 #align real.rpow_lt_one_iff Real.rpow_lt_one_iff
+
+theorem rpow_lt_one_iff' {x y : ℝ} (hx : 0 ≤ x) (hy : 0 < y) :
+    x ^ y < 1 ↔ x < 1 := by
+  rw [← Real.rpow_lt_rpow_iff hx zero_le_one hy, Real.one_rpow]
 
 theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ x < 1 ∧ y < 0 := by
   rw [rpow_def_of_pos hx, one_lt_exp_iff, mul_pos_iff, log_pos_iff hx, log_neg_iff hx]
