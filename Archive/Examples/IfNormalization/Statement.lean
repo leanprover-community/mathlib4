@@ -68,7 +68,7 @@ A helper function to specify that two lists are disjoint.
 -/
 def _root_.List.disjoint {α} [DecidableEq α] : List α → List α → Bool
   | [], _ => true
-  | (x::xs), ys => x ∉ ys && xs.disjoint ys
+  | x::xs, ys => x ∉ ys && xs.disjoint ys
 
 /--
 An if expression evaluates each variable at most once if for each if-then-else
