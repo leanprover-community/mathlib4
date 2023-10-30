@@ -151,7 +151,7 @@ theorem blocks_length : c.blocks.length = c.length :=
 
 /-- The blocks of a composition, seen as a function on `Fin c.length`. When composing analytic
 functions using compositions, this is the main player. -/
-def blocksFun : Fin c.length → ℕ := fun i => c.blocks.get i
+def blocksFun : Fin c.length → ℕ := c.blocks.get
 #align composition.blocks_fun Composition.blocksFun
 
 theorem ofFn_blocksFun : ofFn c.blocksFun = c.blocks :=
@@ -936,7 +936,7 @@ theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     simp [blocks, Nat.lt_of_succ_lt_succ h]
   have B : i < c.boundaries.card := lt_of_lt_of_le A (by simp [blocks, length, Nat.sub_le])
   rw [sum_take_succ _ _ A, IH B]
-  simp  [blocks, blocksFun, get_ofFn]
+  simp [blocks, blocksFun, get_ofFn]
 #align composition_as_set.blocks_partial_sum CompositionAsSet.blocks_partial_sum
 
 theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
