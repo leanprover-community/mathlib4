@@ -32,6 +32,8 @@ variable {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
+open Function
+
 namespace ContinuousMap
 
 /-- A homotopy equivalence between topological spaces `X` and `Y` are a pair of functions
@@ -42,8 +44,8 @@ are both homotopic to corresponding identity maps.
 structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] where
   toFun : C(X, Y)
   invFun : C(Y, X)
-  left_inv : (invFun.comp toFun).Homotopic (ContinuousMap.id X)
-  right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
+  left_inv : Homotopic (invFun.comp toFun) (ContinuousMap.id X)
+  right_inv : Homotopic (toFun.comp invFun) (ContinuousMap.id Y)
 #align continuous_map.homotopy_equiv ContinuousMap.HomotopyEquiv
 
 -- mathport name: continuous_map.homotopy_equiv
@@ -57,7 +59,7 @@ auxiliary definition will make porting of Lean 3 code easier.
 Porting note: TODO: drop this definition. -/
 @[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
 
-instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩
+instance : CoeFun (X ≃ₕ Y) fun _ ↦ X → Y := ⟨toFun'⟩
 
 @[simp]
 theorem toFun_eq_coe (h : HomotopyEquiv X Y) : (h.toFun : X → Y) = h :=
