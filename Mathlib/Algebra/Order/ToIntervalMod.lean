@@ -580,6 +580,89 @@ theorem toIocMod_eq_toIocMod : toIocMod hp a b = toIocMod hp a c ↔ ∃ n : ℤ
     rw [hz, toIocMod_zsmul_add]
 #align to_Ioc_mod_eq_to_Ioc_mod toIocMod_eq_toIocMod
 
+@[gcongr]
+lemma toIcoDiv_le_toIcoDiv (b₁ b₂ : α) (hb : b₁ ≤ b₂) : toIcoDiv hp a b₁ ≤ toIcoDiv hp a b₂ := by
+  let n₁ := toIcoDiv hp a b₁
+  let n₂ := toIcoDiv hp a b₂
+  have hn₁ : b₁ - n₁ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₁
+  have hn₂ : b₂ - n₂ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₂
+  by_contra h
+  have h' : b₂ - n₂ • p < a + p := hn₂.2
+  have h'' : a + p ≤ b₂ - n₂ • p :=
+    calc a + p ≤ b₁ - n₁ • p + 1 • p := add_le_add hn₁.1 (by simp only [one_smul, le_refl])
+        _ = b₁ - (n₁ - 1) • p := by rw [sub_smul]; abel
+        _ ≤ b₁ - n₂ • p := by gcongr; exact zsmul_le_zsmul (le_of_lt hp) (by linarith)
+        _ ≤ b₂ - n₂ • p := by gcongr
+  rw [←not_le] at h'
+  exact h' h''
+
+lemma monotone_toIcoDiv : Monotone (toIcoDiv hp a) := toIcoDiv_le_toIcoDiv hp
+
+lemma toIcoDiv_lt_toIcoDiv (b₁ b₂ : α) (hb : b₁ + p ≤ b₂) :
+    toIcoDiv hp a b₁ < toIcoDiv hp a b₂ := by
+  let n₁ := toIcoDiv hp a b₁
+  let n₂ := toIcoDiv hp a b₂
+  have hn₁ : b₁ - n₁ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₁
+  have hn₂ : b₂ - n₂ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₂
+  by_contra h
+  have h' : b₂ - n₂ • p < a + p := hn₂.2
+  have h'' : a + p ≤ b₂ - n₂ • p :=
+    calc a + p ≤ b₁ - n₁ • p + p := add_le_add hn₁.1 le_rfl
+        _ ≤ b₁ - n₂ • p + p := by
+              refine add_le_add ?_ le_rfl
+              exact sub_le_sub le_rfl <| zsmul_le_zsmul (le_of_lt hp) (by linarith)
+        _ ≤ b₂ - p - n₂ • p + p := by
+              refine add_le_add ?_ le_rfl; gcongr; rwa [le_sub_iff_add_le]
+        _ = b₂ - n₂ • p := by abel
+  rw [←not_le] at h'
+  exact h' h''
+
+lemma toIcoDiv_lt_of_lt_zsmul (m : ℤ) (b : α) (hb : b < m • p) : toIcoDiv hp a b < m := by
+  let n := toIcoDiv hp a b
+  have hn : b - n • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b
+  by_contra h
+  sorry
+
+
+@[gcongr]
+lemma toIocDiv_le_toIocDiv (b₁ b₂ : α) (hb : b₁ ≤ b₂) : toIocDiv hp a b₁ ≤ toIocDiv hp a b₂ := by
+  let n₁ := toIocDiv hp a b₁
+  let n₂ := toIocDiv hp a b₂
+  have hn₁ : b₁ - n₁ • p ∈ Set.Ioc a (a + p) := sub_toIocDiv_zsmul_mem_Ioc hp a b₁
+  have hn₂ : b₂ - n₂ • p ∈ Set.Ioc a (a + p) := sub_toIocDiv_zsmul_mem_Ioc hp a b₂
+  by_contra h
+  have h' : b₂ - n₂ • p ≤ a + p := hn₂.2
+  have h'' : a + p < b₂ - n₂ • p :=
+    calc a + p < b₁ - n₁ • p + 1 • p :=
+            add_lt_add_of_lt_of_le hn₁.1 (by simp only [one_smul, le_refl])
+        _ = b₁ - (n₁ - 1) • p := by rw [sub_smul]; abel
+        _ ≤ b₁ - n₂ • p := by gcongr; exact zsmul_le_zsmul (le_of_lt hp) (by linarith)
+        _ ≤ b₂ - n₂ • p := by gcongr
+  rw [←not_lt] at h'
+  exact h' h''
+
+lemma monotone_toIocDiv : Monotone (toIocDiv hp a) := toIocDiv_le_toIocDiv hp
+
+lemma toIocDiv_lt_toIocDiv (b₁ b₂ : α) (hb : b₁ + p ≤ b₂) :
+    toIocDiv hp a b₁ < toIocDiv hp a b₂ := by
+  let n₁ := toIocDiv hp a b₁
+  let n₂ := toIocDiv hp a b₂
+  have hn₁ : b₁ - n₁ • p ∈ Set.Ioc a (a + p) := sub_toIocDiv_zsmul_mem_Ioc hp a b₁
+  have hn₂ : b₂ - n₂ • p ∈ Set.Ioc a (a + p) := sub_toIocDiv_zsmul_mem_Ioc hp a b₂
+  by_contra h
+  have h' : b₂ - n₂ • p ≤ a + p := hn₂.2
+  have h'' : a + p < b₂ - n₂ • p :=
+    calc a + p < b₁ - n₁ • p + p := add_lt_add_of_lt_of_le hn₁.1 le_rfl
+        _ ≤ b₁ - n₂ • p + p := by
+              refine add_le_add ?_ le_rfl
+              exact sub_le_sub le_rfl <| zsmul_le_zsmul (le_of_lt hp) (by linarith)
+        _ ≤ b₂ - p - n₂ • p + p := by
+              refine add_le_add ?_ le_rfl; gcongr; rwa [le_sub_iff_add_le]
+        _ = b₂ - n₂ • p := by abel
+  rw [←not_lt] at h'
+  exact h' h''
+
+
 /-! ### Links between the `Ico` and `Ioc` variants applied to the same element -/
 
 
@@ -1118,3 +1201,120 @@ theorem iUnion_Icc_int_cast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
 end LinearOrderedRing
 
 end Union
+
+section induction
+
+variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α]
+
+lemma induction_Ico_add {p : α} (hp : 0 < p) {P : α → Prop} (x₀ : α)
+    (base : ∀ x ∈ Set.Ico x₀ (x₀ + p), P x)
+    (step : ∀ n : ℤ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (x₀ + n • p), P z) →
+      (∀ z ∈ Set.Ico (x₀ + n • p) (x₀ + (n+1) • p), P z)) :
+    ∀ x ≥ x₀, P x :=
+  fun x hx =>
+    if hx' : x < x₀ + p then
+      base x ⟨hx, hx'⟩
+    else by
+      push_neg at hx'
+      refine step (toIcoDiv hp 0 (x - x₀)) ?ge_one ?main x ?memIco
+      case ge_one =>
+        calc 1 = toIcoDiv hp 0 (0 + p) := (toIcoDiv_apply_right hp 0).symm
+             _ = toIcoDiv hp 0 (x₀ + p - x₀) := by
+                    have : 0 + p = x₀ + p - x₀ := by abel
+                    rw [this]
+             _ ≤ _ := by gcongr
+      case main =>
+        intro z hz
+        have toIcoDiv_nonneg_x : 0 ≤ toIcoDiv hp 0 (x - x₀) := by
+          calc 0 = toIcoDiv hp 0 0 := (toIcoDiv_apply_left hp 0).symm
+               _ ≤ _ := by gcongr; exact sub_nonneg_of_le hx
+        have toIcoDiv_nonneg_z : 0 ≤ toIcoDiv hp 0 (z - x₀) := by
+          calc 0 = toIcoDiv hp 0 0 := (toIcoDiv_apply_left hp 0).symm
+               _ ≤ _ := by gcongr; exact sub_nonneg_of_le hz.1
+        -- Needed by termination checker
+        have _ : Int.natAbs (toIcoDiv hp 0 (z - x₀)) < Int.natAbs (toIcoDiv hp 0 (x - x₀)) := by
+          zify
+          rw [abs_of_nonneg toIcoDiv_nonneg_x, abs_of_nonneg toIcoDiv_nonneg_z]
+          have hmain := calc
+            toIcoDiv hp 0 (z - x₀) • p = 0 + toIcoDiv hp 0 (z - x₀) • p := by abel
+            _ ≤ toIcoMod hp 0 (z - x₀) + toIcoDiv hp 0 (z - x₀) • p :=
+                  add_le_add (left_le_toIcoMod hp 0 (z - x₀)) le_rfl
+            _ = z - x₀ := by rw [toIcoMod_add_toIcoDiv_zsmul hp 0]
+            _ < toIcoDiv hp 0 (x - x₀) • p := by rw [sub_lt_iff_lt_add, add_comm]; exact hz.2
+          rwa [zsmul_lt_zsmul_iff hp] at hmain
+        exact induction_Ico_add hp x₀ base step z hz.1
+      case memIco =>
+        refine ⟨?lb, ?ub⟩
+        case lb =>
+          refine add_le_of_le_sub_left ?_
+          nth_rewrite 2 [←toIcoMod_add_toIcoDiv_zsmul hp 0 (x - x₀)]
+          nth_rewrite 1 [←zero_add (toIcoDiv hp 0 (x - x₀) • p)]
+          exact add_le_add (left_le_toIcoMod hp 0 _) le_rfl
+        case ub =>
+          refine lt_add_of_sub_left_lt ?_
+          nth_rewrite 1 [←toIcoMod_add_toIcoDiv_zsmul hp 0 (x - x₀)]
+          rw [add_zsmul, one_zsmul, add_comm _ p]
+          refine add_lt_add_of_lt_of_le ?_ le_rfl
+          conv_rhs => rw [←zero_add p]
+          exact toIcoMod_lt_right hp _ (x - x₀)
+  termination_by induction_Ico_add hp _ x₀ base step x hx => Int.natAbs (toIcoDiv hp 0 (x - x₀))
+
+lemma induction_Ioc_add {p : α} (hp : 0 < p) {P : α → Prop} (x₀ : α)
+    (base : ∀ x ∈ Set.Ioc x₀ (x₀ + p), P x)
+    (step : ∀ n : ℤ, n ≥ 1 → (∀ z ∈ Set.Ioc x₀ (x₀ + n • p), P z) →
+      (∀ z ∈ Set.Ioc (x₀ + n • p) (x₀ + (n+1) • p), P z)) :
+    ∀ x > x₀, P x :=
+  fun x hx =>
+    if hx' : x ≤ x₀ + p then
+      base x ⟨hx, hx'⟩
+    else by
+      push_neg at hx'
+      refine step (toIocDiv hp 0 (x - x₀)) ?ge_one ?main x ?memIoc
+      case ge_one =>
+        calc 0 = toIocDiv hp 0 (0 + p) := (toIocDiv_apply_right hp 0).symm
+             _ = toIocDiv hp 0 (x₀ + p - x₀) := by
+                    have : 0 + p = x₀ + p - x₀ := by abel
+                    rw [this]
+             _ < _ := by
+                    refine toIocDiv_lt_toIocDiv hp _ _ ?_
+
+                    sorry
+      case main =>
+        intro z hz
+        have toIocDiv_nonneg_x : 0 ≤ toIocDiv hp 0 (x - x₀) := by
+          calc 0 = toIocDiv hp 0 0 := (toIocDiv_apply_left hp 0).symm
+               _ ≤ _ := by gcongr; exact sub_nonneg_of_lt hx
+        have toIocDiv_nonneg_z : 0 ≤ toIocDiv hp 0 (z - x₀) := by
+          calc 0 = toIocDiv hp 0 0 := (toIocDiv_apply_left hp 0).symm
+               _ ≤ _ := by gcongr; exact sub_nonneg_of_le hz.1
+        -- Needed by termination checker
+        have _ : Int.natAbs (toIocDiv hp 0 (z - x₀)) < Int.natAbs (toIocDiv hp 0 (x - x₀)) := by
+          zify
+          rw [abs_of_nonneg toIocDiv_nonneg_x, abs_of_nonneg toIocDiv_nonneg_z]
+          have hmain := calc
+            toIocDiv hp 0 (z - x₀) • p = 0 + toIocDiv hp 0 (z - x₀) • p := by abel
+            _ ≤ toIocMod hp 0 (z - x₀) + toIocDiv hp 0 (z - x₀) • p :=
+                  add_le_add (left_le_toIocMod hp 0 (z - x₀)) le_rfl
+            _ = z - x₀ := by rw [toIocMod_add_toIocDiv_zsmul hp 0]
+            _ < toIocDiv hp 0 (x - x₀) • p := by rw [sub_lt_iff_lt_add, add_comm]; exact hz.2
+          rwa [zsmul_lt_zsmul_iff hp] at hmain
+        exact induction_Ioc_add hp x₀ base step z hz.1
+      case memIoc =>
+        refine ⟨?lb, ?ub⟩
+        case lb =>
+          refine add_le_of_le_sub_left ?_
+          nth_rewrite 2 [←toIocMod_add_toIocDiv_zsmul hp 0 (x - x₀)]
+          nth_rewrite 1 [←zero_add (toIocDiv hp 0 (x - x₀) • p)]
+          exact add_le_add (left_le_toIocMod hp 0 _) le_rfl
+        case ub =>
+          refine lt_add_of_sub_left_lt ?_
+          nth_rewrite 1 [←toIocMod_add_toIocDiv_zsmul hp 0 (x - x₀)]
+          rw [add_zsmul, one_zsmul, add_comm _ p]
+          refine add_lt_add_of_lt_of_le ?_ le_rfl
+          conv_rhs => rw [←zero_add p]
+          exact toIocMod_lt_right hp _ (x - x₀)
+  termination_by induction_Ioc_add hp _ x₀ base step x hx => Int.natAbs (toIocDiv hp 0 (x - x₀))
+
+
+
+end induction
