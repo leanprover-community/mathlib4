@@ -552,7 +552,210 @@ noncomputable def homologyData [HasZeroObject C] (s : S.Splitting) : S.HomologyD
 lemma exact [HasZeroObject C] (s : S.Splitting) : S.Exact :=
   ⟨s.homologyData, isZero_zero _⟩
 
+/-- If a short complex `S` is equipped with a splitting, then `S.X₁` is the kernel of `S.g`. -/
+noncomputable def fIsKernel [HasZeroObject C] (s : S.Splitting) :
+    IsLimit (KernelFork.ofι S.f S.zero) :=
+  s.homologyData.left.hi
+
+/-- If a short complex `S` is equipped with a splitting, then `S.X₃` is the cokernel of `S.f`. -/
+noncomputable def gIsCokernel [HasZeroObject C] (s : S.Splitting) :
+    IsColimit (CokernelCofork.ofπ S.g S.zero) :=
+  s.homologyData.right.hp
+
+/-- If a short complex `S` has a splitting and `F` is an additive functor, then
+`S.map F` also has a splitting. -/
+@[simps]
+def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
+  r := F.map s.r
+  s := F.map s.s
+  f_r := by
+    dsimp [ShortComplex.map]
+    rw [← F.map_comp, f_r, F.map_id]
+  s_g := by
+    dsimp [ShortComplex.map]
+    simp only [← F.map_comp, s_g, F.map_id]
+  id := by
+    dsimp [ShortComplex.map]
+    simp only [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
+
+/-- A splitting on a short complex induces splittings on isomorphic short complexes. -/
+@[simps]
+def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) : S₂.Splitting where
+  r := e.inv.τ₂ ≫ s.r ≫ e.hom.τ₁
+  s := e.inv.τ₃ ≫ s.s ≫ e.hom.τ₂
+  f_r := by rw [← e.inv.comm₁₂_assoc, s.f_r_assoc, ← comp_τ₁, e.inv_hom_id, id_τ₁]
+  s_g := by rw [assoc, assoc, e.hom.comm₂₃, s.s_g_assoc, ← comp_τ₃, e.inv_hom_id, id_τ₃]
+  id := by
+    have eq := e.inv.τ₂ ≫= s.id =≫ e.hom.τ₂
+    rw [id_comp, ← comp_τ₂, e.inv_hom_id, id_τ₂] at eq
+    rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add,
+      e.hom.comm₁₂, e.inv.comm₂₃_assoc]
+
+/-- The obvious splitting of the short complex `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂`. -/
+noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :
+    Splitting (ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp)) where
+  r := biprod.fst
+  s := biprod.inr
+
+variable (S)
+
+/-- The obvious splitting of a short complex when `S.X₁` is zero and `S.g` is an isomorphism. -/
+noncomputable def ofIsZeroOfIsIso (hf : IsZero S.X₁) (hg : IsIso S.g) : Splitting S where
+  r := 0
+  s := inv S.g
+  f_r := hf.eq_of_src _ _
+
+/-- The obvious splitting of a short complex when `S.f` is an isomorphism and `S.X₃` is zero. -/
+noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitting S where
+  r := inv S.f
+  s := 0
+  s_g := hg.eq_of_src _ _
+
+variable {S}
+
+/-- The splitting of the short complex `S.op` deduced from a splitting of `S`. -/
+@[simps]
+def op (h : Splitting S) : Splitting S.op where
+  r := h.s.op
+  s := h.r.op
+  f_r := Quiver.Hom.unop_inj (by simp)
+  s_g := Quiver.Hom.unop_inj (by simp)
+  id := Quiver.Hom.unop_inj (by
+    simp only [op_X₂, Opposite.unop_op, op_X₁, op_f, op_X₃, op_g, unop_add, unop_comp,
+      Quiver.Hom.unop_op, unop_id, ← h.id]
+    abel)
+
+/-- The splitting of the short complex `S.unop` deduced from a splitting of `S`. -/
+@[simps]
+def unop {S : ShortComplex Cᵒᵖ} (h : Splitting S) : Splitting S.unop where
+  r := h.s.unop
+  s := h.r.unop
+  f_r := Quiver.Hom.op_inj (by simp)
+  s_g := Quiver.Hom.op_inj (by simp)
+  id := Quiver.Hom.op_inj (by
+    simp only [unop_X₂, Opposite.op_unop, unop_X₁, unop_f, unop_X₃, unop_g, op_add,
+      op_comp, Quiver.Hom.op_unop, op_id, ← h.id]
+    abel)
+
+/-- The isomorphism `S.X₂ ≅ S.X₁ ⊞ S.X₃` induced by a splitting of the short complex `S`. -/
+@[simps]
+noncomputable def isoBinaryBiproduct (h : Splitting S) [HasBinaryBiproduct S.X₁ S.X₃] :
+    S.X₂ ≅ S.X₁ ⊞ S.X₃ where
+  hom := biprod.lift h.r S.g
+  inv := biprod.desc S.f h.s
+  hom_inv_id := by simp [h.id]
+
 end Splitting
+
+section Balanced
+
+variable {S}
+variable [Balanced C]
+
+namespace Exact
+
+variable (hS : S.Exact)
+
+lemma isIso_f' (h : S.LeftHomologyData) [Mono S.f] :
+    IsIso h.f' := by
+  have := hS.epi_f' h
+  have := mono_of_mono_fac h.f'_i
+  exact isIso_of_mono_of_epi h.f'
+
+lemma isIso_toCycles [Mono S.f] [S.HasLeftHomology] :
+    IsIso S.toCycles :=
+  hS.isIso_f' _
+
+lemma isIso_g' (h : S.RightHomologyData) [Epi S.g] :
+    IsIso h.g' := by
+  have := hS.mono_g' h
+  have := epi_of_epi_fac h.p_g'
+  exact isIso_of_mono_of_epi h.g'
+
+lemma isIso_fromOpcycles [Epi S.g] [S.HasRightHomology] :
+    IsIso S.fromOpcycles :=
+  hS.isIso_g' _
+
+/-- In a balanced category, if a short complex `S` is exact and `S.f` is a mono, then
+`S.X₁` is the kernel of `S.g`. -/
+noncomputable def fIsKernel [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) := by
+  have := hS.hasHomology
+  have := hS.isIso_toCycles
+  exact IsLimit.ofIsoLimit S.cyclesIsKernel
+    (Fork.ext (asIso S.toCycles).symm (by simp))
+
+lemma map_of_mono_of_preservesKernel (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Mono S.f)
+    (_ : PreservesLimit (parallelPair S.g 0) F) :
+    (S.map F).Exact :=
+  exact_of_f_is_kernel _ (KernelFork.mapIsLimit _ hS.fIsKernel F)
+
+/-- In a balanced category, if a short complex `S` is exact and `S.g` is an epi, then
+`S.X₃` is the cokernel of `S.g`. -/
+noncomputable def gIsCokernel [Epi S.g] : IsColimit (CokernelCofork.ofπ S.g S.zero) := by
+  have := hS.hasHomology
+  have := hS.isIso_fromOpcycles
+  exact IsColimit.ofIsoColimit S.opcyclesIsCokernel
+    (Cofork.ext (asIso S.fromOpcycles) (by simp))
+
+lemma map_of_epi_of_preservesCokernel (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Epi S.g)
+    (_ : PreservesColimit (parallelPair S.f 0) F) :
+    (S.map F).Exact :=
+  exact_of_g_is_cokernel _ (CokernelCofork.mapIsColimit _ hS.gIsCokernel F)
+
+/-- If a short complex `S` in a balanced category is exact and such that `S.f` is a mono,
+then a morphism `k : A ⟶ S.X₂` such that `k ≫ S.g = 0` lifts to a morphism `A ⟶ S.X₁`. -/
+noncomputable def lift {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+    A ⟶ S.X₁ := hS.fIsKernel.lift (KernelFork.ofι k hk)
+
+@[reassoc (attr := simp)]
+lemma lift_f {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+    hS.lift k hk ≫ S.f = k :=
+  Fork.IsLimit.lift_ι _
+
+lemma lift' {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
+    ∃ (l : A ⟶ S.X₁), l ≫ S.f = k :=
+  ⟨hS.lift k hk, by simp⟩
+
+/-- If a short complex `S` in a balanced category is exact and such that `S.g` is an epi,
+then a morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends to a morphism `S.X₃ ⟶ A`. -/
+noncomputable def desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+    S.X₃ ⟶ A := hS.gIsCokernel.desc (CokernelCofork.ofπ k hk)
+
+@[reassoc (attr := simp)]
+lemma g_desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+    S.g ≫ hS.desc k hk = k :=
+  Cofork.IsColimit.π_desc (hS.gIsCokernel)
+
+lemma desc' {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
+    ∃ (l : S.X₃ ⟶ A), S.g ≫ l = k :=
+  ⟨hS.desc k hk, by simp⟩
+
+end Exact
+
+lemma mono_τ₂_of_exact_of_mono {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (h₁ : S₁.Exact) [Mono S₁.f] [Mono S₂.f] [Mono φ.τ₁] [Mono φ.τ₃] : Mono φ.τ₂ := by
+  rw [mono_iff_cancel_zero]
+  intro A x₂ hx₂
+  obtain ⟨x₁, hx₁⟩ : ∃ x₁, x₁ ≫ S₁.f = x₂ := ⟨_, h₁.lift_f x₂
+    (by simp only [← cancel_mono φ.τ₃, assoc, zero_comp, ← φ.comm₂₃, reassoc_of% hx₂])⟩
+  suffices x₁ = 0 by rw [← hx₁, this, zero_comp]
+  simp only [← cancel_mono φ.τ₁, ← cancel_mono S₂.f, assoc, φ.comm₁₂, zero_comp,
+    reassoc_of% hx₁, hx₂]
+
+attribute [local instance] balanced_opposite
+
+lemma epi_τ₂_of_exact_of_epi {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (h₂ : S₂.Exact) [Epi S₁.g] [Epi S₂.g] [Epi φ.τ₁] [Epi φ.τ₃] : Epi φ.τ₂ := by
+  have : Mono S₁.op.f := by dsimp; infer_instance
+  have : Mono S₂.op.f := by dsimp; infer_instance
+  have : Mono (opMap φ).τ₁ := by dsimp; infer_instance
+  have : Mono (opMap φ).τ₃ := by dsimp; infer_instance
+  have := mono_τ₂_of_exact_of_mono (opMap φ) h₂.op
+  exact unop_epi_of_mono (opMap φ).τ₂
+
+end Balanced
 
 end Preadditive
 

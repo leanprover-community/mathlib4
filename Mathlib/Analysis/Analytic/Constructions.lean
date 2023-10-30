@@ -153,27 +153,41 @@ lemma analyticAt_smul [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] (z : 𝕝
 lemma analyticAt_mul (z : A × A) : AnalyticAt 𝕜 (fun x : A × A ↦ x.1 * x.2) z :=
   (ContinuousLinearMap.mul 𝕜 A).analyticAt_bilinear z
 
-namespace AnalyticAt
-
 /-- Scalar multiplication of one analytic function by another. -/
-lemma smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
+lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (f • g) z :=
+    AnalyticAt 𝕜 (fun x ↦ f x • g x) z :=
   (analyticAt_smul _).comp₂ hf hg
 
+/-- Scalar multiplication of one analytic function by another. -/
+lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {s : Set E}
+    (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+    AnalyticOn 𝕜 (fun x ↦ f x • g x) s :=
+  fun _ m ↦ (hf _ m).smul (hg _ m)
+
 /-- Multiplication of analytic functions (valued in a normd `𝕜`-algebra) is analytic. -/
-lemma mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
+lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (fun x ↦ f x * g x) z :=
   (analyticAt_mul _).comp₂ hf hg
 
-/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-lemma pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) : AnalyticAt 𝕜 (f ^ n) z := by
-  induction' n with m hm
-  · rw [pow_zero]
-    exact (analyticAt_const : AnalyticAt 𝕜 (fun _ ↦ (1 : A)) z)
-  · exact pow_succ f m ▸ hf.mul hm
+/-- Multiplication of analytic functions (valued in a normd `𝕜`-algebra) is analytic. -/
+lemma AnalyticOn.mul {f g : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+    AnalyticOn 𝕜 (fun x ↦ f x * g x) s :=
+  fun _ m ↦ (hf _ m).mul (hg _ m)
 
-end AnalyticAt
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
+    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
+  induction' n with m hm
+  · simp only [Nat.zero_eq, pow_zero]
+    apply analyticAt_const
+  · simp only [pow_succ]
+    exact hf.mul hm
+
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
+    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s :=
+  fun _ m ↦ (hf _ m).pow n
 
 section Geometric
 
