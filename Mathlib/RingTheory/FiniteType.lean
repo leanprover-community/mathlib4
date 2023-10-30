@@ -721,23 +721,21 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
     (f_surj : Function.Surjective f) : Function.Injective f := by
   have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤
   · intro a _
-    obtain ⟨y, rfl⟩ := f_surj a
-    let y' := AEval'.of f y
-    have : y = (AEval'.of f).symm y' := rfl
-    rw [this, ←AEval'.of_symm_X_smul]
+    obtain ⟨y, rfl⟩ := f_surj.comp (AEval'.of f).symm.surjective a
+    rw [Function.comp_apply, ←AEval'.of_symm_X_smul]
     exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
   obtain ⟨F, hFa, hFb⟩ :=
     Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
       (finite_def.mp inferInstance) this
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro m hm
-  let m' := Module.AEval.of R M f m
-  have hm' : m'=m := rfl
+  rw [← map_eq_zero_iff (AEval'.of f) (AEval'.of f).injective]
+  set m' := Module.AEval.of R M f m
   rw [Ideal.mem_span_singleton'] at hFa
   obtain ⟨G, hG⟩ := hFa
   suffices (F - 1) • m' = 0 by
-    have Fmzero := hFb m (by simp)
-    rwa [← sub_add_cancel F 1, add_smul, one_smul, ←hm', this, zero_add] at Fmzero
+    have Fmzero := hFb m' (by simp)
+    rwa [← sub_add_cancel F 1, add_smul, one_smul, this, zero_add] at Fmzero
   rw [← hG, mul_smul, AEval'.X_smul_of, hm, map_zero, smul_zero]
 #align module.finite.injective_of_surjective_endomorphism Module.Finite.injective_of_surjective_endomorphism
 
