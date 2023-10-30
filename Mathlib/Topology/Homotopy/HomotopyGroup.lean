@@ -44,7 +44,7 @@ TODO:
 
 open scoped unitInterval Topology
 
-open Homeomorph
+open Homeomorph Function
 
 noncomputable section
 
@@ -163,7 +163,7 @@ instance inhabited : Inhabited (Ω^ N X x) :=
 
 /-- The "homotopic relative to boundary" relation between `GenLoop`s. -/
 def Homotopic (f g : Ω^ N X x) : Prop :=
-  f.1.HomotopicRel g.1 (Cube.boundary N)
+  HomotopicRel f.1 g.1 (Cube.boundary N)
 #align gen_loop.homotopic GenLoop.Homotopic
 
 namespace Homotopic
@@ -172,7 +172,7 @@ variable {f g h : Ω^ N X x}
 
 @[refl]
 theorem refl (f : Ω^ N X x) : Homotopic f f :=
-  ContinuousMap.HomotopicRel.refl _
+  HomotopicRel.refl _
 #align gen_loop.homotopic.refl GenLoop.Homotopic.refl
 
 @[symm]
@@ -230,8 +230,7 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
     by
     rintro y ⟨j, Hj⟩
     simp only [ContinuousMap.comp_apply, toContinuousMap_apply,
-      funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
-      Function.uncurry_apply_pair]
+      funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
     · cases' Hj with Hj Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
@@ -283,14 +282,14 @@ def cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
-def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary N)) :
+def homotopyTo (i : N) {p q : Ω^ N X x} (H : HomotopyRel p.1 q.1 (Cube.boundary N)) :
     C(I × I, C(I^{ j // j ≠ i }, X)) :=
   ((⟨_, ContinuousMap.continuous_curry⟩ : C(_, _)).comp <|
       (cCompInsert i).comp H.toContinuousMap.curry).uncurry
 #align gen_loop.homotopy_to GenLoop.homotopyTo
 
 -- porting note: `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
-theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
+theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : HomotopyRel p.1 q.1 <| Cube.boundary N)
     (t : I × I) (tₙ : I^{ j // j ≠ i }) :
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
   rfl
@@ -325,38 +324,36 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
-  refine' Nonempty.map fun H => ⟨⟨homotopyFrom i H, _, _⟩, _⟩
+  refine' Nonempty.map fun H ↦ ⟨⟨homotopyFrom i H, _, _⟩, _⟩
   pick_goal 3
   · rintro t y ⟨j, jH⟩
-    erw [homotopyFrom_apply]
+    dsimp only [ContinuousMap.toFun_eq_coe, homotopyFrom_apply]
     obtain rfl | h := eq_or_ne j i
     · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
-    /- porting note: the following is indented two spaces more than it should be due to
-      strange behavior of `erw` -/
-    all_goals
-      intro
-      apply (homotopyFrom_apply _ _ _).trans
-      first
-      | rw [H.apply_zero]
-      | rw [H.apply_one]
-      first
-      | apply congr_arg p
-      | apply congr_arg q
-      apply (Cube.splitAt i).left_inv
+  all_goals
+    intro
+    apply (homotopyFrom_apply _ _ _).trans
+    first
+    | rw [H.apply_zero]
+    | rw [H.apply_one]
+    first
+    | apply congr_arg p
+    | apply congr_arg q
+    apply (Cube.splitAt i).left_inv
 #align gen_loop.homotopic_from GenLoop.homotopicFrom
 
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
 def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
   copy (fromLoop i <| (toLoop i f).trans <| toLoop i g)
-    (fun t => if (t i : ℝ) ≤ 1 / 2
-      then f (Function.update t i <| Set.projIcc 0 1 zero_le_one (2 * t i))
-      else g (Function.update t i <| Set.projIcc 0 1 zero_le_one (2 * t i - 1)))
+    (fun t ↦ if (t i : ℝ) ≤ 1 / 2
+      then f (update t i <| Set.projIcc 0 1 zero_le_one (2 * t i))
+      else g (update t i <| Set.projIcc 0 1 zero_le_one (2 * t i - 1)))
     (by
       ext1; symm
-      dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
+      dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, comp_apply, mk_apply,
         ContinuousMap.comp_apply, toContinuousMap_apply, funSplitAt_apply,
-        ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
+        ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, uncurry_apply_pair]
       split_ifs; change f _ = _; swap; change g _ = _
       all_goals congr 1)
 #align gen_loop.trans_at GenLoop.transAt
@@ -369,9 +366,9 @@ def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
 
 theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
     transAt i (transAt j a b) (transAt j c d) = transAt j (transAt i a c) (transAt i b d) := by
-  ext; simp_rw [transAt, coe_copy, Function.update_apply, if_neg h, if_neg h.symm]
+  ext; simp_rw [transAt, coe_copy, update_apply, if_neg h, if_neg h.symm]
   split_ifs <;>
-    · congr 1; ext1; simp only [Function.update, eq_rec_constant, dite_eq_ite]
+    · congr 1; ext1; simp only [update, eq_rec_constant, dite_eq_ite]
       apply ite_ite_comm; rintro rfl; exact h.symm
 #align gen_loop.trans_at_distrib GenLoop.transAt_distrib
 
@@ -546,7 +543,7 @@ theorem symmAt_indep {i} (j) (f : Ω^ N X x) :
 #align homotopy_group.symm_at_indep HomotopyGroup.symmAt_indep
 
 /-- Characterization of multiplicative identity -/
-theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
+theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦GenLoop.const⟧ :=
   rfl
 #align homotopy_group.one_def HomotopyGroup.one_def
 
