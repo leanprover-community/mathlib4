@@ -931,15 +931,15 @@ theorem lintegral_prod (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α 
   simp_rw [prod, lintegral_compProd _ _ _ hg, swapLeft_apply, prodMkLeft_apply, Prod.swap_prod_mk]
 #align probability_theory.kernel.lintegral_prod ProbabilityTheory.kernel.lintegral_prod
 
-instance IsMarkovKernel.prod (κ : kernel α β) [IsMarkovKernel κ] (η : kernel α γ)
+nonrec instance IsMarkovKernel.prod (κ : kernel α β) [IsMarkovKernel κ] (η : kernel α γ)
     [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [prod]; infer_instance
 #align probability_theory.kernel.is_markov_kernel.prod ProbabilityTheory.kernel.IsMarkovKernel.prod
 
-instance IsFiniteKernel.prod (κ : kernel α β) [IsFiniteKernel κ] (η : kernel α γ)
+nonrec instance IsFiniteKernel.prod (κ : kernel α β) [IsFiniteKernel κ] (η : kernel α γ)
     [IsFiniteKernel η] : IsFiniteKernel (κ ×ₖ η) := by rw [prod]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.prod ProbabilityTheory.kernel.IsFiniteKernel.prod
 
-instance IsSFiniteKernel.prod (κ : kernel α β) (η : kernel α γ) :
+nonrec instance IsSFiniteKernel.prod (κ : kernel α β) (η : kernel α γ) :
     IsSFiniteKernel (κ ×ₖ η) := by rw [prod]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.prod ProbabilityTheory.kernel.IsSFiniteKernel.prod
 
