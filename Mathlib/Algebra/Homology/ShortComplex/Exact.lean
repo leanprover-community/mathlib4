@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.MorphismProperty
 
@@ -389,6 +390,262 @@ lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
   rw [exact_iff_mono_fromOpcycles]
   refine' (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm _)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
+
+lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
+  simp only [exact_iff_isZero_homology]
+  exact Iso.isZero_iff (asIso (homologyMap φ))
+
+lemma exact_of_f_is_kernel (hS : IsLimit (KernelFork.ofι S.f S.zero))
+    [S.HasHomology] : S.Exact := by
+  rw [exact_iff_epi_toCycles]
+  have : IsSplitEpi S.toCycles :=
+    ⟨⟨{ section_ := hS.lift (KernelFork.ofι S.iCycles S.iCycles_g)
+        id := by
+          rw [← cancel_mono S.iCycles, assoc, toCycles_i, id_comp]
+          exact Fork.IsLimit.lift_ι hS }⟩⟩
+  infer_instance
+
+lemma exact_of_g_is_cokernel (hS : IsColimit (CokernelCofork.ofπ S.g S.zero))
+    [S.HasHomology] : S.Exact := by
+  rw [exact_iff_mono_fromOpcycles]
+  have : IsSplitMono S.fromOpcycles :=
+    ⟨⟨{ retraction := hS.desc (CokernelCofork.ofπ S.pOpcycles S.f_pOpcycles)
+        id := by
+          rw [← cancel_epi S.pOpcycles, p_fromOpcycles_assoc, comp_id]
+          exact Cofork.IsColimit.π_desc hS }⟩⟩
+  infer_instance
+
+/-- A splitting for a short complex `S` consists of the data of a retraction `r : X₂ ⟶ X₁`
+of `S.f` and section `s : X₃ ⟶ X₂` of `S.g` which satisfy `r ≫ S.f + S.g ≫ s = 𝟙 _` -/
+structure Splitting (S : ShortComplex C) where
+  /-- a retraction of `S.f` -/
+  r : S.X₂ ⟶ S.X₁
+  /-- a section of `S.g` -/
+  s : S.X₃ ⟶ S.X₂
+  /-- the condition that `r` is a retraction of `S.f` -/
+  f_r : S.f ≫ r = 𝟙 _ := by aesop_cat
+  /-- the condition that `s` is a section of `S.g` -/
+  s_g : s ≫ S.g = 𝟙 _ := by aesop_cat
+  /-- the compatibility between the given section and retraction -/
+  id : r ≫ S.f + S.g ≫ s = 𝟙 _ := by aesop_cat
+
+namespace Splitting
+
+attribute [reassoc (attr := simp)] f_r s_g
+
+variable {S}
+
+@[reassoc]
+lemma r_f (s : S.Splitting) : s.r ≫ S.f = 𝟙 _ - S.g ≫ s.s := by rw [← s.id, add_sub_cancel]
+
+@[reassoc]
+lemma g_s (s : S.Splitting) : S.g ≫ s.s = 𝟙 _ - s.r ≫ S.f := by rw [← s.id, add_sub_cancel']
+
+/-- Given a splitting of a short complex `S`, this shows that `S.f` is a split monomorphism. -/
+@[simps] def splitMono_f (s : S.Splitting) : SplitMono S.f := ⟨s.r, s.f_r⟩
+
+lemma isSplitMono_f (s : S.Splitting) : IsSplitMono S.f := ⟨⟨s.splitMono_f⟩⟩
+
+lemma mono_f (s : S.Splitting) : Mono S.f := by
+  have := s.isSplitMono_f
+  infer_instance
+
+/-- Given a splitting of a short complex `S`, this shows that `S.g` is a split epimorphism. -/
+@[simps] def splitEpi_g (s : S.Splitting) : SplitEpi S.g := ⟨s.s, s.s_g⟩
+
+lemma isSplitEpi_g (s : S.Splitting) : IsSplitEpi S.g := ⟨⟨s.splitEpi_g⟩⟩
+
+lemma epi_g (s : S.Splitting) : Epi S.g := by
+  have := s.isSplitEpi_g
+  infer_instance
+
+@[reassoc (attr := simp)]
+lemma s_r (s : S.Splitting) : s.s ≫ s.r = 0 := by
+  have := s.epi_g
+  simp only [← cancel_epi S.g, comp_zero, g_s_assoc, sub_comp, id_comp,
+    assoc, f_r, comp_id, sub_self]
+
+lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
+  have := s.epi_g
+  have eq := s.id
+  rw [← s'.id, h, add_right_inj, cancel_epi S.g] at eq
+  cases s
+  cases s'
+  obtain rfl := eq
+  obtain rfl := h
+  rfl
+
+lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
+  have := s.mono_f
+  have eq := s.id
+  rw [← s'.id, h, add_left_inj, cancel_mono S.f] at eq
+  cases s
+  cases s'
+  obtain rfl := eq
+  obtain rfl := h
+  rfl
+
+/-- The left homology data on a short complex equipped with a splitting. -/
+@[simps]
+noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
+    LeftHomologyData S := by
+  have hi := KernelFork.IsLimit.ofι S.f S.zero
+    (fun x _ => x ≫ s.r)
+    (fun x hx => by simp only [assoc, s.r_f, comp_sub, comp_id,
+      sub_eq_self, reassoc_of% hx, zero_comp])
+    (fun x _ b hb => by simp only [← hb, assoc, f_r, comp_id])
+  let f' := hi.lift (KernelFork.ofι S.f S.zero)
+  have hf' : f' = 𝟙 _ := by
+    apply Fork.IsLimit.hom_ext hi
+    dsimp
+    erw [Fork.IsLimit.lift_ι hi]
+    simp only [Fork.ι_ofι, id_comp]
+  have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
+  have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
+      (by rw [hf']; infer_instance) (isZero_zero _)
+  exact
+    { K := S.X₁
+      H := 0
+      i := S.f
+      wi := S.zero
+      hi := hi
+      π := 0
+      wπ := wπ
+      hπ := hπ }
+
+/-- The right homology data on a short complex equipped with a splitting. -/
+@[simps]
+noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
+    RightHomologyData S := by
+  have hp := CokernelCofork.IsColimit.ofπ S.g S.zero
+    (fun x _ => s.s ≫ x)
+    (fun x hx => by simp only [s.g_s_assoc, sub_comp, id_comp, sub_eq_self, assoc, hx, comp_zero])
+    (fun x _ b hb => by simp only [← hb, s.s_g_assoc])
+  let g' := hp.desc (CokernelCofork.ofπ S.g S.zero)
+  have hg' : g' = 𝟙 _ := by
+    apply Cofork.IsColimit.hom_ext hp
+    dsimp
+    erw [Cofork.IsColimit.π_desc hp]
+    simp only [Cofork.π_ofπ, comp_id]
+  have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
+  have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
+      (by rw [hg']; dsimp; infer_instance) (isZero_zero _)
+  exact
+    { Q := S.X₃
+      H := 0
+      p := S.g
+      wp := S.zero
+      hp := hp
+      ι := 0
+      wι := wι
+      hι := hι }
+
+/-- The homology data on a short complex equipped with a splitting. -/
+@[simps]
+noncomputable def homologyData [HasZeroObject C] (s : S.Splitting) : S.HomologyData where
+  left := s.leftHomologyData
+  right := s.rightHomologyData
+  iso := Iso.refl 0
+
+/-- A short complex equipped with a splitting is exact. -/
+lemma exact [HasZeroObject C] (s : S.Splitting) : S.Exact :=
+  ⟨s.homologyData, isZero_zero _⟩
+
+/-- If a short complex `S` is equipped with a splitting, then `S.X₁` is the kernel of `S.g`. -/
+noncomputable def fIsKernel [HasZeroObject C] (s : S.Splitting) :
+    IsLimit (KernelFork.ofι S.f S.zero) :=
+  s.homologyData.left.hi
+
+/-- If a short complex `S` is equipped with a splitting, then `S.X₃` is the cokernel of `S.f`. -/
+noncomputable def gIsCokernel [HasZeroObject C] (s : S.Splitting) :
+    IsColimit (CokernelCofork.ofπ S.g S.zero) :=
+  s.homologyData.right.hp
+
+/-- If a short complex `S` has a splitting and `F` is an additive functor, then
+`S.map F` also has a splitting. -/
+@[simps]
+def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
+  r := F.map s.r
+  s := F.map s.s
+  f_r := by
+    dsimp [ShortComplex.map]
+    rw [← F.map_comp, f_r, F.map_id]
+  s_g := by
+    dsimp [ShortComplex.map]
+    simp only [← F.map_comp, s_g, F.map_id]
+  id := by
+    dsimp [ShortComplex.map]
+    simp only [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
+
+/-- A splitting on a short complex induces splittings on isomorphic short complexes. -/
+@[simps]
+def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) : S₂.Splitting where
+  r := e.inv.τ₂ ≫ s.r ≫ e.hom.τ₁
+  s := e.inv.τ₃ ≫ s.s ≫ e.hom.τ₂
+  f_r := by rw [← e.inv.comm₁₂_assoc, s.f_r_assoc, ← comp_τ₁, e.inv_hom_id, id_τ₁]
+  s_g := by rw [assoc, assoc, e.hom.comm₂₃, s.s_g_assoc, ← comp_τ₃, e.inv_hom_id, id_τ₃]
+  id := by
+    have eq := e.inv.τ₂ ≫= s.id =≫ e.hom.τ₂
+    rw [id_comp, ← comp_τ₂, e.inv_hom_id, id_τ₂] at eq
+    rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add,
+      e.hom.comm₁₂, e.inv.comm₂₃_assoc]
+
+/-- The obvious splitting of the short complex `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂`. -/
+noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :
+    Splitting (ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp)) where
+  r := biprod.fst
+  s := biprod.inr
+
+variable (S)
+
+/-- The obvious splitting of a short complex when `S.X₁` is zero and `S.g` is an isomorphism. -/
+noncomputable def ofIsZeroOfIsIso (hf : IsZero S.X₁) (hg : IsIso S.g) : Splitting S where
+  r := 0
+  s := inv S.g
+  f_r := hf.eq_of_src _ _
+
+/-- The obvious splitting of a short complex when `S.f` is an isomorphism and `S.X₃` is zero. -/
+noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitting S where
+  r := inv S.f
+  s := 0
+  s_g := hg.eq_of_src _ _
+
+variable {S}
+
+/-- The splitting of the short complex `S.op` deduced from a splitting of `S`. -/
+@[simps]
+def op (h : Splitting S) : Splitting S.op where
+  r := h.s.op
+  s := h.r.op
+  f_r := Quiver.Hom.unop_inj (by simp)
+  s_g := Quiver.Hom.unop_inj (by simp)
+  id := Quiver.Hom.unop_inj (by
+    simp only [op_X₂, Opposite.unop_op, op_X₁, op_f, op_X₃, op_g, unop_add, unop_comp,
+      Quiver.Hom.unop_op, unop_id, ← h.id]
+    abel)
+
+/-- The splitting of the short complex `S.unop` deduced from a splitting of `S`. -/
+@[simps]
+def unop {S : ShortComplex Cᵒᵖ} (h : Splitting S) : Splitting S.unop where
+  r := h.s.unop
+  s := h.r.unop
+  f_r := Quiver.Hom.op_inj (by simp)
+  s_g := Quiver.Hom.op_inj (by simp)
+  id := Quiver.Hom.op_inj (by
+    simp only [unop_X₂, Opposite.op_unop, unop_X₁, unop_f, unop_X₃, unop_g, op_add,
+      op_comp, Quiver.Hom.op_unop, op_id, ← h.id]
+    abel)
+
+/-- The isomorphism `S.X₂ ≅ S.X₁ ⊞ S.X₃` induced by a splitting of the short complex `S`. -/
+@[simps]
+noncomputable def isoBinaryBiproduct (h : Splitting S) [HasBinaryBiproduct S.X₁ S.X₃] :
+    S.X₂ ≅ S.X₁ ⊞ S.X₃ where
+  hom := biprod.lift h.r S.g
+  inv := biprod.desc S.f h.s
+  hom_inv_id := by simp [h.id]
+
+end Splitting
 
 end Preadditive
 

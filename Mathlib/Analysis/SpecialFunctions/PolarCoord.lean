@@ -71,13 +71,11 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   left_inv' := by
     rintro ⟨x, y⟩ _
     have A : sqrt (x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
-      simp [Complex.abs_def, Complex.normSq, pow_two, MonoidWithZeroHom.coe_mk, Complex.add_re,
-        Complex.ofReal_re, Complex.mul_re, Complex.I_re, mul_zero, Complex.ofReal_im,
-        Complex.I_im, sub_self, add_zero, Complex.add_im, Complex.mul_im, mul_one, zero_add]
+      rw [Complex.abs_apply, Complex.normSq_add_mul_I]
     have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
       mul_assoc] at Z
-    simpa [A, -Complex.ofReal_cos, -Complex.ofReal_sin] using Complex.ext_iff.1 Z
+    simp [A]
   open_target := isOpen_Ioi.prod isOpen_Ioo
   open_source :=
     (isOpen_lt continuous_const continuous_fst).union
