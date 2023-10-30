@@ -552,6 +552,99 @@ noncomputable def homologyData [HasZeroObject C] (s : S.Splitting) : S.HomologyD
 lemma exact [HasZeroObject C] (s : S.Splitting) : S.Exact :=
   ⟨s.homologyData, isZero_zero _⟩
 
+/-- If a short complex `S` is equipped with a splitting, then `S.X₁` is the kernel of `S.g`. -/
+noncomputable def fIsKernel [HasZeroObject C] (s : S.Splitting) :
+    IsLimit (KernelFork.ofι S.f S.zero) :=
+  s.homologyData.left.hi
+
+/-- If a short complex `S` is equipped with a splitting, then `S.X₃` is the cokernel of `S.f`. -/
+noncomputable def gIsCokernel [HasZeroObject C] (s : S.Splitting) :
+    IsColimit (CokernelCofork.ofπ S.g S.zero) :=
+  s.homologyData.right.hp
+
+/-- If a short complex `S` has a splitting and `F` is an additive functor, then
+`S.map F` also has a splitting. -/
+@[simps]
+def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
+  r := F.map s.r
+  s := F.map s.s
+  f_r := by
+    dsimp [ShortComplex.map]
+    rw [← F.map_comp, f_r, F.map_id]
+  s_g := by
+    dsimp [ShortComplex.map]
+    simp only [← F.map_comp, s_g, F.map_id]
+  id := by
+    dsimp [ShortComplex.map]
+    simp only [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
+
+/-- A splitting on a short complex induces splittings on isomorphic short complexes. -/
+@[simps]
+def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) : S₂.Splitting where
+  r := e.inv.τ₂ ≫ s.r ≫ e.hom.τ₁
+  s := e.inv.τ₃ ≫ s.s ≫ e.hom.τ₂
+  f_r := by rw [← e.inv.comm₁₂_assoc, s.f_r_assoc, ← comp_τ₁, e.inv_hom_id, id_τ₁]
+  s_g := by rw [assoc, assoc, e.hom.comm₂₃, s.s_g_assoc, ← comp_τ₃, e.inv_hom_id, id_τ₃]
+  id := by
+    have eq := e.inv.τ₂ ≫= s.id =≫ e.hom.τ₂
+    rw [id_comp, ← comp_τ₂, e.inv_hom_id, id_τ₂] at eq
+    rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add,
+      e.hom.comm₁₂, e.inv.comm₂₃_assoc]
+
+/-- The obvious splitting of the short complex `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂`. -/
+noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :
+    Splitting (ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp)) where
+  r := biprod.fst
+  s := biprod.inr
+
+variable (S)
+
+/-- The obvious splitting of a short complex when `S.X₁` is zero and `S.g` is an isomorphism. -/
+noncomputable def ofIsZeroOfIsIso (hf : IsZero S.X₁) (hg : IsIso S.g) : Splitting S where
+  r := 0
+  s := inv S.g
+  f_r := hf.eq_of_src _ _
+
+/-- The obvious splitting of a short complex when `S.f` is an isomorphism and `S.X₃` is zero. -/
+noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitting S where
+  r := inv S.f
+  s := 0
+  s_g := hg.eq_of_src _ _
+
+variable {S}
+
+/-- The splitting of the short complex `S.op` deduced from a splitting of `S`. -/
+@[simps]
+def op (h : Splitting S) : Splitting S.op where
+  r := h.s.op
+  s := h.r.op
+  f_r := Quiver.Hom.unop_inj (by simp)
+  s_g := Quiver.Hom.unop_inj (by simp)
+  id := Quiver.Hom.unop_inj (by
+    simp only [op_X₂, Opposite.unop_op, op_X₁, op_f, op_X₃, op_g, unop_add, unop_comp,
+      Quiver.Hom.unop_op, unop_id, ← h.id]
+    abel)
+
+/-- The splitting of the short complex `S.unop` deduced from a splitting of `S`. -/
+@[simps]
+def unop {S : ShortComplex Cᵒᵖ} (h : Splitting S) : Splitting S.unop where
+  r := h.s.unop
+  s := h.r.unop
+  f_r := Quiver.Hom.op_inj (by simp)
+  s_g := Quiver.Hom.op_inj (by simp)
+  id := Quiver.Hom.op_inj (by
+    simp only [unop_X₂, Opposite.op_unop, unop_X₁, unop_f, unop_X₃, unop_g, op_add,
+      op_comp, Quiver.Hom.op_unop, op_id, ← h.id]
+    abel)
+
+/-- The isomorphism `S.X₂ ≅ S.X₁ ⊞ S.X₃` induced by a splitting of the short complex `S`. -/
+@[simps]
+noncomputable def isoBinaryBiproduct (h : Splitting S) [HasBinaryBiproduct S.X₁ S.X₃] :
+    S.X₂ ≅ S.X₁ ⊞ S.X₃ where
+  hom := biprod.lift h.r S.g
+  inv := biprod.desc S.f h.s
+  hom_inv_id := by simp [h.id]
+
 end Splitting
 
 end Preadditive
