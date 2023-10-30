@@ -225,6 +225,7 @@ theorem sizeUpTo_succ {i : ℕ} (h : i < c.length) :
     c.sizeUpTo (i + 1) = c.sizeUpTo i + c.blocks.get ⟨i, h⟩ := by
   simp only [sizeUpTo]
   rw [sum_take_succ _ _ h]
+  -- Porting note: didn't used to need `rfl`
   rfl
 #align composition.size_up_to_succ Composition.sizeUpTo_succ
 
@@ -403,9 +404,7 @@ theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
 theorem mem_range_embedding (j : Fin n) : j ∈ Set.range (c.embedding (c.index j)) := by
   have : c.embedding (c.index j) (c.invEmbedding j) ∈ Set.range (c.embedding (c.index j)) :=
     Set.mem_range_self _
-  -- porting note: previously `rwa` closed
-  rw [c.embedding_comp_inv j] at this
-  assumption
+  rwa [c.embedding_comp_inv j] at this
 #align composition.mem_range_embedding Composition.mem_range_embedding
 
 theorem mem_range_embedding_iff' {j : Fin n} {i : Fin c.length} :
