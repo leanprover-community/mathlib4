@@ -87,46 +87,43 @@ section polar
 
 /-- The polar coordinates local homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
-protected noncomputable def Complex.polarCoord : LocalHomeomorph ℂ (ℝ × ℝ) :=
+protected noncomputable def polarCoord : LocalHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdClm.toHomeomorph.toLocalHomeomorph.trans polarCoord
 
-protected theorem Complex.polarCoord_apply (a : ℂ) :
+protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
   rfl
 
 @[simp]
-theorem Complex.equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
+theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdAddHom.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 @[simp]
-theorem Complex.equivRealProdLm_symm_apply (p : ℝ × ℝ) :
+theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
 @[simp]
-theorem Complex.equivRealProdClm_symm_apply (p : ℝ × ℝ) :
+theorem equivRealProdClm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdClm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
-protected theorem Complex.polarCoord_source :
+protected theorem polarCoord_source :
     Complex.polarCoord.source = {a | 0 < a.re} ∪ {a | a.im ≠ 0} := by simp [Complex.polarCoord]
 
 @[simp]
-protected theorem Complex.polarCoord_symm_apply (p : ℝ × ℝ) :
+protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
   simp [Complex.polarCoord, mul_add, mul_assoc]
 
-theorem Complex.polardCoord_symm_abs (p : ℝ × ℝ) :
+theorem polardCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
 
-alias Complex.polarCoord_target := polarCoord_target
-
-protected theorem Complex.integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
+protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
   rw [← (Complex.volume_preserving_equiv_real_prod.symm).integral_comp
     measurableEquivRealProd.symm.measurableEmbedding, ← integral_comp_polarCoord_symm]
   rfl
-
 
 end polar
 
