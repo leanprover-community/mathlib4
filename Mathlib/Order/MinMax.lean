@@ -253,7 +253,7 @@ theorem MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 #align monotone_on.map_min MonotoneOn.map_min
 
 theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
-  min (f a) (f b) := hf.dual_right.map_max ha hb
+    min (f a) (f b) := hf.dual_right.map_max ha hb
 #align antitone_on.map_max AntitoneOn.map_max
 
 theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =

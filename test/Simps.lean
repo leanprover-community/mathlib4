@@ -93,8 +93,8 @@ initialize_simps_projections Something
 universe v u w
 
 structure Equiv' (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun     : α → β)
+  (invFun    : β → α)
   (left_inv  : invFun.LeftInverse toFun)
   (right_inv : invFun.RightInverse toFun)
 
@@ -430,16 +430,16 @@ class has_hom (obj : Type u) : Type (max u (v+1)) :=
 infixr:10 " ⟶ " => has_hom.hom -- type as \h
 
 class CategoryStruct (obj : Type u) extends has_hom.{v} obj : Type (max u (v+1)) :=
-  (id       : ∀ X : obj, hom X X)
-  (comp     : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z))
+  (id   : ∀ X : obj, hom X X)
+  (comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z))
 
 notation "𝟙" => CategoryStruct.id -- type as \b1
 infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
 @[simps] instance types : CategoryStruct (Type u) :=
-  { hom     := λ a b => (a → b)
-    id      := λ _ => id
-    comp    := λ f g => g ∘ f }
+  { hom  := λ a b => (a → b)
+    id   := λ _ => id
+    comp := λ f g => g ∘ f }
 
 @[ext] theorem types.ext {X Y : Type u} {f g : X ⟶ Y} : (∀ x, f x = g x) → f = g := funext
 
@@ -475,8 +475,8 @@ example {x : Type} (h : ℕ = x) : voo = x := by simp only [voo_c]; rw [h]
 example {x : ℕ} (h : (3 : ℕ) = x) : voo.x = x := by simp only [voo_x]; rw [h]
 
 structure Equiv2 (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun     : α → β)
+  (invFun    : β → α)
   (left_inv  : invFun.LeftInverse toFun)
   (right_inv : invFun.RightInverse toFun)
 
@@ -571,8 +571,8 @@ end coercing
 namespace ManualCoercion
 
 structure Equiv (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => ManualCoercion.Equiv
 
@@ -599,8 +599,8 @@ end ManualCoercion
 namespace FaultyManualCoercion
 
 structure Equiv (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => FaultyManualCoercion.Equiv
 
@@ -623,8 +623,8 @@ namespace ManualInitialize
 variable {α β γ : Sort _}
 
 structure Equiv (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => ManualInitialize.Equiv
 
@@ -655,8 +655,8 @@ namespace FaultyUniverses
 variable {α β γ : Sort _}
 
 structure Equiv (α : Sort u) (β : Sort v) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => FaultyUniverses.Equiv
 
@@ -684,8 +684,8 @@ namespace ManualUniverses
 variable {α β γ : Sort _}
 
 structure Equiv (α : Sort u) (β : Sort v) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => ManualUniverses.Equiv
 
@@ -705,8 +705,8 @@ end ManualUniverses
 namespace ManualProjectionNames
 
 structure Equiv (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => ManualProjectionNames.Equiv
 
@@ -745,8 +745,8 @@ end ManualProjectionNames
 namespace PrefixProjectionNames
 
 structure Equiv (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => PrefixProjectionNames.Equiv
 
@@ -818,8 +818,8 @@ example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus3.s = x := by
 namespace NestedNonFullyApplied
 
 structure Equiv (α : Sort _) (β : Sort _) :=
-  (toFun    : α → β)
-  (invFun   : β → α)
+  (toFun  : α → β)
+  (invFun : β → α)
 
 local infix:25 (priority := high) " ≃ " => NestedNonFullyApplied.Equiv
 
@@ -972,8 +972,8 @@ instance {α β} : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv'.toFun⟩
   ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 structure DecoratedEquiv (α : Sort _) (β : Sort _) extends Equiv' α β :=
-  (P_toFun    : Function.Injective toFun )
-  (P_invFun   : Function.Injective invFun)
+  (P_toFun  : Function.Injective toFun )
+  (P_invFun : Function.Injective invFun)
 
 instance {α β} : CoeFun (DecoratedEquiv α β) (λ _ => α → β) := ⟨λ f => f.toEquiv'⟩
 
@@ -988,12 +988,12 @@ def DecoratedEquiv.Simps.symm_apply {α β : Sort _} (e : DecoratedEquiv α β) 
 initialize_simps_projections DecoratedEquiv (toFun → apply, invFun → symm_apply, -toEquiv')
 
 @[simps] def foo (α : Type) : DecoratedEquiv α α :=
-  { toFun    := λ x => x
-    invFun   := λ x => x
+  { toFun     := λ x => x
+    invFun    := λ x => x
     left_inv  := λ _ => rfl
     right_inv := λ _ => rfl
-    P_toFun  := λ _ _ h => h
-    P_invFun := λ _ _ h => h }
+    P_toFun   := λ _ _ h => h
+    P_invFun  := λ _ _ h => h }
 
 example {α : Type} (x z : α) (h : x = z) : (foo α).symm x = z := by
   dsimp
@@ -1022,8 +1022,8 @@ example {α : Type} (x z : α) (h : x = z) : foo2 α x = z := by
   rw [h]
 
 structure FurtherDecoratedEquiv (α : Sort _) (β : Sort _) extends DecoratedEquiv α β :=
-  (Q_toFun    : Function.Surjective toFun )
-  (Q_invFun   : Function.Surjective invFun )
+  (Q_toFun  : Function.Surjective toFun )
+  (Q_invFun : Function.Surjective invFun )
 
 instance {α β} : CoeFun (FurtherDecoratedEquiv α β) (λ _ => α → β) :=
   ⟨λ f => f.toDecoratedEquiv⟩
@@ -1042,14 +1042,14 @@ initialize_simps_projections FurtherDecoratedEquiv
   (toFun → apply, invFun → symm_apply, -toDecoratedEquiv, toEquiv' → toEquiv', -toEquiv')
 
 @[simps] def ffoo (α : Type) : FurtherDecoratedEquiv α α :=
-  { toFun    := λ x => x
-    invFun   := λ x => x
+  { toFun     := λ x => x
+    invFun    := λ x => x
     left_inv  := λ _ => rfl
     right_inv := λ _ => rfl
-    P_toFun  := λ _ _ h => h
-    P_invFun := λ _ _ h => h
-    Q_toFun  := λ y => ⟨y, rfl⟩
-    Q_invFun := λ y => ⟨y, rfl⟩ }
+    P_toFun   := λ _ _ h => h
+    P_invFun  := λ _ _ h => h
+    Q_toFun   := λ y => ⟨y, rfl⟩
+    Q_invFun  := λ y => ⟨y, rfl⟩ }
 
 example {α : Type} (x z : α) (h : x = z) : (ffoo α).symm x = z := by
   dsimp
@@ -1057,7 +1057,7 @@ example {α : Type} (x z : α) (h : x = z) : (ffoo α).symm x = z := by
   rw [h]
 
 @[simps!] def ffoo3 (α : Type) : FurtherDecoratedEquiv α α :=
-  { foo α with Q_toFun  := λ y => ⟨y, rfl⟩, Q_invFun  := λ y => ⟨y, rfl⟩ }
+  { foo α with Q_toFun := λ y => ⟨y, rfl⟩, Q_invFun := λ y => ⟨y, rfl⟩ }
 
 @[simps! apply toEquiv' toEquiv'_toFun toDecoratedEquiv_apply]
 def ffoo4 (α : Type) : FurtherDecoratedEquiv α α :=
@@ -1079,14 +1079,14 @@ initialize_simps_projections OneMore (toFun → apply, invFun → symm_apply,
   -toFurtherDecoratedEquiv, toDecoratedEquiv → to_dequiv, -to_dequiv)
 
 @[simps] def fffoo (α : Type) : OneMore α α :=
-  { toFun    := λ x => x
-    invFun   := λ x => x
+  { toFun     := λ x => x
+    invFun    := λ x => x
     left_inv  := λ _ => rfl
     right_inv := λ _ => rfl
-    P_toFun  := λ _ _ h => h
-    P_invFun := λ _ _ h => h
-    Q_toFun  := λ y => ⟨y, rfl⟩
-    Q_invFun := λ y => ⟨y, rfl⟩ }
+    P_toFun   := λ _ _ h => h
+    P_invFun  := λ _ _ h => h
+    Q_toFun   := λ y => ⟨y, rfl⟩
+    Q_invFun  := λ y => ⟨y, rfl⟩ }
 
 example {α : Type} (x : α) : (fffoo α).symm x = x := by dsimp
 
