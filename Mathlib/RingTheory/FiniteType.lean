@@ -730,7 +730,7 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro m hm
   rw [← map_eq_zero_iff (AEval'.of f) (AEval'.of f).injective]
-  set m' := Module.AEval.of R M f m
+  set m' := Module.AEval'.of f m
   rw [Ideal.mem_span_singleton'] at hFa
   obtain ⟨G, hG⟩ := hFa
   suffices (F - 1) • m' = 0 by
