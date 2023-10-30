@@ -145,7 +145,7 @@ theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
     haveI := hasPullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    haveI := hasPullbacks.has_pullbacks  hf₁ hf₂
+    haveI := hasPullbacks.has_pullbacks hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t hf₁ hf₂,
       ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
 #align category_theory.presieve.pullback_compatible_iff CategoryTheory.Presieve.pullbackCompatible_iff
