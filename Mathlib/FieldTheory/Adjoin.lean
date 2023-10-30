@@ -445,7 +445,7 @@ theorem adjoin_map {E' : Type*} [Field E'] [Algebra F E'] (f : E →ₐ[F] E') :
 
 theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
     lift (L := E) (E := adjoin F S) = adjoin F (Subtype.val '' S) :=
-  adjoin_map ..
+  adjoin_map _ _ _
 
 @[simp]
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
@@ -454,14 +454,12 @@ theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
 
 @[simp]
 theorem lift_bot (K : IntermediateField F E) :
-    lift (L := E) (E := (⊥ : IntermediateField F K)) = ⊥ := by
-  rw [← adjoin_empty, ← adjoin_empty, lift_adjoin, Set.image_empty]
+    lift (L := E) (E := (⊥ : IntermediateField F K)) = ⊥ := map_bot _
 
 @[simp]
 theorem lift_top (K : IntermediateField F E) :
     lift (L := E) (E := (⊤ : IntermediateField F K)) = K := by
-  rw [← adjoin_univ, lift_adjoin, Set.image_univ, Subtype.range_coe_subtype]
-  exact le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
+  rw [lift, ←AlgHom.fieldRange_eq_map, fieldRange_val]
 
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
   Algebra.adjoin_le (subset_adjoin _ _)
