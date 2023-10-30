@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import pytz
 import datetime
 import github
 import os
@@ -120,7 +121,7 @@ nums = []
 sync_prs = defaultdict(set)
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
-    if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0):
+    if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0, tzinfo=pytz.UTC):
         continue
     if 'no-source-header' in (l.name for l in pr.labels):
         continue
@@ -145,7 +146,7 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
+        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode(encoding='utf8', errors='replace'))
         prs_of_import.setdefault(import_, []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
