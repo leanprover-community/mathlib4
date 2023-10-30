@@ -365,29 +365,38 @@ theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
 It takes a boolean function `f` on each bit the number of bits `i`.  It is
 almost always specialized  `i = w`; the length of the binary representation.
 This is an alternative to using `List`. It will be used for bitadd, bitneg, bitmul etc.-/
-def ofBits (f : Nat → Bool) : Nat → Nat :=
-  go 0
+def ofBits {n : Nat} (f : Fin n → Bool) : Nat :=
+  go f 0
   where
     /-- A helper method where `z` the starting point.
-    Note that `ofBits.go f z i = 2 ^ i * z + ofBits f i` which we prove next. -/
-    go (z : Nat) : Nat → Nat
+    Note that `ofBits.go f z = 2 ^ n * z + ofBits f i` which we prove next. -/
+    go {n : Nat} (f : Fin n → Bool) (z : Nat) : Nat :=
+    match n with
     | 0 => z
-    | i + 1 => go (z.bit (f i)) i
+    | _ + 1 => go (f ∘ Fin.castSucc) (z.bit (f (.last _)))
 
-theorem ofBits_eq_pow_mul_add {f z i} : ofBits.go f z i = 2 ^ i * z + ofBits f i := by
-  induction' i with i ih generalizing z
+@[simp]
+theorem ofBits_cons {n} (x : Bool) (f : Fin n → Bool) :
+    ofBits (Fin.cons x f) = bit x (ofBits f) := by
+  rw [ofBits, ofBits]
+  sorry
+
+theorem ofBits_go_eq_pow_mul_add {n} (f : Fin n → Bool) (z : Nat) :
+    ofBits.go f z = 2 ^ n * z + ofBits f := by
+  induction' n with i ih generalizing z
   · simp [ofBits, ofBits.go, bit_val]
-  · simp only [ofBits, ofBits.go, @ih (bit (f i) 0), @ih (bit (f i) z)]
+  · simp only [ofBits, ofBits.go, ih _ (bit (f _) 0), @ih _ (bit (f _) z)]
     rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
     simp [bit_val, add_assoc]
 
-theorem ofBits_lt {f i} : ofBits f i < 2 ^ i := by
-  induction' i with i ih
+theorem ofBits_lt {n} (f : Fin n → Bool) : ofBits f < 2 ^ n := by
+  induction' n with i ih
   · simp [ofBits, ofBits.go, bit_val, lt_succ, Bool.toNat_le_one]
   · simp only [ofBits, ofBits.go]
-    rw [ofBits_eq_pow_mul_add]
+    rw [ofBits_go_eq_pow_mul_add]
+    replace ih := ih (f ∘ Fin.castSucc)
     rw [ofBits] at ih
-    cases' (f i) <;> simp [two_pow_succ, ih, ofBits]; linarith
+    cases' (f <| .last _) <;> simp [two_pow_succ, ih, ofBits]; linarith
 
 /-- The `ith` bit of `ofBits` is the function at `i`.
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
