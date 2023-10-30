@@ -1303,6 +1303,9 @@ theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 :=
   eq_sub_iff_add_eq.2 <| sin_sq_add_cos_sq _
 #align real.sin_sq Real.sin_sq
 
+lemma sin_sq_eq_half_sub : sin x ^ 2 = 1 / 2 - cos (2 * x) / 2 := by
+  rw [sin_sq, cos_sq, ← sub_sub, sub_half]
+
 theorem abs_sin_eq_sqrt_one_sub_cos_sq (x : ℝ) : |sin x| = sqrt (1 - cos x ^ 2) := by
   rw [← sin_sq, sqrt_sq_eq_abs]
 #align real.abs_sin_eq_sqrt_one_sub_cos_sq Real.abs_sin_eq_sqrt_one_sub_cos_sq

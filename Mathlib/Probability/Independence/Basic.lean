@@ -164,11 +164,11 @@ lemma iIndep_iff (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Meas
       μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
   simp only [iIndep_iff_iIndepSets, iIndepSets_iff]; rfl
 
-lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
+lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
   simp only [Indep, IndepSets, kernel.Indep]
 
-lemma Indep_iff (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
+lemma Indep_iff (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     Indep m₁ m₂ μ
       ↔ ∀ t1 t2, MeasurableSet[m₁] t1 → MeasurableSet[m₂] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
   rw [Indep_iff_IndepSets, IndepSets_iff]; rfl
