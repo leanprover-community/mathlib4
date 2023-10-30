@@ -8,6 +8,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.VanKampen
 
 #align_import category_theory.extensive from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -16,9 +18,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 # Extensive categories
 
 ## Main definitions
-- `CategoryTheory.IsVanKampenColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is van
-  Kampen if for every cocone `c'` over the pullback of the diagram `F' : J ⥤ C'`,
-  `c'` is colimiting iff `c'` is the pullback of `c`.
 - `CategoryTheory.FinitaryExtensive`: A category is (finitary) extensive if it has finite
   coproducts, and binary coproducts are van Kampen.
 
@@ -30,11 +29,15 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 - `CategoryTheory.BinaryCofan.isPullback_initial_to_of_isVanKampen`: In extensive categories,
   sums are disjoint, i.e. the pullback of `X ⟶ X ⨿ Y` and `Y ⟶ X ⨿ Y` is the initial object.
 - `CategoryTheory.types.finitaryExtensive`: The category of types is extensive.
-
+- `CategoryTheory.FinitaryExtensive_TopCat`:
+  The category `Top` is extensive.
+- `CategoryTheory.FinitaryExtensive_functor`: The category `C ⥤ D` is extensive if `D`
+  has all pullbacks and is extensive.
+- `CategoryTheory.FinitaryExtensive.isVanKampen_finiteCoproducts`: Finite coproducts in a
+  finitary extensive category are van Kampen.
 ## TODO
 
 Show that the following are finitary extensive:
-- the categories of sheaves over a site
 - `Scheme`
 - `AffineScheme` (`CommRingᵒᵖ`)
 
@@ -49,89 +52,35 @@ open CategoryTheory.Limits
 
 namespace CategoryTheory
 
-universe v' u' v u
+universe v' u' v u v'' u''
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
-
-/-- A natural transformation is equifibered if every commutative square of the following form is
-a pullback.
-```
-F(X) → F(Y)
- ↓      ↓
-G(X) → G(Y)
-```
--/
-def NatTrans.Equifibered {F G : J ⥤ C} (α : F ⟶ G) : Prop :=
-  ∀ ⦃i j : J⦄ (f : i ⟶ j), IsPullback (F.map f) (α.app i) (α.app j) (G.map f)
-#align category_theory.nat_trans.equifibered CategoryTheory.NatTrans.Equifibered
-
-theorem NatTrans.equifibered_of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : Equifibered α :=
-  fun _ _ f => IsPullback.of_vert_isIso ⟨NatTrans.naturality _ f⟩
-#align category_theory.nat_trans.equifibered_of_is_iso CategoryTheory.NatTrans.equifibered_of_isIso
-
-theorem NatTrans.Equifibered.comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : Equifibered α)
-    (hβ : Equifibered β) : Equifibered (α ≫ β) :=
-  fun _ _ f => (hα f).paste_vert (hβ f)
-#align category_theory.nat_trans.equifibered.comp CategoryTheory.NatTrans.Equifibered.comp
-
-/-- A (colimit) cocone over a diagram `F : J ⥤ C` is universal if it is stable under pullbacks. -/
-def IsUniversalColimit {F : J ⥤ C} (c : Cocone F) : Prop :=
-  ∀ ⦃F' : J ⥤ C⦄ (c' : Cocone F') (α : F' ⟶ F) (f : c'.pt ⟶ c.pt)
-    (_ : α ≫ c.ι = c'.ι ≫ (Functor.const J).map f) (_ : NatTrans.Equifibered α),
-    (∀ j : J, IsPullback (c'.ι.app j) (α.app j) f (c.ι.app j)) → Nonempty (IsColimit c')
-#align category_theory.is_universal_colimit CategoryTheory.IsUniversalColimit
-
-/-- A (colimit) cocone over a diagram `F : J ⥤ C` is van Kampen if for every cocone `c'` over the
-pullback of the diagram `F' : J ⥤ C'`, `c'` is colimiting iff `c'` is the pullback of `c`.
-
-TODO: Show that this is iff the functor `C ⥤ Catᵒᵖ` sending `x` to `C/x` preserves it.
-TODO: Show that this is iff the inclusion functor `C ⥤ Span(C)` preserves it.
--/
-def IsVanKampenColimit {F : J ⥤ C} (c : Cocone F) : Prop :=
-  ∀ ⦃F' : J ⥤ C⦄ (c' : Cocone F') (α : F' ⟶ F) (f : c'.pt ⟶ c.pt)
-    (_ : α ≫ c.ι = c'.ι ≫ (Functor.const J).map f) (_ : NatTrans.Equifibered α),
-    Nonempty (IsColimit c') ↔ ∀ j : J, IsPullback (c'.ι.app j) (α.app j) f (c.ι.app j)
-#align category_theory.is_van_kampen_colimit CategoryTheory.IsVanKampenColimit
-
-theorem IsVanKampenColimit.isUniversal {F : J ⥤ C} {c : Cocone F} (H : IsVanKampenColimit c) :
-    IsUniversalColimit c :=
-  fun _ c' α f h hα => (H c' α f h hα).mpr
-#align category_theory.is_van_kampen_colimit.is_universal CategoryTheory.IsVanKampenColimit.isUniversal
-
-/-- A van Kampen colimit is a colimit. -/
-noncomputable def IsVanKampenColimit.isColimit {F : J ⥤ C} {c : Cocone F}
-    (h : IsVanKampenColimit c) : IsColimit c := by
-  refine' ((h c (𝟙 F) (𝟙 c.pt : _) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
-    (NatTrans.equifibered_of_isIso _)).mpr fun j => _).some
-  haveI : IsIso (𝟙 c.pt) := inferInstance
-  exact IsPullback.of_vert_isIso ⟨by erw [NatTrans.id_app, Category.comp_id, Category.id_comp]⟩
-#align category_theory.is_van_kampen_colimit.is_colimit CategoryTheory.IsVanKampenColimit.isColimit
-
-theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : IsInitial X) :
-    IsVanKampenColimit (asEmptyCocone X) := by
-  intro F' c' α f hf hα
-  have : F' = Functor.empty C := by apply Functor.hext <;> rintro ⟨⟨⟩⟩
-  subst this
-  haveI := h.isIso_to f
-  refine' ⟨by rintro _ ⟨⟨⟩⟩,
-    fun _ => ⟨IsColimit.ofIsoColimit h (Cocones.ext (asIso f).symm <| by rintro ⟨⟨⟩⟩)⟩⟩
-#align category_theory.is_initial.is_van_kampen_colimit CategoryTheory.IsInitial.isVanKampenColimit
+variable {D : Type u''} [Category.{v''} D]
 
 section Extensive
 
 variable {X Y : C}
 
-/-- A category is (finitary) extensive if it has finite coproducts,
-and binary coproducts are van Kampen.
+/-- A category is (finitary) pre-extensive if it has finite coproducts,
+and binary coproducts are van Kampen. -/
+class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
+  [hasFiniteCoproducts : HasFiniteCoproducts C]
+  [hasPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
+  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
-TODO: Show that this is iff all finite coproducts are van Kampen. -/
+attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts FinitaryPreExtensive.hasPullbackInl
+
+/-- A category is (finitary) extensive if it has finite coproducts,
+and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
+  [hasPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
   /-- In a finitary extensive category, all coproducts are van Kampen-/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 #align category_theory.finitary_extensive CategoryTheory.FinitaryExtensive
 
-attribute [instance] FinitaryExtensive.hasFiniteCoproducts
+attribute [instance] FinitaryExtensive.hasFiniteCoproducts FinitaryExtensive.hasPullbackInl
 
 theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingPair ⥤ C}
     (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
@@ -146,97 +95,32 @@ theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingP
   exact FinitaryExtensive.van_kampen' c hc
 #align category_theory.finitary_extensive.van_kampen CategoryTheory.FinitaryExtensive.vanKampen
 
-theorem mapPair_equifibered {F F' : Discrete WalkingPair ⥤ C} (α : F ⟶ F') :
-    NatTrans.Equifibered α := by
-  rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩
-  all_goals
-    dsimp; simp only [Discrete.functor_map_id]
-    exact IsPullback.of_horiz_isIso ⟨by simp only [Category.comp_id, Category.id_comp]⟩
-#align category_theory.map_pair_equifibered CategoryTheory.mapPair_equifibered
+namespace FinitaryPreExtensive
 
-theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
-    IsVanKampenColimit c ↔
-      ∀ {X' Y' : C} (c' : BinaryCofan X' Y') (αX : X' ⟶ X) (αY : Y' ⟶ Y) (f : c'.pt ⟶ c.pt)
-        (_ : αX ≫ c.inl = c'.inl ≫ f) (_ : αY ≫ c.inr = c'.inr ≫ f),
-        Nonempty (IsColimit c') ↔ IsPullback c'.inl αX f c.inl ∧ IsPullback c'.inr αY f c.inr := by
-  constructor
-  · introv H hαX hαY
-    rw [H c' (mapPair αX αY) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> assumption) (mapPair_equifibered _)]
-    constructor
-    · intro H
-      exact ⟨H _, H _⟩
-    · rintro H ⟨⟨⟩⟩
-      exacts [H.1, H.2]
-  · introv H F' hα h
-    let X' := F'.obj ⟨WalkingPair.left⟩
-    let Y' := F'.obj ⟨WalkingPair.right⟩
-    have : F' = pair X' Y' := by
-      apply Functor.hext
-      · rintro ⟨⟨⟩⟩ <;> rfl
-      · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
-    clear_value X' Y'
-    subst this
-    change BinaryCofan X' Y' at c'
-    rw [H c' _ _ _ (NatTrans.congr_app hα ⟨WalkingPair.left⟩)
-        (NatTrans.congr_app hα ⟨WalkingPair.right⟩)]
-    constructor
-    · rintro H ⟨⟨⟩⟩
-      exacts [H.1, H.2]
-    · intro H
-      exact ⟨H _, H _⟩
-#align category_theory.binary_cofan.is_van_kampen_iff CategoryTheory.BinaryCofan.isVanKampen_iff
+variable [FinitaryPreExtensive C] {X Y Z : C} (f : Z ⟶ X ⨿ Y)
 
-theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
-    (cofans : ∀ X Y : C, BinaryCofan X Y) (colimits : ∀ X Y, IsColimit (cofans X Y))
-    (cones : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z), PullbackCone f g)
-    (limits : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z), IsLimit (cones f g))
-    (h₁ : ∀ {X' Y' : C} (αX : X' ⟶ X) (αY : Y' ⟶ Y) (f : (cofans X' Y').pt ⟶ c.pt)
-      (_ : αX ≫ c.inl = (cofans X' Y').inl ≫ f) (_ : αY ≫ c.inr = (cofans X' Y').inr ≫ f),
-      IsPullback (cofans X' Y').inl αX f c.inl ∧ IsPullback (cofans X' Y').inr αY f c.inr)
-    (h₂ : ∀ {Z : C} (f : Z ⟶ c.pt),
-      IsColimit (BinaryCofan.mk (cones f c.inl).fst (cones f c.inr).fst)) :
-    IsVanKampenColimit c := by
-  rw [BinaryCofan.isVanKampen_iff]
-  introv hX hY
-  constructor
-  · rintro ⟨h⟩
-    let e := h.coconePointUniqueUpToIso (colimits _ _)
-    obtain ⟨hl, hr⟩ := h₁ αX αY (e.inv ≫ f) (by simp [hX]) (by simp [hY])
-    constructor
-    · rw [← Category.id_comp αX, ← Iso.hom_inv_id_assoc e f]
-      haveI : IsIso (𝟙 X') := inferInstance
-      have : c'.inl ≫ e.hom = 𝟙 X' ≫ (cofans X' Y').inl := by
-        dsimp
-        simp
-      exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hl
-    · rw [← Category.id_comp αY, ← Iso.hom_inv_id_assoc e f]
-      haveI : IsIso (𝟙 Y') := inferInstance
-      have : c'.inr ≫ e.hom = 𝟙 Y' ≫ (cofans X' Y').inr := by
-        dsimp
-        simp
-      exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hr
-  · rintro ⟨H₁, H₂⟩
-    refine' ⟨IsColimit.ofIsoColimit _ <| (isoBinaryCofanMk _).symm⟩
-    let e₁ : X' ≅ _ := H₁.isLimit.conePointUniqueUpToIso (limits _ _)
-    let e₂ : Y' ≅ _ := H₂.isLimit.conePointUniqueUpToIso (limits _ _)
-    have he₁ : c'.inl = e₁.hom ≫ (cones f c.inl).fst := by simp
-    have he₂ : c'.inr = e₂.hom ≫ (cones f c.inr).fst := by simp
-    rw [he₁, he₂]
-    apply BinaryCofan.isColimitCompRightIso (BinaryCofan.mk _ _)
-    apply BinaryCofan.isColimitCompLeftIso (BinaryCofan.mk _ _)
-    exact h₂ f
-#align category_theory.binary_cofan.is_van_kampen_mk CategoryTheory.BinaryCofan.isVanKampen_mk
+instance hasPullbackInl' :
+    HasPullback f coprod.inl :=
+  hasPullback_symmetry _ _
 
-theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : BinaryCofan X Y}
-    (h : IsVanKampenColimit c) : Mono c.inr := by
-  refine' PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit _)
-  refine' (h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr _
-      (mapPair_equifibered _)).mp ⟨_⟩ ⟨WalkingPair.right⟩
-  · ext ⟨⟨⟩⟩ <;> dsimp; simp
-  · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
-      dsimp
-      infer_instance)).some
-#align category_theory.binary_cofan.mono_inr_of_is_van_kampen CategoryTheory.BinaryCofan.mono_inr_of_isVanKampen
+instance hasPullbackInr' :
+    HasPullback f coprod.inr := by
+  have : IsPullback (𝟙 _) (f ≫ (coprod.braiding X Y).hom) f (coprod.braiding Y X).hom :=
+    IsPullback.of_horiz_isIso ⟨by simp⟩
+  have := (IsPullback.of_hasPullback (f ≫ (coprod.braiding X Y).hom) coprod.inl).paste_horiz this
+  simp only [coprod.braiding_hom, Category.comp_id, colimit.ι_desc, BinaryCofan.mk_pt,
+    BinaryCofan.ι_app_left, BinaryCofan.mk_inl] at this
+  exact ⟨⟨⟨_, this.isLimit⟩⟩⟩
+
+instance hasPullbackInr :
+    HasPullback coprod.inr f :=
+  hasPullback_symmetry _ _
+
+end FinitaryPreExtensive
+
+instance (priority := 100) FinitaryExtensive.toFinitaryPreExtensive [FinitaryExtensive C] :
+    FinitaryPreExtensive C :=
+  ⟨fun c hc ↦ (FinitaryExtensive.van_kampen' c hc).isUniversal⟩
 
 theorem FinitaryExtensive.mono_inr_of_isColimit [FinitaryExtensive C] {c : BinaryCofan X Y}
     (hc : IsColimit c) : Mono c.inr :=
@@ -254,49 +138,25 @@ instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inl : X ⟶ X ⨿ Y) :=
 instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inr : Y ⟶ X ⨿ Y) :=
   (FinitaryExtensive.mono_inr_of_isColimit (coprodIsCoprod X Y) : _)
 
-theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : BinaryCofan X Y}
-    (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
-  refine' ((h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr _
-      (mapPair_equifibered _)).mp ⟨_⟩ ⟨WalkingPair.left⟩).flip
-  · ext ⟨⟨⟩⟩ <;> dsimp; simp
-  · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
-      dsimp
-      infer_instance)).some
-#align category_theory.binary_cofan.is_pullback_initial_to_of_is_van_kampen CategoryTheory.BinaryCofan.isPullback_initial_to_of_isVanKampen
-
 theorem FinitaryExtensive.isPullback_initial_to_binaryCofan [FinitaryExtensive C]
     {c : BinaryCofan X Y} (hc : IsColimit c) :
     IsPullback (initial.to _) (initial.to _) c.inl c.inr :=
   BinaryCofan.isPullback_initial_to_of_isVanKampen (FinitaryExtensive.vanKampen c hc)
 #align category_theory.finitary_extensive.is_pullback_initial_to_binary_cofan CategoryTheory.FinitaryExtensive.isPullback_initial_to_binaryCofan
 
-theorem hasStrictInitial_of_isUniversal [HasInitial C]
-    (H : IsUniversalColimit (BinaryCofan.mk (𝟙 (⊥_ C)) (𝟙 (⊥_ C)))) : HasStrictInitialObjects C :=
-  hasStrictInitialObjects_of_initial_is_strict
-    (by
-      intro A f
-      suffices IsColimit (BinaryCofan.mk (𝟙 A) (𝟙 A)) by
-        obtain ⟨l, h₁, h₂⟩ := Limits.BinaryCofan.IsColimit.desc' this (f ≫ initial.to A) (𝟙 A)
-        rcases (Category.id_comp _).symm.trans h₂ with rfl
-        exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
-      refine' (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
-        (mapPair_equifibered _) _).some
-      rintro ⟨⟨⟩⟩ <;> dsimp <;>
-        exact IsPullback.of_horiz_isIso ⟨(Category.id_comp _).trans (Category.comp_id _).symm⟩)
-#align category_theory.has_strict_initial_of_is_universal CategoryTheory.hasStrictInitial_of_isUniversal
-
-instance (priority := 100) hasStrictInitialObjects_of_finitaryExtensive [FinitaryExtensive C] :
-    HasStrictInitialObjects C :=
-  hasStrictInitial_of_isUniversal (FinitaryExtensive.vanKampen _
+instance (priority := 100) hasStrictInitialObjects_of_finitaryPreExtensive
+    [FinitaryPreExtensive C] : HasStrictInitialObjects C :=
+  hasStrictInitial_of_isUniversal (FinitaryPreExtensive.universal' _
     ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
-      infer_instance)).some).isUniversal
-#align category_theory.has_strict_initial_objects_of_finitary_extensive CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive
+      infer_instance)).some)
+#align category_theory.has_strict_initial_objects_of_finitary_extensive CategoryTheory.hasStrictInitialObjects_of_finitaryPreExtensive
 
 theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFiniteCoproducts C]
+    [hasPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
     (T : C) (HT : IsTerminal T) (c₀ : BinaryCofan T T) (hc₀ : IsColimit c₀) :
     FinitaryExtensive C ↔ IsVanKampenColimit c₀ := by
-  refine' ⟨fun H => H.2 c₀ hc₀, fun H => _⟩
+  refine' ⟨fun H => H.van_kampen' c₀ hc₀, fun H => _⟩
   constructor
   simp_rw [BinaryCofan.isVanKampen_iff] at H ⊢
   intro X Y c hc X' Y' c' αX αY f hX hY
@@ -458,7 +318,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
 set_option linter.uppercaseLean3 false in
 #align category_theory.finitary_extensive_Top_aux CategoryTheory.finitaryExtensiveTopCatAux
 
-instance : FinitaryExtensive TopCat.{u} := by
+instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
   rw [finitaryExtensive_iff_of_isTerminal TopCat.{u} _ TopCat.isTerminalPUnit _
       (TopCat.binaryCofanIsColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => TopCat.binaryCofanIsColimit X Y) _
@@ -506,71 +366,33 @@ end TopCat
 
 section Functor
 
-universe v'' u''
-
-variable {D : Type u''} [Category.{v''} D]
-
-theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : Equifibered α)
-    (H : C ⥤ D) [PreservesLimitsOfShape WalkingCospan H] : Equifibered (whiskerRight α H) :=
-  fun _ _ f => (hα f).map H
-#align category_theory.nat_trans.equifibered.whisker_right CategoryTheory.NatTrans.Equifibered.whiskerRight
-
-theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKampenColimit c)
-    (e : c ≅ c') : IsVanKampenColimit c' := by
-  intro F' c'' α f h hα
-  have : c'.ι ≫ (Functor.const J).map e.inv.hom = c.ι := by
-    ext j
-    exact e.inv.2 j
-  rw [H c'' α (f ≫ e.inv.1) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα]
-  apply forall_congr'
-  intro j
-  conv_lhs => rw [← Category.comp_id (α.app j)]
-  haveI : IsIso e.inv.hom := Functor.map_isIso (Cocones.forget _) e.inv
-  exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
-#align category_theory.is_van_kampen_colimit.of_iso CategoryTheory.IsVanKampenColimit.of_iso
-
-theorem IsVanKampenColimit.of_map {D : Type*} [Category D] (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
-    [PreservesLimitsOfShape WalkingCospan G] [ReflectsLimitsOfShape WalkingCospan G]
-    [PreservesColimitsOfShape J G] [ReflectsColimitsOfShape J G]
-    (H : IsVanKampenColimit (G.mapCocone c)) : IsVanKampenColimit c := by
-  intro F' c' α f h hα
-  refine' (Iff.trans _ (H (G.mapCocone c') (whiskerRight α G) (G.map f)
-      (by ext j; simpa using G.congr_map (NatTrans.congr_app h j))
-      (hα.whiskerRight G))).trans (forall_congr' fun j => _)
-  · exact ⟨fun h => ⟨isColimitOfPreserves G h.some⟩, fun h => ⟨isColimitOfReflects G h.some⟩⟩
-  · exact IsPullback.map_iff G (NatTrans.congr_app h.symm j)
-#align category_theory.is_van_kampen_colimit.of_map CategoryTheory.IsVanKampenColimit.of_map
-
-theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J D] (F : J ⥤ C ⥤ D)
-    (c : Cocone F) (hc : ∀ x : C, IsVanKampenColimit (((evaluation C D).obj x).mapCocone c)) :
-    IsVanKampenColimit c := by
-  intro F' c' α f e hα
-  have := fun x => hc x (((evaluation C D).obj x).mapCocone c') (whiskerRight α _)
-      (((evaluation C D).obj x).map f)
-      (by
-        ext y
-        dsimp
-        exact NatTrans.congr_app (NatTrans.congr_app e y) x)
-      (hα.whiskerRight _)
+theorem finitaryExtensive_of_reflective [HasFiniteCoproducts D] [HasPullbacks D]
+    [FinitaryExtensive C] [HasPullbacks C]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    [PreservesLimitsOfShape WalkingCospan Gl] :
+    FinitaryExtensive D := by
+  have : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
   constructor
-  · rintro ⟨hc'⟩ j
-    refine' ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ _⟩⟩
-    refine' fun x => (isLimitMapConePullbackConeEquiv _ _).symm _
-    exact ((this x).mp ⟨PreservesColimit.preserves hc'⟩ _).isLimit
-  · exact fun H => ⟨evaluationJointlyReflectsColimits _ fun x =>
-      ((this x).mpr fun j => (H j).map ((evaluation C D).obj x)).some⟩
-#align category_theory.is_van_kampen_colimit_of_evaluation CategoryTheory.isVanKampenColimit_of_evaluation
+  intros X Y c hc
+  apply (IsVanKampenColimit.precompose_isIso_iff
+    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp
+  refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit $ pair X Y ⋙ _)).map_reflective
+    adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
+  · exact isColimitOfPreserves Gl (colimit.isColimit _)
+  · exact (IsColimit.precomposeHomEquiv _ _).symm hc
 
-instance [HasPullbacks C] [FinitaryExtensive C] : FinitaryExtensive (D ⥤ C) :=
+instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
+    FinitaryExtensive (D ⥤ C) :=
   haveI : HasFiniteCoproducts (D ⥤ C) := ⟨fun _ => Limits.functorCategoryHasColimitsOfShape⟩
   ⟨fun c hc => isVanKampenColimit_of_evaluation _ c fun _ =>
     FinitaryExtensive.vanKampen _ <| PreservesColimit.preserves hc⟩
 
 theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExtensive D]
-    [HasFiniteCoproducts C] [PreservesLimitsOfShape WalkingCospan F]
+    [HasFiniteCoproducts C] [∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
+    [PreservesLimitsOfShape WalkingCospan F]
     [ReflectsLimitsOfShape WalkingCospan F] [PreservesColimitsOfShape (Discrete WalkingPair) F]
     [ReflectsColimitsOfShape (Discrete WalkingPair) F] : FinitaryExtensive C :=
-  ⟨fun _ hc => (FinitaryExtensive.vanKampen _ (isColimitOfPreserves F hc)).of_map F⟩
+  ⟨fun _ hc => (FinitaryExtensive.vanKampen _ (isColimitOfPreserves F hc)).of_mapCocone F⟩
 #align category_theory.finitary_extensive_of_preserves_and_reflects CategoryTheory.finitaryExtensive_of_preserves_and_reflects
 
 theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [FinitaryExtensive D]
@@ -584,6 +406,141 @@ theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [F
 #align category_theory.finitary_extensive_of_preserves_and_reflects_isomorphism CategoryTheory.finitaryExtensive_of_preserves_and_reflects_isomorphism
 
 end Functor
+
+section FiniteCoproducts
+
+theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtensive C] {n : ℕ}
+    {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
+  let f : Fin n → C := F.obj ∘ Discrete.mk
+  have : F = Discrete.functor f :=
+    Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+  clear_value f
+  subst this
+  induction' n with n IH
+  · exact (isVanKampenColimit_of_isEmpty _ hc).isUniversal
+  · apply IsUniversalColimit.of_iso _
+      ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
+    apply @isUniversalColimit_extendCofan _ _ _ _ _ _ _ _ ?_
+    · apply IH
+      exact coproductIsCoproduct _
+    · apply FinitaryPreExtensive.universal'
+      exact coprodIsCoprod _ _
+    · dsimp
+      infer_instance
+
+theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive C] {ι : Type*}
+    [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+  apply (IsUniversalColimit.whiskerEquivalence_iff (Discrete.equivalence e).symm).mp
+  apply FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin
+  exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
+
+theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C] {n : ℕ}
+    {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
+  let f : Fin n → C := F.obj ∘ Discrete.mk
+  have : F = Discrete.functor f :=
+    Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+  clear_value f
+  subst this
+  induction' n with n IH
+  · exact isVanKampenColimit_of_isEmpty _ hc
+  · apply IsVanKampenColimit.of_iso _
+      ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
+    apply @isVanKampenColimit_extendCofan _ _ _ _ _ _ _ _ ?_
+    · apply IH
+      exact coproductIsCoproduct _
+    · apply FinitaryExtensive.van_kampen'
+      exact coprodIsCoprod _ _
+    · dsimp
+      infer_instance
+
+theorem FinitaryExtensive.isVanKampen_finiteCoproducts [FinitaryExtensive C] {ι : Type*}
+    [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
+  apply (IsVanKampenColimit.whiskerEquivalence_iff (Discrete.equivalence e).symm).mp
+  apply FinitaryExtensive.isVanKampen_finiteCoproducts_Fin
+  exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
+
+lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C] {ι : Type*}
+    [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) (i : Discrete ι) {X : C}
+    (g : X ⟶ _) : HasPullback g (c.ι.app i) := by
+  classical
+  let f : ι → C := F.obj ∘ Discrete.mk
+  have : F = Discrete.functor f :=
+    Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp)
+  clear_value f
+  subst this
+  change Cofan f at c
+  obtain ⟨i⟩ := i
+  let e : ∐ f ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
+  { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (congr_arg f h) ≫ coprod.inl else
+      Sigma.ι (fun j : ({i}ᶜ : Set ι) ↦ f j) ⟨j, h⟩ ≫ coprod.inr)
+    inv := coprod.desc (Sigma.ι f i) (Sigma.desc <| fun j ↦ Sigma.ι f j)
+    hom_inv_id := by aesop_cat
+    inv_hom_id := by
+      ext j
+      · simp
+      · simp only [coprod.desc_comp, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+          eqToHom_refl, Category.id_comp, dite_true, BinaryCofan.mk_pt, BinaryCofan.ι_app_right,
+          BinaryCofan.mk_inr, colimit.ι_desc_assoc, Discrete.functor_obj, Category.comp_id]
+        exact dif_neg j.prop }
+  let e' : c.pt ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
+    hc.coconePointUniqueUpToIso (getColimitCocone _).2 ≪≫ e
+  have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩
+  · simp only [Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
+      BinaryCofan.ι_app_left, BinaryCofan.mk_inl]
+    exact colimit.comp_coconePointUniqueUpToIso_inv _ _
+  clear_value e'
+  rw [← this]
+  have : IsPullback (𝟙 _) (g ≫ e'.hom) g e'.inv := IsPullback.of_horiz_isIso ⟨by simp⟩
+  exact ⟨⟨⟨_, ((IsPullback.of_hasPullback (g ≫ e'.hom) coprod.inl).paste_horiz this).isLimit⟩⟩⟩
+
+lemma FinitaryExtensive.mono_ι [FinitaryExtensive C] {ι : Type*} [Finite ι] {F : Discrete ι ⥤ C}
+    {c : Cocone F} (hc : IsColimit c) (i : Discrete ι) :
+    Mono (c.ι.app i) :=
+  mono_of_cofan_isVanKampen (isVanKampen_finiteCoproducts hc) _
+
+instance [FinitaryExtensive C] {ι : Type*} [Finite ι] (X : ι → C) (i : ι) :
+    Mono (Sigma.ι X i) :=
+  FinitaryExtensive.mono_ι (coproductIsCoproduct _) ⟨i⟩
+
+lemma FinitaryExtensive.isPullback_initial_to [FinitaryExtensive C]
+    {ι : Type*} [Finite ι] {F : Discrete ι ⥤ C}
+    {c : Cocone F} (hc : IsColimit c) (i j : Discrete ι) (e : i ≠ j) :
+    IsPullback (initial.to _) (initial.to _) (c.ι.app i) (c.ι.app j) :=
+  isPullback_initial_to_of_cofan_isVanKampen (isVanKampen_finiteCoproducts hc) i j e
+
+lemma FinitaryExtensive.isPullback_initial_to_sigma_ι [FinitaryExtensive C] {ι : Type*} [Finite ι]
+    (X : ι → C) (i j : ι) (e : i ≠ j) :
+    IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j) :=
+  FinitaryExtensive.isPullback_initial_to (coproductIsCoproduct _) ⟨i⟩ ⟨j⟩
+    (ne_of_apply_ne Discrete.as e)
+
+instance FinitaryPreExtensive.hasPullbacks_of_inclusions [FinitaryPreExtensive C] {X Z : C}
+    {α : Type*} (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
+    [hi : IsIso (Sigma.desc i)] (a : α) : HasPullback f (i a) := by
+  apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct (c := Cofan.mk Z i)
+  exact @IsColimit.ofPointIso (t := Cofan.mk Z i) (P := _) hi
+
+lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [Finite α] {X : C}
+    {Z : α → C} (π : (a : α) → Z a ⟶ X) {Y : C} (f : Y ⟶ X) (hπ : IsIso (Sigma.desc π)) :
+    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _)) := by
+  suffices IsColimit (Cofan.mk _ ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _)) by
+    change IsIso (this.coconePointUniqueUpToIso (getColimitCocone _).2).inv
+    infer_instance
+  let : IsColimit (Cofan.mk X π)
+  · refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) ?_
+    convert hπ
+    simp [coproductIsCoproduct]
+  refine (FinitaryPreExtensive.isUniversal_finiteCoproducts this
+    (Cofan.mk _ ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
+    (Discrete.natTrans <| fun i ↦ pullback.snd) f ?_
+    (NatTrans.equifibered_of_discrete _) ?_).some
+  · ext
+    simp [pullback.condition]
+  · exact fun j ↦ IsPullback.of_hasPullback f (π j.as)
+
+end FiniteCoproducts
 
 end Extensive
 

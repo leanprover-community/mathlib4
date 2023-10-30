@@ -1001,10 +1001,9 @@ theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.ex
   (f.extend I).left_inv <| by rwa [f.extend_source]
 #align local_homeomorph.extend_left_inv LocalHomeomorph.extend_left_inv
 
--- like `e.extend_left_inv' I`, but stated in terms of images
-lemma extend_left_inv' {t : Set M} {e : LocalHomeomorph M H} (ht: t ⊆ e.source) :
-    ((e.extend I).symm ∘ (e.extend I)) '' t = t :=
-  image_congr'' (fun _ hx ↦ e.extend_left_inv _ (ht hx))
+-- like `f.extend_left_inv' I`, but stated in terms of images
+lemma extend_left_inv' (ht: t ⊆ f.source) : ((f.extend I).symm ∘ (f.extend I)) '' t = t :=
+  EqOn.image_eq' (fun _ hx ↦ f.extend_left_inv I (ht hx))
 
 theorem extend_source_mem_nhds {x : M} (h : x ∈ f.source) : (f.extend I).source ∈ 𝓝 x :=
   (isOpen_extend_source f I).mem_nhds <| by rwa [f.extend_source I]
@@ -1615,3 +1614,102 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
+
+section Topology
+-- Let `M` be a topological manifold over the field 𝕜.
+variable
+  {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [HasGroupoid M (contDiffGroupoid 0 I)]
+
+/-- A finite-dimensional manifold modelled on a locally compact field
+  (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
+lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
+    [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
+  have : ProperSpace E := FiniteDimensional.proper 𝕜 E
+  have : LocallyCompactSpace H := I.locallyCompactSpace
+  exact ChartedSpace.locallyCompactSpace H M
+
+open TopologicalSpace
+/-- A finite-dimensional second-countable manifold modelled on a locally compact field
+  (such as ℝ, ℂ or the p-adic numbers) is σ-compact. -/
+-- FIXME: make this an instance?
+lemma Manifold.sigmaCompact_of_finiteDimensional_of_secondCountable [SecondCountableTopology M]
+    [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] : SigmaCompactSpace M := by
+  have : LocallyCompactSpace M := Manifold.locallyCompact_of_finiteDimensional I
+  apply sigmaCompactSpace_of_locally_compact_second_countable
+
+section Real
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners ℝ E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  -- Let M be a real topological manifold.
+  [HasGroupoid M (contDiffGroupoid 0 I)]
+
+-- TODO: also path-connectedness!
+-- lemma Manifold.locallyPathConnected : LocPathConnectedSpace M := by
+
+-- FIXME: can I simplify this proof, to not require boundarylessness?
+lemma locallyPathConnected_aux [I.Boundaryless] {x : M} {n : Set M} (hn: n ∈ 𝓝 x) :
+    ∃ s : Set M, s ∈ 𝓝 x ∧ s ⊆ n ∧ IsPathConnected s := by
+  -- Assume `n` is contained in some chart at x. (Choose the distinguished chart from our atlas.)
+  let chart := chartAt H x
+  let echart := extChartAt I x
+  -- Shrink n so it is contained in chart.source.
+  have hn : n ∩ echart.source ∈ 𝓝 x := Filter.inter_mem hn
+    (chart.extend_source_mem_nhds _ (mem_chart_source H x))
+  -- Apply the chart to obtain a neighbourhood `n'` of $echart x ∈ E$.
+  let x' := echart x
+  let n' := echart '' (n ∩ echart.source)
+  have hn' : n' ∈ 𝓝 x' := by
+    let r := chart.map_extend_nhds I (mem_chart_source H x)
+    rw [I.range_eq_univ, nhdsWithin_univ, ← extChartAt] at r
+    exact r ▸ Filter.image_mem_map hn
+  -- The normed space `E` is locally path-connected.
+  -- In particular, x' has a path-connected neighbourhood s' ⊆ n'.
+  have : LocPathConnectedSpace E := by infer_instance
+  let r := this.path_connected_basis x'
+  rw [Filter.hasBasis_iff] at r
+  obtain ⟨s', ⟨hs', hs'conn⟩, hsn'⟩ := (r n').mp hn'
+  -- Transport back: s := echart ⁻¹ (s') is a compact neighbourhood of x.
+  let s := echart.symm '' s'
+  have hstarget : s' ⊆ echart.target := calc s'
+    _ ⊆ n' := hsn'
+    _ ⊆ echart '' (echart.source) := image_subset _ (inter_subset_right _ _)
+    _ ⊆ echart.target := LocalEquiv.map_source'' echart
+  refine ⟨s, ?_, ?_, ?_⟩
+  · -- FIXME: (how to) avoid the additional rewrites?
+    let r := chart.extend_image_mem_nhds_symm I hs' hstarget
+    have : LocalHomeomorph.extend chart I = echart := rfl
+    rw [this, ← image_eta, (extChartAt_to_inv I x)] at r
+    apply r
+  · calc s
+      _ ⊆ echart.symm '' n' := image_subset echart.symm hsn'
+      _ = (echart.symm ∘ echart) '' (n ∩ echart.source) := by rw [image_comp]
+      _ = n ∩ echart.source := by
+        rw [extChartAt_source]
+        apply chart.extend_left_inv' _ (inter_subset_right _ _)
+      _ ⊆ n := inter_subset_left _ _
+  · exact hs'conn.image' ((chart.continuousOn_extend_symm I).mono hstarget)
+
+/-- A real manifold without boundary is locally path-connected. -/
+-- FIXME: make this an instance?
+-- FUTURE: show M is locally simply connected and deduce local path-connectedness from that
+lemma Manifold.locallyPathConnected [I.Boundaryless] : LocPathConnectedSpace M := by
+  have aux : ∀ (x : M), Filter.HasBasis (𝓝 x) (fun s ↦ s ∈ 𝓝 x ∧ IsPathConnected s) id := by
+    intro x
+    rw [Filter.hasBasis_iff]
+    intro n
+    refine ⟨fun hn ↦ ?_, fun ⟨i, ⟨hi, _⟩, hin⟩ ↦ Filter.mem_of_superset hi hin⟩
+    obtain ⟨s, hs, hsn, hspconn⟩ := locallyPathConnected_aux I hn
+    exact ⟨s, ⟨hs, hspconn⟩, hsn⟩
+  exact { path_connected_basis := aux }
+
+lemma Manifold.locallyConnected : LocallyConnectedSpace M := by
+  have : LocallyConnectedSpace H := sorry -- TODO!
+  apply ChartedSpace.locallyConnectedSpace H M
+
+end Real
+
+end Topology
