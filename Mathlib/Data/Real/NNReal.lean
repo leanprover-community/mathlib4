@@ -538,13 +538,13 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 example : Archimedean ℝ≥0 := by infer_instance
 
 -- porting note: TODO: remove?
-instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
+instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (+) LE.le := inferInstance
 #align nnreal.covariant_add NNReal.covariant_add
 
-instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
+instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (+) LT.lt := inferInstance
 #align nnreal.contravariant_add NNReal.contravariant_add
 
-instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
+instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (*) LE.le := inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
 
 -- porting note: TODO: delete?

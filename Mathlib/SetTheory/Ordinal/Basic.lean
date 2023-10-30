@@ -913,7 +913,7 @@ theorem card_nat (n : ℕ) : card.{u} n = n := by
 #align ordinal.card_nat Ordinal.card_nat
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
-instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (+) LE.le where
   elim := fun c a b h => by
     revert h c
     refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
@@ -939,7 +939,7 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
+    CovariantClass Ordinal.{u} Ordinal.{u} (swap (+)) LE.le where
   elim := fun c a b h => by
     revert h c
     refine inductionOn a (fun α₁ r₁ _ ↦ ?_)

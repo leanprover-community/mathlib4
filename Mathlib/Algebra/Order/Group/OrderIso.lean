@@ -25,7 +25,7 @@ variable [Group α]
 
 section TypeclassesLeftRightLE
 
-variable [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [LE α] [CovariantClass α α (*) LE.le] [CovariantClass α α (swap (*)) LE.le]
   {a b c d : α}
 
 section
@@ -86,7 +86,7 @@ variable [Group α] [LE α]
 
 section Right
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
+variable [CovariantClass α α (swap (*)) LE.le] {a b c d : α}
 
 /-- `Equiv.mulRight` as an `OrderIso`. See also `OrderEmbedding.mulRight`. -/
 @[to_additive (attr := simps! (config := { simpRhs := true }) toEquiv apply)
@@ -118,7 +118,7 @@ end Right
 
 section Left
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [CovariantClass α α (*) LE.le]
 
 /-- `Equiv.mulLeft` as an `OrderIso`. See also `OrderEmbedding.mulLeft`. -/
 @[to_additive (attr := simps! (config := { simpRhs := true }) toEquiv apply)

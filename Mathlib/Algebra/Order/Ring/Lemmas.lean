@@ -72,49 +72,49 @@ notation "α>0" => { x : α // 0 < x }
 /-- `PosMulMono α` is an abbreviation for `CovariantClass α≥0 α (fun x y ↦ x * y) (≤)`,
 expressing that multiplication by nonnegative elements on the left is monotone. -/
 abbrev PosMulMono : Prop :=
-  CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·)
+  CovariantClass α≥0 α (fun x y => x * y) LE.le
 #align pos_mul_mono PosMulMono
 
 /-- `MulPosMono α` is an abbreviation for `CovariantClass α≥0 α (fun x y ↦ y * x) (≤)`,
 expressing that multiplication by nonnegative elements on the right is monotone. -/
 abbrev MulPosMono : Prop :=
-  CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·)
+  CovariantClass α≥0 α (fun x y => y * x) LE.le
 #align mul_pos_mono MulPosMono
 
 /-- `PosMulStrictMono α` is an abbreviation for `CovariantClass α>0 α (fun x y ↦ x * y) (<)`,
 expressing that multiplication by positive elements on the left is strictly monotone. -/
 abbrev PosMulStrictMono : Prop :=
-  CovariantClass α>0 α (fun x y => x * y) (· < ·)
+  CovariantClass α>0 α (fun x y => x * y) LT.lt
 #align pos_mul_strict_mono PosMulStrictMono
 
 /-- `MulPosStrictMono α` is an abbreviation for `CovariantClass α>0 α (fun x y ↦ y * x) (<)`,
 expressing that multiplication by positive elements on the right is strictly monotone. -/
 abbrev MulPosStrictMono : Prop :=
-  CovariantClass α>0 α (fun x y => y * x) (· < ·)
+  CovariantClass α>0 α (fun x y => y * x) LT.lt
 #align mul_pos_strict_mono MulPosStrictMono
 
 /-- `PosMulReflectLT α` is an abbreviation for `ContravariantClas α≥0 α (fun x y ↦ x * y) (<)`,
 expressing that multiplication by nonnegative elements on the left is strictly reverse monotone. -/
 abbrev PosMulReflectLT : Prop :=
-  ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
+  ContravariantClass α≥0 α (fun x y => x * y) LT.lt
 #align pos_mul_reflect_lt PosMulReflectLT
 
 /-- `MulPosReflectLT α` is an abbreviation for `ContravariantClas α≥0 α (fun x y ↦ y * x) (<)`,
 expressing that multiplication by nonnegative elements on the right is strictly reverse monotone. -/
 abbrev MulPosReflectLT : Prop :=
-  ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
+  ContravariantClass α≥0 α (fun x y => y * x) LT.lt
 #align mul_pos_reflect_lt MulPosReflectLT
 
 /-- `PosMulMonoRev α` is an abbreviation for `ContravariantClas α>0 α (fun x y ↦ x * y) (≤)`,
 expressing that multiplication by positive elements on the left is reverse monotone. -/
 abbrev PosMulMonoRev : Prop :=
-  ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
+  ContravariantClass α>0 α (fun x y => x * y) LE.le
 #align pos_mul_mono_rev PosMulMonoRev
 
 /-- `MulPosMonoRev α` is an abbreviation for `ContravariantClas α>0 α (fun x y ↦ y * x) (≤)`,
 expressing that multiplication by positive elements on the right is reverse monotone. -/
 abbrev MulPosMonoRev : Prop :=
-  ContravariantClass α>0 α (fun x y => y * x) (· ≤ ·)
+  ContravariantClass α>0 α (fun x y => y * x) LE.le
 #align mul_pos_mono_rev MulPosMonoRev
 
 end Abbreviations
@@ -130,22 +130,22 @@ section Preorder
 variable [Preorder α]
 
 instance PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
-    CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
+    CovariantClass α>0 α (fun x y => x * y) LE.le :=
   ⟨fun a _ _ bc => @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align pos_mul_mono.to_covariant_class_pos_mul_le PosMulMono.to_covariantClass_pos_mul_le
 
 instance MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
-    CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
+    CovariantClass α>0 α (fun x y => y * x) LE.le :=
   ⟨fun a _ _ bc => @CovariantClass.elim α≥0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align mul_pos_mono.to_covariant_class_pos_mul_le MulPosMono.to_covariantClass_pos_mul_le
 
 instance PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
-    ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
+    ContravariantClass α>0 α (fun x y => x * y) LT.lt :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt PosMulReflectLT.to_contravariantClass_pos_mul_lt
 
 instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
-    ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
+    ContravariantClass α>0 α (fun x y => y * x) LT.lt :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt MulPosReflectLT.to_contravariantClass_pos_mul_lt
 
@@ -448,7 +448,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 theorem posMulMono_iff_covariant_pos :
-    PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
+    PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) LE.le :=
   ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
@@ -457,7 +457,7 @@ theorem posMulMono_iff_covariant_pos :
 #align pos_mul_mono_iff_covariant_pos posMulMono_iff_covariant_pos
 
 theorem mulPosMono_iff_covariant_pos :
-    MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
+    MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) LE.le :=
   ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
@@ -466,7 +466,7 @@ theorem mulPosMono_iff_covariant_pos :
 #align mul_pos_mono_iff_covariant_pos mulPosMono_iff_covariant_pos
 
 theorem posMulReflectLT_iff_contravariant_pos :
-    PosMulReflectLT α ↔ ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
+    PosMulReflectLT α ↔ ContravariantClass α>0 α (fun x y => x * y) LT.lt :=
   ⟨@PosMulReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt
@@ -475,7 +475,7 @@ theorem posMulReflectLT_iff_contravariant_pos :
 #align pos_mul_reflect_lt_iff_contravariant_pos posMulReflectLT_iff_contravariant_pos
 
 theorem mulPosReflectLT_iff_contravariant_pos :
-    MulPosReflectLT α ↔ ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
+    MulPosReflectLT α ↔ ContravariantClass α>0 α (fun x y => y * x) LT.lt :=
   ⟨@MulPosReflectLT.to_contravariantClass_pos_mul_lt _ _ _ _, fun h =>
     ⟨fun a b c h => by
       obtain ha | ha := a.prop.eq_or_lt

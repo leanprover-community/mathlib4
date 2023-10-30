@@ -37,7 +37,7 @@ error: value mismatch
 has value
   0
 but is expected to have value
-  2 * Classical.choose Real.exists_cos_eq_zero
+  (*) 2 (Classical.choose Real.exists_cos_eq_zero)
 -/
 #guard_msgs in recall Real.pi : ℝ := 0
 
