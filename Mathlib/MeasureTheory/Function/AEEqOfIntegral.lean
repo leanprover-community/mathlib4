@@ -652,10 +652,10 @@ section WithDensity
 
 variable {m : MeasurableSpace α} {μ : Measure α}
 
-theorem withDensity_eq_iff_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞} (hf : Measurable f)
-    (hg : Measurable g) : μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
+theorem withDensity_eq_iff_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) : μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
   ⟨fun hfg ↦ by
-    refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite hf hg fun s hs _ ↦ ?_
+    refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf hg fun s hs _ ↦ ?_
     rw [← withDensity_apply f hs, ← withDensity_apply g hs, ← hfg], withDensity_congr_ae⟩
 
 theorem withDensity_eq_iff {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
