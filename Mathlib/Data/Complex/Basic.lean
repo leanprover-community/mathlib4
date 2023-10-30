@@ -226,7 +226,7 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
 #align complex.of_real_add Complex.ofReal_add
 
 @[simp, norm_cast]
-theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ)  :=
+theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ) :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.ofReal_bit0
 
