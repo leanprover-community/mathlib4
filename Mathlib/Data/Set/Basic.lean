@@ -7,6 +7,7 @@ import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
+import Mathlib.Util.Delaborators
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -568,6 +569,8 @@ theorem setOf_false : { _a : α | False } = ∅ :=
   rfl
 #align set.set_of_false Set.setOf_false
 
+@[simp] theorem setOf_bot : { _x : α | ⊥ } = ∅ := rfl
+
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   fun.
@@ -667,6 +670,8 @@ Mathematically it is the same as `α` but it has a different type.
 theorem setOf_true : { _x : α | True } = univ :=
   rfl
 #align set.set_of_true Set.setOf_true
+
+@[simp] theorem setOf_top : { _x : α | ⊤ } = univ := rfl
 
 @[simp, mfld_simps]
 theorem mem_univ (x : α) : x ∈ @univ α :=
@@ -2344,6 +2349,16 @@ theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ 
   refine' forall_congr' fun x => _
   by_cases hx : x ∈ t <;> simp [*, Set.ite]
 #align set.subset_ite Set.subset_ite
+
+theorem ite_eq_of_subset_left (t : Set α) {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) :
+    t.ite s₁ s₂ = s₁ ∪ (s₂ \ t) := by
+  ext x
+  by_cases hx : x ∈ t <;> simp [*, Set.ite, or_iff_right_of_imp (@h x)]
+
+theorem ite_eq_of_subset_right (t : Set α) {s₁ s₂ : Set α} (h : s₂ ⊆ s₁) :
+    t.ite s₁ s₂ = (s₁ ∩ t) ∪ s₂ := by
+  ext x
+  by_cases hx : x ∈ t <;> simp [*, Set.ite, or_iff_left_of_imp (@h x)]
 
 /-! ### Subsingleton -/
 
