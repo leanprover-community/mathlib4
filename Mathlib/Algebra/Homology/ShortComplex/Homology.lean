@@ -1123,7 +1123,7 @@ lemma asIsoHomologyπ_inv_comp_homologyπ (hf : S.f = 0) [S.HasHomology] :
 
 @[reassoc (attr := simp)]
 lemma homologyπ_comp_asIsoHomologyπ_inv (hf : S.f = 0) [S.HasHomology] :
-    S.homologyπ ≫ (S.asIsoHomologyπ hf).inv  = 𝟙 _ := (S.asIsoHomologyπ hf).hom_inv_id
+    S.homologyπ ≫ (S.asIsoHomologyπ hf).inv = 𝟙 _ := (S.asIsoHomologyπ hf).hom_inv_id
 
 /-- The canonical isomorphism `S.homology ≅ S.opcycles` when `S.g = 0`. -/
 @[simps! hom]

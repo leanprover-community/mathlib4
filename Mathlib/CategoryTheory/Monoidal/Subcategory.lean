@@ -67,8 +67,8 @@ When `P` is a monoidal predicate, the full subcategory for `P` inherits the mono
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
   Monoidal.induced (fullSubcategoryInclusion P)
-    { μIsoSymm := fun X Y => eqToIso rfl
-      εIsoSymm := eqToIso rfl }
+    { μIso := fun X Y => eqToIso rfl
+      εIso := eqToIso rfl }
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
