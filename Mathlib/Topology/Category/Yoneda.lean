@@ -28,6 +28,8 @@ def descend : C(Y, Z) where
     exact h a b hab
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 
+theorem descend_comp : False := sorry -- `QuotientMap.descend` makes the triangle commute.
+
 end QuotientMap
 
 open CategoryTheory Opposite Limits
@@ -69,5 +71,9 @@ theorem EqualizerConditionCoyoneda : EqualizerCondition (coyoneda G X) := by
     simp only [ContinuousMap.coyoneda, comp, unop_op, Quiver.Hom.unop_op, Set.coe_setOf,
       MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
     simp only [ContinuousMap.coyoneda, unop_op] at a
-    sorry
-    -- refine (hq _ _ (pullback.fst (f := π) (g := π))).descend
+    refine ⟨(hq Z B π).descend a ?_, ?_⟩
+    · intro x y hxy
+      -- We need `G` to preserve pullbacks, and then apply `ha` to the element `⟨(x,y), hxy⟩` of the
+      -- explicit pullback in `TopCat`.
+      sorry
+    · sorry -- this is `descend_comp`
