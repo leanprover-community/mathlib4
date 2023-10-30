@@ -65,7 +65,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
     cases h : sel s
     case none => simp [enumerate_eq_none_of_sel, h]
     case some a' =>
-      simp [enumerate, h]
+      simp only [enumerate, h, Nat.add_eq, add_zero]
       exact fun h' : enumerate sel (s \ {a'}) n = some a ↦
         have : a ∈ s \ {a'} := enumerate_mem h_sel h'
         this.left

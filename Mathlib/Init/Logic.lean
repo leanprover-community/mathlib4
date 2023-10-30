@@ -5,10 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
+import Std.Tactic.Relation.Rfl
 import Std.Logic
 import Std.WF
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename

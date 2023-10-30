@@ -63,6 +63,9 @@ def completion.incl {V : SemiNormedGroupCat} : V ⟶ completion.obj V where
   bound' := ⟨1, fun v => by simp⟩
 #align SemiNormedGroup.Completion.incl SemiNormedGroupCat.completion.incl
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] SemiNormedGroupCat.completion.incl_apply
+
 theorem completion.norm_incl_eq {V : SemiNormedGroupCat} {v : V} : ‖completion.incl v‖ = ‖v‖ :=
   UniformSpace.Completion.norm_coe _
 #align SemiNormedGroup.Completion.norm_incl_eq SemiNormedGroupCat.completion.norm_incl_eq
@@ -101,7 +104,8 @@ instance : Preadditive SemiNormedGroupCat.{u} where
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
     -- simp only [add_apply, comp_apply. map_add]
-    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    rw [NormedAddGroupHom.add_apply]; erw [CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
     convert map_add g (f x) (f' x)
   comp_add := by
@@ -109,8 +113,11 @@ instance : Preadditive SemiNormedGroupCat.{u} where
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
     -- simp only [add_apply, comp_apply. map_add]
-    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
+    rw [NormedAddGroupHom.add_apply]
+    -- This used to be a single `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
+    rfl
 
 instance : Functor.Additive completion where
   map_add := NormedAddGroupHom.completion_add _ _
@@ -136,4 +143,3 @@ theorem completion.lift_unique {V W : SemiNormedGroupCat} [CompleteSpace W] [Sep
 #align SemiNormedGroup.Completion.lift_unique SemiNormedGroupCat.completion.lift_unique
 
 end SemiNormedGroupCat
-

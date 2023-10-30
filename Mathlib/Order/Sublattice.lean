@@ -42,12 +42,15 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
+/-- Turn a set closed under supremum and infimum into a sublattice. -/
+abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
+
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
 @[simp] lemma supClosed (L : Sublattice α) : SupClosed (L : Set α) := L.supClosed'
 @[simp] lemma infClosed (L : Sublattice α) : InfClosed (L : Set α) := L.infClosed'
-@[simp] lemma latticeClosed (L : Sublattice α) : LatticeClosed (L : Set α) :=
-  ⟨L.supClosed', L.infClosed'⟩
+@[simp] lemma isSublattice (L : Sublattice α) : IsSublattice (L : Set α) :=
+  ⟨L.supClosed, L.infClosed⟩
 
 @[simp] lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := Iff.rfl
 @[simp] lemma mem_mk (h_sup h_inf) : a ∈ mk s h_sup h_inf ↔ a ∈ s := Iff.rfl
@@ -88,12 +91,12 @@ instance instInfCoe : Inf L where
 
 /-- A sublattice of a lattice inherits a lattice structure. -/
 instance instLatticeCoe (L : Sublattice α) : Lattice L :=
-  Subtype.coe_injective.lattice _ (λ _ _ ↦ rfl) (λ _ _ ↦ rfl)
+  Subtype.coe_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- A sublattice of a distributive lattice inherits a distributive lattice structure. -/
 instance instDistribLatticeCoe {α : Type*} [DistribLattice α] (L : Sublattice α) :
     DistribLattice L :=
-  Subtype.coe_injective.distribLattice _ (λ _ _ ↦ rfl) (λ _ _ ↦ rfl)
+  Subtype.coe_injective.distribLattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The natural lattice hom from a sublattice to the original lattice. -/
 def subtype (L : Sublattice α) : LatticeHom L α where
@@ -141,10 +144,10 @@ instance instInf : Inf (Sublattice α) where
 /-- The inf of sublattices is their intersection. -/
 instance instInfSet : InfSet (Sublattice α) where
   sInf S := { carrier := ⨅ L ∈ S, L
-              supClosed' := supClosed_sInter $ forall_range_iff.2 $ λ L ↦ supClosed_sInter $
-                forall_range_iff.2 λ _ ↦ L.supClosed
-              infClosed' := infClosed_sInter $ forall_range_iff.2 $ λ L ↦ infClosed_sInter $
-                forall_range_iff.2 λ _ ↦ L.infClosed }
+              supClosed' := supClosed_sInter $ forall_range_iff.2 $ fun L ↦ supClosed_sInter $
+                forall_range_iff.2 fun _ ↦ L.supClosed
+              infClosed' := infClosed_sInter $ forall_range_iff.2 $ fun L ↦ infClosed_sInter $
+                forall_range_iff.2 fun _ ↦ L.infClosed }
 
 instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
 
@@ -174,21 +177,21 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
   rw [←SetLike.mem_coe]; simp
 
 /-- Sublattices of a lattice form a complete lattice. -/
-instance instCompleteLattice : CompleteLattice (Sublattice α) :=
-  { completeLatticeOfInf (Sublattice α)
-      λ _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
-    bot := ⊥
-    bot_le := λ _S _a ↦ False.elim
-    top := ⊤
-    le_top := λ _S a _ha ↦ mem_top a
-    inf := (· ⊓ ·)
-    le_inf := λ _L _M _N hM hN _a ha ↦ ⟨hM ha, hN ha⟩
-    inf_le_left := λ _L _M _a ↦ And.left
-    inf_le_right := λ _L _M _a ↦ And.right }
+instance instCompleteLattice : CompleteLattice (Sublattice α) where
+  bot := ⊥
+  bot_le := fun _S _a ↦ False.elim
+  top := ⊤
+  le_top := fun _S a _ha ↦ mem_top a
+  inf := (· ⊓ ·)
+  le_inf := fun _L _M _N hM hN _a ha ↦ ⟨hM ha, hN ha⟩
+  inf_le_left := fun _L _M _a ↦ And.left
+  inf_le_right := fun _L _M _a ↦ And.right
+  __ := completeLatticeOfInf (Sublattice α)
+      fun _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf
 
 lemma subsingleton_iff : Subsingleton (Sublattice α) ↔ IsEmpty α :=
-  ⟨λ _ ↦ univ_eq_empty_iff.1 $ coe_inj.2 $ Subsingleton.elim ⊤ ⊥,
-    λ _ ↦ SetLike.coe_injective.subsingleton⟩
+  ⟨fun _ ↦ univ_eq_empty_iff.1 $ coe_inj.2 $ Subsingleton.elim ⊤ ⊥,
+    fun _ ↦ SetLike.coe_injective.subsingleton⟩
 
 instance [IsEmpty α] : Unique (Sublattice α) where
   uniq _ := @Subsingleton.elim _ (subsingleton_iff.2 ‹_›) _ _
@@ -204,7 +207,7 @@ def comap (f : LatticeHom α β) (L : Sublattice β) : Sublattice α where
 
 @[simp] lemma mem_comap {L : Sublattice β} : a ∈ L.comap f ↔ f a ∈ L := Iff.rfl
 
-lemma comap_mono : Monotone (comap f) := λ _ _ ↦ preimage_mono
+lemma comap_mono : Monotone (comap f) := fun _ _ ↦ preimage_mono
 
 @[simp] lemma comap_id (L : Sublattice α) : L.comap (LatticeHom.id _) = L := rfl
 
@@ -223,7 +226,7 @@ def map (f : LatticeHom α β) (L : Sublattice α) : Sublattice β where
 lemma mem_map_of_mem (f : LatticeHom α β) {a : α} : a ∈ L → f a ∈ L.map f := mem_image_of_mem f
 lemma apply_coe_mem_map (f : LatticeHom α β) (a : L) : f a ∈ L.map f := mem_map_of_mem f a.prop
 
-lemma map_mono : Monotone (map f) := λ _ _ ↦ image_subset _
+lemma map_mono : Monotone (map f) := fun _ _ ↦ image_subset _
 
 @[simp] lemma map_id : L.map (LatticeHom.id α) = L := SetLike.coe_injective $ image_id _
 
@@ -249,7 +252,7 @@ lemma map_le_iff_le_comap {f : LatticeHom α β} {M : Sublattice β} : L.map f �
   image_subset_iff
 
 lemma gc_map_comap (f : LatticeHom α β) : GaloisConnection (map f) (comap f) :=
-  λ _ _ ↦ map_le_iff_le_comap
+  fun _ _ ↦ map_le_iff_le_comap
 
 @[simp] lemma map_bot (f : LatticeHom α β) : (⊥ : Sublattice α).map f = ⊥ := (gc_map_comap f).l_bot
 

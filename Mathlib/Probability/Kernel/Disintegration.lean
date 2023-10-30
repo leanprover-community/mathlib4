@@ -128,7 +128,7 @@ theorem set_lintegral_condKernelReal_prod {s : Set α} (hs : MeasurableSet s) {t
       prod_iUnion, measure_iUnion]
     · simp_rw [hf_eq]
     · intro i j hij
-      rw [Function.onFun, disjoint_prod]
+      rw [Function.onFun, Set.disjoint_prod]
       exact Or.inr (hf_disj hij)
     · exact fun i => MeasurableSet.prod hs (hf_meas i)
 #align probability_theory.set_lintegral_cond_kernel_real_prod ProbabilityTheory.set_lintegral_condKernelReal_prod
@@ -517,7 +517,7 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
   apply MeasurableSpace.ae_induction_on_inter Real.borel_eq_generateFrom_Iic_rat
     Real.isPiSystem_Iic_rat
   · simp only [OuterMeasure.empty', Filter.eventually_true]
-  · simp only [iUnion_singleton_eq_range, mem_range, forall_exists_index, forall_apply_eq_imp_iff']
+  · simp only [iUnion_singleton_eq_range, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
     exact ae_all_iff.2 <| fun q => eq_condKernel_of_measure_eq_compProd' ρ κ hκ measurableSet_Iic
   · filter_upwards [huniv] with x hxuniv t ht heq
     rw [measure_compl ht <| measure_ne_top _ _, heq, hxuniv, measure_compl ht <| measure_ne_top _ _]

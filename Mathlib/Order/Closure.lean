@@ -275,10 +275,10 @@ variable [CompleteLattice α] (c : ClosureOperator α) {p : α → Prop}
 
 /-- Define a closure operator from a predicate that's preserved under infima. -/
 def ofPred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : ClosureOperator α :=
-  ClosureOperator.mk₃ (λ a ↦ ⨅ b : {b // p b ∧ a ≤ b}, b) p
-    (λ a ↦ by simp [forall_swap])
-    (λ a ↦ hsinf _ $ forall_range_iff.2 $ λ b ↦ b.2.1)
-    (λ a b hab hb ↦ iInf_le_of_le ⟨b, hb, hab⟩ le_rfl)
+  ClosureOperator.mk₃ (fun a ↦ ⨅ b : {b // p b ∧ a ≤ b}, b) p
+    (fun a ↦ by simp [forall_swap])
+    (fun a ↦ hsinf _ $ forall_range_iff.2 $ fun b ↦ b.2.1)
+    (fun a b hab hb ↦ iInf_le_of_le ⟨b, hb, hab⟩ le_rfl)
 
 /-- This lemma shows that the image of `x` of a closure operator built from the `ofPred` constructor
 respects `p`, the property that was fed into it. -/

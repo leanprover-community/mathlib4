@@ -55,7 +55,7 @@ theorem charmatrix_apply_natDegree [Nontrivial R] (i j : n) :
 
 theorem charmatrix_apply_natDegree_le (i j : n) :
     (charmatrix M i j).natDegree ≤ ite (i = j) 1 0 := by
-  split_ifs with h <;> simp [h, natDegree_X_sub_C_le]
+  split_ifs with h <;> simp [h, natDegree_X_le]
 #align charmatrix_apply_nat_degree_le charmatrix_apply_natDegree_le
 
 namespace Matrix
