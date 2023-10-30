@@ -132,17 +132,12 @@ instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgue
       exact hmeas.const_smul _
     · refine MutuallySingular.mono_ac hsing AbsolutelyContinuous.rfl ?_
       exact absolutelyContinuous_of_le_smul le_rfl
-    · have : r⁻¹ • rnDeriv μ ν = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv μ ν := by
-        ext x
-        simp [ENNReal.smul_def]
-      rw [this, withDensity_smul _ hmeas, ENNReal.smul_def r,
-        withDensity_smul_measure, ← smul_assoc, smul_eq_mul, ENNReal.coe_inv,
-        ENNReal.inv_mul_cancel]
-      · simp only [one_smul]
-        exact hadd
+    · have : r⁻¹ • rnDeriv μ ν = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv μ ν := by simp [ENNReal.smul_def]
+      rw [this, withDensity_smul _ hmeas, ENNReal.smul_def r, withDensity_smul_measure,
+        ← smul_assoc, smul_eq_mul, ENNReal.coe_inv hr, ENNReal.inv_mul_cancel, one_smul]
+      · exact hadd
       · simp [hr]
       · exact ENNReal.coe_ne_top
-      · exact hr
 
 @[measurability]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
