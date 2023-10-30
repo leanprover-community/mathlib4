@@ -283,9 +283,11 @@ lemma log_rnDeriv_tilted_left_self (μ : Measure α) [SigmaFinite μ] {f : α �
 
 lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFinite μ]
     [IsFiniteMeasure ν] (hμν : μ ≪ ν)
-    {f : α → ℝ} (hf : AEMeasurable f ν) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+    {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
       =ᵐ[ν] fun x ↦ exp (- f x + logIntegralExp ν f) * (μ.rnDeriv ν x).toReal := by
+  have hf : AEMeasurable f ν :=
+    aemeasurable_of_aemeasurable_exp (AEStronglyMeasurable.aemeasurable h_int.1)
   cases eq_zero_or_neZero ν with
   | inl h => simp only [h, ae_zero]; exact Filter.eventually_bot
   | inr h0 =>
@@ -316,9 +318,11 @@ lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFi
       simp only [sub_add_add_cancel, add_right_neg, exp_zero, ENNReal.ofReal_one, one_mul]
 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    {f : α → ℝ} (hf : AEMeasurable f ν) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+    {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
       =ᵐ[ν] fun x ↦ exp (- f x + logIntegralExp ν f) * (μ.rnDeriv ν x).toReal := by
+  have hf : AEMeasurable f ν :=
+    aemeasurable_of_aemeasurable_exp (AEStronglyMeasurable.aemeasurable h_int.1)
   cases eq_zero_or_neZero ν with
   | inl h => simp only [h, ae_zero]; exact Filter.eventually_bot
   | inr h0 =>
@@ -341,7 +345,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
     have h₂ : μ.rnDeriv ν =ᵐ[ν] μ'.rnDeriv ν :=
       (Measure.rnDeriv_withDensity _ (Measure.measurable_rnDeriv _ _)).symm
     have hμ' := rnDeriv_tilted_right_of_absolutelyContinuous μ' ν
-      (withDensity_absolutelyContinuous ν _) hf h_int
+      (withDensity_absolutelyContinuous ν _) h_int
     filter_upwards [h₁, h₂, hμ'] with x hx₁ hx₂ hx_eq
     rw [hx₁, hx₂, hx_eq]
 
