@@ -13,8 +13,8 @@ import Mathlib.Tactic.Basic
 `Filter.Frequently.mp` and `Filter.eventually_of_forall`) with the argument `h` and uses `idents*`
 to introduce variables with the supplied names, giving the "peeled" argument the name `h'`.
 
-Alternatively, one can provide a numeric argument as in `peel 4 h` which will peel 4 quantifiers off
-the expressions automatically name the introduced variables.
+One can provide a numeric argument as in `peel 4 h` which will peel 4 quantifiers off
+the expressions automatically name any variables not specifically named in the `with` clause.
 
 In addition, the user may supply a term `e` via `... using e` in order to close the goal
 immediately. In particular, `peel h using e` is equivalent to `peel h; exact e`. The `using` syntax
@@ -65,9 +65,6 @@ h_peel : 1 / (n + 1 : ℝ) < ε
 and the goal can be closed with `exact h_peel.le`.
 Note that in this example, `h` and the goal are logically equivalent statements, but `peel`
 *cannot* be immediately applied to show that the goal implies `h`.
-
-`peel` can take an optional numeric argument prior to the supplied hypothesis; in which case it will
-autoname the introduced variables, but they will be inaccessible.
 
 In addition, `peel` supports goals of the form `(∀ x, p x) ↔ ∀ x, q x`, or likewise for any
 other quantifier. In this case, there is no hypothesis or term to supply, but otherwise the syntax
