@@ -469,7 +469,7 @@ protected theorem Finset.isClosed [T1Space X] (s : Finset X) : IsClosed (s : Set
   s.finite_toSet.isClosed
 #align finset.is_closed Finset.isClosed
 
-theorem t1Space_TFAE (X : Type u) [ TopologicalSpace X ] :
+theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     List.TFAE [T1Space X,
       ∀ x, IsClosed ({ x } : Set X),
       ∀ x, IsOpen ({ x }ᶜ : Set X),
@@ -1062,7 +1062,7 @@ theorem lim_eq {x : X} [NeBot f] (h : f ≤ 𝓝 x) : @lim _ _ ⟨x⟩ f = x :=
 set_option linter.uppercaseLean3 false in
 #align Lim_eq lim_eq
 
-theorem lim_eq_iff [NeBot f] (h : ∃ x : X, f ≤ nhds x) {x} : @lim _ _ ⟨x⟩ f = x ↔ f ≤ 𝓝 x :=
+theorem lim_eq_iff [NeBot f] (h : ∃ x : X, f ≤ 𝓝 x) {x} : @lim _ _ ⟨x⟩ f = x ↔ f ≤ 𝓝 x :=
   ⟨fun c => c ▸ le_nhds_lim h, lim_eq⟩
 set_option linter.uppercaseLean3 false in
 #align Lim_eq_iff lim_eq_iff
@@ -1509,7 +1509,7 @@ class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   regular : ∀ {s : Set X} {a}, IsClosed s → a ∉ s → Disjoint (𝓝ˢ s) (𝓝 a)
 #align regular_space RegularSpace
 
-theorem regularSpace_TFAE (X : Type u) [ TopologicalSpace X ] :
+theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
     List.TFAE [RegularSpace X,
       ∀ (s : Set X) x, x ∉ closure s → Disjoint (𝓝ˢ s) (𝓝 x),
       ∀ (x : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s,
