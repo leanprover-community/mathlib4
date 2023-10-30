@@ -96,7 +96,8 @@ class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 #align category_theory.finitary_extensive CategoryTheory.FinitaryExtensive
 
-attribute [instance] FinitaryExtensive.hasFiniteCoproducts FinitaryExtensive.HasPullbacksOfInclusions
+attribute [instance] FinitaryExtensive.hasFiniteCoproducts
+attribute [instance] FinitaryExtensive.HasPullbacksOfInclusions
 
 theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingPair ⥤ C}
     (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
