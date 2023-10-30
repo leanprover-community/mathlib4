@@ -1,10 +1,10 @@
-import Mathlib.Tactic.Ring
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
+import Mathlib.Tactic.Ring
 
 /-!
 # The four functions theorem and corollaries
@@ -98,7 +98,7 @@ lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → 
   split_ifs <;> simp [(ne_of_mem_of_not_mem' (mem_insert_self a s) ha).symm, *]
 
 lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu  : u ∈ 𝒜) (hts : t = s)
-  (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
+    (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
   subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
 
 lemma le_collapse_of_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = s) (ht : t ∈ 𝒜) :
@@ -119,8 +119,8 @@ lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert 
 lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := λ _s ↦ sum_nonneg $ λ _t _ ↦ hf _
 
 lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
-  (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u →  f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
-  (𝒜 ℬ : Finset (Finset α)) :
+    (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u →  f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
+    (𝒜 ℬ : Finset (Finset α)) :
     ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → collapse 𝒜 a f₁ s * collapse ℬ a f₂ t ≤
       collapse (𝒜 ⊼ ℬ) a f₃ (s ∩ t) * collapse (𝒜 ⊻ ℬ) a f₄ (s ∪ t) := by
   rintro s hsu t htu
@@ -222,7 +222,7 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)
-  (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
+    (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
   (h : ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
   {𝒜 ℬ : Finset (Finset α)} (h𝒜 : 𝒜 ⊆ u.powerset) (hℬ : ℬ ⊆ u.powerset) :
     (∑ s in 𝒜, f₁ s) * ∑ s in ℬ, f₂ s ≤ (∑ s in 𝒜 ⊼ ℬ, f₃ s) * ∑ s in 𝒜 ⊻ ℬ, f₄ s := by
@@ -252,11 +252,11 @@ open Function
 
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
-  (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
+    (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
     (∑ a in s, f₁ a) * ∑ a in t, f₂ a ≤ (∑ a in s ⊼ t, f₃ a) * ∑ a in s ⊻ t, f₄ a := by
   classical
-  set L : Sublattice α := ⟨latticeClosure (s ∪ t), latticeClosed_latticeClosure.1,
-    latticeClosed_latticeClosure.2⟩
+  set L : Sublattice α := ⟨latticeClosure (s ∪ t), isSublattice_latticeClosure.1,
+    isSublattice_latticeClosure.2⟩
   have : Finite L := (s.finite_toSet.union t.finite_toSet).latticeClosure.to_subtype
   set s' : Finset L := s.preimage (↑) $ Subtype.coe_injective.injOn _
   set t' : Finset L := t.preimage (↑) $ Subtype.coe_injective.injOn _
@@ -296,13 +296,13 @@ variable [Fintype α]
 
 /-- Special case of the **Four Functions Theorem** when `s = t = univ`. -/
 lemma four_functions_theorem_univ (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
-  (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) :
+    (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) :
     (∑ a, f₁ a) * ∑ a, f₂ a ≤ (∑ a, f₃ a) * ∑ a, f₄ a := by
   simpa using four_functions_theorem f₁ f₂ f₃ f₄ h₁ h₂ h₃ h₄ h univ univ
 
 /-- The **Holley Inequality**. -/
 lemma holley (hμ₀ : 0 ≤ μ) (hf : 0 ≤ f) (hg : 0 ≤ g) (hμ : Monotone μ)
-  (hfg : ∑ a, f a = ∑ a, g a) (h : ∀ a b, f a * g b ≤ f (a ⊓ b) * g (a ⊔ b)) :
+    (hfg : ∑ a, f a = ∑ a, g a) (h : ∀ a b, f a * g b ≤ f (a ⊓ b) * g (a ⊔ b)) :
     ∑ a, μ a * f a ≤ ∑ a, μ a * g a := by
   obtain rfl | hf := hf.eq_or_lt
   · simp [eq_comm, Fintype.sum_eq_zero_iff_of_nonneg hg] at hfg
@@ -319,7 +319,7 @@ lemma holley (hμ₀ : 0 ≤ μ) (hf : 0 ≤ f) (hg : 0 ≤ g) (hμ : Monotone �
 
 /-- The **Fortuin-Kastelyn-Ginibre Inequality**. -/
 lemma fkg (hμ₀ : 0 ≤ μ) (hf₀ : 0 ≤ f) (hg₀ : 0 ≤ g) (hf : Monotone f) (hg : Monotone g)
-  (hμ : ∀ a b, μ a * μ b ≤ μ (a ⊓ b) * μ (a ⊔ b)) :
+    (hμ : ∀ a b, μ a * μ b ≤ μ (a ⊓ b) * μ (a ⊔ b)) :
     (∑ a, μ a * f a) * ∑ a, μ a * g a ≤ (∑ a, μ a) * ∑ a, μ a * (f a * g a) := by
   refine' four_functions_theorem_univ (μ * f) (μ * g) μ _ (mul_nonneg hμ₀ hf₀) (mul_nonneg hμ₀ hg₀)
     hμ₀ (mul_nonneg hμ₀ $ mul_nonneg hf₀ hg₀) (λ a b ↦ _)
@@ -337,14 +337,14 @@ variable [DecidableEq α] [GeneralizedBooleanAlgebra α]
 /-- A slight generalisation of the **Marica-Schönheim Inequality**. -/
 lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
     s.card * t.card ≤ (s \\ t).card * (t \\ s).card := by
-  have : ∀ s t : Finset α, (s \\ t).map ⟨_, inlLatticeHom_injective⟩ =
-    s.map ⟨_, inlLatticeHom_injective⟩ \\ t.map ⟨_, inlLatticeHom_injective⟩
+  have : ∀ s t : Finset α, (s \\ t).map ⟨_, liftLatticeHom_injective⟩ =
+    s.map ⟨_, liftLatticeHom_injective⟩ \\ t.map ⟨_, liftLatticeHom_injective⟩
   · rintro s t
     simp_rw [map_eq_image]
     exact image_image₂_distrib λ a b ↦ rfl
   simpa [←card_compls (_ ⊻ _), ←map_sup, ←map_inf, ←this] using
-    (s.map ⟨_, inlLatticeHom_injective⟩).le_card_infs_mul_card_sups
-      (t.map ⟨_, inlLatticeHom_injective⟩)ᶜˢ
+    (s.map ⟨_, liftLatticeHom_injective⟩).le_card_infs_mul_card_sups
+      (t.map ⟨_, liftLatticeHom_injective⟩)ᶜˢ
 
 /-- The **Marica-Schönheim Inequality**. -/
 lemma Finset.card_le_card_diffs (s : Finset α) : s.card ≤ (s \\ s).card :=
