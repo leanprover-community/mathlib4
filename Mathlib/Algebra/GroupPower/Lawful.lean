@@ -13,8 +13,11 @@ import Mathlib.Algebra.Module.Basic
 /-!
 # Lawful power operators on monoids and groups
 
-This file provides a typeclass, `Monoid.LawfulPow`, that generalizes the `Pow M ℕ` and `Pow G ℤ`
-instances on groups and monoids.
+This file provides a typeclass, `LawfulPow`, that generalizes the `Pow M ℕ` and `Pow G ℤ`
+instances on monoids and groups.
+
+Note this does not work for the `Pow G₀ ℤ` instance on a `GroupWithZero G₀`, due to the `pow_add`
+field not handling `0 ^ 0`.
 
 ## TODO
 
@@ -78,12 +81,10 @@ namespace Additive
 
 open LawfulPow
 
-/-- The power operation induced by multiplicativizing a semimodule.
+/-- The module structure induced by additivizing a lawful power.
 
-This is a more general case of the instances already in places for translating scalar multiplication
-by `ℕ` and `ℤ` to the corresponding power operations.
-
-TODO: generalize this to non-commutative `R` by using the right scalar action. -/
+This is a more general case of the instances already in places for translating powers
+by `ℕ` and `ℤ` to the corresponding scalar multiplications. -/
 instance {R M : Type*} [CommSemiring R] [CommMonoid M] [LawfulPow M R] :
     Module R (Additive M) where
   smul r m := .ofMul <| toMul m ^ r

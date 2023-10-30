@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
   Rémy Degenne, David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Algebra.GroupPower.Lawful
 
 #align_import analysis.special_functions.pow.nnreal from "leanprover-community/mathlib"@"4fa54b337f7d52805480306db1b1439c741848c8"
 
@@ -74,8 +75,10 @@ theorem one_rpow (x : ℝ) : (1 : ℝ≥0) ^ x = 1 :=
   NNReal.eq <| Real.one_rpow _
 #align nnreal.one_rpow NNReal.one_rpow
 
-theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z :=
-  NNReal.eq <| Real.rpow_add (pos_iff_ne_zero.2 hx) _ _
+theorem rpow_add {x : ℝ≥0} (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z := by
+  obtain rfl | hx := eq_or_ne x 0
+  · rw [zero_rpow, zero_rpow, zero_mul]
+  . exact NNReal.eq <| Real.rpow_add (pos_iff_ne_zero.2 hx) _ _
 #align nnreal.rpow_add NNReal.rpow_add
 
 theorem rpow_add' (x : ℝ≥0) {y z : ℝ} (h : y + z ≠ 0) : x ^ (y + z) = x ^ y * x ^ z :=
@@ -137,6 +140,16 @@ theorem rpow_two (x : ℝ≥0) : x ^ (2 : ℝ) = x ^ 2 := by
 theorem mul_rpow {x y : ℝ≥0} {z : ℝ} : (x * y) ^ z = x ^ z * y ^ z :=
   NNReal.eq <| Real.mul_rpow x.2 y.2
 #align nnreal.mul_rpow NNReal.mul_rpow
+
+
+instance : LawfulPow ℝ≥0 ℝ where
+  pow_one := rpow_one
+  pow_mul := rpow_mul
+  one_pow := one_rpow
+  mul_pow _ _ _ _ := mul_rpow
+  pow_zero := rpow_zero
+  pow_add _ _ _ := rpow_add _ _ _
+
 
 /-- `rpow` as a `MonoidHom`-/
 @[simps]
@@ -510,6 +523,8 @@ theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) :
   have : x ≠ 0 := fun h => by simp [h] at hx
   simp [coe_rpow_of_ne_zero this, NNReal.rpow_add this]
 #align ennreal.rpow_add ENNReal.rpow_add
+
+#check zpow_add'
 
 theorem rpow_neg (x : ℝ≥0∞) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
   cases' x with x
