@@ -188,35 +188,33 @@ theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
     {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p + q = 1) :
     ∫⁻ a, f a ^ p * g a ^ q ∂μ ≤ (∫⁻ a, f a ∂μ) ^ p * (∫⁻ a, g a ∂μ) ^ q := by
   rcases hp.eq_or_lt with rfl|hp
-  · simp at hpq
-    subst hpq
-    simp
+  · rw [zero_add] at hpq
+    simp [hpq]
   rcases hq.eq_or_lt with rfl|hq
-  · simp at hpq
-    subst hpq
-    simp
-  have h2p : 1 < 1 / p
-  · rw [one_div]
+  · rw [add_zero] at hpq
+    simp [hpq]
+  have h2p : 1 < 1 / p := by
+    rw [one_div]
     apply one_lt_inv hp
     linarith
-  have h2pq : 1 / (1 / p) + 1 / (1 / q) = 1
-  · simp [hp.ne', hq.ne', hpq]
+  have h2pq : 1 / (1 / p) + 1 / (1 / q) = 1 := by
+    simp [hp.ne', hq.ne', hpq]
   have := ENNReal.lintegral_mul_le_Lp_mul_Lq μ ⟨h2p, h2pq⟩ (hf.pow_const p) (hg.pow_const q)
   simpa [← ENNReal.rpow_mul, hp.ne', hq.ne'] using this
 
 /-- A version of Hölder with multiple arguments -/
 theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
-    (s : Finset ι) (hs : s.Nonempty) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
+    (s : Finset ι) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
     {p : ι → ℝ} (hp : ∑ i in s, p i = 1) (h2p : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, ∏ i in s, f i a ^ p i ∂μ ≤ ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
   induction s using Finset.induction generalizing p
   case empty =>
-    simp at hs
+    simp at hp
   case insert i₀ s hi₀ ih =>
     rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
     · simp [hi₀]
-      have h2p : ∀ i ∈ s, p i = 0
-      · simpa [hi₀, h2i₀, sum_eq_zero_iff_of_nonneg (fun i hi ↦ h2p i <| mem_insert_of_mem hi)]
+      have h2p : ∀ i ∈ s, p i = 0 := by
+        simpa [hi₀, h2i₀, sum_eq_zero_iff_of_nonneg (fun i hi ↦ h2p i <| mem_insert_of_mem hi)]
           using hp
       calc ∫⁻ a, f i₀ a ^ p i₀ * ∏ i in s, f i a ^ p i ∂μ
           = ∫⁻ a, f i₀ a ^ p i₀ * ∏ i in s, 1 ∂μ := by
@@ -226,19 +224,15 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
         _ = (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
             congr 1
             apply prod_congr rfl fun i hi ↦ by rw [h2p i hi, ENNReal.rpow_zero]
-    · have hs : s.Nonempty
-      · rw [Finset.nonempty_iff_ne_empty]
-        rintro rfl
-        simp [h2i₀] at hp
-      have hpi₀ : 0 ≤ 1 - p i₀
-      · simp_rw [sub_nonneg, ← hp, single_le_sum h2p (mem_insert_self ..)]
-      have h2pi₀ : 1 - p i₀ ≠ 0
-      · rwa [sub_ne_zero, ne_comm]
+    · have hpi₀ : 0 ≤ 1 - p i₀ := by
+        simp_rw [sub_nonneg, ← hp, single_le_sum h2p (mem_insert_self ..)]
+      have h2pi₀ : 1 - p i₀ ≠ 0 := by
+        rwa [sub_ne_zero, ne_comm]
       let q := fun i ↦ p i / (1 - p i₀)
-      have hq : ∑ i in s, q i = 1
-      · rw [← Finset.sum_div, ← sum_insert_sub hi₀, hp, div_self h2pi₀]
-      have h2q : ∀ i ∈ s, 0 ≤ q i
-      · exact fun i hi ↦ div_nonneg (h2p i <| mem_insert_of_mem hi) hpi₀
+      have hq : ∑ i in s, q i = 1 := by
+        rw [← Finset.sum_div, ← sum_insert_sub hi₀, hp, div_self h2pi₀]
+      have h2q : ∀ i ∈ s, 0 ≤ q i :=
+        fun i hi ↦ div_nonneg (h2p i <| mem_insert_of_mem hi) hpi₀
       calc ∫⁻ a, ∏ i in insert i₀ s, f i a ^ p i ∂μ
           = ∫⁻ a, f i₀ a ^ p i₀ * ∏ i in s, f i a ^ p i ∂μ := by simp [hi₀]
         _ = ∫⁻ a, f i₀ a ^ p i₀ * (∏ i in s, f i a ^ q i) ^ (1 - p i₀) ∂μ := by
@@ -253,7 +247,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
             · apply add_sub_cancel'_right
         _ ≤ (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * (∏ i in s, (∫⁻ a, f i a ∂μ) ^ q i) ^ (1 - p i₀) := by
             gcongr -- behavior of gcongr is heartbeat-dependent, which makes code really fragile...
-            exact ih hs (fun i hi ↦ hf i <| mem_insert_of_mem hi) hq h2q
+            exact ih (fun i hi ↦ hf i <| mem_insert_of_mem hi) hq h2q
         _ = (∫⁻ a, f i₀ a ∂μ) ^ p i₀ * ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
             simp [← ENNReal.prod_rpow_of_nonneg hpi₀, ← ENNReal.rpow_mul,
               div_mul_cancel (h := h2pi₀)]
@@ -270,7 +264,7 @@ theorem lintegral_mul_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ 
     ∫⁻ t, ∏ j in insertNone s, Option.elim j (g t) (fun j ↦ f j t) ^ Option.elim j q p ∂μ
     ≤ ∏ j in insertNone s, (∫⁻ t, Option.elim j (g t) (fun j ↦ f j t) ∂μ) ^ Option.elim j q p by
     simpa using this
-  refine ENNReal.lintegral_prod_norm_pow_le _ insertNone_nonempty ?_ ?_ ?_
+  refine ENNReal.lintegral_prod_norm_pow_le _ ?_ ?_ ?_
   · rintro (_|i) hi
     · exact hg
     · refine hf i ?_
