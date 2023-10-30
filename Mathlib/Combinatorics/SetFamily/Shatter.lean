@@ -15,7 +15,7 @@ This file defines the shattering property and VC-dimension of set families.
 
 ## Main declarations
 
-* `Finset.Shatter`: The shattering property.
+* `Finset.Shatters`: The shattering property.
 * `Finset.shatterer`: The set family of sets shattered by a set family.
 * `Finset.vcDim`: The Vapnik-Chervonenkis dimension.
 
@@ -31,61 +31,62 @@ namespace Finset
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α} {n : ℕ}
 
 /-- A set family `𝒜` shatters a set `s` if all subsets of `s` can be obtained as the intersection
-of `s` and some element of the set family, and we denote this `𝒜.Shatter s`. We also say that `s` is
-traced by `𝒜`. -/
-def Shatter (𝒜 : Finset (Finset α)) (s : Finset α) : Prop := ∀ ⦃t⦄, t ⊆ s → ∃ u ∈ 𝒜, s ∩ u = t
+of `s` and some element of the set family, and we denote this `𝒜.Shatters s`. We also say that `s`
+is *traced* by `𝒜`. -/
+def Shatters (𝒜 : Finset (Finset α)) (s : Finset α) : Prop := ∀ ⦃t⦄, t ⊆ s → ∃ u ∈ 𝒜, s ∩ u = t
 
-instance : DecidablePred 𝒜.Shatter := fun _s ↦ decidableForallOfDecidableSubsets
+instance : DecidablePred 𝒜.Shatters := fun _s ↦ decidableForallOfDecidableSubsets
 
-lemma Shatter.exists_inter_eq_singleton (hs : Shatter 𝒜 s) (ha : a ∈ s) : ∃ t ∈ 𝒜, s ∩ t = {a} :=
+lemma Shatters.exists_inter_eq_singleton (hs : Shatters 𝒜 s) (ha : a ∈ s) : ∃ t ∈ 𝒜, s ∩ t = {a} :=
   hs <| singleton_subset_iff.2 ha
 
-lemma Shatter.mono_left (h : 𝒜 ⊆ ℬ) (h𝒜 : 𝒜.Shatter s) : ℬ.Shatter s :=
+lemma Shatters.mono_left (h : 𝒜 ⊆ ℬ) (h𝒜 : 𝒜.Shatters s) : ℬ.Shatters s :=
   fun _t ht ↦ let ⟨u, hu, hut⟩ := h𝒜 ht; ⟨u, h hu, hut⟩
 
-lemma Shatter.mono_right (h : t ⊆ s) (hs : 𝒜.Shatter s) : 𝒜.Shatter t := fun u hu ↦ by
+lemma Shatters.mono_right (h : t ⊆ s) (hs : 𝒜.Shatters s) : 𝒜.Shatters t := fun u hu ↦ by
   obtain ⟨v, hv, rfl⟩ := hs (hu.trans h); exact ⟨v, hv, inf_congr_right hu <| inf_le_of_left_le h⟩
 
-lemma Shatter.exists_superset (h : 𝒜.Shatter s) : ∃ t ∈ 𝒜, s ⊆ t :=
+lemma Shatters.exists_superset (h : 𝒜.Shatters s) : ∃ t ∈ 𝒜, s ⊆ t :=
   let ⟨t, ht, hst⟩ := h Subset.rfl; ⟨t, ht, inter_eq_left.1 hst⟩
 
-lemma shatter_of_forall_subset (h : ∀ t, t ⊆ s → t ∈ 𝒜) : 𝒜.Shatter s :=
+lemma shatters_of_forall_subset (h : ∀ t, t ⊆ s → t ∈ 𝒜) : 𝒜.Shatters s :=
   fun t ht ↦ ⟨t, h _ ht, inter_eq_right.2 ht⟩
 
-protected lemma Shatter.nonempty (h : 𝒜.Shatter s) : 𝒜.Nonempty :=
+protected lemma Shatters.nonempty (h : 𝒜.Shatters s) : 𝒜.Nonempty :=
   let ⟨t, ht, _⟩ := h Subset.rfl; ⟨t, ht⟩
 
-@[simp] lemma shatter_empty : 𝒜.Shatter ∅ ↔ 𝒜.Nonempty :=
-  ⟨Shatter.nonempty, fun ⟨s, hs⟩ t ht ↦ ⟨s, hs, by rwa [empty_inter, eq_comm, ←subset_empty]⟩⟩
+@[simp] lemma shatters_empty : 𝒜.Shatters ∅ ↔ 𝒜.Nonempty :=
+  ⟨Shatters.nonempty, fun ⟨s, hs⟩ t ht ↦ ⟨s, hs, by rwa [empty_inter, eq_comm, ←subset_empty]⟩⟩
 
-protected lemma Shatter.subset_iff (h : 𝒜.Shatter s) : t ⊆ s ↔ ∃ u ∈ 𝒜, s ∩ u = t :=
+protected lemma Shatters.subset_iff (h : 𝒜.Shatters s) : t ⊆ s ↔ ∃ u ∈ 𝒜, s ∩ u = t :=
   ⟨fun ht ↦ h ht, by rintro ⟨u, _, rfl⟩; exact inter_subset_left _ _⟩
 
-lemma shatter_iff : 𝒜.Shatter s ↔ 𝒜.image (fun t ↦ s ∩ t) = s.powerset :=
+lemma shatters_iff : 𝒜.Shatters s ↔ 𝒜.image (fun t ↦ s ∩ t) = s.powerset :=
   ⟨fun h ↦ by ext t; rw [mem_image, mem_powerset, h.subset_iff],
     fun h t ht ↦ by rwa [←mem_powerset, ←h, mem_image] at ht⟩
 
-lemma univ_shatter [Fintype α] : univ.Shatter s := shatter_of_forall_subset <| fun _ _ ↦ mem_univ _
+lemma univ_shatters [Fintype α] : univ.Shatters s :=
+  shatters_of_forall_subset <| fun _ _ ↦ mem_univ _
 
-@[simp] lemma shatter_univ [Fintype α] : 𝒜.Shatter univ ↔ 𝒜 = univ := by
-  rw [shatter_iff, powerset_univ]; simp_rw [univ_inter, image_id']
+@[simp] lemma shatters_univ [Fintype α] : 𝒜.Shatters univ ↔ 𝒜 = univ := by
+  rw [shatters_iff, powerset_univ]; simp_rw [univ_inter, image_id']
 
 /-- The set family of sets that are shattered by `𝒜`. -/
-def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) := (𝒜.biUnion powerset).filter 𝒜.Shatter
+def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) := (𝒜.biUnion powerset).filter 𝒜.Shatters
 
-@[simp] lemma mem_shatterer : s ∈ 𝒜.shatterer ↔ 𝒜.Shatter s := by
+@[simp] lemma mem_shatterer : s ∈ 𝒜.shatterer ↔ 𝒜.Shatters s := by
   refine mem_filter.trans <| and_iff_right_of_imp <| fun h ↦ ?_
   simp_rw [mem_biUnion, mem_powerset]
   exact h.exists_superset
 
 lemma shatterer_mono (h : 𝒜 ⊆ ℬ) : 𝒜.shatterer ⊆ ℬ.shatterer :=
-  fun _ ↦ by simpa using Shatter.mono_left h
+  fun _ ↦ by simpa using Shatters.mono_left h
 
 lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜.shatterer :=
   fun _s hs ↦ mem_shatterer.2 <| fun t ht ↦ ⟨t, h ht hs, inter_eq_right.2 ht⟩
 
 @[simp] lemma isLowerSet_shatterer (𝒜 : Finset (Finset α)) :
-    IsLowerSet (𝒜.shatterer : Set (Finset α)) := fun s t ↦ by simpa using Shatter.mono_right
+    IsLowerSet (𝒜.shatterer : Set (Finset α)) := fun s t ↦ by simpa using Shatters.mono_right
 
 @[simp] lemma shatterer_eq : 𝒜.shatterer = 𝒜 ↔ IsLowerSet (𝒜 : Set (Finset α)) := by
   refine ⟨fun h ↦ ?_, fun h ↦ Subset.antisymm (fun s hs ↦ ?_) <| subset_shatterer h⟩
@@ -96,12 +97,12 @@ lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜
 
 @[simp] lemma shatterer_idem : 𝒜.shatterer.shatterer = 𝒜.shatterer := by simp
 
-@[simp] lemma shatter_shatterer : 𝒜.shatterer.Shatter s ↔ 𝒜.Shatter s := by
+@[simp] lemma shatters_shatterer : 𝒜.shatterer.Shatters s ↔ 𝒜.Shatters s := by
   simp_rw [←mem_shatterer, shatterer_idem]
 
-protected alias ⟨_, Shatter.shatterer⟩ := shatter_shatterer
+protected alias ⟨_, Shatters.shatterer⟩ := shatters_shatterer
 
-private lemma aux (h : ∀ t ∈ 𝒜, a ∉ t) (ht : 𝒜.Shatter t) : a ∉ t := by
+private lemma aux (h : ∀ t ∈ 𝒜, a ∉ t) (ht : 𝒜.Shatters t) : a ∉ t := by
   obtain ⟨u, hu, htu⟩ := ht.exists_superset; exact not_mem_mono htu <| h u hu
 
 /-- Pajor's variant of the **Sauer-Shelah lemma**. -/
@@ -149,7 +150,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : 𝒜.card ≤ 𝒜.sh
       refine ⟨_, hu.1, ?_⟩
       rwa [insert_inter_of_not_mem hu.2, hsu, erase_eq_self]
 
-lemma Shatter.of_compression (hs : (𝓓 a 𝒜).Shatter s) : 𝒜.Shatter s := by
+lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s := by
   intros t ht
   obtain ⟨u, hu, rfl⟩ := hs ht
   rw [Down.mem_compression] at hu
@@ -180,7 +181,7 @@ lemma shatterer_compress_subset_shatterer (a : α) (𝒜 : Finset (Finset α)) :
 /-- The Vapnik-Chervonenkis dimension of a set family is the maximal size of a set it shatters. -/
 def vcDim (𝒜 : Finset (Finset α)) : ℕ := 𝒜.shatterer.sup card
 
-lemma Shatter.card_le_vcDim (hs : 𝒜.Shatter s) : s.card ≤ 𝒜.vcDim := le_sup <| mem_shatterer.2 hs
+lemma Shatters.card_le_vcDim (hs : 𝒜.Shatters s) : s.card ≤ 𝒜.vcDim := le_sup <| mem_shatterer.2 hs
 
 /-- Down-compressing decreases the VC-dimension. -/
 lemma vcDim_compress_le (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).vcDim ≤ 𝒜.vcDim :=
