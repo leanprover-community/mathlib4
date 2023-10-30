@@ -3,9 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
-import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -24,7 +24,7 @@ For a nonempty finite distributive lattice `α`:
 * `OrderIso.lowerSetSupIrred`: `α` is isomorphic to the lattice of lower sets of its irreducible
   elements.
 * `OrderIso.supIrredLowerSet`: `α` is isomorphic to the order of its irreducible lower sets.
-* `OrderEmbedding.birkhoffSet`, `OrderEmbedding.birkhoffFinet`: Order embedding of `α` into the
+* `OrderEmbedding.birkhoffSet`, `OrderEmbedding.birkhoffFinset`: Order embedding of `α` into the
   powerset lattice of its irreducible elements.
 * `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinet`: Same as the previous two, but bundled as
   an injective lattice homomorphism.
@@ -34,7 +34,7 @@ For a nonempty finite distributive lattice `α`:
 
 ## See also
 
-This correspondance between finite distributive lattices and finite boolean algebras is made
+This correspondence between finite distributive lattices and finite boolean algebras is made
 functorial in... TODO: Actually do it.
 
 ## Tags
@@ -50,7 +50,7 @@ namespace UpperSet
 variable [SemilatticeInf α] {s : UpperSet α} {a : α}
 
 @[simp] lemma infIrred_Ici (a : α) : InfIrred (Ici a) := by
-  refine' ⟨fun h ↦ Ici_ne_top h.eq_top, fun s t hst ↦ _⟩
+  refine ⟨fun h ↦ Ici_ne_top h.eq_top, fun s t hst ↦ ?_⟩
   have := mem_Ici_iff.2 (le_refl a)
   rw [←hst] at this
   exact this.imp (fun ha ↦ le_antisymm (le_Ici.2 ha) $ hst.ge.trans inf_le_left) fun ha ↦
