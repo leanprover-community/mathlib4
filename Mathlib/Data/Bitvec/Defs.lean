@@ -91,18 +91,38 @@ protected def uge (x y : BitVec w) : Bool := BitVec.ule y x
 #align bitvec.uge Std.BitVec.uge
 
 /--
-  Convert a list of booleans to a bitvector, using little-endian bit-order.
+  Convert a list of Booleans to a bitvector, using little-endian bit-order.
   That is, we take the head of the list to be the least significant bit
 -/
 def ofLEList (bs : List Bool) : BitVec bs.length :=
-  ⟨Nat.ofBits (λ i => bs[i]!) bs.length, @Nat.ofBits_lt _ (bs.length)⟩
+  ⟨Nat.ofBits bs.get, Nat.ofBits_lt ..⟩
 
 /--
-  Convert a list of booleans to a bitvector, using big-endian bit order.
+  Convert a list of Booleans to a bitvector, using big-endian bit order.
   That is, we take the head of the list to be the most significant bit
 -/
 def ofBEList (bs : List Bool) : BitVec bs.length :=
   (ofLEList bs.reverse).cast (List.length_reverse ..)
+
+/-- Return the `i`-th least significant bit, where `i` is a statically known in-bounds index -/
+def getLsb' (x : BitVec w) (i : Fin w) := x.getLsb i
+
+/-- Return the `i`-th most significant bit, where `i` is a statically known in-bounds index -/
+def getMsb' (x : BitVec w) (i : Fin w) := x.getMsb i
+
+/--
+  Convert a bitvector to a little-endian list of Booleans.
+  That is, the head of the list is the least significant bit
+-/
+def toLEList (x : BitVec w) : List Bool :=
+  List.ofFn x.getLsb'
+
+/--
+  Convert a bitvector to a big-endian list of Booleans.
+  That is, the head of the list is the most significant bit
+-/
+def toBEList (x : BitVec w) : List Bool :=
+  List.ofFn x.getMsb'
 
 
 /-!

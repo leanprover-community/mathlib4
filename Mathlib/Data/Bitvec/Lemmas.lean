@@ -82,21 +82,30 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   simp [addLsb, two_mul]
 #align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
 
-theorem eq_foldr_reverse (v : Nat) :
-    v = v.bits.reverse.foldr bit 0 := by
+@[simp] lemma bodd_bit {b x} : bodd (bit b x) = b := by
+  cases b <;> simp only [bit_false, bodd_bit0, bit_true, bodd_bit1]
+
+@[simp] lemma div2_bit {b x} : div2 (bit b x) = x := by
+  cases b <;> simp only [bit_false, div2_bit0, bit_true, div2_bit1]
+
+@[simp] lemma bits_bit {b x} (h : bit b x ≠ zero) :
+    bits (bit b x) = b :: bits x := by
+  rw [bits, binaryRec_of_ne_zero (h:=h)]
   simp
-  induction v
-  simp
-  rename_i n n_ih
 
+#eval (Nat.bits 8).reverse.foldr bit 0 -- gives `1`
 
-
-
-  sorry
+@[simp] lemma foldr_bit_bits (v : Nat) :
+    v.bits.foldr bit 0 = v := by
+  induction' v using Nat.binaryRec with b v ih
+  · rfl
+  · by_cases h : bit b v = 0
+    · simp only [h, zero_bits, List.foldr_nil]
+    · simp [bits_bit h, ih]
 
 theorem toNat_eq_foldr_reverse {n : ℕ} (v : BitVec n) :
-    v.toNat = v.toNat.bits.reverse.foldr bit 0 := by
-    rw [←eq_foldr_reverse]
+    v.toNat = v.toList.foldr bit 0 := by
+  rw [←eq_foldr_reverse]
 #align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
