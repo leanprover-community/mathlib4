@@ -581,7 +581,7 @@ noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
 
 @[simp]
 theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
-    colimit.ι _ j ≫  colimit.ι (curry.obj (Prod.swap K J ⋙ G)⋙ colim) k ≫
+    colimit.ι _ j ≫  colimit.ι (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) k ≫
       (colimitCurrySwapCompColimIsoColimitCurryCompColim G).hom =
         (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j : _ ⟶ colimit (curry.obj G⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
@@ -590,11 +590,11 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
 
 @[simp]
 theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
-    colimit.ι _ k ≫  colimit.ι (curry.obj G⋙ colim) j ≫
+    colimit.ι _ k ≫  colimit.ι (curry.obj G ⋙ colim) j ≫
       (colimitCurrySwapCompColimIsoColimitCurryCompColim G).inv =
         (colimit.ι _ j ≫
           colimit.ι (curry.obj _ ⋙ colim) k :
-            _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G)⋙ colim)) := by
+            _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
   slice_lhs 1 3 => simp only []
   simp only [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π,
