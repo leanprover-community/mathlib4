@@ -51,7 +51,7 @@ variable {C D : Type _} [Category C] [Category D]
 /-- A left fraction from `X : C` to `Y : C` for `W : MorphismProperty C` consists of the
 datum of an object `Y' : C` and maps `f : X ⟶ Y'` and `s : Y ⟶ Y'` such that `W s`. -/
 structure LeftFraction (W : MorphismProperty C) (X Y : C) where
-  /-- the auxiliary object of a fraction -/
+  /-- the auxiliary object of a left fraction -/
   {Y' : C}
   /-- the numerator of a left fraction -/
   f : X ⟶ Y'
@@ -64,14 +64,14 @@ namespace LeftFraction
 
 variable (W : MorphismProperty C) {X Y : C}
 
-/-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
+/-- The left fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
 @[simps]
 def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
   W.LeftFraction X Y := mk f (𝟙 Y) (W.id_mem Y)
 
 variable {W}
 
-/-- The right fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
+/-- The left fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
 @[simps]
 def ofInv (s : Y ⟶ X) (hs : W s) :
   W.LeftFraction X Y := mk (𝟙 X) s hs
@@ -116,11 +116,15 @@ lemma cases (α : W.LeftFraction X Y) :
 end LeftFraction
 
 /-- A right fraction from `X : C` to `Y : C` for `W : MorphismProperty C` consists of the
-datum of an object `X' : C` and maps `s : X' ⟶ Y` and `f : X' ⟶ Y'` such that `W s`. -/
+datum of an object `X' : C` and maps `s : X' ⟶ X` and `f : X' ⟶ Y` such that `W s`. -/
 structure RightFraction (W : MorphismProperty C) (X Y : C) where
+  /-- the auxiliary object of a right fraction -/
   {X' : C}
+  /-- the denominator of a right fraction -/
   s : X' ⟶ X
+  /-- the condition that the denominator belongs to the given morphism property -/
   hs : W s
+  /-- the numerator of a right fraction -/
   f : X' ⟶ Y
 
 namespace RightFraction
@@ -129,22 +133,26 @@ variable (W : MorphismProperty C)
 
 variable {X Y : C}
 
+/-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
 @[simps]
 def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
   W.RightFraction X Y := mk (𝟙 X) (W.id_mem X) f
 
 variable {W}
 
+/-- The right fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
 @[simps]
 def ofInv (s : Y ⟶ X) (hs : W s) :
   W.RightFraction X Y := mk s hs (𝟙 Y)
 
+/-- If `φ : W.RightFraction X Y` and `L` is a functor which inverts `W`, this is the
+induced morphism `L.obj X ⟶ L.obj Y`  -/
 noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.obj X ⟶ L.obj Y :=
   have := hL _ φ.hs
   inv (L.map φ.s) ≫ L.map φ.f
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma map_s_comp_map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.map φ.s ≫ φ.map L hL = L.map φ.f := by
   have := hL _ φ.hs
