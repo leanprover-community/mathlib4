@@ -113,6 +113,9 @@ In special cases, this condition can be simplified, see `pullbackCompatible_iff`
 
 This is referred to as a "compatible family" in Definition C2.1.2 of [Elephant], and on nlab:
 https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents
+
+For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
+`CategoryTheory.Presieve.Arrows.Compatible`.
 -/
 def FamilyOfElements.Compatible (x : FamilyOfElements P R) : Prop :=
   ∀ ⦃Y₁ Y₂ Z⦄ (g₁ : Z ⟶ Y₁) (g₂ : Z ⟶ Y₂) ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
@@ -130,6 +133,9 @@ This is the definition for a "matching" family given in [MM92], Chapter III, Sec
 Equation (5). Viewing the type `FamilyOfElements` as the middle object of the fork in
 https://stacks.math.columbia.edu/tag/00VM, this condition expresses that `pr₀* (x) = pr₁* (x)`,
 using the notation defined there.
+
+For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
+`CategoryTheory.Presieve.Arrows.PullbackCompatible`.
 -/
 def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
@@ -738,8 +744,7 @@ theorem exists_familyOfElements :
 A `FamilyOfElements` associated to an explicit family of elements.
 -/
 noncomputable
-def familyOfElements {x : (i : I) → P.obj (op (X i))}
-    (hx : Compatible P π x) : FamilyOfElements P (ofArrows X π) :=
+def familyOfElements : FamilyOfElements P (ofArrows X π) :=
   (exists_familyOfElements hx).choose
 
 @[simp]
@@ -747,12 +752,11 @@ theorem familyOfElements_ofArrows_mk (i : I) :
     hx.familyOfElements _ (ofArrows.mk i) = x i :=
   (exists_familyOfElements hx).choose_spec _
 
-theorem familyOfElements_compatible {x : (i : I) → P.obj (op (X i))}
-    (hx : Compatible P π x) : hx.familyOfElements.Compatible := by
+theorem familyOfElements_compatible : hx.familyOfElements.Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
-  cases' h₁ with i
-  cases' h₂ with j
-  simp [hx i j Z g₁ g₂ hgf]
+  cases h₁ with
+  | mk i => cases h₂ with
+  | mk j => simp [hx i j Z g₁ g₂ hgf]
 
 end Arrows.Compatible
 
@@ -761,7 +765,7 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
     ∃! t, ∀ i, P.map (π i).op t = x i) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨t, ht₁, ht₂⟩ := h _ hx.familyOfElements_compatible
-    refine' ⟨t, fun i => _, _⟩
+    refine ⟨t, fun i => ?_, ?_⟩
     · rw [ht₁ _ (ofArrows.mk i), Arrows.Compatible.familyOfElements_ofArrows_mk]
     · intro t' ht'
       apply ht₂
@@ -771,8 +775,8 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
   · obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
     refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
-    cases' hf with i
-    exact hA i
+    cases hf with
+    | mk i => exact hA i
 
 variable [(ofArrows X π).hasPullbacks]
 
