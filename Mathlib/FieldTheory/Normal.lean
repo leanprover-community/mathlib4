@@ -109,26 +109,11 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
 #align normal.tower_top_of_normal Normal.tower_top_of_normal
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
-  ⟨ϕ.toRingHom.injective, fun x => by
-    letI : Algebra E K := ϕ.toRingHom.toAlgebra
-    obtain ⟨h1, h2⟩ := h.out (algebraMap K E x)
-    cases'
-      minpoly.mem_range_of_degree_eq_one E x
-        (h2.def.resolve_left (minpoly.ne_zero h1)
-          (minpoly.irreducible
-            (isIntegral_of_isScalarTower
-              ((isIntegral_algebraMap_iff (algebraMap K E).injective).mp h1)))
-          (minpoly.dvd E x
-            ((algebraMap K E).injective
-              (by
-                rw [RingHom.map_zero, aeval_map_algebraMap, ← aeval_algebraMap_apply]
-                exact minpoly.aeval F (algebraMap K E x))))) with
-      y hy
-    exact ⟨y, hy⟩⟩
+  h.isAlgebraic'.bijective_of_isScalarTower ϕ
 #align alg_hom.normal_bijective AlgHom.normal_bijective
 
 -- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
-variable {F} {E} {E' : Type*} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
+variable {F E} {E' : Type*} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
 
 theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :=
   normal_iff.2 fun x => by
