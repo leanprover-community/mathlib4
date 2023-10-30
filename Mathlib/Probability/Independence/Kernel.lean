@@ -228,6 +228,11 @@ theorem IndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
   rcases h with ⟨n, hn, h⟩
   exact h t1 t2 (Set.biInter_subset_of_mem hn ht1) ht2
 
+theorem iIndep_comap_mem_iff {f : ι → Set Ω} {_mΩ : MeasurableSpace Ω}
+    {κ : kernel α Ω} {μ : Measure α} :
+    iIndep (fun i => MeasurableSpace.comap (· ∈ f i) ⊤) κ μ ↔ iIndepSet f κ μ := by
+  simp_rw [← generateFrom_singleton]; rfl
+
 theorem iIndepSets_singleton_iff {s : ι → Set Ω} {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} :
     iIndepSets (fun i ↦ {s i}) κ μ ↔

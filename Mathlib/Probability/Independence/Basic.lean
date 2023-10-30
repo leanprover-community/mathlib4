@@ -556,8 +556,8 @@ theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : Measur
 #align probability_theory.indep_iff_forall_indep_set ProbabilityTheory.indep_iff_forall_indepSet
 
 theorem iIndep_comap_mem_iff {f : ι → Set Ω} :
-    iIndep (fun i => MeasurableSpace.comap (· ∈ f i) ⊤) μ ↔ iIndepSet f μ := by
-  simp_rw [← generateFrom_singleton]; rfl
+    iIndep (fun i => MeasurableSpace.comap (· ∈ f i) ⊤) μ ↔ iIndepSet f μ :=
+  kernel.iIndep_comap_mem_iff
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_comap_mem_iff ProbabilityTheory.iIndep_comap_mem_iff
 
