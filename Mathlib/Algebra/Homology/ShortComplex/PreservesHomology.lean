@@ -820,7 +820,7 @@ noncomputable def preservesLeftHomologyOfZerog (hg : S.g = 0)
 
 /-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
 by a functor `F`, then `F` preserves the right homology of `S`. -/
-noncomputable def preservesRightHomologyOfOfZerof (hf : S.f = 0)
+noncomputable def preservesRightHomologyOfZerof (hf : S.f = 0)
     [PreservesLimit (parallelPair S.g 0) F] :
     F.PreservesRightHomologyOf S := ⟨fun h =>
   { f := by
