@@ -62,21 +62,21 @@ def of : M ≃ₗ[R] AEval R M a :=
 
 variable {R M}
 
-lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R M := rfl
+lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R M a m:= rfl
 
 @[simp] lemma of_symm_smul (f : R[X]) (m : AEval R M a) :
     (of R M a).symm (f • m) = (aeval a f • (of R M a).symm m) := by rfl
 
 lemma X_smul₁ (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
-  rw [smul_def₁, aeval_X]
+  rw [←of_aeval_smul, aeval_X]
 
 lemma X_smul₂ (m : AEval R M a) : (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
-  rw [smul_def₂, aeval_X]
+  rw [of_symm_smul, aeval_X]
 
 instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
   smul_assoc r f m := by
     apply (of R M a).symm.injective
-    rw [smul_def₂, map_smul, smul_assoc]
+    rw [of_symm_smul, map_smul, smul_assoc]
     rfl
 
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
