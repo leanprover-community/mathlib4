@@ -28,7 +28,10 @@ def descend : C(Y, Z) where
     exact h a b hab
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 
-theorem descend_comp : False := sorry -- `QuotientMap.descend` makes the triangle commute.
+theorem descend_comp : (hf.descend g h) ∘ f = g := by
+  ext
+  simpa [descend, homeomorph, Setoid.quotientKerEquivOfSurjective,
+    Setoid.quotientKerEquivOfRightInverse] using h _ _ (Function.rightInverse_surjInv _ _)
 
 end QuotientMap
 
@@ -76,4 +79,5 @@ theorem EqualizerConditionCoyoneda : EqualizerCondition (coyoneda G X) := by
       -- We need `G` to preserve pullbacks, and then apply `ha` to the element `⟨(x,y), hxy⟩` of the
       -- explicit pullback in `TopCat`.
       sorry
-    · sorry -- this is `descend_comp`
+    · congr
+      exact (hq Z B π).descend_comp a _
