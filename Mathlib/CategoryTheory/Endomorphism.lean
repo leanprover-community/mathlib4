@@ -17,7 +17,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 Definition and basic properties of endomorphisms and automorphisms of an object in a category.
 
 For each `X : C`, we provide `CategoryTheory.End X := X ⟶ X` with a monoid structure,
-and `CategoryTheory.Aut X := X ≅ X ` with a group structure.
+and `CategoryTheory.Aut X := X ≅ X` with a group structure.
 -/
 
 

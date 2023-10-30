@@ -683,7 +683,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
 open Lean.Elab.Tactic in
 /-- Try using `Set.to_finite` to dispatch a `Set.finite` goal. -/
 def evalUseFiniteInstance : TacticM Unit := do
-  evalTactic (← `(tactic| intros; apply Set.toFinite ))
+  evalTactic (← `(tactic| intros; apply Set.toFinite))
 
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
@@ -793,7 +793,7 @@ theorem coe_basis : ⇑h.basis = e := by
 theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
     ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
   intro i hi
-  rcases(Finsupp.mem_span_image_iff_total _).mp hmem with ⟨l, supp_l, rfl⟩
+  rcases (Finsupp.mem_span_image_iff_total _).mp hmem with ⟨l, supp_l, rfl⟩
   apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
   rwa [← lc_def, h.dual_lc] at hi
 #align module.dual_bases.mem_of_mem_span Module.DualBases.mem_of_mem_span

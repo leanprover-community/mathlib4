@@ -31,7 +31,7 @@ def ENat : Type :=
 deriving Zero,
   -- AddCommMonoidWithOne,
   CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
+  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat

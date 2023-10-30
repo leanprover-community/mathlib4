@@ -420,7 +420,7 @@ section Exists
 variable [HasImages C]
 
 /-- In the case where `f` is not a monomorphism but `C` has images,
-we can still take the "forward map" under it, which agrees with `mono_over.map f`.
+we can still take the "forward map" under it, which agrees with `MonoOver.map f`.
 -/
 def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image

@@ -60,7 +60,7 @@ namespace Sym2
 
 /-- This is the relation capturing the notion of pairs equivalent up to permutations.
 -/
-@[aesop (rule_sets [Sym2]) [safe [constructors, cases], norm unfold]]
+@[aesop (rule_sets [Sym2]) [safe [constructors, cases], norm]]
 inductive Rel (α : Type u) : α × α → α × α → Prop
   | refl (x y : α) : Rel _ (x, y) (x, y)
   | swap (x y : α) : Rel _ (x, y) (y, x)
@@ -562,8 +562,10 @@ private def fromVector : Vector α 2 → α × α
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
     [a₁, b₁].Perm [a₂, b₂] ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ a₁ = b₂ ∧ b₁ = a₂ :=
   { mp := by
-      simp [← Multiset.coe_eq_coe, ← Multiset.cons_coe, Multiset.cons_eq_cons]
-      aesop
+      simp only [←Multiset.coe_eq_coe, ←Multiset.cons_coe, Multiset.coe_nil, Multiset.cons_zero,
+        Multiset.cons_eq_cons, Multiset.singleton_inj, ne_eq, Multiset.singleton_eq_cons_iff,
+        exists_eq_right_right, and_true]
+      tauto
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]
@@ -638,7 +640,7 @@ def relBool [DecidableEq α] (x y : α × α) : Bool :=
   if x.1 = y.1 then x.2 = y.2 else if x.1 = y.2 then x.2 = y.1 else false
 #align sym2.rel_bool Sym2.relBool
 
-@[aesop norm unfold (rule_sets [Sym2])]
+@[aesop norm (rule_sets [Sym2])]
 theorem relBool_spec [DecidableEq α] (x y : α × α) : ↥(relBool x y) ↔ Rel α x y := by
   cases' x with x₁ x₂; cases' y with y₁ y₂
   aesop (rule_sets [Sym2]) (add norm unfold [relBool])
@@ -659,7 +661,7 @@ def eqBool [DecidableEq α] : Sym2 α → Sym2 α → Bool :=
   Sym2.lift₂.toFun
     ⟨fun x₁ x₂ y₁ y₂ => relBool (x₁, x₂) (y₁, y₂), by aesop (add norm unfold [relBool])⟩
 
-@[aesop norm unfold (rule_sets [Sym2])]
+@[aesop norm (rule_sets [Sym2])]
 theorem eqBool_spec [DecidableEq α] (a b : Sym2 α) : (eqBool a b) ↔ (a = b) :=
   Sym2.inductionOn₂ a b <| by aesop (rule_sets [Sym2])
 
