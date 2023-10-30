@@ -60,14 +60,14 @@ variable (W : MorphismProperty C) {X Y : C}
 /-- The left fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
 @[simps]
 def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
-  W.LeftFraction X Y := mk f (𝟙 Y) (W.id_mem Y)
+    W.LeftFraction X Y := mk f (𝟙 Y) (W.id_mem Y)
 
 variable {W}
 
 /-- The left fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
 @[simps]
 def ofInv (s : Y ⟶ X) (hs : W s) :
-  W.LeftFraction X Y := mk (𝟙 X) s hs
+    W.LeftFraction X Y := mk (𝟙 X) s hs
 
 /-- If `φ : W.LeftFraction X Y` and `L` is a functor which inverts `W`, this is the
 induced morphism `L.obj X ⟶ L.obj Y`  -/
@@ -129,14 +129,14 @@ variable {X Y : C}
 /-- The right fraction from `X` to `Y` given by a morphism `f : X ⟶ Y`. -/
 @[simps]
 def ofHom (f : X ⟶ Y) [W.ContainsIdentities] :
-  W.RightFraction X Y := mk (𝟙 X) (W.id_mem X) f
+    W.RightFraction X Y := mk (𝟙 X) (W.id_mem X) f
 
 variable {W}
 
 /-- The right fraction from `X` to `Y` given by a morphism `s : Y ⟶ X` such that `W s`. -/
 @[simps]
 def ofInv (s : Y ⟶ X) (hs : W s) :
-  W.RightFraction X Y := mk s hs (𝟙 Y)
+    W.RightFraction X Y := mk s hs (𝟙 Y)
 
 /-- If `φ : W.RightFraction X Y` and `L` is a functor which inverts `W`, this is the
 induced morphism `L.obj X ⟶ L.obj Y`  -/
