@@ -67,10 +67,10 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
 @[simp] lemma of_symm_smul (f : R[X]) (m : AEval R M a) :
     (of R M a).symm (f • m) = (aeval a f • (of R M a).symm m) := by rfl
 
-lemma X_smul₁ (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
+lemma X_smul_of (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
   rw [←of_aeval_smul, aeval_X]
 
-lemma X_smul₂ (m : AEval R M a) : (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
+lemma of_symm_X_smul (m : AEval R M a) : (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
   rw [of_symm_smul, aeval_X]
 
 instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
@@ -100,8 +100,10 @@ and the action of `f` is `f • (of φ m) = of φ ((aeval φ f) • m)`.
 abbrev AEval' := AEval R M φ
 abbrev AEval'.of := AEval.of R M φ
 lemma AEval'_def : AEval' φ = AEval R M φ := rfl
-lemma AEval'.X_smul₁ (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (φ m) := AEval.X_smul₁ _ _
-lemma AEval'.X_smul₂ (m : AEval' φ) : (AEval'.of φ).symm ((X : R[X]) • m) = φ m := AEval.X_smul₂ _ _
+lemma AEval'.X_smul_of (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (φ m) :=
+  AEval.X_smul_of _ _
+lemma AEval'.of_symm_X_smul (m : AEval' φ) : (AEval'.of φ).symm ((X : R[X]) • m) = φ m :=
+  AEval.of_symm_X_smul _ _
 instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
 
 end Module
