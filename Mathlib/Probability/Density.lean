@@ -140,7 +140,7 @@ theorem lintegral_eq_measure_univ {X : Ω → E} [HasPDF X ℙ μ] :
 theorem unique [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] (f : E → ℝ≥0∞)
     (hmf : AEMeasurable f μ) : ℙ.map X = μ.withDensity f ↔ pdf X ℙ μ =ᵐ[μ] f := by
   rw [map_eq_withDensity_pdf X ℙ μ]
-  apply AEMeasurable.withDensity_eq_iff (measurable_pdf X ℙ μ).aemeasurable hmf
+  apply withDensity_eq_iff (measurable_pdf X ℙ μ).aemeasurable hmf
   rw [lintegral_eq_measure_univ]
   exact (measure_lt_top _ _).ne
 
