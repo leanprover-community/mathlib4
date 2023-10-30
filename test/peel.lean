@@ -131,13 +131,6 @@ example : (∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℚ) < ε) ↔
   · intro ε hε
     peel 3 h (ε / 2) (half_pos hε) using this.trans_lt (half_lt_self hε)
 
-def toInf (f : ℕ → ℕ) : Prop := ∀ m, ∃ n, ∀ n' ≥ n, m ≤ f n'
-
-example (f : ℕ → ℕ) (h : toInf f) : toInf (fun n => 2 * f n) := by
-  peel h with this m n n' h
-  dsimp
-  linarith
-
 /-! ## Use with `↔` goals -/
 
 example (x y : ℚ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
@@ -204,6 +197,13 @@ example {α β γ : Type*} {f : α → β} {g : β → γ} (h : Function.Surject
   fail_if_success peel this
   obtain ⟨x, rfl⟩ := this
   exact ⟨f x, rfl⟩
+
+def toInf (f : ℕ → ℕ) : Prop := ∀ m, ∃ n, ∀ n' ≥ n, m ≤ f n'
+
+example (f : ℕ → ℕ) (h : toInf f) : toInf (fun n => 2 * f n) := by
+  peel h with this m n n' h
+  dsimp
+  linarith
 
 /-! ## Error messages -/
 
