@@ -14,7 +14,7 @@ in normed finite dimension `ℝ`-vector space `E` with an Haar measure. We also 
 `measure_lt_one_eq_integral_div_gamma` to compute the volume of the ball `{x : E | g x ≤ 1}` for a
 function `g` defining a norm on `E`. This provides a way to compute the volume of the unit balls for
 the norms `L_p` for `1 ≤ p` in any dimension over the reals `volume_sum_rpow_lt_one` and the complex
-`Complex.Measure.volume_sum_rpow_lt_one`.
+`Complex.volume_sum_rpow_lt_one`.
 -/
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
@@ -255,7 +255,7 @@ theorem volume_sum_rpow_lt_one :
     rw [Real.rpow_zero, one_mul]
   · rw [finrank_fintype_fun_eq_card]
 
-theorem _root_.Complex.Measure.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
+theorem _root_.Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
     volume {x : ι → ℂ | ∑ i, ‖x i‖ ^ p < 1} =
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith
