@@ -105,26 +105,29 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   simp only [neg_neg]
 #align integral_comp_neg_Ioi integral_comp_neg_Ioi
 
-theorem integral_comp_abs {f : ℝ → ℝ} (hf : IntegrableOn (fun x => f x) (Ioi 0)) :
+theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0:ℝ), f x := by
-  have int_Ioi : IntegrableOn (fun x => f |x|) (Ioi 0) := by
-      refine IntegrableOn.congr_fun hf (fun _ hx => ?_) measurableSet_Ioi
-      rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
-  have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
-    rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
-    let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
-    rw [m.integrableOn_map_iff]
-    simp_rw [Function.comp, abs_neg, neg_preimage, preimage_neg_Iic, neg_zero]
-    exact integrableOn_Ici_iff_integrableOn_Ioi.mpr int_Ioi
-  calc
-    _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by
-      rw [← integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic int_Ioi,
-        Iic_union_Ioi, restrict_univ]
-    _ = 2 * ∫ x in Ioi 0, f x := by
-      rw [two_mul]
-      congr! 1
-      · rw [← neg_zero, ← integral_comp_neg_Iic, neg_zero]
+  have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
+    refine set_integral_congr measurableSet_Ioi (fun _ hx => ?_)
+    rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
+  obtain hf | hf := em (IntegrableOn (fun x => f |x|) (Ioi 0))
+  · have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
+      rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
+      let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
+      rw [m.integrableOn_map_iff]
+      simp_rw [Function.comp, abs_neg, neg_preimage, preimage_neg_Iic, neg_zero]
+      exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf
+    calc
+      _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by
+        rw [← integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi int_Iic hf,
+          Iic_union_Ioi, restrict_univ]
+      _ = 2 * ∫ x in Ioi 0, f x := by
+        rw [two_mul, eq]
+        congr! 1
+        rw [← neg_zero, ← integral_comp_neg_Iic, neg_zero]
         refine set_integral_congr measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
-      · refine set_integral_congr measurableSet_Ioi (fun _ hx => ?_)
-        rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
+  · have : ¬ Integrable (fun x => f |x|) := by
+      contrapose! hf
+      exact hf.integrableOn
+    rw [← eq, integral_undef hf, integral_undef this, mul_zero]
