@@ -652,4 +652,4 @@ end SeparationQuotient
 theorem continuous_congr_of_inseparable (h : ∀ x, f x ~ᵢ g x) :
     Continuous f ↔ Continuous g := by
   simp_rw [SeparationQuotient.inducing_mk.continuous_iff (β := Y)]
-  refine continuous_congr fun x ↦ SeparationQuotient.mk_eq_mk.mpr (h x)
+  exact continuous_congr fun x ↦ SeparationQuotient.mk_eq_mk.mpr (h x)
