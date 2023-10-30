@@ -62,41 +62,41 @@ section Extensive
 variable {X Y : C}
 
 /-- A category has pullback of inclusions if it has all pullbacks along coproduct injections. -/
-class HasPullbackOfInclusions (C : Type u) [Category.{v} C] [HasBinaryCoproducts C] : Prop where
+class HasPullbacksOfInclusions (C : Type u) [Category.{v} C] [HasBinaryCoproducts C] : Prop where
   [hasPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), HasPullback coprod.inl f]
 
-attribute [instance] HasPullbackOfInclusions.hasPullbackInl
+attribute [instance] HasPullbacksOfInclusions.hasPullbackInl
 
 /--
 A functor preserves pullback of inclusions if it preserves all pullbacks along coproduct injections.
 -/
-class PreservesPullbackOfInclusions {C : Type*} [Category C] {D : Type*} [Category D]
+class PreservesPullbacksOfInclusions {C : Type*} [Category C] {D : Type*} [Category D]
     (F : C ⥤ D) [HasBinaryCoproducts C] where
   [preservesPullbackInl : ∀ {X Y Z : C} (f : Z ⟶ X ⨿ Y), PreservesLimit (cospan coprod.inl f) F]
 
-attribute [instance] PreservesPullbackOfInclusions.preservesPullbackInl
+attribute [instance] PreservesPullbacksOfInclusions.preservesPullbackInl
 
 /-- A category is (finitary) pre-extensive if it has finite coproducts,
 and binary coproducts are van Kampen. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
-  [hasPullbackOfInclusions : HasPullbackOfInclusions C]
+  [HasPullbacksOfInclusions : HasPullbacksOfInclusions C]
   /-- In a finitary extensive category, all coproducts are van Kampen-/
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
-attribute [instance] FinitaryPreExtensive.hasPullbackOfInclusions
+attribute [instance] FinitaryPreExtensive.HasPullbacksOfInclusions
 
 /-- A category is (finitary) extensive if it has finite coproducts,
 and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
-  [hasPullbackOfInclusions : HasPullbackOfInclusions C]
+  [HasPullbacksOfInclusions : HasPullbacksOfInclusions C]
   /-- In a finitary extensive category, all coproducts are van Kampen-/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 #align category_theory.finitary_extensive CategoryTheory.FinitaryExtensive
 
-attribute [instance] FinitaryExtensive.hasFiniteCoproducts FinitaryExtensive.hasPullbackOfInclusions
+attribute [instance] FinitaryExtensive.hasFiniteCoproducts FinitaryExtensive.HasPullbacksOfInclusions
 
 theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingPair ⥤ C}
     (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
@@ -111,12 +111,12 @@ theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingP
   exact FinitaryExtensive.van_kampen' c hc
 #align category_theory.finitary_extensive.van_kampen CategoryTheory.FinitaryExtensive.vanKampen
 
-namespace HasPullbackOfInclusions
+namespace HasPullbacksOfInclusions
 
 instance (priority := 100) [HasBinaryCoproducts C] [HasPullbacks C] :
-    HasPullbackOfInclusions C := ⟨⟩
+    HasPullbacksOfInclusions C := ⟨⟩
 
-variable [HasBinaryCoproducts C] [HasPullbackOfInclusions C] {X Y Z : C} (f : Z ⟶ X ⨿ Y)
+variable [HasBinaryCoproducts C] [HasPullbacksOfInclusions C] {X Y Z : C} (f : Z ⟶ X ⨿ Y)
 
 instance preservesPullbackInl' :
     HasPullback f coprod.inl :=
@@ -135,17 +135,17 @@ instance hasPullbackInr :
     HasPullback coprod.inr f :=
   hasPullback_symmetry _ _
 
-end HasPullbackOfInclusions
+end HasPullbacksOfInclusions
 
-namespace PreservesPullbackOfInclusions
+namespace PreservesPullbacksOfInclusions
 
 variable {D : Type*} [Category D] [HasBinaryCoproducts C] (F : C ⥤ D)
 
 noncomputable
 instance (priority := 100) [PreservesLimitsOfShape WalkingCospan F] :
-    PreservesPullbackOfInclusions F := ⟨⟩
+    PreservesPullbacksOfInclusions F := ⟨⟩
 
-variable [PreservesPullbackOfInclusions F] {X Y Z : C} (f : Z ⟶ X ⨿ Y)
+variable [PreservesPullbacksOfInclusions F] {X Y Z : C} (f : Z ⟶ X ⨿ Y)
 
 noncomputable
 instance preservesPullbackInl' :
@@ -163,7 +163,7 @@ instance preservesPullbackInr :
     PreservesLimit (cospan coprod.inr f) F :=
   preservesPullbackSymmetry _ _ _
 
-end PreservesPullbackOfInclusions
+end PreservesPullbacksOfInclusions
 
 instance (priority := 100) FinitaryExtensive.toFinitaryPreExtensive [FinitaryExtensive C] :
     FinitaryPreExtensive C :=
@@ -200,7 +200,7 @@ instance (priority := 100) hasStrictInitialObjects_of_finitaryPreExtensive
 #align category_theory.has_strict_initial_objects_of_finitary_extensive CategoryTheory.hasStrictInitialObjects_of_finitaryPreExtensive
 
 theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFiniteCoproducts C]
-    [HasPullbackOfInclusions C]
+    [HasPullbacksOfInclusions C]
     (T : C) (HT : IsTerminal T) (c₀ : BinaryCofan T T) (hc₀ : IsColimit c₀) :
     FinitaryExtensive C ↔ IsVanKampenColimit c₀ := by
   refine' ⟨fun H => H.van_kampen' c₀ hc₀, fun H => _⟩
@@ -414,11 +414,11 @@ end TopCat
 section Functor
 
 theorem finitaryExtensive_of_reflective
-    [HasFiniteCoproducts D] [HasPullbackOfInclusions D] [FinitaryExtensive C]
+    [HasFiniteCoproducts D] [HasPullbacksOfInclusions D] [FinitaryExtensive C]
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
     [∀ X Y (f : X ⟶ Gl.obj Y), HasPullback (Gr.map f) (adj.unit.app Y)]
     [∀ X Y (f : X ⟶ Gl.obj Y), PreservesLimit (cospan (Gr.map f) (adj.unit.app Y)) Gl]
-    [PreservesPullbackOfInclusions Gl] :
+    [PreservesPullbacksOfInclusions Gl] :
     FinitaryExtensive D := by
   have : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
   constructor
@@ -458,8 +458,8 @@ instance {C} [Category C] {D} [Category D] (F : C ⥤ D)
   preservesPullbackSymmetry _ _ _
 
 theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExtensive D]
-    [HasFiniteCoproducts C] [HasPullbackOfInclusions C]
-    [PreservesPullbackOfInclusions F]
+    [HasFiniteCoproducts C] [HasPullbacksOfInclusions C]
+    [PreservesPullbacksOfInclusions F]
     [ReflectsLimitsOfShape WalkingCospan F] [PreservesColimitsOfShape (Discrete WalkingPair) F]
     [ReflectsColimitsOfShape (Discrete WalkingPair) F] : FinitaryExtensive C := by
   constructor
