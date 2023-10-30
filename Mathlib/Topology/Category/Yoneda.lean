@@ -1,5 +1,6 @@
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Sites.RegularExtensive
-import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
 universe w w' v u
 
@@ -54,12 +55,13 @@ end ContinuousMap
 
 variable (X : Type v) [TopologicalSpace X] (G : C ⥤ TopCat.{u})
     [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], HasPullback π π]
+    [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) G]
     [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], EffectiveEpi (pullback.fst (f := π) (g := π))]
     (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], QuotientMap (G.map π))
 
 open ContinuousMap
 
-theorem EqualizerConditionCoyoneda : EqualizerCondition (coyoneda G X) := by
+theorem EqualizerConditionCoyoneda : EqualizerCondition.{v, u} (coyoneda G X) := by
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
   · simp only [ContinuousMap.coyoneda, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, MapToEqualizer,
@@ -76,8 +78,19 @@ theorem EqualizerConditionCoyoneda : EqualizerCondition (coyoneda G X) := by
     simp only [ContinuousMap.coyoneda, unop_op] at a
     refine ⟨(hq Z B π).descend a ?_, ?_⟩
     · intro x y hxy
-      -- We need `G` to preserve pullbacks, and then apply `ha` to the element `⟨(x,y), hxy⟩` of the
-      -- explicit pullback in `TopCat`.
-      sorry
+      let xy : G.obj (pullback π π) := (PreservesPullback.iso G π π).inv <|
+        (TopCat.pullbackIsoProdSubtype (G.map π) (G.map π)).inv ⟨(x, y), hxy⟩
+      have ha' := congr_fun ha xy
+      dsimp at ha'
+      have h₁ : ∀ y, G.map pullback.fst ((PreservesPullback.iso G π π).inv y) =
+          pullback.fst (f := G.map π) (g := G.map π) y := by
+        simp only [← PreservesPullback.iso_inv_fst]; intro y; rfl
+      have h₂ : ∀ y, G.map pullback.snd ((PreservesPullback.iso G π π).inv y) =
+          pullback.snd (f := G.map π) (g := G.map π) y := by
+        simp only [← PreservesPullback.iso_inv_snd]; intro y; rfl
+      erw [h₁, h₂] at ha'
+      simpa using ha'
     · congr
       exact (hq Z B π).descend_comp a _
+
+instance : PreservesFiniteProducts (coyoneda G X) := sorry
