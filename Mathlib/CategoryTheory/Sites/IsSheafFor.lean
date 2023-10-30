@@ -719,11 +719,8 @@ def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
 
 lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofArrows X π))
     (t : P.obj (op B)) :
-    x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) := by
-  refine ⟨fun h i ↦ h _ (ofArrows.mk i), fun h Y f hf ↦ ?_⟩
-  obtain ⟨i, rfl, hi⟩ := ofArrows_surj π f hf
-  obtain rfl : f = π i := by simpa using hi
-  exact h i
+    x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) :=
+  ⟨fun h i ↦ h _ (ofArrows.mk i), fun h _ f ⟨i⟩ ↦ h i⟩
 
 namespace Arrows.Compatible
 
