@@ -11,7 +11,13 @@ example (p q : Nat → Prop) (h₁ : ∀ x, p x) (h₂ : ∀ x, p x → q x) : �
   guard_target =ₐ q y
   exact h₂ _ this
 
-example (p q : Nat → Nat → Prop) (h₁ : ∀ x y, p x y) (h₂ : ∀ x y, p x y → q x y) :
+example (p q : Nat → Prop) (h₁ : ∀ {x}, p x) (h₂ : ∀ x, p x → q x) : ∀ y, q y := by
+  peel 1 h₁
+  rename_i y
+  guard_target =ₐ q y
+  exact h₂ _ this
+
+example (p q : Nat → Nat → Prop) (h₁ : ∀ {x y}, p x y) (h₂ : ∀ x y, p x y → q x y) :
     ∀ u v, q u v := by
   peel 2 h₁
   rename_i u v
