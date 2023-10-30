@@ -87,12 +87,12 @@ def FractionalOperation.IsValid {m : ℕ} (ω : FractionalOperation D m) : Prop 
   ω ≠ [] ∧ ω.Forall (·.snd ≠ 0)
 
 /-- TODO description -/
-def function_weigth_tt_aux {m n : ℕ} (g : ((Fin m → D) → D) × ℕ) (x' : (Fin n → (Fin m → D))) :
+def function_weigth_tt_aux {m n : ℕ} (g : ((Fin m → D) → D) × ℕ) (x' : Fin n → Fin m → D) :
     (Fin n → D) × ℕ :=
   ⟨fun i => g.fst (x' i), g.snd⟩
 
 /-- TODO description -/
-def FractionalOperation.tt {m n : ℕ} (ω : FractionalOperation D m) (x : (Fin m → (Fin n → D))) :
+def FractionalOperation.tt {m n : ℕ} (ω : FractionalOperation D m) (x : Fin m → Fin n → D) :
     List ((Fin n → D) × ℕ) :=
   ω.map (fun g => function_weigth_tt_aux g (Function.swap x))
 
