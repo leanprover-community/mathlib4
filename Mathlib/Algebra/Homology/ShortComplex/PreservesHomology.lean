@@ -788,7 +788,7 @@ variable (F : C ⥤ D) [F.PreservesZeroMorphisms] (S : ShortComplex C)
 
 /-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
 by a functor `F`, then `F` preserves the left homology of `S`. -/
-noncomputable def preservesLeftHomologyOfOfZerof (hf : S.f = 0)
+noncomputable def preservesLeftHomologyOfZerof (hf : S.f = 0)
     [PreservesLimit (parallelPair S.g 0) F] :
     F.PreservesLeftHomologyOf S := ⟨fun h =>
   { g := by infer_instance
