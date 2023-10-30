@@ -709,7 +709,7 @@ theorem sum_take_map_length_splitWrtComposition (l : List α) (c : Composition l
 #align list.sum_take_map_length_split_wrt_composition List.sum_take_map_length_splitWrtComposition
 
 theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :
-   (l.splitWrtCompositionAux ns).get ⟨i, hi⟩  =
+    (l.splitWrtCompositionAux ns).get ⟨i, hi⟩  =
       (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
   induction' ns with n ns IH generalizing l i
   · cases hi
