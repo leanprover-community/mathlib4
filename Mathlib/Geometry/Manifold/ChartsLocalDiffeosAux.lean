@@ -35,9 +35,31 @@ section Future
 -- Mathlib doesn't fully have that "open subsets of manifolds are manifolds" yet
 -- (the ChartedSpace instance is missing).
 
+example {f : M → N} (hf : ContMDiff I J n f) (s : Opens M) : True := by
+  let f' := (s.1).restrict f
+  have : ContMDiff I J n f' := sorry -- type-checks!
+  sorry
+
 /-- Charts are structomorphisms. -/
 lemma LocalHomeomorphism.toStructomorph {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
-    {G : StructureGroupoid H} : Structomorph G M H := sorry
+    {G : StructureGroupoid H} : Structomorph G M H := by
+  let s : Opens M := { carrier := e.source, is_open' := e.open_source }
+  let t : Opens H := { carrier := e.target, is_open' := e.open_target }
+  let e' := (e.mapsTo).restrict e s t
+  let e'' := (e.symm_mapsTo).restrict e.symm t s
+  let ehom := e.toHomeomorphSourceTarget -- temporary, to make the goal readable
+  have : Structomorph G s t := {
+    ehom with
+    mem_groupoid := by
+      intro c c' hc hc'
+      show (c.symm).trans (ehom.toLocalHomeomorph.trans c') ∈ G -- just pretty-printed goal
+      -- c' should be easy, just the inclusion -> can eliminate
+      -- then, have just a transition map
+      sorry
+  }
+  sorry
+
+#exit
 
 /-- Each chart inverse is a structomorphism. -/
 -- do the same with symm... probably cannot reflect this in the types...
