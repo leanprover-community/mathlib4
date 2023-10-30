@@ -109,7 +109,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
 #align normal.tower_top_of_normal Normal.tower_top_of_normal
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
-  h.isAlgebraic'.bijective_of_isScalarTower ϕ
+  h.isAlgebraic'.bijective_of_isScalarTower' ϕ
 #align alg_hom.normal_bijective AlgHom.normal_bijective
 
 -- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
