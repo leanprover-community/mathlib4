@@ -1184,6 +1184,7 @@ theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 #align measure_theory.measure.map_zero MeasureTheory.Measure.map_zero
 
+@[simp]
 theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
     μ.map f = 0 := by simp [map, hf]
 #align measure_theory.measure.map_of_not_ae_measurable MeasureTheory.Measure.map_of_not_aemeasurable
