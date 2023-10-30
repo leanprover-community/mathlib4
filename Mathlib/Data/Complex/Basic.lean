@@ -905,6 +905,38 @@ theorem ofReal_rat_cast (n : ℚ) : ((n : ℝ) : ℂ) = (n : ℂ) :=
   map_ratCast ofReal n
 #align complex.of_real_rat_cast Complex.ofReal_rat_cast
 
+lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
+  simp_rw [div_eq_inv_mul, ← ofReal_inv, ofReal_mul']
+
+lemma div_nat_cast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ := by
+  exact_mod_cast div_ofReal z n
+
+lemma div_int_cast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ := by
+  exact_mod_cast div_ofReal z n
+
+lemma div_rat_cast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ := by
+  exact_mod_cast div_ofReal z x
+
+lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
+    z / OfNat.ofNat n = ⟨z.re / OfNat.ofNat n, z.im / OfNat.ofNat n⟩ :=
+  div_nat_cast z n
+
+@[simp] lemma div_ofReal_re (z : ℂ) (x : ℝ) : (z / x).re = z.re / x := by rw [div_ofReal]
+@[simp] lemma div_ofReal_im (z : ℂ) (x : ℝ) : (z / x).im = z.im / x := by rw [div_ofReal]
+@[simp] lemma div_nat_cast_re (z : ℂ) (n : ℕ) : (z / n).re = z.re / n := by rw [div_nat_cast]
+@[simp] lemma div_nat_cast_im (z : ℂ) (n : ℕ) : (z / n).im = z.im / n := by rw [div_nat_cast]
+@[simp] lemma div_int_cast_re (z : ℂ) (n : ℤ) : (z / n).re = z.re / n := by rw [div_int_cast]
+@[simp] lemma div_int_cast_im (z : ℂ) (n : ℤ) : (z / n).im = z.im / n := by rw [div_int_cast]
+@[simp] lemma div_rat_cast_re (z : ℂ) (x : ℚ) : (z / x).re = z.re / x := by rw [div_rat_cast]
+@[simp] lemma div_rat_cast_im (z : ℂ) (x : ℚ) : (z / x).im = z.im / x := by rw [div_rat_cast]
+
+@[simp]
+lemma div_ofNat_re (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
+    (z / no_index (OfNat.ofNat n)).re = z.re / OfNat.ofNat n := div_nat_cast_re z n
+
+@[simp]
+lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
+    (z / no_index (OfNat.ofNat n)).im = z.im / OfNat.ofNat n := div_nat_cast_im z n
 
 /-! ### Characteristic zero -/
 
