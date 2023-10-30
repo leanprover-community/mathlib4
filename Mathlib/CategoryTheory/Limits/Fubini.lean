@@ -63,7 +63,6 @@ structure DiagramOfCones where
 
 /-- A structure carrying a diagram of cocones over the functors `F.obj j`.
 -/
-@[nolint docBlame] -- As this structure is rather auxiliary
 structure DiagramOfCocones where
   /-- For each object, a cocone. -/
   obj : ∀ j : J, Cocone (F.obj j)
