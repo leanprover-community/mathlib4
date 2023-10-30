@@ -65,7 +65,7 @@ variable {R M}
 lemma smul_def₁ (f : R[X]) (m : M) : f • (of R M a m) = of R M a (aeval a f • m) := by rfl
 
 lemma smul_def₂ (f : R[X]) (m : AEval R M a) :
-  (of R M a).symm (f • m) = (aeval a f • (of R M a).symm m) := by rfl
+    (of R M a).symm (f • m) = (aeval a f • (of R M a).symm m) := by rfl
 
 lemma X_smul₁ (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
   rw [smul_def₁, aeval_X]
