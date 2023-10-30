@@ -591,7 +591,7 @@ variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
-  ((Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm).rank_eq.trans <| by
+  (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
     rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
     letI := Module.nontrivial F E
     exact linearIndependent_singleton one_ne_zero
