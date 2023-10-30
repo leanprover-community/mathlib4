@@ -69,9 +69,9 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     match h : l.lookup v with
     | none => ⟨var v, ◾⟩
     | some b => ⟨lit b, ◾⟩
-  | .ite (lit true)   t e => have := normalize l t; ◾
-  | .ite (lit false)  t e => have := normalize l e; ◾
-  | .ite (.ite a b c) t e => have := normalize l (.ite a (.ite b t e) (.ite c t e)); ◾
+  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.1, ◾⟩
+  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, ◾⟩
+  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, ◾⟩
   | .ite (var v)      t e =>
     match h : l.lookup v with
     | none =>
@@ -99,7 +99,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
           have := he₃ w
           by_cases w = v <;> ◾⟩
     | some b =>
-      have := normalize l (.ite (lit b) t e); ◾
+      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
   termination_by normalize e => e.normSize
 
 /-
