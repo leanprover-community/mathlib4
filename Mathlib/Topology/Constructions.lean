@@ -1025,7 +1025,7 @@ theorem IsOpenMap.restrict {f : α → β} (hf : IsOpenMap f) {s : Set α} (hs :
   hf.comp hs.isOpenMap_subtype_val
 #align is_open_map.restrict IsOpenMap.restrict
 
-lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Set β) :
+nonrec lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Set β) :
     IsClosedMap (T.restrictPreimage f) := by
   rw [isClosedMap_iff_clusterPt] at hcl ⊢
   intro A ⟨y, hyT⟩ hy
