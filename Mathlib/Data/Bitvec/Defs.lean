@@ -50,7 +50,6 @@ namespace Std.BitVec
 #align bitvec.slt Std.BitVec.slt
 #align bitvec.sle Std.BitVec.sle
 #align bitvec.of_nat Std.BitVec.ofNat
-#align bitvec.add_lsb Nat.bit
 #align bitvec.to_nat Std.BitVec.toNat
 #align bitvec.of_fin Std.BitVec.ofFin
 #align bitvec.to_fin Std.BitVec.toFin
@@ -121,5 +120,10 @@ def sbb {n} (x y : BitVec n) (b : Bool) : Bool × BitVec n :=
   (x < y, x - y)
 #align bitvec.sbb Std.BitVec.sbb
 
+/-- `add_lsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
+def addLsb (r : ℕ) (b : Bool) :=
+  Nat.bit b r
+
+#align bitvec.add_lsb Std.BitVec.addLsb
 
 end Std.BitVec

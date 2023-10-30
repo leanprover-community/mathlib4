@@ -47,18 +47,8 @@ lemma toNat_ofNat {m} (h : m < 2^w) : (BitVec.ofNat w m).toNat = m := Fin.val_ca
 lemma toNat_ofFin (x : Fin (2^w)) : (ofFin x).toNat = x.val := rfl
 
 @[simp]
-lemma ofNat_toNat (x : BitVec w) : BitVec.ofNat w x.toNat = x := by
-  rcases x with ⟨x⟩
-  simp [BitVec.ofNat]
-  apply Fin.cast_val_eq_self x
-
-@[simp]
 lemma cast_eq (x : BitVec w) : x.cast rfl = x :=
   rfl
-
-lemma ofNat_toNat' (x : BitVec w) (h : w = v):
-    BitVec.ofNat v x.toNat = x.cast h := by
-  cases h; rw [ofNat_toNat, cast_eq]
 
 theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
     (msbs ++ lsbs).toNat = msbs.toNat <<< v ||| lsbs.toNat := by
@@ -80,5 +70,80 @@ theorem getLsb_eq_testBit {i} {x : BitVec w} : getLsb x i = x.toNat.testBit i :=
   simp only [getLsb, Nat.shiftLeft_eq, one_mul, Nat.and_two_pow]
   cases' testBit (BitVec.toNat x) i
   <;> simp [pos_iff_ne_zero.mp (two_pow_pos i)]
+
+theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val := by
+  rfl
+#align bitvec.of_fin_val Std.BitVec.ofFin_val
+
+theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
+  simp [addLsb, two_mul]
+#align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
+
+theorem eq_foldr_reverse (v : Nat) :
+  v = v.bits.reverse.foldr bit 0 := by
+  simp
+  induction v
+  simp
+  rename_i n n_ih
+
+
+
+
+  sorry
+
+theorem toNat_eq_foldr_reverse {n : ℕ} (v : BitVec n) :
+    v.toNat = v.toNat.bits.reverse.foldr bit 0 := by
+    rw [←eq_foldr_reverse]
+#align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldr_reverse
+
+theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
+  exact v.toFin.2
+#align bitvec.to_nat_lt Std.BitVec.toNat_lt
+
+theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
+  unfold addLsb
+  rw [← Nat.div2_val, Nat.div2_bit]
+#align bitvec.add_lsb_div_two Std.BitVec.addLsb_div_two
+
+theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
+  cases b <;>  simp [addLsb, bit0, bit1]
+  · rw [decide_eq_false_iff_not, ←two_mul, Nat.mul_mod_right]
+    decide
+  · rw [decide_eq_true_iff, ←two_mul, add_comm, Nat.add_mul_mod_self_left]
+    decide
+#align bitvec.to_bool_add_lsb_mod_two Std.BitVec.decide_addLsb_mod_two
+
+@[simp]
+lemma ofNat_toNat (x : BitVec w) : BitVec.ofNat w x.toNat = x := by
+  rcases x with ⟨x⟩
+  simp [BitVec.ofNat]
+  apply Fin.cast_val_eq_self x
+#align bitvec.of_nat_to_nat Std.BitVec.ofNat_toNat
+
+lemma ofNat_toNat' (x : BitVec w) (h : w = v):
+    BitVec.ofNat v x.toNat = x.cast h := by
+  cases h; rw [ofNat_toNat, cast_eq]
+
+theorem toFin_val {n : ℕ} (v : BitVec n) : (toFin v : ℕ) = v.toNat := by
+  rfl
+#align bitvec.to_fin_val Std.BitVec.toFin_val
+
+theorem toFin_le_toFin_of_le {n} {v₀ v₁ : BitVec n} (h : v₀ ≤ v₁) : v₀.toFin ≤ v₁.toFin :=
+  show (v₀.toFin : ℕ) ≤ v₁.toFin by
+    rw [toFin_val, toFin_val]
+    exact h
+#align bitvec.to_fin_le_to_fin_of_le Std.BitVec.toFin_le_toFin_of_le
+
+theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin i ≤ ofFin j := by
+  exact h
+#align bitvec.of_fin_le_of_fin_of_le Std.BitVec.ofFin_le_ofFin_of_le
+
+theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
+  Fin.eq_of_veq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
+#align bitvec.to_fin_of_fin Std.BitVec.toFin_ofFin
+
+theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
+  rfl
+#align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
 end Std.BitVec
