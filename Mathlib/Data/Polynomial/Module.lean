@@ -70,7 +70,8 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
 lemma X_smul_of (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
   rw [←of_aeval_smul, aeval_X]
 
-lemma of_symm_X_smul (m : AEval R M a) : (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
+lemma of_symm_X_smul (m : AEval R M a) :
+    (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
   rw [of_symm_smul, aeval_X]
 
 instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
