@@ -643,7 +643,6 @@ theorem mem_compPartialSumTarget_iff {m M N : ℕ} {a : Σ n, Composition n} :
   by simp [compPartialSumTarget, compPartialSumTargetSet]
 #align formal_multilinear_series.mem_comp_partial_sum_target_iff FormalMultilinearSeries.mem_compPartialSumTarget_iff
 
-set_option linter.deprecated false in
 /-- `comp_change_of_variables m M N` is a bijection between `comp_partial_sum_source m M N`
 and `comp_partial_sum_target m M N`, yielding equal sums for functions that correspond to each
 other under the bijection. As `comp_change_of_variables m M N` is a dependent function, stating
@@ -664,13 +663,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     simp only [mem_compPartialSumTarget_iff, Composition.length, Composition.blocks, H.left,
       map_ofFn, length_ofFn, true_and_iff, compChangeOfVariables]
     intro j
-    -- Porting note: the following `simp` was sufficient in lean 3.
-    simp only [Composition.blocksFun, (H.right _).right, List.nthLe_ofFn]
-    convert (H.right ⟨j, ?_⟩).right
-    · convert List.nthLe_ofFn _ _ using 2
-      rfl
-    · apply j.prop.trans_eq
-      simp [Composition.length]
+    simp only [Composition.blocksFun, (H.right _).right, List.get_ofFn]
   -- 2 - show that the composition gives the `comp_along_composition` application
   · rintro ⟨k, blocks_fun⟩ H
     rw [h]
@@ -1017,8 +1010,6 @@ theorem length_gather (a : Composition n) (b : Composition a.length) :
     rw [length_map, length_splitWrtComposition]
 #align composition.length_gather Composition.length_gather
 
--- porting note: this needs `Composition.blocksFun` to be refactored in order to remove `nthLe`
-set_option linter.deprecated false in
 /-- An auxiliary function used in the definition of `sigmaEquivSigmaPi` below, associating to
 two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by the length of
 `a.gather b`, the subcomposition of `a` made of those blocks belonging to the `i`-th block of
