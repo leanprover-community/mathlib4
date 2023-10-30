@@ -64,7 +64,8 @@ theorem NatTrans.Equifibered.comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H
 #align category_theory.nat_trans.equifibered.comp CategoryTheory.NatTrans.Equifibered.comp
 
 theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : Equifibered α)
-    (H : C ⥤ D) [PreservesLimitsOfShape WalkingCospan H] : Equifibered (whiskerRight α H) :=
+    (H : C ⥤ D) [∀ (i j : J) (f : j ⟶ i), PreservesLimit (cospan (α.app i) (G.map f)) H] :
+    Equifibered (whiskerRight α H) :=
   fun _ _ f => (hα f).map H
 #align category_theory.nat_trans.equifibered.whisker_right CategoryTheory.NatTrans.Equifibered.whiskerRight
 
@@ -192,9 +193,20 @@ theorem IsVanKampenColimit.precompose_isIso_iff {F G : J ⥤ C} (α : F ⟶ G) [
     (Cocones.ext (Iso.refl _) (by simp)),
     IsVanKampenColimit.precompose_isIso α⟩
 
+theorem IsUniversalColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
+    [PreservesLimitsOfShape WalkingCospan G] [ReflectsColimitsOfShape J G]
+    (hc : IsUniversalColimit (G.mapCocone c)) : IsUniversalColimit c :=
+  fun F' c' α f h hα H ↦
+    ⟨ReflectsColimit.reflects (hc (G.mapCocone c') (whiskerRight α G) (G.map f)
+    (by ext j; simpa using G.congr_map (NatTrans.congr_app h j))
+    (hα.whiskerRight G) (fun j ↦ (H j).map G)).some⟩
+
 theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
-    [PreservesLimitsOfShape WalkingCospan G] [ReflectsLimitsOfShape WalkingCospan G]
-    [PreservesColimitsOfShape J G] [ReflectsColimitsOfShape J G]
+    [∀ (i j : J) (X : C) (f : X ⟶ F.obj j) (g : i ⟶ j), PreservesLimit (cospan f (F.map g)) G]
+    [∀ (i : J) (X : C) (f : X ⟶ c.pt), PreservesLimit (cospan f (c.ι.app i)) G]
+    [ReflectsLimitsOfShape WalkingCospan G]
+    [PreservesColimitsOfShape J G]
+    [ReflectsColimitsOfShape J G]
     (H : IsVanKampenColimit (G.mapCocone c)) : IsVanKampenColimit c := by
   intro F' c' α f h hα
   refine' (Iff.trans _ (H (G.mapCocone c') (whiskerRight α G) (G.map f)
@@ -290,14 +302,18 @@ end Functor
 section reflective
 
 theorem IsUniversalColimit.map_reflective
-    [HasPullbacks C] [HasPullbacks D]
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
-    [PreservesLimitsOfShape WalkingCospan Gl] {F : J ⥤ D} {c : Cocone (F ⋙ Gr)}
-    (H : IsUniversalColimit c) :
+    {F : J ⥤ D} {c : Cocone (F ⋙ Gr)}
+    (H : IsUniversalColimit c)
+    [∀ X (f : X ⟶ Gl.obj c.pt), HasPullback (Gr.map f) (adj.unit.app c.pt)]
+    [∀ X (f : X ⟶ Gl.obj c.pt), PreservesLimit (cospan (Gr.map f) (adj.unit.app c.pt)) Gl] :
     IsUniversalColimit (Gl.mapCocone c) := by
   have := adj.rightAdjointPreservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
   intros F' c' α f h hα hc'
+  have : HasPullback (Gl.map (Gr.map f)) (Gl.map (adj.unit.app c.pt)) :=
+    ⟨⟨_, isLimitPullbackConeMapOfIsLimit _ pullback.condition
+      (IsPullback.of_hasPullback _ _).isLimit⟩⟩
   let α' := α ≫ (Functor.associator _ _ _).hom ≫ whiskerLeft F adj.counit ≫ F.rightUnitor.hom
   have hα' : NatTrans.Equifibered α' := hα.comp (NatTrans.equifibered_of_isIso _)
   have hadj : ∀ X, Gl.map (adj.unit.app X) = inv (adj.counit.app _)
@@ -389,10 +405,11 @@ theorem IsUniversalColimit.map_reflective
         pullback.lift_snd]
 
 theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
-    [HasPullbacks C] [HasPullbacks D]
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
-    [PreservesLimitsOfShape WalkingCospan Gl]
-    {F : J ⥤ D} {c : Cocone (F ⋙ Gr)} (H : IsVanKampenColimit c) :
+    {F : J ⥤ D} {c : Cocone (F ⋙ Gr)} (H : IsVanKampenColimit c)
+    [∀ X (f : X ⟶ Gl.obj c.pt), HasPullback (Gr.map f) (adj.unit.app c.pt)]
+    [∀ X (f : X ⟶ Gl.obj c.pt), PreservesLimit (cospan (Gr.map f) (adj.unit.app c.pt)) Gl]
+    [∀ X i (f : X ⟶ c.pt), PreservesLimit (cospan f (c.ι.app i)) Gl] :
     IsVanKampenColimit (Gl.mapCocone c) := by
   have := adj.rightAdjointPreservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
