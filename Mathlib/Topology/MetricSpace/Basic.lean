@@ -538,6 +538,9 @@ theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
 theorem sphere_subset_closedBall : sphere x ε ⊆ closedBall x ε := fun _ => le_of_eq
 #align metric.sphere_subset_closed_ball Metric.sphere_subset_closedBall
 
+lemma sphere_subset_ball {r R : ℝ} (h : r < R) : sphere x r ⊆ ball x R := fun _x hx ↦
+  (mem_sphere.1 hx).trans_lt h
+
 theorem closedBall_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (closedBall x δ) (ball y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
     (h.trans <| dist_triangle_left _ _ _).not_lt <| add_lt_add_of_le_of_lt ha1 ha2
