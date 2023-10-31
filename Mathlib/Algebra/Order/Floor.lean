@@ -658,6 +658,7 @@ notation "⌊" a "⌋" => Int.floor a
 notation "⌈" a "⌉" => Int.ceil a
 
 -- Mathematical notation for `fract a` is usually `{a}`. Let's not even go there.
+
 @[simp]
 theorem floorRing_floor_eq : @FloorRing.floor = @Int.floor :=
   rfl
