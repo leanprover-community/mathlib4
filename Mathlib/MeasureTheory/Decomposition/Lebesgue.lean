@@ -96,6 +96,16 @@ irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).2 else 0
 #align measure_theory.measure.rn_deriv MeasureTheory.Measure.rnDeriv
 
+lemma singularPart_of_not_haveLebesgueDecomposition {μ ν : Measure α}
+    (h : ¬ HaveLebesgueDecomposition μ ν) :
+    μ.singularPart ν = 0 := by
+  rw [singularPart]; exact dif_neg h
+
+lemma rnDeriv_of_not_haveLebesgueDecomposition {μ ν : Measure α}
+    (h : ¬ HaveLebesgueDecomposition μ ν) :
+    μ.rnDeriv ν = 0 := by
+  rw [rnDeriv]; exact dif_neg h
+
 theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDecomposition μ ν] :
     Measurable (μ.rnDeriv ν) ∧
       μ.singularPart ν ⟂ₘ ν ∧ μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) := by
@@ -173,22 +183,30 @@ theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv
 #align measure_theory.measure.with_density_rn_deriv_le MeasureTheory.Measure.withDensity_rnDeriv_le
 
 @[simp]
-lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [ν.HaveLebesgueDecomposition μ] :
-    μ.withDensity (ν.rnDeriv μ) = 0 ↔ μ ⟂ₘ ν := by
-  have h_dec := haveLebesgueDecomposition_add ν μ
+lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
+    ν.withDensity (μ.rnDeriv ν) = 0 ↔ μ ⟂ₘ ν := by
+  have h_dec := haveLebesgueDecomposition_add μ ν
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [h, add_zero] at h_dec
     rw [h_dec]
-    exact (mutuallySingular_singularPart ν μ).symm
-  · rw [h_dec, MutuallySingular.add_right_iff] at h
-    rw [← MutuallySingular.self_iff]
-    refine MutuallySingular.mono_ac h.2 ?_ AbsolutelyContinuous.rfl
+    exact mutuallySingular_singularPart μ ν
+  · rw [← MutuallySingular.self_iff]
+    rw [h_dec, MutuallySingular.add_left_iff] at h
+    refine MutuallySingular.mono_ac h.2 AbsolutelyContinuous.rfl ?_
     exact withDensity_absolutelyContinuous _ _
 
 @[simp]
-lemma rnDeriv_eq_zero (μ ν : Measure α) [ν.HaveLebesgueDecomposition μ] :
-    ν.rnDeriv μ =ᵐ[μ] 0 ↔ μ ⟂ₘ ν := by
-  rw [← withDensity_rnDeriv_eq_zero, withDensity_eq_zero_iff (measurable_rnDeriv _ _).aemeasurable]
+lemma rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
+    μ.rnDeriv ν =ᵐ[ν] 0 ↔ μ ⟂ₘ ν := by
+  rw [← withDensity_rnDeriv_eq_zero,
+    withDensity_eq_zero_iff (measurable_rnDeriv _ _).aemeasurable]
+
+lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} (hμν : μ ⟂ₘ ν) :
+    μ.rnDeriv ν =ᵐ[ν] 0 := by
+  by_cases h : μ.HaveLebesgueDecomposition ν
+  · rw [rnDeriv_eq_zero]
+    exact hμν
+  · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
 
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
@@ -531,11 +549,6 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
   · exact (lintegral_rnDeriv_lt_top (ν₁ + ν₂) μ).ne
-
-lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} [SigmaFinite ν] (hμν : μ ⟂ₘ ν) :
-    μ.rnDeriv ν =ᵐ[ν] 0 := by
-  refine (Measure.eq_rnDeriv measurable_zero hμν ?_).symm
-  rw [withDensity_zero, add_zero]
 
 open VectorMeasure SignedMeasure
 
