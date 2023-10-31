@@ -499,9 +499,9 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
   h₃ := h.h₀.op
   h₀_f := Quiver.Hom.unop_inj h.g_h₃
   g_h₃ := Quiver.Hom.unop_inj h.h₀_f
-  comm₁ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₃] ; abel)
-  comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂] ; abel)
-  comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁] ; abel)
+  comm₁ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₃]; abel)
+  comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂]; abel)
+  comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁]; abel)
 
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
