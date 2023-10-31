@@ -145,7 +145,7 @@ theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M
         rw [neg_mul, mul_neg, mul_one, mul_neg, neg_mul, neg_mul]
         rw [(natCast_mem_center _ n).mid_assoc _ _]
         simp only [mul_neg]
-  right_assoc a b := match n with
+  right_assoc _ _ := match n with
     | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).right_assoc _ _]
     | Int.negSucc n => by
         simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]
@@ -208,7 +208,7 @@ theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center 
 
 @[to_additive subset_addCenter_add_units]
 theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
-  fun a ha => by
+  fun _ ha => by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
   rw [←Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
@@ -216,7 +216,7 @@ theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆
 #align set.subset_add_center_add_units Set.subset_addCenter_add_units
 
 theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ → M) ⁻¹' center M :=
-  fun a ha => by
+  fun _ ha => by
     rw [mem_preimage, _root_.Semigroup.mem_center_iff]
     intro b
     obtain rfl | hb := eq_or_ne b 0
@@ -269,12 +269,7 @@ variable (M)
 
 @[to_additive (attr := simp) addCenter_eq_univ]
 theorem center_eq_univ [CommSemigroup M] : center M = Set.univ :=
-  (Subset.antisymm (subset_univ _)) (by
-    intros _ _
-    rw [_root_.Semigroup.mem_center_iff]
-    intro _
-    rw [mul_comm]
-    )
+  (Subset.antisymm (subset_univ _)) fun _ _ => Semigroup.mem_center_iff.mpr (fun _ => mul_comm _ _)
 #align set.center_eq_univ Set.center_eq_univ
 #align set.add_center_eq_univ Set.addCenter_eq_univ
 
