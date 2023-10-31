@@ -40,7 +40,7 @@ variable (C : Type*) [Category C]
 abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 
 /-- The type of `n`-simplices in the simplicial set `nerve C` is
-definitionaly equal to `ComposableArrows C n`. -/
+definitionally equal to `ComposableArrows C n`. -/
 example (n : ℕ) :
   (nerve C).obj (Opposite.op (SimplexCategory.mk n)) = ComposableArrows C n := rfl
 
