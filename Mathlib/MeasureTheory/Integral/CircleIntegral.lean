@@ -308,7 +308,11 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     refine' not_intervalIntegrable_of_sub_inv_isBigO_punctured _ Real.two_pi_pos.ne hθ
     set f : ℝ → ℂ := fun θ' => circleMap c R θ' - circleMap c R θ
     have : ∀ᶠ θ' in 𝓝[≠] θ, f θ' ∈ ball (0 : ℂ) 1 \ {0} := by
-      suffices : ∀ᶠ z in 𝓝[≠] circleMap c R θ, z - circleMap c R θ ∈ ball (0 : ℂ) 1 \ {0}
+      -- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+      -- I have replaced `𝓝[≠] circleMap c R θ` with
+      -- `(nhdsWithin (circleMap c R θ) {circleMap c R θ}ᶜ)` as a workaround.
+      suffices : ∀ᶠ z in (nhdsWithin (circleMap c R θ) {circleMap c R θ}ᶜ),
+        z - circleMap c R θ ∈ ball (0 : ℂ) 1 \ {0}
       exact ((differentiable_circleMap c R θ).hasDerivAt.tendsto_punctured_nhds
         (deriv_circleMap_ne_zero hR)).eventually this
       filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds (ball_mem_nhds _ zero_lt_one)]

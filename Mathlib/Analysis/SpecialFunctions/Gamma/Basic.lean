@@ -450,7 +450,10 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
 end GammaHasDeriv
 
 /-- At `s = 0`, the Gamma function has a simple pole with residue 1. -/
-theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) (𝓝[≠] 0) (𝓝 1) := by
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- I have replaced `(𝓝[≠] 0)` with `(nhdsWithin 0 {0}ᶜ)` as a workaround.
+theorem tendsto_self_mul_Gamma_nhds_zero :
+    Tendsto (fun z : ℂ => z * Gamma z) (nhdsWithin 0 {0}ᶜ) (𝓝 1) := by
   rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp only [zero_add, Complex.Gamma_one]]
   convert (Tendsto.mono_left _ nhdsWithin_le_nhds).congr'
     (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one)

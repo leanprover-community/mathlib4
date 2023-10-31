@@ -40,14 +40,20 @@ theorem tendsto_abs_tan_of_cos_eq_zero {x : ℂ} (hx : cos x = 0) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
   simp only [tan_eq_sin_div_cos, ← norm_eq_abs, norm_div]
   have A : sin x ≠ 0 := fun h => by simpa [*, sq] using sin_sq_add_cos_sq x
-  have B : Tendsto cos (𝓝[≠] x) (𝓝[≠] 0) :=
+  -- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+  -- I have replaced `(𝓝[≠] 0)` with `(nhdsWithin 0 {0}ᶜ)` as a workaround.
+  have B : Tendsto cos (𝓝[≠] x) (nhdsWithin 0 {0}ᶜ) :=
     hx ▸ (hasDerivAt_cos x).tendsto_punctured_nhds (neg_ne_zero.2 A)
   exact continuous_sin.continuousWithinAt.norm.mul_atTop (norm_pos_iff.2 A)
     (tendsto_norm_nhdsWithin_zero.comp B).inv_tendsto_zero
 #align complex.tendsto_abs_tan_of_cos_eq_zero Complex.tendsto_abs_tan_of_cos_eq_zero
 
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- I have replaced `(𝓝[≠] ((2 * k + 1) * π / 2 : ℂ))` with
+-- `(nhdsWithin ((2 * k + 1) * π / 2 : ℂ) {((2 * k + 1) * π / 2 : ℂ)}ᶜ)` as a workaround.
 theorem tendsto_abs_tan_atTop (k : ℤ) :
-    Tendsto (fun x => abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2 : ℂ)) atTop :=
+    Tendsto (fun x => abs (tan x))
+      (nhdsWithin ((2 * k + 1) * π / 2 : ℂ) {((2 * k + 1) * π / 2 : ℂ)}ᶜ) atTop :=
   tendsto_abs_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 #align complex.tendsto_abs_tan_at_top Complex.tendsto_abs_tan_atTop
 

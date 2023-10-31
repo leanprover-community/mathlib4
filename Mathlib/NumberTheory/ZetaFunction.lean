@@ -344,29 +344,33 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
     · refine differentiable_one_div_Gamma.differentiableAt.comp t ?_
       exact DifferentiableAt.div_const differentiableAt_id _
   -- Second claim: the limit at `s = 0` exists and is equal to `-1 / 2`.
+  -- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+  -- I have replaced `(𝓝[≠] 0)` with `(nhdsWithin 0 {0}ᶜ)` (five times below) as a workaround.
   have c2 : Tendsto (fun s : ℂ => (π : ℂ) ^ (s / 2) * riemannCompletedZeta s / Gamma (s / 2))
-      (𝓝[≠] 0) (𝓝 <| -1 / 2) := by
+      (nhdsWithin 0 {0}ᶜ) (𝓝 <| -1 / 2) := by
     have h1 : Tendsto (fun z : ℂ => (π : ℂ) ^ (z / 2)) (𝓝 0) (𝓝 1) := by
       convert (ContinuousAt.comp (f := fun z => z/2)
         (continuousAt_const_cpow (ofReal_ne_zero.mpr pi_pos.ne')) ?_).tendsto using 2
       · simp_rw [Function.comp_apply, zero_div, cpow_zero]
       · exact continuousAt_id.div continuousAt_const two_ne_zero
-    suffices h2 : Tendsto (fun z => riemannCompletedZeta z / Gamma (z / 2)) (𝓝[≠] 0) (𝓝 <| -1 / 2)
+    suffices h2 : Tendsto (fun z => riemannCompletedZeta z / Gamma (z / 2)) (nhdsWithin 0 {0}ᶜ)
+      (𝓝 <| -1 / 2)
     · convert (h1.mono_left nhdsWithin_le_nhds).mul h2 using 1
       · ext1 x; rw [mul_div]
       · simp only [one_mul]
     suffices h3 :
-      Tendsto (fun z => riemannCompletedZeta z * (z / 2) / (z / 2 * Gamma (z / 2))) (𝓝[≠] 0)
-        (𝓝 <| -1 / 2)
+      Tendsto (fun z => riemannCompletedZeta z * (z / 2) / (z / 2 * Gamma (z / 2)))
+        (nhdsWithin 0 {0}ᶜ) (𝓝 <| -1 / 2)
     · refine Tendsto.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun z hz => ?_) h3
       rw [← div_div, mul_div_cancel _ (div_ne_zero hz two_ne_zero)]
-    have h4 : Tendsto (fun z : ℂ => z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
+    have h4 : Tendsto (fun z : ℂ => z / 2 * Gamma (z / 2)) (nhdsWithin 0 {0}ᶜ) (𝓝 1) := by
       refine tendsto_self_mul_Gamma_nhds_zero.comp ?_
       rw [tendsto_nhdsWithin_iff, (by simp : 𝓝 (0 : ℂ) = 𝓝 (0 / 2))]
       exact
         ⟨(tendsto_id.div_const _).mono_left nhdsWithin_le_nhds,
           eventually_of_mem self_mem_nhdsWithin fun x hx => div_ne_zero hx two_ne_zero⟩
-    suffices Tendsto (fun z => riemannCompletedZeta z * z / 2) (𝓝[≠] 0) (𝓝 (-1 / 2 : ℂ)) by
+    suffices Tendsto (fun z => riemannCompletedZeta z * z / 2) (nhdsWithin 0 {0}ᶜ)
+        (𝓝 (-1 / 2 : ℂ)) by
       have := this.div h4 one_ne_zero
       simp_rw [div_one, mul_div_assoc] at this
       exact this

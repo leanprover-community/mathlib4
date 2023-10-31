@@ -42,8 +42,12 @@ theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
   exact tendsto_principal_principal.2 fun y => mt Complex.ofReal_inj.1
 #align real.tendsto_abs_tan_of_cos_eq_zero Real.tendsto_abs_tan_of_cos_eq_zero
 
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- I have replaced `(𝓝[≠] ((2 * k + 1) * π / 2))` with
+-- `(nhdsWithin ((2 * k + 1) * π / 2) {((2 * k + 1) * π / 2)}ᶜ)` as a workaround.
 theorem tendsto_abs_tan_atTop (k : ℤ) :
-    Tendsto (fun x => abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2)) atTop :=
+    Tendsto (fun x => abs (tan x)) (nhdsWithin ((2 * k + 1) * π / 2) {((2 * k + 1) * π / 2)}ᶜ)
+      atTop :=
   tendsto_abs_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 #align real.tendsto_abs_tan_at_top Real.tendsto_abs_tan_atTop
 
