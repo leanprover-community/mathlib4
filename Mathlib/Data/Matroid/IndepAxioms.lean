@@ -287,7 +287,6 @@ instance matroid_of_indep_of_finitary_finitary (E : Set α) (Indep : Set α → 
 theorem existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     (hP : ∃ (n : ℕ), ∀ Y, P Y → Y.encard ≤ n) (X : Set α) : ExistsMaximalSubsetProperty P X := by
   obtain ⟨n, hP⟩ := hP
-
   rintro I hI hIX
   have hfin : Set.Finite (ncard '' {Y | P Y ∧ I ⊆ Y ∧ Y ⊆ X})
   · rw [finite_iff_bddAbove, bddAbove_def]
@@ -322,8 +321,8 @@ def matroid_of_indep_of_bdd (E : Set α) (Indep : Set α → Prop) (h_empty : In
     (matroid_of_indep_of_bdd E Indep h_empty h_subset h_aug h_bdd h_support).Indep = Indep := by
   simp [matroid_of_indep_of_bdd]
 
-@[simp] theorem matroid_of_indep_of_bdd_ground (E : Set α) (Indep : Set α → Prop) (h_empty : Indep ∅)
-    (h_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
+@[simp] theorem matroid_of_indep_of_bdd_ground (E : Set α) (Indep : Set α → Prop)
+    (h_empty : Indep ∅) (h_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (h_aug : ∀⦃I B⦄, Indep I → I ∉ maximals (· ⊆ ·) (setOf Indep) →
       B ∈ maximals (· ⊆ ·) (setOf Indep) → ∃ x ∈ B \ I, Indep (insert x I))
     (h_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n) (h_support : ∀ I, Indep I → I ⊆ E) :
@@ -400,7 +399,7 @@ instance matroid_of_indep_of_bdd_finiteRk (E : Set α) (Indep : Set α → Prop)
 def matroid_of_exists_finite_base {α : Type _} (E : Set α) (Base : Set α → Prop)
     (exists_finite_base : ∃ B, Base B ∧ B.Finite) (base_exchange : ExchangeProperty Base)
     (support : ∀ B, Base B → B ⊆ E) : Matroid α :=
-    matroid_of_base E Base
+  matroid_of_base E Base
     (by { obtain ⟨B,h⟩ := exists_finite_base; exact ⟨B,h.1⟩ }) base_exchange
     (by {
       obtain ⟨B, hB, hfin⟩ := exists_finite_base
@@ -456,11 +455,11 @@ def matroid_of_indep_of_finite {E : Set α} (hE : E.Finite) (Indep : Set α → 
     (ind_aug : ∀ ⦃I J⦄, Indep I → Indep J → I.ncard < J.ncard → ∃ e ∈ J, e ∉ I ∧ Indep (insert e I))
     (h_support : ∀ ⦃I⦄, Indep I → I ⊆ E) : Matroid α :=
   matroid_of_indep_of_bdd_augment E Indep h_empty ind_mono
-  ( fun I J hI hJ hlt ↦ ind_aug hI hJ ( by
+    ( fun I J hI hJ hlt ↦ ind_aug hI hJ ( by
       rwa [←Nat.cast_lt (α := ℕ∞), (hE.subset (h_support hJ)).cast_ncard_eq,
       (hE.subset (h_support hI)).cast_ncard_eq]) )
-  (⟨E.ncard, fun I hI ↦ by { rw [hE.cast_ncard_eq]; exact encard_mono (h_support hI) }⟩ )
-  h_support
+    (⟨E.ncard, fun I hI ↦ by { rw [hE.cast_ncard_eq]; exact encard_mono (h_support hI) }⟩ )
+    h_support
 
 @[simp] theorem matroid_of_indep_of_finite_apply {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
     (h_empty : Indep ∅)
