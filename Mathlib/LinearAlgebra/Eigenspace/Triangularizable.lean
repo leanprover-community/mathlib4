@@ -87,8 +87,11 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
     exact Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
   have hg₄ : SurjOn g
       ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) := by
-    -- Easy
-    sorry
+    have : MapsTo g
+        ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) :=
+      hg₁.inter_inter hg₂
+    rw [← LinearMap.injOn_iff_surjOn this]
+    exact hg₃.mono (inter_subset_right _ _)
   specialize hm₂ μ
   obtain ⟨y, ⟨hy₀ : y ∈ p, hy₁ : y ∈ ⨆ k, f.generalizedEigenspace μ k⟩, hy₂ : g y = g (m μ)⟩ :=
     hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩

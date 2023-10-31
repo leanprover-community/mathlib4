@@ -922,6 +922,13 @@ theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
         this).injective⟩
 #align linear_map.injective_iff_surjective LinearMap.injective_iff_surjective
 
+lemma injOn_iff_surjOn {p : Submodule K V} [FiniteDimensional K p]
+    {f : V →ₗ[K] V} (h : ∀ x ∈ p, f x ∈ p) :
+    Set.InjOn f p ↔ Set.SurjOn f p p := by
+  rw [Set.injOn_iff_injective, ← Set.surjective_mapsTo_restrict_iff (h := h)]
+  change Injective (f.domRestrict p) ↔ Surjective (f.restrict h)
+  simp [disjoint_iff, ← injective_iff_surjective]
+
 theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
