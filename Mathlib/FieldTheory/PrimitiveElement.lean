@@ -244,7 +244,7 @@ end SeparableAssumption
 
 section FiniteIntermediateField
 
--- TODO: generalize to 0 ≤ m ≠ n; show [F⟮α⟯ : F⟮α ^ m⟯] = m when m > 0.
+-- TODO: generalize to 0 ≤ m ≠ n; show [F⟮α⟯ : F⟮α ^ m⟯] = m if m > 0 and α transcendental.
 theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hm : 0 < m) (hmn : m < n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
   obtain ⟨r, s, h⟩ := (mem_adjoin_simple_iff F _).1 (heq ▸ mem_adjoin_simple_self F (α ^ m))
