@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Tactic.LibrarySearch
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -78,19 +79,9 @@ variable {M}
 
 @[to_additive]
 theorem _root_.Semigroup.mem_center_iff [Semigroup M] {z : M} :
-    z ∈ Set.center M ↔ ∀ g, g * z = z * g := by
-  constructor
-  · exact fun a g ↦ by rw [Set.IsMulCentral.comm a g]
-  · intro h
-    constructor
-    · intro _
-      rw [h]
-    · intros _ _
-      rw [mul_assoc]
-    · intros _ _
-      rw [mul_assoc]
-    · intros _ _
-      rw [mul_assoc]
+    z ∈ Set.center M ↔ ∀ g, g * z = z * g := ⟨fun a g ↦ by rw [Set.IsMulCentral.comm a g],
+  fun h ↦ ⟨fun _ ↦ (Commute.eq (h _)).symm, fun _ _ ↦ (mul_assoc z _ _).symm,
+  fun _ _ ↦ mul_assoc _ z _, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
 
 variable (M)
 
