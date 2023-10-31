@@ -42,7 +42,7 @@ abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 /-- The type of `n`-simplices in the simplicial set `nerve C` is
 definitionally equal to `ComposableArrows C n`. -/
 lemma nerve_obj_eq_composableArrows (n : ℕ) :
-  (nerve C).obj (Opposite.op (SimplexCategory.mk n)) = ComposableArrows C n := rfl
+    (nerve C).obj (Opposite.op (SimplexCategory.mk n)) = ComposableArrows C n := rfl
 
 namespace ComposableArrows
 
