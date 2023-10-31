@@ -1101,20 +1101,6 @@ lemma abs_im_eq_abs {z : ℂ} : |z.im| = abs z ↔ z.re = 0 :=
   not_iff_not.1 <| (abs_im_le_abs z).lt_iff_ne.symm.trans abs_im_lt_abs
 
 @[simp]
-lemma re_eq_abs {z : ℂ} : z.re = abs z ↔ 0 ≤ z.re ∧ z.im = 0 :=
-  have : 0 ≤ abs z := map_nonneg abs z
-  ⟨fun h ↦ ⟨h.symm ▸ this, abs_re_eq_abs.1 <| h.symm ▸ _root_.abs_of_nonneg this⟩,
-    fun ⟨h₁, h₂⟩ ↦ by rw [← abs_re_eq_abs.2 h₂, _root_.abs_of_nonneg h₁]⟩
-
-@[simp]
-lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z.re ≤ 0 ∧ z.im = 0 := by
-  rw [← neg_le_neg_iff, neg_zero, ← neg_eq_zero, ← neg_im, ← neg_re, ← re_eq_abs, map_neg_eq_map]
-
-@[simp]
-lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z.re ≤ 0 ∧ z.im = 0 := by
-  rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
-
-@[simp]
 theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
   _root_.abs_of_nonneg (AbsoluteValue.nonneg _ z)
 #align complex.abs_abs Complex.abs_abs
