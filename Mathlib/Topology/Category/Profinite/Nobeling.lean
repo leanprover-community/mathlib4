@@ -229,8 +229,8 @@ is `[i₁, i₂, ...]` with `i₁ > i₂ > ...`. We order `Products I` lexicogra
 so `[] < [i₁, ...]`, and `[i₁, i₂, ...] < [j₁, j₂, ...]` if either `i₁ < j₁`,
 or `i₁ = j₁` and `[i₂, ...] < [j₂, ...]`.
 
-Terms `[i₁, i₂, ..., iᵣ]` of this type will be used to represent products of
-the form `e C i₁ ··· e C iᵣ : C → ℤ` `. -/
+Terms `m = [i₁, i₂, ..., iᵣ]` of this type will be used to represent products of
+the form `e C i₁ ··· e C iᵣ : C → ℤ` . The function associated to `m` is `m.eval`.-/
 def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
 
 namespace Products
@@ -399,7 +399,23 @@ theorem GoodProducts.span_iff_products : ⊤ ≤ span ℤ (Set.range (eval C)) �
     exact h m hm
 
 end Products
+/-!
 
+## The good products span.
+
+Most of the argument is developing an API for `π C (· ∈ J)`
+when `J : Finset I`; then the image of `C` is finite
+with the discrete topology.
+In this case, there is a direct argument that
+the good products span. The general result is deduced
+from this.
+
+## Main theorems
+
+`GoodProducts.spanFin` : The good products span the locally constant
+functions on `π C (· ∈ J)` if `J` is finite.
+`GoodProducts.span` : The good products span as long as `C` is closed.
+-/
 section Span
 section Fin
 
@@ -450,8 +466,9 @@ theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis 
     mul_zero, Finsupp.sum_ite_eq, Finsupp.mem_support_iff, ne_eq, ite_not]
   split_ifs with h <;> [exact h.symm; rfl]
 
-/-- A list of locally constant maps whose product is `spanFinBasis C J x` (see
-    `factors_prod_eq_basis`) -/
+/-- A certain explicit list of locally constant maps. The theorem
+  `factors_prod_eq_basis` shows that the product of the elements in
+  this list is the delta function `spanFinBasis C J x`. -/
 def factors (x : π C (· ∈ J)) : List (LocallyConstant (π C (· ∈ J)) ℤ) :=
   List.map (fun i ↦ if x.val i = true then e (π C (· ∈ J)) i else (1 - (e (π C (· ∈ J)) i)))
     (J.sort (·≥·))
@@ -505,7 +522,8 @@ theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ J))} (h : y ≠ x) :
   · refine ⟨e (π C (· ∈ J)) a, ⟨e_mem_of_eq_true _ _ hx, ?_⟩⟩
     rw [hx] at ha
     rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.coe_mk, if_neg ha]
-
+/-- If `J` is finite, the product of the elements of the list `factors C J x`
+is the delta function at `x`. -/
 theorem factors_prod_eq_basis (x : π C (· ∈ J)) :
     (factors C J x).prod = spanFinBasis C J x := by
   ext y
@@ -530,7 +548,8 @@ theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
     simpa only [Finset.mem_coe, Finsupp.mem_support_iff] using hm
   refine ⟨⟨a :: m.val, ha.cons_of_le m.prop hmas⟩, ⟨List.cons_le_cons a hmas, ?_⟩⟩
   simp only [Products.eval, List.map, List.prod_cons]
-
+-- This is the main theorem of the `Fin` section
+/-- If `J` is a finite subset of `I`, then the good products span. -/
 theorem GoodProducts.spanFin : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ J)))) := by
   rw [span_iff_products]
   refine le_trans (spanFinBasis.span C J) ?_
