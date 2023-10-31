@@ -60,7 +60,7 @@ namespace Theorems100
 
 noncomputable section
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 
@@ -97,14 +97,14 @@ Every function in here is finitely supported, and the support is a subset of `s`
 This should be thought of as a generalisation of `Finset.Nat.antidiagonalTuple` where
 `antidiagonalTuple k n` is the same thing as `cut (s : Finset.univ (Fin k)) n`.
 -/
-def cut {ι : Type _} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
+def cut {ι : Type*} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
   Finset.filter (fun f => s.sum f = n)
     ((s.pi fun _ => range (n + 1)).map
       ⟨fun f i => if h : i ∈ s then f i h else 0, fun f g h => by
         ext i hi; simpa [dif_pos hi] using congr_fun h i⟩)
 #align theorems_100.cut Theorems100.cut
 
-theorem mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
+theorem mem_cut {ι : Type*} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
     f ∈ cut s n ↔ s.sum f = n ∧ ∀ i, i ∉ s → f i = 0 := by
   rw [cut, mem_filter, and_comm, and_congr_right]
   intro h
@@ -136,7 +136,7 @@ theorem cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
 
 /-- There is only one `cut` of 0. -/
 @[simp]
-theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
+theorem cut_zero {ι : Type*} (s : Finset ι) : cut s 0 = {0} := by
   -- In general it's nice to prove things using `mem_cut` but in this case it's easier to just
   -- use the definition.
   rw [cut, range_one, pi_const_singleton, map_singleton, Function.Embedding.coeFn_mk,
@@ -148,14 +148,14 @@ theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
 #align theorems_100.cut_zero Theorems100.cut_zero
 
 @[simp]
-theorem cut_empty_succ {ι : Type _} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
+theorem cut_empty_succ {ι : Type*} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
   apply eq_empty_of_forall_not_mem
   intro x hx
   rw [mem_cut, sum_empty] at hx
   cases hx.1
 #align theorems_100.cut_empty_succ Theorems100.cut_empty_succ
 
-theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
+theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     cut (insert a s) n =
       (Nat.antidiagonal n).biUnion fun p : ℕ × ℕ =>
         (cut s p.snd).map
@@ -192,7 +192,7 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
       simp [if_neg h₁, hg₂ _ h₂]
 #align theorems_100.cut_insert Theorems100.cut_insert
 
-theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι → PowerSeries α)
+theorem coeff_prod_range [CommSemiring α] {ι : Type*} (s : Finset ι) (f : ι → PowerSeries α)
     (n : ℕ) : coeff α n (∏ j in s, f j) = ∑ l in cut s n, ∏ i in s, coeff α (l i) (f i) := by
   revert n
   induction s using Finset.induction_on with
@@ -227,7 +227,7 @@ theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι
 #align theorems_100.coeff_prod_range Theorems100.coeff_prod_range
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
-def indicatorSeries (α : Type _) [Semiring α] (s : Set ℕ) : PowerSeries α :=
+def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 #align theorems_100.indicator_series Theorems100.indicatorSeries
 
@@ -309,7 +309,7 @@ def mkOdd : ℕ ↪ ℕ :=
 #align theorems_100.mk_odd Theorems100.mkOdd
 
 -- The main workhorse of the partition theorem proof.
-theorem partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
+theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>

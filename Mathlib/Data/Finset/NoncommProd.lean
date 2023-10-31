@@ -427,10 +427,11 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j _; dsimp
   · rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    simp
+    simp only [MonoidHom.single_apply, ne_eq, Pi.mulSingle_eq_same]
     · intro j hj
       simp at hj
-      simp [Pi.mulSingle, Function.update]
+      simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
+        ne_eq, dite_eq_right_iff]
       intro h
       simp [*] at *
 #align finset.noncomm_prod_mul_single Finset.noncommProd_mul_single

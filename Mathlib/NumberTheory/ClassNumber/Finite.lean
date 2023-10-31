@@ -99,7 +99,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   --   exact finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
   rw [← LinearMap.det_toMatrix bS]
   convert Matrix.det_sum_smul_le (n := ι) Finset.univ _ hy using 3
-  · simp [map_sum]; rfl
+  · simp; rfl
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'

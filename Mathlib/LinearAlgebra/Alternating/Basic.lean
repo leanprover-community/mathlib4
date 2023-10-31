@@ -954,7 +954,7 @@ theorem compMultilinearMap_alternatization (g : N' →ₗ[R] N'₂)
     MultilinearMap.alternatization (g.compMultilinearMap f)
       = g.compAlternatingMap (MultilinearMap.alternatization f) := by
   ext
-  simp [MultilinearMap.alternatization_def, map_sum]
+  simp [MultilinearMap.alternatization_def]
 #align linear_map.comp_multilinear_map_alternatization LinearMap.compMultilinearMap_alternatization
 
 end LinearMap

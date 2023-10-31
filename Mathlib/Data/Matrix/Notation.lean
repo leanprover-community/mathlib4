@@ -72,9 +72,29 @@ end toExpr
 section Parser
 open Lean Elab Term Macro TSyntax
 
+/-- Notation for m×n matrices, aka `Matrix (Fin m) (Fin n) α`.
+
+For instance:
+* `!![a, b, c; d, e, f]` is the matrix with two rows and three columns, of type
+  `Matrix (Fin 2) (Fin 3) α`
+* `!![a, b, c]` is a row vector of type `Matrix (Fin 1) (Fin 3) α` (see also `Matrix.row`).
+* `!![a; b; c]` is a column vector of type `Matrix (Fin 3) (Fin 1) α` (see also `Matrix.col`).
+
+This notation implements some special cases:
+
+* `![,,]`, with `n` `,`s, is a term of type `Matrix (Fin 0) (Fin n) α`
+* `![;;]`, with `m` `;`s, is a term of type `Matrix (Fin m) (Fin 0) α`
+* `![]` is the 0×0 matrix
+
+Note that vector notation is provided elsewhere (by `Matrix.vecNotation`) as `![a, b, c]`.
+Under the hood, `!![a, b, c; d, e, f]` is syntax for `Matrix.of ![![a, b, c], ![d, e, f]]`.
+-/
 syntax (name := matrixNotation)
   "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
+
+@[inherit_doc matrixNotation]
 syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
+@[inherit_doc matrixNotation]
 syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 
 macro_rules

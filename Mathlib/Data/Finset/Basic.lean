@@ -1198,6 +1198,9 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   insert_subset_iff.2 ⟨mem_insert_self _ _, Subset.trans h (subset_insert _ _)⟩
 #align finset.insert_subset_insert Finset.insert_subset_insert
 
+@[simp] lemma insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
+  simp_rw [←coe_subset]; simp [-coe_subset, ha]
+
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_not_mem_of_mem_insert (h.subst <| mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 #align finset.insert_inj Finset.insert_inj
@@ -2802,7 +2805,7 @@ theorem subset_coe_filter_of_subset_forall (s : Finset α) {t : Set α} (h₁ : 
 theorem filter_singleton (a : α) : filter p (singleton a) = if p a then singleton a else ∅ := by
   classical
     ext x
-    simp
+    simp only [mem_singleton, forall_eq, mem_filter]
     split_ifs with h <;> by_cases h' : x = a <;> simp [h, h']
 #align finset.filter_singleton Finset.filter_singleton
 
@@ -2930,7 +2933,7 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
     · intro x
       simp
     · intro x
-      simp
+      simp only [not_not, coe_filter, Set.mem_setOf_eq, Set.mem_diff, and_imp]
       intro hx hx₂
       refine' ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 #align finset.subset_union_elim Finset.subset_union_elim
@@ -3723,7 +3726,7 @@ theorem biUnion_filter_eq_of_maps_to [DecidableEq α] {s : Finset α} {t : Finse
 theorem erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
     (s.biUnion f).erase b = s.biUnion fun x => (f x).erase b := by
   ext a
-  simp [Finset.mem_biUnion, iff_self_iff, exists_and_left, Finset.mem_erase]
+  simp only [mem_biUnion, not_exists, not_and, mem_erase, ne_eq]
   tauto
 #align finset.erase_bUnion Finset.erase_biUnion
 

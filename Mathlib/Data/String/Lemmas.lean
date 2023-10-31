@@ -29,10 +29,10 @@ lemma length_eq_list_length (l : List Char) : (String.mk l).length = l.length :=
     ∀ (s : String), (leftpad n c s).length = max n s.length
   | ⟨s⟩ => by simp only [leftpad, String.length, List.leftpad_length]
 
-lemma leftpad_prefix (n : ℕ) (c : Char) : ∀ s, isPrefix (replicate (n - length s) c) (leftpad n c s)
-  | ⟨l⟩ => by simp only [isPrefix, replicate, leftpad, String.length, List.leftpad_prefix]
+lemma leftpad_prefix (n : ℕ) (c : Char) : ∀ s, IsPrefix (replicate (n - length s) c) (leftpad n c s)
+  | ⟨l⟩ => by simp only [IsPrefix, replicate, leftpad, String.length, List.leftpad_prefix]
 
-lemma leftpad_suffix (n : ℕ) (c : Char) : ∀ s, isSuffix s (leftpad n c s)
-  | ⟨l⟩ => by simp only [isSuffix, replicate, leftpad, String.length, List.leftpad_suffix]
+lemma leftpad_suffix (n : ℕ) (c : Char) : ∀ s, IsSuffix s (leftpad n c s)
+  | ⟨l⟩ => by simp only [IsSuffix, replicate, leftpad, String.length, List.leftpad_suffix]
 
 end String
