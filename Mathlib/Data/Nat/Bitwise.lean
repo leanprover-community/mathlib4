@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.Linarith
 
