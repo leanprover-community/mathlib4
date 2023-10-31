@@ -409,6 +409,14 @@ theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f
 alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
 #align has_fderiv_within_at.has_fderiv_at_of_univ HasFDerivWithinAt.hasFDerivAt_of_univ
 
+theorem hasFDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
+    HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
+  rw [HasFDerivAt, HasFDerivWithinAt, nhdsWithin_eq_nhds.mpr h]
+
+lemma hasFDerivWithinAt_of_open (h : IsOpen s) (hx : x ∈ s) :
+    HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x :=
+  hasFDerivWithin_of_mem_nhds (h.mem_nhds hx)
+
 theorem hasFDerivWithinAt_insert {y : E} :
     HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
   rcases eq_or_ne x y with (rfl | h)
