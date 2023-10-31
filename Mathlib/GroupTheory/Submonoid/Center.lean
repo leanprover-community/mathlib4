@@ -25,12 +25,14 @@ namespace Submonoid
 
 section
 
-variable (M : Type*) [Monoid M]
+variable (M : Type*)
 
-/-- The center of a monoid `M` is the set of elements that commute with everything in `M` -/
+/-- The center of a multiplication with unit `M` is the set of elements that commute with everything
+in `M` -/
 @[to_additive
-      "The center of a monoid `M` is the set of elements that commute with everything in `M`"]
-def center : Submonoid M where
+      "The center of a addition with zero `M` is the set of elements that commute with everything in
+      `M`"]
+def center [MulOneClass M] : Submonoid M where
   carrier := Set.center M
   one_mem' := Set.one_mem_center M
   mul_mem' := Set.mul_mem_center
@@ -38,17 +40,17 @@ def center : Submonoid M where
 #align add_submonoid.center AddSubmonoid.center
 
 @[to_additive]
-theorem coe_center : ↑(center M) = Set.center M :=
+theorem coe_center [MulOneClass M] : ↑(center M) = Set.center M :=
   rfl
 #align submonoid.coe_center Submonoid.coe_center
 #align add_submonoid.coe_center AddSubmonoid.coe_center
 
 @[to_additive (attr := simp) AddSubmonoid.center_toAddSubsemigroup]
-theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
+theorem center_toSubsemigroup [MulOneClass M] : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
 
-variable {M}
+variable {M} [Monoid M]
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
