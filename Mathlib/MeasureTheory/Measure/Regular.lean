@@ -379,7 +379,54 @@ instance smul_nnreal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
     OuterRegular (c • μ) :=
   OuterRegular.smul μ coe_ne_top
 
+lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {U : ℕ → Set α}
+    (h : ∀ n, OuterRegular (μ.restrict (U n))) (h' : ∀ n, IsOpen (U n)) (h'' : univ ⊆ ⋃ n, U n) :
+    OuterRegular μ := by
+  refine ⟨fun A hA r hr ↦ ?_⟩
+  have HA : μ A < ∞ := lt_of_lt_of_le hr le_top
+  obtain ⟨ε, εpos, rfl⟩ : ∃ ε > 0, μ A + ε = r := exists_pos_add_of_lt' hr
+  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, (∀ (i : ℕ), 0 < δ i) ∧ ∑' i, δ i < ε :=
+    ENNReal.exists_pos_sum_of_countable' εpos.ne' ℕ
+  let B (n : ℕ) := A ∩ disjointed U n
+  have meas_B : ∑' n, μ (B n) = μ A := by
+    rw [← measure_iUnion,  ← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
+    · intro m n hmn
+      exact (disjoint_disjointed U hmn).mono (inter_subset_right _ _) (inter_subset_right _ _)
+    · intro n
+      exact hA.inter (MeasurableSet.disjointed (fun n ↦ (h' n).measurableSet) n)
+  have HB (n : ℕ) : ∃ V, IsOpen V ∧ B n ⊆ V ∧ μ V < μ (B n) + δ n := by
+    have IB : μ.restrict (U n) (B n) < μ.restrict (U n) (B n) + δ n := by
+      have : μ.restrict (U n) (B n) < ∞ := by calc
+        μ.restrict (U n) (B n) ≤ μ (B n) := Measure.le_iff'.1 restrict_le_self _
+        _ ≤ μ A := measure_mono (inter_subset_left _ _)
+        _ < ∞ := HA
+      simpa using ENNReal.add_lt_add_left this.ne (δpos n)
+    obtain ⟨V, BV, V_open, hV⟩ :
+      ∃ V, B n ⊆ V ∧ IsOpen V ∧ μ.restrict (U n) V < μ.restrict (U n) (B n) + δ n :=
+        exists_isOpen_lt_of_lt _ _ IB
+    refine ⟨V ∩ (U n), V_open.inter (h' n), ?_, ?_⟩
+    · exact subset_inter BV ((inter_subset_right _ _).trans (disjointed_subset U n))
+    · calc
+      μ (V ∩ U n) = μ.restrict (U n) V := by rw [restrict_apply' (h' n).measurableSet]
+      _ < μ.restrict (U n) (B n) + δ n := hV
+      _ ≤ μ (B n) + δ n := add_le_add_right (Measure.le_iff'.1 restrict_le_self _) _
+  choose V V_open VB hV using HB
+  refine ⟨⋃ n, V n, ?_, isOpen_iUnion V_open, ?_⟩
+  · calc A = A ∩ univ := (inter_univ A).symm
+    _ ⊆ A ∩ (⋃ n, disjointed U n) := by
+      rw [iUnion_disjointed]; exact inter_subset_inter_right _ h''
+    _ = ⋃ n, B n := by rw [inter_iUnion]
+    _ ⊆ ⋃ n, V n := iUnion_mono VB
+  · calc
+    μ (⋃ n, V n) ≤ ∑' n, μ (V n) := measure_iUnion_le _
+    _ ≤ ∑' n, (μ (B n) + δ n) := ENNReal.tsum_le_tsum (fun n ↦ (hV n).le)
+    _ = ∑' n, μ (B n) + ∑' n, δ n := ENNReal.tsum_add
+    _ = μ A + ∑' n, δ n := by rw [meas_B]
+    _ < μ A + ε := ENNReal.add_lt_add_left HA.ne hδ
+
 end OuterRegular
+
+#exit
 
 /-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
 is outer regular, then the original measure is outer regular as well. -/
@@ -531,8 +578,7 @@ theorem of_pseudoEMetricSpace {X : Type*} [PseudoEMetricSpace X] [MeasurableSpac
 
 /-- In a second countable locally compact space, an open set can be approximated from inside by
 compact sets. -/
-theorem of_secondCountableTopology
-    [SecondCountableTopology α] [LocallyCompactSpace α] [BorelSpace α] :
+theorem of_secondCountableTopology [SecondCountableTopology α] [LocallyCompactSpace α] :
     InnerRegularWRT μ IsCompact IsOpen := by
   intro U hU r hr
   rcases hU.exists_iUnion_isCompact with ⟨F, F_comp, -, rfl, F_mono⟩
