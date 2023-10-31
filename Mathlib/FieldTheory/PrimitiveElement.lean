@@ -244,6 +244,7 @@ end SeparableAssumption
 
 section FiniteIntermediateField
 
+-- TODO: generalize to 0 ≤ m ≠ n; show [F⟮α⟯ : F⟮α ^ m⟯] = m when m > 0.
 theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hm : 0 < m) (hmn : m < n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
   obtain ⟨r, s, h⟩ := (mem_adjoin_simple_iff F _).1 (heq ▸ mem_adjoin_simple_self F (α ^ m))
@@ -251,20 +252,19 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hm : 0 < m) (hmn :
   · simp only [hzero, div_zero, pow_eq_zero_iff hm] at h
     exact h.symm ▸ isAlgebraic_zero
   · rw [eq_div_iff hzero, ← sub_eq_zero] at h
-    replace hzero : s ≠ 0 := fun h ↦ by simp only [h, map_zero, not_true] at hzero
+    replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero] at hzero
     let f : F[X] := X ^ m * expand F n s - expand F n r
-    use f
-    constructor
+    refine ⟨f, ?_, ?_⟩
     · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
         have hn : 0 < n := by linarith only [hm, hmn]
         have hndvd : ¬ n ∣ n * s.natDegree + m := by
-          rw [← Nat.dvd_add_iff_right (Nat.dvd_mul_right n s.natDegree)]
+          rw [← Nat.dvd_add_iff_right (n.dvd_mul_right s.natDegree)]
           exact Nat.not_dvd_of_pos_of_lt hm hmn
         simp only [coeff_sub, coeff_X_pow_mul, s.coeff_expand_mul' hn, coeff_natDegree,
           coeff_expand hn r, hndvd, ite_false, sub_zero]
         exact leadingCoeff_ne_zero.2 hzero
       intro h
-      simp only [h, coeff_zero, ne_eq, not_true] at this
+      simp only [h, coeff_zero, ne_eq] at this
     · simp only [map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
@@ -272,49 +272,38 @@ theorem isAlgebraic_of_finite_intermediateField
   intro α
   let f : ℕ → IntermediateField F E := fun n ↦ F⟮α ^ (n + 1)⟯
   obtain ⟨m, n, hneq, heq⟩ := Finite.exists_ne_map_eq_of_infinite f
-  rcases Nat.lt_trichotomy m n with (hmn | hmn | hmn)
+  obtain (hmn | hmn) := hneq.lt_or_lt
   · exact isAlgebraic_of_adjoin_eq_adjoin F E m.succ_pos (Nat.add_lt_add_right hmn 1) heq
-  · contradiction
   · exact isAlgebraic_of_adjoin_eq_adjoin F E n.succ_pos (Nat.add_lt_add_right hmn 1) heq.symm
 
 theorem finiteDimensional_of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
-  have halg := isAlgebraic_of_finite_intermediateField F E
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
-  haveI : Finite IF := Subtype.finite
-  haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦
-    adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg x)
-  have hfin := finiteDimensional_iSup_of_finite (t := fun (K : IF) ↦ K.1)
-  have htop : ⨆ (K : IF), K.1 = ⊤ := by
-    apply le_antisymm le_top
-    intro x _
-    exact le_iSup (fun (K : IF) ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
+  haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional <|
+    isAlgebraic_iff_isIntegral.1 (isAlgebraic_of_finite_intermediateField F E x)
+  have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
+  have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
+    le_iSup (fun K : IF ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
   rw [htop] at hfin
-  have := (topEquiv (F := F) (E := E)).toLinearEquiv
-  exact FiniteDimensional.of_surjective this.toLinearMap this.surjective
+  exact topEquiv.toLinearEquiv.finiteDimensional
 
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
   haveI := finiteDimensional_of_finite_intermediateField F E
   rcases finite_or_infinite F with (_ | _)
   · obtain ⟨α, h⟩ := exists_primitive_element_of_finite_bot F K
-    exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr_arg (lift (L := E)) h⟩
-  · let P : IntermediateField F E → Prop := fun K ↦ ∃ α : E, F⟮α⟯ = K
-    have base : P ⊥ := ⟨0, adjoin_zero⟩
-    have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
-      rintro K β ⟨α, rfl⟩
-      rw [adjoin_simple_adjoin_simple]
-      cases' primitive_element_inf_aux_of_finite_intermediateField F α β with γ hγ
-      exact ⟨γ, hγ.symm⟩
-    exact induction_on_adjoin P base ih K
+    exact ⟨α, by simpa only [lift_adjoin_simple, lift_top] using congr_arg lift h⟩
+  · apply induction_on_adjoin (fun K ↦ ∃ α : E, F⟮α⟯ = K) ⟨0, adjoin_zero⟩
+    rintro K β ⟨α, rfl⟩
+    simp_rw [adjoin_simple_adjoin_simple, eq_comm]
+    exact primitive_element_inf_aux_of_finite_intermediateField F α β
 
 theorem finiteDimensional_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
     (h : ∃ α : E, F⟮α⟯ = ⊤) : FiniteDimensional F E := by
   obtain ⟨α, hprim⟩ := h
   have hfin := adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg α)
   rw [hprim] at hfin
-  have := (topEquiv (F := F) (E := E)).toLinearEquiv
-  exact FiniteDimensional.of_surjective this.toLinearMap this.surjective
+  exact topEquiv.toLinearEquiv.finiteDimensional
 
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)

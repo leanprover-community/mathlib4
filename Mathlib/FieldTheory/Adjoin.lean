@@ -51,15 +51,15 @@ def adjoin : IntermediateField F E :=
 variable {S}
 
 theorem mem_adjoin_iff (x : E) :
-    x ∈ adjoin F S ↔ (∃ r s : MvPolynomial S F,
-      x = MvPolynomial.aeval Subtype.val r / MvPolynomial.aeval Subtype.val s) := by
+    x ∈ adjoin F S ↔ ∃ r s : MvPolynomial S F,
+      x = MvPolynomial.aeval Subtype.val r / MvPolynomial.aeval Subtype.val s := by
   simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
     Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
     Algebra.adjoin_eq_range, AlgHom.mem_range, exists_exists_eq_and]
   tauto
 
 theorem mem_adjoin_simple_iff {α : E} (x : E) :
-    x ∈ adjoin F {α} ↔ (∃ r s : Polynomial F, x = aeval α r / aeval α s) := by
+    x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
   simp only [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
     Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring,
     Algebra.adjoin_singleton_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
@@ -444,22 +444,21 @@ theorem adjoin_map {E' : Type*} [Field E'] [Algebra F E'] (f : E →ₐ[F] E') :
 #align intermediate_field.adjoin_map IntermediateField.adjoin_map
 
 theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
-    lift (L := E) (E := adjoin F S) = adjoin F (Subtype.val '' S) :=
+    lift (adjoin F S) = adjoin F (Subtype.val '' S) :=
   adjoin_map _ _ _
 
 @[simp]
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
-    lift (L := E) (E := adjoin F {α}) = adjoin F {α.1} := by
+    lift (adjoin F {α}) = adjoin F {α.1} := by
   simp only [lift_adjoin, Set.image_singleton]
 
 @[simp]
 theorem lift_bot (K : IntermediateField F E) :
-    lift (L := E) (E := (⊥ : IntermediateField F K)) = ⊥ := map_bot _
+    lift (F := K) ⊥ = ⊥ := map_bot _
 
 @[simp]
 theorem lift_top (K : IntermediateField F E) :
-    lift (L := E) (E := (⊤ : IntermediateField F K)) = K := by
-  rw [lift, ←AlgHom.fieldRange_eq_map, fieldRange_val]
+    lift (F := K) ⊤ = K := by rw [lift, ←AlgHom.fieldRange_eq_map, fieldRange_val]
 
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
   Algebra.adjoin_le (subset_adjoin _ _)
@@ -923,10 +922,10 @@ theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
 /-- If `K / E / F` is a field extension tower, `S ⊂ K` is such that `F(S) = K`,
 then `E(S) = K`. -/
 theorem adjoin_eq_top_of_adjoin_eq_top [Algebra E K] [IsScalarTower F E K]
-    {S : Set K} (hprim : adjoin F S = ⊤) : adjoin E S = ⊤ := by
-  apply restrictScalars_injective (K := F) (L' := E) (L := K)
-  rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
-    coe_restrictScalars, ← adjoin_le_iff]
+    {S : Set K} (hprim : adjoin F S = ⊤) : adjoin E S = ⊤ :=
+  restrictScalars_injective F <| by
+    rw [restrictScalars_top, ← top_le_iff, ← hprim, adjoin_le_iff,
+      coe_restrictScalars, ← adjoin_le_iff]
 
 /-- If `E / F` is a finite extension such that `E = F(α)`, then for any intermediate field `K`, the
 `F` adjoin the coefficients of `minpoly K α` is equal to `K` itself. -/
@@ -936,22 +935,17 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   set g := (minpoly K α).map (algebraMap K E)
   set K' : IntermediateField F E := adjoin F g.frange
   have hsub : K' ≤ K := by
-    rw [adjoin_le_iff]
-    intro x
+    refine adjoin_le_iff.mpr fun x ↦ ?_
     rw [Finset.mem_coe, mem_frange_iff]
-    rintro ⟨n, _, rfl⟩
+    rintro ⟨n, -, rfl⟩
     rw [coeff_map]
     apply Subtype.mem
   have g_lifts : g ∈ lifts (algebraMap K' E) := by
     refine g.lifts_iff_coeff_lifts.mpr fun n ↦ ?_
     erw [Subtype.range_val]
     by_cases hn : n ∈ g.support
-    · have h2 : ({coeff g n} : Set E) ⊆ g.frange := by
-        rw [Set.singleton_subset_iff, Finset.mem_coe, mem_frange_iff]
-        exact ⟨n, hn, rfl⟩
-      exact adjoin.mono F _ _ h2 <| mem_adjoin_simple_self F (coeff g n)
-    · rw [not_mem_support_iff.1 hn]
-      exact zero_mem K'
+    · exact subset_adjoin F _ (mem_frange_iff.mpr ⟨n, hn, rfl⟩)
+    · exact not_mem_support_iff.mp hn ▸ zero_mem K'
   obtain ⟨p, hp⟩ := g.lifts_and_natDegree_eq_and_monic
     g_lifts ((minpoly.monic <| isIntegral_of_finite K α).map _)
   have dvd_p : minpoly K' α ∣ p
@@ -1327,7 +1321,7 @@ theorem finiteDimensional_adjoin_of_finite_of_isAlgebraic
     adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg x.1)
   have hfin := finiteDimensional_iSup_of_finite (t := t)
   have := (gc (F := K) (E := L)).l_iSup (f := fun (x : S) ↦ {x.1})
-  simp only [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype,
+  rw [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype,
     Set.setOf_mem_eq] at this
   rwa [← this] at hfin
 
