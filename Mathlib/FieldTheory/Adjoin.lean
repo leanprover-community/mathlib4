@@ -75,26 +75,28 @@ def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
   choice_eq _ _ := copy_eq _ _ _
 #align intermediate_field.gi IntermediateField.gi
 
-instance : CompleteLattice (IntermediateField F E) :=
-  GaloisInsertion.liftCompleteLattice IntermediateField.gi
+instance : CompleteLattice (IntermediateField F E) where
+  __ := GaloisInsertion.liftCompleteLattice IntermediateField.gi
+  bot :=
+    { toSubalgebra := ⊥
+      inv_mem' := fun x (hx : x ∈ (⊥ : Subalgebra F E)) => show x⁻¹ ∈ (⊥ : Subalgebra F E) by
+        rw [Algebra.mem_bot] at hx ⊢
+        obtain ⟨r, rfl⟩ := hx
+        exact ⟨r⁻¹, map_inv₀ _ _⟩ }
+  bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
 instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
-theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := by
-  change ↑(Subfield.closure (Set.range (algebraMap F E) ∪ ∅)) = Set.range (algebraMap F E)
-  rw [Set.union_empty, ← Set.image_univ, ← RingHom.map_field_closure]
-  simp
+theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
 #align intermediate_field.coe_bot IntermediateField.coe_bot
 
 theorem mem_bot {x : E} : x ∈ (⊥ : IntermediateField F E) ↔ x ∈ Set.range (algebraMap F E) :=
-  Set.ext_iff.mp coe_bot x
+  Iff.rfl
 #align intermediate_field.mem_bot IntermediateField.mem_bot
 
 @[simp]
-theorem bot_toSubalgebra : (⊥ : IntermediateField F E).toSubalgebra = ⊥ := by
-  ext
-  rw [mem_toSubalgebra, Algebra.mem_bot, mem_bot]
+theorem bot_toSubalgebra : (⊥ : IntermediateField F E).toSubalgebra = ⊥ := rfl
 #align intermediate_field.bot_to_subalgebra IntermediateField.bot_toSubalgebra
 
 @[simp]
@@ -257,10 +259,8 @@ def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
 
 @[simp]
 theorem restrictScalars_bot_eq_self (K : IntermediateField F E) :
-    (⊥ : IntermediateField K E).restrictScalars _ = K := by
-  ext x
-  rw [mem_restrictScalars, mem_bot];
-  exact Set.ext_iff.mp Subtype.range_coe x
+    (⊥ : IntermediateField K E).restrictScalars _ = K :=
+  SetLike.coe_injective Subtype.range_coe
 #align intermediate_field.restrict_scalars_bot_eq_self IntermediateField.restrictScalars_bot_eq_self
 
 @[simp]
@@ -268,6 +268,11 @@ theorem restrictScalars_top {K : Type*} [Field K] [Algebra K E] [Algebra K F]
     [IsScalarTower K F E] : (⊤ : IntermediateField F E).restrictScalars K = ⊤ :=
   rfl
 #align intermediate_field.restrict_scalars_top IntermediateField.restrictScalars_top
+
+@[simp]
+theorem map_bot {K : Type*} [Field K] [Algebra F K] (f : E →ₐ[F] K) :
+    IntermediateField.map f ⊥ = ⊥ :=
+  toSubalgebra_injective <| Algebra.map_bot _
 
 theorem _root_.AlgHom.fieldRange_eq_map {K : Type*} [Field K] [Algebra F K] (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
