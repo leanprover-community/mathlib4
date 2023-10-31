@@ -302,7 +302,6 @@ def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
-    
 section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
