@@ -17,6 +17,7 @@ def poly0 : Poly := const Empty
 def y : Poly := linear Unit
 
 def representable (D : Type) : Poly := monomial Unit D
+notation:50 "y^" B:50 => representable B
 
 def bang1 {T : Type} : T -> Unit := λ _ ↦ Unit.unit
 def ident {T : Type} : T -> T := λ t ↦ t
