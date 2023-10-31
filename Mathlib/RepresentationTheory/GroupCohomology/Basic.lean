@@ -30,6 +30,10 @@ This gives us for free a proof that our $d^n$ squares to zero. It also gives us 
 $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
 `Rep k G`.
 
+To talk about cohomology in low degree, please see the file
+`RepresentationTheory.GroupCohomology.LowDegree`, which gives simpler expressions for `H⁰, H¹, H²`
+than the definition `groupCohomology` in this file.
+
 ## Main definitions
 
 * `groupCohomology.linearYonedaObjResolution A`: a complex whose objects are the representation
@@ -38,7 +42,7 @@ $\mathrm{H}^n(G, A)$.
 * `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
 $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
 * `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above two complexes.
-* `group_cohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
+* `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
 second complex, `inhomogeneousCochains A`.
 * `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
 (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
@@ -199,6 +203,11 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     exact map_zero _
 #align group_cohomology.inhomogeneous_cochains groupCohomology.inhomogeneousCochains
 
+@[simp]
+theorem inhomogeneousCochains.d_def (n : ℕ) :
+    (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d n A :=
+  CochainComplex.of_d _ _ _ _
+
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
@@ -218,7 +227,7 @@ open groupCohomology
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
-  (inhomogeneousCochains A).homology n
+  (inhomogeneousCochains A).homology' n
 #align group_cohomology groupCohomology
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
@@ -226,6 +235,6 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   homologyObjIsoOfHomotopyEquiv (HomotopyEquiv.ofIso (inhomogeneousCochainsIso _)) _ ≪≫
-    HomologicalComplex.homologyUnop _ _ ≪≫ (extIso k G A n).symm
+    HomologicalComplex.homology'Unop _ _ ≪≫ (extIso k G A n).symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt
