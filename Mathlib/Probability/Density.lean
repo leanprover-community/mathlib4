@@ -142,7 +142,7 @@ theorem unique [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] (f : E →
   rw [map_eq_withDensity_pdf X ℙ μ]
   apply withDensity_eq_iff (measurable_pdf X ℙ μ).aemeasurable hmf
   rw [lintegral_eq_measure_univ]
-  exact (measure_lt_top _ _).ne
+  exact measure_ne_top _ _
 
 theorem unique' [SigmaFinite μ] {X : Ω → E} [HasPDF X ℙ μ] (f : E → ℝ≥0∞) (hmf : AEMeasurable f μ) :
     ℙ.map X = μ.withDensity f ↔ pdf X ℙ μ =ᵐ[μ] f :=
@@ -155,7 +155,7 @@ nonrec theorem ae_lt_top [IsFiniteMeasure ℙ] {μ : Measure E} {X : Ω → E} :
   · haveI := hpdf
     refine' ae_lt_top (measurable_pdf X ℙ μ) _
     rw [lintegral_eq_measure_univ]
-    exact (measure_lt_top _ _).ne
+    exact measure_ne_top _ _
   · simp [pdf, hpdf]
 #align measure_theory.pdf.ae_lt_top MeasureTheory.pdf.ae_lt_top
 
@@ -428,8 +428,7 @@ section TwoVariables
 
 open ProbabilityTheory
 
-variable {Ω E F : Type*} [MeasurableSpace Ω] [MeasurableSpace E] [MeasurableSpace F]
-variable {X : Ω → E} {Y : Ω → F} {ℙ : Measure Ω} {μ : Measure E} {ν : Measure F}
+variable {F : Type*} [MeasurableSpace F] {ν : Measure F} {X : Ω → E} {Y : Ω → F}
 variable [HasPDF (fun ω ↦ (X ω, Y ω)) ℙ (μ.prod ν)]
 
 /-- Random variables are independent iff their joint density is a product of marginal densities. -/
@@ -437,9 +436,9 @@ theorem indepFun_iff_pdf_prod_eq_pdf_mul_pdf
     [IsFiniteMeasure ℙ] [SigmaFinite μ] [SigmaFinite ν] [HasPDF (fun ω ↦ (X ω, Y ω)) ℙ (μ.prod ν)] :
     IndepFun X Y ℙ ↔
       pdf (fun ω ↦ (X ω, Y ω)) ℙ (μ.prod ν) =ᵐ[μ.prod ν] fun z ↦ pdf X ℙ μ z.1 * pdf Y ℙ ν z.2 := by
-  haveI : HasPDF X ℙ μ := quasiMeasurePreserving_hasPDF' (μ := μ.prod ν) (X := fun ω ↦ (X ω, Y ω))
+  have : HasPDF X ℙ μ := quasiMeasurePreserving_hasPDF' (μ := μ.prod ν) (X := fun ω ↦ (X ω, Y ω))
     quasiMeasurePreserving_fst
-  haveI : HasPDF Y ℙ ν := quasiMeasurePreserving_hasPDF' (μ := μ.prod ν) (X := fun ω ↦ (X ω, Y ω))
+  have : HasPDF Y ℙ ν := quasiMeasurePreserving_hasPDF' (μ := μ.prod ν) (X := fun ω ↦ (X ω, Y ω))
     quasiMeasurePreserving_snd
   have h₀ : (ℙ.map X).prod (ℙ.map Y) =
       (μ.prod ν).withDensity fun z ↦ pdf X ℙ μ z.1 * pdf Y ℙ ν z.2 :=
