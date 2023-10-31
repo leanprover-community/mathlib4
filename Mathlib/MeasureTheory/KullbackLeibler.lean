@@ -121,9 +121,6 @@ lemma continuous_id_mul_log : Continuous (fun x ↦ x * log x) := by
 lemma convexOn_id_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
   sorry
 
-lemma id_mul_log_ge {x : ℝ} (hx : 0 ≤ x) : log (exp 1) / (exp 1) ≤ x * log x := by
-  sorry
-
 lemma id_mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
   mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
 
