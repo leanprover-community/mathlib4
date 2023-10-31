@@ -92,6 +92,7 @@ theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base φ) := by
   simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
   exact ⟨_, _, rfl, rfl⟩
 
+variable (φ) in
 theorem of_apply_eq_base (i : ι) (x : H) : of i (φ i x) = base φ x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
 
@@ -488,7 +489,7 @@ theorem prod_summand_smul {i : ι} (g : G i) (w : NormalWord d) :
     (g • w).prod = of i g * w.prod := by
   simp only [prod, summand_smul_def', equivPair, rcons, Word.equivPair_symm,
     Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, Word.equivPair_smul_same,
-    Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul, ← of_apply_eq_base i,
+    Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul, ← of_apply_eq_base φ i,
     MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
     Word.prod_smul, ofCoprodI_of, inv_mul_cancel_left, mul_inv_cancel_left]
 
@@ -512,7 +513,7 @@ theorem prod_empty : (empty : NormalWord d).prod = 1 := by
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base i, equiv_fst_eq_mul_inv,
+  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
     mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
     ofCoprodI_of, inv_mul_cancel_left]
 
@@ -633,11 +634,11 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
       have hg₁r : g₁ ∉ (φ i).range := by
         rintro ⟨y, rfl⟩
         subst hg₁
-        exact hx (of_apply_eq_base (G:=G) i y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
+        exact hx (of_apply_eq_base φ i y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       have hg₂r : g₂ ∉ (φ j).range := by
         rintro ⟨y, rfl⟩
         subst hg₂
-        exact hx (of_apply_eq_base (G:=G) j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
+        exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
         simp only [not_exists, ne_eq, Reduced, List.find?, List.mem_cons, List.mem_singleton,
