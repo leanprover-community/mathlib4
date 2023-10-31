@@ -1004,7 +1004,11 @@ section Limit
 
 namespace GoodProducts
 
-/-- The image of the `GoodProducts` for `π C (ord I · < o)` in `LocallyConstant C ℤ` -/
+/--
+The image of the `GoodProducts` for `π C (ord I · < o)` in `LocallyConstant C ℤ`. The name `smaller`
+refers to the setting in which we will use this, when we are mapping in `GoodProducts` from a
+smaller set, i.e. when `o` is a smaller ordinal than the one `C` is "contained" in.
+-/
 def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
   (πs C o) '' (range (π C (ord I · < o)))
 
