@@ -8,7 +8,7 @@ import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
-# Charts are local diffeomorphism
+# Charts are local diffeomorphisms
 
 TODO: prove what I want to, then add a real docstring
 -/
@@ -29,11 +29,7 @@ variable
 
 section Future
 -- On any topological manifold (charted space on a normed space),
--- charts and inverse charts are structomorphisms.
--- ACTUALLY, that is not quite true! Charts are only local homeomorphisms,
--- hence they should be structomorphisms on e.source resp. e.target.
--- Mathlib doesn't fully have that "open subsets of manifolds are manifolds" yet
--- (the ChartedSpace instance is missing).
+-- each chart is a structomorphism (from its source to its target).
 
 example {f : M → N} (hf : ContMDiff I J n f) (s : Opens M) : True := by
   let f' := (s.1).restrict f
