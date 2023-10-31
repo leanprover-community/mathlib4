@@ -1029,7 +1029,7 @@ nonrec lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) 
     IsClosedMap (T.restrictPreimage f) := by
   rw [isClosedMap_iff_clusterPt] at hcl ⊢
   intro A ⟨y, hyT⟩ hy
-  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
+  rw [Set.restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
       map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
   rcases hcl _ y hy with ⟨x, hxy, hx⟩
   have hxT : f x ∈ T := hxy ▸ hyT
