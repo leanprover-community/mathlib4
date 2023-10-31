@@ -41,6 +41,12 @@ theorem not_nonempty_eq (s : Set γ) : (¬ s.Nonempty) = (s = ∅) := by
   simp only [Set.Nonempty, not_exists, eq_iff_iff]
   exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
 
+theorem ne_empty_eq_nonempty (s : Set γ) : (s ≠ ∅) = s.Nonempty := by
+  rw [ne_eq, ← not_nonempty_eq s, not_not]
+
+theorem empty_ne_eq_nonempty (s : Set γ) : (∅ ≠ s) = s.Nonempty := by
+  rw [ne_comm, ne_empty_eq_nonempty]
+
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
@@ -77,8 +83,22 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (←mkAppM ``not_or_eq #[p, q])
   | (``Iff, #[p, q]) =>
       return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (←mkAppM ``not_iff #[p, q])
-  | (``Eq, #[_ty, e₁, e₂]) =>
-      return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
+  | (``Eq, #[ty, e₁, e₂]) =>
+      -- test if equality is of the form `s = ∅`, and negate it to `s.Nonempty`
+      if ty.isAppOfArity ``Set 1
+          && e₂.isAppOfArity ``EmptyCollection.emptyCollection 2 then
+        let thm ← mkAppM ``ne_empty_eq_nonempty #[e₁]
+        let some (_, _, rhs) := (← inferType thm).eq? | return none
+        return mkSimpStep rhs thm
+      else
+        -- test if equality is of the form `∅ = s`, and negate it to `s.Nonempty`
+        if ty.isAppOfArity ``Set 1
+            && e₁.isAppOfArity ``EmptyCollection.emptyCollection 2 then
+          let thm ← mkAppM ``empty_ne_eq_nonempty #[e₂]
+          let some (_, _, rhs) := (← inferType thm).eq? | return none
+          return mkSimpStep rhs thm
+        -- otherwise, negate `a = b` to `a ≠ b`
+        else return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
   | (``Ne, #[_ty, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``Eq #[e₁, e₂]) (← mkAppM ``not_ne_eq #[e₁, e₂])
   | (``LE.le, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_le_eq
@@ -86,6 +106,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | (``GE.ge, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_ge_eq
   | (``GT.gt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_gt_eq
   | (``Set.Nonempty, #[_ty, e]) =>
+      -- negate `s.Nonempty` to `s = ∅`
       let thm ← mkAppM ``not_nonempty_eq #[e]
       let some (_, _, rhs) := (← inferType thm).eq? | return none
       return mkSimpStep rhs thm
