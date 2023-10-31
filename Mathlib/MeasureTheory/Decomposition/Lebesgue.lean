@@ -470,7 +470,7 @@ theorem rnDeriv_restrict (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : M
   exact rnDeriv_withDensity _ (measurable_one.indicator hs)
 #align measure_theory.measure.rn_deriv_restrict MeasureTheory.Measure.rnDeriv_restrict
 
-/-- Radon-Nikodym derivative of the scalar product of a measure.
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_left (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] (r : ℝ≥0) :
@@ -487,7 +487,7 @@ theorem rnDeriv_smul_left (ν μ : Measure α) [IsFiniteMeasure ν]
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
   · exact (lintegral_rnDeriv_lt_top (r • ν) μ).ne
 
-/-- Radon-Nikodym derivative of the scalar product of a measure.
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left_of_ne_top'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_left_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0∞} (hr : r ≠ ∞) :
@@ -496,7 +496,7 @@ theorem rnDeriv_smul_left_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     rnDeriv_smul_left ν μ r.toNNReal
   simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
 
-/-- Radon-Nikodym derivative with respect to the scalar product of a measure.
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
@@ -521,7 +521,7 @@ theorem rnDeriv_smul_right (ν μ : Measure α) [IsFiniteMeasure ν]
       smul_eq_mul, inv_mul_cancel hr, one_smul]
     exact ν.haveLebesgueDecomposition_add μ
 
-/-- Radon-Nikodym derivative with respect to the scalar product of a measure.
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right_of_ne_top'`, which requires sigma-finite `ν` and `μ`. -/
 theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0∞} (hr : r ≠ 0) (hr_ne_top : r ≠ ∞) :
@@ -942,7 +942,7 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
 
 section rnDeriv
 
-/-- Radon-Nikodym derivative of the scalar product of a measure.
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_left' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ] (r : ℝ≥0) :
     (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
@@ -957,7 +957,7 @@ theorem rnDeriv_smul_left' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
 
-/-- Radon-Nikodym derivative of the scalar product of a measure.
+/-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left_of_ne_top`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_left_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
     {r : ℝ≥0∞} (hr : r ≠ ∞) :
@@ -966,7 +966,7 @@ theorem rnDeriv_smul_left_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [Sigm
     rnDeriv_smul_left' ν μ r.toNNReal
   simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
 
-/-- Radon-Nikodym derivative with respect to the scalar product of a measure.
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
     {r : ℝ≥0} (hr : r ≠ 0) :
@@ -989,7 +989,7 @@ theorem rnDeriv_smul_right' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite �
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact (measurable_rnDeriv _ _).aemeasurable.const_smul _
 
-/-- Radon-Nikodym derivative with respect to the scalar product of a measure.
+/-- Radon-Nikodym derivative with respect to the scalar multiple of a measure.
 See also `rnDeriv_smul_right_of_ne_top`, which has no hypothesis on `μ` but requires finite `ν`. -/
 theorem rnDeriv_smul_right_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [SigmaFinite μ]
     {r : ℝ≥0∞} (hr : r ≠ 0) (hr_ne_top : r ≠ ∞) :
