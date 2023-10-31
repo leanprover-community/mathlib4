@@ -116,7 +116,7 @@ def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.
         Submonoid.coe_subtype, x.1.prop.comm a]
   }
   map_one' := rfl
-  map_mul' := fun _ _ ↦ rfl
+  map_mul' _ _ := rfl
 
 @[to_additive]
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
