@@ -473,6 +473,10 @@ alias ⟨CompleteLattice.Independent.supIndep, Finset.SupIndep.independent⟩ :=
 #align complete_lattice.independent.sup_indep CompleteLattice.Independent.supIndep
 #align finset.sup_indep.independent Finset.SupIndep.independent
 
+theorem CompleteLattice.Independent.supIndep' [CompleteLattice α] {f : ι → α} (s : Finset ι)
+    (h : CompleteLattice.Independent f) : s.SupIndep f :=
+  CompleteLattice.Independent.supIndep (h.comp Subtype.coe_injective)
+
 /-- A variant of `CompleteLattice.independent_iff_supIndep` for `Fintype`s. -/
 theorem CompleteLattice.independent_iff_supIndep_univ [CompleteLattice α] [Fintype ι] {f : ι → α} :
     CompleteLattice.Independent f ↔ Finset.univ.SupIndep f := by

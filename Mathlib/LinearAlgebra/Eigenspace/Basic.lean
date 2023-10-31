@@ -379,6 +379,11 @@ theorem generalizedEigenspace_le_generalizedEigenspace_finrank [FiniteDimensiona
   ker_pow_le_ker_pow_finrank _ _
 #align module.End.generalized_eigenspace_le_generalized_eigenspace_finrank Module.End.generalizedEigenspace_le_generalizedEigenspace_finrank
 
+@[simp] theorem iSup_generalizedEigenspace_eq_generalizedEigenspace_finrank
+    [FiniteDimensional K V] (f : End K V) (μ : K) :
+    ⨆ k, f.generalizedEigenspace μ k = f.generalizedEigenspace μ (finrank K V) :=
+  le_antisymm (iSup_le (generalizedEigenspace_le_generalizedEigenspace_finrank f μ)) (le_iSup _ _)
+
 /-- Generalized eigenspaces for exponents at least `finrank K V` are equal to each other. -/
 theorem generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le [FiniteDimensional K V]
     (f : End K V) (μ : K) {k : ℕ} (hk : finrank K V ≤ k) :
@@ -436,6 +441,10 @@ lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R]
   simp_rw [(f.generalizedEigenspace μ₁).mono.directed_le.disjoint_iSup_left,
     (f.generalizedEigenspace μ₂).mono.directed_le.disjoint_iSup_right]
   exact disjoint_generalizedEigenspace f hμ
+
+theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R] (f : End R M) :
+    CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
+  sorry
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/

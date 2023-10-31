@@ -79,12 +79,15 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
   have hg₂ : MapsTo g ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) :=
     f.mapsTo_iSup_generalizedEigenspace_of_comm hfg μ
   have hg₃ : InjOn g ↑(⨆ k, f.generalizedEigenspace μ k) := by
-    -- Wait, this is non-trivial: I'll need the independence of the generalized eigenspaces.
-    -- Unfortunately `Module.End.eigenspaces_independent` only does this for eigenspaces *sigh*
-    sorry
+    apply LinearMap.injOn_of_disjoint_ker (subset_refl _)
+    have this := f.independent_generalizedEigenspace
+    simp_rw [f.iSup_generalizedEigenspace_eq_generalizedEigenspace_finrank] at this ⊢
+    rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker _ _ <| this.supIndep' (m.support.erase μ),
+      ← Finset.sup_eq_iSup]
+    exact Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
   have hg₄ : SurjOn g
       ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) ↑(p ⊓ ⨆ k, f.generalizedEigenspace μ k) := by
-    -- Looks like this is only place we'll need finite-dimensionality (we'll get it from `InjOn`).
+    -- Easy
     sorry
   specialize hm₂ μ
   obtain ⟨y, ⟨hy₀ : y ∈ p, hy₁ : y ∈ ⨆ k, f.generalizedEigenspace μ k⟩, hy₂ : g y = g (m μ)⟩ :=
