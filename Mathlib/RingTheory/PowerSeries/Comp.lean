@@ -21,10 +21,11 @@ when $f$ is a polynomial, or when the constant term of $g$ is nilpotent. There a
 where the composition is defined, although these cases are less easy to classify.
 
 In this file we define
-* `PowerSeries.hasComp` : a relation on `R⟦X⟧`, where `f.hasComp g` means that the formal
+* `PowerSeries.HasComp` : a relation on `R⟦X⟧`, where `f.hasComp g` means that the formal
   composition of `f` and `g` exists.
 * `PowerSeries.comp` : a binary operation on `R⟦X⟧`, where `f.comp g` is the formal composition
-  in the case `f.hasComp g`, or zero otherwise.
+  in the case `f.HasComp g`, or zero otherwise.
+
 ## Notation
 
 The operation `f.comp g` can also be written `f ∘ᶠ g`.
@@ -33,14 +34,10 @@ The operation `f.comp g` can also be written `f ∘ᶠ g`.
 ## Main results
 
 * `add_HasComp` if `f.HasComp h` and `g.HasComp h` then `(f+g).HasComp h`.
-
 * `coe_HasComp` if `f` is a polynomial then `(f : R⟦X⟧).HasComp h`.
-
 * `HasComp_of_isNilpotent_constantCoeff` if the constant term of `g`
-                is nilpotent then `f.HasComp g`.
-
+    is nilpotent then `f.HasComp g`.
 * `add_comp` if `f.HasComp h` and `g.HasComp h` then `(f + g) ∘ᶠ h = f ∘ᶠ h + g ∘ᶠ h`.
-
 * `coe_comp_eq_aeval` if `f` is a polynomial then `f ∘ᶠ g = aeval g f`.
 -/
 
