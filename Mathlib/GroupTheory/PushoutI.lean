@@ -267,8 +267,8 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
   by_contra hh1
   have := hφw i (φ i h * (Word.equivPair i w).head) ?_
   · apply hh1
-    simpa [equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead,
-      ((injective_iff_map_eq_one' _).1 (d.injective i))] using this
+    rw [equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead] at this
+    simpa [((injective_iff_map_eq_one' _).1 (d.injective i))] using this
   · simp only [Word.mem_smul_iff, not_true, false_and, ne_eq, Option.mem_def, mul_right_inj,
       exists_eq_right', mul_right_eq_self, exists_prop, true_and, false_or]
     constructor
@@ -278,7 +278,6 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
         equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead, Subtype.ext_iff,
         Prod.ext_iff, Subgroup.coe_mul] at h
       rcases h with ⟨h₁, h₂⟩
-      dsimp at h₁ h₂
       rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _), mul_one,
         ((injective_iff_map_eq_one' _).1 (d.injective i))] at h₁
       contradiction
@@ -365,7 +364,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
     fun w => ext_smul i <| by
-      simp only [rcons, MonoidHom.coe_range, Word.equivPair_symm,
+      simp only [rcons, Word.equivPair_symm,
         Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
         MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
         mul_smul, inv_smul_smul, smul_inv_smul]
@@ -457,12 +456,13 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
       convert h_cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
         h1 (h3 _ _ (List.mem_cons_self _ _)) ?_ rfl
         (ih ?_)
-      · ext; simp [Word.cons, cons,
+      · ext
+        simp only [Word.cons, Option.mem_def, cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
       · apply d.injective i
-        simp [cons, equiv_fst_eq_mul_inv,
-          (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
+        simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
+          map_one, mul_one, mul_right_inv, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
@@ -478,7 +478,7 @@ theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
   apply ext_smul i
-  simp only [cons, ne_eq, MonoidHom.coe_range, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
+  simp only [cons, ne_eq, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,
     equivPair, rcons, Word.equivPair_symm, Word.rcons_eq_smul, Equiv.coe_fn_mk,
     Word.equivPair_tail_eq_inv_smul, Equiv.coe_fn_symm_mk, smul_inv_smul]
@@ -486,7 +486,7 @@ theorem cons_eq_smul {i : ι} (g : G i)
 @[simp]
 theorem prod_summand_smul {i : ι} (g : G i) (w : NormalWord d) :
     (g • w).prod = of i g * w.prod := by
-  simp only [prod, summand_smul_def', equivPair, rcons, MonoidHom.coe_range, Word.equivPair_symm,
+  simp only [prod, summand_smul_def', equivPair, rcons, Word.equivPair_symm,
     Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, Word.equivPair_smul_same,
     Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul, ← of_apply_eq_base i,
     MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
@@ -512,7 +512,9 @@ theorem prod_empty : (empty : NormalWord d).prod = 1 := by
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp [prod, cons, Word.prod, List.map, ← of_apply_eq_base i, equiv_fst_eq_mul_inv, mul_assoc]
+  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base i, equiv_fst_eq_mul_inv,
+    mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
+    ofCoprodI_of, inv_mul_cancel_left]
 
 theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
   induction w using consRecOn with
@@ -606,7 +608,7 @@ theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
   rcases transversal_nonempty φ hφ with ⟨d⟩
   rcases hw.exists_normalWord_prod_eq d with ⟨w', hw'prod, hw'map⟩
   rintro ⟨h, heq⟩
-  have : (NormalWord.prod (d := d) ⟨.empty, h, by simp⟩) = base h := by
+  have : (NormalWord.prod (d := d) ⟨.empty, h, by simp⟩) = base φ h := by
     simp [NormalWord.prod]
   rw [← hw'prod, ← this] at heq
   suffices : w'.toWord = .empty
