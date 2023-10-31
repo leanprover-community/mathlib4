@@ -98,7 +98,7 @@ protected theorem polarCoord_apply (a : ℂ) :
 protected theorem polarCoord_source :
     Complex.polarCoord.source = {a | 0 < a.re} ∪ {a | a.im ≠ 0} := by simp [Complex.polarCoord]
 
-alias Complex.polarCoord_target := polarCoord_target
+alias polarCoord_target := polarCoord_target
 
 @[simp]
 protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
