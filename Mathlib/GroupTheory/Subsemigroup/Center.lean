@@ -295,9 +295,11 @@ section
 
 variable (M) [Mul M]
 
-/-- The center of a magma `M` is the set of elements that commute with everything in `M` -/
+/-- The center of a magma `M` is the set of elements that commute and associate with everything in
+`M` -/
 @[to_additive
-      "The center of a magma `M` is the set of elements that commute with everything in `M`"]
+      "The center of a magma `M` is the set of elements that commute and associate with everything
+      in `M`"]
 def center : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center
@@ -305,7 +307,7 @@ def center : Subsemigroup M where
 variable {M}
 
 /-- The center of a magma is commutative and associative. -/
-@[to_additive "The center of an additive magma is commutative."]
+@[to_additive "The center of an additive magma is commutative and associative."]
 instance : CommSemigroup (Mul.center M) where
   mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
   mul_comm a _ := Subtype.ext <| a.2.comm _
