@@ -176,7 +176,7 @@ theorem free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
     [Module.Free R P] [Module.Finite R P]
     (hN : FiniteDimensional.finrank R N = n)
     (hP : FiniteDimensional.finrank R P = p)
-    [StrongRankCondition R]:
+    [StrongRankCondition R] :
     FiniteDimensional.finrank R M = n + p := by
   apply FiniteDimensional.finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add h, ← hN, ← hP]
