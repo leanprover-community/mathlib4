@@ -21,13 +21,10 @@ when `f` is a polynomial, or when the constant term of `g` is nilpotent. There a
 where the composition is defined, although these cases are less easy to classify.
 
 In this file we define
-
-  `PowerSeries.hasComp` : a relation on `R⟦X⟧`, where `f.hasComp g` means that the formal
-                          composition of `f` and `g` exists.
-
-  `PowerSeries.comp`    : a binary operation on `R⟦X⟧`, where `f.comp g` is the formal composition
-                          in the case `f.hasComp g`, or zero otherwise.
-
+* `PowerSeries.hasComp` : a relation on `R⟦X⟧`, where `f.hasComp g` means that the formal
+  composition of `f` and `g` exists.
+* `PowerSeries.comp` : a binary operation on `R⟦X⟧`, where `f.comp g` is the formal composition
+  in the case `f.hasComp g`, or zero otherwise.
 ## Notation
 
 The operation `f.comp g` can also be written `f ∘ᶠ g`.
