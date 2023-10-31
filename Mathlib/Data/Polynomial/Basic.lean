@@ -1082,7 +1082,8 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
     (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
   rcases p with ⟨⟩
   simp only [erase_def, coeff]
-  convert rfl
+  -- Porting note: Was `convert rfl`.
+  exact ite_congr rfl (fun _ => rfl) (fun _ => rfl)
 #align polynomial.coeff_erase Polynomial.coeff_erase
 
 @[simp]
