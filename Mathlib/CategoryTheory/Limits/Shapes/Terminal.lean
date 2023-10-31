@@ -739,11 +739,8 @@ instance isIso_π_initial [HasInitial J] (F : J ⥤ C) : IsIso (limit.π F (⊥_
   isIso_π_of_isInitial initialIsInitial F
 #align category_theory.limits.is_iso_π_initial CategoryTheory.Limits.isIso_π_initial
 
-theorem isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C)
-    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
-    haveI := IsTerminal.hasTerminal I
-    IsIso (limit.π F j) :=
-  haveI := IsTerminal.hasTerminal I
+theorem isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasLimit F]
+    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramTerminal I F), by ext; simp, by simp⟩⟩
 #align category_theory.limits.is_iso_π_of_is_terminal CategoryTheory.Limits.isIso_π_of_isTerminal
 
@@ -765,11 +762,8 @@ instance isIso_ι_terminal [HasTerminal J] (F : J ⥤ C) : IsIso (colimit.ι F (
   isIso_ι_of_isTerminal terminalIsTerminal F
 #align category_theory.limits.is_iso_ι_terminal CategoryTheory.Limits.isIso_ι_terminal
 
-theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C)
-    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :
-    haveI := IsInitial.hasInitial I
-    IsIso (colimit.ι F j) :=
-  haveI := IsInitial.hasInitial I
+theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimit F]
+    [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (colimit.ι F j) :=
   ⟨⟨colimit.desc _ (coconeOfDiagramInitial I F), by
     refine ⟨?_, by ext; simp⟩
     dsimp; simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
