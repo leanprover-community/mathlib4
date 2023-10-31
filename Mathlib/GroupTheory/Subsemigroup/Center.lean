@@ -27,6 +27,7 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 ## References
 
 * [Cabrera García and Rodríguez Palacios, Non-associative normed algebras. Volume 1]
+  [cabreragarciarodriguezpalacios2014]
 -/
 
 
