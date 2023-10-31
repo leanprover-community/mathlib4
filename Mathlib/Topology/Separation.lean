@@ -1789,7 +1789,7 @@ protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompa
 `ClosableCompactSubsetOpenSpace` property, any open set is an increasing union
 of a sequence of compact closed sets. -/
 theorem IsOpen.exists_iUnion_isCompact_isClosed [SecondCountableTopology X] [LocallyCompactSpace X]
-    [ClosableCompactSubsetOpenSpace X] {U : Set α} (hU : IsOpen U) :
+    [ClosableCompactSubsetOpenSpace X] {U : Set X} (hU : IsOpen U) :
     ∃ F : ℕ → Set X, (∀ n, IsCompact (F n)) ∧ (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U)
       ∧ ⋃ n, F n = U ∧ Monotone F := by
   rcases hU.exists_iUnion_isCompact with ⟨F, F_comp, FU, F_union, F_mono⟩
