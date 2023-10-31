@@ -80,18 +80,19 @@ instance monoid : Monoid (PushoutI φ) :=
 def of (i : ι) : G i →* PushoutI φ :=
   (Con.mk' _).comp <| inl.comp CoprodI.of
 
+variable (φ) in
 /-- The map from the base monoid into the pushout -/
 def base : H →* PushoutI φ :=
   (Con.mk' _).comp inr
 
-theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base (φ := φ)) := by
+theorem of_comp_eq_base (i : ι) : (of i).comp (φ i) = (base φ) := by
   ext x
   apply (Con.eq _).2
   refine ConGen.Rel.of _ _ ?_
   simp only [MonoidHom.comp_apply, Set.mem_iUnion, Set.mem_range]
   exact ⟨_, _, rfl, rfl⟩
 
-theorem of_apply_eq_base (i : ι) (x : H) : of i (φ i x) = base (φ := φ) x := by
+theorem of_apply_eq_base (i : ι) (x : H) : of i (φ i x) = base φ x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
 
 /-- Define a homomorphism out of the pushout of monoids be defining it on each object in the
@@ -116,14 +117,15 @@ theorem lift_of (f : ∀ i, G i →* K) (k : H →* K)
 @[simp]
 theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k)
-    (g : H) : (lift f k hf) (base g : PushoutI φ) = k g := by
+    (g : H) : (lift f k hf) (base φ g : PushoutI φ) = k g := by
   delta PushoutI lift base
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_apply_inr]
 
+-- `ext` attribute should be lower priority then `hom_ext_nonempty`
 @[ext 1199]
 theorem hom_ext {f g : PushoutI φ →* K}
     (h : ∀ i, f.comp (of i : G i →* _) = g.comp (of i : G i →* _))
-    (hbase : f.comp base = g.comp base) : f = g :=
+    (hbase : f.comp (base φ) = g.comp (base φ)) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     Coprod.hom_ext
       (CoprodI.ext_hom _ _ h)
@@ -151,7 +153,7 @@ theorem ofCoprodI_of (i : ι) (g : G i) :
 theorem induction_on {motive : PushoutI φ → Prop}
     (x : PushoutI φ)
     (of  : ∀ (i : ι) (g : G i), motive (of i g))
-    (base : ∀ h, motive (base h))
+    (base : ∀ h, motive (base φ h))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   delta PushoutI PushoutI.of PushoutI.base at *
   induction x using Con.induction_on with
@@ -415,7 +417,7 @@ noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
       smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
-    base (φ := φ) h • w = { w with head := h * w.head } := by
+    base φ h • w = { w with head := h * w.head } := by
   dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
   rw [lift_base]
   rfl
@@ -433,7 +435,7 @@ theorem of_smul_eq_smul {i : ι} (g : G i) (w : NormalWord d) :
   rw [summand_smul_def, summand_smul_def']
 
 theorem base_smul_eq_smul (h : H) (w : NormalWord d) :
-    base (φ := φ) h • w = h • w := by
+    base φ h • w = h • w := by
   rw [base_smul_def, base_smul_def']
 
 /-- Induction principle for `NormalWord`, that corrresponds closely to inducting on
@@ -445,7 +447,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
       (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.head = 1),
       motive w →  motive (cons g w hmw hgr))
     (h_base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
-      (base (φ := φ) h • w)) : motive w := by
+      (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
   convert h_base head ⟨w, 1, h3⟩ rfl ?_
   · simp [base_smul_def]
@@ -470,7 +472,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
 /-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
 injective -/
 def prod (w : NormalWord d) : PushoutI φ :=
-  base w.head * ofCoprodI (w.toWord).prod
+  base φ w.head * ofCoprodI (w.toWord).prod
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
@@ -492,7 +494,7 @@ theorem prod_summand_smul {i : ι} (g : G i) (w : NormalWord d) :
 
 @[simp]
 theorem prod_base_smul (h : H) (w : NormalWord d) :
-    (h • w).prod = base h * w.prod := by
+    (h • w).prod = base φ h * w.prod := by
   simp only [base_smul_def', prod, map_mul, mul_assoc]
 
 @[simp]
@@ -547,7 +549,7 @@ end NormalWord
 open NormalWord
 
 theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
-    Function.Injective (of (φ := φ) (i := i)) := by
+    Function.Injective (of (φ := φ) i) := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
@@ -558,7 +560,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     by simp_all [Function.funext_iff, of_smul_eq_smul])
 
 theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
-    Function.Injective (base (φ := φ)) := by
+    Function.Injective (base φ) := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
@@ -600,7 +602,7 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 `w` itself is not in the image of the base monoid. -/
 theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
     {w : Word G} (hw : Reduced φ w) :
-    ofCoprodI w.prod ∈ (base (φ := φ)).range → w = .empty := by
+    ofCoprodI w.prod ∈ (base φ).range → w = .empty := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   rcases hw.exists_normalWord_prod_eq d with ⟨w', hw'prod, hw'map⟩
   rintro ⟨h, heq⟩
@@ -616,7 +618,7 @@ theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
 end Reduced
 
 theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
-    (of i).range ⊓ (of j).range = (base (φ := φ)).range :=
+    (of i).range ⊓ (of j).range = (base φ).range :=
   le_antisymm
     (by
       intro x ⟨⟨g₁, hg₁⟩, ⟨g₂, hg₂⟩⟩
