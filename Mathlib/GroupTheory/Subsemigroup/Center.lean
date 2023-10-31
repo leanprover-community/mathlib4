@@ -289,33 +289,6 @@ theorem center_eq_univ [CommSemigroup M] : center M = Set.univ :=
 
 end Set
 
-namespace Mul
-
-section
-
-variable (M) [Mul M]
-
-/-- The center of a magma `M` is the set of elements that commute and associate with everything in
-`M` -/
-@[to_additive
-      "The center of a magma `M` is the set of elements that commute and associate with everything
-      in `M`"]
-def center : Subsemigroup M where
-  carrier := Set.center M
-  mul_mem' := Set.mul_mem_center
-
-variable {M}
-
-/-- The center of a magma is commutative and associative. -/
-@[to_additive "The center of an additive magma is commutative and associative."]
-instance : CommSemigroup (Mul.center M) where
-  mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
-  mul_comm a _ := Subtype.ext <| a.2.comm _
-
-end
-
-end Mul
-
 namespace Subsemigroup
 
 section
@@ -335,7 +308,15 @@ def center [Mul M] : Subsemigroup M where
 #noalign subsemigroup.coe_center
 #noalign add_subsemigroup.coe_center
 
-variable {M} [Semigroup M]
+variable {M}
+
+/-- The center of a magma is commutative and associative. -/
+@[to_additive "The center of an additive magma is commutative and associative."]
+instance [Mul M] : CommSemigroup (center M) where
+  mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
+  mul_comm a _ := Subtype.ext <| a.2.comm _
+
+variable [Semigroup M]
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
