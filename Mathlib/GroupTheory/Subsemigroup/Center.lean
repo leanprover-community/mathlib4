@@ -306,8 +306,8 @@ variable {M}
 /-- The center of a magma is commutative. -/
 @[to_additive "The center of an additive magma is commutative."]
 instance : CommSemigroup (Mul.center M) where
-  mul_assoc := fun _ b _ => Subtype.ext <| b.2.mid_assoc _ _
-  mul_comm := fun a _ => Subtype.ext <| a.2.comm _
+  mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
+  mul_comm a _ := Subtype.ext <| a.2.comm _
 
 end
 
