@@ -412,9 +412,9 @@ def symm (h : Homotopy φ₁ φ₂) : Homotopy φ₂ φ₁ where
   h₁ := -h.h₁
   h₂ := -h.h₂
   h₃ := -h.h₃
-  comm₁ := by rw [h.comm₁, comp_neg] ; abel
-  comm₂ := by rw [h.comm₂, comp_neg, neg_comp] ; abel
-  comm₃ := by rw [h.comm₃, neg_comp] ; abel
+  comm₁ := by rw [h.comm₁, comp_neg]; abel
+  comm₂ := by rw [h.comm₂, comp_neg, neg_comp]; abel
+  comm₃ := by rw [h.comm₃, neg_comp]; abel
 
 /-- If two maps of short complexes are homotopic, their opposites also are. -/
 @[simps]
