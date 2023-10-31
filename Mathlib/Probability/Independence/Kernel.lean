@@ -679,18 +679,6 @@ theorem iIndepSets.iIndepSet_of_mem {_mΩ : MeasurableSpace Ω} {κ : kernel α 
 
 variable {s t : Set Ω} (S T : Set (Set Ω))
 
-theorem iIndepSet_iff_iIndepSets_singleton {m0 : MeasurableSpace Ω} {s : ι → Set Ω}
-    (hs_meas : ∀ i, MeasurableSet (s i)) (κ : kernel α Ω) (μ : Measure α) [IsMarkovKernel κ] :
-    iIndepSet s κ μ ↔ iIndepSets (fun i ↦ {s i}) κ μ := by
-  refine ⟨iIndep.iIndepSets (fun n ↦ rfl), fun h ↦ ?_⟩
-  apply iIndepSets.iIndep
-  · refine fun i ↦ (generateFrom_le fun u hu => ?_)
-    rw [Set.mem_singleton_iff.mp hu]
-    exact hs_meas i
-  · exact fun i ↦ IsPiSystem.singleton (s i)
-  · exact fun i ↦ rfl
-  · exact h
-
 theorem indepSet_iff_indepSets_singleton {m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (κ : kernel α Ω) (μ : Measure α)
     [IsMarkovKernel κ] :
@@ -700,13 +688,6 @@ theorem indepSet_iff_indepSets_singleton {m0 : MeasurableSpace Ω} (hs_meas : Me
       (generateFrom_le fun u hu => by rwa [Set.mem_singleton_iff.mp hu])
       (generateFrom_le fun u hu => by rwa [Set.mem_singleton_iff.mp hu])
       (IsPiSystem.singleton s) (IsPiSystem.singleton t) rfl rfl h⟩
-
-theorem iIndepSet_iff_measure_inter_eq_prod {_m0 : MeasurableSpace Ω} {s : ι → Set Ω}
-    (hs_meas : ∀ i, MeasurableSet (s i)) (κ : kernel α Ω) (μ : Measure α)
-    [IsMarkovKernel κ] :
-    iIndepSet s κ μ ↔ ∀ (S : Finset ι), ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, s i) = ∏ i in S, κ a (s i) := by
-  rw [iIndepSet_iff_iIndepSets_singleton, iIndepSets_singleton_iff]
-  exact hs_meas
 
 theorem indepSet_iff_measure_inter_eq_mul {_m0 : MeasurableSpace Ω} (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (κ : kernel α Ω) (μ : Measure α)
