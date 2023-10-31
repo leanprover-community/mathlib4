@@ -646,15 +646,6 @@ theorem AEMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} 
     hf.ennreal_toReal.restrict.aestronglyMeasurable]
 #align measure_theory.ae_measurable.ae_eq_of_forall_set_lintegral_eq MeasureTheory.AEMeasurable.ae_eq_of_forall_set_lintegral_eq
 
-lemma ae_eq_of_withDensity_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
-    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg : AEMeasurable g μ) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
-    (h : μ.withDensity f = μ.withDensity g) :
-    f =ᵐ[μ] g := by
-  refine AEMeasurable.ae_eq_of_forall_set_lintegral_eq hf hg hf_int hg_int fun s hs _ ↦ ?_
-  rw [Measure.ext_iff] at h
-  specialize h s hs
-  rwa [withDensity_apply _ hs, withDensity_apply _ hs] at h
-
 end Lintegral
 
 section WithDensity
