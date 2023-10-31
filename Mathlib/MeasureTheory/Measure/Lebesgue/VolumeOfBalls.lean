@@ -251,9 +251,20 @@ theorem volume_sum_rpow_lt_one :
       ← Finset.sum_neg_distrib, exp_sum]
     rw [integral_finset_prod_eq_pow ι fun x : ℝ => exp (- |x| ^ p), integral_comp_abs
       (f := fun x => Real.exp (- x ^ p)), integral_exp_neg_rpow h₁]
-    convert integrableOn_rpow_mul_exp_neg_rpow (by linarith : (-1:ℝ) < 0) hp using 2
-    rw [Real.rpow_zero, one_mul]
   · rw [finrank_fintype_fun_eq_card]
+
+theorem volume_sum_rpow_lt {r p : ℝ} (hp : 1 ≤ p) (hr : 0 < r) :
+    volume {x : ι → ℝ | ∑ i, |x i| ^ p < r ^ p} =
+      .ofReal (r ^ (card ι) *
+        (2 * Real.Gamma (1 / p + 1)) ^ card ι / Real.Gamma (card ι / p + 1)) := by
+  have : 0 ≤ r ^ (card ι) := pow_nonneg (le_of_lt hr) _
+  rw [mul_div_assoc, ofReal_mul this, ← volume_sum_rpow_lt_one _ hp, ← abs_eq_self.mpr this,
+    ← finrank_pi ℝ]
+  convert addHaar_smul volume r  {x : ι → ℝ |  ∑ i, |x i| ^ p < 1} using 2
+  simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,
+    smul_eq_mul, abs_mul, mul_rpow (abs_nonneg _) (abs_nonneg _), abs_inv,
+    Real.inv_rpow (abs_nonneg _), ← Finset.mul_sum, abs_eq_self.mpr (le_of_lt hr),
+    inv_mul_lt_iff (rpow_pos_of_pos hr _), mul_one]
 
 theorem _root_.Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
     volume {x : ι → ℂ | ∑ i, ‖x i‖ ^ p < 1} =
@@ -287,6 +298,19 @@ theorem _root_.Complex.volume_sum_rpow_lt_one {p : ℝ} (hp : 1 ≤ p) :
       Complex.integral_exp_neg_rpow hp]
   · rw [finrank_pi_fintype, Complex.finrank_real_complex, Finset.sum_const, smul_eq_mul,
        Nat.cast_mul, Nat.cast_ofNat, Fintype.card, mul_comm]
+
+theorem _root_.Complex.volume_sum_rpow_lt {r p : ℝ} (hp : 1 ≤ p) (hr : 0 < r) :
+    volume {x : ι → ℝ | ∑ i, |x i| ^ p < r ^ p} =
+      .ofReal (r ^ (card ι) *
+        (2 * Real.Gamma (1 / p + 1)) ^ card ι / Real.Gamma (card ι / p + 1)) := by
+  have : 0 ≤ r ^ (card ι) := pow_nonneg (le_of_lt hr) _
+  rw [mul_div_assoc, ofReal_mul this, ← volume_sum_rpow_lt_one _ hp, ← abs_eq_self.mpr this,
+    ← finrank_pi ℝ]
+  convert addHaar_smul volume r  {x : ι → ℝ |  ∑ i, |x i| ^ p < 1} using 2
+  simp_rw [← Set.preimage_smul_inv₀ (ne_of_gt hr), Set.preimage_setOf_eq, Pi.smul_apply,
+    smul_eq_mul, abs_mul, mul_rpow (abs_nonneg _) (abs_nonneg _), abs_inv,
+    Real.inv_rpow (abs_nonneg _), ← Finset.mul_sum, abs_eq_self.mpr (le_of_lt hr),
+    inv_mul_lt_iff (rpow_pos_of_pos hr _), mul_one]
 
 end Lp_norm
 
