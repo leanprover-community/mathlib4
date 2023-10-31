@@ -386,7 +386,7 @@ theorem variance (n : ℕ) :
     (∑ ν in Finset.range (n + 1), (n • Polynomial.X - (ν : R[X])) ^ 2 * bernsteinPolynomial R n ν) =
       n • Polynomial.X * ((1 : R[X]) - Polynomial.X) := by
   have p : ((((Finset.range (n + 1)).sum fun ν => (ν * (ν - 1)) • bernsteinPolynomial R n ν) +
-      (1 - (2 * n) • Polynomial.X) * (Finset.range (n + 1)).sum fun ν =>
+      ((1 : R[X]) - (2 * n) • Polynomial.X) * (Finset.range (n + 1)).sum fun ν =>
         ν • bernsteinPolynomial R n ν) + n ^ 2 • X ^ 2 *
           (Finset.range (n + 1)).sum fun ν => bernsteinPolynomial R n ν) = _ :=
     rfl
