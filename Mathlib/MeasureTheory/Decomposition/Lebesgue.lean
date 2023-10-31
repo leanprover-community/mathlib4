@@ -126,25 +126,18 @@ instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgue
   lebesgue_decomposition := by
     obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
     by_cases hr : r = 0
-    · refine ⟨⟨μ, 0⟩, measurable_const, ?_, ?_⟩
-      · simp [hr]
-      · simp
+    · exact ⟨⟨μ, 0⟩, measurable_const, by simp [hr], by simp⟩
     refine ⟨⟨μ.singularPart ν, r⁻¹ • μ.rnDeriv ν⟩, ?_, ?_, ?_⟩
     · change Measurable (r⁻¹ • μ.rnDeriv ν)
       exact hmeas.const_smul _
     · refine MutuallySingular.mono_ac hsing AbsolutelyContinuous.rfl ?_
       exact absolutelyContinuous_of_le_smul le_rfl
-    · have : r⁻¹ • rnDeriv μ ν = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv μ ν := by
-        ext x
-        simp [ENNReal.smul_def]
-      rw [this, withDensity_smul _ hmeas, nnreal_smul_eq_coe_smul r,
-        withDensity_smul_measure, ← smul_assoc, smul_eq_mul, ENNReal.coe_inv,
-        ENNReal.inv_mul_cancel]
-      · simp only [one_smul]
-        exact hadd
+    · have : r⁻¹ • rnDeriv μ ν = ((r⁻¹ : ℝ≥0) : ℝ≥0∞) • rnDeriv μ ν := by simp [ENNReal.smul_def]
+      rw [this, withDensity_smul _ hmeas, ENNReal.smul_def r, withDensity_smul_measure,
+        ← smul_assoc, smul_eq_mul, ENNReal.coe_inv hr, ENNReal.inv_mul_cancel, one_smul]
+      · exact hadd
       · simp [hr]
       · exact ENNReal.coe_ne_top
-      · exact hr
 
 @[measurability]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
@@ -334,14 +327,14 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
   · refine (eq_singularPart ((measurable_rnDeriv μ ν).const_smul r⁻¹) ?_ ?_).symm
     · refine (mutuallySingular_singularPart μ ν).mono_ac AbsolutelyContinuous.rfl ?_
       exact absolutelyContinuous_of_le_smul le_rfl
-    · rw [nnreal_smul_eq_coe_smul r, withDensity_smul_measure, ← withDensity_smul]
+    · rw [ENNReal.smul_def r, withDensity_smul_measure, ← withDensity_smul]
       swap; · exact (measurable_rnDeriv _ _).const_smul _
       convert haveLebesgueDecomposition_add μ ν
       ext x
       simp only [Pi.smul_apply, ne_eq]
       rw [← ENNReal.smul_def, ← smul_assoc, smul_eq_mul, mul_inv_cancel hr, one_smul]
   · rw [singularPart, singularPart, dif_neg hl, dif_neg]
-    refine' fun hl' => hl _
+    refine fun hl' => hl ?_
     rw [← inv_smul_smul₀ hr ν]
     infer_instance
 
