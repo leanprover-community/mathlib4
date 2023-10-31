@@ -207,19 +207,23 @@ section
 /-! `NonUnitalStarSubalgebra`s inherit structure from their `NonUnitalSubsemiringClass` and
 `NonUnitalSubringClass` instances. -/
 
-instance toNonUnitalSemiring {R A} [CommSemiring R] [NonUnitalSemiring A] [Module R A] [Star A]
+@[nolint docBlame]
+abbrev toNonUnitalSemiring {R A} [CommSemiring R] [NonUnitalSemiring A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) : NonUnitalSemiring S :=
   inferInstance
 
-instance toNonUnitalCommSemiring {R A} [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
+@[nolint docBlame]
+abbrev toNonUnitalCommSemiring {R A} [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
     [Star A] (S : NonUnitalStarSubalgebra R A) : NonUnitalCommSemiring S :=
   inferInstance
 
-instance toNonUnitalRing {R A} [CommRing R] [NonUnitalRing A] [Module R A] [Star A]
+@[nolint docBlame]
+abbrev toNonUnitalRing {R A} [CommRing R] [NonUnitalRing A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) : NonUnitalRing S :=
   inferInstance
 
-instance toNonUnitalCommRing {R A} [CommRing R] [NonUnitalCommRing A] [Module R A] [Star A]
+@[nolint docBlame]
+abbrev toNonUnitalCommRing {R A} [CommRing R] [NonUnitalCommRing A] [Module R A] [Star A]
     (S : NonUnitalStarSubalgebra R A) : NonUnitalCommRing S :=
   inferInstance
 end

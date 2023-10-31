@@ -51,7 +51,7 @@ open AddSubmonoidClass
 `NonUnitalSubsemiringClass`. -/
 /-- A non-unital subsemiring of a `NonUnitalNonAssocSemiring` inherits a
 `NonUnitalNonAssocSemiring` structure -/
-instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
+instance toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
   Subtype.coe_injective.nonUnitalNonAssocSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
 #align non_unital_subsemiring_class.to_non_unital_non_assoc_semiring NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring
 
