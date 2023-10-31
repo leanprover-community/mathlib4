@@ -6,6 +6,7 @@ Authors: Martin Dvorak
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Order.SMul
 import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
@@ -28,6 +29,15 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
    *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
 
 -/
+
+lemma Multiset.sum_lt_sum {ι M : Type*}
+    [OrderedAddCommMonoid M]
+    [CovariantClass M M (· + ·) (· ≤ ·)]
+    [CovariantClass M M (· + ·) (· < ·)]
+    {s : Multiset ι} {f g : ι → M}
+    (all_le : ∀ i ∈ s, f i ≤ g i) (exists_lt : ∃ i ∈ s, f i < g i) :
+  (s.map f).sum < (s.map g).sum :=
+sorry
 
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`.
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
@@ -79,12 +89,13 @@ def Function.HasMaxCutProperty (f : (Fin 2 → D) → C) : Prop :=
   ∃ a b : D, a ≠ b ∧ f.HasMaxCutPropertyAt a b
 
 /-- TODO description -/
+@[reducible]
 def FractionalOperation (D : Type*) (m : ℕ) : Type _ :=
-  List (((Fin m → D) → D) × ℕ)
+  Multiset (((Fin m → D) → D) × ℕ)
 
 /-- TODO description -/
 def FractionalOperation.IsValid {m : ℕ} (ω : FractionalOperation D m) : Prop :=
-  ω ≠ [] ∧ ω.Forall (·.snd ≠ 0)
+  ω ≠ ∅ ∧ ∀ g ∈ ω, g.snd ≠ 0
 
 /-- TODO description -/
 def function_weigth_tt_aux {m n : ℕ} (g : ((Fin m → D) → D) × ℕ) (x' : Fin n → Fin m → D) :
@@ -93,7 +104,7 @@ def function_weigth_tt_aux {m n : ℕ} (g : ((Fin m → D) → D) × ℕ) (x' : 
 
 /-- TODO description -/
 def FractionalOperation.tt {m n : ℕ} (ω : FractionalOperation D m) (x : Fin m → Fin n → D) :
-    List ((Fin n → D) × ℕ) :=
+    Multiset ((Fin n → D) × ℕ) :=
   ω.map (fun g => function_weigth_tt_aux g (Function.swap x))
 
 /-- TODO description -/
@@ -101,7 +112,7 @@ def Function.AdmitsFractional {n m : ℕ} (f : (Fin n → D) → C) (ω : Fracti
     Prop :=
   ∀ x : (Fin m → (Fin n → D)),
     m • ((ω.tt x).map (fun r => r.snd • f r.fst)).sum ≤
-    (ω.map Prod.snd).sum • ((List.finRange m).map (fun i => f (x i))).sum
+    (ω.map Prod.snd).sum • (Finset.univ.val.map (fun i => f (x i))).sum
 
 /-- TODO description -/
 def FractionalOperation.IsFractionalPolymorphismFor {m : ℕ}
@@ -110,42 +121,28 @@ def FractionalOperation.IsFractionalPolymorphismFor {m : ℕ}
 
 /-- TODO description -/
 def FractionalOperation.IsSymmetric {m : ℕ} (ω : FractionalOperation D m) : Prop :=
-  ∀ x y : (Fin m → D), List.ofFn x ~ List.ofFn y → ω.Forall (fun g => g.fst x = g.fst y)
+  ∀ x y : (Fin m → D), List.ofFn x ~ List.ofFn y → ∀ g ∈ ω, g.fst x = g.fst y
 
 /-- TODO description -/
 def FractionalOperation.IsSymmetricFractionalPolymorphismFor {m : ℕ}
     (ω : FractionalOperation D m) (Γ : ValuedCsp D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
 
-attribute [pp_dot] Nat.succ List.length List.get List.sum
-
 lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
-    [LinearOrderedAddCommMonoid C] [IsLeftCancelAdd C]
+    [OrderedAddCommMonoid C] [CovariantClass C C (· + ·) (· < ·)] [OrderedSMul ℕ C]
     {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)
     {ω : FractionalOperation D 2} (valid : ω.IsValid) (symmega : ω.IsSymmetric) :
     ¬ f.AdmitsFractional ω := by
   rcases mcf with ⟨a, b, hab, mcfab⟩
-  have cclass : CovariantClass C C (· + ·) (· < ·) -- TODO see whether necessary
-  · constructor
-    intro x y z hyz
-    show x + y < x + z
-    have hle : x + y ≤ x + z
-    · exact add_le_add_left (le_of_lt hyz) x
-    have hne : x + y ≠ x + z
-    · intro contr
-      apply LT.lt.ne hyz
-      apply add_left_cancel
-      exact contr
-    exact Ne.lt_of_le hne hle
   intro contr
   specialize contr ![![a, b], ![b, a]]
   -- on each row `r` we have `f r.fst > f a b = f b a`
-  have triv : (List.finRange 2).map (fun i => f (![![a, b], ![b, a]] i)) = [f ![a, b], f ![b, a]]
+  have triv : Finset.univ.val.map (fun i => f (![![a, b], ![b, a]] i)) = [f ![a, b], f ![b, a]]
   · rfl
   have hfba : f ![b, a] = f ![a, b]
   · symm
     apply mcfab.left
-  have sum_same : List.sum [f ![a, b], f ![a, b]] = 2 • f ![a, b]
+  have sum_same : Multiset.sum [f ![a, b], f ![a, b]] = 2 • f ![a, b]
   · convert_to 1 • f ![a, b] + 1 • f ![a, b] = (1 + 1) • f ![a, b]
     · simp
     symm
@@ -154,16 +151,45 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
   have sharp :
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f ![a, b])).sum <
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f r.fst)).sum
-  · sorry -- TODO utilize `symmega` with `valid` and `mcfab.right` with `hab` here
+  · obtain ⟨nonempty, nonzeros⟩ := valid
+    have rows_lt : ∀ r ∈ (ω.tt ![![a, b], ![b, a]]), r.snd • f ![a, b] < r.snd • f r.fst
+    · intro r rin
+      -- TODO utilize `symmega` with `nonzeros` and `mcfab.right` with `hab` here
+      have rsnd_pos : 0 < r.snd
+      · sorry
+      have key : f ![a, b] < f r.fst
+      · sorry
+      exact smul_lt_smul_of_pos key rsnd_pos
+    have half_sharp :
+      ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f ![a, b])).sum <
+      ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f r.fst)).sum
+    · apply Multiset.sum_lt_sum
+      · intro r rin
+        exact le_of_lt (rows_lt r rin)
+      · obtain ⟨g, gin⟩ : ∃ g, g ∈ ω
+        · exact Multiset.exists_mem_of_ne_zero nonempty
+        use function_weigth_tt_aux g (Function.swap ![![a, b], ![b, a]])
+        have missing :
+          function_weigth_tt_aux g (swap ![![a, b], ![b, a]]) ∈
+            FractionalOperation.tt ω ![![a, b], ![b, a]]
+        · simp only [FractionalOperation.tt, Multiset.mem_map]
+          use g
+        constructor
+        · exact missing
+        · apply rows_lt
+          exact missing
+    have two_pos : 0 < 2
+    · decide
+    exact smul_lt_smul_of_pos half_sharp two_pos
   have hlt := lt_of_lt_of_le sharp contr
-  simp only [FractionalOperation.tt, function_weigth_tt_aux, List.map_map] at hlt
+  simp only [FractionalOperation.tt, function_weigth_tt_aux, Multiset.map_map] at hlt
   have impos : 2 • (ω.map (fun r => r.snd • f ![a, b])).sum < (ω.map Prod.snd).sum • 2 • f ![a, b]
   · exact hlt
   have rhs_swap : (ω.map Prod.snd).sum • 2 • f ![a, b] = 2 • (ω.map Prod.snd).sum • f ![a, b]
   · apply nsmul_left_comm
   rw [rhs_swap] at impos
   have distrib : (ω.map (fun r => r.snd • f ![a, b])).sum = (ω.map Prod.snd).sum • f ![a, b]
-  · rw [List.sum_smul, List.map_map]
+  · rw [Multiset.sum_smul, Multiset.map_map]
     rfl
   rw [distrib] at impos
   apply false_of_ne (ne_of_lt impos)
