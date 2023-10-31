@@ -107,18 +107,15 @@ equivalence in general; one case when it is is for groups with zero, which is co
 `centerUnitsEquivUnitsCenter`. -/
 @[to_additive (attr := simps! apply_coe_val)
   "For an additive monoid, the units of the center inject into the center of the units."]
-def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) where
-  toFun := fun x => {
-    val := (Units.map (Submonoid.center M).subtype) x
-    property := by
+-- def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) :=
+--  (Units.map (Submonoid.center M).subtype).codRestrict _ <| fun u r ↦ Units.ext <| u.1.prop r
+def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) :=
+  (Units.map (Submonoid.center M).subtype).codRestrict _ (by
+      intro u
       rw [Submonoid.mem_center_iff]
-      intro a
-      apply Units.ext
-      rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
-        Submonoid.coe_subtype, x.1.prop.comm a]
-  }
-  map_one' := rfl
-  map_mul' _ _ := rfl
+      exact (fun r ↦ Units.ext (by
+        rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
+          Submonoid.coe_subtype, u.1.prop.comm r])))
 
 @[to_additive]
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
