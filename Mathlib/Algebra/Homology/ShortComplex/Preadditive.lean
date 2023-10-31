@@ -445,9 +445,9 @@ def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁
   h₁ := h.h₁ + h'.h₁
   h₂ := h.h₂ + h'.h₂
   h₃ := h.h₃ + h'.h₃
-  comm₁ := by rw [add_τ₁, add_τ₁, h.comm₁, h'.comm₁, comp_add] ; abel
-  comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp] ; abel
-  comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp] ; abel
+  comm₁ := by rw [add_τ₁, add_τ₁, h.comm₁, h'.comm₁, comp_add]; abel
+  comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp]; abel
+  comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp]; abel
 
 /-- Homotopy between morphisms of short complexes is compatible withe substraction. -/
 @[simps]
