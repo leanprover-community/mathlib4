@@ -37,7 +37,12 @@ lemma Multiset.sum_lt_sum {ι M : Type*}
     {s : Multiset ι} {f g : ι → M}
     (all_le : ∀ i ∈ s, f i ≤ g i) (exists_lt : ∃ i ∈ s, f i < g i) :
   (s.map f).sum < (s.map g).sum :=
-sorry
+by -- TODO move elsewhere
+  rcases s with ⟨l⟩
+  simp only [quot_mk_to_coe'', coe_map, coe_sum]
+  apply List.sum_lt_sum
+  · exact all_le
+  · exact exists_lt
 
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`.
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
