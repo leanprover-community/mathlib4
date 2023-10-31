@@ -843,8 +843,6 @@ theorem smul_apply {_m : MeasurableSpace α} (c : R) (μ : Measure α) (s : Set 
   rfl
 #align measure_theory.measure.smul_apply MeasureTheory.Measure.smul_apply
 
-lemma nnreal_smul_eq_coe_smul (r : ℝ≥0) (μ : Measure α) : r • μ = (r : ℝ≥0∞) • μ := rfl
-
 instance instSMulCommClass [SMulCommClass R R' ℝ≥0∞] [MeasurableSpace α] :
     SMulCommClass R R' (Measure α) :=
   ⟨fun _ _ _ => ext fun _ _ => smul_comm _ _ _⟩
@@ -2969,18 +2967,6 @@ but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
   fun S B1 => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S B1)
 #align measure_theory.measure.le_of_add_le_add_left MeasureTheory.Measure.le_of_add_le_add_left
-
-lemma Measure.add_left_cancel (μ ν₁ ν₂ : Measure α) [IsFiniteMeasure μ] :
-    μ + ν₁ = μ + ν₂ ↔ ν₁ = ν₂ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-  ext s -
-  rw [← ENNReal.add_right_inj (measure_ne_top μ s), ← Pi.add_apply, ← OuterMeasure.coe_add,
-    ← add_toOuterMeasure, h, add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply]
-
-lemma Measure.add_right_cancel (μ ν₁ ν₂ : Measure α) [IsFiniteMeasure μ] :
-    ν₁ + μ = ν₂ + μ ↔ ν₁ = ν₂ := by
-  rw [add_comm _ μ, add_comm _ μ]
-  exact add_left_cancel _ _ _
 
 theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
     (hf₁ : ∀ i : ℕ, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
