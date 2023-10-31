@@ -131,14 +131,6 @@ def single₀ : V ⥤ ChainComplex V ℕ where
         match n with
         | 0 => f
         | n + 1 => 0 }
-  map_id X := by
-    ext (_|_)
-    · rfl
-    · simp
-  map_comp f g := by
-    ext (_|_)
-    · rfl
-    · simp
 #align chain_complex.single₀ ChainComplex.single₀
 
 @[simp]
@@ -328,14 +320,6 @@ def single₀ : V ⥤ CochainComplex V ℕ where
         match n with
         | 0 => f
         | n + 1 => 0 }
-  map_id X := by
-    ext (_|_)
-    · rfl
-    · simp
-  map_comp f g := by
-    ext (_|_)
-    · rfl
-    · simp
 #align cochain_complex.single₀ CochainComplex.single₀
 
 @[simp]
