@@ -494,10 +494,7 @@ theorem rnDeriv_smul_left_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
   have h : (r.toNNReal • ν).rnDeriv μ =ᵐ[μ] r.toNNReal • ν.rnDeriv μ :=
     rnDeriv_smul_left ν μ r.toNNReal
-  have : r.toNNReal • rnDeriv ν μ = r • rnDeriv ν μ := by
-      ext x
-      simp [ENNReal.smul_def, ENNReal.coe_toNNReal hr]
-  simpa [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
+  simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
 
 /-- Radon-Nikodym derivative with respect to the scalar product of a measure.
 See also `rnDeriv_smul_right'`, which requires sigma-finite `ν` and `μ`. -/
@@ -967,10 +964,7 @@ theorem rnDeriv_smul_left_of_ne_top' (ν μ : Measure α) [SigmaFinite ν] [Sigm
     (r • ν).rnDeriv μ =ᵐ[μ] r • ν.rnDeriv μ := by
   have h : (r.toNNReal • ν).rnDeriv μ =ᵐ[μ] r.toNNReal • ν.rnDeriv μ :=
     rnDeriv_smul_left' ν μ r.toNNReal
-  have : r.toNNReal • rnDeriv ν μ = r • rnDeriv ν μ := by
-      ext x
-      simp [ENNReal.smul_def, ENNReal.coe_toNNReal hr]
-  simpa [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
+  simpa [ENNReal.smul_def, ENNReal.coe_toNNReal hr] using h
 
 /-- Radon-Nikodym derivative with respect to the scalar product of a measure.
 See also `rnDeriv_smul_right`, which has no hypothesis on `μ` but requires finite `ν`. -/
