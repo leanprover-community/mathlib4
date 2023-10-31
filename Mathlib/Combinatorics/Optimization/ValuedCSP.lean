@@ -5,7 +5,7 @@ Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
@@ -162,7 +162,8 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
   have rhs_swap : (ω.map Prod.snd).sum • 2 • f ![a, b] = 2 • (ω.map Prod.snd).sum • f ![a, b]
   · apply nsmul_left_comm
   rw [rhs_swap] at impos
-  have key : (ω.map (fun r => r.snd • f ![a, b])).sum = (ω.map Prod.snd).sum • f ![a, b]
-  · sorry -- TODO some transitivity
-  rw [key] at impos
+  have distrib : (ω.map (fun r => r.snd • f ![a, b])).sum = (ω.map Prod.snd).sum • f ![a, b]
+  · rw [List.sum_smul, List.map_map]
+    rfl
+  rw [distrib] at impos
   apply false_of_ne (ne_of_lt impos)
