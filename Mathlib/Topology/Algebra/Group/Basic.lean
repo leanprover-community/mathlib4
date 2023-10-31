@@ -1795,9 +1795,11 @@ theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsC
   refine ⟨L, hL, LK.trans (inter_subset_right _ _), ?_⟩
   exact (hK.smul (y * x⁻¹)).of_isClosed_subset L_closed (LK.trans (inter_subset_left _ _))
 
+-- The next instance creates a loop between weakly locally compact space and locally compact space
+-- for topological groups. Hopefully, it shouldn't create problems.
 /-- A topological group which is weakly locally compact is automatically locally compact. -/
 @[to_additive]
-lemma WeaklyLocallyCompactSpace.locallyCompactSpace_of_group [WeaklyLocallyCompactSpace G] :
+instance (priority := 90) instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
     LocallyCompactSpace G := by
   rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
   exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
