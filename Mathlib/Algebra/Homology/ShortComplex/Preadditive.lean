@@ -434,9 +434,9 @@ def trans (h₁₂ : Homotopy φ₁ φ₂) (h₂₃ : Homotopy φ₂ φ₃) : Ho
   h₁ := h₁₂.h₁ + h₂₃.h₁
   h₂ := h₁₂.h₂ + h₂₃.h₂
   h₃ := h₁₂.h₃ + h₂₃.h₃
-  comm₁ := by rw [h₁₂.comm₁, h₂₃.comm₁, comp_add] ; abel
-  comm₂ := by rw [h₁₂.comm₂, h₂₃.comm₂, comp_add, add_comp] ; abel
-  comm₃ := by rw [h₁₂.comm₃, h₂₃.comm₃, add_comp] ; abel
+  comm₁ := by rw [h₁₂.comm₁, h₂₃.comm₁, comp_add]; abel
+  comm₂ := by rw [h₁₂.comm₂, h₂₃.comm₂, comp_add, add_comp]; abel
+  comm₃ := by rw [h₁₂.comm₃, h₂₃.comm₃, add_comp]; abel
 
 /-- Homotopy between morphisms of short complexes is compatible withe addition. -/
 @[simps]
