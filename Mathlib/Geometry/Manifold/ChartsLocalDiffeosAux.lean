@@ -74,12 +74,23 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
     -- TODO: this should be reasonably obvious... means some missing simp lemma somewhere
     have congr_inv : ∀ y, goal.symm y = r.symm y := by
       intro y
-      rw [@LocalHomeomorph.coe_trans_symm]
-      calc goal.symm y
-        _ = (e'.trans (t.localHomeomorphSubtypeCoe)).symm y := rfl
-        _ = (e.toHomeomorphSourceTarget.toLocalHomeomorph.trans (t.localHomeomorphSubtypeCoe)).symm y := rfl
+      rw [LocalHomeomorph.coe_trans_symm]
+      have aux : ∀ y' : t, e'.symm y' = e.symm ↑y' := by intro; rfl
+      let aux := aux (t.localHomeomorphSubtypeCoe.symm y)
+      -- also fails: rw [aux]
+      calc (e'.symm ∘ t.localHomeomorphSubtypeCoe.symm) y
+        _ = e'.symm (t.localHomeomorphSubtypeCoe.symm y) := rfl
+        -- doesn't work, for some reason! _ = (e.symm) ↑(t.localHomeomorphSubtypeCoe.symm y) := by rw [aux] -- rfl
+        _ = (e.toHomeomorphSourceTarget.toLocalHomeomorph).symm (t.localHomeomorphSubtypeCoe.symm y) := rfl
+        _ = (e.toHomeomorphSourceTarget.symm.toLocalHomeomorph) (t.localHomeomorphSubtypeCoe.symm y) := by rw [← Homeomorph.symm_toLocalHomeomorph]
+        _ = (e.symm.toHomeomorphSourceTarget.toLocalHomeomorph) (t.localHomeomorphSubtypeCoe.symm y) := rfl
 
-        _ = (s.localHomeomorphSubtypeCoe.trans e).symm y := sorry -- eventually
+        _ = (e.symm.toHomeomorphSourceTarget.toLocalHomeomorph) (t.localHomeomorphSubtypeCoe.symm y) := sorry--rfl
+        --_ = (e'.trans (t.localHomeomorphSubtypeCoe)).symm y := rfl
+        --_ = (e.toHomeomorphSourceTarget.toLocalHomeomorph.trans (t.localHomeomorphSubtypeCoe)).symm y := rfl
+
+        _ = (e.symm.trans s.localHomeomorphSubtypeCoe.symm) y := sorry
+        _ = (s.localHomeomorphSubtypeCoe.trans e).symm y := rfl
         _ = r.symm y := rfl
     have congr_to : ∀ y, goal y = r ↑y := by intro; rfl
     have h2 : goal = r := LocalHomeomorph.ext goal r congr_to congr_inv (by simp)
@@ -105,15 +116,6 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
       -- This version is rigorous... except the sorry (i.e. helper above) might be too optimistic.
       -- let e' : LocalHomeomorph s H := (ehom.toLocalHomeomorph.trans c')
       exact G.compatible hc (helper c' hc')
-
-      -- -- This one would also suffice. Not sure if it's easier.
-      -- have he' : e' ∈ G.maximalAtlas s := by
-      --   apply mem_maximalAtlas_iff.mp
-      --   intro e'' he''
-      --   constructor
-      --   · sorry
-      --   · sorry
-      -- exact G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc) he'
   }
   sorry
 #exit
