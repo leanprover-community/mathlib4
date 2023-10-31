@@ -429,7 +429,6 @@ section TwoVariables
 open ProbabilityTheory
 
 variable {F : Type*} [MeasurableSpace F] {ν : Measure F} {X : Ω → E} {Y : Ω → F}
-variable [HasPDF (fun ω ↦ (X ω, Y ω)) ℙ (μ.prod ν)]
 
 /-- Random variables are independent iff their joint density is a product of marginal densities. -/
 theorem indepFun_iff_pdf_prod_eq_pdf_mul_pdf
