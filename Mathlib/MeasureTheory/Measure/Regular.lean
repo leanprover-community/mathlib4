@@ -426,8 +426,6 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {U : ℕ → Set �
 
 end OuterRegular
 
-#exit
-
 /-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
 is outer regular, then the original measure is outer regular as well. -/
 protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {μ : Measure α}
