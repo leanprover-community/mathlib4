@@ -173,7 +173,7 @@ theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv
 #align measure_theory.measure.with_density_rn_deriv_le MeasureTheory.Measure.withDensity_rnDeriv_le
 
 @[simp]
-lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [Measure.HaveLebesgueDecomposition ν μ] :
+lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [ν.HaveLebesgueDecomposition μ] :
     μ.withDensity (ν.rnDeriv μ) = 0 ↔ μ ⟂ₘ ν := by
   have h_dec := haveLebesgueDecomposition_add ν μ
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -184,6 +184,11 @@ lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [Measure.HaveLebesgueDeco
     rw [← MutuallySingular.self_iff]
     refine MutuallySingular.mono_ac h.2 ?_ AbsolutelyContinuous.rfl
     exact withDensity_absolutelyContinuous _ _
+
+@[simp]
+lemma rnDeriv_eq_zero (μ ν : Measure α) [ν.HaveLebesgueDecomposition μ] :
+    ν.rnDeriv μ =ᵐ[μ] 0 ↔ μ ⟂ₘ ν := by
+  rw [← withDensity_rnDeriv_eq_zero, withDensity_eq_zero_iff (measurable_rnDeriv _ _).aemeasurable]
 
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
