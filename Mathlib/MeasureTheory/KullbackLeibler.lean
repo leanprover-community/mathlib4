@@ -149,9 +149,9 @@ lemma stronglyMeasurable_toReal_rnDeriv (μ ν : Measure α) :
 noncomputable
 def LLR (μ ν : Measure α) (x : α) : ℝ := log (μ.rnDeriv ν x).toReal
 
-lemma LLR_def (μ ν : Measure α) : LLR μ ν = fun x ↦ log (μ.rnDeriv ν x).toReal := rfl
+lemma llr_def (μ ν : Measure α) : LLR μ ν = fun x ↦ log (μ.rnDeriv ν x).toReal := rfl
 
-lemma exp_LLR (μ ν : Measure α) [SigmaFinite μ] :
+lemma exp_llr (μ ν : Measure α) [SigmaFinite μ] :
     (fun x ↦ exp (LLR μ ν x))
       =ᵐ[ν] fun x ↦ if μ.rnDeriv ν x = 0 then 1 else (μ.rnDeriv ν x).toReal := by
   filter_upwards [Measure.rnDeriv_lt_top μ ν] with x hx
@@ -161,24 +161,24 @@ lemma exp_LLR (μ ν : Measure α) [SigmaFinite μ] :
   rw [ENNReal.toReal_pos_iff]
   exact ⟨lt_of_le_of_ne (zero_le _) (Ne.symm h_zero), hx⟩
 
-lemma exp_LLR_of_ac (μ ν : Measure α) [SigmaFinite μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma exp_llr_of_ac (μ ν : Measure α) [SigmaFinite μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) :
     (fun x ↦ exp (LLR μ ν x)) =ᵐ[μ] fun x ↦ (μ.rnDeriv ν x).toReal := by
-  filter_upwards [hμν.ae_le (exp_LLR μ ν), Measure.rnDeriv_pos hμν] with x hx_eq hx_pos
+  filter_upwards [hμν.ae_le (exp_llr μ ν), Measure.rnDeriv_pos hμν] with x hx_eq hx_pos
   rw [hx_eq, if_neg hx_pos.ne']
 
 @[measurability]
-lemma measurable_LLR (μ ν : Measure α) : Measurable (LLR μ ν) :=
+lemma measurable_llr (μ ν : Measure α) : Measurable (LLR μ ν) :=
   (measurable_toReal_rnDeriv μ ν).log
 
 @[measurability]
-lemma stronglyMeasurable_LLR (μ ν : Measure α) : StronglyMeasurable (LLR μ ν) :=
-  (measurable_LLR μ ν).stronglyMeasurable
+lemma stronglyMeasurable_llr (μ ν : Measure α) : StronglyMeasurable (LLR μ ν) :=
+  (measurable_llr μ ν).stronglyMeasurable
 
-lemma LLR_smul_left {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma llr_smul_left {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     LLR (c • μ) ν =ᵐ[μ] fun x ↦ LLR μ ν x + log c.toReal := by
-  simp only [LLR, LLR_def]
+  simp only [LLR, llr_def]
   have h := Measure.rnDeriv_smul_left_of_ne_top μ ν hc_ne_top
   filter_upwards [hμν.ae_le h, Measure.rnDeriv_pos hμν, hμν.ae_le (Measure.rnDeriv_lt_top μ ν)]
     with x hx_eq hx_pos hx_ne_top
@@ -192,10 +192,10 @@ lemma LLR_smul_left {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebes
     simp [hx_pos.ne', hx_ne_top.ne]
   ring
 
-lemma LLR_smul_right {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma llr_smul_right {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0∞) (hc : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     LLR μ (c • ν) =ᵐ[μ] fun x ↦ LLR μ ν x - log c.toReal := by
-  simp only [LLR, LLR_def]
+  simp only [LLR, llr_def]
   have h := Measure.rnDeriv_smul_right_of_ne_top μ ν hc hc_ne_top
   filter_upwards [hμν.ae_le h, Measure.rnDeriv_pos hμν, hμν.ae_le (Measure.rnDeriv_lt_top μ ν)]
     with x hx_eq hx_pos hx_ne_top
@@ -213,11 +213,6 @@ lemma LLR_smul_right {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebe
 end LLR
 
 section definition
-
--- TODO: this should be in EReal?
-noncomputable
-def KL (μ ν : Measure α) [Decidable (μ ≪ ν)] [Decidable (Integrable (LLR μ ν) μ)] : ℝ≥0∞ :=
-  if μ ≪ ν ∧ Integrable (LLR μ ν) μ then ENNReal.ofReal (∫ x, LLR μ ν x ∂μ) else ∞
 
 lemma integrable_toReal_rnDeriv_mul {μ ν : Measure α} {f : α → ℝ} [SigmaFinite μ]
     [Measure.HaveLebesgueDecomposition μ ν]
@@ -241,7 +236,7 @@ lemma integrable_toReal_rnDeriv_mul {μ ν : Measure α} {f : α → ℝ} [Sigma
   · exact Measure.measurable_rnDeriv _ _
   · exact Measure.rnDeriv_lt_top _ _
 
-lemma integral_LLR_nonneg_aux' {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
+lemma integral_llr_nonneg_aux' {μ ν : Measure α} [IsFiniteMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     (μ Set.univ).toReal * log (μ Set.univ).toReal ≤ ∫ x, LLR μ ν x ∂μ := by
   have h_eq_int : (μ Set.univ).toReal = ∫ x, (μ.rnDeriv ν x).toReal ∂ν := by
@@ -260,7 +255,7 @@ lemma integral_LLR_nonneg_aux' {μ ν : Measure α} [IsFiniteMeasure μ] [IsProb
       isClosed_Ici ?_ Measure.integrable_toReal_rnDeriv ?_
     · simp
     · exact integrable_toReal_rnDeriv_mul hμν h_int
-        (stronglyMeasurable_LLR _ _).aestronglyMeasurable
+        (stronglyMeasurable_llr _ _).aestronglyMeasurable
   _ = ∫ x, (μ.rnDeriv ν x).toReal * log (μ.rnDeriv ν x).toReal ∂ν := rfl
   _ = ∫ x, LLR μ ν x ∂μ := by
     simp_rw [LLR]
@@ -279,7 +274,7 @@ lemma integral_LLR_nonneg_aux' {μ ν : Measure α} [IsFiniteMeasure μ] [IsProb
     swap; · exact (Measure.measurable_rnDeriv _ _).ennreal_toNNReal
     congr
 
-lemma integral_LLR_ge {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma integral_llr_ge {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     (μ Set.univ).toReal * log ((μ Set.univ).toReal / (ν Set.univ).toReal) ≤ ∫ x, LLR μ ν x ∂μ := by
   by_cases hμ : μ = 0
@@ -295,19 +290,19 @@ lemma integral_LLR_ge {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure
     rw [mul_comm, ENNReal.mul_inv_cancel]
     · simp [hν]
     · exact measure_ne_top _ _
-  have h := integral_LLR_nonneg_aux' (?_ : μ ≪ ν') ?_
+  have h := integral_llr_nonneg_aux' (?_ : μ ≪ ν') ?_
   rotate_left
   · refine Measure.AbsolutelyContinuous.trans hμν ?_
     refine Measure.absolutelyContinuous_of_le_smul (c := ν Set.univ) ?_
     rw [← smul_assoc, smul_eq_mul, ENNReal.mul_inv_cancel, one_smul]
     · simp [hν]
     · exact measure_ne_top _ _
-  · rw [integrable_congr (LLR_smul_right hμν (ν Set.univ)⁻¹ _ _)]
+  · rw [integrable_congr (llr_smul_right hμν (ν Set.univ)⁻¹ _ _)]
     rotate_left
     · simp [measure_ne_top ν _]
     · simp [hν]
     exact h_int.sub (integrable_const _)
-  rw [integral_congr_ae (LLR_smul_right hμν (ν Set.univ)⁻¹ _ _)] at h
+  rw [integral_congr_ae (llr_smul_right hμν (ν Set.univ)⁻¹ _ _)] at h
   rotate_left
   · simp [measure_ne_top ν _]
   · simp [hν]
@@ -319,15 +314,15 @@ lemma integral_LLR_ge {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure
   · rw [ENNReal.toReal_ne_zero]
     simp [hν, measure_ne_top ν]
 
-lemma integral_LLR_nonneg {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+lemma integral_llr_nonneg {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     0 ≤ ∫ x, LLR μ ν x ∂μ := by
-  refine le_trans ?_ (integral_LLR_nonneg_aux' hμν h_int)
+  refine le_trans ?_ (integral_llr_nonneg_aux' hμν h_int)
   simp only [measure_univ, ENNReal.one_toReal, log_one, mul_zero, le_refl]
 
 end definition
 
-lemma LLR_tilted_ae_eq {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+lemma llr_tilted_ae_eq {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (LLR μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + logIntegralExp ν f + LLR μ ν x := by
   filter_upwards [hμν.ae_le (rnDeriv_tilted_right μ ν h_int), Measure.rnDeriv_pos hμν,
@@ -337,19 +332,19 @@ lemma LLR_tilted_ae_eq {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabi
   · rw [ne_eq, ENNReal.toReal_eq_zero_iff]
     simp only [hx_pos.ne', hx_lt_top.ne, or_self, not_false_eq_true]
 
-lemma integrable_LLR_tilted {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+lemma integrable_llr_tilted {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) {f : α → ℝ} (hfμ : Integrable f μ)
     (hfν : Integrable (fun x ↦ exp (f x)) ν) (h_int : Integrable (LLR μ ν) μ) :
     Integrable (LLR μ (ν.tilted f)) μ := by
-  rw [integrable_congr (LLR_tilted_ae_eq hμν hfν)]
+  rw [integrable_congr (llr_tilted_ae_eq hμν hfν)]
   exact Integrable.add (hfμ.neg.add (integrable_const _)) h_int
 
-lemma integral_llr_tilted {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+lemma integral_llr_tilted {μ ν : Measure α} [IsProbabilityMeasure μ] [IsFiniteMeasure ν]
     {f : α → ℝ} (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ exp (f x)) ν)
     (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ (ν.tilted f) x ∂μ = ∫ x, LLR μ ν x ∂μ - ∫ x, f x ∂μ + logIntegralExp ν f := by
   calc ∫ x, LLR μ (ν.tilted f) x ∂μ
-    = ∫ x, - f x + logIntegralExp ν f + LLR μ ν x ∂μ := integral_congr_ae (LLR_tilted_ae_eq hμν hfν)
+    = ∫ x, - f x + logIntegralExp ν f + LLR μ ν x ∂μ := integral_congr_ae (llr_tilted_ae_eq hμν hfν)
   _ = - ∫ x, f x ∂μ + logIntegralExp ν f + ∫ x, LLR μ ν x ∂μ := by
         rw [← integral_neg, integral_add ?_ h_int]
         swap; · exact hfμ.neg.add (integrable_const _)
@@ -358,7 +353,7 @@ lemma integral_llr_tilted {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProb
         simp only [integral_const, measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
   _ = ∫ x, LLR μ ν x ∂μ - ∫ x, f x ∂μ + logIntegralExp ν f := by abel
 
-lemma todo_aux {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {f : α → ℝ}
+lemma todo_aux {μ ν : Measure α} [IsProbabilityMeasure μ] [IsFiniteMeasure ν] {f : α → ℝ}
     (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ exp (f x)) ν)
     (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ ν x ∂μ - ∫ x, LLR μ (ν.tilted f) x ∂μ = ∫ x, f x ∂μ - logIntegralExp ν f := by
@@ -374,8 +369,8 @@ lemma integral_sub_logIntegralExp_le {μ ν : Measure α}
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
   have hf_m : AEMeasurable f ν := aemeasurable_of_aemeasurable_exp hf.1.aemeasurable
-  refine integral_LLR_nonneg (hμν.trans (absolutelyContinuous_tilted hf_m)) ?_
-  exact integrable_LLR_tilted hμν hfμ hf h_int
+  refine integral_llr_nonneg (hμν.trans (absolutelyContinuous_tilted hf_m)) ?_
+  exact integrable_llr_tilted hμν hfμ hf h_int
 
 lemma ciSup_le_integral_llr {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
@@ -389,28 +384,9 @@ lemma ciSup_le_integral_llr {μ ν : Measure α} [IsProbabilityMeasure μ] [IsPr
     · simp only [hf, ciSup_unique]
       exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
     · simp [hf, ciSup_empty]
-      exact integral_LLR_nonneg hμν h_int
+      exact integral_llr_nonneg hμν h_int
   · simp only [hfμ, ciSup_empty]
-    exact integral_LLR_nonneg hμν h_int
-
-lemma aux_bddAbove {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
-    (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
-    BddAbove (Set.range fun f ↦ ⨆ (_ : Integrable f μ) (_ : Integrable (fun x ↦ exp (f x)) ν),
-      ∫ x, f x ∂μ - logIntegralExp ν f) := by
-  refine ⟨∫ x, LLR μ ν x ∂μ, ?_⟩
-  rw [mem_upperBounds]
-  intro x
-  simp only [Set.mem_range, ge_iff_le, le_max_iff, forall_exists_index]
-  rintro f rfl
-  by_cases hfμ : Integrable f μ
-  · simp only [hfμ, ciSup_unique]
-    by_cases hf : Integrable (fun x ↦ exp (f x)) ν
-    · simp only [hf, ciSup_unique]
-      exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
-    · simp only [hf, ciSup_empty]
-      exact integral_LLR_nonneg hμν h_int
-  · simp only [hfμ, ciSup_empty]
-    exact integral_LLR_nonneg hμν h_int
+    exact integral_llr_nonneg hμν h_int
 
 noncomputable
 def LLRAddConst (μ ν : Measure α) (u : ℝ) (x : α) : ℝ := log ((μ.rnDeriv ν x).toReal + u)
@@ -509,7 +485,7 @@ lemma integral_llr_le_integral_llrAddConst {μ ν : Measure α} [IsFiniteMeasure
   · exact add_pos_of_pos_of_nonneg (ENNReal.toReal_pos hx_pos.ne' hx_lt_top.ne) hu
 
 lemma integral_llr_le_ciInf_integral_llrAddConst {μ ν : Measure α}
-    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ ν x ∂μ ≤ ⨅ u : {v // (0 : ℝ) < v}, ∫ x, LLRAddConst μ ν u x ∂μ :=
   le_ciInf (fun u ↦ integral_llr_le_integral_llrAddConst u.2.le hμν h_int)
@@ -574,18 +550,32 @@ lemma integral_llr_le_ciSup {μ ν : Measure α} [IsProbabilityMeasure μ] [IsPr
     ∫ x, LLR μ ν x ∂μ
       ≤ ⨆ (f : α → ℝ) (_ : Integrable f μ) (_ : Integrable (fun x ↦ exp (f x)) ν),
         ∫ x, f x ∂μ - logIntegralExp ν f := by
-  classical
   refine (integral_llr_le_ciSup_integral_llrAddConst_sub hμν h_int).trans ?_
   refine ciSup_le (fun u ↦ ?_)
-  refine le_ciSup_of_le (aux_bddAbove hμν h_int) (LLRAddConst μ ν u) ?_
-  simp [integrable_llrAddConst u.2.le h_int, integrable_exp_llrAddConst u.2]
+  refine le_ciSup_of_le ?_ (LLRAddConst μ ν u) ?_
+  · refine ⟨∫ x, LLR μ ν x ∂μ, fun x ⟨f, hf⟩ ↦ ?_⟩
+    rw [← hf]
+    by_cases hfμ : Integrable f μ
+    · simp only [hfμ, ciSup_unique]
+      by_cases hf : Integrable (fun x ↦ exp (f x)) ν
+      · simp only [hf, ciSup_unique]
+        exact integral_sub_logIntegralExp_le hμν h_int f hfμ hf
+      · simp only [hf, ciSup_empty]
+        exact integral_llr_nonneg hμν h_int
+    · simp only [hfμ, ciSup_empty]
+      exact integral_llr_nonneg hμν h_int
+  · simp [integrable_llrAddConst u.2.le h_int, integrable_exp_llrAddConst u.2]
 
--- todo: differs from the usual statement due to the `Integrable f μ` assumption
-theorem DV' {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+theorem DonskerVaradhan {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ ν x ∂μ
       = ⨆ (f : α → ℝ) (_ : Integrable f μ) (_ : Integrable (fun x ↦ exp (f x)) ν),
         ∫ x, f x ∂μ - logIntegralExp ν f :=
   le_antisymm (integral_llr_le_ciSup hμν h_int) (ciSup_le_integral_llr hμν h_int)
+
+-- TODO: this should be in EReal?
+noncomputable
+def KL (μ ν : Measure α) [Decidable (μ ≪ ν)] [Decidable (Integrable (LLR μ ν) μ)] : ℝ≥0∞ :=
+  if μ ≪ ν ∧ Integrable (LLR μ ν) μ then ENNReal.ofReal (∫ x, LLR μ ν x ∂μ) else ∞
 
 end MeasureTheory
