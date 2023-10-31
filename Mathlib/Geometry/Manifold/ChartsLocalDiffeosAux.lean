@@ -37,24 +37,40 @@ example {f : M → N} (hf : ContMDiff I J n f) (s : Opens M) : True := by
   sorry
 
 /-- Charts are structomorphisms. -/
+-- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
 lemma LocalHomeomorphism.toStructomorph {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
-    {G : StructureGroupoid H} : Structomorph G M H := by
+    {G : StructureGroupoid H} [ClosedUnderRestriction G] (h: HasGroupoid M G) :
+    Structomorph G M H := by
   let s : Opens M := { carrier := e.source, is_open' := e.open_source }
   let t : Opens H := { carrier := e.target, is_open' := e.open_target }
   let e' := (e.mapsTo).restrict e s t
   let e'' := (e.symm_mapsTo).restrict e.symm t s
-  let ehom := e.toHomeomorphSourceTarget -- temporary, to make the goal readable
+  let ehom := e.toHomeomorphSourceTarget -- temporarily given a name, to make the goal readable
+
+  have : HasGroupoid t G := t.instHasGroupoid G
+
   have : Structomorph G s t := {
     ehom with
     mem_groupoid := by
       intro c c' hc hc'
-      show (c.symm).trans (ehom.toLocalHomeomorph.trans c') ∈ G -- just pretty-printed goal
-      -- c' should be easy, just the inclusion -> can eliminate
-      -- then, have just a transition map
-      sorry
+      show (c.symm).trans (ehom.toLocalHomeomorph.trans c') ∈ G -- just our pretty-printed goal
+
+      -- Setting: have s ⊆ M and t ⊆ H, e maps s to t.
+      -- c : s → H is a chart of M; c': t → M is essentially the inclusion.
+
+      -- The atlas on H on itself has only one chart (by `chartedSpaceSelf_atlas H`),
+      -- hence c' (as a restriction of that) is the inclusion.
+      have : ∀ x, c' x = x := sorry -- unsure how to formally prove this...
+      -- This *almost* gives our claim: except that `e` is a chart on M and c is one on s,
+      -- so they don't fit together nicely. (Composing with the inclusion makes that nice...)
+      -- let r := G.compatible hc he
+
+      let e' : LocalHomeomorph s H := (ehom.toLocalHomeomorph.trans c')
+      have he' : e' ∈ atlas H (↑s) := sorry
+      let r := G.compatible hc he'
+      exact r
   }
   sorry
-
 #exit
 
 /-- Each chart inverse is a structomorphism. -/
