@@ -55,11 +55,11 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
     ((Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).sub_left
       (Algebra.commute_algebraMap_left _ _)).pow_pow _ _
   let g : Module.End K M := (m.support.erase μ).noncommProd _ fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂
-  have hfg : Commute f g := Finset.noncommProd_commute _ _ _ _ fun μ' hμ' ↦
+  have hfg : Commute f g := Finset.noncommProd_commute _ _ _ _ fun μ' _ ↦
     (Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).pow_right _
   have hg₀ : g (m.sum fun _μ mμ ↦ mμ) = g (m μ) := by
     suffices ∀ μ' ∈ m.support, g (m μ') = if μ' = μ then g (m μ) else 0 by
-      rw [map_finsupp_sum, Finsupp.sum_congr (g2 := fun μ' m' ↦ if μ' = μ then g (m μ) else 0) this,
+      rw [map_finsupp_sum, Finsupp.sum_congr (g2 := fun μ' _ ↦ if μ' = μ then g (m μ) else 0) this,
         Finsupp.sum_ite_eq', if_pos hμ]
     rintro μ' hμ'
     split_ifs with hμμ'; rw [hμμ']
@@ -70,7 +70,7 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
       (fun μ ↦ (f - algebraMap K (End K M) μ) ^ finrank K M) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
     rw [← this, LinearMap.mul_apply, hm₂, _root_.map_zero]
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K M ↦ MapsTo g' p p)
-      (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' hμ' ↦ by
+      (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
     suffices MapsTo (f - algebraMap K (End K M) μ') p p by
       simp only [LinearMap.coe_pow]; exact this.iterate (finrank K M)
     intro x hx
