@@ -1563,3 +1563,21 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
+
+section Topology
+-- Let `M` be a topological manifold over the field 𝕜.
+variable
+  {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [HasGroupoid M (contDiffGroupoid 0 I)]
+
+/-- A finite-dimensional manifold modelled on a locally compact field
+  (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
+lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
+    [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
+  have : ProperSpace E := FiniteDimensional.proper 𝕜 E
+  have : LocallyCompactSpace H := I.locallyCompactSpace
+  exact ChartedSpace.locallyCompactSpace H M
+
+end Topology
