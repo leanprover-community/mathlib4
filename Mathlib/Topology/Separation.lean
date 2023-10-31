@@ -1604,7 +1604,7 @@ instance [LocallyCompactSpace X] [T2Space X] : RegularSpace X := by
   rcases local_compact_nhds hx with ⟨k, kx, ks, hk⟩
   exact ⟨k, kx, hk.isClosed, ks⟩
 
-variable [RegularSpace α] {x : X} {s : Set X}
+variable [RegularSpace X] {x : X} {s : Set X}
 
 theorem disjoint_nhdsSet_nhds : Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s := by
   have h := (regularSpace_TFAE X).out 0 2
@@ -1733,20 +1733,20 @@ section ClosableCompactSubsetOpenSpace
 the closure of the compact set is also included in the open set.
 Satisfied notably for T2 spaces and regular spaces, and useful
 when discussing classes of regular measures. -/
-class ClosableCompactSubsetOpenSpace (α : Type*) [TopologicalSpace α] : Prop :=
-  closure_subset_of_isOpen : ∀ (K U : Set α), IsCompact K → IsOpen U → K ⊆ U → closure K ⊆ U
+class ClosableCompactSubsetOpenSpace (X : Type*) [TopologicalSpace X] : Prop :=
+  closure_subset_of_isOpen : ∀ (K U : Set X), IsCompact K → IsOpen U → K ⊆ U → closure K ⊆ U
 
-theorem IsCompact.closure_subset_of_isOpen [ClosableCompactSubsetOpenSpace α]
-    {s : Set α} (hs : IsCompact s) {u : Set α} (hu : IsOpen u) (h : s ⊆ u) :
+theorem IsCompact.closure_subset_of_isOpen [ClosableCompactSubsetOpenSpace X]
+    {s : Set X} (hs : IsCompact s) {u : Set X} (hu : IsOpen u) (h : s ⊆ u) :
     closure s ⊆ u :=
   ClosableCompactSubsetOpenSpace.closure_subset_of_isOpen s u hs hu h
 
-instance [T2Space α] : ClosableCompactSubsetOpenSpace α :=
+instance [T2Space X] : ClosableCompactSubsetOpenSpace X :=
   ⟨fun K _U K_comp _U_open KU ↦ by rwa [K_comp.isClosed.closure_eq]⟩
 
 /-- In a (possibly non-Hausdorff) regular space, if a compact set `s` is contained in an
 open set `u`, then its closure is also contained in `u`. -/
-instance [RegularSpace α] : ClosableCompactSubsetOpenSpace α := by
+instance [RegularSpace X] : ClosableCompactSubsetOpenSpace X := by
   refine ⟨fun s u hs hu h ↦ ?_⟩
   obtain ⟨F, sF, F_closed, Fu⟩ : ∃ F, s ⊆ F ∧ IsClosed F ∧ F ⊆ u := by
     apply hs.induction_on (p := fun t ↦ ∃ F, t ⊆ F ∧ IsClosed F ∧ F ⊆ u)
@@ -1764,8 +1764,8 @@ instance [RegularSpace α] : ClosableCompactSubsetOpenSpace α := by
   property (for instance regular spaces), for every containment `K ⊆ U` of a compact set `K` in an
   open set `U`, there is a compact closed neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently,
   there is a compact closed set `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
-theorem exists_compact_closed_between [LocallyCompactSpace α] [ClosableCompactSubsetOpenSpace α]
-    {K U : Set α} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
+theorem exists_compact_closed_between [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
+    {K U : Set X} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
     ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U := by
   rcases exists_compact_between hK hU h_KU with ⟨L, L_comp, KL, LU⟩
   rcases exists_compact_between hK isOpen_interior KL with ⟨M, M_comp, KM, ML⟩
@@ -1779,8 +1779,8 @@ theorem exists_compact_closed_between [LocallyCompactSpace α] [ClosableCompactS
   · apply M_comp.closure_subset_of_isOpen hU
     exact ML.trans (interior_subset.trans LU)
 
-protected theorem IsCompact.closure [WeaklyLocallyCompactSpace α] [ClosableCompactSubsetOpenSpace α]
-    {K : Set α} (hK : IsCompact K) : IsCompact (closure K) := by
+protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
+    {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
   rcases exists_compact_superset hK with ⟨L, L_comp, hL⟩
   exact L_comp.of_isClosed_subset isClosed_closure
     ((hK.closure_subset_of_isOpen isOpen_interior hL).trans interior_subset)
