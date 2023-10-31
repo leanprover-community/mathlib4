@@ -109,8 +109,10 @@ theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ⟨‖f'‖⁻¹, fun z => by field_simp [norm_smul, mt norm_eq_zero.1 hf'] ⟩
 #align has_deriv_at.eventually_ne HasDerivAt.eventually_ne
 
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- I have replaced `(𝓝[≠] f x)` with `(nhdsWithin (f x) {f x}ᶜ)` as a workaround.
 theorem HasDerivAt.tendsto_punctured_nhds (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
-    Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=
+    Tendsto f (𝓝[≠] x) (nhdsWithin (f x) {f x}ᶜ) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
     (h.eventually_ne hf')
 #align has_deriv_at.tendsto_punctured_nhds HasDerivAt.tendsto_punctured_nhds

@@ -436,7 +436,11 @@ theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
 
 #align complex.comap_exp_nhds_zero Complex.comap_exp_nhds_zero
 
-theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := by
+-- The conclusion here used to be:
+-- `comap exp (𝓝[≠] 0) = comap re atBot`
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- As a workaround, we spell out the notation `𝓝[≠] 0`
+theorem comap_exp_nhdsWithin_zero : comap exp (nhdsWithin 0 {0}ᶜ) = comap re atBot := by
   have : (exp ⁻¹' {0})ᶜ = Set.univ := eq_univ_of_forall exp_ne_zero
   simp [nhdsWithin, comap_exp_nhds_zero, this]
 #align complex.comap_exp_nhds_within_zero Complex.comap_exp_nhdsWithin_zero
@@ -457,7 +461,11 @@ theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
   comap_exp_nhds_zero ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_bot Complex.tendsto_exp_comap_re_atBot
 
-theorem tendsto_exp_comap_re_atBot_nhdsWithin : Tendsto exp (comap re atBot) (𝓝[≠] 0) :=
+-- The conclusion here used to be:
+-- `Tendsto exp (comap re atBot) (𝓝[≠] 0)`
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- As a workaround, we spell out the notation `𝓝[≠] 0`
+theorem tendsto_exp_comap_re_atBot_nhdsWithin : Tendsto exp (comap re atBot) (nhdsWithin 0 {0}ᶜ) :=
   comap_exp_nhdsWithin_zero ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_bot_nhds_within Complex.tendsto_exp_comap_re_atBot_nhdsWithin
 

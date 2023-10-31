@@ -183,8 +183,12 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
   if and only if for any sequence `x : ℕ → S`, `ε • x` tends to 0. This actually works for any
   indexing type `ι`, but in the special case `ι = ℕ` we get the important fact that convergent
   sequences fully characterize bounded sets. -/
+-- The hypothesis here used to be:
+-- `(hε : Tendsto ε l (𝓝[≠] 0))`
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- As a workaround, we spell out the notation `𝓝[≠] 0`
 theorem isVonNBounded_iff_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l.NeBot]
-    (hε : Tendsto ε l (𝓝[≠] 0)) {S : Set E} :
+    (hε : Tendsto ε l (nhdsWithin 0 {0}ᶜ)) {S : Set E} :
     IsVonNBounded 𝕝 S ↔ ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0) :=
   ⟨fun hS x hxS => hS.smul_tendsto_zero (eventually_of_forall hxS) (le_trans hε nhdsWithin_le_nhds),
     isVonNBounded_of_smul_tendsto_zero (by exact hε self_mem_nhdsWithin)⟩

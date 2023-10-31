@@ -341,7 +341,11 @@ theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
 #align real.tendsto_log_at_top Real.tendsto_log_atTop
 
-theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
+-- The conclusion here used to be:
+-- `Tendsto log (𝓝[≠] 0) atBot`
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- As a workaround, we spell out the notation `𝓝[≠] 0`
+theorem tendsto_log_nhdsWithin_zero : Tendsto log (nhdsWithin 0 {0}ᶜ) atBot := by
   rw [← show _ = log from funext log_abs]
   refine' Tendsto.comp (g := log) _ tendsto_abs_nhdsWithin_zero
   simpa [← tendsto_comp_exp_atBot] using tendsto_id

@@ -85,9 +85,11 @@ theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x)
   hasDerivAtFilter_iff_tendsto_slope
 #align has_deriv_at_iff_tendsto_slope hasDerivAt_iff_tendsto_slope
 
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- I have replaced `(𝓝[≠] 0)` with `(nhdsWithin 0 {0}ᶜ)` as a workaround.
 theorem hasDerivAt_iff_tendsto_slope_zero :
-    HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
-  have : 𝓝[≠] x = Filter.map (fun t ↦ x + t) (𝓝[≠] 0) := by
+    HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (nhdsWithin 0 {0}ᶜ) (𝓝 f') := by
+  have : 𝓝[≠] x = Filter.map (fun t ↦ x + t) (nhdsWithin 0 {0}ᶜ) := by
     simp [nhdsWithin, map_add_left_nhds_zero x, Filter.map_inf, add_right_injective x]
   simp [hasDerivAt_iff_tendsto_slope, this, slope, Function.comp]
 

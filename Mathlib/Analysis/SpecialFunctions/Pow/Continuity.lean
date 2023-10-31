@@ -234,16 +234,18 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
     exact hp.lt.ne.symm
 #align real.continuous_at_rpow_of_ne Real.continuousAt_rpow_of_ne
 
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- I have replaced `𝓝[≠] 0` with `(nhdsWithin 0 {0}ᶜ)` as a workaround.
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
   cases' p with x y
   dsimp only at hp
   obtain hx | rfl := ne_or_eq x 0
   · exact continuousAt_rpow_of_ne (x, y) hx
-  have A : Tendsto (fun p : ℝ × ℝ => exp (log p.1 * p.2)) (𝓝[≠] 0 ×ˢ 𝓝 y) (𝓝 0) :=
+  have A : Tendsto (fun p : ℝ × ℝ => exp (log p.1 * p.2)) ((nhdsWithin 0 {0}ᶜ) ×ˢ 𝓝 y) (𝓝 0) :=
     tendsto_exp_atBot.comp
       ((tendsto_log_nhdsWithin_zero.comp tendsto_fst).atBot_mul hp tendsto_snd)
-  have B : Tendsto (fun p : ℝ × ℝ => p.1 ^ p.2) (𝓝[≠] 0 ×ˢ 𝓝 y) (𝓝 0) :=
+  have B : Tendsto (fun p : ℝ × ℝ => p.1 ^ p.2) ((nhdsWithin 0 {0}ᶜ) ×ˢ 𝓝 y) (𝓝 0) :=
     squeeze_zero_norm (fun p => abs_rpow_le_exp_log_mul p.1 p.2) A
   have C : Tendsto (fun p : ℝ × ℝ => p.1 ^ p.2) (𝓝[{0}] 0 ×ˢ 𝓝 y) (pure 0) := by
     rw [nhdsWithin_singleton, tendsto_pure, pure_prod, eventually_map]

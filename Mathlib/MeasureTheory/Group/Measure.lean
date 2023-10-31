@@ -874,6 +874,10 @@ no atoms.
 
 The additive version of this instance applies in particular to show that an additive Haar measure on
 a nontrivial finite-dimensional real vector space has no atom. -/
+-- The hypothesis here used to be:
+-- `[(𝓝[≠] (1 : G)).NeBot]`
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- As a workaround, we spell out the notation `𝓝[≠] (1 : G)`
 @[to_additive
 "If the zero element of an additive group is not isolated, then an additive Haar measure on this
 group has no atoms.
@@ -881,8 +885,8 @@ group has no atoms.
 This applies in particular to show that an additive Haar measure on a nontrivial finite-dimensional
 real vector space has no atom."]
 instance (priority := 100) IsHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpace G] [T1Space G]
-    [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
-    NoAtoms μ := by
+    [WeaklyLocallyCompactSpace G] [(nhdsWithin (1 : G) {(1 : G)}ᶜ).NeBot] (μ : Measure G)
+    [μ.IsHaarMeasure] : NoAtoms μ := by
   cases eq_or_ne (μ 1) 0 with
   | inl h => constructor; simpa
   | inr h =>

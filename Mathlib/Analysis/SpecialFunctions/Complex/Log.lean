@@ -208,8 +208,12 @@ theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
     (continuousWithinAt_log_of_re_neg_of_im_zero hre him).tendsto
 #align complex.tendsto_log_nhds_within_im_nonneg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
 
+-- The conclusion here used to be:
+-- `map exp (comap re atBot) = 𝓝[≠] 0`
+-- After leanprover/lean4#2790, this triggers a max recursion depth exception.
+-- As a workaround, we spell out the notation `𝓝[≠] 0`
 @[simp]
-theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
+theorem map_exp_comap_re_atBot : map exp (comap re atBot) = (nhdsWithin 0 {0}ᶜ) := by
   rw [← comap_exp_nhds_zero, map_comap, range_exp, nhdsWithin]
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 

@@ -2081,7 +2081,7 @@ theorem tendsto_norm_div_self_punctured_nhds (a : E) :
 #align tendsto_norm_div_self_punctured_nhds tendsto_norm_div_self_punctured_nhds
 #align tendsto_norm_sub_self_punctured_nhds tendsto_norm_sub_self_punctured_nhds
 
--- The hypothesis here used to be:
+-- The conclusion here used to be:
 -- `Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0)`
 -- After leanprover/lean4#2790, this triggers a max recursion depth exception.
 -- As a workaround, we spell out the notation `𝓝[≠] 1`
