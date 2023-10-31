@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Peel
 
 #align_import group_theory.exponent from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 
@@ -386,3 +387,57 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
 end CommGroup
+
+section PiProd
+
+open Finset Monoid
+
+@[to_additive]
+theorem Monoid.exponent_pi_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {j : ι}
+    (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
+  rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
+  push_neg at hj ⊢
+  peel hj with _ n hn
+  obtain ⟨m, hm⟩ := this
+  refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
+  simpa using congr_fun h j
+
+-- surely we have this and don't need it.
+@[to_additive]
+theorem Pi.surjective_evalMonoidHom {I : Type*} (f : I → Type*) [(i : I) → MulOneClass (f i)]
+    (i : I) : Function.Surjective (evalMonoidHom f i) :=
+  fun g ↦ ⟨mulSingle i g, by simp⟩
+
+@[to_additive]
+theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] [MonoidHomClass F M₁ M₂]
+    {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
+  refine Monoid.exponent_dvd_of_forall_pow_eq_one M₂ _ fun m₂ ↦ ?_
+  obtain ⟨m₁, rfl⟩ := hf m₂
+  rw [←map_pow, pow_exponent_eq_one, map_one]
+
+@[to_additive]
+theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, Monoid (M i)] :
+    exponent ((i : ι) → M i) = lcm univ (exponent <| M ·) := by
+  refine dvd_antisymm ?_ ?_
+  · refine exponent_dvd_of_forall_pow_eq_one _ _ fun m ↦ ?_
+    ext i
+    rw [Pi.pow_apply, Pi.one_apply, ← orderOf_dvd_iff_pow_eq_one]
+    apply dvd_trans (Monoid.order_dvd_exponent (m i))
+    exact Finset.dvd_lcm (mem_univ i)
+  · apply Finset.lcm_dvd fun i _ ↦ ?_
+    exact MonoidHom.exponent_dvd <| Pi.surjective_evalMonoidHom (M ·) i
+
+@[to_additive]
+theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
+    exponent (M₁ × M₂) = Nat.lcm (exponent M₁) (exponent M₂) := by
+  refine dvd_antisymm ?_ (Nat.lcm_dvd ?_ ?_)
+  · refine exponent_dvd_of_forall_pow_eq_one _ _ fun g ↦ ?_
+    ext1
+    · rw [Prod.pow_fst, Prod.fst_one, ← orderOf_dvd_iff_pow_eq_one]
+      exact dvd_trans (Monoid.order_dvd_exponent (g.1)) <| Nat.dvd_lcm_left _ _
+    · rw [Prod.pow_snd, Prod.snd_one, ← orderOf_dvd_iff_pow_eq_one]
+      exact dvd_trans (Monoid.order_dvd_exponent (g.2)) <| Nat.dvd_lcm_right _ _
+  · exact MonoidHom.exponent_dvd (f := MonoidHom.fst M₁ M₂) Prod.fst_surjective
+  · exact MonoidHom.exponent_dvd (f := MonoidHom.snd M₁ M₂) Prod.snd_surjective
+
+end PiProd
