@@ -1,3 +1,4 @@
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
@@ -93,4 +94,42 @@ theorem EqualizerConditionCoyoneda : EqualizerCondition.{v, u} (coyoneda G X) :=
     · congr
       exact (hq Z B π).descend_comp a _
 
-instance : PreservesFiniteProducts (coyoneda G X) := sorry
+-- instance {J : Type*} [Category J] {F : J ⥤ Cᵒᵖ} [HasLimit F] [PreservesLimit F G.op] :
+--     PreservesLimit F (ContinuousMap.coyoneda G X) := by
+--   constructor
+
+noncomputable
+instance [PreservesFiniteCoproducts G] [HasFiniteCoproducts C] :
+    PreservesFiniteProducts (coyoneda G X) := by
+  constructor
+  intro J _
+  apply (config := { allowSynthFailures := true })
+    preservesFiniteProductsOfPreservesBinaryAndTerminal
+  · sorry
+  · constructor
+    intro K
+    have : K = Functor.empty _ := Functor.empty_ext' _ _
+    rw [this]
+    refine preservesTerminalOfIso (coyoneda G X) ?_
+    refine (terminalIsoIsTerminal ?_).symm
+    apply (Types.isTerminalEquivUnique _).invFun
+    simp only [ContinuousMap.coyoneda]
+    have : IsInitial (G.obj (⊤_ Cᵒᵖ).unop) := by
+      have hi : IsInitial (⊤_ Cᵒᵖ).unop := initialUnopOfTerminal terminalIsTerminal
+      have : PreservesColimit (Functor.empty C) G := (PreservesFiniteCoproducts.preserves _).1
+      let i : G.obj (⊥_ C) ≅ ⊥_ TopCat := PreservesInitial.iso G
+      refine IsInitial.ofIso initialIsInitial (i.symm ≪≫ G.mapIso (initialIsoIsInitial hi))
+    let i : (G.obj (⊤_ Cᵒᵖ).unop) ≅ TopCat.of PEmpty :=
+      (initialIsoIsInitial this).symm ≪≫ TopCat.initialIsoPEmpty
+    constructor
+    · intro f
+      ext x
+      cases i.hom x
+    · constructor
+      let f : C((G.obj (⊤_ Cᵒᵖ).unop), TopCat.of PEmpty) := i.hom
+      exact ContinuousMap.comp ⟨PEmpty.elim, continuous_bot⟩ f
+
+
+
+  -- constructor
+  -- intro F
