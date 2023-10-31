@@ -514,9 +514,9 @@ def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂}  (h : 
   h₃ := h.h₀.unop
   h₀_f := Quiver.Hom.op_inj h.g_h₃
   g_h₃ := Quiver.Hom.op_inj h.h₀_f
-  comm₁ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₃] ; abel)
-  comm₂ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₂] ; abel)
-  comm₃ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₁] ; abel)
+  comm₁ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₃]; abel)
+  comm₂ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₂]; abel)
+  comm₃ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₁]; abel)
 
 variable (φ₁ φ₂)
 
