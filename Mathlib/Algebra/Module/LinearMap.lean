@@ -1069,16 +1069,13 @@ theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g :=
 #align linear_map.coe_mul LinearMap.coe_mul
 
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
-  mul := (· * ·)
-  one := (1 : M →ₗ[R] M)
   mul_assoc f g h := LinearMap.ext fun x ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
 #align module.End.monoid Module.End.monoid
 
 instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
-  { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
-    mul_zero := comp_zero
+  { mul_zero := comp_zero
     zero_mul := zero_comp
     left_distrib := fun _ _ _ ↦ comp_add _ _ _
     right_distrib := fun _ _ _ ↦ add_comp _ _ _
