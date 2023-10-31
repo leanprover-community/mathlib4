@@ -402,12 +402,6 @@ theorem Monoid.exponent_pi_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
   simpa using congr_fun h j
 
--- surely we have this and don't need it.
-@[to_additive]
-theorem Pi.surjective_evalMonoidHom {I : Type*} (f : I → Type*) [(i : I) → MulOneClass (f i)]
-    (i : I) : Function.Surjective (evalMonoidHom f i) :=
-  fun g ↦ ⟨mulSingle i g, by simp⟩
-
 @[to_additive]
 theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] [MonoidHomClass F M₁ M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
@@ -425,7 +419,7 @@ theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, 
     apply dvd_trans (Monoid.order_dvd_exponent (m i))
     exact Finset.dvd_lcm (mem_univ i)
   · apply Finset.lcm_dvd fun i _ ↦ ?_
-    exact MonoidHom.exponent_dvd <| Pi.surjective_evalMonoidHom (M ·) i
+    exact MonoidHom.exponent_dvd (f := Pi.evalMonoidHom (M ·) i) (Function.surjective_eval i)
 
 @[to_additive]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
