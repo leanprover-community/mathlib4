@@ -17,7 +17,7 @@ Multiplicative morphisms induced monoidal functors.
 -/
 
 
-universe u
+universe u u'
 
 open CategoryTheory Discrete MonoidalCategory
 
@@ -28,7 +28,7 @@ namespace CategoryTheory
 @[to_additive (attr := simps tensorObj_as leftUnitor rightUnitor associator) Discrete.addMonoidal]
 instance Discrete.monoidal : MonoidalCategory (Discrete M)
     where
-  tensorUnit' := Discrete.mk 1
+  tensorUnit := Discrete.mk 1
   tensorObj X Y := Discrete.mk (X.as * Y.as)
   whiskerLeft X _ _ f := eqToHom (by dsimp; rw [eq_of_hom f])
   whiskerRight f X := eqToHom (by dsimp; rw [eq_of_hom f])
@@ -40,10 +40,9 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M)
 #align category_theory.discrete.add_monoidal CategoryTheory.Discrete.addMonoidal
 
 @[to_additive (attr := simp) Discrete.addMonoidal_tensorUnit_as]
-lemma Discrete.monoidal_tensorUnit_as :
-  (𝟙_ (Discrete M)).as = 1 := rfl
+lemma Discrete.monoidal_tensorUnit_as : (𝟙_ (Discrete M)).as = 1 := rfl
 
-variable {M} {N : Type u} [Monoid N]
+variable {M} {N : Type u'} [Monoid N]
 
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.

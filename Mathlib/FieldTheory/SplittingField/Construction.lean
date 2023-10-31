@@ -100,7 +100,7 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
 
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
-  f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
+    f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
 #align polynomial.nat_degree_remove_factor' Polynomial.natDegree_removeFactor'
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes
@@ -202,7 +202,8 @@ theorem adjoin_rootSet (n : ℕ) :
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
     rw [rootSet_def, aroots_def]
     rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
-    rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
       Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
       Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor),

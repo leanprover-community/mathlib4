@@ -394,7 +394,7 @@ section AddAction
 These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
-These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
+These instances work particularly well in conjunction with `AddGroup.toAddAction`, enabling
 `s +ᵥ m` as an alias for `↑s + m`.
 -/
 

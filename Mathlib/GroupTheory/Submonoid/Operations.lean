@@ -1373,6 +1373,13 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
 #align add_submonoid.eq_bot_iff_forall AddSubmonoid.eq_bot_iff_forall
 
 @[to_additive]
+theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
+  rw [eq_bot_iff_forall]
+  intro y hy
+  change ((⟨y, hy⟩ : S) : M) = (1 : S)
+  rw [Subsingleton.elim (⟨y, hy⟩ : S) 1]
+
+@[to_additive]
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1

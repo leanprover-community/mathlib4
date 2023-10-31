@@ -123,13 +123,13 @@ variable [DecidableEq α] (k : ℕ) (𝒜 : Finset (Finset α))
 
 /-- `falling k 𝒜` is all the finsets of cardinality `k` which are a subset of something in `𝒜`. -/
 def falling : Finset (Finset α) :=
-  𝒜.sup <| powersetLen k
+  𝒜.sup <| powersetCard k
 #align finset.falling Finset.falling
 
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
-  simp_rw [falling, mem_sup, mem_powersetLen]
+  simp_rw [falling, mem_sup, mem_powersetCard]
   aesop
 #align finset.mem_falling Finset.mem_falling
 

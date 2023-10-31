@@ -155,7 +155,7 @@ def bernoulli'PowerSeries :=
 #align bernoulli'_power_series bernoulli'PowerSeries
 
 theorem bernoulli'PowerSeries_mul_exp_sub_one :
-  bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
+    bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
   ext n
   -- constant coefficient is a special case
   cases' n with n

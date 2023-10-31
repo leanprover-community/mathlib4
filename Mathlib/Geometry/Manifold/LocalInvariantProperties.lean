@@ -353,7 +353,7 @@ theorem liftPropOn_indep_chart [HasGroupoid M G] [HasGroupoid M' G'] (he : e ∈
     (hf : f ∈ G'.maximalAtlas M') (h : LiftPropOn P g s) {y : H}
     (hy : y ∈ e.target ∩ e.symm ⁻¹' (s ∩ g ⁻¹' f.source)) :
     P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) y := by
-  convert((hG.liftPropWithinAt_indep_chart he (e.symm_mapsTo hy.1) hf hy.2.2).1 (h _ hy.2.1)).2
+  convert ((hG.liftPropWithinAt_indep_chart he (e.symm_mapsTo hy.1) hf hy.2.2).1 (h _ hy.2.1)).2
   rw [e.right_inv hy.1]
 #align structure_groupoid.local_invariant_prop.lift_prop_on_indep_chart StructureGroupoid.LocalInvariantProp.liftPropOn_indep_chart
 
@@ -654,7 +654,7 @@ theorem _root_.LocalHomeomorph.isLocalStructomorphWithinAt_iff' {G : StructureGr
   rw [f.isLocalStructomorphWithinAt_iff hx]
   refine' imp_congr_right fun _ ↦ exists_congr fun e ↦ and_congr_right fun _ ↦ _
   refine' and_congr_right fun h2e ↦ _
-  rw [inter_eq_right_iff_subset.mpr (h2e.trans hs)]
+  rw [inter_eq_right.mpr (h2e.trans hs)]
 #align local_homeomorph.is_local_structomorph_within_at_iff' LocalHomeomorph.isLocalStructomorphWithinAt_iff'
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is a local homeomorph and

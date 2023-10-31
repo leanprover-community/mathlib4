@@ -318,7 +318,7 @@ theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p�
     congr 3
 #align stalk_skyscraper_presheaf_adjunction_auxs.from_stalk_to_skyscraper StalkSkyscraperPresheafAdjunctionAuxs.fromStalk_to_skyscraper
 
-/-- The unit in `presheaf.stalk ⊣ skyscraper_presheaf_functor`
+/-- The unit in `Presheaf.stalkFunctor ⊣ skyscraperPresheafFunctor`
 -/
 @[simps]
 protected def unit : 𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ skyscraperPresheafFunctor p₀
@@ -336,7 +336,7 @@ protected def unit : 𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ sk
     · apply ((if_neg h).symm.ndrec terminalIsTerminal).hom_ext
 #align stalk_skyscraper_presheaf_adjunction_auxs.unit StalkSkyscraperPresheafAdjunctionAuxs.unit
 
-/-- The counit in `presheaf.stalk ⊣ skyscraper_presheaf_functor`
+/-- The counit in `Presheaf.stalkFunctor ⊣ skyscraperPresheafFunctor`
 -/
 @[simps]
 protected def counit :
@@ -358,7 +358,7 @@ section
 
 open StalkSkyscraperPresheafAdjunctionAuxs
 
-/-- `skyscraper_presheaf_functor` is the right adjoint of `presheaf.stalk_functor`
+/-- `skyscraperPresheafFunctor` is the right adjoint of `Presheaf.stalkFunctor`
 -/
 def skyscraperPresheafStalkAdjunction [HasColimits C] :
     (Presheaf.stalkFunctor C p₀ : Presheaf C X ⥤ C) ⊣ skyscraperPresheafFunctor p₀ where

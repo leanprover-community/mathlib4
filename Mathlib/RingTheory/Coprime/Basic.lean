@@ -5,7 +5,7 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.GroupTheory.GroupAction.Units
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.GroupPower.Ring
 
@@ -70,6 +70,13 @@ theorem isCoprime_zero_right : IsCoprime x 0 ↔ IsUnit x :=
 theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
   mt isCoprime_zero_right.mp not_isUnit_zero
 #align not_coprime_zero_zero not_isCoprime_zero_zero
+
+lemma IsCoprime.intCast {R : Type*} [CommRing R] {a b : ℤ} (h : IsCoprime a b) :
+    IsCoprime (a : R) (b : R) := by
+  rcases h with ⟨u, v, H⟩
+  use u, v
+  rw_mod_cast [H]
+  exact Int.cast_one
 
 /-- If a 2-vector `p` satisfies `IsCoprime (p 0) (p 1)`, then `p ≠ 0`. -/
 theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) (p 1)) : p ≠ 0 := by

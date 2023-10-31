@@ -151,7 +151,7 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [CanonicallyOrderedAddMonoid N] : OrderBot (Lex (α →₀ N)) where
+instance Lex.orderBot [CanonicallyOrderedAddCommMonoid N] : OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 

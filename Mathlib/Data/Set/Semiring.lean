@@ -229,7 +229,7 @@ instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
     (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)),
     (inferInstance : NoZeroDivisors (SetSemiring α)) with
     add_le_add_left := fun _ _ => add_le_add_left
-    exists_add_of_le := fun {_ b} ab => ⟨b, (union_eq_right_iff_subset.2 ab).symm⟩
+    exists_add_of_le := fun {_ b} ab => ⟨b, (union_eq_right.2 ab).symm⟩
     le_self_add := subset_union_left }
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
