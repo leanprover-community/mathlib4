@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2022 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Siddhartha Gadgil, Mario Carneiro
+Authors: Siddhartha Gadgil, Mario Carneiro, Scott Morrison
 -/
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Elab.Tactic.Basic
 import Lean.Elab.Tactic.Location
+import Std.Tactic.Exact
 
 /-!
 # `trans` tactic
@@ -20,6 +21,53 @@ namespace Mathlib.Tactic
 open Lean Meta Elab
 
 initialize registerTraceClass `Tactic.trans
+
+/-- Given an expression of the form `r x y` with implicit arguments,
+returns `(r, x, y)`. Otherwise returns `none`.
+Does not ensure that `r x y` elaborates.
+
+Assumption: `e` is in the form
+`r (... implicit arguments ...) x (... implicit arguments ...) y (... implicit arguments ...)`
+where `r` contains all those implicit arguments that both `x` and `y` depend on. -/
+def _root_.Lean.Expr.rel? (e : Expr) : MetaM (Option (Expr × Expr × Expr)) := do
+  let f := e.getAppFn
+  let args := e.getAppArgs
+  let info ← getFunInfoNArgs f args.size
+  -- Indices to the explicit arguments:
+  let eidxs := (List.range args.size).filter fun i => info.paramInfo[i]!.isExplicit
+  unless eidxs.length ≥ 2 do
+    return none
+  -- xi and yi are the indices to the arguments being related
+  let xi := eidxs[eidxs.length - 2]!
+  let yi := eidxs[eidxs.length - 1]!
+  -- minArgs is the minimum number of arguments to f for the relation itself
+  let minArgs := if eidxs.length = 2 then 0 else eidxs[eidxs.length - 3]!
+  -- Now we need to figure out how many implicit arguments to include before xi
+  let mut relArgs := minArgs
+  for i in [minArgs : xi] do
+    let xdep := info.paramInfo[xi]!.backDeps.contains i
+    let ydep := info.paramInfo[yi]!.backDeps.contains i
+    if xdep != ydep then
+      -- This is an implicit argument that's only for parameterizing x or y
+      -- but not both, so don't immediately include it.
+      pure ()
+    else
+      -- This is an implicit argument parameterizing the relation,
+      -- so include it and all previous implicit arguments.
+      relArgs := i
+  let rel := mkAppN f (args.extract 0 relArgs)
+  return some (rel, args[xi]!, args[yi]!)
+
+/-- Given an expression of the form `r x y` with implicit arguments,
+returns `(r, x, y)`. Otherwise returns `none`.
+Ensures that `r x y` elaborates using `Lean.Meta.mkAppM'`. -/
+def _root_.Lean.Expr.rel?' (e : Expr) : MetaM (Option (Expr × Expr × Expr)) := do
+  let some (rel, x, y) ← e.rel? | return none
+  try
+    discard <| mkAppM' rel #[x, y]
+    return some (rel, x, y)
+  catch _ =>
+    return none
 
 /-- Environment extension storing transitivity lemmas -/
 initialize transExt :
@@ -38,11 +86,14 @@ initialize registerBuiltinAttribute {
     let fail := throwError
       "@[trans] attribute only applies to lemmas proving
       x ∼ y → y ∼ z → x ∼ z, got {indentExpr declTy} with target {indentExpr targetTy}"
-    let .app (.app rel _) _ := targetTy | fail
+    let some (rel, x, z) ← targetTy.rel? | fail
     let some yzHyp := xs.back? | fail
     let some xyHyp := xs.pop.back? | fail
-    let .app (.app _ _) _ ← inferType yzHyp | fail
-    let .app (.app _ _) _ ← inferType xyHyp | fail
+    let some (_, y, z') ← (← inferType yzHyp).rel? | fail
+    let some (_, x', y') ← (← inferType xyHyp).rel? | fail
+    unless ← isDefEq x x' do fail
+    unless ← isDefEq y y' do fail
+    unless ← isDefEq z z' do fail
     let key ← withReducible <| DiscrTree.mkPath rel
     transExt.add (decl, key) kind
 }
@@ -55,122 +106,64 @@ def _root_.Trans.het {a : α} {b : β} {c : γ}
     {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
     [Trans r s t] : r a b → s b c → t a c := trans
 
-
 open Lean.Elab.Tactic
 
-/-- solving `e ← mkAppM' f #[x]` -/
-def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
-  match e with
-  | Expr.app f a => do
-    if ← isDefEq (← mkAppM' f #[a]) e then
-      return some (f, a)
-    else
-      getExplicitFuncArg? f
-  | _ => return none
+/--
+Implementation of `Lean.MVarId.trans` and the user-facing `trans` tactic.
+-/
+def _root_.Lean.MVarId.transCore (g : MVarId) (lem : Name) (rel x z : Expr) (y? ty? : Option Expr) :
+    MetaM (List MVarId) := do
+  g.checkNotAssigned `trans
+  let arity ← withReducible <| forallTelescopeReducing (← inferType (← mkConstWithLevelParams lem))
+    fun es _ => pure es.size
+  let y ← y?.getDM (mkFreshExprMVar ty?)
+  let tag1 := appendTag (← g.getTag) `trans1
+  let tag2 := appendTag (← g.getTag) `trans2
+  let g₁ ← mkFreshExprSyntheticOpaqueMVar (← mkAppM' rel #[x, y]) (tag := tag1)
+  let g₂ ← mkFreshExprSyntheticOpaqueMVar (← mkAppM' rel #[y, z]) (tag := tag2)
+  g.assignIfDefeq <| ← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂])
+  pure <| [g₁.mvarId!, g₂.mvarId!] ++ (if y?.isNone then [y.mvarId!] else [])
 
-/-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
-def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
-  match f with
-  | Expr.app rel x => do
-    let check: Bool ← do
-      try
-        let folded ← mkAppM' rel #[x, z]
-        isDefEq folded tgt
-      catch _ =>
-        pure false
-    if check then
-      return some (rel, x)
-    else
-      getExplicitRelArg? tgt rel z
-  | _ => return none
-
-/-- refining `tgt ← mkAppM' rel #[x, z]` dropping more arguments if possible -/
-def getExplicitRelArgCore (tgt rel x z : Expr) : MetaM (Expr × Expr) := do
-  match rel with
-  | Expr.app rel' _ => do
-    let check: Bool ← do
-      try
-        let folded ← mkAppM' rel' #[x, z]
-        isDefEq folded tgt
-      catch _ =>
-        pure false
-    if !check then
-      return (rel, x)
-    else
-      getExplicitRelArgCore tgt rel' x z
-  | _ => return (rel ,x)
+/--
+Apply a transitivity lemma to the goal, optionally specifying the value `y` of the intermediate
+term, or specifying its type `ty`. (If specifying both the type is not used.)
+-/
+def _root_.Lean.MVarId.trans (g : MVarId) (y ty : Option Expr := none) : MetaM (List MVarId) := do
+  let tgt ← g.getType
+  match ← tgt.rel? with
+  | none => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
+  | some (rel, x, z) =>
+    (``Trans.simple :: ``HEq.trans :: (← (transExt.getState (← getEnv)).getUnify rel).toList)
+      |>.firstM fun lem => do g.transCore lem rel x z y ty
 
 /--
 `trans` applies to a goal whose target has the form `t ~ u` where `~` is a transitive relation,
-that is, a relation which has a transitivity lemma tagged with the attribute [trans].
+that is, a relation which has a transitivity lemma tagged with the attribute `@[trans]`.
 
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
 -/
 elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
   let tgt ← getMainTarget''
-  let (rel, x, z) ←
-    match tgt with
-    | Expr.app f z =>
-      match (← getExplicitRelArg? tgt f z) with
-      | some (rel, x) =>
-        let (rel, x) ← getExplicitRelArgCore tgt rel x z
-        pure (rel, x, z)
-      | none => throwError "transitivity lemmas only apply to
-        binary relations, not {indentExpr tgt}"
-    | _ => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
-  trace[Tactic.trans]"goal decomposed"
-  trace[Tactic.trans]"rel: {indentExpr rel}"
-  trace[Tactic.trans]"x: {indentExpr x}"
-  trace[Tactic.trans]"z: {indentExpr z}"
-  -- first trying the homogeneous case
-  try
+  match ← tgt.rel? with
+  | none => throwError "transitivity lemmas only apply to binary relations, not {indentExpr tgt}"
+  | some (rel, x, z) =>
+    let t (ty? : Option Expr) := do
+      if let some t := t? then
+        let (e, gs) ← elabTermWithHoles t ty? (← getMainTag)
+        return (some e, gs)
+      else
+        return (none, [])
+    let lemmas ← (transExt.getState (← getEnv)).getUnify rel
     let ty ← inferType x
-    let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
-    let s ← saveState
-    trace[Tactic.trans]"trying homogeneous case"
-    for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
-      trace[Tactic.trans]"trying lemma {lem}"
-      try
-        liftMetaTactic fun g ↦ do
-          let lemTy ← inferType (← mkConstWithLevelParams lem)
-          let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-          let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar ty)
-          let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
-          let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
-          g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-          pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
-        return
-      catch _ => s.restore
-    pure ()
-  catch _ =>
-  trace[Tactic.trans]"trying heterogeneous case"
-  let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
-  let s ← saveState
-  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
-      ``HEq.trans |>.push ``HEq.trans do
-    try
-      liftMetaTactic fun g ↦ do
-        trace[Tactic.trans]"trying lemma {lem}"
-        let lemTy ← inferType (← mkConstWithLevelParams lem)
-        let arity ← withReducible <| forallTelescopeReducing lemTy fun es _ ↦ pure es.size
-        trace[Tactic.trans]"arity: {arity}"
-        trace[Tactic.trans]"lemma-type: {lemTy}"
-        let y ← (t'?.map (pure ·.1)).getD (mkFreshExprMVar none)
-        trace[Tactic.trans]"obtained y: {y}"
-        trace[Tactic.trans]"rel: {indentExpr rel}"
-        trace[Tactic.trans]"x:{indentExpr x}"
-        trace[Tactic.trans]"z:  {indentExpr z}"
-        let g₂ ← mkFreshExprMVar (some <| ← mkAppM' rel #[y, z]) .synthetic
-        trace[Tactic.trans]"obtained g₂: {g₂}"
-        let g₁ ← mkFreshExprMVar (some <| ← mkAppM' rel #[x, y]) .synthetic
-        trace[Tactic.trans]"obtained g₁: {g₁}"
-        g.assign (← mkAppOptM lem (mkArray (arity - 2) none ++ #[some g₁, some g₂]))
-        pure <| [g₁.mvarId!, g₂.mvarId!] ++ if let some (_, gs') := t'? then gs' else [y.mvarId!]
-      return
-    catch e =>
-      trace[Tactic.trans]"failed: {e.toMessageData}"
-      s.restore
-
-  throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
-"
+    -- First try assuming the types are homogeneous.
+    (do
+      let (t', gs) ← t ty
+      liftMetaTactic fun g ↦ (lemmas.push ``Trans.simple).toList.firstM fun lem => do
+        (· ++ gs) <$> g.transCore lem rel x z t' ty) <|>
+    -- If that fails, try again but with a metavariable for the type of the middle term.
+    (do
+      let (t', gs) ← t none
+      liftMetaTactic fun g ↦ (lemmas.push ``HEq.trans).toList.firstM fun lem => do
+        (· ++ gs) <$> g.transCore lem rel x z t' none) <|>
+    throwError m!"no applicable transitivity lemma found for {indentExpr tgt}"

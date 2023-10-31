@@ -2,6 +2,30 @@ import Mathlib.Tactic.Relation.Trans
 import Std.Data.Nat.Lemmas
 
 set_option autoImplicit true
+
+attribute [trans] Setoid.trans
+
+section EqOn
+
+def Set (α : Type u) := α → Prop
+
+protected def Set.Mem (a : α) (s : Set α) : Prop :=
+  s a
+
+instance : Membership α (Set α) :=
+  ⟨Set.Mem⟩
+
+-- This is not the order currently used in Mathlib,
+-- although there is a plan to change it: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Reordering.20arguments.20of.20.60Set.2EEqOn.60/near/390467581
+def EqOn (s : Set α) (f₁ f₂ : α → β) : Prop :=
+  ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
+
+@[trans]
+theorem EqOn.trans (h₁ : EqOn s f₁ f₂) (h₂ : EqOn s f₂ f₃) : EqOn s f₁ f₃ := fun _ hx =>
+  (h₁ hx).trans (h₂ hx)
+
+end EqOn
+
 -- testing that the attribute is recognized and used
 def nleq (a b : Nat) : Prop := a ≤ b
 

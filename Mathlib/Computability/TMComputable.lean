@@ -138,7 +138,6 @@ def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
 #align turing.evals_to.refl Turing.EvalsTo.refl
 
 /-- Transitivity of `EvalsTo` in the sum of the numbers of steps. -/
-@[trans]
 def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Option σ)
     (h₁ : EvalsTo f a b) (h₂ : EvalsTo f b c) : EvalsTo f a c :=
   ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
@@ -151,7 +150,6 @@ def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInT
 #align turing.evals_to_in_time.refl Turing.EvalsToInTime.refl
 
 /-- Transitivity of `EvalsToInTime` in the sum of the numbers of steps. -/
-@[trans]
 def EvalsToInTime.trans {σ : Type*} (f : σ → Option σ) (m₁ : ℕ) (m₂ : ℕ) (a : σ) (b : σ)
     (c : Option σ) (h₁ : EvalsToInTime f a b m₁) (h₂ : EvalsToInTime f b c m₂) :
     EvalsToInTime f a c (m₂ + m₁) :=
