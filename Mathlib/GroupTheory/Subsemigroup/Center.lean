@@ -50,7 +50,7 @@ structure IsAddCentral [Add M] (z : M) : Prop where
 @[to_additive]
 structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- multiplication commutes -/
-  comm (a : M): z * a = a * z
+  comm (a : M) : z * a = a * z
   /-- associative property for left multiplication -/
   left_assoc (b c : M) : z * (b * c) = (z * b) * c
   /-- middle associative multiplication property -/
