@@ -22,7 +22,7 @@ theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R 
     _ = star (star c * (star b * a)) := by rw [ha.right_assoc]
     _ = star (star b * a) * c := by rw [star_mul, star_star]
     _ = (star a * b) * c := by rw [star_mul, star_star]
-  mid_assoc := fun b c => calc
+  mid_assoc b c := calc
     b * star a * c = star (star c * star (b * star a)) := by rw [← star_mul, star_star]
     _ = star (star c * (a * star b)) := by rw [star_mul b, star_star]
     _ = star ((star c * a) * star b) := by rw [ha.mid_assoc]
