@@ -205,6 +205,8 @@ lemma RightFraction.exists_leftFraction [W.HasLeftCalculusOfFractions] {X Y : C}
     (φ : W.RightFraction X Y) : ∃ (ψ : W.LeftFraction X Y), φ.f ≫ ψ.s = φ.s ≫ ψ.f :=
   HasLeftCalculusOfFractions.exists_leftFraction φ
 
+/-- A choice of a left fraction deduced from a right fraction for a morphism property `W`
+when `W` has left calculus of fractions. -/
 noncomputable def RightFraction.leftFraction [W.HasLeftCalculusOfFractions] {X Y : C}
     (φ : W.RightFraction X Y) : W.LeftFraction X Y :=
   φ.exists_leftFraction.choose
@@ -218,6 +220,8 @@ lemma LeftFraction.exists_rightFraction [W.HasRightCalculusOfFractions] {X Y : C
     (φ : W.LeftFraction X Y) : ∃ (ψ : W.RightFraction X Y), ψ.s ≫ φ.f = ψ.f ≫ φ.s :=
   HasRightCalculusOfFractions.exists_rightFraction φ
 
+/-- A choice of a right fraction deduced from a left fraction for a morphism property `W`
+when `W` has right calculus of fractions. -/
 noncomputable def LeftFraction.rightFraction [W.HasRightCalculusOfFractions] {X Y : C}
     (φ : W.LeftFraction X Y) : W.RightFraction X Y :=
   φ.exists_rightFraction.choose
@@ -227,6 +231,7 @@ lemma LeftFraction.rightFraction_fac [W.HasRightCalculusOfFractions] {X Y : C}
     (φ : W.LeftFraction X Y) : φ.rightFraction.s ≫ φ.f = φ.rightFraction.f ≫ φ.s :=
   φ.exists_rightFraction.choose_spec
 
+/-- The equivalence relation on left fractions for a morphism property `W`. -/
 def LeftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y) : Prop :=
   ∃ (Z : C)  (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
     (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂), W (z₁.s ≫ t₁)
@@ -267,7 +272,7 @@ section
 variable [W.HasLeftCalculusOfFractions]
 variable (W)
 
-instance equivalenceLeftFractionRel (X Y : C) :
+lemma equivalenceLeftFractionRel (X Y : C) :
     @_root_.Equivalence (W.LeftFraction X Y) LeftFractionRel where
   refl := LeftFractionRel.refl
   symm := LeftFractionRel.symm
@@ -277,6 +282,7 @@ variable {W}
 
 namespace LeftFraction
 
+/-- Auxiliary definition for the composition of left fractions. -/
 @[simp]
 def comp₀ {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
     (z₃ : W.LeftFraction z₁.Y' z₂.Y') :
@@ -304,11 +310,14 @@ lemma comp₀_rel {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction
 
 variable (W)
 
+/-- The morphisms in the constructed localized category for a morphism property `W`
+that has left calculus of fractions are equivalence classes of left fractions. -/
 def Localization.Hom (X Y : C) :=
   Quot (LeftFractionRel : W.LeftFraction X Y → W.LeftFraction X Y → Prop)
 
 variable {W}
 
+/-- The morphism in the constructed localized category that is induced by a left fraction. -/
 def Localization.Hom.mk {X Y : C} (z : W.LeftFraction X Y) : Localization.Hom W X Y :=
   Quot.mk _ z
 
@@ -317,6 +326,9 @@ lemma Localization.Hom.mk_surjective {X Y : C} (f : Localization.Hom W X Y) :
   obtain ⟨z⟩ := f
   exact ⟨z, rfl⟩
 
+/-- Auxiliary definition towards the definition of the composition of morphisms
+in the constructed localized category for a morphism property that has
+left calculus of fractions. -/
 noncomputable def comp {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z) :
     Localization.Hom W X Z :=
   Localization.Hom.mk (z₁.comp₀ z₂ (RightFraction.mk z₁.s z₁.hs z₂.f).leftFraction)

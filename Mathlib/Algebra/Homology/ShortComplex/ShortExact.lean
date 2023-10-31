@@ -1,6 +1,18 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Preadditive.Injective
+
+/-!
+# Short exact short complexes
+
+A short complex `S : ShortComplex C` is short exact (`S.ShortExact`) when it is exact,
+`S.f` is a mono and `S.g` is an epi.
+
+-/
 
 namespace CategoryTheory
 
@@ -12,23 +24,19 @@ namespace ShortComplex
 
 section
 
-variable
-  [HasZeroMorphisms C] [HasZeroMorphisms D]
+variable [HasZeroMorphisms C] [HasZeroMorphisms D]
   (S : ShortComplex C) {S₁ S₂ : ShortComplex C}
 
-structure ShortExact : Prop :=
+/-- A short complex `S` is short exact if it is exact, `S.f` is a mono and `S.g` is an epi. -/
+structure ShortExact : Prop where
   exact : S.Exact
   [mono_f : Mono S.f]
   [epi_g : Epi S.g]
 
-attribute [local instance] mono_comp epi_comp
-
 variable {S}
 
-lemma ShortExact.mk' (h : S.Exact) (hf : Mono S.f) (hg : Epi S.g) : S.ShortExact where
+lemma ShortExact.mk' (h : S.Exact) (_ : Mono S.f) (_ : Epi S.g) : S.ShortExact where
   exact := h
-  mono_f := hf
-  epi_g := hg
 
 lemma shortExact_of_iso (e : S₁ ≅ S₂) (h : S₁.ShortExact) : S₂.ShortExact where
   exact := exact_of_iso e h.exact
@@ -43,7 +51,7 @@ lemma shortExact_of_iso (e : S₁ ≅ S₂) (h : S₁.ShortExact) : S₂.ShortEx
       exact epi_of_epi e.hom.τ₂ _
     have := h.epi_g
     rw [e.hom.comm₂₃]
-    infer_instance
+    apply epi_comp
 
 lemma shortExact_iff_of_iso (e : S₁ ≅ S₂) : S₁.ShortExact ↔ S₂.ShortExact := by
   constructor
@@ -145,11 +153,15 @@ lemma isIso₂_of_shortExact_of_isIso₁₃' [Balanced C] {S₁ S₂ : ShortComp
     (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (_ : IsIso φ.τ₁) (_ : IsIso φ.τ₃) : IsIso φ.τ₂ :=
   isIso₂_of_shortExact_of_isIso₁₃ φ h₁ h₂
 
+/-- If `S` is a short exact short complex in a balanced category,
+then `S.X₁` is the kernel of `S.g`. -/
 noncomputable def ShortExact.fIsKernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
     IsLimit (KernelFork.ofι S.f S.zero) := by
   have := hS.mono_f
   exact hS.exact.fIsKernel
 
+/-- If `S` is a short exact short complex in a balanced category,
+then `S.X₃` is the cokernel of `S.f`. -/
 noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
     IsColimit (CokernelCofork.ofπ S.g S.zero) := by
   have := hS.epi_g
@@ -157,6 +169,7 @@ noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS :
 
 namespace Splitting
 
+/-- A split short complex is short exact. -/
 lemma shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
     S.ShortExact where
   exact := s.exact
@@ -167,14 +180,18 @@ end Splitting
 
 namespace ShortExact
 
-noncomputable def splittingOfInjective
-    (S : ShortComplex C) (hS : S.ShortExact) [Injective S.X₁] [Balanced C] :
+/-- A choice of splitting for a short exact short complex `S` in a balanced category
+such that `S.X₁` is injective. -/
+noncomputable def splittingOfInjective {S : ShortComplex C} (hS : S.ShortExact)
+    [Injective S.X₁] [Balanced C] :
     S.Splitting :=
   have := hS.mono_f
   Splitting.ofExactOfRetraction S hS.exact (Injective.factorThru (𝟙 S.X₁) S.f) (by simp) hS.epi_g
 
-noncomputable def splittingOfProjective
-    (S : ShortComplex C) (hS : S.ShortExact) [Projective S.X₃] [Balanced C] :
+/-- A choice of splitting for a short exact short complex `S` in a balanced category
+such that `S.X₃` is projective. -/
+noncomputable def splittingOfProjective {S : ShortComplex C} (hS : S.ShortExact)
+    [Projective S.X₃] [Balanced C] :
     S.Splitting :=
   have := hS.epi_g
   Splitting.ofExactOfSection S hS.exact (Projective.factorThru (𝟙 S.X₃) S.g) (by simp) hS.mono_f
