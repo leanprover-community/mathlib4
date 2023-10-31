@@ -63,7 +63,7 @@ variable (M)
 /-- The center of a magma. -/
 @[to_additive addCenter " The center of an additive magma. "]
 def center [Mul M] : Set M :=
-   { z | (IsMulCentral z) }
+  { z | IsMulCentral z }
 #align set.center Set.center
 #align set.add_center Set.addCenter
 
