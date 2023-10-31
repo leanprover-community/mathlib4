@@ -498,20 +498,6 @@ def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
   left_inv := I.left_inv
   right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
 
-/-- If `I` is boundaryless, it is an open embedding. -/
--- FIXME: does this lemma carry its weight?
-theorem ModelWithCorners.toOpenEmbedding {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : OpenEmbedding I :=
-  I.toHomeomorph.openEmbedding
-
-/-- If `I` is boundaryless, `I.symm` is an open embedding. -/
--- FIXME: does this lemma carry its weight?
-theorem ModelWithCorners.toOpenEmbedding_symm {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : OpenEmbedding I.symm :=
-  I.toHomeomorph.symm.openEmbedding
-
 /-- The trivial model with corners has no boundary -/
 instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
@@ -1001,10 +987,6 @@ theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.ex
   (f.extend I).left_inv <| by rwa [f.extend_source]
 #align local_homeomorph.extend_left_inv LocalHomeomorph.extend_left_inv
 
--- like `f.extend_left_inv' I`, but stated in terms of images
-lemma extend_left_inv' (ht: t ⊆ f.source) : ((f.extend I).symm ∘ (f.extend I)) '' t = t :=
-  EqOn.image_eq' (fun _ hx ↦ f.extend_left_inv I (ht hx))
-
 theorem extend_source_mem_nhds {x : M} (h : x ∈ f.source) : (f.extend I).source ∈ 𝓝 x :=
   (isOpen_extend_source f I).mem_nhds <| by rwa [f.extend_source I]
 #align local_homeomorph.extend_source_mem_nhds LocalHomeomorph.extend_source_mem_nhds
@@ -1022,39 +1004,6 @@ theorem continuousOn_extend : ContinuousOn (f.extend I) (f.extend I).source := b
 theorem continuousAt_extend {x : M} (h : x ∈ f.source) : ContinuousAt (f.extend I) x :=
   (continuousOn_extend f I).continuousAt <| extend_source_mem_nhds f I h
 #align local_homeomorph.continuous_at_extend LocalHomeomorph.continuousAt_extend
-
-/-- If I has no boundary, `e.extend I` is an open map on its source. -/
-lemma extend_isOpenMapOn_source [I.Boundaryless] {e : LocalHomeomorph M H}
-    {s : Set M} (hopen : IsOpen s) (hs : s ⊆ e.source) : IsOpen ((e.extend I) '' s) := by
-  simp only [extend_coe, image_comp I e]
-  -- As I has no boundary, it is a homeomorphism, hence an open embedding.
-  apply (I.toOpenEmbedding.open_iff_image_open).mp (e.isOpenMapOn_source hopen hs)
-
-/-- If I has no boundary, `(e.extend I).symm` is an open map on its source. -/
-lemma extend_symm_isOpenMapOn_target [I.Boundaryless] {e : LocalHomeomorph M H} {t : Set E}
-    (ht : IsOpen t) (hte : t ⊆ (e.extend I).target) : IsOpen ((e.extend I).symm '' t) := by
-  have h : IsOpen (I.invFun '' t) := I.toOpenEmbedding_symm.open_iff_image_open.mp ht
-  have : (e.extend I).target = I.symm ⁻¹' e.target := by
-    let r := e.extend_target I
-    rw [I.range_eq_univ, inter_univ] at r
-    exact r
-  have : I.symm '' t ⊆ e.target := calc I.symm '' t
-    _ ⊆ I.symm '' ((e.extend I).target) := image_subset _ hte
-    _ = I.symm '' (I.symm ⁻¹' e.target) := by rw [this]
-    _ ⊆ e.target := image_preimage_subset I.symm e.target
-  rw [extend_coe_symm, image_comp]
-  exact e.isOpenMapOn_target_symm h this
-
-/-- If `I` has no boundary, `(e.extend I).symm` maps neighbourhoods on its source. -/
-lemma extend_image_mem_nhds_symm [I.Boundaryless] {e : LocalHomeomorph M H}
-    {x : E} {n : Set E} (hn : n ∈ 𝓝 x) (hn' : n ⊆ (e.extend I).target) :
-    (e.extend I).symm '' n ∈ 𝓝 ((e.extend I).symm x) := by
-  -- XXX: there ought to be a slicker proof, using that I and e map nhds to nhds
-  rcases mem_nhds_iff.mp hn with ⟨t', ht's', ht'open, hxt'⟩
-  rw [mem_nhds_iff]
-  refine ⟨(e.extend I).symm '' t', image_subset _ ht's', ?_, ?_⟩
-  · apply e.extend_symm_isOpenMapOn_target _ ht'open (Subset.trans ht's' hn')
-  · exact mem_image_of_mem (e.extend I).symm hxt'
 
 theorem map_extend_nhds {x : M} (hy : x ∈ f.source) :
     map (f.extend I) (𝓝 x) = 𝓝[range I] f.extend I x := by
@@ -1614,21 +1563,3 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
-
-section Topology
--- Let `M` be a topological manifold over the field 𝕜.
-variable
-  {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [HasGroupoid M (contDiffGroupoid 0 I)]
-
-/-- A finite-dimensional manifold modelled on a locally compact field
-  (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
-lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
-    [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
-  have : ProperSpace E := FiniteDimensional.proper 𝕜 E
-  have : LocallyCompactSpace H := I.locallyCompactSpace
-  exact ChartedSpace.locallyCompactSpace H M
-
-end Topology
