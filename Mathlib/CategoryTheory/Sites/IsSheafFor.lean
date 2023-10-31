@@ -729,13 +729,9 @@ variable {P π}
 
 theorem exists_familyOfElements :
     ∃ (x' : FamilyOfElements P (ofArrows X π)), ∀ (i : I), x' _ (ofArrows.mk i) = x i := by
-  use (fun Y f hf ↦ P.map (eqToHom (ofArrows_surj π f hf).choose_spec.choose.symm).op (x _))
-  intro i
-  specialize hx i (ofArrows_surj π (π i) (ofArrows.mk _)).choose (X i) (𝟙 _)
-    (eqToHom (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose.symm) ?_
-  · simp [← (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec]
-  rw [← hx]
-  simp
+  choose i h h' using @ofArrows_surj _ _ _ _ _ π
+  exact ⟨fun Y f hf ↦ P.map (eqToHom (h f hf).symm).op (x _),
+    fun j ↦ (hx _ j (X j) _ (𝟙 _) <| by rw [← h', id_comp]).trans <| by simp⟩
 
 /--
 A `FamilyOfElements` associated to an explicit family of elements.
@@ -750,10 +746,8 @@ theorem familyOfElements_ofArrows_mk (i : I) :
   (exists_familyOfElements hx).choose_spec _
 
 theorem familyOfElements_compatible : hx.familyOfElements.Compatible := by
-  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
-  cases h₁ with
-  | mk i => cases h₂ with
-  | mk j => simp [hx i j Z g₁ g₂ hgf]
+  rintro Y₁ Y₂ Z g₁ g₂ f₁ f₂ ⟨i⟩ ⟨j⟩ hgf
+  simp [hx i j Z g₁ g₂ hgf]
 
 end Arrows.Compatible
 
@@ -762,18 +756,12 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
     ∃! t, ∀ i, P.map (π i).op t = x i) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨t, ht₁, ht₂⟩ := h _ hx.familyOfElements_compatible
-    refine ⟨t, fun i => ?_, ?_⟩
-    · rw [ht₁ _ (ofArrows.mk i), Arrows.Compatible.familyOfElements_ofArrows_mk]
-    · intro t' ht'
-      apply ht₂
-      rw [FamilyOfElements.isAmalgamation_iff_ofArrows]
-      intro i
-      simp only [ht', Arrows.Compatible.familyOfElements_ofArrows_mk]
+    refine ⟨t, fun i ↦ ?_, fun t' ht' ↦ ht₂ _ fun _ _ ⟨i⟩ ↦ ?_⟩
+    · rw [ht₁ _ (ofArrows.mk i), hx.familyOfElements_ofArrows_mk]
+    · rw [ht', hx.familyOfElements_ofArrows_mk]
   · obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
-    refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
-    cases hf with
-    | mk i => exact hA i
+    exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
 variable [(ofArrows X π).hasPullbacks]
 
