@@ -11,6 +11,7 @@ import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 #align_import ring_theory.subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
@@ -717,20 +718,19 @@ theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
 
 section Center
 
-/-- The center of a semiring `R` is the set of elements that commute with everything in `R` -/
-def center (R) [Semiring R] : Subsemiring R :=
-  { Submonoid.center R with
-    carrier := Set.center R
-    zero_mem' := Set.zero_mem_center R
-    add_mem' := Set.add_mem_center }
+/-- The center of a non-associative semiring `R` is the set of elements that commute with everything
+in `R` -/
+def center (R) [NonAssocSemiring R] : Subsemiring R :=
+  { NonUnitalSubsemiring.center R with
+    one_mem' := Set.one_mem_center R }
 #align subsemiring.center Subsemiring.center
 
-theorem coe_center (R) [Semiring R] : ↑(center R) = Set.center R :=
+theorem coe_center (R) [NonAssocSemiring R] : ↑(center R) = Set.center R :=
   rfl
 #align subsemiring.coe_center Subsemiring.coe_center
 
 @[simp]
-theorem center_toSubmonoid (R) [Semiring R] : (center R).toSubmonoid = Submonoid.center R :=
+theorem center_toSubmonoid (R) [NonAssocSemiring R] : (center R).toSubmonoid = Submonoid.center R :=
   rfl
 #align subsemiring.center_to_submonoid Subsemiring.center_toSubmonoid
 
