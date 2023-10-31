@@ -164,7 +164,7 @@ lemma Equicontinuous.inducing_uniformOnFun_iff_pi [TopologicalSpace ι]
     Inducing (UniformOnFun.ofFun 𝔖 ∘ F) ↔
     Inducing F := by
   rw [eq_univ_iff_forall] at 𝔖_covers
-  let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (β := fun _ ↦ α)
+  let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (Y := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [Equicontinuous.inducing_uniformOnFun_iff_pi' h𝔖 hF,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl]
@@ -191,7 +191,7 @@ theorem Equicontinuous.tendsto_uniformOnFun_iff_pi
     Tendsto (UniformOnFun.ofFun 𝔖 ∘ F) ℱ (𝓝 <| UniformOnFun.ofFun 𝔖 f) ↔
     Tendsto F ℱ (𝓝 f) := by
   rw [eq_univ_iff_forall] at 𝔖_covers
-  let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (β := fun _ ↦ α)
+  let φ : ((⋃₀ 𝔖) → α) ≃ₜ (X → α) := Homeomorph.piCongrLeft (Y := fun _ ↦ α)
     (Equiv.subtypeUnivEquiv 𝔖_covers)
   rw [Equicontinuous.tendsto_uniformOnFun_iff_pi' h𝔖 hF,
       show restrict (⋃₀ 𝔖) ∘ F = φ.symm ∘ F by rfl, show restrict (⋃₀ 𝔖) f = φ.symm f by rfl,
@@ -234,7 +234,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
     rwa [Equicontinuous.inducing_uniformOnFun_iff_pi' h𝔖 F_eqcont] at F_ind
   rw [← forall_sUnion] at F_pointwiseCompact
   choose! Q Q_compact F_in_Q using F_pointwiseCompact
-  rw [← isCompact_univ_iff, ← this.isCompact_iff, image_univ]
+  rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
   refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2) F_cl
     (range_subset_iff.mpr fun i x _ ↦ F_in_Q x x.2 i)
 
@@ -248,7 +248,7 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing [TopologicalSpace ι] {𝔖
   have : Inducing F := by
     rwa [Equicontinuous.inducing_uniformOnFun_iff_pi 𝔖_covers 𝔖_compact F_eqcont] at F_ind
   choose K K_compact F_in_K using F_pointwiseCompact
-  rw [← isCompact_univ_iff, ← this.isCompact_iff, image_univ]
+  rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
   refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ K_compact x) F_cl
     (range_subset_iff.mpr fun i x _ ↦ F_in_K x i)
 
