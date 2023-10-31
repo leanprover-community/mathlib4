@@ -221,32 +221,10 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
   · rfl
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
     simp [h₂, h₁, h, dif_neg (show ¬False from id), dif_pos True.intro, if_false, if_true]
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · congr
     ring
 #align path.homotopy.trans_assoc_reparam Path.Homotopy.trans_assoc_reparam
@@ -295,12 +273,7 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
         Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
   inv {x y} p :=
     Quotient.lift (fun l : Path x y => ⟦l.symm⟧)
-      (by
-        rintro a b ⟨h⟩
-        simp only
-        rw [Quotient.eq]
-        exact ⟨h.symm₂⟩)
-      p
+      (by rintro a b ⟨h⟩; exact Quotient.sound ⟨h.symm₂⟩) p
   inv_comp {x y} f :=
     Quotient.inductionOn f fun a =>
       show ⟦a.symm.trans a⟧ = ⟦Path.refl y⟧ from
