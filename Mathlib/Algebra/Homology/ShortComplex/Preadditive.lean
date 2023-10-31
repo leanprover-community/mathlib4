@@ -423,9 +423,9 @@ def neg (h : Homotopy φ₁ φ₂) : Homotopy (-φ₁) (-φ₂) where
   h₁ := -h.h₁
   h₂ := -h.h₂
   h₃ := -h.h₃
-  comm₁ := by rw [neg_τ₁, neg_τ₁, h.comm₁, neg_add_rev, comp_neg] ; abel
-  comm₂ := by rw [neg_τ₂, neg_τ₂, h.comm₂, neg_add_rev, comp_neg, neg_comp] ; abel
-  comm₃ := by rw [neg_τ₃, neg_τ₃, h.comm₃, neg_comp] ; abel
+  comm₁ := by rw [neg_τ₁, neg_τ₁, h.comm₁, neg_add_rev, comp_neg]; abel
+  comm₂ := by rw [neg_τ₂, neg_τ₂, h.comm₂, neg_add_rev, comp_neg, neg_comp]; abel
+  comm₃ := by rw [neg_τ₃, neg_τ₃, h.comm₃, neg_comp]; abel
 
 /-- The transitivity of homotopy between morphisms of short complexes. -/
 @[simps]
