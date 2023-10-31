@@ -1603,13 +1603,21 @@ theorem good_lt_maxProducts (q : GoodProducts (π C (ord I · < o)))
     simp only [term, Ordinal.typein_enum]
     exact Products.prop_of_isGood C _ q.prop q.val.val.head! (List.head!_mem_self h)
 
+/--
+Removing the leading `o` from a term of `MaxProducts C` yields a list which `isGood` with respect to
+`C'`.
+-/
 theorem maxTail_isGood (l : MaxProducts C ho)
     (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     l.val.Tail.isGood (C' C ho) := by
+  -- Write `l.Tail` as a linear combination of smaller products:
   intro h
   rw [Finsupp.mem_span_image_iff_total, ← max_eq_eval C hsC ho] at h
   obtain ⟨m, ⟨hmmem, hmsum⟩⟩ := h
   rw [Finsupp.total_apply] at hmsum
+
+  -- Write the image of `l` under `Linear_CC'` as `Linear_CC'` applied to the linear combination
+  -- above, with leading `term I ho`'s added to each term:
   have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
     (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.1).map (e C)).prod)
   · rw [← hmsum]
@@ -1631,6 +1639,9 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   have hse := succ_exact C hC hsC ho
   rw [ModuleCat.exact_iff] at hse
   dsimp [ModuleCat.ofHom] at hse
+
+  -- Rewrite `this` using exact sequence manipulations to conclude that a term is in the range of
+  -- the linear map `πs`:
   rw [← LinearMap.sub_mem_ker_iff, ← hse] at this
   obtain ⟨(n : LocallyConstant (π C (ord I · < o)) ℤ), hn⟩ := this
   rw [eq_sub_iff_add_eq] at hn
@@ -1640,6 +1651,8 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   rw [← hc, map_finsupp_sum] at hn
   apply l.prop.1
   rw [← hn]
+
+  -- Now we just need to prove that a sum of two terms belongs to a span:
   apply Submodule.add_mem
   · apply Submodule.finsupp_sum_mem
     intro q _
