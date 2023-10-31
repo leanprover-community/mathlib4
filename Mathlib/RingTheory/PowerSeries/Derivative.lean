@@ -190,10 +190,10 @@ The "chain rule" for formal power series in one variable:
 
   `D (f ∘ᶠ g) = (D f) ∘ᶠ g * D g`.
 -/
-theorem derivative_comp (f g : R⟦X⟧) (hf : f.hasComp g) (hDf : (d⁄dX R f).hasComp g) :
+theorem derivative_comp (f g : R⟦X⟧) (hf : f.HasComp g) (hDf : (d⁄dX R f).HasComp g) :
     d⁄dX R (f ∘ᶠ g) = d⁄dX R f ∘ᶠ g * d⁄dX R g := by
   ext n
-  obtain ⟨N₁, hN₁⟩ := uniform_stable_of_hasComp hDf n
+  obtain ⟨N₁, hN₁⟩ := uniform_stable_of_HasComp hDf n
   obtain ⟨N₂, hN₂⟩ := hf (n+1)
   set N := max (N₁ + 1) N₂
   rw [coeff_derivative, coeff_comp_of_stable hf (N := N),
@@ -223,7 +223,7 @@ The more general case is `D_comp`.
 theorem derivative_comp' {f g : R⟦X⟧} (hg : constantCoeff R g = 0) :
     d⁄dX R (f ∘ᶠ g) = d⁄dX R f ∘ᶠ g * d⁄dX R g := by
   apply derivative_comp <;>
-  apply hasComp_of_constantCoeff_eq_zero (hg := hg)
+  apply HasComp_of_constantCoeff_eq_zero (hg := hg)
 
 
 end CommutativeSemiring

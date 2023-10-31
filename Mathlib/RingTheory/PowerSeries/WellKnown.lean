@@ -82,11 +82,11 @@ if and only if its constant coefficient is a unit.
   · intro hf
     obtain ⟨a : Rˣ,ha⟩ := hf
     have hf : f = (C R a - X) ∘ᶠ (C R a - f)
-    · rw [sub_comp C_hasComp X_hasComp, C_comp, X_comp, sub_sub_cancel]
+    · rw [sub_comp C_HasComp X_HasComp, C_comp, X_comp, sub_sub_cancel]
     have : f * (invUnitsSub a) ∘ᶠ (C R a - f) = 1
     · nth_rw 1 [hf]
       rw [←mul_comp, mul_comm, invUnitsSub_mul_sub, one_comp] <;>
-      · apply hasComp_of_constantCoeff_eq_zero
+      · apply HasComp_of_constantCoeff_eq_zero
         rw [map_sub, constantCoeff_C, ha, sub_self]
     apply isUnit_of_mul_eq_one (h := this)
 
@@ -327,8 +327,8 @@ theorem derivative_alternatingGeometric : d⁄dX R alternatingGeometric = -(1 + 
 @[simp] theorem constantCoeff_logOneAdd : constantCoeff R logOneAdd = 0 := by
   rw [← coeff_zero_eq_constantCoeff, logOneAdd, coeff_mk, cast_zero, div_zero]
 
-theorem hasComp_logOneAdd {f : R⟦X⟧} : f.hasComp logOneAdd := by
-  apply hasComp_of_constantCoeff_eq_zero constantCoeff_logOneAdd
+theorem HasComp_logOneAdd {f : R⟦X⟧} : f.HasComp logOneAdd := by
+  apply HasComp_of_constantCoeff_eq_zero constantCoeff_logOneAdd
 
 @[simp] theorem derivative_logOneAdd : d⁄dX R logOneAdd = (1 + X)⁻¹ := by
   rw [PowerSeries.eq_inv_iff_mul_eq_one]
@@ -351,17 +351,17 @@ theorem hasComp_logOneAdd {f : R⟦X⟧} : f.hasComp logOneAdd := by
 theorem const_exp_sub_one : constantCoeff R (exp - 1) = 0 := by
   rw [map_sub, constantCoeff_exp, constantCoeff_one, sub_self]
 
-theorem hasComp_exp_sub_one {f : R⟦X⟧} : f.hasComp (exp - 1) := by
-  apply hasComp_of_constantCoeff_eq_zero const_exp_sub_one
+theorem HasComp_exp_sub_one {f : R⟦X⟧} : f.HasComp (exp - 1) := by
+  apply HasComp_of_constantCoeff_eq_zero const_exp_sub_one
 
 theorem derivative_log_comp_exp : d⁄dX R (logOneAdd ∘ᶠ (exp - 1)) = 1 := by
   rw [derivative_comp' const_exp_sub_one, derivative_logOneAdd, map_sub, derivative_one,
     sub_zero, derivative_exp]
   have : (1 + X : R⟦X⟧) ∘ᶠ (exp - 1) = exp
-  · rw [add_comp hasComp_exp_sub_one hasComp_exp_sub_one,
+  · rw [add_comp HasComp_exp_sub_one HasComp_exp_sub_one,
       X_comp, one_comp, add_sub_cancel'_right]
   · nth_rw 2 [← this]
-    rw [← mul_comp hasComp_exp_sub_one hasComp_exp_sub_one,
+    rw [← mul_comp HasComp_exp_sub_one HasComp_exp_sub_one,
       PowerSeries.inv_mul_cancel, one_comp]
     rw [map_add, map_one, constantCoeff_X, add_zero]
     exact one_ne_zero
@@ -383,13 +383,13 @@ theorem logOneAdd_comp_mul_sub_one (f g : R⟦X⟧) (hf : constantCoeff R f = 0)
       derivative_comp' hf, derivative_comp' hg, zero_add, sub_zero, zero_add, mul_add,
       derivative_logOneAdd, add_comm]
     congr 1
-    · rw [inv_comp' this eq, add_comp one_hasComp X_hasComp, one_comp, X_comp,
-        add_comm, sub_add_cancel, inv_comp' this hf, add_comp one_hasComp X_hasComp,
+    · rw [inv_comp' this eq, add_comp one_HasComp X_HasComp, one_comp, X_comp,
+        add_comm, sub_add_cancel, inv_comp' this hf, add_comp one_HasComp X_HasComp,
         one_comp, X_comp, ←mul_assoc, PowerSeries.mul_inv_rev,
         mul_comm (1 + g)⁻¹, mul_assoc (1 + f)⁻¹, PowerSeries.inv_mul_cancel, mul_one]
       · rw [map_add, map_one, hg, add_zero]; exact one_ne_zero
-    · rw [inv_comp' this eq, add_comp one_hasComp X_hasComp, one_comp, X_comp,
-        add_comm, sub_add_cancel, inv_comp' this hg, add_comp one_hasComp X_hasComp,
+    · rw [inv_comp' this eq, add_comp one_HasComp X_HasComp, one_comp, X_comp,
+        add_comm, sub_add_cancel, inv_comp' this hg, add_comp one_HasComp X_HasComp,
         one_comp, X_comp, ← mul_assoc, PowerSeries.mul_inv_rev, mul_assoc (1 + g)⁻¹,
         PowerSeries.inv_mul_cancel, mul_one]
       · rw [map_add, map_one, hf, add_zero]; exact one_ne_zero
