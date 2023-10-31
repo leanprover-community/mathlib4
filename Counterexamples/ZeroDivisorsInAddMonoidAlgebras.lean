@@ -16,7 +16,7 @@ import Mathlib.Data.ZMod.Basic
 
 This file contains an easy source of zero-divisors in an `AddMonoidAlgebra`.
 If `k` is a field and `G` is an additive group containing a non-zero torsion element, then
-`AddMonoidAlgebra k G` contains non-zero zero-divisors: this is lemma `zero_divisors_of_torsion`.
+`k[G]` contains non-zero zero-divisors: this is lemma `zero_divisors_of_torsion`.
 
 There is also a version for periodic elements of an additive monoid: `zero_divisors_of_periodic`.
 
@@ -52,15 +52,15 @@ namespace Counterexample
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with an element `a` satisfying `n • a = a` and `(n - 1) • a ≠ a`, for some `2 ≤ n`,
-then `AddMonoidAlgebra R A` contains non-zero zero-divisors.  The elements are easy to write down:
-`[a]` and `[a] ^ (n - 1) - 1` are non-zero elements of `AddMonoidAlgebra R A` whose product
+then `R[A]` contains non-zero zero-divisors.  The elements are easy to write down:
+`[a]` and `[a] ^ (n - 1) - 1` are non-zero elements of `R[A]` whose product
 is zero.
 
 Observe that such an element `a` *cannot* be invertible.  In particular, this lemma never applies
 if `A` is a group. -/
 theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
     (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
-    ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
+    ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine' ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, _, _⟩
   · exact sub_ne_zero.mpr (by simpa [single, AddMonoidAlgebra, single_eq_single_iff])
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
@@ -68,24 +68,24 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
 #align counterexample.zero_divisors_of_periodic Counterexample.zero_divisors_of_periodic
 
 theorem single_zero_one {R A} [Semiring R] [Zero A] :
-    single (0 : A) (1 : R) = (1 : AddMonoidAlgebra R A) :=
+    single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
 #align counterexample.single_zero_one Counterexample.single_zero_one
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
-monoid with a non-zero element `a` of finite order `oa`, then `AddMonoidAlgebra R A` contains
+monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:
-`∑ i in Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `AddMonoidAlgebra R A`
+`∑ i in Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `R[A]`
 whose product is zero.
 
 In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero
 torsion element. -/
 theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
-    (o2 : 2 ≤ addOrderOf a) : ∃ f g : AddMonoidAlgebra R A, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
+    (o2 : 2 ≤ addOrderOf a) : ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
   refine'
     ⟨(Finset.range (addOrderOf a)).sum fun i : ℕ => single a 1 ^ i, single a 1 - single 0 1, _, _,
       _⟩
-  · apply_fun fun x : AddMonoidAlgebra R A => x 0
+  · apply_fun fun x : R[A] => x 0
     refine' ne_of_eq_of_ne (_ : (_ : R) = 1) one_ne_zero
     dsimp only; rw [Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
@@ -95,7 +95,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, le_zero_iff,
         false_imp_iff]
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
-  · apply_fun fun x : AddMonoidAlgebra R A => x 0
+  · apply_fun fun x : R[A] => x 0
     refine' sub_ne_zero.mpr (ne_of_eq_of_ne (_ : (_ : R) = 0) _)
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
@@ -239,9 +239,8 @@ example : ¬CovariantClass (Lex (F →₀ F)) (Lex (F →₀ F)) (· + ·) (· �
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), Function.comp, ofLex_add, toDFinsupp_add,
-      toLex_add, ofLex_toLex, DFinsupp.coe_add, toDFinsupp_coe, Pi.toLex_apply, Pi.add_apply,
-      forall_eq, f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
+  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, coe_add, Pi.add_apply, forall_eq,
+      f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'

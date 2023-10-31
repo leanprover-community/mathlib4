@@ -532,7 +532,7 @@ abbrev prod (X Y : C) [HasBinaryProduct X Y] :=
   limit (pair X Y)
 #align category_theory.limits.prod CategoryTheory.Limits.prod
 
-/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y ` or
+/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or
     `X ⨿ Y`. -/
 abbrev coprod (X Y : C) [HasBinaryCoproduct X Y] :=
   colimit (pair X Y)

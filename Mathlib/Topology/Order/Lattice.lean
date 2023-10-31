@@ -51,14 +51,14 @@ class ContinuousSup (L : Type*) [TopologicalSpace L] [Sup L] : Prop where
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderDual.continuousSup (L : Type*) [TopologicalSpace L] [Inf L]
-    [ContinuousInf L] : ContinuousSup Lᵒᵈ
-    where continuous_sup := @ContinuousInf.continuous_inf L _ _ _
+    [ContinuousInf L] : ContinuousSup Lᵒᵈ where
+  continuous_sup := @ContinuousInf.continuous_inf L _ _ _
 #align order_dual.has_continuous_sup OrderDual.continuousSup
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Sup L]
-    [ContinuousSup L] : ContinuousInf Lᵒᵈ
-    where continuous_inf := @ContinuousSup.continuous_sup L _ _ _
+    [ContinuousSup L] : ContinuousInf Lᵒᵈ where
+  continuous_inf := @ContinuousSup.continuous_sup L _ _ _
 #align order_dual.has_continuous_inf OrderDual.continuousInf
 
 /-- Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.

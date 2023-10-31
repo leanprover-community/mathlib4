@@ -304,7 +304,7 @@ theorem kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
     refine' ⟨b, fun c hc hct => _⟩
     suffices : ∀ i ∈ t, c < i; exact lt_irrefl c (this c hct)
     exact fun i hi => hc.trans_lt (hb.trans_le (ha hi))
-  · exact directed_of_inf fun i j hij k hki => hij.trans hki
+  · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2
   · exact fun n => ⟨n, le_rfl⟩
 
 theorem indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :

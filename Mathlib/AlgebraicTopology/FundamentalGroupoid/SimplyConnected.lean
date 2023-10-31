@@ -22,6 +22,7 @@ A topological space is simply connected if its fundamental groupoid is equivalen
   - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
 
+universe u
 
 noncomputable section
 
@@ -32,13 +33,10 @@ open ContinuousMap
 open scoped ContinuousMap
 
 /-- A simply connected space is one whose fundamental groupoid is equivalent to `Discrete Unit` -/
+@[mk_iff simply_connected_def]
 class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   equiv_unit : Nonempty (FundamentalGroupoid X ≌ Discrete Unit)
 #align simply_connected_space SimplyConnectedSpace
-
-theorem simply_connected_def (X : Type*) [TopologicalSpace X] :
-    SimplyConnectedSpace X ↔ Nonempty (FundamentalGroupoid X ≌ Discrete Unit) :=
-  ⟨fun h => @SimplyConnectedSpace.equiv_unit X _ h, fun h => ⟨h⟩⟩
 #align simply_connected_def simply_connected_def
 
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
@@ -67,10 +65,10 @@ theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p
   Quotient.eq.mp (@Subsingleton.elim (Path.Homotopic.Quotient x y) _ _ _)
 #align simply_connected_space.paths_homotopic SimplyConnectedSpace.paths_homotopic
 
-instance (priority := 100) ofContractible (Y : Type _) [TopologicalSpace Y] [ContractibleSpace Y] :
+instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [ContractibleSpace Y] :
     SimplyConnectedSpace Y where
   equiv_unit :=
-    let H : TopCat.of Y ≃ₕ TopCat.of Unit := (ContractibleSpace.hequiv_unit Y).some
+    let H : TopCat.of Y ≃ₕ TopCat.of PUnit.{u+1} := (ContractibleSpace.hequiv Y PUnit.{u+1}).some
     ⟨(FundamentalGroupoidFunctor.equivOfHomotopyEquiv H).trans
       FundamentalGroupoid.punitEquivDiscretePUnit⟩
 #align simply_connected_space.of_contractible SimplyConnectedSpace.ofContractible

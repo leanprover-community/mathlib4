@@ -242,10 +242,10 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
 #align power_basis.trace_gen_eq_next_coeff_minpoly PowerBasis.trace_gen_eq_nextCoeff_minpoly
 
 /-- Given `pb : PowerBasis K S`, then the trace of `pb.gen` is
-`((minpoly K pb.gen).map (algebraMap K F)).roots.sum`. -/
+`((minpoly K pb.gen).aroots F).sum`. -/
 theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : (minpoly K pb.gen).Splits (algebraMap K F)) :
-    algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).map (algebraMap K F)).roots.sum := by
+    algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
   rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, RingHom.map_neg, ←
     nextCoeff_map (algebraMap K F).injective,
     sum_roots_eq_nextCoeff_of_monic_of_split ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _)
@@ -269,17 +269,14 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
 
 theorem trace_gen_eq_sum_roots (x : L) (hf : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (trace K K⟮x⟯ (AdjoinSimple.gen K x)) =
-      ((minpoly K x).map (algebraMap K F)).roots.sum := by
+      ((minpoly K x).aroots F).sum := by
   have injKxL := (algebraMap K⟮x⟯ L).injective
   by_cases hx : IsIntegral K x; swap
-  · simp [minpoly.eq_zero hx, trace_gen_eq_zero hx]
-  have hx' : IsIntegral K (AdjoinSimple.gen K x) := by
-    rwa [← isIntegral_algebraMap_iff injKxL, AdjoinSimple.algebraMap_gen]
+  · simp [minpoly.eq_zero hx, trace_gen_eq_zero hx, aroots_def]
   rw [← adjoin.powerBasis_gen hx, (adjoin.powerBasis hx).trace_gen_eq_sum_roots] <;>
-      rw [adjoin.powerBasis_gen hx, minpoly.eq_of_algebraMap_eq injKxL hx'] <;>
+    rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
     try simp only [AdjoinSimple.algebraMap_gen _ _]
-  · exact hf
-  · rfl
+  exact hf
 #align intermediate_field.adjoin_simple.trace_gen_eq_sum_roots IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots
 
 end IntermediateField.AdjoinSimple
@@ -303,7 +300,7 @@ variable {K}
 theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (Algebra.trace K L x) =
-      finrank K⟮x⟯ L • ((minpoly K x).map (algebraMap K _)).roots.sum := by
+      finrank K⟮x⟯ L • ((minpoly K x).aroots F).sum := by
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← Algebra.smul_def,
     IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF]
 -- Porting note: last `simp` was `IsScalarTower.algebraMap_smul` inside the `rw`.
@@ -489,7 +486,7 @@ theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     rfl
     ext
     rw [mul_comm _ (b.equivFun z _), ← smul_eq_mul, of_apply, ← LinearMap.map_smul]
-  rw [← LinearMap.map_sum]
+  rw [← _root_.map_sum]
   congr
   conv_lhs =>
     congr

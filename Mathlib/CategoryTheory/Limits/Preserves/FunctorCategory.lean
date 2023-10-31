@@ -57,8 +57,8 @@ work to convert to this version: namely, the natural isomorphism
 -/
 def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
     [∀ X : D, PreservesColimits (prod.functor.obj X)] (F : C ⥤ D) :
-    PreservesColimits (prod.functor.obj F)
-    where preservesColimitsOfShape {J : Type u} [Category.{u, u} J] :=
+    PreservesColimits (prod.functor.obj F) where
+  preservesColimitsOfShape {J : Type u} [Category.{u, u} J] :=
     {
       preservesColimit := fun {K : J ⥤ C ⥤ D} =>
         ( {

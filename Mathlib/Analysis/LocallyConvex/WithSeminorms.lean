@@ -447,10 +447,7 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [TopologicalAd
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     TopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
-  -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
-  refine Eq.to_iff ?_
-  congr
-  funext i
+  congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_topological_space_eq_infi SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf
 
@@ -472,10 +469,7 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     toTopologicalSpace_iInf, nhds_iInf]
-  -- Porting note: next three lines was `congrm (_ = ⨅ i, _)`
-  refine Eq.to_iff ?_
-  congr
-  funext i
+  congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_uniform_space_eq_infi SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf
 
@@ -854,7 +848,7 @@ lemma bound_of_continuous [Nonempty ι] [t : TopologicalSpace E] (hp : WithSemin
   rcases bound_of_continuous_normedSpace q this with ⟨C, C_pos, hC⟩
   exact ⟨s, ⟨C, C_pos.le⟩, fun H ↦ C_pos.ne.symm (congr_arg NNReal.toReal H), hC⟩
   -- Note that the key ingredient for this proof is that, by scaling arguments hidden in
-  -- `seminorm.continuous`, we only have to look at the `q`-ball of radius one, and the `s` we get
+  -- `Seminorm.continuous`, we only have to look at the `q`-ball of radius one, and the `s` we get
   -- from that will automatically work for all other radii.
 
 end Seminorm

@@ -166,7 +166,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       haveI := subsingleton_of_bot_eq_top hS
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
-    · rcases(Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
+    · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
       refine' ⟨fun n => s n, fun n => hps _ (s n).coe_prop, _⟩
       rwa [hs.iSup_comp, ← sSup_eq_iSup']
 #align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_iSup_eq_top_iff_countable
@@ -287,6 +287,27 @@ theorem Countable.image2 {s : Set α} {t : Set β} (hs : s.Countable) (ht : t.Co
   rw [← image_prod]
   exact (hs.prod ht).image _
 #align set.countable.image2 Set.Countable.image2
+
+/-- If a family of disjoint sets is included in a countable set, then only countably many of
+them are nonempty. -/
+theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
+    (hf : Pairwise (Disjoint on f)) {s : Set α} (h'f : ∀ t, f t ⊆ s) (hs : s.Countable) :
+    Set.Countable {t | (f t).Nonempty} := by
+  rw [← Set.countable_coe_iff] at hs ⊢
+  have : ∀ t : {t // (f t).Nonempty}, ∃ x : s, x.1 ∈ f t := by
+    rintro ⟨t, ⟨x, hx⟩⟩
+    exact ⟨⟨x, (h'f t hx)⟩, hx⟩
+  choose F hF using this
+  have A : Injective F := by
+    rintro ⟨t, ht⟩ ⟨t', ht'⟩ htt'
+    have A : (f t ∩ f t').Nonempty := by
+      refine ⟨F ⟨t, ht⟩, hF _, ?_⟩
+      rw [htt']
+      exact hF _
+    simp only [Subtype.mk.injEq]
+    by_contra H
+    exact not_disjoint_iff_nonempty_inter.2 A (hf H)
+  exact Injective.countable A
 
 end Set
 

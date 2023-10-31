@@ -6,7 +6,7 @@ Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Iso
 
-#align_import category_theory.functor.category from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
+#align_import category_theory.functor.category from "leanprover-community/mathlib"@"63721b2c3eba6c325ecf8ae8cca27155a4f6306f"
 
 /-!
 # The category of functors and natural transformations between two fixed categories.

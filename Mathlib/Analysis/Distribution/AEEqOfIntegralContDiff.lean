@@ -41,8 +41,8 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     (h : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 := by
   -- record topological properties of `M`
-  have := I.locally_compact
-  have := ChartedSpace.locallyCompact H M
+  have := I.locallyCompactSpace
+  have := ChartedSpace.locallyCompactSpace H M
   have := I.secondCountableTopology
   have := ChartedSpace.secondCountable_of_sigma_compact H M
   have := ManifoldWithCorners.metrizableSpace I M

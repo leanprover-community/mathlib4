@@ -10,7 +10,7 @@ import Mathlib.Algebra.Star.Pointwise
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
 
-variable {R : Type*} [Semigroup R] [StarSemigroup R] {a : R} {s : Set R}
+variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 
 theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R := by
   simpa only [star_mul, star_star] using fun g =>

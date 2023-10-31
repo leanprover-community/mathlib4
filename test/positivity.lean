@@ -165,8 +165,6 @@ example {a b : ℚ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14
 
 example {a b : ℤ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14 := by positivity
 
--- example {a : ℤ} (ha : 0 < a) : 0 < a / a := by positivity
-
 /-! ### Exponentiation -/
 
 example [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 := by positivity
@@ -189,12 +187,12 @@ example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
 -- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by positivity
 example {a : ℝ} : 0 < a ^ 0 := by positivity
 
--- example {a : ℝ} (ha : 0 < a) : 0 ≤ ⌊a⌋ := by positivity
--- example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌊a⌋ := by positivity
+example {a : ℝ} (ha : 0 < a) : 0 ≤ ⌊a⌋ := by positivity
+example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌊a⌋ := by positivity
 
--- example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉₊ := by positivity
--- example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉ := by positivity
--- example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by positivity
+example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉₊ := by positivity
+example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉ := by positivity
+example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
 
@@ -218,6 +216,7 @@ example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example : 0 < NNReal.sqrt 5 := by positivity
 example : 0 ≤ Real.sqrt (-5) := by positivity
+example (x : ℝ) : 0 ≤ Real.sqrt x := by positivity
 example : 0 < Real.sqrt 5 := by positivity
 
 example {a : ℝ} (_ha : 0 ≤ a) : 0 ≤ Real.sqrt a := by positivity
@@ -248,7 +247,7 @@ example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
--- example (n k : ℕ) : 0 < n.asc_factorial k := by positivity
+example (n k : ℕ) : 0 < n.ascFactorial k := by positivity
 
 -- example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < s.card := by positivity
 -- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity

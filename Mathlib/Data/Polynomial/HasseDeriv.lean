@@ -188,9 +188,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw [cast_choose ℚ h1, cast_choose ℚ h2, cast_choose ℚ h3, cast_choose ℚ hikl]
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
-  have H : ∀ n : ℕ, (n ! : ℚ) ≠ 0 := by exact_mod_cast factorial_ne_zero
-  field_simp [H]
-  ring
+  field_simp; ring
 #align polynomial.hasse_deriv_comp Polynomial.hasseDeriv_comp
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
@@ -229,6 +227,8 @@ section
 
 open AddMonoidHom Finset.Nat
 
+open Finset (antidiagonal mem_antidiagonal)
+
 theorem hasseDeriv_mul (f g : R[X]) :
     hasseDeriv k (f * g) = ∑ ij in antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
@@ -249,7 +249,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
         monomial (m - x.1 + (n - x.2)) (↑(m.choose x.1) * r * (↑(n.choose x.2) * s)) =
           monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) := by
     intro x hx
-    rw [Finset.Nat.mem_antidiagonal] at hx
+    rw [mem_antidiagonal] at hx
     subst hx
     by_cases hm : m < x.1
     · simp only [Nat.choose_eq_zero_of_lt hm, Nat.cast_zero, zero_mul,
@@ -261,7 +261,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     rw [tsub_add_eq_add_tsub hm, ← add_tsub_assoc_of_le hn, ← tsub_add_eq_tsub_tsub,
       add_comm x.2 x.1, mul_assoc, ← mul_assoc r, ← (Nat.cast_commute _ r).eq, mul_assoc, mul_assoc]
   rw [Finset.sum_congr rfl aux]
-  rw [← LinearMap.map_sum, ← Finset.sum_mul]
+  rw [← map_sum, ← Finset.sum_mul]
   congr
   rw_mod_cast [←Nat.add_choose_eq]
 #align polynomial.hasse_deriv_mul Polynomial.hasseDeriv_mul

@@ -42,7 +42,7 @@ theorem even_iff : Even n ↔ n % 2 = 0 :=
 instance : DecidablePred (Even : ℕ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
 
 theorem odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ => by rw [hm, add_mod, mul_mod_right]; rfl,
+  ⟨fun ⟨m, hm⟩ => by norm_num [hm, add_mod],
     fun h => ⟨n / 2, (mod_add_div n 2).symm.trans (by rw [h, add_comm])⟩⟩
 #align nat.odd_iff Nat.odd_iff
 

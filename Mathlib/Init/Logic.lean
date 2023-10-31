@@ -5,14 +5,16 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
+import Std.Tactic.Relation.Rfl
 import Std.Logic
 import Std.WF
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
+import Mathlib.Util.Imports
+import Mathlib.Tactic.ProjectionNotation
 
 set_option autoImplicit true
 
@@ -664,3 +666,5 @@ end Binary
 #align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
+
+attribute [pp_dot] Iff.mp Iff.mpr False.elim Eq.symm Eq.trans

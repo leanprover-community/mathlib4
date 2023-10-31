@@ -31,7 +31,7 @@ def ENat : Type :=
 deriving Zero,
   -- AddCommMonoidWithOne,
   CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
+  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
@@ -119,8 +119,8 @@ theorem toNat_top : toNat ⊤ = 0 :=
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
 def recTopCoe {C : ℕ∞ → Sort*} (h₁ : C ⊤) (h₂ : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
-| none => h₁
-| Option.some a => h₂ a
+  | none => h₁
+  | Option.some a => h₂ a
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]

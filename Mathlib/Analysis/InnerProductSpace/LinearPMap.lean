@@ -135,19 +135,10 @@ def adjointAux : T.adjointDomain →ₗ[𝕜] E where
     hT.eq_of_inner_left fun _ => by
       simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
         adjointDomainMkClmExtend_apply]
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- mathlib3 was finished here
-      rw [adjointDomainMkClmExtend_apply, adjointDomainMkClmExtend_apply,
-        adjointDomainMkClmExtend_apply]
-      simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, inner_add_left]
   map_smul' _ _ :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
         InnerProductSpace.toDual_symm_apply, adjointDomainMkClmExtend_apply]
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- mathlib3 was finished here
-      rw [adjointDomainMkClmExtend_apply, adjointDomainMkClmExtend_apply]
-      simp only [Submodule.coe_smul_of_tower, inner_smul_left]
 #align linear_pmap.adjoint_aux LinearPMap.adjointAux
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :

@@ -73,7 +73,7 @@ instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
 `n` and `b` are both positive.
 -/
 theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 ≤ n) (h₂ : 1 ≤ b) :
-    Nat.coprime n b := by
+    Nat.Coprime n b := by
   by_cases h₃ : 2 ≤ n
   · -- To prove that `n` is coprime with `b`, we need to show that for all prime factors of `n`,
     -- we can derive a contradiction if `n` divides `b`.
@@ -117,7 +117,7 @@ positive.
 
 This lemma is a small wrapper based on `coprime_of_probablePrime`
 -/
-theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.coprime n b := by
+theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.Coprime n b := by
   rcases h with ⟨hp, _, hn₂⟩
   exact coprime_of_probablePrime hp (by linarith) h₁
 #align fermat_psp.coprime_of_fermat_psp Nat.coprime_of_fermatPsp
@@ -140,8 +140,7 @@ private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  convert pow_lt_pow (Nat.lt_of_succ_le ha) hb
-  rw [pow_one]
+  exact self_lt_pow (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -245,7 +244,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- to prove this.
   have ha₃ : p ∣ b ^ (p - 1) - 1 := by
     have : ¬p ∣ b := mt (fun h : p ∣ b => dvd_mul_of_dvd_left h _) not_dvd
-    have : p.coprime b := Or.resolve_right (Nat.coprime_or_dvd_of_prime p_prime b) this
+    have : p.Coprime b := Or.resolve_right (Nat.coprime_or_dvd_of_prime p_prime b) this
     have : IsCoprime (b : ℤ) ↑p := this.symm.isCoprime
     have : ↑b ^ (p - 1) ≡ 1 [ZMOD ↑p] := Int.ModEq.pow_card_sub_one_eq_one p_prime this
     have : ↑p ∣ ↑b ^ (p - 1) - ↑1 := by exact_mod_cast Int.ModEq.dvd (Int.ModEq.symm this)
@@ -267,12 +266,12 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     -- We already proved that `b ^ 2 - 1 ∣ b ^ (p - 1) - 1`.
     -- Since `2 ∣ b ^ p + b` and `p ∣ b ^ p + b`, if we show that 2 and p are coprime, then we
     -- know that `2 * p ∣ b ^ p + b`
-    have q₁ : Nat.coprime p (b ^ 2 - 1) :=
+    have q₁ : Nat.Coprime p (b ^ 2 - 1) :=
       haveI q₂ : ¬p ∣ b ^ 2 - 1 := by
         rw [mul_comm] at not_dvd
         exact mt (fun h : p ∣ b ^ 2 - 1 => dvd_mul_of_dvd_left h _) not_dvd
       (Nat.Prime.coprime_iff_not_dvd p_prime).mpr q₂
-    have q₂ : p * (b ^ 2 - 1) ∣ b ^ (p - 1) - 1 := Nat.coprime.mul_dvd_of_dvd_of_dvd q₁ ha₃ ha₄
+    have q₂ : p * (b ^ 2 - 1) ∣ b ^ (p - 1) - 1 := Nat.Coprime.mul_dvd_of_dvd_of_dvd q₁ ha₃ ha₄
     have q₃ : p * (b ^ 2 - 1) * 2 ∣ (b ^ (p - 1) - 1) * (b ^ p + b) := mul_dvd_mul q₂ ha₂
     have q₄ : p * (b ^ 2 - 1) * 2 ∣ b * ((b ^ (p - 1) - 1) * (b ^ p + b)) :=
       dvd_mul_of_dvd_right q₃ _

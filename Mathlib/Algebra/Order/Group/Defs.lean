@@ -46,8 +46,8 @@ attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    CovariantClass α α (· * ·)
-      (· ≤ ·) where elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
+    CovariantClass α α (· * ·) (· ≤ ·) where
+      elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 #align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.to_covariantClass_left_le
 
@@ -69,8 +69,8 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (· * ·)
-      (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
+    ContravariantClass α α (· * ·) (· ≤ ·) where
+      elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
 
@@ -80,8 +80,8 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (swap (· * ·))
-      (· ≤ ·) where elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
+    ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
+      elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
 #align ordered_add_comm_group.to_contravariant_class_right_le OrderedAddCommGroup.to_contravariantClass_right_le
 
@@ -890,7 +890,7 @@ alias ⟨lt_of_sub_pos, sub_pos_of_lt⟩ := sub_pos
 #align lt_of_sub_pos lt_of_sub_pos
 #align sub_pos_of_lt sub_pos_of_lt
 
-@[to_additive (attr := simp) sub_neg]
+@[to_additive (attr := simp) sub_neg "For `a - -b = a + b`, see `sub_neg_eq_add`."]
 theorem div_lt_one' : a / b < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_lt_one' div_lt_one'
@@ -1159,6 +1159,22 @@ instance (priority := 100) LinearOrderedCommGroup.toLinearOrderedCancelCommMonoi
 #align linear_ordered_comm_group.to_linear_ordered_cancel_comm_monoid LinearOrderedCommGroup.toLinearOrderedCancelCommMonoid
 #align linear_ordered_add_comm_group.to_linear_ordered_cancel_add_comm_monoid LinearOrderedAddCommGroup.toLinearOrderedAddCancelCommMonoid
 
+@[to_additive, simp]
+theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le_mul']
+#align neg_le_self_iff neg_le_self_iff
+
+@[to_additive, simp]
+theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by simp [inv_lt_iff_one_lt_mul]
+#align neg_lt_self_iff neg_lt_self_iff
+
+@[to_additive, simp]
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by simp [← not_iff_not]
+#align le_neg_self_iff le_neg_self_iff
+
+@[to_additive, simp]
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
+#align lt_neg_self_iff lt_neg_self_iff
+
 end LinearOrderedCommGroup
 
 namespace AddCommGroup
@@ -1332,3 +1348,8 @@ theorem StrictAntiOn.inv (hf : StrictAntiOn f s) : StrictMonoOn (fun x => (f x)�
 #align strict_anti_on.neg StrictAntiOn.neg
 
 end
+
+/-
+`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+-/
+assert_not_exists NeZero
