@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.MetricSpace.Metrizable
 
 #align_import measure_theory.measure.regular from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -119,12 +120,12 @@ for the more fine grained definitions above as they apply more generally.
 *  `MeasurableSet.exists_lt_isClosed_of_ne_top` and `MeasurableSet.exists_isClosed_lt_add`:
   a measurable set of finite measure can be approximated by a closed subset (stated as
   `r < μ F` and `μ s < μ F + ε`, respectively).
-* `MeasureTheory.Measure.WeaklyRegular.of_pseudoEMetricSpace_of_isFiniteMeasure` is an
+* `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_of_isFiniteMeasure` is an
   instance registering that a finite measure on a metric space is weakly regular (in fact, a pseudo
-  emetric space is enough);
-* `MeasureTheory.Measure.WeaklyRegular.of_pseudoEMetric_secondCountable_of_locallyFinite`
+  metrizable space is enough);
+* `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_secondCountable_of_locallyFinite`
   is an instance registering that a locally finite measure on a second countable metric space (or
-  even a pseudo emetric space) is weakly regular.
+  even a pseudo metrizable space) is weakly regular.
 
 ### Regular measures
 
@@ -175,7 +176,6 @@ proofs or statements do not apply directly.
 
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
-
 
 open Set Filter ENNReal Topology NNReal BigOperators TopologicalSpace
 
@@ -379,82 +379,35 @@ instance smul_nnreal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
     OuterRegular (c • μ) :=
   OuterRegular.smul μ coe_ne_top
 
-lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {U : ℕ → Set α}
-    (h : ∀ n, OuterRegular (μ.restrict (U n))) (h' : ∀ n, IsOpen (U n)) (h'' : univ ⊆ ⋃ n, U n) :
-    OuterRegular μ := by
-  refine ⟨fun A hA r hr ↦ ?_⟩
-  have HA : μ A < ∞ := lt_of_lt_of_le hr le_top
-  obtain ⟨ε, εpos, rfl⟩ : ∃ ε > 0, μ A + ε = r := exists_pos_add_of_lt' hr
-  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, (∀ (i : ℕ), 0 < δ i) ∧ ∑' i, δ i < ε :=
-    ENNReal.exists_pos_sum_of_countable' εpos.ne' ℕ
-  let B (n : ℕ) := A ∩ disjointed U n
-  have meas_B : ∑' n, μ (B n) = μ A := by
-    rw [← measure_iUnion,  ← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
-    · intro m n hmn
-      exact (disjoint_disjointed U hmn).mono (inter_subset_right _ _) (inter_subset_right _ _)
-    · intro n
-      exact hA.inter (MeasurableSet.disjointed (fun n ↦ (h' n).measurableSet) n)
-  have HB (n : ℕ) : ∃ V, IsOpen V ∧ B n ⊆ V ∧ μ V < μ (B n) + δ n := by
-    have IB : μ.restrict (U n) (B n) < μ.restrict (U n) (B n) + δ n := by
-      have : μ.restrict (U n) (B n) < ∞ := by calc
-        μ.restrict (U n) (B n) ≤ μ (B n) := Measure.le_iff'.1 restrict_le_self _
-        _ ≤ μ A := measure_mono (inter_subset_left _ _)
-        _ < ∞ := HA
-      simpa using ENNReal.add_lt_add_left this.ne (δpos n)
-    obtain ⟨V, BV, V_open, hV⟩ :
-      ∃ V, B n ⊆ V ∧ IsOpen V ∧ μ.restrict (U n) V < μ.restrict (U n) (B n) + δ n :=
-        exists_isOpen_lt_of_lt _ _ IB
-    refine ⟨V ∩ (U n), V_open.inter (h' n), ?_, ?_⟩
-    · exact subset_inter BV ((inter_subset_right _ _).trans (disjointed_subset U n))
-    · calc
-      μ (V ∩ U n) = μ.restrict (U n) V := by rw [restrict_apply' (h' n).measurableSet]
-      _ < μ.restrict (U n) (B n) + δ n := hV
-      _ ≤ μ (B n) + δ n := add_le_add_right (Measure.le_iff'.1 restrict_le_self _) _
-  choose V V_open VB hV using HB
-  refine ⟨⋃ n, V n, ?_, isOpen_iUnion V_open, ?_⟩
-  · calc A = A ∩ univ := (inter_univ A).symm
-    _ ⊆ A ∩ (⋃ n, disjointed U n) := by
-      rw [iUnion_disjointed]; exact inter_subset_inter_right _ h''
-    _ = ⋃ n, B n := by rw [inter_iUnion]
-    _ ⊆ ⋃ n, V n := iUnion_mono VB
-  · calc
-    μ (⋃ n, V n) ≤ ∑' n, μ (V n) := measure_iUnion_le _
-    _ ≤ ∑' n, (μ (B n) + δ n) := ENNReal.tsum_le_tsum (fun n ↦ (hV n).le)
-    _ = ∑' n, μ (B n) + ∑' n, δ n := ENNReal.tsum_add
-    _ = μ A + ∑' n, δ n := by rw [meas_B]
-    _ < μ A + ε := ENNReal.add_lt_add_left HA.ne hδ
-
-end OuterRegular
-
-/-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
-is outer regular, then the original measure is outer regular as well. -/
-protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {μ : Measure α}
-    (s : μ.FiniteSpanningSetsIn { U | IsOpen U ∧ OuterRegular (μ.restrict U) }) :
+/-- If the restrictions of a measure to countably many open sets covering the space are
+outer regular, then the measure itself is outer regular. -/
+lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
+    (h : ∀ n, OuterRegular (μ.restrict (s n))) (h' : ∀ n, IsOpen (s n)) (h'' : univ ⊆ ⋃ n, s n) :
     OuterRegular μ := by
   refine' ⟨fun A hA r hr => _⟩
-  have hm : ∀ n, MeasurableSet (s.set n) := fun n => (s.set_mem n).1.measurableSet
-  haveI : ∀ n, OuterRegular (μ.restrict (s.set n)) := fun n => (s.set_mem n).2
+  have HA : μ A < ∞ := lt_of_lt_of_le hr le_top
+  have hm : ∀ n, MeasurableSet (s n) := fun n => (h' n).measurableSet
   -- Note that `A = ⋃ n, A ∩ disjointed s n`. We replace `A` with this sequence.
   obtain ⟨A, hAm, hAs, hAd, rfl⟩ :
     ∃ A' : ℕ → Set α,
       (∀ n, MeasurableSet (A' n)) ∧
-        (∀ n, A' n ⊆ s.set n) ∧ Pairwise (Disjoint on A') ∧ A = ⋃ n, A' n := by
+        (∀ n, A' n ⊆ s n) ∧ Pairwise (Disjoint on A') ∧ A = ⋃ n, A' n := by
     refine'
-      ⟨fun n => A ∩ disjointed s.set n, fun n => hA.inter (MeasurableSet.disjointed hm _), fun n =>
+      ⟨fun n => A ∩ disjointed s n, fun n => hA.inter (MeasurableSet.disjointed hm _), fun n =>
         (inter_subset_right _ _).trans (disjointed_subset _ _),
-        (disjoint_disjointed s.set).mono fun k l hkl => hkl.mono inf_le_right inf_le_right, _⟩
-    rw [← inter_iUnion, iUnion_disjointed, s.spanning, inter_univ]
+        (disjoint_disjointed s).mono fun k l hkl => hkl.mono inf_le_right inf_le_right, _⟩
+    rw [← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
   rcases ENNReal.exists_pos_sum_of_countable' (tsub_pos_iff_lt.2 hr).ne' ℕ with ⟨δ, δ0, hδε⟩
   rw [lt_tsub_iff_right, add_comm] at hδε
   have : ∀ n, ∃ (U : _) (_ : U ⊇ A n), IsOpen U ∧ μ U < μ (A n) + δ n := by
     intro n
-    have H₁ : ∀ t, μ.restrict (s.set n) t = μ (t ∩ s.set n) := fun t => restrict_apply' (hm n)
-    have Ht : μ.restrict (s.set n) (A n) ≠ ⊤ := by
+    have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
+    have Ht : μ.restrict (s n) (A n) ≠ ⊤ := by
       rw [H₁]
-      exact ((measure_mono <| inter_subset_right _ _).trans_lt (s.finite n)).ne
+      exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
     rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
     rw [H₁, H₁, inter_eq_self_of_subset_left (hAs _)] at hU
-    exact ⟨U ∩ s.set n, subset_inter hAU (hAs _), hUo.inter (s.set_mem n).1, hU⟩
+    exact ⟨U ∩ s n, subset_inter hAU (hAs _), hUo.inter (h' n), hU⟩
   choose U hAU hUo hU using this
   refine' ⟨⋃ n, U n, iUnion_mono hAU, isOpen_iUnion hUo, _⟩
   calc
@@ -463,6 +416,16 @@ protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {�
     _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
     _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
     _ < r := hδε
+
+end OuterRegular
+
+/-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
+is outer regular, then the original measure is outer regular as well. -/
+protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {μ : Measure α}
+    (s : μ.FiniteSpanningSetsIn { U | IsOpen U ∧ OuterRegular (μ.restrict U) }) :
+    OuterRegular μ :=
+  OuterRegular.of_restrict (s := fun n ↦ s.set n) (fun n ↦ (s.set_mem n).2)
+    (fun n ↦ (s.set_mem n).1) s.spanning.symm.subset
 #align measure_theory.measure.finite_spanning_sets_in.outer_regular MeasureTheory.Measure.FiniteSpanningSetsIn.outerRegular
 
 namespace InnerRegularWRT
@@ -563,16 +526,17 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegularWRT.weaklyRegular_of_finite
 
-/-- In a metric space (or even a pseudo emetric space), an open set can be approximated from inside
+/-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from inside
 by closed sets. -/
-theorem of_pseudoEMetricSpace {X : Type*} [PseudoEMetricSpace X] [MeasurableSpace X]
-    (μ : Measure X) : InnerRegularWRT μ IsClosed IsOpen := by
+theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetrizableSpace X]
+    [MeasurableSpace X] (μ : Measure X) : InnerRegularWRT μ IsClosed IsOpen := by
+  let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   intro U hU r hr
   rcases hU.exists_iUnion_isClosed with ⟨F, F_closed, -, rfl, F_mono⟩
   rw [measure_iUnion_eq_iSup F_mono.directed_le] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨F n, subset_iUnion _ _, F_closed n, hn⟩
-#align measure_theory.measure.inner_regular.of_pseudo_emetric_space MeasureTheory.Measure.InnerRegularWRT.of_pseudoEMetricSpace
+#align measure_theory.measure.inner_regular.of_pseudo_emetric_space MeasureTheory.Measure.InnerRegularWRT.of_pseudoMetrizableSpace
 
 /-- In a second countable locally compact space, an open set can be approximated from inside by
 compact sets. -/
@@ -865,25 +829,27 @@ theorem restrict_of_measure_ne_top [BorelSpace α] [WeaklyRegular μ] {A : Set �
 #align measure_theory.measure.weakly_regular.restrict_of_measurable_set MeasureTheory.Measure.WeaklyRegular.restrict_of_measure_ne_top
 
 -- see Note [lower instance priority]
-/-- Any finite measure on a metric space (or even a pseudo emetric space) is weakly regular. -/
-instance (priority := 100) of_pseudoEMetricSpace_of_isFiniteMeasure {X : Type*}
-    [PseudoEMetricSpace X] [MeasurableSpace X] [BorelSpace X] (μ : Measure X) [IsFiniteMeasure μ] :
+/-- Any finite measure on a metrizable space (or even a pseudo metrizable space)
+is weakly regular. -/
+instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type*} [TopologicalSpace X]
+    [PseudoMetrizableSpace X] [MeasurableSpace X] [BorelSpace X]
+    (μ : Measure X) [IsFiniteMeasure μ] :
     WeaklyRegular μ :=
-  (InnerRegularWRT.of_pseudoEMetricSpace μ).weaklyRegular_of_finite μ
-#align measure_theory.measure.weakly_regular.of_pseudo_emetric_space_of_is_finite_measure MeasureTheory.Measure.WeaklyRegular.of_pseudoEMetricSpace_of_isFiniteMeasure
+  (InnerRegularWRT.of_pseudoMetrizableSpace μ).weaklyRegular_of_finite μ
+#align measure_theory.measure.weakly_regular.of_pseudo_emetric_space_of_is_finite_measure MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_of_isFiniteMeasure
 
 -- see Note [lower instance priority]
-/-- Any locally finite measure on a second countable metric space (or even a pseudo emetric space)
-is weakly regular. -/
-instance (priority := 100) of_pseudoEMetric_secondCountable_of_locallyFinite {X : Type*}
-    [PseudoEMetricSpace X] [TopologicalSpace.SecondCountableTopology X] [MeasurableSpace X]
+/-- Any locally finite measure on a second countable metrizable space
+(or even a pseudo metrizable space) is weakly regular. -/
+instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFinite {X : Type*}
+    [TopologicalSpace X] [PseudoMetrizableSpace X] [SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : WeaklyRegular μ :=
-  haveI : OuterRegular μ := by
+  have : OuterRegular μ := by
     refine' (μ.finiteSpanningSetsInOpen'.mono' fun U hU => _).outerRegular
     have : Fact (μ U < ∞) := ⟨hU.2⟩
     exact ⟨hU.1, inferInstance⟩
-  ⟨InnerRegularWRT.of_pseudoEMetricSpace μ⟩
-#align measure_theory.measure.weakly_regular.of_pseudo_emetric_second_countable_of_locally_finite MeasureTheory.Measure.WeaklyRegular.of_pseudoEMetric_secondCountable_of_locallyFinite
+  ⟨InnerRegularWRT.of_pseudoMetrizableSpace μ⟩
+#align measure_theory.measure.weakly_regular.of_pseudo_emetric_second_countable_of_locally_finite MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_secondCountable_of_locallyFinite
 
 protected theorem smul [WeaklyRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).WeaklyRegular := by
   haveI := OuterRegular.smul μ hx
@@ -960,11 +926,10 @@ attribute [local instance] EMetric.secondCountable_of_sigmaCompact
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a `σ`-compact (e)metric space is regular. -/
 instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure {X : Type*}
-    [EMetricSpace X] [SigmaCompactSpace X] [MeasurableSpace X] [BorelSpace X] (μ : Measure X)
-    [IsLocallyFiniteMeasure μ] : Regular μ where
-  lt_top_of_isCompact _K hK := hK.measure_lt_top
-  innerRegular := (InnerRegularWRT.isCompact_isClosed μ).trans
-    (InnerRegularWRT.of_pseudoEMetricSpace μ)
+    [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
+    [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : Regular μ := by
+  let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  exact ⟨(InnerRegularWRT.isCompact_isClosed μ).trans (InnerRegularWRT.of_pseudoMetrizableSpace μ)⟩
 #align measure_theory.measure.regular.of_sigma_compact_space_of_is_locally_finite_measure MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure
 
 end Measure
