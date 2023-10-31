@@ -58,7 +58,7 @@ instance : LinearOrderedAddCommMonoid Two :=
       delta Two WithZero; decide }
 section
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-- The grade 0 part of `R²` is `{(a, a) | a ∈ R}`. -/
 def submoduleZ : Submodule R (R × R) where

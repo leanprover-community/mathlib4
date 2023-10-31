@@ -100,7 +100,7 @@ def homologyMapData : HomologyMapData φ h₁ h₂ := default
 variable {φ h₁ h₂}
 
 lemma congr_left_φH {γ₁ γ₂ : HomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) :
-  γ₁.left.φH = γ₂.left.φH := by rw [eq]
+    γ₁.left.φH = γ₂.left.φH := by rw [eq]
 
 end HomologyMapData
 
@@ -1123,7 +1123,7 @@ lemma asIsoHomologyπ_inv_comp_homologyπ (hf : S.f = 0) [S.HasHomology] :
 
 @[reassoc (attr := simp)]
 lemma homologyπ_comp_asIsoHomologyπ_inv (hf : S.f = 0) [S.HasHomology] :
-    S.homologyπ ≫ (S.asIsoHomologyπ hf).inv  = 𝟙 _ := (S.asIsoHomologyπ hf).hom_inv_id
+    S.homologyπ ≫ (S.asIsoHomologyπ hf).inv = 𝟙 _ := (S.asIsoHomologyπ hf).hom_inv_id
 
 /-- The canonical isomorphism `S.homology ≅ S.opcycles` when `S.g = 0`. -/
 @[simps! hom]

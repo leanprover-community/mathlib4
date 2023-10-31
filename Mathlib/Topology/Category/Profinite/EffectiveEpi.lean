@@ -264,6 +264,11 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Profinite}
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
 
+lemma effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
+    EffectiveEpi f ↔ Function.Surjective f := by
+  rw [← epi_iff_surjective]
+  exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
 end JointlySurjective
 
 section Coherent
