@@ -552,9 +552,9 @@ def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f =
   h₃ := h₃
   h₀_f := h₀_f
   g_h₃ := g_h₃
-  comm₁ := by rw [nullHomotopic_τ₁, zero_τ₁, add_zero] ; abel
-  comm₂ := by rw [nullHomotopic_τ₂, zero_τ₂, add_zero] ; abel
-  comm₃ := by rw [nullHomotopic_τ₃, zero_τ₃, add_zero] ; abel
+  comm₁ := by rw [nullHomotopic_τ₁, zero_τ₁, add_zero]; abel
+  comm₂ := by rw [nullHomotopic_τ₂, zero_τ₂, add_zero]; abel
+  comm₃ := by rw [nullHomotopic_τ₃, zero_τ₃, add_zero]; abel
 
 end Homotopy
 
