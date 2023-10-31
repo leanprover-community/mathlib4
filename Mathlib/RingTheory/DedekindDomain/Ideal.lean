@@ -297,8 +297,8 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- It suffices to show that for integral `x`,
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine ⟨fun {x hx} => ?_⟩
-  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot, ←
-    coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
+  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
+    Submodule.one_eq_span, ←coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -1156,7 +1156,10 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by simp
+  right_inv := fun ⟨j, hj⟩ => by
+    simp
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [OrderIso.apply_symm_apply]
 #align normalized_factors_equiv_of_quot_equiv normalizedFactorsEquivOfQuotEquiv
 
 @[simp]
@@ -1305,7 +1308,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
       simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
         ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i) fun i _ j _ =>
         coprime i j])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => (Ideal.coprime_of_no_prime_ge (by
+    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge (by
       intro P hPi hPj hPp
       haveI := Ideal.isPrime_of_prime (prime i)
       haveI := Ideal.isPrime_of_prime (prime j)
@@ -1315,7 +1318,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
         ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp
           (Ideal.le_of_pow_le_prime hPj)).symm
       · exact (prime i).ne_zero
-      · exact (prime j).ne_zero)).sup_eq
+      · exact (prime j).ne_zero)
 #align is_dedekind_domain.quotient_equiv_pi_of_prod_eq IsDedekindDomain.quotientEquivPiOfProdEq
 
 open scoped Classical
@@ -1346,8 +1349,8 @@ theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  RingEquiv.trans (Ideal.quotEquivOfEq (inf_eq_mul_of_coprime coprime).symm)
-    (Ideal.quotientInfEquivQuotientProd I J coprime.sup_eq)
+  Ideal.quotEquivOfEq (inf_eq_mul_of_coprime coprime).symm |>.trans <|
+    Ideal.quotientInfEquivQuotientProd I J coprime
 #align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as

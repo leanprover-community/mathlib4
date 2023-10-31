@@ -117,6 +117,7 @@ theorem prod_add (s t : Multiset α) : prod (s + t) = prod s * prod t :=
 #align multiset.prod_add Multiset.prod_add
 #align multiset.sum_add Multiset.sum_add
 
+@[to_additive]
 theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | 0 => by
     rw [zero_nsmul, pow_zero]

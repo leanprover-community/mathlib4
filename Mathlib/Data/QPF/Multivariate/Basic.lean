@@ -84,10 +84,10 @@ open MvFunctor
 -/
 class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) [MvFunctor F] where
   P : MvPFunctor.{u} n
-  abs : ∀ {α}, P.Obj α → F α
-  repr : ∀ {α}, F α → P.Obj α
+  abs : ∀ {α}, P α → F α
+  repr : ∀ {α}, F α → P α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
-  abs_map : ∀ {α β} (f : α ⟹ β) (p : P.Obj α), abs (f <$$> p) = f <$$> abs p
+  abs_map : ∀ {α β} (f : α ⟹ β) (p : P α), abs (f <$$> p) = f <$$> abs p
 #align mvqpf MvQPF
 
 namespace MvQPF
@@ -196,7 +196,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     refine' (mem_supp x _ u).mp hh _ _ hu
   rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
-    rcases(mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+    rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'
@@ -216,12 +216,12 @@ def IsUniform : Prop :=
 
 /-- does `abs` preserve `liftp`? -/
 def LiftPPreservation : Prop :=
-  ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.P.Obj α), LiftP p (abs x) ↔ LiftP p x
+  ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.P α), LiftP p (abs x) ↔ LiftP p x
 #align mvqpf.liftp_preservation MvQPF.LiftPPreservation
 
 /-- does `abs` preserve `supp`? -/
 def SuppPreservation : Prop :=
-  ∀ ⦃α⦄ (x : q.P.Obj α), supp (abs x) = supp x
+  ∀ ⦃α⦄ (x : q.P α), supp (abs x) = supp x
 #align mvqpf.supp_preservation MvQPF.SuppPreservation
 
 theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.P.A) (f : q.P.B a ⟹ α) :

@@ -248,7 +248,8 @@ theorem dist_eq_abs_sub_dist_iff_angle_eq_zero {p1 p2 p3 : P} (hp1p2 : p1 ≠ p2
 
 /-- If M is the midpoint of the segment AB, then ∠AMB = π. -/
 theorem angle_midpoint_eq_pi (p1 p2 : P) (hp1p2 : p1 ≠ p2) : ∠ p1 (midpoint ℝ p1 p2) p2 = π := by
-  simp [angle, hp1p2, -zero_lt_one]
+  simp only [angle, left_vsub_midpoint, invOf_eq_inv, right_vsub_midpoint, inv_pos, zero_lt_two,
+    angle_smul_right_of_pos, angle_smul_left_of_pos]
   rw [← neg_vsub_eq_vsub_rev p1 p2]
   apply angle_self_neg_of_nonzero
   simpa only [ne_eq, vsub_eq_zero_iff_eq]

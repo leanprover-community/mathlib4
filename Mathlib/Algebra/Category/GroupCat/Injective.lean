@@ -133,7 +133,8 @@ variable {a}
 
 lemma eq_zero_of_toRatCircle_apply_self
     (h : toRatCircle ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
-  rw [toRatCircle, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [toRatCircle, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap,
     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
     LinearMap.toSpanSingleton_one, AddCircle.coe_eq_zero_iff] at h
   obtain ⟨n, hn⟩ := h
