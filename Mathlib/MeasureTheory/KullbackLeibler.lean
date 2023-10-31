@@ -212,7 +212,7 @@ lemma llr_smul_right {μ ν : Measure α} [IsFiniteMeasure μ] [Measure.HaveLebe
 
 end LLR
 
-section definition
+section integral_llr_nonneg
 
 lemma integrable_toReal_rnDeriv_mul {μ ν : Measure α} {f : α → ℝ} [SigmaFinite μ]
     [Measure.HaveLebesgueDecomposition μ ν]
@@ -320,7 +320,9 @@ lemma integral_llr_nonneg {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProb
   refine le_trans ?_ (integral_llr_nonneg_aux' hμν h_int)
   simp only [measure_univ, ENNReal.one_toReal, log_one, mul_zero, le_refl]
 
-end definition
+end integral_llr_nonneg
+
+section llr_tilted
 
 lemma llr_tilted_ae_eq {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
@@ -353,19 +355,17 @@ lemma integral_llr_tilted {μ ν : Measure α} [IsProbabilityMeasure μ] [IsFini
         simp only [integral_const, measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul]
   _ = ∫ x, LLR μ ν x ∂μ - ∫ x, f x ∂μ + logIntegralExp ν f := by abel
 
-lemma todo_aux {μ ν : Measure α} [IsProbabilityMeasure μ] [IsFiniteMeasure ν] {f : α → ℝ}
-    (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ exp (f x)) ν)
-    (h_int : Integrable (LLR μ ν) μ) :
-    ∫ x, LLR μ ν x ∂μ - ∫ x, LLR μ (ν.tilted f) x ∂μ = ∫ x, f x ∂μ - logIntegralExp ν f := by
-  rw [integral_llr_tilted hμν hfμ hfν h_int]
-  abel
+end llr_tilted
 
 lemma integral_sub_logIntegralExp_le {μ ν : Measure α}
     [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ)
     (f : α → ℝ) (hfμ : Integrable f μ) (hf : Integrable (fun x ↦ exp (f x)) ν) :
     ∫ x, f x ∂μ - logIntegralExp ν f ≤ ∫ x, LLR μ ν x ∂μ := by
-  rw [← todo_aux hμν hfμ hf h_int]
+  have : ∫ x, LLR μ ν x ∂μ - ∫ x, LLR μ (ν.tilted f) x ∂μ = ∫ x, f x ∂μ - logIntegralExp ν f := by
+    rw [integral_llr_tilted hμν hfμ hf h_int]
+    abel
+  rw [← this]
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
   have hf_m : AEMeasurable f ν := aemeasurable_of_aemeasurable_exp hf.1.aemeasurable
@@ -396,6 +396,11 @@ lemma llrAddConst_zero (μ ν : Measure α) : LLRAddConst μ ν 0 = LLR μ ν :=
   ext x
   rw [LLRAddConst, LLR, add_zero]
 
+lemma exp_llrAddConst {μ ν : Measure α} {u : ℝ} (hu : 0 < u) (x : α) :
+    exp (LLRAddConst μ ν u x) = (μ.rnDeriv ν x).toReal + u := by
+  rw [LLRAddConst, exp_log]
+  positivity
+
 lemma stronglyMeasurable_llrAddConst {μ ν : Measure α} {u : ℝ} :
     StronglyMeasurable (LLRAddConst μ ν u) :=
   ((measurable_toReal_rnDeriv _ _).add measurable_const).log.stronglyMeasurable
@@ -421,12 +426,10 @@ lemma abs_llrAddConst_le {μ ν : Measure α} {u : ℝ} {x : α} (hu : 0 < u) :
   cases' le_or_lt 0 (LLRAddConst μ ν u x) with h h
   · rw [abs_of_nonneg h]
     refine (llrAddConst_le_log_max hu).trans (add_le_add ?_ le_rfl)
-    cases le_or_lt (μ.rnDeriv ν x).toReal u with
-    | inl h' =>
-      rw [max_eq_right h', add_comm]
+    cases' le_or_lt (μ.rnDeriv ν x).toReal u with h' h'
+    · rw [max_eq_right h', add_comm]
       exact le_add_of_le_of_nonneg (le_abs_self _) (abs_nonneg _)
-    | inr h' =>
-      rw [max_eq_left h'.le]
+    · rw [max_eq_left h'.le]
       exact le_add_of_le_of_nonneg (le_abs_self _) (abs_nonneg _)
   · rw [abs_of_nonpos h.le]
     calc - LLRAddConst μ ν u x
@@ -450,11 +453,6 @@ lemma integrable_llrAddConst {μ ν : Measure α} [IsFiniteMeasure μ] {u : ℝ}
     exact abs_llrAddConst_le hu
   refine Integrable.mono ?_ stronglyMeasurable_llrAddConst.aestronglyMeasurable (ae_of_all _ h_le)
   exact (h_int.abs.add (integrable_const _)).add (integrable_const _)
-
-lemma exp_llrAddConst {μ ν : Measure α} {u : ℝ} (hu : 0 < u) (x : α) :
-    exp (LLRAddConst μ ν u x) = (μ.rnDeriv ν x).toReal + u := by
-  rw [LLRAddConst, exp_log]
-  positivity
 
 lemma integrable_exp_llrAddConst {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν] {u : ℝ}
     (hu : 0 < u) :
