@@ -84,21 +84,19 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
   | (``Iff, #[p, q]) =>
       return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (←mkAppM ``not_iff #[p, q])
   | (``Eq, #[ty, e₁, e₂]) =>
-      -- test if equality is of the form `s = ∅`, and negate it to `s.Nonempty`
-      if ty.isAppOfArity ``Set 1
-          && e₂.isAppOfArity ``EmptyCollection.emptyCollection 2 then
-        let thm ← mkAppM ``ne_empty_eq_nonempty #[e₁]
-        let some (_, _, rhs) := (← inferType thm).eq? | return none
-        return mkSimpStep rhs thm
-      else
+      if ty.isAppOfArity ``Set 1 then
+        -- test if equality is of the form `s = ∅`, and negate it to `s.Nonempty`
+        if e₂.isAppOfArity ``EmptyCollection.emptyCollection 2 then
+          let thm ← mkAppM ``ne_empty_eq_nonempty #[e₁]
+          let some (_, _, rhs) := (← inferType thm).eq? | return none
+          return mkSimpStep rhs thm
         -- test if equality is of the form `∅ = s`, and negate it to `s.Nonempty`
-        if ty.isAppOfArity ``Set 1
-            && e₁.isAppOfArity ``EmptyCollection.emptyCollection 2 then
+        if e₁.isAppOfArity ``EmptyCollection.emptyCollection 2 then
           let thm ← mkAppM ``empty_ne_eq_nonempty #[e₂]
           let some (_, _, rhs) := (← inferType thm).eq? | return none
           return mkSimpStep rhs thm
-        -- otherwise, negate `a = b` to `a ≠ b`
-        else return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
+      -- negate `a = b` to `a ≠ b`
+      return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
   | (``Ne, #[_ty, e₁, e₂]) =>
       return mkSimpStep (← mkAppM ``Eq #[e₁, e₂]) (← mkAppM ``not_ne_eq #[e₁, e₂])
   | (``LE.le, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_le_eq
