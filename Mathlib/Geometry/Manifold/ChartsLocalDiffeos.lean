@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Tactic.RewriteSearch
 
 /-!
 # Charts are local diffeomorphisms
@@ -29,6 +30,36 @@ variable
 -- On any topological manifold (charted space on a normed space),
 -- each chart is a structomorphism (from its source to its target).
 variable {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
+
+-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
+-- xxx: is the HasGroupoid part needed? I think it is.
+lemma true {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonempty s] :
+    e.subtypeRestr s ∈ G.maximalAtlas s := by
+  rw [mem_maximalAtlas_iff]
+  intro e' he'
+  -- `e'` is the restriction of some chart of `M` at `x`
+  rcases he' with ⟨xset, ⟨x, hx⟩, hc'⟩
+  have : xset = {LocalHomeomorph.subtypeRestr (chartAt H ↑x) s} := hx.symm
+  let e'full := chartAt H (x : M)
+  have : e' = e'full.subtypeRestr s := mem_singleton_iff.mp (this ▸ hc')
+  rw [this]
+  -- the unrestricted charts are in the groupoid,
+  have : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
+  have : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
+  -- the composition is the restriction of the charts, TODO: this is missing
+  let r := (e.subtypeRestr s).symm ≫ₕ e'full.subtypeRestr s --= true := sorry
+  let y : H := sorry
+  -- is this only true for y in e.target?
+  let sdf := calc ((e.subtypeRestr s).symm ≫ₕ e'full.subtypeRestr s) y
+    _ = (e'full.subtypeRestr s) ((e.subtypeRestr s).symm y) := rfl
+    --_ = (e'full.subtypeRestr s) (e.symm y) := rfl
+    _ = (e'full) ((e).symm y) := by sorry --rw [← this, ← @LocalHomeomorph.coe_coe_symm, ← @LocalHomeomorph.symm_toLocalEquiv]--apply?--sorry --rfl
+    _ = (e.symm ≫ₕ e'full) y := rfl
+  let r' := e.symm ≫ₕ e'full
+  have : ∀ y : H, r y = r' y := sorry
+  -- hence the restriction also lies in the groupoid
+  sorry
+  --constructor and handle both goals, using the aux statements above
 
 -- TODO: prove this! it's the main load-bearing part of the lemma below!
 lemma obvious (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ atlas H s := by
@@ -108,7 +139,6 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
       -- so they don't fit together nicely. (Composing with the inclusion makes that nice...)
       -- let r := G.compatible hc he
       -- This version is rigorous... except the sorry (i.e. helper above) might be too optimistic.
-      -- let e' : LocalHomeomorph s H := (ehom.toLocalHomeomorph.trans c')
       exact G.compatible hc (helper c' hc')
   }
   sorry
