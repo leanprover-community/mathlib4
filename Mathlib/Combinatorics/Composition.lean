@@ -225,8 +225,6 @@ theorem sizeUpTo_succ {i : ℕ} (h : i < c.length) :
     c.sizeUpTo (i + 1) = c.sizeUpTo i + c.blocks.get ⟨i, h⟩ := by
   simp only [sizeUpTo]
   rw [sum_take_succ _ _ h]
-  -- Porting note: didn't used to need `rfl`
-  rfl
 #align composition.size_up_to_succ Composition.sizeUpTo_succ
 
 theorem sizeUpTo_succ' (i : Fin c.length) :
