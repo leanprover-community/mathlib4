@@ -433,14 +433,6 @@ theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
 
 /-! ### Non-empty sets -/
 
-
-/-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
-in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
-to the dot notation. -/
-protected def Nonempty (s : Set α) : Prop :=
-  ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
-
 -- Porting note: we seem to need parentheses at `(↥s)`,
 -- even if we increase the right precedence of `↥` in `Mathlib.Tactic.Coe`.
 -- Porting note: removed `simp` as it is competing with `nonempty_subtype`.
