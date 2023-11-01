@@ -167,16 +167,12 @@ noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS :
   have := hS.epi_g
   exact hS.exact.gIsCokernel
 
-namespace Splitting
-
 /-- A split short complex is short exact. -/
-lemma shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
+lemma Splitting.shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
     S.ShortExact where
   exact := s.exact
   mono_f := s.mono_f
   epi_g := s.epi_g
-
-end Splitting
 
 namespace ShortExact
 
