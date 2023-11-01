@@ -218,32 +218,10 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
   · rfl
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
     simp [h₂, h₁, h, dif_neg (show ¬False from id), dif_pos True.intro, if_false, if_true]
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · congr
     ring
 #align path.homotopy.trans_assoc_reparam Path.Homotopy.trans_assoc_reparam
@@ -292,8 +270,7 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
   comp := Path.Homotopic.Quotient.comp
   id_comp f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
   comp_id f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨Path.Homotopy.transRefl a⟩
-  assoc f g h := Quotient.inductionOn₃ f g h
-    fun p q r ↦ Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
+  assoc := by rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩; exact Quotient.sound ⟨Path.Homotopy.transAssoc f g h⟩
   inv p := Quotient.lift (fun l ↦ ⟦l.symm⟧) (by rintro a b ⟨h⟩; exact Quotient.sound ⟨h.symm₂⟩) p
   inv_comp f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
   comp_inv f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
@@ -306,11 +283,10 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl (toT
 
 /-- The functor on fundamental groupoid induced by a continuous map. -/
 def map (f : C(X, Y)) : FundamentalGroupoid X ⥤ FundamentalGroupoid Y where
-  obj := f
-  map {X Y} p := p.mapFn f
+  obj x := fromTop (f (toTop x))
+  map p := p.mapFn f
   map_id _ := rfl
-  map_comp {X Y Z} p q := Quotient.inductionOn₂ p q fun a b ↦ by
-    simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
+  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk' (p.map_trans q f.2)
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
@@ -320,24 +296,14 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
+scoped notation "πₘ" => FundamentalGroupoid.map
 scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
-scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ f).map p = p.mapFn f := rfl
 #align fundamental_groupoid.map_eq FundamentalGroupoid.map_eq
 
-/-- Help the typechecker by converting an arrow in the fundamental groupoid of
-a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
--- Porting note: Added `(X := X)` to the type.
-@[reducible]
-def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) : Path.Homotopic.Quotient (X := X) x₀ x₁ := p
-#align fundamental_groupoid.to_path FundamentalGroupoid.toPath
-
-/-- Help the typechecker by converting a path in a topological space to an arrow in the
-fundamental groupoid of that space. -/
-@[reducible]
-def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) : x₀ ⟶ x₁ := p
-#align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
+#noalign fundamental_groupoid.to_path
+#noalign fundamental_groupoid.from_path
 
 end FundamentalGroupoid
