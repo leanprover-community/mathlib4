@@ -52,6 +52,39 @@ def coyoneda : Cᵒᵖ ⥤ Type (max w w') where
   obj X := C(F.obj (unop X), Y)
   map f g := ContinuousMap.comp g (F.map f.unop)
 
+def coyoneda' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
+  obj X := C((unop X).1, Y)
+  map f g := ContinuousMap.comp g f.unop
+
+lemma coyoneda_eq_comp : coyoneda F Y = F.op ⋙ coyoneda' Y := rfl
+
+lemma piComparison_fac {α : Type} (X : α → TopCat) :
+    piComparison (coyoneda'.{w, w'} Y) (fun x ↦ op (X x)) =
+    (coyoneda' Y).map ((opCoproductIsoProduct X).inv ≫ (TopCat.sigmaIsoSigma X).inv.op) ≫
+    (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).1))).inv ≫ (Types.productIso _).inv := by
+  rw [← Category.assoc, Iso.eq_comp_inv]
+  ext
+  simp only [coyoneda', unop_op, piComparison, types_comp_apply,
+    Types.productIso_hom_comp_eval_apply, Types.pi_lift_π_apply, comp_apply, TopCat.coe_of,
+    unop_comp, Quiver.Hom.unop_op, sigmaEquiv, equivEquivIso_hom, Equiv.toIso_inv,
+    Equiv.coe_fn_symm_mk, comp_assoc, sigmaMk_apply, ← opCoproductIsoProduct_inv_comp_ι]
+  rfl
+
+noncomputable
+instance {α : Type} (X : α → TopCat) :
+    PreservesLimit (Discrete.functor (fun x ↦ op (X x))) (coyoneda'.{w, w'} Y) := by
+  refine @PreservesProduct.ofIsoComparison _ _ _ _ (coyoneda' Y) _ (fun x ↦ op (X x)) _ _ ?_
+  rw [piComparison_fac]
+  infer_instance
+
+noncomputable
+instance : PreservesFiniteProducts (coyoneda'.{w, w'} Y) where
+  preserves J _ := {
+    preservesLimit := by
+      intro K
+      let i : K ≅ Discrete.functor (fun i ↦ op (unop (K.obj ⟨i⟩))) := Discrete.natIsoFunctor
+      exact preservesLimitOfIsoDiagram _ i.symm }
+
 end ContinuousMap
 
 variable (X : Type v) [TopologicalSpace X] (G : C ⥤ TopCat.{u})
@@ -94,42 +127,12 @@ theorem EqualizerConditionCoyoneda : EqualizerCondition.{v, u} (coyoneda G X) :=
     · congr
       exact (hq Z B π).descend_comp a _
 
--- instance {J : Type*} [Category J] {F : J ⥤ Cᵒᵖ} [HasLimit F] [PreservesLimit F G.op] :
---     PreservesLimit F (ContinuousMap.coyoneda G X) := by
---   constructor
-
 noncomputable
-instance [PreservesFiniteCoproducts G] [HasFiniteCoproducts C] :
-    PreservesFiniteProducts (coyoneda G X) := by
+instance [h : PreservesFiniteProducts G.op] : PreservesFiniteProducts (coyoneda G X) := by
+  have h' : PreservesFiniteProducts (coyoneda' X) := inferInstance
+  rw [coyoneda_eq_comp]
   constructor
   intro J _
-  apply (config := { allowSynthFailures := true })
-    preservesFiniteProductsOfPreservesBinaryAndTerminal
-  · sorry
-  · constructor
-    intro K
-    have : K = Functor.empty _ := Functor.empty_ext' _ _
-    rw [this]
-    refine preservesTerminalOfIso (coyoneda G X) ?_
-    refine (terminalIsoIsTerminal ?_).symm
-    apply (Types.isTerminalEquivUnique _).invFun
-    simp only [ContinuousMap.coyoneda]
-    have : IsInitial (G.obj (⊤_ Cᵒᵖ).unop) := by
-      have hi : IsInitial (⊤_ Cᵒᵖ).unop := initialUnopOfTerminal terminalIsTerminal
-      have : PreservesColimit (Functor.empty C) G := (PreservesFiniteCoproducts.preserves _).1
-      let i : G.obj (⊥_ C) ≅ ⊥_ TopCat := PreservesInitial.iso G
-      refine IsInitial.ofIso initialIsInitial (i.symm ≪≫ G.mapIso (initialIsoIsInitial hi))
-    let i : (G.obj (⊤_ Cᵒᵖ).unop) ≅ TopCat.of PEmpty :=
-      (initialIsoIsInitial this).symm ≪≫ TopCat.initialIsoPEmpty
-    constructor
-    · intro f
-      ext x
-      cases i.hom x
-    · constructor
-      let f : C((G.obj (⊤_ Cᵒᵖ).unop), TopCat.of PEmpty) := i.hom
-      exact ContinuousMap.comp ⟨PEmpty.elim, continuous_bot⟩ f
-
-
-
-  -- constructor
-  -- intro F
+  have _ := h.1 J
+  have _ := h'.1 J
+  exact compPreservesLimitsOfShape _ _
