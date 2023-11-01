@@ -152,9 +152,9 @@ theorem Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.Aut_mul_def CategoryTheory.Aut.Aut_mul_def
 
-theorem Aut_inv_def (f : Aut X) : f⁻¹ = f.symm := rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Aut.Aut_inv_def CategoryTheory.Aut.Aut_inv_def
+theorem Aut_one_def : (1 : Aut X) = Iso.refl X := rfl
+--#align category_theory.End.one_def CategoryTheory.End.one_def
+
 
 /-- Units in the monoid of endomorphisms of an object
 are (multiplicatively) equivalent to automorphisms of that object.
