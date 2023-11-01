@@ -51,23 +51,21 @@ noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
     (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
 variable {C c}
-variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (ψ : L ⟶ M)
+variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (ψ : L ⟶ M) (i j k : ι)
 
 /-- The short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
-abbrev sc' (i j k : ι) := (shortComplexFunctor' C c i j k).obj K
+abbrev sc' := (shortComplexFunctor' C c i j k).obj K
 
 /-- The short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. -/
-noncomputable abbrev sc (i : ι) := (shortComplexFunctor C c i).obj K
+noncomputable abbrev sc := (shortComplexFunctor C c i).obj K
 
 /-- The canonical isomorphism `K.sc j ≅ K.sc' i j k` when `c.prev j = i` and `c.next j = k`. -/
-noncomputable abbrev isoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
+noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
     K.sc j ≅ K.sc' i j k := (natIsoSc' C c i j k hi hk).app K
 
 /-- A homological complex `K` has homology in degree `i` if the associated
 short complex `K.sc i` has. -/
-abbrev HasHomology (i : ι) := (K.sc i).HasHomology
-
-variable (i j : ι)
+abbrev HasHomology := (K.sc i).HasHomology
 
 variable [K.HasHomology i]
 
@@ -138,7 +136,7 @@ instance : Epi (K.homologyπ i) := by
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma d_toCycles (k : ι) [K.HasHomology k] :
+lemma d_toCycles [K.HasHomology k] :
     K.d i j ≫ K.toCycles j k = 0 := by
   simp only [← cancel_mono (K.iCycles k), assoc, toCycles_i, d_comp_d, zero_comp]
 
@@ -240,7 +238,7 @@ instance : Mono (K.homologyι i) := by
   infer_instance
 
 @[reassoc (attr := simp)]
-lemma fromOpcycles_d (k : ι) :
+lemma fromOpcycles_d :
     K.fromOpcycles i j ≫ K.d j k = 0 := by
   simp only [← cancel_epi (K.pOpcycles i), p_fromOpcycles_assoc, d_comp_d, comp_zero]
 
