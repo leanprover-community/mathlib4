@@ -787,11 +787,11 @@ instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlg
 
 instance : BooleanAlgebra Bool :=
   { Bool.linearOrder, Bool.boundedOrder with
-    sup := or,
+    sup := max,
     le_sup_left := Bool.left_le_or,
     le_sup_right := Bool.right_le_or,
     sup_le := fun _ _ _ => Bool.or_le,
-    inf := and,
+    inf := min,
     inf_le_left := Bool.and_le_left,
     inf_le_right := Bool.and_le_right,
     le_inf := fun _ _ _ => Bool.le_and,
