@@ -84,28 +84,6 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
       simp [hn]
 open Finset
 
-theorem prod_even_oddFin (n : ℕ) (f : ℕ → ℕ) :
-    ∏ x : Fin (n * 2), f x =  ∏ x : Fin n, (f (2 * x)) * (f (1 + 2 * x)) := by
-  rw [(Equiv.prod_comp' finProdFinEquiv (fun i ↦ f ↑(finProdFinEquiv i)) (fun i ↦ f ↑i)
-          (congrFun rfl)).symm, Fintype.prod_prod_type]
-  simp only [finProdFinEquiv_apply_val]
-  congr
-  ext x
-  rw [Fin.prod_univ_eq_prod_range (fun x_1 => f (↑x_1 + 2 * ↑x)) 2, Finset.prod_range_succ]
-  simp
-
-theorem prod_even_odd_range (n : ℕ) (f : ℕ → ℕ) :
-    ∏ x in range (n * 2), f x =  ∏ x in range n, (f (2 * x)) * (f (1 + 2 * x)) := by
-  convert prod_even_oddFin n f
-  · exact (Fin.prod_univ_eq_prod_range f (n * 2)).symm
-  · exact (Fin.prod_univ_eq_prod_range _ n).symm
-
-theorem prod_even_oddIco (n : ℕ) (f : ℕ → ℕ) :
-    ∏ x in Ico 0 (n * 2), f x =  ∏ x in Ico 0 n, (f (2 * x)) * (f (1 + 2 * x)) := by
-  convert prod_even_oddFin n f
-  · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range f (n * 2))]
-  · rw [Ico_zero_eq_range, ← (Fin.prod_univ_eq_prod_range _ n)]
-
 theorem superFactorial_eq_square_times_factorial (k : ℕ) :
     ∃ n, IsSquare n ∧ sf (4 * k) = n * (2 * k) ! := by
   by_cases k = 0
