@@ -156,7 +156,7 @@ theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F 
 -- I had the (unprovable) goal (of the form) `AdjoinRoot.mk f (C x) = AdjoinRoot.mk f X`
 -- for some `x, f`. So maybe this is indeed the correct approach and rewriting this proof is
 -- salient in the future, or at least taking a closer look at the algebra instances it uses.
-attribute [-instance] AdjoinRoot.instSMulAdjoinRoot
+attribute [-instance] AdjoinRoot.smul
 
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
