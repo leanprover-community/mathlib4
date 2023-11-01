@@ -72,7 +72,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
 /-- A version of `Commute.add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
 also with the binomial coefficient applied via scalar action of ℕ. -/
 theorem add_pow' (h : Commute x y) (n : ℕ) :
-    (x + y) ^ n = ∑ m in Nat.antidiagonal n, choose n m.fst • (x ^ m.fst * y ^ m.snd) := by
+    (x + y) ^ n = ∑ m in antidiagonal n, choose n m.fst • (x ^ m.fst * y ^ m.snd) := by
   simp_rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun m p ↦ choose n m • (x ^ m * y ^ p),
     _root_.nsmul_eq_mul, cast_comm, h.add_pow]
 #align commute.add_pow' Commute.add_pow'
@@ -196,9 +196,9 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
 -- porting note: new lemma
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
 theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
-    (∏ ij in Nat.antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
-      (∏ ij in Nat.antidiagonal n, f ij.1 (ij.2 + 1) ^ n.choose ij.1) *
-        ∏ ij in Nat.antidiagonal n, f (ij.1 + 1) ij.2 ^ n.choose ij.2 := by
+    (∏ ij in antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
+      (∏ ij in antidiagonal n, f ij.1 (ij.2 + 1) ^ n.choose ij.1) *
+        ∏ ij in antidiagonal n, f (ij.1 + 1) ij.2 ^ n.choose ij.2 := by
   simp only [Nat.prod_antidiagonal_eq_prod_range_succ_mk, prod_pow_choose_succ]
   have : ∀ i ∈ range (n + 1), i ≤ n := fun i hi ↦ by simpa [Nat.lt_succ_iff] using hi
   congr 1
@@ -220,9 +220,9 @@ theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
 /-- The sum along the antidiagonal of `(n+1).choose i * f i j` can be split into two sums along the
 antidiagonal at rank `n`, respectively of `n.choose i * f i (j+1)` and `n.choose j * f (i+1) j`. -/
 theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
-    (∑ ij in Nat.antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =
-      (∑ ij in Nat.antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +
-        ∑ ij in Nat.antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
+    (∑ ij in antidiagonal (n + 1), ((n + 1).choose ij.1 : R) * f ij.1 ij.2) =
+      (∑ ij in antidiagonal n, (n.choose ij.1 : R) * f ij.1 (ij.2 + 1)) +
+        ∑ ij in antidiagonal n, (n.choose ij.2 : R) * f (ij.1 + 1) ij.2 := by
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
 

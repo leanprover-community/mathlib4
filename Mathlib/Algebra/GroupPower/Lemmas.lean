@@ -1177,7 +1177,6 @@ section Multiplicative
 
 open Multiplicative
 
-@[simp]
 theorem Nat.toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
   mul_comm _ _
 #align nat.to_add_pow Nat.toAdd_pow
@@ -1187,12 +1186,10 @@ theorem Nat.ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b :=
   (Nat.toAdd_pow _ _).symm
 #align nat.of_add_mul Nat.ofAdd_mul
 
-@[simp]
 theorem Int.toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b :=
   mul_comm _ _
 #align int.to_add_pow Int.toAdd_pow
 
-@[simp]
 theorem Int.toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b :=
   mul_comm _ _
 #align int.to_add_zpow Int.toAdd_zpow
