@@ -2669,6 +2669,9 @@ instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p
     Decidable (∃ a ∈ s, p a) :=
   decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
 
+instance decidableExistsAndFinsetCoe {p : α → Prop} [DecidablePred p] :
+    Decidable (∃ a ∈ (s : Set α), p a) := decidableExistsAndFinset
+
 /-- decidable equality for functions whose domain is bounded by finsets -/
 instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ s, β a) :=

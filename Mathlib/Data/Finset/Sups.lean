@@ -32,20 +32,8 @@ We define the following notation in locale `FinsetFamily`:
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
 
--- TODO: Is there a better spot for those two instances? Why are they not already inferred from
--- `instDecidablePredMemUpperClosure`, `instDecidablePredMemLowerClosure`?
-namespace Finset
-variable {α : Type*} [Preorder α] [@DecidableRel α (· ≤ ·)] {s : Finset α}
-
-instance decidablePredMemUpperClosure : DecidablePred (· ∈ upperClosure (s : Set α)) :=
-  fun _ ↦ decidableExistsAndFinset
-#align finset.decidable_pred_mem_upper_closure Finset.decidablePredMemUpperClosure
-
-instance decidablePredMemLowerClosure : DecidablePred (· ∈ lowerClosure (s : Set α)) :=
-  fun _ ↦ decidableExistsAndFinset
-#align finset.decidable_pred_mem_lower_closure Finset.decidablePredMemLowerClosure
-
-end Finset
+#noalign finset.decidable_pred_mem_upper_closure
+#noalign finset.decidable_pred_mem_lower_closure
 
 open Function
 
