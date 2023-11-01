@@ -27,7 +27,7 @@ the inverse map sends `(x, r)` to `r • x`.
 One may think about it as generalization of polar coordinates to any normed space. -/
 @[simps apply_fst_coe apply_snd_coe symm_apply_coe]
 noncomputable def homeomorphUnitSphereProd :
-    {x : E // x ≠ 0} ≃ₜ (sphere (0 : E) 1 × Ioi (0 : ℝ)) where
+    ({0}ᶜ : Set E) ≃ₜ (sphere (0 : E) 1 × Ioi (0 : ℝ)) where
   toFun x := (⟨‖x.1‖⁻¹ • x.1, by
     rw [mem_sphere_zero_iff_norm, norm_smul, norm_inv, norm_norm,
       inv_mul_cancel (norm_ne_zero_iff.2 x.2)]⟩, ⟨‖x.1‖, norm_pos_iff.2 x.2⟩)
