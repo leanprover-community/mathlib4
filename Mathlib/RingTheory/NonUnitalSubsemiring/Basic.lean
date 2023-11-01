@@ -490,10 +490,10 @@ theorem center_toSubsemigroup :
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
+instance center.instNonUnitalCommSemiring :
     NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
-    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
+    NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
 
 end NonUnitalNonAssocSemiring
 
