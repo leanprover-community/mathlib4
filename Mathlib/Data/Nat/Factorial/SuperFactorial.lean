@@ -69,12 +69,6 @@ theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf
   | n + 1 => by
     rw [Finset.prod_range_succ, prod_range_factorial_succ n, superFactorial, mul_comm, factorial]
 
-@[simp]
-theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x in range (n + 1), x ! = sf n
-  | 0 => rfl
-  | n + 1 => by
-    rw [Finset.prod_range_succ, prod_range_succ_factorial n, superFactorial, mul_comm, factorial]
-
 variable {R : Type*} [CommRing R]
 
 theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
@@ -150,7 +144,7 @@ theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
      exact fun l a ↦ List.minimum_le_of_mem' a
   let w' := fun i ↦ (v i - m).toNat
   have h1 := eval_matrixOfPolynomials_eq_mul_matrix_of_choose w'
-  rw [← prod_range_succ_factorial, ← Fin.prod_univ_eq_prod_range]
+  rw [← prod_range_factorial_succ, ← Fin.prod_univ_eq_prod_range]
   have h2 := vandermonde_det_eq_eval_matrixOfPolynomials_det (fun i ↦ ↑(w' i))
       (fun i => descPochhammer ℤ i)
       (fun i => descPochhammer_natDegree ℤ i)
@@ -180,6 +174,9 @@ theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
   use (Matrix.of (fun (i j : Fin (n + 1))  => ((Nat.choose ((v i  - m).toNat) (j : ℕ)) : ℤ))).det
   convert h1
   norm_cast
+  rw [Fin.prod_univ_eq_prod_range, ← Ico_zero_eq_range,
+      Finset.prod_eq_prod_Ico_succ_bot <| succ_pos n, ← Finset.prod_Ico_add' (fun x => x !) 0 n 1,
+      Ico_zero_eq_range, ← Fin.prod_univ_eq_prod_range, factorial_zero, one_mul]
 
 end SuperFactorial
 
