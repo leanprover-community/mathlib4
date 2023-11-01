@@ -64,7 +64,7 @@ lemma Nat.sub_sub_of_le (m n k : ℕ) (h : k ≤ n) : m - (n - k) = m + k - n :=
   have haux := Nat.le.dest h
   cases haux with
   | intro d hd =>
-    . rw [←hd,add_comm m k,add_tsub_cancel_left,Nat.add_sub_add_left]
+    · rw [←hd,add_comm m k,add_tsub_cancel_left,Nat.add_sub_add_left]
 
 lemma Nat.add_sub_comm_of_le (m n k : ℕ) (h : k ≤ n) : m + (n - k) = (m + n) - k := by
   have haux := Nat.le.dest h
