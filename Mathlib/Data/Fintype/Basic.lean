@@ -1234,7 +1234,8 @@ theorem map_univ_val_equiv (e : α ≃ β) :
 theorem bijective_iff_map_univ_eq_univ (f : α → β) :
     f.Bijective ↔ map f (Finset.univ : Finset α).val = univ.val :=
   ⟨fun bij ↦ congr_arg (·.val) (map_univ_equiv <| Equiv.ofBijective f bij),
-    fun eq ↦ ⟨fun a₁ a₂ ↦ inj_on_of_nodup_map (eq.symm ▸ univ.2) a₁ (mem_univ a₁) a₂ (mem_univ a₂),
+    fun eq ↦ ⟨
+      fun a₁ a₂ ↦ inj_on_of_nodup_map (eq.symm ▸ univ.nodup) _ (mem_univ a₁) _ (mem_univ a₂),
       fun b ↦ have ⟨a, _, h⟩ := mem_map.mp (eq.symm ▸ mem_univ_val b); ⟨a, h⟩⟩⟩
 
 end Multiset
