@@ -5,6 +5,8 @@ Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.Analysis.Convex.Integral
+import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 /-!
 # Kullback-Leibler divergence
@@ -42,49 +44,6 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α}
 
-theorem AEStronglyMeasurable.piecewise {α β : Type*} {m : MeasurableSpace α} [TopologicalSpace β]
-    {μ : Measure α}{f g : α → β} {s : Set α} [DecidablePred (fun j ↦ j ∈ s)]
-    (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (μ.restrict s))
-    (hg : AEStronglyMeasurable g (μ.restrict sᶜ)) :
-    AEStronglyMeasurable (s.piecewise f g) μ := by
-  refine ⟨s.piecewise (hf.mk f) (hg.mk g),
-    StronglyMeasurable.piecewise hs hf.stronglyMeasurable_mk hg.stronglyMeasurable_mk, ?_⟩
-  refine ae_of_ae_restrict_of_ae_restrict_compl s ?_ ?_
-  · have h := hf.ae_eq_mk
-    rw [Filter.EventuallyEq, ae_restrict_iff' hs] at h
-    rw [ae_restrict_iff' hs]
-    filter_upwards [h] with x hx
-    intro hx_mem
-    simp only [hx_mem, Set.piecewise_eq_of_mem, hx hx_mem]
-  · have h := hg.ae_eq_mk
-    rw [Filter.EventuallyEq, ae_restrict_iff' hs.compl] at h
-    rw [ae_restrict_iff' hs.compl]
-    filter_upwards [h] with x hx
-    intro hx_mem
-    rw [Set.mem_compl_iff] at hx_mem
-    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_not_mem, hx hx_mem]
-
-lemma Integrable.piecewise {α E : Type*} {mα : MeasurableSpace α} {μ : Measure α}
-    [NormedAddCommGroup E]
-    {f g : α → E} {s : Set α} [DecidablePred (fun j ↦ j ∈ s)]
-    (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
-    Integrable (s.piecewise f g) μ := by
-  rw [← memℒp_one_iff_integrable]
-  refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
-  rw [snorm_one_eq_lintegral_nnnorm, ← lintegral_add_compl _ hs, ENNReal.add_lt_top]
-  constructor
-  · have h : ∀ᵐ (x : α) ∂μ, x ∈ s → (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) = ‖f x‖₊ := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
-      simp [ha]
-    rw [set_lintegral_congr_fun hs h]
-    exact hf.2
-  · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ → (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) = ‖g x‖₊ := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
-      have ha' : a ∉ s := ha
-      simp [ha']
-    rw [set_lintegral_congr_fun hs.compl h]
-    exact hg.2
-
 section Right -- todo: move to that section of Algebra/Bounds.lean
 
 variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
@@ -116,10 +75,46 @@ section x_log_x
 namespace Real
 
 lemma continuous_id_mul_log : Continuous (fun x ↦ x * log x) := by
+  rw [continuous_iff_continuousAt]
+  intro x
+  by_cases hx : x = 0
+  swap; · exact (continuous_id'.continuousAt).mul (continuousAt_log hx)
+  rw [hx]
+  sorry
+
+lemma differentiableOn_id_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
+  differentiable_id'.differentiableOn.mul differentiableOn_log
+
+lemma deriv_id_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x = log x + 1 := by
+  rw [deriv_mul differentiableAt_id' (differentiableAt_log hx)]
+  simp only [deriv_id'', one_mul, deriv_log', ne_eq, add_right_inj]
+  exact mul_inv_cancel hx
+
+lemma deriv2_id_mul_log {x : ℝ} (hx : x ≠ 0) : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
+  simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
+    Function.comp_apply]
   sorry
 
 lemma convexOn_id_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
-  sorry
+  have h_ss : interior (Set.Ici (0 : ℝ)) ⊆ {0}ᶜ := by
+    intro x
+    simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi, Set.mem_compl_iff,
+      Set.mem_singleton_iff]
+    exact fun hx_pos ↦ hx_pos.ne'
+  refine convexOn_of_deriv2_nonneg ?_ ?_ ?_ ?_ ?_
+  · exact convex_Ici 0
+  · exact continuous_id_mul_log.continuousOn
+  · refine differentiableOn_id_mul_log.mono h_ss
+  · refine DifferentiableOn.congr_mono ?_ (?_ : ∀ x ∈ interior (Set.Ici (0 : ℝ)), _ = log x + 1)
+      h_ss
+    · exact DifferentiableOn.add_const differentiableOn_log 1
+    · intro x hx
+      simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
+      exact deriv_id_mul_log hx.ne'
+  · intro x hx
+    simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
+    rw [deriv2_id_mul_log hx.ne']
+    positivity
 
 lemma id_mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
   mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
