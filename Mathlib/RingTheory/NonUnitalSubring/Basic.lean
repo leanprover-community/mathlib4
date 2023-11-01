@@ -594,25 +594,24 @@ end Order
 
 section
 
-variable {R : Type u} [NonUnitalRing R]
+variable {R : Type u}
 
 variable (R)
 
 /-- The center of a ring `R` is the set of elements that commute with everything in `R` -/
-def center : NonUnitalSubring R :=
+def center [NonUnitalNonAssocRing R] : NonUnitalSubring R :=
   { NonUnitalSubsemiring.center R with
-    carrier := Set.center R
     neg_mem' := Set.neg_mem_center }
 
-theorem coe_center : ↑(center R) = Set.center R :=
+theorem coe_center [NonUnitalNonAssocRing R] : ↑(center R) = Set.center R :=
   rfl
 
 @[simp]
-theorem center_toNonUnitalSubsemiring :
+theorem center_toNonUnitalSubsemiring [NonUnitalNonAssocRing R] :
     (center R).toNonUnitalSubsemiring = NonUnitalSubsemiring.center R :=
   rfl
 
-variable {R}
+variable {R} [NonUnitalRing R]
 
 theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subsemigroup.mem_center_iff
 
