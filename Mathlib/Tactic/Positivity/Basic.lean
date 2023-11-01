@@ -238,25 +238,17 @@ where `a` and `b` are integers. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℤ) (β := ℤ))
   match ra, rb with
-  | .positive pa, .positive pb =>
-    have pa' : Q(0 < $a) := pa
-    have pb' : Q(0 < $b) := pb
+  | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
     if pa == pb then  -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
-      pure (.positive (q(int_div_self_pos $pa') : Expr))
+      pure (.positive (q(int_div_self_pos $pa) : Expr))
     else
-      pure (.nonnegative (q(int_div_nonneg_of_pos_of_pos $pa' $pb') : Expr))
-  | .positive pa, .nonnegative pb =>
-    have pa' : Q(0 < $a) := pa
-    have pb' : Q(0 ≤ $b) := pb
-    pure (.nonnegative (q(int_div_nonneg_of_pos_of_nonneg $pa' $pb') : Expr))
-  | .nonnegative pa, .positive pb =>
-    have pa' : Q(0 ≤ $a) := pa
-    have pb' : Q(0 < $b) := pb
-    pure (.nonnegative (q(int_div_nonneg_of_nonneg_of_pos $pa' $pb') : Expr))
-  | .nonnegative pa, .nonnegative pb =>
-    have pa' : Q(0 ≤ $a) := pa
-    have pb' : Q(0 ≤ $b) := pb
-    pure (.nonnegative (q(Int.ediv_nonneg $pa' $pb') : Expr))
+      pure (.nonnegative (q(int_div_nonneg_of_pos_of_pos $pa $pb) : Expr))
+  | .positive (pa : Q(0 < $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
+    pure (.nonnegative (q(int_div_nonneg_of_pos_of_nonneg $pa $pb) : Expr))
+  | .nonnegative (pa : Q(0 ≤ $a)), .positive (pb : Q(0 < $b)) =>
+    pure (.nonnegative (q(int_div_nonneg_of_nonneg_of_pos $pa $pb) : Expr))
+  | .nonnegative (pa : Q(0 ≤ $a)), .nonnegative (pb : Q(0 ≤ $b)) =>
+    pure (.nonnegative (q(Int.ediv_nonneg $pa $pb) : Expr))
   | _, _ => pure .none
 
 section LinearOrderedSemifield
@@ -381,8 +373,8 @@ private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |(_ : α)|]
-def evalAbs : PositivityExt where eval {_ _α} zα pα e := do
-  let (.app _ (a : Q($_α))) ← withReducible (whnf e) | throwError "not |·|"
+def evalAbs : PositivityExt where eval {u} (α : Q(Type u)) zα pα (e : Q($α)) := do
+  let ~q(@Abs.abs _ $_aα $a) := e | throwError "not |·|"
   try
     match ← core zα pα a with
     | .positive pa =>
@@ -404,8 +396,8 @@ Since the output type of `Int.natAbs` is `ℕ`, the nonnegative case is handled 
 `positivity` tactic.
 -/
 @[positivity Int.natAbs _]
-def evalNatAbs : PositivityExt where eval {_u _α} _zα _pα e := do
-  let (.app _ (a : Q(Int))) ← withReducible (whnf e) | throwError "not Int.natAbs"
+def evalNatAbs : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
+  let ~q(Int.natAbs $a) := e | throwError "not Int.natAbs"
   let zα' : Q(Zero Int) := q(inferInstance)
   let pα' : Q(PartialOrder Int) := q(inferInstance)
   let ra ← core zα' pα' a
@@ -421,14 +413,14 @@ def evalNatAbs : PositivityExt where eval {_u _α} _zα _pα e := do
 
 @[positivity Nat.cast _]
 def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
-  let (.app _ (a : Q(Nat))) ← withReducible (whnf e) | throwError "not Nat.cast"
+  let _iα : Q(NatCast $α) ← synthInstanceQ q(NatCast $α)
+  let ~q(Nat.cast ($a : ℕ)) := e | throwError "not Nat.cast"
   let zα' : Q(Zero Nat) := q(inferInstance)
   let pα' : Q(PartialOrder Nat) := q(inferInstance)
-  let ra ← core zα' pα' a
-  let _oα ← synthInstanceQ q(OrderedSemiring $α)
+  let (_oα : Q(OrderedSemiring $α)) ← synthInstanceQ q(OrderedSemiring $α)
   haveI' : $e =Q Nat.cast $a := ⟨⟩
   assumeInstancesCommute
-  match ra with
+  match ← core zα' pα' a with
   | .positive pa =>
     let _nt ← synthInstanceQ q(Nontrivial $α)
     pure (.positive q(Nat.cast_pos.mpr $pa))
@@ -437,7 +429,8 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 @[positivity Int.cast _]
 def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
-  let (.app _ (a : Q(Int))) ← withReducible (whnf e) | throwError "not Int.cast"
+  let _iα : Q(IntCast $α) ← synthInstanceQ q(IntCast $α)
+  let ~q(Int.cast ($a : ℤ)) := e | throwError "not Int.cast"
   let zα' : Q(Zero Int) := q(inferInstance)
   let pα' : Q(PartialOrder Int) := q(inferInstance)
   let ra ← core zα' pα' a
@@ -485,8 +478,8 @@ def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for Nat.succ. -/
 @[positivity Nat.succ _]
-def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα e := do
-  let (.app _ (a : Q(Nat))) ← withReducible (whnf e) | throwError "not Nat.succ"
+def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
+  let ~q(Nat.succ $a) := e | throwError "not Nat.succ"
   pure (.positive (q(Nat.succ_pos $a) : Expr))
 
 /-- Extension for Nat.factorial. -/
