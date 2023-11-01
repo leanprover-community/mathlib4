@@ -410,6 +410,8 @@ lemma ciSup_le_integral_llr {μ ν : Measure α} [IsProbabilityMeasure μ] [IsPr
   · simp only [hfμ, ciSup_empty]
     exact integral_llr_nonneg hμν h_int
 
+/-- Logarithm of the sum of the likelihood ratio and a constant `u`.
+This is used with `0 < u` to avoid issues with `LLR` due to the likelihood ratio being 0. -/
 noncomputable
 def LLRAddConst (μ ν : Measure α) (u : ℝ) (x : α) : ℝ := log ((μ.rnDeriv ν x).toReal + u)
 
@@ -586,6 +588,7 @@ lemma integral_llr_le_ciSup {μ ν : Measure α} [IsProbabilityMeasure μ] [IsPr
       exact integral_llr_nonneg hμν h_int
   · simp [integrable_llrAddConst u.2.le h_int, integrable_exp_llrAddConst u.2]
 
+/-- **Donsker-Varadhan** variational formula for the Kullback-Leibler divergence. -/
 theorem DonskerVaradhan {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ ν x ∂μ
@@ -594,6 +597,7 @@ theorem DonskerVaradhan {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbab
   le_antisymm (integral_llr_le_ciSup hμν h_int) (ciSup_le_integral_llr hμν h_int)
 
 -- TODO: this should be in EReal?
+/-- Kullback-Leibler divergence. -/
 noncomputable
 def KL (μ ν : Measure α) [Decidable (μ ≪ ν)] [Decidable (Integrable (LLR μ ν) μ)] : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (LLR μ ν) μ then ENNReal.ofReal (∫ x, LLR μ ν x ∂μ) else ∞
