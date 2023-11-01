@@ -6,14 +6,28 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Topology.LocalHomeomorph
 
+/-!
+# Homeomorphism between a normed space and sphere times `(0, +∞)`
+
+In this file we define a homeomorphism between nonzero elements of a normed space `E`
+and `Metric.sphere (0 : E) 1 × Set.Ioi (0 : ℝ)`.
+One may think about it as generalization of polar coordinates to any normed space.
+-/
+
 variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 open Set Metric
 
-/-- -/
+/-- The natural homeomorphism between nonzero elements of a normed space `E`
+and `Metric.sphere (0 : E) 1 × Set.Ioi (0 : ℝ)`.
+
+The forward map sends `⟨x, hx⟩` to `⟨‖x‖⁻¹ • x, _⟩`,
+the inverse map sends `(x, r)` to `r • x`.
+
+One may think about it as generalization of polar coordinates to any normed space. -/
 @[simps apply_fst_coe apply_snd_coe symm_apply_coe]
 noncomputable def homeomorphUnitSphereProd :
-    ({0}ᶜ : Set E) ≃ₜ (sphere (0 : E) 1 × Ioi (0 : ℝ)) where
+    {x : E // x ≠ 0} ≃ₜ (sphere (0 : E) 1 × Ioi (0 : ℝ)) where
   toFun x := (⟨‖x.1‖⁻¹ • x.1, by
     rw [mem_sphere_zero_iff_norm, norm_smul, norm_inv, norm_norm,
       inv_mul_cancel (norm_ne_zero_iff.2 x.2)]⟩, ⟨‖x.1‖, norm_pos_iff.2 x.2⟩)
