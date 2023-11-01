@@ -64,7 +64,7 @@ variable {R M}
 lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R M a m:= rfl
 
 @[simp] lemma of_symm_smul (f : R[X]) (m : AEval R M a) :
-    (of R M a).symm (f • m) = (aeval a f • (of R M a).symm m) := by rfl
+    (of R M a).symm (f • m) = aeval a f • (of R M a).symm m := rfl
 
 lemma X_smul_of (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
   rw [←of_aeval_smul, aeval_X]
