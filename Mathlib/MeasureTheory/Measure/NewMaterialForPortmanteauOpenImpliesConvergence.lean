@@ -15,6 +15,8 @@ to the file `Mathlib.MeasureTheory.Measure.Portmanteau`.
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
 
+/-- With truncation level `t`, the truncated cast `ℝ≥0∞ → ℝ` is given by `x ↦ (min t x).toReal`.
+Unlike `ENNReal.toReal`, this cast is continuous and monotone when `t ≠ ∞`. -/
 noncomputable def ENNReal.truncateToReal (t x : ℝ≥0∞) : ℝ :=
   (min t x).toReal
 
@@ -34,6 +36,7 @@ lemma ENNReal.truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ
 lemma ENNReal.truncateToReal_nonneg {t x : ℝ≥0∞} :
     0 ≤ ENNReal.truncateToReal t x := toReal_nonneg
 
+/-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is monotone when `t ≠ ∞`. -/
 lemma ENNReal.monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) :
     Monotone (ENNReal.truncateToReal t) := by
   intro x y x_le_y
@@ -49,13 +52,15 @@ lemma ENNReal.continuousOn_toReal :
   change ContinuousOn (((↑) : ℝ≥0 → ℝ) ∘ (fun (x : ℝ≥0∞) ↦ x.toNNReal)) { x | x ≠ ∞ }
   apply NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
 
+/-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
 lemma ENNReal.continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) :
     Continuous (ENNReal.truncateToReal t) := by
   apply ENNReal.continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
   simp [t_ne_top]
 
-lemma bar {ι : Type*} {F : Filter ι} [NeBot F]  {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) {xs : ι → ℝ≥0∞}
-  (le_b : ∀ i, xs i ≤ b) :
+/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
+lemma ENNReal.liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+  {xs : ι → ℝ≥0∞} (le_b : ∀ i, xs i ≤ b) :
     F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
   have liminf_le : F.liminf xs ≤ b := by
     apply liminf_le_of_le
@@ -64,16 +69,16 @@ lemma bar {ι : Type*} {F : Filter ι} [NeBot F]  {b : ℝ≥0∞} (b_ne_top : b
     · intro y h
       obtain ⟨i, hi⟩ := h.exists
       exact hi.trans (le_b i)
-  have key : ∀ i, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+  have aux : ∀ i, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
     intro i
     rw [ENNReal.truncateToReal_eq_toReal b_ne_top (le_b i)]
-  have key' : (F.liminf xs).toReal = ENNReal.truncateToReal b (F.liminf xs) := by
+  have aux' : (F.liminf xs).toReal = ENNReal.truncateToReal b (F.liminf xs) := by
     rw [ENNReal.truncateToReal_eq_toReal b_ne_top liminf_le]
-  simp_rw [key, key']
-  have := @Monotone.map_liminf_of_continuousAt ι ℝ≥0∞ ℝ F _ _ _ _ _ _ _ _
+  simp_rw [aux, aux']
+  have key := Monotone.map_liminf_of_continuousAt (F := F)
           (ENNReal.monotone_truncateToReal b_ne_top) xs
           (ENNReal.continuous_truncateToReal b_ne_top).continuousAt ?_ ?_
-  · rw [this]
+  · rw [key]
     rfl
   · use b
     simp only [eventually_map]
@@ -100,13 +105,11 @@ lemma Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f :
   obtain ⟨c, hc⟩ := h.1
   apply isBoundedUnder_of ⟨c, by simpa [mem_lowerBounds] using hc⟩
 
-
 section le_liminf_open_implies_convergence
 
 variable {Ω : Type} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
--- NOTE: I think I will work with real-valued integrals, after all...
-lemma fatou_argument_lintegral
+lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
     {μ : Measure Ω} [SigmaFinite μ] {μs : ℕ → Measure Ω} [∀ i, SigmaFinite (μs i)]
     {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
@@ -130,6 +133,7 @@ theorem BoundedContinuousFunction.lintegral_le_edist_mul
   apply le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (bound x)))
   simp
 
+-- Missing?
 lemma ENNReal.monotoneOn_toReal : MonotoneOn ENNReal.toReal {∞}ᶜ :=
   fun _ _ _ hy x_le_y ↦ toReal_mono hy x_le_y
 
@@ -141,49 +145,27 @@ lemma Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
--- NOTE: I think this is the version I prefer to use, after all...
-lemma fatou_argument_integral_nonneg
+lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     {f : Ω →ᵇ ℝ} (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
       ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
-  have earlier := fatou_argument_lintegral f.continuous f_nn h_opens
+  have same := lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
+                  f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (eventually_of_forall f_nn)
         f.continuous.measurable.aestronglyMeasurable]
-  convert (ENNReal.toReal_le_toReal ?_ ?_).mpr earlier
+  convert (ENNReal.toReal_le_toReal ?_ ?_).mpr same
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (eventually_of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
-    let c := nndist 0 g
-    have c_ne_top : (c : ℝ≥0∞) ≠ ∞ := ENNReal.coe_ne_top
-    have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ c := fun i ↦ by
+    have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
       simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
-    have obs₁ := fun i ↦ @ENNReal.truncateToReal_eq_toReal c _ c_ne_top (bound i)
-    simp only [← obs₁]
-    have := @Monotone.map_liminf_of_continuousAt ℕ ℝ≥0∞ ℝ atTop _ _ _ _ _ _ _
-            (ENNReal.truncateToReal c) (ENNReal.monotone_truncateToReal (t := c) c_ne_top)
-            (fun i ↦ ∫⁻ (a : Ω), ENNReal.ofReal (f a) ∂μs i)
-            (ENNReal.continuous_truncateToReal (t := c) c_ne_top).continuousAt ?_ ?_
-    · convert this.symm using 1
-      apply (ENNReal.truncateToReal_eq_toReal c_ne_top _).symm
-      apply liminf_le_of_le ?_ (fun b h ↦ ?_)
-      · use 0
-        simp only [ge_iff_le, zero_le, eventually_map, eventually_atTop, implies_true, forall_const,
-          exists_const]
-      obtain ⟨i, hi⟩ := h.exists
-      exact hi.trans (bound i)
-    · use c
-      simp only [coe_nnreal_ennreal_nndist, eventually_map, eventually_atTop, ge_iff_le]
-      use 0
-      exact fun j _ ↦  bound j
-    · use 0
-      simp only [ge_iff_le, zero_le, eventually_map, eventually_atTop, implies_true, forall_const,
-        exists_const]
+    apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top bound
   · exact (f.lintegral_of_real_lt_top μ).ne
   · apply ne_of_lt
     have obs := fun (i : ℕ) ↦ @BoundedContinuousFunction.lintegral_nnnorm_le Ω _ _ (μs i) ℝ _ f
-    simp at obs
+    simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
     · refine ⟨0, eventually_of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
@@ -197,11 +179,14 @@ lemma fatou_argument_integral_nonneg
       congr
       exact (Real.norm_of_nonneg (f_nn x)).symm
 
-lemma reduction_to_liminf {ι : Type*} {L : Filter ι} [NeBot L]
+lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : Filter ι}
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ι → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
     (f : Ω →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, (f x) ∂ (μs i)) L (𝓝 (∫ x, (f x) ∂μ)) := by
+  by_cases L_bot : L = ⊥
+  · simp only [L_bot, tendsto_bot]
+  have : NeBot L := ⟨L_bot⟩
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) :=
     isBounded_le_map_of_bounded_range _ obs
@@ -211,7 +196,6 @@ lemma reduction_to_liminf {ι : Type*} {L : Filter ι} [NeBot L]
   · have key := h _ (f.add_norm_nonneg)
     simp_rw [f.integral_add_const ‖f‖] at key
     simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
-    -- TODO: Should the case of ⊥ filter be treated separately and not included as an assumption?
     have := liminf_add_const L (fun i ↦ ∫ x, (f x) ∂ (μs i)) ‖f‖ bdd_above bdd_below
     rwa [this, add_le_add_iff_right] at key
   · have key := h _ (f.norm_sub_nonneg)
@@ -245,39 +229,28 @@ lemma ProbabilityMeasure.tendsto_iff_forall_nonneg_integral_tendsto {γ : Type _
   simp_rw [fx_eq]
   convert tendsto_add.comp (Tendsto.prod_mk_nhds key (@tendsto_const_nhds _ _ _ (-‖f‖) F)) <;> simp
 
-theorem le_liminf_open_implies_convergence {μ : ProbabilityMeasure Ω}
+/-- One implication of the portmanteau theorem. -/
+theorem ProbabilityMeasure.tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
   {μs : ℕ → ProbabilityMeasure Ω} (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
   refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
-  apply reduction_to_liminf
+  apply tendsto_integral_of_forall_integral_le_liminf_integral
   intro f f_nn
-  apply fatou_argument_integral_nonneg (f := f) f_nn
+  apply integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure (f := f) f_nn
   intro G G_open
   specialize h_opens G G_open
   simp only at h_opens
-  simp only [liminf, limsInf, eventually_map, eventually_atTop, ge_iff_le, le_sSup_iff] at *
-  intro b b_ub
-  by_cases b_eq_top : b = ∞
-  · simp only [b_eq_top, le_top]
-  · have foo := (@le_csSup_iff ℝ≥0 _ {a | ∃ a_1, ∀ (b : ℕ), a_1 ≤ b → a ≤ ENNReal.toNNReal (μs b G)}
-              (ENNReal.toNNReal (μ G)) ?_ ?_).mp h_opens (ENNReal.toNNReal b) ?_
-    · simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at foo
-      convert ENNReal.coe_le_coe.mpr foo
-      · simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
-      · simp only [ne_eq, b_eq_top, not_false_eq_true, ENNReal.coe_toNNReal]
-    · use 1
-      simp [mem_upperBounds]
-      intro x n hn
-      exact (hn n (le_refl n)).trans (ProbabilityMeasure.apply_le_one _ _)
-    · refine ⟨0, by simp⟩
-    · simp only [mem_upperBounds, Set.mem_setOf_eq, forall_exists_index, ne_eq,
-                 ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at b_ub ⊢
-      intro x n hn
-      specialize b_ub x n ?_
-      · intro m hm
-        convert ENNReal.coe_le_coe.mpr (hn m hm)
-        simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
-      · rw [(ENNReal.coe_toNNReal b_eq_top).symm] at b_ub
-        exact ENNReal.coe_le_coe.mp b_ub
+  have aux := Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) ?_ ?_ ?_
+  · have obs := ENNReal.coe_mono h_opens
+    simp only [ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
+    convert obs
+    simp only [Function.comp_apply, ne_eq, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+  · apply ENNReal.continuous_coe.continuousAt
+  · use 1
+    simp only [eventually_map, ProbabilityMeasure.apply_le_one, eventually_atTop, ge_iff_le,
+      implies_true, forall_const, exists_const]
+  · use 0
+    simp only [zero_le, eventually_map, eventually_atTop, ge_iff_le, implies_true, forall_const,
+      exists_const]
 
 end le_liminf_open_implies_convergence
