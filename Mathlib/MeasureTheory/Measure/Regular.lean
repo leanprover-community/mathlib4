@@ -708,7 +708,7 @@ lemma regular_of_finiteMeasure [BorelSpace α] [ClosableCompactSubsetOpenSpace �
 /-- I`μ` is inner regular for finite measure sets with respect to compact sets in a regular locally
 compact space, then any compact set can be approximated from outside by open sets. -/
 protected lemma _root_.IsCompact.measure_eq_infi_isOpen [InnerRegularCompactLTTop μ]
-    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [ClosableCompactSubsetOpenSpace α]
+    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
     [BorelSpace α] {K : Set α} (hK : IsCompact K) :
     μ K = ⨅ (U : Set α) (_ : K ⊆ U) (_ : IsOpen U), μ U := by
   apply le_antisymm
@@ -729,7 +729,7 @@ protected lemma _root_.IsCompact.measure_eq_infi_isOpen [InnerRegularCompactLTTo
   rwa [restrict_apply U_open.measurableSet] at hU
 
 protected lemma _root_.IsCompact.exists_isOpen_lt_of_lt [InnerRegularCompactLTTop μ]
-    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [ClosableCompactSubsetOpenSpace α]
+    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
     [BorelSpace α] {K : Set α} (hK : IsCompact K) (r : ℝ≥0∞) (hr : μ K < r) :
     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < r := by
   have : ⨅ (U : Set α) (_ : K ⊆ U) (_ : IsOpen U), μ U < r := by

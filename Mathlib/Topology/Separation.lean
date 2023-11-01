@@ -1731,8 +1731,8 @@ section ClosableCompactSubsetOpenSpace
 
 /-- A class of topological spaces in which, given a compact set included inside an open set, then
 the closure of the compact set is also included in the open set.
-Satisfied notably for T2 spaces and regular spaces, and useful
-when discussing classes of regular measures. -/
+Satisfied notably for T2 spaces and regular spaces, and useful when discussing classes of
+regular measures. Equivalent to regularity among locally compact spaces. -/
 class ClosableCompactSubsetOpenSpace (X : Type*) [TopologicalSpace X] : Prop :=
   closure_subset_of_isOpen : ∀ (K U : Set X), IsCompact K → IsOpen U → K ⊆ U → closure K ⊆ U
 
@@ -1779,6 +1779,15 @@ theorem exists_compact_closed_between [LocallyCompactSpace X] [ClosableCompactSu
   · apply M_comp.closure_subset_of_isOpen hU
     exact ML.trans (interior_subset.trans LU)
 
+/-- A locally compact space with the `ClosableCompactSubsetOpenSpace` is `Regular`. -/
+instance [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X] : RegularSpace X := by
+  apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
+  rcases _root_.mem_nhds_iff.1 hx with ⟨u, us, u_open, xu⟩
+  rcases exists_compact_closed_between (isCompact_singleton (a := x)) u_open (by simpa using xu)
+    with ⟨t, -, t_closed, xt, tu⟩
+  have : interior t ∈ 𝓝 x := isOpen_interior.mem_nhds (by simpa using xt)
+  exact ⟨t, interior_mem_nhds.mp this, t_closed, tu.trans us⟩
+
 protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
     {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
   rcases exists_compact_superset hK with ⟨L, L_comp, hL⟩
@@ -1789,7 +1798,7 @@ protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompa
 `ClosableCompactSubsetOpenSpace` property, any open set is an increasing union
 of a sequence of compact closed sets. -/
 theorem IsOpen.exists_iUnion_isCompact_isClosed [SecondCountableTopology X] [LocallyCompactSpace X]
-    [ClosableCompactSubsetOpenSpace X] {U : Set X} (hU : IsOpen U) :
+    [RegularSpace X] {U : Set X} (hU : IsOpen U) :
     ∃ F : ℕ → Set X, (∀ n, IsCompact (F n)) ∧ (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U)
       ∧ ⋃ n, F n = U ∧ Monotone F := by
   rcases hU.exists_iUnion_isCompact with ⟨F, F_comp, FU, F_union, F_mono⟩

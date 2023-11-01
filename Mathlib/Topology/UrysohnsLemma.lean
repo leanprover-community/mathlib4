@@ -348,8 +348,7 @@ function `f : X → ℝ` such that
 * `f` equals one on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
 -/
-theorem exists_continuous_zero_one_of_isCompact
-    [ClosableCompactSubsetOpenSpace X] [LocallyCompactSpace X]
+theorem exists_continuous_zero_one_of_isCompact [RegularSpace X] [LocallyCompactSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : C(X, ℝ), EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
   obtain ⟨k, k_comp, k_closed, sk, kt⟩ : ∃ k, IsCompact k ∧ IsClosed k ∧ s ⊆ interior k ∧ k ⊆ tᶜ :=
@@ -380,8 +379,7 @@ function `f : X → ℝ` such that
 * `f` equals zero on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
 -/
-theorem exists_continuous_one_zero_of_isCompact
-    [ClosableCompactSubsetOpenSpace X] [LocallyCompactSpace X]
+theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompactSpace X]
     {s t : Set X} (hs : IsCompact s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : C(X, ℝ), EqOn f 1 s ∧ EqOn f 0 t ∧ HasCompactSupport f ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
   obtain ⟨k, k_comp, k_closed, sk, kt⟩ : ∃ k, IsCompact k ∧ IsClosed k ∧ s ⊆ interior k ∧ k ⊆ tᶜ :=
