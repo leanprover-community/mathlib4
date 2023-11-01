@@ -786,16 +786,7 @@ instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlg
 #align pi.boolean_algebra Pi.booleanAlgebra
 
 instance : BooleanAlgebra Bool :=
-  { Bool.linearOrder, Bool.boundedOrder with
-    sup := max,
-    le_sup_left := Bool.left_le_or,
-    le_sup_right := Bool.right_le_or,
-    sup_le := fun _ _ _ => Bool.or_le,
-    inf := min,
-    inf_le_left := Bool.and_le_left,
-    inf_le_right := Bool.and_le_right,
-    le_inf := fun _ _ _ => Bool.le_and,
-    le_sup_inf := by decide,
+  { Bool.linearOrder, Bool.boundedOrder, Bool.instDistribLattice with
     compl := not,
     inf_compl_le_bot := fun a => a.and_not_self.le,
     top_le_sup_compl := fun a => a.or_not_self.ge }
