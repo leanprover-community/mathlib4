@@ -119,13 +119,13 @@ def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
     TrivSqZeroExt.lift
 #align dual_number.lift DualNumber.lift
 
--- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0.
+/-- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem lift_apply_eps (e : { e : A // e * e = 0 }) : @lift R _ _ _ _ e (ε : R[ε]) = e := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, one_smul, zero_add]
 #align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
--- Lifting `DualNumber.eps` itself gives the identity.
+/-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]
 theorem lift_eps : lift ⟨ε, eps_mul_eps⟩ = AlgHom.id R R[ε] :=
   algHom_ext <| lift_apply_eps _

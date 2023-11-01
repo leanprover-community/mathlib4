@@ -110,10 +110,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
     Fibration (GameAdd (CutExpand r) (CutExpand r)) (CutExpand r) fun s ↦ s.1 + s.2 := by
   rintro ⟨s₁, s₂⟩ s ⟨t, a, hr, he⟩; dsimp at he ⊢
   classical
-  -- Porting note: Originally `obtain ⟨ha, rfl⟩`
-  -- This is https://github.com/leanprover/std4/issues/62
-  obtain ⟨ha, hb⟩ := add_singleton_eq_iff.1 he
-  rw [hb]
+  obtain ⟨ha, rfl⟩ := add_singleton_eq_iff.1 he
   rw [add_assoc, mem_add] at ha
   obtain h | h := ha
   · refine' ⟨(s₁.erase a + t, s₂), GameAdd.fst ⟨t, a, hr, _⟩, _⟩
