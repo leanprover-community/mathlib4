@@ -132,6 +132,10 @@ instance [h: Infinite α] : Infinite (Additive α) := h
 
 instance [h: Infinite α] : Infinite (Multiplicative α) := h
 
+instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
+
+instance [h : DecidableEq α] : DecidableEq (Additive α) := h
+
 instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial
 #align additive.nontrivial instNontrivialAdditive
