@@ -98,7 +98,7 @@ theorem homogeneousSubmodule_mul [CommSemiring R] (m n : ℕ) :
       simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
   specialize hφ aux.1
   specialize hψ aux.2
-  rw [Finsupp.mem_antidiagonal] at hde
+  rw [Finset.mem_antidiagonal] at hde
   classical
   have hd' : d.support ⊆ d.support ∪ e.support := Finset.subset_union_left _ _
   have he' : e.support ⊆ d.support ∪ e.support := Finset.subset_union_right _ _
@@ -203,8 +203,8 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     exact h j (Finset.mem_insert_of_mem hjs)
 #align mv_polynomial.is_homogeneous.prod MvPolynomial.IsHomogeneous.prod
 
-nonrec theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
-  rw [totalDegree]
+theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
+  rw [MvPolynomial.totalDegree]
   apply le_antisymm
   · apply Finset.sup_le
     intro d hd
