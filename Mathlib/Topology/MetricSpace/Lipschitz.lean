@@ -9,7 +9,7 @@ import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 
-#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
 /-!
 # Lipschitz continuous functions
@@ -541,6 +541,19 @@ protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith K
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
   exact max_le_max (hf hx hy) (hg hx hy)
 
+theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
+    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a => f a b) s)
+    (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
+    EMetric.diam (Set.image2 f s t) ≤ ↑K₁ * EMetric.diam s + ↑K₂ * EMetric.diam t := by
+  apply EMetric.diam_le
+  rintro _ ⟨a₁, b₁, ha₁, hb₁, rfl⟩ _ ⟨a₂, b₂, ha₂, hb₂, rfl⟩
+  refine' (edist_triangle _ (f a₂ b₁) _).trans _
+  exact
+    add_le_add
+      ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| ENNReal.mul_left_mono <| EMetric.edist_le_diam_of_mem ha₁ ha₂)
+      ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| ENNReal.mul_left_mono <| EMetric.edist_le_diam_of_mem hb₁ hb₂)
+#align lipschitz_on_with.ediam_image2_le LipschitzOnWith.ediam_image2_le
+
 end EMetric
 
 section Metric
@@ -591,6 +604,18 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
     LipschitzOnWith K f s ↔ ∀ x ∈ s, ∀ y ∈ s, f x ≤ f y + K * dist x y :=
   ⟨LipschitzOnWith.le_add_mul, LipschitzOnWith.of_le_add_mul K⟩
 #align lipschitz_on_with.iff_le_add_mul LipschitzOnWith.iff_le_add_mul
+
+theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set α} {t : Set β}
+    (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t)
+    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a => f a b) s)
+    (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) : Bornology.IsBounded (Set.image2 f s t) :=
+  Metric.isBounded_iff_ediam_ne_top.2 <|
+    ne_top_of_le_ne_top
+      (ENNReal.add_ne_top.mpr
+        ⟨ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top,
+          ENNReal.mul_ne_top ENNReal.coe_ne_top ht.ediam_ne_top⟩)
+      (ediam_image2_le _ _ _ hf₁ hf₂)
+#align lipschitz_on_with.bounded_image2 LipschitzOnWith.isBounded_image2
 
 end Metric
 
