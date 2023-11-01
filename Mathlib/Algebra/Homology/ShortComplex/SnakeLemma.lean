@@ -14,6 +14,7 @@ is when we have a diagram as follows in an abelian category `C`, with exact rows
 
     L₁.X₁ ⟶ L₁.X₂ ⟶ L₁.X₃ ⟶ 0
       |       |       |
+      |v₁₂.τ₁ |v₁₂.τ₂ |v₁₂.τ₃
       v       v       v
 0 ⟶ L₂.X₁ ⟶ L₂.X₂ ⟶ L₂.X₃
 
@@ -139,17 +140,17 @@ instance mono_v₀₁_τ₁ : Mono S.v₀₁.τ₁ := mono_of_isLimit_fork S.h�
 instance mono_v₀₁_τ₂ : Mono S.v₀₁.τ₂ := mono_of_isLimit_fork S.h₀τ₂
 instance mono_v₀₁_τ₃ : Mono S.v₀₁.τ₃ := mono_of_isLimit_fork S.h₀τ₃
 
-/-! The upper part of the first column of the snake diagram is exact. -/
+/-- The upper part of the first column of the snake diagram is exact. -/
 lemma exact_C₁_up : (ShortComplex.mk S.v₀₁.τ₁ S.v₁₂.τ₁
     (by rw [← comp_τ₁, S.w₀₂, zero_τ₁])).Exact :=
   exact_of_f_is_kernel _ S.h₀τ₁
 
-/-! The upper part of the second column of the snake diagram is exact. -/
+/-- The upper part of the second column of the snake diagram is exact. -/
 lemma exact_C₂_up : (ShortComplex.mk S.v₀₁.τ₂ S.v₁₂.τ₂
     (by rw [← comp_τ₂, S.w₀₂, zero_τ₂])).Exact :=
   exact_of_f_is_kernel _ S.h₀τ₂
 
-/-! The upper part of the third column of the snake diagram is exact. -/
+/-- The upper part of the third column of the snake diagram is exact. -/
 lemma exact_C₃_up : (ShortComplex.mk S.v₀₁.τ₃ S.v₁₂.τ₃
     (by rw [← comp_τ₃, S.w₀₂, zero_τ₃])).Exact :=
   exact_of_f_is_kernel _ S.h₀τ₃
@@ -176,17 +177,17 @@ instance epi_v₂₃_τ₁ : Epi S.v₂₃.τ₁ := epi_of_isColimit_cofork S.h�
 instance epi_v₂₃_τ₂ : Epi S.v₂₃.τ₂ := epi_of_isColimit_cofork S.h₃τ₂
 instance epi_v₂₃_τ₃ : Epi S.v₂₃.τ₃ := epi_of_isColimit_cofork S.h₃τ₃
 
-/-! The lower part of the first column of the snake diagram is exact. -/
+/-- The lower part of the first column of the snake diagram is exact. -/
 lemma exact_C₁_down: (ShortComplex.mk S.v₁₂.τ₁ S.v₂₃.τ₁
     (by rw [← comp_τ₁, S.w₁₃, zero_τ₁])).Exact :=
   exact_of_g_is_cokernel _ S.h₃τ₁
 
-/-! The lower part of the second column of the snake diagram is exact. -/
+/-- The lower part of the second column of the snake diagram is exact. -/
 lemma exact_C₂_down : (ShortComplex.mk S.v₁₂.τ₂ S.v₂₃.τ₂
     (by rw [← comp_τ₂, S.w₁₃, zero_τ₂])).Exact :=
   exact_of_g_is_cokernel _ S.h₃τ₂
 
-/-! The lower part of the third column of the snake diagram is exact. -/
+/-- The lower part of the third column of the snake diagram is exact. -/
 lemma exact_C₃_down : (ShortComplex.mk S.v₁₂.τ₃ S.v₂₃.τ₃
     (by rw [← comp_τ₃, S.w₁₃, zero_τ₃])).Exact :=
   exact_of_g_is_cokernel _ S.h₃τ₃
