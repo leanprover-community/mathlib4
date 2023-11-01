@@ -188,8 +188,6 @@ theorem IsOpen.exists_iUnion_isCompact
       exact ⟨x, hx, s_mem x hx⟩
   have : T.Nonempty := by
     contrapose! h'U
-    push_neg
-    simp only [not_nonempty_iff_eq_empty] at h'U ⊢
     simpa [h'U] using hT.symm
   obtain ⟨B, hB⟩ : ∃ B : ℕ → T, Function.Surjective B := Countable.exists_surjective this T_count
   refine ⟨fun n ↦ ⋃ i ∈ Iic n, s (B i), ?_, ?_, ?_, ?_⟩
