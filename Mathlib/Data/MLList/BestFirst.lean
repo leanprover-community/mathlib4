@@ -81,7 +81,7 @@ except in cases where the node arrives at the front of the queue.
 -/
 section
 
-/-- A node in a `BestFirstQueue. -/
+/-- A node in a `BestFirstQueue`. -/
 structure BestFirstNode (prio : α → Thunk ω) (ε : α → Type) where
   /-- The data to store at a node, from which we can calculate a priority using `prio`. -/
   key : α
