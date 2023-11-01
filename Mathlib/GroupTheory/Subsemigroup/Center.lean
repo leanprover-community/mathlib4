@@ -295,11 +295,13 @@ def center [Mul M] : Subsemigroup M where
 
 variable {M}
 
-/-- The center of a magma is commutative and associative. -/
-@[to_additive "The center of an additive magma is commutative and associative."]
-instance [Mul M] : CommSemigroup (center M) where
+/-- The center of a magma is commutative. -/
+@[to_additive "The center of an additive magma is commutative."]
+instance center.commSemigroup [Mul M] : CommSemigroup (center M) where
   mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
   mul_comm a _ := Subtype.ext <| a.2.comm _
+#align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
+#align add_subsemigroup.center.add_comm_semigroup AddSubsemigroup.center.addCommSemigroup
 
 @[to_additive]
 theorem mem_center_iff [Semigroup M] {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
@@ -314,13 +316,6 @@ instance decidableMemCenter [Semigroup M] (a) [Decidable <| ∀ b : M, b * a = a
   decidable_of_iff' _ Semigroup.mem_center_iff
 #align subsemigroup.decidable_mem_center Subsemigroup.decidableMemCenter
 #align add_subsemigroup.decidable_mem_center AddSubsemigroup.decidableMemCenter
-
-/-- The center of a magma is commutative. -/
-@[to_additive "The center of an additive magma is commutative."]
-instance center.commSemigroup [Mul M] : CommSemigroup (center M) :=
-  { mul_comm := fun a _ => Subtype.ext <| a.2.comm _ }
-#align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
-#align add_subsemigroup.center.add_comm_semigroup AddSubsemigroup.center.addCommSemigroup
 
 end
 
