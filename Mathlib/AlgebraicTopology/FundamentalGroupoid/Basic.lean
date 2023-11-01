@@ -45,10 +45,7 @@ def reflTransSymmAux (x : I × I) : ℝ :=
 @[continuity]
 theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _
-  · continuity
-  · continuity
-  · continuity
-  · continuity
+  iterate 4 continuity
   intro x hx
   norm_num [hx, mul_assoc]
 #align path.homotopy.continuous_refl_trans_symm_aux Path.Homotopy.continuous_reflTransSymmAux
@@ -273,47 +270,38 @@ def FundamentalGroupoid (X : Type u) := X
 
 namespace FundamentalGroupoid
 
-instance {X : Type u} [h : Inhabited X] : Inhabited (FundamentalGroupoid X) := h
+scoped notation "πₓ" => FundamentalGroupoid
 
-attribute [reducible] FundamentalGroupoid
+/-- Help the typechecker by converting a point in a groupoid back to a point in
+the underlying topological space. -/
+def toTop {X} (x : πₓ X) : X := x
+#align fundamental_groupoid.to_top FundamentalGroupoid.toTop
+
+/-- Help the typechecker by converting a point in a topological space to a
+point in the fundamental groupoid of that space. -/
+def fromTop {X} (x : X) : πₓ X := x
+#align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
+
+instance {X : Type u} [h : Inhabited X] : Inhabited (FundamentalGroupoid X) := h
 
 attribute [local instance] Path.Homotopic.setoid
 
 instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
-  Hom x y := Path.Homotopic.Quotient x y
-  id x := ⟦Path.refl x⟧
-  comp {x y z} := Path.Homotopic.Quotient.comp
-  id_comp {x y} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦(Path.refl x).trans a⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
-  comp_id {x y} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦a.trans (Path.refl y)⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.transRefl a⟩
-  assoc {w x y z} f g h :=
-    Quotient.inductionOn₃ f g h fun p q r =>
-      show ⟦(p.trans q).trans r⟧ = ⟦p.trans (q.trans r)⟧ from
-        Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
-  inv {x y} p :=
-    Quotient.lift (fun l : Path x y => ⟦l.symm⟧)
-      (by
-        rintro a b ⟨h⟩
-        simp only
-        rw [Quotient.eq]
-        exact ⟨h.symm₂⟩)
-      p
-  inv_comp {x y} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦a.symm.trans a⟧ = ⟦Path.refl y⟧ from
-        Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
-  comp_inv {x y} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦a.trans a.symm⟧ = ⟦Path.refl x⟧ from
-        Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
+  Hom x y := Path.Homotopic.Quotient (toTop x) (toTop y)
+  id x := ⟦Path.refl (toTop x)⟧
+  comp := Path.Homotopic.Quotient.comp
+  id_comp f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
+  comp_id f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨Path.Homotopy.transRefl a⟩
+  assoc f g h := Quotient.inductionOn₃ f g h
+    fun p q r ↦ Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
+  inv p := Quotient.lift (fun l ↦ ⟦l.symm⟧) (by rintro a b ⟨h⟩; exact Quotient.sound ⟨h.symm₂⟩) p
+  inv_comp f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
+  comp_inv f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
 
 theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
 #align fundamental_groupoid.comp_eq FundamentalGroupoid.comp_eq
 
-theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x⟧ := rfl
+theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl (toTop x)⟧ := rfl
 #align fundamental_groupoid.id_eq_path_refl FundamentalGroupoid.id_eq_path_refl
 
 /-- The functor on fundamental groupoid induced by a continuous map. -/
@@ -333,24 +321,11 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
 scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
-scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ f).map p = p.mapFn f := rfl
 #align fundamental_groupoid.map_eq FundamentalGroupoid.map_eq
-
-/-- Help the typechecker by converting a point in a groupoid back to a point in
-the underlying topological space. -/
-@[reducible]
-def toTop {X : TopCat} (x : πₓ X) : X := x
-#align fundamental_groupoid.to_top FundamentalGroupoid.toTop
-
-/-- Help the typechecker by converting a point in a topological space to a
-point in the fundamental groupoid of that space. -/
-@[reducible]
-def fromTop {X : TopCat} (x : X) : πₓ X := x
-#align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
