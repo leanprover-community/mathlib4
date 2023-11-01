@@ -703,7 +703,8 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
   map_one' := by
     dsimp only -- porting note: force the function to be applied
     rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk]
-    simp only [map_one, Submonoid.coe_one, div_one]
+    dsimp
+    rw [map_one, div_one]
   map_mul' x y := by
     cases' x with x
     cases' y with y
