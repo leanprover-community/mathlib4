@@ -52,8 +52,12 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
 
 variable {M}
 
-/-- The center of a multiplication with unit is commutative and associative. -/
-instance center.commMonoid : CommMonoid (center M) :=
+/-- The center of a multiplication with unit is commutative and associative.
+
+This is not an instance as it forms an non-defeq diamond with `Submonoid.toMonoid` in the `npow`
+field. -/
+@[to_additive]
+abbrev center.commMonoid' : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
 
 end MulOneClass
@@ -61,6 +65,16 @@ end MulOneClass
 section Monoid
 
 variable {M} [Monoid M]
+
+/-- The center of a monoid is commutative. -/
+@[to_additive]
+instance center.commMonoid : CommMonoid (center M) :=
+  { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
+
+-- no instance diamond, unlike the primed version
+example :
+    center.commMonoid.toMonoid = Submonoid.toMonoid (center M) :=
+  rfl
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by

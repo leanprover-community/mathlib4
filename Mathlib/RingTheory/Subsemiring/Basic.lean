@@ -736,13 +736,25 @@ theorem center_toSubmonoid : (center R).toSubmonoid = Submonoid.center R :=
   rfl
 #align subsemiring.center_to_submonoid Subsemiring.center_toSubmonoid
 
-/-- The center is commutative and associative. -/
-instance commSemiring : CommSemiring (center R) :=
-  { Submonoid.center.commMonoid, (center R).toNonAssocSemiring with }
+/-- The center is commutative and associative.
+
+This is not an instance as it forms a non-defeq diamond with
+`NonUnitalSubringClass.tNonUnitalring ` in the `npow` field. -/
+abbrev center.commSemiring' : CommSemiring (center R) :=
+  { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
 
 end NonAssocSemiring
 
 section Semiring
+
+/-- The center is commutative. -/
+instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) :=
+  { Submonoid.center.commMonoid, (center R).toSemiring with }
+
+-- no instance diamond, unlike the primed version
+example {R} [Semiring R] :
+    center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) :=
+  rfl
 
 theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
