@@ -372,10 +372,8 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (M : Q(Type u1))) _) _) _)
           (a : Q($M))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
-  let .some zM ← trySynthInstance (q(Zero $M))
-    | throwError "failed to synthesize `Zero $M`"
-  let .some pM ← trySynthInstance (q(PartialOrder $M))
-    | throwError "failed to synthesize `PartialOrder $M`"
+  let zM : Q(Zero $M) ← synthInstanceQ (q(Zero $M))
+  let pM : Q(PartialOrder $M) ← synthInstanceQ (q(PartialOrder $M))
   match ← core zM pM a, ← core zα pα b with
   | .positive pa, .positive pb =>
       pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
@@ -400,10 +398,8 @@ def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
         (.const ``SMul.smul [u1, _]) (M : Q(Type u1))) _) _)
           (a : Q($M))) (b : Q($α)) ← whnfR e | throwError "failed to match smul"
   -- TODO: deduplicate this logic, as it's shared with the HSMul extension, above.
-  let .some zM ← trySynthInstance (q(Zero $M))
-    | throwError "failed to synthesize `Zero $M`"
-  let .some pM ← trySynthInstance (q(PartialOrder $M))
-    | throwError "failed to synthesize `PartialOrder $M`"
+  let zM : Q(Zero $M) ← synthInstanceQ (q(Zero $M))
+  let pM : Q(PartialOrder $M) ← synthInstanceQ (q(PartialOrder $M))
   match ← core zM pM a, ← core zα pα b with
   | .positive pa, .positive pb =>
       pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
