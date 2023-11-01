@@ -143,8 +143,8 @@ def center : Subsemigroup M where
 
 variable {M}
 
-/-- The center of a magma is commutative. -/
-@[to_additive "The center of an additive magma is commutative."]
+/-- The center of a magma is commutative and associative. -/
+@[to_additive "The center of an additive magma is commutative and associative."]
 instance center.commSemigroup : CommSemigroup (center M) where
   mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
   mul_comm a _ := Subtype.ext <| a.2.comm _
