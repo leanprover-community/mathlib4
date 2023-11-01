@@ -244,9 +244,18 @@ end SeparableAssumption
 
 section FiniteIntermediateField
 
--- TODO: generalize to 0 ≤ m ≠ n; show [F⟮α⟯ : F⟮α ^ m⟯] = m if m > 0 and α transcendental.
-theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hm : 0 < m) (hmn : m < n)
+-- TODO: show a more generalized result: [F⟮α⟯ : F⟮α ^ m⟯] = m if m > 0 and α transcendental.
+theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
+  wlog hmn : m < n
+  · exact this F E hneq.symm heq.symm (Or.resolve_left hneq.lt_or_lt hmn)
+  by_cases hm : m = 0
+  · rw [hm] at heq hmn
+    simp only [pow_zero, adjoin_one] at heq
+    obtain ⟨y, h⟩ := mem_bot.1 (heq.symm ▸ mem_adjoin_simple_self F (α ^ n))
+    refine ⟨X ^ n - C y, X_pow_sub_C_ne_zero hmn y, ?_⟩
+    simp only [map_sub, map_pow, aeval_X, aeval_C, h, sub_self]
+  replace hm : 0 < m := Nat.pos_of_ne_zero hm
   obtain ⟨r, s, h⟩ := (mem_adjoin_simple_iff F _).1 (heq ▸ mem_adjoin_simple_self F (α ^ m))
   by_cases hzero : aeval (α ^ n) s = 0
   · simp only [hzero, div_zero, pow_eq_zero_iff hm] at h
@@ -270,11 +279,9 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hm : 0 < m) (hmn :
 theorem isAlgebraic_of_finite_intermediateField
     [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := by
   intro α
-  let f : ℕ → IntermediateField F E := fun n ↦ F⟮α ^ (n + 1)⟯
+  let f : ℕ → IntermediateField F E := fun n ↦ F⟮α ^ n⟯
   obtain ⟨m, n, hneq, heq⟩ := Finite.exists_ne_map_eq_of_infinite f
-  obtain (hmn | hmn) := hneq.lt_or_lt
-  · exact isAlgebraic_of_adjoin_eq_adjoin F E m.succ_pos (Nat.add_lt_add_right hmn 1) heq
-  · exact isAlgebraic_of_adjoin_eq_adjoin F E n.succ_pos (Nat.add_lt_add_right hmn 1) heq.symm
+  exact isAlgebraic_of_adjoin_eq_adjoin F E hneq heq
 
 theorem finiteDimensional_of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
