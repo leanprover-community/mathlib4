@@ -590,9 +590,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
     · refine' fun t => DifferentiableAt.const_cpow _ (Or.inl two_ne_zero)
       refine' DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
-  -- After leanprover/lean4#2790, this triggers a max recursion depth exception.
-  -- I have replaced `(𝓝[≠] 1)` with `(nhdsWithin 1 {1}ᶜ)` (twice) as a workaround.
-  have h3 : Tendsto ((↑) : ℝ → ℂ) (nhdsWithin 1 {1}ᶜ) (nhdsWithin 1 {1}ᶜ):= by
+  have h3 : Tendsto ((↑) : ℝ → ℂ) (𝓝[≠] 1) (𝓝[≠] 1) := by
     rw [tendsto_nhdsWithin_iff]; constructor
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuous_ofReal.continuousAt
     · exact eventually_nhdsWithin_iff.mpr (eventually_of_forall fun t ht => ofReal_ne_one.mpr ht)
