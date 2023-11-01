@@ -35,6 +35,11 @@ it is equal to the lowest common multiple of the order of all elements of the gr
   `Finset.lcm` of the order of its elements.
 * `Monoid.exponent_eq_iSup_orderOf(')`: For a commutative cancel monoid, the exponent is
   equal to `⨆ g : G, orderOf g` (or zero if it has any order-zero elements).
+* `Monoid.exponent_pi` and `Monoid.exponent_prod`: The exponent of a finite product of monoids is
+  the least common multiple (`Finset.lcm` and `lcm`, respectively) of the exponents of the
+  constituent monoids.
+* `MonoidHom.exponent_dvd`: If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the
+  exponent of `M₁`.
 
 ## TODO
 * Refactor the characteristic of a ring to be the exponent of its underlying additive group.
@@ -402,6 +407,7 @@ theorem Monoid.exponent_pi_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
   simpa using congr_fun h j
 
+/-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
 @[to_additive]
 theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] [MonoidHomClass F M₁ M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
@@ -409,7 +415,10 @@ theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
   obtain ⟨m₁, rfl⟩ := hf m₂
   rw [←map_pow, pow_exponent_eq_one, map_one]
 
-@[to_additive]
+/-- The exponent of finite product of monoids is the `Finset.lcm` of the exponents of the
+constituent monoids. -/
+@[to_additive "The exponent of finite product of additive monoids is the `Finset.lcm` of the
+exponents of the constituent additive monoids."]
 theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, Monoid (M i)] :
     exponent ((i : ι) → M i) = lcm univ (exponent <| M ·) := by
   refine dvd_antisymm ?_ ?_
@@ -421,7 +430,10 @@ theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, 
   · apply Finset.lcm_dvd fun i _ ↦ ?_
     exact MonoidHom.exponent_dvd (f := Pi.evalMonoidHom (M ·) i) (Function.surjective_eval i)
 
-@[to_additive]
+/-- The exponent of product of two monoids is the `lcm` of the exponents of the
+individuaul monoids. -/
+@[to_additive "The exponent of product of two additive monoids is the `lcm` of the exponents of the
+individuaul additive monoids."]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
     exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
   refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)
