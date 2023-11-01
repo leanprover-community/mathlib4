@@ -1673,7 +1673,7 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
 lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-  {xs : ι → ℝ≥0∞} (le_b : ∀ i, xs i ≤ b) :
+    {xs : ι → ℝ≥0∞} (le_b : ∀ i, xs i ≤ b) :
     F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
   have liminf_le : F.liminf xs ≤ b := by
     apply liminf_le_of_le ⟨0, by simp⟩
@@ -1694,7 +1694,7 @@ lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
 lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-  {xs : ι → ℝ≥0∞} (le_b : ∀ i, xs i ≤ b) :
+    {xs : ι → ℝ≥0∞} (le_b : ∀ i, xs i ≤ b) :
     F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
   have aux : ∀ i, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
     simp only [truncateToReal_eq_toReal b_ne_top (le_b _), implies_true]
