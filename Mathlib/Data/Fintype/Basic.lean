@@ -1232,28 +1232,10 @@ theorem map_univ_val_equiv (e : α ≃ β) :
 /-- For functions on finite sets, they are bijections iff they map universes into universes. -/
 @[simp]
 theorem bijective_iff_map_univ_eq_univ (f : α → β) :
-    Function.Bijective f ↔ map f (Finset.univ : Finset α).val = univ.val := by
-  constructor
-  · intro ⟨inj, surj⟩
-    exact congr_arg (·.val) (map_univ_of_surjective (f := Embedding.mk f inj) surj)
-  intro univ_eq
-  have h (b) : ∃ a, filter (b = f ·) univ.val = {a}
-  · rw [←card_eq_one, ←count_map, univ_eq, count_univ]
-  constructor
-  · intro a b fab
-    obtain ⟨c, hc⟩ := h (f a)
-    have ha : a = c
-    · rw [←Multiset.mem_singleton]
-      simp [←hc]
-    have hb : b = c
-    · rw [←Multiset.mem_singleton]
-      simp [←hc, fab]
-    rw [ha, hb]
-  · intro b
-    refine (h b).imp fun a ha => ?_
-    have ha2 : a ∈ Multiset.filter (b = f ·) univ.val
-    · rw [ha, Multiset.mem_singleton]
-    simpa only [Multiset.mem_filter, mem_val, mem_univ, true_and, eq_comm] using ha2
+    f.Bijective ↔ map f (Finset.univ : Finset α).val = univ.val :=
+  ⟨fun bij ↦ congr_arg (·.val) (map_univ_equiv <| Equiv.ofBijective f bij),
+    fun eq ↦ ⟨fun a₁ a₂ ↦ inj_on_of_nodup_map (eq.symm ▸ univ.2) a₁ (mem_univ a₁) a₂ (mem_univ a₂),
+      fun b ↦ have ⟨a, _, h⟩ := mem_map.mp (eq.symm ▸ mem_univ_val b); ⟨a, h⟩⟩⟩
 
 end Multiset
 
