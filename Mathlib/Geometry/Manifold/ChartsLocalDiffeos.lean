@@ -31,6 +31,21 @@ variable
 -- each chart is a structomorphism (from its source to its target).
 variable {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
 
+/-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
+ of some chart on `M`. -/
+lemma chartOn_open_eq (s : Opens M) [Nonempty s] {e' : LocalHomeomorph s H} (he' : e' ∈ atlas H s) :
+    ∃ x : s, e' = (chartAt H (x : M)).subtypeRestr s := by
+  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
+  have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) s} = xset := hx
+  exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
+
+-- XXX: can I unify this with `chartOn_open_eq`?
+lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he' : e' ∈ atlas H t) :
+    ∃ x : t, e' = (chartAt H ↑x).subtypeRestr t := by
+  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
+  have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
+  exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
+
 -- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
 -- xxx: is the HasGroupoid part needed? I think it is.
 lemma true {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonempty s] :
@@ -38,11 +53,9 @@ lemma true {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonempt
   rw [mem_maximalAtlas_iff]
   intro e' he'
   -- `e'` is the restriction of some chart of `M` at `x`
-  rcases he' with ⟨xset, ⟨x, hx⟩, hc'⟩
-  have : xset = {LocalHomeomorph.subtypeRestr (chartAt H ↑x) s} := hx.symm
-  let e'full := chartAt H (x : M)
-  have : e' = e'full.subtypeRestr s := mem_singleton_iff.mp (this ▸ hc')
+  obtain ⟨x, this⟩ := chartOn_open_eq s he'
   rw [this]
+  let e'full := chartAt H (x : M)
   -- the unrestricted charts are in the groupoid,
   have : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
   have : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
@@ -81,17 +94,13 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
   have helper : ∀ c' : LocalHomeomorph t H, c' ∈ atlas H t →
       e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c' ∈ atlas H s := by
     set e' := e.toHomeomorphSourceTarget.toLocalHomeomorph with eq -- source s, target t
-    intro c'
+    intro c' hc'
     -- Choose `x ∈ t` so c' is the restriction of `chartAt H x`.
-    intro ⟨xset, ⟨x, hx⟩, hc'⟩
-    have : xset = {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} := hx.symm
-    have : c' = LocalHomeomorph.subtypeRestr (chartAt H ↑x) t := mem_singleton_iff.mp (this ▸ hc')
-    rw [this]
+    obtain ⟨x, hc'⟩ := chartOn_open_eq' t hc'
     -- As H has only one chart, this chart is the identity: i.e., c' is the inclusion.
-    rw [(chartAt_self_eq)]
+    rw [hc', (chartAt_self_eq)]
     -- simplify: perhaps not needed, but definitely ok
     rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
-
 
     -- now: argue that our expression equals this chart above
     let r := LocalHomeomorph.subtypeRestr e s
