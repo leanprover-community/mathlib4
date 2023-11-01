@@ -331,9 +331,9 @@ lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
 -/
 /-- Stabilizers in monoid SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul.submonoid {p : SubMulAction R M} (m : p) :
-    MulAction.Stabilizer.submonoid R m = MulAction.Stabilizer.submonoid R (m : M) := by
+    MulAction.stabilizerSubmonoid R m = MulAction.stabilizerSubmonoid R (m : M) := by
   ext
-  simp only [MulAction.mem_stabilizer_submonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
+  simp only [MulAction.mem_stabilizerSubmonoid_iff, ← SubMulAction.val_smul, SetLike.coe_eq_coe]
 #align sub_mul_action.stabilizer_of_sub_mul.submonoid SubMulAction.stabilizer_of_subMul.submonoid
 
 end MulActionMonoid
