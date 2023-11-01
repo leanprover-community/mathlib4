@@ -48,8 +48,11 @@ variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMon
 namespace AEval
 
 instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
+
 instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
+
 instance instFiniteOrig [Finite R M] : Finite R <| AEval R M a := inferInstanceAs (Finite R M)
+
 instance instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
 
 variable (R M)
