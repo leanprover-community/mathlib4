@@ -718,7 +718,7 @@ theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
 
 section Center
 
-/-- The center of a non-associative semiring `R` is the set of elements that commute with everything
+/-- The center of a non-associative semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
 def center (R) [NonAssocSemiring R] : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
