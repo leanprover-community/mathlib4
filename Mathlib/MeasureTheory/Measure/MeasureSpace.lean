@@ -3884,7 +3884,7 @@ protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Mea
   ⟨fun _K hK => ENNReal.mul_lt_top hc hK.measure_lt_top.ne⟩
 #align measure_theory.is_finite_measure_on_compacts.smul MeasureTheory.IsFiniteMeasureOnCompacts.smul
 
-instance IsFiniteMeasureOnCompacts.smul_nnrel [TopologicalSpace α] (μ : Measure α)
+instance IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] (c : ℝ≥0) : IsFiniteMeasureOnCompacts (c • μ) :=
   IsFiniteMeasureOnCompacts.smul μ coe_ne_top
 

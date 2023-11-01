@@ -1713,8 +1713,6 @@ end
 
 section
 
-open scoped Topology
-
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 /-- A compact set is covered by finitely many left multiplicative translates of a set

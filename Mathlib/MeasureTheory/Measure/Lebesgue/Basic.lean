@@ -29,6 +29,7 @@ More properties of the Lebesgue measure are deduced from this in
 additive Haar measure on a finite-dimensional real vector space.
 -/
 
+
 assert_not_exists MeasureTheory.integral
 
 noncomputable section
