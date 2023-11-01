@@ -33,8 +33,6 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 
 variable {M : Type*}
 
-namespace Set
-
 /-- Conditions for an element to be additively central -/
 structure IsAddCentral [Add M] (z : M) : Prop where
   /-- addition commutes -/
@@ -58,7 +56,27 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
-end Set
+namespace IsMulCentral
+
+section IsMulCentral
+
+variable {a b c : M} [Mul M]
+
+-- c.f. Commute.left_comm
+@[to_additive]
+protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) :=
+  by simp only [h.comm, h.right_assoc]
+
+
+-- c.f. Commute.right_comm
+@[to_additive]
+protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b :=
+  by simp only [h.right_assoc, h.mid_assoc, h.comm]
+
+
+end IsMulCentral
+
+end IsMulCentral
 
 section Mul
 
@@ -145,7 +163,7 @@ variable [Semigroup M]
 
 @[to_additive]
 theorem Semigroup.mem_center_iff {z : M} :
-    z ∈ Set.center M ↔ ∀ g, g * z = z * g := ⟨fun a g ↦ by rw [Set.IsMulCentral.comm a g],
+    z ∈ Set.center M ↔ ∀ g, g * z = z * g := ⟨fun a g ↦ by rw [IsMulCentral.comm a g],
   fun h ↦ ⟨fun _ ↦ (Commute.eq (h _)).symm, fun _ _ ↦ (mul_assoc z _ _).symm,
   fun _ _ ↦ mul_assoc _ z _, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
 
