@@ -3,7 +3,6 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.CompactlyGenerated
 import Mathlib.Topology.Sets.Closeds
 
 #align_import topology.noetherian_space from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -74,7 +73,7 @@ protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : 
 -- porting note: fixed NS
 protected theorem _root_.Inducing.noetherianSpace [NoetherianSpace α] {i : β → α}
     (hi : Inducing i) : NoetherianSpace β :=
-  (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.1 (NoetherianSpace.isCompact _)
+  (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
 #align topological_space.inducing.noetherian_space Inducing.noetherianSpace
 
 /-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
@@ -91,7 +90,7 @@ theorem noetherianSpace_TFAE :
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2
-  · refine' (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff  _)
+  · refine' (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff _)
     exact (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4
   · exact noetherianSpace_iff_opens α
@@ -139,7 +138,7 @@ theorem NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continu
 
 theorem noetherianSpace_set_iff (s : Set α) :
     NoetherianSpace s ↔ ∀ t, t ⊆ s → IsCompact t := by
-  simp only [noetherianSpace_iff_isCompact, embedding_subtype_val.isCompact_iff_isCompact_image,
+  simp only [noetherianSpace_iff_isCompact, embedding_subtype_val.isCompact_iff,
     Subtype.forall_set_subtype]
 #align topological_space.noetherian_space_set_iff TopologicalSpace.noetherianSpace_set_iff
 

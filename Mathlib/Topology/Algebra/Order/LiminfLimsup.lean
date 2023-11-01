@@ -303,7 +303,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       simpa [IsBot] using not_bot
     obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
       contrapose! h'
-      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
+      exact ⟨l, l_lt, h'⟩
     have B : F.liminf f ≤ f m := by
       apply liminf_le_of_frequently_le _ _
       · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
@@ -449,7 +449,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     refine' tendsto_atTop_atTop_of_monotone' (fun n m hnm ↦ Finset.sum_mono_set_of_nonneg
       (fun i ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _) (Finset.range_mono hnm)) _
     rintro ⟨i, h⟩
-    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] at h
+    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at h
     induction' i with k hk
     · obtain ⟨j, hj₁, hj₂⟩ := hω 1
       refine' not_lt.2 (h <| j + 1)

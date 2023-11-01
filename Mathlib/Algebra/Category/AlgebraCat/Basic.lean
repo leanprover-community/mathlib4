@@ -217,12 +217,14 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
     -- porting note: was `by tidy`
     change (i.hom ≫ i.inv) x = x
     simp only [hom_inv_id]
-    rw [id_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [id_apply]
   right_inv x := by
     -- porting note: was `by tidy`
     change (i.inv ≫ i.hom) x = x
     simp only [inv_hom_id]
-    rw [id_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [id_apply]
   map_add' := i.hom.map_add -- Porting note: was `by tidy`
   map_mul' := i.hom.map_mul -- Porting note: was `by tidy`
   commutes' := i.hom.commutes -- Porting note: was `by tidy`

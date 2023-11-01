@@ -181,12 +181,12 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
   suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
-  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.Nat.mem_antidiagonal.mp hij) with hi hj
+  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
   · rw [pow_eq_zero_of_le hi hn, zero_mul]
   · rw [pow_eq_zero_of_le hj hm, mul_zero]
 #align commute.is_nilpotent_add Commute.isNilpotent_add
 
-protected lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
+protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
     IsNilpotent (∑ i in s, f i) := by
   classical
@@ -244,7 +244,7 @@ section CommSemiring
 
 variable [CommSemiring R] {x y : R}
 
-lemma isNilpotent_sum {ι : Type _} {s : Finset ι} {f : ι → R}
+lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
     IsNilpotent (∑ i in s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _

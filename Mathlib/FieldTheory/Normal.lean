@@ -227,8 +227,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     rw [AdjoinRoot.adjoinRoot_eq_top, Subalgebra.restrictScalars_top, ←
       @Subalgebra.restrictScalars_top F C] at this
     exact top_le_iff.mpr (Subalgebra.restrictScalars_injective F this)
-/- Porting note: the `change` was `dsimp only [S]`. This is the step that requires increasing
-`maxHeartbeats`. Using `set S ... with hS` doesn't work. -/
+/- Porting note: the `change` was `dsimp only [S]`. Using `set S ... with hS` doesn't work. -/
   change Subalgebra.restrictScalars F (Algebra.adjoin C
     (((p.aroots E).map (algebraMap E D)).toFinset : Set D)) = _
   rw [← Finset.image_toFinset, Finset.coe_image]
@@ -344,9 +343,9 @@ theorem AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [N
 -- Porting note: this was `IsScalarTower F E E := by infer_instance`.
   letI : Algebra E E := Algebra.id E
   let g := f.restrictNormal' E
-  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E), ←
-    IntermediateField.AlgHom.map_fieldRange, IntermediateField.AlgEquiv.fieldRange_eq_top g,
-      ← IntermediateField.AlgHom.fieldRange_eq_map, IntermediateField.fieldRange_val]
+  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E),
+    ← AlgHom.map_fieldRange, AlgEquiv.fieldRange_eq_top g, ← AlgHom.fieldRange_eq_map,
+    IntermediateField.fieldRange_val]
 #align alg_hom.field_range_of_normal AlgHom.fieldRange_of_normal
 
 /-- Restrict algebra isomorphism to a normal subfield -/
