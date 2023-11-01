@@ -51,6 +51,7 @@ variable {I : Type u} [Inhabited I] [LinearOrder I] [IsWellOrder I (·<·)] (C :
 
 open Profinite ContinuousMap CategoryTheory Limits Opposite Submodule
 
+section Projections
 /-!
 
 ## Projection maps
@@ -76,7 +77,6 @@ In this section we define the relevant projection maps and prove some compatibil
 * `spanCone_isLimit` establishes that when `C` is compact, it can be written as a limit of its
   images under the maps `Proj (· ∈ s)` where `s : Finset I`.
 -/
-section Projections
 
 variable (J K L : I → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
 
@@ -244,6 +244,7 @@ def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] [Decidabl
 
 end Projections
 
+section Products
 /-!
 
 ## Defining the basis
@@ -275,7 +276,6 @@ of `e`.
   products span `LocallyConstant C ℤ`.
 
 -/
-section Products
 
 /--
 `e C i` is the locally constant map from `C : Set (I → Bool)` to `ℤ` sending `f` to 1 if
@@ -467,6 +467,7 @@ theorem GoodProducts.span_iff_products : ⊤ ≤ span ℤ (Set.range (eval C)) �
 
 end Products
 
+section Span
 /-!
 ## The good products span
 
@@ -481,7 +482,7 @@ products span. The general result is deduced from this.
 
 * `GoodProducts.span` : The good products span `LocallyConstant C ℤ` for every closed subset `C`.
 -/
-section Span
+
 section Fin
 
 variable (s : Finset I)
@@ -693,6 +694,7 @@ theorem GoodProducts.span (hC : IsClosed C) :
 
 end Span
 
+section Ordinal
 /-!
 
 ## Relating elements of the well-order `I` with ordinals
@@ -712,7 +714,6 @@ can be regarded as the set of all strictly smaller ordinals, allowing to apply o
 * `P I` is the predicate on ordinals about linear independence of good products, which the rest of
   this file is spent on proving by induction.
 -/
-section Ordinal
 
 variable (I)
 
@@ -769,13 +770,13 @@ theorem Products.prop_of_isGood_of_contained  {l : Products I} (o : Ordinal) (h 
 
 end Ordinal
 
+section Zero
 /-!
 
 ## The zero case of the induction
 
 In this case, we have `contained C 0` which means that `C` is either empty or a singleton.
 -/
-section Zero
 
 instance : Subsingleton (LocallyConstant (∅ : Set (I → Bool)) ℤ) :=
   subsingleton_iff.mpr (fun _ _ ↦ LocallyConstant.ext isEmptyElim)
@@ -851,6 +852,7 @@ theorem GoodProducts.linearIndependentSingleton :
 
 end Zero
 
+section Maps
 /-!
 
 ## `ℤ`-linear maps induced by projections
@@ -868,7 +870,6 @@ precomposition with the projections defined in the section `Projections`.
 * We prove that `πs` and `πs'` interact well with `Products.eval` and the main application is the
   theorem `isGood_mono` which says that the property `isGood` is "monotone" on ordinals.
 -/
-section Maps
 
 theorem contained_eq_proj (o : Ordinal) (h : contained C o) :
     C = π C (ord I · < o) := by
@@ -972,6 +973,7 @@ end Products
 
 end Maps
 
+section Limit
 /-!
 
 ## The limit case of the induction
@@ -1000,7 +1002,6 @@ directed union is in bijection with the good products w.r.t. `π C (ord I · < o
 * `GoodProducts.linearIndependent_iff_union_smaller` is the result mentioned above, that the good
   products are linearly independent iff a directed union is.
 -/
-section Limit
 
 namespace GoodProducts
 
@@ -1116,6 +1117,7 @@ theorem GoodProducts.linearIndependent_iff_union_smaller {o : Ordinal} (ho : o.I
 
 end Limit
 
+section Successor
 /-!
 
 ## The successor case in the induction
@@ -1179,7 +1181,6 @@ The main results in the section `GoodProducts` are as follows:
 * `GoodProducts.maxTail_isGood` says that removing the leading `o` from a term of `MaxProducts C` 
   yields a list which `isGood` with respect to `C'`.
 -/
-section Successor
 
 variable {o : Ordinal} (hC : IsClosed C) (hsC : contained C (Order.succ o))
   (ho : o < Ordinal.type (·<· : I → I → Prop))
@@ -1710,9 +1711,10 @@ end GoodProducts
 
 end Successor
 
+section Induction
 /-!
 
-## The actual induction
+## The induction
 
 Here we put together the results of the sections `Zero`, `Limit` and `Successor` to prove the
 predicate `P I o` holds for all ordinals `o`, and conclude with the main result:
@@ -1725,7 +1727,6 @@ We also define
 * `GoodProducts.Basis` which uses `GoodProducts.linearIndependent` and `GoodProducts.span` to
   define a basis for `LocallyConstant C ℤ` 
 -/
-section Induction
 
 theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   have : C ⊆ {(fun _ ↦ false)} := fun c hc ↦ by
@@ -1818,10 +1819,13 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 
-/-- Nöbeling's theorem: the `ℤ`-module `LocallyConstant S ℤ` is free for every `S : Profinite` -/
-theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
-  @NobelingProof.Nobeling_aux {C : Set S // IsClopen C} ⟨⟨∅, isClopen_empty⟩⟩
-    (IsWellOrder.linearOrder WellOrderingRel)
-    WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S)
-
 end Profinite
+
+open Profinite NobelingProof
+
+/-- Nöbeling's theorem: the `ℤ`-module `LocallyConstant S ℤ` is free for every `S : Profinite` -/
+instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
+    Module.Free ℤ (LocallyConstant S ℤ) :=
+  @Nobeling_aux {C : Set S // IsClopen C} ⟨⟨∅, isClopen_empty⟩⟩
+    (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
+    S (Nobeling.ι S) (Nobeling.embedding S)
