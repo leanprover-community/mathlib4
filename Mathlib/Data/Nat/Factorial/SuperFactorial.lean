@@ -133,7 +133,7 @@ theorem eval_matrixOfPolynomials_eq_mul_matrix_of_choose {n : ℕ} (v : Fin n �
   · rw [Nat.cast_prod]
 
 theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
-   ↑(Nat.superFactorial n) ∣ (Matrix.vandermonde v).det := by
+    ↑(Nat.superFactorial n) ∣ (Matrix.vandermonde v).det := by
   let m' := List.minimum ((univ : Finset (Fin (n + 1))).image v).toList
   have : ((univ : Finset (Fin (n + 1))).image v).toList ≠ List.nil := by
     simp only [ne_eq, toList_eq_nil, image_eq_empty]
