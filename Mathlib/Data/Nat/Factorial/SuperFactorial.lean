@@ -59,14 +59,8 @@ theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
     Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
-theorem prod_Ico_factorial_add_one : ∀ n : ℕ, ∏ x in Ico 0 n, (x + 1) ! = sf n :=
-  fun n => (prod_Icc_factorial n) ▸ Finset.prod_Ico_add' _ _ _ _
-
-@[simp]
-theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n
-  | 0 => rfl
-  | n + 1 => by
-    rw [Finset.prod_range_succ, prod_range_factorial_succ n, superFactorial, mul_comm, factorial]
+theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n :=
+  fun n => (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
 
 variable {R : Type*} [CommRing R]
 
@@ -93,20 +87,20 @@ theorem superFactorial_eq_square_times_factorial (k : ℕ) :
   use (∏ x in Ico 0 (2 * k - 1), (x + 1) !) * (∏ x in Ico (2 * k) (4 * k), (x + 1) !)
   have h : sf (4 * k) = (∏ x in Ico 0 (2 * k - 1), (x + 1) !) *
        (∏ x in Ico (2 * k) (4 * k), (x + 1) !) * (2 * k) ! := by
-    rw [mul_assoc, mul_comm _ (2 * k) !, prod_Ico_factorial_add_one,
+    rw [mul_assoc, mul_comm _ (2 * k) !, ← range_eq_Ico, prod_range_factorial_succ,
         ← mul_assoc, mul_comm _ (2 * k)!]
     have := superFactorial_succ (2 * k - 1)
     simp only [hk] at this
     norm_num at this
-    rw [← this]
-    rw [← prod_Ico_factorial_add_one, ← prod_Ico_factorial_add_one, h_succ]
+    rw [← this, ← prod_range_factorial_succ, range_eq_Ico, ← prod_range_factorial_succ,
+        range_eq_Ico, h_succ]
     exact (Finset.prod_Ico_consecutive (fun x => (x + 1) !) (zero_le (2 * k)) (by linarith)).symm
   constructor
   · have h' : sf (4 * k) =
        (2 ^ k * ∏ x in Ico 0 (2 * k), (2 * x + 1)!) ^ 2 * (2 * k)! := by
       calc
         sf (4 * k) = ∏ x in Ico 0 (2 * (2 * k)), (x + 1) ! := by
-          rw [←prod_Ico_factorial_add_one, ← mul_assoc]
+          rw [←range_eq_Ico, prod_range_factorial_succ, ← mul_assoc]
         _ = ∏ x in Ico 0 (2 * k), ((2 * x + 1) !) * (((1 + 2 * x) + 1) !) := by
           rw [mul_comm]
           have prod_even_oddFin : ∀ (n : ℕ), ∀  (f : ℕ → ℕ),
