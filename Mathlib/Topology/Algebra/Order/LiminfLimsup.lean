@@ -82,7 +82,7 @@ theorem Filter.Tendsto.isCoboundedUnder_ge [NeBot f] (h : Tendsto u f (𝓝 a)) 
 
 instance : BoundedGENhdsClass αᵒᵈ := ⟨@isBounded_le_nhds α _ _ _⟩
 
-instance : BoundedLENhdsClass (α × β) := by
+instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
   refine ⟨fun x ↦ ?_⟩
   obtain ⟨a, ha⟩ := isBounded_le_nhds x.1
   obtain ⟨b, hb⟩ := isBounded_le_nhds x.2
@@ -130,12 +130,8 @@ theorem Filter.Tendsto.isCoboundedUnder_le [NeBot f] (h : Tendsto u f (𝓝 a)) 
 
 instance : BoundedLENhdsClass αᵒᵈ := ⟨@isBounded_ge_nhds α _ _ _⟩
 
-instance : BoundedGENhdsClass (α × β) := by
-  refine ⟨fun x ↦ ?_⟩
-  obtain ⟨a, ha⟩ := isBounded_ge_nhds x.1
-  obtain ⟨b, hb⟩ := isBounded_ge_nhds x.2
-  rw [← @Prod.mk.eta _ _ x, nhds_prod_eq]
-  exact ⟨(a, b), ha.prod_mk hb⟩
+instance Prod.instBoundedGENhdsClass : BoundedGENhdsClass (α × β) :=
+  ⟨(Prod.instBoundedLENhdsClass (α := αᵒᵈ) (β := βᵒᵈ)).isBounded_le_nhds⟩
 
 instance [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
     [∀ i, BoundedGENhdsClass (π i)] : BoundedGENhdsClass (∀ i, π i) := by
