@@ -236,9 +236,13 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
   aesop
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
-theorem comm_all_stdBasisMatrix_nondiag {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) (i : n) :
-    M = M i i • (1 : Matrix n n α) := by
+theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
+    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M):
+    M ∈ Set.range (Matrix.scalar n) := by
+  cases isEmpty_or_nonempty n
+  · refine ⟨0, Subsingleton.elim _ _⟩
+  obtain ⟨i⟩ := ‹Nonempty n›
+  refine ⟨M i i, ?_⟩
   rewrite [← ext_iff]
   intro j k
   by_cases h : j = k
