@@ -418,8 +418,7 @@ theorem exists_nonempty_inter_of_measure_univ_lt_tsum_measure {m : MeasurableSpa
   contrapose! H
   apply tsum_measure_le_measure_univ hs
   intro i j hij
-  rw [Function.onFun, disjoint_iff_inf_le]
-  exact fun x hx => H i j hij ⟨x, hx⟩
+  exact disjoint_iff_inter_eq_empty.mpr (H i j hij)
 #align measure_theory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_tsum_measure
 
 /-- Pigeonhole principle for measure spaces: if `s` is a `Finset` and
@@ -431,8 +430,7 @@ theorem exists_nonempty_inter_of_measure_univ_lt_sum_measure {m : MeasurableSpac
   contrapose! H
   apply sum_measure_le_measure_univ h
   intro i hi j hj hij
-  rw [Function.onFun, disjoint_iff_inf_le]
-  exact fun x hx => H i hi j hj hij ⟨x, hx⟩
+  exact disjoint_iff_inter_eq_empty.mpr (H i hi j hj hij)
 #align measure_theory.exists_nonempty_inter_of_measure_univ_lt_sum_measure MeasureTheory.exists_nonempty_inter_of_measure_univ_lt_sum_measure
 
 /-- If two sets `s` and `t` are included in a set `u`, and `μ s + μ t > μ u`,
@@ -1184,6 +1182,7 @@ theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
   by_cases hf : AEMeasurable f (0 : Measure α) <;> simp [map, hf]
 #align measure_theory.measure.map_zero MeasureTheory.Measure.map_zero
 
+@[simp]
 theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
     μ.map f = 0 := by simp [map, hf]
 #align measure_theory.measure.map_of_not_ae_measurable MeasureTheory.Measure.map_of_not_aemeasurable
