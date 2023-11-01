@@ -50,6 +50,8 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
 
+variable {M}
+
 /-- The center of a multiplication with unit is commutative and associative. -/
 instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
