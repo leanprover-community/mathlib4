@@ -46,9 +46,23 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
   have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
   exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
 
+-- this lemma is sorely missing to finish the proof
+lemma missing {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
+    (s : Opens M) [Nonempty s] : ((e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s) ≈ (e.symm ≫ₕ e') := sorry
+  -- let y : t := sorry
+  -- is this only true for y in e.target?
+  -- let sdf := calc ((e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s) y
+  --   _ = (e'.subtypeRestr s) ((e.subtypeRestr s).symm y) := rfl
+  --   --_ = (e'.subtypeRestr s) (e.symm y) := rfl
+  --   _ = (e') ((e).symm y) := by sorry -- partial progress: rw [← this, ← LocalHomeomorph.coe_coe_symm, ← LocalHomeomorph.symm_toLocalEquiv]
+  --   _ = (e.symm ≫ₕ e') y := rfl
+  -- let r := (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s
+  -- let r' := e.symm ≫ₕ e'
+  -- have : ∀ y : H, r y = r' y := sorry -- just shown
+
 -- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
 -- xxx: is the HasGroupoid part needed? I think it is.
-lemma true {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonempty s] :
+lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonempty s] :
     e.subtypeRestr s ∈ G.maximalAtlas s := by
   rw [mem_maximalAtlas_iff]
   intro e' he'
@@ -57,25 +71,17 @@ lemma true {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonempt
   rw [this]
   let e'full := chartAt H (x : M)
   -- the unrestricted charts are in the groupoid,
-  have : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
-  have : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
-  -- the composition is the restriction of the charts, TODO: this is missing
-  let r := (e.subtypeRestr s).symm ≫ₕ e'full.subtypeRestr s --= true := sorry
-  let y : H := sorry
-  -- is this only true for y in e.target?
-  let sdf := calc ((e.subtypeRestr s).symm ≫ₕ e'full.subtypeRestr s) y
-    _ = (e'full.subtypeRestr s) ((e.subtypeRestr s).symm y) := rfl
-    --_ = (e'full.subtypeRestr s) (e.symm y) := rfl
-    _ = (e'full) ((e).symm y) := by sorry --rw [← this, ← @LocalHomeomorph.coe_coe_symm, ← @LocalHomeomorph.symm_toLocalEquiv]--apply?--sorry --rfl
-    _ = (e.symm ≫ₕ e'full) y := rfl
-  let r' := e.symm ≫ₕ e'full
-  have : ∀ y : H, r y = r' y := sorry
+  have aux : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
+  have aux' : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
+  -- the composition is the restriction of the charts
+  let r := missing he (chart_mem_atlas H (x : M)) s
+  let r' := missing (chart_mem_atlas H (x : M)) he s
   -- hence the restriction also lies in the groupoid
-  sorry
-  --constructor and handle both goals, using the aux statements above
+  exact ⟨G.eq_on_source aux r, G.eq_on_source aux' r'⟩
 
 -- TODO: prove this! it's the main load-bearing part of the lemma below!
-lemma obvious (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ atlas H s := by
+-- XXX: this lemma is false as-is; `fixed` is correct
+lemma obvious_false (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ atlas H s := by
   -- can we argue that e = chartAt H x for some x,
   -- hence e.subtypeRestr s is the chart in s at x?
   -- then, would use  simp only [mem_iUnion, mem_singleton_iff]; rfl
@@ -128,7 +134,7 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
         _ = r.symm y := rfl
     have congr_to : ∀ y, goal y = r ↑y := by intro; rfl
     have h2 : goal = r := LocalHomeomorph.ext goal r congr_to congr_inv (by simp)
-    exact mem_of_eq_of_mem h2 (obvious s)
+    exact mem_of_eq_of_mem h2 (obvious_false s)
   -- singleton_hasGroupoid should also show this, by the way
   -- have : HasGroupoid t G := t.instHasGroupoid G -- as G is closed under restrictions
   let ehom := e.toHomeomorphSourceTarget -- temporarily given a name, to make the goal readable
