@@ -24,15 +24,6 @@ The `collect_signs!` tactic extends `collect_signs`, trying to cancel additions 
 substractions of naturals, adding the necessary inequalities as new goals.
 -/
 
-/-
-These lemmas are used as rewriting rules later
--/
-lemma add_sub_add_cancel (G : Type) [AddCommGroup G] (x y z : G) : (x + y) - (z + x) = y - z := by
-  rw [add_comm x y,add_sub_add_right_eq_sub]
-
-lemma add_sub_add_cancel' (G : Type) [AddCommGroup G] (x y z : G) : (y + x) - (x + z) = y - z := by
-  rw [add_comm x z,add_sub_add_right_eq_sub]
-
 /--
 The `collect_signs` tactic rewrites expression combining additions and substractions into
 an expression with only additions minus annother expression with only additions.
@@ -73,13 +64,13 @@ lemma Nat.sub_sub_of_le (m n k : ℕ) (h : k ≤ n) : m - (n - k) = m + k - n :=
   have haux := Nat.le.dest h
   cases haux with
   | intro d hd =>
-    . rw [← hd, add_comm m k, add_tsub_cancel_left,Nat.add_sub_add_left]
+    . rw [←hd,add_comm m k,add_tsub_cancel_left,Nat.add_sub_add_left]
 
 lemma Nat.add_sub_comm_of_le (m n k : ℕ) (h : k ≤ n) : m + (n - k) = (m + n) - k := by
   have haux := Nat.le.dest h
   cases haux with
   | intro d hd =>
-    . rw [← hd, add_comm k d,←  add_assoc, add_tsub_cancel_right, add_tsub_cancel_right]
+    . rw [← hd,add_comm k d,←add_assoc,add_tsub_cancel_right,add_tsub_cancel_right]
 
 /--
 The `collect_signs!` tactic extends `collect_signs`, trying to cancel additions and
