@@ -128,17 +128,18 @@ theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
 #align AddCommGroup.colimits.quot_zero AddCommGroupCat.Colimits.quot_zero
 
 @[simp]
-theorem quot_neg (x) : Quot.mk Setoid.r (neg x) =
+theorem quot_neg (x) :
     -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
-    Neg.neg (α := ColimitType.{w} F) (Quot.mk Setoid.r x : ColimitType.{w} F) :=
+    (by exact Quot.mk Setoid.r (neg x) : ColimitType.{w} F) =
+      -(by exact Quot.mk Setoid.r x) :=
   rfl
 #align AddCommGroup.colimits.quot_neg AddCommGroupCat.Colimits.quot_neg
 
 @[simp]
 theorem quot_add (x y) :
-    Quot.mk Setoid.r (add x y) =
-    -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
-    Add.add (α := ColimitType.{w} F) (Quot.mk Setoid.r x) (Quot.mk Setoid.r y) :=
+    (by exact Quot.mk Setoid.r (add x y) : ColimitType.{w} F) =
+      -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
+      (by exact Quot.mk Setoid.r x) + (by exact Quot.mk Setoid.r y) :=
   rfl
 #align AddCommGroup.colimits.quot_add AddCommGroupCat.Colimits.quot_add
 
