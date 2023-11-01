@@ -24,7 +24,7 @@ import Mathlib.Topology.Order.Basic
 
 ## Implementation notes
 
-The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `euclidean_space ι ℝ`. To avoid code
+The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace ι ℝ`. To avoid code
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
 
