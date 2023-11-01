@@ -641,7 +641,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rintro ⟨p, x⟩ y ⟨hp, hx⟩ hy
     apply hgs p _ hp
     contrapose! hy
-    exact ⟨y - x, x, by simp [hy], hx, by simp⟩
+    exact ⟨y - x, x, by simpa using hy, hx, by simp⟩
   apply ContinuousWithinAt.mono_of_mem (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
   exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩
 #align continuous_on_convolution_right_with_param' continuousOn_convolution_right_with_param
