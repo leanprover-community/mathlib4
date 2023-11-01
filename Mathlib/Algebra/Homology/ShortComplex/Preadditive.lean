@@ -5,14 +5,13 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # Homology of preadditive categories
 
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
-
-TODO: Introduce the notion of homotopy of morphisms of short complexes.
 
 -/
 
@@ -158,7 +157,7 @@ lemma cyclesMap_add : cyclesMap (φ + φ') = cyclesMap φ + cyclesMap φ' :=
 
 @[simp]
 lemma leftHomologyMap_sub : leftHomologyMap (φ - φ') = leftHomologyMap φ - leftHomologyMap φ' :=
-  leftHomologyMap'_sub  _ _
+  leftHomologyMap'_sub _ _
 
 @[simp]
 lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
@@ -269,7 +268,7 @@ lemma opcyclesMap_add : opcyclesMap (φ + φ') = opcyclesMap φ + opcyclesMap φ
 @[simp]
 lemma rightHomologyMap_sub :
     rightHomologyMap (φ - φ') = rightHomologyMap φ - rightHomologyMap φ' :=
-  rightHomologyMap'_sub  _ _
+  rightHomologyMap'_sub _ _
 
 @[simp]
 lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ' :=
@@ -342,7 +341,7 @@ lemma homologyMap_add : homologyMap (φ + φ')  = homologyMap φ + homologyMap �
 
 @[simp]
 lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ' :=
-  homologyMap'_sub  _ _
+  homologyMap'_sub _ _
 
 end
 
@@ -353,7 +352,7 @@ end Homology
 
 section Homotopy
 
-variable (φ₁ φ₂ : S₁ ⟶ S₂)
+variable (φ₁ φ₂ φ₃ φ₄ : S₁ ⟶ S₂)
 
 /-- A homotopy between two morphisms of short complexes `S₁ ⟶ S₂` consists of various
 maps and conditions which will be sufficient to show that they induce the same morphism
@@ -375,6 +374,189 @@ structure Homotopy where
   comm₃ : φ₁.τ₃ = h₃ + h₂ ≫ S₂.g + φ₂.τ₃ := by aesop_cat
 
 attribute [reassoc (attr := simp)] Homotopy.h₀_f Homotopy.g_h₃
+
+variable (S₁ S₂)
+
+/-- Constructor for null homotopic morphisms, see also `Homotopy.ofNullHomotopic`
+and `Homotopy.eq_add_nullHomotopic`. -/
+@[simps]
+def nullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    S₁ ⟶ S₂ where
+  τ₁ := h₀ + S₁.f ≫ h₁
+  τ₂ := h₁ ≫ S₂.f + S₁.g ≫ h₂
+  τ₃ := h₂ ≫ S₂.g + h₃
+
+namespace Homotopy
+
+attribute [local simp] neg_comp
+
+variable {S₁ S₂ φ₁ φ₂ φ₃ φ₄}
+
+/-- The obvious homotopy between two equal morphisms of short complexes. -/
+@[simps]
+def ofEq (h : φ₁ = φ₂) : Homotopy φ₁ φ₂ where
+  h₀ := 0
+  h₁ := 0
+  h₂ := 0
+  h₃ := 0
+
+/-- The obvious homotopy between a morphism of short complexes and itself. -/
+@[simps!]
+def refl (φ : S₁ ⟶ S₂) : Homotopy φ φ := ofEq rfl
+
+/-- The symmetry of homotopy between morphisms of short complexes. -/
+@[simps]
+def symm (h : Homotopy φ₁ φ₂) : Homotopy φ₂ φ₁ where
+  h₀ := -h.h₀
+  h₁ := -h.h₁
+  h₂ := -h.h₂
+  h₃ := -h.h₃
+  comm₁ := by rw [h.comm₁, comp_neg]; abel
+  comm₂ := by rw [h.comm₂, comp_neg, neg_comp]; abel
+  comm₃ := by rw [h.comm₃, neg_comp]; abel
+
+/-- If two maps of short complexes are homotopic, their opposites also are. -/
+@[simps]
+def neg (h : Homotopy φ₁ φ₂) : Homotopy (-φ₁) (-φ₂) where
+  h₀ := -h.h₀
+  h₁ := -h.h₁
+  h₂ := -h.h₂
+  h₃ := -h.h₃
+  comm₁ := by rw [neg_τ₁, neg_τ₁, h.comm₁, neg_add_rev, comp_neg]; abel
+  comm₂ := by rw [neg_τ₂, neg_τ₂, h.comm₂, neg_add_rev, comp_neg, neg_comp]; abel
+  comm₃ := by rw [neg_τ₃, neg_τ₃, h.comm₃, neg_comp]; abel
+
+/-- The transitivity of homotopy between morphisms of short complexes. -/
+@[simps]
+def trans (h₁₂ : Homotopy φ₁ φ₂) (h₂₃ : Homotopy φ₂ φ₃) : Homotopy φ₁ φ₃ where
+  h₀ := h₁₂.h₀ + h₂₃.h₀
+  h₁ := h₁₂.h₁ + h₂₃.h₁
+  h₂ := h₁₂.h₂ + h₂₃.h₂
+  h₃ := h₁₂.h₃ + h₂₃.h₃
+  comm₁ := by rw [h₁₂.comm₁, h₂₃.comm₁, comp_add]; abel
+  comm₂ := by rw [h₁₂.comm₂, h₂₃.comm₂, comp_add, add_comp]; abel
+  comm₃ := by rw [h₁₂.comm₃, h₂₃.comm₃, add_comp]; abel
+
+/-- Homotopy between morphisms of short complexes is compatible withe addition. -/
+@[simps]
+def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ + φ₃) (φ₂ + φ₄) where
+  h₀ := h.h₀ + h'.h₀
+  h₁ := h.h₁ + h'.h₁
+  h₂ := h.h₂ + h'.h₂
+  h₃ := h.h₃ + h'.h₃
+  comm₁ := by rw [add_τ₁, add_τ₁, h.comm₁, h'.comm₁, comp_add]; abel
+  comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp]; abel
+  comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp]; abel
+
+/-- Homotopy between morphisms of short complexes is compatible withe substraction. -/
+@[simps]
+def sub (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ - φ₃) (φ₂ - φ₄) where
+  h₀ := h.h₀ - h'.h₀
+  h₁ := h.h₁ - h'.h₁
+  h₂ := h.h₂ - h'.h₂
+  h₃ := h.h₃ - h'.h₃
+  comm₁ := by rw [sub_τ₁, sub_τ₁, h.comm₁, h'.comm₁, comp_sub]; abel
+  comm₂ := by rw [sub_τ₂, sub_τ₂, h.comm₂, h'.comm₂, comp_sub, sub_comp]; abel
+  comm₃ := by rw [sub_τ₃, sub_τ₃, h.comm₃, h'.comm₃, sub_comp]; abel
+
+/-- Homotopy between morphisms of short complexes is compatible with precomposition. -/
+@[simps]
+def compLeft (h : Homotopy φ₁ φ₂) (ψ : S₃ ⟶ S₁) : Homotopy (ψ ≫ φ₁) (ψ ≫ φ₂) where
+  h₀ := ψ.τ₁ ≫ h.h₀
+  h₁ := ψ.τ₂ ≫ h.h₁
+  h₂ := ψ.τ₃ ≫ h.h₂
+  h₃ := ψ.τ₃ ≫ h.h₃
+  g_h₃ := by rw [← ψ.comm₂₃_assoc, h.g_h₃, comp_zero]
+  comm₁ := by rw [comp_τ₁, comp_τ₁, h.comm₁, comp_add, comp_add, add_left_inj, ψ.comm₁₂_assoc]
+  comm₂ := by rw [comp_τ₂, comp_τ₂, h.comm₂, comp_add, comp_add, assoc, ψ.comm₂₃_assoc]
+  comm₃ := by rw [comp_τ₃, comp_τ₃, h.comm₃, comp_add, comp_add, assoc]
+
+/-- Homotopy between morphisms of short complexes is compatible with postcomposition. -/
+@[simps]
+def compRight (h : Homotopy φ₁ φ₂) (ψ : S₂ ⟶ S₃) : Homotopy (φ₁ ≫ ψ) (φ₂ ≫ ψ) where
+  h₀ := h.h₀ ≫ ψ.τ₁
+  h₁ := h.h₁ ≫ ψ.τ₁
+  h₂ := h.h₂ ≫ ψ.τ₂
+  h₃ := h.h₃ ≫ ψ.τ₃
+  comm₁ := by rw [comp_τ₁, comp_τ₁, h.comm₁, add_comp, add_comp, assoc]
+  comm₂ := by rw [comp_τ₂, comp_τ₂, h.comm₂, add_comp, add_comp, assoc, assoc, assoc, ψ.comm₁₂]
+  comm₃ := by rw [comp_τ₃, comp_τ₃, h.comm₃, add_comp, add_comp, assoc, assoc, ψ.comm₂₃]
+
+/-- Homotopy between morphisms of short complexes is compatible with composition. -/
+@[simps!]
+def comp (h : Homotopy φ₁ φ₂) {ψ₁ ψ₂ : S₂ ⟶ S₃} (h' : Homotopy ψ₁ ψ₂) :
+    Homotopy (φ₁ ≫ ψ₁) (φ₂ ≫ ψ₂) :=
+  (h.compRight ψ₁).trans (h'.compLeft φ₂)
+
+/-- The homotopy between morphisms in `ShortComplex Cᵒᵖ` that is induced by a homotopy
+between morphisms in `ShortComplex C`. -/
+@[simps]
+def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
+  h₀ := h.h₃.op
+  h₁ := h.h₂.op
+  h₂ := h.h₁.op
+  h₃ := h.h₀.op
+  h₀_f := Quiver.Hom.unop_inj h.g_h₃
+  g_h₃ := Quiver.Hom.unop_inj h.h₀_f
+  comm₁ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₃]; abel)
+  comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂]; abel)
+  comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁]; abel)
+
+/-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
+between morphisms in `ShortComplex Cᵒᵖ`. -/
+@[simps]
+def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂}  (h : Homotopy φ₁ φ₂) :
+    Homotopy (unopMap φ₁) (unopMap φ₂) where
+  h₀ := h.h₃.unop
+  h₁ := h.h₂.unop
+  h₂ := h.h₁.unop
+  h₃ := h.h₀.unop
+  h₀_f := Quiver.Hom.op_inj h.g_h₃
+  g_h₃ := Quiver.Hom.op_inj h.h₀_f
+  comm₁ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₃]; abel)
+  comm₂ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₂]; abel)
+  comm₃ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₁]; abel)
+
+variable (φ₁ φ₂)
+
+/-- Equivalence expressing that two morphisms are homotopic iff
+their difference is homotopic to zero. -/
+@[simps]
+def equivSubZero : Homotopy φ₁ φ₂ ≃ Homotopy (φ₁ - φ₂) 0 where
+  toFun h := (h.sub (refl φ₂)).trans (ofEq (sub_self φ₂))
+  invFun h := ((ofEq (sub_add_cancel φ₁ φ₂).symm).trans
+    (h.add (refl φ₂))).trans (ofEq (zero_add φ₂))
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+variable {φ₁ φ₂}
+
+lemma eq_add_nullHomotopic (h : Homotopy φ₁ φ₂) :
+    φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
+  ext
+  · dsimp; rw [h.comm₁]; abel
+  · dsimp; rw [h.comm₂]; abel
+  · dsimp; rw [h.comm₃]; abel
+
+variable (S₁ S₂)
+
+/-- A morphism constructed with `nullHomotopic` is homotopic to zero. -/
+@[simps]
+def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+  Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
+  h₀ := h₀
+  h₁ := h₁
+  h₂ := h₂
+  h₃ := h₃
+  h₀_f := h₀_f
+  g_h₃ := g_h₃
+  comm₁ := by rw [nullHomotopic_τ₁, zero_τ₁, add_zero]; abel
+  comm₂ := by rw [nullHomotopic_τ₂, zero_τ₂, add_zero]; abel
+  comm₃ := by rw [nullHomotopic_τ₃, zero_τ₃, add_zero]; abel
+
+end Homotopy
 
 end Homotopy
 

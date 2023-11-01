@@ -376,7 +376,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
       simpa [IsBot] using not_bot
     obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
       contrapose! h'
-      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
+      exact ⟨l, l_lt, h'⟩
     have B : F.liminf f ≤ f m := by
       apply liminf_le_of_frequently_le _ _
       · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
