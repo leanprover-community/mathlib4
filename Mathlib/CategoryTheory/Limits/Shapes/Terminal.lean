@@ -728,10 +728,8 @@ def colimitOfInitial (F : J ⥤ C) [HasInitial J] [∀ (i j : J) (f : i ⟶ j), 
 
 /-- If `j` is initial in the index category, then the map `limit.π F j` is an isomorphism.
 -/
-theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) :
-    haveI := IsInitial.hasInitial I
+theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit F] :
     IsIso (limit.π F j) :=
-  haveI := IsInitial.hasInitial I
   ⟨⟨limit.lift _ (coneOfDiagramInitial I F), ⟨by ext; simp, by simp⟩⟩⟩
 #align category_theory.limits.is_iso_π_of_is_initial CategoryTheory.Limits.isIso_π_of_isInitial
 
@@ -751,10 +749,8 @@ instance isIso_π_terminal [HasTerminal J] (F : J ⥤ C) [∀ (i j : J) (f : i �
 
 /-- If `j` is terminal in the index category, then the map `colimit.ι F j` is an isomorphism.
 -/
-theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) :
-    haveI := IsTerminal.hasTerminal I
+theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColimit F] :
     IsIso (colimit.ι F j) :=
-  haveI := IsTerminal.hasTerminal I
   ⟨⟨colimit.desc _ (coconeOfDiagramTerminal I F), ⟨by simp, by ext; simp⟩⟩⟩
 #align category_theory.limits.is_iso_ι_of_is_terminal CategoryTheory.Limits.isIso_ι_of_isTerminal
 
