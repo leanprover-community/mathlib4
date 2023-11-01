@@ -526,8 +526,8 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegularWRT.weaklyRegular_of_finite
 
-/-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from inside
-by closed sets. -/
+/-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
+inside by closed sets. -/
 theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetrizableSpace X]
     [MeasurableSpace X] (μ : Measure X) : InnerRegularWRT μ IsClosed IsOpen := by
   let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
@@ -831,8 +831,8 @@ theorem restrict_of_measure_ne_top [BorelSpace α] [WeaklyRegular μ] {A : Set �
 -- see Note [lower instance priority]
 /-- Any finite measure on a metrizable space (or even a pseudo metrizable space)
 is weakly regular. -/
-instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type*} [TopologicalSpace X]
-    [PseudoMetrizableSpace X] [MeasurableSpace X] [BorelSpace X]
+instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type*}
+    [TopologicalSpace X] [PseudoMetrizableSpace X] [MeasurableSpace X] [BorelSpace X]
     (μ : Measure X) [IsFiniteMeasure μ] :
     WeaklyRegular μ :=
   (InnerRegularWRT.of_pseudoMetrizableSpace μ).weaklyRegular_of_finite μ

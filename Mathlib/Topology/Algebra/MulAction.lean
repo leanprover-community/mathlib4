@@ -150,7 +150,6 @@ lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsComp
 lemma smul_set_closure_subset (K : Set M) (L : Set X) :
     closure K • closure L ⊆ closure (K • L) := by
   rintro - ⟨x, y, hx, hy, rfl⟩
-  dsimp
   apply mem_closure_iff_nhds.2 (fun u hu ↦ ?_)
   have A : (fun p ↦ p.fst • p.snd) ⁻¹' u ∈ 𝓝 (x, y) :=
     (continuous_smul.continuousAt (x := (x, y))).preimage_mem_nhds hu

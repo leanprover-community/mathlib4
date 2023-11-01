@@ -1467,55 +1467,55 @@ theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set 
   rfl
 
 @[to_additive]
-lemma subset_mul_set_closure_one (s : Set G) : s ⊆ s *(closure {1} : Set G) := by
+lemma subset_mul_closure_one (s : Set G) : s ⊆ s * (closure {1} : Set G) := by
   have : s ⊆ s * ({1} : Set G) := by simpa using Subset.rfl
   exact this.trans (smul_subset_smul_left subset_closure)
 
 @[to_additive]
-lemma IsCompact.mul_set_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
+lemma IsCompact.mul_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
     K * (closure {1} : Set G) = closure K := by
   apply Subset.antisymm ?_ ?_
   · calc
-    K • (closure {1} : Set G) ⊆ closure K • (closure {1} : Set G) :=
+    K * (closure {1} : Set G) ⊆ closure K * (closure {1} : Set G) :=
       smul_subset_smul_right subset_closure
-    _ ⊆ closure (K • ({1} : Set G)) := smul_set_closure_subset _ _
+    _ ⊆ closure (K * ({1} : Set G)) := smul_set_closure_subset _ _
     _ = closure K := by simp
   · have : IsClosed (K * (closure {1} : Set G)) :=
       IsClosed.smul_left_of_isCompact isClosed_closure hK
     rw [IsClosed.closure_subset_iff this]
-    exact subset_mul_set_closure_one K
+    exact subset_mul_closure_one K
 
 @[to_additive]
-lemma IsClosed.mul_set_closure_one_eq {F : Set G} (hF : IsClosed F) :
+lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
     F * (closure {1} : Set G) = F := by
-  refine Subset.antisymm ?_ (subset_mul_set_closure_one F)
+  refine Subset.antisymm ?_ (subset_mul_closure_one F)
   calc
-  F • (closure {1} : Set G) = closure F • closure ({1} : Set G) := by rw [hF.closure_eq]
-  _ ⊆ closure (F • ({1} : Set G)) := smul_set_closure_subset _ _
+  F * (closure {1} : Set G) = closure F * closure ({1} : Set G) := by rw [hF.closure_eq]
+  _ ⊆ closure (F * ({1} : Set G)) := smul_set_closure_subset _ _
   _ = F := by simp [hF.closure_eq]
 
 @[to_additive]
-lemma compl_mul_set_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :
+lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :
     tᶜ * (closure {1} : Set G) = tᶜ := by
-  refine Subset.antisymm ?_ (subset_mul_set_closure_one tᶜ)
+  refine Subset.antisymm ?_ (subset_mul_closure_one tᶜ)
   rintro - ⟨x, g, hx, hg, rfl⟩
   by_contra H
   have : x ∈ t * (closure {1} : Set G) := by
     rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
-    simp only [mem_compl_iff, not_not] at H
+    simp only [smul_eq_mul, mem_compl_iff, not_not] at H
     exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
   rw [ht] at this
   exact hx this
 
 @[to_additive]
-lemma compl_mul_set_closure_one_eq_iff {t : Set G} :
+lemma compl_mul_closure_one_eq_iff {t : Set G} :
     tᶜ * (closure {1} : Set G) = tᶜ ↔ t * (closure {1} : Set G) = t :=
-  ⟨fun h ↦ by simpa using compl_mul_set_closure_one_eq h, fun h ↦ compl_mul_set_closure_one_eq h⟩
+  ⟨fun h ↦ by simpa using compl_mul_closure_one_eq h, fun h ↦ compl_mul_closure_one_eq h⟩
 
 @[to_additive]
-lemma IsOpen.mul_set_closure_one_eq {U : Set G} (hU : IsOpen U) :
+lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U * (closure {1} : Set G) = U :=
-  compl_mul_set_closure_one_eq_iff.1 (hU.isClosed_compl.mul_set_closure_one_eq)
+  compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
 
 end TopologicalGroup
 
@@ -1685,7 +1685,7 @@ theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : 
   · intro x hx
     have := tendsto_mul (show U ∈ 𝓝 (x * 1) by simpa using hU.mem_nhds (hKU hx))
     rw [nhds_prod_eq, mem_map, mem_prod_iff] at this
-    rcases this with ⟨t, ht, s, hs, h⟩
+    rcases this with ⟨t, ht, s, hs, h⟩Z
     rw [← image_subset_iff, image_mul_prod] at h
     exact ⟨t, mem_nhdsWithin_of_mem_nhds ht, s, hs, h⟩
 #align compact_open_separated_mul_right compact_open_separated_mul_right
@@ -1797,9 +1797,11 @@ theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsC
   refine ⟨L, hL, LK.trans (inter_subset_right _ _), ?_⟩
   exact (hK.smul (y * x⁻¹)).of_isClosed_subset L_closed (LK.trans (inter_subset_left _ _))
 
+-- The next instance creates a loop between weakly locally compact space and locally compact space
+-- for topological groups. Hopefully, it shouldn't create problems.
 /-- A topological group which is weakly locally compact is automatically locally compact. -/
 @[to_additive]
-lemma WeaklyLocallyCompactSpace.locallyCompactSpace_of_group [WeaklyLocallyCompactSpace G] :
+instance (priority := 90) instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
     LocallyCompactSpace G := by
   rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
   exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
@@ -1870,26 +1872,6 @@ instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N
   rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
   exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
     s_comp.image C⟩
-
-end
-
-section
-
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [WeaklyLocallyCompactSpace G]
-
-@[to_additive]
-lemma isCompact_closure_one : IsCompact (closure {1} : Set G) := by
-  rcases exists_isCompact_isClosed_nhds_one G with ⟨K, K_comp, K_closed, K_mem⟩
-  apply K_comp.of_isClosed_subset isClosed_closure
-  rw [← IsClosed.closure_eq K_closed]
-  apply closure_mono
-  simpa using mem_of_mem_nhds K_mem
-
-@[to_additive]
-protected lemma IsCompact.closure_of_group
-    {K : Set G} (hK : IsCompact K) : IsCompact (closure K) := by
-  rw [← hK.mul_set_closure_one_eq_closure, ← image2_mul, ← image_uncurry_prod]
-  exact IsCompact.image (hK.prod isCompact_closure_one) continuous_smul
 
 end
 
