@@ -127,9 +127,10 @@ theorem center_subset_centralizer [Mul M] (S : Set M) : Set.center M ⊆ S.centr
 
 @[to_additive (attr := simp) addCentralizer_eq_top_iff_subset]
 theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
-    centralizer s = Set.univ ↔ s ⊆ center M := eq_top_iff.trans <|
-    ⟨ (fun h _ hx => Semigroup.mem_center_iff.mpr (fun _ => by rw [(h trivial _ hx)])),
-    (fun h _ _ _ hm => (h hm).comm _)⟩
+    centralizer s = Set.univ ↔ s ⊆ center M :=
+  eq_top_iff.trans <| ⟨
+    fun h _ hx => Semigroup.mem_center_iff.mpr fun _ => by rw [h trivial _ hx],
+    fun h _ _ _ hm => (h hm).comm _⟩
 #align set.centralizer_eq_top_iff_subset Set.centralizer_eq_top_iff_subset
 #align set.add_centralizer_eq_top_iff_subset Set.addCentralizer_eq_top_iff_subset
 
