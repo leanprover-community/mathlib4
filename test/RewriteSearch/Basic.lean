@@ -40,3 +40,23 @@ example {a b c : Int} : a + b = c + b + (a - c) := by
 #guard_msgs in
 open Mathlib.Tactic.RewriteSearch in
 #eval ("([5, 3], 4 + (2 * 1))".splitOn.map splitDelimiters).join
+
+-- Function that always constructs `[0]`. Used in the following example.
+def makeSingleton : Nat → List Nat
+  | 0 => [0]
+  | b + 1 => makeSingleton b
+
+-- We prove this theorem here so that the rw_search in the following
+-- example succeeds. (It apparently can't find `ih` yet.)
+theorem makeSingleton_def (n : Nat) : makeSingleton n = [0] := by
+  induction' n with n' ih
+  · simp
+  · simp [makeSingleton, ih]
+
+/-- info: Try this: rw [← makeSingleton_def n'] -/
+#guard_msgs in
+example (n : Nat) : makeSingleton n = [0] := by
+  induction' n with n' ih
+  · simp
+  · -- At one point, this failed with: unknown free variable '_uniq.62770'
+    rw_search
