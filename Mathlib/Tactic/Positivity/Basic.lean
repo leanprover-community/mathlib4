@@ -467,7 +467,7 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
 @[positivity Rat.cast _]
 def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
   let _rα : Q(RatCast $α) ← synthInstanceQ (q(RatCast $α))
-  let ~q(Rat.cast ($a : ℚ)) := e | throwError "failed to match Rat.cast"
+  let ~q(Rat.cast ($a : ℚ)) := e | throwError "not Rat.cast"
   let zα' : Q(Zero ℚ) := q(inferInstance)
   let pα' : Q(PartialOrder ℚ) := q(inferInstance)
   match ← core zα' pα' a with
