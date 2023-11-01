@@ -469,6 +469,39 @@ end Gluing
 
 end ContinuousMap
 
+namespace QuotientMap
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : C(X, Y)} (hf : QuotientMap f) (g : C(X, Z)) (h : ∀ a b, f a = f b → g a = g b)
+
+/-- The homeomorphism from the quotient of a quotient map to its codomain. -/
+noncomputable
+def homeomorph : Quotient (Setoid.ker f) ≃ₜ Y where
+  toEquiv := Setoid.quotientKerEquivOfSurjective _ hf.surjective
+  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr hf.continuous
+  continuous_invFun := by
+    rw [hf.continuous_iff]
+    convert continuous_quotient_mk'
+    ext
+    simp only [Equiv.invFun_as_coe, Function.comp_apply,
+      (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
+    rfl
+
+/-- Descend a continuous map which is constant on the fibres along a quotient map. -/
+noncomputable
+def descend : C(Y, Z) where
+  toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h _ _ hab)) :
+    Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
+  continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
+
+/-- The obvious triangle induced by `QuotientMap.descend` commutes. -/
+theorem descend_comp : (hf.descend g h) ∘ f = g := by
+  ext
+  simpa [descend, homeomorph, Setoid.quotientKerEquivOfSurjective,
+    Setoid.quotientKerEquivOfRightInverse] using h _ _ (Function.rightInverse_surjInv _ _)
+
+end QuotientMap
+
 namespace Homeomorph
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
