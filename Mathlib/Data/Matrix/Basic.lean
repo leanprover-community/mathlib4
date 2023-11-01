@@ -507,11 +507,11 @@ theorem diagonal_natCast' [Zero α] [NatCast α] (m : ℕ) : diagonal ((m : n �
 
 -- See note [no_index around OfNat.ofNat]
 theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
-  diagonal (fun _ : n => no_index (OfNat.ofNat m : α)) = OfNat.ofNat m := rfl
+    diagonal (fun _ : n => no_index (OfNat.ofNat m : α)) = OfNat.ofNat m := rfl
 
 -- See note [no_index around OfNat.ofNat]
 theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
-  diagonal (no_index (OfNat.ofNat m : n → α)) = OfNat.ofNat m := rfl
+    diagonal (no_index (OfNat.ofNat m : n → α)) = OfNat.ofNat m := rfl
 
 instance [Zero α] [IntCast α] : IntCast (Matrix n n α) where
   intCast m := diagonal fun _ => m
