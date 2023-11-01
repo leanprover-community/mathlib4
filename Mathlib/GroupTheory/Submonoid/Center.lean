@@ -23,16 +23,16 @@ other files.
 
 namespace Submonoid
 
-section
+section MulOneClass
 
-variable (M : Type*)
+variable (M : Type*) [MulOneClass M]
 
 /-- The center of a multiplication with unit `M` is the set of elements that commute with everything
 in `M` -/
 @[to_additive
       "The center of a addition with zero `M` is the set of elements that commute with everything in
       `M`"]
-def center [MulOneClass M] : Submonoid M where
+def center : Submonoid M where
   carrier := Set.center M
   one_mem' := Set.one_mem_center M
   mul_mem' := Set.mul_mem_center
@@ -40,15 +40,19 @@ def center [MulOneClass M] : Submonoid M where
 #align add_submonoid.center AddSubmonoid.center
 
 @[to_additive]
-theorem coe_center [MulOneClass M] : ↑(center M) = Set.center M :=
+theorem coe_center : ↑(center M) = Set.center M :=
   rfl
 #align submonoid.coe_center Submonoid.coe_center
 #align add_submonoid.coe_center AddSubmonoid.coe_center
 
 @[to_additive (attr := simp) AddSubmonoid.center_toAddSubsemigroup]
-theorem center_toSubsemigroup [MulOneClass M] : (center M).toSubsemigroup = Subsemigroup.center M :=
+theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
+
+end MulOneClass
+
+section Monoid
 
 variable {M} [Monoid M]
 
@@ -85,7 +89,7 @@ instance center.smulCommClass_right : SMulCommClass M (center M) M :=
 
 example : SMulCommClass (center M) (center M) M := by infer_instance
 
-end
+end Monoid
 
 section
 

@@ -716,23 +716,29 @@ theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 #align subsemiring.eq_top_iff' Subsemiring.eq_top_iff'
 
-section Center
+section NonAssocSemiring
+
+variable (R) [NonAssocSemiring R]
 
 /-- The center of a non-associative semiring `R` is the set of elements that commute and associate
 with everything in `R` -/
-def center (R) [NonAssocSemiring R] : Subsemiring R :=
+def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
     one_mem' := Set.one_mem_center R }
 #align subsemiring.center Subsemiring.center
 
-theorem coe_center (R) [NonAssocSemiring R] : ↑(center R) = Set.center R :=
+theorem coe_center : ↑(center R) = Set.center R :=
   rfl
 #align subsemiring.coe_center Subsemiring.coe_center
 
 @[simp]
-theorem center_toSubmonoid (R) [NonAssocSemiring R] : (center R).toSubmonoid = Submonoid.center R :=
+theorem center_toSubmonoid : (center R).toSubmonoid = Submonoid.center R :=
   rfl
 #align subsemiring.center_to_submonoid Subsemiring.center_toSubmonoid
+
+end NonAssocSemiring
+
+section Semiring
 
 theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
@@ -751,7 +757,7 @@ theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
 instance commSemiring {R} [Semiring R] : CommSemiring (center R) :=
   { Submonoid.center.commMonoid, (center R).toSemiring with }
 
-end Center
+end Semiring
 
 section Centralizer
 

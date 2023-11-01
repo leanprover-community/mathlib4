@@ -467,25 +467,31 @@ theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ 
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 #align non_unital_subsemiring.eq_top_iff' NonUnitalSubsemiring.eq_top_iff'
 
-section Center
+section NonUnitalNonAssocSemiring
+
+variable (R) [NonUnitalNonAssocSemiring R]
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
-def center (R) [NonUnitalNonAssocSemiring R] : NonUnitalSubsemiring R :=
+def center : NonUnitalSubsemiring R :=
   { Subsemigroup.center R with
     zero_mem' := Set.zero_mem_center R
     add_mem' := Set.add_mem_center }
 #align non_unital_subsemiring.center NonUnitalSubsemiring.center
 
-theorem coe_center (R) [NonUnitalNonAssocSemiring R] : ↑(center R) = Set.center R :=
+theorem coe_center : ↑(center R) = Set.center R :=
   rfl
 #align non_unital_subsemiring.coe_center NonUnitalSubsemiring.coe_center
 
 @[simp]
-theorem center_toSubsemigroup (R) [NonUnitalNonAssocSemiring R] :
+theorem center_toSubsemigroup :
     (center R).toSubsemigroup = Subsemigroup.center R :=
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
+
+end NonUnitalNonAssocSemiring
+
+section NonUnitalSemiring
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
@@ -507,7 +513,7 @@ instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
 
-end Center
+end NonUnitalSemiring
 
 section Centralizer
 
