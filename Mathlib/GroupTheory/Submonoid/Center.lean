@@ -50,6 +50,10 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
   rfl
 #align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
 
+/-- The center of a multiplication with unit is commutative. -/
+instance center.commMonoid : CommMonoid (center M) :=
+  { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
+
 end MulOneClass
 
 section Monoid
@@ -69,10 +73,7 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 #align submonoid.decidable_mem_center Submonoid.decidableMemCenter
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
-/-- The center of a monoid is commutative. -/
-instance center.commMonoid : CommMonoid (center M) :=
-  { (center M).toMonoid with
-    mul_comm := fun a _ => Subtype.ext <| a.prop.comm _ }
+
 
 /-- The center of a monoid acts commutatively on that monoid. -/
 instance center.smulCommClass_left : SMulCommClass (center M) M M where

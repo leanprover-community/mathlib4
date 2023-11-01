@@ -489,6 +489,12 @@ theorem center_toSubsemigroup :
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
+/-- The center is commutative and associative. -/
+instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
+    NonUnitalCommSemiring (center R) :=
+  { Subsemigroup.center.commSemigroup,
+    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
+
 end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
@@ -506,12 +512,6 @@ instance decidableMemCenter {R} [NonUnitalSemiring R] [DecidableEq R] [Fintype R
 theorem center_eq_top (R) [NonUnitalCommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 #align non_unital_subsemiring.center_eq_top NonUnitalSubsemiring.center_eq_top
-
-/-- The center is commutative. -/
-instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
-    NonUnitalCommSemiring (center R) :=
-  { Subsemigroup.center.commSemigroup,
-    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) with }
 
 end NonUnitalSemiring
 
