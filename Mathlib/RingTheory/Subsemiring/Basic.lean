@@ -736,6 +736,10 @@ theorem center_toSubmonoid : (center R).toSubmonoid = Submonoid.center R :=
   rfl
 #align subsemiring.center_to_submonoid Subsemiring.center_toSubmonoid
 
+/-- The center is commutative and associative. -/
+instance commSemiring : CommSemiring (center R) :=
+  { Submonoid.center.commMonoid, (center R).toNonAssocSemiring with }
+
 end NonAssocSemiring
 
 section Semiring
@@ -753,9 +757,6 @@ theorem center_eq_top (R) [CommSemiring R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 #align subsemiring.center_eq_top Subsemiring.center_eq_top
 
-/-- The center is commutative. -/
-instance commSemiring {R} [Semiring R] : CommSemiring (center R) :=
-  { Submonoid.center.commMonoid, (center R).toSemiring with }
 
 end Semiring
 
