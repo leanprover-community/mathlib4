@@ -309,7 +309,8 @@ theorem mem_center_iff [Semigroup M] {z : M} : z ∈ center M ↔ ∀ g, g * z =
 #align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
 
 @[to_additive]
-instance decidableMemCenter [Semigroup M] (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
+instance decidableMemCenter [Semigroup M] (a) [Decidable <| ∀ b : M, b * a = a * b] :
+    Decidable (a ∈ center M) :=
   decidable_of_iff' _ Semigroup.mem_center_iff
 #align subsemigroup.decidable_mem_center Subsemigroup.decidableMemCenter
 #align add_subsemigroup.decidable_mem_center AddSubsemigroup.decidableMemCenter
