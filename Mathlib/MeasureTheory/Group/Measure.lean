@@ -717,16 +717,16 @@ lemma _root_.MeasurableSet.mul_set_closure_one_eq {s : Set G} (hs : MeasurableSe
     s * (closure {1} : Set G) = s := by
   apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) ?_ ?_ ?_ hs
   · intro U hU
-    exact hU.mul_set_closure_one_eq
+    exact hU.mul_closure_one_eq
   · rintro t - ht
-    exact compl_mul_set_closure_one_eq_iff.2 ht
+    exact compl_mul_closure_one_eq_iff.2 ht
   · rintro f - - h''f
     simp only [iUnion_smul, h''f]
 
 @[to_additive (attr := simp)]
 lemma measure_mul_set_closure_one (s : Set G) (μ : Measure G) :
     μ (s * (closure {1} : Set G)) = μ s := by
-  apply le_antisymm ?_ (measure_mono (subset_mul_set_closure_one s))
+  apply le_antisymm ?_ (measure_mono (subset_mul_closure_one s))
   conv_rhs => rw [measure_eq_iInf]
   simp only [le_iInf_iff]
   intro t kt t_meas
@@ -737,7 +737,7 @@ lemma measure_mul_set_closure_one (s : Set G) (μ : Measure G) :
 @[to_additive]
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
     μ (closure k) = μ k := by
-  rw [← hk.mul_set_closure_one_eq_closure, measure_mul_set_closure_one]
+  rw [← hk.mul_closure_one_eq_closure, measure_mul_set_closure_one]
 
 end TopologicalGroup
 
