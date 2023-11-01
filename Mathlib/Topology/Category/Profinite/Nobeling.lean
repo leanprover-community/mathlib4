@@ -697,7 +697,7 @@ end Span
 
 ## Relating elements of the well-order `I` with ordinals
 
-We choose a well-ordering on `I`. This amounts to regarding `I` as an ordinal, and as such it is
+We choose a well-ordering on `I`. This amounts to regarding `I` as an ordinal, and as such it
 can be regarded as the set of all strictly smaller ordinals, allowing to apply ordinal induction.
 
 ### Main definitions
@@ -773,7 +773,7 @@ end Ordinal
 
 ## The zero case of the induction
 
-In this case, we have `contained C 0` which means that `C` is eiter empty or a singleton.
+In this case, we have `contained C 0` which means that `C` is either empty or a singleton.
 -/
 section Zero
 
@@ -866,7 +866,7 @@ precomposition with the projections defined in the section `Projections`.
 ### Main result
 
 * We prove that `πs` and `πs'` interact well with `Products.eval` and the main application is the
-  theorem `isGood_mono` which says that the property being good is "monotone" on ordinals.
+  theorem `isGood_mono` which says that the property `isGood` is "monotone" on ordinals.
 -/
 section Maps
 
