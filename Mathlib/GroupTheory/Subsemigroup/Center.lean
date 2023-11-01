@@ -67,12 +67,10 @@ variable {a b c : M} [Mul M]
 protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) :=
   by simp only [h.comm, h.right_assoc]
 
-
 -- c.f. Commute.right_comm
 @[to_additive]
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b :=
   by simp only [h.right_assoc, h.mid_assoc, h.comm]
-
 
 end IsMulCentral
 
