@@ -388,9 +388,7 @@ theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ
 
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=
-  hf.mono <|
-    eventually_of_forall fun x => by
-      simp [abs_le, neg_le, neg_le_abs_self, abs_eq_max_neg, le_total]
+  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le_self _
 #align measure_theory.has_finite_integral.min_zero MeasureTheory.HasFiniteIntegral.min_zero
 
 end PosPart
@@ -407,7 +405,11 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
       refine' lintegral_mono _
       intro i
       -- After leanprover/lean4#2734, we need to do beta reduction `exact_mod_cast`
+<<<<<<< HEAD
       dsimp
+=======
+      beta_reduce
+>>>>>>> bump/v4.4.0
       exact_mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
       rw [lintegral_const_mul']
@@ -673,7 +675,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
       lintegral_mono fun a => by
         -- After leanprover/lean4#2734, we need to do beta reduction before `exact_mod_cast`
-        dsimp
+        beta_reduce
         exact_mod_cast nnnorm_add_le _ _
     _ = _ := (lintegral_nnnorm_add_left hf.aestronglyMeasurable _)
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩

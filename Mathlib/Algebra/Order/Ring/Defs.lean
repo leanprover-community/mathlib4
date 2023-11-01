@@ -1097,32 +1097,6 @@ theorem mul_self_nonneg (a : α) : 0 ≤ a * a :=
   (le_total 0 a).elim (fun h => mul_nonneg h h) fun h => mul_nonneg_of_nonpos_of_nonpos h h
 #align mul_self_nonneg mul_self_nonneg
 
-@[simp]
-theorem neg_le_self_iff : -a ≤ a ↔ 0 ≤ a := by
-  simp [neg_le_iff_add_nonneg, ← two_mul, mul_nonneg_iff, zero_le_one, (zero_lt_two' α).not_le]
-#align neg_le_self_iff neg_le_self_iff
-
-@[simp]
-theorem neg_lt_self_iff : -a < a ↔ 0 < a := by
-  simp [neg_lt_iff_pos_add, ← two_mul, mul_pos_iff, zero_lt_one, (zero_lt_two' α).not_lt]
-#align neg_lt_self_iff neg_lt_self_iff
-
-@[simp]
-theorem le_neg_self_iff : a ≤ -a ↔ a ≤ 0 :=
-  calc
-    a ≤ -a ↔ - -a ≤ -a := by rw [neg_neg]
-    _ ↔ 0 ≤ -a := neg_le_self_iff
-    _ ↔ a ≤ 0 := neg_nonneg
-#align le_neg_self_iff le_neg_self_iff
-
-@[simp]
-theorem lt_neg_self_iff : a < -a ↔ a < 0 :=
-  calc
-    a < -a ↔ - -a < -a := by rw [neg_neg]
-    _ ↔ 0 < -a := neg_lt_self_iff
-    _ ↔ a < 0 := neg_pos
-#align lt_neg_self_iff lt_neg_self_iff
-
 theorem neg_one_lt_zero : -1 < (0 : α) :=
   neg_lt_zero.2 zero_lt_one
 #align neg_one_lt_zero neg_one_lt_zero
