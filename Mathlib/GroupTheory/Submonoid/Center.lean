@@ -56,7 +56,7 @@ variable {M}
 
 This is not an instance as it forms an non-defeq diamond with `Submonoid.toMonoid` in the `npow`
 field. -/
-@[to_additive]
+@[to_additive "The center of an addition with zero is commutative and associative."]
 abbrev center.commMonoid' : CommMonoid (center M) :=
   { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
 

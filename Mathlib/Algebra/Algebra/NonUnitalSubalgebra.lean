@@ -967,6 +967,9 @@ def center : NonUnitalSubalgebra R A :=
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
+/--
+The center of a non-unital algebra is a non-unital commutative semiring
+-/
 abbrev center.instNonUnitalCommSemiring' : NonUnitalCommSemiring (center R A) :=
   NonUnitalSubsemiring.center.instNonUnitalCommSemiring' _
 
