@@ -153,6 +153,11 @@ example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 := by po
 example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 := by positivity
 example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
 
+-- Test that the positivity extension for `a • b` can handle universe polymorphism.
+example {R M : Type*} [OrderedSemiring R] [StrictOrderedSemiring M]
+    [SMulWithZero R M] [OrderedSMul R M] {a : R} {b : M} (ha : 0 < a) (hb : 0 < b) :
+    0 < a • b := by positivity
+
 example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < SMul.smul a b := by positivity
 example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ SMul.smul a b := by positivity
 example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ SMul.smul a b := by positivity
