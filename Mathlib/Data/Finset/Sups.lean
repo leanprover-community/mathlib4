@@ -32,8 +32,8 @@ We define the following notation in locale `FinsetFamily`:
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
 
-#noalign finset.decidable_pred_mem_upper_closure
-#noalign finset.decidable_pred_mem_lower_closure
+#align finset.decidable_pred_mem_upper_closure instDecidablePredMemUpperClosure
+#align finset.decidable_pred_mem_lower_closure instDecidablePredMemLowerClosure
 
 open Function
 
