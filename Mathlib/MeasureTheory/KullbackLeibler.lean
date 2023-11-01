@@ -74,13 +74,51 @@ section x_log_x
 
 namespace Real
 
+lemma tendsto_log_mul_nhds_zero_left :
+    Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := by
+  have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
+  simp only [rpow_one] at h
+  have h_eq : ∀ x ∈ Set.Iio 0, (- (fun x ↦ log x * x) ∘ (fun x ↦ |x|)) x = log x * x := by
+    intro x hx
+    simp only [Set.mem_Iio] at hx
+    simp only [Pi.neg_apply, Function.comp_apply, log_abs]
+    rw [abs_of_nonpos hx.le]
+    simp only [mul_neg, neg_neg]
+  refine tendsto_nhdsWithin_congr h_eq ?_
+  rw [← neg_zero]
+  refine Filter.Tendsto.neg ?_
+  simp only [neg_zero]
+  refine h.comp ?_
+  refine tendsto_abs_nhdsWithin_zero.mono_left ?_
+  refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
+  simp only [Set.mem_Iio] at hx
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]
+
 lemma continuous_id_mul_log : Continuous (fun x ↦ x * log x) := by
   rw [continuous_iff_continuousAt]
   intro x
   by_cases hx : x = 0
   swap; · exact (continuous_id'.continuousAt).mul (continuousAt_log hx)
   rw [hx]
-  sorry
+  have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
+  simp only [rpow_one] at h
+  have h' : Filter.Tendsto (fun x ↦ log x * x) (𝓝[<] 0) (𝓝 0) := tendsto_log_mul_nhds_zero_left
+  rw [ContinuousAt, zero_mul]
+  suffices Filter.Tendsto (fun x ↦ log x * x) (𝓝 0) (𝓝 0) by
+    exact this.congr (fun x ↦ by rw [mul_comm])
+  nth_rewrite 1 [← nhdsWithin_univ]
+  have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by
+    ext x
+    simp only [Set.mem_univ, Set.Iio_union_Ioi, Set.union_singleton, Set.mem_compl_iff,
+      Set.mem_singleton_iff, not_true, Set.mem_insert_iff, true_iff]
+    exact em _
+  rw [this, nhdsWithin_union, nhdsWithin_union]
+  simp only [ge_iff_le, nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
+  refine ⟨⟨h', h⟩, ?_⟩
+  rw [Filter.tendsto_pure_left, mul_zero]
+  intro s hs
+  obtain ⟨t, hts, _, h_zero_mem⟩ := mem_nhds_iff.mp hs
+  exact hts h_zero_mem
 
 lemma differentiableOn_id_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
   differentiable_id'.differentiableOn.mul differentiableOn_log
@@ -210,12 +248,9 @@ lemma integrable_toReal_rnDeriv_mul {μ ν : Measure α} {f : α → ℝ} [Sigma
   simp only [snorm_one_eq_lintegral_nnnorm, nnnorm_mul, ENNReal.coe_mul]
   simp_rw [← ofReal_norm_eq_coe_nnnorm, norm_of_nonneg ENNReal.toReal_nonneg,
     ofReal_norm_eq_coe_nnnorm]
-  have h : ∀ᵐ x ∂ν, ENNReal.ofReal (μ.rnDeriv ν x).toReal = μ.rnDeriv ν x := by
-    filter_upwards [Measure.rnDeriv_ne_top μ ν] with x hx
-    rw [ENNReal.ofReal_toReal hx]
-  have h' : ∀ᵐ x ∂ν, ENNReal.ofReal (μ.rnDeriv ν x).toReal * ‖f x‖₊ = μ.rnDeriv ν x * ‖f x‖₊ := by
-    filter_upwards [h] with x hx using by rw [hx]
-  rw [lintegral_congr_ae h']
+  have h : ∀ᵐ x ∂ν, ENNReal.ofReal (μ.rnDeriv ν x).toReal * ‖f x‖₊ = μ.rnDeriv ν x * ‖f x‖₊ := by
+    filter_upwards [Measure.rnDeriv_ne_top μ ν] with x hx using by rw [ENNReal.ofReal_toReal hx]
+  rw [lintegral_congr_ae h]
   change ∫⁻ a, (μ.rnDeriv ν * (fun a ↦ (‖f a‖₊ : ℝ≥0∞))) a ∂ν < ⊤
   rw [← lintegral_withDensity_eq_lintegral_mul_non_measurable]
   · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
