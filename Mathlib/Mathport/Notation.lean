@@ -599,7 +599,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
 
 initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
 
-/-! scoped[ns] support -/
+/-! `scoped[ns]` support -/
 
 macro_rules
   | `($[$doc]? $(attr)? scoped[$ns] notation3 $(prec)? $(n)? $(prio)? $(pp)? $items* => $t) =>
