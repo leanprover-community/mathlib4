@@ -42,32 +42,20 @@ theorem summable_of_absolute_convergence_real {f : ℕ → ℝ} :
 /-! ### Powers -/
 
 
--- The conclusion here used to be:
--- `Tendsto (norm : 𝕜 → ℝ) (𝓝[≠] 0) (𝓝[>] 0)`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] 0`
 theorem tendsto_norm_zero' {𝕜 : Type*} [NormedAddCommGroup 𝕜] :
-    Tendsto (norm : 𝕜 → ℝ) (nhdsWithin 0 {0}ᶜ) (𝓝[>] 0) :=
+    Tendsto (norm : 𝕜 → ℝ) (𝓝[≠] 0) (𝓝[>] 0) :=
   tendsto_norm_zero.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff.2 hx
 #align tendsto_norm_zero' tendsto_norm_zero'
 
 namespace NormedField
 
--- The conclusion here used to be:
--- `Tendsto (fun x : 𝕜 ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] 0`
 theorem tendsto_norm_inverse_nhdsWithin_0_atTop {𝕜 : Type*} [NormedField 𝕜] :
-    Tendsto (fun x : 𝕜 ↦ ‖x⁻¹‖) (nhdsWithin 0 {0}ᶜ) atTop :=
+    Tendsto (fun x : 𝕜 ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   (tendsto_inv_zero_atTop.comp tendsto_norm_zero').congr fun x ↦ (norm_inv x).symm
 #align normed_field.tendsto_norm_inverse_nhds_within_0_at_top NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
 
--- The conclusion here used to be:
--- `Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] 0`
 theorem tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedField 𝕜] {m : ℤ} (hm : m < 0) :
-    Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (nhdsWithin 0 {0}ᶜ) atTop := by
+    Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   rcases neg_surjective m with ⟨m, rfl⟩
   rw [neg_lt_zero] at hm; lift m to ℕ using hm.le; rw [Int.coe_nat_pos] at hm
   simp only [norm_pow, zpow_neg, zpow_ofNat, ← inv_pow]
