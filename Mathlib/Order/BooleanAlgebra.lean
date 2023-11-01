@@ -794,13 +794,15 @@ instance : BooleanAlgebra Bool where
   top_le_sup_compl a := a.or_not_self.ge.trans_eq <| (Bool.max_eq_or _ _).symm
 
 @[simp]
-theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=
-  funext₂ Bool.max_eq_or -- TODO: replace with `rfl` after std4#329 is integrated into mathlib
+theorem Bool.sup_eq_bor : (· ⊔ ·) = or := by
+  fail_if_success rfl  -- TODO: replace with `rfl` after std4#329 is integrated into mathlib
+  exact funext₂ Bool.max_eq_or
 #align bool.sup_eq_bor Bool.sup_eq_bor
 
 @[simp]
-theorem Bool.inf_eq_band : (· ⊓ ·) = and :=
-  funext₂ Bool.min_eq_and -- TODO: replace with `rfl` after std4#329 is integrated into mathlib
+theorem Bool.inf_eq_band : (· ⊓ ·) = and := by
+  fail_if_success rfl  -- TODO: replace with `rfl` after std4#329 is integrated into mathlib
+  exact funext₂ Bool.min_eq_and
 #align bool.inf_eq_band Bool.inf_eq_band
 
 @[simp]
