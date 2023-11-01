@@ -28,7 +28,7 @@ open Polynomial BigOperators
 namespace Module
 /--
 Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
-Loosely speaking, `Module.AEval R M a` is the `R[X]`-module with element `m : M`,
+Loosely speaking, `Module.AEval R M a` is the `R[X]`-module with elements `m : M`,
 where the action of a polynomial $f$ is given by $f • m = f(a) • m$.
 
 More precisely, `Module.AEval R M a` has elements `Module.AEval.of R M a m` for `m : M`,
