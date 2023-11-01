@@ -206,14 +206,12 @@ end LogDifferentiable
 namespace Real
 
 /-- The function `x * log (1 + t / x)` tends to `t` at `+∞`. -/
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- I have replaced `(𝓝[≠] 0)` with `(nhdsWithin 0 {0}ᶜ)` as a workaround.
 theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
     Tendsto (fun x => x * log (1 + t / x)) atTop (𝓝 t) := by
-  have h₁ : Tendsto (fun h => h⁻¹ * log (1 + t * h)) (nhdsWithin 0 {0}ᶜ) (𝓝 t) := by
+  have h₁ : Tendsto (fun h => h⁻¹ * log (1 + t * h)) (𝓝[≠] 0) (𝓝 t) := by
     simpa [hasDerivAt_iff_tendsto_slope, slope_fun_def] using
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
-  have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (nhdsWithin 0 {0}ᶜ) :=
+  have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
     tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
   simpa only [(· ∘ ·), inv_inv] using h₁.comp h₂
 #align real.tendsto_mul_log_one_plus_div_at_top Real.tendsto_mul_log_one_plus_div_atTop
