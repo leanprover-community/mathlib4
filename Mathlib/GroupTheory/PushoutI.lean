@@ -142,6 +142,19 @@ theorem hom_ext_nonempty [hn : Nonempty ι]
       ext
       rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
+/-- The equivalence that is part of the universal property of the pushout. A hom out of
+the pushout is just a morphism out of all groups in the pushout that satsifies a commutativity
+condition. -/
+@[simps]
+def homEquiv :
+    (PushoutI φ →* K) ≃ { f : (Π i, G i →* K) × (H →* K) // ∀ i, (f.1 i).comp (φ i) = f.2 } :=
+  { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
+      fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
+    invFun := fun f => lift f.1.1 f.1.2 f.2,
+    left_inv := fun _ => hom_ext (by simp [FunLike.ext_iff])
+      (by simp [FunLike.ext_iff])
+    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [FunLike.ext_iff, Function.funext_iff] }
+
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
   CoprodI.lift of
