@@ -38,7 +38,7 @@ Foobars, barfoos
 
 open Real
 
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory
 
@@ -93,28 +93,23 @@ lemma deriv_id_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x 
 lemma deriv2_id_mul_log {x : ℝ} (hx : x ≠ 0) : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.comp.left_id,
     Function.comp_apply]
-  sorry
+  suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ x * log x) y = log y + 1 by
+    refine (Filter.EventuallyEq.deriv_eq this).trans ?_
+    rw [deriv_add_const, deriv_log x]
+  suffices ∀ᶠ y in (𝓝 x), y ≠ 0 by
+    filter_upwards [this] with y hy
+    exact deriv_id_mul_log hy
+  exact eventually_ne_nhds hx
 
-lemma convexOn_id_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
-  have h_ss : interior (Set.Ici (0 : ℝ)) ⊆ {0}ᶜ := by
-    intro x
-    simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi, Set.mem_compl_iff,
-      Set.mem_singleton_iff]
-    exact fun hx_pos ↦ hx_pos.ne'
-  refine convexOn_of_deriv2_nonneg ?_ ?_ ?_ ?_ ?_
-  · exact convex_Ici 0
-  · exact continuous_id_mul_log.continuousOn
-  · refine differentiableOn_id_mul_log.mono h_ss
-  · refine DifferentiableOn.congr_mono ?_ (?_ : ∀ x ∈ interior (Set.Ici (0 : ℝ)), _ = log x + 1)
-      h_ss
-    · exact DifferentiableOn.add_const differentiableOn_log 1
-    · intro x hx
-      simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
-      exact deriv_id_mul_log hx.ne'
-  · intro x hx
-    simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
-    rw [deriv2_id_mul_log hx.ne']
-    positivity
+lemma strictConvexOn_id_mul_log : StrictConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
+  refine strictConvexOn_of_deriv2_pos (convex_Ici 0) (continuous_id_mul_log.continuousOn) ?_
+  intro x hx
+  simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
+  rw [deriv2_id_mul_log hx.ne']
+  positivity
+
+lemma convexOn_id_mul_log : ConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) :=
+  strictConvexOn_id_mul_log.convexOn
 
 lemma id_mul_log_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ x * log x :=
   mul_nonneg (zero_le_one.trans hx) (log_nonneg hx)
