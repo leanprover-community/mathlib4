@@ -321,11 +321,9 @@ lemma exact_L₁' : S.L₁'.Exact := by
   exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, by simp only [assoc, L₁'_f, ← hk₂', hp]⟩
 
 /-- The duality isomorphism `S.P ≅ Opposite.unop S.op.P'`. -/
-@[simp]
 noncomputable def PIsoUnopOpP' : S.P ≅ Opposite.unop S.op.P' := pullbackIsoUnopPushout _ _
 
 /-- The duality isomorphism `S.P' ≅ Opposite.unop S.op.P`. -/
-@[simp]
 noncomputable def P'IsoUnopOpP : S.P' ≅ Opposite.unop S.op.P := pushoutIsoUnopPullback _ _
 
 lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
