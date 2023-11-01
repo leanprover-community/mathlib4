@@ -129,10 +129,10 @@ theorem EqualizerConditionCoyoneda : EqualizerCondition.{v, u} (coyoneda G X) :=
 
 noncomputable
 instance [h : PreservesFiniteProducts G.op] : PreservesFiniteProducts (coyoneda G X) := by
-  have h' : PreservesFiniteProducts (coyoneda' X) := inferInstance
   rw [coyoneda_eq_comp]
   constructor
   intro J _
+  have h' : PreservesFiniteProducts (coyoneda' X) := inferInstance
   have _ := h.1 J
   have _ := h'.1 J
   exact compPreservesLimitsOfShape _ _
