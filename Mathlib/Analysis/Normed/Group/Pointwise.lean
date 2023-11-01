@@ -37,7 +37,7 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
 #align metric.bounded.add Bornology.IsBounded.add
 
 @[to_additive]
-theorem Bornology.IsBounded.of_mul (hst : Bounded (s * t)) : Bounded s ∨ Bounded t :=
+theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t :=
   AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_right x).antilipschitz) hst
 #align metric.bounded.of_mul Bornology.IsBounded.of_mul
 #align metric.bounded.of_add Bornology.IsBounded.of_add
@@ -80,8 +80,8 @@ theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + EMetric.diam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
-        (fun _ _ => (isometry_mul_right _).lipschitz.LipschitzOnWith _) fun _ _ =>
-        (isometry_mul_left _).lipschitz.LipschitzOnWith _).trans_eq <|
+        (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith _) fun _ _ =>
+        (isometry_mul_left _).lipschitz.lipschitzOnWith _).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 #align ediam_mul_le ediam_mul_le
 #align ediam_add_le ediam_add_le
