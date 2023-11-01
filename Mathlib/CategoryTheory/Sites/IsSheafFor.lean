@@ -113,6 +113,9 @@ In special cases, this condition can be simplified, see `pullbackCompatible_iff`
 
 This is referred to as a "compatible family" in Definition C2.1.2 of [Elephant], and on nlab:
 https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents
+
+For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
+`CategoryTheory.Presieve.Arrows.Compatible`.
 -/
 def FamilyOfElements.Compatible (x : FamilyOfElements P R) : Prop :=
   ∀ ⦃Y₁ Y₂ Z⦄ (g₁ : Z ⟶ Y₁) (g₂ : Z ⟶ Y₂) ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
@@ -130,6 +133,9 @@ This is the definition for a "matching" family given in [MM92], Chapter III, Sec
 Equation (5). Viewing the type `FamilyOfElements` as the middle object of the fork in
 https://stacks.math.columbia.edu/tag/00VM, this condition expresses that `pr₀* (x) = pr₁* (x)`,
 using the notation defined there.
+
+For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
+`CategoryTheory.Presieve.Arrows.PullbackCompatible`.
 -/
 def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
@@ -145,7 +151,7 @@ theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
     haveI := hasPullbacks.has_pullbacks hf₁ hf₂
     apply pullback.condition
   · intro t Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ comm
-    haveI := hasPullbacks.has_pullbacks  hf₁ hf₂
+    haveI := hasPullbacks.has_pullbacks hf₁ hf₂
     rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t hf₁ hf₂,
       ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
 #align category_theory.presieve.pullback_compatible_iff CategoryTheory.Presieve.pullbackCompatible_iff
@@ -713,12 +719,9 @@ def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
 
 lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofArrows X π))
     (t : P.obj (op B)) :
-    x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) := by
-  refine ⟨fun h i ↦ h _ (ofArrows.mk i), fun h Y f hf ↦ ?_⟩
-  obtain ⟨i, rfl, hi⟩ := ofArrows_surj π f hf
-  obtain rfl : f = π i := by simpa using hi
-  exact h i
-
+    x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) :=
+  ⟨fun h i ↦ h _ (ofArrows.mk i), fun h _ f ⟨i⟩ ↦ h i⟩
+  
 namespace Arrows.Compatible
 
 variable {x : (i : I) → P.obj (op (X i))} (hx : Compatible P π x)
@@ -726,20 +729,15 @@ variable {P π}
 
 theorem exists_familyOfElements :
     ∃ (x' : FamilyOfElements P (ofArrows X π)), ∀ (i : I), x' _ (ofArrows.mk i) = x i := by
-  use (fun Y f hf ↦ P.map (eqToHom (ofArrows_surj π f hf).choose_spec.choose.symm).op (x _))
-  intro i
-  specialize hx i (ofArrows_surj π (π i) (ofArrows.mk _)).choose (X i) (𝟙 _)
-    (eqToHom (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose.symm) ?_
-  · simp [← (ofArrows_surj π (π i) (ofArrows.mk _)).choose_spec.choose_spec]
-  rw [← hx]
-  simp
+  choose i h h' using @ofArrows_surj _ _ _ _ _ π
+  exact ⟨fun Y f hf ↦ P.map (eqToHom (h f hf).symm).op (x _),
+    fun j ↦ (hx _ j (X j) _ (𝟙 _) <| by rw [← h', id_comp]).trans <| by simp⟩
 
 /--
 A `FamilyOfElements` associated to an explicit family of elements.
 -/
 noncomputable
-def familyOfElements {x : (i : I) → P.obj (op (X i))}
-    (hx : Compatible P π x) : FamilyOfElements P (ofArrows X π) :=
+def familyOfElements : FamilyOfElements P (ofArrows X π) :=
   (exists_familyOfElements hx).choose
 
 @[simp]
@@ -747,11 +745,8 @@ theorem familyOfElements_ofArrows_mk (i : I) :
     hx.familyOfElements _ (ofArrows.mk i) = x i :=
   (exists_familyOfElements hx).choose_spec _
 
-theorem familyOfElements_compatible {x : (i : I) → P.obj (op (X i))}
-    (hx : Compatible P π x) : hx.familyOfElements.Compatible := by
-  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ hgf
-  cases' h₁ with i
-  cases' h₂ with j
+theorem familyOfElements_compatible : hx.familyOfElements.Compatible := by
+  rintro Y₁ Y₂ Z g₁ g₂ f₁ f₂ ⟨i⟩ ⟨j⟩ hgf
   simp [hx i j Z g₁ g₂ hgf]
 
 end Arrows.Compatible
@@ -761,18 +756,12 @@ theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
     ∃! t, ∀ i, P.map (π i).op t = x i) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨t, ht₁, ht₂⟩ := h _ hx.familyOfElements_compatible
-    refine' ⟨t, fun i => _, _⟩
-    · rw [ht₁ _ (ofArrows.mk i), Arrows.Compatible.familyOfElements_ofArrows_mk]
-    · intro t' ht'
-      apply ht₂
-      rw [FamilyOfElements.isAmalgamation_iff_ofArrows]
-      intro i
-      simp only [ht', Arrows.Compatible.familyOfElements_ofArrows_mk]
+    refine ⟨t, fun i ↦ ?_, fun t' ht' ↦ ht₂ _ fun _ _ ⟨i⟩ ↦ ?_⟩
+    · rw [ht₁ _ (ofArrows.mk i), hx.familyOfElements_ofArrows_mk]
+    · rw [ht', hx.familyOfElements_ofArrows_mk]
   · obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
       (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
-    refine ⟨t, fun Y f hf ↦ ?_, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
-    cases' hf with i
-    exact hA i
+    exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
 
 variable [(ofArrows X π).hasPullbacks]
 

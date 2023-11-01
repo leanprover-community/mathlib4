@@ -7,7 +7,7 @@
 import Mathlib.Data.Real.Basic
 
 private axiom test_sorry : ∀ {α}, α
-unsafe def testRepr (r : ℝ) (s : String) : Lean.Elab.Command.CommandElabM Unit  :=
+unsafe def testRepr (r : ℝ) (s : String) : Lean.Elab.Command.CommandElabM Unit :=
 unless toString (repr r) = s do throwError "got {repr r}"
 
 run_cmd unsafe testRepr 0 "Real.ofCauchy (sorry /- 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... -/)"

@@ -1082,6 +1082,10 @@ theorem tendsto_nhds_of_eventually_eq {f : β → α} {a : α} (h : ∀ᶠ x in 
     Tendsto f l (𝓝 a) :=
   tendsto_const_nhds.congr' (.symm h)
 
+theorem Filter.EventuallyEq.tendsto {f : β → α} {a : α} (hf : f =ᶠ[l] fun _ ↦ a) :
+    Tendsto f l (𝓝 a) :=
+  tendsto_nhds_of_eventually_eq hf
+
 /-!
 ### Cluster points
 
@@ -1609,10 +1613,12 @@ theorem IsOpen.preimage {f : α → β} (hf : Continuous f) {s : Set β} (h : Is
   hf.isOpen_preimage s h
 #align is_open.preimage IsOpen.preimage
 
-theorem Continuous.congr {f g : α → β} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g := by
-  convert h
-  ext
-  rw [h']
+theorem continuous_congr {f g : α → β} (h : ∀ x, f x = g x) :
+    Continuous f ↔ Continuous g :=
+  .of_eq <| congrArg _ <| funext h
+
+theorem Continuous.congr {f g : α → β} (h : Continuous f) (h' : ∀ x, f x = g x) : Continuous g :=
+  continuous_congr h' |>.mp h
 #align continuous.congr Continuous.congr
 
 /-- A function between topological spaces is continuous at a point `x₀`
