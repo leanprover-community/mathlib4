@@ -592,10 +592,10 @@ end Order
 
 /-! ## Center of a ring -/
 
-section NonUnitalNonAssocRing
-
+section Center
 variable {R : Type u}
 
+section NonUnitalNonAssocRing
 variable (R) [NonUnitalNonAssocRing R]
 
 /-- The center of a ring `R` is the set of elements that commute with everything in `R` -/
@@ -611,12 +611,14 @@ theorem center_toNonUnitalSubsemiring :
     (center R).toNonUnitalSubsemiring = NonUnitalSubsemiring.center R :=
   rfl
 
+/-- The center is commutative and associative. -/
+instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
+  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
+    inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
+
 end NonUnitalNonAssocRing
 
 section NonUnitalRing
-
-variable {R : Type u}
-
 variable [NonUnitalRing R]
 
 theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subsemigroup.mem_center_iff
@@ -628,12 +630,9 @@ instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ 
 theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
-/-- The center is commutative. -/
-instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
-  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring,
-    (center R).toNonUnitalRing with }
-
 end NonUnitalRing
+
+end Center
 
 /-! ## `NonUnitalSubring` closure of a subset -/
 
