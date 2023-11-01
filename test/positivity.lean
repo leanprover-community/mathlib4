@@ -144,7 +144,6 @@ example {a : ℚ} (ha : 0 < a) : 0 < |a| := by positivity
 example {a : ℚ} (ha : a ≠ 0) : 0 < |a| := by positivity
 example (a : ℚ) : 0 ≤ |a| := by positivity
 
--- `a • b` expands to `HSMul.hSMul a b`
 example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a • b := by positivity
 example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b := by positivity
 example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b := by positivity
@@ -157,14 +156,6 @@ example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a • b ≠ 0 := by 
 example {R M : Type*} [OrderedSemiring R] [StrictOrderedSemiring M]
     [SMulWithZero R M] [OrderedSMul R M] {a : R} {b : M} (ha : 0 < a) (hb : 0 < b) :
     0 < a • b := by positivity
-
-example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < SMul.smul a b := by positivity
-example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ SMul.smul a b := by positivity
-example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ SMul.smul a b := by positivity
-example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ SMul.smul a b := by positivity
-example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : SMul.smul a b ≠ 0 := by positivity
-example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : SMul.smul a b ≠ 0 := by positivity
-example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : SMul.smul a b ≠ 0 := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a + a := by positivity
 

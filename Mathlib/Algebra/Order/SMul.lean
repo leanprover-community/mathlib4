@@ -390,29 +390,3 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   | .nonzero pa, .nonzero pb =>
       pure (.nonzero (← mkAppM ``smul_ne_zero #[pa, pb]))
   | _, _ => pure .none
-
-/-- Positivity extension for SMul. -/
-@[positivity SMul.smul _ _]
-def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
-  let .app (.app (.app (.app (.app
-        (.const ``SMul.smul [u1, _]) (M : Q(Type u1))) _) _)
-          (a : Q($M))) (b : Q($α)) ← whnfR e | throwError "failed to match smul"
-  -- TODO: deduplicate this logic, as it's shared with the HSMul extension, above.
-  let zM : Q(Zero $M) ← synthInstanceQ (q(Zero $M))
-  let pM : Q(PartialOrder $M) ← synthInstanceQ (q(PartialOrder $M))
-  match ← core zM pM a, ← core zα pα b with
-  | .positive pa, .positive pb =>
-      pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
-  | .positive pa, .nonnegative pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
-  | .nonnegative pa, .positive pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
-  | .nonnegative pa, .nonnegative pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg #[pa, pb]))
-  | .positive pa, .nonzero pb =>
-      pure (.nonzero (← mkAppM ``smul_ne_zero_of_pos_of_ne_zero #[pa, pb]))
-  | .nonzero pa, .positive pb =>
-      pure (.nonzero (← mkAppM ``smul_ne_zero_of_ne_zero_of_pos #[pa, pb]))
-  | .nonzero pa, .nonzero pb =>
-      pure (.nonzero (← mkAppM ``smul_ne_zero #[pa, pb]))
-  | _, _ => pure .none
