@@ -1682,7 +1682,7 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
   dsimp
   split_ifs with h₁ h₂ h₃
   · simp only [← val_fin_lt, not_lt] at h₁ h₂
-    exact (lt_le_antisymm h₁ (le_of_lt h₂)).elim
+    exact (Nat.lt_le_asymm h₁ (le_of_lt h₂)).elim
   · rfl
   · rfl
   · simp only [← val_fin_lt, not_lt] at h₁ h₃

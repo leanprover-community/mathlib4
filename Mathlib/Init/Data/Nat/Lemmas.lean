@@ -187,9 +187,9 @@ instance linearOrder : LinearOrder ℕ where
 
 #align nat.le_succ_of_pred_le Nat.le_succ_of_pred_le
 
-#align nat.le_lt_antisymm Nat.le_lt_antisymm
+#align nat.le_lt_antisymm Nat.le_lt_asymm
 
-#align nat.lt_le_antisymm Nat.lt_le_antisymm
+#align nat.lt_le_antisymm Nat.lt_le_asymm
 
 #align nat.lt_asymm Nat.lt_asymm
 
