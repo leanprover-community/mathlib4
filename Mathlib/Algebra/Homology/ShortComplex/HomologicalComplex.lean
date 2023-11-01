@@ -89,7 +89,7 @@ variable {i}
 to `K.X i` whose postcomposition with the differential is zero. -/
 noncomputable def liftCycles {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
     (hk : k ≫ K.d i j = 0) : A ⟶ K.cycles i :=
-  (K.sc i).liftCycles k (by subst hj ; exact hk)
+  (K.sc i).liftCycles k (by subst hj; exact hk)
 
 /-- The morphism to `K.cycles i` that is induced by a "cycle", i.e. a morphism
 to `K.X i` whose postcomposition with the differential is zero. -/
