@@ -944,24 +944,21 @@ end NonAssoc
 
 section Center
 
-theorem _root_.Set.smul_mem_center {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A](r : R) {a : A}
-    (ha : a ∈ Set.center A) :
-    r • a ∈ Set.center A := by
-  apply (Set.mem_center_iff A).mp
-  constructor
-  · intro
-    rw [mul_smul_comm, smul_mul_assoc, ha.comm]
-  · intros
-    rw [smul_mul_assoc, smul_mul_assoc, smul_mul_assoc, ha.left_assoc]
-  · intros
+section NonUnitalNonAssocSemiring
+variable {R A : Type*}
+variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable [IsScalarTower R A A] [SMulCommClass R A A]
+
+theorem _root_.Set.smul_mem_center (r : R) {a : A} (ha : a ∈ Set.center A) :
+    r • a ∈ Set.center A where
+  comm b := by rw [mul_smul_comm, smul_mul_assoc, ha.comm]
+  left_assoc b c := by rw [smul_mul_assoc, smul_mul_assoc, smul_mul_assoc, ha.left_assoc]
+  mid_assoc b c := by
     rw [mul_smul_comm, smul_mul_assoc, smul_mul_assoc, mul_smul_comm, ha.mid_assoc]
-  · intros
+  right_assoc b c := by
     rw [mul_smul_comm, mul_smul_comm, mul_smul_comm, ha.right_assoc]
 
-variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
-  [SMulCommClass R A A]
-
+variable (R A) in
 /-- The center of a non-unital algebra is the set of elements which commute with every element.
 They form a non-unital subalgebra. -/
 def center : NonUnitalSubalgebra R A :=
@@ -969,6 +966,14 @@ def center : NonUnitalSubalgebra R A :=
 
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
+
+abbrev center.instNonUnitalCommSemiring' : NonUnitalCommSemiring (center R A) :=
+  NonUnitalSubsemiring.center.instNonUnitalCommSemiring' _
+
+end NonUnitalNonAssocSemiring
+
+variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
+  [SMulCommClass R A A]
 
 @[simp]
 theorem center_toNonUnitalSubsemiring :
@@ -996,7 +1001,6 @@ instance center.instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [Module R A]
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
-
 
 end Center
 
