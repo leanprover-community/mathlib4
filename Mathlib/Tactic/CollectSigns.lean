@@ -70,7 +70,7 @@ lemma Nat.add_sub_comm_of_le (m n k : ℕ) (h : k ≤ n) : m + (n - k) = (m + n)
   have haux := Nat.le.dest h
   cases haux with
   | intro d hd =>
-    . rw [← hd,add_comm k d,←add_assoc,add_tsub_cancel_right,add_tsub_cancel_right]
+    · rw [← hd,add_comm k d,←add_assoc,add_tsub_cancel_right,add_tsub_cancel_right]
 
 /--
 The `collect_signs!` tactic extends `collect_signs`, trying to cancel additions and
