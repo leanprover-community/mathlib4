@@ -106,8 +106,6 @@ theorem mul_mem_center [Mul M] {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (
 
 end Mul
 
--- variable {M}
-
 section Semigroup
 
 variable [Semigroup M]
