@@ -301,25 +301,23 @@ instance [Mul M] : CommSemigroup (center M) where
   mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
   mul_comm a _ := Subtype.ext <| a.2.comm _
 
-variable [Semigroup M]
-
 @[to_additive]
-theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
+theorem mem_center_iff [Semigroup M] {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
 #align subsemigroup.mem_center_iff Subsemigroup.mem_center_iff
 #align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
 
 @[to_additive]
-instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
+instance decidableMemCenter [Semigroup M] (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
   decidable_of_iff' _ Semigroup.mem_center_iff
 #align subsemigroup.decidable_mem_center Subsemigroup.decidableMemCenter
 #align add_subsemigroup.decidable_mem_center AddSubsemigroup.decidableMemCenter
 
-/-- The center of a semigroup is commutative. -/
-@[to_additive "The center of an additive semigroup is commutative."]
-instance center.commSemigroup : CommSemigroup (center M) :=
-  { MulMemClass.toSemigroup (center M) with mul_comm := fun a _ => Subtype.ext <| a.2.comm _ }
+/-- The center of a magma is commutative. -/
+@[to_additive "The center of an additive magma is commutative."]
+instance center.commSemigroup [Mul M] : CommSemigroup (center M) :=
+  { mul_comm := fun a _ => Subtype.ext <| a.2.comm _ }
 #align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
 #align add_subsemigroup.center.add_comm_semigroup AddSubsemigroup.center.addCommSemigroup
 
