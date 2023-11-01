@@ -152,6 +152,9 @@ def Sbtw (x y z : P) : Prop :=
 
 variable {R}
 
+lemma mem_segment_iff_wbtw {x y z : V} : y ∈ segment R x z ↔ Wbtw R x y z := by
+  rw [Wbtw, affineSegment_eq_segment]
+
 theorem Wbtw.map {x y z : P} (h : Wbtw R x y z) (f : P →ᵃ[R] P') : Wbtw R (f x) (f y) (f z) := by
   rw [Wbtw, ← affineSegment_image]
   exact Set.mem_image_of_mem _ h
