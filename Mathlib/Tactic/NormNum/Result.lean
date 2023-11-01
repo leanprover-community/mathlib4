@@ -243,6 +243,8 @@ inductive Result' where
   | isNegNat (inst lit proof : Expr)
   /-- Untyped version of `Result.isRat`. -/
   | isRat (inst : Expr) (q : Rat) (n d proof : Expr)
+  /-- Untyped version of `Result.other`. -/
+  | other (e proof : Expr)
   deriving Inhabited
 
 section
@@ -279,6 +281,12 @@ and `q` is the value of `n / d`. -/
     ∀ (inst : Q(DivisionRing $α) := by assumption) (q : Rat) (n : Q(ℤ)) (d : Q(ℕ))
       (proof : Q(IsRat $x $n $d)), Result x := Result'.isRat
 
+/-- The result is `proof : isRat x n d`, where `n` is either `.ofNat lit` or `.negOfNat lit`
+with `lit` a raw nat literal and `d` is a raw nat literal (not 0 or 1),
+and `q` is the value of `n / d`. -/
+@[match_pattern, inline] def Result.other {α : Q(Type u)} {x : Q($α)} :
+    ∀ (e : Q($α)) (proof : Q($x = $e)), Result x := Result'.other
+
 end
 
 /-- The result is `z : ℤ` and `proof : isNat x z`. -/
@@ -310,21 +318,22 @@ instance : ToMessageData (Result x) where
   | .isNat _ lit proof => m!"isNat {lit} ({proof})"
   | .isNegNat _ lit proof => m!"isNegNat {lit} ({proof})"
   | .isRat _ q _ _ proof => m!"isRat {q} ({proof})"
+  | .other e proof => m!"other {e} ({proof})"
 
 /-- Returns the rational number that is the result of `norm_num` evaluation. -/
 def Result.toRat : Result e → Option Rat
-  | .isBool .. => none
   | .isNat _ lit _ => some lit.natLit!
   | .isNegNat _ lit _ => some (-lit.natLit!)
   | .isRat _ q .. => some q
+  | _ => none
 
 /-- Returns the rational number that is the result of `norm_num` evaluation, along with a proof
 that the denominator is nonzero in the `isRat` case. -/
 def Result.toRatNZ : Result e → Option (Rat × Option Expr)
-  | .isBool .. => none
   | .isNat _ lit _ => some (lit.natLit!, none)
   | .isNegNat _ lit _ => some (-lit.natLit!, none)
   | .isRat _ q _ _ p => some (q, q(IsRat.den_nz $p))
+  | _ => none
 
 /--
 Extract from a `Result` the integer value (as both a term and an expression),
@@ -345,7 +354,6 @@ and the proof that the original expression is equal to this rational number.
 def Result.toRat' {α : Q(Type u)} {e : Q($α)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) :
     Result e → Option (ℚ × (n : Q(ℤ)) × (d : Q(ℕ)) × Q(IsRat $e $n $d))
-  | .isBool .. => none
   | .isNat _ lit proof =>
     have proof : Q(@IsNat _ instAddMonoidWithOne $e $lit) := proof
     some ⟨lit.natLit!, q(.ofNat $lit), q(nat_lit 1), q(($proof).to_isRat)⟩
@@ -354,6 +362,7 @@ def Result.toRat' {α : Q(Type u)} {e : Q($α)}
     some ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
       (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
   | .isRat _ q n d proof => some ⟨q, n, d, proof⟩
+  | _ => none
 
 /--
 Given a `NormNum.Result e` (which uses `IsNat`, `IsInt`, `IsRat` to express equality to a rational
@@ -370,6 +379,7 @@ def Result.toRawEq {α : Q(Type u)} {e : Q($α)} : Result e → (e' : Q($α)) ×
   | .isNat _ lit p => ⟨q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => ⟨q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
   | .isRat _ _ n d p => ⟨q(Rat.rawCast $n $d), q(IsRat.to_raw_eq $p)⟩
+  | .other e p => ⟨e, p⟩
 
 /--
 `Result.toRawEq` but providing an integer. Given a `NormNum.Result e` for something known to be an
@@ -381,7 +391,7 @@ def Result.toRawIntEq {α : Q(Type u)} {e : Q($α)} : Result e →
     Option (ℤ × (e' : Q($α)) × Q($e = $e'))
   | .isNat _ lit p => some ⟨lit.natLit!, q(Nat.rawCast $lit), q(IsNat.to_raw_eq $p)⟩
   | .isNegNat _ lit p => some ⟨-lit.natLit!, q(Int.rawCast (.negOfNat $lit)), q(IsInt.to_raw_eq $p)⟩
-  | .isRat _ .. | .isBool .. => none
+  | _ => none
 
 /-- Constructs a `Result` out of a raw nat cast. Assumes `e` is a raw nat cast expression. -/
 def Result.ofRawNat {α : Q(Type u)} (e : Q($α)) : Result e := Id.run do
@@ -429,6 +439,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
       let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
       let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
       return { expr := q($n' / $d'), proof? := q(IsRat.nonneg_to_eq $p $pn' $pd') }
+  | .other expr proof? => pure { expr, proof? }
 
 /-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
   Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,

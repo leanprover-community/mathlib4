@@ -174,7 +174,6 @@ def evalPow : NormNumExt where eval {u α} e := do
   /-- Main part of `evalPow`. -/
   core : Option (Result e) := do
     match ra with
-    | .isBool .. => failure
     | .isNat sα na pa =>
       assumeInstancesCommute
       have ⟨c, r⟩ := evalNatPow na nb
@@ -190,4 +189,5 @@ def evalPow : NormNumExt where eval {u α} e := do
       have ⟨dc, r2⟩ := evalNatPow da nb
       let qc := mkRat zc dc.natLit!
       return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+    | _ => failure
   core

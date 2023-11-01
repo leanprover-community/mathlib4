@@ -133,7 +133,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(decide ($nb * $da < $na * $db) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isRat_le_false $pa $pb $r)
   match ra, rb with
-  | .isBool .., _ | _, .isBool .. => failure
   | .isRat _ .., _ | _, .isRat _ .. => ratArm
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
@@ -150,6 +149,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isNat_le_false $pa $pb $r)
     else -- Nats can appear in an `OrderedRing` without `CharZero`.
       intArm
+  | _, _ => failure
 
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -190,7 +190,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(decide ($nb * $da ≤ $na * $db) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isRat_lt_false $pa $pb $r)
   match ra, rb with
-  | .isBool .., _ | _, .isBool .. => failure
   | .isRat _ .., _ | _, .isRat _ .. => ratArm
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
@@ -208,5 +207,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isNat_lt_false $pa $pb $r)
+  | _, _ => failure
 
 end Mathlib.Meta.NormNum

@@ -185,11 +185,11 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let ra ← derive a; let rb ← derive b
   match ra, rb with
-  | .isBool .., _ | _, .isBool .. => failure
   | .isNat _ .., .isNat _ .. | .isNat _ .., .isNegNat _ .. | .isNat _ .., .isRat _ ..
   | .isNegNat _ .., .isNat _ .. | .isNegNat _ .., .isNegNat _ .. | .isNegNat _ .., .isRat _ ..
   | .isRat _ .., .isNat _ .. | .isRat _ .., .isNegNat _ .. | .isRat _ .., .isRat _ .. =>
     guard <|← withNewMCtxDepth <| isDefEq f q(HAdd.hAdd (α := $α))
+  | _, _ => failure
   let rec
   /-- Main part of `evalAdd`. -/
   core : Option (Result e) := do
@@ -218,7 +218,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
       return .isRat' dα qc nc dc q(isRat_add (f := $f) (.refl $f) $pa $pb $r1 $r2)
     match ra, rb with
-    | .isBool .., _ | _, .isBool .. => failure
     | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
     | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
     | .isNat _ na pa, .isNat sα nb pb =>
@@ -228,6 +227,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
       haveI' : Nat.add $na $nb =Q $c := ⟨⟩
       return .isNat sα c q(isNat_add (f := $f) (.refl $f) $pa $pb (.refl $c))
+    | _, _ => failure
   core
 
 -- see note [norm_num lemma function equality]
@@ -266,10 +266,10 @@ such that `norm_num` successfully recognises `a`. -/
       haveI' : Int.neg $na =Q $nb := ⟨⟩
       return .isRat' dα qb nb da q(isRat_neg (f := $f) (.refl $f) $pa (.refl $nb))
     match ra with
-    | .isBool _ .. => failure
     | .isNat _ .. => intArm rα
     | .isNegNat rα .. => intArm rα
     | .isRat dα .. => ratArm dα
+    | _ => failure
   core
 
 -- see note [norm_num lemma function equality]
@@ -321,10 +321,10 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
       return .isRat' dα qc nc dc q(isRat_sub (f := $f) (.refl $f) $pa $pb $r1 $r2)
     match ra, rb with
-    | .isBool .., _ | _, .isBool .. => failure
     | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
     | .isNegNat rα .., _ | _, .isNegNat rα ..
     | .isNat _ .., .isNat _ .. => intArm rα
+    | _, _ => failure
   core
 
 -- see note [norm_num lemma function equality]
@@ -391,7 +391,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r2 : Q(Nat.mul $da $db = Nat.mul $k $dc) := (q(Eq.refl $t2) : Expr)
       return .isRat' dα qc nc dc q(isRat_mul (f := $f) (.refl $f) $pa $pb $r1 $r2)
     match ra, rb with
-    | .isBool .., _ | _, .isBool .. => failure
     | .isRat dα .., _ | _, .isRat dα .. => ratArm dα
     | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
     | .isNat mα' na pa, .isNat mα nb pb =>
@@ -400,6 +399,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
       haveI' : Nat.mul $na $nb =Q $c := ⟨⟩
       return .isNat mα c q(isNat_mul (f := $f) (.refl $f) $pa $pb (.refl $c))
+    | _, _ => failure
   core
 
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →

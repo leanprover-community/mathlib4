@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Structural
 import Mathlib.Algebra.Order.Invertible
 
 /-!
@@ -34,6 +35,10 @@ theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} �
     decide (Int.mul na (.ofNat db) = Int.mul nb (.ofNat da)) = false → ¬a = b
   | _, _, _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
     rw [Rat.invOf_denom_swap]; exact_mod_cast of_decide_eq_false h
+
+theorem eq_of_eq {a b a' b' : α} (ha : a = a') (hb : b = b') (h : a' = b') : a = b := ha ▸ hb ▸ h
+
+theorem ne_of_ne {a b a' b' : α} (ha : a = a') (hb : b = b') (h : a' ≠ b') : a ≠ b := ha ▸ hb ▸ h
 
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -92,5 +97,11 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isNat_eq_false $pa $pb $r)
     else
       failure --TODO: nonzero characteristic ≠
+  | .other .., _ | _, .other .. =>
+    let ⟨a', pa⟩ := ra.toRawEq
+    let ⟨b', pb⟩ := rb.toRawEq
+    match ← evalStructuralEq a' b' with
+    | .inl p => return .isTrue q(eq_of_eq $pa $pb $p)
+    | .inr p => return .isFalse q(ne_of_ne $pa $pb $p)
 
 end Mathlib.Meta.NormNum
