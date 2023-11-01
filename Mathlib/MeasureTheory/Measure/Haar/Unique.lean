@@ -46,7 +46,7 @@ lemma _root_.IsCompact.measure_eq_biInf_integral_hasCompactSupport
     {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
     {k : Set X} (hk : IsCompact k)
     (μ : Measure X) [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
-    [LocallyCompactSpace X] [RegularSpace X] :
+    [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X] :
     μ k = ⨅ (f : X → ℝ) (_ : Continuous f) (_ : HasCompactSupport f) (_ : EqOn f 1 k)
       (_ : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
   apply le_antisymm
@@ -127,7 +127,7 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
         let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
         have M_comp : IsCompact M :=
           (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
-        have M'_comp : IsCompact (closure M) := M_comp.closure_of_group
+        have M'_comp : IsCompact (closure M) := M_comp.closure
         have : ∀ (p : G × G), p ∉ K ×ˢ closure M → f p.1 * (D p.1)⁻¹ * g (p.2⁻¹ * p.1) = 0 := by
           rintro ⟨x, y⟩ hxy
           by_cases H : x ∈ K; swap
@@ -158,7 +158,7 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
         let M := (fun (p : G × G) ↦ p.1 * p.2⁻¹) '' (K ×ˢ L)
         have M_comp : IsCompact M :=
           (K_comp.prod L_comp).image (continuous_fst.mul continuous_snd.inv)
-        have M'_comp : IsCompact (closure M) := M_comp.closure_of_group
+        have M'_comp : IsCompact (closure M) := M_comp.closure
         have : ∀ (p : G × G), p ∉ L ×ˢ closure M →
             f (p.2 * p.1) * (D (p.2 * p.1))⁻¹ * g p.1 = 0 := by
           rintro ⟨x, y⟩ hxy
