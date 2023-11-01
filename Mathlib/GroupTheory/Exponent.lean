@@ -398,7 +398,7 @@ section PiProd
 open Finset Monoid
 
 @[to_additive]
-theorem Monoid.exponent_pi_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {j : ι}
+theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {j : ι}
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push_neg at hj ⊢
