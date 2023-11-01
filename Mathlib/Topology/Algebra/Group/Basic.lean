@@ -1685,7 +1685,7 @@ theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : 
   · intro x hx
     have := tendsto_mul (show U ∈ 𝓝 (x * 1) by simpa using hU.mem_nhds (hKU hx))
     rw [nhds_prod_eq, mem_map, mem_prod_iff] at this
-    rcases this with ⟨t, ht, s, hs, h⟩Z
+    rcases this with ⟨t, ht, s, hs, h⟩
     rw [← image_subset_iff, image_mul_prod] at h
     exact ⟨t, mem_nhdsWithin_of_mem_nhds ht, s, hs, h⟩
 #align compact_open_separated_mul_right compact_open_separated_mul_right
