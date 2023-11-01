@@ -39,6 +39,9 @@ theorem neZero_iff {n : R} : NeZero n ↔ n ≠ 0 :=
   ⟨fun h ↦ h.out, NeZero.mk⟩
 #align ne_zero_iff neZero_iff
 
+@[simp] lemma neZero_zero_iff_false {α : Type*} [Zero α] : NeZero (0 : α) ↔ False :=
+  ⟨fun h ↦ h.ne rfl, fun h ↦ h.elim⟩
+
 theorem not_neZero {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]
 #align not_ne_zero not_neZero
 
