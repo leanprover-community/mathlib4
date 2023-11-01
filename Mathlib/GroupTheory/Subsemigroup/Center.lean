@@ -363,7 +363,6 @@ theorem center_eq_top : center M = ⊤ :=
 #align subsemigroup.center_eq_top Subsemigroup.center_eq_top
 #align add_subsemigroup.center_eq_top AddSubsemigroup.center_eq_top
 
-
 end CommSemigroup
 
 end Subsemigroup
