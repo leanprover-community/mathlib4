@@ -162,7 +162,7 @@ end Set
 
 namespace Subsemigroup
 
-variable [Semigroup M]
+variable {M} [Semigroup M]
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
