@@ -2511,6 +2511,7 @@ import Mathlib.MeasureTheory.Group.LIntegral
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Group.Pointwise
+import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
@@ -2556,7 +2557,6 @@ import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
 import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.MeasureTheory.Measure.Haar.UniqueMeasurable
 import Mathlib.MeasureTheory.Measure.Hausdorff
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex

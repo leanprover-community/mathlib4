@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.MeasureTheory.Measure.Haar.UniqueMeasurable
+import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Algebra.Group.Compact
 

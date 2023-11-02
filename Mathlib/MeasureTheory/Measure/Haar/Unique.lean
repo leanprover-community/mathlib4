@@ -41,7 +41,6 @@ right-invariant measure (with a suitable density function). The uniqueness readi
 open MeasureTheory Filter Set TopologicalSpace Function MeasureTheory Measure
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
-
 lemma _root_.IsCompact.measure_eq_biInf_integral_hasCompactSupport
     {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
     {k : Set X} (hk : IsCompact k)
@@ -321,8 +320,6 @@ lemma mulLeftInvariant_unique_of_isProbabilityMeasure
     (μ μ' : Measure G) [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] : μ' = μ := by
-  have : InnerRegular μ := InnerRegularCompactLTTop.innerRegular_of_finiteMeasure
-  have : InnerRegular μ' := InnerRegularCompactLTTop.innerRegular_of_finiteMeasure
   have : IsOpenPosMeasure μ :=
     isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular (IsProbabilityMeasure.ne_zero μ)
   rcases mulLeftInvariant_unique_of_innerRegular μ μ' with ⟨c, hc⟩

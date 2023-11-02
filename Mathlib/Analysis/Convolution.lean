@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Measure.Haar.UniqueMeasurable
+import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 #align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
