@@ -299,7 +299,7 @@ noncomputable def L₁' : ShortComplex C := ShortComplex.mk _ _ S.L₀_g_δ
 noncomputable def L₂' : ShortComplex C := ShortComplex.mk _ _ S.δ_L₃_f
 
 /-- Exactness of `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
-lemma exact_L₁' : S.L₁'.Exact := by
+lemma L₁'_exact : S.L₁'.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A₀ x₃ hx₃
   dsimp at x₃ hx₃
