@@ -336,8 +336,7 @@ def sigmaMk (i : I) : C(X i, Σ i, X i) where
 
 /--
 To give a continuous map out of a disjoint union, it suffices to give a continuous map out of
-each term. This is `Sigma.uncurry fun i x => f i x`, but `aesop` doesn't manage to prove
-continuity with that implementation.
+each term. This is `Sigma.uncurry` for continuous maps.
 -/
 @[simps]
 def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
