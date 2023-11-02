@@ -87,7 +87,7 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
 open Polynomial
 
 theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ}
-    (v : Fin n → R) (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree = i) :
+    (v : Fin n → R) (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree ≤ i) :
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
@@ -100,32 +100,27 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
 
 theorem matrixOfPolynomials_blockTriangular {n : ℕ} (p : Fin n → R[X])
-    (h_deg : ∀ i, (p i).natDegree  = i) :
+    (h_deg : ∀ i, (p i).natDegree = i) :
     Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
   fun _ j h => coeff_eq_zero_of_natDegree_lt (h_deg j ▸ h)
 
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
-    (h_deg : ∀ i, (p i).natDegree  = i) (h_monic : ∀ i,  Monic <| p i) :
+    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
   rw [Matrix.det_of_upperTriangular (matrixOfPolynomials_blockTriangular p h_deg)]
-  convert prod_const_one
-  rw [Matrix.of_apply]
-  rename_i x _
-  convert h_monic x
-  unfold Monic leadingCoeff
-  rw [h_deg x]
+  convert prod_const_one with x _
+  rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
-theorem vandermonde_det_eq_eval_matrixOfPolynomials_det {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
+theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree  = i) (h_monic : ∀ i,  Monic <| p i) :
     (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
   rw [eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p h_deg, Matrix.det_mul,
       det_matrixOfPolynomials p h_deg h_monic, mul_one]
 
-theorem eval_matrixOfPolynomials_eq_mul_matrix_of_choose {n : ℕ} (v : Fin n → ℕ) :
-    (Matrix.of (fun (i j : Fin n) =>
-    ((fun n => descPochhammer ℤ n) j).eval ((fun k => (v k : ℤ)) i)) ).det =
-    (∏ i : Fin n,  Nat.factorial i) *
-    (Matrix.of (fun (i j : Fin n)  => ((Nat.choose ((v i)) (j : ℕ)) : ℤ))).det := by
+theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
+    (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
+    (∏ i : Fin n, Nat.factorial i) *
+      (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
   convert Matrix.det_mul_row (fun (i : Fin n)  => ((Nat.factorial (i : ℕ)):ℤ)) _
   · rw [Matrix.of_apply, descPochhammer_int_eq_descFactorial _ _]
     congr
@@ -134,49 +129,16 @@ theorem eval_matrixOfPolynomials_eq_mul_matrix_of_choose {n : ℕ} (v : Fin n �
 
 theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
     ↑(Nat.superFactorial n) ∣ (Matrix.vandermonde v).det := by
-  let m' := List.minimum ((univ : Finset (Fin (n + 1))).image v).toList
-  have : ((univ : Finset (Fin (n + 1))).image v).toList ≠ List.nil := by
-    simp only [ne_eq, toList_eq_nil, image_eq_empty]
-    refine Nonempty.ne_empty univ_nonempty
-  cases' Option.isSome_iff_exists.mp <| Option.ne_none_iff_isSome.mp <|
-      List.minimum_ne_top_of_ne_nil this with m hm
-  have h_min : ∀  l, l ∈ ((univ : Finset (Fin (n + 1))).image v).toList →  m' ≤ l := by
-     exact fun l a ↦ List.minimum_le_of_mem' a
+  let m := inf' univ ⟨0, mem_univ _⟩ v
   let w' := fun i ↦ (v i - m).toNat
-  have h1 := eval_matrixOfPolynomials_eq_mul_matrix_of_choose w'
-  rw [← prod_range_factorial_succ, ← Fin.prod_univ_eq_prod_range]
-  have h2 := vandermonde_det_eq_eval_matrixOfPolynomials_det (fun i ↦ ↑(w' i))
+  have hw' : ∀ i, (w' i : ℤ) = v i - m := fun i ↦ Int.toNat_sub_of_le (inf'_le _ (mem_univ _))
+  have h := vandermonde_det_eq_eval_matrixOfPolynomials_det (fun i ↦ ↑(w' i))
       (fun i => descPochhammer ℤ i)
       (fun i => descPochhammer_natDegree ℤ i)
       (fun i => monic_descPochhammer ℤ i)
-  rw [← h2] at h1
-  have : Matrix.det (Matrix.vandermonde fun i ↦ ↑(w' i)) = (Matrix.vandermonde v).det := by
-    rw [← Matrix.det_vandermonde_sub v m]
-    congr
-    unfold Matrix.vandermonde
-    ext i j
-    congr
-    simp only [sub_nonneg]
-    have : m ≤ v i  := by
-      have v_in : (v i) ∈ (image v univ) := by
-        unfold Finset.image
-        simp only [Multiset.mem_toFinset, Multiset.mem_map, mem_val, mem_univ, true_and,
-            exists_apply_eq_apply]
-      have  v_in' : ↑(v i) ∈ toList (image v univ) := mem_toList.mpr v_in
-      have h_min := h_min (v i) v_in'
-      simp only [hm] at h_min
-      rw [WithTop.some_eq_coe] at h_min
-      norm_num at h_min
-      exact h_min
-    exact Int.toNat_sub_of_le this
-  rw [this] at h1
-  norm_num at h1
-  use (Matrix.of (fun (i j : Fin (n + 1))  => ((Nat.choose ((v i  - m).toNat) (j : ℕ)) : ℤ))).det
-  convert h1
-  norm_cast
-  rw [Fin.prod_univ_eq_prod_range, ← Ico_zero_eq_range,
-      Finset.prod_eq_prod_Ico_succ_bot <| succ_pos n, ← Finset.prod_Ico_add' (fun x => x !) 0 n 1,
-      Ico_zero_eq_range, ← Fin.prod_univ_eq_prod_range, factorial_zero, one_mul]
+  conv_lhs at h => simp only [hw', Matrix.det_vandermonde_sub]
+  use (Matrix.of (fun (i j : Fin (n + 1)) => (Nat.choose (w' i) (j : ℕ) : ℤ))).det
+  simp [h, eval_matrixOfPolynomials_eq_mul_matrix_of_choose w', Fin.prod_univ_eq_prod_range]
 
 end SuperFactorial
 
