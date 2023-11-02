@@ -90,20 +90,12 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
 
 open Polynomial
 
-theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
-    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
-    (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
-  rw [Matrix.det_of_upperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
-      Nat.le_of_eq (h_deg i)))]
-  convert prod_const_one with x _
-  rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
-
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
   rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
       Nat.le_of_eq (h_deg i)), Matrix.det_mul,
-      det_matrixOfPolynomials p h_deg h_monic, mul_one]
+      Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]
 
 theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =

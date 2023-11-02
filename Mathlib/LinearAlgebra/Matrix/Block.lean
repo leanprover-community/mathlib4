@@ -277,6 +277,13 @@ theorem matrixOfPolynomials_blockTriangular {n : ℕ} (p : Fin n → R[X])
   fun _ j h => by
     exact coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
 
+theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
+    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
+    (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
+  rw [Matrix.det_of_upperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
+      Nat.le_of_eq (h_deg i)))]
+  convert prod_const_one with x _
+  rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
 /-! ### Invertible -/
 
