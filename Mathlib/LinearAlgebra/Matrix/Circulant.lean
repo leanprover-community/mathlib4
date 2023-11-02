@@ -171,7 +171,7 @@ theorem circulant_single_one (α n) [Zero α] [One α] [DecidableEq n] [AddGroup
 theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype n] (a : α) :
     circulant (Pi.single 0 a : n → α) = scalar n a := by
   ext i j
-  simp [Pi.single_apply, one_apply, sub_eq_zero]
+  simp [Pi.single_apply, diagonal_apply, sub_eq_zero]
 #align matrix.circulant_single Matrix.circulant_single
 
 /-- Note we use `↑i = 0` instead of `i = 0` as `Fin 0` has no `0`.
