@@ -12,15 +12,8 @@ import Mathlib.Data.PFunctor.Univariate.Basic
 
 M types are potentially infinite tree-like structures. They are defined
 as the greatest fixpoint of a polynomial functor.
-
-The original structure of `M` is the closure which returns the approximation of the tree with the
-given depth. However, if we want the sequence of data with increasing depth, we can't reuse
-computational resource which is used for previous datas. So we override the structure of `M` to
-lazy evaluated infinite trees.
 -/
 
-
-set_option linter.uppercaseLean3 false
 
 universe u v w
 
@@ -70,9 +63,9 @@ def children' : ∀ {n} (x : CofixA F (succ n)), F.B (head' x) → CofixA F n
   | _, CofixA.intro _ f => f
 #align pfunctor.approx.children' PFunctor.Approx.children'
 
-theorem CofixA.eta {n : ℕ} (x : CofixA F (n + 1)) : x = CofixA.intro (head' x) (children' x) := by
+theorem approx_eta {n : ℕ} (x : CofixA F (n + 1)) : x = CofixA.intro (head' x) (children' x) := by
   cases x; rfl
-#align pfunctor.approx.approx_eta PFunctor.Approx.CofixA.eta
+#align pfunctor.approx.approx_eta PFunctor.Approx.approx_eta
 
 /-- Relation between two approximations of the cofix of a pfunctor
 that state they both contain the same data until one of them is truncated -/
@@ -140,10 +133,11 @@ theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) :
   constructor
   introv
   apply n_ih
+set_option linter.uppercaseLean3 false in
 #align pfunctor.approx.P_corec PFunctor.Approx.P_corec
 
-/-- `Path F` provides indices to access internal nodes in `CofixA F n` or `M F`. -/
-abbrev Path (F : PFunctor.{u}) :=
+/-- `Path F` provides indices to access internal nodes in `Corec F` -/
+def Path (F : PFunctor.{u}) :=
   List F.Idx
 #align pfunctor.approx.path PFunctor.Approx.Path
 
@@ -152,50 +146,6 @@ instance Path.inhabited : Inhabited (Path F) :=
 #align pfunctor.approx.path.inhabited PFunctor.Approx.Path.inhabited
 
 open List Nat
-
-/-- `IsPathA p x` tells us if `p` is a valid path through `x`. -/
-inductive IsPathA : (p : Path F) → {n : ℕ} → (x : CofixA F n) → Prop
-  /-- `[]` is a valid path for arbitrary `x`. -/
-  | nil {n} (x : CofixA F n) : IsPathA [] x
-  /-- If `ps` is a valid path of `o i`, then
-  `⟨a, i⟩ :: ps` is a valid path of `CofixA.intro a o`. -/
-  | cons {ps : Path F} {n} (a) (o : F.B a → CofixA F n) (i : F.B a) :
-    IsPathA ps (o i) → IsPathA (⟨a, i⟩ :: ps) (CofixA.intro a o)
-
-theorem isPathA_cons' {ps : Path F} {n a} {o : F.B a → CofixA F n} {i : F.B a}
-    (hps : IsPathA (⟨a, i⟩ :: ps) (CofixA.intro a o)) : IsPathA ps (o i) := by
-  cases hps
-  assumption
-
-/-- Destruct `IsPathA.cons` constructively. -/
-def IsPathA.destCons {n a i ps} (x : CofixA F (n + 1)) (hx : IsPathA (⟨a, i⟩ :: ps) x) :
-    { o : F.B a → CofixA F n // IsPathA ps (o i) } :=
-  have ha₂ : head' x = a := by cases hx; rfl
-  ⟨fun i => children' x (cast (congr_arg F.B ha₂.symm) i), by cases hx; assumption⟩
-
-/-- follow a path through a value of `CofixA F (n + length p)` and return the subtree
-found at the end of the path. -/
-def subtree' (p : Path F) {n} (x : CofixA F (n + length p)) (hx : IsPathA p x) : CofixA F n :=
-  match p with
-  | [] => x
-  | ⟨_, i⟩ :: ps =>
-    let ⟨o, ho⟩ := IsPathA.destCons x hx
-    subtree' ps (o i) ho
-
-@[simp]
-theorem subtree'_nil {n} {x : CofixA F n} (hx : IsPathA [] x) : subtree' [] x hx = x :=
-  rfl
-
-@[simp]
-theorem subtree'_cons {ps : Path F} {n} (a) (o : F.B a → CofixA F (n + length ps)) (i : F.B a)
-    (hx : IsPathA (⟨a, i⟩ :: ps) (CofixA.intro a o)) :
-    subtree' (⟨a, i⟩ :: ps) (CofixA.intro a o) hx = subtree' ps (o i) (isPathA_cons' hx) :=
-  rfl
-
-/-- similar to `subtree'` but returns the data at the end of the path instead
-of the whole subtree -/
-def select' (p : Path F) {n : ℕ} (x : CofixA F (n + 1 + length p)) (hx : IsPathA p x) : F.A :=
-  head' (subtree' p x hx)
 
 instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
@@ -229,85 +179,72 @@ end Approx
 
 open Approx
 
-/-- For polynomial functor `F`, `M F` is its final coalgebra -/
-@[opaque_repr]
-structure M where
-  /-- constructor for `M` as a structure of the internal definition.
-  Consider using `corec` before use this. -/
-  protected mk' ::
+/-- Internal definition for `M`. It is needed to avoid name clashes
+between `M.mk` and `M.cases_on` and the declarations generated for
+the structure -/
+structure MIntl where
   /-- An `n`-th level approximation, for each depth `n` -/
   approx : ∀ n, CofixA F n
   /-- Each approximation agrees with the next -/
   consistent : AllAgree approx
-#align pfunctor.M_intl PFunctor.M
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M_intl PFunctor.MIntl
+
+/-- For polynomial functor `F`, `M F` is its final coalgebra -/
+def M :=
+  MIntl F
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M PFunctor.M
 
-/-- This is the meta type of `CofixA F ∞`. This is theorically equivalent to `W`, but
-this can be an infinite structure. -/
-unsafe inductive CofixI (F : PFunctor.{u})
-  /-- Construct `CofixI` from an infinite structure. -/
-  | mk (t : F (CofixI F)) : CofixI F
+theorem M.default_consistent [Inhabited F.A] : ∀ n, Agree (default : CofixA F n) default
+  | 0 => Agree.continu _ _
+  | succ n => Agree.intro _ _ fun _ => M.default_consistent n
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.default_consistent PFunctor.M.default_consistent
+
+instance M.inhabited [Inhabited F.A] : Inhabited (M F) :=
+  ⟨{  approx := default
+      consistent := M.default_consistent _ }⟩
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.inhabited PFunctor.M.inhabited
+
+instance MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
+  show Inhabited (M F) by infer_instance
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M_intl.inhabited PFunctor.MIntl.inhabited
 
 namespace M
-
-variable {F}
-
-/-- Convert `M` to `CofixI`. -/
-@[inline]
-unsafe def ofI : CofixI F → M F :=
-  unsafeCast
-
-/-- Convert `CofixI` to `M`. -/
-@[inline]
-unsafe def toI : M F → CofixI F :=
-  unsafeCast
 
 theorem ext' (x y : M F) (H : ∀ i : ℕ, x.approx i = y.approx i) : x = y := by
   cases x
   cases y
   congr with n
   apply H
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ext' PFunctor.M.ext'
 
 variable {X : Type*}
 
 variable (f : X → F X)
 
-/-- The implemention of `corec`. This generates data trees lazily. -/
-@[inline]
-unsafe def corecUnsafe (i : X) : M F :=
-  let rec
-    /-- The main loop of `corecUnsafe`. -/
-    @[specialize] loop (i : X) : CofixI F :=
-      CofixI.mk <|
-        match f i with
-        | ⟨a, o⟩ => ⟨a, fun b => loop (o b)⟩
-  ofI (loop i)
+variable {F}
 
 /-- Corecursor for the M-type defined by `F`. -/
-@[implemented_by corecUnsafe]
 protected def corec (i : X) : M F where
   approx := sCorec f i
   consistent := P_corec _ _
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec PFunctor.M.corec
-
-theorem default_consistent [Inhabited F.A] : ∀ n, Agree (default : CofixA F n) default
-  | 0 => Agree.continu _ _
-  | succ n => Agree.intro _ _ fun _ => default_consistent n
-#align pfunctor.M.default_consistent PFunctor.M.default_consistent
-
-instance inhabited [Inhabited F.A] : Inhabited (M F) where
-  default := M.corec (fun a : F.A => ⟨a, fun _ => default⟩) default
-#align pfunctor.M_intl.inhabited PFunctor.M.inhabited
 
 /-- given a tree generated by `F`, `head` gives us the first piece of data
 it contains -/
-noncomputable def head (x : M F) :=
+def head (x : M F) :=
   head' (x.1 1)
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.head PFunctor.M.head
 
 /-- return all the subtrees of the root of a tree `x : M F` -/
-noncomputable def children (x : M F) (i : F.B (head x)) : M F :=
+def children (x : M F) (i : F.B (head x)) : M F :=
   let H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
   { approx := fun n => children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H]) i)
     consistent := by
@@ -318,106 +255,51 @@ noncomputable def children (x : M F) (i : F.B (head x)) : M F :=
       apply cast_heq
       symm
       apply cast_heq }
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.children PFunctor.M.children
-
-theorem head_succ (n m : ℕ) (x : M F) : head' (x.approx (succ n)) = head' (x.approx (succ m)) :=
-  head_succ' n m _ x.consistent
-#align pfunctor.M.head_succ PFunctor.M.head_succ
-
-theorem head_eq_head' (x : M F) (n : ℕ) : head x = head' (x.approx <| n + 1) :=
-  head_succ' _ _ _ x.consistent
-#align pfunctor.M.head_eq_head' PFunctor.M.head_eq_head'
-
-theorem head'_eq_head (x : M F) (n : ℕ) : head' (x.approx <| n + 1) = head x :=
-  head_succ' _ _ _ x.consistent
-#align pfunctor.M.head'_eq_head PFunctor.M.head'_eq_head
-
-theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.approx n :=
-  truncate_eq_of_agree _ _ (x.consistent _)
-#align pfunctor.M.truncate_approx PFunctor.M.truncate_approx
-
-theorem approx_eta (x : M F) (n : ℕ) :
-    x.approx (n + 1) = CofixA.intro (head x) (fun i => (children x i).approx n) := by
-  rw [CofixA.eta (x.approx (n + 1))]
-  dsimp only [children]
-  have hx : head' (approx x (n + 1)) = head x := head_eq_head' x n |>.symm
-  congr 1
-  refine hfunext (congr_arg F.B hx) fun a₁ a₂ ha => ?_
-  congr 1
-  symm; rw [cast_eq_iff_heq]; symm; assumption
-
-/-- The implemention of `dest`. This unfolds an M-type. -/
-unsafe def destUnsafe (x : M F) : F (M F) :=
-  match toI x with
-  | ⟨⟨a, o⟩⟩ => ⟨a, fun b => ofI (o b)⟩
-
-/-- This unfolds an M-type. -/
-@[implemented_by destUnsafe]
-def dest (x : M F) : F (M F) :=
-  ⟨head x, fun i => children x i⟩
-#align pfunctor.M.dest PFunctor.M.dest
-
-/-- The implemention of `head`. -/
-@[inline]
-def headComputable (x : M F) :=
-  (dest x).1
-
-@[csimp]
-theorem head_eq_headComputable : @head = @headComputable :=
-  rfl
-
-/-- The implemention of `children`. -/
-@[inline]
-def childrenComputable (x : M F) : (i : F.B (head x)) → M F :=
-  (dest x).2
-
-@[csimp]
-theorem children_eq_childrenComputable : @children = @childrenComputable :=
-  rfl
-
-/-- The implemention of `approx`. -/
-def approxComputable (x : M F) : (n : ℕ) → CofixA F n
-  | 0      => CofixA.continue
-  | succ n => CofixA.intro (head x) fun b => approxComputable (children x b) n
-
-@[csimp]
-theorem approx_eq_approxComputable : @approx.{u} = @approxComputable.{u} := by
-  funext F x n
-  induction n generalizing x with
-  | zero      => apply cofixA_eq_zero
-  | succ n hn => simp only [approxComputable, ← hn, ← approx_eta]
-
-/-- The implemention of `M.casesOn`. -/
-@[specialize]
-def casesOnComputable {motive : M F → Sort*} (x : M F)
-    (mk' : (approx : (n : ℕ) → CofixA F n) → (consistent : AllAgree approx) →
-      motive (M.mk' approx consistent)) :
-    motive x :=
-  mk' (approx x) (consistent x)
-
-@[csimp]
-theorem casesOn_eq_casesOnComputable : @M.casesOn.{v, u} = @M.casesOnComputable.{v, u} :=
-  rfl
 
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
 def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.Idx) (x : M F) : M F :=
   if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
   else default
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ichildren PFunctor.M.ichildren
+
+theorem head_succ (n m : ℕ) (x : M F) : head' (x.approx (succ n)) = head' (x.approx (succ m)) :=
+  head_succ' n m _ x.consistent
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.head_succ PFunctor.M.head_succ
+
+theorem head_eq_head' : ∀ (x : M F) (n : ℕ), head x = head' (x.approx <| n + 1)
+  | ⟨_, h⟩, _ => head_succ' _ _ _ h
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.head_eq_head' PFunctor.M.head_eq_head'
+
+theorem head'_eq_head : ∀ (x : M F) (n : ℕ), head' (x.approx <| n + 1) = head x
+  | ⟨_, h⟩, _ => head_succ' _ _ _ h
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.head'_eq_head PFunctor.M.head'_eq_head
+
+theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.approx n :=
+  truncate_eq_of_agree _ _ (x.consistent _)
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.truncate_approx PFunctor.M.truncate_approx
+
+/-- unfold an M-type -/
+def dest : M F → F (M F)
+  | x => ⟨head x, fun i => children x i⟩
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.dest PFunctor.M.dest
 
 namespace Approx
 
 /-- generates the approximations needed for `M.mk` -/
 protected def sMk (x : F (M F)) : ∀ n, CofixA F n
   | 0 => CofixA.continue
-  | n + 1 => CofixA.intro x.1 fun i => (x.2 i).approx n
+  | succ n => CofixA.intro x.1 fun i => (x.2 i).approx n
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.approx.s_mk PFunctor.M.Approx.sMk
-
-@[simp]
-theorem sMk_succ (x : F (M F)) (n : ℕ) :
-    Approx.sMk x (n + 1) = CofixA.intro x.1 fun i => (x.2 i).approx n :=
-  rfl
 
 protected theorem P_mk (x : F (M F)) : AllAgree (Approx.sMk x)
   | 0 => by constructor
@@ -425,21 +307,17 @@ protected theorem P_mk (x : F (M F)) : AllAgree (Approx.sMk x)
     constructor
     introv
     apply (x.2 i).consistent
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.approx.P_mk PFunctor.M.Approx.P_mk
 
 end Approx
 
-/-- The implemention of `mk`. -/
-@[inline]
-unsafe def mkUnsafe (x : F (M F)) : M F :=
-  match x with
-  | ⟨a, o⟩ => ofI <| CofixI.mk <| ⟨a, fun b => toI (o b)⟩
-
 /-- constructor for M-types -/
-@[implemented_by mkUnsafe, simps]
-protected def mk (x : F (M F)) : M F where
+protected def mk (x : F (M F)) : M F
+    where
   approx := Approx.sMk x
   consistent := Approx.P_mk x
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk PFunctor.M.mk
 
 /-- `Agree' n` relates two trees of type `M F` that
@@ -447,13 +325,13 @@ are the same up to depth `n` -/
 inductive Agree' : ℕ → M F → M F → Prop
   | trivial (x y : M F) : Agree' 0 x y
   | step {n : ℕ} {a} (x y : F.B a → M F) {x' y'} :
-    x' = M.mk ⟨a, x⟩ → y' = M.mk ⟨a, y⟩ →
-      (∀ i, Agree' n (x i) (y i)) → Agree' (succ n) x' y'
+    x' = M.mk ⟨a, x⟩ → y' = M.mk ⟨a, y⟩ → (∀ i, Agree' n (x i) (y i)) → Agree' (succ n) x' y'
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree' PFunctor.M.Agree'
 
 @[simp]
-theorem dest_mk (x : F (M F)) : dest (M.mk x) = x :=
-  rfl
+theorem dest_mk (x : F (M F)) : dest (M.mk x) = x := rfl
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_mk PFunctor.M.dest_mk
 
 @[simp]
@@ -461,51 +339,68 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
   intro n
   dsimp only [M.mk]
-  induction n with
-  | zero => apply cofixA_eq_zero
-  | succ n => simp only [Approx.sMk, dest, ← approx_eta]
+  induction' n with n
+  · apply @Subsingleton.elim _ CofixA.instSubsingleton
+  dsimp only [Approx.sMk, dest, head]
+  cases' h : x.approx (succ n) with _ hd ch
+  have h' : hd = head' (x.approx 1) := by
+    rw [← head_succ' n, h, head']
+    apply x.consistent
+  revert ch
+  rw [h']
+  intros ch h
+  congr
+  · ext a
+    dsimp only [children]
+    generalize hh : cast _ a = a''
+    rw [cast_eq_iff_heq] at hh
+    revert a''
+    rw [h]
+    intros _ hh
+    cases hh
+    rfl
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk_dest PFunctor.M.mk_dest
 
-theorem mk_inj {x y : F (M F)} (h : M.mk x = M.mk y) : x = y := by
-  rw [← dest_mk x, h, dest_mk]
+theorem mk_inj {x y : F (M F)} (h : M.mk x = M.mk y) : x = y := by rw [← dest_mk x, h, dest_mk]
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk_inj PFunctor.M.mk_inj
 
 /-- destructor for M-types -/
-@[inline, elab_as_elim]
-protected def cCases {r : M F → Sort w} (mk : ∀ x : F (M F), r (M.mk x))
-    (x : M F) : r x :=
+protected def cases {r : M F → Sort w} (f : ∀ x : F (M F), r (M.mk x)) (x : M F) : r x :=
   suffices r (M.mk (dest x)) by
     rw [← mk_dest x]
     exact this
-  mk _
-#align pfunctor.M.cases PFunctor.M.cCases
+  f _
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.cases PFunctor.M.cases
 
 /-- destructor for M-types -/
-@[inline, elab_as_elim]
-protected def cCasesOn {r : M F → Sort w} (x : M F)
-    (mk : ∀ x : F (M F), r (M.mk x)) : r x :=
-  M.cCases mk x
-#align pfunctor.M.cases_on PFunctor.M.cCasesOn
+protected def casesOn {r : M F → Sort w} (x : M F) (f : ∀ x : F (M F), r (M.mk x)) : r x :=
+  M.cases f x
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.cases_on PFunctor.M.casesOn
 
-/-- destructor for M-types, similar to `cCasesOn` but also
+/-- destructor for M-types, similar to `casesOn` but also
 gives access directly to the root and subtrees on an M-type -/
-@[inline, elab_as_elim]
-protected def cCasesOn' {r : M F → Sort w} (x : M F) (mkMk : ∀ a f, r (M.mk ⟨a, f⟩)) :
-    r x :=
-  M.cCasesOn x (fun ⟨a, g⟩ => mkMk a g)
-#align pfunctor.M.cases_on' PFunctor.M.cCasesOn'
+protected def casesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk ⟨a, f⟩)) : r x :=
+  M.casesOn x (fun ⟨a, g⟩ => f a g)
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.cases_on' PFunctor.M.casesOn'
 
 theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
     (M.mk ⟨a, f⟩).approx (succ i) = CofixA.intro a fun j => (f j).approx i :=
   rfl
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.approx_mk PFunctor.M.approx_mk
 
 @[simp]
 theorem agree'_refl {n : ℕ} (x : M F) : Agree' n x x := by
   induction' n with _ n_ih generalizing x <;>
-  induction x using PFunctor.M.cCasesOn' <;> constructor <;> try rfl
+  induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
   intros
   apply n_ih
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree'_refl PFunctor.M.agree'_refl
 
 theorem agree_iff_agree' {n : ℕ} (x y : M F) :
@@ -513,8 +408,8 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
   constructor <;> intro h
   · induction' n with _ n_ih generalizing x y
     constructor
-    · induction x using PFunctor.M.cCasesOn'
-      induction y using PFunctor.M.cCasesOn'
+    · induction x using PFunctor.M.casesOn'
+      induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
       cases' h with _ _ _ _ _ _ hagree
       constructor <;> try rfl
@@ -524,8 +419,8 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
   · induction' n with _ n_ih generalizing x y
     constructor
     · cases' h with _ _ _ a x' y'
-      induction' x using PFunctor.M.cCasesOn' with x_a x_f
-      induction' y using PFunctor.M.cCasesOn' with y_a y_f
+      induction' x using PFunctor.M.casesOn' with x_a x_f
+      induction' y using PFunctor.M.casesOn' with y_a y_f
       simp only [approx_mk]
       have h_a_1 := mk_inj ‹M.mk ⟨x_a, x_f⟩ = M.mk ⟨a, x'⟩›
       cases h_a_1
@@ -535,204 +430,105 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       intro i
       apply n_ih
       simp [*]
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.agree_iff_agree' PFunctor.M.agree_iff_agree'
 
 @[simp]
-theorem cCases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
-    PFunctor.M.cCases f (M.mk x) = f x := by
-  dsimp only [M.mk, PFunctor.M.cCases, dest, head, Approx.sMk, head']
+theorem cases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
+    PFunctor.M.cases f (M.mk x) = f x := by
+  dsimp only [M.mk, PFunctor.M.cases, dest, head, Approx.sMk, head']
   cases x; dsimp only [Approx.sMk]
   simp only [Eq.mpr]
   apply congrFun
   rfl
-#align pfunctor.M.cases_mk PFunctor.M.cCases_mk
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.cases_mk PFunctor.M.cases_mk
 
 @[simp]
-theorem cCasesOn_mk {r : M F → Sort*} (x : F (M F))
-    (f : ∀ x : F (M F), r (M.mk x)) :
-    PFunctor.M.cCasesOn (M.mk x) f = f x :=
-  cCases_mk x f
-#align pfunctor.M.cases_on_mk PFunctor.M.cCasesOn_mk
+theorem casesOn_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
+    PFunctor.M.casesOn (M.mk x) f = f x :=
+  cases_mk x f
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.cases_on_mk PFunctor.M.casesOn_mk
 
 @[simp]
-theorem cCasesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
+theorem casesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
     (f : ∀ (a) (f : F.B a → M F), r (M.mk ⟨a, f⟩)) :
-    PFunctor.M.cCasesOn' (M.mk ⟨a, x⟩) f = f a x :=
-  @cCases_mk F r ⟨a, x⟩ (fun ⟨a, g⟩ => f a g)
-#align pfunctor.M.cases_on_mk' PFunctor.M.cCasesOn_mk'
+    PFunctor.M.casesOn' (M.mk ⟨a, x⟩) f = f a x :=
+  @cases_mk F r ⟨a, x⟩ (fun ⟨a, g⟩ => f a g)
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.cases_on_mk' PFunctor.M.casesOn_mk'
 
 /-- `IsPath p x` tells us if `p` is a valid path through `x` -/
 inductive IsPath : Path F → M F → Prop
-  /-- `[]` is a valid path for arbitrary `x`. -/
-  | nil (x : M F) : IsPath [] x
-  /-- If `ps` is a valid path of `o i`, then
-  `⟨a, i⟩ :: ps` is a valid path of `M.mk ⟨a, f⟩`. -/
-  | cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a) :
-    IsPath ps (f i) → IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)
+    | nil (x : M F) : IsPath [] x
+  |
+  cons (xs : Path F) {a} (x : M F) (f : F.B a → M F) (i : F.B a) :
+    x = M.mk ⟨a, f⟩ → IsPath xs (f i) → IsPath (⟨a, i⟩ :: xs) x
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.is_path PFunctor.M.IsPath
 
-theorem isPath_cons {ps : Path F} {a a'} {f : F.B a → M F} {i : F.B a'}
-    (hps : IsPath (⟨a', i⟩ :: ps) (M.mk ⟨a, f⟩)) : a = a' := by
-  generalize h : M.mk ⟨a, f⟩ = x at hps
-  cases hps
+theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :
+    IsPath (⟨a', i⟩ :: xs) (M.mk ⟨a, f⟩) → a = a' := by
+  generalize h : M.mk ⟨a, f⟩ = x
+  rintro (_ | ⟨_, _, _, _, rfl, _⟩)
   cases mk_inj h
   rfl
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.is_path_cons PFunctor.M.isPath_cons
 
-theorem isPath_cons' {ps : Path F} {a} {f : F.B a → M F} {i : F.B a}
-    (hps : IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)) : IsPath ps (f i) := by
-  generalize h : M.mk ⟨a, f⟩ = x at hps
-  cases hps
+theorem isPath_cons' {xs : Path F} {a} {f : F.B a → M F} {i : F.B a} :
+    IsPath (⟨a, i⟩ :: xs) (M.mk ⟨a, f⟩) → IsPath xs (f i) := by
+  generalize h : M.mk ⟨a, f⟩ = x
+  rintro (_ | ⟨_, _, _, _, rfl, hp⟩)
   cases mk_inj h
-  assumption
+  exact hp
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.is_path_cons' PFunctor.M.isPath_cons'
 
-@[simp]
-theorem isPath_cons_iff {ps : Path F} {a} {f : F.B a → M F} {i : F.B a} :
-    IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) ↔ IsPath ps (f i) :=
-  ⟨isPath_cons', IsPath.cons _ _ _⟩
-
-theorem IsPath.isPathA {p : Path F} {x : (n : ℕ) → CofixA F n} {hx : AllAgree x}
-    (hmx : IsPath p (M.mk' x hx)) (n : ℕ) : IsPathA p (x (n + length p)) := by
-  generalize hy : M.mk' x hx = y at hmx
-  induction hmx generalizing x hx with
-  | nil x => constructor
-  | @cons ps a f i _ hps =>
-    simp [M.mk, Approx.sMk] at hy; clear hx; subst hy
-    simp; constructor
-    cases hf : f i
-    exact hps hf.symm
-
-/-- `IsPath` is decidable if `F.A` has decidable equality. -/
-def IsPath.dec [DecidableEq F.A] (p : Path F) (x : M F) : Decidable (IsPath p x) :=
-  match p with
-  | [] => isTrue (IsPath.nil x)
-  | ⟨a, i⟩ :: ps =>
-    if ha : head x = a then
-      @decidable_of_iff _ (IsPath ps (children x (cast (congr_arg F.B ha.symm) i)))
-        (by
-          subst ha
-          conv_rhs => arg 2; rw [← mk_dest x, dest]
-          symm; exact isPath_cons_iff)
-        (dec ps (children x (cast (congr_arg F.B ha.symm) i)))
-    else
-      isFalse <| by
-        intro hx
-        rw [← mk_dest x, dest] at hx
-        exact ha (isPath_cons hx)
-
-instance [DecidableEq F.A] (p : Path F) (x : M F) : Decidable (IsPath p x) :=
-  IsPath.dec p x
-
-/-- Destruct `IsPath.cons` constructively. -/
-def IsPath.destCons {a b ps} (x : M F) (hx : IsPath (⟨a, b⟩ :: ps) x) :
-    { o : F.B a → M F // IsPath ps (o b) } :=
-  have ha₂ : head x = a := by
-    rw [← mk_dest x, dest] at hx; exact isPath_cons hx
-  ⟨fun i => children x (cast (congr_arg F.B ha₂.symm) i), by
-    subst ha₂
-    conv at hx => arg 2; rw [← mk_dest x, dest]
-    exact isPath_cons' hx⟩
-
-theorem IsPath.destCons_isPath_cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a)
-    (hps : IsPath ps (f i)) : IsPath.destCons (M.mk ⟨a, f⟩) (IsPath.cons a f i hps) = ⟨f, hps⟩ := by
-  rfl
-
 /-- follow a path through a value of `M F` and return the subtree
-found at the end of the path. -/
-def subtree (p : Path F) (x : M F) (hx : IsPath p x) : M F :=
-  match p with
-  | [] => x
-  | ⟨_, b⟩ :: ps =>
-    let ⟨o, ho⟩ := IsPath.destCons x hx
-    subtree ps (o b) ho
+found at the end of the path if it is a valid path for that value and
+return a default tree -/
+def isubtree [DecidableEq F.A] [Inhabited (M F)] : Path F → M F → M F
+  | [], x => x
+  | ⟨a, i⟩ :: ps, x =>
+    PFunctor.M.casesOn' (r := fun _ => M F) x (fun a' f =>
+      if h : a = a' then
+        isubtree ps (f <| cast (by rw [h]) i)
+      else
+        default (α := M F)
+    )
 
-@[simp]
-theorem subtree_nil {x : M F} (hx : IsPath [] x) : subtree [] x hx = x :=
-  rfl
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.isubtree PFunctor.M.isubtree
 
-@[simp]
-theorem subtree_cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a)
-    (hps : IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)) :
-    subtree (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) hps = subtree ps (f i) (isPath_cons' hps) :=
-  rfl
-
-theorem subtree'_eq_subtree_approx {p : Path F} {x : (n : ℕ) → CofixA F n} {hx : AllAgree x}
-    (hp : IsPath p (M.mk' x hx)) (n : ℕ) :
-    subtree' p (x (n + length p)) (hp.isPathA n) = approx (subtree p (M.mk' x hx) hp) n := by
-  change
-    subtree' p (approx (M.mk' x hx) (n + length p))
-        (hp.isPathA (x := approx (M.mk' x hx)) (hx := consistent (M.mk' x hx)) n) =
-      approx (subtree p (M.mk' x hx) hp) n
-  generalize M.mk' x hx = y at hp; clear x hx
-  induction hp with
-  | nil x => simp
-  | @cons ps a f i hps hpsᵢ =>
-    simp [add_succ]
-    exact hpsᵢ
-
-/-- follow a path through a value of `M F` and return the subtree
-found at the end of the path if it is a valid path for that value -/
-def subtree? [DecidableEq F.A] (p : Path F) (x : M F) : Option (M F) :=
-  if hp : IsPath p x then
-    some (subtree p x hp)
-  else
-    none
-#align pfunctor.M.isubtree PFunctor.M.subtree?
-
-/-- similar to `subtree` but returns the data at the end of the path instead
+/-- similar to `isubtree` but returns the data at the end of the path instead
 of the whole subtree -/
-def select (p : Path F) (x : M F) (hx : IsPath p x) : F.A :=
-  head (subtree p x hx)
+def iselect [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) : M F → F.A := fun x : M F =>
+  head <| isubtree ps x
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.iselect PFunctor.M.iselect
 
-@[simp]
-theorem select_nil (x : M F) (hx : IsPath [] x) : select [] x hx = head x :=
-  rfl
-
-@[simp]
-theorem select_cons {ps : Path F} (a) (f : F.B a → M F) (i : F.B a)
-    (hps : IsPath (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩)) :
-    select (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) hps = select ps (f i) (isPath_cons' hps) :=
-  rfl
-
-theorem select'_eq_select {p : Path F} {x : (n : ℕ) → CofixA F n} {hx : AllAgree x}
-    (hp : IsPath p (M.mk' x hx)) (n : ℕ) :
-    select' p (x (n + 1 + length p)) (hp.isPathA (n + 1)) = select p (M.mk' x hx) hp := by
-  unfold select select'
-  rw [subtree'_eq_subtree_approx (n := n + 1) hp, head'_eq_head]
-
-/-- similar to `subtree?` but returns the data at the end of the path instead
-of the whole subtree -/
-def select? [DecidableEq F.A] (p : Path F) (x : M F) : Option F.A :=
-  Option.map head (subtree? p x)
-#align pfunctor.M.iselect PFunctor.M.select?
-
-theorem IsPath.concat_select {p : Path F} {x : M F} (hx : IsPath p x) (i) :
-    IsPath (p ++ [⟨select p x hx, i⟩]) x := by
-  induction hx with
-  | nil x =>
-    simp
-    conv => arg 2; rw [← mk_dest x, dest]
-    constructor; constructor
-  | @cons ps a f i₂ hps hpsᵢ =>
-    simp
-    apply hpsᵢ
-
-theorem subtree_concat_select {p : Path F} {x : M F} (hp : IsPath p x) (i) :
-    subtree (p ++ [⟨select p x hp, i⟩]) x (hp.concat_select i) =
-      children (subtree p x hp) i := by
-  induction hp with
-  | nil x =>
-    simp
-    conv_lhs => arg 2; rw [← mk_dest x, dest]
-  | @cons ps a f i₂ hps hpsᵢ =>
-    simp
-    apply hpsᵢ
-
-theorem select?_eq_none [DecidableEq F.A] (ps : Path F) (x : M F)
-    (h : ¬IsPath ps x) : select? ps x = none := by
-  simp [select?, subtree?, h]
-#align pfunctor.M.iselect_eq_default PFunctor.M.select?_eq_none
+theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x : M F)
+    (h : ¬IsPath ps x) : iselect ps x = head default := by
+  induction' ps with ps_hd ps_tail ps_ih generalizing x
+  · exfalso
+    apply h
+    constructor
+  · cases' ps_hd with a i
+    induction' x using PFunctor.M.casesOn' with x_a x_f
+    simp only [iselect, isubtree] at ps_ih ⊢
+    by_cases h'' : a = x_a
+    subst x_a
+    · simp only [dif_pos, eq_self_iff_true, casesOn_mk']
+      rw [ps_ih]
+      intro h'
+      apply h
+      constructor <;> try rfl
+      apply h'
+    · simp [*]
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.iselect_eq_default PFunctor.M.iselect_eq_default
 
 @[simp]
 theorem head_mk (x : F (M F)) : head (M.mk x) = x.1 :=
@@ -740,10 +536,13 @@ theorem head_mk (x : F (M F)) : head (M.mk x) = x.1 :=
     calc
       x.1 = (dest (M.mk x)).1 := by rw [dest_mk]
       _ = head (M.mk x) := rfl
+
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.head_mk PFunctor.M.head_mk
 
 theorem children_mk {a} (x : F.B a → M F) (i : F.B (head (M.mk ⟨a, x⟩))) :
     children (M.mk ⟨a, x⟩) i = x (cast (by rw [head_mk]) i) := by apply ext'; intro n; rfl
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.children_mk PFunctor.M.children_mk
 
 @[simp]
@@ -751,28 +550,29 @@ theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Id
     ichildren i (M.mk x) = x.iget i := by
   dsimp only [ichildren, PFunctor.Obj.iget]
   congr with h
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ichildren_mk PFunctor.M.ichildren_mk
 
 @[simp]
-theorem subtree?_cons [DecidableEq F.A] (ps : Path F) {a}
-    (f : F.B a → M F) {i : F.B a} :
-    subtree? (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = subtree? ps (f i) := by
-  simp [subtree?]
-#align pfunctor.M.isubtree_cons PFunctor.M.subtree?_cons
+theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F)
+    {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
+  simp only [isubtree, ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, M.casesOn_mk']; rfl
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.isubtree_cons PFunctor.M.isubtree_cons
 
 @[simp]
-theorem select?_nil [DecidableEq F.A] {a} (f : F.B a → M F) :
-    select? [] (M.mk ⟨a, f⟩) = a := rfl
-#align pfunctor.M.iselect_nil PFunctor.M.select?_nil
+theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
+    iselect nil (M.mk ⟨a, f⟩) = a := rfl
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.iselect_nil PFunctor.M.iselect_nil
 
 @[simp]
-theorem select?_cons [DecidableEq F.A] (ps : Path F) {a} (f : F.B a → M F) {i} :
-    select? (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = select? ps (f i) := by
-  simp [select?]
-#align pfunctor.M.iselect_cons PFunctor.M.select?_cons
+theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F) {i} :
+    iselect (⟨a, i⟩ :: ps) (M.mk ⟨a, f⟩) = iselect ps (f i) := by simp only [iselect, isubtree_cons]
+set_option linter.uppercaseLean3 false in
+#align pfunctor.M.iselect_cons PFunctor.M.iselect_cons
 
-theorem corec_def {X} (f : X → F X) (x₀ : X) :
-    M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
+theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   dsimp only [M.corec, M.mk]
   congr with n
   cases' n with n
@@ -781,24 +581,24 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) :
     cases h : f x₀
     dsimp only [PFunctor.map]
     congr
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_def PFunctor.M.corec_def
 
-theorem ext_aux [DecidableEq F.A] {n : ℕ}
-    (x y z : M F) (hx : Agree' n z x)
-    (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → select? ps x = select? ps y) :
+theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx : Agree' n z x)
+    (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → iselect ps x = iselect ps y) :
     x.approx (n + 1) = y.approx (n + 1) := by
   induction' n with n n_ih generalizing x y z
   · specialize hrec [] rfl
-    induction x using PFunctor.M.cCasesOn'
-    induction y using PFunctor.M.cCasesOn'
-    simp only [select?_nil] at hrec
-    cases hrec
+    induction x using PFunctor.M.casesOn'
+    induction y using PFunctor.M.casesOn'
+    simp only [iselect_nil] at hrec
+    subst hrec
     simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
                 heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
   · cases hx
     cases hy
-    induction x using PFunctor.M.cCasesOn'
-    induction y using PFunctor.M.cCasesOn'
+    induction x using PFunctor.M.casesOn'
+    induction y using PFunctor.M.casesOn'
     subst z
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
@@ -816,13 +616,16 @@ theorem ext_aux [DecidableEq F.A] {n : ℕ}
     · solve_by_elim
     introv h
     specialize hrec (⟨_, i⟩ :: ps) (congr_arg _ h)
-    simp only [select?_cons] at hrec
+    simp only [iselect_cons] at hrec
     exact hrec
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ext_aux PFunctor.M.ext_aux
 
 open PFunctor.Approx
 
-theorem ext [DecidableEq F.A] (x y : M F) (H : ∀ ps : Path F, select? ps x = select? ps y) :
+attribute [local instance] Classical.propDecidable
+
+theorem ext [Inhabited (M F)] (x y : M F) (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
     x = y := by
   apply ext'; intro i
   induction' i with i i_ih
@@ -835,56 +638,59 @@ theorem ext [DecidableEq F.A] (x y : M F) (H : ∀ ps : Path F, select? ps x = s
     · rw [← agree_iff_agree', i_ih]
       apply y.consistent
     introv H'
-    dsimp only [select?] at H
+    dsimp only [iselect] at H
     cases H'
     apply H ps
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ext PFunctor.M.ext
 
 section Bisim
 
 variable (R : M F → M F → Prop)
 
+local infixl:50 " ~ " => R
+
 /-- Bisimulation is the standard proof technique for equality between
 infinite tree-like structures -/
 structure IsBisimulation : Prop where
   /-- The head of the trees are equal -/
-  head : ∀ {a a'} {f f'}, R (M.mk ⟨a, f⟩) (M.mk ⟨a', f'⟩) → a = a'
+  head : ∀ {a a'} {f f'}, M.mk ⟨a, f⟩ ~ M.mk ⟨a', f'⟩ → a = a'
   /-- The tails are equal -/
-  tail : ∀ {a} {f f' : F.B a → M F},
-    R (M.mk ⟨a, f⟩) (M.mk ⟨a, f'⟩) → ∀ i : F.B a, R (f i) (f' i)
+  tail : ∀ {a} {f f' : F.B a → M F}, M.mk ⟨a, f⟩ ~ M.mk ⟨a, f'⟩ → ∀ i : F.B a, f i ~ f' i
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.is_bisimulation PFunctor.M.IsBisimulation
 
-theorem nth_of_bisim [DecidableEq F.A] (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
-    R s₁ s₂ →
+theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (ps : Path F) :
+    (R s₁ s₂) →
       IsPath ps s₁ ∨ IsPath ps s₂ →
-        select? ps s₁ = select? ps s₂ ∧
+        iselect ps s₁ = iselect ps s₂ ∧
           ∃ (a : _) (f f' : F.B a → M F),
-            M.mk ⟨a, f⟩ ∈ subtree? ps s₁ ∧
-              M.mk ⟨a, f'⟩ ∈ subtree? ps s₂ ∧ ∀ i : F.B a, R (f i) (f' i) := by
+            isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
+              isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh
-  induction' s₁ using PFunctor.M.cCasesOn' with a f
-  induction' s₂ using PFunctor.M.cCasesOn' with a' f'
+  induction' s₁ using PFunctor.M.casesOn' with a f
+  induction' s₂ using PFunctor.M.casesOn' with a' f'
   obtain rfl : a = a' := bisim.head h₀
   induction' ps with i ps ps_ih generalizing a f f'
   · exists rfl, a, f, f', rfl, rfl
     apply bisim.tail h₀
   cases' i with a' i
   obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
-  dsimp only [select?] at ps_ih ⊢
+  dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
-  induction' h : f i using PFunctor.M.cCasesOn' with a₀ f₀
-  induction' h' : f' i using PFunctor.M.cCasesOn' with a₁ f₁
-  simp only [h, h', subtree?_cons] at ps_ih ⊢
+  induction' h : f i using PFunctor.M.casesOn' with a₀ f₀
+  induction' h' : f' i using PFunctor.M.casesOn' with a₁ f₁
+  simp only [h, h', isubtree_cons] at ps_ih ⊢
   rw [h, h'] at h₁
   obtain rfl : a₀ = a₁ := bisim.head h₁
   apply ps_ih _ _ _ h₁
   rw [← h, ← h']
   apply Or.imp isPath_cons' isPath_cons' hh
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.nth_of_bisim PFunctor.M.nth_of_bisim
 
-theorem eq_of_bisim (bisim : IsBisimulation R) :
-    ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
-  classical
+theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
+  inhabit M F
     introv Hr; apply ext
     introv
     by_cases h : IsPath ps s₁ ∨ IsPath ps s₂
@@ -892,7 +698,8 @@ theorem eq_of_bisim (bisim : IsBisimulation R) :
       exact H.left
     · rw [not_or] at h
       cases' h with h₀ h₁
-      simp only [select?_eq_none, *, not_false_iff]
+      simp only [iselect_eq_default, *, not_false_iff]
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.eq_of_bisim PFunctor.M.eq_of_bisim
 
 end Bisim
@@ -900,23 +707,23 @@ end Bisim
 universe u' v'
 
 /-- corecursor for `M F` with swapped arguments -/
-abbrev corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
+def corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
   M.corec f x₀
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_on PFunctor.M.corecOn
 
-variable {P : PFunctor.{u}} {α : Type v}
+variable {P : PFunctor.{u}} {α : Type*}
 
-@[simp]
-theorem dest_corec (g : α → P α) (x : α) :
-    M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
+theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
   rw [corec_def, dest_mk]
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.dest_corec PFunctor.M.dest_corec
 
 theorem bisim (R : M P → M P → Prop)
-    (h : ∀ x y, R x y → ∃ a f f',
-      M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
+    (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   introv h'
+haveI := Inhabited.mk x.head
   apply eq_of_bisim R _ _ _ h'; clear h' x y
   constructor <;> introv ih <;> rcases h _ _ ih with ⟨a'', g, g', h₀, h₁, h₂⟩ <;> clear h
   · replace h₀ := congr_arg Sigma.fst h₀
@@ -927,6 +734,7 @@ theorem bisim (R : M P → M P → Prop)
     cases h₀
     cases h₁
     apply h₂
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim PFunctor.M.bisim
 
 theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
@@ -942,12 +750,12 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
       let ⟨a, f, f', ux'eq, vx'eq, h'⟩ := h x' Qx'
       ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
     _ _ ⟨x, Qx, rfl, rfl⟩
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim' PFunctor.M.bisim'
 
 -- for the record, show M_bisim follows from _bisim'
 theorem bisim_equiv (R : M P → M P → Prop)
-    (h : ∀ x y, R x y → ∃ a f f',
-      M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
+    (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := fun x y Rxy =>
   let Q : M P × M P → Prop := fun p => R p.fst p.snd
   bisim' Q Prod.fst Prod.snd
@@ -955,6 +763,7 @@ theorem bisim_equiv (R : M P → M P → Prop)
       let ⟨a, f, f', hx, hy, h'⟩ := h p.fst p.snd Qp
       ⟨a, f, f', hx, hy, fun i => ⟨⟨f i, f' i⟩, h' i, rfl, rfl⟩⟩)
     ⟨x, y⟩ Rxy
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.bisim_equiv PFunctor.M.bisim_equiv
 
 theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = P.map f (g x)) :
@@ -965,73 +774,18 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   intro x _
   cases' gxeq : g x with a f'
   have h₀ : M.dest (f x) = ⟨a, f ∘ f'⟩ := by rw [hyp, gxeq, PFunctor.map_eq]
-  have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by
-    rw [dest_corec, gxeq, PFunctor.map_eq]
+  have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by rw [dest_corec, gxeq, PFunctor.map_eq]
   refine' ⟨_, _, _, h₀, h₁, _⟩
   intro i
   exact ⟨f' i, trivial, rfl, rfl⟩
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec_unique PFunctor.M.corec_unique
-
-namespace mk'Computable
-
-/-- The loop used in `mk'Computable`. -/
-noncomputable def loop (x : (n : ℕ) → CofixA P n) (hx : AllAgree x) :
-    { p : Path P // IsPath p (M.mk' x hx) } → P { p : Path P // IsPath p (M.mk' x hx) }
-  | ⟨p, hp⟩ =>
-    ⟨select p (M.mk' x hx) hp, fun i =>
-      ⟨p ++ [⟨select p (M.mk' x hx) hp, i⟩], IsPath.concat_select hp i⟩⟩
-
-/-- The implemention of `mk'Computable.loop`. -/
-def loopComputable (x : (n : ℕ) → CofixA P n) (hx : AllAgree x) :
-    { p : Path P // IsPath p (M.mk' x hx) } → P { p : Path P // IsPath p (M.mk' x hx) }
-  | ⟨p, hp⟩ =>
-    ⟨select' p (x (0 + 1 + length p)) (hp.isPathA (0 + 1)), fun i =>
-      ⟨concat p ⟨select' p (x (0 + 1 + length p)) (hp.isPathA (0 + 1)), i⟩, by
-        revert i; rw [select'_eq_select hp]; intro i
-        rw [concat_eq_append]; apply IsPath.concat_select⟩⟩
-
-@[csimp]
-theorem loop_eq_loopComputable : @loop.{u} = @loopComputable.{u} := by
-  funext P x hx ⟨p, hp⟩
-  simp [loop, loopComputable, PFunctor.Obj]
-  have hx : select p (M.mk' x hx) hp = select' p (x (0 + 1 + length p)) (hp.isPathA (0 + 1)) := by
-    rw [select'_eq_select hp]
-  constructor
-  · assumption
-  · refine hfunext (congr_arg P.B hx) (fun i₁ i₂ hi => ?_)
-    simp
-    constructor <;> assumption
-
-end mk'Computable
-
-/-- The implemention of `M.mk'`. -/
-def mk'Computable (x : (n : ℕ) → CofixA P n) (hx : AllAgree x) : M P :=
-  M.corec (mk'Computable.loop x hx) ⟨[], IsPath.nil (M.mk' x hx)⟩
-
-@[csimp]
-theorem mk'_eq_mk'Computable : @M.mk'.{u} = @M.mk'Computable.{u} := by
-  funext P x hx
-  change M.mk' x hx = M.mk'Computable (approx (M.mk' x hx)) (consistent (M.mk' x hx))
-  generalize M.mk' x hx = y; clear x hx
-  suffices
-      (fun s : { p : Path P // IsPath p y } =>
-          match s with
-          | ⟨p, hp⟩ => subtree p y hp) =
-        M.corec (M.mk'Computable.loop (approx y) (consistent y)) by
-    simp [M.mk'Computable, ← this]
-  apply corec_unique
-  rintro ⟨p, hp⟩
-  simp [dest, Function.comp, mk'Computable.loop, PFunctor.Obj]
-  constructor
-  · rfl
-  · ext i
-    rw [subtree_concat_select hp i]
 
 /-- corecursor where the state of the computation can be sent downstream
 in the form of a recursive call -/
-@[inline]
 def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P X) : α → M P :=
   M.corec (F _ id)
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec₁ PFunctor.M.corec₁
 
 /-- corecursor where it is possible to return a fully formed value at any point
