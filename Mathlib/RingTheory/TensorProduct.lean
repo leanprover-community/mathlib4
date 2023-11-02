@@ -778,7 +778,7 @@ theorem comm_tmul (a : A) (b : B) :
 #align algebra.tensor_product.comm_tmul Algebra.TensorProduct.comm_tmul
 
 @[simp]
-theorem comm_symm (a : A) (b : B) :
+theorem comm_symm_apply (a : A) (b : B) :
     (TensorProduct.comm R A B).symm (b ⊗ₜ a) = a ⊗ₜ b :=
   rfl
 
