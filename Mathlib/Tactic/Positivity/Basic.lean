@@ -413,8 +413,7 @@ def evalNatAbs : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
 
 @[positivity Nat.cast _]
 def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
-  let _iα : Q(NatCast $α) ← synthInstanceQ q(NatCast $α)
-  let ~q(Nat.cast ($a : ℕ)) := e | throwError "not Nat.cast"
+  let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
   let zα' : Q(Zero Nat) := q(inferInstance)
   let pα' : Q(PartialOrder Nat) := q(inferInstance)
   let (_oα : Q(OrderedSemiring $α)) ← synthInstanceQ q(OrderedSemiring $α)
@@ -429,8 +428,7 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 @[positivity Int.cast _]
 def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
-  let _iα : Q(IntCast $α) ← synthInstanceQ q(IntCast $α)
-  let ~q(Int.cast ($a : ℤ)) := e | throwError "not Int.cast"
+  let ~q(@Int.cast _ (_) ($a : ℤ)) := e | throwError "not Int.cast"
   let zα' : Q(Zero Int) := q(inferInstance)
   let pα' : Q(PartialOrder Int) := q(inferInstance)
   let ra ← core zα' pα' a
@@ -459,8 +457,7 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for Rat.cast. -/
 @[positivity Rat.cast _]
 def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
-  let _rα : Q(RatCast $α) ← synthInstanceQ (q(RatCast $α))
-  let ~q(Rat.cast ($a : ℚ)) := e | throwError "not Rat.cast"
+  let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
   let zα' : Q(Zero ℚ) := q(inferInstance)
   let pα' : Q(PartialOrder ℚ) := q(inferInstance)
   match ← core zα' pα' a with
