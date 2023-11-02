@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Miguel Marco. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Miguel Marco
+Authors: Miguel Marco
 -/
 import Init.Data.Nat.Basic
 import Mathlib.Algebra.Group.Basic
@@ -10,8 +10,6 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Tactic.FieldSimp
-
-open Lean Meta Elab Tactic Parser Tactic
 
 /-!
 # `collect_signs` and `collect_signs!` tactics.
@@ -23,6 +21,8 @@ an expression with only additions minus annother expression with only additions.
 The `collect_signs!` tactic extends `collect_signs`, trying to cancel additions and
 substractions of naturals, adding the necessary inequalities as new goals.
 -/
+
+open Lean Meta Elab Tactic Parser Tactic
 
 /--
 The `collect_signs` tactic rewrites expression combining additions and substractions into

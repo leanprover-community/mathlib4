@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Miguel Marco. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Miguel Marco
+Authors: Miguel Marco
 -/
 import Init.Data.Nat.Basic
 import Mathlib.Algebra.EuclideanDomain.Basic
@@ -15,8 +15,6 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Tactic.FieldSimp
 import Std.Data.Nat.Lemmas
-
-open Lean Meta Elab Tactic Parser Tactic
 
 /-!
 # `unify_denoms` and `unify_denoms!` tactics
@@ -36,6 +34,8 @@ The `unify_denoms!` tactic extends `unify_denoms` to work also on
 /-
 The following lemmas are needed to manage divisions in the naturals:
 -/
+
+open Lean Meta Elab Tactic Parser Tactic
 
 /--
 `unify_denoms` reduces expressions with nested fractions to a single fraction.
