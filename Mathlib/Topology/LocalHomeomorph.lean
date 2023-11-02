@@ -985,6 +985,7 @@ theorem EqOnSource.restr {e e' : LocalHomeomorph α β} (he : e ≈ e') (s : Set
   LocalEquiv.EqOnSource.restr he _
 #align local_homeomorph.eq_on_source.restr LocalHomeomorph.EqOnSource.restr
 
+/- Two equivalent local homeomorphisms are equal when the source and target are `univ`. -/
 theorem Set.EqOn.restr_eqOn_source {e e' : LocalHomeomorph α β}
     (h : EqOn e e' (e.source ∩ e'.source)) : e.restr e'.source ≈ e'.restr e.source := by
   constructor
