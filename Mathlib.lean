@@ -1615,6 +1615,7 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.Reflection
+import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Matroid.Basic
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Multiset.Antidiagonal
