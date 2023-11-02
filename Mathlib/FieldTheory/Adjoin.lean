@@ -448,7 +448,7 @@ theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
     lift (adjoin F S) = adjoin F (Subtype.val '' S) :=
   adjoin_map _ _ _
 
-@[simp]
+@[simp, priority 900]
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
     lift (adjoin F {α}) = adjoin F {α.1} := by
   simp only [lift_adjoin, Set.image_singleton]
@@ -463,10 +463,9 @@ theorem lift_top (K : IntermediateField F E) :
 
 @[simp]
 theorem adjoin_self (K : IntermediateField F E) :
-    adjoin F {x | x ∈ K} = K := by
-  exact le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
+    adjoin F {x | x ∈ K} = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
 
-lemma restrictScalars_adjoin (K : IntermediateField F E) (S : Set E) :
+theorem restrictScalars_adjoin (K : IntermediateField F E) (S : Set E) :
     restrictScalars (K := F) (adjoin K S) = adjoin F ({x | x ∈ K} ∪ S) := by
   rw [← adjoin_self _ K, adjoin_adjoin_left, adjoin_self _ K]
 
