@@ -352,8 +352,8 @@ each term. This is a version of `Equiv.piCurry` for continuous maps.
 def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
   toFun := sigma
   invFun f i := f.comp (sigmaMk i)
-  left_inv := by intro; ext; simp [sigma]
-  right_inv := by intro; ext; simp [sigma]
+  left_inv := by intro; ext; simp
+  right_inv := by intro; ext; simp
 
 end Sigma
 
