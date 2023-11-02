@@ -183,4 +183,6 @@ for `Fintype J` -/
 class PreservesFiniteCoproducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
+attribute [instance] PreservesFiniteCoproducts.preserves
+
 end CategoryTheory.Limits

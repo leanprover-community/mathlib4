@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
