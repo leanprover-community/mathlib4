@@ -81,8 +81,8 @@ macro_rules
   | (rw [EuclideanDomain.mul_div_mul_cancel] $[at $location]?) -- a * b / (a * c) = b / c
   | (rw [←EuclideanDomain.mul_div_assoc] $[at $location]?) -- x * (y / z) = x * y / z
   | (rw [EuclideanDomain.div_div] $[at $location]?) -- x / y / z = x / (y * z)
-  | (rw [EuclideanDomain.div_add_div_of_dvd] $[at $location]?) -- x / y + z / t = (t * x + y * z) / (t * y)
-  | (rw [EuclideanDomain.div_sub_div_of_dvd] $[at $location]?) -- x / y - z / t = (t * x - y * z) / (t * y)
+  | (rw [EuclideanDomain.div_add_div_of_dvd] $[at $location]?) -- x/y + z/t = (t*x + y*z)/(t*y)
+  | (rw [EuclideanDomain.div_sub_div_of_dvd] $[at $location]?) -- x/y - z/t = (t*x - y*z)/(t*y)
   | (rw [EuclideanDomain.div_add_of_dvd] $[at $location]?) -- x / y + z = (x + y * z) / y
   | (rw [EuclideanDomain.div_sub_of_dvd] $[at $location]?) -- x / y - z = (x - y * z) / y
   | (rw [EuclideanDomain.add_div_of_dvd] $[at $location]?) -- x + y / z = (z * x + y) / z
@@ -126,7 +126,7 @@ macro_rules
   | (rw [Nat.le_div_iff_mul_le] $[at $location]?) -- x ≤ y / k ↔ x * k ≤ y
   | (rw [Nat.div_le_iff_le_mul_of_dvd] $[at $location]?) -- m / n ≤ k ↔ m ≤ k * n
   | (rw [Nat.lt_div_iff_mul_lt_of_dvd] $[at $location]?) -- m < n / k ↔ m * k < n
-  | (rw [EuclideanDomain.div_eq_div_iff_mul_eq_mul_of_dvd] $[at $location]?) -- x / y = z / t ↔ t * x = y * z
+  | (rw [EuclideanDomain.div_eq_div_iff_mul_eq_mul_of_dvd] $[at $location]?) -- x/y=z/t↔t*x=y*z
   | (rw [EuclideanDomain.eq_div_iff_mul_eq_of_dvd] $[at $location]?) -- x = y / z ↔ z * x = y
   | (rw [EuclideanDomain.div_eq_iff_eq_mul_of_dvd] $[at $location]?) -- x / y = z ↔ x = y * z
   | (rw [Int.div_le_div_iff_of_dvd_of_pos] $[at $location]?) -- x / y ≤ z / t ↔ t * x ≤ z * y
