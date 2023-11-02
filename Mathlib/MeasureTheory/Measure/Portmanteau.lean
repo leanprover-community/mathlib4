@@ -573,7 +573,7 @@ lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
   rfl
 
 theorem BoundedContinuousFunction.lintegral_le_edist_mul
-  {μ : Measure Ω} [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ≥0) :
+    {μ : Measure Ω} [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ≥0) :
     (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) := by
   have bound : ∀ x, f x ≤ nndist 0 f := by
     intro x
@@ -645,7 +645,7 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
 
 /-- One implication of the portmanteau theorem. -/
 theorem ProbabilityMeasure.tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
-  {μs : ℕ → ProbabilityMeasure Ω} (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
+    {μs : ℕ → ProbabilityMeasure Ω} (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
   refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
   apply tendsto_integral_of_forall_integral_le_liminf_integral
