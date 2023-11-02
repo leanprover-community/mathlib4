@@ -112,11 +112,10 @@ theorem isSheaf_iff_preservesFiniteProducts'
 
 end Stonean
 
-noncomputable section
-
 namespace Condensed
 
-def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
+/-- The condensed set associated to a finite-product-preserving presheaf on `Stonean`. -/
+noncomputable def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
     CondensedSet.{u} :=
   StoneanCompHaus.equivalence (Type (u+1)) |>.functor.obj {
     val := F
@@ -124,7 +123,11 @@ def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProduc
       rw [Stonean.isSheaf_iff_preservesFiniteProducts' (𝟭 _) F, Functor.comp_id]
       exact ⟨inferInstance⟩ }
 
-def ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
+/--
+The condensed set associated to a presheaf on `Profinite` which preserves finite products and
+satisfies the equalizer condition.
+-/
+noncomputable def ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : CondensedSet.{u} :=
   ProfiniteCompHaus.equivalence (Type (u+1)) |>.functor.obj {
     val := F
@@ -133,7 +136,11 @@ def ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFinitePr
         Functor.comp_id]
       exact ⟨⟨inferInstance⟩, hF⟩ }
 
-def ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
+/--
+The condensed set associated to a presheaf on `CompHaus` which preserves finite products and
+satisfies the equalizer condition.
+-/
+noncomputable def ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : CondensedSet.{u} where
   val := F
   cond := by
@@ -142,4 +149,3 @@ def ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProd
     exact ⟨⟨inferInstance⟩, hF⟩
 
 end Condensed
-end
