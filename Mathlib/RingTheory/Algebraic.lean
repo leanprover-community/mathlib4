@@ -289,15 +289,26 @@ variable [Algebra K L]
 
 theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
     Function.Bijective f := by
-  refine' ⟨f.toRingHom.injective, fun b => _⟩
+  refine' ⟨f.injective, fun b ↦ _⟩
   obtain ⟨p, hp, he⟩ := ha b
-  let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x => x) f).restrict f _ _
-  have : Function.Surjective f' :=
-    Finite.injective_iff_surjective.1 fun _ _ h =>
-      Subtype.eq <| f.toRingHom.injective <| Subtype.ext_iff.1 h
+  let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
+  have : f'.Surjective := Finite.injective_iff_surjective.1
+    fun _ _ h ↦ Subtype.eq <| f.injective <| Subtype.ext_iff.1 h
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 #align algebra.is_algebraic.alg_hom_bijective Algebra.IsAlgebraic.algHom_bijective
+
+theorem Algebra.IsAlgebraic.bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
+    [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    Function.Bijective f :=
+  ⟨f.injective, Function.Surjective.of_comp <|
+    (ha.algHom_bijective <| f.comp <| IsScalarTower.toAlgHom K L R).2⟩
+
+theorem Algebra.IsAlgebraic.bijective_of_isScalarTower' [Field R] [Algebra K R]
+    (ha : Algebra.IsAlgebraic K R) [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    Function.Bijective f :=
+  ⟨f.injective, Function.Surjective.of_comp_left
+    (ha.algHom_bijective <| (IsScalarTower.toAlgHom K L R).comp f).2 (RingHom.injective _)⟩
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
   (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ
