@@ -77,14 +77,6 @@ lemma stable_under_restrictions {G : StructureGroupoid H} (h: HasGroupoid M G)
     exact G.eq_on_source this r_corr
   · sorry -- completely similar to the first goal: FIXME can I deduplicate?
 
--- TODO: prove this! it's the main load-bearing part of the lemma below!
--- XXX: this lemma is false as-is; `fixed` is correct
-lemma obvious_false (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ atlas H s := by
-  -- can we argue that e = chartAt H x for some x,
-  -- hence e.subtypeRestr s is the chart in s at x?
-  -- then, would use  simp only [mem_iUnion, mem_singleton_iff]; rfl
-  sorry
-
 /-- Charts are structomorphisms. -/
 -- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
 lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRestriction G]
@@ -94,9 +86,9 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
 
   have : Nonempty s := sorry -- otherwise, trivial
   have : Nonempty t := sorry -- otherwise, trivial
-  -- helper lemma: cannot pull out easily, but is conceptually independent
-  have helper : ∀ c' : LocalHomeomorph t H, c' ∈ atlas H t →
-      e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c' ∈ atlas H s := by
+  -- FIXME: pull out, one I have clean expressions for s and t
+  have real_helper : ∀ c' : LocalHomeomorph t H, c' ∈ atlas H t →
+      e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c' ∈ G.maximalAtlas s := by
     set e' := e.toHomeomorphSourceTarget.toLocalHomeomorph with eq -- source s, target t
     intro c' hc'
     -- Choose `x ∈ t` so c' is the restriction of `chartAt H x`.
@@ -109,50 +101,23 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
     -- now: argue that our expression equals this chart above
     let r := LocalHomeomorph.subtypeRestr e s
     set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
-    -- TODO: this should be reasonably obvious... means some missing simp lemma somewhere
-    have congr_inv : ∀ y, goal.symm y = r.symm y := by
-      intro y
-      rw [LocalHomeomorph.coe_trans_symm]
-      have aux : ∀ y' : t, e'.symm y' = e.symm ↑y' := by intro; rfl
-      let aux := aux (t.localHomeomorphSubtypeCoe.symm y)
-      -- also fails: rw [aux]
-      calc (e'.symm ∘ t.localHomeomorphSubtypeCoe.symm) y
-        _ = e'.symm (t.localHomeomorphSubtypeCoe.symm y) := rfl
-        -- doesn't work, for some reason! _ = (e.symm) ↑(t.localHomeomorphSubtypeCoe.symm y) := by rw [aux] -- rfl
-        _ = (e.toHomeomorphSourceTarget.toLocalHomeomorph).symm (t.localHomeomorphSubtypeCoe.symm y) := rfl
-        _ = (e.toHomeomorphSourceTarget.symm.toLocalHomeomorph) (t.localHomeomorphSubtypeCoe.symm y) := by rw [← Homeomorph.symm_toLocalHomeomorph]
-        _ = (e.symm.toHomeomorphSourceTarget.toLocalHomeomorph) (t.localHomeomorphSubtypeCoe.symm y) := rfl
-
-        _ = (e.symm.toHomeomorphSourceTarget.toLocalHomeomorph) (t.localHomeomorphSubtypeCoe.symm y) := sorry--rfl
-        --_ = (e'.trans (t.localHomeomorphSubtypeCoe)).symm y := rfl
-        --_ = (e.toHomeomorphSourceTarget.toLocalHomeomorph.trans (t.localHomeomorphSubtypeCoe)).symm y := rfl
-
-        _ = (e.symm.trans s.localHomeomorphSubtypeCoe.symm) y := sorry
-        _ = (s.localHomeomorphSubtypeCoe.trans e).symm y := rfl
-        _ = r.symm y := rfl
+    -- TODO: complete this. Had a long calc block towards this, not really working...
+    have congr_inv : ∀ y, goal.symm y = r.symm y := by sorry
     have congr_to : ∀ y, goal y = r ↑y := by intro; rfl
     have h2 : goal = r := LocalHomeomorph.ext goal r congr_to congr_inv (by simp)
-    exact mem_of_eq_of_mem h2 (obvious_false s)
-  -- singleton_hasGroupoid should also show this, by the way
-  -- have : HasGroupoid t G := t.instHasGroupoid G -- as G is closed under restrictions
-  let ehom := e.toHomeomorphSourceTarget -- temporarily given a name, to make the goal readable
+    rw [h2]
+    exact stable_under_restrictions he h s
   have : Structomorph G s t := {
-    ehom with
+    e.toHomeomorphSourceTarget with
     mem_groupoid := by
       intro c c' hc hc'
-      show (c.symm).trans (ehom.toLocalHomeomorph.trans c') ∈ G -- just our pretty-printed goal
-
-      -- Setting: have s ⊆ M and t ⊆ H, e maps s to t.
-      -- c : s → H is a chart of M; c': t → M is essentially the inclusion.
-
+      show (c.symm).trans (e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c') ∈ G
       -- The atlas on H on itself has only one chart (by `chartedSpaceSelf_atlas H`),
       -- hence c' (as a restriction of that) is the inclusion.
-      have : ∀ x, c' x = x := sorry -- unsure how to formally prove this...
-      -- This *almost* gives our claim: except that `e` is a chart on M and c is one on s,
+      -- This *almost* gives our claim: except that `e` is a chart on M and c is one on s:
+      -- `real_helper` argues the restricted chart belongs to the maximal atlas, making this rigorous.
       -- so they don't fit together nicely. (Composing with the inclusion makes that nice...)
-      -- let r := G.compatible hc he
-      -- This version is rigorous... except the sorry (i.e. helper above) might be too optimistic.
-      exact G.compatible hc (helper c' hc')
+      apply G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc) (real_helper c' hc')
   }
   sorry
 
