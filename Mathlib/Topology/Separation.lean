@@ -1794,21 +1794,6 @@ protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompa
   exact L_comp.of_isClosed_subset isClosed_closure
     ((hK.closure_subset_of_isOpen isOpen_interior hL).trans interior_subset)
 
-/-- In a second-countable locally compact topological space with the
-`ClosableCompactSubsetOpenSpace` property, any open set is an increasing union
-of a sequence of compact closed sets. -/
-theorem IsOpen.exists_iUnion_isCompact_isClosed [SecondCountableTopology X] [LocallyCompactSpace X]
-    [RegularSpace X] {U : Set X} (hU : IsOpen U) :
-    ∃ F : ℕ → Set X, (∀ n, IsCompact (F n)) ∧ (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U)
-      ∧ ⋃ n, F n = U ∧ Monotone F := by
-  rcases hU.exists_iUnion_isCompact with ⟨F, F_comp, FU, F_union, F_mono⟩
-  refine ⟨fun n ↦ closure (F n), fun n ↦ (F_comp n).closure, fun n ↦ isClosed_closure,
-    fun n ↦ (F_comp n).closure_subset_of_isOpen hU (FU n), Subset.antisymm ?_ ?_,
-    fun m n hmn ↦ closure_mono (F_mono hmn)⟩
-  · exact (iUnion_subset_iff.2 (fun n ↦ (F_comp n).closure_subset_of_isOpen hU (FU n)))
-  · rw [← F_union]
-    exact iUnion_mono (fun n ↦ subset_closure)
-
 end ClosableCompactSubsetOpenSpace
 
 section T3

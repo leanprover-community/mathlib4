@@ -164,55 +164,6 @@ instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X
     let ⟨K, hKc, hx, _⟩ := exists_compact_subset isOpen_univ (mem_univ x)
     ⟨K, hKc, mem_interior_iff_mem_nhds.1 hx⟩
 
-/-- In a second-countable locally compact topological space, any open set is an increasing union
-of a sequence of compact sets. -/
-theorem IsOpen.exists_iUnion_isCompact
-    {α : Type*} [TopologicalSpace α] [SecondCountableTopology α] [LocallyCompactSpace α]
-    {U : Set α} (hU : IsOpen U) :
-    ∃ F : ℕ → Set α, (∀ n, IsCompact (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
-  rcases Set.eq_empty_or_nonempty U with rfl|h'U
-  · exact ⟨fun _n ↦ ∅, by simp [monotone_const]⟩
-  have : ∀ x ∈ U, ∃ K : Set α, IsCompact K ∧ x ∈ interior K ∧ K ⊆ U :=
-    fun x hx ↦ exists_compact_subset hU hx
-  choose! s s_comp s_mem sU using this
-  obtain ⟨T, T_count, hT⟩ : ∃ T : Set U, T.Countable ∧ ⋃ i ∈ T, interior (s i) = U := by
-    rcases isOpen_iUnion_countable (fun (i : U) ↦ interior (s i)) (fun (i : U) ↦ isOpen_interior)
-      with ⟨T , T_count, hT⟩
-    refine ⟨T, T_count, ?_⟩
-    rw [hT]
-    apply Subset.antisymm
-    · simp only [iUnion_coe_set, iUnion_subset_iff]
-      exact fun x hx ↦ interior_subset.trans (sU x hx)
-    · intro x hx
-      simp only [iUnion_coe_set, mem_iUnion, exists_prop]
-      exact ⟨x, hx, s_mem x hx⟩
-  have : T.Nonempty := by
-    contrapose! h'U
-    simpa [h'U] using hT.symm
-  obtain ⟨B, hB⟩ : ∃ B : ℕ → T, Function.Surjective B := Countable.exists_surjective this T_count
-  refine ⟨fun n ↦ ⋃ i ∈ Iic n, s (B i), ?_, ?_, ?_, ?_⟩
-  · intro n
-    exact (Set.finite_Iic n).isCompact_biUnion (fun i _hi ↦ s_comp _ (B i).1.2)
-  · intro n
-    simp only [mem_Iio, iUnion_subset_iff]
-    intro i _hi
-    exact sU _ (B i).1.2
-  · apply Subset.antisymm
-    · simp only [mem_Iio, iUnion_subset_iff]
-      intro n i _hi
-      apply sU _ (B i).1.2
-    · intro x hx
-      obtain ⟨i, iT, hix⟩ : ∃ i ∈ T, x ∈ interior (s i) := by
-        simp_rw [← hT] at hx
-        simpa using hx
-      rcases hB ⟨i, iT⟩ with ⟨n, hn⟩
-      simp only [mem_Iic, mem_iUnion, exists_prop]
-      refine ⟨n, n, le_rfl, ?_⟩
-      convert interior_subset hix
-      simp [hn]
-  · intro n m hnm
-    exact biUnion_subset_biUnion_left (Iic_subset_Iic.mpr hnm)
-
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
   compact `L` such that `K ⊆ interior L` and `L ⊆ U`.
