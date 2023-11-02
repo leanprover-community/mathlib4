@@ -6,6 +6,7 @@ Authors: Kalle Kytölä
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 #align_import measure_theory.measure.portmanteau from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -40,9 +41,8 @@ The separate implications are:
  * `MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge` is the equivalence (C) ↔ (O).
  * `MeasureTheory.tendsto_measure_of_null_frontier` is the implication (O) → (B).
  * `MeasureTheory.limsup_measure_closed_le_of_forall_tendsto_measure` is the implication (B) → (C).
-
-TODO:
- * Prove the remaining implication (O) → (T) to complete the proof of equivalence of the conditions.
+ * `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
+    any sequence of Borel probability measures.
 
 ## Implementation notes
 
@@ -78,13 +78,24 @@ probability measure
 
 noncomputable section
 
-open MeasureTheory
+open MeasureTheory Set Filter BoundedContinuousFunction
 
-open Set
+-- Q: Where do these belong? (Tried `Topology.Instances.Real` and `Order.LiminfLimsup` and
+-- `Topology.Algebra.Order.LiminfLimsup` but none worked. `#find_home` suggests the present file.)
 
-open Filter
+lemma Filter.isBounded_le_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
+    (h : Bornology.IsBounded (Set.range f)) :
+    (F.map f).IsBounded (· ≤ ·) := by
+  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
+  obtain ⟨c, hc⟩ := h.2
+  refine isBoundedUnder_of ⟨c, by simpa [mem_upperBounds] using hc⟩
 
-open BoundedContinuousFunction
+lemma Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
+    (h : Bornology.IsBounded (Set.range f)) :
+    (F.map f).IsBounded (· ≥ ·) := by
+  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
+  obtain ⟨c, hc⟩ := h.1
+  apply isBoundedUnder_of ⟨c, by simpa [mem_lowerBounds] using hc⟩
 
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
@@ -540,27 +551,26 @@ lemma le_liminf_measure_open_of_forall_tendsto_measure
 
 end LimitBorelImpliesLimsupClosedLE --section
 
-lemma _root_.Filter.isBounded_le_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
-    (h : Bornology.IsBounded (Set.range f)) :
-    (F.map f).IsBounded (· ≤ ·) := by
-  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
-  obtain ⟨c, hc⟩ := h.2
-  refine isBoundedUnder_of ⟨c, by simpa [mem_upperBounds] using hc⟩
-
-lemma _root_.Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
-    (h : Bornology.IsBounded (Set.range f)) :
-    (F.map f).IsBounded (· ≥ ·) := by
-  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
-  obtain ⟨c, hc⟩ := h.1
-  apply isBoundedUnder_of ⟨c, by simpa [mem_lowerBounds] using hc⟩
-
 section le_liminf_open_implies_convergence
+
+/-! ### Portmanteau implication: liminf condition for open sets implies weak convergence
+
+
+In this section we prove for a sequence (μsₙ)ₙ Borel probability measures that
+
+  (O) For any open set G, the liminf of the measures of G under μsₙ is at least
+      the measure of G under μ, i.e., μ(G) ≤ liminfₙ μsₙ(G).
+
+implies
+
+  (T) The measures μsₙ converge weakly to the measure μ.
+
+-/
 
 variable {Ω : Type} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
 lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
-    {μ : Measure Ω} [SigmaFinite μ] {μs : ℕ → Measure Ω} [∀ i, SigmaFinite (μs i)]
-    {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)
+    {μ : Measure Ω} {μs : ℕ → Measure Ω} {f : Ω → ℝ} (f_cont : Continuous f) (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂ (μs i)) := by
   simp_rw [lintegral_eq_lintegral_meas_lt _ (eventually_of_forall f_nn) f_cont.aemeasurable]
@@ -571,16 +581,6 @@ lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
             := lintegral_liminf_le (fun n ↦ Antitone.measurable
                 (fun s t hst ↦ measure_mono (fun ω hω ↦ lt_of_le_of_lt hst hω)))
   rfl
-
-theorem BoundedContinuousFunction.lintegral_le_edist_mul
-    {μ : Measure Ω} [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ≥0) :
-    (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) := by
-  have bound : ∀ x, f x ≤ nndist 0 f := by
-    intro x
-    convert nndist_coe_le_nndist x
-    simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
-  apply le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (bound x)))
-  simp
 
 lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
@@ -643,8 +643,10 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
   · exact bdd_above
   · exact bdd_below
 
-/-- One implication of the portmanteau theorem. -/
-theorem ProbabilityMeasure.tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
+/-- One implication of the portmanteau theorem:
+If for all open sets G we have the limsup condition μ(G) ≤ liminf μsᵢ(G), then the measures
+μsₙ converge weakly to the measure μ. -/
+theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
     {μs : ℕ → ProbabilityMeasure Ω} (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
   refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
