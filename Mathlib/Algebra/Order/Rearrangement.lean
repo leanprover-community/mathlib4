@@ -5,6 +5,7 @@ Authors: Mantas Bakšys
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.Module
+import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary

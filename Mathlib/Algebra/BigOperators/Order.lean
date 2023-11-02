@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Lemmas
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.GCongr.Core
 

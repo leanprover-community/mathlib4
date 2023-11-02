@@ -5,6 +5,7 @@ Authors: Bhavik Mehta, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.Data.Finset.Lattice
 
 #align_import category_theory.subobject.lattice from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
