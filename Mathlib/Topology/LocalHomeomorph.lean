@@ -22,14 +22,14 @@ instead of `e.toFun x` and `e.invFun x`.
 
 ## Main definitions
 
-`Homeomorph.toLocalHomeomorph` : associating a local homeomorphism to a homeomorphism, with
-                                 `source = target = Set.univ`;
-`LocalHomeomorph.symm` : the inverse of a local homeomorphism
-`LocalHomeomorph.trans` : the composition of two local homeomorphisms
-`LocalHomeomorph.refl` : the identity local homeomorphism
-`LocalHomeomorph.ofSet` : the identity on a set `s`
-`LocalHomeomorph.EqOnSource` : equivalence relation describing the "right" notion of equality
-                               for local homeomorphisms
+* `Homeomorph.toLocalHomeomorph`: associating a local homeomorphism to a homeomorphism, with
+  `source = target = Set.univ`;
+* `LocalHomeomorph.symm`: the inverse of a local homeomorphism
+* `LocalHomeomorph.trans`: the composition of two local homeomorphisms
+* `LocalHomeomorph.refl`: the identity local homeomorphism
+* `LocalHomeomorph.ofSet`: the identity on a set `s`
+* `LocalHomeomorph.EqOnSource`: equivalence relation describing the "right" notion of equality
+  for local homeomorphisms
 
 ## Implementation notes
 

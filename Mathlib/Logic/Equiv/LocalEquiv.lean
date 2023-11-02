@@ -28,13 +28,13 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 
 ## Main definitions
 
-`Equiv.toLocalEquiv`: associating a local equiv to an equiv, with source = target = univ
-`LocalEquiv.symm`    : the inverse of a local equiv
-`LocalEquiv.trans`   : the composition of two local equivs
-`LocalEquiv.refl`    : the identity local equiv
-`LocalEquiv.ofSet`  : the identity on a set `s`
-`EqOnSource`        : equivalence relation describing the "right" notion of equality for local
-                        equivs (see below in implementation notes)
+* `Equiv.toLocalEquiv`: associating a local equiv to an equiv, with source = target = univ
+* `LocalEquiv.symm`: the inverse of a local equiv
+* `LocalEquiv.trans`: the composition of two local equivs
+* `LocalEquiv.refl`: the identity local equiv
+* `LocalEquiv.ofSet`: the identity on a set `s`
+* `EqOnSource`: equivalence relation describing the "right" notion of equality for local
+  equivs (see below in implementation notes)
 
 ## Implementation notes
 
