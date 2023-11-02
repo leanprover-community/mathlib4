@@ -469,14 +469,27 @@ end Gluing
 
 end ContinuousMap
 
-namespace QuotientMap
+section Lift
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    {f : C(X, Y)} (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
+    {f : C(X, Y)}
 
-/-- The homeomorphism from the quotient of a quotient map to its codomain. -/
-noncomputable
-def homeomorph : Quotient (Setoid.ker f) ≃ₜ Y where
+/-- `Setoid.quotientKerEquivOfRightInverse` as a homeomorphism. -/
+@[simps!]
+def Function.RightInverse.homeomorph {f' : C(Y, X)} (hf : Function.RightInverse f' f) :
+    Quotient (Setoid.ker f) ≃ₜ Y where
+  toEquiv := Setoid.quotientKerEquivOfRightInverse _ _ hf
+  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr f.continuous
+  continuous_invFun := continuous_quotient_mk'.comp f'.continuous
+
+namespace QuotientMap
+
+/--
+The homeomorphism from the quotient of a quotient map to its codomain. This is
+`Setoid.quotientKerEquivOfSurjective` as a homeomorphism.
+-/
+@[simps!]
+noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
   toEquiv := Setoid.quotientKerEquivOfSurjective _ hf.surjective
   continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr hf.continuous
   continuous_invFun := by
@@ -487,9 +500,11 @@ def homeomorph : Quotient (Setoid.ker f) ≃ₜ Y where
       (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
     rfl
 
+variable (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
+
 /-- Descend a continuous map, which is constant on the fibres, along a quotient map. -/
-noncomputable
-def lift : C(Y, Z) where
+@[simps]
+noncomputable def lift : C(Y, Z) where
   toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
@@ -505,12 +520,27 @@ f |  / hf.lift g h
   Y
 ```
 -/
-theorem lift_comp : (hf.lift g h) ∘ f = g := by
+@[simp]
+theorem lift_comp : (hf.lift g h).comp f = g := by
   ext
   simpa [lift, homeomorph, Setoid.quotientKerEquivOfSurjective,
     Setoid.quotientKerEquivOfRightInverse] using h (Function.rightInverse_surjInv _ _)
 
+@[simps]
+noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
+  toFun g := hf.lift g g.prop
+  invFun g := ⟨g.comp f, fun _ _ h ↦ by simp only [ContinuousMap.comp_apply]; rw [h]⟩
+  left_inv := by intro; simp
+  right_inv := by
+    intro
+    ext
+    simp only [lift_apply, ContinuousMap.coe_comp, comp_apply, homeomorph_symm_apply,
+      Quotient.liftOn'_mk'']
+    rw [Function.rightInverse_surjInv hf.surjective]
+
 end QuotientMap
+
+end Lift
 
 namespace Homeomorph
 
