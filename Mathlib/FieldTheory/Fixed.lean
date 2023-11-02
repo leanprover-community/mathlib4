@@ -123,25 +123,28 @@ theorem coe_algebraMap :
 #align fixed_points.coe_algebra_map FixedPoints.coe_algebraMap
 
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
-    (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
-      LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
+    (LinearIndependent (FixedPoints.subfield G F) ((s : Set F).restrict id)) →
+      LinearIndependent F ((s : Set F).restrict (MulAction.toFun G F)) := by
   haveI : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine' Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => _
   rw [coe_insert] at hs ⊢
-  rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
-  rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine' ⟨ih hs.1, fun ha => _⟩
+  have hs' := (linearIndependent_insert (mt mem_coe.1 has)).1 hs
+  rw [linearIndependent_insert' (mt mem_coe.1 has)]
+  -- have := linearIndependent_insert <| mt mem_coe.1 has
+  -- rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
+  refine' ⟨ih hs'.1, fun ha => _⟩
   rw [Finsupp.mem_span_image_iff_total] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.total_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
     replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
-    refine' hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => _)
+    refine' hs'.2 (hla ▸ Submodule.sum_mem _ fun c hcs => _)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
     exact Submodule.smul_mem _ _ (Submodule.subset_span <| mem_coe.2 hcs)
   intro i his g
   refine'
     eq_of_sub_eq_zero
-      (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
+      (linearIndependent_iff'.1 (ih hs'.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
           (mem_attach _ _) :
         _)
   refine' (@sum_attach _ _ s _ fun i => (g • l i - l i) • MulAction.toFun G F i).trans _

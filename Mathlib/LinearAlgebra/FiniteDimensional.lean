@@ -351,7 +351,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     (h : finrank K S = finrank K V) : S = ⊤ := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
-  have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
+  have : LinearIndependent K (((↑) '' Basis.ofVectorSpaceIndex K S : Set V).restrict id) :=
     @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ (Submodule.subtype S)
       (by simpa using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
@@ -367,10 +367,10 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
       (by
         rw [Set.card_image_of_injective _ Subtype.coe_injective, ← finrank_eq_card_basis bS, ←
             finrank_eq_card_basis b, h])
-  rw [← b.span_eq, b_eq, Basis.coe_extend, Subtype.range_coe, ← this, ← Submodule.coeSubtype,
-    span_image]
+  rw [← b.span_eq, b_eq, Basis.coe_extend, Set.range_restrict, Set.image_id, ← this,
+    ←Submodule.coeSubtype, span_image]
   have := bS.span_eq
-  rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
+  rw [bS_eq, Basis.coe_ofVectorSpace, Set.range_restrict, Set.image_id] at this
   rw [this, map_top (Submodule.subtype S), range_subtype]
 #align finite_dimensional.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 #align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq

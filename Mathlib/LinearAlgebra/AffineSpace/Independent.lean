@@ -310,14 +310,14 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
 /-- If a family is affinely independent, so is any subfamily indexed
 by a subtype of the index type. -/
 protected theorem AffineIndependent.subtype {p : ι → P} (ha : AffineIndependent k p) (s : Set ι) :
-    AffineIndependent k fun i : s => p i :=
+    AffineIndependent k (s.restrict p):=
   ha.comp_embedding (Embedding.subtype _)
 #align affine_independent.subtype AffineIndependent.subtype
 
 /-- If an indexed family of points is affinely independent, so is the
 corresponding set of points. -/
 protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent k p) :
-    AffineIndependent k (fun x => x : Set.range p → P) := by
+    AffineIndependent k ((Set.range p).restrict id) := by
   let f : Set.range p → ι := fun x => x.property.choose
   have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
@@ -339,15 +339,14 @@ theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
 
 /-- If a set of points is affinely independent, so is any subset. -/
 protected theorem AffineIndependent.mono {s t : Set P}
-    (ha : AffineIndependent k (fun x => x : t → P)) (hs : s ⊆ t) :
-    AffineIndependent k (fun x => x : s → P) :=
+    (ha : AffineIndependent k (t.restrict id)) (hs : s ⊆ t) : AffineIndependent k (s.restrict id) :=
   ha.comp_embedding (s.embeddingOfSubset t hs)
 #align affine_independent.mono AffineIndependent.mono
 
 /-- If the range of an injective indexed family of points is affinely
 independent, so is that family. -/
 theorem AffineIndependent.of_set_of_injective {p : ι → P}
-    (ha : AffineIndependent k (fun x => x : Set.range p → P)) (hi : Function.Injective p) :
+    (ha : AffineIndependent k ((Set.range p).restrict id)) (hi : Function.Injective p) :
     AffineIndependent k p :=
   ha.comp_embedding
     (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
