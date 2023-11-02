@@ -3,13 +3,13 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.Homeomorph
 
