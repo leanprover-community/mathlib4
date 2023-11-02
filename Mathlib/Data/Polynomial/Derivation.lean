@@ -109,11 +109,16 @@ derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
 This derivation takes values in `Module.AEval R M a`, which is `M`, regarded as an
 `R[X]`-module, with the action of a polynomial `f` defined by `f • m = (aeval a f) • m`.
 -/
+/-
+Note: It is currently not easy to define `comp_aeval` using `Derivation.compAlgebraMap`.
+This is partly because `A` is not an `R[X]` algebra and partly because `Derivation.compAlgebraMap`
+is only implemented in the case that `R` is a `CommRing`, not a `CommSemiring`.
+-/
 def comp_aeval : Derivation R R[X] <| AEval R M a where
   toFun f          := AEval.of R M a (d (aeval a f))
-  map_add' _ _     := by simp
-  map_smul' _ _    := by simp
-  leibniz' _ _     := by simp [AEval.of_aeval_smul]
+  map_add'         := by simp
+  map_smul'        := by simp
+  leibniz'         := by simp [AEval.of_aeval_smul]
   map_one_eq_zero' := by simp
 
 lemma comp_aeval_def (d : Derivation R A M) (f : R[X]) :
@@ -130,7 +135,7 @@ lemma comp_aeval_apply (d : Derivation R A M) (f : R[X]) :
   For the same equation in `M`, see `Derivation.comp_aeval_eq`.
 -/
 theorem comp_aeval_eq' (d : Derivation R A M) (f : R[X]) :
-    d.comp_aeval a f = (derivative f) • (AEval.of R M a (d a)) := by
+    d.comp_aeval a f = derivative f • (AEval.of R M a (d a)) := by
   rw [←mkDerivation_apply]
   congr
   apply derivation_ext
