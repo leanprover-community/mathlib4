@@ -14,6 +14,11 @@ import Mathlib.Init.Data.Nat.Notation
 A stream `Stream' α` is an infinite sequence of elements of `α`. One can also think about it as an
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
+
+The original structure of `Stream'` is the closure which returns `n`-th element of a stream.
+However, if we want the list of the `n` first elements, we can't reuse
+computational resource which is used for previous datas. So we override the structure of `Stream'`
+to lazy evaluated infinite lists.
 -/
 
 set_option autoImplicit true
