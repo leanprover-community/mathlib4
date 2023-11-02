@@ -575,18 +575,20 @@ lemma lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫⁻ x, ENNReal.ofReal (f x) ∂ (μs i)) := by
   simp_rw [lintegral_eq_lintegral_meas_lt _ (eventually_of_forall f_nn) f_cont.aemeasurable]
   calc  ∫⁻ (t : ℝ) in Set.Ioi 0, μ {a | t < f a}
-      ≤ ∫⁻ (t : ℝ) in Set.Ioi 0, atTop.liminf (fun i ↦ (μs i) {a | t < f a})
-            := (lintegral_mono (fun t ↦ h_opens _ (continuous_def.mp f_cont _ isOpen_Ioi))).trans ?_
-    _ ≤ atTop.liminf (fun i ↦ ∫⁻ (t : ℝ) in Set.Ioi 0, (μs i) {a | t < f a})
-            := lintegral_liminf_le (fun n ↦ Antitone.measurable
-                (fun s t hst ↦ measure_mono (fun ω hω ↦ lt_of_le_of_lt hst hω)))
-  rfl
+      ≤ ∫⁻ (t : ℝ) in Set.Ioi 0, atTop.liminf (fun i ↦ (μs i) {a | t < f a}) := ?_ -- (i)
+    _ ≤ atTop.liminf (fun i ↦ ∫⁻ (t : ℝ) in Set.Ioi 0, (μs i) {a | t < f a}) := ?_ -- (ii)
+  · -- (i)
+    exact (lintegral_mono (fun t ↦ h_opens _ (continuous_def.mp f_cont _ isOpen_Ioi))).trans
+            (le_refl _)
+  · -- (ii)
+    exact lintegral_liminf_le (fun n ↦ Antitone.measurable (fun s t hst ↦
+            measure_mono (fun ω hω ↦ lt_of_le_of_lt hst hω)))
 
 lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     {μ : Measure Ω} [IsProbabilityMeasure μ] {μs : ℕ → Measure Ω} [∀ i, IsProbabilityMeasure (μs i)]
     {f : Ω →ᵇ ℝ} (f_nn : 0 ≤ f)
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
-      ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
+    ∫ x, (f x) ∂μ ≤ atTop.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)) := by
   have same := lintegral_le_liminf_lintegral_of_forall_isOpen_measure_le_liminf_measure
                   f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (eventually_of_forall f_nn)
@@ -647,7 +649,8 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
 If for all open sets G we have the limsup condition μ(G) ≤ liminf μsᵢ(G), then the measures
 μsₙ converge weakly to the measure μ. -/
 theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
-    {μs : ℕ → ProbabilityMeasure Ω} (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
+    {μs : ℕ → ProbabilityMeasure Ω}
+    (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
   refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
   apply tendsto_integral_of_forall_integral_le_liminf_integral
