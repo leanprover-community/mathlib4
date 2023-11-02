@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Order.SMul
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.List.OfFn
 import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
@@ -163,7 +164,18 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
       have rsnd_pos : 0 < r.snd
       · sorry
       have key : f ![a, b] < f r.fst
-      · sorry
+      · rw [show r.1 = ![r.fst 0, r.fst 1] from List.ofFn_inj.mp rfl]
+        apply lt_of_le_of_ne
+        · exact (mcfab.right (r.fst 0) (r.fst 1)).left
+        · intro equ
+          have asymm : r.fst 0 ≠ r.fst 1
+          · rcases (mcfab.right (r.fst 0) (r.fst 1)).right equ with ⟨ha0, hb1⟩ | ⟨ha1, hb0⟩
+            · rw [ha0, hb1] at hab
+              exact hab
+            · rw [ha1, hb0] at hab
+              exact hab.symm
+          specialize symmega ![a, b] ![b, a] (List.Perm.swap b a [])
+          sorry
       exact smul_lt_smul_of_pos key rsnd_pos
     have half_sharp :
       ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f ![a, b])).sum <
