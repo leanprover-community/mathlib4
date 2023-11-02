@@ -47,18 +47,40 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
   exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
 
 -- this lemma is sorely missing to finish the proof
-lemma missing {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
-    (s : Opens M) [Nonempty s] : ((e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s) ≈ (e.symm ≫ₕ e') := sorry
-  -- let y : t := sorry
-  -- is this only true for y in e.target?
-  -- let sdf := calc ((e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s) y
-  --   _ = (e'.subtypeRestr s) ((e.subtypeRestr s).symm y) := rfl
-  --   --_ = (e'.subtypeRestr s) (e.symm y) := rfl
-  --   _ = (e') ((e).symm y) := by sorry -- partial progress: rw [← this, ← LocalHomeomorph.coe_coe_symm, ← LocalHomeomorph.symm_toLocalEquiv]
-  --   _ = (e.symm ≫ₕ e') y := rfl
-  -- let r := (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s
-  -- let r' := e.symm ≫ₕ e'
-  -- have : ∀ y : H, r y = r' y := sorry -- just shown
+lemma subtypeRestr_trans_eqOnSource {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
+    (s : Opens M) [Nonempty s] : (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s ≈ e.symm ≫ₕ e' := by
+  constructor
+  · -- sources of the restrictions are well-behaved
+    let r := e.subtypeRestr_source s -- also for e'
+    -- presumably, can combine r and r' to conclude both sides have the same source
+    rw [LocalHomeomorph.trans_source, LocalHomeomorph.trans_source]
+    rw [e'.subtypeRestr_source]
+    rw [LocalHomeomorph.symm_source, LocalHomeomorph.symm_source]
+    -- goal is an equality a ∩ b = a' ∩ b'; however, in general a ≠ a' and b ≠ b'
+    -- xxx: analogue of and_congr for intersections?
+    -- actually, is slightly non-trivial:
+    -- naive approach: both sides are equal: well, that's too good to be true
+    -- have : (LocalHomeomorph.subtypeRestr e s).target = e.target := sorry
+    -- have : ((e.subtypeRestr s).symm) ⁻¹' (Subtype.val ⁻¹' e'.source) = e.symm ⁻¹' e'.source := sorry
+    sorry
+  · intro x hx -- functions equal
+    let hx' := hx
+    rw [LocalHomeomorph.trans_source, LocalHomeomorph.symm_source] at hx'
+    let x' : (e.subtypeRestr s).target := ⟨x, mem_of_mem_inter_left hx⟩
+    have : (e.subtypeRestr s).symm x' = e.symm x' := sorry -- should be obvious...
+    have : ∀ x : (e.subtypeRestr s).source, (e.subtypeRestr s) x = e x := by intro; rfl
+    -- proof should be combining these two
+    sorry
+    -- let y : t := sorry
+    -- is this only true for y in e.target?
+    -- let sdf := calc ((e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s) y
+    --   _ = (e'.subtypeRestr s) ((e.subtypeRestr s).symm y) := rfl
+    --   --_ = (e'.subtypeRestr s) (e.symm y) := rfl
+    --   _ = (e') ((e).symm y) := by sorry -- partial progress: rw [← this, ← LocalHomeomorph.coe_coe_symm, ← LocalHomeomorph.symm_toLocalEquiv]
+    --   _ = (e.symm ≫ₕ e') y := rfl
+    -- let r := (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s
+    -- let r' := e.symm ≫ₕ e'
+    -- have : ∀ y : H, r y = r' y := sorry -- just shown
 
 -- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
 -- xxx: is the HasGroupoid part needed? I think it is.
@@ -74,8 +96,8 @@ lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonemp
   have aux : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
   have aux' : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
   -- the composition is the restriction of the charts
-  let r := missing he (chart_mem_atlas H (x : M)) s
-  let r' := missing (chart_mem_atlas H (x : M)) he s
+  let r := subtypeRestr_trans_eqOnSource he (chart_mem_atlas H (x : M)) s
+  let r' := subtypeRestr_trans_eqOnSource (chart_mem_atlas H (x : M)) he s
   -- hence the restriction also lies in the groupoid
   exact ⟨G.eq_on_source aux r, G.eq_on_source aux' r'⟩
 
