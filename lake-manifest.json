@@ -4,10 +4,10 @@
  [{"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "03c9aa99d510bdc52001c941366b31e7329489f5",
+    "rev": "fb43b83c13d10b90299d10d96512d20d33daa658",
     "opts": {},
     "name": "std",
-    "inputRev?": "nightly-testing",
+    "inputRev?": "main",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
@@ -18,12 +18,12 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover/lean4-cli",
+   {"url": "https://github.com/leanprover-community/aesop",
     "subDir?": null,
-    "rev": "39229f3630d734af7d9cfb5937ddc6b41d3aa6aa",
+    "rev": "ed733adcb79e54e157fafb805ce3518d4411ab70",
     "opts": {},
-    "name": "Cli",
-    "inputRev?": "nightly",
+    "name": "aesop",
+    "inputRev?": "master",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/ProofWidgets4",
@@ -34,19 +34,11 @@
     "inputRev?": "v0.0.21",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover/std4",
+   {"url": "https://github.com/leanprover/lean4-cli",
     "subDir?": null,
-    "rev": "6747f41f28627bed83e6d5891683538211caa2c1",
+    "rev": "a751d21d4b68c999accb6fc5d960538af26ad5ec",
     "opts": {},
-    "name": "std",
+    "name": "Cli",
     "inputRev?": "main",
-    "inherited": false}},
-  {"git":
-   {"url": "https://github.com/leanprover-community/aesop",
-    "subDir?": null,
-    "rev": "6749fa4e776919514dae85bfc0ad62a511bc42a7",
-    "opts": {},
-    "name": "aesop",
-    "inputRev?": "master",
     "inherited": false}}],
  "name": "mathlib"}

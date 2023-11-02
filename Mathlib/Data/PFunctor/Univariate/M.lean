@@ -1034,30 +1034,17 @@ def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P X) : α → M P :
   M.corec (F _ id)
 #align pfunctor.M.corec₁ PFunctor.M.corec₁
 
-/-- The more efficient implemention of `corec'`. -/
-@[inline]
-unsafe def corec'Unsafe {α : Type v} (F : α → M P ⊕ P α) (x : α) : M P :=
-  let rec
-    /-- The main loop of `corec'Unsafe`. -/
-    @[specialize] loop (x : α) : CofixI P :=
-      CofixI.mk <|
-        match F x with
-        | Sum.inr ⟨a, o⟩ => ⟨a, fun b => loop (o b)⟩
-        | Sum.inl y =>
-          match toI y with
-          | ⟨t⟩ => t
-  ofI (loop x)
-
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
-@[implemented_by corec'Unsafe]
-def corec' {α : Type v} (F : α → M P ⊕ P α) (x : α) : M P :=
-  M.corec
-    (fun (s : M P ⊕ α) =>
-      match Sum.bind s F with
-      | Sum.inr a => P.map Sum.inr a
-      | Sum.inl y => P.map Sum.inl (M.dest y))
-    (Sum.inr x)
+def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → Sum (M P) (P X)) (x : α) : M P :=
+  corec₁
+    (fun _ rec (a : Sum (M P) α) =>
+      let y := a >>= F (rec ∘ Sum.inr)
+      match y with
+      | Sum.inr y => y
+      | Sum.inl y => P.map (rec ∘ Sum.inl) (M.dest y))
+    (@Sum.inr (M P) _ x)
+set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec' PFunctor.M.corec'
 
 end M
