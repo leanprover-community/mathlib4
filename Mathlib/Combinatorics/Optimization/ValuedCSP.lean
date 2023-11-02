@@ -134,8 +134,8 @@ def FractionalOperation.IsSymmetricFractionalPolymorphismFor {m : ℕ}
     (ω : FractionalOperation D m) (Γ : ValuedCsp D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
 
-lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
-    [OrderedAddCommMonoid C] [CovariantClass C C (· + ·) (· < ·)] [OrderedSMul ℕ C]
+lemma Function.HasMaxCutProperty.forbids_commutative
+    [CovariantClass C C (· + ·) (· < ·)] [OrderedSMul ℕ C]
     {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)
     {ω : FractionalOperation D 2} (valid : ω.IsValid) (symmega : ω.IsSymmetric) :
     ¬ f.AdmitsFractional ω := by
@@ -160,9 +160,13 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
   · obtain ⟨nonempty, nonzeros⟩ := valid
     have rows_lt : ∀ r ∈ (ω.tt ![![a, b], ![b, a]]), r.snd • f ![a, b] < r.snd • f r.fst
     · intro r rin
-      -- TODO utilize `symmega` with `nonzeros` and `mcfab.right` with `hab` here
+      simp only [FractionalOperation.tt, function_weigth_tt_aux,
+        Multiset.mem_map, Prod.exists, Function.swap] at rin
+      rcases rin with ⟨o, w, in_omega, eq_r⟩
       have rsnd_pos : 0 < r.snd
-      · sorry
+      · convert_to 0 < w
+        · rw [← eq_r]
+        exact Nat.pos_of_ne_zero (nonzeros (o, w) in_omega)
       have key : f ![a, b] < f r.fst
       · rw [show r.1 = ![r.fst 0, r.fst 1] from List.ofFn_inj.mp rfl]
         apply lt_of_le_of_ne
@@ -174,8 +178,23 @@ lemma Function.HasMaxCutProperty.forbids_commutative {D C : Type*}
               exact hab
             · rw [ha1, hb0] at hab
               exact hab.symm
-          specialize symmega ![a, b] ![b, a] (List.Perm.swap b a [])
-          sorry
+          have hoab : o ![a, b] = o ![b, a]
+          · exact symmega ![a, b] ![b, a] (List.Perm.swap b a []) (o, w) in_omega
+          rw [← eq_r] at asymm
+          apply asymm
+          show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
+          convert_to o (fun j => ![a, b] j) = o (fun j => ![b, a] j)
+          · congr
+            ext i
+            match i with
+            | 0 => rfl
+            | 1 => rfl
+          · congr
+            ext i
+            match i with
+            | 0 => rfl
+            | 1 => rfl
+          exact hoab
       exact smul_lt_smul_of_pos key rsnd_pos
     have half_sharp :
       ((ω.tt ![![a, b], ![b, a]]).map (fun r => r.snd • f ![a, b])).sum <
