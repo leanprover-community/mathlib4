@@ -325,11 +325,36 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 
+section Sigma
+
+variable {I A : Type*} {X : I → Type*} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
+
 /-- `Sigma.mk i` as a bundled continuous map. -/
 @[simps apply]
-def sigmaMk {ι : Type*} {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] (i : ι) :
-    C(Y i, Σ i, Y i) where
+def sigmaMk (i : I) : C(X i, Σ i, X i) where
   toFun := Sigma.mk i
+
+/--
+To give a continuous map out of a disjoint union, it suffices to give a continuous map out of
+each term. This is `Sigma.uncurry` for continuous maps.
+-/
+@[simps]
+def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
+  toFun ig := f ig.fst ig.snd
+
+variable (A X) in
+/--
+Giving a continuous map out of a disjoint union is the same as giving a continuous map out of
+each term. This is a version of `Equiv.piCurry` for continuous maps.
+-/
+@[simps]
+def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
+  toFun := sigma
+  invFun f i := f.comp (sigmaMk i)
+  left_inv := by intro; ext; simp
+  right_inv := by intro; ext; simp
+
+end Sigma
 
 section Pi
 
@@ -350,6 +375,18 @@ theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a
 @[simps (config := .asFn)]
 def eval (i : I) : C(∀ j, X j, X i) where
   toFun := Function.eval i
+
+variable (A X) in
+/--
+Giving a continuous map out of a disjoint union is the same as giving a continuous map out of
+each term
+-/
+@[simps]
+def piEquiv : (∀ i, C(A, X i)) ≃ C(A, ∀ i, X i) where
+  toFun := pi
+  invFun f i := (eval i).comp f
+  left_inv := by intro; ext; simp [pi]
+  right_inv := by intro; ext; simp [pi]
 
 /-- Combine a collection of bundled continuous maps `C(X i, Y i)` into a bundled continuous map
 `C(∀ i, X i, ∀ i, Y i)`. -/
