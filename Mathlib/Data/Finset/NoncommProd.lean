@@ -3,9 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Hom.Commute
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Group.Commute.Hom
+import Mathlib.Data.Fintype.Card
 
 #align_import data.finset.noncomm_prod from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -430,7 +430,8 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     simp only [MonoidHom.single_apply, ne_eq, Pi.mulSingle_eq_same]
     · intro j hj
       simp at hj
-      simp [Pi.mulSingle, Function.update]
+      simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
+        ne_eq, dite_eq_right_iff]
       intro h
       simp [*] at *
 #align finset.noncomm_prod_mul_single Finset.noncommProd_mul_single
