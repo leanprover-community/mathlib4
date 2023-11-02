@@ -472,7 +472,7 @@ end ContinuousMap
 namespace QuotientMap
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    {f : C(X, Y)} (hf : QuotientMap f) (g : C(X, Z)) (h : ∀ a b, f a = f b → g a = g b)
+    {f : C(X, Y)} (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 
 /-- The homeomorphism from the quotient of a quotient map to its codomain. -/
 noncomputable
