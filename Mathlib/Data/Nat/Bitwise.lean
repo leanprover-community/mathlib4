@@ -401,12 +401,39 @@ theorem ofBits_lt {n} (f : Fin n → Bool) : ofBits f < 2 ^ n := by
 
 /-- The `ith` bit of `ofBits` is the function at `i`.
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
-theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f j).testBit i = f i := by
-  induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
-  · simp only [ofBits, ofBits.go, bit_zero, lt_one_iff.1 h1]; cases (f 0) <;> rfl
-  · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
-    · rw [← ih h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, ofBits, testBit_two_pow_mul_add h1]
-    · rw [h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, bit_zero,
+-- theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f j).testBit i = f i := by
+theorem testBit_ofBits {j} {i : Fin j } {f : Fin j → Bool } : (ofBits f).testBit i = f i := by
+  induction' j, (pos_of_gt i.2) using Nat.le_induction with j _ ih -- generalizing i
+  · simp only [Fin.fin_one_eq_zero, ofBits, ofBits.go, bit_zero, lt_one_iff.1 i.2,
+      Fin.coe_fin_one]; cases (f 0) <;> rfl
+  · cases' i using Fin.reverseInduction
+    · rw [ofBits, ofBits.go, ofBits_go_eq_pow_mul_add, bit_zero]
+      have H := ofBits_lt f
+p
+      have K := testBit_two_pow_mul_toNat_add H
+
+
+        -- testBit_two_pow_mul_toNat_add (ofBits_lt)]
+    simp only [Fin.fin_zero_eq_last, ofBits, ofBits.go, bit_zero, Fin.coe_last]
+      cases (f .last) <;> rfl
+    · simp only [Fin.coe_last, Fin.coe_cast_succ, ofBits, ofBits.go, bit_val]
+      rw [testBit_two_pow_mul_add (Nat.lt_succ_of_le (Nat.le_of_lt_succ i.2)), ih]
+      cases' (f i) <;> simp
+
+  -- v TODO: this should probably be related by a cases on the `i` or something.
+  · cases' lt_or_eq_of_le (lt_succ_iff.mp i.2) with h1 h1
+    -- · let i' : Fin j := { val := i.val, isLt := h1 }
+    · let i' : Fin j := i.castPred
+      have I'VAL : (↑i' : Nat) = (↑i : Nat) := by simp[Fin.coe_castPred i' h1]
+      rw [← I'VAL]
+      -- ← ih (i := i') (f := f),
+      rw [ofBits, ofBits.go, ofBits_go_eq_pow_mul_add, ofBits,
+          testBit_two_pow_mul_add h1]
+      unfold ofBits at ih
+      rw [← I'VAL]
+      rw [ih (i := i') (f := f ∘ Fin.castSucc)]
+      rw[Fin.castSucc_castPred] -- this is going to be a pain, because it expects Fin (i + 2).
+    · rw [h1, ofBits, ofBits.go, ofBits_go_eq_pow_mul_add, bit_zero,
         testBit_two_pow_mul_toNat_add (ofBits_lt)]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
