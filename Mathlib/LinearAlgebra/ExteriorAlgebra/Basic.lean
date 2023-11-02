@@ -333,6 +333,10 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
       rfl
 #align exterior_algebra.ι_multi_succ_curry_left ExteriorAlgebra.ιMulti_succ_curryLeft
 
+/-- An `ExteriorAlgebra` over a nontrivial ring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
+
 end ExteriorAlgebra
 
 namespace TensorAlgebra

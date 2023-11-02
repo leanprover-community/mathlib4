@@ -63,7 +63,7 @@ namespace Set
 variable {s t : Set α}
 
 /-- The cardinality of a set as a term in `ℕ∞` -/
-noncomputable def encard (s : Set α) := PartENat.withTopEquiv (PartENat.card s)
+noncomputable def encard (s : Set α) : ℕ∞ := PartENat.withTopEquiv (PartENat.card s)
 
 @[simp] theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by
   rw [encard, encard, PartENat.card_congr (Equiv.Set.univ ↑s)]
@@ -468,8 +468,7 @@ macro_rules
 
 
 /-- The cardinality of `s : Set α` . Has the junk value `0` if `s` is infinite -/
-noncomputable def ncard (s : Set α) :=
-  ENat.toNat s.encard
+noncomputable def ncard (s : Set α) : ℕ := ENat.toNat s.encard
 #align set.ncard Set.ncard
 
 theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
