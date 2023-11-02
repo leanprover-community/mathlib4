@@ -242,6 +242,7 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 #align part_enat.decidable_le PartENat.decidableLe
 
+-- Porting note: Removed. Use `Nat.castAddMonoidHom` instead.
 #noalign part_enat.coe_hom
 #noalign part_enat.coe_coe_hom
 
