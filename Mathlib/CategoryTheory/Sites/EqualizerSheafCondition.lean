@@ -271,6 +271,8 @@ variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{
 
 /--
 The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/00VM>.
+The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arrises if the family of
+arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 def FirstObj : Type max v u := ∏ (fun i ↦ P.obj (op (X i)))
 
@@ -283,6 +285,8 @@ lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj 
 
 /--
 The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM.
+The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arrises if the
+family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
 def SecondObj : Type max v u  :=
   ∏ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
