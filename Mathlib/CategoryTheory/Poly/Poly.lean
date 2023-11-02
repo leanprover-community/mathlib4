@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2015 David Spivak, Shaowei Lin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Spivak, Shaowei Lin
+-/
+
+import Mathlib.CategoryTheory.Category.Basic
+
+-- need to use `Type u` or `Type v` instead of `Type`
+universe u v
+
+namespace CategoryTheory
+
+
 structure Poly where
   pos : Type
   dir : pos -> Type
@@ -90,6 +104,17 @@ def toTransformation {p q : Poly} : (f : p ⇒ q) -> (T : Type) ->
   let P := Pt.fst
   let Q := Pt.snd
   (Sigma.mk (f.fst P) (Q ∘ f.snd P))
+
+-------- Poly category ----------
+
+instance PolyCat.categoryStruct :
+    CategoryStruct Poly where
+  Hom p q := p ⇒ q
+  id _ := polyid
+  comp f g := f ; g
+
+instance PolyCat.category : Category Poly := by
+  refine' { id_comp := _, comp_id := _, assoc := _ } <;> intros <;> rfl
 
 -------- Substitution product ----------
 
