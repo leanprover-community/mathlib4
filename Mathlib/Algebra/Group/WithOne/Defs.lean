@@ -381,4 +381,18 @@ instance semiring [Semiring α] : Semiring (WithZero α) :=
       cases' a with a <;> cases' b with b <;> try rfl
       exact congr_arg some (right_distrib _ _ _) }
 
+instance leftDistribClass [AddZeroClass α] [MulZeroClass α] [LeftDistribClass α]  :
+    LeftDistribClass (WithZero α) where
+  left_distrib a b c := by
+    cases' a with a
+    · rfl
+    cases' b with b
+    · rw [show ((none : Option α) = (0 : WithZero α)) by rfl]
+      rw [@mul_zero (WithZero α) _ (some a)]
+      simp only [zero_add]
+    cases' c with c
+    · exact rfl
+    rw [WithZero.add]
+    apply congr_arg some (left_distrib _ _ _)
+
 end WithZero
