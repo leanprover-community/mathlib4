@@ -141,117 +141,6 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     _ = LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
 #align module.End.eigenspace_div Module.End.eigenspace_div
 
-/-- The eigenspaces of a linear operator form an independent family of subspaces of `V`.  That is,
-any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
-theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.eigenspace := by
-  classical
-  -- Define an operation from `Π₀ μ : K, f.eigenspace μ`, the vector space of finitely-supported
-  -- choices of an eigenvector from each eigenspace, to `V`, by sending a collection to its sum.
-  let S : @LinearMap K K _ _ (RingHom.id K) (Π₀ μ : K, f.eigenspace μ) V
-      (@DFinsupp.addCommMonoid K (fun μ => f.eigenspace μ) _) _
-      (@DFinsupp.module K _ (fun μ => f.eigenspace μ) _ _ _) _ :=
-    @DFinsupp.lsum K K ℕ _ V _ _ _ _ _ _ _ _ _ fun μ => (f.eigenspace μ).subtype
-  -- We need to show that if a finitely-supported collection `l` of representatives of the
-  -- eigenspaces has sum `0`, then it itself is zero.
-  suffices ∀ l : Π₀ μ, f.eigenspace μ, S l = 0 → l = 0 by
-    rw [CompleteLattice.independent_iff_dfinsupp_lsum_injective]
-    change Function.Injective S
-    rw [← @LinearMap.ker_eq_bot K K (Π₀ μ, f.eigenspace μ) V _ _
-      (@DFinsupp.addCommGroup K (fun μ => f.eigenspace μ) _)]
-    rw [eq_bot_iff]
-    exact this
-  intro l hl
-  -- We apply induction on the finite set of eigenvalues from which `l` selects a nonzero
-  -- eigenvector, i.e. on the support of `l`.
-  induction' h_l_support : l.support using Finset.induction with μ₀ l_support' hμ₀ ih generalizing l
-  -- If the support is empty, all coefficients are zero and we are done.
-  · exact DFinsupp.support_eq_empty.1 h_l_support
-  -- Now assume that the support of `l` contains at least one eigenvalue `μ₀`. We define a new
-  -- collection of representatives `l'` to apply the induction hypothesis on later. The collection
-  -- of representatives `l'` is derived from `l` by multiplying the coefficient of the eigenvector
-  -- with eigenvalue `μ` by `μ - μ₀`.
-  · let l' := DFinsupp.mapRange.linearMap
-      (fun μ => (μ - μ₀) • @LinearMap.id K (f.eigenspace μ) _ _ _) l
-    -- The support of `l'` is the support of `l` without `μ₀`.
-    have h_l_support' : l'.support = l_support' := by
-      rw [← Finset.erase_insert hμ₀, ← h_l_support]
-      ext a
-      have : ¬(a = μ₀ ∨ l a = 0) ↔ ¬a = μ₀ ∧ ¬l a = 0 := not_or
-      simp only [DFinsupp.mapRange.linearMap_apply, DFinsupp.mapRange_apply,
-        DFinsupp.mem_support_iff, Finset.mem_erase, id.def, LinearMap.id_coe, LinearMap.smul_apply,
-        Ne.def, smul_eq_zero, sub_eq_zero, this]
-    -- The entries of `l'` add up to `0`.
-    have total_l' : S l' = 0 := by
-      let g := f - algebraMap K (End K V) μ₀
-      let a : Π₀ _ : K, V := DFinsupp.mapRange.linearMap (fun μ => (f.eigenspace μ).subtype) l
-      calc
-        S l' =
-          DFinsupp.lsum ℕ (fun μ => (f.eigenspace μ).subtype.comp ((μ - μ₀) • LinearMap.id)) l := ?_
-        _ = DFinsupp.lsum ℕ (fun μ => g.comp (f.eigenspace μ).subtype) l := ?_
-        _ = DFinsupp.lsum ℕ (fun _ => g) a := ?_
-        _ = g (DFinsupp.lsum ℕ (fun _ => (LinearMap.id : V →ₗ[K] V)) a) := ?_
-        _ = g (S l) := ?_
-        _ = 0 := by rw [hl, g.map_zero]
-      · exact DFinsupp.sum_mapRange_index.linearMap
-      · congr
-        ext μ v
-        simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.smul_apply, LinearMap.id_coe,
-          id.def, sub_smul, Submodule.subtype_apply, Submodule.coe_sub, Submodule.coe_smul_of_tower,
-          LinearMap.sub_apply, mem_eigenspace_iff.1 v.prop, algebraMap_end_apply]
-      · rw [DFinsupp.sum_mapRange_index.linearMap]
-      · simp only [DFinsupp.sumAddHom_apply, LinearMap.id_coe, map_dfinsupp_sum, id.def,
-          LinearMap.toAddMonoidHom_coe, DFinsupp.lsum_apply_apply]
-      · simp only [DFinsupp.sum_mapRange_index.linearMap, LinearMap.id_comp]
-    -- Therefore, by the induction hypothesis, all entries of `l'` are zero.
-    have l'_eq_0 := ih l' total_l' h_l_support'
-    -- By the definition of `l'`, this means that `(μ - μ₀) • l μ = 0` for all `μ`.
-    have h_smul_eq_0 : ∀ μ, (μ - μ₀) • l μ = 0 := by
-      intro μ
-      calc
-        (μ - μ₀) • l μ = l' μ := by
-          simp only [LinearMap.id_coe, id.def, LinearMap.smul_apply, DFinsupp.mapRange_apply,
-            DFinsupp.mapRange.linearMap_apply]
-        _ = 0 := by rw [l'_eq_0]; rfl
-    -- Thus, the eigenspace-representatives in `l` for all `μ ≠ μ₀` are `0`.
-    have h_lμ_eq_0 : ∀ μ : K, μ ≠ μ₀ → l μ = 0 := by
-      intro μ hμ
-      apply or_iff_not_imp_left.1 (smul_eq_zero.1 (h_smul_eq_0 μ))
-      rwa [sub_eq_zero]
-    -- So if we sum over all these representatives, we obtain `0`.
-    have h_sum_l_support'_eq_0 : (Finset.sum l_support' fun μ => (l μ : V)) = 0 := by
-      rw [← Finset.sum_const_zero]
-      apply Finset.sum_congr rfl
-      intro μ hμ
-      rw [Submodule.coe_eq_zero, h_lμ_eq_0]
-      rintro rfl
-      exact hμ₀ hμ
-    -- The only potentially nonzero eigenspace-representative in `l` is the one corresponding to
-    -- `μ₀`. But since the overall sum is `0` by assumption, this representative must also be `0`.
-    have : l μ₀ = 0 := by
-      simp only [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply,
-        LinearMap.toAddMonoidHom_coe, DFinsupp.sum, h_l_support, Submodule.subtype_apply,
-        Submodule.coe_eq_zero, Finset.sum_insert hμ₀, h_sum_l_support'_eq_0, add_zero] at hl
-      exact hl
-    -- Thus, all coefficients in `l` are `0`.
-    show l = 0
-    · ext μ
-      by_cases h_cases : μ = μ₀
-      · rwa [h_cases, SetLike.coe_eq_coe, DFinsupp.coe_zero, Pi.zero_apply]
-      · exact congr_arg _ (h_lμ_eq_0 μ h_cases)
-#align module.End.eigenspaces_independent Module.End.eigenspaces_independent
-
-/-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
-    independent. (Lemma 5.10 of [axler2015])
-
-    We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
-    eigenvalue in the image of `xs`. -/
-theorem eigenvectors_linearIndependent (f : End K V) (μs : Set K) (xs : μs → V)
-    (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent K xs :=
-  CompleteLattice.Independent.linearIndependent _
-    (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
-    (h_eigenvec μ).2
-#align module.End.eigenvectors_linear_independent Module.End.eigenvectors_linearIndependent
-
 /-- The generalized eigenspace for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
 kernel of `(f - μ • id) ^ k`. (Def 8.10 of [axler2015]). Furthermore, a generalized eigenspace for
 some exponent `k` is contained in the generalized eigenspace for exponents larger than `k`. -/
@@ -408,9 +297,11 @@ lemma mapsTo_iSup_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g
   simp only [Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe]
   exact ⟨k, f.mapsTo_generalizedEigenspace_of_comm h μ k hk⟩
 
-lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R]
+lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ) :
     Disjoint (f.generalizedEigenspace μ₁ k) (f.generalizedEigenspace μ₂ l) := by
+  nontriviality M
+  have := NoZeroSMulDivisors.isReduced R M
   rw [disjoint_iff]
   set p := f.generalizedEigenspace μ₁ k ⊓ f.generalizedEigenspace μ₂ l
   by_contra hp
@@ -435,16 +326,47 @@ lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R]
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
 
-lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R]
+lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) :
     Disjoint (⨆ k, f.generalizedEigenspace μ₁ k) (⨆ k, f.generalizedEigenspace μ₂ k) := by
   simp_rw [(f.generalizedEigenspace μ₁).mono.directed_le.disjoint_iSup_left,
     (f.generalizedEigenspace μ₂).mono.directed_le.disjoint_iSup_right]
   exact disjoint_generalizedEigenspace f hμ
 
-theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] [IsReduced R] (f : End R M) :
+theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
+  intro μ
+  suffices : ∀ (s : Finset R), s.SupIndep fun μ ↦ ⨆ k, f.generalizedEigenspace μ k
+  · sorry
+  intro s
+  classical
+  induction' s using Finset.induction_on with μ₁ s hμ₁ ih; simp
+  rw [Finset.supIndep_iff_disjoint_erase]
+  intro μ₂ hμ₂
+  rw [disjoint_iff, Submodule.eq_bot_iff]
+  rintro m ⟨hm : m ∈ ⨆ k, f.generalizedEigenspace μ₂ k,
+    hm' : m ∈ ((insert μ₁ s).erase μ₂).sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k⟩
+  -- easy inductive step using `disjoint_generalizedEigenspace`
   sorry
+
+/-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
+any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
+theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
+    CompleteLattice.Independent f.eigenspace :=
+  f.independent_generalizedEigenspace.mono <| fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
+
+/-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
+    independent. (Lemma 5.10 of [axler2015])
+
+    We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
+    eigenvalue in the image of `xs`. -/
+theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
+    (f : End R M) (μs : Set R) (xs : μs → M)
+    (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
+  CompleteLattice.Independent.linearIndependent _
+    (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
+    (h_eigenvec μ).2
+#align module.End.eigenvectors_linear_independent Module.End.eigenvectors_linearIndependent
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/

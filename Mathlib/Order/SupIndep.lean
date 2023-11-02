@@ -72,6 +72,7 @@ theorem SupIndep.subset (ht : t.SupIndep f) (h : s ⊆ t) : s.SupIndep f := fun 
   ht (hu.trans h) (h hi)
 #align finset.sup_indep.subset Finset.SupIndep.subset
 
+@[simp]
 theorem supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _ a ha =>
   (not_mem_empty a ha).elim
 #align finset.sup_indep_empty Finset.supIndep_empty
