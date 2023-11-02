@@ -1645,15 +1645,15 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
   h₁.map_eq ▸ (h₂.integral_map g).symm
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
 
-theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
-    ∫ x in s, f x ∂μ = ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) := by
+    ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) = ∫ x in s, f x ∂μ := by
   rw [← map_comap_subtype_coe hs]
-  exact (MeasurableEmbedding.subtype_coe hs).integral_map _
+  exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
 
-theorem set_integral_eq_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s)
-    (f : α → G) : ∫ x in s, f x = ∫ x : s, f x := set_integral_eq_subtype' hs f
-#align measure_theory.set_integral_eq_subtype MeasureTheory.set_integral_eq_subtype
+theorem integral_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (f : α → G) :
+    ∫ x : s, f x = ∫ x in s, f x := integral_subtype_comap hs f
+#align measure_theory.set_integral_eq_subtype MeasureTheory.integral_subtype
 
 @[simp]
 theorem integral_dirac' [MeasurableSpace α] (f : α → E) (a : α) (hfm : StronglyMeasurable f) :
@@ -1806,7 +1806,7 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set
     · exact Integrable.aestronglyMeasurable hf
     · exact Measurable.aemeasurable measurable_subtype_coe
     · exact Countable.measurableSet hs
-  rw [set_integral_eq_subtype' hs.measurableSet, integral_countable' hf']
+  rw [← integral_subtype_comap hs.measurableSet, integral_countable' hf']
   congr 1 with a : 1
   rw [Measure.comap_apply Subtype.val Subtype.coe_injective
     (fun s' hs' => MeasurableSet.subtype_image (Countable.measurableSet hs) hs') _
