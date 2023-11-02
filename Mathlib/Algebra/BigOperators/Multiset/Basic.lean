@@ -407,6 +407,16 @@ theorem prod_map_le_prod_map {s : Multiset ι} (f : ι → α) (g : ι → α) (
 #align multiset.sum_map_le_sum_map Multiset.sum_map_le_sum_map
 
 @[to_additive]
+theorem prod_map_lt_prod_map {s : Multiset ι} {f g : ι → α} [CovariantClass α α (· * ·) (· < ·)]
+    (all_le : ∀ i ∈ s, f i ≤ g i) (exists_lt : ∃ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  rcases s with ⟨l⟩
+  simp only [quot_mk_to_coe'', coe_map, coe_prod]
+  apply List.prod_lt_prod'
+  · exact all_le
+  · exact exists_lt
+
+@[to_additive]
 theorem prod_map_le_prod (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) : (s.map f).prod ≤ s.prod :=
   prod_le_prod_of_rel_le <| rel_map_left.2 <| rel_refl_of_refl_on h
 #align multiset.prod_map_le_prod Multiset.prod_map_le_prod
