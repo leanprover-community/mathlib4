@@ -94,7 +94,7 @@ This ensures your subclass will not have issues with synthesis of the `[Mul M]` 
 before the value of `M` is known.
 -/
 @[notation_class * carrier Simps.findCoercionArgs]
-class SetLike (A : Type*) (B : outParam <| Type*) where
+class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
@@ -111,25 +111,11 @@ instance : CoeTC A (Set B) where coe := SetLike.coe
 instance (priority := 100) instMembership : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩
 
-instance (priority := 100) : CoeSort A (Type _) :=
-  ⟨fun p => { x : B // x ∈ p }⟩
+/-- Coerce a term `p` of a `SetLike` to a type by using `{x // x ∈ p}`. -/
+@[coe] protected abbrev Coe (p : A) : Type _ := { x : B // x ∈ p }
 
-section Delab
-open Lean PrettyPrinter.Delaborator SubExpr
-
-/-- For terms that match the `CoeSort` instance's body, pretty print as `↥S`
-rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
-uses the `SetLike.instMembership` instance. -/
-@[delab app.Subtype]
-def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
-  let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
-  guard <| body.isAppOf ``Membership.mem
-  let #[_, _, inst, .bvar 0, _] := body.getAppArgs | failure
-  guard <| inst.isAppOfArity ``instMembership 3
-  let S ← withAppArg <| withBindingBody n <| withNaryArg 4 delab
-  `(↥$S)
-
-end Delab
+/-- Use `SetLike.Coe` to coerce from a term of a `SetLike` to a type. -/
+instance (priority := 100) : CoeSort A (Type _) := ⟨SetLike.Coe⟩
 
 variable (p q : A)
 
