@@ -122,7 +122,7 @@ instance instCompl : HasCompl (Booleanisation α) where
 * `aᶜ \ b` is `(a ⊔ b)ᶜ`
 * `aᶜ \ bᶜ` is `b \ a` -/
 instance instSDiff : SDiff (Booleanisation α) where
-  sdiff x y  := match x, y with
+  sdiff x y := match x, y with
     | lift a, lift b => lift (a \ b)
     | lift a, comp b => lift (a ⊓ b)
     | comp a, lift b => comp (a ⊔ b)

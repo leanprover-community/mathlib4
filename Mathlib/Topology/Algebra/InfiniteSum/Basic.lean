@@ -480,7 +480,8 @@ theorem tsum_eq_sum {s : Finset β} (hf : ∀ (b) (_ : b ∉ s), f b = 0) :
     contrapose! hx
     rw [nmem_support]
     exact hf _ hx
-  simp [tsum_def, summable_of_ne_finset_zero hf, Set.Finite.subset (finite_toSet s) I]
+  simp only [tsum_def, summable_of_ne_finset_zero hf, Set.Finite.subset (finite_toSet s) I,
+     ite_true, dite_eq_ite]
   exact finsum_eq_sum_of_support_subset f I
 #align tsum_eq_sum tsum_eq_sum
 
@@ -697,7 +698,7 @@ variable [Encodable γ]
   taking a supremum. This is useful for outer measures. -/
 theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0) (s : γ → β) :
     ∑' i : ℕ, m (⨆ b ∈ decode₂ γ i, s b) = ∑' b : γ, m (s b) := by
-  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome :=by
+  have H : ∀ n, m (⨆ b ∈ decode₂ γ n, s b) ≠ 0 → (decode₂ γ n).isSome := by
     intro n h
     generalize decode₂ γ n = foo at *
     cases' foo with b

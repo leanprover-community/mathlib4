@@ -276,25 +276,6 @@ theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (h
   (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
 #align is_closed.hypograph IsClosed.hypograph
 
--- Porting note: todo: move these lemmas to `Topology.Algebra.Order.LeftRight`
-theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
-  nhdsWithin_neBot_of_mem H₂
-#align nhds_within_Ici_ne_bot nhdsWithin_Ici_neBot
-
-@[instance]
-theorem nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) :=
-  nhdsWithin_Ici_neBot (le_refl a)
-#align nhds_within_Ici_self_ne_bot nhdsWithin_Ici_self_neBot
-
-theorem nhdsWithin_Iic_neBot {a b : α} (H : a ≤ b) : NeBot (𝓝[Iic b] a) :=
-  nhdsWithin_neBot_of_mem H
-#align nhds_within_Iic_ne_bot nhdsWithin_Iic_neBot
-
-@[instance]
-theorem nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) :=
-  nhdsWithin_Iic_neBot (le_refl a)
-#align nhds_within_Iic_self_ne_bot nhdsWithin_Iic_self_neBot
-
 end Preorder
 
 section PartialOrder
@@ -1430,6 +1411,60 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : 
   this.of_diff countable_setOf_covby_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo
 
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. -/
+theorem countable_image_lt_image_Ioi [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y} := by
+  /- If the values of `f` are separated above on the right of `x`, there is an interval `(f x, z x)`
+    which is not reached by `f`. This gives a family of disjoint open intervals in `α`. Such a
+    family can only be countable as `α` is second-countable. -/
+  nontriviality β
+  have : Nonempty α := Nonempty.map f (by infer_instance)
+  let s := {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y}
+  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y := fun x hx ↦ hx
+  -- choose `z x` such that `f` does not take the values in `(f x, z x)`.
+  choose! z hz using this
+  have I : InjOn f s := by
+    apply StrictMonoOn.injOn
+    intro x hx y _ hxy
+    calc
+      f x < z x := (hz x hx).1
+      _ ≤ f y := (hz x hx).2 y hxy
+  -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
+  -- (the intervals `(f x, z x)`) is at most countable.
+  have fs_count : (f '' s).Countable := by
+    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
+      rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
+      wlog hle : u ≤ v generalizing u v
+      · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
+      have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
+      apply disjoint_iff_forall_ne.2
+      rintro a ha b hb rfl
+      simp only [I.leftInvOn_invFunOn us, I.leftInvOn_invFunOn vs] at ha hb
+      exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v hlt)).trans hb.1)
+    apply Set.PairwiseDisjoint.countable_of_Ioo A
+    rintro _ ⟨y, ys, rfl⟩
+    simpa only [I.leftInvOn_invFunOn ys] using (hz y ys).1
+  exact MapsTo.countable_of_injOn (mapsTo_image f s) I fs_count
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. -/
+theorem countable_image_gt_image_Ioi [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, z < f x ∧ ∀ y, x < y → f y ≤ z} :=
+  countable_image_lt_image_Ioi (α := αᵒᵈ) f
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. -/
+theorem countable_image_lt_image_Iio [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, f x < z ∧ ∀ y, y < x → z ≤ f y} :=
+  countable_image_lt_image_Ioi (β := βᵒᵈ) f
+
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. -/
+theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α) [SecondCountableTopology α] :
+    Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} :=
+  countable_image_lt_image_Ioi (α := αᵒᵈ) (β := βᵒᵈ) f
+
 instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
     IsCountablyGenerated (atTop : Filter α) := by
   by_cases h : ∃ (x : α), IsTop x
@@ -2423,12 +2458,6 @@ instance nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) 
   nhdsWithin_Ioi_neBot (le_refl a)
 #align nhds_within_Ioi_self_ne_bot nhdsWithin_Ioi_self_neBot
 
-theorem Filter.Eventually.exists_gt [NoMaxOrder α] {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) :
-    ∃ b > a, p b := by
-  simpa only [exists_prop, gt_iff_lt, and_comm] using
-    ((h.filter_mono (@nhdsWithin_le_nhds _ _ a (Ioi a))).and self_mem_nhdsWithin).exists
-#align filter.eventually.exists_gt Filter.Eventually.exists_gt
-
 theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
     NeBot (𝓝[Iio c] b) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| by rwa [closure_Iio' H₁]
@@ -2445,11 +2474,6 @@ theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝
 instance nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) :=
   nhdsWithin_Iio_neBot (le_refl a)
 #align nhds_within_Iio_self_ne_bot nhdsWithin_Iio_self_neBot
-
-theorem Filter.Eventually.exists_lt [NoMinOrder α] {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) :
-    ∃ b < a, p b :=
-  Filter.Eventually.exists_gt (α := αᵒᵈ) h
-#align filter.eventually.exists_lt Filter.Eventually.exists_lt
 
 theorem right_nhdsWithin_Ico_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ico a b] b) :=
   (isLUB_Ico H).nhdsWithin_neBot (nonempty_Ico.2 H)

@@ -116,7 +116,7 @@ lemma ι_descQ_eq_zero_of_boundary (k : S.X₂ ⟶ A) (x : S.X₃ ⟶ A) (hx : k
   congr 1
   simp only [← cancel_epi h.p, hx, p_descQ, p_g'_assoc]
 
-/-- For `h : S.RightHomologyData`, this is a restatement of `h.hι `, saying that
+/-- For `h : S.RightHomologyData`, this is a restatement of `h.hι`, saying that
 `ι : h.H ⟶ h.Q` is a kernel of `h.g' : h.Q ⟶ S.X₃`. -/
 def hι' : IsLimit (KernelFork.ofι h.ι h.ι_g') := h.hι
 

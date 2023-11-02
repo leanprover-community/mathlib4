@@ -11,7 +11,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
 
-#align_import algebra.order.smul from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import algebra.order.smul from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Ordered scalar product
@@ -53,7 +53,7 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
   protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
 #align ordered_smul OrderedSMul
 
-variable {ι 𝕜 R M N : Type*}
+variable {ι α β γ 𝕜 R M N : Type*}
 
 namespace OrderDual
 
@@ -63,10 +63,35 @@ instance OrderDual.instSMulWithZero [Zero R] [AddZeroClass M] [SMulWithZero R M]
     zero_smul := fun m => OrderDual.rec (zero_smul _) m
     smul_zero := fun r => OrderDual.rec (@smul_zero R M _ _) r }
 
+@[to_additive]
 instance OrderDual.instMulAction [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
   { OrderDual.instSMul with
     one_smul := fun m => OrderDual.rec (one_smul _) m
     mul_smul := fun r => OrderDual.rec (@mul_smul R M _ _) r }
+
+@[to_additive]
+instance OrderDual.instSMulCommClass [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
+    SMulCommClass αᵒᵈ β γ := ‹SMulCommClass α β γ›
+
+@[to_additive]
+instance OrderDual.instSMulCommClass' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
+    SMulCommClass α βᵒᵈ γ := ‹SMulCommClass α β γ›
+
+@[to_additive]
+instance OrderDual.instSMulCommClass'' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
+    SMulCommClass α β γᵒᵈ := ‹SMulCommClass α β γ›
+
+@[to_additive OrderDual.instVAddAssocClass]
+instance OrderDual.instIsScalarTower [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+   IsScalarTower αᵒᵈ β γ := ‹IsScalarTower α β γ›
+
+@[to_additive OrderDual.instVAddAssocClass']
+instance OrderDual.instIsScalarTower' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+    IsScalarTower α βᵒᵈ γ := ‹IsScalarTower α β γ›
+
+@[to_additive OrderDual.instVAddAssocClass'']
+instance OrderDual.IsScalarTower'' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+    IsScalarTower α β γᵒᵈ := ‹IsScalarTower α β γ›
 
 instance [MonoidWithZero R] [AddMonoid M] [MulActionWithZero R M] : MulActionWithZero R Mᵒᵈ :=
   { OrderDual.instMulAction, OrderDual.instSMulWithZero with }
@@ -98,6 +123,9 @@ variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [Ordere
     · rw [zero_smul, zero_smul]
     · exact (smul_lt_smul_of_pos hab hc).le
 #align smul_le_smul_of_nonneg smul_le_smul_of_nonneg
+
+-- TODO: Remove `smul_le_smul_of_nonneg` completely
+alias smul_le_smul_of_nonneg_left := smul_le_smul_of_nonneg
 
 theorem smul_nonneg (hc : 0 ≤ c) (ha : 0 ≤ a) : 0 ≤ c • a :=
   calc
@@ -186,11 +214,24 @@ instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul
 
+section LinearOrderedSemiring
+variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
+  [OrderedSMul R M] {a : R}
+
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
-instance LinearOrderedSemiring.toOrderedSMul {R : Type*} [LinearOrderedSemiring R] :
-    OrderedSMul R R :=
+instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
 #align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSMul
+
+theorem smul_max (ha : 0 ≤ a) (b₁ b₂ : M) : a • max b₁ b₂ = max (a • b₁) (a • b₂) :=
+  (monotone_smul_left ha : Monotone (_ : M → M)).map_max
+#align smul_max smul_max
+
+theorem smul_min (ha : 0 ≤ a) (b₁ b₂ : M) : a • min b₁ b₂ = min (a • b₁) (a • b₂) :=
+  (monotone_smul_left ha : Monotone (_ : M → M)).map_min
+#align smul_min smul_min
+
+end LinearOrderedSemiring
 
 section LinearOrderedSemifield
 
