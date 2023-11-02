@@ -785,24 +785,22 @@ instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlg
     top_le_sup_compl := fun _ _ => BooleanAlgebra.top_le_sup_compl _ }
 #align pi.boolean_algebra Pi.booleanAlgebra
 
-instance : BooleanAlgebra Bool where
+instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
   __ := Bool.linearOrder
   __ := Bool.boundedOrder
   __ := Bool.instDistribLattice
-  -- the `(Bool.*_eq_* _ _)` terms can be dropped after std4#329 is integrated into mathlib
-  inf_compl_le_bot a := (Bool.min_eq_and _ _).trans_le <| a.and_not_self.le
-  top_le_sup_compl a := a.or_not_self.ge.trans_eq <| (Bool.max_eq_or _ _).symm
+  compl := not
+  inf_compl_le_bot a := a.and_not_self.le
+  top_le_sup_compl a := a.or_not_self.ge
 
 @[simp]
-theorem Bool.sup_eq_bor : (· ⊔ ·) = or := by
-  fail_if_success rfl  -- TODO: replace with `rfl` after std4#329 is integrated into mathlib
-  exact funext₂ Bool.max_eq_or
+theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=
+  rfl
 #align bool.sup_eq_bor Bool.sup_eq_bor
 
 @[simp]
-theorem Bool.inf_eq_band : (· ⊓ ·) = and := by
-  fail_if_success rfl  -- TODO: replace with `rfl` after std4#329 is integrated into mathlib
-  exact funext₂ Bool.min_eq_and
+theorem Bool.inf_eq_band : (· ⊓ ·) = and :=
+  rfl
 #align bool.inf_eq_band Bool.inf_eq_band
 
 @[simp]
