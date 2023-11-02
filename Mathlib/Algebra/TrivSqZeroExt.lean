@@ -889,7 +889,7 @@ theorem lift_comp_inrHom (f : R →ₐ[S] A) (g : M →ₗ[S] A)
   LinearMap.ext <| lift_apply_inr f g hg hfg hgf
 #align triv_sq_zero_ext.lift_aux_comp_inr_hom TrivSqZeroExt.lift_comp_inrHom
 
--- When applied to `inr` and `inl` themselves, `lift` is the identity.
+/-- When applied to `inr` and `inl` themselves, `lift` is the identity. -/
 @[simp]
 theorem lift_inlAlgHom_inrHom :
     lift (inlAlgHom _ _ _) (inrHom R M |>.restrictScalars S)
