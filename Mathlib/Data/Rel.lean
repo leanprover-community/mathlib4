@@ -359,18 +359,19 @@ namespace Function
 def graph (f : α → β) : Rel α β := fun x y => f x = y
 #align function.graph Function.graph
 
+@[simp] lemma graph_def (f : α → β) (x y) : f.graph x y ↔ (f x = y) := Iff.rfl
+
 theorem graph_id : graph id = @Eq α := by simp [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y
-  simp [graph, Rel.comp]
+  simp [Rel.comp]
 
 end Function
 
 theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = Rel.inv (f : α → β).graph := by
   ext x y
-  simp[Function.graph, Rel.inv, Equiv.apply_eq_iff_eq_symm_apply (f := f.symm), flip]
-  exact eq_comm
+  aesop (add norm Rel.inv_def)
 
 theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) ↔ ∀ x, ∃! y, r x y := by
   unfold Function.graph
@@ -395,15 +396,15 @@ namespace Set
 -- TODO: if image were defined with bounded quantification in corelib, the next two would
 -- be definitional
 theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := by
-  simp [Set.image, Function.graph, Rel.image]
+  simp [Set.image, Rel.image]
 #align set.image_eq Set.image_eq
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by
-  simp [Set.preimage, Function.graph, Rel.preimage, Rel.inv, flip, Rel.image]
+  simp [Set.preimage, Rel.preimage, Rel.inv, flip, Rel.image]
 #align set.preimage_eq Set.preimage_eq
 
 theorem preimage_eq_core (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).core s := by
-  simp [Set.preimage, Function.graph, Rel.core]
+  simp [Set.preimage, Rel.core]
 #align set.preimage_eq_core Set.preimage_eq_core
 
 end Set
