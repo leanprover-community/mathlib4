@@ -1364,7 +1364,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
             contrapose! h
             rintro (⟨⟩ | a) ha
             · exact mem_singleton ⊤
-            · exact (h ⟨a, ha⟩).elim
+            · exact (not_nonempty_iff_eq_empty.2 h ⟨a, ha⟩).elim
         · intro b hb
           rw [← some_le_some]
           exact ha hb

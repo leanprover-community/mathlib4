@@ -156,6 +156,14 @@ theorem ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆
 #align csupr_div ciSup_div
 #align csupr_sub ciSup_sub
 
+@[to_additive]
+theorem ciInf_mul (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
+  (OrderIso.mulRight a).map_ciInf hf
+
+@[to_additive]
+theorem ciInf_div (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
+  simp only [div_eq_mul_inv, ciInf_mul hf]
+
 end Right
 
 section Left
@@ -168,6 +176,10 @@ theorem mul_ciSup (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆
   (OrderIso.mulLeft a).map_ciSup hf
 #align mul_csupr mul_ciSup
 #align add_csupr add_ciSup
+
+@[to_additive]
+theorem mul_ciInf (hf : BddBelow (Set.range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a * f i :=
+  (OrderIso.mulLeft a).map_ciInf hf
 
 end Left
 
