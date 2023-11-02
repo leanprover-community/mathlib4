@@ -8,7 +8,7 @@ import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.TryThis
 import Mathlib.Control.Basic
@@ -110,7 +110,7 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × Bool × Nat)) :=
-  DiscrTreeCache.mk "rw?: init cache" processLemma (config := discrTreeConfig)
+  DiscrTreeCache.mk "rw?: init cache" processLemma
     -- Sort so lemmas with longest names come first.
     -- This is counter-intuitive, but the way that `DiscrTree.getMatch` returns results
     -- means that the results come in "batches", with more specific matches *later*.
@@ -136,7 +136,7 @@ initialize rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) ← unsafe do
   if (← path.pathExists) then
     let (d, _r) ← unpickle (DiscrTree (Name × Bool × Nat)) path
     -- We can drop the `CompactedRegion` value; we do not plan to free it
-    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d) (config := discrTreeConfig)
+    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)
   else
     buildDiscrTree
 
