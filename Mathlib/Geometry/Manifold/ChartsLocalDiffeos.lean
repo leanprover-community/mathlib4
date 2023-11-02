@@ -46,10 +46,11 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
   have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
   exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
 
--- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
--- xxx: is the HasGroupoid part needed? I think it is.
-lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] :
-    e.subtypeRestr s ∈ G.maximalAtlas s := by
+/-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`. -/
+-- this is different from `closedUnderRestriction'` as we want membership in the maximal atlas
+-- XXX: find a better name!
+lemma stable_under_restrictions {G : StructureGroupoid H} (h: HasGroupoid M G)
+    [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
   rw [mem_maximalAtlas_iff]
   intro e' he'
   -- `e'` is the restriction of some chart of `M` at `x`
@@ -66,23 +67,15 @@ lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) [ClosedUnderRestricti
   constructor
   · have : (e.symm ≫ₕ chartAt H ↑x).restr (e.target ∩ e.symm ⁻¹' s) ∈ G := by
       let t := (e.target ∩ e.symm ⁻¹' s)
-      have htopen : IsOpen t := by
-        apply IsOpen.inter e.open_target
-        sorry -- easy, as s is open and e.symm is continuous on its source
-        -- xxx: need version of IsOpen.preimage for ContinuousOn, then this is s.2.preimage e.cont_invFun
-      apply G.locality
-      intro x' hx'
-      refine ⟨e.target ∩ e.symm ⁻¹' s, htopen, ?_, ?_ ⟩
-      · rw [LocalHomeomorph.restr_source] at hx'
-        have : x' ∈ interior (e.target ∩ ↑(LocalHomeomorph.symm e) ⁻¹' ↑s) := by
-          sorry -- apply mem_right_inter or so
-        apply (interior_subset this)
-        -- xxx: why can't I rewrite by `htopen.interioreq` or so?
+      -- easy, as s is open and e.symm is continuous on its source
+      -- xxx: need version of IsOpen.preimage for ContinuousOn, then this is s.2.preimage e.cont_invFun
+      have : IsOpen (e.symm ⁻¹' s) := sorry
+      have htopen : IsOpen t := e.open_target.inter this
+      refine G.locality fun x' hx' ↦ ⟨e.target ∩ e.symm ⁻¹' s, htopen, ?_, ?_ ⟩
+      · exact interior_subset (mem_of_mem_inter_right hx')
       · exact closedUnderRestriction' (closedUnderRestriction' aux htopen) htopen
     exact G.eq_on_source this r_corr
-  · sorry -- completely similar to first part: FIXME extract into general lemma!
-#exit
-
+  · sorry -- completely similar to the first goal: FIXME can I deduplicate?
 
 -- TODO: prove this! it's the main load-bearing part of the lemma below!
 -- XXX: this lemma is false as-is; `fixed` is correct
