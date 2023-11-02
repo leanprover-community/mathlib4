@@ -295,4 +295,13 @@ instance instPrecoherent : Precoherent Profinite := by
 
 end Coherent
 
+instance : Preregular Profinite where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [Profinite.effectiveEpi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
+
 end Profinite

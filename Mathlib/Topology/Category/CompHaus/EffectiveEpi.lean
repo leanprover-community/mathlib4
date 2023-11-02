@@ -247,4 +247,13 @@ lemma effectiveEpi_iff_surjective {X Y : CompHaus} (f : X ⟶ Y) :
   rw [← epi_iff_surjective]
   exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
 
+instance : Preregular CompHaus where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [CompHaus.effectiveEpi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
+
 end CompHaus
