@@ -26,14 +26,6 @@
     "inputRev?": "nightly-testing",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover/lean4-cli",
-    "subDir?": null,
-    "rev": "a751d21d4b68c999accb6fc5d960538af26ad5ec",
-    "opts": {},
-    "name": "Cli",
-    "inputRev?": "nightly",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/leanprover-community/ProofWidgets4",
     "subDir?": null,
     "rev": "f1a5c7808b001305ba07d8626f45ee054282f589",
