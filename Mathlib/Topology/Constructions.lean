@@ -237,22 +237,14 @@ theorem nhdsWithin_subtype_eq_bot_iff {s t : Set α} {x : s} :
     nhds_induced]
 #align nhds_within_subtype_eq_bot_iff nhdsWithin_subtype_eq_bot_iff
 
--- The statement here used to be:
--- `𝓝[≠] x = ⊥ ↔ 𝓝[≠] (x : α) ⊓ 𝓟 S = ⊥`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] (x : α)`
 theorem nhds_ne_subtype_eq_bot_iff {S : Set α} {x : S} :
-    𝓝[≠] x = ⊥ ↔ nhdsWithin (x : α) {(x : α)}ᶜ ⊓ 𝓟 S = ⊥ := by
+    𝓝[≠] x = ⊥ ↔ 𝓝[≠] (x : α) ⊓ 𝓟 S = ⊥ := by
   rw [← nhdsWithin_subtype_eq_bot_iff, preimage_compl, ← image_singleton,
     Subtype.coe_injective.preimage_image]
 #align nhds_ne_subtype_eq_bot_iff nhds_ne_subtype_eq_bot_iff
 
--- The statement here used to be:
--- `(𝓝[≠] x).NeBot ↔ (𝓝[≠] (x : α) ⊓ 𝓟 S).NeBot`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] (x : α)`
 theorem nhds_ne_subtype_neBot_iff {S : Set α} {x : S} :
-    (𝓝[≠] x).NeBot ↔ (nhdsWithin (x : α) {(x : α)}ᶜ ⊓ 𝓟 S).NeBot := by
+    (𝓝[≠] x).NeBot ↔ (𝓝[≠] (x : α) ⊓ 𝓟 S).NeBot := by
   rw [neBot_iff, neBot_iff, not_iff_not, nhds_ne_subtype_eq_bot_iff]
 #align nhds_ne_subtype_ne_bot_iff nhds_ne_subtype_neBot_iff
 
