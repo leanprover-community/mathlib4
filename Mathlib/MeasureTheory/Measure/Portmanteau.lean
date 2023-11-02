@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Integral.Layercake
 
 #align_import measure_theory.measure.portmanteau from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -539,14 +540,14 @@ lemma le_liminf_measure_open_of_forall_tendsto_measure
 
 end LimitBorelImpliesLimsupClosedLE --section
 
-lemma Filter.isBounded_le_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
+lemma _root_.Filter.isBounded_le_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
     (h : Bornology.IsBounded (Set.range f)) :
     (F.map f).IsBounded (· ≤ ·) := by
   rw [Real.isBounded_iff_bddBelow_bddAbove] at h
   obtain ⟨c, hc⟩ := h.2
   refine isBoundedUnder_of ⟨c, by simpa [mem_upperBounds] using hc⟩
 
-lemma Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
+lemma _root_.Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
     (h : Bornology.IsBounded (Set.range f)) :
     (F.map f).IsBounded (· ≥ ·) := by
   rw [Real.isBounded_iff_bddBelow_bddAbove] at h
