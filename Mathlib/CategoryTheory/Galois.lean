@@ -12,76 +12,7 @@ universe u v w v₁ u₁ u₂
 
 open CategoryTheory Limits Functor
 
-section Stacks
-
 namespace Galois
-
-class ConnectedObject (C : Type u₁) [Category.{v₁} C] (X : C) where
-  notInitial : IsInitial X → False
-  noTrivialComponent (Y : C) (i : Y ⟶ X) [Mono i] : ¬ IsIso i → IsInitial Y
-
-/- Stacks Project Definition 0BMY -/
-class GaloisCategory (C : Type u₁) [Category.{v₁} C] (F : C ⥤ Type v₁) where
-  -- properties of C
-  hasFiniteLimits : HasFiniteLimits C
-  hasFiniteColimits : HasFiniteColimits C
-  asFiniteCoproductOfConnected (X : C) :
-    ∃ (ι : Type w) (_ : Fintype ι) (f : ι → C) (_ : ∀ i, ConnectedObject C (f i)),
-    IsIsomorphic X (∐ f)
-
-  -- properties of F
-  imageFinite (X : C) : Fintype (F.obj X)
-  reflectsIsos : ReflectsIsomorphisms F
-  leftExact : PreservesFiniteLimits F
-  rightExact : PreservesFiniteColimits F
-
-variable {C : Type v₁} [Category.{v₁} C] (F : C ⥤ Type v₁) [GaloisCategory C F] 
-
-instance (X : C) : Fintype (F.obj X) := GaloisCategory.imageFinite X
-
-def fundamentalGroup (F : C ⥤ Type v₁) : Type (max v₁ v₁) := Aut F
-
--- inherit group instance from automorphism group
-instance : Group (fundamentalGroup F) := by
-  show Group (Aut F)
-  exact inferInstance
-
--- the fundamental group is a profinite group
-instance : TopologicalSpace (fundamentalGroup F) := sorry
-instance : TopologicalGroup (fundamentalGroup F) := sorry
-instance : CompactSpace (fundamentalGroup F) := sorry
-instance : TotallyDisconnectedSpace (fundamentalGroup F) := sorry
-instance : T2Space (fundamentalGroup F) := sorry
-
-abbrev πTypes := Action (FintypeCat.{v₁}) (MonCat.of (fundamentalGroup F))
-
-def fibreFunctor : C ⥤ πTypes F where
-  obj X := {
-    V := FintypeCat.of (F.obj X)
-    ρ := MonCat.ofHom {
-      toFun := fun (g : fundamentalGroup F) ↦ g.hom.app X
-      map_one' := rfl
-      map_mul' := by aesop
-    }
-  }
-  map f := {
-    hom := F.map f
-    comm := by
-      intro g
-      exact symm <| g.hom.naturality f
-  }
-
-example : fibreFunctor F ⋙ forget (πTypes F) = F := rfl
-
-theorem fundamental : IsEquivalence (fibreFunctor F) := sorry
-
-end Galois
-
-end Stacks
-
-section SGA
-
-namespace Galois2
 
 section Def
 
@@ -188,53 +119,119 @@ lemma monomorphismIffInducesInjective {X Y : C} (f : X ⟶ Y) :
   have : Mono f := monoFromPullbackIso f
   assumption
 
-example (X : C) : ConnectedObject X ↔ ∃ (Y : C) (i : Y ⟶ X), Mono i ∧ ¬ IsIso i ∧ (IsInitial Y → False) := by
-  constructor
-  intro h
-  by_contra h2
-  simp at h2
+--example (X : C) : ConnectedObject X ↔ ∃ (Y : C) (i : Y ⟶ X), Mono i ∧ ¬ IsIso i ∧ (IsInitial Y → False) := by
+--  constructor
+--  intro h
+--  by_contra h2
+--  simp at h2
 
 example (X : C) [ConnectedObject X] : ∃ (ι : Type) (D : Discrete ι ⥤ C) (t : Cocone D) (_ : IsColimit t),
     Finite ι ∧ (∀ i, ConnectedObject (D.obj i)) ∧ t.pt = X := by
   use PUnit
   use fromPUnit X
-  let t : Cocone (fromPUnit X) := {
+  use {
     pt := X
-    ι := {
-      app := by
-        intro y
-        simp
-        exact (𝟙 X)
-    }
+    ι := { app := fun _ ↦ 𝟙 X }
   }
-  have : t.pt = X := rfl
-  have : IsColimit t := sorry
-  use t
-  use this
-  simp
+  use { desc := fun s ↦ s.ι.app ⟨PUnit.unit⟩ }
+  simp only [const_obj_obj, forall_const, and_true]
   constructor
   exact Finite.of_fintype PUnit.{1}
   assumption
 
-lemma sumOfConnectedComponents (X : C) : ∃ (ι : Type) (D : Discrete ι ⥤ C) (t : Cocone D) (_ : IsColimit t),
+lemma sumOfConnectedComponents : (X : C) → ∃ (ι : Type) (D : Discrete ι ⥤ C) (t : Cocone D) (_ : IsColimit t),
     Finite ι ∧ (∀ i, ConnectedObject (D.obj i)) ∧ t.pt = X := by
-  simp
-  induction' Nat.card (F.obj X) using Nat.strong_induction_on with n hi
+  have : ∀ (n : ℕ) (X : C), n = Nat.card (F.obj X) → ∃ (ι : Type) (D : Discrete ι ⥤ C) (t : Cocone D) (_ : IsColimit t),
+    Finite ι ∧ (∀ i, ConnectedObject (D.obj i)) ∧ t.pt = X
+  intro n
+  induction' n using Nat.strong_induction_on with n hi
+  intro X hn
   by_cases ConnectedObject X
-  . use PUnit
+  use PUnit
+  use fromPUnit X
+  use {
+    pt := X
+    ι := { app := fun _ ↦ 𝟙 X }
+  }
+  use { desc := fun s ↦ s.ι.app ⟨PUnit.unit⟩ }
+  simp only [const_obj_obj, forall_const, and_true]
+  constructor
+  exact Finite.of_fintype PUnit.{1}
+  assumption
+  by_cases (IsInitial X → False)
+  . have : ¬ (∀ (Y : C) (i : Y ⟶ X) [Mono i], (IsInitial Y → False) → IsIso i) := sorry
+    simp at this
+    obtain ⟨Y, hnotinitial, v, hvmono, hvnoiso⟩ := this
+    have : Function.Injective (F.map v) := (monomorphismIffInducesInjective v).mp hvmono
+    have : Nat.card (F.obj Y) ≠ 0 := sorry
+    obtain ⟨Z, u, x, _⟩ := PreGaloisCategory.monoInducesIsoOnDirectSummand v
+    have hn1 : Nat.card (F.obj Y) < n := sorry
+    have hn2 : Nat.card (F.obj Z) < n := sorry
+    obtain ⟨ι₁, D₁, t₁, ht₁, hfin₁, hconn₁, h₁⟩ := hi (Nat.card (F.obj Y)) hn1 Y rfl
+    obtain ⟨ι₂, D₂, t₂, ht₂, hfin₂, hconn₂, h₂⟩ := hi (Nat.card (F.obj Z)) hn2 Z rfl
+    let ι := Sum ι₁ ι₂
+    use ι
+    let f : ι → C
+    | Sum.inl i => D₁.obj ⟨i⟩
+    | Sum.inr i => D₂.obj ⟨i⟩
+    use (Discrete.functor f)
+    let t : Cocone (Discrete.functor f) := {
+      pt := X
+      ι := by
+        apply Discrete.natTrans
+        intro ⟨i⟩
+        exact match i with
+        | Sum.inl i => by
+            let h := t₁.ι.app ⟨i⟩
+            rw [h₁] at h
+            exact h ≫ v
+        | Sum.inr i => by
+            let h := t₂.ι.app ⟨i⟩
+            rw [h₂] at h
+            exact h ≫ u
+    }
+    use t
+    have hco : IsColimit t := {
+      desc := by
+        intro s
+        show X ⟶ s.pt
+        let s₁ : Cocone D₁ := {
+          pt := s.pt
+          ι := by
+            apply Discrete.natTrans
+            intro ⟨i⟩
+            exact s.ι.app ⟨Sum.inl i⟩
+        }
+        let f₁ : Y ⟶ s.pt := by
+          rw [h₁]
+          exact ht₁.desc s₁
+        let s₂ : Cocone D₂ := {
+          pt := s.pt
+          ι := by
+            apply Discrete.natTrans
+            intro ⟨i⟩
+            exact s.ι.app ⟨Sum.inl i⟩
+        }
+        let f₂ : Z ⟶ s.pt := ht₂.desc s₂
+    }
+    use hco
     simp
-  . by_cases (IsInitial X → False)
-    . have : ¬ (∀ (Y : C) (i : Y ⟶ X) [Mono i], (IsInitial Y → False) → IsIso i) := sorry
-      simp at this
-      obtain ⟨Y, hnotinitial, i, himono, hinoiso⟩ := this
-      have : Function.Injective (F.map i) := (monomorphismIffInducesInjective i).mp himono
-      have : Nat.card (F.obj Y) ≠ 0 := sorry
-      have : Nat.card (F.obj Y) < Nat.card (F.obj X) := sorry
-      obtain ⟨Z, u, x, _⟩ := PreGaloisCategory.monoInducesIsoOnDirectSummand i
-      have : Nat.card (F.obj Z) < Nat.card (F.obj Z) := sorry
-    . simp at h
-      obtain ⟨y, _⟩ := h
-      admit
+    constructor
+    exact Finite.instFiniteSum
+    intro ⟨i⟩
+    match i with
+    | Sum.inl i => exact hconn₁ ⟨i⟩
+    | Sum.inr i => exact hconn₂ ⟨i⟩
+  . simp at h
+    obtain ⟨y, _⟩ := h
+    use PEmpty
+    use empty C
+    use asEmptyCocone X
+    use y
+    simp only [IsEmpty.forall_iff, asEmptyCocone_pt, and_self, and_true]
+    exact Finite.of_fintype PEmpty.{1}
+  intro X
+  exact this (Nat.card (F.obj X)) X rfl
 
 def evaluation (A X : C) (a : F.obj A) (f : A ⟶ X) : F.obj X := F.map f a
 
@@ -400,6 +397,4 @@ theorem fundamental : IsEquivalence (fibreFunctor F) := sorry
 
 end FundamentalGroup
 
-end Galois2
-
-end SGA
+end Galois
