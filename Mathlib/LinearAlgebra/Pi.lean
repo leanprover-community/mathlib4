@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 -/
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.Logic.Equiv.Fin
 
 #align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
