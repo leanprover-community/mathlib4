@@ -3915,9 +3915,8 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
   rwa [sUnion_image]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
-/-- A measure which is finite on compact sets in a locally compact space is locally finite.
-Not registered as an instance to avoid a loop with the other direction. -/
-theorem isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
+/-- A measure which is finite on compact sets in a locally compact space is locally finite. -/
+instance isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
   ⟨fun x ↦
     let ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x

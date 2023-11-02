@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Metrizable.Urysohn
 
 #align_import measure_theory.measure.regular from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -921,8 +921,6 @@ theorem restrict_of_measure_ne_top [ClosableCompactSubsetOpenSpace α] [BorelSpa
 
 end Regular
 
-attribute [local instance] EMetric.secondCountable_of_sigmaCompact
-
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a `σ`-compact (e)metric space is regular. -/
 instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure {X : Type*}
@@ -931,6 +929,14 @@ instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasur
   let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   exact ⟨(InnerRegularWRT.isCompact_isClosed μ).trans (InnerRegularWRT.of_pseudoMetrizableSpace μ)⟩
 #align measure_theory.measure.regular.of_sigma_compact_space_of_is_locally_finite_measure MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure
+
+/- Check that typeclass inference works to guarantee regularity and inner regularity in
+interesting situations. -/
+example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
+    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : Regular μ := by infer_instance
+
+example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
+    (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := by infer_instance
 
 end Measure
 
