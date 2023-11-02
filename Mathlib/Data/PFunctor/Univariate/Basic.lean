@@ -62,6 +62,7 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
 
 instance : Functor.{v, max u v} P.Obj where map := @map P
 
+/-- We prefer `PFunctor.map` to `Functor.map` because it's polymorphic. -/
 @[simp]
 theorem map_eq_map {α β : Type v} (f : α → β) (x : P α) : f <$> x = P.map f x :=
   rfl

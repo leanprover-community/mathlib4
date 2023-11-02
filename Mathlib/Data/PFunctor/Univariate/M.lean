@@ -790,13 +790,14 @@ set_option linter.uppercaseLean3 false in
 
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
-def corec' (F : α → M P ⊕ P α) (x : α) : M P :=
-  M.corec
-    (fun (a : M P ⊕ α) =>
-      match Sum.bind a F with
-      | Sum.inr y => P.map Sum.inr y
-      | Sum.inl y => P.map Sum.inl (M.dest y))
-    (Sum.inr x)
+def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → Sum (M P) (P X)) (x : α) : M P :=
+  corec₁
+    (fun _ rec (a : Sum (M P) α) =>
+      let y := a >>= F (rec ∘ Sum.inr)
+      match y with
+      | Sum.inr y => y
+      | Sum.inl y => P.map (rec ∘ Sum.inl) (M.dest y))
+    (@Sum.inr (M P) _ x)
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.corec' PFunctor.M.corec'
 
