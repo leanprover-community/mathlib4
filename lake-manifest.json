@@ -40,13 +40,5 @@
     "opts": {},
     "name": "Cli",
     "inputRev?": "main",
-    "inherited": false}},
-  {"git":
-   {"url": "https://github.com/leanprover/std4",
-    "subDir?": null,
-    "rev": "ba1a6051ac4d221352f36a0c7f5095fca750dcc8",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "nightly-testing",
     "inherited": false}}],
  "name": "mathlib"}
