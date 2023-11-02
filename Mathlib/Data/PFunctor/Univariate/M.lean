@@ -691,14 +691,14 @@ set_option linter.uppercaseLean3 false in
 
 theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
   inhabit M F
-    introv Hr; apply ext
-    introv
-    by_cases h : IsPath ps s₁ ∨ IsPath ps s₂
-    · have H := nth_of_bisim R bisim _ _ ps Hr h
-      exact H.left
-    · rw [not_or] at h
-      cases' h with h₀ h₁
-      simp only [iselect_eq_default, *, not_false_iff]
+  introv Hr; apply ext
+  introv
+  by_cases h : IsPath ps s₁ ∨ IsPath ps s₂
+  · have H := nth_of_bisim R bisim _ _ ps Hr h
+    exact H.left
+  · rw [not_or] at h
+    cases' h with h₀ h₁
+    simp only [iselect_eq_default, *, not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.eq_of_bisim PFunctor.M.eq_of_bisim
 
@@ -723,7 +723,7 @@ theorem bisim (R : M P → M P → Prop)
     (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := by
   introv h'
-haveI := Inhabited.mk x.head
+  haveI := Inhabited.mk x.head
   apply eq_of_bisim R _ _ _ h'; clear h' x y
   constructor <;> introv ih <;> rcases h _ _ ih with ⟨a'', g, g', h₀, h₁, h₂⟩ <;> clear h
   · replace h₀ := congr_arg Sigma.fst h₀
