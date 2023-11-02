@@ -6,7 +6,7 @@ Authors: Martin Dvorak
 import Mathlib.Computability.Language
 
 /-!
-# Context-Free
+# Context-Free Grammars
 
 This file contains the definition of a context-free grammar, which is a grammar that has a single
 nonterminal symbol on the left-hand side of each rule.
