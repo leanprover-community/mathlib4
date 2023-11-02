@@ -64,7 +64,7 @@ We prove two versions of the Cauchy product formula. The first one is
 In order to avoid `Nat` subtraction, we also provide
 `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`,
 where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which corresponds to the
-`Finset` `Finset.Nat.antidiagonal n`. -/
+`Finset` `Finset.antidiagonal n`. -/
 
 
 section Nat
@@ -86,7 +86,7 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
 #align summable_norm_sum_mul_antidiagonal_of_summable_norm summable_norm_sum_mul_antidiagonal_of_summable_norm
 
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
-    expressed by summing on `Finset.Nat.antidiagonal`.
+    expressed by summing on `Finset.antidiagonal`.
     See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal` if `f` and `g` are
     *not* absolutely summable. -/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R] {f g : ℕ → R}

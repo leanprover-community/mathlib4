@@ -40,11 +40,16 @@ Many of the later results in this file are only stated for the commutative `R'` 
   `TrivSqZeroExt R M`.
 * `triv_sq_zero_ext.algebra`: the associated `R`-algebra structure.
 * `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
+  morphisms `TrivSqZeroExt R M →ₐ[S] A` are uniquely defined by an algebra morphism `f : R →ₐ[S] A`
+  on `R` and a linear map `g : M →ₗ[S] A` on `M` such that:
+  * `g x * g y = 0`: the elements of `M` continue to square to zero.
+  * `g (r • x) = f r * g x` and `g (op r • x) = g x * f r`: left and right actions are preserved by
+    `g`.
+* `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
   morphisms `TrivSqZeroExt R M →ₐ[R] A` are uniquely defined by linear maps `M →ₗ[R] A` for
   which the product of any two elements in the range is zero.
 
 -/
-
 
 universe u v w
 
@@ -499,6 +504,16 @@ theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
     show (0 : R) • (0 : M) + op r • m = op r • m by rw [smul_zero, zero_add]
 #align triv_sq_zero_ext.inr_mul_inl TrivSqZeroExt.inr_mul_inl
 
+theorem inl_mul_eq_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    (r : R) (x : tsze R M) :
+    inl r * x = r • x :=
+  ext rfl (by dsimp; rw [smul_zero, add_zero])
+
+theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    (x : tsze R M) (r : R) :
+    x * inl r = op r • x :=
+  ext rfl (by dsimp; rw [smul_zero, zero_add])
+
 instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     MulOneClass (tsze R M) :=
   { TrivSqZeroExt.one, TrivSqZeroExt.mul with
@@ -807,14 +822,21 @@ theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A
 
 variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
 
-/-- There is an `AlgHom` from the trivial square zero extension to any `S`-algebra with a submodule
-whose products are all zero, and where scalar actions on the left and right of `M` are turned into
-left- and right- multiplication by `f`.
+/--
+Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.
 
-See `TrivSqZeroExt.liftEquiv` for this as an equiv.
+Namely, we require that for an algebra morphism `f : R →ₐ[S] A` and a linear map `g : M →ₗ[S] A`,
+we have:
+
+* `g x * g y = 0`: the elements of `M` continue to square to zero.
+* `g (r • x) = f r * g x` and `g (op r • x) = g x * f r`: scalar multiplication on the left and
+  right is sent to left- and right- multiplication by the image under `f`.
+
+See `TrivSqZeroExt.liftEquiv` for this as an equiv; namely that any such algebra morphism can be
+factored in this way.
 
 When `R` is commutative, this can be invoked with `f = Algebra.ofId R A`, which satisfies `hfg` and
-`hgf`. -/
+`hgf`. This version is captured as an equiv by `TrivSqZeroExt.liftEquivOfComm`. -/
 def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)
     (hfg : ∀ r x, g (r • x) = f r * g x)
@@ -866,7 +888,7 @@ theorem lift_comp_inrHom (f : R →ₐ[S] A) (g : M →ₗ[S] A)
   LinearMap.ext <| lift_apply_inr f g hg hfg hgf
 #align triv_sq_zero_ext.lift_aux_comp_inr_hom TrivSqZeroExt.lift_comp_inrHom
 
--- When applied to `inr` and `inl` themselves, `lift` is the identity.
+/-- When applied to `inr` and `inl` themselves, `lift` is the identity. -/
 @[simp]
 theorem lift_inlAlgHom_inrHom :
   lift (inlAlgHom _ _ _) (inrHom R M |>.restrictScalars S)
@@ -876,9 +898,9 @@ theorem lift_inlAlgHom_inrHom :
 #align triv_sq_zero_ext.lift_aux_inr_hom TrivSqZeroExt.lift_inlAlgHom_inrHomₓ
 
 /-- A universal property of the trivial square-zero extension, providing a unique
-`TrivSqZeroExt R M →ₐ[R] A` for every pair of linear map `f : R →ₗ[S] A` and `g : M →ₗ[S] A`,
+`TrivSqZeroExt R M →ₐ[R] A` for every pair of maps `f : R →ₐ[S] A` and `g : M →ₗ[S] A`,
 where the range of `g` has no non-zero products, and scaling the input to `g` on the left or right
-corresponds to a corresponding multiplication by `f`.
+amounts to a corresponding multiplication by `f` in the output.
 
 This isomorphism is named to match the very similar `Complex.lift`. -/
 @[simps!]

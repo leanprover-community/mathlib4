@@ -39,20 +39,21 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 variable {R A B : Type*}
 
-/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
+/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.
+`R[ε]` is notation for `DualNumber R`. -/
 abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 #align dual_number DualNumber
 
-/-- The unit element $ε$ that squares to zero. -/
+/-- The unit element $ε$ that squares to zero, with notation `ε`. -/
 def DualNumber.eps [Zero R] [One R] : DualNumber R :=
   TrivSqZeroExt.inr 1
 #align dual_number.eps DualNumber.eps
 
--- mathport name: dual_number.eps
+@[inherit_doc]
 scoped[DualNumber] notation "ε" => DualNumber.eps
 
--- mathport name: dual_number
+@[inherit_doc]
 scoped[DualNumber] postfix:1024 "[ε]" => DualNumber
 
 open DualNumber
@@ -120,49 +121,66 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
-`f : A →ₐ[R] B` and a choice of element `e : A` which squares to `0` and commutes with the range of
+`f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
 `f`.
 
-This isomorphism is named to match the very similar `Complex.lift`. -/
-@[simps! apply_apply]
+This isomorphism is named to match the similar `Complex.lift`.
+Note that when `f : R →ₐ[R] B := Algebra.ofId R B`, the commutativity assumption is automatic, and
+we are free to choose any element `e : B`. -/
 def lift :
     {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)} ≃ (A[ε] →ₐ[R] B) := by
   refine Equiv.trans ?_ TrivSqZeroExt.liftEquiv
   exact {
     toFun := fun fe => ⟨
       (fe.val.1, MulOpposite.op fe.val.2 • fe.val.1.toLinearMap),
-      fun x y => by
-        dsimp
+      fun x y => show (fe.val.1 x * fe.val.2) * (fe.val.1 y * fe.val.2) = 0 by
         rw [(fe.prop.2 _).mul_mul_mul_comm, fe.prop.1, mul_zero],
-      fun r x => by
-        dsimp
+      fun r x => show fe.val.1 (r * x) * fe.val.2 = fe.val.1 r * (fe.val.1 x * fe.val.2) by
         rw [map_mul, mul_assoc],
-      fun r x => by
-        dsimp
+      fun r x => show fe.val.1 (x * r) * fe.val.2 = (fe.val.1 x * fe.val.2) * fe.val.1 r by
         rw [map_mul, (fe.prop.2 _).right_comm]⟩
     invFun := fun fg => ⟨
       (fg.val.1, fg.val.2 1),
       fg.prop.1 _ _,
-      fun a => (fg.prop.2.2 _ _).symm.trans (Eq.trans (by simp) (fg.prop.2.1 _ _))⟩
-    left_inv := fun fe => Subtype.ext <| Prod.ext rfl (by simp)
-    right_inv := fun fg => Subtype.ext <| Prod.ext rfl (by
-      ext
-      dsimp
-      rw [← fg.prop.2.1, smul_eq_mul, mul_one])
-  }
+      fun a => show fg.val.2 1 * fg.val.1 a = fg.val.1 a * fg.val.2 1 by
+        rw [←fg.prop.2.1, ←fg.prop.2.2, smul_eq_mul, op_smul_eq_mul, mul_one, one_mul]⟩
+    left_inv := fun fe => Subtype.ext <| Prod.ext rfl <|
+      show fe.val.1 1 * fe.val.2 = fe.val.2 by
+        rw [map_one, one_mul]
+    right_inv := fun fg => Subtype.ext <| Prod.ext rfl <| LinearMap.ext fun x =>
+      show fg.val.1 x * fg.val.2 1 = fg.val.2 x by
+        rw [← fg.prop.2.1, smul_eq_mul, mul_one] }
 #align dual_number.lift DualNumber.lift
+
+theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
+    lift fe a = fe.val.1 a.fst + fe.val.1 a.snd * fe.val.2 := rfl
 
 @[simp] theorem coe_lift_symm_apply (F : A[ε] →ₐ[R] B) :
     (lift.symm F).val = (F.comp (inlAlgHom _ _ _), F ε) := rfl
 
--- When applied to `ε`, `DualNumber.lift` produces the element of `B` that squares to 0.
-theorem lift_apply_eps
-  (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
+/-- When applied to `inl`, `DualNumber.lift` applies the map `f : A →ₐ[R] B`. -/
+@[simp] theorem lift_apply_inl (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) :
+    lift fe (inl a : A[ε]) = fe.val.1 a := by
+  rw [lift_apply_apply, fst_inl, snd_inl, map_zero, zero_mul, add_zero]
+
+/-- Scaling on the left is sent by `DualNumber.lift` to multiplication on the left -/
+@[simp] theorem lift_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+    lift fe (a • ad) = fe.val.1 a * lift fe ad := by
+  rw [←inl_mul_eq_smul, map_mul, lift_apply_inl]
+
+/-- Scaling on the right is sent by `DualNumber.lift` to multiplication on the right -/
+@[simp] theorem lift_op_smul (fe : {fe : (A →ₐ[R] B) × B // _}) (a : A) (ad : A[ε]) :
+    lift fe (MulOpposite.op a • ad) = lift fe ad * fe.val.1 a := by
+  rw [←mul_inl_eq_op_smul, map_mul, lift_apply_inl]
+
+/-- When applied to `ε`, `DualNumber.lift` produces the element of `B` that squares to 0. -/
+@[simp] theorem lift_apply_eps
+    (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
     lift fe (ε : A[ε]) = fe.val.2 := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, map_one, one_mul, zero_add]
 #align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
--- Lifting `DualNumber.eps` itself gives the identity.
+/-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]
 theorem lift_inlAlgHom_eps :
     lift ⟨(inlAlgHom _ _ _, ε), eps_mul_eps, fun _ => commute_eps_left _⟩ = AlgHom.id R A[ε] :=
