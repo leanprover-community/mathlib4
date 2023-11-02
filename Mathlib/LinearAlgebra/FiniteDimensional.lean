@@ -300,7 +300,7 @@ theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v 
 #align finite_dimensional.lt_aleph_0_of_linear_independent FiniteDimensional.lt_aleph0_of_linearIndependent
 
 theorem _root_.LinearIndependent.finite [FiniteDimensional K V] {b : Set V}
-    (h : LinearIndependent K fun x : b => (x : V)) : b.Finite :=
+    (h : LinearIndependent K (b.restrict id)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp (FiniteDimensional.lt_aleph0_of_linearIndependent h)
 #align linear_independent.finite LinearIndependent.finite
 

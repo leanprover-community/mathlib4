@@ -64,7 +64,9 @@ any family of vectors includes a linear independent subfamily spanning the same 
 We use families instead of sets because it allows us to say that two identical vectors are linearly
 dependent.
 
-If you want to use sets, use the family `(fun x ↦ x : s → M)` given a set `s : Set M`. The lemmas
+If you want to use sets, use the family `(s.restrict id)` given a set `s : Set M`.
+This is defeq to `(↑) : s → M`, but is preferable, since it make the set `s` explicitly
+appear in the pretty-printer and docs, and allow for rewriting `s`. The lemmas
 `LinearIndependent.to_subtype_range` and `LinearIndependent.of_subtype_range` connect those two
 worlds.
 
@@ -1037,9 +1039,9 @@ theorem LinearIndependent.image_subtype {s : Set M} {f : M →ₗ[R] M'}
 #align linear_independent.image_subtype LinearIndependent.image_subtype
 
 theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
-    (hs : LinearIndependent R (fun x => x : s → M))
-    (ht : LinearIndependent R (fun x => x : t → M')) :
-    LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
+    (hs : LinearIndependent R (s.restrict _root_.id))
+    (ht : LinearIndependent R (t.restrict _root_.id)) :
+    LinearIndependent R ((inl R M M' '' s ∪ inr R M M' '' t).restrict _root_.id) := by
   refine' (hs.image_subtype _).union (ht.image_subtype _) _ <;> [simp; simp; skip]
   simp only [span_image]
   simp [disjoint_iff, prod_inf_prod]
@@ -1185,8 +1187,8 @@ alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 #align linear_independent_unique linearIndependent_unique
 
 theorem linearIndependent_singleton {x : M} (hx : x ≠ 0) :
-    LinearIndependent R (fun x => x : ({x} : Set M) → M) :=
-  linearIndependent_unique ((↑) : ({x} : Set M) → M) hx
+    LinearIndependent R (({x} : Set M).restrict id) :=
+  linearIndependent_unique (({x} : Set M).restrict id) hx
 #align linear_independent_singleton linearIndependent_singleton
 
 end Nontrivial
@@ -1265,7 +1267,7 @@ theorem linearIndependent_option {v : Option ι → V} :
 #align linear_independent_option linearIndependent_option
 
 theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has : a ∉ s) :
-    (LinearIndependent K fun x : ↥(insert a s) => f x) ↔
+    (LinearIndependent K ((insert a s).restrict f)) ↔
       (LinearIndependent K fun x : s => f x) ∧ f a ∉ Submodule.span K (f '' s) := by
   classical
   rw [← linearIndependent_equiv ((Equiv.optionEquivSumPUnit _).trans (Equiv.Set.insert has).symm),
@@ -1284,7 +1286,7 @@ theorem linearIndependent_insert (hxs : x ∉ s) :
 #align linear_independent_insert linearIndependent_insert
 
 theorem linearIndependent_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
-    LinearIndependent K ((↑) : ({x, y} : Set V) → V) :=
+    LinearIndependent K (({x, y} : Set V).restrict id) :=
   pair_comm y x ▸ (linearIndependent_singleton hx).insert <|
     mt mem_span_singleton.1 (not_exists.2 hy)
 #align linear_independent_pair linearIndependent_pair
@@ -1353,7 +1355,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
 variable (K t)
 
 theorem exists_linearIndependent :
-    ∃ (b : _) (_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K ((↑) : b → V) := by
+    ∃ (b : _) (_ : b ⊆ t), span K b = span K t ∧ LinearIndependent K (b.restrict id) := by
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
     exists_linearIndependent_extension (linearIndependent_empty K V) (Set.empty_subset t)
   exact ⟨b, hb₁, (span_eq_of_le _ hb₂ (Submodule.span_mono hb₁)).symm, hb₃⟩
@@ -1363,31 +1365,31 @@ variable {K t}
 
 /-- `LinearIndependent.extend` adds vectors to a linear independent set `s ⊆ t` until it spans
 all elements of `t`. -/
-noncomputable def LinearIndependent.extend (hs : LinearIndependent K (fun x => x : s → V))
+noncomputable def LinearIndependent.extend (hs : LinearIndependent K (s.restrict id))
     (hst : s ⊆ t) : Set V :=
   Classical.choose (exists_linearIndependent_extension hs hst)
 #align linear_independent.extend LinearIndependent.extend
 
-theorem LinearIndependent.extend_subset (hs : LinearIndependent K (fun x => x : s → V))
+theorem LinearIndependent.extend_subset (hs : LinearIndependent K (s.restrict id))
     (hst : s ⊆ t) : hs.extend hst ⊆ t :=
   let ⟨hbt, _hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hbt
 #align linear_independent.extend_subset LinearIndependent.extend_subset
 
-theorem LinearIndependent.subset_extend (hs : LinearIndependent K (fun x => x : s → V))
+theorem LinearIndependent.subset_extend (hs : LinearIndependent K (s.restrict id))
     (hst : s ⊆ t) : s ⊆ hs.extend hst :=
   let ⟨_hbt, hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hsb
 #align linear_independent.subset_extend LinearIndependent.subset_extend
 
-theorem LinearIndependent.subset_span_extend (hs : LinearIndependent K (fun x => x : s → V))
+theorem LinearIndependent.subset_span_extend (hs : LinearIndependent K (s.restrict id))
     (hst : s ⊆ t) : t ⊆ span K (hs.extend hst) :=
   let ⟨_hbt, _hsb, htb, _hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   htb
 #align linear_independent.subset_span_extend LinearIndependent.subset_span_extend
 
-theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fun x => x : s → V))
-    (hst : s ⊆ t) : LinearIndependent K ((↑) : hs.extend hst → V) :=
+theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (s.restrict id))
+    (hst : s ⊆ t) : LinearIndependent K ((hs.extend hst).restrict id) :=
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hli
 #align linear_independent.linear_independent_extend LinearIndependent.linearIndependent_extend
@@ -1396,7 +1398,7 @@ theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fu
 
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
-    (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ (span K ↑t : Submodule K V)) :
+    (hs : LinearIndependent K (s.restrict id)) (hst : s ⊆ (span K ↑t : Submodule K V)) :
     ∃ t' : Finset V, ↑t' ⊆ s ∪ ↑t ∧ s ⊆ ↑t' ∧ t'.card = t.card := by
   classical
   have :
@@ -1463,7 +1465,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
 #align exists_of_linear_independent_of_finite_span exists_of_linearIndependent_of_finite_span
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)
-    (hs : LinearIndependent K (fun x => x : s → V)) (hst : s ⊆ span K t) :
+    (hs : LinearIndependent K (s.restrict id)) (hst : s ⊆ span K t) :
     ∃ h : s.Finite, h.toFinset.card ≤ ht.toFinset.card :=
   have : s ⊆ (span K ↑ht.toFinset : Submodule K V) := by simp; assumption
   let ⟨u, _hust, hsu, Eq⟩ := exists_of_linearIndependent_of_finite_span hs this
