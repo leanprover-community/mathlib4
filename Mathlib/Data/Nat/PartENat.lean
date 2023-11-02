@@ -127,11 +127,11 @@ theorem dom_ofNat (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat
   trivial
 
 @[simp]
-theorem dom_zero : ((0 : PartENat)).Dom :=
+theorem dom_zero : (0 : PartENat).Dom :=
   trivial
 
 @[simp]
-theorem dom_one : ((1 : PartENat)).Dom :=
+theorem dom_one : (1 : PartENat).Dom :=
   trivial
 
 instance : CanLift PartENat ℕ (↑) Dom :=
