@@ -344,7 +344,7 @@ noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
 /-- Exactness of `L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂`. -/
 lemma L₂'_exact : S.L₂'.Exact := by
   rw [← exact_op_iff, exact_iff_of_iso S.L₂'OpIso]
-  exact S.op.exact_L₁'
+  exact S.op.L₁'_exact
 
 end SnakeInput
 
