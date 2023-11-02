@@ -1658,7 +1658,7 @@ theorem inter_right_comm (s₁ s₂ s₃ : Finset α) : s₁ ∩ s₂ ∩ s₃ =
 
 @[simp]
 theorem inter_self (s : Finset α) : s ∩ s = s :=
-  ext fun _ => mem_inter.trans <| and_self_iff _
+  ext fun _ => mem_inter.trans <| and_self_iff
 #align finset.inter_self Finset.inter_self
 
 @[simp]
