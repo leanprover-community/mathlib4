@@ -690,18 +690,18 @@ instance restrict [h : InnerRegularCompactLTTop μ] (A : Set α) :
     InnerRegularCompactLTTop (μ.restrict A) :=
   ⟨InnerRegularWRT.restrict h.innerRegular A⟩
 
-instance (priority := 100) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] :
+instance (priority := 50) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] :
     InnerRegular μ := by
   constructor
   convert h.innerRegular with s
   simp [measure_ne_top μ s]
 
-instance (priority := 100) [BorelSpace α] [ClosableCompactSubsetOpenSpace α]
+instance (priority := 50) [BorelSpace α] [ClosableCompactSubsetOpenSpace α]
     [InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] : WeaklyRegular μ := by
   apply InnerRegularWRT.weaklyRegular_of_finite
   exact InnerRegular.innerRegularWRT_isClosed_isOpen
 
-instance (priority := 100) [BorelSpace α] [ClosableCompactSubsetOpenSpace α]
+instance (priority := 50) [BorelSpace α] [ClosableCompactSubsetOpenSpace α]
     [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] : Regular μ := by
   constructor
   apply InnerRegularWRT.trans h.innerRegular
