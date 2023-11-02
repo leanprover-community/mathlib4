@@ -6,6 +6,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.RepresentationTheory.Action
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Category.Preorder
 
 universe u v w v₁ u₁ u₂
 
@@ -84,42 +85,24 @@ namespace Galois2
 
 section Def
 
-def quotientDiagram {C : Type u} [Category.{v, u} C] (X : C) (G : Subgroup (Aut X)) : C ⥤ Type v where
-  obj Y := { f : X ⟶ Y | ∀ σ : G, f = (σ : Aut X).hom ≫ f }
-  map ϕ := by
-    intro ⟨f, hf⟩
-    have h (σ : G) : f ≫ ϕ = (σ : Aut X).hom ≫ f ≫ ϕ := by rw [←Category.assoc, ←hf σ]
-    exact ⟨f ≫ ϕ, h⟩
-
-noncomputable def quotientByAutGroup {C : Type u} [Category.{v, u} C] (X : C) (G : Subgroup (Aut X))
-    [Corepresentable (quotientDiagram X G)] : C :=
-  coreprX (quotientDiagram X G)
-
-def coyonedaOfFofQuot {C : Type u} [Category.{v, u} C] (X : C) (F : C ⥤ Type w) (G : Subgroup (Aut X))
-    [Corepresentable (quotientDiagram X G)] : Type w ⥤ Type w :=
-  coyoneda.obj (Opposite.op <| F.obj <| quotientByAutGroup X G)
-
-example {C : Type u} [Category.{v, u} C] (X : C) (G : Type w) [Group G] : True := sorry
-
-abbrev QuotientByGroupDiagram {C : Type u} [Category.{v, u} C] (G : Type w) [Group G] := SingleObj G ⥤ C
-
-/- Lenstra -/
-class GaloisCategory (C : Type u) [Category.{v, u} C] (F : C ⥤ Type w) where
-  -- (G0)
-  imageFinite (X : C) : Fintype (F.obj X)
+/- Lenstra (G1)-(G3) -/
+class PreGaloisCategory (C : Type u) [Category.{v, u} C] : Prop where
   -- (G1)
   hasTerminalObject : HasTerminal C
   hasPullbacks : HasPullbacks C
   -- (G2)
   hasFiniteCoproducts : HasFiniteCoproducts C
   hasQuotientsByFiniteGroups (G : Type w) [Group G] [Finite G] : HasColimitsOfShape C (SingleObj G ⥤ C)
-  --hasQuotientsByFiniteAutGroups {X : C} (G : Subgroup (Aut X)) [Finite G] :
-  --  Corepresentable (quotientDiagram X G)
   -- (G3)
   epiMonoFactorisation {X Z : C} (f : X ⟶ Z) : ∃ (Y : C) (p : X ⟶ Y) (i : Y ⟶ Z),
     Epi p ∧ Mono i ∧ p ≫ i = f
   monoInducesIsoOnDirectSummand {X Y : C} (i : X ⟶ Y) [Mono i] : ∃ (Z : C) (u : Z ⟶ Y)
     (_ : IsColimit (BinaryCofan.mk i u)), True
+
+/- Lenstra (G4)-(G6) -/
+class FundamentalFunctor {C : Type u} [Category.{v, u} C] [PreGaloisCategory C] (F : C ⥤ Type w) where
+  -- (G0)
+  imageFinite (X : C) : Fintype (F.obj X)
   -- (G4)
   preservesTerminalObjects : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F
   --preservesTerminalObjects : IsIsomorphic (F.obj (⊤_ C)) PUnit
@@ -129,52 +112,141 @@ class GaloisCategory (C : Type u) [Category.{v, u} C] (F : C ⥤ Type w) where
   preservesEpis : Functor.PreservesEpimorphisms F
   preservesQuotientsByFiniteGroups (G : Type w) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F
-  --preservesQuotientsByFiniteAutGroups {X : C} (G : Subgroup (Aut X)) [Finite G] :
-  --  ∃ (t : coyoneda.obj (Opposite.op <| F.obj <| quotientByAutGroup X G)
-  --         ⟶ quotientDiagram (F.obj X) (Subgroup.map (mapAut X F) G)),
-  --  IsIso t
  -- (G6)
   reflectsIsos : ReflectsIsomorphisms F
 
 class ConnectedObject {C : Type u} [Category.{v, u} C] (X : C) : Prop where
   notInitial : IsInitial X → False
-  noTrivialComponent (Y : C) (i : Y ⟶ X) [Mono i] : ¬ IsIso i → (IsInitial Y → False) → False
+  noTrivialComponent (Y : C) (i : Y ⟶ X) [Mono i] : (IsInitial Y → False) → IsIso i
 
-variable {C : Type u} [Category.{v, u} C] (F : C ⥤ Type w) (inst : GaloisCategory C F)
+variable {C : Type u} [Category.{v, u} C] [PreGaloisCategory C]
 
-instance (X : C) : Fintype (F.obj X) := GaloisCategory.imageFinite X
+instance : HasTerminal C := PreGaloisCategory.hasTerminalObject
+instance : HasPullbacks C := PreGaloisCategory.hasPullbacks
+instance : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
+instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks C
+instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
+instance : HasFiniteCoproducts C := PreGaloisCategory.hasFiniteCoproducts
+instance (ι : Type*) [Finite ι] : HasColimitsOfShape (Discrete ι) C :=
+  hasColimitsOfShape_discrete C ι
+instance : HasInitial C := inferInstance
 
-instance hasTerminal : HasTerminal C := GaloisCategory.hasTerminalObject F
-instance hasPullbacks : HasPullbacks C := GaloisCategory.hasPullbacks F
+variable {C : Type u} [Category.{v, u} C] {F : C ⥤ Type w} [PreGaloisCategory C] [FundamentalFunctor F]
 
-instance hasFiniteLimits : HasFiniteLimits C :=
-  @hasFiniteLimits_of_hasTerminal_and_pullbacks C _ (hasTerminal F inst) (hasPullbacks F inst)
-instance hasBinaryProducts : HasBinaryProducts C :=
-  @hasBinaryProducts_of_hasTerminal_and_pullbacks C _ (hasTerminal F inst) (hasPullbacks F inst)
-instance hasEqualizers : HasEqualizers C :=
-  @hasEqualizers_of_hasPullbacks_and_binary_products C _ (hasBinaryProducts F inst) (hasPullbacks F inst)
+instance (X : C) : Fintype (F.obj X) := FundamentalFunctor.imageFinite X
+
+instance : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F :=
+  FundamentalFunctor.preservesTerminalObjects
+instance : PreservesLimitsOfShape WalkingCospan F :=
+  FundamentalFunctor.preservesPullbacks
+instance : PreservesFiniteCoproducts F :=
+  FundamentalFunctor.preservesFiniteCoproducts
+instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) F :=
+  FundamentalFunctor.preservesFiniteCoproducts.preserves PEmpty
+instance : ReflectsIsomorphisms F :=
+  FundamentalFunctor.reflectsIsos
+noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
+  reflectsColimitsOfShapeOfReflectsIsomorphisms
 
 noncomputable instance preservesFiniteLimits : PreservesFiniteLimits F :=
-  @preservesFiniteLimitsOfPreservesTerminalAndPullbacks C _ _ _ (hasTerminal F inst)
-    (hasPullbacks F inst) F (inst.preservesTerminalObjects) (inst.preservesPullbacks)
+  preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
 
-def preservesInitialObject (O : C) (hinitial : IsInitial O) : IsInitial (F.obj O) :=
-  @IsInitial.isInitialObj _ _ _ _ F O (inst.preservesFiniteCoproducts.preserves PEmpty).preservesColimit hinitial
+def preservesInitialObject (O : C) : IsInitial O → IsInitial (F.obj O) :=
+  IsInitial.isInitialObj F O
+
+instance preservesMonomorphisms : PreservesMonomorphisms F :=
+  preservesMonomorphisms_of_preservesLimitsOfShape F
+
+lemma monoFromPullbackIso {X Y : C} (f : X ⟶ Y) [HasPullback f f]
+    [Mono (pullback.fst : pullback f f ⟶ X)] : Mono f where
+  right_cancellation g h heq := by
+    let u : _ ⟶ pullback f f := pullback.lift g h heq
+    let u' : _ ⟶ pullback f f := pullback.lift g g rfl
+    trans
+    show g = u' ≫ pullback.snd
+    exact (pullback.lift_snd g g rfl).symm
+    have h2 : u = u' := (cancel_mono pullback.fst).mp (by simp only [limit.lift_π, PullbackCone.mk_π_app])
+    rw [←h2]
+    simp only [limit.lift_π, PullbackCone.mk_π_app]
+
+lemma monomorphismIffInducesInjective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ Function.Injective (F.map f) := by
+  constructor
+  intro hfmono
+  have : Mono (F.map f) := preservesMonomorphisms.preserves f
+  exact injective_of_mono (F.map f)
+  intro hfinj
+  have : Mono (F.map f) := (mono_iff_injective (F.map f)).mpr hfinj
+  have h2 : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) := fst_iso_of_mono_eq (F.map f)
+  let ϕ : F.obj (pullback f f) ≅ pullback (F.map f) (F.map f) := PreservesPullback.iso F f f
+
+  have : ϕ.hom ≫ pullback.fst = F.map pullback.fst := PreservesPullback.iso_hom_fst F f f
+  have : IsIso (F.map (pullback.fst : pullback f f ⟶ X)) := by
+    rw [←this]
+    exact IsIso.comp_isIso
+  have : IsIso (pullback.fst : pullback f f ⟶ X) := isIso_of_reflects_iso pullback.fst F
+  have : Mono f := monoFromPullbackIso f
+  assumption
+
+example (X : C) : ConnectedObject X ↔ ∃ (Y : C) (i : Y ⟶ X), Mono i ∧ ¬ IsIso i ∧ (IsInitial Y → False) := by
+  constructor
+  intro h
+  by_contra h2
+  simp at h2
+
+example (X : C) [ConnectedObject X] : ∃ (ι : Type) (D : Discrete ι ⥤ C) (t : Cocone D) (_ : IsColimit t),
+    Finite ι ∧ (∀ i, ConnectedObject (D.obj i)) ∧ t.pt = X := by
+  use PUnit
+  use fromPUnit X
+  let t : Cocone (fromPUnit X) := {
+    pt := X
+    ι := {
+      app := by
+        intro y
+        simp
+        exact (𝟙 X)
+    }
+  }
+  have : t.pt = X := rfl
+  have : IsColimit t := sorry
+  use t
+  use this
+  simp
+  constructor
+  exact Finite.of_fintype PUnit.{1}
+  assumption
+
+lemma sumOfConnectedComponents (X : C) : ∃ (ι : Type) (D : Discrete ι ⥤ C) (t : Cocone D) (_ : IsColimit t),
+    Finite ι ∧ (∀ i, ConnectedObject (D.obj i)) ∧ t.pt = X := by
+  simp
+  induction' Nat.card (F.obj X) using Nat.strong_induction_on with n hi
+  by_cases ConnectedObject X
+  . use PUnit
+    simp
+  . by_cases (IsInitial X → False)
+    . have : ¬ (∀ (Y : C) (i : Y ⟶ X) [Mono i], (IsInitial Y → False) → IsIso i) := sorry
+      simp at this
+      obtain ⟨Y, hnotinitial, i, himono, hinoiso⟩ := this
+      have : Function.Injective (F.map i) := (monomorphismIffInducesInjective i).mp himono
+      have : Nat.card (F.obj Y) ≠ 0 := sorry
+      have : Nat.card (F.obj Y) < Nat.card (F.obj X) := sorry
+      obtain ⟨Z, u, x, _⟩ := PreGaloisCategory.monoInducesIsoOnDirectSummand i
+      have : Nat.card (F.obj Z) < Nat.card (F.obj Z) := sorry
+    . simp at h
+      obtain ⟨y, _⟩ := h
+      admit
 
 def evaluation (A X : C) (a : F.obj A) (f : A ⟶ X) : F.obj X := F.map f a
 
 /- The evaluation map is injective for connected objects. -/
 lemma evaluationInjectiveOfConnected (A X : C) [ConnectedObject A] (a : F.obj A) :
-    Function.Injective (evaluation F A X a) := by
+    Function.Injective (evaluation A X a) := by
   intro f g (h : F.map f a = F.map g a)
-  have : HasEqualizers C := hasEqualizers F inst
   let E := equalizer f g
   have : IsIso (equalizer.ι f g) := by
-    by_contra hnotiso
-    apply ConnectedObject.noTrivialComponent E (equalizer.ι f g) hnotiso
+    apply ConnectedObject.noTrivialComponent E (equalizer.ι f g)
     intro hEinitial
-    have hFEinitial : IsInitial (F.obj E) := preservesInitialObject F inst E hEinitial
-    have : PreservesFiniteLimits F := preservesFiniteLimits F inst
+    have hFEinitial : IsInitial (F.obj E) := preservesInitialObject E hEinitial
     have h2 : F.obj E ≃ { x : F.obj A // F.map f x = F.map g x } := by
       apply Iso.toEquiv
       trans
@@ -191,7 +263,7 @@ def ConnectedObjects := { A : C | ConnectedObject A }
 
 def I := (A : @ConnectedObjects C _) × F.obj (A : C)
 
-def r : Setoid (I F) where
+def r : Setoid (@I C _ F) where
   r := by
     intro ⟨A, a⟩ ⟨B, b⟩
     exact ∃ f : (A : C) ⟶ B, IsIso f ∧ F.map f a = b
@@ -221,20 +293,17 @@ def r : Setoid (I F) where
 
 def J := Quotient (r F)
 
-instance : PartialOrder (J F) where
-  le := by
-    intro x y
+instance partOrder : PartialOrder (J F) where
+  le x y := by
     exact ∃ (p q : I F) (f : (p.1 : C) ⟶ q.1), Quotient.mk (r F) p = x ∧ Quotient.mk (r F) q = y ∧ F.map f p.2 = q.2
-  le_refl := by
-    intro x
+  le_refl x := by
     refine Quotient.inductionOn x (fun x' ↦ ?_)
     obtain ⟨A, a⟩ := x'
     use ⟨A, a⟩
     use ⟨A, a⟩
     use 𝟙 (A : C)
     simp only [FunctorToTypes.map_id_apply, and_self]
-  le_trans := by
-    intro x y z
+  le_trans x y z := by
     refine Quotient.inductionOn x (fun x' ↦ ?_)
     refine Quotient.inductionOn y (fun y' ↦ ?_)
     refine Quotient.inductionOn z (fun z' ↦ ?_)
@@ -246,8 +315,7 @@ instance : PartialOrder (J F) where
     use f ≫ u ≫ g
     simp [hf1, hg2]
     rw [hf3, hu, hg3]
-  le_antisymm := by
-    intro x y
+  le_antisymm x y := by
     refine Quotient.inductionOn x (fun x' ↦ ?_)
     refine Quotient.inductionOn y (fun y' ↦ ?_)
     intro ⟨⟨A, a⟩, ⟨B, b⟩, f, hf1, hf2, hf3⟩
@@ -274,6 +342,17 @@ instance : PartialOrder (J F) where
     assumption
     simp only [FunctorToTypes.map_comp_apply]
     rw [hf3, hu]
+
+--example : IsDirected (J F) (fun a b ↦ (partOrder F inst).le a b) where
+--  directed x y := by
+--    refine Quotient.inductionOn x (fun x' ↦ ?_)
+--    refine Quotient.inductionOn y (fun y' ↦ ?_)
+
+instance preOrder : Preorder (J F) := @PartialOrder.toPreorder (J F) (partOrder F inst)
+
+instance : SmallCategory (J F) := @Preorder.smallCategory (J F) (preOrder F inst)
+
+def diagram : (J F) ⥤ Type w := sorry
 
 end Def
 
