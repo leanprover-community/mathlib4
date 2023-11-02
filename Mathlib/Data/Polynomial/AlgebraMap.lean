@@ -436,13 +436,12 @@ theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
   ext s
-  dsimp
   simp only [eval_X, aevalTower_X, coe_aeval_eq_eval]
 #align polynomial.aeval_tower_id Polynomial.aevalTower_id
 
 @[simp]
 theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
-  ext : 2
+  ext
   simp only [aeval_X, aevalTower_X]
 #align polynomial.aeval_tower_of_id Polynomial.aevalTower_ofId
 
