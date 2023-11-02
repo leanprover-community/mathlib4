@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
@@ -200,6 +201,11 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
 
-
+theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
+    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
+    (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
+  rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
+      Nat.le_of_eq (h_deg i)), Matrix.det_mul,
+      Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]
 
 end Matrix

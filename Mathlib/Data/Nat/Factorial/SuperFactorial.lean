@@ -6,7 +6,6 @@ Authors: Moritz Firsching
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Polynomial.Monic
-import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
@@ -88,16 +87,7 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
     · rw [Matrix.det_vandermonde] at hn
       simp [hn]
 
-open Polynomial
-
-theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
-    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
-    (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
-  rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
-      Nat.le_of_eq (h_deg i)), Matrix.det_mul,
-      Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]
-
-theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
+private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
     (∏ i : Fin n, Nat.factorial i) *
       (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
@@ -112,7 +102,7 @@ theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
   let m := inf' univ ⟨0, mem_univ _⟩ v
   let w' := fun i ↦ (v i - m).toNat
   have hw' : ∀ i, (w' i : ℤ) = v i - m := fun i ↦ Int.toNat_sub_of_le (inf'_le _ (mem_univ _))
-  have h :=  det_eval_matrixOfPolynomials_eq_det_vandermonde (fun i ↦ ↑(w' i))
+  have h :=  Matrix.det_eval_matrixOfPolynomials_eq_det_vandermonde (fun i ↦ ↑(w' i))
       (fun i => descPochhammer ℤ i)
       (fun i => descPochhammer_natDegree ℤ i)
       (fun i => monic_descPochhammer ℤ i)
