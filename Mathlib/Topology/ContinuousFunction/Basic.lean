@@ -523,8 +523,7 @@ f |  / hf.lift g h
 @[simp]
 theorem lift_comp : (hf.lift g h).comp f = g := by
   ext
-  simpa [lift, homeomorph, Setoid.quotientKerEquivOfSurjective,
-    Setoid.quotientKerEquivOfRightInverse] using h (Function.rightInverse_surjInv _ _)
+  simpa using h (Function.rightInverse_surjInv _ _)
 
 @[simps]
 noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
@@ -532,11 +531,9 @@ noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ 
   invFun g := ⟨g.comp f, fun _ _ h ↦ by simp only [ContinuousMap.comp_apply]; rw [h]⟩
   left_inv := by intro; simp
   right_inv := by
-    intro
-    ext
-    simp only [lift_apply, ContinuousMap.coe_comp, comp_apply, homeomorph_symm_apply,
-      Quotient.liftOn'_mk'']
-    rw [Function.rightInverse_surjInv hf.surjective]
+    intro g
+    ext a
+    simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
 
 end QuotientMap
 
