@@ -3,8 +3,8 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Kleene
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype

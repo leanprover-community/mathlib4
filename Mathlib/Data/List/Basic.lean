@@ -1888,13 +1888,13 @@ theorem take_take : ∀ (n m) (l : List α), take n (take m l) = take (min n m) 
   | 0, m, l => by rw [zero_min, take_zero, take_zero]
   | succ n, succ m, nil => by simp only [take_nil]
   | succ n, succ m, a :: l => by
-    simp only [take, min_succ_succ, take_take n m l]
+    simp only [take, succ_min_succ, take_take n m l]
 #align list.take_take List.take_take
 
 theorem take_replicate (a : α) : ∀ n m : ℕ, take n (replicate m a) = replicate (min n m) a
   | n, 0 => by simp
   | 0, m => by simp
-  | succ n, succ m => by simp [min_succ_succ, take_replicate]
+  | succ n, succ m => by simp [succ_min_succ, take_replicate]
 #align list.take_replicate List.take_replicate
 
 theorem map_take {α β : Type*} (f : α → β) :
@@ -1986,7 +1986,7 @@ theorem take_eq_take :
   | _ :: xs, 0, 0 => by simp
   | x :: xs, m + 1, 0 => by simp
   | x :: xs, 0, n + 1 => by simp [@eq_comm ℕ 0]
-  | x :: xs, m + 1, n + 1 => by simp [Nat.min_succ_succ, take_eq_take]
+  | x :: xs, m + 1, n + 1 => by simp [Nat.succ_min_succ, take_eq_take]
 #align list.take_eq_take List.take_eq_take
 
 theorem take_add (l : List α) (m n : ℕ) : l.take (m + n) = l.take m ++ (l.drop m).take n := by
@@ -4421,5 +4421,37 @@ theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 #align list.inth_zero_eq_head List.getI_zero_eq_headI
 
 end getI
+
+section Disjoint
+
+variable {α β : Type*}
+
+/-- The images of disjoint maps under a map are disjoint -/
+theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
+    (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
+  simp only [Disjoint]
+  intro b hbs hbt
+  rw [mem_map] at hbs hbt
+  obtain ⟨a, ha, rfl⟩ := hbs
+  apply h ha
+  obtain ⟨a', ha', ha''⟩ := hbt
+  rw [hf ha''.symm]; exact ha'
+
+/-- The images of disjoint lists under a partially defined map are disjoint -/
+theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List α}
+    (hs : ∀ a ∈ s, p a) (ht : ∀ a ∈ t, p a)
+    (hf : ∀ (a a' : α) (ha : p a) (ha' : p a'), f a ha = f a' ha' → a = a')
+    (h : Disjoint s t) :
+    Disjoint (s.pmap f hs) (t.pmap f ht) := by
+  simp only [Disjoint]
+  intro b hbs hbt
+  rw [mem_pmap] at hbs hbt
+  obtain ⟨a, ha, rfl⟩ := hbs
+  apply h ha
+  obtain ⟨a', ha', ha''⟩ := hbt
+  rw [hf a a' (hs a ha) (ht a' ha') ha''.symm]
+  exact ha'
+
+end Disjoint
 
 end List
