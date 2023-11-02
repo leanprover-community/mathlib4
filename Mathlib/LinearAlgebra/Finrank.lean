@@ -346,8 +346,8 @@ theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → V} (hb : Line
         lift_eq_nat_iff] at this)
 #align finrank_span_eq_card finrank_span_eq_card
 
-theorem finrank_span_set_eq_card (s : Set V) [Fintype s] (hs : LinearIndependent K (s.restrict id)) :
-    finrank K (span K s) = s.toFinset.card :=
+theorem finrank_span_set_eq_card (s : Set V) [Fintype s]
+    (hs : LinearIndependent K (s.restrict id)) : finrank K (span K s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
       have : Module.rank K (span K s) = #s := rank_span_set hs

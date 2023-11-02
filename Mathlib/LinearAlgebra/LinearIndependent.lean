@@ -220,7 +220,8 @@ theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf 
 #align linear_independent.comp LinearIndependent.comp
 
 theorem LinearIndependent.coe_range (i : LinearIndependent R v) :
-    LinearIndependent R ((range v).restrict id) := by simpa using i.comp _ (rangeSplitting_injective v)
+    LinearIndependent R ((range v).restrict id) :=
+  by simpa using i.comp _ (rangeSplitting_injective v)
 #align linear_independent.coe_range LinearIndependent.coe_range
 
 /-- If `v` is a linearly independent family of vectors and the kernel of a linear map `f` is
