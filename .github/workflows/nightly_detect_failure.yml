@@ -30,9 +30,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: nightly-testing # checkout nightly-testing branch
+        fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
         token: ${{ secrets.NIGHTLY_TESTING }}
     - name: Update the nightly-testing-YYYY-MM-DD branch
       run: |
