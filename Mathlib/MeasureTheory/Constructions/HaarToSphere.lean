@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Algebra.Order.Pointwise
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.SpecialFunctions.Integrals
@@ -5,6 +10,18 @@ import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
+# Generalized polar coordinate change
+
+Consider an `n`-dimensional normed space `E` and an additive Haar measure `μ` on `E`.
+Then `μ.toSphere` is the measure on the unit sphere
+such that `μ.toSphere s` equals `n • μ (Set.Ioo 0 1 • s)`.
+
+If `n ≠ 0`, then `μ` can be represented (up to `homeomorphUnitSphereProd`)
+as the product of `μ.toSphere`
+and the Lebesgue measure on `(0, +∞)` taken with density `fun r ↦ r ^ n`.
+
+One can think about this fact as a version of polar coordinate change formula
+for a general nontrivial normed space.
 -/
 
 open Set Function Metric MeasurableSpace intervalIntegral
@@ -21,6 +38,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimension
 
 namespace Measure
 
+/-- If `μ` is an additive Haar measure on a normed space `E`,
+then `μ.toSphere` is the measure on the unit sphere in `E`
+such that `μ.toSphere s = FiniteDimensional.finrank ℝ E • μ (Set.Ioo (0 : ℝ) 1 • s)`. -/
 def toSphere (μ : Measure E) : Measure (sphere (0 : E) 1) :=
   dim E • ((μ.comap (Subtype.val ∘ (homeomorphUnitSphereProd E).symm)).restrict
     (univ ×ˢ Iio ⟨1, mem_Ioi.2 one_pos⟩)).fst
@@ -43,11 +63,11 @@ theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
 theorem toSphere_apply_univ' : μ.toSphere univ = dim E * μ (ball 0 1 \ {0}) := by
   rw [μ.toSphere_apply' .univ, image_univ, Subtype.range_coe, Ioo_smul_sphere_zero] <;> simp
 
-theorem toSphere_apply_univ [μ.IsAddHaarMeasure] [Nontrivial E] :
-    μ.toSphere univ = dim E * μ (ball 0 1) := by
-  rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
-
 variable [μ.IsAddHaarMeasure]
+
+@[simp]
+theorem toSphere_apply_univ [Nontrivial E] : μ.toSphere univ = dim E * μ (ball 0 1) := by
+  rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
 
 instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
@@ -55,6 +75,7 @@ instance : IsFiniteMeasure μ.toSphere where
     exact ENNReal.mul_lt_top (ENNReal.nat_ne_top _) <|
       ne_top_of_le_ne_top measure_ball_lt_top.ne <| measure_mono (diff_subset _ _)
 
+/-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
   .withDensity (.comap Subtype.val volume) fun r ↦ .ofReal (r.1 ^ n)
 
@@ -69,6 +90,8 @@ lemma volumeIoiPow_apply_Iio (n : ℕ) (x : Ioi (0 : ℝ)) :
   · filter_upwards [ae_restrict_mem measurableSet_Ioc] with y hy
     exact pow_nonneg hy.1.le _
 
+/-- The intervals `(0, k + 1)` have finite measure `MeasureTheory.Measure.volumeIoiPow _`
+and cover the whole open ray `(0, +∞)`. -/
 def finiteSpanningSetsIn_volumeIoiPow_range_Iio (n : ℕ) :
     FiniteSpanningSetsIn (volumeIoiPow n) (range Iio) where
   set k := Iio ⟨k + 1, mem_Ioi.2 k.cast_add_one_pos⟩
@@ -79,6 +102,9 @@ def finiteSpanningSetsIn_volumeIoiPow_range_Iio (n : ℕ) :
 instance (n : ℕ) : SigmaFinite (volumeIoiPow n) :=
   (finiteSpanningSetsIn_volumeIoiPow_range_Iio n).sigmaFinite
 
+/-- The homeomorphism `homeomorphUnitSphereProd E` sends an additive Haar measure `μ`
+to the product of `μ.toSphere` and `MeasureTheory.Measure.volumeIoiPow (dim E - 1)`,
+where `dim E = FiniteDimensional.finrank ℝ E` is the dimension of `E`. -/
 theorem measurePreserving_homeomorphUnitSphereProd :
     MeasurePreserving (homeomorphUnitSphereProd E) (μ.comap (↑))
       (μ.toSphere.prod (volumeIoiPow (dim E - 1))) := by
