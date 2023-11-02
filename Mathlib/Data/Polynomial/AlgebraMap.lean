@@ -159,13 +159,21 @@ variable {B : Type*} [Semiring B] [Algebra R B]
 
 variable (x : A)
 
+/-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
+
+This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
+@[simps!]
+def eval₂AlgHom' (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) :
+      A[X] →ₐ[R] B :=
+  { eval₂RingHom' f b hf with
+    commutes' := fun _ => (eval₂_C _ _).trans (f.commutes _) }
+
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
 This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
-  { eval₂RingHom' (algebraMap R A) x fun _a => Algebra.commutes _ _ with
-    commutes' := fun _r => eval₂_C _ _ }
+  eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 #align polynomial.aeval Polynomial.aeval
 
 -- porting note: removed `variable` due to redundant binder annotation update
@@ -179,9 +187,16 @@ theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.adjoin_X Polynomial.adjoin_X
 
+/-- `Polynomial.C` as an `AlgHom`. -/
+@[simps! apply]
+def CAlgHom : A →ₐ[R] A[X] where
+  toRingHom := C
+  commutes' _ := rfl
+
 @[ext 1200]
-theorem algHom_ext {f g : R[X] →ₐ[R] A} (h : f X = g X) : f = g :=
-  AlgHom.ext_of_adjoin_eq_top adjoin_X fun _p hp => (Set.mem_singleton_iff.1 hp).symm ▸ h
+theorem algHom_ext {f g : A[X] →ₐ[R] B} (h : f.comp CAlgHom = g.comp CAlgHom) (hX : f X = g X) :
+    f = g :=
+  AlgHom.coe_ringHom_injective <| ringHom_ext (FunLike.congr_fun h) hX
 #align polynomial.alg_hom_ext Polynomial.algHom_ext
 
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
@@ -258,12 +273,12 @@ theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
 #align polynomial.aeval_comp Polynomial.aeval_comp
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
-  algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
+  algHom_ext (Subsingleton.elim _ _) <| by simp only [aeval_X, AlgHom.comp_apply]
 #align polynomial.aeval_alg_hom Polynomial.aeval_algHom
 
 @[simp]
 theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
-  algHom_ext <| aeval_X X
+  algHom_ext (Subsingleton.elim _ _) <| aeval_X X
 set_option linter.uppercaseLean3 false in
 #align polynomial.aeval_X_left Polynomial.aeval_X_left
 
@@ -430,13 +445,16 @@ theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom
 
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
-  ext s
+  ext s : 2
+  · exact Subsingleton.elim _ _
+  dsimp
   simp only [eval_X, aevalTower_X, coe_aeval_eq_eval]
 #align polynomial.aeval_tower_id Polynomial.aevalTower_id
 
 @[simp]
 theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
-  ext
+  ext : 2
+  · exact Subsingleton.elim _ _
   simp only [aeval_X, aevalTower_X]
 #align polynomial.aeval_tower_of_id Polynomial.aevalTower_ofId
 
