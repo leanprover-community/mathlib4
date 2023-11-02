@@ -489,26 +489,26 @@ def homeomorph : Quotient (Setoid.ker f) ≃ₜ Y where
 
 /-- Descend a continuous map, which is constant on the fibres, along a quotient map. -/
 noncomputable
-def descend : C(Y, Z) where
-  toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h _ _ hab)) :
+def lift : C(Y, Z) where
+  toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 
 /--
-The obvious triangle induced by `QuotientMap.descend` commutes:
+The obvious triangle induced by `QuotientMap.lift` commutes:
 ```
      g
   X --→ Z
   |   ↗
-f |  / hf.descend g h
+f |  / hf.lift g h
   v /
   Y
 ```
 -/
-theorem descend_comp : (hf.descend g h) ∘ f = g := by
+theorem lift_comp : (hf.lift g h) ∘ f = g := by
   ext
-  simpa [descend, homeomorph, Setoid.quotientKerEquivOfSurjective,
-    Setoid.quotientKerEquivOfRightInverse] using h _ _ (Function.rightInverse_surjInv _ _)
+  simpa [lift, homeomorph, Setoid.quotientKerEquivOfSurjective,
+    Setoid.quotientKerEquivOfRightInverse] using h (Function.rightInverse_surjInv _ _)
 
 end QuotientMap
 
