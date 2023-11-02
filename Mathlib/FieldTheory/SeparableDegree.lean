@@ -17,13 +17,13 @@ This file contains basics about the separable degree of a field extension.
 
 ## Main results
 
-- `sepDegree E F`: the separable degree of an algebraic extension `E / F` of fields, defined to be
+- `sepDegree F E`: the separable degree of an algebraic extension `E / F` of fields, defined to be
   the cardinal of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`.
   (Mathematically, it should be the algebraic closure of `F`, but in order to make the type
-  compatible with `Module.rank E F`, we use the algebraic closure of `E`.)
+  compatible with `Module.rank F E`, we use the algebraic closure of `E`.)
   Note that if `E / F` is not algebraic, then this definition makes no mathematical sense.
-- `finSepDegree E F`: the separable degree of `E / F` as a natural number, which is zero if
-  `sepDegree E F` is not finite.
+- `finSepDegree F E`: the separable degree of `E / F` as a natural number, which is zero if
+  `sepDegree F E` is not finite.
 
 ## Tags
 
