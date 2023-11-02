@@ -6,7 +6,6 @@ Authors: Moritz Firsching
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.MinMax
-import Mathlib.Data.Polynomial.Eval
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Vandermonde
@@ -92,19 +91,6 @@ theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
 
 open Polynomial
 
-theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ}
-    (v : Fin n → R) (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree ≤ i) :
-    Matrix.of (fun i j => ((p j).eval (v i))) =
-    (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
-  ext i j
-  rw [Matrix.mul_apply, Polynomial.eval, Matrix.of_apply, Polynomial.eval₂]
-  simp only [eq_intCast, Int.cast_id, Matrix.vandermonde]
-  have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
-  rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
-  congr
-  ext k
-  rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
-
 theorem matrixOfPolynomials_blockTriangular {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree ≤ i) :
     Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
@@ -122,7 +108,7 @@ theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
-  rw [eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
+  rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
       Nat.le_of_eq (h_deg i)), Matrix.det_mul,
       det_matrixOfPolynomials p h_deg h_monic, mul_one]
 
