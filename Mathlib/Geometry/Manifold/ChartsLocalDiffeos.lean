@@ -47,6 +47,7 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
   exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
 
 -- this lemma is sorely missing to finish the proof
+-- actually, mathlib has a very similar and correct version already
 lemma subtypeRestr_trans_eqOnSource {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
     (s : Opens M) [Nonempty s] : (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s ≈ e.symm ≫ₕ e' := by
   constructor
@@ -96,10 +97,25 @@ lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonemp
   have aux : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
   have aux' : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
   -- the composition is the restriction of the charts
+  -- scifi versions: unsure if these are fully true
   let r := subtypeRestr_trans_eqOnSource he (chart_mem_atlas H (x : M)) s
   let r' := subtypeRestr_trans_eqOnSource (chart_mem_atlas H (x : M)) he s
+  -- actually, mathlib already has a version of this
+  let r_corr := e.subtypeRestr_symm_trans_subtypeRestr s (chartAt H (x : M))
+  let r'_corr := (chartAt H (x : M)).subtypeRestr_symm_trans_subtypeRestr s e
   -- hence the restriction also lies in the groupoid
-  exact ⟨G.eq_on_source aux r, G.eq_on_source aux' r'⟩
+  refine ⟨?_, G.eq_on_source aux' r'⟩ -- old code for first part: `G.eq_on_source aux r`
+  let myset := e.target ∩ e.symm ⁻¹' s
+  apply G.locality'
+  intro x hx
+  have : x ∈ myset := sorry -- use eq_on_source above, yields a proof that sources are equal + hx
+  use myset
+  -- xxx: need version of IsOpen.preimage for ContinuousOn; otherwise, this `sorry` is obvious
+  refine ⟨e.open_target.inter (s.2.preimage sorry), ?_⟩
+  constructor
+  · exact this
+  · -- finally: argue the RHS in r_corr is in the groupoid: mostly compatible and restriction
+    sorry -- should be routine
 
 -- TODO: prove this! it's the main load-bearing part of the lemma below!
 -- XXX: this lemma is false as-is; `fixed` is correct
