@@ -3,12 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
+import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.CategoryTheory.Sites.Preserves
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-import Mathlib.Tactic.ApplyFun
 /-!
 
 # The Regular and Extensive Coverages
@@ -68,45 +66,6 @@ class Preregular : Prop where
   -/
   exists_fac : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ Y) [EffectiveEpi g],
     (∃ (W : C) (h : W ⟶ X) (_ : EffectiveEpi h) (i : W ⟶ Z), i ≫ g = h ≫ f)
-
-/--
-Describes the property of having pullbacks of morphsims into a finite coproduct, where one
-of the morphisms is an inclusion map into the coproduct (up to isomorphism).
--/
-class HasPullbacksOfInclusions : Prop where
-    /-- For any morphism `f : X ⟶ Z`, where `Z` is the coproduct of `i : (a : α) → Y a ⟶ Z` with
-    `α` finite, the pullback of `f` and `i a` exists for every `a : α`. -/
-    has_pullback : ∀ {X Z : C} {α : Type w} (f : X ⟶ Z) {Y : (a : α) → C}
-    (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α),
-    HasPullback f (i a)
-
-instance [HasPullbacksOfInclusions C] {X Z : C} {α : Type w} (f : X ⟶ Z) {Y : (a : α) → C}
-    (i : (a : α) → Y a ⟶ Z) [Fintype α] [HasCoproduct Y] [IsIso (Sigma.desc i)] (a : α) :
-    HasPullback f (i a) := HasPullbacksOfInclusions.has_pullback f i a
-
-instance [HasPullbacksOfInclusions C] {α : Type w} [Fintype α] (Y : α → C)
-    [HasCoproduct Y] (i j : α) : HasPullback (Sigma.ι Y i) (Sigma.ι Y j) := by
-  have : Sigma.desc (fun i ↦ Sigma.ι Y i) = 𝟙 _ := by ext; simp
-  have _ : IsIso (Sigma.desc (fun i ↦ Sigma.ι Y i)) := by rw [this]; infer_instance
-  exact HasPullbacksOfInclusions.has_pullback _ _ j
-
-/--
-If `C` has pullbacks then it has the pullbacks relevant to `HasPullbacksOfInclusions`.
--/
-instance (priority := 10) [HasPullbacks C] :
-  HasPullbacksOfInclusions C := ⟨fun _ _ _ => inferInstance⟩
-
-/--
-A category is *extensive* if it has all finite coproducts and those coproducts are preserved
-by pullbacks (we only require the relevant pullbacks to exist, via `HasPullbacksOfInclusions`).
-
-TODO: relate this to the class `FinitaryExtensive`
--/
-class Extensive extends HasFiniteCoproducts C, HasPullbacksOfInclusions C : Prop where
-  /-- Pulling back an isomorphism from a coproduct yields an isomorphism. -/
-  sigma_desc_iso : ∀ {α : Type} [Fintype α] {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X)
-    {Y : C} (f : Y ⟶ X) (_ : IsIso (Sigma.desc π)),
-    IsIso (Sigma.desc ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _))
 
 /--
 The regular coverage on a regular category `C`.
@@ -411,7 +370,7 @@ end RegularSheaves
 
 section ExtensiveSheaves
 
-variable [Extensive C] {C}
+variable [FinitaryPreExtensive C] {C}
 
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
 coproduct to the target. -/
@@ -428,7 +387,7 @@ instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
     intro _ _ f hf _ hg
     rw [hS] at hf hg
     cases' hg with b
-    apply HasPullbacksOfInclusions.has_pullback f
+    apply FinitaryPreExtensive.hasPullbacks_of_inclusions f
 
 instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
@@ -441,14 +400,17 @@ theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X)
   subst hS
   exact Presieve.isSheafFor_of_preservesProduct F (X := Z) π
 
-variable (hd : ∀ {α : Type} [Fintype α] (Z : α → C) i j, i ≠ j →
-    IsInitial (pullback (Sigma.ι Z i) (Sigma.ι Z j)))
-    [∀ {α : Type} [Fintype α] (Z : α → C) i, Mono (Sigma.ι Z i)]
--- TODO: add these statements to `CoproductsDisjoint` API
+instance {α : Type} [Fintype α] (Z : α → C) :
+    (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive where
+  arrows_sigma_desc_iso := by
+    refine ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ?_⟩
+    convert IsIso.id _
+    ext
+    simp
 
 open Opposite
 
-theorem isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type max u v) :
+theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type max u v) :
     Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
     Nonempty (PreservesFiniteProducts F) := by
   refine ⟨fun hF ↦ ?_, fun hF ↦ ?_⟩
@@ -459,10 +421,9 @@ theorem isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type max u v) :
     intro K
     rw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
-    have _ : (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)).hasPullbacks :=
-      ⟨fun hf _ hg ↦ by cases hf; cases hg; infer_instance⟩
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
-        Presieve.preservesProductOfIsSheafFor initialIsInitial F ?_ Z (hd Z)
+        Presieve.preservesProductOfIsSheafFor initialIsInitial F ?_ Z
+        (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     · exact preservesLimitOfIsoDiagram F i.symm

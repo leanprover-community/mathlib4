@@ -3,10 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sheaves preserve products
@@ -40,7 +39,8 @@ open Limits Opposite
 variable {C : Type u} [Category.{v} C] {I : C} (hI : IsInitial I) (F : Cᵒᵖ ⥤ Type (max u v))
     (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F) {α : Type}
     (X : α → C) [HasCoproduct X] [(ofArrows X (fun i ↦ Sigma.ι X i)).hasPullbacks]
-    (hd : ∀ i j, i ≠ j → IsInitial (pullback (Sigma.ι X i) (Sigma.ι X j)))
+    [HasInitial C]
+    (hd : ∀ i j, i ≠ j → IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j))
     [∀ i, Mono (Sigma.ι X i)]
 
 namespace Preserves
@@ -80,12 +80,10 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (fun j �
     apply Mono.right_cancellation (f := Sigma.ι X i)
     exact pullback.condition
   · haveI := preservesTerminalOfIsSheafForEmpty hI F hF
-    haveI := hI.hasInitial
     let i₁ : op (pullback (Sigma.ι X i) (Sigma.ι X j)) ≅ op (⊥_ _) :=
-      (initialIsoIsInitial (hd i j hi)).op
+      ((hd i j hi).isoPullback).op
     let i₂ : op (⊥_ C) ≅ (⊤_ Cᵒᵖ) :=
       (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)).symm
-    let _ := preservesTerminalOfIsSheafForEmpty hI F hF
     apply_fun (F.mapIso i₁ ≪≫ F.mapIso i₂ ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _
     simp
