@@ -339,6 +339,7 @@ To give a continuous map out of a disjoint union, it suffices to give a continuo
 each term. This is `Sigma.uncurry fun i x => f i x`, but `aesop` doesn't manage to prove
 continuity with that implementation.
 -/
+@[simps]
 def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
   toFun ig := f ig.fst ig.snd
 
