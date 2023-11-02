@@ -33,6 +33,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         ref: nightly-testing # checkout nightly-testing branch
+        fetch-depth: 0
         token: ${{ secrets.NIGHTLY_TESTING }}
     - name: Update the nightly-testing-YYYY-MM-DD branch
       run: |
