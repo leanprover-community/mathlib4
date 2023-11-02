@@ -323,7 +323,7 @@ theorem symm_image_target_eq_source (e : LocalHomeomorph α β) : e.symm '' e.ta
 /-- Two local homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
 It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on
 the target. This would only be true for a weaker notion of equality, arguably the right one,
-called `eq_on_source`. -/
+called `EqOnSource`. -/
 @[ext]
 protected theorem ext (e' : LocalHomeomorph α β) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
@@ -940,24 +940,24 @@ theorem eqOnSource_iff (e e' : LocalHomeomorph α β) :
   Iff.rfl
 #align local_homeomorph.eq_on_source_iff LocalHomeomorph.eqOnSource_iff
 
-/-- `EqOnSource` is an equivalence relation -/
+/-- `EqOnSource` is an equivalence relation. -/
 instance eqOnSourceSetoid : Setoid (LocalHomeomorph α β) :=
   { LocalEquiv.eqOnSourceSetoid.comap toLocalEquiv with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 #align local_homeomorph.eq_on_source_refl LocalHomeomorph.eqOnSource_refl
 
-/-- If two local homeomorphisms are equivalent, so are their inverses -/
+/-- If two local homeomorphisms are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : LocalHomeomorph α β} (h : e ≈ e') : e.symm ≈ e'.symm :=
   LocalEquiv.EqOnSource.symm' h
 #align local_homeomorph.eq_on_source.symm' LocalHomeomorph.EqOnSource.symm'
 
-/-- Two equivalent local homeomorphisms have the same source -/
+/-- Two equivalent local homeomorphisms have the same source. -/
 theorem EqOnSource.source_eq {e e' : LocalHomeomorph α β} (h : e ≈ e') : e.source = e'.source :=
   h.1
 #align local_homeomorph.eq_on_source.source_eq LocalHomeomorph.EqOnSource.source_eq
 
-/-- Two equivalent local homeomorphisms have the same target -/
+/-- Two equivalent local homeomorphisms have the same target. -/
 theorem EqOnSource.target_eq {e e' : LocalHomeomorph α β} (h : e ≈ e') : e.target = e'.target :=
   h.symm'.1
 #align local_homeomorph.eq_on_source.target_eq LocalHomeomorph.EqOnSource.target_eq
