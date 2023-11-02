@@ -78,8 +78,7 @@ theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : �
   exact rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s one_lt_two hb
 #align rpow_mul_exp_neg_mul_sq_is_o_exp_neg rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg
 
--- TODO. do integrableOn_rpow_mul_exp_neg_mul_rpow
-theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hq : -1 < s) (hp : 1 ≤ p) :
+theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤ p) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (- x ^ p)) (Ioi 0) := by
   obtain hp | hp := le_iff_lt_or_eq.mp hp
   · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x :=
@@ -89,7 +88,7 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hq : -1 < s) (hp : 1 ≤
     · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
       refine IntegrableOn.mul_continuousOn ?_ ?_ isCompact_Icc
       · refine (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp ?_
-        exact intervalIntegral.intervalIntegrable_rpow' hq
+        exact intervalIntegral.intervalIntegrable_rpow' hs
       · intro x _
         change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Icc 0 1) x
         refine ContinuousAt.comp_continuousWithinAt (h_exp _) ?_
@@ -108,22 +107,23 @@ theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hq : -1 < s) (hp : 1 ≤
     convert Real.GammaIntegral_convergent (by linarith : 0 < s + 1) using 2
     rw [add_sub_cancel, mul_comm]
 
+theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp : 1 ≤ p) (hb : 0 < b) :
+    IntegrableOn (fun x : ℝ => x ^ s * exp (- b * x ^ p)) (Ioi 0) := by
+  have hib : 0 < b ^ (-p⁻¹) := rpow_pos_of_pos hb _
+  suffices IntegrableOn (fun x ↦ (b ^ (-p⁻¹)) ^ s * (x ^ s * exp (-x ^ p))) (Ioi 0) by
+    rw [show 0 = b ^ (-p⁻¹) * 0 by rw [mul_zero], ← integrableOn_Ioi_comp_mul_left_iff _ _ hib]
+    refine this.congr_fun (fun _ hx => ?_) measurableSet_Ioi
+    rw [← mul_assoc, mul_rpow, mul_rpow, ← rpow_mul (z := p), neg_mul, neg_mul, inv_mul_cancel,
+      rpow_neg_one, mul_inv_cancel_left₀]
+    all_goals linarith [mem_Ioi.mp hx]
+  refine Integrable.const_mul ?_ _
+  rw [← integrableOn_def]
+  exact integrableOn_rpow_mul_exp_neg_rpow hs hp
+
 theorem integrableOn_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (-b * x ^ 2)) (Ioi 0) := by
-  rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrableOn_union]
-  constructor
-  · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
-    refine' IntegrableOn.mul_continuousOn _ _ isCompact_Icc
-    · refine' (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp _
-      exact intervalIntegral.intervalIntegrable_rpow' hs
-    · exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).continuousOn
-  · have B : (0 : ℝ) < 1 / 2 := by norm_num
-    apply integrable_of_isBigO_exp_neg
-      B _ (IsLittleO.isBigO (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg hb _))
-    intro x hx
-    have N : x ≠ 0 := by refine' (zero_lt_one.trans_le _).ne'; exact hx
-    apply ((continuousAt_rpow_const _ _ (Or.inl N)).mul _).continuousWithinAt
-    exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).continuousAt
+  simp_rw [← rpow_two]
+  exact integrableOn_rpow_mul_exp_neg_mul_rpow hs one_le_two hb
 #align integrable_on_rpow_mul_exp_neg_mul_sq integrableOn_rpow_mul_exp_neg_mul_sq
 
 theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
