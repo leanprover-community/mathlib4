@@ -110,18 +110,18 @@ derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
 This derivation takes values in `comp_aeval R M a`, which is `M`, regarded as an
 `R[X]`-module, with the action of a polynomial `f` defined by `f • m = (aeval a f) • m`.
 -/
-def comp_aeval : Derivation R R[X] <| CompAEval R M a where
-  toFun f          := ⟨d (aeval a f)⟩
-  map_add' _ _     := by simp [Equiv.add_def]
-  map_smul' _ _    := by simp [Equiv.smul_def]
-  leibniz' f g     := by simp [Equiv.add_def, Equiv.smul_def]
-  map_one_eq_zero' := by simp [Equiv.zero_def]
+def comp_aeval : Derivation R R[X] <| AEval R M a where
+  toFun f          := AEval.of R M a (d (aeval a f))
+  map_add' _ _     := by simp
+  map_smul' _ _    := by simp
+  leibniz' _ _     := by simp [AEval.of_aeval_smul]
+  map_one_eq_zero' := by simp
 
-lemma comp_aeval_apply (d : Derivation R A M) (f : R[X]) :
-    d (aeval a f) = (d.comp_aeval a f).val := by rfl
+lemma comp_aeval_def (d : Derivation R A M) (f : R[X]) :
+    d.comp_aeval a f = AEval.of R M a (d (aeval a f)) := rfl
 
 lemma comp_aeval_apply' (d : Derivation R A M) (f : R[X]) :
-    d.comp_aeval a f = ⟨d (aeval a f)⟩ := by rfl
+    (d (aeval a f)) = (AEval.of R M a).symm (d.comp_aeval a f) := rfl
 
 /--
   A form of the chain rule: if `f` is a polynomial over `R`
@@ -131,11 +131,11 @@ lemma comp_aeval_apply' (d : Derivation R A M) (f : R[X]) :
   For the same equation in `M`, see `Derivation.comp_aeval_eq`.
 -/
 theorem comp_aeval_eq' (d : Derivation R A M) (f : R[X]) :
-    d.comp_aeval a f = (derivative f) • ⟨d a⟩ := by
+    d.comp_aeval a f = (derivative f) • (AEval.of R M a (d a)) := by
   rw [←mkDerivation_apply]
   congr
   apply derivation_ext
-  rw [comp_aeval_apply', aeval_X, mkDerivation_X]
+  rw [comp_aeval_def, aeval_X, mkDerivation_X]
 
 /--
   A form of the chain rule: if `f` is a polynomial over `R`
@@ -146,4 +146,4 @@ theorem comp_aeval_eq' (d : Derivation R A M) (f : R[X]) :
 -/
 theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
     d (aeval a f) = aeval a (derivative f) • d a := by
-  simp [comp_aeval_apply, comp_aeval_eq', CompAEval.smul_def, Equiv.smul_def]
+  rw [comp_aeval_apply', comp_aeval_eq', AEval.of_symm_smul, LinearEquiv.symm_apply_apply]
