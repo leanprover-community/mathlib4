@@ -336,7 +336,8 @@ def sigmaMk (i : I) : C(X i, Σ i, X i) where
 
 /--
 To give a continuous map out of a disjoint union, it suffices to give a continuous map out of
-each term
+each term. This is `Sigma.uncurry fun i x => f i x`, but `aesop` doesn't manage to prove
+continuity with that implementation.
 -/
 def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
   toFun ig := f ig.fst ig.snd
@@ -344,8 +345,9 @@ def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
 variable (A X) in
 /--
 Giving a continuous map out of a disjoint union is the same as giving a continuous map out of
-each term
+each term. This is a version of `Equiv.piCurry` for continuous maps.
 -/
+@[simps]
 def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
   toFun := sigma
   invFun f i := f.comp (sigmaMk i)
@@ -379,6 +381,7 @@ variable (A X) in
 Giving a continuous map out of a disjoint union is the same as giving a continuous map out of
 each term
 -/
+@[simps]
 def piEquiv : (∀ i, C(A, X i)) ≃ C(A, ∀ i, X i) where
   toFun := pi
   invFun f i := (eval i).comp f
