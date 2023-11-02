@@ -55,6 +55,18 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
   · exact fun x ↦ (exp_pos _).le
   · exact hf
 
+lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite κ] [μ.HaveLebesgueDecomposition κ]
+    [ν.HaveLebesgueDecomposition κ] [μ.HaveLebesgueDecomposition ν]
+    (hμν : μ ≪ ν) (hνκ : ν ≪ κ) :
+    μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
+  rw [← withDensity_eq_iff_of_sigmaFinite]
+  · rw [mul_comm,
+      withDensity_mul _ (Measure.measurable_rnDeriv _ _) (Measure.measurable_rnDeriv _ _),
+      Measure.withDensity_rnDeriv_eq _ _ (hμν.trans hνκ), Measure.withDensity_rnDeriv_eq _ _ hνκ,
+      Measure.withDensity_rnDeriv_eq _ _ hμν]
+  · exact ((Measure.measurable_rnDeriv _ _).mul (Measure.measurable_rnDeriv _ _)).aemeasurable
+  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
+
 section logIntegralExp
 
 /-- The quantity `log (∫ x, exp (f x) ∂μ)`. -/
@@ -62,13 +74,11 @@ noncomputable
 def logIntegralExp (μ : Measure α) (f : α → ℝ) : ℝ := log (∫ x, exp (f x) ∂μ)
 
 @[simp]
-lemma logIntegralExp_zero_left (f : α → ℝ) :
-    logIntegralExp (0 : Measure α) f = 0 := by
+lemma logIntegralExp_zero_measure (f : α → ℝ) : logIntegralExp (0 : Measure α) f = 0 := by
   simp [logIntegralExp]
 
 @[simp]
-lemma logIntegralExp_zero_right (μ : Measure α) [IsProbabilityMeasure μ] :
-    logIntegralExp μ 0 = 0 := by
+lemma logIntegralExp_zero (μ : Measure α) [IsProbabilityMeasure μ] : logIntegralExp μ 0 = 0 := by
   simp [logIntegralExp]
 
 lemma logIntegralExp_of_not_integrable (hf : ¬ Integrable (fun x ↦ exp (f x)) μ) :
@@ -91,11 +101,8 @@ noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) : Measure α :=
   μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x - logIntegralExp μ f)))
 
-lemma tilted_absolutelyContinuous (μ : Measure α) (f : α → ℝ) : μ.tilted f ≪ μ :=
-  withDensity_absolutelyContinuous _ _
-
 @[simp]
-lemma tilted_zero_left (f : α → ℝ) : (0 : Measure α).tilted f = 0 := by simp [Measure.tilted]
+lemma tilted_zero_measure (f : α → ℝ) : (0 : Measure α).tilted f = 0 := by simp [Measure.tilted]
 
 @[simp]
 lemma tilted_const' (μ : Measure α) [IsFiniteMeasure μ] (c : ℝ) :
@@ -135,8 +142,7 @@ lemma tilted_eq_withDensity_nnreal (μ : Measure α) (f : α → ℝ) :
     μ.tilted f = μ.withDensity
       (fun x ↦ ((↑) : ℝ≥0 → ℝ≥0∞) (⟨exp (f x - logIntegralExp μ f), (exp_pos _).le⟩ : ℝ≥0)) := by
   rw [Measure.tilted]
-  congr
-  ext1 x
+  congr with x
   rw [ENNReal.ofReal_eq_coe_nnreal]
 
 lemma tilted_apply (μ : Measure α) (f : α → ℝ) {s : Set α} (hs : MeasurableSet s) :
@@ -257,14 +263,16 @@ lemma tilted_neg_same [IsProbabilityMeasure μ] (hf : AEMeasurable f μ) :
     (μ.tilted f).tilted (-f) = μ := by
   simp [hf]
 
+lemma tilted_absolutelyContinuous (μ : Measure α) (f : α → ℝ) : μ.tilted f ≪ μ :=
+  withDensity_absolutelyContinuous _ _
+
 lemma absolutelyContinuous_tilted [IsFiniteMeasure μ] (hf : AEMeasurable f μ) :
     μ ≪ μ.tilted f := by
   cases eq_zero_or_neZero μ with
-  | inl h => rw [h]; exact Measure.AbsolutelyContinuous.zero _
+  | inl h0 => rw [h0]; exact Measure.AbsolutelyContinuous.zero _
   | inr h0 =>
     have : μ = (μ Set.univ) • (μ.tilted f).tilted (-f) := by
-      rw [tilted_neg_same' hf]
-      rw [smul_smul, ENNReal.mul_inv_cancel, one_smul]
+      rw [tilted_neg_same' hf, smul_smul, ENNReal.mul_inv_cancel, one_smul]
       · simp [h0.out]
       · exact measure_ne_top _ _
     nth_rw 1 [this]
@@ -300,8 +308,7 @@ lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFi
     refine (absolutelyContinuous_tilted hf).ae_le ?_
     have : IsProbabilityMeasure (ν.tilted f) := isProbabilityMeasure_tilted h_int
     refine Measure.eq_rnDeriv₀ ?_ Measure.MutuallySingular.zero_left ?_
-    · simp only
-      refine AEMeasurable.mul ?_ (Measure.measurable_rnDeriv _ _).aemeasurable
+    · refine AEMeasurable.mul ?_ (Measure.measurable_rnDeriv _ _).aemeasurable
       refine ENNReal.measurable_ofReal.comp_aemeasurable ?_
       refine measurable_exp.comp_aemeasurable ((AEMeasurable.neg ?_).add aemeasurable_const)
       exact AEMeasurable.mono_ac hf (tilted_absolutelyContinuous _ _)
