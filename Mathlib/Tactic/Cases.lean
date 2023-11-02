@@ -75,11 +75,11 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
       let mut s ← getFVarSetToGeneralize targets forbidden
       for v in genArgs do
         if forbidden.contains v then
-          throwError ("variable cannot be generalized " ++
-            "because target depends on it{indentExpr (mkFVar v)}")
+          throwError "variable cannot be generalized {""
+            }because target depends on it{indentExpr (mkFVar v)}"
         if s.contains v then
-          throwError ("unnecessary 'generalizing' argument, " ++
-            "variable '{mkFVar v}' is generalized automatically")
+          throwError "unnecessary 'generalizing' argument, {""
+            }variable '{mkFVar v}' is generalized automatically"
         s := s.insert v
       let (fvarIds, g) ← g.revert (← sortFVarIds s.toArray)
       g.withContext do
