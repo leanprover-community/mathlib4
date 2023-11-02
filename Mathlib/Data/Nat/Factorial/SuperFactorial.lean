@@ -109,7 +109,7 @@ theorem matrixOfPolynomials_blockTriangular {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree ≤ i) :
     Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
   fun _ j h => by
-    refine' coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
+    exact coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
 
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
