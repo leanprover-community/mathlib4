@@ -721,7 +721,7 @@ lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofAr
     (t : P.obj (op B)) :
     x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) :=
   ⟨fun h i ↦ h _ (ofArrows.mk i), fun h _ f ⟨i⟩ ↦ h i⟩
-  
+
 namespace Arrows.Compatible
 
 variable {x : (i : I) → P.obj (op (X i))} (hx : Compatible P π x)
