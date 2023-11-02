@@ -440,7 +440,7 @@ lemma exactAt_iff' (hi : c.prev j = i) (hk : c.next j = k) :
   ShortComplex.exact_iff_of_iso (K.isoSc' i j k hi hk)
 
 lemma exactAt_iff_isZero_homology :
-    IsZero (K.homology i) ↔ K.ExactAt i := by
+    K.ExactAt i ↔ IsZero (K.homology i) := by
   dsimp [homology]
   rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
 
