@@ -7,7 +7,6 @@ import Mathlib.Data.Polynomial.Derivative
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Module
-import Mathlib.Logic.Equiv.TransferInstance
 /-!
 # Derivations of univariate polynomials
 
@@ -107,7 +106,7 @@ open Polynomial Module
 For a derivation `d : A → M` and an element `a : A`, `d.comp_aeval a` is the
 derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
 
-This derivation takes values in `comp_aeval R M a`, which is `M`, regarded as an
+This derivation takes values in `Module.AEval R M a`, which is `M`, regarded as an
 `R[X]`-module, with the action of a polynomial `f` defined by `f • m = (aeval a f) • m`.
 -/
 def comp_aeval : Derivation R R[X] <| AEval R M a where
@@ -120,14 +119,14 @@ def comp_aeval : Derivation R R[X] <| AEval R M a where
 lemma comp_aeval_def (d : Derivation R A M) (f : R[X]) :
     d.comp_aeval a f = AEval.of R M a (d (aeval a f)) := rfl
 
-lemma comp_aeval_apply' (d : Derivation R A M) (f : R[X]) :
+lemma comp_aeval_apply (d : Derivation R A M) (f : R[X]) :
     (d (aeval a f)) = (AEval.of R M a).symm (d.comp_aeval a f) := rfl
 
 /--
   A form of the chain rule: if `f` is a polynomial over `R`
   and `d : A → M` is an `R`-derivation then for all `a : A` we have
   $$ d(f(a)) = f' (a) d a. $$
-  The equation is in the `R[X]`-module `CompAEval R M a`.
+  The equation is in the `R[X]`-module `Module.AEval R M a`.
   For the same equation in `M`, see `Derivation.comp_aeval_eq`.
 -/
 theorem comp_aeval_eq' (d : Derivation R A M) (f : R[X]) :
@@ -135,15 +134,15 @@ theorem comp_aeval_eq' (d : Derivation R A M) (f : R[X]) :
   rw [←mkDerivation_apply]
   congr
   apply derivation_ext
-  rw [comp_aeval_def, aeval_X, mkDerivation_X]
+  simp [comp_aeval_def]
 
 /--
   A form of the chain rule: if `f` is a polynomial over `R`
   and `d : A → M` is an `R`-derivation then for all `a : A` we have
   $$ d(f(a)) = f' (a) d a. $$
-  The equation is in `M`. For the same equation in `CompAEval R M a`,
-  see `Derivation.comp_aeval'`.
+  The equation is in `M`. For the same equation in `Module.AEval R M a`,
+  see `Derivation.comp_aeval_eq'`.
 -/
 theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
     d (aeval a f) = aeval a (derivative f) • d a := by
-  rw [comp_aeval_apply', comp_aeval_eq', AEval.of_symm_smul, LinearEquiv.symm_apply_apply]
+  simp [comp_aeval_apply, comp_aeval_eq']
