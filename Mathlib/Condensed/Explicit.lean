@@ -3,9 +3,28 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+
+import Mathlib.Condensed.Equivalence
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
+
+/-!
+
+We give the following three explicit descriptions of condensed sets:
+
+* `Condensed.ofSheafStonean`: A finite-product-preserving presheaf on `Stonean`.
+
+* `Condensed.ofSheafProfinite`: A finite-product-preserving presheaf on `Profinite`, satisfying
+  `EqualizerCondition`.
+
+* `Condensed.ofSheafStonean`: A finite-product-preserving presheaf on `CompHaus`, satisfying
+  `EqualizerCondition`.
+
+The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive`
+and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
+continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
+`F(X) ⇉ F(X ×_B X)`
+-/
 
 universe v u
 
@@ -37,7 +56,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] {F : CompHaus.{u}ᵒᵖ ⥤ A} :
+    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : CompHaus.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology CompHaus) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
@@ -63,7 +82,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] {F : Profinite.{u}ᵒᵖ ⥤ A} :
+    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : Profinite.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Profinite) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) ∧ EqualizerCondition (F ⋙ G) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Profinite) F G,
@@ -85,10 +104,42 @@ theorem isSheaf_iff_preservesFiniteProducts
 
 theorem isSheaf_iff_preservesFiniteProducts'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
-    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] {F : Stonean.{u}ᵒᵖ ⥤ A} :
+    [HasLimits A] [PreservesLimits G] [ReflectsIsomorphisms G] (F : Stonean.{u}ᵒᵖ ⥤ A) :
     Presheaf.IsSheaf (coherentTopology Stonean) F ↔
     Nonempty (PreservesFiniteProducts (F ⋙ G)) := by
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology Stonean) F G,
     isSheaf_iff_isSheaf_of_type, isSheaf_iff_preservesFiniteProducts]
 
 end Stonean
+
+noncomputable section
+
+namespace Condensed
+
+def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
+    CondensedSet.{u} :=
+  StoneanCompHaus.equivalence (Type (u+1)) |>.functor.obj {
+    val := F
+    cond := by
+      rw [Stonean.isSheaf_iff_preservesFiniteProducts' (𝟭 _) F, Functor.comp_id]
+      exact ⟨inferInstance⟩ }
+
+def ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
+    (hF : EqualizerCondition F) : CondensedSet.{u} :=
+  ProfiniteCompHaus.equivalence (Type (u+1)) |>.functor.obj {
+    val := F
+    cond := by
+      rw [Profinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) F,
+        Functor.comp_id]
+      exact ⟨⟨inferInstance⟩, hF⟩ }
+
+def ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
+    (hF : EqualizerCondition F) : CondensedSet.{u} where
+  val := F
+  cond := by
+    rw [CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) F,
+        Functor.comp_id]
+    exact ⟨⟨inferInstance⟩, hF⟩
+
+end Condensed
+end

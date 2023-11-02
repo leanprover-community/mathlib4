@@ -48,3 +48,5 @@ def Condensed (C : Type w) [Category.{v} C] :=
 
 instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
   show Category (Sheaf _ _) from inferInstance
+
+abbrev CondensedSet := Condensed.{u} (Type (u+1))
