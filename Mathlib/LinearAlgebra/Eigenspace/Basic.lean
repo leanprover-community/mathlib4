@@ -333,11 +333,17 @@ lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M]
     (f.generalizedEigenspace μ₂).mono.directed_le.disjoint_iSup_right]
   exact disjoint_generalizedEigenspace f hμ
 
+lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    InjOn (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k)
+      {μ | ⨆ k, f.generalizedEigenspace μ k ≠ ⊥} := by
+  rintro μ₁ _ μ₂ hμ₂ (hμ₁₂ : ⨆ k, f.generalizedEigenspace μ₁ k = ⨆ k, f.generalizedEigenspace μ₂ k)
+  by_contra contra
+  apply hμ₂
+  simpa only [hμ₁₂, disjoint_self] using f.disjoint_iSup_generalizedEigenspace contra
+
 theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
-  intro μ
-  suffices : ∀ (s : Finset R), s.SupIndep fun μ ↦ ⨆ k, f.generalizedEigenspace μ k
-  · sorry
+  rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace]
   intro s
   classical
   induction' s using Finset.induction_on with μ₁ s hμ₁ ih; simp
