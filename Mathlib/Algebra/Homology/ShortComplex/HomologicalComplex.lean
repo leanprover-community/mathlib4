@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.Homology
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 /-!
 # The short complexes attached to homological complexes
@@ -71,6 +71,12 @@ variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
+
+/-- Comparison isomorphism between the homology for the two homology API. -/
+noncomputable def homology'IsoHomology {A : Type*} [Category A] [Abelian A]
+    (K : HomologicalComplex A c) (i : ι) :
+    K.homology' i ≅ K.homology i :=
+  (K.sc i).homology'IsoHomology
 
 /-- The cycles in degree `i` of a homological complex. -/
 noncomputable def cycles := (K.sc i).cycles
