@@ -69,6 +69,12 @@ theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf
   | n + 1 => by
     rw [Finset.prod_range_succ, prod_range_factorial_succ n, superFactorial, mul_comm, factorial]
 
+@[simp]
+theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x in range (n + 1), x ! = sf n
+  | 0 => rfl
+  | n + 1 => by
+    rw [prod_range_succ, prod_range_succ_factorial n, mul_comm, superFactorial]
+
 variable {R : Type*} [CommRing R]
 
 theorem det_vandermonde_id_eq_superFactorial (n : ℕ) :
@@ -93,35 +99,38 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ
   ext i j
   rw [Matrix.mul_apply, Polynomial.eval, Matrix.of_apply, Polynomial.eval₂]
   simp only [eq_intCast, Int.cast_id, Matrix.vandermonde]
-  have : (p j).support ⊆ range n := supp_subset_range <| h_deg j ▸ Fin.prop j
+  have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
   rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
 
 theorem matrixOfPolynomials_blockTriangular {n : ℕ} (p : Fin n → R[X])
-    (h_deg : ∀ i, (p i).natDegree = i) :
+    (h_deg : ∀ i, (p i).natDegree ≤ i) :
     Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
-  fun _ j h => coeff_eq_zero_of_natDegree_lt (h_deg j ▸ h)
+  fun _ j h => by
+    refine' coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
 
 theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
-  rw [Matrix.det_of_upperTriangular (matrixOfPolynomials_blockTriangular p h_deg)]
+  rw [Matrix.det_of_upperTriangular (matrixOfPolynomials_blockTriangular p (fun i ↦
+      Nat.le_of_eq (h_deg i)))]
   convert prod_const_one with x _
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
-    (h_deg : ∀ i, (p i).natDegree  = i) (h_monic : ∀ i,  Monic <| p i) :
+    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
     (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
-  rw [eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p h_deg, Matrix.det_mul,
+  rw [eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
+      Nat.le_of_eq (h_deg i)), Matrix.det_mul,
       det_matrixOfPolynomials p h_deg h_monic, mul_one]
 
 theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v : Fin n → ℕ) :
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
     (∏ i : Fin n, Nat.factorial i) *
       (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
-  convert Matrix.det_mul_row (fun (i : Fin n)  => ((Nat.factorial (i : ℕ)):ℤ)) _
+  convert Matrix.det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)):ℤ)) _
   · rw [Matrix.of_apply, descPochhammer_int_eq_descFactorial _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _
@@ -132,13 +141,13 @@ theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
   let m := inf' univ ⟨0, mem_univ _⟩ v
   let w' := fun i ↦ (v i - m).toNat
   have hw' : ∀ i, (w' i : ℤ) = v i - m := fun i ↦ Int.toNat_sub_of_le (inf'_le _ (mem_univ _))
-  have h := vandermonde_det_eq_eval_matrixOfPolynomials_det (fun i ↦ ↑(w' i))
+  have h :=  det_eval_matrixOfPolynomials_eq_det_vandermonde (fun i ↦ ↑(w' i))
       (fun i => descPochhammer ℤ i)
       (fun i => descPochhammer_natDegree ℤ i)
       (fun i => monic_descPochhammer ℤ i)
   conv_lhs at h => simp only [hw', Matrix.det_vandermonde_sub]
   use (Matrix.of (fun (i j : Fin (n + 1)) => (Nat.choose (w' i) (j : ℕ) : ℤ))).det
-  simp [h, eval_matrixOfPolynomials_eq_mul_matrix_of_choose w', Fin.prod_univ_eq_prod_range]
+  simp [h, matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose w', Fin.prod_univ_eq_prod_range]
 
 end SuperFactorial
 
