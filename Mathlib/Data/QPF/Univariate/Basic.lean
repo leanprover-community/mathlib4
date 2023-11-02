@@ -499,7 +499,7 @@ theorem Cofix.bisim (r : Cofix F → Cofix F → Prop)
 
 theorem Cofix.bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
     (h : ∀ x, Q x → ∃ a f f', Cofix.dest (u x) = abs ⟨a, f⟩ ∧ Cofix.dest (v x) = abs ⟨a, f'⟩ ∧
-        ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
+      ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : Cofix F => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   Cofix.bisim R
