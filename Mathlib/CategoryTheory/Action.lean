@@ -113,12 +113,12 @@ variable {X} (x : X)
 
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/
-def stabilizerIsoEnd : Stabilizer.submonoid M x ≃* @End (ActionCategory M X) _ x :=
+def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x :=
   MulEquiv.refl _
 #align category_theory.action_category.stabilizer_iso_End CategoryTheory.ActionCategory.stabilizerIsoEnd
 
 @[simp]
-theorem stabilizerIsoEnd_apply (f : Stabilizer.submonoid M x) :
+theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
     (stabilizerIsoEnd M x) f = f :=
   rfl
 #align category_theory.action_category.stabilizer_iso_End_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_apply
