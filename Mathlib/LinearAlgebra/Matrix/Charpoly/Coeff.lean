@@ -164,8 +164,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     FunLike.congr_fun this M
   ext : 1
   · ext M : 1
-    have : M.map (·) = M := map_id _
-    simp [Function.comp, this]
+    simp [Function.comp]
   · simp [smul_eq_diagonal_mul]
 
 theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
