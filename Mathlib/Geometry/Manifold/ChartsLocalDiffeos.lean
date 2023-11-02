@@ -49,7 +49,7 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`. -/
 -- this is different from `closedUnderRestriction'` as we want membership in the maximal atlas
 -- XXX: find a better name!
-lemma stable_under_restrictions {G : StructureGroupoid H} (h: HasGroupoid M G)
+lemma stable_under_restrictions {G : StructureGroupoid H} [HasGroupoid M G]
     [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
   rw [mem_maximalAtlas_iff]
   intro e' he'
@@ -80,12 +80,14 @@ lemma stable_under_restrictions {G : StructureGroupoid H} (h: HasGroupoid M G)
 /-- Charts are structomorphisms. -/
 -- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
 lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRestriction G]
-    (h: HasGroupoid M G) : Structomorph G M H := by
+    [HasGroupoid M G] : Structomorph G M H := by
   let s : Opens M := { carrier := e.source, is_open' := e.open_source }
   let t : Opens H := { carrier := e.target, is_open' := e.open_target }
 
-  have : Nonempty s := sorry -- otherwise, trivial
-  have : Nonempty t := sorry -- otherwise, trivial
+  by_cases s = (∅ : Set M)
+  · sorry -- trivial, TODO fill in!
+  have : Nonempty s := nonempty_iff_ne_empty'.mpr h
+  have : Nonempty t := sorry -- easy, `e` is a bijection from `s` to `t`
   -- FIXME: pull out, one I have clean expressions for s and t
   have real_helper : ∀ c' : LocalHomeomorph t H, c' ∈ atlas H t →
       e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c' ∈ G.maximalAtlas s := by
@@ -106,7 +108,7 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
     have congr_to : ∀ y, goal y = r ↑y := by intro; rfl
     have h2 : goal = r := LocalHomeomorph.ext goal r congr_to congr_inv (by simp)
     rw [h2]
-    exact stable_under_restrictions he h s
+    exact stable_under_restrictions he s
   have : Structomorph G s t := {
     e.toHomeomorphSourceTarget with
     mem_groupoid := by
