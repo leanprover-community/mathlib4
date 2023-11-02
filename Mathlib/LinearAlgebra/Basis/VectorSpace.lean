@@ -62,7 +62,7 @@ theorem extend_apply_self (hs : LinearIndependent K (s.restrict id)) (x : hs.ext
 
 @[simp]
 theorem coe_extend (hs : LinearIndependent K (s.restrict id)) :
-  ⇑(Basis.extend hs) = (Set.restrict _ id) := funext (extend_apply_self hs)
+    ⇑(Basis.extend hs) = (Set.restrict _ id) := funext (extend_apply_self hs)
 #align basis.coe_extend Basis.coe_extend
 
 theorem range_extend (hs : LinearIndependent K (s.restrict id)) :
