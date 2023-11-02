@@ -1245,7 +1245,7 @@ variable {R}
 #noalign tensor_product.neg.aux_of
 
 instance neg : Neg (M ⊗[R] N) where
-  neg := Neg.aux R
+  neg := Neg.aux R (M := M) (N := N)
 
 protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
   x.induction_on
