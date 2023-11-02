@@ -46,46 +46,9 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
   have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
   exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
 
--- this lemma is sorely missing to finish the proof
--- actually, mathlib has a very similar and correct version already
-lemma subtypeRestr_trans_eqOnSource {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
-    (s : Opens M) [Nonempty s] : (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s ≈ e.symm ≫ₕ e' := by
-  constructor
-  · -- sources of the restrictions are well-behaved
-    let r := e.subtypeRestr_source s -- also for e'
-    -- presumably, can combine r and r' to conclude both sides have the same source
-    rw [LocalHomeomorph.trans_source, LocalHomeomorph.trans_source]
-    rw [e'.subtypeRestr_source]
-    rw [LocalHomeomorph.symm_source, LocalHomeomorph.symm_source]
-    -- goal is an equality a ∩ b = a' ∩ b'; however, in general a ≠ a' and b ≠ b'
-    -- xxx: analogue of and_congr for intersections?
-    -- actually, is slightly non-trivial:
-    -- naive approach: both sides are equal: well, that's too good to be true
-    -- have : (LocalHomeomorph.subtypeRestr e s).target = e.target := sorry
-    -- have : ((e.subtypeRestr s).symm) ⁻¹' (Subtype.val ⁻¹' e'.source) = e.symm ⁻¹' e'.source := sorry
-    sorry
-  · intro x hx -- functions equal
-    let hx' := hx
-    rw [LocalHomeomorph.trans_source, LocalHomeomorph.symm_source] at hx'
-    let x' : (e.subtypeRestr s).target := ⟨x, mem_of_mem_inter_left hx⟩
-    have : (e.subtypeRestr s).symm x' = e.symm x' := sorry -- should be obvious...
-    have : ∀ x : (e.subtypeRestr s).source, (e.subtypeRestr s) x = e x := by intro; rfl
-    -- proof should be combining these two
-    sorry
-    -- let y : t := sorry
-    -- is this only true for y in e.target?
-    -- let sdf := calc ((e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s) y
-    --   _ = (e'.subtypeRestr s) ((e.subtypeRestr s).symm y) := rfl
-    --   --_ = (e'.subtypeRestr s) (e.symm y) := rfl
-    --   _ = (e') ((e).symm y) := by sorry -- partial progress: rw [← this, ← LocalHomeomorph.coe_coe_symm, ← LocalHomeomorph.symm_toLocalEquiv]
-    --   _ = (e.symm ≫ₕ e') y := rfl
-    -- let r := (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s
-    -- let r' := e.symm ≫ₕ e'
-    -- have : ∀ y : H, r y = r' y := sorry -- just shown
-
 -- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
 -- xxx: is the HasGroupoid part needed? I think it is.
-lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonempty s] :
+lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] :
     e.subtypeRestr s ∈ G.maximalAtlas s := by
   rw [mem_maximalAtlas_iff]
   intro e' he'
@@ -97,25 +60,29 @@ lemma fixed {G : StructureGroupoid H} (h: HasGroupoid M G) (s : Opens M) [Nonemp
   have aux : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
   have aux' : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
   -- the composition is the restriction of the charts
-  -- scifi versions: unsure if these are fully true
-  let r := subtypeRestr_trans_eqOnSource he (chart_mem_atlas H (x : M)) s
-  let r' := subtypeRestr_trans_eqOnSource (chart_mem_atlas H (x : M)) he s
-  -- actually, mathlib already has a version of this
   let r_corr := e.subtypeRestr_symm_trans_subtypeRestr s (chartAt H (x : M))
   let r'_corr := (chartAt H (x : M)).subtypeRestr_symm_trans_subtypeRestr s e
   -- hence the restriction also lies in the groupoid
-  refine ⟨?_, G.eq_on_source aux' r'⟩ -- old code for first part: `G.eq_on_source aux r`
-  let myset := e.target ∩ e.symm ⁻¹' s
-  apply G.locality'
-  intro x hx
-  have : x ∈ myset := sorry -- use eq_on_source above, yields a proof that sources are equal + hx
-  use myset
-  -- xxx: need version of IsOpen.preimage for ContinuousOn; otherwise, this `sorry` is obvious
-  refine ⟨e.open_target.inter (s.2.preimage sorry), ?_⟩
   constructor
-  · exact this
-  · -- finally: argue the RHS in r_corr is in the groupoid: mostly compatible and restriction
-    sorry -- should be routine
+  · have : (e.symm ≫ₕ chartAt H ↑x).restr (e.target ∩ e.symm ⁻¹' s) ∈ G := by
+      let t := (e.target ∩ e.symm ⁻¹' s)
+      have htopen : IsOpen t := by
+        apply IsOpen.inter e.open_target
+        sorry -- easy, as s is open and e.symm is continuous on its source
+        -- xxx: need version of IsOpen.preimage for ContinuousOn, then this is s.2.preimage e.cont_invFun
+      apply G.locality
+      intro x' hx'
+      refine ⟨e.target ∩ e.symm ⁻¹' s, htopen, ?_, ?_ ⟩
+      · rw [LocalHomeomorph.restr_source] at hx'
+        have : x' ∈ interior (e.target ∩ ↑(LocalHomeomorph.symm e) ⁻¹' ↑s) := by
+          sorry -- apply mem_right_inter or so
+        apply (interior_subset this)
+        -- xxx: why can't I rewrite by `htopen.interioreq` or so?
+      · exact closedUnderRestriction' (closedUnderRestriction' aux htopen) htopen
+    exact G.eq_on_source this r_corr
+  · sorry -- completely similar to first part: FIXME extract into general lemma!
+#exit
+
 
 -- TODO: prove this! it's the main load-bearing part of the lemma below!
 -- XXX: this lemma is false as-is; `fixed` is correct
