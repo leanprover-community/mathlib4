@@ -34,7 +34,7 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 `LocalEquiv.refl`    : the identity local equiv
 `LocalEquiv.ofSet`  : the identity on a set `s`
 `EqOnSource`        : equivalence relation describing the "right" notion of equality for local
-                        equivs (see below in implementation notes)
+                      equivs (see below in implementation notes)
 
 ## Implementation notes
 
@@ -899,8 +899,8 @@ theorem trans_symm_self : e.symm.trans e ≈ LocalEquiv.ofSet e.target :=
   trans_self_symm e.symm
 #align local_equiv.trans_symm_self LocalEquiv.trans_symm_self
 
-/-- Two equivalent local equivs are equal when the source and target are univ -/
-theorem eq_of_eq_on_source_univ (e e' : LocalEquiv α β) (h : e ≈ e') (s : e.source = univ)
+/-- Two equivalent local equivs are equal when the source and target are `univ`. -/
+theorem eq_of_eqOnSource_univ (e e' : LocalEquiv α β) (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' := by
   refine LocalEquiv.ext (fun x => ?_) (fun x => ?_) h.1
   · apply h.2
@@ -909,7 +909,7 @@ theorem eq_of_eq_on_source_univ (e e' : LocalEquiv α β) (h : e ≈ e') (s : e.
   · apply h.symm'.2
     rw [symm_source, t]
     exact mem_univ _
-#align local_equiv.eq_of_eq_on_source_univ LocalEquiv.eq_of_eq_on_source_univ
+#align local_equiv.eq_of_eq_on_source_univ LocalEquiv.eq_of_eqOnSource_univ
 
 section Prod
 
