@@ -160,10 +160,9 @@ variable {p q : R[X]} (x : A)
 
 This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
 @[simps!]
-def eval₂AlgHom' (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) :
-      A[X] →ₐ[R] B :=
-  { eval₂RingHom' f b hf with
-    commutes' := fun _ => (eval₂_C _ _).trans (f.commutes _) }
+def eval₂AlgHom' (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
+  toRingHom := eval₂RingHom' f b hf
+  commutes' _ := (eval₂_C _ _).trans (f.commutes _)
 
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
