@@ -343,17 +343,41 @@ lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 
 theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
-  rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace]
-  intro s
   classical
-  induction' s using Finset.induction_on with μ₁ s hμ₁ ih; simp
-  rw [Finset.supIndep_iff_disjoint_erase]
-  intro μ₂ hμ₂
-  rw [disjoint_iff, Submodule.eq_bot_iff]
-  rintro m ⟨hm : m ∈ ⨆ k, f.generalizedEigenspace μ₂ k,
-    hm' : m ∈ ((insert μ₁ s).erase μ₂).sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k⟩
-  -- easy inductive step using `disjoint_generalizedEigenspace`
-  sorry
+  suffices ∀ μ (s : Finset R) (_ : μ ∉ s), Disjoint (⨆ k, f.generalizedEigenspace μ k)
+      (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) by
+    simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace,
+      Finset.supIndep_iff_disjoint_erase]
+    exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
+  intro μ₁ s
+  induction' s using Finset.induction_on with μ₂ s _ ih; simp
+  intro hμ₁₂
+  obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
+  specialize ih hμ₁
+  rw [Finset.sup_insert, disjoint_iff, Submodule.eq_bot_iff]
+  rintro x ⟨hx, hx'⟩
+  simp only [SetLike.mem_coe] at hx hx'
+  suffices x ∈ ⨆ k, generalizedEigenspace f μ₂ k by
+    rw [← Submodule.mem_bot (R := R), ← (f.disjoint_iSup_generalizedEigenspace hμ₁₂).eq_bot]
+    exact ⟨hx, this⟩
+  obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.mp hx'; clear hx'
+  let g := f - algebraMap R (End R M) μ₂
+  obtain ⟨k : ℕ, hk : (g ^ k) y = 0⟩ := by simpa using hy
+  have hyz : (g ^ k) (y + z) ∈
+      (⨆ k, generalizedEigenspace f μ₁ k) ⊓ s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k := by
+    refine ⟨f.mapsTo_iSup_generalizedEigenspace_of_comm ?_ μ₁ hx, ?_⟩
+    · exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
+    · rw [SetLike.mem_coe, map_add, hk, zero_add]
+      suffices (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k).map (g ^ k) ≤
+          s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k by exact this (Submodule.mem_map_of_mem hz)
+      simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := R), Submodule.map_iSup (ι := _ ∈ s)]
+      refine iSup₂_mono fun μ _ ↦ ?_
+      rintro - ⟨u, hu, rfl⟩
+      refine f.mapsTo_iSup_generalizedEigenspace_of_comm ?_ μ hu
+      exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ k
+  rw [ih.eq_bot, Submodule.mem_bot] at hyz
+  simp_rw [Submodule.mem_iSup_of_chain, mem_generalizedEigenspace]
+  exact ⟨k, hyz⟩
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
