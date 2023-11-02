@@ -97,18 +97,16 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
     obtain ⟨x, hc'⟩ := chartOn_open_eq' t hc'
     -- As H has only one chart, this chart is the identity: i.e., c' is the inclusion.
     rw [hc', (chartAt_self_eq)]
-    -- simplify: perhaps not needed, but definitely ok
+    -- Simplify slightly.
     rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
-
-    -- now: argue that our expression equals this chart above
-    let r := LocalHomeomorph.subtypeRestr e s
+    -- Argue that our expression equals this chart above, at least on its source.
+    let r := e.subtypeRestr s
     set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
-    -- TODO: complete this. Had a long calc block towards this, not really working...
-    have congr_inv : ∀ y, goal.symm y = r.symm y := by sorry
-    have congr_to : ∀ y, goal y = r ↑y := by intro; rfl
-    have h2 : goal = r := LocalHomeomorph.ext goal r congr_to congr_inv (by simp)
-    rw [h2]
-    exact stable_under_restrictions he s
+    have h3: goal ≈ r := (goal.eqOnSource_iff r).mpr ⟨by simp, by intro x'' hx''; rfl⟩
+    -- FIXME: extract as a separate lemma and prove it
+    -- should be simple; for membership in the atlas, that's G.eq_on_source
+    have lem : r ∈ G.maximalAtlas s → goal ≈ r → goal ∈ G.maximalAtlas s := sorry
+    exact lem (stable_under_restrictions he s) h3
   have : Structomorph G s t := {
     e.toHomeomorphSourceTarget with
     mem_groupoid := by
