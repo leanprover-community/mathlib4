@@ -342,7 +342,7 @@ noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
     (by dsimp; simp only [id_comp, comp_id, S.op_δ])
 
 /-- Exactness of `L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂`. -/
-lemma exact_L₂' : S.L₂'.Exact := by
+lemma L₂'_exact : S.L₂'.Exact := by
   rw [← exact_op_iff, exact_iff_of_iso S.L₂'OpIso]
   exact S.op.exact_L₁'
 
