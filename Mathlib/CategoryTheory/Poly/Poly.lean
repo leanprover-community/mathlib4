@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2015 David Spivak, Shaowei Lin. All rights reserved.
+Copyright (c) 2023 David Spivak, Shaowei Lin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Spivak, Shaowei Lin
 -/
@@ -10,7 +10,6 @@ import Mathlib.CategoryTheory.Category.Basic
 universe u v
 
 namespace CategoryTheory
-
 
 structure Poly where
   pos : Type
@@ -113,8 +112,12 @@ instance PolyCat.categoryStruct :
   id _ := polyid
   comp f g := f ; g
 
-instance PolyCat.category : Category Poly := by
-  refine' { id_comp := _, comp_id := _, assoc := _ } <;> intros <;> rfl
+instance PolyCat.category : Category Poly where
+  id_comp := by intros; rfl
+  comp_id := by intros; rfl
+  assoc   := by intros; rfl
+
+
 
 -------- Substitution product ----------
 
