@@ -33,13 +33,9 @@ theorem birthday :
   -- `simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]`
   -- but after leanprover/lean4#2790 that triggers a max recursion depth exception.
   -- As a workaround, we make some of the reduction steps more explicit.
-  have h₁ : Nat.descFactorial 365 23 =
-     42200819302092359872395663074908957253749760700776448000000 := by rfl
-  have h₂ : Nat.descFactorial 365 22 =
-     123034458606683264934098143075536318524051780468736000000 := by rfl
-  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin, h₁]
-  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin, h₂]
-  norm_num
+  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
+  rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
+  simp only
 #align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
