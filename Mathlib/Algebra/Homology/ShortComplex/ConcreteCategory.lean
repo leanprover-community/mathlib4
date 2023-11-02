@@ -16,6 +16,8 @@ if and only if it is so after applying the functor `forget₂ C Ab`.
 
 namespace CategoryTheory
 
+open Limits
+
 variable {C : Type*} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
 
 @[simp]
@@ -26,10 +28,10 @@ lemma ShortComplex.zero_apply
   erw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
-section abelian
+section preadditive
 
-variable [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
-  (S : ShortComplex C)
+variable [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
+  [HasZeroObject C] (S : ShortComplex C)
 
 lemma Abelian.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
@@ -49,10 +51,11 @@ lemma Abelian.epi_iff_injective {X Y : C} (f : X ⟶ Y) :
 
 namespace ShortComplex
 
-lemma exact_iff_exact_map_forget₂ : S.Exact ↔ (S.map (forget₂ C Ab)).Exact :=
+lemma exact_iff_exact_map_forget₂ [S.HasHomology] :
+    S.Exact ↔ (S.map (forget₂ C Ab)).Exact :=
   (S.exact_map_iff_of_faithful (forget₂ C Ab)).symm
 
-lemma exact_iff_of_concreteCategory :
+lemma exact_iff_of_concreteCategory [S.HasHomology] :
     S.Exact ↔ ∀ (x₂ : (forget₂ C Ab).obj S.X₂) (_ : ((forget₂ C Ab).map S.g) x₂ = 0),
       ∃ (x₁ : (forget₂ C Ab).obj S.X₁), ((forget₂ C Ab).map S.f) x₁ = x₂ := by
   rw [S.exact_iff_exact_map_forget₂, ab_exact_iff]
@@ -72,6 +75,6 @@ lemma ShortExact.surjective_g (hS : S.ShortExact) :
 
 end ShortComplex
 
-end abelian
+end preadditive
 
 end CategoryTheory
