@@ -2146,6 +2146,12 @@ theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) : ENNReal.ofReal p ≤ EN
   by rw [ENNReal.ofReal, ENNReal.ofReal, coe_le_coe, Real.toNNReal_le_toNNReal_iff h]
 #align ennreal.of_real_le_of_real_iff ENNReal.ofReal_le_ofReal_iff
 
+lemma ofReal_le_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p ≤ .ofReal q ↔ p ≤ q ∨ p ≤ 0 :=
+  coe_le_coe.trans Real.toNNReal_le_toNNReal_iff'
+
+lemma ofReal_lt_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p < .ofReal q ↔ p < q ∧ 0 < q :=
+  coe_lt_coe.trans Real.toNNReal_lt_toNNReal_iff'
+
 @[simp]
 theorem ofReal_eq_ofReal_iff {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     ENNReal.ofReal p = ENNReal.ofReal q ↔ p = q := by

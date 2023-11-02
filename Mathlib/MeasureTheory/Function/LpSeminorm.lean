@@ -43,7 +43,7 @@ open TopologicalSpace MeasureTheory Filter
 
 open NNReal ENNReal BigOperators Topology MeasureTheory
 
-variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
+variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
 namespace MeasureTheory
@@ -68,40 +68,48 @@ deduce it for `snorm`, and translate it in terms of `Memℒp`.
 
 section ℒpSpaceDefinition
 
-/-- `(∫ ‖f a‖^q ∂μ) ^ (1/q)`, which is a seminorm on the space of measurable functions for which
-this quantity is finite -/
-def snorm' {_ : MeasurableSpace α} (f : α → F) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
-  (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) ^ (1 / q)
-#align measure_theory.snorm' MeasureTheory.snorm'
-
-/-- seminorm for `ℒ∞`, equal to the essential supremum of `‖f‖`. -/
-def snormEssSup {_ : MeasurableSpace α} (f : α → F) (μ : Measure α) :=
-  essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ
-#align measure_theory.snorm_ess_sup MeasureTheory.snormEssSup
-
 /-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. -/
-def snorm {_ : MeasurableSpace α} (f : α → F) (p : ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
-  if p = 0 then 0 else if p = ∞ then snormEssSup f μ else snorm' f (ENNReal.toReal p) μ
+def snorm (f : α → F) (p : ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
+  if p = 0 then μ f.support
+  else if p = ∞ then essSup (‖f ·‖₊ : α → ℝ≥0∞) μ
+  else if p < 1 then ∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p.toReal ∂μ
+  else (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal)
 #align measure_theory.snorm MeasureTheory.snorm
 
-theorem snorm_eq_snorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → F} :
-    snorm f p μ = snorm' f (ENNReal.toReal p) μ := by simp [snorm, hp_ne_zero, hp_ne_top]
-#align measure_theory.snorm_eq_snorm' MeasureTheory.snorm_eq_snorm'
+#noalign measure_theory.snorm_eq_snorm'
 
-theorem snorm_eq_lintegral_rpow_nnnorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → F} :
-    snorm f p μ = (∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
-  rw [snorm_eq_snorm' hp_ne_zero hp_ne_top, snorm']
-#align measure_theory.snorm_eq_lintegral_rpow_nnnorm MeasureTheory.snorm_eq_lintegral_rpow_nnnorm
-
-theorem snorm_one_eq_lintegral_nnnorm {f : α → F} : snorm f 1 μ = ∫⁻ x, ‖f x‖₊ ∂μ := by
-  simp_rw [snorm_eq_lintegral_rpow_nnnorm one_ne_zero ENNReal.coe_ne_top, ENNReal.one_toReal,
-    one_div_one, ENNReal.rpow_one]
-#align measure_theory.snorm_one_eq_lintegral_nnnorm MeasureTheory.snorm_one_eq_lintegral_nnnorm
+@[simp] lemma snorm_exponent_zero (f : α → F) : snorm f 0 μ = μ f.support := if_pos rfl
 
 @[simp]
-theorem snorm_exponent_top {f : α → F} : snorm f ∞ μ = snormEssSup f μ := by simp [snorm]
+lemma snorm_exponent_top (f : α → F) : snorm f ∞ μ = essSup (‖f ·‖₊ : α → ℝ≥0∞) μ := rfl
 #align measure_theory.snorm_exponent_top MeasureTheory.snorm_exponent_top
+
+lemma snorm_of_one_le_ne_top (f : α → F) (hp_one_le : 1 ≤ p) (hp_ne_top : p ≠ ∞) (μ : Measure α) :
+    snorm f p μ = (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
+  simp [snorm, hp_ne_top, hp_one_le.not_lt, (one_pos.trans_le hp_one_le).ne']
+#align measure_theory.snorm_eq_lintegral_rpow_nnnorm MeasureTheory.snorm_of_one_le_ne_top
+
+lemma snorm_of_ne_zero_le_one (f : α → F) (hp_ne_zero : p ≠ 0) (hp_le_one : p ≤ 1)
+    (μ : Measure α) : snorm f p μ = ∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p.toReal ∂μ := by
+  rcases hp_le_one.eq_or_lt with rfl | _ <;>
+    simp [*, snorm, ne_top_of_le_ne_top coe_ne_top hp_le_one]
+
+@[simp]
+lemma snorm_exponent_one (f : α → F) : snorm f 1 μ = ∫⁻ x, ‖f x‖₊ ∂μ := by
+  simp [snorm_of_one_le_ne_top]
+#align measure_theory.snorm_one_eq_lintegral_nnnorm MeasureTheory.snorm_exponent_one
+
+@[simp]
+theorem snorm_zero' : snorm (fun _ : α => (0 : F)) p μ = 0 := by
+  rcases eq_or_ne p 0 with rfl | hp0; · simp
+  rcases eq_or_ne p ∞ with rfl | hp_top; · simp [Pi.zero_def, EventuallyEq.rfl]
+  by_cases hlt : p < 1 <;> simp [snorm, toReal_pos, *]
+#align measure_theory.snorm_zero' MeasureTheory.snorm_zero'
+
+@[simp]
+theorem snorm_zero : snorm (0 : α → F) p μ = 0 := snorm_zero'
+#align measure_theory.snorm_zero MeasureTheory.snorm_zero
 
 /-- The property that `f:α→E` is ae strongly measurable and `(∫ ‖f a‖^p ∂μ)^(1/p)` is finite
 if `p < ∞`, or `essSup f < ∞` if `p = ∞`. -/
@@ -122,10 +130,10 @@ theorem Memℒp.aestronglyMeasurable {f : α → E} {p : ℝ≥0∞} (h : Memℒ
   h.1
 #align measure_theory.mem_ℒp.ae_strongly_measurable MeasureTheory.Memℒp.aestronglyMeasurable
 
-theorem lintegral_rpow_nnnorm_eq_rpow_snorm' {f : α → F} (hq0_lt : 0 < q) :
-    (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) = snorm' f q μ ^ q := by
-  rw [snorm', ← ENNReal.rpow_mul, one_div, inv_mul_cancel, ENNReal.rpow_one]
-  exact (ne_of_lt hq0_lt).symm
+theorem lintegral_rpow_nnnorm_eq_rpow_snorm {f : α → F} {q : ℝ} (hq1_lt : 1 ≤ q) :
+    (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) = snorm f (.ofReal q) μ ^ q := by
+  rw [snorm_of_one_le_ne_top, toReal_ofReal, ← ENNReal.rpow_mul, one_div_mul_cancel,
+    ENNReal.rpow_one] <;> try { linarith } <;> simp
 #align measure_theory.lintegral_rpow_nnnorm_eq_rpow_snorm' MeasureTheory.lintegral_rpow_nnnorm_eq_rpow_snorm'
 
 end ℒpSpaceDefinition
@@ -196,20 +204,6 @@ theorem snormEssSup_zero : snormEssSup (0 : α → F) μ = 0 := by
   simp_rw [snormEssSup, Pi.zero_apply, nnnorm_zero, ENNReal.coe_zero, ← ENNReal.bot_eq_zero]
   exact essSup_const_bot
 #align measure_theory.snorm_ess_sup_zero MeasureTheory.snormEssSup_zero
-
-@[simp]
-theorem snorm_zero : snorm (0 : α → F) p μ = 0 := by
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases h_top : p = ∞
-  · simp only [h_top, snorm_exponent_top, snormEssSup_zero]
-  rw [← Ne.def] at h0
-  simp [snorm_eq_snorm' h0 h_top, ENNReal.toReal_pos h0 h_top]
-#align measure_theory.snorm_zero MeasureTheory.snorm_zero
-
-@[simp]
-theorem snorm_zero' : snorm (fun _ : α => (0 : F)) p μ = 0 := by convert snorm_zero (F := F)
-#align measure_theory.snorm_zero' MeasureTheory.snorm_zero'
 
 theorem zero_memℒp : Memℒp (0 : α → E) p μ :=
   ⟨aestronglyMeasurable_zero, by
