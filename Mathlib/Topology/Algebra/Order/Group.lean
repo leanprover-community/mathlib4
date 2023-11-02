@@ -93,11 +93,7 @@ protected theorem ContinuousOn.abs (h : ContinuousOn f s) : ContinuousOn (fun x 
   fun x hx => (h x hx).abs
 #align continuous_on.abs ContinuousOn.abs
 
--- The statement here used to be:
--- `Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0)`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] 0`
-theorem tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (nhdsWithin 0 {0}ᶜ) (𝓝[>] 0) :=
+theorem tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0) :=
   (continuous_abs.tendsto' (0 : G) 0 abs_zero).inf <|
     tendsto_principal_principal.2 fun _x => abs_pos.2
 #align tendsto_abs_nhds_within_zero tendsto_abs_nhdsWithin_zero

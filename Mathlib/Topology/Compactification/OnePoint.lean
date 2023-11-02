@@ -300,21 +300,12 @@ theorem comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = �
 
 /-- If `x` is not an isolated point of `X`, then `x : OnePoint X` is not an isolated point
 of `OnePoint X`. -/
--- The statement here used to be:
--- `NeBot (𝓝[≠] (x : OnePoint X))`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] (x : OnePoint X)`
 instance nhdsWithin_compl_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] :
-    NeBot (nhdsWithin (x : OnePoint X) {(x : OnePoint X)}ᶜ) := by
+    NeBot (𝓝[≠] (x : OnePoint X)) := by
   simpa [nhdsWithin_coe, preimage, coe_eq_coe] using h.map some
 #align alexandroff.nhds_within_compl_coe_ne_bot OnePoint.nhdsWithin_compl_coe_neBot
 
--- The statement here used to be:
--- `𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X)`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] (∞ : OnePoint X)`
-theorem nhdsWithin_compl_infty_eq :
-    (nhdsWithin (∞ : OnePoint X) {(∞ : OnePoint X)}ᶜ) = map (↑) (coclosedCompact X) := by
+theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
   refine' (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) _ _
   · rintro s ⟨hs, hso⟩
     refine' ⟨_, (isOpen_iff_of_mem hs).mp hso, _⟩
@@ -325,12 +316,7 @@ theorem nhdsWithin_compl_infty_eq :
 #align alexandroff.nhds_within_compl_infty_eq OnePoint.nhdsWithin_compl_infty_eq
 
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
--- The statement here used to be:
--- `NeBot (𝓝[≠] (∞ : OnePoint X))`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] (x : α)`
-instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] :
-    NeBot (nhdsWithin (∞ : OnePoint X) {(∞ : OnePoint X)}ᶜ) := by
+instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
   rw [nhdsWithin_compl_infty_eq]
   infer_instance
 #align alexandroff.nhds_within_compl_infty_ne_bot OnePoint.nhdsWithin_compl_infty_neBot

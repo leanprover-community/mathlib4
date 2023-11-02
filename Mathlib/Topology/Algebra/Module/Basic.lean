@@ -83,15 +83,10 @@ This lemma is not an instance because Lean would need to find `[ContinuousSMul ?
 unknown `?m_1`. We register this as an instance for `R = ℝ` in `Real.punctured_nhds_module_neBot`.
 One can also use `haveI := Module.punctured_nhds_neBot R M` in a proof.
 -/
--- The hypothesis here used to be:
--- `[NeBot (𝓝[≠] (0 : R))]`
--- After leanprover/lean4#2790, this triggers a max recursion depth exception.
--- As a workaround, we spell out the notation `𝓝[≠] (0 : R)`
-theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (nhdsWithin (0 : R) {(0 : R)}ᶜ)]
-    [NoZeroSMulDivisors R M] (x : M) : NeBot (𝓝[≠] x) := by
+theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [NoZeroSMulDivisors R M]
+    (x : M) : NeBot (𝓝[≠] x) := by
   rcases exists_ne (0 : M) with ⟨y, hy⟩
-  suffices : Tendsto (fun c : R => x + c • y) (nhdsWithin (0 : R) {(0 : R)}ᶜ) (𝓝[≠] x)
-  · exact this.neBot
+  suffices : Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x); exact this.neBot
   refine' Tendsto.inf _ (tendsto_principal_principal.2 <| _)
   · convert tendsto_const_nhds.add ((@tendsto_id R _).smul_const y)
     rw [zero_smul, add_zero]
