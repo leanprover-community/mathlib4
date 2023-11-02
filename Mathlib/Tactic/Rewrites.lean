@@ -85,6 +85,7 @@ def localHypotheses (except : List FVarId := []) : MetaM (Array (Expr × Bool ×
   for h in r do
     if except.contains h.fvarId! then continue
     let (_, _, type) ← forallMetaTelescopeReducing (← inferType h)
+    let type ← whnfR type
     match type.getAppFnArgs with
     | (``Eq, #[_, lhs, rhs])
     | (``Iff, #[lhs, rhs]) => do
