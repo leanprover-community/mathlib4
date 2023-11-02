@@ -36,10 +36,10 @@ needs to formalize the "dyadic induction", then prove that the resulting family 
 monotone). So, we formalize a slightly different proof.
 
 Let `Urysohns.CU` be the type of pairs `(C, U)` of a closed set `C` and an open set `U` such that
-`C ⊆ U`. Since `X` is a normal topological space, for each `c : CU P` there exists an open set `u`
+`C ⊆ U`. Since `X` is a normal topological space, for each `c : CU` there exists an open set `u`
 such that `c.C ⊆ u ∧ closure u ⊆ c.U`. We define `c.left` and `c.right` to be `(c.C, u)` and
 `(closure u, c.U)`, respectively. Then we define a family of functions
-`Urysohns.CU.approx (c : Urysohns.CU P) (n : ℕ) : X → ℝ` by recursion on `n`:
+`Urysohns.CU.approx (c : Urysohns.CU) (n : ℕ) : X → ℝ` by recursion on `n`:
 
 * `c.approx 0` is the indicator of `c.Uᶜ`;
 * `c.approx (n + 1) x = (c.left.approx n x + c.right.approx n x) / 2`.
