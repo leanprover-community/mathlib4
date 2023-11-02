@@ -33,7 +33,7 @@ section preadditive
 variable [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
   [HasZeroObject C] (S : ShortComplex C)
 
-lemma Abelian.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
+lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
   rw [← AddCommGroupCat.mono_iff_injective]
   constructor
@@ -41,7 +41,7 @@ lemma Abelian.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     infer_instance
   · apply Functor.mono_of_mono_map
 
-lemma Abelian.epi_iff_injective {X Y : C} (f : X ⟶ Y) :
+lemma Preadditive.epi_iff_injective {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget₂ C Ab).map f) := by
   rw [← AddCommGroupCat.epi_iff_surjective]
   constructor
@@ -65,12 +65,12 @@ variable {S}
 
 lemma ShortExact.injective_f (hS : S.ShortExact) :
     Function.Injective ((forget₂ C Ab).map S.f) := by
-  rw [← Abelian.mono_iff_injective]
+  rw [← Preadditive.mono_iff_injective]
   exact hS.mono_f
 
 lemma ShortExact.surjective_g (hS : S.ShortExact) :
     Function.Surjective ((forget₂ C Ab).map S.g) := by
-  rw [← Abelian.epi_iff_injective]
+  rw [← Preadditive.epi_iff_injective]
   exact hS.epi_g
 
 end ShortComplex
