@@ -225,6 +225,18 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
     (polyEquivTensor R (Matrix n n R)).symm
 #align mat_poly_equiv matPolyEquiv
 
+@[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
+  simp [matPolyEquiv, ←C_eq_algebraMap]
+
+@[simp] theorem matPolyEquiv_symm_X :
+    matPolyEquiv.symm X = Matrix.scalar n (X : R[X]) := by
+  suffices (Matrix.map 1 fun x ↦ X * algebraMap R R[X] x) = scalar n X by
+    simpa [matPolyEquiv]
+  rw [←Matrix.diagonal_one, Matrix.diagonal_map, _root_.map_one, mul_one, coe_scalar]
+  · dsimp only
+    rw [smul_eq_diagonal_mul, mul_one]
+  · rw [_root_.map_zero, mul_zero]
+
 open Finset
 
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
