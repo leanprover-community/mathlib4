@@ -811,6 +811,7 @@ theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R']
   AlgHom.toLinearMap_injective <|
     linearMap_ext (fun _r => (f.commutes _).trans (g.commutes _).symm) h
 #align triv_sq_zero_ext.alg_hom_ext TrivSqZeroExt.algHom_ext
+
 @[ext]
 theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A⦄
     (hinl : f.comp (inlAlgHom S R M) = g.comp (inlAlgHom S R M))
@@ -891,7 +892,7 @@ theorem lift_comp_inrHom (f : R →ₐ[S] A) (g : M →ₗ[S] A)
 /-- When applied to `inr` and `inl` themselves, `lift` is the identity. -/
 @[simp]
 theorem lift_inlAlgHom_inrHom :
-  lift (inlAlgHom _ _ _) (inrHom R M |>.restrictScalars S)
+    lift (inlAlgHom _ _ _) (inrHom R M |>.restrictScalars S)
       (inr_mul_inr R) (fun _ _ => (inl_mul_inr _ _).symm) (fun _ _ => (inr_mul_inl _ _).symm) =
     AlgHom.id S (tsze R M) :=
   algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
