@@ -448,7 +448,6 @@ theorem lift_adjoin (K : IntermediateField F E) (S : Set K) :
     lift (adjoin F S) = adjoin F (Subtype.val '' S) :=
   adjoin_map _ _ _
 
-@[simp, priority 900]
 theorem lift_adjoin_simple (K : IntermediateField F E) (α : K) :
     lift (adjoin F {α}) = adjoin F {α.1} := by
   simp only [lift_adjoin, Set.image_singleton]
