@@ -642,29 +642,29 @@ namespace Homotopy
 
 variable {φ₁ φ₂ S₁ S₂}
 
-lemma congr_leftHomologyMap' (h : Homotopy φ₁ φ₂) (h₁ : S₁.LeftHomologyData)
+lemma leftHomologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.LeftHomologyData)
     (h₂ : S₂.LeftHomologyData) : leftHomologyMap' φ₁ h₁ h₂ = leftHomologyMap' φ₂ h₁ h₂ := by
   rw [h.eq_add_nullHomotopic, leftHomologyMap'_add, leftHomologyMap'_nullHomotopic, add_zero]
 
-lemma congr_rightHomologyMap' (h : Homotopy φ₁ φ₂) (h₁ : S₁.RightHomologyData)
+lemma rightHomologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.RightHomologyData)
     (h₂ : S₂.RightHomologyData) : rightHomologyMap' φ₁ h₁ h₂ = rightHomologyMap' φ₂ h₁ h₂ := by
   rw [h.eq_add_nullHomotopic, rightHomologyMap'_add, rightHomologyMap'_nullHomotopic, add_zero]
 
-lemma congr_homologyMap' (h : Homotopy φ₁ φ₂) (h₁ : S₁.HomologyData)
+lemma homologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.HomologyData)
     (h₂ : S₂.HomologyData) : homologyMap' φ₁ h₁ h₂ = homologyMap' φ₂ h₁ h₂ := by
   rw [h.eq_add_nullHomotopic, homologyMap'_add, homologyMap'_nullHomotopic, add_zero]
 
-lemma congr_leftHomologyMap (h : Homotopy φ₁ φ₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+lemma leftHomologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     leftHomologyMap φ₁ = leftHomologyMap φ₂ :=
-  h.congr_leftHomologyMap' _ _
+  h.leftHomologyMap'_congr _ _
 
-lemma congr_rightHomologyMap (h : Homotopy φ₁ φ₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+lemma rightHomologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
     rightHomologyMap φ₁ = rightHomologyMap φ₂ :=
-  h.congr_rightHomologyMap' _ _
+  h.rightHomologyMap'_congr _ _
 
-lemma congr_homologyMap (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasHomology] :
+lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasHomology] :
     homologyMap φ₁ = homologyMap φ₂ :=
-  h.congr_homologyMap' _ _
+  h.homologyMap'_congr _ _
 
 end Homotopy
 
