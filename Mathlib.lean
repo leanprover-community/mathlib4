@@ -1348,6 +1348,7 @@ import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Equivalence
+import Mathlib.Condensed.Explicit
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
