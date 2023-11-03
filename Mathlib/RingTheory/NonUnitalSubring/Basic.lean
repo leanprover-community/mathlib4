@@ -611,12 +611,9 @@ theorem center_toNonUnitalSubsemiring :
     (center R).toNonUnitalSubsemiring = NonUnitalSubsemiring.center R :=
   rfl
 
-/-- The center is commutative and associative.
-
-This is not an instance as it forms a non-defeq diamond with
-`NonUnitalSubringClass.tNonUnitalring ` in the `npow` field. -/
-abbrev center.instNonUnitalCommRing' : NonUnitalCommRing (center R) :=
-  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring' R,
+/-- The center is commutative and associative. -/
+instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
+  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
     inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
 
 end NonUnitalNonAssocRing
@@ -624,14 +621,9 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
-/-- The center is commutative. -/
-instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
-  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring,
-    inferInstanceAs <| NonUnitalRing (center R) with }
-
--- no instance diamond, unlike the primed version
+-- no instance diamond, unlike the unital version
 example :
-    center.instNonUnitalCommRing.toNonUnitalRing =
+    (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) :=
   rfl
 

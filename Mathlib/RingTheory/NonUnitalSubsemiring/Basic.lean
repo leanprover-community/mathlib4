@@ -489,12 +489,8 @@ theorem center_toSubsemigroup :
   rfl
 #align non_unital_subsemiring.center_to_subsemigroup NonUnitalSubsemiring.center_toSubsemigroup
 
-/-- The center is commutative and associative.
-
-This is not an instance as it forms a non-defeq diamond with
-`NonUnitalSubsemiringClass.toNonUnitalSemiring ` in the `npow` field. -/
-abbrev center.instNonUnitalCommSemiring' :
-    NonUnitalCommSemiring (center R) :=
+/-- The center is commutative and associative. -/
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
   { Subsemigroup.center.commSemigroup,
     NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring (center R) with }
 
@@ -502,15 +498,9 @@ end NonUnitalNonAssocSemiring
 
 section NonUnitalSemiring
 
-/-- The center is commutative. -/
-instance center.instNonUnitalCommSemiring {R} [NonUnitalSemiring R] :
-    NonUnitalCommSemiring (center R) :=
-  { Subsemigroup.center.commSemigroup,
-    inferInstanceAs <| NonUnitalSemiring (center R) with }
-
--- no instance diamond, unlike the primed version
+-- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
-    center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+    (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
       NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
   rfl
 

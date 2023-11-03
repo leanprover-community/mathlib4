@@ -74,7 +74,7 @@ instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalSub
 instance instSMulMemClass : SMulMemClass (NonUnitalSubalgebra R A) R A where
   smul_mem := @fun s => s.smul_mem'
 
-instance instNonUnitalSubringClass {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A]
+instance instNonUnitalSubringClass {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A]
     [Module R A] : NonUnitalSubringClass (NonUnitalSubalgebra R A) A :=
   { NonUnitalSubalgebra.instNonUnitalSubsemiringClass with
     neg_mem := @fun _ x hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
@@ -141,27 +141,30 @@ theorem copy_eq (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.co
 variable (S : NonUnitalSubalgebra R A)
 
 /-- A non-unital subalgebra over a ring is also a `Subring`. -/
-def toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
+def toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A] [Module R A]
     (S : NonUnitalSubalgebra R A) : NonUnitalSubring A where
   toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
   neg_mem' := neg_mem (s := S)
 
 @[simp]
-theorem mem_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
-    {S : NonUnitalSubalgebra R A} {x} : x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
+theorem mem_toNonUnitalSubring {R : Type u} {A : Type v}
+    [CommRing R] [NonUnitalNonAssocRing A] [Module R A] {S : NonUnitalSubalgebra R A} {x} :
+    x ∈ S.toNonUnitalSubring ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
-theorem coe_toNonUnitalSubring {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
-    (S : NonUnitalSubalgebra R A) : (↑S.toNonUnitalSubring : Set A) = S :=
+theorem coe_toNonUnitalSubring {R : Type u} {A : Type v}
+    [CommRing R] [NonUnitalNonAssocRing A] [Module R A] (S : NonUnitalSubalgebra R A) :
+    (↑S.toNonUnitalSubring : Set A) = S :=
   rfl
 
-theorem toNonUnitalSubring_injective {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A]
-    [Module R A] :
+theorem toNonUnitalSubring_injective {R : Type u} {A : Type v}
+    [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
     Function.Injective (toNonUnitalSubring : NonUnitalSubalgebra R A → NonUnitalSubring A) :=
   fun S T h => ext fun x => by rw [← mem_toNonUnitalSubring, ← mem_toNonUnitalSubring, h]
 
-theorem toNonUnitalSubring_inj {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A] [Module R A]
+theorem toNonUnitalSubring_inj {R : Type u} {A : Type v}
+    [CommRing R] [NonUnitalNonAssocRing A] [Module R A]
     {S U : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = U.toNonUnitalSubring ↔ S = U :=
   toNonUnitalSubring_injective.eq_iff
 
@@ -967,16 +970,13 @@ def center : NonUnitalSubalgebra R A :=
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
-/--
-The center of a non-unital algebra is a non-unital commutative semiring
--/
-abbrev center.instNonUnitalCommSemiring' : NonUnitalCommSemiring (center R A) :=
-  NonUnitalSubsemiring.center.instNonUnitalCommSemiring' _
+/-- The center of a non-unital algebra is a commutative and associative -/
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
+  NonUnitalSubsemiring.center.instNonUnitalCommSemiring _
 
-end NonUnitalNonAssocSemiring
-
-variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
-  [SMulCommClass R A A]
+instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
+  NonUnitalSubring.center.instNonUnitalCommRing _
 
 @[simp]
 theorem center_toNonUnitalSubsemiring :
@@ -988,19 +988,23 @@ theorem center_toNonUnitalSubsemiring :
     (center R A).toNonUnitalSubring = NonUnitalSubring.center A :=
   rfl
 
+end NonUnitalNonAssocSemiring
+
+variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
+  [SMulCommClass R A A]
+
+-- no instance diamond, as the `npow` field isn't present in the non-unital case.
+example :
+    center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) :=
+  rfl
+
 @[simp]
 theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : center R A = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ A)
 
 variable {R A}
-
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  NonUnitalSubsemiring.center.instNonUnitalCommSemiring
-
-instance center.instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  NonUnitalSubring.center.instNonUnitalCommRing
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff
