@@ -79,6 +79,7 @@ theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
   ∑ x in (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
   convert Group.nat_card_center_add_sum_card_noncenter_eq_card G using 2
   · simp
-  · rw [← finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype, ← Finset.sum_set_coe]
+  · rw [← finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype,
+      ← Finset.sum_set_coe]
     simp
   · simp

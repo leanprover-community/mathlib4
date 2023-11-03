@@ -413,7 +413,9 @@ protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one 
   { hf.semigroup f mul, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
     npow_zero := hf.forall.2 fun x => by dsimp only; erw [← npow, pow_zero, ← one],
-    npow_succ := fun n => hf.forall.2 fun x => by dsimp only; erw [← npow, pow_succ, ← npow, ← mul] }
+    npow_succ := fun n => hf.forall.2 fun x => by
+      dsimp only
+      erw [← npow, pow_succ, ← npow, ← mul] }
 #align function.surjective.monoid Function.Surjective.monoid
 #align function.surjective.add_monoid Function.Surjective.addMonoid
 

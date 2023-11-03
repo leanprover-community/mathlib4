@@ -230,7 +230,8 @@ def strInv : A.1 ⟶ F.obj A.1 :=
 
 #align category_theory.endofunctor.algebra.initial.str_inv CategoryTheory.Endofunctor.Algebra.Initial.strInv
 
-theorem left_inv' : ⟨strInv h ≫ A.str, by rw [← Category.assoc, F.map_comp, strInv, ← Hom.h]⟩ = 𝟙 A :=
+theorem left_inv' :
+    ⟨strInv h ≫ A.str, by rw [← Category.assoc, F.map_comp, strInv, ← Hom.h]⟩ = 𝟙 A :=
   Limits.IsInitial.hom_ext h _ (𝟙 A)
 #align category_theory.endofunctor.algebra.initial.left_inv' CategoryTheory.Endofunctor.Algebra.Initial.left_inv'
 

@@ -106,7 +106,8 @@ lemma interior_sInter (S : Set (Set α)) : interior (⋂₀ S) = ⋂ s ∈ S, in
   simp_rw [sInter_eq_biInter, interior_iInter]
 
 lemma closure_iUnion (f : ι → Set α) : closure (⋃ i, f i) = ⋃ i, closure (f i) :=
-  compl_injective $ by simpa only [← interior_compl, compl_iUnion] using interior_iInter λ i ↦ (f i)ᶜ
+  compl_injective $ by
+    simpa only [← interior_compl, compl_iUnion] using interior_iInter λ i ↦ (f i)ᶜ
 
 lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, closure s := by
   simp_rw [sUnion_eq_biUnion, closure_iUnion]
