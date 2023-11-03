@@ -98,23 +98,21 @@ In practice, this means that parentheses should be placed as follows:
 (Example taken from page 490 of Knuth's *Concrete Mathematics*.)
 -/
 
--- TODO: Use scoped[NS], when implemented?
-namespace BigOperators
-open Lean Meta Mathlib.FlexibleBinders
-
 /-- `∑ x, f x` is notation for `Finset.sum Finset.univ f`. It is the sum of `f x`,
 where `x` ranges over the finite domain of `f`. -/
-scoped notation3 (name := bigsum) "∑ "(...)", "
+scoped[BigOperators] notation3 (name := bigsum) "∑ "(...)", "
     r:67:(scoped finset%
             p => Finset.sum Finset.univ p,
             bounded := s p => Finset.sum s p) => r
 
 /-- `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
 where `x` ranges over the finite domain of `f`. -/
-scoped notation3 (name := bigprod) "∏ "(...)", "
+scoped[BigOperators] notation3 (name := bigprod) "∏ "(...)", "
     r:67:(scoped finset%
             p => Finset.prod Finset.univ p,
             bounded := s p => Finset.prod s p) => r
+
+namespace BigOperators
 
 /-- (Deprecated) `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/

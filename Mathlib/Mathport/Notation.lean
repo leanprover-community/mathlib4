@@ -387,7 +387,7 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher)
         else
           return {s with scopeState := binders}
 
-/- Create a `Term` that represents a matcher for `scoped` notation.
+/-- Create a `Term` that represents a matcher for `scoped` notation.
 Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
 Reminder:
@@ -589,8 +589,10 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
-        mkScopedMatcher lit.getId scopedId.getId scopedTerm boundNames
-      let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
+        mkScopedMatcher lit.getId scopedFn boundedFn? boundNames
+      let scopedFn' ← scopedFn.updateBody fun s => pure (boundValues.find? s.getId)
+      let propFn'? ← propFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
+      let boundedFn'? ← boundedFn?.mapM (·.updateBody fun s => pure (boundValues.find? s.getId))
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% $domType

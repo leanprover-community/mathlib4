@@ -176,3 +176,140 @@ open scoped MyNotation
 #guard_msgs in #check π
 
 end test_scoped
+
+section FlexibleBinders
+
+def Filter.top {α : Type} : Filter α := fun s => ∀ x, s x
+
+section
+open Mathlib.FlexibleBinders
+
+syntax "filter%" : flexibleBindersDom
+
+macro_rules
+  | `(binder%(filter%, $e ∈ $f)) => do
+    let (e, ty) ← destructAscription e
+    `(binderResolved%($ty, $e, $f))
+
+end
+
+notation3 "∀ᶠ' " (...) ", "
+    r:(scoped filter% p => Filter.eventually p Filter.top,
+       bounded := f p => Filter.eventually p f) => r
+
+/-- info: ∀ᶠ' (x : ℕ), 1 < x : Prop -/
+#guard_msgs in #check ∀ᶠ' x : Nat, 1 < x
+/-- info: fun f ↦ ∀ᶠ' x ∈ f, 1 < x : Filter ℕ → Prop -/
+#guard_msgs in #check fun (f : Filter Nat) => ∀ᶠ' x ∈ f, 1 < x
+
+/-- info: foobar (fun y ↦ y = 1) (∀ᶠ' x ∈ Filter.atTop, x < π) : Prop -/
+#guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
+
+inductive ExistsF {α : Sort u} (p : α → Prop) : Prop where
+  | intro (w : α) (h : p w) : ExistsF p
+
+notation3 "∃F " (...) ", " r:(scoped p => Exists p, prop := p r => p ∧ r) => r
+
+/-- info: ∃F (x : ℕ), x = x : Prop -/
+#guard_msgs in #check ∃F (x : Nat), x = x
+/-- info: ∃F (x : ℕ) (y : ℕ), y < x ∧ x = y : Prop -/
+#guard_msgs in #check ∃F (x : Nat) (y < x), x = y
+/-- info: ∃F (x : ℕ), x < 10 ∧ ∃F (y : ℕ), y < 10 ∧ x + y = 1 : Prop -/
+#guard_msgs in #check ∃F x y < 10, x + y = 1
+
+structure Finset (α : Type _) where
+  s : α → Prop
+
+class Fintype (α : Type _) where
+  univ : Finset α
+
+def Finset.univ {α : Type _} [Fintype α] : Finset α := Fintype.univ
+
+def Set (α : Type _) := α → Prop
+instance {α : Type _} : Membership α (Set α) := ⟨fun x s => s x⟩
+instance {α : Type _} : CoeSort (Set α) (Type _) := ⟨fun s => {x // x ∈ s}⟩
+def Set.toFinset {α : Type _} (s : Set α) [Fintype s] : Finset α := .mk s
+
+def Finset.sum {α : Type _} (_s : Finset α) (_f : α → Nat) : Nat := 0
+
+namespace FinsetFlex
+open Lean Meta Mathlib.FlexibleBinders
+
+/-- `finset% t` elaborates `t` as a `Finset`.
+If `t` is a `Set`, then inserts `Set.toFinset`.
+Does not make use of the expected type. Useful for big operators over finsets.
+```
+#check finset% Finset.range 2 -- Finset Nat
+#check finset% (Set.univ : Set Bool) -- Finset Bool
+```
+-/
+elab (name := finsetStx) "finset% " t:term : term => do
+  let u ← mkFreshLevelMVar
+  let ty ← mkFreshExprMVar (mkSort (.succ u))
+  let x ← Elab.Term.elabTerm t (mkApp (.const ``Finset [u]) ty)
+  let xty ← whnfR (← inferType x)
+  if xty.isAppOfArity ``Set 1 then
+    Elab.Term.elabAppArgs (.const ``Set.toFinset [u]) #[] #[.expr x] none false false
+  else
+    return x
+
+-- open Lean.Elab.Term.Quotation in
+-- /-- `quot_precheck` for the `finset%` syntax. -/
+-- @[quot_precheck Test.FinsetFlex.finsetStx] def precheckFinsetStx : Precheck
+--   | `(finset% $t) => precheck t
+--   | _ => Elab.throwUnsupportedSyntax
+
+/-- For the `finset` domain, `(x ∈ s)` is a binder over `s` as a `Finset`. -/
+macro_rules
+  | `(binder%(finset%, $e ∈ $s)) => do
+    let (e, ty) ← destructAscription e
+    `(binderResolved%($ty, $e, finset% $s))
+end FinsetFlex
+
+notation3 "∑ " (...) ", "
+    r:(scoped finset% p => Finset.sum Finset.univ p,
+       --prop := p b => Finset.sum Finset.univ (fun (_ : PLift p) => b),
+       prop := p b => if p then b else 0,
+       bounded := s p => Finset.sum (finset% s) p) => r
+
+instance (n : Nat) : Fintype (Fin n) := .mk (.mk fun _ => False)
+instance {p : Prop} [Decidable p] : Fintype (PLift p) := .mk (.mk fun _ => False)
+section
+variable (s : Finset Nat) (s' : Set Nat) [Fintype s']
+
+/-- info: ∑ (x : Fin 37) (y ∈ s), ↑x + y : ℕ -/
+#guard_msgs in #check ∑ (x : Fin 37) (y ∈ s), x + y
+/-- info: ∑ x ∈ Set.toFinset s', x : ℕ -/
+#guard_msgs in #check ∑ x ∈ s', x
+/-- info: ∑ (x : Fin 37), if x < 10 then ∑ (y : Fin 37), if y < 10 then ↑x + ↑y else 0 else 0 : ℕ -/
+#guard_msgs in #check ∑ (x y : Fin 37) < 10, x + y
+
+/-- info: MyPi x ∈ s', 0 < x : Prop -/
+#guard_msgs in #check MyPi x ∈ s', 0 < x
+end
+
+/-
+variable (s : Finset α) (u : α → Finset β) (f : α → β → ℕ)
+#check ∑ (x ∈ s) × (y ∈ u x), f x y
+/-
+∑ x ∈ Finset.sigma s fun x ↦ u x,
+  match x with
+  | { fst := x, snd := y } => f x y : ℕ
+-/
+#test_flexible_binders finset% => x y ∈ s when x = x
+
+variable (s : Finset Nat)
+#check ∑ x ∈ s when x < 10, 2 * x
+/-
+∑ x ∈ Finset.filter (fun x ↦ x < 10) s, 2 * x : ℕ
+-/
+#check ∑ x y ∈ s when x < y, 2 * x * y
+/-
+∑ (x ∈ s) (y ∈ Finset.filter (fun y ↦ x < y) s), 2 * x * y : ℕ
+-/
+
+#test_flexible_binders finset% => (x ∈ s) × (y ∈ u x)
+-/
+
+
+end FlexibleBinders

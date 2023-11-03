@@ -38,7 +38,7 @@ macro_rules
     let .str .anonymous b' := b.getId.eraseMacroScopes
       | Macro.throwErrorAt b s!"invalid binder name '{b.getId}', it must be atomic"
     let p := mkIdent <| ← Macro.addMacroScope <| .mkStr1 (a' ++ b')
-    `(binder%(finset%, $p ∈ Finset.Nat.antidiagonal $n)
+    `(binder%(finset%, $p ∈ antidiagonal $n)
       binderLetI%($a, $(p).1) binderLetI%($b, $(p).2))
 
 end Binders
