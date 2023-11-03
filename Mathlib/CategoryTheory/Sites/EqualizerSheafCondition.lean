@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.sites.sheaf_of_types from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
