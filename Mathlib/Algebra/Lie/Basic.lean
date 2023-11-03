@@ -222,10 +222,10 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   abel
 #align lie_jacobi lie_jacobi
 
-instance LieRing.intLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
-#align lie_ring.int_lie_algebra LieRing.intLieAlgebra
+instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
+#align lie_ring.int_lie_algebra LieRing.instLieAlgebra
 
-instance : LieRingModule L (M →ₗ[R] N) where
+instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
   bracket x f :=
     { toFun := fun m => ⁅x, f m⁆ - f ⁅x, m⁆
       map_add' := fun m n => by
@@ -252,7 +252,7 @@ theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = �
   rfl
 #align lie_hom.lie_apply LieHom.lie_apply
 
-instance : LieModule R L (M →ₗ[R] N)
+instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N)
     where
   smul_lie t x f := by
     ext n
@@ -260,6 +260,24 @@ instance : LieModule R L (M →ₗ[R] N)
   lie_smul t x f := by
     ext n
     simp only [smul_sub, LinearMap.smul_apply, LieHom.lie_apply, lie_smul]
+
+/-- We could avoid defining this by instead defining a `LieRingModule L R` instance with a zero
+bracket and relying on `LinearMap.instLieRingModule`. We do not do this because in the case that
+`L = R` we would have a non-defeq diamond via `Ring.instBracket`. -/
+instance Module.Dual.instLieRingModule : LieRingModule L (M →ₗ[R] R) where
+  bracket := fun x f ↦
+    { toFun := fun m ↦ - f ⁅x, m⁆
+      map_add' := by simp [-neg_add_rev, neg_add]
+      map_smul' := by simp }
+  add_lie := fun x y m ↦ by ext n; simp [-neg_add_rev, neg_add]
+  lie_add := fun x m n ↦ by ext p; simp [-neg_add_rev, neg_add]
+  leibniz_lie := fun x m n ↦ by ext p; simp
+
+@[simp] lemma Module.Dual.lie_apply (f : M →ₗ[R] R) : ⁅x, f⁆ m = - f ⁅x, m⁆ := rfl
+
+instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
+  smul_lie := fun t x m ↦ by ext n; simp
+  lie_smul := fun t x m ↦ by ext n; simp
 
 end BasicProperties
 

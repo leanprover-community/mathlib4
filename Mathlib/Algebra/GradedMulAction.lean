@@ -47,7 +47,7 @@ graded action
 -/
 
 
-variable {ιA ιB ιM  : Type*}
+variable {ιA ιB ιM : Type*}
 
 namespace GradedMonoid
 

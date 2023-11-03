@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Hom.Units
 
 #align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -378,7 +378,7 @@ variable {M' : Type*} {N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f 
   (g : N →ₙ* N')
 
 /-- `Prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddMonoidHom`"]
+@[to_additive prodMap "`Prod.map` as an `AddMonoidHom`"]
 def prodMap : M × N →ₙ* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align mul_hom.prod_map MulHom.prodMap

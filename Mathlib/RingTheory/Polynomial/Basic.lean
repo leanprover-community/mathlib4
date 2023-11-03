@@ -547,7 +547,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
   · intro hf
     rw [← sum_monomial_eq f]
     refine' (I.map C : Ideal R[X]).sum_mem fun n _ => _
-    simp [← C_mul_X_pow_eq_monomial]
+    simp only [← C_mul_X_pow_eq_monomial, ne_eq]
     rw [mul_comm]
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 set_option linter.uppercaseLean3 false in
@@ -631,7 +631,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
     · rw [sum_insert ha, prod_insert ha, coeff_mul]
       apply sum_mem
       rintro ⟨i, j⟩ e
-      obtain rfl : i + j = k := Nat.mem_antidiagonal.mp e
+      obtain rfl : i + j = k := mem_antidiagonal.mp e
       apply Ideal.pow_le_pow add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
       exact
@@ -703,14 +703,14 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         let m := Nat.find hf
         let n := Nat.find hg
         refine' ⟨m + n, _⟩
-        rw [coeff_mul, ← Finset.insert_erase ((@Finset.Nat.mem_antidiagonal _ (m, n)).mpr rfl),
+        rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
           Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
         apply P.sum_mem
         rintro ⟨i, j⟩ hij
-        rw [Finset.mem_erase, Finset.Nat.mem_antidiagonal] at hij
+        rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
         simp only [Ne.def, Prod.mk.inj_iff, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
           rw [or_iff_not_imp_left, not_lt, le_iff_lt_or_eq]
