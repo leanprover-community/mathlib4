@@ -367,10 +367,10 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
       (by
         rw [Set.card_image_of_injective _ Subtype.coe_injective, ← finrank_eq_card_basis bS, ←
             finrank_eq_card_basis b, h])
-  rw [← b.span_eq, b_eq, Basis.coe_extend, Set.range_restrict, Set.image_id, ← this,
+  rw [← b.span_eq, b_eq, Basis.coe_extend, Subtype.range_val, ← this,
     ←Submodule.coeSubtype, span_image]
   have := bS.span_eq
-  rw [bS_eq, Basis.coe_ofVectorSpace, Set.range_restrict, Set.image_id] at this
+  rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_val] at this
   rw [this, map_top (Submodule.subtype S), range_subtype]
 #align finite_dimensional.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq
 #align submodule.eq_top_of_finrank_eq Submodule.eq_top_of_finrank_eq

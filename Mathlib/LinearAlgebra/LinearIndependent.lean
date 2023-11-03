@@ -64,11 +64,13 @@ any family of vectors includes a linear independent subfamily spanning the same 
 We use families instead of sets because it allows us to say that two identical vectors are linearly
 dependent.
 
-If you want to use sets, use the family `s.incl` given a set `s : Set M`.
-This is defeq to `(↑) : s → M`, but is preferable, since it make the set `s` explicitly
+If you want to state that a set `s : Set M` is linearly independent over `R`,
+write `LinearIndependent R s.incl`, where `Set.incl s` is an abbreviation for `Subtype.val`.
+This is defeq to all of `(↑) : s → M`, `Subtype.val : s → M` and
+`fun (x : s) ↦ (x : M)`, but is preferable, since it make the set `s` explicitly
 appear in the pretty-printer and docs, and allow for rewriting `s`. The lemmas
-`LinearIndependent.to_subtype_range` and `LinearIndependent.of_subtype_range` connect those two
-worlds.
+`LinearIndependent.to_subtype_range` and `LinearIndependent.of_subtype_range`
+connect those two worlds.
 
 ## Tags
 
@@ -299,7 +301,7 @@ alias ⟨LinearIndependent.of_subtype_range, _⟩ := linearIndependent_subtype_r
 #align linear_independent.of_subtype_range LinearIndependent.of_subtype_range
 
 theorem linearIndependent_image {ι} {s : Set ι} {f : ι → M} (hf : Set.InjOn f s) :
-    (LinearIndependent R (s.restrict f) ↔ LinearIndependent R (f '' s).incl :=
+    LinearIndependent R (s.restrict f) ↔ LinearIndependent R (f '' s).incl :=
   linearIndependent_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl
 #align linear_independent_image linearIndependent_image
 
@@ -1287,7 +1289,7 @@ theorem linearIndependent_insert (hxs : x ∉ s) :
 #align linear_independent_insert linearIndependent_insert
 
 theorem linearIndependent_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
-    LinearIndependent K(({x, y} : Set V).incl :=
+    LinearIndependent K ({x, y} : Set V).incl :=
   pair_comm y x ▸ (linearIndependent_singleton hx).insert <|
     mt mem_span_singleton.1 (not_exists.2 hy)
 #align linear_independent_pair linearIndependent_pair

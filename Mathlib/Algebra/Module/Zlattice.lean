@@ -363,7 +363,7 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
       rw [← hs, ← h_span]
-      exact span_mono <| by simp only [Set.range_restrict, id_eq, Set.image_id', subset_rfl] )
+      exact span_mono <| by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl])
     rw [show span ℤ s = span ℤ (Set.range b) by simp [Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := Set.Finite.fintype h_lind.finite
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
@@ -379,9 +379,10 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
       refine AddSubgroup.add_mem _ h_mem
         (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (Zspan.floor b x))))
       rw [show (L : Set E) = AddSubgroup.toIntSubmodule L by rfl]
-      simp only [Basis.coe_mk, Set.range_restrict, id_eq, Set.image_id']
+      simp only [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
       rw [SetLike.coe_subset_coe]
-      exact span_le.mpr h_incl
+      apply span_le.2
+      simpa only [AddSubgroup.coe_toIntSubmodule]
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.finite h_lind)
@@ -431,13 +432,12 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     -- `e` is a `K`-basis of `E` formed of vectors of `b`
     let e : Basis t K E := Basis.mk ht_lin (by simp [ht_span, h_spanE])
     have : Fintype t := Set.Finite.fintype ((Set.range b).toFinite.subset ht_inc)
-    have h : LinearIndependent ℤ (Set.range b).incl := by
+    have h : LinearIndependent ℤ (fun x : (Set.range b) => (x : E)) := by
       rwa [linearIndependent_subtype_range (Subtype.coe_injective.comp b₀.injective)]
     contrapose! h
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
-
-      rw [Basis.coe_mk, Set.range_restrict, Set.image_id,  ← Set.toFinset_nonempty]
+      rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
       contrapose h
       rw [Finset.not_nonempty_iff_eq_empty, Set.toFinset_diff,
         Finset.sdiff_eq_empty_iff_subset] at h
@@ -445,7 +445,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
         finrank_span_set_eq_card _ ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
-    suffices ¬ LinearIndependent ℤ (insert v (Set.range e)).incl by
+    suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
       refine LinearIndependent.mono ?_ this
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [ht_inc])

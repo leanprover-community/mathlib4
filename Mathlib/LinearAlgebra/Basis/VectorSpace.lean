@@ -62,7 +62,7 @@ theorem extend_apply_self (hs : LinearIndependent K s.incl) (x : hs.extend _) :
 
 @[simp]
 theorem coe_extend (hs : LinearIndependent K s.incl) :
-    ⇑(Basis.extend hs) = (Set.restrict _ id) := funext (extend_apply_self hs)
+    ⇑(Basis.extend hs) = (Set.incl _) := funext (extend_apply_self hs)
 #align basis.coe_extend Basis.coe_extend
 
 theorem range_extend (hs : LinearIndependent K s.incl) :
@@ -129,7 +129,7 @@ theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((ofVectorSpaceIndex K V).incl) := by
   convert (ofVectorSpace K V).linearIndependent
   ext x
-  rw [restrict_apply, id_eq, ofVectorSpace_apply_self]
+  rw [ofVectorSpace_apply_self]
 #align basis.of_vector_space_index.linear_independent Basis.ofVectorSpaceIndex.linearIndependent
 
 theorem range_ofVectorSpace : range (ofVectorSpace K V) = ofVectorSpaceIndex K V :=
