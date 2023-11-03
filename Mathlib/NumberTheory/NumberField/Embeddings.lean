@@ -460,14 +460,18 @@ theorem prod_eq_abs_norm (x : K) :
 
 open Fintype FiniteDimensional
 
+variable (K)
+
+noncomputable abbrev NrRealPlaces := card { w : InfinitePlace K // IsReal w }
+
+noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex w }
+
 theorem card_real_embeddings :
-    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }
-      = card { w : InfinitePlace K // IsReal w } := Fintype.card_congr mkReal
+    card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = NrRealPlaces K := Fintype.card_congr mkReal
 #align number_field.infinite_place.card_real_embeddings NumberField.InfinitePlace.card_real_embeddings
 
 theorem card_complex_embeddings :
-    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } =
-      2 * card { w : InfinitePlace K // IsComplex w } := by
+    card { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ } = 2 * NrComplexPlaces K := by
   suffices ∀ w : { w : InfinitePlace K // IsComplex w }, (Finset.univ.filter
       fun φ : { φ // ¬ ComplexEmbedding.IsReal φ } => mkComplex φ = w).card = 2 by
     rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
@@ -485,10 +489,9 @@ theorem card_complex_embeddings :
 #align number_field.infinite_place.card_complex_embeddings NumberField.InfinitePlace.card_complex_embeddings
 
 theorem card_add_two_mul_card_eq_rank :
-    card { w : InfinitePlace K // IsReal w } + 2 * card { w : InfinitePlace K // IsComplex w } =
-      finrank ℚ K := by
-  rw [← card_real_embeddings, ← card_complex_embeddings]
-  rw [Fintype.card_subtype_compl, ← Embeddings.card K ℂ, Nat.add_sub_of_le]
+    NrRealPlaces K + 2 * NrComplexPlaces K = finrank ℚ K := by
+  rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
+    ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
 
 end NumberField.InfinitePlace
