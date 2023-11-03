@@ -223,6 +223,8 @@ lemma exact_of_δ₀ {S : ComposableArrows C (n + 2)}
   constructor <;> assumption
 
 section
+-- this is only a test of the usability of the API, it shall be removed
+-- when it is applied to the case of the snake lemma
 
 variable {X₀ X₁ X₂ X₃ X₄ X₅ : C} {f₁ : X₀ ⟶ X₁} {f₂ : X₁ ⟶ X₂}
   {f₃ : X₂ ⟶ X₃} {f₄ : X₃ ⟶ X₄} {f₅ : X₄ ⟶ X₅}
