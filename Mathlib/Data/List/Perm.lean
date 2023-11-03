@@ -1197,10 +1197,9 @@ theorem perm_of_mem_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   introv IH1 IH2 m
   rw [permutationsAux_cons, permutations, mem_foldr_permutationsAux2] at m
-  rcases m with (m | ⟨l₁, l₂, m, _, e⟩)
+  rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
-  · subst e
-    have p : l₁ ++ l₂ ~ is := by
+  · have p : l₁ ++ l₂ ~ is := by
       simp [permutations] at m
       cases' m with e m
       · simp [e]
