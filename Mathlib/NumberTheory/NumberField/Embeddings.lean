@@ -403,6 +403,19 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
   · refine Finset.card_doubleton ?_
     rwa [Ne.def, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
+open scoped BigOperators
+
+noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
+    Fintype (InfinitePlace K) := Set.fintypeRange _
+#align number_field.infinite_place.number_field.infinite_place.fintype NumberField.InfinitePlace.NumberField.InfinitePlace.fintype
+
+theorem sum_mult_eq [NumberField K] :
+    ∑ w : InfinitePlace K, mult w = FiniteDimensional.finrank ℚ K := by
+  rw [← Embeddings.card K ℂ, Fintype.card, Finset.card_eq_sum_ones, ← Finset.univ.sum_fiberwise
+    (fun φ => InfinitePlace.mk φ)]
+  exact Finset.sum_congr rfl
+    (fun _ _ => by rw [Finset.sum_const, smul_eq_mul, mul_one, card_filter_mk_eq])
+
 /-- The map from real embeddings to real infinite places as an equiv -/
 noncomputable def mkReal :
     { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } ≃ { w : InfinitePlace K // IsReal w } := by
@@ -429,10 +442,6 @@ theorem mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }
 #align number_field.infinite_place.mk_complex_coe NumberField.InfinitePlace.mkComplex_coe
 
 variable [NumberField K]
-
-noncomputable instance NumberField.InfinitePlace.fintype : Fintype (InfinitePlace K) :=
-  Set.fintypeRange _
-#align number_field.infinite_place.number_field.infinite_place.fintype NumberField.InfinitePlace.NumberField.InfinitePlace.fintype
 
 open scoped BigOperators
 
@@ -482,8 +491,8 @@ theorem card_complex_embeddings :
 theorem card_add_two_mul_card_eq_rank :
     card { w : InfinitePlace K // IsReal w } + 2 * card { w : InfinitePlace K // IsComplex w } =
       finrank ℚ K := by
-  rw [← card_real_embeddings, ← card_complex_embeddings]
-  rw [Fintype.card_subtype_compl, ← Embeddings.card K ℂ, Nat.add_sub_of_le]
+  rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
+    ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
 
 end NumberField.InfinitePlace
