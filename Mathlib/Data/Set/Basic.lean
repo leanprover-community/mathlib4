@@ -2863,7 +2863,7 @@ theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y :
 
 /-- An alias for `Subtype.val` from sets, which takes `s` as an explicit argument to make it clear
   what the set in question is. -/
-abbrev Set.incl (s : Set α) : s → α := Subtype.val
+abbrev incl (s : Set α) : s → α := Subtype.val
 
 end Inclusion
 
