@@ -19,6 +19,8 @@ inclusion `FintypeCat.incl`.
 
 open CategoryTheory Limits Functor
 
+universe u
+
 namespace CategoryTheory.Limits.FintypeCat
 
 /-- Any functor from a finite category to Types that only involves finite objects,
@@ -29,10 +31,10 @@ noncomputable def finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCa
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 
 noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J] :
-    CreatesLimitsOfShape J FintypeCat.incl where
+    CreatesLimitsOfShape J FintypeCat.incl.{u} where
   CreatesLimit := by
     intro K
-    have : Fintype (limit (K ⋙ FintypeCat.incl)) := by
+    have : Fintype (limit (K ⋙ FintypeCat.incl.{u})) := by
       apply finiteLimitOfFiniteDiagram (K ⋙ FintypeCat.incl)
       intro j
       simp only [comp_obj, FintypeCat.incl_obj]
@@ -40,14 +42,14 @@ noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J]
     exact createsLimitOfFullyFaithfulOfIso (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl)
       (eqToIso rfl)
 
-instance {J : Type} [SmallCategory J] [FinCategory J] : HasLimitsOfShape J FintypeCat where
+instance {J : Type} [SmallCategory J] [FinCategory J] : HasLimitsOfShape J FintypeCat.{u} where
   has_limit F := hasLimit_of_created F FintypeCat.incl
 
-instance hasFiniteLimits : HasFiniteLimits FintypeCat where
+instance hasFiniteLimits : HasFiniteLimits FintypeCat.{u} where
   out _ := inferInstance
 
 noncomputable instance inclusionPreservesFiniteLimits :
-    PreservesFiniteLimits FintypeCat.incl where
+    PreservesFiniteLimits FintypeCat.incl.{u} where
   preservesFiniteLimits _ :=
     preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape FintypeCat.incl
 
@@ -60,7 +62,7 @@ noncomputable def finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [Fin
   exact Fintype.ofEquiv (Types.Quot K) (Types.colimitEquivQuot K).symm
 
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :
-    CreatesColimitsOfShape J FintypeCat.incl where
+    CreatesColimitsOfShape J FintypeCat.incl.{u} where
   CreatesColimit := by
     intro K
     have : Fintype (colimit (K ⋙ FintypeCat.incl)) := by
@@ -71,14 +73,14 @@ noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory 
     exact createsColimitOfFullyFaithfulOfIso (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl)
       (eqToIso rfl)
 
-instance {J : Type} [SmallCategory J] [FinCategory J] : HasColimitsOfShape J FintypeCat where
+instance {J : Type} [SmallCategory J] [FinCategory J] : HasColimitsOfShape J FintypeCat.{u} where
   has_colimit F := hasColimit_of_created F FintypeCat.incl
 
-instance hasFiniteColimits : HasFiniteColimits FintypeCat where
+instance hasFiniteColimits : HasFiniteColimits FintypeCat.{u} where
   out _ := inferInstance
 
 noncomputable instance inclusionPreservesFiniteColimits :
-    PreservesFiniteColimits FintypeCat.incl where
+    PreservesFiniteColimits FintypeCat.incl.{u} where
   preservesFiniteColimits _ :=
     preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape FintypeCat.incl
 
