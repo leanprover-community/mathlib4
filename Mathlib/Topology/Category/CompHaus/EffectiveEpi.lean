@@ -192,6 +192,7 @@ theorem effectiveEpiFamily_of_jointly_surjective
 
 open EffectiveEpiFamily
 
+-- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
     {α : Type} [Fintype α] {B : CompHaus.{u}}
