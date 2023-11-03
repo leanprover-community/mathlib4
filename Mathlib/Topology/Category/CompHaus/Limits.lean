@@ -5,8 +5,8 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
