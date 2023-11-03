@@ -219,7 +219,8 @@ lemma lintegral_exponentialPdfReal_eq_one (rate : ℝ) (ratePos : 0 < rate) :
       IntegrOn (antiDerivTendsZero ratePos)]
     simp only [mul_zero, neg_zero, Real.exp_zero, mul_one, _root_.zero_sub]; rw [neg_div];
     simp only [one_div,neg_neg, ne_eq, NNReal.coe_eq_zero]; rw[mul_inv_cancel]; linarith
-  · apply ((measurable_id'.const_mul rate).neg.exp.const_mul rate).stronglyMeasurable.aestronglyMeasurable
+  · apply ((measurable_id'.const_mul
+      rate).neg.exp.const_mul rate).stronglyMeasurable.aestronglyMeasurable
 
 /-- The Pdf of the exponential Distribution integrates to 1-/
 @[simp]
