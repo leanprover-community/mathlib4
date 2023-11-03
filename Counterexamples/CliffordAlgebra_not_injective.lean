@@ -24,26 +24,9 @@ A formalization of https://mathoverflow.net/questions/60596/clifford-pbw-theorem
 Some Zulip discussion at https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/.F0.9D.94.BD.E2.82.82.5B.CE.B1.2C.20.CE.B2.2C.20.CE.B3.5D.20.2F.20.28.CE.B1.C2.B2.2C.20.CE.B2.C2.B2.2C.20.CE.B3.C2.B2.29/near/222716333.
 -/
 
-
 noncomputable section
 
 open scoped BigOperators
-
-section ForMathlib
-
-theorem Ideal.comap_span_le {R : Type*} {S : Type*} [Semiring R] [Semiring S] (f : S →+* R)
-    (g : R →+* S) (h : Function.LeftInverse g f) (s : Set R) :
-    Ideal.comap f (Ideal.span s) ≤ Ideal.span (g '' s) := by
-  rintro x (hx : f x ∈ Ideal.span s)
-  have := Ideal.apply_coe_mem_map g _ ⟨_, hx⟩
-  rwa [Ideal.map_span, Subtype.coe_mk, h x] at this
-
-nonrec theorem Ideal.mem_span_range_iff_exists_fun {ι R} [Fintype ι] [CommSemiring R]
-    (g : ι → R) (x : R) :
-    x ∈ Ideal.span (Set.range g) ↔ ∃ f : ι → R, ∑ i, f i * g i = x :=
-  mem_span_range_iff_exists_fun _
-
-end ForMathlib
 
 namespace Q60596
 
@@ -99,7 +82,8 @@ def K : Type _ := _ ⧸ kIdeal
 instance : CommRing K := Ideal.Quotient.commRing _
 
 theorem comap_C_span_le_bot : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) ≤ ⊥ := by
-  refine (Ideal.comap_span_le _ _ (constantCoeff_C _) _).trans ?_
+  refine (Ideal.comap_le_map_of_inverse _ _ _ (constantCoeff_C _)).trans ?_
+  rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
   rw [RingHom.map_mul, constantCoeff_X, MulZeroClass.mul_zero, Submodule.bot_coe,
