@@ -23,31 +23,98 @@ variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Measurabl
 
 noncomputable section
 
-abbrev innerFourier (f : SchwartzMap E ℂ) := (VectorFourier.fourierIntegral (E := ℂ)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
+abbrev intergalFourier (f : SchwartzMap E ℂ) := (VectorFourier.fourierIntegral (E := ℂ)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
 -- belongs in Mathlib.Analysis.InnerProductSpace.Calculus
 -- TODO : Add after `HasFDerivAt.inner`
 theorem hasFDerivAt_inner (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
     [InnerProductSpace 𝕜 E] [NormedSpace ℝ E] (v : E) (x : E) : HasFDerivAt (inner (𝕜 := 𝕜) v)
     (innerSL 𝕜 v) x := (innerSL 𝕜 v).hasFDerivAt
+--   by
+--   have := @innerSL 𝕜 E _ _ _ v
+--   have := @ContinuousLinearMap.hasFDerivAt 𝕜 _ E _ _ E _ _
+-- #exit
 
+-- theorem hasFDerivAt_inner' {E : Type*} [NormedAddCommGroup E]
+--     [InnerProductSpace ℝ E] [NormedSpace ℝ E] (v : E) (x : E) : HasFDerivAt (𝕜 := ℝ) (fun w : E ↦ ⟪v,w⟫_ℝ)
+--     (innerSL ℝ v) x := sorry
+-- #exit
 
+/-
+I think what's going wrong here is the following.
+
+We just proved above that the derivative of `inner v := fun w ↦ ⟪v,w⟫` is itself. I think we need
+the fact that the derivative of `inner' v := fun w ↦ ⟪w,v⟫` is, over ℝ, also `inner v`.??
+
+The integral defining the FT is :
+  `∫ v, e[-L v w] • f v ∂μ`
+This is an integral over v of the function
+  `F : v w ↦ e[-⟪v, w⟫] • f v`
+
+The derivative *in w* is thus:
+  `F' : v w ↦ (-2 π I) e(-⟪v, w⟫) • f v • (ContinuousLinear : u ↦ ⟪u, w⟫)`
+
+whereas the "natural" thing we have access to is `innerSL`. If we put there `innerSL w`, then
+we'll have the map
+  `F' : v w ↦ (-2 π I) e(-⟪v, w⟫) • f v • (ContinuousLinear : u ↦ ⟪w, u⟫)`
+
+So the theorems we're calling for this are getting the wrong variable...???
+
+But if we put the variables the other way around, the derivative isn't right...
+-/
 theorem hasFDerivAt_fourier (f : SchwartzMap E ℂ) (x : E) :
-    HasFDerivAt (innerFourier E f)
-      ((2 * π * I * innerFourier E f x) • (Complex.ofRealClm ∘L (innerSL ℝ) x)) x := by
-  dsimp [innerFourier]
-  have := ((innerFourier E f x) • (Complex.ofRealClm ∘L (innerSL ℝ x : E →L[ℝ] ℝ)))
+    HasFDerivAt (intergalFourier E f)
+      ((-(2 * π * I) * intergalFourier E f x) • (Complex.ofRealClm ∘L (innerSL ℝ) x)) x := by
+  dsimp [intergalFourier]
+  --have := ((innerFourier E f x) • (Complex.ofRealClm ∘L (innerSL ℝ x : E →L[ℝ] ℝ)))
   let F' := fun v w : E ↦
-    ((-(2 * π * I * Real.fourierChar (-⟪v,w⟫_ℝ))) * (f w)) • (Complex.ofRealClm ∘L (innerSL ℝ) w)
+    ((-(2 * π * I * Real.fourierChar (-⟪w,v⟫_ℝ))) * (f w)) • (Complex.ofRealClm ∘L (innerSL ℝ) w)
   convert (@hasFDerivAt_integral_of_dominated_of_fderiv_le (𝕜 := ℝ)
     (ε_pos := (by norm_num : (0:ℝ) < 1)) (α := E) (H := E) (E := ℂ) _ volume _ _ _ _ _ _
     _ _ F' x ?_ ?_ ?_ ?_ ?_ ?_ ?_)
-  · dsimp [VectorFourier.fourierIntegral]
-    -- rw [@integral_smul_const]
-    -- congr! 5
-    sorry
-    -- rw [innerₛₗ_apply, real_inner_comm]
-    -- rfl
+  · simp only [VectorFourier.fourierIntegral, fourierChar, Multiplicative.toAdd,
+      Multiplicative.ofAdd_symm_eq, ofAdd_neg, map_inv, MonoidHom.coe_mk, OneHom.coe_mk,
+      toAdd_ofAdd, coe_inv_unitSphere, expMapCircle_apply, ofReal_mul, ofReal_ofNat, smul_eq_mul]
+    calc _ = (∫ (v : E), (-(2 * π * I)) * (cexp (2 * π * (((innerₛₗ ℝ) v) x) * I))⁻¹ * f v) •
+              ofRealClm.comp ((innerSL ℝ) x) := ?_
+        _ = ∫ (v : E), ((-(2 * π * I) * (cexp (2 * π * (((innerₛₗ ℝ) v) x) * I))⁻¹ * f v)) •
+              ofRealClm.comp ((innerSL ℝ) x) := by rw [integral_smul_const]
+        _ = _ := ?_
+    · rw [← @integral_mul_left]
+      congr! 2
+      ext1 y
+      ring
+    · congr! 1
+      ext1 y
+      --rw [real_inner_comm]
+      rw [← Complex.exp_neg]
+      simp only [innerₛₗ_apply, Multiplicative.toAdd, Multiplicative.ofAdd, Equiv.coe_fn_symm_mk,
+        ofReal_neg, mul_neg, neg_mul]
+
+
+-- #exit
+
+--     have := @integral_smul_const
+
+-- #exit
+
+--     simp [ContinuousLinearMap.integral_comp_comm]
+--     have : Integrable (fun v ↦
+--       ((fourierChar (Multiplicative.ofAdd (((innerₛₗ ℝ) v) x))⁻¹) * f v) •
+--     ContinuousLinearMap.comp ofRealClm ((innerSL ℝ) x)) (volume : Measure E) := sorry
+
+--     have := ((1 : ℝ →L[ℝ] ℂ).smulRight (2 * π * I)).integral_comp_comm this
+
+-- #exit
+
+-- have := @integral_const_mul
+
+--     simp only [map_inv, coe_inv_unitSphere, neg_mul, neg_smul]
+--     -- rw [integral_smul_const]
+--     -- congr! 5
+--     sorry
+--     -- rw [innerₛₗ_apply, real_inner_comm]
+--     -- rfl
   · sorry
   · filter_upwards [] with a
     sorry -- AEStronglyMeasurable
@@ -61,21 +128,23 @@ theorem hasFDerivAt_fourier (f : SchwartzMap E ℂ) (x : E) :
   · sorry -- integrability of the bound
   · -- checking the derivative formula
     filter_upwards [] with w
-    intro v hv
-    convert (((Complex.ofRealClm.hasFDerivAt.comp v (hasFDerivAt_inner ℝ w v)).const_mul (2 * π)).mul_const I).neg.cexp.mul_const (f w) using 1
+    intro u hu
+    convert (((Complex.ofRealClm.hasFDerivAt.comp u (hasFDerivAt_inner ℝ w u)).const_mul (2 * π)).mul_const I).neg.cexp.mul_const (f w) using 1
     · ext1 y
       simp only [fourierChar, ofAdd_neg, map_inv, MonoidHom.coe_mk, OneHom.coe_mk, toAdd_ofAdd,
         coe_inv_unitSphere, expMapCircle_apply, ofReal_mul, ofReal_ofNat, smul_eq_mul,
         Function.comp_apply, ofRealClm_apply]
       rw [Complex.exp_neg]
       rfl
-    · simp only [fourierChar, MonoidHom.coe_mk, OneHom.coe_mk, expMapCircle_apply, ofReal_mul,
-      ofReal_ofNat, Function.comp_apply, ofRealClm_apply, smul_neg]
-      simp only [Multiplicative.toAdd, Multiplicative.ofAdd, Equiv.coe_fn_symm_mk, ofReal_neg,
-        mul_neg, neg_mul, neg_smul, ← mul_smul, neg_inj]
+    · simp only [fourierChar, Multiplicative.toAdd, Multiplicative.ofAdd, Equiv.coe_fn_symm_mk,
+      MonoidHom.coe_mk, OneHom.coe_mk, mul_neg, expMapCircle_neg, coe_inv_unitSphere,
+      expMapCircle_apply, ofReal_mul, ofReal_ofNat, neg_mul, neg_smul, Function.comp_apply,
+      ofRealClm_apply, ← mul_smul, smul_neg, neg_inj]
       congr! 1
       rw [real_inner_comm]
+      rw [Complex.exp_neg]
       ring_nf
+
 
 
 
