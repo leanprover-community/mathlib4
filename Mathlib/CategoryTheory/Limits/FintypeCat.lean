@@ -21,6 +21,8 @@ open CategoryTheory Limits Functor
 
 namespace CategoryTheory.Limits.FintypeCat
 
+/-- Any functor from a finite category to Types that only involves finite objects,
+has a finite limit. -/
 noncomputable def finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) (_ : (j : J) → Finite (K.obj j)) : Fintype (limit K) := by
   have : Fintype (sections K) := Fintype.ofFinite ↑(sections K)
@@ -49,6 +51,8 @@ noncomputable instance inclusionPreservesFiniteLimits :
   preservesFiniteLimits _ :=
     preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape FintypeCat.incl
 
+/-- Any functor from a finite category to Types that only involves finite objects,
+has a finite colimit. -/
 noncomputable def finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) (_ : (j : J) → Finite (K.obj j)) : Fintype (colimit K) := by
   have : Finite (Types.Quot K) := Quot.finite (Types.Quot.Rel K)
