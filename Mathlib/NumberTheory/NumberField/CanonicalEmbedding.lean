@@ -336,16 +336,16 @@ variable (K)
 
 /-- The matrix that gives the representation on `stdBasis` of the image by `commMap` of an
 element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
-see `stdBasis_repr_eq_matrix_to_stdBasis_mul`. -/
-def matrix_to_stdBasis : Matrix (index K) (index K) ℂ :=
+see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
+def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
-theorem det_matrix_to_stdBasis :
-    (matrix_to_stdBasis K).det = (2⁻¹ * I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} :=
+theorem det_matrixToStdBasis :
+    (matrixToStdBasis K).det = (2⁻¹ * I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} :=
   calc
   _ = ∏ k : { w : InfinitePlace K // IsComplex w }, det ((2 : ℂ)⁻¹ • !![1, 1; -I, I]) := by
-      rw [matrix_to_stdBasis, det_fromBlocks_zero₂₁, det_diagonal, Finset.prod_const_one, one_mul,
+      rw [matrixToStdBasis, det_fromBlocks_zero₂₁, det_diagonal, Finset.prod_const_one, one_mul,
           det_reindex_self, det_blockDiagonal]
   _ = ∏ k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
       refine Finset.prod_congr (Eq.refl _) (fun _ _ => ?_)
@@ -355,12 +355,12 @@ theorem det_matrix_to_stdBasis :
 
 /-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
 representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the product of
-`matrix_to_stdBasis` by `x`. -/
-theorem stdBasis_repr_eq_matrix_to_stdBasis_mul (x : (K →+* ℂ) → ℂ)
+`matrixToStdBasis` by `x`. -/
+theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
     (hx : ∀ φ, conj (x φ) = x (ComplexEmbedding.conjugate φ)) (c : index K) :
     ((stdBasis K).repr (commMap K x) c : ℂ) =
-      (mulVec (matrix_to_stdBasis K) (x ∘ (indexEquiv K))) c := by
-  simp_rw [commMap, matrix_to_stdBasis, LinearMap.coe_mk, AddHom.coe_mk,
+      (mulVec (matrixToStdBasis K) (x ∘ (indexEquiv K))) c := by
+  simp_rw [commMap, matrixToStdBasis, LinearMap.coe_mk, AddHom.coe_mk,
     mulVec, dotProduct, Function.comp_apply, index, Fintype.sum_sum_type,
     diagonal_one, reindex_apply, ← Finset.univ_product_univ, Finset.sum_product,
     indexEquiv_apply_ofIsReal, Fin.sum_univ_two, indexEquiv_apply_ofIsComplex_fst,
@@ -462,9 +462,6 @@ theorem convexBodyLt_convex : Convex ℝ (convexBodyLt K f) :=
   Convex.prod (convex_pi (fun _ _ => convex_ball _ _)) (convex_pi (fun _ _ => convex_ball _ _))
 
 open Classical Fintype MeasureTheory MeasureTheory.Measure BigOperators
-
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
 
 variable [NumberField K]
 
