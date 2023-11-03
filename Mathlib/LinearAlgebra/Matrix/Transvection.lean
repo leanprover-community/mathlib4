@@ -237,10 +237,10 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
 #align matrix.transvection_struct.prod_mul_reverse_inv_prod Matrix.TransvectionStruct.prod_mul_reverse_inv_prod
 
 /-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix).-/
-theorem comm_all_TransvectionStruct {M : Matrix n n R}
-    (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) (i : n) :
-    M = M i i • (1 : Matrix n n R) := by
-  refine StdBasisMatrix.comm_all_stdBasisMatrix_nondiag ?_ i
+theorem mem_range_scalar_of_commute_TransvectionStruct {M : Matrix n n R}
+    (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
+    M ∈ Set.range (Matrix.scalar n) := by
+  refine StdBasisMatrix.mem_range_scalar_of_commute_stdBasisMatrix ?_
   intro i j hij
   simpa [transvection, mul_add, add_mul] using (hM ⟨i, j, hij, 1⟩).eq
 
