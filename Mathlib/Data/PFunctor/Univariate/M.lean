@@ -138,7 +138,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
 def Path (F : PFunctor.{u}) :=
-  List F.IdxCat
+  List F.Idx
 #align pfunctor.approx.path PFunctor.Approx.Path
 
 instance Path.inhabited : Inhabited (Path F) :=
@@ -260,7 +260,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- select a subtree using an `i : F.Idx` or return an arbitrary tree if
 `i` designates no subtree of `x` -/
-def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.IdxCat) (x : M F) : M F :=
+def ichildren [Inhabited (M F)] [DecidableEq F.A] (i : F.Idx) (x : M F) : M F :=
   if H' : i.1 = head x then children x (cast (congr_arg _ <| by simp only [head, H']) i.2)
   else default
 set_option linter.uppercaseLean3 false in
@@ -546,7 +546,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.children_mk PFunctor.M.children_mk
 
 @[simp]
-theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F.Obj (M F)) (i : F.IdxCat) :
+theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F.Obj (M F)) (i : F.Idx) :
     ichildren i (M.mk x) = x.iget i := by
   dsimp only [ichildren, PFunctor.Obj.iget]
   congr with h

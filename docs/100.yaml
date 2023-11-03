@@ -385,7 +385,7 @@
 93:
   title  : The Birthday Problem
   links  :
-    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BirthdayProble.lean
+    mathlib archive: https://github.com/leanprover-community/mathlib4/blob/master/Archive/Wiedijk100Theorems/BirthdayProblem.lean
   author : Eric Rodriguez
 94:
   title  : The Law of Cosines

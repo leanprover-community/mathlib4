@@ -783,7 +783,7 @@ section DomDomLcongr
 
 variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
-/-- `alternating_map.dom_dom_congr` as a linear equivalence. -/
+/-- `AlternatingMap.domDomCongr` as a linear equivalence. -/
 @[simps apply symm_apply]
 def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι' where
   toFun := domDomCongr σ
@@ -954,7 +954,7 @@ theorem compMultilinearMap_alternatization (g : N' →ₗ[R] N'₂)
     MultilinearMap.alternatization (g.compMultilinearMap f)
       = g.compAlternatingMap (MultilinearMap.alternatization f) := by
   ext
-  simp [MultilinearMap.alternatization_def, map_sum]
+  simp [MultilinearMap.alternatization_def]
 #align linear_map.comp_multilinear_map_alternatization LinearMap.compMultilinearMap_alternatization
 
 end LinearMap

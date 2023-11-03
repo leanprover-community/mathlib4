@@ -150,7 +150,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   -- sufficiently large `m`. This contradicts `hJp`.
   set z : ι → ℝ := ⨆ m, (J m).lower
   have hzJ : ∀ m, z ∈ Box.Icc (J m) :=
-    mem_iInter.1 (ciSup_mem_Inter_Icc_of_antitone_Icc
+    mem_iInter.1 (ciSup_mem_iInter_Icc_of_antitone_Icc
       ((@Box.Icc ι).monotone.comp_antitone hJmono) fun m ↦ (J m).lower_le_upper)
   have hJl_mem : ∀ m, (J m).lower ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).lower_mem_Icc
   have hJu_mem : ∀ m, (J m).upper ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).upper_mem_Icc

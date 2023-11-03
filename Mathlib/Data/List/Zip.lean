@@ -95,40 +95,11 @@ theorem zip_append :
     simp only [cons_append, zip_cons_cons, zip_append (succ.inj h)]
 #align list.zip_append List.zip_append
 
-theorem zip_map (f : α → γ) (g : β → δ) :
-    ∀ (l₁ : List α) (l₂ : List β), zip (l₁.map f) (l₂.map g) = (zip l₁ l₂).map (Prod.map f g)
-  | [], l₂ => rfl
-  | l₁, [] => by simp only [map, zip_nil_right]
-  | a :: l₁, b :: l₂ => by
-    simp only [map, zip_cons_cons, zip_map, Prod.map]; constructor
 #align list.zip_map List.zip_map
-
-theorem zip_map_left (f : α → γ) (l₁ : List α) (l₂ : List β) :
-    zip (l₁.map f) l₂ = (zip l₁ l₂).map (Prod.map f id) := by rw [← zip_map, map_id]
 #align list.zip_map_left List.zip_map_left
-
-theorem zip_map_right (f : β → γ) (l₁ : List α) (l₂ : List β) :
-    zip l₁ (l₂.map f) = (zip l₁ l₂).map (Prod.map id f) := by rw [← zip_map, map_id]
 #align list.zip_map_right List.zip_map_right
-
-@[simp]
-theorem zipWith_map {μ} (f : γ → δ → μ) (g : α → γ) (h : β → δ) (as : List α) (bs : List β) :
-    zipWith f (as.map g) (bs.map h) = zipWith (fun a b => f (g a) (h b)) as bs := by
-  induction as generalizing bs
-  · simp
-  · cases bs <;> simp [*]
 #align list.zip_with_map List.zipWith_map
-
-theorem zipWith_map_left (f : α → β → γ) (g : δ → α) (l : List δ) (l' : List β) :
-    zipWith f (l.map g) l' = zipWith (f ∘ g) l l' := by
-  convert zipWith_map f g id l l'
-  exact Eq.symm (List.map_id _)
 #align list.zip_with_map_left List.zipWith_map_left
-
-theorem zipWith_map_right (f : α → β → γ) (l : List α) (g : δ → β) (l' : List δ) :
-    zipWith f l (l'.map g) = zipWith (fun x => f x ∘ g) l l' := by
-  convert List.zipWith_map f id g l l'
-  exact Eq.symm (List.map_id _)
 #align list.zip_with_map_right List.zipWith_map_right
 
 theorem zip_map' (f : α → β) (g : α → γ) :

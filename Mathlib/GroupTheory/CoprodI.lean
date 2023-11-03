@@ -140,8 +140,9 @@ variable {N : Type*} [Monoid N]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
-      rw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
-        MonoidHom.comp_apply, h]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
+        MonoidHom.comp_apply, h]; rfl
 #align free_product.ext_hom Monoid.CoprodI.ext_hom
 
 /-- A map out of the free product corresponds to a family of maps out of the summands. This is the
@@ -163,7 +164,8 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   left_inv := by
     intro fi
     ext i x
-    rw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f
     ext i x

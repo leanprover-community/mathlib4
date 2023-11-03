@@ -104,8 +104,8 @@ noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
 
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-noncomputable instance : CanonicallyLinearOrderedAddMonoid ℝ≥0∞ :=
-  inferInstanceAs (CanonicallyLinearOrderedAddMonoid (WithTop ℝ≥0))
+noncomputable instance : CanonicallyLinearOrderedAddCommMonoid ℝ≥0∞ :=
+  inferInstanceAs (CanonicallyLinearOrderedAddCommMonoid (WithTop ℝ≥0))
 
 noncomputable instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
 noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))

@@ -46,7 +46,7 @@ normed group
 
 variable {𝓕 𝕜 α ι κ E F G : Type*}
 
-open Filter Function Metric
+open Filter Function Metric Bornology
 
 open BigOperators ENNReal Filter NNReal Uniformity Pointwise Topology
 
@@ -409,9 +409,22 @@ theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1
 #align isometry.norm_map_of_map_one Isometry.norm_map_of_map_one
 #align isometry.norm_map_of_map_zero Isometry.norm_map_of_map_zero
 
+@[to_additive (attr := simp) comap_norm_atTop]
+theorem comap_norm_atTop' : comap norm atTop = cobounded E := by
+  simpa only [dist_one_right] using comap_dist_right_atTop (1 : E)
+
+@[to_additive (attr := simp) tendsto_norm_atTop_iff_cobounded]
+theorem tendsto_norm_atTop_iff_cobounded' {f : α → E} {l : Filter α} :
+    Tendsto (‖f ·‖) l atTop ↔ Tendsto f l (cobounded E) := by
+  rw [← comap_norm_atTop', tendsto_comap_iff]; rfl
+
+@[to_additive tendsto_norm_cobounded_atTop]
+theorem tendsto_norm_cobounded_atTop' : Tendsto norm (cobounded E) atTop :=
+  tendsto_norm_atTop_iff_cobounded'.2 tendsto_id
+
 @[to_additive tendsto_norm_cocompact_atTop]
-theorem tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E) atTop := by
-  simpa only [dist_one_right] using tendsto_dist_right_cocompact_atTop (1 : E)
+theorem tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E) atTop :=
+  cobounded_eq_cocompact (α := E) ▸ tendsto_norm_cobounded_atTop'
 #align tendsto_norm_cocompact_at_top' tendsto_norm_cocompact_atTop'
 #align tendsto_norm_cocompact_at_top tendsto_norm_cocompact_atTop
 

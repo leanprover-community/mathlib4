@@ -1265,7 +1265,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       · intro a'
         cases' (hf _).1 (typein_lt_type _ a') with b e
         exists b
-        simp
+        simp only [RelEmbedding.ofMonotone_coe]
         simp [e]
     · cases' h with a e
       rw [← e]

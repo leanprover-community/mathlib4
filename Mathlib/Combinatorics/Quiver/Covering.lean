@@ -158,7 +158,8 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
-  rw [Equiv.eq_symm_comp]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
     -- Porting note: was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
@@ -170,7 +171,8 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
-  rw [Equiv.eq_symm_comp]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
     -- Porting note: was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
@@ -183,8 +185,8 @@ protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
   refine' ⟨fun u => _, fun u => _⟩ <;>
     -- Porting note: was
     -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
-    simp only [φ.symmetrifyStar, φ.symmetrifyCostar, EquivLike.comp_bijective] <;>
-    erw [EquivLike.bijective_comp] <;>
+    simp only [φ.symmetrifyStar, φ.symmetrifyCostar] <;>
+    erw [EquivLike.comp_bijective, EquivLike.bijective_comp] <;>
     simp [hφ.star_bijective u, hφ.costar_bijective u]
 #align prefunctor.is_covering.symmetrify Prefunctor.IsCovering.symmetrify
 

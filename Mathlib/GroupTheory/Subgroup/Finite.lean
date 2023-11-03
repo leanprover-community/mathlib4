@@ -173,6 +173,9 @@ theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
 #align subgroup.card_le_one_iff_eq_bot Subgroup.card_le_one_iff_eq_bot
 #align add_subgroup.card_nonpos_iff_eq_bot AddSubgroup.card_le_one_iff_eq_bot
 
+@[to_additive] lemma eq_bot_iff_card [Fintype H] : H = ⊥ ↔ Fintype.card H = 1 :=
+  ⟨by rintro rfl;  exact card_bot, eq_bot_of_card_eq _⟩
+
 @[to_additive one_lt_card_iff_ne_bot]
 theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
   lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not

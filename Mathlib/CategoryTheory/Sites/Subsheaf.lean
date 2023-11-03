@@ -29,7 +29,7 @@ We define the sub(pre)sheaf of a type valued presheaf.
   The descent of a map into a sheaf to the sheafification.
 - `CategoryTheory.GrothendieckTopology.imageSheaf` : The image sheaf of a morphism.
 - `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
-  `limits.image_factorization`.
+  `Limits.imageFactorization`.
 -/
 
 

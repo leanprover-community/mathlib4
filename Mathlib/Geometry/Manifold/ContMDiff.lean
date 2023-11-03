@@ -16,7 +16,7 @@ basic properties of these notions.
 
 ## Main definitions and statements
 
-Let `M ` and `M'` be two smooth manifolds, with respect to model with corners `I` and `I'`. Let
+Let `M` and `M'` be two smooth manifolds, with respect to model with corners `I` and `I'`. Let
 `f : M → M'`.
 
 * `ContMDiffWithinAt I I' n f s x` states that the function `f` is `Cⁿ` within the set `s`

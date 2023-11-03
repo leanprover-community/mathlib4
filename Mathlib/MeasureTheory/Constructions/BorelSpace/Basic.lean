@@ -985,6 +985,9 @@ def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
   toEquiv := h.toEquiv
 #align homeomorph.to_measurable_equiv Homeomorph.toMeasurableEquiv
 
+lemma Homeomorph.measurableEmbedding (h : γ ≃ₜ γ₂) : MeasurableEmbedding h :=
+  h.toMeasurableEquiv.measurableEmbedding
+
 @[simp]
 theorem Homeomorph.toMeasurableEquiv_coe (h : γ ≃ₜ γ₂) : (h.toMeasurableEquiv : γ → γ₂) = h :=
   rfl

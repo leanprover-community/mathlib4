@@ -292,7 +292,7 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
   (Submodule.gi R M).gc.le_u_l_trans hUV hVW
 #align submodule.subset_span_trans Submodule.subset_span_trans
 
-/-- See `submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
+/-- See `Submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
 `span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
@@ -372,6 +372,11 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
 theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 #align submodule.mem_sup' Submodule.mem_sup'
+
+lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
+    ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
+  suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
+  simpa only [h.eq_top] using Submodule.mem_top
 
 variable (p p')
 
@@ -705,6 +710,10 @@ theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
   rw [← span_singleton_le_iff_mem, le_iSup_iff]
   simp only [span_singleton_le_iff_mem]
 #align submodule.mem_supr Submodule.mem_iSup
+
+theorem mem_sSup {s : Set (Submodule R M)} {m : M} :
+    (m ∈ sSup s) ↔ ∀ N, (∀ p ∈ s, p ≤ N) → m ∈ N := by
+  simp_rw [sSup_eq_iSup, Submodule.mem_iSup, iSup_le_iff]
 
 section
 

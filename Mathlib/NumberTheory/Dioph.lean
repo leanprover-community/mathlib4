@@ -448,7 +448,7 @@ theorem ex1_dioph {S : Set (Option α → ℕ)} : Dioph S → Dioph {v | ∃ x, 
       ⟨fun ⟨x, hx⟩ =>
         let ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ::ₒ t, by
-          simp
+          simp only [Poly.map_apply]
           rw [show (v ⊗ x ::ₒ t) ∘ (inr none ::ₒ inl ⊗ inr ∘ some) = x ::ₒ v ⊗ t from
             funext fun s => by cases' s with a b <;> try { cases a <;> rfl}; rfl]
           exact ht⟩,
@@ -545,7 +545,7 @@ theorem diophFn_compn :
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
-        simp
+        simp only [vectorAllP_cons, and_imp]
         exact fun df dfl =>
           have : Dioph {v | (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr) ∈ S} :=
             ext (diophFn_comp1 (reindex_dioph _ (some ∘ inl ⊗ none::some ∘ inr) d) <|
@@ -572,7 +572,7 @@ theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α →
 theorem diophFn_comp {f : Vector3 ℕ n → ℕ} (df : DiophFn f) (g : Vector3 ((α → ℕ) → ℕ) n)
     (dg : VectorAllP DiophFn g) : DiophFn fun v => f fun i => g i v :=
   dioph_comp ((diophFn_vec _).1 df) ((fun v => v none)::fun i v => g i (v ∘ some)) <| by
-    simp
+    simp only [vectorAllP_cons]
     exact ⟨proj_dioph none, (vectorAllP_iff_forall _ _).2 fun i =>
           reindex_diophFn _ <| (vectorAllP_iff_forall _ _).1 dg _⟩
 #align dioph.dioph_fn_comp Dioph.diophFn_comp

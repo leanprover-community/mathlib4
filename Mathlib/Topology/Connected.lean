@@ -5,7 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
-import Mathlib.Topology.SubsetProperties
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Irreducible
 
 #align_import topology.connected from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
@@ -1346,6 +1347,19 @@ theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι →
       (fun i hi => ⟨b x i, ⟨(hbasis x).mem_of_mem hi, hconnected x i hi⟩, subset_rfl⟩) fun s hs =>
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩
 #align locally_connected_space_of_connected_bases locallyConnectedSpace_of_connected_bases
+
+theorem OpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] [TopologicalSpace β]
+    {f : β → α} (h : OpenEmbedding f) : LocallyConnectedSpace β := by
+  refine locallyConnectedSpace_of_connected_bases (fun _ s ↦ f ⁻¹' s)
+    (fun x s ↦ (IsOpen s ∧ f x ∈ s ∧ IsConnected s) ∧ s ⊆ range f) (fun x ↦ ?_)
+    (fun x s hxs ↦ hxs.1.2.2.isPreconnected.preimage_of_open_map h.inj h.isOpenMap hxs.2)
+  rw [h.nhds_eq_comap]
+  exact LocallyConnectedSpace.open_connected_basis (f x) |>.restrict_subset
+    (h.open_range.mem_nhds <| mem_range_self _) |>.comap _
+
+theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
+    LocallyConnectedSpace U :=
+  hU.openEmbedding_subtype_val.locallyConnectedSpace
 
 end LocallyConnectedSpace
 

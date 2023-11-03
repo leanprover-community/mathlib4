@@ -59,7 +59,7 @@ and consequences are derived.
 * `isCountablyGenerated_iff_exists_antitone_basis` : proves a filter is countably generated if and
   only if it admits a basis parametrized by a decreasing sequence of sets indexed by `ℕ`.
 
-* `tendsto_iff_seq_tendsto ` : an abstract version of "sequentially continuous implies continuous".
+* `tendsto_iff_seq_tendsto` : an abstract version of "sequentially continuous implies continuous".
 
 ## Implementation notes
 

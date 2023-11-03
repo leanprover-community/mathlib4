@@ -343,7 +343,7 @@ theorem fst {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.fst α β
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
-    simp
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 #align primrec.fst Primrec.fst
@@ -354,7 +354,7 @@ theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
     fun n => by
-    simp
+    simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
 #align primrec.snd Primrec.snd
@@ -568,7 +568,8 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
                 Nat.Primrec.right.pair <| Nat.Primrec.right.comp Nat.Primrec.left).comp <|
           Nat.Primrec.id.pair <| (@Primcodable.prim α).comp Nat.Primrec.left).of_eq
       fun n => by
-      simp
+      simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
+        Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
       simp [encodek]
       induction' n.unpair.2 with m <;> simp [encodek]
@@ -911,7 +912,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
   generalize g a = x
   induction' n with n IH generalizing l x
   · rfl
-  simp
+  simp only [iterate_succ, comp_apply]
   cases' l with b l <;> simp [IH]
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
