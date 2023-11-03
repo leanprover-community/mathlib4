@@ -21,15 +21,11 @@ variable
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
   (I : ModelWithCorners ℝ E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  --[SmoothManifoldWithCorners I M]
-  -- Let `N` be a smooth manifold over the pair `(F, G)`.
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type*} [TopologicalSpace G]
-  (J : ModelWithCorners ℝ F G) {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  --[SmoothManifoldWithCorners J N] {n : ℕ∞}
+  --[SmoothManifoldWithCorners I M] {n : ℕ∞}
 
 -- On any topological manifold (charted space on a normed space),
 -- each chart is a structomorphism (from its source to its target).
-variable {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
+variable {e e' : LocalHomeomorph M H} {G : StructureGroupoid H} [HasGroupoid M G]
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
  of some chart on `M`. -/
@@ -49,8 +45,8 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`. -/
 -- this is different from `closedUnderRestriction'` as we want membership in the maximal atlas
 -- XXX: find a better name!
-lemma stable_under_restrictions {G : StructureGroupoid H} [HasGroupoid M G]
-    [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
+lemma StructureGroupoid.stable_under_restrictions (he : e ∈ atlas H M) [ClosedUnderRestriction G]
+    (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
   rw [mem_maximalAtlas_iff]
   intro e' he'
   -- `e'` is the restriction of some chart of `M` at `x`,
@@ -75,8 +71,7 @@ lemma stable_under_restrictions {G : StructureGroupoid H} [HasGroupoid M G]
 
 /-- Charts are structomorphisms. -/
 -- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
-lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRestriction G]
-    [HasGroupoid M G] : Structomorph G M H := by
+lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestriction G] : Structomorph G M H := by
   let s : Opens M := { carrier := e.source, is_open' := e.open_source }
   let t : Opens H := { carrier := e.target, is_open' := e.open_target }
 
@@ -102,7 +97,7 @@ lemma LocalHomeomorphism.toStructomorph {G : StructureGroupoid H} [ClosedUnderRe
     -- FIXME: extract as a separate lemma and prove it
     -- should be simple; for membership in the atlas, that's G.eq_on_source
     have lem : r ∈ G.maximalAtlas s → goal ≈ r → goal ∈ G.maximalAtlas s := sorry
-    exact lem (stable_under_restrictions he s) h3
+    exact lem (G.stable_under_restrictions he s) h3
   have : Structomorph G s t := {
     e.toHomeomorphSourceTarget with
     mem_groupoid := by
