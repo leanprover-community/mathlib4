@@ -3,8 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.Nerve
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linarith
 
 /-!
 # Composable arrows
@@ -45,14 +48,9 @@ variable (C : Type*) [Category C]
 /-- `ComposableArrows C n` is the type of functors `Fin (n + 1) ⥤ C`. -/
 abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 
-/-- The type of `n`-simplices in the simplicial set `nerve C` is
-definitionally equal to `ComposableArrows C n`. -/
-lemma nerve_obj_eq_composableArrows (n : ℕ) :
-    (nerve C).obj (Opposite.op (SimplexCategory.mk n)) = ComposableArrows C n := rfl
-
 namespace ComposableArrows
 
-variable {C} {n : ℕ}
+variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
@@ -397,6 +395,20 @@ example : map' (mk₃ f g h) 1 3 = g ≫ h := by dsimp
 
 end
 
+/-- The map `ComposableArrows C m → ComposableArrows C n` obtained by precomposition with
+a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
+@[simps!]
+def whiskerLeft (F : ComposableArrows C m) (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
+    ComposableArrows C n := Φ ⋙ F
+
+/-- The functor `ComposableArrows C m ⥤ ComposableArrows C n` obtained by precomposition with
+a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
+@[simps!]
+def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
+    ComposableArrows C m ⥤ ComposableArrows C n where
+  obj F := F.whiskerLeft Φ
+  map f := CategoryTheory.whiskerLeft Φ f
+
 /-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.succ`. -/
 @[simps]
 def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
@@ -407,7 +419,7 @@ def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
 the first arrow. -/
 @[simps!]
 def δ₀Functor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
-  (whiskeringLeft _ _ _).obj (Fin.succFunctor _)
+  whiskerLeftFunctor (Fin.succFunctor (n + 1))
 
 /-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
 abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
@@ -417,14 +429,13 @@ lemma precomp_δ₀ {X : C} (f : X ⟶ F.left) : (F.precomp f).δ₀ = F := rfl
 
 end ComposableArrows
 
-namespace Nerve
-
 variable {C}
 
-lemma δ₀_eq_composableArrows_δ₀ {n : ℕ}
-    (x : (nerve C).obj (Opposite.op (SimplexCategory.mk (n + 1)))) :
-    (nerve C).δ (0 : Fin (n + 2)) x = ComposableArrows.δ₀ x := rfl
-
-end Nerve
+/-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
+with a functor `C ⥤ D`. -/
+@[simps!]
+def Functor.mapComposableArrows {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ) :
+    ComposableArrows C n ⥤ ComposableArrows D n :=
+  (whiskeringRight _ _ _).obj G
 
 end CategoryTheory
