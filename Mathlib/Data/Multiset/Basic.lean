@@ -3039,15 +3039,15 @@ def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
     (by
       intros a b _
       funext hp
-      suffices all_equal : ∀ x y : { t // t ∈ b ∧ p t }, x = y
-      · apply all_equal
-      · rintro ⟨x, px⟩ ⟨y, py⟩
-        rcases hp with ⟨z, ⟨_z_mem_l, _pz⟩, z_unique⟩
-        congr
-        calc
-          x = z := z_unique x px
-          _ = y := (z_unique y py).symm
-          )
+      suffices all_equal : ∀ x y : { t // t ∈ b ∧ p t }, x = y by
+        apply all_equal
+      rintro ⟨x, px⟩ ⟨y, py⟩
+      rcases hp with ⟨z, ⟨_z_mem_l, _pz⟩, z_unique⟩
+      congr
+      calc
+        x = z := z_unique x px
+        _ = y := (z_unique y py).symm
+        )
 #align multiset.choose_x Multiset.chooseX
 
 /-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `choose p l hp` returns

@@ -130,8 +130,8 @@ end QuotientAction
 open QuotientGroup
 
 /-- The canonical map to the left cosets. -/
-def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H :=
-  ⟨(↑), Quotient.smul_coe H⟩
+def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H where
+  toFun := (↑); map_smul' := Quotient.smul_coe H
 #align mul_action_hom.to_quotient MulActionHom.toQuotient
 
 @[simp]

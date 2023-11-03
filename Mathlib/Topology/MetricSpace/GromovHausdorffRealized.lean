@@ -192,7 +192,7 @@ private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     _ = 2 * maxVar X Y * max (dist x z) (dist y t) := by
       rw [dist_comm t y]
       ring
-    _ = 2 * maxVar X Y * dist (x, y) (z, t) := by rfl
+    _ = 2 * maxVar X Y * dist (x, y) (z, t) := rfl
 
 /-- Candidates are Lipschitz -/
 private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :

@@ -230,9 +230,9 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     refine' equivOfCardEq _
     rw [Fintype.card_fin, AlgHom.card]
     exact (PowerBasis.finrank pb).symm
-  have hnodup : ((minpoly K pb.gen).map (algebraMap K E)).roots.Nodup :=
+  have hnodup : ((minpoly K pb.gen).aroots E).Nodup :=
     nodup_roots (Separable.map (IsSeparable.separable K pb.gen))
-  have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ ((minpoly K pb.gen).map (algebraMap K E)).roots := by
+  have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
     rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero (IsSeparable.isIntegral K pb.gen)]

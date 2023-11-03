@@ -24,18 +24,15 @@ on compact sets.
   integrable on `s`.
 -/
 
-set_option autoImplicit true
-
-
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace
 
-open scoped Topology Interval
+open scoped Topology Interval ENNReal BigOperators
 
 variable {X Y E R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 
-variable [NormedAddCommGroup E] {f : X → E} {μ : Measure X} {s : Set X}
+variable [NormedAddCommGroup E] {f g : X → E} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -260,18 +257,30 @@ theorem LocallyIntegrable.exists_nat_integrableOn [SecondCountableTopology X]
   refine' ⟨u, u_open, eq_univ_of_univ_subset u_union, fun n ↦ _⟩
   simpa only [inter_univ] using hu n
 
-theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
-    LocallyIntegrable (fun _ => c) μ := by
+theorem Memℒp.locallyIntegrable [IsLocallyFiniteMeasure μ] {f : X → E} {p : ℝ≥0∞}
+    (hf : Memℒp f p μ) (hp : 1 ≤ p) : LocallyIntegrable f μ := by
   intro x
   rcases μ.finiteAt_nhds x with ⟨U, hU, h'U⟩
+  have : Fact (μ U < ⊤) := ⟨h'U⟩
   refine' ⟨U, hU, _⟩
-  simp only [h'U, integrableOn_const, or_true_iff]
+  rw [IntegrableOn, ← memℒp_one_iff_integrable]
+  apply (hf.restrict U).memℒp_of_exponent_le hp
+
+theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
+    LocallyIntegrable (fun _ => c) μ :=
+  (memℒp_top_const c).locallyIntegrable le_top
 #align measure_theory.locally_integrable_const MeasureTheory.locallyIntegrable_const
 
 theorem locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrableOn (fun _ => c) s μ :=
   (locallyIntegrable_const c).locallyIntegrableOn s
 #align measure_theory.locally_integrable_on_const MeasureTheory.locallyIntegrableOn_const
+
+theorem locallyIntegrable_zero : LocallyIntegrable (fun _ ↦ (0 : E)) μ :=
+  (integrable_zero X E μ).locallyIntegrable
+
+theorem locallyIntegrableOn_zero : LocallyIntegrableOn (fun _ ↦ (0 : E)) s μ :=
+  locallyIntegrable_zero.locallyIntegrableOn s
 
 theorem LocallyIntegrable.indicator (hf : LocallyIntegrable f μ) {s : Set X}
     (hs : MeasurableSet s) : LocallyIntegrable (s.indicator f) μ := by
@@ -303,6 +312,19 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
+
+protected theorem LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+    [BoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
+    LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
+
+theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
+    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i in s, f i) μ :=
+  Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
+    locallyIntegrable_zero hf
+
+theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → E}
+    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i in s, f i a) μ := by
+  simpa only [← Finset.sum_apply] using locallyIntegrable_finset_sum' s hf
 
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/

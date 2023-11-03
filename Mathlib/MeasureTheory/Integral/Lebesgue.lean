@@ -259,10 +259,13 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
   rw [lintegral, lintegral]
   refine' iSup_le fun s => iSup_le fun hfs => le_iSup_of_le (s.restrict tᶜ) <| le_iSup_of_le _ _
   · intro a
-    by_cases h : a ∈ t <;> simp [h, restrict_apply s ht.compl, ht.compl]
+    by_cases h : a ∈ t <;>
+      simp only [restrict_apply s ht.compl, mem_compl_iff, h, not_true, not_false_eq_true,
+        indicator_of_not_mem, zero_le, not_false_eq_true, indicator_of_mem]
     exact le_trans (hfs a) (_root_.by_contradiction fun hnfg => h (hts hnfg))
   · refine' le_of_eq (SimpleFunc.lintegral_congr <| this.mono fun a hnt => _)
-    by_cases hat : a ∈ t <;> simp [hat, restrict_apply s ht.compl]
+    by_cases hat : a ∈ t <;> simp only [restrict_apply s ht.compl, mem_compl_iff, hat, not_true,
+      not_false_eq_true, indicator_of_not_mem, not_false_eq_true, indicator_of_mem]
     exact (hnt hat).elim
 #align measure_theory.lintegral_mono_ae MeasureTheory.lintegral_mono_ae
 
@@ -578,7 +581,7 @@ theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0�
   simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum]
   rw [iSup_comm]
   congr; funext s
-  induction' s using Finset.induction_on with i s hi hs;
+  induction' s using Finset.induction_on with i s hi hs
   · apply bot_unique
     simp
   simp only [Finset.sum_insert hi, ← hs]
@@ -854,8 +857,8 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
     rw [(ENNReal.cancel_of_ne hf).add_le_iff_nonpos_right, nonpos_iff_eq_zero, mul_eq_zero] at this
     exact this.resolve_left (ENNReal.inv_ne_zero.2 (ENNReal.nat_ne_top _))
   refine' hfg.mp ((ae_all_iff.2 this).mono fun x hlt hle => hle.antisymm _)
-  suffices : Tendsto (fun n : ℕ => f x + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (f x))
-  exact ge_of_tendsto' this fun i => (hlt i).le
+  suffices Tendsto (fun n : ℕ => f x + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (f x)) from
+    ge_of_tendsto' this fun i => (hlt i).le
   simpa only [inv_top, add_zero] using
     tendsto_const_nhds.add (ENNReal.tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
 #align measure_theory.ae_eq_of_ae_le_of_lintegral_le MeasureTheory.ae_eq_of_ae_le_of_lintegral_le
@@ -977,7 +980,8 @@ theorem lintegral_iInf_ae {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measu
           have h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f 0 a := fun n =>
             h_mono.mono fun a h => by
               induction' n with n ih
-              · { exact le_rfl }; · { exact le_trans (h n) ih }
+              · exact le_rfl
+              · exact le_trans (h n) ih
           congr_arg iSup <|
             funext fun n =>
               lintegral_sub (h_meas _) (ne_top_of_le_ne_top h_fin <| lintegral_mono_ae <| h_mono n)
@@ -1002,7 +1006,6 @@ theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AE
         (ae_of_all μ fun a n m hnm => iInf_le_iInf_of_subset fun i hi => le_trans hnm hi))
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := (iSup_mono fun n => le_iInf₂_lintegral _)
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
-
 #align measure_theory.lintegral_liminf_le' MeasureTheory.lintegral_liminf_le'
 
 /-- Known as Fatou's lemma -/
@@ -1526,14 +1529,14 @@ theorem set_lintegral_lt_top_of_isCompact [TopologicalSpace α] [OpensMeasurable
   set_lintegral_lt_top_of_bddAbove hs hf.measurable (hsc.image hf).bddAbove
 #align measure_theory.set_lintegral_lt_top_of_is_compact MeasureTheory.set_lintegral_lt_top_of_isCompact
 
-theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal {α : Type*}
+theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal {α : Type*}
     [MeasurableSpace α] (μ : Measure α) [μ_fin : IsFiniteMeasure μ] {f : α → ℝ≥0∞}
     (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : ∫⁻ x, f x ∂μ < ∞ := by
   cases' f_bdd with c hc
   apply lt_of_le_of_lt (@lintegral_mono _ _ μ _ _ hc)
   rw [lintegral_const]
   exact ENNReal.mul_lt_top ENNReal.coe_lt_top.ne μ_fin.measure_univ_lt_top.ne
-#align is_finite_measure.lintegral_lt_top_of_bounded_to_ennreal IsFiniteMeasure.lintegral_lt_top_of_bounded_to_eNNReal
+#align is_finite_measure.lintegral_lt_top_of_bounded_to_ennreal IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
 
 /-- Given a measure `μ : Measure α` and a function `f : α → ℝ≥0∞`, `μ.withDensity f` is the
 measure such that for a measurable set `s` we have `μ.withDensity f s = ∫⁻ a in s, f a ∂μ`. -/
@@ -1560,7 +1563,7 @@ theorem withDensity_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α
   refine' Measure.ext fun s hs => _
   rw [withDensity_apply _ hs, Measure.add_apply, withDensity_apply _ hs, withDensity_apply _ hs,
     ← lintegral_add_left hf]
-  rfl
+  simp only [Pi.add_apply]
 #align measure_theory.with_density_add_left MeasureTheory.withDensity_add_left
 
 theorem withDensity_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (hg : Measurable g) :
@@ -1585,7 +1588,7 @@ theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurab
   refine' Measure.ext fun s hs => _
   rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul r hf]
-  rfl
+  simp only [Pi.smul_apply, smul_eq_mul]
 #align measure_theory.with_density_smul MeasureTheory.withDensity_smul
 
 theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :
@@ -1593,7 +1596,7 @@ theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ �
   refine' Measure.ext fun s hs => _
   rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
     smul_eq_mul, ← lintegral_const_mul' r f hr]
-  rfl
+  simp only [Pi.smul_apply, smul_eq_mul]
 #align measure_theory.with_density_smul' MeasureTheory.withDensity_smul'
 
 theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
@@ -2088,8 +2091,8 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
   rcases hL with ⟨g₀, hg₀, g₀L⟩
   have h'L : L < ∫⁻ x, g₀ x ∂μ := by
     convert g₀L
-    rw [← SimpleFunc.lintegral_eq_lintegral]
-    rfl
+    rw [← SimpleFunc.lintegral_eq_lintegral, coe_map]
+    simp only [Function.comp_apply]
   rcases SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral h'L with ⟨g, hg, gL, gtop⟩
   exact ⟨g, fun x => (hg x).trans (coe_le_coe.1 (hg₀ x)), gL, gtop⟩
 #align measure_theory.exists_lt_lintegral_simple_func_of_lt_lintegral MeasureTheory.exists_lt_lintegral_simpleFunc_of_lt_lintegral

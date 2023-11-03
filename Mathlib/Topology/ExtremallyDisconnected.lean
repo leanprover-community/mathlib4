@@ -204,7 +204,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
 /-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
 in an extremally disconnected space, if $U_1$ and $U_2$ are disjoint open sets,
 then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint. -/
-lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_IsOpen [ExtremallyDisconnected A]
+lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisconnected A]
     {U₁ U₂ : Set A} (h : Disjoint U₁ U₂) (hU₁ : IsOpen U₁) (hU₂ : IsOpen U₂) :
     Disjoint (closure U₁) (closure U₂) :=
   (h.closure_right hU₁).closure_left <| open_closure U₂ hU₂
@@ -229,7 +229,7 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
       image_univ_of_surjective ρ_surj]
   -- apply Lemma 2.2 to prove their closures are disjoint
   have disj'' : Disjoint (closure (ρ '' G₁ᶜ)ᶜ) (closure (ρ '' G₂ᶜ)ᶜ) :=
-    disjoint_closure_of_disjoint_IsOpen disj' G₁_open' G₂_open'
+    disjoint_closure_of_disjoint_isOpen disj' G₁_open' G₂_open'
   -- apply Lemma 2.1 to prove $\rho(x_1) = \rho(x_2)$ lies in their intersection
   have hx₁' := image_subset_closure_compl_image_compl_of_isOpen ρ_cont ρ_surj zorn_subset G₁_open <|
     mem_image_of_mem ρ hx₁

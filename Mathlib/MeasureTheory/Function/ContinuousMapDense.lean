@@ -63,7 +63,7 @@ open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
 open MeasureTheory TopologicalSpace ContinuousMap Set
 
-variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [NormalSpace α] [BorelSpace α]
+variable {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [T4Space α] [BorelSpace α]
 
 variable {E : Type*} [NormedAddCommGroup E] {μ : Measure α} {p : ℝ≥0∞}
 

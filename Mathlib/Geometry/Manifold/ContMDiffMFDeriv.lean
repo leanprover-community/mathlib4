@@ -70,7 +70,7 @@ where the derivative is taken as a continuous linear map.
 We have to assume that `f` is `C^n` at `(x₀, g(x₀))` for `n ≥ m + 1` and `g` is `C^m` at `x₀`.
 We have to insert a coordinate change from `x₀` to `x` to make the derivative sensible.
 This result is used to show that maps into the 1-jet bundle and cotangent bundle are smooth.
-`cont_mdiff_at.mfderiv_id` and `ContMDiffAt.mfderiv_const` are special cases of this.
+`ContMDiffAt.mfderiv_const` is a special case of this.
 
 This result should be generalized to a `ContMDiffWithinAt` for `mfderivWithin`.
 If we do that, we can deduce `ContMDiffOn.contMDiffOn_tangentMapWithin` from this.
@@ -596,9 +596,9 @@ end TangentBundle
 
 namespace ContMDiffMap
 
--- These helpers for dot notation have been moved here from `geometry.manifold.cont_mdiff_map`
--- to avoid needing to import `geometry.manifold.cont_mdiff_mfderiv` there.
--- (However as a consequence we import `geometry.manifold.cont_mdiff_map` here now.)
+-- These helpers for dot notation have been moved here from
+-- `Mathlib/Geometry/Manifold/ContMDiffMap.lean` to avoid needing to import this file there.
+-- (However as a consequence we import `Mathlib/Geometry/Manifold/ContMDiffMap.lean` here now.)
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold
 

@@ -3,7 +3,7 @@ Copyright (c) 2018 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Hom.Group.Defs
 import Mathlib.Algebra.Group.Units
 
 #align_import algebra.hom.units from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
@@ -102,8 +102,8 @@ theorem map_id : map (MonoidHom.id M) = MonoidHom.id Mˣ := by ext; rfl
 
 /-- Coercion `Mˣ → M` as a monoid homomorphism. -/
 @[to_additive "Coercion `AddUnits M → M` as an AddMonoid homomorphism."]
-def coeHom : Mˣ →* M :=
-  ⟨⟨Units.val, val_one⟩, val_mul⟩
+def coeHom : Mˣ →* M where
+  toFun := Units.val; map_one' := val_one; map_mul' := val_mul
 #align units.coe_hom Units.coeHom
 #align add_units.coe_hom AddUnits.coeHom
 

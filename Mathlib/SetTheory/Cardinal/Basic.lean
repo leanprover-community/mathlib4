@@ -1673,12 +1673,13 @@ theorem nat_add_aleph0 (n : ℕ) : ↑n + ℵ₀ = ℵ₀ := by rw [add_comm, al
 
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
-def toNat : ZeroHom Cardinal ℕ :=
-  ⟨fun c => if h : c < aleph0.{v} then Classical.choose (lt_aleph0.1 h) else 0, by
+def toNat : ZeroHom Cardinal ℕ where
+  toFun c := if h : c < aleph0.{v} then Classical.choose (lt_aleph0.1 h) else 0
+  map_zero' := by
     have h : 0 < ℵ₀ := nat_lt_aleph0 0
     dsimp only
     rw [dif_pos h, ← Cardinal.natCast_inj, ← Classical.choose_spec (lt_aleph0.1 h),
-      Nat.cast_zero]⟩
+      Nat.cast_zero]
 #align cardinal.to_nat Cardinal.toNat
 
 theorem toNat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) :

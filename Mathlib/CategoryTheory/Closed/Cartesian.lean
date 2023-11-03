@@ -318,9 +318,9 @@ def zeroMul {I : C} (t : IsInitial I) : A ⨯ I ≅ I where
   hom := Limits.prod.snd
   inv := t.to _
   hom_inv_id := by
-    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _)
-    rw [← curry_eq_iff]
-    apply t.hom_ext
+    have : (prod.snd : A ⨯ I ⟶ I) = CartesianClosed.uncurry (t.to _) := by
+      rw [← curry_eq_iff]
+      apply t.hom_ext
     rw [this, ← uncurry_natural_right, ← eq_curry_iff]
     apply t.hom_ext
   inv_hom_id := t.hom_ext _ _
@@ -407,15 +407,17 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
     { isAdj := by
         haveI q : Exponentiable (e.inverse.obj X) := inferInstance
         have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
-        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅ prod.functor.obj (e.inverse.obj X)
-        apply NatIso.ofComponents _ _
-        · intro Y
-          apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
-          apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
-        · intro Y Z g
-          dsimp
-          simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
-          -- I wonder if it would be a good idea to make `map_comp` a simp lemma the other way round
+        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅
+            prod.functor.obj (e.inverse.obj X) := by
+          apply NatIso.ofComponents _ _
+          · intro Y
+            apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
+            apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
+          · intro Y Z g
+            dsimp
+            simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
+            -- I wonder if it would be a good idea to
+            -- make `map_comp` a simp lemma the other way round
         · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
             Adjunction.leftAdjointOfNatIso this.symm
           have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=

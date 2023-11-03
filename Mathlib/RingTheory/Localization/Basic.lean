@@ -25,8 +25,8 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
 ```
-variables (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
-variables [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
+variable (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
+variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 ```
 
 ## Main definitions
@@ -137,7 +137,7 @@ theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (al
     surj' := fun s => by
       obtain ⟨⟨x, y, hy⟩, H⟩ := IsLocalization.surj M s
       exact ⟨⟨x, y, h₁ hy⟩, H⟩
-    eq_iff_exists' := @fun x y => by
+    eq_iff_exists' := fun {x y} => by
       constructor
       · rw [IsLocalization.eq_iff_exists M]
         rintro ⟨c, hc⟩
@@ -486,8 +486,7 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that
 `z = f x * (f y)⁻¹`. -/
 noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* P :=
-  {
-    @Submonoid.LocalizationWithZeroMap.lift _ _ _ _ _ _ _ (toLocalizationWithZeroMap M S)
+  { Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap M S)
       g.toMonoidWithZeroHom hg with
     map_add' := by
       intro x y
@@ -496,7 +495,7 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
       simp_rw [← mul_assoc]
       show g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
       simp_rw [← map_mul g, ← map_add g]
-      apply @eq_of_eq _ _ _ S _ _ _ _ _ g hg
+      apply eq_of_eq (S := S) hg
       simp only [sec_spec', toLocalizationMap_sec, map_add, map_mul]
       ring }
 #align is_localization.lift IsLocalization.lift
@@ -686,8 +685,7 @@ noncomputable def ringEquivOfRingEquiv (h : R ≃+* P) (H : M.map h.toMonoidHom 
     congr
     ext
     apply h.symm_apply_apply
-  {
-    map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) with
+  { map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) with
     toFun := map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H))
     invFun := map S (h.symm : P →+* R) (T.le_comap_of_map_le (le_of_eq H'))
     left_inv := fun x => by
@@ -869,7 +867,7 @@ Should not be confused with `AddLocalization.add`, which is defined as
 -/
 protected irreducible_def add (z w : Localization M) : Localization M :=
   Localization.liftOn₂ z w (fun a b c d => mk ((b : R) * c + d * a) (b * d))
-    @fun a a' b b' c c' d d' h1 h2 =>
+    fun {a a' b b' c c' d d'} h1 h2 =>
     mk_eq_mk_iff.2
       (by
         rw [r_eq_r'] at h1 h2 ⊢
@@ -939,8 +937,7 @@ instance : CommSemiring (Localization M) :=
 /-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
   `Localization M`-/
 @[simps]
-def mkAddMonoidHom (b : M) : R →+ Localization M
-    where
+def mkAddMonoidHom (b : M) : R →+ Localization M where
   toFun a := mk a b
   map_zero' := mk_zero _
   map_add' _ _ := (add_mk_self _ _ _).symm
@@ -960,8 +957,7 @@ theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => 
 #align localization.mk_multiset_sum Localization.mk_multiset_sum
 
 instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
-    DistribMulAction S (Localization M)
-    where
+    DistribMulAction S (Localization M) where
   smul_zero s := by simp only [← Localization.mk_zero 1, Localization.smul_mk, smul_zero]
   smul_add s x y :=
     Localization.induction_on₂ x y <|
@@ -988,8 +984,7 @@ instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S 
           intros
           simp only [Localization.smul_mk, add_smul, add_mk_self] }
 
-instance algebra {S : Type*} [CommSemiring S] [Algebra S R] : Algebra S (Localization M)
-    where
+instance algebra {S : Type*} [CommSemiring S] [Algebra S R] : Algebra S (Localization M) where
   toRingHom :=
     RingHom.comp
       { Localization.monoidOf M with
@@ -1105,7 +1100,7 @@ namespace Localization
 
 /-- Negation in a ring localization is defined as `-⟨a, b⟩ = ⟨-a, b⟩`. -/
 protected irreducible_def neg (z : Localization M) : Localization M :=
-  Localization.liftOn z (fun a b => mk (-a) b) @fun a b c d h =>
+  Localization.liftOn z (fun a b => mk (-a) b) fun {a b c d} h =>
     mk_eq_mk_iff.2
       (by
         rw [r_eq_r'] at h ⊢
@@ -1234,8 +1229,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocalization M S]
     (hM : M ≤ nonZeroDivisors A) : NoZeroDivisors S :=
-  {
-    eq_zero_or_eq_zero_of_mul_eq_zero := by
+  { eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro z w h
       cases' surj M z with x hx
       cases' surj M w with y hy

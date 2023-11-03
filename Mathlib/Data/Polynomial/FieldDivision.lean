@@ -373,7 +373,7 @@ theorem mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p 
 theorem rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : (monomial n a).rootSet S = {0} := by
   classical
-  rw [rootSet, map_monomial, roots_monomial ((_root_.map_ne_zero (algebraMap R S)).2 ha),
+  rw [rootSet, aroots_monomial ha,
     Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton, Finset.coe_singleton]
 #align polynomial.root_set_monomial Polynomial.rootSet_monomial
 
@@ -393,7 +393,7 @@ set_option linter.uppercaseLean3 false in
 theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   classical
-  simp only [rootSet, ← Finset.mem_coe]
+  simp only [rootSet, aroots, ← Finset.mem_coe]
   rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_biUnion]
   rwa [← Polynomial.map_prod, Ne, map_eq_zero]
 #align polynomial.root_set_prod Polynomial.rootSet_prod

@@ -3,13 +3,9 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Tactic.TFAE
 import Mathlib.Topology.AlexandrovDiscrete
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order.LowerUpperTopology
-import Mathlib.Topology.Homeomorph
 
 /-!
 # UpperSet and LowerSet topologies
@@ -56,14 +52,11 @@ Furthermore, the `UpperSetTopology` is used in the construction of the Scott Top
 upper set topology, lower set topology, preorder, Alexandrov
 -/
 
-set_option autoImplicit true
-
-
-variable (α β : Type*)
+variable {α β γ : Type*}
 
 section preorder
 
-variable [Preorder α]
+variable (α) [Preorder α]
 
 /--
 The set of upper sets forms a topology. In general the upper set topology does not coincide with the
@@ -90,12 +83,10 @@ end preorder
 open Set TopologicalSpace
 
 /-- Type synonym for a preorder equipped with the upper set topology. -/
-def WithUpperSetTopology := α
+def WithUpperSetTopology (α : Type*) := α
 
 /-- Type synonym for a preorder equipped with the lower set topology. -/
-def WithLowerSetTopology := α
-
-variable {α β}
+def WithLowerSetTopology (α : Type*) := α
 
 namespace WithUpperSetTopology
 
@@ -132,7 +123,7 @@ instance [Nonempty α] : Nonempty (WithUpperSetTopology α) := ‹Nonempty α›
 
 instance [Inhabited α] : Inhabited (WithUpperSetTopology α) := ‹Inhabited α›
 
-variable [Preorder α]
+variable {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
 
 instance : Preorder (WithUpperSetTopology α) := ‹Preorder α›
 
@@ -436,3 +427,59 @@ lemma LowerSetDual_iff_UpperSet [Preorder α] [TopologicalSpace α] :
   constructor
   · apply LowerSetTopology.instUpperSetTopologyDual
   · apply UpperSetTopology.instLowerSetTopologyDual
+
+namespace WithUpperSetTopology
+variable [Preorder α] [Preorder β] [Preorder γ]
+
+/-- A monotone map between preorders spaces induces a continuous map between themselves considered
+with the upper set topology. -/
+def map (f : α →o β) : C(WithUpperSetTopology α, WithUpperSetTopology β) where
+  toFun := toUpperSet ∘ f ∘ ofUpperSet
+  continuous_toFun := continuous_def.2 λ _s hs ↦ IsUpperSet.preimage hs f.monotone
+
+@[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
+@[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
+
+@[simp] lemma toUpperSet_specializes_toUpperSet {a b : α} :
+  toUpperSet a ⤳ toUpperSet b ↔ b ≤ a := by
+  simp_rw [specializes_iff_closure_subset, UpperSetTopology.closure_singleton, Iic_subset_Iic,
+    toUpperSet_le_iff]
+
+@[simp] lemma ofUpperSet_le_ofUpperSet {a b : WithUpperSetTopology α} :
+  ofUpperSet a ≤ ofUpperSet b ↔ b ⤳ a := toUpperSet_specializes_toUpperSet.symm
+
+@[simp] lemma IsUpperSet_toUpperSet_preimage {s : Set (WithUpperSetTopology α)} :
+  IsUpperSet (toUpperSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
+
+@[simp] lemma isOpen_ofUpperSet_preimage {s : Set α} : IsOpen (ofUpperSet ⁻¹' s) ↔ IsUpperSet s :=
+IsUpperSet_toUpperSet_preimage.symm
+
+end WithUpperSetTopology
+
+namespace WithLowerSetTopology
+variable [Preorder α] [Preorder β] [Preorder γ]
+
+/-- A monotone map between preorders spaces induces a continuous map between themselves considered
+with the lower set topology. -/
+def map (f : α →o β) : C(WithLowerSetTopology α, WithLowerSetTopology β) where
+  toFun := toLowerSet ∘ f ∘ ofLowerSet
+  continuous_toFun := continuous_def.2 λ _s hs ↦ IsLowerSet.preimage hs f.monotone
+
+@[simp] lemma map_id : map (OrderHom.id : α →o α) = ContinuousMap.id _ := rfl
+@[simp] lemma map_comp (g : β →o γ) (f : α →o β): map (g.comp f) = (map g).comp (map f) := rfl
+
+@[simp] lemma toLowerSet_specializes_toLowerSet {a b : α} :
+  toLowerSet a ⤳ toLowerSet b ↔ a ≤ b := by
+  simp_rw [specializes_iff_closure_subset, LowerSetTopology.closure_singleton, Ici_subset_Ici,
+    toLowerSet_le_iff]
+
+@[simp] lemma ofLowerSet_le_ofLowerSet {a b : WithLowerSetTopology α} :
+  ofLowerSet a ≤ ofLowerSet b ↔ a ⤳ b := toLowerSet_specializes_toLowerSet.symm
+
+@[simp] lemma IsLowerSet_toLowerSet_preimage {s : Set (WithLowerSetTopology α)} :
+  IsLowerSet (toLowerSet ⁻¹' s) ↔ IsOpen s := Iff.rfl
+
+@[simp] lemma isOpen_ofLowerSet_preimage {s : Set α} : IsOpen (ofLowerSet ⁻¹' s) ↔ IsLowerSet s :=
+IsLowerSet_toLowerSet_preimage.symm
+
+end WithLowerSetTopology

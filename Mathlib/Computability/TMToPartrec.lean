@@ -312,8 +312,8 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
     suffices ∀ a b, a + b = n →
       (n.succ :: 0 ::
-        g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail)
-          :: v.val.tail : List ℕ) ∈
+        g (n ::ᵥ Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) n ::ᵥ v.tail) ::
+            v.val.tail : List ℕ) ∈
         PFun.fix
           (fun v : List ℕ => Part.bind (cg.eval (v.headI :: v.tail.tail))
             (fun x => Part.some (if v.tail.headI = 0

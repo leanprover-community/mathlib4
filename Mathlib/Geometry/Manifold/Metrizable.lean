@@ -26,7 +26,6 @@ theorem ManifoldWithCorners.metrizableSpace {E : Type*} [NormedAddCommGroup E] [
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [SigmaCompactSpace M] [T2Space M] :
     MetrizableSpace M := by
   haveI := I.locallyCompactSpace; haveI := ChartedSpace.locallyCompactSpace H M
-  haveI : NormalSpace M := normal_of_paracompact_t2
   haveI := I.secondCountableTopology
   haveI := ChartedSpace.secondCountable_of_sigma_compact H M
   exact metrizableSpace_of_t3_second_countable M

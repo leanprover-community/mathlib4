@@ -497,8 +497,8 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
   refine' ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, _⟩
   intro x' hx'
-  suffices : (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1
-  rw [← this]
+  suffices (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1 by
+    rw [← this]
   apply Fork.IsLimit.hom_ext t
   funext ⟨⟩
   apply hx'.trans (congr_fun (Fork.IsLimit.lift' t _ hy').2 ⟨⟩).symm

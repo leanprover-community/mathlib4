@@ -813,8 +813,8 @@ theorem lt_mul_of_lt_of_one_lt_of_pos [PosMulStrictMono α] [MulPosStrictMono α
 /-! Lemmas of the form `a ≤ 1 → b ≤ c → a * b ≤ c`. -/
 
 
-theorem mul_le_of_le_one_of_le_of_nonneg [MulPosMono α] (ha : a ≤ 1) (h : b ≤ c) (hb : 0 ≤ b)
-    : a * b ≤ c :=
+theorem mul_le_of_le_one_of_le_of_nonneg [MulPosMono α] (ha : a ≤ 1) (h : b ≤ c) (hb : 0 ≤ b) :
+    a * b ≤ c :=
   (mul_le_of_le_one_left hb ha).trans h
 #align mul_le_of_le_one_of_le_of_nonneg mul_le_of_le_one_of_le_of_nonneg
 
@@ -922,8 +922,8 @@ theorem lt_of_lt_mul_of_le_one_of_nonneg_right [MulPosMono α] (h : a < b * c) (
   h.trans_le <| mul_le_of_le_one_left hc hb
 #align lt_of_lt_mul_of_le_one_of_nonneg_right lt_of_lt_mul_of_le_one_of_nonneg_right
 
-theorem le_mul_of_one_le_of_le_of_nonneg [MulPosMono α] (ha : 1 ≤ a) (bc : b ≤ c) (c0 : 0 ≤ c)
-    : b ≤ a * c :=
+theorem le_mul_of_one_le_of_le_of_nonneg [MulPosMono α] (ha : 1 ≤ a) (bc : b ≤ c) (c0 : 0 ≤ c) :
+    b ≤ a * c :=
   bc.trans <| le_mul_of_one_le_left c0 ha
 #align le_mul_of_one_le_of_le_of_nonneg le_mul_of_one_le_of_le_of_nonneg
 

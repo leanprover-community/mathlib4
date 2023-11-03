@@ -77,8 +77,8 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     rw [dom_iff_mem] at h₁
     cases' h₁ with y h₁
     replace h₁ := approx_mono' f _ _ h₁
-    suffices : y = b
-    · subst this
+    suffices y = b by
+      subst this
       exact h₁
     cases' hh with i hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁

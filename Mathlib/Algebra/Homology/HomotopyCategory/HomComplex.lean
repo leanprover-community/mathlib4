@@ -100,9 +100,9 @@ lemma ext (z₁ z₂ : Cochain F G n)
 @[ext 1100]
 lemma ext₀ (z₁ z₂ : Cochain F G 0)
     (h : ∀ (p : ℤ), z₁.v p p (add_zero p) = z₂.v p p (add_zero p)) : z₁ = z₂ := by
-    ext p q hpq
-    obtain rfl : q = p := by rw [← hpq, add_zero]
-    exact h q
+  ext p q hpq
+  obtain rfl : q = p := by rw [← hpq, add_zero]
+  exact h q
 
 @[simp]
 lemma zero_v {n : ℤ} (p q : ℤ) (hpq : p + n = q) :
@@ -194,11 +194,11 @@ def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G
 
 @[simp]
 lemma ofHomotopy_ofEq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
-    ofHomotopy (Homotopy.ofEq h) = 0 := by rfl
+    ofHomotopy (Homotopy.ofEq h) = 0 := rfl
 
 @[simp]
 lemma ofHomotopy_refl (φ : F ⟶ G) :
-    ofHomotopy (Homotopy.refl φ) = 0 := by rfl
+    ofHomotopy (Homotopy.refl φ) = 0 := rfl
 
 @[reassoc]
 lemma v_comp_XIsoOfEq_hom

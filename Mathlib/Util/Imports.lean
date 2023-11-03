@@ -8,12 +8,13 @@ import Mathlib.Lean.Expr.Basic
 /-!
 # Tools for analyzing imports.
 
-Provides the command `#redundant_imports` which
-lists any transitively redundant imports in the current module.
+Provides the commands
 
-## Future work
-By inspecting the declarations and syntax in the current file,
-we can suggest a minimal set of imports.
+* `#redundant_imports` which lists any transitively redundant imports in the current module.
+* `#minimize_imports` which attempts to construct a minimal set of imports for the declarations
+  in the current file.
+  (Must be run at the end of the file. Tactics and macros may result in incorrect output.)
+* `#find_home decl` suggests files higher up the import hierarchy to which `decl` could be moved.
 -/
 
 open Lean
@@ -135,7 +136,7 @@ Note that this will *not* account for tactics and syntax used in the file,
 so the results may not suffice as imports.
 -/
 def Lean.Environment.minimalRequiredModules (env : Environment) : Array Name :=
-  let required := env.requiredModules.toArray
+  let required := env.requiredModules.toArray.erase env.header.mainModule
   let redundant := findRedundantImports env required
   required.filter fun n => ¬ redundant.contains n
 
@@ -156,8 +157,9 @@ elab "#minimize_imports" : command => do
 Find locations as high as possible in the import hierarchy
 where the named declaration could live.
 -/
-def Lean.Name.findHome (n : Name) : CoreM NameSet := do
-  let required ← n.requiredModules
+def Lean.Name.findHome (n : Name) (env : Option Environment) : CoreM NameSet := do
+  let current? := match env with | some env => env.header.mainModule | _ => default
+  let required := (← n.requiredModules).toArray.erase current?
   let imports := (← getEnv).importGraph.transitiveClosure
   let mut candidates : NameSet := {}
   for (n, i) in imports do
@@ -173,8 +175,13 @@ open Elab in
 /--
 Find locations as high as possible in the import hierarchy
 where the named declaration could live.
+Using `#find_home!` will forcefully remove the current file.
 -/
-elab "#find_home" n:ident : command => do
+elab "#find_home" bang:"!"? n:ident : command => do
+  let stx ← getRef
+  let mut homes := #[]
   let n ← resolveGlobalConstNoOverloadWithInfo n
-  for i in (← Elab.Command.liftCoreM do n.findHome) do
-    logInfo i
+  let env := if bang.isSome then some (← getEnv) else none
+  for i in (← Elab.Command.liftCoreM do n.findHome env) do
+    homes := homes.push i
+  logInfoAt stx[0] m!"{homes}"

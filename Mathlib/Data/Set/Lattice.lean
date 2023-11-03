@@ -1159,6 +1159,19 @@ theorem sInter_eq_univ {S : Set (Set α)} : ⋂₀ S = univ ↔ ∀ s ∈ S, s =
   sInf_eq_top
 #align set.sInter_eq_univ Set.sInter_eq_univ
 
+theorem subset_powerset_iff {s : Set (Set α)} {t : Set α} : s ⊆ 𝒫 t ↔ ⋃₀ s ⊆ t :=
+  sUnion_subset_iff.symm
+
+/-- `⋃₀` and `𝒫` form a Galois connection. -/
+theorem sUnion_powerset_gc :
+    GaloisConnection (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
+  gc_sSup_Iic
+
+/-- `⋃₀` and `𝒫` form a Galois insertion. -/
+def sUnion_powerset_gi :
+    GaloisInsertion (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
+  gi_sSup_Iic
+
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :
     ⋃₀ S ∈ ({∅, univ} : Set (Set α)) := by

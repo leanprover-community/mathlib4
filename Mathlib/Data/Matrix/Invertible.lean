@@ -62,7 +62,7 @@ protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n 
 #align matrix.invertible_of_invertible_mul invertibleOfInvertibleMul
 #align matrix.invertible_of_mul_invertible invertibleOfMulInvertible
 
-section conj_transpose
+section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)
 
 /-- The conjugate transpose of an invertible matrix is invertible. -/
@@ -78,7 +78,7 @@ def invertibleOfInvertibleConjTranspose [Invertible Aᴴ] : Invertible A := by
 
 @[simp] lemma isUnit_conjTranspose : IsUnit Aᴴ ↔ IsUnit A := isUnit_star
 
-end conj_transpose
+end ConjTranspose
 
 end Semiring
 

@@ -305,10 +305,11 @@ lemma reverse_charpoly (M : Matrix n n R) :
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :
     coeff M.charpolyRev 1 = - trace M := by
   nontriviality R
-  cases isEmpty_or_nonempty n; simp [charpolyRev, coeff_one]
-  simp [trace_eq_neg_charpoly_coeff M, ← M.reverse_charpoly, nextCoeff]
+  cases isEmpty_or_nonempty n
+  · simp [charpolyRev, coeff_one]
+  · simp [trace_eq_neg_charpoly_coeff M, ← M.reverse_charpoly, nextCoeff]
 
-lemma isUnit_charpolyRev_of_IsNilpotent (hM : IsNilpotent M) :
+lemma isUnit_charpolyRev_of_isNilpotent (hM : IsNilpotent M) :
     IsUnit M.charpolyRev := by
   obtain ⟨k, hk⟩ := hM
   replace hk : 1 - (X : R[X]) • M.map C ∣ 1 := by
@@ -320,9 +321,10 @@ lemma isUnit_charpolyRev_of_IsNilpotent (hM : IsNilpotent M) :
 
 lemma isNilpotent_trace_of_isNilpotent (hM : IsNilpotent M) :
     IsNilpotent (trace M) := by
-  cases isEmpty_or_nonempty n; simp
+  cases isEmpty_or_nonempty n
+  · simp
   suffices IsNilpotent (coeff (charpolyRev M) 1) by simpa using this
-  exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_charpolyRev_of_IsNilpotent hM)).2
+  exact (isUnit_iff_coeff_isUnit_isNilpotent.mp (isUnit_charpolyRev_of_isNilpotent hM)).2
     _ one_ne_zero
 
 lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
@@ -333,7 +335,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
     conv_lhs => rw [← modByMonic_add_div p monic_X]
     simp [modByMonic_X]
   have : IsNilpotent (p /ₘ X) :=
-    (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_IsNilpotent hM)).2
+    (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_isNilpotent hM)).2
   have aux : (M.charpoly - X ^ (Fintype.card n)).natDegree ≤ M.charpoly.natDegree :=
     le_trans (natDegree_sub_le _ _) (by simp)
   rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]

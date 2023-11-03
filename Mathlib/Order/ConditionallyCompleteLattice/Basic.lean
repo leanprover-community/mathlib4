@@ -201,9 +201,9 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidableLT : DecidableRel (· < · : α → α → Prop) :=
     @decidableLTOfDecidableLE _ _ decidableLE
-  /-- If a set is not bounded above, its supremum is by convention `Sup ∅`. -/
+  /-- If a set is not bounded above, its supremum is by convention `sSup ∅`. -/
   csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
-  /-- If a set is not bounded below, its infimum is by convention `Inf ∅`. -/
+  /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/
   csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
@@ -885,8 +885,7 @@ lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨆ (h : p), f h = sSup (∅ : Set α) := by
   rw [iSup]
   congr
-  rw [range_eq_empty_iff]
-  exact { false := hp }
+  rwa [range_eq_empty_iff, isEmpty_Prop]
 
 lemma ciInf_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨅ (h : p), f h = sInf (∅ : Set α) :=

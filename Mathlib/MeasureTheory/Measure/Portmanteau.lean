@@ -120,7 +120,7 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type*} {L : Filter ι
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top (μs i) E).ne
   simp_rw [meas_Ec, meas_i_Ec]
   have obs :
-    (L.liminf fun i : ι => 1 - μs i E) = L.liminf ((fun x => 1 - x) ∘ fun i : ι => μs i E) := by rfl
+    (L.liminf fun i : ι => 1 - μs i E) = L.liminf ((fun x => 1 - x) ∘ fun i : ι => μs i E) := rfl
   rw [obs]
   have := antitone_const_tsub.map_limsup_of_continuousAt (F := L)
     (fun i => μs i E) (ENNReal.continuous_sub_left ENNReal.one_ne_top).continuousAt
@@ -148,7 +148,7 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type*} {L : Filter ι
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top (μs i) E).ne
   simp_rw [meas_Ec, meas_i_Ec]
   have obs :
-    (L.limsup fun i : ι => 1 - μs i E) = L.limsup ((fun x => 1 - x) ∘ fun i : ι => μs i E) := by rfl
+    (L.limsup fun i : ι => 1 - μs i E) = L.limsup ((fun x => 1 - x) ∘ fun i : ι => μs i E) := rfl
   rw [obs]
   have := antitone_const_tsub.map_liminf_of_continuousAt (F := L)
     (fun i => μs i E) (ENNReal.continuous_sub_left ENNReal.one_ne_top).continuousAt

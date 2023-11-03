@@ -56,7 +56,7 @@ abbrev grade (m : M) : Submodule R (AddMonoidAlgebra R M) :=
   gradeBy R id m
 #align add_monoid_algebra.grade AddMonoidAlgebra.grade
 
-theorem gradeBy_id : gradeBy R (id : M → M) = grade R := by rfl
+theorem gradeBy_id : gradeBy R (id : M → M) = grade R := rfl
 #align add_monoid_algebra.grade_by_id AddMonoidAlgebra.gradeBy_id
 
 theorem mem_gradeBy_iff (f : M → ι) (i : ι) (a : AddMonoidAlgebra R M) :

@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Set.Countable
 

@@ -30,7 +30,7 @@ universe u v
 
 open BigOperators
 
-variable {R S : Type u} {x y : R}
+variable {R S : Type*} {x y : R}
 
 /-- An element is said to be nilpotent if some natural-number-power of it equals zero.
 

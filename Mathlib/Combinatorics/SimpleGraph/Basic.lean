@@ -135,8 +135,31 @@ structure SimpleGraph (V : Type u) where
 #align simple_graph SimpleGraph
 -- porting note: changed `obviously` to `aesop` in the `structure`
 
-noncomputable instance {V : Type u} [Fintype V] : Fintype (SimpleGraph V) := by
-  classical exact Fintype.ofInjective SimpleGraph.Adj SimpleGraph.ext
+/-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
+@[simps]
+def SimpleGraph.mk' {V : Type u} :
+    {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
+  toFun x := ⟨fun v w ↦ x.1 v w, fun v w ↦ by simp [x.2.1], fun v ↦ by simp [x.2.2]⟩
+  inj' := by
+    rintro ⟨adj, _⟩ ⟨adj', _⟩
+    simp only [mk.injEq, Subtype.mk.injEq]
+    intro h
+    funext v w
+    simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
+
+/-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
+and filtering on whether they are symmetric and irreflexive. -/
+instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
+  elems := Finset.univ.map SimpleGraph.mk'
+  complete := by
+    classical
+    rintro ⟨Adj, hs, hi⟩
+    simp only [mem_map, mem_univ, true_and, Subtype.exists, Bool.not_eq_true]
+    refine ⟨fun v w ↦ Adj v w, ⟨?_, ?_⟩, ?_⟩
+    · simp [hs.iff]
+    · intro v; simp [hi v]
+    · ext
+      simp
 
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/

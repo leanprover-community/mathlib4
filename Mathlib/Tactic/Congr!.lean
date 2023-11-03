@@ -125,70 +125,6 @@ def Congr!.Config.maxArgsFor (config : Config) (numArgs : Nat) : Nat :=
   min numArgs (config.maxArgs.getD numArgs)
 
 /--
-Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
-If successful, returns the new goal, and otherwise returns the original `MVarId`.
-
-This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
--/
-def Lean.MVarId.iffOfEq (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
-    return mvarId
-  return res.getD mvarId
-
-/--
-Try to convert an `Eq` into an `Iff` by applying `propext`.
-If successful, then returns then new goal, otherwise returns the original `MVarId`.
--/
-def Lean.MVarId.propext (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
-    -- We don't want a unification specializing `Sort*` to `Prop`.
-    let tgt ← withReducible mvarId.getType'
-    let some (ty, _, _) := tgt.eq? | failure
-    guard ty.isProp
-    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
-    return mvarId
-  return res.getD mvarId
-
-/--
-Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
-
-We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
-specialize `Sort*` to `Prop`.
--/
-def Lean.MVarId.proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `proofIrrelHeq
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, _, rhs) := tgt.heq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
-      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
-
-/--
-Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
-
-We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
-This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
-`Sort*` to `Prop`.
--/
-def Lean.MVarId.subsingletonElim (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `subsingletonElim
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, rhs) := tgt.eq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which we depend on to avoid unification.
-      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
-
-/--
 Asserts the given congruence theorem as fresh hypothesis, and then applies it.
 Return the `fvarId` for the new hypothesis and the new subgoals.
 
@@ -595,36 +531,6 @@ where
       if let some mvars := res then
         return mvars
     return none
-
-/-- Helper theorem for `Lean.MVar.liftReflToEq`. -/
-theorem Lean.MVarId.rel_of_eq_and_refl {R : α → α → Prop} (hxy : x = y) (h : R x x) :
-    R x y := hxy ▸ h
-
-/--
-Use a `refl`-tagged lemma to convert the goal into an `Eq`. If this can't be done, returns
-the original `MVarId`.
--/
-def Lean.MVarId.liftReflToEq (mvarId : MVarId) : MetaM MVarId := do
-  mvarId.checkNotAssigned `liftReflToEq
-  let tgt ← withReducible mvarId.getType'
-  let .app (.app rel _) _ := tgt | return mvarId
-  if rel.isAppOf `Eq then
-    -- No need to lift Eq to Eq
-    return mvarId
-  let reflLemmas ← (Mathlib.Tactic.reflExt.getState (← getEnv)).getMatch rel
-  for lem in reflLemmas do
-    let res ← observing? do
-      -- First create an equality relating the LHS and RHS
-      -- and reduce the goal to proving that LHS is related to LHS.
-      let [mvarIdEq, mvarIdR] ←
-            mvarId.apply (← mkConstWithFreshMVarLevels ``Lean.MVarId.rel_of_eq_and_refl)
-        | failure
-      -- Then fill in the proof of the latter by reflexivity.
-      let [] ← mvarIdR.apply (← mkConstWithFreshMVarLevels lem) | failure
-      return mvarIdEq
-    if let some mvarId := res then
-      return mvarId
-  return mvarId
 
 /--
 Try to apply `pi_congr`. This is similar to `Lean.MVar.congrImplies?`.

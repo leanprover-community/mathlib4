@@ -184,11 +184,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.id_comp]
@@ -349,11 +349,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
     IsIso (adjunction D ι).unit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]

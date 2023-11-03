@@ -41,7 +41,7 @@ that two measure are equal.
 A `MeasureSpace` is a class that is a measurable space with a canonical measure.
 The measure is denoted `volume`.
 
-This file does not import `MeasureTheory.MeasurableSpace`, but only `MeasurableSpaceDef`.
+This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `MeasurableSpace.Defs`.
 
 ## References
 

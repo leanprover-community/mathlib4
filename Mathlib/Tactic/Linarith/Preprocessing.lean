@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
-import Mathlib.Tactic.CancelDenoms
+import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap

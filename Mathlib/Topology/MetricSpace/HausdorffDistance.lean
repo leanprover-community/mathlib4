@@ -1147,6 +1147,11 @@ theorem Bounded.cthickening {α : Type*} [PseudoMetricSpace α] {δ : ℝ} {E : 
     ((lt_add_one _).trans_le (le_max_left _ _)) _
 #align metric.bounded.cthickening Metric.Bounded.cthickening
 
+protected theorem _root_.IsCompact.cthickening
+    {α : Type*} [PseudoMetricSpace α] [ProperSpace α] {s : Set α}
+    (hs : IsCompact s) {r : ℝ} : IsCompact (cthickening r s) :=
+  isCompact_of_isClosed_bounded isClosed_cthickening hs.bounded.cthickening
+
 theorem thickening_subset_interior_cthickening (δ : ℝ) (E : Set α) :
     thickening δ E ⊆ interior (cthickening δ E) :=
   (subset_interior_iff_isOpen.mpr isOpen_thickening).trans

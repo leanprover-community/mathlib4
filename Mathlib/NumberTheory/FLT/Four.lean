@@ -3,6 +3,7 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
+import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.LinearCombination
@@ -304,8 +305,8 @@ theorem not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 
   apply Fermat42.not_minimal hf h2 hp
 #align not_fermat_42 not_fermat_42
 
-theorem not_fermat_4 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 4 ≠ c ^ 4 := by
-  intro heq
+theorem fermatLastTheoremFour : FermatLastTheoremWith ℤ 4 := by
+  intro a b c ha hb _ heq
   apply @not_fermat_42 _ _ (c ^ 2) ha hb
   rw [heq]; ring
-#align not_fermat_4 not_fermat_4
+#align not_fermat_4 fermatLastTheoremFour
