@@ -95,6 +95,10 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
 #align ordered_cancel_comm_monoid.to_cancel_comm_monoid OrderedCancelCommMonoid.toCancelCommMonoid
 #align ordered_cancel_add_comm_monoid.to_cancel_add_comm_monoid OrderedCancelAddCommMonoid.toCancelAddCommMonoid
 
+@[to_additive]
+instance OrderedCancelCommMonoid.toStrictOrderedCommMonoid : StrictOrderedCommMonoid α :=
+  { ‹OrderedCancelCommMonoid α› with mul_lt_mul_left := fun a b hab c => mul_lt_mul_left' hab c }
+
 end OrderedCancelCommMonoid
 
 /-- A linearly ordered cancellative additive commutative monoid
