@@ -301,9 +301,7 @@ theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f :
 theorem Algebra.IsAlgebraic.algHom_bijective₂ [Field R] [Algebra K R]
     (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
-  have := (ha.algHom_bijective <| g.comp f).2
-  ⟨⟨f.injective, Function.Surjective.of_comp_left this (RingHom.injective _)⟩,
-    g.injective, Function.Surjective.of_comp this⟩
+  (g.injective.bijective₂_of_surjective f.injective (ha.algHom_bijective <| g.comp f).2).symm
 
 theorem Algebra.IsAlgebraic.bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
     [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
