@@ -77,32 +77,36 @@ lemma StructureGroupoid.stable_under_restriction (he : e ∈ atlas H M) [ClosedU
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) s,
          G.trans_restricted (chart_mem_atlas H (x : M)) he s⟩
 
+-- real proof that local homeos induce a chart
+-- xxx: find a better name and description!
+theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) [ClosedUnderRestriction G]
+    (hs : Nonempty e.source) :
+    let s := { carrier := e.source, is_open' := e.open_source : Opens M };
+    let t := { carrier := e.target, is_open' := e.open_target  : Opens H };
+    ∀ c' ∈ atlas H t, (e.toHomeomorphSourceTarget).toLocalHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
+  intro s t c' hc'
+  have : Nonempty t := sorry -- -- easy, `e` is a bijection from `s` to `t`
+  set e' := e.toHomeomorphSourceTarget.toLocalHomeomorph with eq -- source s, target t
+  -- Choose `x ∈ t` so c' is the restriction of `chartAt H x`.
+  obtain ⟨x, hc'⟩ := chartOn_open_eq' t hc'
+  -- As H has only one chart, this chart is the identity: i.e., c' is the inclusion.
+  rw [hc', (chartAt_self_eq)]
+  -- Simplify slightly.
+  rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
+  -- Argue that our expression equals this chart above, at least on its source.
+  set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
+  have : goal ≈ e.subtypeRestr s :=
+    (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro x'' hx''; rfl⟩
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.stable_under_restriction he s)
+
 /-- Charts are structomorphisms. -/
 -- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
 lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestriction G] : Structomorph G M H := by
   let s : Opens M := { carrier := e.source, is_open' := e.open_source }
   let t : Opens H := { carrier := e.target, is_open' := e.open_target }
-
   by_cases s = (∅ : Set M)
   · sorry -- trivial, TODO fill in!
-  have : Nonempty s := nonempty_iff_ne_empty'.mpr h
-  have : Nonempty t := sorry -- easy, `e` is a bijection from `s` to `t`
-  -- FIXME: pull out, one I have clean expressions for s and t
-  have real_helper : ∀ c' : LocalHomeomorph t H, c' ∈ atlas H t →
-      e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c' ∈ G.maximalAtlas s := by
-    set e' := e.toHomeomorphSourceTarget.toLocalHomeomorph with eq -- source s, target t
-    intro c' hc'
-    -- Choose `x ∈ t` so c' is the restriction of `chartAt H x`.
-    obtain ⟨x, hc'⟩ := chartOn_open_eq' t hc'
-    -- As H has only one chart, this chart is the identity: i.e., c' is the inclusion.
-    rw [hc', (chartAt_self_eq)]
-    -- Simplify slightly.
-    rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
-    -- Argue that our expression equals this chart above, at least on its source.
-    set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
-    have : goal ≈ e.subtypeRestr s :=
-      (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro x'' hx''; rfl⟩
-    exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.stable_under_restriction he s)
+  have hs : Nonempty s := nonempty_iff_ne_empty'.mpr h
   have : Structomorph G s t := {
     e.toHomeomorphSourceTarget with
     mem_groupoid := by
@@ -113,7 +117,7 @@ lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestr
       -- This *almost* gives our claim: except that `e` is a chart on M and c is one on s:
       -- `real_helper` argues the restricted chart belongs to the maximal atlas, making this rigorous.
       -- so they don't fit together nicely. (Composing with the inclusion makes that nice...)
-      apply G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc) (real_helper c' hc')
+      apply G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc) (G.restriction_chart he hs c' hc')
   }
   sorry
 
