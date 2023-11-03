@@ -9,10 +9,9 @@ import Mathlib.CategoryTheory.ComposableArrows
 /-!
 # Exact sequences
 
-When `S : ComposableArrows C n` (i.e. `S : Fin (n + 1) ⥤ C`, which we may
-consider as a sequence of `n` composable arrows `S.map' i (i + 1)` in a category `C`
-for `0 ≤ i < n` ), we shall say that it is exact (`S.Exact`) if the composition
-of two consecutive arrows are zero (`S.IsComplex`) and that the diagram is
+A sequence of `n` composable arrows `S : ComposableArrows C` (i.e. a functor
+`S : Fin (n + 1) ⥤ C`) is said to be exact (`S.Exact`) if the composition
+of two consecutive arrows are zero (`S.IsComplex`) and the diagram is
 exact at each `i` for `1 ≤ i < n`.
 
 Together with the inductive construction of composable arrows
@@ -44,11 +43,15 @@ variable {n : ℕ} (S : ComposableArrows C n)
 /-- `F : ComposableArrows C n` is a complex if all compositions of
 two consecutive arrows are zero. -/
 structure IsComplex : Prop where
+  /-- the composition of two consecutive arrows is zero -/
   zero (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
     S.map' i (i + 1) ≫ S.map' (i + 1) (i + 2) = 0
 
+attribute [reassoc] IsComplex.zero
+
 variable {S}
 
+@[reassoc]
 lemma IsComplex.zero' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by linarith)
     (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
     S.map' i j ≫ S.map' j k = 0 := by
@@ -89,7 +92,7 @@ abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
     S.sc' hS i (i + 1) (i + 2)
 
 /-- `F : ComposableArrows C n` is exact if it is a complex and that all short
-complex consisting of two consecutive arrows are exact. -/
+complexes consisting of two consecutive arrows are exact. -/
 structure Exact extends S.IsComplex : Prop where
   exact (i : ℕ) (hi : i + 2 ≤ n := by linarith) : (S.sc toIsComplex i).Exact
 
@@ -103,7 +106,8 @@ lemma IsExact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by linarit
 
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
-def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
+def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂)
+    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
     (i j k : ℕ) (hij : i + 1 = j := by linarith)
     (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
     S₁.sc' h₁ i j k ⟶ S₂.sc' h₂ i j k where
@@ -113,7 +117,8 @@ def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.
 
 /-- Functoriality maps for `ComposableArrows.sc`. -/
 @[simps!]
-def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
+def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂)
+    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
     (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
     S₁.sc h₁ i ⟶ S₂.sc h₂ i :=
   sc'Map φ h₁ h₂ i (i + 1) (i + 2)
@@ -121,7 +126,8 @@ def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.I
 /-- The isomorphism `S₁.sc' _ i j k ≅ S₂.sc' _ i j k` induced by an isomorphism `S₁ ≅ S₂`
 in `ComposableArrows C n`. -/
 @[simps]
-def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
+def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
+    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
     (i j k : ℕ) (hij : i + 1 = j := by linarith)
     (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
     S₁.sc' h₁ i j k ≅ S₂.sc' h₂ i j k where
@@ -133,7 +139,8 @@ def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) (h₁ : S�
 /-- The isomorphism `S₁.sc _ i ≅ S₂.sc _ i` induced by an isomorphism `S₁ ≅ S₂`
 in `ComposableArrows C n`. -/
 @[simps]
-def scMapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
+def scMapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
+    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
     (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
     S₁.sc h₁ i ≅ S₂.sc h₂ i where
   hom := scMap e.hom h₁ h₂ i
