@@ -1325,7 +1325,7 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) (hs : Set.Non
     ∀ c' ∈ atlas H t, (e.toHomeomorphSourceTarget).toLocalHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
   intro s t c' hc'
   have : Nonempty s := nonempty_coe_sort.mpr hs
-  have : Nonempty t := nonempty_coe_sort.mpr (MapsTo.map_nonempty e e.mapsTo hs)
+  have : Nonempty t := nonempty_coe_sort.mpr (MapsTo.map_nonempty e.mapsTo hs)
   -- Choose `x ∈ t` so `c'` is the restriction of `chartAt H x`.
   obtain ⟨x, hc'⟩ := Opens.chart_eq' hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
@@ -1337,6 +1337,15 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) (hs : Set.Non
     (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro _ _; rfl⟩
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he)
 
+lemma Homeomorph.empty {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s : Set X} {t : Set Y}
+    (hs : s = ∅) (ht : t = ∅) : Homeomorph s t :=
+  {
+    toFun := fun ⟨x, hx⟩ ↦ ((mem_empty_iff_false x).mp (hs ▸ hx)).elim
+    invFun := fun ⟨x, hx⟩ ↦ ((mem_empty_iff_false x).mp (ht ▸ hx)).elim
+    left_inv := by intro; aesop
+    right_inv := by intro; aesop
+  }
+
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
 lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] :
@@ -1345,7 +1354,16 @@ lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M)
     Structomorph G s t := by
   intro s t
   by_cases s = (∅ : Set M)
-  · sorry -- statement is mathematicially trivial; TODO fill in!
+  · have h1 : e.source = ∅:= h
+    have h2 : e.target = ∅ := by rw [← e.image_source_eq_target, h1, image_empty]
+    exact {
+      Homeomorph.empty h1 h2 with
+      mem_groupoid := by
+        intro c c' hc hc'
+        dsimp
+        -- FIXME: our homomorphism maps between empty sets; this should be obvious!
+        sorry
+    }
   · exact {
       e.toHomeomorphSourceTarget with
       mem_groupoid := by
