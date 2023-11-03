@@ -44,6 +44,309 @@ universe u
 
 variable {α : Type u} {a : α}
 
+section Generator
+
+open Subgroup
+
+/-- An element of an additive group is a *generator*  if any element of the group is a multiple
+of the generator. -/
+@[ext]
+structure AddGroup.Generator (α : Type u) [AddGroup α] where
+  val : α
+  generates : ∀ x, x ∈ AddSubgroup.zmultiples val
+
+/-- An element of a group is a *generator*  if any element of the group is a power
+of the generator. -/
+@[to_additive, ext]
+structure Group.Generator (α : Type u) [Group α] where
+  val : α
+  generates : ∀ x, x ∈ zpowers val
+
+attribute [coe] Group.Generator.val AddGroup.Generator.val
+
+namespace Group.Generator
+
+@[to_additive]
+instance instCoeOut (α : Type u) [Group α] : CoeOut (Generator α) α where
+  coe := val
+
+@[to_additive]
+instance instCanLift {α : Type u} [Group α] : CanLift α (Generator α) val (∀ x, x ∈ zpowers ·) where
+  prf g hg := ⟨⟨g, hg⟩, rfl⟩
+
+/-- The subgroup of integer powers of a generator is `⊤`. -/
+@[to_additive]
+theorem zpowers_eq_top {α : Type u} [Group α] (g : Generator α) : zpowers (g : α) = ⊤ :=
+  eq_top_iff' _ |>.mpr g.generates
+
+/-- A power `k : ℤ` such that `g ^ k = x`. If `orderOf g = 0`, then `k` is unique. When `orderOf g`
+is positive, we guarantee `0 ≤ k < orderOf g`. -/
+@[to_additive]
+noncomputable def power {α : Type u} [Group α] (g : Generator α)
+    (x : α) : ℤ := by
+  letI k := g.generates x |>.choose
+  exact if orderOf (g : α) = 0 then k else k % orderOf (g : α)
+
+@[to_additive]
+theorem power_spec {α : Type u} [Group α] (g : Generator α)
+    (x : α) : (g : α) ^ (g.power x) = x := by
+  rw [power]
+  split_ifs with h
+  · exact g.generates x |>.choose_spec
+  · rw [←zpow_eq_mod_orderOf]
+    exact g.generates x |>.choose_spec
+
+@[to_additive]
+theorem power_lt_orderOf {α : Type u} [Group α] (g : Generator α) (hg : orderOf (g : α) ≠ 0)
+    (x : α) : g.power x < orderOf (g : α) := by
+  rw [power, if_neg hg]
+  simpa using Int.emod_lt _ (by exact_mod_cast hg : (orderOf (g : α) : ℤ) ≠ 0)
+
+@[to_additive]
+theorem power_nonneg {α : Type u} [Group α] (g : Generator α) (hg : orderOf (g : α) ≠ 0)
+    (x : α) : 0 ≤ g.power x := by
+  rw [power, if_neg hg]
+  exact Int.emod_nonneg _ (by exact_mod_cast hg)
+
+@[to_additive]
+theorem power_mul_modEq {α : Type u} [Group α] (g : Generator α) {x y : α} :
+    g.power (x * y) ≡ g.power x + g.power y [ZMOD orderOf (g : α)] := by
+  simp only [←zpow_eq_zpow_iff_modEq, zpow_add, g.power_spec]
+
+@[to_additive (attr := simp)]
+theorem power_one {α : Type u} [Group α] (g : Generator α) :
+    g.power 1 = 0 := by
+  have := g.power_spec 1
+  rw [zpow_eq_one_iff_modEq] at this
+  by_cases hg : orderOf (g : α) = 0
+  · simpa [hg] using this
+  · simpa only [EuclideanDomain.zero_mod,
+      Int.emod_eq_of_lt (g.power_nonneg hg 1) (g.power_lt_orderOf hg 1)] using this.eq
+
+@[to_additive]
+theorem ne_one {α : Type u} [Group α] [Nontrivial α] (g : Generator α) :
+    (g : α) ≠ 1 :=
+  fun hg ↦ by simpa [hg] using g.zpowers_eq_top
+
+@[to_additive]
+theorem orderOf_ne_one {α : Type u} [Group α] [Nontrivial α] (g : Generator α) :
+    orderOf (g : α) ≠ 1 := by
+  by_cases h : orderOf (g : α) = 0
+  · norm_num [h]
+  · simpa [Ne.def, orderOf_eq_one_iff] using g.ne_one
+
+@[to_additive (attr := simp)]
+theorem power_self {α : Type u} [Group α] [Nontrivial α] (g : Generator α) :
+    g.power (g : α) = 1 := by
+  have := (g.power_spec (g : α)).trans (zpow_one (g : α)).symm
+  rw [zpow_eq_zpow_iff_modEq] at this
+  by_cases hg : orderOf (g : α) = 0
+  · simpa [hg] using this
+  · have := Int.emod_eq_of_lt (g.power_nonneg hg (g : α)) (g.power_lt_orderOf hg (g : α)) ▸ this.eq
+    have one_lt : 1 < orderOf (g : α) :=
+      lt_of_le_of_ne (Nat.one_le_iff_ne_zero.mpr hg) g.orderOf_ne_one.symm
+    simpa [Int.emod_eq_of_lt zero_le_one (by exact_mod_cast one_lt : (1 < (orderOf (g : α) : ℤ)))]
+
+/-- The range of a group homomorphism `f` from a group witha generator `g` is exactly the subgroup
+of integer powers of `f g`. -/
+@[to_additive]
+theorem monoidHom_range {α β : Type*} [Group α] [Group β] (g : Generator α) (f : α →* β) :
+    f.range = Subgroup.zpowers (f g) := by
+  ext
+  constructor
+  · rintro ⟨x, rfl⟩
+    rw [←g.power_spec x, map_zpow]
+    exact zpow_mem_zpowers _ _
+  · rintro ⟨k, rfl⟩
+    exact ⟨(g : α) ^ k, map_zpow f (g : α) k⟩
+
+/-- Group homomorphisms which agree on a generator are equal. -/
+@[to_additive]
+theorem monoidHom_ext {F α β : Type*} [Group α] [Group β] [MonoidHomClass F α β] (g : Generator α)
+    (f₁ f₂ : F) (h : f₁ (g : α) = f₂ (g : α)) : f₁ = f₂ :=
+  FunLike.ext f₁ f₂ fun x ↦ by obtain ⟨k, rfl⟩ := g.generates x; simp only [map_zpow, h]
+
+/-- Given a generator `g` of a group `α` and an element `b` of a group `β` whose order divides the
+order of `g`, this is the unique group homomorphism sending `g` to `b`. -/
+@[to_additive (attr := simps)]
+noncomputable def monoidHom {α β : Type*} [Group α] [Group β] (g : Generator α) {b : β}
+    (hb : orderOf b ∣ orderOf (g : α)) : α →* β where
+  toFun := (b ^ g.power ·)
+  map_one' := by simp
+  map_mul' x₁ x₂ := by
+    rw [← zpow_add, zpow_eq_zpow_iff_modEq]
+    exact Int.ModEq.of_dvd (Int.ofNat_dvd.mpr hb) g.power_mul_modEq
+
+@[to_additive (attr := simp)]
+theorem orderOf_subsingleton {α : Type*} [Monoid α] [Subsingleton α] (x : α) :
+    orderOf x = 1 := by
+  simp [congrArg orderOf <| Subsingleton.elim x 1]
+
+@[to_additive (attr := simp)]
+theorem monoidHom_map_self {α β : Type*} [Group α] [Group β] (g : Generator α)
+    {b : β} (hb : orderOf b ∣ orderOf (g : α)) : g.monoidHom hb g = b := by
+  obtain (h | h) := subsingleton_or_nontrivial α
+  · simp only [orderOf_subsingleton (g : α), Nat.isUnit_iff, orderOf_eq_one_iff, Nat.dvd_one] at hb
+    simp [hb]
+  · simp
+
+/-- The order of a finite group (`Fintype.card`) generated by `g` is the order of `g`. -/
+@[to_additive (attr := simp)]
+theorem orderOf_eq_card {α : Type*} [Group α] [Fintype α] (g : Generator α) :
+    orderOf (g : α) = Fintype.card α := by
+  rw [orderOf_eq_card_zpowers]
+  apply Fintype.card_of_finset'
+  simpa using g.generates
+#align order_of_eq_card_of_forall_mem_zpowers Group.Generator.orderOf_eq_card
+#align add_order_of_eq_card_of_forall_mem_zmultiples AddGroup.Generator.addOrderOf_eq_card
+
+/-- The order of a generator is positive if and only if the group is finite. -/
+@[to_additive]
+theorem orderOf_pos_iff_finite {α : Type*} [Group α] (g : Generator α) :
+    0 < orderOf (g : α) ↔ Finite α := by
+  constructor
+  · intro hg
+    rw [←Set.finite_univ_iff, ←coe_top, ←g.zpowers_eq_top]
+    convert (Finset.range (orderOf (g : α))).finite_toSet.image (fun k : ℕ ↦ (g : α) ^ (k : ℤ))
+    ext
+    constructor
+    · rintro ⟨k, rfl⟩
+      simp only [zpow_coe_nat, Finset.coe_range, Set.mem_image, Set.mem_Iio]
+      refine ⟨k.natMod <| orderOf (g : α), Int.natMod_lt hg.ne', ?_⟩
+      rw [←zpow_ofNat, zpow_eq_zpow_iff_modEq, Int.natMod,
+        Int.toNat_of_nonneg (k.emod_nonneg (by exact_mod_cast hg.ne'))]
+      exact k.mod_modEq (orderOf (g : α))
+    · rintro ⟨k, -, rfl⟩
+      use k
+  · intro
+    have := Fintype.ofFinite α
+    rw [orderOf_eq_card]
+    exact Fintype.card_pos
+
+/-- The order of a generator is zero if and only if the group is infinite. -/
+@[to_additive]
+theorem orderOf_eq_zero_iff_infinite {α : Type*} [Group α] (g : Generator α) :
+    orderOf (g : α) = 0 ↔ Infinite α := by
+  apply not_iff_not.mp
+  simp only [← Nat.pos_iff_ne_zero, not_infinite_iff_finite]
+  exact g.orderOf_pos_iff_finite
+
+/-- The order of a generator of a finite group is positive. -/
+@[to_additive (attr := simp)]
+theorem orderOf_pos {α : Type*} [Group α] [Finite α] (g : Generator α) :
+    0 < orderOf (g : α) :=
+  g.orderOf_pos_iff_finite.mpr ‹_›
+
+/-- The order of a generator of an infinite group is zero. -/
+@[to_additive (attr := simp)]
+theorem orderOf_eq_zero {α : Type*} [Group α] [Infinite α] (g : Generator α) :
+    orderOf (g : α) = 0 :=
+  g.orderOf_eq_zero_iff_infinite.mpr ‹_›
+#align infinite.order_of_eq_zero_of_forall_mem_zpowers Group.Generator.orderOf_eq_zero
+#align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples AddGroup.Generator.addOrderOf_eq_zero
+
+/-- The order of a group (`Nat.card`) generated by `g` is the order of `g`. -/
+@[to_additive]
+theorem orderOf_eq_nat_card {α : Type*} [Group α] (g : Generator α) :
+    orderOf (g : α) = Nat.card α := by
+  obtain (h | h) := finite_or_infinite α
+  · have := Fintype.ofFinite α
+    simp
+  · rwa [Nat.card_eq_zero_of_infinite, g.orderOf_eq_zero_iff_infinite]
+
+@[to_additive (attr := simps)]
+def of_orderOf_eq_card {α : Type*} [Group α] [Fintype α] (x : α)
+    (hx : orderOf x = Fintype.card α) : Generator α where
+  val := x
+  generates := by
+    simp_rw [← SetLike.mem_coe, ← Set.eq_univ_iff_forall]
+    rw [← Fintype.card_congr (Equiv.Set.univ α), orderOf_eq_card_zpowers] at hx
+    exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
+#align is_cyclic_of_order_of_eq_card Group.Generator.of_orderOf_eq_card
+#align is_add_cyclic_of_order_of_eq_card Group.Generator.of_orderOf_eq_card
+
+instance {α : Type*} [Group α] [Finite α] : Finite (Generator α) :=
+  Finite.of_injective val Generator.ext
+
+@[to_additive (attr := simps)]
+def ofCoprime {α : Type*} [Group α] [Fintype α] (g : Generator α) {n : ℕ}
+    (hn : n.Coprime (Fintype.card α)) : Generator α where
+  val := (g : α) ^ n
+  generates := by
+    simp [← Nat.isCoprime_iff_coprime, Int.isCoprime_iff_gcd_eq_one] at hn
+    replace hn := congr_arg ((↑) : ℕ → ℤ) hn
+    simp only [Int.coe_gcd, Nat.cast_one] at hn
+    obtain ⟨x, y, h⟩ := exists_gcd_eq_mul_add_mul (n : ℤ) (Fintype.card α)
+    have := hn.symm.trans h
+    rw [← zpow_ofNat]
+    intro z
+    rw [←sub_eq_iff_eq_add, sub_eq_add_neg, ←mul_neg] at this
+    use x * g.power z
+    simp only
+    rw [zpow_mul, ←zpow_mul _ n, ← this, zpow_add, zpow_mul]
+    simp [g.power_spec z]
+    -- finally
+
+def _root_.AddGroup.Generator.ofZModUnits {α : Type*} [AddGroup α] [Fintype α]
+    (g : AddGroup.Generator α) (n : (ZMod (Fintype.card α))ˣ) : AddGroup.Generator α :=
+  g.ofCoprime (ZMod.unitsEquivCoprime n).property
+
+@[to_additive (attr := simps!) existing AddGroup.Generator.ofZModUnits]
+def ofZModUnits {α : Type*} [Group α] [Fintype α] (g : Generator α)
+    (n : (ZMod (Fintype.card α))ˣ) : Generator α :=
+  g.ofCoprime (ZMod.unitsEquivCoprime n).property
+
+instance {α : Type*} [Group α] [Fintype α] : Pow (Generator α) (ZMod (Fintype.card α))ˣ where
+  pow g n := g.ofZModUnits n
+#help attr to_additive
+/-- The inverse of a generator, as a generator. -/
+@[to_additive]
+def inv {α : Type*} [Group α] (g : Generator α) : Generator α where
+  val := (g : α)⁻¹
+  generates x := by obtain ⟨k, rfl⟩ := g.generates x; exact ⟨-k, by simp⟩
+
+@[to_additive]
+noncomputable def zmodUnitsEquiv {α : Type*} [Group α] [Fintype α] (g : Generator α) :
+    Function.Bijective g.ofZModUnits := by
+  refine ⟨fun n₁ n₂ h ↦ ?_, fun g' ↦ ?_⟩
+  · replace h := congr_arg val h
+    simp [pow_inj_mod (g : α)] at h
+    rw [Nat.mod_eq_of_lt (ZMod.val_lt _), Nat.mod_eq_of_lt (ZMod.val_lt _)] at h
+    exact Units.eq_iff.mp <| ZMod.val_injective _ h
+  . have hg' := g.power_spec (g' : α)
+    have := congr(orderOf $hg')
+    lift power g (g' : α) to ℕ using g.power_nonneg (by simp) g' with n
+    rw [zpow_ofNat, orderOf_pow] at this
+    simp [Nat.div_eq_self, Nat.gcd_comm] at this
+    use ZMod.unitOfCoprime n this
+    ext
+    simp [ZMod.unitsEquivCoprime, ZMod.val_nat_cast]
+    rwa [←g.orderOf_eq_card, ←pow_eq_mod_orderOf, ← zpow_ofNat]
+-- doesn't work @[to_additive]
+/-- The equiv which sends the provided generator `g` to `1`. -/
+
+noncomputable def zmodUnitsEquiv {α : Type*} [Group α] [Fintype α] (g : Generator α) :
+    (ZMod (Fintype.card α))ˣ ≃ Generator α :=
+  Equiv.ofBijective g.ofZModUnits <| by
+    refine ⟨fun n₁ n₂ h ↦ ?_, fun g' ↦ ?_⟩
+    · replace h := congr_arg val h
+      simp [pow_inj_mod (g : α)] at h
+      rw [Nat.mod_eq_of_lt (ZMod.val_lt _), Nat.mod_eq_of_lt (ZMod.val_lt _)] at h
+      exact Units.eq_iff.mp <| ZMod.val_injective _ h
+    . have hg' := g.power_spec (g' : α)
+      have := congr(orderOf $hg')
+      lift power g (g' : α) to ℕ using g.power_nonneg (by simp) g' with n
+      rw [zpow_ofNat, orderOf_pow] at this
+      simp [Nat.div_eq_self, Nat.gcd_comm] at this
+      use ZMod.unitOfCoprime n this
+      ext
+      simp [ZMod.unitsEquivCoprime, ZMod.val_nat_cast]
+      rwa [←g.orderOf_eq_card, ←pow_eq_mod_orderOf, ← zpow_ofNat]
+
+end Group.Generator
+
+end Generator
+
 section Cyclic
 
 open BigOperators
@@ -54,22 +357,31 @@ open Subgroup
 
 /-- A group is called *cyclic* if it is generated by a single element. -/
 class IsAddCyclic (α : Type u) [AddGroup α] : Prop where
-  exists_generator : ∃ g : α, ∀ x, x ∈ AddSubgroup.zmultiples g
+  exists_generator : Nonempty (AddGroup.Generator α)
 #align is_add_cyclic IsAddCyclic
 
 /-- A group is called *cyclic* if it is generated by a single element. -/
 @[to_additive IsAddCyclic]
 class IsCyclic (α : Type u) [Group α] : Prop where
-  exists_generator : ∃ g : α, ∀ x, x ∈ zpowers g
+  exists_generator : Nonempty (Group.Generator α)
 #align is_cyclic IsCyclic
 
+/-- An aribtrary generator of a cyclic group. -/
+@[to_additive]
+noncomputable def IsCyclic.generator (α : Type u) [Group α] [IsCyclic α] : Group.Generator α :=
+  IsCyclic.exists_generator.some
+
 @[to_additive isAddCyclic_of_subsingleton]
-instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
-  ⟨⟨1, fun x => by
-      rw [Subsingleton.elim x 1]
-      exact mem_zpowers 1⟩⟩
+instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α where
+  exists_generator := ⟨1, fun x => by rw [Subsingleton.elim x 1]; exact mem_zpowers 1⟩
 #align is_cyclic_of_subsingleton isCyclic_of_subsingleton
 #align is_add_cyclic_of_subsingleton isAddCyclic_of_subsingleton
+
+noncomputable instance Group.Generator.instFintype {α : Type u} [Group α] [Fintype α] [IsCyclic α] :
+    Fintype (Generator α) :=
+  Fintype.ofEquiv _ (IsCyclic.generator α).zmodUnitsEquiv
+
+
 
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
@@ -79,7 +391,7 @@ proof of `CommGroup`. -/
 def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
   { hg with
     mul_comm := fun x y =>
-      let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
+      let ⟨_, hg⟩ := IsCyclic.generator α
       let ⟨_, hn⟩ := hg x
       let ⟨_, hm⟩ := hg y
       hm ▸ hn ▸ zpow_mul_comm _ _ _ }
@@ -99,58 +411,89 @@ theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →*
 #align monoid_hom.map_cyclic MonoidHom.map_cyclic
 #align monoid_add_hom.map_add_cyclic MonoidAddHom.map_add_cyclic
 
-@[to_additive isAddCyclic_of_orderOf_eq_card]
-theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fintype.card α) :
-    IsCyclic α := by
-  classical
-    use x
-    simp_rw [← SetLike.mem_coe, ← Set.eq_univ_iff_forall]
-    rw [← Fintype.card_congr (Equiv.Set.univ α), orderOf_eq_card_zpowers] at hx
-    exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
-#align is_cyclic_of_order_of_eq_card isCyclic_of_orderOf_eq_card
-#align is_add_cyclic_of_order_of_eq_card isAddCyclic_of_orderOf_eq_card
-
 /-- A finite group of prime order is cyclic. -/
 @[to_additive isAddCyclic_of_prime_card "A finite group of prime order is cyclic."]
 theorem isCyclic_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [hp : Fact p.Prime]
-    (h : Fintype.card α = p) : IsCyclic α :=
-  ⟨by
+    (h : Fintype.card α = p) : IsCyclic α where
+  exists_generator := by
     obtain ⟨g, hg⟩ : ∃ g : α, g ≠ 1 := Fintype.exists_ne_of_one_lt_card (h.symm ▸ hp.1.one_lt) 1
-    classical
-      -- for Fintype (Subgroup.zpowers g)
-      have : Fintype.card (Subgroup.zpowers g) ∣ p := by
-        rw [← h]
-        apply card_subgroup_dvd_card
-      rw [Nat.dvd_prime hp.1] at this
-      cases' this with that that
-      · rw [Fintype.card_eq_one_iff] at that
-        cases' that with t ht
-        suffices g = 1 by contradiction
-        have hgt :=
-          ht
-            ⟨g, by
-              change g ∈ Subgroup.zpowers g
-              exact Subgroup.mem_zpowers g⟩
-        rw [← ht 1] at hgt
-        change (⟨_, _⟩ : Subgroup.zpowers g) = ⟨_, _⟩ at hgt
-        simpa using hgt
-      · use g
-        intro x
-        rw [← h] at that
-        rw [Subgroup.eq_top_of_card_eq _ that]
-        exact Subgroup.mem_top _⟩
+    have := h ▸ orderOf_dvd_card_univ (x := g)
+    rw [Nat.dvd_prime hp.1] at this
+    exact ⟨Group.Generator.of_orderOf_eq_card g <|
+      h.symm ▸ this.resolve_left (hg <| orderOf_eq_one_iff.mp ·)⟩
 #align is_cyclic_of_prime_card isCyclic_of_prime_card
 #align is_add_cyclic_of_prime_card isAddCyclic_of_prime_card
 
-@[to_additive addOrderOf_eq_card_of_forall_mem_zmultiples]
-theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x, x ∈ zpowers g) :
-    orderOf g = Fintype.card α := by
-  classical
-    rw [orderOf_eq_card_zpowers]
-    apply Fintype.card_of_finset'
-    simpa using hx
-#align order_of_eq_card_of_forall_mem_zpowers orderOf_eq_card_of_forall_mem_zpowers
-#align add_order_of_eq_card_of_forall_mem_zmultiples addOrderOf_eq_card_of_forall_mem_zmultiples
+@[to_additive]
+instance {M : Type*} [Monoid M] (m : M) : CommMonoid (Submonoid.powers m) where
+  mul_comm := by
+    rintro ⟨-, ⟨j, rfl⟩⟩ ⟨-, ⟨k, rfl⟩⟩
+    ext1
+    simp only [Submonoid.coe_mul, ←pow_add, add_comm]
+
+
+/-- If an `m` is an element of finite order in a monoid `M`, then `Submonoid.powers m` is a
+cancellative commutative monoid.
+
+This is not declared as an instance because of the hypothesis `0 < orderOf m`, which is necessary.
+Indeed, `M` is a monoid with zero and `m` is nilpotent, then `orderOf m = 0`, but
+`Submonoid.powers m` is not cancellative. -/
+@[to_additive (attr := reducible)]
+def Submonoid.powersCancelCommMonoid {M : Type*} [Monoid M] {m : M} (hm : 0 < orderOf m) :
+    CancelCommMonoid (Submonoid.powers m) where
+  one_mul := one_mul
+  mul_one := mul_one
+  mul_comm := mul_comm
+  mul_left_cancel := by
+    rintro ⟨-, ⟨j, rfl⟩⟩ ⟨-, ⟨k, rfl⟩⟩ ⟨-, ⟨l, rfl⟩⟩
+    intro h
+    replace h := congr_arg Subtype.val h
+    ext
+    simp only [coe_mul] at h ⊢
+    rw [←pow_add, ←pow_add, pow_eq_mod_orderOf, pow_eq_mod_orderOf (n := j + l)] at h
+    have := pow_injective_of_lt_orderOf m ((j + k).mod_lt hm) ((j + l).mod_lt hm) h
+    simpa [← pow_eq_mod_orderOf] using congr_arg (m ^ ·) <| Nat.ModEq.add_left_cancel rfl this
+
+/-- The equivalence between `Fin (orderOf m)` and `Submonoid.powers m`, sending `i` to `m ^ i`,
+under the hypothesis that `orderOf m` is positive. -/
+@[to_additive finEquivMultiples']
+theorem finEquivPowers' {M : Type*} [Monoid M] {m : M} (hm : 0 < orderOf m) :
+    Fin (orderOf m) ≃ Submonoid.powers m :=
+  Equiv.ofBijective (fun k ↦ ⟨m ^ (k : ℕ), ⟨k, rfl⟩⟩) -- maybe use `Subtype.coind`? meh ...
+    ⟨fun k₁ k₂ hk ↦ Fin.ext <|
+      pow_injective_of_lt_orderOf m k₁.prop k₂.prop (congr_arg Subtype.val hk),
+    by
+      rintro ⟨-, ⟨k, rfl⟩⟩
+      exact ⟨⟨k % orderOf m, k.mod_lt hm⟩, by simpa using pow_eq_mod_orderOf.symm⟩⟩
+
+/-- The submonoid of powers of `m` in a monoid `M` is finite if the order of `m` is positive. -/
+@[to_additive finite_multiples_of_orderOf_pos]
+theorem finite_powers_of_orderOf_pos {M : Type*} [Monoid M] {m : M} (hm : 0 < orderOf m) :
+    Finite (Submonoid.powers m) :=
+  Finite.intro (finEquivPowers' hm).symm
+
+/-- In a cancellative monoid, if `orderOf m` is zero then `Submonoid.powers m` is infinite. -/
+@[to_additive infinite_multiples_of_orderOf_zero]
+theorem infinite_powers_of_orderOf_zero {M : Type*} [LeftCancelMonoid M] {m : M}
+    (hm : orderOf m = 0) : Infinite (Submonoid.powers m) := by
+  rw [orderOf_eq_zero_iff, ← injective_pow_iff_not_isOfFinOrder] at hm
+  exact Infinite.of_injective (Subtype.coind (m ^ ·) (fun k ↦ ⟨k, rfl⟩)) <|
+    Subtype.coind_injective _ hm
+
+/-- In a cancellative monoid, if `orderOf m` is zero then `Submonoid.powers m` is infinite. -/
+@[to_additive addOrderOf_pos_iff_finite_multiples]
+theorem orderOf_pos_iff_finite_powers {M : Type*} [LeftCancelMonoid M] {m : M} :
+    0 < orderOf m ↔ Finite (Submonoid.powers m) :=
+  Iff.intro (finite_powers_of_orderOf_pos ·) <| by
+    contrapose
+    simpa only [not_lt, nonpos_iff_eq_zero, not_finite_iff_infinite]
+      using (infinite_powers_of_orderOf_zero ·)
+
+/-- In a cancellative monoid, if `orderOf m` is zero then `Submonoid.powers m` is infinite. -/
+@[to_additive addOrderOf_zero_iff_infinite_multiples]
+theorem orderOf_zero_iff_infinite_powers {M : Type*} [LeftCancelMonoid M] {m : M} :
+    orderOf m = 0 ↔ Infinite (Submonoid.powers m) :=
+  not_iff_not.mp <| by simpa [Nat.pos_iff_ne_zero] using orderOf_pos_iff_finite_powers (m := m)
 
 @[to_additive exists_nsmul_ne_zero_of_isAddCyclic]
 theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cyclic : IsCyclic G]
@@ -161,29 +504,6 @@ theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cycli
   convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
   rw [orderOf_eq_card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
   exact fun x _ ↦ ha x
-
-@[to_additive Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples]
-theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
-    (h : ∀ x, x ∈ zpowers g) : orderOf g = 0 := by
-  classical
-    rw [orderOf_eq_zero_iff']
-    refine' fun n hn hgn => _
-    have ho := orderOf_pos' ((isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, hn, hgn⟩)
-    obtain ⟨x, hx⟩ :=
-      Infinite.exists_not_mem_finset
-        (Finset.image (fun x => g ^ x) <| Finset.range <| orderOf g)
-    apply hx
-    rw [← mem_powers_iff_mem_range_order_of' (x := g) (y := x) ho, Submonoid.mem_powers_iff]
-    obtain ⟨k, hk⟩ := h x
-    dsimp at hk
-    obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
-    · exact ⟨k, by exact_mod_cast hk⟩
-    rw [zpow_eq_mod_orderOf] at hk
-    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.ne')
-    refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
-    rwa [← zpow_ofNat, Int.toNat_of_nonneg this]
-#align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
-#align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples
 
 @[to_additive Bot.isAddCyclic]
 instance Bot.isCyclic {α : Type u} [Group α] : IsCyclic (⊥ : Subgroup α) :=
@@ -267,7 +587,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
             refine' Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) _
             conv_lhs =>
               rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ←
-                orderOf_eq_card_of_forall_mem_zpowers hg]
+                Group.Generator.orderOf_eq_card ⟨g, hg⟩]
             exact orderOf_dvd_of_pow_eq_one hgmn⟩
     _ ≤ n := by
       let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
@@ -276,7 +596,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
           rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
           exact hm.elim' 1
       simp only [Set.toFinset_card, SetLike.coe_sort_coe]
-      rw [← orderOf_eq_card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg]
+      rw [← orderOf_eq_card_zpowers, orderOf_pow g, Group.Generator.orderOf_eq_card ⟨g, hg⟩]
       nth_rw 2 [hm]; nth_rw 3 [hm]
       rw [Nat.mul_div_cancel_left _ (gcd_pos_of_pos_left _ hn0), gcd_mul_left_left, hm,
         Nat.mul_div_cancel _ hm0]
@@ -290,7 +610,8 @@ end Classical
 theorem IsCyclic.exists_monoid_generator [Finite α] [IsCyclic α] :
     ∃ x : α, ∀ y : α, y ∈ Submonoid.powers x := by
   simp_rw [mem_powers_iff_mem_zpowers]
-  exact IsCyclic.exists_generator
+  obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := α)
+  exact ⟨x, hx⟩
 #align is_cyclic.exists_monoid_generator IsCyclic.exists_monoid_generator
 #align is_add_cyclic.exists_add_monoid_generator IsAddCyclic.exists_addMonoid_generator
 
@@ -299,19 +620,18 @@ section
 variable [DecidableEq α] [Fintype α]
 
 @[to_additive]
-theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
-  simp_rw [← SetLike.mem_coe] at ha
-  simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
-#align is_cyclic.image_range_order_of IsCyclic.image_range_orderOf
-#align is_add_cyclic.image_range_order_of IsAddCyclic.image_range_addOrderOf
+theorem Group.Generator.image_range_orderOf (g : Generator α) :
+    Finset.image (fun i => (g : α) ^ i) (range (orderOf (g : α))) = univ := by
+  simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr g.generates, Set.toFinset_univ]
+#align is_cyclic.image_range_order_of Group.Generator.image_range_orderOf
+#align is_add_cyclic.image_range_order_of AddGroup.Generator.image_range_addOrderOf
 
 @[to_additive]
-theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (Fintype.card α)) = univ := by
-  rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
-#align is_cyclic.image_range_card IsCyclic.image_range_card
-#align is_add_cyclic.image_range_card IsAddCyclic.image_range_card
+theorem Group.Generator.image_range_card (g : Generator α) :
+    Finset.image (fun i => (g : α) ^ i) (range (Fintype.card α)) = univ := by
+  rw [← g.orderOf_eq_card, g.image_range_orderOf]
+#align is_cyclic.image_range_card Group.Generator.image_range_card
+#align is_add_cyclic.image_range_card AddGroup.Generator.image_range_card
 
 end
 
@@ -402,13 +722,14 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
     _ = c := sum_totient _
 #align card_order_of_eq_totient_aux₂ card_orderOf_eq_totient_aux₂
 
-theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
-  have : (univ.filter fun a : α => orderOf a = Fintype.card α).Nonempty :=
-    card_pos.1 <| by
-      rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl];
+theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α where
+  exists_generator :=
+    have : (univ.filter fun a : α => orderOf a = Fintype.card α).Nonempty :=
+      card_pos.1 <| by
+        rw [card_orderOf_eq_totient_aux₂ hn dvd_rfl]
         exact totient_pos (Fintype.card_pos_iff.2 ⟨1⟩)
-  let ⟨x, hx⟩ := this
-  isCyclic_of_orderOf_eq_card x (Finset.mem_filter.1 hx).2
+    let ⟨x, hx⟩ := this
+    ⟨Group.Generator.of_orderOf_eq_card x (Finset.mem_filter.1 hx).2⟩
 #align is_cyclic_of_card_pow_eq_one_le isCyclic_of_card_pow_eq_one_le
 
 theorem isAddCyclic_of_card_pow_eq_one_le {α} [AddGroup α] [DecidableEq α] [Fintype α]
@@ -525,22 +846,19 @@ instance (priority := 100) isCyclic : IsCyclic α := by
 @[to_additive]
 theorem prime_card [Fintype α] : (Fintype.card α).Prime := by
   have h0 : 0 < Fintype.card α := Fintype.card_pos_iff.2 (by infer_instance)
-  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
+  obtain ⟨g⟩ := IsCyclic.exists_generator (α := α)
   rw [Nat.prime_def_lt'']
   refine' ⟨Fintype.one_lt_card_iff_nontrivial.2 inferInstance, fun n hn => _⟩
-  refine' (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers (g ^ n))).symm.imp _ _
+  refine' (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers ((g : α) ^ n))).symm.imp _ _
   · intro h
-    have hgo := orderOf_pow (n := n) g
-    rw [orderOf_eq_card_of_forall_mem_zpowers hg, Nat.gcd_eq_right_iff_dvd.1 hn,
-      orderOf_eq_card_of_forall_mem_zpowers, eq_comm,
+    have hgo := orderOf_pow (n := n) (g : α)
+    have := Group.Generator.orderOf_eq_card ⟨(g : α) ^ n, (h ▸ Subgroup.mem_top ·)⟩
+    rw [g.orderOf_eq_card, Nat.gcd_eq_right_iff_dvd.1 hn, this, eq_comm,
       Nat.div_eq_iff_eq_mul_left (Nat.pos_of_dvd_of_pos hn h0) hn] at hgo
-    · exact (mul_left_cancel₀ (ne_of_gt h0) ((mul_one (Fintype.card α)).trans hgo)).symm
-    · intro x
-      rw [h]
-      exact Subgroup.mem_top _
+    exact (mul_left_cancel₀ (ne_of_gt h0) ((mul_one (Fintype.card α)).trans hgo)).symm
   · intro h
     apply le_antisymm (Nat.le_of_dvd h0 hn)
-    rw [← orderOf_eq_card_of_forall_mem_zpowers hg]
+    rw [← g.orderOf_eq_card]
     apply orderOf_le_of_pow_eq_one (Nat.pos_of_dvd_of_pos hn h0)
     rw [← Subgroup.mem_bot, ← h]
     exact Subgroup.mem_zpowers _
@@ -568,22 +886,33 @@ section Exponent
 open Monoid
 
 @[to_additive]
+theorem Group.Generator.exponent_eq_orderOf [Group α] (g : Group.Generator α) :
+    Monoid.exponent α = orderOf (g : α) := by
+  refine dvd_antisymm ?_ <| Monoid.order_dvd_exponent (g : α)
+  refine exponent_dvd_of_forall_pow_eq_one α (orderOf (g : α)) fun x ↦ ?_
+  obtain ⟨n, rfl⟩ := g.generates x
+  exact zpow_pow_orderOf
+
+@[to_additive]
 theorem IsCyclic.exponent_eq_card [Group α] [IsCyclic α] [Fintype α] :
     exponent α = Fintype.card α := by
-  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
+  obtain ⟨g⟩ := IsCyclic.exists_generator (α := α)
   apply Nat.dvd_antisymm
   · rw [← lcm_order_eq_exponent, Finset.lcm_dvd_iff]
     exact fun b _ => orderOf_dvd_card_univ
-  rw [← orderOf_eq_card_of_forall_mem_zpowers hg]
+  rw [← g.orderOf_eq_card]
   exact order_dvd_exponent _
 #align is_cyclic.exponent_eq_card IsCyclic.exponent_eq_card
 #align is_add_cyclic.exponent_eq_card IsAddCyclic.exponent_eq_card
 
+
 @[to_additive]
 theorem IsCyclic.of_exponent_eq_card [CommGroup α] [Fintype α] (h : exponent α = Fintype.card α) :
-    IsCyclic α :=
-  let ⟨g, _, hg⟩ := Finset.mem_image.mp (Finset.max'_mem _ _)
-  isCyclic_of_orderOf_eq_card g <| hg.trans <| exponent_eq_max'_orderOf.symm.trans h
+    IsCyclic α where
+  exists_generator :=
+    let ⟨g, _, hg⟩ := Finset.mem_image.mp <|
+      (exponent_eq_max'_orderOf (G := α)).symm ▸ Finset.max'_mem _ _
+    ⟨Group.Generator.of_orderOf_eq_card g (hg ▸ h)⟩
 #align is_cyclic.of_exponent_eq_card IsCyclic.of_exponent_eq_card
 #align is_add_cyclic.of_exponent_eq_card IsAddCyclic.of_exponent_eq_card
 
@@ -597,17 +926,19 @@ theorem IsCyclic.iff_exponent_eq_card [CommGroup α] [Fintype α] :
 @[to_additive]
 theorem IsCyclic.exponent_eq_zero_of_infinite [Group α] [IsCyclic α] [Infinite α] :
     exponent α = 0 :=
-  let ⟨_, hg⟩ := IsCyclic.exists_generator (α := α)
-  exponent_eq_zero_of_order_zero <| Infinite.orderOf_eq_zero_of_forall_mem_zpowers hg
+  let ⟨g⟩ := IsCyclic.exists_generator (α := α)
+  exponent_eq_zero_of_order_zero <| g.orderOf_eq_zero
 #align is_cyclic.exponent_eq_zero_of_infinite IsCyclic.exponent_eq_zero_of_infinite
 #align is_add_cyclic.exponent_eq_zero_of_infinite IsAddCyclic.exponent_eq_zero_of_infinite
 
+/-- `1` as a generator of `ZMod n` as an additive group. -/
+def ZMod.one_generator (n : ℕ) : AddGroup.Generator (ZMod n) :=
+  ⟨1, fun n ↦ ⟨n, by simp⟩⟩
+
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) where
-  exists_generator := ⟨1, fun n ↦ ⟨n, by simp⟩⟩
+  exists_generator := ⟨ZMod.one_generator n⟩
 
 protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := by
-  cases n
-  · rw [IsAddCyclic.exponent_eq_zero_of_infinite]
-  · rw [IsAddCyclic.exponent_eq_card, card]
+  rw [(ZMod.one_generator n).addOrderOf_eq_card]
 
 end Exponent
