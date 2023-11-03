@@ -53,7 +53,7 @@ lemma stable_under_restrictions {G : StructureGroupoid H} [HasGroupoid M G]
     [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
   rw [mem_maximalAtlas_iff]
   intro e' he'
-  -- `e'` is the restriction of some chart of `M` at `x`
+  -- `e'` is the restriction of some chart of `M` at `x`,
   obtain ⟨x, this⟩ := chartOn_open_eq s he'
   rw [this]
   let e'full := chartAt H (x : M)
@@ -66,14 +66,10 @@ lemma stable_under_restrictions {G : StructureGroupoid H} [HasGroupoid M G]
   -- hence the restriction also lies in the groupoid
   constructor
   · have : (e.symm ≫ₕ chartAt H ↑x).restr (e.target ∩ e.symm ⁻¹' s) ∈ G := by
-      let t := (e.target ∩ e.symm ⁻¹' s)
-      -- easy, as s is open and e.symm is continuous on its source
-      -- xxx: need version of IsOpen.preimage for ContinuousOn, then this is s.2.preimage e.cont_invFun
-      have : IsOpen (e.symm ⁻¹' s) := sorry
-      have htopen : IsOpen t := e.open_target.inter this
-      refine G.locality fun x' hx' ↦ ⟨e.target ∩ e.symm ⁻¹' s, htopen, ?_, ?_ ⟩
+      let hopen := e.preimage_open_of_open_symm s.2
+      refine G.locality fun x' hx' ↦ ⟨e.target ∩ e.symm ⁻¹' s, hopen, ?_, ?_ ⟩
       · exact interior_subset (mem_of_mem_inter_right hx')
-      · exact closedUnderRestriction' (closedUnderRestriction' aux htopen) htopen
+      · exact closedUnderRestriction' (closedUnderRestriction' aux hopen) hopen
     exact G.eq_on_source this r_corr
   · sorry -- completely similar to the first goal: FIXME can I deduplicate?
 
