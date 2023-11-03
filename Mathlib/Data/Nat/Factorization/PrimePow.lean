@@ -29,9 +29,8 @@ theorem isPrimePow_of_minFac_pow_factorization_eq {n : ℕ}
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp_all
   refine' ⟨_, _, (Nat.minFac_prime hn).prime, _, h⟩
-  rw [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.factor_iff_mem_factorization,
-    Nat.mem_factors_iff_dvd hn' (Nat.minFac_prime hn)]
-  apply Nat.minFac_dvd
+  simp [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.support_factorization, hn',
+    Nat.minFac_prime hn, Nat.minFac_dvd]
 #align is_prime_pow_of_min_fac_pow_factorization_eq isPrimePow_of_minFac_pow_factorization_eq
 
 theorem isPrimePow_iff_minFac_pow_factorization_eq {n : ℕ} (hn : n ≠ 1) :
@@ -51,8 +50,8 @@ theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
       rintro rfl
       simp_all only [Finsupp.single_eq_zero, eq_comm, Nat.factorization_zero, hk.ne']
     rw [Nat.eq_pow_of_factorization_eq_single hn0 hn]
-    exact
-      ⟨Nat.prime_of_mem_factorization (by simp [hn, hk.ne'] : p ∈ n.factorization.support), hk, rfl⟩
+    exact ⟨Nat.prime_of_mem_primeFactors $
+      Finsupp.mem_support_iff.2 (by simp [hn, hk.ne'] : n.factorization p ≠ 0), hk, rfl⟩
 #align is_prime_pow_iff_factorization_eq_single isPrimePow_iff_factorization_eq_single
 
 theorem isPrimePow_iff_card_support_factorization_eq_one {n : ℕ} :
