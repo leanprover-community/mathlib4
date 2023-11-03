@@ -656,11 +656,7 @@ theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K
   simp_rw [Ne.def, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
 
-
-
 end InnerRegular
-
-#exit
 
 namespace InnerRegularCompactLTTop
 
