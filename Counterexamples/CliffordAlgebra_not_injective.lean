@@ -86,7 +86,7 @@ theorem comap_C_span_le_bot : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3
   rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_
   rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
-  rw [RingHom.map_mul, constantCoeff_X, MulZeroClass.mul_zero, Submodule.bot_coe,
+  rw [RingHom.map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe,
     Set.mem_singleton_iff]
 
 /-- `k` has characteristic 2. -/
@@ -155,10 +155,10 @@ def Q' : QuadraticForm K (Fin 3 → K) :=
   ∑ i, sq i
 
 theorem Q'_add (x y : Fin 3 → K) : Q' (x + y) = Q' x + Q' y := by
-  simp only [Q', (QuadraticForm.sum_apply), (sq_map_add_char_two), (Finset.sum_add_distrib)]
+  simp only [Q', QuadraticForm.sum_apply, sq_map_add_char_two, Finset.sum_add_distrib]
 
 theorem Q'_sub (x y : Fin 3 → K) : Q' (x - y) = Q' x - Q' y := by
-  simp only [Q', (QuadraticForm.sum_apply), (sq_map_sub_char_two), (Finset.sum_sub_distrib)]
+  simp only [Q', QuadraticForm.sum_apply, sq_map_sub_char_two, Finset.sum_sub_distrib]
 
 theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
   calc
@@ -168,27 +168,26 @@ theorem Q'_apply (a : Fin 3 → K) : Q' a = a 0 * a 0 + a 1 * a 1 + a 2 * a 2 :=
 theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
   calc
     Q' (Pi.single i x) = ∑ j : Fin 3, (Pi.single i x * Pi.single i x : Fin 3 → K) j := by
-      simp [Q', sq, (QuadraticForm.sum_apply), (QuadraticForm.comp_apply),
-        (QuadraticForm.sq_apply), (LinearMap.proj_apply)]
+      simp [Q', sq]
     _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
 
 theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv
   have h0 : α * β * γ * v 0 = 0 := by
-    have := congr_arg ((· * ·) (β * γ)) hv
-    simp only [MulZeroClass.mul_zero, mul_add, ← mul_assoc] at this
+    have := congr_arg (β * γ * ·) hv
+    simp only [mul_zero, mul_add, ← mul_assoc] at this
     rw [mul_comm (β * γ) α, ← mul_assoc, mul_right_comm β γ β, mul_assoc β γ γ, X_sq, X_sq] at this
-    simpa only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, add_zero, zero_add] using this
+    simpa only [mul_zero, zero_mul, add_zero, zero_add] using this
   have h1 : α * β * γ * v 1 = 0 := by
-    have := congr_arg ((· * ·) (α * γ)) hv
-    simp only [MulZeroClass.mul_zero, mul_add, ← mul_assoc] at this
+    have := congr_arg (α * γ * ·) hv
+    simp only [mul_zero, mul_add, ← mul_assoc] at this
     rw [mul_right_comm α γ α, mul_assoc α γ γ, mul_right_comm α γ β, X_sq, X_sq] at this
-    simpa only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, add_zero, zero_add] using this
+    simpa only [mul_zero, zero_mul, add_zero, zero_add] using this
   have h2 : α * β * γ * v 2 = 0 := by
-    have := congr_arg ((· * ·) (α * β)) hv
-    simp only [MulZeroClass.mul_zero, mul_add, ← mul_assoc] at this
+    have := congr_arg (α * β * ·) hv
+    simp only [mul_zero, mul_add, ← mul_assoc] at this
     rw [mul_right_comm α β α, mul_assoc α β β, X_sq, X_sq] at this
-    simpa only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, add_zero, zero_add] using this
+    simpa only [mul_zero, zero_mul, add_zero, zero_add] using this
   rw [Q'_apply, sq_zero_of_αβγ_mul h0, sq_zero_of_αβγ_mul h1, sq_zero_of_αβγ_mul h2, add_zero,
     add_zero]
 
@@ -226,7 +225,7 @@ theorem gen_mul_gen (i) : gen i * gen i = 1 := by
 /-- By virtue of the quotient, terms of this form are zero -/
 theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
   dsimp only [gen]
-  simp_rw [← (LinearMap.map_smul), ← (LinearMap.map_sub), ← Submodule.Quotient.mk_smul _ (_ : K),
+  simp_rw [← LinearMap.map_smul, ←LinearMap.map_sub, ← Submodule.Quotient.mk_smul _ (_ : K),
     ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
@@ -243,7 +242,7 @@ theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := 
   have : (α • x' - β • y' - γ • z') * x' = α • 1 - β • (y' * x') - γ • (z' * x') := by
     simp_rw [sub_mul, smul_mul_assoc, gen_mul_gen]
   rw [← this]
-  rw [quot_obv, MulZeroClass.zero_mul]
+  rw [quot_obv, zero_mul]
 
 theorem algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * γ) = 0 := by
   rw [Algebra.algebraMap_eq_smul_one, αβγ_smul_eq_zero]
