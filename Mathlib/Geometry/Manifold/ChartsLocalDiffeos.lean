@@ -24,7 +24,7 @@ variable {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M] [Char
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
  of some chart on `M`. -/
-lemma chartOn_open_eq (s : Opens M) [Nonempty s] {e : LocalHomeomorph s H} (he : e ∈ atlas H s) :
+lemma chartOn_open_eq {s : Opens M} [Nonempty s] {e : LocalHomeomorph s H} (he : e ∈ atlas H s) :
     ∃ x : s, e = (chartAt H (x : M)).subtypeRestr s := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
   have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) s} = xset := hx
@@ -33,7 +33,7 @@ lemma chartOn_open_eq (s : Opens M) [Nonempty s] {e : LocalHomeomorph s H} (he :
 /-- If `t` is a non-empty open subset of `H`,
   every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chartOn_open_eq`?
-lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he' : e' ∈ atlas H t) :
+lemma chartOn_open_eq' {t : Opens H} [Nonempty t] {e' : LocalHomeomorph t H} (he' : e' ∈ atlas H t) :
     ∃ x : t, e' = (chartAt H ↑x).subtypeRestr t := by
   rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
   have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
@@ -65,10 +65,10 @@ NB. We cannot deduce membership in `atlas H s` in general: by definition, this a
 precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
 can contain more charts than these. -/
 lemma StructureGroupoid.restriction_in_maximalAtlas (he : e ∈ atlas H M) [ClosedUnderRestriction G]
-    (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
+    {s : Opens M} [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
   intro e' he'
   -- `e'` is the restriction of some chart of `M` at `x`,
-  obtain ⟨x, this⟩ := chartOn_open_eq s he'
+  obtain ⟨x, this⟩ := chartOn_open_eq he'
   rw [this]
   -- The transition functions between the unrestricted charts are in the groupoid,
   -- the transition functions of the restriction are the restriction of the transition function.
@@ -92,15 +92,15 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) [ClosedUnderR
   have : Nonempty s := nonempty_coe_sort.mpr hs
   have : Nonempty t := nonempty_coe_sort.mpr (MapsTo.map_nonempty e e.mapsTo hs)
   -- Choose `x ∈ t` so `c'` is the restriction of `chartAt H x`.
-  obtain ⟨x, hc'⟩ := chartOn_open_eq' t hc'
+  obtain ⟨x, hc'⟩ := chartOn_open_eq' hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
   rw [hc', (chartAt_self_eq)]
   -- Argue that our expression equals this chart above, at least on its source.
   rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
-  set goal := (e.toHomeomorphSourceTarget.toLocalHomeomorph ≫ₕ Opens.localHomeomorphSubtypeCoe t)
+  set goal := (e.toHomeomorphSourceTarget.toLocalHomeomorph ≫ₕ t.localHomeomorphSubtypeCoe)
   have : goal ≈ e.subtypeRestr s :=
     (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro _ _; rfl⟩
-  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he s)
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
 lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestriction G] :
