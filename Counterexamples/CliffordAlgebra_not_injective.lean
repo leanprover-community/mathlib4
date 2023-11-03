@@ -3,15 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Two
-import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.Nat.Prime
 import Mathlib.Data.ZMod.Basic
-import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.MvPolynomial.Basic
