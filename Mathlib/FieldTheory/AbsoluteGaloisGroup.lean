@@ -15,13 +15,13 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
 ## Main definitions
 - `Field.absoluteGaloisGroup` : The Galois group of the field extension `K^al/K`, where `K^al` is an
   algebraic closure of `K`.
-- `Field.absoluteGaloisGroup_abelianization` : The topological abelianization of
+- `Field.absoluteGaloisGroupAbelianization` : The topological abelianization of
   `Field.absoluteGaloisGroup K`, that is, the quotient of `Field.absoluteGaloisGroup K` by the
   topological closure of its commutator subgroup.
 
 ## Main results
 - `Field.absoluteGaloisGroup.commutator_closure_isNormal` : the topological closure of the
-  commutation of `absoluteGaloisGroup` is a normal subgroup.
+  commutator of `absoluteGaloisGroup` is a normal subgroup.
 
 ## Tags
 field, algebraic closure, galois group, abelianization
@@ -53,20 +53,8 @@ instance absoluteGaloisGroup.commutator_closure_isNormal :
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
   `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
-def absoluteGaloisGroup_abelianization := TopologicalAbelianization (G_K K)
+abbrev absoluteGaloisGroupAbelianization := TopologicalAbelianization (G_K K)
 
-local notation "G_K_ab" => absoluteGaloisGroup_abelianization
-
-noncomputable instance : Group (G_K_ab K) := TopologicalAbelianization.group (G_K K)
-
-noncomputable instance : CommGroup (G_K_ab K) := TopologicalAbelianization.commGroup (G_K K)
-
-/-- `absoluteGaloisGroup_abelianization` is a topological space with the quotient topology. -/
-noncomputable instance : TopologicalSpace (G_K_ab K) :=
-  TopologicalAbelianization.topologicalSpace (G_K K)
-
-/-- `absoluteGaloisGroup_abelianization` is a topological group with the quotient topology. -/
-instance : TopologicalGroup (G_K_ab K) :=
-  TopologicalAbelianization.topologicalGroup (G_K K)
+local notation "G_K_ab" => absoluteGaloisGroupAbelianization
 
 end Field

@@ -32,32 +32,21 @@ instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal 
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
   `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
-def TopologicalAbelianization := G ⧸ Subgroup.topologicalClosure (commutator G)
+abbrev TopologicalAbelianization := G ⧸ Subgroup.topologicalClosure (commutator G)
 
 local notation "G_ab" => TopologicalAbelianization
 
 namespace TopologicalAbelianization
 
-instance group : Group (G_ab G) :=
-  QuotientGroup.Quotient.group (commutator G).topologicalClosure
-
-instance commGroup : CommGroup (TopologicalAbelianization G) :=
-  { group G with
-    mul_comm := fun x y =>
-      Quotient.inductionOn₂' x y fun a b =>
-        Quotient.sound' <|
-          QuotientGroup.leftRel_apply.mpr <| by
-            have h : (a * b)⁻¹ * (b * a) = ⁅b⁻¹, a⁻¹⁆ := by group
-            rw [h]
-            exact Subgroup.le_topologicalClosure _ (Subgroup.commutator_mem_commutator
-              (Subgroup.mem_top b⁻¹) (Subgroup.mem_top a⁻¹)) }
-
-/-- `absoluteGaloisGroup_abelianization` is a topological space with the quotient topology. -/
-instance topologicalSpace : TopologicalSpace (G_ab G)  :=
-  QuotientGroup.Quotient.topologicalSpace (Subgroup.topologicalClosure (commutator G))
-
-/-- `absoluteGaloisGroup_abelianization` is a topological group with the quotient topology. -/
-instance topologicalGroup : TopologicalGroup (G_ab G)  :=
-  topologicalGroup_quotient (commutator G).topologicalClosure
+instance commGroup : CommGroup (G_ab G) where
+  mul_comm := fun x y =>
+    Quotient.inductionOn₂' x y fun a b =>
+      Quotient.sound' <|
+        QuotientGroup.leftRel_apply.mpr <| by
+          have h : (a * b)⁻¹ * (b * a) = ⁅b⁻¹, a⁻¹⁆ := by group
+          rw [h]
+          exact Subgroup.le_topologicalClosure _ (Subgroup.commutator_mem_commutator
+            (Subgroup.mem_top b⁻¹) (Subgroup.mem_top a⁻¹))
+  __ : Group (G_ab G) := inferInstance
 
 end TopologicalAbelianization
