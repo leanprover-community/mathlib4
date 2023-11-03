@@ -36,6 +36,13 @@ This file contains basics about the separable degree of a field extension.
 - `sepDegree_eq_of_equiv`, `finSepDegree_eq_of_equiv`: if `E` and `E'` are isomorphic as
   `F`-algebras, then they have the same separable degree over `F`.
 
+- `emb_equiv_of_isAlgClosed`: a random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F`
+  is algebraic and `K / F` is algebraically closed.
+
+- `sepDegree_eq_of_isAlgClosed`, `finSepDegree_eq_of_isAlgClosed`: the separable degree of `E / F`
+  is equal to the cardinality of `E →ₐ[F] K` when `E / F` is algebraic and `K / F` is
+  algebraically closed.
+
 ## Tags
 
 separable degree, degree, polynomial
@@ -175,5 +182,144 @@ theorem sepDegree_top' (K : Type w) [Field K] [Algebra F K] [Algebra E K]
 theorem finSepDegree_top' (K : Type w) [Field K] [Algebra F K] [Algebra E K]
     [IsScalarTower F E K] : finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K := by
   simp only [finSepDegree, sepDegree_top']
+
+-- TODO: simplify and remove the following things
+
+section Adhoc
+
+variable {F E}
+
+private lemma test1 {K : Type w} [Field K] [Algebra F K] (i : E →ₐ[F] K) :
+    i.comp (AlgEquiv.ofInjectiveField i).symm.toAlgHom = i.fieldRange.val := by
+  ext x
+  rw [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply,
+    show i ((AlgEquiv.ofInjectiveField i).symm x) =
+        (AlgEquiv.ofInjectiveField i) ((AlgEquiv.ofInjectiveField i).symm x) by
+      rw [← AlgEquiv.ofInjective_apply i i.toRingHom.injective]; rfl,
+    AlgEquiv.apply_symm_apply]
+  rfl
+
+private lemma test3 {K : Type w} [Field K] [Algebra F K] (i : E →ₐ[F] K) [IsAlgClosed E] :
+    IsAlgClosed i.fieldRange := by
+  constructor
+  intro g
+  have g_lifts : g ∈ lifts (AlgEquiv.ofInjectiveField i).toAlgHom.toRingHom := by
+    refine g.lifts_iff_coeff_lifts.mpr fun n ↦ ?_
+    exact AlgEquiv.surjective (AlgEquiv.ofInjectiveField i) (coeff g n)
+  obtain ⟨p, hp⟩ := g_lifts
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, coe_mapRingHom] at hp
+  rw [← hp, splits_map_iff]
+  exact IsAlgClosed.splits_domain p
+
+private lemma test4b (L L' : IntermediateField F E) :
+    let L'' : IntermediateField L' E := adjoin L' (L : Set E)
+    letI : Algebra L' L'' := Subalgebra.algebra L''.toSubalgebra
+    (L ⊔ L' : IntermediateField F E) = restrictScalars F L'' := by
+  simp only
+  -- TODO: use `IntermediateField.adjoin_self` after it's merged
+  have h_adjoin_self : ∀ K : IntermediateField F E, adjoin F {x | x ∈ K} = K :=
+    fun K ↦ le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
+  -- TODO: use `IntermediateField.restrictScalars_adjoin` after it's merged
+  have h_restrictScalars_adjoin : ∀ (K : IntermediateField F E) (S : Set E),
+      restrictScalars (K := F) (adjoin K S) = adjoin F ({x | x ∈ K} ∪ S) :=
+    fun K S ↦ by rw [← h_adjoin_self K, adjoin_adjoin_left, h_adjoin_self K]
+  have : L' ⊔ L = (adjoin F {x | x ∈ L'}) ⊔ (adjoin F {x | x ∈ L}) := by
+    simp only [h_adjoin_self]
+  rw [h_restrictScalars_adjoin L', sup_comm, this, ← gc.l_sup]
+  rfl
+
+private lemma test4a (L L' : IntermediateField F E) (halg : Algebra.IsAlgebraic F L) :
+    let L'' : IntermediateField L' E := adjoin L' (L : Set E)
+    letI : Algebra L' L'' := Subalgebra.algebra L''.toSubalgebra
+    Algebra.IsAlgebraic L' L'' := by
+  have h : ∀ x : L,
+      letI : Algebra L' (adjoin L' {x.1}) := Subalgebra.algebra (adjoin L' {x.1}).toSubalgebra
+      Algebra.IsAlgebraic L' (adjoin L' {x.1}) := fun x ↦ by
+    letI : Algebra L' (adjoin L' {x.1}) := Subalgebra.algebra (adjoin L' {x.1}).toSubalgebra
+    haveI := adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.mp <|
+      isAlgebraic_of_larger_base L' <| isAlgebraic_iff.mp <| halg x
+    exact Algebra.isAlgebraic_of_finite L' _
+  have halg' := isAlgebraic_iSup h
+  have := (gc (F := L') (E := E)).l_iSup (f := fun (x : L) ↦ {x.1})
+  simp only [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype] at this
+  rwa [← this] at halg'
+
+private lemma test4d (L : IntermediateField F E) (hsurj : Function.Surjective (algebraMap F L)) :
+    L = ⊥ := eq_bot_iff.2 fun x hx ↦ mem_bot.2 <| by
+  obtain ⟨y, hy⟩ := hsurj ⟨x, hx⟩
+  use y
+  rw [IsScalarTower.algebraMap_apply F L E, congr_arg (algebraMap L E) hy]
+  rfl
+
+private lemma test4c (L L' : IntermediateField F E) (halg : Algebra.IsAlgebraic F L)
+    [IsAlgClosed L'] :
+    let L'' : IntermediateField L' E := adjoin L' (L : Set E)
+    letI : Algebra L' L'' := Subalgebra.algebra L''.toSubalgebra
+    L'' = ⊥ := by
+  let L'' : IntermediateField L' E := adjoin L' (L : Set E)
+  letI : Algebra L' L'' := Subalgebra.algebra L''.toSubalgebra
+  exact test4d L'' <| IsAlgClosed.algebraMap_surjective_of_isAlgebraic <| test4a L L' halg
+
+private lemma test40 (L L' : IntermediateField F E) (halg : Algebra.IsAlgebraic F L)
+    [IsAlgClosed L'] : L ≤ L' := by
+  apply le_of_sup_eq
+  have := congr_arg (restrictScalars F) (test4c L L' halg)
+  rwa [← test4b, restrictScalars_bot_eq_self] at this
+
+private lemma test4 (halg : Algebra.IsAlgebraic F E)
+    {K : Type w} [Field K] [Algebra F K] (i : E →ₐ[F] K)
+    (E' : IntermediateField F K) [IsAlgClosed E'] : i.fieldRange ≤ E' := by
+  apply test40 i.fieldRange E'
+  rintro ⟨_, ⟨y, rfl⟩⟩
+  exact isAlgebraic_algHom_of_isAlgebraic (AlgEquiv.ofInjectiveField i).toAlgHom (halg y)
+
+private lemma test5 (halg : Algebra.IsAlgebraic F E)
+    {E' : Type v'} [Field E'] [Algebra F E'] [IsAlgClosed E']
+    {K : Type w} [Field K] [Algebra F K] (i : E →ₐ[F] K) (i' : E' →ₐ[F] K) :
+    i.fieldRange ≤ i'.fieldRange := by
+  haveI : IsAlgClosed i'.fieldRange := test3 i'
+  exact test4 halg i i'.fieldRange
+
+end Adhoc
+
+/-- A random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
+and `K / F` is algebraically closed. -/
+-- TODO: `IsAlgClosed K` should be replaced by `∀ α : E, Splits (algebraMap F K) (minpoly F α)`
+def emb_equiv_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
+    (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
+    Emb F E ≃ (E →ₐ[F] K) := by
+  have hac := IsAlgClosure.ofAlgebraic F E (AlgebraicClosure E) halg
+  let i := IsAlgClosed.lift (M := K) hac.algebraic
+  have h2 : Function.Injective (i.comp (A := E)) := fun j j' h ↦ by
+    apply_fun fun x ↦ (x : E → K) at h
+    simp only [AlgHom.coe_comp] at h
+    exact AlgHom.ext (congrFun (Function.Injective.comp_left i.injective h))
+  let i' := AlgEquiv.ofInjectiveField i
+  let toFun : (E →ₐ[F] (AlgebraicClosure E)) → (E →ₐ[F] K) :=
+    fun f ↦ i.comp f
+  let invFun : (E →ₐ[F] K) → (E →ₐ[F] (AlgebraicClosure E)) :=
+    fun f ↦ i'.symm.toAlgHom.comp (IntermediateField.inclusion <|
+      test5 halg f i) |>.comp f.rangeRestrict
+  have right_inv : Function.RightInverse invFun toFun := fun f ↦ by
+    simp only
+    rw [AlgHom.comp_assoc, ← AlgHom.comp_assoc, test1]
+    rfl
+  exact ⟨toFun, invFun, fun f ↦ h2 <| right_inv <| i.comp f, right_inv⟩
+
+/-- The separable degree of `E / F` is equal to the cardinality of `E →ₐ[F] K` when `E / F`
+is algebraic and `K / F` is algebraically closed. -/
+theorem sepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
+    (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
+    Cardinal.lift.{w} (sepDegree F E) = Cardinal.mk (E →ₐ[F] K) := by
+  simpa only [Cardinal.mk_uLift] using ((Equiv.ulift.{w} (α := Emb F E)).trans
+    (emb_equiv_of_isAlgClosed F E halg K)).cardinal_eq
+
+/-- The `finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
+when `E / F` is algebraic and `K / F` is algebraically closed. -/
+theorem finSepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
+    (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
+    finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
+  simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
+    (sepDegree_eq_of_isAlgClosed F E halg K)
 
 end Field
