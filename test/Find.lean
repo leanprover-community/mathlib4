@@ -33,7 +33,8 @@ theorem my_true_eq_True: -- intentionally capitalized
   my_true = true := rfl
 
 /--
-info: Found 2 definitions mentioning my_true.
+info: Found 3 definitions mentioning my_true.
+• my_true
 • my_true_eq_True
 • my_true_eq_true
 -/
@@ -61,7 +62,7 @@ Of these, 3 have a name containing "y_tru".
 #find "y_tru"
 
 /--
-info: Found 2 definitions mentioning my_true.
+info: Found 3 definitions mentioning my_true.
 Of these, 2 have a name containing "eq".
 • my_true_eq_True
 • my_true_eq_true
@@ -71,7 +72,7 @@ Of these, 2 have a name containing "eq".
 
 /--
 info: Found 2 definitions mentioning Bool, my_true and Eq.
-Of these, 2 match your patterns.
+Of these, 2 match your pattern(s).
 • my_true_eq_True
 • my_true_eq_true
 -/
@@ -80,7 +81,7 @@ Of these, 2 match your patterns.
 
 /--
 info: Found 2 definitions mentioning Bool, my_true and Eq.
-Of these, 0 match your patterns.
+Of these, 0 match your pattern(s).
 -/
 #guard_msgs in
 #find (_ = my_true)
@@ -117,7 +118,7 @@ theorem non_linear_pattern_test2 {n m : Nat} :
 
 /--
 info: Found 2 definitions mentioning List.replicate, List and HAppend.hAppend.
-Of these, 1 match your patterns.
+Of these, one matches your pattern(s).
 • non_linear_pattern_test1
 -/
 #guard_msgs in
@@ -125,7 +126,7 @@ Of these, 1 match your patterns.
 
 /--
 info: Found 2 definitions mentioning List.replicate, List and HAppend.hAppend.
-Of these, 2 match your patterns.
+Of these, 2 match your pattern(s).
 • non_linear_pattern_test2
 • non_linear_pattern_test1
 -/
@@ -134,7 +135,7 @@ Of these, 2 match your patterns.
 
 /--
 info: Found 2 definitions mentioning List.replicate, List, Eq and HAppend.hAppend.
-Of these, 1 match your patterns.
+Of these, one matches your pattern(s).
 • non_linear_pattern_test1
 -/
 #guard_msgs in
@@ -142,7 +143,7 @@ Of these, 1 match your patterns.
 
 /--
 info: Found 2 definitions mentioning List.replicate, List, Eq and HAppend.hAppend.
-Of these, 1 match your patterns.
+Of these, one matches your pattern(s).
 • non_linear_pattern_test2
 -/
 #guard_msgs in
@@ -153,7 +154,7 @@ theorem hyp_ordering_test2 {n : Nat} (_ : n + n = 6 * n) (h : 0 < n) : 0 ≤ n :
 
 /--
 info: Found 2 definitions mentioning LE.le, LT.lt and OfNat.ofNat.
-Of these, 2 match your patterns.
+Of these, 2 match your pattern(s).
 • hyp_ordering_test1
 • hyp_ordering_test2
 -/
@@ -174,24 +175,24 @@ export Star(star)
 theorem star_comm_self' {R} [Mul R] [Star R] (x : R) : star x * x = x * star x := sorry
 
 /--
-info: Found 1 definitions mentioning LinearPatternTest.Star.star.
-Of these, 1 match your patterns.
+info: Found 2 definitions mentioning LinearPatternTest.Star.star.
+Of these, one matches your pattern(s).
 • star_comm_self'
 -/
 #guard_msgs in
 #find star _
 
 /--
-info: Found 1 definitions mentioning HMul.hMul, LinearPatternTest.Star.star and Eq.
-Of these, 1 match your patterns.
+info: Found one definition mentioning HMul.hMul, LinearPatternTest.Star.star and Eq.
+Of these, one matches your pattern(s).
 • star_comm_self'
 -/
 #guard_msgs in
 #find star ?a * ?a = ?a * star ?_
 
 /--
-info: Found 1 definitions mentioning HMul.hMul, LinearPatternTest.Star.star and Eq.
-Of these, 1 match your patterns.
+info: Found one definition mentioning HMul.hMul, LinearPatternTest.Star.star and Eq.
+Of these, one matches your pattern(s).
 • star_comm_self'
 -/
 #guard_msgs in
@@ -258,7 +259,7 @@ Of these, 2 have a name containing "my_true_eq_True".
 
 /--
 info: Found 0 definitions mentioning And and True.
-Of these, 0 match your patterns.
+Of these, 0 match your pattern(s).
 -/
 #guard_msgs in
 #find And True
@@ -273,7 +274,7 @@ Of these, 0 match your patterns.
 
 /--
 info: Found 0 definitions mentioning And, True and my_true.
-Of these, 0 match your patterns.
+Of these, 0 match your pattern(s).
 -/
 #guard_msgs in
 #find |- And True True, my_true
@@ -383,8 +384,8 @@ def findThisLemma : A.A1 = B.mk := rfl
 def doNotFindThisLemma : ∀ a, a = B.mk := fun _a => rfl
 
 /--
-info: Found 1 definitions mentioning B, A.A1, B.ofA, B.mk and Eq.
-Of these, 1 match your patterns.
+info: Found one definition mentioning B, A.A1, B.ofA, B.mk and Eq.
+Of these, one matches your pattern(s).
 • findThisLemma
 -/
 #guard_msgs in
@@ -392,8 +393,8 @@ Of these, 1 match your patterns.
 
 
 /--
-info: Found 1 definitions mentioning B, A.A1, B.ofA, B.mk and Eq.
-Of these, 1 match your patterns.
+info: Found one definition mentioning B, A.A1, B.ofA, B.mk and Eq.
+Of these, one matches your pattern(s).
 • findThisLemma
 -/
 #guard_msgs in
@@ -403,8 +404,8 @@ Of these, 1 match your patterns.
 set_option pp.raw true
 
 /--
-info: Found 1 definitions mentioning B, A.A1, B.ofA, B.mk and Eq.
-Of these, 1 match your patterns.
+info: Found one definition mentioning B, A.A1, B.ofA, B.mk and Eq.
+Of these, one matches your pattern(s).
 • findThisLemma
 -/
 #guard_msgs in

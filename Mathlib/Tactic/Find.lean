@@ -438,16 +438,22 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
         -- array of names
         let hitArrays := hitArrays.qsort fun (_, a₁) (_, a₂) => a₁.size < a₂.size
         let (needle, hits) := hitArrays.get! 0
-        message := message ++ m!"Found {hits.size} definitions whose name contains \"{needle}\".\n"
+        if hits.size == 1 then
+          message := message ++ m!"Found one definition whose name contains \"{needle}\".\n"
+        else
+          message := message ++ m!"Found {hits.size} definitions whose name contains \"{needle}\".\n"
         pure hits
       else do
         -- Query the declaration cache
         let (m₁, m₂) ← index.nameRelCache.get
         let hits := RBTree.intersects <| needles.toArray.map <| fun needle =>
-          (m₁.find needle).union (m₂.find needle)
+          ((m₁.find needle).union (m₂.find needle)).insert needle
 
         let needlesList := MessageData.andList (needles.toArray.map .ofName)
-        message := message ++ m!"Found {hits.size} definitions mentioning {needlesList}.\n"
+        if hits.size == 1 then
+          message := message ++ m!"Found one definition mentioning {needlesList}.\n"
+        else
+          message := message ++ m!"Found {hits.size} definitions mentioning {needlesList}.\n"
         pure hits.toArray
 
     -- Filter by name patterns
@@ -456,7 +462,10 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
       m.find? n.toString.toLower |>.isSome
     unless (namePats.isEmpty) do
       let nameList := MessageData.andList <| namePats.map fun s => m!"\"{s}\""
-      message := message ++ m!"Of these, {hits2.size} have a name containing {nameList}.\n"
+      if hits2.size == 1 then
+        message := message ++ m!"Of these, one has a name containing {nameList}.\n"
+      else
+        message := message ++ m!"Of these, {hits2.size} have a name containing {nameList}.\n"
 
     -- Obtain ConstantInfos
     let env ← getEnv
@@ -470,7 +479,10 @@ def find (index : Index) (args : TSyntax ``find_filters) (maxShown := 200) :
         matchAnywhere t
     let hits4 ← hits3.filterM fun ci => pats.allM (· ci)
     unless (pats.isEmpty) do
-      message := message ++ m!"Of these, {hits4.size} match your patterns.\n"
+      if hits4.size == 1 then
+        message := message ++ m!"Of these, one matches your pattern(s).\n"
+      else
+        message := message ++ m!"Of these, {hits4.size} match your pattern(s).\n"
 
     -- Sort by modindex and then by theorem size.
     let hits5 ← sortByModule' (·.name) (exprSize ·.type) hits4
