@@ -19,7 +19,17 @@ import Mathlib.RingTheory.MvPolynomial.Ideal
 
 /-! # `algebraMap R (CliffordAlgebra Q)` is not always injective.
 
-A formalization of https://mathoverflow.net/questions/60596/clifford-pbw-theorem-for-quadratic-form/87958#87958
+A formalization of [Darij Grinberg's answer](https://mathoverflow.net/questions/60596/clifford-pbw-theorem-for-quadratic-form/87958#87958)
+to a "Clifford PBW theorem for quadratic form" post on MathOverflow, that provides a counterexample
+to `Function.Injective (algebraMap R (CliffordAlgebra Q))`.
+
+The outline is that we define:
+
+* $k$ (`Q60596.K`) as the commutative ring $𝔽₂[α, β, γ] / (α², β², γ²)$
+* $L$ (`Q60596.L`) as the $k$-module $⟨x,y,z⟩ / ⟨αx + βy + γz⟩$
+* $Q$ (`Q60596.Q`) as the quadratic form sending $Q(\overline{ax + by = cz}) = a² + b² + c²$
+
+and discover that $αβγ ≠ 0$ as an element of $K$, but $αβγ = 0$ as an element of $𝒞l(Q)$.
 
 Some Zulip discussion at https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/.F0.9D.94.BD.E2.82.82.5B.CE.B1.2C.20.CE.B2.2C.20.CE.B3.5D.20.2F.20.28.CE.B1.C2.B2.2C.20.CE.B2.C2.B2.2C.20.CE.B3.C2.B2.29/near/222716333.
 -/
@@ -45,7 +55,7 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   rw [this, mem_ideal_span_monomial_image]
   simp
 
-theorem X0_X1_X2_nmem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
+theorem X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
   intro h
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
     Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
@@ -81,7 +91,8 @@ def K : Type _ := _ ⧸ kIdeal
 
 instance : CommRing K := Ideal.Quotient.commRing _
 
-theorem comap_C_span_le_bot : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) ≤ ⊥ := by
+theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
+  refine bot_unique ?_
   refine (Ideal.comap_le_map_of_inverse _ _ _ (constantCoeff_C _)).trans ?_
   rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_
@@ -96,7 +107,7 @@ instance K.charP : CharP K 2 := by
   have : Nat.castRingHom (MvPolynomial (Fin 3) (ZMod 2)) = C.comp (Nat.castRingHom _) := by
     ext1 r; rfl
   rw [this, ← Ideal.comap_comap, ← RingHom.comap_ker]
-  exact Ideal.comap_mono (comap_C_span_le_bot.trans bot_le)
+  exact Ideal.comap_mono (comap_C_kIdeal.trans_le bot_le)
 
 /-- The generators of `K`. -/
 def K.gen (i : Fin 3) : K := Ideal.Quotient.mk _ (MvPolynomial.X i)
@@ -121,7 +132,7 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
 
 /-- Though `αβγ` is not itself zero-/
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
-  X0_X1_X2_nmem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
+  X0_X1_X2_not_mem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
 
 -- A variant of lean4#2220
 local macro_rules | `($x • $y) => `(@HSMul.hSMul _ _ _ instHSMul $x $y)
