@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
+Authors: Vasily Nesterov, Jireh Loreaux
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Tactic.Linarith
@@ -67,38 +67,41 @@ theorem helly_theorem (F : Set (Set E)) {hF_fin : Set.Finite F}
   rw [hn] at h_card
   induction' n, h_card using Nat.le_induction with k h_card hk generalizing F
   exact h_inter F (Eq.subset rfl) hn
-  have h1 : ∀ X ∈ F, (⋂₀ (F \ {X})).Nonempty := by
-    intro X hX
-    apply @hk _ (Finite.diff hF_fin {X})
+  /- construct a family of vectors indexed by `F` such that the vector corresponding to `X : F` is
+  an arbitrary element of the intersection `⋂₀ F` which *does not lie in `X`*. -/
+  let a : F → E := fun X : F ↦ Set.Nonempty.some (s := ⋂₀ (F \ {(X : Set E)})) <| by
+    apply @hk _ (Finite.diff hF_fin {(X : Set E)})
     · exact fun Y hY ↦ h_convex Y (mem_of_mem_diff hY)
-    · exact fun G hG_1 hG_2 ↦ h_inter G (Subset.trans hG_1 (diff_subset F {X})) hG_2
-    · rw [ncard_diff_singleton_of_mem hX hF_fin, Nat.sub_eq_of_eq_add hn]
-  let a : F → E := fun X ↦ (h1 X (Subtype.mem X)).some
+    · exact fun G hG_1 hG_2 ↦ h_inter G (Subset.trans hG_1 (diff_subset F {(X : Set E)})) hG_2
+    · rw [ncard_diff_singleton_of_mem X.property hF_fin, Nat.sub_eq_of_eq_add hn]
+  /- This family of vectors is not affine independent because the number of them exceeds the
+  dimension of the space. -/
   have h2 : ¬AffineIndependent 𝕜 a := by
     have : Fintype ↑F := Finite.fintype hF_fin -- for instance inferring
     rw [←finrank_vectorSpan_le_iff_not_affineIndependent 𝕜 a (n := (k - 1))]
     · exact (Submodule.finrank_le (vectorSpan 𝕜 (Set.range a))).trans (Nat.le_pred_of_lt h_card)
     · rw [←Finite.card_toFinset hF_fin, ←ncard_eq_toFinset_card F hF_fin, hn,
-      ←Nat.sub_add_comm (Nat.one_le_of_lt h_card)]
+        ←Nat.sub_add_comm (Nat.one_le_of_lt h_card)]
       rfl
+  /- Use `Convex.radon_partition` to conclude there is a subset `I` of `F` and a point `p : E`
+  which lies in the convex hull of either `a '' I` or `a '' Iᶜ`. We claim that `p ∈ ⋂₀ F`.
+  (here `Iᶜ` is the complement within `F`, i.e., it is effectively `F \ I`.) -/
   obtain ⟨I, p, h4_I, h4_Ic⟩ := Convex.radon_partition h2
-  use p
-  rw [mem_sInter]
-  intro X hX
-  have h3 (X Y : Set E) (hX : X ∈ F) (hY : Y ∈ F) (hneq : X ≠ Y) : a ⟨Y, hY⟩ ∈ X := by
-    apply @mem_of_subset_of_mem _ (⋂₀ (F \ {Y})) _
-    apply sInter_subset_of_mem
-    · simp only [mem_diff, hX, mem_singleton_iff, hneq, not_false_eq_true, and_self]
-    · exact (h1 Y hY).some_mem
-  have h4 (I : Set F) (h : ⟨X, hX⟩ ∈ I) : (convexHull 𝕜) (a '' Iᶜ) ⊆ X := by
-    rw [Convex.convexHull_subset_iff (h_convex X hX)]
-    intro z hz; simp only [Set.mem_image] at hz; rcases hz with ⟨Y, hY1, hY2⟩
-    rw [←hY2]
-    apply h3
-    · exact hX
-    · by_contra heq
-      simp only [heq, Subtype.coe_eta] at h
-      contradiction
-  by_cases (⟨X, hX⟩ ∈ I)
-  · exact h4 I h h4_Ic
-  · apply h4 Iᶜ h; rwa [compl_compl]
+  refine ⟨p, fun X hX ↦ ?_⟩
+  lift X to F using hX
+  /- It suffices to show that for any set `X` in a subcollection `I` of `F`, that the convex hull
+  of `a '' Iᶜ` is contained in `X`. -/
+  suffices ∀ I : Set F, X ∈ I → (convexHull 𝕜) (a '' Iᶜ) ⊆ X by
+    by_cases (X ∈ I)
+    · exact this I h h4_Ic
+    · apply this Iᶜ h; rwa [compl_compl]
+  /- Given any subcollection `I` of `F` containing `X`, because `X` is convex, we need only show
+  that `a Y ∈ X` for each `Y ∈ Iᶜ` -/
+  intro I h
+  rw [Convex.convexHull_subset_iff (h_convex _ X.prop)]
+  rintro - ⟨Y, hY, rfl⟩
+  /- Since `Y ∈ Iᶜ` and `X ∈ I`, we conclude that `X ≠ Y`, and hence by the definition of `a`:
+  `a Y ∈ ⋂₀ F \ {Y} ⊆ X`  -/
+  have : X ≠ Y := fun h' ↦ hY (h' ▸ h)
+  exact (sInter_subset_of_mem <| mem_diff_singleton.mpr ⟨X.prop, Subtype.coe_injective.ne this⟩)
+    (Set.Nonempty.some_mem _)
