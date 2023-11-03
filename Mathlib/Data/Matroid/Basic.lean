@@ -596,16 +596,15 @@ theorem Indep.exists_insert_of_not_base (hI : M.Indep I) (hI' : ¬M.Base I) (hB 
   exact ⟨e, ⟨he.1, not_mem_subset hIB' he.2⟩,
     ⟨_, hBase, insert_subset_insert (subset_diff_singleton hIB' hx)⟩⟩
 
-/-- This is the same as `Indep.exists_insert_of_not_base`, but phrased so the statement is
-  defeq to the augmentation axiom for independent sets -/
-theorem aug_property (M : Matroid α) :
-    ∀⦃I B⦄, M.Indep I → I ∉ maximals (· ⊆ ·) (setOf M.Indep) →
-      B ∈ maximals (· ⊆ ·) (setOf M.Indep) → ∃ x ∈ B \ I, M.Indep (insert x I) := by
-  intro I B hI hImax hB
+/-- This is the same as `Indep.exists_insert_of_not_base`, but phrased so that
+  `M.aug_property` is exactly the augmentation axiom for independent sets. -/
+theorem aug_property (M : Matroid α) ⦃I B : Set α⦄ (hI : M.Indep I)
+    (hInotmax : I ∉ maximals (· ⊆ ·) (setOf M.Indep)) (hB : B ∈ maximals (· ⊆ ·) (setOf M.Indep)) :
+    ∃ x ∈ B \ I, M.Indep (insert x I) := by
   simp only [mem_maximals_iff, mem_setOf_eq, not_and, not_forall, exists_prop,
-    exists_and_left, iff_true_intro hI, true_imp_iff] at hB hImax
+    exists_and_left, iff_true_intro hI, true_imp_iff] at hB hInotmax
   refine hI.exists_insert_of_not_base (fun hIb ↦ ?_) ?_
-  · obtain ⟨I', hII', hI', hne⟩ := hImax
+  · obtain ⟨I', hII', hI', hne⟩ := hInotmax
     exact hne <| hIb.eq_of_subset_indep hII' hI'
   exact hB.1.base_of_maximal fun J hJ hBJ ↦ hB.2 hJ hBJ
 
