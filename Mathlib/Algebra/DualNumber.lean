@@ -95,11 +95,12 @@ theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
 /-- `ε` commutes with every element of the algebra. -/
 theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
 
+variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
 /-- For two `R`-algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the elements
 of `A` and the `A`-multiples of `ε`. -/
 @[ext 1100]
-nonrec theorem algHom_ext' {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    ⦃f g : A[ε] →ₐ[R] B⦄
+nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
     (hinl : f.comp (inlAlgHom _ _ _) = g.comp (inlAlgHom _ _ _))
     (hinr : f.toLinearMap ∘ₗ (LinearMap.toSpanSingleton A A[ε] ε).restrictScalars R =
         g.toLinearMap ∘ₗ (LinearMap.toSpanSingleton A A[ε] ε).restrictScalars R) :
@@ -111,15 +112,11 @@ nonrec theorem algHom_ext' {A} [CommSemiring R] [Semiring A] [Semiring B] [Algeb
 
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
-nonrec theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A]
-    ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) :
-      f = g := by
+nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
   ext <;> dsimp
   · exact (f.commutes _).trans (g.commutes _).symm
   · simp only [one_smul, hε]
 #align dual_number.alg_hom_ext DualNumber.algHom_ext
-
-variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
