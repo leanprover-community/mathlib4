@@ -110,9 +110,9 @@ This derivation takes values in `Module.AEval R M a`, which is `M`, regarded as 
 `R[X]`-module, with the action of a polynomial `f` defined by `f • m = (aeval a f) • m`.
 -/
 /-
-Note: It is currently not easy to define `compAEval` using `Derivation.compAlgebraMap`.
-This is partly because `A` is not an `R[X]` algebra and partly because `Derivation.compAlgebraMap`
-is only implemented in the case that `R` is a `CommRing`, not a `CommSemiring`.
+Note: `compAEval` is not defined using `Derivation.compAlgebraMap`.
+This because `A` is not an `R[X]` algebra and it would be messy to create an algebra instance
+within the definition.
 -/
 @[simps]
 def compAEval : Derivation R R[X] <| AEval R M a where
