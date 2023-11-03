@@ -469,7 +469,7 @@ lemma isIso_homologyι : IsIso (K.homologyι i) :=
   ShortComplex.isIso_homologyι _ (by aesop_cat)
 
 /-- The canonical isomorphism `K.homology i ≅ K.opcycles i`
-when the diffetential from `i` is zero. -/
+when the differential from `i` is zero. -/
 @[simps! hom]
 noncomputable def isoHomologyι : K.homology i ≅ K.opcycles i :=
   have := K.isIso_homologyι i j hj h
@@ -515,7 +515,7 @@ lemma isIso_homologyπ : IsIso (K.homologyπ j) :=
   ShortComplex.isIso_homologyπ _ (by aesop_cat)
 
 /-- The canonical isomorphism `K.cycles j ≅ K.homology j`
-when the diffetential to `j` is zero. -/
+when the differential to `j` is zero. -/
 @[simps! hom]
 noncomputable def isoHomologyπ : K.cycles j ≅ K.homology j :=
   have := K.isIso_homologyπ i j hi h
