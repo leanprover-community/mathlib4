@@ -140,7 +140,7 @@ theorem eq_bot_of_subsingleton [Subsingleton p] : p = ⊥ :=
 #align submodule.eq_bot_of_subsingleton Submodule.eq_bot_of_subsingleton
 
 theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
-  rw [← not_iff_not, ne_eq, not_not, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
+  rw [iff_not_comm, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
 
 /-!
 ## Top element of a submodule
