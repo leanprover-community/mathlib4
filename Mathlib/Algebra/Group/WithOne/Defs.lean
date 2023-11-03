@@ -387,7 +387,7 @@ instance rightDistribClass [AddZeroClass α] [MulZeroClass α] [RightDistribClas
 instance semiring [Semiring α] : Semiring (WithZero α) :=
   { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
     WithZero.monoidWithZero with
-    left_distrib := fun a b c ↦ LeftDistribClass.left_distrib a b c,
-    right_distrib := fun a b c ↦ RightDistribClass.right_distrib a b c }
+    left_distrib := LeftDistribClass.left_distrib,
+    right_distrib := RightDistribClass.right_distrib }
 
 end WithZero
