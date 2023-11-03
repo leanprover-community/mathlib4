@@ -153,7 +153,8 @@ lemma map_truncatedSup (e : α ≃o β) (s : Finset α) (a : α) :
 
 variable [DecidableEq α]
 
-private lemma lower_aux : a ∈ lowerClosure ↑(s ∪ t) ↔ a ∈ lowerClosure s ∨ a ∈ lowerClosure t := by rw [coe_union, lowerClosure_union, LowerSet.mem_sup_iff]
+private lemma lower_aux : a ∈ lowerClosure ↑(s ∪ t) ↔ a ∈ lowerClosure s ∨ a ∈ lowerClosure t := by
+  rw [coe_union, lowerClosure_union, LowerSet.mem_sup_iff]
 
 lemma truncatedSup_union (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t) :
     truncatedSup (s ∪ t) a = truncatedSup s a ⊔ truncatedSup t a := by
