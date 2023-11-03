@@ -29,32 +29,34 @@ This is the axiom that appears in all most of the definitions.
 
 ## Main definitions
 
-* `matroidOfBase` constructs a matroid from the base axioms (using the definition of a matroid).
+* `Matroid.matroidOfBase` constructs a matroid from the base axioms (using the definition of a
+  matroid).
 
-* `matroidOfIndep` constructs a matroid described in terms of its independent sets
+* `Matroid.matroidOfIndep` constructs a matroid described in terms of its independent sets
   in full generality, using infinite versions of the axioms.
 
-* `matroidOfIndepOfFinitary` constructs a `Finitary` matroid in terms of its independent sets
-  in the special case where independence of a set is determined only by that of its
+* `Matroid.matroidOfIndepOfFinitary` constructs a `Finitary` matroid in terms of its independent
+  sets in the special case where independence of a set is determined only by that of its
   finite subsets. This construction uses Zorn's lemma.
 
-* `matroidOfIndepOfBdd` constructs a matroid in terms of its independence sets in
+* `Matroid.matroidOfIndepOfBdd` constructs a matroid in terms of its independence sets in
   the case where there is some known absolute upper bound on the size of an independent set.
   This uses the infinite version of the augmentation axiom, and gives a `FiniteRk` matroid.
 
-* `matroidOfIndepOfBddAugment` is the same as the above, but with a finite augmentation axiom.
+* `Matroid.matroidOfIndepOfBddAugment` is the same as the above, but with a finite augmentation
+  axiom.
 
-* `matroidOfExistsFiniteBase` constructs a matroid from its bases, if it is known that one
+* `Matroid.matroidOfExistsFiniteBase` constructs a matroid from its bases, if it is known that one
   of them is finite. This gives a `FiniteRk` matroid.
 
-* `matroidOfBaseOfFinite` constructs a `Finite` matroid from its bases.
+* `Matroid.matroidOfBaseOfFinite` constructs a `Finite` matroid from its bases.
 
-* `matroidOfIndepOfFinite` constructs a `Finite` matroid from its independent sets.
+* `Matroid.matroidOfIndepOfFinite` constructs a `Finite` matroid from its independent sets.
 
-* `matroidOfIndepFinset` constructs a `Finitary` matroid on `α` from an independence predicate
-    on `Finset α`.
+* `Matroid.matroidOfIndepFinset` constructs a `Finitary` matroid on `α` from an independence
+  predicate on `Finset α`.
 
-* `matroidOfIndepOfExistsMatroid` constructs a 'copy' of a matroid that is known only
+* `Matroid.matroidOfIndepOfExistsMatroid` constructs a 'copy' of a matroid that is known only
   existentially, but whose independent predicate is known explicitly.
 -/
 
