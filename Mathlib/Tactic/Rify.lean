@@ -26,6 +26,8 @@ example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
   rify at hn hk
   linarith
 ```
+
+TODO: Investigate whether we should generalize this to other fields.
 -/
 
 namespace Mathlib.Tactic.Rify
