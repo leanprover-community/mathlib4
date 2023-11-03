@@ -114,6 +114,7 @@ Note: It is currently not easy to define `comp_aeval` using `Derivation.compAlge
 This is partly because `A` is not an `R[X]` algebra and partly because `Derivation.compAlgebraMap`
 is only implemented in the case that `R` is a `CommRing`, not a `CommSemiring`.
 -/
+@[simps]
 def comp_aeval : Derivation R R[X] <| AEval R M a where
   toFun f          := AEval.of R M a (d (aeval a f))
   map_add'         := by simp
