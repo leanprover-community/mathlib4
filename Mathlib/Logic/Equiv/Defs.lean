@@ -70,6 +70,7 @@ structure Equiv (α : Sort*) (β : Sort _) where
   protected right_inv : RightInverse invFun toFun
 #align equiv Equiv
 
+@[inherit_doc]
 infixl:25 " ≃ " => Equiv
 
 /-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
@@ -184,12 +185,6 @@ instance : Trans Equiv Equiv Equiv where
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
-
--- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
--- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
--- If this issue is fixed then the simp linter probably will start complaining, and
--- this theorem can be deleted hopefully without breaking any `simp` proofs.
-@[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
 @[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 #align equiv.inv_fun_as_coe Equiv.invFun_as_coe

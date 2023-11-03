@@ -1218,6 +1218,9 @@ protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 #align fin.coe_fin_one Fin.coe_fin_one
 
+lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
+  fin_two_eq_of_eq_zero_iff (by simpa only [iff_false] using hi)
+
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
@@ -1264,7 +1267,8 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
 @[simp]
 theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   rcases k with ⟨_ | k, hk⟩
-  simp [lt_iff_val_lt_val]
+  simp only [zero_eq, zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, add_pos_iff,
+    or_true]
   have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
     rw [add_right_comm, add_assoc, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
@@ -1779,6 +1783,17 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
   rfl
 #align fin.coe_of_nat_eq_mod Fin.coe_ofNat_eq_mod
+
+theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
+    (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
+  ⟨fun H => ⟨fun _ => H _, H _⟩, fun ⟨H0, H1⟩ i => Fin.lastCases H1 H0 i⟩
+
+-- to match `Fin.eq_zero_or_eq_succ`
+theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
+    (∃ j : Fin n, i = j.castSucc) ∨ i = last n := by
+  induction i using reverseInduction with
+  | last => right; rfl
+  | cast n => left; exact ⟨_, rfl⟩
 
 section Mul
 
