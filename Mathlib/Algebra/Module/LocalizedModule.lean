@@ -718,8 +718,8 @@ noncomputable def fromLocalizedModule' : LocalizedModule S M → M' := fun p =>
       rintro ⟨a, b⟩ ⟨a', b'⟩ ⟨c, eq1⟩
       dsimp
       -- Porting note: We remove `generalize_proofs h1 h2`.
-      erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ←map_smul, ←map_smul,
-        Module.End_algebraMap_isUnit_inv_apply_eq_iff', ←map_smul]
+      erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← map_smul, ← map_smul,
+        Module.End_algebraMap_isUnit_inv_apply_eq_iff', ← map_smul]
       exact (IsLocalizedModule.eq_iff_exists S f).mpr ⟨c, eq1⟩)
 #align is_localized_module.from_localized_module' IsLocalizedModule.fromLocalizedModule'
 
@@ -737,7 +737,7 @@ theorem fromLocalizedModule'_add (x y : LocalizedModule S M) :
       intro a a' b b'
       simp only [LocalizedModule.mk_add_mk, fromLocalizedModule'_mk]
       -- Porting note: We remove `generalize_proofs h1 h2 h3`.
-      erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, smul_add, ←map_smul, ←map_smul,
+      erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, smul_add, ← map_smul, ← map_smul,
         ←map_smul, map_add]
       congr 1
       all_goals rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff']

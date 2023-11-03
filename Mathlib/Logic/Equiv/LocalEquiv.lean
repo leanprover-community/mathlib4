@@ -673,9 +673,9 @@ protected def trans' (e' : LocalEquiv β γ) (h : e.target = e'.source) : LocalE
   invFun := e.symm ∘ e'.symm
   source := e.source
   target := e'.target
-  map_source' x hx := by simp [←h, hx]
+  map_source' x hx := by simp [← h, hx]
   map_target' y hy := by simp [h, hy]
-  left_inv' x hx := by simp [hx, ←h]
+  left_inv' x hx := by simp [hx, ← h]
   right_inv' y hy := by simp [hy, h]
 #align local_equiv.trans' LocalEquiv.trans'
 

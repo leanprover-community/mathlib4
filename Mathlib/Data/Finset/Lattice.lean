@@ -901,7 +901,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F)
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
     (g : β → α) (hs' : s.Nonempty := (Nonempty.image_iff _).1 hs) :
     (s.image f).sup' hs g = s.sup' hs' (g ∘ f) := by
-  rw [←WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
+  rw [← WithBot.coe_eq_coe]; simp only [coe_sup', sup_image, WithBot.coe_sup]; rfl
 #align finset.sup'_image Finset.sup'_image
 
 @[simp]

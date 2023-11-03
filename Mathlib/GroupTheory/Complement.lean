@@ -358,7 +358,7 @@ theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
   rw [LeftCosetEquivalence, leftCoset_eq_iff]
   constructor
   · intro h
-    rw [← hSK.equiv_fst_mul_equiv_snd g₂, ←hSK.equiv_fst_mul_equiv_snd g₁, ← h,
+    rw [← hSK.equiv_fst_mul_equiv_snd g₂, ← hSK.equiv_fst_mul_equiv_snd g₁, ← h,
       mul_inv_rev, ← mul_assoc, inv_mul_cancel_right, ← coe_inv, ← coe_mul]
     exact Subtype.property _
   · intro h
@@ -374,7 +374,7 @@ theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
   rw [RightCosetEquivalence, rightCoset_eq_iff]
   constructor
   · intro h
-    rw [← hHT.equiv_fst_mul_equiv_snd g₂, ←hHT.equiv_fst_mul_equiv_snd g₁, ← h,
+    rw [← hHT.equiv_fst_mul_equiv_snd g₂, ← hHT.equiv_fst_mul_equiv_snd g₁, ← h,
       mul_inv_rev, mul_assoc, mul_inv_cancel_left, ← coe_inv, ← coe_mul]
     exact Subtype.property _
   · intro h

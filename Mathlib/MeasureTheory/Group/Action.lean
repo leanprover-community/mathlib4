@@ -121,7 +121,7 @@ theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     _ = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf <| hS.preimage (measurable_const_smul _)
     _ = μ ((m • f ·) ⁻¹' S) := by rw [preimage_preimage]
     _ = μ ((f <| m • ·) ⁻¹' S) := by simp_rw [hsmul]
-    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [←preimage_preimage]
+    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [← preimage_preimage]
     _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
     _ = map f μ S := (map_apply hf hS).symm
 

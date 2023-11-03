@@ -413,7 +413,7 @@ theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
   refine Monoid.exponent_dvd_of_forall_pow_eq_one M₂ _ fun m₂ ↦ ?_
   obtain ⟨m₁, rfl⟩ := hf m₂
-  rw [←map_pow, pow_exponent_eq_one, map_one]
+  rw [← map_pow, pow_exponent_eq_one, map_one]
 
 /-- The exponent of finite product of monoids is the `Finset.lcm` of the exponents of the
 constituent monoids. -/

@@ -194,11 +194,11 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
   use erase + lead
   constructor
   · simp only [hlead, herase, Polynomial.map_add]
-    rw [←eraseLead, ←leadingCoeff]
+    rw [← eraseLead, ← leadingCoeff]
     rw [eraseLead_add_monomial_natDegree_leadingCoeff p]
-  rw [degree_eq_natDegree pzero, ←deg_lead]
+  rw [degree_eq_natDegree pzero, ← deg_lead]
   apply degree_add_eq_right_of_degree_lt
-  rw [herase.2, deg_lead, ←degree_eq_natDegree pzero]
+  rw [herase.2, deg_lead, ← degree_eq_natDegree pzero]
   exact degree_erase_lt pzero
 #align polynomial.mem_lifts_and_degree_eq Polynomial.mem_lifts_and_degree_eq
 
@@ -223,7 +223,7 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
   obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq (erase_mem_lifts p.natDegree hlifts)
   have p_neq_0 : p ≠ 0 := by intro hp; apply h0; rw [hp]; simp only [natDegree_zero, erase_zero]
   have hdeg : q.degree < (X ^ p.natDegree).degree := by
-    rw [@degree_X_pow R, hq.2, ←degree_eq_natDegree p_neq_0]
+    rw [@degree_X_pow R, hq.2, ← degree_eq_natDegree p_neq_0]
     exact degree_erase_lt p_neq_0
   refine' ⟨q + X ^ p.natDegree, _, _, (monic_X_pow _).add_of_right hdeg⟩
   · rw [Polynomial.map_add, hq.1, Polynomial.map_pow, map_X, H]

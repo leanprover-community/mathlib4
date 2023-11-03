@@ -102,7 +102,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
   refine (norm_mul_le _ _).trans ?_
   calc
     _ ≤ ‖star x.fst • (x.fst • b + x.snd * b) + star x.snd * (x.fst • b + x.snd * b)‖ := by
-      nth_rewrite 2 [←one_mul ‖_ + _‖]
+      nth_rewrite 2 [← one_mul ‖_ + _‖]
       gcongr
       exact (norm_star b).symm ▸ mem_closedBall_zero_iff.1 hb
     _ ≤ sSup (_ '' Metric.closedBall 0 1) := le_csSup ?_ ⟨b, hb, ?_⟩

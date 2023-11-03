@@ -1526,7 +1526,7 @@ theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
   let equiv := (Subspace.quotEquivAnnihilator <| LinearMap.range f)
   have eq := LinearEquiv.finrank_eq (R := K) (M := (V₂ ⧸ range f))
     (M₂ := { x // x ∈ Submodule.dualAnnihilator (range f) }) equiv
-  rw [eq, ←ker_dualMap_eq_dualAnnihilator_range] at that
+  rw [eq, ← ker_dualMap_eq_dualAnnihilator_range] at that
   -- Porting note: cannot convert at `this`?
   conv_rhs at that => rw [← Subspace.dual_finrank_eq]
   refine' add_left_injective (finrank K <| LinearMap.ker f.dualMap) _

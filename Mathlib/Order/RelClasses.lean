@@ -620,7 +620,7 @@ variable [HasSubset α] {a b c : α}
 lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
 #align subset_of_eq_of_subset subset_of_eq_of_subset
 
-lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [←hbc]
+lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
 #align subset_of_subset_of_eq subset_of_subset_of_eq
 
 @[refl]
@@ -689,7 +689,7 @@ variable [HasSSubset α] {a b c : α}
 lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
 #align ssubset_of_eq_of_ssubset ssubset_of_eq_of_ssubset
 
-lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [←hbc]
+lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [← hbc]
 #align ssubset_of_ssubset_of_eq ssubset_of_ssubset_of_eq
 
 lemma ssubset_irrefl [IsIrrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _

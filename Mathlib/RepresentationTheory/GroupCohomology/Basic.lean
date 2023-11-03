@@ -156,7 +156,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
   erw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     resolution.d_eq]
   erw [resolution.d_of (Fin.partialProd g)]
-  simp only [map_sum, ←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
+  simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]

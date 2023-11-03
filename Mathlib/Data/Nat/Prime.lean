@@ -430,7 +430,7 @@ theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
   constructor
   · intro h
-    rw [←h]
+    rw [← h]
     exact minFac_dvd n
   · intro h
     have ub := minFac_le_of_dvd (le_refl 2) h

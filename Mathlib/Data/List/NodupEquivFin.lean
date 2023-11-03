@@ -129,7 +129,7 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
       exact b.succ_pos
   have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
-    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, add_tsub_cancel_of_le, ←hf, List.get?]
+    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, add_tsub_cancel_of_le, ← hf, List.get?]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]

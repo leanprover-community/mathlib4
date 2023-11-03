@@ -1706,7 +1706,7 @@ def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     by_cases h : a ∈ s
     · lift a to s using h
       exact embDomain_apply _ _ _
-    rw [embDomain_notin_range, eq_comm, ←Finsupp.not_mem_support_iff]
+    rw [embDomain_notin_range, eq_comm, ← Finsupp.not_mem_support_iff]
     · exact fun hs => h <| hf hs
     · simp [h]
   right_inv f := ext <| embDomain_apply _ f

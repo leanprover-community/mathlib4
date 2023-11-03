@@ -59,7 +59,7 @@ lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
   obtain ⟨N,hN⟩ := hx
   use N
-  rw [←pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+  rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
 
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by

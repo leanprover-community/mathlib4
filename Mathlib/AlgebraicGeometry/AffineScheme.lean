@@ -520,7 +520,7 @@ theorem isLocalization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U
   simp only [Scheme.comp_val_c_app, Category.assoc]
   -- Porting note : `erw naturality_assoc` for some reason does not work, so changed to a version
   -- where `naturality` is used, the good thing is that `erw` is changed back to `rw`
-  simp only [←Category.assoc]
+  simp only [← Category.assoc]
   -- Note: changed `rw` to `simp_rw` to improve performance
   simp_rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
   -- simp only [Category.assoc]

@@ -722,7 +722,7 @@ theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing
   have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤
   · intro a _
     obtain ⟨y, rfl⟩ := f_surj.comp (AEval'.of f).symm.surjective a
-    rw [Function.comp_apply, ←AEval'.of_symm_X_smul]
+    rw [Function.comp_apply, ← AEval'.of_symm_X_smul]
     exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
   obtain ⟨F, hFa, hFb⟩ :=
     Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))

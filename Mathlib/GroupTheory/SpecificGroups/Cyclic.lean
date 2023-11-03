@@ -204,7 +204,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         Nat.pos_of_ne_zero fun h => hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
             cases' k with k k
-            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_ofNat, ←Int.ofNat_eq_coe, hk]
+            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_ofNat, ← Int.ofNat_eq_coe, hk]
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
     ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>

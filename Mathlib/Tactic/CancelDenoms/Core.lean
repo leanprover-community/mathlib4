@@ -65,10 +65,10 @@ theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := 
 
 theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
     (h1 : n * e1 = t1) (h2 : l * n ^ e2 = k) : k * (e1 ^ e2) = l * t1 ^ e2 := by
-  rw [←h2, ←h1, mul_pow, mul_assoc]
+  rw [← h2, ← h1, mul_pow, mul_assoc]
 
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
-    k * (e ⁻¹) = n := by rw [←div_eq_mul_inv, ←h3, mul_div_cancel _ h2]
+    k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel _ h2]
 
 theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :

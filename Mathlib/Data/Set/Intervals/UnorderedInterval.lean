@@ -187,12 +187,12 @@ variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
 
 lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
     MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
-  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+  rw [uIcc, uIcc, ← hf.map_sup, ← hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
 
 lemma _root_.AntitoneOn.mapsTo_uIcc (hf : AntitoneOn f (uIcc a b)) :
     MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
-  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+  rw [uIcc, uIcc, ← hf.map_sup, ← hf.map_inf] <;>
     apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
 
 lemma _root_.Monotone.mapsTo_uIcc (hf : Monotone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=

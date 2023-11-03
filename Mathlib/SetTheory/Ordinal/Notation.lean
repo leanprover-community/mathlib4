@@ -982,7 +982,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
         simp [HPow.hPow]
         simp [Pow.pow, opow, Ordinal.succ_ne_zero]
       · simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
-      · rw [←Nat.cast_succ, lt_omega]
+      · rw [← Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
   · haveI := N₁.fst
     haveI := N₁.snd

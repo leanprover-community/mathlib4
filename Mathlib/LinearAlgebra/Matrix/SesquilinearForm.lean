@@ -603,9 +603,9 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     simp only [← mul_assoc, P.transpose_nonsing_inv]
     -- porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
-    · rw [mul_assoc, mul_assoc, ←mul_assoc J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
-    · rw [mul_assoc, mul_assoc, ←mul_assoc _ _ J]
+    · rw [mul_assoc, mul_assoc, ← mul_assoc _ _ J]
       rfl
   rw [Units.eq_mul_inv_iff_mul_eq]
   conv_rhs => rw [mul_assoc]

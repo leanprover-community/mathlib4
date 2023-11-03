@@ -291,7 +291,7 @@ theorem quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : Q
   rintro ⟨i, j⟩; dsimp at i j
   -- replace H := H (Scheme.OpenCover.pullbackCover (Scheme.affineCover Z) g) i
   specialize H _ i
-  -- rw [←isQuasiSeparated_iff_quasiSeparatedSpace] at H
+  -- rw [← isQuasiSeparated_iff_quasiSeparatedSpace] at H
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_ H ?_
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
@@ -345,8 +345,8 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
     -- leave the goal in a desired form
     rw [RingHom.algebraMap_toAlgebra, map_mul, map_mul, map_pow, map_pow, map_mul, map_pow, map_mul]
     erw [map_pow]
-    rw [←comp_apply, ←comp_apply]
-    erw [←comp_apply, ←comp_apply, ←comp_apply, ←comp_apply]
+    rw [← comp_apply, ← comp_apply]
+    erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
     simp only [← Functor.map_comp, ← op_comp, homOfLE_comp]
     have h₃ : X.basicOpen ((X.presheaf.map (homOfLE (h₁.trans le_sup_left)).op) f) ≤ S.val := by
       simpa only [X.basicOpen_res] using inf_le_left

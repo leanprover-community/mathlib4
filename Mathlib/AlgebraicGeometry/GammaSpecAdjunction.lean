@@ -197,7 +197,7 @@ theorem toΓSpecSheafedSpace_app_eq :
     ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪)
     isBasis_basic_opens X.toΓSpecCBasicOpens r
   dsimp at this
-  rw [←this]
+  rw [← this]
   dsimp
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
@@ -219,7 +219,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  -- Porting note : was `rw [←assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
+  -- Porting note : was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
   rw [toΓSpecSheafedSpace_app_spec_assoc]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]

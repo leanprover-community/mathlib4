@@ -196,7 +196,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     specialize h r
     simp only [sheafedSpaceObj_carrier, Functor.op_obj, unop_op, TopCat.Presheaf.pushforwardObj_obj,
       sheafedSpaceObj_presheaf, Category.assoc] at h
-    rw [NatTrans.comp_app, ←h]
+    rw [NatTrans.comp_app, ← h]
     congr
     simp
 set_option linter.uppercaseLean3 false in

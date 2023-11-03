@@ -2932,7 +2932,7 @@ gi_principal_ker.gc.u_iInf
 gi_principal_ker.gc.u_sInf
 @[simp] lemma ker_principal (s : Set α) : ker (𝓟 s) = s := gi_principal_ker.u_l_eq _
 
-@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [←principal_singleton, ker_principal]
+@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [← principal_singleton, ker_principal]
 
 @[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
   ext a

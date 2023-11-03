@@ -835,7 +835,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       · rw [add_comm] at this
         contradiction
       · cases' h with w h; cases' h with h₁ h₂
-        rw [←Fin.ext_iff] at h₂
+        rw [← Fin.ext_iff] at h₂
         rwa [h₂]
     · intro h
       apply Or.inr

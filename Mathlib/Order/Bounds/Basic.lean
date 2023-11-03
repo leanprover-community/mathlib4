@@ -1577,7 +1577,7 @@ lemma bddBelow_pi {s : Set (∀ a, π a)} :
 
 lemma bddAbove_range_pi {F : ι → ∀ a, π a} :
     BddAbove (range F) ↔ ∀ a, BddAbove (range fun i ↦ F i a) := by
-  simp only [bddAbove_pi, ←range_comp]
+  simp only [bddAbove_pi, ← range_comp]
   rfl
 
 lemma bddBelow_range_pi {F : ι → ∀ a, π a} :

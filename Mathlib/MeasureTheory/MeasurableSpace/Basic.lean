@@ -1836,7 +1836,7 @@ theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β
     (h : Measurable (compl : β → β)) (f : α → β) :
     MeasurableSpace.comap (fun a => (f a)ᶜ) inferInstance =
       MeasurableSpace.comap f inferInstance := by
-  rw [←Function.comp_def, ←MeasurableSpace.comap_comp]
+  rw [← Function.comp_def, ← MeasurableSpace.comap_comp]
   congr
   exact (MeasurableEquiv.ofInvolutive _ compl_involutive h).measurableEmbedding.comap_eq
 #align measurable_space.comap_compl MeasurableSpace.comap_compl

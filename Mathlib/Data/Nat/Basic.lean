@@ -792,7 +792,7 @@ theorem mul_dvd_of_dvd_div {a b c : ℕ} (hab : c ∣ b) (h : a ∣ b / c) : c *
   let ⟨d, hd⟩ := h1
   have h3 : b = a * d * c := Nat.eq_mul_of_div_eq_left hab hd
   -- Porting note: was `cc`
-  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ←mul_assoc] at h3⟩
+  show ∃ d, b = c * a * d from ⟨d, by rwa [mul_comm, ← mul_assoc] at h3⟩
 #align nat.mul_dvd_of_dvd_div Nat.mul_dvd_of_dvd_div
 
 theorem eq_of_dvd_of_div_eq_one {a b : ℕ} (w : a ∣ b) (h : b / a = 1) : a = b := by

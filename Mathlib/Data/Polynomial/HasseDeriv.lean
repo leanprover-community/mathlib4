@@ -158,7 +158,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   rw [mul_comm (k+1) _, mul_assoc, mul_assoc]
   congr 1
   have : n + k + 1 = n + (k + 1) := by apply add_assoc
-  rw [←choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
+  rw [← choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]
   congr
   rw [add_assoc, add_tsub_cancel_left]
 #align polynomial.factorial_smul_hasse_deriv Polynomial.factorial_smul_hasseDeriv
@@ -170,7 +170,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
     mul_one, monomial_eq_zero_iff, sum_monomial_index, mul_zero, ←
     tsub_add_eq_tsub_tsub, add_comm l k]
   rw_mod_cast [nsmul_eq_mul]
-  rw [←Nat.cast_mul]
+  rw [← Nat.cast_mul]
   congr 2
   by_cases hikl : i < k + l
   · rw [choose_eq_zero_of_lt hikl, mul_zero]
@@ -263,7 +263,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
   rw [Finset.sum_congr rfl aux]
   rw [← map_sum, ← Finset.sum_mul]
   congr
-  rw_mod_cast [←Nat.add_choose_eq]
+  rw_mod_cast [← Nat.add_choose_eq]
 #align polynomial.hasse_deriv_mul Polynomial.hasseDeriv_mul
 
 end

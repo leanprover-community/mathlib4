@@ -69,7 +69,7 @@ lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j
 isOpen_iInter λ _ ↦ isOpen_iInter $ hf _
 
 lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [←isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter $ ball_image_iff.2 hS
+  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter $ ball_image_iff.2 hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
 isClosed_sUnion $ forall_range_iff.2 hf
@@ -106,7 +106,7 @@ lemma interior_sInter (S : Set (Set α)) : interior (⋂₀ S) = ⋂ s ∈ S, in
   simp_rw [sInter_eq_biInter, interior_iInter]
 
 lemma closure_iUnion (f : ι → Set α) : closure (⋃ i, f i) = ⋃ i, closure (f i) :=
-  compl_injective $ by simpa only [←interior_compl, compl_iUnion] using interior_iInter λ i ↦ (f i)ᶜ
+  compl_injective $ by simpa only [← interior_compl, compl_iUnion] using interior_iInter λ i ↦ (f i)ᶜ
 
 lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, closure s := by
   simp_rw [sUnion_eq_biUnion, closure_iUnion]
@@ -188,14 +188,14 @@ lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) int
   gc_exterior_interior.l_sup
 
 @[simp] lemma nhdsSet_exterior (s : Set α) : 𝓝ˢ (exterior s) = 𝓝ˢ s := by
-  ext t; simp_rw [←exterior_subset_iff_mem_nhdsSet, exterior_exterior]
+  ext t; simp_rw [← exterior_subset_iff_mem_nhdsSet, exterior_exterior]
 
 @[simp] lemma principal_exterior (s : Set α) : 𝓟 (exterior s) = 𝓝ˢ s := by
-  rw [←nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
+  rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
 
 @[simp] lemma exterior_subset_exterior : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
   refine ⟨?_, λ h ↦ ker_mono h⟩
-  simp_rw [le_def, ←exterior_subset_iff_mem_nhdsSet]
+  simp_rw [le_def, ← exterior_subset_iff_mem_nhdsSet]
   exact λ h u ↦ h.trans
 
 lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by

@@ -499,7 +499,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
       cases ne_iff_lt_or_gt.1 h_1 with
       | inl h_2 => simpa [hh, lt_self_iff_false] using h.2 h_2
       | inr h_2 =>
-          rw [← inv_one, ←inv_eq_iff_eq_inv, ← map_inv₀] at hh
+          rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
           exact hh.not_lt (h.2 ((one_lt_val_iff v' hx).1 h_2))
     · intro hh
       by_contra h_1
@@ -564,7 +564,7 @@ instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
     one_ne_zero (α := Γ₀) <|
       calc
         1 = v 1 := v.map_one.symm
-        _ = 0 := by rw [←mem_supp_iff, h]; exact Submodule.mem_top,
+        _ = 0 := by rw [← mem_supp_iff, h]; exact Submodule.mem_top,
    fun {x y} hxy => by
     simp only [mem_supp_iff] at hxy ⊢
     rw [v.map_mul x y] at hxy

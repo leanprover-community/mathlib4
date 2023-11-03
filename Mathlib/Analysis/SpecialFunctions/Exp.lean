@@ -307,12 +307,12 @@ theorem comap_exp_atTop : comap exp atTop = atTop := by
 @[simp]
 theorem tendsto_exp_comp_atTop {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l atTop ↔ Tendsto f l atTop := by
-  simp_rw [←comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_atTop]
+  simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_atTop]
 #align real.tendsto_exp_comp_at_top Real.tendsto_exp_comp_atTop
 
 theorem tendsto_comp_exp_atTop {f : ℝ → α} :
     Tendsto (fun x => f (exp x)) atTop l ↔ Tendsto f atTop l := by
-  simp_rw [←comp_apply (g := exp), ← tendsto_map'_iff, map_exp_atTop]
+  simp_rw [← comp_apply (g := exp), ← tendsto_map'_iff, map_exp_atTop]
 #align real.tendsto_comp_exp_at_top Real.tendsto_comp_exp_atTop
 
 @[simp]
@@ -339,7 +339,7 @@ theorem comap_exp_nhds_zero : comap exp (𝓝 0) = atBot :=
 @[simp]
 theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
-  simp_rw [←comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
+  simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 #align real.tendsto_exp_comp_nhds_zero Real.tendsto_exp_comp_nhds_zero
 
 -- Porting note: new lemma
@@ -443,7 +443,7 @@ theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := 
 
 theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
-  simp_rw [←comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
+  simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
   rfl
 #align complex.tendsto_exp_nhds_zero_iff Complex.tendsto_exp_nhds_zero_iff
 

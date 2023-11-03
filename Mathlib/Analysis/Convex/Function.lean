@@ -1092,9 +1092,9 @@ theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜
   refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
+  have hxy' : x' ≠ y' := by rw [← f.injective.ne_iff, ← hx'', ← hy'']; exact hxy
   simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
-  rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
+  rw [← f.lt_iff_lt, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) hxy' ha hb hab
 
 theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
@@ -1103,7 +1103,7 @@ theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
-  rw [←f.le_iff_le, OrderIso.apply_symm_apply]
+  rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 
 theorem OrderIso.strictConcaveOn_symm (f : α ≃o β) (hf : StrictConvexOn 𝕜 univ f) :
@@ -1111,9 +1111,9 @@ theorem OrderIso.strictConcaveOn_symm (f : α ≃o β) (hf : StrictConvexOn 𝕜
   refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
-  have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
+  have hxy' : x' ≠ y' := by rw [← f.injective.ne_iff, ← hx'', ← hy'']; exact hxy
   simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
-  rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
+  rw [← f.lt_iff_lt, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) hxy' ha hb hab
 
 theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
@@ -1122,7 +1122,7 @@ theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
   obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
   obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
   simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
-  rw [←f.le_iff_le, OrderIso.apply_symm_apply]
+  rw [← f.le_iff_le, OrderIso.apply_symm_apply]
   exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
 
 end OrderIso

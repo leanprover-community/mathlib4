@@ -438,7 +438,7 @@ lemma posFittingComp_map_incl_sup_of_codisjoint [IsNoetherian R M] [IsArtinian R
     (eventually_iInf_lowerCentralSeries_eq R L M)
   obtain ⟨hl₁, hl₂, hl₃⟩ := hl l (le_refl _)
   simp_rw [← iInf_lowerCentralSeries_eq_posFittingComp, hl₁, hl₂, hl₃,
-    LieSubmodule.lowerCentralSeries_map_eq_lcs, ←LieSubmodule.lcs_sup, lowerCentralSeries, h.eq_top]
+    LieSubmodule.lowerCentralSeries_map_eq_lcs, ← LieSubmodule.lcs_sup, lowerCentralSeries, h.eq_top]
 
 end map_comap
 

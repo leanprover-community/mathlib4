@@ -136,7 +136,7 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   apply Submonoid.mem_iInf.mp hs x
   -- Porting note : added `dsimp` to make `rw ←map_mul` work
   dsimp
-  rw [←map_mul, e, map_zero]
+  rw [← map_mul, e, map_zero]
 
 end Presheaf
 

@@ -292,7 +292,7 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
       (eqToHom U.1.openEmbedding_obj_top).op r)).openEmbedding)))) _ (le_of_eq rfl) (_)
     (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 _)]
   erw [RingHom.comp_id]
-  rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ←CommRingCat.comp_eq_ring_hom_comp,
+  rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ← CommRingCat.comp_eq_ring_hom_comp,
     Scheme.Γ_map_op, Scheme.Γ_map_op, Scheme.Γ_map_op, Category.assoc]
   erw [← X.presheaf.map_comp]
   rw [← h₁.cancel_right_isIso _ (X.presheaf.map (eqToHom _))]

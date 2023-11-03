@@ -638,11 +638,11 @@ theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by s
 end deprecated
 
 -- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
-theorem lift_two : lift.{u, v} 2 = 2 := by simp [←one_add_one_eq_two]
+theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = (2 ^ #α) := by simp [←one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = (2 ^ #α) := by simp [← one_add_one_eq_two, Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
@@ -651,7 +651,7 @@ theorem mk_powerset {α : Type u} (s : Set α) : #(↥(𝒫 s)) = (2 ^ #(↥s)) 
   (mk_congr (Equiv.Set.powerset s)).trans mk_set
 #align cardinal.mk_powerset Cardinal.mk_powerset
 
-theorem lift_two_power (a) : lift.{v} (2 ^ a) = (2 ^ lift.{v} a) := by simp [←one_add_one_eq_two]
+theorem lift_two_power (a) : lift.{v} (2 ^ a) = (2 ^ lift.{v} a) := by simp [← one_add_one_eq_two]
 #align cardinal.lift_two_power Cardinal.lift_two_power
 
 section OrderProperties
@@ -1111,7 +1111,7 @@ theorem lift_sInf (s : Set Cardinal) : lift.{u,v} (sInf s) = sInf (lift.{u,v} ''
 theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u,v} (iInf f) = ⨅ i, lift.{u,v} (f i) := by
   unfold iInf
   convert lift_sInf (range f)
-  simp_rw [←comp_apply (f := lift), range_comp]
+  simp_rw [← comp_apply (f := lift), range_comp]
 #align cardinal.lift_infi Cardinal.lift_iInf
 
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :

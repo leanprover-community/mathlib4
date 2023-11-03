@@ -111,7 +111,7 @@ lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :
 -- Porting note: Removing `simp` - LHS does not simplify
 lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
     image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t := by
-  simp [←image_uncurry_prod, uncurry]
+  simp [← image_uncurry_prod, uncurry]
 #align set.image2_curry Set.image2_curry
 
 theorem image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun a b => f b a) t s := by
@@ -135,12 +135,12 @@ theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s
 
 lemma image2_inter_left (hf : Injective2 f) :
     image2 f (s ∩ s') t = image2 f s t ∩ image2 f s' t := by
-  simp_rw [←image_uncurry_prod, inter_prod, image_inter hf.uncurry]
+  simp_rw [← image_uncurry_prod, inter_prod, image_inter hf.uncurry]
 #align set.image2_inter_left Set.image2_inter_left
 
 lemma image2_inter_right (hf : Injective2 f) :
     image2 f s (t ∩ t') = image2 f s t ∩ image2 f s t' := by
-  simp_rw [←image_uncurry_prod, prod_inter, image_inter hf.uncurry]
+  simp_rw [← image_uncurry_prod, prod_inter, image_inter hf.uncurry]
 #align set.image2_inter_right Set.image2_inter_right
 
 @[simp]

@@ -112,7 +112,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
-    (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
+    (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [← comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
 

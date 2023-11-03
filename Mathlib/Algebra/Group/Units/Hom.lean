@@ -391,7 +391,7 @@ protected theorem one_div_mul_cancel (h : IsUnit a) : 1 / a * a = 1 := by simp [
 @[to_additive]
 theorem inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rcases h with ⟨u, hu⟩
-  rw [←hu, ← Units.val_inv_eq_inv_val]
+  rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 #align is_unit.inv IsUnit.inv
 #align is_add_unit.neg IsAddUnit.neg

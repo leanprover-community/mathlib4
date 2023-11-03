@@ -308,7 +308,7 @@ theorem rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f :
   apply homology'.hom_to_ext
   rw [Category.assoc, homology'.lift_ι, Category.assoc]
   erw [homology'.map_ι] -- Porting note: need to insist
-  rw [←Category.assoc (homology'.lift _ _ _ _ _) _ _]
+  rw [← Category.assoc (homology'.lift _ _ _ _ _) _ _]
   erw [homology'.lift_ι] -- Porting note: need to insist
   rw [Category.assoc]
   erw [cokernel.π_desc] -- Porting note: need to insist

@@ -327,7 +327,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
       Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
     simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
     erw [Finsupp.lift_apply]
-    rw [Finsupp.sum_single_index, ←this, of_ρ_apply]
+    rw [Finsupp.sum_single_index, ← this, of_ρ_apply]
     erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
     simp only [one_smul, smul_eq_mul, mul_one]
     · -- This goal didn't exist before leanprover/lean4#2644
@@ -386,9 +386,9 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
       comm := fun g => by
         refine' LinearMap.ext fun x => LinearMap.ext fun y => _
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
-        rw [←hom_comm_apply]
+        rw [← hom_comm_apply]
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
-        simp only [←map_mul, mul_inv_self, map_one]
+        simp only [← map_mul, mul_inv_self, map_one]
         rfl }
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip

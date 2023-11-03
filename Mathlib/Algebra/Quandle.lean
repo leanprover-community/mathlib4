@@ -160,15 +160,15 @@ identity holds.
 -/
 lemma act_act_self_eq (x y : S) : (x ◃ y) ◃ x = x ◃ y := by
   have h : (x ◃ y) ◃ x = (x ◃ y) ◃ (x ◃ 1) := by rw [act_one]
-  rw [h, ←Shelf.self_distrib, act_one]
+  rw [h, ← Shelf.self_distrib, act_one]
 #align unital_shelf.act_act_self_eq UnitalShelf.act_act_self_eq
 
-lemma act_idem (x : S) : (x ◃ x) = x := by rw [←act_one x, ←Shelf.self_distrib, act_one, act_one]
+lemma act_idem (x : S) : (x ◃ x) = x := by rw [← act_one x, ← Shelf.self_distrib, act_one, act_one]
 #align unital_shelf.act_idem UnitalShelf.act_idem
 
 lemma act_self_act_eq (x y : S) : x ◃ (x ◃ y) = x ◃ y := by
   have h : x ◃ (x ◃ y) = (x ◃ 1) ◃ (x ◃ y) := by rw [act_one]
-  rw [h, ←Shelf.self_distrib, one_act]
+  rw [h, ← Shelf.self_distrib, one_act]
 #align unital_shelf.act_self_act_eq UnitalShelf.act_self_act_eq
 
 /--

@@ -842,7 +842,7 @@ instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
     a + a = 0 ↔ a = 0 := by
   rw [Nat.odd_iff, ← Nat.two_dvd_ne_zero, ← Nat.prime_two.coprime_iff_not_dvd] at hn
-  rw [←mul_two, ←@Nat.cast_two (ZMod n), ←ZMod.coe_unitOfCoprime 2 hn, Units.mul_left_eq_zero]
+  rw [← mul_two, ←@Nat.cast_two (ZMod n), ← ZMod.coe_unitOfCoprime 2 hn, Units.mul_left_eq_zero]
 
 theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -a := by
   rwa [Ne, eq_neg_iff_add_eq_zero, add_self_eq_zero_iff_eq_zero hn]

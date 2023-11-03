@@ -49,11 +49,11 @@ lemma mul_uzpow (s₁ s₂ : ℤˣ) (x : ZMod 2) : (s₁ * s₂) ^ x = s₁ ^ x 
 
 lemma uzpow_mul (s : ℤˣ) (x y : ZMod 2) : s ^ (x * y) = (s ^ x) ^ y := by
   convert pow_mul s x.val y.val
-  rw [←uzpow_natCast, Nat.cast_mul, ZMod.nat_cast_zmod_val, ZMod.nat_cast_zmod_val]
+  rw [← uzpow_natCast, Nat.cast_mul, ZMod.nat_cast_zmod_val, ZMod.nat_cast_zmod_val]
 
 lemma uzpow_add (s : ℤˣ) (x y : ZMod 2) : s ^ (x + y) = s ^ x * s ^ y := by
   simp only [uzpow_def]
-  rw [ZMod.val_add, ←pow_eq_pow_mod, pow_add]
+  rw [ZMod.val_add, ← pow_eq_pow_mod, pow_add]
   fin_cases s <;> simp
 
 /-! The next two lemmas are mathematically not interesting as `-` coincides with `+` and `/` with

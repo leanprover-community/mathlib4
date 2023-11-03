@@ -44,7 +44,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
   change _ ↔ x ∈ RHS
   constructor
   · revert x
-    rw [←SetLike.le_def] -- porting note: refine needs this even though it's defeq?
+    rw [← SetLike.le_def] -- porting note: refine needs this even though it's defeq?
     refine Ideal.span_le.2 ?_
     rintro _ ⟨i, hi, rfl⟩ m hm
     refine' ⟨_, hi, 1, _⟩

@@ -463,7 +463,7 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
 lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
-  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ←h, card_sdiff_add_card, union_comm]
+  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
 
 end Lattice
 
@@ -487,7 +487,7 @@ theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + card B �
       apply Nat.succ_pos
     have z : i + card B + k = card (erase A a) := by
       rw [card_erase_of_mem (mem_sdiff.1 ha).1, ← h,
-        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ←pred_eq_sub_one,
+        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ← pred_eq_sub_one,
         k.pred_succ]
     have : B ⊆ A.erase a := by
       rintro t th

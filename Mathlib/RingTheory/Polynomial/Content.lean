@@ -378,7 +378,7 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     rcases hpq with (hlt | heq)
     · apply ih _ _ hlt
     rw [← p.natDegree_primPart, ← q.natDegree_primPart, ← Nat.cast_inj (R := WithBot ℕ),
-      Nat.cast_add, ←degree_eq_natDegree p.primPart_ne_zero,
+      Nat.cast_add, ← degree_eq_natDegree p.primPart_ne_zero,
       ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     suffices h : (q.primPart * p.primPart).content = 1

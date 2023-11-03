@@ -1227,7 +1227,7 @@ theorem count_univ [DecidableEq α] (a : α) : count a Finset.univ.val = 1 :=
 @[simp]
 theorem map_univ_val_equiv (e : α ≃ β) :
     map e univ.val = univ.val := by
-  rw [←congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
+  rw [← congr_arg Finset.val (Finset.map_univ_equiv e), Finset.map_val, Equiv.coe_toEmbedding]
 
 /-- For functions on finite sets, they are bijections iff they map universes into universes. -/
 @[simp]

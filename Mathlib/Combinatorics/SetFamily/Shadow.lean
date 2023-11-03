@@ -279,14 +279,14 @@ theorem mem_upShadow_iff_exists_mem_card_add :
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
-  simp [←compl_involutive.eq_iff]
+  simp [← compl_involutive.eq_iff]
 #align finset.up_shadow_image_compl Finset.shadow_compls
 
 @[simp] lemma upShadow_compls : ∂⁺ 𝒜ᶜˢ = (∂ 𝒜)ᶜˢ := by
   ext s
   simp only [mem_image, exists_prop, mem_shadow_iff, mem_upShadow_iff, mem_compls]
   refine (compl_involutive.toPerm _).exists_congr_left.trans ?_
-  simp [←compl_involutive.eq_iff]
+  simp [← compl_involutive.eq_iff]
 #align finset.shadow_image_compl Finset.upShadow_compls
 
 end UpShadow

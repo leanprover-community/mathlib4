@@ -914,8 +914,8 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
           intros b _; cases b <;> rfl]
       rw [Nat.bitwise_bit gff]
     any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
-    any_goals rw [Nat.bitwise_zero_left, ←Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
-    any_goals rw [Nat.bitwise_zero_right, ←Bool.cond_eq_ite, this, ← bit_to_nat, pb1]
+    any_goals rw [Nat.bitwise_zero_left, ← Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
+    any_goals rw [Nat.bitwise_zero_right, ← Bool.cond_eq_ite, this, ← bit_to_nat, pb1]
     all_goals
       rw [← show ∀ n : PosNum, ↑(p m n) = Nat.bitwise g ↑m ↑n from IH]
       rw [← bit_to_nat, pbb]
@@ -946,7 +946,7 @@ theorem castNum_xor : ∀ m n : Num, ↑(m ^^^ n) = (↑m ^^^ ↑n : ℕ) := by
 
 @[simp, norm_cast]
 theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n : ℕ) := by
-  cases m <;> dsimp only [←shiftl_eq_shiftLeft, shiftl]
+  cases m <;> dsimp only [← shiftl_eq_shiftLeft, shiftl]
   · symm
     apply Nat.zero_shiftLeft
   simp only [cast_pos]
@@ -960,12 +960,12 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
 @[simp, norm_cast]
 
 theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ)  := by
-  cases' m with m <;> dsimp only [←shiftr_eq_shiftRight, shiftr];
+  cases' m with m <;> dsimp only [← shiftr_eq_shiftRight, shiftr];
   · symm
     apply Nat.zero_shiftRight
   induction' n with n IH generalizing m
   · cases m <;> rfl
-  cases' m with m m <;> dsimp only [PosNum.shiftr, ←PosNum.shiftr_eq_shiftRight]
+  cases' m with m m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt

@@ -184,7 +184,7 @@ def karoubiUniversal₁ : C ⥤ Karoubi D ≌ Karoubi C ⥤ Karoubi D where
     dsimp [FunctorExtension₁.map, KaroubiUniversal₁.counitIso]
     simp only [eqToHom_app, Functor.id_obj, Functor.comp_obj, functorExtension₁_obj,
       whiskeringLeft_obj_obj, eqToHom_f, FunctorExtension₁.obj_obj_X, toKaroubi_obj_X,
-      eqToHom_refl, comp_id, comp_p, ←comp_f, ← F.map_comp, P.idem]
+      eqToHom_refl, comp_id, comp_p, ← comp_f, ← F.map_comp, P.idem]
 #align category_theory.idempotents.karoubi_universal₁ CategoryTheory.Idempotents.karoubiUniversal₁
 
 theorem functorExtension₁_comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :

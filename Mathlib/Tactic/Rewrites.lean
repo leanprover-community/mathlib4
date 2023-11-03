@@ -21,7 +21,7 @@ import Mathlib.Tactic.SolveByElim
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 -/
 
@@ -330,7 +330,7 @@ syntax forbidden := " [" (("-" ident),*,?) "]"
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 You can use `rw? [-my_lemma, -my_theorem]` to prevent `rw?` using the named lemmas.
 -/

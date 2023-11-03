@@ -116,7 +116,7 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
   rw [isSheaf_coherent]
   intro X α _ Y π H
   have h_colim := isColimitOfEffectiveEpiFamilyStruct Y π H.effectiveEpiFamily.some
-  rw [←Sieve.generateFamily_eq] at h_colim
+  rw [← Sieve.generateFamily_eq] at h_colim
   intro x hx
   let x_ext := Presieve.FamilyOfElements.sieveExtend x
   have hx_ext := Presieve.FamilyOfElements.Compatible.sieveExtend hx

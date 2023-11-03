@@ -112,7 +112,7 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
       -- category notation
       change Quotient.CompClosure redStep (q ≫ Quiver.Path.reverse q)
         (Quiver.Path.cons q f ≫ (Quiver.Hom.toPath (Quiver.reverse f)) ≫ (Quiver.Path.reverse q))
-      simp only [←Category.assoc] at this ⊢
+      simp only [← Category.assoc] at this ⊢
       exact this
     · exact ih
 #align category_theory.groupoid.free.congr_comp_reverse CategoryTheory.Groupoid.Free.congr_comp_reverse

@@ -635,7 +635,7 @@ theorem degree_le_zero_iff : degree p ≤ 0 ↔ p = C (coeff p 0) :=
 #align polynomial.degree_le_zero_iff Polynomial.degree_le_zero_iff
 
 theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) := by
-  simpa only [degree, ←support_toFinsupp, toFinsupp_add]
+  simpa only [degree, ← support_toFinsupp, toFinsupp_add]
     using AddMonoidAlgebra.sup_support_add_le _ _ _
 #align polynomial.degree_add_le Polynomial.degree_add_le
 
@@ -784,7 +784,7 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simpa only [degree, ←support_toFinsupp, toFinsupp_mul]
+  simpa only [degree, ← support_toFinsupp, toFinsupp_mul]
     using AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le _ _
 #align polynomial.degree_mul_le Polynomial.degree_mul_le
 

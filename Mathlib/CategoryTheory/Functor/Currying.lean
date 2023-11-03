@@ -54,13 +54,13 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
   obj X :=
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X, g)
-      map_id := fun Y => by simp only [F.map_id]; rw [←prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp [←F.map_comp]}
+      map_id := fun Y => by simp only [F.map_id]; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map_comp := fun f g => by simp [← F.map_comp]}
   map f :=
     { app := fun Y => F.map (f, 𝟙 Y)
-      naturality := fun {Y} {Y'} g => by simp [←F.map_comp] }
+      naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
   map_id := fun X => by ext Y; exact F.map_id _
-  map_comp := fun f g => by ext Y; dsimp; simp [←F.map_comp]
+  map_comp := fun f g => by ext Y; dsimp; simp [← F.map_comp]
 #align category_theory.curry_obj CategoryTheory.curryObj
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
@@ -88,7 +88,7 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
     (NatIso.ofComponents fun F =>
         NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _)
     (NatIso.ofComponents fun F => NatIso.ofComponents (fun X => eqToIso (by simp))
-      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [←F.map_comp]; simp))
+      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [← F.map_comp]; simp))
 #align category_theory.currying CategoryTheory.currying
 
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/

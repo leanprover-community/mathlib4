@@ -812,7 +812,7 @@ theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsFiel
   intro mle
   apply lt_irrefl (⊤ : Ideal R)
   have : M = ⊥ := eq_bot_iff.mpr mle
-  rw [←this] at Ibot
+  rw [← this] at Ibot
   rwa [hm.1.2 I Ibot] at Itop
 #align ideal.bot_lt_of_maximal Ideal.bot_lt_of_maximal
 
