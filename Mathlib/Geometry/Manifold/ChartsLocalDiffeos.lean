@@ -101,25 +101,27 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) [ClosedUnderR
 
 /-- Charts are structomorphisms. -/
 -- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
-lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestriction G] : Structomorph G M H := by
-  let s : Opens M := { carrier := e.source, is_open' := e.open_source }
-  let t : Opens H := { carrier := e.target, is_open' := e.open_target }
+lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestriction G] :
+    let s : Opens M := { carrier := e.source, is_open' := e.open_source }
+    let t : Opens H := { carrier := e.target, is_open' := e.open_target }
+    Structomorph G s t := by
+  intro s t
   by_cases s = (∅ : Set M)
   · sorry -- trivial, TODO fill in!
-  have hs : Nonempty s := nonempty_iff_ne_empty'.mpr h
-  have : Structomorph G s t := {
-    e.toHomeomorphSourceTarget with
-    mem_groupoid := by
-      intro c c' hc hc'
-      show (c.symm).trans (e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c') ∈ G
-      -- The atlas on H on itself has only one chart (by `chartedSpaceSelf_atlas H`),
-      -- hence c' (as a restriction of that) is the inclusion.
-      -- This *almost* gives our claim: except that `e` is a chart on M and c is one on s:
-      -- `real_helper` argues the restricted chart belongs to the maximal atlas, making this rigorous.
-      -- so they don't fit together nicely. (Composing with the inclusion makes that nice...)
-      apply G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc) (G.restriction_chart he hs c' hc')
+  · have hs : Nonempty s := nonempty_iff_ne_empty'.mpr h
+    exact {
+      e.toHomeomorphSourceTarget with
+      mem_groupoid := by
+        intro c c' hc hc'
+        show (c.symm).trans (e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c') ∈ G
+        -- The atlas on H on itself has only one chart (by `chartedSpaceSelf_atlas H`),
+        -- hence c' (as a restriction of that) is the inclusion.
+        -- This *almost* gives our claim: except that `e` is a chart on M and c is one on s:
+        -- `real_helper` argues the restricted chart belongs to the maximal atlas, making this rigorous.
+        -- so they don't fit together nicely. (Composing with the inclusion makes that nice...)
+        apply G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
+          (G.restriction_chart he hs c' hc')
   }
-  sorry
 
 -- /-- Each chart inverse is a structomorphism. -/
 -- -- essentially re-use the proof above!
