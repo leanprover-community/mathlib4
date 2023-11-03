@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Heather Macbeth
 -/
 import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.Data.MvPolynomial.Supported
+import Mathlib.Tactic.Polyrith
 
 #align_import ring_theory.witt_vector.mul_coeff from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -29,8 +30,6 @@ that needs to happen in characteristic 0.
 
 
 noncomputable section
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace WittVector
 
@@ -142,9 +141,9 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
     (p : 𝕄) ^ n * wittMul p n + wittPolyProdRemainder p n = wittPolyProd p n := by
-  convert mul_polyOfInterest_aux1 p n
-  rw [sum_range_succ, add_comm, Nat.sub_self, pow_zero, pow_one]
-  rfl
+  rw [← mul_polyOfInterest_aux1 p n, sum_range_succ, Nat.sub_self]
+  simp only [wittPolyProdRemainder]
+  ring
 #align witt_vector.mul_poly_of_interest_aux2 WittVector.mul_polyOfInterest_aux2
 
 theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
@@ -174,28 +173,15 @@ theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
     enter [1, 2, 2]
     rw [sum_range_succ, ← C_mul_X_pow_eq_monomial, tsub_self, pow_zero, pow_one, map_mul,
       rename_C, rename_X, ← mvpz]
-  simp only [add_mul, mul_add]
-  rw [add_comm _ (remainder p n)]
-  simp only [add_assoc]
-  apply congrArg (Add.add _)
+  simp only [remainder]
   ring
 #align witt_vector.mul_poly_of_interest_aux3 WittVector.mul_polyOfInterest_aux3
 
-theorem mul_polyOfInterest_aux4 (n : ℕ) :
-    (p : 𝕄) ^ (n + 1) * wittMul p (n + 1) =
-    -((p : 𝕄) ^ (n + 1) * X (0, n + 1)) * ((p : 𝕄) ^ (n + 1) * X (1, n + 1)) +
-    (p : 𝕄) ^ (n + 1) * X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
-    (p : 𝕄) ^ (n + 1) * X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
-    (remainder p n - wittPolyProdRemainder p (n + 1)) := by
-  rw [← add_sub_assoc, eq_sub_iff_add_eq, mul_polyOfInterest_aux2]
-  exact mul_polyOfInterest_aux3 _ _
-#align witt_vector.mul_poly_of_interest_aux4 WittVector.mul_polyOfInterest_aux4
-
 theorem mul_polyOfInterest_aux5 (n : ℕ) :
     (p : 𝕄) ^ (n + 1) * polyOfInterest p n = remainder p n - wittPolyProdRemainder p (n + 1) := by
-  simp only [polyOfInterest, mul_sub, mul_add, sub_eq_iff_eq_add']
-  rw [mul_polyOfInterest_aux4 p n]
-  ring
+  simp only [polyOfInterest]
+  linear_combination mul_polyOfInterest_aux2 p (n+1) + mul_polyOfInterest_aux3 p n
+
 #align witt_vector.mul_poly_of_interest_aux5 WittVector.mul_polyOfInterest_aux5
 
 theorem mul_polyOfInterest_vars (n : ℕ) :
@@ -213,18 +199,12 @@ theorem polyOfInterest_vars (n : ℕ) : (polyOfInterest p n).vars ⊆ univ ×ˢ 
   rw [this, vars_C_mul]
   apply NeZero.ne
 
-
 theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
     peval (polyOfInterest p n) ![fun i => x.coeff i, fun i => y.coeff i] =
-    (x * y).coeff (n + 1) + p ^ (n + 1) * x.coeff (n + 1) * y.coeff (n + 1) -
-      y.coeff (n + 1) * ∑ i in range (n + 1 + 1), p ^ i * x.coeff i ^ p ^ (n + 1 - i) -
-      x.coeff (n + 1) * ∑ i in range (n + 1 + 1), p ^ i * y.coeff i ^ p ^ (n + 1 - i) := by
-  simp only [polyOfInterest, peval, map_natCast, Matrix.head_cons, map_pow,
-    Function.uncurry_apply_pair, aeval_X, Matrix.cons_val_one, map_mul, Matrix.cons_val_zero,
-    map_sub]
-  rw [sub_sub, add_comm (_ * _), ← sub_sub]
-  simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, eval₂_rename, mul_coeff, peval, map_natCast,
-    map_add, map_pow, map_mul]
+    (x * y).coeff (n + 1) + (p : k) ^ (n + 1) * x.coeff (n + 1) * y.coeff (n + 1)
+      - x.coeff (n + 1) * ∑ i in range (n + 1 + 1), (p : k) ^ i * y.coeff i ^ p ^ (n + 1 - i)
+      - y.coeff (n + 1) * ∑ i in range (n + 1 + 1), (p : k) ^ i * x.coeff i ^ p ^ (n + 1 - i) := by
+  simp [peval, polyOfInterest, wittPolynomial_eq_sum_C_mul_X_pow, mul_coeff]
 #align witt_vector.peval_poly_of_interest WittVector.peval_polyOfInterest
 
 variable [CharP k p]
@@ -232,8 +212,9 @@ variable [CharP k p]
 /-- The characteristic `p` version of `peval_polyOfInterest` -/
 theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
     peval (polyOfInterest p n) ![fun i => x.coeff i, fun i => y.coeff i] =
-      (x * y).coeff (n + 1) - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) -
-        x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
+      (x * y).coeff (n + 1)
+      - x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1)
+      - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
   simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow', zero_mul, add_zero]
@@ -253,8 +234,9 @@ variable (k)
 theorem nth_mul_coeff' (n : ℕ) :
     ∃ f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k,
     ∀ x y : 𝕎 k, f (truncateFun (n + 1) x) (truncateFun (n + 1) y) =
-      (x * y).coeff (n + 1) - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) -
-        x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
+      (x * y).coeff (n + 1)
+      - x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1)
+      - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) := by
   simp only [← peval_polyOfInterest']
   obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars k (polyOfInterest_vars p n)
   have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b => rfl
