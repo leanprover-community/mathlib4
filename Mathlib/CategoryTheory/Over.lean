@@ -524,7 +524,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m  : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 

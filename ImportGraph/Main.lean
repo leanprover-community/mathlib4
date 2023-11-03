@@ -42,7 +42,7 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   | some fr => some <| fr.as! ModuleName
   | none => none
   searchPathRef.set compile_time_search_path%
-  let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
+  let dotFile ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
       graph := graph.downstreamOf (NameSet.empty.insert f)

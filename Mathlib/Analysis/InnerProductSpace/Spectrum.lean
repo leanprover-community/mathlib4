@@ -49,7 +49,7 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 
-variable {𝕜 : Type*} [IsROrC 𝕜] [dec_𝕜 : DecidableEq 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 

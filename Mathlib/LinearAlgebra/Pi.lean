@@ -149,7 +149,7 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
     simp [apply_single]
   right_inv f := by
     ext x
-    suffices f (∑ j, Pi.single j (x j)) = f x by simpa [apply_single]
+    suffices f (∑ j, Pi.single j (x j)) = f x by simpa [apply_single, map_sum]
     rw [Finset.univ_sum_single]
 #align linear_map.lsum LinearMap.lsum
 #align linear_map.lsum_symm_apply LinearMap.lsum_symm_apply

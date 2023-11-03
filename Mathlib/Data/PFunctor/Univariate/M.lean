@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem casesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
-                    (f : ∀ (a) (f : F.B a → M F), r (M.mk ⟨a, f⟩)) :
+    (f : ∀ (a) (f : F.B a → M F), r (M.mk ⟨a, f⟩)) :
     PFunctor.M.casesOn' (M.mk ⟨a, x⟩) f = f a x :=
   @cases_mk F r ⟨a, x⟩ (fun ⟨a, g⟩ => f a g)
 set_option linter.uppercaseLean3 false in

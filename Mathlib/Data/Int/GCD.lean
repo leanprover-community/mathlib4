@@ -51,7 +51,7 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
 theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
 theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
-  xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
+    xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]
 theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
@@ -167,7 +167,7 @@ theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k
     ← Int.mul_emod]
 #align nat.exists_mul_mod_eq_gcd Nat.exists_mul_emod_eq_gcd
 
-theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : coprime n k) (hk : 1 < k) :
+theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
     ∃ m, n * m % k = 1 :=
   Exists.recOn (exists_mul_emod_eq_gcd (lt_of_le_of_lt (le_of_eq hkn) hk)) fun m hm ↦
     ⟨m, hm.trans hkn⟩
@@ -498,6 +498,12 @@ theorem lcm_dvd {i j k : ℤ} : i ∣ k → j ∣ k → (lcm i j : ℤ) ∣ k :=
   intro hi hj
   exact coe_nat_dvd_left.mpr (Nat.lcm_dvd (natAbs_dvd_natAbs.mpr hi) (natAbs_dvd_natAbs.mpr hj))
 #align int.lcm_dvd Int.lcm_dvd
+
+theorem lcm_mul_left {m n k : ℤ} : (m * n).lcm (m * k) = natAbs m * n.lcm k := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_left]
+
+theorem lcm_mul_right {m n k : ℤ} : (m * n).lcm (k * n) = m.lcm k * natAbs n := by
+  simp_rw [Int.lcm, natAbs_mul, Nat.lcm_mul_right]
 
 end Int
 

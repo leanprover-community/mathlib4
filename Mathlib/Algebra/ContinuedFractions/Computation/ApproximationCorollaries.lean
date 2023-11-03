@@ -122,14 +122,9 @@ theorem of_convergence_epsilon :
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
       succ_nth_fib_le_of_nth_denom (Or.inr this)
-    have zero_lt_B : 0 < B :=
-      haveI : (0 : K) < fib (n + 1) := by exact_mod_cast fib_pos n.zero_lt_succ
-      lt_of_lt_of_le this B_ineq
-    have zero_lt_mul_conts : 0 < B * nB := by
-      have : 0 < nB :=
-        haveI : (0 : K) < fib (n + 2) := by exact_mod_cast fib_pos (n + 1).zero_lt_succ
-        lt_of_lt_of_le this nB_ineq
-      solve_by_elim [mul_pos]
+    have zero_lt_B : 0 < B := B_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 n.succ_pos
+    have nB_pos : 0 < nB := nB_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 $ succ_pos _
+    have zero_lt_mul_conts : 0 < B * nB := by positivity
     suffices : 1 < ε * (B * nB); exact (div_lt_iff zero_lt_mul_conts).mpr this
     -- use that `N ≥ n` was obtained from the archimedean property to show the following
     have one_lt_ε_mul_N : 1 < ε * n := by
@@ -148,10 +143,8 @@ theorem of_convergence_epsilon :
       _ ≤ fib (n + 1) := by exact_mod_cast fib_le_fib_succ
       _ ≤ fib (n + 1) * fib (n + 1) := by exact_mod_cast (fib (n + 1)).le_mul_self
       _ ≤ fib (n + 1) * fib (n + 2) :=
-        (mul_le_mul_of_nonneg_left (by exact_mod_cast fib_le_fib_succ)
-          (by exact_mod_cast (fib (n + 1)).zero_le))
-      _ ≤ B * nB :=
-        mul_le_mul B_ineq nB_ineq (by exact_mod_cast (fib (n + 2)).zero_le) (le_of_lt zero_lt_B)
+            mul_le_mul_of_nonneg_left (by exact_mod_cast fib_le_fib_succ) (cast_nonneg _)
+      _ ≤ B * nB := mul_le_mul B_ineq nB_ineq (cast_nonneg _) zero_lt_B.le
 #align generalized_continued_fraction.of_convergence_epsilon GeneralizedContinuedFraction.of_convergence_epsilon
 
 attribute [local instance] Preorder.topology

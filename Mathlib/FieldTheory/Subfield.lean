@@ -192,7 +192,7 @@ theorem coe_set_mk (S : Subring K) (h) : ((⟨S, h⟩ : Subfield K) : Set K) = S
 
 @[simp]
 theorem mk_le_mk {S S' : Subring K} (h h') : (⟨S, h⟩ : Subfield K) ≤ (⟨S', h'⟩ : Subfield K) ↔
-      S ≤ S' :=
+    S ≤ S' :=
   Iff.rfl
 #align subfield.mk_le_mk Subfield.mk_le_mk
 

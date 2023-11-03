@@ -7,6 +7,11 @@ import Mathlib.Tactic.Replace
 
 set_option linter.unusedVariables false
 
+/-- Test the `:=` syntax works -/
+example {A B : Type} (h : A) (f : A → B) : B := by
+  replace h := f h
+  exact h
+
 -- tests without `:=`, creating a new subgoal
 
 example (z : Int) : Nat := by

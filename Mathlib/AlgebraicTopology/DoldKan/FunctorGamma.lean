@@ -132,7 +132,7 @@ variable {K K'}
 
 @[reassoc (attr := simp)]
 theorem mapMono_naturality (i : Δ ⟶ Δ') [Mono i] :
-  mapMono K i ≫ f.f Δ.len = f.f Δ'.len ≫ mapMono K' i := by
+    mapMono K i ≫ f.f Δ.len = f.f Δ'.len ≫ mapMono K' i := by
   unfold mapMono
   split_ifs with h
   · subst h
@@ -145,7 +145,7 @@ variable (K)
 
 @[reassoc (attr := simp)]
 theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
-  mapMono K i ≫ mapMono K i' = mapMono K (i' ≫ i) := by
+    mapMono K i ≫ mapMono K i' = mapMono K (i' ≫ i) := by
   -- case where i : Δ' ⟶ Δ is the identity
   by_cases h₁ : Δ = Δ'
   · subst h₁

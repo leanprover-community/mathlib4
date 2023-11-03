@@ -839,6 +839,29 @@ theorem comap_map_eq_self {f : F} {p : Submodule R M} (h : LinearMap.ker f ≤ p
     comap f (map f p) = p := by rw [Submodule.comap_map_eq, sup_of_le_left h]
 #align submodule.comap_map_eq_self Submodule.comap_map_eq_self
 
+lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
+    LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [eq_top_iff]
+    intro x _
+    have : f x ∈ LinearMap.range f := LinearMap.mem_range_self f x
+    rw [← h] at this
+    obtain ⟨y, hy⟩ : ∃ y : S, f.domRestrict S y = f x := this
+    have : (y : M) + (x - y) ∈ S ⊔ (LinearMap.ker f) := Submodule.add_mem_sup y.2 (by simp [← hy])
+    simpa using this
+  · refine le_antisymm (LinearMap.range_domRestrict_le_range f S) ?_
+    rintro x ⟨y, rfl⟩
+    obtain ⟨s, hs, t, ht, rfl⟩ : ∃ s, s ∈ S ∧ ∃ t, t ∈ LinearMap.ker f ∧ s + t = y :=
+      Submodule.mem_sup.1 (by simp [h])
+    exact ⟨⟨s, hs⟩, by simp [LinearMap.mem_ker.1 ht]⟩
+
+@[simp] lemma _root_.LinearMap.surjective_domRestrict_iff
+    {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} (hf : Surjective f) :
+    Surjective (f.domRestrict S) ↔ S ⊔ LinearMap.ker f = ⊤ := by
+  rw [← LinearMap.range_eq_top] at hf ⊢
+  rw [← hf]
+  exact LinearMap.range_domRestrict_eq_range_iff
+
 end AddCommGroup
 
 section DivisionRing

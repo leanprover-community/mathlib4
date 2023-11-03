@@ -1174,7 +1174,7 @@ theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, �
 #align lp.norm_le_of_tendsto lp.norm_le_of_tendsto
 
 /-- If `f` is the pointwise limit of a bounded sequence in `lp E p`, then `f` is in `lp E p`. -/
-theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Metric.Bounded (Set.range F)) {f : ∀ a, E a}
+theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.range F)) {f : ∀ a, E a}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : Memℓp f p := by
   obtain ⟨C, _, hCF'⟩ := hF.exists_pos_norm_le
   have hCF : ∀ k, ‖F k‖ ≤ C := fun k => hCF' _ ⟨k, rfl⟩
@@ -1212,7 +1212,7 @@ instance completeSpace : CompleteSpace (lp E p) :=
     obtain ⟨f, hf⟩ := cauchySeq_tendsto_of_complete
       ((uniformContinuous_coe (p := p)).comp_cauchySeq hF)
     -- Since the Cauchy sequence is bounded, its pointwise limit `f` is in `lp E p`.
-    have hf' : Memℓp f p := memℓp_of_tendsto hF.bounded_range hf
+    have hf' : Memℓp f p := memℓp_of_tendsto hF.isBounded_range hf
     -- And therefore `f` is its limit in the `lp E p` topology as well as pointwise.
     exact ⟨⟨f, hf'⟩, tendsto_lp_of_tendsto_pi hF hf⟩)
 

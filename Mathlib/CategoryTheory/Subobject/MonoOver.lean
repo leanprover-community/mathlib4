@@ -190,9 +190,9 @@ theorem lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
 are equivalent to monomorphisms over the source of `f`.
 -/
 def slice {A : C} {f : Over A}
-  (h₁ : ∀ (g : MonoOver f),
+    (h₁ : ∀ (g : MonoOver f),
     Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
-  (h₂ : ∀ (g : MonoOver f.left),
+    (h₂ : ∀ (g : MonoOver f.left),
     Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
   MonoOver f ≌ MonoOver f.left where
   functor := MonoOver.lift f.iteratedSliceEquiv.functor h₁

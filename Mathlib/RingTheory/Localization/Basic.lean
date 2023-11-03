@@ -94,7 +94,7 @@ variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemirin
 
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
-/-- The typeclass `IsLocalization (M : Submodule R) S` where `S` is an `R`-algebra
+/-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
   --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
@@ -424,7 +424,7 @@ theorem mk'_mul_mk'_eq_one' (x : R) (y : M) (h : x ∈ M) : mk' S x y * mk' S (y
   mk'_mul_mk'_eq_one ⟨x, h⟩ _
 #align is_localization.mk'_mul_mk'_eq_one' IsLocalization.mk'_mul_mk'_eq_one'
 
-theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m  := by
+theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m := by
   nth_rw 2 [← one_mul m]
   rw [mk'_mul, mk'_one, Algebra.smul_def]
 

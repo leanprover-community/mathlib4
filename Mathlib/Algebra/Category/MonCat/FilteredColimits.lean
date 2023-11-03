@@ -365,7 +365,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 #align AddCommMon.filtered_colimits.M AddCommMonCat.FilteredColimits.M
 
 @[to_additive]
-noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F):=
+noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with
     mul_comm := fun x y => by
       refine Quot.induction_on₂ x y ?_

@@ -1580,7 +1580,7 @@ theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n
 
 theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
     HasCompactSupport (iteratedFDeriv 𝕜 n f) :=
-  isCompact_of_isClosed_subset hf isClosed_closure (tsupport_iteratedFDeriv_subset n)
+  hf.of_isClosed_subset isClosed_closure (tsupport_iteratedFDeriv_subset n)
 #align has_compact_support.iterated_fderiv HasCompactSupport.iteratedFDeriv
 
 theorem norm_fderiv_iteratedFDeriv {n : ℕ} :

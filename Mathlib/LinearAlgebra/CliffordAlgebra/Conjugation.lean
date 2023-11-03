@@ -97,7 +97,7 @@ def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
 
 @[simp]
 theorem reverseOpEquiv_opComm :
-  AlgEquiv.opComm (reverseOpEquiv (Q := Q)) = reverseOpEquiv.symm := rfl
+    AlgEquiv.opComm (reverseOpEquiv (Q := Q)) = reverseOpEquiv.symm := rfl
 
 /-- Grade reversion, inverting the multiplication order of basis vectors.
 Also called *transpose* in some literature. -/

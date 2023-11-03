@@ -436,7 +436,7 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 -- Porting note: new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
-  (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
+    (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
 
 @[to_additive]
 theorem Submonoid.le_topologicalClosure (s : Submonoid M) : s ≤ s.topologicalClosure :=

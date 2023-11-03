@@ -118,7 +118,7 @@ theorem coe_int_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := num_den'
 numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
 @[elab_as_elim]
 def numDenCasesOn.{u} {C : ℚ → Sort u} :
-    ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).coprime d → C (n /. d)), C a
+    ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).Coprime d → C (n /. d)), C a
   | ⟨n, d, h, c⟩, H => by rw [num_den']; exact H n d (Nat.pos_of_ne_zero h) c
 #align rat.num_denom_cases_on Rat.numDenCasesOn
 
@@ -510,6 +510,10 @@ theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q
   rw [coe_int_eq_divInt]
   rfl
 #align rat.coe_int_num_of_denom_eq_one Rat.coe_int_num_of_den_eq_one
+
+lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
+  rw [Rat.isInt, Nat.beq_eq_true_eq] at h
+  exact (Rat.coe_int_num_of_den_eq_one h).symm
 
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
   ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩

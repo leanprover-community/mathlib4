@@ -1180,7 +1180,7 @@ lemma ofJ'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJ' j).j = j := 
 variable {F : Type u} [Field F] (j : F)
 
 private lemma two_or_three_ne_zero : (2 : F) ≠ 0 ∨ (3 : F) ≠ 0 :=
-  ne_zero_or_ne_zero_of_nat_coprime (show Nat.coprime 2 3 by norm_num1)
+  ne_zero_or_ne_zero_of_nat_coprime (show Nat.Coprime 2 3 by norm_num1)
 
 variable [DecidableEq F]
 

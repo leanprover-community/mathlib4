@@ -663,7 +663,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wellFounded_dvdNotUnit := by
     have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
-      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.toIsNoetherian)
+      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindRing.toIsNoetherian)
     convert this
     ext
     rw [Ideal.dvdNotUnit_iff_lt]

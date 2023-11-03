@@ -116,9 +116,10 @@ theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.di
 
 /-- Convex hull of `s` is bounded if and only if `s` is bounded. -/
 @[simp]
-theorem bounded_convexHull {s : Set E} : Metric.Bounded (convexHull ℝ s) ↔ Metric.Bounded s := by
-  simp only [Metric.bounded_iff_ediam_ne_top, convexHull_ediam]
-#align bounded_convex_hull bounded_convexHull
+theorem isBounded_convexHull {s : Set E} :
+    Bornology.IsBounded (convexHull ℝ s) ↔ Bornology.IsBounded s := by
+  simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
+#align bounded_convex_hull isBounded_convexHull
 
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   TopologicalAddGroup.pathConnectedSpace

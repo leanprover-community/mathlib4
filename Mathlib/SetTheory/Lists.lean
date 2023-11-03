@@ -402,7 +402,7 @@ mutual
           by decreasing_tactic
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
-  instance Subset.decidable  : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
+  instance Subset.decidable : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
     | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
       haveI :=
@@ -414,7 +414,7 @@ mutual
           by decreasing_tactic
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
-  instance mem.decidable  : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
+  instance mem.decidable : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
     | a, Lists'.nil => isFalse <| by rintro ⟨_, ⟨⟩, _⟩
     | a, Lists'.cons' b l₂ => by
       haveI :=

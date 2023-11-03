@@ -1445,6 +1445,17 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
   exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 #align measure_theory.tendsto_integral_approx_on_of_measurable_of_range_subset MeasureTheory.tendsto_integral_approxOn_of_measurable_of_range_subset
 
+theorem tendsto_integral_norm_approxOn_sub [MeasurableSpace E] [BorelSpace E] {f : α → E}
+    (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
+    Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
+      atTop (𝓝 0) := by
+  convert (tendsto_toReal zero_ne_top).comp (tendsto_approxOn_range_L1_nnnorm fmeas hf) with n
+  rw [integral_norm_eq_lintegral_nnnorm]
+  · simp
+  · apply (SimpleFunc.aestronglyMeasurable _).sub
+    apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩ ).aestronglyMeasurable
+    exact (isSeparable_of_separableSpace_subtype (range f ∪ {0})).mono (subset_union_left _ _)
+
 variable {ν : Measure α}
 
 theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integrable f ν) :
@@ -1635,8 +1646,7 @@ theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α �
 
 theorem set_integral_eq_subtype' {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) (f : α → G) :
-    ∫ x in s, f x ∂μ =
-      ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ):= by
+    ∫ x in s, f x ∂μ = ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) := by
   rw [← map_comap_subtype_coe hs]
   exact (MeasurableEmbedding.subtype_coe hs).integral_map _
 

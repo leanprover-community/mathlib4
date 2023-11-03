@@ -23,14 +23,14 @@ particularly
 
 ```
 theorem suffixLevenshtein_eq_tails_map :
-  (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := ...
+    (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := ...
 ```
 
 and
 
 ```
 theorem levenshtein_cons_cons :
-  levenshtein C (x :: xs) (y :: ys) =
+    levenshtein C (x :: xs) (y :: ys) =
     min (C.delete x + levenshtein C xs (y :: ys))
       (min (C.insert y + levenshtein C (x :: xs) ys)
         (C.substitute x y + levenshtein C xs ys)) := ...
@@ -251,21 +251,17 @@ theorem suffixLevenshtein_eq_tails_map (xs ys) :
 
 @[simp]
 theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
-  simp [levenshtein]
+  simp [levenshtein, suffixLevenshtein]
 
 @[simp]
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
-  dsimp [levenshtein]
+  dsimp [levenshtein, suffixLevenshtein, impl]
   congr
   rw [List.getLast_eq_get]
   congr
   rw [show (List.length _) = 1 from _]
-  induction ys with
-  | nil => simp
-  | cons y ys ih =>
-    simp only [List.foldr]
-    rw [impl_length] <;> simp [ih]
+  induction ys <;> simp
 
 @[simp]
 theorem levenshtein_cons_nil (x : α) (xs : List α) :

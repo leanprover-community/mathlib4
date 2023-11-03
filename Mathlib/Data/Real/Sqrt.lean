@@ -150,7 +150,7 @@ theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
 
 /- TODO(Mario): finish the proof
 theorem sqrt_aux_converges (f : cau_seq ℚ abs) : ∃ h x, 0 ≤ x ∧ x * x = max 0 (mk f) ∧
-  mk ⟨sqrt_aux f, h⟩ = x :=
+    mk ⟨sqrt_aux f, h⟩ = x :=
 begin
   rcases sqrt_exists (le_max_left 0 (mk f)) with ⟨x, x0, hx⟩,
   suffices : ∃ h, mk ⟨sqrt_aux f, h⟩ = x,

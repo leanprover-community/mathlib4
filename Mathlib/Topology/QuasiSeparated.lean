@@ -70,21 +70,21 @@ theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s
     (H (f ⁻¹' U) (f ⁻¹' V)
       ?_ (h.continuous.1 _ hU') ?_ ?_ (h.continuous.1 _ hV') ?_).image h.continuous
   · symm
-    rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset]
+    rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact (Set.inter_subset_left _ _).trans (hU.trans (Set.image_subset_range _ _))
   · intro x hx
     rw [← (h.inj.injOn _).mem_image_iff (Set.subset_univ _) trivial]
     exact hU hx
   · rw [h.isCompact_iff_isCompact_image]
     convert hU''
-    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset]
+    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hU.trans (Set.image_subset_range _ _)
   · intro x hx
     rw [← (h.inj.injOn _).mem_image_iff (Set.subset_univ _) trivial]
     exact hV hx
   · rw [h.isCompact_iff_isCompact_image]
     convert hV''
-    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff_subset]
+    rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hV.trans (Set.image_subset_range _ _)
 #align is_quasi_separated.image_of_embedding IsQuasiSeparated.image_of_embedding
 

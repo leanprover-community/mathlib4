@@ -286,7 +286,7 @@ theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
 /-- The sets of rational and irrational points of the antidiagonal `{(x, y) | x + y = 0}` cannot be
 separated by open neighborhoods. This implies that `ℝₗ × ℝₗ` is not a normal space. -/
 theorem not_separatedNhds_rat_irrational_antidiag :
-  ¬SeparatedNhds {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ ∃ r : ℚ, ↑r = x.1}
+    ¬SeparatedNhds {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ ∃ r : ℚ, ↑r = x.1}
     {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ Irrational (toReal x.1)} := by
   have h₀ : ∀ {n : ℕ+}, 0 < (n : ℝ)⁻¹ := inv_pos.2 (Nat.cast_pos.2 (PNat.pos _))
   have h₀' : ∀ {n : ℕ+} {x : ℝ}, x < x + (n : ℝ)⁻¹ := lt_add_of_pos_right _ h₀

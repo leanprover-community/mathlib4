@@ -203,7 +203,7 @@ theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.perm_factors_mul Nat.perm_factors_mul
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
-theorem perm_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) :
+theorem perm_factors_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
     (a * b).factors ~ a.factors ++ b.factors := by
   rcases a.eq_zero_or_pos with (rfl | ha)
   · simp [(coprime_zero_left _).mp hab]
@@ -257,7 +257,7 @@ theorem mem_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) {p : ℕ} :
 #align nat.mem_factors_mul Nat.mem_factors_mul
 
 /-- The sets of factors of coprime `a` and `b` are disjoint -/
-theorem coprime_factors_disjoint {a b : ℕ} (hab : a.coprime b) :
+theorem coprime_factors_disjoint {a b : ℕ} (hab : a.Coprime b) :
     List.Disjoint a.factors b.factors := by
   intro q hqa hqb
   apply not_prime_one
@@ -265,7 +265,7 @@ theorem coprime_factors_disjoint {a b : ℕ} (hab : a.coprime b) :
   exact prime_of_mem_factors hqa
 #align nat.coprime_factors_disjoint Nat.coprime_factors_disjoint
 
-theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : coprime a b) (p : ℕ) :
+theorem mem_factors_mul_of_coprime {a b : ℕ} (hab : Coprime a b) (p : ℕ) :
     p ∈ (a * b).factors ↔ p ∈ a.factors ∪ b.factors := by
   rcases a.eq_zero_or_pos with (rfl | ha)
   · simp [(coprime_zero_left _).mp hab]

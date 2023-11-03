@@ -1076,12 +1076,12 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
 #align computation.lift_rel.trans Computation.LiftRel.trans
 
 theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  -- Porting note: The code below was:
+  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, by apply LiftRel.symm; apply symm,
+    by apply LiftRel.trans; apply trans⟩
+  -- Porting note: The code above was:
   -- | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, LiftRel.symm R symm, LiftRel.trans R trans⟩
   --
   -- The code fails to identify `symm` as being symmetric.
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, by apply LiftRel.symm; apply symm,
-    by apply LiftRel.trans; apply trans⟩
 #align computation.lift_rel.equiv Computation.LiftRel.equiv
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :

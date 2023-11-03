@@ -185,7 +185,7 @@ protected theorem heq_fun_iff {α : Sort*} {k l : ℕ} (h : k = l) {f : Fin k �
 If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equal on each pair,
 then they coincide (in the heq sense). -/
 protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
-  {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
+    {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
     HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
   subst h
   subst h'
@@ -1614,7 +1614,7 @@ theorem castPred_mk' (n i : ℕ) (h₁ : i < n + 2) (h₂ : i < n + 1) : castPre
   castPred_mk _ _ _
 
 theorem coe_castPred {n : ℕ} (a : Fin (n + 2)) (hx : a < Fin.last _) :
-  (a.castPred : ℕ) = a := by
+    (a.castPred : ℕ) = a := by
   rcases a with ⟨a, ha⟩
   rw [castPred_mk]
   exact hx

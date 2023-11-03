@@ -140,7 +140,7 @@ section
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
-  joinM (Functor.map f <$> a) = f <$> joinM a := by
+    joinM (Functor.map f <$> a) = f <$> joinM a := by
   simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 

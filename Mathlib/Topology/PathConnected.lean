@@ -1148,7 +1148,7 @@ theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continu
   exact isPathConnected_univ.image hf
 
 theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
-  {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
+    {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
 

@@ -378,7 +378,7 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
 #align ordinal.type_lt_iff Ordinal.type_lt_iff
 
 theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s : β → β → Prop}
-  [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
+    [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 #align principal_seg.ordinal_type_lt PrincipalSeg.ordinal_type_lt
 

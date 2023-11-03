@@ -73,29 +73,29 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
 
 @[simp]
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
-| ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
-  induction s₁ generalizing s₂ <;> cases s₂
-  · simp
-  · rename_i c₂ cs₂; apply iff_of_true
-    · rw [ltb]; simp; apply ne_false_of_eq_true; apply decide_eq_true
-      simp [endPos, utf8ByteSize, utf8ByteSize.go, csize_pos]
-    · apply List.nil_lt_cons
-  · rename_i c₁ cs₁ ih; apply iff_of_false
-    · rw [ltb]; simp
-    · apply not_lt_of_lt; apply List.nil_lt_cons
-  · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
-    simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
-          utf8GetAux, Iterator.next, next]
-    split_ifs with h
-    · subst c₂
-      suffices ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₁ :: cs₂⟩, ⟨csize c₁⟩⟩ = ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩
-        by rw [Pos.zero_addChar_eq, this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
-      rw [← Pos.zero_addChar_eq]
-      apply ltb_cons_addChar
-    · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
-      cases e <;> rename_i h'
-      · contradiction
-      · assumption
+  | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
+    induction s₁ generalizing s₂ <;> cases s₂
+    · simp
+    · rename_i c₂ cs₂; apply iff_of_true
+      · rw [ltb]; simp; apply ne_false_of_eq_true; apply decide_eq_true
+        simp [endPos, utf8ByteSize, utf8ByteSize.go, csize_pos]
+      · apply List.nil_lt_cons
+    · rename_i c₁ cs₁ ih; apply iff_of_false
+      · rw [ltb]; simp
+      · apply not_lt_of_lt; apply List.nil_lt_cons
+    · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
+      simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
+            utf8GetAux, Iterator.next, next]
+      split_ifs with h
+      · subst c₂
+        suffices ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₁ :: cs₂⟩, ⟨csize c₁⟩⟩ = ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩
+          by rw [Pos.zero_addChar_eq, this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
+        rw [← Pos.zero_addChar_eq]
+        apply ltb_cons_addChar
+      · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
+        cases e <;> rename_i h'
+        · contradiction
+        · assumption
 #align string.lt_iff_to_list_lt String.lt_iff_toList_lt
 
 instance LE : LE String :=
@@ -132,12 +132,12 @@ theorem asString_inv_toList (s : String) : s.toList.asString = s :=
 #align string.to_list_singleton String.data_singleton
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
-| ⟨s⟩, h => by
-  cases s
-  · simp only at h
-  · rename_i c cs
-    simp only [toList, List.cons.injEq]
-    constructor <;> [rfl; simp [drop_eq]]
+  | ⟨s⟩, h => by
+    cases s
+    · simp only at h
+    · rename_i c cs
+      simp only [toList, List.cons.injEq]
+      constructor <;> [rfl; simp [drop_eq]]
 #align string.to_list_nonempty String.toList_nonempty
 
 @[simp]

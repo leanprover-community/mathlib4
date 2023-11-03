@@ -75,7 +75,7 @@ lemma exact_iff_isZero_leftHomology [S.HasHomology] :
     S.Exact ↔ IsZero S.leftHomology :=
   LeftHomologyData.exact_iff _
 
-lemma exact_iff_isZero_right_homology [S.HasHomology] :
+lemma exact_iff_isZero_rightHomology [S.HasHomology] :
     S.Exact ↔ IsZero S.rightHomology :=
   RightHomologyData.exact_iff _
 
@@ -145,7 +145,7 @@ lemma Exact.unop {S : ShortComplex Cᵒᵖ} (h : S.Exact) : S.unop.Exact := by
 variable (S)
 
 @[simp]
-lemma exact_op_iff : S.op.Exact ↔ S.Exact:=
+lemma exact_op_iff : S.op.Exact ↔ S.Exact :=
   ⟨Exact.unop, Exact.op⟩
 
 @[simp]

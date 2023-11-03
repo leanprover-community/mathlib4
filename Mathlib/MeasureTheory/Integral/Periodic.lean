@@ -56,11 +56,11 @@ theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
 #align is_add_fundamental_domain_Ioc isAddFundamentalDomain_Ioc
 
 theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measure ℝ := by volume_tac) :
-    IsAddFundamentalDomain (AddSubgroup.opposite <| .zmultiples T) (Ioc t (t + T)) μ := by
+    IsAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) (Ioc t (t + T)) μ := by
   refine' IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => _
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).injective).bijective
-  refine' (AddSubgroup.oppositeEquiv _).bijective.comp this |>.existsUnique_iff.2 _
+  refine' (AddSubgroup.equivOp _).bijective.comp this |>.existsUnique_iff.2 _
   simpa using existsUnique_add_zsmul_mem_Ioc hT x t
 #align is_add_fundamental_domain_Ioc' isAddFundamentalDomain_Ioc'
 
@@ -108,7 +108,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
   let I := Ioc (-(T / 2)) (T / 2)
   have h₁ : ε < T / 2 → Metric.closedBall (0 : ℝ) ε ∩ I = Metric.closedBall (0 : ℝ) ε := by
     intro hε
-    rw [inter_eq_left_iff_subset, Real.closedBall_eq_Icc, zero_sub, zero_add]
+    rw [inter_eq_left, Real.closedBall_eq_Icc, zero_sub, zero_add]
     rintro y ⟨hy₁, hy₂⟩; constructor <;> linarith
   have h₂ : (↑) ⁻¹' Metric.closedBall (0 : AddCircle T) ε ∩ I =
       if ε < T / 2 then Metric.closedBall (0 : ℝ) ε else I := by

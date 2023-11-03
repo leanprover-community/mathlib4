@@ -30,7 +30,7 @@ namespace Nat
 /-- Euler's totient function. This counts the number of naturals strictly less than `n` which are
 coprime with `n`. -/
 def totient (n : ℕ) : ℕ :=
-  ((range n).filter n.coprime).card
+  ((range n).filter n.Coprime).card
 #align nat.totient Nat.totient
 
 @[inherit_doc]
@@ -45,13 +45,13 @@ theorem totient_zero : φ 0 = 0 :=
 theorem totient_one : φ 1 = 1 := by simp [totient]
 #align nat.totient_one Nat.totient_one
 
-theorem totient_eq_card_coprime (n : ℕ) : φ n = ((range n).filter n.coprime).card :=
+theorem totient_eq_card_coprime (n : ℕ) : φ n = ((range n).filter n.Coprime).card :=
   rfl
 #align nat.totient_eq_card_coprime Nat.totient_eq_card_coprime
 
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
-theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.coprime m } := by
-  let e : { m | m < n ∧ n.coprime m } ≃ Finset.filter n.coprime (Finset.range n) :=
+theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
+  let e : { m | m < n ∧ n.Coprime m } ≃ Finset.filter n.Coprime (Finset.range n) :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       left_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta]
@@ -74,13 +74,13 @@ theorem totient_pos : ∀ {n : ℕ}, 0 < n → 0 < φ n
 #align nat.totient_pos Nat.totient_pos
 
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
-    ((Ico n (n + a)).filter (coprime a)).card = totient a := by
+    ((Ico n (n + a)).filter (Coprime a)).card = totient a := by
   rw [totient, filter_Ico_card_eq_of_periodic, count_eq_card_filter_range]
   exact periodic_coprime a
 #align nat.filter_coprime_Ico_eq_totient Nat.filter_coprime_Ico_eq_totient
 
 theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
-    ((Ico k (k + n)).filter (coprime a)).card ≤ totient a * (n / a + 1) := by
+    ((Ico k (k + n)).filter (Coprime a)).card ≤ totient a * (n / a + 1) := by
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
@@ -88,20 +88,20 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
       Nat.zero_eq, zero_add]
     --Porting note: below line was `mono`
     refine Finset.card_mono ?_
-    refine' monotone_filter_left a.coprime _
+    refine' monotone_filter_left a.Coprime _
     simp only [Finset.le_eq_subset]
     exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
-    (filter a.coprime (Ico k (k + n % a + a * i + a))).card = (filter a.coprime
+    (filter a.Coprime (Ico k (k + n % a + a * i + a))).card = (filter a.Coprime
         (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
       rw [add_assoc]
       exact le_self_add
       exact le_self_add
-    _ ≤ (filter a.coprime (Ico k (k + n % a + a * i))).card + a.totient := by
+    _ ≤ (filter a.Coprime (Ico k (k + n % a + a * i))).card + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
     _ ≤ a.totient * i + a.totient + a.totient := add_le_add_right ih (totient a)
@@ -115,7 +115,7 @@ diamonds. -/
 theorem _root_.ZMod.card_units_eq_totient (n : ℕ) [NeZero n] [Fintype (ZMod n)ˣ] :
     Fintype.card (ZMod n)ˣ = φ n :=
   calc
-    Fintype.card (ZMod n)ˣ = Fintype.card { x : ZMod n // x.val.coprime n } :=
+    Fintype.card (ZMod n)ˣ = Fintype.card { x : ZMod n // x.val.Coprime n } :=
       Fintype.card_congr ZMod.unitsEquivCoprime
     _ = φ n := by
       obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := exists_eq_succ_of_ne_zero NeZero.out
@@ -133,7 +133,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
   rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n, if_neg hn.ne']
 #align nat.totient_even Nat.totient_even
 
-theorem totient_mul {m n : ℕ} (h : m.coprime n) : φ (m * n) = φ m * φ n :=
+theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
     cases' Nat.mul_eq_zero.1 hmn0 with h h <;>
       simp only [totient_zero, mul_zero, zero_mul, h]
@@ -153,7 +153,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
   rcases hnd with ⟨x, rfl⟩
   rw [Nat.mul_div_cancel_left x hd0]
   apply Finset.card_congr fun k _ => d * k
-  · simp only [mem_filter, mem_range, and_imp, coprime]
+  · simp only [mem_filter, mem_range, and_imp, Coprime]
     refine' fun a ha1 ha2 => ⟨(mul_lt_mul_left hd0).2 ha1, _⟩
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
@@ -188,7 +188,7 @@ theorem sum_totient' (n : ℕ) : (∑ m in (range n.succ).filter (· ∣ n), φ 
 /-- When `p` is prime, then the totient of `p ^ (n + 1)` is `p ^ n * (p - 1)` -/
 theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n + 1)) = p ^ n * (p - 1) :=
   calc
-    φ (p ^ (n + 1)) = ((range (p ^ (n + 1))).filter (coprime (p ^ (n + 1)))).card :=
+    φ (p ^ (n + 1)) = ((range (p ^ (n + 1))).filter (Coprime (p ^ (n + 1)))).card :=
       totient_eq_card_coprime _
     _ = (range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)).card :=
       (congr_arg card

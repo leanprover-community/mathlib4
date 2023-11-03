@@ -73,15 +73,15 @@ tends to zero.
 
 See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage'`. -/
 theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : α → E} {x : α}
-    (h : Metric.Bounded (range (g <| f^[·] x))) :
+    (h : Bornology.IsBounded (range (g <| f^[·] x))) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) := by
-  rcases h with ⟨C, hC⟩
+  rcases Metric.isBounded_range_iff.1 h with ⟨C, hC⟩
   have : Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) :=
     tendsto_const_nhds.div_atTop tendsto_nat_cast_atTop_atTop
   refine squeeze_zero_norm (fun n ↦ ?_) this
   rw [← dist_eq_norm, dist_birkhoffAverage_apply_birkhoffAverage]
   gcongr
-  exact hC _ ⟨n, rfl⟩ _ ⟨0, rfl⟩
+  exact hC n 0
 
 /-- If a function `g` is bounded,
 then the difference between Birkhoff averages of `g`
@@ -90,9 +90,9 @@ tends to zero.
 
 See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage`. -/
 theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
-    (h : Metric.Bounded (range g)) (f : α → α) (x : α):
+    (h : Bornology.IsBounded (range g)) (f : α → α) (x : α):
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
-  tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.mono <| range_comp_subset_range _ _
+  tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
 
 end
 

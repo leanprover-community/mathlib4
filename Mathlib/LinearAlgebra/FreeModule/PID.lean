@@ -450,7 +450,7 @@ lemma repr_eq_zero_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hi : ∀ j, snf.f j ≠ i := by simpa using hi
-  simp [Finsupp.single_apply, hi, snf.snf]
+  simp [Finsupp.single_apply, hi, snf.snf, map_finsupp_sum]
 
 lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
     N ≤ LinearMap.ker (snf.bM.coord i) :=
@@ -461,9 +461,10 @@ lemma le_ker_coord_of_nmem_range {i : ι} (hi : i ∉ Set.range snf.f) :
   obtain ⟨m, hm⟩ := m
   obtain ⟨c, rfl⟩ := snf.bN.mem_submodule_iff.mp hm
   replace hm : (⟨Finsupp.sum c fun i t ↦ t • (↑(snf.bN i) : M), hm⟩ : N) =
-      Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by ext; change _ = N.subtype _; simp
+      Finsupp.sum c fun i t ↦ t • ⟨snf.bN i, (snf.bN i).2⟩ := by
+    ext; change _ = N.subtype _; simp [map_finsupp_sum]
   classical
-  simp_rw [hm, map_smul, LinearEquiv.map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
+  simp_rw [hm, map_smul, map_finsupp_sum, map_smul, Subtype.coe_eta, repr_self,
     Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_single, Finsupp.smul_apply, snf.snf,
     map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.sum_apply,
     Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Finsupp.sum_ite_eq',

@@ -100,7 +100,7 @@ theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegr
 #align polynomial.nat_degree_remove_factor Polynomial.natDegree_removeFactor
 
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
-  f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
+    f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
 #align polynomial.nat_degree_remove_factor' Polynomial.natDegree_removeFactor'
 
 /-- Auxiliary construction to a splitting field of a polynomial, which removes

@@ -2832,6 +2832,14 @@ theorem IsClosed.csInf_mem {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B :
   (isGLB_csInf hs B).mem_of_isClosed hs hc
 #align is_closed.cInf_mem IsClosed.csInf_mem
 
+theorem IsClosed.isLeast_csInf {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddBelow s) :
+    IsLeast s (sInf s) :=
+  ⟨hc.csInf_mem hs B, (isGLB_csInf hs B).1⟩
+
+theorem IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempty) (B : BddAbove s) :
+    IsGreatest s (sSup s) :=
+  IsClosed.isLeast_csInf (α := αᵒᵈ) hc hs B
+
 /-- If a monotone function is continuous at the supremum of a nonempty bounded above set `s`,
 then it sends this supremum to the supremum of the image of `s`. -/
 theorem Monotone.map_csSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))

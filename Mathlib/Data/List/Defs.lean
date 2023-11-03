@@ -436,14 +436,14 @@ Example: suppose `l = [1, 2, 3]`. `mapDiagM' f l` will evaluate, in this order,
 `f 1 1`, `f 1 2`, `f 1 3`, `f 2 2`, `f 2 3`, `f 3 3`.
 -/
 def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
--- as ported:
---   | [] => return ()
---   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
   | [] => return ()
   | h :: t => do
     _ ← f h h
     _ ← t.mapM' (f h)
     t.mapDiagM' f
+-- as ported:
+--   | [] => return ()
+--   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
 #align list.mmap'_diag List.mapDiagM'
 
 /-- Map each element of a `List` to an action, evaluate these actions in order,

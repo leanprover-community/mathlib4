@@ -327,7 +327,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
 #align sensitivity.f_matrix Sensitivity.f_matrix
 
 /-- The linear operator $g_m$ corresponding to Knuth's matrix $B_m$. -/
-noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ:=
+noncomputable def g (m : ℕ) : V m →ₗ[ℝ] V m.succ :=
   LinearMap.prod (f m + √ (m + 1) • LinearMap.id) LinearMap.id
 #align sensitivity.g Sensitivity.g
 

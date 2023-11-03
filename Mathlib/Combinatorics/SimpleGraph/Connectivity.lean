@@ -1079,8 +1079,8 @@ theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.
 #align simple_graph.walk.is_cycle.not_of_nil SimpleGraph.Walk.IsCycle.not_of_nil
 
 lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
-| nil, hp => by cases hp.ne_nil rfl
-| cons h _, hp => by rintro rfl; exact h
+  | nil, hp => by cases hp.ne_nil rfl
+  | cons h _, hp => by rintro rfl; exact h
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬⟦(u, v)⟧ ∈ p.edges := by

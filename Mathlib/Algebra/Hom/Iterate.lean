@@ -245,7 +245,7 @@ theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
 
 @[to_additive]
 theorem Commute.function_commute_mul_right (h : Commute a b) :
-  Function.Commute (· * a) (· * b) :=
+    Function.Commute (· * a) (· * b) :=
   SemiconjBy.function_semiconj_mul_right_swap h
 #align commute.function_commute_mul_right Commute.function_commute_mul_right
 #align add_commute.function_commute_add_right AddCommute.function_commute_add_right

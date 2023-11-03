@@ -160,7 +160,7 @@ def updateType (c : ConstantInfo) (type : Expr) : ConstantInfo :=
 
 /-- Update the level parameters of a `ConstantInfo`. -/
 def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
-  ConstantInfo :=
+    ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with levelParams}
 
 /-- Update the value of a `ConstantInfo`, if it has one. -/
@@ -349,7 +349,12 @@ def zero? (e : Expr) : Bool :=
   | some 0 => true
   | _ => false
 
-/-- `Lean.Expr.le? p` take `e : Expr` as input.
+/-- Tests is if an expression matches either `x ≠ y` or `¬ (x = y)`.
+If it matches, returns `some (type, x, y)`. -/
+def ne?' (e : Expr) : Option (Expr × Expr × Expr) :=
+  e.ne? <|> (e.not? >>= Expr.eq?)
+
+/-- `Lean.Expr.le? e` takes `e : Expr` as input.
 If `e` represents `a ≤ b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
 otherwise, it returns `none`. -/
 @[inline] def le? (p : Expr) : Option (Expr × Expr × Expr) := do

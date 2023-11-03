@@ -737,15 +737,13 @@ open Module
 variable [DecidableEq ι] (h : DualBases e ε)
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
-  erw [_root_.map_sum]
+  rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
   -- Porting note: cannot get at •
   -- simp only [h.eval, map_smul, smul_eq_mul]
-  rw [Finset.sum_eq_single i]
   · simp [h.eval, smul_eq_mul]
   · intro q _ q_ne
     simp [q_ne.symm, h.eval, smul_eq_mul]
-  · intro p_not_in
-    simp [Finsupp.not_mem_support_iff.1 p_not_in]
+  · simp
 #align module.dual_bases.dual_lc Module.DualBases.dual_lc
 
 @[simp]
@@ -1521,7 +1519,7 @@ namespace LinearMap
 -- see https://github.com/leanprover-community/mathlib/pull/17521#discussion_r1083242551
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
-  -- Porting note: broken dot notation lean4#1910
+    -- Porting note: broken dot notation lean4#1910
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
   have that := Submodule.finrank_quotient_add_finrank (LinearMap.range f)
   -- Porting note: Again LinearEquiv.finrank_eq needs help

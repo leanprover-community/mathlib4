@@ -1,6 +1,7 @@
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.Ring
 
+private axiom test_sorry : ∀ {α}, α
 universe u
 section
 variable {α : Type u} [LinearOrderedField α] (a b c d : α)
@@ -88,9 +89,9 @@ end
 
 section
 -- simulate the type of complex numbers
-def C : Type := sorry
-instance : Field C := sorry
-instance : CharZero C := sorry
+def C : Type := test_sorry
+noncomputable instance : Field C := test_sorry
+instance : CharZero C := test_sorry
 variable (a b c d : C)
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms

@@ -26,8 +26,6 @@ open Polynomial
 open PowerBasis
 
 
--- Porting note:
-
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
@@ -37,16 +35,15 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : adjoin K ({x} : Set S)) := by
     apply (isIntegral_algebraMap_iff hST).mp
     convert hx
-  have minpoly_eq := minpoly.eq_of_algebraMap_eq hST hx' rfl
   apply
     @Basis.mk (Fin (minpoly K x).natDegree) _ (adjoin K {x}) fun i =>
       ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ)
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : adjoin K {x})
-    rwa [minpoly_eq] at this
+    rwa [← minpoly.algebraMap_eq hST] at this
   · rintro ⟨y, hy⟩ _
     have := hx'.mem_span_pow (y := ⟨y, hy⟩)
-    rw [minpoly_eq] at this
+    rw [← minpoly.algebraMap_eq hST] at this
     apply this
     · rw [adjoin_singleton_eq_range_aeval] at hy
       obtain ⟨f, rfl⟩ := (aeval x).mem_range.mp hy

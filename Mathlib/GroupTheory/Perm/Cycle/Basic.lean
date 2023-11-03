@@ -100,6 +100,14 @@ theorem SameCycle.trans : SameCycle f x y → SameCycle f y z → SameCycle f x 
   fun ⟨i, hi⟩ ⟨j, hj⟩ => ⟨j + i, by rw [zpow_add, mul_apply, hi, hj]⟩
 #align equiv.perm.same_cycle.trans Equiv.Perm.SameCycle.trans
 
+variable (f) in
+theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
+  ⟨SameCycle.refl f, SameCycle.symm, SameCycle.trans⟩
+
+/-- The setoid defined by the `SameCycle` relation. -/
+def SameCycle.setoid (f : Perm α) : Setoid α where
+  iseqv := SameCycle.equivalence f
+
 @[simp]
 theorem sameCycle_one : SameCycle 1 x y ↔ x = y := by simp [SameCycle]
 #align equiv.perm.same_cycle_one Equiv.Perm.sameCycle_one
@@ -609,7 +617,7 @@ theorem IsCycle.eq_on_support_inter_nonempty_congr (hf : IsCycle f) (hg : IsCycl
     intro y hy
     obtain ⟨k, rfl⟩ := hf.exists_pow_eq (mem_support.mp hx') (mem_support.mp hy)
     rwa [pow_eq_on_of_mem_support h _ _ (mem_inter_of_mem hx' hx''), pow_apply_mem_support]
-  rw [(inter_eq_left_iff_subset _ _).mpr this] at h
+  rw [inter_eq_left.mpr this] at h
   exact hf.support_congr hg this h
 #align equiv.perm.is_cycle.eq_on_support_inter_nonempty_congr Equiv.Perm.IsCycle.eq_on_support_inter_nonempty_congr
 
@@ -639,7 +647,7 @@ theorem IsCycle.support_pow_of_pos_of_lt_orderOf (hf : IsCycle f) {n : ℕ} (npo
 #align equiv.perm.is_cycle.support_pow_of_pos_of_lt_order_of Equiv.Perm.IsCycle.support_pow_of_pos_of_lt_orderOf
 
 theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
-    IsCycle (f ^ n) ↔ n.coprime (orderOf f) := by
+    IsCycle (f ^ n) ↔ n.Coprime (orderOf f) := by
   classical
     cases nonempty_fintype β
     constructor
@@ -723,8 +731,8 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
     (hf' : (orderOf f).Prime) (n : ℕ) (hn : 0 < n) (hn' : n < orderOf f) : IsCycle (f ^ n) := by
   classical
     cases nonempty_fintype β
-    have : n.coprime (orderOf f) := by
-      refine' Nat.coprime.symm _
+    have : n.Coprime (orderOf f) := by
+      refine' Nat.Coprime.symm _
       rw [Nat.Prime.coprime_iff_not_dvd hf']
       exact Nat.not_dvd_of_pos_of_lt hn hn'
     obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime this
@@ -1660,7 +1668,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
   exact step4 y z
 #align equiv.perm.closure_cycle_adjacent_swap Equiv.Perm.closure_cycle_adjacent_swap
 
-theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.coprime n (Fintype.card α))
+theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n (Fintype.card α))
     (h1 : IsCycle σ) (h2 : σ.support = Finset.univ) (x : α) :
     closure ({σ, swap x ((σ ^ n) x)} : Set (Perm α)) = ⊤ := by
   rw [← Finset.card_univ, ← h2, ← h1.orderOf] at h0
@@ -1683,7 +1691,7 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
       (mem_support.mp ((Finset.ext_iff.mp h2 y).mpr (Finset.mem_univ y)))
   rw [h5, ← hi]
   refine'
-    closure_cycle_coprime_swap (Nat.coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 _)) h1 h2 x
+    closure_cycle_coprime_swap (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 _)) h1 h2 x
   cases' h with m hm
   rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
     one_apply] at hi

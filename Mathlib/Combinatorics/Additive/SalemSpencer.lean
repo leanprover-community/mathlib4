@@ -380,7 +380,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
   let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
     mulRothNumber (s ∪ t) = u.card := hcard.symm
-    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_distrib_left, (inter_eq_left_iff_subset _ _).2 hus]
+    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_distrib_left, inter_eq_left.2 hus]
     _ ≤ (u ∩ s).card + (u ∩ t).card := (card_union_le _ _)
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)

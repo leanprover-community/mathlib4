@@ -8,9 +8,10 @@ import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Basic
 
@@ -340,7 +341,7 @@ theorem prod_insert_one [DecidableEq α] (h : f a = 1) : ∏ x in insert a s, f 
 #align finset.sum_insert_zero Finset.sum_insert_zero
 
 @[to_additive (attr := simp)]
-theorem prod_singleton : ∏ x in singleton a, f x = f a :=
+theorem prod_singleton (f : α → β) (a : α) : ∏ x in singleton a, f x = f a :=
   Eq.trans fold_singleton <| mul_one _
 #align finset.prod_singleton Finset.prod_singleton
 #align finset.sum_singleton Finset.sum_singleton
@@ -790,7 +791,7 @@ theorem prod_eq_single_of_mem {s : Finset α} {f : α → β} (a : α) (h : a �
         · intro _ H
           rwa [mem_singleton.1 H]
         · simpa only [mem_singleton] }
-    _ = f a := prod_singleton
+    _ = f a := prod_singleton _ _
 #align finset.prod_eq_single_of_mem Finset.prod_eq_single_of_mem
 #align finset.sum_eq_single_of_mem Finset.sum_eq_single_of_mem
 
@@ -1232,7 +1233,7 @@ theorem prod_range_succ' (f : ℕ → β) :
 
 @[to_additive]
 theorem eventually_constant_prod {u : ℕ → β} {N : ℕ} (hu : ∀ n ≥ N, u n = 1) {n : ℕ} (hn : N ≤ n) :
-    (∏ k in range (n + 1), u k) = ∏ k in range (N + 1), u k := by
+    (∏ k in range n, u k) = ∏ k in range N, u k := by
   obtain ⟨m, rfl : n = N + m⟩ := le_iff_exists_add.mp hn
   clear hn
   induction' m with m hm
@@ -1265,8 +1266,7 @@ theorem prod_range_zero (f : ℕ → β) : ∏ k in range 0, f k = 1 := by rw [r
 
 @[to_additive sum_range_one]
 theorem prod_range_one (f : ℕ → β) : ∏ k in range 1, f k = f 0 := by
-  rw [range_one]
-  apply @prod_singleton β ℕ 0 f
+  rw [range_one, prod_singleton]
 #align finset.prod_range_one Finset.prod_range_one
 #align finset.sum_range_one Finset.sum_range_one
 
@@ -1459,6 +1459,13 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x in s, f x ^ n
   Multiset.prod_map_pow
 #align finset.prod_pow Finset.prod_pow
 #align finset.sum_nsmul Finset.sum_nsmul
+
+/-- A product over `Finset.powersetLen` which only depends on the size of the sets is constant. -/
+@[to_additive
+"A sum over `Finset.powersetLen` which only depends on the size of the sets is constant."]
+lemma prod_powersetLen (n : ℕ) (s : Finset α) (f : ℕ → β) :
+    ∏ t in powersetLen n s, f t.card = f n ^ s.card.choose n := by
+  rw [prod_eq_pow_card, card_powersetLen]; rintro a ha; rw [(mem_powersetLen.1 ha).2]
 
 @[to_additive]
 theorem prod_flip {n : ℕ} (f : ℕ → β) :
