@@ -212,9 +212,8 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero 0
       exact h.exact 0 (by linarith)
-    · refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
-      · exact h.toIsComplex.zero (i + 1)
-      · exact h.exact (i + 1)
+    · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero (i + 1)))
+        (fun i hi => h.exact (i + 1))
   · rintro ⟨h, h₀⟩
     refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
     · obtain _ | i := i
