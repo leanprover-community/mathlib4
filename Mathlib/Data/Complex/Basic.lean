@@ -1125,6 +1125,14 @@ theorem abs_im_lt_abs {z : ℂ} : |z.im| < Complex.abs z ↔ z.re ≠ 0 := by
 #align complex.abs_im_lt_abs Complex.abs_im_lt_abs
 
 @[simp]
+lemma abs_re_eq_abs {z : ℂ} : |z.re| = abs z ↔ z.im = 0 :=
+  not_iff_not.1 <| (abs_re_le_abs z).lt_iff_ne.symm.trans abs_re_lt_abs
+
+@[simp]
+lemma abs_im_eq_abs {z : ℂ} : |z.im| = abs z ↔ z.re = 0 :=
+  not_iff_not.1 <| (abs_im_le_abs z).lt_iff_ne.symm.trans abs_im_lt_abs
+
+@[simp]
 theorem abs_abs (z : ℂ) : |Complex.abs z| = Complex.abs z :=
   _root_.abs_of_nonneg (AbsoluteValue.nonneg _ z)
 #align complex.abs_abs Complex.abs_abs

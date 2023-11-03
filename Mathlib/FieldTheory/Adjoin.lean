@@ -88,12 +88,11 @@ instance : CompleteLattice (IntermediateField F E) where
 instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
-theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) :=
-  Algebra.coe_bot
+theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
 #align intermediate_field.coe_bot IntermediateField.coe_bot
 
 theorem mem_bot {x : E} : x ∈ (⊥ : IntermediateField F E) ↔ x ∈ Set.range (algebraMap F E) :=
-  Algebra.mem_bot
+  Iff.rfl
 #align intermediate_field.mem_bot IntermediateField.mem_bot
 
 @[simp]
@@ -260,10 +259,8 @@ def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
 
 @[simp]
 theorem restrictScalars_bot_eq_self (K : IntermediateField F E) :
-    (⊥ : IntermediateField K E).restrictScalars _ = K := by
-  ext x
-  rw [mem_restrictScalars, mem_bot];
-  exact Set.ext_iff.mp Subtype.range_coe x
+    (⊥ : IntermediateField K E).restrictScalars _ = K :=
+  SetLike.coe_injective Subtype.range_coe
 #align intermediate_field.restrict_scalars_bot_eq_self IntermediateField.restrictScalars_bot_eq_self
 
 @[simp]
@@ -906,6 +903,12 @@ noncomputable def algHomAdjoinIntegralEquiv (h : IsIntegral F α) :
     ((Equiv.refl _).subtypeEquiv fun x => by
       rw [adjoin.powerBasis_gen, minpoly_gen, Equiv.refl_apply])
 #align intermediate_field.alg_hom_adjoin_integral_equiv IntermediateField.algHomAdjoinIntegralEquiv
+
+lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
+    (x : { x // x ∈ (minpoly F α).aroots K }) :
+    (algHomAdjoinIntegralEquiv F h).symm x (AdjoinSimple.gen F α) = x :=
+  (adjoin.powerBasis h).lift_gen x.val <| by
+    rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.2).2
 
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
