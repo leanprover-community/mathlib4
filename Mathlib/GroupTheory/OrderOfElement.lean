@@ -97,7 +97,7 @@ theorem isOfFinOrder_iff_coe (H : Submonoid G) (x : H) : IsOfFinOrder x ↔ IsOf
 theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :
     IsOfFinOrder <| f x :=
   (isOfFinOrder_iff_pow_eq_one _).mpr <| by
-    rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
+    rcases (isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
     exact ⟨n, npos, by rw [← f.map_pow, hn, f.map_one]⟩
 #align monoid_hom.is_of_fin_order MonoidHom.isOfFinOrder
 #align add_monoid_hom.is_of_fin_order AddMonoidHom.isOfFinAddOrder
@@ -106,7 +106,7 @@ theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrd
 @[to_additive "If a direct product has finite additive order then so does each component."]
 theorem IsOfFinOrder.apply {η : Type*} {Gs : η → Type*} [∀ i, Monoid (Gs i)] {x : ∀ i, Gs i}
     (h : IsOfFinOrder x) : ∀ i, IsOfFinOrder (x i) := by
-  rcases(isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
+  rcases (isOfFinOrder_iff_pow_eq_one _).mp h with ⟨n, npos, hn⟩
   exact fun _ => (isOfFinOrder_iff_pow_eq_one _).mpr ⟨n, npos, (congr_fun hn.symm _).symm⟩
 #align is_of_fin_order.apply IsOfFinOrder.apply
 #align is_of_fin_add_order.apply IsOfFinAddOrder.apply
@@ -546,7 +546,7 @@ variable [Group G] {x y : G} {i : ℤ}
 @[to_additive "Inverses of elements of finite additive order have finite additive order."]
 theorem IsOfFinOrder.inv {x : G} (hx : IsOfFinOrder x) : IsOfFinOrder x⁻¹ :=
   (isOfFinOrder_iff_pow_eq_one _).mpr <| by
-    rcases(isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
+    rcases (isOfFinOrder_iff_pow_eq_one x).mp hx with ⟨n, npos, hn⟩
     refine' ⟨n, npos, by simp_rw [inv_pow, hn, inv_one]⟩
 #align is_of_fin_order.inv IsOfFinOrder.inv
 #align is_of_fin_add_order.neg IsOfFinAddOrder.neg

@@ -420,7 +420,7 @@ theorem Sized.rotateR {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (rotateR
 theorem Sized.rotateL_size {l x r} (hm : Sized r) :
     size (@Ordnode.rotateL α l x r) = size l + size r + 1 := by
   cases r <;> simp [Ordnode.rotateL]
-  simp [size, hm.1]
+  simp only [hm.1]
   split_ifs <;> simp [node3L_size, node4L_size hm.2.1] <;> abel
 #align ordnode.sized.rotate_l_size Ordnode.Sized.rotateL_size
 
@@ -1568,7 +1568,7 @@ theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : Stric
     simp [map]; apply valid'_nil
     cases a₁; · trivial
     cases a₂; · trivial
-    simp [Bounded]
+    simp only [Bounded]
     exact f_strict_mono h.ord
   | node _ _ _ _ t_ih_l t_ih_r =>
     have t_ih_l' := t_ih_l h.left
@@ -1576,7 +1576,7 @@ theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : Stric
     clear t_ih_l t_ih_r
     cases' t_ih_l' with t_l_valid t_l_size
     cases' t_ih_r' with t_r_valid t_r_size
-    simp [map]
+    simp only [map, size_node, and_true]
     constructor
     · exact And.intro t_l_valid.ord t_r_valid.ord
     · constructor
@@ -1602,7 +1602,7 @@ theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (
   | nil =>
     simp [erase, Raised]; exact h
   | node _ t_l t_x t_r t_ih_l t_ih_r =>
-    simp [erase]
+    simp only [erase, size_node]
     have t_ih_l' := t_ih_l h.left
     have t_ih_r' := t_ih_r h.right
     clear t_ih_l t_ih_r

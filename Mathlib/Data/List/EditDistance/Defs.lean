@@ -37,12 +37,12 @@ theorem levenshtein_cons_cons :
 ```
 -/
 
-variable {α β δ : Type _} [AddZeroClass δ] [Min δ]
+variable {α β δ : Type*} [AddZeroClass δ] [Min δ]
 
 namespace Levenshtein
 
 /-- A cost structure for Levenshtein edit distance. -/
-structure Cost (α β : Type _) (δ : Type _) where
+structure Cost (α β δ : Type*) where
   /-- Cost to delete an element from a list. -/
   delete : α → δ
   /-- Cost in insert an element into a list. -/

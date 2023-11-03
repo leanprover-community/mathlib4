@@ -199,7 +199,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
     exact
       ((compact_basis_nhds _).restrict_subset <| hf.open_range.mem_nhds <| mem_range_self _).comap _
   refine' locallyCompactSpace_of_hasBasis this fun x s hs => _
-  rw [← hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
+  rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
   exact hs.1.2
 #align open_embedding.locally_compact_space OpenEmbedding.locallyCompactSpace
 
