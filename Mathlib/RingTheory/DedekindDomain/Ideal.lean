@@ -366,9 +366,9 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
   -- Let `Z` be a minimal set of prime ideals such that their product is contained in `J`.
   obtain ⟨Z₀, hZ₀⟩ := PrimeSpectrum.exists_primeSpectrum_prod_le_and_ne_bot_of_domain hNF hI0
   obtain ⟨Z, ⟨hZI, hprodZ⟩, h_eraseZ⟩ :=
-    Multiset.wellFounded_lt.has_min
-      (fun Z => (Z.map PrimeSpectrum.asIdeal).prod ≤ I ∧ (Z.map PrimeSpectrum.asIdeal).prod ≠ ⊥)
-      ⟨Z₀, hZ₀⟩
+    wellFounded_lt.has_min
+      {Z | (Z.map PrimeSpectrum.asIdeal).prod ≤ I ∧ (Z.map PrimeSpectrum.asIdeal).prod ≠ ⊥}
+      ⟨Z₀, hZ₀.1, hZ₀.2⟩
   have hZM : Multiset.prod (Z.map PrimeSpectrum.asIdeal) ≤ M := le_trans hZI hIM
   have hZ0 : Z ≠ 0 := by rintro rfl; simp [hM.ne_top] at hZM
   obtain ⟨_, hPZ', hPM⟩ := (hM.isPrime.multiset_prod_le (mt Multiset.map_eq_zero.mp hZ0)).mp hZM
