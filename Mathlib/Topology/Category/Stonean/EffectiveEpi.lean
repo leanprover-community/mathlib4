@@ -214,9 +214,4 @@ instance instPrecoherent : Precoherent Stonean.{u} := by
 
 end Coherent
 
-instance : Preregular Stonean where
-  exists_fac := by
-    intro X Y Z f π hπ
-    exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
-
 end Stonean
