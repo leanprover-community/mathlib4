@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Christian Merten
+Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
@@ -19,21 +19,15 @@ inclusion `FintypeCat.incl`.
 
 open CategoryTheory Limits Functor
 
-instance {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
-    (_ : (j : J) → Finite (K.obj j)) : Finite ((j : J) → K.obj j) :=
-  Pi.finite
+namespace CategoryTheory.Limits.FintypeCat
 
-instance {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
-    (_ : (j : J) → Finite (K.obj j)) : Finite (sections K) :=
-  inferInstance
-
-lemma finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
+noncomputable def finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
     (_ : (j : J) → Finite (K.obj j)) : Fintype (limit K) := by
   have : Fintype (sections K) := Fintype.ofFinite ↑(sections K)
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 
-noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J]
-    : CreatesLimitsOfShape J FintypeCat.incl where
+noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J] :
+    CreatesLimitsOfShape J FintypeCat.incl where
   CreatesLimit := by
     intro K
     have : Fintype (limit (K ⋙ FintypeCat.incl)) := by
@@ -55,10 +49,10 @@ noncomputable instance inclusionPreservesFiniteLimits :
   preservesFiniteLimits _ :=
     preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape FintypeCat.incl
 
-lemma finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
+noncomputable def finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
     (_ : (j : J) → Finite (K.obj j)) : Fintype (colimit K) := by
   have : Finite (Types.Quot K) := Quot.finite (Types.Quot.Rel K)
-  have : Fintype (Types.Quot K) := Fintype.ofFinite (Types.Quot K) 
+  have : Fintype (Types.Quot K) := Fintype.ofFinite (Types.Quot K)
   exact Fintype.ofEquiv (Types.Quot K) (Types.colimitEquivQuot K).symm
 
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :
@@ -83,3 +77,5 @@ noncomputable instance inclusionPreservesFiniteColimits :
     PreservesFiniteColimits FintypeCat.incl where
   preservesFiniteColimits _ :=
     preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape FintypeCat.incl
+
+end CategoryTheory.Limits.FintypeCat
