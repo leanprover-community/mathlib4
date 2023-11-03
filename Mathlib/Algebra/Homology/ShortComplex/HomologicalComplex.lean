@@ -553,9 +553,7 @@ end HomologicalComplex
 namespace ChainComplex
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C]
-  (K L : ChainComplex C ℕ) (φ : K ⟶ L)
-
-variable [K.HasHomology 0]
+  (K L : ChainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
 instance isIso_homologyι₀ :
     IsIso (K.homologyι 0) :=
@@ -581,9 +579,7 @@ end ChainComplex
 namespace CochainComplex
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C]
-  (K L : CochainComplex C ℕ) (φ : K ⟶ L)
-
-variable [K.HasHomology 0]
+  (K L : CochainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
 instance isIso_homologyπ₀ :
     IsIso (K.homologyπ 0) :=
