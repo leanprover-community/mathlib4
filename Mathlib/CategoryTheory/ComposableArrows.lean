@@ -29,7 +29,6 @@ In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
 like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
 
 TODO (@joelriou):
-* define various constructors for objects, morphisms, isomorphisms in `ComposableArrows C n`
 * redefine `Arrow C` as `ComposableArrow C 1`?
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
 the precomposition with which shall induce funtors
@@ -51,6 +50,9 @@ abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 namespace ComposableArrows
 
 variable {C} {n m : ℕ}
+
+section
+
 variable (F G : ComposableArrows C n)
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
@@ -89,6 +91,24 @@ in `ComposableArrows C n` when `i` is a natural number such that `i ≤ n`. -/
 @[simp]
 abbrev app' (φ : F ⟶ G) (i : ℕ) (hi : i ≤ n := by linarith) :
     F.obj' i ⟶ G.obj' i := φ.app _
+
+@[reassoc]
+lemma naturality' (φ : F ⟶ G) (i j : ℕ)
+    (hij : i ≤ j := by linarith) (hj : j ≤ n := by linarith) :
+    F.map' i j ≫ app' φ j = app' φ i ≫ G.map' i j :=
+  φ.naturality _
+
+@[reassoc]
+lemma naturality'_1 (φ : F ≅ G) (i j : ℕ)
+    (hij : i ≤ j := by linarith) (hj : j ≤ n := by linarith) :
+    app' φ.inv i ≫ F.map' i j ≫ app' φ.hom j = G.map' i j :=
+  NatIso.naturality_1 φ _
+
+@[reassoc]
+lemma naturality'_2 (φ : F ≅ G) (i j : ℕ)
+    (hij : i ≤ j := by linarith) (hj : j ≤ n := by linarith) :
+    app' φ.hom i ≫ G.map' i j ≫ app' φ.inv j = F.map' i j :=
+  NatIso.naturality_2 φ _
 
 /-- Constructor for `ComposableArrows C 0`. -/
 @[simps!]
@@ -264,6 +284,16 @@ lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X�
 
 variable (F)
 
+/-- The `ith` arrow of `F : ComposableArrows C n` for `0 ≤ i < n`. -/
+abbrev arrow (i : ℕ) (hi : i < n := by linarith) : ComposableArrows C 1 := mk₁ (F.map' i (i + 1))
+
+lemma arrow_right_eq_arrow_succ_left (i : ℕ) (hi : i + 1 < n := by linarith) :
+    (F.arrow i).right = (F.arrow (i + 1)).left := rfl
+
+lemma eq_arrow_zero (F : ComposableArrows C 1) : F = F.arrow 0 := by
+  obtain ⟨_, _, _, rfl⟩ := mk₁_surjective F
+  rfl
+
 namespace Precomp
 
 variable (X : C)
@@ -365,10 +395,27 @@ def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
 def mk₂ {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : ComposableArrows C 2 :=
   (mk₁ g).precomp f
 
+/-! It is certainly important to keep named constructors like `mk₀`, `mk₁` and `mk₂`,
+but instead of the following `mk₃`, etc, it would be nice to introduce
+a list-like notation in order to construct `n` composable arrows for arbitrary `n`. -/
+
 /-- Constructor for `ComposableArrows C 3`. -/
 @[simp]
 def mk₃ {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : ComposableArrows C 3 :=
   (mk₂ g h).precomp f
+
+/-- Constructor for `ComposableArrows C 4`. -/
+@[simp]
+def mk₄ {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄) :
+    ComposableArrows C 4 :=
+  (mk₃ g h i).precomp f
+
+/-- Constructor for `ComposableArrows C 5`. -/
+@[simp]
+def mk₅ {X₀ X₁ X₂ X₃ X₄ X₅ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃)
+    (i : X₃ ⟶ X₄) (j : X₄ ⟶ X₅) :
+    ComposableArrows C 5 :=
+  (mk₄ g h i j).precomp f
 
 section
 
@@ -426,6 +473,221 @@ abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
 
 @[simp]
 lemma precomp_δ₀ {X : C} (f : X ⟶ F.left) : (F.precomp f).δ₀ = F := rfl
+
+end
+
+section
+
+variable {F G : ComposableArrows C (n + 1)}
+
+lemma hom_ext_succ {φ φ' : F ⟶ G} (h : app' φ 0 = app' φ' 0)
+    (h₀ : δ₀Functor.map φ = δ₀Functor.map φ') : φ = φ' := by
+  ext ⟨i, hi⟩
+  cases' i with i
+  · exact h
+  · exact congr_app h₀ ⟨i, by linarith⟩
+
+variable (app₀ : F.left ⟶ G.left) (φ₀ : F.δ₀ ⟶ G.δ₀)
+  (w : F.map' 0 1 ≫ φ₀.app 0 = app₀ ≫ G.map' 0 1)
+
+/-- Inductive construction of morphisms in `ComposableArrows C (n + 1)`. -/
+def homMkSucc : F ⟶ G :=
+  homMk (fun i => match i with
+    | 0 => app₀
+    | ⟨i + 1, _⟩ => φ₀.app ⟨i, by linarith⟩) (fun i hi => by
+      obtain _ | i := i
+      · exact w
+      · let φ : (⟨i, by linarith⟩ : Fin (n + 1)) ≤ ⟨i + 1, by linarith⟩ := by simp
+        exact φ₀.naturality (homOfLE φ))
+
+@[simp]
+lemma homMkSucc_app_zero : (homMkSucc app₀ φ₀ w).app 0 = app₀ := rfl
+
+@[simp]
+lemma homMkSucc_app_succ (i : ℕ) (hi : i + 1 < n + 1 + 1) :
+    (homMkSucc app₀ φ₀ w).app ⟨i + 1, hi⟩ = φ₀.app ⟨i, by linarith⟩ := rfl
+
+/-- Inductive construction of isomorphisms in `ComposableArrows C (n + 1)`. -/
+@[simps]
+def isoMkSucc (app₀ : F.left ≅ G.left) (φ₀ : F.δ₀ ≅ G.δ₀)
+    (w : F.map' 0 1 ≫ φ₀.hom.app 0 = app₀.hom ≫ G.map' 0 1) : F ≅ G where
+  hom := homMkSucc app₀.hom φ₀.hom w
+  inv := homMkSucc app₀.inv φ₀.inv (by
+    rw [← cancel_epi app₀.hom, ← reassoc_of% w, φ₀.hom_inv_id_app,
+      app₀.hom_inv_id_assoc]
+    dsimp
+    rw [comp_id])
+  hom_inv_id := hom_ext_succ app₀.hom_inv_id φ₀.hom_inv_id
+  inv_hom_id := hom_ext_succ app₀.inv_hom_id φ₀.inv_hom_id
+
+/-! Together with `precomp`, the extensionality lemma `ext_succ` below essentially shows
+that an element in `ComposableArrows C (n + 1)` can be uniquely written as a "composition"
+of an element `F : ComposableArrows C 1` and of an element `G : ComposableArrows C n`
+such that `F.right = G.left`. In other words, in the nerve of the category `C`
+(see `AlgebraicTopology.Nerve`), the `n + 1`-simplices identify to a certain fiber
+product of `1`-simplicies and `n`-simplices over `0`-simplices. This is a characteristic
+property of nerves of categories, see
+`https://ncatlab.org/nlab/show/Segal+condition#of_simplicial_nerves_of_small_categories`. -/
+
+lemma ext_succ (h : F.arrow 0 = G.arrow 0) (h₀ : F.δ₀ = G.δ₀) : F = G :=
+  ext
+    (fun ⟨i, hi⟩ => by
+      obtain _ | i := i
+      · exact Functor.congr_obj h 0
+      · exact Functor.congr_obj h₀ ⟨i, by linarith⟩)
+    (fun i hi => by
+      obtain _ | i := i
+      · simpa using (naturality'_2 (eqToIso h) 0 1).symm
+      · simpa using (naturality'_2 (eqToIso h₀) i (i + 1)).symm)
+
+end
+
+section
+
+variable {F G : ComposableArrows C 2}
+
+@[ext]
+lemma hom_ext₂ {φ φ' : F ⟶ G}
+    (h₀ : app' φ 0 = app' φ' 0) (h₁ : app' φ 1 = app' φ' 1) (h₂ : app' φ 2 = app' φ' 2) :
+    φ = φ' :=
+  hom_ext_succ h₀ (hom_ext₁ h₁ h₂)
+
+variable
+  (app₀ : F.obj' 0 ⟶ G.obj' 0) (app₁ : F.obj' 1 ⟶ G.obj' 1) (app₂ : F.obj' 2 ⟶ G.obj' 2)
+  (w₁ : F.map' 0 1 ≫ app₁ = app₀ ≫ G.map' 0 1)
+  (w₂ : F.map' 1 2 ≫ app₂ = app₁ ≫ G.map' 1 2)
+
+/-- Constructor for morphisms in `ComposableArrows C 1`. -/
+def homMk₂ : F ⟶ G :=
+  homMkSucc app₀ (homMk₁ app₁ app₂ w₂) w₁
+
+@[simp]
+lemma homMk₂_app_zero : (homMk₂ app₀ app₁ app₂ w₁ w₂).app 0 = app₀ := rfl
+
+@[simp]
+lemma homMk₂_app_one : (homMk₂ app₀ app₁ app₂ w₁ w₂).app 1 = app₁ := rfl
+
+@[simp]
+lemma homMk₂_app_two' : (homMk₂ app₀ app₁ app₂ w₁ w₂).app ⟨2, by linarith⟩ = app₂ := rfl
+
+/-- Constructor for isomorphisms in `ComposableArrows C 1`. -/
+@[simps]
+def isoMk₂ (app₀ : F.obj' 0 ≅ G.obj' 0) (app₁ : F.obj' 1 ≅ G.obj' 1)
+    (app₂ : F.obj' 2 ≅ G.obj' 2)
+    (w₁ : F.map' 0 1 ≫ app₁.hom = app₀.hom ≫ G.map' 0 1)
+    (w₂ : F.map' 1 2 ≫ app₂.hom = app₁.hom ≫ G.map' 1 2) : F ≅ G where
+  hom := homMk₂ app₀.hom app₁.hom app₂.hom w₁ w₂
+  inv := homMk₂ app₀.inv app₁.inv app₂.inv
+    (by rw [← cancel_epi app₀.hom, ← reassoc_of% w₁, app₁.hom_inv_id,
+      comp_id, app₀.hom_inv_id_assoc])
+    (by rw [← cancel_epi app₁.hom, ← reassoc_of% w₂, app₂.hom_inv_id,
+      comp_id, app₁.hom_inv_id_assoc])
+
+lemma ext₂ (h₀ : F.obj' 0 = G.obj' 0) (h₁ : F.obj' 1 = G.obj' 1) (h₂ : F.obj' 2 = G.obj' 2)
+    (w₁ : F.map' 0 1 = eqToHom h₀ ≫ G.map' 0 1 ≫ eqToHom h₁.symm)
+    (w₂ : F.map' 1 2 = eqToHom h₁ ≫ G.map' 1 2 ≫ eqToHom h₂.symm) : F = G :=
+  ext_succ (ext₁ h₀ h₁ w₁) (ext₁ h₁ h₂ w₂)
+
+variable (F)
+
+lemma mk₂_surjective : ∃ (X₀ X₁ X₂ : C) (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂), F = mk₂ f g :=
+  ⟨_, _, _, F.map' 0 1, F.map' 1 2, ext₂ rfl rfl rfl (by simp) (by simp)⟩
+
+end
+
+/-! The lemmas `segal_condition_uniq` and `segal_condition_exists` essentially prove
+that nerves of categories (see `AlgebraicTopology.Nerve`) satisfy the
+Segal condition, see
+https://ncatlab.org/nlab/show/Segal+condition#of_simplicial_nerves_of_small_categories -/
+
+lemma segal_condition_uniq {F G : ComposableArrows C (n + 1)}
+    (h : ∀ (i : ℕ) (hi : i ≤ n), F.arrow i = G.arrow i) : F = G := by
+  revert F G h
+  induction' n with n hn
+  · intro F G h
+    rw [F.eq_arrow_zero, G.eq_arrow_zero, h 0 (by rfl)]
+  · intro F G h
+    apply ext_succ
+    · exact h 0 (by linarith)
+    · exact hn (fun i hi => h (i + 1) (by linarith))
+
+lemma segal_condition_exists (φ : Fin (n + 1) → ComposableArrows C 1)
+    (hφ : ∀ (i : Fin n), (φ i.castSucc).right = (φ i.succ).left) :
+      ∃ (F : ComposableArrows C (n + 1)),
+        ∀ (i : ℕ) (hi : i ≤ n), F.arrow i = φ ⟨i, by linarith⟩ := by
+  revert φ
+  induction' n with n hn
+  · intro φ _
+    refine' ⟨φ 0, fun i hi => _⟩
+    obtain rfl : i = 0 := by linarith
+    exact (eq_arrow_zero _).symm
+  · intro φ hφ
+    obtain ⟨F, hF⟩ := hn (fun ⟨i, hi⟩ => φ ⟨i + 1, by linarith⟩) (fun i => hφ i.succ)
+    have : (φ 0).right = F.obj' 0 := (hφ 0).trans (by
+      change _ = (F.arrow 0).left
+      rw [hF 0 (by linarith)]
+      rfl)
+    refine' ⟨F.precomp ((φ 0).hom ≫ eqToHom this), fun i hi => _⟩
+    obtain _ | i := i
+    · exact ext₁ rfl this.symm (by simp)
+    · exact hF i (by linarith)
+
+/-- Given a functor `F : C ⥤ D` and for all `X : C`, an object `obj X : D` that is
+isomorphic to `F.obj X`, this is the functor isomorphic to `F` obtained by replacing
+`F.obj` by `obj`. -/
+@[simps]
+def _root_.CategoryTheory.Functor.mkOfIsoObj {C D : Type*} [Category C] [Category D]
+    (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X) : C ⥤ D where
+  obj := obj
+  map f := (e _).inv ≫ F.map f ≫ (e _).hom
+
+/-- The isomorphism to the functor constructed by `Functor.mkOfIsoObj`. -/
+@[simps!]
+def _root_.CategoryTheory.Functor.isoMkOfIsoObj {C D : Type*} [Category C] [Category D]
+    (F : C ⥤ D) (obj : C → D) (e : ∀ X, F.obj X ≅ obj X) :
+    F ≅ F.mkOfIsoObj obj e :=
+  NatIso.ofComponents e (by aesop_cat)
+
+section
+
+variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
+
+lemma mkOfObjMapSucc_aux :
+    ∃ (F : ComposableArrows C n) (iso : ∀ (i : Fin (n + 1)), F.obj i ≅ obj i),
+      ∀ (i : ℕ) (hi : i < n), F.map' i (i + 1) =
+        (iso _).hom ≫ mapSucc ⟨i, hi⟩ ≫ (iso _).inv := by
+  obtain _ | n := n
+  · exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
+  · obtain ⟨F, hF⟩ := (segal_condition_exists (fun i => mk₁ (mapSucc i)) (fun i => rfl))
+    have : ∀ (i : Fin (n + 2)), F.obj i = obj i := fun ⟨i, hi⟩ => by
+      obtain _ | i := i
+      · exact congr_arg left (hF 0 (by linarith))
+      · exact congr_arg right (hF i (by linarith))
+    exact ⟨F, fun i => eqToIso (this i), fun i hi =>
+      by simpa using (naturality'_2 (eqToIso (hF i (by linarith))) 0 1).symm⟩
+
+/-- This is the functor in `ComposableArrows C n` that is obtained from
+objects `obj : Fin (n +1) → C` and morphisms `obj i.castSucc ⟶ obj i.succ`.
+It has good definitional properties on objects. -/
+@[simps! obj]
+noncomputable def mkOfObjMapSucc :
+    ComposableArrows C n :=
+  (mkOfObjMapSucc_aux obj mapSucc).choose.mkOfIsoObj obj
+    (mkOfObjMapSucc_aux obj mapSucc).choose_spec.choose
+
+lemma mkOfObjMapSucc_map'_succ (i : ℕ) (hi : i < n := by linarith) :
+    (mkOfObjMapSucc obj mapSucc).map' i (i + 1) = mapSucc ⟨i, hi⟩ := by
+  let iso := (mkOfObjMapSucc_aux obj mapSucc).choose_spec.choose
+  change (iso _).inv ≫ _ ≫ (iso _).hom = _
+  rw [← cancel_mono (iso _).inv, ← cancel_epi (iso _).hom, assoc, assoc,
+    Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
+  apply (mkOfObjMapSucc_aux obj mapSucc).choose_spec.choose_spec
+
+lemma mkOfObjMapSucc_arrow (i : ℕ) (hi : i < n) :
+    (mkOfObjMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) := by
+  rw [← mkOfObjMapSucc_map'_succ obj mapSucc i]
+
+end
 
 end ComposableArrows
 
