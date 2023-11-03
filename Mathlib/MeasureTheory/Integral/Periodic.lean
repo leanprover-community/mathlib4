@@ -26,18 +26,9 @@ Another consequence (`Function.Periodic.intervalIntegral_add_eq` and related dec
 period `T`.
 -/
 
-
 open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgroup intervalIntegral
 
 open scoped MeasureTheory NNReal ENNReal
-
-noncomputable instance AddCircle.measurableSpace {a : ℝ} : MeasurableSpace (AddCircle a) :=
-  QuotientAddGroup.measurableSpace _
-#align add_circle.measurable_space AddCircle.measurableSpace
-
-instance AddCircle.borelSpace {a : ℝ} : BorelSpace (AddCircle a) :=
-  QuotientAddGroup.borelSpace
-#align add_circle.borel_space AddCircle.borelSpace
 
 @[measurability]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
@@ -71,7 +62,7 @@ variable (T : ℝ) [hT : Fact (0 < T)]
 /-- Equip the "additive circle" `ℝ ⧸ (ℤ ∙ T)` with, as a standard measure, the Haar measure of total
 mass `T` -/
 noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
-  { AddCircle.measurableSpace with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
+  { QuotientAddGroup.measurableSpace _ with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
 #align add_circle.measure_space AddCircle.measureSpace
 
 @[simp]
@@ -181,7 +172,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   have := integral_map_equiv (μ := volume) (measurableEquivIoc T t).symm f
   simp only [measurableEquivIoc, equivIoc, QuotientAddGroup.equivIocMod, MeasurableEquiv.symm_mk,
     MeasurableEquiv.coe_mk, Equiv.coe_fn_symm_mk] at this
-  rw [← (AddCircle.measurePreserving_mk T t).map_eq, set_integral_eq_subtype m, ← this]
+  rw [← (AddCircle.measurePreserving_mk T t).map_eq, ← integral_subtype m, ← this]
   have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
     ext1 x; rfl
   simp_rw [this]
@@ -203,17 +194,9 @@ namespace UnitAddCircle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-noncomputable instance measureSpace : MeasureSpace UnitAddCircle :=
-  AddCircle.measureSpace 1
-#align unit_add_circle.measure_space UnitAddCircle.measureSpace
-
 @[simp]
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 #align unit_add_circle.measure_univ UnitAddCircle.measure_univ
-
-instance isFiniteMeasure : IsFiniteMeasure (volume : Measure UnitAddCircle) :=
-  AddCircle.isFiniteMeasure 1
-#align unit_add_circle.is_finite_measure UnitAddCircle.isFiniteMeasure
 
 /-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass 1)

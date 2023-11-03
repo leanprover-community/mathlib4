@@ -189,19 +189,20 @@ def DeclCache2.mkFromCache (empty : α) (addDecl : Name → ConstantInfo → α 
 /--
 A type synonym for a `DeclCache` containing a pair of discrimination trees.
 -/
-@[reducible] def DiscrTreeCache (α : Type) : Type := DeclCache2 (DiscrTree α true)
+@[reducible] def DiscrTreeCache (α : Type) : Type := DeclCache2 (DiscrTree α)
 
 /--
 Build a `DiscrTreeCache`,
 from a function that returns a collection of keys and values for each declaration.
 -/
 def DiscrTreeCache.mk [BEq α] (profilingName : String)
-    (processDecl : Name → ConstantInfo → MetaM (Array (Array (DiscrTree.Key true) × α)))
+    (processDecl : Name → ConstantInfo → MetaM (Array (Array DiscrTree.Key × α)))
     (post? : Option (Array α → Array α) := none)
-    (init : Option (DiscrTree α true) := none) :
+    (init : Option (DiscrTree α) := none)
+    (config : WhnfCoreConfig) :
     IO (DiscrTreeCache α) :=
   let addDecl := fun name constInfo tree => do
-    return (← processDecl name constInfo).foldl (fun t (k, v) => t.insertIfSpecific k v) tree
+    return (← processDecl name constInfo).foldl (fun t (k, v) => t.insertIfSpecific k v config) tree
   let post := match post? with
   | some f => fun T => pure (T.mapArrays f)
   | none => fun T => pure T
@@ -218,8 +219,9 @@ it will rebuild the discrimination tree for the current file multiple times,
 and it would be more efficient to call `c.get` once,
 and then call `DiscrTree.getMatch` multiple times.
 -/
-def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) : MetaM (Array α) := do
+def DiscrTreeCache.getMatch (c : DiscrTreeCache α) (e : Expr) (config : WhnfCoreConfig) :
+    MetaM (Array α) := do
   let (locals, imports) ← c.get
   -- `DiscrTree.getMatch` returns results in batches, with more specific lemmas coming later.
   -- Hence we reverse this list, so we try out more specific lemmas earlier.
-  return (← locals.getMatch e).reverse ++ (← imports.getMatch e).reverse
+  return (← locals.getMatch e config).reverse ++ (← imports.getMatch e config).reverse

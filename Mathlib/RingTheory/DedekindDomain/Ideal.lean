@@ -297,8 +297,8 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- It suffices to show that for integral `x`,
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine ⟨fun {x hx} => ?_⟩
-  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot, ←
-    coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
+  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
+    Submodule.one_eq_span, ←coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -1156,7 +1156,10 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by simp
+  right_inv := fun ⟨j, hj⟩ => by
+    simp
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [OrderIso.apply_symm_apply]
 #align normalized_factors_equiv_of_quot_equiv normalizedFactorsEquivOfQuotEquiv
 
 @[simp]

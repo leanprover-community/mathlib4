@@ -382,9 +382,13 @@ instance instAlgebra : Algebra R (A ⊗[R] B) :=
 
 @[simp]
 theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
-    (algebraMap S (A ⊗[R] B)) r = (algebraMap S A) r ⊗ₜ 1 :=
+    algebraMap S (A ⊗[R] B) r = (algebraMap S A) r ⊗ₜ 1 :=
   rfl
 #align algebra.tensor_product.algebra_map_apply Algebra.TensorProduct.algebraMap_apply
+
+theorem algebraMap_apply' (r : R) :
+    algebraMap R (A ⊗[R] B) r = 1 ⊗ₜ algebraMap R B r := by
+  rw [algebraMap_apply, Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, smul_tmul]
 
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
@@ -404,12 +408,7 @@ def includeRight : B →ₐ[R] A ⊗[R] B where
   map_add' := by simp [tmul_add]
   map_one' := rfl
   map_mul' := by simp
-  commutes' r := by
-    simp only [algebraMap_apply]
-    trans r • (1 : A) ⊗ₜ[R] (1 : B)
-    · rw [← tmul_smul, Algebra.smul_def]
-      simp
-    · simp [Algebra.smul_def]
+  commutes' r := by simp only [algebraMap_apply']
 #align algebra.tensor_product.include_right Algebra.TensorProduct.includeRight
 
 @[simp]
@@ -731,6 +730,9 @@ protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
     (by simp [Algebra.smul_def])
 #align algebra.tensor_product.lid Algebra.TensorProduct.lid
 
+@[simp] theorem lid_toLinearEquiv :
+    (TensorProduct.lid R A).toLinearEquiv = _root_.TensorProduct.lid R A := rfl
+
 @[simp]
 theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r ⊗ₜ a) = r • a := rfl
 #align algebra.tensor_product.lid_tmul Algebra.TensorProduct.lid_tmul
@@ -747,6 +749,9 @@ protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
     (one_smul _ _)
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
 
+@[simp] theorem rid_toLinearEquiv :
+    (TensorProduct.rid R S A).toLinearEquiv = AlgebraTensorModule.rid R S A := rfl
+
 variable {R A} in
 @[simp]
 theorem rid_tmul (r : R) (a : A) : TensorProduct.rid R S A (a ⊗ₜ r) = r • a := rfl
@@ -762,6 +767,9 @@ variable (B)
 protected def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
   algEquivOfLinearEquivTensorProduct (_root_.TensorProduct.comm R A B) (fun _ _ _ _ => rfl) rfl
 #align algebra.tensor_product.comm Algebra.TensorProduct.comm
+
+@[simp] theorem comm_toLinearEquiv :
+    (Algebra.TensorProduct.comm R A B).toLinearEquiv = _root_.TensorProduct.comm R A B := rfl
 
 @[simp]
 theorem comm_tmul (a : A) (b : B) :
@@ -790,7 +798,7 @@ theorem assoc_aux_2 : (TensorProduct.assoc R A B C) ((1 ⊗ₜ[R] 1) ⊗ₜ[R] 1
   rfl
 #align algebra.tensor_product.assoc_aux_2 Algebra.TensorProduct.assoc_aux_2ₓ
 
-variable (A B C)
+variable (R A B C)
 
 -- porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
@@ -801,12 +809,14 @@ protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
     Algebra.TensorProduct.assoc_aux_2
 #align algebra.tensor_product.assoc Algebra.TensorProduct.assoc
 
+@[simp] theorem assoc_toLinearEquiv :
+  (Algebra.TensorProduct.assoc R A B C).toLinearEquiv = _root_.TensorProduct.assoc R A B C := rfl
+
 variable {A B C}
 
 @[simp]
 theorem assoc_tmul (a : A) (b : B) (c : C) :
-    (_root_.TensorProduct.assoc R A B C : (A ⊗[R] B) ⊗[R] C → A ⊗[R] B ⊗[R] C) (a ⊗ₜ b ⊗ₜ c) =
-      a ⊗ₜ (b ⊗ₜ c) :=
+    Algebra.TensorProduct.assoc R A B C (a ⊗ₜ b ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) :=
   rfl
 #align algebra.tensor_product.assoc_tmul Algebra.TensorProduct.assoc_tmul
 
@@ -869,6 +879,10 @@ def congr (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) : A ⊗[R] C ≃ₐ[S] B ⊗[R
   AlgEquiv.ofAlgHom (map f g) (map f.symm g.symm)
     (ext' fun b d => by simp) (ext' fun a c => by simp)
 #align algebra.tensor_product.congr Algebra.TensorProduct.congr
+
+@[simp] theorem congr_toLinearEquiv (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) :
+    (Algebra.TensorProduct.congr f g).toLinearEquiv =
+      TensorProduct.AlgebraTensorModule.congr f.toLinearEquiv g.toLinearEquiv := rfl
 
 @[simp]
 theorem congr_apply (f : A ≃ₐ[S] B) (g : C ≃ₐ[R] D) (x) :

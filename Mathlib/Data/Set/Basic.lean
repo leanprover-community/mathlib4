@@ -7,6 +7,7 @@ import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
+import Mathlib.Util.Delaborators
 
 #align_import data.set.basic from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
@@ -81,9 +82,9 @@ universe u v w x
 
 namespace Set
 
-variable {α : Type _} {s t : Set α}
+variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet {α : Type _} : BooleanAlgebra (Set α) :=
+instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -568,6 +569,8 @@ theorem setOf_false : { _a : α | False } = ∅ :=
   rfl
 #align set.set_of_false Set.setOf_false
 
+@[simp] theorem setOf_bot : { _x : α | ⊥ } = ∅ := rfl
+
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
   fun.
@@ -667,6 +670,8 @@ Mathematically it is the same as `α` but it has a different type.
 theorem setOf_true : { _x : α | True } = univ :=
   rfl
 #align set.set_of_true Set.setOf_true
+
+@[simp] theorem setOf_top : { _x : α | ⊤ } = univ := rfl
 
 @[simp, mfld_simps]
 theorem mem_univ (x : α) : x ∈ @univ α :=
@@ -1172,7 +1177,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
 #align set.insert_subset_insert Set.insert_subset_insert
 
-theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
+@[simp] theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
   refine' ⟨fun h x hx => _, insert_subset_insert⟩
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts [(ha hx).elim, hxt]
@@ -2197,19 +2202,15 @@ theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
 
 /-! ### Sets defined as an if-then-else -/
 
---Porting note: New theorem to prove `mem_dite` lemmas.
--- `simp [h]` where `h : p` does not simplify `∀ (h : p), x ∈ s h` any more.
--- https://github.com/leanprover/lean4/issues/1926
 theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set α) (x : α) :
     (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h := by
   split_ifs with hp
   · exact ⟨fun hx => ⟨fun _ => hx, fun hnp => (hnp hp).elim⟩, fun hx => hx.1 hp⟩
   · exact ⟨fun hx => ⟨fun h => (hp h).elim, fun _ => hx⟩, fun hx => hx.2 hp⟩
 
---Porting note: Old proof was `split_ifs; simp [h]`
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
-  simp [mem_dite]
+  split_ifs <;> simp_all
 #align set.mem_dite_univ_right Set.mem_dite_univ_right
 
 @[simp]
@@ -2220,7 +2221,7 @@ theorem mem_ite_univ_right (p : Prop) [Decidable p] (t : Set α) (x : α) :
 
 theorem mem_dite_univ_left (p : Prop) [Decidable p] (t : ¬p → Set α) (x : α) :
     (x ∈ if h : p then univ else t h) ↔ ∀ h : ¬p, x ∈ t h := by
-  simp [mem_dite]
+  split_ifs <;> simp_all
 #align set.mem_dite_univ_left Set.mem_dite_univ_left
 
 @[simp]
@@ -2344,6 +2345,16 @@ theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ 
   refine' forall_congr' fun x => _
   by_cases hx : x ∈ t <;> simp [*, Set.ite]
 #align set.subset_ite Set.subset_ite
+
+theorem ite_eq_of_subset_left (t : Set α) {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) :
+    t.ite s₁ s₂ = s₁ ∪ (s₂ \ t) := by
+  ext x
+  by_cases hx : x ∈ t <;> simp [*, Set.ite, or_iff_right_of_imp (@h x)]
+
+theorem ite_eq_of_subset_right (t : Set α) {s₁ s₂ : Set α} (h : s₂ ⊆ s₁) :
+    t.ite s₁ s₂ = (s₁ ∩ t) ∪ s₂ := by
+  ext x
+  by_cases hx : x ∈ t <;> simp [*, Set.ite, or_iff_left_of_imp (@h x)]
 
 /-! ### Subsingleton -/
 

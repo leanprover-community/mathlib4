@@ -75,7 +75,8 @@ def ε : 𝟙_ (ModuleCat.{u} R) ⟶ (free R).obj (𝟙_ (Type u)) :=
   Finsupp.lsingle PUnit.unit
 #align Module.free.ε ModuleCat.Free.ε
 
-@[simp]
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 theorem ε_apply (r : R) : ε R r = Finsupp.single PUnit.unit r :=
   rfl
 #align Module.free.ε_apply ModuleCat.Free.ε_apply
@@ -103,8 +104,10 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (Finsupp.mapDomain f (Finsupp.single x 1) ⊗ₜ[R] Finsupp.mapDomain g (Finsupp.single x' 1)) _
     = (Finsupp.mapDomain (f ⊗ g) (finsuppTensorFinsupp' R X X'
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single x' 1))) _
+
+  -- extra `rfl` after leanprover/lean4#2466
   simp_rw [Finsupp.mapDomain_single, finsuppTensorFinsupp'_single_tmul_single, mul_one,
-    Finsupp.mapDomain_single, CategoryTheory.tensor_apply]
+    Finsupp.mapDomain_single, CategoryTheory.tensor_apply]; rfl
 #align Module.free.μ_natural ModuleCat.Free.μ_natural
 
 theorem left_unitality (X : Type u) :
@@ -175,8 +178,9 @@ theorem associativity (X Y Z : Type u) :
     finsuppTensorFinsupp' R X (Y ⊗ Z)
     (Finsupp.single x 1 ⊗ₜ[R]
       finsuppTensorFinsupp' R Y Z (Finsupp.single y 1 ⊗ₜ[R] Finsupp.single z 1)) a
+  -- extra `rfl` after leanprover/lean4#2466
   simp_rw [finsuppTensorFinsupp'_single_tmul_single, Finsupp.mapDomain_single, mul_one,
-    CategoryTheory.associator_hom_apply]
+    CategoryTheory.associator_hom_apply]; rfl
 #align Module.free.associativity ModuleCat.Free.associativity
 
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
@@ -422,5 +426,4 @@ def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
 #align category_theory.Free.lift_unique CategoryTheory.Free.liftUnique
 
 end Free
-
 end CategoryTheory

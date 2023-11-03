@@ -319,6 +319,7 @@ theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
   simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+  rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
 @[simp]
