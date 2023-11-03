@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Order.BoundedOrder
@@ -31,7 +31,7 @@ class OrderedCommMonoid (α : Type*) extends CommMonoid α, PartialOrder α wher
 #align ordered_comm_monoid OrderedCommMonoid
 
 /-- An ordered (additive) commutative monoid is a commutative monoid
-  with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone)
+with a partial order such that `a ≤ b → c + a ≤ c + b` (addition is monotone)
 -/
 class OrderedAddCommMonoid (α : Type*) extends AddCommMonoid α, PartialOrder α where
   /-- Addition is monotone in an `OrderedAddCommMonoid`. -/
@@ -39,6 +39,22 @@ class OrderedAddCommMonoid (α : Type*) extends AddCommMonoid α, PartialOrder �
 #align ordered_add_comm_monoid OrderedAddCommMonoid
 
 attribute [to_additive] OrderedCommMonoid
+
+/-- A strict ordered commutative monoid is a commutative monoid
+with a partial order such that `a ≤ b → c * a ≤ c * b` and `a < b → c * a < c * b`
+-/
+class StrictOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α where
+  /-- Multiplication is also monotone along `<` in a `StrictOrderedCommMonoid`. -/
+  protected mul_lt_mul_left : ∀ a b : α, a < b → ∀ c : α, c * a < c * b
+
+/-- A strict ordered (additive) commutative monoid is a commutative monoid
+with a partial order such that `a ≤ b → c + a ≤ c + b` and `a < b → c + a < c + b`
+-/
+class StrictOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α where
+  /-- Addition is also monotone along `<` in a `StrictOrderedAddCommMonoid`. -/
+  protected add_lt_add_left : ∀ a b : α, a < b → ∀ c : α, c + a < c + b
+
+attribute [to_additive] StrictOrderedCommMonoid
 
 section OrderedInstances
 
@@ -62,6 +78,16 @@ instance OrderedCommMonoid.to_covariantClass_right (M : Type*) [OrderedCommMonoi
 #noalign has_add.to_covariant_class_left
 #noalign has_mul.to_covariant_class_right
 #noalign has_add.to_covariant_class_right
+
+@[to_additive]
+instance StrictOrderedCommMonoid.to_covariantClass_left (M : Type*) [StrictOrderedCommMonoid M] :
+    CovariantClass M M (· * ·) (· < ·) where
+  elim := fun a _ _ bc ↦ StrictOrderedCommMonoid.mul_lt_mul_left _ _ bc a
+
+@[to_additive]
+instance StrictOrderedCommMonoid.to_covariantClass_right (M : Type*) [StrictOrderedCommMonoid M] :
+    CovariantClass M M (swap (· * ·)) (· < ·) :=
+  covariant_swap_mul_of_covariant_mul M _
 
 end OrderedInstances
 

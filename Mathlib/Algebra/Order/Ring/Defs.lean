@@ -67,7 +67,7 @@ immediate predecessors and what conditions are added to each of them.
   - `OrderedAddCommMonoid` & multiplication & `*` respects `≤`
   - `Semiring` & partial order structure & `+` respects `≤` & `*` respects `≤`
 * `StrictOrderedSemiring`
-  - `OrderedCancelAddCommMonoid` & multiplication & `*` respects `<` & nontriviality
+  - `StrictOrderedAddCommMonoid` & multiplication & `*` respects `<` & nontriviality
   - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
 * `OrderedCommSemiring`
   - `OrderedSemiring` & commutativity of multiplication
@@ -517,6 +517,9 @@ instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemi
       letI := @StrictOrderedSemiring.toOrderedSemiring' α _ (Classical.decRel _)
       mul_le_mul_of_nonneg_right }
 #align strict_ordered_semiring.to_ordered_semiring StrictOrderedSemiring.toOrderedSemiring
+
+instance StrictOrderedSemiring.toStrictOrderedAddCommMonoid : StrictOrderedAddCommMonoid α :=
+  { ‹StrictOrderedSemiring α› with add_lt_add_left := fun _ _ hab c => add_lt_add_left hab c }
 
 theorem mul_lt_mul (hac : a < c) (hbd : b ≤ d) (hb : 0 < b) (hc : 0 ≤ c) : a * b < c * d :=
   (mul_lt_mul_of_pos_right hac hb).trans_le <| mul_le_mul_of_nonneg_left hbd hc
