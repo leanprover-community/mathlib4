@@ -15,6 +15,9 @@ In this file, we show that the following are all equivalent:
 - The induced map `∐ X ⟶ B` is epimorphic.
 - The family `π` is jointly surjective.
 
+As a consequence, we show (see `effectiveEpi_iff_surjective`) that all epimorphisms in `Profinite` 
+are effective, and that `Profinite` is preregular.
+
 ## Main results
 
 - `Profinite.effectiveEpiFamily_tfae`: characterise being an effective epimorphic family.
@@ -268,6 +271,15 @@ lemma effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
   rw [← epi_iff_surjective]
   exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
+instance : Preregular Profinite where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [Profinite.effectiveEpi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
 end JointlySurjective
 

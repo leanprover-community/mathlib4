@@ -58,7 +58,7 @@ def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
   arrows Z := { g | ∃ (e : Z ⟶ Y), e ≫ f = g }
   downward_closed := by
     rintro W Z g ⟨e,rfl⟩ q
-    refine ⟨q ≫ e, by simp⟩
+    exact ⟨q ≫ e, by simp⟩
 
 lemma Sieve.generateSingleton_eq {X Y : C} (f : Y ⟶ X) :
     Sieve.generate (Presieve.singleton f) = Sieve.generateSingleton f := by
@@ -226,7 +226,7 @@ def Sieve.generateFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → 
   arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
   downward_closed := by
     rintro Y₁ Y₂ g₁ ⟨a,q,rfl⟩ e
-    refine ⟨a, e ≫ q, by simp⟩
+    exact ⟨a, e ≫ q, by simp⟩
 
 lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve.generate (Presieve.ofArrows X π) = Sieve.generateFamily X π := by
@@ -235,7 +235,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
   · rintro ⟨W, g, f, ⟨a⟩, rfl⟩
     exact ⟨a, g, rfl⟩
   · rintro ⟨a, g, rfl⟩
-    refine ⟨_, g, π a, ⟨a⟩, rfl⟩
+    exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
 /--
 This structure encodes the data required for a family of morphisms to be effective epimorphic.

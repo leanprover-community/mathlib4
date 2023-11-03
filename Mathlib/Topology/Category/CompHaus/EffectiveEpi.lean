@@ -18,7 +18,7 @@ In this file, we show that the following are all equivalent:
 - The family `π` is jointly surjective.
 This is the main result of this file, which can be found in `CompHaus.effectiveEpiFamily_tfae`
 
-As a consequence, we also show that `CompHaus` is precoherent.
+As a consequence, we also show that `CompHaus` is precoherent and preregular.
 
 # Projects
 
@@ -192,6 +192,7 @@ theorem effectiveEpiFamily_of_jointly_surjective
 
 open EffectiveEpiFamily
 
+-- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
     {α : Type} [Fintype α] {B : CompHaus.{u}}
