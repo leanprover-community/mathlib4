@@ -11,6 +11,7 @@ import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Lean.Linter
 import Std.Data.List.Count
+import Mathlib.Lean.Expr.Basic
 -- import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 
 /-!
