@@ -51,32 +51,31 @@ lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource (h : e' ≈ e)
   exact ⟨G.eq_on_source l (EqOnSource.trans' (EqOnSource.symm' h) (e''.eqOnSource_refl)),
          G.eq_on_source r (EqOnSource.trans' (e''.symm).eqOnSource_refl h)⟩
 
+/-- If `G` is closed under restriction, the transition function between
+  the restriction of two charts `e` and `e'` lies in `G`. -/
+theorem StructureGroupoid.trans_restricted (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
+    [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] :
+    (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s ∈ G := by
+  have : (e.symm ≫ₕ e').restr (e.target ∩ e.symm ⁻¹' s) ∈ G := by
+    let hopen := e.preimage_open_of_open_symm s.2
+    refine G.locality fun x' hx' ↦ ⟨e.target ∩ e.symm ⁻¹' s, hopen, ?_, ?_ ⟩
+    · exact interior_subset (mem_of_mem_inter_right hx')
+    · exact closedUnderRestriction' (closedUnderRestriction' (G.compatible he he') hopen) hopen
+  exact G.eq_on_source this (e.subtypeRestr_symm_trans_subtypeRestr s e')
+
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`. -/
 -- this is different from `closedUnderRestriction'` as we want membership in the maximal atlas
 -- XXX: find a better name!
-lemma StructureGroupoid.stable_under_restrictions (he : e ∈ atlas H M) [ClosedUnderRestriction G]
+lemma StructureGroupoid.stable_under_restriction (he : e ∈ atlas H M) [ClosedUnderRestriction G]
     (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
-  rw [mem_maximalAtlas_iff]
   intro e' he'
   -- `e'` is the restriction of some chart of `M` at `x`,
   obtain ⟨x, this⟩ := chartOn_open_eq s he'
   rw [this]
-  let e'full := chartAt H (x : M)
-  -- the unrestricted charts are in the groupoid,
-  have aux : e.symm ≫ₕ e'full ∈ G := G.compatible he (chart_mem_atlas H (x : M))
-  have aux' : e'full.symm ≫ₕ e ∈ G := G.compatible (chart_mem_atlas H (x : M)) he
-  -- the composition is the restriction of the charts
-  let r_corr := e.subtypeRestr_symm_trans_subtypeRestr s (chartAt H (x : M))
-  let r'_corr := (chartAt H (x : M)).subtypeRestr_symm_trans_subtypeRestr s e
-  -- hence the restriction also lies in the groupoid
-  constructor
-  · have : (e.symm ≫ₕ chartAt H ↑x).restr (e.target ∩ e.symm ⁻¹' s) ∈ G := by
-      let hopen := e.preimage_open_of_open_symm s.2
-      refine G.locality fun x' hx' ↦ ⟨e.target ∩ e.symm ⁻¹' s, hopen, ?_, ?_ ⟩
-      · exact interior_subset (mem_of_mem_inter_right hx')
-      · exact closedUnderRestriction' (closedUnderRestriction' aux hopen) hopen
-    exact G.eq_on_source this r_corr
-  · sorry -- completely similar to the first goal: FIXME can I deduplicate?
+  -- The transition functions between the unrestricted charts are in the groupoid,
+  -- the transition functions of the restriction are the restriction of the transition function.
+  exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) s,
+         G.trans_restricted (chart_mem_atlas H (x : M)) he s⟩
 
 /-- Charts are structomorphisms. -/
 -- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
@@ -103,7 +102,7 @@ lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestr
     set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
     have : goal ≈ e.subtypeRestr s :=
       (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro x'' hx''; rfl⟩
-    exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.stable_under_restrictions he s)
+    exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.stable_under_restriction he s)
   have : Structomorph G s t := {
     e.toHomeomorphSourceTarget with
     mem_groupoid := by
