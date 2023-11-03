@@ -37,10 +37,8 @@ noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [
 
 noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J FintypeCat.incl.{u} where
-  CreatesLimit := by
-    intro K
-    exact createsLimitOfFullyFaithfulOfIso (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl)
-      (Iso.refl _)
+  CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
+    (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
 instance {J : Type} [SmallCategory J] [FinCategory J] : HasLimitsOfShape J FintypeCat.{u} where
   has_limit F := hasLimit_of_created F FintypeCat.incl
@@ -63,10 +61,8 @@ noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J]
 
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J FintypeCat.incl.{u} where
-  CreatesColimit := by
-    intro K
-    exact createsColimitOfFullyFaithfulOfIso (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl)
-      (Iso.refl _)
+  CreatesColimit {K} := createsColimitOfFullyFaithfulOfIso
+    (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
 instance {J : Type} [SmallCategory J] [FinCategory J] : HasColimitsOfShape J FintypeCat.{u} where
   has_colimit F := hasColimit_of_created F FintypeCat.incl
