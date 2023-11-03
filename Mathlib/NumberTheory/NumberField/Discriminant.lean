@@ -24,7 +24,7 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 
 namespace NumberField
 
-open Classical NumberField Matrix
+open Classical NumberField Matrix Complex
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -48,10 +48,8 @@ open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
-      (2 : ℝ≥0)⁻¹ ^ Fintype.card { w : InfinitePlace K // IsComplex w } *
+      (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w : InfinitePlace K // IsComplex w } *
         NNReal.sqrt ‖discr K‖₊ := by
-  rw [← toNNReal_eq_toNNReal_iff' (ne_of_lt (fundamentalDomain_isBounded _).measure_lt_top)
-    (ENNReal.mul_ne_top (coe_ne_top) (coe_ne_top)), toNNReal_mul, toNNReal_coe]
   let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
     (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
@@ -60,26 +58,22 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     RingHom.equivRatAlgHom
   suffices M.map Complex.ofReal = (matrix_to_stdBasis K) *
       (Matrix.reindex (indexEquiv K).symm (indexEquiv K).symm N).transpose by
-    calc
-      _ = Real.toNNReal (|((mixedEmbedding.stdBasis K).toMatrix
-            ((latticeBasis K).reindex e.symm)).det|) := by
-        rw [← fundamentalDomain_reindex _ e.symm, measure_fundamentalDomain
+    calc volume (fundamentalDomain (latticeBasis K))
+      _ = ‖((mixedEmbedding.stdBasis K).toMatrix ((latticeBasis K).reindex e.symm)).det‖₊ := by
+        rw [← fundamentalDomain_reindex _ e.symm, ← norm_toNNReal, measure_fundamentalDomain
           ((latticeBasis K).reindex e.symm), volume_fundamentalDomain_stdBasis, mul_one]
         rfl
-      _ = Real.toNNReal (Complex.abs ((matrix_to_stdBasis K).det * N.det)) := by
-        rw [← Complex.abs_ofReal, ← Complex.ofReal_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply,
-          this, Matrix.det_mul, Matrix.det_transpose, Matrix.det_reindex_self]
-      _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card {w // IsComplex w} * Real.toNNReal (Complex.abs N.det) := by
-        rw [_root_.map_mul, det_matrix_to_stdBasis, Real.toNNReal_mul (Complex.abs.nonneg _),
-          Complex.abs_pow, _root_.map_mul, Complex.abs_I, mul_one, map_inv₀, Complex.abs_two,
-          Real.toNNReal_pow (by norm_num), Real.toNNReal_inv, Real.toNNReal_ofNat]
-      _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} *
-            Real.toNNReal (Real.sqrt (Complex.abs (N.det ^ 2))) := by
-        rw [Complex.abs_pow, Real.sqrt_sq (Complex.abs.nonneg _)]
-      _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
+      _ = ‖(matrix_to_stdBasis K).det * N.det‖₊ := by
+        rw [← nnnorm_real, ← ofReal_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
+          det_mul, det_transpose, det_reindex_self]
+      _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} * sqrt ‖N.det ^ 2‖₊ := by
+        have : ‖Complex.I‖₊ = 1 := by rw [← norm_toNNReal, norm_eq_abs, abs_I, Real.toNNReal_one]
+        rw [det_matrix_to_stdBasis, nnnorm_mul, nnnorm_pow, nnnorm_mul, this, mul_one, nnnorm_inv,
+          coe_mul, ENNReal.coe_pow, ← norm_toNNReal, IsROrC.norm_two, Real.toNNReal_ofNat,
+          coe_inv two_ne_zero, coe_ofNat, nnnorm_pow, NNReal.sqrt_sq]
+      _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
         rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
-          ← coe_discr, map_intCast, ← Complex.norm_eq_abs, ← Complex.nnnorm_int, Real.sqrt,
-          norm_toNNReal, Real.toNNReal_coe]
+          ← coe_discr, map_intCast, ← Complex.nnnorm_int]
   ext : 2
   dsimp only
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp, Equiv.symm_symm,
