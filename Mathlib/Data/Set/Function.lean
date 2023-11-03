@@ -221,6 +221,10 @@ theorem EqOn.image_eq (heq : EqOn f₁ f₂ s) : f₁ '' s = f₂ '' s :=
   image_congr heq
 #align set.eq_on.image_eq Set.EqOn.image_eq
 
+/-- Variant of `EqOn.image_eq`, for one function being the identity. -/
+theorem EqOn.image_eq' {f : α → α} (h : Set.EqOn f id s) : f '' s = s := by
+  rw [h.image_eq, image_id]
+
 theorem EqOn.inter_preimage_eq (heq : EqOn f₁ f₂ s) (t : Set β) : s ∩ f₁ ⁻¹' t = s ∩ f₂ ⁻¹' t :=
   ext fun x => and_congr_right_iff.2 fun hx => by rw [mem_preimage, mem_preimage, heq hx]
 #align set.eq_on.inter_preimage_eq Set.EqOn.inter_preimage_eq
