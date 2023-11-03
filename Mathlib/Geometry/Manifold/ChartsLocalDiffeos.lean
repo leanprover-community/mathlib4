@@ -42,6 +42,15 @@ lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he
   have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
   exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
 
+open LocalHomeomorph in
+/-- The maximal atlas of a structure groupoid is stable under equivalence. -/
+lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource (h : e' ≈ e)
+    (he : e ∈ G.maximalAtlas M) : e' ∈ G.maximalAtlas M := by
+  intro e'' he''
+  obtain ⟨l, r⟩ := mem_maximalAtlas_iff.mp he e'' he''
+  exact ⟨G.eq_on_source l (EqOnSource.trans' (EqOnSource.symm' h) (e''.eqOnSource_refl)),
+         G.eq_on_source r (EqOnSource.trans' (e''.symm).eqOnSource_refl h)⟩
+
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`. -/
 -- this is different from `closedUnderRestriction'` as we want membership in the maximal atlas
 -- XXX: find a better name!
@@ -91,13 +100,10 @@ lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestr
     -- Simplify slightly.
     rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
     -- Argue that our expression equals this chart above, at least on its source.
-    let r := e.subtypeRestr s
     set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
-    have h3: goal ≈ r := (goal.eqOnSource_iff r).mpr ⟨by simp, by intro x'' hx''; rfl⟩
-    -- FIXME: extract as a separate lemma and prove it
-    -- should be simple; for membership in the atlas, that's G.eq_on_source
-    have lem : r ∈ G.maximalAtlas s → goal ≈ r → goal ∈ G.maximalAtlas s := sorry
-    exact lem (G.stable_under_restrictions he s) h3
+    have : goal ≈ e.subtypeRestr s :=
+      (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro x'' hx''; rfl⟩
+    exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.stable_under_restrictions he s)
   have : Structomorph G s t := {
     e.toHomeomorphSourceTarget with
     mem_groupoid := by
