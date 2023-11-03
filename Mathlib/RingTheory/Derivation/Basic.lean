@@ -79,7 +79,7 @@ theorem toFun_eq_coe : D.toFun = ⇑D :=
 #align derivation.to_fun_eq_coe Derivation.toFun_eq_coe
 
 /-- See Note [custom simps projection] -/
-def Derivation.Simps.apply (D : Derivation R A M) : A → M := D
+def Simps.apply (D : Derivation R A M) : A → M := D
 
 initialize_simps_projections Derivation (toFun → apply)
 
