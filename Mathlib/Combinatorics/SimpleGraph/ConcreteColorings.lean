@@ -23,6 +23,7 @@ theorem aux (m n : ℕ) (h : m + 1 = n) : (m % 2 == 0) ≠ (n % 2 == 0) := by
   simp only [beq_iff_eq, ←h, ←Nat.even_iff, Nat.even_add_one] at h₁
   exact not_iff_self h₁.symm
 
+/-- Bicoloring of a path graph -/
 def SimpleGraph.pathGraph.bicoloring (n : ℕ) :
     SimpleGraph.Coloring (pathGraph n) Bool :=
   Coloring.mk (fun u => u.val % 2 == 0)
@@ -37,7 +38,7 @@ def SimpleGraph.pathGraph.bicoloring (n : ℕ) :
         | Or.inr h' => exact (aux v u h').symm
     )
 
-
+/-- Convert a coloring to bool to a coloring to Fin 2 -/
 def SimpleGraph.Coloring.BoolToFin2 {α} {G : SimpleGraph α} (c : SimpleGraph.Coloring G Bool) :
     SimpleGraph.Coloring G (Fin 2) :=
   (SimpleGraph.recolorOfEquiv G (finTwoEquiv)).invFun c
