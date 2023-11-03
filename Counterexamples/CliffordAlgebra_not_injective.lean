@@ -106,8 +106,8 @@ instance K.charP : CharP K 2 := by
   rw [CharP.quotient_iff_le_ker_natCast]
   have : Nat.castRingHom (MvPolynomial (Fin 3) (ZMod 2)) = C.comp (Nat.castRingHom _) := by
     ext1 r; rfl
-  rw [this, ← Ideal.comap_comap, ← RingHom.comap_ker]
-  exact Ideal.comap_mono (comap_C_kIdeal.trans_le bot_le)
+  rw [this, ← Ideal.comap_comap, ← RingHom.comap_ker, comap_C_kIdeal]
+  exact Ideal.comap_mono bot_le
 
 /-- The generators of `K`. -/
 def K.gen (i : Fin 3) : K := Ideal.Quotient.mk _ (MvPolynomial.X i)
