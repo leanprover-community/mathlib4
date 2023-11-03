@@ -1580,4 +1580,13 @@ lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
   have : LocallyCompactSpace H := I.locallyCompactSpace
   exact ChartedSpace.locallyCompactSpace H M
 
+open TopologicalSpace
+/-- A finite-dimensional second-countable manifold modelled on a locally compact field
+  (such as ℝ, ℂ or the `p`-adic numbers) is σ-compact. -/
+-- FIXME: make this an instance?
+lemma Manifold.sigmaCompact_of_finiteDimensional_of_secondCountable [SecondCountableTopology M]
+    [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] : SigmaCompactSpace M := by
+  have : LocallyCompactSpace M := Manifold.locallyCompact_of_finiteDimensional I
+  apply sigmaCompactSpace_of_locally_compact_second_countable
+
 end Topology
