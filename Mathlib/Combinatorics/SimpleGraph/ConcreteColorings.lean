@@ -17,16 +17,16 @@ This file defines colorings for some common graphs
 * `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph
 -/
 
-theorem aux (m n : ℕ) (h : m + 1 = n) : (m % 2 == 0) ≠ (n % 2 == 0) := by
-  intro h₁
-  rw [Bool.eq_iff_eq_true_iff, beq_iff_eq] at h₁
-  simp only [beq_iff_eq, ←h, ←Nat.even_iff, Nat.even_add_one] at h₁
-  exact not_iff_self h₁.symm
+theorem suc_mod2_neq (m : ℕ) : (m % 2 == 0) ≠ ((m + 1) % 2 == 0) := by
+  intro h
+  rw [Bool.eq_iff_eq_true_iff, beq_iff_eq] at h
+  simp only [beq_iff_eq, ←Nat.even_iff, Nat.even_add_one] at h
+  exact not_iff_self h.symm
 
 /-- Bicoloring of a path graph -/
 def SimpleGraph.pathGraph.bicoloring (n : ℕ) :
     SimpleGraph.Coloring (pathGraph n) Bool :=
-  Coloring.mk (fun u => u.val % 2 == 0)
+  Coloring.mk (fun u ↦ u.val % 2 == 0)
     (by
       intro u v h
       simp
@@ -34,9 +34,12 @@ def SimpleGraph.pathGraph.bicoloring (n : ℕ) :
       have : u.val ⋖ v.val ∨ v.val ⋖ u.val := by simp_all [Fin.coe_covby_iff]
       have : u.val + 1 = v.val ∨ v.val + 1 = u.val := by simp_all [Nat.covby_iff_succ_eq]
       match this with
-        | Or.inl h' => exact aux u v h'
-        | Or.inr h' => exact (aux v u h').symm
-    )
+        | Or.inl h' =>
+          rw [←h']
+          exact suc_mod2_neq u
+        | Or.inr h' =>
+          rw [←h']
+          exact (suc_mod2_neq v).symm)
 
 /-- Convert a coloring to bool to a coloring to Fin 2 -/
 def SimpleGraph.Coloring.BoolToFin2 {α} {G : SimpleGraph α} (c : SimpleGraph.Coloring G Bool) :
@@ -52,23 +55,13 @@ theorem SimpleGraph.pathGraph.clique (n : ℕ) (h : n > 1) :
     -- Adj (pathGraph n) ↑x ↑y
     simp [pathGraph]
     -- ↑x ⋖ ↑y ∨ ↑y ⋖ ↑x
-    have x_val : x.val.val = 0 ∨ x.val.val = 1 := by aesop
-    have i1 : x.val.val = 0 ↔ y.val.val = 1 := by aesop
-    have i2 : x.val.val = 1 ↔ y.val.val = 0 := by aesop
+    have : (x : ℕ) = 0 ↔ (y : ℕ) = 1 := by aesop
+    have : (x : ℕ) = 1 ↔ (y : ℕ) = 0 := by aesop
+    have x_val : (x : ℕ) = 0 ∨ (x : ℕ) = 1 := by aesop
     apply Or.elim x_val
-    · intro (x0 : x.val.val = 0)
-      have y1 : y.val.val = 1 := by rw [←i1, x0]
-      apply Or.inl
-      -- ↑x ⋖ ↑y
-      simp_all [Fin.coe_covby_iff.symm]
-      exact Nat.covby_iff_succ_eq.mpr rfl
-    · intro (x1 : x.val.val = 1)
-      have y0 : y.val.val = 0 := by rw [←i2, x1]
-      apply Or.inr
-      -- ↑y ⋖ ↑x
-      simp_all [Fin.coe_covby_iff.symm]
-      exact Nat.covby_iff_succ_eq.mpr rfl
-
+    repeat
+      intro _
+      simp_all [Fin.coe_covby_iff.symm, Nat.covby_iff_succ_eq.mpr rfl]
   simp_all [Finset.mem_singleton, Fin.mk.injEq, Finset.coe_insert,
             Finset.coe_singleton, Set.mem_singleton_iff]
 
