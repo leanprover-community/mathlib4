@@ -158,7 +158,7 @@ lemma smul_set_closure_subset (K : Set M) (L : Set X) :
       mem_nhds_prod_iff.1 A
   obtain ⟨x', ⟨x'a, x'K⟩⟩ : Set.Nonempty (a ∩ K) := mem_closure_iff_nhds.1 hx a ha
   obtain ⟨y', ⟨y'b, y'L⟩⟩ : Set.Nonempty (b ∩ L) := mem_closure_iff_nhds.1 hy b hb
-  refine ⟨x' • y', hab (Set.mk_mem_prod x'a y'b), Set.smul_mem_smul x'K y'L⟩
+  exact ⟨x' • y', hab (Set.mk_mem_prod x'a y'b), Set.smul_mem_smul x'K y'L⟩
 
 end SMul
 
