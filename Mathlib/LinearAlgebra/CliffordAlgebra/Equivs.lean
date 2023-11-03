@@ -588,7 +588,7 @@ def toDualQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂][
     ⟨mkDualQuaternion c₁ c₂, mkDualQuaternion_mul_mkDualQuaternion c₁ c₂⟩
 
 theorem toDualQuaternion_ι (v : (R × R) × R) :
-  toDualQuaternion c₁ c₂ (ι _ v) = mkDualQuaternion c₁ c₂ v := lift_ι_apply _ _ _
+    toDualQuaternion c₁ c₂ (ι _ v) = mkDualQuaternion c₁ c₂ v := lift_ι_apply _ _ _
 
 @[simp] theorem toDualQuaternion_i :
     toDualQuaternion c₁ c₂ i = TrivSqZeroExt.inl (QuaternionAlgebra.Basis.self R).i := by
