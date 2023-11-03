@@ -158,8 +158,6 @@ lemma exact_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) :
     S₁.Exact ↔ S₂.Exact :=
   ⟨exact_of_iso e, exact_of_iso e.symm⟩
 
-/-- new features -/
-
 lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
   toIsComplex := S.isComplex₀
   exact i hi := by simp at hi
