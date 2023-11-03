@@ -526,71 +526,23 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegularWRT.weaklyRegular_of_finite
 
-/-- If the restrictions of a measure to countably many sets covering the space are
-inner regular for some property `p` (which is invariant under finite unions) and all measurable
-sets, then the measure itself satisfies the same property. -/
+/-- If the restrictions of a measure to a monotone sequence of sets covering the space are
+inner regular for some property `p` and all measurable sets, then the measure itself satisfies
+the same property. -/
 lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
     (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet) (hm : ∀ n, MeasurableSet (s n))
-    (h'' : univ ⊆ ⋃ n, s n) : InnerRegularWRT μ p MeasurableSet := by
-  intro A hA r hr
-  -- Note that `A = ⋃ n, A ∩ disjointed s n`. We replace `A` with this sequence.
-  obtain ⟨A, hAm, hAs, hAd, rfl⟩ :
-    ∃ A' : ℕ → Set α,
-      (∀ n, MeasurableSet (A' n)) ∧
-        (∀ n, A' n ⊆ s n) ∧ Pairwise (Disjoint on A') ∧ A = ⋃ n, A' n := by
-    refine'
-      ⟨fun n => A ∩ disjointed s n, fun n => hA.inter (MeasurableSet.disjointed hm _), fun n =>
-        (inter_subset_right _ _).trans (disjointed_subset _ _),
-        (disjoint_disjointed s).mono fun k l hkl => hkl.mono inf_le_right inf_le_right, _⟩
-    rw [← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
-  have mu_eq : ∀ n, μ (A n) = μ.restrict (s n) (A n) := sorry
-  by_cases H : ∃ n, μ (A n) = ∞
-  · rcases H with ⟨n, hn⟩
-    have : r < μ.restrict (s n) (A n) := by
-      rw [← mu_eq n, hn]
-      exact hr.trans_le le_top
-    rcases h n (hAm n) _ this with ⟨K, hKA, hK, K_meas⟩
-    refine ⟨K, hKA.trans (subset_iUnion A n), hK, K_meas.trans_le ?_⟩
-    exact restrict_apply_le _ _
-  push_neg at H
-  have L : Tendsto (fun t => (∑ k in t, μ (A k))) atTop (𝓝 <| μ (⋃ n, A n)) := by
-    rw [measure_iUnion hAd hAm]
-    exact ENNReal.summable.hasSum
-  obtain ⟨t, ht⟩ : ∃ (t : Finset ℕ), r < ∑ k in t, μ (A k) := ((tendsto_order.1 L).1 r hr).exists
-  obtain ⟨ε, ε_pos, ε_ne_top, hε⟩ :
-    ∃ (ε : ℝ≥0∞), ε ≠ 0 ∧ ε ≠ ∞ ∧ r + t.card * ε < ∑ k in t, μ (A k) := sorry
-  have M (n : ℕ) : ∃ u ⊆ A n, p u ∧ μ (A n) < μ u + ε := by
-    rw [mu_eq n]
-    rcases (h n).exists_subset_lt_add sorry (hAm n) sorry ε_pos with ⟨K, hKA, hpK, hK⟩
-    refine ⟨K, hKA, hpK, hK.trans_le ?_⟩
-
-
-
-
-
-
-
-#exit
-
-  rcases ENNReal.exists_pos_sum_of_countable' (tsub_pos_iff_lt.2 hr).ne' ℕ with ⟨δ, δ0, hδε⟩
-  rw [lt_tsub_iff_right, add_comm] at hδε
-  have : ∀ n, ∃ (U : _) (_ : U ⊇ A n), IsOpen U ∧ μ U < μ (A n) + δ n := by
-    intro n
-    have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
-    have Ht : μ.restrict (s n) (A n) ≠ ⊤ := by
-      rw [H₁]
-      exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
-    rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
-    rw [H₁, H₁, inter_eq_self_of_subset_left (hAs _)] at hU
-    exact ⟨U ∩ s n, subset_inter hAU (hAs _), hUo.inter (h' n), hU⟩
-  choose U hAU hUo hU using this
-  refine' ⟨⋃ n, U n, iUnion_mono hAU, isOpen_iUnion hUo, _⟩
-  calc
-    μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
-    _ ≤ ∑' n, (μ (A n) + δ n) := (ENNReal.tsum_le_tsum fun n => (hU n).le)
-    _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
-    _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
-    _ < r := hδε
+    (hs : univ ⊆ ⋃ n, s n) (hmono : Monotone s) : InnerRegularWRT μ p MeasurableSet := by
+  intro F hF r hr
+  have hBc : ∀ n, MeasurableSet (F ∩ s n) := fun n ↦ hF.inter (hm n)
+  have hBU : ⋃ n, F ∩ s n = F := by  rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
+  have : μ F = ⨆ n, μ (F ∩ s n) := by
+    rw [← measure_iUnion_eq_iSup, hBU]
+    exact Monotone.directed_le fun m n h ↦ inter_subset_inter_right _ (hmono h)
+  rw [this] at hr
+  rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
+  rw [← restrict_apply hF] at hn
+  rcases h n hF _ hn with ⟨K, KF, hKp, hK⟩
+  refine ⟨K, KF, hKp, hK.trans_le (restrict_apply_le _ _)⟩
 
 /-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
 inside by closed sets. -/
