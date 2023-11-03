@@ -49,45 +49,6 @@ open BigOperators
 namespace Nat
 variable {a b m n p : ℕ}
 
-/-- The prime factors of a natural number as a finset. -/
-@[pp_dot] def primeFactors (n : ℕ) : Finset ℕ := n.factors.toFinset
-
-@[simp] lemma toFinset_factors (n : ℕ) : n.factors.toFinset = n.primeFactors := rfl
-
-@[simp] lemma mem_primeFactors : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
-  simp_rw [←toFinset_factors, List.mem_toFinset, mem_factors']
-
-lemma mem_primeFactors_of_ne_zero (hn : n ≠ 0) : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n := by
-  simp [hn]
-
-lemma primeFactors_mono (hmn : m ∣ n) (hn : n ≠ 0) : primeFactors m ⊆ primeFactors n := by
-  simp only [subset_iff, mem_primeFactors, and_imp]
-  exact fun p hp hpm _ ↦ ⟨hp, hpm.trans hmn, hn⟩
-
-lemma mem_primeFactors_iff_mem_factors : p ∈ n.primeFactors ↔ p ∈ n.factors := by
-  simp only [primeFactors, List.mem_toFinset]
-
-lemma prime_of_mem_primeFactors (hp : p ∈ n.primeFactors) : p.Prime := (mem_primeFactors.1 hp).1
-lemma dvd_of_mem_primeFactors (hp : p ∈ n.primeFactors) : p ∣ n := (mem_primeFactors.1 hp).2.1
-
-lemma pos_of_mem_primeFactors (hp : p ∈ n.primeFactors) : 0 < p :=
-  (prime_of_mem_primeFactors hp).pos
-
-lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
-  le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt $ dvd_of_mem_primeFactors h
-
-@[simp] lemma primeFactors_zero : primeFactors 0 = ∅ := rfl
-@[simp] lemma primeFactors_one : primeFactors 0 = ∅ := rfl
-
-lemma primeFactors_mul (ha : a ≠ 0) (hb : b ≠ 0) :
-    (a * b).primeFactors = a.primeFactors ∪ b.primeFactors := by
-  ext
-  simp only [Finset.mem_union, mem_primeFactors_iff_mem_factors, mem_factors_mul ha hb]
-
-lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
-    (a.gcd b).primeFactors = a.primeFactors ∩ b.primeFactors := by
-  ext; simp [dvd_gcd_iff, ha, hb, gcd_ne_zero_left ha]; aesop
-
 /-- `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
  mapping each prime factor of `n` to its multiplicity in `n`. -/
 def factorization (n : ℕ) : ℕ →₀ ℕ where
