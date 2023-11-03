@@ -69,6 +69,7 @@ instance : CommSemiring N₃ where
   mul_zero := by rintro ⟨⟩ <;> rfl
   one_mul := by rintro ⟨⟩ <;> rfl
   mul_one := by rintro ⟨⟩ <;> rfl
+  nsmul := nsmulRec
 
 theorem X_add_two_mul_X_add_two : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
   simp only [mul_add, add_mul, X_mul, add_assoc]
