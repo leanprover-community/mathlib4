@@ -76,6 +76,8 @@ theorem image_restrict (f : α → β) (s t : Set α) :
   rw [restrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
 #align set.image_restrict Set.image_restrict
 
+@[simp] theorem restrict_id (s : Set α) : s.restrict id = Subtype.val := rfl
+
 @[simp]
 theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ (a) (_ : a ∉ s), β) :

@@ -106,7 +106,7 @@ The definition is marked as protected to avoid conflicts with `_root_.rank`,
 the rank of a linear map.
 -/
 protected irreducible_def Module.rank : Cardinal :=
-  ⨆ ι : { s : Set V // LinearIndependent K (s.restrict id) }, (#ι.1)
+  ⨆ ι : { s : Set V // LinearIndependent K s.incl }, (#ι.1)
 #align module.rank Module.rank
 
 end
@@ -138,7 +138,7 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 #align linear_map.rank_le_of_injective LinearMap.rank_le_of_injective
 
 theorem rank_le {n : ℕ}
-    (H : ∀ s : Finset M, (LinearIndependent R ((s : Set M).restrict id)) → s.card ≤ n) :
+    (H : ∀ s : Finset M, (LinearIndependent R (s : Set M).incl) → s.card ≤ n) :
     Module.rank R M ≤ n := by
   rw [Module.rank_def]
   apply ciSup_le'
@@ -265,7 +265,7 @@ theorem cardinal_le_rank_of_linearIndependent {ι : Type v} {v : ι → M}
 #align cardinal_le_rank_of_linear_independent cardinal_le_rank_of_linearIndependent
 
 theorem cardinal_le_rank_of_linearIndependent' {s : Set M}
-    (hs : LinearIndependent R (s.restrict id)) : #s ≤ Module.rank R M :=
+    (hs : LinearIndependent R s.incl) : #s ≤ Module.rank R M :=
   cardinal_le_rank_of_linearIndependent hs
 #align cardinal_le_rank_of_linear_independent' cardinal_le_rank_of_linearIndependent'
 
@@ -308,7 +308,7 @@ theorem LinearIndependent.finite_of_isNoetherian [IsNoetherian R M] {v : ι → 
 #align linear_independent.finite_of_is_noetherian LinearIndependent.finite_of_isNoetherian
 
 theorem LinearIndependent.set_finite_of_isNoetherian [IsNoetherian R M] {s : Set M}
-    (hi : LinearIndependent R (s.restrict id)) : s.Finite :=
+    (hi : LinearIndependent R s.incl) : s.Finite :=
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 #align linear_independent.set_finite_of_is_noetherian LinearIndependent.set_finite_of_isNoetherian
 
@@ -393,7 +393,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     · congr
       exact i.injective z
   -- The key step in the proof is checking that this strictly larger family is linearly independent.
-  have i' : LinearIndependent R ((range v').restrict id) := by
+  have i' : LinearIndependent R (range v').incl := by
     rw [linearIndependent_subtype_range inj', linearIndependent_iff]
     intro l z
     rw [Finsupp.total_option] at z
@@ -474,7 +474,7 @@ variable [Ring R] [AddCommGroup M] [Module R M]
 @[simp]
 theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
   haveI := Module.subsingleton R M
-  have _ : Nonempty { s : Set M // LinearIndependent R (s.restrict id) } :=
+  have _ : Nonempty { s : Set M // LinearIndependent R s.incl } :=
     ⟨⟨∅, linearIndependent_empty _ _⟩⟩
   rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
   · rintro ⟨s, hs⟩
@@ -494,7 +494,7 @@ theorem rank_pos [Nontrivial M] : 0 < Module.rank R M := by
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   suffices 1 ≤ Module.rank R M by exact zero_lt_one.trans_le this
   letI := Module.nontrivial R M
-  suffices LinearIndependent R fun y : ({x} : Set M) => (y : M) by
+  suffices LinearIndependent R ({x} : Set M).incl by
     simpa using cardinal_le_rank_of_linearIndependent this
   exact linearIndependent_singleton hx
 #align rank_pos rank_pos
@@ -1242,7 +1242,7 @@ theorem Basis.ofRankEqZero_apply {ι : Type*} [IsEmpty ι] (hV : Module.rank K V
 #align basis.of_rank_eq_zero_apply Basis.ofRankEqZero_apply
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
-    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K (s.restrict id) := by
+    c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndependent K s.incl := by
   constructor
   · intro h
     let t := Basis.ofVectorSpace K V
@@ -1254,7 +1254,7 @@ theorem le_rank_iff_exists_linearIndependent {c : Cardinal} :
 #align le_rank_iff_exists_linear_independent le_rank_iff_exists_linearIndependent
 
 theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} : ↑n ≤ Module.rank K V ↔
-    ∃ s : Finset V, s.card = n ∧ LinearIndependent K ((s : Set V).restrict id) := by
+    ∃ s : Finset V, s.card = n ∧ LinearIndependent K (s : Set V).incl := by
   simp only [le_rank_iff_exists_linearIndependent, Cardinal.mk_set_eq_nat_iff_finset]
   constructor
   · rintro ⟨s, ⟨t, rfl, rfl⟩, si⟩
@@ -1446,7 +1446,7 @@ theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V, Cardinal.lift.{v'} #s =
-    Cardinal.lift.{v} c ∧ LinearIndependent K fun x : s => f x := by
+    Cardinal.lift.{v} c ∧ LinearIndependent K (s.restrict f) := by
   rcases f.rangeRestrict.exists_rightInverse_of_surjective f.range_rangeRestrict with ⟨g, hg⟩
   have fg : LeftInverse f.rangeRestrict g := LinearMap.congr_fun hg
   refine' ⟨fun h => _, _⟩

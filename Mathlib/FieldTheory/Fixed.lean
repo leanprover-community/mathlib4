@@ -123,7 +123,7 @@ theorem coe_algebraMap :
 #align fixed_points.coe_algebra_map FixedPoints.coe_algebraMap
 
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
-    (LinearIndependent (FixedPoints.subfield G F) ((s : Set F).restrict id)) →
+    (LinearIndependent (FixedPoints.subfield G F) (s : Set F).incl) →
       LinearIndependent F ((s : Set F).restrict (MulAction.toFun G F)) := by
   haveI : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine' Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => _

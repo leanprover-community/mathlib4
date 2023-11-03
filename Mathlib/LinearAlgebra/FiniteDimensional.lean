@@ -300,7 +300,7 @@ theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v 
 #align finite_dimensional.lt_aleph_0_of_linear_independent FiniteDimensional.lt_aleph0_of_linearIndependent
 
 theorem _root_.LinearIndependent.finite [FiniteDimensional K V] {b : Set V}
-    (h : LinearIndependent K (b.restrict id)) : b.Finite :=
+    (h : LinearIndependent K b.incl) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp (FiniteDimensional.lt_aleph0_of_linearIndependent h)
 #align linear_independent.finite LinearIndependent.finite
 
@@ -351,7 +351,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     (h : finrank K S = finrank K V) : S = ⊤ := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
-  have : LinearIndependent K (((↑) '' Basis.ofVectorSpaceIndex K S : Set V).restrict id) :=
+  have : LinearIndependent K ((↑) '' Basis.ofVectorSpaceIndex K S : Set V).incl :=
     @LinearIndependent.image_subtype _ _ _ _ _ _ _ _ _ (Submodule.subtype S)
       (by simpa using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq

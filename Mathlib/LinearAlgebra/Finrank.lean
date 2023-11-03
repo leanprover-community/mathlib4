@@ -172,7 +172,7 @@ section DivisionRing
 variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
   [Module K V₂]
 
-theorem Basis.subset_extend {s : Set V} (hs : LinearIndependent K (s.restrict id)) :
+theorem Basis.subset_extend {s : Set V} (hs : LinearIndependent K s.incl) :
     s ⊆ hs.extend (Set.subset_univ _) :=
   hs.subset_extend _
 #align finite_dimensional.basis.subset_extend FiniteDimensional.Basis.subset_extend
@@ -347,7 +347,7 @@ theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → V} (hb : Line
 #align finrank_span_eq_card finrank_span_eq_card
 
 theorem finrank_span_set_eq_card (s : Set V) [Fintype s]
-    (hs : LinearIndependent K (s.restrict id)) : finrank K (span K s) = s.toFinset.card :=
+    (hs : LinearIndependent K s.incl) : finrank K (span K s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
       have : Module.rank K (span K s) = #s := rank_span_set hs
@@ -355,7 +355,7 @@ theorem finrank_span_set_eq_card (s : Set V) [Fintype s]
 #align finrank_span_set_eq_card finrank_span_set_eq_card
 
 theorem finrank_span_finset_eq_card (s : Finset V)
-    (hs : LinearIndependent K ((s : Set V).restrict id)) :
+    (hs : LinearIndependent K (s : Set V).incl) :
     finrank K (span K (s : Set V)) = s.card := by
   convert finrank_span_set_eq_card (s : Set V) hs
   ext
@@ -499,7 +499,7 @@ theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι �
 @[simps! repr_apply]
 noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
     (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis {x // x ∈ s} K V :=
-  basisOfTopLeSpanOfCardEqFinrank ((s : Set V).restrict id)
+  basisOfTopLeSpanOfCardEqFinrank (s : Set V).incl
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
 #align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
@@ -508,7 +508,7 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
 @[simps! repr_apply]
 noncomputable def setBasisOfTopLeSpanOfCardEqFinrank {s : Set V} [Fintype s]
     (le_span : ⊤ ≤ span K s) (card_eq : s.toFinset.card = finrank K V) : Basis s K V :=
-  basisOfTopLeSpanOfCardEqFinrank (s.restrict id) ((@Subtype.range_coe_subtype _ s).symm ▸ le_span)
+  basisOfTopLeSpanOfCardEqFinrank s.incl ((@Subtype.range_coe_subtype _ s).symm ▸ le_span)
     (_root_.trans s.toFinset_card.symm card_eq)
 #align set_basis_of_top_le_span_of_card_eq_finrank setBasisOfTopLeSpanOfCardEqFinrank
 

@@ -48,24 +48,24 @@ namespace Basis
 section ExistsBasis
 
 /-- If `s` is a linear independent set of vectors, we can extend it to a basis. -/
-noncomputable def extend (hs : LinearIndependent K (s.restrict id)) :
+noncomputable def extend (hs : LinearIndependent K s.incl) :
     Basis (hs.extend (subset_univ s)) K V :=
   Basis.mk
     (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
     (SetLike.coe_subset_coe.mp <| by simpa using hs.subset_span_extend (subset_univ s))
 #align basis.extend Basis.extend
 
-theorem extend_apply_self (hs : LinearIndependent K (s.restrict id)) (x : hs.extend _) :
+theorem extend_apply_self (hs : LinearIndependent K s.incl) (x : hs.extend _) :
     Basis.extend hs x = x :=
   Basis.mk_apply _ _ _
 #align basis.extend_apply_self Basis.extend_apply_self
 
 @[simp]
-theorem coe_extend (hs : LinearIndependent K (s.restrict id)) :
+theorem coe_extend (hs : LinearIndependent K s.incl) :
     ⇑(Basis.extend hs) = (Set.restrict _ id) := funext (extend_apply_self hs)
 #align basis.coe_extend Basis.coe_extend
 
-theorem range_extend (hs : LinearIndependent K (s.restrict id)) :
+theorem range_extend (hs : LinearIndependent K s.incl) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   simp [coe_extend]
 #align basis.range_extend Basis.range_extend
@@ -92,7 +92,7 @@ noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExte
           Equiv.Set.sumDiffSubset (hs.to_subtype_range.subset_extend _)
 #align basis.sum_extend Basis.sumExtend
 
-theorem subset_extend {s : Set V} (hs : LinearIndependent K (s.restrict id)) :
+theorem subset_extend {s : Set V} (hs : LinearIndependent K s.incl) :
     s ⊆ hs.extend (Set.subset_univ _) :=
   hs.subset_extend _
 #align basis.subset_extend Basis.subset_extend
@@ -121,12 +121,12 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
 #align basis.of_vector_space_apply_self Basis.ofVectorSpace_apply_self
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = (Set.restrict _ id) :=
+theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = (Set.incl _) :=
   funext fun x => ofVectorSpace_apply_self K V x
 #align basis.coe_of_vector_space Basis.coe_ofVectorSpace
 
 theorem ofVectorSpaceIndex.linearIndependent :
-    LinearIndependent K ((ofVectorSpaceIndex K V).restrict id) := by
+    LinearIndependent K ((ofVectorSpaceIndex K V).incl) := by
   convert (ofVectorSpace K V).linearIndependent
   ext x
   rw [restrict_apply, id_eq, ofVectorSpace_apply_self]

@@ -431,7 +431,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     -- `e` is a `K`-basis of `E` formed of vectors of `b`
     let e : Basis t K E := Basis.mk ht_lin (by simp [ht_span, h_spanE])
     have : Fintype t := Set.Finite.fintype ((Set.range b).toFinite.subset ht_inc)
-    have h : LinearIndependent ℤ ((Set.range b).restrict id) := by
+    have h : LinearIndependent ℤ (Set.range b).incl := by
       rwa [linearIndependent_subtype_range (Subtype.coe_injective.comp b₀.injective)]
     contrapose! h
     -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
@@ -445,7 +445,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
         finrank_span_set_eq_card _ ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
-    suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
+    suffices ¬ LinearIndependent ℤ (insert v (Set.range e)).incl by
       contrapose! this
       refine LinearIndependent.mono ?_ this
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [ht_inc])
