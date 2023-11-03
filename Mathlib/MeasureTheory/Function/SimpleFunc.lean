@@ -256,7 +256,7 @@ theorem piecewise_empty (f g : α →ₛ β) : piecewise ∅ MeasurableSet.empty
 @[simp]
 theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
     piecewise s hs f f = f :=
-  FunLike.coe_injective <| Set.piecewise_same _ _
+  coe_injective <| Set.piecewise_same _ _
 
 theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α →ₛ β) :
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
