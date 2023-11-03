@@ -481,14 +481,14 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K < volume (con
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K) < volume (convexBodySum K B)) :
-    ∃ (a : 𝓞 K), a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ ((finrank ℚ K : ℝ)⁻¹ * B) ^ (finrank ℚ K) := by
+    ∃ (a : 𝓞 K), a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
   have hB : 0 ≤ B := by
     contrapose! h
     rw [convexBodySum_empty K h, measure_empty]
     exact zero_le (minkowskiBound K)
   -- Some inequalities that will be useful later on
   have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
-  have h2 : 0 ≤ (finrank ℚ K : ℝ)⁻¹ * B := mul_nonneg (le_of_lt h1) hB
+  have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
   have h_fund := Zspan.isAddFundamentalDomain (latticeBasis K) volume
   have : Countable (Submodule.span ℤ (Set.range (latticeBasis K))).toAddSubgroup := by
     change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
@@ -501,10 +501,10 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
   · rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
     exact Subtype.ne_of_val_ne h_nzr
   · rw [← rpow_nat_cast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
-    (rpow_nonneg_of_nonneg h2 _) h1, ← rpow_mul h2, mul_inv_cancel (Nat.cast_ne_zero.mpr
-    (ne_of_gt finrank_pos)), rpow_one, ← inv_mul_le_iff h1]
+      (rpow_nonneg_of_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
+      (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
     refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
-    rw [inv_mul_le_iff h1, ← sum_mult_eq, Nat.cast_sum]
+    rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]
     refine le_trans ?_ (geom_mean_le_arith_mean Finset.univ _ _ (fun _ _ => Nat.cast_nonneg _)
       ?_ (fun _ _ => AbsoluteValue.nonneg _ _))
     · simp_rw [← prod_eq_abs_norm, rpow_nat_cast]
