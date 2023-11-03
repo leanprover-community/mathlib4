@@ -95,10 +95,10 @@ theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
 /-- `ε` commutes with every element of the algebra. -/
 theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
 
-/-- For two algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the elements
+/-- For two `R`-algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the elements
 of `A` and the `A`-multiples of `ε`. -/
-@[ext]
-theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+@[ext 1100]
+nonrec theorem algHom_ext' {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     ⦃f g : A[ε] →ₐ[R] B⦄
     (hinl : f.comp (inlAlgHom _ _ _) = g.comp (inlAlgHom _ _ _))
     (hinr : f.toLinearMap ∘ₗ (LinearMap.toSpanSingleton A A[ε] ε).restrictScalars R =
@@ -108,6 +108,15 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] 
     ext a
     show f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using FunLike.congr_fun hinr a)
+
+/-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
+@[ext 1200]
+nonrec theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A]
+    ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) :
+      f = g := by
+  ext <;> dsimp
+  · exact (f.commutes _).trans (g.commutes _).symm
+  · simp only [one_smul, hε]
 #align dual_number.alg_hom_ext DualNumber.algHom_ext
 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
