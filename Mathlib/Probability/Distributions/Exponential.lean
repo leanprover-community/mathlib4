@@ -38,8 +38,8 @@ lemma comp_of_ge : {x : ℝ | x ≥ 0}ᶜ =  {x | x < 0} := by
 
   /-- A Lebesgue Integral from -∞ to y can be expressed
     as the sum of one from -∞ to 0 and 0 to x-/
-lemma lintegral_split_bounded {y z : ℝ}(f: ℝ → ENNReal) (ygez: z ≤ y) :
-    ∫⁻ (x : ℝ) in Set.Iic y, f x  =  (∫⁻ (x : ℝ) in Set.Iio z, f x) +  ∫⁻ (x : ℝ) in Set.Icc z y, f x := by
+lemma lint_split_bounded {y z : ℝ}(f: ℝ → ENNReal) (ygez: z ≤ y) : ∫⁻ (x : ℝ) in Set.Iic y, f x =
+    (∫⁻ (x : ℝ) in Set.Iio z, f x) +  ∫⁻ (x : ℝ) in Set.Icc z y, f x := by
   have union : Set.Iic y = Set.Iio z ∪ Set.Icc z y := by
     ext x; constructor
     · simp only [Set.mem_Iic, ge_iff_le, not_le, gt_iff_lt, Set.mem_union, Set.mem_Iio, Set.mem_Icc]
@@ -284,7 +284,7 @@ lemma lint_eq_antiDeriv (rate : ℝ) (ratePos: 0 < rate) : ∀ x:ℝ,
   refine ae_of_all ℙ ?_; intro a ha; simp only [Set.mem_Iic] at ha;
   simp only [ge_iff_le, ENNReal.ofReal_eq_zero]
   rw [if_neg]; linarith
-  rw [lintegral_split_bounded _ h, lintegral_nonpos _ (le_refl 0), ENNReal.ofReal_zero, zero_add];
+  rw [lint_split_bounded _ h, lintegral_nonpos _ (le_refl 0), ENNReal.ofReal_zero, zero_add];
   unfold exponentialPdf exponentialPdfReal;
   rw[set_lintegral_congr_fun (g:=(fun x => ENNReal.ofReal (rate * rexp (-(rate * x)))))
     measurableSet_Icc ?ifpos]
