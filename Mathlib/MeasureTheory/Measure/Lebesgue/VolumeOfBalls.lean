@@ -117,9 +117,11 @@ end move_me
 
 namespace MeasureTheory
 
-open MeasureTheory.Measure FiniteDimensional ENNReal -- TODO: propagate
+open MeasureTheory.Measure FiniteDimensional ENNReal Filter
 
-section main_result
+open scoped Topology
+
+noncomputable section main_result
 
 theorem measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
@@ -138,12 +140,13 @@ theorem measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
     mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_toReal]
   exact ne_of_lt measure_ball_lt_top
 
-theorem measure_lt_one_eq_integral_div_gamma {E : Type*}
-    [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [mE : MeasurableSpace E]
-    [tE : TopologicalSpace E] [TopologicalAddGroup E] [BorelSpace E] [T2Space E]
-    [Nontrivial E] [ContinuousSMul ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
-    {g : E → ℝ} (hg0 : g 0 = 0) (hgn : ∀ x, g (- x) = g x) (hgt : ∀ x y, g (x + y) ≤ g x + g y)
-    (hgs : ∀ {x}, g x = 0 → x = 0) (hns :  ∀ r x, g (r • x) ≤ |r| * (g x)) {p : ℝ} (hp : 0 < p) :
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [mE : MeasurableSpace E]
+  [tE : TopologicalSpace E] [TopologicalAddGroup E] [BorelSpace E] [T2Space E] [Nontrivial E]
+  [ContinuousSMul ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {g : E → ℝ} (h1 : g 0 = 0)
+  (h2 : ∀ x, g (- x) = g x) (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
+  (h5 :  ∀ r x, g (r • x) ≤ |r| * (g x))
+
+theorem measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     μ {x : E | g x < 1} =
       .ofReal ((∫ (x : E), Real.exp (- (g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
@@ -151,14 +154,14 @@ theorem measure_lt_one_eq_integral_div_gamma {E : Type*}
   letI : NormedAddCommGroup F :=
   { norm := g
     dist := fun x y => g (x - y)
-    dist_self := by simp only [_root_.sub_self, hg0, forall_const]
-    dist_comm := fun _ _ => by dsimp [dist]; rw [← hgn, neg_sub]
-    dist_triangle := fun x y z => by convert hgt (x - y) (y - z) using 1; abel_nf
+    dist_self := by simp only [_root_.sub_self, h1, forall_const]
+    dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
+    dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; abel_nf
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
-    eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (hgs h) }
+    eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
   letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ =>  hns _ _ }
+  { norm_smul_le := fun _ _ =>  h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
@@ -187,6 +190,54 @@ theorem measure_lt_one_eq_integral_div_gamma {E : Type*}
       @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
     erw [← this.integral_comp (@MeasurableEquiv.measurableEmbedding E F mE _ ψ)]
     rfl
+
+-- TODO. I don't know how to prove that without duplicating most of the previous proof...
+theorem measure_le_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
+    μ {x : E | g x ≤ 1} =
+      .ofReal ((∫ (x : E), Real.exp (- (g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
+  -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
+  letI F : Type _ := E
+  letI : NormedAddCommGroup F :=
+  { norm := g
+    dist := fun x y => g (x - y)
+    dist_self := by simp only [_root_.sub_self, h1, forall_const]
+    dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
+    dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; abel_nf
+    edist := fun x y => .ofReal (g (x - y))
+    edist_dist := fun _ _ => rfl
+    eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
+  letI : NormedSpace ℝ F :=
+  { norm_smul_le := fun _ _ =>  h5 _ _ }
+  -- We put the new topology on F
+  letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
+  letI : MeasurableSpace F := borel F
+  have : BorelSpace F := { measurable_eq := rfl }
+  -- The map between `E` and `F` as a continuous linear equivalence
+  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
+    (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
+  -- The measure `ν` is the measure on `F` defined by `μ`
+  -- Since we have two different topologies, it is necessary to specify the topology of E
+  let ν : Measure F := @Measure.map E F _ mE φ μ
+  have : IsAddHaarMeasure ν :=
+    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ _ mE _ _ _
+      φ μ _
+  convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
+  · rw [← addHaar_closedBall_eq_addHaar_ball,
+      @Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
+    · congr!
+      simp_rw [Metric.closedBall, dist_zero_right]
+      rfl
+    · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
+      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
+  · -- The map between `E` and `F` as a measurable equivalence
+    let ψ := @Homeomorph.toMeasurableEquiv E F tE mE _ _ _ _
+      (@ContinuousLinearEquiv.toHomeomorph ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ)
+    -- The map `ψ` is measure preserving by construction
+    have : @MeasurePreserving E F mE _ ψ μ ν :=
+      @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
+    erw [← this.integral_comp (@MeasurableEquiv.measurableEmbedding E F mE _ ψ)]
+    rfl
+
 end main_result
 
 section Complex
