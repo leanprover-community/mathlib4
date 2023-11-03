@@ -1065,7 +1065,7 @@ section Int
 
 variable {R : Type*} [NonUnitalNonAssocRing R]
 
-/-- A non-unital subring is a non-unital subalgebra. -/
+/-- A non-unital subring is a non-unital `ℤ`-subalgebra. -/
 def nonUnitalSubalgebraOfNonUnitalSubring (S : NonUnitalSubring R) : NonUnitalSubalgebra ℤ R where
   toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
   smul_mem' n _x hx := zsmul_mem (K := S) hx n
