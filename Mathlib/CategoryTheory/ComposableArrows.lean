@@ -14,6 +14,17 @@ to the type of functors `Fin (n + 1) ⥤ C`, which can be thought as families of
 arrows in `C`. In this file, we introduce and study this category `ComposableArrows C n`
 of `n` composable arrows in `C`.
 
+If `F : ComposableArrows C n`, we define `F.left` as the leftmost object, `F.right` as the
+rightmost object, and `F.hom : F.left ⟶ F.right` is the canonical map.
+
+The most significant definition in this file is the constructor
+`F.precomp f : ComposableArrows C (n + 1)` for `F : ComposableArrows C n` and `f : X ⟶ F.left`:
+"it shifts `F` towards the right and inserts `f` on the left". This `precomp` has
+good definitional properties.
+
+In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
+like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
+
 TODO (@joelriou):
 * define various constructors for objects, morphisms, isomorphisms in `ComposableArrows C n`
 * redefine `Arrow C` as `ComposableArrow C 1`?
