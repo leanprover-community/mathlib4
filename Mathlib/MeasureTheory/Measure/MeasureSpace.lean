@@ -1608,6 +1608,9 @@ theorem le_restrict_apply (s t : Set α) : μ (t ∩ s) ≤ μ.restrict s t :=
     _ ≤ μ.restrict s t := measure_mono (inter_subset_left _ _)
 #align measure_theory.measure.le_restrict_apply MeasureTheory.Measure.le_restrict_apply
 
+theorem restrict_apply_le (s t : Set α) : μ.restrict s t ≤ μ t :=
+  Measure.le_iff'.1 restrict_le_self _
+
 theorem restrict_apply_superset (h : s ⊆ t) : μ.restrict s t = μ s :=
   ((measure_mono (subset_univ _)).trans_eq <| restrict_apply_univ _).antisymm
     ((restrict_apply_self μ s).symm.trans_le <| measure_mono h)
@@ -3890,7 +3893,7 @@ instance IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measu
 
 instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {s : Set α} : IsFiniteMeasureOnCompacts (μ.restrict s) :=
-  ⟨fun k hk ↦ (Measure.le_iff'.1 restrict_le_self k).trans_lt hk.measure_lt_top⟩
+  ⟨fun k hk ↦ (restrict_apply_le _ _).trans_lt hk.measure_lt_top⟩
 
 /-- Note this cannot be an instance because it would form a typeclass loop with
 `isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure`. -/

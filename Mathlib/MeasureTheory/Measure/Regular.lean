@@ -526,6 +526,72 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegularWRT.weaklyRegular_of_finite
 
+/-- If the restrictions of a measure to countably many sets covering the space are
+inner regular for some property `p` (which is invariant under finite unions) and all measurable
+sets, then the measure itself satisfies the same property. -/
+lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
+    (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet) (hm : ∀ n, MeasurableSet (s n))
+    (h'' : univ ⊆ ⋃ n, s n) : InnerRegularWRT μ p MeasurableSet := by
+  intro A hA r hr
+  -- Note that `A = ⋃ n, A ∩ disjointed s n`. We replace `A` with this sequence.
+  obtain ⟨A, hAm, hAs, hAd, rfl⟩ :
+    ∃ A' : ℕ → Set α,
+      (∀ n, MeasurableSet (A' n)) ∧
+        (∀ n, A' n ⊆ s n) ∧ Pairwise (Disjoint on A') ∧ A = ⋃ n, A' n := by
+    refine'
+      ⟨fun n => A ∩ disjointed s n, fun n => hA.inter (MeasurableSet.disjointed hm _), fun n =>
+        (inter_subset_right _ _).trans (disjointed_subset _ _),
+        (disjoint_disjointed s).mono fun k l hkl => hkl.mono inf_le_right inf_le_right, _⟩
+    rw [← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
+  have mu_eq : ∀ n, μ (A n) = μ.restrict (s n) (A n) := sorry
+  by_cases H : ∃ n, μ (A n) = ∞
+  · rcases H with ⟨n, hn⟩
+    have : r < μ.restrict (s n) (A n) := by
+      rw [← mu_eq n, hn]
+      exact hr.trans_le le_top
+    rcases h n (hAm n) _ this with ⟨K, hKA, hK, K_meas⟩
+    refine ⟨K, hKA.trans (subset_iUnion A n), hK, K_meas.trans_le ?_⟩
+    exact restrict_apply_le _ _
+  push_neg at H
+  have L : Tendsto (fun t => (∑ k in t, μ (A k))) atTop (𝓝 <| μ (⋃ n, A n)) := by
+    rw [measure_iUnion hAd hAm]
+    exact ENNReal.summable.hasSum
+  obtain ⟨t, ht⟩ : ∃ (t : Finset ℕ), r < ∑ k in t, μ (A k) := ((tendsto_order.1 L).1 r hr).exists
+  obtain ⟨ε, ε_pos, ε_ne_top, hε⟩ :
+    ∃ (ε : ℝ≥0∞), ε ≠ 0 ∧ ε ≠ ∞ ∧ r + t.card * ε < ∑ k in t, μ (A k) := sorry
+  have M (n : ℕ) : ∃ u ⊆ A n, p u ∧ μ (A n) < μ u + ε := by
+    rw [mu_eq n]
+    rcases (h n).exists_subset_lt_add sorry (hAm n) sorry ε_pos with ⟨K, hKA, hpK, hK⟩
+    refine ⟨K, hKA, hpK, hK.trans_le ?_⟩
+
+
+
+
+
+
+
+#exit
+
+  rcases ENNReal.exists_pos_sum_of_countable' (tsub_pos_iff_lt.2 hr).ne' ℕ with ⟨δ, δ0, hδε⟩
+  rw [lt_tsub_iff_right, add_comm] at hδε
+  have : ∀ n, ∃ (U : _) (_ : U ⊇ A n), IsOpen U ∧ μ U < μ (A n) + δ n := by
+    intro n
+    have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
+    have Ht : μ.restrict (s n) (A n) ≠ ⊤ := by
+      rw [H₁]
+      exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
+    rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
+    rw [H₁, H₁, inter_eq_self_of_subset_left (hAs _)] at hU
+    exact ⟨U ∩ s n, subset_inter hAU (hAs _), hUo.inter (h' n), hU⟩
+  choose U hAU hUo hU using this
+  refine' ⟨⋃ n, U n, iUnion_mono hAU, isOpen_iUnion hUo, _⟩
+  calc
+    μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
+    _ ≤ ∑' n, (μ (A n) + δ n) := (ENNReal.tsum_le_tsum fun n => (hU n).le)
+    _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
+    _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
+    _ < r := hδε
+
 /-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
 inside by closed sets. -/
 theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetrizableSpace X]
@@ -638,7 +704,11 @@ theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K
   simp_rw [Ne.def, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
 
+
+
 end InnerRegular
+
+#exit
 
 namespace InnerRegularCompactLTTop
 
@@ -725,7 +795,7 @@ protected lemma _root_.IsCompact.measure_eq_infi_isOpen [InnerRegularCompactLTTo
     ⟨(measure_mono interior_subset).trans_lt L_comp.measure_lt_top⟩
   obtain ⟨U, KU, U_open, hU⟩ : ∃ U, K ⊆ U ∧ IsOpen U ∧ μ.restrict (interior L) U < r := by
     apply exists_isOpen_lt_of_lt K r
-    exact lt_of_le_of_lt (Measure.le_iff'.1 restrict_le_self _) hr
+    exact (restrict_apply_le _ _).trans_lt hr
   refine ⟨U ∩ interior L, subset_inter KU KL, U_open.inter isOpen_interior, ?_⟩
   rwa [restrict_apply U_open.measurableSet] at hU
 
@@ -756,6 +826,9 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
 instance smul_nnreal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
     InnerRegularCompactLTTop (c • μ) :=
   inferInstanceAs (InnerRegularCompactLTTop ((c : ℝ≥0∞) • μ))
+
+instance (priority := 80) [InnerRegularCompactLTTop μ] [SigmaFinite μ] : InnerRegular μ :=
+  ⟨InnerRegularCompactLTTop.innerRegular.trans InnerRegularWRT.of_sigmaFinite⟩
 
 end InnerRegularCompactLTTop
 
@@ -921,9 +994,6 @@ theorem restrict_of_measure_ne_top [ClosableCompactSubsetOpenSpace α] [BorelSpa
 
 end Regular
 
-instance (priority := 100) [Regular μ] [SigmaFinite μ] : InnerRegular μ :=
-  ⟨InnerRegularCompactLTTop.innerRegular.trans InnerRegularWRT.of_sigmaFinite⟩
-
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a `σ`-compact pseudometrizable space is regular. -/
 instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure {X : Type*}
@@ -940,6 +1010,10 @@ example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCounta
 
 example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
     (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := by infer_instance
+
+example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
+    (μ : Measure α) [SigmaFinite μ] : InnerRegular μ := by infer_instance
+
 
 end Measure
 
