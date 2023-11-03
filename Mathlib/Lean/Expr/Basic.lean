@@ -103,7 +103,7 @@ def isInternal' (declName : Name) : Bool :=
 open Meta
 
 -- from Lean.Server.Completion
-def isBlackListed (declName : Name) : CoreM Bool := do
+def isBlackListed {m} [Monad m] [MonadEnv m] (declName : Name) : m Bool := do
   if declName == ``sorryAx then return true
   if declName matches .str _ "inj" then return true
   if declName matches .str _ "noConfusionType" then return true

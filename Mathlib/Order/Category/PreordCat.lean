@@ -105,8 +105,8 @@ def preordCatToCat : PreordCat.{u} ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align Preord_to_Cat preordCatToCat
 
-instance : Faithful preordCatToCat.{u}
-    where map_injective h := by ext x; exact Functor.congr_obj h x
+instance : Faithful preordCatToCat.{u} where
+  map_injective h := by ext x; exact Functor.congr_obj h x
 
 instance : Full preordCatToCat.{u} where
   preimage {X Y} f := ⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩

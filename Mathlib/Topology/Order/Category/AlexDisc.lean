@@ -3,9 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.PreordCat
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Order.UpperLowerSetTopology
+import Mathlib.Topology.Specialization
 
 /-!
 # Category of Alexandrov-discrete topological spaces
@@ -56,3 +54,13 @@ def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where
   inv_hom_id := FunLike.ext _ _ e.apply_symm_apply
 
 end AlexDisc
+
+/-- Sends a topological space to its specialisation order. -/
+@[simps]
+def alexDiscEquivPreord  : AlexDisc ≌ PreordCat where
+  functor := forget₂ _ _ ⋙ topToPreord
+  inverse := { obj := λ X ↦ AlexDisc.of (WithUpperSetTopology X), map := WithUpperSetTopology.map }
+  unitIso := NatIso.ofComponents λ X ↦ AlexDisc.Iso.mk $ by
+    dsimp; exact homeoWithUpperSetTopologyorderIso X
+  counitIso := NatIso.ofComponents λ X ↦ PreordCat.Iso.mk $ by
+    dsimp; exact (orderIsoSpecializationWithUpperSetTopology X).symm

@@ -949,8 +949,8 @@ theorem IsCompact.prod {s : Set α} {t : Set β} (hs : IsCompact s) (ht : IsComp
 #align is_compact.prod IsCompact.prod
 
 /-- Finite topological spaces are compact. -/
-instance (priority := 100) Finite.compactSpace [Finite α] : CompactSpace α
-    where isCompact_univ := finite_univ.isCompact
+instance (priority := 100) Finite.compactSpace [Finite α] : CompactSpace α where
+  isCompact_univ := finite_univ.isCompact
 #align finite.compact_space Finite.compactSpace
 
 /-- The product of two compact spaces is compact. -/

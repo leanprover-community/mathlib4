@@ -408,7 +408,7 @@ end
 of the canonical basis. -/
 theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M) (x : ι → R) :
     f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
-  conv_lhs => rw [pi_eq_sum_univ x, f.map_sum]
+  conv_lhs => rw [pi_eq_sum_univ x, map_sum]
   refine Finset.sum_congr rfl (fun _ _ => ?_)
   rw [map_smul]
 #align linear_map.pi_apply_eq_sum_univ LinearMap.pi_apply_eq_sum_univ
@@ -1109,11 +1109,7 @@ section Sum
 
 variable [∀ i, Zero (γ i)] [∀ (i) (x : γ i), Decidable (x ≠ 0)]
 
-@[simp]
-theorem map_dfinsupp_sum (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ i} {g : ∀ i, γ i → M} :
-    f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum
-#align linear_map.map_dfinsupp_sum LinearMap.map_dfinsupp_sum
+#align linear_map.map_dfinsupp_sum map_dfinsupp_sumₓ
 
 theorem coe_dfinsupp_sum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) :
     ⇑(t.sum g) = t.sum fun i d => g i d := rfl
@@ -1923,11 +1919,7 @@ variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable {γ : ι → Type*} [DecidableEq ι]
 
 
-@[simp]
-theorem map_dfinsupp_sum [∀ i, Zero (γ i)] [∀ (i) (x : γ i), Decidable (x ≠ 0)] (f : M ≃ₛₗ[τ₁₂] M₂)
-    (t : Π₀ i, γ i) (g : ∀ i, γ i → M) : f (t.sum g) = t.sum fun i d => f (g i d) :=
-  f.map_sum _
-#align linear_equiv.map_dfinsupp_sum LinearEquiv.map_dfinsupp_sum
+#align linear_equiv.map_dfinsupp_sum map_dfinsupp_sumₓ
 
 @[simp]
 theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)

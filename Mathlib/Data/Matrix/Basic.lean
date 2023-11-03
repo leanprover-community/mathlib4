@@ -1003,9 +1003,6 @@ protected theorem add_mul [Fintype m] (L M : Matrix l m α) (N : Matrix m n α) 
 
 instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) :=
   { Matrix.addCommMonoid with
-    mul := (· * ·)
-    add := (· + ·)
-    zero := 0
     mul_zero := Matrix.mul_zero
     zero_mul := Matrix.zero_mul
     left_distrib := Matrix.mul_add

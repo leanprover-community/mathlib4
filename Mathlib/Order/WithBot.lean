@@ -57,7 +57,7 @@ instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
 
 open Function
 
-theorem coe_injective : Injective (fun (a : α) => (a : WithBot α)) :=
+theorem coe_injective : Injective ((↑) : α → WithBot α) :=
   Option.some_injective _
 #align with_bot.coe_injective WithBot.coe_injective
 
@@ -585,6 +585,15 @@ instance inhabited : Inhabited (WithTop α) :=
 
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
+
+open Function
+
+theorem coe_injective : Injective ((↑) : α → WithTop α) :=
+  Option.some_injective _
+
+@[norm_cast]
+theorem coe_inj : (a : WithTop α) = b ↔ a = b :=
+  Option.some_inj
 
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
   Option.forall

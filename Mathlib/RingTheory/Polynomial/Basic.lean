@@ -549,7 +549,8 @@ theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
   ext
   simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
-  simp_rw [RingHom.mem_ker f, coeff_map, coeff_zero]
+  simp_rw [RingHom.mem_ker f]
+  simp
 #align polynomial.ker_map_ring_hom Polynomial.ker_mapRingHom
 
 variable (I : Ideal R[X])

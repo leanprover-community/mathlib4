@@ -248,8 +248,8 @@ def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
 #align homological_complex.id HomologicalComplex.id
 
 /-- Composition of chain maps. -/
-def comp (A B C : HomologicalComplex V c) (φ : Hom A B) (ψ : Hom B C) : Hom A C
-    where f i := φ.f i ≫ ψ.f i
+def comp (A B C : HomologicalComplex V c) (φ : Hom A B) (ψ : Hom B C) : Hom A C where
+  f i := φ.f i ≫ ψ.f i
 #align homological_complex.comp HomologicalComplex.comp
 
 section

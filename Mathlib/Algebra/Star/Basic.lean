@@ -461,7 +461,6 @@ See note [reducible non-instances].
 @[reducible]
 def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with
-    star := id
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 

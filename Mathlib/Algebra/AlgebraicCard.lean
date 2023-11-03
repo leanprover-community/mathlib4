@@ -43,7 +43,7 @@ variable (R : Type u) (A : Type v) [CommRing R] [CommRing A] [IsDomain A] [Algeb
   [NoZeroSMulDivisors R A]
 
 theorem cardinal_mk_lift_le_mul :
-    Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ Cardinal.lift.{v} #(R[X]) * ℵ₀ := by
+    Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ Cardinal.lift.{v} #R[X] * ℵ₀ := by
   rw [← mk_uLift, ← mk_uLift]
   choose g hg₁ hg₂ using fun x : { x : A | IsAlgebraic R x } => x.coe_prop
   refine' lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le g fun f => _
@@ -90,8 +90,8 @@ section NonLift
 variable (R A : Type u) [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
   [NoZeroSMulDivisors R A]
 
-theorem cardinal_mk_le_mul : #{ x : A // IsAlgebraic R x } ≤ #(R[X]) * ℵ₀ := by
-  rw [← lift_id #_, ← lift_id #(R[X])]
+theorem cardinal_mk_le_mul : #{ x : A // IsAlgebraic R x } ≤ #R[X] * ℵ₀ := by
+  rw [← lift_id #_, ← lift_id #R[X]]
   exact cardinal_mk_lift_le_mul R A
 #align algebraic.cardinal_mk_le_mul Algebraic.cardinal_mk_le_mul
 

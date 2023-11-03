@@ -416,8 +416,8 @@ class SecondCountableTopologyEither (α β : Type*) [TopologicalSpace α] [Topol
 #align second_countable_topology_either SecondCountableTopologyEither
 
 instance (priority := 100) secondCountableTopologyEither_of_left (α β : Type*) [TopologicalSpace α]
-    [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β
-    where out := Or.inl (by infer_instance)
+    [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β where
+  out := Or.inl (by infer_instance)
 #align second_countable_topology_either_of_left secondCountableTopologyEither_of_left
 
 instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*)

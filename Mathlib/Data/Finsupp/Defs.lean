@@ -734,8 +734,8 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
   rfl
 #align finsupp.of_support_finite_coe Finsupp.ofSupportFinite_coe
 
-instance canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite
-    where prf f hf := ⟨ofSupportFinite f hf, rfl⟩
+instance canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
+  prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 #align finsupp.can_lift Finsupp.canLift
 
 end OfSupportFinite

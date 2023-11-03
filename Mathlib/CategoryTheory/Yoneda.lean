@@ -497,4 +497,10 @@ def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
     · aesop_cat
 #align category_theory.curried_yoneda_lemma' CategoryTheory.curriedYonedaLemma'
 
+lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
+    (hf : ∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) :
+    IsIso f := by
+  obtain ⟨g, hg : g ≫ f = 𝟙 Y⟩ := (hf Y).2 (𝟙 Y)
+  exact ⟨g, (hf _).1 (by aesop_cat), hg⟩
+
 end CategoryTheory

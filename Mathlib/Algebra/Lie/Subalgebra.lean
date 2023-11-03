@@ -116,8 +116,8 @@ instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
-instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L'
-    where lie_smul := by
+instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
+  lie_smul := by
     { intros
       apply SetCoe.ext
       apply lie_smul }

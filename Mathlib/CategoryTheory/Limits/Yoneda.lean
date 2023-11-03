@@ -73,8 +73,8 @@ variable {C : Type u} [Category.{v} C]
 open Limits
 
 /-- The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
-instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X)
-    where preservesLimitsOfShape {J} 𝒥 :=
+instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X) where
+  preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>
         { preserves := fun {c} t =>
             { lift := fun s x =>
@@ -91,8 +91,8 @@ instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X)
 #align category_theory.yoneda_preserves_limits CategoryTheory.yonedaPreservesLimits
 
 /-- The coyoneda embedding `coyoneda.obj X : C ⥤ Type v` for `X : Cᵒᵖ` preserves limits. -/
-instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X)
-    where preservesLimitsOfShape {J} 𝒥 :=
+instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X) where
+  preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>
         { preserves := fun {c} t =>
             { lift := fun s x =>

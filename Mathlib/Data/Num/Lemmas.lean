@@ -409,9 +409,6 @@ instance commSemiring : CommSemiring Num := by
     { Num.addMonoid,
       Num.addMonoidWithOne with
       mul := (· * ·)
-      one := 1
-      add := (· + ·)
-      zero := 0
       npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
     try { intros; rfl } <;>
     transfer <;>
@@ -1500,7 +1497,6 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     mul_assoc := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
-    one := 1
     one_mul := by transfer
     mul_one := by transfer
     left_distrib := by

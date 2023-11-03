@@ -154,6 +154,12 @@ theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n)
           (lt_of_le_of_ne (divisor_le (Nat.mem_divisors.2 ⟨h, hzero⟩)) hdiff)⟩
 #align nat.divisors_subset_proper_divisors Nat.divisors_subset_properDivisors
 
+lemma divisors_filter_dvd_of_dvd {n m : ℕ} (hn : n ≠ 0) (hm : m ∣ n) :
+    (n.divisors.filter (· ∣ m)) = m.divisors := by
+  ext k
+  simp_rw [mem_filter, mem_divisors]
+  exact ⟨fun ⟨_, hkm⟩ ↦ ⟨hkm, ne_zero_of_dvd_ne_zero hn hm⟩, fun ⟨hk, _⟩ ↦ ⟨⟨hk.trans hm, hn⟩, hk⟩⟩
+
 @[simp]
 theorem divisors_zero : divisors 0 = ∅ := by
   ext
@@ -486,6 +492,11 @@ theorem prime_divisors_eq_to_filter_divisors_prime (n : ℕ) :
   · ext q
     simpa [hn, hn.ne', mem_factors] using and_comm
 #align nat.prime_divisors_eq_to_filter_divisors_prime Nat.prime_divisors_eq_to_filter_divisors_prime
+
+lemma prime_divisors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
+    n.factors.toFinset.filter (· ∣ m) = m.factors.toFinset := by
+  simp_rw [prime_divisors_eq_to_filter_divisors_prime, filter_comm,
+    divisors_filter_dvd_of_dvd hn hmn]
 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :

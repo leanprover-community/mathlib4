@@ -6,9 +6,8 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
-import Mathlib.Order.Bounds.Basic
 
-#align_import order.directed from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
+#align_import order.directed from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
 /-!
 # Directed indexed families and sets
@@ -332,40 +331,3 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 #align order_bot.to_is_directed_ge OrderBot.to_isDirected_ge
-
-section ScottContinuous
-
-variable [Preorder α] {a : α}
-
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
-
-The dual notion
-
-```lean
-∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
-```
-
-does not appear to play a significant role in the literature, so is omitted here.
--/
-def ScottContinuous [Preorder β] (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-#align scott_continuous ScottContinuous
-
-protected theorem ScottContinuous.monotone [Preorder β] {f : α → β} (h : ScottContinuous f) :
-    Monotone f := by
-  intro a b hab
-  have e1 : IsLUB (f '' {a, b}) (f b) := by
-    apply h
-    · exact Set.insert_nonempty _ _
-    · exact directedOn_pair le_refl hab
-    · rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-        Set.inter_eq_self_of_subset_right (Set.Ici_subset_Ici.mpr hab)]
-      exact isLeast_Ici
-  apply e1.1
-  rw [Set.image_pair]
-  exact Set.mem_insert _ _
-#align scott_continuous.monotone ScottContinuous.monotone
-
-end ScottContinuous

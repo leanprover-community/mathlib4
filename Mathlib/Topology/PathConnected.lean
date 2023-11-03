@@ -1154,9 +1154,9 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
-  (surjective_quotient_mk X).pathConnectedSpace continuous_coinduced_rng
+  (surjective_quotient_mk' X).pathConnectedSpace continuous_coinduced_rng
 
-/-- This is a special case of `NormedSpace.path_connected` (and
+/-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   Nonempty := inferInstance

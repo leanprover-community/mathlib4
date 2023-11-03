@@ -114,8 +114,7 @@ def contractRight : CliffordAlgebra Q →ₗ[R] Module.Dual R M →ₗ[R] Cliffo
 #align clifford_algebra.contract_right CliffordAlgebra.contractRight
 
 theorem contractRight_eq (x : CliffordAlgebra Q) :
-    contractRight (Q := Q) x d = reverse
-    (contractLeft (R := R) (M := M) d <| reverse x) :=
+    contractRight (Q := Q) x d = reverse (contractLeft (R := R) (M := M) d <| reverse x) :=
   rfl
 #align clifford_algebra.contract_right_eq CliffordAlgebra.contractRight_eq
 
@@ -232,7 +231,7 @@ theorem contractRight_comm (x : CliffordAlgebra Q) : x⌊d⌊d' = -(x⌊d'⌊d) 
 #align clifford_algebra.contract_right_comm CliffordAlgebra.contractRight_comm
 
 /- TODO:
-lemma contract_right_contract_left (x : clifford_algebra Q) : (d ⌋ x) ⌊ d' = d ⌋ (x ⌊ d') :=
+lemma contractRight_contractLeft (x : CliffordAlgebra Q) : (d ⌋ x) ⌊ d' = d ⌋ (x ⌊ d') :=
 -/
 end contractLeft
 

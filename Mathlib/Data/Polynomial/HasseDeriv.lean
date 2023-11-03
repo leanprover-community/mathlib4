@@ -259,7 +259,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     rw [tsub_add_eq_add_tsub hm, ← add_tsub_assoc_of_le hn, ← tsub_add_eq_tsub_tsub,
       add_comm x.2 x.1, mul_assoc, ← mul_assoc r, ← (Nat.cast_commute _ r).eq, mul_assoc, mul_assoc]
   rw [Finset.sum_congr rfl aux]
-  rw [← LinearMap.map_sum, ← Finset.sum_mul]
+  rw [← map_sum, ← Finset.sum_mul]
   congr
   rw_mod_cast [←Nat.add_choose_eq]
 #align polynomial.hasse_deriv_mul Polynomial.hasseDeriv_mul

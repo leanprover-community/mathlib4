@@ -185,7 +185,7 @@ theorem fac : W.Q ⋙ lift G hG = G :=
     (by
       intro X Y f
       simp only [Functor.comp_map, eqToHom_refl, comp_id, id_comp]
-      dsimp [MorphismProperty.Q, Quot.liftOn]
+      dsimp [MorphismProperty.Q, Quot.liftOn, Quotient.functor]
       rw [composePath_toPath])
 #align category_theory.localization.construction.fac CategoryTheory.Localization.Construction.fac
 
