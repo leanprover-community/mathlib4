@@ -1317,7 +1317,7 @@ theorem _root_.Measurable.add_simpleFunc
   · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     change Measurable (g + s.piecewise (Function.const α c) (0 : α → E))
-    rw [← piecewise_same s g, ← piecewise_add]
+    rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.add_const _) (hg.add_const _)
   · have : (g + ↑(f + f'))
         = (Function.support f).piecewise (g + (f : α → E)) (g + f') := by
@@ -1342,7 +1342,7 @@ theorem _root_.Measurable.simpleFunc_add
   · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     change Measurable (s.piecewise (Function.const α c) (0 : α → E) + g)
-    rw [← piecewise_same s g, ← piecewise_add]
+    rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.const_add _) (hg.const_add _)
   · have : (↑(f + f') + g)
         = (Function.support f).piecewise ((f : α → E) + g) (f' + g) := by
