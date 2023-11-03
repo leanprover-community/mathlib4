@@ -60,7 +60,7 @@ namespace Theorems100
 
 noncomputable section
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 
@@ -97,14 +97,14 @@ Every function in here is finitely supported, and the support is a subset of `s`
 This should be thought of as a generalisation of `Finset.Nat.antidiagonalTuple` where
 `antidiagonalTuple k n` is the same thing as `cut (s : Finset.univ (Fin k)) n`.
 -/
-def cut {ι : Type _} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
+def cut {ι : Type*} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
   Finset.filter (fun f => s.sum f = n)
     ((s.pi fun _ => range (n + 1)).map
       ⟨fun f i => if h : i ∈ s then f i h else 0, fun f g h => by
         ext i hi; simpa [dif_pos hi] using congr_fun h i⟩)
 #align theorems_100.cut Theorems100.cut
 
-theorem mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
+theorem mem_cut {ι : Type*} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
     f ∈ cut s n ↔ s.sum f = n ∧ ∀ i, i ∉ s → f i = 0 := by
   rw [cut, mem_filter, and_comm, and_congr_right]
   intro h
@@ -123,7 +123,7 @@ theorem mem_cut {ι : Type _} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
 #align theorems_100.mem_cut Theorems100.mem_cut
 
 theorem cut_equiv_antidiag (n : ℕ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = Nat.antidiagonal n := by
+    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
     Equiv.eq_symm_apply]
@@ -136,7 +136,7 @@ theorem cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
 
 /-- There is only one `cut` of 0. -/
 @[simp]
-theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
+theorem cut_zero {ι : Type*} (s : Finset ι) : cut s 0 = {0} := by
   -- In general it's nice to prove things using `mem_cut` but in this case it's easier to just
   -- use the definition.
   rw [cut, range_one, pi_const_singleton, map_singleton, Function.Embedding.coeFn_mk,
@@ -148,23 +148,23 @@ theorem cut_zero {ι : Type _} (s : Finset ι) : cut s 0 = {0} := by
 #align theorems_100.cut_zero Theorems100.cut_zero
 
 @[simp]
-theorem cut_empty_succ {ι : Type _} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
+theorem cut_empty_succ {ι : Type*} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
   apply eq_empty_of_forall_not_mem
   intro x hx
   rw [mem_cut, sum_empty] at hx
   cases hx.1
 #align theorems_100.cut_empty_succ Theorems100.cut_empty_succ
 
-theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
+theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     cut (insert a s) n =
-      (Nat.antidiagonal n).biUnion fun p : ℕ × ℕ =>
+      (antidiagonal n).biUnion fun p : ℕ × ℕ =>
         (cut s p.snd).map
           ⟨fun f => f + fun t => if t = a then p.fst else 0, add_left_injective _⟩ := by
   ext f
   rw [mem_cut, mem_biUnion, sum_insert h]
   constructor
   · rintro ⟨rfl, h₁⟩
-    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, Nat.mem_antidiagonal, Prod.exists]
+    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists]
     refine' ⟨f a, s.sum f, rfl, fun i => if i = a then 0 else f i, _, _⟩
     · rw [mem_cut]
       refine' ⟨_, _⟩
@@ -183,7 +183,7 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
       obtain rfl | h := eq_or_ne x a
       · simp
       · simp [if_neg h]
-  · simp only [mem_insert, Function.Embedding.coeFn_mk, mem_map, Nat.mem_antidiagonal, Prod.exists,
+  · simp only [mem_insert, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists,
       exists_prop, mem_cut, not_or]
     rintro ⟨p, q, rfl, g, ⟨rfl, hg₂⟩, rfl⟩
     refine' ⟨_, _⟩
@@ -192,7 +192,7 @@ theorem cut_insert {ι : Type _} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s
       simp [if_neg h₁, hg₂ _ h₂]
 #align theorems_100.cut_insert Theorems100.cut_insert
 
-theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι → PowerSeries α)
+theorem coeff_prod_range [CommSemiring α] {ι : Type*} (s : Finset ι) (f : ι → PowerSeries α)
     (n : ℕ) : coeff α n (∏ j in s, f j) = ∑ l in cut s n, ∏ i in s, coeff α (l i) (f i) := by
   revert n
   induction s using Finset.induction_on with
@@ -216,7 +216,7 @@ theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι
       rw [if_neg, add_zero]
       exact ne_of_mem_of_not_mem hk hi
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, Prod.forall, not_and, Ne.def,
-        Nat.mem_antidiagonal, disjoint_left, mem_map, exists_prop, Function.Embedding.coeFn_mk,
+        mem_antidiagonal, disjoint_left, mem_map, exists_prop, Function.Embedding.coeFn_mk,
         exists_imp, not_exists, Finset.mem_coe, Function.onFun, mem_cut, and_imp]
       rintro p₁ q₁ rfl p₂ q₂ h t x p hp _ hp3 q hq _ hq3
       have z := hp3.trans hq3.symm
@@ -227,7 +227,7 @@ theorem coeff_prod_range [CommSemiring α] {ι : Type _} (s : Finset ι) (f : ι
 #align theorems_100.coeff_prod_range Theorems100.coeff_prod_range
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
-def indicatorSeries (α : Type _) [Semiring α] (s : Set ℕ) : PowerSeries α :=
+def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 #align theorems_100.indicator_series Theorems100.indicatorSeries
 
@@ -275,14 +275,14 @@ theorem num_series' [Field α] (i : ℕ) :
       symm
       split_ifs with h
       · suffices
-          ((Nat.antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
+          ((antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
             1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
         cases' h with p hp
         refine' ⟨((i + 1) * (p - 1), i + 1), _⟩
         ext ⟨a₁, a₂⟩
-        simp only [mem_filter, Prod.mk.inj_iff, Nat.mem_antidiagonal, mem_singleton]
+        simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
           refine' ⟨_, rfl⟩
@@ -292,12 +292,12 @@ theorem num_series' [Field α] (i : ℕ) :
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (Nat.antidiagonal n.succ)).card =
+          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal n.succ)).card =
             0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
         apply eq_empty_of_forall_not_mem
-        simp only [Prod.forall, mem_filter, not_and, Nat.mem_antidiagonal]
+        simp only [Prod.forall, mem_filter, not_and, mem_antidiagonal]
         rintro _ h₁ h₂ ⟨a, rfl⟩ rfl
         apply h
         simp [← h₂]
@@ -309,7 +309,7 @@ def mkOdd : ℕ ↪ ℕ :=
 #align theorems_100.mk_odd Theorems100.mkOdd
 
 -- The main workhorse of the partition theorem proof.
-theorem partialGF_prop (α : Type _) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
+theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :
     (Finset.card
           ((univ : Finset (Nat.Partition n)).filter fun p =>

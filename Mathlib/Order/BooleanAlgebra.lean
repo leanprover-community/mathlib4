@@ -685,6 +685,9 @@ theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
   ⟨fun h => by have h := compl_le_compl h; simp at h; assumption, compl_le_compl⟩
 #align compl_le_compl_iff_le compl_le_compl_iff_le
 
+@[simp] lemma compl_lt_compl_iff_lt : yᶜ < xᶜ ↔ x < y :=
+  lt_iff_lt_of_le_iff_le' compl_le_compl_iff_le compl_le_compl_iff_le
+
 theorem compl_le_of_compl_le (h : yᶜ ≤ x) : xᶜ ≤ y := by
   simpa only [compl_compl] using compl_le_compl h
 #align compl_le_of_compl_le compl_le_of_compl_le
@@ -782,20 +785,13 @@ instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlg
     top_le_sup_compl := fun _ _ => BooleanAlgebra.top_le_sup_compl _ }
 #align pi.boolean_algebra Pi.booleanAlgebra
 
-instance : BooleanAlgebra Bool :=
-  { Bool.linearOrder, Bool.boundedOrder with
-    sup := or,
-    le_sup_left := Bool.left_le_or,
-    le_sup_right := Bool.right_le_or,
-    sup_le := fun _ _ _ => Bool.or_le,
-    inf := and,
-    inf_le_left := Bool.and_le_left,
-    inf_le_right := Bool.and_le_right,
-    le_inf := fun _ _ _ => Bool.le_and,
-    le_sup_inf := by decide,
-    compl := not,
-    inf_compl_le_bot := fun a => a.and_not_self.le,
-    top_le_sup_compl := fun a => a.or_not_self.ge }
+instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
+  __ := Bool.linearOrder
+  __ := Bool.boundedOrder
+  __ := Bool.instDistribLattice
+  compl := not
+  inf_compl_le_bot a := a.and_not_self.le
+  top_le_sup_compl a := a.or_not_self.ge
 
 @[simp]
 theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=

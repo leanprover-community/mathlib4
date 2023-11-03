@@ -97,7 +97,7 @@ def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
 
 @[simp]
 theorem reverseOpEquiv_opComm :
-  AlgEquiv.opComm (reverseOpEquiv (Q := Q)) = reverseOpEquiv.symm := rfl
+    AlgEquiv.opComm (reverseOpEquiv (Q := Q)) = reverseOpEquiv.symm := rfl
 
 /-- Grade reversion, inverting the multiplication order of basis vectors.
 Also called *transpose* in some literature. -/
@@ -163,7 +163,7 @@ theorem reverse_comp_involute :
   case h_add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
 #align clifford_algebra.reverse_comp_involute CliffordAlgebra.reverse_comp_involute
 
-/-- `CliffordAlgebra.reverse` and `clifford_algebra.inverse` commute. Note that the composition
+/-- `CliffordAlgebra.reverse` and `CliffordAlgebra.involute` commute. Note that the composition
 is sometimes referred to as the "clifford conjugate". -/
 theorem reverse_involute_commute : Function.Commute (reverse (Q := Q)) involute :=
   LinearMap.congr_fun reverse_comp_involute

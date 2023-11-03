@@ -191,9 +191,6 @@ theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
 
 /-! Transfer instances from `Submodule R P` to `FractionalIdeal S P`. -/
 
-instance (I : FractionalIdeal S P) : AddCommGroup I :=
-  Submodule.addCommGroup (I : Submodule R P)
-
 instance (I : FractionalIdeal S P) : Module R I :=
   Submodule.module (I : Submodule R P)
 
@@ -487,7 +484,7 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     ∀ n : ℕ, IsFractional S I → IsFractional S (n • I : Submodule R P)
   | 0, _ => by
     rw [zero_smul]
-    convert((0 : Ideal R) : FractionalIdeal S P).isFractional
+    convert ((0 : Ideal R) : FractionalIdeal S P).isFractional
     simp
   | n + 1, h => by
     rw [succ_nsmul]
@@ -946,7 +943,7 @@ theorem canonicalEquiv_coeIdeal (I : Ideal R) : canonicalEquiv S P P' I = I := b
 @[simp]
 theorem canonicalEquiv_self : canonicalEquiv S P P = RingEquiv.refl _ := by
   rw [← canonicalEquiv_trans_canonicalEquiv S P P]
-  convert(canonicalEquiv S P P).symm_trans_self
+  convert (canonicalEquiv S P P).symm_trans_self
   exact (canonicalEquiv_symm S P P).symm
 #align fractional_ideal.canonical_equiv_self FractionalIdeal.canonicalEquiv_self
 

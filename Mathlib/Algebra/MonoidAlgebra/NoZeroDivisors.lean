@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Group.UniqueProds
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import algebra.monoid_algebra.no_zero_divisors from "leanprover-community/mathlib"@"3e067975886cf5801e597925328c335609511b1a"
 
@@ -13,7 +12,7 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
 
 This file studies the interaction between typeclass assumptions on two Types `R` and `A` and
-whether `AddMonoidAlgebra R A` has non-zero zero-divisors.  For some background on related
+whether `R[A]` has non-zero zero-divisors.  For some background on related
 questions, see [Kaplansky's Conjectures](https://en.wikipedia.org/wiki/Kaplansky%27s_conjectures),
 especially the *zero divisor conjecture*.
 
@@ -22,7 +21,7 @@ Let `K` be a field, and `G` a torsion-free group. The group ring `K[G]` does not
 nontrivial zero divisors, that is, it is a domain.
 
 In this file we show that if `R` satisfies `NoZeroDivisors` and `A` is a grading type satisfying
-`UniqueProds A` (resp. `UniqueSums A`), then `MonoidAlgebra R A` (resp. `AddMonoidAlgebra R A`)
+`UniqueProds A` (resp. `UniqueSums A`), then `MonoidAlgebra R A` (resp. `R[A]`)
 also satisfies `NoZeroDivisors`.
 
 Because of the instances to `UniqueProds/Sums`, we obtain a formalization of the well-known result
@@ -39,15 +38,15 @@ The actual assumptions on `R` are weaker.
 * The instance showing that `Semiring R, NoZeroDivisors R, Mul A, UniqueProds A` imply
   `NoZeroDivisors (MonoidAlgebra R A)`.
 * The instance showing that `Semiring R, NoZeroDivisors R, Add A, UniqueSums A` imply
-  `NoZeroDivisors (AddMonoidAlgebra R A)`.
+  `NoZeroDivisors R[A]`.
 
 TODO: move the rest of the docs to UniqueProds?
  `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
-  left addition, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
+  left addition, then `R[A]` has no non-zero zero-divisors.
 * `NoZeroDivisors.of_right_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add left cancel semigroup with strictly monotone
-  right addition, then `AddMonoidAlgebra R A` has no non-zero zero-divisors.
+  right addition, then `R[A]` has no non-zero zero-divisors.
 
 The conditions on `A` imposed in `NoZeroDivisors.of_left_ordered` are sometimes referred to as
 `left-ordered`.
@@ -95,20 +94,12 @@ namespace AddMonoidAlgebra
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
-theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : AddMonoidAlgebra R A} {a0 b0 : A}
+theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
     (h : UniqueAdd f.support g.support a0 b0) :
     (f * g) (a0 + b0) = f a0 * g b0 :=
 MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
 
-instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors (AddMonoidAlgebra R A) :=
+instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
 MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
 
 end AddMonoidAlgebra
-
-/-- The proof goes via the equivalence `A ≃ₗ[ℚ] (Basis.ofVectorSpaceIndex ℚ A) →₀ ℚ`,
-i.e. choosing a basis.
-Once we have a basis, we use the embedding into sequences of coordinates and all the instances
-that `ℚ` already has.
--/
-instance [AddCommGroup A] [Module ℚ A] : UniqueSums A :=
-  UniqueSums.addHom_image_of_injective _ (Basis.ofVectorSpace ℚ A).repr.injective inferInstance

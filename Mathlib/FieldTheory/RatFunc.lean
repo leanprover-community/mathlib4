@@ -281,7 +281,7 @@ See also `induction_on`, which is a recursion principle defined in terms of `alg
 -/
 @[elab_as_elim]
 protected theorem induction_on' {P : RatFunc K → Prop} :
-  ∀ (x : RatFunc K) (_pq : ∀ (p q : K[X]) (_ : q ≠ 0), P (RatFunc.mk p q)), P x
+    ∀ (x : RatFunc K) (_pq : ∀ (p q : K[X]) (_ : q ≠ 0), P (RatFunc.mk p q)), P x
   | ⟨x⟩, f =>
     Localization.induction_on x fun ⟨p, q⟩ => by
       simpa only [mk_coe_def, Localization.mk_eq_mk'] using
@@ -581,11 +581,8 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
 
 instance instCommRing : CommRing (RatFunc K) :=
   { instCommMonoid K, instAddCommGroup K with
-    add := (· + ·)
     zero := 0
-    neg := Neg.neg
     sub := Sub.sub
-    mul := (· * ·)
     zero_mul := by frac_tac
     mul_zero := by frac_tac
     left_distrib := by frac_tac

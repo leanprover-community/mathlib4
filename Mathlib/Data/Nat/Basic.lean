@@ -192,13 +192,7 @@ theorem one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ :=
 
 -- Porting note: Nat.succ_le_succ_iff is in Std
 
-theorem max_succ_succ {m n : ℕ} : max (succ m) (succ n) = succ (max m n) := by
-  by_cases h1 : m ≤ n
-  rw [max_eq_right h1, max_eq_right (succ_le_succ h1)]
-  · rw [not_le] at h1
-    have h2 := le_of_lt h1
-    rw [max_eq_left h2, max_eq_left (succ_le_succ h2)]
-#align nat.max_succ_succ Nat.max_succ_succ
+#align nat.max_succ_succ Nat.succ_max_succ
 
 theorem not_succ_lt_self {n : ℕ} : ¬succ n < n :=
   not_lt_of_ge (Nat.le_succ _)
@@ -934,22 +928,23 @@ end FindGreatest
 
 /-! ### decidability of predicates -/
 
+-- To work around lean4#2552, we use `match` instead of `if/casesOn` with decidable instances.
 instance decidableBallLT :
-    ∀ (n : Nat) (P : ∀ k < n, Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
-| 0, P, _ => isTrue fun n h => by cases h
-| (n+1), P, H => by
-  cases' decidableBallLT n fun k h => P k (lt_succ_of_lt h) with h h
-  · refine' isFalse (mt _ h)
-    intro hn k h
-    apply hn
-  by_cases p : P n (lt_succ_self n)
-  · exact
-      isTrue fun k h' =>
-        (le_of_lt_succ h').lt_or_eq_dec.elim (h _) fun e =>
-          match k, e, h' with
-          | _, rfl, _ => p
-  · exact isFalse (mt (fun hn => hn _ _) p)
+  ∀ (n : Nat) (P : ∀ k, k < n → Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
+| 0, _, _ => isTrue fun _ => (by cases ·)
+| (n+1), P, H =>
+  match decidableBallLT n (P · <| lt_succ_of_lt ·) with
+  | isFalse h => isFalse (h fun _ _ => · _ _)
+  | isTrue h =>
+    match H n Nat.le.refl with
+    | isFalse p => isFalse (p <| · _ _)
+    | isTrue p => isTrue fun _ h' => (Nat.le_of_lt_succ h').lt_or_eq_dec.elim (h _) (· ▸ p)
 #align nat.decidable_ball_lt Nat.decidableBallLT
+
+-- To verify we don't have a regression on the speed, we put a difficult example.
+-- any regression should take a huge amount of heartbeats -- we are currently at 187621.
+-- For reference, the instance using `casesOn` took 44544 for 4; this one takes 1299 for 4.
+example : ∀ a, a < 25 → ∀ b, b < 25 → ∀ c, c < 25 → a ^ 2 + b ^ 2 + c ^ 2 ≠ 7 := by decide
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :
     Decidable (∀ i, P i) :=

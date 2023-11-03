@@ -240,14 +240,9 @@ protected theorem linearIsometry_apply_single {i : ι} (x : G i) :
   · simp [h]
 #align orthogonal_family.linear_isometry_apply_single OrthogonalFamily.linearIsometry_apply_single
 
-@[simp]
 protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometry (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  have :
-    hV.linearIsometry (∑ i in W₀.support, lp.single 2 i (W₀ i)) =
-      ∑ i in W₀.support, hV.linearIsometry (lp.single 2 i (W₀ i)) :=
-    hV.linearIsometry.toLinearMap.map_sum
-  simp (config := { contextual := true }) [DFinsupp.sum, this]
+  simp
 #align orthogonal_family.linear_isometry_apply_dfinsupp_sum_single OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of

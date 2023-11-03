@@ -91,6 +91,13 @@ theorem mul_star_self [Mul R] [StarMul R] (x : R) : IsSelfAdjoint (x * star x) :
   simpa only [star_star] using star_mul_self (star x)
 #align is_self_adjoint.mul_star_self IsSelfAdjoint.mul_star_self
 
+/-- Self-adjoint elements commute if and only if their product is self-adjoint. -/
+lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
+    (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : Commute x y ↔ IsSelfAdjoint (x * y) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [isSelfAdjoint_iff, star_mul, hx.star_eq, hy.star_eq, h.eq]
+  · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
+
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
 theorem starHom_apply {F R S : Type*} [Star R] [Star S] [StarHomClass F R S] {x : R}
     (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
@@ -521,6 +528,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]

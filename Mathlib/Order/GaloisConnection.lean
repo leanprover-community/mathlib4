@@ -961,7 +961,7 @@ def gci_Ici_sInf [CompleteSemilatticeInf α] :
 coercion form a Galois insertion. -/
 def WithBot.giUnbot'Bot [Preorder α] [OrderBot α] :
     GaloisInsertion (WithBot.unbot' ⊥) (some : α → WithBot α) where
-  gc _ _ := WithBot.unbot'_bot_le_iff
+  gc _ _ := WithBot.unbot'_le_iff (fun _ ↦ bot_le)
   le_l_u _ := le_rfl
   choice o _ := o.unbot' ⊥
   choice_eq _ _ := rfl
