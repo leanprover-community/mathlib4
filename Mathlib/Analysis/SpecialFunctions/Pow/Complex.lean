@@ -125,21 +125,24 @@ lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [m
 lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := by
   exact_mod_cast cpow_int_mul x n y
 
+/-- See Note [no_index around OfNat.ofNat] -/
 lemma cpow_ofNat_mul (x : ℂ) (n : ℕ) [n.AtLeastTwo] (y : ℂ) :
-    x ^ (OfNat.ofNat n * y) = (x ^ y) ^ (OfNat.ofNat n : ℕ) :=
+    x ^ (no_index (OfNat.ofNat n) * y) = (x ^ y) ^ (OfNat.ofNat n : ℕ) :=
   cpow_nat_mul x n y
 
 lemma cpow_mul_nat (x y : ℂ) (n : ℕ) : x ^ (y * n) = (x ^ y) ^ n := by
   rw [mul_comm, cpow_nat_mul]
 
+/-- See Note [no_index around OfNat.ofNat] -/
 lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
-    x ^ (y * OfNat.ofNat n) = (x ^ y) ^ (OfNat.ofNat n : ℕ) :=
+    x ^ (y * no_index (OfNat.ofNat n)) = (x ^ y) ^ (OfNat.ofNat n : ℕ) :=
   cpow_mul_nat x y n
 
 @[simp, norm_cast]
 theorem cpow_nat_cast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
 #align complex.cpow_nat_cast Complex.cpow_nat_cast
 
+/-- See Note [no_index around OfNat.ofNat] -/
 @[simp]
 lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℂ) = x ^ (OfNat.ofNat n : ℕ) :=
@@ -158,6 +161,7 @@ theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ
   assumption_mod_cast
 #align complex.cpow_nat_inv_pow Complex.cpow_nat_inv_pow
 
+/-- See Note [no_index around OfNat.ofNat] -/
 @[simp]
 lemma cpow_ofNat_inv_pow (x : ℂ) (n : ℕ) [h : n.AtLeastTwo] :
     (x ^ ((no_index (OfNat.ofNat n) : ℂ)⁻¹)) ^ (no_index (OfNat.ofNat n) : ℕ) = x :=
