@@ -176,7 +176,7 @@ lemma cpow_int_mul' {x : ℂ} {n : ℤ} (hlt : -π < n * x.arg) (hle : n * x.arg
   rw [mul_comm] at hlt hle
   rw [cpow_mul, cpow_int_cast] <;> simpa [log_im]
 
-/-- A version of `Complex.cpow_int_mul` with RHS that matches `Complex.cpow_mul`.
+/-- A version of `Complex.cpow_nat_mul` with RHS that matches `Complex.cpow_mul`.
 
 The assumptions on the arguments are needed
 because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`. -/
