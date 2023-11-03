@@ -525,6 +525,7 @@ theorem lift_comp : (hf.lift g h).comp f = g := by
   ext
   simpa using h (Function.rightInverse_surjInv _ _)
 
+/-- `QuotientMap.lift` as an equivalence. -/
 @[simps]
 noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
   toFun g := hf.lift g g.prop
