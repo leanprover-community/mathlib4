@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Prod.Lex
-import Mathlib.Tactic.LibrarySearch
 
 #align_import algebra.order.monoid.prod from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
@@ -41,16 +40,13 @@ instance instStrictOrderedCommMonoid [StrictOrderedCommMonoid α] [StrictOrdered
         · exact ⟨⟨le_of_lt fstlt, sndle⟩, by rintro ⟨hfst, -⟩; simpa using (fstlt.trans_le hfst)⟩
       · rintro ⟨⟨hfst, hsnd⟩, negle⟩
         by_contra contr
-        by_cases h1 : y.fst ≤ x.fst ; swap
-        · apply contr
-          right
-          exact ⟨lt_of_le_not_le hfst h1, hsnd⟩
-        by_cases h2 : y.snd ≤ x.snd ; swap
+        by_cases h1 : y.fst ≤ x.fst; by_cases h2 : y.snd ≤ x.snd; exact negle ⟨h1, h2⟩
         · apply contr
           left
           exact ⟨hfst, lt_of_le_not_le hsnd h2⟩
-        apply negle
-        exact ⟨h1, h2⟩
+        · apply contr
+          right
+          exact ⟨lt_of_le_not_le hfst h1, hsnd⟩
     mul_lt_mul_left := fun x y hxy z => by
       rcases hxy with ⟨fstle, sndlt⟩ | ⟨fstlt, sndle⟩
       · left
