@@ -8,33 +8,30 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Tactic.RewriteSearch
 
 /-!
-# Charts are local diffeomorphisms
+# Charts are structomorphisms
 
-TODO: prove what I want to, then add a real docstring
+We prove that charts of a charted space are `Structomorph`s.
+For a `C^n` manifold in particular, this implies charts are `C^n` diffeomorphisms.
 -/
 
 open Function Manifold Set SmoothManifoldWithCorners TopologicalSpace Topology
 set_option autoImplicit false
 
-variable
-  -- Let `M` be a manifold over the pair `(E, H)`.
-  {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners ℝ E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  --[SmoothManifoldWithCorners I M] {n : ℕ∞}
-
--- On any topological manifold (charted space on a normed space),
--- each chart is a structomorphism (from its source to its target).
-variable {e e' : LocalHomeomorph M H} {G : StructureGroupoid H} [HasGroupoid M G]
+-- Let `M` be a charted space modelled on `H`, with structure groupoid `G`.
+variable {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {G : StructureGroupoid H} [HasGroupoid M G]
+  {e e' : LocalHomeomorph M H}
 
 /-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
  of some chart on `M`. -/
-lemma chartOn_open_eq (s : Opens M) [Nonempty s] {e' : LocalHomeomorph s H} (he' : e' ∈ atlas H s) :
-    ∃ x : s, e' = (chartAt H (x : M)).subtypeRestr s := by
-  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
+lemma chartOn_open_eq (s : Opens M) [Nonempty s] {e : LocalHomeomorph s H} (he : e ∈ atlas H s) :
+    ∃ x : s, e = (chartAt H (x : M)).subtypeRestr s := by
+  rcases he with ⟨xset, ⟨x, hx⟩, he⟩
   have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) s} = xset := hx
-  exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
+  exact ⟨x, mem_singleton_iff.mp (this ▸ he)⟩
 
+/-- If `t` is a non-empty open subset of `H`,
+  every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chartOn_open_eq`?
 lemma chartOn_open_eq' (t : Opens H) [Nonempty t] {e' : LocalHomeomorph t H} (he' : e' ∈ atlas H t) :
     ∃ x : t, e' = (chartAt H ↑x).subtypeRestr t := by
@@ -63,10 +60,12 @@ theorem StructureGroupoid.trans_restricted (he : e ∈ atlas H M) (he' : e' ∈ 
     · exact closedUnderRestriction' (closedUnderRestriction' (G.compatible he he') hopen) hopen
   exact G.eq_on_source this (e.subtypeRestr_symm_trans_subtypeRestr s e')
 
-/-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`. -/
--- this is different from `closedUnderRestriction'` as we want membership in the maximal atlas
--- XXX: find a better name!
-lemma StructureGroupoid.stable_under_restriction (he : e ∈ atlas H M) [ClosedUnderRestriction G]
+/-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
+
+NB. We cannot deduce membership in `atlas H s` in general: by definition, this atlas contains
+precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
+can contain more charts than these. -/
+lemma StructureGroupoid.restriction_in_maximalAtlas (he : e ∈ atlas H M) [ClosedUnderRestriction G]
     (s : Opens M) [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
   intro e' he'
   -- `e'` is the restriction of some chart of `M` at `x`,
@@ -78,13 +77,13 @@ lemma StructureGroupoid.stable_under_restriction (he : e ∈ atlas H M) [ClosedU
          G.trans_restricted (chart_mem_atlas H (x : M)) he s⟩
 
 -- missing lemma, it seems: or ask on zulip
--- Mathlib.Data.Set.Function
+-- xxx: move to Mathlib.Data.Set.Function
 variable {X Y : Type*} {s : Set X} {t : Set Y} (f : X → Y)
 theorem MapsTo.map_nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
   (hs.image f).mono (mapsTo'.mp h)
 
--- real proof that local homeos induce a chart
--- xxx: find a better name and description!
+/-- Restricting a chart to its source `s ⊆ M` yields a chart in the maximal atlas of `s`. -/
+-- xxx: better name? how does this differ from `restriction_in_maximalAtlas`?
 theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) [ClosedUnderRestriction G]
     (hs : Set.Nonempty e.source) :
     let s := { carrier := e.source, is_open' := e.open_source : Opens M };
@@ -104,10 +103,9 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) [ClosedUnderR
   set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
   have : goal ≈ e.subtypeRestr s :=
     (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro _ _; rfl⟩
-  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.stable_under_restriction he s)
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he s)
 
-/-- Charts are structomorphisms. -/
--- xxx: do I need [ClosedUnderRestriction G]? in practice, is not an issue
+/-- Each chart of a charted space is a structomorphism between its source and target. -/
 lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestriction G] :
     let s : Opens M := { carrier := e.source, is_open' := e.open_source }
     let t : Opens H := { carrier := e.target, is_open' := e.open_target }
@@ -120,18 +118,12 @@ lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M) [ClosedUnderRestr
       mem_groupoid := by
         intro c c' hc hc'
         show (c.symm).trans (e.toHomeomorphSourceTarget.toLocalHomeomorph.trans c') ∈ G
-        -- The atlas on H on itself has only one chart (by `chartedSpaceSelf_atlas H`),
-        -- hence c' (as a restriction of that) is the inclusion.
-        -- This *almost* gives our claim: except that `e` is a chart on M and c is one on s:
-        -- `real_helper` argues the restricted chart belongs to the maximal atlas, making this rigorous.
-        -- so they don't fit together nicely. (Composing with the inclusion makes that nice...)
+        -- The atlas of H on itself has only one chart, hence c' is the inclusion.
+        -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
+        -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
+        -- with `c'` yields a chart in the maximal atlas of `s`.
         apply G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_chart he (nmem_singleton_empty.mp h) c' hc')
   }
-
--- /-- Each chart inverse is a structomorphism. -/
--- -- essentially re-use the proof above!
--- lemma LocalHomeomorphism.symm_toStructomorph {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
---     {G : StructureGroupoid H} : Structomorph G M H := sorry
 
 -- TODO: Generalise this to all extended charts, if `I` is boundaryless.
