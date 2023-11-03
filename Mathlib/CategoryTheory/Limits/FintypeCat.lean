@@ -21,8 +21,8 @@ open CategoryTheory Limits Functor
 
 namespace CategoryTheory.Limits.FintypeCat
 
-noncomputable def finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
-    (_ : (j : J) → Finite (K.obj j)) : Fintype (limit K) := by
+noncomputable def finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
+    (K : J ⥤ Type*) (_ : (j : J) → Finite (K.obj j)) : Fintype (limit K) := by
   have : Fintype (sections K) := Fintype.ofFinite ↑(sections K)
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 
@@ -49,8 +49,8 @@ noncomputable instance inclusionPreservesFiniteLimits :
   preservesFiniteLimits _ :=
     preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape FintypeCat.incl
 
-noncomputable def finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ Type*)
-    (_ : (j : J) → Finite (K.obj j)) : Fintype (colimit K) := by
+noncomputable def finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
+    (K : J ⥤ Type*) (_ : (j : J) → Finite (K.obj j)) : Fintype (colimit K) := by
   have : Finite (Types.Quot K) := Quot.finite (Types.Quot.Rel K)
   have : Fintype (Types.Quot K) := Fintype.ofFinite (Types.Quot K)
   exact Fintype.ofEquiv (Types.Quot K) (Types.colimitEquivQuot K).symm
