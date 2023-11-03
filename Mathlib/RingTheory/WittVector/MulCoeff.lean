@@ -207,19 +207,12 @@ theorem mul_polyOfInterest_vars (n : ℕ) :
   · apply wittPolyProdRemainder_vars
 #align witt_vector.mul_poly_of_interest_vars WittVector.mul_polyOfInterest_vars
 
-theorem polyOfInterest_vars_eq (n : ℕ) : (polyOfInterest p n).vars =
-    ((p : 𝕄) ^ (n + 1) * (wittMul p (n + 1) + (p : 𝕄) ^ (n + 1) * X (0, n + 1) * X (1, n + 1) -
-      X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) -
-      X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)))).vars := by
-  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by simp only; norm_cast
-  rw [polyOfInterest, this, vars_C_mul]
-  apply pow_ne_zero
-  exact_mod_cast hp.out.ne_zero
-#align witt_vector.poly_of_interest_vars_eq WittVector.polyOfInterest_vars_eq
-
 theorem polyOfInterest_vars (n : ℕ) : (polyOfInterest p n).vars ⊆ univ ×ˢ range (n + 1) := by
-  rw [polyOfInterest_vars_eq]; apply mul_polyOfInterest_vars
-#align witt_vector.poly_of_interest_vars WittVector.polyOfInterest_vars
+  convert mul_polyOfInterest_vars p n using 1
+  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by simp only; norm_cast
+  rw [this, vars_C_mul]
+  apply NeZero.ne
+
 
 theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
     peval (polyOfInterest p n) ![fun i => x.coeff i, fun i => y.coeff i] =
