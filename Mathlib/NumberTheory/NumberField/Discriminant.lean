@@ -24,7 +24,7 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 
 namespace NumberField
 
-open Classical NumberField Matrix Complex
+open Classical NumberField Matrix
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -44,12 +44,11 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
 
 open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
-  NumberField.InfinitePlace ENNReal NNReal
+  NumberField.InfinitePlace ENNReal NNReal Complex
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
-      (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w : InfinitePlace K // IsComplex w } *
-        NNReal.sqrt ‖discr K‖₊ := by
+      (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w : InfinitePlace K // IsComplex w } * sqrt ‖discr K‖₊ := by
   let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
     (canonicalEmbedding.latticeBasis K).indexEquiv (Pi.basisFun ℂ _)
   let e : (index K) ≃ Module.Free.ChooseBasisIndex ℤ (𝓞 K) := (indexEquiv K).trans f.symm
