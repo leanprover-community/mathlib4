@@ -126,11 +126,14 @@ theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
 -- A variant of lean4#2220
 local macro_rules | `($x • $y) => `(@HSMul.hSMul _ _ _ instHSMul $x $y)
 
-/-- The 1-form on $K^3$, the kernel of which we will take a quotient by. -/
+/-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
+
+Our source uses $αx - βy - γz$, though since this is characteristic two we just use $αx + βy + γz$.
+ -/
 @[simps!]
 def lFunc : (Fin 3 → K) →ₗ[K] K :=
   letI proj : Fin 3 → (Fin 3 → K) →ₗ[K] K := LinearMap.proj
-  α • proj 0 - β • proj 1 - γ • proj 2
+  α • proj 0 + β • proj 1 + γ • proj 2
 
 /-- The quotient of `K^3` by the specified relation. -/
 abbrev L : Type _ := _ ⧸ LinearMap.ker lFunc
@@ -247,7 +250,7 @@ theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := 
 theorem algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * γ) = 0 := by
   rw [Algebra.algebraMap_eq_smul_one, αβγ_smul_eq_zero]
 
-/-- Our final result: for the quadratic form `Q60596.Q`, the algebra map to the clifford algebra
+/-- Our final result: for the quadratic form `Q60596.Q`, the algebra map to the Clifford algebra
 is not injective, as it sends the non-zero `α * β * γ` to zero. -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
   fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
