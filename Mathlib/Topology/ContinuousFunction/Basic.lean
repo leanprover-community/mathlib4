@@ -366,6 +366,11 @@ def pi (f : ∀ i, C(A, X i)) : C(A, ∀ i, X i) where
   toFun (a : A) (i : I) := f i a
 #align continuous_map.pi ContinuousMap.pi
 
+@[simp]
+theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a :=
+  rfl
+#align continuous_map.pi_eval ContinuousMap.pi_eval
+
 /-- Evaluation at point as a bundled continuous map. -/
 @[simps (config := .asFn)]
 def eval (i : I) : C(∀ j, X j, X i) where
