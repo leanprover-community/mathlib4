@@ -53,12 +53,11 @@ lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource (h : e' ≈ e)
 theorem StructureGroupoid.trans_restricted (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
     [ClosedUnderRestriction G] (s : Opens M) [Nonempty s] :
     (e.subtypeRestr s).symm ≫ₕ e'.subtypeRestr s ∈ G := by
-  have : (e.symm ≫ₕ e').restr (e.target ∩ e.symm ⁻¹' s) ∈ G := by
-    let hopen := e.preimage_open_of_open_symm s.2
-    refine G.locality fun x' hx' ↦ ⟨e.target ∩ e.symm ⁻¹' s, hopen, ?_, ?_ ⟩
-    · exact interior_subset (mem_of_mem_inter_right hx')
-    · exact closedUnderRestriction' (closedUnderRestriction' (G.compatible he he') hopen) hopen
-  exact G.eq_on_source this (e.subtypeRestr_symm_trans_subtypeRestr s e')
+  apply G.eq_on_source ?_ (e.subtypeRestr_symm_trans_subtypeRestr s e')
+  let hopen := e.preimage_open_of_open_symm s.2
+  refine G.locality fun x' hx' ↦ ⟨e.target ∩ e.symm ⁻¹' s, hopen, ?_, ?_ ⟩
+  · exact interior_subset (mem_of_mem_inter_right hx')
+  · exact closedUnderRestriction' (closedUnderRestriction' (G.compatible he he') hopen) hopen
 
 /-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
 
@@ -92,15 +91,13 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) [ClosedUnderR
   intro s t c' hc'
   have : Nonempty s := nonempty_coe_sort.mpr hs
   have : Nonempty t := nonempty_coe_sort.mpr (MapsTo.map_nonempty e e.mapsTo hs)
-  set e' := e.toHomeomorphSourceTarget.toLocalHomeomorph -- source s, target t
-  -- Choose `x ∈ t` so c' is the restriction of `chartAt H x`.
+  -- Choose `x ∈ t` so `c'` is the restriction of `chartAt H x`.
   obtain ⟨x, hc'⟩ := chartOn_open_eq' t hc'
-  -- As H has only one chart, this chart is the identity: i.e., c' is the inclusion.
+  -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
   rw [hc', (chartAt_self_eq)]
-  -- Simplify slightly.
-  rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
   -- Argue that our expression equals this chart above, at least on its source.
-  set goal := (e' ≫ₕ Opens.localHomeomorphSubtypeCoe t)
+  rw [LocalHomeomorph.subtypeRestr_def, LocalHomeomorph.trans_refl]
+  set goal := (e.toHomeomorphSourceTarget.toLocalHomeomorph ≫ₕ Opens.localHomeomorphSubtypeCoe t)
   have : goal ≈ e.subtypeRestr s :=
     (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro _ _; rfl⟩
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he s)
