@@ -251,8 +251,6 @@ namespace Finset
 
 variable [Monoid β] [Monoid γ]
 
--- TODO Consider using `comm :  Pairwise (Commute on f ∘ ((↑) : s → α))` instead below.
-
 /-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)

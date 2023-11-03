@@ -877,7 +877,7 @@ theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
 #align set.surj_on_iff_surjective Set.surjOn_iff_surjective
 
 @[simp]
-theorem surjective_mapsTo_restrict_iff {h : MapsTo f s t} :
+theorem MapsTo.restrict_surjective_iff (h : MapsTo f s t) :
     Surjective (MapsTo.restrict _ _ _ h) ↔ SurjOn f s t := by
   refine ⟨fun h' b hb ↦ ?_, fun h' ⟨b, hb⟩ ↦ ?_⟩
   · obtain ⟨⟨a, ha⟩, ha'⟩ := h' ⟨b, hb⟩

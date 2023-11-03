@@ -178,8 +178,8 @@ theorem mem_weightSpace (χ : L → R) (m : M) :
   simp [weightSpace, mem_weightSpaceOf]
 
 lemma weightSpace_le_weightSpaceOf (x : L) (χ : L → R) :
-    weightSpace M χ ≤ weightSpaceOf M (χ x) x := by
-  rw [weightSpace]; exact iInf_le _ x
+    weightSpace M χ ≤ weightSpaceOf M (χ x) x :=
+  iInf_le _ x
 
 /-- See also the more useful form `LieModule.zero_weightSpace_eq_top_of_nilpotent`. -/
 @[simp]

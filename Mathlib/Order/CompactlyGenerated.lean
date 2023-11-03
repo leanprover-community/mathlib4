@@ -449,7 +449,7 @@ lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι →
   classical
   rw [← Finset.sup_erase_bot]
   set t := s.erase ⊥
-  replace hf : InjOn f (f ⁻¹' t) := fun i hi j hj hij ↦ by refine hf ?_ ?_ hij <;> aesop
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
   have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
     ext a
     simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq, Finset.mem_insert, true_or, not_true,
