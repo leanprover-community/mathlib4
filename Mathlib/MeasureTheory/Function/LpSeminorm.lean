@@ -80,8 +80,8 @@ def snorm (f : α → F) (p : ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
 #noalign measure_theory.snorm_eq_snorm'
 
 @[simp] lemma snorm_exponent_zero (f : α → F) : snorm f 0 μ = μ f.support := if_pos rfl
+#align measure_theory.snorm_exponent_zero MeasureTheory.snorm_exponent_zeroₓ
 
-@[simp]
 lemma snorm_exponent_top (f : α → F) : snorm f ∞ μ = essSup (‖f ·‖₊ : α → ℝ≥0∞) μ := rfl
 #align measure_theory.snorm_exponent_top MeasureTheory.snorm_exponent_top
 
@@ -103,7 +103,7 @@ lemma snorm_exponent_one (f : α → F) : snorm f 1 μ = ∫⁻ x, ‖f x‖₊ 
 @[simp]
 theorem snorm_zero' : snorm (fun _ : α => (0 : F)) p μ = 0 := by
   rcases eq_or_ne p 0 with rfl | hp0; · simp
-  rcases eq_or_ne p ∞ with rfl | hp_top; · simp [Pi.zero_def, EventuallyEq.rfl]
+  rcases eq_or_ne p ∞ with rfl | hp_top; · simp [snorm_exponent_top, Pi.zero_def, EventuallyEq.rfl]
   by_cases hlt : p < 1 <;> simp [snorm, toReal_pos, *]
 #align measure_theory.snorm_zero' MeasureTheory.snorm_zero'
 
@@ -133,8 +133,12 @@ theorem Memℒp.aestronglyMeasurable {f : α → E} {p : ℝ≥0∞} (h : Memℒ
 theorem lintegral_rpow_nnnorm_eq_rpow_snorm {f : α → F} {q : ℝ} (hq1_lt : 1 ≤ q) :
     (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) = snorm f (.ofReal q) μ ^ q := by
   rw [snorm_of_one_le_ne_top, toReal_ofReal, ← ENNReal.rpow_mul, one_div_mul_cancel,
-    ENNReal.rpow_one] <;> try { linarith } <;> simp
-#align measure_theory.lintegral_rpow_nnnorm_eq_rpow_snorm' MeasureTheory.lintegral_rpow_nnnorm_eq_rpow_snorm'
+    ENNReal.rpow_one] <;> try { linarith } <;> simp [*]
+#align measure_theory.lintegral_rpow_nnnorm_eq_rpow_snorm' MeasureTheory.lintegral_rpow_nnnorm_eq_rpow_snorm
+
+theorem lintegral_rpow_nnnorm_eq_snorm {f : α → F} {q : ℝ} (hq_pos : 0 < q) (hq_le_1 : q ≤ 1) :
+    (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) = snorm f (.ofReal q) μ := by
+  rw [snorm_of_ne_zero_le_one, ENNReal.toReal_ofReal] <;> try { linarith } <;> simp [*]
 
 end ℒpSpaceDefinition
 
@@ -175,14 +179,6 @@ end Top
 
 section Zero
 
-@[simp]
-theorem snorm'_exponent_zero {f : α → F} : snorm' f 0 μ = 1 := by
-  rw [snorm', _root_.div_zero, ENNReal.rpow_zero]
-#align measure_theory.snorm'_exponent_zero MeasureTheory.snorm'_exponent_zero
-
-@[simp]
-theorem snorm_exponent_zero {f : α → F} : snorm f 0 μ = 0 := by simp [snorm]
-#align measure_theory.snorm_exponent_zero MeasureTheory.snorm_exponent_zero
 
 theorem memℒp_zero_iff_aestronglyMeasurable {f : α → E} : Memℒp f 0 μ ↔ AEStronglyMeasurable f μ :=
   by simp [Memℒp, snorm_exponent_zero]
