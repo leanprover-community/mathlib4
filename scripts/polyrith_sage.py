@@ -34,6 +34,9 @@ if {n_vars!r} != 0:
 else:
     # workaround for a Sage shortcoming with `n_vars = 0`,
     # `TypeError: no conversion of this ring to a Singular ring defined`
+    # In this case, there is no need to look for membership in the *radical*;
+    # we just check for membership in the ideal, and return exponent 1 
+    # if coefficients are found.
     P = PolynomialRing({type_str(type)}, 'var', 1)
     p = P({goal_type})
     I = P.ideal({eq_list})
