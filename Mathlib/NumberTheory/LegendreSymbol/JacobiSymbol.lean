@@ -468,7 +468,7 @@ theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : 
 theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) := by
   rcases eq_or_ne a 0 with (rfl | ha₀)
   · rw [mul_zero, mod_zero]
-  have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by norm_num) _)
+  have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by decide) _)
   rcases exists_eq_pow_mul_and_not_dvd ha₀ 2 (by norm_num) with ⟨e, a', ha₁', ha₂⟩
   have ha₁ := odd_iff.mpr (two_dvd_ne_zero.mp ha₁')
   nth_rw 2 [ha₂]; nth_rw 1 [ha₂]
@@ -493,7 +493,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
 theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) := by
   cases' Int.natAbs_eq a with ha ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
   · exact mod_right' a.natAbs hb
-  · have hb' : Odd (b % (4 * a.natAbs)) := hb.mod_even (Even.mul_right (by norm_num) _)
+  · have hb' : Odd (b % (4 * a.natAbs)) := hb.mod_even (Even.mul_right (by decide) _)
     rw [jacobiSym.neg _ hb, jacobiSym.neg _ hb', mod_right' _ hb, χ₄_nat_mod_four,
       χ₄_nat_mod_four (b % (4 * _)), mod_mod_of_dvd b (dvd_mul_right 4 _)]
 #align jacobi_sym.mod_right jacobiSym.mod_right

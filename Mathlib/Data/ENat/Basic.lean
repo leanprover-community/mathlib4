@@ -149,13 +149,17 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
   WithTop.top_sub_coe
 
+@[simp]
+theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
+  WithTop.zero_lt_top
+
 --Porting note: new theorem copied from `WithTop`
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
 @[simp]
 theorem coe_toNat_eq_self : ENat.toNat (n : ℕ∞) = n ↔ n ≠ ⊤ :=
-  ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
+  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self

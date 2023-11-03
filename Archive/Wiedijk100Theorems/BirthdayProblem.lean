@@ -30,6 +30,7 @@ local notation "‖" x "‖" => Fintype.card x
 theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
   simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
+  norm_num
 #align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
@@ -76,7 +77,7 @@ theorem birthday_measure :
       exact Fintype.card_congr (Equiv.subtypeInjectiveEquivEmbedding _ _)
     · simp only [Fintype.card_embedding_eq, Fintype.card_fin, Nat.descFactorial]
   rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
-  rotate_left; (iterate 2 right; norm_num); (iterate 2 left; norm_num)
+  rotate_left; (iterate 2 right; norm_num); decide; (iterate 2 left; norm_num)
   norm_cast
   simp only [Fintype.card_pi]
   norm_num

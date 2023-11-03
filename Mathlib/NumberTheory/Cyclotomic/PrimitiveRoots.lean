@@ -469,7 +469,7 @@ theorem pow_sub_one_norm_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot
       rw [← PNat.coe_inj, PNat.pow_coe, ← pow_one 2] at htwo
       replace htwo :=
         eq_of_prime_pow_eq (prime_iff.1 hpri.out) (prime_iff.1 Nat.prime_two) (succ_pos _) htwo
-      rwa [show 2 = ((2 : ℕ+) : ℕ) by simp, PNat.coe_inj] at htwo
+      rwa [show 2 = ((2 : ℕ+) : ℕ) by decide, PNat.coe_inj] at htwo
     replace hs : s = k
     · rw [hp, ← PNat.coe_inj, PNat.pow_coe] at htwo
       nth_rw 2 [← pow_one 2] at htwo

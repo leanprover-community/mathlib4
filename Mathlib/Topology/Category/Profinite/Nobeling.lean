@@ -386,7 +386,7 @@ theorem eval_eq (l : Products I) (x : C) :
     push_neg at h
     convert h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
-    simp only [ite_eq_right_iff]
+    simp only [ite_eq_right_iff, one_ne_zero]
 
 theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :

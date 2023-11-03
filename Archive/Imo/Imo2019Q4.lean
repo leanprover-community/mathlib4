@@ -65,7 +65,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ ≤ k ! := by gcongr
   clear h h2
   induction' n, hn using Nat.le_induction with n' hn' IH
-  · norm_num
+  · decide
   let A := ∑ i in range n', i
   have le_sum : ∑ i in range 6, i ≤ A
   · apply sum_le_sum_of_subset
@@ -87,8 +87,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   -- The implication `←` holds.
   constructor
   swap
-  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;>
-    norm_num [prod_range_succ, succ_mul]
+  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;> decide
   intro h
   -- We know that n < 6.
   have := Imo2019Q4.upper_bound hk h
@@ -101,9 +100,9 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
     exact h; rw [h]; norm_num
   all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> norm_num
+  · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> decide
   -- n = 4
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> norm_num
+  · refine' monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> decide
   -- n = 5
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> norm_num
+  · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> decide
 #align imo2019_q4 imo2019_q4
