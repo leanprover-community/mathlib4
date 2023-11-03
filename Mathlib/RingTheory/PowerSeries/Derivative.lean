@@ -53,10 +53,7 @@ theorem derivativeFun_add (f g : R⟦X⟧) :
 
 theorem derivativeFun_C (r : R) : derivativeFun (C R r) = 0 := by
   ext n
-  rw [coeff_derivativeFun, coeff_C]
-  split_ifs with h
-  · cases succ_ne_zero n h
-  · rw [zero_mul, map_zero]
+  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, map_zero]
 
 theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
     trunc n f.derivativeFun = derivative (trunc (n + 1) f):= by
