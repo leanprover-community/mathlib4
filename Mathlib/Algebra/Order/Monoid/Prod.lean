@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Prod.Lex
+import Mathlib.Tactic.LibrarySearch
 
 #align_import algebra.order.monoid.prod from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
@@ -14,18 +15,52 @@ import Mathlib.Data.Prod.Lex
 
 namespace Prod
 
-variable {α β M N : Type*}
+variable {α β : Type*}
 
 @[to_additive]
 instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) where
   mul_le_mul_left _ _ h _ := ⟨mul_le_mul_left' h.1 _, mul_le_mul_left' h.2 _⟩
 
 @[to_additive]
-instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid M] [OrderedCancelCommMonoid N] :
-    OrderedCancelCommMonoid (M × N) :=
-  { (inferInstance : OrderedCommMonoid (M × N)) with
+instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
+    OrderedCancelCommMonoid (α × β) :=
+  { (inferInstance : OrderedCommMonoid (α × β)) with
     le_of_mul_le_mul_left :=
       fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
+
+@[to_additive]
+instance instStrictOrderedCommMonoid [StrictOrderedCommMonoid α] [StrictOrderedCommMonoid β] :
+    StrictOrderedCommMonoid (α × β) :=
+  { (inferInstance : OrderedCommMonoid (α × β)) with
+    lt := fun x y => x.fst ≤ y.fst ∧ x.snd < y.snd ∨ x.fst < y.fst ∧ x.snd ≤ y.snd
+    lt_iff_le_not_le := fun x y => by
+      constructor
+      · intro hxy
+        rcases hxy with ⟨fstle, sndlt⟩ | ⟨fstlt, sndle⟩
+        · exact ⟨⟨fstle, le_of_lt sndlt⟩, by rintro ⟨-, hsnd⟩; simpa using (sndlt.trans_le hsnd)⟩
+        · exact ⟨⟨le_of_lt fstlt, sndle⟩, by rintro ⟨hfst, -⟩; simpa using (fstlt.trans_le hfst)⟩
+      · rintro ⟨⟨hfst, hsnd⟩, negle⟩
+        by_contra contr
+        by_cases h1 : y.fst ≤ x.fst ; swap
+        · apply contr
+          right
+          exact ⟨lt_of_le_not_le hfst h1, hsnd⟩
+        by_cases h2 : y.snd ≤ x.snd ; swap
+        · apply contr
+          left
+          exact ⟨hfst, lt_of_le_not_le hsnd h2⟩
+        apply negle
+        exact ⟨h1, h2⟩
+    mul_lt_mul_left := fun x y hxy z => by
+      rcases hxy with ⟨fstle, sndlt⟩ | ⟨fstlt, sndle⟩
+      · left
+        constructor
+        · apply mul_le_mul_left' fstle
+        · apply mul_lt_mul_left' sndlt
+      · right
+        constructor
+        · apply mul_lt_mul_left' fstlt
+        · apply mul_le_mul_left' sndle }
 
 @[to_additive]
 instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β] :
