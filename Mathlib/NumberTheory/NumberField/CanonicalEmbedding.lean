@@ -354,7 +354,7 @@ theorem det_matrix_to_stdBasis :
       rw [Finset.prod_const, Fintype.card]
 
 /-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
-representation of `comMap K x` on `stdBasis` is given (up to reindexing) by the product of
+representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the product of
 `matrix_to_stdBasis` by `x`. -/
 theorem stdBasis_repr_eq_matrix_to_stdBasis_mul (x : (K →+* ℂ) → ℂ)
     (hx : ∀ φ, conj (x φ) = x (ComplexEmbedding.conjugate φ)) (c : index K) :

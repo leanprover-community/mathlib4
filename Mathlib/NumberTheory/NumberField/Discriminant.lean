@@ -49,7 +49,7 @@ open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
       (2 : ℝ≥0)⁻¹ ^ Fintype.card { w : InfinitePlace K // IsComplex w } *
-        Real.toNNReal (Real.sqrt |discr K|) := by
+        NNReal.sqrt ‖discr K‖₊ := by
   rw [← toNNReal_eq_toNNReal_iff' (ne_of_lt (fundamentalDomain_isBounded _).measure_lt_top)
     (ENNReal.mul_ne_top (coe_ne_top) (coe_ne_top)), toNNReal_mul, toNNReal_coe]
   let f : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →+* ℂ) :=
@@ -76,10 +76,10 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
       _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} *
             Real.toNNReal (Real.sqrt (Complex.abs (N.det ^ 2))) := by
         rw [Complex.abs_pow, Real.sqrt_sq (Complex.abs.nonneg _)]
-      _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card { w // IsComplex w } *
-            Real.toNNReal (Real.sqrt |(discr K)|) := by
+      _ = (2 : ℝ≥0)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
         rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
-          ← coe_discr, map_intCast, Complex.int_cast_abs]
+          ← coe_discr, map_intCast, ← Complex.norm_eq_abs, ← Complex.nnnorm_int, Real.sqrt,
+          norm_toNNReal, Real.toNNReal_coe]
   ext : 2
   dsimp only
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp, Equiv.symm_symm,
