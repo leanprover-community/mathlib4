@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Order.WithBot
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Defs
 
 #align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -367,32 +368,26 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
           rw [Nat.cast_succ, coe_add, coe_one]
       }
 
-instance semiring [Semiring α] : Semiring (WithZero α) :=
-  { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
-    WithZero.monoidWithZero with
-    left_distrib := fun a b c => by
-      cases' a with a; · rfl
-      cases' b with b <;> cases' c with c <;> try rfl
-      exact congr_arg some (left_distrib _ _ _),
-    right_distrib := fun a b c => by
-      cases' c with c
-      · change (a + b) * 0 = a * 0 + b * 0
-        simp
-      cases' a with a <;> cases' b with b <;> try rfl
-      exact congr_arg some (right_distrib _ _ _) }
-
 instance leftDistribClass [AddZeroClass α] [MulZeroClass α] [LeftDistribClass α]  :
     LeftDistribClass (WithZero α) where
   left_distrib a b c := by
-    cases' a with a
-    · rfl
-    cases' b with b
-    · rw [show ((none : Option α) = (0 : WithZero α)) by rfl]
-      rw [@mul_zero (WithZero α) _ (some a)]
-      simp only [zero_add]
+    cases' a with a; · rfl
+    cases' b with b <;> cases' c with c <;> try rfl
+    exact congr_arg some (left_distrib _ _ _)
+
+instance rightDistribClass [AddZeroClass α] [MulZeroClass α] [RightDistribClass α]  :
+    RightDistribClass (WithZero α) where
+  right_distrib a b c := by
     cases' c with c
-    · exact rfl
-    rw [WithZero.add]
-    apply congr_arg some (left_distrib _ _ _)
+    · change (a + b) * 0 = a * 0 + b * 0
+      simp
+    cases' a with a <;> cases' b with b <;> try rfl
+    exact congr_arg some (right_distrib _ _ _)
+
+instance semiring [Semiring α] : Semiring (WithZero α) :=
+  { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
+    WithZero.monoidWithZero with
+    left_distrib := fun a b c ↦ LeftDistribClass.left_distrib a b c,
+    right_distrib := fun a b c ↦ RightDistribClass.right_distrib a b c }
 
 end WithZero
