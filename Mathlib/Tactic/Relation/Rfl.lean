@@ -41,7 +41,7 @@ def _root_.Lean.MVarId.liftReflToEq (mvarId : MVarId) : MetaM MVarId := do
   if rel.isAppOf `Eq then
     -- No need to lift Eq to Eq
     return mvarId
-  for lem in ← (Std.Tactic.reflExt.getState (← getEnv)).getMatch rel do
+  for lem in ← (Std.Tactic.reflExt.getState (← getEnv)).getMatch rel Std.Tactic.reflExt.config do
     let res ← observing? do
       -- First create an equality relating the LHS and RHS
       -- and reduce the goal to proving that LHS is related to LHS.
