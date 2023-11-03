@@ -1037,6 +1037,15 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph
   exact G.eq_on_source C (Setoid.symm D)
 #align structure_groupoid.compatible_of_mem_maximal_atlas StructureGroupoid.compatible_of_mem_maximalAtlas
 
+open LocalHomeomorph in
+/-- The maximal atlas of a structure groupoid is stable under equivalence. -/
+lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource (h : e' ≈ e)
+    (he : e ∈ G.maximalAtlas M) : e' ∈ G.maximalAtlas M := by
+  intro e'' he''
+  obtain ⟨l, r⟩ := mem_maximalAtlas_iff.mp he e'' he''
+  exact ⟨G.eq_on_source l (EqOnSource.trans' (EqOnSource.symm' h) (e''.eqOnSource_refl)),
+         G.eq_on_source r (EqOnSource.trans' (e''.symm).eqOnSource_refl h)⟩
+
 variable (G)
 
 /-- In the model space, the identity is in any maximal atlas. -/
@@ -1146,6 +1155,23 @@ protected instance instChartedSpace : ChartedSpace H s where
     simp only [mem_iUnion, mem_singleton_iff]
     use x
 #align topological_space.opens.charted_space TopologicalSpace.Opens.instChartedSpace
+
+/-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
+ of some chart on `M`. -/
+lemma chart_eq {s : Opens M} [Nonempty s] {e : LocalHomeomorph s H} (he : e ∈ atlas H s) :
+    ∃ x : s, e = (chartAt H (x : M)).subtypeRestr s := by
+  rcases he with ⟨xset, ⟨x, hx⟩, he⟩
+  have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) s} = xset := hx
+  exact ⟨x, mem_singleton_iff.mp (this ▸ he)⟩
+
+/-- If `t` is a non-empty open subset of `H`,
+  every chart of `t` is the restriction of some chart on `H`. -/
+-- XXX: can I unify this with `chart_eq`?
+lemma chart_eq' {t : Opens H} [Nonempty t] {e' : LocalHomeomorph t H} (he' : e' ∈ atlas H t) :
+    ∃ x : t, e' = (chartAt H ↑x).subtypeRestr t := by
+  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
+  have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
+  exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/

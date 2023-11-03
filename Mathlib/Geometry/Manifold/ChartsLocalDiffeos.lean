@@ -22,32 +22,6 @@ variable {H : Type*} [TopologicalSpace H] {M : Type*} [TopologicalSpace M] [Char
   {G : StructureGroupoid H} [HasGroupoid M G]
   {e e' : LocalHomeomorph M H}
 
-/-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
- of some chart on `M`. -/
-lemma chartOn_open_eq {s : Opens M} [Nonempty s] {e : LocalHomeomorph s H} (he : e ∈ atlas H s) :
-    ∃ x : s, e = (chartAt H (x : M)).subtypeRestr s := by
-  rcases he with ⟨xset, ⟨x, hx⟩, he⟩
-  have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) s} = xset := hx
-  exact ⟨x, mem_singleton_iff.mp (this ▸ he)⟩
-
-/-- If `t` is a non-empty open subset of `H`,
-  every chart of `t` is the restriction of some chart on `H`. -/
--- XXX: can I unify this with `chartOn_open_eq`?
-lemma chartOn_open_eq' {t : Opens H} [Nonempty t] {e' : LocalHomeomorph t H} (he' : e' ∈ atlas H t) :
-    ∃ x : t, e' = (chartAt H ↑x).subtypeRestr t := by
-  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
-  have : {LocalHomeomorph.subtypeRestr (chartAt H ↑x) t} = xset := hx
-  exact ⟨x, mem_singleton_iff.mp (this ▸ he')⟩
-
-open LocalHomeomorph in
-/-- The maximal atlas of a structure groupoid is stable under equivalence. -/
-lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource (h : e' ≈ e)
-    (he : e ∈ G.maximalAtlas M) : e' ∈ G.maximalAtlas M := by
-  intro e'' he''
-  obtain ⟨l, r⟩ := mem_maximalAtlas_iff.mp he e'' he''
-  exact ⟨G.eq_on_source l (EqOnSource.trans' (EqOnSource.symm' h) (e''.eqOnSource_refl)),
-         G.eq_on_source r (EqOnSource.trans' (e''.symm).eqOnSource_refl h)⟩
-
 /-- If `G` is closed under restriction, the transition function between
   the restriction of two charts `e` and `e'` lies in `G`. -/
 theorem StructureGroupoid.trans_restricted (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
@@ -68,7 +42,7 @@ lemma StructureGroupoid.restriction_in_maximalAtlas (he : e ∈ atlas H M) [Clos
     {s : Opens M} [Nonempty s] : e.subtypeRestr s ∈ G.maximalAtlas s := by
   intro e' he'
   -- `e'` is the restriction of some chart of `M` at `x`,
-  obtain ⟨x, this⟩ := chartOn_open_eq he'
+  obtain ⟨x, this⟩ := Opens.chart_eq he'
   rw [this]
   -- The transition functions between the unrestricted charts are in the groupoid,
   -- the transition functions of the restriction are the restriction of the transition function.
@@ -92,7 +66,7 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) [ClosedUnderR
   have : Nonempty s := nonempty_coe_sort.mpr hs
   have : Nonempty t := nonempty_coe_sort.mpr (MapsTo.map_nonempty e e.mapsTo hs)
   -- Choose `x ∈ t` so `c'` is the restriction of `chartAt H x`.
-  obtain ⟨x, hc'⟩ := chartOn_open_eq' hc'
+  obtain ⟨x, hc'⟩ := Opens.chart_eq' hc'
   -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
   rw [hc', (chartAt_self_eq)]
   -- Argue that our expression equals this chart above, at least on its source.
