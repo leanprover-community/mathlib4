@@ -7,7 +7,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.TryThis
