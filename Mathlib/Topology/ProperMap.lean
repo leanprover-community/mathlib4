@@ -246,7 +246,7 @@ theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) 
 
 /-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
 such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y] [LocallyCompactSpace Y] :
+theorem isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) := by
   constructor <;> intro H
   -- The direct implication follows from the previous results
@@ -265,7 +265,7 @@ theorem isProperMap_iff_isCompact_preimage [T2Space Y] [LocallyCompactSpace Y] :
     exact ⟨x, hx⟩
 
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
-lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [LocallyCompactSpace Y] :
+lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
   simp_rw [isProperMap_iff_isCompact_preimage, hasBasis_cocompact.tendsto_right_iff,
     ← mem_preimage, eventually_mem_set, preimage_compl]

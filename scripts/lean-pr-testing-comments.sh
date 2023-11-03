@@ -8,7 +8,7 @@ set -e
 # env:
 #   TOKEN: ${{ secrets.LEAN_PR_TESTING }}
 #   GITHUB_CONTEXT: ${{ toJson(github) }}
-#   WORKFLOW_URL: ${{ github.event.workflow_run.html_url }}
+#   WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
 #   LINT_OUTCOME: ${{ steps.lint.outcome }}
 #   TEST_OUTCOME: ${{ steps.test.outcome }}
 #   BUILD_OUTCOME: ${{ steps.build.outcome }}
@@ -44,7 +44,7 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -H "X-GitHub-Api-Version: 2022-11-28" \
       https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels \
       -d '{"labels":["builds-mathlib"]}'
-  else
+  elif [ "$LINT_OUTCOME" == "failure" || "$TEST_OUTCOME" == "failure" || "$BUILD_OUTCOME" == "failure" ]; then
     echo "Removing label builds-mathlib"
     curl -L -s \
       -X DELETE \
@@ -66,20 +66,24 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
   existing_comment=$(curl -L -s -H "Authorization: token $TOKEN" \
                           -H "Accept: application/vnd.github.v3+json" \
                           "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments" \
-                          | jq '.[] | select(.body | startswith("- ✅ Mathlib") or startswith("- ❌ Mathlib") or startswith("- 💥 Mathlib"))')
+                          | jq '.[] | select(.body | startswith("- ✅ Mathlib") or startswith("- ❌ Mathlib") or startswith("- 💥 Mathlib") or startswith("- 🟡 Mathlib"))')
   existing_comment_id=$(echo "$existing_comment" | jq -r .id)
   existing_comment_body=$(echo "$existing_comment" | jq -r .body)
 
   branch="[lean-pr-testing-$pr_number](https://github.com/leanprover-community/mathlib4/compare/master...lean-pr-testing-$pr_number)"
   # Depending on the success/failure, set the appropriate message
-  if [ "$LINT_OUTCOME" == "success" ]; then
-    message="✅ Mathlib branch $branch has successfully built against this PR. ($current_time)"
+  if [ "$LINT_OUTCOME" == "cancelled" || "$TEST_OUTCOME" == "cancelled" || "$BUILD_OUTCOME" == "cancelled" ]; then
+    message="- 🟡 Mathlib branch $branch build against this PR was cancelled. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$LINT_OUTCOME" == "success" ]; then
+    message="- ✅ Mathlib branch $branch has successfully built against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$TEST_OUTCOME" == "success" ]; then
-    message="❌ Mathlib branch $branch built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ❌ Mathlib branch $branch built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$BUILD_OUTCOME" == "success" ]; then
-    message="❌ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ❌ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$LINT_OUTCOME" == "failure" || "$TEST_OUTCOME" == "failure" || "$BUILD_OUTCOME" == "failure" ]; then
+    message="- 💥 Mathlib branch $branch build failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   else
-    message="💥 Mathlib branch $branch failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- 🟡 Mathlib branch $branch build this PR didn't complete normally. ($current_time) [View Log]($WORKFLOW_URL)"
   fi
 
   echo "$message"
@@ -92,17 +96,16 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -X POST \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "$(jq --null-input --arg val "- $message" '{"body": $val}')" \
+      -d "$(jq --null-input --arg val "$message" '{"body": $val}')" \
       "https://api.github.com/repos/leanprover/lean4/issues/$pr_number/comments"
   else
     # Append new result to the existing comment
     echo "Appending to existing comment at leanprover/lean4/issues/$pr_number/comments"
-    updated_comment_body="$existing_comment_body\n- $message"
     curl -L -s \
       -X PATCH \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "$(jq --null-input --arg val "- $updated_comment_body" '{"body": $val}')" \
+      -d "$(jq --null-input --arg existing "$existing_comment_body" --arg message "$message" '{"body":($existing + "\n" + $message)}')" \
       "https://api.github.com/repos/leanprover/lean4/issues/comments/$existing_comment_id"
   fi
 fi

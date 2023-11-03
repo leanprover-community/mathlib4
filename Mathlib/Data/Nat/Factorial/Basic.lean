@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Common
 
 #align_import data.nat.factorial.basic from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 

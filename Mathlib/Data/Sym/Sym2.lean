@@ -337,11 +337,11 @@ theorem mem_iff {a b c : α} : a ∈ (⟦(b, c)⟧ : Sym2 α) ↔ a = b ∨ a = 
 #align sym2.mem_iff Sym2.mem_iff
 
 theorem out_fst_mem (e : Sym2 α) : e.out.1 ∈ e :=
-  ⟨e.out.2, by rw [Prod.mk.eta, e.out_eq]⟩
+  ⟨e.out.2, by rw [e.out_eq]⟩
 #align sym2.out_fst_mem Sym2.out_fst_mem
 
 theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
-  ⟨e.out.1, by rw [eq_swap, Prod.mk.eta, e.out_eq]⟩
+  ⟨e.out.1, by rw [eq_swap, e.out_eq]⟩
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ (⟦(a, b)⟧ : Sym2 α), p c) ↔ p a ∧ p b := by

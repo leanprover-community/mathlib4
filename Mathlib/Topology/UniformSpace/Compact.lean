@@ -252,11 +252,14 @@ theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β]
   exact this.tendstoUniformly hxK
 #align continuous_on.tendsto_uniformly ContinuousOn.tendstoUniformly
 
-/-- A continuous family of functions `α → β → γ` tends uniformly to its value at `x` if `α` is
-locally compact and `β` is compact. -/
-theorem Continuous.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
+/-- A continuous family of functions `α → β → γ` tends uniformly to its value at `x`
+if `α` is weakly locally compact and `β` is compact. -/
+theorem Continuous.tendstoUniformly [WeaklyLocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
     (f : α → β → γ) (h : Continuous ↿f) (x : α) : TendstoUniformly f (f x) (𝓝 x) :=
-  h.continuousOn.tendstoUniformly univ_mem
+  let ⟨K, hK, hxK⟩ := exists_compact_mem_nhds x
+  have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
+    IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ) h.continuousOn
+  this.tendstoUniformly hxK
 #align continuous.tendsto_uniformly Continuous.tendstoUniformly
 
 section UniformConvergence

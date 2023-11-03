@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.Common
 
 #align_import algebra.gcd_monoid.basic from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 

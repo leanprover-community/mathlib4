@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.RestateAxiom
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.Common
 
 #align_import category_theory.category.basic from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 

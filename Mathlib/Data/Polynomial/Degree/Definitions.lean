@@ -238,7 +238,6 @@ theorem natDegree_lt_natDegree {p q : R[X]} (hp : p ≠ 0) (hpq : p.degree < q.d
     p.natDegree < q.natDegree := by
   by_cases hq : q = 0
   · exact (not_lt_bot <| hq ▸ hpq).elim
-  -- Porting note: `Nat.cast_withBot` is required.
   rwa [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt] at hpq
 #align polynomial.nat_degree_lt_nat_degree Polynomial.natDegree_lt_natDegree
 

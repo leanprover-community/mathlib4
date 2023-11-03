@@ -5,9 +5,6 @@ Authors: Simon Hudon, David Renshaw
 -/
 
 import Lean
-import Mathlib.Init.Logic
-import Mathlib.Init.Propext
-import Mathlib.Logic.Basic
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
@@ -34,7 +31,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr
-    replace q(mt Iff.to_eq $h')
+    replace q(mt propext $h')
   | ~q(($a : Prop) = $b) => do
     let h' : Q($a = $b) := h.toExpr
     replace q(Eq.to_iff $h')

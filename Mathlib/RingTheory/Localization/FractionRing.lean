@@ -310,14 +310,20 @@ theorem mk_eq_div {r s} :
   by rw [Localization.mk_eq_mk', IsFractionRing.mk'_eq_div]
 #align fraction_ring.mk_eq_div FractionRing.mk_eq_div
 
-noncomputable instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
-    Algebra (FractionRing R) K :=
+/-- This is not an instance because it creates a diamond when `K = FractionRing R`.
+Should usually be introduced locally along with `isScalarTower_liftAlgebra`
+See note [reducible non-instances]. -/
+@[reducible]
+noncomputable def liftAlgebra [IsDomain R] [Field K] [Algebra R K]
+    [NoZeroSMulDivisors R K] : Algebra (FractionRing R) K :=
   RingHom.toAlgebra (IsFractionRing.lift (NoZeroSMulDivisors.algebraMap_injective R _))
 
 -- Porting note: had to fill in the `_` by hand for this instance
-instance [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
-    IsScalarTower R (FractionRing R) K :=
-  IsScalarTower.of_algebraMap_eq fun x =>
+/-- Should be introduced locally after introducing `FractionRing.liftAlgebra` -/
+theorem isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
+    by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
+  letI := liftAlgebra R K
+  exact IsScalarTower.of_algebraMap_eq fun x =>
     (IsFractionRing.lift_algebraMap (NoZeroSMulDivisors.algebraMap_injective R K ) x).symm
 
 /-- Given an integral domain `A` and a localization map to a field of fractions

@@ -299,6 +299,15 @@ theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
   List.length_finRange n
 #align fintype.card_fin Fintype.card_fin
 
+theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
+    Fintype.card {i : Fin n // i < m} = m := by
+  conv_rhs => rw [← Fintype.card_fin m]
+  apply Fintype.card_congr
+  exact { toFun := fun ⟨⟨i, _⟩, hi⟩ ↦ ⟨i, hi⟩
+          invFun := fun ⟨i, hi⟩ ↦ ⟨⟨i, lt_of_lt_of_le hi h⟩, hi⟩
+          left_inv := fun i ↦ rfl
+          right_inv := fun i ↦ rfl }
+
 @[simp]
 theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by
   rw [Finset.card_univ, Fintype.card_fin]
@@ -540,6 +549,7 @@ theorem card_pos [h : Nonempty α] : 0 < card α :=
   card_pos_iff.mpr h
 #align fintype.card_pos Fintype.card_pos
 
+@[simp]
 theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero

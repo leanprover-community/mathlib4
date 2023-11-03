@@ -1617,7 +1617,6 @@
  ["docBlame", "Mathlib.Tactic.hGeneralize"],
  ["docBlame", "Mathlib.Tactic.hGeneralize!"],
  ["docBlame", "Mathlib.Tactic.haveField"],
- ["docBlame", "Mathlib.Tactic.haveLetCore"],
  ["docBlame", "Mathlib.Tactic.hint"],
  ["docBlame", "Mathlib.Tactic.hygieneInfo"],
  ["docBlame", "Mathlib.Tactic.hygieneInfoFn"],

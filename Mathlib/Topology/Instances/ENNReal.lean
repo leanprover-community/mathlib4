@@ -1506,7 +1506,7 @@ theorem isClosed_setOf_lipschitzOnWith {α β} [PseudoEMetricSpace α] [PseudoEM
 
 theorem isClosed_setOf_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) :
     IsClosed { f : α → β | LipschitzWith K f } := by
-  simp only [← lipschitz_on_univ, isClosed_setOf_lipschitzOnWith]
+  simp only [← lipschitzOn_univ, isClosed_setOf_lipschitzOnWith]
 #align is_closed_set_of_lipschitz_with isClosed_setOf_lipschitzWith
 
 namespace Real

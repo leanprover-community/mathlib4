@@ -440,7 +440,7 @@ theorem mulRothNumber_map_mul_left :
 @[to_additive (attr := simp)]
 theorem mulRothNumber_map_mul_right :
     mulRothNumber (s.map <| mulRightEmbedding a) = mulRothNumber s := by
-  rw [← mul_left_embedding_eq_mul_right_embedding, mulRothNumber_map_mul_left s a]
+  rw [← mulLeftEmbedding_eq_mulRightEmbedding, mulRothNumber_map_mul_left s a]
 #align mul_roth_number_map_mul_right mulRothNumber_map_mul_right
 #align add_roth_number_map_add_right addRothNumber_map_add_right
 

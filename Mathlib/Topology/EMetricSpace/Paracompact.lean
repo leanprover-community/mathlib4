@@ -162,7 +162,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         (Hle i hi).finite.biUnion' fun _ _ => finite_singleton _
     refine' this.subset fun I hI => _
     simp only [mem_iUnion]
-    refine' ⟨I.1, _, I.2, hI, Prod.mk.eta.symm⟩
+    refine' ⟨I.1, _, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
 -- see Note [lower instance priority]

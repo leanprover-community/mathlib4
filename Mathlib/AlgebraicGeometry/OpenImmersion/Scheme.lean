@@ -1073,7 +1073,7 @@ def morphismRestrictEq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y} (e : U = V) 
 
 -- Porting note : this does not compile under 200000 heart beats. The proof is more or less
 -- preserved with some morphisms named so that instances about them can be made manually.
-set_option maxHeartbeats 350000 in
+set_option maxHeartbeats 300000 in
 /-- Restricting a morphism twice is isomorphic to one restriction. -/
 def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
     Arrow.mk (f ∣_ U ∣_ V) ≅ Arrow.mk (f ∣_ U.openEmbedding.isOpenMap.functor.obj V) := by

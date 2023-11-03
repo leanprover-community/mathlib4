@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Adam Topaz
+Authors: Scott Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Free
+import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -572,5 +573,28 @@ theorem induction {C : FreeAlgebra R X → Prop}
   simp [AlgHom.ext_iff] at of_id
   exact of_id a
 #align free_algebra.induction FreeAlgebra.induction
+
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by
+  set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using FreeAlgebra.induction with
+  | h_grade0 => exact S.algebraMap_mem _
+  | h_add x y hx hy => exact S.add_mem hx hy
+  | h_mul x y hx hy => exact S.mul_mem hx hy
+  | h_grade1 x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+variable {A : Type*} [Semiring A] [Algebra R A]
+
+/-- Noncommutative version of `Algebra.adjoin_range_eq_range_aeval`. -/
+theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :
+    Algebra.adjoin R (Set.range f) = (FreeAlgebra.lift R f).range := by
+  simp only [← Algebra.map_top, ←adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    (· ∘ ·), lift_ι_apply]
+
+/-- Noncommutative version of `Algebra.adjoin_range_eq_range`. -/
+theorem _root_.Algebra.adjoin_eq_range_freeAlgebra_lift (s : Set A) :
+    Algebra.adjoin R s = (FreeAlgebra.lift R ((↑) : s → A)).range := by
+  rw [← Algebra.adjoin_range_eq_range_freeAlgebra_lift, Subtype.range_coe]
 
 end FreeAlgebra

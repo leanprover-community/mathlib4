@@ -261,7 +261,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
   suffices h : ContinuousOn (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)) (I '' s)
   · have C := ContinuousOn.comp h I.continuous_toFun.continuousOn Subset.rfl
     have A : Continuous fun q : (E →L[𝕜] E') × E => q.1 q.2 :=
-      isBoundedBilinearMapApply.continuous
+      isBoundedBilinearMap_apply.continuous
     have B :
       ContinuousOn
         (fun p : H × E => (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I p.1), p.2))

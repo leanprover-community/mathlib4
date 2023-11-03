@@ -61,9 +61,14 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack"]
 
-open Cache IO Hashing Requests in
+open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  let hashMemo ← getHashMemo
+  -- We pass any following arguments to `getHashMemo`,
+  -- so we can use the cache on `Archive` or `Counterexamples`.
+  let extraRoots := match args with
+  | [] => #[]
+  | _ :: t => t.toArray.map FilePath.mk
+  let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
@@ -84,8 +89,9 @@ def main (args : List String) : IO Unit := do
   | ["clean"] =>
     cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
-  | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
-  | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)
+  -- We allow arguments for `put` and `put!` so they can be added to the `roots`.
+  | "put" :: _ => putFiles (← packCache hashMap false) false (← getToken)
+  | "put!" :: _ => putFiles (← packCache hashMap false) true (← getToken)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)

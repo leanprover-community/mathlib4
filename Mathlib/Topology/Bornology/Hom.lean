@@ -188,12 +188,14 @@ theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f
   ext fun _ => rfl
 #align locally_bounded_map.id_comp LocallyBoundedMap.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
 -- porting note: unification was not strong enough to do `congrArg _`.
 #align locally_bounded_map.cancel_right LocallyBoundedMap.cancel_right
 
+@[simp]
 theorem cancel_left {g : LocallyBoundedMap β γ} {f₁ f₂ : LocallyBoundedMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
