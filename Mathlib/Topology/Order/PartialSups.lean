@@ -53,7 +53,7 @@ protected lemma ContinuousWithinAt.partialSups (hf : ∀ k ≤ n, ContinuousWith
   simpa only [← partialSups_apply] using ContinuousWithinAt.partialSups_apply hf
 
 protected lemma ContinuousOn.partialSups_apply (hf : ∀ k ≤ n, ContinuousOn (f k) s) :
-    ContinuousOn (fun a ↦ partialSups (f · a) n) s := fun x hx ↦ 
+    ContinuousOn (fun a ↦ partialSups (f · a) n) s := fun x hx ↦
   ContinuousWithinAt.partialSups_apply fun k hk ↦ hf k hk x hx
 
 protected lemma ContinuousOn.partialSups (hf : ∀ k ≤ n, ContinuousOn (f k) s) :
