@@ -16,10 +16,6 @@ of `n` composable arrows in `C`.
 
 TODO (@joelriou):
 * define various constructors for objects, morphisms, isomorphisms in `ComposableArrows C n`
-* construction of `precomp F f : ComposableArrows C (n + 1)` when `F : ComposableArrows C n`
-and `f : X ⟶ F.left` with good definitional properties.
-* constructors like `mk₃ f g h : ComposableArrows C 3` which would take as inputs a certain
-number of composable morphisms
 * redefine `Arrow C` as `ComposableArrow C 1`?
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
 the precomposition with which shall induce funtors
