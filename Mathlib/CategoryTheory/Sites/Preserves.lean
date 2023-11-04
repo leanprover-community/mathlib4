@@ -9,17 +9,23 @@ import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 
 /-!
 # Sheaves preserve products
+
 We prove that a presheaf which satisfies the sheaf condition with respect to certain presieves
 preserve "the corresponding products".
+
 ## Main results
+
 More precisely, given a presheaf `F : Cᵒᵖ ⥤ Type*`, we have:
+
 * If `F` satisfies the sheaf condition with respect to the empty sieve on the initial object of `C`,
-  then `F` preserves terminal objects.
+  then `F` preserves terminal objects.
 See `preservesTerminalOfIsSheafForEmpty`.
-* If `F` furthermore satisfies the sheaf condition with respect to the presieve consisting of the
-  inclusion arrows in a coproduct in `C`, then `F` preserves the corresponding product.
+
+* If `F` furthermore satisfies the sheaf condition with respect to the presieve consisting of the
+  inclusion arrows in a coproduct in `C`, then `F` preserves the corresponding product.
 See `preservesProductOfIsSheafFor`.
-* If `F` preserves a product, then it satisfies the sheaf condition with respect to the
+
+* If `F` preserves a product, then it satisfies the sheaf condition with respect to the
   corresponding presieve of arrows.
 See `isSheafFor_of_preservesProduct`.
 -/
@@ -38,8 +44,8 @@ section Terminal
 
 variable (I) in
 /--
-If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
-object, then `F` takes that object to the terminal object.
+If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
+object, then `F` takes that object to the terminal object.
 -/
 noncomputable
 def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
@@ -47,11 +53,9 @@ def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   choose t h using hF (by tauto) (by tauto)
   exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
--- variable {I} (hI : IsInitial I)
-
 /--
-If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
-initial object, then `F` preserves terminal objects.
+If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
+initial object, then `F` preserves terminal objects.
 -/
 noncomputable
 def preservesTerminalOfIsSheafForEmpty (hI : IsInitial I) : PreservesLimit (Functor.empty Cᵒᵖ) F :=
