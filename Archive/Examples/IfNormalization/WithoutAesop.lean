@@ -25,7 +25,7 @@ attribute [local simp] eval normalized hasNestedIf hasConstantIf hasRedundantIf 
 -- A copy of Lean's `decide_eq_true_eq` which unifies the `Decidable` instance
 -- rather than finding it by typeclass search.
 -- See https://github.com/leanprover/lean4/pull/2816
-@[simp] theorem decide_eq_true_eq {i : Decidable p} : (@decide p i = true) = p :=
+@[simp] theorem decide_eq_true_eq' {i : Decidable p} : (@decide p i = true) = p :=
   _root_.decide_eq_true_eq
 
 theorem eval_ite_ite' :
@@ -106,7 +106,8 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             simp_all
           · simp_all? says simp_all only [ne_eq, hasNestedIf, Bool.or_self, hasConstantIf,
               and_self, hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, not_false_eq_true,
-              disjoint, List.disjoint, Bool.and_true, Bool.and_eq_true, decide_eq_true_eq, true_and]
+              disjoint, List.disjoint, Bool.and_true, Bool.and_eq_true, decide_eq_true_eq',
+              true_and]
             constructor <;> assumption
         · have := ht₃ w
           have := he₃ w
