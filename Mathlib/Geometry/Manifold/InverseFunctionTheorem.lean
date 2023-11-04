@@ -3,6 +3,7 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-! # The inverse function theorem for manifolds
@@ -15,7 +16,7 @@ TODOs
 * handle models with corners in my "charts are structomorphs" argument
 -/
 
-open Function Manifold TopologicalSpace Topology
+open Function Manifold Set TopologicalSpace Topology
 
 -- Let M and N be manifolds over (E,H) and (E',H'), respectively.
 -- We don't assume smoothness, but allow any structure groupoid (which contains C¹ maps).
@@ -72,10 +73,67 @@ end Prerequisites
   the differential $df_x$ is a linear isomorphism.
   Then `x` and `f x` admit neighbourhoods `U ⊆ M` and `V ⊆ N`, respectively such that
   `f` is a structomorphism between `U` and `V`. -/
-theorem IFT_manifolds [HasGroupoid M (contDiffGroupoid 1 I)]
+theorem IFT_manifolds [CompleteSpace E] [HasGroupoid M (contDiffGroupoid 1 I)]
     (G : StructureGroupoid H) [HasGroupoid M G]
     (hf : ContMDiffAt I J 1 f x) {f' : TangentSpace I x ≃L[ℝ] TangentSpace J (f x)}
     (hf' : HasMFDerivAt I J f x f') :
     -- TODO: state the correct statement: h.toFun and f "are the same"
     ∃ U : Opens M, ∃ V : Opens N, ∃ h : Structomorph G U V, True /-(∀ x : U → h x = f x.1-/ := by
+
+  -- part 1: bookkeeping on the manifolds
+  -- Consider the charts φ and ψ on `M` resp. `N` around `x` and `f x`, respectively.
+  let φ := extChartAt I x
+  let ψ := extChartAt J (f x)
+  -- Consider the local coordinate representation `f_loc` of `f` w.r.t. these charts.
+  let f_loc := ψ ∘f ∘ φ.invFun
+  let U := φ '' (φ.source ∩ f ⁻¹' ψ.source)
+  let V := ψ '' (f '' φ.source ∩ ψ.source)
+  -- Check: `U` and `V` are open and `f_loc` maps `U` to `V`.
+  -- have : U ⊆ φ.target := sorry -- will see when I need these!
+  -- have : V ⊆ ψ.target := sorry
+  have : IsOpen U := sorry -- easy, in principle
+  have : IsOpen V := sorry
+  have : MapsTo f_loc U V
+  -- By definition, `f_loc` is `C^1` at `x' := φ x`.
+  set x' := φ x
+  have : ContDiffAt ℝ 1 f_loc (φ x) := sorry -- should be by definition
+
+  -- Note that `(df_loc)_φ x is also a linear isomorphism, by the preliminary lemma.
+  have df_loc : E ≃L[ℝ] E' := sorry
+  have hdf'loc : HasFDerivAt (𝕜 := ℝ) f_loc df_loc (φ x) := sorry
+
+  -- By the Inverse Function Theorem on normed spaces, there are neighbourhoods U' and V' of x' and
+  -- ψ(f x)=f_loc x' and a C¹ function g_loc:V' \to U' such that f_loc and g_loc are inverses.
+  let r := this.toLocalHomeomorph f_loc hdf'loc (by rfl)
+  let U' := r.source
+  let V' := r.target
+  have aux : x' ∈ U' := this.mem_toLocalHomeomorph_source hdf'loc (le_refl 1)
+  have aux : f_loc x' ∈ V' := this.image_mem_toLocalHomeomorph_target hdf'loc (le_refl 1)
+
+  let g_loc := this.localInverse hdf'loc (by rfl)
+  let gloc_diff := this.to_localInverse hdf'loc (by rfl)
+  -- have : ContDiffAt ℝ 1 g_loc (f_loc x') := gloc_diff
+  -- xxx: is this missing API to argue r and g_loc are the same? I'll see!
+
+  -- Shrinking U' and V' jointly if necessary, we may assume U'\subset U and V'\subset V.
+  -- sorry this for now; the details are slightly annoying
+  have : U' ⊆ U := sorry
+  have : V' ⊆ V := sorry
+
+  -- These yield open subsets `U` and `V` containing `x` and `f x`, respectively,
+  let U := φ ⁻¹' U'
+  let V := ψ ⁻¹' V'
+  have : IsOpen U := sorry
+  have : x ∈ U := sorry
+  have : IsOpen V := sorry
+  have : f x ∈ V := sorry
+  -- and a local inverse g of f.
+  let g := φ.invFun ∘ g_loc ∘ ψ
+  have : MapsTo g V U := sorry -- check!
+
+  -- We compute f = \psi^{-1}\circ\psi \tilde{f}\circ\phi^{-1}\circ\phi = \psi^{-1}\circ \tilde{f}\circ\phi on U. Hence, we deduce g\circ f=id on U and f\circ g =id_V.
+  -- g is C¹, since in the charts \phi and \psi, the local coordinate representation is \tilde{g},
+  -- which is C¹ by definition.
+
+  sorry
   sorry
