@@ -767,7 +767,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   · intro i; rw [pow_zero, hf.1]
   iterate 4 rw [hf.multiplicative_factorization f (by assumption),
     Finsupp.prod_of_support_subset _ _ _ (fun _ _ => hfi_zero)
-      (s := (x.factorization.support ⊔ y.factorization.support))]
+      (s := (x.primeFactors ⊔ y.primeFactors))]
   · rw [←Finset.prod_mul_distrib, ←Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl
     intro p _

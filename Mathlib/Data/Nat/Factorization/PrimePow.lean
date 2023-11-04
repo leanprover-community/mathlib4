@@ -54,11 +54,11 @@ theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
       Finsupp.mem_support_iff.2 (by simp [hn, hk.ne'] : n.factorization p ≠ 0), hk, rfl⟩
 #align is_prime_pow_iff_factorization_eq_single isPrimePow_iff_factorization_eq_single
 
-theorem isPrimePow_iff_card_support_factorization_eq_one {n : ℕ} :
-    IsPrimePow n ↔ n.factorization.support.card = 1 := by
-  simp_rw [isPrimePow_iff_factorization_eq_single, Finsupp.card_support_eq_one', exists_prop,
-    pos_iff_ne_zero]
-#align is_prime_pow_iff_card_support_factorization_eq_one isPrimePow_iff_card_support_factorization_eq_one
+theorem isPrimePow_iff_card_primeFactors_eq_one {n : ℕ} :
+    IsPrimePow n ↔ n.primeFactors.card = 1 := by
+  simp_rw [isPrimePow_iff_factorization_eq_single, ←Nat.support_factorization,
+    Finsupp.card_support_eq_one', exists_prop, pos_iff_ne_zero]
+#align is_prime_pow_iff_card_support_factorization_eq_one isPrimePow_iff_card_primeFactors_eq_one
 
 theorem IsPrimePow.exists_ord_compl_eq_one {n : ℕ} (h : IsPrimePow n) :
     ∃ p : ℕ, p.Prime ∧ ord_compl[p] n = 1 := by
@@ -136,7 +136,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
     rw [← Finsupp.not_mem_support_iff, ← Finsupp.not_mem_support_iff, ← not_and_or, ←
       Finset.mem_inter]
     intro t -- porting note: used to be `exact` below, but the definition of `∈` has changed.
-    simpa using (Nat.factorization_disjoint_of_coprime hab).le_bot t
+    simpa using hab.disjoint_primeFactors.le_bot t
   cases' this with h h <;> simp [h, imp_or]
 #align nat.coprime.is_prime_pow_dvd_mul Nat.Coprime.isPrimePow_dvd_mul
 

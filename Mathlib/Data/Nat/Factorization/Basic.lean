@@ -203,10 +203,9 @@ theorem factorization_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 #align nat.factorization_mul_support Nat.primeFactors_mul
 
-/-- If a product over `n.factorization` doesn't use the multiplicities of the prime factors
-then it's equal to the corresponding product over `n.primeFactors` -/
-theorem prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → β) :
-    (n.factorization.prod fun p _ => f p) = ∏ p in n.primeFactors, f p := rfl
+/-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
+lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
+    n.factorization.prod f = ∏ p in n.primeFactors, f p (n.factorization p) := rfl
 #align nat.prod_factorization_eq_prod_factors Nat.prod_factorization_eq_prod_primeFactors
 
 /-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : Finset α`,
@@ -734,19 +733,8 @@ theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : Coprime a b) (hpb
   exact factorization_eq_of_coprime_left (coprime_comm.mp hab) hpb
 #align nat.factorization_eq_of_coprime_right Nat.factorization_eq_of_coprime_right
 
-/-- The prime factorizations of coprime `a` and `b` are disjoint -/
-theorem factorization_disjoint_of_coprime {a b : ℕ} (hab : Coprime a b) :
-    Disjoint a.factorization.support b.factorization.support := by
-  simpa only [support_factorization] using
-    disjoint_toFinset_iff_disjoint.mpr (coprime_factors_disjoint hab)
-#align nat.factorization_disjoint_of_coprime Nat.factorization_disjoint_of_coprime
-
-/-- For coprime `a` and `b` the prime factorization `a * b` is the union of those of `a` and `b` -/
-theorem factorization_mul_support_of_coprime {a b : ℕ} (hab : Coprime a b) :
-    (a * b).factorization.support = a.factorization.support ∪ b.factorization.support := by
-  rw [factorization_mul_of_coprime hab]
-  exact support_add_eq (factorization_disjoint_of_coprime hab)
-#align nat.factorization_mul_support_of_coprime Nat.factorization_mul_support_of_coprime
+#align nat.factorization_disjoint_of_coprime Nat.Coprime.disjoint_primeFactors
+#align nat.factorization_mul_support_of_coprime Nat.primeFactors_mul
 
 /-! ### Induction principles involving factorizations -/
 
@@ -832,25 +820,17 @@ theorem multiplicative_factorization {β : Type*} [CommMonoid β] (f : ℕ → �
   · intro a b _ _ hab ha hb hab_pos
     rw [h_mult a b hab, ha (left_ne_zero_of_mul hab_pos), hb (right_ne_zero_of_mul hab_pos),
       factorization_mul_of_coprime hab, ← prod_add_index_of_disjoint]
-    convert factorization_disjoint_of_coprime hab
+    exact hab.disjoint_primeFactors
 #align nat.multiplicative_factorization Nat.multiplicative_factorization
 
 /-- For any multiplicative function `f` with `f 1 = 1` and `f 0 = 1`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization' {β : Type*} [CommMonoid β] (f : ℕ → β)
     (h_mult : ∀ x y : ℕ, Coprime x y → f (x * y) = f x * f y) (hf0 : f 0 = 1) (hf1 : f 1 = 1) :
-    ∀ {n : ℕ}, f n = n.factorization.prod fun p k => f (p ^ k) := by
-  apply Nat.recOnPosPrimePosCoprime
-  · rintro p k hp -
-    simp only [hp.factorization_pow]
-    rw [prod_single_index _]
-    simp [hf1]
-  · simp [hf0]
-  · rw [factorization_one, hf1]
-    simp
-  · intro a b _ _ hab ha hb
-    rw [h_mult a b hab, ha, hb, factorization_mul_of_coprime hab, ← prod_add_index_of_disjoint]
-    exact factorization_disjoint_of_coprime hab
+    f n = n.factorization.prod fun p k => f (p ^ k) := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simpa
+  · exact multiplicative_factorization _ h_mult hf1 hn
 #align nat.multiplicative_factorization' Nat.multiplicative_factorization'
 
 /-- Two positive naturals are equal if their prime padic valuations are equal -/
