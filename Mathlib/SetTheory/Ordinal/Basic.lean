@@ -302,7 +302,7 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
 
-@[simp]
+@[simp, nolint simpNF] -- applies to itself despite linter's claims
 theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
     convert (RelIso.preimage f r).ordinal_type_eq
