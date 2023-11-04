@@ -24,9 +24,9 @@ universe u
 namespace CategoryTheory.Limits.FintypeCat
 
 instance {J : Type} [SmallCategory J] [FinCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
-  Finite ((K ⋙ FintypeCat.incl.{u}).obj j) := by
-    simp only [comp_obj, FintypeCat.incl_obj]
-    exact inferInstance
+    Finite ((K ⋙ FintypeCat.incl.{u}).obj j) := by
+  simp only [comp_obj, FintypeCat.incl_obj]
+  infer_instance
 
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite limit. -/
