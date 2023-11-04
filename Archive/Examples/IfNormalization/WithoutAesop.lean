@@ -22,6 +22,12 @@ namespace IfExpr
 attribute [local simp] eval normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint max_add_add_right max_mul_mul_left Nat.lt_add_one_iff le_add_of_le_right
 
+-- A copy of Lean's `decide_eq_true_eq` which unifies the `Decidable` instance
+-- rather than finding it by typeclass search.
+-- See https://github.com/leanprover/lean4/pull/2816
+@[simp] theorem decide_eq_true_eq {i : Decidable p} : (@decide p i = true) = p :=
+  _root_.decide_eq_true_eq
+
 theorem eval_ite_ite' :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all
@@ -98,10 +104,9 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           split <;> rename_i h'
           · subst h'
             simp_all
-          · simp_all? says simp_all only [ne_eq, hasNestedIf, Bool.or_self, hasConstantIf, and_self,
-              hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, not_false_eq_true, disjoint,
-              List.disjoint, decide_not, Bool.and_true, Bool.and_eq_true, Bool.not_eq_true',
-              decide_eq_false_iff_not, true_and]
+          · simp_all? says simp_all only [ne_eq, hasNestedIf, Bool.or_self, hasConstantIf,
+              and_self, hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, not_false_eq_true,
+              disjoint, List.disjoint, Bool.and_true, Bool.and_eq_true, true_and]
             constructor <;> assumption
         · have := ht₃ w
           have := he₃ w
