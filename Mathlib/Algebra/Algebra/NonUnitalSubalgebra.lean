@@ -76,11 +76,6 @@ instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalSub
 instance instSMulMemClass : SMulMemClass (NonUnitalSubalgebra R A) R A where
   smul_mem := @fun s => s.smul_mem'
 
-instance instNonUnitalSubringClass {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A]
-    [Module R A] : NonUnitalSubringClass (NonUnitalSubalgebra R A) A :=
-  { NonUnitalSubalgebra.instNonUnitalSubsemiringClass with
-    neg_mem := @fun _ x hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
-
 theorem mem_carrier {s : NonUnitalSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
