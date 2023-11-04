@@ -533,11 +533,10 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
 /-- If the restrictions of a measure to a monotone sequence of sets covering the space are
 inner regular for some property `p` and all measurable sets, then the measure itself satisfies
 the same property. -/
-lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
-    (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet) (hm : ∀ n, MeasurableSet (s n))
+lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
+    (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet)
     (hs : univ ⊆ ⋃ n, s n) (hmono : Monotone s) : InnerRegularWRT μ p MeasurableSet := by
   intro F hF r hr
-  have hBc : ∀ n, MeasurableSet (F ∩ s n) := fun n ↦ hF.inter (hm n)
   have hBU : ⋃ n, F ∩ s n = F := by  rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
   have : μ F = ⨆ n, μ (F ∩ s n) := by
     rw [← measure_iUnion_eq_iSup, hBU]
@@ -960,7 +959,7 @@ instance (priority := 100) {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [SigmaFinite μ] : InnerRegular μ := by
   refine ⟨(InnerRegularWRT.isCompact_isClosed μ).trans ?_⟩
-  refine InnerRegularWRT.of_restrict (fun n ↦ ?_) (measurable_spanningSets μ)
+  refine InnerRegularWRT.of_restrict (fun n ↦ ?_)
     (univ_subset_iff.2 (iUnion_spanningSets μ)) (monotone_spanningSets μ)
   have : Fact (μ (spanningSets μ n) < ∞) := ⟨measure_spanningSets_lt_top μ n⟩
   exact WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite

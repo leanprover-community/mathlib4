@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Algebra.Group.Compact
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import measure_theory.measure.haar.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -737,8 +738,6 @@ theorem isHaarMeasure_eq_smul_isHaarMeasure [LocallyCompactSpace G] (μ ν : Mea
       _ = (μ K / ν K) • ν K • haarMeasure K := by
         rw [smul_smul, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel νpos.ne' νne, mul_one]
       _ = (μ K / ν K) • ν := by rw [← haarMeasure_unique ν K]
-#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isHaarMeasure_eq_smul_isHaarMeasure
-#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_eq_smul_isAddHaarMeasure
 
 /-- An invariant measure is absolutely continuous with respect to a Haar measure. -/
 @[to_additive
@@ -751,17 +750,8 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G] (μ ν : Meas
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
 
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 90) regular_of_isHaarMeasure [LocallyCompactSpace G] (μ : Measure G)
-    [IsHaarMeasure μ] : Regular μ := by
-  have K : PositiveCompacts G := Classical.arbitrary _
-  obtain ⟨c, _, ctop, hμ⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ μ = c • haarMeasure K :=
-    isHaarMeasure_eq_smul_isHaarMeasure μ _
-  rw [hμ]
-  exact Regular.smul ctop
-#align measure_theory.measure.regular_of_is_haar_measure MeasureTheory.Measure.regular_of_isHaarMeasure
-#align measure_theory.measure.regular_of_is_add_haar_measure MeasureTheory.Measure.regular_of_isAddHaarMeasure
+#noalign measure_theory.measure.regular_of_is_haar_measure
+#noalign measure_theory.measure.regular_of_is_add_haar_measure
 
 /-- **Steinhaus Theorem** In any locally compact group `G` with a haar measure `μ`, for any
   measurable set `E` of positive measure, the set `E / E` is a neighbourhood of `1`. -/

@@ -6,34 +6,41 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.MeasureTheory.Measure.Haar.Basic
+import Mathlib.MeasureTheory.Group.Prod
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
 
 In a locally compact group, we prove that two left-invariant measures which are finite on compact
 sets give the same value to the integral of continuous compactly supported functions, in
-`integral_mulLeftInvariant_unique_of_hasCompactSupport`. From this, we deduce various uniqueness
+`integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`. From this, we deduce various uniqueness
 statements for left invariant measures (up to scalar multiplication):
-* `measure_mulLeftInvariant_unique_of_ne_top`: two left-invariant measures which are inner regular
-  for finite measure sets with respect to compact sets give the same measure to compact sets.
-* `mulLeftInvariant_unique_of_innerRegular`: two left invariant measure which are
-  inner regular coincide.
-* `mulLeftInvariant_unique_of_regular`: two left invariant measure which are
-  regular coincide.
-* `mulLeftInvariant_unique_of_isProbabilityMeasure`: two left-invariant probability measures which
+* `measure_isMulLeftInvariant_eq_smul_of_ne_top`: two left-invariant measures which are inner
+  regular for finite measure sets with respect to compact sets give the same measure to
+  compact sets.
+* `isMulLeftInvariant_eq_smul_of_innerRegular`: two left invariant measures which are
+  inner regular coincide up to a scalar.
+* `isHaarMeasure_eq_smul_of_innerRegular`: two Haar measures which are inner regular coincide up
+  to a nonzero scalar.
+* `isMulLeftInvariant_eq_smul_of_regular`: two left invariant measure which are
+  regular coincide up to a scalar.
+* `isHaarMeasure_eq_smul_of_regular`: two Haar measures which are regular coincide up to a
+  nonzero scalar.
+* `isHaarMeasure_eq_smul`: in a second countable space, two Haar measures coincide up to a
+  nonzero scalar.
+* `isMulLeftInvariant_eq_of_isProbabilityMeasure`: two left-invariant probability measures which
   are inner regular for finite measure sets with respect to compact sets coincide.
 
 In general, uniqueness statements for Haar measures in the literature make some assumption of
 regularity, either regularity or inner regularity. We have tried to minimize the assumptions in the
-theorems above (notably in `integral_mulLeftInvariant_unique_of_hasCompactSupport`, which doesn't
+theorems above (notably in `integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`, which doesn't
 make any regularity assumption), and cover the different results that exist in the literature.
 
-The main result is `integral_mulLeftInvariant_unique_of_hasCompactSupport`, and the other ones
+The main result is `integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`, and the other ones
 follow readily from this one by using continuous compactly supported functions to approximate
 characteristic functions of set.
 
-To prove `integral_mulLeftInvariant_unique_of_hasCompactSupport`, we use a change of variables
+To prove `integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`, we use a change of variables
 to express integrals with respect to a left-invariant measure as integrals with respect to a given
 right-invariant measure (with a suitable density function). The uniqueness readily follows.
 -/
@@ -92,7 +99,7 @@ lemma continuous_integral_apply_inv_mul
   exact A.continuousAt ht
 
 @[to_additive]
-lemma integral_mulLeftInvariant_mulRightInvariant_combo
+lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
     {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
     [IsMulLeftInvariant μ] [IsMulRightInvariant ν] [IsOpenPosMeasure ν]
     {f g : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f)
@@ -182,9 +189,9 @@ lemma integral_mulLeftInvariant_mulRightInvariant_combo
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
 compacts, they coincide in the following sense: they give the same value to the integral of
 continuous compactly supported functions, up to a multiplicative constant. -/
-@[to_additive]
-lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
-    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+@[to_additive integral_isAddLeftInvariant_eq_smul_of_hasCompactSupport]
+lemma integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
+    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ] :
     ∃ (c : ℝ≥0), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
       ∫ x, f x ∂μ' = ∫ x, f x ∂(c • μ) := by
@@ -219,10 +226,10 @@ lemma integral_mulLeftInvariant_unique_of_hasCompactSupport
   on a right-invariant measure `ν`. We use `ν = μ.inv` for convenience. -/
   let ν := μ.inv
   have A : ∫ x, f x ∂μ = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ :=
-    integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
+    integral_isMulLeftInvariant_isMulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
   rw [← mul_inv_eq_iff_eq_mul₀ int_g_pos.ne'] at A
   have B : ∫ x, f x ∂μ' = (∫ y, f y * (∫ z, g (z⁻¹ * y) ∂ν)⁻¹ ∂ν) * ∫ x, g x ∂μ' :=
-    integral_mulLeftInvariant_mulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
+    integral_isMulLeftInvariant_isMulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
   /- Since the `ν`-factor is the same for `μ` and `μ'`, this gives the result. -/
   rw [← A, mul_assoc, mul_comm] at B
   simp only [B, integral_smul_nnreal_measure]
@@ -233,14 +240,14 @@ compacts and inner regular for finite measure sets with respect to compact sets,
 they coincide in the following sense: they give the same value to finite measure sets,
 up to a multiplicative constant. -/
 @[to_additive]
-lemma measure_mulLeftInvariant_unique_of_ne_top
-    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+lemma measure_isMulLeftInvariant_eq_smul_of_ne_top
+    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ'] :
     ∃ (c : ℝ≥0), ∀ (s : Set G), μ s < ∞ → μ' s < ∞ → μ' s = (c • μ) s := by
   /- We know that the measures integrate in the same way continuous compactly supported functions,
   up to a constant `c`. We will use this constant `c`. -/
-  rcases integral_mulLeftInvariant_unique_of_hasCompactSupport μ μ' with ⟨c, hc⟩
+  rcases integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ with ⟨c, hc⟩
   refine ⟨c, fun s hs h's ↦ ?_⟩
   /- By regularity, every compact set may be approximated by a continuous compactly supported
   function. Therefore, the measures coincide on compact sets. -/
@@ -280,28 +287,41 @@ lemma measure_mulLeftInvariant_unique_of_ne_top
 
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite
 on compacts and inner regular, they coincide up to a multiplicative constant. -/
-@[to_additive]
-lemma mulLeftInvariant_unique_of_innerRegular
-    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+@[to_additive isAddLeftInvariant_eq_smul_of_innerRegular]
+lemma isMulLeftInvariant_eq_smul_of_innerRegular
+    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
     [InnerRegular μ] [InnerRegular μ'] :
     ∃ (c : ℝ≥0), μ' = c • μ := by
-  rcases measure_mulLeftInvariant_unique_of_ne_top μ μ' with ⟨c, hc⟩
+  rcases measure_isMulLeftInvariant_eq_smul_of_ne_top μ' μ with ⟨c, hc⟩
   refine ⟨c, ?_⟩
   ext s hs
   rw [hs.measure_eq_iSup_isCompact, hs.measure_eq_iSup_isCompact]
   congr! 4 with K _Ks K_comp
   exact hc K K_comp.measure_lt_top K_comp.measure_lt_top
 
+/-- **Uniqueness of left-invariant measures**: Two inner regular Haar measures coincide up to a
+multiplicative constant. -/
+@[to_additive isAddHaarMeasure_eq_smul_of_innerRegular]
+lemma isHaarMeasure_eq_smul_of_innerRegular
+    (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] [InnerRegular μ] [InnerRegular μ'] :
+    ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ μ' = c • μ := by
+  rcases isMulLeftInvariant_eq_smul_of_innerRegular μ' μ with ⟨c, hc⟩
+  refine ⟨c, ?_, ENNReal.coe_ne_top, hc⟩
+  intro h
+  simp only [ENNReal.coe_eq_zero.1 h, zero_smul] at hc
+  have : 0 < μ' univ := NeZero.pos (μ' univ)
+  simp [hc] at this
+
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite
-on compacts and inner regular, they coincide up to a multiplicative constant. -/
-@[to_additive]
-lemma mulLeftInvariant_unique_of_regular
-    (μ μ' : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+on compacts and regular, they coincide up to a multiplicative constant. -/
+@[to_additive isAddLeftInvariant_eq_smul_of_regular]
+lemma isMulLeftInvariant_eq_smul_of_regular
+    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
     [Regular μ] [Regular μ'] :
     ∃ (c : ℝ≥0), μ' = c • μ := by
-  rcases measure_mulLeftInvariant_unique_of_ne_top μ μ' with ⟨c, hc⟩
+  rcases measure_isMulLeftInvariant_eq_smul_of_ne_top μ' μ with ⟨c, hc⟩
   refine ⟨c, ?_⟩
   have A : ∀ U, IsOpen U → μ' U = (c • μ) U := by
     intro U hU
@@ -313,16 +333,41 @@ lemma mulLeftInvariant_unique_of_regular
   congr! 4 with U _sU U_open
   exact A U U_open
 
+/-- **Uniqueness of left-invariant measures**: Two regular Haar measures coincide up to a
+multiplicative constant. -/
+@[to_additive isAddHaarMeasure_eq_smul_of_regular]
+lemma isHaarMeasure_eq_smul_of_regular
+    (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] [Regular μ] [Regular μ'] :
+    ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ μ' = c • μ := by
+  rcases isMulLeftInvariant_eq_smul_of_regular μ' μ with ⟨c, hc⟩
+  refine ⟨c, ?_, ENNReal.coe_ne_top, hc⟩
+  intro h
+  simp only [ENNReal.coe_eq_zero.1 h, zero_smul] at hc
+  have : 0 < μ' univ := NeZero.pos (μ' univ)
+  simp [hc] at this
+
+/-- **Uniqueness of left-invariant measures**: Two Haar measures coincide up to a multiplicative
+constant in a second countable group. -/
+@[to_additive isAddHaarMeasure_eq_smul]
+lemma isHaarMeasure_eq_smul [SecondCountableTopology G]
+    (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] :
+    ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ μ' = c • μ :=
+  isHaarMeasure_eq_smul_of_regular μ' μ
+  -- one could use as well `isHaarMeasure_eq_smul_isHaarMeasure_of_innerRegular μ' μ`, as in a
+  -- second countable topological space all Haar measures are regular and inner regular
+#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.isHaarMeasure_eq_smul
+#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.isAddHaarMeasure_eq_smul
+
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant probability measures which
 are inner regular for finite measure sets with respect to compact sets, they coincide. -/
 @[to_additive]
-lemma mulLeftInvariant_unique_of_isProbabilityMeasure
-    (μ μ' : Measure G) [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
+lemma isMulLeftInvariant_eq_of_isProbabilityMeasure
+    (μ' μ : Measure G) [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] : μ' = μ := by
   have : IsOpenPosMeasure μ :=
     isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular (IsProbabilityMeasure.ne_zero μ)
-  rcases mulLeftInvariant_unique_of_innerRegular μ μ' with ⟨c, hc⟩
+  rcases isMulLeftInvariant_eq_smul_of_regular μ' μ with ⟨c, hc⟩
   have : ((c : ℝ≥0∞) • μ) univ = μ' univ := by rw [hc]; rfl
   simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, measure_univ, smul_eq_mul,
     mul_one, ENNReal.coe_eq_one] at this
