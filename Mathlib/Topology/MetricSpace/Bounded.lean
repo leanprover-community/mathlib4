@@ -29,7 +29,7 @@ metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
 open Set Filter  Bornology
-open scoped ENNReal Uniformity Topology
+open scoped ENNReal Uniformity Topology Pointwise
 
 universe u v w
 
@@ -362,6 +362,12 @@ theorem diam_empty : diam (∅ : Set α) = 0 :=
 theorem diam_singleton : diam ({x} : Set α) = 0 :=
   diam_subsingleton subsingleton_singleton
 #align metric.diam_singleton Metric.diam_singleton
+
+@[to_additive (attr := simp)]
+theorem diam_one [One α] : diam (1 : Set α) = 0 :=
+  diam_singleton
+#align metric.diam_one Metric.diam_one
+#align metric.diam_zero Metric.diam_zero
 
 -- Does not work as a simp-lemma, since {x, y} reduces to (insert y {x})
 theorem diam_pair : diam ({x, y} : Set α) = dist x y := by
