@@ -322,14 +322,14 @@ def GradedRing.projZeroRingHom' : A →+* (𝒜 0) :=
 
 lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
   GradedRing.projZeroRingHom' 𝒜 a = a := by
-ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+    ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
 
 /--
 The semiring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective.
 -/
 lemma GradedRing.projZeroRingHom'_surjective :
   Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
-Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
+    Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
 
 end GradeZero
 
@@ -338,15 +338,15 @@ variable {a b : A} {n i : ι}
 namespace DirectSum
 
 theorem coe_decompose_mul_of_left_mem_of_not_le (a_mem : a ∈ 𝒜 i) (h : ¬i ≤ n) :
-    (decompose 𝒜 (a * b) n : A) = 0 := by
-  lift a to 𝒜 i using a_mem
-  rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_not_le]
+  (decompose 𝒜 (a * b) n : A) = 0 := by
+    lift a to 𝒜 i using a_mem
+    rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_left_mem_of_not_le DirectSum.coe_decompose_mul_of_left_mem_of_not_le
 
 theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i ≤ n) :
-    (decompose 𝒜 (a * b) n : A) = 0 := by
-  lift b to 𝒜 i using b_mem
-  rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
+  (decompose 𝒜 (a * b) n : A) = 0 := by
+    lift b to 𝒜 i using b_mem
+    rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_right_mem_of_not_le DirectSum.coe_decompose_mul_of_right_mem_of_not_le
 
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
@@ -421,13 +421,13 @@ def GradedRing.projZeroRingHom'' : A →+* (𝒜 0) :=
 
 lemma GradedRing.projZeroRingHom''_apply_coe (a : 𝒜 0) :
   GradedRing.projZeroRingHom'' 𝒜 a = a := by
-ext; simp only [coe_projZeroRingHom''_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+    ext; simp only [coe_projZeroRingHom''_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
 
 /--
 The ring homomorphism `GradedRing.projZeroRingHom'' 𝒜` is surjective.
 -/
 lemma GradedRing.projZeroRingHom''_surjective :
   Function.Surjective (GradedRing.projZeroRingHom'' 𝒜) :=
-Function.RightInverse.surjective (GradedRing.projZeroRingHom''_apply_coe 𝒜)
+    Function.RightInverse.surjective (GradedRing.projZeroRingHom''_apply_coe 𝒜)
 
 end GradeZero
