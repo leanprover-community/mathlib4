@@ -239,7 +239,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
     ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
-  norm_num [sub_zero, Ideal.span, Pi.single_apply]
+  simp (config := { decide := true }) [sub_zero, Ideal.span, Pi.single_apply]
 
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by
