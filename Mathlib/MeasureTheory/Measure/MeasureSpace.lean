@@ -2906,7 +2906,7 @@ instance isFiniteMeasureZero : IsFiniteMeasure (0 : Measure α) :=
   ⟨by simp⟩
 #align measure_theory.is_finite_measure_zero MeasureTheory.isFiniteMeasureZero
 
-instance (priority := 100) isFiniteMeasureOfIsEmpty [IsEmpty α] : IsFiniteMeasure μ := by
+instance (priority := 50) isFiniteMeasureOfIsEmpty [IsEmpty α] : IsFiniteMeasure μ := by
   rw [eq_zero_of_isEmpty μ]
   infer_instance
 #align measure_theory.is_finite_measure_of_is_empty MeasureTheory.isFiniteMeasureOfIsEmpty
@@ -3893,11 +3893,9 @@ instance IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measu
 
 instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {s : Set α} : IsFiniteMeasureOnCompacts (μ.restrict s) :=
-  ⟨fun k hk ↦ (restrict_apply_le _ _).trans_lt hk.measure_lt_top⟩
+  ⟨fun _k hk ↦ (restrict_apply_le _ _).trans_lt hk.measure_lt_top⟩
 
-/-- Note this cannot be an instance because it would form a typeclass loop with
-`isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure`. -/
-theorem CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
+instance (priority := 100) CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
     [IsFiniteMeasureOnCompacts μ] : IsFiniteMeasure μ :=
   ⟨IsFiniteMeasureOnCompacts.lt_top_of_isCompact isCompact_univ⟩
 #align measure_theory.compact_space.is_finite_measure MeasureTheory.CompactSpace.isFiniteMeasure
@@ -3919,7 +3917,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
 /-- A measure which is finite on compact sets in a locally compact space is locally finite. -/
-instance isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
+instance (priority := 100) isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
   ⟨fun x ↦
     let ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x
