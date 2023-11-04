@@ -878,14 +878,6 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
       by_cases h : b = a <;> simpa [h] using H⟩
 #align list.perm_iff_count List.perm_iff_count
 
-lemma filter_append_filter {α} [DecidableEq α] (P : α → Prop) [DecidablePred P] (l : List α) :
-    l.filter P ++ l.filter (¬ P ·) ~ l :=
-  List.perm_iff_count.mpr fun a ↦ List.count_append a _ _ ▸ count_filter_add_count_filter P l a
-
-lemma filter_append_filter' {α} [DecidableEq α] (P : α → Prop) [DecidablePred P] (l : List α) :
-    l.filter (¬ P ·) ++ l.filter P ~ l :=
-  List.perm_append_comm.trans <| filter_append_filter ..
-
 theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
