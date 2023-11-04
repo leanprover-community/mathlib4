@@ -35,7 +35,7 @@ theorem birthday :
   -- As a workaround, we make some of the reduction steps more explicit.
   rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
   rw [Fintype.card_embedding_eq, Fintype.card_fun, Fintype.card_fin, Fintype.card_fin]
-  simp only
+  decide
 #align theorems_100.birthday Theorems100.birthday
 
 section MeasureTheory
@@ -86,7 +86,6 @@ theorem birthday_measure :
       rfl
   rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
   rotate_left; (iterate 2 right; norm_num); decide; (iterate 2 left; norm_num)
-  norm_cast
   simp only [Fintype.card_pi]
   norm_num
 #align theorems_100.birthday_measure Theorems100.birthday_measure
