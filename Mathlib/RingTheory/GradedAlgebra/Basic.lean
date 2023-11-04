@@ -338,15 +338,15 @@ variable {a b : A} {n i : ι}
 namespace DirectSum
 
 theorem coe_decompose_mul_of_left_mem_of_not_le (a_mem : a ∈ 𝒜 i) (h : ¬i ≤ n) :
-  (decompose 𝒜 (a * b) n : A) = 0 := by
-    lift a to 𝒜 i using a_mem
-    rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_not_le]
+    (decompose 𝒜 (a * b) n : A) = 0 := by
+  lift a to 𝒜 i using a_mem
+  rwa [decompose_mul, decompose_coe, coe_of_mul_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_left_mem_of_not_le DirectSum.coe_decompose_mul_of_left_mem_of_not_le
 
 theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i ≤ n) :
-  (decompose 𝒜 (a * b) n : A) = 0 := by
-    lift b to 𝒜 i using b_mem
-    rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
+    (decompose 𝒜 (a * b) n : A) = 0 := by
+  lift b to 𝒜 i using b_mem
+  rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_right_mem_of_not_le DirectSum.coe_decompose_mul_of_right_mem_of_not_le
 
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
