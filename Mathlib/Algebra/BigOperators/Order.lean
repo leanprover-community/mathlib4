@@ -208,6 +208,15 @@ theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a �
 #align finset.single_le_prod' Finset.single_le_prod'
 #align finset.single_le_sum Finset.single_le_sum
 
+@[to_additive]
+lemma mul_le_prod {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : j ∈ s) (hne : i ≠ j) :
+    f i * f j ≤ ∏ k in s, f k :=
+  calc
+    f i * f j = ∏ k in .cons i {j} (by simpa), f k := by rw [prod_cons, prod_singleton]
+    _ ≤ ∏ k in s, f k := by
+      refine prod_le_prod_of_subset_of_one_le' ?_ fun k hk _ ↦ hf k hk
+      simp [cons_subset, *]
+
 @[to_additive sum_le_card_nsmul]
 theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, f x ≤ n) :
     s.prod f ≤ n ^ s.card := by
