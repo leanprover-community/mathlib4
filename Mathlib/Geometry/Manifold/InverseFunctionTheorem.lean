@@ -143,13 +143,44 @@ theorem toLocalHomeomorph {n : ℕ∞} [I.Boundaryless] [J.Boundaryless]
 --     (hf : ContMDiffAt I J n f x) (hf' : HasMFDerivAt I J f x f') (hn : 1 ≤ n) :
 --     (hf.toLocalHomeomorph I J hf' hn : M → N) = f :=
 --   rfl
+end ContMDiffAt
 
 -- do I want counterparts of mem_toLocalHomeomorph_source, image_mem_toLocalHomeomorph_target also?
 
-end ContMDiffAt
-end IFT
+-- step 2, separately in each category
+-- if f is C^k, analytic, etc. and df_x is invertible, then f_loc is a local structo within thingy
+-- StructureGroupoid.IsLocalStructomorphWithinAt
+-- this has been shown for C^n already, just quote it!
 
-#exit
+-- step 3, general: if f_loc is a `IsLocalStructomorphWithinAt`, so is the local inverse
+-- (general nonsense, structure groupoid is closed under inverses)
+
+/-- If f : H → H is a local structomorphism at `x` relative to `s` and has a local inverse `g`,
+  then `g` is a local structomorphism at `f x` relative to `f '' x`. -/
+-- no differentiability here! wouldn't make sense either :-)
+lemma StructureGroupoid.localInverse_isLocalStructomorphWithin {f : H → H} (s : Set H) (x : H)
+    (G : StructureGroupoid H) (hf : G.IsLocalStructomorphWithinAt f s x)
+    -- TODO: changing to f '' s to s should fail somewhere...!
+    {g : H → H} (hg: LeftInvOn g f s) (hg' : RightInvOn g f (f '' s)) :
+    G.IsLocalStructomorphWithinAt g (f '' s) (f x) := by
+  intro hfx
+  -- pretend this is true: otherwise pass to g(f(x)) instead and simplify then, also works.
+  have : x ∈ s := sorry
+  rcases hf this with ⟨e, ⟨heg, heq, hxsource⟩⟩
+  refine ⟨e.symm, symm G heg, ?_, ?_⟩
+  · -- g = e.symm on f '' s ∩ e.symm.source
+    show EqOn g e.symm (f '' s ∩ e.symm.source)
+    -- heq tells us: EqOn f (↑e.toLocalEquiv) (s ∩ e.source)
+    -- now, need to use both-sided inverses; shouldn't be hard, but didn't think yet
+    sorry
+  · -- show f x ∈ e.symm.source
+    rw [LocalHomeomorph.symm_source, ← e.image_source_eq_target, heq (mem_inter this hxsource)]
+    apply mem_image_of_mem e hxsource
+
+-- step 4, specific: if f is C^k at x, then f_loc is C^k, hence also g_loc
+--> in the smooth case, get a diffeo between things (right phrasing touches the local diffeo q.)
+
+end IFT
 
 variable {f : M → N} {x : M}
 -- Suppose G consists of C¹ maps, i.e. G\leq contDiffGroupoid n.
