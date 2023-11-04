@@ -96,9 +96,6 @@ open Set
 open Filter hiding map
 
 open Function MeasurableSpace
-
-open TopologicalSpace (SecondCountableTopology)
-
 open Classical Topology BigOperators Filter ENNReal NNReal Interval MeasureTheory
 
 variable {α β γ δ ι R R' : Type*}
