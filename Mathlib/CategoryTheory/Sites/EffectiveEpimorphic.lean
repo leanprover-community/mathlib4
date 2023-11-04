@@ -540,6 +540,14 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
     [IsIso (Sigma.desc π)] : EffectiveEpiFamily X π :=
   ⟨⟨EffectiveEpiFamilyStruct_of_isIso_desc X π⟩⟩
 
+/-- The identity is an effective epi. -/
+def EffectiveEpiStructId {X : C} : EffectiveEpiStruct (𝟙 X) where
+  desc e _ := e
+  fac _ _ := by simp only [Category.id_comp]
+  uniq _ _ _ h := by simp only [Category.id_comp] at h; exact h
+
+instance {X : C} : EffectiveEpi (𝟙 X) := ⟨⟨EffectiveEpiStructId⟩⟩
+
 end instances
 
 section Epi
