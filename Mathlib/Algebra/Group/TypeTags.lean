@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Group.Defs
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Logic.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Data.Finite.Defs
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Nontrivial.Basic
 
 #align_import algebra.group.type_tags from "leanprover-community/mathlib"@"2e0975f6a25dd3fbfb9e41556a77f075f6269748"
 
@@ -131,6 +131,10 @@ instance [Finite α] : Finite (Multiplicative α) :=
 instance [h: Infinite α] : Infinite (Additive α) := h
 
 instance [h: Infinite α] : Infinite (Multiplicative α) := h
+
+instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
+
+instance [h : DecidableEq α] : DecidableEq (Additive α) := h
 
 instance instNontrivialAdditive [Nontrivial α] : Nontrivial (Additive α) :=
   ofMul.injective.nontrivial

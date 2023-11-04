@@ -90,12 +90,12 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
     Q.baseChange A (a ⊗ₜ m₂) = Q m₂ • (a * a) :=
   tensorDistrib_tmul _ _ _ _
 
-theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
+theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange A := by
   dsimp only [QuadraticForm.baseChange, BilinForm.baseChange]
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
 
-theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂)  :
+theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = (polarBilin Q).baseChange A := by
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
     ←LinearMap.map_smul, smul_tmul', ←two_nsmul_associated R, coe_associatedHom, associated_sq,
