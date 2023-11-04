@@ -182,8 +182,8 @@ lemma todo_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] {f : α 
   exact Measure.MutuallySingular.mono_ac (μ.mutuallySingular_singularPart ν)
     Measure.AbsolutelyContinuous.rfl (withDensity_absolutelyContinuous _ _)
 
-lemma rnDeriv_withDensity_left_of_absolutelyContinuous  {ν : Measure α} [SigmaFinite μ]
-  [SigmaFinite ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) :
+lemma rnDeriv_withDensity_left_of_absolutelyContinuous {ν : Measure α} [SigmaFinite μ]
+    [SigmaFinite ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) :
     (μ.withDensity f).rnDeriv ν =ᵐ[ν] fun x ↦ f x * μ.rnDeriv ν x := by
   refine (Measure.eq_rnDeriv₀ ?_ Measure.MutuallySingular.zero_left ?_).symm
   · exact hf.mul (Measure.measurable_rnDeriv _ _).aemeasurable
