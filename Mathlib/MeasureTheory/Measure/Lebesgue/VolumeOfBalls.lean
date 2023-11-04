@@ -82,17 +82,20 @@ end integrals
 
 section move_me
 
-open BigOperators Fintype MeasureTheory.Measure
+open BigOperators Fintype MeasureTheory MeasureTheory.Measure
 
-theorem MeasureTheory.integral_finset_prod_eq_pow' {E : Type*} {n : ℕ} (hn : 1 ≤ n)
-    (f : E → ℝ) [MeasureSpace E] [SigmaFinite (volume : Measure E)] :
-    ∫ x : (Fin n) → E, ∏ i, f (x i) = (∫ x, f x) ^ n := by
-  induction n, hn using Nat.le_induction with
-  | base =>
-      rw [← (volume_preserving_funUnique (Fin 1) E).integral_comp']
-      simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.prod_singleton,
-        MeasurableEquiv.funUnique_apply, pow_one]
-  | succ n _ n_ih =>
+@[simp]
+theorem _root_.MeasureTheory.Measure.pi_empty {ι : Type*} {α : ι → Type*} [IsEmpty ι]
+    [∀ i, MeasurableSpace (α i)] (μ : (i : ι) → Measure (α i)) [∀ (i : ι), SigmaFinite (μ i)] :
+    Measure.pi μ (Set.univ) = 1 := by rw [Measure.pi_univ, Fintype.prod_empty]
+
+theorem MeasureTheory.integral_finset_prod_eq_pow' {E : Type*} {n : ℕ} (f : E → ℝ) [MeasureSpace E]
+    [SigmaFinite (volume : Measure E)] : ∫ x : (Fin n) → E, ∏ i, f (x i) = (∫ x, f x) ^ n := by
+  induction n with
+  | zero =>
+      simp only [Nat.zero_eq, volume_pi, Finset.univ_eq_empty, Finset.prod_empty, integral_const,
+        pi_empty, ENNReal.one_toReal, smul_eq_mul, mul_one, pow_zero]
+  | succ n n_ih =>
       calc
         _ = ∫ x : E × (Fin n → E), (f x.1) * ∏ i : Fin n, f (x.2 i) := by
           rw [volume_pi, ← ((measurePreserving_piFinSuccAboveEquiv
@@ -103,15 +106,14 @@ theorem MeasureTheory.integral_finset_prod_eq_pow' {E : Type*} {n : ℕ} (hn : 1
         _ = (∫ x, f x) * (∫ x, f x) ^ n := by rw [← n_ih, ← integral_prod_mul, volume_eq_prod]
         _ = (∫ x, f x) ^ n.succ := by rw [← pow_succ]
 
-theorem MeasureTheory.integral_finset_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] [Nonempty ι]
-    (f : E → ℝ) [MeasureSpace E] [SigmaFinite (volume : Measure E)] :
+theorem MeasureTheory.integral_finset_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι]  (f : E → ℝ)
+    [MeasureSpace E] [SigmaFinite (volume : Measure E)] :
     ∫ x : ι → E, ∏ i, f (x i) = (∫ x, f x) ^ (card ι) := by
   let p := measurePreserving_piCongrLeft (fun _ => (volume : Measure E)) (equivFin ι)
-  rw [volume_pi, ← (p.symm).integral_comp', ← integral_finset_prod_eq_pow' _ f]
-  · congr!
-    rw [Fintype.prod_equiv (equivFin ι)]
-    exact fun _ => rfl
-  · exact Nat.one_le_iff_ne_zero.mpr card_ne_zero
+  rw [volume_pi, ← (p.symm).integral_comp', ← integral_finset_prod_eq_pow']
+  congr!
+  rw [Fintype.prod_equiv (equivFin ι)]
+  exact fun _ => rfl
 
 end move_me
 
