@@ -83,7 +83,7 @@ attribute [local simp] tensorHom_def
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
-instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
+instance functorCategoryMonoidalStruct : MonoidalCategoryStruct (C ⥤ D) where
   tensorObj F G := tensorObj F G
   tensorHom α β := tensorHom α β
   whiskerLeft F _ _ α := FunctorCategory.whiskerLeft F α
@@ -122,13 +122,13 @@ theorem tensorHom_app {F G F' G' : C ⥤ D} {α : F ⟶ G} {β : F' ⟶ G'} {X} 
 #align category_theory.monoidal.tensor_hom_app CategoryTheory.Monoidal.tensorHom_app
 
 @[simp]
-theorem whiskerLeft_app (F : C ⥤ D) {G H : C ⥤ D} (α : G ⟶ H) (X : C) :
-    (F ◁ α).app X = F.obj X ◁ α.app X :=
+theorem whiskerLeft_app {F F' G' : C ⥤ D} {β : F' ⟶ G'} {X} :
+    (F ◁ β).app X = F.obj X ◁ β.app X :=
   rfl
 
 @[simp]
-theorem whiskerRight_app {G H : C ⥤ D} (α : G ⟶ H) (F : C ⥤ D) (X : C) :
-    (α ▷ F).app X = α.app X ▷ F.obj X  :=
+theorem whiskerRight_app {F G F' : C ⥤ D} {α : F ⟶ G} {X} :
+    (α ▷ F').app X = α.app X ▷ F'.obj X :=
   rfl
 
 @[simp]
@@ -166,6 +166,15 @@ theorem associator_inv_app {F G H : C ⥤ D} {X} :
     ((α_ F G H).inv : F ⊗ G ⊗ H ⟶ (F ⊗ G) ⊗ H).app X = (α_ (F.obj X) (G.obj X) (H.obj X)).inv :=
   rfl
 #align category_theory.monoidal.associator_inv_app CategoryTheory.Monoidal.associator_inv_app
+
+/-- When `C` is any category, and `D` is a monoidal category,
+the functor category `C ⥤ D` has a natural pointwise monoidal structure,
+where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
+-/
+instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
+  tensorHom_def := by intros; ext; simp [tensorHom_def]
+  pentagon F G H K := by ext X; dsimp; rw [pentagon]
+#align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
 
 section BraidedCategory
 

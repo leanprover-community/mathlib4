@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Hom.Group.Defs
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
 
@@ -641,6 +641,26 @@ an additive action of `N` on `α`.
 
 See note [reducible non-instances]. -/
 add_decl_doc AddAction.compHom
+
+@[to_additive]
+theorem compHom_smul_def
+    {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G] (f : E →* F) (a : E) (x : G) :
+    letI : MulAction E G := MulAction.compHom _ f
+    a • x = (f a) • x := rfl
+
+/-- If an action is transitive, then composing this action with a surjective homomorphism gives
+again a transitive action. -/
+@[to_additive]
+theorem isPretransitive_compHom
+    {E F G : Type*} [Monoid E] [Monoid F] [MulAction F G] [IsPretransitive F G]
+    {f : E →* F} (hf : Surjective f) :
+    letI : MulAction E G := MulAction.compHom _ f
+    IsPretransitive E G := by
+  let _ : MulAction E G := MulAction.compHom _ f
+  refine ⟨fun x y ↦ ?_⟩
+  obtain ⟨m, rfl⟩ : ∃ m : F, m • x = y := exists_smul_eq F x y
+  obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
+  exact ⟨e, rfl⟩
 
 end MulAction
 

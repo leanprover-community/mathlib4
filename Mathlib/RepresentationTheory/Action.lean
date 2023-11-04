@@ -78,6 +78,9 @@ def ρAut {G : GroupCat.{u}} (A : Action V (MonCat.of G)) : G ⟶ GroupCat.of (A
 set_option linter.uppercaseLean3 false in
 #align Action.ρ_Aut Action.ρAut
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
+
 variable (G : MonCat.{u})
 
 section
@@ -473,7 +476,7 @@ open MonoidalCategory
 
 variable [MonoidalCategory V]
 
-instance : MonoidalCategory (Action V G) :=
+instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
@@ -519,7 +522,7 @@ theorem whiskerRight_v {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem associator_hom_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
-  dsimp [Monoidal.transport_associator]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.associator_hom_hom Action.associator_hom_hom
@@ -527,35 +530,35 @@ set_option linter.uppercaseLean3 false in
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem associator_inv_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
-  dsimp [Monoidal.transport_associator]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.associator_inv_hom Action.associator_inv_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
-  dsimp [Monoidal.transport_leftUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_hom_hom Action.leftUnitor_hom_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
-  dsimp [Monoidal.transport_leftUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_inv_hom Action.leftUnitor_inv_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
-  dsimp [Monoidal.transport_rightUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_hom_hom Action.rightUnitor_hom_hom
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
-  dsimp [Monoidal.transport_rightUnitor]
+  dsimp
   simp
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_inv_hom Action.rightUnitor_inv_hom
@@ -574,7 +577,7 @@ variable (V G)
 /-- When `V` is monoidal the forgetful functor `Action V G` to `V` is monoidal. -/
 @[simps]
 def forgetMonoidal : MonoidalFunctor (Action V G) V :=
-  { Action.forget _ _ with
+  { toFunctor := Action.forget _ _
     ε := 𝟙 _
     μ := fun X Y => 𝟙 _ }
 set_option linter.uppercaseLean3 false in
@@ -643,12 +646,6 @@ theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
   -- porting note: Lean3 was able to see through some defeq, as the mathlib3 proof was
   --   show (𝟙 A.V ⊗ 𝟙 B.V) ≫ 𝟙 (A.V ⊗ B.V) ≫ (𝟙 A.V ⊗ 𝟙 B.V) = 𝟙 (A.V ⊗ B.V)
   --   simp only [monoidal_category.tensor_id, category.comp_id]
-  dsimp [Equivalence.unit]
-  erw [Category.id_comp]
-  rw [NatIso.isIso_inv_app, IsIso.inv_comp_eq]
-  erw [MonoidalCategory.tensor_id]
-  erw [(functorCategoryEquivalence V G).inverse.map_id,
-    (functorCategoryEquivalence V G).functor.map_id, Category.id_comp]
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_app Action.functorCategoryMonoidalEquivalence.μ_app
@@ -752,13 +749,15 @@ theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
 set_option linter.uppercaseLean3 false in
 #align Action.left_dual_V Action.leftDual_v
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
 #align Action.right_dual_ρ Action.rightDual_ρ
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
 set_option linter.uppercaseLean3 false in
@@ -915,7 +914,8 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         refine' Prod.ext rfl _
         erw [tensor_rho, tensor_rho]
         dsimp
-        rw [leftRegular_ρ_apply]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [leftRegular_ρ_apply]
         erw [map_mul]
         rfl }
   hom_inv_id := by

@@ -48,8 +48,7 @@ namespace SzemerediRegularity
 variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
   (G : SimpleGraph α) (ε : ℝ) {U : Finset α} (hU : U ∈ P.parts) (V : Finset α)
 
-local notation3 (prettyPrint := false)
-  "m" => (card α / stepBound P.parts.card : ℕ)
+local notation3 "m" => (card α / stepBound P.parts.card : ℕ)
 
 /-!
 ### Definitions
@@ -451,7 +450,10 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   set s : ℝ := ↑(G.edgeDensity (G.nonuniformWitness ε U V) (G.nonuniformWitness ε V U))
   set t : ℝ := ↑(G.edgeDensity U V)
   have hrs : |r - s| ≤ ε / 5 := abs_density_star_sub_density_le_eps hPε hε₁ hUVne hUV
-  have hst : ε ≤ |s - t| := by exact_mod_cast G.nonuniformWitness_spec hUVne hUV
+  have hst : ε ≤ |s - t| := by
+    -- After leanprover/lean4#2734, we need to do the zeta reduction before `norm_cast`.
+    unfold_let s t
+    exact_mod_cast G.nonuniformWitness_spec hUVne hUV
   have hpr : |p - r| ≤ ε ^ 5 / 49 :=
     average_density_near_total_density hPα hPε hε₁ star_subset_chunk star_subset_chunk
   have hqt : |q - t| ≤ ε ^ 5 / 49 := by

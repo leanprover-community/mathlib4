@@ -130,10 +130,21 @@ theorem card_doubleton (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
 #align finset.card_doubleton Finset.card_doubleton
 
+/-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
 theorem card_erase_of_mem : a ∈ s → (s.erase a).card = s.card - 1 :=
   Multiset.card_erase_of_mem
 #align finset.card_erase_of_mem Finset.card_erase_of_mem
+
+/-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$.
+  This result is casted to any additive group with 1,
+  so that we don't have to work with `ℕ`-subtraction. -/
+@[simp]
+theorem cast_card_erase_of_mem {R} [AddGroupWithOne R] {s : Finset α} (hs : a ∈ s) :
+    ((s.erase a).card : R) = s.card - 1 := by
+  rw [card_erase_of_mem hs, Nat.cast_sub, Nat.cast_one]
+  rw [Nat.add_one_le_iff, Finset.card_pos]
+  exact ⟨a, hs⟩
 
 @[simp]
 theorem card_erase_add_one : a ∈ s → (s.erase a).card + 1 = s.card :=
@@ -451,6 +462,9 @@ theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
   rw [← card_disjoint_union sdiff_disjoint, sdiff_union_self_eq_union]
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
+lemma card_sdiff_comm (h : s.card = t.card) : (s \ t).card = (t \ s).card :=
+  add_left_injective t.card $ by simp_rw [card_sdiff_add_card, ←h, card_sdiff_add_card, union_comm]
+
 end Lattice
 
 theorem filter_card_add_filter_neg_card_eq_card
@@ -610,8 +624,10 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
-theorem card_eq_succ [DecidableEq α] :
-    s.card = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ t.card = n :=
+section DecidableEq
+variable [DecidableEq α]
+
+theorem card_eq_succ : s.card = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ t.card = n :=
   ⟨fun h =>
     let ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < s.card)
     ⟨a, s.erase a, s.not_mem_erase a, insert_erase has, by
@@ -619,7 +635,7 @@ theorem card_eq_succ [DecidableEq α] :
     fun ⟨a, t, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_insert_of_not_mem hat⟩
 #align finset.card_eq_succ Finset.card_eq_succ
 
-theorem card_eq_two [DecidableEq α] : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
+theorem card_eq_two : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   constructor
   · rw [card_eq_succ]
     simp_rw [card_eq_one]
@@ -629,8 +645,7 @@ theorem card_eq_two [DecidableEq α] : s.card = 2 ↔ ∃ x y, x ≠ y ∧ s = {
     exact card_doubleton h
 #align finset.card_eq_two Finset.card_eq_two
 
-theorem card_eq_three [DecidableEq α] :
-    s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
+theorem card_eq_three : s.card = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   constructor
   · rw [card_eq_succ]
     simp_rw [card_eq_two]
@@ -641,6 +656,18 @@ theorem card_eq_three [DecidableEq α] :
     simp only [xy, xz, yz, mem_insert, card_insert_of_not_mem, not_false_iff, mem_singleton,
       or_self_iff, card_singleton]
 #align finset.card_eq_three Finset.card_eq_three
+
+lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by
+  rw [covby_iff_exists_insert]
+  constructor
+  · rintro ⟨a, ha, rfl⟩
+    simp [*]
+  · simp_rw [card_eq_one]
+    rintro ⟨hts, a, ha⟩
+    refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
+    rw [insert_eq, ←ha, sdiff_union_of_subset hts]
+
+end DecidableEq
 
 /-! ### Inductions -/
 

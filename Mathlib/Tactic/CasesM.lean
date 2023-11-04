@@ -54,7 +54,7 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
       return (acc.push g)
 
 def casesType (heads : Array Name) (recursive := false) (allowSplit := true) :
-     MVarId → MetaM (List MVarId) :=
+    MVarId → MetaM (List MVarId) :=
   let matcher ty := pure <|
     if let .const n .. := ty.headBeta.getAppFn then heads.contains n else false
   casesMatching matcher recursive allowSplit

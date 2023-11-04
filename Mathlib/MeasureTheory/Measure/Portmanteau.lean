@@ -365,9 +365,9 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
   have room₂ :
     (lintegral (μ : Measure Ω) fun a => thickenedIndicator (δs_pos M) F a) <
       (lintegral (μ : Measure Ω) fun a => thickenedIndicator (δs_pos M) F a) + ε / 2 := by
-    apply
-      ENNReal.lt_add_right (lintegral_lt_top_of_boundedContinuous_to_nnreal (μ : Measure Ω) _).ne
+    apply ENNReal.lt_add_right (ne_of_lt ?_)
         (ENNReal.div_pos_iff.mpr ⟨(ENNReal.coe_pos.mpr ε_pos).ne.symm, ENNReal.two_ne_top⟩).ne.symm
+    apply BoundedContinuousFunction.lintegral_lt_top_of_nnreal
   have ev_near := Eventually.mono (eventually_lt_of_tendsto_lt room₂ key₂) fun n => le_of_lt
   have ev_near' := Eventually.mono ev_near fun n => le_trans
     (measure_le_lintegral_thickenedIndicator (μs n : Measure Ω) F_closed.measurableSet (δs_pos M))

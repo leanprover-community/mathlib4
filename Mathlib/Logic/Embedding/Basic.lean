@@ -266,7 +266,7 @@ def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
 #align function.embedding.sectr Function.Embedding.sectr
 #align function.embedding.sectr_apply Function.Embedding.sectr_apply
 
-/-- If `e₁` and `e₂` are embeddings, then so is `prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
+/-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.Prod_map e₂.injective⟩
 #align function.embedding.prod_map Function.Embedding.prodMap
