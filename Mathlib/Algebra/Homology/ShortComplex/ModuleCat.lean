@@ -131,7 +131,7 @@ noncomputable def moduleCatCyclesIso : S.cycles ≅ ModuleCat.of R (LinearMap.ke
 /-- Given a short complex `S` of modules, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `LinearMap.ker S.g` by the image of
-`S.X₁ →ₗ[R] LinearMap.ker S.g`. -/
+`S.moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g`. -/
 noncomputable def moduleCatHomologyIso :
     S.homology ≅
       ModuleCat.of R ((LinearMap.ker S.g) ⧸ LinearMap.range S.moduleCatToCycles) :=
