@@ -203,6 +203,11 @@ lemma _root_.CategoryTheory.ShortComplex.Exact.exact_toComposableArrows
     S.toComposableArrows.Exact :=
   exact₂_mk _ _ hS
 
+lemma _root_.CategoryTheory.ShortComplex.exact_iff_exact_toComposableArrows
+    (S : ShortComplex C) :
+    S.Exact ↔ S.toComposableArrows.Exact :=
+  (S.toComposableArrows.exact₂_iff S.isComplex_toComposableArrows).symm
+
 lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
     S.Exact ↔ (mk₂ (S.map' 0 1) (S.map' 1 2)).Exact ∧ S.δ₀.Exact := by
   constructor
