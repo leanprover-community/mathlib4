@@ -45,6 +45,7 @@ variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
+   {N₂ : Type*} [AddCommMonoid N₂] [Module R₂ N₂]
 
 variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
 
@@ -65,20 +66,32 @@ open Matrix
 /-- The map from `Matrix n n R` to bilinear forms on `n → R`.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
-def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) where
-  bilin v w := ∑ i, ∑ j, v i * M i j * w j
-  bilin_add_left x y z := by simp only [Pi.add_apply, add_mul, sum_add_distrib]
-  bilin_smul_left a x y := by simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_sum]
-  bilin_add_right x y z := by simp only [Pi.add_apply, mul_add, sum_add_distrib]
-  bilin_smul_right a x y := by
-    simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, mul_sum]
+def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n R₂) : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂ where
+  toFun v := {
+    toFun := fun w => ∑ i, ∑ j, v i * M i j * w j
+    map_add' := fun _ _ => by
+      simp [Pi.add_apply, mul_add, sum_add_distrib]
+    map_smul' := fun _ _ => by
+      simp [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_sum, mul_left_comm]
+  }
+  map_add' := fun _ _ => by
+    ext
+    simp only [Pi.add_apply, add_mul, sum_add_distrib, coe_mk, AddHom.coe_mk, LinearMap.add_apply]
+  map_smul' := fun _ _ => by
+    ext
+    simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, coe_mk, AddHom.coe_mk,
+      RingHom.id_apply, LinearMap.smul_apply, mul_sum]
+
+def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) :=
+  LinearMap.toBilin (Matrix.toBilin'Aux' M)
 #align matrix.to_bilin'_aux Matrix.toBilin'Aux
 
 theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
     M.toBilin'Aux (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j := by
-  rw [Matrix.toBilin'Aux]
-  dsimp only -- Porting note: had to add `dsimp only` to get rid of the projections
+  rw [Matrix.toBilin'Aux, Matrix.toBilin'Aux']
+  dsimp only [toBilin_apply, coe_mk, AddHom.coe_mk]
+  --dsimp only -- Porting note: had to add `dsimp only` to get rid of the projections
   rw [sum_eq_single i, sum_eq_single j]
   · simp only [stdBasis_same, stdBasis_same, one_mul, mul_one]
   · rintro j' - hj'
