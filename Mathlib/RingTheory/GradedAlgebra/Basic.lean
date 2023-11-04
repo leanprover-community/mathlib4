@@ -315,21 +315,21 @@ The semiring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
 -/
 def GradedRing.projZeroRingHom' : A →+* (𝒜 0) :=
   ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
-    A →+* GradeZero.subsemiring 𝒜)
+  A →+* GradeZero.subsemiring 𝒜)
 
 @[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
-  (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+    (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
 
 lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
-  GradedRing.projZeroRingHom' 𝒜 a = a := by
-    ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+    GradedRing.projZeroRingHom' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
 
 /--
 The semiring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective.
 -/
 lemma GradedRing.projZeroRingHom'_surjective :
-  Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
-    Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
+    Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
 
 end GradeZero
 
@@ -414,20 +414,20 @@ The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
 -/
 def GradedRing.projZeroRingHom'' : A →+* (𝒜 0) :=
   ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
-    A →+* GradeZero.subring 𝒜)
+  A →+* GradeZero.subring 𝒜)
 
 @[simp] lemma GradedRing.coe_projZeroRingHom''_apply (a : A) :
-  (GradedRing.projZeroRingHom'' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+    (GradedRing.projZeroRingHom'' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
 
 lemma GradedRing.projZeroRingHom''_apply_coe (a : 𝒜 0) :
-  GradedRing.projZeroRingHom'' 𝒜 a = a := by
-    ext; simp only [coe_projZeroRingHom''_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+    GradedRing.projZeroRingHom'' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom''_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
 
 /--
 The ring homomorphism `GradedRing.projZeroRingHom'' 𝒜` is surjective.
 -/
 lemma GradedRing.projZeroRingHom''_surjective :
-  Function.Surjective (GradedRing.projZeroRingHom'' 𝒜) :=
-    Function.RightInverse.surjective (GradedRing.projZeroRingHom''_apply_coe 𝒜)
+    Function.Surjective (GradedRing.projZeroRingHom'' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom''_apply_coe 𝒜)
 
 end GradeZero
