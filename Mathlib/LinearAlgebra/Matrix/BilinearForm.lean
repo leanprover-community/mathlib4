@@ -125,6 +125,15 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
       apply Matrix.toBilin'Aux_stdBasis'
 #align matrix.to_bilin'_aux_std_basis Matrix.toBilin'Aux_stdBasis
 
+
+/-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
+
+This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
+def BilinForm.toMatrixAux' (b : n → M₂) : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) →ₗ[R₂] Matrix n n R₂ where
+  toFun B := of fun i j => B (b i) (b j)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
@@ -135,6 +144,11 @@ def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Ma
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
+theorem BilinForm.toMatrixAux_apply' (B : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂)) (b : n → M₂) (i j : n) :
+    BilinForm.toMatrixAux' (R₂ := R₂) b B i j = B (b i) (b j) :=
+  rfl
+
+@[simp]
 theorem BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (i j : n) :
     -- porting note: had to hint the base ring even though it should be clear from context...
     BilinForm.toMatrixAux (R₂ := R₂) b B i j = B (b i) (b j) :=
@@ -142,6 +156,15 @@ theorem BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (
 #align bilin_form.to_matrix_aux_apply BilinForm.toMatrixAux_apply
 
 variable [Fintype n] [Fintype o]
+
+theorem toBilin'Aux_toMatrixAux' [DecidableEq n] (B₂ : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂) :
+    -- porting note: had to hint the base ring even though it should be clear from context...
+    Matrix.toBilin'Aux' (BilinForm.toMatrixAux' (R₂ := R₂)
+      (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
+  refine' LinearMap.ext_basis (Pi.basisFun R₂ n) (Pi.basisFun R₂ n) (fun i j => _)
+  --fun i => sorry
+  rw [Pi.basisFun_apply, Pi.basisFun_apply,Matrix.toBilin'Aux_stdBasis',
+    BilinForm.toMatrixAux_apply']
 
 theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R₂)) :
     -- porting note: had to hint the base ring even though it should be clear from context...
