@@ -208,6 +208,10 @@ lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : 
     n.factorization.prod f = ∏ p in n.primeFactors, f p (n.factorization p) := rfl
 #align nat.prod_factorization_eq_prod_factors Nat.prod_factorization_eq_prod_primeFactors
 
+/-- A product over `n.primeFactors` can be written as a product over `n.factorization`; -/
+lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ → β) :
+    ∏ p in n.primeFactors, f p = n.factorization.prod (fun p _ ↦ f p) := rfl
+
 /-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : Finset α`,
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
 Generalises `factorization_mul`, which is the special case where `S.card = 2` and `g = id`. -/
