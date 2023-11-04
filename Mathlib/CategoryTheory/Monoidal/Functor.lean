@@ -69,12 +69,10 @@ structure LaxMonoidalFunctor extends C ⥤ D where
   ε : 𝟙_ D ⟶ obj (𝟙_ C)
   /-- tensorator -/
   μ : ∀ X Y : C, obj X ⊗ obj Y ⟶ obj (X ⊗ Y)
-  /-- naturality of the tensorator -/
   μ_natural_left :
     ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
       (map f ▷ obj X') ≫ μ Y X' = μ X X' ≫ map (f ▷ X') := by
     aesop_cat
-  /-- naturality of the tensorator -/
   μ_natural_right :
     ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
       (obj X' ◁ map f) ≫ μ X' Y = μ X' X ≫ map (X' ◁ f) := by
