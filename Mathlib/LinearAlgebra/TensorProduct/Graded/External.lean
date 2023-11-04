@@ -45,7 +45,7 @@ multiplication follows trivially from this after some point-free nonsense.
 
 suppress_compilation
 
-open scoped TensorProduct
+open scoped TensorProduct DirectSum
 
 variable {R ι A B : Type*}
 
