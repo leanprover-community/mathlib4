@@ -1,23 +1,46 @@
 /-
-Copyright (c) 2023 Oliver Nash. All rights reserved.
+Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
+Authors: Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+
+#align_import linear_algebra.eigenspace.is_alg_closed from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # Triangularizable linear endomorphisms
 
-TODO write something
+An endomorphism `f` of a module `M` is said to be triangularizable if the generalized eigenspaces of
+`f` span `M`. This file contains basic results about triangularizability.
 
+## Main definitions / results
+
+ * `Module.End.IsTriangularizable`: the definition of triangularizability.
+ * `Module.End.isTriangularizable_of_isAlgClosed`: every endomorphism of a finite-dimensional vector
+   space over an algebraically-closed field is triangularizable.
+ * `Module.End.IsTriangularizable.isTriangularizable_restrict`: the restriction of a
+   triangularizable endomorphism to an invariant submodule is triangularizable.
+
+## References
+
+* [Sheldon Axler, *Linear Algebra Done Right*][axler2015]
+* https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors
+
+## Tags
+
+eigenspace, eigenvector, eigenvalue, eigen
 -/
 
-open Set Function Module
+open Set Function Module FiniteDimensional
 
-variable {K R M : Type*} [CommRing R] [Field K] [AddCommGroup M] [Module R M] [Module K M]
-  {p : Submodule K M} {f : End K M}
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 namespace Module.End
+
+section CommRing
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- An endomorphism of a module is said to be triangularizable if its generalized eigenspaces span
 the entire module.
@@ -31,13 +54,92 @@ lemma IsTriangularizable.iSup_eq {f : End R M} (hf : f.IsTriangularizable) :
     ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⊤ :=
   hf
 
+end CommRing
+
+-- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
+/-- Every linear operator on a vector space over an algebraically closed field has
+    an eigenvalue. -/
+theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
+    ∃ c : K, f.HasEigenvalue c := by
+  simp_rw [hasEigenvalue_iff_mem_spectrum]
+  exact spectrum.nonempty_of_isAlgClosed_of_finiteDimensional K f
+#align module.End.exists_eigenvalue Module.End.exists_eigenvalue
+
+noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
+    Inhabited f.Eigenvalues :=
+  ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
+
+/-- The generalized eigenvectors span the entire vector space (Lemma 8.21 of [axler2015]). -/
+theorem isTriangularizable_of_isAlgClosed [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    f.IsTriangularizable := by
+  rw [IsTriangularizable]
+  -- We prove the claim by strong induction on the dimension of the vector space.
+  induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
+  cases' n with n
+  -- If the vector space is 0-dimensional, the result is trivial.
+  · rw [← top_le_iff]
+    simp only [finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
+  -- Otherwise the vector space is nontrivial.
+  · haveI : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
+    -- Hence, `f` has an eigenvalue `μ₀`.
+    obtain ⟨μ₀, hμ₀⟩ : ∃ μ₀, f.HasEigenvalue μ₀ := exists_eigenvalue f
+    -- We define `ES` to be the generalized eigenspace
+    let ES := f.generalizedEigenspace μ₀ (finrank K V)
+    -- and `ER` to be the generalized eigenrange.
+    let ER := f.generalizedEigenrange μ₀ (finrank K V)
+    -- `f` maps `ER` into itself.
+    have h_f_ER : ∀ x : V, x ∈ ER → f x ∈ ER := fun x hx =>
+      map_generalizedEigenrange_le (Submodule.mem_map_of_mem hx)
+    -- Therefore, we can define the restriction `f'` of `f` to `ER`.
+    let f' : End K ER := f.restrict h_f_ER
+    -- The dimension of `ES` is positive
+    have h_dim_ES_pos : 0 < finrank K ES := by
+      dsimp only
+      rw [h_dim]
+      apply pos_finrank_generalizedEigenspace_of_hasEigenvalue hμ₀ (Nat.zero_lt_succ n)
+    -- and the dimensions of `ES` and `ER` add up to `finrank K V`.
+    have h_dim_add : finrank K ER + finrank K ES = finrank K V := by
+      apply LinearMap.finrank_range_add_finrank_ker
+    -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
+    have h_dim_ER : finrank K ER < n.succ := by linarith
+    -- This allows us to apply the induction hypothesis on `ER`:
+    have ih_ER : ⨆ (μ : K) (k : ℕ), f'.generalizedEigenspace μ k = ⊤ :=
+      ih (finrank K ER) h_dim_ER f' rfl
+    -- The induction hypothesis gives us a statement about subspaces of `ER`. We can transfer this
+    -- to a statement about subspaces of `V` via `submodule.subtype`:
+    have ih_ER' : ⨆ (μ : K) (k : ℕ), (f'.generalizedEigenspace μ k).map ER.subtype = ER := by
+      simp only [(Submodule.map_iSup _ _).symm, ih_ER, Submodule.map_subtype_top ER]
+    -- Moreover, every generalized eigenspace of `f'` is contained in the corresponding generalized
+    -- eigenspace of `f`.
+    have hff' :
+      ∀ μ k, (f'.generalizedEigenspace μ k).map ER.subtype ≤ f.generalizedEigenspace μ k := by
+      intros
+      rw [generalizedEigenspace_restrict]
+      apply Submodule.map_comap_le
+    -- It follows that `ER` is contained in the span of all generalized eigenvectors.
+    have hER : ER ≤ ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k := by
+      rw [← ih_ER']
+      exact iSup₂_mono hff'
+    -- `ES` is contained in this span by definition.
+    have hES : ES ≤ ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k :=
+      le_trans (le_iSup (fun k => f.generalizedEigenspace μ₀ k) (finrank K V))
+        (le_iSup (fun μ : K => ⨆ k : ℕ, f.generalizedEigenspace μ k) μ₀)
+    -- Moreover, we know that `ER` and `ES` are disjoint.
+    have h_disjoint : Disjoint ER ES := generalized_eigenvec_disjoint_range_ker f μ₀
+    -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
+    -- span of all generalized eigenvectors is all of `V`.
+    show ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤
+    · rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
+      apply sup_le hER hES
+#align module.End.supr_generalized_eigenspace_eq_top Module.End.isTriangularizable_of_isAlgClosed
+
 end Module.End
 
 namespace Submodule
 
-open FiniteDimensional
+variable {p : Submodule K V} {f : Module.End K V}
 
-theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p, f x ∈ p) :
+theorem inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) :
     p ⊓ ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⨆ μ, ⨆ k, p ⊓ f.generalizedEigenspace μ k := by
   simp_rw [← (f.generalizedEigenspace _).mono.directed_le.inf_iSup_eq]
   refine le_antisymm (fun m hm ↦ ?_)
@@ -45,16 +147,16 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
   classical
   obtain ⟨hm₀ : m ∈ p, hm₁ : m ∈ ⨆ μ, ⨆ k, f.generalizedEigenspace μ k⟩ := hm
   obtain ⟨m, hm₂, rfl⟩ := (mem_iSup_iff_exists_finsupp _ _).mp hm₁
-  suffices ∀ μ, (m μ : M) ∈ p by
+  suffices ∀ μ, (m μ : V) ∈ p by
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
   by_cases hμ : μ ∈ m.support; swap; simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
   have h_comm : ∀ (μ₁ μ₂ : K),
-    Commute ((f - algebraMap K (End K M) μ₁) ^ finrank K M)
-            ((f - algebraMap K (End K M) μ₂) ^ finrank K M) := fun μ₁ μ₂ ↦
+    Commute ((f - algebraMap K (End K V) μ₁) ^ finrank K V)
+            ((f - algebraMap K (End K V) μ₂) ^ finrank K V) := fun μ₁ μ₂ ↦
     ((Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).sub_left
       (Algebra.commute_algebraMap_left _ _)).pow_pow _ _
-  let g : Module.End K M := (m.support.erase μ).noncommProd _ fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂
+  let g : End K V := (m.support.erase μ).noncommProd _ fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂
   have hfg : Commute f g := Finset.noncommProd_commute _ _ _ _ fun μ' _ ↦
     (Commute.sub_right rfl <| Algebra.commute_algebraMap_right _ _).pow_right _
   have hg₀ : g (m.sum fun _μ mμ ↦ mμ) = g (m μ) := by
@@ -63,16 +165,16 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
         Finsupp.sum_ite_eq', if_pos hμ]
     rintro μ' hμ'
     split_ifs with hμμ'; rw [hμμ']
-    replace hm₂ : ((f - algebraMap K (End K M) μ') ^ finrank K M) (m μ') = 0 := by
+    replace hm₂ : ((f - algebraMap K (End K V) μ') ^ finrank K V) (m μ') = 0 := by
       obtain ⟨k, hk⟩ := (mem_iSup_of_chain _ _).mp (hm₂ μ')
       exact Module.End.generalizedEigenspace_le_generalizedEigenspace_finrank _ _ k hk
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
-      (fun μ ↦ (f - algebraMap K (End K M) μ) ^ finrank K M) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
+      (fun μ ↦ (f - algebraMap K (End K V) μ) ^ finrank K V) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
     rw [← this, LinearMap.mul_apply, hm₂, _root_.map_zero]
-  have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K M ↦ MapsTo g' p p)
+  have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
-    suffices MapsTo (f - algebraMap K (End K M) μ') p p by
-      simp only [LinearMap.coe_pow]; exact this.iterate (finrank K M)
+    suffices MapsTo (f - algebraMap K (End K V) μ') p p by
+      simp only [LinearMap.coe_pow]; exact this.iterate (finrank K V)
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
@@ -97,16 +199,17 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K M] (h : ∀ x ∈ p,
     hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩
   rwa [← hg₃ hy₁ hm₂ hy₂]
 
-theorem eq_iSup_inf_generalizedEigenspace [FiniteDimensional K M]
+theorem eq_iSup_inf_generalizedEigenspace [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : f.IsTriangularizable) :
     p = ⨆ μ, ⨆ k, p ⊓ f.generalizedEigenspace μ k := by
   rw [← inf_iSup_generalizedEigenspace h, h'.iSup_eq, inf_top_eq]
 
 end Submodule
 
-theorem Module.End.IsTriangularizable.isTriangularizable_restrict [FiniteDimensional K M]
+theorem Module.End.IsTriangularizable.isTriangularizable_restrict
+     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : f.IsTriangularizable) :
-    End.IsTriangularizable (LinearMap.restrict f h) := by
+    Module.End.IsTriangularizable (LinearMap.restrict f h) := by
   have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_generalizedEigenspace h h')
   have h_inj : Function.Injective p.subtype := Subtype.coe_injective
   simp_rw [Submodule.inf_generalizedEigenspace f p h, Submodule.comap_subtype_self,
