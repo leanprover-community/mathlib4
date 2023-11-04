@@ -53,8 +53,6 @@ def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   choose t h using hF (by tauto) (by tauto)
   exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
--- variable {I} (hI : IsInitial I)
-
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
 initial object, then `F` preserves terminal objects.
