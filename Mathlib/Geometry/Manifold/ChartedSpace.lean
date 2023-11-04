@@ -1226,7 +1226,7 @@ lemma StructureGroupoid.restriction_in_maximalAtlas (he : e ∈ atlas H M) {s : 
   -- `e'` is the restriction of some chart of `M` at `x`,
   obtain ⟨x, this⟩ := Opens.chart_eq he'
   rw [this]
-  -- The transition functions between the unrestricted charts are in the groupoid,
+  -- The transition functions between the unrestricted charts lie in the groupoid,
   -- the transition functions of the restriction are the restriction of the transition function.
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) s,
          G.trans_restricted (chart_mem_atlas H (x : M)) he s⟩
@@ -1337,15 +1337,6 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) (hs : Set.Non
     (goal.eqOnSource_iff (e.subtypeRestr s)).mpr ⟨by simp, by intro _ _; rfl⟩
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he)
 
-lemma Homeomorph.empty {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s : Set X} {t : Set Y}
-    (hs : s = ∅) (ht : t = ∅) : Homeomorph s t :=
-  {
-    toFun := fun ⟨x, hx⟩ ↦ ((mem_empty_iff_false x).mp (hs ▸ hx)).elim
-    invFun := fun ⟨x, hx⟩ ↦ ((mem_empty_iff_false x).mp (ht ▸ hx)).elim
-    left_inv := by intro; aesop
-    right_inv := by intro; aesop
-  }
-
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
 lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] :
@@ -1354,15 +1345,15 @@ lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M)
     Structomorph G s t := by
   intro s t
   by_cases s = (∅ : Set M)
-  · have h1 : e.source = ∅:= h
-    have h2 : e.target = ∅ := by rw [← e.image_source_eq_target, h1, image_empty]
+  · have : IsEmpty s := isEmpty_coe_sort.mpr h
+    have : t = (∅ : Set H) := by
+      show e.target = ∅
+      exact e.image_source_eq_target ▸ (image_eq_empty.mpr h)
+    have : IsEmpty t := isEmpty_coe_sort.mpr this
     exact {
-      Homeomorph.empty h1 h2 with
-      mem_groupoid := by
-        intro c c' hc hc'
-        dsimp
-        -- FIXME: our homomorphism maps between empty sets; this should be obvious!
-        sorry
+      Homeomorph.empty with
+      -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
+      mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim
     }
   · exact {
       e.toHomeomorphSourceTarget with
