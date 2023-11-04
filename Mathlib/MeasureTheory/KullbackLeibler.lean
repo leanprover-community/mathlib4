@@ -346,10 +346,11 @@ end integral_llr_nonneg
 
 section llr_tilted
 
-lemma llr_tilted_ae_eq {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hμν : μ ≪ ν) {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+variable {μ ν : Measure α}
+
+lemma llr_tilted_ae_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) {f : α → ℝ} (hf : AEMeasurable f ν) :
     (LLR μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + logIntegralExp ν f + LLR μ ν x := by
-  have hf : AEMeasurable f ν := aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable
   filter_upwards [hμν.ae_le (ofReal_rnDeriv_tilted_right μ ν hf), Measure.rnDeriv_pos hμν,
     hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
   rw [LLR, hx, log_mul (exp_pos _).ne']
@@ -357,15 +358,15 @@ lemma llr_tilted_ae_eq {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasur
   · rw [ne_eq, ENNReal.toReal_eq_zero_iff]
     simp only [hx_pos.ne', hx_lt_top.ne, or_self, not_false_eq_true]
 
-lemma integrable_llr_tilted {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma integrable_llr_tilted [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) {f : α → ℝ} (hfμ : Integrable f μ)
-    (hfν : Integrable (fun x ↦ exp (f x)) ν) (h_int : Integrable (LLR μ ν) μ) :
+    (hfν : AEMeasurable f ν) (h_int : Integrable (LLR μ ν) μ) :
     Integrable (LLR μ (ν.tilted f)) μ := by
   rw [integrable_congr (llr_tilted_ae_eq hμν hfν)]
   exact Integrable.add (hfμ.neg.add (integrable_const _)) h_int
 
-lemma integral_llr_tilted {μ ν : Measure α} [IsProbabilityMeasure μ] [IsFiniteMeasure ν]
-    {f : α → ℝ} (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : Integrable (fun x ↦ exp (f x)) ν)
+lemma integral_llr_tilted [IsProbabilityMeasure μ] [IsFiniteMeasure ν]
+    {f : α → ℝ} (hμν : μ ≪ ν) (hfμ : Integrable f μ) (hfν : AEMeasurable f ν)
     (h_int : Integrable (LLR μ ν) μ) :
     ∫ x, LLR μ (ν.tilted f) x ∂μ = ∫ x, LLR μ ν x ∂μ - ∫ x, f x ∂μ + logIntegralExp ν f := by
   calc ∫ x, LLR μ (ν.tilted f) x ∂μ
@@ -385,15 +386,15 @@ lemma integral_sub_logIntegralExp_le {μ ν : Measure α}
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ)
     (f : α → ℝ) (hfμ : Integrable f μ) (hf : Integrable (fun x ↦ exp (f x)) ν) :
     ∫ x, f x ∂μ - logIntegralExp ν f ≤ ∫ x, LLR μ ν x ∂μ := by
+  have hf_m : AEMeasurable f ν := aemeasurable_of_aemeasurable_exp hf.1.aemeasurable
   have : ∫ x, LLR μ ν x ∂μ - ∫ x, LLR μ (ν.tilted f) x ∂μ = ∫ x, f x ∂μ - logIntegralExp ν f := by
-    rw [integral_llr_tilted hμν hfμ hf h_int]
+    rw [integral_llr_tilted hμν hfμ hf_m h_int]
     abel
   rw [← this]
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   have : IsProbabilityMeasure (Measure.tilted ν f) := isProbabilityMeasure_tilted hf
-  have hf_m : AEMeasurable f ν := aemeasurable_of_aemeasurable_exp hf.1.aemeasurable
   refine integral_llr_nonneg (hμν.trans (absolutelyContinuous_tilted hf_m)) ?_
-  exact integrable_llr_tilted hμν hfμ hf h_int
+  exact integrable_llr_tilted hμν hfμ hf_m h_int
 
 lemma ciSup_le_integral_llr {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμν : μ ≪ ν) (h_int : Integrable (LLR μ ν) μ) :
