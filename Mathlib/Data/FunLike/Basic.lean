@@ -147,24 +147,8 @@ namespace FunLike
 
 variable {F α β} [i : FunLike F α β]
 
-open Lean Elab Meta Term
-
-def bodyBeta (e : Expr) : Expr :=
-  match e with
-  | .lam name binTy body binInfo => .lam name binTy body.headBeta binInfo
-  | _ => e
-
-def reduceStuff (e : Expr) : Expr :=
-  let f := e.getAppFn
-  let args := e.getAppArgs.map bodyBeta
-  mkAppN f args
-
-elab "reduce_stuff% " t:term : term => do
-  let e ← elabTerm t none
-  return reduceStuff e
-
 instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
-  coe := fun f => reduce_stuff% FunLike.coe f
+  coe := @FunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 
 #eval Lean.Elab.Command.liftTermElabM do
   Std.Tactic.Coe.registerCoercion ``FunLike.coe
