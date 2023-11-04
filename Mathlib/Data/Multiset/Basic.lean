@@ -2323,7 +2323,6 @@ theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [Decidabl
 #align multiset.countp_map Multiset.countP_map
 
 -- porting note: `Lean.Internal.coeM` forces us to type-ascript `{a // a ∈ s}`
-@[simp]
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by
     simp only [quot_mk_to_coe, coe_countP]
@@ -2336,7 +2335,6 @@ lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} 
     rfl
 #align multiset.countp_attach Multiset.countP_attach
 
-@[simp]
 lemma filter_attach (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.attach.filter fun a : {a // a ∈ s} ↦ p ↑a) =
       (s.filter p).attach.map (Subtype.map id fun _ ↦ Multiset.mem_of_mem_filter) :=

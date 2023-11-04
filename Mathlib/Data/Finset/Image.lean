@@ -200,7 +200,6 @@ lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [Decidabl
   eq_of_veq <| Multiset.filter_attach' _ _
 #align finset.filter_attach' Finset.filter_attach'
 
-@[simp]
 lemma filter_attach (p : α → Prop) [DecidablePred p] (s : Finset α) :
     s.attach.filter (fun a : s ↦ p a) =
       (s.filter p).attach.map ((Embedding.refl _).subtypeMap mem_of_mem_filter) :=

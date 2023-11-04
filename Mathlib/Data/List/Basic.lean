@@ -3498,7 +3498,6 @@ lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α
 #align list.filter_attach' List.filter_attach'
 
 -- porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
-@[simp]
 lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
