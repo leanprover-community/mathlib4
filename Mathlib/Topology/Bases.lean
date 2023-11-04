@@ -33,12 +33,12 @@ conditions are equivalent in this case).
 
 ## Main results
 
-* `TopologicalSpace.FirstCountableTopology.tendsto_subseq`: In a first-countable space,
+* `FirstCountableTopology.tendsto_subseq`: In a first-countable space,
   cluster points are limits of subsequences.
-* `TopologicalSpace.SecondCountableTopology.isOpen_iUnion_countable`: In a second-countable space,
+* `SecondCountableTopology.isOpen_iUnion_countable`: In a second-countable space,
   the union of arbitrarily-many open sets is equal to a sub-union of only countably many of these
   sets.
-* `TopologicalSpace.SecondCountableTopology.countable_cover_nhds`: Consider `f : α → Set α` with the
+* `SecondCountableTopology.countable_cover_nhds`: Consider `f : α → Set α` with the
   property that `f x ∈ 𝓝 x` for all `x`. Then there is some countable set `s` whose image covers the
   space.
 
@@ -303,10 +303,10 @@ variable (α)
 `TopologicalSpace.denseRange_denseSeq`.
 
 If `α` is a uniform space with countably generated uniformity filter (e.g., an `EMetricSpace`), then
-this condition is equivalent to `TopologicalSpace.SecondCountableTopology α`. In this case the
+this condition is equivalent to `SecondCountableTopology α`. In this case the
 latter should be used as a typeclass argument in theorems because Lean can automatically deduce
-`TopologicalSpace.SeparableSpace` from `TopologicalSpace.SecondCountableTopology` but it can't
-deduce `TopologicalSpace.SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
+`TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
+deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
 Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
 instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
@@ -636,7 +636,7 @@ is the limit of some subsequence. -/
 theorem tendsto_subseq [FirstCountableTopology α] {u : ℕ → α} {x : α}
     (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
-#align topological_space.first_countable_topology.tendsto_subseq TopologicalSpace.FirstCountableTopology.tendsto_subseq
+#align topological_space.first_countable_topology.tendsto_subseq FirstCountableTopology.tendsto_subseq
 
 end FirstCountableTopology
 
@@ -734,7 +734,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
   ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
         (countable_countableBasis α).mono <| inter_subset_left _ _⟩⟩
-#align topological_space.second_countable_topology.to_first_countable_topology TopologicalSpace.SecondCountableTopology.to_firstCountableTopology
+#align topological_space.second_countable_topology.to_first_countable_topology SecondCountableTopology.to_firstCountableTopology
 
 /-- If `β` is a second-countable space, then its induced topology via
 `f` on `α` is also second-countable. -/
@@ -744,7 +744,7 @@ theorem secondCountableTopology_induced (β) [t : TopologicalSpace β] [SecondCo
   letI := t.induced f
   refine' { is_open_generated_countable := ⟨preimage f '' b, hb.image _, _⟩ }
   rw [eq, induced_generateFrom_eq]
-#align topological_space.second_countable_topology_induced TopologicalSpace.secondCountableTopology_induced
+#align topological_space.second_countable_topology_induced SecondCountableTopology_induced
 
 variable {α}
 
@@ -776,7 +776,7 @@ instance (priority := 100) SecondCountableTopology.to_separableSpace [SecondCoun
   exact
     ⟨⟨range p, countable_range _,
         (isBasis_countableBasis α).dense_iff.2 fun o ho _ => ⟨p ⟨o, ho⟩, hp _, mem_range_self _⟩⟩⟩
-#align topological_space.second_countable_topology.to_separable_space TopologicalSpace.SecondCountableTopology.to_separableSpace
+#align topological_space.second_countable_topology.to_separable_space SecondCountableTopology.to_separableSpace
 
 /-- A countable open cover induces a second-countable topology if all open covers
 are themselves second countable. -/
@@ -786,7 +786,7 @@ theorem secondCountableTopology_of_countable_cover {ι} [Encodable ι] {U : ι �
   haveI : IsTopologicalBasis (⋃ i, image ((↑) : U i → α) '' countableBasis (U i)) :=
     isTopologicalBasis_of_cover Uo hc fun i => isBasis_countableBasis (U i)
   this.secondCountableTopology (countable_iUnion fun _ => (countable_countableBasis _).image _)
-#align topological_space.second_countable_topology_of_countable_cover TopologicalSpace.secondCountableTopology_of_countable_cover
+#align topological_space.second_countable_topology_of_countable_cover SecondCountableTopology_of_countable_cover
 
 /-- In a second-countable space, an open set, given as a union of open sets,
 is equal to the union of countably many of those sets.
