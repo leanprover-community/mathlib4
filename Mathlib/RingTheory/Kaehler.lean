@@ -635,18 +635,6 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 
-variable {R B}
-
-/-- For a tower `R → A → B` and an `R`-derivation `B → M`, we may compose with `A → B` to obtain an
-`R`-derivation `A → M`. -/
-def Derivation.compAlgebraMap [Module A M] [Module B M] [IsScalarTower A B M]
-    (d : Derivation R B M) : Derivation R A M where
-  map_one_eq_zero' := by simp
-  leibniz' a b := by simp
-  toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
-#align derivation.comp_algebra_map Derivation.compAlgebraMap
-
-variable (R B)
 variable [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` given a square
