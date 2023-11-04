@@ -187,20 +187,13 @@ theorem isSepClosure_iff [Algebra k K] :
     IsSepClosure k K ↔ IsSepClosed K ∧ IsSeparable k K :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 
--- TODO: move to suitable file
-instance IsSeparable.isAlgebraic [Algebra k K] [IsSeparable k K] : Algebra.IsAlgebraic k K :=
-  fun x => IsIntegral.isAlgebraic k <| IsSeparable.isIntegral' x
-
 namespace IsSepClosure
 
 instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
   IsSepClosure.separable
 
-instance isAlgebraic [Algebra k K] [IsSepClosure k K] : Algebra.IsAlgebraic k K :=
-  IsSeparable.isAlgebraic
-
 instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
-  ⟨isAlgebraic,
+  ⟨fun x => IsIntegral.isAlgebraic k <| IsSeparable.isIntegral' x,
     fun x => @IsSepClosed.splits_codomain _ _ _ _ (IsSepClosure.sep_closed k) _ _
       (have : IsSeparable k K := IsSepClosure.separable; IsSeparable.separable k x)⟩
 
@@ -219,9 +212,10 @@ set_option synthInstance.maxHeartbeats 400000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
-  have hL : Algebra.IsAlgebraic K L := IsSeparable.isAlgebraic
+  have hL : Algebra.IsAlgebraic K L :=
+    fun x => IsIntegral.isAlgebraic K <| IsSeparable.isIntegral' x
   let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
-  letI : Field N := (Subalgebra.isField_of_algebraic N IsSeparable.isAlgebraic).toField
+  letI : Field N := (Subalgebra.isField_of_algebraic N hL).toField
   letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
   haveI : IsSeparable N L := isSeparable_tower_top_of_isSeparable K N L
   obtain ⟨y, hy⟩ := IsSepClosed.exists_aeval_eq_zero M (minpoly N x)
