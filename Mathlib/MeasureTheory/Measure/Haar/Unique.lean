@@ -451,17 +451,17 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
 -- TODO: weaken assumptions?
 @[to_additive]
 theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ]
-    [T2Space G] [InnerRegularCompactLTTop μ] {n : ℤ} (hn : n ≠ 0) :
+    [InnerRegularCompactLTTop μ] {n : ℤ} (hn : n ≠ 0) :
     MeasurePreserving (fun g : G => g ^ n) μ μ :=
   { measurable := (continuous_zpow n).measurable
     map_eq := by
       let f := @zpowGroupHom G _ n
       have hf : Continuous f := continuous_zpow n
-      haveI : (μ.map f).IsHaarMeasure :=
-        isHaarMeasure_map μ f hf (RootableBy.surjective_pow G ℤ hn) (by simp)
-      have : InnerRegularCompactLTTop μ := sorry
+      have : (μ.map f).IsHaarMeasure :=
+        isHaarMeasure_map_of_isFiniteMeasure μ f hf (RootableBy.surjective_pow G ℤ hn)
+      have : InnerRegularCompactLTTop (μ.map f) := by infer_instance
       have : InnerRegular μ := by infer_instance
-      have : IsFiniteMeasure μ := by exact CompactSpace.isFiniteMeasure
+      have : IsFiniteMeasure μ := by infer_instance
       have : Regular μ := by infer_instance
       obtain ⟨C, -, -, hC⟩ := isHaarMeasure_eq_smul_of_innerRegular (μ.map f) μ
       suffices C = 1 by rwa [this, one_smul] at hC

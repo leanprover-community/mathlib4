@@ -807,6 +807,30 @@ instance smul_nnreal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
 instance (priority := 80) [InnerRegularCompactLTTop μ] [SigmaFinite μ] : InnerRegular μ :=
   ⟨InnerRegularCompactLTTop.innerRegular.trans InnerRegularWRT.of_sigmaFinite⟩
 
+protected theorem map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+    [BorelSpace β] [h : InnerRegularCompactLTTop μ] {f : α → β} (hf : Continuous f) :
+    InnerRegularCompactLTTop (Measure.map f μ) := by
+  refine ⟨fun s ⟨s_meas, hs⟩ r hr ↦ ?_⟩
+  rw [map_apply hf.measurable s_meas] at hr hs
+  obtain ⟨K, Ks, K_comp, hK⟩ : ∃ K ⊆ f ⁻¹' s, IsCompact K ∧ r < μ K :=
+    h.innerRegular ⟨hf.measurable s_meas, hs⟩ _ hr
+  refine ⟨f '' K, mapsTo'.mp Ks, K_comp.image hf, ?_⟩
+  apply hK.trans_le
+  have : Measurable f := hf.measurable
+
+
+
+
+
+
+#exit
+
+
+  ⟨InnerRegular.innerRegular.map' f.toMeasurableEquiv
+    (fun _U hU ↦ f.measurable hU) (fun _K hK ↦ hK.image f.continuous)⟩
+
+#exit
+
 end InnerRegularCompactLTTop
 
 -- Generalized and moved to another file

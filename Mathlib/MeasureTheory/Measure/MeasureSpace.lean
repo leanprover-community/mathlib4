@@ -1273,8 +1273,11 @@ theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ 
     _ = μ.map f (toMeasurable (μ.map f) s) :=
       (map_apply_of_aemeasurable hf <| measurableSet_toMeasurable _ _).symm
     _ = μ.map f s := measure_toMeasurable _
-
 #align measure_theory.measure.le_map_apply MeasureTheory.Measure.le_map_apply
+
+theorem le_map_apply_image {f : α → β} (hf : AEMeasurable f μ) (s : Set α) :
+    μ s ≤ μ.map f (f '' s) :=
+  (measure_mono (subset_preimage_image f s)).trans (le_map_apply hf _)
 
 /-- Even if `s` is not measurable, `map f μ s = 0` implies that `μ (f ⁻¹' s) = 0`. -/
 theorem preimage_null_of_map_null {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
