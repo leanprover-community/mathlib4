@@ -63,7 +63,7 @@ open BilinForm Finset LinearMap Matrix
 
 open Matrix
 
-/-- The map from `Matrix n n R` to bilinear forms on `n → R`.
+/-- The map from `Matrix n n R` to bilinear maps on `n → R`.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n R₂) : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂ where
@@ -82,6 +82,9 @@ def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n R₂) : (n → R₂) →ₗ[
     simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, coe_mk, AddHom.coe_mk,
       RingHom.id_apply, LinearMap.smul_apply, mul_sum]
 
+/-- The map from `Matrix n n R` to bilinear forms on `n → R`.
+
+This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n → R₂) :=
   LinearMap.toBilin (Matrix.toBilin'Aux' M)
 #align matrix.to_bilin'_aux Matrix.toBilin'Aux
