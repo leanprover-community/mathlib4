@@ -232,12 +232,12 @@ end invertibleTwo
     dist p (Equiv.pointReflection p q) = dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_left _ _)
 
-@[simp] theorem dist_pointReflection_right (p q : P) :
+theorem dist_pointReflection_right (p q : P) :
     dist (Equiv.pointReflection p q) q = ‖(2 : 𝕜)‖ * dist p q := by
   simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_right (G := V),
     nsmul_eq_smul_cast 𝕜, norm_smul]
 
-@[simp] theorem dist_right_pointReflection (p q : P) :
+theorem dist_right_pointReflection (p q : P) :
     dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
   (dist_comm _ _).trans (dist_pointReflection_right _ _)
 
@@ -304,3 +304,4 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp
 #align affine_map.of_map_midpoint AffineMap.ofMapMidpoint
+#lint
