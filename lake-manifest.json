@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
     "subDir?": null,
-    "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
+    "rev": "396201245bf244f9d78e9007a02dd1c388193d27",
     "opts": {},
     "name": "Qq",
     "inputRev?": "master",
@@ -20,7 +20,7 @@
   {"git":
    {"url": "https://github.com/leanprover-community/aesop",
     "subDir?": null,
-    "rev": "314a7385c24fe45304fcdcd28830a6b18c19b743",
+    "rev": "ff167a0c35976f824885e17976e4942be3638d87",
     "opts": {},
     "name": "aesop",
     "inputRev?": "bump/v4.4.0",
@@ -28,10 +28,10 @@
   {"git":
    {"url": "https://github.com/leanprover/lean4-cli",
     "subDir?": null,
-    "rev": "a751d21d4b68c999accb6fc5d960538af26ad5ec",
+    "rev": "39229f3630d734af7d9cfb5937ddc6b41d3aa6aa",
     "opts": {},
     "name": "Cli",
-    "inputRev?": "main",
+    "inputRev?": "nightly",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/ProofWidgets4",
