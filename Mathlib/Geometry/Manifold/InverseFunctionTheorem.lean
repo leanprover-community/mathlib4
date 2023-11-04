@@ -11,10 +11,17 @@ import Mathlib.Tactic.RewriteSearch
 
 TODO: write a docstring when I'm done
 
-TODOs
+**TODO**
 * allow M and N to be modelled on different normed spaces (even if they must be isomorphic)
 * don't assume M and N are smooth: the groupoid containing the C^1 groupoid suffices
 * handle models with corners in my "charts are structomorphs" argument
+
+* extend the arguments to manifolds with boundary, for instance like this:
+  - at an interior point, we can choose U and V to be open - so the argument for the boundaryless case applies
+  - f being C¹ at a boundary point x, means f has a C¹ extension to an open neighbourhood of range I\subset E:
+  work with that like in the previous bullet point
+  - to phrase these above two bullet points, mathlib needs to gain
+  the concepts of interior and boundary points, and that the interior is an open subset
 -/
 
 open Function Manifold Set TopologicalSpace Topology
@@ -76,13 +83,12 @@ end Prerequisites
   the differential $df_x$ is a linear isomorphism.
   Then `x` and `f x` admit neighbourhoods `U ⊆ M` and `V ⊆ N`, respectively such that
   `f` is a structomorphism between `U` and `V`. -/
-theorem IFT_manifolds [CompleteSpace E] [HasGroupoid M (contDiffGroupoid 1 I)]
+theorem IFT_manifolds [CompleteSpace E] [HasGroupoid M (contDiffGroupoid 1 I)] [I.Boundaryless]
     (G : StructureGroupoid H) [HasGroupoid M G]
     (hf : ContMDiffAt I J 1 f x) {f' : TangentSpace I x ≃L[ℝ] TangentSpace J (f x)}
     (hf' : HasMFDerivAt I J f x f') :
     -- TODO: state the correct statement: h.toFun and f "are the same"
     ∃ U : Opens M, ∃ V : Opens N, ∃ h : Structomorph G U V, True /-(∀ x : U → h x = f x.1-/ := by
-
   -- part 1: bookkeeping on the manifolds
   -- Consider the charts φ and ψ on `M` resp. `N` around `x` and `f x`, respectively.
   let φ := extChartAt I x
@@ -99,30 +105,27 @@ theorem IFT_manifolds [CompleteSpace E] [HasGroupoid M (contDiffGroupoid 1 I)]
   have : IsOpen V := sorry
   have : MapsTo f_loc U V := by
     intro x hx
-    have this := calc f_loc '' U
-      _ = (ψ ∘ f ∘ φ.invFun) '' (φ '' (φ.source ∩ f ⁻¹' ψ.source)) := rfl
-      _ = (ψ ∘ f) '' ((φ.invFun ∘φ) '' (φ.source ∩ f ⁻¹' ψ.source)) := by
-        simp only [image_comp, comp.assoc]
-      _ = ((ψ ∘ f) ∘ id) '' (φ.source ∩ f ⁻¹' ψ.source) := by sorry -- proven on another branch
-      _ = (ψ ∘ f) '' (φ.source ∩ f ⁻¹' ψ.source) := by simp
-      _ = ((ψ ∘ f) '' φ.source) ∩ (ψ ∘ f) '' (f ⁻¹' ψ.source) := by sorry
-      _ = ψ '' (f '' φ.source) ∩ ψ '' (f '' (f ⁻¹' ψ.source)) := by
-        simp only [image_comp, comp.assoc, image_inter]
-      _ = ψ '' (f '' φ.source ∩ f '' (f ⁻¹' ψ.source)) := sorry
-        -- need ψ injective, or so apply image_inter ψ f '' φ.source _
-      _ = ψ '' (f '' φ.source ∩ ψ.source) := sorry -- image of preimage
-      _ = V := rfl
-    rw [← this]
-    exact mem_image_of_mem f_loc hx
+    rcases hx with ⟨x', hx', hx'x⟩
+    have : φ.invFun (φ x') = x' := φ.left_inv (mem_of_mem_inter_left hx')
+    have : f_loc x = (ψ ∘ f) x' := calc f_loc x
+      _ = (ψ ∘ f ∘ φ.invFun) (φ x') := by rw [hx'x]
+      _ = (ψ ∘ f) (φ.invFun (φ x')) := rfl
+      _ = (ψ ∘ f) x' := by rw [this]
+    --have : f x' ∈ (f '' φ.source ∩ ψ.source) := by aesop
+    aesop
   -- By definition, `f_loc` is `C^1` at `x' := φ x`.
   set x' := φ x
-  have : ContDiffAt ℝ 1 f_loc (φ x) := sorry -- should be by definition
-
+  have : ContDiffWithinAt ℝ 1 f_loc (range I) x' := ((contMDiffAt_iff I J).mp hf).2
+  have : ContDiffAt ℝ 1 f_loc (φ x) := by rw [I.range_eq_univ] at this; exact this
   -- As shown before, `(df_loc)_φ x is also a linear isomorphism.
   have df_loc : E ≃L[ℝ] E' := differential_in_charts_iso I J f' hf'
   let temp := differential_in_charts_iso_coe I J (chartAt H x) (chartAt H (f x)) f' hf'
-  -- easy combination of differentiability lemmas
-  have hdf'loc : HasFDerivAt (𝕜 := ℝ) f_loc df_loc (φ x) := by sorry
+  -- have temp' : ((differential_in_charts_iso I J f' hf').toLinearEquiv).toAddHom.toFun = (fderiv ℝ f_loc x') := temp
+  -- have temp'' : (df_loc.toLinearEquiv).toAddHom.toFun = (fderiv ℝ f_loc x') := sorry -- not the same temp'
+  -- TODO: different lemmas don't match; both expressions should be `fderiv ℝ f_loc x'`
+  obtain ⟨der, part2⟩ := this.differentiableAt (by rfl)
+  have mismatch : der = df_loc := by sorry
+  have hdf'loc : HasFDerivAt (𝕜 := ℝ) f_loc df_loc x' := by rw [← mismatch]; exact part2
 
   -- By the Inverse Function Theorem on normed spaces, there are neighbourhoods U' and V' of x' and
   -- ψ(f x)=f_loc x' and a C¹ function g_loc:V' \to U' such that f_loc and g_loc are inverses.
