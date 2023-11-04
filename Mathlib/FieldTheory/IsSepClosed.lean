@@ -206,44 +206,12 @@ open IsAlgClosed lift SubfieldWithHom
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsSepClosed M] [IsSeparable K L]
 
--- porting note: this was much faster in lean 3
-set_option maxHeartbeats 800000 in
-set_option synthInstance.maxHeartbeats 400000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
   intro x _
-  have hL : Algebra.IsAlgebraic K L :=
-    fun x => IsIntegral.isAlgebraic K <| IsSeparable.isIntegral' x
-  let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
-  letI : Field N := (Subalgebra.isField_of_algebraic N hL).toField
-  letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
-  haveI : IsSeparable N L := isSeparable_tower_top_of_isSeparable K N L
-  obtain ⟨y, hy⟩ := IsSepClosed.exists_aeval_eq_zero M (minpoly N x)
-    (minpoly.degree_pos
-      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ hL x))).ne'
-    (IsSeparable.separable N x)
-  let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
-  letI : Algebra N O := Subalgebra.algebra O
-  -- Porting note: there are some tricky unfolds going on here:
-  -- (O.restrictScalars K : Type*) is identified with (O : Type*) in a few places
-  let larger_emb : O →ₐ[N] M := Algebra.adjoin.liftSingleton N x y hy
-  let larger_emb' : O →ₐ[K] M := AlgHom.restrictScalars K (S := N) (A := O) (B := M) larger_emb
-  have hNO : N ≤ O.restrictScalars K := by
-    intro z hz
-    show algebraMap N L ⟨z, hz⟩ ∈ O
-    exact O.algebraMap_mem _
-  let O' : SubfieldWithHom K L M :=
-    ⟨O.restrictScalars K, larger_emb'⟩
-  have hO' : maximalSubfieldWithHom K L M ≤ O' := by
-    refine' ⟨hNO, _⟩
-    intro z
-    -- Porting note: have to help Lean unfold even more here
-    show Algebra.adjoin.liftSingleton N x y hy (@algebraMap N O _ _ (Subalgebra.algebra O) z) =
-        algebraMap N M z
-    exact AlgHom.commutes _ _
-  refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
-  show x ∈ Algebra.adjoin N {(x : L)}
-  exact Algebra.subset_adjoin (Set.mem_singleton x)
+  exact mem_maximalSubfieldWithHom_of_splits K L M
+    (fun x => IsIntegral.isAlgebraic K <| IsSeparable.isIntegral' x) x
+      (splits_codomain _ (IsSeparable.separable K x))
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
