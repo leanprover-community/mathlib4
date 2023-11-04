@@ -1403,19 +1403,14 @@ lemma Basis.mem_center_iff {A}
     z ∈ Set.center A ↔ (∀ i, Commute (b i) z) ∧ ∀ i j,
     z * (b i * b j) = (z * b i) * b j
     ∧ (b i * z) * b j = b i * (z * b j)
-    ∧ (b i * b j) * z = b i * (b j * z)
-     := by
+    ∧ (b i * b j) * z = b i * (b j * z) := by
   constructor
   · intro h;
     constructor
     · intro i
       apply (h.1 (b i)).symm
     · intros
-      constructor
-      · apply h.2
-      · constructor
-        · apply h.3
-        · apply h.4
+      exact ⟨h.2 _ _, ⟨h.3 _ _, h.4 _ _⟩⟩
   · intro h
     rw [center, mem_setOf_eq]
     constructor
