@@ -34,12 +34,15 @@ universe v u
 
 namespace CategoryTheory.Presieve
 
-open Limits Opposite
+variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type (max u v))
 
-variable {C : Type u} [Category.{v} C] (I : C) (F : Cᵒᵖ ⥤ Type (max u v))
+open Limits Opposite
 
 variable (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
 
+section Terminal
+
+variable (I) in
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
 object, then `F` takes that object to the terminal object.
@@ -50,19 +53,25 @@ def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   choose t h using hF (by tauto) (by tauto)
   exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
-variable {I} (hI : IsInitial I)
+-- variable {I} (hI : IsInitial I)
 
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
 initial object, then `F` preserves terminal objects.
 -/
 noncomputable
-def preservesTerminalOfIsSheafForEmpty : PreservesLimit (Functor.empty Cᵒᵖ) F :=
+def preservesTerminalOfIsSheafForEmpty (hI : IsInitial I) : PreservesLimit (Functor.empty Cᵒᵖ) F :=
   haveI := hI.hasInitial
   (preservesTerminalOfIso F
     ((F.mapIso (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)) ≪≫
     (F.mapIso (initialIsoIsInitial hI).symm.op) ≪≫
     (terminalIsoIsTerminal (isTerminal_of_isSheafFor_empty_presieve I F hF)).symm)))
+
+end Terminal
+
+section Product
+
+variable (hI : IsInitial I)
 
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type} (X : α → C) [HasCoproduct X] [(ofArrows X (Sigma.ι X)).hasPullbacks]
@@ -166,5 +175,7 @@ theorem isSheafFor_iff_preservesProduct : (ofArrows X (Sigma.ι X)).IsSheafFor F
   have : Sigma.desc (Sigma.ι X) = 𝟙 _ := by ext; simp
   have _ : IsIso (Sigma.desc (Sigma.ι X)) := by rw [this]; infer_instance
   exact isSheafFor_of_preservesProduct F X (Sigma.ι X)
+
+end Product
 
 end CategoryTheory.Presieve
