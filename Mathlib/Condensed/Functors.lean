@@ -1,28 +1,28 @@
-import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.Condensed.Abelian
-import Mathlib.Condensed.Equivalence
+import Mathlib.Condensed.Explicit
+import Mathlib.Topology.Category.Yoneda
 
 universe u v
 
-open CategoryTheory Limits
+open CategoryTheory Limits ContinuousMap
 
-instance : PreservesLimits uliftFunctor.{v} := sorry
+noncomputable
+def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} := sorry
+  -- @ofSheafCompHaus (ContinuousMap.coyoneda.{u, u+1, u, u+1} compHausToTop.{u} X)
+  -- (instPreservesFiniteProductsOppositeOppositeTypeTypesCoyoneda.{u, u+1} X.1 compHausToTop) sorry
 
-def Condensed.ulift : Condensed.{u} (Type u) ⥤ CondensedSet.{u} :=
-  sheafCompose (coherentTopology CompHaus) uliftFunctor.{u+1}
+def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} := sorry
 
-def CompHaus.toCondensed_aux : CompHaus.{u} ⥤ Condensed (Type u) where
-  obj S := {
-    val := yoneda.obj S
-    cond := by
-       rw [isSheaf_iff_isSheaf_of_type]
-       exact coherentTopology.isSheaf_yoneda_obj S }
-  map f := ⟨yoneda.map f⟩
+def CompHaus.toCondensed (S : CompHaus.{u}) : CondensedSet.{u} := sorry
 
-def CompHaus.toCondensed : CompHaus.{u} ⥤ CondensedSet.{u} := toCondensed_aux ⋙ Condensed.ulift
+def compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u} := sorry
 
-def Profinite.toCondensed : Profinite.{u} ⥤ CondensedSet.{u} := sorry
+def Profinite.toCondensed (S : Profinite.{u}) : CondensedSet.{u} := sorry
 
-def Stonean.toCondensed : Stonean.{u} ⥤ CondensedSet.{u} := sorry
+def profiniteToCondensed : Profinite.{u} ⥤ CondensedSet.{u} := sorry
 
-def Condensed.forget : CondensedAb.{u} ⥤ CondensedSet.{u} := by sorry
+def Stonean.toCondensed (S : Stonean.{u}) : CondensedSet.{u} := sorry
+
+def stoneanToCondensed : Stonean.{u} ⥤ CondensedSet.{u} := sorry
+
+def Condensed.forget : CondensedAb.{u} ⥤ CondensedSet.{u} := sorry
