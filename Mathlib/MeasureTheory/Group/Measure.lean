@@ -783,33 +783,27 @@ compact sets and positive mass to open sets.
 Textbooks generally require an additional regularity assumption to ensure nice behavior on
 arbitrary locally compact groups. Use `[IsHaarMeasure μ] [Regular μ]` or
 `[IsHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
-sense is automatically regular and inner regular on second countable locally compact groups, see
-`...`.-/
+sense is automatically regular and inner regular on second countable locally compact groups, as
+checked just below this definition.-/
 @[to_additive existing]
 class IsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsMulLeftInvariant μ, IsOpenPosMeasure μ :
   Prop
 #align measure_theory.measure.is_haar_measure MeasureTheory.Measure.IsHaarMeasure
 
-/-- Record that a Haar measure on a locally compact space is locally finite. This is needed as the
-fact that a measure which is finite on compacts is locally finite is not registered as an instance,
-to avoid an instance loop.
-
-See Note [lower instance priority]. -/
-@[to_additive
-"Record that an additive Haar measure on a locally compact space is locally finite. This is needed
-as the fact that a measure which is finite on compacts is locally finite is not registered as an
-instance, to avoid an instance loop.
-
-See Note [lower instance priority]"]
-instance (priority := 100) isLocallyFiniteMeasure_of_isHaarMeasure {G : Type*} [Group G]
-    [MeasurableSpace G] [TopologicalSpace G] [WeaklyLocallyCompactSpace G] (μ : Measure G)
-    [IsHaarMeasure μ] : IsLocallyFiniteMeasure μ :=
-  isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts
-#align measure_theory.measure.is_locally_finite_measure_of_is_haar_measure MeasureTheory.Measure.isLocallyFiniteMeasure_of_isHaarMeasure
-#align measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure MeasureTheory.Measure.isLocallyFiniteMeasure_of_isAddHaarMeasure
+#noalign measure_theory.measure.is_locally_finite_measure_of_is_haar_measure
+#noalign measure_theory.measure.is_locally_finite_measure_of_is_add_haar_measure
 
 variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
+
+/-! Check that typeclass inference knows that a Haar measure on a locally compact second countable
+topological group is automatically regular and inner regular. -/
+
+example [TopologicalGroup G] [LocallyCompactSpace G] [TopologicalSpace.SecondCountableTopology G]
+    [BorelSpace G] : Regular μ := by infer_instance
+
+example [TopologicalGroup G] [LocallyCompactSpace G] [TopologicalSpace.SecondCountableTopology G]
+    [BorelSpace G] : InnerRegular μ := by infer_instance
 
 @[to_additive (attr := simp)]
 theorem Haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by

@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
