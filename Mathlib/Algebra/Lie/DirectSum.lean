@@ -197,7 +197,6 @@ theorem lie_of_of_eq [DecidableEq ι] {i j : ι} (hij : j = i) (x : L i) (y : L 
     lieAlgebraOf_apply]
 #align direct_sum.lie_of_of_eq DirectSum.lie_of_of_eq
 
-@[simp]
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = if hij : j = i then lieAlgebraOf R ι L i ⁅x, hij.recOn y⁆ else 0 := by
   by_cases hij : j = i
