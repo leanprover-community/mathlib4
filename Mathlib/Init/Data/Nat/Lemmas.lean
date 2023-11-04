@@ -470,7 +470,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.min_zero Nat.min_zero
 
-#align nat.min_succ_succ Nat.min_succ_succ
+#align nat.succ_min_succ Nat.succ_min_succ
 
 #align nat.sub_eq_sub_min Nat.sub_eq_sub_min
 

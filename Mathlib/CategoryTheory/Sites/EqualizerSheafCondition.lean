@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.sites.sheaf_of_types from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -185,7 +186,8 @@ namespace Presieve
 
 variable [R.hasPullbacks]
 
-/-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
+/--
+The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[simp] def SecondObj : Type max v u :=
@@ -258,6 +260,104 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
     rw [← q]
     simp [forkMap]
 #align category_theory.equalizer.presieve.sheaf_condition CategoryTheory.Equalizer.Presieve.sheaf_condition
+
+namespace Arrows
+
+open Presieve
+
+variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{w, max v u}]
+    [(ofArrows X π).hasPullbacks]
+-- TODO: allow `I : Type w` 
+
+/--
+The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/00VM>.
+The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arrises if the family of
+arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
+-/
+def FirstObj : Type max v u := ∏ (fun i ↦ P.obj (op (X i)))
+
+@[ext]
+lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj P X ⟶ _) z₁ =
+    (Pi.π _ i : FirstObj P X ⟶ _) z₂) : z₁ = z₂ := by
+  apply Limits.Types.limit_ext
+  rintro ⟨i⟩
+  exact h i
+
+/--
+The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM.
+The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arrises if the
+family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
+-/
+def SecondObj : Type max v u  :=
+  ∏ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
+
+@[ext]
+lemma SecondObj.ext (z₁ z₂ : SecondObj P X π) (h : ∀ ij, (Pi.π _ ij : SecondObj P X π ⟶ _) z₁ =
+    (Pi.π _ ij : SecondObj P X π ⟶ _) z₂) : z₁ = z₂ := by
+  apply Limits.Types.limit_ext
+  rintro ⟨i⟩
+  exact h i
+
+/--
+The left morphism of the fork diagram.
+-/
+def forkMap : P.obj (op B) ⟶ FirstObj P X := Pi.lift (fun i ↦ P.map (π i).op)
+
+/--
+The first of the two parallel morphisms of the fork diagram, induced by the first projection in
+each pullback.
+-/
+def firstMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
+
+/--
+The second of the two parallel morphisms of the fork diagram, induced by the second projection in
+each pullback.
+-/
+def secondMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
+
+theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
+  ext x ij
+  simp only [firstMap, secondMap, forkMap, types_comp_apply, Types.pi_lift_π_apply,
+    ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.condition]
+
+/--
+The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
+map it to the same point.
+-/
+theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.productIso _).hom x)) ↔
+    firstMap P X π x = secondMap P X π x := by
+  rw [Arrows.pullbackCompatible_iff]
+  constructor
+  · intro t
+    ext ij
+    simpa [firstMap, secondMap] using t ij.1 ij.2
+  · intro t i j
+    apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
+    simpa [firstMap, secondMap] using t
+
+/--
+`P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer.
+See <https://stacks.math.columbia.edu/tag/00VM>.
+-/
+theorem sheaf_condition : (ofArrows X π).IsSheafFor P ↔
+    Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
+  rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
+  erw [← Equiv.forall_congr_left (Types.productIso _).toEquiv.symm]
+  simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
+  apply ball_congr
+  intro x _
+  apply exists_unique_congr
+  intro t
+  erw [Equiv.eq_symm_apply]
+  constructor
+  · intro q
+    funext i
+    simpa [forkMap] using q i
+  · intro q i
+    rw [← q]
+    simp [forkMap]
+
+end Arrows
 
 end Presieve
 
