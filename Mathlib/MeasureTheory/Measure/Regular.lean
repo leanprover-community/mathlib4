@@ -47,8 +47,7 @@ There is a reason for this zoo of regularity classes:
 
 While traditional textbooks on measure theory on locally compact spaces emphasize regular measures,
 more recent textbooks emphasize that inner regular Haar measures are better behaved than regular
-Haar measures, so our notion of Haar measure will be in terms of inner regular measures. Whenever
-possible, however, we will prove some statements for regular measures also.
+Haar measures, so we will develop both notions.
 
 The five conditions above are registered as typeclasses for a measure `μ`, and implications between
 them are recorded as instances. For example, in a Hausdorff topological space, regularity implies
@@ -78,6 +77,11 @@ Then the set `ℝ × {0}` has infinite measure (by outer regularity), but any co
 has zero measure (as it is finite). In fact, this set only contains subset with measure zero or
 infinity. The inner regular version of Haar measure, on the other hand, gives zero mass to the
 set `ℝ × {0}`.
+
+Another interesting example is the sum of the Dirac masses at rational points in the real line.
+It is a σ-finite measure on a locally compact metric space, but it is not outer regular: for
+outer regularity, one needs additional locally finite assumptions. On the other hand, it is
+inner regular.
 
 Several authors require both regularity and inner regularity for their measures. We have opted
 for the more fine grained definitions above as they apply more generally.
@@ -951,6 +955,16 @@ instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasur
   exact ⟨(InnerRegularWRT.isCompact_isClosed μ).trans (InnerRegularWRT.of_pseudoMetrizableSpace μ)⟩
 #align measure_theory.measure.regular.of_sigma_compact_space_of_is_locally_finite_measure MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure
 
+/-- Any sigma finite measure on a `σ`-compact pseudometrizable space is inner regular. -/
+instance (priority := 100) {X : Type*}
+    [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
+    [BorelSpace X] (μ : Measure X) [SigmaFinite μ] : InnerRegular μ := by
+  refine ⟨(InnerRegularWRT.isCompact_isClosed μ).trans ?_⟩
+  refine InnerRegularWRT.of_restrict (fun n ↦ ?_) (measurable_spanningSets μ)
+    (univ_subset_iff.2 (iUnion_spanningSets μ)) (monotone_spanningSets μ)
+  have : Fact (μ (spanningSets μ n) < ∞) := ⟨measure_spanningSets_lt_top μ n⟩
+  exact WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite
+
 /- Check that typeclass inference works to guarantee regularity and inner regularity in
 interesting situations. -/
 example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
@@ -958,10 +972,6 @@ example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCounta
 
 example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
     (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : InnerRegular μ := by infer_instance
-
-example [LocallyCompactSpace α] [RegularSpace α] [BorelSpace α] [SecondCountableTopology α]
-    (μ : Measure α) [SigmaFinite μ] : InnerRegular μ := by infer_instance
-
 
 end Measure
 
