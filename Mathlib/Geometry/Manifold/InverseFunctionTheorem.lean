@@ -38,7 +38,7 @@ variable {E E' H H' M N : Type*}
   -- these lines are what I actually want
   --(I : ModelWithCorners ℝ E H) (G : StructureGroupoid H) [HasGroupoid M G]
   -- (J : ModelWithCorners ℝ E' H') (G' : StructureGroupoid H') [HasGroupoid N G']
-  {f : M → N} {x : M}
+
 
 -- inconsistent: HasFDerivAt f f' x vs HasMFDerivAt f x f'
 
@@ -50,6 +50,8 @@ variable {E E' H H' M N : Type*}
   respectively, denote `f_loc := ψ ∘ f ∘ φ⁻¹`. We show that the differential `df_x` of `f`
   is injective, surjective resp. a linear isomorphism iff `(df_loc)_(φ x)` is. -/
 section Prerequisites
+variable {f : M → N} {x : M}
+
 -- xxx: for unextended charts, this doesn't make sense unless H is also a normed space
 variable (hf : ContMDiffAt I J 1 f x)
   {e : LocalHomeomorph M H} (he : e ∈ atlas H M)
@@ -78,6 +80,78 @@ lemma diff_surjective_iff_in_charts_extend : Surjective (mfderiv I J f x) ↔ Su
     (mfderiv 𝓘(ℝ, E) 𝓘(ℝ, E') ((e'.extend J) ∘ f ∘ (e.extend I).symm) ((e.extend I) x)) := sorry
 end Prerequisites
 
+/-! Inverse function theorem for manifolds. -/
+section IFT
+namespace ContMDiffAt
+variable {f : M → N} {x : M} {f' : TangentSpace I x ≃L[ℝ] TangentSpace J (f x)} [CompleteSpace E]
+
+/-- Given a `ContMDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
+derivative at `x`, returns a `LocalHomeomorph` with `to_fun = f` and `x ∈ source`. -/
+theorem toLocalHomeomorph {n : ℕ∞} [I.Boundaryless] [J.Boundaryless]
+    (hf : ContMDiffAt I J n f x) (hf' : HasMFDerivAt I J f x f') (hn : 1 ≤ n) : LocalHomeomorph M N := by
+  -- This follows from the analogous statement on charts.
+  -- Consider the charts φ and ψ on `M` resp. `N` around `x` and `f x`, respectively,
+  -- and the local coordinate representation `f_loc` of `f` w.r.t. these charts.
+  let φ := extChartAt I x
+  let ψ := extChartAt J (f x)
+  let f_loc := ψ ∘ f ∘ φ.invFun
+  -- `f_loc` maps `U` to `V`; these are open sets (at least morally).
+  let U := φ '' (φ.source ∩ f ⁻¹' ψ.source)
+  let V := ψ '' (f '' φ.source ∩ ψ.source)
+  have : MapsTo f_loc U V := by
+    intro x hx
+    rcases hx with ⟨x', hx', hx'x⟩
+    have : φ.invFun (φ x') = x' := φ.left_inv (mem_of_mem_inter_left hx')
+    have : f_loc x = (ψ ∘ f) x' := calc f_loc x
+      _ = (ψ ∘ f ∘ φ.invFun) (φ x') := by rw [hx'x]
+      _ = (ψ ∘ f) (φ.invFun (φ x')) := rfl
+      _ = (ψ ∘ f) x' := by rw [this]
+    --have : f x' ∈ (f '' φ.source ∩ ψ.source) := by aesop
+    aesop
+  -- openness of U and V were obvious for just charts; it's not as obvious here
+  -- for instance, a priori we only know `f` is continuous *at x*, not *near* `x`
+  -- XXX: I'll see if we need this
+  -- have : IsOpen U := sorry
+  -- have : IsOpen V := sorry
+  -- have : U ⊆ φ.target := sorry
+  -- have : V ⊆ ψ.target := sorry
+
+  -- By definition, `f_loc` is `C^1` at `x' := φ x`. (At least, if `M` is boundaryless.)
+  set x' := φ x
+  have : ContDiffWithinAt ℝ n f_loc (range I) x' := ((contMDiffAt_iff I J).mp hf).2
+  have : ContDiffAt ℝ n f_loc (φ x) := by rw [I.range_eq_univ] at this; exact this
+  -- As shown before, `(df_loc)_φ x is also a linear isomorphism.
+  have df_loc : E ≃L[ℝ] E' := differential_in_charts_iso I J f' hf'
+  let temp := differential_in_charts_iso_coe I J (chartAt H x) (chartAt H (f x)) f' hf'
+  -- this should be obvious/easy - I did this already on a different branch
+  have hdf'loc : HasFDerivAt (𝕜 := ℝ) f_loc df_loc x' := sorry
+
+  -- By the Inverse Function Theorem on normed spaces, there's a local homeomorphism
+  -- to `toFun = f_loc` and `x' ∈ source`.
+  let f_loc' := this.toLocalHomeomorph f_loc hdf'loc hn
+  -- Composing with the inverse charts yields the local homeomorphism we want.
+  -- (If M and N are boundaryless, that is: otherwise, we'd have to work harder.)
+  let φ' := (chartAt H x).trans I.toHomeomorph.toLocalHomeomorph
+  let ψ' := (chartAt H (f x)).trans J.toHomeomorph.toLocalHomeomorph
+  have : φ'.toFun = φ.toFun := rfl
+  have : ψ'.toFun = ψ.toFun := rfl
+  exact φ' ≫ₕ f_loc' ≫ₕ ψ'.symm
+
+-- TODO: sanity-check that I got the directions right?
+-- @[simp]
+-- theorem toLocalHomeomorph_coe {n : ℕ∞} [I.Boundaryless] [J.Boundaryless]
+--     (hf : ContMDiffAt I J n f x) (hf' : HasMFDerivAt I J f x f') (hn : 1 ≤ n) :
+--     (hf.toLocalHomeomorph I J hf' hn : M → N) = f :=
+--   rfl
+
+-- do I want counterparts of mem_toLocalHomeomorph_source, image_mem_toLocalHomeomorph_target also?
+
+end ContMDiffAt
+end IFT
+
+#exit
+
+variable {f : M → N} {x : M}
 -- Suppose G consists of C¹ maps, i.e. G\leq contDiffGroupoid n.
 /-- Suppose `G` consists of `C^1` maps. Suppose `f:M → N` is `C^1` at `x` and
   the differential $df_x$ is a linear isomorphism.
