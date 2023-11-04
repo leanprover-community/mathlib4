@@ -53,6 +53,8 @@ variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
 
+--variable [SMulCommClass R₂ R₂ N₂]
+
 section Matrix
 
 variable {n o : Type*}
@@ -63,24 +65,28 @@ open BilinForm Finset LinearMap Matrix
 
 open Matrix
 
+lemma test4 (r₁ r₂ r₃ : R₂) (n : N₂) : r₁ • r₂ • r₃ • n = r₂ • r₁ • r₃ • n := by
+  rw [smul_comm]
+
 /-- The map from `Matrix n n R` to bilinear maps on `n → R`.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
-def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n R₂) : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂ where
+def Matrix.toBilin'Aux' [Fintype n] (M : Matrix n n N₂) : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂ where
   toFun v := {
-    toFun := fun w => ∑ i, ∑ j, v i * M i j * w j
+    toFun := fun w => ∑ i, ∑ j, v i  • w j • M i j
     map_add' := fun _ _ => by
-      simp [Pi.add_apply, mul_add, sum_add_distrib]
+      simp only [Pi.add_apply, add_smul, smul_add, sum_add_distrib]
     map_smul' := fun _ _ => by
-      simp [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_sum, mul_left_comm]
+      simp only [Pi.smul_apply, smul_eq_mul, MulAction.mul_smul, RingHom.id_apply, smul_sum]
+      simp_rw [test4]
   }
   map_add' := fun _ _ => by
     ext
-    simp only [Pi.add_apply, add_mul, sum_add_distrib, coe_mk, AddHom.coe_mk, LinearMap.add_apply]
+    simp only [Pi.add_apply, add_smul, sum_add_distrib, coe_mk, AddHom.coe_mk, LinearMap.add_apply]
   map_smul' := fun _ _ => by
     ext
-    simp only [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, coe_mk, AddHom.coe_mk,
-      RingHom.id_apply, LinearMap.smul_apply, mul_sum]
+    simp [Pi.smul_apply, smul_eq_mul, mul_assoc, mul_left_comm, coe_mk, AddHom.coe_mk,
+      RingHom.id_apply, LinearMap.smul_apply, mul_sum, Finset.smul_sum, MulAction.mul_smul]
 
 /-- The map from `Matrix n n R` to bilinear forms on `n → R`.
 
@@ -89,28 +95,34 @@ def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₂) : BilinForm R₂ (n →
   LinearMap.toBilin (Matrix.toBilin'Aux' M)
 #align matrix.to_bilin'_aux Matrix.toBilin'Aux
 
-theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
-    M.toBilin'Aux (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
+theorem Matrix.toBilin'Aux_stdBasis' [Fintype n] [DecidableEq n] (M : Matrix n n N₂) (i j : n) :
+    M.toBilin'Aux' (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j := by
-  rw [Matrix.toBilin'Aux, Matrix.toBilin'Aux']
+  rw [Matrix.toBilin'Aux']
   dsimp only [toBilin_apply, coe_mk, AddHom.coe_mk]
   --dsimp only -- Porting note: had to add `dsimp only` to get rid of the projections
   rw [sum_eq_single i, sum_eq_single j]
-  · simp only [stdBasis_same, stdBasis_same, one_mul, mul_one]
+  · simp only [stdBasis_apply', ite_true, one_smul]
   · rintro j' - hj'
-    apply mul_eq_zero_of_right
+    apply smul_eq_zero_of_right _
+    apply smul_eq_zero_of_left _
     exact stdBasis_ne R₂ (fun _ => R₂) _ _ hj' 1
   · intros
     have := Finset.mem_univ j
     contradiction
   · rintro i' - hi'
     refine' Finset.sum_eq_zero fun j _ => _
-    apply mul_eq_zero_of_left
-    apply mul_eq_zero_of_left
-    exact stdBasis_ne R₂ (fun _ => R₂) _ _ hi' 1
+    apply smul_eq_zero_of_left _
+    apply stdBasis_ne R₂ (fun _ => R₂) _ _ hi' _
   · intros
     have := Finset.mem_univ i
     contradiction
+
+theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n R₂) (i j : n) :
+    M.toBilin'Aux (LinearMap.stdBasis R₂ (fun _ => R₂) i 1)
+      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j := by
+      rw [Matrix.toBilin'Aux]
+      apply Matrix.toBilin'Aux_stdBasis'
 #align matrix.to_bilin'_aux_std_basis Matrix.toBilin'Aux_stdBasis
 
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
