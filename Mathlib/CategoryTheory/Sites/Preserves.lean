@@ -13,9 +13,9 @@ import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 We prove that a presheaf which satisfies the sheaf condition with respect to certain presieves
 preserve "the corresponding products".
 
-More precisely, given a presheaf `F : Cᵒᵖ ⥤ Type*`, we have:
-
 ## Main results
+
+More precisely, given a presheaf `F : Cᵒᵖ ⥤ Type*`, we have:
 
 * If `F` satisfies the sheaf condition with respect to the empty sieve on the initial object of `C`,
   then `F` preserves terminal objects.
