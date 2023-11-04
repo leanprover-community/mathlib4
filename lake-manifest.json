@@ -20,10 +20,10 @@
   {"git":
    {"url": "https://github.com/leanprover-community/aesop",
     "subDir?": null,
-    "rev": "c9dbd09c1e02b66d09384076f7e0090d3df300d5",
+    "rev": "314a7385c24fe45304fcdcd28830a6b18c19b743",
     "opts": {},
     "name": "aesop",
-    "inputRev?": "master",
+    "inputRev?": "bump/v4.4.0",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover/lean4-cli",
