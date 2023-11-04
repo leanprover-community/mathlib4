@@ -571,7 +571,7 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
       {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} := by
     intro x hx
     contrapose! hx
-    simp only [Classical.not_not, mem_setOf_eq] at hx
+    simp only [Classical.not_not, mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
     simp [apply_f_eq_continuousPart Hcont φ x hx]
   have B :
     {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} ⊆

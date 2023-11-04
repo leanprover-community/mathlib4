@@ -3,8 +3,8 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Dynamics.FixedPoints.Basic
 
 #align_import data.set.pointwise.iterate from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
