@@ -659,6 +659,13 @@ theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K
   simp_rw [Ne.def, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
 
+/-- If `μ` is inner regular, then any measurable set can be approximated by a compact subset.
+See also `MeasurableSet.exists_isCompact_lt_add_of_ne_top`. -/
+theorem _root_.MeasurableSet.exists_lt_isCompact [InnerRegular μ] ⦃A : Set α⦄
+    (hA : MeasurableSet A) {r : ℝ≥0∞} (hr : r < μ A) :
+    ∃ K, K ⊆ A ∧ IsCompact K ∧ r < μ K :=
+  InnerRegular.innerRegular hA _ hr
+
 end InnerRegular
 
 namespace InnerRegularCompactLTTop
@@ -757,6 +764,12 @@ protected lemma _root_.IsCompact.exists_isOpen_lt_of_lt [InnerRegularCompactLTTo
   have : ⨅ (U : Set α) (_ : K ⊆ U) (_ : IsOpen U), μ U < r := by
     rwa [hK.measure_eq_infi_isOpen] at hr
   simpa only [iInf_lt_iff, exists_prop, exists_and_left]
+
+protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]
+    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
+    [BorelSpace α] {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
+  hK.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hK.measure_lt_top.ne hε)
 
 instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
   by_cases hc : c = 0

@@ -723,6 +723,13 @@ lemma _root_.MeasurableSet.mul_set_closure_one_eq {s : Set G} (hs : MeasurableSe
   · rintro f - - h''f
     simp only [iUnion_smul, h''f]
 
+/-- If a compact set is included in a measurable set, then so is its closure. -/
+@[to_additive]
+lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
+    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s := by
+  rw [← hk.mul_closure_one_eq_closure, ← hs.mul_set_closure_one_eq]
+  exact mul_subset_mul_right h
+
 @[to_additive (attr := simp)]
 lemma measure_mul_set_closure_one (s : Set G) (μ : Measure G) :
     μ (s * (closure {1} : Set G)) = μ s := by
@@ -854,12 +861,14 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 /-- The image of a Haar measure under map of a left action is again a Haar measure. -/
 @[to_additive
    "The image of a Haar measure under map of a left additive action is again a Haar measure"]
-instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Space G]
+instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G]
     [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
   lt_top_of_isCompact K hK := by
-    rw [map_apply (measurable_const_smul _) hK.measurableSet]
+    let F := (Homeomorph.smul a (α := G)).toMeasurableEquiv
+    change map F μ K < ∞
+    rw [F.map_apply K]
     exact IsCompact.measure_lt_top <| (Homeomorph.isCompact_preimage (Homeomorph.smul a)).2 hK
   toIsOpenPosMeasure :=
     (continuous_const_smul a).isOpenPosMeasure_map (MulAction.surjective a)
@@ -867,18 +876,27 @@ instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G] [T2Spac
 /-- The image of a Haar measure under right multiplication is again a Haar measure. -/
 @[to_additive isHaarMeasure_map_add_right
   "The image of a Haar measure under right addition is again a Haar measure."]
-instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G) :
+instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] (g : G) :
     IsHaarMeasure (Measure.map (· * g) μ) :=
   isHaarMeasure_map_smul μ (MulOpposite.op g)
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
 nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*}
-    [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H]
+    [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
-  isHaarMeasure_map μ (e : G →* H) he e.surjective
-    ({ e with } : G ≃ₜ H).toCocompactMap.cocompact_tendsto'
+  { toIsMulLeftInvariant := isMulLeftInvariant_map e.toMulHom he.measurable e.surjective
+    lt_top_of_isCompact := by
+      intro K hK
+      let F : G ≃ₜ H := {
+        e.toEquiv with
+        continuous_toFun := he
+        continuous_invFun := hesymm }
+      change map F.toMeasurableEquiv μ K < ∞
+      rw [F.toMeasurableEquiv.map_apply K]
+      exact (F.isCompact_preimage.mpr hK).measure_lt_top
+    toIsOpenPosMeasure := he.isOpenPosMeasure_map e.surjective }
 #align mul_equiv.is_haar_measure_map MulEquiv.isHaarMeasure_map
 #align add_equiv.is_add_haar_measure_map AddEquiv.isAddHaarMeasure_map
 
@@ -886,7 +904,7 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
 theorem _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     {E F R S : Type*} [Semiring R] [Semiring S]
     [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]
-    [TopologicalSpace E] [TopologicalAddGroup E] [TopologicalSpace F] [T2Space F]
+    [TopologicalSpace E] [TopologicalAddGroup E] [TopologicalSpace F]
     [TopologicalAddGroup F]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [MeasurableSpace E] [BorelSpace E] [MeasurableSpace F] [BorelSpace F]

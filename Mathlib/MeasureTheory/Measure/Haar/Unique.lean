@@ -98,6 +98,8 @@ lemma continuous_integral_apply_inv_mul
       simpa only [Set.mem_inv, mul_inv_rev, inv_inv] using subset_tsupport _ hx
   exact A.continuousAt ht
 
+namespace Measure
+
 @[to_additive]
 lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
     {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
@@ -355,8 +357,8 @@ lemma isHaarMeasure_eq_smul [SecondCountableTopology G]
   isHaarMeasure_eq_smul_of_regular μ' μ
   -- one could use as well `isHaarMeasure_eq_smul_isHaarMeasure_of_innerRegular μ' μ`, as in a
   -- second countable topological space all Haar measures are regular and inner regular
-#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.isHaarMeasure_eq_smul
-#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.isAddHaarMeasure_eq_smul
+#align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isHaarMeasure_eq_smul
+#align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_eq_smul
 
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant probability measures which
 are inner regular for finite measure sets with respect to compact sets, they coincide. -/
@@ -372,5 +374,85 @@ lemma isMulLeftInvariant_eq_of_isProbabilityMeasure
   simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, measure_univ, smul_eq_mul,
     mul_one, ENNReal.coe_eq_one] at this
   simp [hc, this]
+
+/-- An invariant σ-finite measure is absolutely continuous with respect to a Haar measure in a
+second countable grop. -/
+@[to_additive
+"An invariant measure is absolutely continuous with respect to an additive Haar measure. "]
+theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G] [T2Space G]
+    [SecondCountableTopology G] (μ ν : Measure G)
+    [SigmaFinite μ] [IsMulLeftInvariant μ] [IsHaarMeasure ν] : μ ≪ ν := by
+  have K : PositiveCompacts G := Classical.arbitrary _
+  obtain ⟨c, -, -, h⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ haarMeasure K = c • ν :=
+    isHaarMeasure_eq_smul _ _
+  rw [haarMeasure_unique μ K, h, smul_smul]
+  exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
+
+section CommGroup
+
+variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
+  [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
+
+/-- Any Haar measure is invariant under inversion in an abelian group. -/
+@[to_additive "Any additive Haar measure is invariant under negation in an abelian group."]
+instance (priority := 100) IsHaarMeasure.isInvInvariant [LocallyCompactSpace G] [Regular μ] :
+    IsInvInvariant μ := by
+  -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form
+  -- `c μ`. Applying again inversion, one gets the measure `c^2 μ`. But since inversion is an
+  -- involution, this is also `μ`. Hence, `c^2 = 1`, which implies `c = 1`.
+  constructor
+  haveI : IsHaarMeasure (Measure.map Inv.inv μ) :=
+    (MulEquiv.inv G).isHaarMeasure_map μ continuous_inv continuous_inv
+  obtain ⟨c, _, _, hc⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ Measure.map Inv.inv μ = c • μ :=
+    isHaarMeasure_eq_smul _ _
+  have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
+    simp only [hc, smul_smul, pow_two, Measure.map_smul]
+  have μeq : μ = c ^ 2 • μ := by
+    rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
+    simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
+  have K : PositiveCompacts G := Classical.arbitrary _
+  have : c ^ 2 * μ K = 1 ^ 2 * μ K := by
+    conv_rhs => rw [μeq]
+    simp
+  have : c ^ 2 = 1 ^ 2 :=
+    (ENNReal.mul_eq_mul_right (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
+          K.isCompact.measure_lt_top.ne).1 this
+  have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
+  rw [Measure.inv, hc, this, one_smul]
+#align measure_theory.measure.is_haar_measure.is_inv_invariant MeasureTheory.Measure.IsHaarMeasure.isInvInvariant
+#align measure_theory.measure.is_add_haar_measure.is_neg_invariant MeasureTheory.Measure.IsAddHaarMeasure.isNegInvariant
+
+@[to_additive]
+theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :
+    MeasurePreserving (fun g : G => g ^ n) μ μ :=
+  { measurable := (continuous_zpow n).measurable
+    map_eq := by
+      let f := @zpowGroupHom G _ n
+      have hf : Continuous f := continuous_zpow n
+      haveI : (μ.map f).IsHaarMeasure :=
+        isHaarMeasure_map μ f hf (RootableBy.surjective_pow G ℤ hn) (by simp)
+      obtain ⟨C, -, -, hC⟩ := isHaarMeasure_eq_smul (μ.map f) μ
+      suffices C = 1 by rwa [this, one_smul] at hC
+      have h_univ : (μ.map f) univ = μ univ := by
+        rw [map_apply_of_aemeasurable hf.measurable.aemeasurable MeasurableSet.univ,
+          preimage_univ]
+      have hμ₀ : μ univ ≠ 0 := IsOpenPosMeasure.open_pos univ isOpen_univ univ_nonempty
+      have hμ₁ : μ univ ≠ ∞ := CompactSpace.isFiniteMeasure.measure_univ_lt_top.ne
+      rwa [hC, smul_apply, Algebra.id.smul_eq_mul, mul_comm, ← ENNReal.eq_div_iff hμ₀ hμ₁,
+        ENNReal.div_self hμ₀ hμ₁] at h_univ }
+#align measure_theory.measure.measure_preserving_zpow MeasureTheory.Measure.measurePreserving_zpow
+#align measure_theory.measure.measure_preserving_zsmul MeasureTheory.Measure.measurePreserving_zsmul
+
+@[to_additive]
+theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) {X : Type*}
+    [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
+    MeasurePreserving (fun x => f x ^ n) μ' μ :=
+  (measurePreserving_zpow μ hn).comp hf
+#align measure_theory.measure.measure_preserving.zpow MeasureTheory.Measure.MeasurePreserving.zpow
+#align measure_theory.measure.measure_preserving.zsmul MeasureTheory.Measure.MeasurePreserving.zsmul
+
+end CommGroup
+
+end Measure
 
 end MeasureTheory
