@@ -57,7 +57,7 @@ def entriesToMessageData (entries : Entries) : MetaM MessageData := do
   -- ['1', '2', '3']
   let paddedLines ← padRight <| entries.l.map fun entry => m!"{entry.line!}"
   -- ['   ', '1,2', '1  ']
-  let paddedDeps  ← padRight <| entries.l.map fun entry =>
+  let paddedDeps ← padRight <| entries.l.map fun entry =>
     String.intercalate "," <| entry.deps.map (fun dep => (dep.map toString).getD "_")
   -- ['p  ', 'hP ', '∀I ']
   let paddedThms ← padRight <| entries.l.map (·.thm)
