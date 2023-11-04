@@ -150,7 +150,7 @@ theorem laverage_add_measure :
     simp [laverage_eq, hν]
   haveI := hμ; haveI := hν
   simp only [← ENNReal.mul_div_right_comm, measure_mul_laverage, ← ENNReal.add_div,
-    ←lintegral_add_measure, ← Measure.add_apply, ← laverage_eq]
+    ← lintegral_add_measure, ← Measure.add_apply, ← laverage_eq]
 #align measure_theory.laverage_add_measure MeasureTheory.laverage_add_measure
 
 theorem measure_mul_setLaverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
@@ -325,7 +325,7 @@ theorem average_add_measure [IsFiniteMeasure μ] {ν : Measure α} [IsFiniteMeas
       ((μ univ).toReal / ((μ univ).toReal + (ν univ).toReal)) • ⨍ x, f x ∂μ +
         ((ν univ).toReal / ((μ univ).toReal + (ν univ).toReal)) • ⨍ x, f x ∂ν := by
   simp only [div_eq_inv_mul, mul_smul, measure_smul_average, ← smul_add,
-    ←integral_add_measure hμ hν, ← ENNReal.toReal_add (measure_ne_top μ _) (measure_ne_top ν _)]
+    ← integral_add_measure hμ hν, ← ENNReal.toReal_add (measure_ne_top μ _) (measure_ne_top ν _)]
   rw [average_eq, Measure.add_apply]
 #align measure_theory.average_add_measure MeasureTheory.average_add_measure
 
@@ -617,7 +617,7 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
     (hf.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const)]
   rw [← setOf_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
-    ←measure_diff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
+    ← measure_diff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
   refine' this.trans_le (measure_mono _)
   rintro x ⟨hfx, hx⟩
   dsimp at hfx

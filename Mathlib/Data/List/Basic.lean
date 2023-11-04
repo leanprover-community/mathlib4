@@ -2795,7 +2795,7 @@ where
         | cons hd tl =>
           rw [length, succ_eq_add_one] at h
           rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
-            ←Array.toList_eq]
+            ← Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
     · induction n generalizing xs acc with
       | zero =>

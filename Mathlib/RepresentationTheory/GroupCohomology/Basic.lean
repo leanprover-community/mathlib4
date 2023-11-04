@@ -136,7 +136,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
     LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
     diagonalHomEquiv_apply, Action.comp_hom, Resolution.d_eq k G n,
     Resolution.d_of (Fin.partialProd g), LinearMap.map_sum,
-    ←Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
+    ← Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
   simp only [@Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul, Fin.succAbove_zero,
     diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1)), Function.comp_apply,
     Fin.partialProd_succ, Fin.castSucc_zero, Fin.partialProd_zero, one_mul]

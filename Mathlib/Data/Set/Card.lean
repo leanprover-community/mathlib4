@@ -316,7 +316,7 @@ theorem encard_eq_two : s.encard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   refine' ⟨fun h ↦ _, fun ⟨x, y, hne, hs⟩ ↦ by rw [hs, encard_pair hne]⟩
   obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
   rw [← insert_eq_of_mem hx, ← insert_diff_singleton, encard_insert_of_not_mem (fun h ↦ h.2 rfl),
-    ←one_add_one_eq_two, WithTop.add_right_cancel_iff (WithTop.one_ne_top), encard_eq_one] at h
+    ← one_add_one_eq_two, WithTop.add_right_cancel_iff (WithTop.one_ne_top), encard_eq_one] at h
   obtain ⟨y, h⟩ := h
   refine' ⟨x, y, by rintro rfl; exact (h.symm.subset rfl).2 rfl, _⟩
   rw [← h, insert_diff_singleton, insert_eq_of_mem hx]

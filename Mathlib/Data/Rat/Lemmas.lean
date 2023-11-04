@@ -211,14 +211,14 @@ theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAb
     (a / b : ℚ).num = a := by
   -- Porting note: was `lift b to ℕ using le_of_lt hb0`
   rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
-    ←mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
+    ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.num_div_eq_of_coprime Rat.num_div_eq_of_coprime
 
 theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
   -- Porting note: was `lift b to ℕ using le_of_lt hb0`
   rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
-    ←mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
+    ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
 #align rat.denom_div_eq_of_coprime Rat.den_div_eq_of_coprime
 
 theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)
