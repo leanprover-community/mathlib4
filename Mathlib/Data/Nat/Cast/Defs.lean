@@ -51,12 +51,13 @@ namespace Nat.AtLeastTwo
 
 variable {n : ℕ} [n.AtLeastTwo]
 
-theorem one_lt : 1 < n := prop
-theorem one_le : 1 ≤ n := Nat.le_of_lt one_lt
-theorem pos : 0 < n := one_le
+lemma one_lt : 1 < n := prop
+lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+lemma one_le : 1 ≤ n := Nat.le_of_lt one_lt
+lemma pos : 0 < n := one_le
+lemma ne_zero : n ≠ 0 := Nat.ne_of_gt pos
 
 end Nat.AtLeastTwo
-
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through

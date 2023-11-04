@@ -241,6 +241,7 @@ import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -1290,6 +1291,7 @@ import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Combinatorics.SetFamily.Compression.UV
+import Mathlib.Combinatorics.SetFamily.FourFunctions
 import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 import Mathlib.Combinatorics.SetFamily.Intersecting
 import Mathlib.Combinatorics.SetFamily.Kleitman
@@ -1965,6 +1967,7 @@ import Mathlib.Dynamics.Minimal
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.FieldTheory.AbelRuffini
+import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Cardinality
@@ -3305,6 +3308,7 @@ import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.Group.OpenMapping
+import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
@@ -3538,6 +3542,7 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.ProperMap
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Semicontinuous
+import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Sequences
