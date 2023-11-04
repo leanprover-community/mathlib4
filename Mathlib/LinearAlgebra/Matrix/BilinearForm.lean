@@ -126,7 +126,7 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
 #align matrix.to_bilin'_aux_std_basis Matrix.toBilin'Aux_stdBasis
 
 
-/-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
+/-- The linear map from bilinear maps to `Matrix n n R` given an `n`-indexed basis.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def BilinForm.toMatrixAux' (b : n → M₂) : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) →ₗ[R₂] Matrix n n R₂ where
@@ -134,13 +134,13 @@ def BilinForm.toMatrixAux' (b : n → M₂) : (M₂ →ₗ[R₂] M₂ →ₗ[R�
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+variable (B : BilinForm R₂ M₂)
+
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
-def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ where
-  toFun B := of fun i j => B (b i) (b j)
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ :=
+  (BilinForm.toMatrixAux' b) ∘ₗ  BilinForm.toLinHom (R₂ := R₂)
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
