@@ -349,7 +349,8 @@ section llr_tilted
 lemma llr_tilted_ae_eq {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμν : μ ≪ ν) {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (LLR μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + logIntegralExp ν f + LLR μ ν x := by
-  filter_upwards [hμν.ae_le (rnDeriv_tilted_right μ ν h_int), Measure.rnDeriv_pos hμν,
+  have hf : AEMeasurable f ν := aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable
+  filter_upwards [hμν.ae_le (ofReal_rnDeriv_tilted_right μ ν hf), Measure.rnDeriv_pos hμν,
     hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
   rw [LLR, hx, log_mul (exp_pos _).ne']
   · rw [log_exp, LLR]
