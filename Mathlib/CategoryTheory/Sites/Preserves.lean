@@ -41,8 +41,8 @@ variable {C : Type u} [Category.{v} C] (I : C) (F : Cᵒᵖ ⥤ Type (max u v))
 variable (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
 
 /--
-If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
-initial object, then `F` takes the initial object to the terminal object.
+If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
+object, then `F` takes that object to the terminal object.
 -/
 noncomputable
 def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
@@ -70,6 +70,10 @@ variable {α : Type} (X : α → C) [HasCoproduct X] [(ofArrows X (Sigma.ι X)).
       IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j))
     [∀ i, Mono (Sigma.ι X i)]
 
+/--
+The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
+inclusion maps in a disjoint coproduct are equal.
+-/
 theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (fun j ↦ Sigma.ι X j) =
     Equalizer.Presieve.Arrows.secondMap F X (fun j ↦ Sigma.ι X j) := by
   ext a ⟨i, j⟩
