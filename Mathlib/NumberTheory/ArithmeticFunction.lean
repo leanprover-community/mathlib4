@@ -779,7 +779,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   · apply Finset.subset_union_left
   · rw [factorization_gcd hx hy, Finsupp.support_inf, Finset.sup_eq_union]
     apply Finset.inter_subset_union
-  · rw [factorization_lcm hx hy, Finsupp.support_sup, Finset.sup_eq_union]
+  · simp [factorization_lcm hx hy]
 
 end IsMultiplicative
 
