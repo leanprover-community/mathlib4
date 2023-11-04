@@ -666,6 +666,19 @@ theorem _root_.MeasurableSet.exists_lt_isCompact [InnerRegular μ] ⦃A : Set α
     ∃ K, K ⊆ A ∧ IsCompact K ∧ r < μ K :=
   InnerRegular.innerRegular hA _ hr
 
+protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+    [BorelSpace β] [InnerRegular μ] (f : α ≃ₜ β) : (Measure.map f μ).InnerRegular :=
+  ⟨InnerRegular.innerRegular.map' f.toMeasurableEquiv
+    (fun _U hU ↦ f.measurable hU) (fun _K hK ↦ hK.image f.continuous)⟩
+
+protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+    [BorelSpace β] (f : α ≃ₜ β) :
+    InnerRegular (Measure.map f μ) ↔ InnerRegular μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
+  convert h.map f.symm
+  rw [map_map f.symm.continuous.measurable f.continuous.measurable]
+  simp
+
 end InnerRegular
 
 namespace InnerRegularCompactLTTop
@@ -936,6 +949,14 @@ protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
         (fun U hU => hU.preimage f.continuous)
         (fun K hK => hK.image f.continuous)⟩
 #align measure_theory.measure.regular.map MeasureTheory.Measure.Regular.map
+
+protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+    [BorelSpace β] (f : α ≃ₜ β) :
+    Regular (Measure.map f μ) ↔ Regular μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
+  convert h.map f.symm
+  rw [map_map f.symm.continuous.measurable f.continuous.measurable]
+  simp
 
 protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • μ).Regular := by
   haveI := OuterRegular.smul μ hx

@@ -393,20 +393,20 @@ section CommGroup
 variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
-/-- Any Haar measure is invariant under inversion in an abelian group. -/
-@[to_additive "Any additive Haar measure is invariant under negation in an abelian group."]
-instance (priority := 100) IsHaarMeasure.isInvInvariant [LocallyCompactSpace G] [Regular μ] :
+/-- Any regular Haar measure is invariant under inversion in an abelian group. -/
+@[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
+instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
+    [LocallyCompactSpace G] [Regular μ] :
     IsInvInvariant μ := by
   -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form
   -- `c μ`. Applying again inversion, one gets the measure `c^2 μ`. But since inversion is an
   -- involution, this is also `μ`. Hence, `c^2 = 1`, which implies `c = 1`.
   constructor
-  haveI : IsHaarMeasure (Measure.map Inv.inv μ) :=
-    (MulEquiv.inv G).isHaarMeasure_map μ continuous_inv continuous_inv
-  obtain ⟨c, _, _, hc⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ Measure.map Inv.inv μ = c • μ :=
-    isHaarMeasure_eq_smul _ _
+  have : IsHaarMeasure μ.inv := (MulEquiv.inv G).isHaarMeasure_map μ continuous_inv continuous_inv
+  obtain ⟨c, _, _, hc⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ μ.inv = c • μ :=
+    isHaarMeasure_eq_smul_of_regular _ _
   have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
-    simp only [hc, smul_smul, pow_two, Measure.map_smul]
+    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
@@ -418,12 +418,40 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant [LocallyCompactSpace G] 
     (ENNReal.mul_eq_mul_right (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
           K.isCompact.measure_lt_top.ne).1 this
   have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
-  rw [Measure.inv, hc, this, one_smul]
-#align measure_theory.measure.is_haar_measure.is_inv_invariant MeasureTheory.Measure.IsHaarMeasure.isInvInvariant
-#align measure_theory.measure.is_add_haar_measure.is_neg_invariant MeasureTheory.Measure.IsAddHaarMeasure.isNegInvariant
+  rw [hc, this, one_smul]
+#align measure_theory.measure.is_haar_measure.is_inv_invariant MeasureTheory.Measure.IsHaarMeasure.isInvInvariant_of_regular
+#align measure_theory.measure.is_add_haar_measure.is_neg_invariant MeasureTheory.Measure.IsAddHaarMeasure.isNegInvariant_of_regular
 
+/-- Any inner regular Haar measure is invariant under inversion in an abelian group. -/
+@[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
+instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
+    [LocallyCompactSpace G] [InnerRegular μ] : IsInvInvariant μ := by
+  -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form
+  -- `c μ`. Applying again inversion, one gets the measure `c^2 μ`. But since inversion is an
+  -- involution, this is also `μ`. Hence, `c^2 = 1`, which implies `c = 1`.
+  constructor
+  have : IsHaarMeasure μ.inv := (MulEquiv.inv G).isHaarMeasure_map μ continuous_inv continuous_inv
+  obtain ⟨c, _, _, hc⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ μ.inv = c • μ :=
+    isHaarMeasure_eq_smul_of_innerRegular _ _
+  have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
+    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
+  have μeq : μ = c ^ 2 • μ := by
+    rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
+    simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
+  have K : PositiveCompacts G := Classical.arbitrary _
+  have : c ^ 2 * μ K = 1 ^ 2 * μ K := by
+    conv_rhs => rw [μeq]
+    simp
+  have : c ^ 2 = 1 ^ 2 :=
+    (ENNReal.mul_eq_mul_right (measure_pos_of_nonempty_interior _ K.interior_nonempty).ne'
+          K.isCompact.measure_lt_top.ne).1 this
+  have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
+  rw [hc, this, one_smul]
+
+-- TODO: weaken assumptions?
 @[to_additive]
-theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) :
+theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ]
+    [T2Space G] [SecondCountableTopology G] {n : ℤ} (hn : n ≠ 0) :
     MeasurePreserving (fun g : G => g ^ n) μ μ :=
   { measurable := (continuous_zpow n).measurable
     map_eq := by
@@ -444,7 +472,8 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn
 #align measure_theory.measure.measure_preserving_zsmul MeasureTheory.Measure.measurePreserving_zsmul
 
 @[to_additive]
-theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ] {n : ℤ} (hn : n ≠ 0) {X : Type*}
+theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
+    [T2Space G] [SecondCountableTopology G] {n : ℤ} (hn : n ≠ 0) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x ^ n) μ' μ :=
   (measurePreserving_zpow μ hn).comp hf

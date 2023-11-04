@@ -412,6 +412,9 @@ section Inv
 
 variable [Inv G]
 
+@[to_additive]
+theorem inv_def (μ : Measure G) : μ.inv = Measure.map inv μ := rfl
+
 @[to_additive (attr := simp)]
 theorem inv_eq_self (μ : Measure G) [IsInvInvariant μ] : μ.inv = μ :=
   IsInvInvariant.inv_eq_self
@@ -561,15 +564,21 @@ instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
 #align measure_theory.measure.regular.inv MeasureTheory.Measure.Regular.inv
 #align measure_theory.measure.regular.neg MeasureTheory.Measure.Regular.neg
 
+@[to_additive]
+instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerRegular μ.inv :=
+  InnerRegular.map (Homeomorph.inv G)
+
 variable [TopologicalGroup G]
 
 @[to_additive]
-theorem regular_inv_iff : μ.inv.Regular ↔ μ.Regular := by
-  constructor
-  · intro h; rw [← μ.inv_inv]; exact Measure.Regular.inv
-  · intro h; exact Measure.Regular.inv
+theorem regular_inv_iff : μ.inv.Regular ↔ μ.Regular :=
+  Regular.map_iff (Homeomorph.inv G)
 #align measure_theory.regular_inv_iff MeasureTheory.regular_inv_iff
 #align measure_theory.regular_neg_iff MeasureTheory.regular_neg_iff
+
+@[to_additive]
+theorem innerRegular_inv_iff : μ.inv.InnerRegular ↔ μ.InnerRegular :=
+  InnerRegular.map_iff (Homeomorph.inv G)
 
 variable [IsMulLeftInvariant μ]
 
