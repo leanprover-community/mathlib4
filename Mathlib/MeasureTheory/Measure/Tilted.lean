@@ -113,7 +113,7 @@ lemma Measure.withDensity.sigmaFinite_ofReal [SigmaFinite μ] {f : α → ℝ}
   rw [withDensity_congr_ae h]
   exact Measure.withDensity.sigmaFinite_ofReal_of_stronglyMeasurable hf.stronglyMeasurable_mk
 
-instance Measure.withDensity.sigmaFinite [SigmaFinite μ] {f : α → ℝ≥0}
+lemma Measure.withDensity.sigmaFinite [SigmaFinite μ] {f : α → ℝ≥0}
     (hf : AEMeasurable f μ) :
     SigmaFinite (μ.withDensity (fun x ↦ f x)) := by
   have : (fun x ↦ (f x : ℝ≥0∞)) = fun x ↦ ENNReal.ofReal (f x) := by simp
