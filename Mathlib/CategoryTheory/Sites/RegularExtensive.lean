@@ -422,8 +422,8 @@ theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ �
     rw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
-        Presieve.preservesProductOfIsSheafFor initialIsInitial F ?_ Z
-        (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
+        Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial Z
+        (fun _ _ ↦ FinitaryExtensive.isPullback_initial_to_sigma_ι Z _ _)
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     · exact preservesLimitOfIsoDiagram F i.symm
