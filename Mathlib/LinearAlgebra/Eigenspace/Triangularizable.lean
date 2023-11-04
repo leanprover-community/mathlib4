@@ -207,7 +207,7 @@ theorem eq_iSup_inf_generalizedEigenspace [FiniteDimensional K V]
 end Submodule
 
 theorem Module.End.IsTriangularizable.isTriangularizable_restrict
-     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
+    {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : f.IsTriangularizable) :
     Module.End.IsTriangularizable (LinearMap.restrict f h) := by
   have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_generalizedEigenspace h h')

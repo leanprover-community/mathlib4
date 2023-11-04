@@ -2288,7 +2288,6 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.Eigenspace.IsAlgClosed
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
