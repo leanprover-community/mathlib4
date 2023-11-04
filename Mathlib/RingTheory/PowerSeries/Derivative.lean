@@ -5,6 +5,7 @@ Authors: Richard M. Hill
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Derivation.Basic
+import Mathlib.Data.Polynomial.Derivation
 
 /-!
 # Definitions
@@ -129,6 +130,16 @@ theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     rfl
   | succ n =>
     rw [succ_sub_one, trunc_derivative]
+
+/--
+A special case of the chain rule for composition of a polynomial `f` and a power series `g`:
+$$ d/dX (f ∘ g) = (df/dX ∘ g) * dg/dX. $$
+In this statement, the composition $f ∘ g$ is `aeval g f`.
+-/
+@[simp]
+theorem derivative_aeval (f : R[X]) (g : R⟦X⟧) :
+    d⁄dX R (aeval g f) = aeval g (Polynomial.derivative f) * d⁄dX R g := by
+  apply Derivation.comp_aeval_eq
 
 end CommutativeSemiring
 
