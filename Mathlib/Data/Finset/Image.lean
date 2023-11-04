@@ -65,8 +65,7 @@ theorem map_empty (f : α ↪ β) : (∅ : Finset α).map f = ∅ :=
 variable {f : α ↪ β} {s : Finset α}
 
 @[simp]
-theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
-  mem_map.trans <| by simp only [exists_prop]; rfl
+theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b := Multiset.mem_map
 #align finset.mem_map Finset.mem_map
 
 --Porting note: Higher priority to apply before `mem_map`.

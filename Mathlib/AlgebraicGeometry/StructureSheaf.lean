@@ -483,7 +483,7 @@ def localizationToStalk (x : PrimeSpectrum.Top R) :
 @[simp]
 theorem localizationToStalk_of (x : PrimeSpectrum.Top R) (f : R) :
     localizationToStalk R x (algebraMap _ (Localization _) f) = toStalk R x f :=
-  IsLocalization.lift_eq _ f
+  IsLocalization.lift_eq (S := Localization x.asIdeal.primeCompl) _ f
 #align algebraic_geometry.structure_sheaf.localization_to_stalk_of AlgebraicGeometry.StructureSheaf.localizationToStalk_of
 
 @[simp]

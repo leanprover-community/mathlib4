@@ -1052,7 +1052,6 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
   simp only [IsUnit.mul_iff, Nat.isUnit_iff, squarefree_mul hnm, ite_and, mul_ite, ite_mul,
     zero_mul, mul_zero]
   rw [cardFactors_mul hn hm] -- porting note: `simp` does not seem to use this lemma.
-  simp only [moebius, ZeroHom.coe_mk, squarefree_mul hnm, ite_and, cardFactors_mul hn hm]
   rw [pow_add, ite_mul_zero_left, ite_mul_zero_right]
   split_ifs <;>  -- porting note: added
   simp           -- porting note: added
