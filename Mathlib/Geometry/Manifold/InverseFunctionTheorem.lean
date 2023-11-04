@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.Tactic.RewriteSearch
 
 /-! # The inverse function theorem for manifolds
 
@@ -49,12 +50,14 @@ variable (hf : ContMDiffAt I J 1 f x)
 
 /-- `df_x` is a linear isomorphism iff `(df_loc)_(φ x)` is a linear isomorphism.-/
 -- part 1: isomorphism
-def differential_in_charts_iso {dfx : TangentSpace I x ≃L[ℝ] TangentSpace J (f x)}
-    (hx : mfderiv I J f x = dfx) : E ≃L[ℝ] E' := sorry
+def differential_in_charts_iso (dfx : TangentSpace I x ≃L[ℝ] TangentSpace J (f x))
+    (hx : HasMFDerivAt I J f x dfx) : E ≃L[ℝ] E' := sorry
 
+variable (e e') in
 -- part 2: this isomorphism is really the fderiv
-lemma differential_in_charts_iso_coe {dfx : TangentSpace I x ≃L[ℝ] TangentSpace J (f x)}
-    (hx : mfderiv I J f x = dfx) : (differential_in_charts_iso I J hx).toFun = fderiv ℝ ((e'.extend J) ∘ f ∘ (e.extend I).symm) ((e.extend I) x) := sorry
+lemma differential_in_charts_iso_coe (dfx : TangentSpace I x ≃L[ℝ] TangentSpace J (f x))
+    (hx : HasMFDerivAt I J f x dfx) : (differential_in_charts_iso I J dfx hx).toFun =
+      fderiv ℝ ((e'.extend J) ∘ f ∘ (e.extend I).symm) ((e.extend I) x) := sorry
 
 -- FIXME: add converse version, differential_iso_of_in_charts plus `coe` version
 -- should follow easily from this one
@@ -85,22 +88,41 @@ theorem IFT_manifolds [CompleteSpace E] [HasGroupoid M (contDiffGroupoid 1 I)]
   let φ := extChartAt I x
   let ψ := extChartAt J (f x)
   -- Consider the local coordinate representation `f_loc` of `f` w.r.t. these charts.
-  let f_loc := ψ ∘f ∘ φ.invFun
+  let f_loc := ψ ∘ f ∘ φ.invFun
   let U := φ '' (φ.source ∩ f ⁻¹' ψ.source)
   let V := ψ '' (f '' φ.source ∩ ψ.source)
   -- Check: `U` and `V` are open and `f_loc` maps `U` to `V`.
   -- have : U ⊆ φ.target := sorry -- will see when I need these!
   -- have : V ⊆ ψ.target := sorry
-  have : IsOpen U := sorry -- easy, in principle
+  -- clear for charts; not as obvious for extended charts
+  have : IsOpen U := sorry
   have : IsOpen V := sorry
-  have : MapsTo f_loc U V
+  have : MapsTo f_loc U V := by
+    intro x hx
+    have this := calc f_loc '' U
+      _ = (ψ ∘ f ∘ φ.invFun) '' (φ '' (φ.source ∩ f ⁻¹' ψ.source)) := rfl
+      _ = (ψ ∘ f) '' ((φ.invFun ∘φ) '' (φ.source ∩ f ⁻¹' ψ.source)) := by
+        simp only [image_comp, comp.assoc]
+      _ = ((ψ ∘ f) ∘ id) '' (φ.source ∩ f ⁻¹' ψ.source) := by sorry -- proven on another branch
+      _ = (ψ ∘ f) '' (φ.source ∩ f ⁻¹' ψ.source) := by simp
+      _ = ((ψ ∘ f) '' φ.source) ∩ (ψ ∘ f) '' (f ⁻¹' ψ.source) := by sorry
+      _ = ψ '' (f '' φ.source) ∩ ψ '' (f '' (f ⁻¹' ψ.source)) := by
+        simp only [image_comp, comp.assoc, image_inter]
+      _ = ψ '' (f '' φ.source ∩ f '' (f ⁻¹' ψ.source)) := sorry
+        -- need ψ injective, or so apply image_inter ψ f '' φ.source _
+      _ = ψ '' (f '' φ.source ∩ ψ.source) := sorry -- image of preimage
+      _ = V := rfl
+    rw [← this]
+    exact mem_image_of_mem f_loc hx
   -- By definition, `f_loc` is `C^1` at `x' := φ x`.
   set x' := φ x
   have : ContDiffAt ℝ 1 f_loc (φ x) := sorry -- should be by definition
 
-  -- Note that `(df_loc)_φ x is also a linear isomorphism, by the preliminary lemma.
-  have df_loc : E ≃L[ℝ] E' := sorry
-  have hdf'loc : HasFDerivAt (𝕜 := ℝ) f_loc df_loc (φ x) := sorry
+  -- As shown before, `(df_loc)_φ x is also a linear isomorphism.
+  have df_loc : E ≃L[ℝ] E' := differential_in_charts_iso I J f' hf'
+  let temp := differential_in_charts_iso_coe I J (chartAt H x) (chartAt H (f x)) f' hf'
+  -- easy combination of differentiability lemmas
+  have hdf'loc : HasFDerivAt (𝕜 := ℝ) f_loc df_loc (φ x) := by sorry
 
   -- By the Inverse Function Theorem on normed spaces, there are neighbourhoods U' and V' of x' and
   -- ψ(f x)=f_loc x' and a C¹ function g_loc:V' \to U' such that f_loc and g_loc are inverses.
@@ -116,7 +138,7 @@ theorem IFT_manifolds [CompleteSpace E] [HasGroupoid M (contDiffGroupoid 1 I)]
   -- xxx: is this missing API to argue r and g_loc are the same? I'll see!
 
   -- Shrinking U' and V' jointly if necessary, we may assume U'\subset U and V'\subset V.
-  -- sorry this for now; the details are slightly annoying
+  -- Skipping this for the moment; the details are slightly annoying.
   have : U' ⊆ U := sorry
   have : V' ⊆ V := sorry
 
@@ -135,5 +157,4 @@ theorem IFT_manifolds [CompleteSpace E] [HasGroupoid M (contDiffGroupoid 1 I)]
   -- g is C¹, since in the charts \phi and \psi, the local coordinate representation is \tilde{g},
   -- which is C¹ by definition.
 
-  sorry
   sorry
