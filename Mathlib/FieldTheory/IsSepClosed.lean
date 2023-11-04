@@ -231,18 +231,9 @@ variable [Algebra K L] [IsSepClosure K L]
 /-- A (random) isomorphism between two separable closures of `K`. -/
 noncomputable def equiv : L ≃ₐ[K] M :=
   -- Porting note: added to replace local instance above
+  haveI : IsSepClosed L := IsSepClosure.sep_closed K
   haveI : IsSepClosed M := IsSepClosure.sep_closed K
-  haveI : IsSeparable K L := IsSepClosure.separable
-  let f : L →ₐ[K] M := IsSepClosed.lift
-  AlgEquiv.ofBijective f
-    ⟨RingHom.injective f.toRingHom, by
-      letI : Algebra L M := RingHom.toAlgebra f
-      haveI : IsScalarTower K L M := IsScalarTower.of_algebraMap_eq <| by
-        simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
-      haveI : IsSepClosed L := IsSepClosure.sep_closed K
-      haveI : IsSeparable K M := IsSepClosure.separable
-      haveI : IsSeparable L M := isSeparable_tower_top_of_isSeparable K L M
-      show Function.Surjective (algebraMap L M)
-      exact IsSepClosed.algebraMap_surjective⟩
+  AlgEquiv.ofBijective _ (Normal.isAlgebraic'.algHom_bijective₂
+    (IsSepClosed.lift : L →ₐ[K] M) (IsSepClosed.lift : M →ₐ[K] L)).1
 
 end IsSepClosure
