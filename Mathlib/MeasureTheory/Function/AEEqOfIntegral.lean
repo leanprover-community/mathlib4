@@ -222,14 +222,13 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
     _ = 0 := by simp only [μs, tsum_zero]
 #align measure_theory.ae_le_of_forall_set_lintegral_le_of_sigma_finite MeasureTheory.ae_le_of_forall_set_lintegral_le_of_sigmaFinite
 
-theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ {μ : Measure α} [SigmaFinite μ]
+theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ) :
     f ≤ᵐ[μ] g := by
   have h' : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, hf.mk f x ∂μ ≤ ∫⁻ x in s, hg.mk g x ∂μ := by
-    intro s hs hμs
-    specialize h s hs hμs
-    refine (set_lintegral_congr_fun hs ?_).trans_le (h.trans_eq (set_lintegral_congr_fun hs ?_))
+    refine fun s hs hμs ↦ (set_lintegral_congr_fun hs ?_).trans_le
+      ((h s hs hμs).trans_eq (set_lintegral_congr_fun hs ?_))
     · filter_upwards [hf.ae_eq_mk] with a ha using fun _ ↦ ha.symm
     · filter_upwards [hg.ae_eq_mk] with a ha using fun _ ↦ ha
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk,
@@ -237,7 +236,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ {μ : Measure α} [Si
     with a haf hag ha
   rwa [haf, hag]
 
-theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ {μ : Measure α} [SigmaFinite μ]
+theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g := by
   have A : f ≤ᵐ[μ] g :=
@@ -400,7 +399,7 @@ theorem ae_eq_zero_restrict_of_forall_set_integral_eq_zero {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) {t : Set α}
     (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : f =ᵐ[μ.restrict t] 0 := by
-  rcases(hf_int_finite t ht hμt.lt_top).aestronglyMeasurable.isSeparable_ae_range with
+  rcases (hf_int_finite t ht hμt.lt_top).aestronglyMeasurable.isSeparable_ae_range with
     ⟨u, u_sep, hu⟩
   refine' ae_eq_zero_of_forall_dual_of_isSeparable ℝ u_sep (fun c => _) hu
   refine' ae_eq_zero_restrict_of_forall_set_integral_eq_zero_real _ _ ht hμt
@@ -647,15 +646,27 @@ theorem AEMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} 
     hf.ennreal_toReal.restrict.aestronglyMeasurable]
 #align measure_theory.ae_measurable.ae_eq_of_forall_set_lintegral_eq MeasureTheory.AEMeasurable.ae_eq_of_forall_set_lintegral_eq
 
-lemma ae_eq_of_withDensity_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
-    (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg : AEMeasurable g μ) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
-    (h : μ.withDensity f = μ.withDensity g) :
-    f =ᵐ[μ] g := by
-  refine AEMeasurable.ae_eq_of_forall_set_lintegral_eq hf hg hf_int hg_int fun s hs _ ↦ ?_
-  rw [Measure.ext_iff] at h
-  specialize h s hs
-  rwa [withDensity_apply _ hs, withDensity_apply _ hs] at h
-
 end Lintegral
+
+section WithDensity
+
+variable {m : MeasurableSpace α} {μ : Measure α}
+
+theorem withDensity_eq_iff_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) : μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
+  ⟨fun hfg ↦ by
+    refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf hg fun s hs _ ↦ ?_
+    rw [← withDensity_apply f hs, ← withDensity_apply g hs, ← hfg], withDensity_congr_ae⟩
+
+theorem withDensity_eq_iff {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) (hfi : ∫⁻ x, f x ∂μ ≠ ∞) :
+    μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
+  ⟨fun hfg ↦ by
+    refine AEMeasurable.ae_eq_of_forall_set_lintegral_eq hf hg hfi ?_ fun s hs _ ↦ ?_
+    · rwa [← set_lintegral_univ, ← withDensity_apply g MeasurableSet.univ, ← hfg,
+        withDensity_apply f MeasurableSet.univ, set_lintegral_univ]
+    · rw [← withDensity_apply f hs, ← withDensity_apply g hs, ← hfg], withDensity_congr_ae⟩
+
+end WithDensity
 
 end MeasureTheory

@@ -3,11 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
-import Std.Data.Option.Lemmas
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Tactic.Tauto
+import Std.Data.Option.Lemmas
 
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -185,7 +185,7 @@ private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := b
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0
     · simp [hc]
-    simp [mul_coe hc]
+    simp only [mul_coe hc]
     cases a <;> cases b
     repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
 

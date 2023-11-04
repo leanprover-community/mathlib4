@@ -31,10 +31,11 @@ open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
-variable {α : Type*} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {f : α → ℝ}
 
-lemma aemeasurable_of_aemeasurable_exp {μ : Measure α} {f : α → ℝ}
-    (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
+lemma Measure.AbsolutelyContinuous.zero (μ : Measure α) : 0 ≪ μ := fun s _ ↦ by simp
+
+lemma aemeasurable_of_aemeasurable_exp (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
     AEMeasurable f μ := by
   have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
   rw [this]
@@ -54,33 +55,45 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
   · exact fun x ↦ (exp_pos _).le
   · exact hf
 
-section tilted
+lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite κ] [μ.HaveLebesgueDecomposition κ]
+    [ν.HaveLebesgueDecomposition κ] [μ.HaveLebesgueDecomposition ν]
+    (hμν : μ ≪ ν) (hνκ : ν ≪ κ) :
+    μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
+  rw [← withDensity_eq_iff_of_sigmaFinite]
+  · rw [mul_comm,
+      withDensity_mul _ (Measure.measurable_rnDeriv _ _) (Measure.measurable_rnDeriv _ _),
+      Measure.withDensity_rnDeriv_eq _ _ (hμν.trans hνκ), Measure.withDensity_rnDeriv_eq _ _ hνκ,
+      Measure.withDensity_rnDeriv_eq _ _ hμν]
+  · exact ((Measure.measurable_rnDeriv _ _).mul (Measure.measurable_rnDeriv _ _)).aemeasurable
+  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
+
+section logIntegralExp
 
 /-- The quantity `log (∫ x, exp (f x) ∂μ)`. -/
 noncomputable
 def logIntegralExp (μ : Measure α) (f : α → ℝ) : ℝ := log (∫ x, exp (f x) ∂μ)
 
 @[simp]
-lemma logIntegralExp_zero_left (f : α → ℝ) :
-    logIntegralExp (0 : Measure α) f = 0 := by
+lemma logIntegralExp_zero_measure (f : α → ℝ) : logIntegralExp (0 : Measure α) f = 0 := by
   simp [logIntegralExp]
 
 @[simp]
-lemma logIntegralExp_zero_right (μ : Measure α) [IsProbabilityMeasure μ] :
-    logIntegralExp μ 0 = 0 := by
+lemma logIntegralExp_zero (μ : Measure α) [IsProbabilityMeasure μ] : logIntegralExp μ 0 = 0 := by
   simp [logIntegralExp]
 
-lemma logIntegralExp_of_not_integrable {μ : Measure α} {f : α → ℝ}
-    (hf : ¬ Integrable (fun x ↦ exp (f x)) μ) :
+lemma logIntegralExp_of_not_integrable (hf : ¬ Integrable (fun x ↦ exp (f x)) μ) :
     logIntegralExp μ f = 0 := by
   simp only [logIntegralExp, log_eq_zero]
   exact Or.inl (integral_undef hf)
 
-lemma exp_logIntegralExp {μ : Measure α} [NeZero μ] {f : α → ℝ}
-    (hf : Integrable (fun x ↦ exp (f x)) μ) :
+lemma exp_logIntegralExp [NeZero μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     exp (logIntegralExp μ f) = ∫ x, exp (f x) ∂μ := by
   rw [logIntegralExp, exp_log]
   exact integral_exp_pos hf
+
+end logIntegralExp
+
+section tilted
 
 /-- Exponentially tilted measure. `μ.tilted f` is the probability measure with density with respect
 to `μ` proportional to `exp (f x)`. -/
@@ -88,12 +101,8 @@ noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) : Measure α :=
   μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x - logIntegralExp μ f)))
 
-lemma tilted_absolutelyContinuous {μ : Measure α} {f : α → ℝ} : μ.tilted f ≪ μ :=
-  withDensity_absolutelyContinuous _ _
-
 @[simp]
-lemma tilted_zero_left (f : α → ℝ) : (0 : Measure α).tilted f = 0 := by
-  simp [Measure.tilted]
+lemma tilted_zero_measure (f : α → ℝ) : (0 : Measure α).tilted f = 0 := by simp [Measure.tilted]
 
 @[simp]
 lemma tilted_const' (μ : Measure α) [IsFiniteMeasure μ] (c : ℝ) :
@@ -133,16 +142,14 @@ lemma tilted_eq_withDensity_nnreal (μ : Measure α) (f : α → ℝ) :
     μ.tilted f = μ.withDensity
       (fun x ↦ ((↑) : ℝ≥0 → ℝ≥0∞) (⟨exp (f x - logIntegralExp μ f), (exp_pos _).le⟩ : ℝ≥0)) := by
   rw [Measure.tilted]
-  congr
-  ext1 x
+  congr with x
   rw [ENNReal.ofReal_eq_coe_nnreal]
 
 lemma tilted_apply (μ : Measure α) (f : α → ℝ) {s : Set α} (hs : MeasurableSet s) :
     μ.tilted f s = ∫⁻ a in s, ENNReal.ofReal (exp (f a - logIntegralExp μ f)) ∂μ := by
   rw [Measure.tilted, withDensity_apply _ hs]
 
-lemma tilted_apply_eq_ofReal_integral (μ : Measure α)
-    {f : α → ℝ} (hf : Integrable (fun x ↦ exp (f x)) μ)
+lemma tilted_apply_eq_ofReal_integral (hf : Integrable (fun x ↦ exp (f x)) μ)
     {s : Set α} (hs : MeasurableSet s) :
     μ.tilted f s = ENNReal.ofReal (∫ a in s, exp (f a - logIntegralExp μ f) ∂μ) := by
   rw [tilted_apply _ _ hs, ← ofReal_integral_eq_lintegral_ofReal]
@@ -151,42 +158,7 @@ lemma tilted_apply_eq_ofReal_integral (μ : Measure α)
     exact hf.mul_const _
   · exact ae_of_all _ (fun x ↦ (exp_pos _).le)
 
-lemma set_lintegral_tilted {μ : Measure α} {f : α → ℝ} (hf : AEMeasurable f μ) (g : α → ℝ≥0∞)
-    {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ x in s, g x ∂(μ.tilted f)
-      = ∫⁻ x in s, ENNReal.ofReal (exp (f x - logIntegralExp μ f)) * (g x) ∂μ := by
-  rw [Measure.tilted, set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀]
-  · simp only [Pi.mul_apply]
-  · refine AEMeasurable.restrict ?_
-    refine ENNReal.measurable_ofReal.comp_aemeasurable ?_
-    exact measurable_exp.comp_aemeasurable (hf.sub aemeasurable_const)
-  · exact hs
-  · refine ae_of_all _ ?_
-    simp only [ENNReal.ofReal_lt_top, implies_true]
-
-lemma lintegral_tilted {μ : Measure α} {f : α → ℝ} (hf : AEMeasurable f μ) (g : α → ℝ≥0∞) :
-    ∫⁻ x, g x ∂(μ.tilted f) = ∫⁻ x, ENNReal.ofReal (exp (f x - logIntegralExp μ f)) * (g x) ∂μ := by
-  rw [← set_lintegral_univ, set_lintegral_tilted hf g MeasurableSet.univ, set_lintegral_univ]
-
-lemma set_integral_tilted {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-    {μ : Measure α} {f : α → ℝ} (hf : AEMeasurable f μ) (g : α → E)
-    {s : Set α} (hs : MeasurableSet s) :
-    ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, exp (f x - logIntegralExp μ f) • (g x) ∂μ := by
-  rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
-  · congr
-  · suffices AEMeasurable (fun x ↦ exp (f x - logIntegralExp μ f)) μ by
-      rw [← aEMeasurable_coe_nnreal_real_iff]
-      refine AEMeasurable.restrict ?_
-      simpa only [NNReal.coe_mk]
-    exact measurable_exp.comp_aemeasurable (hf.sub aemeasurable_const)
-
-lemma integral_tilted {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-    {μ : Measure α} {f : α → ℝ} (hf : AEMeasurable f μ) (g : α → E) :
-    ∫ x, g x ∂(μ.tilted f) = ∫ x, exp (f x - logIntegralExp μ f) • (g x) ∂μ := by
-  rw [← integral_univ, set_integral_tilted hf g MeasurableSet.univ, integral_univ]
-
-lemma isFiniteMeasure_tilted {μ : Measure α} {f : α → ℝ}
-    (hf : Integrable (fun x ↦ exp (f x)) μ) :
+lemma isFiniteMeasure_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) :
     IsFiniteMeasure (μ.tilted f) := by
   constructor
   simp_rw [tilted_apply _ _ MeasurableSet.univ, set_lintegral_univ, exp_sub,
@@ -198,8 +170,7 @@ lemma isFiniteMeasure_tilted {μ : Measure α} {f : α → ℝ}
   · simp only [ne_eq, ENNReal.ofReal_ne_top, not_false_eq_true]
   · exact ae_of_all _ fun _ ↦ (exp_pos _).le
 
-lemma isProbabilityMeasure_tilted {μ : Measure α} [NeZero μ] {f : α → ℝ}
-    (hf : Integrable (fun x ↦ exp (f x)) μ) :
+lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     IsProbabilityMeasure (μ.tilted f) := by
   constructor
   simp_rw [tilted_apply _ _ MeasurableSet.univ, set_lintegral_univ, exp_sub,
@@ -213,7 +184,44 @@ lemma isProbabilityMeasure_tilted {μ : Measure α} [NeZero μ] {f : α → ℝ}
     · simp
   · exact ae_of_all _ fun _ ↦ (exp_pos _).le
 
-lemma logIntegralExp_tilted {μ : Measure α} {f g : α → ℝ} (hf : AEMeasurable f μ)
+section Integrals
+
+lemma set_lintegral_tilted (hf : AEMeasurable f μ) (g : α → ℝ≥0∞)
+    {s : Set α} (hs : MeasurableSet s) :
+    ∫⁻ x in s, g x ∂(μ.tilted f)
+      = ∫⁻ x in s, ENNReal.ofReal (exp (f x - logIntegralExp μ f)) * (g x) ∂μ := by
+  rw [Measure.tilted, set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀]
+  · simp only [Pi.mul_apply]
+  · refine AEMeasurable.restrict ?_
+    refine ENNReal.measurable_ofReal.comp_aemeasurable ?_
+    exact measurable_exp.comp_aemeasurable (hf.sub aemeasurable_const)
+  · exact hs
+  · refine ae_of_all _ ?_
+    simp only [ENNReal.ofReal_lt_top, implies_true]
+
+lemma lintegral_tilted (hf : AEMeasurable f μ) (g : α → ℝ≥0∞) :
+    ∫⁻ x, g x ∂(μ.tilted f) = ∫⁻ x, ENNReal.ofReal (exp (f x - logIntegralExp μ f)) * (g x) ∂μ := by
+  rw [← set_lintegral_univ, set_lintegral_tilted hf g MeasurableSet.univ, set_lintegral_univ]
+
+lemma set_integral_tilted {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (hf : AEMeasurable f μ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
+    ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, exp (f x - logIntegralExp μ f) • (g x) ∂μ := by
+  rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
+  · congr
+  · suffices AEMeasurable (fun x ↦ exp (f x - logIntegralExp μ f)) μ by
+      rw [← aEMeasurable_coe_nnreal_real_iff]
+      refine AEMeasurable.restrict ?_
+      simpa only [NNReal.coe_mk]
+    exact measurable_exp.comp_aemeasurable (hf.sub aemeasurable_const)
+
+lemma integral_tilted {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (hf : AEMeasurable f μ) (g : α → E) :
+    ∫ x, g x ∂(μ.tilted f) = ∫ x, exp (f x - logIntegralExp μ f) • (g x) ∂μ := by
+  rw [← integral_univ, set_integral_tilted hf g MeasurableSet.univ, integral_univ]
+
+end Integrals
+
+lemma logIntegralExp_tilted {g : α → ℝ} (hf : AEMeasurable f μ)
     (hfg : Integrable (fun x ↦ exp ((f + g) x)) μ) :
     logIntegralExp (μ.tilted f) g = logIntegralExp μ (f + g) - logIntegralExp μ f := by
   cases eq_zero_or_neZero μ with
@@ -232,7 +240,7 @@ lemma logIntegralExp_tilted {μ : Measure α} {f g : α → ℝ} (hf : AEMeasura
       ← sub_eq_add_neg]
     rfl
 
-lemma tilted_tilted {μ : Measure α} {f g : α → ℝ} (hf : AEMeasurable f μ)
+lemma tilted_tilted {g : α → ℝ} (hf : AEMeasurable f μ)
     (hfg : Integrable (fun x ↦ exp ((f + g) x)) μ) :
     (μ.tilted f).tilted g = μ.tilted (f + g) := by
   cases eq_zero_or_neZero μ with
@@ -246,44 +254,41 @@ lemma tilted_tilted {μ : Measure α} {f g : α → ℝ} (hf : AEMeasurable f μ
     abel
 
 @[simp]
-lemma tilted_inv_same' {μ : Measure α} [IsFiniteMeasure μ] {f : α → ℝ} (hf : AEMeasurable f μ) :
+lemma tilted_neg_same' [IsFiniteMeasure μ] (hf : AEMeasurable f μ) :
     (μ.tilted f).tilted (-f) = (μ Set.univ)⁻¹ • μ := by
   rw [tilted_tilted hf] <;> simp
 
 @[simp]
-lemma tilted_inv_same {μ : Measure α} [IsProbabilityMeasure μ] {f : α → ℝ} (hf : AEMeasurable f μ) :
+lemma tilted_neg_same [IsProbabilityMeasure μ] (hf : AEMeasurable f μ) :
     (μ.tilted f).tilted (-f) = μ := by
   simp [hf]
 
-lemma Measure.AbsolutelyContinuous.zero (μ : Measure α) : 0 ≪ μ := fun s _ ↦ by simp
+lemma tilted_absolutelyContinuous (μ : Measure α) (f : α → ℝ) : μ.tilted f ≪ μ :=
+  withDensity_absolutelyContinuous _ _
 
-lemma absolutelyContinuous_tilted {μ : Measure α} [IsFiniteMeasure μ] {f : α → ℝ}
-    (hf : AEMeasurable f μ) :
+lemma absolutelyContinuous_tilted [IsFiniteMeasure μ] (hf : AEMeasurable f μ) :
     μ ≪ μ.tilted f := by
   cases eq_zero_or_neZero μ with
-  | inl h => rw [h]; exact Measure.AbsolutelyContinuous.zero _
+  | inl h0 => rw [h0]; exact Measure.AbsolutelyContinuous.zero _
   | inr h0 =>
     have : μ = (μ Set.univ) • (μ.tilted f).tilted (-f) := by
-      rw [tilted_inv_same' hf]
-      rw [smul_smul, ENNReal.mul_inv_cancel, one_smul]
+      rw [tilted_neg_same' hf, smul_smul, ENNReal.mul_inv_cancel, one_smul]
       · simp [h0.out]
       · exact measure_ne_top _ _
     nth_rw 1 [this]
-    exact tilted_absolutelyContinuous.smul (μ Set.univ)
+    exact (tilted_absolutelyContinuous _ _).smul (μ Set.univ)
 
-lemma rnDeriv_tilted_left_self (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
+lemma rnDeriv_tilted_left_self (μ : Measure α) [SigmaFinite μ] (hf : Measurable f) :
     (μ.tilted f).rnDeriv μ =ᵐ[μ] fun x ↦ ENNReal.ofReal (exp (f x - logIntegralExp μ f)) :=
   Measure.rnDeriv_withDensity μ (hf.sub measurable_const).exp.ennreal_ofReal
 
-lemma log_rnDeriv_tilted_left_self (μ : Measure α) [SigmaFinite μ] {f : α → ℝ} (hf : Measurable f) :
-    (fun x ↦ log ((μ.tilted f).rnDeriv μ x).toReal)
-      =ᵐ[μ] fun x ↦ f x - logIntegralExp μ f := by
+lemma log_rnDeriv_tilted_left_self (μ : Measure α) [SigmaFinite μ] (hf : Measurable f) :
+    (fun x ↦ log ((μ.tilted f).rnDeriv μ x).toReal) =ᵐ[μ] fun x ↦ f x - logIntegralExp μ f := by
   filter_upwards [rnDeriv_tilted_left_self μ hf] with x hx
   rw [hx, ENNReal.toReal_ofReal (exp_pos _).le, log_exp]
 
 lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFinite μ]
-    [IsFiniteMeasure ν] (hμν : μ ≪ ν)
-    {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+    [IsFiniteMeasure ν] (hμν : μ ≪ ν) (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
       =ᵐ[ν] fun x ↦ exp (- f x + logIntegralExp ν f) * (μ.rnDeriv ν x).toReal := by
   have hf : AEMeasurable f ν :=
@@ -303,11 +308,10 @@ lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFi
     refine (absolutelyContinuous_tilted hf).ae_le ?_
     have : IsProbabilityMeasure (ν.tilted f) := isProbabilityMeasure_tilted h_int
     refine Measure.eq_rnDeriv₀ ?_ Measure.MutuallySingular.zero_left ?_
-    · simp only
-      refine AEMeasurable.mul ?_ (Measure.measurable_rnDeriv _ _).aemeasurable
+    · refine AEMeasurable.mul ?_ (Measure.measurable_rnDeriv _ _).aemeasurable
       refine ENNReal.measurable_ofReal.comp_aemeasurable ?_
       refine measurable_exp.comp_aemeasurable ((AEMeasurable.neg ?_).add aemeasurable_const)
-      exact AEMeasurable.mono_ac hf tilted_absolutelyContinuous
+      exact AEMeasurable.mono_ac hf (tilted_absolutelyContinuous _ _)
     · ext1 s hs
       conv_lhs => rw [← Measure.withDensity_rnDeriv_eq _ _ hμν]
       rw [zero_add]
@@ -318,7 +322,7 @@ lemma rnDeriv_tilted_right_of_absolutelyContinuous (μ ν : Measure α) [SigmaFi
       simp only [sub_add_add_cancel, add_right_neg, exp_zero, ENNReal.ofReal_one, one_mul]
 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    {f : α → ℝ} (h_int : Integrable (fun x ↦ exp (f x)) ν) :
+    (h_int : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
       =ᵐ[ν] fun x ↦ exp (- f x + logIntegralExp ν f) * (μ.rnDeriv ν x).toReal := by
   have hf : AEMeasurable f ν :=
@@ -341,7 +345,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
       refine hν_ac.ae_le ?_
       refine Measure.MutuallySingular.rnDeriv_ae_eq_zero ?_
       exact Measure.MutuallySingular.mono_ac (μ.mutuallySingular_singularPart ν)
-        Measure.AbsolutelyContinuous.rfl tilted_absolutelyContinuous
+        Measure.AbsolutelyContinuous.rfl (tilted_absolutelyContinuous _ _)
     have h₂ : μ.rnDeriv ν =ᵐ[ν] μ'.rnDeriv ν :=
       (Measure.rnDeriv_withDensity _ (Measure.measurable_rnDeriv _ _)).symm
     have hμ' := rnDeriv_tilted_right_of_absolutelyContinuous μ' ν

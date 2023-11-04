@@ -186,6 +186,11 @@ theorem withDensity_eq_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h 
     h, Measure.coe_zero, Pi.zero_apply]
 #align measure_theory.with_density_eq_zero MeasureTheory.withDensity_eq_zero
 
+@[simp]
+theorem withDensity_eq_zero_iff {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
+    μ.withDensity f = 0 ↔ f =ᵐ[μ] 0 :=
+  ⟨withDensity_eq_zero hf, fun h => withDensity_zero (μ := μ) ▸ withDensity_congr_ae h⟩
+
 theorem withDensity_apply_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hf : Measurable f) :
     μ.withDensity f s = 0 ↔ μ ({ x | f x ≠ 0 } ∩ s) = 0 := by
   constructor
@@ -262,8 +267,6 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
 #align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aemeasurable_withDensity_ennreal_iff
 
 open MeasureTheory.SimpleFunc
-
-variable {m0 : MeasurableSpace α}
 
 /-- This is Exercise 1.2.1 from [tao2010]. It allows you to express integration of a measurable
 function with respect to `(μ.withDensity f)` as an integral with respect to `μ`, called the base
@@ -470,5 +473,20 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
   nth_rw 1 [this]
   exact withDensity_absolutelyContinuous _ _
 #align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
+
+variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
+
+lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuous f) :
+    IsLocallyFiniteMeasure (μ.withDensity fun x ↦ f x) := by
+  refine ⟨fun x ↦ ?_⟩
+  rcases (μ.finiteAt_nhds x).exists_mem_basis ((nhds_basis_opens' x).restrict_subset
+    (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
+  refine ⟨U, hUx, ?_⟩
+  rw [withDensity_apply _ hUo.measurableSet]
+  exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, ball_image_iff.2 hUf⟩
+
+lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
+    IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
+  .withDensity_coe <| continuous_real_toNNReal.comp hf
 
 end MeasureTheory

@@ -176,7 +176,7 @@ def LocallyFiniteOrder.ofIcc' (α : Type*) [Preorder α] [DecidableRel ((· ≤ 
 #align locally_finite_order.of_Icc' LocallyFiniteOrder.ofIcc'
 
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
-the ends. As opposed to `LocallyFiniteOrder.ofIcc`, this one requires `PartialOrder` but only
+the ends. As opposed to `LocallyFiniteOrder.ofIcc'`, this one requires `PartialOrder` but only
 `DecidableEq`. -/
 def LocallyFiniteOrder.ofIcc (α : Type*) [PartialOrder α] [DecidableEq α]
     (finsetIcc : α → α → Finset α) (mem_Icc : ∀ a b x, x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b) :
@@ -1085,7 +1085,9 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
           not_exists, not_and, and_imp, Embedding.some, forall_const]
     | (a : α), (b : α), (x : α) => by
         simp only [some, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
-          some_le_some, aux]
+          some_le_some]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
@@ -1093,23 +1095,40 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [some, Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, some_le_some, aux,
           top, some_lt_none, and_true]
+        -- This used to be in the above `simp` before leanprover/lean4#2644
+        erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
+                                      -- This used to be in the above `simp` before
+                                      -- leanprover/lean4#2644
+                                      erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
+                                -- This used to be in the above `simp` before
+                                -- leanprover/lean4#2644
+                                erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
+      -- This used to be in the above `simp` before
+      -- leanprover/lean4#2644
+      erw [aux]
 
 variable (a b : α)
 
@@ -1377,7 +1396,7 @@ section Finite
 
 variable {α : Type*} {s : Set α}
 
-theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α]:
+theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α] :
     s.Finite ↔ BddAbove s :=
   ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) (by simpa)⟩,
     fun ⟨m, hm⟩ ↦ (Set.finite_Icc ⊥ m).subset (fun x hx ↦ ⟨bot_le, hm hx⟩)⟩

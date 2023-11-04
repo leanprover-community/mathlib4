@@ -278,17 +278,11 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
     coincides with `f n` on `β n` sends it to `⋃ n, s n`. -/
   choose β hβ h'β f f_cont f_range using fun n =>
     analyticSet_iff_exists_polishSpace_range.1 (hs n)
-  skip
   let γ := Σn, β n
-  let F : γ → α := by
-    rintro ⟨n, x⟩
-    exact f n x
+  let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
-    rw [range_sigma_eq_iUnion_range]
-    apply congr_arg
-    ext1 n
-    rw [← f_range n]
+    simp only [range_sigma_eq_iUnion_range, f_range]
   rw [← F_range]
   exact analyticSet_range_of_polishSpace F_cont
 #align measure_theory.analytic_set.Union MeasureTheory.AnalyticSet.iUnion
@@ -311,6 +305,7 @@ theorem _root_.MeasurableSet.isClopenable [PolishSpace α] [MeasurableSpace α] 
   · exact fun f _ _ hf => IsClopenable.iUnion hf
 #align measurable_set.is_clopenable MeasurableSet.isClopenable
 
+/-- A Borel-measurable set in a Polish space is analytic. -/
 theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] [PolishSpace α]
     [MeasurableSpace α] [BorelSpace α] {s : Set α} (hs : MeasurableSet s) : AnalyticSet s := by
   /- For a short proof (avoiding measurable induction), one sees `s` as a closed set for a finer
@@ -361,6 +356,16 @@ theorem _root_.MeasurableSet.analyticSet_image {X Y : Type*} [MeasurableSpace X]
   have hle := borel_anti hle
   exact (hle _ hs).analyticSet.image_of_continuous hfc
 #align measurable_set.analytic_set_image MeasurableSet.analyticSet_image
+
+/-- Preimage of an analytic set is an analytic set. -/
+protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [PolishSpace X] [T2Space Y] {s : Set Y} (hs : AnalyticSet s) {f : X → Y} (hf : Continuous f) :
+    AnalyticSet (f ⁻¹' s) := by
+  rcases analyticSet_iff_exists_polishSpace_range.1 hs with ⟨Z, _, _, g, hg, rfl⟩
+  have : IsClosed {x : X × Z | f x.1 = g x.2} := isClosed_diagonal.preimage (hf.prod_map hg)
+  convert this.analyticSet.image_of_continuous continuous_fst
+  ext x
+  simp [eq_comm]
 
 /-! ### Separating sets with measurable sets -/
 
@@ -459,7 +464,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- by design, the cylinders around these points have images which are not Borel-separable.
   have M : ∀ n, ¬MeasurablySeparable (f '' cylinder x n) (g '' cylinder y n) := by
     intro n
-    convert(p n).2 using 3
+    convert (p n).2 using 3
     · rw [pn_fst, ← mem_cylinder_iff_eq, mem_cylinder_iff]
       intro i hi
       rw [hx]
@@ -501,7 +506,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   exact M n B
 #align measure_theory.measurably_separable_range_of_disjoint MeasureTheory.measurablySeparable_range_of_disjoint
 
-/-- The Lusin separation theorem: if two analytic sets are disjoint, then they are contained in
+/-- The **Lusin separation theorem**: if two analytic sets are disjoint, then they are contained in
 disjoint Borel sets. -/
 theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
     {s t : Set α} (hs : AnalyticSet s) (ht : AnalyticSet t) (h : Disjoint s t) :

@@ -164,7 +164,9 @@ instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X
 
 /-- In a locally compact space, for every containment `K ⊆ U` of a compact set `K` in an open
   set `U`, there is a compact neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently, there is a
-  compact `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
+  compact `L` such that `K ⊆ interior L` and `L ⊆ U`.
+  See also `exists_compact_closed_between`, in which one guarantees additionally that `L` is closed
+  if the space is regular. -/
 theorem exists_compact_between [hX : LocallyCompactSpace X] {K U : Set X} (hK : IsCompact K)
     (hU : IsOpen U) (h_KU : K ⊆ U) : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ U := by
   choose V hVc hxV hKV using fun x : K => exists_compact_subset hU (h_KU x.2)
@@ -199,7 +201,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
     exact
       ((compact_basis_nhds _).restrict_subset <| hf.open_range.mem_nhds <| mem_range_self _).comap _
   refine' locallyCompactSpace_of_hasBasis this fun x s hs => _
-  rw [← hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
+  rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]
   exact hs.1.2
 #align open_embedding.locally_compact_space OpenEmbedding.locallyCompactSpace
 
@@ -207,9 +209,3 @@ protected theorem IsOpen.locallyCompactSpace [LocallyCompactSpace X] {s : Set X}
     LocallyCompactSpace s :=
   hs.openEmbedding_subtype_val.locallyCompactSpace
 #align is_open.locally_compact_space IsOpen.locallyCompactSpace
-
-nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by
-  rcases isCompact_univ.ultrafilter_le_nhds F (by simp) with ⟨x, -, h⟩
-  exact le_nhds_lim ⟨x, h⟩
-set_option linter.uppercaseLean3 false in
-#align ultrafilter.le_nhds_Lim Ultrafilter.le_nhds_lim

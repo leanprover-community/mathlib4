@@ -303,7 +303,6 @@ variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
 
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
-set_option maxHeartbeats 300000 in
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
   then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
@@ -433,7 +432,6 @@ private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDoma
     haveI islocSₘ : IsLocalization (Submonoid.map φ (Submonoid.powers x)) Sₘ := by infer_instance
     exact @isIntegral_isLocalization_polynomial_quotient R _ Rₘ Sₘ _ _ P p pP _ _ _ islocSₘ
 
-set_option maxHeartbeats 300000 in
 theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X] := by
   rw [isJacobson_iff_prime_eq]
   intro I hI

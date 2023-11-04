@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.NormCast.Tactic
+import Mathlib.Tactic.Cases
 import Mathlib.Algebra.NeZero
 
 #align_import algebra.char_zero.defs from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
