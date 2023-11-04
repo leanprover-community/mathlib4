@@ -134,7 +134,7 @@ theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
 /--
 A special case of the chain rule for composition of a polynomial `f` and a power series `g`:
 $$ d/dX (f ∘ g) = (df/dX ∘ g) * dg/dX. $$
-In this statement, the composition $f ∘ g$ is `aeval g f`.
+In this statement, the composition $f ∘ g$ is expressed as `aeval g f`.
 -/
 @[simp]
 theorem derivative_aeval (f : R[X]) (g : R⟦X⟧) :
