@@ -80,11 +80,20 @@ noncomputable def exponent :=
 
 variable {G}
 
+@[simp]
 theorem _root_.AddMonoid.exponent_additive :
     AddMonoid.exponent (Additive G) = exponent G := rfl
 
+@[simp]
 theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
     exponent (Multiplicative G) = AddMonoid.exponent G := rfl
+
+open MulOpposite in
+@[to_additive (attr := simp)]
+theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
+  simp only [Monoid.exponent, ExponentExists]
+  congr!
+  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
 
 @[to_additive]
 theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := by
