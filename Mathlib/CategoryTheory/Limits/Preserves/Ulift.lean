@@ -5,20 +5,23 @@ universe v u
 
 open CategoryTheory Limits
 
+def sectionsEquiv {J : Type u} [Category.{u, u} J] (K : J ⥤ Type u) :
+    uliftFunctor.{v, u}.obj (Functor.sections K) ≃ (Functor.sections (K ⋙ uliftFunctor.{v, u})) where
+  toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
+  invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
+  left_inv := by intro; apply ULift.ext; ext; rfl
+  right_inv := by intro; ext; rfl
+
 noncomputable
 instance : CreatesLimitsOfSize.{u, u} uliftFunctor.{v, u} where
-  CreatesLimitsOfShape {J} _ := {
-    CreatesLimit := fun {K} => by
-      refine @createsLimitOfFullyFaithfulOfIso _ _ _ _ _ _ K uliftFunctor _ _ _ (limit K) ?_
-      sorry
-      -- refine IsLimit.conePointUniqueUpToIso ?_ (limit.isLimit (K ⋙ uliftFunctor.{v, u}))
+  CreatesLimitsOfShape := {
+    CreatesLimit := fun {K} =>
+      @createsLimitOfFullyFaithfulOfIso _ _ _ _ _ _ K uliftFunctor _ _ _ (limit K)
+        (uliftFunctor.{v, u}.mapIso (equivEquivIso (Types.isLimitEquivSections.{u, u}
+        (limit.isLimit K))) ≪≫ (equivEquivIso (sectionsEquiv K)) ≪≫
+        (equivEquivIso (Types.isLimitEquivSections.{u, max u v}
+        (limit.isLimit (K ⋙ uliftFunctor.{v, u})))).symm)
   }
 
-instance : PreservesLimitsOfSize.{u, u} uliftFunctor where
-  preservesLimitsOfShape {J} 𝒥 :=
-    { preservesLimit := fun {K} =>
-        { preserves := fun {c} t =>
-            { lift := fun s x => sorry
-              fac := fun s j => sorry
-              uniq := fun s m w => sorry
-              } } }
+noncomputable
+instance : PreservesLimitsOfSize.{u, u} uliftFunctor := inferInstance

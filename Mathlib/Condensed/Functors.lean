@@ -7,6 +7,8 @@ universe u v
 
 open CategoryTheory Limits ContinuousMap
 
+section Topology
+
 instance : PreservesFiniteProducts compHausToTop.{u}.op where
   preserves J _ := by
     apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
@@ -37,4 +39,10 @@ def Stonean.toCondensed (S : Stonean.{u}) : CondensedSet.{u} := sorry
 
 def stoneanToCondensed : Stonean.{u} ⥤ CondensedSet.{u} := sorry
 
+end Topology
+
+section Abelian
+
 def Condensed.forget : CondensedAb.{u} ⥤ CondensedSet.{u} := sorry
+
+end Abelian
