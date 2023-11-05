@@ -51,14 +51,6 @@ noncomputable def single (j : ι) : V ⥤ HomologicalComplex V c where
     · simp
 #align homological_complex.single HomologicalComplex.single
 
-/-- The functor `V ⥤ ChainComplex V ℕ` creating a chain complex supported in degree zero. -/
-noncomputable abbrev _root_.ChainComplex.single₀ : V ⥤ ChainComplex V ℕ :=
-  single V (ComplexShape.down ℕ) 0
-
-/-- The functor `V ⥤ CochainComplex V ℕ` creating a cochain complex supported in degree zero. -/
-noncomputable abbrev _root_.CochainComplex.single₀ : V ⥤ CochainComplex V ℕ :=
-  single V (ComplexShape.up ℕ) 0
-
 variable {V}
 
 @[simp]
@@ -177,9 +169,25 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
 
 end HomologicalComplex
 
+namespace ChainComplex
+
+/-- The functor `V ⥤ ChainComplex V ℕ` creating a chain complex supported in degree zero. -/
+noncomputable abbrev single₀ : V ⥤ ChainComplex V ℕ :=
+  HomologicalComplex.single V (ComplexShape.down ℕ) 0
+
 variable {V}
 
-namespace ChainComplex
+@[simp]
+lemma single₀_obj_zero (A : V) :
+    ((single₀ V).obj A).X 0 = A := rfl
+
+@[simp]
+lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
+    ((single₀ V).map f).f 0 = f := by
+  rw [HomologicalComplex.single_map_f_self]
+  dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
+  erw [comp_id, id_comp]
+
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
@@ -196,19 +204,22 @@ noncomputable def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
     obtain rfl : i = 1 := by simpa using hi.symm
     exact f.2)
-  left_inv φ := by
-    ext
-    dsimp
-    simp only [HomologicalComplex.mkHomToSingle_f, single₀ObjXSelf, Iso.refl_inv]
-    erw [comp_id]
-  right_inv f := by
-    ext
-    simp only [HomologicalComplex.mkHomToSingle_f, single₀ObjXSelf, Iso.refl_inv]
-    erw [comp_id]
+  left_inv φ := by aesop_cat
+  right_inv f := by aesop_cat
 
 end ChainComplex
 
 namespace CochainComplex
+
+/-- The functor `V ⥤ CochainComplex V ℕ` creating a cochain complex supported in degree zero. -/
+noncomputable abbrev single₀ : V ⥤ CochainComplex V ℕ :=
+  HomologicalComplex.single V (ComplexShape.up ℕ) 0
+
+variable {V}
+
+@[simp]
+lemma single₀_obj_zero (A : V) :
+    ((single₀ V).obj A).X 0 = A := rfl
 
 @[simp]
 lemma single₀ObjXSelf (X : V) :
