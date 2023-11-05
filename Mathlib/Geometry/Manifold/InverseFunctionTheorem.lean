@@ -199,11 +199,12 @@ lemma contGoodPregroupoidReally? [CompactSpace H] [T2Space H] : GoodPregroupoid 
     show ContinuousOn g t
     sorry
 
-variable {n : ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+--{𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 -- C^n functions on E: warm-up case (only one chart); full definition in SmoothManifoldsWithCorners
 def contDiffPregroupoidWarmup : Pregroupoid E := {
-  property := fun f s ↦ ContDiffOn 𝕜 n f s
+  property := fun f s ↦ ContDiffOn ℝ n f s
   comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
   id_mem := contDiffOn_id
   locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
@@ -213,7 +214,7 @@ def contDiffPregroupoidWarmup : Pregroupoid E := {
 -- test this works: this is a good pregroupoid -> no, it doesn't, my assumptions are still too weak!
 lemma contDiffPregroupoidGoodWarmup : GoodPregroupoid E where
   -- TODO: fix copy-paste!
-  property := fun f s ↦ ContDiffOn 𝕜 n f s
+  property := fun f s ↦ ContDiffOn ℝ n f s
   comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
   id_mem := contDiffOn_id
   locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
@@ -221,8 +222,54 @@ lemma contDiffPregroupoidGoodWarmup : GoodPregroupoid E where
   --toPregroupoid := contDiffPregroupoidWarmup E
   inverse := by
     intro f g s t hf hinv
-    have : ContDiffOn 𝕜 n f s := hf
-    show ContDiffOn 𝕜 n g t
+    have : ContDiffOn ℝ n f s := hf
+    show ContDiffOn ℝ n g t
+    sorry
+
+-- try another definition, slightly stronger: want f to be a local homeo with inverse g
+
+structure BetterPregroupoid (H : Type*) [TopologicalSpace H] extends Pregroupoid H where
+  -- If `f ∈ P` defines a homeomorphism `s → t` with inverse `g`, then `g ∈ P` also.
+  -- For instance, if `f` is a local homeo at `x`, we're good.
+  -- xxx: do we really need all these assumptions (s and t open, mapsto stuff?)
+  inverse : ∀ {f g s t}, IsOpen s → IsOpen t → property f s → InvOn g f s t →
+    MapsTo f s t → MapsTo g t s → ContinuousOn f s → ContinuousOn g t → property g t
+
+variable [CompleteSpace E] [Module ℝ E] --[IsROrC 𝕜]
+
+lemma contDiffPregroupoidBetterWarmup  {x : E} : BetterPregroupoid E where
+  -- TODO: fix copy-paste!
+  property := fun f s ↦ ContDiffOn ℝ n f s
+  comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
+  id_mem := contDiffOn_id
+  locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
+  congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
+  --toPregroupoid := contDiffPregroupoidWarmup E
+  inverse := by
+    intro f g s t hs ht hf hinv hmf hmg hfcont hgcont
+    have : ContDiffOn ℝ n f s := hf
+    show ContDiffOn ℝ n g t
+    let h : LocalHomeomorph E E := {
+      toFun := f
+      invFun := g
+      source := s
+      target := t
+      map_source' := hmf
+      map_target' := hmg
+      left_inv' := hinv.1
+      right_inv' := hinv.2
+      open_source := hs
+      open_target := ht
+      continuous_toFun := hfcont
+      continuous_invFun := hgcont
+    }
+    have : ContDiffAt ℝ n f x := hf.contDiffAt sorry /- s ∈ 𝓝 x -/
+    -- by chain rule, df_x is invertible: also holds over any field
+    -- let f' : E ≃L[ℝ] E := sorry--let f' : E ≃L[𝕜] E := sorry
+    -- have hf' : HasFDerivAt (𝕜 := ℝ) f sorry x := sorry --a) (hn : 1 ≤ n)
+    -- have hn : 1 ≤ n := sorry
+    -- for 𝕜 being ℝ or ℂ, ContDiffAt.to_localInverse shows our local inverse is invertible, or so
+    -- left to show: the inverse equals g; that's because of uniqueness
     sorry
 
 /- my vision for the general IFT/general shape should go like this:
@@ -239,7 +286,16 @@ lemma contDiffPregroupoidGoodWarmup : GoodPregroupoid E where
     - perhaps: can I characterise, over any suitable pregroupoid, this as sth like
         f:M → M' (ove the same model I) is a local structo for G iff f and f' are in P
       generalising `isLocalStructomorphOn_contDiffGroupoid_iff` to all categories
-  specialise to specific categories: C^n and 𝕜-analytic ones, show they satisfy this. -/
+  specialise to specific categories: C^n and 𝕜-analytic ones, show they satisfy this.
+
+∀ x, f':..., f with df_x=f'
+if f is contDiff at x with invertible differential,
+g is the IFT inverse, then the inverse is also in P
+
+perhaps generalise: LocalHomeomorph.contDiffAt_symm
+if f is a local homeo, ContDiffAt x and df_x is an inverse, we're good
+
+  the framework works for any C^k, also for analytic functions, just the same -/
 
 end Pregroupoids
 
