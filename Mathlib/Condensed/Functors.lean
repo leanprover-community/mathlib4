@@ -20,7 +20,10 @@ def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
     rw [CompHaus.effectiveEpi_iff_surjective] at he
     apply QuotientMap.of_surjective_continuous he π.continuous )
 
-def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} := sorry
+noncomputable
+def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} where
+  obj X := X.toCondensed
+  map f := ⟨⟨fun _ g ↦ ContinuousMap.comp f g, by aesop⟩⟩
 
 def CompHaus.toCondensed (S : CompHaus.{u}) : CondensedSet.{u} := sorry
 

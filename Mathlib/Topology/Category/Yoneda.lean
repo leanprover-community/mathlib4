@@ -14,13 +14,13 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ TopCat.{w})
 
 namespace ContinuousMap
 
-def yoneda : C ⥤ Type (max w w') where
-  obj X := C(Y, F.obj X)
-  map f g := ContinuousMap.comp (F.map f) g
-
 def coyoneda : Cᵒᵖ ⥤ Type (max w w') where
   obj X := C(F.obj (unop X), Y)
   map f g := ContinuousMap.comp g (F.map f.unop)
+
+def yoneda : C ⥤ (Cᵒᵖ ⥤ Type w) where
+  obj Y := (coyoneda.{w, w} F (F.obj Y).1)
+  map f := { app := fun _ g ↦ ContinuousMap.comp (F.map f) g }
 
 def coyoneda' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
