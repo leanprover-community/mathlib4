@@ -1189,6 +1189,23 @@ theorem Summable.subtype (hf : Summable f) (s : Set β) : Summable (f ∘ (↑) 
   hf.comp_injective Subtype.coe_injective
 #align summable.subtype Summable.subtype
 
+theorem summable_iff_vanishing_tsum : Summable f ↔
+    ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
+  refine ⟨fun hsum e he ↦ ?_, fun mem_nhds ↦ summable_iff_vanishing.mpr fun e he ↦ ?_⟩
+  · obtain ⟨e', he', closed, hsub⟩ := exists_mem_nhds_isClosed_subset he
+    obtain ⟨s, hs⟩ := summable_iff_vanishing.mp hsum e' he'
+    refine ⟨s, fun t hts ↦ hsub <| closed.mem_of_tendsto (hsum.subtype _).hasSum <|
+      eventually_of_forall fun t' ↦ ?_⟩
+    rw [← Finset.sum_subtype_map_embedding fun _ _ ↦ by rfl]
+    apply hs
+    simp_rw [Finset.disjoint_left, Set.disjoint_left, Finset.mem_map] at hts ⊢
+    rintro _ ⟨b, -, rfl⟩
+    exact hts b.2
+  · obtain ⟨s, hs⟩ := mem_nhds _ he
+    refine ⟨s, fun t hts ↦ ?_⟩
+    simp only [Finset.disjoint_left, Set.disjoint_left] at hs hts
+    exact (t.tsum_subtype f).symm ▸ hs _ hts
+
 theorem summable_subtype_and_compl {s : Set β} :
     ((Summable fun x : s => f x) ∧ Summable fun x : ↑sᶜ => f x) ↔ Summable f :=
   ⟨and_imp.2 Summable.add_compl, fun h => ⟨h.subtype s, h.subtype sᶜ⟩⟩
