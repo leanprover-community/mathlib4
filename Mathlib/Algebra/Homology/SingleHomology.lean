@@ -1,5 +1,18 @@
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+/-!
+# The homology of single complexes
+
+The main definition in this file is `HomologicalComplex.homologyFunctorSingleIso`
+which is a natural isomorphism `single C c j ⋙ homologyFunctor C c j ≅ 𝟭 C`.
+
+-/
+
 
 universe v u
 
@@ -155,11 +168,12 @@ lemma singleObjOpcyclesSelfIso_inv_naturality :
 
 variable (C)
 
+/-- The computation of the homology of single complexes, as a natural isomorphism
+`single C c j ⋙ homologyFunctor C c j ≅ 𝟭 C`. -/
 @[simps!]
 noncomputable def homologyFunctorSingleIso [CategoryWithHomology C] :
     single C c j ⋙ homologyFunctor C c j ≅ 𝟭 _ :=
   NatIso.ofComponents (fun A => (singleObjHomologySelfIso c j A))
     (fun f => singleObjHomologySelfIso_hom_naturality c j f)
-
 
 end HomologicalComplex
