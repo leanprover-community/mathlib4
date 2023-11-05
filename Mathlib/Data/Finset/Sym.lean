@@ -23,6 +23,7 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
   whose elements are in `s`.
 * `Finset.sym2`: The symmetric square of a finset. `s.sym2` is all the pairs whose elements are in
   `s`.
+* A `Finset (Sym2 α)` instance that does not require `DecidableEq α`.
 
 ## TODO
 
@@ -30,39 +31,172 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 `Finset.sym2`.
 -/
 
-namespace Finset
+namespace List
 
-variable {α : Type*} [DecidableEq α] {s t : Finset α} {a b : α}
+variable {α : Type*}
 
-theorem isDiag_mk'_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag ⟦a⟧ :=
-  (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
-#align finset.is_diag_mk_of_mem_diag Finset.isDiag_mk'_of_mem_diag
+/-- `xs.sym2` is a list of all unordered pairs of elements from `xs`.
+If `xs` has no duplicates then neither does `xs.sym2`. -/
+protected def sym2 : List α → List (Sym2 α)
+  | [] => []
+  | x::xs => ((x::xs).map fun y => Quotient.mk _ (x, y)) ++ xs.sym2
 
-theorem not_isDiag_mk'_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) : ¬Sym2.IsDiag ⟦a⟧ := by
-  rw [Sym2.isDiag_iff_proj_eq]
-  exact (mem_offDiag.1 h).2.2
-#align finset.not_is_diag_mk_of_mem_off_diag Finset.not_isDiag_mk'_of_mem_offDiag
+theorem left_mem_of_mem_sym2 {xs : List α} {a b : α}
+    (h : Quotient.mk _ (a, b) ∈ xs.sym2) : a ∈ xs := by
+  induction xs generalizing a b with
+  | nil => exact (not_mem_nil _ h).elim
+  | cons x xs ih =>
+    rw [mem_cons]
+    simp only [List.sym2, map_cons, cons_append, mem_cons, mem_append, mem_map] at h
+    obtain (h | h) := h
+    · rw [Sym2.eq_iff, ← and_or_left] at h
+      left; exact h.1
+    · obtain (⟨c, hc, h⟩ | h) := h
+      · rw [Sym2.eq_iff] at h
+        obtain (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) := h
+        · left; rfl
+        · right; exact hc
+      · right; exact ih h
 
-section Sym2
+theorem right_mem_of_mem_sym2 {xs : List α} {a b : α}
+    (h : Quotient.mk _ (a, b) ∈ xs.sym2) : b ∈ xs := by
+  rw [Sym2.eq_swap] at h
+  exact left_mem_of_mem_sym2 h
 
-variable {m : Sym2 α}
+theorem mem_sym2 {xs : List α} {a b : α} (ha : a ∈ xs) (hb : b ∈ xs) :
+    Quotient.mk _ (a, b) ∈ xs.sym2 := by
+  induction xs with
+  | nil => simp at ha
+  | cons x xs ih =>
+    rw [List.sym2, List.map_cons]
+    rw [mem_cons] at ha hb
+    obtain (rfl | ha) := ha <;> obtain (rfl | hb) := hb
+    · apply List.mem_append_left
+      apply List.mem_cons_self
+    · apply List.mem_append_left
+      apply List.mem_cons_of_mem
+      rw [List.mem_map]
+      use b
+    · apply List.mem_append_left
+      apply List.mem_cons_of_mem
+      rw [Sym2.eq_swap, List.mem_map]
+      use a
+    · apply List.mem_append_right
+      exact ih ha hb
 
-/-- Lifts a finset to `Sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
-protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ˢ s).image Quotient.mk'
-#align finset.sym2 Finset.sym2
+theorem mk_mem_sym2_iff {xs : List α} {a b : α} :
+    Quotient.mk _ (a, b) ∈ xs.sym2 ↔ a ∈ xs ∧ b ∈ xs := by
+  constructor
+  · intro h
+    exact ⟨left_mem_of_mem_sym2 h, right_mem_of_mem_sym2 h⟩
+  · rintro ⟨ha, hb⟩
+    exact mem_sym2 ha hb
+
+protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
+  induction xs with
+  | nil => simp [List.sym2]
+  | cons x xs ih =>
+    rw [List.sym2, List.map]
+    have := ih (Nodup.of_cons h)
+    rw [nodup_cons] at h
+    apply Nodup.append _ this
+    · intro z hz hz'
+      simp only [mem_cons, mem_map] at hz
+      obtain (rfl | ⟨_, _, rfl⟩) := hz
+        <;> simp [left_mem_of_mem_sym2 hz'] at h
+    apply Nodup.cons
+    · intro h'
+      simp only [mem_map, Sym2.eq_iff, true_and, or_self, exists_eq_right] at h'
+      simp [h'] at h
+    apply Nodup.map
+    · intro a b
+      simp only [Sym2.eq_iff, true_and]
+      rintro (rfl | ⟨rfl, rfl⟩) <;> rfl
+    · exact h.2
+
+protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
+    xs.sym2 ~ ys.sym2 := by
+  induction h with
+  | nil => rfl
+  | cons x h ih =>
+    simp only [List.sym2, map_cons, cons_append, perm_cons]
+    exact (h.map _).append ih
+  | swap x y xs =>
+    simp only [List.sym2, map_cons, cons_append]
+    refine Perm.trans (Perm.swap ..) (Perm.trans ?_ (Perm.swap ..))
+    rw [Sym2.eq_swap]
+    apply Perm.cons
+    simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
+      ← Multiset.coe_add, ← Multiset.singleton_add]
+    simp only [add_assoc, add_left_comm]
+  | trans _ _ ih1 ih2 => exact ih1.trans ih2
 
 @[simp]
-theorem mem_sym2_iff : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
-  refine
-    mem_image.trans
-      ⟨?_, fun h ↦ ⟨m.out, mem_product.2 ⟨h _ m.out_fst_mem, h _ m.out_snd_mem⟩, m.out_eq⟩⟩
-  rintro ⟨⟨a, b⟩, h, rfl⟩
-  rw [Quotient.mk', @Sym2.ball _ (fun x ↦ x ∈ s)]
-  rwa [mem_product] at h
+theorem sym2_eq_nil {xs : List α} : xs.sym2 = [] ↔ xs = [] := by
+  cases xs <;> simp [List.sym2]
+
+end List
+
+namespace Multiset
+
+variable {α : Type*}
+
+/-- `m.sym2` is the multiset of all unordered pairs of elements from `m`, with multiplicity.
+If `m` has no duplicates then neither does `m.sym2`. -/
+protected def sym2 (m : Multiset α) : Multiset (Sym2 α) :=
+  m.liftOn (fun xs => xs.sym2) fun _ _ h => by rw [coe_eq_coe]; exact h.sym2
+
+@[simp] theorem sym2_coe (xs : List α) : (xs : Multiset α).sym2 = xs.sym2 := rfl
+
+theorem mk_mem_sym2_iff {m : Multiset α} {a b : α} :
+    Quotient.mk _ (a, b) ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
+  m.recOnSubsingleton fun xs => by simp [List.mk_mem_sym2_iff]
+
+protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
+  Quotient.recOnSubsingleton m (fun _ h => List.Nodup.sym2 h) h
+
+@[simp]
+theorem sym2_eq_zero {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
+  m.recOnSubsingleton fun xs => by simp
+
+end Multiset
+
+namespace Finset
+
+variable {α : Type*}
+
+/-- `s.sym2` is the finset of all unordered pairs of elements from `s`.
+It is image of `s ×ˢ s` under the quotient `α × α → Sym2 α`. -/
+@[simps]
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2⟩
+#align finset.sym2 Finset.sym2
+
+section
+variable {s t : Finset α} {a b : α}
+
+theorem mk_mem_sym2_iff : ⟦(a, b)⟧ ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
+  rw [Finset.sym2, ← Finset.mem_coe]
+  simp only [mem_coe, mem_mk, Multiset.mk_mem_sym2_iff, mem_val]
+#align finset.mk_mem_sym2_iff Finset.mk_mem_sym2_iff
+
+@[simp]
+theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
+  refine Quotient.recOnSubsingleton m ?_
+  rintro ⟨x, y⟩
+  rw [mk_mem_sym2_iff]
+  simp only [Sym2.mem_iff, forall_eq_or_imp, forall_eq]
 #align finset.mem_sym2_iff Finset.mem_sym2_iff
 
-theorem mk'_mem_sym2_iff : ⟦(a, b)⟧ ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by rw [mem_sym2_iff, Sym2.ball]
-#align finset.mk_mem_sym2_iff Finset.mk'_mem_sym2_iff
+instance instFintypeSym2 [Fintype α] : Fintype (Sym2 α) where
+  elems := Finset.univ.sym2
+  complete := by simp
+
+theorem sym2_toFinset [DecidableEq α] (m : Multiset α) :
+    m.toFinset.sym2 = m.sym2.toFinset := by
+  ext z
+  refine z.recOnSubsingleton ?_
+  rintro ⟨x, y⟩
+  simp only [mk_mem_sym2_iff, Multiset.mem_toFinset, Multiset.mk_mem_sym2_iff]
 
 @[simp]
 theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
@@ -70,50 +204,84 @@ theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
 
 @[simp]
 theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
-  rw [Finset.sym2, image_eq_empty, product_eq_empty, or_self_iff]
+  classical
+  rw [← Finset.val_toFinset s, sym2_toFinset]
+  simp
 #align finset.sym2_eq_empty Finset.sym2_eq_empty
 
 @[simp]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
-  rw [Finset.sym2, Nonempty.image_iff, nonempty_product, and_self_iff]
+  rw [← not_iff_not]
+  simp only [not_nonempty_iff_eq_empty, sym2_eq_empty]
 #align finset.sym2_nonempty Finset.sym2_nonempty
 
-alias ⟨_, nonempty.sym2⟩ := sym2_nonempty
-#align finset.nonempty.sym2 Finset.nonempty.sym2
+alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
+#align finset.nonempty.sym2 Finset.Nonempty.sym2
 
 -- Porting note: attribute does not exist
--- attribute [protected] nonempty.sym2
+-- attribute [protected] Nonempty.sym2
 
+-- Note(kmill): Using a default argument to make this simp lemma more general.
 @[simp]
-theorem sym2_univ [Fintype α] : (univ : Finset α).sym2 = univ := by
+theorem sym2_univ [Fintype α] (inst : Fintype (Sym2 α) := instFintypeSym2) :
+    (univ : Finset α).sym2 = univ := by
   ext
   simp only [mem_sym2_iff, mem_univ, implies_true]
 #align finset.sym2_univ Finset.sym2_univ
 
 @[simp]
-theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := by
-  rw [Finset.sym2, singleton_product_singleton, image_singleton, Sym2.diag, Quotient.mk']
+theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := rfl
 #align finset.sym2_singleton Finset.sym2_singleton
-
--- Porting note: add this lemma and remove simp in the next lemma since simpNF lint
--- warns that its LHS is not in normal form
-@[simp]
-theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
-  rw [← mem_sym2_iff]
-  exact mk'_mem_sym2_iff.trans <| and_self_iff
-
-theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
-#align finset.diag_mem_sym2_iff Finset.diag_mem_sym2_iff
 
 @[simp]
 theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := fun _m he ↦
   mem_sym2_iff.2 fun _a ha ↦ h <| mem_sym2_iff.1 he _ ha
 #align finset.sym2_mono Finset.sym2_mono
 
+end
+
+variable [DecidableEq α] {s t : Finset α} {a b : α}
+
+theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image (Quotient.mk _) := by
+  ext z
+  refine Quotient.recOnSubsingleton z ?_
+  rintro ⟨x, y⟩
+  rw [mk_mem_sym2_iff, mem_image]
+  constructor
+  · intro h
+    use (x, y)
+    simp only [mem_product, h, and_self, true_and]
+  · rintro ⟨⟨a, b⟩, h⟩
+    simp only [mem_product, Sym2.eq_iff] at h
+    obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
+      <;> simp [h]
+
+theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag ⟦a⟧ :=
+  (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
+#align finset.is_diag_mk_of_mem_diag Finset.isDiag_mk_of_mem_diag
+
+theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) : ¬Sym2.IsDiag ⟦a⟧ := by
+  rw [Sym2.isDiag_iff_proj_eq]
+  exact (mem_offDiag.1 h).2.2
+#align finset.not_is_diag_mk_of_mem_off_diag Finset.not_isDiag_mk_of_mem_offDiag
+
+section Sym2
+
+variable {m : Sym2 α}
+
+-- Porting note: add this lemma and remove simp in the next lemma since simpNF lint
+-- warns that its LHS is not in normal form
+@[simp]
+theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈ s := by
+  rw [← mem_sym2_iff]
+  exact mk_mem_sym2_iff.trans <| and_self_iff
+
+theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
+#align finset.diag_mem_sym2_iff Finset.diag_mem_sym2_iff
+
 theorem image_diag_union_image_offDiag :
-    s.diag.image Quotient.mk' ∪ s.offDiag.image Quotient.mk' = s.sym2 := by
-  rw [← image_union, diag_union_offDiag]
-  rfl
+    s.diag.image (Quotient.mk _) ∪ s.offDiag.image (Quotient.mk _) = s.sym2 := by
+  rw [← image_union, diag_union_offDiag, sym2_eq_image]
 #align finset.image_diag_union_image_off_diag Finset.image_diag_union_image_offDiag
 
 end Sym2
