@@ -129,12 +129,12 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
 /-- The linear map from bilinear maps to `Matrix n n R` given an `n`-indexed basis.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
-def BilinForm.toMatrixAux' (b : n → M₂) : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) →ₗ[R₂] Matrix n n R₂ where
+def BilinForm.toMatrixAux' (b : n → M₂) : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) →ₗ[R₂] Matrix n n N₂ where
   toFun B := of fun i j => B (b i) (b j)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-variable (B : BilinForm R₂ M₂)
+--variable (B : BilinForm R₂ M₂)
 
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
@@ -144,7 +144,7 @@ def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Ma
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
-theorem BilinForm.toMatrixAux_apply' (B : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂)) (b : n → M₂) (i j : n) :
+theorem BilinForm.toMatrixAux_apply' (B : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂)) (b : n → M₂) (i j : n) :
     BilinForm.toMatrixAux' (R₂ := R₂) b B i j = B (b i) (b j) :=
   rfl
 
@@ -157,7 +157,7 @@ theorem BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (
 
 variable [Fintype n] [Fintype o]
 
-theorem toBilin'Aux_toMatrixAux' [DecidableEq n] (B₂ : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂) :
+theorem toBilin'Aux_toMatrixAux' [DecidableEq n] (B₂ : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂) :
     -- porting note: had to hint the base ring even though it should be clear from context...
     Matrix.toBilin'Aux' (BilinForm.toMatrixAux' (R₂ := R₂)
       (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
@@ -185,7 +185,7 @@ This section deals with the conversion between matrices and bilinear forms on `n
 variable [DecidableEq n] [DecidableEq o]
 
 /-- The linear equivalence between bilinear maps on `n → R` and `n × n` matrices -/
-def BilinForm.toMatrix'' : ((n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂) ≃ₗ[R₂] Matrix n n R₂ :=
+def BilinForm.toMatrix'' : ((n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂) ≃ₗ[R₂] Matrix n n N₂ :=
   { BilinForm.toMatrixAux' fun j =>
       stdBasis R₂ (fun _ => R₂) j
         1 with
@@ -203,6 +203,13 @@ def BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R�
 #align bilin_form.to_matrix' BilinForm.toMatrix'
 
 @[simp]
+theorem BilinForm.toMatrixAux_stdBasis' (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂) :
+    -- porting note: had to hint the base ring even though it should be clear from context...
+    BilinForm.toMatrixAux' (R₂ := R₂) (fun j => stdBasis R₂ (fun _ => R₂) j 1) B =
+      BilinForm.toMatrix'' B :=
+  rfl
+
+@[simp]
 theorem BilinForm.toMatrixAux_stdBasis (B : BilinForm R₂ (n → R₂)) :
     -- porting note: had to hint the base ring even though it should be clear from context...
     BilinForm.toMatrixAux (R₂ := R₂) (fun j => stdBasis R₂ (fun _ => R₂) j 1) B =
@@ -211,18 +218,36 @@ theorem BilinForm.toMatrixAux_stdBasis (B : BilinForm R₂ (n → R₂)) :
 #align bilin_form.to_matrix_aux_std_basis BilinForm.toMatrixAux_stdBasis
 
 /-- The linear equivalence between `n × n` matrices and bilinear forms on `n → R` -/
+def Matrix.toBilin'' : Matrix n n N₂ ≃ₗ[R₂] ((n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂) :=
+  BilinForm.toMatrix''.symm
+
+/-- The linear equivalence between `n × n` matrices and bilinear forms on `n → R` -/
 def Matrix.toBilin' : Matrix n n R₂ ≃ₗ[R₂] BilinForm R₂ (n → R₂) :=
   BilinForm.toMatrix'.symm
 #align matrix.to_bilin' Matrix.toBilin'
+
+@[simp]
+theorem Matrix.toBilin'Aux_eq' (M : Matrix n n N₂) :
+    Matrix.toBilin'Aux' M = Matrix.toBilin'' (R₂ := R₂) M :=
+  rfl
 
 @[simp]
 theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₂) : Matrix.toBilin'Aux M = Matrix.toBilin' M :=
   rfl
 #align matrix.to_bilin'_aux_eq Matrix.toBilin'Aux_eq
 
+theorem Matrix.toBilin'_apply' (M : Matrix n n N₂) (x y : n → R₂) :
+    Matrix.toBilin'' M x y = ∑ i, ∑ j, x i • y j •  M i j := rfl
+
 theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
-    Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
-  rfl
+    Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j := by
+    have e1: ∑ i, ∑ j, x i * M i j * y j = ∑ i, ∑ j, x i • y j •  M i j := by
+      simp_rw [smul_eq_mul]
+      simp_rw [mul_assoc]
+      simp_rw [mul_comm]
+    rw [e1]
+    rw [← Matrix.toBilin'_apply']
+    exact rfl
 #align matrix.to_bilin'_apply Matrix.toBilin'_apply
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₂) (v w : n → R₂) :
