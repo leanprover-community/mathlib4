@@ -19,7 +19,7 @@ open Function Order Relation Set
 
 section PartialSucc
 
-variable {α : Type _} [PartialOrder α] [SuccOrder α] [IsSuccArchimedean α]
+variable {α : Type*} [PartialOrder α] [SuccOrder α] [IsSuccArchimedean α]
 
 /-- For `n ≤ m`, `(n, m)` is in the reflexive-transitive closure of `~` if `i ~ succ i`
   for all `i` between `n` and `m`. -/
@@ -63,7 +63,7 @@ end PartialSucc
 
 section LinearSucc
 
-variable {α : Type _} [LinearOrder α] [SuccOrder α] [IsSuccArchimedean α]
+variable {α : Type*} [LinearOrder α] [SuccOrder α] [IsSuccArchimedean α]
 
 /-- `(n, m)` is in the reflexive-transitive closure of `~` if `i ~ succ i` and `succ i ~ i`
   for all `i` between `n` and `m`. -/
@@ -91,7 +91,7 @@ end LinearSucc
 
 section PartialPred
 
-variable {α : Type _} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
+variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
 
 /-- For `m ≤ n`, `(n, m)` is in the reflexive-transitive closure of `~` if `i ~ pred i`
   for all `i` between `n` and `m`. -/
@@ -125,7 +125,7 @@ end PartialPred
 
 section LinearPred
 
-variable {α : Type _} [LinearOrder α] [PredOrder α] [IsPredArchimedean α]
+variable {α : Type*} [LinearOrder α] [PredOrder α] [IsPredArchimedean α]
 
 /-- `(n, m)` is in the reflexive-transitive closure of `~` if `i ~ pred i` and `pred i ~ i`
   for all `i` between `n` and `m`. -/

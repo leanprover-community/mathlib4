@@ -32,7 +32,7 @@ homeomorphism, ball
 -/
 
 open Set Metric Pointwise
-variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 noncomputable section
 
@@ -99,7 +99,7 @@ theorem Homeomorph.coe_unitBall_apply_zero :
   LocalHomeomorph.univUnitBall_apply_zero
 #align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
 
-variable {P : Type _} [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 namespace LocalHomeomorph
 
@@ -117,7 +117,7 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
 /-- If `r > 0`, then `LocalHomeomorph.univBall c r` is a smooth local homeomorphism
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`.
-Thus in all cases, it sends `0` to `c`, see `LocalHomeomorph.univBall_apply_zero`. -/ 
+Thus in all cases, it sends `0` to `c`, see `LocalHomeomorph.univBall_apply_zero`. -/
 def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
   if h : 0 < r then univUnitBall.trans' (unitBallBall c r h) rfl
   else (IsometryEquiv.vaddConst c).toHomeomorph.toLocalHomeomorph

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.Algebra.Hom.GroupAction
+import Mathlib.GroupTheory.GroupAction.Hom
 /-!
 # Action of `Mᵈᵐᵃ` on `α →[N] β` and `A →+[N] B`
 
@@ -17,6 +17,8 @@ into a separate file, not with the definition of `DomMulAct`.
 Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib.Algebra.Hom.GroupAction` and
 `SMulCommClass` instances saying that left and right actions commute.
 -/
+
+set_option autoImplicit true
 
 namespace DomMulAct
 

@@ -22,14 +22,14 @@ instead of `e.toFun x` and `e.invFun x`.
 
 ## Main definitions
 
-`Homeomorph.toLocalHomeomorph` : associating a local homeomorphism to a homeomorphism, with
-                                 `source = target = Set.univ`;
-`LocalHomeomorph.symm` : the inverse of a local homeomorphism
-`LocalHomeomorph.trans` : the composition of two local homeomorphisms
-`LocalHomeomorph.refl` : the identity local homeomorphism
-`LocalHomeomorph.ofSet` : the identity on a set `s`
-`LocalHomeomorph.EqOnSource` : equivalence relation describing the "right" notion of equality
-                               for local homeomorphisms
+* `Homeomorph.toLocalHomeomorph`: associating a local homeomorphism to a homeomorphism, with
+  `source = target = Set.univ`;
+* `LocalHomeomorph.symm`: the inverse of a local homeomorphism
+* `LocalHomeomorph.trans`: the composition of two local homeomorphisms
+* `LocalHomeomorph.refl`: the identity local homeomorphism
+* `LocalHomeomorph.ofSet`: the identity on a set `s`
+* `LocalHomeomorph.EqOnSource`: equivalence relation describing the "right" notion of equality
+  for local homeomorphisms
 
 ## Implementation notes
 
@@ -49,12 +49,12 @@ open Function Set Filter Topology
 
 open TopologicalSpace (SecondCountableTopology)
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _} [TopologicalSpace α]
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
 /-- local homeomorphisms, defined on open subsets of the space -/
 -- porting note: commented @[nolint has_nonempty_instance]
-structure LocalHomeomorph (α : Type _) (β : Type _) [TopologicalSpace α]
+structure LocalHomeomorph (α : Type*) (β : Type*) [TopologicalSpace α]
   [TopologicalSpace β] extends LocalEquiv α β where
   open_source : IsOpen source
   open_target : IsOpen target
@@ -323,7 +323,7 @@ theorem symm_image_target_eq_source (e : LocalHomeomorph α β) : e.symm '' e.ta
 /-- Two local homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
 It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on
 the target. This would only be true for a weaker notion of equality, arguably the right one,
-called `eq_on_source`. -/
+called `EqOnSource`. -/
 @[ext]
 protected theorem ext (e' : LocalHomeomorph α β) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
@@ -514,7 +514,7 @@ theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source �
   LocalEquiv.IsImage.iff_preimage_eq
 #align local_homeomorph.is_image.iff_preimage_eq LocalHomeomorph.IsImage.iff_preimage_eq
 
-alias iff_preimage_eq ↔ preimage_eq of_preimage_eq
+alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
 #align local_homeomorph.is_image.preimage_eq LocalHomeomorph.IsImage.preimage_eq
 #align local_homeomorph.is_image.of_preimage_eq LocalHomeomorph.IsImage.of_preimage_eq
 
@@ -522,7 +522,7 @@ theorem iff_symm_preimage_eq : e.IsImage s t ↔ e.target ∩ e.symm ⁻¹' s = 
   symm_iff.symm.trans iff_preimage_eq
 #align local_homeomorph.is_image.iff_symm_preimage_eq LocalHomeomorph.IsImage.iff_symm_preimage_eq
 
-alias iff_symm_preimage_eq ↔ symm_preimage_eq of_symm_preimage_eq
+alias ⟨symm_preimage_eq, of_symm_preimage_eq⟩ := iff_symm_preimage_eq
 #align local_homeomorph.is_image.symm_preimage_eq LocalHomeomorph.IsImage.symm_preimage_eq
 #align local_homeomorph.is_image.of_symm_preimage_eq LocalHomeomorph.IsImage.of_symm_preimage_eq
 
@@ -531,7 +531,7 @@ theorem iff_symm_preimage_eq' :
   rw [iff_symm_preimage_eq, ← image_source_inter_eq, ← image_source_inter_eq']
 #align local_homeomorph.is_image.iff_symm_preimage_eq' LocalHomeomorph.IsImage.iff_symm_preimage_eq'
 
-alias iff_symm_preimage_eq' ↔ symm_preimage_eq' of_symm_preimage_eq'
+alias ⟨symm_preimage_eq', of_symm_preimage_eq'⟩ := iff_symm_preimage_eq'
 #align local_homeomorph.is_image.symm_preimage_eq' LocalHomeomorph.IsImage.symm_preimage_eq'
 #align local_homeomorph.is_image.of_symm_preimage_eq' LocalHomeomorph.IsImage.of_symm_preimage_eq'
 
@@ -539,7 +539,7 @@ theorem iff_preimage_eq' : e.IsImage s t ↔ e.source ∩ e ⁻¹' (e.target ∩
   symm_iff.symm.trans iff_symm_preimage_eq'
 #align local_homeomorph.is_image.iff_preimage_eq' LocalHomeomorph.IsImage.iff_preimage_eq'
 
-alias iff_preimage_eq' ↔ preimage_eq' of_preimage_eq'
+alias ⟨preimage_eq', of_preimage_eq'⟩ := iff_preimage_eq'
 #align local_homeomorph.is_image.preimage_eq' LocalHomeomorph.IsImage.preimage_eq'
 #align local_homeomorph.is_image.of_preimage_eq' LocalHomeomorph.IsImage.of_preimage_eq'
 
@@ -736,7 +736,7 @@ theorem restr_source_inter (s : Set α) : e.restr (e.source ∩ s) = e.restr s :
 
 /-- The identity on the whole space as a local homeomorphism. -/
 @[simps! (config := mfld_cfg) apply, simps! (config := .lemmasOnly) source target]
-protected def refl (α : Type _) [TopologicalSpace α] : LocalHomeomorph α α :=
+protected def refl (α : Type*) [TopologicalSpace α] : LocalHomeomorph α α :=
   (Homeomorph.refl α).toLocalHomeomorph
 #align local_homeomorph.refl LocalHomeomorph.refl
 
@@ -929,7 +929,7 @@ theorem _root_.Homeomorph.transLocalHomeomorph_eq_trans (e : α ≃ₜ β) :
   toLocalEquiv_injective <| Equiv.transLocalEquiv_eq_trans _ _
 #align homeomorph.trans_local_homeomorph_eq_trans Homeomorph.transLocalHomeomorph_eq_trans
 
-/-- `eq_on_source e e'` means that `e` and `e'` have the same source, and coincide there. They
+/-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
 should really be considered the same local equiv. -/
 def EqOnSource (e e' : LocalHomeomorph α β) : Prop :=
   e.source = e'.source ∧ EqOn e e' e.source
@@ -940,24 +940,24 @@ theorem eqOnSource_iff (e e' : LocalHomeomorph α β) :
   Iff.rfl
 #align local_homeomorph.eq_on_source_iff LocalHomeomorph.eqOnSource_iff
 
-/-- `eq_on_source` is an equivalence relation -/
+/-- `EqOnSource` is an equivalence relation. -/
 instance eqOnSourceSetoid : Setoid (LocalHomeomorph α β) :=
   { LocalEquiv.eqOnSourceSetoid.comap toLocalEquiv with r := EqOnSource }
 
 theorem eqOnSource_refl : e ≈ e := Setoid.refl _
 #align local_homeomorph.eq_on_source_refl LocalHomeomorph.eqOnSource_refl
 
-/-- If two local homeomorphisms are equivalent, so are their inverses -/
+/-- If two local homeomorphisms are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : LocalHomeomorph α β} (h : e ≈ e') : e.symm ≈ e'.symm :=
   LocalEquiv.EqOnSource.symm' h
 #align local_homeomorph.eq_on_source.symm' LocalHomeomorph.EqOnSource.symm'
 
-/-- Two equivalent local homeomorphisms have the same source -/
+/-- Two equivalent local homeomorphisms have the same source. -/
 theorem EqOnSource.source_eq {e e' : LocalHomeomorph α β} (h : e ≈ e') : e.source = e'.source :=
   h.1
 #align local_homeomorph.eq_on_source.source_eq LocalHomeomorph.EqOnSource.source_eq
 
-/-- Two equivalent local homeomorphisms have the same target -/
+/-- Two equivalent local homeomorphisms have the same target. -/
 theorem EqOnSource.target_eq {e e' : LocalHomeomorph α β} (h : e ≈ e') : e.target = e'.target :=
   h.symm'.1
 #align local_homeomorph.eq_on_source.target_eq LocalHomeomorph.EqOnSource.target_eq
@@ -985,6 +985,7 @@ theorem EqOnSource.restr {e e' : LocalHomeomorph α β} (he : e ≈ e') (s : Set
   LocalEquiv.EqOnSource.restr he _
 #align local_homeomorph.eq_on_source.restr LocalHomeomorph.EqOnSource.restr
 
+/- Two equivalent local homeomorphisms are equal when the source and target are `univ`. -/
 theorem Set.EqOn.restr_eqOn_source {e e' : LocalHomeomorph α β}
     (h : EqOn e e' (e.source ∩ e'.source)) : e.restr e'.source ≈ e'.restr e.source := by
   constructor
@@ -1005,10 +1006,10 @@ theorem trans_symm_self : e.symm.trans e ≈ LocalHomeomorph.ofSet e.target e.op
   e.symm.trans_self_symm
 #align local_homeomorph.trans_symm_self LocalHomeomorph.trans_symm_self
 
-theorem eq_of_eq_on_source_univ {e e' : LocalHomeomorph α β} (h : e ≈ e') (s : e.source = univ)
+theorem eq_of_eqOnSource_univ {e e' : LocalHomeomorph α β} (h : e ≈ e') (s : e.source = univ)
     (t : e.target = univ) : e = e' :=
-  toLocalEquiv_injective <| LocalEquiv.eq_of_eq_on_source_univ _ _ h s t
-#align local_homeomorph.eq_of_eq_on_source_univ LocalHomeomorph.eq_of_eq_on_source_univ
+  toLocalEquiv_injective <| LocalEquiv.eq_of_eqOnSource_univ _ _ h s t
+#align local_homeomorph.eq_of_eq_on_source_univ LocalHomeomorph.eq_of_eqOnSource_univ
 
 section Prod
 
@@ -1031,13 +1032,13 @@ theorem prod_symm (e : LocalHomeomorph α β) (e' : LocalHomeomorph γ δ) :
 #align local_homeomorph.prod_symm LocalHomeomorph.prod_symm
 
 @[simp]
-theorem refl_prod_refl {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] :
+theorem refl_prod_refl {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] :
     (LocalHomeomorph.refl α).prod (LocalHomeomorph.refl β) = LocalHomeomorph.refl (α × β) :=
   LocalHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) univ_prod_univ
 #align local_homeomorph.refl_prod_refl LocalHomeomorph.refl_prod_refl
 
 @[simp, mfld_simps]
-theorem prod_trans {η : Type _} {ε : Type _} [TopologicalSpace η] [TopologicalSpace ε]
+theorem prod_trans {η : Type*} {ε : Type*} [TopologicalSpace η] [TopologicalSpace ε]
     (e : LocalHomeomorph α β) (f : LocalHomeomorph β γ) (e' : LocalHomeomorph δ η)
     (f' : LocalHomeomorph η ε) : (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
   toLocalEquiv_injective <| e.1.prod_trans ..
@@ -1120,7 +1121,7 @@ end Piecewise
 
 section Pi
 
-variable {ι : Type _} [Fintype ι] {Xi Yi : ι → Type _} [∀ i, TopologicalSpace (Xi i)]
+variable {ι : Type*} [Fintype ι] {Xi Yi : ι → Type*} [∀ i, TopologicalSpace (Xi i)]
   [∀ i, TopologicalSpace (Yi i)] (ei : ∀ i, LocalHomeomorph (Xi i) (Yi i))
 
 /-- The product of a finite family of `LocalHomeomorph`s. -/
@@ -1266,18 +1267,18 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set α)) (h' 
     simpa only [continuous_iff_continuousOn_univ, h'] using e.continuousOn_symm
 #align local_homeomorph.to_homeomorph_of_source_eq_univ_target_eq_univ LocalHomeomorph.toHomeomorphOfSourceEqUnivTargetEqUniv
 
+theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
+  refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
+    continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
+  rw [Set.restrict_eq, Set.image_comp]
+  exact e.image_open_of_open (e.open_source.isOpenMap_subtype_val V hV) fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
+
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
 converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/
-theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e := by
-  apply openEmbedding_of_continuous_injective_open
-  · apply continuous_iff_continuousOn_univ.mpr
-    rw [← h]
-    exact e.continuousOn
-  · apply Set.injective_iff_injOn_univ.mpr
-    rw [← h]
-    exact e.injOn
-  · intro U hU
-    simpa only [h, subset_univ, mfld_simps] using e.image_open_of_open hU
+theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
+  e.openEmbedding_restrict.comp
+    ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ α).symm.openEmbedding
+
 #align local_homeomorph.to_open_embedding LocalHomeomorph.to_openEmbedding
 
 end LocalHomeomorph

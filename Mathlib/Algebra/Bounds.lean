@@ -25,7 +25,7 @@ open Pointwise
 
 section InvNeg
 
-variable {G : Type _} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
+variable {G : Type*} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
   [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
@@ -92,7 +92,7 @@ end InvNeg
 
 section mul_add
 
-variable {M : Type _} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
+variable {M : Type*} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
@@ -141,7 +141,7 @@ section ConditionallyCompleteLattice
 
 section Right
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
@@ -156,11 +156,19 @@ theorem ciSup_div (hf : BddAbove (Set.range f)) (a : G) : (⨆ i, f i) / a = ⨆
 #align csupr_div ciSup_div
 #align csupr_sub ciSup_sub
 
+@[to_additive]
+theorem ciInf_mul (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
+  (OrderIso.mulRight a).map_ciInf hf
+
+@[to_additive]
+theorem ciInf_div (hf : BddBelow (Set.range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
+  simp only [div_eq_mul_inv, ciInf_mul hf]
+
 end Right
 
 section Left
 
-variable {ι G : Type _} [Group G] [ConditionallyCompleteLattice G]
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
   [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
 
 @[to_additive]
@@ -168,6 +176,10 @@ theorem mul_ciSup (hf : BddAbove (Set.range f)) (a : G) : (a * ⨆ i, f i) = ⨆
   (OrderIso.mulLeft a).map_ciSup hf
 #align mul_csupr mul_ciSup
 #align add_csupr add_ciSup
+
+@[to_additive]
+theorem mul_ciInf (hf : BddBelow (Set.range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a * f i :=
+  (OrderIso.mulLeft a).map_ciInf hf
 
 end Left
 

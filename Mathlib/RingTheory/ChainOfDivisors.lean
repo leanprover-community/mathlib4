@@ -37,7 +37,7 @@ and the set of factors of `a`.
 -/
 
 
-variable {M : Type _} [CancelCommMonoidWithZero M]
+variable {M : Type*} [CancelCommMonoidWithZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
@@ -220,7 +220,7 @@ theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
 
 end DivisorChain
 
-variable {N : Type _} [CancelCommMonoidWithZero N]
+variable {N : Type*} [CancelCommMonoidWithZero N]
 
 theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :

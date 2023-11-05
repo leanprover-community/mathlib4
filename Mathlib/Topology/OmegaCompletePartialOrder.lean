@@ -87,7 +87,7 @@ instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
 
 section notBelow
 
-variable {α : Type _} [OmegaCompletePartialOrder α] (y : Scott α)
+variable {α : Type*} [OmegaCompletePartialOrder α] (y : Scott α)
 
 /-- `notBelow` is an open set in `Scott α` used
 to prove the monotonicity of continuous functions -/

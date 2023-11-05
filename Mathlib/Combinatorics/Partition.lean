@@ -40,8 +40,10 @@ Partition
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
 
+set_option autoImplicit true
 
-variable {α : Type _}
+
+variable {α : Type*}
 
 open Multiset
 

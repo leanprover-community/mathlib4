@@ -41,7 +41,7 @@ balanced
 
 open Set Pointwise Topology Filter
 
-variable {𝕜 E ι : Type _}
+variable {𝕜 E ι : Type*}
 
 section balancedHull
 
@@ -234,7 +234,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
     exact isClosedMap_smul_of_ne_zero ha' U hU
   · have : balancedCore 𝕜 U = ∅ := by
       contrapose! h
-      exact balancedCore_nonempty_iff.mp (Set.nonempty_iff_ne_empty.2 h)
+      exact balancedCore_nonempty_iff.mp h
     rw [this]
     exact isClosed_empty
 #align is_closed.balanced_core IsClosed.balancedCore

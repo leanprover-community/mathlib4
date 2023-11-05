@@ -32,9 +32,9 @@ section HammingDistNorm
 
 open Finset Function
 
-variable {α ι : Type _} {β : ι → Type _} [Fintype ι] [∀ i, DecidableEq (β i)]
+variable {α ι : Type*} {β : ι → Type*} [Fintype ι] [∀ i, DecidableEq (β i)]
 
-variable {γ : ι → Type _} [∀ i, DecidableEq (γ i)]
+variable {γ : ι → Type*} [∀ i, DecidableEq (γ i)]
 
 /-- The Hamming distance function to the naturals. -/
 def hammingDist (x y : ∀ i, β i) : ℕ :=
@@ -244,13 +244,13 @@ end HammingDistNorm
 
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
-def Hamming {ι : Type _} (β : ι → Type _) : Type _ :=
+def Hamming {ι : Type*} (β : ι → Type*) : Type _ :=
   ∀ i, β i
 #align hamming Hamming
 
 namespace Hamming
 
-variable {α ι : Type _} {β : ι → Type _}
+variable {α ι : Type*} {β : ι → Type*}
 
 /-! Instances inherited from normal Pi types. -/
 
@@ -293,7 +293,7 @@ instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
 instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
   Pi.addCommGroup
 
-instance (α) [Semiring α] (β : ι → Type _) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
+instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
     Module α (Hamming β) :=
   Pi.module _ _ _
 

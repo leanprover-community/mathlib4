@@ -38,6 +38,8 @@ functor, applicative, monad, simp
 
 -/
 
+set_option autoImplicit true
+
 attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
 
 @[monad_norm]

@@ -13,13 +13,13 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 # Concrete categories
 
 A concrete category is a category `C` with a fixed faithful functor
-`forget : C ⥤ Type _`.  We define concrete categories using `class ConcreteCategory`.
+`forget : C ⥤ Type*`.  We define concrete categories using `class ConcreteCategory`.
 In particular, we impose no restrictions on the
 carrier type `C`, so `Type` is a concrete category with the identity
 forgetful functor.
 
 Each concrete category `C` comes with a canonical faithful functor
-`forget C : C ⥤ Type _`.  We say that a concrete category `C` admits a
+`forget C : C ⥤ Type*`.  We say that a concrete category `C` admits a
 *forgetful functor* to a concrete category `D`, if it has a functor
 `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D) = forget C`,
 see `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices
@@ -139,7 +139,7 @@ theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) =
 #align category_theory.comp_apply CategoryTheory.comp_apply
 
 theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-  (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
+    (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
 
 theorem ConcreteCategory.congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x :=
   congr_fun (congr_arg (fun f : X ⟶ Y => (f : X → Y)) h) x
@@ -205,7 +205,7 @@ class HasForget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory
 #align category_theory.has_forget₂ CategoryTheory.HasForget₂
 
 /-- The forgetful functor `C ⥤ D` between concrete categories for which we have an instance
-`HasForget₂ C `. -/
+`HasForget₂ C`. -/
 @[reducible]
 def forget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : C ⥤ D :=

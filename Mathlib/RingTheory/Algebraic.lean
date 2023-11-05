@@ -86,7 +86,7 @@ end
 
 section zero_ne_one
 
-variable (R : Type u) {S : Type _} {A : Type v} [CommRing R]
+variable (R : Type u) {S : Type*} {A : Type v} [CommRing R]
 
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 
@@ -189,7 +189,7 @@ theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x 
   refine' ⟨_, IsIntegral.isAlgebraic K⟩
   rintro ⟨p, hp, hpx⟩
   refine' ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
-  rw [← aeval_def, AlgHom.map_mul, hpx, MulZeroClass.zero_mul]
+  rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]
 #align is_algebraic_iff_is_integral isAlgebraic_iff_isIntegral
 
 protected theorem Algebra.isAlgebraic_iff_isIntegral :
@@ -201,7 +201,7 @@ end Field
 
 section
 
-variable {K : Type _} {L : Type _} {R : Type _} {S : Type _} {A : Type _}
+variable {K : Type*} {L : Type*} {R : Type*} {S : Type*} {A : Type*}
 
 section Ring
 
@@ -289,15 +289,29 @@ variable [Algebra K L]
 
 theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
     Function.Bijective f := by
-  refine' ⟨f.toRingHom.injective, fun b => _⟩
+  refine' ⟨f.injective, fun b ↦ _⟩
   obtain ⟨p, hp, he⟩ := ha b
-  let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x => x) f).restrict f _ _
-  have : Function.Surjective f' :=
-    Finite.injective_iff_surjective.1 fun _ _ h =>
-      Subtype.eq <| f.toRingHom.injective <| Subtype.ext_iff.1 h
+  let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
+  have : f'.Surjective := Finite.injective_iff_surjective.1
+    fun _ _ h ↦ Subtype.eq <| f.injective <| Subtype.ext_iff.1 h
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 #align algebra.is_algebraic.alg_hom_bijective Algebra.IsAlgebraic.algHom_bijective
+
+theorem Algebra.IsAlgebraic.algHom_bijective₂ [Field R] [Algebra K R]
+    (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
+    Function.Bijective f ∧ Function.Bijective g :=
+  (g.injective.bijective₂_of_surjective f.injective (ha.algHom_bijective <| g.comp f).2).symm
+
+theorem Algebra.IsAlgebraic.bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
+    [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    Function.Bijective f :=
+  (ha.algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
+
+theorem Algebra.IsAlgebraic.bijective_of_isScalarTower' [Field R] [Algebra K R]
+    (ha : Algebra.IsAlgebraic K R) [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    Function.Bijective f :=
+  (ha.algHom_bijective₂ f (IsScalarTower.toAlgHom K L R)).1
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
   (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ
@@ -331,7 +345,7 @@ end Field
 
 end
 
-variable {R S : Type _} [CommRing R] [IsDomain R] [CommRing S]
+variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
@@ -347,7 +361,7 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
-theorem IsIntegralClosure.exists_smul_eq_mul {L : Type _} [Field L] [Algebra R S] [Algebra S L]
+theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S] [Algebra S L]
     [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] (h : Algebra.IsAlgebraic R L)
     (inj : Function.Injective (algebraMap R L)) (a : S) {b : S} (hb : b ≠ 0) :
     ∃ (c : S) (d : _) (_ : d ≠ (0 : R)), d • a = b * c := by
@@ -364,7 +378,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type _} [Field L] [Algebra R S
 
 section Field
 
-variable {K L : Type _} [Field K] [Field L] [Algebra K L] (A : Subalgebra K L)
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (A : Subalgebra K L)
 
 theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (divX p) ≠ 0) :
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by
@@ -383,7 +397,7 @@ theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeva
   rw [RingHom.map_zero]
   convert aeval_eq
   conv_rhs => rw [← divX_mul_X_add p]
-  rw [AlgHom.map_add, AlgHom.map_mul, h, MulZeroClass.zero_mul, zero_add, aeval_C]
+  rw [AlgHom.map_add, AlgHom.map_mul, h, zero_mul, zero_add, aeval_C]
 #align inv_eq_of_root_of_coeff_zero_ne_zero inv_eq_of_root_of_coeff_zero_ne_zero
 
 theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}

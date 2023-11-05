@@ -40,7 +40,7 @@ open GradedRing DirectSum SetLike Finset
 
 open BigOperators
 
-variable {ι σ A : Type _}
+variable {ι σ A : Type*}
 
 variable [CommRing A]
 

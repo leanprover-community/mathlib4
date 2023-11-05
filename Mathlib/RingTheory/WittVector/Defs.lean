@@ -47,12 +47,12 @@ If `p` is invertible in `R`, this ring is isomorphic to `ℕ → R` (the product
 If `R` is a ring of characteristic `p`, then `witt_vector p R` is a ring of characteristic `0`.
 The canonical example is `witt_vector p (zmod p)`,
 which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
-structure WittVector (p : ℕ) (R : Type _) where mk' ::
+structure WittVector (p : ℕ) (R : Type*) where mk' ::
   coeff : ℕ → R
 #align witt_vector WittVector
 
 -- Porting note: added to make the `p` argument explicit
-def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R) : WittVector p R := mk' coeff
+def WittVector.mk (p : ℕ) {R : Type*} (coeff : ℕ → R) : WittVector p R := mk' coeff
 
 variable {p : ℕ}
 
@@ -65,7 +65,7 @@ local notation "𝕎" => WittVector p
 -- type as `\bbW`
 namespace WittVector
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
 add_decl_doc WittVector.mk
@@ -255,7 +255,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
     simp only [one_pow, one_mul, xInTermsOfW_zero, sub_self, bind₁_X_right]
   · intro i hin hi0
     rw [Finset.mem_range] at hin
-    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_pos hp.1.pos _), MulZeroClass.mul_zero]
+    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_pos hp.1.pos _), mul_zero]
   · rw [Finset.mem_range]; intro; contradiction
 #align witt_vector.witt_one_pos_eq_zero WittVector.wittOne_pos_eq_zero
 
@@ -302,7 +302,7 @@ theorem constantCoeff_wittSub (n : ℕ) : constantCoeff (wittSub p n) = 0 := by
 @[simp]
 theorem constantCoeff_wittMul (n : ℕ) : constantCoeff (wittMul p n) = 0 := by
   apply constantCoeff_wittStructureInt p _ _ n
-  simp only [MulZeroClass.mul_zero, RingHom.map_mul, constantCoeff_X]
+  simp only [mul_zero, RingHom.map_mul, constantCoeff_X]
 #align witt_vector.constant_coeff_witt_mul WittVector.constantCoeff_wittMul
 
 @[simp]

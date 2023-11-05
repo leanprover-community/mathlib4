@@ -26,7 +26,7 @@ unitary
 /-- In a *-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
 `R` such that `star U * U = 1` and `U * star U = 1`.
 -/
-def unitary (R : Type _) [Monoid R] [StarSemigroup R] : Submonoid R where
+def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
   carrier := { U | star U * U = 1 ∧ U * star U = 1 }
   one_mem' := by simp only [mul_one, and_self_iff, Set.mem_setOf_eq, star_one]
   mul_mem' := @fun U B ⟨hA₁, hA₂⟩ ⟨hB₁, hB₂⟩ => by
@@ -41,13 +41,13 @@ def unitary (R : Type _) [Monoid R] [StarSemigroup R] : Submonoid R where
         _ = 1 := by rw [hB₂, mul_one, hA₂]
 #align unitary unitary
 
-variable {R : Type _}
+variable {R : Type*}
 
 namespace unitary
 
 section Monoid
 
-variable [Monoid R] [StarSemigroup R]
+variable [Monoid R] [StarMul R]
 
 theorem mem_iff {U : R} : U ∈ unitary R ↔ star U * U = 1 ∧ U * star U = 1 :=
   Iff.rfl
@@ -109,7 +109,7 @@ instance : InvolutiveStar (unitary R) :=
     ext
     rw [coe_star, coe_star, star_star]⟩
 
-instance : StarSemigroup (unitary R) :=
+instance : StarMul (unitary R) :=
   ⟨by
     intro x y
     ext
@@ -143,7 +143,7 @@ end Monoid
 
 section CommMonoid
 
-variable [CommMonoid R] [StarSemigroup R]
+variable [CommMonoid R] [StarMul R]
 
 instance : CommGroup (unitary R) :=
   { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
@@ -160,7 +160,7 @@ end CommMonoid
 
 section GroupWithZero
 
-variable [GroupWithZero R] [StarSemigroup R]
+variable [GroupWithZero R] [StarMul R]
 
 @[norm_cast]
 theorem coe_inv (U : unitary R) : ↑U⁻¹ = (U⁻¹ : R) :=
@@ -185,8 +185,8 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance : Neg (unitary R)
-    where neg U :=
+instance : Neg (unitary R) where
+  neg U :=
     ⟨-U, by simp [mem_iff, star_neg, neg_mul_neg]⟩
 
 @[norm_cast]

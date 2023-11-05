@@ -17,12 +17,12 @@ open Ideal Polynomial
 
 open scoped BigOperators Polynomial
 
-variable {R S ι : Type _} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
+variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]
 
 section CommRing
 
-variable (F : Type _) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
+variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
 
 /-- For a nonzero element `f` in an algebra `S` over a principal ideal domain `R` that is finite and
 free as an `R`-module, the norm of `f` relative to `R` is associated to the product of the Smith
@@ -44,7 +44,8 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
     Finsupp.single_eq_pi_single, Matrix.diagonal_mulVec_single, Pi.single_apply, ite_smul,
     zero_smul, Finset.sum_ite_eq', mul_one, if_pos (Finset.mem_univ _), b'.equiv_apply]
   change _ = f * _
-  rw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul,
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul,
     Ideal.selfBasis_def]
   rfl
 #align associated_norm_prod_smith associated_norm_prod_smith
@@ -53,9 +54,8 @@ end CommRing
 
 section Field
 
-variable {F : Type _} [Field F] [Algebra F[X] S] [Finite ι]
+variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
-set_option maxHeartbeats 210000 in
 instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
   -- Porting note: we need to do this proof in two stages otherwise it times out
@@ -67,11 +67,8 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   -- irreducible so that they don't expose `Quotient.lift` accidentally.
   refine PowerBasis.finiteDimensional ?_
   refine AdjoinRoot.powerBasis ?_
-  refine I.smithCoeffs_ne_zero b hI i
+  exact I.smithCoeffs_ne_zero b hI i
 
--- Porting note: this proof was already slow in mathlib3 and it is even slower now
--- See: https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 1000000 in
 /-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an
 `F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
 theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F[X] S]

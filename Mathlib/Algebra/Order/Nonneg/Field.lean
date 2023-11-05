@@ -26,7 +26,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nonneg
 

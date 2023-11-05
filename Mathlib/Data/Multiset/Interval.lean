@@ -30,7 +30,7 @@ open Finset DFinsupp Function
 
 open BigOperators Pointwise
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Multiset
 

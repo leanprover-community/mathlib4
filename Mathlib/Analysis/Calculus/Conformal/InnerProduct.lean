@@ -18,7 +18,7 @@ is conformal at `x` iff the derivative preserves inner products up to a scalar m
 
 noncomputable section
 
-variable {E F : Type _}
+variable {E F : Type*}
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 

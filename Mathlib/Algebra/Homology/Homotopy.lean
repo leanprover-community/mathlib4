@@ -23,7 +23,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable {V : Type u} [Category.{v} V] [Preadditive V]
 
@@ -308,7 +308,7 @@ theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X 
 #align homotopy.comp_null_homotopic_map' Homotopy.comp_nullHomotopicMap'
 
 /-- Compatibility of `nullHomotopicMap` with the application of additive functors -/
-theorem map_nullHomotopicMap {W : Type _} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
+theorem map_nullHomotopicMap {W : Type*} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, C.X i ⟶ D.X j) :
     (G.mapHomologicalComplex c).map (nullHomotopicMap hom) =
       nullHomotopicMap (fun i j => by exact G.map (hom i j)) := by
@@ -318,7 +318,7 @@ theorem map_nullHomotopicMap {W : Type _} [Category W] [Preadditive W] (G : V �
 #align homotopy.map_null_homotopic_map Homotopy.map_nullHomotopicMap
 
 /-- Compatibility of `nullHomotopicMap'` with the application of additive functors -/
-theorem map_nullHomotopicMap' {W : Type _} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
+theorem map_nullHomotopicMap' {W : Type*} [Category W] [Preadditive W] (G : V ⥤ W) [G.Additive]
     (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (G.mapHomologicalComplex c).map (nullHomotopicMap' hom) =
       nullHomotopicMap' fun i j hij => by exact G.map (hom i j hij) := by
@@ -349,7 +349,6 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
   apply nullHomotopy fun i j => dite (c.Rel j i) (h i j) fun _ => 0
   intro i j hij
-  dsimp
   rw [dite_eq_right_iff]
   intro hij'
   exfalso
@@ -375,7 +374,6 @@ theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ + h k₁ k₂ r₂₁ ≫ D.d k₂ k₁ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f r₂₁ r₁₀]
-  dsimp
   split_ifs
   rfl
 #align homotopy.null_homotopic_map'_f Homotopy.nullHomotopicMap'_f
@@ -395,7 +393,6 @@ theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
     (nullHomotopicMap' h).f k₀ = h k₀ k₁ r₁₀ ≫ D.d k₁ k₀ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f_of_not_rel_left r₁₀ hk₀]
-  dsimp
   split_ifs
   rfl
 #align homotopy.null_homotopic_map'_f_of_not_rel_left Homotopy.nullHomotopicMap'_f_of_not_rel_left
@@ -415,7 +412,6 @@ theorem nullHomotopicMap'_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ := by
   simp only [nullHomotopicMap']
   rw [nullHomotopicMap_f_of_not_rel_right r₁₀ hk₁]
-  dsimp
   split_ifs
   rfl
 #align homotopy.null_homotopic_map'_f_of_not_rel_right Homotopy.nullHomotopicMap'_f_of_not_rel_right
@@ -774,7 +770,7 @@ def trans {C D E : HomologicalComplex V c} (f : HomotopyEquiv C D) (g : Homotopy
 #align homotopy_equiv.trans HomotopyEquiv.trans
 
 /-- An isomorphism of complexes induces a homotopy equivalence. -/
-def ofIso {ι : Type _} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
+def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
     {C D : HomologicalComplex V c} (f : C ≅ D) : HomotopyEquiv C D :=
   ⟨f.hom, f.inv, Homotopy.ofEq f.3, Homotopy.ofEq f.4⟩
 #align homotopy_equiv.of_iso HomotopyEquiv.ofIso
@@ -785,34 +781,34 @@ variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
 /-- Homotopic maps induce the same map on homology.
 -/
-theorem homology_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
-    (homologyFunctor V c i).map f = (homologyFunctor V c i).map g := by
-  dsimp [homologyFunctor]
+theorem homology'_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
+    (homology'Functor V c i).map f = (homology'Functor V c i).map g := by
+  dsimp [homology'Functor]
   apply eq_of_sub_eq_zero
   ext
-  simp only [homology.π_map, comp_zero, Preadditive.comp_sub]
+  simp only [homology'.π_map, comp_zero, Preadditive.comp_sub]
   dsimp [kernelSubobjectMap]
   simp_rw [h.comm i]
   simp only [zero_add, zero_comp, dNext_eq_dFrom_fromNext, kernelSubobject_arrow_comp_assoc,
     Preadditive.comp_add]
   rw [← Preadditive.sub_comp]
   simp only [CategoryTheory.Subobject.factorThru_add_sub_factorThru_right]
-  erw [Subobject.factorThru_ofLE (D.boundaries_le_cycles i)]
+  erw [Subobject.factorThru_ofLE (D.boundaries_le_cycles' i)]
   · simp
   · rw [prevD_eq_toPrev_dTo, ← Category.assoc]
     apply imageSubobject_factors_comp_self
-#align homology_map_eq_of_homotopy homology_map_eq_of_homotopy
+#align homology_map_eq_of_homotopy homology'_map_eq_of_homotopy
 
 /-- Homotopy equivalent complexes have isomorphic homologies. -/
 def homologyObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
-    (homologyFunctor V c i).obj C ≅ (homologyFunctor V c i).obj D where
-  hom := (homologyFunctor V c i).map f.hom
-  inv := (homologyFunctor V c i).map f.inv
+    (homology'Functor V c i).obj C ≅ (homology'Functor V c i).obj D where
+  hom := (homology'Functor V c i).map f.hom
+  inv := (homology'Functor V c i).map f.inv
   hom_inv_id := by
-    rw [← Functor.map_comp, homology_map_eq_of_homotopy f.homotopyHomInvId,
+    rw [← Functor.map_comp, homology'_map_eq_of_homotopy f.homotopyHomInvId,
       CategoryTheory.Functor.map_id]
   inv_hom_id := by
-    rw [← Functor.map_comp, homology_map_eq_of_homotopy f.homotopyInvHomId,
+    rw [← Functor.map_comp, homology'_map_eq_of_homotopy f.homotopyInvHomId,
       CategoryTheory.Functor.map_id]
 #align homology_obj_iso_of_homotopy_equiv homologyObjIsoOfHomotopyEquiv
 
@@ -820,7 +816,7 @@ end
 
 namespace CategoryTheory
 
-variable {W : Type _} [Category W] [Preadditive W]
+variable {W : Type*} [Category W] [Preadditive W]
 
 /-- An additive functor takes homotopies to homotopies. -/
 @[simps]

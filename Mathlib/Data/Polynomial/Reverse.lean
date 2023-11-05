@@ -24,11 +24,11 @@ namespace Polynomial
 
 open Polynomial Finsupp Finset
 
-open Classical Polynomial
+open Polynomial
 
 section Semiring
 
-variable {R : Type _} [Semiring R] {f : R[X]}
+variable {R : Type*} [Semiring R] {f : R[X]}
 
 /-- If `i ≤ N`, then `revAtFun N i` returns `N - i`, otherwise it returns `i`.
 This is the map used by the embedding `revAt`.
@@ -77,6 +77,8 @@ theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
 theorem revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
   if_pos H
 #align polynomial.rev_at_le Polynomial.revAt_le
+
+lemma revAt_eq_self_of_lt {N i : ℕ} (h : N < i) : revAt N i = i := by simp [revAt, Nat.not_le.mpr h]
 
 theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
     revAt (N + O) (n + o) = revAt N n + revAt O o := by
@@ -166,6 +168,9 @@ theorem reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N 
   rw [← one_mul (X ^ n), ← one_mul (X ^ revAt N n), ← C_1, reflect_C_mul_X_pow]
 #align polynomial.reflect_monomial Polynomial.reflect_monomial
 
+@[simp] lemma reflect_one_X : reflect 1 (X : R[X]) = 1 := by
+  simpa using reflect_monomial 1 1 (R := R)
+
 theorem reflect_mul_induction (cf cg : ℕ) :
     ∀ N O : ℕ,
       ∀ f g : R[X],
@@ -212,7 +217,7 @@ theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.na
 
 section Eval₂
 
-variable {S : Type _} [CommSemiring S]
+variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reflect_mul_pow (i : R →+* S) (x : S) [Invertible x] (N : ℕ) (f : R[X])
     (hf : f.natDegree ≤ N) : eval₂ i (⅟ x) (reflect N f) * x ^ N = eval₂ i x f := by
@@ -268,7 +273,7 @@ theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
-  rw [Nat.cast_withBot, Nat.cast_withBot, WithBot.coe_lt_coe] at hn
+  rw [Nat.cast_lt] at hn
   rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
     coeff_eq_zero_of_natDegree_lt hn]
 #align polynomial.reverse_nat_degree_le Polynomial.reverse_natDegree_le
@@ -317,7 +322,7 @@ theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
 #align polynomial.reverse_mul Polynomial.reverse_mul
 
 @[simp]
-theorem reverse_mul_of_domain {R : Type _} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
+theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
     reverse (f * g) = reverse f * reverse g := by
   by_cases f0 : f = 0
   · simp only [f0, zero_mul, reverse_zero]
@@ -326,7 +331,7 @@ theorem reverse_mul_of_domain {R : Type _} [Ring R] [NoZeroDivisors R] (f g : R[
   simp [reverse_mul, *]
 #align polynomial.reverse_mul_of_domain Polynomial.reverse_mul_of_domain
 
-theorem trailingCoeff_mul {R : Type _} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
+theorem trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
     (p * q).trailingCoeff = p.trailingCoeff * q.trailingCoeff := by
   rw [← reverse_leadingCoeff, reverse_mul_of_domain, leadingCoeff_mul, reverse_leadingCoeff,
     reverse_leadingCoeff]
@@ -342,9 +347,37 @@ theorem coeff_one_reverse (f : R[X]) : coeff (reverse f) 1 = nextCoeff f := by
     exact Nat.succ_le_iff.2 (pos_iff_ne_zero.2 hf)
 #align polynomial.coeff_one_reverse Polynomial.coeff_one_reverse
 
+@[simp] lemma reverse_C (t : R) :
+    reverse (C t) = C t := by
+  simp [reverse]
+
+@[simp] lemma reverse_mul_X (p : R[X]) : reverse (p * X) = reverse p := by
+  nontriviality R
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  · simp [reverse, hp]
+
+@[simp] lemma reverse_X_mul (p : R[X]) : reverse (X * p) = reverse p := by
+  rw [commute_X p, reverse_mul_X]
+
+@[simp] lemma reverse_mul_X_pow (p : R[X]) (n : ℕ) : reverse (p * X ^ n) = reverse p := by
+  induction' n with n ih; simp
+  rw [pow_succ', ← mul_assoc, reverse_mul_X, ih]
+
+@[simp] lemma reverse_X_pow_mul (p : R[X]) (n : ℕ) : reverse (X ^ n * p) = reverse p := by
+  rw [commute_X_pow p, reverse_mul_X_pow]
+
+@[simp] lemma reverse_add_C (p : R[X]) (t : R) :
+    reverse (p + C t) = reverse p + C t * X ^ p.natDegree := by
+  simp [reverse]
+
+@[simp] lemma reverse_C_add (p : R[X]) (t : R) :
+    reverse (C t + p) = C t * X ^ p.natDegree + reverse p := by
+  rw [add_comm, reverse_add_C, add_comm]
+
 section Eval₂
 
-variable {S : Type _} [CommSemiring S]
+variable {S : Type*} [CommSemiring S]
 
 theorem eval₂_reverse_mul_pow (i : R →+* S) (x : S) [Invertible x] (f : R[X]) :
     eval₂ i (⅟ x) (reverse f) * x ^ f.natDegree = eval₂ i x f :=
@@ -363,7 +396,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R]
+variable {R : Type*} [Ring R]
 
 @[simp]
 theorem reflect_neg (f : R[X]) (N : ℕ) : reflect N (-f) = -reflect N f := by

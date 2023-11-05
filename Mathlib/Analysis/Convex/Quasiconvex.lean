@@ -31,19 +31,19 @@ quasiconcavity, and monotonicity implies quasilinearity.
 
 open Function OrderDual Set
 
-variable {𝕜 E F β : Type _}
+variable {𝕜 E F β : Type*}
 
 section OrderedSemiring
 
 variable [OrderedSemiring 𝕜]
 
-section AddCommMonoid
+section AddCommMonoid_E
 
 variable [AddCommMonoid E] [AddCommMonoid F]
 
-section OrderedAddCommMonoid
+section LE_β
 
-variable (𝕜) [OrderedAddCommMonoid β] [SMul 𝕜 E] (s : Set E) (f : E → β)
+variable (𝕜) [LE β] [SMul 𝕜 E] (s : Set E) (f : E → β)
 
 /-- A function is quasiconvex if all its sublevels are convex.
 This means that, for all `r`, `{x ∈ s | f x ≤ r}` is `𝕜`-convex. -/
@@ -97,27 +97,29 @@ theorem QuasiconcaveOn.convex [IsDirected β (· ≥ ·)] (hf : QuasiconcaveOn �
   hf.dual.convex
 #align quasiconcave_on.convex QuasiconcaveOn.convex
 
-end OrderedAddCommMonoid
+end LE_β
 
-section LinearOrderedAddCommMonoid
-
-variable [LinearOrderedAddCommMonoid β]
-
-section SMul
+section Semilattice_β
 
 variable [SMul 𝕜 E] {s : Set E} {f g : E → β}
 
-theorem QuasiconvexOn.sup (hf : QuasiconvexOn 𝕜 s f) (hg : QuasiconvexOn 𝕜 s g) :
-    QuasiconvexOn 𝕜 s (f ⊔ g) := by
+theorem QuasiconvexOn.sup [SemilatticeSup β] (hf : QuasiconvexOn 𝕜 s f)
+    (hg : QuasiconvexOn 𝕜 s g) : QuasiconvexOn 𝕜 s (f ⊔ g) := by
   intro r
   simp_rw [Pi.sup_def, sup_le_iff, Set.sep_and]
   exact (hf r).inter (hg r)
 #align quasiconvex_on.sup QuasiconvexOn.sup
 
-theorem QuasiconcaveOn.inf (hf : QuasiconcaveOn 𝕜 s f) (hg : QuasiconcaveOn 𝕜 s g) :
-    QuasiconcaveOn 𝕜 s (f ⊓ g) :=
+theorem QuasiconcaveOn.inf [SemilatticeInf β] (hf : QuasiconcaveOn 𝕜 s f)
+    (hg : QuasiconcaveOn 𝕜 s g) : QuasiconcaveOn 𝕜 s (f ⊓ g) :=
   hf.dual.sup hg
 #align quasiconcave_on.inf QuasiconcaveOn.inf
+
+end Semilattice_β
+
+section LinearOrder_β
+
+variable [LinearOrder β] [SMul 𝕜 E] {s : Set E} {f g : E → β}
 
 theorem quasiconvexOn_iff_le_max : QuasiconvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
     y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ≤ max (f x) (f y) :=
@@ -153,11 +155,12 @@ theorem QuasiconcaveOn.convex_gt (hf : QuasiconcaveOn 𝕜 s f) (r : β) :
   hf.dual.convex_lt r
 #align quasiconcave_on.convex_gt QuasiconcaveOn.convex_gt
 
-end SMul
+end LinearOrder_β
 
-section OrderedSMul
+section OrderedSMul_β
 
-variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β}
+variable [OrderedAddCommMonoid β] [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  {s : Set E} {f : E → β}
 
 theorem ConvexOn.quasiconvexOn (hf : ConvexOn 𝕜 s f) : QuasiconvexOn 𝕜 s f :=
   hf.convex_le
@@ -167,13 +170,11 @@ theorem ConcaveOn.quasiconcaveOn (hf : ConcaveOn 𝕜 s f) : QuasiconcaveOn 𝕜
   hf.convex_ge
 #align concave_on.quasiconcave_on ConcaveOn.quasiconcaveOn
 
-end OrderedSMul
+end OrderedSMul_β
 
-end LinearOrderedAddCommMonoid
+end AddCommMonoid_E
 
-end AddCommMonoid
-
-section LinearOrderedAddCommMonoid
+section LinearOrderedAddCommMonoid_E
 
 variable [LinearOrderedAddCommMonoid E] [OrderedAddCommMonoid β] [Module 𝕜 E] [OrderedSMul 𝕜 E]
   {s : Set E} {f : E → β}
@@ -226,23 +227,23 @@ theorem Antitone.quasilinearOn (hf : Antitone f) : QuasilinearOn 𝕜 univ f :=
   ⟨hf.quasiconvexOn, hf.quasiconcaveOn⟩
 #align antitone.quasilinear_on Antitone.quasilinearOn
 
-end LinearOrderedAddCommMonoid
+end LinearOrderedAddCommMonoid_E
 
 end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [LinearOrderedAddCommMonoid β] {s : Set 𝕜} {f : 𝕜 → β}
+variable [LinearOrderedField 𝕜] {s : Set 𝕜} {f : 𝕜 → β}
 
-theorem QuasilinearOn.monotoneOn_or_antitoneOn (hf : QuasilinearOn 𝕜 s f) :
+theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : QuasilinearOn 𝕜 s f) :
     MonotoneOn f s ∨ AntitoneOn f s := by
   simp_rw [monotoneOn_or_antitoneOn_iff_uIcc, ← segment_eq_uIcc]
   rintro a ha b hb c _ h
   refine' ⟨((hf.2 _).segment_subset _ _ h).2, ((hf.1 _).segment_subset _ _ h).2⟩ <;> simp [*]
 #align quasilinear_on.monotone_on_or_antitone_on QuasilinearOn.monotoneOn_or_antitoneOn
 
-theorem quasilinearOn_iff_monotoneOn_or_antitoneOn (hs : Convex 𝕜 s) :
-    QuasilinearOn 𝕜 s f ↔ MonotoneOn f s ∨ AntitoneOn f s :=
+theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrderedAddCommMonoid β]
+    (hs : Convex 𝕜 s) : QuasilinearOn 𝕜 s f ↔ MonotoneOn f s ∨ AntitoneOn f s :=
   ⟨fun h => h.monotoneOn_or_antitoneOn, fun h =>
     h.elim (fun h => h.quasilinearOn hs) fun h => h.quasilinearOn hs⟩
 #align quasilinear_on_iff_monotone_on_or_antitone_on quasilinearOn_iff_monotoneOn_or_antitoneOn

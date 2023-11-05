@@ -41,12 +41,12 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
 #align set.Iic_disjoint_Ioc Set.Iic_disjoint_Ioc
 
 @[simp]
-theorem Ioc_disjoint_Ioc_same {a b c : α} : Disjoint (Ioc a b) (Ioc b c) :=
+theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
   (Iic_disjoint_Ioc (le_refl b)).mono (fun _ => And.right) le_rfl
 #align set.Ioc_disjoint_Ioc_same Set.Ioc_disjoint_Ioc_same
 
 @[simp]
-theorem Ico_disjoint_Ico_same {a b c : α} : Disjoint (Ico a b) (Ico b c) :=
+theorem Ico_disjoint_Ico_same : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.mpr fun _ hab hbc => hab.2.not_le hbc.1
 #align set.Ico_disjoint_Ico_same Set.Ico_disjoint_Ico_same
 
@@ -59,6 +59,13 @@ theorem Ici_disjoint_Iic : Disjoint (Ici a) (Iic b) ↔ ¬a ≤ b := by
 theorem Iic_disjoint_Ici : Disjoint (Iic a) (Ici b) ↔ ¬b ≤ a :=
   disjoint_comm.trans Ici_disjoint_Iic
 #align set.Iic_disjoint_Ici Set.Iic_disjoint_Ici
+
+@[simp]
+theorem Ioc_disjoint_Ioi (h : b ≤ c) : Disjoint (Ioc a b) (Ioi c) :=
+  disjoint_left.mpr (fun _ hx hy ↦ (hx.2.trans h).not_lt hy)
+
+theorem Ioc_disjoint_Ioi_same : Disjoint (Ioc a b) (Ioi b) :=
+  Ioc_disjoint_Ioi le_rfl
 
 @[simp]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
@@ -224,24 +231,24 @@ theorem IsLUB.biUnion_Iic_eq_Iic (a_lub : IsLUB s a) (a_mem : a ∈ s) : ⋃ x �
   a_lub.dual.biUnion_Ici_eq_Ici a_mem
 #align is_lub.bUnion_Iic_eq_Iic IsLUB.biUnion_Iic_eq_Iic
 
-theorem iUnion_Ici_eq_Ioi_iInf {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Ici_eq_Ioi_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (no_least_elem : ⨅ i, f i ∉ range f) : ⋃ i : ι, Ici (f i) = Ioi (⨅ i, f i) := by
   simp only [← IsGLB.biUnion_Ici_eq_Ioi (@isGLB_iInf _ _ _ f) no_least_elem, mem_range,
     iUnion_exists, iUnion_iUnion_eq']
 #align Union_Ici_eq_Ioi_infi iUnion_Ici_eq_Ioi_iInf
 
-theorem iUnion_Iic_eq_Iio_iSup {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Iic_eq_Iio_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (no_greatest_elem : (⨆ i, f i) ∉ range f) : ⋃ i : ι, Iic (f i) = Iio (⨆ i, f i) :=
   @iUnion_Ici_eq_Ioi_iInf ι (OrderDual R) _ f no_greatest_elem
 #align Union_Iic_eq_Iio_supr iUnion_Iic_eq_Iio_iSup
 
-theorem iUnion_Ici_eq_Ici_iInf {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Ici_eq_Ici_iInf {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (has_least_elem : (⨅ i, f i) ∈ range f) : ⋃ i : ι, Ici (f i) = Ici (⨅ i, f i) := by
   simp only [← IsGLB.biUnion_Ici_eq_Ici (@isGLB_iInf _ _ _ f) has_least_elem, mem_range,
     iUnion_exists, iUnion_iUnion_eq']
 #align Union_Ici_eq_Ici_infi iUnion_Ici_eq_Ici_iInf
 
-theorem iUnion_Iic_eq_Iic_iSup {R : Type _} [CompleteLinearOrder R] {f : ι → R}
+theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R}
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : ⋃ i : ι, Iic (f i) = Iic (⨆ i, f i) :=
   @iUnion_Ici_eq_Ici_iInf ι (OrderDual R) _ f has_greatest_elem
 #align Union_Iic_eq_Iic_supr iUnion_Iic_eq_Iic_iSup

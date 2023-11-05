@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
-#align_import algebraic_topology.dold_kan.notations from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
+#align_import algebraic_topology.dold_kan.notations from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -14,6 +14,8 @@ import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 This file defines the notation `K[X] : ChainComplex C ℕ` for the alternating face
 map complex of `(X : SimplicialObject C)` where `C` is a preadditive category, as well
 as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 

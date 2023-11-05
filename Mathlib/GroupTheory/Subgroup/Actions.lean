@@ -20,9 +20,9 @@ subgroup, subgroups
 
 namespace Subgroup
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The action by a subgroup is the action by the underlying group. -/
 @[to_additive "The additive action by an add_subgroup is the action by the underlying `AddGroup`. "]

@@ -10,6 +10,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Order.Cover
 
 #align_import algebra.support from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
@@ -27,7 +28,7 @@ open BigOperators
 
 namespace Function
 
-variable {α β A B M N P R S G M₀ G₀ : Type _} {ι : Sort _}
+variable {α β A B M N P R S G M₀ G₀ : Type*} {ι : Sort*}
 
 section One
 
@@ -123,6 +124,12 @@ theorem range_subset_insert_image_mulSupport (f : α → M) :
     fun x (hx : x ∈ mulSupport f) => mem_image_of_mem f hx
 #align function.range_subset_insert_image_mul_support Function.range_subset_insert_image_mulSupport
 #align function.range_subset_insert_image_support Function.range_subset_insert_image_support
+
+@[to_additive]
+lemma range_eq_image_or_of_mulSupport_subset {f : α → M} {k : Set α} (h : mulSupport f ⊆ k) :
+    range f = f '' k ∨ range f = insert 1 (f '' k) := by
+  apply (wcovby_insert _ _).eq_or_eq (image_subset_range _ _)
+  exact (range_subset_insert_image_mulSupport f).trans (insert_subset_insert (image_subset f h))
 
 @[to_additive (attr := simp)]
 theorem mulSupport_one' : mulSupport (1 : α → M) = ∅ :=
@@ -238,7 +245,7 @@ theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
 @[to_additive support_prod_mk']
 theorem mulSupport_prod_mk' (f : α → M × N) :
     mulSupport f = (mulSupport fun x => (f x).1) ∪ mulSupport fun x => (f x).2 := by
-  simp only [← mulSupport_prod_mk, Prod.mk.eta]
+  simp only [← mulSupport_prod_mk]
 #align function.mul_support_prod_mk' Function.mulSupport_prod_mk'
 #align function.support_prod_mk' Function.support_prod_mk'
 
@@ -448,7 +455,7 @@ namespace Set
 
 open Function
 
-variable {α β M : Type _} [One M] {f : α → M}
+variable {α β M : Type*} [One M] {f : α → M}
 
 @[to_additive]
 theorem image_inter_mulSupport_eq {s : Set β} {g : β → α} :
@@ -461,7 +468,7 @@ end Set
 
 namespace Pi
 
-variable {A : Type _} {B : Type _} [DecidableEq A] [One B] {a : A} {b : B}
+variable {A : Type*} {B : Type*} [DecidableEq A] [One B] {a : A} {b : B}
 
 open Function
 

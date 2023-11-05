@@ -32,7 +32,7 @@ We provide various results concerning the minimal primes above an ideal
 
 section
 
-variable {R S : Type _} [CommRing R] [CommRing S] (I J : Ideal R)
+variable {R S : Type*} [CommRing R] [CommRing S] (I J : Ideal R)
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected def Ideal.minimalPrimes : Set (Ideal R) :=
@@ -41,7 +41,7 @@ protected def Ideal.minimalPrimes : Set (Ideal R) :=
 
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
-def minimalPrimes (R : Type _) [CommRing R] : Set (Ideal R) :=
+def minimalPrimes (R : Type*) [CommRing R] : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 #align minimal_primes minimalPrimes
 
@@ -163,7 +163,7 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
 #align ideal.exists_minimal_primes_comap_eq Ideal.exists_minimalPrimes_comap_eq
 
-theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
+theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := h.1.1
   refine' ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, _⟩
@@ -174,7 +174,7 @@ theorem Ideal.mimimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.
   apply h.2 _ _
   · exact ⟨Ideal.map_isPrime_of_surjective hf this, Ideal.le_map_of_comap_le_of_surjective f hf e₁⟩
   · exact Ideal.map_le_of_le_comap e₂
-#align ideal.mimimal_primes_comap_of_surjective Ideal.mimimal_primes_comap_of_surjective
+#align ideal.mimimal_primes_comap_of_surjective Ideal.minimal_primes_comap_of_surjective
 
 theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     (I : Ideal S) : (I.comap f).minimalPrimes = Ideal.comap f '' I.minimalPrimes := by
@@ -184,7 +184,7 @@ theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Functio
     obtain ⟨p, h, rfl⟩ := Ideal.exists_minimalPrimes_comap_eq f J H
     exact ⟨p, h, rfl⟩
   · rintro ⟨J, hJ, rfl⟩
-    exact Ideal.mimimal_primes_comap_of_surjective hf hJ
+    exact Ideal.minimal_primes_comap_of_surjective hf hJ
 #align ideal.comap_minimal_primes_eq_of_surjective Ideal.comap_minimalPrimes_eq_of_surjective
 
 theorem Ideal.minimalPrimes_eq_comap :

@@ -15,7 +15,7 @@ For instance, `Matrix.of_mul_of_fin` could be used as:
 ```lean
 example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;
-     a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
+     a₂₁, a₂₂] * !![b₁₁, b₁₂;
                     b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                    a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   rw [of_mul_of_fin]

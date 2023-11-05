@@ -39,7 +39,7 @@ namespace Language
 
 variable {L : Language.{u, v}}
 
-variable {M : Type w} {N P : Type _} [L.Structure M] [L.Structure N] [L.Structure P]
+variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
 
 variable {α : Type u'} {β : Type v'}
 
@@ -208,7 +208,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
       simp only [SizeOf.sizeOf, List._sizeOf_1, ← add_assoc]
       exact le_max_of_le_right le_add_self⟩
   | Sum.inr (Sum.inl ⟨n, R⟩)::Sum.inr (Sum.inr k)::l =>
-    ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft).get? i).join.isSome then
+    ⟨if h : ∀ i : Fin n, ((l.map Sum.getLeft?).get? i).join.isSome then
         if h' : ∀ i, (Option.get _ (h i)).1 = k then
           ⟨k, BoundedFormula.rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
         else default
@@ -250,7 +250,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
       · simp only [eq_mp_eq_cast, cast_eq, eq_self_iff_true, heq_iff_eq, and_self_iff, nil_append]
       · simp only [eq_self_iff_true, heq_iff_eq, and_self_iff]
     · rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
-      · have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft (List.map (fun i : Fin φ_l =>
+      · have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft? (List.map (fun i : Fin φ_l =>
           Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
             Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
           intro i
@@ -258,7 +258,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
             get?_eq_some, length_append, length_map, length_finRange]
           refine' ⟨lt_of_lt_of_le i.2 le_self_add, _⟩
           rw [get_append, get_map]
-          · simp only [Sum.getLeft, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
+          · simp only [Sum.getLeft?, get_finRange, Fin.eta, Function.comp_apply, eq_self_iff_true,
               heq_iff_eq, and_self_iff]
           · simp only [length_map, length_finRange, is_lt]
         rw [dif_pos]

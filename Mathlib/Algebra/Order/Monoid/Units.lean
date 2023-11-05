@@ -13,6 +13,7 @@ import Mathlib.Algebra.Group.Units
 # Units in ordered monoids
 -/
 
+set_option autoImplicit true
 
 namespace Units
 
@@ -33,7 +34,7 @@ theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a <
 #align add_units.coe_lt_coe AddUnits.val_lt_val
 
 @[to_additive]
-instance [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
+instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
   PartialOrder.lift val Units.ext
 #align units.partial_order Units.instPartialOrderUnits
 #align add_units.partial_order AddUnits.instPartialOrderAddUnits

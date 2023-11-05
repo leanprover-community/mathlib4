@@ -17,7 +17,7 @@ In this file we characterise the interaction of `UpperSet`/`LowerSet` and `Local
 
 namespace Set
 
-variable {α : Type _} [Preorder α] {s : Set α}
+variable {α : Type*} [Preorder α] {s : Set α}
 
 protected theorem Finite.upperClosure [LocallyFiniteOrderTop α] (hs : s.Finite) :
     (upperClosure s : Set α).Finite := by

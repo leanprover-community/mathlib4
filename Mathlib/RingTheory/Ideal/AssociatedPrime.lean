@@ -34,7 +34,7 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 -/
 
 
-variable {R : Type _} [CommRing R] (I J : Ideal R) (M : Type _) [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the annihilator of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
@@ -50,7 +50,7 @@ def associatedPrimes : Set (Ideal R) :=
 
 variable {I J M R}
 
-variable {M' : Type _} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 #align associate_primes.mem_iff AssociatePrimes.mem_iff

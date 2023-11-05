@@ -70,7 +70,7 @@ Urysohn's lemma, normal topological space
 -/
 
 
-variable {X : Type _} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 open Set Filter TopologicalSpace Topology Filter
 
@@ -80,7 +80,7 @@ set_option linter.uppercaseLean3 false
 
 /-- An auxiliary type for the proof of Urysohn's lemma: a pair of a closed set `C` and its
 open neighborhood `U`. -/
-structure CU (X : Type _) [TopologicalSpace X] where
+structure CU (X : Type*) [TopologicalSpace X] where
   protected (C U : Set X)
   protected closed_C : IsClosed C
   protected open_U : IsOpen U
@@ -263,7 +263,7 @@ theorem continuous_lim (c : CU X) : Continuous c.lim := by
     rw [pow_zero]
     exact Real.dist_le_of_mem_Icc_01 (c.lim_mem_Icc _) (c.lim_mem_Icc _)
   · by_cases hxl : x ∈ c.left.U
-    · filter_upwards [IsOpen.mem_nhds c.left.open_U hxl, ihn c.left]with _ hyl hyd
+    · filter_upwards [IsOpen.mem_nhds c.left.open_U hxl, ihn c.left] with _ hyl hyd
       rw [pow_succ, c.lim_eq_midpoint, c.lim_eq_midpoint,
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hyl),
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hxl)]
@@ -273,7 +273,7 @@ theorem continuous_lim (c : CU X) : Continuous c.lim := by
     · replace hxl : x ∈ c.left.right.Cᶜ
       exact compl_subset_compl.2 c.left.right.subset hxl
       filter_upwards [IsOpen.mem_nhds (isOpen_compl_iff.2 c.left.right.closed_C) hxl,
-        ihn c.left.right, ihn c.right]with y hyl hydl hydr
+        ihn c.left.right, ihn c.right] with y hyl hydl hydr
       replace hxl : x ∉ c.left.left.U
       exact compl_subset_compl.2 c.left.left_U_subset_right_C hxl
       replace hyl : y ∉ c.left.left.U

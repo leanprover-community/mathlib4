@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 #align_import linear_algebra.quadratic_form.isometry from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -22,11 +23,11 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 -/
 
 
-variable {ι R K M M₁ M₂ M₃ V : Type _}
+variable {ι R K M M₁ M₂ M₃ V : Type*}
 
 namespace QuadraticForm
 
-variable [Semiring R]
+variable [CommSemiring R]
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
 
@@ -51,20 +52,21 @@ namespace IsometryEquiv
 
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
+instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
+  coe f := f.toLinearEquiv
+  inv f := f.toLinearEquiv.symm
+  left_inv f := f.toLinearEquiv.left_inv
+  right_inv f := f.toLinearEquiv.right_inv
+  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  map_add f := map_add f.toLinearEquiv
+  map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
+
 -- Porting note: was `Coe`
 instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
   ⟨IsometryEquiv.toLinearEquiv⟩
 
 -- Porting note: syntaut
 #noalign quadratic_form.isometry.to_linear_equiv_eq_coe
-
---Porting note: replace `CoeFun` with `EquivLike`
-instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ :=
-  { coe := fun f => ⇑(f : M₁ ≃ₗ[R] M₂),
-    inv := fun f => ⇑(f : M₁ ≃ₗ[R] M₂).symm,
-    left_inv := fun f => (f : M₁ ≃ₗ[R] M₂).left_inv
-    right_inv := fun f => (f : M₁ ≃ₗ[R] M₂).right_inv
-    coe_injective' := fun f g => by cases f; cases g; simp (config := {contextual := true}) }
 
 @[simp]
 theorem coe_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=
@@ -95,6 +97,12 @@ def trans (f : Q₁.IsometryEquiv Q₂) (g : Q₂.IsometryEquiv Q₃) : Q₁.Iso
   { (f : M₁ ≃ₗ[R] M₂).trans (g : M₂ ≃ₗ[R] M₃) with
     map_app' := by intro m; rw [← f.map_app, ← g.map_app]; rfl }
 #align quadratic_form.isometry.trans QuadraticForm.IsometryEquiv.trans
+
+/-- Isometric equivalences are isometric maps -/
+@[simps]
+def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
+  toFun x := g x
+  __ := g
 
 end IsometryEquiv
 
@@ -143,7 +151,7 @@ variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (FiniteDimensional.finrank K V)) K V)
-    (hv₁ : (associated (R₁ := K) Q).iIsOrtho v) :
+    (hv₁ : (associated (R := K) Q).iIsOrtho v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine' ⟨iso, fun m => _⟩
@@ -162,7 +170,7 @@ theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
 #align quadratic_form.equivalent_weighted_sum_squares QuadraticForm.equivalent_weightedSumSquares
 
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
-    (hQ : (associated (R₁ := K) Q).Nondegenerate) :
+    (hQ : (associated (R := K) Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_nondegenerate hQ

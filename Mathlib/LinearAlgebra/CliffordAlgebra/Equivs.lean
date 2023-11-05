@@ -69,7 +69,7 @@ namespace CliffordAlgebraRing
 
 open scoped ComplexConjugate
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 @[simp]
 theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
@@ -111,7 +111,7 @@ theorem involute_eq_id :
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
     (CliffordAlgebra.lift (0 : QuadraticForm R Unit) <|
-      ⟨0, fun m : Unit => (MulZeroClass.zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
+      ⟨0, fun m : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
     (Algebra.ofId R _) (by ext x; exact AlgHom.commutes _ x)
     (by ext : 1; rw [ι_eq_zero, LinearMap.comp_zero, LinearMap.comp_zero])
 #align clifford_algebra_ring.equiv CliffordAlgebraRing.equiv
@@ -254,7 +254,7 @@ open scoped Quaternion
 
 open QuaternionAlgebra
 
-variable {R : Type _} [CommRing R] (c₁ c₂ : R)
+variable {R : Type*} [CommRing R] (c₁ c₂ : R)
 
 /-- `Q c₁ c₂` is a quadratic form over `R × R` such that `CliffordAlgebra (Q c₁ c₂)` is isomorphic
 as an `R`-algebra to `ℍ[R,c₁,c₂]`. -/
@@ -396,7 +396,7 @@ open scoped DualNumber
 
 open DualNumber TrivSqZeroExt
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul R, ← smul_eq_mul R, LinearMap.map_smul,
@@ -410,8 +410,10 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
   AlgEquiv.ofAlgHom
     (CliffordAlgebra.lift (0 : QuadraticForm R R) ⟨inrHom R _, fun m => inr_mul_inr _ m m⟩)
     (DualNumber.lift ⟨ι (R := R) _ 1, ι_mul_ι (1 : R) 1⟩)
-    (by ext : 1; simp)
-    (by ext : 2; simp)
+    -- This used to be a single `simp` before leanprover/lean4#2644
+    (by ext : 1; simp; erw [lift_ι_apply]; simp)
+    -- This used to be a single `simp` before leanprover/lean4#2644
+    (by ext : 2; simp; erw [lift_ι_apply]; simp)
 #align clifford_algebra_dual_number.equiv CliffordAlgebraDualNumber.equiv
 
 @[simp]

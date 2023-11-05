@@ -34,7 +34,7 @@ open Topology Filter Pointwise
 /-- A family of additive subgroups on a ring `A` is a subgroups basis if it satisfies some
 axioms ensuring there is a topology on `A` which is compatible with the ring structure and
 admits this family as a basis of neighborhoods of zero. -/
-structure RingSubgroupsBasis {A ι : Type _} [Ring A] (B : ι → AddSubgroup A) : Prop where
+structure RingSubgroupsBasis {A ι : Type*} [Ring A] (B : ι → AddSubgroup A) : Prop where
   /-- Condition for `B` to be a filter basis on `A`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
   /-- For each set `B` in the submodule basis on `A`, there is another basis element `B'` such
@@ -50,9 +50,9 @@ structure RingSubgroupsBasis {A ι : Type _} [Ring A] (B : ι → AddSubgroup A)
 
 namespace RingSubgroupsBasis
 
-variable {A ι : Type _} [Ring A]
+variable {A ι : Type*} [Ring A]
 
-theorem of_comm {A ι : Type _} [CommRing A] (B : ι → AddSubgroup A)
+theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
     (inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j) (mul : ∀ i, ∃ j, (B j : Set A) * B j ⊆ B i)
     (leftMul : ∀ x : A, ∀ i, ∃ j, (B j : Set A) ⊆ (fun y : A => x * y) ⁻¹' B i) :
     RingSubgroupsBasis B :=
@@ -205,7 +205,7 @@ theorem nonarchimedean : @NonarchimedeanRing A _ hB.topology := by
 
 end RingSubgroupsBasis
 
-variable {ι R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
+variable {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 /-- A family of submodules in a commutative `R`-algebra `A` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `A` which is compatible with the ring structure and
@@ -242,7 +242,7 @@ def topology [Nonempty ι] (hB : SubmodulesRingBasis B) : TopologicalSpace A :=
 
 end SubmodulesRingBasis
 
-variable {M : Type _} [AddCommGroup M] [Module R M]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- A family of submodules in an `R`-module `M` is a submodules basis if it satisfies
 some axioms ensuring there is a topology on `M` which is compatible with the module structure and
@@ -351,7 +351,7 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
 
 library_note "nonarchimedean non instances"/--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
-(such as `MeasureTheory.AEEqFun.instAddMonoid ` or `topological_add_group.to_has_continuous_add`)
+(such as `MeasureTheory.AEEqFun.instAddMonoid` or `topological_add_group.to_has_continuous_add`)
 cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
@@ -387,7 +387,7 @@ structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → S
   /-- Condition for `B` to be a filter basis on `M`. -/
   inter : ∀ i j, ∃ k, B k ≤ B i ⊓ B j
   /-- For any element `m : M` and any set `B i` in the submodule basis on `M`,
-    there is a `U` in the ring filter basis on `R` such that `U ⬝ m` is in `B i`. -/
+    there is a `U` in the ring filter basis on `R` such that `U * m` is in `B i`. -/
   smul : ∀ (m : M) (i : ι), ∃ U ∈ BR, U ⊆ (· • m) ⁻¹' B i
 #align ring_filter_basis.submodules_basis RingFilterBasis.SubmodulesBasis
 

@@ -40,7 +40,7 @@ open Classical uniformity Topology
 
 open Set UniformSpace UniformSpace.Completion Filter
 
-variable (K : Type _) [Field K] [UniformSpace K]
+variable (K : Type*) [Field K] [UniformSpace K]
 
 -- mathport name: exprhat
 local notation "hat" => Completion
@@ -98,7 +98,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
-instance : Inv (hat K) :=
+instance instInvCompletion : Inv (hat K) :=
   ⟨fun x => if x = 0 then 0 else hatInv x⟩
 
 variable [TopologicalDivisionRing K]
@@ -179,7 +179,7 @@ end Completion
 
 end UniformSpace
 
-variable (L : Type _) [Field L] [UniformSpace L] [CompletableTopField L]
+variable (L : Type*) [Field L] [UniformSpace L] [CompletableTopField L]
 
 instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K :=
   { Subtype.separatedSpace (K : Set L) with
@@ -193,7 +193,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K :
       rw [← Filter.push_pull', ← map_zero i, ← hi.inducing.nhds_eq_comap, inf_F, Filter.map_bot] }
 #align subfield.completable_top_field Subfield.completableTopField
 
-instance (priority := 100) completableTopField_of_complete (L : Type _) [Field L] [UniformSpace L]
+instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
     [TopologicalDivisionRing L] [SeparatedSpace L] [CompleteSpace L] : CompletableTopField L :=
   { ‹SeparatedSpace L› with
     nice := fun F cau_F hF => by

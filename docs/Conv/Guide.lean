@@ -7,7 +7,7 @@ Authors: Kyle Miller
 /-! # Guide: Conversion mode tactic
 
 This is a curated guide to point you toward how `conv` mode works and what tactics are available.
-It is not meant to be comprehesive, but rather a "cheat sheet." See also the
+It is not meant to be comprehensive, but rather a "cheat sheet." See also the
 [`conv` introduction](https://leanprover-community.github.io/mathlib4_docs/docs/Conv/Introduction.html).
 
 ## Syntax
@@ -155,6 +155,9 @@ in Lean 4 core.
 ### Manipulation
 
 * `change t` changes the expression to `t` if the expression and `t` are definitionally equal.
+
+* `equals t => tacticSeq` changes the current expression, say `e`, to `t`, and asks you to prove
+   the equality `e = t`. (Std4)
 
 * `rw [thms...]` rewrites the expression using the given theorems. The syntax is similar to `rw`.
 

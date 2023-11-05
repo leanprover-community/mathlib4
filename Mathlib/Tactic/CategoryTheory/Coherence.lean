@@ -26,6 +26,8 @@ which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 -/
 
+set_option autoImplicit true
+
 -- Porting note: restore when ported
 -- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 
@@ -182,7 +184,7 @@ noncomputable def monoidalIsoComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
 
 @[inherit_doc Mathlib.Tactic.Coherence.monoidalIsoComp]
 scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
-  Mathlib.Tactic.Coherence.monoidalIsoComp -- type as \ot \gg
+  Mathlib.Tactic.Coherence.monoidalIsoComp -- type as \ll \ot \gg
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) : U ⟶ Y := f ⊗≫ g
 
@@ -287,15 +289,17 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
-    simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom] <;>
+    (simp (config := {failIfUnchanged := false}) only
+      [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
-    simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
+    (simp (config := {failIfUnchanged := false}) only
+      [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
 
-lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
+lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
   simpa using w
 
-lemma insert_id_rhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
+lemma insert_id_rhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
     f = g := by
   simpa using w
 
@@ -364,10 +368,10 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    simp only [bicategoricalComp,
+    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
       Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom'];
-    simp only [monoidalComp];
-    try whisker_simps
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
+      monoidalComp]);
+    whisker_simps (config := {failIfUnchanged := false})
     ))
   coherence_loop

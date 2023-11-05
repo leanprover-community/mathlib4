@@ -19,7 +19,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type _}
+variable {α : Type u} {β : Type*}
 
 namespace Function.Injective
 

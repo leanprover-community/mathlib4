@@ -18,7 +18,7 @@ namespace Finset
 
 open Multiset
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-! ### fold -/
 
@@ -104,7 +104,7 @@ theorem fold_disjUnion {s₁ s₂ : Finset α} {b₁ b₂ : β} (h) :
   (congr_arg _ <| Multiset.map_add _ _ _).trans (Multiset.fold_add _ _ _ _ _)
 #align finset.fold_disj_union Finset.fold_disjUnion
 
-theorem fold_disjiUnion {ι : Type _} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
+theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
     (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
   (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 #align finset.fold_disj_Union Finset.fold_disjiUnion
