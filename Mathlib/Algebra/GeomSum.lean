@@ -147,7 +147,7 @@ theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
       by simp_rw [← pow_add]
     _ = ∑ i in Finset.range n, x ^ (n - 1) :=
       Finset.sum_congr rfl fun i hi =>
-        congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| Finset.mem_range.1 hi
+        congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| Finset.mem_range.1 hi
     _ = (Finset.range n).card • x ^ (n - 1) := Finset.sum_const _
     _ = n * x ^ (n - 1) := by rw [Finset.card_range, nsmul_eq_mul]
 #align geom_sum₂_self geom_sum₂_self
@@ -309,7 +309,7 @@ protected theorem Commute.geom_sum₂_succ_eq {α : Type u} [Ring α] {x y : α}
   suffices n - 1 - i + 1 = n - i by rw [this]
   cases' n with n
   · exact absurd (List.mem_range.mp hi) i.not_lt_zero
-  · rw [tsub_add_eq_add_tsub (Nat.le_pred_of_lt (List.mem_range.mp hi)),
+  · rw [tsub_add_eq_add_tsub (Nat.le_sub_one_of_lt (List.mem_range.mp hi)),
       tsub_add_cancel_of_le (Nat.succ_le_iff.mpr n.succ_pos)]
 #align commute.geom_sum₂_succ_eq Commute.geom_sum₂_succ_eq
 

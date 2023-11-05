@@ -784,7 +784,7 @@ lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
             to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
           exact Nat.succ_le_succ ih
       case neg =>
-        have _ : e = 0 := Nat.eq_zero_of_nonpos e h_pred_pos
+        have _ : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
         rw [‹e = 0›]
         have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
         have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
