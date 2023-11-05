@@ -27,6 +27,14 @@ namespace ShortComplex
 
 noncomputable instance : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology where
 
+/-- Constructor for short complexes in `ModuleCat.{v} R` taking as inputs
+linear maps `f` and `g` and the vanishing of their composition. -/
+@[simps]
+def moduleCatMk {X₁ X₂ X₃ : Type v} [AddCommGroup X₁] [AddCommGroup X₂] [AddCommGroup X₃]
+    [Module R X₁] [Module R X₂] [Module R X₃] (f : X₁ →ₗ[R] X₂) (g : X₂ →ₗ[R] X₃)
+    (hfg : g.comp f = 0) : ShortComplex (ModuleCat.{v} R) :=
+  ShortComplex.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g) hfg
+
 variable (S : ShortComplex (ModuleCat.{v} R))
 
 @[simp]
@@ -78,15 +86,15 @@ lemma ShortExact.moduleCat_surjective_g (hS : S.ShortExact) :
 /-- Constructor for short complexes in `ModuleCat.{v} R` taking as inputs
 morphisms `f` and `g` and the assumption `LinearMap.range f ≤ LinearMap.ker g`. -/
 @[simps]
-def moduleCat_mk_of_ker_le_range {X₁ X₂ X₃ : ModuleCat.{v} R} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
+def moduleCatMkOfKerLERange {X₁ X₂ X₃ : ModuleCat.{v} R} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
     (hfg : LinearMap.range f ≤ LinearMap.ker g) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk f g (by
     ext
     exact hfg ⟨_, rfl⟩)
 
-lemma Exact.moduleCat_mk_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
+lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (hfg : LinearMap.range f = LinearMap.ker g) :
-    (moduleCat_mk_of_ker_le_range f g (by rw [hfg])).Exact := by
+    (moduleCatMkOfKerLERange f g (by rw [hfg])).Exact := by
   simpa only [moduleCat_exact_iff_range_eq_ker] using hfg
 
 variable (S)
