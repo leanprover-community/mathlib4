@@ -989,7 +989,7 @@ theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.ex
 
 /-- Variant of `f.extend_left_inv I`, stated in terms of images. -/
 lemma extend_left_inv' (ht: t ⊆ f.source) : ((f.extend I).symm ∘ (f.extend I)) '' t = t :=
-  EqOn.image_eq' (fun _ hx ↦ f.extend_left_inv I (ht hx))
+  EqOn.image_eq_self (fun _ hx ↦ f.extend_left_inv I (ht hx))
 
 theorem extend_source_mem_nhds {x : M} (h : x ∈ f.source) : (f.extend I).source ∈ 𝓝 x :=
   (isOpen_extend_source f I).mem_nhds <| by rwa [f.extend_source I]

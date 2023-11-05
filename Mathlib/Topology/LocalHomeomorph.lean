@@ -448,15 +448,14 @@ theorem preimage_open_of_open {s : Set β} (hs : IsOpen s) : IsOpen (e.source �
 #align local_homeomorph.preimage_open_of_open LocalHomeomorph.preimage_open_of_open
 
 /-- A local homeomorphism is an open map on its source. -/
-lemma isOpenMapOn_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) : IsOpen (e '' s) := by
+lemma isOpen_image_of_subset_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) : IsOpen (e '' s) := by
   rw [(image_eq_target_inter_inv_preimage (e := e) hse)]
   exact e.continuous_invFun.preimage_open_of_open e.open_target hs
 
 /-- The inverse of a local homeomorphism `e` is an open map on `e.target`. -/
-lemma isOpenMapOn_target_symm {t : Set β} (ht : IsOpen t) (hte : t ⊆ e.target) :
-    IsOpen (e.invFun '' t) := by
-  have r : e.invFun '' t = e.source ∩ ↑e ⁻¹' t := symm_image_eq_source_inter_preimage (e := e) hte
-  exact r ▸ e.continuous_toFun.preimage_open_of_open e.open_source ht
+lemma isOpen_image_symm_of_subset_target {t : Set β} (ht : IsOpen t) (hte : t ⊆ e.target) :
+    IsOpen (e.symm '' t) :=
+  isOpen_image_of_subset_source e.symm ht (e.symm_source ▸ hte)
 
 /-!
 ### `LocalHomeomorph.IsImage` relation
