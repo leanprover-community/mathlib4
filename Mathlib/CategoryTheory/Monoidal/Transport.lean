@@ -152,6 +152,8 @@ def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
     left_unitality := by cases fData; aesop_cat
     right_unitality := by cases fData; aesop_cat }
 
+/-- Transport a monoidal structure along an equivalence of (plain) categories.
+-/
 @[simps]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
