@@ -18,7 +18,7 @@ which constructs complexes in `V` of shape `c`, supported in degree `j`.
 
 noncomputable section
 
-open CategoryTheory Limits ZeroObject
+open CategoryTheory Category Limits ZeroObject
 
 universe v u
 
@@ -130,6 +130,7 @@ instance (j : ι) : Full (single V c j) where
 
 variable {c}
 
+/-- Constructor for morphisms to a single homological complex. -/
 def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
     (hφ : ∀ (i : ι), c.Rel i j → K.d i j ≫ φ = 0) :
     K ⟶ (single V c j).obj A where
@@ -142,7 +143,7 @@ def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ 
     rw [comp_zero]
     split_ifs with hk
     · subst hk
-      simp only [XIsoOfEq_rfl, Iso.refl_hom, Category.id_comp, reassoc_of% hφ i hik, zero_comp]
+      simp only [XIsoOfEq_rfl, Iso.refl_hom, id_comp, reassoc_of% hφ i hik, zero_comp]
     · apply (isZero_single_obj_X c j A k hk).eq_of_tgt
 
 @[simp]
@@ -150,9 +151,10 @@ lemma mkHomToSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j 
     (hφ : ∀ (i : ι), c.Rel i j → K.d i j ≫ φ = 0) :
     (mkHomToSingle φ hφ).f j = φ ≫ (singleObjXSelf c j A).inv := by
   dsimp [mkHomToSingle]
-  rw [dif_pos rfl, Category.id_comp]
+  rw [dif_pos rfl, id_comp]
   rfl
 
+/-- Constructor for morphisms from a single homological complex. -/
 def mkHomFromSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A ⟶ K.X j)
     (hφ : ∀ (k : ι), c.Rel j k → φ ≫ K.d j k = 0) :
     (single V c j).obj A ⟶ K where
@@ -165,8 +167,7 @@ def mkHomFromSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A ⟶ K.
     rw [zero_comp]
     split_ifs with hi
     · subst hi
-      simp only [XIsoOfEq_rfl, Iso.refl_inv, Category.comp_id,
-        Category.assoc, hφ k hik, comp_zero]
+      simp only [XIsoOfEq_rfl, Iso.refl_inv, comp_id, assoc, hφ k hik, comp_zero]
     · apply (isZero_single_obj_X c j A i hi).eq_of_src
 
 @[simp]
@@ -174,78 +175,61 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
     (hφ : ∀ (k : ι), c.Rel j k → φ ≫ K.d j k = 0) :
     (mkHomFromSingle φ hφ).f j = (singleObjXSelf c j A).hom ≫ φ := by
   dsimp [mkHomFromSingle]
-  rw [dif_pos rfl, Category.comp_id]
+  rw [dif_pos rfl, comp_id]
   rfl
 
 end HomologicalComplex
 
-/-namespace ChainComplex
+namespace ChainComplex
 
-/-- `ChainComplex.single₀ V` is the embedding of `V` into `ChainComplex V ℕ`
-as chain complexes supported in degree 0.
+@[simp]
+lemma single₀ObjXSelf (X : V) :
+    HomologicalComplex.singleObjXSelf (ComplexShape.down ℕ) 0 X = Iso.refl _ := rfl
 
-This is naturally isomorphic to `single V _ 0`, but has better definitional properties.
+/-- Morphisms from an `ℕ`-indexed chain complex `C`
+to a single object chain complex with `X` concentrated in degree 0
+are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 -/
-def single₀ : V ⥤ ChainComplex V ℕ where
-  obj X :=
-    { X := fun n =>
-        match n with
-        | 0 => X
-        | _ + 1 => 0
-      d := fun i j => 0 }
-  map f :=
-    { f := fun n =>
-        match n with
-        | 0 => f
-        | n + 1 => 0 }
-#align chain_complex.single₀ ChainComplex.single₀
+@[simps]
+def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
+    (C ⟶ (single₀ V).obj X) ≃ { f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 } where
+  toFun φ := ⟨φ.f 0, by rw [← φ.comm 1 0, HomologicalComplex.single_obj_d, comp_zero]⟩
+  invFun f := HomologicalComplex.mkHomToSingle f.1 (fun i hi => by
+    obtain rfl : i = 1 := by simpa using hi.symm
+    exact f.2)
+  left_inv φ := by
+    ext
+    dsimp
+    simp only [HomologicalComplex.mkHomToSingle_f, single₀ObjXSelf, Iso.refl_inv]
+    erw [comp_id]
+  right_inv f := by
+    ext
+    simp only [HomologicalComplex.mkHomToSingle_f, single₀ObjXSelf, Iso.refl_inv]
+    erw [comp_id]
+
+end ChainComplex
+
+namespace CochainComplex
 
 @[simp]
-theorem single₀_obj_X_0 (X : V) : ((single₀ V).obj X).X 0 = X :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_0 ChainComplex.single₀_obj_X_0
+lemma single₀ObjXSelf (X : V) :
+    HomologicalComplex.singleObjXSelf (ComplexShape.up ℕ) 0 X = Iso.refl _ := rfl
 
-@[simp]
-theorem single₀_obj_X_succ (X : V) (n : ℕ) : ((single₀ V).obj X).X (n + 1) = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_succ ChainComplex.single₀_obj_X_succ
+/-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
+to an `ℕ`-indexed cochain complex `C`
+are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/
+def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
+    ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.X 0 // f ≫ C.d 0 1 = 0 } where
+  toFun φ := ⟨φ.f 0, by rw [φ.comm 0 1, HomologicalComplex.single_obj_d, zero_comp]⟩
+  invFun f := HomologicalComplex.mkHomFromSingle f.1 (fun i hi => by
+    obtain rfl : i = 1 := by simpa using hi.symm
+    exact f.2)
+  left_inv φ := by aesop_cat
+  right_inv := by aesop_cat
 
-@[simp]
-theorem single₀_obj_X_d (X : V) (i j : ℕ) : ((single₀ V).obj X).d i j = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_d ChainComplex.single₀_obj_X_d
+/-
 
-@[simp]
-theorem single₀_obj_X_dTo (X : V) (j : ℕ) : ((single₀ V).obj X).dTo j = 0 := by
-  rw [dTo_eq ((single₀ V).obj X) rfl]
-  simp
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_d_to ChainComplex.single₀_obj_X_dTo
-
-@[simp]
-theorem single₀_obj_x_dFrom (X : V) (i : ℕ) : ((single₀ V).obj X).dFrom i = 0 := by
-  cases i
-  · rw [dFrom_eq_zero]
-    simp
-  · erw [dFrom_eq ((single₀ V).obj X) rfl]
-    simp
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_d_from ChainComplex.single₀_obj_x_dFrom
-
-@[simp]
-theorem single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
-  rfl
-#align chain_complex.single₀_map_f_0 ChainComplex.single₀_map_f_0
-
-@[simp]
-theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
-  rfl
-#align chain_complex.single₀_map_f_succ ChainComplex.single₀_map_f_succ
-
-section
+namespace ChainComplex
 
 variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
@@ -275,166 +259,7 @@ noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
 
 end
 
-variable {V}
-
-/-- Morphisms from an `ℕ`-indexed chain complex `C`
-to a single object chain complex with `X` concentrated in degree 0
-are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
--/
-@[simps]
-def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
-    (C ⟶ (single₀ V).obj X) ≃ { f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 } where
-  toFun f :=
-    ⟨f.f 0, by
-      rw [← f.comm 1 0]
-      simp⟩
-  invFun f :=
-    { f := fun i =>
-        match i with
-        | 0 => f.1
-        | n + 1 => 0
-      comm' := fun i j h => by
-        rcases i with (_|_|i) <;> cases j <;> simp only [single₀_obj_X_d, comp_zero]
-        · rw [C.shape, zero_comp]
-          simp
-        · exact f.2.symm
-        · rw [C.shape, zero_comp]
-          exact i.succ_succ_ne_one.symm }
-  left_inv f := by
-    ext i
-    rcases i with ⟨⟩
-    · rfl
-    · dsimp
-      ext
-  right_inv := by aesop_cat
-#align chain_complex.to_single₀_equiv ChainComplex.toSingle₀Equiv
-
-@[ext]
-theorem to_single₀_ext {C : ChainComplex V ℕ} {X : V} (f g : C ⟶ (single₀ V).obj X)
-    (h : f.f 0 = g.f 0) : f = g :=
-  (toSingle₀Equiv C X).injective
-    (by
-      ext
-      exact h)
-#align chain_complex.to_single₀_ext ChainComplex.to_single₀_ext
-
-/-- Morphisms from a single object chain complex with `X` concentrated in degree 0
-to an `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X`.
--/
-@[simps]
-def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) : ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
-  toFun f := f.f 0
-  invFun f :=
-    { f := fun i =>
-        match i with
-        | 0 => f
-        | n + 1 => 0
-      comm' := fun i j h => by
-        cases i <;> cases j <;>
-          simp only [shape, ComplexShape.down_Rel, Nat.one_ne_zero, not_false_iff,
-            zero_comp, single₀_obj_X_d, Nat.zero_eq, add_eq_zero, comp_zero] }
-  left_inv f := by
-    ext i
-    cases i
-    · rfl
-    · dsimp
-      ext
-  right_inv g := rfl
-#align chain_complex.from_single₀_equiv ChainComplex.fromSingle₀Equiv
-
-variable (V)
-
-/-- `single₀` is the same as `single V _ 0`. -/
-def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := { f := fun i => by cases i <;> exact 𝟙 _ }
-        inv := { f := fun i => by cases i <;> exact 𝟙 _ }
-        hom_inv_id := to_single₀_ext _ _ (by simp)
-        inv_hom_id := by
-          ext (_|_)
-          · dsimp
-            simp
-          · dsimp
-            rw [Category.comp_id] })
-    fun f => by ext (_|_) <;> aesop_cat
-#align chain_complex.single₀_iso_single ChainComplex.single₀IsoSingle
-
-instance : Faithful (single₀ V) :=
-  Faithful.of_iso (single₀IsoSingle V).symm
-
-instance : Full (single₀ V) :=
-  Full.ofIso (single₀IsoSingle V).symm
-
-end ChainComplex
-
 namespace CochainComplex
-
-/-- `CochainComplex.single₀ V` is the embedding of `V` into `CochainComplex V ℕ`
-as cochain complexes supported in degree 0.
-
-This is naturally isomorphic to `single V _ 0`, but has better definitional properties.
--/
-def single₀ : V ⥤ CochainComplex V ℕ where
-  obj X :=
-    { X := fun n =>
-        match n with
-        | 0 => X
-        | _ + 1 => 0
-      d := fun i j => 0 }
-  map f :=
-    { f := fun n =>
-        match n with
-        | 0 => f
-        | n + 1 => 0 }
-#align cochain_complex.single₀ CochainComplex.single₀
-
-@[simp]
-theorem single₀_obj_X_0 (X : V) : ((single₀ V).obj X).X 0 = X :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_0 CochainComplex.single₀_obj_X_0
-
-@[simp]
-theorem single₀_obj_X_succ (X : V) (n : ℕ) : ((single₀ V).obj X).X (n + 1) = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_succ CochainComplex.single₀_obj_X_succ
-
-@[simp]
-theorem single₀_obj_X_d (X : V) (i j : ℕ) : ((single₀ V).obj X).d i j = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_d CochainComplex.single₀_obj_X_d
-
-@[simp]
-theorem single₀_obj_x_dFrom (X : V) (j : ℕ) : ((single₀ V).obj X).dFrom j = 0 := by
-  rw [dFrom_eq ((single₀ V).obj X) rfl]
-  simp
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_d_from CochainComplex.single₀_obj_x_dFrom
-
-@[simp]
-theorem single₀_obj_x_dTo (X : V) (i : ℕ) : ((single₀ V).obj X).dTo i = 0 := by
-  cases i
-  · rw [dTo_eq_zero]
-    simp
-  · erw [dTo_eq ((single₀ V).obj X) rfl]
-    simp
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_d_to CochainComplex.single₀_obj_x_dTo
-
-@[simp]
-theorem single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
-  rfl
-#align cochain_complex.single₀_map_f_0 CochainComplex.single₀_map_f_0
-
-@[simp]
-theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
-  rfl
-#align cochain_complex.single₀_map_f_succ CochainComplex.single₀_map_f_succ
-
-section
 
 variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
 
@@ -462,73 +287,6 @@ noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
     fun f => (Functor.zero_obj _).eq_of_tgt _ _
 #align cochain_complex.homology_functor_succ_single₀ CochainComplex.homology'FunctorSuccSingle₀
 
-end
+end CochainComplex
 
-variable {V}
-
-/-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
-to an `ℕ`-indexed cochain complex `C`
-are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`.
 -/
-def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
-    ((single₀ V).obj X ⟶ C) ≃ { f : X ⟶ C.X 0 // f ≫ C.d 0 1 = 0 } where
-  toFun f :=
-    ⟨f.f 0, by
-      rw [f.comm 0 1]
-      simp⟩
-  invFun f :=
-    { f := fun i =>
-        match i with
-        | 0 => f.1
-        | n + 1 => 0
-      comm' := fun i j h => by
-        rcases f with ⟨f, hf⟩
-        rcases j with (_|_|j) <;> cases i <;> simp only [single₀_obj_X_d, zero_comp]
-        · rw [C.shape, comp_zero]
-          simp
-        · exact hf
-        · rw [C.shape, comp_zero]
-          simp only [Nat.zero_eq, ComplexShape.up_Rel, zero_add]
-          exact j.succ_succ_ne_one.symm }
-  left_inv f := by
-    ext i
-    rcases i with ⟨⟩
-    · rfl
-    · dsimp
-      ext
-  right_inv := by aesop_cat
-#align cochain_complex.from_single₀_equiv CochainComplex.fromSingle₀Equiv
-
--- porting note: added to ease the following definition
-@[ext]
-theorem from_single₀_ext {C : CochainComplex V ℕ} {X : V} (f g : (single₀ V).obj X ⟶ C)
-    (h : f.f 0 = g.f 0) : f = g :=
-  (fromSingle₀Equiv C X).injective
-    (by
-      ext
-      exact h)
-
-variable (V)
-
-/-- `single₀` is the same as `single V _ 0`. -/
-def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
-  NatIso.ofComponents fun X =>
-    { hom := { f := fun i => by cases i <;> exact 𝟙 _ }
-      inv := { f := fun i => by cases i <;> exact 𝟙 _ }
-      hom_inv_id := from_single₀_ext _ _ (by simp)
-      inv_hom_id := by
-        ext (_|_)
-        · dsimp
-          simp
-        · dsimp
-          rw [Category.id_comp]
-          rfl }
-#align cochain_complex.single₀_iso_single CochainComplex.single₀IsoSingle
-
-instance : Faithful (single₀ V) :=
-  Faithful.of_iso (single₀IsoSingle V).symm
-
-instance : Full (single₀ V) :=
-  Full.ofIso (single₀IsoSingle V).symm
-
-end CochainComplex-/
