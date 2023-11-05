@@ -227,6 +227,7 @@ theorem functorCategoryEquivalence.functor_def :
 theorem functorCategoryEquivalence.inverse_def :
     (functorCategoryEquivalence V G).inverse = FunctorCategoryEquivalence.inverse :=
   rfl
+-/
 
 instance [HasFiniteProducts V] : HasFiniteProducts (Action V G) where
   out _ :=
