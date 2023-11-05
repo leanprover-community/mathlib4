@@ -6,6 +6,13 @@ Authors: Yaël Dillies
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.Hom.Lattice
 
+/-!
+# Lexicographic sum of lattices
+
+This file proves that we can combine two lattices `α` and `β` into a lattice `α ⊕ₗ β` where
+everything in `α` is declared smaller than everything in `β`.
+-/
+
 open OrderDual
 
 namespace Sum.Lex
