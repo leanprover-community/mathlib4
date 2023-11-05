@@ -204,66 +204,78 @@ end ContMDiffAt
 -- step 3, general: if f_loc is a `IsLocalStructomorphWithinAt`, so is the local inverse
 -- (general nonsense, structure groupoid is closed under inverses)
 
+-- XXX: good name for this?
 variable {X Y : Type*} {f f' : X → Y} {g g' : Y → X} {s : Set X} {t : Set Y} in
-lemma name (h : InvOn g f s t) (h' : InvOn g' f' s t) (heq : EqOn f f' s) : EqOn g g' t := sorry
+lemma InvOn.eqOn_inverse_of_eqOn (h : InvOn g f s t) (h' : InvOn g' f' s t) (heq : EqOn f f' s)
+    (hg : MapsTo g t s) : EqOn g g' t := by
+  intro y hy
+  -- We have y = f x = f' x for x := g y ∈ s, hence can apply our assumptions.
+  set x := g y
+  rw [← (h.2 hy), heq (hg hy)]
+  exact (h'.1 (hg hy)).symm
 
 -- xxx: why is my variant better?
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (e : LocalHomeomorph X Y) in
-lemma LocalHomeomorph.restr_target' (s : Set X) (hs : IsOpen s) :
+lemma LocalHomeomorph.restr_target' {s : Set X} (hs : IsOpen s) :
     (e.restr s).target = e '' (e.source ∩ s) := by
   rw [← (e.restr s).image_source_eq_target, e.restr_source s, hs.interior_eq, e.restr_apply]
+
+variable {X Y : Type*} {s : Set X} {f : X → Y} {g : Y → X} in
+lemma InvOn.mapsTo_image (hinv : InvOn g f s (f '' s)) : MapsTo g (f '' s) s := by
+  rintro y ⟨x, hxs, hxy⟩
+  rw [← hxy]
+  exact mem_of_eq_of_mem (hinv.1 hxs) hxs
 
 /-- If f : H → H is a local structomorphism at `x` relative to `s` and has a local inverse `g`,
   then `g` is a local structomorphism at `f x` relative to `f '' x`. -/
 -- no differentiability here! wouldn't make sense either :-)
-lemma StructureGroupoid.localInverse_isLocalStructomorphWithin {f : H → H} (s : Set H) (x : H)
-    (G : StructureGroupoid H) [ClosedUnderRestriction G] (hf : G.IsLocalStructomorphWithinAt f s x)
-    (hs : IsOpen s)
-    -- TODO: changing to f '' s to s should fail somewhere...!
-    {g : H → H} (hinv : InvOn g f s (f '' s)) (hgx : g (f x) = x) :
+lemma StructureGroupoid.localInverse_isLocalStructomorphWithin {f : H → H} {s : Set H} {x : H}
+    {G : StructureGroupoid H} [ClosedUnderRestriction G] (hf : G.IsLocalStructomorphWithinAt f s x)
+    (hs : IsOpen s) {g : H → H} (hinv : InvOn g f s (f '' s)) (hgx : g (f x) = x) :
     G.IsLocalStructomorphWithinAt g (f '' s) (f x) := by
   intro hfx
   -- `hgx` is required so this is true: need to exclude the case x ∉ s, but f x ∈ f'' s.
-  have : x ∈ s := by
+  have hxs : x ∈ s := by
     rcases hfx with ⟨x', hx's, hx'y⟩
     have : x = x' := by rw [(hinv.1 hx's).symm, hx'y, hgx]
     exact mem_of_eq_of_mem this hx's
-  rcases hf this with ⟨e, heg, heq, hxsource⟩
-
-  have : (e.restr s).symm.source = e '' (e.source ∩ s) := by
-    rw [(e.restr s).symm_source, e.restr_target' s hs]
-  rw [inter_comm] at this -- to placate heq
-
+  rcases hf hxs with ⟨e, heg, heq, hxsource⟩
+  -- XXX: `heq` and `restr_target` disagree about order of sets,
+  -- so need to rewrite by inter_comm, here and below.
+  have e'source : (e.restr s).symm.source = e '' (e.source ∩ s) := by
+    rw [(e.restr s).symm_source, e.restr_target' hs]
+  rw [inter_comm] at e'source
+  have image_eq : e '' (e.source ∩ s) = f '' (e.source ∩ s) := by
+    rw [inter_comm]; exact image_congr heq.symm
   refine ⟨(e.restr s).symm, G.symm (closedUnderRestriction' heg hs), ?_, ?_⟩
   · intro y hy
-    rw [this] at hy
+    rw [e'source] at hy
     -- write y = e x = f x for some x ∈ e.source ∩ s
     rcases mem_of_mem_inter_right hy with ⟨x, hx, hxy⟩
     have : f x = y := by rw [heq hx]; exact hxy
     have hy' : y ∈ f '' (s ∩ e.source) := this ▸ mem_image_of_mem f hx
-
-
-    have hinv' : InvOn g f (s ∩ e.source) (f '' (s ∩ e.source)) := sorry -- monotonicity
-
-    -- e'' ... and f '' ... are equal by heq; perhaps re-order e.source and s, then it's a fact about e.restr s
-    have aux : InvOn (e.restr s).symm (e.restr s) (s ∩ e.source) (f '' (s ∩ e.source)) := sorry
-
-    have : EqOn g (e.restr s).symm (f '' (s ∩ e.source)) := name hinv' aux heq
-
-    exact this hy'
-  · sorry
-  -- · -- g = e.symm on f '' s ∩ e.symm.source
-  --   show EqOn g e.symm (f '' s ∩ e.symm.source)
-  --   -- heq tells us: EqOn f (e.toLocalEquiv) (s ∩ e.source)
-  --   -- now, need to use both-sided inverses; shouldn't be hard, but didn't think yet
-  --   sorry
-  -- · -- show f x ∈ e.symm.source
-  --   rw [LocalHomeomorph.symm_source, ← e.image_source_eq_target, heq (mem_inter this hxsource)]
-  --   apply mem_image_of_mem e hxsource
+    -- Now, it's a general lemma about two-sided inverses.
+    have hinv' : InvOn g f (s ∩ e.source) (f '' (s ∩ e.source)) :=
+      hinv.mono (inter_subset_left s e.source) (image_subset _ (inter_subset_left _ _))
+    have aux : InvOn (e.restr s).symm (e.restr s) (s ∩ e.source) (f '' (s ∩ e.source)) := by
+      have : f '' (s ∩ e.source) = e '' (s ∩ e.source) := image_congr heq
+      rw [this]
+      have : (e.restr s).source = s ∩ e.source := by
+        rw [inter_comm]
+        let r := hs.interior_eq ▸ e.restr_source s
+        exact r
+      rw [← e'source, ← this]
+      exact (e.restr s).invOn
+    exact (InvOn.eqOn_inverse_of_eqOn hinv' aux heq) (InvOn.mapsTo_image hinv') hy'
+  · show f x ∈ (e.restr s).symm.source
+    rw [(e.restr s).symm_source, e.restr_target' hs]
+    rw [image_eq]
+    apply mem_image_of_mem f (mem_inter hxsource hxs)
 
 -- step 4, specific: if f is C^k at x, then f_loc is C^k, hence also g_loc
 --> in the smooth case, get a diffeo between things (right phrasing touches the local diffeo q.)
 
+#exit
 end IFT
 
 variable {f : M → N} {x : M}
