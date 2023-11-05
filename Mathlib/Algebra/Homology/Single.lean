@@ -250,6 +250,13 @@ lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
 @[simp]
+lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
+    ((single₀ V).map f).f 0 = f := by
+  rw [HomologicalComplex.single_map_f_self]
+  dsimp [HomologicalComplex.singleObjXSelf, HomologicalComplex.singleObjXIsoOfEq]
+  erw [comp_id, id_comp]
+
+@[simp]
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.up ℕ) 0 X = Iso.refl _ := rfl
 
@@ -296,67 +303,3 @@ lemma toSingle₀Equiv_symm_apply_f_succ
   rfl
 
 end CochainComplex
-
-/-
-
-namespace ChainComplex
-
-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
-
-/-- Sending objects to chain complexes supported at `0` then taking `0`-th homology
-is the same as doing nothing.
--/
-noncomputable def homology'Functor0Single₀ : single₀ V ⋙ homology'Functor V _ 0 ≅ 𝟭 V :=
-  NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
-    fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
-      dsimp
-      ext
-      simp
-#align chain_complex.homology_functor_0_single₀ ChainComplex.homology'Functor0Single₀
-
-/-- Sending objects to chain complexes supported at `0` then taking `(n+1)`-st homology
-is the same as the zero functor.
--/
-noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
-    single₀ V ⋙ homology'Functor V _ (n + 1) ≅ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      homology'.congr _ _ (by simp) (by simp) ≪≫
-        homology'ZeroZero ≪≫ (Functor.zero_obj _).isoZero.symm)
-    fun f => (Functor.zero_obj _).eq_of_tgt _ _
-#align chain_complex.homology_functor_succ_single₀ ChainComplex.homology'FunctorSuccSingle₀
-
-end
-
-namespace CochainComplex
-
-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
-
-/-- Sending objects to cochain complexes supported at `0` then taking `0`-th homology
-is the same as doing nothing.
--/
-noncomputable def homologyFunctor0Single₀ : single₀ V ⋙ homology'Functor V _ 0 ≅ 𝟭 V :=
-  NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
-    fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
-      dsimp
-      ext
-      simp
-#align cochain_complex.homology_functor_0_single₀ CochainComplex.homologyFunctor0Single₀
-
-/-- Sending objects to cochain complexes supported at `0` then taking `(n+1)`-st homology
-is the same as the zero functor.
--/
-noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
-    single₀ V ⋙ homology'Functor V _ (n + 1) ≅ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      homology'.congr _ _ (by simp) (by simp) ≪≫
-        homology'ZeroZero ≪≫ (Functor.zero_obj _).isoZero.symm)
-    fun f => (Functor.zero_obj _).eq_of_tgt _ _
-#align cochain_complex.homology_functor_succ_single₀ CochainComplex.homology'FunctorSuccSingle₀
-
-end CochainComplex
-
--/
