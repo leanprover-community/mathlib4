@@ -80,6 +80,55 @@ lemma diff_surjective_iff_in_charts_extend : Surjective (mfderiv I J f x) ↔ Su
     (mfderiv 𝓘(ℝ, E) 𝓘(ℝ, E') ((e'.extend J) ∘ f ∘ (e.extend I).symm) ((e.extend I) x)) := sorry
 end Prerequisites
 
+-- Experimenting with another design towards local diffeomorphisms.
+section LocalDiffeos
+variable {G : StructureGroupoid H}
+
+/-- A structomorph induces a map in the structure groupoid. -/
+lemma Structomorph.toFun_mem_groupoid (h : Structomorph G H H) : h.toLocalHomeomorph ∈ G := by
+  -- FIXME: is there a more elegant way to prove this?
+  have : ∀ (c c' : LocalHomeomorph H H), c ∈ atlas H H → c' ∈ atlas H H → h.toLocalHomeomorph ∈ G := by
+    intro c c' hc hc'
+    have : c.symm ≫ₕ h.toHomeomorph.toLocalHomeomorph ≫ₕ c' = h.toLocalHomeomorph := by
+      rw [chartedSpaceSelf_atlas.mp hc, chartedSpaceSelf_atlas.mp hc']
+      simp
+    exact this ▸ (h.mem_groupoid c c' hc hc')
+  apply this (c := LocalHomeomorph.refl H) (c' := LocalHomeomorph.refl H) rfl rfl
+
+/-- If `h` is a `Structomorph` on `H`,it is also a local structomorphism at every point. -/
+lemma Structomorph.toLocalStructomorphAt (h : Structomorph G H H) {x : H} :
+    G.IsLocalStructomorphWithinAt h.toFun univ x :=
+  fun y ↦ ⟨h.toLocalHomeomorph, h.toFun_mem_groupoid, eqOn_refl h.toFun _, y⟩
+
+/-- If `f : H → H` is a local structomorphism at each `x`, it induces a structomorphism on `H`. -/
+noncomputable def Structomorph.of_localStructomorphs {f : H → H}
+    (hf : ∀ x, ∃ s : Set H, x ∈ s ∧ G.IsLocalStructomorphWithinAt f s x) : Structomorph G H H := by
+  -- for each x, choose an s and a local homeomorph x
+  choose s hs  using hf
+  choose hxs e he using hs
+  -- Choose the inverse by taking the point-wise inverse under our construction.
+  let g : H → H := fun x ↦ (e x (hxs x)) x
+  -- Now: show all the boilerplate to argue this defines an inverse.
+  have hf : Continuous f := by
+    have : ∀ x, ContinuousAt f x := by
+      intro x
+      sorry
+    exact continuous_iff_continuousAt.mpr this
+  have hg : Continuous g := sorry
+  let h : Homeomorph H H := {
+    toFun := f
+    invFun := g
+    left_inv := sorry
+    right_inv := sorry
+    continuous_toFun := hf
+    continuous_invFun := hg
+  }
+  exact {
+    h with
+    mem_groupoid := sorry
+  }
+end LocalDiffeos
+
 /-! Inverse function theorem for manifolds. -/
 section IFT
 namespace ContMDiffAt
