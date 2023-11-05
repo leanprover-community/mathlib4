@@ -8,10 +8,16 @@ import Mathlib.Algebra.Homology.HomologicalComplex
 #align_import algebra.homology.single from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
 
 /-!
-# Chain complexes supported in a single degree
+# Homological complexes supported in a single degree
 
 We define `single V j c : V ⥤ HomologicalComplex V c`,
 which constructs complexes in `V` of shape `c`, supported in degree `j`.
+
+In `ChainComplex.toSingle₀Equiv` we characterize chain maps to an
+`ℕ`-indexed complex concentrated in degree 0; they are equivalent to
+`{ f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 }`.
+(This is useful translating between a projective resolution and
+an augmented exact complex of projectives.)
 
 -/
 
