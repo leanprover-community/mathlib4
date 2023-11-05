@@ -20,8 +20,7 @@ instance : CreatesLimitsOfSize.{u, u} uliftFunctor.{v, u} where
         (uliftFunctor.{v, u}.mapIso (equivEquivIso (Types.isLimitEquivSections.{u, u}
         (limit.isLimit K))) ≪≫ (equivEquivIso (sectionsEquiv K)) ≪≫
         (equivEquivIso (Types.isLimitEquivSections.{u, max u v}
-        (limit.isLimit (K ⋙ uliftFunctor.{v, u})))).symm)
-  }
+        (limit.isLimit (K ⋙ uliftFunctor.{v, u})))).symm) }
 
 noncomputable
 instance : PreservesLimitsOfSize.{u, u} uliftFunctor := inferInstance
